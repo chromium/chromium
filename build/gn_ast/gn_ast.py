@@ -16,19 +16,14 @@ from __future__ import annotations
 import dataclasses
 import functools
 import json
-import os
-import re
-import shutil
 import subprocess
-import sys
-from typing import Dict, List, Optional
-
-_DIR_SOURCE_ROOT = os.path.normpath(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from typing import Callable, Dict, List, Optional, Tuple, TypeVar
 
 NODE_CHILD = 'child'
 NODE_TYPE = 'type'
 NODE_VALUE = 'value'
+
+_T = TypeVar('_T')
 
 
 def _create_location_node(begin_line=1):
@@ -40,7 +35,7 @@ def _create_location_node(begin_line=1):
     }
 
 
-def _wrap(node):
+def _wrap(node: dict):
     kind = node[NODE_TYPE]
     if kind == 'LIST':
         return StringList(node)
@@ -55,8 +50,8 @@ def _unwrap(thing):
     return thing
 
 
-def _find_node(root_node, target_node):
-    def recurse(node):
+def _find_node(root_node: dict, target_node: dict):
+    def recurse(node: dict) -> Optional[Tuple[dict, int]]:
         children = node.get(NODE_CHILD)
         if children:
             for i, child in enumerate(children):
@@ -70,34 +65,33 @@ def _find_node(root_node, target_node):
     ret = recurse(root_node)
     if ret is None:
         raise Exception(
-            f'Node not found: {node_to_remove}\nLooked in: {root_node}')
+            f'Node not found: {target_node}\nLooked in: {root_node}')
     return ret
-
 
 @dataclasses.dataclass
 class NodeWrapper:
     """Base class for all wrappers."""
-    node: dict = None
+    node: dict
 
     @property
-    def node_type(self):
+    def node_type(self) -> str:
         return self.node[NODE_TYPE]
 
     @property
-    def node_value(self):
+    def node_value(self) -> str:
         return self.node[NODE_VALUE]
 
     @property
-    def node_children(self):
+    def node_children(self) -> List[dict]:
         return self.node[NODE_CHILD]
 
     @functools.cached_property
     def first_child(self):
-        return _wrap(self.node[NODE_CHILD][0])
+        return _wrap(self.node_children[0])
 
     @functools.cached_property
     def second_child(self):
-        return _wrap(self.node[NODE_CHILD][1])
+        return _wrap(self.node_children[1])
 
     def is_list(self):
         return self.node_type == 'LIST'
@@ -105,10 +99,11 @@ class NodeWrapper:
     def is_identifier(self):
         return self.node_type == 'IDENTIFIER'
 
-    def visit_nodes(self, callback) -> List:
+    def visit_nodes(self, callback: Callable[[dict],
+                                             Optional[_T]]) -> List[_T]:
         ret = []
 
-        def recurse(root):
+        def recurse(root: dict):
             value = callback(root)
             if value is not None:
                 ret.append(value)
@@ -122,7 +117,7 @@ class NodeWrapper:
         return ret
 
     def set_location_recursive(self, line):
-        def helper(n):
+        def helper(n: dict):
             loc = n.get('location')
             if loc:
                 loc['begin_line'] = line
@@ -156,7 +151,7 @@ class BlockWrapper(NodeWrapper):
         assert self.node_type == 'BLOCK'
 
     def find_assignments(self, var_name=None):
-        def match_fn(node):
+        def match_fn(node: dict):
             assignment = AssignmentWrapper.from_node(node)
             if not assignment:
                 return None
@@ -197,10 +192,10 @@ class AssignmentWrapper(NodeWrapper):
         return self.operation == '+='
 
     def value_as_string_list(self):
-        return StringList(self.value_node)
+        return StringList(self.value.node)
 
     @staticmethod
-    def from_node(node) -> Optional[AssignmentWrapper]:
+    def from_node(node: dict) -> Optional[AssignmentWrapper]:
         if node.get(NODE_TYPE) != 'BINARY':
             return None
         children = node[NODE_CHILD]
@@ -242,7 +237,7 @@ class StringList(NodeWrapper):
     def __post_init__(self):
         assert self.is_list()
 
-        self.literals = [
+        self.literals: List[str] = [
             x[NODE_VALUE].strip('"') for x in self.node_children
             if x[NODE_TYPE] == 'LITERAL'
         ]
@@ -297,28 +292,30 @@ class Target(NodeWrapper):
     This does not actually find all targets. E.g. ignores those that use an
     expression for a name, or that use "target(type, name)".
     """
-    def __init__(self, function_node, name_node):
+    def __init__(self, function_node: dict, name_node: dict):
         super().__init__(function_node)
         self.name_node = name_node
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self.name_node[NODE_VALUE].strip('"')
 
     # E.g. "android_library"
     @property
-    def type(self):
+    def type(self) -> str:
         return self.node[NODE_VALUE]
 
     @property
-    def block(self):
-        return self.second_child
+    def block(self) -> BlockWrapper:
+        block = self.second_child
+        assert isinstance(block, BlockWrapper)
+        return block
 
     def set_name(self, value):
         self.name_node[NODE_VALUE] = f'"{value}"'
 
     @staticmethod
-    def from_node(node) -> Optional[Target]:
+    def from_node(node: dict) -> Optional[Target]:
         """Returns a Target if |node| is a target, None otherwise."""
         if node.get(NODE_TYPE) != 'FUNCTION':
             return None
@@ -343,7 +340,7 @@ class Target(NodeWrapper):
 
 class BuildFile:
     """Represents the contents of a BUILD.gn file."""
-    def __init__(self, path, root_node):
+    def __init__(self, path: str, root_node: dict):
         self.block = BlockWrapper(root_node)
         self.path = path
         self._original_content = json.dumps(root_node)
