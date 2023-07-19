@@ -22,15 +22,21 @@ python_library("fixtures") {
   if (is_android && enable_chrome_android_internal) {
     data += [
       "//build/android/",
-     "//tools/android/avd/proto/",
+      "//tools/android/avd/proto/",
     ]
 
     data_deps += [
       "//build/android:devil_chromium_py",
       "//build/android:test_runner_py",
+      "//clank/bin:installer_scripts",
       "//third_party/catapult/devil:devil",
-      "//clank/bin:installer_scripts"
     ]
+  }
+
+  if (is_chromeos) {
+    data += [ "//third_party/chromite/" ]
+
+    data_deps += [ "//third_party/catapult/telemetry:telemetry" ]
   }
 }
 

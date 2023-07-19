@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import os
+from typing import Optional
 
 import pytest
 
@@ -43,6 +44,12 @@ def pytest_addoption(parser):
     default=False,
     help='Enable graphical window display on the emulator.')
 
+  # Options for CrOS VMs.
+  parser.addoption('--cros-args',
+                   nargs='+',
+                   dest='cros_args',
+                   help='A list of launching args passed to CrOS VM.')
+
 
 # pylint: disable=redefined-outer-name
 @pytest.fixture(scope="session")
@@ -76,6 +83,13 @@ def chromedriver_path(pytestconfig) -> str:
     ver = test_utils.find_version(platform, channel)
     downloaded_dir = test_utils.download_chromedriver_linux_host(
       channel=channel, version=str(ver))
+  elif platform in ('lacros', 'cros'):
+    # CrOS and LaCrOS running inside a VM, the chromedriver will run on the
+    # Linux host. The browser is started inside VM through dbus message, and
+    # the debugging port is forwarded. see drivers/chromeos.py.
+    ver = test_utils.find_version('linux', channel)
+    downloaded_dir = test_utils.download_chromedriver_linux_host(
+      channel=channel, version=str(ver))
   else:
     return None
 
@@ -92,13 +106,13 @@ def driver_factory(
   """Returns a factory that creates a webdriver."""
   factory: Optional[DriverFactory] = None
   target_platform = pytestconfig.getoption('target_platform')
+  factory = None
   if target_platform in ('linux', 'win', 'mac'):
     from chrome.test.variations.drivers import desktop
     factory = desktop.DesktopDriverFactory(
       channel=pytestconfig.getoption('channel'),
       crash_dump_dir=str(tmp_path_factory.mktemp('crash')),
       chromedriver_path=chromedriver_path)
-
   elif target_platform in ('android', 'webview'):
     assert test_utils.get_hosted_platform() == 'linux', (
       f'Only support to run android tests on Linux, but running on '
@@ -117,6 +131,14 @@ def driver_factory(
       chromedriver_path=chromedriver_path,
       ports=[local_http_server.server_port]
     )
+  elif target_platform in ('cros'):
+    from chrome.test.variations.drivers import chromeos
+    factory = chromeos.CrOSDriverFactory(
+      channel=pytestconfig.getoption('channel'),
+      cros_args=pytestconfig.getoption('cros_args'),
+      chromedriver_path=chromedriver_path,
+      server_port=local_http_server.server_port
+      )
 
   if not factory:
     assert False, f'Not supported platform {target_platform}.'
