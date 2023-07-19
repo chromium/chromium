@@ -5,6 +5,8 @@
 /**
  * @fileoverview Element which shows and controls password sharing dialogs.
  */
+
+import './share_password_family_picker_dialog.js';
 import './share_password_loading_dialog.js';
 import './share_password_error_dialog.js';
 import './share_password_no_members_dialog.js';
@@ -22,6 +24,7 @@ export enum ShareFlowState {
   FETCHING,
   ERROR,
   NO_MEMBERS,
+  FAMILY_PICKER,
 }
 
 const SharePasswordFlowElementBase = I18nMixin(PolymerElement);
@@ -73,7 +76,7 @@ export class SharePasswordFlowElement extends SharePasswordFlowElementBase {
         this.flowState = ShareFlowState.NO_MEMBERS;
         break;
       case chrome.passwordsPrivate.FamilyFetchStatus.SUCCESS:
-        // TODO(crbug/1445526): Implement and show family picker dialog.
+        this.flowState = ShareFlowState.FAMILY_PICKER;
         break;
       default:
         assertNotReached();

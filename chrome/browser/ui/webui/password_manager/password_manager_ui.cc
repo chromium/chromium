@@ -297,6 +297,10 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     {"savePasswordsLabel", IDS_PASSWORD_MANAGER_UI_SAVE_PASSWORDS_TOGGLE_LABEL},
     {"share", IDS_PASSWORD_MANAGER_UI_SHARE},
     {"shareDialogTitle", IDS_PASSWORD_MANAGER_UI_SHARE_DIALOG_TITLE},
+    {"sharePasswordFamilyPickerDescription",
+     IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_FAMILY_PICKER_DESCRIPTION},
+    {"sharePasswordManageFamily",
+     IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_MANAGE_FAMILY},
     {"sharePasswordErrorDescription",
      IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_ERROR_DESCRIPTION},
     {"sharePasswordErrorTitle",
@@ -364,6 +368,8 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       l10n_util::GetStringFUTF16(
           IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_NO_MEMBERS_DESCRIPTION,
           base::ASCIIToUTF16(chrome::kFamilyGroupSiteURL)));
+
+  source->AddString("familyGroupSiteURL", chrome::kFamilyGroupSiteURL);
 
   source->AddString(
       "checkupUrl",

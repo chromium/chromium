@@ -96,6 +96,11 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, SharePasswordHeader) {
   RunTest("password_manager/share_password_header_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, SharePasswordFamilyPickerDialog) {
+  RunTest("password_manager/share_password_family_picker_dialog_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, SideBar) {
   RunTest("password_manager/password_manager_side_bar_test.js", "mocha.run()");
 }

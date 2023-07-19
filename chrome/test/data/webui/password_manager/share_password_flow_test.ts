@@ -41,7 +41,7 @@ suite('SharePasswordFlowTest', function() {
   test('Has correct loading state', async function() {
     const shareElement = startPasswordShare(/*passwordName=*/ SITE);
     assertEquals(ShareFlowState.FETCHING, shareElement.flowState);
-    await flushTasks();
+    flush();
 
     const dialog =
         shareElement.shadowRoot!.querySelector('share-password-loading-dialog');
@@ -147,6 +147,24 @@ suite('SharePasswordFlowTest', function() {
         'share-password-no-members-dialog');
     assertTrue(!!dialog);
     dialog.$.action.click();
+    await flushTasks();
+
+    await shareFlowDone;
+  });
+
+  test('Cancel button should hide family picker dialog', async function() {
+    passwordManager.data.familyFetchResults = makeFamilyFetchResults(
+        chrome.passwordsPrivate.FamilyFetchStatus.SUCCESS);
+    const shareElement = startPasswordShare();
+    await passwordManager.whenCalled('fetchFamilyMembers');
+    await flushTasks();
+
+    const shareFlowDone = eventToPromise('share-flow-done', shareElement);
+
+    const dialog = shareElement.shadowRoot!.querySelector(
+        'share-password-family-picker-dialog');
+    assertTrue(!!dialog);
+    dialog.$.cancel.click();
     await flushTasks();
 
     await shareFlowDone;

@@ -5,24 +5,31 @@
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import './share_password_dialog_header.js';
+import '../shared_style.css.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './share_password_no_members_dialog.html.js';
+import {UserUtilMixin} from '../user_utils_mixin.js';
 
-export interface SharePasswordNoMembersDialogElement {
+import {getTemplate} from './share_password_family_picker_dialog.html.js';
+
+export interface SharePasswordFamilyPickerDialogElement {
   $: {
+    header: HTMLElement,
     description: HTMLElement,
     action: HTMLElement,
-    header: HTMLElement,
+    cancel: HTMLElement,
+    avatar: HTMLImageElement,
+    manageLink: HTMLAnchorElement,
+    footerDescription: HTMLElement,
   };
 }
 
-export class SharePasswordNoMembersDialogElement extends I18nMixin
-(PolymerElement) {
+export class SharePasswordFamilyPickerDialogElement extends UserUtilMixin
+(I18nMixin(PolymerElement)) {
   static get is() {
-    return 'share-password-no-members-dialog';
+    return 'share-password-family-picker-dialog';
   }
 
   static get template() {
@@ -35,7 +42,7 @@ export class SharePasswordNoMembersDialogElement extends I18nMixin
 
   dialogTitle: string;
 
-  private onClickActionButton_() {
+  private onClickCancel_() {
     this.dispatchEvent(
         new CustomEvent('close', {bubbles: true, composed: true}));
   }
@@ -43,10 +50,11 @@ export class SharePasswordNoMembersDialogElement extends I18nMixin
 
 declare global {
   interface HTMLElementTagNameMap {
-    'share-password-no-members-dialog': SharePasswordNoMembersDialogElement;
+    'share-password-family-picker-dialog':
+        SharePasswordFamilyPickerDialogElement;
   }
 }
 
 customElements.define(
-    SharePasswordNoMembersDialogElement.is,
-    SharePasswordNoMembersDialogElement);
+    SharePasswordFamilyPickerDialogElement.is,
+    SharePasswordFamilyPickerDialogElement);
