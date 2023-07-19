@@ -99,20 +99,28 @@ export class NetworkProcessor {
     );
 
     cdpClient.on(
-      'Network.loadingFailed',
-      (params: Protocol.Network.LoadingFailedEvent) => {
-        networkProcessor
-          .#getOrCreateNetworkRequest(params.requestId)
-          .onLoadingFailedEvent(params);
-      }
-    );
-
-    cdpClient.on(
       'Network.requestServedFromCache',
       (params: Protocol.Network.RequestServedFromCacheEvent) => {
         networkProcessor
           .#getOrCreateNetworkRequest(params.requestId)
           .onServedFromCache();
+      }
+    );
+
+    cdpClient.on(
+      'Network.loadingFailed',
+      (params: Protocol.Network.LoadingFailedEvent) => {
+        networkProcessor
+          .#getOrCreateNetworkRequest(params.requestId)
+          .onLoadingFailedEvent(params);
+        networkProcessor.#forgetRequest(params.requestId);
+      }
+    );
+
+    cdpClient.on(
+      'Network.loadingFinished',
+      (params: Protocol.Network.RequestServedFromCacheEvent) => {
+        networkProcessor.#forgetRequest(params.requestId);
       }
     );
 
@@ -123,6 +131,14 @@ export class NetworkProcessor {
 
   #getOrCreateNetworkRequest(requestId: Network.Request): NetworkRequest {
     return this.#requestMap.get(requestId);
+  }
+
+  #forgetRequest(requestId: Network.Request): void {
+    const request = this.#requestMap.get(requestId);
+    if (request) {
+      request.dispose();
+    }
+    this.#requestMap.delete(requestId);
   }
 
   dispose() {
