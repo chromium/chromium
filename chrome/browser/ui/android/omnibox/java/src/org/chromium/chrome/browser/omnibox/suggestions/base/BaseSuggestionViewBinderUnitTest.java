@@ -77,12 +77,12 @@ public class BaseSuggestionViewBinderUnitTest {
         mResources = mContext.getResources();
 
         mBaseView = spy(new BaseSuggestionView(new ImageView(mContext)));
-        mIconView = mBaseView.getSuggestionImageView();
+        mIconView = mBaseView.decorationIcon;
 
         mModel = new PropertyModel(BaseSuggestionViewProperties.ALL_KEYS);
         PropertyModelChangeProcessor.create(mModel, mBaseView,
                 new BaseSuggestionViewBinder(
-                        (m, v, p) -> { assertEquals(mBaseView.getContentView(), v); }));
+                        (m, v, p) -> { assertEquals(mBaseView.contentView, v); }));
         BaseSuggestionViewBinder.initializeDimensions(mContext);
     }
 

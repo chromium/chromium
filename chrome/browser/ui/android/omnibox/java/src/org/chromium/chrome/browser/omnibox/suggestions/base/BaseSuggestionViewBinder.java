@@ -89,8 +89,8 @@ public final class BaseSuggestionViewBinder<T extends View>
             sDimensionsInitialized = true;
         }
 
-        mContentBinder.bind(model, view.getContentView(), propertyKey);
-        ActionChipsBinder.bind(model, view.getActionChipsView(), propertyKey);
+        mContentBinder.bind(model, view.contentView, propertyKey);
+        ActionChipsBinder.bind(model, view.actionChipsView, propertyKey);
 
         if (BaseSuggestionViewProperties.ICON == propertyKey) {
             updateSuggestionIcon(model, view);
@@ -198,7 +198,7 @@ public final class BaseSuggestionViewBinder<T extends View>
     /** Update attributes of decorated suggestion icon. */
     private static <T extends View> void updateSuggestionIcon(
             PropertyModel model, BaseSuggestionView<T> baseView) {
-        final ImageView rciv = baseView.getSuggestionImageView();
+        final ImageView rciv = baseView.decorationIcon;
         final SuggestionDrawableState sds = model.get(BaseSuggestionViewProperties.ICON);
 
         if (sds != null) {
