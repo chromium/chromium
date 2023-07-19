@@ -20,6 +20,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/work_area_insets.h"
+#include "base/auto_reset.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
@@ -35,6 +36,20 @@
 
 namespace ash {
 
+DeskBarController::BarWidgetAndView::BarWidgetAndView(
+    DeskBarViewBase* view,
+    std::unique_ptr<views::Widget> widget)
+    : bar_widget(std::move(widget)), bar_view(view) {}
+
+DeskBarController::BarWidgetAndView::BarWidgetAndView(
+    BarWidgetAndView&& other) = default;
+
+DeskBarController::BarWidgetAndView&
+DeskBarController::BarWidgetAndView::operator=(BarWidgetAndView&& other) =
+    default;
+
+DeskBarController::BarWidgetAndView::~BarWidgetAndView() = default;
+
 DeskBarController::DeskBarController() {
   Shell::Get()->overview_controller()->AddObserver(this);
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
@@ -46,7 +61,6 @@ DeskBarController::DeskBarController() {
 
 DeskBarController::~DeskBarController() {
   CloseAllDeskBars();
-  DestroyAllDeskBars();
   Shell::Get()->RemoveShellObserver(this);
   Shell::Get()->RemovePreTargetHandler(this);
   Shell::Get()->activation_client()->RemoveObserver(this);
@@ -78,14 +92,12 @@ void DeskBarController::OnKeyEvent(ui::KeyEvent* event) {
   }
 
   const bool is_control_down = event->IsControlDown();
-  for (auto* bar_view : desk_bar_views_) {
-    if (!bar_view->GetVisible()) {
+  for (auto& desk_bar : desk_bars_) {
+    if (!desk_bar.bar_view->GetVisible()) {
       continue;
     }
 
-    auto* bar_widget = bar_view->GetWidget();
-    CHECK(bar_widget);
-    auto* focus_manager = bar_widget->GetFocusManager();
+    auto* focus_manager = desk_bar.bar_widget->GetFocusManager();
     views::View* focused_view = focus_manager->GetFocusedView();
     DeskPreviewView* focused_preview =
         views::AsViewClass<DeskPreviewView>(focused_view);
@@ -163,12 +175,11 @@ void DeskBarController::OnOverviewModeWillStart() {
 }
 
 void DeskBarController::OnShellDestroying() {
-  is_shell_destroying = true;
+  is_shell_destroying_ = true;
 
   // The desk bar widgets should not outlive shell. Unlike `DeleteSoon`, we get
   // rid of it right away.
-  desk_bar_views_.clear();
-  desk_bar_widgets_.clear();
+  desk_bars_.clear();
 }
 
 void DeskBarController::OnTabletModeStarting() {
@@ -178,7 +189,7 @@ void DeskBarController::OnTabletModeStarting() {
 void DeskBarController::OnWindowActivated(ActivationReason reason,
                                           aura::Window* gained_active,
                                           aura::Window* lost_active) {
-  if (is_shell_destroying) {
+  if (is_shell_destroying_ || should_ignore_activation_change_) {
     return;
   }
 
@@ -192,14 +203,13 @@ void DeskBarController::OnWindowActivated(ActivationReason reason,
 
   // Destroys the bar when it loses activation, or any other window gains
   // activation.
-  for (const auto& bar_widget : desk_bar_widgets_) {
-    CHECK(bar_widget);
-    CHECK(bar_widget->GetNativeWindow());
-    if ((lost_active && bar_widget->GetNativeWindow()->Contains(lost_active)) ||
+  for (auto& desk_bar : desk_bars_) {
+    CHECK(desk_bar.bar_widget->GetNativeWindow());
+    if ((lost_active &&
+         desk_bar.bar_widget->GetNativeWindow()->Contains(lost_active)) ||
         (gained_active &&
-         !bar_widget->GetNativeWindow()->Contains(gained_active))) {
+         !desk_bar.bar_widget->GetNativeWindow()->Contains(gained_active))) {
       CloseAllDeskBars();
-      DestroyAllDeskBars();
     }
   }
 }
@@ -210,110 +220,108 @@ void DeskBarController::OnDisplayMetricsChanged(const display::Display& display,
     return;
   }
 
-  for (auto* bar_view : desk_bar_views_) {
-    if (!bar_view->GetVisible()) {
+  for (auto& desk_bar : desk_bars_) {
+    if (!desk_bar.bar_view->GetVisible()) {
       continue;
     }
 
-    views::Widget* bar_widget = bar_view->GetWidget();
-    const int64_t display_id = display::Screen::GetScreen()
-                                   ->GetDisplayNearestWindow(bar_view->root())
-                                   .id();
+    const int64_t display_id =
+        display::Screen::GetScreen()
+            ->GetDisplayNearestWindow(desk_bar.bar_view->root())
+            .id();
     if (display.id() != display_id) {
       continue;
     }
 
-    bar_widget->SetBounds(GetDeskBarWidgetBounds(bar_view->root()));
+    desk_bar.bar_widget->SetBounds(
+        GetDeskBarWidgetBounds(desk_bar.bar_view->root()));
   }
 }
 
 DeskBarViewBase* DeskBarController::GetDeskBarView(aura::Window* root) const {
-  auto it = base::ranges::find(desk_bar_views_, root, &DeskBarViewBase::root);
-  return it != desk_bar_views_.end() ? *it : nullptr;
+  auto it = base::ranges::find_if(desk_bars_,
+                                  [root](const BarWidgetAndView& desk_bar) {
+                                    return desk_bar.bar_view->root() == root;
+                                  });
+  return it != desk_bars_.end() ? it->bar_view : nullptr;
 }
 
 bool DeskBarController::IsShowingDeskBar() const {
-  return base::ranges::any_of(desk_bar_views_, [](DeskBarViewBase* bar_view) {
-    return bar_view->GetVisible();
+  return base::ranges::any_of(desk_bars_, [](const BarWidgetAndView& desk_bar) {
+    return desk_bar.bar_view->GetVisible();
   });
 }
 
 void DeskBarController::OpenDeskBar(aura::Window* root) {
   CHECK(root && root->IsRootWindow());
 
+  // It should not close all bars for the activation change when a new desk bar
+  // is opening.
+  base::AutoReset<bool> auto_reset(&should_ignore_activation_change_, true);
+
+  // Calculates bar widget and bar view.
   DeskBarViewBase* bar_view = GetDeskBarView(root);
   if (!bar_view) {
-    CreateDeskBar(root);
-    bar_view = GetDeskBarView(root);
-  }
-  CHECK(bar_view);
+    gfx::Rect bounds = GetDeskBarWidgetBounds(root);
+    std::unique_ptr<views::Widget> bar_widget =
+        DeskBarViewBase::CreateDeskWidget(root, bounds,
+                                          DeskBarViewBase::Type::kDeskButton);
+    bar_view = bar_widget->SetContentsView(std::make_unique<DeskBarView>(root));
+    bar_view->Init();
 
-  views::Widget* bar_widget = bar_view->GetWidget();
-  CHECK(bar_widget);
+    // Ownership transfer and bookkeeping.
+    desk_bars_.emplace_back(bar_view, std::move(bar_widget));
+  }
 
   SetDeskButtonActivation(root, /*is_activated=*/true);
-  bar_widget->Show();
+  bar_view->GetWidget()->Show();
 }
 
 void DeskBarController::CloseDeskBar(aura::Window* root) {
   CHECK(root && root->IsRootWindow());
 
-  DeskBarViewBase* bar_view = GetDeskBarView(root);
-  CHECK(bar_view);
+  // It should not close all bars for the activation change when an existing
+  // desk bar is closing.
+  base::AutoReset<bool> auto_reset(&should_ignore_activation_change_, true);
 
-  views::Widget* bar_widget = bar_view->GetWidget();
-  CHECK(bar_widget);
+  for (auto it = desk_bars_.begin(); it != desk_bars_.end();) {
+    if (it->bar_view->root() == root) {
+      // TODO(yongshun): Avoid code duplication between this and
+      // `CloseAllDeskBars`.
+      it->bar_widget->Hide();
 
-  SetDeskButtonActivation(root, /*is_activated=*/false);
-  bar_widget->Hide();
-}
+      // Deletes asynchronously so it is less likely to result in UAF.
+      base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+          FROM_HERE, it->bar_widget.release());
 
-void DeskBarController::CloseAllDeskBars() {
-  for (auto* bar_view : desk_bar_views_) {
-    views::Widget* bar_widget = bar_view->GetWidget();
-    CHECK(bar_widget);
+      it = desk_bars_.erase(it);
 
-    if (bar_widget->IsVisible()) {
-      SetDeskButtonActivation(bar_view->root(), /*is_activated=*/false);
-      bar_widget->Hide();
+      SetDeskButtonActivation(root, /*is_activated=*/false);
+    } else {
+      it++;
     }
   }
 }
 
-void DeskBarController::CreateDeskBar(aura::Window* root) {
-  CHECK_EQ(desk_bar_views_.size(), desk_bar_widgets_.size());
+void DeskBarController::CloseAllDeskBars() {
+  // It should not close all bars for the activation change when the existing
+  // desk bars are closing.
+  base::AutoReset<bool> auto_reset(&should_ignore_activation_change_, true);
 
-  // Closes existing bar for `root` before creating a new one.
-  if (GetDeskBarView(root)) {
-    CloseDeskBar(root);
+  for (auto& desk_bar : desk_bars_) {
+    if (desk_bar.bar_widget->IsVisible()) {
+      desk_bar.bar_widget->Hide();
+
+      // Deletes asynchronously so it is less likely to result in UAF.
+      base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+          FROM_HERE, desk_bar.bar_widget.release());
+
+      SetDeskButtonActivation(desk_bar.bar_view->root(),
+                              /*is_activated=*/false);
+    }
   }
-  CHECK(!GetDeskBarView(root));
 
-  // Calculates bounds and creates a new bar.
-  gfx::Rect bounds = GetDeskBarWidgetBounds(root);
-  std::unique_ptr<views::Widget> desk_bar_widget =
-      DeskBarViewBase::CreateDeskWidget(root, bounds,
-                                        DeskBarViewBase::Type::kDeskButton);
-  DeskBarView* desk_bar_view =
-      desk_bar_widget->SetContentsView(std::make_unique<DeskBarView>(root));
-  desk_bar_view->Init();
-
-  // Ownership transfer and bookkeeping.
-  desk_bar_views_.push_back(desk_bar_view);
-  desk_bar_widgets_.push_back(std::move(desk_bar_widget));
-}
-
-void DeskBarController::DestroyAllDeskBars() {
-  CHECK_EQ(desk_bar_views_.size(), desk_bar_widgets_.size());
-
-  desk_bar_views_.clear();
-
-  // Deletes asynchronously so it is less likely to result in UAF.
-  for (auto& bar_widget : desk_bar_widgets_) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
-        FROM_HERE, bar_widget.release());
-  }
-  desk_bar_widgets_.clear();
+  desk_bars_.clear();
 }
 
 gfx::Rect DeskBarController::GetDeskBarWidgetBounds(aura::Window* root) const {
@@ -356,7 +364,7 @@ gfx::Rect DeskBarController::GetDeskBarWidgetBounds(aura::Window* root) const {
 }
 
 void DeskBarController::OnMaybePressOffBar(const ui::LocatedEvent& event) {
-  if (desk_bar_views_.empty()) {
+  if (desk_bars_.empty()) {
     return;
   }
 
@@ -366,24 +374,24 @@ void DeskBarController::OnMaybePressOffBar(const ui::LocatedEvent& event) {
   bool intersect_with_bar_view = false;
   bool intersect_with_desk_button = false;
   bool desk_name_being_modified = false;
-  for (auto* desk_bar_view : desk_bar_views_) {
+  for (auto& desk_bar : desk_bars_) {
     // Converts to screen coordinate.
     gfx::Point screen_location;
-    gfx::Rect desk_bar_view_bounds = desk_bar_view->GetBoundsInScreen();
+    gfx::Rect desk_bar_view_bounds = desk_bar.bar_view->GetBoundsInScreen();
     gfx::Rect desk_button_bounds =
-        GetDeskButton(desk_bar_view->root())->GetBoundsInScreen();
+        GetDeskButton(desk_bar.bar_view->root())->GetBoundsInScreen();
     if (event.target()) {
       screen_location = event.target()->GetScreenLocation(event);
     } else {
       screen_location = event.root_location();
-      wm::ConvertPointToScreen(desk_bar_view->root(), &screen_location);
+      wm::ConvertPointToScreen(desk_bar.bar_view->root(), &screen_location);
     }
 
     if (desk_bar_view_bounds.Contains(screen_location)) {
       intersect_with_bar_view = true;
-    } else if (desk_bar_view->IsDeskNameBeingModified()) {
+    } else if (desk_bar.bar_view->IsDeskNameBeingModified()) {
       desk_name_being_modified = true;
-      DeskNameView::CommitChanges(desk_bar_view->GetWidget());
+      DeskNameView::CommitChanges(desk_bar.bar_widget.get());
     }
 
     if (desk_button_bounds.Contains(screen_location)) {

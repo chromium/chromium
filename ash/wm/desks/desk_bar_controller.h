@@ -15,6 +15,7 @@
 #include "ash/wm/desks/desk_button/desk_button.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/overview/overview_observer.h"
+#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "ui/display/display_observer.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/rect.h"
@@ -39,6 +40,19 @@ class ASH_EXPORT DeskBarController : public DesksController::Observer,
                                      public wm::ActivationChangeObserver,
                                      public display::DisplayObserver {
  public:
+  struct BarWidgetAndView {
+    BarWidgetAndView(DeskBarViewBase* bar_view,
+                     std::unique_ptr<views::Widget> bar_widget);
+    BarWidgetAndView(BarWidgetAndView&& other);
+    BarWidgetAndView& operator=(BarWidgetAndView&& other);
+    BarWidgetAndView(const BarWidgetAndView&) = delete;
+    BarWidgetAndView& operator=(const BarWidgetAndView&) = delete;
+    ~BarWidgetAndView();
+
+    std::unique_ptr<views::Widget> bar_widget;
+    base::raw_ptr<DeskBarViewBase> bar_view;
+  };
+
   DeskBarController();
 
   DeskBarController(const DeskBarController&) = delete;
@@ -79,26 +93,16 @@ class ASH_EXPORT DeskBarController : public DesksController::Observer,
   // Returns true when there is a visible desk bar.
   bool IsShowingDeskBar() const;
 
-  // Opens the desk bar in 'root'.
+  // Creates and shows the desk bar in 'root'.
   void OpenDeskBar(aura::Window* root);
 
-  // Closes the desk bar in 'root'. Please note, the destruction of the desk bar
-  // is triggered when the bar loses activation via `OnWindowActivated()`.
+  // Hides and destroys the desk bar in 'root'.
   void CloseDeskBar(aura::Window* root);
 
-  // Closes all desk bars. Please note, the destruction of the desk bars is
-  // triggered when the bars lose activation via `OnWindowActivated()`.
+  // Hides and destroys all desk bars.
   void CloseAllDeskBars();
 
  private:
-  // Creates desk bar(both bar widget and bar view) in `root`. If there is
-  // another bar in `root`, it will get rid of the existing one and then
-  // create a new one.
-  void CreateDeskBar(aura::Window* root);
-
-  // Destroys all desk bars. This is where the real destruction happens.
-  void DestroyAllDeskBars();
-
   // Returns bounds for desk bar widget in `root`. Please note, this is the full
   // available bounds and does not change after initialization. Therefore, the
   // desk bar view can adjust its bounds as needed without manipulating the
@@ -162,14 +166,15 @@ class ASH_EXPORT DeskBarController : public DesksController::Observer,
 
   // Bar widgets and bar views for the desk bars. Right now, it supports only
   // desk button desk bar. Support for overview desk bar will be added later.
-  std::vector<std::unique_ptr<views::Widget>> desk_bar_widgets_;
-  std::vector<DeskBarViewBase*> desk_bar_views_;
+  std::vector<BarWidgetAndView> desk_bars_;
 
   // Observes display configuration changes.
   display::ScopedDisplayObserver display_observer_{this};
 
   // Indicates that shell is destroying.
-  bool is_shell_destroying = false;
+  bool is_shell_destroying_ = false;
+
+  bool should_ignore_activation_change_ = false;
 };
 
 }  // namespace ash
