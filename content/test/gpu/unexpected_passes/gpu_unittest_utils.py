@@ -28,6 +28,5 @@ class GenericGpuExpectations(gpu_expectations.GpuExpectations):
     return """\
 # tags: [ linux mac win ]
 # tags: [ amd intel nvidia ]
-# tags: [ webgl-version-1]
 # results: [ Failure RetryOnFailure Skip Pass ]
 """

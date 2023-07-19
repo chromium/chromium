@@ -599,7 +599,6 @@ class WebGLConformanceIntegrationTestBase(
   def GetPlatformTags(cls, browser: ct.Browser) -> List[str]:
     assert cls._webgl_version is not None
     tags = super().GetPlatformTags(browser)
-    tags.append('webgl-version-%d' % cls._webgl_version)
 
     system_info = browser.GetSystemInfo()
     gpu_info = None

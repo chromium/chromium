@@ -987,9 +987,9 @@ class GpuIntegrationTest(
         'cast-streaming-shell',  # Syonymous with cast_streaming suite
         # WebGL version is already handled by having expectations in separate
         # files.
-        # TODO(crbug.com/1140283): Consider merging the two files and using
-        # these tags once stale expectations are removed and the files are more
-        # reasonably sized.
+        # TODO(crbug.com/1140283): Remove these tags once we're sure that
+        # all relevant data has aged out. Should be safe to do so at the end of
+        # August 2023.
         'webgl-version-1',
         'webgl-version-2',
         # GPU tests are always run in remote mode on the bots, and it shouldn't

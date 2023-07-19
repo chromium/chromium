@@ -269,21 +269,19 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
             args,
             target_cpu_bits=31))
 
-  def testGenerateWebglConformanceExampleTagsForWebglVersion1andAsan(self
-                                                                     ) -> None:
+  def testGenerateWebglConformanceExampleTagsForAsan(self) -> None:
     args = gpu_helper.GetMockArgs(webgl_version='1.0.0')
     tag_set = self._TestTagGenerationForMockPlatform(
         webgl1_cit.WebGL1ConformanceIntegrationTest, args, is_asan=True)
-    self.assertTrue(set(['asan', 'webgl-version-1']).issubset(tag_set))
-    self.assertFalse(set(['no-asan', 'webgl-version-2']) & tag_set)
+    self.assertTrue(set(['asan']).issubset(tag_set))
+    self.assertFalse(set(['no-asan']) & tag_set)
 
-  def testGenerateWebglConformanceExampleTagsForWebglVersion2andNoAsan(
-      self) -> None:
+  def testGenerateWebglConformanceExampleTagsForNoAsan(self) -> None:
     args = gpu_helper.GetMockArgs(webgl_version='2.0.0')
     tag_set = self._TestTagGenerationForMockPlatform(
         webgl2_cit.WebGL2ConformanceIntegrationTest, args)
-    self.assertTrue(set(['no-asan', 'webgl-version-2']).issubset(tag_set))
-    self.assertFalse(set(['asan', 'webgl-version-1']) & tag_set)
+    self.assertTrue(set(['no-asan']).issubset(tag_set))
+    self.assertFalse(set(['asan']) & tag_set)
 
   def testWebGlConformanceTimeoutNoAsan(self) -> None:
     instance = webgl1_cit.WebGL1ConformanceIntegrationTest(
