@@ -16,6 +16,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/compositor/layer.h"
@@ -167,77 +168,69 @@ void UpdateAccessibilityFocusInOverview() {
   controller->overview_session()->UpdateAccessibilityFocus();
 }
 
-// A self-deleting object that performs a fade out animation on
-// `removed_mini_view`'s layer by changing its opacity from 1 to 0 and scales
-// down it around the center of `bar_view` while switching back to zero state.
-// `removed_mini_view_` and the object itself will be deleted when the
+// Performs a fade out animation on `removed_mini_view`'s layer by changing its
+// opacity from 1 to 0 and scales down it around the center of `bar_view` while
+// switching back to zero state. `removed_mini_view_` will be deleted when the
 // animation is complete or aborted.
-// TODO(afakhry): Consider generalizing HidingWindowAnimationObserverBase to be
-// reusable for the mini_view removal animation.
-class RemovedMiniViewAnimation {
- public:
-  RemovedMiniViewAnimation(DeskMiniView* removed_mini_view,
-                           DeskBarViewBase* bar_view,
-                           const bool to_zero_state)
-      : removed_mini_view_(removed_mini_view), bar_view_(bar_view) {
-    CHECK(bar_view);
+void AnimateDeskMiniViewRemove(DeskMiniView* removed_mini_view,
+                               const bool to_zero_state) {
+  DeskBarViewBase* bar_view = removed_mini_view->owner_bar();
+  CHECK(bar_view);
 
-    removed_mini_view_->set_is_animating_to_remove(true);
+  removed_mini_view->set_is_animating_to_remove(true);
 
-    ui::Layer* layer = removed_mini_view_->layer();
-    const gfx::Transform transform =
-        to_zero_state
-            ? GetScaleTransformForView(removed_mini_view,
-                                       bar_view->bounds().CenterPoint().x())
-            : kEndTransform;
-    const gfx::Tween::Type tween_type = chromeos::features::IsJellyrollEnabled()
-                                            ? gfx::Tween::ACCEL_20_DECEL_100
-                                            : gfx::Tween::ACCEL_20_DECEL_60;
+  ui::Layer* layer = removed_mini_view->layer();
+  const gfx::Transform transform =
+      to_zero_state
+          ? GetScaleTransformForView(removed_mini_view,
+                                     bar_view->bounds().CenterPoint().x())
+          : kEndTransform;
+  const gfx::Tween::Type tween_type = chromeos::features::IsJellyrollEnabled()
+                                          ? gfx::Tween::ACCEL_20_DECEL_100
+                                          : gfx::Tween::ACCEL_20_DECEL_60;
 
-    // Use animation builder so that we can use `views::AnimationAbortHandle`.
-    // Setting abort handle is important as it manages to abort ongoing
-    // animation as documented in `DeskMiniView::animation_abort_handle_`.
-    views::AnimationBuilder animation_builder;
-    removed_mini_view_->set_animation_abort_handle(
-        animation_builder.GetAbortHandle());
-    animation_builder
-        .SetPreemptionStrategy(
-            ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-        .OnEnded(base::BindOnce(
-            [](RemovedMiniViewAnimation* animation) { delete animation; },
-            base::Unretained(this)))
-        .OnAborted(base::BindOnce(
-            [](RemovedMiniViewAnimation* animation) { delete animation; },
-            base::Unretained(this)))
-        .Once()
-        .SetDuration(kRemovedMiniViewsFadeOutDuration)
-        .SetTransform(layer, transform, tween_type)
-        .SetOpacity(layer, 0.f, tween_type);
-  }
+  // Uses animation builder so that we can use `views::AnimationAbortHandle`.
+  // Setting abort handle is important as it manages to abort ongoing
+  // animation as documented in `DeskMiniView::animation_abort_handle_`.
+  views::AnimationBuilder animation_builder;
+  removed_mini_view->set_animation_abort_handle(
+      animation_builder.GetAbortHandle());
 
-  RemovedMiniViewAnimation(const RemovedMiniViewAnimation&) = delete;
-  RemovedMiniViewAnimation& operator=(const RemovedMiniViewAnimation&) = delete;
+  // This callback is designed to destroy the mini view instance only if it is
+  // still in the view tree, meaning that the mini view has not yet been
+  // destroyed as a result of the destruction of the entire desk bar.
+  base::OnceClosure ondone = base::BindOnce(
+      [](DeskMiniView* mini_view) {
+        // Does nothing if the whole bar is destructing.
+        views::View* parent = mini_view->parent();
+        if (!parent) {
+          return;
+        }
 
-  ~RemovedMiniViewAnimation() {
-    // The removed mini view may have already been taken out of the view tree
-    // during the bar's destruction process.
-    views::View* parent = removed_mini_view_->parent();
-    if (!parent) {
-      return;
-    }
+        std::unique_ptr<DeskMiniView> to_delete =
+            parent->RemoveChildViewT(mini_view);
+        mini_view->owner_bar()->UpdateDeskButtonsVisibility();
 
-    parent->RemoveChildViewT(removed_mini_view_.get());
-    bar_view_->UpdateDeskButtonsVisibility();
+        auto* overview_controller = Shell::Get()->overview_controller();
+        if (mini_view->owner_bar()->type() ==
+                DeskBarViewBase::Type::kOverview &&
+            overview_controller->InOverviewSession()) {
+          overview_controller->overview_session()->UpdateAccessibilityFocus();
+        }
+      },
+      base::Unretained(removed_mini_view));
 
-    if (Shell::Get()->overview_controller()->InOverviewSession()) {
-      UpdateAccessibilityFocusInOverview();
-    }
-  }
-
- private:
-  raw_ptr<DeskMiniView, ExperimentalAsh> removed_mini_view_;
-  const raw_ptr<DeskBarViewBase, ExperimentalAsh> bar_view_;
-};
+  auto split = base::SplitOnceCallback(std::move(ondone));
+  animation_builder
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(std::move(split.first))
+      .OnAborted(std::move(split.second))
+      .Once()
+      .SetDuration(kRemovedMiniViewsFadeOutDuration)
+      .SetTransform(layer, transform, tween_type)
+      .SetOpacity(layer, 0.f, tween_type);
+}
 
 // A self-deleting object that performs bounds changes animation for the desk
 // bar while it switches between zero state and expanded state.
@@ -493,8 +486,8 @@ void PerformRemoveDeskMiniViewAnimation(
   gfx::Transform mini_views_right_begin_transform;
   mini_views_right_begin_transform.Translate(-shift_x, 0);
 
-  new RemovedMiniViewAnimation(removed_mini_view, bar_view,
-                               /*to_zero_state=*/false);
+  AnimateDeskMiniViewRemove(removed_mini_view,
+                            /*to_zero_state=*/false);
 
   AnimateMiniViews(mini_views_left, mini_views_left_begin_transform);
   AnimateMiniViews(mini_views_right, mini_views_right_begin_transform);
@@ -580,8 +573,9 @@ void PerformZeroStateToExpandedStateMiniViewAnimationCrOSNext(
 void PerformExpandedStateToZeroStateMiniViewAnimation(
     DeskBarViewBase* bar_view,
     std::vector<DeskMiniView*> removed_mini_views) {
-  for (auto* mini_view : removed_mini_views)
-    new RemovedMiniViewAnimation(mini_view, bar_view, /*to_zero_state=*/true);
+  for (auto* mini_view : removed_mini_views) {
+    AnimateDeskMiniViewRemove(mini_view, /*to_zero_state=*/true);
+  }
   new DeskBarBoundsAnimation(bar_view, /*to_zero_state=*/true);
   const gfx::Rect bounds = bar_view->bounds();
   ScaleDownAndFadeOutView(bar_view->expanded_state_new_desk_button(),
