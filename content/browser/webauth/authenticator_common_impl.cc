@@ -1158,12 +1158,12 @@ void AuthenticatorCommonImpl::GetAssertion(
 
   req_state_->request_delegate->SetConditionalRequest(options->is_conditional);
 
-  if (options->is_conditional && !options->allow_credentials.empty()) {
+  req_state_->request_delegate->SetCredentialIdFilter(
+      options->allow_credentials);
+  if (options->is_conditional) {
     // Conditional mediation requests can only be fulfilled by discoverable
     // credentials. The provided allowCredentials list is stripped and will be
     // used to filter returned passkeys
-    req_state_->request_delegate->SetCredentialIdFilter(
-        std::move(options->allow_credentials));
     options->allow_credentials =
         std::vector<device::PublicKeyCredentialDescriptor>();
   }
