@@ -59,16 +59,16 @@ std::string DrivePinningScreen::GetResultString(Result result) {
   }
 }
 
-void DrivePinningScreen::ApplyDrivePinningPerf(Profile* profile) {
+void DrivePinningScreen::ApplyDrivePinningPref(Profile* profile) {
   auto* prefs = profile->GetPrefs();
-  if (!prefs->HasPrefPath(prefs::kOobeDisplaySizeFactorDeferred)) {
+  if (!prefs->HasPrefPath(prefs::kOobeDrivePinningEnabledDeferred)) {
     return;
   }
   bool drive_pinning =
       profile->GetPrefs()->GetBoolean(prefs::kOobeDrivePinningEnabledDeferred);
   profile->GetPrefs()->SetBoolean(drive::prefs::kDriveFsBulkPinningEnabled,
                                   drive_pinning);
-  prefs->ClearPref(prefs::kOobeDisplaySizeFactorDeferred);
+  prefs->ClearPref(prefs::kOobeDrivePinningEnabledDeferred);
 }
 
 DrivePinningScreen::DrivePinningScreen(

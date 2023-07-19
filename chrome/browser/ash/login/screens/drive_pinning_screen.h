@@ -28,8 +28,8 @@ class DrivePinningScreen : public BaseScreen,
 
   static std::string GetResultString(Result result);
 
-  // Apply the deffered perf `kOobeDrivePinningEnabledDeferred`.
-  static void ApplyDrivePinningPerf(Profile* profile);
+  // Apply the deferred perf `kOobeDrivePinningEnabledDeferred`.
+  static void ApplyDrivePinningPref(Profile* profile);
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
