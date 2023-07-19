@@ -10,6 +10,8 @@
 
 #include "content/common/content_export.h"
 
+class GURL;
+
 namespace url {
 class Origin;
 }
@@ -48,14 +50,13 @@ class CONTENT_EXPORT WebUIConfigMap {
   // readers tell what type of WebUIConfig is being added.
   void AddUntrustedWebUIConfig(std::unique_ptr<WebUIConfig> config);
 
-  // Returns the WebUIConfig for |origin| if it's registered and the WebUI is
+  // Returns the WebUIConfig for |url| if it's registered and the WebUI is
   // enabled. (WebUIs can be disabled based on the profile or feature flags.)
-  WebUIConfig* GetConfig(BrowserContext* browser_context,
-                         const url::Origin& origin);
+  WebUIConfig* GetConfig(BrowserContext* browser_context, const GURL& url);
 
-  // Removes and returns the WebUIConfig with |origin|. Returns nullptr if
-  // there is no WebUIConfig with |origin|.
-  std::unique_ptr<WebUIConfig> RemoveConfig(const url::Origin& origin);
+  // Removes and returns the WebUIConfig with |url|. Returns nullptr if
+  // there is no WebUIConfig with |url|.
+  std::unique_ptr<WebUIConfig> RemoveConfig(const GURL& url);
 
   // Returns the size of the map, i.e. how many WebUIConfigs are registered.
   size_t GetSizeForTesting() { return configs_map_.size(); }

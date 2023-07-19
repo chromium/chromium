@@ -29,8 +29,7 @@ class WebUIConfigMapWebUIControllerFactory : public WebUIControllerFactory {
 
   WebUI::TypeID GetWebUIType(BrowserContext* browser_context,
                              const GURL& url) override {
-    auto* config =
-        config_map_->GetConfig(browser_context, url::Origin::Create(url));
+    auto* config = config_map_->GetConfig(browser_context, url);
     if (!config)
       return WebUI::kNoWebUI;
 
@@ -39,15 +38,14 @@ class WebUIConfigMapWebUIControllerFactory : public WebUIControllerFactory {
 
   bool UseWebUIForURL(BrowserContext* browser_context,
                       const GURL& url) override {
-    return config_map_->GetConfig(browser_context, url::Origin::Create(url));
+    return config_map_->GetConfig(browser_context, url);
   }
 
   std::unique_ptr<WebUIController> CreateWebUIControllerForURL(
       WebUI* web_ui,
       const GURL& url) override {
     auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
-    auto* config =
-        config_map_->GetConfig(browser_context, url::Origin::Create(url));
+    auto* config = config_map_->GetConfig(browser_context, url);
     if (!config)
       return nullptr;
 
@@ -95,8 +93,17 @@ void WebUIConfigMap::AddWebUIConfigImpl(std::unique_ptr<WebUIConfig> config) {
 }
 
 WebUIConfig* WebUIConfigMap::GetConfig(BrowserContext* browser_context,
-                                       const url::Origin& origin) {
-  auto origin_and_config = configs_map_.find(origin);
+                                       const GURL& url) {
+  // "filesystem:" and "blob:" get dropped by url::Origin::Create() below. We
+  // don't want navigations to these URLs to have WebUI bindings, e.g.
+  // chrome.send() or Mojo.bindInterface(), since some WebUIs currently expose
+  // untrusted content via these schemes.
+  if (url.scheme() != kChromeUIScheme &&
+      url.scheme() != kChromeUIUntrustedScheme) {
+    return nullptr;
+  }
+
+  auto origin_and_config = configs_map_.find(url::Origin::Create(url));
   if (origin_and_config == configs_map_.end())
     return nullptr;
   auto& config = origin_and_config->second;
@@ -107,9 +114,11 @@ WebUIConfig* WebUIConfigMap::GetConfig(BrowserContext* browser_context,
   return config.get();
 }
 
-std::unique_ptr<WebUIConfig> WebUIConfigMap::RemoveConfig(
-    const url::Origin& origin) {
-  auto it = configs_map_.find(origin);
+std::unique_ptr<WebUIConfig> WebUIConfigMap::RemoveConfig(const GURL& url) {
+  CHECK(url.scheme() == kChromeUIScheme ||
+        url.scheme() == kChromeUIUntrustedScheme);
+
+  auto it = configs_map_.find(url::Origin::Create(url));
   if (it == configs_map_.end())
     return nullptr;
 
