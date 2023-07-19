@@ -55,7 +55,6 @@ class ProhibitedTechnologiesHandler;
 class StubCellularNetworksProvider;
 class TechnologyStateController;
 class UIProxyConfigService;
-class HiddenNetworkMetricsHelper;
 class VpnNetworkMetricsHelper;
 
 // Class for handling initialization and access to chromeos network handlers.
@@ -179,7 +178,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   std::unique_ptr<HotspotMetricsHelper> hotspot_metrics_helper_;
   std::unique_ptr<ESimPolicyLoginMetricsLogger>
       esim_policy_login_metrics_logger_;
-  std::unique_ptr<HiddenNetworkMetricsHelper> hidden_network_metrics_helper_;
   std::unique_ptr<VpnNetworkMetricsHelper> vpn_network_metrics_helper_;
   std::unique_ptr<CellularNetworkMetricsLogger>
       cellular_network_metrics_logger_;

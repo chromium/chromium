@@ -29,7 +29,6 @@
 #include "chromeos/ash/components/network/metrics/cellular_network_metrics_logger.h"
 #include "chromeos/ash/components/network/metrics/connection_info_metrics_logger.h"
 #include "chromeos/ash/components/network/metrics/esim_policy_login_metrics_logger.h"
-#include "chromeos/ash/components/network/metrics/hidden_network_metrics_helper.h"
 #include "chromeos/ash/components/network/metrics/hotspot_feature_usage_metrics.h"
 #include "chromeos/ash/components/network/metrics/hotspot_metrics_helper.h"
 #include "chromeos/ash/components/network/metrics/vpn_network_metrics_helper.h"
@@ -75,7 +74,6 @@ NetworkHandler::NetworkHandler()
   managed_cellular_pref_handler_.reset(new ManagedCellularPrefHandler());
   cellular_metrics_logger_.reset(new CellularMetricsLogger());
   connection_info_metrics_logger_.reset(new ConnectionInfoMetricsLogger());
-  hidden_network_metrics_helper_.reset(new HiddenNetworkMetricsHelper());
   hotspot_allowed_flag_handler_.reset(new HotspotAllowedFlagHandler());
   vpn_network_metrics_helper_.reset(new VpnNetworkMetricsHelper());
   if (base::FeatureList::IsEnabled(features::kHiddenNetworkMigration)) {
@@ -181,7 +179,6 @@ void NetworkHandler::Init() {
                                  managed_network_configuration_handler_.get());
   connection_info_metrics_logger_->Init(network_state_handler_.get(),
                                         network_connection_handler_.get());
-  hidden_network_metrics_helper_->Init(network_configuration_handler_.get());
   vpn_network_metrics_helper_->Init(network_configuration_handler_.get());
   if (client_cert_resolver_) {
     client_cert_resolver_->Init(network_state_handler_.get(),

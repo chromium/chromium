@@ -1,25 +1,17 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/network/metrics/hidden_network_metrics_helper.h"
+#include "chromeos/ash/components/network/metrics/wifi_network_metrics_helper.h"
 
 #include <memory>
 #include <utility>
 
-#include "base/functional/callback.h"
-#include "base/logging.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "base/values.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
-#include "chromeos/ash/components/network/network_configuration_handler.h"
-#include "chromeos/ash/components/network/network_handler_test_helper.h"
-#include "chromeos/ash/components/network/network_profile_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace ash {
 
@@ -28,58 +20,24 @@ namespace {
 const char kHistogramLoggedIn[] = "Network.Ash.WiFi.Hidden.LoggedIn";
 const char kHistogramNotLoggedIn[] = "Network.Ash.WiFi.Hidden.NotLoggedIn";
 
-void ErrorCallback(const std::string& error_name) {
-  ADD_FAILURE() << "Unexpected error: " << error_name;
-}
-
-// Helper function to create a WiFi network using NetworkConfigurationHandler.
-void CreateTestShillConfiguration(bool is_hidden) {
-  static int guid_index = 0;
-
-  base::Value::Dict properties;
-
-  properties.Set(shill::kGuidProperty,
-                 base::StringPrintf("guid-%i", guid_index++));
-  properties.Set(shill::kTypeProperty, shill::kTypeWifi);
-  properties.Set(shill::kStateProperty, shill::kStateIdle);
-  properties.Set(shill::kWifiHiddenSsid, is_hidden);
-  properties.Set(shill::kProfileProperty,
-                 NetworkProfileHandler::GetSharedProfilePath());
-
-  NetworkHandler::Get()
-      ->network_configuration_handler()
-      ->CreateShillConfiguration(std::move(properties), base::DoNothing(),
-                                 base::BindOnce(&ErrorCallback));
-  base::RunLoop().RunUntilIdle();
-}
-
 }  // namespace
 
-class HiddenNetworkMetricsHelperTest : public testing::Test {
+class WifiNetworkMetricsHelperTest : public testing::Test {
  public:
-  HiddenNetworkMetricsHelperTest() = default;
-  HiddenNetworkMetricsHelperTest(const HiddenNetworkMetricsHelperTest&) =
+  WifiNetworkMetricsHelperTest() = default;
+  WifiNetworkMetricsHelperTest(const WifiNetworkMetricsHelperTest&) = delete;
+  WifiNetworkMetricsHelperTest& operator=(const WifiNetworkMetricsHelperTest&) =
       delete;
-  HiddenNetworkMetricsHelperTest& operator=(
-      const HiddenNetworkMetricsHelperTest&) = delete;
-  ~HiddenNetworkMetricsHelperTest() override = default;
+  ~WifiNetworkMetricsHelperTest() override = default;
 
   void SetUp() override {
     LoginState::Initialize();
     LoginState::Get()->set_always_logged_in(false);
 
-    network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     histogram_tester_ = std::make_unique<base::HistogramTester>();
-
-    network_handler_test_helper_->ClearServices();
   }
 
-  void TearDown() override {
-    network_handler_test_helper_->ClearServices();
-    network_handler_test_helper_.reset();
-
-    LoginState::Shutdown();
-  }
+  void TearDown() override { LoginState::Shutdown(); }
 
   void SetLoggedIn(bool logged_in) const {
     LoginState::Get()->SetLoggedInState(
@@ -103,10 +61,9 @@ class HiddenNetworkMetricsHelperTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-  std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
 };
 
-TEST_F(HiddenNetworkMetricsHelperTest, LogHiddenNetworkCreation) {
+TEST_F(WifiNetworkMetricsHelperTest, LogWifiNetworkCreation) {
   ExpectHiddenCounts(/*histogram=*/kHistogramLoggedIn,
                      /*hidden_count=*/0,
                      /*not_hidden_count=*/0);
@@ -116,12 +73,12 @@ TEST_F(HiddenNetworkMetricsHelperTest, LogHiddenNetworkCreation) {
 
   SetLoggedIn(true);
 
-  CreateTestShillConfiguration(/*is_hidden=*/true);
+  WifiNetworkMetricsHelper::LogInitiallyConfiguredAsHidden(/*is_hidden=*/true);
   ExpectHiddenCounts(/*histogram=*/kHistogramLoggedIn,
                      /*hidden_count=*/1,
                      /*not_hidden_count=*/0);
 
-  CreateTestShillConfiguration(/*is_hidden=*/false);
+  WifiNetworkMetricsHelper::LogInitiallyConfiguredAsHidden(/*is_hidden=*/false);
   ExpectHiddenCounts(/*histogram=*/kHistogramLoggedIn,
                      /*hidden_count=*/1,
                      /*not_hidden_count=*/1);
@@ -131,12 +88,12 @@ TEST_F(HiddenNetworkMetricsHelperTest, LogHiddenNetworkCreation) {
 
   SetLoggedIn(false);
 
-  CreateTestShillConfiguration(/*is_hidden=*/true);
+  WifiNetworkMetricsHelper::LogInitiallyConfiguredAsHidden(/*is_hidden=*/true);
   ExpectHiddenCounts(/*histogram=*/kHistogramNotLoggedIn,
                      /*hidden_count=*/1,
                      /*not_hidden_count=*/0);
 
-  CreateTestShillConfiguration(/*is_hidden=*/false);
+  WifiNetworkMetricsHelper::LogInitiallyConfiguredAsHidden(/*is_hidden=*/false);
   ExpectHiddenCounts(/*histogram=*/kHistogramLoggedIn,
                      /*hidden_count=*/1,
                      /*not_hidden_count=*/1);

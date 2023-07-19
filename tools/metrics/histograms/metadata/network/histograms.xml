@@ -543,7 +543,11 @@ chromium-metrics-reviews@google.com.
   <owner>cros-connectivity@google.com</owner>
   <summary>
     Logs whether the network in question is configured as hidden or not. Emitted
-    when a network is configured.
+    when a network is newly configured.
+
+    Note: This histogram was wrongly emitted for all network configurations when
+    it should have only been emitted for new network configurations. This issue
+    was resolved on 2023-07-19.
   </summary>
   <token key="LoginStatus">
     <variant name="LoggedIn"/>

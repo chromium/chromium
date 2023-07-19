@@ -27,6 +27,7 @@
 #include "chromeos/ash/components/network/client_cert_util.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/metrics/esim_policy_login_metrics_logger.h"
+#include "chromeos/ash/components/network/metrics/wifi_network_metrics_helper.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_device_handler.h"
 #include "chromeos/ash/components/network/network_event_log.h"
@@ -375,14 +376,26 @@ void ManagedNetworkConfigurationHandlerImpl::CreateConfiguration(
   std::string guid =
       GetStringFromDictionary(properties, ::onc::network_config::kGUID);
   const NetworkState* network_state = nullptr;
-  if (!guid.empty())
+  if (!guid.empty()) {
     network_state = network_state_handler_->GetNetworkStateFromGuid(guid);
+  }
   if (network_state) {
     NET_LOG(USER) << "CreateConfiguration for: " << NetworkId(network_state);
   } else {
     std::string type =
         GetStringFromDictionary(properties, ::onc::network_config::kType);
     NET_LOG(USER) << "Create new network configuration, Type: " << type;
+
+    if (type == ::onc::network_type::kWiFi) {
+      const base::Value::Dict* type_dict =
+          properties.FindDict(::onc::network_config::kWiFi);
+      const absl::optional<bool> is_hidden =
+          type_dict ? type_dict->FindBool(::onc::wifi::kHiddenSSID)
+                    : absl::nullopt;
+      if (is_hidden.has_value()) {
+        WifiNetworkMetricsHelper::LogInitiallyConfiguredAsHidden(*is_hidden);
+      }
+    }
   }
 
   // Validate the ONC dictionary. We are liberal and ignore unknown field
