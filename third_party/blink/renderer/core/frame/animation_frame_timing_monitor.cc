@@ -464,12 +464,7 @@ void AnimationFrameTimingMonitor::Did(
   if (ScriptTimingInfo* script_timing_info = DidExecuteScript(probe_data)) {
     script_timing_info->SetSourceLocation(
         ScriptTimingInfo::ScriptSourceLocation{
-            .url = probe_data.script->SourceUrl(),
-            .line_number = static_cast<unsigned int>(
-                probe_data.script->StartPosition().line_.OneBasedInt()),
-            .column_number = static_cast<unsigned int>(
-                probe_data.script->StartPosition().column_.OneBasedInt()),
-        });
+            .url = probe_data.script->SourceUrl()});
   }
 }
 void AnimationFrameTimingMonitor::WillRunJavaScriptDialog() {
@@ -579,11 +574,14 @@ ScriptTimingInfo::ScriptSourceLocation CaptureScriptSourceLocation(
     value = bound;
   }
 
-  if (std::unique_ptr<SourceLocation> location =
-          CaptureSourceLocation(value.As<v8::Function>())) {
+  v8::Local<v8::Function> function = value.As<v8::Function>();
+  if (function->IsFunction()) {
     return ScriptTimingInfo::ScriptSourceLocation{
-        location->Url(), location->Function(), location->LineNumber(),
-        location->ColumnNumber()};
+        .url = ToCoreStringWithUndefinedOrNullCheck(
+            function->GetScriptOrigin().ResourceName()),
+        .function_name =
+            ToCoreStringWithUndefinedOrNullCheck(function->GetName()),
+        .start_position = function->GetScriptStartPosition()};
   }
 
   return ScriptTimingInfo::ScriptSourceLocation();
