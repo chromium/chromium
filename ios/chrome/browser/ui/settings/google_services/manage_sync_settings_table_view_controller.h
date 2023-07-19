@@ -40,9 +40,9 @@
 @property(nonatomic, weak) id<ManageSyncSettingsServiceDelegate>
     serviceDelegate;
 
-// Tells the controller to use customized heights for the sections' headers and
-// footers.
-@property(nonatomic, assign) BOOL useHeaderFooterCustomSpacing;
+// Tells the controller if it is being viewed for a signed-in not syncing
+// account or not.
+@property(nonatomic, assign) BOOL isAccountStateSignedIn;
 
 @end
 

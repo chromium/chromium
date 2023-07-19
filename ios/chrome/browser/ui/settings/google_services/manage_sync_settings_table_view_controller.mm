@@ -181,7 +181,7 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
 
 - (CGFloat)tableView:(UITableView*)tableView
     heightForHeaderInSection:(NSInteger)section {
-  if (self.useHeaderFooterCustomSpacing) {
+  if (self.isAccountStateSignedIn) {
     NSInteger sectionIdentifier =
         [self.tableViewModel sectionIdentifierForSectionIndex:section];
     switch (sectionIdentifier) {
@@ -201,7 +201,7 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
 
 - (CGFloat)tableView:(UITableView*)tableView
     heightForFooterInSection:(NSInteger)section {
-  if (self.useHeaderFooterCustomSpacing) {
+  if (self.isAccountStateSignedIn) {
     NSInteger sectionIdentifier =
         [self.tableViewModel sectionIdentifierForSectionIndex:section];
     switch (sectionIdentifier) {
@@ -225,8 +225,11 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
 - (void)didTapManagedUIInfoButton:(UIButton*)buttonView {
   EnterpriseInfoPopoverViewController* bubbleViewController =
       [[EnterpriseInfoPopoverViewController alloc]
-          initWithMessage:l10n_util::GetNSString(
-                              IDS_IOS_ENTERPRISE_MANAGED_SYNC)
+          initWithMessage:self.isAccountStateSignedIn
+                              ? l10n_util::GetNSString(
+                                    IDS_IOS_ENTERPRISE_MANAGED_SAVE_IN_ACCOUNT)
+                              : l10n_util::GetNSString(
+                                    IDS_IOS_ENTERPRISE_MANAGED_SYNC)
            enterpriseName:nil];
   [self presentViewController:bubbleViewController animated:YES completion:nil];
 

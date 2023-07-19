@@ -2937,6 +2937,10 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_ENTERPRISE_MANAGED_SYNC" desc="Text displayed to inform the user that syncable types are limited (i.e. managed). [iOS only]">
         Your organization limits what you can sync.
       </message>
+      <!-- TODO(crbug.com/1449220): Introduce final strings. -->
+      <message translateable="false" name="IDS_IOS_ENTERPRISE_MANAGED_SAVE_IN_ACCOUNT" desc="Text displayed to inform the user that types that can be stored on their account are limited (i.e. managed). [iOS only]">
+        **Your organization limits what you can save in your Google Account.**
+      </message>
       <message name="IDS_IOS_ENTERPRISE_SIGNED_OUT" desc="Text displayed in an alert when the user is signed out due to browser sign-in becoming disabled by policy. [iOS only]">
         You're Signed Out
       </message>
