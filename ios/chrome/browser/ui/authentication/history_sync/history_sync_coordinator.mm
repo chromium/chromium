@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_mediator.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_view_controller.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -36,6 +37,8 @@
   __weak id<HistorySyncCoordinatorDelegate> _delegate;
 }
 
+@synthesize baseNavigationController = _baseNavigationController;
+
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser
@@ -46,6 +49,7 @@
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
+    _baseNavigationController = navigationController;
     _firstRun = firstRun;
     _delegate = delegate;
   }
@@ -54,12 +58,19 @@
 
 - (void)start {
   [super start];
-  _viewController = [[HistorySyncViewController alloc] init];
-  _viewController.delegate = self;
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   CHECK_EQ(browserState, browserState->GetOriginalChromeBrowserState());
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
+  // Don't show history sync opt-in screen if no signed-in user account.
+  if (!authenticationService->GetPrimaryIdentity(
+          signin::ConsentLevel::kSignin)) {
+    [_delegate closeHistorySyncCoordinator:self];
+    return;
+  }
+
+  _viewController = [[HistorySyncViewController alloc] init];
+  _viewController.delegate = self;
   ChromeAccountManagerService* chromeAccountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
   signin::IdentityManager* identityManager =

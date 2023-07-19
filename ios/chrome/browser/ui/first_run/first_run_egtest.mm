@@ -9,6 +9,8 @@
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
 #import "components/signin/ios/browser/features.h"
+#import "components/signin/public/base/consent_level.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/metrics/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/policy_util.h"
@@ -165,6 +167,12 @@ void DismissDefaultBrowserPromo() {
   config.additional_args.push_back("true");
   // Relaunch app at each test to rewind the startup state.
   config.relaunch_policy = ForceRelaunchByKilling;
+
+  if ([self isRunningTest:@selector(testHistorySyncSkippedIfNoSignIn)] ||
+      [self isRunningTest:@selector(testHistorySyncShownAfterSignIn)]) {
+    config.features_enabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
 
   return config;
 }
@@ -876,6 +884,52 @@ void DismissDefaultBrowserPromo() {
   DismissDefaultBrowserPromo();
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGrey verifySyncUIEnabled:YES];
+}
+
+#pragma mark - History Sync Opt-in
+
+// Tests if the user skip the Sign-in step, the History Sync Opt-in screen is
+// skipped and the default browser screen is shown.
+- (void)testHistorySyncSkippedIfNoSignIn {
+  // Skip sign-in.
+  [[self
+      elementInteractionWithGreyMatcher:PromoStyleSecondaryActionButtonMatcher()
+                   scrollViewIdentifier:
+                       kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  [SigninEarlGrey verifySignedOut];
+  // Verify that the History Sync Opt-In screen is hidden.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kHistorySyncViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_nil()];
+  // Verify that the default browser choice screen is shown.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(
+              first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests if the user signs in with the first screen, the History Sync Opt-In
+// screen is shown next.
+- (void)testHistorySyncShownAfterSignIn {
+  // Add identity.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  // Accept sign-in.
+  [[self
+      elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
+                   scrollViewIdentifier:
+                       kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity.userEmail
+                                        consent:signin::ConsentLevel::kSignin];
+  // Verify that the History Sync Opt-In screen is shown.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kHistorySyncViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 #pragma mark - Helper

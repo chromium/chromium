@@ -23,6 +23,7 @@ source_set("history_sync") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:constants",
     "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/chrome/common/ui/promo_style",
   ]
   public_deps =
