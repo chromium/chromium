@@ -1692,6 +1692,28 @@ class PortTest(LoggingTestCase):
             port.skipped_due_to_exclusive_virtual_tests(
                 'virtual/v2/b2/test2.html'))
 
+    def test_virtual_skip_base_tests(self):
+        port = self.make_port()
+        fs = port.host.filesystem
+        web_tests_dir = port.web_tests_dir()
+        fs.write_text_file(
+            fs.join(web_tests_dir, 'VirtualTestSuites'), '['
+            '{"prefix": "v1", "platforms": ["Linux"], "bases": ["b1", "b2"],'
+            '"args": ["-a"], "expires": "never"},'
+            '{"prefix": "v2", "platforms": ["Linux"], "bases": ["b1"],'
+            '"skip_base_tests": "ALL",'
+            '"args": ["-a"], "expires": "never"}'
+            ']')
+        fs.write_text_file(fs.join(web_tests_dir, 'b1', 'test1.html'), '')
+        fs.write_text_file(fs.join(web_tests_dir, 'b2', 'test2.html'), '')
+
+        self.assertTrue(port.skipped_due_to_skip_base_tests('b1/test.html'))
+        self.assertFalse(
+            port.skipped_due_to_skip_base_tests('virtual/v1/b1/test1.html'))
+        self.assertFalse(port.skipped_due_to_skip_base_tests('b2/test2.html'))
+        self.assertFalse(
+            port.skipped_due_to_skip_base_tests('virtual/v1/b2/test2.html'))
+
     def test_default_results_directory(self):
         port = self.make_port(
             options=optparse.Values({

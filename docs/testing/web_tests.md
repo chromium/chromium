@@ -347,6 +347,30 @@ following tests:
 | virtual/v2 |   run   |   run   | n/a  |
 | virtual/v3 |   run   | skipped | run  |
 
+In a similar manner, a virtual test suite can also have an optional
+`skip_base_tests` field to specify all (with `"ALL"`) or a subset of `bases`
+tests that will be run under this virtual while the base tests will be skipped.
+This will not affect other virtual suites.
+
+```json
+{
+  "prefix": "v1",
+  "bases": ["a/a1"],
+}
+{
+  "prefix": "v2",
+  "bases": ["a/a1"],
+  "skip_base_tests": "ALL",
+}
+```
+Suppose there are directories `a/a1` and `a/a2` we will run the following tests:
+
+|      Suite |   a/a1  |   a/a2  |
+| ---------: | :-----: | :-----: |
+|       base | skipped |   run   |
+| virtual/v1 |   run   |   n/a   |
+| virtual/v2 |   run   |   n/a   |
+
 
 ### Choosing between flag-specific and virtual test suite
 

@@ -1388,7 +1388,8 @@ class Port(object):
         return (self.skipped_due_to_smoke_tests(test)
                 or self.skipped_in_never_fix_tests(test)
                 or self.virtual_test_skipped_due_to_platform_config(test)
-                or self.skipped_due_to_exclusive_virtual_tests(test))
+                or self.skipped_due_to_exclusive_virtual_tests(test)
+                or self.skipped_due_to_skip_base_tests(test))
 
     @memoized
     def tests_from_file(self, filename: str) -> Set[str]:
@@ -1511,6 +1512,26 @@ class Port(object):
         for suite in self.virtual_test_suites():
             for entry in suite.exclusive_tests:
                 if base_test.startswith(self.normalize_test_name(entry)):
+                    return True
+        return False
+
+    @memoized
+    def skipped_due_to_skip_base_tests(self, test):
+        """Checks if the test should be skipped due to the skip_base_test rule
+        of any virtual suite.
+
+        If the test is not a virtual test, it will be skipped if it's in the
+        skip_base_test list of any virtual suite. If the test is a virtual
+        test, it will not be skipped.
+        """
+        # This check doesn't apply to virtual tests
+        if self.lookup_virtual_test_base(test):
+            return False
+
+        for suite in self.virtual_test_suites():
+            for entry in suite.skip_base_tests:
+                if self.normalize_test_name(test).startswith(
+                        self.normalize_test_name(entry)):
                     return True
         return False
 
@@ -2704,6 +2725,7 @@ class VirtualTestSuite(object):
                  platforms=None,
                  bases=None,
                  exclusive_tests=None,
+                 skip_base_tests=None,
                  args=None,
                  owners=None,
                  expires=None):
@@ -2720,10 +2742,17 @@ class VirtualTestSuite(object):
             exclusive_tests = []
         assert isinstance(exclusive_tests, list)
 
+        if skip_base_tests == "ALL":
+            skip_base_tests = bases
+        elif skip_base_tests is None:
+            skip_base_tests = []
+        assert isinstance(skip_base_tests, list)
+
         self.full_prefix = 'virtual/' + prefix + '/'
         self.platforms = [x.lower() for x in platforms]
         self.bases = bases
         self.exclusive_tests = exclusive_tests
+        self.skip_base_tests = skip_base_tests
         self.args = sorted(args)
         # always put --enable-threaded-compositing at the end of list, so that after appending
         # this parameter due to crrev.com/c/4599846, we do not need to restart content shell
