@@ -199,6 +199,16 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'device_page/customize_mouse_buttons_subpage_test.js',
    {enabled: ['ash::features::kPeripheralCustomization']}
  ],
+ [
+   'CustomizePenButtonsSubpage',
+   'device_page/customize_pen_buttons_subpage_test.js',
+   {enabled: ['ash::features::kPeripheralCustomization']}
+ ],
+ [
+   'CustomizeTabletButtonsSubpage',
+   'device_page/customize_tablet_buttons_subpage_test.js',
+   {enabled: ['ash::features::kPeripheralCustomization']}
+ ],
  ['DateTimePage', 'date_time_page/date_time_page_test.js'],
  ['DateTimePageTimezoneSelector', 'date_time_page/timezone_selector_test.js'],
  ['DateTimePageTimezoneSubpage', 'date_time_page/timezone_subpage_test.js'],

@@ -47,6 +47,12 @@ export class SettingsCustomizeTabletButtonsSubpageElement extends
     };
   }
 
+  static get observers(): string[] {
+    return [
+      'onGraphicsTabletListUpdated(graphicsTablets.*)',
+    ];
+  }
+
   selectedTablet: GraphicsTablet;
   public graphicsTablets: GraphicsTablet[];
 
@@ -80,6 +86,23 @@ export class SettingsCustomizeTabletButtonsSubpageElement extends
 
   private hasGraphicsTablets(): boolean {
     return this.graphicsTablets?.length > 0;
+  }
+
+  private isTabletConnected(id: number): boolean {
+    return !!this.graphicsTablets.find(tablet => tablet.id === id);
+  }
+
+  onGraphicsTabletListUpdated(): void {
+    if (Router.getInstance().currentRoute !== routes.CUSTOMIZE_TABLET_BUTTONS) {
+      return;
+    }
+
+    if (!this.hasGraphicsTablets() ||
+        !this.isTabletConnected(this.getGraphicsTabletIdFromUrl())) {
+      Router.getInstance().navigateTo(routes.DEVICE);
+      return;
+    }
+    this.initializeTablet();
   }
 }
 
