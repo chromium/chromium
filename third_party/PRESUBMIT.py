@@ -98,11 +98,8 @@ def CheckThirdPartyReadmesUpdated(input_api, output_api):
   license_pattern = input_api.re.compile(
     r'^License: (.+)\r?$',
     input_api.re.IGNORECASE | input_api.re.MULTILINE)
-  license_file_pattern = input_api.re.compile(
-    r'^License File: (.+)\r?$',
-    input_api.re.IGNORECASE | input_api.re.MULTILINE)
-  shipped_pattern = input_api.re.compile(
-    r'^Shipped: (yes|no)\r?$',
+  not_shipped_pattern = input_api.re.compile(
+    r'^License File: NOT_SHIPPED\r?$',
     input_api.re.IGNORECASE | input_api.re.MULTILINE)
   license_android_compatible_pattern = input_api.re.compile(
     r'^License Android Compatible: (yes|no)\r?$',
@@ -131,8 +128,8 @@ def CheckThirdPartyReadmesUpdated(input_api, output_api):
     if not release_pattern.search(contents):
       errors.append(output_api.PresubmitError(
         'Third party README files should contain a \'Security Critical\'\n'
-        'field. This field specifies the security impact of vulnerabilities.\n'
-        'Check README.chromium.template for details.',
+        'field. This field specifies whether the package is built with\n'
+        'Chromium. Check README.chromium.template for details.',
         [f]))
     license_match = license_pattern.search(contents)
     if not license_match:
@@ -141,28 +138,16 @@ def CheckThirdPartyReadmesUpdated(input_api, output_api):
         'This field specifies the license used by the package. Check\n'
         'README.chromium.template for details.',
         [f]))
-    shipped_match = shipped_pattern.search(contents)
-    if not shipped_match:
-      errors.append(output_api.PresubmitError(
-        'Third party README files should contain a \'Shipped\' field.\n'
-        'This field specifies whether the package is shipped as part of\n'
-        'a release. Check README.chromium.template for details.',
-        [f]))
+    not_shipped_match = not_shipped_pattern.search(contents)
     android_compatible_match = (
         license_android_compatible_pattern.search(contents))
-    if (not shipped_match and not android_compatible_match and
+    if (not not_shipped_match and not android_compatible_match and
         not LicenseIsCompatibleWithAndroid(input_api, license_match.group(1))):
       errors.append(output_api.PresubmitPromptWarning(
         'Cannot determine whether specified license is compatible with\n' +
         'the Android licensing requirements. Please check that the license\n' +
         'name is spelled according to third_party/PRESUBMIT.py. Please see\n' +
         'README.chromium.template for details.',
-        [f]))
-    license_file_match = license_file_pattern.search(contents)
-    if (shipped_match and "yes" in shipped_match.group(1)) and not license_file_match:
-      errors.append(output_api.PresubmitError(
-        'Packages marked as shipped must provide a path to a license file.\n'
-        'Check README.chromium.template for details.',
         [f]))
   return errors
 
