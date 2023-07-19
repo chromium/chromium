@@ -113,7 +113,12 @@ static constexpr auto kTypeNameToFieldType =
          {"ONE_TIME_CODE", ONE_TIME_CODE},
          {"ADDRESS_HOME_LANDMARK", ADDRESS_HOME_LANDMARK},
          {"ADDRESS_HOME_BETWEEN_STREETS", ADDRESS_HOME_BETWEEN_STREETS},
-         {"ADDRESS_HOME_ADMIN_LEVEL2", ADDRESS_HOME_ADMIN_LEVEL2}});
+         {"ADDRESS_HOME_ADMIN_LEVEL2", ADDRESS_HOME_ADMIN_LEVEL2},
+         {"DELIVERY_INSTRUCTIONS", DELIVERY_INSTRUCTIONS},
+         {"ADDRESS_HOME_OVERFLOW", ADDRESS_HOME_OVERFLOW},
+         {"ADDRESS_HOME_STREET_LOCATION", ADDRESS_HOME_STREET_LOCATION},
+         {"ADDRESS_HOME_BETWEEN_STREETS_1", ADDRESS_HOME_BETWEEN_STREETS_1},
+         {"ADDRESS_HOME_BETWEEN_STREETS_2", ADDRESS_HOME_BETWEEN_STREETS_2}});
 
 ServerFieldType ToSafeServerFieldType(
     std::underlying_type_t<ServerFieldType> raw_value,
@@ -137,8 +142,8 @@ ServerFieldType ToSafeServerFieldType(
            // Fax numbers (values [20,24]) are deprecated.
            !(20 <= t && t <= 24) &&
            // Reserved for server-side only use.
-           t != 127 &&
-           (t == 136 || t == 141 || t == 143 || !(130 <= t && t <= 153));
+           t != 127 && !(130 <= t && t <= 132) && t != 134 &&
+           !(137 <= t && t <= 140) && !(144 <= t && t <= 150);
   };
   return IsValid(raw_value) ? static_cast<ServerFieldType>(raw_value)
                             : fallback_value;
@@ -192,7 +197,12 @@ bool IsFillableFieldType(ServerFieldType field_type) {
     case ADDRESS_HOME_FLOOR:
     case ADDRESS_HOME_LANDMARK:
     case ADDRESS_HOME_BETWEEN_STREETS:
+    case ADDRESS_HOME_BETWEEN_STREETS_1:
+    case ADDRESS_HOME_BETWEEN_STREETS_2:
     case ADDRESS_HOME_ADMIN_LEVEL2:
+    case ADDRESS_HOME_OVERFLOW:
+    case ADDRESS_HOME_STREET_LOCATION:
+    case DELIVERY_INSTRUCTIONS:
       return true;
 
     case CREDIT_CARD_NAME_FULL:
@@ -389,6 +399,10 @@ base::StringPiece FieldTypeToDeveloperRepresentationString(
       return "Street and dependent street name";
     case ADDRESS_HOME_BETWEEN_STREETS:
       return "Address between streets";
+    case ADDRESS_HOME_BETWEEN_STREETS_1:
+      return "Address between streets 1";
+    case ADDRESS_HOME_BETWEEN_STREETS_2:
+      return "Address between streets 2";
     case ADDRESS_HOME_LINE1:
       return "Address line 1";
     case ADDRESS_HOME_LINE2:
@@ -403,6 +417,8 @@ base::StringPiece FieldTypeToDeveloperRepresentationString(
       return "Address subunit";
     case ADDRESS_HOME_ADMIN_LEVEL2:
       return "Administrative area level 2";
+    case ADDRESS_HOME_STREET_LOCATION:
+      return "Street location";
     case ADDRESS_HOME_STREET_ADDRESS:
       return "Street address";
     case ADDRESS_HOME_SORTING_CODE:
@@ -419,6 +435,10 @@ base::StringPiece FieldTypeToDeveloperRepresentationString(
       return "Zip code";
     case ADDRESS_HOME_COUNTRY:
       return "Country";
+    case ADDRESS_HOME_OVERFLOW:
+      return "Address overflow";
+    case DELIVERY_INSTRUCTIONS:
+      return "Delivery instructions";
     case BIRTHDATE_DAY:
       return "Birthdate day";
     case BIRTHDATE_MONTH:

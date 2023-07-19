@@ -6687,6 +6687,9 @@ others/histograms.xml -->
 </enum>
 
 <enum name="AutofilledFieldUserEditingStatusByFieldType">
+<!-- Generated from components/autofill/core/browser/field_types.h.
+Called by update_autofill_enums.py.-->
+
   <int value="0" label="NO_SERVER_DATA: edited"/>
   <int value="1" label="NO_SERVER_DATA: accepted"/>
   <int value="16" label="UNKNOWN_TYPE: edited"/>
@@ -6857,8 +6860,8 @@ others/histograms.xml -->
   <int value="1617" label="NOT_USERNAME: accepted"/>
   <int value="1632" label="UPI_VPA: edited"/>
   <int value="1633" label="UPI_VPA: accepted"/>
-  <int value="1648" label="ADDRESS_HOME_STREET: edited"/>
-  <int value="1649" label="ADDRESS_HOME_STREET: accepted"/>
+  <int value="1648" label="ADDRESS_HOME_STREET_NAME: edited"/>
+  <int value="1649" label="ADDRESS_HOME_STREET_NAME: accepted"/>
   <int value="1664" label="ADDRESS_HOME_HOUSE_NUMBER: edited"/>
   <int value="1665" label="ADDRESS_HOME_HOUSE_NUMBER: accepted"/>
   <int value="1680" label="ADDRESS_HOME_SUBPREMISE: edited"/>
@@ -6909,16 +6912,26 @@ others/histograms.xml -->
   <int value="2001" label="IBAN_VALUE: accepted"/>
   <int value="2016" label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE: edited"/>
   <int value="2017" label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE: accepted"/>
-  <int value="2032" label="NUMERIC_QUANTITY: edited"/>
-  <int value="2033" label="NUMERIC_QUANTITY: accepted"/>
-  <int value="2048" label="ONE_TIME_CODE: edited"/>
-  <int value="2049" label="ONE_TIME_CODE: accepted"/>
+  <int value="2048" label="NUMERIC_QUANTITY: edited"/>
+  <int value="2049" label="NUMERIC_QUANTITY: accepted"/>
+  <int value="2064" label="ONE_TIME_CODE: edited"/>
+  <int value="2065" label="ONE_TIME_CODE: accepted"/>
+  <int value="2128" label="DELIVERY_INSTRUCTIONS: edited"/>
+  <int value="2129" label="DELIVERY_INSTRUCTIONS: accepted"/>
+  <int value="2160" label="ADDRESS_HOME_OVERFLOW: edited"/>
+  <int value="2161" label="ADDRESS_HOME_OVERFLOW: accepted"/>
   <int value="2176" label="ADDRESS_HOME_LANDMARK: edited"/>
   <int value="2177" label="ADDRESS_HOME_LANDMARK: accepted"/>
   <int value="2256" label="ADDRESS_HOME_ADMIN_LEVEL2: edited"/>
   <int value="2257" label="ADDRESS_HOME_ADMIN_LEVEL2: accepted"/>
+  <int value="2272" label="ADDRESS_HOME_STREET_LOCATION: edited"/>
+  <int value="2273" label="ADDRESS_HOME_STREET_LOCATION: accepted"/>
   <int value="2288" label="ADDRESS_HOME_BETWEEN_STREETS: edited"/>
   <int value="2289" label="ADDRESS_HOME_BETWEEN_STREETS: accepted"/>
+  <int value="2416" label="ADDRESS_HOME_BETWEEN_STREETS_1: edited"/>
+  <int value="2417" label="ADDRESS_HOME_BETWEEN_STREETS_1: accepted"/>
+  <int value="2432" label="ADDRESS_HOME_BETWEEN_STREETS_2: edited"/>
+  <int value="2433" label="ADDRESS_HOME_BETWEEN_STREETS_2: accepted"/>
 </enum>
 
 <enum name="AutofillErrorDialogType">
@@ -7289,6 +7302,36 @@ others/histograms.xml -->
   <int value="9979" label="Admin Level 2: False Positive (Empty)"/>
   <int value="9980" label="Admin Level 2: False Negative (Mismatch)"/>
   <int value="9981" label="Admin Level 2: False Negative (Unknown)"/>
+  <int value="10072" label="Street location: True Positive"/>
+  <int value="10073" label="Street location: True Negative (Ambiguous)"/>
+  <int value="10074" label="Street location: True Negative (Unknown)"/>
+  <int value="10075" label="Street location: True Negative (Empty)"/>
+  <int value="10076" label="Street location: False Positive (Mismatch)"/>
+  <int value="10077" label="Street location: False Positive (Ambiguous)"/>
+  <int value="10078" label="Street location: False Positive (Unknown)"/>
+  <int value="10079" label="Street location: False Positive (Empty)"/>
+  <int value="10080" label="Street location: False Negative (Mismatch)"/>
+  <int value="10081" label="Street location: False Negative (Unknown)"/>
+  <int value="10172" label="Address overflow: True Positive"/>
+  <int value="10173" label="Address overflow: True Negative (Ambiguous)"/>
+  <int value="10174" label="Address overflow: True Negative (Unknown)"/>
+  <int value="10175" label="Address overflow: True Negative (Empty)"/>
+  <int value="10176" label="Address overflow: False Positive (Mismatch)"/>
+  <int value="10177" label="Address overflow: False Positive (Ambiguous)"/>
+  <int value="10178" label="Address overflow: False Positive (Unknown)"/>
+  <int value="10179" label="Address overflow: False Positive (Empty)"/>
+  <int value="10180" label="Address overflow: False Negative (Mismatch)"/>
+  <int value="10181" label="Address overflow: False Negative (Unknown)"/>
+  <int value="10272" label="Delivery instructions: True Positive"/>
+  <int value="10273" label="Delivery instructions: True Negative (Ambiguous)"/>
+  <int value="10274" label="Delivery instructions: True Negative (Unknown)"/>
+  <int value="10275" label="Delivery instructions: True Negative (Empty)"/>
+  <int value="10276" label="Delivery instructions: False Positive (Mismatch)"/>
+  <int value="10277" label="Delivery instructions: False Positive (Ambiguous)"/>
+  <int value="10278" label="Delivery instructions: False Positive (Unknown)"/>
+  <int value="10279" label="Delivery instructions: False Positive (Empty)"/>
+  <int value="10280" label="Delivery instructions: False Negative (Mismatch)"/>
+  <int value="10281" label="Delivery instructions: False Negative (Unknown)"/>
 </enum>
 
 <enum name="AutofillFormControlType">
@@ -7673,17 +7716,24 @@ others/histograms.xml -->
 </enum>
 
 <enum name="AutofillPredictionsComparisonResult">
+<!-- Generated from components/autofill/core/browser/field_types.h.
+Called by update_autofill_enums.py.-->
+
   <int value="0" label="None"/>
-  <int value="1" label="Predictions equal - Value agrees"/>
-  <int value="2" label="Predictions equal - Value disagrees"/>
+  <int value="1" label="NO_SERVER_DATA - Predictions equal - Value agrees"/>
+  <int value="2" label="NO_SERVER_DATA - Predictions equal - Value disagrees"/>
   <int value="3"
-      label="Predictions different - Value agrees with old prediction"/>
+      label="NO_SERVER_DATA - Predictions different - Value agrees with old
+             prediction"/>
   <int value="4"
-      label="Predictions different - Value agrees with new prediction"/>
+      label="NO_SERVER_DATA - Predictions different - Value agrees with new
+             prediction"/>
   <int value="5"
-      label="Predictions different - Value agrees with neither prediction"/>
+      label="NO_SERVER_DATA - Predictions different - Value agrees with
+             neither prediction"/>
   <int value="6"
-      label="Predictions different - Value agrees with both predictions"/>
+      label="NO_SERVER_DATA - Predictions different - Value agrees with both
+             predictions"/>
   <int value="7" label="UNKNOWN_TYPE - Predictions equal - Value agrees"/>
   <int value="8" label="UNKNOWN_TYPE - Predictions equal - Value disagrees"/>
   <int value="9"
@@ -8003,21 +8053,21 @@ others/histograms.xml -->
       label="ADDRESS_HOME_LINE2 - Predictions different - Value agrees with
              both predictions"/>
   <int value="193"
-      label="ADDRESS_HOME_APPT_NUM - Predictions equal - Value agrees"/>
+      label="ADDRESS_HOME_APT_NUM - Predictions equal - Value agrees"/>
   <int value="194"
-      label="ADDRESS_HOME_APPT_NUM - Predictions equal - Value disagrees"/>
+      label="ADDRESS_HOME_APT_NUM - Predictions equal - Value disagrees"/>
   <int value="195"
-      label="ADDRESS_HOME_APPT_NUM - Predictions different - Value agrees
-             with old prediction"/>
+      label="ADDRESS_HOME_APT_NUM - Predictions different - Value agrees with
+             old prediction"/>
   <int value="196"
-      label="ADDRESS_HOME_APPT_NUM - Predictions different - Value agrees
-             with new prediction"/>
+      label="ADDRESS_HOME_APT_NUM - Predictions different - Value agrees with
+             new prediction"/>
   <int value="197"
-      label="ADDRESS_HOME_APPT_NUM - Predictions different - Value agrees
-             with neither prediction"/>
+      label="ADDRESS_HOME_APT_NUM - Predictions different - Value agrees with
+             neither prediction"/>
   <int value="198"
-      label="ADDRESS_HOME_APPT_NUM - Predictions different - Value agrees
-             with both predictions"/>
+      label="ADDRESS_HOME_APT_NUM - Predictions different - Value agrees with
+             both predictions"/>
   <int value="199"
       label="ADDRESS_HOME_CITY - Predictions equal - Value agrees"/>
   <int value="200"
@@ -9022,21 +9072,21 @@ others/histograms.xml -->
       label="UPI_VPA - Predictions different - Value agrees with both
              predictions"/>
   <int value="619"
-      label="ADDRESS_HOME_STREET - Predictions equal - Value agrees"/>
+      label="ADDRESS_HOME_STREET_NAME - Predictions equal - Value agrees"/>
   <int value="620"
-      label="ADDRESS_HOME_STREET - Predictions equal - Value disagrees"/>
+      label="ADDRESS_HOME_STREET_NAME - Predictions equal - Value disagrees"/>
   <int value="621"
-      label="ADDRESS_HOME_STREET - Predictions different - Value agrees with
-             old prediction"/>
+      label="ADDRESS_HOME_STREET_NAME - Predictions different - Value agrees
+             with old prediction"/>
   <int value="622"
-      label="ADDRESS_HOME_STREET - Predictions different - Value agrees with
-             new prediction"/>
+      label="ADDRESS_HOME_STREET_NAME - Predictions different - Value agrees
+             with new prediction"/>
   <int value="623"
-      label="ADDRESS_HOME_STREET - Predictions different - Value agrees with
-             neither prediction"/>
+      label="ADDRESS_HOME_STREET_NAME - Predictions different - Value agrees
+             with neither prediction"/>
   <int value="624"
-      label="ADDRESS_HOME_STREET - Predictions different - Value agrees with
-             both predictions"/>
+      label="ADDRESS_HOME_STREET_NAME - Predictions different - Value agrees
+             with both predictions"/>
   <int value="625"
       label="ADDRESS_HOME_HOUSE_NUMBER - Predictions equal - Value agrees"/>
   <int value="626"
@@ -9441,6 +9491,38 @@ others/histograms.xml -->
   <int value="780"
       label="ONE_TIME_CODE - Predictions different - Value agrees with both
              predictions"/>
+  <int value="799"
+      label="DELIVERY_INSTRUCTIONS - Predictions equal - Value agrees"/>
+  <int value="800"
+      label="DELIVERY_INSTRUCTIONS - Predictions equal - Value disagrees"/>
+  <int value="801"
+      label="DELIVERY_INSTRUCTIONS - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="802"
+      label="DELIVERY_INSTRUCTIONS - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="803"
+      label="DELIVERY_INSTRUCTIONS - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="804"
+      label="DELIVERY_INSTRUCTIONS - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="811"
+      label="ADDRESS_HOME_OVERFLOW - Predictions equal - Value agrees"/>
+  <int value="812"
+      label="ADDRESS_HOME_OVERFLOW - Predictions equal - Value disagrees"/>
+  <int value="813"
+      label="ADDRESS_HOME_OVERFLOW - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="814"
+      label="ADDRESS_HOME_OVERFLOW - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="815"
+      label="ADDRESS_HOME_OVERFLOW - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="816"
+      label="ADDRESS_HOME_OVERFLOW - Predictions different - Value agrees
+             with both predictions"/>
   <int value="817"
       label="ADDRESS_HOME_LANDMARK - Predictions equal - Value agrees"/>
   <int value="818"
@@ -9457,38 +9539,91 @@ others/histograms.xml -->
   <int value="822"
       label="ADDRESS_HOME_LANDMARK - Predictions different - Value agrees
              with both predictions"/>
-  <int value="846"
-      label="ADDRESS_HOME_ADMIN_LEVEL2 - Predictions equal - Value agrees"/>
   <int value="847"
-      label="ADDRESS_HOME_ADMIN_LEVEL2 - Predictions equal - Value disagrees"/>
+      label="ADDRESS_HOME_ADMIN_LEVEL2 - Predictions equal - Value agrees"/>
   <int value="848"
-      label="ADDRESS_HOME_ADMIN_LEVEL2 - Predictions different - Value agrees
-             with old prediction"/>
+      label="ADDRESS_HOME_ADMIN_LEVEL2 - Predictions equal - Value disagrees"/>
   <int value="849"
       label="ADDRESS_HOME_ADMIN_LEVEL2 - Predictions different - Value agrees
-             with new prediction"/>
+             with old prediction"/>
   <int value="850"
       label="ADDRESS_HOME_ADMIN_LEVEL2 - Predictions different - Value agrees
-             with neither prediction"/>
+             with new prediction"/>
   <int value="851"
       label="ADDRESS_HOME_ADMIN_LEVEL2 - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="852"
+      label="ADDRESS_HOME_ADMIN_LEVEL2 - Predictions different - Value agrees
              with both predictions"/>
+  <int value="853"
+      label="ADDRESS_HOME_STREET_LOCATION - Predictions equal - Value agrees"/>
+  <int value="854"
+      label="ADDRESS_HOME_STREET_LOCATION - Predictions equal - Value
+             disagrees"/>
+  <int value="855"
+      label="ADDRESS_HOME_STREET_LOCATION - Predictions different - Value
+             agrees with old prediction"/>
+  <int value="856"
+      label="ADDRESS_HOME_STREET_LOCATION - Predictions different - Value
+             agrees with new prediction"/>
+  <int value="857"
+      label="ADDRESS_HOME_STREET_LOCATION - Predictions different - Value
+             agrees with neither prediction"/>
   <int value="858"
-      label="ADDRESS_HOME_BETWEEN_STREETS - Predictions equal - Value agrees"/>
+      label="ADDRESS_HOME_STREET_LOCATION - Predictions different - Value
+             agrees with both predictions"/>
   <int value="859"
+      label="ADDRESS_HOME_BETWEEN_STREETS - Predictions equal - Value agrees"/>
+  <int value="860"
       label="ADDRESS_HOME_BETWEEN_STREETS - Predictions equal - Value
              disagrees"/>
-  <int value="860"
-      label="ADDRESS_HOME_BETWEEN_STREETS - Predictions different - Value
-             agrees with old prediction"/>
   <int value="861"
       label="ADDRESS_HOME_BETWEEN_STREETS - Predictions different - Value
-             agrees with new prediction"/>
+             agrees with old prediction"/>
   <int value="862"
       label="ADDRESS_HOME_BETWEEN_STREETS - Predictions different - Value
-             agrees with neither prediction"/>
+             agrees with new prediction"/>
   <int value="863"
       label="ADDRESS_HOME_BETWEEN_STREETS - Predictions different - Value
+             agrees with neither prediction"/>
+  <int value="864"
+      label="ADDRESS_HOME_BETWEEN_STREETS - Predictions different - Value
+             agrees with both predictions"/>
+  <int value="907"
+      label="ADDRESS_HOME_BETWEEN_STREETS_1 - Predictions equal - Value
+             agrees"/>
+  <int value="908"
+      label="ADDRESS_HOME_BETWEEN_STREETS_1 - Predictions equal - Value
+             disagrees"/>
+  <int value="909"
+      label="ADDRESS_HOME_BETWEEN_STREETS_1 - Predictions different - Value
+             agrees with old prediction"/>
+  <int value="910"
+      label="ADDRESS_HOME_BETWEEN_STREETS_1 - Predictions different - Value
+             agrees with new prediction"/>
+  <int value="911"
+      label="ADDRESS_HOME_BETWEEN_STREETS_1 - Predictions different - Value
+             agrees with neither prediction"/>
+  <int value="912"
+      label="ADDRESS_HOME_BETWEEN_STREETS_1 - Predictions different - Value
+             agrees with both predictions"/>
+  <int value="913"
+      label="ADDRESS_HOME_BETWEEN_STREETS_2 - Predictions equal - Value
+             agrees"/>
+  <int value="914"
+      label="ADDRESS_HOME_BETWEEN_STREETS_2 - Predictions equal - Value
+             disagrees"/>
+  <int value="915"
+      label="ADDRESS_HOME_BETWEEN_STREETS_2 - Predictions different - Value
+             agrees with old prediction"/>
+  <int value="916"
+      label="ADDRESS_HOME_BETWEEN_STREETS_2 - Predictions different - Value
+             agrees with new prediction"/>
+  <int value="917"
+      label="ADDRESS_HOME_BETWEEN_STREETS_2 - Predictions different - Value
+             agrees with neither prediction"/>
+  <int value="918"
+      label="ADDRESS_HOME_BETWEEN_STREETS_2 - Predictions different - Value
              agrees with both predictions"/>
 </enum>
 
@@ -9671,6 +9806,9 @@ others/histograms.xml -->
 </enum>
 
 <enum name="AutofillServerFieldType">
+<!-- Generated from components/autofill/core/browser/field_types.h.
+Called by update_autofill_enums.py.-->
+
   <int value="0" label="NO_SERVER_DATA"/>
   <int value="1" label="UNKNOWN_TYPE"/>
   <int value="2" label="EMPTY_TYPE"/>
@@ -9783,9 +9921,14 @@ others/histograms.xml -->
   <int value="127" label="RESERVED"/>
   <int value="128" label="NUMERIC_QUANTITY"/>
   <int value="129" label="ONE_TIME_CODE"/>
+  <int value="133" label="DELIVERY_INSTRUCTIONS"/>
+  <int value="135" label="ADDRESS_HOME_OVERFLOW"/>
   <int value="136" label="ADDRESS_HOME_LANDMARK"/>
   <int value="141" label="ADDRESS_HOME_ADMIN_LEVEL2"/>
+  <int value="142" label="ADDRESS_HOME_STREET_LOCATION"/>
   <int value="143" label="ADDRESS_HOME_BETWEEN_STREETS"/>
+  <int value="151" label="ADDRESS_HOME_BETWEEN_STREETS_1"/>
+  <int value="152" label="ADDRESS_HOME_BETWEEN_STREETS_2"/>
 </enum>
 
 <enum name="AutofillServerPredictionAvailability">

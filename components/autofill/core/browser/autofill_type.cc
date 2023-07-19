@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
+#include "components/autofill/core/browser/field_types.h"
 
 namespace autofill {
 
@@ -63,7 +64,12 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case ADDRESS_HOME_FLOOR:
     case ADDRESS_HOME_LANDMARK:
     case ADDRESS_HOME_BETWEEN_STREETS:
+    case ADDRESS_HOME_BETWEEN_STREETS_1:
+    case ADDRESS_HOME_BETWEEN_STREETS_2:
     case ADDRESS_HOME_ADMIN_LEVEL2:
+    case ADDRESS_HOME_STREET_LOCATION:
+    case ADDRESS_HOME_OVERFLOW:
+    case DELIVERY_INSTRUCTIONS:
       return FieldTypeGroup::kAddressHome;
 
     case CREDIT_CARD_NAME_FULL:
