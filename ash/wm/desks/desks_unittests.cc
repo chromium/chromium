@@ -9359,11 +9359,52 @@ class DeskBarTest
     // Run the context menu command for closing a desk with all of its windows.
     auto* menu_controller =
         DesksTestApi::GetContextMenuForDesk(bar_type, index);
-    menu_controller->ExecuteCommand(
-        static_cast<int>(close_all
-                             ? DeskActionContextMenu::CommandId::kCloseAll
-                             : DeskActionContextMenu::CommandId::kCombineDesks),
-        /*event_flags=*/0);
+
+    const int command_id = static_cast<int>(
+        close_all ? DeskActionContextMenu::CommandId::kCloseAll
+                  : DeskActionContextMenu::CommandId::kCombineDesks);
+    if (bar_type == DeskBarViewBase::Type::kDeskButton &&
+        desks_bar_view->mini_views()[index]->desk()->is_active()) {
+      DeskSwitchAnimationWaiter waiter;
+      menu_controller->ExecuteCommand(command_id,
+                                      /*event_flags=*/0);
+      waiter.Wait();
+    } else {
+      menu_controller->ExecuteCommand(command_id,
+                                      /*event_flags=*/0);
+    }
+  }
+
+  // Closes the desk at `index` with the selected method, using the context menu
+  // if we are using touch gestures.
+  void CloseDeskWithButton(size_t index,
+                           bool close_all,
+                           aura::Window* root,
+                           DeskBarViewBase::Type bar_type) {
+    if (use_touch_gestures_) {
+      ExecuteContextMenuDeskActionForDesk(index, close_all, root, bar_type);
+    } else {
+      const auto* desk_bar_view = GetDeskBarView(root, bar_type);
+      ASSERT_LT(index, desk_bar_view->mini_views().size());
+      auto* target_mini_view = desk_bar_view->mini_views()[index];
+      auto* event_generator = GetEventGenerator();
+      event_generator->MoveMouseTo(
+          target_mini_view->desk_preview()->GetBoundsInScreen().CenterPoint());
+      auto* target_button =
+          close_all
+              ? target_mini_view->desk_action_view()->close_all_button()
+              : target_mini_view->desk_action_view()->combine_desks_button();
+      ASSERT_TRUE(target_button->GetVisible());
+
+      if (bar_type == DeskBarViewBase::Type::kDeskButton &&
+          target_mini_view->desk()->is_active()) {
+        DeskSwitchAnimationWaiter waiter;
+        ClickOnView(target_button, event_generator);
+        waiter.Wait();
+      } else {
+        ClickOnView(target_button, event_generator);
+      }
+    }
   }
 
   bool use_touch_gestures_;
@@ -10452,11 +10493,7 @@ TEST_P(DeskBarTest, DeskBarActionMetrics) {
     auto* desk_bar_view = GetDeskBarView(root_window, bar_type);
 
     // Add new desk.
-    ClickOrPressOnView(
-        enable_jellyroll_
-            ? static_cast<views::View*>(desk_bar_view->new_desk_button())
-            : static_cast<views::View*>(
-                  desk_bar_view->expanded_state_new_desk_button()));
+    ClickOrPressOnView(GetExpandedStateInnerNewDeskButton(desk_bar_view));
     histogram_tester.ExpectTotalCount(kDeskBarNewDeskHistogramName, 1);
 
     // Set desk name.
@@ -10478,45 +10515,16 @@ TEST_P(DeskBarTest, DeskBarActionMetrics) {
     histogram_tester.ExpectTotalCount(kDeskBarReorderDeskHistogramName, 1);
 
     // Close desk with windows.
-    if (use_touch_gestures_) {
-      ExecuteContextMenuDeskActionForDesk(1, /*close_all=*/true,
-                                          Shell::Get()->GetPrimaryRootWindow(),
-                                          bar_type);
-    } else {
-      auto* target_mini_view = mini_views[1];
-      event_generator->MoveMouseTo(
-          target_mini_view->desk_preview()->GetBoundsInScreen().CenterPoint());
-      auto* close_all_button =
-          target_mini_view->desk_action_view()->close_all_button();
-      ASSERT_TRUE(close_all_button->GetVisible());
-      ClickOnView(close_all_button, event_generator);
-    }
-
+    CloseDeskWithButton(/*index=*/1, /*close_all=*/true, root_window, bar_type);
     histogram_tester.ExpectTotalCount(kDeskBarCloseDeskHistogramName, 1);
 
     // Combine desks.
-    if (use_touch_gestures_) {
-      ExecuteContextMenuDeskActionForDesk(1, /*close_all=*/false,
-                                          Shell::Get()->GetPrimaryRootWindow(),
-                                          bar_type);
-    } else {
-      auto* target_mini_view = mini_views[1];
-      ASSERT_FALSE(target_mini_view->desk()->windows().empty());
-      event_generator->MoveMouseTo(
-          target_mini_view->desk_preview()->GetBoundsInScreen().CenterPoint());
-      EXPECT_TRUE(target_mini_view->desk_action_view()
-                      ->close_all_button()
-                      ->GetVisible());
-      auto* combine_desks_button =
-          target_mini_view->desk_action_view()->combine_desks_button();
-      ASSERT_TRUE(combine_desks_button->GetVisible());
-      ClickOnView(combine_desks_button, event_generator);
-    }
-
+    CloseDeskWithButton(/*index=*/1, /*close_all=*/false, root_window,
+                        bar_type);
     histogram_tester.ExpectTotalCount(kDeskBarCombineDesksHistogramName, 1);
 
     // Open library.
-    EnterLibrary(Shell::Get()->GetPrimaryRootWindow(), bar_type);
+    EnterLibrary(root_window, bar_type);
     histogram_tester.ExpectTotalCount(kDeskBarOpenLibraryHistogramName, 1);
   };
 
@@ -10529,6 +10537,96 @@ TEST_P(DeskBarTest, DeskBarActionMetrics) {
   desks_controller->SendToDeskAtIndex(window.window(), 3);
   EnterOverview();
   validate_actions(DeskBarViewBase::Type::kOverview);
+}
+
+// Tests that metrics are correctly separated for desk switches between the
+// overview desk bar and the desk button desk bar.
+TEST_P(DeskBarTest, DeskBarSwitchMetrics) {
+  NewDesk();
+  NewDesk();
+
+  base::HistogramTester histogram_tester;
+
+  // Create an app window on the first desk.
+  WindowHolder window(CreateAppWindow());
+  auto* desks_controller = DesksController::Get();
+  desks_controller->SendToDeskAtIndex(window.window(), 0);
+
+  OpenDeskBar();
+
+  DeskSwitchAnimationWaiter waiter;
+  ClickOrPressOnView(GetDeskBarView()->mini_views()[1]->desk_preview());
+  waiter.Wait();
+  ASSERT_TRUE(desks_controller->desks()[1]->is_active());
+  histogram_tester.ExpectBucketCount(
+      kDeskSwitchHistogramName,
+      bar_type_ == DeskBarViewBase::Type::kDeskButton
+          ? DesksSwitchSource::kDeskButtonMiniViewButton
+          : DesksSwitchSource::kMiniViewButton,
+      1);
+
+  OpenDeskBar();
+
+  auto* root_window = Shell::Get()->GetPrimaryRootWindow();
+  CloseDeskWithButton(/*index=*/1, /*close_all=*/true, root_window, bar_type_);
+  histogram_tester.ExpectBucketCount(
+      kDeskSwitchHistogramName,
+      bar_type_ == DeskBarViewBase::Type::kDeskButton
+          ? DesksSwitchSource::kDeskButtonDeskRemoved
+          : DesksSwitchSource::kDeskRemoved,
+      1);
+
+  OpenDeskBar();
+
+  CloseDeskWithButton(/*index=*/0, /*close_all=*/false, root_window, bar_type_);
+  histogram_tester.ExpectBucketCount(
+      kDeskSwitchHistogramName,
+      bar_type_ == DeskBarViewBase::Type::kDeskButton
+          ? DesksSwitchSource::kDeskButtonDeskRemoved
+          : DesksSwitchSource::kDeskRemoved,
+      2);
+}
+
+// Tests that metrics are correctly separated for desk creation and removal
+// between the overview desk bar and the desk button desk bar.
+TEST_P(DeskBarTest, DeskCreationRemovalMetrics) {
+  NewDesk();
+
+  base::HistogramTester histogram_tester;
+
+  WindowHolder window(CreateAppWindow());
+  auto* desks_controller = DesksController::Get();
+  desks_controller->SendToDeskAtIndex(window.window(), 0);
+
+  OpenDeskBar();
+  auto* desk_bar = GetDeskBarView();
+
+  ClickOrPressOnView(GetExpandedStateInnerNewDeskButton(desk_bar));
+  histogram_tester.ExpectBucketCount(
+      kNewDeskHistogramName,
+      bar_type_ == DeskBarViewBase::Type::kDeskButton
+          ? DesksCreationRemovalSource::kDeskButtonDeskBarButton
+          : DesksCreationRemovalSource::kButton,
+      1);
+
+  auto* root_window = Shell::Get()->GetPrimaryRootWindow();
+  CloseDeskWithButton(/*index=*/1, /*close_all=*/true, root_window, bar_type_);
+  histogram_tester.ExpectBucketCount(
+      kRemoveDeskHistogramName,
+      bar_type_ == DeskBarViewBase::Type::kDeskButton
+          ? DesksCreationRemovalSource::kDeskButtonDeskBarButton
+          : DesksCreationRemovalSource::kButton,
+      1);
+
+  OpenDeskBar();
+
+  CloseDeskWithButton(/*index=*/0, /*close_all=*/false, root_window, bar_type_);
+  histogram_tester.ExpectBucketCount(
+      kRemoveDeskHistogramName,
+      bar_type_ == DeskBarViewBase::Type::kDeskButton
+          ? DesksCreationRemovalSource::kDeskButtonDeskBarButton
+          : DesksCreationRemovalSource::kButton,
+      2);
 }
 
 namespace {

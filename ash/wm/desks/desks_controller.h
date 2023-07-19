@@ -429,10 +429,13 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
 
   // Removes `desk` without animation.
   // `close_type` determines how the desk will be closed. See `DeskCloseType`
-  // for more information on what each value does.
+  // for more information on what each value does. `desk_switched` indicates
+  // that the desk switch animation has already moved activation from the
+  // removing desk.
   void RemoveDeskInternal(const Desk* desk,
                           DesksCreationRemovalSource source,
-                          DeskCloseType close_type);
+                          DeskCloseType close_type,
+                          bool desk_switched);
 
   // Inserts the desk contained in `temporary_removed_desk_->desk()` back into
   // its original position of `temporary_removed_desk_->index()`. Activates the

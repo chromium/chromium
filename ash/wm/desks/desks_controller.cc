@@ -28,6 +28,7 @@
 #include "ash/wm/desks/desk_animation_impl.h"
 #include "ash/wm/desks/desk_bar_controller.h"
 #include "ash/wm/desks/desks_animations.h"
+#include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
@@ -89,7 +90,6 @@ unsigned int g_close_desk_toast_counter = 0;
 constexpr char kDesksCountHistogramName[] = "Ash.Desks.DesksCount3";
 constexpr char kWeeklyActiveDesksHistogramName[] =
     "Ash.Desks.WeeklyActiveDesks";
-constexpr char kRemoveDeskHistogramName[] = "Ash.Desks.RemoveDesk";
 constexpr char kMoveWindowFromActiveDeskHistogramName[] =
     "Ash.Desks.MoveWindowFromActiveDesk";
 constexpr char kCloseAllUndoHistogramName[] = "Ash.Desks.CloseAllUndo";
@@ -286,12 +286,13 @@ AccountId GetPrimaryUserAccountId() {
 class DesksController::RemovedDeskData {
  public:
   RemovedDeskData(std::unique_ptr<Desk> desk,
+                  bool was_active,
                   int index,
                   DesksCreationRemovalSource source,
                   DeskCloseType type)
       : toast_id_(base::StringPrintf("UndoCloseAllToast_%d",
                                      ++g_close_desk_toast_counter)),
-        was_active_(desk->is_active()),
+        was_active_(was_active),
         desk_(std::move(desk)),
         index_(index),
         is_toast_persistent_(Shell::Get()
@@ -595,9 +596,11 @@ void DesksController::NewDesk(DesksCreationRemovalSource source) {
   Desk* new_desk = desks_.back().get();
 
   // The new desk should have an empty name when the user creates a desk with
-  // the button. This is done to encourage them to rename their desks.
+  // a button. This is done to encourage them to rename their desks.
   const bool empty_name =
-      source == DesksCreationRemovalSource::kButton && desks_.size() > 1;
+      (source == DesksCreationRemovalSource::kButton ||
+       source == DesksCreationRemovalSource::kDeskButtonDeskBarButton) &&
+      desks_.size() > 1;
   if (!empty_name) {
     new_desk->SetName(GetDeskDefaultName(desks_.size() - 1),
                       /*set_by_user=*/false);
@@ -666,13 +669,22 @@ void DesksController::RemoveDesk(const Desk* desk,
         current_desk_index + ((current_desk_index > 0) ? -1 : 1);
     DCHECK_GE(target_desk_index, 0);
     DCHECK_LT(target_desk_index, static_cast<int>(desks_.size()));
+
+    // Collect metrics now because the `DeskRemovalAnimation` will skip the
+    // logging in `ActivateDesk` and go straight to `ActivateDeskInternal`.
+    base::UmaHistogramEnumeration(
+        kDeskSwitchHistogramName,
+        source == DesksCreationRemovalSource::kDeskButtonDeskBarButton
+            ? DesksSwitchSource::kDeskButtonDeskRemoved
+            : DesksSwitchSource::kDeskRemoved);
+
     animation_ = std::make_unique<DeskRemovalAnimation>(
         this, current_desk_index, target_desk_index, source, close_type);
     animation_->Launch();
     return;
   }
 
-  RemoveDeskInternal(desk, source, close_type);
+  RemoveDeskInternal(desk, source, close_type, /*desk_switched=*/false);
 }
 
 void DesksController::ReorderDesk(int old_index, int new_index) {
@@ -773,7 +785,8 @@ void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
   UMA_HISTOGRAM_ENUMERATION(kDeskSwitchHistogramName, source);
 
   const int target_desk_index = GetDeskIndex(desk);
-  if (source != DesksSwitchSource::kDeskRemoved) {
+  if (source != DesksSwitchSource::kDeskRemoved &&
+      source != DesksSwitchSource::kDeskButtonDeskRemoved) {
     // Desk removal has its own a11y alert.
     Shell::Get()
         ->accessibility_controller()
@@ -782,6 +795,7 @@ void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
   }
 
   if (source == DesksSwitchSource::kDeskRemoved ||
+      source == DesksSwitchSource::kDeskButtonDeskRemoved ||
       (source == DesksSwitchSource::kRemovalUndone && in_overview) ||
       is_user_switch) {
     // Desk switches due to desks removal, undoing the removal of an active desk
@@ -1702,7 +1716,8 @@ void DesksController::ActivateDeskInternal(const Desk* desk,
 
 void DesksController::RemoveDeskInternal(const Desk* desk,
                                          DesksCreationRemovalSource source,
-                                         DeskCloseType close_type) {
+                                         DeskCloseType close_type,
+                                         bool desk_switched) {
   MaybeCommitPendingDeskRemoval();
 
   DCHECK(CanRemoveDesks());
@@ -1742,8 +1757,10 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
   // `temporary_removed_desk_`. Otherwise, we may be resetting the wrong
   // removing desk GUID in restore data.
   CHECK(!temporary_removed_desk_);
-  auto temporary_removed_desk = std::make_unique<RemovedDeskData>(
-      std::move(*iter), removed_desk_index, source, close_type);
+  const bool desk_was_active = (*iter)->is_active() || desk_switched;
+  auto temporary_removed_desk =
+      std::make_unique<RemovedDeskData>(std::move(*iter), desk_was_active,
+                                        removed_desk_index, source, close_type);
   auto* temporary_removed_desk_ptr = temporary_removed_desk.get();
   Desk* removed_desk = temporary_removed_desk_ptr->desk();
 
@@ -1818,6 +1835,7 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
       // If we are not closing the app windows, then we move all windows to
       // `target_desk`.
       removed_desk->MoveWindowsToDesk(target_desk);
+      MaybeUpdateShelfItems({}, removed_desk_windows);
     } else if (in_overview) {
       // If we are closing the app windows, then we only need to move non-app
       // overview windows to `target_desk` if we are in overview.
@@ -1826,7 +1844,15 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
       removed_desk->MoveNonAppOverviewWindowsToDesk(target_desk);
     }
 
-    ActivateDesk(target_desk, DesksSwitchSource::kDeskRemoved);
+    // If the desk has already switched due to the `DeskRemovalAnimation` being
+    // run in `RemoveDesk`, we should not try to activate the desk again.
+    if (!desk_switched) {
+      ActivateDesk(
+          target_desk,
+          source == DesksCreationRemovalSource::kDeskButtonDeskBarButton
+              ? DesksSwitchSource::kDeskButtonDeskRemoved
+              : DesksSwitchSource::kDeskRemoved);
+    }
 
     // Desk activation should not change overview mode state.
     DCHECK_EQ(in_overview, overview_controller->InOverviewSession());
@@ -2269,8 +2295,12 @@ void DesksController::ReportClosedWindowsCountPerSourceHistogram(
     DesksCreationRemovalSource source,
     int windows_closed) const {
   const char* desk_removal_source_histogram = nullptr;
+
+  // TODO(b/285029311): We may want to create a new histogram for
+  // NumberOfWindowsClosed with `kDeskButtonDeskBarButton` separated out.
   switch (source) {
     case DesksCreationRemovalSource::kButton:
+    case DesksCreationRemovalSource::kDeskButtonDeskBarButton:
       desk_removal_source_histogram = kNumberOfWindowsClosedByButton;
       break;
     case DesksCreationRemovalSource::kKeyboard:

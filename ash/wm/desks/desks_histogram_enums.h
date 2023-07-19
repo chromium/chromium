@@ -11,6 +11,8 @@ namespace ash {
 // numeric values should never be reused. Please keep in sync with
 // DesksCreationRemovalSource in src/tools/metrics/histograms/enums.xml.
 enum class DesksCreationRemovalSource {
+  // TODO(b/291821991): Update this to reflect that there is now more than one
+  // way to use a button to create or remove a desk.
   kButton = 0,
   kKeyboard = 1,
   kDesksRestore = 2,
@@ -20,7 +22,8 @@ enum class DesksCreationRemovalSource {
   kApi = 6,
   kEnsureDefaultDesk = 7,
   kFloatingWorkspace = 8,
-  kMaxValue = kFloatingWorkspace,
+  kDeskButtonDeskBarButton = 9,
+  kMaxValue = kDeskButtonDeskBarButton,
 };
 
 // These values are logged to UMA. Entries should not be renumbered and
@@ -42,6 +45,8 @@ enum class DesksSwitchSource {
   kNewDeskShortcut = 0,
   kDeskRemoved = 1,
   kDeskSwitchShortcut = 2,
+  // TODO(b/291821991): Update this to reflect that this metric refers only to
+  // mini views in the overview desk bar.
   kMiniViewButton = 3,
   kWindowActivated = 4,
   kDeskSwitchTouchpad = 5,
@@ -53,11 +58,14 @@ enum class DesksSwitchSource {
   kApiSwitch = 11,
   kApiLaunch = 12,
   kDeskButtonSwitchButton = 13,
-  kMaxValue = kDeskButtonSwitchButton,
+  kDeskButtonDeskRemoved = 14,
+  kDeskButtonMiniViewButton = 15,
+  kMaxValue = kDeskButtonMiniViewButton,
 };
 
 constexpr char kNewDeskHistogramName[] = "Ash.Desks.NewDesk2";
 constexpr char kDeskSwitchHistogramName[] = "Ash.Desks.DesksSwitch";
+constexpr char kRemoveDeskHistogramName[] = "Ash.Desks.RemoveDesk";
 
 constexpr char kNumberOfCustomNamesHistogramName[] =
     "Ash.Desks.CustomNameCount";

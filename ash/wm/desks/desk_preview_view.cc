@@ -601,8 +601,11 @@ views::View* DeskPreviewView::GetView() {
 }
 
 void DeskPreviewView::MaybeActivateHighlightedView() {
-  DesksController::Get()->ActivateDesk(mini_view_->desk(),
-                                       DesksSwitchSource::kMiniViewButton);
+  DesksController::Get()->ActivateDesk(
+      mini_view_->desk(),
+      mini_view_->owner_bar()->type() == DeskBarViewBase::Type::kDeskButton
+          ? DesksSwitchSource::kDeskButtonMiniViewButton
+          : DesksSwitchSource::kMiniViewButton);
 }
 
 void DeskPreviewView::MaybeCloseHighlightedView(bool primary_action) {

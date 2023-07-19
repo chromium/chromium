@@ -430,8 +430,12 @@ void DeskMiniView::OnRemovingDesk(DeskCloseType close_type) {
 
   desk_action_view_->SetVisible(false);
 
-  controller->RemoveDesk(desk_, DesksCreationRemovalSource::kButton,
-                         close_type);
+  controller->RemoveDesk(
+      desk_,
+      owner_bar_->type() == DeskBarViewBase::Type::kDeskButton
+          ? DesksCreationRemovalSource::kDeskButtonDeskBarButton
+          : DesksCreationRemovalSource::kButton,
+      close_type);
 }
 
 void DeskMiniView::OnPreviewAboutToBeFocusedByReverseTab() {

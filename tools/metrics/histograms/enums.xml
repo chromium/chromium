@@ -27022,6 +27022,7 @@ Called by update_debug_scenarios.py.-->
   <int value="6" label="API invoked"/>
   <int value="7" label="Create a new desk to ensure the default desk exists"/>
   <int value="8" label="Desk Floating Workspace"/>
+  <int value="9" label="Button pressed on desk button desk bar"/>
 </enum>
 
 <enum name="DesksMoveWindowFromActiveDeskSource">
@@ -27048,6 +27049,12 @@ Called by update_debug_scenarios.py.-->
   <int value="12" label="Desk switch by invoking a launch desk API"/>
   <int value="13"
       label="Desk switch by pressing a desk switch button on the desks button"/>
+  <int value="14"
+      label="Desk switch by removing the active desk via the desk button desk
+             bar"/>
+  <int value="15"
+      label="Desk switch by clicking on a mini view in the desk button desk
+             bar"/>
 </enum>
 
 <enum name="DesktopCaptureCounters">

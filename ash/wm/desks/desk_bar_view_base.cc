@@ -532,9 +532,12 @@ DeskBarViewBase::DeskBarViewBase(aura::Window* root, Type type)
             l10n_util::GetStringUTF16(IDS_ASH_DESKS_NEW_DESK_BUTTON),
             cros_tokens::kCrosSysOnPrimary, cros_tokens::kCrosSysPrimary,
             /*initially_enabled=*/DesksController::Get()->CanCreateDesks(),
-            base::BindRepeating(&DeskBarViewBase::OnNewDeskButtonPressed,
-                                base::Unretained(this),
-                                DesksCreationRemovalSource::kButton)));
+            base::BindRepeating(
+                &DeskBarViewBase::OnNewDeskButtonPressed,
+                base::Unretained(this),
+                type_ == Type::kDeskButton
+                    ? DesksCreationRemovalSource::kDeskButtonDeskBarButton
+                    : DesksCreationRemovalSource::kButton)));
     new_desk_button_label_ =
         scroll_view_contents_->AddChildView(std::make_unique<views::Label>());
     new_desk_button_label_->SetPaintToLayer();
@@ -545,9 +548,12 @@ DeskBarViewBase::DeskBarViewBase(aura::Window* root, Type type)
             this, &kDesksNewDeskButtonIcon,
             l10n_util::GetStringUTF16(IDS_ASH_DESKS_NEW_DESK_BUTTON),
             /*initially_enabled=*/DesksController::Get()->CanCreateDesks(),
-            base::BindRepeating(&DeskBarViewBase::OnNewDeskButtonPressed,
-                                base::Unretained(this),
-                                DesksCreationRemovalSource::kButton)));
+            base::BindRepeating(
+                &DeskBarViewBase::OnNewDeskButtonPressed,
+                base::Unretained(this),
+                type_ == Type::kDeskButton
+                    ? DesksCreationRemovalSource::kDeskButtonDeskBarButton
+                    : DesksCreationRemovalSource::kButton)));
 
     zero_state_default_desk_button_ = scroll_view_contents_->AddChildView(
         std::make_unique<ZeroStateDefaultDeskButton>(this));
@@ -555,9 +561,12 @@ DeskBarViewBase::DeskBarViewBase(aura::Window* root, Type type)
         std::make_unique<ZeroStateIconButton>(
             this, &kDesksNewDeskButtonIcon,
             l10n_util::GetStringUTF16(IDS_ASH_DESKS_NEW_DESK_BUTTON),
-            base::BindRepeating(&DeskBarViewBase::OnNewDeskButtonPressed,
-                                base::Unretained(this),
-                                DesksCreationRemovalSource::kButton)));
+            base::BindRepeating(
+                &DeskBarViewBase::OnNewDeskButtonPressed,
+                base::Unretained(this),
+                type_ == Type::kDeskButton
+                    ? DesksCreationRemovalSource::kDeskButtonDeskBarButton
+                    : DesksCreationRemovalSource::kButton)));
   }
 
   if (saved_desk_util::IsSavedDesksEnabled()) {
@@ -1233,7 +1242,10 @@ void DeskBarViewBase::OnActivateDeskTimer(const base::Uuid& uuid) {
   auto* controller = DesksController::Get();
 
   if (Desk* desk = controller->GetDeskByUuid(uuid)) {
-    controller->ActivateDesk(desk, DesksSwitchSource::kMiniViewButton);
+    controller->ActivateDesk(desk,
+                             type_ == Type::kDeskButton
+                                 ? DesksSwitchSource::kDeskButtonMiniViewButton
+                                 : DesksSwitchSource::kMiniViewButton);
   }
 }
 

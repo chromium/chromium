@@ -367,7 +367,7 @@ void DeskRemovalAnimation::OnDeskSwitchAnimationFinishedInternal() {
   // are destroyed.
   controller_->RemoveDeskInternal(
       controller_->desks()[desk_to_remove_index_].get(), request_source_,
-      close_type_);
+      close_type_, /*desk_switched=*/true);
   MaybeRestoreSplitView(/*refresh_snapped_windows=*/true);
 }
 
