@@ -50,6 +50,8 @@ MediaItemUICastFooterView::MediaItemUICastFooterView(
   stop_casting_button_->SetBackground(views::CreateThemedRoundedRectBackground(
       media_color_theme.error_container_color_id, kButtonHeight / 2));
   stop_casting_button_->SetFocusRingCornerRadius(kButtonHeight / 2);
+  views::FocusRing::Get(stop_casting_button_)
+      ->SetColorId(media_color_theme.focus_ring_color_id);
 
   layout->SetFlexForView(stop_casting_button_, 1);
 }

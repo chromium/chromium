@@ -27,6 +27,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaSquigglyProgressView
   explicit MediaSquigglyProgressView(
       ui::ColorId foreground_color_id,
       ui::ColorId background_color_id,
+      ui::ColorId focus_ring_color_id,
       base::RepeatingCallback<void(double)> seek_callback);
   MediaSquigglyProgressView(const MediaSquigglyProgressView&) = delete;
   MediaSquigglyProgressView& operator=(const MediaSquigglyProgressView&) =
@@ -38,10 +39,14 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaSquigglyProgressView
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
   void VisibilityChanged(View* starting_from, bool is_visible) override;
   void AddedToWidget() override;
   void OnPaint(gfx::Canvas* canvas) override;
+  void OnFocus() override;
+  void OnBlur() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
+  bool OnKeyPressed(const ui::KeyEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
 
   // Updates the progress in UI given the new media position.
@@ -59,16 +64,24 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaSquigglyProgressView
   // Handles the event when user seeks for a new media position.
   void HandleSeeking(const gfx::Point& location);
 
+  // Returns the new current progress value given the new media position.
+  double CalculateNewValue(base::TimeDelta new_position);
+
   // Returns whether the given seek position is valid to be handled.
   bool IsValidSeekPosition(int x, int y);
 
   // Init parameters.
   ui::ColorId foreground_color_id_;
   ui::ColorId background_color_id_;
+  ui::ColorId focus_ring_color_id_;
   const base::RepeatingCallback<void(double)> seek_callback_;
 
   // Current progress value in the range from 0.0 to 1.0.
   double current_value_ = 0.0;
+
+  // Current media position and media duration.
+  base::TimeDelta current_position_;
+  base::TimeDelta media_duration_ = base::TimeDelta::Max();
 
   // Fraction of the progress amplitude used for progress path to transition
   // between squiggly and straight lines.

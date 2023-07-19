@@ -27,6 +27,10 @@ class MediaNotificationItem;
 class MediaSquigglyProgressView;
 }  // namespace media_message_center
 
+namespace ui {
+struct AXNodeData;
+}  // namespace ui
+
 namespace global_media_controls {
 
 namespace {
@@ -81,6 +85,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaNotificationViewAshImpl
 
   // views::View:
   void AddedToWidget() override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // Helper functions for testing:
   views::ImageView* GetArtworkViewForTesting();

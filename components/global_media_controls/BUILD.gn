@@ -31,6 +31,8 @@ component("global_media_controls") {
     "//media",
     "//media/remoting:remoting_constants",
     "//skia",
+    "//ui/accessibility:ax_base",
+    "//ui/accessibility:ax_enums_mojo",
     "//ui/color",
     "//ui/message_center/public/cpp",
   ]

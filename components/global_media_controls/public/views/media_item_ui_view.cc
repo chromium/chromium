@@ -53,7 +53,7 @@ constexpr int kCrOSDismissButtonIconSize = 12;
 constexpr gfx::Size kModernDismissButtonSize = gfx::Size(14, 14);
 constexpr int kModernDismissButtonIconSize = 10;
 constexpr gfx::Insets kSwipeableContainerInsets =
-    gfx::Insets::TLBR(0, 16, 8, 16);
+    gfx::Insets::TLBR(4, 16, 8, 16);
 
 // The minimum number of enabled and visible user actions such that we should
 // force the MediaNotificationView to be expanded.
@@ -97,7 +97,6 @@ MediaItemUIView::MediaItemUIView(
       views::BoxLayout::Orientation::kVertical));
   SetPreferredSize(kNormalSize);
   SetNotifyEnterExitOnChild(true);
-  SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   SetTooltipText(
       l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_BACK_TO_TAB));
 
@@ -133,12 +132,18 @@ MediaItemUIView::MediaItemUIView(
       device_selector_view->SetMediaItemUIView(this);
       device_selector_view_ = device_selector_view.get();
     }
+
+    // Focus behavior will be set inside MediaNotificationViewAshImpl.
+    SetFocusBehavior(views::View::FocusBehavior::NEVER);
+
     view_ = swipeable_container_->AddChildView(
         std::make_unique<MediaNotificationViewAshImpl>(
             this, std::move(item), std::move(footer_view),
             std::move(device_selector_view), media_color_theme.value(),
             media_display_page.value()));
   } else {
+    SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+
     gfx::Size dismiss_button_size =
         has_notification_theme_ ? kCrOSDismissButtonSize : kDismissButtonSize;
     if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI)) {
