@@ -181,11 +181,24 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   CreateDirectoryHandle(const BindingContext& context,
                         const storage::FileSystemURL& url,
                         const SharedHandleState& handle_state);
-  // Attempts to take a lock on `url`. The lock is released when the returned
-  // object is destroyed.
+
+  // Attempts to take a lock of `lock_type` on `url`. Returns the lock if
+  // successful. The lock is released when the returned object is destroyed.
   scoped_refptr<FileSystemAccessLockManager::Lock> TakeLock(
       const storage::FileSystemURL& url,
       FileSystemAccessLockManager::LockType lock_type);
+
+  // Creates a new shared lock type.
+  [[nodiscard]] FileSystemAccessLockManager::LockType CreateSharedLockType()
+      const;
+
+  // Gets the exclusive lock type.
+  [[nodiscard]] FileSystemAccessLockManager::LockType GetExclusiveLockType()
+      const;
+
+  // Gets the `ancestor_lock_type_` for testing.
+  [[nodiscard]] FileSystemAccessLockManager::LockType
+  GetAncestorLockTypeForTesting() const;
 
   // Creates a new FileSystemAccessFileWriterImpl for a given target and
   // swap file URLs. Assumes the passed in URLs are valid and represent files.

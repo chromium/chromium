@@ -50,9 +50,8 @@ FileSystemAccessFileWriterImpl::FileSystemAccessFileWriterImpl(
       auto_close_(auto_close) {
   CHECK_EQ(swap_url.type(), url.type());
   // TODO(https://crbug.com/1382215): Support exclusively-locked writers.
-  CHECK_EQ(lock_->type(), FileSystemAccessLockManager::LockType::kShared);
-  CHECK_EQ(swap_lock_->type(),
-           FileSystemAccessLockManager::LockType::kExclusive);
+  CHECK(!lock_->IsExclusive());
+  CHECK(swap_lock_->IsExclusive());
 
   receiver_.set_disconnect_handler(base::BindOnce(
       &FileSystemAccessFileWriterImpl::OnDisconnect, base::Unretained(this)));

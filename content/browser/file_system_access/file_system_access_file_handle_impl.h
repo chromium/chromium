@@ -12,6 +12,7 @@
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "content/browser/file_system_access/file_system_access_handle_base.h"
+#include "content/browser/file_system_access/file_system_access_lock_manager.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -181,6 +182,10 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
   absl::optional<base::File::Error> swap_file_clone_result_for_testing_ =
       absl::nullopt;
 #endif  // BUILDFLAG(IS_MAC)
+
+  // The shared lock type for WritableFileStream's default `siloed` mode.
+  FileSystemAccessLockManager::LockType wfs_siloed_lock_type_ =
+      manager()->CreateSharedLockType();
 
   base::WeakPtr<FileSystemAccessHandleBase> AsWeakPtr() override;
 

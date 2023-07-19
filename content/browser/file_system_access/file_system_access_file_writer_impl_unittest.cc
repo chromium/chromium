@@ -149,28 +149,15 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
         file_system_context_, chrome_blob_context_,
         /*permission_context=*/permission_context(),
         /*off_the_record=*/false);
+    writable_shared_lock_type_ = manager_->CreateSharedLockType();
 
     quarantine_callback_ = base::BindLambdaForTesting(
         [&](mojo::PendingReceiver<quarantine::mojom::Quarantine> receiver) {
           quarantine_receivers_.Add(&quarantine_, std::move(receiver));
         });
 
-    auto lock = manager_->TakeLock(
-        test_file_url_, FileSystemAccessLockManager::LockType::kShared);
-    ASSERT_TRUE(lock);
-    auto swap_lock = manager_->TakeLock(
-        test_swap_url_, FileSystemAccessLockManager::LockType::kExclusive);
-    ASSERT_TRUE(swap_lock);
-
-    handle_ = manager_->CreateFileWriter(
-        FileSystemAccessManagerImpl::BindingContext(kTestStorageKey, kTestURL,
-                                                    kFrameId),
-        test_file_url_, test_swap_url_, std::move(lock), std::move(swap_lock),
-        FileSystemAccessManagerImpl::SharedHandleState(permission_grant_,
-                                                       permission_grant_),
-        remote_.InitWithNewPipeAndPassReceiver(),
-        /*has_transient_user_activation=*/false,
-        /*auto_close=*/false, quarantine_callback_);
+    handle_ = CreateWritable(test_file_url_, test_swap_url_, remote_);
+    ASSERT_TRUE(handle_);
   }
 
   void TearDown() override {
@@ -178,6 +165,31 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
 
     task_environment_.RunUntilIdle();
     EXPECT_TRUE(dir_.Delete());
+  }
+
+  base::WeakPtr<FileSystemAccessFileWriterImpl> CreateWritable(
+      const FileSystemURL& file_url,
+      const FileSystemURL& swap_url,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>& remote) {
+    auto lock = manager_->TakeLock(file_url, writable_shared_lock_type_);
+    if (!lock) {
+      return nullptr;
+    }
+    auto swap_lock =
+        manager_->TakeLock(swap_url, manager_->GetExclusiveLockType());
+    if (!swap_lock) {
+      return nullptr;
+    }
+
+    return manager_->CreateFileWriter(
+        FileSystemAccessManagerImpl::BindingContext(kTestStorageKey, kTestURL,
+                                                    kFrameId),
+        file_url, swap_url, std::move(lock), std::move(swap_lock),
+        FileSystemAccessManagerImpl::SharedHandleState(permission_grant_,
+                                                       permission_grant_),
+        remote.InitWithNewPipeAndPassReceiver(),
+        /*has_transient_user_activation=*/false,
+        /*auto_close=*/false, quarantine_callback_);
   }
 
   mojo::ScopedDataPipeConsumerHandle CreateStream(const std::string& contents) {
@@ -294,6 +306,8 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
 
   mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter> remote_;
   base::WeakPtr<FileSystemAccessFileWriterImpl> handle_;
+
+  FileSystemAccessLockManager::LockType writable_shared_lock_type_;
 };
 
 TEST_F(FileSystemAccessFileWriterImplTest, WriteValidEmptyString) {
@@ -596,23 +610,9 @@ TEST_F(FileSystemAccessFileWriterAfterWriteChecksTest,
             storage::AsyncFileTestHelper::CreateFile(file_system_context_.get(),
                                                      test_swap_url_));
 
-  auto lock = manager_->TakeLock(
-      test_file_url_, FileSystemAccessLockManager::LockType::kShared);
-  ASSERT_TRUE(lock);
-  auto swap_lock = manager_->TakeLock(
-      test_swap_url_, FileSystemAccessLockManager::LockType::kExclusive);
-  ASSERT_TRUE(swap_lock);
-
   mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter> remote;
-  handle_ = manager_->CreateFileWriter(
-      FileSystemAccessManagerImpl::BindingContext(kTestStorageKey, kTestURL,
-                                                  kFrameId),
-      test_file_url_, test_swap_url_, std::move(lock), std::move(swap_lock),
-      FileSystemAccessManagerImpl::SharedHandleState(permission_grant_,
-                                                     permission_grant_),
-      remote.InitWithNewPipeAndPassReceiver(),
-      /*has_transient_user_activation=*/false,
-      /*auto_close=*/false, quarantine_callback_);
+  handle_ = CreateWritable(test_file_url_, test_swap_url_, remote);
+  ASSERT_TRUE(handle_);
 
   uint64_t bytes_written;
   FileSystemAccessStatus result = WriteSync(0, "foo", &bytes_written);

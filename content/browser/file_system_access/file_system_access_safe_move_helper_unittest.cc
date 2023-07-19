@@ -19,7 +19,6 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "content/browser/file_system_access/features.h"
-#include "content/browser/file_system_access/file_system_access_lock_manager.h"
 #include "content/browser/file_system_access/file_system_access_safe_move_helper.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/browser/file_system_access/mock_file_system_access_permission_context.h"
@@ -158,9 +157,6 @@ class FileSystemAccessSafeMoveHelperTest : public testing::Test {
         [&](mojo::PendingReceiver<quarantine::mojom::Quarantine> receiver) {
           quarantine_receivers_.Add(&quarantine_, std::move(receiver));
         });
-
-    ASSERT_TRUE(manager_->TakeLock(
-        test_dest_url_, FileSystemAccessLockManager::LockType::kShared));
 
     InitializeHelperWithUrls(test_source_url_, test_dest_url_);
   }

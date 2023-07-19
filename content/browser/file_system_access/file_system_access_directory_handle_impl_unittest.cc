@@ -367,6 +367,9 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, RemoveEntry) {
 
   auto handle = GetHandleWithPermissions(dir, /*read=*/true, /*write=*/true);
 
+  LockType exclusive_lock_type = manager_->GetExclusiveLockType();
+  LockType shared_lock_type = manager_->CreateSharedLockType();
+
   // Calling removeEntry() on an unlocked file should succeed.
   {
     base::CreateTemporaryFileInDir(dir, &file);
@@ -381,17 +384,17 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, RemoveEntry) {
     EXPECT_FALSE(base::PathExists(file));
     // The lock acquired during the operation should be released by the time the
     // callback runs.
-    EXPECT_TRUE(manager_->TakeLock(file_url, LockType::kExclusive));
+    EXPECT_TRUE(manager_->TakeLock(file_url, exclusive_lock_type));
   }
 
-  // Acquire an exclusive lock on a file before removing to similate when the
+  // Acquire an exclusive lock on a file before removing to simulate when the
   // file has an open access handle. This should fail.
   {
     base::CreateTemporaryFileInDir(dir, &file);
     auto base_name = storage::FilePathToString(file.BaseName());
     EXPECT_EQ(handle->GetChildURL(base_name, &file_url)->file_error,
               base::File::Error::FILE_OK);
-    auto lock = manager_->TakeLock(file_url, LockType::kExclusive);
+    auto lock = manager_->TakeLock(file_url, exclusive_lock_type);
     EXPECT_TRUE(lock);
 
     base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
@@ -410,9 +413,9 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, RemoveEntry) {
     auto base_name = storage::FilePathToString(file.BaseName());
     EXPECT_EQ(handle->GetChildURL(base_name, &file_url)->file_error,
               base::File::Error::FILE_OK);
-    auto lock = manager_->TakeLock(file_url, LockType::kShared);
+    auto lock = manager_->TakeLock(file_url, shared_lock_type);
     ASSERT_TRUE(lock);
-    EXPECT_TRUE(lock->type() == LockType::kShared);
+    EXPECT_TRUE(lock->type() == shared_lock_type);
 
     base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
     handle->RemoveEntry(base_name,

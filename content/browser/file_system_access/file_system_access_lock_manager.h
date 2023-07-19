@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/types/id_type.h"
 #include "base/types/pass_key.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/common/content_export.h"
@@ -32,14 +33,6 @@ class FileSystemAccessManagerImpl;
 class CONTENT_EXPORT FileSystemAccessLockManager {
  public:
   using PassKey = base::PassKey<FileSystemAccessLockManager>;
-
-  enum class LockType {
-    // An exclusive lock prevents the taking of any new lock.
-    kExclusive,
-    // A shared lock prevents the taking of new exclusive locks, while allowing
-    // the taking of shared ones.
-    kShared
-  };
 
   enum class EntryPathType {
     // A path on the local file system. Files with these paths can be operated
@@ -73,6 +66,10 @@ class CONTENT_EXPORT FileSystemAccessLockManager {
     const absl::optional<storage::BucketLocator> bucket_locator;
   };
 
+  // This type represents a locking type used to prevent other locking types
+  // from acquiring a lock.
+  using LockType = base::IdType32<class LockTypeTag>;
+
   // This class represents an active lock on an entry locator. The lock is
   // released on destruction.
   class CONTENT_EXPORT Lock : public base::RefCounted<Lock> {
@@ -88,6 +85,8 @@ class CONTENT_EXPORT FileSystemAccessLockManager {
 
     const LockType& type() const { return type_; }
 
+    bool IsExclusive() const;
+
    private:
     friend class base::RefCounted<Lock>;
     // The lock is released on destruction.
@@ -101,7 +100,7 @@ class CONTENT_EXPORT FileSystemAccessLockManager {
         GUARDED_BY_CONTEXT(sequence_checker_);
 
     // Locator of the file or directory associated with this lock. It is used to
-    // unlock the exclusive lock on closure/destruction.
+    // unlock the lock on closure/destruction.
     const EntryLocator entry_locator_;
 
     const LockType type_;
@@ -122,9 +121,19 @@ class CONTENT_EXPORT FileSystemAccessLockManager {
   FileSystemAccessLockManager& operator=(FileSystemAccessLockManager const&) =
       delete;
 
-  // Attempts to take a lock on `url`. Returns the lock if successful.
+  // Attempts to take a lock of `lock_type` on `url`. Returns the lock if
+  // successful. The lock is released when the returned object is destroyed.
   scoped_refptr<Lock> TakeLock(const storage::FileSystemURL& url,
                                LockType lock_type);
+
+  // Creates a new shared lock type.
+  [[nodiscard]] LockType CreateSharedLockType();
+
+  // Gets the exclusive lock type.
+  [[nodiscard]] LockType GetExclusiveLockType();
+
+  // Gets the `ancestor_lock_type_` for testing.
+  [[nodiscard]] LockType GetAncestorLockTypeForTesting();
 
  private:
   scoped_refptr<Lock> TakeLockImpl(const EntryLocator& entry_locator,
@@ -136,6 +145,14 @@ class CONTENT_EXPORT FileSystemAccessLockManager {
   SEQUENCE_CHECKER(sequence_checker_);
 
   std::map<EntryLocator, Lock*> locks_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  LockType::Generator lock_type_generator_;
+
+  LockType exclusive_lock_type_ = lock_type_generator_.GenerateNextId();
+
+  // The shared lock type that the lock manager uses to lock ancestors of locked
+  // entry locators. Should not be used outside of the lock manager or testing.
+  LockType ancestor_lock_type_ = lock_type_generator_.GenerateNextId();
 
   base::WeakPtrFactory<FileSystemAccessLockManager> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};

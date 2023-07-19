@@ -64,60 +64,63 @@ class FileSystemAccessLockManagerTest : public testing::Test {
 
   void AssertAncestorLockBehavior(const FileSystemURL& parent_url,
                                   const FileSystemURL& child_url) {
-    // Parent cannot take exclusive lock if child is exclusively locked.
+    LockType exclusive_lock_type = manager_->GetExclusiveLockType();
+    LockType ancestor_lock_type = manager_->GetAncestorLockTypeForTesting();
+    LockType shared_lock_type = manager_->CreateSharedLockType();
+    // Parent cannot take an exclusive lock if child holds an exclusive lock.
     {
-      auto child_lock = manager_->TakeLock(child_url, LockType::kExclusive);
+      auto child_lock = manager_->TakeLock(child_url, exclusive_lock_type);
       ASSERT_TRUE(child_lock);
-      ASSERT_FALSE(manager_->TakeLock(parent_url, LockType::kExclusive));
+      ASSERT_FALSE(manager_->TakeLock(parent_url, exclusive_lock_type));
     }
 
-    // Parent can take shared lock if child is exclusively locked.
+    // Parent can take an ancestor lock if child holds an exclusive lock.
     {
-      auto child_lock = manager_->TakeLock(child_url, LockType::kExclusive);
+      auto child_lock = manager_->TakeLock(child_url, exclusive_lock_type);
       ASSERT_TRUE(child_lock);
-      ASSERT_TRUE(manager_->TakeLock(parent_url, LockType::kShared));
+      ASSERT_TRUE(manager_->TakeLock(parent_url, ancestor_lock_type));
     }
 
-    // Child cannot take exclusive lock if parent is exclusively locked.
+    // Child cannot take an exclusive lock if parent holds an exclusive lock.
     {
-      auto parent_lock = manager_->TakeLock(parent_url, LockType::kExclusive);
+      auto parent_lock = manager_->TakeLock(parent_url, exclusive_lock_type);
       ASSERT_TRUE(parent_lock);
-      ASSERT_FALSE(manager_->TakeLock(child_url, LockType::kExclusive));
+      ASSERT_FALSE(manager_->TakeLock(child_url, exclusive_lock_type));
     }
 
-    // Child cannot take shared lock if parent is exclusively locked.
+    // Child can take an exclusive lock if parent holds an ancestor lock.
     {
-      auto parent_lock = manager_->TakeLock(parent_url, LockType::kExclusive);
+      auto parent_lock = manager_->TakeLock(parent_url, ancestor_lock_type);
       ASSERT_TRUE(parent_lock);
-      ASSERT_FALSE(manager_->TakeLock(child_url, LockType::kShared));
+      ASSERT_TRUE(manager_->TakeLock(child_url, exclusive_lock_type));
     }
 
-    // Parent cannot take exclusive lock if child holds a shared lock.
+    // Parent cannot take an exclusive lock if child holds a shared lock.
     {
-      auto child_lock = manager_->TakeLock(child_url, LockType::kShared);
+      auto child_lock = manager_->TakeLock(child_url, shared_lock_type);
       ASSERT_TRUE(child_lock);
-      ASSERT_FALSE(manager_->TakeLock(parent_url, LockType::kExclusive));
+      ASSERT_FALSE(manager_->TakeLock(parent_url, exclusive_lock_type));
     }
 
-    // Parent can take shared lock if child holds a shared lock.
+    // Parent can take an ancestor lock if child holds a shared lock.
     {
-      auto child_lock = manager_->TakeLock(child_url, LockType::kShared);
+      auto child_lock = manager_->TakeLock(child_url, shared_lock_type);
       ASSERT_TRUE(child_lock);
-      ASSERT_TRUE(manager_->TakeLock(parent_url, LockType::kShared));
+      ASSERT_TRUE(manager_->TakeLock(parent_url, ancestor_lock_type));
     }
 
-    // Child can take exclusive lock if parent holds a shared lock.
+    // Child cannot take a shared lock if parent holds an exclusive lock.
     {
-      auto parent_lock = manager_->TakeLock(parent_url, LockType::kShared);
+      auto parent_lock = manager_->TakeLock(parent_url, exclusive_lock_type);
       ASSERT_TRUE(parent_lock);
-      ASSERT_TRUE(manager_->TakeLock(child_url, LockType::kExclusive));
+      ASSERT_FALSE(manager_->TakeLock(child_url, shared_lock_type));
     }
 
-    // Child can take shared lock if parent holds a shared lock.
+    // Child can take a shared lock if parent holds an ancestor lock.
     {
-      auto parent_lock = manager_->TakeLock(parent_url, LockType::kShared);
+      auto parent_lock = manager_->TakeLock(parent_url, ancestor_lock_type);
       ASSERT_TRUE(parent_lock);
-      ASSERT_TRUE(manager_->TakeLock(child_url, LockType::kShared));
+      ASSERT_TRUE(manager_->TakeLock(child_url, shared_lock_type));
     }
   }
 
@@ -143,18 +146,20 @@ TEST_F(FileSystemAccessLockManagerTest, ExclusiveLock) {
   auto url = manager_->CreateFileSystemURLFromPath(
       FileSystemAccessEntryFactory::PathType::kLocal, path);
 
+  LockType exclusive_lock_type = manager_->GetExclusiveLockType();
+  LockType shared_lock_type = manager_->CreateSharedLockType();
   {
-    auto exclusive_lock = manager_->TakeLock(url, LockType::kExclusive);
+    auto exclusive_lock = manager_->TakeLock(url, exclusive_lock_type);
     ASSERT_TRUE(exclusive_lock);
 
     // Cannot take another lock while the file is exclusively locked.
-    ASSERT_FALSE(manager_->TakeLock(url, LockType::kExclusive));
-    ASSERT_FALSE(manager_->TakeLock(url, LockType::kShared));
+    ASSERT_FALSE(manager_->TakeLock(url, exclusive_lock_type));
+    ASSERT_FALSE(manager_->TakeLock(url, shared_lock_type));
   }
 
   // The exclusive lock has been released and should be available to be
   // re-acquired.
-  ASSERT_TRUE(manager_->TakeLock(url, LockType::kExclusive));
+  ASSERT_TRUE(manager_->TakeLock(url, exclusive_lock_type));
 }
 
 TEST_F(FileSystemAccessLockManagerTest, SharedLock) {
@@ -162,18 +167,23 @@ TEST_F(FileSystemAccessLockManagerTest, SharedLock) {
   auto url = manager_->CreateFileSystemURLFromPath(
       FileSystemAccessEntryFactory::PathType::kLocal, path);
 
+  LockType exclusive_lock_type = manager_->GetExclusiveLockType();
+  LockType shared_lock_type_1 = manager_->CreateSharedLockType();
+  LockType shared_lock_type_2 = manager_->CreateSharedLockType();
   {
-    auto shared_lock = manager_->TakeLock(url, LockType::kShared);
+    auto shared_lock = manager_->TakeLock(url, shared_lock_type_1);
     ASSERT_TRUE(shared_lock);
 
-    // Can take another shared lock, but not an exclusive lock.
-    ASSERT_TRUE(manager_->TakeLock(url, LockType::kShared));
-    ASSERT_FALSE(manager_->TakeLock(url, LockType::kExclusive));
+    // Can take another shared lock of the same type, but not an exclusive lock
+    // or a shared lock of another type.
+    ASSERT_TRUE(manager_->TakeLock(url, shared_lock_type_1));
+    ASSERT_FALSE(manager_->TakeLock(url, exclusive_lock_type));
+    ASSERT_FALSE(manager_->TakeLock(url, shared_lock_type_2));
   }
 
   // The shared locks have been released and we should be available to acquire
   // an exclusive lock.
-  ASSERT_TRUE(manager_->TakeLock(url, LockType::kExclusive));
+  ASSERT_TRUE(manager_->TakeLock(url, exclusive_lock_type));
 }
 
 TEST_F(FileSystemAccessLockManagerTest, SandboxedFile) {
@@ -182,18 +192,20 @@ TEST_F(FileSystemAccessLockManagerTest, SandboxedFile) {
       base::FilePath::FromUTF8Unsafe("test/foo/bar"));
   url.SetBucket(kTestBucketLocator);
 
+  LockType exclusive_lock_type = manager_->GetExclusiveLockType();
+  LockType shared_lock_type = manager_->CreateSharedLockType();
   {
-    auto exclusive_lock = manager_->TakeLock(url, LockType::kExclusive);
+    auto exclusive_lock = manager_->TakeLock(url, exclusive_lock_type);
     ASSERT_TRUE(exclusive_lock);
 
     // Cannot take another lock while the file is exclusively locked.
-    ASSERT_FALSE(manager_->TakeLock(url, LockType::kExclusive));
-    ASSERT_FALSE(manager_->TakeLock(url, LockType::kShared));
+    ASSERT_FALSE(manager_->TakeLock(url, exclusive_lock_type));
+    ASSERT_FALSE(manager_->TakeLock(url, shared_lock_type));
   }
 
   // The exclusive lock has been released and should be available to be
   // re-acquired.
-  ASSERT_TRUE(manager_->TakeLock(url, LockType::kExclusive));
+  ASSERT_TRUE(manager_->TakeLock(url, exclusive_lock_type));
 }
 
 TEST_F(FileSystemAccessLockManagerTest, SandboxedFilesSamePath) {
@@ -213,15 +225,17 @@ TEST_F(FileSystemAccessLockManagerTest, SandboxedFilesSamePath) {
       /*is_default=*/false);
   url2.SetBucket(kOtherBucketLocator);
 
+  LockType exclusive_lock_type = manager_->GetExclusiveLockType();
+
   // Take a lock on the file in the first file system.
-  auto exclusive_lock1 = manager_->TakeLock(url1, LockType::kExclusive);
+  auto exclusive_lock1 = manager_->TakeLock(url1, exclusive_lock_type);
   ASSERT_TRUE(exclusive_lock1);
-  ASSERT_FALSE(manager_->TakeLock(url1, LockType::kExclusive));
+  ASSERT_FALSE(manager_->TakeLock(url1, exclusive_lock_type));
 
   // Can still take a lock on the file in the second file system.
-  auto exclusive_lock2 = manager_->TakeLock(url2, LockType::kExclusive);
+  auto exclusive_lock2 = manager_->TakeLock(url2, exclusive_lock_type);
   ASSERT_TRUE(exclusive_lock2);
-  ASSERT_FALSE(manager_->TakeLock(url2, LockType::kExclusive));
+  ASSERT_FALSE(manager_->TakeLock(url2, exclusive_lock_type));
 }
 
 TEST_F(FileSystemAccessLockManagerTest, SandboxedFilesDifferentBucket) {
@@ -238,15 +252,17 @@ TEST_F(FileSystemAccessLockManagerTest, SandboxedFilesDifferentBucket) {
       /*is_default=*/false);
   url2.SetBucket(kOtherBucketLocator);
 
+  LockType exclusive_lock_type = manager_->GetExclusiveLockType();
+
   // Take a lock on the file in the first file system.
-  auto exclusive_lock1 = manager_->TakeLock(url1, LockType::kExclusive);
+  auto exclusive_lock1 = manager_->TakeLock(url1, exclusive_lock_type);
   ASSERT_TRUE(exclusive_lock1);
-  ASSERT_FALSE(manager_->TakeLock(url1, LockType::kExclusive));
+  ASSERT_FALSE(manager_->TakeLock(url1, exclusive_lock_type));
 
   // Can still take a lock on the file in the second file system.
-  auto exclusive_lock2 = manager_->TakeLock(url2, LockType::kExclusive);
+  auto exclusive_lock2 = manager_->TakeLock(url2, exclusive_lock_type);
   ASSERT_TRUE(exclusive_lock2);
-  ASSERT_FALSE(manager_->TakeLock(url2, LockType::kExclusive));
+  ASSERT_FALSE(manager_->TakeLock(url2, exclusive_lock_type));
 }
 
 TEST_F(FileSystemAccessLockManagerTest, DifferentBackends) {
@@ -264,17 +280,19 @@ TEST_F(FileSystemAccessLockManagerTest, DifferentBackends) {
 
   EXPECT_EQ(local_url.path(), external_url.virtual_path());
 
+  LockType exclusive_lock_type = manager_->GetExclusiveLockType();
+
   // Take a lock on the file in the local file system.
   auto local_exclusive_lock =
-      manager_->TakeLock(local_url, LockType::kExclusive);
+      manager_->TakeLock(local_url, exclusive_lock_type);
   ASSERT_TRUE(local_exclusive_lock);
-  ASSERT_FALSE(manager_->TakeLock(local_url, LockType::kExclusive));
+  ASSERT_FALSE(manager_->TakeLock(local_url, exclusive_lock_type));
 
   // Can still take a lock on the file in the external file system.
   auto external_exclusive_lock =
-      manager_->TakeLock(external_url, LockType::kExclusive);
+      manager_->TakeLock(external_url, exclusive_lock_type);
   ASSERT_TRUE(external_exclusive_lock);
-  ASSERT_FALSE(manager_->TakeLock(external_url, LockType::kExclusive));
+  ASSERT_FALSE(manager_->TakeLock(external_url, exclusive_lock_type));
 }
 
 TEST_F(FileSystemAccessLockManagerTest, LockAcrossSites) {
@@ -290,18 +308,21 @@ TEST_F(FileSystemAccessLockManagerTest, LockAcrossSites) {
   EXPECT_EQ(url1.path(), url2.path());
   EXPECT_NE(url1.storage_key(), url2.storage_key());
 
+  LockType exclusive_lock_type = manager_->GetExclusiveLockType();
+  LockType shared_lock_type = manager_->CreateSharedLockType();
+
   {
-    auto exclusive_lock = manager_->TakeLock(url1, LockType::kExclusive);
+    auto exclusive_lock = manager_->TakeLock(url1, exclusive_lock_type);
     ASSERT_TRUE(exclusive_lock);
 
     // Other sites cannot access the file while it is exclusively locked.
-    ASSERT_FALSE(manager_->TakeLock(url2, LockType::kExclusive));
-    ASSERT_FALSE(manager_->TakeLock(url2, LockType::kShared));
+    ASSERT_FALSE(manager_->TakeLock(url2, exclusive_lock_type));
+    ASSERT_FALSE(manager_->TakeLock(url2, shared_lock_type));
   }
 
   // The exclusive lock has been released and should be available to be
   // re-acquired.
-  ASSERT_TRUE(manager_->TakeLock(url2, LockType::kExclusive));
+  ASSERT_TRUE(manager_->TakeLock(url2, exclusive_lock_type));
 }
 
 TEST_F(FileSystemAccessLockManagerTest, AncestorLocks) {

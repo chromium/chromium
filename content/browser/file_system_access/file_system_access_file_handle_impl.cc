@@ -59,8 +59,6 @@ using storage::FileSystemOperationRunner;
 
 namespace content {
 
-using LockType = FileSystemAccessLockManager::LockType;
-
 namespace {
 
 std::pair<base::File, base::FileErrorOr<int64_t>> GetFileLengthOnBlockingThread(
@@ -241,7 +239,7 @@ void FileSystemAccessFileHandleImpl::OpenAccessHandle(
     return;
   }
 
-  auto lock = manager()->TakeLock(url(), LockType::kExclusive);
+  auto lock = manager()->TakeLock(url(), manager()->GetExclusiveLockType());
   if (!lock) {
     std::move(callback).Run(
         file_system_access_error::FromStatus(
@@ -509,7 +507,7 @@ void FileSystemAccessFileHandleImpl::DidVerifyHasWritePermissions(
     return;
   }
 
-  auto lock = manager()->TakeLock(url(), LockType::kShared);
+  auto lock = manager()->TakeLock(url(), wfs_siloed_lock_type_);
   if (!lock) {
     std::move(callback).Run(
         file_system_access_error::FromStatus(
@@ -566,7 +564,8 @@ void FileSystemAccessFileHandleImpl::StartCreateSwapFile(
   storage::FileSystemURL swap_url = url().CreateSibling(*opt_swap_name);
   CHECK(swap_url.is_valid());
 
-  auto swap_lock = manager()->TakeLock(swap_url, LockType::kExclusive);
+  auto swap_lock =
+      manager()->TakeLock(swap_url, manager()->GetExclusiveLockType());
   if (!swap_lock) {
     StartCreateSwapFile(count + 1, keep_existing_data, auto_close,
                         std::move(lock), std::move(callback));

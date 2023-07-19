@@ -14,7 +14,6 @@
 #include "build/build_config.h"
 #include "content/browser/file_system_access/features.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
-#include "content/browser/file_system_access/file_system_access_lock_manager.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -46,7 +45,6 @@ using storage::FileSystemOperationRunner;
 namespace content {
 
 using HandleType = FileSystemAccessPermissionContext::HandleType;
-using LockType = FileSystemAccessLockManager::LockType;
 #if BUILDFLAG(IS_POSIX)
 using PathType = FileSystemAccessPermissionContext::PathType;
 using SensitiveEntryResult =

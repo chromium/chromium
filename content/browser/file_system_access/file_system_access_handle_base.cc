@@ -32,7 +32,6 @@
 namespace content {
 
 using Lock = FileSystemAccessLockManager::Lock;
-using LockType = FileSystemAccessLockManager::LockType;
 
 namespace {
 std::string GetURLDisplayName(const storage::FileSystemURL& url) {
@@ -389,10 +388,11 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
     return;
   }
 
-  // The file can only be moved if we can acquire exclusive locks to both
-  // the source and destination URLs.
+  // The file can only be moved if we can acquire exclusive locks to both the
+  // source and destination URLs.
   std::vector<scoped_refptr<Lock>> locks;
-  auto source_lock = manager()->TakeLock(url(), LockType::kExclusive);
+  auto source_lock =
+      manager()->TakeLock(url(), manager()->GetExclusiveLockType());
   if (!source_lock) {
     std::move(callback).Run(file_system_access_error::FromStatus(
         blink::mojom::FileSystemAccessStatus::kNoModificationAllowedError,
@@ -405,7 +405,8 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
 
   // Acquire an exclusive lock to the destination URL.
   DCHECK(dest_url != url());
-  auto dest_lock = manager()->TakeLock(dest_url, LockType::kExclusive);
+  auto dest_lock =
+      manager()->TakeLock(dest_url, manager()->GetExclusiveLockType());
   if (!dest_lock) {
     std::move(callback).Run(file_system_access_error::FromStatus(
         blink::mojom::FileSystemAccessStatus::kNoModificationAllowedError,
@@ -532,15 +533,15 @@ void FileSystemAccessHandleBase::DoRemove(
 
   // A locked file cannot be removed. Acquire a lock and release it after the
   // remove operation completes.
-  auto lock = manager()->TakeLock(url, LockType::kExclusive);
+  auto lock = manager()->TakeLock(url, manager()->GetExclusiveLockType());
   if (!lock) {
     std::move(callback).Run(file_system_access_error::FromStatus(
         blink::mojom::FileSystemAccessStatus::kNoModificationAllowedError));
     return;
   }
 
-  // Bind the `lock` to the Remove callback to guarantee the lock is
-  // held until the operation completes.
+  // Bind the `lock` to the Remove callback to guarantee the lock is held until
+  // the operation completes.
   auto wrapped_callback = base::BindOnce(
       [](scoped_refptr<Lock> lock,
          base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>

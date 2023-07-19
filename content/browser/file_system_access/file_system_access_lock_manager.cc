@@ -78,6 +78,11 @@ Lock::~Lock() {
   }
 }
 
+bool Lock::IsExclusive() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return type_ == lock_manager_->exclusive_lock_type_;
+}
+
 FileSystemAccessLockManager::FileSystemAccessLockManager(
     base::PassKey<FileSystemAccessManagerImpl> /*pass_key*/) {}
 
@@ -108,7 +113,7 @@ scoped_refptr<Lock> FileSystemAccessLockManager::TakeLockImpl(
     if (parent_path != entry_locator.path) {
       EntryLocator parent_entry_locator{entry_locator.type, parent_path,
                                         entry_locator.bucket_locator};
-      parent_lock = TakeLockImpl(parent_entry_locator, LockType::kShared);
+      parent_lock = TakeLockImpl(parent_entry_locator, ancestor_lock_type_);
       if (!parent_lock) {
         return nullptr;
       }
@@ -130,10 +135,10 @@ scoped_refptr<Lock> FileSystemAccessLockManager::TakeLockImpl(
     return base::WrapRefCounted<Lock>(new_lock);
   }
 
-  if (lock_type == LockType::kExclusive ||
-      existing_lock->type() == LockType::kExclusive) {
-    // There is an existing lock, and either it or the requested lock is
-    // exclusive. Therefore it is not possible to take a new lock.
+  if (lock_type != existing_lock->type() || lock_type == exclusive_lock_type_) {
+    // There is an existing lock, and either it's not the same type as the
+    // requested lock or it's an exclusive lock. Therefore it is not possible to
+    // take a new lock.
     return nullptr;
   }
 
@@ -150,6 +155,21 @@ void FileSystemAccessLockManager::ReleaseLock(
   size_t count_removed = locks_.erase(entry_locator);
 
   DCHECK_EQ(1u, count_removed);
+}
+
+FileSystemAccessLockManager::LockType
+FileSystemAccessLockManager::CreateSharedLockType() {
+  return lock_type_generator_.GenerateNextId();
+}
+
+FileSystemAccessLockManager::LockType
+FileSystemAccessLockManager::GetExclusiveLockType() {
+  return exclusive_lock_type_;
+}
+
+FileSystemAccessLockManager::LockType
+FileSystemAccessLockManager::GetAncestorLockTypeForTesting() {
+  return ancestor_lock_type_;
 }
 
 }  // namespace content

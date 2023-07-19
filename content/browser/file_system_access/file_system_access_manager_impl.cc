@@ -1074,6 +1074,21 @@ FileSystemAccessManagerImpl::TakeLock(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return lock_manager_->TakeLock(url, lock_type);
 }
+FileSystemAccessLockManager::LockType
+FileSystemAccessManagerImpl::CreateSharedLockType() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return lock_manager_->CreateSharedLockType();
+}
+FileSystemAccessLockManager::LockType
+FileSystemAccessManagerImpl::GetExclusiveLockType() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return lock_manager_->GetExclusiveLockType();
+}
+FileSystemAccessLockManager::LockType
+FileSystemAccessManagerImpl::GetAncestorLockTypeForTesting() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return lock_manager_->GetAncestorLockTypeForTesting();  // IN-TEST
+}
 
 mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>
 FileSystemAccessManagerImpl::CreateFileWriter(
@@ -1136,7 +1151,7 @@ FileSystemAccessManagerImpl::CreateAccessHandleHost(
     scoped_refptr<FileSystemAccessLockManager::Lock> lock,
     base::ScopedClosureRunner on_close_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(lock->type() == FileSystemAccessLockManager::LockType::kExclusive);
+  DCHECK(lock->IsExclusive());
 
   mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost> result;
   auto receiver = result.InitWithNewPipeAndPassReceiver();
