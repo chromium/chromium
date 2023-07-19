@@ -271,10 +271,6 @@ void AssertPinnedCellMovedToRegularGrid(unsigned int pinned_index,
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Pinned Tabs feature is only "
                            @"supported on iPhone.");
   }
-  // TODO(crbug.com/1464519): Failing on iOS17.
-  if (@available(iOS 17.0, *)) {
-    XCTSkip(@"Failing on iOS17");
-  }
 
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGreyUI openTabGrid];
@@ -285,31 +281,20 @@ void AssertPinnedCellMovedToRegularGrid(unsigned int pinned_index,
   DragDropCellInPinnedView(IdentifierForRegularCellAtIndex(0));
   AssertRegularCellMovedToPinnedView(/*regular_index*/ 0, /*pinned_index*/ 1);
 
-  [[EarlGrey selectElementWithMatcher:PinnedView()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:PinnedView()];
 
   // Drag the second pinned cell in the regular grid.
   DragDropCellInRegularGrid(IdentifierForPinnedCellAtIndex(1));
   AssertPinnedCellMovedToRegularGrid(/*pinned_index*/ 1, /*regular_index*/ 0);
-  [[EarlGrey selectElementWithMatcher:PinnedView()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:PinnedView()];
 
   // Drag the first (and last) pinned cell in the regular grid.
   DragDropCellInRegularGrid(IdentifierForPinnedCellAtIndex(0));
   AssertPinnedCellMovedToRegularGrid(/*pinned_index*/ 0, /*regular_index*/ 1);
 
   // Check that the pinned view is hidden when its last item has been removed.
-  ConditionBlock condition = ^{
-    NSError* error = nil;
-
-    [[EarlGrey selectElementWithMatcher:PinnedView()]
-        assertWithMatcher:grey_notVisible()
-                    error:&error];
-
-    return !error;
-  };
-  GREYAssert(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition),
-             @"The pinned view is still visible.");
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:PinnedView()];
 }
 
 @end
