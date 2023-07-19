@@ -359,4 +359,57 @@ TEST_F(NearbyPresenceTest, UpdateRemoteSharedCredentials_Fail) {
   EXPECT_TRUE(creds.empty());
 }
 
+TEST_F(NearbyPresenceTest, GetLocalSharedCredentials_Success) {
+  ::nearby::internal::SharedCredential shared_credential1;
+  shared_credential1.set_secret_id(
+      std::string(kSecretId1.begin(), kSecretId1.end()));
+  ::nearby::internal::SharedCredential shared_credential2;
+  shared_credential2.set_secret_id(
+      std::string(kSecretId2.begin(), kSecretId2.end()));
+  ::nearby::internal::SharedCredential shared_credential3;
+  shared_credential3.set_secret_id(
+      std::string(kSecretId3.begin(), kSecretId3.end()));
+
+  fake_presence_service_->SetLocalPublicCredentialsResult(
+      /*status_code=*/absl::Status(absl::StatusCode::kOk,
+                                   /*msg=*/std::string()),
+      /*shared_credentials=*/{shared_credential1, shared_credential2,
+                              shared_credential3});
+
+  base::RunLoop run_loop;
+  nearby_presence_->GetLocalSharedCredentials(
+      kAccountName,
+      base::BindLambdaForTesting(
+          [&](std::vector<mojom::SharedCredentialPtr> shared_creds,
+              mojom::StatusCode status) {
+            EXPECT_EQ(mojom::StatusCode::kOk, status);
+            EXPECT_FALSE(shared_creds.empty());
+            EXPECT_EQ(3u, shared_creds.size());
+            EXPECT_EQ(kSecretId1, shared_creds[0]->secret_id);
+            EXPECT_EQ(kSecretId2, shared_creds[1]->secret_id);
+            EXPECT_EQ(kSecretId3, shared_creds[2]->secret_id);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+TEST_F(NearbyPresenceTest, GetLocalSharedCredentials_Failure) {
+  fake_presence_service_->SetLocalPublicCredentialsResult(
+      /*status_code=*/absl::Status(absl::StatusCode::kCancelled,
+                                   /*msg=*/std::string()),
+      /*shared_credentials=*/{});
+
+  base::RunLoop run_loop;
+  nearby_presence_->GetLocalSharedCredentials(
+      kAccountName,
+      base::BindLambdaForTesting(
+          [&](std::vector<mojom::SharedCredentialPtr> shared_creds,
+              mojom::StatusCode status) {
+            EXPECT_EQ(mojom::StatusCode::kFailure, status);
+            EXPECT_TRUE(shared_creds.empty());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
 }  // namespace ash::nearby::presence

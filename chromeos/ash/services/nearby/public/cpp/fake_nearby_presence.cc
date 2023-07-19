@@ -67,4 +67,11 @@ void FakeNearbyPresence::UpdateRemoteSharedCredentials(
   std::move(callback).Run(update_remote_shared_credentials_status_);
 }
 
+void FakeNearbyPresence::GetLocalSharedCredentials(
+    const std::string& account_name,
+    FakeNearbyPresence::GetLocalSharedCredentialsCallback callback) {
+  std::move(callback).Run(std::move(local_shared_credentials_response_),
+                          get_local_shared_credential_status_);
+}
+
 }  // namespace ash::nearby::presence

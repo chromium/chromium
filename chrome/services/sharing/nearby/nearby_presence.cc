@@ -251,6 +251,41 @@ void NearbyPresence::UpdateRemoteSharedCredentials(
            }});
 }
 
+void NearbyPresence::GetLocalSharedCredentials(
+    const std::string& account_name,
+    GetLocalSharedCredentialsCallback callback) {
+  presence_service_->GetLocalPublicCredentials(
+      /*credential_selector=*/{.manager_app_id = kChromeOSManagerAppId,
+                               .account_name = account_name,
+                               .identity_type = ::nearby::internal::
+                                   IdentityType::IDENTITY_TYPE_PRIVATE},
+      {.credentials_fetched_cb =
+           [cb = base::BindOnce(std::move(callback)),
+            task_runner = base::SequencedTaskRunner::GetCurrentDefault()](
+               auto status_or_shared_credentials) {
+             std::vector<mojom::SharedCredentialPtr> mojo_credentials;
+
+             if (status_or_shared_credentials.ok()) {
+               for (auto credential : status_or_shared_credentials.value()) {
+                 mojo_credentials.push_back(
+                     SharedCredentialToMojom(credential));
+               }
+             }
+
+             // absl::AnyInvocable marks its bound parameters as const&, but
+             // base::BindOnce() expects a non-const rvalue. Cast it as
+             // non-const to allow the bind.
+             task_runner->PostTask(
+                 FROM_HERE,
+                 base::BindOnce(
+                     std::move(
+                         const_cast<GetLocalSharedCredentialsCallback&>(cb)),
+                     /*credentials=*/std::move(mojo_credentials), /*status=*/
+                     CovertStatusToMojomStatus(
+                         status_or_shared_credentials.status())));
+           }});
+}
+
 NearbyPresence::ScanSessionImpl::ScanSessionImpl() {}
 NearbyPresence::ScanSessionImpl::~ScanSessionImpl() {}
 

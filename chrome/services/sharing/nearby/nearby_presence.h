@@ -68,6 +68,10 @@ class NearbyPresence : public mojom::NearbyPresence {
                            UpdateRemoteSharedCredentials_Success);
   FRIEND_TEST_ALL_PREFIXES(NearbyPresenceTest,
                            UpdateRemoteSharedCredentials_Fail);
+  FRIEND_TEST_ALL_PREFIXES(NearbyPresenceTest,
+                           GetLocalSharedCredentials_Success);
+  FRIEND_TEST_ALL_PREFIXES(NearbyPresenceTest,
+                           GetLocalSharedCredentials_Failure);
 
   // mojom::NearbyPresence:
   void SetScanObserver(
@@ -83,6 +87,9 @@ class NearbyPresence : public mojom::NearbyPresence {
       std::vector<mojom::SharedCredentialPtr> shared_credentials,
       const std::string& account_name,
       UpdateRemoteSharedCredentialsCallback callback) override;
+  void GetLocalSharedCredentials(
+      const std::string& account_name,
+      GetLocalSharedCredentialsCallback callback) override;
 
   // This is used as the disconnect handler for ScanSession.
   void OnScanSessionDisconnect(uint64_t scan_session_id);
