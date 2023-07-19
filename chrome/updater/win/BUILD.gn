@@ -151,3 +151,12 @@ fuzzer_test("updater_fuzzer") {
 
   seed_corpus = "../test/data/tag_extractor_corpus/"
 }
+
+source_set("msi_tag_extractor") {
+  sources = [
+    "msi_tag_extractor.cc",
+    "msi_tag_extractor.h",
+  ]
+
+  deps = [ "//base" ]
+}
