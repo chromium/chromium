@@ -108,11 +108,12 @@ struct ComponentInfo {
   const char* const crx_id;
 };
 
-// Specifies the mode of migration. The values correspond to `MigratorDelegate`
-// either being `CopyMigrator` or `MoveMigrator`.
+// Specifies the mode of migration. Used to distinguish what migration mode the
+// user used to migrate to Lacros.
 enum class MigrationMode {
-  kCopy = 0,  // Migrate using `CopyMigrator`.
+  kCopy = 0,  // Migrate using `CopyMigrator`. CopyMigrator is deprecated.
   kMove = 1,  // Migrate using `MoveMigrator`.
+  kSkipForNewUser = 2,  // Skip migration for new users.
 };
 
 // Specifies the mode Lacros is currently running.
@@ -418,19 +419,18 @@ bool IsProfileMigrationAvailable();
 MigrationMode GetMigrationMode(const user_manager::User* user,
                                PolicyInitState policy_init_state);
 
-// Returns true if either copy or move migration is completed. Used as a wrapper
-// over `IsProfileMigrationCompletedForUser()`.
-// TODO(crbug.com/1340438): This function is introduced to prevent running
-// profile move migration for users who have already completed copy migration.
-bool IsCopyOrMoveProfileMigrationCompletedForUser(
-    PrefService* local_state,
-    const std::string& user_id_hash);
-
-// Checks if profile migration has been completed. This is reset if profile
-// migration is initiated for example due to lacros data directory being wiped.
+// Checks if profile migration has been completed for the user. If `print_mode`
+// is true, it prints the mode the migration was completed with.
 bool IsProfileMigrationCompletedForUser(PrefService* local_state,
                                         const std::string& user_id_hash,
-                                        MigrationMode mode);
+                                        bool print_mode = false);
+
+// Returns the migration mode that was used to mark profile migration as
+// completed. If migration is not completed, the `optional` will not have a
+// value.
+absl::optional<MigrationMode> GetCompletedMigrationMode(
+    PrefService* local_state,
+    const std::string& user_id_hash);
 
 // Sets the value of `kProfileMigrationCompletedForUserPref` or
 // `kProfileMoveMigrationCompletedForUserPref` to be true for the user

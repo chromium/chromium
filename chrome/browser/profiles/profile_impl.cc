@@ -1156,8 +1156,7 @@ void ProfileImpl::OnLocaleReady(CreateMode create_mode) {
                                          version_info::GetVersion());
     crosapi::browser_util::SetProfileMigrationCompletedForUser(
         local_state, user_id_hash,
-        crosapi::browser_util::GetMigrationMode(
-            user, crosapi::browser_util::PolicyInitState::kAfterInit));
+        crosapi::browser_util::MigrationMode::kSkipForNewUser);
   }
 #endif
 

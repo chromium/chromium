@@ -185,11 +185,13 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
       case MigrationStep::kEnded:
       default:
         // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises,
-        // remove
-        // this log message or reduce to VLOG(1).
-        LOG(WARNING)
-            << "Migration has ended and either completed or failed. step = "
-            << static_cast<int>(step);
+        // remove this log message or reduce to VLOG(1).
+        if (crosapi::browser_util::IsProfileMigrationCompletedForUser(
+                local_state, user_id_hash, true /* print_mode */)) {
+          LOG(WARNING) << "Migration was attempted and successfully completed.";
+        } else {
+          LOG(WARNING) << "Migration was attempted but failed or was skipped.";
+        }
         break;
     }
 
@@ -290,16 +292,9 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
     return true;
   }
 
-  if (crosapi::browser_util::IsCopyOrMoveProfileMigrationCompletedForUser(
-          local_state, user_id_hash)) {
-    // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises,
-    // remove this log message.
-    if (crosapi::browser_util::IsProfileMigrationCompletedForUser(
-            local_state, user_id_hash,
-            crosapi::browser_util::MigrationMode::kMove)) {
-      LOG(WARNING) << "Profile move migration has been completed already.";
-    }
-    LOG(WARNING) << "Profile migration has been completed already.";
+  if (crosapi::browser_util::IsProfileMigrationCompletedForUser(
+          local_state, user_id_hash, true /* print_mode */)) {
+    LOG(WARNING) << "Profile migration is already completed.";
     return false;
   }
 

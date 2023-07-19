@@ -159,9 +159,8 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorMigrateOnSignInLacrosSideBySide,
   const std::string user_id_hash =
       user_manager::FakeUserManager::GetFakeUsernameHash(
           regular_user_.account_id);
-  EXPECT_FALSE(
-      crosapi::browser_util::IsCopyOrMoveProfileMigrationCompletedForUser(
-          g_browser_process->local_state(), user_id_hash));
+  EXPECT_FALSE(crosapi::browser_util::IsProfileMigrationCompletedForUser(
+      g_browser_process->local_state(), user_id_hash));
 }
 
 class BrowserDataMigratorMigrateOnSignInLacrosPrimary
@@ -202,9 +201,8 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorMigrateOnSignInLacrosPrimary,
   const std::string user_id_hash =
       user_manager::FakeUserManager::GetFakeUsernameHash(
           regular_user_.account_id);
-  EXPECT_FALSE(
-      crosapi::browser_util::IsCopyOrMoveProfileMigrationCompletedForUser(
-          g_browser_process->local_state(), user_id_hash));
+  EXPECT_FALSE(crosapi::browser_util::IsProfileMigrationCompletedForUser(
+      g_browser_process->local_state(), user_id_hash));
 }
 
 class BrowserDataMigratorMoveMigrateOnSignInByPolicy
@@ -295,15 +293,11 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorMoveMigrateOnSignInByFeature,
   const std::string user_id_hash =
       user_manager::FakeUserManager::GetFakeUsernameHash(
           regular_user_.account_id);
-  EXPECT_TRUE(
-      crosapi::browser_util::IsCopyOrMoveProfileMigrationCompletedForUser(
-          g_browser_process->local_state(), user_id_hash));
   EXPECT_TRUE(crosapi::browser_util::IsProfileMigrationCompletedForUser(
-      g_browser_process->local_state(), user_id_hash,
-      crosapi::browser_util::MigrationMode::kCopy));
-  EXPECT_TRUE(crosapi::browser_util::IsProfileMigrationCompletedForUser(
-      g_browser_process->local_state(), user_id_hash,
-      crosapi::browser_util::MigrationMode::kMove));
+      g_browser_process->local_state(), user_id_hash));
+  EXPECT_EQ(crosapi::browser_util::GetCompletedMigrationMode(
+                g_browser_process->local_state(), user_id_hash),
+            crosapi::browser_util::MigrationMode::kSkipForNewUser);
 }
 
 class BrowserDataMigratorResumeOnSignIn : public BrowserDataMigratorOnSignIn,

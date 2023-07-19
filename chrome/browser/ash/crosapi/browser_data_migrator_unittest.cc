@@ -126,8 +126,7 @@ TEST_F(BrowserDataMigratorImplTest, Migrate) {
   EXPECT_TRUE(base::PathExists(new_user_data_dir.Append(kFirstRun)));
   // Check that migration is marked as completed for the user.
   EXPECT_TRUE(crosapi::browser_util::IsProfileMigrationCompletedForUser(
-      &pref_service_, user_id_hash,
-      crosapi::browser_util::MigrationMode::kMove));
+      &pref_service_, user_id_hash));
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(BrowserDataMigrator::ResultKind::kSucceeded, result->kind);
   EXPECT_EQ(BrowserDataMigratorImpl::GetMigrationStep(&pref_service_),
@@ -173,8 +172,7 @@ TEST_F(BrowserDataMigratorImplTest, MigrateCancelled) {
       new_user_data_dir.Append("Default");
   EXPECT_FALSE(base::PathExists(new_user_data_dir.Append(kFirstRun)));
   EXPECT_FALSE(crosapi::browser_util::IsProfileMigrationCompletedForUser(
-      &pref_service_, user_id_hash,
-      crosapi::browser_util::MigrationMode::kCopy));
+      &pref_service_, user_id_hash));
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(BrowserDataMigrator::ResultKind::kCancelled, result->kind);
   EXPECT_EQ(BrowserDataMigratorImpl::GetMigrationStep(&pref_service_),
