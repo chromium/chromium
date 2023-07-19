@@ -93,7 +93,7 @@ std::unique_ptr<InkDropRipple> InkDropHost::CreateInkDropRipple() const {
     return create_ink_drop_ripple_callback_.Run();
   }
   return std::make_unique<views::FloodFillInkDropRipple>(
-      InkDrop::Get(host_view_), host_view_->size(), gfx::Insets(),
+      InkDrop::Get(host_view_), host_view_->size(),
       GetInkDropCenterBasedOnLastEvent(), GetBaseColor(), GetVisibleOpacity());
 }
 

@@ -5,10 +5,7 @@
 #ifndef COMPONENTS_OMNIBOX_COMMON_OMNIBOX_FEATURES_H_
 #define COMPONENTS_OMNIBOX_COMMON_OMNIBOX_FEATURES_H_
 
-#include <string>
-
 #include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 
 namespace omnibox {
 
@@ -115,12 +112,6 @@ BASE_DECLARE_FEATURE(kOmniboxSteadyStateHeight);
 BASE_DECLARE_FEATURE(kOmniboxSteadyStateTextStyle);
 
 BASE_DECLARE_FEATURE(kOmniboxSteadyStateTextColor);
-// These feature params are located here, as opposed to omnibox_field_trial.h,
-// in order to permit inclusion into (non-Omnibox) color mixer code.
-extern const base::FeatureParam<std::string> kOmniboxTextColorDarkMode;
-extern const base::FeatureParam<std::string> kOmniboxTextColorDimmedDarkMode;
-extern const base::FeatureParam<std::string> kOmniboxTextColorLightMode;
-extern const base::FeatureParam<std::string> kOmniboxTextColorDimmedLightMode;
 
 BASE_DECLARE_FEATURE(kDiscardTemporaryInputOnTabSwitch);
 BASE_DECLARE_FEATURE(kRedoCurrentMatch);

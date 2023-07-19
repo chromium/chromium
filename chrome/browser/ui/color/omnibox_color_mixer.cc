@@ -31,66 +31,12 @@ void ApplyGM3OmniboxTextColor(ui::ColorMixer& mixer,
       features::GetChromeRefresh2023Level() ==
           features::ChromeRefresh2023Level::kLevel2 ||
       base::FeatureList::IsEnabled(omnibox::kOmniboxSteadyStateTextColor);
-
   if (!gm3_text_color_enabled) {
     return;
   }
 
-  // Retrieve GM3 omnibox text color params (Dark Mode).
-  const std::string dark_text_color_param =
-      omnibox::kOmniboxTextColorDarkMode.Get();
-  const std::string dark_text_color_dimmed_param =
-      omnibox::kOmniboxTextColorDimmedDarkMode.Get();
-
-  // Retrieve GM3 omnibox text color params (Light Mode).
-  const std::string light_text_color_param =
-      omnibox::kOmniboxTextColorLightMode.Get();
-  const std::string light_text_color_dimmed_param =
-      omnibox::kOmniboxTextColorDimmedLightMode.Get();
-
-  const auto string_to_skcolor = [](const std::string& rgb_str,
-                                    SkColor* result) {
-    // Valid color strings are of the form 0xRRGGBB or 0xAARRGGBB.
-    const bool valid = result && (rgb_str.size() == 8 || rgb_str.size() == 10);
-    if (!valid) {
-      return false;
-    }
-
-    uint32_t parsed = 0;
-    const bool success = base::HexStringToUInt(rgb_str, &parsed);
-    if (success) {
-      *result = SkColorSetA(static_cast<SkColor>(parsed), SK_AlphaOPAQUE);
-    }
-    return success;
-  };
-
-  SkColor dark_text_color = 0;
-  SkColor dark_text_color_dimmed = 0;
-
-  SkColor light_text_color = 0;
-  SkColor light_text_color_dimmed = 0;
-
-  const bool success =
-      string_to_skcolor(dark_text_color_param, &dark_text_color) &&
-      string_to_skcolor(dark_text_color_dimmed_param,
-                        &dark_text_color_dimmed) &&
-      string_to_skcolor(light_text_color_param, &light_text_color) &&
-      string_to_skcolor(light_text_color_dimmed_param,
-                        &light_text_color_dimmed);
-
-  if (!success) {
-    return;
-  }
-
-  const auto selected_text_color = ui::SelectBasedOnDarkInput(
-      kColorToolbar, dark_text_color, light_text_color);
-
-  mixer[kColorOmniboxText] = {selected_text_color};
-
-  const auto selected_text_color_dimmed = ui::SelectBasedOnDarkInput(
-      kColorToolbar, dark_text_color_dimmed, light_text_color_dimmed);
-
-  mixer[kColorOmniboxTextDimmed] = {selected_text_color_dimmed};
+  mixer[kColorOmniboxText] = {ui::kColorSysOnSurface};
+  mixer[kColorOmniboxTextDimmed] = {ui::kColorSysOnSurfaceSubtle};
 }
 
 void ApplyCR2023OmniboxIconColors(ui::ColorMixer& mixer,
@@ -160,13 +106,9 @@ void ApplyCR2023OmniboxExpandedStateColors(ui::ColorMixer& mixer,
   mixer[kColorOmniboxResultsButtonIcon] = {kColorOmniboxResultsUrl};
   mixer[kColorOmniboxResultsButtonIconSelected] = {
       kColorOmniboxResultsButtonIcon};
-  // TODO(crbug.com/1431337) Update to use sys tokens. We need a sys token like
-  //   `{dark_mode ? kColorRefNeutral90 : kColorRefNeutral65}`.
-  mixer[kColorOmniboxResultsButtonInkDrop] =
-      ui::SelectBasedOnDarkInput(kColorToolbar, SkColorSetRGB(226, 226, 226),
-                                 SkColorSetRGB(153, 153, 153));
+  mixer[kColorOmniboxResultsButtonInkDrop] = {ui::kColorSysStateHoverOnSubtle};
   mixer[kColorOmniboxResultsButtonInkDropSelected] = {
-      kColorOmniboxResultsButtonInkDrop};
+      ui::kColorSysStateRippleNeutralOnSubtle};
 
   // Update starter pack icon color.
   mixer[kColorOmniboxResultsStarterPackIcon] = {ui::kColorSysPrimary};
@@ -378,16 +320,12 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
     mixer[kColorOmniboxSecurityChipDefault] = {kColorOmniboxSecurityChipSecure};
   }
 
-  // TODO(manukh): Figure out if we can use the blending defined above and in
-  //   `ui::` instead of hard coding these colors. That'll probably be safer for
-  //   e.g. when users use high contrast mode. But this is (hopefully) fine for
-  //   non-launch experiments.
+  // TODO(manukh): `kColorOmniboxResultsIconGM3Background` is unused currently,
+  //   but if we decide to revisit it, we should use tokens instead of rgb's.
   mixer[kColorOmniboxResultsIconGM3Background] = ui::SelectBasedOnDarkInput(
       kColorToolbar, SkColorSetRGB(48, 48, 48), SkColorSetRGB(242, 242, 242));
-  mixer[kColorOmniboxAnswerIconGM3Background] = ui::SelectBasedOnDarkInput(
-      kColorToolbar, SkColorSetRGB(0, 74, 119), SkColorSetRGB(211, 227, 253));
-  mixer[kColorOmniboxAnswerIconGM3Foreground] = ui::SelectBasedOnDarkInput(
-      kColorToolbar, SkColorSetRGB(194, 231, 255), SkColorSetRGB(4, 30, 73));
+  mixer[kColorOmniboxAnswerIconGM3Background] = {ui::kColorSysTonalContainer};
+  mixer[kColorOmniboxAnswerIconGM3Foreground] = {ui::kColorSysOnTonalContainer};
 
   // location bar icon colors.
   mixer[kColorPageInfoBackground] = {kColorToolbar};

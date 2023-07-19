@@ -4,8 +4,6 @@
 
 #include "components/omnibox/common/omnibox_features.h"
 
-#include <string>
-
 #include "base/feature_list.h"
 #include "build/build_config.h"
 
@@ -468,70 +466,6 @@ BASE_FEATURE(kOmniboxSteadyStateTextStyle,
 BASE_FEATURE(kOmniboxSteadyStateTextColor,
              "OmniboxSteadyStateTextColor",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Specifies the CR23 omnibox text color in Dark Mode.
-//
-// In order to control the value of this param via Finch, the
-// `kOmniboxSteadyStateTextColor` feature flag must be enabled.
-//
-// Enabling `ChromeRefresh2023` Level 2 while leaving the
-// `kOmniboxSteadyStateTextColor` flag disabled, will result in the param being
-// locked to its default value and ignoring any overrides provided via Finch.
-//
-// If neither `ChromeRefresh2023` Level 2 nor `kOmniboxSteadyStateTextColor` are
-// enabled, then this feature param will have zero effect on Chrome UI.
-const base::FeatureParam<std::string> kOmniboxTextColorDarkMode(
-    &omnibox::kOmniboxSteadyStateTextColor,
-    "OmniboxTextColorDarkMode",
-    "0xE3E3E3");
-
-// Specifies the CR23 omnibox text color in Dark Mode (dimmed).
-//
-// In order to control the value of this param via Finch, the
-// `kOmniboxSteadyStateTextColor` feature flag must be enabled.
-//
-// Enabling `ChromeRefresh2023` Level 2 while leaving the
-// `kOmniboxSteadyStateTextColor` flag disabled, will result in the param being
-// locked to its default value and ignoring any overrides provided via Finch.
-//
-// If neither `ChromeRefresh2023` Level 2 nor `kOmniboxSteadyStateTextColor` are
-// enabled, then this feature param will have zero effect on Chrome UI.
-const base::FeatureParam<std::string> kOmniboxTextColorDimmedDarkMode(
-    &omnibox::kOmniboxSteadyStateTextColor,
-    "OmniboxTextColorDimmedDarkMode",
-    "0xC7C7C7");
-
-// Specifies the CR23 omnibox text color in Light Mode.
-//
-// In order to control the value of this param via Finch, the
-// `kOmniboxSteadyStateTextColor` feature flag must be enabled.
-//
-// Enabling `ChromeRefresh2023` Level 2 while leaving the
-// `kOmniboxSteadyStateTextColor` flag disabled, will result in the param being
-// locked to its default value and ignoring any overrides provided via Finch.
-//
-// If neither `ChromeRefresh2023` Level 2 nor `kOmniboxSteadyStateTextColor` are
-// enabled, then this feature param will have zero effect on Chrome UI.
-const base::FeatureParam<std::string> kOmniboxTextColorLightMode(
-    &omnibox::kOmniboxSteadyStateTextColor,
-    "OmniboxTextColorLightMode",
-    "0x1F1F1F");
-
-// Specifies the CR23 omnibox text color in Light Mode (dimmed).
-//
-// In order to control the value of this param via Finch, the
-// `kOmniboxSteadyStateTextColor` feature flag must be enabled.
-//
-// Enabling `ChromeRefresh2023` Level 2 while leaving the
-// `kOmniboxSteadyStateTextColor` flag disabled, will result in the param being
-// locked to its default value and ignoring any overrides provided via Finch.
-//
-// If neither`ChromeRefresh2023` Level 2 nor `kOmniboxSteadyStateTextColor` are
-// enabled, then this feature param will have zero effect on Chrome UI.
-const base::FeatureParam<std::string> kOmniboxTextColorDimmedLightMode(
-    &omnibox::kOmniboxSteadyStateTextColor,
-    "OmniboxTextColorDimmedLightMode",
-    "0x474747");
 
 // If enabled, switching tabs will not restore the omnibox state.
 // TODO(manukh): Should also blur the omnibox on tab switch.

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_util.h"
 #include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_match_cell_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
@@ -48,6 +49,14 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
+namespace {
+bool Cr2023ExpandedStateColorsEnabled() {
+  return features::GetChromeRefresh2023Level() ==
+             features::ChromeRefresh2023Level::kLevel2 ||
+         base::FeatureList::IsEnabled(omnibox::kExpandedStateColors);
+}
+}  // namespace
+
 class OmniboxSuggestionRowButton : public views::MdTextButton {
  public:
   METADATA_HEADER(OmniboxSuggestionRowButton);
@@ -81,7 +90,8 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     }
 
     auto* const ink_drop = views::InkDrop::Get(this);
-    ink_drop->SetHighlightOpacity(kOmniboxOpacityHovered);
+    if (!Cr2023ExpandedStateColorsEnabled())
+      ink_drop->SetHighlightOpacity(kOmniboxOpacityHovered);
     SetAnimationDuration(base::TimeDelta());
     ink_drop->GetInkDrop()->SetHoverHighlightFadeDuration(base::TimeDelta());
 
@@ -123,9 +133,14 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
                       GetLayoutConstant(LOCATION_BAR_ICON_SIZE)));
     SetEnabledTextColors(color_provider->GetColor(
         selected ? kColorOmniboxResultsTextSelected : kColorOmniboxText));
-    views::InkDrop::Get(this)->SetBaseColorId(
-        selected ? kColorOmniboxResultsButtonInkDropSelected
-                 : kColorOmniboxResultsButtonInkDrop);
+    if (Cr2023ExpandedStateColorsEnabled()) {
+      ConfigureInkDropForRefresh2023(this, kColorOmniboxResultsButtonInkDrop,
+                                     kColorOmniboxResultsButtonInkDropSelected);
+    } else {
+      views::InkDrop::Get(this)->SetBaseColorId(
+          selected ? kColorOmniboxResultsButtonInkDropSelected
+                   : kColorOmniboxResultsButtonInkDrop);
+    }
 
     views::FocusRing::Get(this)->SchedulePaint();
   }
