@@ -210,6 +210,10 @@ void BorealisApps::CreateAppOverrides(
   }
 }
 
+int BorealisApps::DefaultIconResourceId() const {
+  return IDR_LOGO_BOREALIS_DEFAULT_192;
+}
+
 void BorealisApps::Launch(const std::string& app_id,
                           int32_t event_flags,
                           LaunchSource launch_source,
