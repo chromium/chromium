@@ -625,7 +625,7 @@ class BookmarkManagerMediator
 
     @Override
     public void openSearchUi() {
-        setState(BookmarkUiState.createSearchState());
+        setState(BookmarkUiState.createSearchState(""));
         mSelectableListLayout.onStartSearch(R.string.bookmark_no_result);
     }
 
@@ -744,6 +744,13 @@ class BookmarkManagerMediator
         if (!mStateStack.isEmpty() && mStateStack.peek().mUiMode == BookmarkUiMode.LOADING) {
             mStateStack.pop();
         }
+        // Don't queue multiple consecutive search states. Instead replace the previous with the new
+        // one.
+        if (getCurrentUiMode() == BookmarkUiMode.SEARCHING
+                && state.mUiMode == BookmarkUiMode.SEARCHING) {
+            mStateStack.pop();
+        }
+
         mStateStack.push(state);
         notifyUi(state);
     }
@@ -1290,7 +1297,7 @@ class BookmarkManagerMediator
         final @BookmarkUiMode int currentUiMode = getCurrentUiMode();
         if (!TextUtils.isEmpty(text)) {
             // #setState will no-op if we're already in a search state.
-            setState(BookmarkUiState.createSearchState());
+            setState(BookmarkUiState.createSearchState(text));
             search(text);
         } else if (currentUiMode == BookmarkUiMode.SEARCHING) {
             onEndSearch();

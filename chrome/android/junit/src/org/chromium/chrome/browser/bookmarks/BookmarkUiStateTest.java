@@ -46,8 +46,8 @@ public class BookmarkUiStateTest {
         BookmarkUiState loadingState = BookmarkUiState.createLoadingState();
         assertEquals(loadingState, BookmarkUiState.createLoadingState());
 
-        BookmarkUiState searchState = BookmarkUiState.createSearchState();
-        assertEquals(searchState, BookmarkUiState.createSearchState());
+        BookmarkUiState searchState = BookmarkUiState.createSearchState(/*queryString*/ "");
+        assertEquals(searchState, BookmarkUiState.createSearchState(/*queryString*/ ""));
         assertNotEquals(searchState, loadingState);
 
         BookmarkUiState shoppingFilterState = BookmarkUiState.createShoppingFilterState();
@@ -62,6 +62,16 @@ public class BookmarkUiStateTest {
         assertNotEquals(folderState1, loadingState);
         assertNotEquals(folderState1, searchState);
         assertNotEquals(folderState1, shoppingFilterState);
+    }
+
+    @Test
+    public void testCreateSearchState() {
+        BookmarkUiState emptySearchState = BookmarkUiState.createSearchState("");
+        assertEquals(emptySearchState, BookmarkUiState.createSearchState(""));
+
+        BookmarkUiState fooSearchState = BookmarkUiState.createSearchState("foo");
+        assertEquals(fooSearchState, BookmarkUiState.createSearchState("foo"));
+        assertNotEquals(emptySearchState, fooSearchState);
     }
 
     @Test
