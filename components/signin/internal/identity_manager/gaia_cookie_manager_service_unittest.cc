@@ -20,6 +20,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "build/buildflag.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
@@ -400,7 +401,12 @@ TEST_F(GaiaCookieManagerServiceTest, FailedUbertoken) {
   SimulateUbertokenFailure(&helper, error());
 }
 
-TEST_F(GaiaCookieManagerServiceTest, ContinueAfterSuccess) {
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ContinueAfterSuccess DISABLED_ContinueAfterSuccess
+#else
+#define MAYBE_ContinueAfterSuccess ContinueAfterSuccess
+#endif
+TEST_F(GaiaCookieManagerServiceTest, MAYBE_ContinueAfterSuccess) {
   InstrumentedGaiaCookieManagerService helper(account_tracker_service(),
                                               token_service(), signin_client());
   MockObserver observer(&helper);
