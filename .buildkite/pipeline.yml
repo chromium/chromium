@@ -53,7 +53,6 @@ steps:
   - label: "Build chromium - Windows"
     key: "build-chromium-windows"
     timeout_in_minutes: 60
-    soft_fail: true
     plugins:
       - https://github.com/jazzdan/skip-checkout-buildkite-plugin.git#jazzdan/windows-support: ~
     command: "cd C:\\Users\\Administrator\\chromium\\src && node buildWindows.mjs &&  node replay_build_scripts/upload_build_artifacts.mjs"
