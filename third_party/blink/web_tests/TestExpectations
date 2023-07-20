@@ -6583,3 +6583,7 @@ crbug.com/1459304 [ Mac11 ] virtual/coop-restrict-properties/external/wpt/html/c
 # Gardener 2023-07-18
 # flaky on Mac builders
 crbug.com/1465723 [ Mac ] virtual/prefetch-no-vary-search/wpt_internal/speculation-rules/prefetch/no-vary-search/prefetch-single-non-eager-with-hint.https.html [ Failure Pass ]
+
+# Gardener 2023-07-20
+# flaky on Mac builders
+crbug.com/1465723 [ Mac11 ] virtual/prefetch-no-vary-search/wpt_internal/speculation-rules/prefetch/no-vary-search/prefetch-single-non-eager-with-hint.https.html?25-25 [ Failure Pass ]
