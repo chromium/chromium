@@ -166,8 +166,9 @@ void ChildAccountService::SetSupervisionStatusAndNotifyObservers(
 
 void ChildAccountService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
-  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
-      signin::PrimaryAccountChangeEvent::Type::kSet) {
+  signin::PrimaryAccountChangeEvent::Type event_type =
+      event_details.GetEventTypeFor(signin::ConsentLevel::kSignin);
+  if (event_type == signin::PrimaryAccountChangeEvent::Type::kSet) {
     AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
         event_details.GetCurrentState().primary_account);
     if (!account_info.IsEmpty()) {
@@ -175,6 +176,11 @@ void ChildAccountService::OnPrimaryAccountChanged(
     }
     // Otherwise OnExtendedAccountInfoUpdated will be notified once
     // the account info is available.
+  } else if (event_type == signin::PrimaryAccountChangeEvent::Type::kCleared) {
+// TODO(crbug.com/1462004): This causes test failure on win-rel.
+#if BUILDFLAG(IS_IOS)
+    SetSupervisionStatusAndNotifyObservers(false);
+#endif  // BUILDFLAG(IS_IOS)
   }
 }
 
@@ -207,7 +213,7 @@ void ChildAccountService::OnExtendedAccountInfoRemoved(
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin)) {
     return;
   }
-
+  // TODO(crbug.com/1462004): This is not reached on iOS.
   SetSupervisionStatusAndNotifyObservers(false);
 }
 

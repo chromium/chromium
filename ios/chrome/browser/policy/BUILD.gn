@@ -120,6 +120,19 @@ source_set("policy_util") {
   ]
 }
 
+source_set("policy_earl_grey_matchers") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "policy_earl_grey_matchers.h",
+    "policy_earl_grey_matchers.mm",
+  ]
+  deps = [
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+}
+
 source_set("constants") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -257,6 +270,7 @@ source_set("eg2_tests") {
   deps = [
     ":constants",
     ":eg_test_support+eg2",
+    ":policy_earl_grey_matchers",
     ":test_resources",
     "//base",
     "//components/autofill/core/common",

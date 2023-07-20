@@ -90,14 +90,23 @@ source_set("eg2_tests") {
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  sources = [ "supervised_user_with_parental_controls_egtest.mm" ]
+  sources = [
+    "supervised_user_incognito_mode_egtest.mm",
+    "supervised_user_with_parental_controls_egtest.mm",
+  ]
   deps = [
+    "//base",
     "//components/signin/internal/identity_manager",
     "//components/supervised_user/core/common",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/policy:eg_test_support+eg2",
+    "//ios/chrome/browser/policy:policy_earl_grey_matchers",
     "//ios/chrome/browser/signin:capabilities_types",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/signin:system_identity_manager",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/popup_menu:constants",
+    "//ios/chrome/browser/ui/toolbar/public:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
   ]

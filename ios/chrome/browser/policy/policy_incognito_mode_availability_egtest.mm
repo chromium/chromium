@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/policy/policy_constants.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
+#import "ios/chrome/browser/policy/policy_earl_grey_matchers.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -22,6 +23,10 @@
 #endif
 
 using chrome_test_util::ToolsMenuView;
+using policy::AssertButtonInCollectionDisabled;
+using policy::AssertButtonInCollectionEnabled;
+using policy::AssertOverflowMenuElementDisabled;
+using policy::AssertOverflowMenuElementEnabled;
 
 namespace {
 
@@ -49,44 +54,6 @@ id<GREYMatcher> TabGridButton() {
       IDS_IOS_TOOLBAR_SHOW_TABS);
 }
 
-// Tests the enabled state of an item.
-// `string_id` is the ID of the string associated with the item.
-// `enabled` is the expected availability.
-void AssertItemEnabled(int string_id, bool enabled) {
-  id<GREYMatcher> assertion_matcher =
-      enabled
-          ? grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled))
-          : grey_accessibilityTrait(UIAccessibilityTraitNotEnabled);
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(
-              chrome_test_util::ButtonWithAccessibilityLabelId(string_id),
-              grey_ancestor(grey_kindOfClassName(@"UICollectionView")),
-              grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:assertion_matcher];
-}
-
-// Tests the enabled state of an item.
-// `parentMatcher` is the container matcher of the `item`.
-// `availability` is the expected availability.
-void AssertItemEnabledState(id<GREYMatcher> item,
-                            id<GREYMatcher> parentMatcher,
-                            bool enabled) {
-  id<GREYMatcher> enabledMatcher =
-      [ChromeEarlGrey isNewOverflowMenuEnabled]
-          // TODO(crbug.com/1285974): grey_userInteractionEnabled doesn't work
-          // for SwiftUI views.
-          ? grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled))
-          : grey_userInteractionEnabled();
-  [[[EarlGrey selectElementWithMatcher:item]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
-                                                  /*amount=*/200)
-      onElementWithMatcher:parentMatcher]
-      assertWithMatcher:enabled ? enabledMatcher
-                                : grey_accessibilityTrait(
-                                      UIAccessibilityTraitNotEnabled)];
-}
-
 }  // namespace
 
 // Test case to verify that the IncognitoModeAvailability policy is set and
@@ -107,8 +74,6 @@ void AssertItemEnabledState(id<GREYMatcher> item,
 
 - (void)tearDown {
   [super tearDown];
-  // Close the popup menu.
-  [ChromeTestCase removeAnyOpenMenusAndInfoBars];
 }
 
 // When the IncognitoModeAvailability policy is set to available, the tools
@@ -117,10 +82,8 @@ void AssertItemEnabledState(id<GREYMatcher> item,
   SetIncognitoAvailabiliy(IncognitoAvailability::kAvailable);
   [ChromeEarlGreyUI openToolsMenu];
 
-  AssertItemEnabledState(grey_accessibilityID(kToolsMenuNewTabId),
-                         ToolsMenuView(), /*enabled=*/YES);
-  AssertItemEnabledState(grey_accessibilityID(kToolsMenuNewIncognitoTabId),
-                         ToolsMenuView(), /*enabled=*/YES);
+  AssertOverflowMenuElementEnabled(kToolsMenuNewTabId);
+  AssertOverflowMenuElementEnabled(kToolsMenuNewIncognitoTabId);
 }
 
 // When the IncognitoModeAvailability policy is set to disabled, the tools menu
@@ -129,10 +92,8 @@ void AssertItemEnabledState(id<GREYMatcher> item,
   SetIncognitoAvailabiliy(IncognitoAvailability::kDisabled);
   [ChromeEarlGreyUI openToolsMenu];
 
-  AssertItemEnabledState(grey_accessibilityID(kToolsMenuNewTabId),
-                         ToolsMenuView(), /*enabled=*/YES);
-  AssertItemEnabledState(grey_accessibilityID(kToolsMenuNewIncognitoTabId),
-                         ToolsMenuView(), /*enabled=*/NO);
+  AssertOverflowMenuElementEnabled(kToolsMenuNewTabId);
+  AssertOverflowMenuElementDisabled(kToolsMenuNewIncognitoTabId);
 }
 
 // When the IncognitoModeAvailability policy is set to forced, the tools menu
@@ -141,10 +102,8 @@ void AssertItemEnabledState(id<GREYMatcher> item,
   SetIncognitoAvailabiliy(IncognitoAvailability::kOnly);
   [ChromeEarlGreyUI openToolsMenu];
 
-  AssertItemEnabledState(grey_accessibilityID(kToolsMenuNewTabId),
-                         ToolsMenuView(), /*enabled=*/NO);
-  AssertItemEnabledState(grey_accessibilityID(kToolsMenuNewIncognitoTabId),
-                         ToolsMenuView(), /*enabled=*/YES);
+  AssertOverflowMenuElementDisabled(kToolsMenuNewTabId);
+  AssertOverflowMenuElementEnabled(kToolsMenuNewIncognitoTabId);
 }
 
 // When the IncognitoModeAvailability policy is set to available, the "New Tab"
@@ -156,8 +115,8 @@ void AssertItemEnabledState(id<GREYMatcher> item,
   [[EarlGrey selectElementWithMatcher:TabGridButton()]
       performAction:grey_longPress()];
 
-  AssertItemEnabled(IDS_IOS_TOOLS_MENU_NEW_TAB, /*enabled=*/true);
-  AssertItemEnabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB, /*enabled=*/true);
+  AssertButtonInCollectionEnabled(IDS_IOS_TOOLS_MENU_NEW_TAB);
+  AssertButtonInCollectionEnabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
 }
 
 // When the IncognitoModeAvailability policy is set to disabled, the "New
@@ -169,8 +128,8 @@ void AssertItemEnabledState(id<GREYMatcher> item,
   [[EarlGrey selectElementWithMatcher:TabGridButton()]
       performAction:grey_longPress()];
 
-  AssertItemEnabled(IDS_IOS_TOOLS_MENU_NEW_TAB, /*enabled=*/true);
-  AssertItemEnabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB, /*enabled=*/false);
+  AssertButtonInCollectionEnabled(IDS_IOS_TOOLS_MENU_NEW_TAB);
+  AssertButtonInCollectionDisabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
 }
 
 // When the IncognitoModeAvailability policy is set to forced, the "New Tab"
@@ -182,8 +141,8 @@ void AssertItemEnabledState(id<GREYMatcher> item,
   [[EarlGrey selectElementWithMatcher:TabGridButton()]
       performAction:grey_longPress()];
 
-  AssertItemEnabled(IDS_IOS_TOOLS_MENU_NEW_TAB, /*enabled=*/false);
-  AssertItemEnabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB, /*enabled=*/true);
+  AssertButtonInCollectionDisabled(IDS_IOS_TOOLS_MENU_NEW_TAB);
+  AssertButtonInCollectionEnabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
 }
 
 // TODO(crbug.com/1165655): Add test to new tab long-press menu.
