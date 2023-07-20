@@ -74,11 +74,14 @@ source_set("browser_interop") {
 
 source_set("remoting_service") {
   sources = [
+    "file_session_storage.cc",
+    "file_session_storage.h",
     "remote_support_host_ash.cc",
     "remote_support_host_ash.h",
     "remoting_service.cc",
     "remoting_service.h",
     "session_id.h",
+    "session_storage.h",
   ]
 
   public_deps = [
@@ -133,6 +136,7 @@ source_set("unit_tests") {
 
   sources = [
     "clipboard_aura_unittest.cc",
+    "file_session_storage_unittest.cc",
     "frame_sink_desktop_capturer_unittest.cc",
     "remote_support_host_ash_unittest.cc",
     "scoped_fake_ash_proxy.cc",

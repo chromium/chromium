@@ -221,6 +221,8 @@ void It2MeNativeMessageHostAsh::PostMessageFromNativeHost(
   }
 
   if (type == kConnectResponse) {
+    // TODO(jeroendh): Update the connect response to include all the
+    // information required to store the reconnectable session information.
     HandleConnectResponse();
   } else if (type == kDisconnectResponse) {
     HandleDisconnectResponse();
