@@ -57,7 +57,7 @@ declare -A DISPLAY_RES=(
 # Use FHD as default panel.
 DISPLAY_CONFIG=${DISPLAY_RES[fhd]}
 
-LACROS_FEATURES=LacrosSupport
+LACROS_FEATURES=LacrosOnly
 FEATURES=OverviewButton
 
 LACROS_ENABLED=false
@@ -101,9 +101,9 @@ function build_args {
     --login-profile=user --lacros-mojo-socket-for-testing=$LACROS_SOCK_FILE \
     --ash-host-window-bounds=${DISPLAY_CONFIG} \
     --enable-features=${FEATURES} \
-    --disable-features=LacrosSxSPrimaryRemove \
     ${TOUCH_DEVICE_OPTION} \
-    --lacros-chrome-path=${LACROS_BUILD_DIR}"
+    --enable-ash-debug-browser \
+    --lacros-chrome-path=${LACROS_BUILD_DIR}" \
 
   # To enable internal display.
   ARGS="${ARGS} --use-first-display-as-internal"
