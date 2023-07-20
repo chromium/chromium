@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 
+#include <atomic>
+
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/realbox/realbox_handler.h"
@@ -24,14 +26,13 @@ namespace {
 // This can be eliminated if we find a way to cleanly pass pointers into WebUI
 // construction, but currently they appear designed to avoid such things,
 // sensibly relying on the URL only.
-OmniboxController* g_omnibox_controller = nullptr;
+std::atomic<OmniboxController*> g_omnibox_controller = nullptr;
 
 }  // namespace
 
 // static
 void OmniboxPopupUI::SetOmniboxController(
     OmniboxController* omnibox_controller) {
-  CHECK(!g_omnibox_controller);
   g_omnibox_controller = omnibox_controller;
 }
 
@@ -63,11 +64,12 @@ WEB_UI_CONTROLLER_TYPE_IMPL(OmniboxPopupUI)
 
 void OmniboxPopupUI::BindInterface(
     mojo::PendingReceiver<omnibox::mojom::PageHandler> pending_page_handler) {
-  CHECK(g_omnibox_controller);
+  OmniboxController* controller = g_omnibox_controller;
+  g_omnibox_controller = nullptr;
+
   handler_ = std::make_unique<RealboxHandler>(
       std::move(pending_page_handler), Profile::FromWebUI(web_ui()),
-      web_ui()->GetWebContents(), &metrics_reporter_, g_omnibox_controller);
-  g_omnibox_controller = nullptr;
+      web_ui()->GetWebContents(), &metrics_reporter_, controller);
 }
 
 void OmniboxPopupUI::BindInterface(
