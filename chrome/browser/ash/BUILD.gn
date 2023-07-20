@@ -1441,6 +1441,8 @@ source_set("ash") {
     "input_method/diacritics_checker.h",
     "input_method/diacritics_insensitive_string_comparator.cc",
     "input_method/diacritics_insensitive_string_comparator.h",
+    "input_method/editor_mediator.cc",
+    "input_method/editor_mediator.h",
     "input_method/emoji_suggester.cc",
     "input_method/emoji_suggester.h",
     "input_method/field_trial.cc",
