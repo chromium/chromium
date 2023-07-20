@@ -56,6 +56,7 @@
 #include "net/base/features.h"
 #include "net/base/network_change_notifier.h"
 #include "net/first_party_sets/global_first_party_sets.h"
+#include "net/log/file_net_log_observer.h"
 #include "net/log/net_log_util.h"
 #include "sandbox/policy/features.h"
 #include "services/cert_verifier/cert_verifier_service_factory.h"
@@ -576,6 +577,37 @@ net::NetLogCaptureMode GetNetCaptureModeFromCommandLine(
   return net::NetLogCaptureMode::kDefault;
 }
 
+// Parse the maximum file size for the NetLog, if one was specified.
+// kNoLimit indicates no, valid, maximum size was specified.
+int64_t GetNetMaximumFileSizeFromCommandLine(
+    const base::CommandLine& command_line) {
+  base::StringPiece switch_name = network::switches::kNetLogMaxSizeMb;
+
+  if (!command_line.HasSwitch(switch_name)) {
+    return net::FileNetLogObserver::kNoLimit;
+  }
+
+  std::string value = command_line.GetSwitchValueASCII(switch_name);
+
+  if (value.empty()) {
+    return net::FileNetLogObserver::kNoLimit;
+  }
+
+  // 32 bits for the input is fine, a max size of ~2 PB ought to be enough for
+  // anybody.
+  uint32_t max_size_megabytes;
+  bool valid = base::StringToUint(value, &max_size_megabytes);
+
+  if (!valid) {
+    return net::FileNetLogObserver::kNoLimit;
+  }
+
+  // Value is currently in megabytes, convert to bytes. 1024*1024 == 2^20 ==
+  // left shift by 20 bits
+  uint64_t max_size_bytes = max_size_megabytes << 20;
+  return max_size_bytes;
+}
+
 }  // namespace
 
 class NetworkServiceInstancePrivate {
@@ -679,9 +711,12 @@ network::mojom::NetworkService* GetNetworkService() {
         if (!file.IsValid()) {
           LOG(ERROR) << "Failed opening NetLog: " << log_path.value();
         } else {
+          uint64_t max_file_size =
+              GetNetMaximumFileSizeFromCommandLine(*command_line);
+
           (*g_network_service_remote)
               ->StartNetLog(
-                  std::move(file),
+                  std::move(file), max_file_size,
                   GetNetCaptureModeFromCommandLine(*command_line),
                   GetContentClient()->browser()->GetNetLogConstants());
         }

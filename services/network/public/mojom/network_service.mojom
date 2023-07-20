@@ -173,13 +173,19 @@ interface NetworkService {
   // Sets the parameters and initializes the service.
   SetParams(NetworkServiceParams params);
 
-  // Starts observing the NetLog event stream and writing entries to |file|.
-  // |constants| is a legend used for decoding constant values in the log; it
-  // will be merged with the |GetNetConstants()| dictionary before being passed
-  // through to the FileObserver. (See |FileNetLogObserver::CreateBounded()|
-  // for more details). Most clients will just be adding a dictionary under
-  // the key "clientInfo".
+  // Starts observing the NetLog event stream and writing entries to |file| with
+  // a maximum size specified by |max_total_size|. |constants| is a legend used
+  // for decoding constant values in the log; it will be merged with the
+  // |GetNetConstants()| dictionary before being passed through to the
+  // FileObserver. (See |FileNetLogObserver::CreateBounded()| for more details).
+  // Most clients will just be adding a dictionary under the key "clientInfo".
+  // If |max_total_size| is net::FileNetLogObserver::kNoLimit then the log has
+  // an unbounded size.
+  //
+  // Note that maximum size is only a rough limit and the final file size may
+  // differ by a small amount from the requested value.
   StartNetLog(mojo_base.mojom.File file,
+              uint64 max_total_size,
               NetLogCaptureMode capture_mode,
               mojo_base.mojom.DictionaryValue constants);
 

@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -19,6 +21,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "content/browser/network/network_service_util_internal.h"
 #include "content/browser/network_service_instance_impl.h"
 #include "content/browser/storage_partition_impl.h"
@@ -54,6 +57,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/gtest_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "sandbox/policy/features.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -1661,6 +1665,122 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceWithUDPSocketLimit,
     EXPECT_EQ(net::ERR_INSUFFICIENT_RESOURCES,
               ConnectUDPSocketSync(network_context, &socket));
   }
+}
+
+class NetworkServiceNetLogBrowserTest : public ContentBrowserTest {
+ public:
+  NetworkServiceNetLogBrowserTest() {
+    EXPECT_TRUE(embedded_test_server()->Start());
+    EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
+    log_path_ = temp_dir_.Take();
+    log_path_ = log_path_.Append(FILE_PATH_LITERAL("my_net_log_file.json"));
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchPath(network::switches::kLogNetLog, log_path_);
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    // Check that the log file exists and has been written to.
+    base::File log_file_read(log_path_,
+                             base::File::FLAG_OPEN | base::File::FLAG_READ);
+    EXPECT_TRUE(log_file_read.IsValid());
+    base::File::Info file_info;
+    log_file_read.GetInfo(&file_info);
+    EXPECT_GT(file_info.size, 0);
+  }
+
+ protected:
+  base::FilePath log_path_;
+  base::ScopedTempDir temp_dir_;
+};
+
+// Tests that a log file is generated and is of non-zero size.
+IN_PROC_BROWSER_TEST_F(NetworkServiceNetLogBrowserTest, LogCreated) {
+  // Navigate to a page to generate some data.
+  EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL("/echo")));
+  // Because the file isn't closed until the network service shuts down the
+  // final checks are performed in TearDownInProcessBrowserTestFixture().
+}
+
+class NetworkServiceBoundedNetLogBrowserTest
+    : public NetworkServiceNetLogBrowserTest {
+ public:
+  NetworkServiceBoundedNetLogBrowserTest() {
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
+    // Network sandboxing disallows the creation of a temp directory needed by
+    // bounded net-logs. Disable it for this test.
+    scoped_feature_list_.InitAndDisableFeature(
+        sandbox::policy::features::kNetworkServiceSandbox);
+#endif
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    NetworkServiceNetLogBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(network::switches::kNetLogMaxSizeMb,
+                                    base::NumberToString(kMaxSizeMegaBytes));
+    command_line->AppendSwitchASCII(network::switches::kNetLogCaptureMode,
+                                    "Everything");
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+// Check that the log file exists and has been written to.
+#if BUILDFLAG(IS_ANDROID)
+    // Android devices don't always finish flushing the file to disk before
+    // control is returned to the test, meaning that if we were to immediately
+    // get the file size it would be smaller than expected because it's not
+    // fully written out. Adding this sleep gives the file time to finish
+    // flushing.
+    base::PlatformThread::Sleep(base::Seconds(1));
+#endif
+
+    base::File log_file_read(log_path_,
+                             base::File::FLAG_OPEN | base::File::FLAG_READ);
+    auto error = log_file_read.error_details();
+    EXPECT_EQ(error, base::File::FILE_OK);
+    EXPECT_TRUE(log_file_read.IsValid());
+    base::File::Info file_info;
+    log_file_read.GetInfo(&file_info);
+
+    // The max size is only a rough bound, so let's make sure the final file is
+    // within a reasonable range from our max. Let's say 10%.
+    const int64_t kMaxSizeUpper = kMaxSizeBytes * 1.1;
+    const int64_t kMaxSizeLower = kMaxSizeBytes * 0.9;
+    EXPECT_GT(file_info.size, kMaxSizeLower);
+    EXPECT_LT(file_info.size, kMaxSizeUpper);
+  }
+
+  // For testing, have a max log size of 1 MB. 1024*1024 == 2^20 == left shift
+  // by 20 bits
+  const uint32_t kMaxSizeMegaBytes = 1;
+  const uint64_t kMaxSizeBytes = kMaxSizeMegaBytes << 20;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1466224): Try-bots use a different temp directory that the Mac
+// network sandbox doesn't allow and causes this test to fail. Disable the test
+// until this is resolved.
+IN_PROC_BROWSER_TEST_F(NetworkServiceBoundedNetLogBrowserTest,
+                       DISABLED_LogCreated) {
+#else
+IN_PROC_BROWSER_TEST_F(NetworkServiceBoundedNetLogBrowserTest, LogCreated) {
+#endif
+  // Navigate to a page to generate some data.
+  // Through trial and error it was found that this looping navigation results
+  // in a ~2MB unbounded net-log file. Since our bounded net-log is limited to
+  // 1MB this is fine.
+
+  // This string is roughly 8KB;
+  const std::string kManyAs(8192, 'a');
+  for (int i = 0; i < 30; i++) {
+    EXPECT_TRUE(NavigateToURL(
+        shell(), embedded_test_server()->GetURL("/echo?" + kManyAs)));
+  }
+  // Because the file isn't closed until the network service shuts down the
+  // final checks are performed in TearDownInProcessBrowserTestFixture().
 }
 
 #if BUILDFLAG(IS_ANDROID)
