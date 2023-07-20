@@ -64,6 +64,12 @@ IN_PROC_BROWSER_TEST_F(CrComponentsTest, LocalizedLink) {
   RunTest("cr_components/localized_link_test.js", "mocha.run()");
 }
 
+typedef WebUIMochaBrowserTest CrComponentsOmniboxTest;
+IN_PROC_BROWSER_TEST_F(CrComponentsOmniboxTest, RealboxMatchTest) {
+  set_test_loader_host(chrome::kChromeUINewTabPageHost);
+  RunTest("cr_components/omnibox/realbox_match_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrComponentsTest, SettingsPrefs) {
   // Preload a settings URL, so that the test can access settingsPrivate.
   set_test_loader_host(chrome::kChromeUISettingsHost);
