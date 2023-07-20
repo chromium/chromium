@@ -12,8 +12,8 @@
 #include "base/values.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/host/mojom/remote_support.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -27,6 +27,7 @@ class ChromotingHostContext;
 class It2MeHostFactory;
 class PolicyWatcher;
 struct ChromeOsEnterpriseParams;
+struct ConnectionDetails;
 
 // This class wraps the It2MeNativeMessageHost instance used on other platforms
 // and provides a way to interact with it using Mojo IPC.  This instance
@@ -43,6 +44,8 @@ class It2MeNativeMessageHostAsh : public extensions::NativeMessageHost::Client {
       delete;
   ~It2MeNativeMessageHostAsh() override;
 
+  using ClientConnectedCallback = base::OnceCallback<void(ConnectionDetails)>;
+
   // Creates a new NMH instance, creates a new SupportHostObserver remote and
   // returns the pending_remote.  Start() must be called before the first call
   // to |Connect()|.
@@ -56,10 +59,14 @@ class It2MeNativeMessageHostAsh : public extensions::NativeMessageHost::Client {
 
   // Begins the connection process using the wrapped native message host.
   // |connected_callback| is run after the connection process has completed.
+  // If `reconnect_params` is set then the new connection will allow a
+  // previously connected client to reconnect.
   void Connect(
-      mojom::SupportSessionParamsPtr params,
+      const mojom::SupportSessionParams& params,
       const absl::optional<ChromeOsEnterpriseParams>& enterprise_params,
+      const absl::optional<ConnectionDetails>& reconnect_params,
       base::OnceClosure connected_callback,
+      ClientConnectedCallback client_connected_callback,
       base::OnceClosure disconnected_callback);
   // Disconnects an active session if one exists.
   void Disconnect();
@@ -76,6 +83,9 @@ class It2MeNativeMessageHostAsh : public extensions::NativeMessageHost::Client {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::OnceClosure connected_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  ClientConnectedCallback client_connected_callback_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::OnceClosure disconnected_callback_
       GUARDED_BY_CONTEXT(sequence_checker_);

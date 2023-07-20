@@ -9,12 +9,14 @@
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/host/chromeos/features.h"
 #include "remoting/host/chromoting_host_context.h"
+#include "remoting/host/it2me/connection_details.h"
 #include "remoting/host/it2me/it2me_native_messaging_host.h"
 #include "remoting/host/native_messaging/native_messaging_helpers.h"
 #include "remoting/host/policy_watcher.h"
@@ -150,9 +152,11 @@ It2MeNativeMessageHostAsh::Start(
 }
 
 void It2MeNativeMessageHostAsh::Connect(
-    mojom::SupportSessionParamsPtr params,
+    const mojom::SupportSessionParams& params,
     const absl::optional<ChromeOsEnterpriseParams>& enterprise_params,
+    const absl::optional<ConnectionDetails>& reconnect_params,
     base::OnceClosure connected_callback,
+    ClientConnectedCallback client_connected_callback,
     base::OnceClosure disconnected_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(native_message_host_);
@@ -160,21 +164,22 @@ void It2MeNativeMessageHostAsh::Connect(
   DCHECK(!disconnected_callback_);
 
   connected_callback_ = std::move(connected_callback);
+  client_connected_callback_ = std::move(client_connected_callback);
   disconnected_callback_ = std::move(disconnected_callback);
 
   auto message =
       base::Value::Dict()
           .Set(kMessageType, kConnectMessage)
-          .Set(kUserName, params->user_name)
-          .Set(kAuthServiceWithToken, params->oauth_access_token)
+          .Set(kUserName, params.user_name)
+          .Set(kAuthServiceWithToken, params.oauth_access_token)
           .Set(kSuppressUserDialogs,
-               ShouldSuppressUserDialog(*params, enterprise_params))
+               ShouldSuppressUserDialog(params, enterprise_params))
           .Set(kSuppressNotifications,
-               ShouldSuppressNotifications(*params, enterprise_params))
+               ShouldSuppressNotifications(params, enterprise_params))
           .Set(kTerminateUponInput,
-               ShouldTerminateUponInput(*params, enterprise_params))
+               ShouldTerminateUponInput(params, enterprise_params))
           .Set(kCurtainLocalUserSession,
-               ShouldCurtainLocalUserSession(*params, enterprise_params))
+               ShouldCurtainLocalUserSession(params, enterprise_params))
           .Set(kShowTroubleshootingTools,
                ShouldShowTroubleshootingTools(enterprise_params))
           .Set(kAllowTroubleshootingTools,
@@ -182,8 +187,26 @@ void It2MeNativeMessageHostAsh::Connect(
           .Set(kAllowReconnections, ShouldAllowReconnections(enterprise_params))
           .Set(kAllowFileTransfer, ShouldAllowFileTransfer(enterprise_params))
           .Set(kIsEnterpriseAdminUser, enterprise_params.has_value());
-  if (params->authorized_helper.has_value()) {
-    message.Set(kAuthorizedHelper, *params->authorized_helper);
+  if (params.authorized_helper.has_value()) {
+    message.Set(kAuthorizedHelper, params.authorized_helper.value());
+  }
+
+  if (reconnect_params.has_value()) {
+    // We pass the previously connected user as the `authorized_helper`, to
+    // prevent anyone else from snooping in and connecting to the session.
+    message.Set(kAuthorizedHelper, reconnect_params.value().remote_username);
+
+    if (params.authorized_helper.has_value()) {
+      // Check we did not receive conflicting information.
+      CHECK_EQ(params.authorized_helper.value(),
+               reconnect_params.value().remote_username);
+    }
+
+    // TODO(b/283091055): Send the reconnection params in the connect message,
+    // and use them to reconnect to an existing client.
+    LOG(WARNING) << "Should reconnect to existing client, but that's not "
+                    "implemented yet!";
+    NOTIMPLEMENTED();
   }
 
   native_message_host_->OnMessage(base::WriteJson(message).value());
@@ -191,12 +214,10 @@ void It2MeNativeMessageHostAsh::Connect(
 
 void It2MeNativeMessageHostAsh::Disconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::Value::Dict message;
-  message.Set(kMessageType, kDisconnectMessage);
 
-  std::string message_json;
-  base::JSONWriter::Write(message, &message_json);
-  native_message_host_->OnMessage(message_json);
+  native_message_host_->OnMessage(
+      base::WriteJson(base::Value::Dict().Set(kMessageType, kDisconnectMessage))
+          .value());
 
   // Notify the owner that the host has been disconnected.  This will result in
   // the destruction of this object so do not access member variables after this
@@ -221,8 +242,6 @@ void It2MeNativeMessageHostAsh::PostMessageFromNativeHost(
   }
 
   if (type == kConnectResponse) {
-    // TODO(jeroendh): Update the connect response to include all the
-    // information required to store the reconnectable session information.
     HandleConnectResponse();
   } else if (type == kDisconnectResponse) {
     HandleDisconnectResponse();
@@ -309,6 +328,13 @@ void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
       return;
     }
     remote_->OnHostStateConnected(*remote_username);
+
+    // TODO(b/283091055): Update the client connected response to contain
+    // reconnection information (if the session is reconnectable), and add
+    // this information to `ConnectionDetail`.
+    std::move(client_connected_callback_)
+        .Run(ConnectionDetails(*remote_username));
+
   } else if (*new_state == kHostStateError) {
     const std::string* error_code_string =
         message.FindString(kErrorMessageCode);

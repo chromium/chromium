@@ -9,7 +9,7 @@
 
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "remoting/host/chromeos/file_session_storage.h"
 #include "remoting/host/chromeos/remote_support_host_ash.h"
 
 namespace remoting {
@@ -34,6 +34,8 @@ class RemotingServiceImpl : public RemotingService {
 
   std::unique_ptr<RemoteSupportHostAsh> remote_support_host_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  FileSessionStorage session_storage_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 RemotingServiceImpl::RemotingServiceImpl() = default;
@@ -41,10 +43,12 @@ RemotingServiceImpl::~RemotingServiceImpl() = default;
 
 RemoteSupportHostAsh& RemotingServiceImpl::GetSupportHost() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!remote_support_host_) {
-    remote_support_host_ =
-        std::make_unique<RemoteSupportHostAsh>(base::BindOnce(
-            &RemotingServiceImpl::ReleaseSupportHost, base::Unretained(this)));
+    remote_support_host_ = std::make_unique<RemoteSupportHostAsh>(
+        base::BindOnce(&RemotingServiceImpl::ReleaseSupportHost,
+                       base::Unretained(this)),
+        session_storage_);
   }
   return *remote_support_host_;
 }

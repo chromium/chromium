@@ -35,7 +35,7 @@ void RemotingAsh::StartSupportSession(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   remoting::RemotingService::Get().GetSupportHost().StartSession(
-      std::move(params), absl::nullopt,
+      *params.get(), absl::nullopt,
       base::BindOnce(
           [](StartSupportSessionCallback callback,
              remoting::mojom::StartSupportSessionResponsePtr response) {

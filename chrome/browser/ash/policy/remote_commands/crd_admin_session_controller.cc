@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_start_crd_session_job.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "remoting/host/chromeos/remote_support_host_ash.h"
 #include "remoting/host/chromeos/remoting_service.h"
 #include "remoting/host/chromeos/session_id.h"
@@ -47,7 +48,7 @@ class DefaultRemotingService
   void StartSession(remoting::mojom::SupportSessionParamsPtr params,
                     const remoting::ChromeOsEnterpriseParams& enterprise_params,
                     StartSessionCallback callback) override {
-    return GetSupportHost().StartSession(std::move(params), enterprise_params,
+    return GetSupportHost().StartSession(*params.get(), enterprise_params,
                                          std::move(callback));
   }
 
