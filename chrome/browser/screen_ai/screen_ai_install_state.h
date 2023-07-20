@@ -31,7 +31,7 @@ class ScreenAIInstallState {
     // Component is downloaded but not loaded yet.
     kDownloaded,
     // Component is initialized successfully by at least one profile.
-    kReady,
+    kReady
   };
 
   class Observer : public base::CheckedObserver {
@@ -63,6 +63,9 @@ class ScreenAIInstallState {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // Returns true if current state is suitable for trying to download.
+  bool MayTryDownload();
+
   // Returns true if the component is downloaded and not failed to initialize.
   bool IsComponentAvailable();
 
@@ -71,10 +74,9 @@ class ScreenAIInstallState {
   // Sets the component state and informs the observers.
   void SetState(State state);
 
-  // Triggers component download if it's not done. This function depends on
-  // component updater or DLC downloader and since they need the install state,
-  // we need to move it to another build target to avoid circular dependency.
-  virtual void DownloadComponent() = 0;
+  // Triggers component download if it's not already downloaded or is in
+  // progress.
+  void DownloadComponent();
 
   // Called by component downloaders to set download progress.
   void SetDownloadProgress(double progress);
@@ -87,8 +89,14 @@ class ScreenAIInstallState {
   State get_state() { return state_; }
 
   void ResetForTesting();
+  void SetStateForTesting(State state);
 
  private:
+  // This function depends on component updater or DLC downloader and since they
+  // need have dependencies on browser thread, we need to move it to another
+  // build target to avoid circular dependency.
+  virtual void DownloadComponentInternal() = 0;
+
   base::FilePath component_binary_path_;
   State state_ = State::kNotDownloaded;
 

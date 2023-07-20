@@ -62,14 +62,8 @@ ScreenAIDownloader::ScreenAIDownloader() {
 
 ScreenAIDownloader::~ScreenAIDownloader() = default;
 
-void ScreenAIDownloader::DownloadComponent() {
+void ScreenAIDownloader::DownloadComponentInternal() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  // TODO(crbug.com/1278249): Consider trying again if download has failed
-  // before.
-  if (get_state() != State::kNotDownloaded) {
-    return;
-  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   screen_ai::dlc_installer::Install();

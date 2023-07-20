@@ -100,8 +100,12 @@ void ScreenAIInstallState::AddObserver(
 
   // Adding an observer indicates that we need the component.
   SetLastUsageTime();
-  if (state_ == State::kNotDownloaded) {
-    DownloadComponent();
+  DownloadComponent();
+}
+
+void ScreenAIInstallState::DownloadComponent() {
+  if (MayTryDownload()) {
+    DownloadComponentInternal();
   }
 }
 
@@ -162,9 +166,26 @@ void ScreenAIInstallState::SetComponentReadyForTesting() {
   state_ = State::kReady;
 }
 
+bool ScreenAIInstallState::MayTryDownload() {
+  switch (state_) {
+    case State::kNotDownloaded:
+    case State::kFailed:
+      return true;
+
+    case State::kDownloading:
+    case State::kDownloaded:
+    case State::kReady:
+      return false;
+  }
+}
+
 void ScreenAIInstallState::ResetForTesting() {
   state_ = State::kNotDownloaded;
   component_binary_path_.clear();
+}
+
+void ScreenAIInstallState::SetStateForTesting(State state) {
+  state_ = state;
 }
 
 }  // namespace screen_ai

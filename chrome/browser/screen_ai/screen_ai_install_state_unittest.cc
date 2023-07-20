@@ -21,7 +21,12 @@ class TestScreenAIInstallState : public screen_ai::ScreenAIInstallState {
 
   void SetLastUsageTime() override {}
 
-  void DownloadComponent() override {}
+  void DownloadComponentInternal() override {
+    // The passed file path is not used and just indicates that the component
+    // exists.
+    ScreenAIInstallState::GetInstance()->SetComponentFolder(
+        base::FilePath(FILE_PATH_LITERAL("tmp")));
+  }
 };
 
 }  // namespace
@@ -37,12 +42,7 @@ class ScreenAIInstallStateTest : public testing::Test,
     component_downloaded_observer_.Observe(ScreenAIInstallState::GetInstance());
   }
 
-  void MakeComponentDownloaded() {
-    // The passed file path is not used and just indicates that the component
-    // exists.
-    ScreenAIInstallState::GetInstance()->SetComponentFolder(
-        base::FilePath(FILE_PATH_LITERAL("tmp")));
-  }
+  void DownloadComponent() { test_install_state_.DownloadComponentInternal(); }
 
   void StateChanged(ScreenAIInstallState::State state) override {
     if (state == ScreenAIInstallState::State::kDownloaded) {
@@ -61,20 +61,21 @@ class ScreenAIInstallStateTest : public testing::Test,
   bool component_downloaded_received_ = false;
 };
 
-TEST_F(ScreenAIInstallStateTest, NeverDownloaded) {
-  StartObservation();
-  EXPECT_FALSE(ComponentDownloadedReceived());
-}
-
-TEST_F(ScreenAIInstallStateTest, DownloadedBeforeObservation) {
-  MakeComponentDownloaded();
+TEST_F(ScreenAIInstallStateTest, AddingObserverTriggersDownload) {
   StartObservation();
   EXPECT_TRUE(ComponentDownloadedReceived());
 }
 
-TEST_F(ScreenAIInstallStateTest, DownloadedAfterObservation) {
+TEST_F(ScreenAIInstallStateTest, DownloadedBeforeObservation) {
+  DownloadComponent();
   StartObservation();
-  MakeComponentDownloaded();
+  EXPECT_TRUE(ComponentDownloadedReceived());
+}
+
+TEST_F(ScreenAIInstallStateTest, ObservationAfterFailure) {
+  ScreenAIInstallState::GetInstance()->SetStateForTesting(
+      screen_ai::ScreenAIInstallState::State::kFailed);
+  StartObservation();
   EXPECT_TRUE(ComponentDownloadedReceived());
 }
 

@@ -24,7 +24,7 @@ class ScreenAIDownloader : public ScreenAIInstallState {
   ScreenAIDownloader& operator=(const ScreenAIDownloader&) = delete;
   ~ScreenAIDownloader() override;
 
-  void DownloadComponent() override;
+  void DownloadComponentInternal() override;
   void SetLastUsageTime() override;
 
  private:

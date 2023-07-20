@@ -36,7 +36,7 @@ class TestScreenAIInstallState : public screen_ai::ScreenAIInstallState {
 
   void SetLastUsageTime() override {}
 
-  void DownloadComponent() override {}
+  void DownloadComponentInternal() override {}
 };
 
 class TestPdfOcrHandler : public PdfOcrHandler {

@@ -29,10 +29,7 @@ void ScreenAIDownloaderAsh::GetComponentFolder(
     return;
   }
 
-  // TODO(b:289011135): Consider trying again if download has failed before.
-  if (!download_if_needed ||
-      (install_state->get_state() ==
-       screen_ai::ScreenAIInstallState::State::kFailed)) {
+  if (!download_if_needed) {
     std::move(callback).Run(absl::nullopt);
     return;
   }
@@ -40,7 +37,12 @@ void ScreenAIDownloaderAsh::GetComponentFolder(
   // Keep the callback and observe status updates.
   pending_download_callbacks_.push_back(std::move(callback));
   if (!install_state_observer_.IsObserving()) {
+    // Adding the observer will trigger download.
     install_state_observer_.Observe(install_state);
+  } else {
+    // When the observer is added and the component does not exit, it means that
+    // download has failed the previous time. So we need to try again.
+    install_state->DownloadComponent();
   }
 }
 
@@ -81,6 +83,11 @@ void ScreenAIDownloaderAsh::StateChanged(
     std::move(callback).Run(component_path);
   }
   pending_download_callbacks_.clear();
+}
+
+void ScreenAIDownloaderAsh::AttachObserverForTesting() {
+  install_state_observer_.Observe(
+      screen_ai::ScreenAIInstallState::GetInstance());
 }
 
 }  // namespace crosapi

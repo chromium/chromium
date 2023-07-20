@@ -504,6 +504,7 @@ source_set("unit_tests") {
     "prefs_ash_unittest.cc",
     "primary_profile_creation_waiter_unittest.cc",
     "rootfs_lacros_loader_unittest.cc",
+    "screen_ai_downloader_ash_unittest.cc",
     "stateful_lacros_loader_unittest.cc",
     "test_local_printer_ash.cc",
     "test_local_printer_ash.h",
