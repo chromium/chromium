@@ -1425,36 +1425,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   __weak __typeof(self) weakSelf = self;
   auto completion = ^(BOOL finished) {
-    __typeof(self) strongSelf = weakSelf;
-    if (!strongSelf) {
-      return;
-    }
-
-    [strongSelf.delegate gridViewController:strongSelf
-                          didMoveItemWithID:itemID
-                                    toIndex:toIndex];
-
-    // Bring back selected halo only for the moved cell, which lost it during
-    // the move (drag & drop).
-    if (strongSelf.selectedIndex != toIndex) {
-      return;
-    }
-    // Force reload of the selected cell now to avoid extra delay for the
-    // blue halo to appear. Bring the halo in 100ms.
-    [UIView
-        animateWithDuration:0.1
-                 animations:^{
-                   [strongSelf.collectionView reloadItemsAtIndexPaths:@[
-                     CreateIndexPath(strongSelf.selectedIndex)
-                   ]];
-                   [self deselectAllCollectionViewItemsAnimated:NO];
-                   [self
-                       selectCollectionViewItemWithID:strongSelf.selectedItemID
-                                             animated:NO
-                                       scrollPosition:
-                                           UICollectionViewScrollPositionNone];
-                 }
-                 completion:nil];
+    [weakSelf.delegate gridViewController:weakSelf
+                        didMoveItemWithID:itemID
+                                  toIndex:toIndex];
   };
   [self performModelUpdates:modelUpdates
                 collectionViewUpdates:collectionViewUpdates
