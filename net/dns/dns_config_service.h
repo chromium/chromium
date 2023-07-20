@@ -97,8 +97,6 @@ class NET_EXPORT_PRIVATE DnsConfigService {
     void CheckOnCorrectSequence();
 
    private:
-    void OnConfigChangedDelayed(bool success);
-
     // Back pointer. `this` is expected to be owned by `service_`, making this
     // raw pointer safe.
     const raw_ptr<DnsConfigService> service_;
@@ -184,6 +182,10 @@ class NET_EXPORT_PRIVATE DnsConfigService {
   // Called with new hosts. Rest of the config is assumed unchanged.
   void OnHostsRead(DnsHosts hosts);
 
+  // Called when config refresh is required. `succeeded` false to indicate that
+  // there was an error while watching for the change.
+  void OnConfigChanged(bool succeeded);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
  private:
@@ -195,7 +197,6 @@ class NET_EXPORT_PRIVATE DnsConfigService {
 
   // Hooks for Watcher change notifications. `succeeded` false to indicate that
   // there was an error watching for the change.
-  void OnConfigChanged(bool succeeded);
   void OnHostsChanged(bool succeeded);
   void OnConfigChangedDelayed(bool succeeded);
 
