@@ -669,11 +669,14 @@ void DIPSBounceDetector::OnServerCookiesAccessed(
 void DIPSBounceDetector::RecordRedirectHeuristic(
     const ukm::SourceId& source_id,
     const content::CookieAccessDetails& details) {
+  const std::string first_party_site = GetSiteForDIPS(details.first_party_url);
+  const std::string tracker_site = GetSiteForDIPS(details.url);
+
   // The redirect heuristic only applies when a main frame URL from earlier in
   // the redirect chain is now attempting to access cookies as a tracker on the
   // current main frame URL.
-  if (details.first_party_url == details.url ||
-      !committed_redirect_context_.HasUrlInRedirectChain(details.url)) {
+  if (first_party_site == tracker_site ||
+      !committed_redirect_context_.HasSiteInRedirectChain(tracker_site)) {
     return;
   }
 

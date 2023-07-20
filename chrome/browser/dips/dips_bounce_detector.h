@@ -124,9 +124,7 @@ class DIPSRedirectContext {
     return redirects_.size() + redirect_prefix_count_;
   }
 
-  bool HasUrlInRedirectChain(const GURL& url) {
-    const std::string site = GetSiteForDIPS(url);
-
+  bool HasSiteInRedirectChain(const std::string& site) {
     for (const auto& redirect : redirects_) {
       if (GetSiteForDIPS(redirect->url) == site) {
         return true;
