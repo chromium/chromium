@@ -77,8 +77,10 @@ constexpr int kDefaultMargin = 8;
 constexpr int kBadgeSize = 16;
 constexpr int kCircularImageButtonSize = 28;
 constexpr int kCircularImageButtonRefreshSize = 32;
+constexpr int kCircularImageButtonTransparentRefreshSize = 24;
 constexpr float kShortcutIconToImageRatio = 9.0f / 16.0f;
-constexpr float kShortcutIconToImageRefreshRatio = 10.0f / 16.0f;
+constexpr float kShortcutIconToImageRefreshRatio = 20.0f / 32.0f;
+constexpr float kShortcutIconToImageTransparentRefreshRatio = 16.0f / 24.0f;
 // TODO(crbug.com/1128499): Remove this constant by extracting art height from
 // |avatar_header_art|.
 constexpr int kHeaderArtHeight = 80;
@@ -263,16 +265,17 @@ class CircularImageButton : public views::ImageButton {
 
     const auto* color_provider = GetColorProvider();
     SkColor icon_color = color_provider->GetColor(ui::kColorIcon);
+    float shortcutIconToImageRatio = kShortcutIconToImageRatio;
     if (features::IsChromeRefresh2023()) {
       icon_color = color_provider->GetColor(kColorProfileMenuIconButton);
+      shortcutIconToImageRatio =
+          has_background_color_ ? kShortcutIconToImageRefreshRatio
+                                : kShortcutIconToImageTransparentRefreshRatio;
     } else if (themed_icon_color_ != SK_ColorTRANSPARENT) {
       icon_color = themed_icon_color_;
     }
-    gfx::ImageSkia image = ImageForMenu(*icon_,
-                                        features::IsChromeRefresh2023()
-                                            ? kShortcutIconToImageRefreshRatio
-                                            : kShortcutIconToImageRatio,
-                                        icon_color);
+    gfx::ImageSkia image =
+        ImageForMenu(*icon_, shortcutIconToImageRatio, icon_color);
     SetImage(views::Button::STATE_NORMAL, SizeImage(image, button_size_));
     views::InkDrop::Get(this)->SetBaseColor(icon_color);
   }
@@ -688,8 +691,8 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
           base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
                               base::Unretained(this),
                               std::move(edit_button_params->edit_action)),
-          *edit_button_params->edit_icon,
-          edit_button_params->edit_tooltip_text);
+          *edit_button_params->edit_icon, edit_button_params->edit_tooltip_text,
+          kCircularImageButtonTransparentRefreshSize);
     } else {
       edit_button = std::make_unique<CircularImageButton>(
           base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
