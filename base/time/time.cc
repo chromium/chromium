@@ -53,37 +53,6 @@ std::atomic<ThreadTicksNowFunction> g_thread_ticks_now_function{
 
 // TimeDelta ------------------------------------------------------------------
 
-int64_t TimeDelta::InSecondsFloored() const {
-  if (!is_inf()) {
-    const int64_t result = delta_ / Time::kMicrosecondsPerSecond;
-    // Convert |result| from truncating to flooring.
-    return (result * Time::kMicrosecondsPerSecond > delta_) ? (result - 1)
-                                                            : result;
-  }
-  return delta_;
-}
-
-int TimeDelta::InDaysFloored() const {
-  if (!is_inf()) {
-    const int result = delta_ / Time::kMicrosecondsPerDay;
-    // Convert |result| from truncating to flooring.
-    return (result * Time::kMicrosecondsPerDay > delta_) ? (result - 1)
-                                                         : result;
-  }
-  return (delta_ < 0) ? std::numeric_limits<int>::min()
-                      : std::numeric_limits<int>::max();
-}
-
-int64_t TimeDelta::InMillisecondsRoundedUp() const {
-  if (!is_inf()) {
-    const int64_t result = delta_ / Time::kMicrosecondsPerMillisecond;
-    // Convert |result| from truncating to ceiling.
-    return (delta_ > result * Time::kMicrosecondsPerMillisecond) ? (result + 1)
-                                                                 : result;
-  }
-  return delta_;
-}
-
 TimeDelta TimeDelta::CeilToMultiple(TimeDelta interval) const {
   if (is_inf() || interval.is_zero())
     return *this;

@@ -227,15 +227,15 @@ class BASE_EXPORT TimeDelta {
   // arithmetic is such that XXX(t.InXXXF()) may not precisely equal |t|.
   // Hence, floating point values should not be used for storage.
   constexpr int InDays() const;
-  int InDaysFloored() const;
+  constexpr int InDaysFloored() const;
   constexpr int InHours() const;
   constexpr int InMinutes() const;
   constexpr double InSecondsF() const;
   constexpr int64_t InSeconds() const;
-  int64_t InSecondsFloored() const;
+  constexpr int64_t InSecondsFloored() const;
   constexpr double InMillisecondsF() const;
   constexpr int64_t InMilliseconds() const;
-  int64_t InMillisecondsRoundedUp() const;
+  constexpr int64_t InMillisecondsRoundedUp() const;
   constexpr int64_t InMicroseconds() const { return delta_; }
   constexpr double InMicrosecondsF() const;
   constexpr int64_t InNanoseconds() const;
@@ -933,6 +933,17 @@ constexpr int TimeDelta::InDays() const {
                       : std::numeric_limits<int>::max();
 }
 
+constexpr int TimeDelta::InDaysFloored() const {
+  if (!is_inf()) {
+    const int result = delta_ / Time::kMicrosecondsPerDay;
+    // Convert |result| from truncating to flooring.
+    return (result * Time::kMicrosecondsPerDay > delta_) ? (result - 1)
+                                                         : result;
+  }
+  return (delta_ < 0) ? std::numeric_limits<int>::min()
+                      : std::numeric_limits<int>::max();
+}
+
 constexpr int TimeDelta::InHours() const {
   // saturated_cast<> is necessary since very large (but still less than
   // min/max) deltas would result in overflow.
@@ -956,6 +967,16 @@ constexpr int64_t TimeDelta::InSeconds() const {
   return is_inf() ? delta_ : (delta_ / Time::kMicrosecondsPerSecond);
 }
 
+constexpr int64_t TimeDelta::InSecondsFloored() const {
+  if (!is_inf()) {
+    const int64_t result = delta_ / Time::kMicrosecondsPerSecond;
+    // Convert |result| from truncating to flooring.
+    return (result * Time::kMicrosecondsPerSecond > delta_) ? (result - 1)
+                                                            : result;
+  }
+  return delta_;
+}
+
 constexpr double TimeDelta::InMillisecondsF() const {
   if (!is_inf()) {
     return static_cast<double>(delta_) / Time::kMicrosecondsPerMillisecond;
@@ -970,6 +991,16 @@ constexpr int64_t TimeDelta::InMilliseconds() const {
   }
   return (delta_ < 0) ? std::numeric_limits<int64_t>::min()
                       : std::numeric_limits<int64_t>::max();
+}
+
+constexpr int64_t TimeDelta::InMillisecondsRoundedUp() const {
+  if (!is_inf()) {
+    const int64_t result = delta_ / Time::kMicrosecondsPerMillisecond;
+    // Convert |result| from truncating to ceiling.
+    return (delta_ > result * Time::kMicrosecondsPerMillisecond) ? (result + 1)
+                                                                 : result;
+  }
+  return delta_;
 }
 
 constexpr double TimeDelta::InMicrosecondsF() const {
