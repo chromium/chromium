@@ -53,10 +53,6 @@ class MockSuggestionsHandler
   base::WeakPtrFactory<MockSuggestionsHandler> weak_ptr_factory_{this};
 };
 
-FormStructureTestApi test_api(FormStructure* form_structure) {
-  return FormStructureTestApi(form_structure);
-}
-
 }  // namespace
 
 class SingleFieldFormFillRouterTest : public testing::Test {
@@ -149,12 +145,12 @@ TEST_F(SingleFieldFormFillRouterTest,
   FormStructure form_structure{form_data};
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  test_api(&form_structure)
+  test_api(form_structure)
       .SetFieldTypes({UNKNOWN_TYPE, UNKNOWN_TYPE, UNKNOWN_TYPE,
                       MERCHANT_PROMO_CODE, MERCHANT_PROMO_CODE,
                       MERCHANT_PROMO_CODE, IBAN_VALUE, IBAN_VALUE, IBAN_VALUE});
 #else
-  test_api(&form_structure)
+  test_api(form_structure)
       .SetFieldTypes({UNKNOWN_TYPE, UNKNOWN_TYPE, UNKNOWN_TYPE,
                       MERCHANT_PROMO_CODE, MERCHANT_PROMO_CODE,
                       MERCHANT_PROMO_CODE});

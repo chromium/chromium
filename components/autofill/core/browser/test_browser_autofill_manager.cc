@@ -23,14 +23,6 @@
 
 namespace autofill {
 
-namespace {
-
-FormStructureTestApi test_api(FormStructure* form_structure) {
-  return FormStructureTestApi(form_structure);
-}
-
-}  // namespace
-
 TestBrowserAutofillManager::TestBrowserAutofillManager(AutofillDriver* driver,
                                                        AutofillClient* client)
     : BrowserAutofillManager(driver, client, "en-US") {}
@@ -208,9 +200,8 @@ void TestBrowserAutofillManager::AddSeenForm(
     bool preserve_values_in_form_structure) {
   auto form_structure = std::make_unique<FormStructure>(
       preserve_values_in_form_structure ? form : test::WithoutValues(form));
-  test_api(form_structure.get()).SetFieldTypes(heuristic_types, server_types);
-  test_api(form_structure.get())
-      .IdentifySections(/*ignore_autocomplete=*/false);
+  test_api(*form_structure).SetFieldTypes(heuristic_types, server_types);
+  test_api(*form_structure).IdentifySections(/*ignore_autocomplete=*/false);
   AddSeenFormStructure(std::move(form_structure));
   form_interactions_ukm_logger()->OnFormsParsed(client()->GetUkmSourceId());
 }

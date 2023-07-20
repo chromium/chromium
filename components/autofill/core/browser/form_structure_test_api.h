@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/containers/contains.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/form_structure.h"
 
@@ -41,9 +41,7 @@ class FormStructureTestApi {
   }
 
   explicit FormStructureTestApi(FormStructure* form_structure)
-      : form_structure_(form_structure) {
-    DCHECK(form_structure_);
-  }
+      : form_structure_(*form_structure) {}
 
   [[nodiscard]] bool ShouldBeParsed(ShouldBeParsedParams params = {},
                                     LogManager* log_manager = nullptr) {
@@ -99,8 +97,16 @@ class FormStructureTestApi {
   }
 
  private:
-  raw_ptr<FormStructure> form_structure_;
+  const raw_ref<FormStructure> form_structure_;
 };
+
+inline FormStructureTestApi test_api(FormStructure* form_structure) {
+  return FormStructureTestApi(form_structure);
+}
+
+inline FormStructureTestApi test_api(FormStructure& form_structure) {
+  return FormStructureTestApi(&form_structure);
+}
 
 }  // namespace autofill
 

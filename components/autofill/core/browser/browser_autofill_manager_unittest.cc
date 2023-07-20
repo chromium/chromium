@@ -7031,8 +7031,7 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedServerTypes) {
     heuristic_types.push_back(UNKNOWN_TYPE);
     server_types.push_back(form_structure->field(i)->heuristic_type());
   }
-  FormStructureTestApi(form_structure.get())
-      .SetFieldTypes(heuristic_types, server_types);
+  test_api(*form_structure).SetFieldTypes(heuristic_types, server_types);
   browser_autofill_manager_->AddSeenFormStructure(std::move(form_structure));
 
   // Fill the form.
@@ -8893,8 +8892,7 @@ TEST_F(BrowserAutofillManagerTest,
                                                      UNKNOWN_TYPE);
   const std::vector<ServerFieldType> server_types{NAME_FIRST, NAME_MIDDLE,
                                                   NAME_LAST};
-  FormStructureTestApi(form_structure.get())
-      .SetFieldTypes(heuristic_types, server_types);
+  test_api(*form_structure).SetFieldTypes(heuristic_types, server_types);
   browser_autofill_manager_->AddSeenFormStructure(std::move(form_structure));
 
   // Make sure the form can be autofilled.
@@ -9050,8 +9048,7 @@ TEST_F(BrowserAutofillManagerTest,
   FormData form_data;
   test::CreateTestIbanFormData(&form_data);
   FormStructure form_structure{form_data};
-  FormStructureTestApi(&form_structure)
-      .SetFieldTypes({IBAN_VALUE}, {IBAN_VALUE});
+  test_api(form_structure).SetFieldTypes({IBAN_VALUE}, {IBAN_VALUE});
 
   MockAutofillOptimizationGuide autofill_optimization_guide;
   ON_CALL(autofill_client_, GetAutofillOptimizationGuide)
@@ -9072,8 +9069,7 @@ TEST_F(BrowserAutofillManagerTest,
   FormData form_data;
   test::CreateTestIbanFormData(&form_data);
   FormStructure form_structure{form_data};
-  FormStructureTestApi(&form_structure)
-      .SetFieldTypes({IBAN_VALUE}, {IBAN_VALUE});
+  test_api(form_structure).SetFieldTypes({IBAN_VALUE}, {IBAN_VALUE});
 
   // Test that form processing doesn't crash when we have an IBAN form but no
   // AutofillOptimizationGuide present.
@@ -10008,8 +10004,7 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteMetrics) {
   // Override the types and simulate seeing the form on page load.
   auto form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(nullptr, nullptr);
-  FormStructureTestApi(form_structure.get())
-      .SetFieldTypes(heuristic_types, server_types);
+  test_api(*form_structure).SetFieldTypes(heuristic_types, server_types);
   browser_autofill_manager_->AddSeenFormStructure(std::move(form_structure));
 
   // Submit the form and verify that all metrics are collected correctly.
@@ -10096,7 +10091,7 @@ TEST_P(BrowserAutofillManagerContextMenuImpressionsTest,
 
   // Override the types and simulate seeing the form on page load.
   auto form_structure = std::make_unique<FormStructure>(form);
-  FormStructureTestApi(form_structure.get())
+  test_api(*form_structure)
       .SetFieldTypes({test_case.heuristic_type}, {test_case.server_type});
   browser_autofill_manager_->AddSeenFormStructure(std::move(form_structure));
 

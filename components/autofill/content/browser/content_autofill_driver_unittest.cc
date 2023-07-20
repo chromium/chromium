@@ -72,14 +72,6 @@ namespace {
 
 const char kAppLocale[] = "en-US";
 
-ContentAutofillRouterTestApi test_api(ContentAutofillRouter* cad) {
-  return ContentAutofillRouterTestApi(cad);
-}
-
-ContentAutofillDriverTestApi test_api(ContentAutofillDriver* cad) {
-  return ContentAutofillDriverTestApi(cad);
-}
-
 class FakeAutofillAgent : public mojom::AutofillAgent {
  public:
   FakeAutofillAgent() = default;
@@ -353,7 +345,7 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness {
         navigation_handle.set_is_prerendered_page_activation(true);
         break;
     }
-    factory()->DidFinishNavigation(&navigation_handle);
+    factory().DidFinishNavigation(&navigation_handle);
   }
 
  protected:
@@ -361,10 +353,10 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness {
     FormData form;
     test::CreateTestAddressFormData(&form);
     std::vector<FormData> augmented_forms;
-    EXPECT_CALL(*manager(), OnFormsSeen(_, _))
+    EXPECT_CALL(manager(), OnFormsSeen(_, _))
         .WillOnce(DoAll(SaveArg<0>(&augmented_forms)));
-    driver()->renderer_events().FormsSeen(/*updated_forms=*/{form},
-                                          /*removed_forms=*/{});
+    driver().renderer_events().FormsSeen(/*updated_forms=*/{form},
+                                         /*removed_forms=*/{});
     return augmented_forms.front();
   }
 
@@ -372,21 +364,19 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness {
     return autofill_client_injector_[web_contents()];
   }
 
-  ContentAutofillDriverFactory* factory() {
-    return client()->GetAutofillDriverFactory();
+  ContentAutofillDriverFactory& factory() {
+    return *client()->GetAutofillDriverFactory();
   }
 
-  ContentAutofillRouter& router() {
-    return ContentAutofillDriverFactoryTestApi(factory()).router();
+  ContentAutofillRouter& router() { return test_api(factory()).router(); }
+
+  ContentAutofillDriver& driver() {
+    return *autofill_driver_injector_[web_contents()];
   }
 
-  ContentAutofillDriver* driver() {
-    return autofill_driver_injector_[web_contents()];
-  }
-
-  MockBrowserAutofillManager* manager() {
-    return static_cast<MockBrowserAutofillManager*>(
-        driver()->autofill_manager());
+  MockBrowserAutofillManager& manager() {
+    return static_cast<MockBrowserAutofillManager&>(
+        *driver().autofill_manager());
   }
 
   LocalFrameToken frame_token() {
@@ -405,22 +395,22 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness {
 };
 
 TEST_F(ContentAutofillDriverTest, NavigatedMainFrameDifferentDocument) {
-  EXPECT_CALL(*manager(), Reset());
+  EXPECT_CALL(manager(), Reset());
   Navigate(NavigationType::kNormal);
 }
 
 TEST_F(ContentAutofillDriverTest, NavigatedMainFrameSameDocument) {
-  EXPECT_CALL(*manager(), Reset()).Times(0);
+  EXPECT_CALL(manager(), Reset()).Times(0);
   Navigate(NavigationType::kSameDocument);
 }
 
 TEST_F(ContentAutofillDriverTest, NavigatedMainFrameFromBackForwardCache) {
-  EXPECT_CALL(*manager(), Reset()).Times(0);
+  EXPECT_CALL(manager(), Reset()).Times(0);
   Navigate(NavigationType::kServedFromBackForwardCache);
 }
 
 TEST_F(ContentAutofillDriverTest, NavigatedMainFramePrerenderedPageActivation) {
-  EXPECT_CALL(*manager(), Reset()).Times(0);
+  EXPECT_CALL(manager(), Reset()).Times(0);
   Navigate(NavigationType::kPrerenderedPageActivation);
 }
 
@@ -467,18 +457,18 @@ TEST_F(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm_Version) {
   test::CreateTestAddressFormData(&form);
 
   std::vector<FormData> augmented_forms;
-  EXPECT_CALL(*manager(), OnFormsSeen(_, _))
+  EXPECT_CALL(manager(), OnFormsSeen(_, _))
       .WillOnce(DoAll(SaveArg<0>(&augmented_forms)));
-  driver()->renderer_events().FormsSeen(/*updated_forms=*/{form},
-                                        /*removed_forms=*/{});
+  driver().renderer_events().FormsSeen(/*updated_forms=*/{form},
+                                       /*removed_forms=*/{});
   ASSERT_EQ(augmented_forms.size(), 1u);
   FormVersion previous_version = augmented_forms[0].version;
-  EXPECT_CALL(*manager(), OnFormsSeen(ElementsAre(Field("FormData::version",
-                                                        &FormData::version,
-                                                        Gt(previous_version))),
-                                      _));
-  driver()->renderer_events().FormsSeen(/*updated_forms=*/{form},
-                                        /*removed_forms=*/{});
+  EXPECT_CALL(manager(), OnFormsSeen(ElementsAre(Field("FormData::version",
+                                                       &FormData::version,
+                                                       Gt(previous_version))),
+                                     _));
+  driver().renderer_events().FormsSeen(/*updated_forms=*/{form},
+                                       /*removed_forms=*/{});
 }
 
 // Test that forms in "about:" subframes inherit the URL of their next
@@ -504,7 +494,7 @@ TEST_F(ContentAutofillDriverTest,
   ASSERT_TRUE(grandchild_rfh->GetLastCommittedURL().IsAboutBlank());
 
   FormData form;
-  test_api(grandchild_driver).SetFrameAndFormMetaData(form, nullptr);
+  test_api(*grandchild_driver).SetFrameAndFormMetaData(form, nullptr);
 
   EXPECT_EQ(form.url, GURL("https://hostname"));
 }
@@ -534,7 +524,7 @@ TEST_F(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfField) {
 TEST_F(ContentAutofillDriverTest, FormsSeen_UpdatedForm) {
   FormData form;
   test::CreateTestAddressFormData(&form);
-  EXPECT_CALL(*manager(),
+  EXPECT_CALL(manager(),
               OnFormsSeen(ElementsAre(AllOf(
                               // The received form has some frame-specific meta
                               // data set, which we don't test here.
@@ -546,19 +536,19 @@ TEST_F(ContentAutofillDriverTest, FormsSeen_UpdatedForm) {
                               Field("FormData::fields", &FormData::fields,
                                     SizeIs(form.fields.size())))),
                           IsEmpty()));
-  driver()->renderer_events().FormsSeen(/*updated_forms=*/{form},
-                                        /*removed_forms=*/{});
+  driver().renderer_events().FormsSeen(/*updated_forms=*/{form},
+                                       /*removed_forms=*/{});
 }
 
 // Tests that FormsSeen() for a removed form arrives in the AutofillManager.
 // Does not test multiple frames.
 TEST_F(ContentAutofillDriverTest, FormsSeen_RemovedForm) {
   FormRendererId form_renderer_id = test::MakeFormRendererId();
-  EXPECT_CALL(*manager(),
+  EXPECT_CALL(manager(),
               OnFormsSeen(IsEmpty(), ElementsAre(FormGlobalId(
                                          frame_token(), form_renderer_id))));
-  driver()->renderer_events().FormsSeen(/*updated_forms=*/{},
-                                        /*removed_forms=*/{form_renderer_id});
+  driver().renderer_events().FormsSeen(/*updated_forms=*/{},
+                                       /*removed_forms=*/{form_renderer_id});
 }
 
 // Tests that FormsSeen() for one updated and one removed form arrives in the
@@ -569,7 +559,7 @@ TEST_F(ContentAutofillDriverTest, FormsSeen_UpdatedAndRemovedForm) {
   test::CreateTestAddressFormData(&form);
   FormRendererId other_form_renderer_id = test::MakeFormRendererId();
   EXPECT_CALL(
-      *manager(),
+      manager(),
       OnFormsSeen(
           ElementsAre(AllOf(
               // The received form has some frame-specific meta data set, which
@@ -581,7 +571,7 @@ TEST_F(ContentAutofillDriverTest, FormsSeen_UpdatedAndRemovedForm) {
               Field("FormData::fields", &FormData::fields,
                     SizeIs(form.fields.size())))),
           ElementsAre(FormGlobalId(frame_token(), other_form_renderer_id))));
-  driver()->renderer_events().FormsSeen(
+  driver().renderer_events().FormsSeen(
       /*updated_forms=*/{form},
       /*removed_forms=*/{other_form_renderer_id});
 }
@@ -595,7 +585,7 @@ TEST_F(ContentAutofillDriverTest, FormDataSentToRenderer_FillForm) {
   }
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
-  driver()->browser_events().FillOrPreviewForm(
+  driver().browser_events().FillOrPreviewForm(
       mojom::RendererFormDataAction::kFill, input_form_data, triggered_origin,
       {});
 
@@ -621,7 +611,7 @@ TEST_F(ContentAutofillDriverTest, FormDataSentToRenderer_PreviewForm) {
                                    &FormFieldData::value));
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
-  driver()->browser_events().FillOrPreviewForm(
+  driver().browser_events().FillOrPreviewForm(
       mojom::RendererFormDataAction::kPreview, input_form_data,
       triggered_origin, {});
 
@@ -643,10 +633,10 @@ TEST_F(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {
   test::CreateTestAddressFormData(&form);
 
   std::vector<FormData> augmented_forms;
-  EXPECT_CALL(*manager(), OnFormsSeen(_, _))
+  EXPECT_CALL(manager(), OnFormsSeen(_, _))
       .WillOnce(DoAll(SaveArg<0>(&augmented_forms)));
-  driver()->renderer_events().FormsSeen(/*updated_forms=*/{form},
-                                        /*removed_forms=*/{});
+  driver().renderer_events().FormsSeen(/*updated_forms=*/{form},
+                                       /*removed_forms=*/{});
 
   test_api(driver()).SetFrameAndFormMetaData(form, nullptr);
   ASSERT_EQ(augmented_forms.size(), 1u);
@@ -659,7 +649,7 @@ TEST_F(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {
 
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
-  driver()->browser_events().SendAutofillTypePredictionsToRenderer(
+  driver().browser_events().SendAutofillTypePredictionsToRenderer(
       form_structures);
   run_loop.RunUntilIdle();
 
@@ -673,8 +663,8 @@ TEST_F(ContentAutofillDriverTest, AcceptDataListSuggestion) {
 
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
-  driver()->browser_events().RendererShouldAcceptDataListSuggestion(
-      field, input_value);
+  driver().browser_events().RendererShouldAcceptDataListSuggestion(field,
+                                                                   input_value);
   run_loop.RunUntilIdle();
 
   EXPECT_EQ(input_value,
@@ -685,7 +675,7 @@ TEST_F(ContentAutofillDriverTest, ClearFilledSectionSentToRenderer) {
   SeeAddressFormData();
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
-  driver()->browser_events().RendererShouldClearFilledSection();
+  driver().browser_events().RendererShouldClearFilledSection();
   run_loop.RunUntilIdle();
 
   EXPECT_TRUE(fake_agent_.GetCalledClearSection());
@@ -695,7 +685,7 @@ TEST_F(ContentAutofillDriverTest, ClearPreviewedFormSentToRenderer) {
   SeeAddressFormData();
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
-  driver()->browser_events().RendererShouldClearPreviewedForm();
+  driver().browser_events().RendererShouldClearPreviewedForm();
   run_loop.RunUntilIdle();
 
   EXPECT_TRUE(fake_agent_.GetCalledClearPreviewedForm());
@@ -710,8 +700,8 @@ TEST_F(ContentAutofillDriverTest, TriggerSuggestions) {
 
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
-  driver()->browser_events().RendererShouldTriggerSuggestions(field,
-                                                              input_source);
+  driver().browser_events().RendererShouldTriggerSuggestions(field,
+                                                             input_source);
   run_loop.RunUntilIdle();
 
   EXPECT_EQ(input_source, fake_agent_.GetCalledTriggerSuggestionsSource(field));
@@ -723,8 +713,8 @@ TEST_F(ContentAutofillDriverTest, FillFieldWithValue) {
 
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
-  driver()->browser_events().RendererShouldFillFieldWithValue(field,
-                                                              input_value);
+  driver().browser_events().RendererShouldFillFieldWithValue(field,
+                                                             input_value);
   run_loop.RunUntilIdle();
 
   EXPECT_EQ(input_value, fake_agent_.GetString16FillFieldWithValue(field));
@@ -736,8 +726,8 @@ TEST_F(ContentAutofillDriverTest, PreviewFieldWithValue) {
 
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
-  driver()->browser_events().RendererShouldPreviewFieldWithValue(field,
-                                                                 input_value);
+  driver().browser_events().RendererShouldPreviewFieldWithValue(field,
+                                                                input_value);
   run_loop.RunUntilIdle();
 
   EXPECT_EQ(input_value, fake_agent_.GetString16PreviewFieldWithValue(field));
@@ -745,9 +735,9 @@ TEST_F(ContentAutofillDriverTest, PreviewFieldWithValue) {
 
 TEST_F(ContentAutofillDriverTest, SetShouldSuppressKeyboard) {
   ASSERT_FALSE(test_api(driver()).should_suppress_keyboard());
-  test_api(&router()).set_last_queried_source(driver());
+  test_api(router()).set_last_queried_source(&driver());
 
-  driver()->SetShouldSuppressKeyboard(true);
+  driver().SetShouldSuppressKeyboard(true);
   EXPECT_TRUE(test_api(driver()).should_suppress_keyboard());
 }
 
@@ -758,7 +748,7 @@ TEST_F(ContentAutofillDriverTest, TriggerFormExtractionInAllFrames) {
 
   EXPECT_CALL(fake_agent_, TriggerFormExtractionWithResponse)
       .WillOnce(MoveArg<0>(&form_extraction_finished_callback));
-  driver()->browser_events().TriggerFormExtractionInAllFrames(base::BindOnce(
+  driver().browser_events().TriggerFormExtractionInAllFrames(base::BindOnce(
       [](base::RunLoop* run_loop, bool success) { run_loop->Quit(); },
       &run_loop));
   run_loop.RunUntilIdle();
@@ -778,7 +768,7 @@ TEST_F(ContentAutofillDriverTest, GetFourDigitCombinationsFromDOM_NoMatches) {
       .WillOnce(WithArg<0>(Invoke(cb)));
 
   std::vector<std::string> matches = {"dummy data"};
-  driver()->browser_events().GetFourDigitCombinationsFromDOM(
+  driver().browser_events().GetFourDigitCombinationsFromDOM(
       base::BindLambdaForTesting([&](const std::vector<std::string>& result) {
         matches = result;
         run_loop.Quit();
@@ -798,7 +788,7 @@ TEST_F(ContentAutofillDriverTest,
   EXPECT_CALL(fake_agent_, GetPotentialLastFourCombinationsForStandaloneCvc)
       .WillOnce(WithArg<0>(Invoke(cb)));
   std::vector<std::string> matches;
-  driver()->browser_events().GetFourDigitCombinationsFromDOM(
+  driver().browser_events().GetFourDigitCombinationsFromDOM(
       base::BindLambdaForTesting([&](const std::vector<std::string>& result) {
         matches = result;
         run_loop.Quit();

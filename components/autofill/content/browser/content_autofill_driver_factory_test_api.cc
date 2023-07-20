@@ -35,7 +35,7 @@ ContentAutofillDriverFactoryTestApi::Create(
 
 ContentAutofillDriverFactoryTestApi::ContentAutofillDriverFactoryTestApi(
     ContentAutofillDriverFactory* factory)
-    : factory_(factory) {}
+    : factory_(*factory) {}
 
 void ContentAutofillDriverFactoryTestApi::SetDriver(
     content::RenderFrameHost* rfh,

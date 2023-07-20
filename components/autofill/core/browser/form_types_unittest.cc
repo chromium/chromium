@@ -41,7 +41,7 @@ TEST_P(FormTypesTest, FormHasFillableCreditCardFields) {
     form.fields.emplace_back(CreateFieldWithValue(value));
   }
   FormStructure form_structure(form);
-  FormStructureTestApi(&form_structure).SetFieldTypes(test_case.field_types);
+  test_api(form_structure).SetFieldTypes(test_case.field_types);
 
   EXPECT_THAT(FormHasAllCreditCardFields(form_structure),
               testing::Eq(test_case.expected_result));

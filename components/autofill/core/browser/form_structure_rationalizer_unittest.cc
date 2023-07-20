@@ -193,10 +193,6 @@ Matcher<FormStructure> AreFields(Matchers... matchers) {
   return AreFieldsArray(std::vector<Matcher<AutofillField>>{matchers...});
 }
 
-FormStructureTestApi test_api(FormStructure& form_structure) {
-  return FormStructureTestApi(&form_structure);
-}
-
 class FormStructureRationalizerTest : public testing::Test {
  public:
   FormStructureRationalizerTest();

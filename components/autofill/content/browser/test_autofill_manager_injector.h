@@ -129,7 +129,7 @@ class TestAutofillManagerInjector : public TestAutofillManagerInjectorBase {
       // observers affect the injected objects.
       // The AutofillManager injector should come right after the
       // ContentAutofillDriver injector, if one exists.
-      ContentAutofillDriverFactoryTestApi(factory_).AddObserverAtIndex(
+      test_api(*factory_).AddObserverAtIndex(
           this,
           TestAutofillDriverInjectorBase::some_instance_is_alive() ? 1 : 0);
     }

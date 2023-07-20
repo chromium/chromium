@@ -563,9 +563,9 @@ TEST_F(FormCacheBrowserTest, FreeDataOnElementRemoval) {
   EXPECT_THAT(forms.updated_forms, ElementsAre(HasId(FormRendererId())));
   EXPECT_TRUE(forms.removed_forms.empty());
 
-  EXPECT_EQ(1u, FormCacheTestApi(&form_cache).initial_select_values_size());
-  EXPECT_EQ(1u, FormCacheTestApi(&form_cache).initial_selectmenu_values_size());
-  EXPECT_EQ(1u, FormCacheTestApi(&form_cache).initial_checked_state_size());
+  EXPECT_EQ(1u, test_api(form_cache).initial_select_values_size());
+  EXPECT_EQ(1u, test_api(form_cache).initial_selectmenu_values_size());
+  EXPECT_EQ(1u, test_api(form_cache).initial_checked_state_size());
 
   ExecuteJavaScriptForTests(R"(
     const container = document.getElementById('container');
@@ -577,9 +577,9 @@ TEST_F(FormCacheBrowserTest, FreeDataOnElementRemoval) {
   forms = form_cache.UpdateFormCache(/*field_data_manager=*/nullptr);
   EXPECT_TRUE(forms.updated_forms.empty());
   EXPECT_THAT(forms.removed_forms, ElementsAre(FormRendererId()));
-  EXPECT_EQ(0u, FormCacheTestApi(&form_cache).initial_select_values_size());
-  EXPECT_EQ(0u, FormCacheTestApi(&form_cache).initial_selectmenu_values_size());
-  EXPECT_EQ(0u, FormCacheTestApi(&form_cache).initial_checked_state_size());
+  EXPECT_EQ(0u, test_api(form_cache).initial_select_values_size());
+  EXPECT_EQ(0u, test_api(form_cache).initial_selectmenu_values_size());
+  EXPECT_EQ(0u, test_api(form_cache).initial_checked_state_size());
 }
 
 TEST_F(FormCacheBrowserTest, IsFormElementEligibleForManualFilling) {
@@ -615,11 +615,11 @@ TEST_F(FormCacheBrowserTest, IsFormElementEligibleForManualFilling) {
   form_cache.SetFieldsEligibleForManualFilling(
       fields_eligible_for_manual_filling);
 
-  EXPECT_TRUE(FormCacheTestApi(&form_cache)
+  EXPECT_TRUE(test_api(form_cache)
                   .IsFormElementEligibleForManualFilling(first_name_element));
-  EXPECT_FALSE(FormCacheTestApi(&form_cache)
+  EXPECT_FALSE(test_api(form_cache)
                    .IsFormElementEligibleForManualFilling(middle_name_element));
-  EXPECT_TRUE(FormCacheTestApi(&form_cache)
+  EXPECT_TRUE(test_api(form_cache)
                   .IsFormElementEligibleForManualFilling(last_name_element));
 }
 
@@ -635,7 +635,7 @@ TEST_F(FormCacheBrowserTest, DoNotStoreEmptyForms) {
   EXPECT_TRUE(forms.removed_forms.empty());
 
   EXPECT_EQ(1u, GetMainFrame()->GetDocument().Forms().size());
-  EXPECT_EQ(0u, FormCacheTestApi(&form_cache).extracted_forms_size());
+  EXPECT_EQ(0u, test_api(form_cache).extracted_forms_size());
 }
 
 // Test that the FormCache never contains more than |kMaxExtractableFields|
@@ -658,8 +658,7 @@ TEST_F(FormCacheBrowserTest, FormCacheSizeUpperBound) {
 
   EXPECT_EQ(kMaxExtractableFields + 1,
             GetMainFrame()->GetDocument().Forms().size());
-  EXPECT_EQ(kMaxExtractableFields,
-            FormCacheTestApi(&form_cache).extracted_forms_size());
+  EXPECT_EQ(kMaxExtractableFields, test_api(form_cache).extracted_forms_size());
 }
 
 // Test that FormCache::UpdateFormCache() limits the number of total fields by

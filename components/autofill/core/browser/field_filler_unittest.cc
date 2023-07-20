@@ -2302,7 +2302,7 @@ TEST_F(AutofillFieldFillerTest, PreviewVirtualCVC) {
                            CREDIT_CARD_VERIFICATION_CODE);
 
   CreditCard card = test::GetVirtualCard();
-  CreditCardTestApi(&card).set_network_for_virtual_card(kMasterCard);
+  test_api(card).set_network_for_virtual_card(kMasterCard);
   filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
                        /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kPreview,
@@ -2318,7 +2318,7 @@ TEST_F(AutofillFieldFillerTest, PreviewVirtualCVCAmericanExpress) {
                            CREDIT_CARD_VERIFICATION_CODE);
 
   CreditCard card = test::GetVirtualCard();
-  CreditCardTestApi(&card).set_network_for_virtual_card(kAmericanExpressCard);
+  test_api(card).set_network_for_virtual_card(kAmericanExpressCard);
   filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
                        /*cvc=*/std::u16string(),
                        mojom::RendererFormDataAction::kPreview,
@@ -2333,7 +2333,7 @@ TEST_F(AutofillFieldFillerTest, PreviewVirtualCardNumber) {
 
   CreditCard card = test::GetVirtualCard();
   card.SetNumber(u"5454545454545454");
-  CreditCardTestApi(&card).set_network_for_virtual_card(kMasterCard);
+  test_api(card).set_network_for_virtual_card(kMasterCard);
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
   filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
                        /*cvc=*/std::u16string(),
@@ -2361,7 +2361,7 @@ TEST_F(AutofillFieldFillerTest, PreviewVirtualCardNumber_OffsetExceedsLength) {
 
   CreditCard card = test::GetVirtualCard();
   card.SetNumber(u"5454545454545454");
-  CreditCardTestApi(&card).set_network_for_virtual_card(kMasterCard);
+  test_api(card).set_network_for_virtual_card(kMasterCard);
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
   filler.FillFormField(field, &card, /*forced_fill_values=*/{}, &field,
                        /*cvc=*/std::u16string(),

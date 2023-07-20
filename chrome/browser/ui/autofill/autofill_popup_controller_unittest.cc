@@ -83,10 +83,6 @@ using ::testing::StrictMock;
 namespace autofill {
 namespace {
 
-ContentAutofillRouterTestApi test_api(ContentAutofillRouter* cadf) {
-  return ContentAutofillRouterTestApi(cadf);
-}
-
 class MockAutofillDriver : public ContentAutofillDriver {
  public:
   MockAutofillDriver(content::RenderFrameHost* rfh,
@@ -256,7 +252,7 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
   virtual std::unique_ptr<NiceMock<MockAutofillExternalDelegate>>
   CreateExternalDelegate() {
     // Fake that |driver| has queried a form.
-    test_api(&autofill_router()).set_last_queried_source(autofill_driver());
+    test_api(autofill_router()).set_last_queried_source(autofill_driver());
     return std::make_unique<NiceMock<MockAutofillExternalDelegate>>(
         autofill_manager(), autofill_driver());
   }

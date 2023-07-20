@@ -120,7 +120,7 @@ class TestAutofillDriverInjector : public TestAutofillDriverInjectorBase {
       factory_ = client->GetAutofillDriverFactory();
       // The injectors' observers should come first so that production-code
       // observers affect the injected objects.
-      ContentAutofillDriverFactoryTestApi(factory_).AddObserverAtIndex(this, 0);
+      test_api(*factory_).AddObserverAtIndex(this, 0);
     }
 
     void OnContentAutofillDriverFactoryDestroyed(
@@ -137,7 +137,6 @@ class TestAutofillDriverInjector : public TestAutofillDriverInjectorBase {
         ContentAutofillDriver& driver) override {
       content::RenderFrameHost* rfh = driver.render_frame_host();
       std::unique_ptr<T> new_driver = CreateDriver(rfh, &factory);
-      ContentAutofillDriverFactoryTestApi test_api(&factory);
       owner_->drivers_[rfh] = new_driver.get();
       // This is spectacularly hacky as it relies on an implementation detail of
       // ContentAutofillDriverFactory::DriverForFrame(), which fires this event:
@@ -146,7 +145,8 @@ class TestAutofillDriverInjector : public TestAutofillDriverInjectorBase {
       // to the std::unique_ptr<> that owns `driver`. By calling SetDriver(), we
       // mutate that reference. This looks sketchy, but it is "safe" because
       // std::[unordered_]map<>::operator[]() does not invalidate references.
-      test_api.SetDriver(driver.render_frame_host(), std::move(new_driver));
+      test_api(factory).SetDriver(driver.render_frame_host(),
+                                  std::move(new_driver));
     }
 
     void OnContentAutofillDriverWillBeDeleted(

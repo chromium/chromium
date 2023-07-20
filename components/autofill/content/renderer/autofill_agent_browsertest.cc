@@ -197,10 +197,6 @@ class AutofillAgentTest : public content::RenderViewTest {
     task_environment_.FastForwardBy(kFormsSeenThrottle * 3 / 2);
   }
 
-  AutofillAgentTestApi test_api() {
-    return AutofillAgentTestApi(autofill_agent_.get());
-  }
-
  protected:
   MockAutofillDriver autofill_driver_;
   std::unique_ptr<AutofillAgent> autofill_agent_;

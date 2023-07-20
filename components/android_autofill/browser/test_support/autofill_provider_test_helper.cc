@@ -27,8 +27,7 @@ AutofillManager* GetAutofillManager(content::WebContents* web_contents,
   // a new ContentAutofillDriver.
   if (ContentAutofillDriverFactory* factory =
           ContentAutofillDriverFactory::FromWebContents(web_contents)) {
-    if (ContentAutofillDriver* driver =
-            ContentAutofillDriverFactoryTestApi(factory).GetDriver(rfh)) {
+    if (ContentAutofillDriver* driver = test_api(*factory).GetDriver(rfh)) {
       return driver->autofill_manager();
     }
   }

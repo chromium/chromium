@@ -182,10 +182,6 @@ class ContentAutofillDriverFactoryTest
         ->Commit();
   }
 
-  ContentAutofillDriverFactoryTestApi factory_test_api() {
-    return ContentAutofillDriverFactoryTestApi(factory_.get());
-  }
-
  protected:
   version_info::Channel channel_;
   std::unique_ptr<MockAutofillAgent> agent_;
@@ -195,13 +191,14 @@ class ContentAutofillDriverFactoryTest
 
 TEST_F(ContentAutofillDriverFactoryTest, MainDriver) {
   NavigateMainFrame("https://a.com/");
-  ContentAutofillDriver* main_driver = factory_test_api().GetDriver(main_rfh());
+  ContentAutofillDriver* main_driver =
+      test_api(*factory_).GetDriver(main_rfh());
   EXPECT_TRUE(main_driver);
-  EXPECT_EQ(factory_test_api().num_drivers(), 1u);
+  EXPECT_EQ(test_api(*factory_).num_drivers(), 1u);
   EXPECT_EQ(factory_->DriverForFrame(main_rfh()), main_driver);
-  EXPECT_EQ(factory_test_api().num_drivers(), 1u);
+  EXPECT_EQ(test_api(*factory_).num_drivers(), 1u);
   EXPECT_EQ(factory_->DriverForFrame(main_rfh()), main_driver);
-  EXPECT_EQ(factory_test_api().num_drivers(), 1u);
+  EXPECT_EQ(test_api(*factory_).num_drivers(), 1u);
 }
 
 // Test case with two frames: the main frame and one child frame.
@@ -235,10 +232,10 @@ TEST_F(ContentAutofillDriverFactoryTest_WithTwoFrames, TwoDrivers) {
   EXPECT_TRUE(child_driver);
   EXPECT_EQ(factory_->DriverForFrame(main_rfh()), main_driver);
   EXPECT_EQ(factory_->DriverForFrame(child_rfh()), child_driver);
-  EXPECT_EQ(factory_test_api().num_drivers(), 2u);
+  EXPECT_EQ(test_api(*factory_).num_drivers(), 2u);
   EXPECT_EQ(factory_->DriverForFrame(main_rfh()), main_driver);
   EXPECT_EQ(factory_->DriverForFrame(child_rfh()), child_driver);
-  EXPECT_EQ(factory_test_api().num_drivers(), 2u);
+  EXPECT_EQ(test_api(*factory_).num_drivers(), 2u);
   // TODO(crbug.com/1200511): Set the router's last source and target, and if
   // the |child_driver| is destroyed, expect a call to
   // AutofillManager::OnHidePopup(). For this to work, we need mock
@@ -270,13 +267,13 @@ TEST_P(ContentAutofillDriverFactoryTest_WithTwoFrames_PickOne,
   ContentAutofillDriver* child_driver = factory_->DriverForFrame(child_rfh());
   EXPECT_TRUE(main_driver);
   EXPECT_TRUE(child_driver);
-  EXPECT_EQ(factory_test_api().num_drivers(), 2u);
+  EXPECT_EQ(test_api(*factory_).num_drivers(), 2u);
   factory_->RenderFrameDeleted(picked_rfh());
-  EXPECT_EQ(factory_test_api().num_drivers(), 1u);
+  EXPECT_EQ(test_api(*factory_).num_drivers(), 1u);
   if (picked_rfh() == main_rfh())
-    EXPECT_EQ(factory_test_api().GetDriver(child_rfh()), child_driver);
+    EXPECT_EQ(test_api(*factory_).GetDriver(child_rfh()), child_driver);
   else
-    EXPECT_EQ(factory_test_api().GetDriver(main_rfh()), main_driver);
+    EXPECT_EQ(test_api(*factory_).GetDriver(main_rfh()), main_driver);
 }
 
 // Tests that OnVisibilityChanged() hides the popup.
@@ -322,8 +319,8 @@ TEST_P(ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes,
   ContentAutofillDriver* orig_driver = factory_->DriverForFrame(orig_rfh);
   NavigateMainFrame("https://a.com/#same-site");
   ASSERT_EQ(orig_rfh, main_rfh());
-  EXPECT_EQ(factory_test_api().GetDriver(orig_rfh), orig_driver);
-  EXPECT_EQ(factory_test_api().num_drivers(), 1u);
+  EXPECT_EQ(test_api(*factory_).GetDriver(orig_rfh), orig_driver);
+  EXPECT_EQ(test_api(*factory_).num_drivers(), 1u);
 
   // TODO(crbug.com/1200511): Test that |router_| has been untouched. To this
   // end, call `orig_driver->FormsSeen({FormData{}})` above and then check
@@ -349,11 +346,11 @@ TEST_P(ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes,
   // if BFCache is disabled the driver for |orig_rfh| has now been removed in
   // ContentAutofillDriverFactory::RenderFrameDeleted().
   if (use_bfcache()) {
-    EXPECT_EQ(factory_test_api().GetDriver(orig_rfh), orig_driver);
+    EXPECT_EQ(test_api(*factory_).GetDriver(orig_rfh), orig_driver);
   } else if (main_rfh() != orig_rfh) {
-    EXPECT_EQ(factory_test_api().GetDriver(orig_rfh), nullptr);
+    EXPECT_EQ(test_api(*factory_).GetDriver(orig_rfh), nullptr);
   }
-  EXPECT_EQ(factory_test_api().num_drivers(), use_bfcache() ? 2u : 1u);
+  EXPECT_EQ(test_api(*factory_).num_drivers(), use_bfcache() ? 2u : 1u);
 }
 
 // Tests that that a driver is removed and replaced with a fresh one after a
@@ -366,8 +363,8 @@ TEST_P(ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes,
   ContentAutofillDriver* orig_driver = factory_->DriverForFrame(orig_rfh);
 
   ASSERT_EQ(orig_rfh, main_rfh());
-  EXPECT_EQ(factory_test_api().GetDriver(orig_rfh), orig_driver);
-  EXPECT_EQ(factory_test_api().num_drivers(), 1u);
+  EXPECT_EQ(test_api(*factory_).GetDriver(orig_rfh), orig_driver);
+  EXPECT_EQ(test_api(*factory_).num_drivers(), 1u);
 
   NavigateMainFrame("https://different-origin-after-navigation.com/");
 
@@ -377,11 +374,11 @@ TEST_P(ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes,
   // BFcache is enabled (or main_rfh() happens to have the same address as
   // |orig_rfh|).
   if (use_bfcache())
-    EXPECT_EQ(factory_test_api().GetDriver(orig_rfh), orig_driver);
+    EXPECT_EQ(test_api(*factory_).GetDriver(orig_rfh), orig_driver);
   else if (main_rfh() != orig_rfh)
-    EXPECT_EQ(factory_test_api().GetDriver(orig_rfh), nullptr);
-  EXPECT_NE(factory_test_api().GetDriver(main_rfh()), nullptr);
-  EXPECT_EQ(factory_test_api().num_drivers(), use_bfcache() ? 2u : 1u);
+    EXPECT_EQ(test_api(*factory_).GetDriver(orig_rfh), nullptr);
+  EXPECT_NE(test_api(*factory_).GetDriver(main_rfh()), nullptr);
+  EXPECT_EQ(test_api(*factory_).num_drivers(), use_bfcache() ? 2u : 1u);
 }
 
 // Fixture for testing that Autofill is enabled in fenced frames.

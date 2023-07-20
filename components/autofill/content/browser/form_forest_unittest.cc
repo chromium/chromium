@@ -215,12 +215,8 @@ void SetMetaData(FormData& form, content::RenderFrameHost* rfh) {
     SetMetaData(form.unique_renderer_id, field, rfh);
 }
 
-FormForestTestApi TestApi(FormForest& ff) {
-  return FormForestTestApi(&ff);
-}
-
 FrameDataSet& frame_datas(FormForest& ff) {
-  return TestApi(ff).frame_datas();
+  return test_api(ff).frame_datas();
 }
 
 // Flattens a vector by concatenating the elements of the outer vector.
@@ -457,8 +453,8 @@ class FormForestTestWithMockedTree : public FormForestTest {
   };
 
   void TearDown() override {
-    TestApi(mocked_forms_).Reset();
-    TestApi(flattened_forms_).Reset();
+    test_api(mocked_forms_).Reset();
+    test_api(flattened_forms_).Reset();
     drivers_.clear();
     forms_.clear();
     FormForestTest::TearDown();
@@ -554,7 +550,7 @@ class FormForestTestWithMockedTree : public FormForestTest {
 
     // Copy |mocked_forms_| into |flattened_forms_|, without fields.
     if (frame_datas(flattened_forms_).empty() || force_flatten) {
-      TestApi(flattened_forms_).Reset();
+      test_api(flattened_forms_).Reset();
       std::vector<std::unique_ptr<FrameData>> copy;
       for (const auto& frame : frame_datas(mocked_forms_)) {
         copy.push_back(std::make_unique<FrameData>(frame->frame_token));
@@ -599,7 +595,7 @@ class FormForestTestWithMockedTree : public FormForestTest {
       LocalFrameToken frame_token =
           GetMockedForm(frame_or_form_name).host_frame;
       const FrameData* frame_data =
-          TestApi(mocked_forms_).GetFrameData(frame_token);
+          test_api(mocked_forms_).GetFrameData(frame_token);
       return static_cast<MockContentAutofillDriver*>(frame_data->driver);
     }
   }
@@ -607,7 +603,7 @@ class FormForestTestWithMockedTree : public FormForestTest {
   FrameData& GetMockedFrame(base::StringPiece frame_or_form_name) {
     MockContentAutofillDriver* d = driver(frame_or_form_name);
     CHECK(d) << frame_or_form_name;
-    FrameData* frame = TestApi(mocked_forms_).GetFrameData(d->token());
+    FrameData* frame = test_api(mocked_forms_).GetFrameData(d->token());
     CHECK(frame);
     return *frame;
   }
@@ -615,7 +611,7 @@ class FormForestTestWithMockedTree : public FormForestTest {
   FormData& GetMockedForm(base::StringPiece form_name) {
     auto it = forms_.find(form_name);
     CHECK(it != forms_.end()) << form_name;
-    FormData* form = TestApi(mocked_forms_).GetFormData(it->second);
+    FormData* form = test_api(mocked_forms_).GetFormData(it->second);
     CHECK(form);
     return *form;
   }
@@ -625,7 +621,7 @@ class FormForestTestWithMockedTree : public FormForestTest {
           driver(form_name)->is_sub_root());
     auto it = forms_.find(form_name);
     CHECK(it != forms_.end()) << form_name;
-    FormData* form = TestApi(flattened_forms_).GetFormData(it->second);
+    FormData* form = test_api(flattened_forms_).GetFormData(it->second);
     CHECK(form);
     return *form;
   }
@@ -779,7 +775,7 @@ class FormForestTestUpdateOrder
       public ::testing::WithParamInterface<FormNameVector> {
  protected:
   void TearDown() override {
-    TestApi(ff_).Reset();
+    test_api(ff_).Reset();
     FormForestTestUpdateTree::TearDown();
   }
 
