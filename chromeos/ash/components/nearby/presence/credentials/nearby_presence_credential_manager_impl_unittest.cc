@@ -19,6 +19,7 @@
 #include "chromeos/ash/components/nearby/presence/credentials/prefs.h"
 #include "chromeos/ash/components/nearby/presence/credentials/proto_conversions.h"
 #include "chromeos/ash/services/nearby/public/cpp/fake_nearby_presence.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -214,6 +215,39 @@ class NearbyPresenceCredentialManagerImplTest : public testing::Test {
             }));
   }
 
+  void SimulateDeviceAlreadyRegistered() {
+    // Simulate that it is not first time registration flow.
+    fake_local_device_data_provider_->SetRegistrationComplete(true);
+    fake_local_device_data_provider_->SetDeviceMetadata(BuildTestMetadata());
+    fake_local_device_data_provider_->SaveUserRegistrationInfo(
+        /*display_name=*/kUserName, /*image_url=*/kProfileUrl);
+  }
+
+  void TriggerDailySync() {
+    SimulateDeviceAlreadyRegistered();
+
+    base::RunLoop update_local_device_metadata_run_loop;
+    fake_nearby_presence_.SetUpdateLocalDeviceMetadataCallback(
+        update_local_device_metadata_run_loop.QuitClosure());
+
+    base::RunLoop create_credential_run_loop;
+    CreateCredentialManager(create_credential_run_loop.QuitClosure());
+    create_credential_run_loop.Run();
+
+    EXPECT_TRUE(credential_manager_);
+
+    update_local_device_metadata_run_loop.Run();
+
+    daily_sync_scheduler_ =
+        scheduler_factory_.pref_name_to_periodic_instance()
+            .find(prefs::kNearbyPresenceSchedulingCredentialDailySyncPrefName)
+            ->second.fake_scheduler;
+
+    // Simulate the scheduler notifying the CredentialManager that the task is
+    // ready when it has network connectivity.
+    daily_sync_scheduler_->InvokeRequestCallback();
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -222,6 +256,7 @@ class NearbyPresenceCredentialManagerImplTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_env_;
   raw_ptr<FakeLocalDeviceDataProvider> fake_local_device_data_provider_ =
       nullptr;
+  raw_ptr<FakeNearbyScheduler, ExperimentalAsh> daily_sync_scheduler_ = nullptr;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
   std::unique_ptr<LocalDeviceDataProvider> local_device_data_provider_;
   std::unique_ptr<NearbyPresenceCredentialManager> credential_manager_;
@@ -232,11 +267,7 @@ class NearbyPresenceCredentialManagerImplTest : public testing::Test {
 };
 
 TEST_F(NearbyPresenceCredentialManagerImplTest, SetDeviceMetadata) {
-  // Simulate that it is not first time registration flow.
-  fake_local_device_data_provider_->SetRegistrationComplete(true);
-  fake_local_device_data_provider_->SetDeviceMetadata(BuildTestMetadata());
-  fake_local_device_data_provider_->SaveUserRegistrationInfo(
-      /*display_name=*/kUserName, /*image_url=*/kProfileUrl);
+  SimulateDeviceAlreadyRegistered();
 
   base::RunLoop update_local_device_metadata_run_loop;
   fake_nearby_presence_.SetUpdateLocalDeviceMetadataCallback(
@@ -270,6 +301,15 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, RegistrationSuccess) {
   CreateCredentialManager(create_credential_manager_run_loop.QuitClosure());
 
   TriggerFirstTimeRegistrationSuccess();
+
+  // Any requests to daily sync are expected to be ignored. If they are not
+  // ignored, a crash occurs due to the `server_cliet`_ already existing. Test
+  // this by ensuring no crash.
+  daily_sync_scheduler_ =
+      scheduler_factory_.pref_name_to_periodic_instance()
+          .find(prefs::kNearbyPresenceSchedulingCredentialDailySyncPrefName)
+          ->second.fake_scheduler;
+  daily_sync_scheduler_->InvokeRequestCallback();
 
   generate_creds_run_loop.Run();
 
@@ -497,6 +537,114 @@ TEST_F(NearbyPresenceCredentialManagerImplTest,
 
   create_credential_manager_run_loop.Run();
   EXPECT_FALSE(credential_manager_);
+}
+
+TEST_F(NearbyPresenceCredentialManagerImplTest,
+       DailySyncSuccess_LocalCredentialsChanged) {
+  base::RunLoop get_local_creds_run_loop;
+  fake_local_device_data_provider_->SetUpdatePersistedSharedCredentialsCallback(
+      get_local_creds_run_loop.QuitClosure());
+
+  // Simulate that the local credentials have changed, which is expected to
+  // trigger a local credential upload to the server.
+  fake_local_device_data_provider_->SetHaveSharedCredentialsChanged(true);
+
+  // Simulate the local device credentials stored in the NP library and
+  // retrieved successfully.
+  fake_nearby_presence_.SetLocalSharedCredentialsResponse(
+      BuildSharedCredentials(), mojom::StatusCode::kOk);
+
+  TriggerDailySync();
+  get_local_creds_run_loop.Run();
+
+  // Simulate a successful result from the server. This call also enforces
+  // that an upload request has been made.
+  TriggerLocalCredentialUploadSuccess();
+
+  // Expect daily sync success.
+  EXPECT_TRUE(daily_sync_scheduler_->handled_results().front());
+}
+
+TEST_F(NearbyPresenceCredentialManagerImplTest,
+       DailySyncSuccess_LocalCredentialsDidntChanged) {
+  base::RunLoop get_local_creds_run_loop;
+  fake_local_device_data_provider_->SetHaveSharedCredentialsChangedCallback(
+      get_local_creds_run_loop.QuitClosure());
+
+  // Simulate that the local credentials have not changed, which is expected to
+  // not trigger a local credential upload to the server.
+  fake_local_device_data_provider_->SetHaveSharedCredentialsChanged(false);
+
+  // Simulate the local device credentials stored in the NP library and
+  // retrieved successfully.
+  fake_nearby_presence_.SetLocalSharedCredentialsResponse(
+      BuildSharedCredentials(), mojom::StatusCode::kOk);
+
+  TriggerDailySync();
+  get_local_creds_run_loop.Run();
+
+  // Expect no calls to trigger a credential upload, which is indicated by the
+  // creation of an on demand upload scheduler.
+  EXPECT_EQ(scheduler_factory_.pref_name_to_on_demand_instance().find(
+                prefs::kNearbyPresenceSchedulingUploadPrefName),
+            scheduler_factory_.pref_name_to_on_demand_instance().end());
+
+  // Expect daily sync success.
+  EXPECT_TRUE(daily_sync_scheduler_->handled_results().front());
+}
+
+TEST_F(NearbyPresenceCredentialManagerImplTest,
+       DailySyncFailure_GetLocalCredentialFailure) {
+  // Simulate the local device credentials retrieved unsuccessfully.
+  fake_nearby_presence_.SetLocalSharedCredentialsResponse(
+      /*credentials=*/{}, mojom::StatusCode::kFailure);
+
+  TriggerDailySync();
+
+  // Required because no way to inject a QuitClosure() into the
+  // FakeLocalDeviceProvider, since it is unused in this flow.
+  base::RunLoop().RunUntilIdle();
+
+  // Expect no calls to trigger a credential upload, which is indicated by the
+  // creation of an on demand upload scheduler.
+  EXPECT_EQ(scheduler_factory_.pref_name_to_on_demand_instance().find(
+                prefs::kNearbyPresenceSchedulingUploadPrefName),
+            scheduler_factory_.pref_name_to_on_demand_instance().end());
+
+  // Expect daily sync failure, which also indicates exponential retries.
+  EXPECT_FALSE(daily_sync_scheduler_->handled_results().front());
+}
+
+TEST_F(NearbyPresenceCredentialManagerImplTest,
+       DailySyncFailure_UploadCredentialsFailure) {
+  base::RunLoop get_local_creds_run_loop;
+  fake_local_device_data_provider_->SetUpdatePersistedSharedCredentialsCallback(
+      get_local_creds_run_loop.QuitClosure());
+
+  // Simulate that the local credentials have changed, which is expected to
+  // trigger a local credential upload to the server.
+  fake_local_device_data_provider_->SetHaveSharedCredentialsChanged(true);
+
+  // Simulate the local device credentials stored in the NP library and
+  // retrieved successfully.
+  fake_nearby_presence_.SetLocalSharedCredentialsResponse(
+      BuildSharedCredentials(), mojom::StatusCode::kOk);
+
+  TriggerDailySync();
+  get_local_creds_run_loop.Run();
+
+  // Simulate failure to upload credentials to the server.
+  const raw_ptr<FakeNearbyScheduler, ExperimentalAsh> upload_scheduler =
+      scheduler_factory_.pref_name_to_on_demand_instance()
+          .find(prefs::kNearbyPresenceSchedulingUploadPrefName)
+          ->second.fake_scheduler;
+  upload_scheduler->SetNumConsecutiveFailures(kServerCommunicationMaxAttempts);
+  upload_scheduler->InvokeRequestCallback();
+  server_client_factory_.fake_server_client()->InvokeUpdateDeviceErrorCallback(
+      ash::nearby::NearbyHttpError::kInternalServerError);
+
+  // Expect daily sync failure, which also indicates exponential retries.
+  EXPECT_FALSE(daily_sync_scheduler_->handled_results().front());
 }
 
 }  // namespace ash::nearby::presence

@@ -37,6 +37,7 @@ const char kFirstTimeRegistrationFieldMaskPath[] = "display_name";
 const char kUploadCredentialsFieldMaskPath[] = "certificates";
 const base::TimeDelta kServerResponseTimeout = base::Seconds(5);
 constexpr int kServerCommunicationMaxAttempts = 5;
+const base::TimeDelta kSyncCredentialsDailyTimePeriod = base::Hours(24);
 
 }  // namespace
 
@@ -162,6 +163,18 @@ NearbyPresenceCredentialManagerImpl::NearbyPresenceCredentialManagerImpl(
   CHECK(identity_manager_);
   CHECK(url_loader_factory_);
   CHECK(local_device_data_provider_);
+
+  daily_credential_sync_scheduler_ =
+      ash::nearby::NearbySchedulerFactory::CreatePeriodicScheduler(
+          /*request_period=*/kSyncCredentialsDailyTimePeriod,
+          /*retry_failures=*/true, /*require_connectivity=*/true,
+          prefs::kNearbyPresenceSchedulingCredentialDailySyncPrefName,
+          pref_service_,
+          base::BindRepeating(
+              &NearbyPresenceCredentialManagerImpl::StartDailySync,
+              weak_ptr_factory_.GetWeakPtr()),
+          base::DefaultClock::GetInstance());
+  daily_credential_sync_scheduler_->Start();
 }
 
 NearbyPresenceCredentialManagerImpl::~NearbyPresenceCredentialManagerImpl() =
@@ -391,6 +404,102 @@ void NearbyPresenceCredentialManagerImpl::OnFirstTimeRemoteCredentialsSaved(
   local_device_data_provider_->SetRegistrationComplete(/*complete=*/true);
   CHECK(on_registered_callback_);
   std::move(on_registered_callback_).Run(/*success=*/true);
+}
+
+void NearbyPresenceCredentialManagerImpl::StartDailySync() {
+  // If the device has not been registered yet, this is a no-op, and is
+  // considered a success, which reschedules the daily sync. This happens when
+  // the First Time Registration flow is kicked off, and the daily sync event
+  // fires.
+  if (!IsLocalDeviceRegistered()) {
+    daily_credential_sync_scheduler_->HandleResult(/*success=*/true);
+    return;
+  }
+
+  // The flow for first time registration is as follows:
+  //      1. Fetch this device's credentials.
+  //      2. Upload this device's credentials if they have changed.
+  //      3. Download other devices' credentials.
+  //      4. Save other devices' credentials.
+  //
+  // Next, kick off Step 1.
+  nearby_presence_->GetLocalSharedCredentials(
+      local_device_data_provider_->GetAccountName(),
+      base::BindOnce(
+          &NearbyPresenceCredentialManagerImpl::OnGetLocalSharedCredentials,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void NearbyPresenceCredentialManagerImpl::OnGetLocalSharedCredentials(
+    std::vector<mojom::SharedCredentialPtr> shared_credentials,
+    mojom::StatusCode status) {
+  // On failures, exponentially retry the daily sync flow.
+  if (status != mojom::StatusCode::kOk) {
+    daily_credential_sync_scheduler_->HandleResult(/*success=*/false);
+    return;
+  }
+
+  // We've completed the 1st of 4 steps for daily credential sync.
+  //   -> 1. Fetch this device's credentials.
+  //      2. Upload this device's credentials if they have changed.
+  //      3. Download other devices' credentials.
+  //      4. Save other devices' credentials.
+  //
+  // Next, kick off Step 2.
+
+  // Convert from mojo to proto and check for changes for the credentials.
+  // Only upload if they have changed, otherwise proceed to the next step.
+  std::vector<::nearby::internal::SharedCredential> proto_shared_credentials;
+  for (const auto& cred : shared_credentials) {
+    proto_shared_credentials.push_back(
+        proto::SharedCredentialFromMojom(cred.get()));
+  }
+
+  // Update the credentials persisted to disk if they have changed, and
+  // schedule an upload of the credentials.
+  if (local_device_data_provider_->HaveSharedCredentialsChanged(
+          proto_shared_credentials)) {
+    local_device_data_provider_->UpdatePersistedSharedCredentials(
+        proto_shared_credentials);
+    ScheduleUploadCredentials(
+        proto_shared_credentials,
+        base::BindRepeating(
+            &NearbyPresenceCredentialManagerImpl::OnDailySyncCredentialUpload,
+            weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
+  // If the local credentials haven't changed, don't upload them to the server.
+  // We've completed the 2nd of 4 steps for daily credential sync.
+  //      1. Fetch this device's credentials.
+  //  ->  2. Upload this device's credentials if they have changed.
+  //      3. Download other devices' credentials.
+  //      4. Save other devices' credentials.
+  //
+  // Next, kick off Step 3.
+  //
+  // TODO(b/276307539): Continue step 3
+  daily_credential_sync_scheduler_->HandleResult(/*success=*/true);
+}
+
+void NearbyPresenceCredentialManagerImpl::OnDailySyncCredentialUpload(
+    bool success) {
+  // On failures, exponentially retry the daily sync flow.
+  if (!success) {
+    daily_credential_sync_scheduler_->HandleResult(/*success=*/false);
+    return;
+  }
+
+  // We've completed the 2nd of 4 steps for daily credential sync.
+  //      1. Fetch this device's credentials.
+  //  ->  2. Upload this device's credentials if they have changed.
+  //      3. Download other devices' credentials.
+  //      4. Save other devices' credentials.
+  //
+  // Next, kick off Step 3.
+  //
+  // TODO(b/276307539): Continue step 3
+  daily_credential_sync_scheduler_->HandleResult(/*success=*/true);
 }
 
 void NearbyPresenceCredentialManagerImpl::ScheduleUploadCredentials(

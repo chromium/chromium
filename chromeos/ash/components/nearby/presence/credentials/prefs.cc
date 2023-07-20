@@ -25,6 +25,8 @@ const char kNearbyPresenceSchedulingUploadPrefName[] =
     "nearby_presence.scheduling.upload";
 const char kNearbyPresenceSchedulingDownloadPrefName[] =
     "nearby_presence.scheduling.download";
+const char kNearbyPresenceSchedulingCredentialDailySyncPrefName[] =
+    "nearby_presence.scheduling.daily_sync";
 
 }  // namespace prefs
 
@@ -47,6 +49,8 @@ void RegisterNearbyPresenceCredentialPrefs(PrefRegistrySimple* registry) {
       prefs::kNearbyPresenceSchedulingUploadPrefName);
   registry->RegisterDictionaryPref(
       prefs::kNearbyPresenceSchedulingDownloadPrefName);
+  registry->RegisterDictionaryPref(
+      prefs::kNearbyPresenceSchedulingCredentialDailySyncPrefName);
 }
 
 }  // namespace ash::nearby::presence

@@ -39,11 +39,12 @@ class FakeLocalDeviceDataProvider : public LocalDeviceDataProvider {
   bool IsRegistrationCompleteAndUserInfoSaved() override;
   void SetRegistrationComplete(bool complete) override;
 
-  void SetHaveSharedCredentialsChanged(bool have_credentials_changed);
+  void SetHaveSharedCredentialsChanged(bool have_shared_credentials_changed);
   void SetDeviceId(std::string device_id);
   void SetDeviceMetadata(::nearby::internal::Metadata metadata);
   void SetAccountName(std::string account_name);
   void SetUpdatePersistedSharedCredentialsCallback(base::OnceClosure callback);
+  void SetHaveSharedCredentialsChangedCallback(base::OnceClosure callback);
 
  private:
   // LocalDeviceDataProvider:
@@ -51,13 +52,14 @@ class FakeLocalDeviceDataProvider : public LocalDeviceDataProvider {
       const std::vector<::nearby::internal::SharedCredential>&
           shared_credentials) override;
 
-  bool have_credentials_changed_ = false;
+  bool have_shared_credentials_changed_ = false;
   bool is_registration_complete_ = false;
   bool user_info_saved_ = false;
   std::string device_id_;
   ::nearby::internal::Metadata metadata_;
   std::string account_name_;
   base::OnceClosure on_persist_credentials_callback_;
+  base::OnceClosure have_shared_credentials_changed_callback_;
 };
 
 }  // namespace ash::nearby::presence

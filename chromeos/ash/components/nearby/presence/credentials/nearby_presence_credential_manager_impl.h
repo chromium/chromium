@@ -171,6 +171,18 @@ class NearbyPresenceCredentialManagerImpl
       std::vector<::nearby::internal::SharedCredential> credentials,
       bool success);
 
+  void StartDailySync();
+
+  // Callback for fetching local device credentials from the NP library during
+  // daily syncs.
+  void OnGetLocalSharedCredentials(
+      std::vector<mojom::SharedCredentialPtr> shared_credentials,
+      mojom::StatusCode status);
+
+  // Callback for updating the local device's credentials as part of the
+  // daily syncs.
+  void OnDailySyncCredentialUpload(bool success);
+
   // Helper functions to trigger uploading credentials in the NP server. The
   // helper functions are used for first time server registration to upload
   // newly generated credentials, daily syncs with the server to upload
@@ -252,6 +264,12 @@ class NearbyPresenceCredentialManagerImpl
   // the first time registration flow.
   std::unique_ptr<ash::nearby::NearbyScheduler>
       first_time_registration_on_demand_scheduler_;
+
+  // Scheduler used for daily credential syncs with the server. Every 24 hours,
+  // attempt to upload the local device's credentials and download/save
+  // remote devices' credentials.
+  std::unique_ptr<ash::nearby::NearbyScheduler>
+      daily_credential_sync_scheduler_;
 
   // Callback to return the result of the first time registration. Not
   // guaranteed to be a valid callback, as this is set only during first time
