@@ -27,9 +27,11 @@ source_set("password_sharing_ui") {
     "recipient_info.mm",
   ]
   deps = [
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/bottom_sheet",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/ui/authentication:authentication_constants",
     "//ios/chrome/browser/ui/settings/cells",
+    "//ui/base",
   ]
 }

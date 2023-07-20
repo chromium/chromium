@@ -2825,6 +2825,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION_OPTED_IN_LEARN_MORE" desc="Section title in settings > password, allow to learn more about on-device encryption. [iOS Only]">
         Learn More
       </message>
+      <message name="IDS_IOS_PASSWORD_SHARING_FAMILY_PICKER_SUBTITLE" desc="Header text in the view that allows to choose recipients for password sharing from a list of family members explaining what happens when the user shares their password with them. [iOS Only]">
+        When you share a copy of your username and password, your family member can fill them using Google Password Manager.
+      </message>
       <message name="IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION" desc="Footer text shown when the user is trying to add a new credential manually via settings [iOS only]" meaning="Telling user to ensure provided password matches password on the website.">
         Make sure you're saving your current password for this site.
       </message>

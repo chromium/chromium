@@ -8,6 +8,8 @@
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_cell.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/recipient_info.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -33,6 +35,9 @@
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
+  self.subtitleString =
+      l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_FAMILY_PICKER_SUBTITLE);
+  self.subtitleTextStyle = UIFontTextStyleFootnote;
   [super viewDidLoad];
 }
 
