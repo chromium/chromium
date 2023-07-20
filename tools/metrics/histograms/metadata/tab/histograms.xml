@@ -1705,7 +1705,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.ScrubDuration" units="ms" expires_after="2023-08-20">
+<histogram name="Tabs.ScrubDuration" units="ms" expires_after="2024-07-20">
   <owner>afakhry@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <summary>
