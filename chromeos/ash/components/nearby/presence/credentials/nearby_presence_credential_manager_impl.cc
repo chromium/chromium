@@ -477,9 +477,9 @@ void NearbyPresenceCredentialManagerImpl::OnGetLocalSharedCredentials(
   //      4. Save other devices' credentials.
   //
   // Next, kick off Step 3.
-  //
-  // TODO(b/276307539): Continue step 3
-  daily_credential_sync_scheduler_->HandleResult(/*success=*/true);
+  ScheduleDownloadCredentials(base::BindRepeating(
+      &NearbyPresenceCredentialManagerImpl::OnDailySyncCredentialDownload,
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void NearbyPresenceCredentialManagerImpl::OnDailySyncCredentialUpload(
@@ -497,8 +497,57 @@ void NearbyPresenceCredentialManagerImpl::OnDailySyncCredentialUpload(
   //      4. Save other devices' credentials.
   //
   // Next, kick off Step 3.
+  ScheduleDownloadCredentials(base::BindRepeating(
+      &NearbyPresenceCredentialManagerImpl::OnDailySyncCredentialDownload,
+      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void NearbyPresenceCredentialManagerImpl::OnDailySyncCredentialDownload(
+    std::vector<::nearby::internal::SharedCredential> credentials,
+    bool success) {
+  // On failures, exponentially retry the daily sync flow.
+  if (!success) {
+    daily_credential_sync_scheduler_->HandleResult(/*success=*/false);
+    return;
+  }
+
+  // We've completed the 3rd of 4 steps for daily credential sync.
+  //      1. Fetch this device's credentials.
+  //      2. Upload this device's credentials if they have changed.
+  //  ->  3. Download other devices' credentials.
+  //      4. Save other devices' credentials.
   //
-  // TODO(b/276307539): Continue step 3
+  // Next, kick off Step 4.
+  //
+  // Convert the credentials and send them over the mojo pipe to the NP library.
+  std::vector<mojom::SharedCredentialPtr> mojo_credentials;
+  for (auto cred : credentials) {
+    mojo_credentials.push_back(proto::SharedCredentialToMojom(cred));
+  }
+
+  nearby_presence_->UpdateRemoteSharedCredentials(
+      std::move(mojo_credentials),
+      local_device_data_provider_->GetAccountName(),
+      base::BindOnce(&NearbyPresenceCredentialManagerImpl::
+                         OnDailySyncRemoteCredentialsSaved,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void NearbyPresenceCredentialManagerImpl::OnDailySyncRemoteCredentialsSaved(
+    mojom::StatusCode status) {
+  // On failures, exponentially retry the daily sync flow.
+  if (status != mojom::StatusCode::kOk) {
+    daily_credential_sync_scheduler_->HandleResult(/*success=*/false);
+    return;
+  }
+
+  // We've completed the last of 4 steps for daily credential sync.
+  //      1. Fetch this device's credentials.
+  //      2. Upload this device's credentials if they have changed.
+  //      3. Download other devices' credentials.
+  //   -> 4. Save other devices' credentials.
+  // Signal success to the scheduler, which causes it to reschedule for the
+  // next daily sync.
   daily_credential_sync_scheduler_->HandleResult(/*success=*/true);
 }
 

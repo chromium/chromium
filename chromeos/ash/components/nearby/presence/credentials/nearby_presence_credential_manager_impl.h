@@ -179,9 +179,16 @@ class NearbyPresenceCredentialManagerImpl
       std::vector<mojom::SharedCredentialPtr> shared_credentials,
       mojom::StatusCode status);
 
-  // Callback for updating the local device's credentials as part of the
+  // Callbacks for uploading/downloading credentials as part of the
   // daily syncs.
   void OnDailySyncCredentialUpload(bool success);
+  void OnDailySyncCredentialDownload(
+      std::vector<::nearby::internal::SharedCredential> credentials,
+      bool success);
+
+  // Callback for remote credential saving in the NP library that is part of
+  // the daily sync flow.
+  void OnDailySyncRemoteCredentialsSaved(mojom::StatusCode status);
 
   // Helper functions to trigger uploading credentials in the NP server. The
   // helper functions are used for first time server registration to upload

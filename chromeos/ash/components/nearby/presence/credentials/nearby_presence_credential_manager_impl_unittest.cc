@@ -541,6 +541,8 @@ TEST_F(NearbyPresenceCredentialManagerImplTest,
 
 TEST_F(NearbyPresenceCredentialManagerImplTest,
        DailySyncSuccess_LocalCredentialsChanged) {
+  // Required to send messages across mojo pipe for retrieving local device
+  // credentials.
   base::RunLoop get_local_creds_run_loop;
   fake_local_device_data_provider_->SetUpdatePersistedSharedCredentialsCallback(
       get_local_creds_run_loop.QuitClosure());
@@ -554,14 +556,32 @@ TEST_F(NearbyPresenceCredentialManagerImplTest,
   fake_nearby_presence_.SetLocalSharedCredentialsResponse(
       BuildSharedCredentials(), mojom::StatusCode::kOk);
 
+  // Simulate the remote device credentials being successfully set in the
+  // NP library.
+  fake_nearby_presence_.SetUpdateRemoteCredentialsStatus(
+      mojom::StatusCode::kOk);
+
   TriggerDailySync();
+
+  // Required to send messages across mojo pipe for saving remote device
+  // credentials.
+  base::RunLoop save_remote_creds_run_loop;
+  daily_sync_scheduler_->SetHandleResultCallback(
+      save_remote_creds_run_loop.QuitClosure());
+
   get_local_creds_run_loop.Run();
 
   // Simulate a successful result from the server. This call also enforces
   // that an upload request has been made.
   TriggerLocalCredentialUploadSuccess();
 
-  // Expect daily sync success.
+  // Simulate a successful download of credentials from the server.
+  TriggerDownloadRemoteCredentialSuccess();
+
+  save_remote_creds_run_loop.Run();
+
+  // Expect daily sync success, which only happens after credentials are
+  // saved to the NP library.
   EXPECT_TRUE(daily_sync_scheduler_->handled_results().front());
 }
 
@@ -580,7 +600,19 @@ TEST_F(NearbyPresenceCredentialManagerImplTest,
   fake_nearby_presence_.SetLocalSharedCredentialsResponse(
       BuildSharedCredentials(), mojom::StatusCode::kOk);
 
+  // Simulate the remote device credentials being successfully set in the
+  // NP library.
+  fake_nearby_presence_.SetUpdateRemoteCredentialsStatus(
+      mojom::StatusCode::kOk);
+
   TriggerDailySync();
+
+  // Required to send messages across mojo pipe for saving remote device
+  // credentials.
+  base::RunLoop save_remote_creds_run_loop;
+  daily_sync_scheduler_->SetHandleResultCallback(
+      save_remote_creds_run_loop.QuitClosure());
+
   get_local_creds_run_loop.Run();
 
   // Expect no calls to trigger a credential upload, which is indicated by the
@@ -589,7 +621,13 @@ TEST_F(NearbyPresenceCredentialManagerImplTest,
                 prefs::kNearbyPresenceSchedulingUploadPrefName),
             scheduler_factory_.pref_name_to_on_demand_instance().end());
 
-  // Expect daily sync success.
+  // Simulate a successful download of credentials from the server.
+  TriggerDownloadRemoteCredentialSuccess();
+
+  save_remote_creds_run_loop.Run();
+
+  // Expect daily sync success, which only happens after credentials are
+  // saved to the NP library.
   EXPECT_TRUE(daily_sync_scheduler_->handled_results().front());
 }
 
@@ -644,6 +682,81 @@ TEST_F(NearbyPresenceCredentialManagerImplTest,
       ash::nearby::NearbyHttpError::kInternalServerError);
 
   // Expect daily sync failure, which also indicates exponential retries.
+  EXPECT_FALSE(daily_sync_scheduler_->handled_results().front());
+}
+
+TEST_F(NearbyPresenceCredentialManagerImplTest,
+       DailySyncFailure_DownloadCredentialFailure) {
+  base::RunLoop get_local_creds_run_loop;
+  fake_local_device_data_provider_->SetHaveSharedCredentialsChangedCallback(
+      get_local_creds_run_loop.QuitClosure());
+
+  // Simulate that the local credentials have not changed, which is expected to
+  // not trigger a local credential upload to the server.
+  fake_local_device_data_provider_->SetHaveSharedCredentialsChanged(false);
+
+  // Simulate the local device credentials stored in the NP library and
+  // retrieved successfully.
+  fake_nearby_presence_.SetLocalSharedCredentialsResponse(
+      BuildSharedCredentials(), mojom::StatusCode::kOk);
+
+  // Simulate the remote device credentials being successfully set in the
+  // NP library.
+  fake_nearby_presence_.SetUpdateRemoteCredentialsStatus(
+      mojom::StatusCode::kOk);
+
+  TriggerDailySync();
+
+  get_local_creds_run_loop.Run();
+
+  // Simulate failure to download credentials from the server.
+  const raw_ptr<FakeNearbyScheduler, ExperimentalAsh> upload_scheduler =
+      scheduler_factory_.pref_name_to_on_demand_instance()
+          .find(prefs::kNearbyPresenceSchedulingDownloadPrefName)
+          ->second.fake_scheduler;
+  upload_scheduler->SetNumConsecutiveFailures(kServerCommunicationMaxAttempts);
+  upload_scheduler->InvokeRequestCallback();
+  server_client_factory_.fake_server_client()
+      ->InvokeListPublicCertificatesErrorCallback(
+          ash::nearby::NearbyHttpError::kInternalServerError);
+
+  EXPECT_FALSE(daily_sync_scheduler_->handled_results().front());
+}
+
+TEST_F(NearbyPresenceCredentialManagerImplTest,
+       DailySyncFailure_SaveRemoteCredentialFailure) {
+  base::RunLoop get_local_creds_run_loop;
+  fake_local_device_data_provider_->SetHaveSharedCredentialsChangedCallback(
+      get_local_creds_run_loop.QuitClosure());
+
+  // Simulate that the local credentials have not changed, which is expected to
+  // not trigger a local credential upload to the server.
+  fake_local_device_data_provider_->SetHaveSharedCredentialsChanged(false);
+
+  // Simulate the local device credentials stored in the NP library and
+  // retrieved successfully.
+  fake_nearby_presence_.SetLocalSharedCredentialsResponse(
+      BuildSharedCredentials(), mojom::StatusCode::kOk);
+
+  // Simulate the remote device credentials being unsuccessfully set in the
+  // NP library.
+  fake_nearby_presence_.SetUpdateRemoteCredentialsStatus(
+      mojom::StatusCode::kFailure);
+
+  TriggerDailySync();
+
+  // Required to send messages across mojo pipe for saving remote device
+  // credentials.
+  base::RunLoop save_remote_creds_run_loop;
+  daily_sync_scheduler_->SetHandleResultCallback(
+      save_remote_creds_run_loop.QuitClosure());
+
+  get_local_creds_run_loop.Run();
+
+  // Simulate a successful download of credentials from the server.
+  TriggerDownloadRemoteCredentialSuccess();
+  save_remote_creds_run_loop.Run();
+
   EXPECT_FALSE(daily_sync_scheduler_->handled_results().front());
 }
 

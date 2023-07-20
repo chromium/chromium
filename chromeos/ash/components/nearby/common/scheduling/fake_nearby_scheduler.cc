@@ -19,6 +19,10 @@ void FakeNearbyScheduler::MakeImmediateRequest() {
 
 void FakeNearbyScheduler::HandleResult(bool success) {
   handled_results_.push_back(success);
+
+  if (handle_result_callback_) {
+    std::move(handle_result_callback_).Run();
+  }
 }
 
 void FakeNearbyScheduler::Reschedule() {
@@ -70,6 +74,10 @@ void FakeNearbyScheduler::SetIsWaitingForResult(bool is_waiting) {
 
 void FakeNearbyScheduler::SetNumConsecutiveFailures(size_t num_failures) {
   num_consecutive_failures_ = num_failures;
+}
+
+void FakeNearbyScheduler::SetHandleResultCallback(base::OnceClosure callback) {
+  handle_result_callback_ = std::move(callback);
 }
 
 }  // namespace ash::nearby
