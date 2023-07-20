@@ -14,7 +14,10 @@ build_webui("build") {
     "images/empty_state.svg",
   ]
 
-  web_component_files = [ "app.ts" ]
+  web_component_files = [
+    "app.ts",
+    "read_anything_toolbar.ts",
+  ]
 
   ts_composite = true
   ts_deps = [

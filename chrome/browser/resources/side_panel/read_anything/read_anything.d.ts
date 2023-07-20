@@ -31,6 +31,9 @@ declare namespace chrome {
     let lineSpacing: number;
     let letterSpacing: number;
 
+    // Whether the WebUI toolbar feature flag is enabled.
+    let isWebUIToolbarVisible: boolean;
+
     // Returns a list of AXNodeIDs corresponding to the unignored children of
     // the AXNode for the provided AXNodeID. If there is a selection contained
     // in this node, only returns children which are partially or entirely

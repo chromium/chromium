@@ -29,6 +29,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -588,6 +589,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                    &ReadAnythingAppController::ForegroundColor)
       .SetProperty("letterSpacing", &ReadAnythingAppController::LetterSpacing)
       .SetProperty("lineSpacing", &ReadAnythingAppController::LineSpacing)
+      .SetProperty("isWebUIToolbarVisible",
+                   &ReadAnythingAppController::isWebUIToolbarEnabled)
       .SetMethod("getChildren", &ReadAnythingAppController::GetChildren)
       .SetMethod("getTextDirection",
                  &ReadAnythingAppController::GetTextDirection)
@@ -763,6 +766,10 @@ bool ReadAnythingAppController::IsOverline(ui::AXNodeID ax_node_id) const {
 
 bool ReadAnythingAppController::isSelectable() const {
   return model_.active_tree_selectable();
+}
+
+bool ReadAnythingAppController::isWebUIToolbarEnabled() const {
+  return features::IsReadAnythingWebUIToolbarEnabled();
 }
 
 void ReadAnythingAppController::OnConnected() {

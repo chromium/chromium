@@ -124,6 +124,7 @@ class ReadAnythingAppController
                          ui::AXNodeID focus_node_id,
                          int focus_offset) const;
   bool isSelectable() const;
+  bool isWebUIToolbarEnabled() const;
 
   void Distill();
   void Draw();

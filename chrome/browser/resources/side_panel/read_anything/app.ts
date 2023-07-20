@@ -5,6 +5,7 @@
 import '//read-anything-side-panel.top-chrome/shared/sp_empty_state.js';
 import '//resources/cr_elements/cr_hidden_style.css.js';
 import '../strings.m.js';
+import './read_anything_toolbar.js';
 
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from '//resources/js/assert_ts.js';
@@ -145,6 +146,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private emptyStateHeading_: string;
   private emptyStateSubheading_: string;
 
+  // If the WebUI toolbar should be shown. This happens when the WebUI feature
+  // flag is enabled.
+  private isWebUIToolbarVisible_: boolean;
+
   override connectedCallback() {
     super.connectedCallback();
     if (chrome.readingMode) {
@@ -183,6 +188,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       chrome.readingMode.onCopy();
       return false;
     };
+
+    this.isWebUIToolbarVisible_ = chrome.readingMode.isWebUIToolbarVisible;
   }
 
   private buildSubtree_(nodeId: number): Node {
