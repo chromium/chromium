@@ -68,6 +68,7 @@ suite('TabDiscardExceptionsDialog', function() {
         document.createElement('tab-discard-exception-tabbed-add-dialog');
     setupDialog(addDialog);
     await performanceBrowserProxy.whenCalled('getCurrentOpenSites');
+    performanceBrowserProxy.resetResolver('getCurrentOpenSites');
     return addDialog;
   }
 
@@ -332,6 +333,7 @@ suite('TabDiscardExceptionsDialog', function() {
     assertRulesListEquals(dialog, [CHANGED_SITE]);
 
     // after switching back to the list tab, list should start updating again
+    performanceBrowserProxy.resetResolver('getCurrentOpenSites');
     switchAddDialogTab(dialog, TabDiscardExceptionAddDialogTabs.CURRENT_SITES);
     await performanceBrowserProxy.whenCalled('getCurrentOpenSites');
     await eventToPromise('iron-resize', dialog.$.list.$.list);
@@ -342,6 +344,7 @@ suite('TabDiscardExceptionsDialog', function() {
     // after document is hidden, list should no longer update
     Object.defineProperty(
         document, 'visibilityState', {value: 'hidden', writable: true});
+    performanceBrowserProxy.resetResolver('getCurrentOpenSites');
     document.dispatchEvent(new Event('visibilitychange'));
     await performanceBrowserProxy.whenCalled('getCurrentOpenSites');
     assertFalse(dialog.$.list.getIsUpdatingForTesting());
@@ -352,6 +355,7 @@ suite('TabDiscardExceptionsDialog', function() {
     // after document becomes visible, list should start updating again
     Object.defineProperty(
         document, 'visibilityState', {value: 'visible', writable: true});
+    performanceBrowserProxy.resetResolver('getCurrentOpenSites');
     document.dispatchEvent(new Event('visibilitychange'));
     await performanceBrowserProxy.whenCalled('getCurrentOpenSites');
     await eventToPromise('iron-resize', dialog.$.list.$.list);
