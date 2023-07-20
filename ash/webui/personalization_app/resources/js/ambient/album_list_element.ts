@@ -9,6 +9,7 @@
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../../css/common.css.js';
 
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
 import {AmbientModeAlbum, TopicSource} from '../../personalization_app.mojom-webui.js';
@@ -41,27 +42,62 @@ export class AlbumList extends WithPersonalizationStore {
   static get properties() {
     return {
       topicSource: TopicSource,
+      /**
+       * List of albums received from the client.
+       */
       albums: {
         type: Array,
         value: null,
+        observer: 'onAlbumsChanged_',
+      },
+      /**
+       * List of albums used for iron-list rendering.
+       */
+      albumsForDisplay_: {
+        type: Array,
+        value: [],
       },
     };
   }
 
   topicSource: TopicSource;
   albums: AmbientModeAlbum[]|null;
+  private albumsForDisplay_: AmbientModeAlbum[];
+
+  private onAlbumsChanged_(albums: AlbumList['albums']) {
+    if (!albums) {
+      return;
+    }
+
+    // `albumsForDisplay_` is updated in place to avoid complete re-rendering of
+    // iron-list, which would cause the tabindex to reset. See b/291123326.
+    this.updateList(
+        /*propertyPath=*/ 'albumsForDisplay_',
+        /*identityGetter=*/
+        (album: AmbientModeAlbum) => album.id,
+        /*newList=*/ albums,
+        /*identityBasedUpdate=*/ true,
+    );
+  }
 
   /** Invoked on selection of an album. */
   private onAlbumSelected_(e: Event&{model: {album: AmbientModeAlbum}}) {
-    if (this.topicSource === TopicSource.kVideo && e.model.album.checked) {
+    // Retrieve the actual instance of selected album from `albums`.
+    const albumIndex =
+        this.albums!.findIndex(album => album.id === e.model.album.id);
+    assert(albumIndex >= 0);
+    const albumChanged = this.albums![albumIndex];
+
+    if (this.topicSource === TopicSource.kVideo && albumChanged.checked) {
       // De-selecting a selected video album is a no-op. Selecting a different
       // video album will unselect the other video albums in the client.
       return;
     }
-    e.model.album.checked = !e.model.album.checked;
+
+    albumChanged.checked = !albumChanged.checked;
     this.dispatchEvent(new CustomEvent(
         'album_selected_changed',
-        {bubbles: true, composed: true, detail: {album: e.model.album}}));
+        {bubbles: true, composed: true, detail: {album: albumChanged}}));
   }
 
   private isAlbumSelected_(

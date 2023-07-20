@@ -686,12 +686,12 @@ suite('AmbientSubpageTest', function() {
     const albums = albumList.shadowRoot!.querySelectorAll<WallpaperGridItem>(
         'wallpaper-grid-item:not([hidden])');
     assertEquals(3, albums.length);
-    assertTrue(!!albums[0]);
-    assertTrue(!!albums[1]);
-    assertTrue(!!albums[2]);
-    assertFalse(albums[0].selected!);
-    assertFalse(albums[1].selected!);
-    assertTrue(albums[2].selected!);
+    assertTrue(!!albums[0], '!!albums[0]');
+    assertTrue(!!albums[1], '!!albums[1]');
+    assertTrue(!!albums[2], '!!albums[2]');
+    assertFalse(albums[0].selected!, 'albums[0].selected!');
+    assertFalse(albums[1].selected!, 'albums[1].selected!');
+    assertTrue(albums[2].selected!, 'albums[2].selected!');
     let selectedAlbums = getSelectedAlbums(
         personalizationStore.data.ambient.albums || [],
         personalizationStore.data.ambient.topicSource!);
@@ -700,7 +700,7 @@ suite('AmbientSubpageTest', function() {
 
     personalizationStore.expectAction(AmbientActionName.SET_ALBUM_SELECTED);
     albums[1].click();
-    assertTrue(albums[1].selected!);
+    assertTrue(albums[1].selected!, 'albums[1].selected!');
     await personalizationStore.waitForAction(
         AmbientActionName.SET_ALBUM_SELECTED);
     selectedAlbums = getSelectedAlbums(
@@ -742,23 +742,24 @@ suite('AmbientSubpageTest', function() {
     const albums = albumList.shadowRoot!.querySelectorAll<WallpaperGridItem>(
         'wallpaper-grid-item:not([hidden])');
     assertEquals(3, albums.length);
-    assertTrue(!!albums[0]);
-    assertTrue(!!albums[1]);
-    assertTrue(!!albums[2]);
-    assertFalse(albums[0].selected!);
-    assertFalse(albums[1].selected!);
-    assertTrue(albums[2].selected!);
+    assertTrue(!!albums[0], '!!albums[0]');
+    assertTrue(!!albums[1], '!!albums[1]');
+    assertTrue(!!albums[2], '!!albums[2]');
+    assertFalse(albums[0].selected!, 'albums[0].selected!');
+    assertFalse(albums[1].selected!, 'albums[1].selected!');
+    assertTrue(albums[2].selected!, 'albums[2].selected!');
 
     // Click the last art album item image will not toggle the check and will
     // show a dialog.
     albums[2].click();
-    assertTrue(albums[2].selected);
+    assertTrue(albums[2].selected, 'albums[2].selected');
 
+    await waitAfterNextRender(albumsSubpage);
     const artAlbumDialog =
         albumsSubpage.shadowRoot!.querySelector('art-album-dialog');
-    assertTrue(!!artAlbumDialog);
+    assertTrue(!!artAlbumDialog, '!!artAlbumDialog');
     await waitAfterNextRender(artAlbumDialog);
-    assertTrue(artAlbumDialog.$.dialog.open);
+    assertTrue(artAlbumDialog.$.dialog.open, 'artAlbumDialog.$.dialog.open');
   });
 
   test('has correct album preview information', async () => {
