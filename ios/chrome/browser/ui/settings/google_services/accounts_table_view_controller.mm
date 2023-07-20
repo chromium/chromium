@@ -217,8 +217,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 }
 
 - (void)settingsWillBeDismissed {
-  [self.removeOrMyGoogleChooserAlertCoordinator stop];
-  self.removeOrMyGoogleChooserAlertCoordinator = nil;
+  [self dismissRemoveOrMyGoogleChooserAlert];
   [self.signoutCoordinator stop];
   self.signoutCoordinator = nil;
   [self.removeAccountCoordinator stop];
@@ -683,6 +682,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
                            IDS_IOS_MANAGE_YOUR_GOOGLE_ACCOUNT_TITLE)
                 action:^{
                   [weakSelf handleManageGoogleAccountWithIdentity:identity];
+                  [weakSelf dismissRemoveOrMyGoogleChooserAlert];
                 }
                  style:UIAlertActionStyleDefault];
   [self.removeOrMyGoogleChooserAlertCoordinator
@@ -690,12 +690,14 @@ constexpr CGFloat kErrorSymbolSize = 22.;
                            IDS_IOS_REMOVE_GOOGLE_ACCOUNT_TITLE)
                 action:^{
                   [weakSelf handleRemoveSecondaryAccountWithIdentity:identity];
+                  [weakSelf dismissRemoveOrMyGoogleChooserAlert];
                 }
                  style:UIAlertActionStyleDestructive];
   [self.removeOrMyGoogleChooserAlertCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
                 action:^() {
                   [weakSelf handleAlertCoordinatorCancel];
+                  [weakSelf dismissRemoveOrMyGoogleChooserAlert];
                 }
                  style:UIAlertActionStyleCancel];
   [self.removeOrMyGoogleChooserAlertCoordinator start];
@@ -977,6 +979,11 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 }
 
 #pragma mark - Private methods
+
+- (void)dismissRemoveOrMyGoogleChooserAlert {
+  [self.removeOrMyGoogleChooserAlertCoordinator stop];
+  self.removeOrMyGoogleChooserAlertCoordinator = nil;
+}
 
 // Returns YES if the account is signed in not syncing, NO otherwise.
 - (BOOL)isAccountSignedInNotSyncing {
