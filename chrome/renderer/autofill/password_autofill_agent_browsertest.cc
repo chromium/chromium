@@ -461,11 +461,6 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     GetMainFrame()->AutofillClient()->DidCompleteFocusChangeInFrame();
   }
 
-  void SetFillOnAccountSelect() {
-    scoped_feature_list_.InitAndEnableFeature(
-        password_manager::features::kFillOnAccountSelect);
-  }
-
   void EnableOverwritingPlaceholderUsernames() {
     scoped_feature_list_.InitAndEnableFeature(
         password_manager::features::kEnableOverwritingPlaceholderUsernames);
@@ -2866,8 +2861,6 @@ TEST_F(PasswordAutofillAgentTest, NotShowPopupPasswordField) {
 // highlighted as autofillable (regression test for https://crbug.com/442564).
 TEST_F(PasswordAutofillAgentTest,
        FillOnAccountSelectOnlyReadonlyUnknownUsername) {
-  SetFillOnAccountSelect();
-
   ClearUsernameAndPasswordFieldValues();
 
   username_element_.SetValue("foobar");

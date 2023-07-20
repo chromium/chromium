@@ -29,6 +29,8 @@ BASE_DECLARE_FEATURE(kEnablePasswordsAccountStorage);
 BASE_DECLARE_FEATURE(kFillingAcrossAffiliatedWebsites);
 BASE_DECLARE_FEATURE(kFillingAcrossGroupedSites);
 
+BASE_DECLARE_FEATURE(kFillOnAccountSelect);
+
 BASE_DECLARE_FEATURE(kSharedPasswordNotificationUI);
 
 BASE_DECLARE_FEATURE(kPasswordManagerEnableReceiverService);

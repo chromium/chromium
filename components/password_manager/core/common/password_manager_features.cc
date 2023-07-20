@@ -18,12 +18,6 @@ BASE_FEATURE(kEnableOverwritingPlaceholderUsernames,
              "EnableOverwritingPlaceholderUsernames",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the experiment for the password manager to only fill on account
-// selection, rather than autofilling on page load, with highlighting of fields.
-BASE_FEATURE(kFillOnAccountSelect,
-             "fill-on-account-select",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables logging the content of chrome://password-manager-internals to the
 // terminal.
 BASE_FEATURE(kPasswordManagerLogToTerminal,
