@@ -6,8 +6,10 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_BROWSER_AUTOFILL_MANAGER_TEST_API_H_
 
 #include "base/memory/raw_ref.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 
@@ -28,6 +30,12 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
 
   explicit BrowserAutofillManagerTestApi(BrowserAutofillManager* manager)
       : AutofillManagerTestApi(manager), manager_(*manager) {}
+
+  // Blocks until all pending votes have been emitted. This fails if either a
+  // timeout is hit or if the BrowserAutofillManager::vote_upload_task_runner_
+  // has not been initialized yet.
+  [[nodiscard]] testing::AssertionResult FlushPendingVotes(
+      base::TimeDelta timeout = base::Seconds(10));
 
   const std::vector<autofill::AutofillProfile>& test_addresses() {
     return manager_->test_addresses_;

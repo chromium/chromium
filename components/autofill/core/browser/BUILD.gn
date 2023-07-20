@@ -698,6 +698,7 @@ static_library("test_support") {
     "autofill_manager_test_api.h",
     "autofill_test_utils.cc",
     "autofill_test_utils.h",
+    "browser_autofill_manager_test_api.cc",
     "browser_autofill_manager_test_api.h",
     "data_model/autofill_structured_address_test_utils.cc",
     "data_model/autofill_structured_address_test_utils.h",

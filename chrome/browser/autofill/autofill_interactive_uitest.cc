@@ -53,6 +53,7 @@
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_delegate.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
@@ -3864,13 +3865,8 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 //    09 / 99 instead.
 // 4) The promise waits to see 09 / 99 and resolved.
 // Flaky on Mac https://crbug.com/1462103.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_FillCardOnReformatingForm DISABLED_FillCardOnReformatingForm
-#else
-#define MAYBE_FillCardOnReformatingForm FillCardOnReformatingForm
-#endif
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
-                       MAYBE_FillCardOnReformatingForm) {
+                       FillCardOnReformattingForm) {
   CreateTestCreditCart();
   GURL url = https_server()->GetURL(
       "a.com", "/autofill/autofill_creditcard_form_with_date_formatter.html");
@@ -3888,9 +3884,22 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
   // interaction timestamp must be before the submission timestamp, we advance
   // the browser by a lot.
   AdvanceClock(base::Minutes(10));
+
+  // Since votes are emitted and quality metrics are recorded asynchronously, we
+  // need to explicitly wait for the pending votes. Since voting is scheduled on
+  // submission, we first need to wait for the submission (otherwise, there are
+  // no pending to vote for).
+  //
+  // Additionally, we wait for a navigation because that's when the key metrics
+  // are emitted.
   content::LoadStopObserver load_stop_observer(GetWebContents());
+  BrowserAutofillManager* autofill_manager = GetBrowserAutofillManager();
+  TestAutofillManagerWaiter submission_waiter(
+      *autofill_manager, {AutofillManagerEvent::kFormSubmitted});
   ASSERT_TRUE(content::ExecJs(GetWebContents(),
                               "document.getElementById('testform').submit();"));
+  ASSERT_TRUE(submission_waiter.Wait(1));
+  ASSERT_TRUE(test_api(*autofill_manager).FlushPendingVotes());
   load_stop_observer.Wait();
 
   // Short hand for ExpectbucketCount:
