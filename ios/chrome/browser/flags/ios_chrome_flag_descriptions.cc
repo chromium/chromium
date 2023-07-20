@@ -328,6 +328,12 @@ const char kEnableFeedHeaderSettingsName[] =
 const char kEnableFeedHeaderSettingsDescription[] =
     "When enabled, some UI elements of the feed header can be modified.";
 
+const char kEnableFriendlierSafeBrowsingSettingsName[] =
+    "Enable Friendlier Safe Browsing Settings";
+const char kEnableFriendlierSafeBrowsingSettingsDescription[] =
+    "Updates the text, layout, and icons on both the privacy guide and the "
+    "security settings page.";
+
 const char kEditPasswordsInSettingsName[] = "Edit passwords in settings";
 const char kEditPasswordsInSettingsDescription[] =
     "Enables password editing in settings.";

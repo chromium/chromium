@@ -313,6 +313,11 @@ extern const char kEnableFollowManagementInstantReloadDescription[];
 extern const char kEnableFollowUIUpdateName[];
 extern const char kEnableFollowUIUpdateDescription[];
 
+// Title and description for the flag to enable Friendlier Safe Browsing feature
+// on iOS.
+extern const char kEnableFriendlierSafeBrowsingSettingsName[];
+extern const char kEnableFriendlierSafeBrowsingSettingsDescription[];
+
 // Title and description for the flag to enable kEditPasswordsInSettings flag on
 // iOS.
 extern const char kEditPasswordsInSettingsName[];
