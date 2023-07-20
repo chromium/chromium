@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_COOKIE_CONTROLS_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_COOKIE_CONTROLS_BUBBLE_VIEW_H_
 
+#include "base/functional/callback.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/views/widget/widget.h"
 
 class CookieControlsContentView;
 
@@ -23,6 +25,8 @@ class View;
 class CookieControlsBubbleView {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCookieControlsBubble);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kContentView);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kReloadingView);
 
   virtual ~CookieControlsBubbleView() = default;
 
@@ -35,13 +39,16 @@ class CookieControlsBubbleView {
   virtual void UpdateFaviconImage(const gfx::Image& image,
                                   int favicon_view_id) = 0;
 
-  virtual void ShowContentView() = 0;
-  virtual void ShowReloadingView() = 0;
+  virtual void SwitchToReloadingView() = 0;
 
   virtual CookieControlsContentView* GetContentView() = 0;
   virtual views::View* GetReloadingView() = 0;
 
   virtual void CloseWidget() = 0;
+
+  virtual base::CallbackListSubscription
+  RegisterOnUserClosedContentViewCallback(
+      base::RepeatingClosureList::CallbackType callback) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_COOKIE_CONTROLS_BUBBLE_VIEW_H_

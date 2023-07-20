@@ -17,7 +17,6 @@
 #include "components/favicon_base/favicon_types.h"
 #include "url/gurl.h"
 
-class Browser;
 class CookieControlsBubbleView;
 
 class CookieControlsBubbleViewController
@@ -43,7 +42,10 @@ class CookieControlsBubbleViewController
       CookieControlsBreakageConfidenceLevel level) override;
 
  private:
-  void SetButtonPressedCallbacks();
+  friend class CookieControlsBubbleViewBrowserTest;
+
+  void SetCallbacks();
+  void OnUserClosedContentView();
   void OnToggleButtonPressed(bool new_value);
   void OnFeedbackButtonPressed();
 
@@ -65,13 +67,16 @@ class CookieControlsBubbleViewController
   // Used for favicon loading tasks.
   base::CancelableTaskTracker cancelable_task_tracker_;
 
+  base::CallbackListSubscription on_user_closed_content_view_callback_;
   base::CallbackListSubscription toggle_button_callback_;
   base::CallbackListSubscription feedback_button_callback_;
   base::WeakPtr<content_settings::CookieControlsController> controller_;
   base::ScopedObservation<content_settings::CookieControlsController,
                           content_settings::CookieControlsObserver>
       controller_observation_{this};
-  raw_ptr<Browser> browser_ = nullptr;
+
+  bool waiting_for_reload_ = false;
+  bool requires_reload_ = false;
 
   base::WeakPtrFactory<CookieControlsBubbleViewController> weak_factory_{this};
 };

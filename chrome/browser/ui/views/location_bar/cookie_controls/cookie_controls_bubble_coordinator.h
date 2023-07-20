@@ -32,6 +32,8 @@ class CookieControlsBubbleCoordinator : public views::ViewObserver {
 
   CookieControlsBubbleViewImpl* GetBubble();
 
+  CookieControlsBubbleViewController* GetViewControllerForTesting();
+
  private:
   // views::ViewObserver
   void OnViewIsDeleting(views::View* observed_view) override;
