@@ -164,15 +164,14 @@ class NearbyPresenceCredentialManagerImplTest : public testing::Test {
         ->InvokeUpdateDeviceSuccessCallback(response);
   }
 
-  void TriggerFirstTimeLocalCredentialUploadSuccess() {
+  void TriggerLocalCredentialUploadSuccess() {
     // Simulate the scheduler notifying the CredentialManager that the upload
     // task is ready when it has network connectivity.
-    const raw_ptr<FakeNearbyScheduler, ExperimentalAsh>
-        first_time_upload_scheduler =
-            scheduler_factory_.pref_name_to_on_demand_instance()
-                .find(prefs::kNearbyPresenceSchedulingFirstTimeUploadPrefName)
-                ->second.fake_scheduler;
-    first_time_upload_scheduler->InvokeRequestCallback();
+    const raw_ptr<FakeNearbyScheduler, ExperimentalAsh> upload_scheduler =
+        scheduler_factory_.pref_name_to_on_demand_instance()
+            .find(prefs::kNearbyPresenceSchedulingUploadPrefName)
+            ->second.fake_scheduler;
+    upload_scheduler->InvokeRequestCallback();
 
     // Mock and return the server response.
     ash::nearby::proto::UpdateDeviceResponse update_credentials_response;
@@ -180,15 +179,14 @@ class NearbyPresenceCredentialManagerImplTest : public testing::Test {
         ->InvokeUpdateDeviceSuccessCallback(update_credentials_response);
   }
 
-  void TriggerFirstTimeDownloadRemoteCredentialSuccess() {
+  void TriggerDownloadRemoteCredentialSuccess() {
     // Simulate the scheduler notifying the CredentialManager that the download
     // task is ready when it has network connectivity.
-    const raw_ptr<FakeNearbyScheduler, ExperimentalAsh>
-        first_time_download_scheduler =
-            scheduler_factory_.pref_name_to_on_demand_instance()
-                .find(prefs::kNearbyPresenceSchedulingFirstTimeDownloadPrefName)
-                ->second.fake_scheduler;
-    first_time_download_scheduler->InvokeRequestCallback();
+    const raw_ptr<FakeNearbyScheduler, ExperimentalAsh> download_scheduler =
+        scheduler_factory_.pref_name_to_on_demand_instance()
+            .find(prefs::kNearbyPresenceSchedulingDownloadPrefName)
+            ->second.fake_scheduler;
+    download_scheduler->InvokeRequestCallback();
 
     // Next, mock and return the server response for fetching remote device
     // public certificates.
@@ -275,8 +273,8 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, RegistrationSuccess) {
 
   generate_creds_run_loop.Run();
 
-  TriggerFirstTimeLocalCredentialUploadSuccess();
-  TriggerFirstTimeDownloadRemoteCredentialSuccess();
+  TriggerLocalCredentialUploadSuccess();
+  TriggerDownloadRemoteCredentialSuccess();
 
   create_credential_manager_run_loop.Run();
   EXPECT_TRUE(credential_manager_);
@@ -358,7 +356,7 @@ TEST_F(NearbyPresenceCredentialManagerImplTest,
   const raw_ptr<FakeNearbyScheduler, ExperimentalAsh>
       first_time_upload_scheduler =
           scheduler_factory_.pref_name_to_on_demand_instance()
-              .find(prefs::kNearbyPresenceSchedulingFirstTimeUploadPrefName)
+              .find(prefs::kNearbyPresenceSchedulingUploadPrefName)
               ->second.fake_scheduler;
   first_time_upload_scheduler->InvokeRequestCallback();
 
@@ -390,7 +388,7 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, UploadCredentialsFailure) {
   const raw_ptr<FakeNearbyScheduler, ExperimentalAsh>
       first_time_upload_scheduler =
           scheduler_factory_.pref_name_to_on_demand_instance()
-              .find(prefs::kNearbyPresenceSchedulingFirstTimeUploadPrefName)
+              .find(prefs::kNearbyPresenceSchedulingUploadPrefName)
               ->second.fake_scheduler;
 
   // Simulate the max number of failures caused by a RPC failure.
@@ -417,14 +415,14 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, DownloadCredentialsFailure) {
   // Required for credentials to be generated and passed over the mojo pipe.
   generate_creds_run_loop.Run();
 
-  TriggerFirstTimeLocalCredentialUploadSuccess();
+  TriggerLocalCredentialUploadSuccess();
 
   // Simulate the scheduler notifying the CredentialManager that the download
   // task is ready when it has network connectivity.
   const raw_ptr<FakeNearbyScheduler, ExperimentalAsh>
       first_time_download_scheduler =
           scheduler_factory_.pref_name_to_on_demand_instance()
-              .find(prefs::kNearbyPresenceSchedulingFirstTimeDownloadPrefName)
+              .find(prefs::kNearbyPresenceSchedulingDownloadPrefName)
               ->second.fake_scheduler;
 
   // Simulate the max number of failures caused by a RPC failure.
@@ -454,14 +452,14 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, DownloadCredentialsTimeout) {
   // Required for credentials to be generated and passed over the mojo pipe.
   generate_creds_run_loop.Run();
 
-  TriggerFirstTimeLocalCredentialUploadSuccess();
+  TriggerLocalCredentialUploadSuccess();
 
   // Simulate the scheduler notifying the CredentialManager that the download
   // task is ready when it has network connectivity.
   const raw_ptr<FakeNearbyScheduler, ExperimentalAsh>
       first_time_download_scheduler =
           scheduler_factory_.pref_name_to_on_demand_instance()
-              .find(prefs::kNearbyPresenceSchedulingFirstTimeDownloadPrefName)
+              .find(prefs::kNearbyPresenceSchedulingDownloadPrefName)
               ->second.fake_scheduler;
   first_time_download_scheduler->InvokeRequestCallback();
 
@@ -494,8 +492,8 @@ TEST_F(NearbyPresenceCredentialManagerImplTest,
   // Required for credentials to be generated and passed over the mojo pipe.
   generate_creds_run_loop.Run();
 
-  TriggerFirstTimeLocalCredentialUploadSuccess();
-  TriggerFirstTimeDownloadRemoteCredentialSuccess();
+  TriggerLocalCredentialUploadSuccess();
+  TriggerDownloadRemoteCredentialSuccess();
 
   create_credential_manager_run_loop.Run();
   EXPECT_FALSE(credential_manager_);
