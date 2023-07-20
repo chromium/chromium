@@ -2065,6 +2065,10 @@
       status: "stable",
     },
     {
+      name: "LayoutIgnoreMarginsForSticky",
+      status: "stable",
+    },
+    {
       name: "LayoutNewFixedPositionInvalidation",
       status: "stable",
     },

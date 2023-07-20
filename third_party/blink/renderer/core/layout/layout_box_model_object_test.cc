@@ -287,9 +287,17 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionPercentageStyles) {
   EXPECT_TRUE(scrollable_area->HasStickyLayer(sticky->Layer()));
   ASSERT_EQ(0.f, constraints->top_inset);
 
-  ASSERT_EQ(gfx::Rect(25, 145, 200, 330),
-            ToEnclosingRect(
-                constraints->scroll_container_relative_containing_block_rect));
+  if (RuntimeEnabledFeatures::LayoutIgnoreMarginsForStickyEnabled()) {
+    ASSERT_EQ(
+        gfx::Rect(25, 125, 200, 350),
+        ToEnclosingRect(
+            constraints->scroll_container_relative_containing_block_rect));
+  } else {
+    ASSERT_EQ(
+        gfx::Rect(25, 145, 200, 330),
+        ToEnclosingRect(
+            constraints->scroll_container_relative_containing_block_rect));
+  }
   ASSERT_EQ(
       gfx::Rect(25, 145, 100, 100),
       ToEnclosingRect(constraints->scroll_container_relative_sticky_box_rect));

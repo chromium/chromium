@@ -657,17 +657,20 @@ bool LayoutBoxModelObject::UpdateStickyPositionConstraints() {
   // See https://www.w3.org/TR/css-position-3/#sticky-pos
   scroll_container_relative_containing_block_rect.ContractEdges(
       MinimumValueForLength(sticky_container->StyleRef().PaddingTop(),
-                            max_container_width) +
-          MinimumValueForLength(StyleRef().MarginTop(), max_width),
+                            max_container_width),
       MinimumValueForLength(sticky_container->StyleRef().PaddingRight(),
-                            max_container_width) +
-          MinimumValueForLength(StyleRef().MarginRight(), max_width),
+                            max_container_width),
       MinimumValueForLength(sticky_container->StyleRef().PaddingBottom(),
-                            max_container_width) +
-          MinimumValueForLength(StyleRef().MarginBottom(), max_width),
+                            max_container_width),
       MinimumValueForLength(sticky_container->StyleRef().PaddingLeft(),
-                            max_container_width) +
-          MinimumValueForLength(StyleRef().MarginLeft(), max_width));
+                            max_container_width));
+  if (!RuntimeEnabledFeatures::LayoutIgnoreMarginsForStickyEnabled()) {
+    scroll_container_relative_containing_block_rect.ContractEdges(
+        MinimumValueForLength(StyleRef().MarginTop(), max_width),
+        MinimumValueForLength(StyleRef().MarginRight(), max_width),
+        MinimumValueForLength(StyleRef().MarginBottom(), max_width),
+        MinimumValueForLength(StyleRef().MarginLeft(), max_width));
+  }
 
   constraints->scroll_container_relative_containing_block_rect =
       scroll_container_relative_containing_block_rect;
