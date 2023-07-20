@@ -33,7 +33,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -387,7 +386,7 @@ ServiceWorkerGlobalScope::GetInstalledScriptsManager() {
 }
 
 void ServiceWorkerGlobalScope::DidEvaluateScript() {
-  CHECK(!did_evaluate_script_);
+  DCHECK(!did_evaluate_script_);
   did_evaluate_script_ = true;
 
   int number_of_fetch_handlers =
@@ -1345,31 +1344,6 @@ void ServiceWorkerGlobalScope::OnBeforeStartEvent(bool is_offline_event) {
 
 void ServiceWorkerGlobalScope::OnIdleTimeout() {
   DCHECK(IsContextThread());
-  if (!did_evaluate_script_) {
-    // TODO(crbug.com/1462568): After investigating crash bug, the following
-    // DumpWithoutCrashing should be removed.
-    static bool has_dumped_without_crashing = false;
-    if (!has_dumped_without_crashing) {
-      has_dumped_without_crashing = true;
-      SCOPED_CRASH_KEY_BOOL("SWGScope", "requested_termination",
-                            RequestedTermination());
-      SCOPED_CRASH_KEY_BOOL("SWGScope", "is_installing", is_installing_);
-      SCOPED_CRASH_KEY_BOOL("SWGScope", "did_idle_timeout",
-                            event_queue_->did_idle_timeout());
-      SCOPED_CRASH_KEY_BOOL("SWGScope", "global_scope_initialized_",
-                            global_scope_initialized_);
-      SCOPED_CRASH_KEY_BOOL("SWGScope", "did_evaluate_script_",
-                            did_evaluate_script_);
-      SCOPED_CRASH_KEY_BOOL("SWGScope", "pause_evaluation_", pause_evaluation_);
-      SCOPED_CRASH_KEY_STRING64("SWGScope", "service_worker_url_protocol",
-                                Url().Protocol().Left(64).Utf8());
-      SCOPED_CRASH_KEY_STRING1024("SWGScope", "service_worker_url_host",
-                                  Url().Host().Left(1024).Utf8());
-      base::debug::DumpWithoutCrashing();
-    }
-  }
-  // Still we are not sure this is always true, hence DCHECK.
-  DCHECK(did_evaluate_script_);
   // RequestedTermination() returns true if ServiceWorkerEventQueue agrees
   // we should request the host to terminate this worker now.
   DCHECK(RequestedTermination());
@@ -1598,37 +1572,6 @@ void ServiceWorkerGlobalScope::DispatchFetchEventForSubresource(
         response_callback,
     DispatchFetchEventForSubresourceCallback callback) {
   DCHECK(IsContextThread());
-
-  if (!did_evaluate_script_) {
-    // TODO(crbug.com/1462568): After investigating crash bug, the following
-    // DumpWithoutCrashing should be removed.
-    static bool has_dumped_without_crashing = false;
-    if (!has_dumped_without_crashing) {
-      has_dumped_without_crashing = true;
-      SCOPED_CRASH_KEY_BOOL("SWGScope", "requested_termination",
-                            RequestedTermination());
-      SCOPED_CRASH_KEY_BOOL("SWGScope", "is_installing", is_installing_);
-      SCOPED_CRASH_KEY_BOOL("SWGScope", "did_idle_timeout",
-                            event_queue_->did_idle_timeout());
-      SCOPED_CRASH_KEY_BOOL("SWGScope", "global_scope_initialized_",
-                            global_scope_initialized_);
-      SCOPED_CRASH_KEY_BOOL("SWGScope", "did_evaluate_script_",
-                            did_evaluate_script_);
-      SCOPED_CRASH_KEY_BOOL("SWGScope", "pause_evaluation_", pause_evaluation_);
-      SCOPED_CRASH_KEY_BOOL("SWGScope", "is_offline_capability_check",
-                            params->is_offline_capability_check);
-      SCOPED_CRASH_KEY_BOOL("SWGScope", "did_start_race_network_req",
-                            params->did_start_race_network_request);
-      SCOPED_CRASH_KEY_BOOL("SWGScope", "race_network_req_loader_f",
-                            bool(params->race_network_request_loader_factory));
-      SCOPED_CRASH_KEY_STRING64("SWGScope", "service_worker_url_protocol",
-                                Url().Protocol().Left(64).Utf8());
-      SCOPED_CRASH_KEY_STRING1024("SWGScope", "service_worker_url_host",
-                                  Url().Host().Left(1024).Utf8());
-      base::debug::DumpWithoutCrashing();
-    }
-  }
-
   TRACE_EVENT2("ServiceWorker",
                "ServiceWorkerGlobalScope::DispatchFetchEventForSubresource",
                "url", params->request->url.ElidedString().Utf8(), "queued",
@@ -2033,36 +1976,6 @@ void ServiceWorkerGlobalScope::DispatchFetchEventForMainResource(
         response_callback,
     DispatchFetchEventForMainResourceCallback callback) {
   DCHECK(IsContextThread());
-
-  if (!did_evaluate_script_) {
-    // TODO(crbug.com/1462568): After investigating crash bug, the following
-    // DumpWithoutCrashing should be removed.
-    static bool has_dumped_without_crashing = false;
-    if (!has_dumped_without_crashing) {
-      has_dumped_without_crashing = true;
-      SCOPED_CRASH_KEY_BOOL("SWGScope", "requested_termination",
-                            RequestedTermination());
-      SCOPED_CRASH_KEY_BOOL("SWGScope", "is_installing", is_installing_);
-      SCOPED_CRASH_KEY_BOOL("SWGScope", "did_idle_timeout",
-                            event_queue_->did_idle_timeout());
-      SCOPED_CRASH_KEY_BOOL("SWGScope", "global_scope_initialized_",
-                            global_scope_initialized_);
-      SCOPED_CRASH_KEY_BOOL("SWGScope", "did_evaluate_script_",
-                            did_evaluate_script_);
-      SCOPED_CRASH_KEY_BOOL("SWGScope", "pause_evaluation_", pause_evaluation_);
-      SCOPED_CRASH_KEY_BOOL("SWGScope", "is_offline_capability_check",
-                            params->is_offline_capability_check);
-      SCOPED_CRASH_KEY_BOOL("SWGScope", "did_start_race_network_req",
-                            params->did_start_race_network_request);
-      SCOPED_CRASH_KEY_BOOL("SWGScope", "race_network_req_loader_f",
-                            bool(params->race_network_request_loader_factory));
-      SCOPED_CRASH_KEY_STRING64("SWGScope", "service_worker_url_protocol",
-                                Url().Protocol().Left(64).Utf8());
-      SCOPED_CRASH_KEY_STRING1024("SWGScope", "service_worker_url_host",
-                                  Url().Host().Left(1024).Utf8());
-      base::debug::DumpWithoutCrashing();
-    }
-  }
 
   // The timeout for offline events in a service worker. The default value is
   // the same as the update interval value in the event queue.

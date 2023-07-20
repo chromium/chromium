@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -614,18 +613,6 @@ void EmbeddedWorkerInstance::RequestTermination(
     RequestTerminationCallback callback) {
   if (status() != EmbeddedWorkerStatus::RUNNING &&
       status() != EmbeddedWorkerStatus::STOPPING) {
-    static bool has_dumped_without_crashing = false;
-    if (!has_dumped_without_crashing) {
-      has_dumped_without_crashing = true;
-      SCOPED_CRASH_KEY_NUMBER("EmbWorker", "status",
-                              static_cast<int>(status()));
-      SCOPED_CRASH_KEY_BOOL("EmbWorker", "pause_init_global_scope",
-                            pause_initializing_global_scope_);
-      SCOPED_CRASH_KEY_NUMBER("EmbWorker", "starting_phase",
-                              static_cast<int>(starting_phase_));
-      SCOPED_CRASH_KEY_NUMBER("EmbWorker", "restart_count", restart_count_);
-      base::debug::DumpWithoutCrashing();
-    }
     mojo::ReportBadMessage(
         "Invalid termination request: Termination should be requested during "
         "running or stopping");
