@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 #include "chrome/browser/ash/file_manager/delete_io_task.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
@@ -112,6 +113,7 @@ DriveUploadHandler::~DriveUploadHandler() {
 
   // Stop observing Drive updates.
   if (drive_integration_service_) {
+    drive_integration_service_->RemoveObserver(this);
     drive_integration_service_->GetDriveFsHost()->RemoveObserver(this);
   }
 }
@@ -151,10 +153,19 @@ void DriveUploadHandler::Run(UploadCallback callback) {
     return;
   }
 
+  if (drive::util::GetDriveConnectionStatus(profile_) !=
+      drive::util::DRIVE_CONNECTED) {
+    LOG(ERROR) << "No connection to Drive";
+    OnEndCopy(GURL(), OfficeFilesUploadResult::kNoConnection,
+              GetGenericErrorMessage());
+    return;
+  }
+
   // Observe IO tasks updates.
   io_task_controller_->AddObserver(this);
 
   // Observe Drive updates.
+  drive_integration_service_->AddObserver(this);
   drive_integration_service_->GetDriveFsHost()->AddObserver(this);
 
   if (!drive_integration_service_->IsMounted()) {
@@ -506,6 +517,14 @@ void DriveUploadHandler::OnError(const drivefs::mojom::DriveError& error) {
     default:
       OnEndCopy(GURL(), OfficeFilesUploadResult::kCloudError,
                 GetGenericErrorMessage());
+  }
+}
+
+void DriveUploadHandler::OnDriveConnectionStatusChanged(
+    drive::util::ConnectionStatusType status) {
+  if (status != drive::util::DRIVE_CONNECTED) {
+    OnEndCopy(GURL(), OfficeFilesUploadResult::kNoConnection,
+              GetGenericErrorMessage());
   }
 }
 

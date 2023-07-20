@@ -77911,6 +77911,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="11" label="Bad metadata received from cloud"/>
   <int value="12" label="Cloud quota full"/>
   <int value="13" label="Cloud error"/>
+  <int value="14" label="No connectivity to cloud or sync disabled"/>
 </enum>
 
 <enum name="OfficeFilesUseOutsideDriveHook">

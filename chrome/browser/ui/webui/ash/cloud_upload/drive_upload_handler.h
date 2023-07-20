@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/extensions/file_manager/scoped_suppress_drive_notifications_for_path.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_notification_manager.h"
@@ -35,6 +36,7 @@ namespace ash::cloud_upload {
 class DriveUploadHandler
     : public ::file_manager::io_task::IOTaskController::Observer,
       public drivefs::DriveFsHostObserver,
+      public drive::DriveIntegrationServiceObserver,
       public base::RefCounted<DriveUploadHandler> {
  public:
   using UploadCallback = base::OnceCallback<void(const GURL&, int64_t)>;
@@ -105,6 +107,9 @@ class DriveUploadHandler
   void OnSyncingStatusUpdate(
       const drivefs::mojom::SyncingStatus& status) override;
   void OnError(const drivefs::mojom::DriveError& error) override;
+
+  void OnDriveConnectionStatusChanged(
+      drive::util::ConnectionStatusType status) override;
 
   // Checks the alternate URL from the request file's metadata.
   void OnGetDriveMetadata(bool timed_out,
