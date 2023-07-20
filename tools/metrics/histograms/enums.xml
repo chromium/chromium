@@ -63909,7 +63909,6 @@ from previous Chrome versions.
       label="AutofillMoveLegalTermsAndIconForNewCardEnrollment:disabled"/>
   <int value="-225505731" label="CCTModule:enabled"/>
   <int value="-225228149" label="ContentSettingsRedesign:enabled"/>
-  <int value="-224936774" label="Permissive USB Passthrough:disabled"/>
   <int value="-223595595" label="OSKResizesVisualViewportByDefault:enabled"/>
   <int value="-222282965"
       label="disable_idle_sockets_close_on_memory_pressure:enabled"/>
@@ -64627,6 +64626,7 @@ from previous Chrome versions.
   <int value="143725809" label="DownloadProgressInfoBar:enabled"/>
   <int value="144868136" label="DesktopPWAsNotificationIconAndTitle:enabled"/>
   <int value="145296783" label="CameraMicPreview:disabled"/>
+  <int value="146139744" label="CrOSLateBootPermissiveUsbPassthrough:disabled"/>
   <int value="146229312" label="WebPaymentsExperimentalFeatures:enabled"/>
   <int value="146553675" label="BookmarkBottomSheet:disabled"/>
   <int value="147342055" label="ChromeHomeClearUrlOnOpen:disabled"/>
@@ -64685,7 +64685,6 @@ from previous Chrome versions.
   <int value="176882922" label="ux-study-1"/>
   <int value="176898248" label="FilesAppExperimental:enabled"/>
   <int value="177507679" label="Glanceables:disabled"/>
-  <int value="177694388" label="Permissive USB Passthrough:enabled"/>
   <int value="178337215" label="enable-md-history"/>
   <int value="178693406" label="LockScreenMediaControls:disabled"/>
   <int value="179083323" label="HelpAppBackgroundPage:disabled"/>
@@ -67700,6 +67699,7 @@ from previous Chrome versions.
   <int value="1730416578" label="NTPCondensedLayout:enabled"/>
   <int value="1731522433" label="enable-offer-store-unmasked-wallet-cards"/>
   <int value="1731612996" label="CrostiniFiles:disabled"/>
+  <int value="1731642759" label="CrOSLateBootPermissiveUsbPassthrough:enabled"/>
   <int value="1733390925" label="force-enable-stylus-tools"/>
   <int value="1733740363" label="FedCmMetricsEndpoint:disabled"/>
   <int value="1734685331" label="NtpShoppingTasksModule:enabled"/>

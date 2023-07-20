@@ -4702,7 +4702,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"permissive-usb-passthrough",
      flag_descriptions::kPermissiveUsbPassthroughName,
      flag_descriptions::kPermissiveUsbPassthroughDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kPermissiveUsbPassthrough)},
+     PLATFORM_FEATURE_NAME_TYPE("CrOSLateBootPermissiveUsbPassthrough")},
     {"crostini-multi-container", flag_descriptions::kCrostiniMultiContainerName,
      flag_descriptions::kCrostiniMultiContainerDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kCrostiniMultiContainer)},

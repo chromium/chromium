@@ -1859,11 +1859,6 @@ BASE_FEATURE(kPcieBillboardNotification,
              "PcieBillboardNotification",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// More permissive USB passthrough to Crostini, Chrome tabs, etc.
-BASE_FEATURE(kPermissiveUsbPassthrough,
-             "Permissive USB Passthrough",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Limits the items on the shelf to the ones associated with windows the
 // currently active desk.
 BASE_FEATURE(kPerDeskShelf, "PerDeskShelf", base::FEATURE_DISABLED_BY_DEFAULT);
