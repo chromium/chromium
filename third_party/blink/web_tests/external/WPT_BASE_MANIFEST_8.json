@@ -16273,6 +16273,13 @@
       {}
      ]
     ],
+    "requireInteraction-manual.https.html": [
+     "23e9e4bbb322ceab495d2374575b6b813dbe1925",
+     [
+      null,
+      {}
+     ]
+    ],
     "shownotification-resolve-manual.https.html": [
      "a73b11d100afe9c3c8b80199b8a43147878a124a",
      [
@@ -169429,6 +169436,58 @@
        {}
       ]
      ],
+     "scrollbar-color-scheme-dynamic-1.html": [
+      "71fd97f27419316f5d923dce5673a3f0e0d87633",
+      [
+       null,
+       [
+        [
+         "/css/css-scrollbars/scrollbar-color-scheme-dynamic-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scrollbar-color-scheme-dynamic-2.html": [
+      "111219c7d167243b6de1491ae7c6882af7d481c1",
+      [
+       null,
+       [
+        [
+         "/css/css-scrollbars/scrollbar-color-scheme-dynamic-2-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scrollbar-color-scheme-dynamic-3.html": [
+      "47105f0c6d92dc28dd3ed52743bd220973d86691",
+      [
+       null,
+       [
+        [
+         "/css/css-scrollbars/scrollbar-color-scheme-dynamic-3-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scrollbar-color-scheme-dynamic-4.html": [
+      "9655a0ebb2429585bb482a2872d310b23ea55c46",
+      [
+       null,
+       [
+        [
+         "/css/css-scrollbars/scrollbar-color-scheme-dynamic-4-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "scrollbar-width-paint-001.html": [
       "3621a65b39ed7d9e3b0afea4e1770427b31534de",
       [
@@ -321693,6 +321752,22 @@
      ],
      "scrollbar-color-010-ref.html": [
       "890179a21c68bc7051c1db252fb7550468bb952e",
+      []
+     ],
+     "scrollbar-color-scheme-dynamic-1-ref.html": [
+      "ec54bc08a721f2b6d4eff3a6422fdc816a4cbeae",
+      []
+     ],
+     "scrollbar-color-scheme-dynamic-2-ref.html": [
+      "906fb11cd56898c60deb841236346ea18e0dec3a",
+      []
+     ],
+     "scrollbar-color-scheme-dynamic-3-ref.html": [
+      "e9e842caea71c9481ac721db5821f9b849afed2b",
+      []
+     ],
+     "scrollbar-color-scheme-dynamic-4-ref.html": [
+      "045619823547041d72b8b6349ac67945c7540bb6",
       []
      ],
      "scrollbar-width-paint-001-ref.html": [
@@ -564240,6 +564315,15 @@
         [
          null,
          {}
+        ]
+       ],
+       "number-constraint-validation.html": [
+        "959726bb50d9ddf75fc56123746e1d8e21e7df71",
+        [
+         null,
+         {
+          "testdriver": true
+         }
         ]
        ],
        "number-disabled.html": [
