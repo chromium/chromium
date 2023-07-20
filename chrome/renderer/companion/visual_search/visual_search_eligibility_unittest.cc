@@ -546,4 +546,66 @@ TEST(EligibilityModuleTest, TestPageFeatureComputation) {
                 FeatureLibrary::BY_MAX_VALUE, images, false),
             0.0625);
 }
+
+TEST(EligibilityModuleTest, TestZIndexOverlapFiltering) {
+  EligibilitySpec spec;
+  spec.mutable_additional_cheap_pruning_options()->set_z_index_overlap_fraction(
+      0.85);
+
+  EligibilityModule module(spec);
+  SizeF viewport_size(100.0, 50.0);
+  std::vector<SingleImageGeometryFeatures> images;
+  images.reserve(6);
+  // The test images are ordered 1-4 by z score, but we insert them out of order
+  // on purpose.
+  // Filtered -- fully covered by image1.
+  SingleImageGeometryFeatures image4;
+  image4.image_identifier = "image4";
+  image4.onpage_rect = Rect(0, 0, 10, 1);
+  image4.z_index = 7;
+  images.push_back(std::move(image4));
+
+  // Not filtered
+  SingleImageGeometryFeatures image2;
+  image2.image_identifier = "image2";
+  image2.onpage_rect = Rect(0, 0, 10, 9);
+  image2.z_index = 9;
+  images.push_back(std::move(image2));
+
+  // Not filtered.
+  SingleImageGeometryFeatures image1;
+  image1.image_identifier = "image1";
+  image1.onpage_rect = Rect(0, 0, 10, 7);
+  image1.z_index = 10;
+  images.push_back(std::move(image1));
+
+  // Filtered -- sufficiently covered by image2.
+  SingleImageGeometryFeatures image3;
+  image3.image_identifier = "image3";
+  image3.onpage_rect = Rect(0, 0, 10, 10);
+  image3.z_index = 8;
+  images.push_back(std::move(image3));
+
+  // Images with missing z-index should not be filtered.
+  // Missing z-index, fully covered image.
+  SingleImageGeometryFeatures image5;
+  image5.image_identifier = "image5";
+  image5.onpage_rect = Rect(0, 0, 1, 1);
+  // Missing z-index.
+  images.push_back(std::move(image5));
+
+  // Missing z-index, fully covers something else image.
+  SingleImageGeometryFeatures image6;
+  image6.image_identifier = "image6";
+  image6.onpage_rect = Rect(0, 0, 10, 9);
+  // Missing z-index.
+  images.push_back(std::move(image6));
+
+  const std::vector<std::string> simple_pruning_image_ids =
+      module.RunFirstPassEligibilityAndCacheFeatureValues(viewport_size,
+                                                          images);
+  EXPECT_THAT(simple_pruning_image_ids,
+              UnorderedElementsAre("image1", "image2", "image5", "image6"));
+}
+
 }  // namespace companion::visual_search

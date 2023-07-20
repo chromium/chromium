@@ -36,6 +36,8 @@ struct SingleImageGeometryFeatures {
   std::string image_identifier;
   Size original_image_size;
   Rect onpage_rect = Rect(0, 0, 0, 0);
+  // Used for filtering of overlapping images using the z index.
+  absl::optional<int> z_index;
   ~SingleImageGeometryFeatures() = default;
 };
 
@@ -122,6 +124,8 @@ class EligibilityModule {
   // Apply the sorting clauses of the spec before returning the results.
   void SortImages(
       std::vector<std::pair<std::string, double>>* images_with_feature_values);
+  void RunAdditionalCheapPruning(
+      const std::vector<SingleImageGeometryFeatures>& images);
 
   EligibilitySpec spec_;
   // Cache for features that are computed individually for each image.
