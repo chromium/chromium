@@ -2078,8 +2078,16 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if defined(IS_FAST_BUILD)  // Avoid flakiness on slower debug/sanitizer builds.
+
+// TODO(crbug.com/1466360):  Enable once thread flakiness is resolved.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_NonInteractiveChangesAreBatched \
+  DISABLED_NonInteractiveChangesAreBatched
+#else
+#define MAYBE_NonInteractiveChangesAreBatched NonInteractiveChangesAreBatched
+#endif
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
-                       NonInteractiveChangesAreBatched) {
+                       MAYBE_NonInteractiveChangesAreBatched) {
   // Ensure that normal DOM changes are batched together, and do not occur
   // more than once every kDelayForDeferredUpdatesAfterPageLoad.
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
