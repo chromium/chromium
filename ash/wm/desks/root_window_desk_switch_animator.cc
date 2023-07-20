@@ -60,12 +60,6 @@ constexpr float kQuickAnimationTranslationDistanceRatio = 0.25;
 // The ratio of root window width used for animation layer width.
 constexpr float kQuickAnimationLayerWidthRatio = 1.25;
 
-// The amount, by which the detached old layers of the removed desk's windows,
-// is translated vertically during the for-remove desk switch animation.
-constexpr int kRemovedDeskWindowYTranslation = 20;
-constexpr base::TimeDelta kRemovedDeskWindowTranslationDuration =
-    base::Milliseconds(100);
-
 // When ending a swipe that is deemed fast, the target desk only needs to be
 // 10% shown for us to animate to that desk, compared to 50% shown for a non
 // fast swipe.
@@ -213,25 +207,6 @@ void RootWindowDeskSwitchAnimator::StartAnimation() {
     scoped_settings.SetTweenType(gfx::Tween::ACCEL_20_DECEL_100);
   }
   animation_layer->SetTransform(animation_layer_ending_transform);
-
-  if (for_remove_) {
-    DCHECK(old_windows_layer_tree_owner_);
-    auto* old_windows_layer = old_windows_layer_tree_owner_->root();
-    DCHECK(old_windows_layer);
-
-    // Translate the old layers of removed desk's windows back down by
-    // `kRemovedDeskWindowYTranslation`.
-    gfx::Transform transform = old_windows_layer->GetTargetTransform();
-    ui::ScopedLayerAnimationSettings scoped_settings_2(
-        old_windows_layer->GetAnimator());
-    scoped_settings_2.SetPreemptionStrategy(
-        ui::LayerAnimator::ENQUEUE_NEW_ANIMATION);
-    scoped_settings_2.SetTransitionDuration(
-        kRemovedDeskWindowTranslationDuration);
-    scoped_settings_2.SetTweenType(gfx::Tween::EASE_IN);
-    transform.Translate(0, kRemovedDeskWindowYTranslation);
-    old_windows_layer->SetTransform(transform);
-  }
 
   // During quick animation, we fade in the ending desk during sliding
   // animation.
@@ -492,17 +467,6 @@ void RootWindowDeskSwitchAnimator::CompleteAnimationPhase1WithLayer(
     auto* old_windows_layer = old_windows_layer_tree_owner_->root();
     DCHECK(old_windows_layer);
     root_layer->StackBelow(animation_layer, old_windows_layer);
-
-    // Translate the old layers of the removed desk's windows up by
-    // `kRemovedDeskWindowYTranslation`.
-    gfx::Transform transform = old_windows_layer->GetTargetTransform();
-    ui::ScopedLayerAnimationSettings settings(old_windows_layer->GetAnimator());
-    settings.SetPreemptionStrategy(
-        ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-    settings.SetTransitionDuration(kRemovedDeskWindowTranslationDuration);
-    settings.SetTweenType(gfx::Tween::EASE_OUT);
-    transform.Translate(0, -kRemovedDeskWindowYTranslation);
-    old_windows_layer->SetTransform(transform);
   } else {
     root_layer->StackAtTop(animation_layer);
   }
