@@ -81,34 +81,6 @@
             ]
         }
     ],
-    "AlignWakeUpsWithAntiStarvation": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled16msAntiStarvation_20230405",
-                    "params": {
-                        "count": "1",
-                        "leeway": "16ms"
-                    },
-                    "enable_features": [
-                        "AddTaskLeeway",
-                        "AlignWakeUps",
-                        "MaxDelayedStarvationTasks"
-                    ]
-                }
-            ]
-        }
-    ],
     "AllowBypassRenderPassQuads": [
         {
             "platforms": [
