@@ -250,6 +250,9 @@ class V4L2IoctlShim {
   base::File decode_fd_;
   // Media device file descriptor used for ioctl requests.
   base::File media_fd_;
+
+  // Whether V4L2_CTRL_WHICH_CUR_VAL is implemented correctly
+  bool cur_val_is_supported_ = true;
 };
 
 }  // namespace v4l2_test

@@ -97,9 +97,6 @@ class VideoDecoder {
 
   // resolution from the bitstream header
   gfx::Size display_resolution_;
-
-  // Whether V4L2_CTRL_WHICH_CUR_VAL is implemented correctly
-  bool cur_val_is_supported_ = true;
 };
 
 }  // namespace v4l2_test
