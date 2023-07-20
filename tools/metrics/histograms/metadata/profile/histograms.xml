@@ -155,8 +155,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.Guest.ForcedByPolicy" enum="BooleanForced"
-    expires_after="2023-08-27">
-  <owner>rhalavati@chromium.org</owner>
+    expires_after="2024-04-27">
+  <owner>arabm@google.com</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
     Records if a Guest session is started by user's request or is forced by a
