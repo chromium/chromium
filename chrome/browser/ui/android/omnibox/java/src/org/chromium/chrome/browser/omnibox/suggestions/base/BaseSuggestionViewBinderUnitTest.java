@@ -17,6 +17,8 @@ import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.view.ContextThemeWrapper;
@@ -118,75 +120,6 @@ public class BaseSuggestionViewBinderUnitTest {
         assertEquals(View.GONE, mIconView.getVisibility());
         // Ensure we're releasing drawable to free memory.
         assertNull(mIconView.getDrawable());
-    }
-
-    @Test
-    public void decorIcon_padding() {
-        SuggestionDrawableState state =
-                SuggestionDrawableState.Builder.forColor(0).setUseRoundedCorners(true).build();
-        mModel.set(BaseSuggestionViewProperties.ICON, state);
-        int padding = mResources.getDimensionPixelSize(
-                org.chromium.chrome.browser.omnibox.R.dimen
-                        .omnibox_suggestion_24dp_icon_margin_start);
-
-        assertEquals(0, mIconView.getPaddingTop());
-        assertEquals(0, mIconView.getPaddingBottom());
-        assertEquals(padding, mIconView.getPaddingStart());
-        assertEquals(padding, mIconView.getPaddingEnd());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
-    public void decorIcon_padding_small() {
-        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALL_BOTTOM_MARGIN.setForTesting(true);
-        BaseSuggestionViewBinder.initializeDimensions(mContext);
-        SuggestionDrawableState state =
-                SuggestionDrawableState.Builder.forColor(0).setUseRoundedCorners(true).build();
-        mModel.set(BaseSuggestionViewProperties.ICON, state);
-        int padding = mResources.getDimensionPixelSize(
-                org.chromium.chrome.browser.omnibox.R.dimen
-                        .omnibox_suggestion_24dp_icon_margin_start_modern_bigger);
-
-        assertEquals(0, mIconView.getPaddingTop());
-        assertEquals(0, mIconView.getPaddingBottom());
-        assertEquals(padding, mIconView.getPaddingStart());
-        assertEquals(padding, mIconView.getPaddingEnd());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
-    public void decorIcon_padding_smaller() {
-        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLER_MARGINS.setForTesting(true);
-        BaseSuggestionViewBinder.initializeDimensions(mContext);
-        SuggestionDrawableState state =
-                SuggestionDrawableState.Builder.forColor(0).setUseRoundedCorners(true).build();
-        mModel.set(BaseSuggestionViewProperties.ICON, state);
-        int padding = mResources.getDimensionPixelSize(
-                org.chromium.chrome.browser.omnibox.R.dimen
-                        .omnibox_suggestion_24dp_icon_margin_start);
-
-        assertEquals(0, mIconView.getPaddingTop());
-        assertEquals(0, mIconView.getPaddingBottom());
-        assertEquals(padding, mIconView.getPaddingStart());
-        assertEquals(padding, mIconView.getPaddingEnd());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
-    public void decorIcon_padding_smallest() {
-        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS.setForTesting(true);
-        BaseSuggestionViewBinder.initializeDimensions(mContext);
-        SuggestionDrawableState state =
-                SuggestionDrawableState.Builder.forColor(0).setUseRoundedCorners(true).build();
-        mModel.set(BaseSuggestionViewProperties.ICON, state);
-        int padding = mResources.getDimensionPixelSize(
-                org.chromium.chrome.browser.omnibox.R.dimen
-                        .omnibox_suggestion_24dp_icon_margin_start);
-
-        assertEquals(0, mIconView.getPaddingTop());
-        assertEquals(0, mIconView.getPaddingBottom());
-        assertEquals(padding, mIconView.getPaddingStart());
-        assertEquals(padding, mIconView.getPaddingEnd());
     }
 
     @Test
@@ -495,7 +428,7 @@ public class BaseSuggestionViewBinderUnitTest {
     @Config(qualifiers = "ldltr")
     @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
     public void iconStartPadding_smallerMarginsRevamp_ltr() {
-        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS.setForTesting(true);
+        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLER_MARGINS.setForTesting(true);
         runDecorationIconPaddingTest();
     }
 
@@ -503,7 +436,7 @@ public class BaseSuggestionViewBinderUnitTest {
     @Config(qualifiers = "ldrtl")
     @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
     public void iconStartPadding_smallerMarginsRevamp_rtl() {
-        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS.setForTesting(true);
+        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLER_MARGINS.setForTesting(true);
         runDecorationIconPaddingTest();
     }
 
@@ -523,35 +456,59 @@ public class BaseSuggestionViewBinderUnitTest {
 
     private void runDecorationIconPaddingTest() {
         BaseSuggestionViewBinder.initializeDimensions(mContext);
-        int smallPadding =
-                mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_24dp_icon_margin_start);
-        int startPaddingLarge =
-                mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_36dp_icon_margin_start);
-        int endPaddingLarge =
-                mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_36dp_icon_margin_end);
+
         int smallRoundingRadius =
                 mResources.getDimensionPixelSize(R.dimen.omnibox_small_icon_rounding_radius);
         int largeRoundingRadius =
                 mResources.getDimensionPixelSize(R.dimen.omnibox_large_icon_rounding_radius);
+        int smallEdgeSize =
+                mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_24dp_icon_size);
+        int largeEdgeSize =
+                mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_36dp_icon_size);
 
-        SuggestionDrawableState smallState =
-                SuggestionDrawableState.Builder.forColor(0).setUseRoundedCorners(true).build();
-        mModel.set(BaseSuggestionViewProperties.ICON, smallState);
-        assertEquals(0, mIconView.getPaddingTop());
-        assertEquals(0, mIconView.getPaddingBottom());
-        assertEquals(smallPadding, mIconView.getPaddingStart());
-        assertEquals(smallPadding, mIconView.getPaddingEnd());
+        // Variant 1: Small, wide, short icon.
+        // Width bound by the edge edge size, height wrapping content.
+        var b = Bitmap.createBitmap(/*width=*/2, /*height=*/1, Bitmap.Config.ALPHA_8);
+        var d = new BitmapDrawable(b);
+
+        SuggestionDrawableState state =
+                SuggestionDrawableState.Builder.forDrawable(d).setUseRoundedCorners(true).build();
+        mModel.set(BaseSuggestionViewProperties.ICON, state);
+        assertEquals(MarginLayoutParams.WRAP_CONTENT, mIconView.getLayoutParams().height);
+        assertEquals(smallEdgeSize, mIconView.getLayoutParams().width);
         assertEquals(smallRoundingRadius, mBaseView.decorationIconOutline.getRadiusForTesting());
 
-        SuggestionDrawableState largeState = SuggestionDrawableState.Builder.forColor(0)
-                                                     .setUseRoundedCorners(true)
-                                                     .setLarge(true)
-                                                     .build();
-        mModel.set(BaseSuggestionViewProperties.ICON, largeState);
-        assertEquals(0, mIconView.getPaddingTop());
-        assertEquals(0, mIconView.getPaddingBottom());
-        assertEquals(startPaddingLarge, mIconView.getPaddingStart());
-        assertEquals(endPaddingLarge, mIconView.getPaddingEnd());
+        // Variant 2: Large, wide, short icon.
+        // Width bound by the edge edge size, height wrapping content.
+        state = SuggestionDrawableState.Builder.forDrawable(d)
+                        .setUseRoundedCorners(true)
+                        .setLarge(true)
+                        .build();
+        mModel.set(BaseSuggestionViewProperties.ICON, state);
+        assertEquals(MarginLayoutParams.WRAP_CONTENT, mIconView.getLayoutParams().height);
+        assertEquals(largeEdgeSize, mIconView.getLayoutParams().width);
+        assertEquals(largeRoundingRadius, mBaseView.decorationIconOutline.getRadiusForTesting());
+
+        // Variant 3: Small, narrow, tall icon.
+        // Height bound by the edge edge size, width wrapping content.
+        b = Bitmap.createBitmap(/*width=*/1, /*height=*/2, Bitmap.Config.ALPHA_8);
+        d = new BitmapDrawable(b);
+
+        state = SuggestionDrawableState.Builder.forDrawable(d).setUseRoundedCorners(true).build();
+        mModel.set(BaseSuggestionViewProperties.ICON, state);
+        assertEquals(MarginLayoutParams.WRAP_CONTENT, mIconView.getLayoutParams().width);
+        assertEquals(smallEdgeSize, mIconView.getLayoutParams().height);
+        assertEquals(smallRoundingRadius, mBaseView.decorationIconOutline.getRadiusForTesting());
+
+        // Variant 4: Large, narrow, tall icon.
+        // Height bound by the edge edge size, width wrapping content.
+        state = SuggestionDrawableState.Builder.forDrawable(d)
+                        .setUseRoundedCorners(true)
+                        .setLarge(true)
+                        .build();
+        mModel.set(BaseSuggestionViewProperties.ICON, state);
+        assertEquals(MarginLayoutParams.WRAP_CONTENT, mIconView.getLayoutParams().width);
+        assertEquals(largeEdgeSize, mIconView.getLayoutParams().height);
         assertEquals(largeRoundingRadius, mBaseView.decorationIconOutline.getRadiusForTesting());
     }
 }

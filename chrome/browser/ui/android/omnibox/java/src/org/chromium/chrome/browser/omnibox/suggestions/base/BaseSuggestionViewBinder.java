@@ -71,9 +71,6 @@ public final class BaseSuggestionViewBinder<T extends View>
     private final ViewBinder<PropertyModel, T, PropertyKey> mContentBinder;
 
     private static boolean sDimensionsInitialized;
-    private static int sPaddingSmallIcon;
-    private static int sPaddingStartLargeIcon;
-    private static int sPaddingEndLargeIcon;
     private static int sEdgeSize;
     private static int sEdgeSizeLargeIcon;
     private static int sSideSpacing;
@@ -204,9 +201,11 @@ public final class BaseSuggestionViewBinder<T extends View>
         final SuggestionDrawableState sds = model.get(BaseSuggestionViewProperties.ICON);
 
         if (sds != null) {
-            int paddingStart = sds.isLarge ? sPaddingStartLargeIcon : sPaddingSmallIcon;
-            int paddingEnd = sds.isLarge ? sPaddingEndLargeIcon : sPaddingSmallIcon;
+            // Ensure the decoration icon size does not exceed the maximum edge size.
             int edgeSize = sds.isLarge ? sEdgeSizeLargeIcon : sEdgeSize;
+            boolean isTall = sds.drawable.getIntrinsicHeight() > sds.drawable.getIntrinsicWidth();
+            rciv.getLayoutParams().width = isTall ? ViewGroup.LayoutParams.WRAP_CONTENT : edgeSize;
+            rciv.getLayoutParams().height = isTall ? edgeSize : ViewGroup.LayoutParams.WRAP_CONTENT;
 
             // Note: ImageView, unlike other View types, includes logic to scale its bounds
             // proportionally to its image aspect ratio. This guarantees behavior consistent with
@@ -216,7 +215,6 @@ public final class BaseSuggestionViewBinder<T extends View>
             rciv.setMaxWidth(edgeSize);
             rciv.setMaxHeight(edgeSize);
 
-            rciv.setPaddingRelative(paddingStart, 0, paddingEnd, 0);
             rciv.setClipToOutline(sds.useRoundedCorners);
             baseView.decorationIconOutline.setRadius(
                     sds.isLarge ? sLargeIconRoundingRadius : sSmallIconRoundingRadius);
@@ -371,9 +369,6 @@ public final class BaseSuggestionViewBinder<T extends View>
                 OmniboxFeatures.shouldShowModernizeVisualUpdate(context);
         Resources resources = context.getResources();
 
-        sPaddingSmallIcon = OmniboxResourceProvider.getIconStartPadding(context);
-        sPaddingStartLargeIcon = OmniboxResourceProvider.getLargeIconStartPadding(context);
-        sPaddingEndLargeIcon = OmniboxResourceProvider.getLargeIconEndPadding(context);
         sEdgeSize = resources.getDimensionPixelSize(R.dimen.omnibox_suggestion_24dp_icon_size);
         sEdgeSizeLargeIcon =
                 resources.getDimensionPixelSize(R.dimen.omnibox_suggestion_36dp_icon_size);

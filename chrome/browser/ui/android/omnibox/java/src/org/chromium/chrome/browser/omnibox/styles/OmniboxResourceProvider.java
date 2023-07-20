@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.util.ColorUtils;
 
 /** Provides resources specific to Omnibox. */
@@ -399,46 +398,6 @@ public class OmniboxResourceProvider {
                 selectMarginDimen(context, R.dimen.omnibox_suggestion_side_spacing,
                         R.dimen.omnibox_suggestion_side_spacing_smaller,
                         R.dimen.omnibox_suggestion_side_spacing_smallest));
-    }
-
-    /** Gets the start padding for an omnibox suggestion's decoration icon. */
-    public static @Px int getIconStartPadding(Context context) {
-        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
-                || DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
-            return context.getResources().getDimensionPixelSize(
-                    R.dimen.omnibox_suggestion_24dp_icon_margin_start);
-        }
-
-        return context.getResources().getDimensionPixelSize(selectMarginDimen(context,
-                R.dimen.omnibox_suggestion_24dp_icon_margin_start_modern_bigger,
-                R.dimen.omnibox_suggestion_24dp_icon_margin_start,
-                R.dimen.omnibox_suggestion_24dp_icon_margin_start));
-    }
-
-    /** Gets the start padding for a large omnibox suggestion decoration icon. */
-    public static @Px int getLargeIconStartPadding(Context context) {
-        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
-            return context.getResources().getDimensionPixelSize(
-                    R.dimen.omnibox_suggestion_36dp_icon_margin_start);
-        }
-
-        return context.getResources().getDimensionPixelSize(selectMarginDimen(context,
-                R.dimen.omnibox_suggestion_36dp_icon_margin_start_smallest,
-                R.dimen.omnibox_suggestion_36dp_icon_margin_start,
-                R.dimen.omnibox_suggestion_36dp_icon_margin_start));
-    }
-
-    /** Gets the end padding for a large omnibox suggestion decoration icon. */
-    public static @Px int getLargeIconEndPadding(Context context) {
-        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
-            return context.getResources().getDimensionPixelSize(
-                    R.dimen.omnibox_suggestion_36dp_icon_margin_end);
-        }
-
-        return context.getResources().getDimensionPixelSize(
-                selectMarginDimen(context, R.dimen.omnibox_suggestion_36dp_icon_margin_end_smallest,
-                        R.dimen.omnibox_suggestion_36dp_icon_margin_end,
-                        R.dimen.omnibox_suggestion_36dp_icon_margin_end));
     }
 
     /** Get the top margin for a suggestion that is the beginning of a group. */

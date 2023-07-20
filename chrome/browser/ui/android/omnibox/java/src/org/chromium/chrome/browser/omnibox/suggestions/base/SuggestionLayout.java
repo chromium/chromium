@@ -380,8 +380,9 @@ class SuggestionLayout extends ViewGroup {
             // Note that at this stage everything else has already been measured.
             var viewWidthSpec = 0;
             if (params.getViewType() == LayoutParams.SuggestionViewType.DECORATION) {
-                viewWidthSpec =
-                        MeasureSpec.makeMeasureSpec(mDecorationIconWidthPx, MeasureSpec.EXACTLY);
+                viewWidthSpec = getChildMeasureSpec(
+                        MeasureSpec.makeMeasureSpec(mDecorationIconWidthPx, MeasureSpec.AT_MOST), 0,
+                        params.width);
             } else if (params.getViewType() == LayoutParams.SuggestionViewType.ACTION_BUTTON) {
                 viewWidthSpec =
                         MeasureSpec.makeMeasureSpec(mActionButtonWidthPx, MeasureSpec.EXACTLY);
