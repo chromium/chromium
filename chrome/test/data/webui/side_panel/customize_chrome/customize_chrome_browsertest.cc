@@ -40,13 +40,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, Appearance) {
 }
 
 // TODO(crbug.com/1466344): Re-enable this test
-#if BUILDFLAG(IS_LINUX) && \
-    (defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER))
-#define MAYBE_Categories DISABLED_Categories
-#else
-#define MAYBE_Categories Categories
-#endif
-IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, MAYBE_Categories) {
+IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, DISABLED_Categories) {
   RunTest("side_panel/customize_chrome/categories_test.js", "mocha.run()");
 }
 
@@ -68,13 +62,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, HoverButton) {
 }
 
 // TODO(crbug.com/1466344): Re-enable this test
-#if BUILDFLAG(IS_LINUX) && \
-    (defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER))
-#define MAYBE_Themes DISABLED_Themes
-#else
-#define MAYBE_Themes Themes
-#endif
-IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, MAYBE_Themes) {
+IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, DISABLED_Themes) {
   RunTest("side_panel/customize_chrome/themes_test.js", "mocha.run()");
 }
 
