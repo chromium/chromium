@@ -55832,6 +55832,21 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="3" label="Obsolete - Loading Started"/>
 </enum>
 
+<enum name="IOSParcelCarrier">
+  <int value="0" label="Unkown"/>
+  <int value="1" label="Fedex"/>
+  <int value="2" label="UPS"/>
+  <int value="3" label="DHL"/>
+  <int value="4" label="USPS"/>
+  <int value="5" label="OnTrac"/>
+  <int value="6" label="LaserShip"/>
+  <int value="7" label="IsraelPost"/>
+  <int value="8" label="SwissPost"/>
+  <int value="9" label="MSC"/>
+  <int value="10" label="Amazon"/>
+  <int value="11" label="CarrierIParcel"/>
+</enum>
+
 <enum name="IOSPermissionEvent">
   <int value="0" label="Camera permission disabled"/>
   <int value="1" label="Camera permission enabled"/>

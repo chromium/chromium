@@ -19,7 +19,7 @@ source_set("ukm_url_recorder") {
   public_deps = [ "//services/metrics/public/cpp:metrics_cpp" ]
   deps = [
     "//base",
-    "//ios/web",
+    "//ios/web/public",
     "//url",
   ]
 }
