@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_REALBOX_REALBOX_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_REALBOX_REALBOX_HANDLER_H_
 
+#include <atomic>
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
@@ -66,6 +67,9 @@ class RealboxHandler : public omnibox::mojom::PageHandler,
   RealboxHandler& operator=(const RealboxHandler&) = delete;
 
   ~RealboxHandler() override;
+
+  // Returns true if the page remote is bound and ready to receive calls.
+  bool IsRemoteBound() const;
 
   // omnibox::mojom::PageHandler:
   void SetPage(mojo::PendingRemote<omnibox::mojom::Page> pending_page) override;
@@ -134,6 +138,8 @@ class RealboxHandler : public omnibox::mojom::PageHandler,
                           AutocompleteController::Observer>
       autocomplete_controller_observation_{this};
 
+  // Since mojo::Remote is not thread-safe, use an atomic to signal readiness.
+  std::atomic<bool> page_set_;
   mojo::Remote<omnibox::mojom::Page> page_;
   mojo::Receiver<omnibox::mojom::PageHandler> page_handler_;
 

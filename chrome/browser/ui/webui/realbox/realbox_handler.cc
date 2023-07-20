@@ -764,6 +764,7 @@ RealboxHandler::RealboxHandler(
     : profile_(profile),
       web_contents_(web_contents),
       metrics_reporter_(metrics_reporter),
+      page_set_(false),
       page_handler_(this, std::move(pending_page_handler)) {
   // Keep a reference to the OmniboxController instance owned by the OmniboxView
   // when the handler is being used in the context of the omnibox popup.
@@ -787,9 +788,14 @@ RealboxHandler::~RealboxHandler() {
   controller_ = nullptr;
 }
 
+bool RealboxHandler::IsRemoteBound() const {
+  return page_set_;
+}
+
 void RealboxHandler::SetPage(
     mojo::PendingRemote<omnibox::mojom::Page> pending_page) {
   page_.Bind(std::move(pending_page));
+  page_set_ = page_.is_bound();
 }
 
 void RealboxHandler::OnFocusChanged(bool focused) {

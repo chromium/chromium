@@ -14,16 +14,17 @@
 #include "components/omnibox/browser/omnibox_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
-OmniboxPopupPresenter::OmniboxPopupPresenter(LocationBarView* location_bar_view)
+OmniboxPopupPresenter::OmniboxPopupPresenter(LocationBarView* location_bar_view,
+                                             OmniboxController* controller)
     : views::WebView(location_bar_view->profile()),
       location_bar_view_(location_bar_view),
       widget_(nullptr) {
   set_owned_by_client();
 
-  // Prepare for instantiation of a RealboxHandler that will connect with
-  // this omnibox controller.
-  OmniboxPopupUI::SetOmniboxController(
-      location_bar_view->GetOmniboxView()->controller());
+  // Prepare for instantiation of a `RealboxHandler` that will connect with
+  // this omnibox controller. The URL load will instantiate and bind
+  // the handler asynchronously.
+  OmniboxPopupUI::SetOmniboxController(controller);
   LoadInitialURL(GURL(chrome::kChromeUIOmniboxPopupURL));
 }
 
@@ -65,14 +66,28 @@ void OmniboxPopupPresenter::Show() {
 }
 
 void OmniboxPopupPresenter::Hide() {
-  ReleaseWidget(true);
+  // Only close if UI DevTools settings allow.
+  if (widget_ && widget_->ShouldHandleNativeWidgetActivationChanged(false)) {
+    ReleaseWidget(true);
+  }
 }
 
-RealboxHandler* OmniboxPopupPresenter::GetWebUIHandler() {
+bool OmniboxPopupPresenter::IsShown() const {
+  return !!widget_;
+}
+
+bool OmniboxPopupPresenter::IsHandlerReady() {
   OmniboxPopupUI* omnibox_popup_ui = static_cast<OmniboxPopupUI*>(
       GetWebContents()->GetWebUI()->GetController());
-  DCHECK(omnibox_popup_ui->webui_handler());
-  return omnibox_popup_ui->webui_handler();
+  return omnibox_popup_ui->handler() &&
+         omnibox_popup_ui->handler()->IsRemoteBound();
+}
+
+RealboxHandler* OmniboxPopupPresenter::GetHandler() {
+  OmniboxPopupUI* omnibox_popup_ui = static_cast<OmniboxPopupUI*>(
+      GetWebContents()->GetWebUI()->GetController());
+  CHECK(IsHandlerReady());
+  return omnibox_popup_ui->handler();
 }
 
 void OmniboxPopupPresenter::OnWidgetDestroyed(views::Widget* widget) {
