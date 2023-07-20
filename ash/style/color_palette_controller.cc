@@ -326,12 +326,13 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
       LOG(WARNING) << "Using default color due to missing wallpaper sample";
       celebi_seed_color.emplace(kDefaultWallpaperColor);
     }
+    CHECK(celebi_seed_color.has_value());
     auto* session = GetActiveUserSession();
     DCHECK(session);
     auto account_id = AccountFromSession(session);
     bool use_k_means = GetUseKMeansPref(account_id);
-    absl::optional<SkColor> tonal_spot_color =
-        use_k_means ? GetCurrentKMeanColor() : celebi_seed_color;
+    const SkColor tonal_spot_color =
+        use_k_means ? GetCurrentKMeanColor() : *celebi_seed_color;
     // Schemes need to be copied as the underlying memory for the span could go
     // out of scope.
     std::vector<const ColorScheme> schemes_copy(color_scheme_buttons.begin(),
@@ -344,7 +345,7 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
 
     for (unsigned int i = 0; i < color_scheme_buttons.size(); i++) {
       SkColor seed_color = color_scheme_buttons[i] == ColorScheme::kTonalSpot
-                               ? *tonal_spot_color
+                               ? tonal_spot_color
                                : *celebi_seed_color;
       base::ThreadPool::PostTaskAndReplyWithResult(
           FROM_HERE,
@@ -640,7 +641,10 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
   }
 
   void OnUseKMeansPrefChanged() {
-    CHECK(local_state_);
+    if (!local_state_) {
+      CHECK_IS_TEST();
+      return;
+    }
     auto account_id = AccountFromSession(GetActiveUserSession());
     auto use_k_means = GetUseKMeansPref(account_id);
     user_manager::KnownUser(local_state_)
