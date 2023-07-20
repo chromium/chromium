@@ -11,12 +11,10 @@
 {
   'IPHONE_7_15_4_1': {
     'swarming': {
-      'dimension_sets': [
-        {
-          'os': 'iOS-15.4.1',
-          'device': 'iPhone9,1'
-        }
-      ]
+      'dimensions': {
+        'os': 'iOS-15.4.1',
+        'device': 'iPhone9,1'
+      },
     },
     'identifier': 'iPhone 7 15.4.1'
   },
@@ -865,13 +863,11 @@
     ],
     'identifier': 'amd64-generic',
     'swarming': {
-       'dimension_sets': [
-        {
-          'cpu': 'x86',
-          'kvm': '1',
-          'os': 'Ubuntu-22.04',
-        }
-      ],
+      'dimensions': {
+        'cpu': 'x86',
+        'kvm': '1',
+        'os': 'Ubuntu-22.04',
+      },
     },
   },
   'LACROS_ASH_TOT': {
@@ -887,12 +883,10 @@
     ],
     'identifier': 'eve',
     'swarming': {
-      'dimension_sets': [
-        {
-          'os': 'ChromeOS',
-          'device_type': 'eve',
-        }
-      ],
+      'dimensions': {
+        'os': 'ChromeOS',
+        'device_type': 'eve',
+      },
     },
   },
   'WIN10_INTEL_UHD_630_STABLE': {
