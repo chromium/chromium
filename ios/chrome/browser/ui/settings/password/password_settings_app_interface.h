@@ -16,17 +16,14 @@
 @interface PasswordSettingsAppInterface : NSObject
 
 // Sets a re-authentication mock (i.e. what asks user for fingerprint to
-// view password) and its options for next test.
+// view password) and its options for next test. Applies to all password manager
+// surfaces (i/c/b/u/s/password/*).
 + (void)setUpMockReauthenticationModule;
-+ (void)setUpMockReauthenticationModuleForAddPassword;
-+ (void)setUpMockReauthenticationModuleForPasswordManager;
++ (void)removeMockReauthenticationModule;
+
 + (void)mockReauthenticationModuleExpectedResult:
     (ReauthenticationResult)expectedResult;
 + (void)mockReauthenticationModuleCanAttempt:(BOOL)canAttempt;
-
-// Similar to the methods above, but with a companion to remove the override.
-+ (void)setUpMockReauthenticationModuleForExportFromSettings;
-+ (void)removeMockReauthenticationModuleForExportFromSettings;
 
 // Dismisses snack bar.  Used before next test.
 + (void)dismissSnackBar;

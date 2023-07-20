@@ -373,8 +373,6 @@ void CopyPasswordDetailWithID(int detail_id) {
   // With notes enabled authentication is required before interacting with
   // password details.
   if ([self notesEnabled]) {
-    [PasswordSettingsAppInterface
-        setUpMockReauthenticationModuleForPasswordManager];
     [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                       ReauthenticationResult::kSuccess];
   }
@@ -414,6 +412,8 @@ void CopyPasswordDetailWithID(int detail_id) {
           @"PasswordAutoFillStatusManager", @"sharedManager",
           [PasswordsInOtherAppsAppInterface
               swizzlePasswordAutoFillStatusManagerWithFake]);
+
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
 }
 
 - (void)tearDown {
@@ -429,6 +429,8 @@ void CopyPasswordDetailWithID(int detail_id) {
 
   [PasswordsInOtherAppsAppInterface resetManager];
   _passwordAutoFillStatusSwizzler.reset();
+
+  [PasswordSettingsAppInterface removeMockReauthenticationModule];
 
   [super tearDown];
 }
@@ -519,7 +521,6 @@ void CopyPasswordDetailWithID(int detail_id) {
       performAction:grey_tap()];
 
   // Check the snackbar in case of successful reauthentication.
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
@@ -564,7 +565,6 @@ void CopyPasswordDetailWithID(int detail_id) {
       performAction:grey_tap()];
 
   if (![self notesEnabled]) {
-    [PasswordSettingsAppInterface setUpMockReauthenticationModule];
     [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                       ReauthenticationResult::kSuccess];
   }
@@ -601,7 +601,6 @@ void CopyPasswordDetailWithID(int detail_id) {
                                             username:@"concrete username"]
       performAction:grey_tap()];
 
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kFailure];
 
@@ -692,7 +691,6 @@ void CopyPasswordDetailWithID(int detail_id) {
       performAction:grey_tap()];
 
   if (![self notesEnabled]) {
-    [PasswordSettingsAppInterface setUpMockReauthenticationModule];
     [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                       ReauthenticationResult::kSuccess];
   }
@@ -745,7 +743,6 @@ void CopyPasswordDetailWithID(int detail_id) {
       performAction:grey_tap()];
 
   if (![self notesEnabled]) {
-    [PasswordSettingsAppInterface setUpMockReauthenticationModule];
     [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                       ReauthenticationResult::kSuccess];
   }
@@ -808,7 +805,6 @@ void CopyPasswordDetailWithID(int detail_id) {
       performAction:grey_tap()];
 
   if (![self notesEnabled]) {
-    [PasswordSettingsAppInterface setUpMockReauthenticationModule];
     [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                       ReauthenticationResult::kSuccess];
   }
@@ -870,7 +866,6 @@ void CopyPasswordDetailWithID(int detail_id) {
       performAction:grey_tap()];
 
   if (![self notesEnabled]) {
-    [PasswordSettingsAppInterface setUpMockReauthenticationModule];
     [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                       ReauthenticationResult::kSuccess];
   }
@@ -1029,7 +1024,6 @@ void CopyPasswordDetailWithID(int detail_id) {
       performAction:grey_tap()];
 
   if (![self notesEnabled]) {
-    [PasswordSettingsAppInterface setUpMockReauthenticationModule];
     [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                       ReauthenticationResult::kSuccess];
   }
@@ -1116,7 +1110,6 @@ void CopyPasswordDetailWithID(int detail_id) {
   // end of the test, otherwise it might get deleted too soon and break the
   // functionality of copying and viewing passwords.
   if (![self notesEnabled]) {
-    [PasswordSettingsAppInterface setUpMockReauthenticationModule];
     [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                       ReauthenticationResult::kSuccess];
   }
@@ -1174,7 +1167,6 @@ void CopyPasswordDetailWithID(int detail_id) {
 
   // Check that editing doesn't require reauth.
   if (![self notesEnabled]) {
-    [PasswordSettingsAppInterface setUpMockReauthenticationModule];
     [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                       ReauthenticationResult::kFailure];
   }
@@ -1586,7 +1578,6 @@ void CopyPasswordDetailWithID(int detail_id) {
                                             username:@"concrete username"]
       performAction:grey_tap()];
 
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
   [PasswordSettingsAppInterface mockReauthenticationModuleCanAttempt:NO];
 
   CopyPasswordDetailWithID(IDS_IOS_SHOW_PASSWORD_VIEW_PASSWORD);
@@ -1622,7 +1613,6 @@ void CopyPasswordDetailWithID(int detail_id) {
                                             username:@"concrete username"]
       performAction:grey_tap()];
 
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
   [PasswordSettingsAppInterface mockReauthenticationModuleCanAttempt:NO];
   [GetInteractionForPasswordDetailItem(ShowPasswordButton())
       performAction:grey_tap()];
@@ -1683,8 +1673,6 @@ void CopyPasswordDetailWithID(int detail_id) {
   OpenPasswordManager();
 
   if ([self notesEnabled]) {
-    [PasswordSettingsAppInterface
-        setUpMockReauthenticationModuleForPasswordManager];
     [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                       ReauthenticationResult::kSuccess];
   }
@@ -1761,8 +1749,6 @@ void CopyPasswordDetailWithID(int detail_id) {
 
   OpenPasswordManager();
 
-  [PasswordSettingsAppInterface
-      setUpMockReauthenticationModuleForExportFromSettings];
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
@@ -1998,7 +1984,6 @@ void CopyPasswordDetailWithID(int detail_id) {
 
   // Check the snackbar in case of successful reauthentication.
   if (![self notesEnabled]) {
-    [PasswordSettingsAppInterface setUpMockReauthenticationModule];
     [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                       ReauthenticationResult::kSuccess];
   }
@@ -2052,7 +2037,6 @@ void CopyPasswordDetailWithID(int detail_id) {
 
   // Check the snackbar in case of successful reauthentication.
   if (![self notesEnabled]) {
-    [PasswordSettingsAppInterface setUpMockReauthenticationModule];
     [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                       ReauthenticationResult::kSuccess];
   }
@@ -2115,7 +2099,6 @@ void CopyPasswordDetailWithID(int detail_id) {
 
   // Check the snackbar in case of successful reauthentication.
   if (![self notesEnabled]) {
-    [PasswordSettingsAppInterface setUpMockReauthenticationModule];
     [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                       ReauthenticationResult::kSuccess];
   }
@@ -2160,7 +2143,6 @@ void CopyPasswordDetailWithID(int detail_id) {
 
   // Check the snackbar in case of successful reauthentication.
   if (![self notesEnabled]) {
-    [PasswordSettingsAppInterface setUpMockReauthenticationModule];
     [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                       ReauthenticationResult::kSuccess];
   }
@@ -2296,7 +2278,6 @@ void CopyPasswordDetailWithID(int detail_id) {
                                             username:@"new username"]
       performAction:grey_tap()];
 
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
@@ -2409,10 +2390,6 @@ void CopyPasswordDetailWithID(int detail_id) {
   SavePasswordForm();
 
   OpenPasswordManager();
-  [PasswordSettingsAppInterface
-      setUpMockReauthenticationModuleForPasswordManager];
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
-                                    ReauthenticationResult::kSuccess];
 
   // Press "Add".
   [[EarlGrey selectElementWithMatcher:AddPasswordButton()]
@@ -2443,7 +2420,6 @@ void CopyPasswordDetailWithID(int detail_id) {
                  base::test::ios::kWaitForUIElementTimeout, condition),
              @"Waiting Save Button to be disabled.");
 
-  [PasswordSettingsAppInterface setUpMockReauthenticationModuleForAddPassword];
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
@@ -2595,7 +2571,6 @@ void CopyPasswordDetailWithID(int detail_id) {
       performAction:grey_tap()];
 
   if (![self notesEnabled]) {
-    [PasswordSettingsAppInterface setUpMockReauthenticationModule];
     [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                       ReauthenticationResult::kSuccess];
   }
@@ -2610,8 +2585,7 @@ void CopyPasswordDetailWithID(int detail_id) {
 // when adding a new credential.
 - (void)testTLDMissingMessage {
   OpenPasswordManager();
-  [PasswordSettingsAppInterface
-      setUpMockReauthenticationModuleForPasswordManager];
+
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
@@ -2661,7 +2635,6 @@ void CopyPasswordDetailWithID(int detail_id) {
   [GetInteractionForPasswordIssueEntry(@"example.com", @"concrete username")
       performAction:grey_tap()];
 
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
@@ -2701,7 +2674,7 @@ void CopyPasswordDetailWithID(int detail_id) {
       performAction:grey_tap()];
 
   // Check the snackbar in case of successful reauthentication.
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
@@ -2931,8 +2904,6 @@ void CopyPasswordDetailWithID(int detail_id) {
   OpenPasswordManager();
 
   if ([self notesEnabled]) {
-    [PasswordSettingsAppInterface
-        setUpMockReauthenticationModuleForPasswordManager];
     [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                       ReauthenticationResult::kSuccess];
   }
@@ -2943,7 +2914,6 @@ void CopyPasswordDetailWithID(int detail_id) {
       performAction:grey_tap()];
 
   if (![self notesEnabled]) {
-    [PasswordSettingsAppInterface setUpMockReauthenticationModule];
     [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                       ReauthenticationResult::kSuccess];
   }
@@ -3089,8 +3059,6 @@ void CopyPasswordDetailWithID(int detail_id) {
   OpenPasswordManager();
 
   if ([self notesEnabled]) {
-    [PasswordSettingsAppInterface
-        setUpMockReauthenticationModuleForPasswordManager];
     [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                       ReauthenticationResult::kSuccess];
   }
@@ -3109,7 +3077,6 @@ void CopyPasswordDetailWithID(int detail_id) {
       performAction:grey_tap()];
 
   if (![self notesEnabled]) {
-    [PasswordSettingsAppInterface setUpMockReauthenticationModule];
     [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                       ReauthenticationResult::kSuccess];
   }
@@ -3148,8 +3115,6 @@ void CopyPasswordDetailWithID(int detail_id) {
   OpenPasswordManager();
 
   if ([self notesEnabled]) {
-    [PasswordSettingsAppInterface
-        setUpMockReauthenticationModuleForPasswordManager];
     [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                       ReauthenticationResult::kSuccess];
   }
@@ -3168,7 +3133,6 @@ void CopyPasswordDetailWithID(int detail_id) {
       performAction:grey_tap()];
 
   if (![self notesEnabled]) {
-    [PasswordSettingsAppInterface setUpMockReauthenticationModule];
     [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                       ReauthenticationResult::kSuccess];
   }

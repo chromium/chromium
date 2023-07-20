@@ -151,8 +151,8 @@ using password_manager::WarningType;
                      faviconLoader:faviconLoader
                        syncService:SyncServiceFactory::GetForBrowserState(
                                        browserState)];
-  self.reauthModule = [[ReauthenticationModule alloc]
-      initWithSuccessfulReauthTimeAccessor:self.mediator];
+  self.reauthModule = password_manager::BuildReauthenticationModule(
+      /*successfulReauthTimeAccessor=*/self.mediator);
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
   self.passwordsViewController = [[PasswordManagerViewController alloc]
@@ -271,7 +271,7 @@ using password_manager::WarningType;
 - (void)showPasswordDeleteDialogWithOrigins:(NSArray<NSString*>*)origins
                                  completion:(void (^)(void))completion {
   std::pair<NSString*, NSString*> titleAndMessage =
-      GetPasswordAlertTitleAndMessageForOrigins(origins);
+      password_manager::GetPasswordAlertTitleAndMessageForOrigins(origins);
   NSString* title = titleAndMessage.first;
   NSString* message = titleAndMessage.second;
 

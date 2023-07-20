@@ -265,7 +265,8 @@
   // Blocked websites have empty `password` and no title or message.
   if ([password.password length]) {
     std::tie(title, message) =
-        GetPasswordAlertTitleAndMessageForOrigins(password.origins);
+        password_manager::GetPasswordAlertTitleAndMessageForOrigins(
+            password.origins);
   }
   NSString* buttonText = l10n_util::GetNSString(IDS_IOS_DELETE_ACTION_TITLE);
 

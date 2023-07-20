@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_settings/scoped_password_settings_reauth_module_override.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_coordinator.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
+#import "ios/chrome/browser/ui/settings/utils/password_utils.h"
 #import "ios/chrome/browser/ui/settings/utils/settings_utils.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
@@ -137,10 +138,7 @@
 - (void)start {
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
 
-  self.reauthModule =
-      ScopedPasswordSettingsReauthModuleOverride::instance
-          ? ScopedPasswordSettingsReauthModuleOverride::instance->module
-          : [[ReauthenticationModule alloc] init];
+  self.reauthModule = password_manager::BuildReauthenticationModule();
 
   _savedPasswordsPresenter =
       std::make_unique<password_manager::SavedPasswordsPresenter>(

@@ -7,11 +7,23 @@
 
 #import <UIKit/UIKit.h>
 
-#include <utility>
+#import <utility>
+
+@protocol ReauthenticationProtocol;
+@protocol SuccessfulReauthTimeAccessor;
+
+namespace password_manager {
 
 // Returns the title and the message for the password alert from an array of
 // `origins`. `first`: title and `second`: message.
 std::pair<NSString*, NSString*> GetPasswordAlertTitleAndMessageForOrigins(
     NSArray<NSString*>* origins);
+
+// Creates the module containing the reauthentication mechanism for interactions
+// with passwords.
+id<ReauthenticationProtocol> BuildReauthenticationModule(
+    id<SuccessfulReauthTimeAccessor> successfulReauthTimeAccessor = nullptr);
+
+}  // namespace password_manager
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_UTILS_PASSWORD_UTILS_H_
