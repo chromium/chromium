@@ -8,6 +8,7 @@
 #include <iterator>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include "ash/glanceables/tasks/glanceables_tasks_client.h"
@@ -114,6 +115,16 @@ std::vector<std::unique_ptr<GlanceablesTask>> ConvertTasks(
 
 }  // namespace
 
+GlanceablesTasksClientImpl::TaskListsFetchState::TaskListsFetchState() =
+    default;
+
+GlanceablesTasksClientImpl::TaskListsFetchState::~TaskListsFetchState() =
+    default;
+
+GlanceablesTasksClientImpl::TasksFetchState::TasksFetchState() = default;
+
+GlanceablesTasksClientImpl::TasksFetchState::~TasksFetchState() = default;
+
 GlanceablesTasksClientImpl::GlanceablesTasksClientImpl(
     const GlanceablesTasksClientImpl::CreateRequestSenderCallback&
         create_request_sender_callback)
@@ -123,26 +134,46 @@ GlanceablesTasksClientImpl::~GlanceablesTasksClientImpl() = default;
 
 void GlanceablesTasksClientImpl::GetTaskLists(
     GlanceablesTasksClient::GetTaskListsCallback callback) {
-  if (task_lists_) {
-    std::move(callback).Run(task_lists_.get());
+  if (task_lists_fetch_state_.status == FetchStatus::kFresh) {
+    std::move(callback).Run(&task_lists_);
     return;
   }
-  task_lists_ = std::make_unique<ui::ListModel<GlanceablesTaskList>>();
-  FetchTaskListsPage(/*page_token=*/"", std::move(callback));
+
+  task_lists_fetch_state_.callbacks.push_back(std::move(callback));
+
+  if (task_lists_fetch_state_.status != FetchStatus::kRefreshing) {
+    task_lists_fetch_state_.status = FetchStatus::kRefreshing;
+    FetchTaskListsPage(/*page_token=*/"");
+  }
 }
 
 void GlanceablesTasksClientImpl::GetTasks(
     const std::string& task_list_id,
     GlanceablesTasksClient::GetTasksCallback callback) {
   CHECK(!task_list_id.empty());
+
   const auto [iter, inserted] = tasks_in_task_lists_.emplace(
-      task_list_id, std::make_unique<ui::ListModel<GlanceablesTask>>());
-  if (!inserted) {
-    std::move(callback).Run(iter->second.get());
+      std::piecewise_construct, std::forward_as_tuple(task_list_id),
+      std::forward_as_tuple());
+
+  const auto [status_it, state_inserted] =
+      tasks_fetch_state_.emplace(task_list_id, nullptr);
+  if (!status_it->second) {
+    status_it->second = std::make_unique<TasksFetchState>();
+  }
+  TasksFetchState& fetch_state = *status_it->second;
+  if (fetch_state.status == FetchStatus::kFresh) {
+    std::move(callback).Run(&iter->second);
     return;
   }
-  FetchTasksPage(task_list_id, /*page_token=*/"", /*accumulated_raw_tasks=*/{},
-                 std::move(callback));
+
+  fetch_state.callbacks.push_back(std::move(callback));
+
+  if (fetch_state.status != FetchStatus::kRefreshing) {
+    fetch_state.status = FetchStatus::kRefreshing;
+    FetchTasksPage(task_list_id, /*page_token=*/"",
+                   /*accumulated_raw_tasks=*/{});
+  }
 }
 
 void GlanceablesTasksClientImpl::MarkAsCompleted(
@@ -162,24 +193,36 @@ void GlanceablesTasksClientImpl::MarkAsCompleted(
       task_list_id, task_id, Task::Status::kCompleted));
 }
 
-void GlanceablesTasksClientImpl::OnGlanceablesBubbleClosed() {}
+void GlanceablesTasksClientImpl::OnGlanceablesBubbleClosed() {
+  weak_factory_.InvalidateWeakPtrs();
+
+  for (auto& task_list_state : tasks_fetch_state_) {
+    RunGetTasksCallbacks(task_list_state.first, FetchStatus::kNotFresh,
+                         &stub_task_list_);
+  }
+  tasks_in_task_lists_.clear();
+  tasks_fetch_state_.clear();
+
+  task_lists_.DeleteAll();
+  RunGetTaskListsCallbacks(FetchStatus::kNotFresh);
+}
 
 void GlanceablesTasksClientImpl::FetchTaskListsPage(
-    const std::string& page_token,
-    GlanceablesTasksClient::GetTaskListsCallback callback) {
+    const std::string& page_token) {
   auto* const request_sender = GetRequestSender();
   request_sender->StartRequestWithAuthRetry(
       std::make_unique<ListTaskListsRequest>(
           request_sender,
           base::BindOnce(&GlanceablesTasksClientImpl::OnTaskListsPageFetched,
-                         weak_factory_.GetWeakPtr(), base::Time::Now(),
-                         std::move(callback)),
+                         weak_factory_.GetWeakPtr(), base::Time::Now()),
           page_token));
+  if (task_lists_request_callback_) {
+    task_lists_request_callback_.Run(page_token);
+  }
 }
 
 void GlanceablesTasksClientImpl::OnTaskListsPageFetched(
     const base::Time& request_start_time,
-    GlanceablesTasksClient::GetTaskListsCallback callback,
     base::expected<std::unique_ptr<TaskLists>, ApiErrorCode> result) {
   UMA_HISTOGRAM_TIMES("Ash.Glanceables.Api.Tasks.GetTaskLists.Latency",
                       base::Time::Now() - request_start_time);
@@ -187,43 +230,44 @@ void GlanceablesTasksClientImpl::OnTaskListsPageFetched(
                        result.error_or(ApiErrorCode::HTTP_SUCCESS));
 
   if (!result.has_value()) {
-    task_lists_->DeleteAll();
-    std::move(callback).Run(task_lists_.get());
+    task_lists_.DeleteAll();
+    RunGetTaskListsCallbacks(FetchStatus::kNotFresh);
     return;
   }
 
   for (const auto& raw_item : result.value()->items()) {
-    task_lists_->Add(std::make_unique<GlanceablesTaskList>(
+    task_lists_.Add(std::make_unique<GlanceablesTaskList>(
         raw_item->id(), raw_item->title(), raw_item->updated()));
   }
 
   if (result.value()->next_page_token().empty()) {
-    std::move(callback).Run(task_lists_.get());
+    RunGetTaskListsCallbacks(FetchStatus::kFresh);
   } else {
-    FetchTaskListsPage(result.value()->next_page_token(), std::move(callback));
+    FetchTaskListsPage(result.value()->next_page_token());
   }
 }
 
 void GlanceablesTasksClientImpl::FetchTasksPage(
     const std::string& task_list_id,
     const std::string& page_token,
-    std::vector<std::unique_ptr<Task>> accumulated_raw_tasks,
-    GlanceablesTasksClient::GetTasksCallback callback) {
+    std::vector<std::unique_ptr<Task>> accumulated_raw_tasks) {
   auto* const request_sender = GetRequestSender();
   request_sender->StartRequestWithAuthRetry(std::make_unique<ListTasksRequest>(
       request_sender,
       base::BindOnce(&GlanceablesTasksClientImpl::OnTasksPageFetched,
                      weak_factory_.GetWeakPtr(), task_list_id,
-                     std::move(accumulated_raw_tasks), base::Time::Now(),
-                     std::move(callback)),
+                     std::move(accumulated_raw_tasks), base::Time::Now()),
       task_list_id, page_token));
+
+  if (tasks_request_callback_) {
+    tasks_request_callback_.Run(task_list_id, page_token);
+  }
 }
 
 void GlanceablesTasksClientImpl::OnTasksPageFetched(
     const std::string& task_list_id,
     std::vector<std::unique_ptr<Task>> accumulated_raw_tasks,
     const base::Time& request_start_time,
-    GlanceablesTasksClient::GetTasksCallback callback,
     base::expected<std::unique_ptr<Tasks>, ApiErrorCode> result) {
   UMA_HISTOGRAM_TIMES("Ash.Glanceables.Api.Tasks.GetTasks.Latency",
                       base::Time::Now() - request_start_time);
@@ -233,7 +277,8 @@ void GlanceablesTasksClientImpl::OnTasksPageFetched(
   const auto iter = tasks_in_task_lists_.find(task_list_id);
 
   if (!result.has_value()) {
-    std::move(callback).Run(iter->second.get());
+    iter->second.DeleteAll();
+    RunGetTasksCallbacks(task_list_id, FetchStatus::kNotFresh, &iter->second);
     return;
   }
 
@@ -244,12 +289,44 @@ void GlanceablesTasksClientImpl::OnTasksPageFetched(
 
   if (result.value()->next_page_token().empty()) {
     for (auto& item : ConvertTasks(accumulated_raw_tasks)) {
-      iter->second->Add(std::move(item));
+      iter->second.Add(std::move(item));
     }
-    std::move(callback).Run(iter->second.get());
+    RunGetTasksCallbacks(task_list_id, FetchStatus::kFresh, &iter->second);
   } else {
     FetchTasksPage(task_list_id, result.value()->next_page_token(),
-                   std::move(accumulated_raw_tasks), std::move(callback));
+                   std::move(accumulated_raw_tasks));
+  }
+}
+
+void GlanceablesTasksClientImpl::RunGetTaskListsCallbacks(
+    FetchStatus final_fetch_status) {
+  task_lists_fetch_state_.status = final_fetch_status;
+
+  std::vector<GetTaskListsCallback> callbacks;
+  task_lists_fetch_state_.callbacks.swap(callbacks);
+
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(&task_lists_);
+  }
+}
+
+void GlanceablesTasksClientImpl::RunGetTasksCallbacks(
+    const std::string& task_list_id,
+    FetchStatus final_fetch_status,
+    ui::ListModel<GlanceablesTask>* tasks) {
+  auto fetch_state_it = tasks_fetch_state_.find(task_list_id);
+  if (fetch_state_it == tasks_fetch_state_.end()) {
+    return;
+  }
+
+  TasksFetchState* fetch_state = fetch_state_it->second.get();
+  fetch_state->status = final_fetch_status;
+
+  std::vector<GetTasksCallback> callbacks;
+  fetch_state->callbacks.swap(callbacks);
+
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(tasks);
   }
 }
 
@@ -275,15 +352,15 @@ void GlanceablesTasksClientImpl::OnMarkedAsCompleted(
     return;
   }
   const auto task_iter = std::find_if(
-      task_list_iter->second->begin(), task_list_iter->second->end(),
+      task_list_iter->second.begin(), task_list_iter->second.end(),
       [&task_id](const auto& task) { return task->id == task_id; });
-  if (task_iter == task_list_iter->second->end()) {
+  if (task_iter == task_list_iter->second.end()) {
     std::move(callback).Run(/*success=*/false);
     return;
   }
 
-  const auto task_index = task_iter - task_list_iter->second->begin();
-  task_list_iter->second->RemoveAt(task_index);
+  const auto task_index = task_iter - task_list_iter->second.begin();
+  task_list_iter->second.RemoveAt(task_index);
   std::move(callback).Run(/*success=*/true);
 }
 
