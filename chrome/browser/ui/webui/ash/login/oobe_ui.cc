@@ -621,11 +621,6 @@ void OobeUI::BindInterface(
 
 void OobeUI::BindInterface(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  if (!features::IsOobeJellyEnabled()) {
-    mojo::ReportBadMessage(
-        "Jelly not enabled: OOBE should not listen to color changes.");
-    return;
-  }
   color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
       web_ui()->GetWebContents(), std::move(receiver));
 }
