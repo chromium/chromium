@@ -191,7 +191,7 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
  private:
   // ContentsView:
   SkPath GetClipPath() override {
-    const SkRect local_bounds = gfx::RectToSkRect(GetContentsBounds());
+    const SkRect contents_bounds = gfx::RectToSkRect(GetContentsBounds());
     if (!chromeos::features::IsClipboardHistoryRefreshEnabled() ||
         !is_delete_button_visible()) {
       // Create rounded corners around the contents area. Because the menu's
@@ -203,11 +203,11 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
           chromeos::features::IsClipboardHistoryRefreshEnabled()
               ? ClipboardHistoryViews::kImageBackgroundCornerRadius
               : ClipboardHistoryViews::kImageBorderCornerRadius);
-      return SkPath::RRect(local_bounds, radius, radius);
+      return SkPath::RRect(contents_bounds, radius, radius);
     }
 
-    const auto width = local_bounds.width();
-    const auto height = local_bounds.height();
+    const auto width = contents_bounds.width();
+    const auto height = contents_bounds.height();
     const auto radius = ClipboardHistoryViews::kImageBackgroundCornerRadius;
 
     const auto top_left = SkPoint::Make(0.f, 0.f);
@@ -229,9 +229,9 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
         // connecting it to the bottom-left corner.
         .arcTo(bottom_right, bottom_right - vertical_offset, radius)
         // Draw a vertical line to the start of the top-right corner's cutout.
-        .lineTo(width, 38.f)
+        .lineTo(width, ClipboardHistoryViews::kCornerCutoutHeight)
         // Draw the top-right corner's cutout.
-        .rCubicTo(0.f, -radius, -6.7f, -10.f, -10.f, -10.f)
+        .rCubicTo(0.f, -8.f, -6.7f, -10.f, -10.f, -10.f)
         .rLineTo(-4.f, 0.f)
         .rCubicTo(-7.7f, 0.f, -14.f, -6.3f, -14.f, -14.f)
         .rLineTo(0.f, -4.f)

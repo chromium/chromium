@@ -47,6 +47,10 @@ constexpr float kImageBackgroundCornerRadius = 12.f;
 // The radius of the image view's rounded corners when surrounded by a border.
 constexpr float kImageBorderCornerRadius = 4.f;
 
+// The height of the region cut out from a contents view when the refresh is
+// enabled and the menu item's delete button is showing.
+constexpr float kCornerCutoutHeight = 38.f;
+
 // The preferred size for an item's icon.
 constexpr gfx::Size kIconSize(20, 20);
 
