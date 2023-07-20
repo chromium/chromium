@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/functional/callback_helpers.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 
 #include <map>
@@ -14,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/one_shot_event.h"
@@ -21,6 +21,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/web_applications/externally_managed_app_install_task.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
@@ -36,6 +37,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -44,6 +46,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/uninstall_result_code.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_constants.h"
@@ -1744,14 +1747,19 @@ TEST_F(ExternallyManagedAppManagerImplTest,
 
   // Reinstall placeholder
   {
+    AppId app_id = GenerateAppIdFromManifestId(
+        GenerateManifestIdFromStartUrlOnly(kFooWebAppUrl));
     install_options.wait_for_windows_closed = true;
     externally_managed_app_manager_impl().SetNextInstallationTaskResult(
         kFooWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall,
         /*did_install_placeholder=*/false);
-    ui_manager().SetNumWindowsForApp(
-        GenerateAppIdFromManifestId(
-            GenerateManifestIdFromStartUrlOnly(kFooWebAppUrl)),
-        1);
+    ui_manager().SetNumWindowsForApp(app_id, 1);
+
+    base::MockRepeatingCallback<void(AppId)> callback;
+    EXPECT_CALL(callback, Run(app_id)).WillOnce(::testing::Invoke([&]() {
+      ui_manager().SetNumWindowsForApp(app_id, 0);
+    }));
+    ui_manager().SetOnNotifyOnAllAppWindowsClosedCallback(callback.Get());
     scheduler().SetNextUninstallExternalWebAppResult(
         kFooWebAppUrl, webapps::UninstallResultCode::kSuccess);
 
