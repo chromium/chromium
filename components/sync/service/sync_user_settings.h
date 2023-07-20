@@ -51,17 +51,13 @@ class SyncUserSettings {
   virtual UserSelectableTypeSet GetSelectedTypes() const = 0;
   virtual bool IsTypeManagedByPolicy(UserSelectableType type) const = 0;
 
-  // TODO(crbug.com/1455963): Either merge or clearly distinguish
-  // SetSelectedTypes() (used for syncing users) from SetSelectedType() (used
-  // for signed-in, non-syncing users).
-
-  // Setting selected types for Sync-the-feature users.
-  // Sets user's selected types. Must only be called if Sync-the-feature is
-  // active, or in the process of being configured.
   // Whether the "Sync everything" is enabled. This only has an effect if
   // Sync-the-feature is enabled. Note that even if this is true, some types may
   // be disabled e.g. due to enterprise policy.
   virtual bool IsSyncEverythingEnabled() const = 0;
+  // Sets user's selected types. Should only be called if Sync-the-feature is
+  // active, or in the process of being configured; otherwise use the singular
+  // SetSelectedType().
   virtual void SetSelectedTypes(bool sync_everything,
                                 UserSelectableTypeSet types) = 0;
 

@@ -8,10 +8,8 @@
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/sync/base/passphrase_enums.h"
@@ -217,11 +215,6 @@ bool SyncServiceCrypto::IsPassphraseRequired() const {
 
   NOTREACHED();
   return false;
-}
-
-bool SyncServiceCrypto::IsUsingExplicitPassphrase() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return IsExplicitPassphrase(state_.cached_passphrase_type);
 }
 
 bool SyncServiceCrypto::IsTrustedVaultKeyRequired() const {

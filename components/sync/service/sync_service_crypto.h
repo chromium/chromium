@@ -57,7 +57,6 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   // See the SyncUserSettings header.
   base::Time GetExplicitPassphraseTime() const;
   bool IsPassphraseRequired() const;
-  bool IsUsingExplicitPassphrase() const;
   bool IsTrustedVaultKeyRequired() const;
   bool IsTrustedVaultRecoverabilityDegraded() const;
   bool IsEncryptEverythingEnabled() const;

@@ -10,12 +10,9 @@
 
 #include "base/base64.h"
 #include "base/containers/contains.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/mock_callback.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -23,12 +20,10 @@
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/engine/sync_status.h"
-#include "components/sync/service/sync_prefs.h"
 #include "components/sync/test/mock_sync_engine.h"
 #include "components/trusted_vault/trusted_vault_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -395,7 +390,6 @@ TEST_F(SyncServiceCryptoTest, ShouldSetUpNewCustomPassphrase) {
 
   crypto_.SetSyncEngine(CoreAccountInfo(), &engine_);
   ASSERT_FALSE(crypto_.IsPassphraseRequired());
-  ASSERT_FALSE(crypto_.IsUsingExplicitPassphrase());
   ASSERT_FALSE(crypto_.IsEncryptEverythingEnabled());
   ASSERT_THAT(crypto_.GetPassphraseType(),
               Ne(PassphraseType::kCustomPassphrase));
@@ -419,9 +413,8 @@ TEST_F(SyncServiceCryptoTest, ShouldSetUpNewCustomPassphrase) {
 
   EXPECT_FALSE(crypto_.IsPassphraseRequired());
   EXPECT_TRUE(crypto_.IsEncryptEverythingEnabled());
-  ASSERT_THAT(crypto_.GetPassphraseType(),
+  EXPECT_THAT(crypto_.GetPassphraseType(),
               Eq(PassphraseType::kCustomPassphrase));
-  EXPECT_TRUE(crypto_.IsUsingExplicitPassphrase());
 }
 
 TEST_F(SyncServiceCryptoTest, ShouldExposePassphraseRequired) {

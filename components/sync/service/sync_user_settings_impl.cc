@@ -15,6 +15,7 @@
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/features.h"
+#include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/service/sync_prefs.h"
@@ -277,7 +278,7 @@ bool SyncUserSettingsImpl::IsTrustedVaultRecoverabilityDegraded() const {
 }
 
 bool SyncUserSettingsImpl::IsUsingExplicitPassphrase() const {
-  return crypto_->IsUsingExplicitPassphrase();
+  return IsExplicitPassphrase(GetPassphraseType());
 }
 
 base::Time SyncUserSettingsImpl::GetExplicitPassphraseTime() const {
