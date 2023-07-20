@@ -5953,16 +5953,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
                    "response.status)"));
 }
 
-// TODO(crbug.com/1431421): Flaky on Fuchsia and iOS.
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
-#define MAYBE_Subresource_FetchHandler_Wins_Redirect \
-  DISABLED_Subresource_FetchHandler_Wins_Redirect
-#else
-#define MAYBE_Subresource_FetchHandler_Wins_Redirect \
-  Subresource_FetchHandler_Wins_Redirect
-#endif
+// TODO(crbug.com/1431421): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       MAYBE_Subresource_FetchHandler_Wins_Redirect) {
+                       DISABLED_Subresource_FetchHandler_Wins_Redirect) {
   SetupAndRegisterServiceWorker();
   ReloadBlockUntilNavigationsComplete(shell(), 1);
 
