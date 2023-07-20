@@ -2236,6 +2236,11 @@ BASE_FEATURE(kSuspendToDisk,
 const base::FeatureParam<int> kHibernateAfterTimeHours{
     &kSuspendToDisk, "HibernateAfterTimeHours", 8};
 
+// Allow the system to transition to S4 rather than S5.
+BASE_FEATURE(kSuspendToDiskAllowS4,
+             "CrOSSuspendToDiskAllowS4",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables custom Demo Mode behavior on feature-aware devices, as controlled by
 // the feature management module.
 BASE_FEATURE(kFeatureManagementFeatureAwareDeviceDemoMode,

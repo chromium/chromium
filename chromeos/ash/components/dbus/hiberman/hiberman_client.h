@@ -43,6 +43,8 @@ class COMPONENT_EXPORT(HIBERMAN_CLIENT) HibermanClient {
 
   virtual bool IsEnabled() const = 0;
 
+  virtual bool IsHibernateToS4Enabled() const = 0;
+
   // Actual DBus Methods:
   // Runs the callback as soon as the service becomes available.
   virtual void WaitForServiceToBeAvailable(

@@ -44,6 +44,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_HIBERNATE)
   // Determines if hibernate is supported on this platform.
   static void InitializePlatformSupport();
 
+  // Determines if the system has AESKL.
+  static bool HasAESKL();
+
+  // Determines if hibernate is supported.
+  static bool IsHibernateSupported();
+
  private:
   void ResumeFromHibernateAuthOpCallback(
       AuthOperationCallback callback,

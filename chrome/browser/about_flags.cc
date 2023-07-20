@@ -273,6 +273,7 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
+#include "chromeos/ash/components/login/hibernate/hibernate_manager.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "components/app_restore/features.h"
@@ -3060,6 +3061,9 @@ constexpr char kClipboardHistoryRefreshInternalName[] =
     "clipboard-history-refresh";
 constexpr char kWelcomeScreenInternalName[] = "welcome-screen";
 constexpr char kBluetoothUseFlossInternalName[] = "bluetooth-use-floss";
+constexpr char kEnableSuspendToDiskInternalName[] = "enable-suspend-to-disk";
+constexpr char kEnableSuspendToDiskAllowS4InternalName[] =
+    "enable-suspend-to-disk-allow-s4";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -4219,11 +4223,15 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-zram-writeback", flag_descriptions::kEnableZramWriteback,
      flag_descriptions::kEnableZramWritebackDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::kCrOSEnableZramWriteback)},
-    {"enable-suspend-to-disk", flag_descriptions::kEnableSuspendToDisk,
+    {kEnableSuspendToDiskInternalName, flag_descriptions::kEnableSuspendToDisk,
      flag_descriptions::kEnableSuspendToDiskDescription, kOsCrOS,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kSuspendToDisk,
                                     kHibernateFeatureVariations,
                                     "SuspendToDisk")},
+    {kEnableSuspendToDiskAllowS4InternalName,
+     flag_descriptions::kEnableSuspendToDiskAllowS4,
+     flag_descriptions::kEnableSuspendToDiskAllowS4Description, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kSuspendToDiskAllowS4)},
     // Used to carry the policy value crossing the Chrome process lifetime.
     {crosapi::browser_util::kLacrosAvailabilityPolicyInternalName, "", "",
      kOsCrOS, MULTI_VALUE_TYPE(kLacrosAvailabilityPolicyChoices)},
@@ -10775,6 +10783,22 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
 
   if (!strcmp(kArcEnableVirtioBlkForDataInternalName, entry.internal_name)) {
     return !arc::IsArcVmEnabled();
+  }
+
+  if (!strcmp(kEnableSuspendToDiskInternalName, entry.internal_name) ||
+      !strcmp(kEnableSuspendToDiskAllowS4InternalName, entry.internal_name)) {
+    // All Suspend to disk flags require that hibernate is supported.
+    if (!ash::HibernateManager::IsHibernateSupported()) {
+      return true;
+    }
+
+    // We only show the suspend to disk allow S4 flag on systems that have
+    // aeskl.
+    if (!strcmp(kEnableSuspendToDiskAllowS4InternalName, entry.internal_name)) {
+      return !ash::HibernateManager::HasAESKL();
+    }
+
+    return false;
   }
 
   // Only show Borealis flags on enabled devices.

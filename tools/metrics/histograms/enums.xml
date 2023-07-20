@@ -64917,6 +64917,7 @@ from previous Chrome versions.
   <int value="336105835" label="CameraAppTimeLapse:disabled"/>
   <int value="336429189" label="DisallowUnsafeHttpDownloads:disabled"/>
   <int value="336830575" label="DeviceForceScheduledReboot:enabled"/>
+  <int value="338273848" label="CrOSSuspendToDiskAllowS4:disabled"/>
   <int value="338662897" label="AndroidNightModeTabReparenting:disabled"/>
   <int value="339388667" label="SyncAndroidPromosWithTitle:enabled"/>
   <int value="339419844" label="EmojiSuggestAddition:enabled"/>
@@ -66931,6 +66932,7 @@ from previous Chrome versions.
   <int value="1376279104" label="TrafficCountersEnabled:enabled"/>
   <int value="1376437124" label="show-cert-link"/>
   <int value="1377056573" label="browser-side-navigation:enabled"/>
+  <int value="1377199649" label="CrOSSuspendToDiskAllowS4:enabled"/>
   <int value="1377802847" label="ViewTransition:enabled"/>
   <int value="1378310092" label="disable-suggestions-service"/>
   <int value="1379182781" label="MessagesForAndroidNearOomReduction:disabled"/>

@@ -5873,6 +5873,12 @@ const char kEnableSuspendToDiskDescription[] =
     "after 6 hours or more hours. This is a best effort and might fail, in "
     "which case the legacy suspend or shutdown behavior will remain";
 
+const char kEnableSuspendToDiskAllowS4[] = "Enable Suspend to Disk: Allow S4";
+const char kEnableSuspendToDiskAllowS4Description[] =
+    "If enabled on systems with Keylocker hibernate will be to S4. On systems "
+    "with keylocker hibernate would otherwise be unavailable. WARNING: Only "
+    "enable this if you know what you are doing.";
+
 const char kEnableVariableRefreshRateName[] = "Enable Variable Refresh Rate";
 const char kEnableVariableRefreshRateDescription[] =
     "Enable the variable refresh rate (Adaptive Sync) setting for capable "

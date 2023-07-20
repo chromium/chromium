@@ -3374,6 +3374,9 @@ extern const char kEnableZramWritebackDescription[];
 extern const char kEnableSuspendToDisk[];
 extern const char kEnableSuspendToDiskDescription[];
 
+extern const char kEnableSuspendToDiskAllowS4[];
+extern const char kEnableSuspendToDiskAllowS4Description[];
+
 extern const char kEapGtcWifiAuthenticationName[];
 extern const char kEapGtcWifiAuthenticationDescription[];
 

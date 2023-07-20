@@ -22,6 +22,7 @@ constexpr const char kSystemMissingDevSnapshot[] =
 
 constexpr const char kCryptoPath[] = "/proc/crypto";
 constexpr const char kDevSnapshotPath[] = "/dev/snapshot";
+constexpr const char kHibermanBinaryPath[] = "/usr/sbin/hiberman";
 
 // HasAESKL will return true if the system is using aeskl (AES w/
 // KeyLocker). The reason for this is because keylocker requires suspend to
@@ -52,6 +53,14 @@ bool HasSnapshotDevice() {
   return hasSnapshotDev;
 }
 
+// Returns true if the system has a hiberman binary.
+bool HasHibermanBinary() {
+  static bool hasHibermanBinary = []() -> bool {
+    return base::PathExists(base::FilePath(kHibermanBinaryPath));
+  }();
+  return hasHibermanBinary;
+}
+
 bool g_platform_support_test_complete = false;
 
 }  // namespace
@@ -67,7 +76,18 @@ base::WeakPtr<HibernateManager> HibernateManager::AsWeakPtr() {
 void HibernateManager::InitializePlatformSupport() {
   HasSnapshotDevice();
   HasAESKL();
+  HasHibermanBinary();
   g_platform_support_test_complete = true;
+}
+
+// static
+bool HibernateManager::HasAESKL() {
+  return ash::HasAESKL();
+}
+
+// static
+bool HibernateManager::IsHibernateSupported() {
+  return ash::HasHibermanBinary();
 }
 
 void HibernateManager::PrepareHibernateAndMaybeResumeAuthOp(
@@ -90,7 +110,7 @@ void HibernateManager::PrepareHibernateAndMaybeResume(
   } else if (!client->IsAlive() || !g_platform_support_test_complete) {
     aborted = true;
     client->AbortResumeHibernate(kHibermanNotReady);
-  } else if (HasAESKL()) {
+  } else if (HasAESKL() && !client->IsHibernateToS4Enabled()) {
     aborted = true;
     client->AbortResumeHibernate(kSystemHasAESKL);
   } else if (!HasSnapshotDevice()) {

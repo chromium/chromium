@@ -3472,6 +3472,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "enable-suspend-to-disk-allow-s4",
+    "owners": [ "bgeffon", "mka", "chromeos-power@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "enable-sync-history-datatype",
     "owners": [ "treib", "chrome-sync-dev@google.com" ],
     "expiry_milestone": 117
