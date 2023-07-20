@@ -112,12 +112,6 @@ class PasswordGenerationController {
   // on the next page.
   virtual void HideBottomSheetIfNeeded() = 0;
 
-  // Called when content::WebContents render frame is deleted.
-  // Ensures that the password generation bottom sheet is hidden when the frame
-  // is removed.
-  virtual void RenderFrameDeleted(
-      content::RenderFrameHost* render_frame_host) = 0;
-
   virtual std::unique_ptr<TouchToFillPasswordGenerationController>
   CreateTouchToFillGenerationControllerForTesting(
       std::unique_ptr<TouchToFillPasswordGenerationBridge> bridge) = 0;

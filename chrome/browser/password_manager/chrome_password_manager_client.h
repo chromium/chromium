@@ -339,7 +339,6 @@ class ChromePasswordManagerClient
 
   // content::WebContentsObserver overrides.
   void PrimaryPageChanged(content::Page& page) override;
-  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void WebContentsDestroyed() override;
 
   password_manager::ContentPasswordManagerDriverFactory* GetDriverFactory()

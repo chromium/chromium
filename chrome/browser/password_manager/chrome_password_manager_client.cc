@@ -1381,19 +1381,6 @@ void ChromePasswordManagerClient::PrimaryPageChanged(content::Page& page) {
   HideFillingUI();
 }
 
-void ChromePasswordManagerClient::RenderFrameDeleted(
-    content::RenderFrameHost* render_frame_host) {
-#if BUILDFLAG(IS_ANDROID)
-  PasswordGenerationController* generation_controller =
-      PasswordGenerationController::GetIfExisting(web_contents());
-  // If the render frame for which the password generation was offered is
-  // deleted then hide the UI.
-  if (generation_controller) {
-    generation_controller->RenderFrameDeleted(render_frame_host);
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-}
-
 void ChromePasswordManagerClient::WebContentsDestroyed() {
   // crbug/1090011
   // Drop the connection before the WebContentsObserver destructors are invoked.

@@ -219,12 +219,11 @@ void PasswordGenerationControllerImpl::CreateForWebContentsForTesting(
 
 PasswordGenerationControllerImpl::PasswordGenerationControllerImpl(
     content::WebContents* web_contents)
-    : content::WebContentsUserData<PasswordGenerationControllerImpl>(
-          *web_contents),
-      client_(ChromePasswordManagerClient::FromWebContents(web_contents)),
-      create_dialog_factory_(
-          base::BindRepeating(&PasswordGenerationDialogViewInterface::Create)),
-      create_touch_to_fill_generation_controller_(
+    : PasswordGenerationControllerImpl(
+          web_contents,
+          ChromePasswordManagerClient::FromWebContents(web_contents),
+          /*manual_filling_controller=*/nullptr,
+          base::BindRepeating(&PasswordGenerationDialogViewInterface::Create),
           base::BindRepeating(&PasswordGenerationControllerImpl::
                                   CreateTouchToFillGenerationController,
                               base::Unretained(this))) {}
@@ -236,7 +235,8 @@ PasswordGenerationControllerImpl::PasswordGenerationControllerImpl(
     CreateDialogFactory create_dialog_factory,
     CreateTouchToFillGenerationControllerFactory
         create_touch_to_fill_generation_controller)
-    : content::WebContentsUserData<PasswordGenerationControllerImpl>(
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<PasswordGenerationControllerImpl>(
           *web_contents),
       client_(client),
       manual_filling_controller_(std::move(manual_filling_controller)),
@@ -354,6 +354,12 @@ void PasswordGenerationControllerImpl::RenderFrameDeleted(
       active_frame_driver_->render_frame_host() == render_frame_host) {
     HideBottomSheetIfNeeded();
   }
+}
+
+void PasswordGenerationControllerImpl::WebContentsDestroyed() {
+  // Avoid invalid pointers to other `WebContentsUserData`, e.g. `client_`.
+  GetWebContents().RemoveUserData(UserDataKey());
+  // `this` is now destroyed - do not add code here.
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PasswordGenerationControllerImpl);
