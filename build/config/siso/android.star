@@ -19,7 +19,7 @@ def __enabled(ctx):
 def __step_config(ctx, step_config):
     __input_deps(ctx, step_config["input_deps"])
 
-    remote_run = True # Turn this to False when you do file access trace.
+    remote_run = True  # Turn this to False when you do file access trace.
     step_config["rules"].extend([
         # See also https://chromium.googlesource.com/chromium/src/build/+/HEAD/android/docs/java_toolchain.md
         {

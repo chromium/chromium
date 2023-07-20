@@ -11,6 +11,12 @@ __filegroups = {}
 __handlers = {}
 
 def __step_rules():
+    # mojom_bindings_generator.py will run faster on n2-highmem-8 than
+    # n2-custom-2-3840
+    # e.g.
+    #  n2-highmem-8: exec: 880.202978ms
+    #  n2-custom-2-3840: exec: 2.42808488s
+    platform_ref = "large"
     return [
         {
             "name": "mojo/mojom_bindings_generator",
@@ -110,7 +116,7 @@ def __step_rules():
             "remote": True,
             "timeout": "2m",
             "output_local": True,
-            "platform_ref": "mojo",
+            "platform_ref": platform_ref,
         },
         {
             "name": "mojo/mojom_parser",
@@ -151,7 +157,7 @@ def __step_rules():
             "remote": True,
             "input_root_absolute_path": True,
             "output_local": True,
-            "platform_ref": "mojo",
+            "platform_ref": platform_ref,
         },
     ]
 

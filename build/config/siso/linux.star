@@ -86,16 +86,14 @@ def __step_config(ctx, step_config):
             "container-image": "docker://gcr.io/chops-public-images-prod/rbe/siso-chromium/linux@sha256:912808c295e578ccde53b0685bcd0d56c15d7a03e819dcce70694bfe3fdab35e",
             "label:action_default": "1",
         },
-        "mojo": {
+        "large": {
             "OSFamily": "Linux",
             "container-image": "docker://gcr.io/chops-public-images-prod/rbe/siso-chromium/linux@sha256:912808c295e578ccde53b0685bcd0d56c15d7a03e819dcce70694bfe3fdab35e",
-            # action_mojo pool uses n2-highmem-8 machine as of 2023 Jun and
-            # mojo_bindings_generators.py will run faster on n2-highmem-8 than
-            # n2-custom-2-3840
-            # e.g.
-            #  n2-highmem-8: exec: 880.202978ms
-            #  n2-custom-2-3840: exec: 2.42808488s
-            "label:action_mojo": "1",
+            # As of Jul 2023, the action_large pool uses n2-highmem-8 with 200GB of pd-ssd.
+            # The pool is intended for the following actions.
+            #  - slow actions that can benefit from multi-cores and/or faster disk I/O. e.g. link, mojo, generate bindings etc.
+            #  - actions that fail for OOM.
+            "label:action_large": "1",
         },
     }
 
