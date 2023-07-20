@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_wasm_response_extensions.h"
 
-#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -257,12 +256,6 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
               AbortCompilation("Download cancelled");
               break;
             case BytesConsumer::PublicState::kErrored:
-              // Store the debug name of the BytesConsumer to debug
-              // https://crbug.com/1449546.
-              // TODO(clemensb): Remove this after resolving the issue.
-              static crash_reporter::CrashKeyString<128> detail_key(
-                  "v8-wasm-bytes-consumer-debug-name");
-              detail_key.Set(consumer_->DebugName().Utf8().c_str());
               AbortCompilation("Network error: " +
                                consumer_->GetError().Message());
               break;
