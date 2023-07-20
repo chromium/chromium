@@ -192,6 +192,11 @@
     padding: 0;
   }
 
+  :host-context([chrome-refresh-2023]):host([show-background-image_])
+      #customizeButton {
+    padding-inline-start: 8px;
+  }
+
   :host-context(.focus-outline-visible) #customizeButton:focus {
     box-shadow: var(--ntp-focus-shadow);
   }
