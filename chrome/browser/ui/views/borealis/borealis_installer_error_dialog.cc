@@ -62,6 +62,10 @@ class ErrorBehaviourProvider {
   virtual CallToAction GetAction() const { return CallToAction::kNone; }
 
   virtual std::u16string ErrorMessage() const = 0;
+
+  virtual std::vector<std::pair<std::u16string, GURL>> GetLinks() const {
+    return {};
+  }
 };
 
 class Duplicate : public ErrorBehaviourProvider {
@@ -75,6 +79,11 @@ class Update : public ErrorBehaviourProvider {
  public:
   std::u16string ErrorMessage() const override {
     return l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ERROR_UPDATE);
+  }
+  std::vector<std::pair<std::u16string, GURL>> GetLinks() const override {
+    return {
+        {l10n_util::GetStringUTF16(IDS_LEARN_MORE),
+         GURL("https://support.google.com/chromebook?p=Steam_InternalError")}};
   }
 };
 
@@ -94,6 +103,11 @@ class Space : public ErrorBehaviourProvider {
   CallToAction GetAction() const override {
     return CallToAction::kStorageManagement;
   }
+  std::vector<std::pair<std::u16string, GURL>> GetLinks() const override {
+    return {{l10n_util::GetStringUTF16(IDS_LEARN_MORE),
+             GURL("https://support.google.com/"
+                  "chromebook?p=Steam_kDlcNeedSpaceError")}};
+  }
 };
 
 class Offline : public ErrorBehaviourProvider {
@@ -102,6 +116,10 @@ class Offline : public ErrorBehaviourProvider {
     return l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ERROR_OFFLINE);
   }
   CallToAction GetAction() const override { return CallToAction::kRetry; }
+  std::vector<std::pair<std::u16string, GURL>> GetLinks() const override {
+    return {{l10n_util::GetStringUTF16(IDS_LEARN_MORE),
+             GURL("https://support.google.com/chromebook?p=Steam_Offline")}};
+  }
 };
 
 class Startup : public ErrorBehaviourProvider {
@@ -154,7 +172,7 @@ class BorealisInstallerErrorDialog : public views::DialogDelegate {
       : behaviour_(std::move(behaviour)), callback_(std::move(callback)) {
     set_internal_name("BorealisInstallerErrorDialog");
     InitializeButtons();
-    InitializeView();
+    InitializeView(*behaviour_);
     SetModalType(ui::MODAL_TYPE_WINDOW);
     SetOwnedByWidget(true);
     SetShowCloseButton(false);
@@ -208,7 +226,7 @@ class BorealisInstallerErrorDialog : public views::DialogDelegate {
     }
   }
 
-  void InitializeView() {
+  void InitializeView(const ErrorBehaviourProvider& behaviour) {
     auto view = std::make_unique<views::View>();
 
     views::LayoutProvider* provider = views::LayoutProvider::Get();
@@ -235,6 +253,20 @@ class BorealisInstallerErrorDialog : public views::DialogDelegate {
     message_label->SetMultiLine(true);
     message_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
     view->AddChildView(message_label);
+
+    for (const std::pair<std::u16string, GURL>& link : behaviour.GetLinks()) {
+      LOG(ERROR) << link.first << link.second;
+      views::Link* link_label =
+          view->AddChildView(std::make_unique<views::Link>(link.first));
+      link_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+      link_label->SetCallback(base::BindRepeating(
+          [](GURL url) {
+            ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+                url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+                ash::NewWindowDelegate::Disposition::kNewForegroundTab);
+          },
+          link.second));
+    }
 
     SetContentsView(std::move(view));
   }
