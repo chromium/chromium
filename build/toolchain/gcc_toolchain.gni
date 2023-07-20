@@ -244,10 +244,6 @@ template("single_gcc_toolchain") {
       not_needed([ "goma_path" ])
     }
 
-    # Create a distinct variable for "asm", since coverage runs pass a bunch of
-    # flags to clang/clang++ that are nonsensical on assembler runs.
-    asm_prefix = compiler_prefix
-
     # A specific toolchain may wish to avoid coverage instrumentation, so we
     # allow the global "use_clang_coverage" arg to be overridden.
     if (defined(toolchain_args.use_clang_coverage)) {
@@ -293,7 +289,10 @@ template("single_gcc_toolchain") {
 
     cc = compiler_prefix + invoker.cc
     cxx = compiler_prefix + invoker.cxx
-    asm = asm_prefix + invoker.cc
+    # "asm" doesn't support any of toolchain_cc_wrapper, toolchain_uses_goma and
+    # toolchain_uses_remoteexec. The coverage flags are also nonsensical on
+    # assembler runs.
+    asm = invoker.cc
     ar = invoker.ar
     ld = link_prefix + invoker.ld
     if (defined(invoker.readelf)) {
