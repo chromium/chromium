@@ -157,12 +157,15 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
     query_params.emplace_back("mediaType",
                               media::GetMimeTypeForFile(media_file));
     query_params.emplace_back("keySystem", key_system);
-    if (src_type == SrcType::MSE)
+    if (src_type == SrcType::MSE) {
       query_params.emplace_back("useMSE", "1");
-    if (force_invalid_response)
+    }
+    if (force_invalid_response) {
       query_params.emplace_back("forceInvalidResponse", "1");
-    if (!session_to_load.empty())
+    }
+    if (!session_to_load.empty()) {
       query_params.emplace_back("sessionToLoad", session_to_load);
+    }
     query_params.emplace_back(
         "playCount", base::NumberToString(static_cast<int>(play_count)));
     RunEncryptedMediaTestPage(html_page, key_system, query_params,
@@ -219,8 +222,9 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
                                   base::StringPairs* query_params) {
     std::unique_ptr<TestLicenseServerConfig> config =
         GetServerConfig(key_system);
-    if (!config)
+    if (!config) {
       return;
+    }
     license_server_ = std::make_unique<TestLicenseServer>(std::move(config));
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
@@ -232,8 +236,9 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
 
   bool IsPlayBackPossible(const std::string& key_system) {
 #if BUILDFLAG(ENABLE_WIDEVINE)
-    if (IsWidevine(key_system) && !GetServerConfig(key_system))
+    if (IsWidevine(key_system) && !GetServerConfig(key_system)) {
       return false;
+    }
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
     return true;
   }
@@ -244,8 +249,9 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
     if (IsWidevine(key_system)) {
       std::unique_ptr<TestLicenseServerConfig> config(
           new WVTestLicenseServerConfig);
-      if (config->IsPlatformSupported())
+      if (config->IsPlatformSupported()) {
         return config;
+      }
     }
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
     return nullptr;
@@ -402,8 +408,9 @@ class ECKEncryptedMediaOutputProtectionTest
 #endif
 
     base::StringPairs query_params;
-    if (create_recorder_before_media_keys)
+    if (create_recorder_before_media_keys) {
       query_params.emplace_back("createMediaRecorderBeforeMediaKeys", "1");
+    }
     RunMediaTestPage("eme_and_get_display_media.html", query_params,
                      expected_title, /*http=*/true,
                      /*with_transient_activation=*/true);
@@ -530,8 +537,9 @@ class ParameterizedEncryptedMediaTestBase : public EncryptedMediaTestBase {
     query_params.emplace_back("mediaFile", media_file);
     query_params.emplace_back("mediaType",
                               media::GetMimeTypeForFile(media_file));
-    if (CurrentSourceType() == SrcType::MSE)
+    if (CurrentSourceType() == SrcType::MSE) {
       query_params.emplace_back("useMSE", "1");
+    }
     query_params.emplace_back("keySystem", CurrentKeySystem());
     query_params.emplace_back("policyCheck", "1");
     RunEncryptedMediaTestPage(kDefaultEmePlayer, CurrentKeySystem(),
@@ -661,8 +669,9 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoClearAudio_WebM_Opus) {
 }
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_Multiple_VideoAudio_WebM) {
-  if (!IsPlayBackPossible(CurrentKeySystem()))
+  if (!IsPlayBackPossible(CurrentKeySystem())) {
     GTEST_SKIP() << "Playback_Multiple test requires playback.";
+  }
 
   TestMultiplePlayback("bear-320x240-av_enc-av.webm");
 }
@@ -736,16 +745,18 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, InvalidResponseKeyError) {
 
 // This is not really an "encrypted" media test. Keep it here for completeness.
 IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, ConfigChangeVideo_ClearToClear) {
-  if (!IsPlayBackPossible(CurrentKeySystem()))
+  if (!IsPlayBackPossible(CurrentKeySystem())) {
     GTEST_SKIP() << "ConfigChange test requires video playback.";
+  }
 
   TestConfigChange(ConfigChangeType::CLEAR_TO_CLEAR);
 }
 
 IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
                        ConfigChangeVideo_ClearToEncrypted) {
-  if (!IsPlayBackPossible(CurrentKeySystem()))
+  if (!IsPlayBackPossible(CurrentKeySystem())) {
     GTEST_SKIP() << "ConfigChange test requires video playback.";
+  }
 
   TestConfigChange(ConfigChangeType::CLEAR_TO_ENCRYPTED);
 }
@@ -753,23 +764,26 @@ IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
 // TODO(crbug.com/1045376): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
                        DISABLED_ConfigChangeVideo_EncryptedToClear) {
-  if (!IsPlayBackPossible(CurrentKeySystem()))
+  if (!IsPlayBackPossible(CurrentKeySystem())) {
     GTEST_SKIP() << "ConfigChange test requires video playback.";
+  }
 
   TestConfigChange(ConfigChangeType::ENCRYPTED_TO_CLEAR);
 }
 
 IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
                        ConfigChangeVideo_EncryptedToEncrypted) {
-  if (!IsPlayBackPossible(CurrentKeySystem()))
+  if (!IsPlayBackPossible(CurrentKeySystem())) {
     GTEST_SKIP() << "ConfigChange test requires video playback.";
+  }
 
   TestConfigChange(ConfigChangeType::ENCRYPTED_TO_ENCRYPTED);
 }
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, FrameSizeChangeVideo) {
-  if (!IsPlayBackPossible(CurrentKeySystem()))
+  if (!IsPlayBackPossible(CurrentKeySystem())) {
     GTEST_SKIP() << "FrameSizeChange test requires video playback.";
+  }
 
   TestFrameSizeChange();
 }
@@ -781,8 +795,9 @@ IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, PolicyCheck) {
 
 // Only use MSE since this is independent to the demuxer.
 IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, RemoveTemporarySession) {
-  if (!IsPlayBackPossible(CurrentKeySystem()))
+  if (!IsPlayBackPossible(CurrentKeySystem())) {
     GTEST_SKIP() << "RemoveTemporarySession test requires license server.";
+  }
 
   base::StringPairs query_params{{"keySystem", CurrentKeySystem()}};
   RunEncryptedMediaTestPage("eme_remove_session_test.html", CurrentKeySystem(),
