@@ -586,6 +586,7 @@ _CONFIG = [
             'v8::.+',
             'v8_inspector::.+',
             'inspector_protocol_encoding::.+',
+            'snappy::.+',
 
             # Inspector instrumentation and protocol
             'probe::.+',

@@ -45,8 +45,9 @@ std::unique_ptr<IDBValue> CreateIDBValueForTesting(v8::Isolate* isolate,
   IDBValueWrapper wrapper(isolate, v8_array,
                           SerializedScriptValue::SerializeOptions::kSerialize,
                           non_throwable_exception_state);
+  wrapper.set_wrapping_threshold_for_test(
+      create_wrapped_value ? 0 : 1024 * element_count);
   wrapper.DoneCloning();
-  wrapper.WrapIfBiggerThan(create_wrapped_value ? 0 : 1024 * element_count);
 
   Vector<scoped_refptr<BlobDataHandle>> blob_data_handles =
       wrapper.TakeBlobDataHandles();

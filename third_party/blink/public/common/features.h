@@ -469,6 +469,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kHiddenSelectionBounds);
 // applied. See https://crbug.com/1369823.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kImageLoadingPrioritizationFix);
 
+// Use Snappy to compress values for IndexedDB before wiring them to the
+// browser.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kIndexedDBCompressValuesWithSnappy);
+
 // This flag is used to set field parameters to choose predictor we use when
 // kResamplingInputEvents is disabled. It's used for gathering accuracy metrics
 // on finch and also for choosing predictor type for predictedEvents API without
