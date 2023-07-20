@@ -107,8 +107,6 @@ long sched_setattr(pid_t pid,
   return syscall(__NR_sched_setattr, pid, attr, flags);
 }
 
-} // namespace
-
 // Setup whether a thread is latency sensitive. The thread_id should
 // always be the value in the root PID namespace (see FindThreadID).
 void SetThreadLatencySensitivity(ProcessId process_id,
@@ -139,7 +137,7 @@ void SetThreadLatencySensitivity(ProcessId process_id,
   // conversion from NS tid to global tid is done by the callers using
   // FindThreadID().
   FilePath thread_dir;
-  if (thread_id)
+  if (thread_id && thread_id != PlatformThread::CurrentId())
     thread_dir = FilePath(StringPrintf("/proc/%d/task/%d/", process_id, thread_id));
   else
     thread_dir = FilePath("/proc/thread-self/");
@@ -202,13 +200,7 @@ void SetThreadLatencySensitivity(ProcessId process_id,
   }
 }
 
-// Temporary ifdef to keep ChromeOS bisectability working. This block
-// will be removed in next CL in the series.
-void SetThreadLatencySensitivityTemporary(ProcessId process_id,
-                                         PlatformThreadId thread_id,
-                                         ThreadType thread_type) {
-  SetThreadLatencySensitivity(process_id, thread_id, thread_type);
-}
+} // namespace
 
 void PlatformThreadChromeOS::InitFeaturesPostFieldTrial() {
   DCHECK(FeatureList::GetInstance());
@@ -248,6 +240,12 @@ void PlatformThreadChromeOS::InitFeaturesPostFieldTrial() {
 void PlatformThreadChromeOS::SetThreadType(ProcessId process_id,
                                            PlatformThreadId thread_id,
                                            ThreadType thread_type) {
+  // TODO(b/262267726): Call PlatformThreadLinux::SetThreadType for common code.
+  PlatformThreadId syscall_tid = thread_id;
+  if (thread_id == PlatformThread::CurrentId()) {
+    syscall_tid = 0;
+  }
+
   // For legacy schedtune interface
   PlatformThreadLinux::SetThreadCgroupsForThreadType(thread_id, thread_type);
 
@@ -255,8 +253,17 @@ void PlatformThreadChromeOS::SetThreadType(ProcessId process_id,
   // earlier) and upstream (uclamp) interfaces, and whichever succeeds wins.
   SetThreadLatencySensitivity(process_id, thread_id, thread_type);
 
+  if (thread_type == ThreadType::kRealtimeAudio) {
+    if (sched_setscheduler(syscall_tid, SCHED_RR, &kRealTimePrio) == 0) {
+      return;
+    }
+    // If failed to set to RT, fallback to setting nice value.
+    DVPLOG(1) << "Failed to set realtime priority for thread (" << thread_id
+              << ")";
+  }
+
   const int nice_setting = internal::ThreadTypeToNiceValue(thread_type);
-  if (setpriority(PRIO_PROCESS, static_cast<id_t>(thread_id), nice_setting)) {
+  if (setpriority(PRIO_PROCESS, static_cast<id_t>(syscall_tid), nice_setting)) {
     DVPLOG(1) << "Failed to set nice value of thread (" << thread_id << ") to "
               << nice_setting;
   }

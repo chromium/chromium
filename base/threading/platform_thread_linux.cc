@@ -97,13 +97,10 @@ void SetThreadCgroupForThreadType(PlatformThreadId thread_id,
 
   SetThreadCgroup(thread_id, cgroup_directory);
 }
+
 }  // namespace
 
 namespace internal {
-
-namespace {
-const struct sched_param kRealTimePrio = {8};
-}  // namespace
 
 const ThreadPriorityToNiceValuePairForTest
     kThreadPriorityToNiceValueMapForTest[5] = {
@@ -142,17 +139,8 @@ bool SetCurrentThreadTypeForPlatform(ThreadType thread_type,
     return true;
   }
 
-  // For legacy schedtune interface
-  PlatformThread::SetThreadCgroupsForThreadType(tid, thread_type);
-
-// Temporary ifdef to keep ChromeOS bisectability working. This block
-// will be removed in next CL in the series.
-#if BUILDFLAG(IS_CHROMEOS)
-  SetThreadLatencySensitivityTemporary(0 /* ignore */, 0 /* thread-self */, thread_type);
-#endif
-
-  return thread_type == ThreadType::kRealtimeAudio &&
-         pthread_setschedparam(pthread_self(), SCHED_RR, &kRealTimePrio) == 0;
+  PlatformThread::SetThreadType(getpid(), tid, thread_type);
+  return true;
 }
 
 absl::optional<ThreadPriorityForTest>
@@ -162,7 +150,8 @@ GetCurrentThreadPriorityForPlatformForTest() {
   if (pthread_getschedparam(pthread_self(), &maybe_sched_rr,
                             &maybe_realtime_prio) == 0 &&
       maybe_sched_rr == SCHED_RR &&
-      maybe_realtime_prio.sched_priority == kRealTimePrio.sched_priority) {
+      maybe_realtime_prio.sched_priority ==
+          PlatformThreadLinux::kRealTimePrio.sched_priority) {
     return absl::make_optional(ThreadPriorityForTest::kRealtimeAudio);
   }
   return absl::nullopt;
@@ -217,11 +206,27 @@ void PlatformThreadLinux::SetThreadCgroupsForThreadType(
 void PlatformThreadLinux::SetThreadType(ProcessId process_id,
                                         PlatformThreadId thread_id,
                                         ThreadType thread_type) {
-  // For legacy schedtune interface
   SetThreadCgroupsForThreadType(thread_id, thread_type);
 
+  // Some scheduler syscalls require thread ID of 0 for current thread.
+  // This prevents us from requiring to translate the NS TID to
+  // global TID.
+  PlatformThreadId syscall_tid = thread_id;
+  if (thread_id == PlatformThread::CurrentId()) {
+    syscall_tid = 0;
+  }
+
+  if (thread_type == ThreadType::kRealtimeAudio) {
+    if (sched_setscheduler(syscall_tid, SCHED_RR,
+                           &PlatformThreadLinux::kRealTimePrio) == 0) {
+      return;
+    }
+    // If failed to set to RT, fallback to setpriority to set nice value.
+    DPLOG(ERROR) << "Failed to set realtime priority for thread " << thread_id;
+  }
+
   const int nice_setting = internal::ThreadTypeToNiceValue(thread_type);
-  if (setpriority(PRIO_PROCESS, static_cast<id_t>(thread_id), nice_setting)) {
+  if (setpriority(PRIO_PROCESS, static_cast<id_t>(syscall_tid), nice_setting)) {
     DVPLOG(1) << "Failed to set nice value of thread (" << thread_id << ") to "
               << nice_setting;
   }

@@ -16,7 +16,6 @@
 
 #include "base/base_export.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/process/process_handle.h"
 #include "base/threading/platform_thread_ref.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -294,6 +293,8 @@ class ThreadTypeDelegate;
 
 class BASE_EXPORT PlatformThreadLinux : public PlatformThreadBase {
  public:
+  static constexpr struct sched_param kRealTimePrio = {8};
+
   // Sets a delegate which handles thread type changes for this process. This
   // must be externally synchronized with any call to SetCurrentThreadType.
   static void SetThreadTypeDelegate(ThreadTypeDelegate* delegate);

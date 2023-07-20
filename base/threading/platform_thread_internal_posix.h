@@ -70,16 +70,6 @@ int GetCurrentThreadNiceValue();
 
 }  // namespace internal
 
-// Temporary ifdef to keep ChromeOS bisectability working. This block
-// will be removed in next CL in the series.
-#if BUILDFLAG(IS_CHROMEOS)
-void SetThreadLatencySensitivityTemporary(
-    ProcessId process_id,
-    PlatformThreadId thread_id,
-    ThreadType thread_type);
-
-#endif
-
 }  // namespace base
 
 #endif  // BASE_THREADING_PLATFORM_THREAD_INTERNAL_POSIX_H_
