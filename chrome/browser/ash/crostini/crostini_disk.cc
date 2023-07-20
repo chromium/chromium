@@ -192,11 +192,8 @@ void OnListVmDisks(
   std::move(callback).Run(std::move(disk_info));
 }
 
-std::vector<crostini::mojom::DiskSliderTickPtr> GetTicks(
-    int64_t min,
-    int64_t current,
-    int64_t max,
-    int* out_default_index) {
+std::vector<crostini::mojom::DiskSliderTickPtr>
+GetTicks(int64_t min, int64_t current, int64_t max, int* out_default_index) {
   if (current < min) {
     // btrfs is conservative, sometimes it won't let us resize to what the user
     // currently has. In those cases act like the current size is the same as

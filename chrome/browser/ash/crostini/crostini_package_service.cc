@@ -260,8 +260,9 @@ void CrostiniPackageService::OnInstallLinuxPackageProgress(
   // map to a single progess percentage amount by dividing the range in half --
   // 0-50% for the downloading phase, 51-100% for the installing phase.
   int display_progress = progress_percent / 2;
-  if (status == InstallLinuxPackageProgressStatus::INSTALLING)
+  if (status == InstallLinuxPackageProgressStatus::INSTALLING) {
     display_progress += 50;  // Second phase
+  }
 
   UpdatePackageOperationStatus(container_id,
                                InstallStatusToOperationStatus(status),

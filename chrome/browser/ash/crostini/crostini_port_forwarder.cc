@@ -121,8 +121,9 @@ bool CrostiniPortForwarder::RemovePortPreference(const PortRuleKey& key) {
   auto it = base::ranges::find_if(update_list, [&key, this](const auto& dict) {
     return MatchPortRuleDict(dict, key);
   });
-  if (it == update_list.end())
+  if (it == update_list.end()) {
     return false;
+  }
   update_list.erase(it);
   return true;
 }
@@ -405,10 +406,12 @@ void CrostiniPortForwarder::UpdateActivePortInterfaces() {
 
 void CrostiniPortForwarder::ActiveNetworksChanged(
     const std::string& interface) {
-  if (interface.empty())
+  if (interface.empty()) {
     return;
-  if (interface == current_interface_)
+  }
+  if (interface == current_interface_) {
     return;
+  }
   current_interface_ = interface;
   UpdateActivePortInterfaces();
 }

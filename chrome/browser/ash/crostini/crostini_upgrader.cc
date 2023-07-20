@@ -126,8 +126,9 @@ void CrostiniUpgrader::CreateNewLogFile() {
       base::BindOnce(
           [](base::WeakPtr<CrostiniUpgrader> weak_this,
              absl::optional<base::FilePath> path) {
-            if (!weak_this)
+            if (!weak_this) {
               return;
+            }
 
             weak_this->current_log_file_ = path;
             if (path) {
@@ -155,8 +156,9 @@ void CrostiniUpgrader::StatusTracker::SetStatusRunningUI(int progress_percent) {
   } else {
     upgrader_->OnRestoreProgress(progress_percent);
   }
-  if (has_notified_start_)
+  if (has_notified_start_) {
     return;
+  }
   for (auto& observer : upgrader_->upgrader_observers_) {
     observer.OnBackupMaybeStarted(/*did_start=*/true);
   }

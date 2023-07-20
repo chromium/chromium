@@ -300,8 +300,9 @@ void CrostiniPackageNotification::Click(
     crostini::ShowCrostiniPackageInstallFailureView(error_message_);
   }
 
-  if (current_status_ != PackageOperationStatus::SUCCEEDED)
+  if (current_status_ != PackageOperationStatus::SUCCEEDED) {
     return;
+  }
 
   if (app_count_ == 0) {
     LaunchTerminal(profile_,

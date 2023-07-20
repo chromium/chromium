@@ -100,8 +100,9 @@ void RecordTimeFromDeviceSetupToInstallMetric() {
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&ash::StartupUtils::GetTimeSinceOobeFlagFileCreation),
       base::BindOnce([](base::TimeDelta time_from_device_setup) {
-        if (time_from_device_setup.is_zero())
+        if (time_from_device_setup.is_zero()) {
           return;
+        }
 
         // The magic number 1471228928 is used for legacy reasons and changing
         // it would invalidate already logged data.
@@ -588,8 +589,9 @@ void CrostiniInstaller::OnAvailableDiskSpace(absl::optional<int64_t> bytes) {
 
   DCHECK_EQ(installing_state_, InstallerState::kStart);
 
-  if (bytes.has_value())
+  if (bytes.has_value()) {
     free_disk_space_ = bytes.value();
+  }
   // Don't enforce minimum disk size on dev box or trybots because
   // base::SysInfo::AmountOfFreeDiskSpace returns zero in testing.
   if (base::SysInfo::IsRunningOnChromeOS() &&

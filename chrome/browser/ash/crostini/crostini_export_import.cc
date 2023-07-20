@@ -187,8 +187,9 @@ void CrostiniExportImport::OpenFileDialog(OperationData* operation_data,
     return;
   }
   // Early return if the select file dialog is already active.
-  if (select_folder_dialog_)
+  if (select_folder_dialog_) {
     return;
+  }
 
   ui::SelectFileDialog::Type file_selector_mode;
   unsigned title = 0;

@@ -37,8 +37,9 @@ CrostiniExportImportClickCloseDelegate::CrostiniExportImportClickCloseDelegate()
           HandleNotificationClickDelegate::ButtonClickCallback()) {}
 
 void CrostiniExportImportClickCloseDelegate::Close(bool by_user) {
-  if (!close_closure_.is_null())
+  if (!close_closure_.is_null()) {
     close_closure_.Run();
+  }
 }
 
 CrostiniExportImportClickCloseDelegate::

@@ -61,26 +61,30 @@ bool FakeCrostiniFeatures::IsAllowedNow(Profile* profile, std::string* reason) {
 }
 
 bool FakeCrostiniFeatures::IsEnabled(Profile* profile) {
-  if (enabled_.has_value())
+  if (enabled_.has_value()) {
     return *enabled_;
+  }
   return original_features_->IsEnabled(profile);
 }
 
 bool FakeCrostiniFeatures::IsExportImportUIAllowed(Profile* profile) {
-  if (export_import_ui_allowed_.has_value())
+  if (export_import_ui_allowed_.has_value()) {
     return *export_import_ui_allowed_;
+  }
   return original_features_->IsExportImportUIAllowed(profile);
 }
 
 bool FakeCrostiniFeatures::IsRootAccessAllowed(Profile* profile) {
-  if (root_access_allowed_.has_value())
+  if (root_access_allowed_.has_value()) {
     return *root_access_allowed_;
+  }
   return original_features_->IsRootAccessAllowed(profile);
 }
 
 bool FakeCrostiniFeatures::IsContainerUpgradeUIAllowed(Profile* profile) {
-  if (container_upgrade_ui_allowed_.has_value())
+  if (container_upgrade_ui_allowed_.has_value()) {
     return *container_upgrade_ui_allowed_;
+  }
   return original_features_->IsContainerUpgradeUIAllowed(profile);
 }
 
@@ -95,8 +99,9 @@ void FakeCrostiniFeatures::CanChangeAdbSideloading(
 }
 
 bool FakeCrostiniFeatures::IsPortForwardingAllowed(Profile* profile) {
-  if (port_forwarding_allowed_.has_value())
+  if (port_forwarding_allowed_.has_value()) {
     return *port_forwarding_allowed_;
+  }
   return original_features_->IsPortForwardingAllowed(profile);
 }
 
