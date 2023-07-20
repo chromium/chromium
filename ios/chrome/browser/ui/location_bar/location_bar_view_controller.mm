@@ -605,9 +605,8 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
     NSString* imageName = nil;
     ToolbarType targetToolbarType;
     if (_prefService->GetBoolean(prefs::kBottomOmnibox)) {
-      title = @"Show Top Address Bar";
+      title = l10n_util::GetNSString(IDS_IOS_TOOLBAR_MENU_TOP_OMNIBOX);
       // TODO(crbug.com/1466420): Add the symbols so it's available on 15.0.
-      // TODO(crbug.com/1466420): Add titles to ios_strings.
       if (@available(iOS 15.1, *)) {
         imageName = kMovePlatterToTopPhoneSymbol;
       } else {
@@ -615,7 +614,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
       }
       targetToolbarType = ToolbarType::kPrimary;
     } else {
-      title = @"Show Bottom Address Bar";
+      title = l10n_util::GetNSString(IDS_IOS_TOOLBAR_MENU_BOTTOM_OMNIBOX);
       if (@available(iOS 15.1, *)) {
         imageName = kMovePlatterToBottomPhoneSymbol;
       } else {
