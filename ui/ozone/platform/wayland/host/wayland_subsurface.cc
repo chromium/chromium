@@ -159,8 +159,11 @@ void WaylandSubsurface::ConfigureAndShowSurface(
     }
   }
 
+  // If augmented_surface_set_clip_rect is supported, clip rect is handled
+  // inside WaylandSurface, so skip sending clip rect on sub surface.
   if (augmented_subsurface_ &&
-      connection_->surface_augmenter()->SupportsClipRect()) {
+      connection_->surface_augmenter()->SupportsClipRect() &&
+      !connection_->surface_augmenter()->SupportsClipRectOnAugmentedSurface()) {
     absl::optional<gfx::RectF> clip_dip_in_parent_surface;
     if (clip_rect_px) {
       clip_dip_in_parent_surface = AdjustSubsurfaceBounds(

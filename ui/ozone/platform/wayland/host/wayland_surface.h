@@ -201,6 +201,13 @@ class WaylandSurface {
       pending_state_.background_color = background_color;
   }
 
+  // Sets the clip rect for this surface.
+  void set_clip_rect(absl::optional<gfx::RectF> clip_rect) {
+    if (get_augmented_surface()) {
+      pending_state_.clip_rect = clip_rect;
+    }
+  }
+
   // Sets whether this surface contains a video.
   void set_contains_video(bool contains_video) {
     pending_state_.contains_video = contains_video;
@@ -322,6 +329,9 @@ class WaylandSurface {
     // can be used by Wayland compositor to correctly display delegated textures
     // which require background color applied.
     absl::optional<SkColor4f> background_color;
+
+    // Optional clip rect for this surface on surface space coordinates.
+    absl::optional<gfx::RectF> clip_rect;
 
     // Whether or not this surface contains video, for wp_content_type_v1.
     bool contains_video = false;

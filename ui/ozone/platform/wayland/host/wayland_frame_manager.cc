@@ -256,6 +256,8 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
         }
       }
     } else {
+      // TODO(crbug.com/1457446): Remove clip_rect when
+      // augmented_surface_set_clip_rect become supported widely enough.
       subsurface->ConfigureAndShowSurface(
           config.bounds_rect, root_config.bounds_rect, config.clip_rect,
           config.transform, root_config.surface_scale_factor, nullptr,
@@ -379,14 +381,23 @@ void WaylandFrameManager::ApplySurfaceConfigure(
   // If we don't attach a released buffer, graphics freeze will occur.
   DCHECK(will_attach || !buffer_handle->released(surface));
 
-  // |damage_region| is specified in viz::Display space, the same as
-  // |bounds_rect|. To get the damage in surface space we need to offset the
-  // origin by the surface's position.
-  // Note: The damage may be enlarged if bounds_rect is sub-pixel positioned
-  // because |damage_region| is a Rect, and |bounds_rect| is a RectF.
+  // `damage_region` and `clip_rect` are specified in viz::Display space, the
+  // same as `bounds_rect`. To get the damage and clip rect in surface space we
+  // need to offset the origin by the surface's position. Note: The damage and
+  // clip rect may be enlarged if bounds_rect is sub-pixel positioned because
+  // `damage_region` is a Rect, and |bounds_rect| is a RectF.
   gfx::RectF surface_damage = gfx::RectF(config.damage_region);
   surface_damage -= config.bounds_rect.OffsetFromOrigin();
   surface->UpdateBufferDamageRegion(ToEnclosingRect(surface_damage));
+  if (config.clip_rect) {
+    gfx::RectF clip_rect = gfx::RectF(*config.clip_rect);
+    clip_rect -= config.bounds_rect.OffsetFromOrigin();
+    surface->set_clip_rect(clip_rect);
+  } else {
+    // Reset clip rect value when `config.clip_rect` is not set.
+    surface->set_clip_rect(absl::nullopt);
+  }
+
   if (!config.access_fence_handle.is_null())
     surface->set_acquire_fence(std::move(config.access_fence_handle));
 

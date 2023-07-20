@@ -72,6 +72,8 @@ uint32_t TranslatePriority(gfx::OverlayPriorityHint priority_hint) {
   return priority;
 }
 
+const wl_fixed_t kMinusOne = wl_fixed_from_int(-1);
+
 }  // namespace
 
 WaylandSurface::ExplicitReleaseInfo::ExplicitReleaseInfo(
@@ -632,6 +634,25 @@ void WaylandSurface::ApplyPendingState() {
     }
   }
 
+  if (pending_state_.clip_rect != state_.clip_rect) {
+    DCHECK(get_augmented_surface());
+    if (connection_->surface_augmenter()
+            ->SupportsClipRectOnAugmentedSurface()) {
+      absl::optional<gfx::RectF> clip_rect = pending_state_.clip_rect;
+      if (clip_rect) {
+        clip_rect->Scale(1.f / GetWaylandScale(pending_state_));
+        augmented_surface_set_clip_rect(
+            get_augmented_surface(), wl_fixed_from_double(clip_rect->x()),
+            wl_fixed_from_double(clip_rect->y()),
+            wl_fixed_from_double(clip_rect->width()),
+            wl_fixed_from_double(clip_rect->height()));
+      } else {
+        augmented_surface_set_clip_rect(get_augmented_surface(), kMinusOne,
+                                        kMinusOne, kMinusOne, kMinusOne);
+      }
+    }
+  }
+
   if (content_type_ &&
       (pending_state_.contains_video != state_.contains_video)) {
     wp_content_type_v1_set_content_type(content_type_.get(),
@@ -884,6 +905,7 @@ WaylandSurface::State& WaylandSurface::State::operator=(
   rounded_clip_bounds = other.rounded_clip_bounds;
   priority_hint = other.priority_hint;
   background_color = other.background_color;
+  clip_rect = other.clip_rect;
   contains_video = other.contains_video;
   return *this;
 }
