@@ -1163,26 +1163,10 @@ bool AXObjectCacheImpl::IsRelevantSlotElement(const HTMLSlotElement& slot) {
     }
   }
 
-  // A slot is not relevant if it has no children in the flat tree.
-  // TODO(accessibility) Check into using slot.HasAssignedNodesSlow() -- it
-  // seemed to return false in all cases previously.
-  if (!FlatTreeTraversal::FirstChild(slot)) {
-    return false;
-  }
-
-  // A slot is not relevant if it is not in the flat tree.
-  // Determine this by attempting to traverse to an ancestor document.
-  // TODO(accesssibility) Look for O(1) approach -- perhaps the loop can stop
-  // when an associateed AXObject can found, e.g. there is an entry in
-  // node_object_mapping_.
-  const Node* ancestor = &slot;
-  while (ancestor) {
-    if (IsA<Document>(ancestor)) {
-      return true;
-    }
-    ancestor = FlatTreeTraversal::Parent(*ancestor);
-  }
-  return false;
+  // HasAssignedNodesNoRecalc() will return false when  the slot is not in the
+  // flat tree. We must also return true when the slot has ordinary children
+  // (fallback content).
+  return slot.HasAssignedNodesNoRecalc() || slot.hasChildren();
 }
 
 // static
