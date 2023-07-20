@@ -145,6 +145,7 @@ source_set("unit_tests") {
   sources = [
     "css_agent_unittest.cc",
     "devtools_server_unittest.cc",
+    "ui_element_unittest.cc",
   ]
 
   data = [ "//components/test/data/ui_devtools/test_file.cc" ]
