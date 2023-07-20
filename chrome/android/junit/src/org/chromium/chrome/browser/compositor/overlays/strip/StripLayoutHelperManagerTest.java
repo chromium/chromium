@@ -132,6 +132,33 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
+    @Features.DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
+    public void testModelSelectorButtonXPosition() {
+        // Set model selector button position.
+        mStripLayoutHelperManager.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
+
+        // Verify model selector button x-position.
+        // stripWidth(800) - buttonEndPadding(12) - MsbWidth(24) = 764
+        assertEquals("Model selector button x-position is not as expected", 764.f,
+                mStripLayoutHelperManager.getModelSelectorButton().getX(), 0.0);
+    }
+
+    @Test
+    @Features.DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
+    public void testModelSelectorButtonXPosition_Rtl() {
+        // Set model selector button position.
+        LocalizationUtils.setRtlForTesting(true);
+        mStripLayoutHelperManager.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
+
+        // Verify model selector button x-position.
+        // msbEndPadding(12)
+        assertEquals("Model selector button x-position is not as expected", 12.f,
+                mStripLayoutHelperManager.getModelSelectorButton().getX(), 0.0);
+    }
+
+    @Test
     @Feature("Tab Strip Redesign")
     public void testModelSelectorButtonXPosition_TSR() {
         // Set model selector button position.

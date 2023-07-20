@@ -584,6 +584,47 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    @Features.DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
+    public void testNewTabButtonXPosition() {
+        when(mModelSelectorBtn.getWidth()).thenReturn(24.f);
+
+        int tabCount = 11;
+        initializeTest(false, false, false, 0, tabCount);
+
+        // Set New tab button position.
+        mStripLayoutHelper.setEndMargin(48.f, true);
+
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Verify new tab button position.
+        // stripWidth(800) - msbAndStripEndPadding(12) - msbWidth(24) - msbAndNtbPadding(24) -
+        // ntbWidth(24) = 716
+        assertEquals("New tab button x-position is not as expected", 716.f,
+                mStripLayoutHelper.getNewTabButton().getX(), EPSILON);
+    }
+
+    @Test
+    @Features.DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
+    public void testNewTabButtonXPosition_Rtl() {
+        when(mModelSelectorBtn.getWidth()).thenReturn(24.f);
+
+        int tabCount = 11;
+        initializeTest(true, false, false, 0, tabCount);
+
+        // Set New tab button position.
+        mStripLayoutHelper.setEndMargin(48.f, true);
+
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Verify new tab button position.
+        // msbAndStripEndPadding(12) + msbWidth(24) + msbAndNtbPadding(24) = 60
+        assertEquals("New tab button x-position is not as expected", 60.f,
+                mStripLayoutHelper.getNewTabButton().getX(), EPSILON);
+    }
+
+    @Test
     @Feature("Tab Strip Redesign")
     public void testNewTabButtonXPosition_TSR() {
         // Setup

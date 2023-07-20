@@ -484,10 +484,19 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
             orientationChanged = true;
         }
         if (!LocalizationUtils.isLayoutRtl()) {
-            mModelSelectorButton.setX(mWidth - getModelSelectorButtonWidthWithPadding());
+            if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+                mModelSelectorButton.setX(mWidth - getModelSelectorButtonWidthWithPadding());
+            } else {
+                mModelSelectorButton.setX(
+                        mWidth - mModelSelectorWidth - MODEL_SELECTOR_BUTTON_PADDING_DP);
+            }
         } else {
-            mModelSelectorButton.setX(
-                    getModelSelectorButtonWidthWithPadding() - mModelSelectorWidth);
+            if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+                mModelSelectorButton.setX(
+                        getModelSelectorButtonWidthWithPadding() - mModelSelectorWidth);
+            } else {
+                mModelSelectorButton.setX(MODEL_SELECTOR_BUTTON_PADDING_DP);
+            }
         }
 
         mNormalHelper.onSizeChanged(mWidth, mHeight, orientationChanged, LayoutManagerImpl.time());

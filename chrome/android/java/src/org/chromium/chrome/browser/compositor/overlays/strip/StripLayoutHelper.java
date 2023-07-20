@@ -543,20 +543,28 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
     /**
      * @param margin The distance between the last tab and the edge of the screen.
+     * @param isMsbVisible The boolean to determine whether model selector button is visible.
      */
     public void setEndMargin(float margin, boolean isMsbVisible) {
         // When MSB is not visible we add strip end padding here. When MSB is visible strip end
         // padding will be included in MSB margin, so just add padding between NTB and MSB here.
         if (LocalizationUtils.isLayoutRtl()) {
             mLeftMargin = margin + mNewTabButtonWidth;
-            mLeftMargin += isMsbVisible ? NEW_TAB_BUTTON_WITH_MODEL_SELECTOR_BUTTON_PADDING
-                                        : mNewTabButtonWithTabStripEndPadding;
+            if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+                mLeftMargin += isMsbVisible ? NEW_TAB_BUTTON_WITH_MODEL_SELECTOR_BUTTON_PADDING
+                                            : mNewTabButtonWithTabStripEndPadding;
+            } else {
+                mLeftMargin += mNewTabButtonWithTabStripEndPadding;
+            }
         } else {
             mRightMargin = margin + mNewTabButtonWidth;
-            mRightMargin += isMsbVisible ? NEW_TAB_BUTTON_WITH_MODEL_SELECTOR_BUTTON_PADDING
-                                         : mNewTabButtonWithTabStripEndPadding;
+            if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+                mRightMargin += isMsbVisible ? NEW_TAB_BUTTON_WITH_MODEL_SELECTOR_BUTTON_PADDING
+                                             : mNewTabButtonWithTabStripEndPadding;
+            } else {
+                mRightMargin += mNewTabButtonWithTabStripEndPadding;
+            }
         }
-
         computeAndUpdateTabWidth(false, false);
     }
 
