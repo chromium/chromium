@@ -2507,6 +2507,11 @@ BASE_FEATURE(kVirtualKeyboardRoundCorners,
              "VirtualKeyboardRoundCorners",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable or disable Nacl for virtual keyboard on ChromeOS.
+BASE_FEATURE(kVirtualKeyboardRemoveNacl,
+             "VirtualKeyboardRemoveNacl",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables a per-boot host GPU cache generation for VMs. On default, the cache
 // is generated per OS version.
 BASE_FEATURE(kVmPerBootShaderCache,
