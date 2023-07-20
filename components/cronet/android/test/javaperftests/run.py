@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -47,7 +47,7 @@ import shutil
 import sys
 import tempfile
 import time
-import six.moves.urllib_parse # pylint: disable=import-error
+import urllib.parse
 
 REPOSITORY_ROOT = os.path.abspath(os.path.join(
     os.path.dirname(__file__), '..', '..', '..', '..', '..'))
@@ -89,7 +89,7 @@ class CronetPerfTestAndroidStory(android.AndroidStory):
     self._device = device
     config = perf_test_utils.GetConfig(device)
     device.RemovePath(config['DONE_FILE'], force=True)
-    self.url ='http://sample/?' + six.moves.urllib_parse.urlencode(config)
+    self.url ='http://sample/?' + urllib.parse.urlencode(config)
     start_intent = intent.Intent(
         package=perf_test_utils.APP_PACKAGE,
         activity=perf_test_utils.APP_ACTIVITY,

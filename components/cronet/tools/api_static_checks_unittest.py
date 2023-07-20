@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -8,12 +8,12 @@
 
 import contextlib
 import hashlib
+import io
 import os
 import shutil
 import sys
 import tempfile
 import unittest
-import six
 
 REPOSITORY_ROOT = os.path.abspath(os.path.join(
     os.path.dirname(__file__), '..', '..', '..'))
@@ -60,7 +60,7 @@ def capture_output():
 
   oldout,olderr = sys.stdout, sys.stderr
   try:
-    out=[six.StringIO(), six.StringIO()]
+    out = [io.StringIO(), io.StringIO()]
     sys.stdout,sys.stderr = out
     yield out
   finally:
