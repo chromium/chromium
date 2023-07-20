@@ -9,8 +9,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/i18n/number_formatting.h"
-#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -18,18 +16,13 @@
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/webauthn/webauthn_ui_helpers.h"
+#include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/url_formatter/elide_url.h"
-#include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/fido_types.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/font_list.h"
-#include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/text_utils.h"
-#include "url/gurl.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
@@ -1459,4 +1452,69 @@ std::u16string AuthenticatorPhoneConfirmationSheet::GetAcceptButtonLabel()
 
 void AuthenticatorPhoneConfirmationSheet::OnAccept() {
   dialog_model()->ContactPriorityPhone();
+}
+
+AuthenticatorMultiSourcePickerSheetModel::
+    AuthenticatorMultiSourcePickerSheetModel(
+        AuthenticatorRequestDialogModel* dialog_model)
+    : AuthenticatorSheetModelBase(dialog_model) {
+  vector_illustrations_.emplace(kPasskeyHeaderIcon, kPasskeyHeaderDarkIcon);
+
+  using CredentialMech = AuthenticatorRequestDialogModel::Mechanism::Credential;
+  bool has_local_passkeys =
+      std::ranges::any_of(dialog_model->mechanisms(), [](const auto& mech) {
+        return absl::holds_alternative<CredentialMech>(mech.type) &&
+               absl::get<CredentialMech>(mech.type).value() !=
+                   device::AuthenticatorType::kPhone;
+      });
+  // TODO(crbug.com/1459273): i18n.
+  if (has_local_passkeys) {
+    primary_passkeys_label_ = u"From this device (UNTRANSLATED)";
+    for (size_t i = 0; i < dialog_model->mechanisms().size(); ++i) {
+      const AuthenticatorRequestDialogModel::Mechanism& mech =
+          dialog_model->mechanisms()[i];
+      if (absl::holds_alternative<CredentialMech>(mech.type) &&
+          absl::get<CredentialMech>(mech.type).value() !=
+              device::AuthenticatorType::kPhone) {
+        primary_passkey_indices_.push_back(i);
+      } else {
+        secondary_passkey_indices_.push_back(i);
+      }
+    }
+    return;
+  }
+
+  const absl::optional<std::u16string>& phone_name =
+      dialog_model->GetPrioritySyncedPhoneName();
+  if (phone_name) {
+    primary_passkeys_label_ =
+        std::u16string(u"From \"") + *phone_name + u"\" (UNTRANSLATED)";
+  }
+  for (size_t i = 0; i < dialog_model->mechanisms().size(); ++i) {
+    const AuthenticatorRequestDialogModel::Mechanism& mech =
+        dialog_model->mechanisms()[i];
+    if (absl::holds_alternative<CredentialMech>(mech.type) &&
+        absl::get<CredentialMech>(mech.type).value() ==
+            device::AuthenticatorType::kPhone) {
+      // There should not be any phone passkeys if the phone name is empty.
+      CHECK(phone_name);
+      primary_passkey_indices_.push_back(i);
+    } else {
+      secondary_passkey_indices_.push_back(i);
+    }
+  }
+}
+
+AuthenticatorMultiSourcePickerSheetModel::
+    ~AuthenticatorMultiSourcePickerSheetModel() = default;
+
+std::u16string AuthenticatorMultiSourcePickerSheetModel::GetStepTitle() const {
+  return base::UTF8ToUTF16(std::string("Choose a passkey for ") +
+                           dialog_model()->relying_party_id() +
+                           " (UNTRANSLATED)");
+}
+
+std::u16string AuthenticatorMultiSourcePickerSheetModel::GetStepDescription()
+    const {
+  return u"";
 }

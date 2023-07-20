@@ -5641,6 +5641,8 @@ static_library("ui") {
       "views/webauthn/authenticator_client_pin_entry_sheet_view.h",
       "views/webauthn/authenticator_client_pin_entry_view.cc",
       "views/webauthn/authenticator_client_pin_entry_view.h",
+      "views/webauthn/authenticator_multi_source_picker_sheet_view.cc",
+      "views/webauthn/authenticator_multi_source_picker_sheet_view.h",
       "views/webauthn/authenticator_paask_sheet_view.cc",
       "views/webauthn/authenticator_paask_sheet_view.h",
       "views/webauthn/authenticator_qr_sheet_view.cc",

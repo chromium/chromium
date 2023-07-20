@@ -106,7 +106,7 @@ WebAuthnHoverButton::WebAuthnHoverButton(
   title_->SetProperty(views::kTableColAndRowSpanKey,
                       gfx::Size(/*width=*/1, title_row_span));
   if (features::IsChromeRefresh2023()) {
-    title_->SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS);
+    title_->SetTextStyle(views::style::STYLE_BODY_3_BOLD);
   }
 
   if (secondary_icon) {
@@ -119,6 +119,9 @@ WebAuthnHoverButton::WebAuthnHoverButton(
   if (is_two_line && !subtitle_text.empty()) {
     subtitle_ = AddChildView(std::make_unique<views::Label>(subtitle_text));
     subtitle_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    if (features::IsChromeRefresh2023()) {
+      subtitle_->SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS);
+    }
   }
 
   SetAccessibleName(subtitle_text.empty()

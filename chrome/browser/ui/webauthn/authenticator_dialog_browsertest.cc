@@ -19,6 +19,7 @@
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/features.h"
+#include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/pin.h"
 #include "device/fido/public_key_credential_user_entity.h"
@@ -554,6 +555,10 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
  public:
   // AuthenticatorDialogTest:
   void ShowUi(const std::string& name) override {
+    // Web modal dialogs' bounds may exceed the display's work area.
+    // https://crbug.com/893292.
+    set_should_verify_dialog_bounds(false);
+
     model_ = std::make_unique<AuthenticatorRequestDialogModel>(
         browser()
             ->tab_strip_model()
@@ -563,6 +568,8 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
 
     device::FidoRequestHandlerBase::TransportAvailabilityInfo&
         transport_availability = model_->transport_availability_for_testing();
+    transport_availability.request_type =
+        device::FidoRequestType::kGetAssertion;
     transport_availability.available_transports = {
         AuthenticatorTransport::kUsbHumanInterfaceDevice,
         AuthenticatorTransport::kInternal,

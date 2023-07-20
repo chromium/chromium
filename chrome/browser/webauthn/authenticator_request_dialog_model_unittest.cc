@@ -33,6 +33,7 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
+#include "device/fido/fido_types.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -217,6 +218,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
   const auto internal = AuthenticatorTransport::kInternal;
   const auto cable = AuthenticatorTransport::kHybrid;
   const auto aoa = AuthenticatorTransport::kAndroidAccessory;
+  const auto phone = device::AuthenticatorType::kPhone;
+  const auto other = device::AuthenticatorType::kOther;
   const auto v1 = TransportAvailabilityParam::kHasCableV1Extension;
   const auto v2 = TransportAvailabilityParam::kHasCableV2Extension;
   const auto has_winapi =
@@ -565,7 +568,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {usb, cable, internal},
        {one_phone_cred, two_cred},
        {psync("a")},
-       {c(), c(), c(), add, t(usb)},
+       {c(other), c(other), c(phone), add, t(usb)},
        mss},
       // Internal credentials + qr code.
       {L,
@@ -573,7 +576,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {usb, cable, internal},
        {two_cred},
        {psync("a")},
-       {c(), c(), add, t(usb)},
+       {c(other), c(other), add, t(usb)},
        mss},
       // Phone credentials only.
       {L,
@@ -581,7 +584,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {usb, cable, internal},
        {one_phone_cred},
        {psync("a")},
-       {c(), add, t(usb)},
+       {c(phone), add, t(usb)},
        mss},
   };
 
@@ -593,7 +596,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {cable},
        {one_phone_cred, two_cred, has_winapi, only_hybrid_or_internal},
        {psync("a")},
-       {c(), c(), c(), add},
+       {c(other), c(other), c(phone), add},
        mss},
       // Mix of phone, internal credentials, and USB/NFC.
       // This should offer dispatching to the Windows API for USB/NFC.
@@ -602,7 +605,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {cable},
        {one_phone_cred, two_cred, has_winapi},
        {psync("a")},
-       {c(), c(), c(), winapi, add},
+       {c(other), c(other), c(phone), winapi, add},
        mss},
       // Phone credentials and unknown Windows Hello credential status.
       // This should offer dispatching to the Windows API for Windows Hello.
@@ -611,7 +614,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {cable},
        {one_phone_cred, has_winapi, maybe_plat, only_hybrid_or_internal},
        {psync("a")},
-       {c(), winapi, add},
+       {c(phone), winapi, add},
        mss},
   };
 
@@ -623,11 +626,17 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {cable},
        {one_phone_cred, two_cred, has_winapi, only_hybrid_or_internal},
        {psync("a")},
-       {c(), c(), c(), winapi},
+       {c(other), c(other), c(phone), winapi},
        mss},
       // Internal credentials only.
       // This should not offer dispatching directly to the Windows API.
-      {L, ga, {}, {two_cred, has_winapi, only_internal}, {}, {c(), c()}, mss},
+      {L,
+       ga,
+       {},
+       {two_cred, has_winapi, only_internal},
+       {},
+       {c(other), c(other)},
+       mss},
   };
 #undef L
 

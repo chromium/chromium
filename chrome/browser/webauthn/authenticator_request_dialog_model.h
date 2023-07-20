@@ -176,13 +176,21 @@ class AuthenticatorRequestDialogModel {
     virtual void OnManageDevicesClicked() {}
   };
 
-  // A Mechanism is a user-visable method of authenticating. It might be a
+  // A Mechanism is a user-visible method of authenticating. It might be a
   // transport (such as USB), a platform authenticator, a phone, or even a
-  // delegation to a platform API. Mechanisms are listed in the UI for the
-  // user to select between.
+  // delegation to a platform API. Selecting a mechanism starts the flow for the
+  // user to authenticate with it (e.g. by showing a QR code or dispatching to a
+  // platform authenticator).
+  //
+  // On get assertion requests, mechanisms can also represent credentials for
+  // authenticators that support silent discovery. In this case, the |type| is
+  // |Credential| and it is annotated with the source of the credential (phone,
+  // icloud, etc). Selecting such a mechanism dispatches a request narrowed down
+  // to the specific credential to an authenticator that can fulfill it.
   struct Mechanism {
     // These types describe the type of Mechanism.
-    using Credential = base::StrongAlias<class CredentialTag, absl::monostate>;
+    using Credential =
+        base::StrongAlias<class CredentialTag, device::AuthenticatorType>;
     using Transport =
         base::StrongAlias<class TransportTag, AuthenticatorTransport>;
     using WindowsAPI = base::StrongAlias<class WindowsAPITag, absl::monostate>;
@@ -554,6 +562,11 @@ class AuthenticatorRequestDialogModel {
   // user-visible mechanisms and use the callbacks therein.
   void ContactPhoneForTesting(const std::string& name);
 
+  // Returns the name of the phone from sync that will be dispatched to when a
+  // user selects a Mechanism::Credential corresponding to a phone credential,
+  // or absl::nullopt if there isn't one.
+  virtual absl::optional<std::u16string> GetPrioritySyncedPhoneName() const;
+
   // StartTransportFlowForTesting moves the UI to focus on the given transport.
   // UI should use |mechanisms()| to enumerate the user-visible mechanisms and
   // use the callbacks therein.
@@ -715,7 +728,7 @@ class AuthenticatorRequestDialogModel {
 
   // Returns a phone that has been paired through Chrome Sync, or absl::nullopt
   // if there isn't one.
-  absl::optional<PairedPhone> GetPrioritySyncedPhone();
+  absl::optional<PairedPhone> GetPrioritySyncedPhone() const;
 
   // PopulateMechanisms fills in |mechanisms_|.
   void PopulateMechanisms();

@@ -397,7 +397,6 @@ void AuthenticatorRequestDialogModel::
          current_step() == Step::kOffTheRecordInterstitial ||
          current_step() == Step::kPreSelectAccount ||
          current_step() == Step::kSelectAccount ||
-         current_step() == Step::kMechanismSelection ||
          current_step() == Step::kConditionalMediation ||
          current_step() == Step::kNotStarted)
       << "Invalid step " << static_cast<int>(current_step());
@@ -872,6 +871,15 @@ void AuthenticatorRequestDialogModel::ContactPhoneForTesting(
   ContactPhone(name);
 }
 
+absl::optional<std::u16string>
+AuthenticatorRequestDialogModel::GetPrioritySyncedPhoneName() const {
+  absl::optional<PairedPhone> phone = GetPrioritySyncedPhone();
+  if (!phone) {
+    return absl::nullopt;
+  }
+  return base::UTF8ToUTF16(phone->name);
+}
+
 void AuthenticatorRequestDialogModel::StartTransportFlowForTesting(
     AuthenticatorTransport transport) {
   StartGuidedFlowForTransport(transport);
@@ -1140,7 +1148,8 @@ void AuthenticatorRequestDialogModel::StartConditionalMediationRequest() {
   auto* web_contents = GetWebContents();
   if (web_contents && render_frame_host) {
     std::vector<password_manager::PasskeyCredential> credentials;
-    absl::optional<PairedPhone> priority_phone = GetPrioritySyncedPhone();
+    absl::optional<std::u16string> priority_phone =
+        GetPrioritySyncedPhoneName();
     base::ranges::transform(
         ephemeral_state_.creds_, std::back_inserter(credentials),
         [&priority_phone](const auto& credential) {
@@ -1156,8 +1165,7 @@ void AuthenticatorRequestDialogModel::StartConditionalMediationRequest() {
                   credential.user.display_name.value_or("")));
           if (credential.source == device::AuthenticatorType::kPhone &&
               priority_phone) {
-            passkey.set_authenticator_label(
-                base::UTF8ToUTF16(priority_phone->name));
+            passkey.set_authenticator_label(*priority_phone);
           }
           return passkey;
         });
@@ -1231,7 +1239,7 @@ void AuthenticatorRequestDialogModel::ContactNextPhoneByName(
 }
 
 absl::optional<AuthenticatorRequestDialogModel::PairedPhone>
-AuthenticatorRequestDialogModel::GetPrioritySyncedPhone() {
+AuthenticatorRequestDialogModel::GetPrioritySyncedPhone() const {
   // Try finding the most recently used phone from sync.
   absl::optional<std::vector<uint8_t>> last_used_pairing =
       RetrieveLastUsedPairing(content::RenderFrameHost::FromID(frame_host_id_));
@@ -1274,8 +1282,8 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
       }
       std::u16string name = base::UTF8ToUTF16(cred.user.name.value_or(""));
       auto& mechanism = mechanisms_.emplace_back(
-          AuthenticatorRequestDialogModel::Mechanism::Credential(), name, name,
-          GetCredentialIcon(cred.source),
+          AuthenticatorRequestDialogModel::Mechanism::Credential(cred.source),
+          name, name, GetCredentialIcon(cred.source),
           base::BindRepeating(
               &AuthenticatorRequestDialogModel::OnAccountPreselected,
               base::Unretained(this), cred.cred_id));

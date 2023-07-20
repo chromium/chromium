@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_model.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_bio_enrollment_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_client_pin_entry_sheet_view.h"
+#include "chrome/browser/ui/views/webauthn/authenticator_multi_source_picker_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_paask_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_qr_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
@@ -21,7 +22,7 @@
 #include "chrome/browser/ui/webauthn/sheet_models.h"
 #include "chrome/browser/ui/webauthn/transport_hover_list_model.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
-#include "ui/gfx/paint_vector_icon.h"
+#include "device/fido/features.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -116,9 +117,17 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
   std::unique_ptr<AuthenticatorRequestSheetView> sheet_view;
   switch (dialog_model->current_step()) {
     case Step::kMechanismSelection:
-      sheet_view = std::make_unique<AuthenticatorMechanismSelectorSheetView>(
-          std::make_unique<AuthenticatorMechanismSelectorSheetModel>(
-              dialog_model));
+      if (dialog_model->transport_availability()->request_type ==
+              device::FidoRequestType::kGetAssertion &&
+          base::FeatureList::IsEnabled(device::kWebAuthnListSyncedPasskeys)) {
+        sheet_view = std::make_unique<AuthenticatorMultiSourcePickerSheetView>(
+            std::make_unique<AuthenticatorMultiSourcePickerSheetModel>(
+                dialog_model));
+      } else {
+        sheet_view = std::make_unique<AuthenticatorMechanismSelectorSheetView>(
+            std::make_unique<AuthenticatorMechanismSelectorSheetModel>(
+                dialog_model));
+      }
       break;
     case Step::kUsbInsertAndActivate:
       sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
