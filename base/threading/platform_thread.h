@@ -16,6 +16,7 @@
 
 #include "base/base_export.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/process/process_handle.h"
 #include "base/threading/platform_thread_ref.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -309,6 +310,11 @@ class BASE_EXPORT PlatformThreadLinux : public PlatformThreadBase {
   static void SetThreadType(PlatformThreadId process_id,
                             PlatformThreadId thread_id,
                             ThreadType thread_type);
+
+  // For a given thread id and thread type, setup the cpuset and schedtune
+  // CGroups for the thread.
+  static void SetThreadCgroupsForThreadType(PlatformThreadId thread_id,
+                                            ThreadType thread_type);
 };
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
@@ -318,6 +324,13 @@ class BASE_EXPORT PlatformThreadChromeOS : public PlatformThreadLinux {
   // Signals that the feature list has been initialized. Used for preventing
   // race conditions and crashes, see comments in PlatformThreadApple.
   static void InitFeaturesPostFieldTrial();
+
+  // Toggles a specific thread's type at runtime. This is the ChromeOS-specific
+  // version and includes Linux's functionality but does slightly more. See
+  // PlatformThreadLinux's SetThreadType() header comment for Linux details.
+  static void SetThreadType(PlatformThreadId process_id,
+                            PlatformThreadId thread_id,
+                            ThreadType thread_type);
 };
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
