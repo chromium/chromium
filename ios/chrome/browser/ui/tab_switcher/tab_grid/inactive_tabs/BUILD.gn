@@ -47,6 +47,7 @@ source_set("inactive_tabs") {
     "//ios/chrome/common/ui/util",
     "//ios/web/public",
     "//ui/gfx",
+    "//ui/strings",
   ]
 }
 

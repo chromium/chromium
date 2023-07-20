@@ -28,6 +28,7 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "ui/strings/grit/ui_strings.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -289,8 +290,7 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 
   [self.userEducationCoordinator stop];
   self.userEducationCoordinator = nil;
-  [_actionSheetCoordinator stop];
-  _actionSheetCoordinator = nil;
+  [self dismissActionSheetCoordinator];
 
   [self.mediator disconnect];
   self.mediator = nil;
@@ -478,8 +478,15 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
                   base::RecordAction(base::UserMetricsAction(
                       "MobileInactiveTabsCloseAllConfirm"));
                   [weakSelf closeAllInactiveTabs];
+                  [weakSelf dismissActionSheetCoordinator];
                 }
                  style:UIAlertActionStyleDestructive];
+  [_actionSheetCoordinator
+      addItemWithTitle:l10n_util::GetNSString(IDS_APP_CANCEL)
+                action:^{
+                  [weakSelf dismissActionSheetCoordinator];
+                }
+                 style:UIAlertActionStyleCancel];
   [_actionSheetCoordinator start];
 }
 
@@ -561,6 +568,11 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 }
 
 #pragma mark - Private
+
+- (void)dismissActionSheetCoordinator {
+  [_actionSheetCoordinator stop];
+  _actionSheetCoordinator = nil;
+}
 
 // Called to make the Inactive Tabs grid appear in an animation.
 - (void)animateIn {
