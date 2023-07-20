@@ -6,13 +6,16 @@
 
 #include "base/check_op.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "base/i18n/message_formatter.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
+#include "chrome/browser/ash/file_manager/delete_io_task.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
@@ -97,7 +100,8 @@ DriveUploadHandler::DriveUploadHandler(Profile* profile,
               /*num_files=*/1,
               upload_type_)),
       source_url_(source_url) {
-  observed_task_id_ = -1;
+  observed_copy_task_id_ = -1;
+  observed_delete_task_id_ = -1;
 }
 
 DriveUploadHandler::~DriveUploadHandler() {
@@ -119,8 +123,8 @@ void DriveUploadHandler::Run(UploadCallback callback) {
 
   if (!profile_) {
     LOG(ERROR) << "No profile";
-    OnEndUpload(GURL(), OfficeFilesUploadResult::kOtherError,
-                GetGenericErrorMessage());
+    OnEndCopy(GURL(), OfficeFilesUploadResult::kOtherError,
+              GetGenericErrorMessage());
     return;
   }
 
@@ -128,22 +132,22 @@ void DriveUploadHandler::Run(UploadCallback callback) {
       file_manager::VolumeManager::Get(profile_);
   if (!volume_manager) {
     LOG(ERROR) << "No volume manager";
-    OnEndUpload(GURL(), OfficeFilesUploadResult::kOtherError,
-                GetGenericErrorMessage());
+    OnEndCopy(GURL(), OfficeFilesUploadResult::kOtherError,
+              GetGenericErrorMessage());
     return;
   }
   io_task_controller_ = volume_manager->io_task_controller();
   if (!io_task_controller_) {
     LOG(ERROR) << "No task_controller";
-    OnEndUpload(GURL(), OfficeFilesUploadResult::kOtherError,
-                GetGenericErrorMessage());
+    OnEndCopy(GURL(), OfficeFilesUploadResult::kOtherError,
+              GetGenericErrorMessage());
     return;
   }
 
   if (!drive_integration_service_) {
     LOG(ERROR) << "No Drive integration service";
-    OnEndUpload(GURL(), OfficeFilesUploadResult::kOtherError,
-                GetGenericErrorMessage());
+    OnEndCopy(GURL(), OfficeFilesUploadResult::kOtherError,
+              GetGenericErrorMessage());
     return;
   }
 
@@ -155,8 +159,8 @@ void DriveUploadHandler::Run(UploadCallback callback) {
 
   if (!drive_integration_service_->IsMounted()) {
     LOG(ERROR) << "Google Drive is not mounted";
-    OnEndUpload(GURL(), OfficeFilesUploadResult::kFileSystemNotFound,
-                GetGenericErrorMessage());
+    OnEndCopy(GURL(), OfficeFilesUploadResult::kFileSystemNotFound,
+              GetGenericErrorMessage());
     return;
   }
 
@@ -168,23 +172,20 @@ void DriveUploadHandler::Run(UploadCallback callback) {
   // TODO (b/243095484) Define error behavior.
   if (!destination_folder_url.is_valid()) {
     LOG(ERROR) << "Unable to generate destination folder Drive URL";
-    OnEndUpload(GURL(), OfficeFilesUploadResult::kFileSystemNotFound,
-                GetGenericErrorMessage());
+    OnEndCopy(GURL(), OfficeFilesUploadResult::kFileSystemNotFound,
+              GetGenericErrorMessage());
     return;
   }
 
-  const file_manager::io_task::OperationType operation_type =
-      GetUploadType(profile_, source_url_) == UploadType::kCopy
-          ? file_manager::io_task::OperationType::kCopy
-          : file_manager::io_task::OperationType::kMove;
   std::vector<FileSystemURL> source_urls{source_url_};
-  std::unique_ptr<file_manager::io_task::IOTask> task =
+  // Always use a copy task. Will convert to a move upon success.
+  std::unique_ptr<file_manager::io_task::IOTask> copy_task =
       std::make_unique<file_manager::io_task::CopyOrMoveIOTask>(
-          operation_type, std::move(source_urls),
+          file_manager::io_task::OperationType::kCopy, std::move(source_urls),
           std::move(destination_folder_url), profile_, file_system_context_,
           /*show_notification=*/false);
 
-  observed_task_id_ = io_task_controller_->Add(std::move(task));
+  observed_copy_task_id_ = io_task_controller_->Add(std::move(copy_task));
 }
 
 void DriveUploadHandler::UpdateProgressNotification() {
@@ -194,10 +195,67 @@ void DriveUploadHandler::UpdateProgressNotification() {
   notification_manager_->ShowUploadProgress(progress);
 }
 
-void DriveUploadHandler::OnEndUpload(GURL hosted_url,
-                                     OfficeFilesUploadResult result,
-                                     std::string error_message) {
+void DriveUploadHandler::OnEndCopy(GURL hosted_url,
+                                   OfficeFilesUploadResult result,
+                                   std::string error_message) {
+  if (copy_ended_) {
+    // Prevent loops in case Copy IO task and Drive sync fail separately.
+    return;
+  }
+  copy_ended_ = true;
   UMA_HISTOGRAM_ENUMERATION(kUploadResultMetricName, result);
+
+  // If copy to Drive was successful and intended operation is a copy, no delete
+  // is required.
+  if (result == OfficeFilesUploadResult::kSuccess &&
+      upload_type_ == UploadType::kCopy) {
+    OnEndUpload(hosted_url, error_message);
+    return;
+  }
+
+  // If destination file doesn't exist, no delete is required.
+  base::FilePath rel_path;
+  bool destination_file_exists =
+      !observed_absolute_dest_path_.empty() &&
+      drive_integration_service_->GetRelativeDrivePath(
+          observed_absolute_dest_path_, &rel_path);
+  if (!destination_file_exists) {
+    OnEndUpload(hosted_url, error_message);
+    return;
+  }
+
+  end_upload_callback_ =
+      base::BindOnce(&DriveUploadHandler::OnEndUpload,
+                     weak_ptr_factory_.GetWeakPtr(), hosted_url, error_message);
+
+  ConvertToMoveOrUndoUpload(result);
+}
+
+void DriveUploadHandler::ConvertToMoveOrUndoUpload(
+    OfficeFilesUploadResult result) {
+  std::vector<FileSystemURL> file_urls;
+
+  // If copy to Drive was successful, delete source file to convert the upload
+  // to a move to Drive.
+  if (result == OfficeFilesUploadResult::kSuccess) {
+    file_urls.push_back(source_url_);
+  } else {
+    // If copy to Drive was unsuccessful, delete destination file to undo the
+    // copy to Drive.
+    FileSystemURL dest_url = FilePathToFileSystemURL(
+        profile_, file_system_context_, observed_absolute_dest_path_);
+    file_urls.push_back(dest_url);
+  }
+
+  std::unique_ptr<file_manager::io_task::IOTask> task =
+      std::make_unique<file_manager::io_task::DeleteIOTask>(
+          std::move(file_urls), file_system_context_,
+          /*show_notification=*/false);
+  observed_delete_task_id_ = io_task_controller_->Add(std::move(task));
+}
+
+void DriveUploadHandler::OnEndUpload(GURL hosted_url,
+                                     std::string error_message) {
   // TODO (b/243095484) Define error behavior on invalid hosted URL.
   observed_relative_drive_path_.clear();
   // Stop suppressing Drive events for the observed file.
@@ -218,9 +276,18 @@ void DriveUploadHandler::OnEndUpload(GURL hosted_url,
 
 void DriveUploadHandler::OnIOTaskStatus(
     const file_manager::io_task::ProgressStatus& status) {
-  if (status.task_id != observed_task_id_) {
+  if (status.task_id == observed_copy_task_id_) {
+    OnCopyStatus(status);
     return;
   }
+  if (status.task_id == observed_delete_task_id_) {
+    OnDeleteStatus(status);
+    return;
+  }
+}
+
+void DriveUploadHandler::OnCopyStatus(
+    const ::file_manager::io_task::ProgressStatus& status) {
   switch (status.state) {
     case file_manager::io_task::State::kScanning:
       // TODO(crbug.com/1361915): Potentially adapt to show scanning.
@@ -239,8 +306,8 @@ void DriveUploadHandler::OnIOTaskStatus(
 
         if (!drive_integration_service_) {
           LOG(ERROR) << "No Drive integration service";
-          OnEndUpload(GURL(), OfficeFilesUploadResult::kOtherError,
-                      GetGenericErrorMessage());
+          OnEndCopy(GURL(), OfficeFilesUploadResult::kOtherError,
+                    GetGenericErrorMessage());
           return;
         }
 
@@ -248,8 +315,9 @@ void DriveUploadHandler::OnIOTaskStatus(
         // destination file name is not known in advance, given that it's
         // generated from the IOTaskController which resolves potential name
         // clashes.
+        observed_absolute_dest_path_ = status.outputs[0].url.path();
         drive_integration_service_->GetRelativeDrivePath(
-            status.outputs[0].url.path(), &observed_relative_drive_path_);
+            observed_absolute_dest_path_, &observed_relative_drive_path_);
         scoped_suppress_drive_notifications_for_path_ = std::make_unique<
             file_manager::ScopedSuppressDriveNotificationsForPath>(
             profile_, observed_relative_drive_path_);
@@ -264,12 +332,13 @@ void DriveUploadHandler::OnIOTaskStatus(
       DCHECK_EQ(status.outputs.size(), 1u);
       return;
     case file_manager::io_task::State::kCancelled:
+      LOG(ERROR) << "Upload to Google Drive cancelled";
       if (upload_type_ == UploadType::kCopy) {
-        OnEndUpload(GURL(), OfficeFilesUploadResult::kCopyOperationCancelled,
-                    GetGenericErrorMessage());
+        OnEndCopy(GURL(), OfficeFilesUploadResult::kCopyOperationCancelled,
+                  GetGenericErrorMessage());
       } else {
-        OnEndUpload(GURL(), OfficeFilesUploadResult::kMoveOperationCancelled,
-                    GetGenericErrorMessage());
+        OnEndCopy(GURL(), OfficeFilesUploadResult::kMoveOperationCancelled,
+                  GetGenericErrorMessage());
       }
       return;
     case file_manager::io_task::State::kError:
@@ -278,6 +347,22 @@ void DriveUploadHandler::OnIOTaskStatus(
     case file_manager::io_task::State::kNeedPassword:
       NOTREACHED() << "Encrypted file should not need password to be copied or "
                       "moved. Case should not be reached.";
+      return;
+  }
+}
+
+void DriveUploadHandler::OnDeleteStatus(
+    const ::file_manager::io_task::ProgressStatus& status) {
+  switch (status.state) {
+    case file_manager::io_task::State::kCancelled:
+      NOTREACHED() << "Deletion of source or destination file should not have "
+                      "been cancelled.";
+      ABSL_FALLTHROUGH_INTENDED;
+    case file_manager::io_task::State::kError:
+    case file_manager::io_task::State::kSuccess:
+      std::move(end_upload_callback_).Run();
+      return;
+    default:
       return;
   }
 }
@@ -333,7 +418,7 @@ void DriveUploadHandler::ShowIOTaskError(
       error_message = GetGenericErrorMessage();
   }
 
-  OnEndUpload(GURL(), upload_result, error_message);
+  OnEndCopy(GURL(), upload_result, error_message);
 }
 
 void DriveUploadHandler::OnUnmounted() {}
@@ -380,13 +465,13 @@ void DriveUploadHandler::OnSyncingStatusUpdate(
         return;
       case drivefs::mojom::ItemEvent::State::kFailed:
         LOG(ERROR) << "Drive sync error";
-        OnEndUpload(GURL(), OfficeFilesUploadResult::kCloudError,
-                    GetGenericErrorMessage());
+        OnEndCopy(GURL(), OfficeFilesUploadResult::kCloudError,
+                  GetGenericErrorMessage());
         return;
       default:
         LOG(ERROR) << "Drive sync error + invalid sync state";
-        OnEndUpload(GURL(), OfficeFilesUploadResult::kCloudError,
-                    GetGenericErrorMessage());
+        OnEndCopy(GURL(), OfficeFilesUploadResult::kCloudError,
+                  GetGenericErrorMessage());
         return;
     }
   }
@@ -401,7 +486,7 @@ void DriveUploadHandler::OnError(const drivefs::mojom::DriveError& error) {
     case drivefs::mojom::DriveError::Type::kCantUploadStorageFull:
     case drivefs::mojom::DriveError::Type::kCantUploadStorageFullOrganization:
     case drivefs::mojom::DriveError::Type::kCantUploadSharedDriveStorageFull:
-      OnEndUpload(
+      OnEndCopy(
           GURL(), OfficeFilesUploadResult::kCloudQuotaFull,
           base::UTF16ToUTF8(
               base::i18n::MessageFormatter::FormatWithNumberedArgs(
@@ -415,12 +500,12 @@ void DriveUploadHandler::OnError(const drivefs::mojom::DriveError& error) {
                       IDS_OFFICE_CLOUD_PROVIDER_GOOGLE_DRIVE_SHORT))));
       break;
     case drivefs::mojom::DriveError::Type::kPinningFailedDiskFull:
-      OnEndUpload(GURL(), OfficeFilesUploadResult::kPinningFailedDiskFull,
-                  GetGenericErrorMessage());
+      OnEndCopy(GURL(), OfficeFilesUploadResult::kPinningFailedDiskFull,
+                GetGenericErrorMessage());
       break;
     default:
-      OnEndUpload(GURL(), OfficeFilesUploadResult::kCloudError,
-                  GetGenericErrorMessage());
+      OnEndCopy(GURL(), OfficeFilesUploadResult::kCloudError,
+                GetGenericErrorMessage());
   }
 }
 
@@ -431,8 +516,8 @@ void DriveUploadHandler::OnGetDriveMetadata(
   if (error != drive::FILE_ERROR_OK) {
     if (timed_out) {
       LOG(ERROR) << "Drive Metadata error";
-      OnEndUpload(GURL(), OfficeFilesUploadResult::kCloudMetadataError,
-                  GetGenericErrorMessage());
+      OnEndCopy(GURL(), OfficeFilesUploadResult::kCloudMetadataError,
+                GetGenericErrorMessage());
     } else {
       alternate_url_poll_timer_.Start(
           FROM_HERE, base::Milliseconds(kAlternateUrlPollInterval),
@@ -445,8 +530,8 @@ void DriveUploadHandler::OnGetDriveMetadata(
   if (!hosted_url.is_valid()) {
     if (timed_out) {
       LOG(ERROR) << "Invalid alternate URL - Drive editing unavailable";
-      OnEndUpload(GURL(), OfficeFilesUploadResult::kCloudMetadataError,
-                  GetGenericErrorMessage());
+      OnEndCopy(GURL(), OfficeFilesUploadResult::kCloudMetadataError,
+                GetGenericErrorMessage());
     } else {
       alternate_url_poll_timer_.Start(
           FROM_HERE, base::Milliseconds(kAlternateUrlPollInterval),
@@ -461,8 +546,8 @@ void DriveUploadHandler::OnGetDriveMetadata(
   if (hosted_url.host() != "docs.google.com") {
     if (timed_out) {
       LOG(ERROR) << "Unexpected alternate URL - Drive editing unavailable";
-      OnEndUpload(GURL(), OfficeFilesUploadResult::kCloudMetadataError,
-                  GetGenericErrorMessage());
+      OnEndCopy(GURL(), OfficeFilesUploadResult::kCloudMetadataError,
+                GetGenericErrorMessage());
     } else {
       alternate_url_poll_timer_.Start(
           FROM_HERE, base::Milliseconds(kAlternateUrlPollInterval),
@@ -475,14 +560,14 @@ void DriveUploadHandler::OnGetDriveMetadata(
   // Success.
   alternate_url_timeout_.Stop();
   alternate_url_poll_timer_.Stop();
-  OnEndUpload(hosted_url, OfficeFilesUploadResult::kSuccess);
+  OnEndCopy(hosted_url, OfficeFilesUploadResult::kSuccess);
 }
 
 void DriveUploadHandler::CheckAlternateUrl(bool timed_out) {
   if (!drive_integration_service_) {
     LOG(ERROR) << "No Drive integration service";
-    OnEndUpload(GURL(), OfficeFilesUploadResult::kOtherError,
-                GetGenericErrorMessage());
+    OnEndCopy(GURL(), OfficeFilesUploadResult::kOtherError,
+              GetGenericErrorMessage());
     return;
   }
 
