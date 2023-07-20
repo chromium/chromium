@@ -747,6 +747,36 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         }
     }
 
+    private static boolean isSharedPrefFileAllowed(File f) {
+        // Multidex support library prefs need to stay or else multidex extraction will occur
+        // needlessly.
+        if (f.getName().endsWith("multidex.version.xml")) {
+            return true;
+        }
+
+        // WebView prefs need to stay because webview tests have no (good) way of hooking
+        // SharedPreferences for instantiated WebViews.
+        String[] allowlist = new String[] {
+                "WebViewChromiumPrefs.xml",
+                "org.chromium.android_webview.devui.MainActivity.xml",
+                "AwComponentUpdateServicePreferences.xml",
+                "ComponentsProviderServicePreferences.xml",
+                "org.chromium.webengine.test.instrumentation_test_apk_preferences.xml",
+        };
+        for (String name : allowlist) {
+            // SharedPreferences may also access a ".bak" backup file from a previous run. See
+            // https://crbug.com/1462105#c4 and
+            // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/core/java/android/app/SharedPreferencesImpl.java;l=213;drc=6f7c5e0914a18e6adafaa319e670363772e51691
+            // for details.
+            String backupName = name + ".bak";
+
+            if (f.getName().equals(name) || f.getName().equals(backupName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void checkOrDeleteOnDiskSharedPreferences(boolean check) {
         File dataDir = ContextCompat.getDataDir(InstrumentationRegistry.getTargetContext());
         File prefsDir = new File(dataDir, "shared_prefs");
@@ -756,22 +786,13 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         }
         ArrayList<File> badFiles = new ArrayList<>();
         for (File f : files) {
-            // Multidex support library prefs need to stay or else multidex extraction will occur
-            // needlessly.
-            // WebView prefs need to stay because webview tests have no (good) way of hooking
-            // SharedPreferences for instantiated WebViews.
-            if (!f.getName().endsWith("multidex.version.xml")
-                    && !f.getName().equals("WebViewChromiumPrefs.xml")
-                    && !f.getName().equals("org.chromium.android_webview.devui.MainActivity.xml")
-                    && !f.getName().equals("AwComponentUpdateServicePreferences.xml")
-                    && !f.getName().equals("ComponentsProviderServicePreferences.xml")
-                    && !f.getName().equals("org.chromium.webengine.test."
-                            + "instrumentation_test_apk_preferences.xml")) {
-                if (check) {
-                    badFiles.add(f);
-                } else {
-                    f.delete();
-                }
+            if (isSharedPrefFileAllowed(f)) {
+                continue;
+            }
+            if (check) {
+                badFiles.add(f);
+            } else {
+                f.delete();
             }
         }
         if (!badFiles.isEmpty()) {
