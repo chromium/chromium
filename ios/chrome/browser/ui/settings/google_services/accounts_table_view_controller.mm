@@ -220,8 +220,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   [self dismissRemoveOrMyGoogleChooserAlert];
   [self.signoutCoordinator stop];
   self.signoutCoordinator = nil;
-  [self.removeAccountCoordinator stop];
-  self.removeAccountCoordinator = nil;
+  [self dismissRemoveAccountCoordinator];
   _identityManagerObserver.reset();
   _accountManagerServiceObserver.reset();
   _syncObserver.reset();
@@ -742,12 +741,14 @@ constexpr CGFloat kErrorSymbolSize = 22.;
       addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
                 action:^{
                   weakSelf.removeAccountCoordinator = nil;
+                  [weakSelf dismissRemoveAccountCoordinator];
                 }
                  style:UIAlertActionStyleCancel];
   [self.removeAccountCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_IOS_REMOVE_ACCOUNT_LABEL)
                 action:^{
                   [weakSelf removeSecondaryIdentity:identity];
+                  [weakSelf dismissRemoveAccountCoordinator];
                 }
                  style:UIAlertActionStyleDestructive];
   [self.removeAccountCoordinator start];
@@ -983,6 +984,11 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 - (void)dismissRemoveOrMyGoogleChooserAlert {
   [self.removeOrMyGoogleChooserAlertCoordinator stop];
   self.removeOrMyGoogleChooserAlertCoordinator = nil;
+}
+
+- (void)dismissRemoveAccountCoordinator {
+  [self.removeAccountCoordinator stop];
+  self.removeAccountCoordinator = nil;
 }
 
 // Returns YES if the account is signed in not syncing, NO otherwise.
