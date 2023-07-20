@@ -1067,6 +1067,33 @@ xmlSwitchEncoding(xmlParserCtxtPtr ctxt, xmlCharEncoding enc)
     int ret;
 
     if (ctxt == NULL) return(-1);
+
+    /*
+     * FIXME: The BOM shouldn't be skipped here, but in the parsing code.
+     *
+     * Note that we look for a decoded UTF-8 BOM when switching to UTF-16.
+     * This is mostly useless but Webkit/Chromium relies on this behavior.
+     * See https://bugs.chromium.org/p/chromium/issues/detail?id=1451026
+     */
+    if ((ctxt->input != NULL) &&
+        (ctxt->input->consumed == 0) &&
+        (ctxt->input->cur != NULL) &&
+        (ctxt->input->cur == ctxt->input->base) &&
+        ((enc == XML_CHAR_ENCODING_UTF8) ||
+         (enc == XML_CHAR_ENCODING_UTF16LE) ||
+         (enc == XML_CHAR_ENCODING_UTF16BE))) {
+        /*
+         * Errata on XML-1.0 June 20 2001
+         * Specific handling of the Byte Order Mark for
+         * UTF-8
+         */
+        if ((ctxt->input->cur[0] == 0xEF) &&
+            (ctxt->input->cur[1] == 0xBB) &&
+            (ctxt->input->cur[2] == 0xBF)) {
+            ctxt->input->cur += 3;
+        }
+    }
+
     switch (enc) {
 	case XML_CHAR_ENCODING_ERROR:
 	    __xmlErrEncoding(ctxt, XML_ERR_UNKNOWN_ENCODING,
@@ -1079,18 +1106,6 @@ xmlSwitchEncoding(xmlParserCtxtPtr ctxt, xmlCharEncoding enc)
 	case XML_CHAR_ENCODING_UTF8:
 	    /* default encoding, no conversion should be needed */
 	    ctxt->charset = XML_CHAR_ENCODING_UTF8;
-
-	    /*
-	     * Errata on XML-1.0 June 20 2001
-	     * Specific handling of the Byte Order Mark for
-	     * UTF-8
-	     */
-	    if ((ctxt->input != NULL) &&
-		(ctxt->input->cur[0] == 0xEF) &&
-		(ctxt->input->cur[1] == 0xBB) &&
-		(ctxt->input->cur[2] == 0xBF)) {
-		ctxt->input->cur += 3;
-	    }
 	    return(0);
         case XML_CHAR_ENCODING_EBCDIC:
             handler = xmlDetectEBCDIC(ctxt->input);
@@ -1182,8 +1197,8 @@ xmlSwitchInputEncoding(xmlParserCtxtPtr ctxt, xmlParserInputPtr input,
 
         /*
          * Switching encodings during parsing is a really bad idea,
-         * but WebKit/Chromium switches from ISO-8859-1 to UTF-16 as soon as
-         * it finds Unicode characters with code points larger than 255.
+         * but Chromium can switch between ISO-8859-1 and UTF-16 before
+         * separate calls to xmlParseChunk.
          *
          * TODO: We should check whether the "raw" input buffer is empty and
          * convert the old content using the old encoder.
@@ -1202,6 +1217,10 @@ xmlSwitchInputEncoding(xmlParserCtxtPtr ctxt, xmlParserInputPtr input,
      */
     if (xmlBufIsEmpty(in->buffer) == 0) {
         size_t processed, use, consumed;
+
+        /*
+         * FIXME: The BOM shouldn't be skipped here, but in the parsing code.
+         */
 
         /*
          * Specific handling of the Byte Order Mark for
