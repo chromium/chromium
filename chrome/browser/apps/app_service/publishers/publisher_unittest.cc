@@ -660,69 +660,6 @@ TEST_F(PublisherTest, BuiltinAppsOnApps) {
   VerifyAppTypeIsInitialized(AppType::kBuiltIn);
 }
 
-class LegacyPackagedAppLacrosNotPrimaryPublisherTest : public PublisherTest {
- public:
-  LegacyPackagedAppLacrosNotPrimaryPublisherTest() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures({ash::features::kLacrosSupport},
-                                          {ash::features::kLacrosPrimary});
-  }
-
-  LegacyPackagedAppLacrosNotPrimaryPublisherTest(
-      const LegacyPackagedAppLacrosNotPrimaryPublisherTest&) = delete;
-  LegacyPackagedAppLacrosNotPrimaryPublisherTest& operator=(
-      const LegacyPackagedAppLacrosNotPrimaryPublisherTest&) = delete;
-  ~LegacyPackagedAppLacrosNotPrimaryPublisherTest() override = default;
-
-  void SetUp() override {
-    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    auto* fake_user_manager = user_manager.get();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(user_manager));
-
-    // Login a user. The "email" must match the TestingProfile's
-    // GetProfileUserName() so that profile() will be the primary profile.
-    const AccountId account_id = AccountId::FromUserEmail("testing_profile");
-    fake_user_manager->AddUser(account_id);
-    fake_user_manager->LoginUser(account_id);
-
-    PublisherTest::SetUp();
-
-    ASSERT_FALSE(crosapi::browser_util::IsLacrosPrimaryBrowser());
-  }
-
- private:
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-};
-
-TEST_F(LegacyPackagedAppLacrosNotPrimaryPublisherTest,
-       LegacyPackagedAppsOnApps) {
-  // Re-init AppService to verify the init process.
-  AppServiceTest app_service_test;
-  app_service_test.SetUp(profile());
-
-  // Install a legacy packaged app.
-  scoped_refptr<extensions::Extension> legacy_app =
-      MakeLegacyPackagedApp("legacy_app", "0.0", "http://google.com",
-                            std::string(kLegacyPackagedAppId));
-  ASSERT_TRUE(legacy_app->is_legacy_packaged_app());
-
-  service_->AddExtension(legacy_app.get());
-
-  // Verify the legacy packaged app is published.
-  VerifyApp(AppType::kChromeApp, legacy_app->id(), legacy_app->name(),
-            Readiness::kReady, InstallReason::kDefault,
-            InstallSource::kChromeWebStore, {}, base::Time(), base::Time(),
-            apps::Permissions(),
-            /*is_platform_app=*/false, /*recommendable=*/true,
-            /*searchable=*/true,
-            /*show_in_launcher=*/true, /*show_in_shelf=*/true,
-            /*show_in_search=*/true, /*show_in_management=*/true,
-            /*handles_intents=*/true, /*allow_uninstall=*/true,
-            /*has_badge=*/false, /*paused=*/false);
-  VerifyAppTypeIsInitialized(AppType::kChromeApp);
-}
-
 class LegacyPackagedAppLacrosPrimaryPublisherTest : public PublisherTest {
  public:
   LegacyPackagedAppLacrosPrimaryPublisherTest() {
@@ -735,9 +672,9 @@ class LegacyPackagedAppLacrosPrimaryPublisherTest : public PublisherTest {
   }
 
   LegacyPackagedAppLacrosPrimaryPublisherTest(
-      const LegacyPackagedAppLacrosNotPrimaryPublisherTest&) = delete;
+      const LegacyPackagedAppLacrosPrimaryPublisherTest&) = delete;
   LegacyPackagedAppLacrosPrimaryPublisherTest& operator=(
-      const LegacyPackagedAppLacrosNotPrimaryPublisherTest&) = delete;
+      const LegacyPackagedAppLacrosPrimaryPublisherTest&) = delete;
   ~LegacyPackagedAppLacrosPrimaryPublisherTest() override = default;
 
   void SetUp() override {
