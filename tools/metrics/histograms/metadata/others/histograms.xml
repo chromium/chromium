@@ -11373,10 +11373,11 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram base="true" name="SendTabToSelf.ClickResult"
-    enum="SendTabToSelfClickResult" expires_after="2022-10-25">
+    enum="SendTabToSelfClickResult" expires_after="2024-07-18">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>ellyjones@chromium.org</owner>
-  <owner>chrome-sharing-core@google.com</owner>
+  <owner>src/components/send_tab_to_self/OWNERS</owner>
+  <component>UI&gt;Browser&gt;Sharing</component>
   <summary>
     Records user flow for SendTabToSelf feature.
 
@@ -11386,6 +11387,8 @@ should be kept until we remove incident reporting. -->
 
     On iOS this was not recorded between M85 and M90, inclusive (see
     crbug.com/1204944).
+
+    This expired 2022/10 and got revived 2023/07, some data will be missing.
   </summary>
 </histogram>
 
