@@ -87,6 +87,7 @@ extern NSString* const kMarkAsReadActionSymbol;
 extern NSString* const kReadLaterActionSymbol;
 extern NSString* const kAddBookmarkActionSymbol;
 extern NSString* const kCopyActionSymbol;
+extern NSString* const kPasteActionSymbol;
 extern NSString* const kNewWindowActionSymbol;
 extern NSString* const kShowActionSymbol;
 extern NSString* const kHideActionSymbol;
@@ -160,6 +161,8 @@ extern NSString* const kDocPlaintext;
 extern NSString* const kFlagSymbol;
 extern NSString* const kKeyboardSymbol;
 extern NSString* const kSpeedometerSymbol;
+extern NSString* const kMovePlatterToTopPhoneSymbol;
+extern NSString* const kMovePlatterToBottomPhoneSymbol;
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

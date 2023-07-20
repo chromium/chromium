@@ -79,6 +79,7 @@ NSString* const kMarkAsReadActionSymbol = @"text.badge.checkmark";
 NSString* const kReadLaterActionSymbol = @"text.badge.plus";
 NSString* const kAddBookmarkActionSymbol = @"star";
 NSString* const kCopyActionSymbol = @"doc.on.doc";
+NSString* const kPasteActionSymbol = @"doc.on.clipboard";
 NSString* const kNewWindowActionSymbol = @"square.split.2x1";
 NSString* const kShowActionSymbol = @"eye";
 NSString* const kHideActionSymbol = @"eye.slash";
@@ -153,6 +154,10 @@ NSString* const kDocPlaintext = @"doc.plaintext";
 NSString* const kFlagSymbol = @"flag";
 NSString* const kKeyboardSymbol = @"keyboard";
 NSString* const kSpeedometerSymbol = @"speedometer";
+NSString* const kMovePlatterToTopPhoneSymbol =
+    @"platter.filled.top.and.arrow.up.iphone";
+NSString* const kMovePlatterToBottomPhoneSymbol =
+    @"platter.filled.bottom.and.arrow.down.iphone";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.
