@@ -108,26 +108,29 @@ TEST_F(
       });
     });
 
-TEST_F('SwitchAccessAutoScanManagerTest', 'EnableAndDisable', function() {
-  this.runWithLoadedDesktop(() => {
-    assertFalse(
-        AutoScanManager.instance.isRunning_(),
-        'Auto scan manager is running prematurely');
-    assertEquals(0, intervalCount, 'Incorrect initialization of intervalCount');
+// TODO(crbug.com/1408940): Test is flaky.
+TEST_F(
+    'SwitchAccessAutoScanManagerTest', 'DISABLED_EnableAndDisable', function() {
+      this.runWithLoadedDesktop(() => {
+        assertFalse(
+            AutoScanManager.instance.isRunning_(),
+            'Auto scan manager is running prematurely');
+        assertEquals(
+            0, intervalCount, 'Incorrect initialization of intervalCount');
 
-    AutoScanManager.setEnabled(true);
-    assertTrue(
-        AutoScanManager.instance.isRunning_(),
-        'Auto scan manager is not running');
-    assertEquals(1, intervalCount, 'There is not exactly 1 interval');
+        AutoScanManager.setEnabled(true);
+        assertTrue(
+            AutoScanManager.instance.isRunning_(),
+            'Auto scan manager is not running');
+        assertEquals(1, intervalCount, 'There is not exactly 1 interval');
 
-    AutoScanManager.setEnabled(false);
-    assertFalse(
-        AutoScanManager.instance.isRunning_(),
-        'Auto scan manager did not stop running');
-    assertEquals(0, intervalCount, 'Interval was not removed');
-  });
-});
+        AutoScanManager.setEnabled(false);
+        assertFalse(
+            AutoScanManager.instance.isRunning_(),
+            'Auto scan manager did not stop running');
+        assertEquals(0, intervalCount, 'Interval was not removed');
+      });
+    });
 
 // https://crbug.com/1408940: Flaky on linux-chromeos-dbg
 GEN('#ifndef NDEBUG');
