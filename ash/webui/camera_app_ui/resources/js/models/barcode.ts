@@ -4,6 +4,7 @@
 
 import {assertInstanceof} from '../assert.js';
 import * as Comlink from '../lib/comlink.js';
+import {getSanitizedScriptUrl} from '../trusted_script_url_policy_util.js';
 
 import {AsyncIntervalRunner} from './async_interval.js';
 import {BarcodeWorker} from './barcode_worker.js';
@@ -19,8 +20,8 @@ const MAX_SCAN_SIZE = 720;
 // TODO(b/172879638): Change 1.0 to match the final UI spec.
 const ACTIVE_SCAN_RATIO = 1.0;
 
-const BARCODE_WORKER = Comlink.wrap<BarcodeWorker>(
-    new Worker('/js/models/barcode_worker.js', {type: 'module'}));
+const BARCODE_WORKER = Comlink.wrap<BarcodeWorker>(new Worker(
+    getSanitizedScriptUrl('/js/models/barcode_worker.js'), {type: 'module'}));
 
 /**
  * A barcode scanner to detect barcodes from a camera stream.

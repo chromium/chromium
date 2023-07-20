@@ -9,6 +9,7 @@
 #include "ash/webui/camera_app_ui/camera_app_helper_impl.h"
 #include "ash/webui/camera_app_ui/resources.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
+#include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/grit/ash_camera_app_resources_map.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
@@ -83,7 +84,7 @@ void CreateAndAddCameraAppUIHTMLSource(content::BrowserContext* browser_context,
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       browser_context, kChromeUICameraAppHost);
 
-  source->DisableTrustedTypesCSP();
+  ash::EnableTrustedTypesCSP(source);
 
   // Add all settings resources.
   source->AddResourcePaths(

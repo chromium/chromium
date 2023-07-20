@@ -5,6 +5,7 @@
 import {AppWindow} from './app_window.js';
 import * as Comlink from './lib/comlink.js';
 import {TestBridge} from './test_bridge.js';
+import {getSanitizedScriptUrl} from './trusted_script_url_policy_util.js';
 import {
   createUntrustedIframe,
   injectUntrustedJSModule,
@@ -24,8 +25,8 @@ declare global {
 
 
 document.addEventListener('DOMContentLoaded', async () => {
-  const workerPath = '/js/test_bridge.js';
-  const sharedWorker = new SharedWorker(workerPath, {type: 'module'});
+  const sharedWorker = new SharedWorker(
+      getSanitizedScriptUrl('/js/test_bridge.js'), {type: 'module'});
   const testBridge = Comlink.wrap<TestBridge>(sharedWorker.port);
 
   // To support code coverage collection and communication with tast, the
@@ -70,6 +71,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const mainScript = document.createElement('script');
   mainScript.setAttribute('type', 'module');
-  mainScript.setAttribute('src', '/js/main.js');
+  mainScript.setAttribute('src', getSanitizedScriptUrl('/js/main.js'));
   document.head.appendChild(mainScript);
 });

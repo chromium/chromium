@@ -38,6 +38,7 @@ static_library("camera_app_ui") {
     ":window_managemet",
     "//ash",
     "//ash/public/cpp",
+    "//ash/webui/common:trusted_types_util",
     "//ash/webui/system_apps/public:system_web_app_config",
     "//ash/webui/web_applications",
     "//chromeos/utils",

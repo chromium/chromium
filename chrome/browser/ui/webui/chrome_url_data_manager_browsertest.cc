@@ -401,6 +401,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://account-migration-welcome",
     "chrome://add-supervision/",
     "chrome://app-disabled",
+    "chrome://camera-app/views/main.html",
     "chrome://assistant-optin/",
     "chrome://bluetooth-pairing",
     "chrome://certificate-manager/",

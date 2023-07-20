@@ -43,6 +43,7 @@ import {preloadImagesList} from './preload_images.js';
 import * as state from './state.js';
 import * as toast from './toast.js';
 import * as tooltip from './tooltip.js';
+import {getSanitizedScriptUrl} from './trusted_script_url_policy_util.js';
 import {
   ErrorLevel,
   ErrorType,
@@ -444,9 +445,8 @@ export class App {
       await this.suspend();
     };
 
-    const multiWindowManagerPath = '/js/multi_window_manager.js';
-    const multiWindowManagerWorker =
-        new SharedWorker(multiWindowManagerPath, {type: 'module'});
+    const multiWindowManagerWorker = new SharedWorker(
+        getSanitizedScriptUrl('/js/multi_window_manager.js'), {type: 'module'});
     const windowInstance =
         Comlink.wrap<WindowInstance>(multiWindowManagerWorker.port);
     addUnloadCallback(() => {
