@@ -140,6 +140,7 @@ void V8Manager::BindInterface(const std::string& interface_name,
   for (auto& binder : interface_binders_) {
     if (binder->MatchesInterface(interface_name)) {
       binder->BindReceiver(std::move(pending_receiver));
+      return;
     }
   }
   LOG(ERROR) << "Couldn't find Receiver for interface " << interface_name

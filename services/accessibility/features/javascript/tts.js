@@ -27,6 +27,22 @@ class TtsEventObserver {
 // TODO(b:277221897): Compile and type-check this.
 // TODO(b:266767235): Convert to typescript.
 class AtpTts {
+  /**
+   * @enum {string}
+   */
+  EventType = {
+    START: 'start',
+    END: 'end',
+    WORD: 'word',
+    SENTENCE: 'sentence',
+    MARKER: 'marker',
+    INTERRUPTED: 'interrupted',
+    CANCELLED: 'cancelled',
+    ERROR: 'error',
+    PAUSE: 'pause',
+    RESUME: 'resume',
+  };
+
   constructor() {
     const TtsApi = ax.mojom.Tts;
     this.remote_ = TtsApi.getRemote();
@@ -65,7 +81,7 @@ class AtpTts {
           const ttsEventObserver = new TtsEventObserver(
               speakResult.result.utteranceClient, (ttsEvent) => {
                 if (ttsOptions.onEvent) {
-                  let type = AtpTts.eventTypeToString_(ttsEvent.type);
+                  let type = AtpTts.convertFromMojomEventType_(ttsEvent.type);
                   ttsOptions.onEvent({
                     type,
                     charIndex: ttsEvent.charIndex,
@@ -126,7 +142,7 @@ class AtpTts {
       for (let voice of voicesResult.voices) {
         let eventTypes = [];
         for (let eventType of voice.eventTypes) {
-          eventTypes.push(AtpTts.eventTypeToString_(eventType));
+          eventTypes.push(AtpTts.convertFromMojomEventType_(eventType));
         }
         result.push({
           voiceName: voice.voiceName,
@@ -143,31 +159,31 @@ class AtpTts {
   /**
    * Converts ax.mojom.TtsEventType into the string used by TTS extension API.
    * @param {ax.mojom.TtsEventType} eventType
-   * @return {chrome.tts.EventType}
+   * @return {EventType}
    * @private
    */
-  static eventTypeToString_(eventType) {
+  static convertFromMojomEventType_(eventType) {
     switch (eventType) {
       case ax.mojom.TtsEventType.kStart:
-        return 'start';
+        return chrome.tts.EventType.START;
       case ax.mojom.TtsEventType.kEnd:
-        return 'end';
+        return chrome.tts.EventType.END;
       case ax.mojom.TtsEventType.kWord:
-        return 'word';
+        return chrome.tts.EventType.WORD;
       case ax.mojom.TtsEventType.kSentence:
-        return 'sentence';
+        return chrome.tts.EventType.SENTENCE;
       case ax.mojom.TtsEventType.kMarker:
-        return 'marker';
+        return chrome.tts.EventType.MARKER;
       case ax.mojom.TtsEventType.kInterrupted:
-        return 'interrupted';
+        return chrome.tts.EventType.INTERRUPTED;
       case ax.mojom.TtsEventType.kCancelled:
-        return 'cancelled';
+        return chrome.tts.EventType.CANCELLED;
       case ax.mojom.TtsEventType.kError:
-        return 'error';
+        return chrome.tts.EventType.ERROR;
       case ax.mojom.TtsEventType.kPause:
-        return 'pause';
+        return chrome.tts.EventType.PAUSE;
       case ax.mojom.TtsEventType.kResume:
-        return 'resume';
+        return chrome.tts.EventType.RESUME;
     }
   }
 

@@ -191,10 +191,10 @@ TEST_F(TtsJSApiTest, TtsSpeakWithStartAndEndEvents) {
     const remote = axtest.mojom.TestBindingInterface.getRemote();
     let receivedStart = false;
     const onEvent = (ttsEvent) => {
-      if (ttsEvent.type === 'end') {
+      if (ttsEvent.type === chrome.tts.EventType.END) {
         remote.testComplete(
             /*success=*/receivedStart);
-      } else if (ttsEvent.type === 'start') {
+      } else if (ttsEvent.type === chrome.tts.EventType.START) {
         receivedStart = true;
       }
     };
@@ -236,16 +236,16 @@ TEST_F(TtsJSApiTest, TtsSpeakPauseResumeStopEvents) {
     // resume creates a request to stop,
     // stop causes interrupted, which ends the test.
     const onEvent = (ttsEvent) => {
-      if (ttsEvent.type === 'start') {
+      if (ttsEvent.type === chrome.tts.EventType.START) {
         receivedStart = true;
         chrome.tts.pause();
-      } else if (ttsEvent.type === 'pause') {
+      } else if (ttsEvent.type === chrome.tts.EventType.PAUSE) {
         receivedPause = true;
         chrome.tts.resume();
-      } else if (ttsEvent.type === 'resume') {
+      } else if (ttsEvent.type === chrome.tts.EventType.RESUME) {
         receivedResume = true;
         chrome.tts.stop();
-      } else if (ttsEvent.type === 'interrupted') {
+      } else if (ttsEvent.type === chrome.tts.EventType.INTERRUPTED) {
         remote.testComplete(
             /*success=*/receivedStart && receivedPause && receivedResume);
       } else {
@@ -275,7 +275,7 @@ TEST_F(TtsJSApiTest, TtsEventPassesParams) {
   ExecuteJS(R"JS(
     const remote = axtest.mojom.TestBindingInterface.getRemote();
     const onEvent = (ttsEvent) => {
-      if (ttsEvent.type === 'start') {
+      if (ttsEvent.type === chrome.tts.EventType.START) {
         let success = ttsEvent.charIndex === 5 &&
           ttsEvent.length === 10 && ttsEvent.errorMessage === 'Off by one';
         remote.testComplete(success);
@@ -327,7 +327,7 @@ TEST_F(TtsJSApiTest, TtsUtteranceError) {
   ExecuteJS(R"JS(
     const remote = axtest.mojom.TestBindingInterface.getRemote();
     const onEvent = (ttsEvent) => {
-      const success = ttsEvent.type == 'error' &&
+      const success = ttsEvent.type == chrome.tts.EventType.ERROR &&
           ttsEvent.errorMessage === 'I am no man';
       remote.testComplete(success);
     };
