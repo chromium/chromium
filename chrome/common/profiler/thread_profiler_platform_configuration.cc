@@ -199,9 +199,13 @@ AndroidPlatformConfiguration::GetEnableRates(
 
   DCHECK(*release_channel == version_info::Channel::CANARY ||
          *release_channel == version_info::Channel::DEV);
-  // Put all users in 50/50 experiment groups to maximize signal in the relevant
-  // metrics.
-  return RelativePopulations{0, 100};
+
+  // For 80% of population always enable profiling.
+  // For 20% of population
+  // - 50% within the subgroup, i.e. 10% of total population, enable profiling.
+  // - 50% within the subgroup, disable profiling.
+  // This results a total of 90% enable rate.
+  return RelativePopulations{80, 20};
 }
 
 double AndroidPlatformConfiguration::GetChildProcessPerExecutionEnableFraction(
