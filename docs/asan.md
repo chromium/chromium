@@ -22,11 +22,10 @@ run with --no-sandbox, but there's an extra Linux bot that enables the sandbox
 (but disables LeakSanitizer).
 
 The trybots running Chromium tests on Linux and macOS are:
-- linux\_asan (everything except browser\_tests and content\_browsertests)
-- linux\_browser\_asan (browser\_tests and content\_browsertests),
-- mac\_asan (many tests including browser\_tests and content\_browsertests)
-- linux\_chromeos\_asan (the chromeos=1 build running on a Linux machine, many
-tests including browser\_tests and content\_browsertests).
+- linux\_chromium\_asan\_rel\_ng
+- mac\_chromium\_asan\_rel\_ng
+- linux\_chromium\_chromeos\_asan\_rel\_ng (the chromeos=1 build running on a
+Linux machine)
 
 ## Pre-built Chrome binaries
 
