@@ -1128,7 +1128,6 @@ http/tests/devtools/sources/debugger-ui/watch-expressions-preserve-expansion.js
 http/tests/devtools/sources/debugger/anonymous-script-with-source-map-breakpoint.js
 http/tests/devtools/sources/debugger/async-callstack-fetch.js
 http/tests/devtools/sources/debugger/async-callstack-network-initiator.js
-http/tests/devtools/sources/debugger/debug-inlined-scripts.js
 http/tests/devtools/sources/debugger/debugger-compile-and-run.js
 http/tests/devtools/sources/debugger/debugger-es6-harmony-scopes.js
 http/tests/devtools/sources/debugger/debugger-minified-variables-evalution.js

@@ -4089,10 +4089,6 @@ crbug.com/1015975 media/video-currentTime.html [ Failure Pass ]
 # Sheriff 2019-10-21
 crbug.com/1016456 external/wpt/dom/ranges/Range-mutations-dataChange.html [ Crash Pass Timeout ]
 
-
-# Temporarily disabled to a breakpoint non-determinism issue.
-crbug.com/1019613 http/tests/devtools/sources/debugger/debug-inlined-scripts.js [ Failure Pass ]
-
 # First frame not always painted in time
 crbug.com/1024976 media/controls/paint-controls-webkit-appearance-none-custom-bg.html [ Failure Pass ]
 
