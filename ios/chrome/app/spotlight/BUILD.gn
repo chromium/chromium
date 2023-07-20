@@ -7,8 +7,6 @@ source_set("spotlight") {
   sources = [
     "actions_spotlight_manager.h",
     "actions_spotlight_manager.mm",
-    "base_spotlight_manager.h",
-    "base_spotlight_manager.mm",
     "bookmarks_spotlight_manager.h",
     "bookmarks_spotlight_manager.mm",
     "fake_searchable_item_factory.h",
