@@ -409,6 +409,10 @@ defaults = args.defaults(
     siso_experiments = [],
     health_spec = None,
 
+    # Variables for modifying builder characteristics in a shadow bucket
+    shadow_pool = None,
+    shadow_service_account = None,
+
     # Provide vars for bucket and executable so users don't have to
     # unnecessarily make wrapper functions
     bucket = args.COMPUTE,
@@ -477,6 +481,8 @@ def builder(
         siso_enable_cloud_trace = args.DEFAULT,
         siso_experiments = args.DEFAULT,
         health_spec = args.DEFAULT,
+        shadow_pool = args.DEFAULT,
+        shadow_service_account = args.DEFAULT,
         **kwargs):
     """Define a builder.
 
@@ -664,6 +670,10 @@ def builder(
         siso_enable_cloud_profiler: If True, enable cloud profiler in siso.
         siso_enable_cloud_trace: If True, enable cloud trace in siso.
         siso_experiments: a list of experiment flags for siso.
+        shadow_pool: If set, then led builds created for this Builder will be
+            set to use this alternate pool instead.
+        shadow_service_account: If set, then led builds created for this builder
+            will use this service account instead.
         **kwargs: Additional keyword arguments to forward on to `luci.builder`.
 
     Returns:
@@ -868,6 +878,8 @@ def builder(
             resultdb_bigquery_exports = resultdb_bigquery_exports,
             resultdb_index_by_timestamp = resultdb_index_by_timestamp,
         ),
+        shadow_pool = defaults.get_value("shadow_pool", shadow_pool),
+        shadow_service_account = defaults.get_value("shadow_service_account", shadow_service_account),
         **kwargs
     )
 

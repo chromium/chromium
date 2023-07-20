@@ -26,8 +26,6 @@ defaults = args.defaults(
     thin_tester_cores = args.DEFAULT,
     tree_closing = False,
     tree_closing_notifiers = None,
-    shadow_pool = None,
-    shadow_service_account = None,
 )
 
 def ci_builder(
@@ -43,8 +41,6 @@ def ci_builder(
         notifies = None,
         resultdb_bigquery_exports = None,
         experiments = None,
-        shadow_pool = args.DEFAULT,
-        shadow_service_account = args.DEFAULT,
         **kwargs):
     """Define a CI builder.
 
@@ -85,10 +81,6 @@ def ci_builder(
           chrome-luci-data.chromium.gpu_ci_test_results
       experiments: a dict of experiment name to the percentage chance (0-100)
         that it will apply to builds generated from this builder.
-      shadow_pool: If set, then led builds created for this Builder will be set
-        to use this alternate pool instead.
-      shadow_service_account: If set, then led builds created for this builder
-        will use this service account instead.
       **kwargs: Additional keyword arguments that will be forwarded on to
         `builders.builder`.
     """
@@ -161,8 +153,6 @@ def ci_builder(
         notifies = notifies,
         experiments = experiments,
         resultdb_index_by_timestamp = True,
-        shadow_pool = defaults.get_value("shadow_pool", shadow_pool),
-        shadow_service_account = defaults.get_value("shadow_service_account", shadow_service_account),
         **kwargs
     )
 
