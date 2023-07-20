@@ -37,12 +37,32 @@ _REBASELINE = os.environ.get('REBASELINE', '0') != '0'
 _accessed_goldens = set()
 
 
-class CommonOptions:
-  def __init__(self, action):
-    self.action = action
+class CliOptions:
+  def __init__(self, is_final=False, is_javap=False, **kwargs):
+    if is_final:
+      self.action = 'generate-final'
+    elif is_javap:
+      self.action = 'from-jar'
+    else:
+      self.action = 'from-source'
+
+    self.input_file = None
+    self.jar_file = None
+    self.output_dir = None
+    self.output_name = None if is_final else 'output.h'
+    self.header_path = None
     self.enable_jni_multiplexing = False
     self.package_prefix = None
     self.use_proxy_hash = False
+    self.extra_include = None if is_final else _EXTRA_INCLUDES
+    self.module_name = None
+    self.add_stubs_for_missing_native = False
+    self.enable_proxy_mocks = False
+    self.include_test_only = False
+    self.manual_jni_registration = False
+    self.remove_uncalled_methods = False
+    self.require_mocks = False
+    self.__dict__.update(kwargs)
 
   def to_args(self):
     ret = [os.path.join(_SCRIPT_DIR, 'jni_zero.py'), self.action]
@@ -52,48 +72,16 @@ class CommonOptions:
       ret += ['--package-prefix', self.package_prefix]
     if self.use_proxy_hash:
       ret.append('--use-proxy-hash')
-    return ret
-
-
-class IntermediatesOptions(CommonOptions):
-  def __init__(self, **kwargs):
-    super().__init__('generate-library')
-    self.extra_include = _EXTRA_INCLUDES
-    self.input_file = None
-    self.jar_file = None
-    self.module_name = ''
-    self.output_dir = None
-    self.output_name = 'output.h'
-    self.__dict__.update(kwargs)
-
-  def to_args(self):
-    ret = super().to_args()
-    ret += ['--output-dir', self.output_dir]
-    ret += ['--input-file', self.input_file]
-    ret += ['--output-name', self.output_name]
+    if self.output_dir:
+      ret += ['--output-dir', self.output_dir]
+    if self.input_file:
+      ret += ['--input-file', self.input_file]
+    if self.output_name:
+      ret += ['--output-name', self.output_name]
     if self.jar_file:
       ret += ['--jar-file', self.jar_file]
     if self.extra_include:
       ret += ['--extra-include', self.extra_include]
-    return ret
-
-
-class LinkOptions(CommonOptions):
-  """The mock options object which is passed to the jni_generator.py script."""
-  def __init__(self, **kwargs):
-    super().__init__('generate-final')
-    self.add_stubs_for_missing_native = False
-    self.enable_proxy_mocks = False
-    self.header_path = None
-    self.include_test_only = False
-    self.manual_jni_registration = False
-    self.module_name = ''
-    self.remove_uncalled_methods = False
-    self.require_mocks = False
-    self.__dict__.update(kwargs)
-
-  def to_args(self):
-    ret = super().to_args()
     if self.add_stubs_for_missing_native:
       ret.append('--add-stubs-for-missing-native')
     if self.enable_proxy_mocks:
@@ -135,8 +123,9 @@ class BaseTest(unittest.TestCase):
         self.AssertGoldenTextEquals(contents, name_to_goldens[name])
 
   def _TestEndToEndGeneration(self, input_file, *, srcjar=False, **kwargs):
+    is_javap = input_file.endswith('.class')
     golden_name = self._testMethodName
-    options = IntermediatesOptions(**kwargs)
+    options = CliOptions(is_javap=is_javap, **kwargs)
     basename = os.path.splitext(input_file)[0]
     header_golden = f'{golden_name}-{basename}_jni.h.golden'
     if srcjar:
@@ -150,7 +139,7 @@ class BaseTest(unittest.TestCase):
 
     with tempfile.TemporaryDirectory() as tdir:
       relative_input_file = os.path.join(_JAVA_SRC_DIR, input_file)
-      if input_file.endswith('.class'):
+      if is_javap:
         jar_path = os.path.join(tdir, 'input.jar')
         with zipfile.ZipFile(jar_path, 'w') as z:
           z.write(relative_input_file, input_file)
@@ -181,7 +170,7 @@ class BaseTest(unittest.TestCase):
                                 src_files_for_asserts_and_stubs=None,
                                 **kwargs):
     golden_name = self._testMethodName
-    options = LinkOptions(**kwargs)
+    options = CliOptions(is_final=True, **kwargs)
     dir_prefix, file_prefix = _MakePrefixes(options)
     name_to_goldens = {
         f'{dir_prefix}org/chromium/base/natives/{file_prefix}GEN_JNI.java':

@@ -543,8 +543,8 @@ class HeaderFileGeneratorHelper(object):
                class_name,
                module_name,
                fully_qualified_class,
-               use_proxy_hash,
-               package_prefix,
+               use_proxy_hash=False,
+               package_prefix=None,
                split_name=None,
                enable_jni_multiplexing=False):
     self.class_name = class_name
@@ -676,14 +676,20 @@ class InlHeaderFileGenerator(object):
     self.constant_fields = constant_fields
     self.type_resolver = type_resolver
     self.options = options
+
+    # from-jar does not define these flags.
+    kwargs = {}
+    if hasattr(options, 'use_proxy_hash'):
+      kwargs['use_proxy_hash'] = options.use_proxy_hash
+      kwargs['enable_jni_multiplexing'] = options.enable_jni_multiplexing
+      kwargs['package_prefix'] = options.package_prefix
+
     self.helper = HeaderFileGeneratorHelper(
         java_class.name,
         module_name,
         self.java_class.full_name_with_slashes,
-        self.options.use_proxy_hash,
-        self.options.package_prefix,
-        split_name=self.options.split_name,
-        enable_jni_multiplexing=self.options.enable_jni_multiplexing)
+        split_name=options.split_name,
+        **kwargs)
 
   def GetContent(self):
     """Returns the content of the JNI binding file."""
@@ -1126,64 +1132,72 @@ def _CreateSrcJar(srcjar_path, gen_jni_class, jni_objs, *, script_name):
       zip_helpers.add_to_zip_hermetic(srcjar, zip_path, data=content)
 
 
-def DoGeneration(options):
-  try:
-    if options.jar_file:
-      jni_objs = _ParseClassFiles(options.jar_file, options.input_files,
-                                  options)
-    else:
-      jni_objs = [
-          JNIFromJavaSource.CreateFromFile(f, options)
-          for f in options.input_files
-      ]
-      _CheckNotEmpty(jni_objs)
-      _CheckSameModule(jni_objs)
-  except (ParseError, SyntaxError) as e:
-    sys.stderr.write(f'{e}\n')
-    sys.exit(1)
-
-  # Write .h files
-  for jni_obj, header_name in zip(jni_objs, options.output_names):
-    output_file = os.path.join(options.output_dir, header_name)
+def _WriteHeaders(jni_objs, output_names, output_dir):
+  for jni_obj, header_name in zip(jni_objs, output_names):
+    output_file = os.path.join(output_dir, header_name)
     content = jni_obj.GetContent()
     with action_helpers.atomic_output(output_file, 'w') as f:
       f.write(content)
 
+
+def _ParseSourceFiles(args):
+  jni_objs = []
+  for f in args.input_files:
+    parsed_file = parse.parse_java_file(f, package_prefix=args.package_prefix)
+    jni_objs.append(JNIFromJavaSource(parsed_file, args))
+  return jni_objs
+
+
+def GenerateFromSource(parser, args):
+  # Remove existing headers so that moving .java source files but not updating
+  # the corresponding C++ include will be a compile failure (otherwise
+  # incremental builds will usually not catch this).
+  _RemoveStaleHeaders(args.output_dir, args.output_names)
+
+  try:
+    jni_objs = _ParseSourceFiles(args)
+    _CheckNotEmpty(jni_objs)
+    _CheckSameModule(jni_objs)
+  except SyntaxError as e:
+    sys.stderr.write(f'{e}\n')
+    sys.exit(1)
+
+  _WriteHeaders(jni_objs, args.output_names, args.output_dir)
+
   # Write .srcjar
-  if options.srcjar_path:
+  if args.srcjar_path:
     # module_name is set only for proxy_natives.
     jni_objs = [x for x in jni_objs if x.proxy_natives]
     if jni_objs:
       gen_jni_class = proxy.get_gen_jni_class(
           short=False,
           name_prefix=jni_objs[0].module_name,
-          package_prefix=options.package_prefix)
-      _CreateSrcJar(options.srcjar_path,
+          package_prefix=args.package_prefix)
+      _CreateSrcJar(args.srcjar_path,
                     gen_jni_class,
                     jni_objs,
                     script_name=GetScriptName())
     else:
       # Only @CalledByNatives.
-      zipfile.ZipFile(options.srcjar_path, 'w').close()
+      zipfile.ZipFile(args.srcjar_path, 'w').close()
 
 
-def main(parser, args):
-  if args.jar_file and args.package_prefix:
-    parser.error('--package-prefix not implemented for --jar-file')
-
-  if args.jar_file and not args.javap:
+def GenerateFromJar(parser, args):
+  if not args.javap:
     args.javap = shutil.which('javap')
     if not args.javap:
       parser.error('Could not find "javap" on your PATH. Use --javap to '
                    'specify its location.')
-
-  # Kotlin files are not supported by jni_generator.py, but they do end up in
-  # the list of source files passed to jni_generator.py.
-  input_files = [f for f in args.input_files if not f.endswith('.kt')]
 
   # Remove existing headers so that moving .java source files but not updating
   # the corresponding C++ include will be a compile failure (otherwise
   # incremental builds will usually not catch this).
   _RemoveStaleHeaders(args.output_dir, args.output_names)
 
-  DoGeneration(args)
+  try:
+    jni_objs = _ParseClassFiles(args.jar_file, args.input_files, args)
+  except SyntaxError as e:
+    sys.stderr.write(f'{e}\n')
+    sys.exit(1)
+
+  _WriteHeaders(jni_objs, args.output_names, args.output_dir)

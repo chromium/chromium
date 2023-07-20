@@ -16,125 +16,134 @@ import jni_registration_generator
 _MIN_PYTHON_MINOR = 8
 
 
-def _add_common_args(parser):
-  parser.add_argument(
-      '--use-proxy-hash',
-      action='store_true',
-      help='Enables hashing of the native declaration for methods in '
-      'a @NativeMethods interface')
-  parser.add_argument('--enable-jni-multiplexing',
-                      action='store_true',
-                      help='Enables JNI multiplexing for Java native methods')
-  parser.add_argument(
-      '--package-prefix',
-      help='Adds a prefix to the classes fully qualified-name. Effectively '
-      'changing a class name from foo.bar -> prefix.foo.bar')
+def _add_io_args(parser, *, is_final=False, is_javap=False):
+  group = parser.add_argument_group(title='Inputs & Outputs')
+  if is_final:
+    group.add_argument('--java-sources-file',
+                       required=True,
+                       help='A file which contains Java file paths, derived '
+                       'from java deps metadata.')
+    group.add_argument('--native-sources-file',
+                       help='A file which contains Java file paths, derived '
+                       'from native deps onto generate_jni.')
+    group.add_argument('--depfile',
+                       help='Path to depfile (for use with ninja build system)')
+  else:
+    if is_javap:
+      group.add_argument(
+          '--jar-file',
+          help='Extract the list of input files from a specified jar file. '
+          'Uses javap to extract the methods from a pre-compiled class.')
+
+      help_text = 'Paths within the .jar'
+    else:
+      help_text = 'Paths to .java files to parse.'
+    group.add_argument('--input-file',
+                       action='append',
+                       required=True,
+                       dest='input_files',
+                       help=help_text)
+    group.add_argument('--output-name',
+                       action='append',
+                       required=True,
+                       dest='output_names',
+                       help='Output filenames within output directory.')
+    group.add_argument('--output-dir',
+                       required=True,
+                       help='Output directory. '
+                       'Existing .h files in this directory will be assumed '
+                       'stale and removed.')
+
+  group.add_argument('--header-path', help='Path to output header file.')
+
+  if is_javap:
+    group.add_argument('--javap', help='The path to javap command.')
+  else:
+    group.add_argument(
+        '--srcjar-path',
+        help='Path to output srcjar for GEN_JNI.java (and J/N.java if proxy'
+        ' hash is enabled).')
 
 
-def _add_library_args(parser):
-  _add_common_args(parser)
-  parser.add_argument(
-      '--jar-file',
-      help='Extract the list of input files from a specified jar file. Uses '
-      'javap to extract the methods from a pre-compiled class. --input should '
-      'point to pre-compiled Java .class files.')
-  parser.add_argument(
-      '--namespace',
-      help='Uses as a namespace in the generated header instead of the javap '
-      'class name, or when there is no JNINamespace annotation in the java '
-      'source.')
-  parser.add_argument('--input-file',
-                      action='append',
-                      required=True,
-                      dest='input_files',
-                      help='Input filenames, or paths within a .jar if '
-                      '--jar-file is used.')
-  parser.add_argument('--output-dir',
-                      required=True,
-                      help='Output directory. '
-                      'Existing .h files in this directory will be assumed '
-                      'stale and removed.')
-  parser.add_argument('--output-name',
-                      action='append',
-                      dest='output_names',
-                      help='Output filenames within output directory.')
-  parser.add_argument('--srcjar-path',
-                      help='Path to output srcjar for generated .java files.')
-  parser.add_argument('--extra-include',
-                      action='append',
-                      dest='extra_includes',
-                      help='Header file to #include in the generated header.')
-  parser.add_argument('--javap', help='The path to javap command.')
-  parser.add_argument('--enable-profiling',
-                      action='store_true',
-                      help='Add additional profiling instrumentation.')
-  parser.add_argument('--unchecked-exceptions',
-                      action='store_true',
-                      help='Do not check that no exceptions were thrown.')
-  parser.add_argument(
-      '--split-name',
-      help='Split name that the Java classes should be loaded from.')
-
-  parser.set_defaults(func=jni_generator.main)
-
-
-def _add_final_args(parser):
-  _add_common_args(parser)
-  parser.add_argument('--depfile',
-                      help='Path to depfile (for use with ninja build system)')
-
-  parser.add_argument('--native-sources-file',
-                      help='A file which contains Java file paths, derived '
-                      'from native deps onto generate_jni.')
-  parser.add_argument('--java-sources-file',
-                      required=True,
-                      help='A file which contains Java file paths, derived '
-                      'from java deps metadata.')
-  parser.add_argument(
-      '--add-stubs-for-missing-native',
-      action='store_true',
-      help='Adds stub methods for any --java-sources-file which are missing '
-      'from --native-sources-files. If not passed, we will assert that none of '
-      'these exist.')
-  parser.add_argument(
-      '--remove-uncalled-methods',
-      action='store_true',
-      help='Removes --native-sources-files which are not in '
-      '--java-sources-file. If not passed, we will assert that none of these '
-      'exist.')
-  parser.add_argument('--header-path', help='Path to output header file.')
-  parser.add_argument(
-      '--srcjar-path',
-      required=True,
-      help='Path to output srcjar for GEN_JNI.java (and J/N.java if proxy'
-      ' hash is enabled).')
-  parser.add_argument(
-      '--namespace',
-      help='Native namespace to wrap the registration functions into.')
-  # TODO(crbug.com/898261) hook these flags up to the build config to enable
-  # mocking in instrumentation tests
-  parser.add_argument(
-      '--enable-proxy-mocks',
-      default=False,
-      action='store_true',
-      help='Allows proxy native impls to be mocked through Java.')
-  parser.add_argument(
-      '--require-mocks',
-      default=False,
-      action='store_true',
-      help='Requires all used native implementations to have a mock set when '
-      'called. Otherwise an exception will be thrown.')
-  parser.add_argument(
+def _add_codegen_args(parser, *, is_final=False, is_javap=False):
+  group = parser.add_argument_group(title='Codegen Options')
+  group.add_argument(
       '--module-name',
       help='Only look at natives annotated with a specific module name.')
-  parser.add_argument('--manual-jni-registration',
-                      action='store_true',
-                      help='Generate a call to RegisterNatives()')
-  parser.add_argument('--include-test-only',
-                      action='store_true',
-                      help='Whether to maintain ForTesting JNI methods.')
+  if is_final:
+    group.add_argument(
+        '--add-stubs-for-missing-native',
+        action='store_true',
+        help='Adds stub methods for any --java-sources-file which are missing '
+        'from --native-sources-files. If not passed, we will assert that none '
+        'of these exist.')
+    group.add_argument(
+        '--remove-uncalled-methods',
+        action='store_true',
+        help='Removes --native-sources-files which are not in '
+        '--java-sources-file. If not passed, we will assert that none of these '
+        'exist.')
+    group.add_argument(
+        '--namespace',
+        help='Native namespace to wrap the registration functions into.')
+    # TODO(crbug.com/898261) hook these flags up to the build config to enable
+    # mocking in instrumentation tests
+    group.add_argument(
+        '--enable-proxy-mocks',
+        default=False,
+        action='store_true',
+        help='Allows proxy native impls to be mocked through Java.')
+    group.add_argument(
+        '--require-mocks',
+        default=False,
+        action='store_true',
+        help='Requires all used native implementations to have a mock set when '
+        'called. Otherwise an exception will be thrown.')
+    group.add_argument('--manual-jni-registration',
+                       action='store_true',
+                       help='Generate a call to RegisterNatives()')
+    group.add_argument('--include-test-only',
+                       action='store_true',
+                       help='Whether to maintain ForTesting JNI methods.')
+  else:
+    group.add_argument('--extra-include',
+                       action='append',
+                       dest='extra_includes',
+                       help='Header file to #include in the generated header.')
+    group.add_argument('--enable-profiling',
+                       action='store_true',
+                       help='Add additional profiling instrumentation.')
+    group.add_argument(
+        '--split-name',
+        help='Split name that the Java classes should be loaded from.')
 
-  parser.set_defaults(func=jni_registration_generator.main)
+  if is_javap:
+    group.add_argument('--unchecked-exceptions',
+                       action='store_true',
+                       help='Do not check that no exceptions were thrown.')
+  else:
+    group.add_argument(
+        '--use-proxy-hash',
+        action='store_true',
+        help='Enables hashing of the native declaration for methods in '
+        'a @NativeMethods interface')
+    group.add_argument('--enable-jni-multiplexing',
+                       action='store_true',
+                       help='Enables JNI multiplexing for Java native methods')
+    group.add_argument(
+        '--package-prefix',
+        help='Adds a prefix to the classes fully qualified-name. Effectively '
+        'changing a class name from foo.bar -> prefix.foo.bar')
+
+  if not is_final:
+    if is_javap:
+      instead_msg = 'instead of the javap class name.'
+    else:
+      instead_msg = 'when there is no @JNINamespace set'
+
+    group.add_argument('--namespace',
+                       help='Uses as a namespace in the generated header ' +
+                       instead_msg)
 
 
 def _maybe_relaunch_with_newer_python():
@@ -157,18 +166,30 @@ def _maybe_relaunch_with_newer_python():
     sys.exit(1)
 
 
+def _add_args(parser, *, is_final=False, is_javap=False):
+  _add_io_args(parser, is_final=is_final, is_javap=is_javap)
+  _add_codegen_args(parser, is_final=is_final, is_javap=is_javap)
+
+
 def main():
   parser = argparse.ArgumentParser(description=__doc__)
   subparsers = parser.add_subparsers(required=True)
 
   subp = subparsers.add_parser(
-      'generate-library', help='Generates files for a set of .java sources.')
-  _add_library_args(subp)
+      'from-source', help='Generates files for a set of .java sources.')
+  _add_args(subp)
+  subp.set_defaults(func=jni_generator.GenerateFromSource)
+
+  subp = subparsers.add_parser(
+      'from-jar', help='Generates files from a .jar of .class files.')
+  _add_args(subp, is_javap=True)
+  subp.set_defaults(func=jni_generator.GenerateFromJar)
 
   subp = subparsers.add_parser(
       'generate-final',
       help='Generates files that require knowledge of all intermediates.')
-  _add_final_args(subp)
+  _add_args(subp, is_final=True)
+  subp.set_defaults(func=jni_registration_generator.main)
 
   # Default to showing full help text when no args are passed.
   if len(sys.argv) == 1:

@@ -185,8 +185,13 @@ if (enable_java_templates) {
 
         inputs = []
         outputs = []
-        args = [
-          "generate-library",
+        args = []
+        if (defined(invoker.classes)) {
+          args += [ "from-jar" ]
+        } else {
+          args += [ "from-source" ]
+        }
+        args += [
           "--output-dir",
           rebase_path(_jni_output_dir, root_build_dir),
           "--extra-include",
