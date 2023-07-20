@@ -613,6 +613,7 @@
       'linux-bfcache-rel': 'release_bot_blink',
       'linux-extended-tracing-rel': 'release_bot_extended_tracing_reclient',
       'linux-gcc-rel': 'release_bot_minimal_symbols_no_clang',
+      'linux-v4l2-codec-rel': 'v4l2_codec_chrome_with_codecs_release_bot_reclient',
     },
 
     'chromium.mac': {
@@ -1225,6 +1226,7 @@
       'linux-rel-warmed': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage',
       'linux-siso-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient',
       'linux-ubsan-fyi-rel': 'ubsan_release_bot_reclient',
+      'linux-v4l2-codec-rel': 'v4l2_codec_chrome_with_codecs_release_trybot_reclient',
       'linux-viz-rel': 'release_trybot_reclient',
       'linux-wayland-rel': 'gpu_tests_wayland_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_reclient',
       'linux-webkit-msan-rel': 'msan_release_bot_reclient',
@@ -3651,6 +3653,14 @@
       'updater', 'release_trybot_reclient',
     ],
 
+    'v4l2_codec_chrome_with_codecs_release_bot_reclient': [
+      'v4l2_codec', 'chrome_with_codecs', 'release_bot_reclient',
+    ],
+
+    'v4l2_codec_chrome_with_codecs_release_trybot_reclient': [
+      'v4l2_codec', 'chrome_with_codecs', 'release_trybot_reclient',
+    ],
+
     'v8_future_debug_bot_reclient': [
       'v8_future', 'debug_bot_reclient',
     ],
@@ -4676,6 +4686,10 @@
 
     'use_remoteexec_links': {
       'gn_args': 'use_remoteexec_links=true concurrent_links=50',
+    },
+
+    'v4l2_codec': {
+      'gn_args': 'use_v4l2_codec=true',
     },
 
     'v8_enable_debugging_features': {

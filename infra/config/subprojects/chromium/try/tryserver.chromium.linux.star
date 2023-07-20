@@ -669,6 +669,22 @@ try_.builder(
 )
 
 try_.builder(
+    name = "linux-v4l2-codec-rel",
+    mirrors = [
+        "ci/linux-v4l2-codec-rel",
+    ],
+    main_list_view = "try",
+    # b/291169645: This builder is opt-in for now, but in the future we
+    # want it to be a CQ builder based on the following paths.
+    # tryjob = try_.job(
+    #     location_filters = [
+    #        cq.location_filter(path_regexp = "media/gpu/chromeos/.+"),
+    #         cq.location_filter(path_regexp = "media/gpu/v4l2/.+"),
+    #     ],
+    # ),
+)
+
+try_.builder(
     name = "network_service_linux",
     mirrors = [
         "ci/Network Service Linux",
