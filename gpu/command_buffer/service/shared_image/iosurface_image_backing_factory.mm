@@ -316,7 +316,12 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
     gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
     const gfx::BufferFormat buffer_format = ToBufferFormat(format);
     const bool should_clear = false;
-    const bool override_rgba_to_bgra = gr_context_type_ == GrContextType::kGL;
+    const bool override_rgba_to_bgra =
+#if BUILDFLAG(IS_IOS)
+        false;
+#else
+        gr_context_type_ == GrContextType::kGL;
+#endif
     io_surface = gfx::CreateIOSurface(size, buffer_format, should_clear,
                                       override_rgba_to_bgra);
     if (!io_surface) {
@@ -385,7 +390,12 @@ IOSurfaceImageBackingFactory::CreateSharedImageGMBs(
   // checking, could result in an out-of-bounds memory access.
   {
     uint32_t io_surface_format = IOSurfaceGetPixelFormat(io_surface);
-    const bool override_rgba_to_bgra = gr_context_type_ == GrContextType::kGL;
+    const bool override_rgba_to_bgra =
+#if BUILDFLAG(IS_IOS)
+        false;
+#else
+        gr_context_type_ == GrContextType::kGL;
+#endif
     if (io_surface_format != BufferFormatToIOSurfacePixelFormat(
                                  buffer_format, override_rgba_to_bgra)) {
       LOG(ERROR)
