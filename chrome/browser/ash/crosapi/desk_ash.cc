@@ -106,10 +106,13 @@ void DeskAsh::LaunchEmptyDesk(const std::string& desk_name,
 
 void DeskAsh::RemoveDesk(const base::Uuid& desk_uuid,
                          bool combine_desk,
+                         absl::optional<bool> allow_undo,
                          RemoveDeskCallback callback) {
-  ash::DeskCloseType close_type = combine_desk
-                                      ? ash::DeskCloseType::kCombineDesks
-                                      : ash::DeskCloseType::kCloseAllWindows;
+  bool undo_value = allow_undo.value_or(false);
+  ash::DeskCloseType close_type =
+      combine_desk ? ash::DeskCloseType::kCombineDesks
+                   : (undo_value ? ash::DeskCloseType::kCloseAllWindowsAndWait
+                                 : ash::DeskCloseType::kCloseAllWindows);
   auto error = DesksClient::Get()->RemoveDesk(desk_uuid, close_type);
   if (error) {
     std::move(callback).Run(crosapi::mojom::RemoveDeskResult::NewError(

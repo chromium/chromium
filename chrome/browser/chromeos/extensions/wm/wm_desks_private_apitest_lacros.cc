@@ -108,7 +108,8 @@ IN_PROC_BROWSER_TEST_F(DesksExtensionApiLacrosTest,
       base::MakeRefCounted<WmDesksPrivateRemoveDeskFunction>();
   api_test_utils::RunFunctionAndReturnSingleResult(
       remove_desk_function.get(),
-      R"([")" + desk_id->GetString() + R"(", { "combineDesks": false }])",
+      R"([")" + desk_id->GetString() +
+          R"(", { "combineDesks": false, "allowUndo": false }])",
       profile());
 
   // Wait for remove desk animation to settle.

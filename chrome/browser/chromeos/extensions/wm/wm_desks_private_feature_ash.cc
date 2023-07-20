@@ -110,10 +110,12 @@ void WMDesksPrivateFeatureAsh::LaunchDesk(std::string desk_name,
 
 void WMDesksPrivateFeatureAsh::RemoveDesk(const base::Uuid& desk_uuid,
                                           bool combine_desk,
+                                          bool allow_undo,
                                           RemoveDeskCallback callback) {
-  ash::DeskCloseType close_type = combine_desk
-                                      ? ash::DeskCloseType::kCombineDesks
-                                      : ash::DeskCloseType::kCloseAllWindows;
+  ash::DeskCloseType close_type =
+      combine_desk ? ash::DeskCloseType::kCombineDesks
+                   : (allow_undo ? ash::DeskCloseType::kCloseAllWindowsAndWait
+                                 : ash::DeskCloseType::kCloseAllWindows);
   auto error = DesksClient::Get()->RemoveDesk(desk_uuid, close_type);
   std::move(callback).Run(error ? GetStringError(error.value()) : "");
 }

@@ -28,6 +28,7 @@ class WMDesksPrivateFeatureLacros : public WMDesksPrivateFeature {
 
   void RemoveDesk(const base::Uuid& desk_uuid,
                   bool combine_desk,
+                  bool allow_undo,
                   RemoveDeskCallback callback) override;
 
   void SetAllDeskProperty(int window_id,

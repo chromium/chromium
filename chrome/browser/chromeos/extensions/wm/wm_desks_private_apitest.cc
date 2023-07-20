@@ -69,7 +69,8 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, LaunchAndCloseDeskTest) {
       base::MakeRefCounted<WmDesksPrivateRemoveDeskFunction>();
   api_test_utils::RunFunctionAndReturnSingleResult(
       remove_desk_function.get(),
-      R"([")" + desk_id->GetString() + R"(", { "combineDesks": false }])",
+      R"([")" + desk_id->GetString() +
+          R"(", { "combineDesks": false, "allowUndo":false }])",
       browser()->profile());
 
   histogram_tester.ExpectBucketCount("Ash.DeskApi.RemoveDesk.Result", 1, 1);

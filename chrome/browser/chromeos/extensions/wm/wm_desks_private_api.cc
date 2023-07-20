@@ -151,6 +151,10 @@ ExtensionFunction::ResponseAction WmDesksPrivateRemoveDeskFunction::Run() {
   bool combine_desk = params->remove_desk_options
                           ? params->remove_desk_options->combine_desks
                           : false;
+  bool allow_undo =
+      params->remove_desk_options
+          ? params->remove_desk_options->allow_undo.value_or(false)
+          : false;
   base::Uuid uuid = base::Uuid::ParseCaseInsensitive(params->desk_id);
   if (!uuid.is_valid()) {
     base::UmaHistogramBoolean(kApiRemoveDeskResult, false);
@@ -158,7 +162,7 @@ ExtensionFunction::ResponseAction WmDesksPrivateRemoveDeskFunction::Run() {
   }
   std::unique_ptr<WMDesksPrivateFeature> desk_impl = GetDeskFeatureImpl();
   desk_impl->RemoveDesk(
-      uuid, combine_desk,
+      uuid, combine_desk, allow_undo,
       base::BindOnce(&WmDesksPrivateRemoveDeskFunction::OnRemoveDesk, this));
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
