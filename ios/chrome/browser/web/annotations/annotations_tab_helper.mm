@@ -111,6 +111,7 @@ void AnnotationsTabHelper::OnClick(web::WebState* web_state,
   }
 
   if (!ios::provider::HandleIntentTypesForOneTap(web_state, match,
+                                                 base::SysUTF8ToNSString(text),
                                                  base_view_controller_)) {
     NSArray<CRWContextMenuItem*>* items =
         ios::provider::GetContextMenuElementsToAdd(

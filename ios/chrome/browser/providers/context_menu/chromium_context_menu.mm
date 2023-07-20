@@ -29,6 +29,7 @@ NSTextCheckingType GetHandledIntentTypesForOneTap(web::WebState* web_state) {
 
 BOOL HandleIntentTypesForOneTap(web::WebState* web_state,
                                 NSTextCheckingResult* match,
+                                NSString* text,
                                 UIViewController* presenting_view_controller) {
   return NO;
 }

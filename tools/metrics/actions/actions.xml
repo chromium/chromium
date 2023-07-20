@@ -12165,6 +12165,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.ExperienceKit.Maps.OneTap.View">
+  <owner>erahmaoui@google.com</owner>
+  <owner>djean@chromium.org</owner>
+  <description>
+    The number of times the user tapped on an underlined address and triggered
+    the &quot;view-locationh&quot; view controller.
+  </description>
+</action>
+
 <action name="IOS.ExperienceKit.Maps.View">
   <owner>erahmaoui@google.com</owner>
   <owner>djean@chromium.org</owner>

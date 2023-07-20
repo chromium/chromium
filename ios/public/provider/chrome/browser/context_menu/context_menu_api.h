@@ -54,6 +54,7 @@ NSTextCheckingType GetHandledIntentTypesForOneTap(web::WebState* web_state);
 // NO if no direct 1-tap action is defined.
 BOOL HandleIntentTypesForOneTap(web::WebState* web_state,
                                 NSTextCheckingResult* match,
+                                NSString* text,
                                 UIViewController* presenting_view_controller);
 
 // Returns `CRWContextMenuItem` items for the given `match`, for the given
