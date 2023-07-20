@@ -798,7 +798,7 @@ void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
     GetPhoneContactableGpmPasskeysForRpId(dialog_model_->relying_party_id(),
                                           &data.recognized_credentials);
   }
-  if (is_conditional_ && !credential_filter_.empty()) {
+  if (!credential_filter_.empty()) {
     std::vector<device::DiscoverableCredentialMetadata> filtered_list;
     for (auto& platform_credential : data.recognized_credentials) {
       for (auto& filter_credential : credential_filter_) {
