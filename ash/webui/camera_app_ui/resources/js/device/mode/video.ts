@@ -17,6 +17,7 @@ import {Filenamer} from '../../models/file_namer.js';
 import * as loadTimeData from '../../models/load_time_data.js';
 import {
   GifSaver,
+  TimeLapseEncoderArgs,
   TimeLapseSaver,
   VideoSaver,
 } from '../../models/video_saver.js';
@@ -181,6 +182,12 @@ export interface VideoHandler {
    * Creates VideoSaver to save video capture result.
    */
   createVideoSaver(): Promise<VideoSaver>;
+
+  /**
+   * Creates TimeLapseSaver to save time-lapse capture result.
+   */
+  createTimeLapseSaver(encoderArgs: TimeLapseEncoderArgs, speed: number):
+      Promise<TimeLapseSaver>;
 
   /**
    * Handles the result video snapshot.
@@ -811,8 +818,12 @@ export class Video extends ModeBase {
     const encoderConfig = getVideoEncoderConfig(param, this.captureResolution);
 
     // Creates a saver given the initial speed.
-    const saver = await TimeLapseSaver.create(
-        encoderConfig, this.captureResolution, this.frameRate,
+    const saver = await this.handler.createTimeLapseSaver(
+        {
+          encoderConfig,
+          fps: this.frameRate,
+          resolution: this.captureResolution,
+        },
         TIME_LAPSE_INITIAL_SPEED);
 
     // Creates a frame reader from track processor.

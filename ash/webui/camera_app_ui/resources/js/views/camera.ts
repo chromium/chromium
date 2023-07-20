@@ -28,7 +28,11 @@ import * as metrics from '../metrics.js';
 import {Filenamer} from '../models/file_namer.js';
 import {getI18nMessage} from '../models/load_time_data.js';
 import {ResultSaver} from '../models/result_saver.js';
-import {VideoSaver} from '../models/video_saver.js';
+import {
+  TimeLapseEncoderArgs,
+  TimeLapseSaver,
+  VideoSaver,
+} from '../models/video_saver.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
 import {ToteMetricFormat} from '../mojo/type.js';
@@ -720,6 +724,12 @@ export class Camera extends View implements CameraViewUI {
 
   createVideoSaver(): Promise<VideoSaver> {
     return this.resultSaver.startSaveVideo(this.outputVideoRotation);
+  }
+
+  createTimeLapseSaver(encoderArgs: TimeLapseEncoderArgs, speed: number):
+      Promise<TimeLapseSaver> {
+    encoderArgs.videoRotation = this.outputVideoRotation;
+    return TimeLapseSaver.create(encoderArgs, speed);
   }
 
   playShutterEffect(): void {
