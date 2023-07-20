@@ -2674,6 +2674,7 @@ if (!is_android) {
       sources += [
         "../browser/accessibility/live_caption/live_caption_unavailability_notifier_browsertest.cc",
         "../browser/ui/views/device_id/pen_id_browsertest_win.cc",
+        "../browser/ui/views/eye_dropper/eye_dropper_view_aura_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_integration_browsertest_win.cc",
       ]
       sources -= [ "../browser/ui/views/tabs/tab_search_button_browsertest.cc" ]

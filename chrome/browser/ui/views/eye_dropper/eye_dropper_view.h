@@ -52,7 +52,9 @@ class EyeDropperView : public content::EyeDropper,
     raw_ptr<EyeDropperView> view_;
 #if defined(USE_AURA)
     class KeyboardHandler;
+    class FocusObserver;
     std::unique_ptr<KeyboardHandler> keyboard_handler_;
+    std::unique_ptr<FocusObserver> focus_observer_;
 #endif
   };
 

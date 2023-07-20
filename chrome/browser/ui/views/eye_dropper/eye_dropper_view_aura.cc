@@ -7,6 +7,8 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "ui/aura/client/cursor_client.h"
+#include "ui/aura/client/focus_change_observer.h"
+#include "ui/aura/client/focus_client.h"
 #include "ui/aura/window.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/native_window_tracker.h"
@@ -54,11 +56,41 @@ void EyeDropperView::PreEventDispatchHandler::KeyboardHandler::OnKeyEvent(
   }
 }
 
+class EyeDropperView::PreEventDispatchHandler::FocusObserver
+    : public aura::client::FocusChangeObserver {
+ public:
+  FocusObserver(EyeDropperView* view, aura::Window* parent);
+
+  // aura::client::FocusChangeObserver
+  void OnWindowFocused(aura::Window* gained_focus,
+                       aura::Window* lost_focus) override;
+
+  raw_ptr<EyeDropperView> view_;
+  base::ScopedObservation<aura::client::FocusClient,
+                          aura::client::FocusChangeObserver>
+      focus_observation_{this};
+};
+
+EyeDropperView::PreEventDispatchHandler::FocusObserver::FocusObserver(
+    EyeDropperView* view,
+    aura::Window* parent)
+    : view_(view) {
+  focus_observation_.Observe(
+      aura::client::GetFocusClient(parent->GetRootWindow()));
+}
+
+void EyeDropperView::PreEventDispatchHandler::FocusObserver::OnWindowFocused(
+    aura::Window* gained_focus,
+    aura::Window* lost_focus) {
+  view_->OnColorSelectionCanceled();
+}
+
 EyeDropperView::PreEventDispatchHandler::PreEventDispatchHandler(
     EyeDropperView* view,
     gfx::NativeView parent)
     : view_(view),
-      keyboard_handler_(std::make_unique<KeyboardHandler>(view, parent)) {
+      keyboard_handler_(std::make_unique<KeyboardHandler>(view, parent)),
+      focus_observer_(std::make_unique<FocusObserver>(view, parent)) {
   // Ensure that this handler is called before color popup handler by using
   // a higher priority.
   view->GetWidget()->GetNativeWindow()->AddPreTargetHandler(
