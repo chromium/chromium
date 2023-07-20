@@ -47,8 +47,8 @@ class PublisherHost;
 // An app publisher (in the App Service sense) of extension-backed apps for
 // ChromeOS, including Chrome Apps (platform apps and legacy packaged apps),
 // hosted apps (including desktop PWAs), and browser extensions. In Chrome OS,
-// there are 2 ExtensionAppsChromeOs publishers for browser extensions and
-// Chrome apps(including hosted apps) separately.
+// there are two ExtensionAppsChromeOs publishers for extension-backed apps: one
+// for `kExtension`, and one for `kChromeApp` (including hosted apps).
 //
 // See components/services/app_service/README.md.
 class ExtensionAppsChromeOs : public ExtensionAppsBase,
