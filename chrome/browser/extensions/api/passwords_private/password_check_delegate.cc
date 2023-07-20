@@ -293,7 +293,7 @@ PasswordCheckDelegate::GetCredentialsWithReusedPassword() {
 bool PasswordCheckDelegate::MuteInsecureCredential(
     const api::passwords_private::PasswordUiEntry& credential) {
   // Try to obtain the original CredentialUIEntry. Return false if fails.
-  const CredentialUIEntry* entry = FindMatchingEntry(credential);
+  const CredentialUIEntry* entry = id_generator_->TryGetKey(credential.id);
   if (!entry)
     return false;
 
@@ -303,7 +303,7 @@ bool PasswordCheckDelegate::MuteInsecureCredential(
 bool PasswordCheckDelegate::UnmuteInsecureCredential(
     const api::passwords_private::PasswordUiEntry& credential) {
   // Try to obtain the original CredentialUIEntry. Return false if fails.
-  const CredentialUIEntry* entry = FindMatchingEntry(credential);
+  const CredentialUIEntry* entry = id_generator_->TryGetKey(credential.id);
   if (!entry)
     return false;
 
@@ -478,22 +478,6 @@ void PasswordCheckDelegate::OnCredentialDone(
   }
 }
 
-const CredentialUIEntry* PasswordCheckDelegate::FindMatchingEntry(
-    const api::passwords_private::PasswordUiEntry& credential) const {
-  const CredentialUIEntry* entry = id_generator_->TryGetKey(credential.id);
-  if (!entry)
-    return nullptr;
-
-  if (credential.urls.signon_realm != entry->GetFirstSignonRealm() ||
-      credential.username != base::UTF16ToUTF8(entry->username) ||
-      (credential.password &&
-       *credential.password != base::UTF16ToUTF8(entry->password))) {
-    return nullptr;
-  }
-
-  return entry;
-}
-
 void PasswordCheckDelegate::
     RecordAndNotifyAboutCompletedCompromisedPasswordCheck() {
   profile_->GetPrefs()->SetDouble(
@@ -531,10 +515,7 @@ api::passwords_private::PasswordUiEntry
 PasswordCheckDelegate::ConstructInsecureCredentialUiEntry(
     CredentialUIEntry entry) {
   api::passwords_private::PasswordUiEntry api_credential;
-  api_credential.is_android_credential =
-      password_manager::IsValidAndroidFacetURI(entry.GetFirstSignonRealm());
   api_credential.username = base::UTF16ToUTF8(entry.username);
-  api_credential.urls = CreateUrlCollectionFromCredential(entry);
   api_credential.stored_in = StoreSetFromCredential(entry);
   api_credential.compromised_info = CreateCompromiseInfo(entry);
   absl::optional<GURL> change_password_url = entry.GetChangePasswordURL();

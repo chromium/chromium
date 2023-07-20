@@ -113,14 +113,6 @@ class PasswordCheckDelegate
   void OnCredentialDone(const password_manager::LeakCheckCredential& credential,
                         password_manager::IsLeaked is_leaked) override;
 
-  // Tries to find the matching CredentialUIEntry for |credential|. It
-  // performs a look-up in |id_generator_| using |credential.id|. If a matching
-  // value exists it also verifies that signon realm, username and when possible
-  // password match. Returns a pointer to the matching CredentialUIEntry on
-  // success or nullptr otherwise.
-  const password_manager::CredentialUIEntry* FindMatchingEntry(
-      const api::passwords_private::PasswordUiEntry& credential) const;
-
   // Starts the analyses of whether credentials are compromised and/or weak.
   // Assumes that `StartPasswordCheck()` was called prior.
   void StartPasswordAnalyses(StartPasswordCheckCallback callback);

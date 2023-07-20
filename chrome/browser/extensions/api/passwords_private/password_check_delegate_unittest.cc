@@ -89,9 +89,9 @@ constexpr char16_t kWeakPassword2[] = u"111111";
 constexpr char kGoogleAccounts[] = "https://accounts.google.com";
 
 using api::passwords_private::CompromisedInfo;
+using api::passwords_private::DomainInfo;
 using api::passwords_private::PasswordCheckStatus;
 using api::passwords_private::PasswordUiEntry;
-using api::passwords_private::UrlCollection;
 using password_manager::BulkLeakCheckDelegateInterface;
 using password_manager::BulkLeakCheckService;
 using password_manager::InsecureType;
@@ -241,12 +241,6 @@ PasswordForm MakeSavedAndroidPassword(
   return form;
 }
 
-auto ExpectUrls(const std::string& formatted_origin,
-                const std::string& detailed_origin) {
-  return AllOf(Field(&UrlCollection::shown, formatted_origin),
-               Field(&UrlCollection::link, detailed_origin));
-}
-
 // Creates matcher for a given compromised info.
 auto ExpectCompromisedInfo(
     base::TimeDelta elapsed_time_since_compromise,
@@ -262,21 +256,15 @@ auto ExpectCompromisedInfo(
 }
 
 // Creates matcher for a given compromised credential
-auto ExpectCredential(const std::string& formatted_origin,
-                      const std::string& detailed_origin,
-                      const absl::optional<std::string>& change_password_url,
+auto ExpectCredential(const absl::optional<std::string>& change_password_url,
                       const std::u16string& username) {
   return AllOf(
       Field(&PasswordUiEntry::username, base::UTF16ToASCII(username)),
-      Field(&PasswordUiEntry::urls,
-            ExpectUrls(formatted_origin, detailed_origin)),
       Field(&PasswordUiEntry::change_password_url, change_password_url));
 }
 
 // Creates matcher for a given compromised credential
 auto ExpectCompromisedCredential(
-    const std::string& formatted_origin,
-    const std::string& detailed_origin,
     const absl::optional<std::string>& change_password_url,
     const std::u16string& username,
     base::TimeDelta elapsed_time_since_compromise,
@@ -291,12 +279,10 @@ auto ExpectCompromisedCredential(
   return AllOf(
       Field(&PasswordUiEntry::username, base::UTF16ToASCII(username)),
       change_password_url_field_matcher,
-      Field(&PasswordUiEntry::urls,
-            ExpectUrls(formatted_origin, detailed_origin)),
       Field(&PasswordUiEntry::compromised_info,
             Optional(ExpectCompromisedInfo(elapsed_time_since_compromise,
-                                          elapsed_time_since_compromise_str,
-                                          compromise_types))));
+                                           elapsed_time_since_compromise_str,
+                                           compromise_types))));
 }
 
 class PasswordCheckDelegateTest : public ::testing::Test {
@@ -370,13 +356,10 @@ TEST_F(PasswordCheckDelegateTest, GetInsecureCredentialsFillsFieldsCorrectly) {
   EXPECT_THAT(
       delegate().GetInsecureCredentials(),
       UnorderedElementsAre(
-          ExpectCredential("example.com", "https://example.com/",
-                           "https://example.com/.well-known/change-password",
+          ExpectCredential("https://example.com/.well-known/change-password",
                            kUsername1),
-          ExpectCredential(
-              "Example App",
-              "https://play.google.com/store/apps/details?id=com.example.app",
-              "https://example.com/.well-known/change-password", kUsername2)));
+          ExpectCredential("https://example.com/.well-known/change-password",
+                           kUsername2)));
 }
 
 // Verify that computation of weak credentials notifies observers.
@@ -404,7 +387,6 @@ TEST_F(PasswordCheckDelegateTest, WeakCheckWhenUserSignedOut) {
   EXPECT_THAT(
       delegate().GetInsecureCredentials(),
       ElementsAre(ExpectCredential(
-          "example.com", "https://example.com/",
           "https://example.com/.well-known/change-password", kUsername1)));
   EXPECT_EQ(api::passwords_private::PASSWORD_CHECK_STATE_SIGNED_OUT,
             delegate().GetPasswordCheckStatus().state);
@@ -435,25 +417,21 @@ TEST_F(PasswordCheckDelegateTest, GetInsecureCredentialsHandlesTimes) {
   EXPECT_THAT(
       delegate().GetInsecureCredentials(),
       ElementsAre(ExpectCompromisedCredential(
-                      "example.com", "https://example.com/",
                       "https://example.com/.well-known/change-password",
                       kUsername1, base::Seconds(59), "Just now",
                       {api::passwords_private::COMPROMISE_TYPE_LEAKED,
                        api::passwords_private::COMPROMISE_TYPE_REUSED}),
                   ExpectCompromisedCredential(
-                      "example.com", "https://example.com/",
                       "https://example.com/.well-known/change-password",
                       kUsername2, base::Seconds(60), "1 minute ago",
                       {api::passwords_private::COMPROMISE_TYPE_LEAKED,
                        api::passwords_private::COMPROMISE_TYPE_REUSED}),
                   ExpectCompromisedCredential(
-                      "example.org", "http://www.example.org/",
                       "http://www.example.org/.well-known/change-password",
                       kUsername1, base::Days(100), "3 months ago",
                       {api::passwords_private::COMPROMISE_TYPE_LEAKED,
                        api::passwords_private::COMPROMISE_TYPE_REUSED}),
                   ExpectCompromisedCredential(
-                      "example.org", "http://www.example.org/",
                       "http://www.example.org/.well-known/change-password",
                       kUsername2, base::Days(800), "2 years ago",
                       {api::passwords_private::COMPROMISE_TYPE_LEAKED,
@@ -489,27 +467,23 @@ TEST_F(PasswordCheckDelegateTest,
   EXPECT_THAT(delegate().GetInsecureCredentials(),
               UnorderedElementsAre(
                   ExpectCompromisedCredential(
-                      "example.com", "https://example.com/",
                       "https://example.com/.well-known/change-password",
                       kUsername1, base::Minutes(1), "1 minute ago",
                       {api::passwords_private::COMPROMISE_TYPE_LEAKED,
                        api::passwords_private::COMPROMISE_TYPE_PHISHED,
                        api::passwords_private::COMPROMISE_TYPE_REUSED}),
                   ExpectCompromisedCredential(
-                      "example.org", "http://www.example.org/",
                       "http://www.example.org/.well-known/change-password",
                       kUsername1, base::Minutes(3), "3 minutes ago",
                       {api::passwords_private::COMPROMISE_TYPE_PHISHED,
                        api::passwords_private::COMPROMISE_TYPE_REUSED}),
                   ExpectCompromisedCredential(
-                      "example.org", "http://www.example.org/",
                       "http://www.example.org/.well-known/change-password",
                       kUsername2, base::Minutes(4), "4 minutes ago",
                       {api::passwords_private::COMPROMISE_TYPE_LEAKED,
                        api::passwords_private::COMPROMISE_TYPE_PHISHED,
                        api::passwords_private::COMPROMISE_TYPE_REUSED}),
                   ExpectCompromisedCredential(
-                      "example.com", "https://example.com/",
                       "https://example.com/.well-known/change-password",
                       kUsername2, base::Minutes(2), "2 minutes ago",
                       {api::passwords_private::COMPROMISE_TYPE_LEAKED,
@@ -535,28 +509,22 @@ TEST_F(PasswordCheckDelegateTest, GetInsecureCredentialsInjectsAndroid) {
 
   // Verify that the compromised credentials match what is stored in the
   // password store.
-  EXPECT_THAT(
-      delegate().GetInsecureCredentials(),
-      UnorderedElementsAre(
-          ExpectCompromisedCredential(
-              "Example App",
-              "https://play.google.com/store/apps/details?id=com.example.app",
-              "https://example.com/.well-known/change-password", kUsername2,
-              base::Days(3), "3 days ago",
-              {api::passwords_private::COMPROMISE_TYPE_PHISHED,
-               api::passwords_private::COMPROMISE_TYPE_REUSED}),
-          ExpectCompromisedCredential(
-              "app.example.com",
-              "https://play.google.com/store/apps/details?id=com.example.app",
-              absl::nullopt, kUsername1, base::Days(4), "4 days ago",
-              {api::passwords_private::COMPROMISE_TYPE_PHISHED,
-               api::passwords_private::COMPROMISE_TYPE_REUSED}),
-          ExpectCompromisedCredential(
-              "example.com", "https://example.com/",
-              "https://example.com/.well-known/change-password", kUsername1,
-              base::Minutes(5), "5 minutes ago",
-              {api::passwords_private::COMPROMISE_TYPE_LEAKED,
-               api::passwords_private::COMPROMISE_TYPE_REUSED})));
+  EXPECT_THAT(delegate().GetInsecureCredentials(),
+              UnorderedElementsAre(
+                  ExpectCompromisedCredential(
+                      "https://example.com/.well-known/change-password",
+                      kUsername2, base::Days(3), "3 days ago",
+                      {api::passwords_private::COMPROMISE_TYPE_PHISHED,
+                       api::passwords_private::COMPROMISE_TYPE_REUSED}),
+                  ExpectCompromisedCredential(
+                      absl::nullopt, kUsername1, base::Days(4), "4 days ago",
+                      {api::passwords_private::COMPROMISE_TYPE_PHISHED,
+                       api::passwords_private::COMPROMISE_TYPE_REUSED}),
+                  ExpectCompromisedCredential(
+                      "https://example.com/.well-known/change-password",
+                      kUsername1, base::Minutes(5), "5 minutes ago",
+                      {api::passwords_private::COMPROMISE_TYPE_LEAKED,
+                       api::passwords_private::COMPROMISE_TYPE_REUSED})));
 }
 
 // Test that a change to compromised credential notifies observers.
@@ -690,68 +658,6 @@ TEST_F(PasswordCheckDelegateTest, UnmuteInsecureCredentialIdMismatch) {
   credential.id = 1;
 
   EXPECT_FALSE(delegate().UnmuteInsecureCredential(credential));
-}
-
-TEST_F(PasswordCheckDelegateTest, RecordChangePasswordFlowStarted) {
-  // Create an insecure credential.
-  PasswordForm form = MakeSavedPassword(kExampleCom, kUsername1);
-  AddIssueToForm(&form, InsecureType::kLeaked);
-  store().AddLogin(form);
-  RunUntilIdle();
-
-  PasswordUiEntry credential =
-      std::move(delegate().GetInsecureCredentials().at(0));
-  ASSERT_EQ(base::UTF16ToASCII(kUsername1), credential.username);
-
-  EXPECT_CALL(
-      password_change_success_tracker(),
-      OnManualChangePasswordFlowStarted(
-          GURL(*credential.change_password_url), credential.username,
-          PasswordChangeSuccessTracker::EntryPoint::kLeakCheckInSettings));
-
-  delegate().RecordChangePasswordFlowStarted(credential);
-}
-
-TEST_F(PasswordCheckDelegateTest,
-       RecordChangePasswordFlowStartedForAppWithWebRealm) {
-  // Create an insecure credential.
-  PasswordForm form = MakeSavedAndroidPassword(kExampleApp, kUsername2,
-                                               "Example App", kExampleCom);
-  AddIssueToForm(&form, InsecureType::kLeaked);
-  store().AddLogin(form);
-  RunUntilIdle();
-
-  PasswordUiEntry credential =
-      std::move(delegate().GetInsecureCredentials().at(0));
-  ASSERT_EQ(base::UTF16ToASCII(kUsername2), credential.username);
-
-  EXPECT_CALL(
-      password_change_success_tracker(),
-      OnManualChangePasswordFlowStarted(
-          GURL(*credential.change_password_url), credential.username,
-          PasswordChangeSuccessTracker::EntryPoint::kLeakCheckInSettings));
-
-  delegate().RecordChangePasswordFlowStarted(credential);
-}
-
-TEST_F(PasswordCheckDelegateTest,
-       RecordChangePasswordFlowStartedForAppWithoutWebRealm) {
-  // Create an insecure credential.
-  PasswordForm form = MakeSavedAndroidPassword(kExampleApp, kUsername1, "", "");
-  AddIssueToForm(&form, InsecureType::kLeaked);
-  store().AddLogin(form);
-  RunUntilIdle();
-
-  PasswordUiEntry credential =
-      std::move(delegate().GetInsecureCredentials().at(0));
-  ASSERT_EQ(base::UTF16ToASCII(kUsername1), credential.username);
-
-  // Since no password change link exists, we expect no call to the tracker.
-  EXPECT_CALL(password_change_success_tracker(),
-              OnManualChangePasswordFlowStarted)
-      .Times(0);
-
-  delegate().RecordChangePasswordFlowStarted(credential);
 }
 
 // Tests that we don't create an entry in the database if there is no matching
@@ -927,21 +833,6 @@ TEST_F(PasswordCheckDelegateTest, GetPasswordCheckStatusCount) {
   EXPECT_EQ(*status.total_number_of_passwords, 2);
 }
 
-// Verifies that the case where the check is canceled is reported correctly.
-TEST_F(PasswordCheckDelegateTest, GetPasswordCheckStatusCanceled) {
-  identity_test_env().MakeAccountAvailable(kTestEmail);
-  store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1));
-  RunUntilIdle();
-
-  delegate().StartPasswordCheck();
-  EXPECT_EQ(api::passwords_private::PASSWORD_CHECK_STATE_RUNNING,
-            delegate().GetPasswordCheckStatus().state);
-
-  delegate().StopPasswordCheck();
-  EXPECT_EQ(api::passwords_private::PASSWORD_CHECK_STATE_CANCELED,
-            delegate().GetPasswordCheckStatus().state);
-}
-
 // Verifies that the case where the user is offline is reported correctly.
 TEST_F(PasswordCheckDelegateTest, GetPasswordCheckStatusOffline) {
   identity_test_env().MakeAccountAvailable(kTestEmail);
@@ -1096,24 +987,6 @@ TEST_F(PasswordCheckDelegateTest, OnCredentialDoneUpdatesProgress) {
   EXPECT_EQ(0, *status->remaining_in_queue);
 }
 
-// Tests that StopPasswordCheck() invokes pending callbacks before
-// initialization finishes.
-TEST_F(PasswordCheckDelegateTest,
-       StopPasswordCheckRespondsCancelsBeforeInitialization) {
-  MockStartPasswordCheckCallback callback1;
-  MockStartPasswordCheckCallback callback2;
-  delegate().StartPasswordCheck(callback1.Get());
-  delegate().StartPasswordCheck(callback2.Get());
-
-  EXPECT_CALL(callback1, Run(BulkLeakCheckService::State::kIdle));
-  EXPECT_CALL(callback2, Run(BulkLeakCheckService::State::kIdle));
-  delegate().StopPasswordCheck();
-
-  Mock::VerifyAndClearExpectations(&callback1);
-  Mock::VerifyAndClearExpectations(&callback2);
-  RunUntilIdle();
-}
-
 // Tests that pending callbacks get invoked once initialization finishes.
 TEST_F(PasswordCheckDelegateTest,
        StartPasswordCheckRunsCallbacksAfterInitialization) {
@@ -1193,25 +1066,17 @@ TEST_F(PasswordCheckDelegateTest,
           Field(&api::passwords_private::PasswordUiEntryList::entries,
                 UnorderedElementsAre(
                     ExpectCredential(
-                        "example.com", "https://example.com/",
                         "https://example.com/.well-known/change-password",
                         kUsername2),
                     ExpectCredential(
-                        "Example App",
-                        "https://play.google.com/store/apps/"
-                        "details?id=com.example.app",
                         "https://example.com/.well-known/change-password",
                         kUsername1))),
           Field(&api::passwords_private::PasswordUiEntryList::entries,
                 UnorderedElementsAre(
                     ExpectCredential(
-                        "example.com", "https://example.com/",
                         "https://example.com/.well-known/change-password",
                         kUsername1),
                     ExpectCredential(
-                        "Example App",
-                        "https://play.google.com/store/apps/"
-                        "details?id=com.example.app",
                         "https://example.com/.well-known/change-password",
                         kUsername2)))));
 }
@@ -1234,3 +1099,4 @@ TEST_F(PasswordCheckDelegateTest,
 }
 
 }  // namespace extensions
+                          
