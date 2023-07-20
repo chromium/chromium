@@ -84,6 +84,7 @@ source_set("unit_tests") {
   deps = [
     ":fast_pair_handshake",
     ":test_support",
+    "//ash/constants:constants",
     "//ash/quick_pair/common",
     "//ash/quick_pair/common:test_support",
     "//ash/quick_pair/repository:test_support",
