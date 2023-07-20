@@ -94,35 +94,41 @@ TEST_F(TouchSelectionMenuRunnerViewsTest, InstalledAndWorksProperly) {
 // menu, the bottom of the anchor rect should be expanded so that the quick menu
 // will not overlap with the handles.
 TEST_F(TouchSelectionMenuRunnerViewsTest, QuickMenuAdjustsAnchorRect) {
-  gfx::Size handle_size(10, 10);
   TouchSelectionMenuRunnerViews::TestApi test_api(
       static_cast<TouchSelectionMenuRunnerViews*>(
           ui::TouchSelectionMenuRunner::GetInstance()));
 
   // When the provided anchor rect has zero width (e.g. when an insertion handle
-  // is visible), the bottom should be adjusted to include the handle height.
-  gfx::Rect anchor_rect(0, 0, 0, 20);
+  // is visible), the anchor rect should be expanded below the bottom of the
+  // handles to prevent the menu and handles from overlapping.
+  gfx::Rect anchor_rect(0, 10);
+  constexpr gfx::Size kHandleSize(15, 15);
   ui::TouchSelectionMenuRunner::GetInstance()->OpenMenu(
-      GetWeakPtr(), anchor_rect, handle_size, GetContext());
-  anchor_rect.Outset(gfx::Outsets::TLBR(0, 0, handle_size.height(), 0));
-  EXPECT_EQ(anchor_rect, test_api.GetAnchorRect());
+      GetWeakPtr(), anchor_rect, kHandleSize, GetContext());
+  EXPECT_GE(test_api.GetAnchorRect().bottom(),
+            anchor_rect.bottom() + kHandleSize.height());
 
-  // When the provided anchor rect's width is slightly greater than the quick
-  // menu width plus the handle width, the anchor rect should not be adjusted.
+  // When the provided anchor rect's width is greater than the quick menu width
+  // plus the handle width, the menu can fit between the selection handles. In
+  // this case the anchor rect is still slightly adjusted to add padding, but
+  // does not need to expand below the handles.
   anchor_rect =
-      gfx::Rect(0, 0, test_api.GetMenuWidth() + handle_size.width() + 10, 20);
+      gfx::Rect(test_api.GetMenuWidth() + kHandleSize.width() + 10, 20);
   ui::TouchSelectionMenuRunner::GetInstance()->OpenMenu(
-      GetWeakPtr(), anchor_rect, handle_size, GetContext());
-  EXPECT_EQ(anchor_rect, test_api.GetAnchorRect());
+      GetWeakPtr(), anchor_rect, kHandleSize, GetContext());
+  EXPECT_GE(test_api.GetAnchorRect().bottom(), anchor_rect.bottom());
+  EXPECT_LE(test_api.GetAnchorRect().bottom(),
+            anchor_rect.bottom() + kHandleSize.height());
 
-  // When the provided anchor rect's width is slightly less than the quick
-  // menu width plus the handle width, the anchor rect should be adjusted.
+  // When the provided anchor rect's width is less than the quick menu width
+  // plus the handle width, the anchor rect should be expanded below the bottom
+  // of the handles to prevent the menu and handles from overlapping.
   anchor_rect =
-      gfx::Rect(0, 0, test_api.GetMenuWidth() + handle_size.width() - 10, 20);
+      gfx::Rect(test_api.GetMenuWidth() + kHandleSize.width() - 10, 20);
   ui::TouchSelectionMenuRunner::GetInstance()->OpenMenu(
-      GetWeakPtr(), anchor_rect, handle_size, GetContext());
-  anchor_rect.Outset(gfx::Outsets::TLBR(0, 0, handle_size.height(), 0));
-  EXPECT_EQ(anchor_rect, test_api.GetAnchorRect());
+      GetWeakPtr(), anchor_rect, kHandleSize, GetContext());
+  EXPECT_GE(test_api.GetAnchorRect().bottom(),
+            anchor_rect.bottom() + kHandleSize.height());
 
   ui::TouchSelectionMenuRunner::GetInstance()->CloseMenu();
   RunPendingMessages();
