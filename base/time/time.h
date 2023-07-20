@@ -226,18 +226,18 @@ class BASE_EXPORT TimeDelta {
   // up to greater integers (std::ceil() behavior). WARNING: Floating point
   // arithmetic is such that XXX(t.InXXXF()) may not precisely equal |t|.
   // Hence, floating point values should not be used for storage.
-  int InDays() const;
+  constexpr int InDays() const;
   int InDaysFloored() const;
   constexpr int InHours() const;
   constexpr int InMinutes() const;
   constexpr double InSecondsF() const;
   constexpr int64_t InSeconds() const;
   int64_t InSecondsFloored() const;
-  double InMillisecondsF() const;
+  constexpr double InMillisecondsF() const;
   constexpr int64_t InMilliseconds() const;
   int64_t InMillisecondsRoundedUp() const;
   constexpr int64_t InMicroseconds() const { return delta_; }
-  double InMicrosecondsF() const;
+  constexpr double InMicrosecondsF() const;
   constexpr int64_t InNanoseconds() const;
 
   // Computations with other deltas.
@@ -925,6 +925,14 @@ constexpr double TimeDelta::ToHz() const {
   return Seconds(1) / *this;
 }
 
+constexpr int TimeDelta::InDays() const {
+  if (!is_inf()) {
+    return static_cast<int>(delta_ / Time::kMicrosecondsPerDay);
+  }
+  return (delta_ < 0) ? std::numeric_limits<int>::min()
+                      : std::numeric_limits<int>::max();
+}
+
 constexpr int TimeDelta::InHours() const {
   // saturated_cast<> is necessary since very large (but still less than
   // min/max) deltas would result in overflow.
@@ -948,12 +956,28 @@ constexpr int64_t TimeDelta::InSeconds() const {
   return is_inf() ? delta_ : (delta_ / Time::kMicrosecondsPerSecond);
 }
 
+constexpr double TimeDelta::InMillisecondsF() const {
+  if (!is_inf()) {
+    return static_cast<double>(delta_) / Time::kMicrosecondsPerMillisecond;
+  }
+  return (delta_ < 0) ? -std::numeric_limits<double>::infinity()
+                      : std::numeric_limits<double>::infinity();
+}
+
 constexpr int64_t TimeDelta::InMilliseconds() const {
   if (!is_inf()) {
     return delta_ / Time::kMicrosecondsPerMillisecond;
   }
   return (delta_ < 0) ? std::numeric_limits<int64_t>::min()
                       : std::numeric_limits<int64_t>::max();
+}
+
+constexpr double TimeDelta::InMicrosecondsF() const {
+  if (!is_inf()) {
+    return static_cast<double>(delta_);
+  }
+  return (delta_ < 0) ? -std::numeric_limits<double>::infinity()
+                      : std::numeric_limits<double>::infinity();
 }
 
 constexpr int64_t TimeDelta::InNanoseconds() const {

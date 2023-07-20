@@ -63,13 +63,6 @@ int64_t TimeDelta::InSecondsFloored() const {
   return delta_;
 }
 
-int TimeDelta::InDays() const {
-  if (!is_inf())
-    return static_cast<int>(delta_ / Time::kMicrosecondsPerDay);
-  return (delta_ < 0) ? std::numeric_limits<int>::min()
-                      : std::numeric_limits<int>::max();
-}
-
 int TimeDelta::InDaysFloored() const {
   if (!is_inf()) {
     const int result = delta_ / Time::kMicrosecondsPerDay;
@@ -81,13 +74,6 @@ int TimeDelta::InDaysFloored() const {
                       : std::numeric_limits<int>::max();
 }
 
-double TimeDelta::InMillisecondsF() const {
-  if (!is_inf())
-    return static_cast<double>(delta_) / Time::kMicrosecondsPerMillisecond;
-  return (delta_ < 0) ? -std::numeric_limits<double>::infinity()
-                      : std::numeric_limits<double>::infinity();
-}
-
 int64_t TimeDelta::InMillisecondsRoundedUp() const {
   if (!is_inf()) {
     const int64_t result = delta_ / Time::kMicrosecondsPerMillisecond;
@@ -96,13 +82,6 @@ int64_t TimeDelta::InMillisecondsRoundedUp() const {
                                                                  : result;
   }
   return delta_;
-}
-
-double TimeDelta::InMicrosecondsF() const {
-  if (!is_inf())
-    return static_cast<double>(delta_);
-  return (delta_ < 0) ? -std::numeric_limits<double>::infinity()
-                      : std::numeric_limits<double>::infinity();
 }
 
 TimeDelta TimeDelta::CeilToMultiple(TimeDelta interval) const {
