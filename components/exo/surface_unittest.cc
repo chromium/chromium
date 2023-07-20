@@ -151,7 +151,8 @@ class SurfaceTest
   }
 
   const viz::CompositorFrame& GetFrameFromSurface(ShellSurface* shell_surface) {
-    viz::SurfaceId surface_id = shell_surface->host_window()->GetSurfaceId();
+    viz::SurfaceId surface_id =
+        *shell_surface->host_window()->layer()->GetSurfaceId();
     const viz::CompositorFrame& frame =
         GetSurfaceManager()->GetSurfaceForId(surface_id)->GetActiveFrame();
     return frame;

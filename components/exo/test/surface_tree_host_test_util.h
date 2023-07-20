@@ -25,7 +25,7 @@ void SetLayerTreeFrameSinkHolderFactory(SurfaceTreeHost* surface_tree_host) {
           [surface_tree_host]() -> std::unique_ptr<LayerTreeFrameSinkHolder> {
             return std::make_unique<LayerTreeFrameSinkHolderType>(
                 surface_tree_host,
-                surface_tree_host->host_window()->CreateLayerTreeFrameSink());
+                surface_tree_host->CreateLayerTreeFrameSink());
           }));
 }
 

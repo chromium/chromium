@@ -992,8 +992,9 @@ void ShellSurfaceBase::OnSurfaceCommit() {
   // SetShadowBounds requires synchronizing shadow bounds with the next frame,
   // so submit the next frame to a new surface and let the host window use the
   // new surface.
-  if (shadow_bounds_changed_)
-    host_window()->AllocateLocalSurfaceId();
+  if (shadow_bounds_changed_) {
+    AllocateLocalSurfaceId();
+  }
 
   root_surface()->CommitSurfaceHierarchy(false);
 

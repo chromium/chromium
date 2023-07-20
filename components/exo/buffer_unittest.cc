@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
 #include "components/exo/frame_sink_resource_manager.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/surface_tree_host.h"
@@ -447,7 +448,7 @@ class TestLayerTreeFrameSinkHolder : public LayerTreeFrameSinkHolder {
  public:
   TestLayerTreeFrameSinkHolder(
       SurfaceTreeHost* surface_tree_host,
-      std::unique_ptr<cc::LayerTreeFrameSink> frame_sink)
+      std::unique_ptr<cc::mojo_embedder::AsyncLayerTreeFrameSink> frame_sink)
       : LayerTreeFrameSinkHolder(surface_tree_host, std::move(frame_sink)) {}
   ~TestLayerTreeFrameSinkHolder() override = default;
 

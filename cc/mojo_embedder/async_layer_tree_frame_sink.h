@@ -102,6 +102,12 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
   const viz::LocalSurfaceId& local_surface_id() const {
     return local_surface_id_;
   }
+  float last_submitted_device_scale_factor() const {
+    return last_submitted_device_scale_factor_;
+  }
+  const gfx::Size& last_submitted_size_in_pixels() const {
+    return last_submitted_size_in_pixels_;
+  }
 
   // LayerTreeFrameSink implementation.
   bool BindToClient(LayerTreeFrameSinkClient* client) override;

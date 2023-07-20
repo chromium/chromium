@@ -11,11 +11,11 @@
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/exo/layer_tree_frame_sink_holder.h"
 #include "components/exo/surface.h"
 #include "components/exo/surface_delegate.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
-#include "components/viz/common/quads/compositor_frame_metadata.h"
+#include "components/viz/common/quads/compositor_frame.h"
+#include "components/viz/common/surfaces/frame_sink_id.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/rect.h"
@@ -35,6 +35,7 @@ class LayerTreeFrameSinkHolder;
 // tree is hosted in the |host_window_|.
 class SurfaceTreeHost : public SurfaceDelegate,
                         public display::DisplayObserver,
+                        public ui::LayerOwner::Observer,
                         public viz::ContextLostObserver {
  public:
   explicit SurfaceTreeHost(const std::string& window_name);
@@ -154,6 +155,13 @@ class SurfaceTreeHost : public SurfaceDelegate,
   void SetLayerTreeFrameSinkHolderFactoryForTesting(
       LayerTreeFrameSinkHolderFactory frame_sink_holder_factory);
 
+  // Create a LayerTreeFrameSink for the |host_window_|.
+  std::unique_ptr<cc::mojo_embedder::AsyncLayerTreeFrameSink>
+  CreateLayerTreeFrameSink();
+
+  // Overridden from ui::LayerOwner::Observer
+  void OnLayerRecreated(ui::Layer* old_layer) override;
+
  protected:
   void UpdateDisplayOnTree();
 
@@ -191,16 +199,41 @@ class SurfaceTreeHost : public SurfaceDelegate,
   // NOTE: This should only be done if the client submits in pixel coordinates.
   void SetScaleFactorTransform(float scale_factor);
 
+  // Once a configure is acknowledged, accept the parent portion of the
+  // local_surface_id from the |host_window_|.
+  void UpdateLocalSurfaceIdFromParent(
+      const viz::LocalSurfaceId& parent_local_surface_id);
+
+  // Change the local_surface_id as the viz::Surface property will change.
+  void AllocateLocalSurfaceId();
+
+  // If local_surface_id is newer than |host_window_|'s ui layer, push the
+  // current local_surface_id to |host_window_| and its ui layer to produce a
+  // different SurfaceDrawQuad.
+  void MaybeActivateSurface();
+
+  // Returns the primary SurfaceId.
+  viz::SurfaceId GetSurfaceId() const;
+
  private:
   void InitHostWindow(const std::string& window_name);
 
   viz::CompositorFrame PrepareToSubmitCompositorFrame();
+
+  // The local_surface_id that the |frame_sink_| is submitting with, it should
+  // never be older than the local_surface_id of |host_window_|'s layer.
+  const viz::LocalSurfaceId& GetCurrentLocalSurfaceId() const;
 
   void HandleContextLost();
 
   void CleanUpCallbacks();
 
   std::unique_ptr<LayerTreeFrameSinkHolder> CreateLayerTreeFrameSinkHolder();
+
+  // The FrameSinkId associated with this.
+  viz::FrameSinkId frame_sink_id_;
+  std::unique_ptr<viz::ChildLocalSurfaceIdAllocator>
+      child_local_surface_id_allocator_;
 
   raw_ptr<Surface, ExperimentalAsh> root_surface_ = nullptr;
 
@@ -249,8 +282,6 @@ class SurfaceTreeHost : public SurfaceDelegate,
   std::set<gpu::SyncToken> prev_frame_verified_tokens_;
 
   bool bounds_is_dirty_ = true;
-
-  absl::optional<gfx::Rect> previous_content_bounds_;
 
   base::WeakPtrFactory<SurfaceTreeHost> weak_ptr_factory_{this};
 };

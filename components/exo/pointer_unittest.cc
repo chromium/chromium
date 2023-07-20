@@ -311,7 +311,8 @@ TEST_P(PointerTest, SetCursor) {
 
   const viz::CompositorRenderPass* last_render_pass;
   {
-    viz::SurfaceId surface_id = pointer->host_window()->GetSurfaceId();
+    viz::SurfaceId surface_id =
+        *pointer->host_window()->layer()->GetSurfaceId();
     viz::SurfaceManager* surface_manager = GetSurfaceManager();
     ASSERT_TRUE(surface_manager->GetSurfaceForId(surface_id)->HasActiveFrame());
     const viz::CompositorFrame& frame =
@@ -327,7 +328,8 @@ TEST_P(PointerTest, SetCursor) {
 
   // Verify that adjustment to hotspot resulted in new frame.
   {
-    viz::SurfaceId surface_id = pointer->host_window()->GetSurfaceId();
+    viz::SurfaceId surface_id =
+        *pointer->host_window()->layer()->GetSurfaceId();
     viz::SurfaceManager* surface_manager = GetSurfaceManager();
     ASSERT_TRUE(surface_manager->GetSurfaceForId(surface_id)->HasActiveFrame());
     const viz::CompositorFrame& frame =
@@ -402,7 +404,8 @@ TEST_P(PointerTest, SetCursorType) {
   test::WaitForLastFrameAck(pointer.get());
 
   {
-    viz::SurfaceId surface_id = pointer->host_window()->GetSurfaceId();
+    viz::SurfaceId surface_id =
+        *pointer->host_window()->layer()->GetSurfaceId();
     viz::SurfaceManager* surface_manager = GetSurfaceManager();
     ASSERT_TRUE(surface_manager->GetSurfaceForId(surface_id)->HasActiveFrame());
     const viz::CompositorFrame& frame =
@@ -476,7 +479,8 @@ TEST_P(PointerTest, SetCursorAndSetCursorType) {
   test::WaitForLastFramePresentation(pointer.get());
 
   {
-    viz::SurfaceId surface_id = pointer->host_window()->GetSurfaceId();
+    viz::SurfaceId surface_id =
+        *pointer->host_window()->layer()->GetSurfaceId();
     viz::SurfaceManager* surface_manager = GetSurfaceManager();
     ASSERT_TRUE(surface_manager->GetSurfaceForId(surface_id)->HasActiveFrame());
     const viz::CompositorFrame& frame =
@@ -496,7 +500,8 @@ TEST_P(PointerTest, SetCursorAndSetCursorType) {
   test::WaitForLastFramePresentation(pointer.get());
 
   {
-    viz::SurfaceId surface_id = pointer->host_window()->GetSurfaceId();
+    viz::SurfaceId surface_id =
+        *pointer->host_window()->layer()->GetSurfaceId();
     viz::SurfaceManager* surface_manager = GetSurfaceManager();
     ASSERT_TRUE(surface_manager->GetSurfaceForId(surface_id)->HasActiveFrame());
     const viz::CompositorFrame& frame =

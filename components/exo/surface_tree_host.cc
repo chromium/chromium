@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "components/exo/layer_tree_frame_sink_holder.h"
 #include "components/exo/shell_surface_base.h"
@@ -23,7 +24,8 @@
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/resources/transferable_resource.h"
-#include "components/viz/common/surfaces/local_surface_id.h"
+#include "components/viz/common/surfaces/child_local_surface_id_allocator.h"
+#include "components/viz/host/host_frame_sink_manager.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/accessibility/aura/aura_window_properties.h"
@@ -36,7 +38,6 @@
 #include "ui/aura/window_targeter.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/cursor.h"
-#include "ui/color/color_id.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
@@ -47,7 +48,6 @@
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/presentation_feedback.h"
 
@@ -129,6 +129,12 @@ SurfaceTreeHost::~SurfaceTreeHost() {
   LayerTreeFrameSinkHolder::DeleteWhenLastResourceHasBeenReclaimed(
       std::move(layer_tree_frame_sink_holder_));
   CleanUpCallbacks();
+
+  if (frame_sink_id_.is_valid()) {
+    auto* context_factory = aura::Env::GetInstance()->context_factory();
+    auto* host_frame_sink_manager = context_factory->GetHostFrameSinkManager();
+    host_frame_sink_manager->InvalidateFrameSinkId(frame_sink_id_);
+  }
 }
 
 void SurfaceTreeHost::SetRootSurface(Surface* root_surface) {
@@ -145,11 +151,16 @@ void SurfaceTreeHost::SetRootSurface(Surface* root_surface) {
     host_window_->RemoveChild(root_surface_->window());
     host_window_->SetBounds(
         gfx::Rect(host_window_->bounds().origin(), gfx::Size()));
+    AllocateLocalSurfaceId();
+    if (!layer_tree_frame_sink_holder_->is_lost()) {
+      layer_tree_frame_sink_holder_->SetLocalSurfaceId(
+          GetCurrentLocalSurfaceId());
+    }
+    MaybeActivateSurface();
     root_surface_->SetSurfaceDelegate(nullptr);
     // Force recreating resources when the surface is added to a tree again.
     root_surface_->SurfaceHierarchyResourcesLost();
     root_surface_ = nullptr;
-    previous_content_bounds_ = absl::nullopt;
   }
 
   if (root_surface) {
@@ -375,12 +386,12 @@ void SurfaceTreeHost::SubmitEmptyCompositorFrame() {
   const gfx::Rect quad_rect = gfx::Rect(0, 0, 1, 1);
   viz::SharedQuadState* quad_state =
       render_pass->CreateAndAppendSharedQuadState();
-  quad_state->SetAll(
-      gfx::Transform(), /*quad_layer_rect=*/quad_rect,
-      /*visible_layer_rect=*/quad_rect,
-      /*mask_filter_info=*/gfx::MaskFilterInfo(), /*clip_rect=*/absl::nullopt,
-      /*are_contents_opaque=*/true, /*opacity=*/1.f,
-      /*blend_mode=*/SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
+  quad_state->SetAll(gfx::Transform(), /*layer_rect=*/quad_rect,
+                     /*visible_layer_rect=*/quad_rect,
+                     /*filter_info=*/gfx::MaskFilterInfo(),
+                     /*clip=*/absl::nullopt,
+                     /*contents_opaque=*/true, /*opacity_f=*/1.f,
+                     /*blend=*/SkBlendMode::kSrcOver, /*sorting_context=*/0);
 
   viz::SolidColorDrawQuad* solid_quad =
       render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
@@ -401,7 +412,6 @@ void SurfaceTreeHost::UpdateHostWindowBounds() {
   // applied.
   aura::WindowOcclusionTracker::ScopedPause pause_occlusion;
 
-  const viz::LocalSurfaceId old_id = host_window_->GetLocalSurfaceId();
   const gfx::Rect& bounds = root_surface_->surface_hierarchy_content_bounds();
   gfx::Size size = bounds.size();
   if (client_submits_surfaces_in_pixel_coordinates_) {
@@ -412,14 +422,6 @@ void SurfaceTreeHost::UpdateHostWindowBounds() {
     // DP size has changed, set new bounds.
     host_window_->SetBounds({host_window_->bounds().origin(), size});
   }
-
-  if (previous_content_bounds_ != bounds &&
-      host_window_->GetLocalSurfaceId() == old_id) {
-    // Explicitly allocate local surface id if it's not updated since pixel
-    // bounds has changed.
-    host_window_->AllocateLocalSurfaceId();
-  }
-  previous_content_bounds_ = bounds;
 
   // TODO(yjliu): a) consolidate with ClientControlledShellSurface. b) use the
   // scale factor the buffer is created for to set the transform for
@@ -452,7 +454,94 @@ void SurfaceTreeHost::InitHostWindow(const std::string& window_name) {
   host_window_->SetEventTargetingPolicy(
       aura::EventTargetingPolicy::kDescendantsOnly);
   host_window_->SetEventTargeter(std::make_unique<CustomWindowTargeter>(this));
+  host_window_.get()->ui::LayerOwner::AddObserver(this);
   layer_tree_frame_sink_holder_ = frame_sink_holder_factory_.Run();
+}
+
+std::unique_ptr<cc::mojo_embedder::AsyncLayerTreeFrameSink>
+SurfaceTreeHost::CreateLayerTreeFrameSink() {
+  auto* context_factory = aura::Env::GetInstance()->context_factory();
+  auto* host_frame_sink_manager = context_factory->GetHostFrameSinkManager();
+
+  if (!frame_sink_id_.is_valid()) {
+    frame_sink_id_ = context_factory->AllocateFrameSinkId();
+    host_frame_sink_manager->RegisterFrameSinkId(
+        frame_sink_id_, host_window(), viz::ReportFirstSurfaceActivation::kNo);
+    host_window_->SetEmbedFrameSinkId(frame_sink_id_);
+  }
+
+  // For creating an async frame sink which connects to the viz display
+  // compositor.
+  mojo::PendingRemote<viz::mojom::CompositorFrameSink> sink_remote;
+  mojo::PendingReceiver<viz::mojom::CompositorFrameSink> sink_receiver =
+      sink_remote.InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> client_remote;
+  mojo::PendingReceiver<viz::mojom::CompositorFrameSinkClient> client_receiver =
+      client_remote.InitWithNewPipeAndPassReceiver();
+  host_frame_sink_manager->CreateCompositorFrameSink(
+      frame_sink_id_, std::move(sink_receiver), std::move(client_remote));
+
+  cc::mojo_embedder::AsyncLayerTreeFrameSink::InitParams params;
+  params.gpu_memory_buffer_manager =
+      aura::Env::GetInstance()->context_factory()->GetGpuMemoryBufferManager();
+  params.pipes.compositor_frame_sink_remote = std::move(sink_remote);
+  params.pipes.client_receiver = std::move(client_receiver);
+  auto frame_sink =
+      std::make_unique<cc::mojo_embedder::AsyncLayerTreeFrameSink>(
+          nullptr /* context_provider */, nullptr /* worker_context_provider */,
+          /*shared_image_interface=*/nullptr, &params);
+  AllocateLocalSurfaceId();
+  CHECK(GetCurrentLocalSurfaceId().is_valid());
+  return frame_sink;
+}
+
+void SurfaceTreeHost::AllocateLocalSurfaceId() {
+  if (!child_local_surface_id_allocator_) {
+    child_local_surface_id_allocator_ =
+        std::make_unique<viz::ChildLocalSurfaceIdAllocator>();
+    child_local_surface_id_allocator_->UpdateFromParent(
+        host_window_->GetLocalSurfaceId());
+  }
+  child_local_surface_id_allocator_->GenerateId();
+}
+
+void SurfaceTreeHost::UpdateLocalSurfaceIdFromParent(
+    const viz::LocalSurfaceId& parent_local_surface_id) {
+  child_local_surface_id_allocator_->UpdateFromParent(parent_local_surface_id);
+}
+
+void SurfaceTreeHost::MaybeActivateSurface() {
+  DCHECK(!host_window_->layer()->GetSurfaceId() ||
+         GetCurrentLocalSurfaceId().IsSameOrNewerThan(
+             host_window_->layer()->GetSurfaceId()->local_surface_id()));
+
+  if (host_window_->layer()->GetSurfaceId() &&
+      !GetCurrentLocalSurfaceId().IsNewerThan(
+          host_window_->layer()->GetSurfaceId()->local_surface_id())) {
+    return;
+  }
+
+  host_window_->UpdateLocalSurfaceIdFromEmbeddedClient(
+      GetCurrentLocalSurfaceId());
+  host_window_->layer()->SetShowSurface(
+      GetSurfaceId(), host_window_->bounds().size(), SK_ColorWHITE,
+      cc::DeadlinePolicy::UseDefaultDeadline(),
+      false /* stretch_content_to_fill_bounds */);
+}
+
+viz::SurfaceId SurfaceTreeHost::GetSurfaceId() const {
+  return viz::SurfaceId(frame_sink_id_, GetCurrentLocalSurfaceId());
+}
+
+const viz::LocalSurfaceId& SurfaceTreeHost::GetCurrentLocalSurfaceId() const {
+  return child_local_surface_id_allocator_->GetCurrentLocalSurfaceId();
+}
+
+void SurfaceTreeHost::OnLayerRecreated(ui::Layer* old_layer) {
+  // TODO(crbug/1251778): Track the old layer copies that are kept and advance
+  // them to new local_surface_id in case the surface property changes, until
+  // the copies' corresponding parent local_surface_id is synchronized to the
+  // surface_tree_host.
 }
 
 viz::CompositorFrame SurfaceTreeHost::PrepareToSubmitCompositorFrame() {
@@ -505,6 +594,19 @@ viz::CompositorFrame SurfaceTreeHost::PrepareToSubmitCompositorFrame() {
                       gfx::Rect(), gfx::Transform());
   frame.metadata.device_scale_factor = device_scale_factor;
 
+  // TODO(crbug.com/1464991): if the frame is throttled by
+  // ReactiveFrameSubmission, `LastSubmittedSizeInPixels()` and
+  // `LastSubmittedDeviceScaleFactor()` does not represent the properties of the
+  // last frame pushed to the queue.
+  if (output_surface_size_in_pixels !=
+          layer_tree_frame_sink_holder_->LastSubmittedSizeInPixels() ||
+      device_scale_factor !=
+          layer_tree_frame_sink_holder_->LastSubmittedDeviceScaleFactor()) {
+    AllocateLocalSurfaceId();
+  }
+  layer_tree_frame_sink_holder_->SetLocalSurfaceId(GetCurrentLocalSurfaceId());
+  MaybeActivateSurface();
+
   return frame;
 }
 
@@ -519,8 +621,9 @@ void SurfaceTreeHost::HandleContextLost() {
   DCHECK(context_provider_);
   context_provider_->AddObserver(this);
 
-  if (!host_window_->GetSurfaceId().is_valid() || !root_surface_)
+  if (!GetSurfaceId().is_valid() || !root_surface_) {
     return;
+  }
 
   root_surface_->SurfaceHierarchyResourcesLost();
   SubmitCompositorFrame();
@@ -560,8 +663,8 @@ void SurfaceTreeHost::CleanUpCallbacks() {
 
 std::unique_ptr<LayerTreeFrameSinkHolder>
 SurfaceTreeHost::CreateLayerTreeFrameSinkHolder() {
-  return std::make_unique<LayerTreeFrameSinkHolder>(
-      this, host_window_->CreateLayerTreeFrameSink());
+  return std::make_unique<LayerTreeFrameSinkHolder>(this,
+                                                    CreateLayerTreeFrameSink());
 }
 
 void SurfaceTreeHost::SetScaleFactorTransform(float scale_factor) {

@@ -6,7 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/task/single_thread_task_runner.h"
-#include "cc/trees/layer_tree_frame_sink.h"
+#include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
 #include "components/exo/surface_tree_host.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
@@ -23,7 +23,7 @@ BASE_FEATURE(kExoReactiveFrameSubmission,
 
 LayerTreeFrameSinkHolder::LayerTreeFrameSinkHolder(
     SurfaceTreeHost* surface_tree_host,
-    std::unique_ptr<cc::LayerTreeFrameSink> frame_sink)
+    std::unique_ptr<cc::mojo_embedder::AsyncLayerTreeFrameSink> frame_sink)
     : surface_tree_host_(surface_tree_host),
       frame_sink_(std::move(frame_sink)),
       reactive_frame_submission_(
@@ -55,7 +55,7 @@ void LayerTreeFrameSinkHolder::DeleteWhenLastResourceHasBeenReclaimed(
   if (holder->is_lost_)
     return;
 
-  if (holder->last_frame_size_in_pixels_.IsEmpty()) {
+  if (holder->LastSubmittedSizeInPixels().IsEmpty()) {
     // Delete sink holder immediately if no frame has been submitted.
     DCHECK(holder->last_frame_resources_.empty());
     return;
@@ -69,11 +69,12 @@ void LayerTreeFrameSinkHolder::DeleteWhenLastResourceHasBeenReclaimed(
       viz::BeginFrameAck::CreateManualAckWithDamage();
   frame.metadata.frame_token =
       holder->surface_tree_host_->GenerateNextFrameToken();
-  frame.metadata.device_scale_factor = holder->last_frame_device_scale_factor_;
+  frame.metadata.device_scale_factor = holder->LastSubmittedDeviceScaleFactor();
   auto pass = viz::CompositorRenderPass::Create();
   pass->SetNew(viz::CompositorRenderPassId{1},
-               gfx::Rect(holder->last_frame_size_in_pixels_),
-               gfx::Rect(holder->last_frame_size_in_pixels_), gfx::Transform());
+               gfx::Rect(holder->LastSubmittedSizeInPixels()),
+               gfx::Rect(holder->LastSubmittedSizeInPixels()),
+               gfx::Transform());
   frame.render_pass_list.push_back(std::move(pass));
   holder->SubmitCompositorFrameToRemote(&frame);
 
@@ -115,6 +116,19 @@ void LayerTreeFrameSinkHolder::SubmitCompositorFrame(
   UpdateSubmitFrameTimer();
 }
 
+void LayerTreeFrameSinkHolder::SetLocalSurfaceId(
+    const viz::LocalSurfaceId& local_surface_id) {
+  frame_sink_->SetLocalSurfaceId(local_surface_id);
+}
+
+float LayerTreeFrameSinkHolder::LastSubmittedDeviceScaleFactor() const {
+  return frame_sink_->last_submitted_device_scale_factor();
+}
+
+const gfx::Size& LayerTreeFrameSinkHolder::LastSubmittedSizeInPixels() const {
+  return frame_sink_->last_submitted_size_in_pixels();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // cc::LayerTreeFrameSinkClient overrides:
 
@@ -145,6 +159,9 @@ void LayerTreeFrameSinkHolder::ReclaimResources(
   for (auto& resource : resources) {
     // Skip resources that are also in last frame. This can happen if
     // the frame sink id changed.
+    // TODO(crbug/1448681): if viz reclaims the resources b/c the viz::Surface
+    // never gets embedded, this prevents clients from receiving release
+    // callbacks. This needs to be addressed.
     if (base::Contains(last_frame_resources_, resource.id)) {
       continue;
     }
@@ -294,8 +311,6 @@ void LayerTreeFrameSinkHolder::SubmitCompositorFrameToRemote(
                                           base::TimeTicks::Now());
   }
 
-  last_frame_size_in_pixels_ = frame->size_in_pixels();
-  last_frame_device_scale_factor_ = frame->metadata.device_scale_factor;
   last_frame_resources_.clear();
   for (auto& resource : frame->resource_list) {
     last_frame_resources_.push_back(resource.id);
