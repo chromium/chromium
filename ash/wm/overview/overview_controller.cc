@@ -172,9 +172,7 @@ bool OverviewController::HandleContinuousScroll(float y_offset,
   }
 
   overview_session_->set_enter_exit_overview_type(type);
-  // TODO(pvanderlaat): Uncomment this line in the next CL.
-  // return overview_session_->HandleContinuousScrollIntoOverview(y_offset);
-  return false;
+  return overview_session_->HandleContinuousScrollIntoOverview(y_offset);
 }
 
 void OverviewController::IncrementSelection(bool forward) {
