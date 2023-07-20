@@ -392,7 +392,7 @@
   E_CPONLY(kColorSidePanelCardSecondaryForeground) \
   E_CPONLY(kColorSidePanelContentAreaSeparator) \
   E_CPONLY(kColorSidePanelContentBackground) \
-  E_CPONLY(kColorSidePanelCustomizeChromeCategoriesTileBorder) \
+  E_CPONLY(kColorSidePanelCustomizeChromeClassicChromeTileBorder) \
   E_CPONLY(kColorSidePanelCustomizeChromeColorPickerCheckmarkBackground) \
   E_CPONLY(kColorSidePanelCustomizeChromeColorPickerCheckmarkForeground) \
   E_CPONLY(kColorSidePanelCustomizeChromeColorPickerOptionBackground) \
@@ -412,6 +412,7 @@
   E_CPONLY(kColorSidePanelCustomizeChromeThemeCheckmarkBackground) \
   E_CPONLY(kColorSidePanelCustomizeChromeThemeCheckmarkForeground) \
   E_CPONLY(kColorSidePanelCustomizeChromeThemeSnapshotBackground) \
+  E_CPONLY(kColorSidePanelCustomizeChromeWebStoreBorder) \
   E_CPONLY(kColorSidePanelDialogBackground) \
   E_CPONLY(kColorSidePanelDialogDivider) \
   E_CPONLY(kColorSidePanelDialogPrimaryForeground) \

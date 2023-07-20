@@ -45,6 +45,13 @@
     background-color: var(--color-side-panel-customize-chrome-theme-background);
   }
 
+  :host-context([chrome-refresh-2023]) #cornerNewTabPageTile {
+    background-color: var(
+        --color-side-panel-customize-chrome-corner-ntp-background);
+    border: solid 1px
+        var(--color-side-panel-customize-chrome-corner-ntp-background);
+  }
+
   :host-context([chrome-refresh-2023]) #uploadImageTile .image-container {
     --cr-icon-color: var(
         --color-side-panel-customize-chrome-custom-option-foreground);
@@ -52,19 +59,13 @@
         --color-side-panel-customize-chrome-custom-option-background);
   }
 
-  :host-context([chrome-refresh-2023]) #chromeWebStoreTile .image-container,
-  :host-context([chrome-refresh-2023]) #cornerNewTabPageTile  {
+  :host-context([chrome-refresh-2023]) #chromeWebStoreTile .image-container {
     border: solid 1px
-        var(--color-side-panel-customize-chrome-categories-tile-border);
+        var(--color-side-panel-customize-chrome-web-store-border);
   }
 
   :host-context([chrome-refresh-2023]) #chromeWebStoreTile .cr-icon {
     --cr-icon-color: currentColor;
-  }
-
-  :host-context([chrome-refresh-2023]) #cornerNewTabPageTile {
-    background-color: var(
-        --color-side-panel-customize-chrome-corner-ntp-background);
   }
 
   .image-container img,

@@ -85,8 +85,8 @@ void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
       ui::kColorSysOnSurfaceSubtle};
 
   /* Customize Chrome */
-  mixer[kColorSidePanelCustomizeChromeCategoriesTileBorder] = {
-      ui::kColorSysNeutralOutline};
+  mixer[kColorSidePanelCustomizeChromeClassicChromeTileBorder] = {
+      ui::kColorSysTonalContainer};
   mixer[kColorSidePanelCustomizeChromeColorPickerCheckmarkBackground] = {
       ui::kColorSysOnSurface};
   mixer[kColorSidePanelCustomizeChromeColorPickerCheckmarkForeground] = {
@@ -123,6 +123,8 @@ void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
       ui::kColorSysOnPrimary};
   mixer[kColorSidePanelCustomizeChromeThemeSnapshotBackground] = {
       ui::kColorSysTonalContainer};
+  mixer[kColorSidePanelCustomizeChromeWebStoreBorder] = {
+      ui::kColorSysNeutralOutline};
 
   // Note anything below here will only apply if themes aren't being used.
   if (!ShouldApplyChromeMaterialOverrides(key)) {
