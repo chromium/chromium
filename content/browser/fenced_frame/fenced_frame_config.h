@@ -103,7 +103,8 @@ struct CONTENT_EXPORT AutomaticBeaconInfo {
       const std::string& data,
       const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
       network::AttributionReportingRuntimeFeatures
-          attribution_reporting_runtime_features);
+          attribution_reporting_runtime_features,
+      bool once);
 
   AutomaticBeaconInfo(const AutomaticBeaconInfo&);
   AutomaticBeaconInfo(AutomaticBeaconInfo&&);
@@ -119,6 +120,9 @@ struct CONTENT_EXPORT AutomaticBeaconInfo {
   // enabled and is needed for integration with Attribution Reporting API.
   network::AttributionReportingRuntimeFeatures
       attribution_reporting_runtime_features;
+  // Indicates whether the automatic beacon will only be sent out for one event,
+  // or if it will be sent out every time an event occurs.
+  bool once;
 };
 
 // Different kinds of entities (renderers) that should receive different
@@ -378,7 +382,12 @@ struct CONTENT_EXPORT FencedFrameProperties {
       const std::string& event_data,
       const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
       network::AttributionReportingRuntimeFeatures
-          attribution_reporting_runtime_features);
+          attribution_reporting_runtime_features,
+      bool once);
+
+  // Automatic beacon data is cleared out after one automatic beacon if `once`
+  // was set to true when calling `setReportEventDataForAutomaticBeacons()`.
+  void MaybeResetAutomaticBeaconData();
 
   const absl::optional<AutomaticBeaconInfo>& automatic_beacon_info() const {
     return automatic_beacon_info_;

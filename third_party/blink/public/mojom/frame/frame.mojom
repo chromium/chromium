@@ -673,7 +673,8 @@ interface LocalFrameHost {
       string event_data,
       array<ReportingDestination> destinations,
       network.mojom.AttributionReportingRuntimeFeatures
-          attribution_reporting_runtime_features);
+          attribution_reporting_runtime_features,
+      bool once);
 
   // See:
   // https://github.com/WICG/turtledove/blob/main/FLEDGE_extended_PA_reporting.md

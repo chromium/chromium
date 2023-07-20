@@ -2443,7 +2443,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const std::string& event_data,
       const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
       network::AttributionReportingRuntimeFeatures
-          attribution_reporting_runtime_features) override;
+          attribution_reporting_runtime_features,
+      bool once) override;
   void SendLegacyTechEvent(
       const std::string& type,
       blink::mojom::LegacyTechEventCodeLocationPtr code_location) override;

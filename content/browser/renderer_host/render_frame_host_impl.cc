@@ -8533,6 +8533,9 @@ void RenderFrameHostImpl::MaybeSendFencedFrameReportingBeacon(
         /*from_renderer=*/false, info->attribution_reporting_runtime_features,
         GetFrameTreeNodeId(), navigation_request.GetNavigationId());
   }
+
+  initiator_rfh->frame_tree_node()
+      ->MaybeResetFencedFrameAutomaticBeaconReportEventData();
 }
 
 void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
@@ -8615,7 +8618,8 @@ void RenderFrameHostImpl::SetFencedFrameAutomaticBeaconReportEventData(
     const std::string& event_data,
     const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
     network::AttributionReportingRuntimeFeatures
-        attribution_reporting_runtime_features) {
+        attribution_reporting_runtime_features,
+    bool once) {
   if (event_data.length() > blink::kFencedFrameMaxBeaconLength) {
     mojo::ReportBadMessage(
         "The data provided to SetFencedFrameAutomaticBeaconReportEventData() "
@@ -8636,7 +8640,7 @@ void RenderFrameHostImpl::SetFencedFrameAutomaticBeaconReportEventData(
   CHECK(owner_);  // See `owner_` invariants about `IsActive()`.
 
   owner_->SetFencedFrameAutomaticBeaconReportEventData(
-      event_data, destinations, attribution_reporting_runtime_features);
+      event_data, destinations, attribution_reporting_runtime_features, once);
 }
 
 void RenderFrameHostImpl::OnViewTransitionOptInChanged(

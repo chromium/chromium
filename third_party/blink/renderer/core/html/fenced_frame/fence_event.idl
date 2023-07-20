@@ -14,4 +14,5 @@ dictionary FenceEvent {
   required DOMString eventType;
   DOMString eventData;
   required sequence<FenceReportingDestination> destination;
+  boolean once = false;
 };

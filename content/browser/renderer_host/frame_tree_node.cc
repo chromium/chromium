@@ -919,11 +919,23 @@ FrameTreeNode::GetFencedFramePropertiesForEditing(bool force_tree_traversal) {
   return fenced_frame_properties_;
 }
 
+void FrameTreeNode::MaybeResetFencedFrameAutomaticBeaconReportEventData() {
+  absl::optional<FencedFrameProperties>& properties =
+      GetFencedFramePropertiesForEditing(/*force_tree_traversal=*/true);
+  // `properties` will exist for both fenced frames as well as iframes loaded
+  // with a urn:uuid.
+  if (!properties) {
+    return;
+  }
+  properties->MaybeResetAutomaticBeaconData();
+}
+
 void FrameTreeNode::SetFencedFrameAutomaticBeaconReportEventData(
     const std::string& event_data,
     const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
     network::AttributionReportingRuntimeFeatures
-        attribution_reporting_runtime_features) {
+        attribution_reporting_runtime_features,
+    bool once) {
   absl::optional<FencedFrameProperties>& properties =
       GetFencedFramePropertiesForEditing(
           /*force_tree_traversal=*/true);
@@ -946,8 +958,8 @@ void FrameTreeNode::SetFencedFrameAutomaticBeaconReportEventData(
         "origin to the mapped url from the fenced frame config.");
     return;
   }
-  properties->UpdateAutomaticBeaconData(event_data, destinations,
-                                        attribution_reporting_runtime_features);
+  properties->UpdateAutomaticBeaconData(
+      event_data, destinations, attribution_reporting_runtime_features, once);
 }
 
 size_t FrameTreeNode::GetFencedFrameDepth(
