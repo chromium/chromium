@@ -621,9 +621,7 @@ void ChromeContentRendererClient::RenderFrameCreated(
 #endif
 
   TrustedVaultEncryptionKeysExtension::Create(render_frame);
-  if (base::FeatureList::IsEnabled(features::kWebAuthFlowInBrowserTab)) {
-    GoogleAccountsPrivateApiExtension::Create(render_frame);
-  }
+  GoogleAccountsPrivateApiExtension::Create(render_frame);
 
   if (render_frame->IsMainFrame())
     new webapps::WebPageMetadataAgent(render_frame);

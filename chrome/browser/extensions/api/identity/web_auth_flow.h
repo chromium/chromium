@@ -11,11 +11,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "extensions/browser/app_window/app_window_registry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -25,22 +22,14 @@ class OneShotTimer;
 class TickClock;
 }  // namespace base
 
-namespace content {
-class StoragePartition;
-}
-
 namespace extensions {
 
 class WebAuthFlowInfoBarDelegate;
 
-// When enabled, cookies in the `launchWebAuthFlow()` partition are persisted
-// across browser restarts.
-BASE_DECLARE_FEATURE(kPersistentStorageForWebAuthFlow);
-
 // Controller class for web based auth flows. The WebAuthFlow creates
-// a dialog window in the scope approval component app by firing an
-// event. A webview embedded in the dialog will navigate to the
-// |provider_url| passed to the WebAuthFlow constructor.
+// a browser popup window (or a new tab based on the feature setting)
+// with a webview that will navigate to the |provider_url| passed to the
+// WebAuthFlow constructor.
 //
 // The WebAuthFlow monitors the WebContents of the webview, and
 // notifies its delegate interface any time the WebContents navigates
@@ -54,17 +43,11 @@ BASE_DECLARE_FEATURE(kPersistentStorageForWebAuthFlow);
 //
 // A WebAuthFlow can be started in Mode::SILENT, which never displays
 // a window. If a window would be required, the flow fails.
-class WebAuthFlow : public content::WebContentsObserver,
-                    public AppWindowRegistry::Observer {
+class WebAuthFlow : public content::WebContentsObserver {
  public:
   enum Mode {
     INTERACTIVE,  // Show UI to the user if necessary.
     SILENT        // No UI should be shown.
-  };
-
-  enum Partition {
-    GET_AUTH_TOKEN,       // Use the getAuthToken() partition.
-    LAUNCH_WEB_AUTH_FLOW  // Use the launchWebAuthFlow() partition.
   };
 
   enum Failure {
@@ -110,7 +93,6 @@ class WebAuthFlow : public content::WebContentsObserver,
               Profile* profile,
               const GURL& provider_url,
               Mode mode,
-              Partition partition,
               bool user_gesture,
               AbortOnLoad abort_on_load_for_non_interactive = AbortOnLoad::kYes,
               absl::optional<base::TimeDelta> timeout_for_non_interactive =
@@ -131,19 +113,6 @@ class WebAuthFlow : public content::WebContentsObserver,
   // Prevents further calls to the delegate and deletes the flow.
   void DetachDelegateAndDelete();
 
-  // Returns a StoragePartition of the guest webview. Used to inject cookies
-  // into Gaia page. Can override for testing.
-  virtual content::StoragePartition* GetGuestPartition();
-
-  // Returns an ID string attached to the window. Can override for testing.
-  virtual const std::string& GetAppWindowKey() const;
-
-  // Returns the StoragePartitionConfig for a given |partition| used in the
-  // WebAuthFlow.
-  static content::StoragePartitionConfig GetWebViewPartitionConfig(
-      Partition partition,
-      content::BrowserContext* browser_context);
-
   // This call will make the interactive mode, that opens up a browser tab for
   // auth, display an Infobar that shows the extension name.
   void SetShouldShowInfoBar(const std::string& extension_display_name);
@@ -152,16 +121,8 @@ class WebAuthFlow : public content::WebContentsObserver,
   base::WeakPtr<WebAuthFlowInfoBarDelegate> GetInfoBarDelegateForTesting();
 
  private:
-  // ::AppWindowRegistry::Observer implementation.
-  void OnAppWindowAdded(AppWindow* app_window) override;
-  void OnAppWindowRemoved(AppWindow* app_window) override;
-
   // WebContentsObserver implementation.
   void DidStopLoading() override;
-  void InnerWebContentsCreated(
-      content::WebContents* inner_web_contents) override;
-  void PrimaryMainFrameRenderProcessGone(
-      base::TerminationStatus status) override;
   void WebContentsDestroyed() override;
   void TitleWasSet(content::NavigationEntry* entry) override;
   void DidStartNavigation(
@@ -177,31 +138,17 @@ class WebAuthFlow : public content::WebContentsObserver,
   void MaybeStartTimeout();
   void OnTimeout();
 
-  bool IsObservingProviderWebContents() const;
-
   bool DisplayAuthPageInPopupWindow();
 
   void DisplayInfoBar();
   void CloseInfoBar();
 
-  bool IsDisplayingAuthPageInTab() const;
-
   raw_ptr<Delegate> delegate_ = nullptr;
   const raw_ptr<Profile> profile_;
   const GURL provider_url_;
   const Mode mode_;
-  const Partition partition_;
   const bool user_gesture_;
 
-  // Variables used only if displaying the auth flow in an app window.
-  raw_ptr<AppWindow> app_window_ = nullptr;
-  std::string app_window_key_;
-  bool embedded_window_created_ = false;
-
-  // Variables used only if displaying the auth flow in a browser tab.
-  //
-  // Checks that the auth with browser tab is activated.
-  bool using_auth_with_browser_tab_ = false;
   // WebContents used to initialize the authentication. It is not displayed
   // and not owned by browser window. This WebContents is observed by
   // `this`. When this value becomes nullptr, this means that the browser tab

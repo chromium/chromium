@@ -409,13 +409,6 @@
     "channel": "stable",
     "extension_types": ["extension", "platform_app"]
   },
-  "identityPrivate": {
-    "channel": "stable",
-    "extension_types": [
-      "legacy_packaged_app", "platform_app"
-    ],
-    "location": "component"
-  },
   "idltest": {
     "channel": "trunk",
     "extension_types": ["extension"]

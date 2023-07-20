@@ -386,62 +386,6 @@ TEST_F(AccountsCookieMutatorTest, SetAccountsInCookie_AllExistingAccounts) {
   run_loop.Run();
 }
 
-// Test that trying to set a list of accounts in a partitionned cookie jar where
-// all of those accounts have refresh tokens in IdentityManager results in them
-// being successfully set.
-TEST_F(AccountsCookieMutatorTest,
-       SetAccountsInCookieForPartition_AllExistingAccounts) {
-  PrepareURLLoaderResponsesForAction(
-      AccountsCookiesMutatorAction::kSetAccountsInCookie);
-  PrepareURLLoaderResponsesForAction(
-      AccountsCookiesMutatorAction::kTriggerCookieJarUpdateNoAccounts);
-
-  CoreAccountId account_id = AddAcountWithRefreshToken(kTestAccountEmail);
-  CoreAccountId other_account_id =
-      AddAcountWithRefreshToken(kTestOtherAccountEmail);
-  base::RunLoop run_loop;
-  MultiloginParameters parameters = {
-      gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
-      {account_id, other_account_id}};
-  std::unique_ptr<AccountsCookieMutator::SetAccountsInCookieTask> task =
-      accounts_cookie_mutator()->SetAccountsInCookieForPartition(
-          this, parameters, gaia::GaiaSource::kChrome,
-          base::BindOnce(
-              [](base::OnceClosure quit_closure,
-                 SetAccountsInCookieResult result) {
-                EXPECT_EQ(result, SetAccountsInCookieResult::kSuccess);
-                std::move(quit_closure).Run();
-              },
-              run_loop.QuitClosure()));
-
-  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      account_id, kTestAccessToken, base::Time::Now() + base::Hours(1));
-  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      other_account_id, kTestAccessToken, base::Time::Now() + base::Hours(1));
-
-  run_loop.Run();
-}
-
-// Test that setting accounts in a partition can be cancelled.
-TEST_F(AccountsCookieMutatorTest, SetAccountsInCookieForPartition_Cancel) {
-  PrepareURLLoaderResponsesForAction(
-      AccountsCookiesMutatorAction::kSetAccountsInCookie);
-  PrepareURLLoaderResponsesForAction(
-      AccountsCookiesMutatorAction::kTriggerCookieJarUpdateNoAccounts);
-
-  CoreAccountId account_id = AddAcountWithRefreshToken(kTestAccountEmail);
-  CoreAccountId other_account_id =
-      AddAcountWithRefreshToken(kTestOtherAccountEmail);
-  MultiloginParameters parameters = {
-      gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
-      {account_id, other_account_id}};
-  std::unique_ptr<AccountsCookieMutator::SetAccountsInCookieTask> task =
-      accounts_cookie_mutator()->SetAccountsInCookieForPartition(
-          this, parameters, gaia::GaiaSource::kChrome,
-          base::BindOnce([](SetAccountsInCookieResult) { NOTREACHED(); }));
-  task.reset();
-}
-
 // Test triggering the update of a cookie jar with no accounts works.
 TEST_F(AccountsCookieMutatorTest, TriggerCookieJarUpdate_NoListedAccounts) {
   PrepareURLLoaderResponsesForAction(

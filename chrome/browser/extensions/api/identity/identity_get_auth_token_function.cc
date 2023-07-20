@@ -662,11 +662,6 @@ void IdentityGetAuthTokenFunction::OnGaiaRemoteConsentFlowFailed(
           IdentityGetAuthTokenError::State::kRemoteConsentFlowRejected);
       break;
 
-    case GaiaRemoteConsentFlow::SET_ACCOUNTS_IN_COOKIE_FAILED:
-      error = IdentityGetAuthTokenError(
-          IdentityGetAuthTokenError::State::kSetAccountsInCookieFailure);
-      break;
-
     case GaiaRemoteConsentFlow::LOAD_FAILED:
       error = IdentityGetAuthTokenError(
           IdentityGetAuthTokenError::State::kRemoteConsentPageLoadFailure);

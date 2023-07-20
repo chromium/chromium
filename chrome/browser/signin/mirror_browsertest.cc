@@ -99,35 +99,6 @@ class MirrorBrowserTest : public InProcessBrowserTest {
     // disable this feature.
     feature_list_.InitAndDisableFeature(features::kHttpsUpgrades);
   }
-  void RunExtensionConsentTest(extensions::WebAuthFlow::Partition partition,
-                               bool expects_header) {
-    net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-    https_server.AddDefaultHandlers(GetChromeTestDataDir());
-    const std::string kAuthPath = "/auth";
-    net::test_server::HttpRequest::HeaderMap headers;
-    base::RunLoop run_loop;
-    https_server.RegisterRequestMonitor(base::BindLambdaForTesting(
-        [&](const net::test_server::HttpRequest& request) {
-          if (request.GetURL().path() != kAuthPath)
-            return;
-
-          headers = request.headers;
-          run_loop.Quit();
-        }));
-    ASSERT_TRUE(https_server.Start());
-
-    auto web_auth_flow = std::make_unique<extensions::WebAuthFlow>(
-        nullptr, browser()->profile(),
-        https_server.GetURL("google.com", kAuthPath),
-        extensions::WebAuthFlow::INTERACTIVE, partition, /*user_gesture=*/true);
-
-    web_auth_flow->Start();
-    run_loop.Run();
-    EXPECT_EQ(!!headers.count(signin::kChromeConnectedHeader), expects_header);
-
-    web_auth_flow.release()->DetachDelegateAndDelete();
-    base::RunLoop().RunUntilIdle();
-  }
 
  private:
   void SetUpOnMainThread() override {
@@ -268,35 +239,6 @@ IN_PROC_BROWSER_TEST_F(MirrorBrowserTest, MirrorRequestHeader) {
 
     header_map.clear();
   }
-}
-
-// These tests should be removed once `features::kWebAuthFlowInBrowserTab` is
-// launched.
-class MirrorBrowserTestWithWebAuthFlowInBrowserTabOff
-    : public MirrorBrowserTest {
- public:
-  MirrorBrowserTestWithWebAuthFlowInBrowserTabOff() {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kWebAuthFlowInBrowserTab);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Verifies that requests originated from chrome.identity.launchWebAuthFlow()
-// API don't have Mirror headers attached.
-// This is a regression test for crbug.com/1077504.
-IN_PROC_BROWSER_TEST_F(MirrorBrowserTestWithWebAuthFlowInBrowserTabOff,
-                       NoMirrorExtensionConsent_LaunchWebAuthFlow) {
-  RunExtensionConsentTest(extensions::WebAuthFlow::LAUNCH_WEB_AUTH_FLOW, false);
-}
-
-// Verifies that requests originated from chrome.identity.getAuthToken()
-// API have Mirror headers attached.
-IN_PROC_BROWSER_TEST_F(MirrorBrowserTestWithWebAuthFlowInBrowserTabOff,
-                       MirrorExtensionConsent_GetAuthToken) {
-  RunExtensionConsentTest(extensions::WebAuthFlow::GET_AUTH_TOKEN, true);
 }
 
 }  // namespace

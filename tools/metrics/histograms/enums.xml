@@ -35126,7 +35126,7 @@ Called by update_extension_histograms.py.-->
   <int value="147" label="HOTWORD_PRIVATE_ON_SPEAKER_MODEL_EXISTS"/>
   <int value="148" label="HOTWORD_PRIVATE_ON_SPEAKER_MODEL_SAVED"/>
   <int value="149" label="IDENTITY_ON_SIGN_IN_CHANGED"/>
-  <int value="150" label="IDENTITY_PRIVATE_ON_WEB_FLOW_REQUEST"/>
+  <int value="150" label="DELETED_IDENTITY_PRIVATE_ON_WEB_FLOW_REQUEST"/>
   <int value="151" label="IDLE_ON_STATE_CHANGED"/>
   <int value="152" label="IMAGE_WRITER_PRIVATE_ON_DEVICE_INSERTED"/>
   <int value="153" label="IMAGE_WRITER_PRIVATE_ON_DEVICE_REMOVED"/>
@@ -37057,7 +37057,7 @@ Called by update_extension_histograms.py.-->
   <int value="1433" label="LOGIN_UNLOCKMANAGEDGUESTSESSION"/>
   <int value="1434" label="AUTOTESTPRIVATE_SETARCTOUCHMODE"/>
   <int value="1435" label="PRINTING_SUBMITJOB"/>
-  <int value="1436" label="IDENTITYPRIVATE_SETCONSENTRESULT"/>
+  <int value="1436" label="DELETED_IDENTITYPRIVATE_SETCONSENTRESULT"/>
   <int value="1437" label="PRINTING_CANCELJOB"/>
   <int value="1438" label="DELETED_AUTOFILLASSISTANTPRIVATE_CREATE"/>
   <int value="1439" label="DELETED_AUTOFILLASSISTANTPRIVATE_START"/>
@@ -37932,7 +37932,7 @@ Called by update_extension_permission.py.-->
   <int value="84" label="kHotwordPrivate"/>
   <int value="85" label="kIdentity"/>
   <int value="86" label="kIdentityEmail"/>
-  <int value="87" label="kIdentityPrivate"/>
+  <int value="87" label="kDeleted_IdentityPrivate"/>
   <int value="88" label="kIdltest"/>
   <int value="89" label="kIdle"/>
   <int value="90" label="kImeWindowEnabled"/>
@@ -46909,7 +46909,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="0" label="Success"/>
   <int value="1" label="Window was closed"/>
   <int value="2" label="Failed to load the consent page"/>
-  <int value="3" label="Failed to set accounts in cookies"/>
+  <int value="3" label="Failed to set accounts in cookies (deprecated 07/23)"/>
   <int value="4" label="Failed to parse the consent result"/>
   <int value="5" label="Consent wasn't granted"/>
   <int value="6" label="User navigated away"/>
@@ -49251,7 +49251,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="22" label="kOffTheRecord"/>
   <int value="23" label="kPageLoadFailure (deprecated 02/2021)"/>
   <int value="24" label="kRemoteConsentPageLoadFailure"/>
-  <int value="25" label="kSetAccountsInCookieFailure"/>
+  <int value="25" label="kSetAccountsInCookieFailure (deprecated 07/2023)"/>
   <int value="26" label="kInvalidConsentResult"/>
   <int value="27" label="kCanceled"/>
   <int value="28" label="kInteractivityDenied"/>

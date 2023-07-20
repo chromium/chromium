@@ -571,10 +571,6 @@
     "dependencies": ["permission:identity"],
     "contexts": ["blessed_extension"]
   },
-  "identityPrivate": {
-    "dependencies": ["permission:identityPrivate"],
-    "contexts": ["blessed_extension"]
-  },
   "idltest": {
     "dependencies": ["permission:idltest"],
     "contexts": ["blessed_extension"]

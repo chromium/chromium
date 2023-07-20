@@ -539,17 +539,15 @@ void ChromeContentBrowserClient::
                                                     render_frame_host);
       },
       &render_frame_host));
-  if (base::FeatureList::IsEnabled(features::kWebAuthFlowInBrowserTab)) {
-    associated_registry.AddInterface<
-        chrome::mojom::GoogleAccountsPrivateApiExtension>(base::BindRepeating(
-        [](content::RenderFrameHost* render_frame_host,
-           mojo::PendingAssociatedReceiver<
-               chrome::mojom::GoogleAccountsPrivateApiExtension> receiver) {
-          GoogleAccountsPrivateApiHost::BindHost(std::move(receiver),
-                                                 render_frame_host);
-        },
-        &render_frame_host));
-  }
+  associated_registry.AddInterface<
+      chrome::mojom::GoogleAccountsPrivateApiExtension>(base::BindRepeating(
+      [](content::RenderFrameHost* render_frame_host,
+         mojo::PendingAssociatedReceiver<
+             chrome::mojom::GoogleAccountsPrivateApiExtension> receiver) {
+        GoogleAccountsPrivateApiHost::BindHost(std::move(receiver),
+                                               render_frame_host);
+      },
+      &render_frame_host));
   associated_registry.AddInterface<
       content_capture::mojom::ContentCaptureReceiver>(base::BindRepeating(
       [](content::RenderFrameHost* render_frame_host,

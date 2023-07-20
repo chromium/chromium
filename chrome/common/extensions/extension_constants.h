@@ -53,9 +53,6 @@ extern const char kGooglePlayMusicAppId[];
 // The extension id of the Google+ application.
 extern const char kGooglePlusAppId[];
 
-// The extension id of the Identity API UI application.
-extern const char kIdentityApiUiAppId[];
-
 // The extension id of the Text Editor application.
 extern const char kTextEditorAppId[];
 

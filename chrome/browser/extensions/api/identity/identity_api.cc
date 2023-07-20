@@ -98,16 +98,6 @@ void IdentityAPI::EraseStaleGaiaIdsForAllExtensions() {
   }
 }
 
-void IdentityAPI::SetConsentResult(const std::string& result,
-                                   const std::string& window_id) {
-  on_set_consent_result_callback_list_.Notify(result, window_id);
-}
-
-base::CallbackListSubscription IdentityAPI::RegisterOnSetConsentResultCallback(
-    const base::RepeatingCallback<OnSetConsentResultSignature>& callback) {
-  return on_set_consent_result_callback_list_.Add(callback);
-}
-
 void IdentityAPI::Shutdown() {
   on_shutdown_callback_list_.Notify();
   identity_manager_->RemoveObserver(this);

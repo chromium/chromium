@@ -97,21 +97,6 @@ class AccountsCookieMutator {
       base::OnceCallback<void(SetAccountsInCookieResult)>
           set_accounts_in_cookies_completed_callback) = 0;
 
-  // This is similar to SetAccountsInCookie, but allow specifying the partition
-  // where the cookies are set. This function must not be used with the default
-  // partition (use SetAccountsInCookie instead).
-  //
-  // The returned SetAccountsInCookieTask must not outlive the
-  // AccountsCookieMutator. If the task is deleted, all network requests are
-  // cancelled; the partition delegate and the callback will not be called.
-  virtual std::unique_ptr<SetAccountsInCookieTask>
-  SetAccountsInCookieForPartition(
-      PartitionDelegate* partition_delegate,
-      const MultiloginParameters& parameters,
-      gaia::GaiaSource source,
-      base::OnceCallback<void(SetAccountsInCookieResult)>
-          set_accounts_in_cookies_completed_callback) = 0;
-
   // Triggers a ListAccounts fetch. Can be used in circumstances where clients
   // know that the contents of the Gaia cookie might have changed.
   virtual void TriggerCookieJarUpdate() = 0;

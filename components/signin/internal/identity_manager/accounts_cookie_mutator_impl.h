@@ -56,13 +56,6 @@ class AccountsCookieMutatorImpl : public AccountsCookieMutator {
       base::OnceCallback<void(SetAccountsInCookieResult)>
           set_accounts_in_cookies_completed_callback) override;
 
-  std::unique_ptr<SetAccountsInCookieTask> SetAccountsInCookieForPartition(
-      PartitionDelegate* partition_delegate,
-      const MultiloginParameters& parameters,
-      gaia::GaiaSource source,
-      base::OnceCallback<void(SetAccountsInCookieResult)>
-          set_accounts_in_cookies_completed_callback) override;
-
   void TriggerCookieJarUpdate() override;
 
 #if BUILDFLAG(IS_IOS)
@@ -76,15 +69,6 @@ class AccountsCookieMutatorImpl : public AccountsCookieMutator {
   void RemoveLoggedOutAccountByGaiaId(const std::string& gaia_id) override;
 
  private:
-  class MultiloginHelperWrapper : public SetAccountsInCookieTask {
-   public:
-    MultiloginHelperWrapper(std::unique_ptr<OAuthMultiloginHelper> helper);
-    ~MultiloginHelperWrapper() override;
-
-   private:
-    std::unique_ptr<OAuthMultiloginHelper> helper_;
-  };
-
   raw_ptr<SigninClient> signin_client_;
   raw_ptr<ProfileOAuth2TokenService, AcrossTasksDanglingUntriaged>
       token_service_;
