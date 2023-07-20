@@ -25,7 +25,7 @@ class MockSecondDeviceAuthBroker : public SecondDeviceAuthBroker {
       delete;
   ~MockSecondDeviceAuthBroker() override;
 
-  MOCK_METHOD(void, GetChallengeBytes, (ChallengeBytesCallback), (override));
+  MOCK_METHOD(void, FetchChallengeBytes, (ChallengeBytesCallback), (override));
   MOCK_METHOD(void,
               FetchRefreshToken,
               (const FidoAssertionInfo&,

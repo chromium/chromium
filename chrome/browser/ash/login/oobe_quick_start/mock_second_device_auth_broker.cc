@@ -33,7 +33,7 @@ MockSecondDeviceAuthBroker::~MockSecondDeviceAuthBroker() = default;
 
 void MockSecondDeviceAuthBroker::SetupChallengeBytesResponse(
     ChallengeBytesOrError challenge) {
-  ON_CALL(*this, GetChallengeBytes)
+  ON_CALL(*this, FetchChallengeBytes)
       .WillByDefault(
           WithArg<0>(Invoke([challenge](ChallengeBytesCallback callback) {
             std::move(callback).Run(challenge);

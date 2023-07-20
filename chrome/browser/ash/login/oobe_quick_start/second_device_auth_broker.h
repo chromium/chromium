@@ -145,12 +145,12 @@ class SecondDeviceAuthBroker : public GaiaAuthConsumer {
   SecondDeviceAuthBroker& operator=(const SecondDeviceAuthBroker&) = delete;
   ~SecondDeviceAuthBroker() override;
 
-  // Gets Base64Url encoded nonce challenge bytes from Gaia SecondDeviceAuth
+  // Fetches Base64Url encoded nonce challenge bytes from Gaia SecondDeviceAuth
   // service.
   // The callback is completed with either the challenge bytes - for successful
   // execution, or with a `GoogleServiceAuthError` - for a failed execution.
   // Virtual for testing.
-  virtual void GetChallengeBytes(ChallengeBytesCallback challenge_callback);
+  virtual void FetchChallengeBytes(ChallengeBytesCallback challenge_callback);
 
   // Fetches a new Remote Attestation certificate - for proving device
   // integrity.

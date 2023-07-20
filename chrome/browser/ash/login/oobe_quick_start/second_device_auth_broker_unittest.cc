@@ -216,11 +216,12 @@ class SecondDeviceAuthBrokerTest : public ::testing::Test {
   ~SecondDeviceAuthBrokerTest() override = default;
 
  protected:
-  base::expected<Base64UrlString, GoogleServiceAuthError> GetChallengeBytes() {
+  base::expected<Base64UrlString, GoogleServiceAuthError>
+  FetchChallengeBytes() {
     base::test::TestFuture<
         const base::expected<Base64UrlString, GoogleServiceAuthError>&>
         future;
-    second_device_auth_broker_.GetChallengeBytes(future.GetCallback());
+    second_device_auth_broker_.FetchChallengeBytes(future.GetCallback());
     return future.Get();
   }
 
@@ -321,34 +322,34 @@ TEST_F(SecondDeviceAuthBrokerDeathTest,
 }
 
 TEST_F(SecondDeviceAuthBrokerTest,
-       GetChallengeBytesReturnsAnErrorForAuthErrors) {
+       FetchChallengeBytesReturnsAnErrorForAuthErrors) {
   SimulateAuthError(kGetChallengeDataUrl);
   base::expected<Base64UrlString, GoogleServiceAuthError> response =
-      GetChallengeBytes();
+      FetchChallengeBytes();
   ASSERT_FALSE(response.has_value());
   EXPECT_THAT(response.error(), Property(&GoogleServiceAuthError::state,
                                          Eq(State::SERVICE_ERROR)));
 }
 
 TEST_F(SecondDeviceAuthBrokerTest,
-       GetChallengeBytesReturnsAnErrorForMalformedResponse) {
+       FetchChallengeBytesReturnsAnErrorForMalformedResponse) {
   AddFakeResponse(kGetChallengeDataUrl, "");
   base::expected<Base64UrlString, GoogleServiceAuthError> response =
-      GetChallengeBytes();
+      FetchChallengeBytes();
   ASSERT_FALSE(response.has_value());
   EXPECT_THAT(response.error(),
               Property(&GoogleServiceAuthError::state,
                        Eq(State::UNEXPECTED_SERVICE_RESPONSE)));
 
   AddFakeResponse(kGetChallengeDataUrl, "{}");
-  response = GetChallengeBytes();
+  response = FetchChallengeBytes();
   ASSERT_FALSE(response.has_value());
   EXPECT_THAT(response.error(),
               Property(&GoogleServiceAuthError::state,
                        Eq(State::UNEXPECTED_SERVICE_RESPONSE)));
 
   AddFakeResponse(kGetChallengeDataUrl, "{\"challengeData\": \"\"}");
-  response = GetChallengeBytes();
+  response = FetchChallengeBytes();
   ASSERT_FALSE(response.has_value());
   EXPECT_THAT(response.error(),
               Property(&GoogleServiceAuthError::state,
@@ -356,17 +357,17 @@ TEST_F(SecondDeviceAuthBrokerTest,
 }
 
 TEST_F(SecondDeviceAuthBrokerTest,
-       GetChallengeBytesReturnsAnErrorForBase64ParsingError) {
+       FetchChallengeBytesReturnsAnErrorForBase64ParsingError) {
   AddFakeResponse(kGetChallengeDataUrl, kInvalidBase64ChallengeDataResponse);
   base::expected<Base64UrlString, GoogleServiceAuthError> response =
-      GetChallengeBytes();
+      FetchChallengeBytes();
   ASSERT_FALSE(response.has_value());
   EXPECT_THAT(response.error(),
               Property(&GoogleServiceAuthError::state,
                        Eq(State::UNEXPECTED_SERVICE_RESPONSE)));
 }
 
-TEST_F(SecondDeviceAuthBrokerTest, GetChallengeBytesReturnsChallengeBytes) {
+TEST_F(SecondDeviceAuthBrokerTest, FetchChallengeBytesReturnsChallengeBytes) {
   // Set an interceptor that checks the validity of the incoming request for
   // challenge bytes.
   SetInterceptor(
@@ -403,7 +404,7 @@ TEST_F(SecondDeviceAuthBrokerTest, GetChallengeBytesReturnsChallengeBytes) {
       }));
 
   base::expected<Base64UrlString, GoogleServiceAuthError> response =
-      GetChallengeBytes();
+      FetchChallengeBytes();
   ASSERT_TRUE(response.has_value());
   EXPECT_THAT(*response.value(), Property(&std::string::size, Gt(0UL)));
 }

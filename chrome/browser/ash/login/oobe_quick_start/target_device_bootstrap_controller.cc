@@ -327,7 +327,7 @@ void TargetDeviceBootstrapController::AttemptGoogleAccountTransfer() {
 
   // Request the challenge bytes from Gaia to be sent to the phone.
   CHECK(auth_broker_);
-  auth_broker_->GetChallengeBytes(
+  auth_broker_->FetchChallengeBytes(
       base::BindOnce(&TargetDeviceBootstrapController::OnChallengeBytesReceived,
                      weak_ptr_factory_.GetWeakPtr()));
 }

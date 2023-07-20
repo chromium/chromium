@@ -216,7 +216,7 @@ void RunChallengeBytesCallback(
   std::move(challenge_callback).Run(challenge);
 }
 
-void HandleGetChallengeBytesErrorResponse(
+void HandleFetchChallengeBytesErrorResponse(
     SecondDeviceAuthBroker::ChallengeBytesCallback challenge_callback,
     std::unique_ptr<EndpointResponse> response) {
   LOG(ERROR) << "Could not fetch challenge bytes. HTTP status code: "
@@ -599,7 +599,7 @@ SecondDeviceAuthBroker::SecondDeviceAuthBroker(
 
 SecondDeviceAuthBroker::~SecondDeviceAuthBroker() = default;
 
-void SecondDeviceAuthBroker::GetChallengeBytes(
+void SecondDeviceAuthBroker::FetchChallengeBytes(
     ChallengeBytesCallback challenge_callback) {
   DCHECK(!endpoint_fetcher_)
       << "This class can handle only one request at a time";
@@ -632,8 +632,8 @@ void SecondDeviceAuthBroker::OnChallengeBytesFetched(
   endpoint_fetcher_.reset();
 
   if (response->http_status_code != google_apis::ApiErrorCode::HTTP_SUCCESS) {
-    HandleGetChallengeBytesErrorResponse(std::move(challenge_callback),
-                                         std::move(response));
+    HandleFetchChallengeBytesErrorResponse(std::move(challenge_callback),
+                                           std::move(response));
     return;
   }
 
