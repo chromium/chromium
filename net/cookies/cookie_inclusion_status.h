@@ -28,8 +28,6 @@ namespace net {
 class NET_EXPORT CookieInclusionStatus {
  public:
   // Types of reasons why a cookie might be excluded.
-  // If adding a ExclusionReason, please also update the GetDebugString()
-  // method.
   enum ExclusionReason {
     EXCLUDE_UNKNOWN_ERROR = 0,
 
@@ -123,7 +121,7 @@ class NET_EXPORT CookieInclusionStatus {
 
   // Reason to warn about a cookie. Any information contained in
   // WarningReason of an included cookie may be passed to an untrusted
-  // renderer. If you add one, please update GetDebugString().
+  // renderer.
   enum WarningReason {
     // Of the following 3 SameSite warnings, there will be, at most, a single
     // active one.
