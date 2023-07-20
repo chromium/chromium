@@ -106,14 +106,14 @@ using ScopedWebStateListObservation =
 
 - (void)willChangeWebStateList:(WebStateList*)webStateList
                         change:(const WebStateListChangeDetach&)detachChange
-                     selection:(const WebStateSelection&)selection {
+                        status:(const WebStateListStatus&)status {
   // Do nothing. Updating the consumer with the new count will be handled in
-  // didChangeWebStateList:change:selection: with kDetach.
+  // didChangeWebStateList:change:status: with kDetach.
 }
 
 - (void)didChangeWebStateList:(WebStateList*)webStateList
                        change:(const WebStateListChange&)change
-                    selection:(const WebStateSelection&)selection {
+                       status:(const WebStateListStatus&)status {
   DCHECK_EQ(_webStateList, webStateList);
   if (_webStateList->IsBatchInProgress()) {
     // Consumer will be updated at the end of the batch.
@@ -121,8 +121,8 @@ using ScopedWebStateListObservation =
   }
 
   switch (change.type()) {
-    case WebStateListChange::Type::kSelectionOnly: {
-      CHECK(!selection.pinned_state_change);
+    case WebStateListChange::Type::kStatusOnly: {
+      CHECK(!status.pinned_state_change);
       // TODO(crbug.com/1442546): Move the implementation from
       // webStateList:didChangeActiveWebState:oldWebState:atIndex:reason to
       // here. Note that here is reachable only when `reason` ==

@@ -65,7 +65,7 @@ void TextToSpeechPlaybackController::Shutdown() {
 void TextToSpeechPlaybackController::WebStateListWillChange(
     WebStateList* web_state_list,
     const WebStateListChangeDetach& detach_change,
-    const WebStateSelection& selection) {
+    const WebStateListStatus& status) {
   if (!detach_change.is_closing()) {
     return;
   }
@@ -78,9 +78,9 @@ void TextToSpeechPlaybackController::WebStateListWillChange(
 void TextToSpeechPlaybackController::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
-    const WebStateSelection& selection) {
+    const WebStateListStatus& status) {
   switch (change.type()) {
-    case WebStateListChange::Type::kSelectionOnly:
+    case WebStateListChange::Type::kStatusOnly:
       // TODO(crbug.com/1442546): Move the implementation from
       // WebStateActivatedAt() to here. Note that here is reachable only when
       // `reason` == ActiveWebStateChangeReason::Activated.
@@ -108,7 +108,7 @@ void TextToSpeechPlaybackController::WebStateListDidChange(
     case WebStateListChange::Type::kInsert: {
       const WebStateListChangeInsert& insert_change =
           change.As<WebStateListChangeInsert>();
-      if (selection.active_state_change) {
+      if (status.active_web_state_change()) {
         SetWebState(insert_change.inserted_web_state());
       }
       break;

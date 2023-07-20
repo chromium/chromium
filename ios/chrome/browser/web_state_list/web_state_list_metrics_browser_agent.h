@@ -53,10 +53,10 @@ class WebStateListMetricsBrowserAgent
   // WebStateListObserver:
   void WebStateListWillChange(WebStateList* web_state_list,
                               const WebStateListChangeDetach& detach_change,
-                              const WebStateSelection& selection) override;
+                              const WebStateListStatus& status) override;
   void WebStateListDidChange(WebStateList* web_state_list,
                              const WebStateListChange& change,
-                             const WebStateSelection& selection) override;
+                             const WebStateListStatus& status) override;
   void WebStateActivatedAt(WebStateList* web_state_list,
                            web::WebState* old_web_state,
                            web::WebState* new_web_state,

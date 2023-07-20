@@ -266,9 +266,9 @@ constexpr base::TimeDelta kPromoTimeout = base::Seconds(45);
 
 - (void)didChangeWebStateList:(WebStateList*)webStateList
                        change:(const WebStateListChange&)change
-                    selection:(const WebStateSelection&)selection {
+                       status:(const WebStateListStatus&)status {
   switch (change.type()) {
-    case WebStateListChange::Type::kSelectionOnly:
+    case WebStateListChange::Type::kStatusOnly:
       // TODO(crbug.com/1442546): Move the implementation from
       // webStateList:didChangeActiveWebState:oldWebState:atIndex:reason to
       // here. Note that here is reachable only when `reason` ==
@@ -290,7 +290,7 @@ constexpr base::TimeDelta kPromoTimeout = base::Seconds(45);
       // opened.
       if (self.currentPromoReason == PromoReasonExternalLink &&
           self.webStateList->GetActiveWebState() == self.webStateToListenTo &&
-          selection.active_state_change) {
+          status.active_web_state_change()) {
         const WebStateListChangeInsert& insertChange =
             change.As<WebStateListChangeInsert>();
         self.webStateToListenTo = insertChange.inserted_web_state();

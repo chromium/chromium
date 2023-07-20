@@ -62,7 +62,7 @@ class WebStateDelegateBrowserAgent
   // WebStateListObserver::
   void WebStateListDidChange(WebStateList* web_state_list,
                              const WebStateListChange& change,
-                             const WebStateSelection& selection) override;
+                             const WebStateListStatus& status) override;
 
   // BrowserObserver::
   void BrowserDestroyed(Browser* browser) override;

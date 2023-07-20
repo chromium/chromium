@@ -12,11 +12,11 @@
 #error "This file requires ARC support."
 #endif
 
-WebStateListChangeSelectionOnly::WebStateListChangeSelectionOnly(
+WebStateListChangeStatusOnly::WebStateListChangeStatusOnly(
     raw_ptr<web::WebState> selected_web_state)
     : selected_web_state_(selected_web_state) {}
 
-WebStateListChange::Type WebStateListChangeSelectionOnly::type() const {
+WebStateListChange::Type WebStateListChangeStatusOnly::type() const {
   return kType;
 }
 
@@ -70,13 +70,12 @@ WebStateListObserver::~WebStateListObserver() {
 void WebStateListObserver::WebStateListWillChange(
     WebStateList* web_state_list,
     const WebStateListChangeDetach& detach_change,
-    const WebStateSelection& selection) {}
+    const WebStateListStatus& status) {}
 
 void WebStateListObserver::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
-    const WebStateSelection& selection) {}
-
+    const WebStateListStatus& status) {}
 void WebStateListObserver::WebStateActivatedAt(
     WebStateList* web_state_list,
     web::WebState* old_web_state,

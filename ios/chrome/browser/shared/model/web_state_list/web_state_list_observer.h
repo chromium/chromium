@@ -13,6 +13,14 @@ namespace web {
 class WebState;
 }
 
+// WebStateListChange and WebStateListStatus are used to inform
+// WebStateListObservers of changes of
+// (1) inserted/remove/replaced/removed WebStates
+// (2) status updates
+//    (2-1) activated WebState
+//    (2-2) pinned/non-pinned WebState
+// The change of (1) and (2) can be triggered synchronously.
+
 // Represents a generic change to the WebStateList. Use `type()` to determine
 // its type, then access the correct sub-class using `As()<...>` method.
 class WebStateListChange {
@@ -20,7 +28,7 @@ class WebStateListChange {
   enum class Type {
     // Used when the status of a WebState is updated by the activation or the
     // pinned state update. It does not update the layout of WebStateList.
-    kSelectionOnly,
+    kStatusOnly,
     // Used when a WebState at the specified index is detached. The detached
     // WebState is still valid when observer is called but it is no longer in
     // WebStateList.
@@ -54,13 +62,13 @@ class WebStateListChange {
 
 // Represents a change that corresponds to updating the active state or the
 // pinned state of a selected WebState.
-class WebStateListChangeSelectionOnly final : public WebStateListChange {
+class WebStateListChangeStatusOnly final : public WebStateListChange {
  public:
-  static constexpr Type kType = Type::kSelectionOnly;
+  static constexpr Type kType = Type::kStatusOnly;
 
-  explicit WebStateListChangeSelectionOnly(
+  explicit WebStateListChangeStatusOnly(
       raw_ptr<web::WebState> selected_web_state);
-  ~WebStateListChangeSelectionOnly() final = default;
+  ~WebStateListChangeStatusOnly() final = default;
 
   Type type() const final;
 
@@ -121,7 +129,8 @@ class WebStateListChangeMove final : public WebStateListChange {
   Type type() const final;
 
   // The WebState that is moved from the position of `moved_from_index` in
-  // WebStateListChangeMove to the position of `index` in WebStateSelection.
+  // WebStateListChangeMove to the position of `index` in
+  // WebStateListStatus.
   raw_ptr<web::WebState> moved_web_state() const {
     CHECK(moved_web_state_);
     return moved_web_state_;
@@ -178,7 +187,7 @@ class WebStateListChangeInsert final : public WebStateListChange {
   Type type() const final;
 
   // The WebState that is inserted into the WebStateList. It is inserted to the
-  // position of `index` in WebStateSelection.
+  // position of `index` in WebStateListStatus.
   raw_ptr<web::WebState> inserted_web_state() const {
     CHECK(inserted_web_state_);
     return inserted_web_state_;
@@ -188,16 +197,23 @@ class WebStateListChangeInsert final : public WebStateListChange {
   raw_ptr<web::WebState> inserted_web_state_;
 };
 
-struct WebStateSelection {
+// Represents a change on pinned state/activation.
+struct WebStateListStatus {
   // The index to be changed. A WebState is no longer in WebStateList at the
   // `index` position when a WebState is detached.
   const int index;
-  // True when the active WebState is updated. The new active index can be
-  // obtained via `WebStateList::active_index()`.
-  const bool active_state_change;
   // True when the pinned state of the WebState at `index` in WebStateList is
   // updated.
   const bool pinned_state_change;
+  // WebState that used to be active before the change in WebStateList is
+  // finished.
+  const raw_ptr<web::WebState> old_active_web_state;
+  // WebState that will be active after the change in WebStateList is finished.
+  const raw_ptr<web::WebState> new_active_web_state;
+  // True when the active WebState is updated.
+  bool active_web_state_change() const {
+    return old_active_web_state != new_active_web_state;
+  }
 };
 
 // Constants used when notifying about changes to active WebState.
@@ -234,12 +250,12 @@ class WebStateListObserver : public base::CheckedObserver {
   virtual void WebStateListWillChange(
       WebStateList* web_state_list,
       const WebStateListChangeDetach& detach_change,
-      const WebStateSelection& selection);
+      const WebStateListStatus& status);
 
   /// Invoked when WebStateList is updated.
   virtual void WebStateListDidChange(WebStateList* web_state_list,
                                      const WebStateListChange& change,
-                                     const WebStateSelection& selection);
+                                     const WebStateListStatus& status);
 
   // Invoked after `new_web_state` was activated at the specified index. Both
   // WebState are either valid or null (if there was no selection or there is

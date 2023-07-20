@@ -277,7 +277,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 
 - (void)willChangeWebStateList:(WebStateList*)webStateList
                         change:(const WebStateListChangeDetach&)detachChange
-                     selection:(const WebStateSelection&)selection {
+                        status:(const WebStateListStatus&)status {
   DCHECK_EQ(_webStateList, webStateList);
   if (_webStateList->IsBatchInProgress()) {
     // Updates are handled in the batch operation observer methods.
@@ -293,7 +293,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 
 - (void)didChangeWebStateList:(WebStateList*)webStateList
                        change:(const WebStateListChange&)change
-                    selection:(const WebStateSelection&)selection {
+                       status:(const WebStateListStatus&)status {
   DCHECK_EQ(_webStateList, webStateList);
   if (_webStateList->IsBatchInProgress()) {
     // Updates are handled in the batch operation observer methods.
@@ -301,8 +301,8 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   }
 
   switch (change.type()) {
-    case WebStateListChange::Type::kSelectionOnly: {
-      CHECK(!selection.pinned_state_change);
+    case WebStateListChange::Type::kStatusOnly: {
+      CHECK(!status.pinned_state_change);
       // TODO(crbug.com/1442546): Move the implementation from
       // webStateList:didChangeActiveWebState:oldWebState:atIndex:reason to
       // here. Note that here is reachable only when `reason` ==
@@ -326,7 +326,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
       web::WebState* insertedWebState = insertChange.inserted_web_state();
       TabSwitcherItem* item =
           [[WebStateTabSwitcherItem alloc] initWithWebState:insertedWebState];
-      [_consumer insertItem:item atIndex:selection.index selectedItemID:nil];
+      [_consumer insertItem:item atIndex:status.index selectedItemID:nil];
 
       _scopedWebStateObservation->AddObservation(insertedWebState);
       break;

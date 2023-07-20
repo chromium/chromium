@@ -154,7 +154,7 @@ using web::WebState;
 
 - (void)didChangeWebStateList:(WebStateList*)webStateList
                        change:(const WebStateListChange&)change
-                    selection:(const WebStateSelection&)selection {
+                       status:(const WebStateListStatus&)status {
   if (change.type() == WebStateListChange::Type::kInsert) {
     const WebStateListChangeInsert& insertChange =
         change.As<WebStateListChangeInsert>();

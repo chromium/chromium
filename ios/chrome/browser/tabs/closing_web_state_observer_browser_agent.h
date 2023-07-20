@@ -45,10 +45,10 @@ class ClosingWebStateObserverBrowserAgent
   // WebStateListObserver implementation.
   void WebStateListWillChange(WebStateList* web_state_list,
                               const WebStateListChangeDetach& detach_change,
-                              const WebStateSelection& selection) override;
+                              const WebStateListStatus& status) override;
   void WebStateListDidChange(WebStateList* web_state_list,
                              const WebStateListChange& change,
-                             const WebStateSelection& selection) override;
+                             const WebStateListStatus& status) override;
 
   sessions::TabRestoreService* restore_service_ = nullptr;
 };

@@ -325,10 +325,10 @@ using ReauthenticationEvent::kSuccess;
 
 - (void)didChangeWebStateList:(WebStateList*)webStateList
                        change:(const WebStateListChange&)change
-                    selection:(const WebStateSelection&)selection {
+                       status:(const WebStateListStatus&)status {
   DCHECK_EQ(_webStateList, webStateList);
   switch (change.type()) {
-    case WebStateListChange::Type::kSelectionOnly:
+    case WebStateListChange::Type::kStatusOnly:
       // TODO(crbug.com/1442546): Move the implementation from
       // webStateList:didChangeActiveWebState:oldWebState:atIndex:reason to
       // here. Note that here is reachable only when `reason` ==
@@ -341,7 +341,7 @@ using ReauthenticationEvent::kSuccess;
       // Do nothing when a WebState is moved.
       break;
     case WebStateListChange::Type::kReplace: {
-      if (selection.index == webStateList->active_index()) {
+      if (status.index == webStateList->active_index()) {
         [self onWebStateChange];
       }
       break;

@@ -243,9 +243,9 @@ void CrashReporterURLObserver::StopObservingWebStateList(
 void CrashReporterURLObserver::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
-    const WebStateSelection& selection) {
+    const WebStateListStatus& status) {
   switch (change.type()) {
-    case WebStateListChange::Type::kSelectionOnly:
+    case WebStateListChange::Type::kStatusOnly:
       // TODO(crbug.com/1442546): Move the implementation from
       // WebStateActivatedAt() to here. Note that here is reachable only when
       // `reason` == ActiveWebStateChangeReason::Activated.
@@ -282,7 +282,7 @@ void CrashReporterURLObserver::WebStateListDidChange(
       web::WebState* inserted_web_state = insert_change.inserted_web_state();
       web_state_to_group_[inserted_web_state] =
           GroupForWebStateList(web_state_list);
-      if (selection.active_state_change) {
+      if (status.active_web_state_change()) {
         RecordURLForWebState(inserted_web_state);
       }
       break;

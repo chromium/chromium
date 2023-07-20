@@ -392,9 +392,9 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 
 - (void)didChangeWebStateList:(WebStateList*)webStateList
                        change:(const WebStateListChange&)change
-                    selection:(const WebStateSelection&)selection {
+                       status:(const WebStateListStatus&)status {
   switch (change.type()) {
-    case WebStateListChange::Type::kSelectionOnly:
+    case WebStateListChange::Type::kStatusOnly:
       // TODO(crbug.com/1442546): Move the implementation from
       // webStateList:didChangeActiveWebState:oldWebState:atIndex:reason to
       // here. Note that here is reachable only when `reason` ==
@@ -410,7 +410,7 @@ const char kInfobarOverflowBadgeShownUserAction[] =
       DCHECK_EQ(self.webStateList, webStateList);
       const WebStateListChangeReplace& replaceChange =
           change.As<WebStateListChangeReplace>();
-      if (selection.index == webStateList->active_index()) {
+      if (status.index == webStateList->active_index()) {
         self.webState = replaceChange.inserted_web_state();
       }
       break;

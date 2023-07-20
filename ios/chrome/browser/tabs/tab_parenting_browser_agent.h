@@ -24,7 +24,7 @@ class TabParentingBrowserAgent
   // WebStateListObserver implementation.
   void WebStateListDidChange(WebStateList* web_state_list,
                              const WebStateListChange& change,
-                             const WebStateSelection& selection) override;
+                             const WebStateListStatus& status) override;
 
  private:
   friend class BrowserUserData<TabParentingBrowserAgent>;

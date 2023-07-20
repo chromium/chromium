@@ -38,7 +38,7 @@ class IncognitoWebStateObserver {
     // WebStateListObserver:
     void WebStateListDidChange(WebStateList* web_state_list,
                                const WebStateListChange& change,
-                               const WebStateSelection& selection) override;
+                               const WebStateListStatus& status) override;
     IncognitoWebStateObserver* incognito_tracker_;
   };
 

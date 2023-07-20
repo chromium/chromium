@@ -17,24 +17,24 @@ WebStateListObserverBridge::~WebStateListObserverBridge() {}
 void WebStateListObserverBridge::WebStateListWillChange(
     WebStateList* web_state_list,
     const WebStateListChangeDetach& detach_change,
-    const WebStateSelection& selection) {
-  const SEL selector = @selector(willChangeWebStateList:change:selection:);
+    const WebStateListStatus& status) {
+  const SEL selector = @selector(willChangeWebStateList:change:status:);
   if (![observer_ respondsToSelector:selector]) {
     return;
   }
 
   [observer_ willChangeWebStateList:web_state_list
                              change:detach_change
-                          selection:selection];
+                             status:status];
 }
 
 void WebStateListObserverBridge::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
-    const WebStateSelection& selection) {
+    const WebStateListStatus& status) {
   switch (change.type()) {
-    case WebStateListChange::Type::kSelectionOnly: {
-      if (!selection.pinned_state_change) {
+    case WebStateListChange::Type::kStatusOnly: {
+      if (!status.pinned_state_change) {
         // TODO(crbug.com/1442546): Move the implementation from
         // WebStateActivatedAt() to here. Note that here is reachable only when
         // `reason` == ActiveWebStateChangeReason::Activated.
@@ -49,14 +49,14 @@ void WebStateListObserverBridge::WebStateListDidChange(
     case WebStateListChange::Type::kReplace:
       [[fallthrough]];
     case WebStateListChange::Type::kInsert: {
-      const SEL selector = @selector(didChangeWebStateList:change:selection:);
+      const SEL selector = @selector(didChangeWebStateList:change:status:);
       if (![observer_ respondsToSelector:selector]) {
         return;
       }
 
       [observer_ didChangeWebStateList:web_state_list
                                 change:change
-                             selection:selection];
+                                status:status];
       break;
     }
   }

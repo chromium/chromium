@@ -71,7 +71,7 @@ void WebStateListMetricsBrowserAgent::SessionRestorationFinished(
 void WebStateListMetricsBrowserAgent::WebStateListWillChange(
     WebStateList* web_state_list,
     const WebStateListChangeDetach& detach_change,
-    const WebStateSelection& selection) {
+    const WebStateListStatus& status) {
   if (!detach_change.is_closing()) {
     return;
   }
@@ -93,9 +93,9 @@ void WebStateListMetricsBrowserAgent::WebStateListWillChange(
 void WebStateListMetricsBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
-    const WebStateSelection& selection) {
+    const WebStateListStatus& status) {
   switch (change.type()) {
-    case WebStateListChange::Type::kSelectionOnly:
+    case WebStateListChange::Type::kStatusOnly:
       // TODO(crbug.com/1442546): Move the implementation from
       // WebStateActivatedAt() to here. Note that here is reachable only when
       // `reason` == ActiveWebStateChangeReason::Activated.

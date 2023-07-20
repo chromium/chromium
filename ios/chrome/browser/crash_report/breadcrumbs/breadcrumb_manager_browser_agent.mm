@@ -70,9 +70,9 @@ void BreadcrumbManagerBrowserAgent::PlatformLogEvent(const std::string& event) {
 void BreadcrumbManagerBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
-    const WebStateSelection& selection) {
+    const WebStateListStatus& status) {
   switch (change.type()) {
-    case WebStateListChange::Type::kSelectionOnly:
+    case WebStateListChange::Type::kStatusOnly:
       // TODO(crbug.com/1442546): Move the implementation from
       // WebStateActivatedAt() to here. Note that here is reachable only when
       // `reason` == ActiveWebStateChangeReason::Activated.
@@ -85,14 +85,14 @@ void BreadcrumbManagerBrowserAgent::WebStateListDidChange(
       const WebStateListChangeDetach& detach_change =
           change.As<WebStateListChangeDetach>();
       LogTabClosedAt(GetTabId(detach_change.detached_web_state()),
-                     selection.index);
+                     status.index);
       break;
     }
     case WebStateListChange::Type::kMove: {
       const WebStateListChangeMove& move_change =
           change.As<WebStateListChangeMove>();
       LogTabMoved(GetTabId(move_change.moved_web_state()),
-                  move_change.moved_from_index(), selection.index);
+                  move_change.moved_from_index(), status.index);
       break;
     }
     case WebStateListChange::Type::kReplace: {
@@ -100,7 +100,7 @@ void BreadcrumbManagerBrowserAgent::WebStateListDidChange(
           change.As<WebStateListChangeReplace>();
       LogTabReplaced(GetTabId(replace_change.replaced_web_state()),
                      GetTabId(replace_change.inserted_web_state()),
-                     selection.index);
+                     status.index);
       break;
     }
     case WebStateListChange::Type::kInsert: {
@@ -111,7 +111,7 @@ void BreadcrumbManagerBrowserAgent::WebStateListDidChange(
       const WebStateListChangeInsert& insert_change =
           change.As<WebStateListChangeInsert>();
       LogTabInsertedAt(GetTabId(insert_change.inserted_web_state()),
-                       selection.index, selection.active_state_change);
+                       status.index, status.active_web_state_change());
       break;
     }
   }

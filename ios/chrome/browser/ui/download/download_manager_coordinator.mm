@@ -143,7 +143,7 @@ class UnopenedDownloadsTracker : public web::DownloadTaskObserver,
   // WebStateListObserver overrides:
   void WebStateListWillChange(WebStateList* web_state_list,
                               const WebStateListChangeDetach& detach_change,
-                              const WebStateSelection& selection) override {
+                              const WebStateListStatus& status) override {
     if (!detach_change.is_closing()) {
       return;
     }

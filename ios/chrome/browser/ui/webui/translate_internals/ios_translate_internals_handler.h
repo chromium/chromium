@@ -70,7 +70,7 @@ class IOSTranslateInternalsHandler
     // WebStateListObserver:
     void WebStateListDidChange(WebStateList* web_state_list,
                                const WebStateListChange& change,
-                               const WebStateSelection& selection) override;
+                               const WebStateListStatus& status) override;
 
     IOSTranslateInternalsHandler* handler_;
   };

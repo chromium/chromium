@@ -19,12 +19,12 @@
 // only before a WebState is detached from WebStateList.
 - (void)willChangeWebStateList:(WebStateList*)webStateList
                         change:(const WebStateListChangeDetach&)change
-                     selection:(const WebStateSelection&)selection;
+                        status:(const WebStateListStatus&)status;
 
 // Invoked after the WebStateList is updated.
 - (void)didChangeWebStateList:(WebStateList*)webStateList
                        change:(const WebStateListChange&)change
-                    selection:(const WebStateSelection&)selection;
+                       status:(const WebStateListStatus&)status;
 
 // Invoked after `newWebState` was activated at the specified index. Both
 // WebState are either valid or null (if there was no selection or there is
@@ -69,10 +69,10 @@ class WebStateListObserverBridge final : public WebStateListObserver {
   // WebStateListObserver implementation.
   void WebStateListWillChange(WebStateList* web_state_list,
                               const WebStateListChangeDetach& detach_change,
-                              const WebStateSelection& selection) override;
+                              const WebStateListStatus& status) override;
   void WebStateListDidChange(WebStateList* web_state_list,
                              const WebStateListChange& change,
-                             const WebStateSelection& selection) override;
+                             const WebStateListStatus& status) override;
   void WebStateActivatedAt(WebStateList* web_state_list,
                            web::WebState* old_web_state,
                            web::WebState* new_web_state,

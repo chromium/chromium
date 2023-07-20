@@ -523,7 +523,7 @@ void OverlayPresenterImpl::OverlayPresentationContextDidMoveToWindow(
 void OverlayPresenterImpl::WebStateListWillChange(
     WebStateList* web_state_list,
     const WebStateListChangeDetach& detach_change,
-    const WebStateSelection& selection) {
+    const WebStateListStatus& status) {
   web::WebState* detached_web_state = detach_change.detached_web_state();
   detaching_presenting_web_state_ =
       presented_request_
@@ -535,9 +535,9 @@ void OverlayPresenterImpl::WebStateListWillChange(
 void OverlayPresenterImpl::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
-    const WebStateSelection& selection) {
+    const WebStateListStatus& status) {
   switch (change.type()) {
-    case WebStateListChange::Type::kSelectionOnly:
+    case WebStateListChange::Type::kStatusOnly:
       // TODO(crbug.com/1442546): Move the implementation from
       // WebStateActivatedAt() to here. Note that here is reachable only when
       // `reason` == ActiveWebStateChangeReason::Activated.

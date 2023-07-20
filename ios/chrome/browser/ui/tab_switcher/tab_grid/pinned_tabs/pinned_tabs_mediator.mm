@@ -127,7 +127,7 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
 
 - (void)willChangeWebStateList:(WebStateList*)webStateList
                         change:(const WebStateListChangeDetach&)detachChange
-                     selection:(const WebStateSelection&)selection {
+                        status:(const WebStateListStatus&)status {
   DCHECK_EQ(_webStateList, webStateList);
   if (webStateList->IsBatchInProgress()) {
     return;
@@ -137,7 +137,7 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
     return;
   }
 
-  if (!webStateList->IsWebStatePinnedAt(selection.index)) {
+  if (!webStateList->IsWebStatePinnedAt(status.index)) {
     [self.consumer
         selectItemWithID:GetActiveWebStateIdentifier(
                              webStateList,
@@ -160,20 +160,20 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
 
 - (void)didChangeWebStateList:(WebStateList*)webStateList
                        change:(const WebStateListChange&)change
-                    selection:(const WebStateSelection&)selection {
+                       status:(const WebStateListStatus&)status {
   DCHECK_EQ(_webStateList, webStateList);
   if (webStateList->IsBatchInProgress()) {
     return;
   }
 
   switch (change.type()) {
-    case WebStateListChange::Type::kSelectionOnly: {
-      const WebStateListChangeSelectionOnly& selectionOnlyChange =
-          change.As<WebStateListChangeSelectionOnly>();
-      if (selection.pinned_state_change) {
+    case WebStateListChange::Type::kStatusOnly: {
+      const WebStateListChangeStatusOnly& selectionOnlyChange =
+          change.As<WebStateListChangeStatusOnly>();
+      if (status.pinned_state_change) {
         [self changePinnedStateForWebState:selectionOnlyChange
                                                .selected_web_state()
-                                   atIndex:selection.index];
+                                   atIndex:status.index];
         return;
       }
       // TODO(crbug.com/1442546): Move the implementation from
@@ -188,23 +188,23 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
     case WebStateListChange::Type::kMove: {
       const WebStateListChangeMove& moveChange =
           change.As<WebStateListChangeMove>();
-      if (webStateList->IsWebStatePinnedAt(selection.index)) {
+      if (webStateList->IsWebStatePinnedAt(status.index)) {
         // PinnedTabsMediator handles only pinned tabs because non pinned tabs
         // are handled in BaseGridMediator.
         [self.consumer
             moveItemWithID:moveChange.moved_web_state()->GetStableIdentifier()
-                   toIndex:selection.index];
+                   toIndex:status.index];
       }
 
       // The pinned state can be updated when a tab is moved.
-      if (selection.pinned_state_change) {
+      if (status.pinned_state_change) {
         [self changePinnedStateForWebState:moveChange.moved_web_state()
-                                   atIndex:selection.index];
+                                   atIndex:status.index];
       }
       break;
     }
     case WebStateListChange::Type::kReplace: {
-      if (!webStateList->IsWebStatePinnedAt(selection.index)) {
+      if (!webStateList->IsWebStatePinnedAt(status.index)) {
         return;
       }
 
@@ -222,7 +222,7 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
       break;
     }
     case WebStateListChange::Type::kInsert: {
-      if (!webStateList->IsWebStatePinnedAt(selection.index)) {
+      if (!webStateList->IsWebStatePinnedAt(status.index)) {
         [self.consumer
             selectItemWithID:GetActiveWebStateIdentifier(
                                  webStateList,
@@ -238,7 +238,7 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
       TabSwitcherItem* item =
           [[WebStateTabSwitcherItem alloc] initWithWebState:insertedWebState];
       [self.consumer insertItem:item
-                        atIndex:selection.index
+                        atIndex:status.index
                  selectedItemID:GetActiveWebStateIdentifier(
                                     webStateList,
                                     WebStateSearchCriteria{

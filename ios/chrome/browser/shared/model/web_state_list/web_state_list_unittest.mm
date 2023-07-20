@@ -84,10 +84,10 @@ class WebStateListTestObserver : public WebStateListObserver {
   // WebStateListObserver implementation.
   void WebStateListDidChange(WebStateList* web_state_list,
                              const WebStateListChange& change,
-                             const WebStateSelection& selection) override {
+                             const WebStateListStatus& status) override {
     switch (change.type()) {
-      case WebStateListChange::Type::kSelectionOnly: {
-        if (selection.pinned_state_change) {
+      case WebStateListChange::Type::kStatusOnly: {
+        if (status.pinned_state_change) {
           pinned_state_changed_ = true;
         }
         // TODO(crbug.com/1442546): Move the implementation from
@@ -113,7 +113,7 @@ class WebStateListTestObserver : public WebStateListObserver {
         break;
     }
 
-    if (selection.active_state_change) {
+    if (status.active_web_state_change()) {
       active_web_state_changed_ = true;
     }
   }
@@ -550,7 +550,7 @@ TEST_F(WebStateListTest, MoveActiveWebState) {
   web_state_list_.MoveWebStateAt(1, 2);
 
   EXPECT_TRUE(observer_.web_state_moved());
-  EXPECT_TRUE(observer_.active_web_state_changed());
+  EXPECT_FALSE(observer_.active_web_state_changed());
   EXPECT_EQ(2, web_state_list_.active_index());
   EXPECT_EQ(3, web_state_list_.count());
   EXPECT_EQ(kURL0, web_state_list_.GetWebStateAt(0)->GetVisibleURL().spec());

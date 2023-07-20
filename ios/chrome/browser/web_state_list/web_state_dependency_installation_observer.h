@@ -42,7 +42,7 @@ class WebStateDependencyInstallationObserver : public WebStateListObserver,
   // WebStateListObserver:
   void WebStateListDidChange(WebStateList* web_state_list,
                              const WebStateListChange& change,
-                             const WebStateSelection& selection) override;
+                             const WebStateListStatus& status) override;
   void WebStateListDestroyed(WebStateList* web_state_list) override;
 
   WebStateDependencyInstallationObserver(

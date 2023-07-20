@@ -80,7 +80,7 @@ class StartSurfaceRecentTabBrowserAgent
   // WebStateListObserver:
   void WebStateListDidChange(WebStateList* web_state_list,
                              const WebStateListChange& change,
-                             const WebStateSelection& selection) override;
+                             const WebStateListStatus& status) override;
 
   // web::WebStateObserver
   void WebStateDestroyed(web::WebState* web_state) override;

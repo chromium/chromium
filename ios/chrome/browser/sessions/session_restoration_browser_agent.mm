@@ -339,8 +339,8 @@ void SessionRestorationBrowserAgent::WebStateActivatedAt(
 void SessionRestorationBrowserAgent::WebStateListWillChange(
     WebStateList* web_state_list,
     const WebStateListChangeDetach& detach_change,
-    const WebStateSelection& selection) {
-  if (web_state_list->active_index() == selection.index) {
+    const WebStateListStatus& status) {
+  if (web_state_list->active_index() == status.index) {
     return;
   }
 
@@ -351,9 +351,9 @@ void SessionRestorationBrowserAgent::WebStateListWillChange(
 void SessionRestorationBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
-    const WebStateSelection& selection) {
+    const WebStateListStatus& status) {
   switch (change.type()) {
-    case WebStateListChange::Type::kSelectionOnly:
+    case WebStateListChange::Type::kStatusOnly:
       // TODO(crbug.com/1442546): Move the implementation from
       // WebStateActivatedAt() to here. Note that here is reachable only when
       // `reason` == ActiveWebStateChangeReason::Activated.
@@ -394,7 +394,7 @@ void SessionRestorationBrowserAgent::WebStateListDidChange(
     case WebStateListChange::Type::kInsert: {
       const WebStateListChangeInsert& insert_change =
           change.As<WebStateListChangeInsert>();
-      if (selection.active_state_change ||
+      if (status.active_web_state_change() ||
           insert_change.inserted_web_state()->IsLoading()) {
         return;
       }

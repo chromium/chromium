@@ -74,9 +74,9 @@ void WebUsageEnablerBrowserAgent::BrowserDestroyed(Browser* browser) {
 void WebUsageEnablerBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
-    const WebStateSelection& selection) {
+    const WebStateListStatus& status) {
   switch (change.type()) {
-    case WebStateListChange::Type::kSelectionOnly:
+    case WebStateListChange::Type::kStatusOnly:
       // Do nothing when a WebState is selected and its status is updated.
       break;
     case WebStateListChange::Type::kDetach: {
@@ -108,7 +108,7 @@ void WebUsageEnablerBrowserAgent::WebStateListDidChange(
           change.As<WebStateListChangeInsert>();
       UpdateWebUsageForAddedWebState(
           insert_change.inserted_web_state(),
-          /*triggers_initial_load=*/selection.active_state_change);
+          /*triggers_initial_load=*/status.active_web_state_change());
       break;
     }
   }

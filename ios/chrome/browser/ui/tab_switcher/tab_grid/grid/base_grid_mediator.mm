@@ -256,7 +256,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
 
 - (void)willChangeWebStateList:(WebStateList*)webStateList
                         change:(const WebStateListChangeDetach&)detachChange
-                     selection:(const WebStateSelection&)selection {
+                        status:(const WebStateListStatus&)status {
   DCHECK_EQ(_webStateList, webStateList);
   if (webStateList->IsBatchInProgress()) {
     return;
@@ -277,27 +277,27 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
   // the Tab Search and was closed from the context menu. In such a case
   // there were no observation added for it. Therefore, there is no need to
   // remove one.
-  if (![self isPinnedWebState:selection.index]) {
+  if (![self isPinnedWebState:status.index]) {
     _scopedWebStateObservation->RemoveObservation(detachedWebState);
   }
 }
 
 - (void)didChangeWebStateList:(WebStateList*)webStateList
                        change:(const WebStateListChange&)change
-                    selection:(const WebStateSelection&)selection {
+                       status:(const WebStateListStatus&)status {
   DCHECK_EQ(_webStateList, webStateList);
   if (webStateList->IsBatchInProgress()) {
     return;
   }
 
   switch (change.type()) {
-    case WebStateListChange::Type::kSelectionOnly: {
-      const WebStateListChangeSelectionOnly& selectionOnlyChange =
-          change.As<WebStateListChangeSelectionOnly>();
-      if (selection.pinned_state_change) {
+    case WebStateListChange::Type::kStatusOnly: {
+      const WebStateListChangeStatusOnly& selectionOnlyChange =
+          change.As<WebStateListChangeStatusOnly>();
+      if (status.pinned_state_change) {
         [self changePinnedStateForWebState:selectionOnlyChange
                                                .selected_web_state()
-                                   atIndex:selection.index];
+                                   atIndex:status.index];
         return;
       }
 
@@ -313,25 +313,25 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
     case WebStateListChange::Type::kMove: {
       const WebStateListChangeMove& moveChange =
           change.As<WebStateListChangeMove>();
-      if (![self isPinnedWebState:selection.index]) {
+      if (![self isPinnedWebState:status.index]) {
         // BaseGridMediator handles only non pinned tabs because pinned tabs are
         // handled in PinnedTabsMediator.
         NSUInteger itemIndex =
-            [self itemIndexFromWebStateListIndex:selection.index];
+            [self itemIndexFromWebStateListIndex:status.index];
         [self.consumer
             moveItemWithID:moveChange.moved_web_state()->GetStableIdentifier()
                    toIndex:itemIndex];
       }
 
       // The pinned state can be updated when a tab is moved.
-      if (selection.pinned_state_change) {
+      if (status.pinned_state_change) {
         [self changePinnedStateForWebState:moveChange.moved_web_state()
-                                   atIndex:selection.index];
+                                   atIndex:status.index];
       }
       break;
     }
     case WebStateListChange::Type::kReplace: {
-      if ([self isPinnedWebState:selection.index]) {
+      if ([self isPinnedWebState:status.index]) {
         return;
       }
 
@@ -349,7 +349,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
       break;
     }
     case WebStateListChange::Type::kInsert: {
-      if ([self isPinnedWebState:selection.index]) {
+      if ([self isPinnedWebState:status.index]) {
         [self.consumer
             selectItemWithID:GetActiveWebStateIdentifier(
                                  webStateList,
@@ -364,8 +364,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
       web::WebState* insertedWebState = insertChange.inserted_web_state();
       TabSwitcherItem* item =
           [[WebStateTabSwitcherItem alloc] initWithWebState:insertedWebState];
-      NSUInteger itemIndex =
-          [self itemIndexFromWebStateListIndex:selection.index];
+      NSUInteger itemIndex = [self itemIndexFromWebStateListIndex:status.index];
       [self.consumer insertItem:item
                         atIndex:itemIndex
                  selectedItemID:GetActiveWebStateIdentifier(

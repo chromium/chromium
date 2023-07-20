@@ -87,15 +87,15 @@ class TabHelperDelegateInstaller {
     // WebStateListObserver:
     void WebStateListWillChange(WebStateList* web_state_list,
                                 const WebStateListChangeDetach& detach_change,
-                                const WebStateSelection& selection) override {
+                                const WebStateListStatus& status) override {
       SetTabHelperDelegate(detach_change.detached_web_state(), nullptr);
     }
 
     void WebStateListDidChange(WebStateList* web_state_list,
                                const WebStateListChange& change,
-                               const WebStateSelection& selection) override {
+                               const WebStateListStatus& status) override {
       switch (change.type()) {
-        case WebStateListChange::Type::kSelectionOnly:
+        case WebStateListChange::Type::kStatusOnly:
           // Do nothing when a WebState is selected and its status is updated.
           break;
         case WebStateListChange::Type::kDetach:
