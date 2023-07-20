@@ -90,7 +90,8 @@ class BorealisTasksTest : public testing::Test,
 
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<BorealisContext> context_;
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
   void CreateProfile() {
@@ -183,6 +184,10 @@ TEST_F(BorealisTasksTest,
 
 TEST_F(BorealisTasksTest,
        AwaitBorealisStartupSucceedsAndCallbackRanWithResults) {
+  vm_tools::concierge::VmStartedSignal vm_signal;
+  vm_signal.set_owner_id(
+      ash::ProfileHelper::GetUserIdHashFromProfile(context_->profile()));
+  vm_signal.set_name(context_->vm_name());
   vm_tools::cicerone::ContainerStartedSignal signal;
   signal.set_owner_id(
       ash::ProfileHelper::GetUserIdHashFromProfile(context_->profile()));
@@ -192,8 +197,9 @@ TEST_F(BorealisTasksTest,
   CallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(BorealisStartupResult::kSuccess, _));
 
-  AwaitBorealisStartup task(context_->profile(), context_->vm_name());
+  AwaitBorealisStartup task;
   task.Run(context_.get(), callback_factory.BindOnce());
+  FakeConciergeClient()->NotifyVmStarted(vm_signal);
   FakeCiceroneClient()->NotifyContainerStarted(std::move(signal));
 
   task_environment_.RunUntilIdle();
@@ -201,17 +207,30 @@ TEST_F(BorealisTasksTest,
 
 TEST_F(BorealisTasksTest,
        AwaitBorealisStartupContainerAlreadyStartedAndCallbackRanWithResults) {
-  vm_tools::cicerone::ContainerStartedSignal signal;
-  signal.set_owner_id(
+  vm_tools::concierge::ListVmsResponse list_vms_response;
+  vm_tools::concierge::ExtendedVmInfo vm_info;
+  vm_info.set_owner_id(
       ash::ProfileHelper::GetUserIdHashFromProfile(context_->profile()));
-  signal.set_vm_name(context_->vm_name());
-  signal.set_container_name("penguin");
+  vm_info.set_name(context_->vm_name());
+  *list_vms_response.add_vms() = vm_info;
+  list_vms_response.set_success(true);
+  FakeConciergeClient()->set_list_vms_response(list_vms_response);
+
+  vm_tools::cicerone::ListRunningContainersResponse list_containers_response;
+  auto* container = list_containers_response.add_containers();
+  container->set_vm_name(context_->vm_name());
+  container->set_container_name("penguin");
+  FakeCiceroneClient()->set_list_containers_response(list_containers_response);
+
+  vm_tools::cicerone::GetGarconSessionInfoResponse garcon_response;
+  garcon_response.set_status(
+      vm_tools::cicerone::GetGarconSessionInfoResponse::SUCCEEDED);
+  FakeCiceroneClient()->set_get_garcon_session_info_response(garcon_response);
 
   CallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(BorealisStartupResult::kSuccess, _));
 
-  AwaitBorealisStartup task(context_->profile(), context_->vm_name());
-  FakeCiceroneClient()->NotifyContainerStarted(std::move(signal));
+  AwaitBorealisStartup task;
   task.Run(context_.get(), callback_factory.BindOnce());
   task_environment_.RunUntilIdle();
 }
@@ -223,10 +242,9 @@ TEST_F(BorealisTasksTest,
       callback_factory,
       Call(BorealisStartupResult::kAwaitBorealisStartupFailed, StrNe("")));
 
-  AwaitBorealisStartup task(context_->profile(), context_->vm_name());
-  task.GetWatcherForTesting().SetTimeoutForTesting(base::Milliseconds(0));
+  AwaitBorealisStartup task;
   task.Run(context_.get(), callback_factory.BindOnce());
-  task_environment_.RunUntilIdle();
+  task_environment_.FastForwardBy(base::Seconds(31));
 }
 
 TEST_F(BorealisTasksTest, SyncBorealisDiskFailureIgnored) {
