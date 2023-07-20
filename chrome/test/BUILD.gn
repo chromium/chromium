@@ -3552,6 +3552,7 @@ if (!is_android) {
           "../browser/chromeos/extensions/system_log/system_log_apitest.cc",
           "../browser/chromeos/extensions/wallpaper_apitest.cc",
           "../browser/chromeos/extensions/wm/wm_desks_private_apitest.cc",
+          "../browser/chromeos/reporting/network/network_bandwidth_sampler_ash_browsertest.cc",
           "../browser/extensions/api/bluetooth_low_energy/bluetooth_low_energy_apitest_chromeos.cc",
           "../browser/extensions/api/crash_report_private/crash_report_private_apitest.cc",
           "../browser/extensions/api/enterprise_device_attributes/enterprise_device_attributes_ash_apitest.cc",
@@ -5130,6 +5131,7 @@ if (is_chromeos_lacros) {
     sources = [
       "../browser/accessibility/live_caption/live_caption_surface_browsertest.cc",
       "../browser/chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager_lacros_browsertest.cc",
+      "../browser/chromeos/reporting/network/network_bandwidth_sampler_lacros_browsertest.cc",
       "../browser/ui/autofill/autofill_context_menu_manager_lacros_browsertest.cc",
 
       # dlp_content_manager_lacros_browsertest.cc should become a unit test.
@@ -5166,6 +5168,7 @@ if (is_chromeos_lacros) {
       "//chrome/browser/chromeos:test_support",
       "//chrome/browser/chromeos/extensions/telemetry/api:browser_tests",
       "//chromeos/crosapi/mojom",
+      "//chromeos/dbus/missive:test_support",
       "//chromeos/lacros",
       "//chromeos/lacros:test_support",
       "//chromeos/startup",
