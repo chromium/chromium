@@ -69,16 +69,8 @@ export class GuestOsController {
       }
     }
 
-    // Deduplicate GuestOSes with the same name/vmType to ignore issues from the
-    // backend. b/279378611. The instances that appear later prevail, assuming
-    // they're mounted/registered more recently.
-    const uniqGuests = new Map();
-    guests.forEach(guest => {
-      uniqGuests.set(`${guest.vmType}-${guest.displayName}`, guest);
-    });
-
     const newGuestOsPlaceholders =
-        Array.from(uniqGuests.values()).map(guest => {
+        guests.map(guest => {
           const guestOsEntry =
               new GuestOsPlaceholder(guest.displayName, guest.id, guest.vmType);
           const navigationModelItem = new NavigationModelFakeItem(
