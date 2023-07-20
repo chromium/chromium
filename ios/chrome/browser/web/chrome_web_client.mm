@@ -188,25 +188,35 @@ NSString* GetHttpsOnlyModeErrorPageHtml(web::WebState* web_state,
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 // Returns the Supervised User Error Page Interstitial HTML.
 NSString* GetSupervisedUserErrorPageHTML(web::WebState* web_state,
+                                         int64_t navigation_id,
                                          const GURL& url) {
   // Fetch the supervised user error info from the WebState's container.
   SupervisedUserErrorContainer* container =
       SupervisedUserErrorContainer::FromWebState(web_state);
-  SupervisedUserErrorContainer::SupervisedUserErrorInfo& info =
-      container->GetSupervisedUserErrorInfo();
+  CHECK(container);
+  std::unique_ptr<SupervisedUserErrorContainer::SupervisedUserErrorInfo>
+      error_info = container->ReleaseSupervisedUserErrorInfo();
+  CHECK(error_info);
 
-  container->CreateSupervisedUserInterstitial();
-  // TODO(b/264669960): Pass ownership of the intersitial to the appropriate
-  // handler of its lifecycle (tracking the navigation).
+  std::unique_ptr<supervised_user::SupervisedUserInterstitial> interstitial =
+      container->CreateSupervisedUserInterstitial(*error_info);
+  std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage> page =
+      std::make_unique<SupervisedUserInterstitialBlockingPage>(
+          std::move(interstitial), /*controller_client=*/nullptr, container,
+          web_state);
 
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
   std::string error_page_content =
       supervised_user::SupervisedUserInterstitial::GetHTMLContents(
           SupervisedUserServiceFactory::GetForBrowserState(browser_state),
-          browser_state->GetPrefs(), info.filtering_behavior_reason(),
-          container->IsRemoteApprovalPendingForUrl(url), info.is_main_frame(),
+          browser_state->GetPrefs(), error_info->filtering_behavior_reason(),
+          container->IsRemoteApprovalPendingForUrl(url),
+          error_info->is_main_frame(),
           GetApplicationContext()->GetApplicationLocale());
+
+  security_interstitials::IOSBlockingPageTabHelper::FromWebState(web_state)
+      ->AssociateBlockingPage(navigation_id, std::move(page));
   return base::SysUTF8ToNSString(error_page_content);
 }
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -419,7 +429,7 @@ void ChromeWebClient::PrepareErrorPage(
                  isEqualToString:kSupervisedUserInterstitialErrorDomain]) {
     CHECK_EQ(kSupervisedUserInterstitialErrorCode, final_underlying_error.code);
     std::move(error_html_callback)
-        .Run(GetSupervisedUserErrorPageHTML(web_state, url));
+        .Run(GetSupervisedUserErrorPageHTML(web_state, navigation_id, url));
 #endif
   } else if ([final_underlying_error.domain
                  isEqualToString:kHttpsOnlyModeErrorDomain]) {

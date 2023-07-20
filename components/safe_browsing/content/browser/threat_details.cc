@@ -1002,6 +1002,7 @@ ClientSafeBrowsingReportRequest::InterstitialInteraction::
     case security_interstitials::CMD_TEXT_FOUND:
     case security_interstitials::CMD_TEXT_NOT_FOUND:
     case security_interstitials::CMD_ERROR:
+    case security_interstitials::CMD_REQUEST_SITE_ACCESS_PERMISSION:
       break;
   }
   return ClientSafeBrowsingReportRequest::InterstitialInteraction::UNSPECIFIED;

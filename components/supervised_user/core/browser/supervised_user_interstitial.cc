@@ -54,7 +54,8 @@ SupervisedUserInterstitial::SupervisedUserInterstitial(
       web_content_handler_(std::move(web_content_handler)),
       url_(url),
       supervised_user_name_(supervised_user_name) {}
-SupervisedUserInterstitial::~SupervisedUserInterstitial() {}
+
+SupervisedUserInterstitial::~SupervisedUserInterstitial() = default;
 
 // static
 std::string SupervisedUserInterstitial::GetHTMLContents(

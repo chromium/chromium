@@ -7,6 +7,7 @@
 #import <string>
 
 #import "base/memory/ptr_util.h"
+#import "base/notreached.h"
 #import "components/supervised_user/core/browser/supervised_user_service.h"
 #import "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -76,44 +77,41 @@ void SupervisedUserErrorContainer::SetSupervisedUserErrorInfo(
   supervised_user_error_info_ = std::move(error_info);
 }
 
-SupervisedUserErrorContainer::SupervisedUserErrorInfo&
-SupervisedUserErrorContainer::GetSupervisedUserErrorInfo() {
-  return *supervised_user_error_info_.get();
-}
-
-void SupervisedUserErrorContainer::CreateSupervisedUserInterstitial() {
-  CHECK(supervised_user_error_info_);
-
+std::unique_ptr<supervised_user::SupervisedUserInterstitial>
+SupervisedUserErrorContainer::CreateSupervisedUserInterstitial(
+    SupervisedUserErrorInfo& error_info) {
   std::unique_ptr<IOSWebContentHandlerImpl> web_content_handler =
-      std::make_unique<IOSWebContentHandlerImpl>(
-          web_state_, supervised_user_error_info_->is_main_frame());
+      std::make_unique<IOSWebContentHandlerImpl>(web_state_,
+                                                 error_info.is_main_frame());
 
-  interstitial_ = supervised_user::SupervisedUserInterstitial::Create(
-      std::move(web_content_handler), supervised_user_service_.get(),
-      supervised_user_error_info_->request_url(),
-      // User name needed only for the local web approval flow, not applicable
-      // for iOS.
-      /*supervised_user_name=*/std::u16string(),
-      supervised_user_error_info_->filtering_behavior_reason());
+  std::unique_ptr<supervised_user::SupervisedUserInterstitial> interstitial =
+      supervised_user::SupervisedUserInterstitial::Create(
+          std::move(web_content_handler), supervised_user_service_.get(),
+          error_info.request_url(),
+          // User name needed only for the local web approval flow, not
+          // applicable for iOS.
+          /*supervised_user_name=*/std::u16string(),
+          error_info.filtering_behavior_reason());
+  return interstitial;
 }
 
 void SupervisedUserErrorContainer::HandleCommand(
-    supervised_user::SupervisedUserInterstitial::Commands command) {
-  CHECK(interstitial_);
-  if (command == supervised_user::SupervisedUserInterstitial::Commands::
-                     REMOTE_ACCESS_REQUEST) {
+    supervised_user::SupervisedUserInterstitial& interstitial,
+    security_interstitials::SecurityInterstitialCommand command) {
+  if (command == security_interstitials::SecurityInterstitialCommand::
+                     CMD_REQUEST_SITE_ACCESS_PERMISSION) {
     RequestUrlAccessRemoteCallback callback =
         base::BindOnce(&OnRequestUrlAccessRemote, web_state_->GetWeakPtr(),
-                       supervised_user_error_info_->is_main_frame());
-
-    interstitial_->RequestUrlAccessRemote(
+                       interstitial.web_content_handler()->IsMainFrame());
+    interstitial.RequestUrlAccessRemote(
         base::BindOnce(&SupervisedUserErrorContainer::OnRequestCreated,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                       interstitial_->url().host()));
-
-  } else if (command ==
-             supervised_user::SupervisedUserInterstitial::Commands::BACK) {
-    interstitial_->GoBack();
+                       interstitial.url().host()));
+  } else if (command == security_interstitials::SecurityInterstitialCommand::
+                            CMD_DONT_PROCEED) {
+    // TODO (b/279766168): Use `GoBack` from IOSBlockingPageControllerClient
+    // once implemented.
+    interstitial.GoBack();
   }
 }
 
@@ -156,4 +154,46 @@ void SupervisedUserErrorContainer::MaybeUpdatePendingApprovals() {
       iter++;
     }
   }
+}
+
+SupervisedUserInterstitialBlockingPage::SupervisedUserInterstitialBlockingPage(
+    std::unique_ptr<supervised_user::SupervisedUserInterstitial> interstitial,
+    std::unique_ptr<security_interstitials::IOSBlockingPageControllerClient>
+        controller_client,
+    SupervisedUserErrorContainer* error_container,
+    web::WebState* web_state)
+    : security_interstitials::IOSSecurityInterstitialPage(
+          web_state,
+          interstitial->url(),
+          controller_client.get()),
+      interstitial_(std::move(interstitial)),
+      controller_client_(std::move(controller_client)),
+      web_state_(web_state),
+      error_container_(error_container) {
+  scoped_observation_.Observe(web_state);
+}
+
+SupervisedUserInterstitialBlockingPage::
+    ~SupervisedUserInterstitialBlockingPage() = default;
+
+void SupervisedUserInterstitialBlockingPage::HandleCommand(
+    security_interstitials::SecurityInterstitialCommand command) {
+  CHECK(error_container_);
+  error_container_->HandleCommand(*interstitial_, command);
+}
+
+bool SupervisedUserInterstitialBlockingPage::ShouldCreateNewNavigation() const {
+  NOTREACHED_NORETURN();
+}
+
+void SupervisedUserInterstitialBlockingPage::PopulateInterstitialStrings(
+    base::Value::Dict& load_time_data) const {
+  NOTREACHED_NORETURN();
+}
+
+void SupervisedUserInterstitialBlockingPage::WebStateDestroyed(
+    web::WebState* web_state) {
+  DCHECK(scoped_observation_.IsObservingSource(web_state));
+  error_container_ = nullptr;
+  scoped_observation_.Reset();
 }

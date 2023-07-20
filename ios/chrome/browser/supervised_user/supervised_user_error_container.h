@@ -9,9 +9,14 @@
 
 #import "base/memory/raw_ref.h"
 #import "base/memory/weak_ptr.h"
+#import "base/scoped_observation.h"
+#import "components/security_interstitials/core/controller_client.h"
 #import "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #import "components/supervised_user/core/browser/supervised_user_service_observer.h"
 #import "components/supervised_user/core/common/supervised_user_utils.h"
+#import "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
+#import "ios/components/security_interstitials/ios_security_interstitial_page.h"
+#import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 #import "url/gurl.h"
 
@@ -59,25 +64,24 @@ class SupervisedUserErrorContainer
   void SetSupervisedUserErrorInfo(
       std::unique_ptr<SupervisedUserErrorInfo> error_info);
 
-  // Returns currently stored info associated with an error page.
-  SupervisedUserErrorInfo& GetSupervisedUserErrorInfo();
-
-  // Creates an instance of the SupervisedUserInterstitial from the
-  // information stored in this container.
-  void CreateSupervisedUserInterstitial();
-
-  // Dispatch a supervised user interstitial command to the bound intersitial
-  // for execution.
-  void HandleCommand(
-      supervised_user::SupervisedUserInterstitial::Commands command);
-
-  // Return and move ownership of the SupervisedUserInterstitial instance.
-  std::unique_ptr<supervised_user::SupervisedUserInterstitial>
-  ReleaseSupervisedUserInterstitial() {
-    return std::move(interstitial_);
+  // Returns and moves ownership of currently stored info associated with an
+  // error page.
+  std::unique_ptr<SupervisedUserErrorInfo> ReleaseSupervisedUserErrorInfo() {
+    return std::move(supervised_user_error_info_);
   }
 
-  // Checks if the host of the `url` has been already requested for approval.
+  // Creates an instance of the SupervisedUserInterstitial from the
+  // provided `error_info`.
+  std::unique_ptr<supervised_user::SupervisedUserInterstitial>
+  CreateSupervisedUserInterstitial(SupervisedUserErrorInfo& error_info);
+
+  // Dispatches a supervised user interstitial command to the given
+  // `interstitial` for execution.
+  void HandleCommand(
+      supervised_user::SupervisedUserInterstitial& interstitial,
+      security_interstitials::SecurityInterstitialCommand command);
+
+  // Checks if the `url` host has been already requested for approval.
   bool IsRemoteApprovalPendingForUrl(const GURL& url);
 
   // SupervisedUserServiceObserver override:
@@ -96,12 +100,49 @@ class SupervisedUserErrorContainer
   WEB_STATE_USER_DATA_KEY_DECL();
 
   std::unique_ptr<SupervisedUserErrorInfo> supervised_user_error_info_;
-  std::unique_ptr<supervised_user::SupervisedUserInterstitial> interstitial_;
   raw_ref<supervised_user::SupervisedUserService> supervised_user_service_;
   raw_ptr<web::WebState> web_state_;
   std::set<std::string> requested_hosts_;
-
   base::WeakPtrFactory<SupervisedUserErrorContainer> weak_ptr_factory_{this};
+};
+
+// Wrapper class for the supervised user interstitial instance. It allows use to
+// manage the interstitial's lifecysle through `IOSBlockingPageTabHelper`.
+class SupervisedUserInterstitialBlockingPage
+    : public security_interstitials::IOSSecurityInterstitialPage,
+      public web::WebStateObserver {
+ public:
+  SupervisedUserInterstitialBlockingPage(
+      std::unique_ptr<supervised_user::SupervisedUserInterstitial> interstitial,
+      std::unique_ptr<security_interstitials::IOSBlockingPageControllerClient>
+          controller_client,
+      SupervisedUserErrorContainer* error_container,
+      web::WebState* web_state);
+  ~SupervisedUserInterstitialBlockingPage() override;
+
+ private:
+  // security_interstitials::IOSSecurityInterstitialPage implementation:
+  void HandleCommand(
+      security_interstitials::SecurityInterstitialCommand command) override;
+  bool ShouldCreateNewNavigation() const override;
+  void PopulateInterstitialStrings(
+      base::Value::Dict& load_time_data) const override;
+
+  // Note: The SupervisedUserInterstitialBlockingPage has a pointer to
+  // error_container_ (which is WebStateUserData helper) and is managed by
+  // SupervisedUserInterstitialBlockingPage (another WebStateUserData helper).
+  // The order of their destruction is unspecified, so the present object
+  // observes the `web_state` to reset the pointer.
+  // web::WebStateObserver override:
+  void WebStateDestroyed(web::WebState* web_state) override;
+
+  std::unique_ptr<supervised_user::SupervisedUserInterstitial> interstitial_;
+  std::unique_ptr<security_interstitials::IOSBlockingPageControllerClient>
+      controller_client_;
+  raw_ptr<web::WebState> web_state_;
+  raw_ptr<SupervisedUserErrorContainer> error_container_;
+  base::ScopedObservation<web::WebState, web::WebStateObserver>
+      scoped_observation_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_ERROR_CONTAINER_H_

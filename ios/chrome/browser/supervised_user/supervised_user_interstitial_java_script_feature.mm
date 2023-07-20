@@ -6,8 +6,9 @@
 
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "components/security_interstitials/core/controller_client.h"
 #import "components/supervised_user/core/browser/supervised_user_interstitial.h"
-#import "ios/chrome/browser/supervised_user/supervised_user_error_container.h"
+#import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
 #import "ios/web/public/js_messaging/script_message.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -19,13 +20,14 @@ namespace {
 // kept in sync with components/neterror/resources/error_page_controller_ios.js.
 const char kWebUIMessageHandlerName[] = "SupervisedUserInterstitialMessage";
 
-absl::optional<supervised_user::SupervisedUserInterstitial::Commands>
+absl::optional<security_interstitials::SecurityInterstitialCommand>
 GetEnumCommand(const std::string& command) {
   if (command == "requestUrlAccessRemote") {
-    return supervised_user::SupervisedUserInterstitial::Commands::
-        REMOTE_ACCESS_REQUEST;
+    return security_interstitials::SecurityInterstitialCommand::
+        CMD_REQUEST_SITE_ACCESS_PERMISSION;
   } else if (command == "back") {
-    return supervised_user::SupervisedUserInterstitial::Commands::BACK;
+    return security_interstitials::SecurityInterstitialCommand::
+        CMD_DONT_PROCEED;
   }
   return absl::nullopt;
 }
@@ -68,11 +70,15 @@ void SupervisedUserInterstitialJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  SupervisedUserErrorContainer* container =
-      SupervisedUserErrorContainer::FromWebState(web_state);
   auto command_enum = GetEnumCommand(*command);
   if (!command_enum.has_value()) {
     return;
   }
-  container->HandleCommand(command_enum.value());
+
+  security_interstitials::IOSBlockingPageTabHelper* blocking_tab_helper =
+      security_interstitials::IOSBlockingPageTabHelper::FromWebState(web_state);
+  if (!blocking_tab_helper) {
+    return;
+  }
+  blocking_tab_helper->OnBlockingPageCommandReceived(command_enum.value());
 }
