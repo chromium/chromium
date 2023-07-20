@@ -98,7 +98,6 @@ class ASH_EXPORT CameraPrivacySwitchController
   int active_applications_using_camera_count_ = 0;
   bool is_camera_observer_added_ = false;
   int camera_count_ = -1;
-  bool camera_used_while_deactivated_ = false;
   bool using_camera_led_fallback_ = true;
 };
 

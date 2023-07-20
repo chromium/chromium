@@ -152,49 +152,30 @@ void CameraPrivacySwitchController::ActiveApplicationsChanged(
   const bool camera_muted_by_sw =
       GetUserSwitchPreference() == CameraSWPrivacySwitchSetting::kDisabled;
 
-  if (features::IsVideoConferenceEnabled()) {
-    // The `VideoConferenceTrayController` shows this info as a toast.
-    return;
-  }
-
   auto* privacy_hub_notification_controller =
       PrivacyHubNotificationController::Get();
   CHECK(privacy_hub_notification_controller);
-
-  if (features::IsPrivacyIndicatorsEnabled()) {
-    // NOTE: This logic mirrors the logic in
-    // `MicrophonePrivacySwitchController`.
-    if (active_applications_using_camera_count_ == 0) {
-      // Always remove the notification when active applications go to 0.
-      privacy_hub_notification_controller->RemoveSoftwareSwitchNotification(
-          SensorDisabledNotificationDelegate::Sensor::kCamera);
-    } else if (application_added) {
-      if (camera_muted_by_sw) {
-        privacy_hub_notification_controller->ShowSoftwareSwitchNotification(
-            SensorDisabledNotificationDelegate::Sensor::kCamera);
-      }
-    } else {
-      // Application removed, update the notifications message.
-      privacy_hub_notification_controller->UpdateSoftwareSwitchNotification(
-          SensorDisabledNotificationDelegate::Sensor::kCamera);
-    }
-    return;
-  }
 
   if (!camera_muted_by_sw) {
     return;
   }
 
-  if (active_applications_using_camera_count_ == 0 &&
-      camera_used_while_deactivated_) {
-    camera_used_while_deactivated_ = false;
+  if (features::IsVideoConferenceEnabled()) {
+    // The `VideoConferenceTrayController` shows this info as a toast.
+    return;
+  }
+
+  // NOTE: This logic mirrors the logic in
+  // `MicrophonePrivacySwitchController`.
+  if (active_applications_using_camera_count_ == 0) {
+    // Always remove the notification when active applications go to 0.
     privacy_hub_notification_controller->RemoveSoftwareSwitchNotification(
         SensorDisabledNotificationDelegate::Sensor::kCamera);
   } else if (application_added) {
-    camera_used_while_deactivated_ = true;
     privacy_hub_notification_controller->ShowSoftwareSwitchNotification(
         SensorDisabledNotificationDelegate::Sensor::kCamera);
   } else {
+    // Application removed, update the notifications message.
     privacy_hub_notification_controller->UpdateSoftwareSwitchNotification(
         SensorDisabledNotificationDelegate::Sensor::kCamera);
   }
