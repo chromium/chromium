@@ -269,7 +269,7 @@ public class ArkTabWebContentsObserver extends ArkTabWebContentsUserData {
 
         @Override
         public void titleWasSet(String title) {
-            mTab.updateTitle(title);
+            mTab.updateTitle();
         }
 
         @Override

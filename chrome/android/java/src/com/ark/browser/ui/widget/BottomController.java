@@ -147,6 +147,7 @@ public class BottomController {
             @Override
             public void onAttachToWindowAndroid(Tab tab, @NonNull WindowAndroid windowAndroid) {
                 ArkLogger.e(TAG, "onAttachToWindowAndroid");
+                updateStarButton(tab);
             }
 
             @Override
@@ -171,6 +172,7 @@ public class BottomController {
             @Override
             public void onPageLoadStarted(Tab tab, GURL url) {
                 ArkLogger.d(TAG, "onPageLoadStarted tab=" + tab.getId());
+                updateStarButton(tab);
             }
 
             @Override
@@ -219,6 +221,7 @@ public class BottomController {
             public void onContentChanged(Tab tab) {
                 Log.e(TAG, "onContentChanged");
                 loadingTitle.setText(tab.getTitle());
+                updateStarButton(tab);
             }
 
             @Override
@@ -235,6 +238,7 @@ public class BottomController {
             @Override
             public void onUpdateUrl(Tab tab, GURL url) {
                 loadingTitle.setText(url.getSpec());
+                updateStarButton(tab);
             }
 
         };
@@ -287,8 +291,13 @@ public class BottomController {
 
     public void onPageAttached(@NonNull Tab page) {
         ArkLogger.e(TAG, "onPageAttached page=" + page.getId());
-        page.addObserver(mTabObserver);
-        mTab = page;
+        if (mTab != page) {
+            if (mTab != null) {
+                mTab.removeObserver(mTabObserver);
+            }
+            page.addObserver(mTabObserver);
+            mTab = page;
+        }
         mIsIncognito = page.isIncognito();
         loadingTitle.setText(page.getTitle());
         int drawableId = page.isLoading() ? R.drawable.ic_cancel : R.drawable.ic_refresh;
@@ -305,12 +314,16 @@ public class BottomController {
     public void onPageDetached(@NonNull Tab page) {
         ArkLogger.e(TAG, "onPageDetached page=" + page.getId());
         page.removeObserver(mTabObserver);
-        finishLoadProgress(false);
+        if (mTab == page) {
+            finishLoadProgress(false);
+            mTab = null;
+        }
     }
 
     public void onDestroy() {
         if (mTab != null) {
             mTab.removeObserver(mTabObserver);
+            mTab = null;
         }
         if (mBookmarkModel != null) {
             mBookmarkModel.removeObserver(mBookmarksObserver);

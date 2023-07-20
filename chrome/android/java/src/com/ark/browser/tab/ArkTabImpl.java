@@ -181,6 +181,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     private final TabThemeColorHelper mThemeColorHelper;
     private int mThemeColor;
+    private String mTitle;
 
     private final TabWebContentsDelegateAndroidImpl mWebContentsDelegate = new TabWebContentsDelegateAndroidImpl(this, null);
 
@@ -1217,27 +1218,6 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         // When restoring the tabs, the title will no longer be populated, so request it from the
         // WebContents or NativePage (if present).
         String title = mArkWeb.getTitle();
-        updateTitle(title);
-    }
-
-    private String mTitle;
-
-    /**
-     * Cache the title for the current page.
-     * <p>
-     * {@link ContentViewClient#onUpdateTitle} is unreliable, particularly for navigating backwards
-     * and forwards in the history stack, so pull the correct title whenever the page changes.
-     * onUpdateTitle is only called when the title of a navigation entry changes. When the user goes
-     * back a page the navigation entry exists with the correct title, thus the title is not
-     * actually changed, and no notification is sent.
-     *
-     * @param title Title of the page.
-     */
-    void updateTitle(String title) {
-        if (TextUtils.isEmpty(title)) {
-            title = getUrl().getSpec();
-        }
-
         if (TextUtils.equals(mTitle, title)) return;
 
         mTitle = title;
