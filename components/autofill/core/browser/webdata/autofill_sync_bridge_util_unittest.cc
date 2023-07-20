@@ -166,9 +166,10 @@ TEST_F(AutofillSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
   EXPECT_EQ(base::UTF8ToUTF16(nickname), wallet_cards.back().nickname());
 
   // Verify that the issuer and the issuer id are set correctly.
-  EXPECT_EQ(wallet_cards.front().card_issuer(), CreditCard::EXTERNAL_ISSUER);
+  EXPECT_EQ(wallet_cards.front().card_issuer(),
+            CreditCard::Issuer::kExternalIssuer);
   EXPECT_EQ(wallet_cards.front().issuer_id(), "amex");
-  EXPECT_EQ(wallet_cards.back().card_issuer(), CreditCard::GOOGLE);
+  EXPECT_EQ(wallet_cards.back().card_issuer(), CreditCard::Issuer::kGoogle);
   EXPECT_EQ(wallet_cards.back().issuer_id(), "google");
 
   // Verify that the virtual_card_enrollment_state is set correctly.

@@ -86,16 +86,16 @@ CreditCard CardFromSpecifics(const sync_pb::WalletMaskedCreditCard& card) {
   result.SetExpirationYear(card.exp_year());
   result.set_billing_address_id(card.billing_address_id());
 
-  CreditCard::Issuer issuer = CreditCard::ISSUER_UNKNOWN;
+  CreditCard::Issuer issuer = CreditCard::Issuer::kIssuerUnknown;
   switch (card.card_issuer().issuer()) {
     case sync_pb::CardIssuer::ISSUER_UNKNOWN:
-      issuer = CreditCard::ISSUER_UNKNOWN;
+      issuer = CreditCard::Issuer::kIssuerUnknown;
       break;
     case sync_pb::CardIssuer::GOOGLE:
-      issuer = CreditCard::GOOGLE;
+      issuer = CreditCard::Issuer::kGoogle;
       break;
     case sync_pb::CardIssuer::EXTERNAL_ISSUER:
-      issuer = CreditCard::EXTERNAL_ISSUER;
+      issuer = CreditCard::Issuer::kExternalIssuer;
       break;
   }
   result.set_card_issuer(issuer);
@@ -292,13 +292,13 @@ void SetAutofillWalletSpecificsFromServerCard(
 
   sync_pb::CardIssuer::Issuer issuer = sync_pb::CardIssuer::ISSUER_UNKNOWN;
   switch (card.card_issuer()) {
-    case CreditCard::ISSUER_UNKNOWN:
+    case CreditCard::Issuer::kIssuerUnknown:
       issuer = sync_pb::CardIssuer::ISSUER_UNKNOWN;
       break;
-    case CreditCard::GOOGLE:
+    case CreditCard::Issuer::kGoogle:
       issuer = sync_pb::CardIssuer::GOOGLE;
       break;
-    case CreditCard::EXTERNAL_ISSUER:
+    case CreditCard::Issuer::kExternalIssuer:
       issuer = sync_pb::CardIssuer::EXTERNAL_ISSUER;
       break;
   }

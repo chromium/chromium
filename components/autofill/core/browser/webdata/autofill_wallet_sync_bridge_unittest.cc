@@ -419,7 +419,7 @@ TEST_F(AutofillWalletSyncBridgeTest,
   table()->SetServerProfiles({address1, address2});
   CreditCard card1 = test::GetMaskedServerCard();
   // Set the card issuer to Google.
-  card1.set_card_issuer(CreditCard::Issuer::GOOGLE);
+  card1.set_card_issuer(CreditCard::Issuer::kGoogle);
   card1.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::UNENROLLED);
   card1.set_card_art_url(GURL("https://www.example.com/card.png"));
@@ -899,7 +899,7 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_SetsAllWalletCardData) {
   CreditCard card = test::GetMaskedServerCard();
   card.SetNickname(u"Grocery card");
   // Set the card issuer to Google.
-  card.set_card_issuer(CreditCard::Issuer::GOOGLE);
+  card.set_card_issuer(CreditCard::Issuer::kGoogle);
   card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::UNENROLLED);
   card.set_card_art_url(GURL("https://www.example.com/card.png"));

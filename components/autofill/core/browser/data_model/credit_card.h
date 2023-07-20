@@ -57,10 +57,10 @@ class CreditCard : public AutofillDataModel {
 
   // The Issuer for the card. This must stay in sync with the proto enum in
   // autofill_specifics.proto.
-  enum Issuer {
-    ISSUER_UNKNOWN = 0,
-    GOOGLE = 1,
-    EXTERNAL_ISSUER = 2,
+  enum class Issuer {
+    kIssuerUnknown = 0,
+    kGoogle = 1,
+    kExternalIssuer = 2,
   };
 
   // Whether the card has been enrolled in the virtual card feature. This must
@@ -513,7 +513,7 @@ class CreditCard : public AutofillDataModel {
   // TODO(crbug.com/1394514): Consider removing this field and all its usage
   // after `issuer_id_` is used.
   // The issuer for the card. This is populated from the sync response. It has a
-  // default value of CreditCard::ISSUER_UNKNOWN.
+  // default value of CreditCard::Issuer::kIssuerUnknown.
   Issuer card_issuer_;
 
   // The issuer id of the card. This is set for server cards only (both actual

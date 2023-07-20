@@ -993,15 +993,15 @@ TEST(CreditCardTest, Compare) {
   b.set_record_type(MASKED_SERVER_CARD);
 
   // Card with UNKNOWN_ISSUER is different from GOOGLE issued card.
-  a.set_card_issuer(CreditCard::ISSUER_UNKNOWN);
-  b.set_card_issuer(CreditCard::GOOGLE);
+  a.set_card_issuer(CreditCard::Issuer::kIssuerUnknown);
+  b.set_card_issuer(CreditCard::Issuer::kGoogle);
   EXPECT_GT(0, a.Compare(b));
   // Card with UNKNOWN_ISSUER is different from EXTERNAL_ISSUER issued card.
-  a.set_card_issuer(CreditCard::ISSUER_UNKNOWN);
-  b.set_card_issuer(CreditCard::EXTERNAL_ISSUER);
+  a.set_card_issuer(CreditCard::Issuer::kIssuerUnknown);
+  b.set_card_issuer(CreditCard::Issuer::kExternalIssuer);
   EXPECT_GT(0, a.Compare(b));
-  a.set_card_issuer(CreditCard::EXTERNAL_ISSUER);
-  b.set_card_issuer(CreditCard::EXTERNAL_ISSUER);
+  a.set_card_issuer(CreditCard::Issuer::kExternalIssuer);
+  b.set_card_issuer(CreditCard::Issuer::kExternalIssuer);
 
   // Difference in issuer id.
   a.set_issuer_id("amex");

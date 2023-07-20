@@ -170,7 +170,7 @@ CreditCard::CreditCard(const std::string& guid, const std::string& origin)
       network_(kGenericCard),
       expiration_month_(0),
       expiration_year_(0),
-      card_issuer_(ISSUER_UNKNOWN),
+      card_issuer_(Issuer::kIssuerUnknown),
       instrument_id_(0) {}
 
 CreditCard::CreditCard(RecordType type, const std::string& server_id)
@@ -1314,7 +1314,11 @@ std::ostream& operator<<(std::ostream& os, const CreditCard& credit_card) {
             << " " << credit_card.record_type() << " "
             << credit_card.use_count() << " " << credit_card.use_date() << " "
             << credit_card.billing_address_id() << " " << credit_card.nickname()
-            << " " << credit_card.card_issuer() << " "
+            << " "
+            << static_cast<
+                   typename std::underlying_type<CreditCard::Issuer>::type>(
+                   credit_card.card_issuer())
+            << " "
             << " " << credit_card.issuer_id() << " "
             << credit_card.instrument_id() << " "
             << credit_card.virtual_card_enrollment_state() << " "
