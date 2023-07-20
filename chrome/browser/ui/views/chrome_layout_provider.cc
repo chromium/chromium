@@ -176,6 +176,8 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return features::IsChromeRefresh2023() ? 20 : 0;
     case DISTANCE_INFOBAR_HORIZONTAL_ICON_LABEL_PADDING:
       return features::IsChromeRefresh2023() ? 16 : 12;
+    case DISTANCE_RICH_HOVER_BUTTON_ICON_HORIZONTAL:
+      return features::IsChromeRefresh2023() ? 8 : 12;
   }
   NOTREACHED_NORETURN();
 }

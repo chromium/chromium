@@ -619,7 +619,8 @@ const gfx::VectorIcon& PageInfoViewFactory::GetAboutThisSiteColorVectorIcon() {
   }
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  return views::kInfoIcon;
+  return features::IsChromeRefresh2023() ? views::kInfoChromeRefreshIcon
+                                         : views::kInfoIcon;
 }
 
 // static
@@ -630,7 +631,8 @@ const gfx::VectorIcon& PageInfoViewFactory::GetAboutThisSiteVectorIcon() {
   }
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  return views::kInfoIcon;
+  return features::IsChromeRefresh2023() ? views::kInfoChromeRefreshIcon
+                                         : views::kInfoIcon;
 }
 // static
 const ui::ImageModel PageInfoViewFactory::GetHistoryIcon() {

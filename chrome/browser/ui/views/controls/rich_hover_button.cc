@@ -49,7 +49,7 @@ RichHoverButton::RichHoverButton(
 
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
   const int icon_label_spacing = layout_provider->GetDistanceMetric(
-      views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+      DISTANCE_RICH_HOVER_BUTTON_ICON_HORIZONTAL);
   views::style::TextContext text_context =
       views::style::CONTEXT_DIALOG_BODY_TEXT;
 
@@ -106,15 +106,17 @@ RichHoverButton::RichHoverButton(
   title_ = AddChildView(std::move(title_label));
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_->SetCanProcessEventsWithinSubtree(false);
-  if (features::IsChromeRefresh2023()) {
-    title_->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
-  }
 
   auto secondary_label = std::make_unique<views::Label>(
       std::u16string(), views::style::CONTEXT_LABEL,
       views::style::STYLE_SECONDARY);
   secondary_label->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
   secondary_label_ = AddChildView(std::move(secondary_label));
+
+  if (features::IsChromeRefresh2023()) {
+    title_->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
+    secondary_label_->SetTextStyle(views::style::STYLE_BODY_5_MEDIUM);
+  }
 
   // State icon is optional and column is created only when it is set.
   if (state_icon.has_value()) {
@@ -140,6 +142,9 @@ RichHoverButton::RichHoverButton(
     subtitle_ = AddChildView(std::make_unique<views::Label>(
         subtitle_text, views::style::CONTEXT_LABEL,
         views::style::STYLE_SECONDARY));
+    if (features::IsChromeRefresh2023()) {
+      subtitle_->SetTextStyle(views::style::STYLE_BODY_5_MEDIUM);
+    }
     subtitle_->SetMultiLine(true);
     subtitle_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     subtitle_->SetAutoColorReadabilityEnabled(false);

@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
@@ -18,7 +19,7 @@ namespace {
 // and refactor PageInfoViewFactory::CreateLabelWrapper.
 std::unique_ptr<views::View> CreateLabelWrapper() {
   const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+      DISTANCE_RICH_HOVER_BUTTON_ICON_HORIZONTAL);
   auto label_wrapper = std::make_unique<views::FlexLayoutView>();
   label_wrapper->SetOrientation(views::LayoutOrientation::kVertical);
   label_wrapper->SetProperty(views::kMarginsKey,
@@ -51,6 +52,9 @@ RichControlsContainerView::RichControlsContainerView() {
   labels_wrapper_ = AddChildView(CreateLabelWrapper());
   title_ = labels_wrapper_->AddChildView(std::make_unique<views::Label>(
       std::u16string(), views::style::CONTEXT_DIALOG_BODY_TEXT));
+  if (features::IsChromeRefresh2023()) {
+    title_->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
+  }
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   // Calculate difference between label height and icon size to align icons
