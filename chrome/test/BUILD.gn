@@ -1479,7 +1479,6 @@ if (!is_android) {
       "//chrome/services/qrcode_generator/public/cpp",
       "//chrome/services/qrcode_generator/public/mojom",
       "//chrome/services/removable_storage_writer:lib",
-      "//chrome/test/data/webui:browser_tests",
       "//chrome/test/data/webui:resources_grit",
       "//chrome/test/data/webui:web_ui_test_bindings",
       "//chrome/test/data/webui/mojo:mojo_bindings",
@@ -3012,6 +3011,7 @@ if (!is_android) {
 
     if (include_js_tests) {
       deps += [
+        "//chrome/test/data/webui:browser_tests",
         "//chrome/test/data/webui:browser_tests_js_mojo_webui",
         "//chrome/test/data/webui:browser_tests_js_webui",
       ]
@@ -10158,7 +10158,6 @@ if (!is_android) {
       "//chrome/common:version_header",
       "//chrome/common/notifications",
       "//chrome/renderer",
-      "//chrome/test/data/webui:interactive_ui_tests",
       "//chrome/test/media_router:browser_tests",
       "//chrome/test/media_router/access_code_cast:access_code_cast_integration_base",
       "//components/autofill/content/browser:test_support",
@@ -10240,7 +10239,10 @@ if (!is_android) {
       "//ui/web_dialogs:test_support",
     ]
     if (include_js_tests) {
-      deps += [ "//chrome/test/data/webui:interactive_ui_tests_js_webui" ]
+      deps += [
+        "//chrome/test/data/webui:interactive_ui_tests",
+        "//chrome/test/data/webui:interactive_ui_tests_js_webui",
+      ]
     }
 
     # Runtime dependencies
