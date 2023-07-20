@@ -21,6 +21,8 @@ DEVICE_BLUETOOTH_EXPORT BASE_DECLARE_FEATURE(kFlossIsAvailable);
 // A helper method that has the appropriate behavior on both Ash and Lacros.
 bool DEVICE_BLUETOOTH_EXPORT IsFlossEnabled();
 
+// Helper method to get if the current device is available to enable Floss.
+bool DEVICE_BLUETOOTH_EXPORT IsFlossAvailable();
 }  // namespace features
 }  // namespace floss
 

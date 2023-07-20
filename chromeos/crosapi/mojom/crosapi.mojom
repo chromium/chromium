@@ -1392,6 +1392,10 @@ struct BrowserInitParams {
   // management flag has been enabled.
   [MinVersion=65]
   bool is_drivefs_bulk_pinning_enabled@65;
+
+  // Tell lacros whether the device is available to enable Floss.
+  [MinVersion=66]
+  bool is_floss_available@66;
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams

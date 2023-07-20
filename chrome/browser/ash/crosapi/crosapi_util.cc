@@ -604,6 +604,7 @@ void InjectBrowserInitParams(
   params->ash_chrome_version = version_info::GetVersionNumber();
   params->use_cups_for_printing = GetUseCupsForPrinting();
   params->use_floss_bluetooth = floss::features::IsFlossEnabled();
+  params->is_floss_available = floss::features::IsFlossAvailable();
 
   params->enable_window_layout_menu =
       base::FeatureList::IsEnabled(chromeos::wm::features::kWindowLayoutMenu);

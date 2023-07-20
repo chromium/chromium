@@ -20,10 +20,23 @@ BASE_FEATURE(kFlossIsAvailable,
 #endif
 
 bool IsFlossEnabled() {
+  if (!IsFlossAvailable()) {
+    return false;
+  }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return base::FeatureList::IsEnabled(floss::features::kFlossEnabled);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->UseFlossBluetooth();
+#else
+  return false;
+#endif
+}
+
+bool IsFlossAvailable() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return base::FeatureList::IsEnabled(floss::features::kFlossIsAvailable);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::BrowserParamsProxy::Get()->IsFlossAvailable();
 #else
   return false;
 #endif

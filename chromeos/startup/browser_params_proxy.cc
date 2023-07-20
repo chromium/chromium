@@ -235,6 +235,10 @@ bool BrowserParamsProxy::UseFlossBluetooth() const {
   return BrowserInitParams::Get()->use_floss_bluetooth;
 }
 
+bool BrowserParamsProxy::IsFlossAvailable() const {
+  return BrowserInitParams::Get()->is_floss_available;
+}
+
 bool BrowserParamsProxy::IsCurrentUserDeviceOwner() const {
   if (IsLaunchedWithPostLoginParams()) {
     return BrowserPostLoginParams::Get()->is_current_user_device_owner;

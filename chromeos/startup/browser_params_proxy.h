@@ -100,6 +100,8 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool UseFlossBluetooth() const;
 
+  bool IsFlossAvailable() const;
+
   bool IsCurrentUserDeviceOwner() const;
 
   bool IsCurrentUserEphemeral() const;
