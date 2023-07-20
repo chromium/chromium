@@ -142,6 +142,14 @@ def _ParseOptions():
       action='append',
       help='List of name pairs separated by : mapping a feature module to a '
       'dependent feature module.')
+  parser.add_argument('--input-art-profile',
+                      help='Path to the input unobfuscated ART profile.')
+  parser.add_argument('--output-art-profile',
+                      help='Path to the output obfuscated ART profile.')
+  parser.add_argument(
+      '--apply-startup-profile',
+      action='store_true',
+      help='Whether to pass --input-art-profile as a startup profile to R8.')
   parser.add_argument(
       '--keep-rules-targets-regex',
       metavar='KEEP_RULES_REGEX',
@@ -186,6 +194,11 @@ def _ParseOptions():
       options.keep_rules_output_path):
     parser.error('You must path both --keep-rules-targets-regex and '
                  '--keep-rules-output-path')
+
+  if options.output_art_profile and not options.input_art_profile:
+    parser.error('--output-art-profile requires --input-art-profile')
+  if options.apply_startup_profile and not options.input_art_profile:
+    parser.error('--apply-startup-profile requires --input-art-profile')
 
   if options.force_enable_assertions and options.assertion_handler:
     parser.error('Cannot use both --force-enable-assertions and '
@@ -341,6 +354,18 @@ def _OptimizeWithR8(options, config_paths, libraries, dynamic_config_data):
     if options.main_dex_rules_path:
       for main_dex_rule in options.main_dex_rules_path:
         cmd += ['--main-dex-rules', main_dex_rule]
+
+    if options.output_art_profile:
+      cmd += [
+          '--art-profile',
+          options.input_art_profile,
+          options.output_art_profile,
+      ]
+    if options.apply_startup_profile:
+      cmd += [
+          '--startup-profile',
+          options.input_art_profile,
+      ]
 
     # Add any extra inputs to the base context (e.g. desugar runtime).
     extra_jars = set(options.input_paths)

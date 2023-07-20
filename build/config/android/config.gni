@@ -251,11 +251,17 @@ if (is_android || is_chromeos) {
     # resources.arsc.
     enable_unused_resource_stripping = true
 
-    # Controls whether |baseline_profile_path| is respected. Useful to disable
-    # baseline profiles.
+    # Controls whether specifying |art_profile_path| automatically adds a binary
+    # baseline profile to the APK/AAB.
     # Currently disabled while bundletool does not support baseline profiles in
     # non-base splits.
     enable_baseline_profiles = false
+
+    # Controls whether specifying |art_profile_path| automatically applies it as
+    # a startup profile to the APK/AAB.
+    # Currently disabled while R8 causes checkdiscard errors due to
+    # methods/classes not being inlined correctly.
+    enable_startup_profiles = false
 
     # The target to use as the system WebView implementation.
     if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {

@@ -1289,6 +1289,21 @@ if (enable_java_templates) {
     }
     _outputs += [ _mapping_path ]
 
+    if (defined(invoker.input_art_profile)) {
+      _inputs += [ invoker.input_art_profile ]
+      _args += [ "--input-art-profile=" +
+                 rebase_path(invoker.input_art_profile, root_build_dir) ]
+      if (defined(invoker.output_art_profile)) {
+        _outputs += [ invoker.output_art_profile ]
+        _args += [ "--output-art-profile=" +
+                   rebase_path(invoker.output_art_profile, root_build_dir) ]
+      }
+      if (defined(invoker.enable_startup_profile) &&
+          invoker.enable_startup_profile) {
+        _args += [ "--apply-startup-profile" ]
+      }
+    }
+
     if (defined(invoker.enable_proguard_checks) &&
         !invoker.enable_proguard_checks) {
       _args += [ "--disable-checks" ]
@@ -1512,6 +1527,9 @@ if (enable_java_templates) {
         forward_variables_from(invoker,
                                TESTONLY_AND_VISIBILITY + [
                                      "add_view_trace_events",
+                                     "input_art_profile",
+                                     "output_art_profile",
+                                     "enable_startup_profile",
                                      "build_config",
                                      "custom_assertion_handler",
                                      "data",
@@ -2652,11 +2670,11 @@ if (enable_java_templates) {
         invoker.binary_baseline_profile_path,
         invoker.binary_baseline_profile_metadata_path,
       ]
-      _profgen_path = "$android_sdk_root/cmdline-tools/latest/bin/profgen"
+      _profgen_path =
+          "$public_android_sdk_root/cmdline-tools/latest/bin/profgen"
       _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
       inputs = [
         invoker.build_config,
-        invoker.proguard_mapping_path,
         invoker.input_profile_path,
         _profgen_path,
       ]
@@ -2669,13 +2687,18 @@ if (enable_java_templates) {
         rebase_path(invoker.binary_baseline_profile_metadata_path,
                     root_build_dir),
         "--dex=@FileArg($_rebased_build_config:final_dex:path)",
-        "--proguard-mapping",
-        rebase_path(invoker.proguard_mapping_path, root_build_dir),
         "--input-profile-path",
         rebase_path(invoker.input_profile_path, root_build_dir),
         "--depfile",
         rebase_path(depfile, root_build_dir),
       ]
+      if (defined(invoker.proguard_mapping_path)) {
+        args += [
+          "--proguard-mapping",
+          rebase_path(invoker.proguard_mapping_path, root_build_dir),
+        ]
+        inputs += [ invoker.proguard_mapping_path ]
+      }
     }
   }
 
