@@ -27,7 +27,7 @@ class GpuDriverBugWorkarounds;
 struct GpuPreferences;
 
 // Common constructor and helper functions for
-// GLTextureImageBackingFactory and GLImageBackingFactory.
+// various GL-based backing factories.
 class GPU_GLES2_EXPORT GLCommonImageBackingFactory
     : public SharedImageBackingFactory {
  public:

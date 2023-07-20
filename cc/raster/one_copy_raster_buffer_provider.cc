@@ -450,8 +450,7 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
   query_target = GL_COMMANDS_ISSUED_CHROMIUM;
 #endif
 
-  // COMMANDS_ISSUED is sufficient for shared memory GpuMemoryBuffers because
-  // they're uploaded using glTexImage2D (see gl::GLImageMemory::CopyTexImage).
+  // COMMANDS_ISSUED is sufficient for shared memory GpuMemoryBuffers.
   const auto* buffer = staging_buffer->gpu_memory_buffer.get();
   if (buffer &&
       buffer->GetType() == gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER) {

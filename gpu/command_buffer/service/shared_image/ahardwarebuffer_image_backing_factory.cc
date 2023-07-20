@@ -580,7 +580,7 @@ AHardwareBufferImageBackingFactory::FormatInfoForSupportedFormat(
   GLenum gl_format = GLDataFormat(format);
   GLenum gl_type = GLDataType(format);
 
-  //  GLImageAHardwareBuffer supports internal format GL_RGBA and GL_RGB.
+  // AHardwareBufferImageBacking supports internal format GL_RGBA and GL_RGB.
   if (internal_format != GL_RGBA && internal_format != GL_RGB) {
     return info;
   }

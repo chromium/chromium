@@ -14,15 +14,14 @@
 namespace gpu {
 
 // Interface through which a representation that has a GL texture calls into its
-// GLImage backing.
+// backing.
 class GLTextureImageRepresentationClient {
  public:
   virtual bool GLTextureImageRepresentationBeginAccess(bool readonly) = 0;
   virtual void GLTextureImageRepresentationEndAccess(bool readonly) = 0;
 };
 
-// Representation of a GLTextureImageBacking or GLImageBacking
-// as a GL Texture.
+// Representation of a GLTextureImageBacking as a GL Texture.
 class GLTextureGLCommonRepresentation : public GLTextureImageRepresentation {
  public:
   GLTextureGLCommonRepresentation(SharedImageManager* manager,
