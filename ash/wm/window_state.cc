@@ -24,7 +24,6 @@
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "ash/wm/default_state.h"
 #include "ash/wm/float/float_controller.h"
-#include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/pip/pip_positioner.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -55,7 +54,6 @@
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/display/display_finder.h"
 #include "ui/display/screen.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/painter.h"
@@ -275,29 +273,6 @@ void ReportAshPipAndroidPipUseTime(base::TimeDelta duration) {
 void SaveWindowForWindowRestore(WindowState* window_state) {
   if (auto* controller = WindowRestoreController::Get())
     controller->SaveWindow(window_state);
-}
-
-// Same as `ScreenAsh::GetDisplayMatching`. But based on current active displays
-// instead of the active only display list. The latter one does not include the
-// displays that will be removed.
-display::Display GetDisplayMatchingOnAllDisplays(const gfx::Rect& match_rect) {
-  display::Screen* screen = display::Screen::GetScreen();
-  if (match_rect.IsEmpty()) {
-    return screen->GetDisplayNearestPoint(match_rect.origin());
-  }
-
-  const display::Display* matching =
-      display::FindDisplayWithBiggestIntersection(screen->GetAllDisplays(),
-                                                  match_rect);
-  return matching ? *matching : screen->GetPrimaryDisplay();
-}
-
-// Checks whether the given `bounds` is inside the bounds of the given `root`.
-bool IsBoundsInsideRoot(aura::Window* root, const gfx::Rect& bounds) {
-  display::Screen* screen = display::Screen::GetScreen();
-  int64_t target_display_id = screen->GetDisplayNearestWindow(root).id();
-  int64_t current_display_id = GetDisplayMatchingOnAllDisplays(bounds).id();
-  return target_display_id == current_display_id;
 }
 
 }  // namespace
@@ -1316,31 +1291,6 @@ void WindowState::OnWindowAddedToRootWindow(aura::Window* window) {
   if (::wm::GetTransientParent(window))
     return;
   MoveAllTransientChildrenToNewRoot(window);
-}
-
-void WindowState::OnWindowRemovingFromRootWindow(aura::Window* window,
-                                                 aura::Window* new_root) {
-  // No need o update the restore bounds if the window is excluded from the mru
-  // window list or `new_root` doesn't exist.
-  if (!CanIncludeWindowInMruList(window) || !new_root) {
-    return;
-  }
-
-  // Do not update the restore bounds and history stack if we are moving the
-  // window because of fullscreen it to another display. As in this case, the
-  // window is expected to be restored back to the previous display instead of
-  // the target display set by `kFullscreenTargetDisplayIdKey`.
-  if (GetFullscreenTargetDisplayId() != display::kInvalidDisplayId) {
-    return;
-  }
-
-  // Update restore bounds to the new root window.
-  if (HasRestoreBounds() &&
-      !IsBoundsInsideRoot(new_root, GetRestoreBoundsInScreen())) {
-    gfx::Rect restore_bounds = GetRestoreBoundsInParent();
-    ::wm::ConvertRectToScreen(new_root, &restore_bounds);
-    SetRestoreBoundsInScreen(restore_bounds);
-  }
 }
 
 void WindowState::OnWindowDestroying(aura::Window* window) {

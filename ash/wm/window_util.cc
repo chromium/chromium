@@ -237,6 +237,13 @@ bool MoveWindowToDisplay(aura::Window* window, int64_t display_id) {
   if (!container)
     return false;
 
+  // Update restore bounds to target root window.
+  if (window_state->HasRestoreBounds()) {
+    gfx::Rect restore_bounds = window_state->GetRestoreBoundsInParent();
+    ::wm::ConvertRectToScreen(root, &restore_bounds);
+    window_state->SetRestoreBoundsInScreen(restore_bounds);
+  }
+
   container->AddChild(window);
   return true;
 }
