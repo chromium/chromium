@@ -946,20 +946,6 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kSupportsRtcWakeOver24Hours);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// When enabled, use authentication through a browser tab, instead of
-// an app window.
-COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kWebAuthFlowInBrowserTab);
-enum class WebAuthFlowInBrowserTabMode {
-  // Auth flow is presented in a new tab attached to a new/existing browser.
-  kNewTab,
-  // Auth flow is presented in a browser popup window.
-  kPopupWindow
-};
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<WebAuthFlowInBrowserTabMode>
-    kWebAuthFlowInBrowserTabMode;
-
 bool PrefServiceEnabled();
 
 // DON'T ADD RANDOM STUFF HERE. Put it in the main section above in

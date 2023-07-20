@@ -1412,7 +1412,6 @@ static_library("test_support") {
   testonly = true
 
   sources = [
-    "api/identity/test_scoped_should_animate_web_auth_flow_info_bar.h",
     "api/passwords_private/test_passwords_private_delegate.cc",
     "api/passwords_private/test_passwords_private_delegate.h",
     "chrome_extension_test_notification_observer.cc",

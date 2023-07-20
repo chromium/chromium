@@ -657,7 +657,6 @@ void IdentityGetAuthTokenFunction::OnGaiaRemoteConsentFlowFailed(
 
   switch (failure) {
     case GaiaRemoteConsentFlow::WINDOW_CLOSED:
-    case GaiaRemoteConsentFlow::USER_NAVIGATED_AWAY:
       error = IdentityGetAuthTokenError(
           IdentityGetAuthTokenError::State::kRemoteConsentFlowRejected);
       break;

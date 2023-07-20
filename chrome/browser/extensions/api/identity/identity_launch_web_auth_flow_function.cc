@@ -26,7 +26,6 @@ IdentityLaunchWebAuthFlowFunction::Error WebAuthFlowFailureToError(
     WebAuthFlow::Failure failure) {
   switch (failure) {
     case WebAuthFlow::WINDOW_CLOSED:
-    case WebAuthFlow::USER_NAVIGATED_AWAY:
       return IdentityLaunchWebAuthFlowFunction::Error::kUserRejected;
     case WebAuthFlow::INTERACTION_REQUIRED:
       return IdentityLaunchWebAuthFlowFunction::Error::kInteractionRequired;

@@ -16,11 +16,7 @@
 #include "chrome/browser/extensions/api/identity/web_auth_flow_info_bar_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
-#include "chrome/common/chrome_features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -161,25 +157,10 @@ void WebAuthFlow::AfterUrlLoaded() {
   // If `web_contents_` is nullptr, this means that the interactive tab has
   // already been opened once.
   if (delegate_ && web_contents_ && mode_ == WebAuthFlow::INTERACTIVE) {
-    switch (features::kWebAuthFlowInBrowserTabMode.Get()) {
-      case features::WebAuthFlowInBrowserTabMode::kNewTab: {
-        // Displays the auth page in a new tab attached to an existing/new
-        // browser.
-        chrome::ScopedTabbedBrowserDisplayer browser_displayer(profile_);
-        NavigateParams params(browser_displayer.browser(),
-                              std::move(web_contents_));
-        Navigate(&params);
-        break;
-      }
-      case features::WebAuthFlowInBrowserTabMode::kPopupWindow: {
-        bool is_auth_page_displayed = DisplayAuthPageInPopupWindow();
-        if (!is_auth_page_displayed) {
-          delegate_->OnAuthFlowFailure(
-              WebAuthFlow::Failure::CANNOT_CREATE_WINDOW);
-          return;
-        }
-        break;
-      }
+    bool is_auth_page_displayed = DisplayAuthPageInPopupWindow();
+    if (!is_auth_page_displayed) {
+      delegate_->OnAuthFlowFailure(WebAuthFlow::Failure::CANNOT_CREATE_WINDOW);
+      return;
     }
 
     if (info_bar_parameters_.should_show) {
@@ -233,22 +214,6 @@ void WebAuthFlow::DidStopLoading() {
 
 void WebAuthFlow::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  // If the initial web contents is being displayed in a window
-  // (`!web_contents_`) and the navigation is initiated by the user, the tab
-  // will exit the auth flow screen, this should result in a declined
-  // authentication and deleting the flow. These conditions do not apply for the
-  // Popup Window, where the url bar is deactivated and the user cannot navigate
-  // away directly, to allow going back and forth within the same flow.
-  if (!web_contents_ &&
-      features::kWebAuthFlowInBrowserTabMode.Get() !=
-          features::WebAuthFlowInBrowserTabMode::kPopupWindow &&
-      !navigation_handle->IsRendererInitiated()) {
-    // Stop observing the web contents since it is not part of the flow anymore.
-    WebContentsObserver::Observe(nullptr);
-    delegate_->OnAuthFlowFailure(Failure::USER_NAVIGATED_AWAY);
-    return;
-  }
-
   if (navigation_handle->IsInPrimaryMainFrame()) {
     BeforeUrlLoaded(navigation_handle->GetURL());
   }

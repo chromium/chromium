@@ -8,15 +8,12 @@
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
 }  // namespace content
 
 namespace extensions {
-
-class TestScopedShouldAnimateWebAuthFlowInfoBar;
 
 // Infobar used by extension auth flow `chrome.identity.launchWebAuthFlow()`
 // when authentication is done through a Browser Tab. A browser tab is opened
@@ -40,18 +37,12 @@ class WebAuthFlowInfoBarDelegate : public ConfirmInfoBarDelegate {
   // ConfirmInfoBarDelegate:
   std::u16string GetMessageText() const override;
   int GetButtons() const override;
-  bool ShouldAnimate() const override;
 
   // Closes the info bar this delegate is associated with.
   void CloseInfoBar();
 
  private:
-  friend TestScopedShouldAnimateWebAuthFlowInfoBar;
-
   explicit WebAuthFlowInfoBarDelegate(const std::string& extension_name);
-
-  // Only controlled by `TestScopedShouldAnimateWebAuthFlowInfoBar`.
-  static absl::optional<bool> should_animate_for_testing_;
 
   const std::string extension_name_;
 

@@ -102,9 +102,6 @@ void GaiaRemoteConsentFlow::OnAuthFlowFailure(WebAuthFlow::Failure failure) {
     case WebAuthFlow::WINDOW_CLOSED:
       gaia_failure = GaiaRemoteConsentFlow::WINDOW_CLOSED;
       break;
-    case WebAuthFlow::USER_NAVIGATED_AWAY:
-      gaia_failure = GaiaRemoteConsentFlow::USER_NAVIGATED_AWAY;
-      break;
     case WebAuthFlow::LOAD_FAILED:
     case WebAuthFlow::TIMED_OUT:
       gaia_failure = GaiaRemoteConsentFlow::LOAD_FAILED;

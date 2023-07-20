@@ -27,7 +27,8 @@ class GaiaRemoteConsentFlow : public WebAuthFlow::Delegate {
     // SET_ACCOUNTS_IN_COOKIE_FAILED = 3,
     INVALID_CONSENT_RESULT = 4,
     NO_GRANT = 5,
-    USER_NAVIGATED_AWAY = 6,
+    // Deprecated:
+    // USER_NAVIGATED_AWAY = 6,
     CANNOT_CREATE_WINDOW = 7,
     kMaxValue = CANNOT_CREATE_WINDOW
   };

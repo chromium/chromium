@@ -1567,16 +1567,4 @@ BASE_FEATURE(kSupportsRtcWakeOver24Hours,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-BASE_FEATURE(kWebAuthFlowInBrowserTab,
-             "WebAuthFlowInBrowserTab",
-             base::FeatureState::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<WebAuthFlowInBrowserTabMode>::Option
-    web_auth_flow_modes[] = {
-        {WebAuthFlowInBrowserTabMode::kNewTab, "new_tab"},
-        {WebAuthFlowInBrowserTabMode::kPopupWindow, "popup_window"}};
-const base::FeatureParam<WebAuthFlowInBrowserTabMode>
-    kWebAuthFlowInBrowserTabMode{&kWebAuthFlowInBrowserTab, "browser_tab_mode",
-                                 WebAuthFlowInBrowserTabMode::kPopupWindow,
-                                 &web_auth_flow_modes};
-
 }  // namespace features

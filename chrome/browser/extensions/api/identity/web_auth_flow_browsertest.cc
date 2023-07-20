@@ -10,7 +10,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
-#include "chrome/browser/extensions/api/identity/test_scoped_should_animate_web_auth_flow_info_bar.h"
 #include "chrome/browser/extensions/api/identity/web_auth_flow_info_bar_delegate.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -20,7 +19,6 @@
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -519,13 +517,6 @@ IN_PROC_BROWSER_TEST_F(
   // Simulate an internal navigation, such as an authentication that needs an
   // input of username and password on two different pages/urls.
   GURL new_url = embedded_test_server()->GetURL("/title2.html");
-  // Below a first navigation will be done, then going back on the initial auth
-  // page, in the popup window mode the error should not trigger and the auth
-  // flow should stay alive.
-  EXPECT_CALL(mock(),
-              OnAuthFlowFailure(WebAuthFlow::Failure::USER_NAVIGATED_AWAY))
-      .Times(0);
-
   EXPECT_CALL(mock(), OnAuthFlowURLChange(new_url));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), new_url));
 
@@ -712,74 +703,6 @@ IN_PROC_BROWSER_TEST_F(
               OnAuthFlowFailure(WebAuthFlow::Failure::CANNOT_CREATE_WINDOW));
   StartWebAuthFlow(auth_url, WebAuthFlow::Mode::INTERACTIVE);
   navigation_observer.Wait();
-}
-
-class WebAuthFlowWithBrowserTabInNewTabBrowserTest
-    : public WebAuthFlowBrowserTest {
- public:
-  WebAuthFlowWithBrowserTabInNewTabBrowserTest() {
-    // Enables feature with New tab mode.
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kWebAuthFlowInBrowserTab, {{"browser_tab_mode", "new_tab"}});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    WebAuthFlowWithBrowserTabInNewTabBrowserTest,
-    InteractiveNewTabCreatedWithAuthURL_ThenChangeURLBeforeAuthResult) {
-  const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
-  content::TestNavigationObserver navigation_observer(auth_url);
-  navigation_observer.StartWatchingNewWebContents();
-
-  EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
-  // Remove the animation mainly for the deleting part as it could create
-  // flakiness when checking for the deletion of the info bar.
-  TestScopedShouldAnimateWebAuthFlowInfoBar should_animate(false);
-  StartWebAuthFlow(auth_url, WebAuthFlow::Mode::INTERACTIVE);
-  web_auth_flow()->SetShouldShowInfoBar("extension name");
-
-  navigation_observer.Wait();
-
-  //---------------------------------------------------------------------
-  // Browser-initiated URL change in the opened tab before completing the auth
-  // flow should trigger an auth flow failure.
-  //---------------------------------------------------------------------
-  testing::Mock::VerifyAndClearExpectations(&mock());
-
-  // Keeping a reference to the info bar delegate to check later.
-  base::WeakPtr<WebAuthFlowInfoBarDelegate> auth_info_bar =
-      web_auth_flow()->GetInfoBarDelegateForTesting();
-  ASSERT_TRUE(auth_info_bar);
-
-  Browser* newtab_browser = chrome::FindBrowserWithWebContents(web_contents());
-  EXPECT_EQ(browser(), newtab_browser);
-  TabStripModel* tabs = newtab_browser->tab_strip_model();
-
-  // Simulating a non user navigation, it shouldn't break the flow.
-  GURL internal_url = embedded_test_server()->GetURL("/title2.html");
-  EXPECT_CALL(mock(), OnAuthFlowURLChange(internal_url));
-  EXPECT_CALL(mock(), OnAuthFlowFailure(testing::_)).Times(0);
-  ASSERT_TRUE(content::NavigateToURLFromRenderer(web_contents(), internal_url));
-  EXPECT_TRUE(web_auth_flow());
-  EXPECT_TRUE(auth_info_bar);
-  testing::Mock::VerifyAndClearExpectations(&mock());
-
-  // Simulating user manually navigating to another URL.
-  GURL browsing_url = embedded_test_server()->GetURL("/simple.html");
-  EXPECT_CALL(mock(),
-              OnAuthFlowFailure(WebAuthFlow::Failure::USER_NAVIGATED_AWAY));
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), browsing_url));
-
-  // New tab is not expected to be closed, it is now used for navigation and
-  // not part of the flow anymore.
-  EXPECT_FALSE(web_contents());
-  EXPECT_FALSE(web_auth_flow());
-  EXPECT_EQ(tabs->GetActiveWebContents()->GetLastCommittedURL(), browsing_url);
-  // Infobar should be closed on navigation.
-  EXPECT_FALSE(auth_info_bar);
 }
 
 }  //  namespace extensions

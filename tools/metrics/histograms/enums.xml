@@ -46914,7 +46914,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="Failed to set accounts in cookies (deprecated 07/23)"/>
   <int value="4" label="Failed to parse the consent result"/>
   <int value="5" label="Consent wasn't granted"/>
-  <int value="6" label="User navigated away"/>
+  <int value="6" label="User navigated away (deprecated 07/23)"/>
   <int value="7" label="Cannot create a window"/>
 </enum>
 

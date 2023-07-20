@@ -54,7 +54,6 @@ class WebAuthFlow : public content::WebContentsObserver {
     WINDOW_CLOSED,         // Window closed by user (app or tab).
     INTERACTION_REQUIRED,  // Non-redirect page load in silent mode.
     LOAD_FAILED,
-    USER_NAVIGATED_AWAY,  // The user navigated away from the auth page.
     TIMED_OUT,
     CANNOT_CREATE_WINDOW  // Couldn't create a browser window.
   };

@@ -7994,11 +7994,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "web-auth-flow-in-browser-tab",
-    "owners": ["rsult", "alexilin", "chrome-signin-team"],
-    "expiry_milestone": 115
-  },
-  {
     "name": "web-authentication-android-credential-management",
     "owners": ["kenrb", "agl"],
     "expiry_milestone": 120
