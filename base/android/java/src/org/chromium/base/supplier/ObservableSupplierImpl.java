@@ -34,6 +34,12 @@ public class ObservableSupplierImpl<E> implements ObservableSupplier<E> {
     private E mObject;
     private final ObserverList<Callback<E>> mObservers = new ObserverList<>();
 
+    public ObservableSupplierImpl() {}
+
+    public ObservableSupplierImpl(E initialValue) {
+        mObject = initialValue;
+    }
+
     @Override
     public E addObserver(Callback<E> obs) {
         checkThread();

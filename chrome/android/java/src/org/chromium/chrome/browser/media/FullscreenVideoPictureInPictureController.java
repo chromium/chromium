@@ -38,9 +38,10 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A controller for entering Android O Picture in Picture mode with fullscreen videos.
@@ -114,9 +115,8 @@ public class FullscreenVideoPictureInPictureController {
 
     // Components names that won't trigger the pip mode. Use cases like notification clicks won't
     // trigger pip.
-    private static final HashSet<String> NO_PIP_COMPONENT_NAMES = new HashSet<String>() {
-        { add(NotificationIntentInterceptor.TrampolineActivity.class.getName()); }
-    };
+    private static final Set<String> NO_PIP_COMPONENT_NAMES = Collections.singleton(
+            NotificationIntentInterceptor.TrampolineActivity.class.getName());
 
     /** Callbacks to cleanup after leaving PiP. */
     private final List<Runnable> mOnLeavePipCallbacks = new LinkedList<>();

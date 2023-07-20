@@ -111,9 +111,7 @@ public class CustomTabActivityNavigationController
     private final Activity mActivity;
     private final DefaultBrowserProvider mDefaultBrowserProvider;
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
-            new ObservableSupplierImpl<>() {
-                { set(false); }
-            };
+            new ObservableSupplierImpl<>(false);
 
     @Nullable
     private ToolbarManager mToolbarManager;
