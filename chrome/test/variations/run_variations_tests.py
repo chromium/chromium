@@ -23,6 +23,12 @@ if __name__ == "__main__":
                       '--gerrit-patchset',
                       '--buildbucket-id')
 
+  # These are not currently used but supplied from the test runner, we need to
+  # ignore them for now so it will not stop the script.
+  parser.add_argument('--isolated-script-test-repeat',
+                      '--isolated-script-test-filter',
+                      '--isolated-script-test-launcher-retry-limit')
+
   parser.add_argument('--isolated-script-test-output',
                       '--write-full-results-to',
                       '--json-results-file',
