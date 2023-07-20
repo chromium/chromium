@@ -39,7 +39,7 @@ constexpr char kSavedTabGroupsTypeName[] = "savedTabGroups";
 constexpr char kPaymentsTypeName[] = "payments";
 
 UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
-  static_assert(48 == syncer::GetNumModelTypes(),
+  static_assert(49 == syncer::GetNumModelTypes(),
                 "Almost always when adding a new ModelType, you must tie it to "
                 "a UserSelectableType below (new or existing) so the user can "
                 "disable syncing of that data. Today you must also update the "
@@ -100,8 +100,9 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
     case UserSelectableType::kPayments:
       return {kPaymentsTypeName,
               AUTOFILL_WALLET_DATA,
-              {AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_METADATA,
-               AUTOFILL_WALLET_OFFER, AUTOFILL_WALLET_USAGE}};
+              {AUTOFILL_WALLET_CREDENTIAL, AUTOFILL_WALLET_DATA,
+               AUTOFILL_WALLET_METADATA, AUTOFILL_WALLET_OFFER,
+               AUTOFILL_WALLET_USAGE}};
   }
   NOTREACHED();
   return {nullptr, UNSPECIFIED, {}};

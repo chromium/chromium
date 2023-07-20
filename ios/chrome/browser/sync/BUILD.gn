@@ -172,6 +172,7 @@ source_set("unit_tests") {
   deps = [
     ":sync",
     "//base",
+    "//components/autofill/core/common/",
     "//components/browser_sync",
     "//components/sync",
     "//ios/chrome/browser/favicon",

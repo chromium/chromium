@@ -17,6 +17,7 @@ class ArcPackageSpecifics;
 class AutofillProfileSpecifics;
 class AutofillSpecifics;
 class AutofillOfferSpecifics;
+class AutofillWalletCredentialSpecifics;
 class AutofillWalletSpecifics;
 class AutofillWalletUsageSpecifics;
 class BookmarkSpecifics;
@@ -108,6 +109,10 @@ base::Value AutofillProfileSpecificsToValue(
 
 base::Value AutofillSpecificsToValue(
     const sync_pb::AutofillSpecifics& autofill_specifics);
+
+base::Value AutofillWalletCredentialSpecificsToValue(
+    const sync_pb::AutofillWalletCredentialSpecifics&
+        autofill_wallet_credential_specifics);
 
 base::Value AutofillWalletSpecificsToValue(
     const sync_pb::AutofillWalletSpecifics& autofill_wallet_specifics);

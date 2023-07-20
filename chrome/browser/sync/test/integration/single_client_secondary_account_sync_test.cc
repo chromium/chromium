@@ -22,17 +22,22 @@ namespace {
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
-  static_assert(48 == syncer::GetNumModelTypes(),
+  static_assert(49 == syncer::GetNumModelTypes(),
                 "Add new types below if they can run in transport mode");
   // Only some types will run by default in transport mode (i.e. without their
   // own separate opt-in).
-  syncer::ModelTypeSet allowed_types = {
-      syncer::AUTOFILL_WALLET_DATA,  syncer::AUTOFILL_WALLET_METADATA,
-      syncer::AUTOFILL_WALLET_OFFER, syncer::AUTOFILL_WALLET_USAGE,
-      syncer::CONTACT_INFO,          syncer::DEVICE_INFO,
-      syncer::READING_LIST,          syncer::SECURITY_EVENTS,
-      syncer::SEND_TAB_TO_SELF,      syncer::SHARING_MESSAGE,
-      syncer::USER_CONSENTS};
+  syncer::ModelTypeSet allowed_types = {syncer::AUTOFILL_WALLET_CREDENTIAL,
+                                        syncer::AUTOFILL_WALLET_DATA,
+                                        syncer::AUTOFILL_WALLET_METADATA,
+                                        syncer::AUTOFILL_WALLET_OFFER,
+                                        syncer::AUTOFILL_WALLET_USAGE,
+                                        syncer::CONTACT_INFO,
+                                        syncer::DEVICE_INFO,
+                                        syncer::READING_LIST,
+                                        syncer::SECURITY_EVENTS,
+                                        syncer::SEND_TAB_TO_SELF,
+                                        syncer::SHARING_MESSAGE,
+                                        syncer::USER_CONSENTS};
   allowed_types.PutAll(syncer::ControlTypes());
   return allowed_types;
 }

@@ -76,6 +76,7 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
       return kMinLocalChangeNudgeDelay;
     case PASSWORDS:
     case AUTOFILL_PROFILE:
+    case AUTOFILL_WALLET_CREDENTIAL:
     case AUTOFILL_WALLET_DATA:
     case AUTOFILL_WALLET_METADATA:
     case AUTOFILL_WALLET_OFFER:
@@ -139,6 +140,7 @@ bool CanGetCommitsFromExtensions(ModelType model_type) {
     case SESSIONS:
     case PREFERENCES:
     case SHARING_MESSAGE:
+    case AUTOFILL_WALLET_CREDENTIAL:
     case AUTOFILL_WALLET_DATA:
     case AUTOFILL_WALLET_METADATA:
     case AUTOFILL_WALLET_OFFER:

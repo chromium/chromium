@@ -103500,6 +103500,7 @@ would be helpful to identify which type is being sent.
   <int value="58" label="WebAuthn Credentials"/>
   <int value="59" label="Incoming Password Sharing Invitations"/>
   <int value="60" label="Outgoing Password Sharing Invitations"/>
+  <int value="61" label="Autofill Wallet Credential"/>
 </enum>
 
 <enum name="SyncModelTypeStoreInitResult">

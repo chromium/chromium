@@ -53,7 +53,7 @@ class SyncServiceFactoryTest : public PlatformTest {
  protected:
   // Returns the collection of default datatypes.
   syncer::ModelTypeSet DefaultDatatypes() {
-    static_assert(48 == syncer::GetNumModelTypes(),
+    static_assert(49 == syncer::GetNumModelTypes(),
                   "When adding a new type, you probably want to add it here as "
                   "well (assuming it is already enabled).");
 
@@ -63,6 +63,10 @@ class SyncServiceFactoryTest : public PlatformTest {
     // is null for testing and hence no controller gets instantiated.
     datatypes.Put(syncer::AUTOFILL);
     datatypes.Put(syncer::AUTOFILL_PROFILE);
+    if (base::FeatureList::IsEnabled(
+            syncer::kSyncAutofillWalletCredentialData)) {
+      datatypes.Put(syncer::AUTOFILL_WALLET_CREDENTIAL);
+    }
     datatypes.Put(syncer::AUTOFILL_WALLET_DATA);
     datatypes.Put(syncer::AUTOFILL_WALLET_METADATA);
     datatypes.Put(syncer::AUTOFILL_WALLET_OFFER);

@@ -62,6 +62,10 @@ const ModelTypeInfo kModelTypeInfoMap[] = {
     {AUTOFILL, "AUTOFILL", "autofill", "Autofill",
      sync_pb::EntitySpecifics::kAutofillFieldNumber,
      ModelTypeForHistograms::kAutofill},
+    {AUTOFILL_WALLET_CREDENTIAL, "AUTOFILL_WALLET_CREDENTIAL",
+     "autofill_wallet_credential", "Autofill Wallet Credential",
+     sync_pb::EntitySpecifics::kAutofillWalletCredentialFieldNumber,
+     ModelTypeForHistograms::kAutofillWalletCredential},
     {AUTOFILL_WALLET_DATA, "AUTOFILL_WALLET", "autofill_wallet",
      "Autofill Wallet", sync_pb::EntitySpecifics::kAutofillWalletFieldNumber,
      ModelTypeForHistograms::kAutofillWalletData},
@@ -209,7 +213,7 @@ const ModelTypeInfo kModelTypeInfoMap[] = {
 static_assert(std::size(kModelTypeInfoMap) == GetNumModelTypes(),
               "kModelTypeInfoMap should have GetNumModelTypes() elements");
 
-static_assert(48 == syncer::GetNumModelTypes(),
+static_assert(49 == syncer::GetNumModelTypes(),
               "When adding a new type, update enum SyncModelTypes in enums.xml "
               "and suffix SyncModelType in histograms.xml.");
 
@@ -233,6 +237,9 @@ void AddDefaultFieldValue(ModelType type, sync_pb::EntitySpecifics* specifics) {
       break;
     case AUTOFILL:
       specifics->mutable_autofill();
+      break;
+    case AUTOFILL_WALLET_CREDENTIAL:
+      specifics->mutable_autofill_wallet_credential();
       break;
     case AUTOFILL_WALLET_DATA:
       specifics->mutable_autofill_wallet();
@@ -391,7 +398,7 @@ void internal::GetModelTypeSetFromSpecificsFieldNumberListHelper(
 }
 
 ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
-  static_assert(48 == syncer::GetNumModelTypes(),
+  static_assert(49 == syncer::GetNumModelTypes(),
                 "When adding new protocol types, the following type lookup "
                 "logic must be updated.");
   if (specifics.has_bookmark())
@@ -489,6 +496,9 @@ ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
   if (specifics.has_outgoing_password_sharing_invitation()) {
     return OUTGOING_PASSWORD_SHARING_INVITATION;
   }
+  if (specifics.has_autofill_wallet_credential()) {
+    return AUTOFILL_WALLET_CREDENTIAL;
+  }
 
   // This client version doesn't understand |specifics|.
   DVLOG(1) << "Unknown datatype in sync proto.";
@@ -496,7 +506,7 @@ ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
 }
 
 ModelTypeSet EncryptableUserTypes() {
-  static_assert(48 == syncer::GetNumModelTypes(),
+  static_assert(49 == syncer::GetNumModelTypes(),
                 "If adding an unencryptable type, remove from "
                 "encryptable_user_types below.");
   ModelTypeSet encryptable_user_types = UserTypes();

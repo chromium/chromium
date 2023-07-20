@@ -59,6 +59,8 @@ enum ModelType {
   AUTOFILL_PROFILE,
   // An autofill object, i.e. an autocomplete entry keyed to an HTML form field.
   AUTOFILL,
+  // Credentials related to an autofill wallet instrument; aka the CVC/CVV code.
+  AUTOFILL_WALLET_CREDENTIAL,
   // Credit cards and addresses from the user's account. These are read-only on
   // the client.
   AUTOFILL_WALLET_DATA,
@@ -257,7 +259,8 @@ enum class ModelTypeForHistograms {
   kWebAuthnCredentials = 58,
   kIncomingPasswordSharingInvitations = 59,
   kOutgoingPasswordSharingInvitations = 60,
-  kMaxValue = kOutgoingPasswordSharingInvitations,
+  kAutofillWalletCredential = 61,
+  kMaxValue = kAutofillWalletCredential,
 };
 
 // Used to mark the type of EntitySpecifics that has no actual data.
@@ -276,6 +279,7 @@ constexpr ModelTypeSet ProtocolTypes() {
           PASSWORDS,
           AUTOFILL_PROFILE,
           AUTOFILL,
+          AUTOFILL_WALLET_CREDENTIAL,
           AUTOFILL_WALLET_DATA,
           AUTOFILL_WALLET_METADATA,
           AUTOFILL_WALLET_OFFER,
@@ -340,7 +344,7 @@ constexpr ModelTypeSet AlwaysEncryptedUserTypes() {
   // If you add a new model type here that is conceptually different from a
   // password, make sure you audit UI code that refers to these types as
   // passwords, e.g. consumers of IsEncryptEverythingEnabled().
-  return {PASSWORDS, WIFI_CONFIGURATIONS};
+  return {AUTOFILL_WALLET_CREDENTIAL, PASSWORDS, WIFI_CONFIGURATIONS};
 }
 
 // This is the subset of UserTypes() that have priority over other types. These

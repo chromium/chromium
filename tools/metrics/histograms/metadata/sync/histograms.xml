@@ -31,6 +31,8 @@ chromium-metrics-reviews@google.com.
   <variant name=".AUTOFILL_OFFER" summary="AUTOFILL_OFFER"/>
   <variant name=".AUTOFILL_PROFILE" summary="AUTOFILL_PROFILE"/>
   <variant name=".AUTOFILL_WALLET" summary="AUTOFILL_WALLET"/>
+  <variant name=".AUTOFILL_WALLET_CREDENTIAL"
+      summary="AUTOFILL_WALLET_CREDENTIAL"/>
   <variant name=".AUTOFILL_WALLET_USAGE" summary="AUTOFILL_WALLET_USAGE"/>
   <variant name=".BOOKMARK" summary="BOOKMARK"/>
   <variant name=".CONTACT_INFO" summary="CONTACT_INFO"/>

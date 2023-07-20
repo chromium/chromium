@@ -63,6 +63,9 @@ inline constexpr base::FeatureParam<int> kSyncAndroidNTPPromoMaxImpressions{
 // Controls whether to enable syncing of Autofill Wallet Usage Data.
 BASE_DECLARE_FEATURE(kSyncAutofillWalletUsageData);
 
+// Controls whether to enable syncing of Autofill Wallet Credential Data.
+BASE_DECLARE_FEATURE(kSyncAutofillWalletCredentialData);
+
 // If enabled, Segmentation data type will be synced.
 BASE_DECLARE_FEATURE(kSyncSegmentationDataType);
 

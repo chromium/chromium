@@ -65,7 +65,7 @@ using testing::Not;
 
 DEFINE_SPECIFICS_TO_VALUE_TEST(encrypted)
 
-static_assert(48 == syncer::GetNumModelTypes(),
+static_assert(49 == syncer::GetNumModelTypes(),
               "When adding a new field, add a DEFINE_SPECIFICS_TO_VALUE_TEST "
               "for your field below, and optionally a test for the specific "
               "conversions.");
@@ -78,6 +78,7 @@ DEFINE_SPECIFICS_TO_VALUE_TEST(autofill)
 DEFINE_SPECIFICS_TO_VALUE_TEST(autofill_offer)
 DEFINE_SPECIFICS_TO_VALUE_TEST(autofill_profile)
 DEFINE_SPECIFICS_TO_VALUE_TEST(autofill_wallet)
+DEFINE_SPECIFICS_TO_VALUE_TEST(autofill_wallet_credential)
 DEFINE_SPECIFICS_TO_VALUE_TEST(autofill_wallet_usage)
 DEFINE_SPECIFICS_TO_VALUE_TEST(bookmark)
 DEFINE_SPECIFICS_TO_VALUE_TEST(contact_info)

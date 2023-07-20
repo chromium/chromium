@@ -331,7 +331,7 @@ ModelTypeSet SyncUserSettingsImpl::GetPreferredDataTypes() const {
   // though they're technically not registered.
   types.PutAll(ControlTypes());
 
-  static_assert(48 == GetNumModelTypes(),
+  static_assert(49 == GetNumModelTypes(),
                 "If adding a new sync data type, update the list below below if"
                 " you want to disable the new data type for local sync.");
   if (prefs_->IsLocalSyncEnabled()) {
