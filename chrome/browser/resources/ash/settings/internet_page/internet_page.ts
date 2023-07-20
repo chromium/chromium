@@ -54,7 +54,7 @@ import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../deep_linking_mixin
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
+import {RouteOriginMixin, RouteOriginMixinInterface} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {ApnSubpageElement} from './apn_subpage.js';
@@ -98,10 +98,10 @@ const SettingsInternetPageElementBase =
         [
           NetworkListenerBehavior,
         ],
-        DeepLinkingMixin(PrefsMixin(RouteObserverMixin(
+        DeepLinkingMixin(PrefsMixin(RouteOriginMixin(
             WebUiListenerMixin(I18nMixin(PolymerElement)))))) as {
       new (): PolymerElement & I18nMixinInterface &
-          WebUiListenerMixinInterface & RouteObserverMixinInterface &
+          WebUiListenerMixinInterface & RouteOriginMixinInterface &
           PrefsMixinInterface & DeepLinkingMixinInterface &
           NetworkListenerBehaviorInterface,
     };
@@ -280,13 +280,6 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
         value: '',
       },
 
-      focusConfig_: {
-        type: Object,
-        value() {
-          return new Map();
-        },
-      },
-
       /**
        * Used by DeepLinkingMixin to focus this page's deep links.
        */
@@ -338,10 +331,9 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   private addConnectionExpanded_: boolean;
   private browserProxy_: InternetPageBrowserProxy;
   private cellularSetupDialogPageName_: CellularSetupPageName|null;
-  private detailType_: NetworkType|undefined;
+  private detailType_: NetworkType|null;
   private errorToastMessage_: string;
   private eSimNetworkState_: NetworkStateProperties;
-  private focusConfig_: Map<string, HTMLElement>;
   private globalPolicy_: GlobalPolicy|undefined;
   private hasActiveCellularNetwork_: boolean;
   private isApnRevampEnabled_: boolean;
@@ -369,10 +361,13 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   constructor() {
     super();
 
+    /** RouteOriginMixin override */
+    this.route = routes.INTERNET;
+
     /**
      * Type of last detail page visited
      */
-    this.detailType_ = undefined;
+    this.detailType_ = null;
 
     this.browserProxy_ = InternetPageBrowserProxyImpl.getInstance();
 
@@ -419,6 +414,33 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
     this.addEventListener('show-error-toast', (event) => {
       this.onShowErrorToast_(event);
     });
+
+    [routes.INTERNET_NETWORKS,
+     routes.NETWORK_DETAIL,
+     routes.KNOWN_NETWORKS,
+     routes.HOTSPOT_DETAIL,
+     routes.APN,
+     routes.PASSPOINT_DETAIL,
+    ].forEach((route) => {
+      this.addFocusConfig(route, () => {
+        if (this.detailType_ !== null) {
+          const rowForDetailType =
+              this.shadowRoot!.querySelector('network-summary')!.getNetworkRow(
+                  this.detailType_);
+
+          // Note: It is possible that the row is no longer present in the DOM
+          // (e.g., when a Cellular dongle is unplugged or when Instant
+          // Tethering becomes unavailable due to the Bluetooth controller
+          // disconnecting).
+          if (rowForDetailType) {
+            return rowForDetailType.shadowRoot!.querySelector<HTMLElement>(
+                '.subpage-arrow');
+          }
+        }
+
+        return null;
+      });
+    });
   }
 
   override connectedCallback(): void {
@@ -459,10 +481,15 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   }
 
   /**
-   * RouteObserverMixin override
+   * RouteOriginMixin override
    */
-  override currentRouteChanged(route: Route, oldRoute?: Route): void {
-    if (route === routes.INTERNET_NETWORKS) {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
+    super.currentRouteChanged(newRoute, oldRoute);
+
+    if (newRoute === this.route) {
+      // Show deep links for the internet page.
+      this.attemptDeepLink();
+    } else if (newRoute === routes.INTERNET_NETWORKS) {
       // Handle direct navigation to the networks page,
       // e.g. chrome://settings/internet/networks?type=WiFi
       const queryParams = Router.getInstance().getQueryParameters();
@@ -489,7 +516,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
       this.pendingShowSimLockDialog_ = !oldRoute &&
           !!queryParams.get('showSimLockDialog') &&
           this.subpageType_ === NetworkType.kCellular;
-    } else if (route === routes.KNOWN_NETWORKS) {
+    } else if (newRoute === routes.KNOWN_NETWORKS) {
       // Handle direct navigation to the known networks page,
       // e.g. chrome://settings/internet/knownNetworks?type=WiFi
       const queryParams = Router.getInstance().getQueryParameters();
@@ -499,46 +526,6 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
       } else {
         this.knownNetworksType_ = NetworkType.kWiFi;
       }
-    } else if (route === routes.INTERNET) {
-      // Show deep links for the internet page.
-      this.attemptDeepLink();
-    } else if (route !== routes.BASIC) {
-      // If we are navigating to a non internet section, do not set focus.
-      return;
-    }
-
-    if (!oldRoute || !routes.INTERNET || !routes.INTERNET.contains(oldRoute)) {
-      return;
-    }
-
-    // Focus the subpage arrow where appropriate.
-    let element: HTMLElement|null = null;
-    if (route === routes.INTERNET_NETWORKS) {
-      // iron-list makes the correct timing to focus an item in the list
-      // very complicated, and the item may not exist, so just focus the
-      // entire list for now.
-      const subPage =
-          this.shadowRoot!.querySelector('settings-internet-subpage');
-      if (subPage) {
-        element = subPage.shadowRoot!.querySelector('#networkList');
-      }
-    } else if (this.detailType_ !== undefined) {
-      const rowForDetailType =
-          this.shadowRoot!.querySelector('network-summary')!.getNetworkRow(
-              this.detailType_);
-
-      // Note: It is possible that the row is no longer present in the DOM
-      // (e.g., when a Cellular dongle is unplugged or when Instant Tethering
-      // becomes unavailable due to the Bluetooth controller disconnecting).
-      if (rowForDetailType) {
-        element = rowForDetailType.shadowRoot!.querySelector('.subpage-arrow');
-      }
-    }
-
-    if (element) {
-      this.focusConfig_.set(oldRoute.path, element);
-    } else {
-      this.focusConfig_.delete(oldRoute.path);
     }
   }
 
