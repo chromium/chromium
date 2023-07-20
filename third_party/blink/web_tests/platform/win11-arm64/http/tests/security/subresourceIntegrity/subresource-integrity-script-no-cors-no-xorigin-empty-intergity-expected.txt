@@ -1,5 +1,0 @@
-CONSOLE ERROR: Uncaught Error: assert_equals: Script ran. expected "ran" but got ""
-This is a testharness.js-based test.
-FAIL SRI on cross origin CORS disabled script, without CORS fetch, but an empty integrity attribute Uncaught Error: assert_equals: Script ran. expected "ran" but got ""
-Harness: the test ran to completion.
-

@@ -13,11 +13,11 @@ if (!(empty($max_age))) {
   header('Cache-Control: max-age=' . $max_age);
 }
 
-if (strtolower($_GET['credentials']) == 'true') {
+if (strtolower($_GET['credentials'] ?? '') == 'true') {
   header('Access-Control-Allow-Credentials: true');
 }
 
-$custom_header_arg = strtolower($_GET['custom']);
+$custom_header_arg = strtolower($_GET['custom'] ?? '');
 if (!(empty($custom_header_arg))) {
   header('Access-Control-Allow-Headers: ' . $custom_header_arg);
 }

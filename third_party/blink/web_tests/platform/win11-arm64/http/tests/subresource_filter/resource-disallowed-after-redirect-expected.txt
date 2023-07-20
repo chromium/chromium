@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL Resources for which no URLs in the redirect chain are disallowed are still loaded. assert_in_array: Scripts that are not disallowed are still executed. value "alpha" not in array []
-FAIL Resources that redirect to a disallowed URL are not loaded. assert_unreached: Reached unreachable code
-Harness: the test ran to completion.
-

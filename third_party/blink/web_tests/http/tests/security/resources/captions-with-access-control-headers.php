@@ -1,7 +1,7 @@
 <?php
 
-    $origin = $_GET["origin"];
-    $credentials = $_GET["credentials"];
+    $origin = $_GET["origin"] ?? null;
+    $credentials = $_GET["credentials"] ?? null;
 
     if ($origin)
         header("Access-Control-Allow-Origin: http://127.0.0.1:8000");

@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Tests for Service Worker generated mixed responses. promise_test: Unhandled rejection with value: "error event should not be fired. url: http://127.0.0.1:8000/media/resources/load-video.php?name=../../../../media/content/silence.oga&type=audio/ogg&SW_FIRST=&SW_SECOND=&prevent_cache=1"
-Harness: the test ran to completion.
-

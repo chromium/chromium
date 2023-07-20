@@ -1,5 +1,5 @@
 <?php
-if ($_SERVER["HTTP_IF_MODIFIED_SINCE"]) {
+if (isset($_SERVER["HTTP_IF_MODIFIED_SINCE"])) {
   usleep(20000);
   header("HTTP/1.0 304 Not Modified");
   exit();

@@ -1,6 +1,6 @@
 <?php
 $age_string = "";
-if ($_GET['clear']) {
+if (isset($_GET['clear'])) {
     $age_string = "; expires=Thu, 19 Mar 1982 11:22:11 GMT";
 }
 header("Set-Cookie: WK-xhr-cookie-storage=MySpecialValue" . $age_string .
