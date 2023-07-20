@@ -13,3 +13,19 @@ static void JNI_SigninMetricsUtils_LogSigninUserActionForAccessPoint(
   signin_metrics::RecordSigninUserActionForAccessPoint(
       static_cast<signin_metrics::AccessPoint>(access_point));
 }
+
+static void JNI_SigninMetricsUtils_LogAccountConsistencyPromoAction(
+    JNIEnv* env,
+    jint promo_action,
+    jint access_point) {
+  CHECK_GE(promo_action, 0);
+  CHECK_LE(promo_action,
+           static_cast<int>(
+               signin_metrics::AccountConsistencyPromoAction::kMaxValue));
+  CHECK_GE(access_point, 0);
+  CHECK_LE(access_point,
+           static_cast<int>(signin_metrics::AccessPoint::ACCESS_POINT_MAX));
+  signin_metrics::RecordConsistencyPromoUserAction(
+      static_cast<signin_metrics::AccountConsistencyPromoAction>(promo_action),
+      static_cast<signin_metrics::AccessPoint>(access_point));
+}
