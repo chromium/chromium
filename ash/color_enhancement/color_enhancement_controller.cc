@@ -250,7 +250,6 @@ void ColorEnhancementController::UpdateDisplay(aura::Window* root_window) {
   if (!color_filtering_enabled_) {
     // Reset layer state to defaults.
     layer->SetLayerGrayscale(0.0);
-    layer->SetLayerSaturation(1.0);
     layer->ClearLayerCustomColorMatrix();
     return;
   }
