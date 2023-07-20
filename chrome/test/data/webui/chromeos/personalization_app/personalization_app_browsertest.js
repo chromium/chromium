@@ -254,15 +254,8 @@ class PersonalizationAppAmbientModeDisallowedBrowserTest extends
 this[PersonalizationAppAmbientModeDisallowedBrowserTest.name] =
     PersonalizationAppAmbientModeDisallowedBrowserTest;
 
-// TODO(b/292076437): Flaky on debug builds.
-GEN('#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)');
-GEN('#define MAYBE_All DISABLED_All');
-GEN('#else');
-GEN('#define MAYBE_All All');
-GEN('#endif');
-
 TEST_F(
-    PersonalizationAppAmbientModeDisallowedBrowserTest.name, 'MAYBE_All',
+    PersonalizationAppAmbientModeDisallowedBrowserTest.name, 'All',
     async () => {
       await import('chrome://webui-test/mojo_webui_test_support.js');
 
@@ -629,8 +622,16 @@ class PersonalizationAppDynamicColorEnabledBrowserTest extends
 this[PersonalizationAppDynamicColorEnabledBrowserTest.name] =
     PersonalizationAppDynamicColorEnabledBrowserTest;
 
+// TODO(b/292076437): Flaky on debug builds.
+GEN('#if !defined(NDEBUG)');
+GEN('#define MAYBE_All DISABLED_All');
+GEN('#else');
+GEN('#define MAYBE_All All');
+GEN('#endif');
+
 TEST_F(
-    PersonalizationAppDynamicColorEnabledBrowserTest.name, 'All', async () => {
+    PersonalizationAppDynamicColorEnabledBrowserTest.name, 'MAYBE_All',
+    async () => {
       await import('chrome://webui-test/mojo_webui_test_support.js');
 
       function getDynamicColorElement() {
