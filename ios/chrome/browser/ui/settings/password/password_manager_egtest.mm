@@ -3194,26 +3194,6 @@ void CopyPasswordDetailWithID(int detail_id) {
 
 @end
 
-// Rerun all the tests in this file but with kPasswordNotesWithBackup disabled.
-// This will be removed once that feature launches fully, but ensures
-// regressions aren't introduced in the meantime.
-@interface PasswordManagerNotesDisabledTestCase : PasswordManagerTestCase
-
-@end
-
-@implementation PasswordManagerNotesDisabledTestCase
-
-- (BOOL)notesEnabled {
-  return NO;
-}
-
-// This causes the test case to actually be detected as a test case. The actual
-// tests are all inherited from the parent class.
-- (void)testEmpty {
-}
-
-@end
-
 // Rerun all the tests in this file but with kIOSPasswordCheckup disabled.
 // This will be removed once that feature launches fully, but ensures
 // regressions aren't introduced in the meantime.
