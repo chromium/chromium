@@ -3187,6 +3187,11 @@
           'shards': 32, # Adjusted for testing, see https://crbug.com/1179567
         },
       },
+      'linux-lacros-asan-lsan-rel': {
+        'swarming': {
+          'shards': 5,
+        },
+      },
       'linux-rel-cft': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux.linux-rel-cft.interactive_ui_tests.filter',
@@ -3245,6 +3250,42 @@
       },
     },
   },
+  'interactive_ui_tests Lacros version skew testing ash beta': {
+    'modifications': {
+      'linux-lacros-asan-lsan-rel': {
+        'swarming': {
+          'shards': 5,
+        },
+      },
+    },
+  },
+  'interactive_ui_tests Lacros version skew testing ash canary': {
+    'modifications': {
+      'linux-lacros-asan-lsan-rel': {
+        'swarming': {
+          'shards': 5,
+        },
+      },
+    },
+  },
+  'interactive_ui_tests Lacros version skew testing ash dev': {
+    'modifications': {
+      'linux-lacros-asan-lsan-rel': {
+        'swarming': {
+          'shards': 5,
+        },
+      },
+    },
+  },
+  'interactive_ui_tests Lacros version skew testing ash stable': {
+    'modifications': {
+      'linux-lacros-asan-lsan-rel': {
+        'swarming': {
+          'shards': 5,
+        },
+      },
+    },
+  },
   'interactive_ui_tests amd64-generic': {
     'remove_from': [
       # TODO(crbug.com/1204231): Re-enable.
@@ -3277,6 +3318,42 @@
     },
   },
   'lacros_chrome_browsertests_run_in_series': {
+    'modifications': {
+      'linux-lacros-asan-lsan-rel': {
+        'swarming': {
+          'shards': 5,
+        },
+      },
+    },
+  },
+  'lacros_chrome_browsertests_run_in_series Lacros version skew testing ash beta': {
+    'modifications': {
+      'linux-lacros-asan-lsan-rel': {
+        'swarming': {
+          'shards': 5,
+        },
+      },
+    },
+  },
+  'lacros_chrome_browsertests_run_in_series Lacros version skew testing ash canary': {
+    'modifications': {
+      'linux-lacros-asan-lsan-rel': {
+        'swarming': {
+          'shards': 5,
+        },
+      },
+    },
+  },
+  'lacros_chrome_browsertests_run_in_series Lacros version skew testing ash dev': {
+    'modifications': {
+      'linux-lacros-asan-lsan-rel': {
+        'swarming': {
+          'shards': 5,
+        },
+      },
+    },
+  },
+  'lacros_chrome_browsertests_run_in_series Lacros version skew testing ash stable': {
     'modifications': {
       'linux-lacros-asan-lsan-rel': {
         'swarming': {
