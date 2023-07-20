@@ -145,7 +145,7 @@ ScriptPromise SmartCardContext::listReaders(ScriptState* script_state,
   ScriptPromiseResolver* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
       script_state, exception_state.GetContext());
 
-  list_readers_request_ = resolver;
+  request_ = resolver;
   scard_context_->ListReaders(
       WTF::BindOnce(&SmartCardContext::OnListReadersDone, WrapPersistent(this),
                     WrapPersistent(resolver)));
@@ -184,7 +184,7 @@ ScriptPromise SmartCardContext::getStatusChange(
   ScriptPromiseResolver* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
       script_state, exception_state.GetContext());
 
-  get_status_change_request_ = resolver;
+  request_ = resolver;
   scard_context_->GetStatusChange(
       timeout, ToMojomReaderStatesIn(reader_states),
       WTF::BindOnce(&SmartCardContext::OnGetStatusChangeDone,
@@ -207,7 +207,7 @@ ScriptPromise SmartCardContext::connect(
   ScriptPromiseResolver* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
       script_state, exception_state.GetContext());
 
-  connect_request_ = resolver;
+  request_ = resolver;
   scard_context_->Connect(
       reader_name, ToMojoSmartCardShareMode(access_mode),
       ToMojoSmartCardProtocols(preferred_protocols),
@@ -227,9 +227,7 @@ ScriptPromise SmartCardContext::connect(ScriptState* script_state,
 
 void SmartCardContext::Trace(Visitor* visitor) const {
   visitor->Trace(scard_context_);
-  visitor->Trace(list_readers_request_);
-  visitor->Trace(connect_request_);
-  visitor->Trace(get_status_change_request_);
+  visitor->Trace(request_);
   visitor->Trace(get_status_change_abort_signal_);
   visitor->Trace(get_status_change_abort_handle_);
   ScriptWrappable::Trace(visitor);
@@ -253,11 +251,9 @@ void SmartCardContext::CloseMojoConnection() {
                                      kContextUnavailable);
   };
 
-  reject(list_readers_request_.Release());
-  reject(connect_request_.Release());
-
   ResetAbortSignal();
-  reject(get_status_change_request_.Release());
+
+  reject(request_.Release());
 }
 
 void SmartCardContext::ResetAbortSignal() {
@@ -272,7 +268,7 @@ void SmartCardContext::ResetAbortSignal() {
 
 bool SmartCardContext::EnsureNoOperationInProgress(
     ExceptionState& exception_state) const {
-  if (list_readers_request_ || connect_request_ || get_status_change_request_) {
+  if (request_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "An operation is in progress.");
     return false;
@@ -293,8 +289,8 @@ bool SmartCardContext::EnsureMojoConnection(
 void SmartCardContext::OnListReadersDone(
     ScriptPromiseResolver* resolver,
     device::mojom::blink::SmartCardListReadersResultPtr result) {
-  CHECK_EQ(list_readers_request_, resolver);
-  list_readers_request_ = nullptr;
+  CHECK_EQ(request_, resolver);
+  request_ = nullptr;
 
   if (result->is_error()) {
     auto mojom_error = result->get_error();
@@ -317,8 +313,8 @@ void SmartCardContext::OnListReadersDone(
 void SmartCardContext::OnGetStatusChangeDone(
     ScriptPromiseResolver* resolver,
     device::mojom::blink::SmartCardStatusChangeResultPtr result) {
-  CHECK_EQ(get_status_change_request_, resolver);
-  get_status_change_request_ = nullptr;
+  CHECK_EQ(request_, resolver);
+  request_ = nullptr;
 
   if (result->is_error()) {
     if (get_status_change_abort_signal_ &&
@@ -349,8 +345,8 @@ void SmartCardContext::OnCancelDone(
 void SmartCardContext::OnConnectDone(
     ScriptPromiseResolver* resolver,
     device::mojom::blink::SmartCardConnectResultPtr result) {
-  CHECK_EQ(connect_request_, resolver);
-  connect_request_ = nullptr;
+  CHECK_EQ(request_, resolver);
+  request_ = nullptr;
 
   if (result->is_error()) {
     auto* error = SmartCardError::Create(result->get_error());
@@ -391,7 +387,7 @@ void SmartCardContext::AbortGetStatusChange() {
   CHECK(get_status_change_abort_handle_);
   // Aborting shouldn't be possible if there's no ongoing getStatusChange()
   // request in the first place.
-  CHECK(get_status_change_request_);
+  CHECK(request_);
 
   // You can only abort once.
   get_status_change_abort_signal_->RemoveAlgorithm(

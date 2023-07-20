@@ -72,12 +72,11 @@ class SmartCardContext final : public ScriptWrappable,
   void ResetAbortSignal();
 
   HeapMojoRemote<device::mojom::blink::SmartCardContext> scard_context_;
-  Member<ScriptPromiseResolver> list_readers_request_;
-  Member<ScriptPromiseResolver> connect_request_;
+  // The currently ongoing request, if any.
+  Member<ScriptPromiseResolver> request_;
 
   Member<AbortSignal> get_status_change_abort_signal_;
   Member<AbortSignal::AlgorithmHandle> get_status_change_abort_handle_;
-  Member<ScriptPromiseResolver> get_status_change_request_;
 };
 }  // namespace blink
 
