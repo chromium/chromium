@@ -4,21 +4,62 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
+#include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/reading_list/core/mock_reading_list_model_observer.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/sync/base/features.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
+#include "components/sync/protocol/reading_list_specifics.pb.h"
 #include "content/public/test/browser_test.h"
 
 using testing::Eq;
 
 namespace {
+
+// Checker used to block until the reading list URLs on the server match a
+// given set of expected reading list URLs.
+class ServerReadingListURLsEqualityChecker
+    : public fake_server::FakeServerMatchStatusChecker {
+ public:
+  // |fake_server| must not be nullptr and must outlive this object.
+  explicit ServerReadingListURLsEqualityChecker(std::set<GURL> expected_urls)
+      : expected_urls_(std::move(expected_urls)) {}
+
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for server-side reading list URLs to match expected.";
+
+    std::vector<sync_pb::SyncEntity> entities =
+        fake_server()->GetSyncEntitiesByModelType(syncer::READING_LIST);
+
+    std::set<GURL> actual_urls;
+    for (const sync_pb::SyncEntity& entity : entities) {
+      actual_urls.insert(GURL(entity.specifics().reading_list().url()));
+    }
+
+    testing::StringMatchResultListener result_listener;
+    const bool matches = ExplainMatchResult(
+        testing::ContainerEq(expected_urls_), actual_urls, &result_listener);
+    *os << result_listener.str();
+    return matches;
+  }
+
+  ServerReadingListURLsEqualityChecker(
+      const ServerReadingListURLsEqualityChecker&) = delete;
+  ServerReadingListURLsEqualityChecker& operator=(
+      const ServerReadingListURLsEqualityChecker&) = delete;
+
+  ~ServerReadingListURLsEqualityChecker() override = default;
+
+ private:
+  const std::set<GURL> expected_urls_;
+};
 
 void WaitForReadingListModelLoaded(ReadingListModel* reading_list_model) {
   testing::NiceMock<MockReadingListModelObserver> observer_;
@@ -102,6 +143,38 @@ IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
 
   EXPECT_THAT(model()->size(), Eq(1ul));
   EXPECT_FALSE(model()->NeedsExplicitUploadToSyncServer(kUrl));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
+                       ShouldUploadOnlyEntriesCreatedAfterSignin) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_THAT(model()->size(), Eq(0ul));
+
+  const GURL kLocalUrl("http://local_url.com/");
+  model()->AddOrReplaceEntry(kLocalUrl, "local_title",
+                             reading_list::ADDED_VIA_CURRENT_APP,
+                             /*estimated_read_time=*/base::TimeDelta());
+
+  ASSERT_THAT(model()->size(), Eq(1ul));
+
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::READING_LIST));
+  ASSERT_THAT(model()->size(), Eq(1ul));
+
+  const GURL kAccountUrl("http://account_url.com/");
+  model()->AddOrReplaceEntry(kAccountUrl, "account_title",
+                             reading_list::ADDED_VIA_CURRENT_APP,
+                             /*estimated_read_time=*/base::TimeDelta());
+
+  ASSERT_THAT(model()->size(), Eq(2ul));
+
+  EXPECT_TRUE(model()->NeedsExplicitUploadToSyncServer(kLocalUrl));
+  EXPECT_FALSE(model()->NeedsExplicitUploadToSyncServer(kAccountUrl));
+  EXPECT_TRUE(ServerReadingListURLsEqualityChecker({{kAccountUrl}}).Wait());
+  EXPECT_TRUE(model()->NeedsExplicitUploadToSyncServer(kLocalUrl));
+  EXPECT_FALSE(model()->NeedsExplicitUploadToSyncServer(kAccountUrl));
 }
 
 // ChromeOS doesn't have the concept of sign-out, so this only exists on other
