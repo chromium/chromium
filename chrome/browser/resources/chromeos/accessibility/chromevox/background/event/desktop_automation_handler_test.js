@@ -252,3 +252,54 @@ AX_TEST_F(
           .expectBraille('foo lstitm 1/2 (x)');
       await mockFeedback.replay();
     });
+
+AX_TEST_F(
+    'ChromeVoxDesktopAutomationHandlerTest', 'OnDocumentSelectionChanged',
+    async function() {
+      const root = await this.runWithLoadedTree(`
+          <div>
+            <input type="text" value="I’m Nobody! Who are you?"></input>
+          </div>
+          <p>The first line of a poem by Emily Dickinson.<p>
+          `);
+      const input = root.find({role: RoleType.TEXT_FIELD});
+      assertNotNullNorUndefined(input);
+      const text =
+          root.find({role: RoleType.STATIC_TEXT, state: {editable: false}});
+      assertNotNullNorUndefined(text);
+      assertTrue(text.name.includes('Emily Dickinson'));
+      const instance = DesktopAutomationHandler.instance;
+
+      // Verify that onEditableChanged_ is called.
+      let called = false;
+      this.addCallbackPostMethod(
+          instance, 'onEditableChanged_', () => called = true);
+
+      // Case: editable with valid start and end.
+      const promise =
+          this.waitForEvent(instance.node_, 'documentSelectionChanged', true);
+      chrome.automation.setDocumentSelection({
+        anchorObject: input,
+        anchorOffset: 0,
+        focusObject: input,
+        focusOffset: 7,
+      });
+      await promise;
+
+      assertTrue(called);
+      called = false;
+
+      // Case: no selection start.
+      // Because automation.setDocumentSelection enforces that there is a
+      // selectionStart object, we will call the method directly.
+      instance.onDocumentSelectionChanged({
+        target: {
+          selectionStartObject: null,
+          selectionStartOffset: 0,
+          selectionEndObject: input,
+          selectionEndOffset: 3,
+        },
+      });
+
+      assertFalse(called);
+    });
