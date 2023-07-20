@@ -14,14 +14,20 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
+#include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/net/fake_nss_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
@@ -31,12 +37,16 @@
 #include "chrome/test/base/fake_profile_manager.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/account_id/account_id.h"
+#include "components/ownership/mock_owner_key_util.h"
 #include "components/policy/core/common/device_local_account_type.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -45,6 +55,7 @@
 #include "components/user_manager/user_names.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_utils.h"
 #include "extensions/common/features/feature_session_type.h"
 #include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -122,6 +133,14 @@ class UserManagerTest : public testing::Test {
 
  protected:
   void SetUp() override {
+    device_policy_.policy_data().set_management_mode(
+        enterprise_management::PolicyData::ManagementMode::
+            PolicyData_ManagementMode_LOCAL_OWNER);
+    device_policy_.Build();
+
+    fake_session_manager_client_.set_device_policy(device_policy_.GetBlob());
+    owner_keys->ImportPrivateKeyAndSetPublicKey(device_policy_.GetSigningKey());
+
     base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
     command_line.AppendSwitch(::switches::kTestType);
     command_line.AppendSwitch(switches::kIgnoreUserProfileMappingForTests);
@@ -132,14 +151,10 @@ class UserManagerTest : public testing::Test {
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
 
     // Populate the stub DeviceSettingsProvider with valid values.
-    SetDeviceSettings(/* ephemeral_users_enabled= */ false, /* owner= */ "");
+    SetEphemeralModeConfig(false);
 
     // Instantiate ProfileHelper.
     ash::ProfileHelper::Get();
-
-    // Register an in-memory local settings instance.
-    local_state_ = std::make_unique<ScopedTestingLocalState>(
-        TestingBrowserProcess::GetGlobal());
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     TestingBrowserProcess::GetGlobal()->SetProfileManager(
@@ -209,11 +224,31 @@ class UserManagerTest : public testing::Test {
     return std::make_unique<MockRemoveUserManager>();
   }
 
-  void SetDeviceSettings(bool ephemeral_users_enabled,
-                         const std::string& owner) {
+  void SetOwnershipStatus() {
+    DeviceSettingsService::Get()->SetSessionManager(
+        &fake_session_manager_client_, owner_keys);
+    OwnerSettingsServiceAshFactory::GetInstance()->SetOwnerKeyUtilForTesting(
+        owner_keys);
+
+    TestingProfile::Builder builder;
+    builder.SetProfileName(kOwnerAccountId.GetUserEmail());
+    std::unique_ptr<TestingProfile> user = builder.Build();
+    // Initialize NSS for the user in case it tries to access or generate a
+    // private key.
+    FakeNssService::InitializeForBrowserContext(user.get(),
+                                                /*enable_system_slot=*/false);
+
+    OwnerSettingsServiceAshFactory::GetForBrowserContext(user.get())
+        ->OnTPMTokenReady();
+    content::RunAllTasksUntilIdle();
+
+    settings_helper_.SetString(kDeviceOwner, kOwnerAccountId.GetUserEmail());
+    DeviceSettingsService::Get()->LoadImmediately();
+  }
+
+  void SetEphemeralModeConfig(bool ephemeral_users_enabled) {
     settings_helper_.SetBoolean(kAccountsPrefEphemeralUsersEnabled,
                                 ephemeral_users_enabled);
-    settings_helper_.SetString(kDeviceOwner, owner);
   }
 
   void SetDeviceLocalKioskAppAccount(
@@ -271,12 +306,19 @@ class UserManagerTest : public testing::Test {
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
   TestWallpaperController test_wallpaper_controller_;
 
+  policy::DevicePolicyBuilder device_policy_;
+  FakeSessionManagerClient fake_session_manager_client_;
+  scoped_refptr<ownership::MockOwnerKeyUtil> owner_keys{
+      base::MakeRefCounted<ownership::MockOwnerKeyUtil>()};
+
   content::BrowserTaskEnvironment task_environment_;
   system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 
-  ScopedCrosSettingsTestHelper settings_helper_;
   // local_state_ should be destructed after ProfileManager.
-  std::unique_ptr<ScopedTestingLocalState> local_state_;
+  std::unique_ptr<ScopedTestingLocalState> local_state_{
+      std::make_unique<ScopedTestingLocalState>(
+          TestingBrowserProcess::GetGlobal())};
+  ScopedCrosSettingsTestHelper settings_helper_;
 
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   base::ScopedTempDir temp_dir_;
@@ -287,16 +329,10 @@ TEST_F(UserManagerTest, RetrieveTrustedDevicePolicies) {
       /* included_by_default= */ true,
       /* include_list= */ std::vector<AccountId>{},
       /* exclude_list= */ std::vector<AccountId>{}));
-  SetUserManagerOwnerId(EmptyAccountId());
 
-  SetDeviceSettings(
-      /* ephemeral_users_enabled= */ false,
-      /* owner= */ kOwnerAccountId.GetUserEmail());
   RetrieveTrustedDevicePolicies();
 
   EXPECT_FALSE(IsEphemeralAccountId(EmptyAccountId()));
-
-  EXPECT_EQ(GetUserManagerOwnerId(), kOwnerAccountId);
 }
 
 // Tests that `IsEphemeralAccountId(account_id)` returns false when `account_id`
@@ -304,12 +340,22 @@ TEST_F(UserManagerTest, RetrieveTrustedDevicePolicies) {
 TEST_F(UserManagerTest, IsEphemeralAccountIdFalseForOwnerAccountId) {
   EXPECT_FALSE(IsEphemeralAccountId(kOwnerAccountId));
 
-  SetDeviceSettings(
-      /* ephemeral_users_enabled= */ true,
-      /* owner= */ kOwnerAccountId.GetUserEmail());
+  SetOwnershipStatus();
+  SetEphemeralModeConfig(true);
   RetrieveTrustedDevicePolicies();
 
   EXPECT_FALSE(IsEphemeralAccountId(kOwnerAccountId));
+}
+
+// Tests that a callback passed to `RequestOwnerAccountId` only resolves after
+// the device owner has been properly set.
+TEST_F(UserManagerTest, RequestOwnerAccountId) {
+  base::test::TestFuture<const AccountId&> future;
+  GetChromeUserManager()->RequestOwnerAccountId(future.GetCallback());
+
+  SetOwnershipStatus();
+
+  EXPECT_EQ(future.Get(), kOwnerAccountId);
 }
 
 // Tests that `IsEphemeralAccountId(account_id)` returns true when `account_id`
@@ -317,9 +363,8 @@ TEST_F(UserManagerTest, IsEphemeralAccountIdFalseForOwnerAccountId) {
 TEST_F(UserManagerTest, IsEphemeralAccountIdTrueForGuestAccountId) {
   EXPECT_TRUE(IsEphemeralAccountId(user_manager::GuestAccountId()));
 
-  SetDeviceSettings(
-      /* ephemeral_users_enabled= */ false,
-      /* owner= */ kOwnerAccountId.GetUserEmail());
+  SetOwnershipStatus();
+  SetEphemeralModeConfig(false);
   RetrieveTrustedDevicePolicies();
 
   EXPECT_TRUE(IsEphemeralAccountId(user_manager::GuestAccountId()));
@@ -330,9 +375,8 @@ TEST_F(UserManagerTest, IsEphemeralAccountIdTrueForGuestAccountId) {
 TEST_F(UserManagerTest, IsEphemeralAccountIdFalseForStubAccountId) {
   EXPECT_FALSE(IsEphemeralAccountId(user_manager::StubAccountId()));
 
-  SetDeviceSettings(
-      /* ephemeral_users_enabled= */ true,
-      /* owner= */ kOwnerAccountId.GetUserEmail());
+  SetOwnershipStatus();
+  SetEphemeralModeConfig(false);
   RetrieveTrustedDevicePolicies();
 
   EXPECT_FALSE(IsEphemeralAccountId(user_manager::StubAccountId()));
@@ -343,9 +387,8 @@ TEST_F(UserManagerTest, IsEphemeralAccountIdFalseForStubAccountId) {
 TEST_F(UserManagerTest, IsEphemeralAccountIdFalseForStubAdAccountId) {
   EXPECT_FALSE(IsEphemeralAccountId(user_manager::StubAdAccountId()));
 
-  SetDeviceSettings(
-      /* ephemeral_users_enabled= */ true,
-      /* owner= */ kOwnerAccountId.GetUserEmail());
+  SetOwnershipStatus();
+  SetEphemeralModeConfig(true);
   RetrieveTrustedDevicePolicies();
 
   EXPECT_FALSE(IsEphemeralAccountId(user_manager::StubAdAccountId()));
@@ -356,9 +399,8 @@ TEST_F(UserManagerTest, IsEphemeralAccountIdFalseForStubAdAccountId) {
 TEST_F(UserManagerTest, IsEphemeralAccountIdTrueForPublicAccountId) {
   // Set all ephemeral related policies to `false` to make sure that policies
   // don't affect ephemeral mode of the public account.
-  SetDeviceSettings(
-      /* ephemeral_users_enabled= */ false,
-      /* owner= */ kOwnerAccountId.GetUserEmail());
+  SetOwnershipStatus();
+  SetEphemeralModeConfig(false);
   SetDeviceLocalPublicAccount(
       kDeviceLocalAccountId, policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION,
       policy::DeviceLocalAccount::EphemeralMode::kDisable);
@@ -374,9 +416,8 @@ TEST_F(UserManagerTest, IsEphemeralAccountIdTrueForPublicAccountId) {
 TEST_F(UserManagerTest, IsEphemeralAccountIdTrueForSamlPublicAccountId) {
   // Set all ephemeral related policies to `false` to make sure that policies
   // don't affect ephemeral mode of the SAML public account.
-  SetDeviceSettings(
-      /* ephemeral_users_enabled= */ false,
-      /* owner= */ kOwnerAccountId.GetUserEmail());
+  SetOwnershipStatus();
+  SetEphemeralModeConfig(false);
   SetDeviceLocalPublicAccount(
       kDeviceLocalAccountId,
       policy::DeviceLocalAccount::TYPE_SAML_PUBLIC_SESSION,
@@ -394,9 +435,8 @@ TEST_F(UserManagerTest, IsEphemeralAccountIdTrueForSamlPublicAccountId) {
 TEST_F(UserManagerTest, IsEphemeralAccountIdUsesEphemeralUsersEnabledPolicy) {
   EXPECT_FALSE(IsEphemeralAccountId(EmptyAccountId()));
 
-  SetDeviceSettings(
-      /* ephemeral_users_enabled= */ true,
-      /* owner= */ kOwnerAccountId.GetUserEmail());
+  SetOwnershipStatus();
+  SetEphemeralModeConfig(true);
   RetrieveTrustedDevicePolicies();
 
   EXPECT_TRUE(IsEphemeralAccountId(EmptyAccountId()));
@@ -412,18 +452,15 @@ TEST_F(UserManagerTest,
 
   EXPECT_FALSE(IsEphemeralAccountId(account_id));
 
-  SetDeviceSettings(
-      /* ephemeral_users_enabled= */ true,
-      /* owner= */ kOwnerAccountId.GetUserEmail());
+  SetOwnershipStatus();
+  SetEphemeralModeConfig(true);
   SetDeviceLocalKioskAppAccount(
       kDeviceLocalAccountId, "",
       policy::DeviceLocalAccount::EphemeralMode::kFollowDeviceWidePolicy);
   RetrieveTrustedDevicePolicies();
   EXPECT_TRUE(IsEphemeralAccountId(account_id));
 
-  SetDeviceSettings(
-      /* ephemeral_users_enabled= */ false,
-      /* owner= */ kOwnerAccountId.GetUserEmail());
+  SetEphemeralModeConfig(false);
   RetrieveTrustedDevicePolicies();
   EXPECT_FALSE(IsEphemeralAccountId(account_id));
 }
@@ -437,18 +474,15 @@ TEST_F(UserManagerTest, IsEphemeralAccountIdRespectsUnsetEphemeralMode) {
 
   EXPECT_FALSE(IsEphemeralAccountId(account_id));
 
-  SetDeviceSettings(
-      /* ephemeral_users_enabled= */ true,
-      /* owner= */ kOwnerAccountId.GetUserEmail());
+  SetOwnershipStatus();
+  SetEphemeralModeConfig(true);
   SetDeviceLocalKioskAppAccount(
       kDeviceLocalAccountId, "",
       policy::DeviceLocalAccount::EphemeralMode::kUnset);
   RetrieveTrustedDevicePolicies();
   EXPECT_TRUE(IsEphemeralAccountId(account_id));
 
-  SetDeviceSettings(
-      /* ephemeral_users_enabled= */ false,
-      /* owner= */ kOwnerAccountId.GetUserEmail());
+  SetEphemeralModeConfig(false);
   RetrieveTrustedDevicePolicies();
   EXPECT_FALSE(IsEphemeralAccountId(account_id));
 }
@@ -462,9 +496,8 @@ TEST_F(UserManagerTest, IsEphemeralAccountIdRespectsDisableEphemeralMode) {
 
   EXPECT_FALSE(IsEphemeralAccountId(account_id));
 
-  SetDeviceSettings(
-      /* ephemeral_users_enabled= */ true,
-      /* owner= */ kOwnerAccountId.GetUserEmail());
+  SetOwnershipStatus();
+  SetEphemeralModeConfig(true);
   SetDeviceLocalKioskAppAccount(
       kDeviceLocalAccountId, "",
       policy::DeviceLocalAccount::EphemeralMode::kDisable);
@@ -483,9 +516,8 @@ TEST_F(UserManagerTest, IsEphemeralAccountIdRespectssEnableEphemeralMode) {
 
   EXPECT_FALSE(IsEphemeralAccountId(account_id));
 
-  SetDeviceSettings(
-      /* ephemeral_users_enabled= */ false,
-      /* owner= */ kOwnerAccountId.GetUserEmail());
+  SetOwnershipStatus();
+  SetEphemeralModeConfig(false);
   SetDeviceLocalKioskAppAccount(
       kDeviceLocalAccountId, "",
       policy::DeviceLocalAccount::EphemeralMode::kEnable);
@@ -582,9 +614,8 @@ TEST_F(UserManagerTest, RemoveAllExceptOwnerFromList) {
   EXPECT_EQ((*users)[2]->GetAccountId(), kOwnerAccountId);
 
   test_wallpaper_controller_.ClearCounts();
-  SetDeviceSettings(
-      /* ephemeral_users_enabled= */ true,
-      /* owner= */ kOwnerAccountId.GetUserEmail());
+  SetOwnershipStatus();
+  SetEphemeralModeConfig(true);
   RetrieveTrustedDevicePolicies();
 
   users = &user_manager::UserManager::Get()->GetUsers();
@@ -595,9 +626,8 @@ TEST_F(UserManagerTest, RemoveAllExceptOwnerFromList) {
 }
 
 TEST_F(UserManagerTest, RegularUserLoggedInAsEphemeral) {
-  SetDeviceSettings(
-      /* ephemeral_users_enabled= */ true,
-      /* owner= */ kOwnerAccountId.GetUserEmail());
+  SetOwnershipStatus();
+  SetEphemeralModeConfig(true);
   RetrieveTrustedDevicePolicies();
 
   user_manager::UserManager::Get()->UserLoggedIn(

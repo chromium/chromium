@@ -214,7 +214,7 @@ class ApiGuardDelegateImplAsh : public ApiGuardDelegateImplBase {
                        weak_factory_.GetWeakPtr(), base::Unretained(context),
                        base::Unretained(extension), std::move(callback)));
 
-    user_manager::UserManager::Get()->GetOwnerAccountIdAsync(
+    user_manager::UserManager::Get()->RequestOwnerAccountId(
         std::move(on_owner_fetched));
   }
 

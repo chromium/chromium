@@ -196,7 +196,19 @@ class ChromeUserManagerImpl
       const AccountId& account_id,
       const policy::DeviceLocalAccount::Type type) const;
 
-  void UpdateOwnerId();
+  // Invoked as soon as the definitive device ownership is initialized. The
+  // device owner is first determined by either login with a user account or
+  // enterprise enrollment. After every reboot this value needs to be fetched so
+  // that this class holds the correct owner id.
+  void OnDeviceOwnershipInitialized();
+
+  // Goes through the list of users and removes users that are marked as
+  // ephemeral. This method must only be called after the device owner was
+  // initialized. Returns whether some user state was changed or not.
+  bool CleanEphemeralUsers();
+
+  // Returns whether the device owner is yet initialized or not.
+  bool IsDeviceOwnerInitialized();
 
   // Remove non cryptohome data associated with the given `account_id` after
   // having removed all external data (such as wallpapers and avatars)
@@ -244,6 +256,7 @@ class ChromeUserManagerImpl
   base::RepeatingClosure remove_non_cryptohome_data_barrier_;
 
   std::unique_ptr<MountPerformer> mount_performer_;
+  bool is_device_owner_initialized_{false};
 
   base::WeakPtrFactory<ChromeUserManagerImpl> weak_factory_{this};
 };

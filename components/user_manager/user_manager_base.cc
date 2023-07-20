@@ -202,7 +202,7 @@ const AccountId& UserManagerBase::GetOwnerAccountId() const {
   return *owner_account_id_;
 }
 
-void UserManagerBase::GetOwnerAccountIdAsync(
+void UserManagerBase::RequestOwnerAccountId(
     base::OnceCallback<void(const AccountId&)> callback) const {
   if (owner_account_id_.has_value()) {
     std::move(callback).Run(*owner_account_id_);
@@ -960,11 +960,8 @@ void UserManagerBase::SetIsCurrentUserNew(bool is_new) {
   is_current_user_new_ = is_new;
 }
 
-void UserManagerBase::ResetOwnerId() {
-  owner_account_id_ = absl::nullopt;
-}
-
 void UserManagerBase::SetOwnerId(const AccountId& owner_account_id) {
+  // TODO(crbug.com/1466440): Add a check that this is only called once.
   owner_account_id_ = owner_account_id;
   pending_owner_callbacks_.Notify(owner_account_id);
   NotifyLoginStateUpdated();

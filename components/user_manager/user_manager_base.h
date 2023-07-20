@@ -87,7 +87,7 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   const UserList& GetLoggedInUsers() const override;
   const UserList& GetLRULoggedInUsers() const override;
   const AccountId& GetOwnerAccountId() const override;
-  void GetOwnerAccountIdAsync(
+  void RequestOwnerAccountId(
       base::OnceCallback<void(const AccountId&)> callback) const override;
 
   const AccountId& GetLastSessionActiveAccountId() const override;
@@ -296,7 +296,8 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   virtual void SetEphemeralModeConfig(
       EphemeralModeConfig ephemeral_mode_config);
 
-  virtual void ResetOwnerId();
+  // Since the owner `AccountId` is static over the device lifetime (after its
+  // been fetched), this method should only be called once.
   virtual void SetOwnerId(const AccountId& owner_account_id);
 
   virtual const AccountId& GetPendingUserSwitchID() const;
