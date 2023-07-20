@@ -54,6 +54,7 @@ NSString* const kIncognitoCircleFillSymbol = @"incognito_circle_fill";
 NSString* const kPlusCircleFillSymbol = @"plus_circle_fill";
 
 // Default symbol names.
+NSString* const kChartBarXAxisSymbol = @"chart.bar.xaxis";
 NSString* const kCircleFillSymbol = @"circle.fill";
 NSString* const kSyncEnabledSymbol = @"arrow.triangle.2.circlepath";
 NSString* const kSyncCircleSymbol = @"arrow.triangle.2.circlepath.circle.fill";
@@ -151,6 +152,7 @@ NSString* const kSquareOnSquareDashedSymbol = @"square.on.square.dashed";
 NSString* const kDocPlaintext = @"doc.plaintext";
 NSString* const kFlagSymbol = @"flag";
 NSString* const kKeyboardSymbol = @"keyboard";
+NSString* const kSpeedometerSymbol = @"speedometer";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

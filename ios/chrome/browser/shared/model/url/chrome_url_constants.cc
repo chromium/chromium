@@ -148,3 +148,6 @@ const char kChromeUIAboutNewTabURL[] = "about://newtab/";
 
 const char kManagementLearnMoreURL[] =
     "https://support.google.com/chrome/?p=is_chrome_managed";
+
+const char kEnhancedSafeBrowsingLearnMoreURL[] =
+    "https://support.google.com/chrome?p=safe_browsing_preferences";

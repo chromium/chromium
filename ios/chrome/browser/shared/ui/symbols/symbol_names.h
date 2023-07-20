@@ -62,6 +62,7 @@ extern NSString* const kPlusCircleFillSymbol;
 extern NSString* const kIncognitoCircleFilliOS14Symbol;
 
 // Default symbol names.
+extern NSString* const kChartBarXAxisSymbol;
 extern NSString* const kCircleFillSymbol;
 extern NSString* const kSyncEnabledSymbol;
 extern NSString* const kSyncCircleSymbol;
@@ -158,6 +159,7 @@ extern NSString* const kSquareOnSquareDashedSymbol;
 extern NSString* const kDocPlaintext;
 extern NSString* const kFlagSymbol;
 extern NSString* const kKeyboardSymbol;
+extern NSString* const kSpeedometerSymbol;
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

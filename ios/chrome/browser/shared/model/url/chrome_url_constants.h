@@ -137,4 +137,8 @@ extern const char kChromeUIAboutNewTabURL[];
 // "Learn more" URL for enterprise management information.
 extern const char kManagementLearnMoreURL[];
 
+// "Learn more" URL for the safe browsing setting in the privacy and security
+// section.
+extern const char kEnhancedSafeBrowsingLearnMoreURL[];
+
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_URL_CHROME_URL_CONSTANTS_H_

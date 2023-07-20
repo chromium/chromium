@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_enhanced_protection_mediator.h"
 #import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_enhanced_protection_view_controller.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -32,8 +31,6 @@
 // View controller for privacy safe browsing enhanced protection.
 @property(nonatomic, strong)
     SafeBrowsingEnhancedProtectionViewController* viewController;
-// Mediator instantiated by coordinator.
-@property(nonatomic, strong) SafeBrowsingEnhancedProtectionMediator* mediator;
 
 @end
 
@@ -56,8 +53,6 @@
   self.viewController = [[SafeBrowsingEnhancedProtectionViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
   self.viewController.presentationDelegate = self;
-  self.mediator = [[SafeBrowsingEnhancedProtectionMediator alloc] init];
-  self.mediator.consumer = self.viewController;
 
   self.viewController.dispatcher = static_cast<
       id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>>(

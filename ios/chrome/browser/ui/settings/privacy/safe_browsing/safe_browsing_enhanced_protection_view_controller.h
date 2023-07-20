@@ -7,7 +7,6 @@
 
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 
-#import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_enhanced_protection_consumer.h"
 #import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
 
 @class SafeBrowsingEnhancedProtectionViewController;
@@ -26,8 +25,7 @@
 // View controller to related to Privacy safe browsing enhanced protection
 // setting.
 @interface SafeBrowsingEnhancedProtectionViewController
-    : SettingsRootTableViewController <SafeBrowsingEnhancedProtectionConsumer,
-                                       SettingsControllerProtocol>
+    : SettingsRootTableViewController <SettingsControllerProtocol>
 
 // Navigation controller.
 @property(nonatomic, strong) UINavigationController* navigationController;

@@ -2295,6 +2295,33 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SAFE_BROWSING_NO_PROTECTION_CONFIRMATION_DIALOG_CONFIRM" desc="Message for Safe Browsing no protection confirmation button.">
         Turn Off
       </message>
+      <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_ACCOUNT_ICON_DESCRIPTION" desc="Description for Safe Browsing enhanced protection account icon.">
+        When you're signed in, this data is linked to your Google Account to protect you across Google services, for example increasing protection in Gmail after a security incident.
+      </message>
+      <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_DOWNLOAD_ICON_DESCRIPTION" desc="Description for Safe Browsing enhanced protection download icon.">
+        Offers in-depth scans for suspicious downloads.
+      </message>
+      <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_G_ICON_DESCRIPTION" desc="Description for Safe Browsing enhanced protection G icon.">
+        When you're signed in, protects you across Google services.
+      </message>
+      <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_GLOBE_ICON_DESCRIPTION" desc="Description for Safe Browsing enhanced protection globe icon.">
+        Improves security for you and everyone on the web.
+      </message>
+      <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_WHEN_ON_HEADER" desc="Header for Safe Browsing enhanced protection mode When On section.">
+        When On
+      </message>
+      <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_THINGS_TO_CONSIDER_HEADER" desc="Header for Safe Browsing enhanced protection mode Things To Consider section.">
+        Things To Consider
+      </message>
+      <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_KEY_ICON_DESCRIPTION" desc="Description for Safe Browsing enhanced protection key icon.">
+        Warns you if you use a password that has been compromised by a data breach.
+      </message>
+      <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_LINK_ICON_DESCRIPTION" desc="Description for Safe Browsing enhanced protection link icon.">
+        Sends the URLs you visit and a small sample of page content, downloads, extension activity, and system information to Google Safe Browsing to check if they're harmful. If safe, this data is deleted after 30 days.
+      </message>
+      <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_PERFORMANCE_ICON_DESCRIPTION" desc="Description for Safe Browsing enhanced protection performance icon.">
+        Doesn't noticeably slow down your browser or device.
+      </message>
       <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_TITLE" desc="Title for Safe Browsing enhanced protection mode.">
         Enhanced Protection
       </message>
@@ -2496,9 +2523,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_ONE" desc="First bullet point under the Safe Browsing enhanced protection mode">
          Predicts and warns you about dangerous events before they happen.
        </message>
-      <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_THREE" desc="Third bullet point under the Safe Browsing enhanced protection mode">
-        Improves security for you and everyone on the web.
-      </message>
       <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_FOUR" desc="Fourth bullet point under the Safe Browsing enhanced protection mode">
         Warns you if passwords are exposed in a data breach.
       </message>
