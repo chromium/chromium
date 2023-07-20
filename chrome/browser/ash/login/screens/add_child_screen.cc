@@ -58,7 +58,7 @@ AddChildScreen::AddChildScreen(base::WeakPtr<AddChildScreenView> view,
 AddChildScreen::~AddChildScreen() = default;
 
 bool AddChildScreen::MaybeSkip(WizardContext& context) {
-  if (context.skip_post_login_screens_for_tests) {
+  if (context.skip_to_login_for_tests) {
     exit_callback_.Run(Result::SKIPPED);
     return true;
   }

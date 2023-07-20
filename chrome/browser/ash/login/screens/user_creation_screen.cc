@@ -127,6 +127,13 @@ void UserCreationScreen::HideImpl() {
   error_screen_->Hide();
 }
 
+void UserCreationScreen::SetChildSetupStep() {
+  if (!view_) {
+    return;
+  }
+  view_->SetChildSetupStep();
+}
+
 void UserCreationScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionSignIn) {

@@ -3222,7 +3222,7 @@ IN_PROC_BROWSER_TEST_P(GoingBackFromGaiaScreenInChildFlowTest,
 
   test::OobeJS().ClickOnPath(
       {"gaia-signin", "signin-frame-dialog", "signin-back-button"});
-  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+  OobeScreenWaiter(AddChildScreenView::kScreenId).Wait();
 }
 
 INSTANTIATE_TEST_SUITE_P(

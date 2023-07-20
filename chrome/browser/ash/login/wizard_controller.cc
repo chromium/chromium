@@ -20,6 +20,7 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/login_types.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -1297,8 +1298,10 @@ void WizardController::OnConsumerUpdateScreenExit(
 void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
   OnScreenExit(GaiaView::kScreenId, GaiaScreen::GetResultString(result));
   switch (result) {
-    case GaiaScreen::Result::BACK:
     case GaiaScreen::Result::BACK_CHILD:
+      ShowAddChildScreen();
+      break;
+    case GaiaScreen::Result::BACK:
     case GaiaScreen::Result::CANCEL: {
       if (features::IsOobeGaiaInfoScreenEnabled()) {
         if (wizard_context_->is_user_creation_enabled) {
@@ -1306,18 +1309,12 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
           // pressing back button. It goes back to GaiaInfoScreenView if user
           // creation is enabled; otherwise, it behaves the same as
           // `Result::CANCEL` which is triggered by pressing ESC key.
-          // In the child flow the GaiaInfo screen is not shown, so in case of
-          // `Result::BACK_CHILD` we should go back to user creation screen
           if (result == GaiaScreen::Result::BACK) {
             if (wizard_context_->is_add_person_flow) {
               AdvanceToScreen(UserCreationView::kScreenId);
             } else {
               AdvanceToScreen(GaiaInfoScreenView::kScreenId);
             }
-            break;
-          }
-          if (result == GaiaScreen::Result::BACK_CHILD) {
-            AdvanceToScreen(UserCreationView::kScreenId);
             break;
           }
         }
@@ -1400,6 +1397,9 @@ void WizardController::OnAddChildScreenExit(AddChildScreen::Result result) {
       break;
     case AddChildScreen::Result::BACK:
       AdvanceToScreen(UserCreationView::kScreenId);
+      if (features::IsOobeSoftwareUpdateEnabled()) {
+        GetScreen<UserCreationScreen>()->SetChildSetupStep();
+      }
       break;
   }
 }
