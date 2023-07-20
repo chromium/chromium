@@ -318,23 +318,13 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
 
   // If the device owner was already determined, set it now, otherwise postpone
   // to when the `OwnershipStatus` changes.
-  // TODO(b/290339809): Remove `PostTask` and replace with synchronous call.
   if (IsDeviceOwnershipDetermined()) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ChromeUserManagerImpl::OnDeviceOwnershipInitialized,
-                       weak_factory_.GetWeakPtr()));
+    OnDeviceOwnershipInitialized();
   } else {
     DeviceSettingsService::Get()->AddObserver(this);
   }
 
-  // Since we're in ctor postpone any actions till this is fully created.
-  if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ChromeUserManagerImpl::RetrieveTrustedDevicePolicies,
-                       weak_factory_.GetWeakPtr()));
-  }
+  RetrieveTrustedDevicePolicies();
 
   allow_guest_subscription_ = cros_settings_->AddSettingsObserver(
       kAccountsPrefAllowGuest,

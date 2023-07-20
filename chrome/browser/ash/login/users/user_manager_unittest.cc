@@ -177,10 +177,11 @@ class UserManagerTest : public testing::Test {
     DeviceSettingsService::Get()->UnsetSessionManager();
     TestingBrowserProcess::GetGlobal()->SetProfileManager(nullptr);
 
+    base::RunLoop().RunUntilIdle();
+
     // Unregister the in-memory local settings instance.
     local_state_.reset();
 
-    base::RunLoop().RunUntilIdle();
     ConciergeClient::Shutdown();
   }
 
