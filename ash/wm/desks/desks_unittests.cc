@@ -7511,7 +7511,9 @@ TEST_P(DesksTest, ClickTargetLocationOfDroppedDesk) {
   EXPECT_TRUE(desks_bar_view->IsDraggingDesk());
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  DeskSwitchAnimationWaiter waiter;
   ClickOnView(mini_view, event_generator);
+  waiter.Wait();
 }
 
 // Tests that while reordering desks by drag & drop, when a desk is snapping
