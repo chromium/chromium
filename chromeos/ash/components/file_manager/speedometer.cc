@@ -30,7 +30,13 @@ size_t Speedometer::GetSampleCount() const {
 
 bool Speedometer::Update(const int64_t bytes) {
   DCHECK_GE(bytes, 0);
-  DCHECK_LE(bytes, total_bytes_);
+
+  if (total_bytes_ < bytes) {
+    VLOG_IF(1, total_bytes_ > 0)
+        << "Total bytes changed from " << total_bytes_ << " to " << bytes
+        << " to match the already processed bytes";
+    total_bytes_ = bytes;
+  }
 
   const base::TimeTicks now = base::TimeTicks::Now();
   if (const auto it = samples_.End()) {
