@@ -69,7 +69,7 @@ const FeatureWithEnabledFunction
 // stylus-capable screen.
 BASE_FEATURE(kCursiveManagedStylusPreinstall,
              "CursiveManagedStylusPreinstall",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables installing the Messages app on unmanaged devices.
 BASE_FEATURE(kMessagesPreinstall,
