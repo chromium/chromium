@@ -494,6 +494,8 @@ void DefaultState::EnterToNextState(
     return;
   }
 
+  const bool is_previous_normal_type =
+      window_state->IsNonVerticalOrHorizontalMaximizedNormalState();
   WindowStateType previous_state_type = state_type_;
   state_type_ = next_state_type;
 
@@ -517,14 +519,25 @@ void DefaultState::EnterToNextState(
   // This can happen during dragging.
   // TODO(oshima): This was added for DOCKED windows. Investigate if
   // we still need this.
+  gfx::Rect restore_bounds_in_screen;
   if (window_state->window()->parent()) {
-    // When restoring from a minimized state, we want to restore to the
-    // previous bounds. However, we want to maintain the restore bounds.
-    // (The restore bounds are set if a user maximized the window in one
-    // axis by double clicking the window border for example).
+    // Save the current bounds as the restore bounds if changing from normal
+    // state (not horizontal/vertical maximized) to other non-minimized window
+    // states.
+    if (is_previous_normal_type && !window_state->IsMinimized() &&
+        !window_state->IsNormalStateType()) {
+      window_state->SaveCurrentBoundsForRestore();
+    }
+
+    // When restoring from the minimized state to horizontal/vertical maximized.
+    // We want to restore to the previous horizontal/vertical maximized bounds
+    // and keep its restore bounds.(E.g, double clicking the window border will
+    // set the window to be horizontal/vertical maximized and set the restore
+    // bounds).
     if (previous_state_type == WindowStateType::kMinimized &&
-        window_state->IsNormalStateType() && window_state->HasRestoreBounds() &&
+        window_state->IsVerticalOrHorizontalMaximized() &&
         !window_state->unminimize_to_restore_bounds()) {
+      restore_bounds_in_screen = window_state->GetRestoreBoundsInScreen();
       window_state->SaveCurrentBoundsForRestore();
     }
 
@@ -533,6 +546,18 @@ void DefaultState::EnterToNextState(
     UpdateMinimizedState(window_state, previous_state_type);
   }
   window_state->NotifyPostStateTypeChange(previous_state_type);
+
+  if (!restore_bounds_in_screen.IsEmpty()) {
+    // Set the restore bounds back after unminimize the window to normal state.
+    // Usually normal state window should have no restore bounds unless it was
+    // horizontal/vertical maximized before minimize.
+    window_state->SetRestoreBoundsInScreen(restore_bounds_in_screen);
+  } else if (window_state->window_state_restore_history().empty()) {
+    // Clear the restore bounds when restore history stack has been cleared to
+    // keep them consistent. Do this after window state updates as restore
+    // history stack will be updated during the process.
+    window_state->ClearRestoreBounds();
+  }
 
   if (IsPinnedWindowStateType(next_state_type) ||
       IsPinnedWindowStateType(previous_state_type)) {

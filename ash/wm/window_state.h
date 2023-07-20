@@ -6,7 +6,6 @@
 #define ASH_WM_WINDOW_STATE_H_
 
 #include <memory>
-#include <ostream>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -112,28 +111,6 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
     kAnimateZero,
   };
 
-  // Represents the state of a window relevant for restore.
-  struct RestoreState {
-    // The WindowStateType for which this RestoreState is applicable.
-    chromeos::WindowStateType window_state_type =
-        chromeos::WindowStateType::kDefault;
-
-    // The actual window bounds, in screen coordinates, during this
-    // window_state_type. If there was no explicit restore bounds property
-    // during this state, then the actual bounds here is used for restoring.
-    gfx::Rect actual_bounds_in_screen;
-
-    // The value of the restore bounds property, if any, in screen coordinates,
-    // during this window_state_type. This is separate from the actual bounds
-    // above, because some special cases, such as horizontal/vertical maximize,
-    // have different actual bounds and restore bounds.
-    absl::optional<gfx::Rect> restore_bounds_in_screen;
-
-    // TODO(aluh): Simplify to defaulted comparison operator once C++20 is
-    // supported.
-    bool operator==(const RestoreState&) const;
-  };
-
   // The default duration for an animation between two sets of bounds.
   static constexpr base::TimeDelta kBoundsChangeSlideDuration =
       base::Milliseconds(120);
@@ -188,6 +165,14 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   bool IsNormalStateType() const;
 
   bool IsNormalOrSnapped() const;
+
+  // Returns true if the window is vertical or horizontal maximized. The window
+  // is in normal state type with vertical or horizontal axis maximized.
+  bool IsVerticalOrHorizontalMaximized() const;
+
+  // Return true if the window is in normal state but not horizontal or vertical
+  // maximized.
+  bool IsNonVerticalOrHorizontalMaximizedNormalState() const;
 
   bool IsActive() const;
 
@@ -450,7 +435,7 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   const DragDetails* drag_details() const { return drag_details_.get(); }
   DragDetails* drag_details() { return drag_details_.get(); }
 
-  const std::vector<RestoreState>& window_state_restore_history_for_testing()
+  const std::vector<chromeos::WindowStateType>& window_state_restore_history()
       const {
     return window_state_restore_history_;
   }
@@ -562,17 +547,10 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // window was not partial.
   void MaybeRecordPartialDuration();
 
-  // Called before the window state change to push/pop the applicable window
-  // state to/from the restore history.
-  void UpdateRestoreHistory(chromeos::WindowStateType previous_state_type);
-
-  // Called after the window state change to update the various window restore
-  // properties from the restore history.
-  void UpdateRestorePropertiesFromRestoreHistory();
-
-  // Looks at the next RestoreState from the restore history without modifying
-  // the history. Returns nullptr if history is empty.
-  const RestoreState* PeekNextRestoreState() const;
+  // Called after the window state changes to update the window state restore
+  // history stack.
+  void UpdateWindowStateRestoreHistoryStack(
+      chromeos::WindowStateType previous_state_type);
 
   // Depending on the capabilities of the window we either return
   // |WindowStateType::kMaximized| or |WindowStateType::kNormal|.
@@ -693,21 +671,8 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // can restore back to, with relevant restore states.
   // See `kWindowStateRestoreHistoryLayerMap` in the cc file for what window
   // state types can be put in the restore history stack.
-  std::vector<RestoreState> window_state_restore_history_;
-
-  // Usually we want to use the tip of the window_state_restore_history_ to
-  // retrieve the restore_bounds. However, there are cases where we might want
-  // to explicitly set or store a specific restore bounds when transitioning
-  // between states. This typically happens because an operation might cause
-  // the restore bounds to become incorrect. If a value is present, it will have
-  // a higher precedent than whatever is at the tip of
-  // window_state_restore_history_.
-  absl::optional<gfx::Rect> restore_bounds_override_;
+  std::vector<chromeos::WindowStateType> window_state_restore_history_;
 };
-
-ASH_EXPORT
-std::ostream& operator<<(std::ostream& os,
-                         const WindowState::RestoreState& state);
 
 }  // namespace ash
 
