@@ -313,6 +313,10 @@ void CaptureLabelView::AddedToWidget() {
   auto* parent = layer()->parent();
   parent->Add(shadow_->GetLayer());
   parent->StackAtBottom(shadow_->GetLayer());
+
+  // Make the shadow observe the color provider source change to update the
+  // colors.
+  shadow_->ObserveColorProviderSource(GetWidget());
 }
 
 void CaptureLabelView::OnBoundsChanged(const gfx::Rect& previous_bounds) {

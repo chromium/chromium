@@ -22,6 +22,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/highlight_border.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -69,6 +70,10 @@ void KeyItemView::AddedToWidget() {
   auto* parent = layer()->parent();
   parent->Add(shadow_->GetLayer());
   parent->StackAtBottom(shadow_->GetLayer());
+
+  // Make the shadow observe the color provider source change to update the
+  // colors.
+  shadow_->ObserveColorProviderSource(GetWidget());
 }
 
 void KeyItemView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
