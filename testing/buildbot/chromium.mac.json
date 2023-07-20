@@ -5774,23 +5774,6 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "content_nocompile_tests",
-        "test_id_prefix": "ninja://content/test:content_nocompile_tests/"
-      },
-      {
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-13"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
         "test": "content_unittests",
         "test_id_prefix": "ninja://content/test:content_unittests/"
       },
@@ -6346,23 +6329,6 @@
         },
         "test": "net_unittests",
         "test_id_prefix": "ninja://net:net_unittests/"
-      },
-      {
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-13"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "openscreen_unittests",
-        "test_id_prefix": "ninja://chrome/browser/media/router:openscreen_unittests/"
       },
       {
         "isolate_profile_data": true,
