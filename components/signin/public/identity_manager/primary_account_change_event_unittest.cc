@@ -15,6 +15,8 @@ using signin::PrimaryAccountChangeEvent;
 using Type = signin::PrimaryAccountChangeEvent::Type;
 using State = signin::PrimaryAccountChangeEvent::State;
 
+// TODO(crbug.com/1462978): Revise this test suite when ConsentLevel::kSync is
+//     deleted. See ConsentLevel::kSync documentation for details.
 class PrimaryAccountChangeEventTest : public testing::Test {
  public:
   PrimaryAccountChangeEventTest() {
@@ -76,6 +78,8 @@ TEST_F(PrimaryAccountChangeEventTest,
   EXPECT_EQ(Type::kNone, event.GetEventTypeFor(ConsentLevel::kSync));
 }
 
+// TODO(crbug.com/1462978): Delete this test when ConsentLevel::kSync is
+//     deleted. See ConsentLevel::kSync documentation for details.
 TEST_F(PrimaryAccountChangeEventTest, ConsentLevelChangeFromNotRequiredToSync) {
   PrimaryAccountChangeEvent event(empty_not_required_, account1_sync_);
   EXPECT_EQ(Type::kSet, event.GetEventTypeFor(ConsentLevel::kSignin));
@@ -90,6 +94,8 @@ TEST_F(PrimaryAccountChangeEventTest, ConsentLevelChangeFromNotRequiredToSync) {
   EXPECT_EQ(Type::kSet, event.GetEventTypeFor(ConsentLevel::kSync));
 }
 
+// TODO(crbug.com/1462978): Delete this test when ConsentLevel::kSync is
+//     deleted. See ConsentLevel::kSync documentation for details.
 TEST_F(PrimaryAccountChangeEventTest, ConsentLevelChangeFromSyncToNotRequired) {
   PrimaryAccountChangeEvent event(account1_sync_, account1_not_required_);
   EXPECT_EQ(Type::kNone, event.GetEventTypeFor(ConsentLevel::kSignin));
