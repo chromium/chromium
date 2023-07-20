@@ -161,9 +161,8 @@ export class FileOperationHandler {
                   });
             } else {
               item.setExtraButton(
-                  ProgressItemState.ERROR, extraButtonText,
-                  () => {
-                      // TODO(b/289919765): Implementation.
+                  ProgressItemState.ERROR, extraButtonText, () => {
+                    util.visitURL(str('DLP_HELP_URL'));
                   });
             }
           }
