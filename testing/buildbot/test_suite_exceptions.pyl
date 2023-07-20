@@ -2668,8 +2668,7 @@
       'linux-lacros-asan-lsan-rel': {
         'args': [
           '--gtest_filter=-NativeExtensionBindingsSystemUnittest*:'
-          'BluetoothSocketApiUnittest.CreateThenClose:'
-          'FeatureProviderTest.PermissionFeatureAvailability',
+          'BluetoothSocketApiUnittest.CreateThenClose',
         ],
       },
       # https://crbug.com/1111979,
@@ -2682,15 +2681,13 @@
       'linux-lacros-dbg-tests-fyi': {
         'args': [
           '--gtest_filter=-NativeExtensionBindingsSystemUnittest*:'
-          'BluetoothSocketApiUnittest.CreateThenClose:'
-          'FeatureProviderTest.PermissionFeatureAvailability',
+          'BluetoothSocketApiUnittest.CreateThenClose',
         ],
       },
       'linux-lacros-tester-rel': {
         'args': [
           '--gtest_filter=-NativeExtensionBindingsSystemUnittest*:'
-          'BluetoothSocketApiUnittest.CreateThenClose:'
-          'FeatureProviderTest.PermissionFeatureAvailability',
+          'BluetoothSocketApiUnittest.CreateThenClose',
         ],
       },
     },
