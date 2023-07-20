@@ -87,8 +87,8 @@
     outline: none;
   }
 
-  #collapsibleSection {
-    padding-top: 0;
+  :host([is-printer-settings-revamp-enabled_]) #collapsibleSection {
+    padding: 0 20px 20px 20px;
   }
 
   #helpSection {
@@ -225,7 +225,7 @@
   </div>
 
   <template is="dom-if" if="[[canAddPrinter]]" restamp>
-    <div id="collapsibleSection" class="padded"
+    <div id="collapsibleSection"
         hidden="[[!nearbyPrintersExpanded_]]">
       <div id="helpSection" hidden="[[!isPrinterSettingsRevampEnabled_]]">
         <div id="helpIconSection">

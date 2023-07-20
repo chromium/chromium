@@ -44,7 +44,9 @@
 <div focus-row-container>
   <div id="entry" class="list-item" focus-row-control focus-type="entry">
     <div class="printer-name text-elide">
-      <span class="entry-icon" aria-hidden="true">
+      <span class="entry-icon" aria-hidden="true"
+          hidden="[[!showAnyIcon_(printerEntry.printerType,
+              printerEntry.printerInfo)]]">
           <iron-icon
             hidden="[[!printerEntry.printerInfo.isManaged]]"
             icon="cr20:domain">

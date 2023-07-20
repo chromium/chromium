@@ -222,6 +222,7 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
           return loadTimeData.getBoolean('isPrinterSettingsRevampEnabled');
         },
         readOnly: true,
+        reflectToAttribute: true,
       },
     };
   }
