@@ -335,10 +335,6 @@ absl::optional<::media::AudioRendererAlgorithmParameters>
 CastContentRendererClient::GetAudioRendererAlgorithmParameters(
     ::media::AudioParameters audio_parameters) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BundleUtils::IsBundle() ||
-      base::FeatureList::IsEnabled(kEnableCastAudioOutputDevice)) {
-    return absl::nullopt;
-  }
   ::media::AudioRendererAlgorithmParameters parameters;
   parameters.max_capacity = kAudioRendererMaxCapacity;
   parameters.starting_capacity = kAudioRendererStartingCapacity;
