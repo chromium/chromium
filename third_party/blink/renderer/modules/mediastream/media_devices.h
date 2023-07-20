@@ -107,25 +107,8 @@ class MODULES_EXPORT MediaDevices final
   void OnDevicesChanged(mojom::blink::MediaDeviceType,
                         const Vector<WebMediaDeviceInfo>&) override;
 
-  // Callback for testing only.
-  using EnumerateDevicesTestCallback =
-      base::OnceCallback<void(const MediaDeviceInfoVector&)>;
-
   void SetDispatcherHostForTesting(
       mojo::PendingRemote<mojom::blink::MediaDevicesDispatcherHost>);
-
-  void SetEnumerateDevicesCallbackForTesting(
-      EnumerateDevicesTestCallback test_callback) {
-    enumerate_devices_test_callback_ = std::move(test_callback);
-  }
-
-  void SetConnectionErrorCallbackForTesting(base::OnceClosure test_callback) {
-    connection_error_test_callback_ = std::move(test_callback);
-  }
-
-  void SetDeviceChangeCallbackForTesting(base::OnceClosure test_callback) {
-    device_change_test_callback_ = std::move(test_callback);
-  }
 
   void Trace(Visitor*) const override;
 
@@ -196,10 +179,6 @@ class MODULES_EXPORT MediaDevices final
   HeapHashMap<Member<Element>, Member<ScriptPromiseResolver>>
       crop_id_resolvers_;
 #endif
-
-  EnumerateDevicesTestCallback enumerate_devices_test_callback_;
-  base::OnceClosure connection_error_test_callback_;
-  base::OnceClosure device_change_test_callback_;
 };
 
 }  // namespace blink

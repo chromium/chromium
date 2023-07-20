@@ -801,10 +801,6 @@ void MediaDevices::OnDevicesChanged(
   if (RuntimeEnabledFeatures::OnDeviceChangeEnabled()) {
     ScheduleDispatchEvent(Event::Create(event_type_names::kDevicechange));
   }
-
-  if (device_change_test_callback_) {
-    std::move(device_change_test_callback_).Run();
-  }
 }
 
 void MediaDevices::ScheduleDispatchEvent(Event* event) {
@@ -955,11 +951,6 @@ void MediaDevices::DevicesEnumerated(
   }
 
   RecordEnumeratedDevices(result_tracker->GetScriptState(), media_devices);
-
-  if (enumerate_devices_test_callback_) {
-    std::move(enumerate_devices_test_callback_).Run(media_devices);
-  }
-
   result_tracker->Resolve(media_devices);
 }
 
@@ -973,10 +964,6 @@ void MediaDevices::OnDispatcherHostConnectionError() {
   }
   enumerate_device_requests_.clear();
   dispatcher_host_.reset();
-
-  if (connection_error_test_callback_) {
-    std::move(connection_error_test_callback_).Run();
-  }
 }
 
 mojom::blink::MediaDevicesDispatcherHost& MediaDevices::GetDispatcherHost(
