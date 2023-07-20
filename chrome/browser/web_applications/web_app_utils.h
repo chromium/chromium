@@ -58,7 +58,7 @@ const char16_t kOfflineIconId[] = u"offlineIcon";
 // Returns false if |profile| is nullptr.
 //
 // Is main WebApp System allowed (WebAppProvider exists):
-bool AreWebAppsEnabled(const Profile* profile);
+bool AreWebAppsEnabled(Profile* profile);
 // Is user allowed to install web apps from UI:
 bool AreWebAppsUserInstallable(Profile* profile);
 

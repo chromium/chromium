@@ -165,8 +165,9 @@ void LogErrorMessageToConsole(absl::optional<int> frame_tree_node_id,
 base::expected<std::reference_wrapper<const WebApp>, std::string>
 FindIsolatedWebApp(Profile* profile, const IsolatedWebAppUrlInfo& url_info) {
   // TODO(b/242738845): Defer navigation in IsolatedWebAppThrottle until
-  // WebAppProvider is ready to ensure we never fail this DCHECK.
+  // WebAppProvider is ready to ensure we never fail these DCHECKs.
   auto* web_app_provider = WebAppProvider::GetForWebApps(profile);
+  DCHECK(web_app_provider);
   DCHECK(web_app_provider->is_registry_ready());
   const WebAppRegistrar& registrar = web_app_provider->registrar_unsafe();
   const WebApp* iwa = registrar.GetAppById(url_info.app_id());

@@ -57,6 +57,11 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#endif
+
 namespace web_app {
 
 namespace {
@@ -77,12 +82,14 @@ WebAppProvider* WebAppProvider::GetForWebApps(Profile* profile) {
   // If features::kWebAppsCrosapi is enabled, Ash browser only manages system
   // web apps (return nullptr here). Otherwise, Ash browser manages all web apps
   // (return WebAppProvider).
-  return IsWebAppsCrosapiEnabled()
-             ? nullptr
-             : WebAppProviderFactory::GetForProfile(profile);
-#else
-  return WebAppProviderFactory::GetForProfile(profile);
+  // An exception is that Shimless RMA app always requires loading IWA on Ash.
+  if (IsWebAppsCrosapiEnabled() &&
+      (!::ash::features::IsShimlessRMA3pDiagnosticsEnabled() ||
+       !::ash::IsShimlessRmaAppBrowserContext(profile))) {
+    return nullptr;
+  }
 #endif
+  return WebAppProviderFactory::GetForProfile(profile);
 }
 
 // static

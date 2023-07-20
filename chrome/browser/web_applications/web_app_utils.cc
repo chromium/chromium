@@ -63,6 +63,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/user_manager/user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -288,7 +289,7 @@ constexpr base::FilePath::CharType kManifestResourcesDirectoryName[] =
 constexpr base::FilePath::CharType kTempDirectoryName[] =
     FILE_PATH_LITERAL("Temp");
 
-bool AreWebAppsEnabled(const Profile* profile) {
+bool AreWebAppsEnabled(Profile* profile) {
   if (!profile || profile->IsSystemProfile())
     return false;
 
@@ -299,7 +300,8 @@ bool AreWebAppsEnabled(const Profile* profile) {
   // Web Apps should not be installed to the ChromeOS system profiles except the
   // lock screen app profile.
   if (!ash::ProfileHelper::IsUserProfile(original_profile) &&
-      !ash::ProfileHelper::IsLockScreenAppProfile(profile)) {
+      !ash::ProfileHelper::IsLockScreenAppProfile(profile) &&
+      !ash::IsShimlessRmaAppBrowserContext(profile)) {
     return false;
   }
   auto* user_manager = user_manager::UserManager::Get();

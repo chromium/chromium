@@ -141,6 +141,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
@@ -1452,13 +1453,13 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   bool extensions_enabled = !go_off_the_record;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableLoginScreenApps) &&
-      ash::ProfileHelper::IsSigninProfile(profile)) {
+  if ((!base::CommandLine::ForCurrentProcess()->HasSwitch(
+           switches::kDisableLoginScreenApps) &&
+       ash::ProfileHelper::IsSigninProfile(profile)) ||
+      ash::ProfileHelper::IsLockScreenAppProfile(profile) ||
+      ash::IsShimlessRmaAppBrowserContext(profile)) {
     extensions_enabled = true;
   }
-  if (ash::ProfileHelper::IsLockScreenAppProfile(profile))
-    extensions_enabled = true;
 #endif
   extensions::ExtensionSystem::Get(profile)->InitForRegularProfile(
       extensions_enabled);
