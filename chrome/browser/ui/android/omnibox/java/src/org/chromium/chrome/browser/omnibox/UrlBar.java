@@ -865,9 +865,18 @@ public abstract class UrlBar extends AutocompleteEditText {
                         // update this to correctly calculate the hint.
                         mVisibleTextPrefixHint = null;
                     } else {
-                        assert finalVisibleCharIndex
-                                == textLayout.getOffsetForHorizontal(0, measuredWidth)
-                            : "scrollToTLD incorrect optimized finalVisibleCharIndex";
+                        int finalVisibleCharIndexSlow =
+                                textLayout.getOffsetForHorizontal(0, measuredWidth);
+
+                        // TODO(crbug.com/1465967): remove after getting enough data to diagnose
+                        // failed assert
+                        String errorMessage = "scrollToTLD incorrect optimized "
+                                + "finalVisibleCharIndex. old index: "
+                                + String.valueOf(finalVisibleCharIndexSlow) + " optimized index: "
+                                + String.valueOf(finalVisibleCharIndex) + " url: " + url.toString()
+                                + " viewport: " + String.valueOf(measuredWidth)
+                                + " url length: " + String.valueOf(urlTextLength);
+                        assert finalVisibleCharIndex == finalVisibleCharIndexSlow : errorMessage;
 
                         // To avoid issues where a small portion of the character following
                         // finalVisibleCharIndex is visible on screen, be more conservative and
