@@ -929,8 +929,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   self.baseViewController.remoteTabsViewController.browser = nil;
   [self.remoteTabsMediator disconnect];
   self.remoteTabsMediator = nil;
-  [self.actionSheetCoordinator stop];
-  self.actionSheetCoordinator = nil;
+  [self dismissActionSheetCoordinator];
 
   [self.snackbarCoordinator stop];
   self.snackbarCoordinator = nil;
@@ -1023,6 +1022,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   self.actionSheetCoordinator.alertStyle = UIAlertControllerStyleActionSheet;
 
   __weak BaseGridMediator* weakBaseGridMediator = baseGridMediator;
+  __weak TabGridCoordinator* weakSelf = self;
   [self.actionSheetCoordinator
       addItemWithTitle:base::SysUTF16ToNSString(
                            l10n_util::GetPluralStringFUTF16(
@@ -1032,6 +1032,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                   base::RecordAction(base::UserMetricsAction(
                       "MobileTabGridSelectionCloseTabsConfirmed"));
                   [weakBaseGridMediator closeItemsWithIDs:items];
+                  [weakSelf dismissActionSheetCoordinator];
                 }
                  style:UIAlertActionStyleDestructive];
   [self.actionSheetCoordinator
@@ -1039,6 +1040,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                 action:^{
                   base::RecordAction(base::UserMetricsAction(
                       "MobileTabGridSelectionCloseTabsCanceled"));
+                  [weakSelf dismissActionSheetCoordinator];
                 }
                  style:UIAlertActionStyleCancel];
   [self.actionSheetCoordinator start];
@@ -1059,9 +1061,13 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.sharingCoordinator start];
 }
 
-- (void)dismissPopovers {
+- (void)dismissActionSheetCoordinator {
   [self.actionSheetCoordinator stop];
   self.actionSheetCoordinator = nil;
+}
+
+- (void)dismissPopovers {
+  [self dismissActionSheetCoordinator];
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
 }
