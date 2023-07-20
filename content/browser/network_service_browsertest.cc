@@ -1759,15 +1759,17 @@ class NetworkServiceBoundedNetLogBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#if BUILDFLAG(IS_MAC)
 // TODO(crbug.com/1466224): Try-bots use a different temp directory that the Mac
 // network sandbox doesn't allow and causes this test to fail. Disable the test
 // until this is resolved.
-IN_PROC_BROWSER_TEST_F(NetworkServiceBoundedNetLogBrowserTest,
-                       DISABLED_LogCreated) {
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_LogCreated DISABLED_LogCreated
 #else
-IN_PROC_BROWSER_TEST_F(NetworkServiceBoundedNetLogBrowserTest, LogCreated) {
+#define MAYBE_LogCreated LogCreated
 #endif
+
+IN_PROC_BROWSER_TEST_F(NetworkServiceBoundedNetLogBrowserTest,
+                       MAYBE_LogCreated) {
   // Navigate to a page to generate some data.
   // Through trial and error it was found that this looping navigation results
   // in a ~2MB unbounded net-log file. Since our bounded net-log is limited to
