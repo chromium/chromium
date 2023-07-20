@@ -2355,7 +2355,7 @@ void ServiceWorkerVersion::OnTimeoutTimer() {
                                     ? kStartInstalledWorkerTimeout
                                     : kStartNewWorkerTimeout;
 
-  if (embedded_worker_->pause_initializing_global_scope()) {
+  if (IsWarmedUp()) {
     start_limit =
         blink::features::kSpeculativeServiceWorkerWarmUpDuration.Get();
   }
