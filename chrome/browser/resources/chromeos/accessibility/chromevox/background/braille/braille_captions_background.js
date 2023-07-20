@@ -156,9 +156,20 @@ export class BrailleCaptionsBackground {
     if (BrailleCaptionsBackground.isEnabled()) {
       const rows = SettingsManager.getNumber('virtualBrailleRows');
       const columns = SettingsManager.getNumber('virtualBrailleColumns');
-      return {available: true, textRowCount: rows, textColumnCount: columns};
+      // TODO(accessibility) make `cellSize` customizable.
+      return {
+        available: true,
+        textRowCount: rows,
+        textColumnCount: columns,
+        cellSize: 8,
+      };
     } else {
-      return {available: false, textRowCount: 0, textColumnCount: 0};
+      return {
+        available: false,
+        textRowCount: 0,
+        textColumnCount: 0,
+        cellSize: 0,
+      };
     }
   }
 
