@@ -169,6 +169,7 @@
 }
 
 - (void)stop {
+  [self dismissActionSheetCoordinator];
   [self.mediator disconnect];
   self.mediator = nil;
   self.viewController = nil;
@@ -239,12 +240,15 @@
       addItemWithTitle:l10n_util::GetNSString(IDS_IOS_CONFIRM_PASSWORD_EDIT)
                 action:^{
                   [weakSelf.viewController passwordEditingConfirmed];
+                  [weakSelf dismissActionSheetCoordinator];
                 }
                  style:UIAlertActionStyleDefault];
 
   [self.actionSheetCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_IOS_CANCEL_PASSWORD_EDIT)
-                action:nil
+                action:^{
+                  [weakSelf dismissActionSheetCoordinator];
+                }
                  style:UIAlertActionStyleCancel];
 
   [self.actionSheetCoordinator start];
@@ -277,15 +281,19 @@
                                    message:message
                              barButtonItem:self.viewController.deleteButton];
   __weak __typeof(self.mediator) weakMediator = self.mediator;
+  __weak __typeof(self) weakSelf = self;
   [self.actionSheetCoordinator
       addItemWithTitle:buttonText
                 action:^{
                   [weakMediator removeCredential:password];
+                  [weakSelf dismissActionSheetCoordinator];
                 }
                  style:UIAlertActionStyleDestructive];
   [self.actionSheetCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_IOS_CANCEL_PASSWORD_DELETION)
-                action:nil
+                action:^{
+                  [weakSelf dismissActionSheetCoordinator];
+                }
                  style:UIAlertActionStyleCancel];
   [self.actionSheetCoordinator start];
 }
@@ -317,12 +325,15 @@
                   [weakSelf.mediator
                       moveCredentialToAccountStoreWithConflict:password];
                   movedCompletion();
+                  [weakSelf dismissActionSheetCoordinator];
                 }
                  style:UIAlertActionStyleDefault];
 
   [self.actionSheetCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_IOS_CANCEL_PASSWORD_MOVE)
-                action:nil
+                action:^{
+                  [weakSelf dismissActionSheetCoordinator];
+                }
                  style:UIAlertActionStyleCancel];
   [self.actionSheetCoordinator start];
 }
@@ -404,6 +415,13 @@
       PasswordTabHelper::FromWebState(activeWebState)
           ->GetPasswordManagerClient();
   passwordManagerClient->UpdateFormManagers();
+}
+
+#pragma mark - Private
+
+- (void)dismissActionSheetCoordinator {
+  [self.actionSheetCoordinator stop];
+  self.actionSheetCoordinator = nil;
 }
 
 @end
