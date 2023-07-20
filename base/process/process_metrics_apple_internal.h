@@ -37,21 +37,11 @@ class BASE_EXPORT ProcessMetricsAppleInternal {
 
   task_power_info GetTaskPowerInfo();
 
-#if BUILDFLAG(IS_MAC)
-  int GetEnergyImpact();
-
-  int GetOpenFdCount() const;
-  int GetOpenFdSoftLimit() const;
-#endif
-
- private:
   // Queries the port provider if it's set.
   mach_port_t TaskForPid(ProcessHandle process) const;
 
+ private:
 #if BUILDFLAG(IS_MAC)
-  uint64_t last_energy_impact_time_ = 0;
-  double last_energy_impact_ = 0;
-
   raw_ptr<PortProvider> port_provider_;
 #endif
 
