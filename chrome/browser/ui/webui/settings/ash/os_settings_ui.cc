@@ -300,6 +300,12 @@ void OSSettingsUI::BindInterface(
 }
 
 void OSSettingsUI::BindInterface(
+    mojo::PendingReceiver<auth::mojom::PasswordFactorEditor> receiver) {
+  auth::BindToPasswordFactorEditor(
+      std::move(receiver), quick_unlock::QuickUnlockFactory::GetDelegate());
+}
+
+void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<google_drive::mojom::PageHandlerFactory> receiver) {
   // The PageHandlerFactory is reused across same-origin navigations, so ensure
   // any existing factories are reset.

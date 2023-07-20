@@ -162,6 +162,8 @@ class OSSettingsUI : public ui::MojoWebUIController {
       mojo::PendingReceiver<auth::mojom::RecoveryFactorEditor> receiver);
   void BindInterface(
       mojo::PendingReceiver<auth::mojom::PinFactorEditor> receiver);
+  void BindInterface(
+      mojo::PendingReceiver<auth::mojom::PasswordFactorEditor> receiver);
 
   // Binds to the Jelly dynamic color Mojo
   void BindInterface(

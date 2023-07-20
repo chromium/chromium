@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "chromeos/ash/services/auth_factor_config/auth_factor_config_utils.h"
 #include "components/user_manager/user_manager.h"
 
 namespace ash::auth {
@@ -67,6 +68,15 @@ void AuthFactorConfig::IsSupported(const std::string& auth_token,
           cryptohome_supported_factors.Has(cryptohome::AuthFactorType::kPin));
       return;
     }
+    case mojom::AuthFactor::kGaiaPassword: {
+      std::move(callback).Run(true);
+      return;
+    }
+    case mojom::AuthFactor::kLocalPassword: {
+      std::move(callback).Run(
+          features::IsPasswordlessGaiaEnabledForConsumers());
+      return;
+    }
   }
 
   NOTREACHED();
@@ -94,6 +104,28 @@ void AuthFactorConfig::IsConfigured(const std::string& auth_token,
     case mojom::AuthFactor::kPin: {
       std::move(callback).Run(
           config.HasConfiguredFactor(cryptohome::AuthFactorType::kPin));
+      return;
+    }
+    case mojom::AuthFactor::kGaiaPassword: {
+      const cryptohome::AuthFactor* password_factor =
+          config.FindFactorByType(cryptohome::AuthFactorType::kPassword);
+      if (!password_factor) {
+        std::move(callback).Run(false);
+        return;
+      }
+
+      std::move(callback).Run(IsGaiaPassword(*password_factor));
+      return;
+    }
+    case mojom::AuthFactor::kLocalPassword: {
+      const cryptohome::AuthFactor* password_factor =
+          config.FindFactorByType(cryptohome::AuthFactorType::kPassword);
+      if (!password_factor) {
+        std::move(callback).Run(false);
+        return;
+      }
+
+      std::move(callback).Run(IsLocalPassword(*password_factor));
       return;
     }
   }
@@ -132,6 +164,12 @@ void AuthFactorConfig::GetManagementType(
       } else {
         std::move(callback).Run(mojom::ManagementType::kNone);
       }
+      return;
+    }
+    case mojom::AuthFactor::kGaiaPassword:
+    case mojom::AuthFactor::kLocalPassword: {
+      // There are currently no policies related to Gaia/local passwords.
+      std::move(callback).Run(mojom::ManagementType::kNone);
       return;
     }
   }
@@ -213,6 +251,17 @@ void AuthFactorConfig::IsEditable(const std::string& auth_token,
       }
 
       std::move(callback).Run(false);
+      return;
+    }
+    case mojom::AuthFactor::kGaiaPassword: {
+      // TODO(b/290916811): Decide upon when to return true here. For now we
+      // don't allow edits or removal of Gaia passwords once they're
+      // configured, so we always return false.
+      std::move(callback).Run(false);
+      return;
+    }
+    case mojom::AuthFactor::kLocalPassword: {
+      std::move(callback).Run(true);
       return;
     }
   }

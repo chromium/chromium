@@ -22,8 +22,9 @@ module ash.auth.mojom;
 enum AuthFactor {
   kRecovery,
   kPin,
+  kGaiaPassword,
+  kLocalPassword,
   // TODO(crbug.com/1327627): Add support for other authentication factors:
-  // kPassword,
   // kFingerprint,
 };
 
@@ -103,4 +104,25 @@ interface PinFactorEditor {
   SetPin(string auth_token, string pin) => (ConfigureResult result);
   // Remove the pin factor for the user.
   RemovePin(string auth_token) => (ConfigureResult result);
+};
+
+// Interface for methods specific to password authentication. Served from chrome
+// ash, intended to be consumed by the following trusted webuis:
+//
+// * chrome://os-settings
+// * chrome://oobe
+//
+// The chrome ash implementation calls into the cryptohomed system daemon via
+// the UserDataAuth.proto Dbus API to affect the desired changes to the user's
+// authentication factors.
+interface PasswordFactorEditor {
+  // Sets the user's local password to the desired value. This will overwrite
+  // the user's current password, if any.
+  // TODO(b/290916811): For now, callers of this method must ensure that a local
+  // password is already configured for that user, i.e. `GetPasswordFactorType`
+  // must return `kLocal`. Eventually, calling this method should also be
+  // possible when the user has a Gaia password (which will then be removed and
+  // replaced by the provided local password) or no password at all.
+  SetLocalPassword(string auth_token, string new_password) =>
+      (ConfigureResult result);
 };

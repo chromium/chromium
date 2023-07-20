@@ -196,6 +196,10 @@ void UserContext::SetKey(const Key& key) {
   key_ = key;
 }
 
+void UserContext::SetReplacementKey(const Key& replacement_key) {
+  replacement_key_ = replacement_key;
+}
+
 void UserContext::SaveKeyForReplacement() {
   if (replacement_key_.has_value())
     return;

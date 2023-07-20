@@ -106,6 +106,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthFactorEditor {
   void RemoveRecoveryFactor(std::unique_ptr<UserContext> context,
                             AuthOperationCallback callback);
 
+  // Replaces the user's local password with a new value. A local password must
+  // already be configured prior to calling this.
+  // Session should be authenticated.
+  void ReplaceLocalPasswordFactor(std::unique_ptr<UserContext> context,
+                                  cryptohome::RawPassword new_password,
+                                  AuthOperationCallback callback);
+
  private:
   void OnListAuthFactors(
       std::unique_ptr<UserContext> context,
@@ -134,6 +141,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthFactorEditor {
       std::unique_ptr<UserContext> context,
       AuthOperationCallback callback,
       absl::optional<user_data_auth::RemoveAuthFactorReply> reply);
+
+  void ReplaceLocalPasswordFactorImpl(std::unique_ptr<UserContext> context,
+                                      cryptohome::RawPassword new_password,
+                                      AuthOperationCallback callback,
+                                      const std::string& system_salt);
 
   base::WeakPtrFactory<AuthFactorEditor> weak_factory_{this};
 };
