@@ -280,6 +280,21 @@
   <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_LOADING" desc="Message, informing the user the confirmation code entered to activate an eSIM profile is currently being verified.">
     Verifying confirmation code...
   </message>
+  <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_PROFILE_DISCOVERY_CONSENT_TITLE" desc="Title asking for consent to scan automatically for available eSIM profiles.">
+    Automatically scan for available eSIM profiles?
+  </message>
+  <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_PROFILE_DISCOVERY_CONSENT_MESSAGE" desc="Message, informing the user that device information will be shared with third parties.">
+    By continuing, you allow third parties to verify information that identifies this device on the network
+  </message>
+  <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_PROFILE_DISCOVERY_CONSENT_ENTER_MANUALLY" desc="Label for button that allows the user to manually scan for profiles.">
+    Enter manually
+  </message>
+  <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_PROFILE_DISCOVERY_CONSENT_SCAN" desc="Label for button to trigger automatic scanning.">
+    Scan
+  </message>
+  <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_PROFILE_DISCOVERY_CONSENT_CANCEL" desc="Label for button to cancel and return to previous page.">
+    Cancel
+  </message>
 
   <!-- ChromeOS Strings -->
   <message name="IDS_ECHO_CONSENT_DIALOG_TEXT" desc="Dialog text shown when user is asked to give consent to proceed with redeeming an ECHO offer.">

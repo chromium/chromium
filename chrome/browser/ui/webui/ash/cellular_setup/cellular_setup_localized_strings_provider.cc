@@ -62,10 +62,9 @@ constexpr webui::LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
     {"scanQRCode", IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE},
     {"scanQRCodeNoProfilesFound",
      IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_NO_PROFILES_FOUND},
-    {"enterActivationCode",
-     IDS_CELLULAR_SETUP_ESIM_PAGE_ENTER_ACTIVATION_CODE},
+    {"enterActivationCode", IDS_CELLULAR_SETUP_ESIM_PAGE_ENTER_ACTIVATION_CODE},
     {"enterActivationCodeNoProfilesFound",
-    IDS_CELLULAR_SETUP_ESIM_PAGE_ENTER_ACTIVATION_CODE_NO_PROFILES_FOUND},
+     IDS_CELLULAR_SETUP_ESIM_PAGE_ENTER_ACTIVATION_CODE_NO_PROFILES_FOUND},
     {"switchCamera", IDS_CELLULAR_SETUP_ESIM_PAGE_SWITCH_CAMERA},
     {"qrCodeA11YCameraOn", IDS_CELLULAR_SETUP_ESIM_PAGE_A11Y_QR_CODE_CAMERA_ON},
     {"qrCodeA11YCameraScanSuccess",
@@ -92,7 +91,17 @@ constexpr webui::LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
     {"confirmationCodeLoading",
      IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_LOADING},
     {"verifyingActivationCode",
-     IDS_CELLULAR_SETUP_ESIM_PAGE_VERIFYING_ACTIVATION_CODE}};
+     IDS_CELLULAR_SETUP_ESIM_PAGE_VERIFYING_ACTIVATION_CODE},
+    {"profileDiscoveryConsentTitle",
+     IDS_CELLULAR_SETUP_ESIM_PAGE_PROFILE_DISCOVERY_CONSENT_TITLE},
+    {"profileDiscoveryConsentMessage",
+     IDS_CELLULAR_SETUP_ESIM_PAGE_PROFILE_DISCOVERY_CONSENT_MESSAGE},
+    {"profileDiscoveryConsentEnterManually",
+     IDS_CELLULAR_SETUP_ESIM_PAGE_PROFILE_DISCOVERY_CONSENT_ENTER_MANUALLY},
+    {"profileDiscoveryConsentScan",
+     IDS_CELLULAR_SETUP_ESIM_PAGE_PROFILE_DISCOVERY_CONSENT_SCAN},
+    {"profileDiscoveryConsentCancel",
+     IDS_CELLULAR_SETUP_ESIM_PAGE_PROFILE_DISCOVERY_CONSENT_CANCEL}};
 
 struct NamedBoolean {
   const char* name;
