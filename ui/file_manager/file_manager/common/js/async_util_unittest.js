@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertArrayEquals, assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertArrayEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {AsyncQueue} from './async_util.js';
+import {AsyncQueue, RateLimiter} from './async_util.js';
 import {waitUntil} from './test_error_reporting.js';
 
 /**
@@ -96,4 +96,18 @@ export async function testAsyncQueueStartEndOrder(done) {
   const expected = [0, 1, 2, 3, 3, 2, 1, 0];
   assertArrayEquals(expected, taskTrace);
   done();
+}
+
+/**
+ * Checks that calling `run` inside a RateRimiter's clojure does not lead to
+ * recursive calls.
+ */
+export async function testRateLimiterDoesNotLeadToRescursion(done) {
+  const limiter = new RateLimiter(() => {
+    // This should not lead to an infinite recursion.
+    limiter.run();
+    done();
+  });
+
+  limiter.run();
 }
