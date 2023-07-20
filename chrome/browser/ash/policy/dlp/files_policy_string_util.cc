@@ -13,31 +13,37 @@
 
 namespace policy::files_string_util {
 
-// TODO(b/279435843): Replace all constants below with translation strings.
 std::u16string GetBlockTitle(dlp::FileAction action, size_t file_count) {
   int message_id;
   std::u16string message;
   switch (action) {
     case dlp::FileAction::kDownload:
-      message_id = IDS_POLICY_DLP_FILES_DOWNLOAD_BLOCK_TITLE;
+      message_id = IDS_POLICY_DLP_FILES_DOWNLOAD_BLOCKED_TITLE;
       break;
     case dlp::FileAction::kUpload:
-      message_id = IDS_POLICY_DLP_FILES_UPLOAD_BLOCK_TITLE;
+      message_id = IDS_POLICY_DLP_FILES_UPLOAD_BLOCKED_TITLE;
       break;
     case dlp::FileAction::kCopy:
-      return u"Blocked copy";
+      message_id = IDS_POLICY_DLP_FILES_COPY_BLOCKED_TITLE;
+      break;
     case dlp::FileAction::kMove:
-      return u"Blocked move";
+      message_id = IDS_POLICY_DLP_FILES_MOVE_BLOCKED_TITLE;
+      break;
     case dlp::FileAction::kOpen:
     case dlp::FileAction::kShare:
-      message_id = IDS_POLICY_DLP_FILES_OPEN_BLOCK_TITLE;
+      message_id = IDS_POLICY_DLP_FILES_OPEN_BLOCKED_TITLE;
       break;
     case dlp::FileAction::kUnknown:
     // kUnknown is used for internal checks - treat as kTransfer.
     case dlp::FileAction::kTransfer:
-      return u"Blocked transfer";
+      message_id = IDS_POLICY_DLP_FILES_TRANSFER_BLOCKED_TITLE;
+      break;
   }
-  return l10n_util::GetStringUTF16(message_id);
+  message = l10n_util::GetPluralStringFUTF16(message_id, file_count);
+  return file_count == 1 ? message
+                         : base::ReplaceStringPlaceholders(
+                               message, base::NumberToString16(file_count),
+                               /*offset=*/nullptr);
 }
 
 std::u16string GetWarnTitle(dlp::FileAction action) {
@@ -92,16 +98,20 @@ std::u16string GetContinueAnywayButton(dlp::FileAction action) {
 std::u16string GetBlockReasonMessage(Policy policy,
                                      size_t file_count,
                                      const std::u16string& first_file) {
+  int message_id;
+  const std::u16string placeholder_value =
+      file_count == 1 ? first_file : base::NumberToString16(file_count);
   switch (policy) {
     case Policy::kDlp:
-      return file_count == 1 ? first_file + u" was blocked because of policy"
-                             : base::NumberToString16(file_count) +
-                                   u" files were blocked because of policy";
+      message_id = IDS_POLICY_DLP_FILES_POLICY_BLOCK_MESSAGE;
+      break;
     case Policy::kEnterpriseConnectors:
-      return file_count == 1
-                 ? first_file + u" file was blocked because of content"
-                 : base::NumberToString16(file_count) +
-                       u" files were blocked because of content";
+      message_id = IDS_POLICY_DLP_FILES_CONTENT_BLOCK_MESSAGE;
+      break;
   }
+  return base::ReplaceStringPlaceholders(
+      l10n_util::GetPluralStringFUTF16(message_id, file_count),
+      placeholder_value,
+      /*offset=*/nullptr);
 }
 }  // namespace policy::files_string_util

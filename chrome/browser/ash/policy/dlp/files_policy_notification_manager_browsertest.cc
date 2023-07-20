@@ -960,8 +960,9 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
 
   auto notification = bridge_->GetDisplayedNotification(kNotificationId1);
   ASSERT_TRUE(notification.has_value());
-  const std::u16string title =
-      action == dlp::FileAction::kCopy ? u"Blocked copy" : u"Blocked move";
+  const std::u16string title = action == dlp::FileAction::kCopy
+                                   ? u"2 files blocked from copying"
+                                   : u"2 files blocked from moving";
   EXPECT_EQ(notification->title(), title);
 
   notification = bridge_->GetDisplayedNotification(kNotificationId2);
@@ -1021,8 +1022,9 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest, MultiFileDismissRemovesIOInfo_Error) {
 
   auto notification = bridge_->GetDisplayedNotification(kNotificationId1);
   ASSERT_TRUE(notification.has_value());
-  const std::u16string title =
-      action == dlp::FileAction::kCopy ? u"Blocked copy" : u"Blocked move";
+  const std::u16string title = action == dlp::FileAction::kCopy
+                                   ? u"2 files blocked from copying"
+                                   : u"2 files blocked from moving";
   EXPECT_EQ(notification->title(), title);
 
   // Dismiss the notification.
@@ -1035,7 +1037,7 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest, MultiFileDismissRemovesIOInfo_Error) {
 }
 
 // Tests that the IO task info for copy or move with single blocked file will
-// be removed upon the error notification is clicked.
+// be removed after the error notification is clicked.
 IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
                        SingleFileNotificationRemovesIOInfo_Error) {
   auto [type, action] = GetParam();
@@ -1064,8 +1066,9 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
 
   auto notification = bridge_->GetDisplayedNotification(kNotificationId1);
   ASSERT_TRUE(notification.has_value());
-  const std::u16string title =
-      action == dlp::FileAction::kCopy ? u"Blocked copy" : u"Blocked move";
+  const std::u16string title = action == dlp::FileAction::kCopy
+                                   ? u"File blocked from copying"
+                                   : u"File blocked from moving";
   EXPECT_EQ(notification->title(), title);
 
   // Click Learn more.
@@ -1123,8 +1126,9 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest, SingleFileOkProceeds_Mix) {
   EXPECT_TRUE(fpnm_->HasIOTask(kTaskId1));
 
   // Error notification.
-  const std::u16string title2 =
-      action == dlp::FileAction::kCopy ? u"Blocked copy" : u"Blocked move";
+  const std::u16string title2 = action == dlp::FileAction::kCopy
+                                    ? u"File blocked from copying"
+                                    : u"File blocked from moving";
   notification = bridge_->GetDisplayedNotification(kNotificationId1);
   ASSERT_TRUE(notification.has_value());
   EXPECT_EQ(notification->title(), title2);

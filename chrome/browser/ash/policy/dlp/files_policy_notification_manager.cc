@@ -79,9 +79,10 @@ std::u16string GetNotificationMessage(NotificationType type,
   switch (type) {
     case NotificationType::kError:
       CHECK(policy.has_value());
-      return file_count > 1 ? u"Review for further details"
-                            : policy::files_string_util::GetBlockReasonMessage(
-                                  policy.value(), file_count, first_file);
+      return file_count > 1
+                 ? l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_BLOCK_MESSAGE)
+                 : policy::files_string_util::GetBlockReasonMessage(
+                       policy.value(), file_count, first_file);
     case NotificationType::kWarning:
       const std::u16string placeholder_value =
           file_count == 1 ? first_file : base::NumberToString16(file_count);
@@ -112,7 +113,7 @@ std::u16string GetOkButton(NotificationType type,
 std::u16string GetCancelButton(NotificationType type) {
   switch (type) {
     case NotificationType::kError:
-      return u"Dismiss";
+      return l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_DISMISS_BUTTON);
     case NotificationType::kWarning:
       return l10n_util::GetStringUTF16(IDS_POLICY_DLP_WARN_CANCEL_BUTTON);
   }

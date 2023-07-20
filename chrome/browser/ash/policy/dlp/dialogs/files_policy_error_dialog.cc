@@ -73,7 +73,7 @@ void FilesPolicyErrorDialog::MaybeAddConfidentialRows() {
 }
 
 std::u16string FilesPolicyErrorDialog::GetOkButton() {
-  return u"Dismiss";
+  return l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_OK_BUTTON);
 }
 
 std::u16string FilesPolicyErrorDialog::GetCancelButton() {

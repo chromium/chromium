@@ -996,6 +996,12 @@ Additional details:
   <message name="IDS_POLICY_DLP_FILES_REVIEW_BUTTON" desc="The label of the warn or block notification 'Review' button, shown when some files action is under a policy restriction, that allows the user to open a dialog with more information.">
     Review
   </message>
+  <message name="IDS_POLICY_DLP_FILES_DISMISS_BUTTON" desc="The label of the block notification 'Dismiss' button, shown when some files action was blocked due to policy.">
+    Dismiss
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_OK_BUTTON" desc="The label of the block dialog 'OK' button, shown when some files action was blocked due to policy.">
+    OK
+  </message>
   <message name="IDS_POLICY_DLP_WARN_CANCEL_BUTTON" desc="Cancel dialog button label for warning.">
     Cancel
   </message>
@@ -1023,6 +1029,49 @@ Additional details:
      {0, plural,
                 =1 {Opening this file is blocked by administrator policy}
                 other {Opening # files is blocked by administrator policy}}
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_DOWNLOAD_BLOCKED_TITLE" desc="The title of the notification/dialog informing the user that downloading files is blocked.">
+     {0, plural,
+                =1 {File blocked from downloading}
+                other {<ph name="FILE_COUNT">$1<ex>5</ex></ph> files blocked from downloading}}
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_TRANSFER_BLOCKED_TITLE" desc="The title of the notification/dialog informing the user that transferring files is blocked.">
+     {0, plural,
+                =1 {File blocked from transferring}
+                other {<ph name="FILE_COUNT">$1<ex>5</ex></ph> files blocked from transferring}}
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_UPLOAD_BLOCKED_TITLE" desc="The title of the notification/dialog informing the user that uploading files is blocked.">
+     {0, plural,
+                =1 {File blocked from uploading}
+                other {<ph name="FILE_COUNT">$1<ex>5</ex></ph> files blocked from uploading}}
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_MOVE_BLOCKED_TITLE" desc="The title of the notification/dialog informing the user that moving files is blocked.">
+     {0, plural,
+                =1 {File blocked from moving}
+                other {<ph name="FILE_COUNT">$1<ex>5</ex></ph> files blocked from moving}}
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_COPY_BLOCKED_TITLE" desc="The title of the notification/dialog informing the user that copying files is blocked.">
+     {0, plural,
+                =1 {File blocked from copying}
+                other {<ph name="FILE_COUNT">$1<ex>5</ex></ph> files blocked from copying}}
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_OPEN_BLOCKED_TITLE" desc="The title of the notification/dialog informing the user that opening files is blocked.">
+     {0, plural,
+                =1 {File blocked from opening}
+                other {<ph name="FILE_COUNT">$1<ex>5</ex></ph> files blocked from opening}}
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_POLICY_BLOCK_MESSAGE" desc="The message for notification/dialog informing the user an action (e.g. open, upload) of the selected file(s) is blocked because of policy.">
+        {0, plural,
+                =1 {<ph name="FILE_NAME">$1<ex>Example.txt</ex></ph> was blocked because of policy}
+                other {<ph name="FILE_COUNT">$1<ex>5</ex></ph> files were blocked because of policy}}
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_CONTENT_BLOCK_MESSAGE" desc="The message for notification/dialog informing the user an action (e.g. open, upload) of the selected file(s) is blocked because of sensitive content.">
+        {0, plural,
+                =1 {<ph name="FILE_NAME">$1<ex>Example.txt</ex></ph> was blocked because of content}
+                other {<ph name="FILE_COUNT">$1<ex>5</ex></ph> files were blocked because of content}}
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_BLOCK_MESSAGE" desc="The message for notification shown when an action (e.g. open, upload) of several files was blocked, that the user can review in more detail by opening a dialog.">
+    Review for further details
   </message>
   <message name="IDS_POLICY_DEVICE_SCHEDULED_REBOOT_TITLE" desc="The title for notification informing the user that the device will restart soon.">
     Device will restart very soon
