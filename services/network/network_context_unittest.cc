@@ -7390,7 +7390,8 @@ TEST_F(NetworkContextTestWithMockTime, EnableTrustTokensWithStoreOnDisk) {
 
 TEST_F(NetworkContextTest, DisableTrustTokens) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kPrivateStateTokens);
+  scoped_feature_list.InitWithFeatures(
+      {}, {features::kPrivateStateTokens, features::kFledgePst});
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
@@ -7423,7 +7424,8 @@ class NetworkContextExpectBadMessageTest : public NetworkContextTest {
 TEST_F(NetworkContextExpectBadMessageTest,
        FailsTrustTokenBearingRequestWhenTrustTokensIsDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kPrivateStateTokens);
+  scoped_feature_list.InitWithFeatures(
+      {}, {features::kPrivateStateTokens, features::kFledgePst});
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
@@ -7628,7 +7630,8 @@ TEST_F(NetworkContextTest,
 
 TEST_F(NetworkContextTest, NoAvailableTrustTokensWhenTrustTokensAreDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kPrivateStateTokens);
+  scoped_feature_list.InitWithFeatures(
+      {}, {features::kPrivateStateTokens, features::kFledgePst});
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
@@ -7744,7 +7747,8 @@ TEST_F(NetworkContextTest, GetStoredTrustTokensReentrant) {
 TEST_F(NetworkContextTest,
        DeleteStoredTrustTokensReportsErrorWhenFeatureIsDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kPrivateStateTokens);
+  scoped_feature_list.InitWithFeatures(
+      {}, {features::kPrivateStateTokens, features::kFledgePst});
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());

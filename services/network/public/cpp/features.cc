@@ -154,11 +154,11 @@ BASE_FEATURE(kAttributionReportingCrossAppWeb,
 // (See https://github.com/WICG/trust-token-api.)
 BASE_FEATURE(kPrivateStateTokens,
              "PrivateStateTokens",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Secondary flag used by the FLEDGE ads experiment in the interim before
 // PSTs are fully rolled out to stable.
-BASE_FEATURE(kFledgePst, "TrustTokens", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFledgePst, "TrustTokens", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Determines which Trust Tokens operations require the TrustTokens origin trial
 // active in order to be used. This is runtime-configurable so that the Trust
