@@ -528,13 +528,6 @@ AcceleratorAliasConverter::FilterAliasBySupportedKeys(
       continue;
     }
 
-    // VKEY_PLAY/PAUSE should not be shown as they are conceptual duplicates of
-    // VKEY_MEDIA_PLAY/VKEY_MEDIA_PAUSE.
-    if (accelerator.key_code() == ui::VKEY_PLAY ||
-        accelerator.key_code() == ui::VKEY_PAUSE) {
-      continue;
-    }
-
     // Otherwise, always copy the accelerator.
     filtered_accelerators.push_back(accelerator);
   }

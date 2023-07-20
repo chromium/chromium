@@ -296,19 +296,6 @@ TEST_F(AcceleratorAliasConverterTest, CheckCapsLockAlias) {
   EXPECT_EQ(0u, accelerator_aliases.size());
 }
 
-TEST_F(AcceleratorAliasConverterTest, CheckPlayPauseHidden) {
-  AcceleratorAliasConverter accelerator_alias_converter_;
-  const ui::Accelerator play_accelerator{ui::VKEY_PLAY, ui::EF_NONE};
-  const ui::Accelerator pause_accelerator{ui::VKEY_PAUSE, ui::EF_NONE};
-
-  EXPECT_TRUE(
-      accelerator_alias_converter_.CreateAcceleratorAlias(play_accelerator)
-          .empty());
-  EXPECT_TRUE(
-      accelerator_alias_converter_.CreateAcceleratorAlias(pause_accelerator)
-          .empty());
-}
-
 TEST_F(AcceleratorAliasConverterTest, MetaFKeyRewritesSuppressed) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kInputDeviceSettingsSplit);
@@ -749,9 +736,7 @@ class MediaKeyAliasTest : public AcceleratorAliasConverterTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     MediaKeyAliasTest,
-    testing::Values(ui::VKEY_MEDIA_PAUSE,
-                    ui::VKEY_MEDIA_PLAY,
-                    ui::VKEY_OEM_103,  // Media Rewind
+    testing::Values(ui::VKEY_OEM_103,  // Media Rewind
                     ui::VKEY_OEM_104,  // Media Fast Forward
                     ui::VKEY_MEDIA_STOP));
 
