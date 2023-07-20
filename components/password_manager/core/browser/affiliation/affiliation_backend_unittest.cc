@@ -126,9 +126,9 @@ const char kTestFacetURIAlpha3[] = "https://three.alpha.example.com";
 const char kTestFacetURIAlpha4[] = "android://hash@com.example.alpha.android";
 const char kTestFacetNameAlpha4[] = "Facet Name Alpha";
 const char kTestFacetIconURLAlpha4[] = "https://example.com/alpha.png";
-const char kTestFacetURIBeta1[] = "https://one.beta.example.com";
-const char kTestFacetURIBeta2[] = "https://two.beta.example.com";
-const char kTestFacetURIGamma1[] = "https://gamma.example.com";
+const char kTestFacetURIBeta1[] = "https://one.beta.example.org";
+const char kTestFacetURIBeta2[] = "https://two.beta.example.org";
+const char kTestFacetURIGamma1[] = "https://gamma.example.de";
 
 AffiliatedFacets GetTestEquivalenceClassAlpha() {
   return {
@@ -407,7 +407,6 @@ class AffiliationBackendTest : public testing::Test {
         GetTestEquivalenceClassGamma());
     fake_affiliation_api_.AddTestGrouping(GetTestGropingAlpha());
     fake_affiliation_api_.AddTestGrouping(GetTestGropingBeta());
-    fake_affiliation_api_.AddTestGrouping(GetTestGropingAlpha());
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -1122,6 +1121,28 @@ TEST_F(AffiliationBackendTest,
 
   EXPECT_GE(0u, backend_facet_manager_count());
   EXPECT_EQ(0u, GetNumOfEquivalenceClassInDatabase());
+}
+
+TEST_F(AffiliationBackendTest, GroupsUpdatedByMainDomain) {
+  std::vector<FacetURI> fetched_uris;
+  fetched_uris.push_back(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1));
+  // Add a different facet to its own group with the same eTLD+1.
+  fetched_uris.push_back(
+      FacetURI::FromCanonicalSpec("https://alpha.example.com"));
+
+  GroupedFacets group;
+  group.facets = {Facet(fetched_uris.back())};
+  fake_affiliation_api()->AddTestEquivalenceClass(group.facets);
+  fake_affiliation_api()->AddTestGrouping(group);
+
+  backend()->KeepPrefetchForFacets(fetched_uris);
+  ASSERT_NO_FATAL_FAILURE(ExpectNeedForFetchAndLetItBeSent());
+  ASSERT_NO_FATAL_FAILURE(ExpectAndCompleteFetch(fetched_uris));
+
+  auto expected_group = GetTestGropingAlpha();
+  expected_group.facets.emplace_back(fetched_uris.back());
+  EXPECT_THAT(backend()->GetGroupingInfo(fetched_uris),
+              testing::ElementsAre(expected_group));
 }
 
 }  // namespace password_manager

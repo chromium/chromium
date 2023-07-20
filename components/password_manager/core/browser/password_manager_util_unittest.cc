@@ -43,6 +43,9 @@
 
 using autofill::password_generation::PasswordGenerationType;
 using device_reauth::MockDeviceAuthenticator;
+using password_manager::Facet;
+using password_manager::FacetURI;
+using password_manager::GroupedFacets;
 using password_manager::PasswordForm;
 
 namespace password_manager_util {
@@ -1051,4 +1054,92 @@ INSTANTIATE_TEST_SUITE_P(
         TestCase{"http://facebook.com", "facebook.com"},
         TestCase{"http://www.facebook.com", "facebook.com"},
         TestCase{"http://many.many.many.facebook.com", "facebook.com"}));
+
+struct MergeRelatedGroupsTestCase {
+  std::vector<std::vector<std::string>> input_groups;
+  std::vector<std::vector<std::string>> output_groups;
+  std::vector<std::string> psl_extensions;
+};
+
+class PasswordManagerUtilMergeRelatedGroupsTest
+    : public testing::Test,
+      public testing::WithParamInterface<MergeRelatedGroupsTestCase> {
+ protected:
+  std::vector<GroupedFacets> GetGroups(
+      const std::vector<std::vector<std::string>>& groups) {
+    std::vector<password_manager::GroupedFacets> results;
+    for (const auto& group : groups) {
+      GroupedFacets result;
+      for (const auto& facet : group) {
+        result.facets.emplace_back(
+            FacetURI::FromPotentiallyInvalidSpec("https://" + facet));
+      }
+      results.push_back(std::move(result));
+    }
+    return results;
+  }
+
+  void SortFacets(std::vector<GroupedFacets>& groups) {
+    for (auto& group : groups) {
+      std::sort(group.facets.begin(), group.facets.end(),
+                [](const auto& lhs, const auto& rhs) {
+                  return base::CompareCaseInsensitiveASCII(
+                      lhs.uri.potentially_invalid_spec(),
+                      rhs.uri.potentially_invalid_spec());
+                });
+    }
+  }
+
+  base::flat_set<std::string> GetPSLExtensions() {
+    return base::flat_set<std::string>(GetParam().psl_extensions);
+  }
+};
+
+TEST_P(PasswordManagerUtilMergeRelatedGroupsTest, ParamTest) {
+  std::vector<GroupedFacets> expected_groups =
+      GetGroups(GetParam().output_groups);
+  std::vector<GroupedFacets> actual_groups = MergeRelatedGroups(
+      GetPSLExtensions(), GetGroups(GetParam().input_groups));
+
+  // Sort facets to simplify testing as their order doesn'r matter
+  SortFacets(expected_groups);
+  SortFacets(actual_groups);
+
+  EXPECT_THAT(actual_groups,
+              testing::UnorderedElementsAreArray(expected_groups));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PasswordManagerUtilMergeRelatedGroupsTest,
+    ::testing::Values(
+        MergeRelatedGroupsTestCase{{{"a.com"}, {"b.com"}, {"c.com"}},
+                                   {{"a.com"}, {"b.com"}, {"c.com"}},
+                                   {}},
+        MergeRelatedGroupsTestCase{
+            {{"a.com"}, {"test1.a.com"}, {"test2.a.com"}},
+            {{"a.com", "test1.a.com", "test2.a.com"}},
+            {}},
+        // When a.com is extended to be a public suffix the groups no longer
+        // merge together.
+        MergeRelatedGroupsTestCase{
+            {{"a.com"}, {"test1.a.com"}, {"test2.a.com"}},
+            {{"a.com"}, {"test1.a.com"}, {"test2.a.com"}},
+            {"a.com"}},
+        MergeRelatedGroupsTestCase{{{"a.com", "b.com"}, {"www.b.com", "c.com"}},
+                                   {{"a.com", "b.com", "www.b.com", "c.com"}},
+                                   {}},
+        MergeRelatedGroupsTestCase{
+            {{"a.com", "b.com"}, {"www.b.com", "c.com"}, {"d.org"}},
+            {{"a.com", "b.com", "www.b.com", "c.com"}, {"d.org"}},
+            {}},
+        MergeRelatedGroupsTestCase{
+            {{"a.com", "b.com", "c.com"},
+             {"www.b.com"},
+             {"d.org", "www.c.com"}},
+            {{"a.com", "b.com", "c.com", "www.b.com", "d.org", "www.c.com"}},
+            {}}
+
+        ));
+
 }  // namespace password_manager_util

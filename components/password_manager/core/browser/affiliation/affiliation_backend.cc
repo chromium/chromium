@@ -24,6 +24,7 @@
 #include "components/password_manager/core/browser/affiliation/affiliation_fetcher_factory_impl.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_fetcher_interface.h"
 #include "components/password_manager/core/browser/affiliation/facet_manager.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace password_manager {
@@ -321,6 +322,9 @@ void AffiliationBackend::OnFetchSucceeded(
     cache_->UpdatePslExtensions(result->psl_extensions);
   }
 
+  auto psl_extensions = base::MakeFlatSet<std::string>(result->psl_extensions);
+  result->groupings = password_manager_util::MergeRelatedGroups(
+      psl_extensions, result->groupings);
   std::map<std::string, const GroupedFacets*> map_facet_to_group;
   for (const GroupedFacets& grouped_facets : result->groupings) {
     for (const Facet& facet : grouped_facets.facets) {
