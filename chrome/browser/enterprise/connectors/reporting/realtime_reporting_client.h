@@ -201,11 +201,13 @@ class RealtimeReportingClient : public KeyedService,
 // "securityAgents" : [
 //   {
 //     "crowdstrike": {
-//       "agentId": "agent-123",
-//       "customerId": "customer-123"
+//       "agent_id": "agent-123",
+//       "customer_id": "customer-123"
 //     }
 //   }
 // ]
+// These must match proto specified in
+// chrome/cros/reporting/api/proto/browser_events.proto
 void AddCrowdstrikeSignalsToEvent(
     base::Value::Dict& event,
     const device_signals::SignalsAggregationResponse& response);

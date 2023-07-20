@@ -265,8 +265,8 @@ TEST_F(RealtimeReportingClientTestBase, TestCrowdstrikeSignalsPopulated) {
   ASSERT_EQ(agentList.size(), 1u);
   const base::Value::Dict& signalValues =
       agentList[0].GetDict().Find("crowdstrike")->GetDict();
-  EXPECT_EQ(signalValues.Find("agentId")->GetString(), "agent-123");
-  EXPECT_EQ(signalValues.Find("customerId")->GetString(), "customer-123");
+  EXPECT_EQ(signalValues.Find("agent_id")->GetString(), "agent-123");
+  EXPECT_EQ(signalValues.Find("customer_id")->GetString(), "customer-123");
 }
 
 TEST_F(RealtimeReportingClientTestBase,

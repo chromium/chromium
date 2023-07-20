@@ -441,8 +441,8 @@ void AddCrowdstrikeSignalsToEvent(
       response.agent_signals_response->crowdstrike_signals.value();
 
   base::Value::Dict crowdstrike_agent_fields;
-  crowdstrike_agent_fields.Set("agentId", crowdstrike_signals.agent_id);
-  crowdstrike_agent_fields.Set("customerId", crowdstrike_signals.customer_id);
+  crowdstrike_agent_fields.Set("agent_id", crowdstrike_signals.agent_id);
+  crowdstrike_agent_fields.Set("customer_id", crowdstrike_signals.customer_id);
   base::Value::Dict crowdstrike_agent;
   crowdstrike_agent.Set("crowdstrike", std::move(crowdstrike_agent_fields));
   base::Value::List agents;
