@@ -1035,9 +1035,6 @@ extern const char kStartSurfaceReturnTimeDescription[];
 extern const char kStorageBucketsName[];
 extern const char kStorageBucketsDescription[];
 
-extern const char kHiddenNetworkMigrationName[];
-extern const char kHiddenNetworkMigrationDescription[];
-
 extern const char kHideIncognitoMediaMetadataName[];
 extern const char kHideIncognitoMediaMetadataDescription[];
 

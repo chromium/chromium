@@ -76,9 +76,7 @@ NetworkHandler::NetworkHandler()
   connection_info_metrics_logger_.reset(new ConnectionInfoMetricsLogger());
   hotspot_allowed_flag_handler_.reset(new HotspotAllowedFlagHandler());
   vpn_network_metrics_helper_.reset(new VpnNetworkMetricsHelper());
-  if (base::FeatureList::IsEnabled(features::kHiddenNetworkMigration)) {
-    hidden_network_handler_.reset(new HiddenNetworkHandler());
-  }
+  hidden_network_handler_.reset(new HiddenNetworkHandler());
   if (ash::features::IsHotspotEnabled()) {
     enterprise_managed_metadata_store_.reset(
         new EnterpriseManagedMetadataStore());
@@ -145,10 +143,8 @@ void NetworkHandler::Init() {
       cellular_inhibitor_.get(), network_profile_handler_.get(),
       network_state_handler_.get(), managed_cellular_pref_handler_.get(),
       managed_network_configuration_handler_.get());
-  if (base::FeatureList::IsEnabled(features::kHiddenNetworkMigration)) {
-    hidden_network_handler_->Init(managed_network_configuration_handler_.get(),
-                                  network_state_handler_.get());
-  }
+  hidden_network_handler_->Init(managed_network_configuration_handler_.get(),
+                                network_state_handler_.get());
   hotspot_allowed_flag_handler_->Init();
   if (ash::features::IsHotspotEnabled()) {
     hotspot_capabilities_provider_->Init(network_state_handler_.get());
@@ -241,19 +237,15 @@ void NetworkHandler::InitializePrefServices(
   cellular_network_metrics_logger_.reset(new CellularNetworkMetricsLogger(
       network_state_handler_.get(), network_metadata_store_.get(),
       connection_info_metrics_logger_.get()));
-  if (base::FeatureList::IsEnabled(ash::features::kHiddenNetworkMigration)) {
-    hidden_network_handler_->SetNetworkMetadataStore(
-        network_metadata_store_.get());
-  }
+  hidden_network_handler_->SetNetworkMetadataStore(
+      network_metadata_store_.get());
 }
 
 void NetworkHandler::ShutdownPrefServices() {
   cellular_esim_profile_handler_->SetDevicePrefs(nullptr);
   managed_cellular_pref_handler_->SetDevicePrefs(nullptr);
   ui_proxy_config_service_.reset();
-  if (base::FeatureList::IsEnabled(ash::features::kHiddenNetworkMigration)) {
-    hidden_network_handler_->SetNetworkMetadataStore(nullptr);
-  }
+  hidden_network_handler_->SetNetworkMetadataStore(nullptr);
   network_metadata_store_.reset();
 }
 
@@ -304,7 +296,6 @@ TechnologyStateController* NetworkHandler::technology_state_controller() {
 }
 
 HiddenNetworkHandler* NetworkHandler::hidden_network_handler() {
-  DCHECK(base::FeatureList::IsEnabled(features::kHiddenNetworkMigration));
   return hidden_network_handler_.get();
 }
 

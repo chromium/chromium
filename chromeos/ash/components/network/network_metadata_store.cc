@@ -432,8 +432,6 @@ void NetworkMetadataStore::SetLastConnectedTimestamp(
 
 base::Time NetworkMetadataStore::UpdateAndRetrieveWiFiTimestamp(
     const std::string& network_guid) {
-  DCHECK(base::FeatureList::IsEnabled(features::kHiddenNetworkMigration));
-
   const NetworkState* network =
       network_state_handler_->GetNetworkStateFromGuid(network_guid);
 

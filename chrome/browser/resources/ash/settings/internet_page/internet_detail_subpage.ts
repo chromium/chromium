@@ -286,14 +286,6 @@ class SettingsInternetDetailPageElement extends
         computed: 'computeDisabled_(deviceState_.*)',
       },
 
-      enableHiddenNetworkMigration_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists('enableHiddenNetworkMigration') &&
-              loadTimeData.getBoolean('enableHiddenNetworkMigration');
-        },
-      },
-
       isApnRevampEnabled_: {
         type: Boolean,
         value() {
@@ -393,7 +385,6 @@ class SettingsInternetDetailPageElement extends
   private deviceState_: OncMojo.DeviceStateProperties|null;
   private didSetFocus_: boolean;
   private disabled_: boolean;
-  private enableHiddenNetworkMigration_: boolean;
   private hiddenPref_: chrome.settingsPrivate.PrefObject<boolean>;
   private ipAddress_: string;
   private isApnRevampEnabled_: boolean;
@@ -1882,14 +1873,6 @@ class SettingsInternetDetailPageElement extends
     }
 
     return true;
-  }
-
-  private showHiddenNetworkToggleLegacy_(): boolean {
-    return this.showHiddenNetwork_() && !this.enableHiddenNetworkMigration_;
-  }
-
-  private showHiddenNetworkToggleMoved_(): boolean {
-    return this.showHiddenNetwork_() && this.enableHiddenNetworkMigration_;
   }
 
   private showMetered_(): boolean {

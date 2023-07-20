@@ -4324,9 +4324,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          ash::features::kDeprecateOldKeyboardShortcutsAccelerator)},
-    {"hidden-network-migration", flag_descriptions::kHiddenNetworkMigrationName,
-     flag_descriptions::kHiddenNetworkMigrationDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kHiddenNetworkMigration)},
     {"show-bluetooth-debug-log-toggle",
      flag_descriptions::kShowBluetoothDebugLogToggleName,
      flag_descriptions::kShowBluetoothDebugLogToggleDescription, kOsCrOS,

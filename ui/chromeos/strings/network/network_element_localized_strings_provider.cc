@@ -536,10 +536,6 @@ void AddConfigLocalizedStrings(content::WebUIDataSource* html_source) {
       "showHiddenNetworkWarning",
       base::FeatureList::IsEnabled(ash::features::kHiddenNetworkWarning));
 
-  html_source->AddBoolean(
-      "enableHiddenNetworkMigration",
-      base::FeatureList::IsEnabled(ash::features::kHiddenNetworkMigration));
-
   // Login screen and public account users can only create shared network
   // configurations. Other users default to unshared network configurations.
   // NOTE: Guest and kiosk users can only create unshared network configs.

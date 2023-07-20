@@ -553,8 +553,6 @@ TEST_F(NetworkMetadataStoreTest, OwnOobeNetworks_NotFirstLogin) {
 }
 
 TEST_F(NetworkMetadataStoreTest, NetworkCreationTimestamp) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kHiddenNetworkMigration);
   ConfigureService(kConfigWifi0Connectable);
 
   const base::Time creation_timestamp =
@@ -571,8 +569,6 @@ TEST_F(NetworkMetadataStoreTest, NetworkCreationTimestamp) {
 
 TEST_F(NetworkMetadataStoreTest,
        NetworkCreationTimestampIsEventuallyOverwritten) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kHiddenNetworkMigration);
   ConfigureService(kConfigWifi0Connectable);
   EXPECT_EQ(metadata_store()->UpdateAndRetrieveWiFiTimestamp(kGuid),
             base::Time::Now().UTCMidnight());
@@ -584,16 +580,12 @@ TEST_F(NetworkMetadataStoreTest,
 }
 
 TEST_F(NetworkMetadataStoreTest, NetworkCreationTimestampNonWifi) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kHiddenNetworkMigration);
   ConfigureService(kConfigEthernet);
   EXPECT_EQ(metadata_store()->UpdateAndRetrieveWiFiTimestamp(kGuid3),
             base::Time::Now().UTCMidnight());
 }
 
 TEST_F(NetworkMetadataStoreTest, NetworkCreationTimestampNonExistentNetwork) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kHiddenNetworkMigration);
   EXPECT_EQ(metadata_store()->UpdateAndRetrieveWiFiTimestamp(kGuid),
             base::Time::Now().UTCMidnight());
   // Fast forward 2 weeks to check that creation timestamp is always
@@ -607,8 +599,6 @@ TEST_F(NetworkMetadataStoreTest, NetworkCreationTimestampMigrationAgeOverride) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kHiddenNetworkMigrationAge, kMigrationAgeASCII);
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kHiddenNetworkMigration);
   ConfigureService(kConfigWifi0Connectable);
 
   // Verify that the amount of time a network must have existed before its

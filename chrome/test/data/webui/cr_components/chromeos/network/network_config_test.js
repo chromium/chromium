@@ -130,59 +130,36 @@ suite('network-config', function() {
       });
     });
 
-    // Syntactic sugar for running test twice with different values for the
-    // enableHiddenNetworkMigration feature flag.
-    [true, false].forEach(isHiddenNetworkMigrationEnabled => {
-      test(
-          'New networks are explicitly not hidden when logged in', async () => {
-            loadTimeData.overrideValues({
-              'enableHiddenNetworkMigration': isHiddenNetworkMigrationEnabled,
-            });
+    test('New networks are explicitly not hidden when logged in', async () => {
+      // Simulate the dialog being opened while a user is logged in.
+      networkConfig.isLoggedIn_ = true;
 
-            // Simulate the dialog being opened while a user is logged in.
-            networkConfig.isLoggedIn_ = true;
+      await flushAsync();
 
-            await flushAsync();
+      networkConfig.save();
 
-            networkConfig.save();
+      await flushAsync();
 
-            await flushAsync();
-
-            const props = mojoApi_.getPropertiesToSetForTest();
-            if (isHiddenNetworkMigrationEnabled) {
-              assertEquals(
-                  props.typeConfig.wifi.hiddenSsid, HiddenSsidMode.kDisabled);
-            } else {
-              assertEquals(
-                  props.typeConfig.wifi.hiddenSsid, HiddenSsidMode.kAutomatic);
-            }
-          });
+      const props = mojoApi_.getPropertiesToSetForTest();
+      assertEquals(props.typeConfig.wifi.hiddenSsid, HiddenSsidMode.kDisabled);
     });
 
-    // Syntactic sugar for running test twice with different values for the
-    // enableHiddenNetworkMigration feature flag.
-    [true, false].forEach(isHiddenNetworkMigrationEnabled => {
-      test(
-          'New networks are explicitly not hidden when not logged in',
-          async () => {
-            loadTimeData.overrideValues({
-              'enableHiddenNetworkMigration': isHiddenNetworkMigrationEnabled,
-            });
+    test(
+        'New networks are explicitly not hidden when not logged in',
+        async () => {
+          // Simulate the dialog being opened when the user is not logged in.
+          networkConfig.isLoggedIn_ = false;
 
-            // Simulate the dialog being opened when the user is not logged in.
-            networkConfig.isLoggedIn_ = false;
+          await flushAsync();
 
-            await flushAsync();
+          networkConfig.save();
 
-            networkConfig.save();
+          await flushAsync();
 
-            await flushAsync();
-
-            assertEquals(
-                mojoApi_.getPropertiesToSetForTest().typeConfig.wifi.hiddenSsid,
-                HiddenSsidMode.kAutomatic);
-          });
-    });
+          assertEquals(
+              mojoApi_.getPropertiesToSetForTest().typeConfig.wifi.hiddenSsid,
+              HiddenSsidMode.kAutomatic);
+        });
   });
 
   suite('Existing WiFi Config', function() {
@@ -236,23 +213,15 @@ suite('network-config', function() {
       });
     });
 
-    // Syntactic sugar for running test twice with different values for the
-    // enableHiddenNetworkMigration feature flag.
-    [true, false].forEach(isHiddenNetworkMigrationEnabled => {
-      test('Networks\' hidden SSID mode is not overwritten', async () => {
-        loadTimeData.overrideValues(
-            {'enableHiddenNetworkMigration': isHiddenNetworkMigrationEnabled});
+    test('Networks\' hidden SSID mode is not overwritten', async () => {
+      await flushAsync();
 
-        await flushAsync();
+      networkConfig.save();
 
-        networkConfig.save();
+      await flushAsync();
 
-        await flushAsync();
-
-        const props = mojoApi_.getPropertiesToSetForTest();
-        assertEquals(
-            props.typeConfig.wifi.hiddenSsid, HiddenSsidMode.kAutomatic);
-      });
+      const props = mojoApi_.getPropertiesToSetForTest();
+      assertEquals(props.typeConfig.wifi.hiddenSsid, HiddenSsidMode.kAutomatic);
     });
   });
 

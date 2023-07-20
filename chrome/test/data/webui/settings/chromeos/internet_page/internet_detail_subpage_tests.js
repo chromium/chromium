@@ -130,10 +130,7 @@ suite('InternetDetailPage', function() {
   }
 
   function getHiddenToggle() {
-    if (loadTimeData.getBoolean('enableHiddenNetworkMigration')) {
-      return internetDetailPage.shadowRoot.querySelector('#hiddenToggle');
-    }
-    return internetDetailPage.shadowRoot.querySelector('#hiddenToggleLegacy');
+    return internetDetailPage.shadowRoot.querySelector('#hiddenToggle');
   }
 
   /**
@@ -422,47 +419,6 @@ suite('InternetDetailPage', function() {
         const hiddenToggle = getHiddenToggle();
         assertFalse(!!hiddenToggle);
       });
-    });
-
-    // Syntactic sugar for running test twice with different values for the
-    // apnRevamp feature flag.
-    [true, false].forEach(shouldEnableHiddenNetworkMigration => {
-      test(
-          'Hidden toggle is shown in a different location depending on feature flag',
-          async () => {
-            loadTimeData.overrideValues({
-              enableHiddenNetworkMigration: shouldEnableHiddenNetworkMigration,
-            });
-
-            init();
-            mojoApi_.resetForTest();
-            mojoApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
-            const wifiNetwork =
-                getManagedProperties(NetworkType.kWiFi, 'wifi_user');
-            wifiNetwork.source = OncSource.kUser;
-            wifiNetwork.connectable = true;
-
-            mojoApi_.setManagedPropertiesForTest(wifiNetwork);
-
-            internetDetailPage.init('wifi_user_guid', 'WiFi', 'wifi_user');
-
-            return flushAsync().then(() => {
-              const enableHiddenNetworkMigration =
-                  loadTimeData.getBoolean('enableHiddenNetworkMigration');
-              const hiddenToggle =
-                  internetDetailPage.shadowRoot.querySelector('#hiddenToggle');
-              const hiddenToggleLegacy =
-                  internetDetailPage.shadowRoot.querySelector(
-                      '#hiddenToggleLegacy');
-              if (loadTimeData.getBoolean('enableHiddenNetworkMigration')) {
-                assertTrue(!!hiddenToggle);
-                assertFalse(!!hiddenToggleLegacy);
-              } else {
-                assertFalse(!!hiddenToggle);
-                assertTrue(!!hiddenToggleLegacy);
-              }
-            });
-          });
     });
 
     test('Proxy Unshared', function() {

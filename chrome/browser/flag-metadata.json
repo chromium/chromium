@@ -4537,11 +4537,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "hidden-network-migration",
-    "owners": [ "chadduffin", "hsuregan", "cros-connectivity@google.com" ],
-    "expiry_milestone": 116
-  },
-  {
     "name": "hide-content-suggestions-tiles",
     "owners": [ "adamta@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 120

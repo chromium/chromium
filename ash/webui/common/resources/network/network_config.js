@@ -540,13 +540,11 @@ Polymer({
     this.selectedServerCaHash_ = undefined;
     this.selectedUserCertHash_ = undefined;
 
-    if (this.getHiddenNetworkMigrationEnabled()) {
-      const dialogArgs = chrome.getVariableValue('dialogArguments');
-      if (dialogArgs) {
-        const args = JSON.parse(dialogArgs);
-        if ('loggedIn' in args) {
-          this.isLoggedIn_ = args.loggedIn;
-        }
+    const dialogArgs = chrome.getVariableValue('dialogArguments');
+    if (dialogArgs) {
+      const args = JSON.parse(dialogArgs);
+      if ('loggedIn' in args) {
+        this.isLoggedIn_ = args.loggedIn;
       }
     }
 
@@ -604,11 +602,6 @@ Polymer({
     }
   },
 
-  /** @private */
-  getHiddenNetworkMigrationEnabled() {
-    return loadTimeData.getBoolean('enableHiddenNetworkMigration');
-  },
-
   /**
    * @param {boolean} connect If true, connect after save.
    * @private
@@ -645,7 +638,7 @@ Polymer({
     }
     const propertiesToSet = this.getPropertiesToSet_();
     if (this.managedProperties_.source === OncSource.kNone) {
-      if (this.getHiddenNetworkMigrationEnabled() && this.isLoggedIn_) {
+      if (this.isLoggedIn_) {
         // Note: Set hidden SSID mode of new WiFi networks to disabled to avoid
         // unintentionally marking networks as hidden if not in range or
         // misspelled, etc.

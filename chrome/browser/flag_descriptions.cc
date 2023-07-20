@@ -1819,12 +1819,6 @@ const char kHeavyAdInterventionName[] = "Heavy Ad Intervention";
 const char kHeavyAdInterventionDescription[] =
     "Unloads ads that use too many device resources.";
 
-const char kHiddenNetworkMigrationName[] = "Hidden Network Migration";
-
-const char kHiddenNetworkMigrationDescription[] =
-    "Enables a privacy improvement that removes wrongly configured hidden"
-    "networks and mitigates the creation of these networks.";
-
 const char kHideIncognitoMediaMetadataName[] =
     "Hide media metadata when in Incognito";
 const char kHideIncognitoMediaMetadataDescription[] =

@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/components/network/hidden_network_handler.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
@@ -58,10 +57,6 @@ base::TimeDelta ComputeMigrationInterval() {
 }
 
 }  // namespace
-
-HiddenNetworkHandler::HiddenNetworkHandler() {
-  DCHECK(base::FeatureList::IsEnabled(features::kHiddenNetworkMigration));
-}
 
 void HiddenNetworkHandler::Init(
     ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
