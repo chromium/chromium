@@ -182,10 +182,14 @@ void ProcessMetricsDecorator::RefreshMetrics() {
       &ProcessMetricsDecorator::DidGetMemoryUsage, weak_factory_.GetWeakPtr()));
 }
 
-void ProcessMetricsDecorator::RefreshMetricsForTesting() {
-  // Tests may refresh the metrics outside the normal schedule. Make sure the
-  // timer isn't running so that RefreshMetrics() can call StartTimer() to
-  // schedule the next refresh.
+void ProcessMetricsDecorator::RequestImmediateMetrics() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (state_ == State::kWaitingForResponse) {
+    // A measurement is already being taken and will be available immediately.
+    return;
+  }
+  // Stop the timer so the next metrics sample will be 2 minutes after this to
+  // avoid re-sampling shortly after updating the metrics.
   StopTimer();
   RefreshMetrics();
 }

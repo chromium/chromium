@@ -81,7 +81,7 @@ class ResourceUsageTabHelperTest : public InteractiveBrowserTest {
           base::BindLambdaForTesting([](performance_manager::Graph* graph) {
             auto* metrics_decorator = graph->GetRegisteredObjectAs<
                 performance_manager::ProcessMetricsDecorator>();
-            metrics_decorator->RefreshMetricsForTesting();
+            metrics_decorator->RequestImmediateMetrics();
           }));
 
       run_loop.Run();

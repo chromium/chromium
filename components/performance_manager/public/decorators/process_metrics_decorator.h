@@ -69,7 +69,8 @@ class ProcessMetricsDecorator
   bool IsTimerRunningForTesting() const;
   base::TimeDelta GetTimerDelayForTesting() const;
 
-  void RefreshMetricsForTesting();
+  // Immediately refreshes the metrics for all the process nodes.
+  void RequestImmediateMetrics();
 
  protected:
   class ScopedMetricsInterestTokenImpl;

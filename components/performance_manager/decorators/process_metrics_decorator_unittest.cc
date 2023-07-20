@@ -208,6 +208,14 @@ class ProcessMetricsDecoratorTest : public GraphTestHarness {
     mock_utility_process_->set_private_footprint_kb(0);
   }
 
+  void ExpectAndResetAllProcessResults(uint64_t resident_set_kb,
+                                       uint64_t private_footprint_kb) {
+    ExpectProcessResults(resident_set_kb, private_footprint_kb);
+    ExpectOtherProcessResults(resident_set_kb, private_footprint_kb);
+    ExpectUtilityProcessResults(resident_set_kb, private_footprint_kb);
+    ResetResults();
+  }
+
   TestNodeWrapper<ProcessNodeImpl> mock_utility_process_;
 
  private:
@@ -223,55 +231,73 @@ TEST_F(ProcessMetricsDecoratorTest, RefreshTimer) {
   graph()->AddSystemNodeObserver(&sys_node_observer);
 
   // There's no data available initially.
-  ExpectProcessResults(0, 0);
-  ExpectOtherProcessResults(0, 0);
-  ExpectUtilityProcessResults(0, 0);
+  ExpectAndResetAllProcessResults(0, 0);
 
   // The first measurement should be taken immediately.
+  auto default_memory_dump = [&] {
+    return GenerateMemoryDump({
+        {mock_graph()->process->process_id(), kFakeResidentSetKb,
+         kFakePrivateFootprintKb},
+        {mock_graph()->other_process->process_id(), kFakeResidentSetKb,
+         kFakePrivateFootprintKb},
+        {mock_utility_process_->process_id(), kFakeResidentSetKb,
+         kFakePrivateFootprintKb},
+    });
+  };
   EXPECT_CALL(*decorator(), GetMemoryDump())
-      .WillOnce(Return(ByMove(GenerateMemoryDump({
-          {mock_graph()->process->process_id(), kFakeResidentSetKb,
-           kFakePrivateFootprintKb},
-          {mock_graph()->other_process->process_id(), kFakeResidentSetKb,
-           kFakePrivateFootprintKb},
-          {mock_utility_process_->process_id(), kFakeResidentSetKb,
-           kFakePrivateFootprintKb},
-      }))));
+      .WillOnce(Return(ByMove(default_memory_dump())));
   EXPECT_CALL(sys_node_observer, OnProcessMemoryMetricsAvailable(_));
 
   auto interest_token =
       ProcessMetricsDecorator::RegisterInterestForProcessMetrics(graph());
-
-  ExpectProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
-  ExpectOtherProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
-  ExpectUtilityProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
-  ResetResults();
+  ExpectAndResetAllProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
 
   // Advance the timer, this should trigger a refresh of the metrics.
   EXPECT_CALL(*decorator(), GetMemoryDump())
-      .WillOnce(Return(ByMove(GenerateMemoryDump({
-          {mock_graph()->process->process_id(), kFakeResidentSetKb,
-           kFakePrivateFootprintKb},
-          {mock_graph()->other_process->process_id(), kFakeResidentSetKb,
-           kFakePrivateFootprintKb},
-          {mock_utility_process_->process_id(), kFakeResidentSetKb,
-           kFakePrivateFootprintKb},
-      }))));
+      .WillOnce(Return(ByMove(default_memory_dump())));
   EXPECT_CALL(sys_node_observer, OnProcessMemoryMetricsAvailable(_));
 
   task_env().FastForwardBy(decorator()->GetTimerDelayForTesting());
+  ExpectAndResetAllProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
 
-  ExpectProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
-  ExpectOtherProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
-  ExpectUtilityProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
-  ResetResults();
+  // Requesting an immediate measurement partway through the timer period should
+  // reset the timer.
+  base::TimeDelta delay = decorator()->GetTimerDelayForTesting();
+
+  EXPECT_CALL(*decorator(), GetMemoryDump())
+      .WillOnce(Return(ByMove(default_memory_dump())));
+  EXPECT_CALL(sys_node_observer, OnProcessMemoryMetricsAvailable(_));
+
+  task_env().FastForwardBy(delay / 2);
+  decorator()->RequestImmediateMetrics();
+  ExpectAndResetAllProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
+
+  // Timer should not fire again until the full `delay` passes.
+  task_env().FastForwardBy(delay / 2);
+  ExpectAndResetAllProcessResults(0, 0);
+
+  EXPECT_CALL(*decorator(), GetMemoryDump())
+      .WillOnce(Return(ByMove(default_memory_dump())));
+  EXPECT_CALL(sys_node_observer, OnProcessMemoryMetricsAvailable(_));
+
+  task_env().FastForwardBy(delay / 2);
+  ExpectAndResetAllProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
+
+  // Requesting an immediate measurement while a measurement is already in
+  // progress should do nothing.
+  EXPECT_CALL(*decorator(), GetMemoryDump()).WillOnce([&] {
+    decorator()->RequestImmediateMetrics();
+    return default_memory_dump();
+  });
+  EXPECT_CALL(sys_node_observer, OnProcessMemoryMetricsAvailable(_));
+
+  task_env().FastForwardBy(decorator()->GetTimerDelayForTesting());
+  ExpectAndResetAllProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
 
   // Refreshes should stop when there are no tokens left.
   interest_token.reset();
   task_env().FastForwardBy(decorator()->GetTimerDelayForTesting());
-  ExpectProcessResults(0, 0);
-  ExpectOtherProcessResults(0, 0);
-  ExpectUtilityProcessResults(0, 0);
+  ExpectAndResetAllProcessResults(0, 0);
 
   graph()->RemoveSystemNodeObserver(&sys_node_observer);
 }
@@ -312,9 +338,7 @@ TEST_F(ProcessMetricsDecoratorTest, RefreshFailure) {
   auto interest_token =
       ProcessMetricsDecorator::RegisterInterestForProcessMetrics(graph());
 
-  ExpectProcessResults(0, 0);
-  ExpectOtherProcessResults(0, 0);
-  ExpectUtilityProcessResults(0, 0);
+  ExpectAndResetAllProcessResults(0, 0);
 
   // A failure shouldn't stop the next refresh.
   EXPECT_CALL(*decorator(), GetMemoryDump())
@@ -329,9 +353,7 @@ TEST_F(ProcessMetricsDecoratorTest, RefreshFailure) {
 
   task_env().FastForwardBy(decorator()->GetTimerDelayForTesting());
 
-  ExpectProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
-  ExpectOtherProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
-  ExpectUtilityProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
+  ExpectAndResetAllProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
 }
 
 TEST_F(ProcessMetricsDecoratorTest, MetricsInterestTokens) {
