@@ -6,6 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SHARING_INCOMING_PASSWORD_SHARING_INVITATION_SYNC_BRIDGE_H_
 
 #include <memory>
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/sync/model/model_error.h"
@@ -21,6 +22,8 @@ class ModelTypeChangeProcessor;
 
 namespace password_manager {
 
+class PasswordReceiverService;
+
 // Sync bridge implementation for INCOMING_PASSWORD_SHARING_INVITATION model
 // type.
 class IncomingPasswordSharingInvitationSyncBridge
@@ -35,7 +38,15 @@ class IncomingPasswordSharingInvitationSyncBridge
       const IncomingPasswordSharingInvitationSyncBridge&) = delete;
   ~IncomingPasswordSharingInvitationSyncBridge() override;
 
+  // |password_receiver_service| must outlive this object and must not be null.
+  // This method must be called before any interaction with the server has
+  // started.
+  void SetPasswordReceiverService(
+      PasswordReceiverService* password_receiver_service);
+
   // ModelTypeSyncBridge implementation.
+  void OnSyncStarting(
+      const syncer::DataTypeActivationRequest& request) override;
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   absl::optional<syncer::ModelError> MergeFullSyncData(
@@ -59,12 +70,20 @@ class IncomingPasswordSharingInvitationSyncBridge
                                std::unique_ptr<syncer::ModelTypeStore> store);
   void OnReadAllMetadata(const absl::optional<syncer::ModelError>& error,
                          std::unique_ptr<syncer::MetadataBatch> metadata_batch);
+  void OnCommitSyncMetadata(const absl::optional<syncer::ModelError>& error);
+
+  // Persists the changes to sync metadata store.
+  void CommitSyncMetadata(
+      std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   // In charge of actually persisting changes to disk, or loading previous data.
   // Stores only sync metadata.
   std::unique_ptr<syncer::ModelTypeStore> sync_metadata_store_;
+
+  // Used to process incoming invitations.
+  raw_ptr<PasswordReceiverService> password_receiver_service_ = nullptr;
 
   base::WeakPtrFactory<IncomingPasswordSharingInvitationSyncBridge>
       weak_ptr_factory_{this};

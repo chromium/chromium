@@ -60,6 +60,11 @@ PasswordReceiverServiceImpl::PasswordReceiverServiceImpl(
     PasswordStoreInterface* password_store)
     : sync_bridge_(std::move(sync_bridge)), password_store_(password_store) {
   CHECK(password_store_);
+
+  // |sync_bridge_| can be empty in tests.
+  if (sync_bridge_) {
+    sync_bridge_->SetPasswordReceiverService(this);
+  }
 }
 
 PasswordReceiverServiceImpl::~PasswordReceiverServiceImpl() = default;
