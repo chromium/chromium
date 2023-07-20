@@ -31,7 +31,15 @@ source_set("ios") {
 
   deps = [
     "//base:base_static",
+    "//base:debugging_buildflags",
+    "//base:feature_list_buildflags",
+    "//base:logging_buildflags",
+    "//base:tracing_buildflags",
+    "//base/allocator:buildflags",
+    "//base/allocator/partition_allocator:debugging_buildflags",
+    "//base/allocator/partition_allocator:partition_alloc_buildflags",
     "//base/numerics:base_numerics",
+    "//base/time/buildflags",
     "//build:blink_buildflags",
     "//third_party/abseil-cpp:absl",
   ]
