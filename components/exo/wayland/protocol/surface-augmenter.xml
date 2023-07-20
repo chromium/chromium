@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="surface_augmenter" version="7">
+  <interface name="surface_augmenter" version="8">
     <description summary="surface composition delegation">
       The global interface exposing surface delegated composition
       capabilities is used to instantiate an interface extension for a
@@ -89,7 +89,7 @@
     </request>
   </interface>
 
-  <interface name="augmented_surface" version="7">
+  <interface name="augmented_surface" version="8">
     <description summary="delegate composition of a wl_surface">
       An additional interface to a wl_surface object, which allows the
       client to specify the delegated composition of the surface
@@ -212,6 +212,26 @@
       <arg name="bottom_right" type="fixed" summary="bottom right corner"/>
       <arg name="bottom_left" type="fixed" summary="bottom left corner"/>
     </request>
+
+    <!-- Version 8 additions -->
+
+    <request name="set_clip_rect" since="8">
+      <description summary="sets a subsurface clip rect on surface local coordinates">
+  This schedules a clip rect to be applied when drawing this sub-surface.
+  The clip will be placed with its origin (top left corner pixel) at the
+  location x, y of the surface local coordinate system. The coordinates are not
+  restricted to the surface area. Negative x and y values are allowed.
+
+  If all of x, y, width and height are -1.0, the clip rect is unset instead.
+
+  Initially, surfaces have no clip set.
+  This state is double-buffered, and is applied on the next wl_surface.commit.
+      </description>
+      <arg name="x" type="fixed" summary="x coordinate in the surface local coordinates"/>
+      <arg name="y" type="fixed" summary="y coordinate in the surface local coordinates"/>
+      <arg name="width" type="fixed" summary="width of the clip rect"/>
+      <arg name="height" type="fixed" summary="height of the clip rect"/>
+    </request>
   </interface>
 
   <interface name="augmented_sub_surface" version="5">
@@ -251,6 +271,7 @@
     </request>
     <request name="set_clip_rect" since="4">
       <description summary="sets a subsurface clip rect with subpixel accuracy">
+  [Deprecated] Use set_clip_rect on augmented_surface instead.
   This schedules a clip rect to be applied when drawing this sub-surface.
   The clip will be placed with its origin (top left corner pixel) at the
   location x, y of the parent surface coordinate system. The coordinates are not

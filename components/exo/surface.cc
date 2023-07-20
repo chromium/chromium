@@ -606,11 +606,27 @@ void Surface::SetClipRect(const absl::optional<gfx::RectF>& clip_rect) {
   TRACE_EVENT1("exo", "Surface::SetClipRect", "clip_rect",
                (clip_rect ? clip_rect->ToString() : "nullopt"));
 
-  if (pending_state_.clip_rect == clip_rect) {
+  if (pending_state_.clip_rect == clip_rect &&
+      !pending_state_.clip_rect_is_parent_coordinates) {
     return;
   }
   has_pending_contents_ = true;
   pending_state_.clip_rect = clip_rect;
+  pending_state_.clip_rect_is_parent_coordinates = false;
+}
+
+void Surface::SetClipRectOnParentSurface(
+    const absl::optional<gfx::RectF>& clip_rect) {
+  TRACE_EVENT1("exo", "Surface::SetClipRectOnParentSurface", "clip_rect",
+               (clip_rect ? clip_rect->ToString() : "nullopt"));
+
+  if (pending_state_.clip_rect == clip_rect &&
+      pending_state_.clip_rect_is_parent_coordinates) {
+    return;
+  }
+  has_pending_contents_ = true;
+  pending_state_.clip_rect = clip_rect;
+  pending_state_.clip_rect_is_parent_coordinates = true;
 }
 
 void Surface::SetSurfaceTransform(const gfx::Transform& transform) {
@@ -887,6 +903,8 @@ void Surface::Commit() {
   cached_state_.rounded_corners_bounds = pending_state_.rounded_corners_bounds;
   cached_state_.overlay_priority_hint = pending_state_.overlay_priority_hint;
   cached_state_.clip_rect = pending_state_.clip_rect;
+  cached_state_.clip_rect_is_parent_coordinates =
+      pending_state_.clip_rect_is_parent_coordinates;
   cached_state_.surface_transform = pending_state_.surface_transform;
   cached_state_.acquire_fence = std::move(pending_state_.acquire_fence);
   cached_state_.per_commit_explicit_release_callback_ =
@@ -1033,6 +1051,8 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
       }
       state_.rounded_corners_bounds = cached_state_.rounded_corners_bounds;
       state_.clip_rect = cached_state_.clip_rect;
+      state_.clip_rect_is_parent_coordinates =
+          cached_state_.clip_rect_is_parent_coordinates;
       state_.surface_transform = cached_state_.surface_transform;
       state_.acquire_fence = std::move(cached_state_.acquire_fence);
       state_.per_commit_explicit_release_callback_ =
@@ -1490,7 +1510,15 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
 
   absl::optional<gfx::Rect> quad_clip_rect;
   if (state_.clip_rect) {
-    quad_clip_rect = gfx::ToEnclosedRect(*state_.clip_rect);
+    // `state_.clip_rect` should be on local surface coordinates but the
+    // deprecated implementation still uses parent surface coordinates. If so,
+    // we skip translating into the root surface coordinates to keep the old
+    // behavior.
+    // TODO(crbug.com/1457446): Remove this.
+    auto clip_rect_offset = state_.clip_rect_is_parent_coordinates
+                                ? gfx::Vector2d()
+                                : origin.OffsetFromOrigin();
+    quad_clip_rect = gfx::ToEnclosedRect(*state_.clip_rect + clip_rect_offset);
   }
 
   state_.damage.Clear();

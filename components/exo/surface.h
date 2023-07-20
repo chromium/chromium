@@ -194,6 +194,10 @@ class Surface final : public ui::PropertyHandler {
   // Sets the surface's clip rectangle.
   void SetClipRect(const absl::optional<gfx::RectF>& clip_rect);
 
+  // Sets the surface's clip rectangle on parent surface coordinates.
+  // TODO(crbug.com/1457446): Remove this.
+  void SetClipRectOnParentSurface(const absl::optional<gfx::RectF>& clip_rect);
+
   // Sets the surface's transformation matrix.
   void SetSurfaceTransform(const gfx::Transform& transform);
 
@@ -589,10 +593,17 @@ class Surface final : public ui::PropertyHandler {
     // The hint for overlay prioritization
     // Persisted between commits.
     OverlayPriority overlay_priority_hint = OverlayPriority::REGULAR;
-    // The clip rect for this surface, in the parent's coordinate space. This
+    // The clip rect for this surface, in the local coordinate space. This
     // should only be set for subsurfaces.
     // Persisted between commits.
     absl::optional<gfx::RectF> clip_rect;
+    // True if `clip_rect` is on parent coordinate space. `clip_rect` should be
+    // on local surface coordinates, but the outdated implementation was on
+    // parent coordinate space. This flag is to support the fallback
+    // implementation.
+    // Persisted between commits.
+    // TODO(crbug.com/1457446): Remove this.
+    bool clip_rect_is_parent_coordinates = false;
     // The transform to apply when drawing this surface. This should only be set
     // for subsurfaces, and doesn't apply to children of this surface.
     // Persisted between commits.
