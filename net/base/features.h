@@ -87,6 +87,14 @@ NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
 // Update protocol using ALPN information in HTTPS DNS records.
 NET_EXPORT BASE_DECLARE_FEATURE(kUseDnsHttpsSvcbAlpn);
 
+// If the `kUseAlternativePortForGloballyReachableCheck` flag is enabled, the
+// globally reachable check will use the port number specified by
+// `kAlternativePortForGloballyReachableCheck` flag. Otherwise, the globally
+// reachable check will use 443 port.
+NET_EXPORT extern const base::FeatureParam<int>
+    kAlternativePortForGloballyReachableCheck;
+NET_EXPORT BASE_DECLARE_FEATURE(kUseAlternativePortForGloballyReachableCheck);
+
 // If enabled allows the use of SHA-1 by the server for signatures
 // in the TLS handshake.
 NET_EXPORT BASE_DECLARE_FEATURE(kSHA1ServerSignature);
