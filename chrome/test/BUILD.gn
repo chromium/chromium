@@ -4666,6 +4666,7 @@ if (!is_android) {
         "//chromeos/ash/components/scalable_iph:iph_session",
         "//chromeos/ash/components/scalable_iph:scalable_iph_delegate",
         "//chromeos/ash/components/smbfs",
+        "//chromeos/ash/components/standalone_browser:test_support",
         "//chromeos/ash/components/system",
         "//chromeos/ash/components/timezone",
         "//chromeos/ash/services/assistant:lib",

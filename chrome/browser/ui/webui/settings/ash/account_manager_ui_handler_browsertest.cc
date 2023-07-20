@@ -21,6 +21,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
@@ -67,6 +68,7 @@ std::ostream& operator<<(std::ostream& stream,
                 << ", user_type: " << device_account_info.user_type << "}";
 }
 
+// TODO(b/291075080): Remove USER_TYPE_ACTIVE_DIRECTORY.
 DeviceAccountInfo GetActiveDirectoryDeviceAccountInfo() {
   return {"fake-ad-id" /*id*/,
           "primary@example.com" /*email*/,
@@ -407,7 +409,12 @@ class AccountManagerUIHandlerTestWithArcAccountRestrictions
     : public AccountManagerUIHandlerTest {
  public:
   AccountManagerUIHandlerTestWithArcAccountRestrictions() {
-    feature_list_.InitAndEnableFeature(ash::features::kLacrosSupport);
+    std::vector<base::test::FeatureRef> lacros =
+        ash::standalone_browser::GetFeatureRefs();
+    if (GetDeviceAccountInfo().user_type == user_manager::USER_TYPE_CHILD) {
+      lacros.push_back(crosapi::browser_util::kLacrosForSupervisedUsers);
+    }
+    feature_list_.InitWithFeatures(lacros, {});
   }
 
   void SetUpOnMainThread() override {
@@ -426,6 +433,9 @@ class AccountManagerUIHandlerTestWithArcAccountRestrictions
     handler_->RegisterMessages();
     handler_->AllowJavascriptForTesting();
     base::RunLoop().RunUntilIdle();
+
+    ASSERT_TRUE(
+        ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
   }
 
   void TearDownOnMainThread() override {
@@ -606,8 +616,8 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTestWithArcAccountRestrictions,
 INSTANTIATE_TEST_SUITE_P(
     AccountManagerUIHandlerTestWithArcAccountRestrictionsSuite,
     AccountManagerUIHandlerTestWithArcAccountRestrictions,
-    ::testing::Values(GetActiveDirectoryDeviceAccountInfo(),
-                      GetGaiaDeviceAccountInfo(),
-                      GetChildDeviceAccountInfo()));
+    // USER_TYPE_ACTIVE_DIRECTORY is not supported by Lacros (ARC account
+    // restrictions), so don't test with GetActiveDirectoryDeviceAccountInfo().
+    ::testing::Values(GetGaiaDeviceAccountInfo(), GetChildDeviceAccountInfo()));
 
 }  // namespace ash::settings

@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/pref_names.h"
@@ -222,7 +223,7 @@ AccountAppsAvailability::~AccountAppsAvailability() = default;
 
 // static
 bool AccountAppsAvailability::IsArcAccountRestrictionsEnabled() {
-  return base::FeatureList::IsEnabled(features::kLacrosSupport);
+  return crosapi::browser_util::IsLacrosEnabled();
 }
 
 // static

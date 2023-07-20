@@ -1826,10 +1826,14 @@ void BrowserManager::StartKeepAlive(Feature feature) {
     return;
   }
 
-  DCHECK(keep_alive_features_.find(feature) == keep_alive_features_.end())
-      << "Features should never be double registered.";
+  auto insertion = keep_alive_features_.insert(feature);
+  // Features should never be double registered.
+  // TODO(b/278643115): Replace if-statement with a (D)CHECK once browser tests
+  // no longer use multiple user managers.
+  if (!insertion.second) {
+    CHECK_IS_TEST();
+  }
 
-  keep_alive_features_.insert(feature);
   // If this is first KeepAlive instance, update the keep-alive in the browser.
   if (keep_alive_features_.size() == 1) {
     UpdateKeepAliveInBrowserIfNecessary(true);

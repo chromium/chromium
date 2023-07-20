@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/login/screens/sync_consent_screen.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
@@ -37,6 +38,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -251,6 +253,10 @@ class SyncConsentTest
             },
             base::Unretained(this)))
         .Wait();
+
+    ASSERT_EQ(is_lacros_enabled_, crosapi::browser_util::IsLacrosEnabled());
+    ASSERT_EQ(is_lacros_enabled_,
+              AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
   }
 
   // Attempts to log in and show sync consent screen if it is not to be skipped.
@@ -430,9 +436,12 @@ class SyncConsentTestWithModesParams
       // Make sure that `crosapi::browser_util::IsLacrosEnabled()` returns
       // `true`.
       scoped_feature_list_.InitWithFeatures(
-          /*enabled=*/
-          {ash::features::kLacrosOnly},
+          /*enabled=*/ash::standalone_browser::GetFeatureRefs(),
           /*disabled=*/{features::kOsSyncConsentRevamp});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled=*/{},
+          /*disabled=*/ash::standalone_browser::GetFeatureRefs());
     }
   }
 
@@ -487,21 +496,24 @@ INSTANTIATE_TEST_SUITE_P(All,
                          SyncConsentTestWithModesParams,
                          testing::Combine(testing::Bool(), testing::Bool()));
 
-// Tests the different combinations of LacrosSupport state and the selection of
+// Tests the different combinations of Lacros state and the selection of
 // the `Review later` checkbox.
 class SyncConsentTestWithReviewParams
     : public SyncConsentTest,
       public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   SyncConsentTestWithReviewParams() {
-    std::tie(is_lacros_supported_, is_review_settings_checked_) = GetParam();
-    if (is_lacros_supported_) {
+    std::tie(is_lacros_enabled_, is_review_settings_checked_) = GetParam();
+    if (is_lacros_enabled_) {
       // Make sure that `crosapi::browser_util::IsLacrosEnabled()` returns
       // `true`.
       scoped_feature_list_.InitWithFeatures(
-          /*enabled=*/
-          {ash::features::kLacrosOnly},
+          /*enabled=*/ash::standalone_browser::GetFeatureRefs(),
           /*disabled=*/{features::kOsSyncConsentRevamp});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled=*/{},
+          /*disabled=*/ash::standalone_browser::GetFeatureRefs());
     }
   }
 
@@ -514,7 +526,6 @@ class SyncConsentTestWithReviewParams
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  bool is_lacros_supported_;
   bool is_review_settings_checked_;
 };
 
@@ -825,10 +836,11 @@ class SyncConsentLacrosRevampTest : public SyncConsentTest {
  public:
   SyncConsentLacrosRevampTest() {
     // Make sure that `crosapi::browser_util::IsLacrosEnabled()` returns `true`.
+    auto features = ash::standalone_browser::GetFeatureRefs();
+    features.push_back(features::kOsSyncConsentRevamp);
     sync_feature_list_.InitWithFeatures(
-        /*enabled=*/{ash::features::kLacrosOnly,
-                     features::kOsSyncConsentRevamp},
-        /*disabled=*/{});
+        /*enabled=*/features, /*disabled=*/{});
+    is_lacros_enabled_ = true;
   }
   ~SyncConsentLacrosRevampTest() override = default;
 
@@ -987,10 +999,11 @@ class SyncConsentTestLacrosRevampWithParams
     std::tie(is_app_synced, is_settings_synced, is_wifi_synced,
              is_wallpaper_synced) = GetParam();
     // Make sure that `crosapi::browser_util::IsLacrosEnabled()` returns `true`.
+    auto features = ash::standalone_browser::GetFeatureRefs();
+    features.push_back(features::kOsSyncConsentRevamp);
     scoped_feature_list_.InitWithFeatures(
-        /*enabled=*/{ash::features::kLacrosOnly,
-                     features::kOsSyncConsentRevamp},
-        /*disabled=*/{});
+        /*enabled=*/features, /*disabled=*/{});
+    is_lacros_enabled_ = true;
   }
 
   SyncConsentTestLacrosRevampWithParams(
