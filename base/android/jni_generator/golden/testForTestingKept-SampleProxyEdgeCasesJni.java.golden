@@ -52,6 +52,11 @@ class SampleProxyEdgeCasesJni implements SampleProxyEdgeCases.Natives {
   }
 
   @Override
+  public void fooForTests() {
+    GEN_JNI.org_chromium_example_jni_1generator_SampleProxyEdgeCases_fooForTests();
+  }
+
+  @Override
   public void foo__weirdly__escaped_name1() {
     GEN_JNI.org_chromium_example_jni_1generator_SampleProxyEdgeCases_foo_1_1weirdly_1_1escaped_1name1();
   }

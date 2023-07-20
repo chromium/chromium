@@ -218,7 +218,7 @@ def GetParamsInStub(native):
 
 
 def _NameIsTestOnly(name):
-  return name.endswith('ForTest') or name.endswith('ForTesting')
+  return name.endswith(('ForTest', 'ForTests', 'ForTesting'))
 
 
 def ExtractNatives(type_resolver, contents):

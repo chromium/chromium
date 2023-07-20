@@ -55,6 +55,9 @@ JNI_GENERATOR_EXPORT void Java_J_N_M3dXOemX_1ForTesting(
 JNI_GENERATOR_EXPORT void Java_J_N_MCNruAwI_1ForTesting(
     JNIEnv* env,
     jclass jcaller);
+JNI_GENERATOR_EXPORT void Java_J_N_MpToXM8I_1ForTesting(
+    JNIEnv* env,
+    jclass jcaller);
 JNI_GENERATOR_EXPORT void Java_J_N_MV9YSTxh(
     JNIEnv* env,
     jclass jcaller);

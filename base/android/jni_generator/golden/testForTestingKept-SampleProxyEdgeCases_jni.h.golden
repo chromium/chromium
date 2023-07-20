@@ -99,6 +99,15 @@ JNI_GENERATOR_EXPORT void
   return JNI_SampleProxyEdgeCases_FooForTesting(env);
 }
 
+static void JNI_SampleProxyEdgeCases_FooForTests(JNIEnv* env);
+
+JNI_GENERATOR_EXPORT void
+    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleProxyEdgeCases_1fooForTests(
+    JNIEnv* env,
+    jclass jcaller) {
+  return JNI_SampleProxyEdgeCases_FooForTests(env);
+}
+
 static void JNI_SampleProxyEdgeCases_Foo__weirdly__escaped_name1(JNIEnv* env);
 
 JNI_GENERATOR_EXPORT void

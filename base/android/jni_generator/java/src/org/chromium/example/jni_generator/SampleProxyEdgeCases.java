@@ -22,6 +22,7 @@ class SampleProxyEdgeCases {
         String[][] arrayTypes1(int[] a, Object[][] b);
         int[] arrayTypes2(int[] a, Throwable[][] b);
         void fooForTest();
+        void fooForTests();
         void fooForTesting();
         Map<OtherInnerClass, OtherInnerClass[]>[] genericsWithNestedClassArray(
                 Map<OtherInnerClass, OtherInnerClass[]>[] arg);

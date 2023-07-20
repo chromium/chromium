@@ -21,6 +21,8 @@ public class N {
     public static native void M3dXOemX_ForTesting();
       // Original name: org_chromium_example_jni_1generator_SampleProxyEdgeCases_fooForTesting
     public static native void MCNruAwI_ForTesting();
+      // Original name: org_chromium_example_jni_1generator_SampleProxyEdgeCases_fooForTests
+    public static native void MpToXM8I_ForTesting();
       // Original name: org_chromium_example_jni_1generator_SampleProxyEdgeCases_foo_1_1weirdly_1_1escaped_1name1
     public static native void MV9YSTxh();
       // Original name: org_chromium_example_jni_1generator_SampleProxyEdgeCases_genericsWithNestedClassArray

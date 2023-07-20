@@ -33,6 +33,10 @@ public class GEN_JNI {
         J.N.MCNruAwI_ForTesting();
     }
 
+    public static void org_chromium_example_jni_1generator_SampleProxyEdgeCases_fooForTests() {
+        J.N.MpToXM8I_ForTesting();
+    }
+
     public static void org_chromium_example_jni_1generator_SampleProxyEdgeCases_foo_1_1weirdly_1_1escaped_1name1() {
         J.N.MV9YSTxh();
     }
