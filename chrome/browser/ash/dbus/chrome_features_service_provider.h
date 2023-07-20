@@ -97,6 +97,9 @@ class ChromeFeaturesServiceProvider
       dbus::ExportedObject::ResponseSender response_sender);
   void IsDnsProxyEnabled(dbus::MethodCall* method_call,
                          dbus::ExportedObject::ResponseSender response_sender);
+  void IsSuspendToDiskEnabled(
+      dbus::MethodCall* method_call,
+      dbus::ExportedObject::ResponseSender response_sender);
 
   // Provides a way to look up features by _name_ rather than by base::Feature.
   std::unique_ptr<base::FeatureList::Accessor> feature_list_accessor_;
