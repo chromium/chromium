@@ -72,6 +72,7 @@
       dismissViewControllerAnimated:YES
                          completion:nil];
   self.addCreditCardViewController = nil;
+  [self dismissActionSheetCoordinator];
   self.mediator = nil;
 }
 
@@ -136,13 +137,16 @@
                            IDS_IOS_VIEW_CONTROLLER_DISMISS_DISCARD_CHANGES)
                 action:^{
                   [weakSelf stop];
+                  [weakSelf dismissActionSheetCoordinator];
                 }
                  style:UIAlertActionStyleDestructive];
 
   [self.actionSheetCoordinator
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_VIEW_CONTROLLER_DISMISS_CANCEL_CHANGES)
-                action:nil
+                action:^{
+                  [weakSelf dismissActionSheetCoordinator];
+                }
                  style:UIAlertActionStyleCancel];
 
   [self.actionSheetCoordinator start];
@@ -157,6 +161,13 @@
                          message:nil];
 
   [self.alertCoordinator start];
+}
+
+#pragma mark - Private
+
+- (void)dismissActionSheetCoordinator {
+  [self.actionSheetCoordinator stop];
+  self.actionSheetCoordinator = nil;
 }
 
 @end
