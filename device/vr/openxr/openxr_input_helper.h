@@ -41,6 +41,8 @@ class OpenXRInputHelper {
 
   XrResult OnInteractionProfileChanged();
 
+  bool ReceivedExitGesture() { return received_exit_gesture_; }
+
  private:
   absl::optional<Gamepad> GetWebXRGamepad(const OpenXrController& controller);
 
@@ -53,6 +55,8 @@ class OpenXRInputHelper {
   XrSpace GetMojomSpace() const {
     return local_space_;  // Mojom space is currently defined as local space
   }
+
+  void OnExitGesture() { received_exit_gesture_ = true; }
 
   XrSession session_;
   XrSpace local_space_;
@@ -67,6 +71,7 @@ class OpenXRInputHelper {
       controller_states_;
 
   std::unique_ptr<OpenXRPathHelper> path_helper_;
+  bool received_exit_gesture_ = false;
 };
 
 }  // namespace device

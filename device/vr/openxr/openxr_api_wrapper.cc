@@ -1210,6 +1210,14 @@ void OpenXrApiWrapper::EnsureEventPolling() {
 }
 
 XrResult OpenXrApiWrapper::ProcessEvents() {
+  // If we've received an exit gesture from any of the input sources, end the
+  // session.
+  if (input_helper_->ReceivedExitGesture()) {
+    XrResult xr_result = xrEndSession(session_);
+    Uninitialize();
+    return xr_result;
+  }
+
   XrEventDataBuffer event_data{XR_TYPE_EVENT_DATA_BUFFER};
   XrResult xr_result = xrPollEvent(instance_, &event_data);
 
