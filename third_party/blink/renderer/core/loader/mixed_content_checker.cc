@@ -798,19 +798,21 @@ bool MixedContentChecker::ShouldAutoupgrade(
   // autoupgrade because it might not make sense to request a certificate for
   // an IP address.
   if (GURL(request_url).HostIsIPAddress()) {
-    if (auto* window =
-            DynamicTo<LocalDOMWindow>(execution_context_for_logging)) {
-      window->AddConsoleMessage(
-          MixedContentChecker::
-              CreateConsoleMessageAboutFetchIPAddressNoAutoupgrade(
-                  fetch_client_settings_object->GlobalObjectUrl(),
-                  request_url));
-      AuditsIssue::ReportMixedContentIssue(
-          fetch_client_settings_object->GlobalObjectUrl(),
-          resource_request.Url(), resource_request.GetRequestContext(),
-          window->document()->GetFrame(),
-          MixedContentResolutionStatus::kMixedContentWarning,
-          resource_request.GetDevToolsId());
+    if (!request_url.ProtocolIs("https")) {
+      if (auto* window =
+              DynamicTo<LocalDOMWindow>(execution_context_for_logging)) {
+        window->AddConsoleMessage(
+            MixedContentChecker::
+                CreateConsoleMessageAboutFetchIPAddressNoAutoupgrade(
+                    fetch_client_settings_object->GlobalObjectUrl(),
+                    request_url));
+        AuditsIssue::ReportMixedContentIssue(
+            fetch_client_settings_object->GlobalObjectUrl(),
+            resource_request.Url(), resource_request.GetRequestContext(),
+            window->document()->GetFrame(),
+            MixedContentResolutionStatus::kMixedContentWarning,
+            resource_request.GetDevToolsId());
+      }
     }
     return false;
   }
