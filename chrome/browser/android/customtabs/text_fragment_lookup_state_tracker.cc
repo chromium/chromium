@@ -108,7 +108,7 @@ void TextFragmentLookupStateTracker::PrimaryPageChanged(content::Page& page) {
 size_t TextFragmentLookupStateTracker::max_lookups_per_page() const {
   return GetFieldTrialParamByFeatureAsInt(
       chrome::android::kCCTTextFragmentLookupApiEnabled, "max_lookups_per_page",
-      15);
+      45);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(TextFragmentLookupStateTracker);
