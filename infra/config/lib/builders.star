@@ -120,7 +120,7 @@ reclient = struct(
         HIGH_JOBS_FOR_CI = 500,
         LOW_JOBS_FOR_CQ = 150,
         # TODO(b/285080767): increase this to 500 gradually.
-        HIGH_JOBS_FOR_CQ = 350,
+        HIGH_JOBS_FOR_CQ = 400,
     ),
 )
 
