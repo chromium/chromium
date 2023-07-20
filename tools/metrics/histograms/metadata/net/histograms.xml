@@ -44,6 +44,11 @@ chromium-metrics-reviews@google.com.
   <variant name="FirstRecordSlowerThan1s" summary="more than or equal to 1s"/>
 </variants>
 
+<variants name="SuccessOrFailure">
+  <variant name="Failure" summary="Operation failed"/>
+  <variant name="Success" summary="Operation succeeded"/>
+</variants>
+
 <variants name="URLLoaderThrottleStages">
   <variant name="BeforeWillProcessResponse"/>
   <variant name="WillOnCompleteWithError"/>
@@ -4837,6 +4842,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Net.SharedDictionaryOnDisk.OpenEntryLatency.{SuccessOrFailure}"
+    units="ms" expires_after="2023-12-01">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/extras/shared_dictionary/OWNERS</owner>
+  <summary>
+    The time taken to open a disk cache entry of a shared dictionary. Recorded
+    when the entry is opened in the SharedDictionaryOnDisk.
+  </summary>
+  <token key="SuccessOrFailure" variants="SuccessOrFailure"/>
+</histogram>
+
+<histogram name="Net.SharedDictionaryOnDisk.ReadDataLatency.{SuccessOrFailure}"
+    units="ms" expires_after="2023-12-01">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/extras/shared_dictionary/OWNERS</owner>
+  <summary>
+    The time taken to read the data of a shared dictionary's disk cache entry.
+    Recorded when the whole data is read in the SharedDictionaryOnDisk.
+  </summary>
+  <token key="SuccessOrFailure" variants="SuccessOrFailure"/>
+</histogram>
+
 <histogram name="Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse"
     enum="Boolean" expires_after="2023-12-01">
   <owner>horo@chromium.org</owner>
@@ -4882,6 +4910,19 @@ chromium-metrics-reviews@google.com.
     SQLitePersistentSharedDictionaryStore is writing a dictionary in the
     database.
   </summary>
+</histogram>
+
+<histogram
+    name="Net.SharedDictionaryTransaction.DictionaryReadLatency.{SuccessOrFailure}"
+    units="ms" expires_after="2023-12-01">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/extras/shared_dictionary/OWNERS</owner>
+  <summary>
+    The delay of SharedDictionaryTransaction caused by reading a shared
+    dictionary. Recorded when the dictionary is read in the
+    SharedDictionaryTransaction.
+  </summary>
+  <token key="SuccessOrFailure" variants="SuccessOrFailure"/>
 </histogram>
 
 <histogram name="Net.SharedDictionaryWriterInMemory.DictionarySize"

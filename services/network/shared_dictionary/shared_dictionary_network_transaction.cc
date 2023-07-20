@@ -4,8 +4,12 @@
 
 #include "services/network/shared_dictionary/shared_dictionary_network_transaction.h"
 
+#include <string>
+
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "net/base/completion_once_callback.h"
@@ -169,7 +173,7 @@ void SharedDictionaryNetworkTransaction::ModifyRequestHeaders(
     dictionary_status_ = DictionaryStatus::kReading;
     auto split_callback = base::SplitOnceCallback(base::BindOnce(
         &SharedDictionaryNetworkTransaction::OnReadSharedDictionary,
-        base::Unretained(this)));
+        base::Unretained(this), /*read_start_time=*/base::Time::Now()));
     int read_result =
         shared_dictionary_->ReadAll(std::move(split_callback.first));
     if (read_result != net::ERR_IO_PENDING) {
@@ -178,8 +182,15 @@ void SharedDictionaryNetworkTransaction::ModifyRequestHeaders(
   }
 }
 
-void SharedDictionaryNetworkTransaction::OnReadSharedDictionary(int result) {
-  if (result != net::OK) {
+void SharedDictionaryNetworkTransaction::OnReadSharedDictionary(
+    base::Time read_start_time,
+    int result) {
+  bool succeeded = result == net::OK;
+  base::UmaHistogramTimes(
+      base::StrCat({"Net.SharedDictionaryTransaction.DictionaryReadLatency.",
+                    succeeded ? "Success" : "Failure"}),
+      base::Time::Now() - read_start_time);
+  if (!succeeded) {
     dictionary_status_ = DictionaryStatus::kFailed;
   } else {
     dictionary_status_ = DictionaryStatus::kFinished;

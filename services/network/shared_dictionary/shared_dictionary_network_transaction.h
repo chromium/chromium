@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
+#include "base/time/time.h"
 #include "net/http/http_transaction.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -125,7 +126,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryNetworkTransaction
   void ModifyRequestHeaders(const GURL& request_url,
                             net::HttpRequestHeaders* request_headers);
 
-  void OnReadSharedDictionary(int result);
+  void OnReadSharedDictionary(base::Time read_start_time, int result);
 
   raw_ref<SharedDictionaryManager> shared_dictionary_manager_;
   scoped_refptr<SharedDictionaryStorage> shared_dictionary_storage_;
