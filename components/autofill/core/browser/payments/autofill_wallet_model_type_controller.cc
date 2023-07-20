@@ -30,7 +30,8 @@ AutofillWalletModelTypeController::AutofillWalletModelTypeController(
                           std::move(delegate_for_transport_mode)),
       pref_service_(pref_service),
       sync_service_(sync_service) {
-  DCHECK(type == syncer::AUTOFILL_WALLET_DATA ||
+  DCHECK(type == syncer::AUTOFILL_WALLET_CREDENTIAL ||
+         type == syncer::AUTOFILL_WALLET_DATA ||
          type == syncer::AUTOFILL_WALLET_METADATA ||
          type == syncer::AUTOFILL_WALLET_OFFER ||
          type == syncer::AUTOFILL_WALLET_USAGE);

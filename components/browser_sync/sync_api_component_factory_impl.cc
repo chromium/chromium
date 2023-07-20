@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/payments/autofill_wallet_model_type_controller.h"
 #include "components/autofill/core/browser/webdata/autocomplete_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_profile_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/autofill_wallet_credential_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_wallet_metadata_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_wallet_offer_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_wallet_sync_bridge.h"
@@ -24,6 +25,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/contact_info_model_type_controller.h"
 #include "components/autofill/core/browser/webdata/contact_info_sync_bridge.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/browser_sync/active_devices_provider_impl.h"
 #include "components/browser_sync/browser_sync_client.h"
 #include "components/history/core/browser/sync/history_delete_directives_model_type_controller.h"
@@ -91,6 +93,15 @@ base::WeakPtr<syncer::ModelTypeControllerDelegate>
 AutofillProfileDelegateFromDataService(
     autofill::AutofillWebDataService* service) {
   return autofill::AutofillProfileSyncBridge::FromWebDataService(service)
+      ->change_processor()
+      ->GetControllerDelegate();
+}
+
+base::WeakPtr<syncer::ModelTypeControllerDelegate>
+AutofillWalletCredentialDataDelegateFromDataService(
+    autofill::AutofillWebDataService* service) {
+  return autofill::AutofillWalletCredentialSyncBridge::FromWebDataService(
+             service)
       ->change_processor()
       ->GetControllerDelegate();
 }
@@ -287,6 +298,20 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
       controllers.push_back(CreateWalletModelTypeController(
           syncer::AUTOFILL_WALLET_USAGE,
           base::BindRepeating(&AutofillWalletUsageDataDelegateFromDataService),
+          sync_service, /*with_transport_mode_support=*/true));
+    }
+
+    // Wallet credential data sync depends on Wallet data sync.
+    if (base::FeatureList::IsEnabled(
+            autofill::features::kAutofillEnableCvcStorageAndFilling) &&
+        base::FeatureList::IsEnabled(
+            syncer::kSyncAutofillWalletCredentialData) &&
+        !disabled_types.Has(syncer::AUTOFILL_WALLET_DATA) &&
+        !disabled_types.Has(syncer::AUTOFILL_WALLET_CREDENTIAL)) {
+      controllers.push_back(CreateWalletModelTypeController(
+          syncer::AUTOFILL_WALLET_CREDENTIAL,
+          base::BindRepeating(
+              &AutofillWalletCredentialDataDelegateFromDataService),
           sync_service, /*with_transport_mode_support=*/true));
     }
   }

@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/webdata/autocomplete_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_profile_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/webdata/autofill_wallet_credential_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_wallet_metadata_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_wallet_offer_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_wallet_sync_bridge.h"
@@ -23,6 +24,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/contact_info_sync_bridge.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/search_engines/keyword_table.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/signin/public/webdata/token_service_table.h"
@@ -85,6 +87,16 @@ void InitWalletUsageDataSyncBridgeOnDBSequence(
     autofill::AutofillWebDataBackend* autofill_backend) {
   DCHECK(db_task_runner->RunsTasksInCurrentSequence());
   autofill::AutofillWalletUsageDataSyncBridge::
+      CreateForWebDataServiceAndBackend(autofill_backend,
+                                        autofill_web_data.get());
+}
+
+void InitWalletCredentialSyncBridgeOnDBSequence(
+    scoped_refptr<base::SequencedTaskRunner> db_task_runner,
+    const scoped_refptr<autofill::AutofillWebDataService>& autofill_web_data,
+    autofill::AutofillWebDataBackend* autofill_backend) {
+  CHECK(db_task_runner->RunsTasksInCurrentSequence());
+  autofill::AutofillWalletCredentialSyncBridge::
       CreateForWebDataServiceAndBackend(autofill_backend,
                                         autofill_web_data.get());
 }
@@ -157,6 +169,13 @@ WebDataServiceWrapper::WebDataServiceWrapper(
         base::BindOnce(&InitWalletUsageDataSyncBridgeOnDBSequence,
                        db_task_runner, profile_autofill_web_data_));
   }
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableCvcStorageAndFilling) &&
+      base::FeatureList::IsEnabled(syncer::kSyncAutofillWalletCredentialData)) {
+    profile_autofill_web_data_->GetAutofillBackend(
+        base::BindOnce(&InitWalletCredentialSyncBridgeOnDBSequence,
+                       db_task_runner, profile_autofill_web_data_));
+  }
 
   base::FilePath account_storage_path;
 #if BUILDFLAG(IS_ANDROID) || !BUILDFLAG(USE_BLINK)
@@ -183,6 +202,13 @@ WebDataServiceWrapper::WebDataServiceWrapper(
   if (base::FeatureList::IsEnabled(syncer::kSyncAutofillWalletUsageData)) {
     account_autofill_web_data_->GetAutofillBackend(
         base::BindOnce(&InitWalletUsageDataSyncBridgeOnDBSequence,
+                       db_task_runner, account_autofill_web_data_));
+  }
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableCvcStorageAndFilling) &&
+      base::FeatureList::IsEnabled(syncer::kSyncAutofillWalletCredentialData)) {
+    account_autofill_web_data_->GetAutofillBackend(
+        base::BindOnce(&InitWalletCredentialSyncBridgeOnDBSequence,
                        db_task_runner, account_autofill_web_data_));
   }
 }

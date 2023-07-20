@@ -489,6 +489,8 @@ static_library("browser") {
     "webdata/autofill_table_encryptor.h",
     "webdata/autofill_table_encryptor_factory.cc",
     "webdata/autofill_table_encryptor_factory.h",
+    "webdata/autofill_wallet_credential_sync_bridge.cc",
+    "webdata/autofill_wallet_credential_sync_bridge.h",
     "webdata/autofill_wallet_metadata_sync_bridge.cc",
     "webdata/autofill_wallet_metadata_sync_bridge.h",
     "webdata/autofill_wallet_offer_sync_bridge.cc",
