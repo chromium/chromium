@@ -241,6 +241,13 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     return *ComputePaddingAddress();
   }
 
+  const NGPhysicalBoxStrut Margins() const {
+    if (const auto* field = GetRareField(FieldId::kMargins)) {
+      return field->margins;
+    }
+    return NGPhysicalBoxStrut();
+  }
+
   const PhysicalOffset ContentOffset() const {
     if (!HasBorders() && !HasPadding())
       return PhysicalOffset();
@@ -426,6 +433,20 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     return *rare_data_->GetField(FieldId::kMathMLPaintInfo)
                 ->mathml_paint_info.get();
   }
+
+  class MutableForContainerLayout {
+    STACK_ALLOCATED();
+
+   public:
+    MutableForContainerLayout(base::PassKey<NGPhysicalBoxFragment>,
+                              NGPhysicalBoxFragment& fragment);
+    void SetMargins(const NGPhysicalBoxStrut& margins);
+
+   private:
+    NGPhysicalBoxFragment& fragment_;
+  };
+
+  MutableForContainerLayout GetMutableForContainerLayout() const;
 
   // Painters can use const methods only, except for these explicitly declared
   // methods.

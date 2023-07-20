@@ -1160,7 +1160,22 @@ int LayoutBox::PixelSnappedScrollHeight() const {
 
 void LayoutBox::SetMargin(const NGPhysicalBoxStrut& box) {
   NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
   margin_box_outsets_ = box;
+}
+
+NGPhysicalBoxStrut LayoutBox::MarginBoxOutsets() const {
+  NOT_DESTROYED();
+  if (!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
+    return margin_box_outsets_;
+  }
+  if (PhysicalFragmentCount()) {
+    // We get margin data from the first physical fragment. Margins are
+    // per-LayoutBox data, and we don't need to take care of block
+    // fragmentation.
+    return GetPhysicalFragment(0)->Margins();
+  }
+  return NGPhysicalBoxStrut();
 }
 
 void LayoutBox::AbsoluteQuads(Vector<gfx::QuadF>& quads,

@@ -96,7 +96,8 @@ class ShapeOutsideInfo final : public GarbageCollected<ShapeOutsideInfo> {
   explicit ShapeOutsideInfo(const LayoutBox& layout_box)
       : layout_box_(&layout_box), is_computing_shape_(false) {}
 
-  void SetReferenceBoxLogicalSize(LogicalSize);
+  void SetReferenceBoxLogicalSize(LogicalSize new_reference_box_logical_size,
+                                  LogicalSize margin_size);
   void SetPercentageResolutionInlineSize(LayoutUnit);
 
   LayoutUnit ShapeLogicalBottom() const {

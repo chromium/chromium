@@ -390,6 +390,9 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
       !!builder->table_cell_column_index_ +
       (builder->table_section_row_offsets_.empty() ? 0 : 2) +
       !!builder->page_name_;
+  if (RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
+    rare_fields_size += !!builder->Style().MayHaveMargin();
+  }
 
   if (rare_fields_size > 0 || !builder->table_column_geometries_.empty()) {
     rare_data_ = MakeGarbageCollected<PhysicalFragmentRareData>(
@@ -1083,6 +1086,28 @@ NGPhysicalBoxFragment::InlineContainerFragmentIfOutlineOwner() const {
     }
     previous_fragment_index = fragment_index;
   }
+}
+
+NGPhysicalBoxFragment::MutableForContainerLayout::MutableForContainerLayout(
+    base::PassKey<NGPhysicalBoxFragment>,
+    NGPhysicalBoxFragment& fragment)
+    : fragment_(fragment) {}
+
+void NGPhysicalBoxFragment::MutableForContainerLayout::SetMargins(
+    const NGPhysicalBoxStrut& margins) {
+  DCHECK(RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
+  // This can be called even without rare_data_.
+  if (!fragment_.rare_data_) {
+    fragment_.rare_data_ = MakeGarbageCollected<PhysicalFragmentRareData>(1);
+  }
+  fragment_.rare_data_->EnsureField(FieldId::kMargins).margins = margins;
+}
+
+NGPhysicalBoxFragment::MutableForContainerLayout
+NGPhysicalBoxFragment::GetMutableForContainerLayout() const {
+  DCHECK(layout_object_->GetFrameView()->IsInPerformLayout());
+  return MutableForContainerLayout(base::PassKey<NGPhysicalBoxFragment>(),
+                                   const_cast<NGPhysicalBoxFragment&>(*this));
 }
 
 void NGPhysicalBoxFragment::SetInkOverflow(const PhysicalRect& self,

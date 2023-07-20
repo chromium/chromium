@@ -33,6 +33,7 @@ struct NGMathMLPaintInfo;
 class PhysicalFragmentRareData
     : public GarbageCollected<PhysicalFragmentRareData> {
  public:
+  explicit PhysicalFragmentRareData(wtf_size_t num_fields);
   PhysicalFragmentRareData(NGBoxFragmentBuilder& builder,
                            wtf_size_t num_fields);
   PhysicalFragmentRareData(const PhysicalFragmentRareData& other);
@@ -59,8 +60,9 @@ class PhysicalFragmentRareData
     kTableSectionStartRowIndex,
     kTableSectionRowOffsets,
     kPageName,
+    kMargins,
 
-    kMaxValue = kPageName,
+    kMaxValue = kMargins,
   };
   static_assert(sizeof(RareBitFieldType) * CHAR_BIT >
                     static_cast<unsigned>(FieldId::kMaxValue),
@@ -78,6 +80,7 @@ class PhysicalFragmentRareData
       wtf_size_t table_section_start_row_index;
       Vector<LayoutUnit> table_section_row_offsets;
       AtomicString page_name;
+      NGPhysicalBoxStrut margins;
     };
     const FieldId type;
 
@@ -107,14 +110,28 @@ class PhysicalFragmentRareData
     return nullptr;
   }
 
-  RareField& SetField(FieldId field_id) {
+  template <bool allow_overwrite>
+  RareField& EnsureField(FieldId field_id) {
     RareBitFieldType field_id_bit = FieldIdBit(field_id);
-    // SetField() should be called only once for the specified field_id.
-    DCHECK(!(bit_field_ & field_id_bit));
+    if (allow_overwrite) {
+      if (bit_field_ & field_id_bit) {
+        return field_list_[GetFieldIndex(field_id)];
+      }
+    } else {
+      DCHECK(!(bit_field_ & field_id_bit));
+    }
     bit_field_ = bit_field_ | field_id_bit;
     wtf_size_t index = GetFieldIndex(field_id);
     field_list_.insert(index, RareField(field_id));
     return field_list_[index];
+  }
+
+  // We should not call this for a unique `field_id` multiple times.
+  RareField& SetField(FieldId field_id) { return EnsureField<false>(field_id); }
+
+  // We may call this for a unique `field_id` multiple times.
+  RareField& EnsureField(FieldId field_id) {
+    return EnsureField<true>(field_id);
   }
 
   Vector<RareField> field_list_;

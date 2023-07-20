@@ -111,6 +111,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, Caching) {
     </div>
   )HTML");
 
+  AdvanceToLayoutPhase();
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(100), LayoutUnit(100)));
@@ -2134,8 +2135,6 @@ TEST_F(NGBlockLayoutAlgorithmTest, FloatFragmentationOrthogonalFlows) {
       LogicalSize(LayoutUnit(1000), kIndefiniteSize),
       /* stretch_inline_size_if_auto */ true,
       /* is_new_formatting_context */ true, kFragmentainerSpaceAvailable);
-
-  AdvanceToLayoutPhase();
 
   const NGPhysicalBoxFragment* fragment = RunBlockLayoutAlgorithm(node, space);
   EXPECT_EQ(PhysicalSize(150, 60), fragment->Size());

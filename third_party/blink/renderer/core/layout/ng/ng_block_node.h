@@ -281,11 +281,13 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
       const NGPhysicalBoxFragment&,
       const NGBlockBreakToken* previous_container_break_token) const;
 
-  void UpdateMarginPaddingInfoIfNeeded(const NGConstraintSpace&) const;
+  void UpdateMarginPaddingInfoIfNeeded(
+      const NGConstraintSpace&,
+      const NGPhysicalFragment& fragment) const;
 
   void UpdateShapeOutsideInfoIfNeeded(
       const NGLayoutResult&,
-      LayoutUnit percentage_resolution_inline_size) const;
+      const NGConstraintSpace& constraint_space) const;
 };
 
 template <>

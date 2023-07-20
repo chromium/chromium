@@ -373,10 +373,10 @@ const NGLayoutResult* NGBlockNode::Layout(
 
     // We may have to update the margins on box_; we reuse the layout result
     // even if a percentage margin may have changed.
-    UpdateMarginPaddingInfoIfNeeded(constraint_space);
+    UpdateMarginPaddingInfoIfNeeded(constraint_space,
+                                    layout_result->PhysicalFragment());
 
-    UpdateShapeOutsideInfoIfNeeded(
-        *layout_result, constraint_space.PercentageResolutionInlineSize());
+    UpdateShapeOutsideInfoIfNeeded(*layout_result, constraint_space);
 
     // Return the cached result unless we're marked for layout. We may have
     // added or removed scrollbars during overflow recalculation, which may have
@@ -553,8 +553,7 @@ const NGLayoutResult* NGBlockNode::Layout(
   //
   // TODO(ikilpatrick): This should be fixed by moving the shape-outside data
   // to the NGLayoutResult, removing this "side" data-structure.
-  UpdateShapeOutsideInfoIfNeeded(
-      *layout_result, constraint_space.PercentageResolutionInlineSize());
+  UpdateShapeOutsideInfoIfNeeded(*layout_result, constraint_space);
 
   return layout_result;
 }
@@ -1165,7 +1164,7 @@ void NGBlockNode::CopyFragmentDataToLayoutBox(
   // TODO(mstensho): This should always be done by the parent algorithm, since
   // we may have auto margins, which only the parent is able to resolve. Remove
   // the following line when all layout modes do this properly.
-  UpdateMarginPaddingInfoIfNeeded(constraint_space);
+  UpdateMarginPaddingInfoIfNeeded(constraint_space, physical_fragment);
 
   auto* block_flow = DynamicTo<LayoutBlockFlow>(box_.Get());
   LayoutMultiColumnFlowThread* flow_thread = GetFlowThread(block_flow);
@@ -1754,13 +1753,26 @@ const NGLayoutResult* NGBlockNode::RunSimplifiedLayout(
 }
 
 void NGBlockNode::UpdateMarginPaddingInfoIfNeeded(
-    const NGConstraintSpace& space) const {
+    const NGConstraintSpace& space,
+    const NGPhysicalFragment& fragment) const {
   // Table-cells don't have margins, and aren't grid-items.
   if (space.IsTableCell())
     return;
 
-  if (Style().MayHaveMargin())
-    box_->SetMargin(ComputePhysicalMargins(space, Style()));
+  if (Style().MayHaveMargin()) {
+    if (RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
+      // We set the initial margin data here because RebuildFragmentTreeSpine()
+      // and atomic inline layout don't use NGBoxFragmentBuilder::AddResult().
+      // TODO(crbug.com/1353190): Try to move margin computation to them.
+      To<NGPhysicalBoxFragment>(fragment)
+          .GetMutableForContainerLayout()
+          .SetMargins(ComputePhysicalMargins(space, Style()));
+
+    } else {
+      box_->SetMargin(ComputePhysicalMargins(space, Style()));
+    }
+    // This margin data may be overwritten by NGBoxFragmentBuilder::AddResult().
+  }
 
   if (Style().MayHaveMargin() || Style().MayHavePadding()) {
     // Copy back the %-size so that |LayoutBoxModelObject::ComputedCSSPadding|
@@ -1779,7 +1791,7 @@ void NGBlockNode::UpdateMarginPaddingInfoIfNeeded(
 // in the parents writing mode.
 void NGBlockNode::UpdateShapeOutsideInfoIfNeeded(
     const NGLayoutResult& layout_result,
-    LayoutUnit percentage_resolution_inline_size) const {
+    const NGConstraintSpace& constraint_space) const {
   if (!box_->IsFloating() || !box_->GetShapeOutsideInfo())
     return;
 
@@ -1795,10 +1807,14 @@ void NGBlockNode::UpdateShapeOutsideInfoIfNeeded(
   // model and computing the correct sizes of shapes.
   ShapeOutsideInfo* shape_outside = box_->GetShapeOutsideInfo();
   WritingMode writing_mode = box_->ContainingBlock()->Style()->GetWritingMode();
+  NGBoxStrut margins =
+      ComputePhysicalMargins(constraint_space, Style())
+          .ConvertToLogical({writing_mode, TextDirection::kLtr});
   shape_outside->SetReferenceBoxLogicalSize(
-      box_size.ConvertToLogical(writing_mode));
+      box_size.ConvertToLogical(writing_mode),
+      LogicalSize(margins.InlineSum(), margins.BlockSum()));
   shape_outside->SetPercentageResolutionInlineSize(
-      percentage_resolution_inline_size);
+      constraint_space.PercentageResolutionInlineSize());
 }
 
 void NGBlockNode::StoreColumnSizeAndCount(LayoutUnit inline_size, int count) {

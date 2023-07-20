@@ -143,9 +143,14 @@ void NGBoxFragmentBuilder::AddResult(
            child_layout_result.IsSelfCollapsing(), relative_offset,
            inline_container);
   if (margins) {
-    // TODO(crbug.com/1353190): Store margins in physical fragments.
-    To<LayoutBox>(fragment.GetMutableLayoutObject())
-        ->SetMargin((*margins).ConvertToPhysical(GetWritingDirection()));
+    if (RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
+      To<NGPhysicalBoxFragment>(fragment)
+          .GetMutableForContainerLayout()
+          .SetMargins((*margins).ConvertToPhysical(GetWritingDirection()));
+    } else {
+      To<LayoutBox>(fragment.GetMutableLayoutObject())
+          ->SetMargin((*margins).ConvertToPhysical(GetWritingDirection()));
+    }
   }
 
   if (UNLIKELY(has_block_fragmentation_))

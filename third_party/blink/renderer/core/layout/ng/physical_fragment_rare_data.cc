@@ -10,6 +10,10 @@
 
 namespace blink {
 
+PhysicalFragmentRareData::PhysicalFragmentRareData(wtf_size_t num_fields) {
+  field_list_.ReserveInitialCapacity(num_fields);
+}
+
 PhysicalFragmentRareData::PhysicalFragmentRareData(
     NGBoxFragmentBuilder& builder,
     wtf_size_t num_fields) {
@@ -59,7 +63,9 @@ PhysicalFragmentRareData::PhysicalFragmentRareData(
             builder.table_column_geometries_);
   }
 
-  DCHECK_EQ(field_list_.size(), num_fields);
+  // size() can be smaller than num_fields because FieldId::kMargins is not
+  // set yet.
+  DCHECK_LE(field_list_.size(), num_fields);
 }
 
 #define SET_IF_EXISTS(id, name, source)                   \
@@ -75,7 +81,7 @@ PhysicalFragmentRareData::PhysicalFragmentRareData(
 PhysicalFragmentRareData::PhysicalFragmentRareData(
     const PhysicalFragmentRareData& other)
     : table_column_geometries_(other.table_column_geometries_) {
-  field_list_.ReserveInitialCapacity(other.field_list_.size());
+  field_list_.ReserveInitialCapacity(other.field_list_.capacity());
 
   // Each field should be processed in order of FieldId to avoid vector
   // element insertions.
@@ -91,6 +97,7 @@ PhysicalFragmentRareData::PhysicalFragmentRareData(
                 other);
   SET_IF_EXISTS(kTableSectionRowOffsets, table_section_row_offsets, other);
   SET_IF_EXISTS(kPageName, page_name, other);
+  SET_IF_EXISTS(kMargins, margins, other);
 
   DCHECK_EQ(field_list_.size(), other.field_list_.size());
 }
@@ -113,6 +120,7 @@ PhysicalFragmentRareData::~PhysicalFragmentRareData() = default;
     FUNC(kTableSectionStartRowIndex, table_section_start_row_index);        \
     FUNC(kTableSectionRowOffsets, table_section_row_offsets);               \
     FUNC(kPageName, page_name);                                             \
+    FUNC(kMargins, margins);                                                \
   }
 
 #define CONSTRUCT_UNION_MEMBER(id, name) \

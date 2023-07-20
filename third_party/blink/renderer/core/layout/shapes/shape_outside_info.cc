@@ -52,31 +52,22 @@ CSSBoxType ReferenceBox(const ShapeValue& shape_value) {
 }
 
 void ShapeOutsideInfo::SetReferenceBoxLogicalSize(
-    LogicalSize new_reference_box_logical_size) {
+    LogicalSize new_reference_box_logical_size,
+    LogicalSize margin_size) {
   Document& document = layout_box_->GetDocument();
   bool is_horizontal_writing_mode =
       layout_box_->ContainingBlock()->StyleRef().IsHorizontalWritingMode();
 
   LogicalSize margin_box_for_use_counter = new_reference_box_logical_size;
-  if (is_horizontal_writing_mode) {
-    margin_box_for_use_counter.Expand(layout_box_->MarginWidth(),
-                                      layout_box_->MarginHeight());
-  } else {
-    margin_box_for_use_counter.Expand(layout_box_->MarginHeight(),
-                                      layout_box_->MarginWidth());
-  }
+  margin_box_for_use_counter.Expand(margin_size.inline_size,
+                                    margin_size.block_size);
 
   const ShapeValue& shape_value = *layout_box_->StyleRef().ShapeOutside();
   switch (ReferenceBox(shape_value)) {
     case CSSBoxType::kMargin:
       UseCounter::Count(document, WebFeature::kShapeOutsideMarginBox);
-      if (is_horizontal_writing_mode) {
-        new_reference_box_logical_size.Expand(layout_box_->MarginWidth(),
-                                              layout_box_->MarginHeight());
-      } else {
-        new_reference_box_logical_size.Expand(layout_box_->MarginHeight(),
-                                              layout_box_->MarginWidth());
-      }
+      new_reference_box_logical_size.Expand(margin_size.inline_size,
+                                            margin_size.block_size);
       break;
     case CSSBoxType::kBorder:
       UseCounter::Count(document, WebFeature::kShapeOutsideBorderBox);
