@@ -34,7 +34,8 @@ class CrosSpeechRecognitionRecognizerImpl
       media::mojom::SpeechRecognitionOptionsPtr options,
       const base::FilePath& binary_path,
       const base::flat_map<std::string, base::FilePath>& config_paths,
-      const std::string& primary_language_name);
+      const std::string& primary_language_name,
+      const bool mask_offensive_words);
   ~CrosSpeechRecognitionRecognizerImpl() override;
 
   static void Create(
@@ -44,7 +45,8 @@ class CrosSpeechRecognitionRecognizerImpl
       media::mojom::SpeechRecognitionOptionsPtr options,
       const base::FilePath& binary_path,
       const base::flat_map<std::string, base::FilePath>& config_paths,
-      const std::string& primary_language_name);
+      const std::string& primary_language_name,
+      const bool mask_offensive_words);
 
   // SpeechRecognitionRecognizerImpl:
   void SendAudioToSpeechRecognitionServiceInternal(

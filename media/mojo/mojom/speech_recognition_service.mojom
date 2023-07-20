@@ -47,6 +47,9 @@ interface SpeechRecognitionService {
   SetSodaPaths(mojo_base.mojom.FilePath binary_path,
               map<string, mojo_base.mojom.FilePath> config_paths,
               string primary_language_name);
+
+  // Sets various params to the Speech On-Device API (SODA) binary.
+  SetSodaParams(bool mask_offensive_words);
 };
 
 // The interface used to start and stop fetching audio from the microphone

@@ -55,6 +55,11 @@ void SpeechRecognitionServiceImpl::SetSodaPaths(
   primary_language_name_ = primary_language_name;
 }
 
+void SpeechRecognitionServiceImpl::SetSodaParams(
+    const bool mask_offensive_words) {
+  mask_offensive_words_ = mask_offensive_words;
+}
+
 void SpeechRecognitionServiceImpl::BindRecognizer(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizer> receiver,
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> client,
@@ -79,7 +84,7 @@ void SpeechRecognitionServiceImpl::BindRecognizer(
 
   SpeechRecognitionRecognizerImpl::Create(
       std::move(receiver), std::move(client), std::move(options), binary_path_,
-      config_paths_, primary_language_name_);
+      config_paths_, primary_language_name_, mask_offensive_words_);
   std::move(callback).Run(
       SpeechRecognitionRecognizerImpl::IsMultichannelSupported());
 }
@@ -112,7 +117,7 @@ void SpeechRecognitionServiceImpl::BindAudioSourceFetcher(
       std::move(fetcher_receiver),
       std::make_unique<SpeechRecognitionRecognizerImpl>(
           std::move(client), std::move(options), binary_path_, config_paths_,
-          primary_language_name_),
+          primary_language_name_, mask_offensive_words_),
       is_multi_channel_supported, is_server_based);
   std::move(callback).Run(is_multi_channel_supported);
 }

@@ -45,6 +45,7 @@ class SpeechRecognitionServiceImpl
       const base::FilePath& binary_path,
       const base::flat_map<std::string, base::FilePath>& config_paths,
       const std::string& primary_language_name) override;
+  void SetSodaParams(const bool mask_offensive_words) override;
 
   // media::mojom::SpeechRecognitionContext:
   void BindRecognizer(
@@ -77,6 +78,7 @@ class SpeechRecognitionServiceImpl
   base::FilePath binary_path_ = base::FilePath();
   base::flat_map<std::string, base::FilePath> config_paths_;
   std::string primary_language_name_;
+  bool mask_offensive_words_ = false;
 
   base::WeakPtrFactory<SpeechRecognitionServiceImpl> weak_factory_{this};
 };

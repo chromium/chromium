@@ -99,6 +99,10 @@ void ChromeSpeechRecognitionService::LaunchIfNotRunning() {
   speech_recognition_service_.reset_on_idle_timeout(kIdleProcessTimeout);
   speech_recognition_service_->SetSodaPaths(binary_path, config_paths,
                                             language_name);
+
+  bool mask_offensive_words =
+      profile_prefs->GetBoolean(prefs::kLiveCaptionMaskOffensiveWords);
+  speech_recognition_service_->SetSodaParams(mask_offensive_words);
 }
 
 base::flat_map<std::string, base::FilePath>

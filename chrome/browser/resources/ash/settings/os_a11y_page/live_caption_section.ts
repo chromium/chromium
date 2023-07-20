@@ -87,14 +87,6 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
         'Accessibility.LiveCaption.EnableFromSettings', liveCaptionEnabled);
   }
 
-  private onLiveCaptionMaskOffensiveWordsChanged_(event: Event) {
-    const liveCaptionMaskOffensiveWords =
-        (event.target as SettingsToggleButtonElement).checked;
-    chrome.metricsPrivate.recordBoolean(
-        'Accessibility.LiveCaption.MaskOffensiveWords',
-        liveCaptionMaskOffensiveWords);
-  }
-
   /**
    * Displays SODA download progress in the UI.
    * @param sodaDownloadProgress The message sent from the webui to be displayed
