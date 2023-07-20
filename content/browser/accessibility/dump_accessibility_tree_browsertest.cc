@@ -40,6 +40,13 @@
 #define MAYBE(x) x
 #endif
 
+// TODO(https://crbug.com/1367886): Flaky on asan builder on multiple platforms.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_ASAN(x) DISABLED_##x
+#else
+#define MAYBE_ASAN(x) x
+#endif
+
 namespace content {
 
 using ui::AXPropertyFilter;
@@ -1765,13 +1772,16 @@ IN_PROC_BROWSER_TEST_P(
   RunFormControlsTest(FILE_PATH_LITERAL("contenteditable-descendants.html"));
 }
 
+// TODO(https://crbug.com/1367886): Flaky on asan builder on multiple platforms.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityContenteditableDocsLi) {
+                       MAYBE_ASAN(AccessibilityContenteditableDocsLi)) {
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-docs-li.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityContenteditableLiContainsPresentation) {
+// TODO(https://crbug.com/1367886): Flaky on asan builder on multiple platforms.
+IN_PROC_BROWSER_TEST_P(
+    DumpAccessibilityTreeTest,
+    MAYBE_ASAN(AccessibilityContenteditableLiContainsPresentation)) {
   RunHtmlTest(
       FILE_PATH_LITERAL("contenteditable-li-contains-presentation.html"));
 }
@@ -3013,7 +3023,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySpan) {
   RunHtmlTest(FILE_PATH_LITERAL("span.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySpanLineBreak) {
+// TODO(https://crbug.com/1367886): Flaky on asan builder on multiple platforms.
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       MAYBE_ASAN(AccessibilitySpanLineBreak)) {
   RunHtmlTest(FILE_PATH_LITERAL("span-line-break.html"));
 }
 
