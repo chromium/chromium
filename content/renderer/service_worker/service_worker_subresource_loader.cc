@@ -398,7 +398,18 @@ void ServiceWorkerSubresourceLoader::DispatchFetchEvent() {
   auto* router_evaluator = controller_connector_->router_evaluator();
   if (router_evaluator) {
     CHECK(router_evaluator->IsValid());
-    auto sources = router_evaluator->Evaluate(resource_request_);
+    std::vector<blink::ServiceWorkerRouterSource> sources;
+    // Avoid calling GetRecentRunningStatus() if there is no rules that
+    // need running status.
+    // Getting recent running status sends IPC to the browser process,
+    // and affection to performance is concerned.
+    if (router_evaluator->need_running_status()) {
+      sources = router_evaluator->Evaluate(
+          resource_request_, controller_connector_->GetRecentRunningStatus());
+    } else {
+      sources =
+          router_evaluator->EvaluateWithoutRunningStatus(resource_request_);
+    }
     if (!sources.empty()) {  // matched the rule.
       // TODO(crbug.com/1371756): support other sources in the full form.
       // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api/blob/main/final-form.md

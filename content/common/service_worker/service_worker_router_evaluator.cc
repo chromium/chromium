@@ -110,6 +110,18 @@ base::Value RequestToValue(
   return base::Value(std::move(ret));
 }
 
+std::string RunningStatusToString(
+    const blink::ServiceWorkerRouterRunningStatusCondition& running_status) {
+  switch (running_status.status) {
+    case blink::ServiceWorkerRouterRunningStatusCondition::RunningStatusEnum::
+        kRunning:
+      return "running";
+    case blink::ServiceWorkerRouterRunningStatusCondition::RunningStatusEnum::
+        kNotRunning:
+      return "not-running";
+  }
+}
+
 bool IsValidCondition(const blink::ServiceWorkerRouterCondition& condition) {
   switch (condition.type) {
     case blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern:
@@ -177,6 +189,18 @@ bool IsMatchedRequest(const blink::ServiceWorkerRouterRequestCondition& pattern,
   return true;
 }
 
+bool IsMatchedRunningCondition(
+    const blink::ServiceWorkerRouterRunningStatusCondition& condition,
+    const blink::EmbeddedWorkerStatus& running_status) {
+  // returns true if both condition matches.
+  bool is_condition_running = condition.status ==
+                              blink::ServiceWorkerRouterRunningStatusCondition::
+                                  RunningStatusEnum::kRunning;
+  bool is_status_running =
+      running_status == blink::EmbeddedWorkerStatus::RUNNING;
+  return is_condition_running == is_status_running;
+}
+
 }  // namespace
 
 namespace content {
@@ -188,10 +212,13 @@ class ServiceWorkerRouterEvaluator::RouterRule {
         hostname_patterns_(RE2::Set(RE2::Options(), RE2::Anchor::UNANCHORED)) {}
   ~RouterRule() = default;
   bool SetRule(const blink::ServiceWorkerRouterRule& rule);
-  bool IsConditionMatched(const network::ResourceRequest& request) const;
+  bool IsConditionMatched(
+      const network::ResourceRequest& request,
+      absl::optional<blink::EmbeddedWorkerStatus> running_status) const;
   const std::vector<blink::ServiceWorkerRouterSource>& sources() const {
     return sources_;
   }
+  bool need_running_status() const { return need_running_status_; }
 
  private:
   // Returns true on success. Otherwise, false.
@@ -209,7 +236,8 @@ class ServiceWorkerRouterEvaluator::RouterRule {
   bool IsUrlPatternConditionMatched(
       const network::ResourceRequest& request) const;
   bool IsNonUrlPatternConditionMatched(
-      const network::ResourceRequest& request) const;
+      const network::ResourceRequest& request,
+      absl::optional<blink::EmbeddedWorkerStatus> running_status) const;
   // To process SafeUrlPattern faster, all patterns are combined into the
   // `RE::Set` and compiled when `ServiceWorkerRouterEvaluator` is initialized.
   RE2::Set pathname_patterns_;
@@ -219,6 +247,7 @@ class ServiceWorkerRouterEvaluator::RouterRule {
   // Non-SafeUrlPattern conditions are processed one by one.
   std::vector<blink::ServiceWorkerRouterCondition> non_url_pattern_conditions_;
   std::vector<blink::ServiceWorkerRouterSource> sources_;
+  bool need_running_status_ = false;
 };
 
 bool ServiceWorkerRouterEvaluator::RouterRule::SetRule(
@@ -242,6 +271,10 @@ bool ServiceWorkerRouterEvaluator::RouterRule::SetConditions(
     if (condition.type !=
         blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern) {
       non_url_pattern_conditions_.push_back(condition);
+      if (condition.type ==
+          blink::ServiceWorkerRouterCondition::ConditionType::kRunningStatus) {
+        need_running_status_ = true;
+      }
       continue;
     }
 
@@ -281,9 +314,10 @@ bool ServiceWorkerRouterEvaluator::RouterRule::SetConditions(
 }
 
 bool ServiceWorkerRouterEvaluator::RouterRule::IsConditionMatched(
-    const network::ResourceRequest& request) const {
+    const network::ResourceRequest& request,
+    absl::optional<blink::EmbeddedWorkerStatus> running_status) const {
   return IsUrlPatternConditionMatched(request) &&
-         IsNonUrlPatternConditionMatched(request);
+         IsNonUrlPatternConditionMatched(request, running_status);
 }
 
 bool ServiceWorkerRouterEvaluator::RouterRule::IsUrlPatternConditionMatched(
@@ -312,7 +346,8 @@ bool ServiceWorkerRouterEvaluator::RouterRule::IsUrlPatternConditionMatched(
 }
 
 bool ServiceWorkerRouterEvaluator::RouterRule::IsNonUrlPatternConditionMatched(
-    const network::ResourceRequest& request) const {
+    const network::ResourceRequest& request,
+    absl::optional<blink::EmbeddedWorkerStatus> running_status) const {
   for (const auto& c : non_url_pattern_conditions_) {
     switch (c.type) {
       case blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern:
@@ -324,7 +359,10 @@ bool ServiceWorkerRouterEvaluator::RouterRule::IsNonUrlPatternConditionMatched(
         }
         break;
       case blink::ServiceWorkerRouterCondition::ConditionType::kRunningStatus:
-        NOTIMPLEMENTED() << "Not implemented yet. crbug.com/1371756";
+        if (running_status &&
+            !IsMatchedRunningCondition(*c.running_status, *running_status)) {
+          return false;
+        }
         break;
     }
   }
@@ -344,6 +382,7 @@ void ServiceWorkerRouterEvaluator::Compile() {
     if (!rule->SetRule(r)) {
       return;
     }
+    need_running_status_ |= rule->need_running_status();
     compiled_rules_.emplace_back(std::move(rule));
   }
   RecordSetupError(ServiceWorkerRouterEvaluatorErrorEnums::kNoError);
@@ -351,11 +390,12 @@ void ServiceWorkerRouterEvaluator::Compile() {
 }
 
 std::vector<blink::ServiceWorkerRouterSource>
-ServiceWorkerRouterEvaluator::Evaluate(
-    const network::ResourceRequest& request) const {
+ServiceWorkerRouterEvaluator::EvaluateInternal(
+    const network::ResourceRequest& request,
+    absl::optional<blink::EmbeddedWorkerStatus> running_status) const {
   CHECK(is_valid_);
   for (const auto& rule : compiled_rules_) {
-    if (rule->IsConditionMatched(request)) {
+    if (rule->IsConditionMatched(request, running_status)) {
       VLOG(3) << "matched request url=" << request.url;
       RecordMatchedSourceType(rule->sources());
       return rule->sources();
@@ -363,6 +403,20 @@ ServiceWorkerRouterEvaluator::Evaluate(
   }
   VLOG(3) << "not matched request url=" << request.url;
   return std::vector<blink::ServiceWorkerRouterSource>();
+}
+
+std::vector<blink::ServiceWorkerRouterSource>
+ServiceWorkerRouterEvaluator::Evaluate(
+    const network::ResourceRequest& request,
+    blink::EmbeddedWorkerStatus running_status) const {
+  return EvaluateInternal(request, running_status);
+}
+
+std::vector<blink::ServiceWorkerRouterSource>
+ServiceWorkerRouterEvaluator::EvaluateWithoutRunningStatus(
+    const network::ResourceRequest& request) const {
+  CHECK(!need_running_status_);
+  return EvaluateInternal(request, absl::nullopt);
 }
 
 base::Value ServiceWorkerRouterEvaluator::ToValue() const {
@@ -398,7 +452,9 @@ base::Value ServiceWorkerRouterEvaluator::ToValue() const {
         }
         case blink::ServiceWorkerRouterCondition::ConditionType::
             kRunningStatus: {
-          NOTIMPLEMENTED() << "Not implemented yet. crbug.com/1371756";
+          base::Value::Dict out_c;
+          out_c.Set("running_status", RunningStatusToString(*c.running_status));
+          condition.Append(std::move(out_c));
           break;
         }
       }

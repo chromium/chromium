@@ -251,8 +251,8 @@ void ServiceWorkerMainResourceLoader::StartRequest(
   // Check if registered static route rules match the request.
   if (active_worker->router_evaluator()) {
     CHECK(active_worker->router_evaluator()->IsValid());
-    auto sources =
-        active_worker->router_evaluator()->Evaluate(resource_request_);
+    auto sources = active_worker->router_evaluator()->Evaluate(
+        resource_request_, active_worker->running_status());
     // TODO(crbug.com/1371756) In some cases the router is evaluated only in the
     // renderer side. The same mechanism is needed in the subresource loader
     // as well.

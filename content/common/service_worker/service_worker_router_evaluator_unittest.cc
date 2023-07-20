@@ -22,7 +22,7 @@ TEST(ServiceWorkerRouterEvaluator, EmptyRule) {
   network::ResourceRequest request;
   request.method = "GET";
   request.url = GURL("https://example.com/");
-  const auto sources = evaluator.Evaluate(request);
+  const auto sources = evaluator.EvaluateWithoutRunningStatus(request);
   EXPECT_TRUE(sources.empty());
 }
 
@@ -60,7 +60,7 @@ TEST(ServiceWorkerRouterEvaluator, SimpleMatch) {
   network::ResourceRequest request;
   request.method = "GET";
   request.url = GURL("https://example.com/test/page.html");
-  const auto sources = evaluator.Evaluate(request);
+  const auto sources = evaluator.EvaluateWithoutRunningStatus(request);
   EXPECT_EQ(1U, sources.size());
 }
 
@@ -98,7 +98,7 @@ TEST(ServiceWorkerRouterEvaluator, SimpleExactMatch) {
   network::ResourceRequest request;
   request.method = "GET";
   request.url = GURL("https://example.com/test/page.html");
-  const auto sources = evaluator.Evaluate(request);
+  const auto sources = evaluator.EvaluateWithoutRunningStatus(request);
   EXPECT_EQ(1U, sources.size());
 }
 
@@ -136,7 +136,7 @@ TEST(ServiceWorkerRouterEvaluator, NotMatchingCondition) {
   network::ResourceRequest request;
   request.method = "GET";
   request.url = GURL("https://example.com/notmatched/page.html");
-  const auto sources = evaluator.Evaluate(request);
+  const auto sources = evaluator.EvaluateWithoutRunningStatus(request);
   EXPECT_EQ(0U, sources.size());
 }
 
@@ -187,7 +187,7 @@ TEST(ServiceWorkerRouterEvaluator, OneConditionMisMatch) {
   network::ResourceRequest request;
   request.method = "GET";
   request.url = GURL("https://example.com/test/page.html");
-  const auto sources = evaluator.Evaluate(request);
+  const auto sources = evaluator.EvaluateWithoutRunningStatus(request);
   EXPECT_EQ(0U, sources.size());
 }
 
@@ -237,7 +237,7 @@ TEST(ServiceWorkerRouterEvaluator, AllConditionMatch) {
   network::ResourceRequest request;
   request.method = "GET";
   request.url = GURL("https://example.com/test/page.html");
-  const auto sources = evaluator.Evaluate(request);
+  const auto sources = evaluator.EvaluateWithoutRunningStatus(request);
   EXPECT_EQ(1U, sources.size());
 }
 
@@ -296,7 +296,7 @@ TEST(ServiceWorkerRouterEvaluator, ChooseMatchedRoute) {
   network::ResourceRequest request;
   request.method = "GET";
   request.url = GURL("https://example.com/top/test.css");
-  const auto sources = evaluator.Evaluate(request);
+  const auto sources = evaluator.EvaluateWithoutRunningStatus(request);
   // Four sources rule should match because of *.css URLPattern.
   ASSERT_EQ(1U, sources.size());
   EXPECT_EQ(blink::ServiceWorkerRouterSource::SourceType::kRace,
@@ -337,7 +337,7 @@ TEST(ServiceWorkerRouterEvaluator, SimpleHostnameMatch) {
   network::ResourceRequest request;
   request.method = "GET";
   request.url = GURL("https://www.example.com/test/page.html");
-  const auto sources = evaluator.Evaluate(request);
+  const auto sources = evaluator.EvaluateWithoutRunningStatus(request);
   EXPECT_EQ(1U, sources.size());
 }
 
@@ -375,7 +375,7 @@ TEST(ServiceWorkerRouterEvaluator, SimpleExactHostnameMatch) {
   network::ResourceRequest request;
   request.method = "GET";
   request.url = GURL("https://www.example.com/test/page.html");
-  const auto sources = evaluator.Evaluate(request);
+  const auto sources = evaluator.EvaluateWithoutRunningStatus(request);
   EXPECT_EQ(1U, sources.size());
 }
 
@@ -413,7 +413,7 @@ TEST(ServiceWorkerRouterEvaluator, NotMatchingHostnameCondition) {
   network::ResourceRequest request;
   request.method = "GET";
   request.url = GURL("https://www.example.org/notmatched/page.html");
-  const auto sources = evaluator.Evaluate(request);
+  const auto sources = evaluator.EvaluateWithoutRunningStatus(request);
   EXPECT_EQ(0U, sources.size());
 }
 
@@ -524,7 +524,7 @@ TEST(ServiceWorkerRouterEvaluator, RequestMatch) {
         ASSERT_EQ(1U, evaluator.rules().rules.size());
         EXPECT_TRUE(evaluator.IsValid());
 
-        const auto sources = evaluator.Evaluate(request);
+        const auto sources = evaluator.EvaluateWithoutRunningStatus(request);
         if (expect_match) {
           EXPECT_EQ(1U, sources.size());
         } else {
@@ -580,6 +580,85 @@ TEST(ServiceWorkerRouterEvaluator, RequestMatch) {
   }
 }
 
+TEST(ServiceWorkerRouterEvaluator, RunningStatusMatch) {
+  auto verify = [](const blink::ServiceWorkerRouterRunningStatusCondition&
+                       running_status_condition,
+                   blink::EmbeddedWorkerStatus running_status,
+                   bool expect_match) {
+    blink::ServiceWorkerRouterRules rules;
+    {
+      blink::ServiceWorkerRouterRule rule;
+      {
+        blink::ServiceWorkerRouterCondition condition;
+        condition.type =
+            blink::ServiceWorkerRouterCondition::ConditionType::kRunningStatus;
+        condition.running_status = running_status_condition;
+        rule.conditions.push_back(condition);
+      }
+      {
+        blink::ServiceWorkerRouterSource source;
+        source.type = blink::ServiceWorkerRouterSource::SourceType::kFetchEvent;
+        source.fetch_event_source.emplace();
+        rule.sources.push_back(source);
+      }
+      rules.rules.push_back(rule);
+    }
+    ASSERT_EQ(1U, rules.rules.size());
+    ServiceWorkerRouterEvaluator evaluator(rules);
+    ASSERT_EQ(1U, evaluator.rules().rules.size());
+    EXPECT_TRUE(evaluator.IsValid());
+    EXPECT_TRUE(evaluator.need_running_status());
+
+    network::ResourceRequest request;
+    request.method = "GET";
+    request.url = GURL("https://example.com/");
+
+    const auto sources = evaluator.Evaluate(request, running_status);
+    if (expect_match) {
+      EXPECT_EQ(1U, sources.size());
+    } else {
+      EXPECT_EQ(0U, sources.size());
+    }
+  };
+
+  {
+    blink::ServiceWorkerRouterRunningStatusCondition rc;
+    rc.status = blink::ServiceWorkerRouterRunningStatusCondition::
+        RunningStatusEnum::kRunning;
+    verify(rc, blink::EmbeddedWorkerStatus::RUNNING,
+           /*expect_match=*/true);
+  }
+  {
+    blink::ServiceWorkerRouterRunningStatusCondition rc;
+    rc.status = blink::ServiceWorkerRouterRunningStatusCondition::
+        RunningStatusEnum::kRunning;
+    verify(rc, blink::EmbeddedWorkerStatus::STOPPED,
+           /*expect_match=*/false);
+    verify(rc, blink::EmbeddedWorkerStatus::STARTING,
+           /*expect_match=*/false);
+    verify(rc, blink::EmbeddedWorkerStatus::STOPPING,
+           /*expect_match=*/false);
+  }
+  {
+    blink::ServiceWorkerRouterRunningStatusCondition rc;
+    rc.status = blink::ServiceWorkerRouterRunningStatusCondition::
+        RunningStatusEnum::kNotRunning;
+    verify(rc, blink::EmbeddedWorkerStatus::RUNNING,
+           /*expect_match=*/false);
+  }
+  {
+    blink::ServiceWorkerRouterRunningStatusCondition rc;
+    rc.status = blink::ServiceWorkerRouterRunningStatusCondition::
+        RunningStatusEnum::kNotRunning;
+    verify(rc, blink::EmbeddedWorkerStatus::STOPPED,
+           /*expect_match=*/true);
+    verify(rc, blink::EmbeddedWorkerStatus::STARTING,
+           /*expect_match=*/true);
+    verify(rc, blink::EmbeddedWorkerStatus::STOPPING,
+           /*expect_match=*/true);
+  }
+}
+
 TEST(ServiceWorkerRouterEvaluator, ToValueEmptyRule) {
   blink::ServiceWorkerRouterRules rules;
   ServiceWorkerRouterEvaluator evaluator(rules);
@@ -614,6 +693,26 @@ TEST(ServiceWorkerRouterEvaluator, ToValueBasicSimpleRule) {
       request.mode = network::mojom::RequestMode::kCors;
       request.destination = network::mojom::RequestDestination::kFrame;
       condition.request = request;
+      rule.conditions.push_back(condition);
+    }
+    {
+      blink::ServiceWorkerRouterCondition condition;
+      condition.type =
+          blink::ServiceWorkerRouterCondition::ConditionType::kRunningStatus;
+      blink::ServiceWorkerRouterRunningStatusCondition running_status;
+      running_status.status = blink::ServiceWorkerRouterRunningStatusCondition::
+          RunningStatusEnum::kRunning;
+      condition.running_status = running_status;
+      rule.conditions.push_back(condition);
+    }
+    {
+      blink::ServiceWorkerRouterCondition condition;
+      condition.type =
+          blink::ServiceWorkerRouterCondition::ConditionType::kRunningStatus;
+      blink::ServiceWorkerRouterRunningStatusCondition running_status;
+      running_status.status = blink::ServiceWorkerRouterRunningStatusCondition::
+          RunningStatusEnum::kNotRunning;
+      condition.running_status = running_status;
       rule.conditions.push_back(condition);
     }
     {
@@ -661,6 +760,16 @@ TEST(ServiceWorkerRouterEvaluator, ToValueBasicSimpleRule) {
             request.Set("destination", "frame");
             condition.Set("request", base::Value(std::move(request)));
           }
+          conditions.Append(std::move(condition));
+        }
+        {
+          base::Value::Dict condition;
+          condition.Set("running_status", "running");
+          conditions.Append(std::move(condition));
+        }
+        {
+          base::Value::Dict condition;
+          condition.Set("running_status", "not-running");
           conditions.Append(std::move(condition));
         }
         rule.Set("condition", std::move(conditions));
