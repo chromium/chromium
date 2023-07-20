@@ -357,93 +357,6 @@ class BrowserAutofillManager : public AutofillManager,
     test_addresses_ = test_addresses;
   }
 
-  const std::vector<autofill::AutofillProfile>& test_addresses_for_test() {
-    return test_addresses_;
-  }
-
-  void SetExternalDelegateForTest(
-      std::unique_ptr<AutofillExternalDelegate> external_delegate) {
-    external_delegate_ = std::move(external_delegate);
-  }
-
-  static void DeterminePossibleFieldTypesForUploadForTest(
-      const std::vector<AutofillProfile>& profiles,
-      const std::vector<CreditCard>& credit_cards,
-      const std::u16string& last_unlocked_credit_card_cvc,
-      const std::string& app_locale,
-      FormStructure* form) {
-    // For tests, the observed_submission is hardcoded to true.
-    DeterminePossibleFieldTypesForUpload(
-        profiles, credit_cards, last_unlocked_credit_card_cvc, app_locale,
-        /*observed_submission=*/true, form);
-  }
-
-  bool ShouldTriggerRefillForTest(const FormStructure& form_structure) {
-    return ShouldTriggerRefill(form_structure);
-  }
-
-  void TriggerRefillForTest(const FormData& form,
-                            const AutofillTriggerSource trigger_source) {
-    TriggerRefill(form, trigger_source);
-  }
-
-  void PreProcessStateMatchingTypesForTest(
-      const std::vector<AutofillProfile>& profiles,
-      FormStructure* form_structure) {
-    PreProcessStateMatchingTypes(profiles, form_structure);
-  }
-
-  AutofillSuggestionGenerator* suggestion_generator_for_test() {
-    return suggestion_generator_.get();
-  }
-
-  FormInteractionsFlowId address_form_interactions_flow_id_for_test() const {
-    return address_form_event_logger_->form_interactions_flow_id_for_test();
-  }
-
-  void set_single_field_form_fill_router_for_test(
-      std::unique_ptr<SingleFieldFormFillRouter> router) {
-    single_field_form_fill_router_ = std::move(router);
-  }
-
-  void set_credit_card_access_manager_for_test(
-      std::unique_ptr<CreditCardAccessManager> manager) {
-    credit_card_access_manager_ = std::move(manager);
-  }
-
-  void OnCreditCardFetchedForTest(
-      CreditCardFetchResult result,
-      const CreditCard* credit_card = nullptr,
-      const std::u16string& cvc = std::u16string()) {
-    OnCreditCardFetched(result, credit_card, cvc);
-  }
-
-  bool WillFillCreditCardNumberForTest(const FormData& form,
-                                       const FormFieldData& field) {
-    return WillFillCreditCardNumber(form, field);
-  }
-
-  void FillOrPreviewDataModelFormForTest(
-      mojom::RendererFormDataAction action,
-      const FormData& form,
-      const FormFieldData& field,
-      absl::variant<const AutofillProfile*, const CreditCard*>
-          profile_or_credit_card,
-      const std::u16string* optional_cvc,
-      FormStructure* form_structure,
-      AutofillField* autofill_field) {
-    return FillOrPreviewDataModelForm(
-        action, form, field, profile_or_credit_card, optional_cvc,
-        form_structure, autofill_field, AutofillTriggerSource::kPopup);
-  }
-
-  FormData* pending_form_data_for_test() { return pending_form_data_.get(); }
-
-  void OnFormProcessedForTesting(const FormData& form,
-                                 const FormStructure& form_structure) {
-    OnFormProcessed(form, form_structure);
-  }
-
   // Returns the field corresponding to |form| and |field| that can be
   // autofilled. Returns NULL if the field cannot be autofilled.
   [[nodiscard]] AutofillField* GetAutofillField(const FormData& form,
@@ -503,6 +416,8 @@ class BrowserAutofillManager : public AutofillManager,
   void OnAfterProcessParsedForms(const DenseSet<FormType>& form_types) override;
 
  private:
+  friend class BrowserAutofillManagerTestApi;
+
   // Keeps track of the filling context for a form, used to make refill
   // attempts.
   struct FillingContext {

@@ -19,6 +19,7 @@
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/test_autofill_external_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -68,8 +69,8 @@ class AutofillPopupControllerBrowserTest : public InProcessBrowserTest {
             &autofill_manager(), autofill_driver_,
             /*call_parent_methods=*/true);
     autofill_external_delegate_ = autofill_external_delegate.get();
-    autofill_manager().SetExternalDelegateForTest(
-        std::move(autofill_external_delegate));
+    test_api(autofill_manager())
+        .SetExternalDelegate(std::move(autofill_external_delegate));
 
     disable_animation_ = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
         ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
@@ -193,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
   // hidden. This can happen if the web_contents are destroyed before the popup
   // is hidden. See http://crbug.com/232475
   autofill_external_delegate_ = nullptr;
-  autofill_manager().SetExternalDelegateForTest(nullptr);
+  test_api(autofill_manager()).SetExternalDelegate(nullptr);
   autofill_driver_->set_autofill_manager(nullptr);
 }
 

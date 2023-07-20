@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/browser_autofill_manager.h"
-
 #include <stddef.h>
 
 #include <memory>
@@ -38,6 +36,8 @@
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
@@ -610,8 +610,9 @@ class BrowserAutofillManagerTest : public testing::Test {
     ON_CALL(*single_field_form_fill_router, OnGetSingleFieldSuggestions)
         .WillByDefault(testing::Return(true));
     single_field_form_fill_router_ = single_field_form_fill_router.get();
-    browser_autofill_manager_->set_single_field_form_fill_router_for_test(
-        std::move(single_field_form_fill_router));
+    test_api(*browser_autofill_manager_)
+        .set_single_field_form_fill_router(
+            std::move(single_field_form_fill_router));
 
     auto download_manager =
         std::make_unique<MockAutofillDownloadManager>(&autofill_client_);
@@ -622,8 +623,8 @@ class BrowserAutofillManagerTest : public testing::Test {
         browser_autofill_manager_.get(), autofill_driver_.get(),
         /*call_parent_methods=*/false);
     external_delegate_ = external_delegate.get();
-    browser_autofill_manager_->SetExternalDelegateForTest(
-        std::move(external_delegate));
+    test_api(*browser_autofill_manager_)
+        .SetExternalDelegate(std::move(external_delegate));
 
     browser_autofill_manager_->set_touch_to_fill_delegate(
         std::make_unique<MockTouchToFillDelegate>());
@@ -828,8 +829,8 @@ class BrowserAutofillManagerTest : public testing::Test {
 
   bool WillFillCreditCardNumber(const FormData& form,
                                 const FormFieldData& field) {
-    return browser_autofill_manager_->WillFillCreditCardNumberForTest(form,
-                                                                      field);
+    return test_api(*browser_autofill_manager_)
+        .WillFillCreditCardNumber(form, field);
   }
 
   FormData CreateTestCreditCardFormData(bool is_https, bool use_month_type) {
@@ -991,8 +992,9 @@ class BrowserAutofillManagerTest : public testing::Test {
             autocomplete_history_manager_.get(), iban_manager_.get(),
             merchant_promo_code_manager_.get());
     single_field_form_fill_router_ = single_field_form_fill_router.get();
-    browser_autofill_manager_->set_single_field_form_fill_router_for_test(
-        std::move(single_field_form_fill_router));
+    test_api(*browser_autofill_manager_)
+        .set_single_field_form_fill_router(
+            std::move(single_field_form_fill_router));
   }
 
   // Matches a AskForValuesToFillFieldLogEvent by equality of fields.
@@ -2628,9 +2630,9 @@ TEST_F(BrowserAutofillManagerTest, OnCreditCardFetched_StoreInstrumentId) {
       mojom::RendererFormDataAction::kFill, form, form.fields[0], &credit_card,
       AutofillTriggerSource::kPopup);
 
-  browser_autofill_manager_->OnCreditCardFetchedForTest(
-      CreditCardFetchResult::kSuccess, &credit_card,
-      /*cvc=*/u"123");
+  test_api(*browser_autofill_manager_)
+      .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &credit_card,
+                           /*cvc=*/u"123");
 
   ASSERT_TRUE(
       test_form_data_importer_->fetched_card_instrument_id().has_value());
@@ -2845,9 +2847,10 @@ TEST_F(BrowserAutofillManagerTest, DoNotFillIfFormFieldChanged) {
   EXPECT_CALL(*autofill_driver_, FillOrPreviewForm)
       .WillOnce((DoAll(testing::SaveArg<1>(&response_data),
                        testing::Return(std::vector<FieldGlobalId>{}))));
-  browser_autofill_manager_->FillOrPreviewDataModelFormForTest(
-      mojom::RendererFormDataAction::kFill, form, form.fields.front(), profile,
-      nullptr, form_structure, autofill_field);
+  test_api(*browser_autofill_manager_)
+      .FillOrPreviewDataModelForm(mojom::RendererFormDataAction::kFill, form,
+                                  form.fields.front(), profile, nullptr,
+                                  form_structure, autofill_field);
   std::vector<FormFieldData> filled_fields(response_data.fields.begin(),
                                            response_data.fields.begin() + 2);
   std::vector<FormFieldData> skipped_fields(response_data.fields.begin() + 2,
@@ -2879,9 +2882,10 @@ TEST_F(BrowserAutofillManagerTest, DoNotFillIfFormChanged) {
 
   FormData response_data;
   EXPECT_CALL(*autofill_driver_, FillOrPreviewForm).Times(0);
-  browser_autofill_manager_->FillOrPreviewDataModelFormForTest(
-      mojom::RendererFormDataAction::kFill, form, form.fields.front(), profile,
-      nullptr, form_structure, autofill_field);
+  test_api(*browser_autofill_manager_)
+      .FillOrPreviewDataModelForm(mojom::RendererFormDataAction::kFill, form,
+                                  form.fields.front(), profile, nullptr,
+                                  form_structure, autofill_field);
 }
 
 TEST_F(BrowserAutofillManagerTest, UndoAutofillCallsDriver) {
@@ -2895,10 +2899,11 @@ TEST_F(BrowserAutofillManagerTest, UndoAutofillCallsDriver) {
       form, form.fields.front(), &form_structure, &autofill_field));
   EXPECT_CALL(*autofill_driver_, FillOrPreviewForm)
       .WillOnce(Return(safe_fields));
-  browser_autofill_manager_->FillOrPreviewDataModelFormForTest(
-      mojom::RendererFormDataAction::kFill, form, form.fields.front(),
-      personal_data().GetProfiles().front(), /*optional_cvc=*/nullptr,
-      form_structure, autofill_field);
+  test_api(*browser_autofill_manager_)
+      .FillOrPreviewDataModelForm(
+          mojom::RendererFormDataAction::kFill, form, form.fields.front(),
+          personal_data().GetProfiles().front(), /*optional_cvc=*/nullptr,
+          form_structure, autofill_field);
 
   EXPECT_CALL(*autofill_driver_, UndoAutofill);
   browser_autofill_manager_->UndoAutofill(mojom::RendererFormDataAction::kFill,
@@ -2915,10 +2920,11 @@ TEST_F(BrowserAutofillManagerTest,
   ASSERT_TRUE(browser_autofill_manager_->GetCachedFormAndField(
       form, form.fields.front(), &form_structure, &autofill_field));
   EXPECT_CALL(autofill_client_, DidFillOrPreviewForm);
-  browser_autofill_manager_->FillOrPreviewDataModelFormForTest(
-      mojom::RendererFormDataAction::kFill, form, form.fields.front(),
-      personal_data().GetCreditCards()[0], /*optional_cvc=*/nullptr,
-      form_structure, autofill_field);
+  test_api(*browser_autofill_manager_)
+      .FillOrPreviewDataModelForm(
+          mojom::RendererFormDataAction::kFill, form, form.fields.front(),
+          personal_data().GetCreditCards()[0], /*optional_cvc=*/nullptr,
+          form_structure, autofill_field);
 }
 
 // Test that if the form cache is outdated because a field was removed, filling
@@ -2953,18 +2959,18 @@ TEST_F(BrowserAutofillManagerTest,
   test::CreateTestAddressFormData(&form);
 
   browser_autofill_manager_->UpdatePendingForm(form);
-  ASSERT_TRUE(
-      browser_autofill_manager_->pending_form_data_for_test()->SameFormAs(
-          form));
+  ASSERT_TRUE(test_api(*browser_autofill_manager_)
+                  .pending_form_data()
+                  ->SameFormAs(form));
 
   // Receiving a notification that focus is no longer on the form *without* the
   // renderer having a previously-interacted form should not result in
   // any changes to the pending form.
   browser_autofill_manager_->OnFocusNoLongerOnForm(
       /*had_interacted_form=*/false);
-  EXPECT_TRUE(
-      browser_autofill_manager_->pending_form_data_for_test()->SameFormAs(
-          form));
+  EXPECT_TRUE(test_api(*browser_autofill_manager_)
+                  .pending_form_data()
+                  ->SameFormAs(form));
 }
 
 TEST_F(BrowserAutofillManagerTest,
@@ -3220,8 +3226,8 @@ TEST_F(BrowserAutofillManagerTest, DetermineStateFieldTypeForUpload) {
     FormStructure form_structure(form);
     EXPECT_EQ(form_structure.field_count(), 2U);
 
-    browser_autofill_manager_->PreProcessStateMatchingTypesForTest(
-        {profile}, &form_structure);
+    test_api(*browser_autofill_manager_)
+        .PreProcessStateMatchingTypes({profile}, &form_structure);
     EXPECT_TRUE(form_structure.field(1)->state_is_a_matching_type());
   }
 
@@ -3241,8 +3247,8 @@ TEST_F(BrowserAutofillManagerTest, DetermineStateFieldTypeForUpload) {
     FormStructure form_structure(form);
     EXPECT_EQ(form_structure.field_count(), 2U);
 
-    browser_autofill_manager_->PreProcessStateMatchingTypesForTest(
-        {profile}, &form_structure);
+    test_api(*browser_autofill_manager_)
+        .PreProcessStateMatchingTypes({profile}, &form_structure);
     EXPECT_FALSE(form_structure.field(1)->state_is_a_matching_type());
   }
 
@@ -3267,8 +3273,8 @@ TEST_F(BrowserAutofillManagerTest, DetermineStateFieldTypeForUpload) {
   FormStructure form_structure(form);
   EXPECT_EQ(form_structure.field_count(), 2U);
 
-  browser_autofill_manager_->PreProcessStateMatchingTypesForTest(
-      {profile}, &form_structure);
+  test_api(*browser_autofill_manager_)
+      .PreProcessStateMatchingTypes({profile}, &form_structure);
   EXPECT_TRUE(form_structure.field(1)->state_is_a_matching_type());
 }
 
@@ -6364,8 +6370,9 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   base::Base64Encode(response_string, &encoded_response_string);
 
   // Query autofill server for the field type prediction.
-  browser_autofill_manager_->OnLoadedServerPredictionsForTest(
-      encoded_response_string, test::GetEncodedSignatures(*form_structure));
+  test_api(*browser_autofill_manager_)
+      .OnLoadedServerPredictions(encoded_response_string,
+                                 test::GetEncodedSignatures(*form_structure));
   std::vector<ServerFieldType> types{NAME_FIRST, ADDRESS_HOME_LINE1,
                                      ADDRESS_HOME_CITY, ADDRESS_HOME_STATE,
                                      ADDRESS_HOME_ZIP};
@@ -6467,8 +6474,9 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   base::Base64Encode(response_string, &encoded_response_string);
 
   // Query autofill server for the field type prediction.
-  browser_autofill_manager_->OnLoadedServerPredictionsForTest(
-      encoded_response_string, test::GetEncodedSignatures(*form_structure));
+  test_api(*browser_autofill_manager_)
+      .OnLoadedServerPredictions(encoded_response_string,
+                                 test::GetEncodedSignatures(*form_structure));
   std::vector<ServerFieldType> overall_types{
       NAME_FULL, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, ADDRESS_HOME_CITY};
   for (size_t i = 0; i < server_types.size(); ++i) {
@@ -6563,8 +6571,8 @@ TEST_F(BrowserAutofillManagerTest,
       browser_autofill_manager_.get(), autofill_driver_.get(),
       /*call_parent_methods=*/false);
   external_delegate_ = external_delegate.get();
-  browser_autofill_manager_->SetExternalDelegateForTest(
-      std::move(external_delegate));
+  test_api(*browser_autofill_manager_)
+      .SetExternalDelegate(std::move(external_delegate));
 
   // Set up our form data.
   FormData form;
@@ -6638,8 +6646,8 @@ TEST_F(BrowserAutofillManagerTest,
       browser_autofill_manager_.get(), autofill_driver_.get(),
       /*call_parent_methods=*/false);
   external_delegate_ = external_delegate.get();
-  browser_autofill_manager_->SetExternalDelegateForTest(
-      std::move(external_delegate));
+  test_api(*browser_autofill_manager_)
+      .SetExternalDelegate(std::move(external_delegate));
 
   // Set up our form data.
   FormData form = CreateTestCreditCardFormData(false, false);
@@ -6673,8 +6681,8 @@ TEST_F(BrowserAutofillManagerTest,
       browser_autofill_manager_.get(), autofill_driver_.get(),
       /*call_parent_methods=*/false);
   external_delegate_ = external_delegate.get();
-  browser_autofill_manager_->SetExternalDelegateForTest(
-      std::move(external_delegate));
+  test_api(*browser_autofill_manager_)
+      .SetExternalDelegate(std::move(external_delegate));
 
   // Set up our form data.
   FormData form = CreateTestCreditCardFormData(false, false);
@@ -6733,8 +6741,8 @@ TEST_F(
       browser_autofill_manager_.get(), autofill_driver_.get(),
       /*call_parent_methods=*/false);
   external_delegate_ = external_delegate.get();
-  browser_autofill_manager_->SetExternalDelegateForTest(
-      std::move(external_delegate));
+  test_api(*browser_autofill_manager_)
+      .SetExternalDelegate(std::move(external_delegate));
 
   // Set up our form data.
   FormData form;
@@ -6851,8 +6859,8 @@ TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictionsFromApi) {
 
   // Run method under test.
   base::HistogramTester histogram_tester;
-  browser_autofill_manager_->OnLoadedServerPredictionsForTest(
-      encoded_response_string, signatures);
+  test_api(*browser_autofill_manager_)
+      .OnLoadedServerPredictions(encoded_response_string, signatures);
 
   // Verify whether the relevant histograms were updated.
   histogram_tester.ExpectBucketCount("Autofill.ServerQueryResponse",
@@ -6913,8 +6921,8 @@ TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictions_ResetManager) {
   browser_autofill_manager_->Reset();
 
   base::HistogramTester histogram_tester;
-  browser_autofill_manager_->OnLoadedServerPredictionsForTest(
-      response_string_base64, signatures);
+  test_api(*browser_autofill_manager_)
+      .OnLoadedServerPredictions(response_string_base64, signatures);
 
   // Verify that FormStructure::ParseQueryResponse was NOT called.
   histogram_tester.ExpectTotalCount("Autofill.ServerQueryResponse", 0);
@@ -6973,8 +6981,9 @@ TEST_F(BrowserAutofillManagerTest, DetermineHeuristicsWithOverallPrediction) {
   base::Base64Encode(response_string, &response_string_base64);
 
   base::HistogramTester histogram_tester;
-  browser_autofill_manager_->OnLoadedServerPredictionsForTest(
-      response_string_base64, test::GetEncodedSignatures(*form_structure));
+  test_api(*browser_autofill_manager_)
+      .OnLoadedServerPredictions(response_string_base64,
+                                 test::GetEncodedSignatures(*form_structure));
   // Verify that FormStructure::ParseQueryResponse was called (here and below).
   histogram_tester.ExpectBucketCount("Autofill.ServerQueryResponse",
                                      AutofillMetrics::QUERY_RESPONSE_RECEIVED,
@@ -7351,7 +7360,7 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
 
   FormStructure form_structure(form);
 
-  BrowserAutofillManager::DeterminePossibleFieldTypesForUploadForTest(
+  BrowserAutofillManagerTestApi::DeterminePossibleFieldTypesForUpload(
       profiles, credit_cards, std::u16string(), "en-us", &form_structure);
 
   ASSERT_EQ(1U, form_structure.field_count());
@@ -7414,7 +7423,7 @@ void DoTestDeterminePossibleFieldTypesForUploadOfSelect(
   FormStructure form_structure(form);
 
   // Validate expectations.
-  BrowserAutofillManager::DeterminePossibleFieldTypesForUploadForTest(
+  BrowserAutofillManagerTestApi::DeterminePossibleFieldTypesForUpload(
       profiles, credit_cards, std::u16string(), "en-us", &form_structure);
 
   ASSERT_EQ(2U, form_structure.field_count());
@@ -7661,7 +7670,7 @@ TEST_F(BrowserAutofillManagerTest, DisambiguateUploadTypes) {
               test_fields[i].predicted_type)});
     }
 
-    BrowserAutofillManager::DeterminePossibleFieldTypesForUploadForTest(
+    BrowserAutofillManagerTestApi::DeterminePossibleFieldTypesForUpload(
         profiles, credit_cards, std::u16string(), "en-us", &form_structure);
     ASSERT_EQ(test_fields.size(), form_structure.field_count());
 
@@ -7717,7 +7726,7 @@ TEST_F(BrowserAutofillManagerTest, CrowdsourceUPIVPA) {
   form.fields.push_back(field);
   FormStructure form_structure(form);
 
-  BrowserAutofillManager::DeterminePossibleFieldTypesForUploadForTest(
+  BrowserAutofillManagerTestApi::DeterminePossibleFieldTypesForUpload(
       profiles, credit_cards, std::u16string(), "en-us", &form_structure);
 
   EXPECT_THAT(form_structure.field(0)->possible_types(), ElementsAre(UPI_VPA));
@@ -7759,7 +7768,7 @@ TEST_F(BrowserAutofillManagerTest, CrowdsourceCVCFieldByValue) {
   FormStructure form_structure(form);
   form_structure.field(0)->set_possible_types({CREDIT_CARD_NUMBER});
 
-  BrowserAutofillManager::DeterminePossibleFieldTypesForUploadForTest(
+  BrowserAutofillManagerTestApi::DeterminePossibleFieldTypesForUpload(
       profiles, credit_cards, kCvc16, "en-us", &form_structure);
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(
@@ -7812,7 +7821,7 @@ TEST_F(BrowserAutofillManagerTest,
   // Set up the test profiles.
   std::vector<AutofillProfile> profiles;
 
-  BrowserAutofillManager::DeterminePossibleFieldTypesForUploadForTest(
+  BrowserAutofillManagerTestApi::DeterminePossibleFieldTypesForUpload(
       profiles, credit_cards, std::u16string(), "en-us", &form_structure);
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(form_structure, 2,
@@ -7866,7 +7875,7 @@ TEST_F(BrowserAutofillManagerTest,
   // Set up the test profiles.
   std::vector<AutofillProfile> profiles;
 
-  BrowserAutofillManager::DeterminePossibleFieldTypesForUploadForTest(
+  BrowserAutofillManagerTestApi::DeterminePossibleFieldTypesForUpload(
       profiles, credit_cards, std::u16string(), "en-us", &form_structure);
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(form_structure, 2,
@@ -7920,7 +7929,7 @@ TEST_F(BrowserAutofillManagerTest,
   // Set up the test profiles.
   std::vector<AutofillProfile> profiles;
 
-  BrowserAutofillManager::DeterminePossibleFieldTypesForUploadForTest(
+  BrowserAutofillManagerTestApi::DeterminePossibleFieldTypesForUpload(
       profiles, credit_cards, std::u16string(), "en-us", &form_structure);
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(form_structure, 1,
@@ -7974,7 +7983,7 @@ TEST_F(BrowserAutofillManagerTest,
   // Set up the test profiles.
   std::vector<AutofillProfile> profiles;
 
-  BrowserAutofillManager::DeterminePossibleFieldTypesForUploadForTest(
+  BrowserAutofillManagerTestApi::DeterminePossibleFieldTypesForUpload(
       profiles, credit_cards, std::u16string(), "en-us", &form_structure);
   CheckThatNoFieldHasThisPossibleType(form_structure,
                                       CREDIT_CARD_VERIFICATION_CODE);
@@ -8024,7 +8033,7 @@ TEST_F(BrowserAutofillManagerTest, CrowdsourceNoCVCDueToInvalidCandidateValue) {
   // Set up the test profiles.
   std::vector<AutofillProfile> profiles;
 
-  BrowserAutofillManager::DeterminePossibleFieldTypesForUploadForTest(
+  BrowserAutofillManagerTestApi::DeterminePossibleFieldTypesForUpload(
       profiles, credit_cards, std::u16string(), "en-us", &form_structure);
 
   CheckThatNoFieldHasThisPossibleType(form_structure,
@@ -9060,8 +9069,8 @@ TEST_F(BrowserAutofillManagerTest,
       autofill_driver_.get(), &autofill_client_);
   EXPECT_CALL(autofill_optimization_guide, OnDidParseForm).Times(1);
 
-  browser_autofill_manager_->OnFormProcessedForTesting(form_data,
-                                                       form_structure);
+  test_api(*browser_autofill_manager_)
+      .OnFormProcessed(form_data, form_structure);
 }
 
 TEST_F(BrowserAutofillManagerTest,
@@ -9073,8 +9082,8 @@ TEST_F(BrowserAutofillManagerTest,
 
   // Test that form processing doesn't crash when we have an IBAN form but no
   // AutofillOptimizationGuide present.
-  browser_autofill_manager_->OnFormProcessedForTesting(form_data,
-                                                       form_structure);
+  test_api(*browser_autofill_manager_)
+      .OnFormProcessed(form_data, form_structure);
 }
 
 TEST_F(BrowserAutofillManagerTest,

@@ -83,7 +83,7 @@ TEST_P(FormEventLoggerBaseFunnelTest, LogFunnelMetrics) {
   }
 
   FormInteractionsFlowId flow_id =
-      autofill_manager().address_form_interactions_flow_id_for_test();
+      test_api(autofill_manager()).address_form_interactions_flow_id();
   ResetDriverToCommitMetrics();
 
   // Phase 2: Validate Funnel expectations.
@@ -262,7 +262,7 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogEmptyForm) {
   SubmitForm(form_);
 
   FormInteractionsFlowId flow_id =
-      autofill_manager().address_form_interactions_flow_id_for_test();
+      test_api(autofill_manager()).address_form_interactions_flow_id();
   ResetDriverToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
@@ -300,7 +300,7 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogNoProfile) {
   SubmitForm(form_);
 
   FormInteractionsFlowId flow_id =
-      autofill_manager().address_form_interactions_flow_id_for_test();
+      test_api(autofill_manager()).address_form_interactions_flow_id();
   ResetDriverToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
@@ -338,7 +338,7 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogUserDoesNotAcceptSuggestion) {
   SubmitForm(form_);
 
   FormInteractionsFlowId flow_id =
-      autofill_manager().address_form_interactions_flow_id_for_test();
+      test_api(autofill_manager()).address_form_interactions_flow_id();
   ResetDriverToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
@@ -378,7 +378,7 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogUserFixesFilledData) {
   SubmitForm(form_);
 
   FormInteractionsFlowId flow_id =
-      autofill_manager().address_form_interactions_flow_id_for_test();
+      test_api(autofill_manager()).address_form_interactions_flow_id();
   ResetDriverToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
@@ -422,7 +422,7 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest,
   // Don't submit form.
 
   FormInteractionsFlowId flow_id =
-      autofill_manager().address_form_interactions_flow_id_for_test();
+      test_api(autofill_manager()).address_form_interactions_flow_id();
   ResetDriverToCommitMetrics();
 
   histogram_tester.ExpectTotalCount(

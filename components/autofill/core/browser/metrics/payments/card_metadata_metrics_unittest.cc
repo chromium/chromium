@@ -255,8 +255,8 @@ TEST_P(CardMetadataFormEventMetricsTest, LogFilledMetrics) {
   autofill_manager().FillOrPreviewForm(
       mojom::RendererFormDataAction::kFill, form(), form().fields.back(),
       Suggestion::BackendId(kCardGuid), AutofillTriggerSource::kPopup);
-  autofill_manager().OnCreditCardFetchedForTest(CreditCardFetchResult::kSuccess,
-                                                &card(), u"123");
+  test_api(autofill_manager())
+      .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card(), u"123");
 
   // Verify that:
   // 1. if the card suggestion filled had metadata,
@@ -298,8 +298,8 @@ TEST_P(CardMetadataFormEventMetricsTest, LogFilledMetrics) {
                                       card_metadata_available(), 0);
 
   // Fill the suggestion again.
-  autofill_manager().OnCreditCardFetchedForTest(CreditCardFetchResult::kSuccess,
-                                                &card(), u"123");
+  test_api(autofill_manager())
+      .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card(), u"123");
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
@@ -330,8 +330,8 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSubmitMetrics) {
   autofill_manager().FillOrPreviewForm(
       mojom::RendererFormDataAction::kFill, form(), form().fields.back(),
       Suggestion::BackendId(kCardGuid), AutofillTriggerSource::kPopup);
-  autofill_manager().OnCreditCardFetchedForTest(CreditCardFetchResult::kSuccess,
-                                                &card(), u"123");
+  test_api(autofill_manager())
+      .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card(), u"123");
   SubmitForm(form());
 
   // Verify that:

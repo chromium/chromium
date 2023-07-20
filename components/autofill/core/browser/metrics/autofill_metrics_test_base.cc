@@ -75,7 +75,8 @@ void AutofillMetricsBaseTest::SetUpHelper() {
   auto external_delegate = std::make_unique<AutofillExternalDelegate>(
       &autofill_manager(), autofill_driver_.get());
   external_delegate_ = external_delegate.get();
-  autofill_manager().SetExternalDelegateForTest(std::move(external_delegate));
+  test_api(autofill_manager())
+      .SetExternalDelegate(std::move(external_delegate));
 
 #if !BUILDFLAG(IS_IOS)
   autofill_manager()
@@ -194,13 +195,15 @@ void AutofillMetricsBaseTest::OnCreditCardFetchingSuccessful(
                       : CreditCard::RecordType::MASKED_SERVER_CARD);
   credit_card_.SetNumber(real_pan);
 
-  autofill_manager().OnCreditCardFetchedForTest(CreditCardFetchResult::kSuccess,
-                                                &credit_card_, u"123");
+  test_api(autofill_manager())
+      .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &credit_card_,
+                           u"123");
 }
 
 void AutofillMetricsBaseTest::OnCreditCardFetchingFailed() {
-  autofill_manager().OnCreditCardFetchedForTest(
-      CreditCardFetchResult::kPermanentError, nullptr, u"");
+  test_api(autofill_manager())
+      .OnCreditCardFetched(CreditCardFetchResult::kPermanentError, nullptr,
+                           u"");
 }
 
 void AutofillMetricsBaseTest::RecreateCreditCards(

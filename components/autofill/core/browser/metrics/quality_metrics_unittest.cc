@@ -9,6 +9,8 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
+#include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/metrics/ukm_metrics_test_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -778,8 +780,8 @@ TEST_F(QualityMetricsTest, BasedOnAutocomplete) {
   FormStructure* form_structure_ptr = form_structure.get();
   form_structure->DetermineHeuristicTypes(nullptr, nullptr);
   ASSERT_TRUE(
-      autofill_manager()
-          .mutable_form_structures_for_test()
+      test_api(autofill_manager())
+          .mutable_form_structures()
           ->emplace(form_structure_ptr->global_id(), std::move(form_structure))
           .second);
 
@@ -796,8 +798,9 @@ TEST_F(QualityMetricsTest, BasedOnAutocomplete) {
 
   std::string response_string = SerializeAndEncode(response);
   base::HistogramTester histogram_tester;
-  autofill_manager().OnLoadedServerPredictionsForTest(
-      response_string, test::GetEncodedSignatures(*form_structure_ptr));
+  test_api(autofill_manager())
+      .OnLoadedServerPredictions(
+          response_string, test::GetEncodedSignatures(*form_structure_ptr));
 
   // Verify that FormStructure::ParseApiQueryResponse was called (here and
   // below).

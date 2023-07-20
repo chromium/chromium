@@ -8,6 +8,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
+#include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
@@ -160,7 +161,7 @@ const gfx::Image& TestBrowserAutofillManager::GetCardImage(
 void TestBrowserAutofillManager::ScheduleRefill(
     const FormData& form,
     const AutofillTriggerSource trigger_source) {
-  TriggerRefillForTest(form, trigger_source);
+  test_api(*this).TriggerRefill(form, trigger_source);
 }
 
 bool TestBrowserAutofillManager::MaybeStartVoteUploadProcess(

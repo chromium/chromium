@@ -695,8 +695,10 @@ static_library("test_support") {
   sources = [
     "autofill_form_test_utils.cc",
     "autofill_form_test_utils.h",
+    "autofill_manager_test_api.h",
     "autofill_test_utils.cc",
     "autofill_test_utils.h",
+    "browser_autofill_manager_test_api.h",
     "data_model/autofill_structured_address_test_utils.cc",
     "data_model/autofill_structured_address_test_utils.h",
     "data_model/test_autofill_data_model.cc",

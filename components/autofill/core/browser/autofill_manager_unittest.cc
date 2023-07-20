@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/autofill_manager.h"
-
 #include <iterator>
 #include <memory>
 #include <tuple>
@@ -13,6 +11,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
@@ -472,7 +472,7 @@ TEST_F(
 
   EXPECT_CALL(observer_,
               OnAfterLoadedServerPredictions(testing::Address(manager_.get())));
-  manager_->OnLoadedServerPredictionsForTest("", {});
+  test_api(*manager_).OnLoadedServerPredictions("", {});
 
   manager_->RemoveObserver(&observer_);
 }
@@ -490,7 +490,7 @@ TEST_F(
 
   EXPECT_CALL(observer_,
               OnAfterLoadedServerPredictions(testing::Address(manager_.get())));
-  manager_->OnLoadedServerPredictionsForTest(
+  test_api(*manager_).OnLoadedServerPredictions(
       "",
       {manager_->FindCachedFormById(forms[0].global_id())->form_signature()});
 

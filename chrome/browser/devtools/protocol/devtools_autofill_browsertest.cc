@@ -11,6 +11,7 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -168,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, SetAddresses) {
   SendCommandSync("Autofill.setAddresses", std::move(params));
 
   std::vector<autofill::AutofillProfile> res =
-      main_autofill_manager()->test_addresses_for_test();
+      test_api(*main_autofill_manager()).test_addresses();
   ASSERT_EQ(res.size(), 2u);
   ASSERT_EQ(res[0].GetAddress().GetRawInfo(
                 autofill::ServerFieldType::ADDRESS_HOME_LINE1),

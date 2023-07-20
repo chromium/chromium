@@ -347,24 +347,6 @@ class AutofillManager
     return form_interactions_ukm_logger_.get();
   }
 
-  // A public wrapper that calls |OnLoadedServerPredictions| for testing
-  // purposes only, it is used by WebView integration test and unit test, so it
-  // can't be in #ifdef UNIT_TEST.
-  void OnLoadedServerPredictionsForTest(
-      std::string response,
-      const std::vector<FormSignature>& queried_form_signatures) {
-    OnLoadedServerPredictions(response, queried_form_signatures);
-  }
-
-  std::map<FormGlobalId, std::unique_ptr<FormStructure>>*
-  mutable_form_structures_for_test() {
-    return mutable_form_structures();
-  }
-
-  FormStructure* ParseFormForTest(const FormData& form) {
-    return ParseForm(form, nullptr);
-  }
-
  protected:
   AutofillManager(AutofillDriver* driver, AutofillClient* client);
 
@@ -511,6 +493,8 @@ class AutofillManager
   }
 
  private:
+  friend class AutofillManagerTestApi;
+
   // AutofillDownloadManager::Observer:
   void OnLoadedServerPredictions(
       std::string response,
