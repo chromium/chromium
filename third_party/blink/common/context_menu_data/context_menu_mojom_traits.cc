@@ -65,6 +65,7 @@ bool StructTraits<blink::mojom::UntrustworthyContextMenuParamsDataView,
   out->edit_flags = data.edit_flags();
   out->selection_start_offset = data.selection_start_offset();
   out->opened_from_highlight = data.opened_from_highlight();
+  out->is_password_type_by_heuristics = data.is_password_type_by_heuristics();
   return true;
 }
 

@@ -2035,4 +2035,47 @@ TEST_F(ContextMenuControllerRemoteParentFrameTest, ShowContextMenuInChild) {
   EXPECT_EQ(kPoint, host_context_menu_location.value());
 }
 
+// Test the field of context_menu_data is_password_type_by_heuristics which
+// should be set iff a field's type is plain text but heuristics (e.g. the name
+// attribute contains 'password' as a substring) recognize it as a password
+// field.
+TEST_F(ContextMenuControllerTest, IsPasswordTypeByHeuristic) {
+  WebURL url = url_test_helpers::ToKURL("http://www.test.com/");
+  frame_test_helpers::LoadHTMLString(LocalMainFrame(),
+                                     R"(<html>
+        <form>
+          <input type="password" id="not_heuristic"></textarea>
+          <input id="not_related"></textarea>
+          <input id="heuristic_password"></textarea>
+        </form>
+      </html>
+      )",
+                                     url);
+  Document* document = GetDocument();
+  ASSERT_TRUE(IsA<HTMLDocument>(document));
+
+  // Heuristics-based recognition is not needed, it is a clear password by
+  // input_field_type
+  Element* not_heuristic_password =
+      document->getElementById(AtomicString("not_heuristic"));
+  EXPECT_TRUE(
+      ShowContextMenuForElement(not_heuristic_password, kMenuSourceMouse));
+  ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_FALSE(context_menu_data.is_password_type_by_heuristics);
+
+  // Unrelated text field should not be recognized as password field.
+  Element* not_related = document->getElementById(AtomicString("not_related"));
+  EXPECT_TRUE(ShowContextMenuForElement(not_related, kMenuSourceMouse));
+  context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_FALSE(context_menu_data.is_password_type_by_heuristics);
+
+  // Field is of type 'text' and has 'password' in its id. Therefore, is
+  // password type by heuristics.
+  Element* heuristic_password =
+      document->getElementById(AtomicString("heuristic_password"));
+  EXPECT_TRUE(ShowContextMenuForElement(heuristic_password, kMenuSourceMouse));
+  context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_TRUE(context_menu_data.is_password_type_by_heuristics);
+}
+
 }  // namespace blink

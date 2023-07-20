@@ -139,7 +139,6 @@ absl::optional<uint64_t> GetFieldRendererId(HitTestResult& result) {
   }
   return absl::nullopt;
 }
-
 }  // namespace
 
 ContextMenuController::ContextMenuController(Page* page) : page_(page) {}
@@ -349,8 +348,8 @@ static int ComputeEditFlags(Document& selected_document, Editor& editor) {
 }
 
 static mojom::blink::ContextMenuDataInputFieldType ComputeInputFieldType(
-    HitTestResult& result) {
-  if (auto* input = DynamicTo<HTMLInputElement>(result.InnerNode())) {
+    Element* element) {
+  if (auto* input = DynamicTo<HTMLInputElement>(element)) {
     if (input->type() == input_type_names::kPassword)
       return mojom::blink::ContextMenuDataInputFieldType::kPassword;
     if (input->type() == input_type_names::kNumber)
@@ -360,10 +359,29 @@ static mojom::blink::ContextMenuDataInputFieldType ComputeInputFieldType(
     if (input->IsTextField())
       return mojom::blink::ContextMenuDataInputFieldType::kPlainText;
     return mojom::blink::ContextMenuDataInputFieldType::kOther;
-  } else if (IsA<HTMLTextAreaElement>(result.InnerNode())) {
+  } else if (IsA<HTMLTextAreaElement>(element)) {
     return mojom::blink::ContextMenuDataInputFieldType::kPlainText;
   }
   return mojom::blink::ContextMenuDataInputFieldType::kNone;
+}
+
+void SetInputFieldsData(Element* element, ContextMenuData& data) {
+  data.input_field_type = ComputeInputFieldType(element);
+
+  // Uses heuristics (finding 'password' in field name and id etc.) to recognize
+  // a field intended for password input of plain text HTML field type, and it
+  // is used to set the field is_password_type_by_heuristics.
+  if (auto* input = DynamicTo<HTMLInputElement>(element)) {
+    const AtomicString& id = input->GetIdAttribute();
+    const AtomicString& name = input->GetNameAttribute();
+    data.is_password_type_by_heuristics =
+        (data.input_field_type ==
+         mojom::blink::ContextMenuDataInputFieldType::kPlainText) &&
+        (id.Contains("password", kTextCaseASCIIInsensitive) ||
+         name.Contains("password", kTextCaseASCIIInsensitive));
+    // TODO(crbug/1466053): Add other detectors (words similar to 'password' -
+    // e.g. 'psswrd', its abbreviations, translations etc).
+  }
 }
 
 static gfx::Rect ComputeSelectionRect(LocalFrame* selected_frame) {
@@ -784,7 +802,7 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
     }
   }
 
-  data.input_field_type = ComputeInputFieldType(result);
+  SetInputFieldsData(result.InnerElement(), data);
   data.selection_rect = ComputeSelectionRect(selected_frame);
   data.source_type = source_type;
   data.form_renderer_id = GetFormRendererId(result);

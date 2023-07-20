@@ -195,6 +195,10 @@ struct UntrustworthyContextMenuParams {
   // If this node is an input field, the type of that field.
   ContextMenuDataInputFieldType input_field_type;
 
+  // True iff a field's type is plain text but heuristics (e.g. the name attribute
+  // contains 'password' as a substring) recognize it as a password field.
+  bool is_password_type_by_heuristics;
+
   // Rect representing the coordinates in the document space of the selection.
   gfx.mojom.Rect selection_rect;
 

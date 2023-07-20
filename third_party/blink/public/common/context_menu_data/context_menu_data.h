@@ -123,6 +123,11 @@ struct ContextMenuData {
   // If this node is an input field, the type of that field.
   blink::mojom::ContextMenuDataInputFieldType input_field_type;
 
+  // True iff a field's type is plain text but heuristics (e.g. the name
+  // attribute contains 'password' as a substring) recognize it as a password
+  // field.
+  bool is_password_type_by_heuristics = false;
+
   enum CheckableMenuItemFlags {
     kCheckableMenuItemDisabled = 0x0,
     kCheckableMenuItemEnabled = 0x1,
