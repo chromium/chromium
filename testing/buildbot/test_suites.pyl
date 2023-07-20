@@ -337,15 +337,6 @@
         ],
         'test': 'chrome_public_test_apk',
       },
-      'bf_cache_chrome_public_unit_test_apk': {
-        'args': [
-          '--disable-features=BackForwardCache',
-        ],
-        'mixins': [
-          'skia_gold_test',
-        ],
-        'test': 'chrome_public_unit_test_apk',
-      },
       'bf_cache_content_shell_test_apk': {
         'args': [
           '--disable-features=BackForwardCache',
@@ -364,25 +355,6 @@
           'shards': 20,
         },
         'test': 'content_browsertests',
-      },
-      'bf_cache_content_unittests': {
-        'args': [
-          '--disable-features=BackForwardCache',
-        ],
-        'swarming': {
-          'shards': 10,
-        },
-        'test': 'content_unittests',
-      },
-      'bf_cache_unit_tests': {
-        'args': [
-          '--disable-features=BackForwardCache',
-          '--test-launcher-filter-file=../../testing/buildbot/filters/bfcache.unit_tests.filter'
-        ],
-        'swarming': {
-          'shards': 10,
-        },
-        'test': 'unit_tests',
       },
     },
 
