@@ -136,6 +136,24 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
       _largeIconTaskTracker.get());
 }
 
+- (CSSearchableItem*)searchableItem:(NSString*)title
+                             itemID:(NSString*)itemID
+                 additionalKeywords:(NSArray<NSString*>*)keywords {
+  CSSearchableItemAttributeSet* attributeSet =
+      [[CSSearchableItemAttributeSet alloc]
+          initWithItemContentType:spotlight::StringFromSpotlightDomain(
+                                      _spotlightDomain)];
+  [attributeSet setTitle:title];
+  [attributeSet setDisplayName:title];
+
+  CSSearchableItem* item = [self spotlightItemWithItemID:itemID
+                                            attributeSet:attributeSet];
+
+  [self addKeywords:keywords toSearchableItem:item];
+
+  return item;
+}
+
 - (NSString*)spotlightIDForURL:(const GURL&)URL {
   NSString* spotlightID = [NSString
       stringWithFormat:@"%@.%016llx",

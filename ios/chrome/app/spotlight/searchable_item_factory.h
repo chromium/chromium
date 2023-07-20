@@ -34,6 +34,12 @@ class GURL;
             additionalKeywords:(NSArray<NSString*>*)keywords
              completionHandler:(void (^)(CSSearchableItem*))completionHandler;
 
+/// Returns a simple searchable item displaying a title, given a 'title'
+/// 'itemID' and some 'additionalKeywords'
+- (CSSearchableItem*)searchableItem:(NSString*)title
+                             itemID:(NSString*)itemID
+                 additionalKeywords:(NSArray<NSString*>*)keywords;
+
 // Returns the spotlight ID for an item indexing `URL` and `title`.
 - (NSString*)spotlightIDForURL:(const GURL&)URL title:(NSString*)title;
 

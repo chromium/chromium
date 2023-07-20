@@ -11,6 +11,7 @@
 #import "ios/chrome/app/spotlight/bookmarks_spotlight_manager.h"
 #import "ios/chrome/app/spotlight/open_tabs_spotlight_manager.h"
 #import "ios/chrome/app/spotlight/reading_list_spotlight_manager.h"
+#import "ios/chrome/app/spotlight/spotlight_util.h"
 #import "ios/chrome/app/spotlight/topsites_spotlight_manager.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
