@@ -222,7 +222,73 @@ bool H265Decoder::ProcessCurrentSlice() {
   return false;
 }
 
+void H265Decoder::CalcPicOutputFlags(const H265SliceHeader* slice_hdr) {
+  NOTIMPLEMENTED();
+}
+
+void H265Decoder::CalcPictureOrderCount(const H265PPS* pps,
+                                        const H265SliceHeader* slice_hdr) {
+  NOTIMPLEMENTED();
+}
+
+bool H265Decoder::CalcRefPicPocs(const H265SPS* sps,
+                                 const H265PPS* pps,
+                                 const H265SliceHeader* slice_hdr) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+bool H265Decoder::BuildRefPicLists(const H265SPS* sps,
+                                   const H265PPS* pps,
+                                   const H265SliceHeader* slice_hdr) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+bool H265Decoder::PerformDpbOperations(const H265SPS* sps) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 bool H265Decoder::StartNewFrame(const H265SliceHeader* slice_hdr) {
+  CHECK(curr_pic_.get());
+  DCHECK(slice_hdr);
+
+  curr_pps_id_ = slice_hdr->slice_pic_parameter_set_id;
+  const H265PPS* pps = parser_->GetPPS(curr_pps_id_);
+  DCHECK(pps);
+
+  curr_sps_id_ = pps->pps_seq_parameter_set_id;
+  const H265SPS* sps = parser_->GetSPS(curr_sps_id_);
+  DCHECK(sps);
+
+  // If this is from a retry for submitting frame meta data,
+  // we should not redo all of these calculations.
+  if (!curr_pic_->processed_) {
+    // Copy slice/pps variables we need to the picture.
+    curr_pic_->nal_unit_type_ = curr_nalu_->nal_unit_type;
+    curr_pic_->irap_pic_ = slice_hdr->irap_pic;
+
+    // TODO(b/261127809): Set the color space for the picture.
+
+    CalcPicOutputFlags(slice_hdr);
+    CalcPictureOrderCount(pps, slice_hdr);
+    {
+      const bool success = CalcRefPicPocs(sps, pps, slice_hdr);
+      CHECK(success) << "CalcRefPicPocs function failed.";
+    }
+    {
+      const bool success = BuildRefPicLists(sps, pps, slice_hdr);
+      CHECK(success) << "BuildRefPicLists function failed.";
+    }
+    {
+      const bool success = PerformDpbOperations(sps);
+      CHECK(success) << "PerformDpbOperations function failed.";
+    }
+    curr_pic_->processed_ = true;
+  }
+
+  // TODO(b/261127809): Implement submit frame meta data
   NOTIMPLEMENTED();
   return false;
 }
@@ -376,7 +442,6 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
         CHECK_EQ(parse_result, H265Parser::kOk)
             << "Parser Failed to parse PPS.";
 
-        // TODO(b/261127809): add code to set |curr_pps_id_| in StartNewFrame()
         if (curr_pps_id_ == -1) {
           bool need_new_buffers = false;
 

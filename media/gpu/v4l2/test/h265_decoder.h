@@ -88,6 +88,36 @@ class H265Decoder : public VideoDecoder {
   // Process current slice as a slice of the current picture.
   bool ProcessCurrentSlice();
 
+  // Calculates the picture output flags using |slice_hdr| for |curr_pic_|.
+  void CalcPicOutputFlags(const H265SliceHeader* slice_hdr);
+
+  // Calculates picture order count (POC) using |pps| and|slice_hdr| for
+  // |curr_pic_|.
+  void CalcPictureOrderCount(const H265PPS* pps,
+                             const H265SliceHeader* slice_hdr);
+
+  // Calculates the POCs for the reference pictures for |curr_pic_| using
+  // |sps|, |pps| and |slice_hdr| and stores them in the member variables.
+  // Returns false if bitstream conformance is not maintained, true otherwise.
+  bool CalcRefPicPocs(const H265SPS* sps,
+                      const H265PPS* pps,
+                      const H265SliceHeader* slice_hdr);
+
+  // Builds the reference pictures lists for |curr_pic_| using |sps|, |pps|,
+  // |slice_hdr| and the member variables calculated in CalcRefPicPocs. Returns
+  // false if bitstream conformance is not maintained or needed reference
+  // pictures are missing, true otherwise. At the end of this,
+  // |ref_pic_list{0,1}| will be populated with the required reference pictures
+  // for submitting to the accelerator.
+  bool BuildRefPicLists(const H265SPS* sps,
+                        const H265PPS* pps,
+                        const H265SliceHeader* slice_hdr);
+
+  // Performs DPB management operations for |curr_pic_| by removing no longer
+  // needed entries from the DPB and outputting pictures from the DPB. |sps|
+  // should be the corresponding SPS for |curr_pic_|.
+  bool PerformDpbOperations(const H265SPS* sps);
+
   // Start processing a new frame. This also generates all the POC and output
   // variables for the frame, generates reference picture lists, performs
   // reference picture marking, DPB management and picture output.
@@ -122,7 +152,8 @@ class H265Decoder : public VideoDecoder {
   scoped_refptr<H265Picture> prev_tid0_pic_;
   int max_pic_order_cnt_lsb_;
 
-  // Currently active PPS.
+  // Currently active SPS and PPS.
+  int curr_sps_id_ = -1;
   int curr_pps_id_ = -1;
 
   // Current NALU and slice header being processed.
