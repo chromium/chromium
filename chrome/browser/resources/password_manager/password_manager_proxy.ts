@@ -296,11 +296,6 @@ export interface PasswordManagerProxy {
       listener: PasswordsFileExportProgressListener): void;
 
   /**
-   * Cancels the export in progress.
-   */
-  cancelExportPasswords(): void;
-
-  /**
    * Switches Biometric authentication before filling state after
    * successful authentication.
    */
@@ -537,10 +532,6 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
       listener: PasswordsFileExportProgressListener) {
     chrome.passwordsPrivate.onPasswordsFileExportProgress.removeListener(
         listener);
-  }
-
-  cancelExportPasswords() {
-    chrome.passwordsPrivate.cancelExportPasswords();
   }
 
   switchBiometricAuthBeforeFillingState() {

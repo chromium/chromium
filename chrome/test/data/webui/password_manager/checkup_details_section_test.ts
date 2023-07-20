@@ -279,7 +279,7 @@ suite('CheckupDetailsSectionTest', function() {
     ];
     passwordManager.data.groups = insecurePasswords.map(
         entry => createCredentialGroup(
-            {name: entry.urls.shown, credentials: [entry]}));
+            {name: entry.affiliatedDomains[0]!.name, credentials: [entry]}));
     passwordManager.data.credentialWithReusedPassword = [
       {entries: insecurePasswords.slice(0, 3).sort(() => Math.random() - 0.5)},
       {entries: insecurePasswords.slice(3, 5).sort(() => Math.random() - 0.5)},
@@ -305,7 +305,7 @@ suite('CheckupDetailsSectionTest', function() {
 
       assertTrue(!!listItemElement);
       assertEquals(
-          expectedCredential.urls.shown,
+          expectedCredential.affiliatedDomains[0]!.name,
           listItemElement.$.shownUrl.textContent!.trim());
       assertEquals(
           expectedCredential.username,

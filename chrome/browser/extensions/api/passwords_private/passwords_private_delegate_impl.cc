@@ -418,35 +418,6 @@ bool PasswordsPrivateDelegateImpl::AddPassword(
   return success;
 }
 
-absl::optional<int> PasswordsPrivateDelegateImpl::ChangeSavedPassword(
-    int id,
-    const api::passwords_private::ChangeSavedPasswordParams& params) {
-  const CredentialUIEntry* original_credential =
-      credential_id_generator_.TryGetKey(id);
-  if (!original_credential) {
-    return absl::nullopt;
-  }
-
-  CredentialUIEntry updated_credential = *original_credential;
-  updated_credential.username = base::UTF8ToUTF16(params.username);
-  updated_credential.password = base::UTF8ToUTF16(params.password);
-  if (params.note) {
-    updated_credential.note = base::UTF8ToUTF16(*params.note);
-  }
-  switch (saved_passwords_presenter_.EditSavedCredentials(*original_credential,
-                                                          updated_credential)) {
-    case password_manager::SavedPasswordsPresenter::EditResult::kSuccess:
-    case password_manager::SavedPasswordsPresenter::EditResult::kNothingChanged:
-      break;
-    case password_manager::SavedPasswordsPresenter::EditResult::kNotFound:
-    case password_manager::SavedPasswordsPresenter::EditResult::kAlreadyExisits:
-    case password_manager::SavedPasswordsPresenter::EditResult::kEmptyPassword:
-      return absl::nullopt;
-  }
-
-  return credential_id_generator_.GenerateId(std::move(updated_credential));
-}
-
 bool PasswordsPrivateDelegateImpl::ChangeCredential(
     const api::passwords_private::PasswordUiEntry& credential) {
   const CredentialUIEntry* original_credential =
@@ -749,10 +720,6 @@ void PasswordsPrivateDelegateImpl::ExportPasswords(
                      std::move(accepted_callback), web_contents));
 }
 
-void PasswordsPrivateDelegateImpl::CancelExportPasswords() {
-  password_manager_porter_->CancelExport();
-}
-
 api::passwords_private::ExportProgressStatus
 PasswordsPrivateDelegateImpl::GetExportProgressStatus() {
   return ConvertStatus(password_manager_porter_->GetExportProgressStatus());
@@ -802,18 +769,9 @@ bool PasswordsPrivateDelegateImpl::UnmuteInsecureCredential(
   return password_check_delegate_.UnmuteInsecureCredential(credential);
 }
 
-void PasswordsPrivateDelegateImpl::RecordChangePasswordFlowStarted(
-    const api::passwords_private::PasswordUiEntry& credential) {
-  password_check_delegate_.RecordChangePasswordFlowStarted(credential);
-}
-
 void PasswordsPrivateDelegateImpl::StartPasswordCheck(
     StartPasswordCheckCallback callback) {
   password_check_delegate_.StartPasswordCheck(std::move(callback));
-}
-
-void PasswordsPrivateDelegateImpl::StopPasswordCheck() {
-  password_check_delegate_.StopPasswordCheck();
 }
 
 api::passwords_private::PasswordCheckStatus
@@ -1089,25 +1047,21 @@ api::passwords_private::PasswordUiEntry
 PasswordsPrivateDelegateImpl::CreatePasswordUiEntryFromCredentialUiEntry(
     CredentialUIEntry credential) {
   api::passwords_private::PasswordUiEntry entry;
-  entry.affiliated_domains = std::vector<api::passwords_private::DomainInfo>();
   base::ranges::transform(credential.GetAffiliatedDomains(),
-                          std::back_inserter(entry.affiliated_domains.value()),
+                          std::back_inserter(entry.affiliated_domains),
                           [](const CredentialUIEntry::DomainInfo& domain) {
-                            api::passwords_private::DomainInfo domainInfo;
-                            domainInfo.name = domain.name;
-                            domainInfo.url = domain.url.spec();
-                            domainInfo.signon_realm = domain.signon_realm;
-                            return domainInfo;
+                            api::passwords_private::DomainInfo domain_info;
+                            domain_info.name = domain.name;
+                            domain_info.url = domain.url.spec();
+                            domain_info.signon_realm = domain.signon_realm;
+                            return domain_info;
                           });
   entry.is_passkey = !credential.passkey_credential_id.empty();
-  entry.urls = extensions::CreateUrlCollectionFromCredential(credential);
   entry.username = base::UTF16ToUTF8(credential.username);
   if (entry.is_passkey) {
     entry.display_name = base::UTF16ToUTF8(credential.user_display_name);
   }
   entry.stored_in = extensions::StoreSetFromCredential(credential);
-  entry.is_android_credential = password_manager::IsValidAndroidFacetURI(
-      credential.GetFirstSignonRealm());
   if (!credential.federation_origin.opaque()) {
     std::u16string formatted_origin =
         url_formatter::FormatOriginForSecurityDisplay(

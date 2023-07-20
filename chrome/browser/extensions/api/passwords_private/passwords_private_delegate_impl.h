@@ -71,9 +71,6 @@ class PasswordsPrivateDelegateImpl
                    const std::u16string& note,
                    bool use_account_store,
                    content::WebContents* web_contents) override;
-  absl::optional<int> ChangeSavedPassword(
-      int id,
-      const api::passwords_private::ChangeSavedPasswordParams& params) override;
   bool ChangeCredential(
       const api::passwords_private::PasswordUiEntry& credential) override;
   void RemoveCredential(
@@ -101,7 +98,6 @@ class PasswordsPrivateDelegateImpl
   void ExportPasswords(
       base::OnceCallback<void(const std::string&)> accepted_callback,
       content::WebContents* web_contents) override;
-  void CancelExportPasswords() override;
   api::passwords_private::ExportProgressStatus GetExportProgressStatus()
       override;
   bool IsOptedInForAccountStorage() override;
@@ -116,10 +112,7 @@ class PasswordsPrivateDelegateImpl
       const api::passwords_private::PasswordUiEntry& credential) override;
   bool UnmuteInsecureCredential(
       const api::passwords_private::PasswordUiEntry& credential) override;
-  void RecordChangePasswordFlowStarted(
-      const api::passwords_private::PasswordUiEntry& credential) override;
   void StartPasswordCheck(StartPasswordCheckCallback callback) override;
-  void StopPasswordCheck() override;
   api::passwords_private::PasswordCheckStatus GetPasswordCheckStatus() override;
   password_manager::InsecureCredentialsManager* GetInsecureCredentialsManager()
       override;

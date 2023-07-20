@@ -29,18 +29,6 @@ class PasswordsPrivateRecordPasswordsPageAccessInSettingsFunction
   ResponseAction Run() override;
 };
 
-class PasswordsPrivateChangeSavedPasswordFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.changeSavedPassword",
-                             PASSWORDSPRIVATE_CHANGESAVEDPASSWORD)
-
- protected:
-  ~PasswordsPrivateChangeSavedPasswordFunction() override = default;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-};
-
 class PasswordsPrivateChangeCredentialFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("passwordsPrivate.changeCredential",
@@ -256,18 +244,6 @@ class PasswordsPrivateExportPasswordsFunction : public ExtensionFunction {
   void ExportRequestCompleted(const std::string& error);
 };
 
-class PasswordsPrivateCancelExportPasswordsFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.cancelExportPasswords",
-                             PASSWORDSPRIVATE_CANCELEXPORTPASSWORDS)
-
- protected:
-  ~PasswordsPrivateCancelExportPasswordsFunction() override = default;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-};
-
 class PasswordsPrivateRequestExportProgressStatusFunction
     : public ExtensionFunction {
  public:
@@ -360,19 +336,6 @@ class PasswordsPrivateUnmuteInsecureCredentialFunction
   ResponseAction Run() override;
 };
 
-class PasswordsPrivateRecordChangePasswordFlowStartedFunction
-    : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.recordChangePasswordFlowStarted",
-                             PASSWORDSPRIVATE_RECORDCHANGEPASSWORDFLOWSTARTED)
-
- protected:
-  ~PasswordsPrivateRecordChangePasswordFlowStartedFunction() override;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-};
-
 class PasswordsPrivateStartPasswordCheckFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("passwordsPrivate.startPasswordCheck",
@@ -386,18 +349,6 @@ class PasswordsPrivateStartPasswordCheckFunction : public ExtensionFunction {
 
  private:
   void OnStarted(password_manager::BulkLeakCheckService::State state);
-};
-
-class PasswordsPrivateStopPasswordCheckFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.stopPasswordCheck",
-                             PASSWORDSPRIVATE_STOPPASSWORDCHECK)
-
- protected:
-  ~PasswordsPrivateStopPasswordCheckFunction() override;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
 };
 
 class PasswordsPrivateGetPasswordCheckStatusFunction

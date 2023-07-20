@@ -310,18 +310,6 @@ bool PasswordCheckDelegate::UnmuteInsecureCredential(
   return insecure_credentials_manager_.UnmuteCredential(*entry);
 }
 
-// Records that a change password flow was started for |credential|.
-void PasswordCheckDelegate::RecordChangePasswordFlowStarted(
-    const api::passwords_private::PasswordUiEntry& credential) {
-  // If the |credential| does not have a |change_password_url|, skip it.
-  if (!credential.change_password_url)
-    return;
-
-  GetPasswordChangeSuccessTracker()->OnManualChangePasswordFlowStarted(
-      GURL(*credential.change_password_url), credential.username,
-      PasswordChangeSuccessTracker::EntryPoint::kLeakCheckInSettings);
-}
-
 void PasswordCheckDelegate::StartPasswordCheck(
     StartPasswordCheckCallback callback) {
   // If the delegate isn't initialized yet, enqueue the callback and return
@@ -361,16 +349,6 @@ void PasswordCheckDelegate::StartPasswordAnalyses(
   DCHECK(is_check_running_);
   std::move(callback).Run(
       bulk_leak_check_service_adapter_.GetBulkLeakCheckState());
-}
-
-void PasswordCheckDelegate::StopPasswordCheck() {
-  if (!is_initialized_) {
-    for (auto&& callback : std::exchange(start_check_callbacks_, {}))
-      std::move(callback).Run(State::kIdle);
-    return;
-  }
-
-  bulk_leak_check_service_adapter_.StopBulkLeakCheck();
 }
 
 api::passwords_private::PasswordCheckStatus

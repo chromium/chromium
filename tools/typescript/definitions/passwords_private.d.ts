@@ -131,15 +131,13 @@ declare global {
 
       export interface PasswordUiEntry {
         isPasskey: boolean;
-        urls: UrlCollection;
-        affiliatedDomains?: DomainInfo[];
+        affiliatedDomains: DomainInfo[];
         username: string;
         displayName?: string;
         password?: string;
         federationText?: string;
         id: number;
         storedIn: PasswordStoreSet;
-        isAndroidCredential: boolean;
         note?: string;
         changePasswordUrl?: string;
         compromisedInfo?: CompromisedInfo;
@@ -178,19 +176,11 @@ declare global {
         useAccountStore: boolean;
       }
 
-      export interface ChangeSavedPasswordParams {
-        username: string;
-        password: string;
-        note?: string;
-      }
-
       export interface PasswordUiEntryList {
         entries: PasswordUiEntry[];
       }
 
       export function recordPasswordsPageAccessInSettings(): void;
-      export function changeSavedPassword(
-          id: number, params: ChangeSavedPasswordParams): Promise<number>;
       export function changeCredential(credential: PasswordUiEntry):
           Promise<void>;
       export function removeCredential(
@@ -214,7 +204,6 @@ declare global {
       export function exportPasswords(): Promise<void>;
       export function requestExportProgressStatus():
           Promise<ExportProgressStatus>;
-      export function cancelExportPasswords(): void;
       export function isOptedInForAccountStorage(): Promise<boolean>;
       export function optInForAccountStorage(optIn: boolean): void;
       export function getInsecureCredentials(): Promise<PasswordUiEntry[]>;
@@ -224,10 +213,7 @@ declare global {
           Promise<void>;
       export function unmuteInsecureCredential(credential: PasswordUiEntry):
           Promise<void>;
-      export function recordChangePasswordFlowStarted(
-          credential: PasswordUiEntry): void;
       export function startPasswordCheck(): Promise<void>;
-      export function stopPasswordCheck(): Promise<void>;
       export function getPasswordCheckStatus(): Promise<PasswordCheckStatus>;
       export function isAccountStoreDefault(): Promise<boolean>;
       export function getUrlCollection(url: string):

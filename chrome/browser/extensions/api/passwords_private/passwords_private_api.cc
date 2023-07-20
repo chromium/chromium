@@ -49,29 +49,6 @@ PasswordsPrivateRecordPasswordsPageAccessInSettingsFunction::Run() {
   return RespondNow(NoArguments());
 }
 
-// PasswordsPrivateChangeSavedPasswordFunction
-ResponseAction PasswordsPrivateChangeSavedPasswordFunction::Run() {
-  if (!GetDelegate(browser_context())) {
-    return RespondNow(Error(kNoDelegateError));
-  }
-
-  auto parameters =
-      api::passwords_private::ChangeSavedPassword::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(parameters);
-
-  auto new_id = GetDelegate(browser_context())
-                    ->ChangeSavedPassword(parameters->id, parameters->params);
-  if (new_id.has_value()) {
-    return RespondNow(ArgumentList(
-        api::passwords_private::ChangeSavedPassword::Results::Create(
-            new_id.value())));
-  }
-  return RespondNow(Error(
-      "Could not change the password. Either the password is empty, the user "
-      "is not authenticated or no matching password could be found for the "
-      "id."));
-}
-
 // PasswordsPrivateChangeCredentialFunction
 ResponseAction PasswordsPrivateChangeCredentialFunction::Run() {
   if (!GetDelegate(browser_context())) {
@@ -392,16 +369,6 @@ void PasswordsPrivateExportPasswordsFunction::ExportRequestCompleted(
     Respond(Error(error));
 }
 
-// PasswordsPrivateCancelExportPasswordsFunction
-ResponseAction PasswordsPrivateCancelExportPasswordsFunction::Run() {
-  if (!GetDelegate(browser_context())) {
-    return RespondNow(Error(kNoDelegateError));
-  }
-
-  GetDelegate(browser_context())->CancelExportPasswords();
-  return RespondNow(NoArguments());
-}
-
 // PasswordsPrivateRequestExportProgressStatusFunction
 ResponseAction PasswordsPrivateRequestExportProgressStatusFunction::Run() {
   if (!GetDelegate(browser_context())) {
@@ -512,25 +479,6 @@ ResponseAction PasswordsPrivateUnmuteInsecureCredentialFunction::Run() {
   return RespondNow(NoArguments());
 }
 
-// PasswordsPrivateRecordChangePasswordFlowStartedFunction:
-PasswordsPrivateRecordChangePasswordFlowStartedFunction::
-    ~PasswordsPrivateRecordChangePasswordFlowStartedFunction() = default;
-
-ResponseAction PasswordsPrivateRecordChangePasswordFlowStartedFunction::Run() {
-  if (!GetDelegate(browser_context())) {
-    return RespondNow(Error(kNoDelegateError));
-  }
-
-  auto parameters =
-      api::passwords_private::RecordChangePasswordFlowStarted::Params::Create(
-          args());
-  EXTENSION_FUNCTION_VALIDATE(parameters);
-
-  GetDelegate(browser_context())
-      ->RecordChangePasswordFlowStarted(parameters->credential);
-  return RespondNow(NoArguments());
-}
-
 // PasswordsPrivateStartPasswordCheckFunction:
 PasswordsPrivateStartPasswordCheckFunction::
     ~PasswordsPrivateStartPasswordCheckFunction() = default;
@@ -554,19 +502,6 @@ void PasswordsPrivateStartPasswordCheckFunction::OnStarted(
       state == password_manager::BulkLeakCheckService::State::kRunning;
   Respond(is_running ? NoArguments()
                      : Error("Starting password check failed."));
-}
-
-// PasswordsPrivateStopPasswordCheckFunction:
-PasswordsPrivateStopPasswordCheckFunction::
-    ~PasswordsPrivateStopPasswordCheckFunction() = default;
-
-ResponseAction PasswordsPrivateStopPasswordCheckFunction::Run() {
-  if (!GetDelegate(browser_context())) {
-    return RespondNow(Error(kNoDelegateError));
-  }
-
-  GetDelegate(browser_context())->StopPasswordCheck();
-  return RespondNow(NoArguments());
 }
 
 // PasswordsPrivateGetPasswordCheckStatusFunction:

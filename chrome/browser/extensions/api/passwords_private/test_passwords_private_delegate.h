@@ -40,11 +40,6 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
                    const std::u16string& note,
                    bool use_account_store,
                    content::WebContents* web_contents) override;
-  // Fake implementation of ChangeSavedPassword. This succeeds if the current
-  // list of entries has the id and if the new password isn't empty.
-  absl::optional<int> ChangeSavedPassword(
-      const int id,
-      const api::passwords_private::ChangeSavedPasswordParams& params) override;
   bool ChangeCredential(
       const api::passwords_private::PasswordUiEntry& credential) override;
   void RemoveCredential(
@@ -72,7 +67,6 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   void ResetImporter(bool delete_file) override;
   void ExportPasswords(base::OnceCallback<void(const std::string&)> callback,
                        content::WebContents* web_contents) override;
-  void CancelExportPasswords() override;
   api::passwords_private::ExportProgressStatus GetExportProgressStatus()
       override;
   bool IsOptedInForAccountStorage() override;
@@ -90,12 +84,7 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   // delegate knows of a insecure credential with the same id.
   bool UnmuteInsecureCredential(
       const api::passwords_private::PasswordUiEntry& credential) override;
-  // Fake implementation of `RecordChangePasswordFlowStarted`. Sets the url
-  // returned by `last_change_flow_url()`.
-  void RecordChangePasswordFlowStarted(
-      const api::passwords_private::PasswordUiEntry& credential) override;
   void StartPasswordCheck(StartPasswordCheckCallback callback) override;
-  void StopPasswordCheck() override;
   api::passwords_private::PasswordCheckStatus GetPasswordCheckStatus() override;
   password_manager::InsecureCredentialsManager* GetInsecureCredentialsManager()
       override;
@@ -117,24 +106,16 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   bool ContinueImportTriggered() const { return continue_import_triggered_; }
   bool ResetImporterTriggered() const { return reset_importer_triggered_; }
   bool ExportPasswordsTriggered() const { return export_passwords_triggered_; }
-  bool CancelExportPasswordsTriggered() const {
-    return cancel_export_passwords_triggered_;
-  }
   bool FetchFamilyMembersTriggered() const {
     return fetch_family_members_triggered_;
   }
   bool StartPasswordCheckTriggered() const {
     return start_password_check_triggered_;
   }
-  bool StopPasswordCheckTriggered() const {
-    return stop_password_check_triggered_;
-  }
   void SetStartPasswordCheckState(
       password_manager::BulkLeakCheckService::State state) {
     start_password_check_state_ = state;
   }
-
-  const std::string& last_change_flow_url() { return last_change_flow_url_; }
 
   const std::vector<int>& last_moved_passwords() const {
     return last_moved_passwords_;
@@ -194,17 +175,11 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   bool continue_import_triggered_ = false;
   bool reset_importer_triggered_ = false;
   bool export_passwords_triggered_ = false;
-  bool cancel_export_passwords_triggered_ = false;
 
   // Flags for detecting whether password check operations have been invoked.
   bool start_password_check_triggered_ = false;
-  bool stop_password_check_triggered_ = false;
   password_manager::BulkLeakCheckService::State start_password_check_state_ =
       password_manager::BulkLeakCheckService::State::kRunning;
-
-  // Url of the last reported change password flow. Defaults to empty if
-  // none has been registered.
-  std::string last_change_flow_url_;
 
   // Records the ids of the passwords that were last moved.
   std::vector<int> last_moved_passwords_;

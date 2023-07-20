@@ -26,9 +26,13 @@ constexpr size_t kNumMocks = 3;
 
 api::passwords_private::PasswordUiEntry CreateEntry(int id) {
   api::passwords_private::PasswordUiEntry entry;
-  entry.urls.shown = "test" + base::NumberToString(id) + ".com";
-  entry.urls.signon_realm = "http://" + entry.urls.shown + "/login";
-  entry.urls.link = entry.urls.signon_realm;
+  entry.affiliated_domains.emplace_back();
+  entry.affiliated_domains.back().name =
+      "test" + base::NumberToString(id) + ".com";
+  entry.affiliated_domains.back().signon_realm =
+      "http://" + entry.affiliated_domains.back().name + "/login";
+  entry.affiliated_domains.back().url =
+      entry.affiliated_domains.back().signon_realm;
   entry.username = "testName" + base::NumberToString(id);
   entry.id = id;
   entry.stored_in = api::passwords_private::PASSWORD_STORE_SET_DEVICE;
@@ -103,19 +107,6 @@ bool TestPasswordsPrivateDelegate::AddPassword(
     bool use_account_store,
     content::WebContents* web_contents) {
   return !url.empty() && !password.empty();
-}
-
-absl::optional<int> TestPasswordsPrivateDelegate::ChangeSavedPassword(
-    const int id,
-    const api::passwords_private::ChangeSavedPasswordParams& params) {
-  if (static_cast<size_t>(id) >= current_entries_.size()) {
-    return absl::nullopt;
-  }
-
-  if (params.password.empty())
-    return absl::nullopt;
-
-  return id;
 }
 
 bool TestPasswordsPrivateDelegate::ChangeCredential(
@@ -255,10 +246,6 @@ void TestPasswordsPrivateDelegate::ExportPasswords(
   std::move(callback).Run(std::string());
 }
 
-void TestPasswordsPrivateDelegate::CancelExportPasswords() {
-  cancel_export_passwords_triggered_ = true;
-}
-
 api::passwords_private::ExportProgressStatus
 TestPasswordsPrivateDelegate::GetExportProgressStatus() {
   // The testing of password exporting itself should be handled via
@@ -281,10 +268,11 @@ std::vector<api::passwords_private::PasswordUiEntry>
 TestPasswordsPrivateDelegate::GetInsecureCredentials() {
   api::passwords_private::PasswordUiEntry leaked_credential;
   leaked_credential.username = "alice";
-  leaked_credential.urls.shown = "example.com";
-  leaked_credential.urls.link = "https://example.com";
-  leaked_credential.urls.signon_realm = "https://example.com";
-  leaked_credential.is_android_credential = false;
+  leaked_credential.affiliated_domains.emplace_back();
+  leaked_credential.affiliated_domains.back().name = "example.com";
+  leaked_credential.affiliated_domains.back().url = "https://example.com";
+  leaked_credential.affiliated_domains.back().signon_realm =
+      "https://example.com";
   leaked_credential.change_password_url = "https://example.com/change-password";
   leaked_credential.compromised_info.emplace();
   // Mar 03 2020 12:00:00 UTC
@@ -299,9 +287,9 @@ TestPasswordsPrivateDelegate::GetInsecureCredentials() {
 
   api::passwords_private::PasswordUiEntry weak_credential;
   weak_credential.username = "bob";
-  weak_credential.urls.shown = "example.com";
-  weak_credential.urls.link = "https://example.com";
-  weak_credential.is_android_credential = false;
+  weak_credential.affiliated_domains.emplace_back();
+  weak_credential.affiliated_domains.back().name = "example.com";
+  weak_credential.affiliated_domains.back().url = "https://example.com";
   weak_credential.change_password_url = "https://example.com/change-password";
   weak_credential.stored_in = api::passwords_private::PASSWORD_STORE_SET_DEVICE;
   weak_credential.compromised_info.emplace();
@@ -320,9 +308,9 @@ TestPasswordsPrivateDelegate::GetCredentialsWithReusedPassword() {
 
   api::passwords_private::PasswordUiEntry credential_1;
   credential_1.username = "bob";
-  credential_1.urls.shown = "example.com";
-  credential_1.urls.link = "https://example.com";
-  credential_1.is_android_credential = false;
+  credential_1.affiliated_domains.emplace_back();
+  credential_1.affiliated_domains.back().name = "example.com";
+  credential_1.affiliated_domains.back().url = "https://example.com";
   credential_1.change_password_url = "https://example.com/change-password";
   credential_1.stored_in = api::passwords_private::PASSWORD_STORE_SET_DEVICE;
   credential_1.compromised_info.emplace();
@@ -331,9 +319,9 @@ TestPasswordsPrivateDelegate::GetCredentialsWithReusedPassword() {
 
   api::passwords_private::PasswordUiEntry credential_2;
   credential_2.username = "angela";
-  credential_2.urls.shown = "test.com";
-  credential_2.urls.link = "https://test.com";
-  credential_2.is_android_credential = false;
+  credential_2.affiliated_domains.emplace_back();
+  credential_2.affiliated_domains.back().name = "test.com";
+  credential_2.affiliated_domains.back().url = "https://test.com";
   credential_2.stored_in = api::passwords_private::PASSWORD_STORE_SET_DEVICE;
   credential_2.compromised_info.emplace();
   credential_2.compromised_info->compromise_types = {
@@ -360,20 +348,10 @@ bool TestPasswordsPrivateDelegate::UnmuteInsecureCredential(
   return IsCredentialPresentInInsecureCredentialsList(credential);
 }
 
-void TestPasswordsPrivateDelegate::RecordChangePasswordFlowStarted(
-    const api::passwords_private::PasswordUiEntry& credential) {
-  last_change_flow_url_ =
-      credential.change_password_url ? *credential.change_password_url : "";
-}
-
 void TestPasswordsPrivateDelegate::StartPasswordCheck(
     StartPasswordCheckCallback callback) {
   start_password_check_triggered_ = true;
   std::move(callback).Run(start_password_check_state_);
-}
-
-void TestPasswordsPrivateDelegate::StopPasswordCheck() {
-  stop_password_check_triggered_ = true;
 }
 
 api::passwords_private::PasswordCheckStatus

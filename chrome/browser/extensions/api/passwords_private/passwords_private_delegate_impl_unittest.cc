@@ -316,12 +316,11 @@ sync_pb::WebauthnCredentialSpecifics CreatePasskey() {
 
 MATCHER_P(PasswordUiEntryDataEquals, expected, "") {
   return testing::Value(expected.get().is_passkey, arg.is_passkey) &&
-         testing::Value(expected.get().urls.link, arg.urls.link) &&
+         testing::Value(expected.get().affiliated_domains[0].signon_realm,
+                        arg.affiliated_domains[0].signon_realm) &&
          testing::Value(expected.get().username, arg.username) &&
          testing::Value(expected.get().display_name, arg.display_name) &&
-         testing::Value(expected.get().stored_in, arg.stored_in) &&
-         testing::Value(expected.get().is_android_credential,
-                        arg.is_android_credential);
+         testing::Value(expected.get().stored_in, arg.stored_in);
 }
 
 }  // namespace
@@ -538,13 +537,17 @@ TEST_F(PasswordsPrivateDelegateImplTest, AddPassword) {
 
   // Check that adding passwords got reflected in the passwords list.
   api::passwords_private::PasswordUiEntry expected_entry1;
-  expected_entry1.urls.link = "https://example1.com/";
+  expected_entry1.affiliated_domains.emplace_back();
+  expected_entry1.affiliated_domains.back().signon_realm =
+      "https://example1.com/";
   expected_entry1.username = "username1";
   expected_entry1.note.emplace();
   expected_entry1.stored_in =
       api::passwords_private::PASSWORD_STORE_SET_ACCOUNT;
   api::passwords_private::PasswordUiEntry expected_entry2;
-  expected_entry2.urls.link = "http://example2.com/login";
+  expected_entry2.affiliated_domains.emplace_back();
+  expected_entry2.affiliated_domains.back().signon_realm =
+      "http://example2.com/";
   expected_entry2.username = "";
   expected_entry2.note = "note";
   expected_entry2.stored_in = api::passwords_private::PASSWORD_STORE_SET_DEVICE;
@@ -759,118 +762,6 @@ TEST_F(PasswordsPrivateDelegateImplTest, ResetImporter) {
 
   EXPECT_CALL(*mock_porter_ptr, ResetImporter).Times(1);
   delegate->ResetImporter(/*delete_file=*/false);
-}
-
-TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPassword) {
-  password_manager::PasswordForm sample_form = CreateSampleForm();
-  SetUpPasswordStores({sample_form});
-  auto delegate = CreateDelegate();
-  // Spin the loop to allow PasswordStore tasks posted on the creation of
-  // |delegate| to be completed.
-  base::RunLoop().RunUntilIdle();
-
-  // Double check that the contents of the passwords list matches our
-  // expectation.
-  base::MockCallback<PasswordsPrivateDelegate::UiEntriesCallback> callback;
-  EXPECT_CALL(callback, Run(SizeIs(1)))
-      .WillOnce([&](const PasswordsPrivateDelegate::UiEntries& passwords) {
-        EXPECT_EQ(sample_form.username_value,
-                  base::UTF8ToUTF16(passwords[0].username));
-      });
-  delegate->GetSavedPasswordsList(callback.Get());
-  int sample_form_id = delegate->GetIdForCredential(
-      password_manager::CredentialUIEntry(sample_form));
-
-  api::passwords_private::ChangeSavedPasswordParams params;
-  params.password = "new_pass";
-  params.username = "new_user";
-  params.note = "new note";
-
-  sample_form.username_value = u"new_user";
-  sample_form.password_value = u"new_pass";
-  int new_form_id = delegate->GetIdForCredential(
-      password_manager::CredentialUIEntry(sample_form));
-
-  auto result = delegate->ChangeSavedPassword(sample_form_id, params);
-  EXPECT_EQ(result, new_form_id);
-
-  // Spin the loop to allow PasswordStore tasks posted when changing the
-  // password to be completed.
-  base::RunLoop().RunUntilIdle();
-
-  // Check that the changing the password got reflected in the passwords list.
-  // `note` field should not be filled when `GetSavedPasswordsList` is called.
-  EXPECT_CALL(callback, Run(SizeIs(1)))
-      .WillOnce([](const PasswordsPrivateDelegate::UiEntries& passwords) {
-        EXPECT_THAT(passwords[0].username, Eq("new_user"));
-        EXPECT_THAT(passwords[0].note, Eq(absl::nullopt));
-      });
-  delegate->GetSavedPasswordsList(callback.Get());
-}
-
-TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPasswordInBothStores) {
-  password_manager::PasswordForm profile_form = CreateSampleForm();
-  password_manager::PasswordForm account_form = profile_form;
-  account_form.in_store = password_manager::PasswordForm::Store::kAccountStore;
-  SetUpPasswordStores({profile_form, account_form});
-
-  auto delegate = CreateDelegate();
-  // Spin the loop to allow PasswordStore tasks posted on the creation of
-  // |delegate| to be completed.
-  base::RunLoop().RunUntilIdle();
-
-  int profile_form_id = delegate->GetIdForCredential(
-      password_manager::CredentialUIEntry(profile_form));
-  int account_form_id = delegate->GetIdForCredential(
-      password_manager::CredentialUIEntry(account_form));
-
-  ASSERT_EQ(profile_form_id, account_form_id);
-
-  api::passwords_private::ChangeSavedPasswordParams params;
-  params.password = "new_pass";
-  params.username = "new_user";
-
-  profile_form.username_value = u"new_user";
-  profile_form.password_value = u"new_pass";
-  int new_profile_form_id = delegate->GetIdForCredential(
-      password_manager::CredentialUIEntry(profile_form));
-  account_form.username_value = u"new_user";
-  account_form.password_value = u"new_pass";
-  int new_account_form_id = delegate->GetIdForCredential(
-      password_manager::CredentialUIEntry(account_form));
-
-  ASSERT_EQ(new_profile_form_id, new_account_form_id);
-
-  EXPECT_EQ(new_profile_form_id,
-            delegate->ChangeSavedPassword(profile_form_id, params));
-}
-
-TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPasswordInAccountStore) {
-  password_manager::PasswordForm profile_form = CreateSampleForm();
-  profile_form.password_value = u"different_pass";
-  password_manager::PasswordForm account_form = CreateSampleForm();
-  account_form.in_store = password_manager::PasswordForm::Store::kAccountStore;
-  SetUpPasswordStores({profile_form, account_form});
-
-  auto delegate = CreateDelegate();
-  // Spin the loop to allow PasswordStore tasks posted on the creation of
-  // |delegate| to be completed.
-  base::RunLoop().RunUntilIdle();
-
-  int account_form_id = delegate->GetIdForCredential(
-      password_manager::CredentialUIEntry(account_form));
-
-  api::passwords_private::ChangeSavedPasswordParams params;
-  params.password = "new_pass";
-  params.username = "new_user";
-
-  account_form.username_value = u"new_user";
-  account_form.password_value = u"new_pass";
-  int new_account_form_id = delegate->GetIdForCredential(
-      password_manager::CredentialUIEntry(account_form));
-
-  auto result = delegate->ChangeSavedPassword(account_form_id, params);
-  EXPECT_THAT(result, new_account_form_id);
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, ChangeCredential_Password) {
@@ -1396,28 +1287,6 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestMovePasswordsToAccountStore) {
       1);
 }
 
-TEST_F(PasswordsPrivateDelegateImplTest, AndroidCredential) {
-  auto delegate = CreateDelegate();
-
-  password_manager::PasswordForm android_form;
-  android_form.signon_realm = "android://hash@example.com";
-  android_form.username_value = u"test@gmail.com";
-  android_form.in_store = password_manager::PasswordForm::Store::kProfileStore;
-  SetUpPasswordStores({android_form});
-
-  base::MockCallback<PasswordsPrivateDelegate::UiEntriesCallback> callback;
-
-  api::passwords_private::PasswordUiEntry expected_entry;
-  expected_entry.urls.link =
-      "https://play.google.com/store/apps/details?id=example.com";
-  expected_entry.username = "test@gmail.com";
-  expected_entry.is_android_credential = true;
-  expected_entry.stored_in = api::passwords_private::PASSWORD_STORE_SET_DEVICE;
-  EXPECT_CALL(callback, Run(testing::ElementsAre(PasswordUiEntryDataEquals(
-                            testing::ByRef(expected_entry)))));
-  delegate->GetSavedPasswordsList(callback.Get());
-}
-
 TEST_F(PasswordsPrivateDelegateImplTest, VerifyCastingOfImportEntryStatus) {
   static_assert(
       static_cast<int>(api::passwords_private::ImportEntryStatus::
@@ -1657,11 +1526,13 @@ TEST_F(PasswordsPrivateDelegateImplTest, GetCredentialGroups) {
   EXPECT_EQ("https://abc1.com/favicon.ico", groups[0].icon_url);
 
   api::passwords_private::PasswordUiEntry expected_entry1;
-  expected_entry1.urls.link = "https://abc1.com/";
+  expected_entry1.affiliated_domains.emplace_back();
+  expected_entry1.affiliated_domains.back().signon_realm = "https://abc1.com";
   expected_entry1.username = "username1";
   expected_entry1.stored_in = api::passwords_private::PASSWORD_STORE_SET_DEVICE;
   api::passwords_private::PasswordUiEntry expected_entry2;
-  expected_entry2.urls.link = "https://abc1.com/";
+  expected_entry2.affiliated_domains.emplace_back();
+  expected_entry2.affiliated_domains.back().signon_realm = "https://abc1.com";
   expected_entry2.username = "username2";
   expected_entry2.stored_in = api::passwords_private::PASSWORD_STORE_SET_DEVICE;
   EXPECT_THAT(groups[0].entries,
@@ -1713,12 +1584,14 @@ TEST_F(PasswordsPrivateDelegateImplTest, GetPasskeyInGroups) {
   EXPECT_EQ("https://abc1.com/favicon.ico", groups[0].icon_url);
 
   api::passwords_private::PasswordUiEntry expected_entry1;
-  expected_entry1.urls.link = "https://abc1.com/";
+  expected_entry1.affiliated_domains.emplace_back();
+  expected_entry1.affiliated_domains.back().signon_realm = "https://abc1.com";
   expected_entry1.username = "username1";
   expected_entry1.stored_in = api::passwords_private::PASSWORD_STORE_SET_DEVICE;
   api::passwords_private::PasswordUiEntry expected_entry2;
   expected_entry2.is_passkey = true;
-  expected_entry2.urls.link = "https://abc1.com/";
+  expected_entry2.affiliated_domains.emplace_back();
+  expected_entry2.affiliated_domains.back().signon_realm = "https://abc1.com";
   expected_entry2.username = passkey.user_name();
   expected_entry2.display_name = passkey.user_display_name();
   expected_entry2.stored_in =

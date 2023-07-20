@@ -36,10 +36,10 @@ function validatePasswordsSubsection(
     const matchingDomain =
         expectedGroup.entries
             .find(
-                cred => cred.affiliatedDomains?.some(
+                cred => cred.affiliatedDomains.some(
                     domain => domain.name.includes(searchTerm)))
             ?.affiliatedDomains
-            ?.find(domain => domain.name.includes(searchTerm))
+            .find(domain => domain.name.includes(searchTerm))
             ?.name;
 
     assertTrue(!!listItemElement);
