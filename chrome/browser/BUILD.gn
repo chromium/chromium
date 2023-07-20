@@ -2152,6 +2152,7 @@ static_library("browser") {
     "//components/history/metrics",
     "//components/history_clusters/core",
     "//components/history_clusters/history_clusters_internals/webui",
+    "//components/history_clusters/history_clusters_internals/webui:constants",
     "//components/infobars/content",
     "//components/infobars/core",
     "//components/invalidation/impl",

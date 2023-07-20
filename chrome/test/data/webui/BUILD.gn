@@ -68,6 +68,7 @@ source_set("browser_tests") {
     "//chrome/test:test_support",
     "//components/bookmarks/browser:browser",
     "//components/bookmarks/managed:managed",
+    "//components/commerce/core:commerce_constants",
     "//components/commerce/core:feature_list",
     "//components/history/core/common:common",
     "//components/history_clusters/core:core",

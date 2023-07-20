@@ -209,6 +209,7 @@ source_set("policy_specific_browser_tests") {
     "//components/policy/core/common",
     "//components/prefs",
     "//components/proxy_config",
+    "//components/safe_browsing/core/common",
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/unified_consent",
     "//content/test:test_support",

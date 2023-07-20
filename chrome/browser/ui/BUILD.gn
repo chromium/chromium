@@ -507,6 +507,7 @@ static_library("ui") {
     "//components/history/core/common",
     "//components/history_clusters/core",
     "//components/history_clusters/history_clusters_internals/webui",
+    "//components/history_clusters/history_clusters_internals/webui:constants",
     "//components/history_clusters/history_clusters_internals/webui:mojo_bindings",
     "//components/history_clusters/ui",
     "//components/image_fetcher/core",

@@ -158,10 +158,6 @@ static_library("common_lib") {
     "search/ntp_logging_events.h",
     "secure_origin_allowlist.cc",
     "secure_origin_allowlist.h",
-    "url_constants.cc",
-    "url_constants.h",
-    "webui_url_constants.cc",
-    "webui_url_constants.h",
   ]
   defines = []
 
@@ -178,11 +174,10 @@ static_library("common_lib") {
     ":mojo_bindings",
     ":offline_page_auto_fetcher_mojom",
     ":supervised_user_commands_mojom",
+    ":url_constants",
     "//base",
     "//base:base_static",
     "//base:i18n",
-    "//build:branding_buildflags",
-    "//build/config/chromebox_for_meetings:buildflags",
     "//chrome:resources",
     "//chrome:strings",
     "//chrome/app/theme:theme_resources",
@@ -195,7 +190,6 @@ static_library("common_lib") {
     "//components/cdm/common",
     "//components/client_hints/common",
     "//components/cloud_devices/common",
-    "//components/commerce/core:commerce_constants",
     "//components/component_updater",
     "//components/content_settings/core/common",
     "//components/crash/core/common",
@@ -206,8 +200,6 @@ static_library("common_lib") {
     "//components/favicon_base",
     "//components/flags_ui:switches",
     "//components/gcm_driver/common",
-    "//components/history_clusters/history_clusters_internals/webui",
-    "//components/lens:buildflags",
     "//components/metrics",
     "//components/metrics:net",
     "//components/nacl/common:buildflags",
@@ -219,27 +211,22 @@ static_library("common_lib") {
     "//components/offline_pages/buildflags",
     "//components/offline_pages/core:switches",
     "//components/omnibox/common",
-    "//components/optimization_guide/optimization_guide_internals/webui",
     "//components/page_load_metrics/common:page_load_metrics_mojom",
     "//components/password_manager/core/common",
     "//components/policy:generated",
     "//components/policy/core/common",
     "//components/prefs",
     "//components/safe_browsing:buildflags",
-    "//components/safe_browsing/core/common",
     "//components/safe_search_api",
     "//components/services/app_service",
     "//components/services/heap_profiling/public/cpp",
     "//components/strings",
-    "//components/supervised_user/core/common:buildflags",
     "//components/translate/content/common",
     "//components/translate/core/common",
     "//components/url_formatter",
     "//components/variations",
     "//components/variations/net",
     "//components/visitedlink/common",
-    "//content/public/common",
-    "//extensions/buildflags",
     "//google_apis",
     "//gpu/command_buffer/service",
     "//gpu/config",
@@ -248,7 +235,6 @@ static_library("common_lib") {
     "//mojo/public/cpp/bindings",
     "//pdf:buildflags",
     "//ppapi/buildflags",
-    "//printing/buildflags",
     "//sandbox/policy",
     "//skia",
     "//third_party/icu",
@@ -274,7 +260,6 @@ static_library("common_lib") {
     "//components/no_state_prefetch/common",
     "//components/no_state_prefetch/common:mojo_bindings",
     "//components/page_load_metrics/common:common",
-    "//components/password_manager/content/common",
   ]
 
   if (enable_supervised_users) {
@@ -582,6 +567,37 @@ component("chrome_features") {
   ]
 
   public_deps = [ "//ui/base:buildflags" ]
+}
+
+static_library("url_constants") {
+  visibility = [ "//chrome/common/*" ]
+  sources = [
+    "url_constants.cc",
+    "url_constants.h",
+    "webui_url_constants.cc",
+    "webui_url_constants.h",
+  ]
+
+  public_deps = [
+    ":buildflags",
+    "//build:branding_buildflags",
+    "//build/config/chromebox_for_meetings:buildflags",
+    "//components/signin/public/base:signin_buildflags",
+    "//components/supervised_user/core/common:buildflags",
+    "//content/public/common",
+    "//extensions/buildflags",
+    "//net:buildflags",
+    "//printing/buildflags",
+  ]
+  deps = [
+    "//components/commerce/core:commerce_constants",
+    "//components/history_clusters/history_clusters_internals/webui:constants",
+    "//components/lens:buildflags",
+    "//components/nacl/common:buildflags",
+    "//components/optimization_guide/optimization_guide_internals/webui:url_constants",
+    "//components/password_manager/content/common",
+    "//components/safe_browsing/core/common",
+  ]
 }
 
 static_library("constants") {
