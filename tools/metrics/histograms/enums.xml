@@ -2850,6 +2850,7 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="CRASHES_LIST_FRAGMENT"/>
   <int value="2" label="FLAGS_FRAGMENT"/>
   <int value="3" label="COMPONENTS_LIST_FRAGMENT"/>
+  <int value="4" label="SAFEMODE_FRAGMENT"/>
 </enum>
 
 <enum name="AndroidWebViewDevUiMenu">
@@ -2860,6 +2861,7 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="About WebView DevTools"/>
   <int value="5" label="Components"/>
   <int value="6" label="Update the components"/>
+  <int value="7" label="SafeMode"/>
 </enum>
 
 <enum name="AndroidWebViewDevUiMetricsTransmission">

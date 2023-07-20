@@ -271,6 +271,20 @@ public class DeveloperUiTest {
         onView(withId(R.id.fragment_components_list)).check(matches(isDisplayed()));
     }
 
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testMenuOptions_safeMode() throws Throwable {
+        launchHomeFragment();
+
+        openOptionsMenu();
+
+        onView(withText("SafeMode status")).check(matches(isDisplayed()));
+        onView(withText("SafeMode status")).perform(click());
+
+        onView(withId(R.id.fragment_safe_mode)).check(matches(isDisplayed()));
+    }
+
     private void switchToFlagsUi() {
         onView(withId(R.id.navigation_flags_ui)).perform(click());
     }

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fragment_safe_mode"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+  <!--suppress HardcodedText -->
+  <TextView
+      android:text="SafeMode State"
+      style="@style/HeaderTextView"/>
+
+  <TextView
+      android:id="@+id/safe_mode_state"
+      style="@style/SubHeaderTextView"/>
+
+  <!-- horizontal divider -->
+  <View
+      android:layout_width="match_parent"
+      android:layout_height="1dp"
+      android:background="?android:attr/listDivider"/>
+
+  <LinearLayout
+      android:id="@+id/safe_mode_actions_container"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:orientation="vertical" >
+
+  <!--suppress HardcodedText -->
+  <TextView
+      android:text="Active Actions"
+      style="@style/HeaderTextView"/>
+
+  <ListView
+      android:id="@+id/safe_mode_actions_list"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:divider="@null"/>
+  </LinearLayout>
+</LinearLayout>

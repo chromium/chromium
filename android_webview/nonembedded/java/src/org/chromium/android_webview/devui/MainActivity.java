@@ -62,12 +62,13 @@ public class MainActivity extends FragmentActivity {
     public static final int FRAGMENT_ID_CRASHES = 1;
     public static final int FRAGMENT_ID_FLAGS = 2;
     public static final int FRAGMENT_ID_COMPONENTS = 3;
+    public static final int FRAGMENT_ID_SAFEMODE = 4;
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
     @IntDef({MenuChoice.SWITCH_PROVIDER, MenuChoice.REPORT_BUG, MenuChoice.CHECK_UPDATES,
             MenuChoice.CRASHES_REFRESH, MenuChoice.ABOUT_DEVTOOLS, MenuChoice.COMPONENTS_UI,
-            MenuChoice.COMPONENTS_UPDATE})
+            MenuChoice.COMPONENTS_UPDATE, MenuChoice.SAFEMODE_UI})
     public @interface MenuChoice {
         int SWITCH_PROVIDER = 0;
         int REPORT_BUG = 1;
@@ -76,7 +77,8 @@ public class MainActivity extends FragmentActivity {
         int ABOUT_DEVTOOLS = 4;
         int COMPONENTS_UI = 5;
         int COMPONENTS_UPDATE = 6;
-        int COUNT = 7;
+        int SAFEMODE_UI = 7;
+        int COUNT = 8;
     }
 
     public static void logMenuSelection(@MenuChoice int selectedMenuItem) {
@@ -87,13 +89,15 @@ public class MainActivity extends FragmentActivity {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
     @IntDef({FragmentNavigation.HOME_FRAGMENT, FragmentNavigation.CRASHES_LIST_FRAGMENT,
-            FragmentNavigation.FLAGS_FRAGMENT, FragmentNavigation.COMPONENTS_LIST_FRAGMENT})
+            FragmentNavigation.FLAGS_FRAGMENT, FragmentNavigation.COMPONENTS_LIST_FRAGMENT,
+            FragmentNavigation.SAFEMODE_FRAGMENT})
     private @interface FragmentNavigation {
         int HOME_FRAGMENT = 0;
         int CRASHES_LIST_FRAGMENT = 1;
         int FLAGS_FRAGMENT = 2;
         int COMPONENTS_LIST_FRAGMENT = 3;
-        int COUNT = 4;
+        int SAFEMODE_FRAGMENT = 4;
+        int COUNT = 5;
     }
 
     private static final int NOTIFICATION_PERMISSION_REQUEST_CODE = 0;
@@ -129,6 +133,9 @@ public class MainActivity extends FragmentActivity {
                 break;
             case FRAGMENT_ID_COMPONENTS:
                 sample = FragmentNavigation.COMPONENTS_LIST_FRAGMENT;
+                break;
+            case FRAGMENT_ID_SAFEMODE:
+                sample = FragmentNavigation.SAFEMODE_FRAGMENT;
                 break;
             default:
                 sample = FragmentNavigation.HOME_FRAGMENT;
@@ -214,6 +221,9 @@ public class MainActivity extends FragmentActivity {
                 break;
             case FRAGMENT_ID_COMPONENTS:
                 fragment = new ComponentsListFragment();
+                break;
+            case FRAGMENT_ID_SAFEMODE:
+                fragment = new SafeModeFragment();
                 break;
             default:
                 chosenFragmentId = FRAGMENT_ID_HOME;
@@ -353,6 +363,10 @@ public class MainActivity extends FragmentActivity {
         } else if (item.getItemId() == R.id.options_menu_components) {
             logMenuSelection(MenuChoice.COMPONENTS_UI);
             switchFragment(FRAGMENT_ID_COMPONENTS, false);
+            return true;
+        } else if (item.getItemId() == R.id.options_menu_safe_mode) {
+            logMenuSelection(MenuChoice.SAFEMODE_UI);
+            switchFragment(FRAGMENT_ID_SAFEMODE, false);
             return true;
         }
         return super.onOptionsItemSelected(item);

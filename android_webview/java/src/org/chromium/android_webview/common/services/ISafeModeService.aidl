@@ -16,4 +16,10 @@ interface ISafeModeService {
     // package name and signing certificate, looked up via the system PackageManager),
     // SafeModeService will throw a SecurityException.
     void setSafeMode(in List<String> actions);
+
+    // Exposes WebView SafeMode Activation Time. This is primarily intended to be displayed in the
+    // SafeMode Fragment of the Developer UI. However, this API can be used by any app.
+    // The exposed timestamp is not a sensitive piece of information. Also, apps can't change this
+    // timestamp as this is a getter only.
+    long getSafeModeActivationTimestamp();
 }

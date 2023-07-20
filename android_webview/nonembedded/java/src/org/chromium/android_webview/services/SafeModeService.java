@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.GuardedBy;
 
 /**
@@ -219,6 +220,12 @@ public final class SafeModeService extends Service {
 
             SafeModeService.setSafeMode(actions);
         }
+
+        // This used by the Dev UI SafeMode Fragment to display the activation time.
+        @Override
+        public long getSafeModeActivationTimestamp() {
+            return getLastModifiedTime();
+        }
     };
 
     @Override
@@ -333,6 +340,11 @@ public final class SafeModeService extends Service {
             }
             return actions;
         }
+    }
+
+    @Nonnull
+    public static long getLastModifiedTime() {
+        return getSharedPreferences().getLong(LAST_MODIFIED_TIME_KEY, 0L);
     }
 
     @VisibleForTesting

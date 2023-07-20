@@ -378,6 +378,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="CrashesListFragment" label="This is for the crash list tool."/>
   <suffix name="FlagsFragment" label="This is for the flag modification tool."/>
   <suffix name="HomeFragment" label="This is for the home (default) page."/>
+  <suffix name="SafeModeFragment" label="This is for the safe mode tool."/>
   <suffix name="Unknown"
       label="Unknown Fragment (the histogram may need to be updated)."/>
   <affected-histogram name="Android.WebView.DevUi.SessionDuration2"/>
