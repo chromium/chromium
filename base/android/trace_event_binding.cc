@@ -15,6 +15,7 @@
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
 #include "base/trace_event/trace_event_impl.h"  // no-presubmit-check
+#include "third_party/perfetto/protos/perfetto/config/chrome/chrome_config.gen.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 namespace base {
@@ -27,6 +28,59 @@ namespace {
 constexpr const char kAndroidViewHierarchyTraceCategory[] =
     TRACE_DISABLED_BY_DEFAULT("android_view_hierarchy");
 constexpr const char kAndroidViewHierarchyEventName[] = "AndroidView";
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+class TraceEnabledObserver : public perfetto::TrackEventSessionObserver {
+ public:
+  static TraceEnabledObserver* GetInstance() {
+    static base::NoDestructor<TraceEnabledObserver> instance;
+    return instance.get();
+  }
+
+  // perfetto::TrackEventSessionObserver implementation
+  void OnSetup(const perfetto::DataSourceBase::SetupArgs& args) override {
+    trace_event::TraceConfig trace_config(
+        args.config->chrome_config().trace_config());
+    event_name_filtering_per_session_[args.internal_instance_index] =
+        trace_config.IsEventPackageNameFilterEnabled();
+
+    JNIEnv* env = base::android::AttachCurrentThread();
+    base::android::Java_TraceEvent_setEnabled(env, true);
+    base::android::Java_TraceEvent_setEventNameFilteringEnabled(
+        env, EventNameFilteringEnabled());
+  }
+
+  void OnStop(const perfetto::DataSourceBase::StopArgs& args) override {
+    event_name_filtering_per_session_.erase(args.internal_instance_index);
+
+    JNIEnv* env = base::android::AttachCurrentThread();
+    base::android::Java_TraceEvent_setEnabled(
+        env, !event_name_filtering_per_session_.empty());
+    base::android::Java_TraceEvent_setEventNameFilteringEnabled(
+        env, EventNameFilteringEnabled());
+  }
+
+ private:
+  friend class base::NoDestructor<TraceEnabledObserver>;
+  TraceEnabledObserver() = default;
+  ~TraceEnabledObserver() override = default;
+
+  // Return true if event name filtering is requested by at least one tracing
+  // session.
+  bool EventNameFilteringEnabled() const {
+    bool event_name_filtering_enabled = false;
+    for (const auto& entry : event_name_filtering_per_session_) {
+      if (entry.second) {
+        event_name_filtering_enabled = true;
+      }
+    }
+    return event_name_filtering_enabled;
+  }
+
+  std::unordered_map<uint32_t, bool> event_name_filtering_per_session_;
+};
+
+#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 class TraceEnabledObserver
     : public trace_event::TraceLog::EnabledStateObserver {
@@ -43,20 +97,27 @@ class TraceEnabledObserver
       base::android::Java_TraceEvent_setEventNameFilteringEnabled(env, true);
     }
   }
+
   void OnTraceLogDisabled() override {
     JNIEnv* env = base::android::AttachCurrentThread();
     base::android::Java_TraceEvent_setEnabled(env, false);
     base::android::Java_TraceEvent_setEventNameFilteringEnabled(env, false);
   }
 };
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 }  // namespace
 
 static void JNI_TraceEvent_RegisterEnabledObserver(JNIEnv* env) {
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  base::android::Java_TraceEvent_setEnabled(env, base::TrackEvent::IsEnabled());
+  base::TrackEvent::AddSessionObserver(TraceEnabledObserver::GetInstance());
+#else
   bool enabled = trace_event::TraceLog::GetInstance()->IsEnabled();
   base::android::Java_TraceEvent_setEnabled(env, enabled);
   trace_event::TraceLog::GetInstance()->AddOwnedEnabledStateObserver(
       std::make_unique<TraceEnabledObserver>());
+#endif
 }
 
 static jboolean JNI_TraceEvent_ViewHierarchyDumpEnabled(JNIEnv* env) {
