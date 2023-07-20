@@ -291,7 +291,8 @@ class FileMetricsProvider : public MetricsProvider,
   static bool ProvideIndependentMetricsOnTaskRunner(
       SourceInfo* source,
       ChromeUserMetricsExtension* uma_proto,
-      base::HistogramSnapshotManager* snapshot_manager);
+      base::HistogramSnapshotManager* snapshot_manager,
+      base::OnceClosure serialize_log_callback);
 
   // Collects the metadata of the |source|.
   // Returns the number of histogram samples from that source.
@@ -318,6 +319,7 @@ class FileMetricsProvider : public MetricsProvider,
   void OnDidCreateMetricsLog() override;
   bool HasIndependentMetrics() override;
   void ProvideIndependentMetrics(
+      base::OnceClosure serialize_log_callback,
       base::OnceCallback<void(bool)> done_callback,
       ChromeUserMetricsExtension* uma_proto,
       base::HistogramSnapshotManager* snapshot_manager) override;

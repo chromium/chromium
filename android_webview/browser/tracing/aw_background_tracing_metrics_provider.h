@@ -38,6 +38,7 @@ class AwBackgroundTracingMetricsProvider
       std::string&& serialized_trace,
       metrics::TraceLog* log,
       base::HistogramSnapshotManager* snapshot_manager,
+      base::OnceClosure serialize_log_callback,
       base::OnceCallback<void(bool)> done_callback) override;
 
   // Compresses |serialized_trace|. If the compressed trace does not fit into
@@ -47,7 +48,8 @@ class AwBackgroundTracingMetricsProvider
   // some data.
   static bool Compress(std::string&& serialized_trace,
                        metrics::ChromeUserMetricsExtension* uma_proto,
-                       metrics::TraceLog* log);
+                       metrics::TraceLog* log,
+                       base::OnceClosure serialize_log_callback);
 
   base::WeakPtrFactory<AwBackgroundTracingMetricsProvider> weak_factory_{this};
 };

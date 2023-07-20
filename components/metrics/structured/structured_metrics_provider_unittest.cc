@@ -128,6 +128,7 @@ class StructuredMetricsProviderTest : public testing::Test {
     ChromeUserMetricsExtension uma_proto;
     if (provider_->HasIndependentMetrics()) {
       provider_->ProvideIndependentMetrics(
+          base::DoNothing(),
           base::BindOnce([](bool success) { CHECK(success); }), &uma_proto,
           nullptr);
       Wait();

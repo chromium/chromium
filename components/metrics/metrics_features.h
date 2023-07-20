@@ -54,6 +54,10 @@ extern const base::FeatureParam<bool> kDeregisterAsync;
 // is true.
 extern const base::FeatureParam<bool> kDeregisterSequenced;
 
+// Determines whether the metrics service should finalize certain independent
+// logs asynchronously.
+BASE_DECLARE_FEATURE(kMetricsServiceAsyncIndependentLogs);
+
 }  // namespace metrics::features
 
 #endif  // COMPONENTS_METRICS_METRICS_FEATURES_H_

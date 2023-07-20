@@ -41,4 +41,8 @@ const base::FeatureParam<bool> kDeregisterAsync{&kSubprocessMetricsAsync,
 const base::FeatureParam<bool> kDeregisterSequenced{
     &kSubprocessMetricsAsync, "DeregisterSequenced", false};
 
+BASE_FEATURE(kMetricsServiceAsyncIndependentLogs,
+             "MetricsServiceAsyncIndependentLogs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace metrics::features

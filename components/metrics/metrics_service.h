@@ -328,6 +328,7 @@ class MetricsService {
 
     // This type is move only.
     FinalizedLog(FinalizedLog&& other);
+    FinalizedLog& operator=(FinalizedLog&& other);
 
     // The size of the uncompressed log data. This is only used for calculating
     // some metrics.
@@ -402,7 +403,9 @@ class MetricsService {
   // execution on a background thread.
   class IndependentMetricsLoader {
    public:
-    explicit IndependentMetricsLoader(std::unique_ptr<MetricsLog> log);
+    explicit IndependentMetricsLoader(std::unique_ptr<MetricsLog> log,
+                                      std::string app_version,
+                                      std::string signing_key);
 
     IndependentMetricsLoader(const IndependentMetricsLoader&) = delete;
     IndependentMetricsLoader& operator=(const IndependentMetricsLoader&) =
@@ -412,19 +415,36 @@ class MetricsService {
 
     // Call ProvideIndependentMetrics (which may execute on a background thread)
     // for the |metrics_provider| and execute the |done_callback| when complete
-    // with the result (true if successful). Though this can be called multiple
-    // times to include data from multiple providers, later calls will override
-    // system profile information set by earlier calls.
+    // with the result (true if successful). |done_callback| must own |this|.
     void Run(base::OnceCallback<void(bool)> done_callback,
              MetricsProvider* metrics_provider);
 
-    // Extract the filled log. No more Run() operations can be done after this.
-    std::unique_ptr<MetricsLog> ReleaseLog();
+    // Finalizes/serializes |log_|, and stores the result in |finalized_log_|.
+    // Should only be called once, after |log_| has been filled.
+    void FinalizeLog();
+
+    // Returns whether FinalizeLog() was called.
+    bool HasFinalizedLog();
+
+    // Extracts |finalized_log_|. Should be only called once, after
+    // FinalizeLog() has been called. No more operations should be done after
+    // this.
+    FinalizedLog ReleaseFinalizedLog();
 
    private:
     std::unique_ptr<MetricsLog> log_;
     std::unique_ptr<base::HistogramFlattener> flattener_;
     std::unique_ptr<base::HistogramSnapshotManager> snapshot_manager_;
+    bool run_called_ = false;
+
+    // Used for finalizing |log_| in FinalizeLog().
+    const std::string app_version_;
+    const std::string signing_key_;
+
+    // Stores the result of FinalizeLog().
+    FinalizedLog finalized_log_;
+    bool finalize_log_called_ = false;
+    bool release_finalized_log_called_ = false;
   };
 
   // Gets the LogStore for UMA logs.

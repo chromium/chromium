@@ -33,6 +33,7 @@ class TRACING_EXPORT BackgroundTracingMetricsProvider
   // metrics::MetricsProvider:
   bool HasIndependentMetrics() override;
   void ProvideIndependentMetrics(
+      base::OnceClosure serialize_log_callback,
       base::OnceCallback<void(bool)> done_callback,
       metrics::ChromeUserMetricsExtension* uma_proto,
       base::HistogramSnapshotManager* snapshot_manager) override;
@@ -47,6 +48,7 @@ class TRACING_EXPORT BackgroundTracingMetricsProvider
       std::string&& serialized_trace,
       metrics::TraceLog* log,
       base::HistogramSnapshotManager* snapshot_manager,
+      base::OnceClosure serialize_log_callback,
       base::OnceCallback<void(bool)> done_callback);
 
   // Writes |serialized_trace| into |logs|'s |raw_data| field.

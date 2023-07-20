@@ -53,7 +53,8 @@ class StructuredMetricsProvider final : public metrics::MetricsProvider {
   void ProvideCurrentSessionData(
       metrics::ChromeUserMetricsExtension* uma_proto) override;
   bool HasIndependentMetrics() override;
-  void ProvideIndependentMetrics(base::OnceCallback<void(bool)> done_callback,
+  void ProvideIndependentMetrics(base::OnceClosure serialize_log_callback,
+                                 base::OnceCallback<void(bool)> done_callback,
                                  ChromeUserMetricsExtension* uma_proto,
                                  base::HistogramSnapshotManager*) override;
 

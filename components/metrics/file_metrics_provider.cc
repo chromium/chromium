@@ -664,7 +664,8 @@ FileMetricsProvider::AccessResult FileMetricsProvider::HandleFilterSource(
 bool FileMetricsProvider::ProvideIndependentMetricsOnTaskRunner(
     SourceInfo* source,
     ChromeUserMetricsExtension* uma_proto,
-    base::HistogramSnapshotManager* snapshot_manager) {
+    base::HistogramSnapshotManager* snapshot_manager,
+    base::OnceClosure serialize_log_callback) {
   // Include various crash keys about the file/allocator being read so that if
   // there is ever a crash report being dumped while reading its contents, we
   // have some info about its state.
@@ -717,6 +718,14 @@ bool FileMetricsProvider::ProvideIndependentMetricsOnTaskRunner(
       if (!client_uuid.empty()) {
         uma_proto->set_client_id(MetricsLog::Hash(client_uuid));
       }
+    }
+
+    // If |kMetricsServiceAsyncIndependentLogs| is enabled, serialize the log
+    // while we are still in the background, instead of on the callback that
+    // runs on the main thread.
+    if (base::FeatureList::IsEnabled(
+            metrics::features::kMetricsServiceAsyncIndependentLogs)) {
+      std::move(serialize_log_callback).Run();
     }
 
     return true;
@@ -864,6 +873,7 @@ bool FileMetricsProvider::HasIndependentMetrics() {
 }
 
 void FileMetricsProvider::ProvideIndependentMetrics(
+    base::OnceClosure serialize_log_callback,
     base::OnceCallback<void(bool)> done_callback,
     ChromeUserMetricsExtension* uma_proto,
     base::HistogramSnapshotManager* snapshot_manager) {
@@ -890,7 +900,8 @@ void FileMetricsProvider::ProvideIndependentMetrics(
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(
           &FileMetricsProvider::ProvideIndependentMetricsOnTaskRunner,
-          source_ptr, uma_proto, snapshot_manager),
+          source_ptr, uma_proto, snapshot_manager,
+          std::move(serialize_log_callback)),
       base::BindOnce(&FileMetricsProvider::ProvideIndependentMetricsCleanup,
                      weak_factory_.GetWeakPtr(), std::move(done_callback),
                      std::move(source)));
@@ -910,7 +921,7 @@ void FileMetricsProvider::ProvideIndependentMetricsCleanup(
   ScheduleSourcesCheck();
 
   // Execute the chained callback.
-  // TODO(crbug/1052796): Remove the UMA timer code, which is currently used to
+  // TODO(crbug/1428679): Remove the UMA timer code, which is currently used to
   // determine if it is worth to finalize independent logs in the background
   // by measuring the time it takes to execute the callback
   // MetricsService::PrepareProviderMetricsLogDone().

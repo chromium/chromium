@@ -181,6 +181,7 @@ class FileMetricsProviderTest : public testing::TestWithParam<bool> {
     bool success = false;
     bool success_set = false;
     provider()->ProvideIndependentMetrics(
+        base::DoNothing(),
         base::BindOnce(
             [](bool* success_ptr, bool* set_ptr, bool s) {
               *success_ptr = s;
@@ -217,7 +218,8 @@ class FileMetricsProviderTest : public testing::TestWithParam<bool> {
     HistogramFlattenerDeltaRecorder flattener;
     base::HistogramSnapshotManager snapshot_manager(&flattener);
     ChromeUserMetricsExtension uma_proto;
-    provider()->ProvideIndependentMetrics(base::BindOnce([](bool success) {}),
+    provider()->ProvideIndependentMetrics(base::DoNothing(),
+                                          base::BindOnce([](bool success) {}),
                                           &uma_proto, &snapshot_manager);
 
     task_environment()->RunUntilIdle();

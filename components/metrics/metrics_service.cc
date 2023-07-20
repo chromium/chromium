@@ -941,6 +941,8 @@ void MetricsService::OpenNewLog(bool call_providers) {
 MetricsService::FinalizedLog::FinalizedLog() = default;
 MetricsService::FinalizedLog::~FinalizedLog() = default;
 MetricsService::FinalizedLog::FinalizedLog(FinalizedLog&& other) = default;
+MetricsService::FinalizedLog& MetricsService::FinalizedLog::operator=(
+    FinalizedLog&& other) = default;
 
 MetricsService::MetricsLogHistogramWriter::MetricsLogHistogramWriter(
     MetricsLog* log)
@@ -975,23 +977,61 @@ void MetricsService::MetricsLogHistogramWriter::
 }
 
 MetricsService::IndependentMetricsLoader::IndependentMetricsLoader(
-    std::unique_ptr<MetricsLog> log)
+    std::unique_ptr<MetricsLog> log,
+    std::string app_version,
+    std::string signing_key)
     : log_(std::move(log)),
       flattener_(new IndependentFlattener(log_.get())),
-      snapshot_manager_(new base::HistogramSnapshotManager(flattener_.get())) {}
+      snapshot_manager_(new base::HistogramSnapshotManager(flattener_.get())),
+      app_version_(std::move(app_version)),
+      signing_key_(std::move(signing_key)) {
+  CHECK(log_);
+  CHECK_EQ(log_->log_type(), MetricsLog::INDEPENDENT_LOG);
+}
 
 MetricsService::IndependentMetricsLoader::~IndependentMetricsLoader() = default;
 
 void MetricsService::IndependentMetricsLoader::Run(
     base::OnceCallback<void(bool)> done_callback,
     MetricsProvider* metrics_provider) {
+  CHECK(!run_called_);
+  run_called_ = true;
+
   metrics_provider->ProvideIndependentMetrics(
+      // Unretained is safe because this callback is either called before
+      // |done_callback|, or in |done_callback|. Either case is fine because
+      // |done_callback| owns |this|.
+      base::BindOnce(&MetricsService::IndependentMetricsLoader::FinalizeLog,
+                     base::Unretained(this)),
       std::move(done_callback), log_->uma_proto(), snapshot_manager_.get());
 }
 
-std::unique_ptr<MetricsLog>
-MetricsService::IndependentMetricsLoader::ReleaseLog() {
-  return std::move(log_);
+void MetricsService::IndependentMetricsLoader::FinalizeLog() {
+  CHECK(run_called_);
+  CHECK(!finalize_log_called_);
+  finalize_log_called_ = true;
+
+  // Release |snapshot_manager_| and then |flattener_| to prevent dangling
+  // pointers, since |log_| will be released in MetricsService::FinalizeLog().
+  snapshot_manager_.reset();
+  flattener_.reset();
+
+  // Note that the close_time param must not be set for independent logs.
+  finalized_log_ = MetricsService::FinalizeLog(
+      std::move(log_), /*truncate_events=*/false, /*close_time=*/absl::nullopt,
+      app_version_, signing_key_);
+}
+
+bool MetricsService::IndependentMetricsLoader::HasFinalizedLog() {
+  return finalize_log_called_ && !release_finalized_log_called_;
+}
+
+MetricsService::FinalizedLog
+MetricsService::IndependentMetricsLoader::ReleaseFinalizedLog() {
+  CHECK(HasFinalizedLog());
+
+  release_finalized_log_called_ = true;
+  return std::move(finalized_log_);
 }
 
 void MetricsService::StartInitTask() {
@@ -1405,19 +1445,16 @@ void MetricsService::PrepareProviderMetricsLogDone(
   DCHECK(loader);
 
   if (success) {
-    // Finalize and store the log that was created independently by the metrics
-    // provider.
-    std::unique_ptr<MetricsLog> log = loader->ReleaseLog();
-    MetricsLog::LogType log_type = log->log_type();
-    CHECK_EQ(log_type, MetricsLog::INDEPENDENT_LOG);
-    std::string signing_key = log_store()->GetSigningKeyForLogType(log_type);
-    // Note that the close_time param must not be set for independent logs.
-    FinalizedLog finalized_log = FinalizeLog(
-        std::move(log), /*truncate_events=*/false, /*close_time=*/absl::nullopt,
-        client_->GetVersionString(), signing_key);
-    StoreFinalizedLog(log_type,
+    // If not already done, finalize the log that was created independently by
+    // the metrics provider.
+    if (!loader->HasFinalizedLog()) {
+      loader->FinalizeLog();
+    }
+
+    StoreFinalizedLog(MetricsLog::INDEPENDENT_LOG,
                       MetricsLogsEventManager::CreateReason::kIndependent,
-                      base::DoNothing(), std::move(finalized_log));
+                      /*done_callback=*/base::DoNothing(),
+                      loader->ReleaseFinalizedLog());
   }
 
   independent_loader_active_ = false;
@@ -1448,7 +1485,10 @@ bool MetricsService::PrepareProviderMetricsLog() {
       // because the unique_ptr may get moved before the value can be used
       // to call Run().
       std::unique_ptr<IndependentMetricsLoader> loader =
-          std::make_unique<IndependentMetricsLoader>(std::move(log));
+          std::make_unique<IndependentMetricsLoader>(
+              std::move(log), client_->GetVersionString(),
+              log_store()->GetSigningKeyForLogType(
+                  MetricsLog::INDEPENDENT_LOG));
       IndependentMetricsLoader* loader_ptr = loader.get();
       loader_ptr->Run(
           base::BindOnce(&MetricsService::PrepareProviderMetricsLogDone,
