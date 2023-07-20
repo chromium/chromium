@@ -17,6 +17,7 @@ class TestHarness {
     this.skipped = true;
     this.finished = true;
     this.message = message;
+    this.log('Test skipped: ' + message);
   }
 
   reportSuccess() {

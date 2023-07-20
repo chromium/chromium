@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<!--
+  Test how video encoder supports "quantizer" and QP values provided for each
+  frame.
+-->
+<html>
+
+<head>
+  <title>Encode test</title>
+  <script src="webcodecs_common.js"></script>
+  <script type="text/javascript">
+    'use strict';
+
+    function get_qp_range(codec) {
+      if (codec.includes('av01')) {
+        return {min: 1, max: 63};
+      }
+      if (codec.includes('vp9')) {
+        return {min: 1, max: 63};
+      }
+      if (codec.includes('avc')) {
+        return {min: 1, max: 51};
+      }
+      return null;
+    }
+
+    function set_qp(codec, options, value) {
+      if (codec.includes('av01')) {
+        options.av1 = {quantizer: value};
+      }
+      if (codec.includes('vp9')) {
+        options.vp9 = {quantizer: value};
+      }
+      if (codec.includes('avc')) {
+        options.avc = {quantizer: value};
+      }
+    }
+
+    async function main(arg) {
+      // Use 16x16 aligned resolution since some platforms require that.
+      // See https://crbug.com/1084702.
+      const width = 640;
+      const height = 480;
+      const qp_range = get_qp_range(arg.codec);
+      const frames_to_encode = qp_range.max - qp_range.min + 1;
+      let errors = 0;
+      let chunks = [];
+
+      const encoder_config = {
+        codec: arg.codec,
+        hardwareAcceleration: arg.acceleration,
+        width: width,
+        height: height,
+        bitrateMode: "quantizer",
+        framerate: 24
+      };
+
+      TEST.log('Starting test with arguments: ' + JSON.stringify(arg));
+      let support = await VideoEncoder.isConfigSupported(encoder_config);
+      if (!support.supported) {
+        TEST.skip('Unsupported codec: ' + arg.codec);
+        return;
+      }
+
+      let source = await createFrameSource(arg.source_type, width, height);
+      if (!source) {
+        TEST.skip('Unsupported source: ' + arg.source_type);
+        return;
+      }
+
+      const init = {
+        output(chunk, metadata) {
+          chunks.push(chunk);
+        },
+        error(e) {
+          errors++;
+          TEST.log(e);
+        }
+      };
+
+      let encoder = new VideoEncoder(init);
+      encoder.configure(encoder_config);
+
+      let qp = qp_range.min;
+      for (let i = 0; i < frames_to_encode; i++) {
+        let frame = await source.getNextFrame();
+        if (qp < qp_range.max) {
+          qp++;
+        } else {
+          qp = qp_range.min;
+        }
+        let encode_options = {keyFrame: false};
+        set_qp(arg.codec, encode_options, qp);
+        encoder.encode(frame, encode_options);
+        frame.close();
+      }
+      await encoder.flush();
+
+      TEST.assert(
+        chunks.length == frames_to_encode,
+        'Output count mismatch: ' + chunks.length);
+
+      TEST.assert(errors == 0, 'Encoding errors occurred during the test');
+      TEST.log('Test completed');
+    }
+    addManualTestButton([{
+      'source_type': 'offscreen',
+      'codec': 'avc1.64001E',
+      'acceleration':'prefer-hardware'
+    },
+    {
+      'source_type': 'offscreen',
+      'codec': 'av01.0.04M.08',
+      'acceleration':'prefer-software'
+    }]);
+  </script>
+</head>
+
+<body>
+</body>
+
+</html>

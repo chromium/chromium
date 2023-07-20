@@ -8,4 +8,5 @@ dictionary VideoEncoderEncodeOptions {
   boolean keyFrame = false;
   VideoEncoderEncodeOptionsForVp9 vp9;
   VideoEncoderEncodeOptionsForAv1 av1;
+  VideoEncoderEncodeOptionsForAvc avc;
 };

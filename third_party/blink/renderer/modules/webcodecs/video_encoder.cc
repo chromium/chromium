@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options_for_av_1.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options_for_avc.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options_for_vp_9.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_support.h"
@@ -147,8 +148,7 @@ media::VideoEncodeAccelerator::SupportedRateControlMode BitrateToSupportedMode(
           ;
 
     case media::Bitrate::Mode::kExternal:
-      // External rate control is not supported by VEA yet.
-      return media::VideoEncodeAccelerator::kNoMode;
+      return media::VideoEncodeAccelerator::kExternalMode;
   }
 }
 
@@ -261,7 +261,9 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
           ? media::VideoEncoder::LatencyMode::Quality
           : media::VideoEncoder::LatencyMode::Realtime;
 
-  if (config->hasBitrate()) {
+  if (config->hasBitrateMode() && config->bitrateMode() == "quantizer") {
+    result->options.bitrate = media::Bitrate::ExternalRateControl();
+  } else if (config->hasBitrate()) {
     uint32_t bps = base::saturated_cast<uint32_t>(config->bitrate());
     if (bps == 0) {
       exception_state.ThrowTypeError("Zero is not a valid bitrate.");
@@ -269,9 +271,6 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
     }
     if (config->hasBitrateMode() && config->bitrateMode() == "constant") {
       result->options.bitrate = media::Bitrate::ConstantBitrate(bps);
-    } else if (config->hasBitrateMode() &&
-               config->bitrateMode() == "quantizer") {
-      result->options.bitrate = media::Bitrate::ExternalRateControl();
     } else {
       // VBR in media:Bitrate supports both target and peak bitrate.
       // Currently webcodecs doesn't expose peak bitrate
@@ -983,8 +982,19 @@ media::VideoEncoder::EncodeOptions VideoEncoder::CreateEncodeOptions(
       result.quantizer = request->encodeOpts->vp9()->quantizer();
       break;
     }
-    case media::VideoCodec::kVP8:
     case media::VideoCodec::kH264:
+      if (!active_config_->options.bitrate.has_value() ||
+          active_config_->options.bitrate->mode() !=
+              media::Bitrate::Mode::kExternal) {
+        break;
+      }
+      if (!request->encodeOpts->hasAvc() ||
+          !request->encodeOpts->avc()->hasQuantizer()) {
+        break;
+      }
+      result.quantizer = request->encodeOpts->avc()->quantizer();
+      break;
+    case media::VideoCodec::kVP8:
     default:
       break;
   }
