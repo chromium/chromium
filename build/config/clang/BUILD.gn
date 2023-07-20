@@ -48,54 +48,11 @@ config("find_bad_constructs") {
         "-Xclang",
         "check-raw-ptr-fields",
 
-        # TODO(mikt): Remove this once crrev.com/c/4565714 is rolled out.
-        "-Xclang",
-        "-plugin-arg-find-bad-constructs",
-        "-Xclang",
-        "raw-ptr-exclude-path=testing/platform_test.h",
-        "-Xclang",
-        "-plugin-arg-find-bad-constructs",
-        "-Xclang",
-        "raw-ptr-exclude-path=sandbox/mac/",
-
-        # TODO(mikt): Remove this once crrev.com/c/4575913 is rolled out.
-        "-Xclang",
-        "-plugin-arg-find-bad-constructs",
-        "-Xclang",
-        "raw-ptr-exclude-path=chrome/browser/ui/cocoa/touchbar/browser_window_default_touch_bar.mm",
-        "-Xclang",
-        "-plugin-arg-find-bad-constructs",
-        "-Xclang",
-        "raw-ptr-exclude-path=device/bluetooth/test/mock_bluetooth_central_manager_mac.mm",
-        "-Xclang",
-        "-plugin-arg-find-bad-constructs",
-        "-Xclang",
-        "raw-ptr-exclude-path=device/bluetooth/test/mock_bluetooth_cbperipheral_mac.mm",
-        "-Xclang",
-        "-plugin-arg-find-bad-constructs",
-        "-Xclang",
-        "raw-ptr-exclude-path=ui/views/controls/native/native_view_host_mac_unittest.mm",
-        "-Xclang",
-        "-plugin-arg-find-bad-constructs",
-        "-Xclang",
-        "raw-ptr-exclude-path=ui/views/widget/native_widget_mac_unittest.mm",
-        "-Xclang",
-        "-plugin-arg-find-bad-constructs",
-        "-Xclang",
-        "raw-ptr-exclude-path=ui/views/controls/native/native_view_host_mac_unittest.mm",
-
         # TODO(mikt): Remove this once crbug.com/1449812 is resolved.
         "-Xclang",
         "-plugin-arg-find-bad-constructs",
         "-Xclang",
         "raw-ptr-exclude-path=um/winnt.h",
-
-        # TODO(crbug.com/1459145): Remove this once we exclude this
-        # in our clang plugin.
-        "-Xclang",
-        "-plugin-arg-find-bad-constructs",
-        "-Xclang",
-        "raw-ptr-exclude-path=chromeos/assistant/internal/",
       ]
     }
 
