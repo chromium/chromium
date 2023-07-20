@@ -47,6 +47,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/popup_debug_info_consumer.h"
 #import "ios/chrome/browser/ui/omnibox/popup/popup_swift.h"
 #import "ios/chrome/browser/ui/omnibox/popup/remote_suggestions_service_observer_bridge.h"
+#import "ios/chrome/browser/ui/toolbar/public/toolbar_omnibox_consumer.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -150,7 +151,11 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 - (void)updateWithResults:(const AutocompleteResult&)result {
   [self updateMatches:result];
   self.open = !result.empty();
-  [self.presenter updatePopup];
+  metrics::OmniboxFocusType inputFocusType =
+      self.autocompleteController->input().focus_type();
+  BOOL isFocusing =
+      inputFocusType == metrics::OmniboxFocusType::INTERACTION_FOCUS;
+  [self.presenter updatePopupOnFocus:isFocusing];
 }
 
 - (void)setTextAlignment:(NSTextAlignment)alignment {

@@ -281,6 +281,10 @@
   return self.viewController;
 }
 
+- (id<ToolbarOmniboxConsumer>)toolbarOmniboxConsumer {
+  return self.popupCoordinator.toolbarOmniboxConsumer;
+}
+
 #pragma mark Scribble
 
 - (void)focusOmniboxForScribble {

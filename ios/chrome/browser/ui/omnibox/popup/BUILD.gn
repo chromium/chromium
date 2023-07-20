@@ -104,6 +104,7 @@ source_set("popup") {
     "//ios/chrome/browser/ui/omnibox:omnibox_util",
     "//ios/chrome/browser/ui/sharing",
     "//ios/chrome/browser/ui/toolbar/buttons",
+    "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/toolbar/public:constants",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",

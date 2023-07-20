@@ -187,6 +187,10 @@
   return self.mediator.isOpen;
 }
 
+- (id<ToolbarOmniboxConsumer>)toolbarOmniboxConsumer {
+  return self.mediator.presenter;
+}
+
 #pragma mark - Property accessor
 
 - (BOOL)hasResults {

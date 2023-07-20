@@ -13,6 +13,7 @@ class WebLocationBar;
 @class OmniboxTextFieldIOS;
 @protocol LocationBarOffsetProvider;
 @protocol OmniboxPopupPresenterDelegate;
+@protocol ToolbarOmniboxConsumer;
 
 // The coordinator for the omnibox.
 @interface OmniboxCoordinator : ChromeCoordinator
@@ -62,6 +63,8 @@ class WebLocationBar;
 // Use this method to resign `textField` as the first responder.
 - (void)endEditing;
 
+// Returns the toolbar omnibox consumer.
+- (id<ToolbarOmniboxConsumer>)toolbarOmniboxConsumer;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_COORDINATOR_H_

@@ -308,6 +308,11 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   return self.omniboxCoordinator.scribbleInput;
 }
 
+// Returns the toolbar omnibox consumer.
+- (id<ToolbarOmniboxConsumer>)toolbarOmniboxConsumer {
+  return self.omniboxCoordinator.toolbarOmniboxConsumer;
+}
+
 #pragma mark - LoadQueryCommands
 
 - (void)loadQuery:(NSString*)query immediately:(BOOL)immediately {

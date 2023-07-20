@@ -45,7 +45,12 @@ const CGFloat kPopupBottomPaddingTablet = 80;
 
 @end
 
-@implementation OmniboxPopupPresenter
+@implementation OmniboxPopupPresenter {
+  /// Type of the toolbar that contains the omnibox when it's not focused. The
+  /// animation of focusing/defocusing the omnibox changes depending on this
+  /// position.
+  ToolbarType _unfocusedOmniboxToolbarType;
+}
 
 - (instancetype)
     initWithPopupPresenterDelegate:(id<OmniboxPopupPresenterDelegate>)delegate
@@ -121,7 +126,8 @@ const CGFloat kPopupBottomPaddingTablet = 80;
   return self;
 }
 
-- (void)updatePopup {
+- (void)updatePopupOnFocus:(BOOL)isFocusingOmnibox {
+  // TODO(crbug.com/1462889): Add animation for bottom omnibox presentation.
   BOOL popupHasContent = self.viewController.hasContent;
   BOOL popupIsOnscreen = self.popupContainerView.superview != nil;
   if (!popupHasContent && popupIsOnscreen) {
@@ -187,6 +193,12 @@ const CGFloat kPopupBottomPaddingTablet = 80;
     self.bottomConstraintPhone.active = YES;
     self.bottomSeparator.hidden = NO;
   }
+}
+
+#pragma mark - ToolbarOmniboxConsumer
+
+- (void)steadyStateOmniboxMovedToToolbar:(ToolbarType)toolbarType {
+  _unfocusedOmniboxToolbarType = toolbarType;
 }
 
 #pragma mark - Private

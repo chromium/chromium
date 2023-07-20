@@ -11,6 +11,7 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_type.h"
 
+@protocol ToolbarOmniboxConsumer;
 class WebStateList;
 
 /// Delegate for events in `ToolbarMediator`.
@@ -32,6 +33,8 @@ class WebStateList;
 
 /// Delegate for events in `ToolbarMediator`.
 @property(nonatomic, weak) id<ToolbarMediatorDelegate> delegate;
+/// The omnibox consumer for this object.
+@property(nonatomic, weak) id<ToolbarOmniboxConsumer> omniboxConsumer;
 /// Observe user preference changes for preferred omnibox position.
 @property(nonatomic, assign) PrefService* prefService;
 

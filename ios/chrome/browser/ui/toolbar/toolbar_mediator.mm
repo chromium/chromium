@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
+#import "ios/chrome/browser/ui/toolbar/public/toolbar_omnibox_consumer.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -110,6 +111,8 @@
   [self.delegate transitionOmniboxToToolbarType:self.omniboxPosition];
   [self.delegate transitionSteadyStateOmniboxToToolbarType:
                      self.steadyStateOmniboxPosition];
+  [self.omniboxConsumer
+      steadyStateOmniboxMovedToToolbar:self.steadyStateOmniboxPosition];
 }
 
 - (void)didNavigateToNTPOnActiveWebState {
@@ -133,6 +136,8 @@
     _steadyStateOmniboxPosition = steadyStateOmniboxPosition;
     [self.delegate
         transitionSteadyStateOmniboxToToolbarType:steadyStateOmniboxPosition];
+    [self.omniboxConsumer
+        steadyStateOmniboxMovedToToolbar:steadyStateOmniboxPosition];
   }
 }
 
