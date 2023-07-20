@@ -18,6 +18,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/sanitizer_buildflags.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -4238,9 +4239,16 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest,
 
 // Tests that the gesture debounce timer plays nice with the overscroll
 // controller.
-// TODO(crbug.com/776424): Disabled due to flakiness on Fuchsia and Linux tsan.
+// TODO(crbug.com/776424): Disabled due to flakiness on Linux tsan.
+#if BUILDFLAG(USING_SANITIZER)
+#define MAYBE_GestureScrollDebounceTimerOverscroll \
+  DISABLED_GestureScrollDebounceTimerOverscroll
+#else
+#define MAYBE_GestureScrollDebounceTimerOverscroll \
+  GestureScrollDebounceTimerOverscroll
+#endif
 TEST_F(RenderWidgetHostViewAuraOverscrollTest,
-       DISABLED_GestureScrollDebounceTimerOverscroll) {
+       MAYBE_GestureScrollDebounceTimerOverscroll) {
   SetUpOverscrollEnvironmentWithDebounce(10);
 
   PressAndSetTouchActionAuto();
