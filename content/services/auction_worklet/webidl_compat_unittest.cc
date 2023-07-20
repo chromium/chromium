@@ -46,11 +46,9 @@ class WebIDLCompatTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  // Calls the `make` method in the given script to produce the value passed
-  // to DictConverter.
-  std::unique_ptr<DictConverter> MakeFromScript(
-      v8::Local<v8::Context> context,
-      const std::string& script_source) {
+  // Calls the `make` method in the given script to produce a value.
+  v8::Local<v8::Value> MakeValueFromScript(v8::Local<v8::Context> context,
+                                           const std::string& script_source) {
     absl::optional<std::string> error;
     v8::MaybeLocal<v8::UnboundScript> maybe_script =
         v8_helper_->Compile(script_source, GURL("https://example.org"),
@@ -71,9 +69,17 @@ class WebIDLCompatTest : public testing::Test {
       result = v8::Undefined(v8_helper_->isolate());
     }
     EXPECT_THAT(errors, ElementsAre());
+    return result;
+  }
 
-    return std::make_unique<DictConverter>(v8_helper_.get(), *time_limit_scope_,
-                                           "<error prefix> ", result);
+  // Calls the `make` method in the given script to produce the value passed
+  // to DictConverter.
+  std::unique_ptr<DictConverter> MakeFromScript(
+      v8::Local<v8::Context> context,
+      const std::string& script_source) {
+    return std::make_unique<DictConverter>(
+        v8_helper_.get(), *time_limit_scope_, "<error prefix> ",
+        MakeValueFromScript(context, script_source));
   }
 
   bool GetSequence(DictConverter* converter,
@@ -114,6 +120,263 @@ class WebIDLCompatTest : public testing::Test {
   std::unique_ptr<AuctionV8Helper::FullIsolateScope> v8_scope_;
 };
 
+TEST_F(WebIDLCompatTest, StandaloneDouble) {
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+
+  {
+    auto in_value = MakeValueFromScript(context, "make = () => 124.5");
+    double out = -1;
+    auto res = IdlConvert::Convert(v8_helper_->isolate(), "test1",
+                                   {"v1", "scalar"}, in_value, out);
+    EXPECT_EQ(res.type(), IdlConvert::Status::Type::kSuccess);
+    EXPECT_EQ(out, 124.5);
+  }
+
+  {
+    auto in_value = MakeValueFromScript(context, "make = () => (0/0)");
+    double out_unchecked;
+    auto res =
+        IdlConvert::Convert(v8_helper_->isolate(), "test2:", {"v2", "scalar"},
+                            in_value, out_unchecked);
+    EXPECT_EQ(res.type(), IdlConvert::Status::Type::kErrorMessage);
+    EXPECT_EQ(
+        "test2:Converting v2scalar to a Number did not "
+        "produce a finite double.",
+        res.ConvertToErrorString(v8_helper_->isolate()));
+  }
+
+  {
+    auto in_value = MakeValueFromScript(context, R"(
+      make = () => {
+        return {
+          valueOf: () => { while(true) {} }
+        }
+      }
+    )");
+    double out_unchecked;
+    auto res =
+        IdlConvert::Convert(v8_helper_->isolate(), "test3:", {"v3", "scalar"},
+                            in_value, out_unchecked);
+    EXPECT_EQ(res.type(), IdlConvert::Status::Type::kTimeout);
+    EXPECT_EQ("test3:Converting v3scalar to Number timed out.",
+              res.ConvertToErrorString(v8_helper_->isolate()));
+  }
+
+  {
+    auto in_value = MakeValueFromScript(context, R"(
+      make = () => {
+        return {
+          valueOf: () => { throw "boo"; }
+        }
+      }
+    )");
+    double out_unchecked;
+    auto res =
+        IdlConvert::Convert(v8_helper_->isolate(), "test4:", {"v4", "scalar"},
+                            in_value, out_unchecked);
+    ASSERT_EQ(res.type(), IdlConvert::Status::Type::kException);
+    EXPECT_EQ("https://example.org/:4 Uncaught boo.",
+              res.ConvertToErrorString(v8_helper_->isolate()));
+    std::string exception_str;
+    EXPECT_TRUE(gin::Converter<std::string>::FromV8(
+        v8_helper_->isolate(), res.GetException().exception, &exception_str));
+    EXPECT_EQ("boo", exception_str);
+  }
+
+  // Successful conversions can happen. Here the string '345' turns into
+  // Number 345.
+  {
+    auto in_value = MakeValueFromScript(context, "make = () => '345'");
+    double out = -1;
+    auto res = IdlConvert::Convert(v8_helper_->isolate(), "test5",
+                                   {"v5", "scalar"}, in_value, out);
+    EXPECT_EQ(res.type(), IdlConvert::Status::Type::kSuccess);
+    EXPECT_EQ(out, 345);
+  }
+}
+
+// unrestricted double, unlike double, doesn't reject +/- inf and NaN.
+TEST_F(WebIDLCompatTest, StandaloneUnrestrictedDouble) {
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+
+  {
+    auto in_value = MakeValueFromScript(context, "make = () => 124.5");
+    UnrestrictedDouble out;
+    out.number = -1;
+    auto res = IdlConvert::Convert(v8_helper_->isolate(), "test1",
+                                   {"v1", "scalar"}, in_value, out);
+    EXPECT_EQ(res.type(), IdlConvert::Status::Type::kSuccess);
+    EXPECT_EQ(out.number, 124.5);
+  }
+
+  {
+    auto in_value = MakeValueFromScript(context, "make = () => (0/0)");
+    UnrestrictedDouble out;
+    out.number = -1;
+    auto res = IdlConvert::Convert(v8_helper_->isolate(),
+                                   "test2:", {"v2", "scalar"}, in_value, out);
+    EXPECT_EQ(res.type(), IdlConvert::Status::Type::kSuccess);
+    EXPECT_TRUE(std::isnan(out.number));
+  }
+
+  {
+    auto in_value = MakeValueFromScript(context, R"(
+      make = () => {
+        return {
+          valueOf: () => { while(true) {} }
+        }
+      }
+    )");
+    UnrestrictedDouble out_unchecked;
+    auto res =
+        IdlConvert::Convert(v8_helper_->isolate(), "test3:", {"v3", "scalar"},
+                            in_value, out_unchecked);
+    EXPECT_EQ(res.type(), IdlConvert::Status::Type::kTimeout);
+    EXPECT_EQ("test3:Converting v3scalar to Number timed out.",
+              res.ConvertToErrorString(v8_helper_->isolate()));
+  }
+
+  {
+    auto in_value = MakeValueFromScript(context, R"(
+      make = () => {
+        return {
+          valueOf: () => { throw "boo"; }
+        }
+      }
+    )");
+    UnrestrictedDouble out_unchecked;
+    auto res =
+        IdlConvert::Convert(v8_helper_->isolate(), "test4:", {"v4", "scalar"},
+                            in_value, out_unchecked);
+    ASSERT_EQ(res.type(), IdlConvert::Status::Type::kException);
+    EXPECT_EQ("https://example.org/:4 Uncaught boo.",
+              res.ConvertToErrorString(v8_helper_->isolate()));
+    std::string exception_str;
+    EXPECT_TRUE(gin::Converter<std::string>::FromV8(
+        v8_helper_->isolate(), res.GetException().exception, &exception_str));
+    EXPECT_EQ("boo", exception_str);
+  }
+}
+
+TEST_F(WebIDLCompatTest, StandaloneBool) {
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+
+  {
+    auto in_value = MakeValueFromScript(context, "make = () => false");
+    bool out = true;
+    auto res = IdlConvert::Convert(v8_helper_->isolate(), "test1",
+                                   {"v1", "scalar"}, in_value, out);
+    EXPECT_EQ(res.type(), IdlConvert::Status::Type::kSuccess);
+    EXPECT_FALSE(out);
+  }
+
+  {
+    auto in_value = MakeValueFromScript(context, "make = () => true");
+    bool out = false;
+    auto res = IdlConvert::Convert(v8_helper_->isolate(), "test2",
+                                   {"v2", "scalar"}, in_value, out);
+    EXPECT_EQ(res.type(), IdlConvert::Status::Type::kSuccess);
+    EXPECT_TRUE(out);
+  }
+
+  {
+    auto in_value = MakeValueFromScript(context, "make = () => 0");
+    bool out = true;
+    auto res = IdlConvert::Convert(v8_helper_->isolate(), "test3",
+                                   {"v3", "scalar"}, in_value, out);
+    EXPECT_EQ(res.type(), IdlConvert::Status::Type::kSuccess);
+    EXPECT_FALSE(out);
+  }
+
+  {
+    auto in_value = MakeValueFromScript(context, "make = () => 'hi'");
+    bool out = false;
+    auto res = IdlConvert::Convert(v8_helper_->isolate(), "test4",
+                                   {"v4", "scalar"}, in_value, out);
+    EXPECT_EQ(res.type(), IdlConvert::Status::Type::kSuccess);
+    EXPECT_TRUE(out);
+  }
+}
+
+TEST_F(WebIDLCompatTest, StandaloneString) {
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+
+  {
+    auto in_value = MakeValueFromScript(context, "make = () => 'hi'");
+    std::string out;
+    auto res = IdlConvert::Convert(v8_helper_->isolate(), "test1",
+                                   {"v1", "scalar"}, in_value, out);
+    EXPECT_EQ(res.type(), IdlConvert::Status::Type::kSuccess);
+    EXPECT_EQ(out, "hi");
+  }
+
+  {
+    auto in_value = MakeValueFromScript(context, R"(
+      make = () => {
+        return {
+          toString: () => { while(true) {} }
+        }
+      }
+    )");
+    std::string out_unchecked;
+    auto res =
+        IdlConvert::Convert(v8_helper_->isolate(), "test2:", {"v2", "scalar"},
+                            in_value, out_unchecked);
+    EXPECT_EQ(res.type(), IdlConvert::Status::Type::kTimeout);
+    EXPECT_EQ("test2:Converting v2scalar to String timed out.",
+              res.ConvertToErrorString(v8_helper_->isolate()));
+  }
+
+  {
+    auto in_value = MakeValueFromScript(context, R"(
+      make = () => {
+        return {
+          toString: () => { throw "boo"; }
+        }
+      }
+    )");
+    std::string out_unchecked;
+    auto res =
+        IdlConvert::Convert(v8_helper_->isolate(), "test3:", {"v3", "scalar"},
+                            in_value, out_unchecked);
+    ASSERT_EQ(res.type(), IdlConvert::Status::Type::kException);
+    EXPECT_EQ("https://example.org/:4 Uncaught boo.",
+              res.ConvertToErrorString(v8_helper_->isolate()));
+    std::string exception_str;
+    EXPECT_TRUE(gin::Converter<std::string>::FromV8(
+        v8_helper_->isolate(), res.GetException().exception, &exception_str));
+    EXPECT_EQ("boo", exception_str);
+  }
+
+  // Successful conversions can happen.
+  {
+    auto in_value = MakeValueFromScript(context, "make = () => 123");
+    std::string out;
+    auto res = IdlConvert::Convert(v8_helper_->isolate(), "test4",
+                                   {"v4", "scalar"}, in_value, out);
+    EXPECT_EQ(res.type(), IdlConvert::Status::Type::kSuccess);
+    EXPECT_EQ(out, "123");
+  }
+}
+
+TEST_F(WebIDLCompatTest, StandaloneAny) {
+  // 'any' handling is just passthrough; it's there to help the dictionary
+  // code out.
+  v8::Local<v8::Context> context = v8_helper_->CreateContext();
+  v8::Context::Scope ctx(context);
+
+  auto in_value = MakeValueFromScript(context, "make = () => 'hi'");
+  v8::Local<v8::Value> out;
+  auto res = IdlConvert::Convert(v8_helper_->isolate(), "test1",
+                                 {"v1", "scalar"}, in_value, out);
+  EXPECT_EQ(res.type(), IdlConvert::Status::Type::kSuccess);
+  EXPECT_EQ(out, in_value);
+}
+
 // WebIDL treats undefined as empty dictionary.
 TEST_F(WebIDLCompatTest, UndefinedEmptyDict) {
   v8::Local<v8::Context> context = v8_helper_->CreateContext();
@@ -131,7 +394,7 @@ TEST_F(WebIDLCompatTest, UndefinedEmptyDict) {
 
   std::string out2;
   EXPECT_FALSE(converter->GetRequired("a", out2));
-  EXPECT_EQ("<error prefix> Required field 'a' missing.",
+  EXPECT_EQ("<error prefix> Required field 'a' is undefined.",
             converter->ErrorMessage());
   EXPECT_FALSE(converter->FailureIsTimeout());
 }
@@ -153,7 +416,7 @@ TEST_F(WebIDLCompatTest, NullEmptyDict) {
 
   std::string out2;
   EXPECT_FALSE(converter->GetRequired("a", out2));
-  EXPECT_EQ("<error prefix> Required field 'a' missing.",
+  EXPECT_EQ("<error prefix> Required field 'a' is undefined.",
             converter->ErrorMessage());
   EXPECT_FALSE(converter->FailureIsTimeout());
 }
@@ -182,7 +445,7 @@ TEST_F(WebIDLCompatTest, OptionalOrRequired) {
   EXPECT_FALSE(out.has_value());
 
   EXPECT_FALSE(converter->GetRequired("b", out_required));
-  EXPECT_EQ("<error prefix> Required field 'b' missing.",
+  EXPECT_EQ("<error prefix> Required field 'b' is undefined.",
             converter->ErrorMessage());
   EXPECT_FALSE(converter->FailureIsTimeout());
 }
@@ -245,7 +508,7 @@ TEST_F(WebIDLCompatTest, ErrorLatch) {
   EXPECT_EQ("42", out_required);
 
   EXPECT_FALSE(converter->GetRequired("a", out_required));
-  EXPECT_EQ("<error prefix> Required field 'a' missing.",
+  EXPECT_EQ("<error prefix> Required field 'a' is undefined.",
             converter->ErrorMessage());
   EXPECT_FALSE(converter->FailureIsTimeout());
 
@@ -254,7 +517,7 @@ TEST_F(WebIDLCompatTest, ErrorLatch) {
   EXPECT_FALSE(converter->GetRequired("b", out_required));
 
   // .. and don't mess up the error message.
-  EXPECT_EQ("<error prefix> Required field 'a' missing.",
+  EXPECT_EQ("<error prefix> Required field 'a' is undefined.",
             converter->ErrorMessage());
   EXPECT_FALSE(converter->FailureIsTimeout());
 }
@@ -438,7 +701,7 @@ TEST_F(WebIDLCompatTest, Boolean) {
   EXPECT_TRUE(out);
 
   EXPECT_FALSE(converter->GetRequired("f", out));
-  EXPECT_EQ("<error prefix> Required field 'f' missing.",
+  EXPECT_EQ("<error prefix> Required field 'f' is undefined.",
             converter->ErrorMessage());
   EXPECT_FALSE(converter->FailureIsTimeout());
 }

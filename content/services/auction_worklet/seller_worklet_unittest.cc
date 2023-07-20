@@ -856,13 +856,13 @@ TEST_F(SellerWorkletTest, ScoreAd) {
   RunScoreAdWithReturnValueExpectingResult(
       "", 0,
       {"https://url.test/ scoreAd() return: Required field 'desirability' "
-       "missing."});
+       "is undefined."});
 
   // Wrong return type / invalid values.
   RunScoreAdWithReturnValueExpectingResult(
       "{hats:15}", 0,
       {"https://url.test/ scoreAd() return: Required field 'desirability' "
-       "missing."});
+       "is undefined."});
   RunScoreAdWithReturnValueExpectingResult(
       "{desirability:[15, 16]}", 0,
       {"https://url.test/ scoreAd() return: Converting field 'desirability' to "
@@ -881,7 +881,7 @@ TEST_F(SellerWorkletTest, ScoreAd) {
   RunScoreAdWithReturnValueExpectingResult(
       "[15]", 0,
       {"https://url.test/ scoreAd() return: Required field 'desirability' "
-       "missing."});
+       "is undefined."});
   RunScoreAdWithReturnValueExpectingResult(
       "1/0", 0, {"https://url.test/ scoreAd() returned an invalid score."});
   RunScoreAdWithReturnValueExpectingResult(

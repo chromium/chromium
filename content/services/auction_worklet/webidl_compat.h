@@ -6,20 +6,22 @@
 #define CONTENT_SERVICES_AUCTION_WORKLET_WEBIDL_COMPAT_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "v8/include/v8-local-handle.h"
 #include "v8/include/v8-value.h"
 
 namespace v8 {
 class TryCatch;
+class Isolate;
 }  // namespace v8
 
 namespace auction_worklet {
@@ -29,34 +31,167 @@ struct CONTENT_EXPORT UnrestrictedDouble {
   double number;
 };
 
+// IdlConvert converts v8::Value values to a C++ representation
+// following the semantics of WebIDL for certain simpler, non-structured,
+// WebIDL types. The IDL type desired is denoted by the output parameter of the
+// particular Convert() overload used.
+//
+// Clients should have AuctionV8Helper::TimeLimitScope active to protect against
+// non-termination.
+//
+// `error_prefix` is prepended to non-exception error messages,
+//  in order to identify where the error occurred, e.g. foo.js:100, etc.
+//
+// `error_subject` names the thing being converted (e.g. field foo,
+//  argument bar, etc.)
+class CONTENT_EXPORT IdlConvert {
+ public:
+  // Outcome of the conversion, either success or some kind of error.
+  class CONTENT_EXPORT Status {
+   public:
+    enum class Success { kSuccessTag };
+
+    struct CONTENT_EXPORT Timeout {
+      std::string timeout_message;
+    };
+
+    struct CONTENT_EXPORT Exception {
+      v8::Local<v8::Value> exception;
+      v8::Local<v8::Message> message;
+    };
+
+    // This must match the order inside `StatusValue`
+    enum class Type { kSuccess, kTimeout, kErrorMessage, kException };
+    using StatusValue = absl::variant<Success, Timeout, std::string, Exception>;
+
+    Status();
+    Status(const Status& other) = delete;
+    Status(Status&& other);
+    ~Status();
+
+    Status& operator=(const Status&) = delete;
+    Status& operator=(Status&&);
+
+    static Status MakeTimeout(std::string timeout_message) {
+      Timeout t;
+      t.timeout_message = std::move(timeout_message);
+      return Status(std::move(t));
+    }
+
+    static Status MakeException(v8::Local<v8::Value> exception,
+                                v8::Local<v8::Message> message) {
+      Exception e;
+      e.exception = exception;
+      e.message = message;
+      return Status(std::move(e));
+    }
+
+    static Status MakeErrorMessage(std::string message) {
+      return Status(StatusValue(std::move(message)));
+    }
+
+    static Status MakeSuccess() {
+      return Status(StatusValue(Success::kSuccessTag));
+    }
+
+    Type type() const { return static_cast<Type>(value_.index()); }
+
+    bool is_success() const { return type() == Type::kSuccess; }
+
+    // Serializes the conversion error message. This can only be called if
+    // the status is not a success.
+    std::string ConvertToErrorString(v8::Isolate* isolate) const;
+
+    // TODO(morlovich): Add a raise exception if needed helper, similar to how
+    // SetBidBindings propagates it.
+
+    const Exception& GetException() const {
+      DCHECK_EQ(type(), Type::kException);
+      return absl::get<Exception>(value_);
+    }
+
+   private:
+    explicit Status(StatusValue value);
+
+    StatusValue value_;
+  };
+
+  // For values that should be converted to WebIDL "unrestricted double" type.
+  // Unlike "double" it permits NaN and +/- infinity.
+  static Status Convert(v8::Isolate* isolate,
+                        std::string_view error_prefix,
+                        std::initializer_list<std::string_view> error_subject,
+                        v8::Local<v8::Value> value,
+                        UnrestrictedDouble& out);
+
+  // For values that should be converted to WebIDL "double" type.
+  static Status Convert(v8::Isolate* isolate,
+                        std::string_view error_prefix,
+                        std::initializer_list<std::string_view> error_subject,
+                        v8::Local<v8::Value> value,
+                        double& out);
+
+  // For values that should be converted to WebIDL "boolean" type.
+  static Status Convert(v8::Isolate* isolate,
+                        std::string_view error_prefix,
+                        std::initializer_list<std::string_view> error_subject,
+                        v8::Local<v8::Value> value,
+                        bool& out);
+
+  // For values that should be converted to WebIDL "DOMString" type.
+  static Status Convert(v8::Isolate* isolate,
+                        std::string_view error_prefix,
+                        std::initializer_list<std::string_view> error_subject,
+                        v8::Local<v8::Value> value,
+                        std::string& out);
+
+  // For values that should be converted to WebIDL "any" type.
+  // This just passes the incoming value through, and is here for benefit of
+  // DictConverter; it should not be used directly.
+  static Status Convert(v8::Isolate* isolate,
+                        std::string_view error_prefix,
+                        std::initializer_list<std::string_view> error_subject,
+                        v8::Local<v8::Value> value,
+                        v8::Local<v8::Value>& out);
+
+ private:
+  // Makes a failure result based on state of `catcher`. If nothing is set on
+  // `catcher`, will report a conversion failure.
+  static Status MakeConversionFailure(
+      const v8::TryCatch& catcher,
+      std::string_view error_prefix,
+      std::initializer_list<std::string_view> error_subject,
+      std::string_view type_name);
+};
+
+// DictConverter helps convert a v8::Value that's supposed to be a WebIDL
+// dictionary to C++ values one field at a time, following the appropriate
+// semantics. Please see the constructor comment for more details.
+//
+// After construction, you should call GetOptional/GetRequired/
+// GetOptionalSequence as appropriate for all the fields in the dictionary in
+// lexicographic order. Unlike gin, this will do type conversions.
+//
+// All the Get... methods return true on success, false on failure.
+// In particular, if GetOptional() is called on a field that's missing,
+// the out-param is set to nullopt, and true is returned.
+//
+// In case of failure all further Get... ops will fail, and the state of
+// out-param is unpredictable. You can use ErrorMessage() to get the
+// description of the first detected error.
+//
+// The output type is what determines the conversion --- see the various
+// `IdlConvert::Convert` overloads, except sequences are handled specially, via
+//  GetOptionalSequence.
 class CONTENT_EXPORT DictConverter {
  public:
   // This should be bigger than the biggest Sequence<> the users of this need to
   // handle, which is currently blink::kMaxAdAuctionAdComponents.
   static const size_t kSequenceLengthLimit = 21;
 
-  // Prepares to convert `value` to a WebIDL dictionary. You should follow this
-  // by calling appropriate Get... methods for all the fields in lexicographic
-  // order. Unlike gin, this does type conversions.
+  // Prepares to convert `value` to a WebIDL dictionary.
   //
-  // All the Get... methods return true on success, false on failure.
-  // In particular, if an optional field is missing, the out-param is set to
-  // nullopt, and true is returned.
-  //
-  // In case of failure all further Get... ops will fail, and the state of
-  // out-param is unpredictable. You can use ErrorMessage() to get the
-  // description of the first detected error.
-  //
-  // Output types <T> correspond to the following WebIDL types:
-  //  double to double.
-  //  UnrestrictedDouble to unrestricted double.
-  //  bool to boolean.
-  //  std::string to DOMString.
-  //  v8::Local<v8::Value> to any.
-  //
-  // Sequences are handled specially, via GetOptionalSequence.
-  //
-  // Since these conversions may loop infinitely, a `time_limit_scope` must
+  // Since fields conversions may loop infinitely, a `time_limit_scope` must
   // exist during its operation, and one with non-null time limit.
   //
   // Expects `v8_helper` and `time_limit_scope` will outlive `this`.
@@ -67,34 +202,37 @@ class CONTENT_EXPORT DictConverter {
                 AuctionV8Helper::TimeLimitScope& time_limit_scope,
                 std::string error_prefix,
                 v8::Local<v8::Value> value);
+  ~DictConverter();
 
   template <typename T>
-  bool GetRequired(base::StringPiece field, T& out) {
-    if (failed_) {
+  bool GetRequired(std::string_view field, T& out) {
+    if (is_failed()) {
       return false;
     }
 
     v8::Local<v8::Value> val = GetMember(field);
-    if (failed_) {
+    if (is_failed()) {
       return false;
     }
 
     if (val->IsUndefined()) {
-      MarkFailed(base::StrCat({"Required field '", field, "' missing."}));
+      MarkFailed(base::StrCat({"Required field '", field, "' is undefined."}));
       return false;
     }
 
-    return Convert(field, val, out);
+    status_ = IdlConvert::Convert(v8_helper_->isolate(), error_prefix_,
+                                  {"field '", field, "'"}, val, out);
+    return !is_failed();
   }
 
   template <typename T>
-  bool GetOptional(base::StringPiece field, absl::optional<T>& out) {
-    if (failed_) {
+  bool GetOptional(std::string_view field, absl::optional<T>& out) {
+    if (is_failed()) {
       return false;
     }
 
     v8::Local<v8::Value> val = GetMember(field);
-    if (failed_) {
+    if (is_failed()) {
       return false;
     }
 
@@ -104,7 +242,9 @@ class CONTENT_EXPORT DictConverter {
     }
 
     out.emplace();
-    return Convert(field, val, out.value());
+    status_ = IdlConvert::Convert(v8_helper_->isolate(), error_prefix_,
+                                  {"field '", field, "'"}, val, out.value());
+    return !is_failed();
   }
 
   // Gets an optional sequence field `field`. If the field exists,
@@ -116,68 +256,52 @@ class CONTENT_EXPORT DictConverter {
   // The conversion routine can use PropagateErrorsFrom() to forward errors to
   // `this` from a different converter.
   bool GetOptionalSequence(
-      base::StringPiece field,
+      std::string_view field,
       base::OnceClosure exists_callback,
       base::RepeatingCallback<bool(v8::Local<v8::Value>)> item_callback);
 
-  const std::string& ErrorMessage() { return failure_message_; }
+  std::string ErrorMessage() const;
 
   // This is non-empty only when an exception specifically got thrown by
   // something invoked during conversion; not for any errors synthesized here.
-  v8::MaybeLocal<v8::Value> FailureException() { return failure_exception_; }
+  v8::MaybeLocal<v8::Value> FailureException() const;
 
   // Returns true if conversion failed because execution timeout has been
   // reached.
-  bool FailureIsTimeout() { return failed_with_timeout_; }
+  bool FailureIsTimeout() const;
 
   // Moves over error information from `other_converter`; requires the
-  // converter to be in failed state and `this` not to be. `other_converter`
-  // will still be marked as in error, but will no longer have the error string.
+  // converter to be in failed state and `this` not to be. `other_converter`'s
+  // error status will be cleared.
   void PropagateErrorsFrom(DictConverter& other_converter);
 
  private:
   // This can mark failure.
-  v8::Local<v8::Value> GetMember(base::StringPiece field);
-
-  // These mark failure as it happens.
-  bool Convert(base::StringPiece field,
-               v8::Local<v8::Value> value,
-               UnrestrictedDouble& out);
-  bool Convert(base::StringPiece field,
-               v8::Local<v8::Value> value,
-               double& out);
-  bool Convert(base::StringPiece field, v8::Local<v8::Value> value, bool& out);
-  bool Convert(base::StringPiece field,
-               v8::Local<v8::Value> value,
-               std::string& out);
-  bool Convert(base::StringPiece field,
-               v8::Local<v8::Value> value,
-               v8::Local<v8::Value>& out);
+  v8::Local<v8::Value> GetMember(std::string_view field);
 
   bool ConvertSequence(
-      base::StringPiece field,
+      std::string_view field,
       v8::Local<v8::Value> value,
       base::RepeatingCallback<bool(v8::Local<v8::Value>)> item_callback);
 
-  void MarkFailed(base::StringPiece fail_message);
-  void MarkFailedWithTimeout(base::StringPiece fail_message);
+  void MarkFailed(std::string_view fail_message);
+  void MarkFailedWithTimeout(std::string_view fail_message);
   void MarkFailedWithException(const v8::TryCatch& catcher);
+  void MarkFailedIter(std::string_view field, const v8::TryCatch& catcher);
 
-  void MarkFailedWithExceptionOrMessage(const v8::TryCatch& catcher,
-                                        base::StringPiece fail_message);
-  void MarkFailedIter(base::StringPiece field, const v8::TryCatch& catcher);
+  bool is_failed() const {
+    return status_.type() != IdlConvert::Status::Type::kSuccess;
+  }
 
   raw_ptr<AuctionV8Helper> v8_helper_;
   std::string error_prefix_;
   v8::Local<v8::Object> object_;  // Can be empty if undefined/null.
 
-  // This gets set to true on first error, and all further ops fail fast after
-  // that. This is needed because user-provided custom type coercions can have
-  // side effects, so we should not run them when the process already failed.
-  bool failed_ = false;
-  bool failed_with_timeout_ = false;
-  v8::Local<v8::Value> failure_exception_;
-  std::string failure_message_;
+  // This gets latched to a non-success on first error, and all further ops fail
+  // fast after that. This is needed because user-provided custom type coercions
+  // can have side effects, so we should not run them when the process already
+  // failed.
+  IdlConvert::Status status_;
 };
 
 }  // namespace auction_worklet

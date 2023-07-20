@@ -1413,7 +1413,7 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueUrl) {
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
       {"https://url.test/ generateBid() 'render': Required field 'url' "
-       "missing."});
+       "is undefined."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:9})",
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
@@ -1520,7 +1520,7 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueAdComponents) {
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
       {"https://url.test/ generateBid() adComponents entry: Required field "
-       "'url' missing."});
+       "'url' is undefined."});
 
   // Up to 20 values in the output adComponents output array are allowed (And
   // they can all be the same URL).
@@ -1898,7 +1898,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
       {"https://url.test/:2 Uncaught TypeError: 'render': Required field 'url' "
-       "missing."});
+       "is undefined."});
   RunGenerateBidWithJavascriptExpectingResult(
       R"(function generateBid() {
          setBid({ad: ["ad"], bid:1, render:9});
@@ -1987,7 +1987,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
       {"https://url.test/:2 Uncaught TypeError: adComponents entry: Required "
-       "field 'url' missing."});
+       "field 'url' is undefined."});
 
   // Up to 20 values in the output adComponents output array are allowed (And
   // they can all be the same URL).
@@ -8148,7 +8148,7 @@ TEST_F(BidderWorkletTest, GenerateBidRenderUrlWithSize) {
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
       {"https://url.test/ generateBid() 'render': Required field 'url' "
-       "missing."});
+       "is undefined."});
 
   // The 'render' field corresponds to an object with an invalid field.
   // Extra fields are just ignored.
@@ -8179,7 +8179,7 @@ TEST_F(BidderWorkletTest, GenerateBidRenderUrlWithSize) {
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
       {"https://url.test/ generateBid() 'render': Required field 'url' "
-       "missing."});
+       "is undefined."});
 
   // The 'render' field corresponds to an object without url string field.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -8187,7 +8187,7 @@ TEST_F(BidderWorkletTest, GenerateBidRenderUrlWithSize) {
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
       {"https://url.test/ generateBid() 'render': Required field 'url' "
-       "missing."});
+       "is undefined."});
 
   // Size is not of string type, but numbers just get stringified, so count
   // as pixels.
@@ -8474,7 +8474,7 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
       {"https://url.test/ generateBid() adComponents entry: Required field "
-       "'url' missing."});
+       "'url' is undefined."});
 
   // The 'adComponents' field corresponds to an array of an object that has an
   // invalid field. That's OK.
@@ -8514,7 +8514,7 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
       {"https://url.test/ generateBid() adComponents entry: Required field "
-       "'url' missing."});
+       "'url' is undefined."});
 
   // The 'adComponents' field corresponds to an array of an object without url
   // string field.
@@ -8533,7 +8533,7 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
       {"https://url.test/ generateBid() adComponents entry: Required field "
-       "'url' missing."});
+       "'url' is undefined."});
 
   // Size is not covertible to a string type.
   RunGenerateBidWithReturnValueExpectingResult(

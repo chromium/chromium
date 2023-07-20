@@ -16,6 +16,148 @@
 
 namespace auction_worklet {
 
+IdlConvert::Status::Status() : value_(Success::kSuccessTag) {}
+IdlConvert::Status::Status(Status&& other) = default;
+IdlConvert::Status::~Status() = default;
+IdlConvert::Status& IdlConvert::Status::operator=(Status&&) = default;
+
+std::string IdlConvert::Status::ConvertToErrorString(
+    v8::Isolate* isolate) const {
+  switch (type()) {
+    case Type::kSuccess:
+      NOTREACHED();
+      return std::string();
+    case Type::kTimeout:
+      return absl::get<Timeout>(value_).timeout_message;
+    case Type::kErrorMessage:
+      return absl::get<std::string>(value_);
+    case Type::kException:
+      return AuctionV8Helper::FormatExceptionMessage(
+          isolate->GetCurrentContext(), absl::get<Exception>(value_).message);
+  }
+}
+
+IdlConvert::Status::Status(StatusValue value) : value_(std::move(value)) {}
+
+// These mostly match the various routines in
+// third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h
+
+// static
+IdlConvert::Status IdlConvert::Convert(
+    v8::Isolate* isolate,
+    std::string_view error_prefix,
+    std::initializer_list<std::string_view> error_subject,
+    v8::Local<v8::Value> value,
+    UnrestrictedDouble& out) {
+  v8::TryCatch try_catch(isolate);
+  v8::Local<v8::Number> number_value;
+  if (value->IsNumber()) {
+    number_value = value.As<v8::Number>();
+  } else if (!value->ToNumber(isolate->GetCurrentContext())
+                  .ToLocal(&number_value)) {
+    // Converting a non-Number to a Number failed somehow.
+    return MakeConversionFailure(try_catch, error_prefix, error_subject,
+                                 "Number");
+  }
+
+  out.number = number_value->Value();
+  return Status::MakeSuccess();
+}
+
+// static
+IdlConvert::Status IdlConvert::Convert(
+    v8::Isolate* isolate,
+    std::string_view error_prefix,
+    std::initializer_list<std::string_view> error_subject,
+    v8::Local<v8::Value> value,
+    double& out) {
+  UnrestrictedDouble unrestricted_out;
+  IdlConvert::Status unrestricted_double_result =
+      Convert(isolate, error_prefix, error_subject, value, unrestricted_out);
+  if (unrestricted_double_result.type() != Status::Type::kSuccess) {
+    return unrestricted_double_result;
+  }
+
+  if (!std::isfinite(unrestricted_out.number)) {
+    return Status::MakeErrorMessage(
+        base::StrCat({error_prefix, "Converting ", base::StrCat(error_subject),
+                      " to a Number did not produce a finite double."}));
+  }
+  out = unrestricted_out.number;
+  return Status::MakeSuccess();
+}
+
+// static
+IdlConvert::Status IdlConvert::Convert(
+    v8::Isolate* isolate,
+    std::string_view error_prefix,
+    std::initializer_list<std::string_view> error_subject,
+    v8::Local<v8::Value> value,
+    bool& out) {
+  if (value->IsBoolean()) {
+    out = value.As<v8::Boolean>()->Value();
+  } else {
+    out = value->BooleanValue(isolate);
+  }
+  return Status::MakeSuccess();
+}
+
+// static
+IdlConvert::Status IdlConvert::Convert(
+    v8::Isolate* isolate,
+    std::string_view error_prefix,
+    std::initializer_list<std::string_view> error_subject,
+    v8::Local<v8::Value> value,
+    std::string& out) {
+  v8::TryCatch try_catch(isolate);
+  v8::Local<v8::String> v8_string;
+  if (value->IsString()) {
+    v8_string = value.As<v8::String>();
+  } else if (!value->ToString(isolate->GetCurrentContext())
+                  .ToLocal(&v8_string)) {
+    return MakeConversionFailure(try_catch, error_prefix, error_subject,
+                                 "String");
+  }
+
+  if (!gin::Converter<std::string>::FromV8(isolate, v8_string, &out)) {
+    return Status::MakeErrorMessage(
+        base::StrCat({error_prefix, "Converting ", base::StrCat(error_subject),
+                      " to a String did not produce a useful result."}));
+  }
+  return Status::MakeSuccess();
+}
+
+// static
+IdlConvert::Status IdlConvert::Convert(
+    v8::Isolate* isolate,
+    std::string_view error_prefix,
+    std::initializer_list<std::string_view> error_subject,
+    v8::Local<v8::Value> value,
+    v8::Local<v8::Value>& out) {
+  out = value;
+  return Status::MakeSuccess();
+}
+
+// static
+IdlConvert::Status IdlConvert::MakeConversionFailure(
+    const v8::TryCatch& catcher,
+    std::string_view error_prefix,
+    std::initializer_list<std::string_view> error_subject,
+    std::string_view type_name) {
+  if (catcher.HasTerminated()) {
+    return Status::MakeTimeout(
+        base::StrCat({error_prefix, "Converting ", base::StrCat(error_subject),
+                      " to ", type_name, " timed out."}));
+  } else if (catcher.HasCaught()) {
+    return Status::MakeException(catcher.Exception(), catcher.Message());
+  } else {
+    std::string fail_message =
+        base::StrCat({error_prefix, "Trouble converting ",
+                      base::StrCat(error_subject), " to a ", type_name, "."});
+    return Status::MakeErrorMessage(std::move(fail_message));
+  }
+}
+
 const size_t DictConverter::kSequenceLengthLimit;
 
 DictConverter::DictConverter(AuctionV8Helper* v8_helper,
@@ -34,16 +176,18 @@ DictConverter::DictConverter(AuctionV8Helper* v8_helper,
   }
 }
 
+DictConverter::~DictConverter() = default;
+
 bool DictConverter::GetOptionalSequence(
-    base::StringPiece field,
+    std::string_view field,
     base::OnceClosure exists_callback,
     base::RepeatingCallback<bool(v8::Local<v8::Value>)> item_callback) {
-  if (failed_) {
+  if (is_failed()) {
     return false;
   }
 
   v8::Local<v8::Value> val = GetMember(field);
-  if (failed_) {
+  if (is_failed()) {
     return false;
   }
 
@@ -56,16 +200,31 @@ bool DictConverter::GetOptionalSequence(
   return ConvertSequence(field, val, std::move(item_callback));
 }
 
-void DictConverter::PropagateErrorsFrom(DictConverter& other_converter) {
-  DCHECK(!failed_);
-  DCHECK(other_converter.failed_);
-  failed_ = true;
-  failure_exception_ = other_converter.failure_exception_;
-  failure_message_ = std::move(other_converter.failure_message_);
-  failed_with_timeout_ = other_converter.failed_with_timeout_;
+std::string DictConverter::ErrorMessage() const {
+  return status_.is_success()
+             ? std::string()
+             : status_.ConvertToErrorString(v8_helper_->isolate());
 }
 
-v8::Local<v8::Value> DictConverter::GetMember(base::StringPiece field) {
+v8::MaybeLocal<v8::Value> DictConverter::FailureException() const {
+  if (status_.type() == IdlConvert::Status::Type::kException) {
+    return status_.GetException().exception;
+  } else {
+    return v8::MaybeLocal<v8::Value>();
+  }
+}
+
+bool DictConverter::FailureIsTimeout() const {
+  return status_.type() == IdlConvert::Status::Type::kTimeout;
+}
+
+void DictConverter::PropagateErrorsFrom(DictConverter& other_converter) {
+  DCHECK(!is_failed());
+  DCHECK(other_converter.is_failed());
+  status_ = std::move(other_converter.status_);
+}
+
+v8::Local<v8::Value> DictConverter::GetMember(std::string_view field) {
   v8::Isolate* isolate = v8_helper_->isolate();
   // WebIDL treats undefined or null as a dict with all fields undefined.
   if (object_.IsEmpty()) {
@@ -85,100 +244,16 @@ v8::Local<v8::Value> DictConverter::GetMember(base::StringPiece field) {
     } else if (try_catch.HasCaught()) {
       MarkFailedWithException(try_catch);
     }
-    // Failing to get otherwise isn't a problem unless this is a required field,
-    // which will get checked in `GetRequired()`.
+    // Failing to get otherwise isn't a problem unless this is a required
+    // field, which will get checked in `GetRequired()`.
     return v8::Undefined(isolate);
   }
 
   return val;
 }
 
-// These mostly match the various routines in
-// third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h
-bool DictConverter::Convert(base::StringPiece field,
-                            v8::Local<v8::Value> value,
-                            UnrestrictedDouble& out) {
-  v8::Isolate* isolate = v8_helper_->isolate();
-  v8::TryCatch try_catch(isolate);
-  v8::Local<v8::Number> number_value;
-  if (value->IsNumber()) {
-    number_value = value.As<v8::Number>();
-  } else if (!value->ToNumber(isolate->GetCurrentContext())
-                  .ToLocal(&number_value)) {
-    // Converting a non-Number to a Number failed somehow.
-    if (try_catch.HasTerminated()) {
-      MarkFailedWithTimeout(base::StrCat(
-          {"Converting field '", field, "' to Number timed out."}));
-    } else {
-      MarkFailedWithExceptionOrMessage(
-          try_catch, base::StrCat({"Trouble converting field '", field,
-                                   "' to a Number."}));
-    }
-    return false;
-  }
-
-  out.number = number_value->Value();
-  return true;
-}
-
-bool DictConverter::Convert(base::StringPiece field,
-                            v8::Local<v8::Value> value,
-                            double& out) {
-  UnrestrictedDouble unrestricted_out;
-  if (!Convert(field, value, unrestricted_out)) {
-    return false;
-  }
-
-  if (!std::isfinite(unrestricted_out.number)) {
-    MarkFailed(
-        base::StrCat({"Converting field '", field,
-                      "' to a Number did not produce a finite double."}));
-    return false;
-  }
-  out = unrestricted_out.number;
-  return true;
-}
-
-bool DictConverter::Convert(base::StringPiece field,
-                            v8::Local<v8::Value> value,
-                            bool& out) {
-  if (value->IsBoolean()) {
-    out = value.As<v8::Boolean>()->Value();
-  } else {
-    out = value->BooleanValue(v8_helper_->isolate());
-  }
-  return true;
-}
-
-bool DictConverter::Convert(base::StringPiece field,
-                            v8::Local<v8::Value> value,
-                            std::string& out) {
-  v8::Isolate* isolate = v8_helper_->isolate();
-  v8::TryCatch try_catch(isolate);
-  v8::Local<v8::String> v8_string;
-  if (value->IsString()) {
-    v8_string = value.As<v8::String>();
-  } else if (!value->ToString(isolate->GetCurrentContext())
-                  .ToLocal(&v8_string)) {
-    if (try_catch.HasTerminated()) {
-      MarkFailedWithTimeout(base::StrCat(
-          {"Converting field '", field, "' to String timed out."}));
-    } else {
-      MarkFailedWithExceptionOrMessage(
-          try_catch, base::StrCat({"Trouble converting field '", field,
-                                   "' to a String."}));
-    }
-    return false;
-  }
-
-  if (!gin::Converter<std::string>::FromV8(isolate, v8_string, &out)) {
-    return false;
-  }
-  return true;
-}
-
 bool DictConverter::ConvertSequence(
-    base::StringPiece field,
+    std::string_view field,
     v8::Local<v8::Value> value,
     base::RepeatingCallback<bool(v8::Local<v8::Value>)> item_callback) {
   // This is based on https://webidl.spec.whatwg.org/#es-sequence and its
@@ -266,7 +341,7 @@ bool DictConverter::ConvertSequence(
     v8::Local<v8::Value> done_val;
     if (result->Get(current_context, done_name).ToLocal(&done_val)) {
       // Can use our Convert() since it doesn't fail for bools.
-      Convert(field, done_val, done);
+      IdlConvert::Convert(isolate, "", {}, done_val, done);
     } else if (try_catch.HasCaught() || try_catch.HasTerminated()) {
       MarkFailedIter(field, try_catch);
       return false;
@@ -294,7 +369,7 @@ bool DictConverter::ConvertSequence(
     if (!item_callback.Run(next_item)) {
       // It's possible that the callback already propagated an error to us;
       // if not, set one ourselves.
-      if (!failed_) {
+      if (!is_failed()) {
         MarkFailed(base::StrCat({"Conversion for an item for sequence field '",
                                  field, "' failed."}));
       }
@@ -305,43 +380,25 @@ bool DictConverter::ConvertSequence(
   return true;
 }
 
-bool DictConverter::Convert(base::StringPiece field,
-                            v8::Local<v8::Value> value,
-                            v8::Local<v8::Value>& out) {
-  out = value;
-  return true;
+void DictConverter::MarkFailed(std::string_view fail_message) {
+  DCHECK(!is_failed());
+  status_ = IdlConvert::Status::MakeErrorMessage(
+      base::StrCat({error_prefix_, fail_message}));
 }
 
-void DictConverter::MarkFailed(base::StringPiece fail_message) {
-  DCHECK(!failed_);
-  failed_ = true;
-  failure_message_ = base::StrCat({error_prefix_, fail_message});
-}
-
-void DictConverter::MarkFailedWithTimeout(base::StringPiece fail_message) {
-  failed_with_timeout_ = true;
-  MarkFailed(fail_message);
+void DictConverter::MarkFailedWithTimeout(std::string_view fail_message) {
+  DCHECK(!is_failed());
+  status_ = IdlConvert::Status::MakeTimeout(
+      base::StrCat({error_prefix_, fail_message}));
 }
 
 void DictConverter::MarkFailedWithException(const v8::TryCatch& catcher) {
-  DCHECK(!failed_);
-  failed_ = true;
-  failure_message_ = v8_helper_->FormatExceptionMessage(
-      v8_helper_->isolate()->GetCurrentContext(), catcher.Message());
-  failure_exception_ = catcher.Exception();
+  DCHECK(!is_failed());
+  status_ =
+      IdlConvert::Status::MakeException(catcher.Exception(), catcher.Message());
 }
 
-void DictConverter::MarkFailedWithExceptionOrMessage(
-    const v8::TryCatch& catcher,
-    base::StringPiece fail_message) {
-  if (catcher.HasCaught()) {
-    MarkFailedWithException(catcher);
-  } else {
-    MarkFailed(fail_message);
-  }
-}
-
-void DictConverter::MarkFailedIter(base::StringPiece field,
+void DictConverter::MarkFailedIter(std::string_view field,
                                    const v8::TryCatch& catcher) {
   if (catcher.HasTerminated()) {
     MarkFailedWithTimeout(
