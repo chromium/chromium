@@ -390,7 +390,12 @@ bool MediaValues::CalculatePrefersReducedData(LocalFrame* frame) {
 bool MediaValues::CalculatePrefersReducedTransparency(LocalFrame* frame) {
   DCHECK(frame);
   DCHECK(frame->GetSettings());
-  return frame->GetSettings()->GetPrefersReducedTransparency();
+  const MediaFeatureOverrides* overrides =
+      frame->GetPage()->GetMediaFeatureOverrides();
+  absl::optional<bool> override_value =
+      overrides ? overrides->GetPrefersReducedTransparency() : absl::nullopt;
+  return override_value.value_or(
+      frame->GetSettings()->GetPrefersReducedTransparency());
 }
 
 ForcedColors MediaValues::CalculateForcedColors(LocalFrame* frame) {

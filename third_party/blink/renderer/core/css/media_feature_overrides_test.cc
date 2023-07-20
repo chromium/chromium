@@ -15,6 +15,7 @@ TEST(MediaFeatureOverrides, GetOverrideInitial) {
 
   EXPECT_FALSE(overrides.GetColorGamut().has_value());
   EXPECT_FALSE(overrides.GetPreferredColorScheme().has_value());
+  EXPECT_FALSE(overrides.GetPrefersReducedTransparency().has_value());
 }
 
 TEST(MediaFeatureOverrides, SetOverrideInvalid) {
@@ -26,6 +27,10 @@ TEST(MediaFeatureOverrides, SetOverrideInvalid) {
 
   overrides.SetOverride(media_feature_names::kPrefersColorSchemeMediaFeature,
                         "orange");
+  EXPECT_FALSE(overrides.GetPreferredColorScheme().has_value());
+
+  overrides.SetOverride(
+      media_feature_names::kPrefersReducedTransparencyMediaFeature, "orange");
   EXPECT_FALSE(overrides.GetPreferredColorScheme().has_value());
 }
 
@@ -41,6 +46,15 @@ TEST(MediaFeatureOverrides, SetOverrideValid) {
                         "dark");
   EXPECT_EQ(mojom::blink::PreferredColorScheme::kDark,
             overrides.GetPreferredColorScheme());
+
+  overrides.SetOverride(
+      media_feature_names::kPrefersReducedTransparencyMediaFeature, "reduce");
+  EXPECT_TRUE(overrides.GetPrefersReducedTransparency().value());
+
+  overrides.SetOverride(
+      media_feature_names::kPrefersReducedTransparencyMediaFeature,
+      "no-preference");
+  EXPECT_FALSE(overrides.GetPrefersReducedTransparency().value());
 }
 
 TEST(MediaFeatureOverrides, ResetOverride) {
@@ -59,6 +73,20 @@ TEST(MediaFeatureOverrides, ResetOverride) {
   overrides.SetOverride(media_feature_names::kPrefersColorSchemeMediaFeature,
                         "invalid");
   EXPECT_FALSE(overrides.GetPreferredColorScheme().has_value());
+
+  overrides.SetOverride(
+      media_feature_names::kPrefersReducedTransparencyMediaFeature, "reduce");
+  EXPECT_TRUE(overrides.GetPrefersReducedTransparency().has_value());
+  overrides.SetOverride(
+      media_feature_names::kPrefersReducedTransparencyMediaFeature, "");
+  EXPECT_FALSE(overrides.GetPrefersReducedTransparency().has_value());
+
+  overrides.SetOverride(
+      media_feature_names::kPrefersReducedTransparencyMediaFeature, "reduce");
+  EXPECT_TRUE(overrides.GetPrefersReducedTransparency().has_value());
+  overrides.SetOverride(
+      media_feature_names::kPrefersReducedTransparencyMediaFeature, "invalid");
+  EXPECT_FALSE(overrides.GetPrefersReducedTransparency().has_value());
 }
 
 }  // namespace blink

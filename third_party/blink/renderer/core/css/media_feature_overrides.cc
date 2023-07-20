@@ -67,6 +67,14 @@ absl::optional<bool> ConvertPrefersReducedData(
   return value.Id() == CSSValueID::kReduce;
 }
 
+absl::optional<bool> ConvertPrefersReducedTransparency(
+    const MediaQueryExpValue& value) {
+  if (!value.IsValid()) {
+    return absl::nullopt;
+  }
+  return value.Id() == CSSValueID::kReduce;
+}
+
 absl::optional<ForcedColors> ConvertForcedColors(
     const MediaQueryExpValue& value) {
   if (!value.IsValid()) {
@@ -114,6 +122,9 @@ void MediaFeatureOverrides::SetOverride(const AtomicString& feature,
     prefers_reduced_motion_ = ConvertPrefersReducedMotion(value);
   } else if (feature == media_feature_names::kPrefersReducedDataMediaFeature) {
     prefers_reduced_data_ = ConvertPrefersReducedData(value);
+  } else if (feature ==
+             media_feature_names::kPrefersReducedTransparencyMediaFeature) {
+    prefers_reduced_transparency_ = ConvertPrefersReducedTransparency(value);
   } else if (feature == media_feature_names::kForcedColorsMediaFeature) {
     forced_colors_ = ConvertForcedColors(value);
   }
