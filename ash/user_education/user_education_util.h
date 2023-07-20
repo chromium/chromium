@@ -6,8 +6,10 @@
 #define ASH_USER_EDUCATION_USER_EDUCATION_UTIL_H_
 
 #include <string>
+#include <utility>
 
 #include "ash/ash_export.h"
+#include "base/values.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -38,6 +40,24 @@ CreateExtendedProperties(HelpBubbleId help_bubble_id);
 // Returns extended properties for a help bubble having set `help_bubble_style`.
 ASH_EXPORT user_education::HelpBubbleParams::ExtendedProperties
 CreateExtendedProperties(HelpBubbleStyle help_bubble_style);
+
+/*
+Creates an extended properties instance by merging `properties`.
+
+Example usage:
+const user_education::HelpBubbleParams::ExtendedProperties
+      extended_properties = CreateExtendedProperties(
+          CreateExtendedProperties(HelpBubbleId::kTest),
+          CreateExtendedProperties(HelpBubbleStyle::kNudge));
+*/
+template <typename... Properties>
+ASH_EXPORT user_education::HelpBubbleParams::ExtendedProperties
+CreateExtendedProperties(Properties&&... properties) {
+  user_education::HelpBubbleParams::ExtendedProperties extended_properties;
+  base::Value::Dict& values = extended_properties.values();
+  ([&] { values.Merge(std::move(properties.values())); }(), ...);
+  return extended_properties;
+}
 
 // Returns the `AccountId` for the specified `user_session`. If the specified
 // `user_session` is `nullptr`, `EmptyAccountId()` is returned.

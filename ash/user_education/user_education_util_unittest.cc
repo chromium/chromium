@@ -61,6 +61,16 @@ using UserEducationUtilTest = ::testing::Test;
 
 // Tests -----------------------------------------------------------------------
 
+TEST_F(UserEducationUtilTest, CreateExtendedProperties) {
+  const user_education::HelpBubbleParams::ExtendedProperties
+      extended_properties = CreateExtendedProperties(
+          CreateExtendedProperties(HelpBubbleId::kTest),
+          CreateExtendedProperties(HelpBubbleStyle::kNudge));
+
+  EXPECT_EQ(GetHelpBubbleId(extended_properties), HelpBubbleId::kTest);
+  EXPECT_EQ(GetHelpBubbleStyle(extended_properties), HelpBubbleStyle::kNudge);
+}
+
 // Verifies that `CreateExtendedProperties()` can be used to create extended
 // properties for a help bubble having set ID, and that `GetHelpBubbleId()` can
 // be used to retrieve help bubble ID from extended properties.
