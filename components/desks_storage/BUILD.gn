@@ -75,6 +75,7 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "core/admin_template_service_unittests.cc",
     "core/desk_model_wrapper_unittests.cc",
     "core/desk_sync_bridge_unittest.cc",
     "core/desk_template_conversion_unittests.cc",
@@ -94,6 +95,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/app_constants",
+    "//components/prefs:test_support",
     "//components/sync:test_support",
     "//testing/gtest",
     "//ui/gfx/geometry",
