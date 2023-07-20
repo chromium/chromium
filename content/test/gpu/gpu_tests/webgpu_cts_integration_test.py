@@ -253,6 +253,10 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     browser_args.extend([
         '--enable-dawn-features=allow_unsafe_apis',
     ])
+    if sys.platform == 'win32':
+      browser_args.extend([
+          '--disable-dawn-features=use_dxc',
+      ])
     browser_args.extend(cba.ENABLE_WEBGPU_FOR_TESTING)
     if cls._use_webgpu_adapter:
       browser_args.append('--use-webgpu-adapter=%s' % cls._use_webgpu_adapter)

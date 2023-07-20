@@ -273,11 +273,11 @@
       'Dawn Mac x64 Builder': 'dawn_tests_release_bot_reclient',
       'Dawn Mac x64 DEPS Builder': 'dawn_tests_release_bot_reclient',
 
-      'Dawn Win10 x64 ASAN Release': 'dawn_tests_asan_release_bot_reclient',
-      'Dawn Win10 x64 Builder': 'dawn_tests_release_bot_reclient',
-      'Dawn Win10 x64 DEPS Builder': 'dawn_tests_release_bot_reclient',
-      'Dawn Win10 x86 Builder': 'dawn_tests_x86_release_bot_reclient',
-      'Dawn Win10 x86 DEPS Builder': 'dawn_tests_x86_release_bot_reclient',
+      'Dawn Win10 x64 ASAN Release': 'dawn_tests_win_asan_release_bot_reclient',
+      'Dawn Win10 x64 Builder': 'dawn_tests_win_release_bot_reclient',
+      'Dawn Win10 x64 DEPS Builder': 'dawn_tests_win_release_bot_reclient',
+      'Dawn Win10 x86 Builder': 'dawn_tests_win_x86_release_bot_reclient',
+      'Dawn Win10 x86 DEPS Builder': 'dawn_tests_win_x86_release_bot_reclient',
     },
 
     'chromium.dev': {
@@ -1145,15 +1145,15 @@
       'dawn-try-mac-amd-exp': 'dawn_tests_release_bot_reclient',
       'dawn-try-mac-arm64-rel': 'dawn_tests_arm64_release_bot_reclient',
       'dawn-try-mac-intel-exp': 'dawn_tests_release_bot_reclient',
-      'dawn-try-win-x64-intel-exp': 'dawn_tests_release_bot_reclient',
-      'dawn-try-win-x86-intel-exp': 'dawn_tests_x86_release_bot_reclient',
-      'dawn-try-win10-x64-asan-rel': 'dawn_tests_asan_release_bot_reclient',
-      'dawn-try-win10-x86-rel': 'dawn_tests_x86_release_bot_reclient',
-      'dawn-win10-x64-deps-rel': 'dawn_tests_release_bot_reclient',
-      'dawn-win10-x86-deps-rel': 'dawn_tests_x86_release_bot_reclient',
+      'dawn-try-win-x64-intel-exp': 'dawn_tests_win_release_bot_reclient',
+      'dawn-try-win-x86-intel-exp': 'dawn_tests_win_x86_release_bot_reclient',
+      'dawn-try-win10-x64-asan-rel': 'dawn_tests_win_asan_release_bot_reclient',
+      'dawn-try-win10-x86-rel': 'dawn_tests_win_x86_release_bot_reclient',
+      'dawn-win10-x64-deps-rel': 'dawn_tests_win_release_bot_reclient',
+      'dawn-win10-x86-deps-rel': 'dawn_tests_win_x86_release_bot_reclient',
       'linux-dawn-rel': 'dawn_tests_release_bot_reclient',
       'mac-dawn-rel': 'dawn_tests_release_bot_reclient',
-      'win-dawn-rel': 'dawn_tests_release_bot_reclient',
+      'win-dawn-rel': 'dawn_tests_win_release_bot_reclient',
     },
 
     'tryserver.chromium.fuchsia': {
@@ -2495,10 +2495,6 @@
       'dawn_enable_opengles', 'release_trybot_minimal_symbols_reclient', 'arm64',
     ],
 
-    'dawn_tests_asan_release_bot_reclient': [
-      'dawn_enable_opengles', 'asan', 'release_trybot_minimal_symbols_reclient',
-    ],
-
     'dawn_tests_release_bot_reclient': [
       'dawn_enable_opengles', 'release_trybot_minimal_symbols_reclient',
     ],
@@ -2507,8 +2503,16 @@
       'dawn_enable_opengles', 'tsan', 'release_trybot_minimal_symbols_reclient',
     ],
 
-    'dawn_tests_x86_release_bot_reclient': [
-      'dawn_enable_opengles', 'release_trybot_minimal_symbols_reclient', 'x86',
+    'dawn_tests_win_asan_release_bot_reclient': [
+      'dawn_use_built_dxc', 'dawn_enable_opengles', 'asan', 'release_trybot_minimal_symbols_reclient',
+    ],
+
+    'dawn_tests_win_release_bot_reclient': [
+      'dawn_use_built_dxc', 'dawn_enable_opengles', 'release_trybot_minimal_symbols_reclient',
+    ],
+
+    'dawn_tests_win_x86_release_bot_reclient': [
+      'dawn_enable_opengles', 'release_trybot_minimal_symbols_reclient', 'x86'
     ],
 
     'debug_bot': [
@@ -4020,6 +4024,10 @@
 
     'dawn_enable_opengles': {
       'gn_args': 'dawn_enable_opengles=true',
+    },
+
+    'dawn_use_built_dxc': {
+      'gn_args': 'dawn_use_built_dxc=true',
     },
 
     'dcheck_always_on': {

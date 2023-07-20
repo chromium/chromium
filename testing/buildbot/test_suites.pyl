@@ -2855,6 +2855,27 @@
       },
     },
 
+    'gpu_dawn_gtests_no_dxc': {
+      'dawn_end2end_no_dxc_tests': {
+        'mixins': ['dawn_end2end_gpu_test'],
+        'args': [
+          '--disable-toggles=use_dxc',
+        ],
+        'test': 'dawn_end2end_tests',
+      },
+    },
+
+    'gpu_dawn_gtests_no_dxc_with_validation': {
+      'dawn_end2end_no_dxc_validation_layers_tests': {
+        'mixins': ['dawn_end2end_gpu_test'],
+        'args': [
+          '--disable-toggles=use_dxc',
+          '--enable-backend-validation',
+        ],
+        'test': 'dawn_end2end_tests',
+      },
+    },
+
     # GPU gtests that test only Dawn with backend validation layers
     'gpu_dawn_gtests_with_validation': {
       'dawn_end2end_validation_layers_tests': {
@@ -6462,6 +6483,7 @@
 
     'gpu_dawn_integration_asan_gtests_passthrough': [
       'gpu_dawn_gtests',
+      'gpu_dawn_gtests_no_dxc',
       'gpu_common_gtests_passthrough',
     ],
 
@@ -6470,6 +6492,14 @@
     'gpu_dawn_integration_gtests_passthrough': [
       'gpu_dawn_gtests',
       'gpu_dawn_gtests_with_validation',
+      'gpu_common_gtests_passthrough',
+    ],
+
+    'gpu_dawn_integration_gtests_passthrough_win_x64': [
+      'gpu_dawn_gtests',
+      'gpu_dawn_gtests_with_validation',
+      'gpu_dawn_gtests_no_dxc',
+      'gpu_dawn_gtests_no_dxc_with_validation',
       'gpu_common_gtests_passthrough',
     ],
 
