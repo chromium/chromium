@@ -35,7 +35,6 @@
 @property(nonatomic, strong) ScreenProvider* screenProvider;
 @property(nonatomic, strong) ChromeCoordinator* childCoordinator;
 @property(nonatomic, strong) UINavigationController* navigationController;
-@property(nonatomic, strong) NSDate* firstScreenStartTime;
 
 // YES if First Run was completed.
 @property(nonatomic, assign) BOOL completed;
@@ -65,10 +64,8 @@
   // is finished.
   base::UmaHistogramBoolean("FirstRun.iOSFreFinchEnabled", isFinchFreEnabled);
   [self presentScreen:[self.screenProvider nextScreenType]];
-  __weak FirstRunCoordinator* weakSelf = self;
   void (^completion)(void) = ^{
     base::UmaHistogramEnumeration("FirstRun.Stage", first_run::kStart);
-    weakSelf.firstScreenStartTime = [NSDate now];
   };
   [self.navigationController setNavigationBarHidden:YES animated:NO];
   [self.baseViewController presentViewController:self.navigationController
@@ -107,16 +104,6 @@
 - (void)screenWillFinishPresenting {
   [self.childCoordinator stop];
   self.childCoordinator = nil;
-  // Usually, finishing presenting the first FRE screen signifies that the user
-  // has accepted Terms of Services. Therefore, we can use the time it takes the
-  // first screen to be visible as the time it takes a user to accept Terms of
-  // Services.
-  if (self.firstScreenStartTime) {
-    base::TimeDelta delta =
-        base::Time::Now() - base::Time::FromNSDate(self.firstScreenStartTime);
-    base::UmaHistogramTimes("FirstRun.TermsOfServicesPromoDisplayTime", delta);
-    self.firstScreenStartTime = nil;
-  }
   [self presentScreen:[self.screenProvider nextScreenType]];
 }
 

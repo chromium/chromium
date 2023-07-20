@@ -6354,17 +6354,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="FirstRun.TermsOfServicesPromoDisplayTime" units="ms"
-    expires_after="2023-08-08">
-  <owner>ginnyhuang@chromium.org</owner>
-  <owner>bling-get-set-up@google.com</owner>
-  <summary>
-    Records the time it takes for the user to accept Terms of Services after
-    it's shown in the first Promo screen on First Run. Note: This is not
-    available for the legacy FRE.
-  </summary>
-</histogram>
-
 <histogram name="FirstUserAction.BackgroundTime" units="minutes"
     expires_after="2023-09-12">
 <!-- Name completed by histogram_suffixes name="FirstUserActionType" and name="FirstUserActionTypeDevice" -->
