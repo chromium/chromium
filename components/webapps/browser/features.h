@@ -16,7 +16,7 @@ namespace features {
 // Default number of days that dismissing or ignoring the banner will prevent it
 // being seen again for.
 constexpr unsigned int kMinimumBannerBlockedToBannerShown = 90;
-constexpr unsigned int kMinimumDaysBetweenBannerShows = 14;
+constexpr unsigned int kMinimumDaysBetweenBannerShows = 7;
 
 // Default site engagement required to trigger the banner.
 constexpr unsigned int kDefaultTotalEngagementToTrigger = 2;
@@ -40,6 +40,7 @@ extern const base::FeatureParam<base::TimeDelta>
     kInstallPromptGlobalGuardrails_IgnorePeriod;
 BASE_DECLARE_FEATURE(kWebApkInstallFailureNotification);
 BASE_DECLARE_FEATURE(kWebApkInstallFailureRetry);
+BASE_DECLARE_FEATURE(kBlockInstallPromptIfIgnoreRecently);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_DECLARE_FEATURE(kCreateShortcutIgnoresManifest);

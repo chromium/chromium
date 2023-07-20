@@ -150,6 +150,16 @@ void AmbientBadgeManager::MaybeShowAmbientBadgeLegacy() {
     return;
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kBlockInstallPromptIfIgnoreRecently) &&
+      AppBannerSettingsHelper::WasBannerRecentlyIgnored(
+          web_contents_.get(), validated_url_, app_identifier_,
+          AppBannerManager::GetCurrentTime())) {
+    LOG(ERROR) << "block";
+    UpdateState(State::kBlocked);
+    return;
+  }
+
   if (ShouldSuppressAmbientBadgeOnFirstVisit()) {
     UpdateState(State::kPendingEngagement);
     return;
