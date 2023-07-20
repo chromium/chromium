@@ -4,14 +4,21 @@
 
 #include "base/run_loop.h"
 #include "base/test/test_switches.h"
-#include "chrome/browser/ui/browser.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
+#endif
+
 // This is a demo to run a browser test on a ChromeOS device or VM.
-// Following the following to run the test:
+//
+// To run the test for lacros:
+//
 // Environment and device setup:
 //   Follow //docs/lacros/build_dut_lacros.md so you can build Lacros
 //   and deploy on a VM or ChromeOS device under test(DUT).
@@ -48,8 +55,22 @@
 //   You should see a browser open with tab direct to chrome://version.
 //   You can now interact with the browser freely. There might be some
 //   limitations, like the browser is only allowed to access certain websites.
+//
+// To run the test for ash:
+//
+// 1. See http://go/crosint-run for instructions.
+// 2. You can optionally add --test-launcher-interactive to play with the
+//    browser after the test finishes.
 class DemoIntegrationTest : public InProcessBrowserTest {
-  void SetUpInProcessBrowserTestFixture() {
+ public:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetUpCommandLine(base::CommandLine* cmd_line) override {
+    // On ash this test exercises the built-in browser, not lacros.
+    cmd_line->AppendSwitch(ash::switches::kDisallowLacros);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  void SetUpInProcessBrowserTestFixture() override {
     // You don't need this in your test.
     // By default, we don't allow any network access in tests to
     // avoid flakiness. This is just a showcase so people can
@@ -63,6 +84,21 @@ class DemoIntegrationTest : public InProcessBrowserTest {
 
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void TearDownOnMainThread() override {
+    // Close any browsers we opened otherwise the test may hang on shutdown.
+    // This happens because chromeos_integration_tests is not started by session
+    // manager, but AttemptUserExit() uses session manager to kill the chrome
+    // binary.
+    // TODO(b/292067979): Find a better way to work around this issue.
+    for (Browser* browser : *BrowserList::GetInstance()) {
+      CloseBrowserSynchronously(browser);
+    }
+
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 IN_PROC_BROWSER_TEST_F(DemoIntegrationTest, NewTab) {

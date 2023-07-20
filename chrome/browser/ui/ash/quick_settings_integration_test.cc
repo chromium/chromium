@@ -53,6 +53,7 @@ class QuickSettingsIntegrationTest : public InteractiveBrowserTest {
   void TearDownOnMainThread() override {
     // Clean up any browsers we opened (including the SWA browser) otherwise
     // the test may hang on shutdown.
+    // TODO(b/292067979): Find a better way to work around this issue.
     for (Browser* browser : *BrowserList::GetInstance()) {
       CloseBrowserSynchronously(browser);
     }
