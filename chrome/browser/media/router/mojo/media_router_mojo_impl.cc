@@ -120,7 +120,7 @@ MediaRouterMojoImpl::InternalMediaRoutesObserver::current_routes() const {
 }
 
 MediaRouterMojoImpl::MediaRouterMojoImpl(content::BrowserContext* context)
-    : context_(context) {
+    : context_(context), media_router_debugger_(context) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 

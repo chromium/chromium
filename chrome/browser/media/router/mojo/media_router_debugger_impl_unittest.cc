@@ -5,6 +5,10 @@
 #include "chrome/browser/media/router/mojo/media_router_debugger_impl.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/test/browser_task_environment.h"
 #include "media/base/media_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,19 +28,23 @@ class MockMirroringStatsObserver
 
 class MediaRouterDebuggerImplTest : public ::testing::Test {
  public:
-  MediaRouterDebuggerImplTest()
-      : debugger_(std::make_unique<MediaRouterDebuggerImpl>()) {}
+  MediaRouterDebuggerImplTest() = default;
   MediaRouterDebuggerImplTest(const MediaRouterDebuggerImplTest&) = delete;
   ~MediaRouterDebuggerImplTest() override = default;
   MediaRouterDebuggerImplTest& operator=(const MediaRouterDebuggerImplTest&) =
       delete;
 
  protected:
-  void SetUp() override { debugger_->AddObserver(observer_); }
+  void SetUp() override {
+    debugger_ = std::make_unique<MediaRouterDebuggerImpl>(&profile_);
+    debugger_->AddObserver(observer_);
+  }
   void TearDown() override { debugger_->RemoveObserver(observer_); }
 
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<MediaRouterDebuggerImpl> debugger_;
   testing::NiceMock<MockMirroringStatsObserver> observer_;
+  TestingProfile profile_;
 };
 
 TEST_F(MediaRouterDebuggerImplTest, ShouldFetchMirroringStats) {
@@ -58,6 +66,21 @@ TEST_F(MediaRouterDebuggerImplTest, ShouldFetchMirroringStatsFeatureEnabled) {
   feature_list.InitWithFeatures({media::kEnableRtcpReporting}, {});
   debugger_->ShouldFetchMirroringStats(
       base::BindOnce([](bool enabled) { EXPECT_TRUE(enabled); }));
+}
+
+TEST_F(MediaRouterDebuggerImplTest,
+       ShouldFetchMirroringStatsAccessCodeCastFeature) {
+  profile_.GetTestingPrefService()->SetManagedPref(
+      prefs::kAccessCodeCastEnabled, std::make_unique<base::Value>(true));
+  auto debugger_with_feature =
+      std::make_unique<MediaRouterDebuggerImpl>(&profile_);
+  debugger_with_feature->ShouldFetchMirroringStats(
+      base::BindOnce([](bool enabled) { EXPECT_TRUE(enabled); }));
+
+  // User settings should override policy pref.
+  debugger_with_feature->DisableRtcpReports();
+  debugger_with_feature->ShouldFetchMirroringStats(
+      base::BindOnce([](bool enabled) { EXPECT_FALSE(enabled); }));
 }
 
 TEST_F(MediaRouterDebuggerImplTest, OnMirroringStatsRtcpReportsDisabled) {
@@ -99,6 +122,22 @@ TEST_F(MediaRouterDebuggerImplTest, TestShouldFetchMirroringStats) {
   debugger_->EnableRtcpReports();
 
   EXPECT_TRUE(debugger_->ShouldFetchMirroringStats());
+}
+
+TEST_F(MediaRouterDebuggerImplTest, GetMirroringStats) {
+  EXPECT_TRUE(debugger_->GetMirroringStats().empty());
+
+  base::Value::Dict dict = base::Value::Dict();
+  dict.Set("foo_key", "foo_value");
+  debugger_->OnMirroringStats(base::Value(dict.Clone()));
+
+  // GetLogs should only work if logs have been enabled.
+  EXPECT_TRUE(debugger_->GetMirroringStats().empty());
+
+  debugger_->EnableRtcpReports();
+  debugger_->OnMirroringStats(base::Value(dict.Clone()));
+
+  EXPECT_EQ(dict, debugger_->GetMirroringStats());
 }
 
 }  // namespace media_router
