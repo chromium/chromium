@@ -896,8 +896,9 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest, SingleFileOkProceeds_Warning) {
   EXPECT_EQ(notification->title(), title);
   bridge_->Click(kNotificationId1, NotificationButton::OK);
 
-  // The notification should be closed.
-  EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId1).has_value());
+  // The warning notification should be closed or replaced by in progress one.
+  notification = bridge_->GetDisplayedNotification(kNotificationId1);
+  EXPECT_TRUE(!notification.has_value() || notification->title() != title);
 
   // Wait till IO task is complete.
   base::RunLoop().RunUntilIdle();
@@ -978,9 +979,7 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
   EXPECT_FALSE(fpnm_->HasIOTask(kTaskId1));
 
   // The notification should be closed.
-  // TODO(b/289903108): Uncomment when notifications are deduped.
-  //     EXPECT_FALSE(
-  //         bridge_->GetDisplayedNotification(kNotificationId1).has_value());
+  EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId1).has_value());
 
   // Show the second dialog. No new app should be opened.
   bridge_->Click(kNotificationId2, NotificationButton::OK);
@@ -1102,19 +1101,20 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest, SingleFileOkProceeds_Mix) {
   }
   ASSERT_TRUE(fpnm_->HasIOTask(kTaskId1));
 
-  auto notification1 = bridge_->GetDisplayedNotification(kNotificationId1);
-  ASSERT_TRUE(notification1.has_value());
+  auto notification = bridge_->GetDisplayedNotification(kNotificationId1);
+  ASSERT_TRUE(notification.has_value());
   const std::u16string title1 =
       action == dlp::FileAction::kCopy
           ? l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_COPY_REVIEW_TITLE)
           : l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_MOVE_REVIEW_TITLE);
-  EXPECT_EQ(notification1->title(), title1);
+  EXPECT_EQ(notification->title(), title1);
 
   // Proceed the warning.
   bridge_->Click(kNotificationId1, NotificationButton::OK);
 
-  // The notification should be closed.
-  EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId1).has_value());
+  // The warning notification should be closed or replaced by in progress one.
+  notification = bridge_->GetDisplayedNotification(kNotificationId1);
+  EXPECT_TRUE(!notification.has_value() || notification->title() != title1);
 
   // Wait till IO task is complete.
   base::RunLoop().RunUntilIdle();
@@ -1125,9 +1125,9 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest, SingleFileOkProceeds_Mix) {
   // Error notification.
   const std::u16string title2 =
       action == dlp::FileAction::kCopy ? u"Blocked copy" : u"Blocked move";
-  auto notification2 = bridge_->GetDisplayedNotification(kNotificationId1);
-  ASSERT_TRUE(notification2.has_value());
-  EXPECT_EQ(notification2->title(), title2);
+  notification = bridge_->GetDisplayedNotification(kNotificationId1);
+  ASSERT_TRUE(notification.has_value());
+  EXPECT_EQ(notification->title(), title2);
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -418,7 +418,7 @@ void FilesPolicyNotificationManager::ShowDialog(
     return;
   }
 
-  // No window found, so open a new one. This should notify us by through
+  // No window found, so open a new one. This should notify us through
   // OnBrowserSetLastActive() to show the dialog.
   LaunchFilesApp(std::make_unique<DialogInfo>(
       base::BindOnce(&FilesPolicyNotificationManager::ShowDialogForIOTask,
@@ -494,40 +494,44 @@ void FilesPolicyNotificationManager::HandleDlpWarningNotificationClick(
     return;
   }
 
-  if (button_index == NotificationButton::CANCEL) {
-    std::move(callback).Run(/*should_proceed=*/false);
-  }
-
-  if (button_index == NotificationButton::OK) {
-    DCHECK(files.size() >= 1);
-
-    if (files.size() == 1) {
-      // Action anyway.
-      std::move(callback).Run(/*should_proceed=*/true);
-    } else {
-      // Review.
-      FileTaskInfo info(action);
-      info.destination = destination;
-      info.warning_info.emplace(
-          std::move(files), Policy::kDlp, std::move(callback),
-          base::BindOnce(
-              &FilesPolicyNotificationManager::OnNonIOTaskWarningDialogClicked,
-              weak_factory_.GetWeakPtr(), notification_id, Policy::kDlp));
-      non_io_tasks_.emplace(notification_id, std::move(info));
-      // Always open the Files app. This should notify us by through
-      // OnBrowserSetLastActive() to show the dialog.
-      LaunchFilesApp(std::make_unique<DialogInfo>(
-          base::BindOnce(
-              &FilesPolicyNotificationManager::ShowDialogForNonIOTask,
-              weak_factory_.GetWeakPtr(), notification_id,
-              FilesDialogType::kWarning),
-          notification_id,
-          base::BindOnce(&FilesPolicyNotificationManager::OnNonIOTaskTimedOut,
-                         weak_factory_.GetWeakPtr(), notification_id)));
-    }
-  }
-
   Dismiss(context_, notification_id);
+
+  switch (button_index.value()) {
+    case NotificationButton::CANCEL:
+      std::move(callback).Run(/*should_proceed=*/false);
+      break;
+    case NotificationButton::OK:
+      DCHECK(files.size() >= 1);
+
+      if (files.size() == 1) {
+        // Action anyway.
+        std::move(callback).Run(/*should_proceed=*/true);
+      } else {
+        // Review.
+        FileTaskInfo info(action);
+        info.destination = destination;
+        info.warning_info.emplace(
+            std::move(files), Policy::kDlp, std::move(callback),
+            base::BindOnce(&FilesPolicyNotificationManager::
+                               OnNonIOTaskWarningDialogClicked,
+                           weak_factory_.GetWeakPtr(), notification_id,
+                           Policy::kDlp));
+        non_io_tasks_.emplace(notification_id, std::move(info));
+        // Always open the Files app. This should notify us through
+        // OnBrowserSetLastActive() to show the dialog.
+        LaunchFilesApp(std::make_unique<DialogInfo>(
+            base::BindOnce(
+                &FilesPolicyNotificationManager::ShowDialogForNonIOTask,
+                weak_factory_.GetWeakPtr(), notification_id,
+                FilesDialogType::kWarning),
+            notification_id,
+            base::BindOnce(&FilesPolicyNotificationManager::OnNonIOTaskTimedOut,
+                           weak_factory_.GetWeakPtr(), notification_id)));
+      }
+      break;
+    default:
+      NOTREACHED();
+  }
 }
 
 void FilesPolicyNotificationManager::HandleDlpErrorNotificationClick(
@@ -539,40 +543,43 @@ void FilesPolicyNotificationManager::HandleDlpErrorNotificationClick(
     return;
   }
 
-  if (button_index == NotificationButton::CANCEL) {
-    Dismiss(context_, notification_id);
-  }
+  Dismiss(context_, notification_id);
 
-  if (button_index == NotificationButton::OK) {
-    DCHECK(files.size() >= 1);
+  switch (button_index.value()) {
+    case NotificationButton::CANCEL:
+      // Nothing more to do.
+      break;
+    case NotificationButton::OK:
+      DCHECK(files.size() >= 1);
 
-    if (files.size() == 1) {
-      // Learn more.
-      ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-          GURL(dlp::kDlpLearnMoreUrl),
-          ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-          ash::NewWindowDelegate::Disposition::kNewForegroundTab);
-    } else {
-      // Review.
-      FileTaskInfo info(action);
-      for (const auto& file : files) {
-        info.blocked_files.emplace(DlpConfidentialFile(file.file_path),
-                                   Policy::kDlp);
+      if (files.size() == 1) {
+        // Learn more.
+        ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+            GURL(dlp::kDlpLearnMoreUrl),
+            ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+            ash::NewWindowDelegate::Disposition::kNewForegroundTab);
+      } else {
+        // Review.
+        FileTaskInfo info(action);
+        for (const auto& file : files) {
+          info.blocked_files.emplace(DlpConfidentialFile(file.file_path),
+                                     Policy::kDlp);
+        }
+        non_io_tasks_.emplace(notification_id, std::move(info));
+        // Always open the Files app. This should notify us through
+        // OnBrowserSetLastActive() to show the dialog.
+        LaunchFilesApp(std::make_unique<DialogInfo>(
+            base::BindOnce(
+                &FilesPolicyNotificationManager::ShowDialogForNonIOTask,
+                weak_factory_.GetWeakPtr(), notification_id,
+                FilesDialogType::kError),
+            notification_id,
+            base::BindOnce(&FilesPolicyNotificationManager::OnNonIOTaskTimedOut,
+                           weak_factory_.GetWeakPtr(), notification_id)));
       }
-      non_io_tasks_.emplace(notification_id, std::move(info));
-      // Always open the Files app. This should notify us by through
-      // OnBrowserSetLastActive() to show the dialog.
-      LaunchFilesApp(std::make_unique<DialogInfo>(
-          base::BindOnce(
-              &FilesPolicyNotificationManager::ShowDialogForNonIOTask,
-              weak_factory_.GetWeakPtr(), notification_id,
-              FilesDialogType::kError),
-          notification_id,
-          base::BindOnce(&FilesPolicyNotificationManager::OnNonIOTaskTimedOut,
-                         weak_factory_.GetWeakPtr(), notification_id)));
-    }
-
-    Dismiss(context_, notification_id);
+      break;
+    default:
+      NOTREACHED();
   }
 }
 
@@ -648,21 +655,21 @@ void FilesPolicyNotificationManager::HandleFilesPolicyWarningNotificationClick(
     LOG(WARNING) << "Warning notification clicked but no warning info found";
     return;
   }
+  Dismiss(context_, notification_id);
 
-  if (button_index.value() == NotificationButton::CANCEL) {
-    Cancel(task_id);
-    Dismiss(context_, notification_id);
-  }
-
-  if (button_index.value() == NotificationButton::OK) {
-    if (io_tasks_.at(task_id).warning_info->files.size() == 1) {
-      // Single file - proceed.
-      Resume(task_id);
-    } else {
-      // Multiple files - review.
-      ShowDialog(task_id, FilesDialogType::kWarning);
-    }
-    Dismiss(context_, notification_id);
+  switch (button_index.value()) {
+    case NotificationButton::CANCEL:
+      Cancel(task_id);
+      break;
+    case NotificationButton::OK:
+      if (io_tasks_.at(task_id).warning_info->files.size() == 1) {
+        // Single file - proceed.
+        Resume(task_id);
+      } else {
+        // Multiple files - review.
+        ShowDialog(task_id, FilesDialogType::kWarning);
+      }
+      break;
   }
 }
 
@@ -682,12 +689,12 @@ void FilesPolicyNotificationManager::HandleFilesPolicyErrorNotificationClick(
     return;
   }
 
+  Dismiss(context_, notification_id);
+
   switch (button_index.value()) {
     case NotificationButton::CANCEL:
       io_tasks_.erase(task_id);
-      Dismiss(context_, notification_id);
       return;
-
     case NotificationButton::OK:
       if (io_tasks_.at(task_id).blocked_files.size() == 1) {
         // Single file - open help page.
@@ -702,9 +709,7 @@ void FilesPolicyNotificationManager::HandleFilesPolicyErrorNotificationClick(
         // Multiple files - review.
         ShowDialog(task_id, FilesDialogType::kError);
       }
-      Dismiss(context_, notification_id);
       return;
-
     default:
       NOTREACHED();
   }
