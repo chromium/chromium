@@ -235,6 +235,9 @@ Notification* MessageCenterImpl::FindParentNotification(
         return nullptr;
       }
       for (auto* n : notifications) {
+        if (n->group_parent() || n->group_child()) {
+          continue;
+        }
         n->SetGroupChild();
       }
     }
