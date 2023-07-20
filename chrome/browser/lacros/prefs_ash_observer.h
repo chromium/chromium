@@ -62,7 +62,7 @@ class PrefsAshObserver {
   // or can be forwarded immediately after the profile is initialized.
   bool is_profile_initialized_ = false;
 
-  raw_ptr<PrefService, DanglingUntriaged> local_state_{nullptr};
+  raw_ptr<PrefService> local_state_{nullptr};
   std::unique_ptr<CrosapiPrefObserver> doh_mode_observer_;
   std::unique_ptr<CrosapiPrefObserver> doh_templates_observer_;
   std::unique_ptr<CrosapiPrefObserver> doh_templates_with_identifiers_observer_;

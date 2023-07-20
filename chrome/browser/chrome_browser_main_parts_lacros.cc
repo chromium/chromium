@@ -95,5 +95,10 @@ void ChromeBrowserMainPartsLacros::PostProfileInit(Profile* profile,
 void ChromeBrowserMainPartsLacros::PostDestroyThreads() {
   chromeos::LacrosShutdownDBus();
 
+  // Reset PrefsAshObserver here to guarantee it's destroyed before
+  // `g_browser_process->local_state()` is destructed as PrefsAshObserver
+  // depends on local state.
+  prefs_ash_observer_.reset();
+
   ChromeBrowserMainPartsLinux::PostDestroyThreads();
 }
