@@ -124,7 +124,7 @@ various important responsibilities:
   * Use the 'last updated' column to avoid duplicating the work of the previous
     secondary.
 * Stay sharp, keep in shape ([finger
-  exercises](https://youtu.be/20elMaVZ9lg?t=47s) are standard for the secondary),
+  exercises](https://youtu.be/iV9vyacIeEY?t=47s) are standard for the secondary),
   and remember you may be called upon during emergencies.
 
 ## Life Of A Security Bug
