@@ -30,6 +30,7 @@ class IconButton;
 class PillButton;
 class SavedDeskIconContainer;
 class SavedDeskNameView;
+class SystemShadow;
 
 // A view that represents each individual saved desk item in the saved desk
 // grid. The view has different shown contents depending on whether the mouse is
@@ -182,6 +183,8 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
   // This field is not a raw_ptr<> because it was filtered by the rewriter
   // for: #addr-of
   RAW_PTR_EXCLUSION views::View* hover_container_ = nullptr;
+
+  std::unique_ptr<SystemShadow> shadow_;
 
   // When the `name_view_` is focused, we select all its text. However, if it is
   // focused via a mouse press event, on mouse release will clear the selection.
