@@ -33,6 +33,10 @@ BASE_FEATURE(kOmniboxSuggestionsRTLImprovements,
              "OmniboxSuggestionsRTLImprovements",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOmniboxLockIconEnabled,
+             "OmniboxLockIconEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsIpadPopoutOmniboxEnabled() {
   return base::FeatureList::IsEnabled(kEnablePopoutOmniboxIpad) &&
          ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
