@@ -1056,6 +1056,9 @@ TEST_F(AcceleratorConfigurationProviderTest, TestGetKeyDisplay) {
   EXPECT_EQ(u"page down", ash::GetKeyDisplay(ui::VKEY_NEXT));
   EXPECT_EQ(u"alt", ash::GetKeyDisplay(ui::VKEY_MENU));
   EXPECT_EQ(u"MediaPlay", ash::GetKeyDisplay(ui::VKEY_MEDIA_PLAY));
+  EXPECT_EQ(u"Pause", ash::GetKeyDisplay(ui::VKEY_PAUSE));
+  EXPECT_EQ(u"Attn", ash::GetKeyDisplay(ui::VKEY_ATTN));
+  EXPECT_EQ(u"AltLeft", ash::GetKeyDisplay(ui::VKEY_LMENU));
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, NonConfigurableActions) {
