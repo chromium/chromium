@@ -299,10 +299,6 @@ class MODULES_EXPORT ServiceWorkerEventQueue {
   // |timer_| invokes UpdateEventStatus() periodically.
   base::RepeatingTimer timer_;
 
-  // TODO(crbug.com/1462568): After investigating crash bug, the following
-  // `timer_will_start_soon_` should be removed.
-  bool timer_started_ = false;
-
   // |tick_clock_| outlives |this|.
   const base::TickClock* const tick_clock_;
 
