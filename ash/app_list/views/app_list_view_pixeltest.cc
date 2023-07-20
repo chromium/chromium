@@ -25,6 +25,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
@@ -76,13 +77,20 @@ void UseFixedPlaceholderTextAndHideCursor(SearchBoxView* search_box_view) {
 
 class AppListViewPixelRTLTest
     : public AshTestBase,
-      public testing::WithParamInterface<bool /*is_rtl=*/> {
+      public testing::WithParamInterface<
+          std::tuple<bool /*jelly_enabled=*/, bool /*is_rtl=*/>> {
  public:
   // AshTestBase:
+  void SetUp() override {
+    scoped_features_.InitWithFeatureState(chromeos::features::kJelly,
+                                          JellyEnabled());
+    AshTestBase::SetUp();
+  }
+
   absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     pixel_test::InitParams init_params;
-    init_params.under_rtl = GetParam();
+    init_params.under_rtl = IsRtl();
     return init_params;
   }
 
@@ -141,9 +149,18 @@ class AppListViewPixelRTLTest
     // Adding results will schedule Update().
     base::RunLoop().RunUntilIdle();
   }
+
+  bool JellyEnabled() const { return std::get<0>(GetParam()); }
+
+  bool IsRtl() const { return std::get<1>(GetParam()); }
+
+ private:
+  base::test::ScopedFeatureList scoped_features_;
 };
 
-INSTANTIATE_TEST_SUITE_P(RTL, AppListViewPixelRTLTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(RTL,
+                         AppListViewPixelRTLTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 // Verifies Answer Card search results under the clamshell mode.
 TEST_P(AppListViewPixelRTLTest, AnswerCardSearchResult) {
@@ -163,7 +180,8 @@ TEST_P(AppListViewPixelRTLTest, AnswerCardSearchResult) {
   UseFixedPlaceholderTextAndHideCursor(test_helper->GetSearchBoxView());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "bubble_launcher_answer_card_search_results",
-      /*revision_number=*/2, GetAppListTestHelper()->GetBubbleView(),
+      /*revision_number=*/JellyEnabled() ? 3 : 2,
+      GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
 
@@ -185,7 +203,8 @@ TEST_P(AppListViewPixelRTLTest, URLSearchResult) {
   UseFixedPlaceholderTextAndHideCursor(test_helper->GetSearchBoxView());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "bubble_launcher_url_search_results",
-      /*revision_number=*/2, GetAppListTestHelper()->GetBubbleView(),
+      /*revision_number=*/JellyEnabled() ? 3 : 2,
+      GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
 
@@ -199,7 +218,8 @@ TEST_P(AppListViewPixelRTLTest, Basics) {
       GetAppListTestHelper()->GetSearchBoxView());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "bubble_launcher_basics",
-      /*revision_number=*/2, GetAppListTestHelper()->GetBubbleView(),
+      /*revision_number=*/JellyEnabled() ? 3 : 2,
+      GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
 
@@ -221,7 +241,8 @@ TEST_P(AppListViewPixelRTLTest, GradientZone) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "bubble_launcher_gradient_zone",
-      /*revision_number=*/2, GetAppListTestHelper()->GetBubbleView(),
+      /*revision_number=*/JellyEnabled() ? 3 : 2,
+      GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
 
