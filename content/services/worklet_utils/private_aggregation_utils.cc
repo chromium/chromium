@@ -172,15 +172,18 @@ ParseContributeToHistogramArguments(
     return nullptr;
   }
 
-  if (js_value->IsInt32()) {
-    value = js_value.As<v8::Int32>()->Value();
+  if (js_value->IsNumber()) {
+    v8::Maybe<int32_t> converted_value =
+        js_value->Int32Value(isolate->GetCurrentContext());
+    CHECK(converted_value.IsJust());
+    value = converted_value.ToChecked();
   } else if (js_value->IsBigInt()) {
     isolate->ThrowException(v8::Exception::TypeError(
         CreateStringFromLiteral(isolate, "Value cannot be a BigInt")));
     return nullptr;
   } else {
     isolate->ThrowException(v8::Exception::TypeError(
-        CreateStringFromLiteral(isolate, "Value must be an integer Number")));
+        CreateStringFromLiteral(isolate, "Value must be a Number")));
     return nullptr;
   }
 

@@ -223,8 +223,11 @@ auction_worklet::mojom::ForEventSignalValuePtr GetValue(
     v8::Local<v8::Value> js_value,
     std::string* error) {
   auction_worklet::mojom::ForEventSignalValuePtr value;
-  if (js_value->IsInt32()) {
-    int int_value = js_value.As<v8::Int32>()->Value();
+  if (js_value->IsNumber()) {
+    v8::Maybe<int32_t> converted_value =
+        js_value->Int32Value(isolate->GetCurrentContext());
+    CHECK(converted_value.IsJust());
+    int int_value = converted_value.ToChecked();
     value = auction_worklet::mojom::ForEventSignalValue::NewIntValue(int_value);
     if (int_value < 0) {
       *error = "Value must be non-negative";
@@ -243,7 +246,7 @@ auction_worklet::mojom::ForEventSignalValuePtr GetValue(
     *error = "Value cannot be a BigInt";
     return nullptr;
   } else {
-    *error = "Value must be an integer or a dictionary";
+    *error = "Value must be a Number or a dictionary";
     return nullptr;
   }
   return value;
