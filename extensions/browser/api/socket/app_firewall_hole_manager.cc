@@ -10,7 +10,6 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/app_window/app_window.h"
-#include "extensions/browser/extensions_browser_client.h"
 
 using content::BrowserContext;
 
@@ -48,8 +47,7 @@ class AppFirewallHoleManagerFactory : public BrowserContextKeyedServiceFactory {
 
   BrowserContext* GetBrowserContextToUse(
       BrowserContext* context) const override {
-    return ExtensionsBrowserClient::Get()->GetContextOwnInstance(
-        context, /*force_guest_profile=*/true);
+    return context;
   }
 };
 

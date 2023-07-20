@@ -38,10 +38,4 @@ KeyedService* UpdateServiceFactory::BuildServiceInstanceFor(
       context, ExtensionsBrowserClient::Get()->CreateUpdateClient(context));
 }
 
-content::BrowserContext* UpdateServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return ExtensionsBrowserClient::Get()->GetContextForOriginalOnly(
-      context, /*force_guest_profile=*/true);
-}
-
 }  // namespace extensions

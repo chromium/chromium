@@ -277,8 +277,7 @@ KeyedService* AppWindowGeometryCache::Factory::BuildServiceInstanceFor(
 content::BrowserContext*
 AppWindowGeometryCache::Factory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
-  return ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
-      context, /*force_guest_profile=*/true);
+  return ExtensionsBrowserClient::Get()->GetOriginalContext(context);
 }
 
 void AppWindowGeometryCache::AddObserver(Observer* observer) {
