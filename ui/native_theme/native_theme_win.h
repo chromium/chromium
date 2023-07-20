@@ -196,13 +196,14 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
 
   void RegisterThemeRegkeyObserver();
   void UpdateDarkModeStatus();
+  void UpdatePrefersReducedTransparency();
 
   // True if Windows supports dark mode. This does NOT indicate whether the
   // system is in dark mode, only that it is supported by this version of
   // Windows.
   const bool supports_windows_dark_mode_;
 
-  // Dark Mode registry key.
+  // Dark Mode/Transparency registry key.
   base::win::RegKey hkcu_themes_regkey_;
 
   // A cache of open theme handles.

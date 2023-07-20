@@ -295,6 +295,13 @@ NativeThemeWin::NativeThemeWin(bool configure_web_instance,
     hkcu_themes_regkey_ = OpenThemeRegKey(KEY_READ | KEY_NOTIFY);
     if (hkcu_themes_regkey_.Valid()) {
       UpdateDarkModeStatus();
+      UpdatePrefersReducedTransparency();
+      RegisterThemeRegkeyObserver();
+    }
+  } else if (base::SequencedTaskRunner::HasCurrentDefault()) {
+    hkcu_themes_regkey_ = OpenThemeRegKey(KEY_READ | KEY_NOTIFY);
+    if (hkcu_themes_regkey_.Valid()) {
+      UpdatePrefersReducedTransparency();
       RegisterThemeRegkeyObserver();
     }
   }
@@ -329,6 +336,8 @@ void NativeThemeWin::ConfigureWebInstance() {
   web_instance->set_forced_colors(InForcedColorsMode());
   web_instance->set_preferred_color_scheme(GetPreferredColorScheme());
   web_instance->SetPreferredContrast(GetPreferredContrast());
+  web_instance->set_prefers_reduced_transparency(
+      GetPrefersReducedTransparency());
   web_instance->set_system_colors(GetSystemColors());
 }
 
@@ -1572,6 +1581,7 @@ void NativeThemeWin::RegisterThemeRegkeyObserver() {
   hkcu_themes_regkey_.StartWatching(base::BindOnce(
       [](NativeThemeWin* native_theme) {
         native_theme->UpdateDarkModeStatus();
+        native_theme->UpdatePrefersReducedTransparency();
         // RegKey::StartWatching only provides one notification. Reregistration
         // is required to get future notifications.
         native_theme->RegisterThemeRegkeyObserver();
@@ -1589,6 +1599,19 @@ void NativeThemeWin::UpdateDarkModeStatus() {
   }
   set_use_dark_colors(dark_mode_enabled);
   set_preferred_color_scheme(CalculatePreferredColorScheme());
+  CloseHandlesInternal();
+  NotifyOnNativeThemeUpdated();
+}
+
+void NativeThemeWin::UpdatePrefersReducedTransparency() {
+  bool prefers_reduced_transparency = false;
+  if (hkcu_themes_regkey_.Valid()) {
+    DWORD enable_transparency = 1;
+    hkcu_themes_regkey_.ReadValueDW(L"EnableTransparency",
+                                    &enable_transparency);
+    prefers_reduced_transparency = (enable_transparency == 0);
+  }
+  set_prefers_reduced_transparency(prefers_reduced_transparency);
   CloseHandlesInternal();
   NotifyOnNativeThemeUpdated();
 }
