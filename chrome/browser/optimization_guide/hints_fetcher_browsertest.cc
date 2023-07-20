@@ -422,8 +422,9 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
       return;
 
     base::flat_set<std::string> hosts_and_urls_requested;
-    for (const auto& host : hints_request.hosts())
+    for (const auto& host : hints_request.hosts()) {
       hosts_and_urls_requested.insert(host.host());
+    }
     for (const auto& url : hints_request.urls()) {
       // TODO(crbug/1051365):  Remove normalization step once nav predictor
       // provides predictable URLs.
@@ -501,6 +502,7 @@ class HintsFetcherBrowserTest : public HintsFetcherDisabledBrowserTest {
          {
              optimization_guide::features::kRemoteOptimizationGuideFetching,
              {{"max_concurrent_page_navigation_fetches", "2"},
+              {"max_urls_for_optimization_guide_service_hints_fetch", "30"},
               {"batch_update_hints_for_top_hosts", "true"}},
          }},
         {});
@@ -1503,4 +1505,167 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPagePrerenderingBrowserTest,
       "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 3, 1);
   histogram_tester->ExpectBucketCount(
       "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 7, 1);
+}
+
+class HintsFetcherSearchPageDisabledBrowserTest
+    : public HintsFetcherDisabledBrowserTest {
+ public:
+  HintsFetcherSearchPageDisabledBrowserTest() = default;
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        // Enabled.
+        {{optimization_guide::features::kOptimizationHints, {}},
+         {blink::features::kNavigationPredictor,
+          {{"random_anchor_sampling_period", "1"}}},
+         {
+             optimization_guide::features::kRemoteOptimizationGuideFetching,
+             {{"max_concurrent_page_navigation_fetches", "2"},
+              {"max_urls_for_optimization_guide_service_hints_fetch", "30"},
+              {"batch_update_hints_for_top_hosts", "true"}},
+         }},
+        // Disabled.
+        {optimization_guide::features::kOptimizationGuideFetchingForSRP});
+
+    HintsFetcherDisabledBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    // Register an optimization type, so hints will be fetched at page
+    // navigation.
+    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+        ->RegisterOptimizationTypes({optimization_guide::proto::NOSCRIPT});
+
+    HintsFetcherDisabledBrowserTest::SetUpOnMainThread();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPageDisabledBrowserTest,
+                       HintsFetcherStillFetchesNavigations) {
+  SetNetworkConnectionOnline();
+  SetResponseType(
+      optimization_guide::HintsFetcherRemoteResponseType::kSuccessful);
+
+  const base::HistogramTester* histogram_tester = GetHistogramTester();
+
+  // Navigate to a search results page - should not result in a request with
+  // more than 1 url.
+  ResetCountHintsRequestsReceived();
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), search_results_page_url()));
+
+  // Technically the results page counts as a navigation URL.
+  base::flat_set<std::string> srp_request;
+  srp_request.insert(GURL(search_results_page_url()).host());
+  srp_request.insert(GURL(search_results_page_url()).spec());
+  SetExpectedHintsRequestForHostsAndUrls(srp_request);
+  EXPECT_EQ(1u, count_hints_requests_received());
+  histogram_tester->ExpectBucketCount(
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1, 1);
+  histogram_tester->ExpectBucketCount(
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 1, 1);
+  histogram_tester->ExpectTotalCount(
+      "OptimizationGuide.HintsFetcher.RequestStatus.PageNavigation", 1);
+  histogram_tester->ExpectTotalCount(
+      "OptimizationGuide.HintsFetcher.RequestStatus.BatchUpdateGoogleSRP", 0);
+
+  // Now go to a regular URL.
+  ResetCountHintsRequestsReceived();
+  std::string full_url = "https://foo.com/test/";
+  base::flat_set<std::string> expected_request;
+  expected_request.insert(GURL(full_url).host());
+  expected_request.insert(GURL(full_url).spec());
+  SetExpectedHintsRequestForHostsAndUrls(expected_request);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(full_url)));
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      histogram_tester, optimization_guide::kLoadedHintLocalHistogramString, 1);
+  histogram_tester->ExpectTotalCount(
+      "OptimizationGuide.HintsFetcher.RequestStatus.PageNavigation", 2);
+  EXPECT_EQ(1u, count_hints_requests_received());
+  histogram_tester->ExpectBucketCount(
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1, 2);
+  histogram_tester->ExpectBucketCount(
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 1, 2);
+  histogram_tester->ExpectTotalCount(
+      "OptimizationGuide.HintsFetcher.RequestStatus.PageNavigation", 2);
+  histogram_tester->ExpectTotalCount(
+      "OptimizationGuide.HintsFetcher.RequestStatus.BatchUpdateGoogleSRP", 0);
+}
+
+class HintsFetcherSearchPageLimitedURLsBrowserTest
+    : public HintsFetcherDisabledBrowserTest {
+ public:
+  HintsFetcherSearchPageLimitedURLsBrowserTest() = default;
+
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        // Enabled.
+        {{optimization_guide::features::kOptimizationHints, {}},
+         {
+             optimization_guide::features::kRemoteOptimizationGuideFetching,
+             {{"max_concurrent_page_navigation_fetches", "2"},
+              {"max_urls_for_optimization_guide_service_hints_fetch", "30"},
+              {"batch_update_hints_for_top_hosts", "true"}},
+         },
+         {
+             optimization_guide::features::kOptimizationGuideFetchingForSRP,
+             {{"max_urls_for_srp_fetch", "2"}},
+         }},
+        // Disabled.
+        {});
+
+    HintsFetcherDisabledBrowserTest::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* cmd) override {
+    cmd->AppendSwitch(optimization_guide::switches::
+                          kDisableFetchingHintsAtNavigationStartForTesting);
+    cmd->AppendSwitch("ignore-certificate-errors");
+    HintsFetcherDisabledBrowserTest::SetUpCommandLine(cmd);
+  }
+
+  void SetUpOnMainThread() override {
+    // Register an optimization type, so hints will be fetched at page
+    // navigation.
+    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+        ->RegisterOptimizationTypes({optimization_guide::proto::NOSCRIPT});
+
+    HintsFetcherDisabledBrowserTest::SetUpOnMainThread();
+  }
+};
+
+// TODO(crbug/1463073): Disable limited SRP test on Windows/CrOS for now.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_HintsFetcherLimitedResults DISABLED_HintsFetcherLimitedResults
+#else
+#define MAYBE_HintsFetcherLimitedResults HintsFetcherLimitedResults
+#endif
+IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPageLimitedURLsBrowserTest,
+                       MAYBE_HintsFetcherLimitedResults) {
+  SetNetworkConnectionOnline();
+  SetResponseType(
+      optimization_guide::HintsFetcherRemoteResponseType::kSuccessful);
+
+  const base::HistogramTester* histogram_tester = GetHistogramTester();
+
+  // Navigate to a search results page - should result a batch request with up
+  // to 2 urls.
+  ResetCountHintsRequestsReceived();
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), search_results_page_url()));
+  WaitUntilHintsFetcherRequestReceived();
+
+  EXPECT_GE(
+      optimization_guide::RetryForHistogramUntilCountReached(
+          histogram_tester,
+          "OptimizationGuide.HintsFetcher.RequestStatus.BatchUpdateGoogleSRP",
+          1),
+      1);
+  EXPECT_EQ(1u, count_hints_requests_received());
+  histogram_tester->ExpectBucketCount(
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 2, 1);
+  histogram_tester->ExpectBucketCount(
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 2, 1);
+  histogram_tester->ExpectTotalCount(
+      "OptimizationGuide.HintsFetcher.RequestStatus.BatchUpdateGoogleSRP", 1);
 }

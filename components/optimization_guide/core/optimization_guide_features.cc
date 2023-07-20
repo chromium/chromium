@@ -208,6 +208,12 @@ BASE_FEATURE(kPageContentAnnotationsPersistSalientImageMetadata,
              "PageContentAnnotationsPersistSalientImageMetadata",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Killswitch for fetching on search results from a remote Optimization Guide
+// Service.
+BASE_FEATURE(kOptimizationGuideFetchingForSRP,
+             "OptimizationHintsFetchingSRP",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables the model store to save relative paths computed from the base model
 // store dir. Storing as relative path in the model store is needed for IOS,
 // since the directories could change after Chrome upgrade. This feature is
@@ -236,6 +242,14 @@ bool ShouldBatchUpdateHintsForActiveTabsAndTopHosts() {
                                              enabled_by_default_mobile_only);
   }
   return false;
+}
+
+size_t MaxResultsForSRPFetch() {
+  static int max_urls = GetFieldTrialParamByFeatureAsInt(
+      kOptimizationGuideFetchingForSRP, "max_urls_for_srp_fetch",
+      // Default to match overall max.
+      MaxUrlsForOptimizationGuideServiceHintsFetch());
+  return max_urls;
 }
 
 size_t MaxHostsForOptimizationGuideServiceHintsFetch() {
@@ -320,6 +334,10 @@ bool IsOptimizationHintsEnabled() {
 
 bool IsRemoteFetchingEnabled() {
   return base::FeatureList::IsEnabled(kRemoteOptimizationGuideFetching);
+}
+
+bool IsSRPFetchingEnabled() {
+  return base::FeatureList::IsEnabled(kOptimizationGuideFetchingForSRP);
 }
 
 bool IsPushNotificationsEnabled() {

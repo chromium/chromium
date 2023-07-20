@@ -174,12 +174,16 @@ void OptimizationGuideWebContentsObserver::FetchHintsUsingManager(
   if (!page)
     return;
 
+  CHECK(optimization_guide::features::IsSRPFetchingEnabled());
   PageData& page_data = GetPageData(*page);
   page_data.set_sent_batched_hints_request();
 
+  std::vector<GURL> top_urls = page_data.GetHintsTargetUrls();
+
+  top_urls.resize(std::min(
+      top_urls.size(), optimization_guide::features::MaxResultsForSRPFetch()));
   hints_manager->FetchHintsForURLs(
-      page_data.GetHintsTargetUrls(),
-      optimization_guide::proto::CONTEXT_BATCH_UPDATE_GOOGLE_SRP);
+      top_urls, optimization_guide::proto::CONTEXT_BATCH_UPDATE_GOOGLE_SRP);
 }
 
 void OptimizationGuideWebContentsObserver::NotifyNavigationFinish(

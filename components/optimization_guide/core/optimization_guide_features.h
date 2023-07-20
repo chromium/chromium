@@ -25,6 +25,7 @@ namespace features {
 BASE_DECLARE_FEATURE(kOptimizationHints);
 BASE_DECLARE_FEATURE(kRemoteOptimizationGuideFetching);
 BASE_DECLARE_FEATURE(kRemoteOptimizationGuideFetchingAnonymousDataConsent);
+BASE_DECLARE_FEATURE(kOptimizationGuideFetchingForSRP);
 BASE_DECLARE_FEATURE(kContextMenuPerformanceInfoAndRemoteHintFetching);
 BASE_DECLARE_FEATURE(kOptimizationTargetPrediction);
 BASE_DECLARE_FEATURE(kOptimizationGuideModelDownloading);
@@ -61,12 +62,18 @@ base::TimeDelta PageTextExtractionOutstandingRequestsGracePeriod();
 bool ShouldBatchUpdateHintsForActiveTabsAndTopHosts();
 
 // The maximum number of hosts allowed to be requested by the client to the
-// remote Optimzation Guide Service.
+// remote Optimization Guide Service.
 size_t MaxHostsForOptimizationGuideServiceHintsFetch();
 
 // The maximum number of URLs allowed to be requested by the client to the
-// remote Optimzation Guide Service.
+// remote Optimization Guide Service.
 size_t MaxUrlsForOptimizationGuideServiceHintsFetch();
+
+// Whether hints fetching for search results is enabled.
+bool IsSRPFetchingEnabled();
+// The maximum number of search results allowed to be requested by the client to
+// the remote Optimization Guide Service.
+size_t MaxResultsForSRPFetch();
 
 // The maximum number of hosts allowed to be stored as covered by the hints
 // fetcher.
@@ -161,7 +168,7 @@ base::TimeDelta StoredModelsValidDuration();
 base::TimeDelta URLKeyedHintValidCacheDuration();
 
 // The maximum number of hosts allowed to be requested by the client to the
-// remote Optimzation Guide Service for use by prediction models.
+// remote Optimization Guide Service for use by prediction models.
 size_t MaxHostsForOptimizationGuideServiceModelsFetch();
 
 // The maximum number of hosts allowed to be maintained in a least-recently-used
