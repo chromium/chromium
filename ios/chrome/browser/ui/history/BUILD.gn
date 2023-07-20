@@ -104,6 +104,7 @@ source_set("history_ui") {
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
     "//ui/base",
+    "//ui/strings",
   ]
 }
 

@@ -59,6 +59,7 @@
 #import "ios/web/public/navigation/referrer.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "ui/strings/grit/ui_strings.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -217,6 +218,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   // Clear C++ ivars.
   _browser = nullptr;
   _historyService = nullptr;
+  [self dismissContextMenuCoordinator];
 }
 
 #pragma mark - TableViewModel
@@ -739,6 +741,11 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 
 #pragma mark - Private methods
 
+- (void)dismissContextMenuCoordinator {
+  [self.contextMenuCoordinator stop];
+  self.contextMenuCoordinator = nil;
+}
+
 // Fetches history for search text `query`. If `query` is nil or the empty
 // string, all history is fetched. If continuation is false, then the most
 // recent results are fetched, otherwise the results more recent than the
@@ -1052,6 +1059,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
       l10n_util::GetNSStringWithFixup(IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB);
   ProceduralBlock openInNewTabAction = ^{
     [weakSelf openURLInNewTab:entry.URL];
+    [weakSelf dismissContextMenuCoordinator];
   };
   [self.contextMenuCoordinator addItemWithTitle:openInNewTabTitle
                                          action:openInNewTabAction
@@ -1074,6 +1082,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
       IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB);
   ProceduralBlock openInNewIncognitoTabAction = ^{
     [weakSelf openURLInNewIncognitoTab:entry.URL];
+    [weakSelf dismissContextMenuCoordinator];
   };
   BOOL incognitoEnabled =
       !IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs());
@@ -1087,10 +1096,18 @@ const CGFloat kButtonHorizontalPadding = 30.0;
       l10n_util::GetNSStringWithFixup(IDS_IOS_CONTENT_CONTEXT_COPY);
   ProceduralBlock copyURLAction = ^{
     StoreURLInPasteboard(entry.URL);
+    [weakSelf dismissContextMenuCoordinator];
   };
   [self.contextMenuCoordinator addItemWithTitle:copyURLTitle
                                          action:copyURLAction
                                           style:UIAlertActionStyleDefault];
+
+  [self.contextMenuCoordinator
+      addItemWithTitle:l10n_util::GetNSString(IDS_APP_CANCEL)
+                action:^{
+                  [weakSelf dismissContextMenuCoordinator];
+                }
+                 style:UIAlertActionStyleCancel];
   [self.contextMenuCoordinator start];
 }
 
