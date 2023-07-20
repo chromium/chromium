@@ -29,7 +29,7 @@ from build import (CheckoutGitRepo, DownloadAndUnpack, LLVM_BUILD_TOOLS_DIR,
 from update import (RmTree)
 
 # The git hash to use.
-BINDGEN_GIT_VERSION = '078fb77e82507c1b96f571a18700a03870c96fdd'
+BINDGEN_GIT_VERSION = '97e29b49bebaba4d067d4f5f2270748c7d28a557'
 BINDGEN_GIT_REPO = ('https://chromium.googlesource.com/external/' +
                     'github.com/rust-lang/rust-bindgen')
 
