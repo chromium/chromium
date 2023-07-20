@@ -420,47 +420,6 @@ suite('HistoryListTest', function() {
             });
       });
 
-  // TODO(calamity): Reenable this test after fixing flakiness.
-  // See http://crbug.com/640862.
-  test.skip(
-      'ScrollingHistoryListCausesToolbarShadowToAppear', () => {
-        function loadMoreResults(numReloads: number): Promise<any> {
-          testService.resetResolver('queryHistory');
-          testService.setQueryResult(
-              {info: createHistoryInfo(), value: TEST_HISTORY_RESULTS});
-          element.dispatchEvent(new CustomEvent(
-              'query-history', {bubbles: true, composed: true, detail: true}));
-          const promise = testService.whenCalled('queryHistoryContinuation');
-          return numReloads === 1 ? promise : promise.then(() => {
-            return loadMoreResults(numReloads - 1);
-          });
-        }
-        return finishSetup(TEST_HISTORY_RESULTS)
-            .then(() => {
-              return loadMoreResults(9);
-            })
-            .then(flushTasks)
-            .then(function() {
-              element.shadowRoot!.querySelector('iron-list')!.dispatchEvent(
-                  new CustomEvent(
-                      'iron-resize', {bubbles: true, composed: true}));
-              return waitAfterNextRender(element);
-            })
-            .then(() => {
-              assertFalse(app.hasAttribute('toolbar-shadow_'));
-              element.$['infinite-list'].scrollToIndex(20);
-              return waitForEvent(app, 'toolbar-shadow_-changed');
-            })
-            .then(() => {
-              assertTrue(app.hasAttribute('toolbar-shadow_'));
-              element.$['infinite-list'].scrollToIndex(0);
-              return waitForEvent(app, 'toolbar-shadow_-changed');
-            })
-            .then(() => {
-              assertFalse(app.hasAttribute('toolbar-shadow_'));
-            });
-      });
-
   test('ChangingSearchDeselectsItems', function() {
     return finishSetup(
                [createHistoryEntry('2016-06-9', 'https://www.example.com')],
