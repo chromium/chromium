@@ -359,9 +359,18 @@ ScriptTimingInfo* AnimationFrameTimingMonitor::MaybeAddScript(
   return script_timing_info;
 }
 
+namespace {
+bool ShouldAllowScriptURL(const WTF::String& url) {
+  KURL kurl(url);
+  return kurl.ProtocolIsData() || kurl.ProtocolIsInHTTPFamily() ||
+         kurl.ProtocolIs("blob") || kurl.IsEmpty();
+}
+}  // namespace
+
 bool AnimationFrameTimingMonitor::ShouldAddScript(ExecutionContext* context) {
   return enabled_ && pending_script_info_ && context && context->IsWindow() &&
          client_.ShouldReportLongAnimationFrameTiming() &&
+         ShouldAllowScriptURL(pending_script_info_->source_location.url) &&
          state_ != State::kIdle;
 }
 

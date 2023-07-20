@@ -15,13 +15,13 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_canvas.h"
 #include "content/public/common/isolated_world_ids.h"
@@ -283,6 +283,9 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
   void DumpTitleChanges();
   void DumpUserGestureInFrameLoadCallbacks();
   void EvaluateScriptInIsolatedWorld(int world_id, const std::string& script);
+  void EvaluateScriptInOwnTask(const std::string& script,
+                               const std::string& source_url,
+                               v8::Local<v8::Function> v8_callback);
   void ExecCommand(gin::Arguments* args);
   void TriggerTestInspectorIssue(gin::Arguments* args);
   void FocusDevtoolsSecondaryWindow();
@@ -613,6 +616,8 @@ gin::ObjectTemplateBuilder TestRunnerBindings::GetObjectTemplateBuilder(
                  &TestRunnerBindings::EnableAutoResizeMode)
       .SetMethod("evaluateScriptInIsolatedWorld",
                  &TestRunnerBindings::EvaluateScriptInIsolatedWorld)
+      .SetMethod("evaluateScriptInOwnTask",
+                 &TestRunnerBindings::EvaluateScriptInOwnTask)
       .SetMethod(
           "evaluateScriptInIsolatedWorldAndReturnValue",
           &TestRunnerBindings::EvaluateScriptInIsolatedWorldAndReturnValue)
@@ -1114,6 +1119,34 @@ void TestRunnerBindings::EvaluateScriptInIsolatedWorld(
   blink::WebScriptSource source(blink::WebString::FromUTF8(script));
   GetWebFrame()->ExecuteScriptInIsolatedWorld(
       world_id, source, blink::BackForwardCacheAware::kAllow);
+}
+
+void TestRunnerBindings::EvaluateScriptInOwnTask(
+    const std::string& script,
+    const std::string& url,
+    v8::Local<v8::Function> v8_callback) {
+  if (invalid_) {
+    return;
+  }
+
+  blink::WebScriptSource source(blink::WebString::FromUTF8(script),
+                                blink::WebURL(GURL(url)));
+  GetWebFrame()
+      ->GetTaskRunner(blink::TaskType::kInternalTest)
+      ->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              [](base::WeakPtr<TestRunnerBindings> weak_this,
+                 blink::WebScriptSource source, base::OnceClosure closure) {
+                if (!weak_this || weak_this->invalid_) {
+                  return;
+                }
+
+                weak_this->GetWebFrame()->ExecuteScript(source);
+                std::move(closure).Run();
+              },
+              weak_ptr_factory_.GetWeakPtr(), std::move(source),
+              WrapV8Closure(v8_callback)));
 }
 
 void TestRunnerBindings::SetIsolatedWorldInfo(
