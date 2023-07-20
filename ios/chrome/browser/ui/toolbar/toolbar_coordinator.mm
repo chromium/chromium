@@ -383,8 +383,9 @@
 
 - (void)viewControllerTraitCollectionDidChange:
     (UITraitCollection*)previousTraitCollection {
-  [self.toolbarMediator
-      toolbarTraitCollectionChangedTo:self.traitEnvironment.traitCollection];
+  if (!_started) {
+    return;
+  }
   [self updateToolbarsLayout];
 }
 
@@ -507,8 +508,11 @@
   return self.primaryToolbarViewController;
 }
 
-/// Updates toolbars layout whith current omnibox focus state.
+/// Updates toolbars layout whith current omnibox focus state and trait
+/// collection.
 - (void)updateToolbarsLayout {
+  [self.toolbarMediator
+      toolbarTraitCollectionChangedTo:self.traitEnvironment.traitCollection];
   BOOL omniboxFocused =
       self.isOmniboxFirstResponder || self.showingOmniboxPopup;
   [self.orchestrator
