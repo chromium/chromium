@@ -51,11 +51,6 @@ void FakeDataRetriever::GetIcons(content::WebContents* web_contents,
                                  bool skip_page_favicons,
                                  bool fail_all_if_any_fail,
                                  GetIconsCallback callback) {
-  if (get_icons_delegate_) {
-    icons_map_ = get_icons_delegate_.Run(
-        web_contents, icon_urls, skip_page_favicons, fail_all_if_any_fail);
-  }
-
   completion_callback_ =
       base::BindOnce(std::move(callback), icons_downloaded_result_,
                      std::move(icons_map_), std::move(icons_http_results_));
@@ -83,14 +78,7 @@ void FakeDataRetriever::SetManifest(blink::mojom::ManifestPtr manifest,
 }
 
 void FakeDataRetriever::SetIcons(IconsMap icons_map) {
-  DCHECK(!get_icons_delegate_);
   icons_map_ = std::move(icons_map);
-}
-
-void FakeDataRetriever::SetGetIconsDelegate(
-    GetIconsDelegate get_icons_delegate) {
-  DCHECK(icons_map_.empty());
-  get_icons_delegate_ = std::move(get_icons_delegate);
 }
 
 void FakeDataRetriever::SetIconsDownloadedResult(IconsDownloadedResult result) {
