@@ -261,7 +261,7 @@ public final class ToolbarSecurityIconTest {
     @SmallTest
     @UiThreadTest
     public void testGetSecurityIconColorWithSecurityLevel_DangerousWebsiteWithIncognito() {
-        assertEquals(R.color.baseline_error_200,
+        assertEquals(R.color.baseline_error_80,
                 mLocationBarModel.getSecurityIconColorWithSecurityLevel(
                         /*connectionSecurityLevel*/ ConnectionSecurityLevel.DANGEROUS,
                         /*brandedColorScheme*/ BrandedColorScheme.APP_DEFAULT,

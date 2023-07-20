@@ -42,8 +42,8 @@ found in the LICENSE file.
     <color name="default_text_color_link_dark">@color/baseline_primary_40</color>
     <color name="default_text_color_link_light">@color/baseline_primary_80</color>
     <!-- Same as ?attr/colorError. -->
-    <color name="default_text_color_error_light">@color/baseline_error_200</color>
-    <color name="default_text_color_error_dark">@color/baseline_error_600</color>
+    <color name="default_text_color_error_light">@color/baseline_error_80</color>
+    <color name="default_text_color_error_dark">@color/baseline_error_40</color>
     <!-- Same as ?attr/onSurface with alpha. -->
     <color name="default_text_color_link_disabled_light">@color/baseline_neutral_90_alpha_38</color>
     <color name="default_text_color_link_disabled_dark">@color/baseline_neutral_10_alpha_38</color>
@@ -52,8 +52,8 @@ found in the LICENSE file.
     <color name="default_text_color_on_accent1_dark">@color/baseline_primary_20</color>
 
     <!-- Same as ?attr/colorError. -->
-    <color name="default_red_light">@color/baseline_error_200</color>
-    <color name="default_red_dark">@color/baseline_error_600</color>
+    <color name="default_red_light">@color/baseline_error_80</color>
+    <color name="default_red_dark">@color/baseline_error_40</color>
 
     <color name="default_green_light">@color/baseline_tertiary_80</color>
     <color name="default_green_dark">@color/baseline_tertiary_40</color>

@@ -747,7 +747,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
             // LIGHT_BRANDED_THEME for the purpose of improving contrast.
             if (isIncognito) {
                 // Use light red for Incognito mode.
-                return R.color.baseline_error_200;
+                return R.color.baseline_error_80;
             } else if (brandedColorScheme == BrandedColorScheme.APP_DEFAULT) {
                 // Use adaptive red for light and dark background.
                 return R.color.default_red;

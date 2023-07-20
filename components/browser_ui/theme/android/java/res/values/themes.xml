@@ -29,7 +29,7 @@ found in the LICENSE file.
         <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_30</item>
         <item name="colorOnSurfaceInverse">@color/baseline_neutral_95</item>
         <item name="colorOutline">@color/baseline_neutral_variant_50</item>
-        <item name="colorError">@color/baseline_error_600</item>
+        <item name="colorError">@color/baseline_error_40</item>
 
         <!-- Text colors-->
         <item name="android:textColorPrimary">@color/default_text_color_list</item>
@@ -129,7 +129,7 @@ found in the LICENSE file.
         <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_30</item>
         <item name="colorOnSurfaceInverse">@color/baseline_neutral_95</item>
         <item name="colorOutline">@color/baseline_neutral_variant_50</item>
-        <item name="colorError">@color/baseline_error_600</item>
+        <item name="colorError">@color/baseline_error_40</item>
 
         <!-- Text colors-->
         <item name="android:textColorPrimary">@color/default_text_color_list</item>
@@ -196,7 +196,7 @@ found in the LICENSE file.
         <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_30</item>
         <item name="colorOnSurfaceInverse">@color/baseline_neutral_95</item>
         <item name="colorOutline">@color/baseline_neutral_variant_50</item>
-        <item name="colorError">@color/baseline_error_600</item>
+        <item name="colorError">@color/baseline_error_40</item>
 
         <!-- Text colors-->
         <item name="android:textColorPrimary">@color/default_text_color_list</item>

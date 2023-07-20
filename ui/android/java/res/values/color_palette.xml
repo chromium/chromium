@@ -6,8 +6,8 @@ found in the LICENSE file.
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- 2021 color palette. -->
-    <color name="baseline_error_200">#F2B8B5</color>
-    <color name="baseline_error_600">#B3261E</color>
+    <color name="baseline_error_80">#F2B8B5</color>
+    <color name="baseline_error_40">#B3261E</color>
     <color name="baseline_primary_100">@android:color/white</color>
     <color name="baseline_primary_95">#ECF3FE</color>
     <color name="baseline_primary_90">#D3E3FD</color>
@@ -133,8 +133,8 @@ found in the LICENSE file.
         solid grey. -->
     <color name="modern_grey_900_with_grey_200_alpha_11">@color/baseline_neutral_10_with_neutral_80_alpha_11_with_primary_80_alpha_2</color>
     <!-- Correct for most places to use 200 instead of 300 now. -->
-    <color name="google_red_300">@color/baseline_error_200</color>
-    <color name="google_red_600">@color/baseline_error_600</color>
+    <color name="google_red_300">@color/baseline_error_80</color>
+    <color name="google_red_600">@color/baseline_error_40</color>
 
     <!-- No 2021 color palette mapping exists. -->
     <color name="black_alpha_5">#0D000000</color>
