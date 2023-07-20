@@ -172,6 +172,10 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
     // kNotSupported.
     virtual Status SetStream(base::span<const uint8_t> stream,
                              const DecryptConfig* decrypt_config);
+
+    // Notifies whether or not the current platform requires reference lists.
+    // In general, implementations don't need it.
+    virtual bool RequiresRefLists();
   };
 
   H264Decoder(std::unique_ptr<H264Accelerator> accelerator,
@@ -427,6 +431,9 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
   int last_output_poc_;
 
   const std::unique_ptr<H264Accelerator> accelerator_;
+
+  // Whether the current decoder will utilize reference lists.
+  const bool requires_ref_lists_;
 };
 
 }  // namespace media
