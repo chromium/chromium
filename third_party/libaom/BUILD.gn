@@ -207,17 +207,6 @@ if (current_cpu == "arm64" || cpu_arch_full == "arm-neon" ||
     sources += aom_av1_encoder_intrin_neon
     sources += aom_dsp_encoder_intrin_neon
   }
-
-  source_set("libaom_intrinsics_arm_crc32") {
-    check_includes = false
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    configs += [ ":libaom_config" ]
-    if (!is_win || is_clang) {
-      cflags = [ "-march=armv8-a+crc" ]
-    }
-    sources = aom_av1_encoder_intrin_arm_crc32
-  }
 }
 
 static_library("libaom") {
@@ -269,10 +258,7 @@ static_library("libaom") {
   }
   if (current_cpu == "arm64" || cpu_arch_full == "arm-neon" ||
       cpu_arch_full == "arm-neon-cpu-detect") {
-    deps += [
-      ":libaom_intrinsics_arm_crc32",
-      ":libaom_intrinsics_neon",
-    ]
+    deps += [ ":libaom_intrinsics_neon" ]
   }
   if (current_cpu == "arm64" || current_cpu == "arm") {
     # This is needed by all arm boards due to aom_arm_cpu_caps()

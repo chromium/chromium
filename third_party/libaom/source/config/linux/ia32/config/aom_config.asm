@@ -66,8 +66,6 @@
 %define HAVE_FEXCEPT 1
 %define HAVE_MMX 1
 %define HAVE_NEON 0
-%define HAVE_NEON_DOTPROD 0
-%define HAVE_NEON_I8MM 0
 %define HAVE_PTHREAD_H 1
 %define HAVE_SSE 1
 %define HAVE_SSE2 1

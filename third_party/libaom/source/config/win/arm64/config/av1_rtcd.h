@@ -282,12 +282,7 @@ void av1_fwht4x4_neon(const int16_t *input, tran_low_t *output, int stride);
 #define av1_fwht4x4 av1_fwht4x4_neon
 
 uint32_t av1_get_crc32c_value_c(void *crc_calculator, uint8_t *p, size_t length);
-uint32_t av1_get_crc32c_value_arm_crc32(void* crc_calculator,
-                                        uint8_t* p,
-                                        size_t length);
-RTCD_EXTERN uint32_t (*av1_get_crc32c_value)(void* crc_calculator,
-                                             uint8_t* p,
-                                             size_t length);
+#define av1_get_crc32c_value av1_get_crc32c_value_c
 
 void av1_get_horver_correlation_full_c( const int16_t *diff, int stride, int w, int h, float *hcorr, float *vcorr);
 void av1_get_horver_correlation_full_neon( const int16_t *diff, int stride, int w, int h, float *hcorr, float *vcorr);
@@ -608,10 +603,6 @@ static void setup_rtcd_internal(void)
 
     (void)flags;
 
-    av1_get_crc32c_value = av1_get_crc32c_value_c;
-    if (flags & HAS_ARM_CRC32) {
-      av1_get_crc32c_value = av1_get_crc32c_value_arm_crc32;
-    }
 }
 #endif
 
