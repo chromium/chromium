@@ -54,6 +54,8 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "ui/gl/gl_context_egl.h"
+#include "ui/gl/gl_surface_egl.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <dawn/native/D3D11Backend.h>
@@ -113,7 +115,12 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
     return nullptr;
   }
   void Destroy(bool have_context) override;
-  bool MakeCurrent() override { return true; }
+  bool MakeCurrent() override {
+    if (gl_context_.get()) {
+      gl_context_->MakeCurrent(gl_surface_.get());
+    }
+    return true;
+  }
   gl::GLContext* GetGLContext() override { return nullptr; }
   gl::GLSurface* GetGLSurface() override {
     NOTREACHED();
@@ -894,6 +901,9 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   bool has_polling_work_ = false;
   bool destroyed_ = false;
 
+  scoped_refptr<gl::GLContext> gl_context_;
+  scoped_refptr<gl::GLSurface> gl_surface_;
+
   base::WeakPtrFactory<WebGPUDecoderImpl> weak_ptr_factory_{this};
 };
 
@@ -1120,6 +1130,19 @@ ContextResult WebGPUDecoderImpl::Initialize(
   }
 
   dawn_instance_->EnableAdapterBlocklist(use_blocklist());
+  // Create a Chrome-side EGL context. This isn't actually used by Dawn,
+  // but it prevents rendering artifacts in Chrome. This workaround should
+  // be revisited once EGL context creation is reworked. See crbug.com/1465911
+  if (use_webgpu_adapter_ == WebGPUAdapterName::kOpenGLES) {
+    gl_surface_ = new gl::SurfacelessEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(),
+                                         gfx::Size(1, 1));
+    gl::GLContextAttribs attribs;
+    attribs.client_major_es_version = 3;
+    attribs.client_minor_es_version = 1;
+    gl_context_ = new gl::GLContextEGL(nullptr);
+    gl_context_->Initialize(gl_surface_.get(), attribs);
+    gl_context_->MakeCurrent(gl_surface_.get());
+  }
   return ContextResult::kSuccess;
 }
 
