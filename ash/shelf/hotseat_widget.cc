@@ -536,6 +536,9 @@ void HotseatWidget::DelegateView::Init(
   auto* shadow_layer = shadow_->GetLayer();
   parent_layer->Add(shadow_layer);
   parent_layer->StackAtBottom(shadow_layer);
+
+  // Make shadow observe the widget theme change.
+  shadow_->ObserveColorProviderSource(hotseat_widget);
 }
 
 void HotseatWidget::DelegateView::UpdateTranslucentBackground() {
