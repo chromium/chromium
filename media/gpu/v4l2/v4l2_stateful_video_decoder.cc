@@ -319,6 +319,7 @@ void V4L2StatefulVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   CHECK_GE(v4l2_buffer->GetPlaneSize(/*plane=*/0), buffer->data_size());
   memcpy(dst, buffer->data(), buffer->data_size());
   v4l2_buffer->SetPlaneBytesUsed(0, buffer->data_size());
+  v4l2_buffer->SetTimeStamp(TimeDeltaToTimeVal(buffer->timestamp()));
 
   if (!std::move(*v4l2_buffer).QueueMMap()) {
     LOG(ERROR) << "Error while queuing input buffer!";
@@ -676,6 +677,8 @@ void V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers() {
     VLOGF(3) << "There's at least one |CAPTURE_queue_| buffer ready.";
     scoped_refptr<VideoFrame> video_frame = dequeued_buffer->GetVideoFrame();
     CHECK(video_frame);
+    video_frame->set_timestamp(
+        TimeValToTimeDelta(dequeued_buffer->GetTimeStamp()));
 
     //  For a V4L2_MEMORY_MMAP |CAPTURE_queue_| we wrap |video_frame| to return
     //  |dequeued_buffer| to |CAPTURE_queue_|, where they are "pooled". For a
