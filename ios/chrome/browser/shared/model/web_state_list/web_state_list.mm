@@ -498,7 +498,6 @@ std::unique_ptr<web::WebState> WebStateList::ReplaceWebStateAtImpl(
     }
   }
 
-  delegate_->WebStateDetached(replaced_web_state.get());
   return replaced_web_state;
 }
 
@@ -559,7 +558,6 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
     }
   }
 
-  delegate_->WebStateDetached(web_state);
   return detached_web_state;
 }
 

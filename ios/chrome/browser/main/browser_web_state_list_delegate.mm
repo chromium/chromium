@@ -20,5 +20,3 @@ void BrowserWebStateListDelegate::WillAddWebState(web::WebState* web_state) {
   // WebStateList has all the expected tab helpers.
   AttachTabHelpers(web_state, /*for_prerender=*/false);
 }
-
-void BrowserWebStateListDelegate::WebStateDetached(web::WebState* web_state) {}

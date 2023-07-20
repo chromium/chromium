@@ -22,7 +22,6 @@ class BrowserWebStateListDelegate : public WebStateListDelegate {
 
   // WebStateListDelegate implementation.
   void WillAddWebState(web::WebState* web_state) override;
-  void WebStateDetached(web::WebState* web_state) override;
 };
 
 #endif  // IOS_CHROME_BROWSER_MAIN_BROWSER_SHARED_MODEL_WEB_STATE_LIST_DELEGATE_H_

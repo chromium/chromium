@@ -63,7 +63,6 @@ class AllWebStateObservationForwarderTest : public PlatformTest,
 
   // WebStateListDelegate.
   void WillAddWebState(web::WebState* web_state) override {}
-  void WebStateDetached(web::WebState* web_state) override {}
 
  protected:
   WebStateList web_state_list_;

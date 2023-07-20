@@ -64,7 +64,6 @@ const char kErrorUkmMetric[] = "Error";
 
 class FakeWebStateListDelegate : public WebStateListDelegate {
   void WillAddWebState(web::WebState* web_state) override {}
-  void WebStateDetached(web::WebState* web_state) override {}
 };
 
 // Fake version of JS Feature which directly invokes the passed callback using

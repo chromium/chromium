@@ -41,7 +41,6 @@ class WebStateDependencyInstallerBridgeTest : public PlatformTest,
       : web_state_list_(this), installer_([[TestInstaller alloc] init]) {}
   // WebStateListDelegate.
   void WillAddWebState(web::WebState* web_state) override {}
-  void WebStateDetached(web::WebState* web_state) override {}
 
  protected:
   WebStateList web_state_list_;
