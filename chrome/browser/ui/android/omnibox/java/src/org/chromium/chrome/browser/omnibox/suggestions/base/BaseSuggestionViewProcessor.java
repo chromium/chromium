@@ -227,8 +227,10 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
 
         mFaviconFetcher.fetchFaviconWithBackoff(url, false, (icon, type) -> {
             if (icon != null) {
-                setSuggestionDrawableState(
-                        model, SuggestionDrawableState.Builder.forBitmap(mContext, icon).build());
+                setSuggestionDrawableState(model,
+                        SuggestionDrawableState.Builder.forBitmap(mContext, icon)
+                                .setUseRoundedCorners(true)
+                                .build());
             }
         });
     }

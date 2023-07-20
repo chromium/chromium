@@ -15,7 +15,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 
-import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionLayout.LayoutParams;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
@@ -33,6 +32,7 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
     public final @NonNull ImageView decorationIcon;
     public final @NonNull T contentView;
     public final @NonNull ActionChipsView actionChipsView;
+    public final @NonNull RoundedCornerOutlineProvider decorationIconOutline;
 
     private final List<ImageView> mActionButtons;
     private @Nullable Runnable mOnFocusViaSelectionListener;
@@ -48,9 +48,10 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
         setClickable(true);
         setFocusable(true);
 
+        decorationIconOutline = new RoundedCornerOutlineProvider();
+
         decorationIcon = new ImageView(getContext());
-        decorationIcon.setOutlineProvider(new RoundedCornerOutlineProvider(
-                getResources().getDimensionPixelSize(R.dimen.default_rounded_corner_radius)));
+        decorationIcon.setOutlineProvider(decorationIconOutline);
         decorationIcon.setScaleType(ImageView.ScaleType.FIT_CENTER);
         addView(decorationIcon,
                 LayoutParams.forViewType(LayoutParams.SuggestionViewType.DECORATION));

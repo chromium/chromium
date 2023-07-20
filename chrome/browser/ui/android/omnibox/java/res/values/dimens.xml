@@ -85,12 +85,13 @@ found in the LICENSE file.
     <dimen name="omnibox_carousel_suggestion_padding_smaller">5dp</dimen>
     <dimen name="omnibox_carousel_suggestion_padding_smallest">1dp</dimen>
     <dimen name="omnibox_carousel_suggestion_small_bottom_padding">4dp</dimen>
-    <dimen name="omnibox_carousel_icon_rounding_radius">4dp</dimen>
     <dimen name="omnibox_carousel_start_padding_reduction">4dp</dimen>
     <dimen name="omnibox_action_chips_container_height">48dp</dimen>
     <dimen name="omnibox_action_chip_spacing">8dp</dimen>
     <dimen name="omnibox_pedal_suggestion_icon_size">18dp</dimen>
     <dimen name="omnibox_pedal_suggestion_text_vertical_padding">6dp</dimen>
+    <dimen name="omnibox_small_icon_rounding_radius">4dp</dimen>
+    <dimen name="omnibox_large_icon_rounding_radius">@dimen/default_rounded_corner_radius</dimen>
 
     <dimen name="omnibox_suggestion_36dp_icon_size">36dp</dimen>
     <dimen name="omnibox_suggestion_24dp_icon_size">24dp</dimen>

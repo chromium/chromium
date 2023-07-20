@@ -529,6 +529,10 @@ public class BaseSuggestionViewBinderUnitTest {
                 mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_36dp_icon_margin_start);
         int endPaddingLarge =
                 mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_36dp_icon_margin_end);
+        int smallRoundingRadius =
+                mResources.getDimensionPixelSize(R.dimen.omnibox_small_icon_rounding_radius);
+        int largeRoundingRadius =
+                mResources.getDimensionPixelSize(R.dimen.omnibox_large_icon_rounding_radius);
 
         SuggestionDrawableState smallState =
                 SuggestionDrawableState.Builder.forColor(0).setUseRoundedCorners(true).build();
@@ -537,6 +541,7 @@ public class BaseSuggestionViewBinderUnitTest {
         assertEquals(0, mIconView.getPaddingBottom());
         assertEquals(smallPadding, mIconView.getPaddingStart());
         assertEquals(smallPadding, mIconView.getPaddingEnd());
+        assertEquals(smallRoundingRadius, mBaseView.decorationIconOutline.getRadiusForTesting());
 
         SuggestionDrawableState largeState = SuggestionDrawableState.Builder.forColor(0)
                                                      .setUseRoundedCorners(true)
@@ -547,5 +552,6 @@ public class BaseSuggestionViewBinderUnitTest {
         assertEquals(0, mIconView.getPaddingBottom());
         assertEquals(startPaddingLarge, mIconView.getPaddingStart());
         assertEquals(endPaddingLarge, mIconView.getPaddingEnd());
+        assertEquals(largeRoundingRadius, mBaseView.decorationIconOutline.getRadiusForTesting());
     }
 }

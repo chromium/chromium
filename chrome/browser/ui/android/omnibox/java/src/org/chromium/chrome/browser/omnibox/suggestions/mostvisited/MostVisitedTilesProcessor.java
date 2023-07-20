@@ -165,7 +165,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
 
                 tileModel.set(TileViewProperties.SMALL_ICON_ROUNDING_RADIUS,
                         mContext.getResources().getDimensionPixelSize(
-                                R.dimen.omnibox_carousel_icon_rounding_radius));
+                                R.dimen.omnibox_small_icon_rounding_radius));
                 if (mFaviconFetcher != null) {
                     mFaviconFetcher.fetchFaviconWithBackoff(url, true, (icon, type) -> {
                         tileModel.set(TileViewProperties.ICON, new BitmapDrawable(icon));

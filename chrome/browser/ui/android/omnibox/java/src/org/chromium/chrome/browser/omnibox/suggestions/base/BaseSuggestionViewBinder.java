@@ -77,6 +77,8 @@ public final class BaseSuggestionViewBinder<T extends View>
     private static int sEdgeSize;
     private static int sEdgeSizeLargeIcon;
     private static int sSideSpacing;
+    private static int sLargeIconRoundingRadius;
+    private static int sSmallIconRoundingRadius;
 
     public BaseSuggestionViewBinder(ViewBinder<PropertyModel, T, PropertyKey> contentBinder) {
         mContentBinder = contentBinder;
@@ -216,6 +218,8 @@ public final class BaseSuggestionViewBinder<T extends View>
 
             rciv.setPaddingRelative(paddingStart, 0, paddingEnd, 0);
             rciv.setClipToOutline(sds.useRoundedCorners);
+            baseView.decorationIconOutline.setRadius(
+                    sds.isLarge ? sLargeIconRoundingRadius : sSmallIconRoundingRadius);
         }
 
         updateIcon(rciv, sds, ChromeColors.getSecondaryIconTintRes(isIncognito(model)));
@@ -374,6 +378,10 @@ public final class BaseSuggestionViewBinder<T extends View>
         sEdgeSizeLargeIcon =
                 resources.getDimensionPixelSize(R.dimen.omnibox_suggestion_36dp_icon_size);
         sSideSpacing = OmniboxResourceProvider.getSideSpacing(context);
+        sLargeIconRoundingRadius =
+                resources.getDimensionPixelSize(R.dimen.omnibox_large_icon_rounding_radius);
+        sSmallIconRoundingRadius =
+                resources.getDimensionPixelSize(R.dimen.omnibox_small_icon_rounding_radius);
     }
 
     /** @return Cached ConstantState for testing. */
