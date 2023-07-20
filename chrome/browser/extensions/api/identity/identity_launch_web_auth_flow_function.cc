@@ -62,6 +62,8 @@ std::string ErrorToString(IdentityLaunchWebAuthFlowFunction::Error error) {
       return identity_constants::kPageLoadTimedOut;
     case IdentityLaunchWebAuthFlowFunction::Error::kCannotCreateWindow:
       return identity_constants::kCannotCreateWindow;
+    case IdentityLaunchWebAuthFlowFunction::Error::kInvalidURLScheme:
+      return identity_constants::kInvalidURLScheme;
   }
 }
 
@@ -99,6 +101,13 @@ ExtensionFunction::ResponseAction IdentityLaunchWebAuthFlowFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   GURL auth_url(params->details.url);
+  if (!auth_url.SchemeIsHTTPOrHTTPS()) {
+    Error error = Error::kInvalidURLScheme;
+
+    RecordHistogramFunctionResult(error);
+    return RespondNow(ExtensionFunction::Error(ErrorToString(error)));
+  }
+
   WebAuthFlow::Mode mode =
       params->details.interactive && *params->details.interactive
           ? WebAuthFlow::INTERACTIVE

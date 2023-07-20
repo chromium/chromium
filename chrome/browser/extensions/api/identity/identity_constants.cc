@@ -29,6 +29,9 @@ const char kInvalidConsentResult[] = "Returned an invalid consent result.";
 const char kCanceled[] = "canceled";
 const char kCannotCreateWindow[] =
     "Couldn't create a browser window to display an authorization page.";
+const char kInvalidURLScheme[] =
+    "The auth url has an invalid scheme. Only http:// and https:// schemes are "
+    "allowed.";
 
 const int kCachedRemoteConsentTTLSeconds = 1;
 }  // namespace identity_constants

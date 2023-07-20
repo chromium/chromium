@@ -58616,6 +58616,7 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="5" label="kUnexpectedError"/>
   <int value="6" label="kPageLoadTimedOut"/>
   <int value="7" label="kCannotCreateWindow"/>
+  <int value="8" label="kInvalidURLScheme"/>
 </enum>
 
 <enum name="LazyCSSParseUsage">

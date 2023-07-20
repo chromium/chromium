@@ -3647,6 +3647,25 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, UserCloseWindow) {
       IdentityLaunchWebAuthFlowFunction::Error::kUserRejected, 1);
 }
 
+// Regression test for http://b/290733700.
+IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest,
+                       SchemeOtherThanHttpOrHttpsNotAllowed) {
+  // Only http and https schemes are allowed.
+  GURL invalid_auth_url("chrome-untrusted://some_chrome_url");
+  scoped_refptr<IdentityLaunchWebAuthFlowFunction> function =
+      CreateLaunchWebAuthFlowFunction();
+
+  std::string args =
+      "[{\"interactive\": true, \"url\": \"" + invalid_auth_url.spec() + "\"}]";
+  RunFunctionAsync(function.get(), args);
+
+  EXPECT_EQ(std::string(errors::kInvalidURLScheme),
+            WaitForError(function.get()));
+  histogram_tester()->ExpectUniqueSample(
+      kLaunchWebAuthFlowResultHistogramName,
+      IdentityLaunchWebAuthFlowFunction::Error::kInvalidURLScheme, 1);
+}
+
 class LaunchWebAuthFlowFunctionTestWithBrowserTab
     : public LaunchWebAuthFlowFunctionTest {
  protected:

@@ -38,7 +38,8 @@ class IdentityLaunchWebAuthFlowFunction : public ExtensionFunction,
     kUnexpectedError = 5,
     kPageLoadTimedOut = 6,
     kCannotCreateWindow = 7,
-    kMaxValue = kCannotCreateWindow,
+    kInvalidURLScheme = 8,
+    kMaxValue = kInvalidURLScheme,
   };
 
   IdentityLaunchWebAuthFlowFunction();
