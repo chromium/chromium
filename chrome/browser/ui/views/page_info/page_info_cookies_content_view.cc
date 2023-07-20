@@ -273,7 +273,7 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
 
   third_party_cookies_row_->SetIcon(
       PageInfoViewFactory::GetThirdPartyCookiesIcon(
-          are_third_party_cookies_blocked));
+          !are_third_party_cookies_blocked));
   third_party_cookies_toggle_->SetIsOn(!are_third_party_cookies_blocked);
 
   const std::u16string toggle_subtitle =
