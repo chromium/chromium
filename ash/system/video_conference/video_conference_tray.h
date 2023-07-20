@@ -16,9 +16,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace gfx {
-class Canvas;
 struct VectorIcon;
 }  // namespace gfx
 
@@ -77,7 +77,7 @@ class VideoConferenceTrayButton : public IconButton {
   void UpdateCapturingState();
 
   // IconButton:
-  void PaintButtonContents(gfx::Canvas* canvas) override;
+  gfx::ImageSkia GetImageToPaint() override;
 
  private:
   // Updates the tooltip according to the medium the button is for, the toggle

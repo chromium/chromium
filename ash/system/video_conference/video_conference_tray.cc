@@ -32,6 +32,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "components/session_manager/session_manager_types.h"
+#include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkPaint.h"
+#include "third_party/skia/include/core/SkPoint.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -39,7 +43,9 @@
 #include "ui/color/color_id.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/image/canvas_image_source.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
@@ -48,8 +54,8 @@ namespace ash {
 namespace {
 
 constexpr float kTrayButtonsSpacing = 4;
-constexpr float kPrivacyIndicatorRadius = 4;
-constexpr float kIndicatorBorderWidth = 1;
+constexpr float kPrivacyIndicatorRadius = 3;
+constexpr float kIndicatorBorderWidth = 2;
 
 // Histogram names
 constexpr char kToggleButtonHistogramName[] =
@@ -131,6 +137,8 @@ VideoConferenceTrayButton::VideoConferenceTrayButton(
   SetBackgroundToggledColorId(cros_tokens::kCrosSysSystemNegativeContainer);
   SetIconToggledColorId(cros_tokens::kCrosSysSystemOnNegativeContainer);
 
+  SetBackgroundColorId(cros_tokens::kCrosSysSystemOnBase1);
+
   SetToggledVectorIcon(*toggled_icon);
 
   SetAccessibleRole(ax::mojom::Role::kToggleButton);
@@ -175,35 +183,77 @@ void VideoConferenceTrayButton::UpdateCapturingState() {
   SchedulePaint();
 }
 
-void VideoConferenceTrayButton::PaintButtonContents(gfx::Canvas* canvas) {
-  IconButton::PaintButtonContents(canvas);
+gfx::ImageSkia VideoConferenceTrayButton::GetImageToPaint() {
+  auto image_skia = IconButton::GetImageToPaint();
 
-  if (!show_privacy_indicator_)
-    return;
+  // If we show the privacy indicator, we need to manipulate the image to draw
+  // this indicator.
+  if (!show_privacy_indicator_) {
+    return image_skia;
+  }
 
-  const gfx::RectF bounds(GetContentsBounds());
-  auto image = GetImageToPaint();
-  auto indicator_origin_x = (bounds.width() - image.width()) / 2 +
-                            image.width() - kPrivacyIndicatorRadius;
-  auto indicator_origin_y = (bounds.height() - image.height()) / 2 +
-                            image.height() - kPrivacyIndicatorRadius;
+  const SkBitmap* bitmap = image_skia.bitmap();
+  int width = bitmap->width();
+  int height = bitmap->height();
 
-  cc::PaintFlags flags;
-  flags.setStyle(cc::PaintFlags::kFill_Style);
-  flags.setAntiAlias(true);
+  // Since the original `bitmap` is marked as immutable. We need to create a new
+  // instance of bitmap to manipulate its content.
+  SkBitmap manipulated_bitmap;
+  manipulated_bitmap.allocN32Pixels(width, height);
+  manipulated_bitmap.eraseColor(SK_ColorTRANSPARENT);
 
-  // Draw the outer border of the green dot.
-  flags.setColor(GetBackgroundColor());
-  canvas->DrawCircle(
-      gfx::PointF(indicator_origin_x - kIndicatorBorderWidth / 2,
-                  indicator_origin_y - kIndicatorBorderWidth / 2),
-      kPrivacyIndicatorRadius + kIndicatorBorderWidth, flags);
+  // Copy all the color in each location of `bitmap` to `manipulated_bitmap`.
+  for (int y = 0; y < height; y++) {
+    const SkColor* src_color =
+        reinterpret_cast<SkColor*>(bitmap->getAddr32(0, y));
+    SkColor* preview_color =
+        reinterpret_cast<SkColor*>(manipulated_bitmap.getAddr32(0, y));
 
-  // Draw the green dot privacy indicator.
-  flags.setColor(
+    for (int x = 0; x < width; x++) {
+      SkColor target_color;
+
+      if (SkColorGetA(src_color[x]) < 1) {
+        target_color = SK_ColorTRANSPARENT;
+      } else {
+        target_color = src_color[x];
+      }
+
+      preview_color[x] = target_color;
+    }
+  }
+
+  // Use a canvas to perform DST_OUT and SRC_OVER operations and draw the green
+  // privacy indicator and the ring around it.
+  SkCanvas canvas(manipulated_bitmap);
+
+  SkPoint circle_center = SkPoint::Make(
+      image_skia.width() - kPrivacyIndicatorRadius - kIndicatorBorderWidth,
+      image_skia.height() - kPrivacyIndicatorRadius - kIndicatorBorderWidth);
+
+  SkPaint paint_outer_ring;
+  paint_outer_ring.setStyle(SkPaint::kFill_Style);
+  paint_outer_ring.setAntiAlias(true);
+
+  // DST_OUT operation to draw the circle act as the ring around the green
+  // privacy indicator. Note that we need to use DST_OUT operation here to erase
+  // the portion of the icon that overlap with the ring.
+  paint_outer_ring.setBlendMode(SkBlendMode::kDstOut);
+  canvas.drawCircle(circle_center,
+                    kPrivacyIndicatorRadius + kIndicatorBorderWidth,
+                    paint_outer_ring);
+
+  SkPaint paint_circle;
+  paint_circle.setColor(
       GetColorProvider()->GetColor(ui::kColorAshPrivacyIndicatorsBackground));
-  canvas->DrawCircle(gfx::PointF(indicator_origin_x, indicator_origin_y),
-                     kPrivacyIndicatorRadius, flags);
+  paint_circle.setStyle(SkPaint::kFill_Style);
+  paint_circle.setAntiAlias(true);
+
+  // SRC_OVER operation to paint the green privacy indicator at the center of
+  // the ring.
+  paint_circle.setBlendMode(SkBlendMode::kSrcOver);
+  canvas.drawCircle(circle_center, kPrivacyIndicatorRadius, paint_circle);
+
+  return gfx::ImageSkia::CreateFrom1xBitmap(manipulated_bitmap);
 }
 
 void VideoConferenceTrayButton::UpdateTooltip() {
@@ -310,8 +360,9 @@ std::u16string VideoConferenceTray::GetAccessibleNameForBubble() {
 
 void VideoConferenceTray::HideBubbleWithView(
     const TrayBubbleView* bubble_view) {
-  if (bubble_ && bubble_->bubble_view() == bubble_view)
+  if (bubble_ && bubble_->bubble_view() == bubble_view) {
     CloseBubble();
+  }
 }
 
 void VideoConferenceTray::ClickedOutsideBubble() {

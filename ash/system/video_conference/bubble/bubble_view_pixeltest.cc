@@ -278,7 +278,7 @@ TEST_F(BubbleViewPixelTest, ReturnToAppLinux) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_tray_linux_bubble_one_app",
-      /*revision_number=*/0, video_conference_tray()->GetBubbleView()));
+      /*revision_number=*/1, video_conference_tray()->GetBubbleView()));
 
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/true,
@@ -293,7 +293,7 @@ TEST_F(BubbleViewPixelTest, ReturnToAppLinux) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "video_conference_tray_linux_bubble_two_app",
-      /*revision_number=*/0, video_conference_tray()->GetBubbleView()));
+      /*revision_number=*/1, video_conference_tray()->GetBubbleView()));
 }
 
 TEST_F(BubbleViewPixelTest, OneToggleEffects) {
