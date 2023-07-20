@@ -21,7 +21,7 @@ __handlers = {
 }
 
 def __step_config(ctx, step_config):
-    remote_run = config.get(ctx, "remote_nasm") or config.get(ctx, "remote_all")
+    remote_run = True  # Turn this to False when you do file access trace.
     rules = []
     for toolchain in ["", "clang_x64"]:
         nasm_path = path.join(toolchain, "nasm")

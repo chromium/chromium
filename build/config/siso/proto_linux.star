@@ -25,7 +25,7 @@ __handlers = {
 }
 
 def __step_config(ctx, step_config):
-    remote_run = config.get(ctx, "remote_proto") or config.get(ctx, "remote_all")
+    remote_run = True  # Turn this to False when you do file access trace.
     step_config["input_deps"].update({
         "third_party/dom_distiller_js/protoc_plugins/util/plugin_protos.py": [
             "third_party/protobuf/python/google:pyprotolib",

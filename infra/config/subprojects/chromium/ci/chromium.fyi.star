@@ -1280,7 +1280,7 @@ def build_perf_builder(description_html, **kwargs):
         siso_enable_cloud_profiler = True,
         siso_enable_cloud_trace = True,
         siso_project = siso.project.DEFAULT_UNTRUSTED,
-        siso_configs = ["remote_all", "remote_to_reproxy"],
+        siso_configs = ["remote_to_reproxy"],
         notifies = ["chrome-build-perf"],
         description_html = description_html + "<br>Build stats is show in http://shortn/_gaAdI3x6o6.",
         **kwargs
