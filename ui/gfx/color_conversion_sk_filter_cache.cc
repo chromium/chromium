@@ -268,7 +268,7 @@ sk_sp<SkImage> ColorConversionSkFilterCache::ConvertImage(
       return image->makeColorSpace(graphite_recorder, target_color_space,
                                    props);
     } else {
-      return image->makeColorSpace(target_color_space, gr_context);
+      return image->makeColorSpace(gr_context, target_color_space);
     }
   }
 
@@ -287,7 +287,7 @@ sk_sp<SkImage> ColorConversionSkFilterCache::ConvertImage(
         return image->makeColorSpace(graphite_recorder, target_color_space,
                                      props);
       } else {
-        return image->makeColorSpace(target_color_space, gr_context);
+        return image->makeColorSpace(gr_context, target_color_space);
       }
   }
 

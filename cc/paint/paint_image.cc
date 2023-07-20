@@ -260,8 +260,8 @@ bool PaintImage::DecodeFromSkImage(SkPixmap pixmap,
   auto image = GetSkImageForFrame(frame_index, client_id);
   DCHECK(image);
   if (color_space) {
-    image = image->makeColorSpace(color_space,
-                                  static_cast<GrDirectContext*>(nullptr));
+    image = image->makeColorSpace(static_cast<GrDirectContext*>(nullptr),
+                                  color_space);
     if (!image)
       return false;
   }

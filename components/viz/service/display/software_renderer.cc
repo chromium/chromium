@@ -855,7 +855,7 @@ sk_sp<SkShader> SoftwareRenderer::GetBackdropFilterShader(
     // Crop the source image to the backdrop_filter_bounds.
     sk_sp<SkImage> cropped_image = SkImages::RasterFromBitmap(backdrop_bitmap);
     cropped_image = cropped_image->makeSubset(
-        RectToSkIRect(filter_clip), static_cast<GrDirectContext*>(nullptr));
+        static_cast<GrDirectContext*>(nullptr), RectToSkIRect(filter_clip));
     cropped_image->asLegacyBitmap(&backdrop_bitmap);
     image_offset = filter_clip.origin();
   }

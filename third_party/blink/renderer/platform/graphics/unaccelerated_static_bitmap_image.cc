@@ -114,10 +114,11 @@ UnacceleratedStaticBitmapImage::ConvertToColorSpace(
   sk_sp<SkImage> skia_image = PaintImageForCurrentFrame().GetSwSkImage();
   // If we don't need to change the color type, use SkImage::makeColorSpace()
   if (skia_image->colorType() == color_type) {
-    skia_image = skia_image->makeColorSpace(color_space);
+    skia_image = skia_image->makeColorSpace(
+        static_cast<GrDirectContext*>(nullptr), color_space);
   } else {
-    skia_image =
-        skia_image->makeColorTypeAndColorSpace(color_type, color_space);
+    skia_image = skia_image->makeColorTypeAndColorSpace(
+        static_cast<GrDirectContext*>(nullptr), color_type, color_space);
   }
   if (UNLIKELY(!skia_image)) {
     // Null value indicates that skia failed to allocate the destination

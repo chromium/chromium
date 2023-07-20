@@ -465,8 +465,8 @@ sk_sp<SkImage> MakeTextureImage(viz::RasterContextProvider* context,
   // Step 2: Apply a color-space conversion if necessary.
   if (uploaded_image && target_color_space) {
     sk_sp<SkImage> pre_converted_image = uploaded_image;
-    uploaded_image = uploaded_image->makeColorSpace(target_color_space,
-                                                    context->GrContext());
+    uploaded_image = uploaded_image->makeColorSpace(context->GrContext(),
+                                                    target_color_space);
 
     if (uploaded_image != pre_converted_image)
       DeleteSkImageAndPreventCaching(context, std::move(pre_converted_image));
@@ -3542,8 +3542,8 @@ sk_sp<SkImage> GpuImageDecodeCache::CreateImageFromYUVATexturesInternal(
       context_->GrContext(), yuva_backend_textures,
       std::move(decoded_color_space));
   if (target_color_space && yuva_image) {
-    return yuva_image->makeColorSpace(target_color_space,
-                                      context_->GrContext());
+    return yuva_image->makeColorSpace(context_->GrContext(),
+                                      target_color_space);
   }
 
   return yuva_image;
