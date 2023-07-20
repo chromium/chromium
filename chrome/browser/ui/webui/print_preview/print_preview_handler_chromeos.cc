@@ -24,6 +24,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_handler.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
+#include "chrome/browser/ui/webui/print_preview/print_preview_utils.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
 #include "chrome/common/printing/printer_capabilities.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
@@ -214,6 +215,7 @@ void PrintPreviewHandlerChromeOS::SendPrinterSetup(
     return;
   }
 
+  FilterContinuousFeedMediaSizes(*caps_value);
   base::Value::Dict response;
   response.Set("printerId", printer_name);
   response.Set("capabilities", std::move(*caps_value));

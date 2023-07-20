@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/webui/print_preview/policy_settings.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_metrics.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
+#include "chrome/browser/ui/webui/print_preview/print_preview_utils.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -1290,6 +1291,64 @@ TEST_F(PrintPreviewHandlerTest, GetNoDenyListPrinterCapabilities) {
 
     ValidatePrinterCapabilities(callback_id_in, is_allowed_type);
   }
+}
+
+TEST_F(PrintPreviewHandlerTest, GetPrinterCapabilitiesContinuousMedia) {
+  // Add two media sizes to our printer - one with discrete sizes and one with
+  // continuous feed.  The continuous feed media should get filtered out when
+  // the capabilities are retrieved.
+  base::Value::Dict media_1;
+  media_1.Set("width_microns", 100);
+  media_1.Set("height_microns", 200);
+  base::Value::Dict media_2;
+  media_2.Set("width_microns", 300);
+  media_2.Set("is_continuous_feed", true);
+  // After filtering, the expected media will just have the discrete media.
+  base::Value::List expected_media;
+  expected_media.Append(media_1.Clone());
+
+  base::Value::List option_list;
+  option_list.Append(std::move(media_1));
+  option_list.Append(std::move(media_2));
+  base::Value::Dict media_size;
+  media_size.Set("option", std::move(option_list));
+  base::Value::Dict printer;
+  printer.Set("media_size", std::move(media_size));
+  base::Value::Dict cdd;
+  cdd.Set("printer", std::move(printer));
+
+  ASSERT_EQ(1u, printers().size());
+  printers()[0].capabilities.Set(kSettingCapabilities, std::move(cdd));
+  printer_handler()->SetPrinters(printers());
+
+  const base::Value::Dict* capabilities =
+      printers()[0].capabilities.FindDict(kSettingCapabilities);
+  ASSERT_TRUE(capabilities);
+  const base::Value::List* options = GetMediaSizeOptionsFromCdd(*capabilities);
+
+  ASSERT_TRUE(options);
+  EXPECT_EQ(2u, options->size());
+
+  // Initial settings first to enable javascript.
+  Initialize();
+
+  std::string callback_id_in = "test-callback-id";
+  handler()->reset_calls();
+  SendGetPrinterCapabilities(mojom::PrinterType::kLocal, callback_id_in,
+                             test::kPrinterName);
+  ASSERT_EQ(2u, web_ui()->call_data().size());
+
+  // Validate printer capabilities only has one media type (the continuous feed
+  // option should get filtered out).
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  CheckWebUIResponse(data, callback_id_in, true);
+  ASSERT_TRUE(data.arg3()->is_dict());
+  const base::Value::Dict& settings = data.arg3()->GetDict();
+  capabilities = settings.FindDict(kSettingCapabilities);
+  ASSERT_TRUE(capabilities);
+  options = GetMediaSizeOptionsFromCdd(*capabilities);
+  ASSERT_TRUE(options);
+  EXPECT_EQ(expected_media, *options);
 }
 
 TEST_F(PrintPreviewHandlerTest, Print) {

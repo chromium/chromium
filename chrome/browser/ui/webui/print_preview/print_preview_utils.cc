@@ -43,6 +43,8 @@ const char kTypeKey[] = "type";
 const char kDpiCapabilityKey[] = "dpi";
 const char kHorizontalDpi[] = "horizontal_dpi";
 const char kVerticalDpi[] = "vertical_dpi";
+const char kMediaSizeKey[] = "media_size";
+const char kIsContinuousFeed[] = "is_continuous_feed";
 
 // The dictionary key for the CDD item containing custom vendor capabilities.
 const char kVendorCapabilityKey[] = "vendor_capability";
@@ -213,6 +215,37 @@ base::Value::Dict UpdateCddWithDpiIfMissing(base::Value::Dict cdd) {
     printer->Set(kDpiCapabilityKey, std::move(dpi_capability));
   }
   return cdd;
+}
+
+const base::Value::List* GetMediaSizeOptionsFromCdd(
+    const base::Value::Dict& cdd) {
+  const base::Value::Dict* printer = cdd.FindDict(kPrinter);
+  if (!printer) {
+    return nullptr;
+  }
+  const base::Value::Dict* media_size = printer->FindDict(kMediaSizeKey);
+  if (!media_size) {
+    return nullptr;
+  }
+  return media_size->FindList(kOptionKey);
+}
+
+void FilterContinuousFeedMediaSizes(base::Value::Dict& cdd) {
+  // OK to const_cast here since `cdd` started off non-const.
+  base::Value::List* options =
+      const_cast<base::Value::List*>(GetMediaSizeOptionsFromCdd(cdd));
+  if (!options) {
+    return;
+  }
+
+  options->EraseIf([](const base::Value& item) {
+    const base::Value::Dict* item_dict = item.GetIfDict();
+    if (!item_dict) {
+      return false;
+    }
+    absl::optional<bool> is_continuous = item_dict->FindBool(kIsContinuousFeed);
+    return is_continuous.value_or(false);
+  });
 }
 
 void ConvertPrinterListForCallback(

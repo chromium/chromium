@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/webui/print_preview/policy_settings.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_metrics.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
+#include "chrome/browser/ui/webui/print_preview/print_preview_utils.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/crash_keys.h"
@@ -1007,7 +1008,9 @@ void PrintPreviewHandler::SendPrinterCapabilities(
     const std::string& callback_id,
     base::Value::Dict settings_info) {
   // Check that |settings_info| is valid.
-  if (settings_info.FindDict(kSettingCapabilities)) {
+  base::Value::Dict* settings = settings_info.FindDict(kSettingCapabilities);
+  if (settings) {
+    FilterContinuousFeedMediaSizes(*settings);
     VLOG(1) << "Get printer capabilities finished";
     ResolveJavascriptCallback(base::Value(callback_id), settings_info);
     return;

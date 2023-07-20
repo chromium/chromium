@@ -47,6 +47,14 @@ base::Value::Dict ValidateCddForPrintPreview(base::Value::Dict cdd);
 // Assumes `cdd` is the output from ValidateCddForPrintPreview().
 base::Value::Dict UpdateCddWithDpiIfMissing(base::Value::Dict cdd);
 
+// Returns the list of media size options from the `cdd`, or nullptr if it does
+// not exist.  Returns a pointer into `cdd`.
+const base::Value::List* GetMediaSizeOptionsFromCdd(
+    const base::Value::Dict& cdd);
+
+// Updates `cdd` by removing all continuous feed media size options.
+void FilterContinuousFeedMediaSizes(base::Value::Dict& cdd);
+
 // Starts a local print of `print_data` with print settings dictionary
 // `job_settings`. Runs `callback` on failure or success.
 void StartLocalPrint(base::Value::Dict job_settings,
