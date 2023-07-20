@@ -66,6 +66,13 @@ class AllocatorState {
   // stack traces. (Stack trace entries take ~3.5 bytes on average.)
   static constexpr size_t kMaxPackedTraceLength = 400;
 
+  // Maximum number of stack trace frames collected by the Lightweight UAF
+  // Detector.
+  static constexpr size_t kMaxLightweightStackFrames = 25;
+  // Number of bytes allocated by the Lightweight UAF Detector for a packed
+  // deallocation stack trace. (Allocation stack traces aren't collected.)
+  static constexpr size_t kMaxLightweightPackedTraceLength = 90;
+
   static_assert(std::numeric_limits<SlotIdx>::max() >= kMaxReservedSlots,
                 "SlotIdx can hold all possible slot index values");
   static_assert(std::numeric_limits<MetadataIdx>::max() >= kMaxMetadata - 1,
@@ -90,24 +97,24 @@ class AllocatorState {
     kErrorOutdatedMetadataIndex = 4,
   };
 
+  // Information saved for allocations and deallocations.
+  struct AllocationInfo {
+    // (De)allocation thread id or base::kInvalidThreadId if no (de)allocation
+    // occurred.
+    uint64_t tid = base::kInvalidThreadId;
+    // Length used to encode the packed stack trace.
+    uint16_t trace_len = 0;
+    // Whether a stack trace has been collected for this (de)allocation.
+    bool trace_collected = false;
+
+    static_assert(std::numeric_limits<decltype(trace_len)>::max() >=
+                      kMaxPackedTraceLength - 1,
+                  "trace_len can hold all possible length values.");
+  };
+
   // Structure for storing data about a slot.
   struct SlotMetadata {
     SlotMetadata();
-
-    // Information saved for allocations and deallocations.
-    struct AllocationInfo {
-      // (De)allocation thread id or base::kInvalidThreadId if no (de)allocation
-      // occurred.
-      uint64_t tid = base::kInvalidThreadId;
-      // Length used to encode the packed stack trace.
-      uint16_t trace_len = 0;
-      // Whether a stack trace has been collected for this (de)allocation.
-      bool trace_collected = false;
-
-      static_assert(std::numeric_limits<decltype(trace_len)>::max() >=
-                        kMaxPackedTraceLength - 1,
-                    "trace_len can hold all possible length values.");
-    };
 
     // Size of the allocation
     size_t alloc_size = 0;
@@ -122,6 +129,19 @@ class AllocatorState {
     uint8_t stack_trace_pool[kMaxPackedTraceLength];
 
     AllocationInfo alloc;
+    AllocationInfo dealloc;
+  };
+
+  struct LightweightSlotMetadata {
+    LightweightSlotMetadata();
+
+    // Size of the allocation
+    size_t alloc_size = 0;
+    // The allocation address.
+    uintptr_t alloc_ptr = 0;
+    // Unlike `SlotMetadata` above, only holds the deallocation stack trace.
+    uint8_t deallocation_stack_trace[kMaxLightweightPackedTraceLength];
+
     AllocationInfo dealloc;
 
     // Used by the lightweight UAF detector to make sure the metadata entry
@@ -183,15 +203,15 @@ class AllocatorState {
 
   // Returns a reference to the metadata entry in the lightweight detector's
   // ring buffer. Different IDs may point to the same slot.
-  AllocatorState::SlotMetadata& GetLightweightSlotMetadataById(
+  AllocatorState::LightweightSlotMetadata& GetLightweightSlotMetadataById(
       LightweightDetector::MetadataId,
-      SlotMetadata* metadata_arr);
+      LightweightSlotMetadata* metadata_arr);
 
   // The relationship between a metadata slot and an ID is one-to-many.
   // This function returns true if the ID stored in the slot matches
   // the ID that's used to access the slot.
   bool HasLightweightMetadataForId(LightweightDetector::MetadataId,
-                                   SlotMetadata* metadata_arr);
+                                   LightweightSlotMetadata* metadata_arr);
 
   uintptr_t pages_base_addr = 0;     // Points to start of mapped region.
   uintptr_t pages_end_addr = 0;      // Points to the end of mapped region.
@@ -230,6 +250,9 @@ static_assert(std::is_trivially_copyable<AllocatorState>(),
               "AllocatorState must be POD");
 static_assert(std::is_trivially_copyable<AllocatorState::SlotMetadata>(),
               "AllocatorState::SlotMetadata must be POD");
+static_assert(
+    std::is_trivially_copyable<AllocatorState::LightweightSlotMetadata>(),
+    "AllocatorState::LightweightSlotMetadata must be POD");
 
 }  // namespace internal
 }  // namespace gwp_asan

@@ -224,10 +224,10 @@ bool CrashAnalyzer::AnalyzeLightweightDetectorCrash(
 
   size_t slot_count = valid_state.num_lightweight_detector_metadata;
   auto metadata_arr =
-      std::make_unique<AllocatorState::SlotMetadata[]>(slot_count);
+      std::make_unique<AllocatorState::LightweightSlotMetadata[]>(slot_count);
   if (!process_snapshot.Memory()->Read(
           valid_state.lightweight_detector_metadata_addr,
-          sizeof(AllocatorState::SlotMetadata) * slot_count,
+          sizeof(AllocatorState::LightweightSlotMetadata) * slot_count,
           metadata_arr.get())) {
     ReportHistogram(
         Crash_Allocator_PARTITIONALLOC,
@@ -334,8 +334,9 @@ bool CrashAnalyzer::AnalyzeLightweightDetectorCrash(
   proto->set_allocation_size(metadata.alloc_size);
   if (metadata.dealloc.tid != base::kInvalidThreadId ||
       metadata.dealloc.trace_len) {
-    ReadAllocationInfo(metadata.stack_trace_pool, metadata.alloc.trace_len,
-                       metadata.dealloc, proto->mutable_deallocation());
+    ReadAllocationInfo(metadata.deallocation_stack_trace,
+                       /* stack_trace_offset = */ 0, metadata.dealloc,
+                       proto->mutable_deallocation());
   }
 
   ReportHistogram(Crash_Allocator_PARTITIONALLOC,
@@ -423,7 +424,7 @@ bool CrashAnalyzer::AnalyzeCrashedAllocator(
   }
 
   if (ret == GetMetadataReturnType::kGwpAsanCrash) {
-    SlotMetadata& metadata = metadata_arr[metadata_idx];
+    AllocatorState::SlotMetadata& metadata = metadata_arr[metadata_idx];
     AllocatorState::ErrorType error_type =
         valid_state.GetErrorType(exception_addr, metadata.alloc.trace_collected,
                                  metadata.dealloc.trace_collected);
@@ -448,7 +449,7 @@ bool CrashAnalyzer::AnalyzeCrashedAllocator(
 void CrashAnalyzer::ReadAllocationInfo(
     const uint8_t* stack_trace,
     size_t stack_trace_offset,
-    const SlotMetadata::AllocationInfo& slot_info,
+    const AllocatorState::AllocationInfo& slot_info,
     gwp_asan::Crash_AllocationInfo* proto_info) {
   if (slot_info.tid != base::kInvalidThreadId)
     proto_info->set_thread_id(slot_info.tid);

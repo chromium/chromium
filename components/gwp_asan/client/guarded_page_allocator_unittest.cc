@@ -417,8 +417,6 @@ TEST_F(LightweightDetectorAllocatorTest, PoisonAlloc) {
       *metadata_id, gpa_.lightweight_detector_metadata_.get());
   EXPECT_EQ(metadata.alloc_ptr, reinterpret_cast<uintptr_t>(&alloc));
   EXPECT_EQ(metadata.alloc_size, sizeof(alloc));
-  EXPECT_EQ(metadata.alloc.trace_collected, false);
-  EXPECT_EQ(metadata.alloc.trace_len, 0u);
   EXPECT_EQ(metadata.dealloc.trace_collected, true);
   EXPECT_NE(metadata.dealloc.trace_len, 0u);
 }
