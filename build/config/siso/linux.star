@@ -103,15 +103,15 @@ def __step_config(ctx, step_config):
     if reproxy_from_rewrapper.enabled(ctx):
         step_config = __disable_remote_b281663988(step_config)
         step_config = reproxy_from_rewrapper.step_config(ctx, step_config)
-        if config.get(ctx, "remote_to_reproxy"):
-            # Exclude mojo and clang. Already covered by reproxy_from_rewrapper.
-            # (Duplicate rules are not allowed, so it wouldn't work anyway.)
-            if android.enabled(ctx):
-                step_config = android.step_config(ctx, step_config)
-            step_config = nacl.step_config(ctx, step_config)
-            step_config = nasm.step_config(ctx, step_config)
-            step_config = proto.step_config(ctx, step_config)
-            step_config = reproxy_from_remote.step_config(ctx, step_config)
+
+        # Exclude mojo and clang. Already covered by reproxy_from_rewrapper.
+        # (Duplicate rules are not allowed, so it wouldn't work anyway.)
+        if android.enabled(ctx):
+            step_config = android.step_config(ctx, step_config)
+        step_config = nacl.step_config(ctx, step_config)
+        step_config = nasm.step_config(ctx, step_config)
+        step_config = proto.step_config(ctx, step_config)
+        step_config = reproxy_from_remote.step_config(ctx, step_config)
     elif remote_exec_wrapper.enabled(ctx):
         step_config = __disable_remote_b281663988(step_config)
         step_config = remote_exec_wrapper.step_config(ctx, step_config)
