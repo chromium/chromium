@@ -228,6 +228,9 @@ void SystemToastStyle::AddedToWidget() {
 
   // Update shadow content bounds with the bounds of widget layer.
   shadow_->SetContentBounds(gfx::Rect(widget_layer->bounds().size()));
+
+  // Make shadow observe the theme change of the widget.
+  shadow_->ObserveColorProviderSource(GetWidget());
 }
 
 void SystemToastStyle::UpdateInsideBorderInsets() {

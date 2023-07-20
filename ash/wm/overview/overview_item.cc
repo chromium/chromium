@@ -1316,6 +1316,7 @@ void OverviewItem::CreateItemWidget() {
   auto* widget_layer = item_widget_->GetLayer();
   widget_layer->Add(shadow_layer);
   widget_layer->StackAtBottom(shadow_layer);
+  shadow_->ObserveColorProviderSource(item_widget_.get());
 
   overview_item_view_ =
       item_widget_->SetContentsView(std::make_unique<OverviewItemView>(

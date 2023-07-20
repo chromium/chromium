@@ -211,6 +211,7 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
       0, -menu_size.height() - kVerticalPosition);
   menu_view_->layer()->SetTransform(initial_transform);
   menu_view_->shadow()->SetContentBounds(gfx::Rect(menu_size));
+  menu_view_->shadow()->ObserveColorProviderSource(widget_.get());
 
   // Showing the widget can change native focus (which would result in an
   // immediate closing of the menu). Only start observing after shown.
