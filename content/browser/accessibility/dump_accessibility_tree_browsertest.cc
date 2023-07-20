@@ -3107,15 +3107,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 // TODO(crbug.com/1367886):  Enable once thread flakiness is resolved.
-#if defined(THREAD_SANITIZER)
-#define MAYBE_AccessibilitySvgTextAlternativeComputation \
-  DISABLED_AccessibilitySvgTextAlternativeComputation
-#else
-#define MAYBE_AccessibilitySvgTextAlternativeComputation \
-  AccessibilitySvgTextAlternativeComputation
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilitySvgTextAlternativeComputation) {
+                       DISABLED_AccessibilitySvgTextAlternativeComputation) {
   RunHtmlTest(FILE_PATH_LITERAL("svg-text-alternative-computation.html"));
 }
 
