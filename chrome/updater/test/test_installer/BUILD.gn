@@ -1,0 +1,55 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+executable("test_meta_installer") {
+  testonly = true
+
+  sources = [
+    "main.cc",
+    "test_installer.rc",
+  ]
+  deps = [
+    "//base",
+    "//chrome/updater/win/installer:lib",
+  ]
+}
+
+copy("test_installer") {
+  testonly = true
+
+  sources = [
+    "$root_out_dir/test_meta_installer.exe",
+    "//chrome/tools/build/win/resedit.py",
+    "create_test_installer_gn_wrapper.py",
+    "embed_install_scripts.py",
+  ]
+
+  deps = [ ":test_meta_installer" ]
+
+  outputs = [ "$root_out_dir/test_installer/{{source_file_part}}" ]
+}
+
+action("test_app1_installer") {
+  testonly = true
+  script = "$root_out_dir/test_installer/create_test_installer_gn_wrapper.py"
+
+  inputs = [
+    script,
+    "test_app1_setup.py",
+  ]
+
+  output_installer = "$root_out_dir/test_installer/TestApp1Setup.exe"
+  outputs = [ output_installer ]
+
+  args = [
+    "--installer",
+    rebase_path("$root_out_dir/test_installer/test_meta_installer.exe",
+                root_out_dir),
+    "--output",
+    rebase_path(output_installer, root_out_dir),
+    "--script",
+    rebase_path("test_app1_setup.py"),
+  ]
+  deps = [ ":test_installer" ]
+}
