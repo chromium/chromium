@@ -287,6 +287,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableUserActivationSameOriginVisibility,
      raw_ref(features::kUserActivationSameOriginVisibility)},
     {wf::EnableVideoPlaybackQuality, raw_ref(features::kVideoPlaybackQuality)},
+    {wf::EnableViewportSegments, raw_ref(features::kViewportSegments)},
     {wf::EnableWebBluetooth, raw_ref(features::kWebBluetooth),
      kSetOnlyIfOverridden},
     {wf::EnableWebBluetoothGetDevices,

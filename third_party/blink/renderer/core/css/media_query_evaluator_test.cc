@@ -685,7 +685,7 @@ TEST(MediaQueryEvaluatorTest, CachedPrefersReducedTransparency) {
 }
 
 TEST(MediaQueryEvaluatorTest, CachedViewportSegments) {
-  ScopedCSSFoldablesForTest scoped_feature(true);
+  ScopedViewportSegmentsForTest scoped_feature(true);
 
   MediaValuesCached::MediaValuesCachedData data;
   {

@@ -235,7 +235,7 @@ static inline bool FeatureExpectingInteger(const String& media_feature) {
     return true;
   }
 
-  if (RuntimeEnabledFeatures::CSSFoldablesEnabled()) {
+  if (RuntimeEnabledFeatures::ViewportSegmentsEnabled()) {
     if (media_feature ==
             media_feature_names::kHorizontalViewportSegmentsMediaFeature ||
         media_feature ==

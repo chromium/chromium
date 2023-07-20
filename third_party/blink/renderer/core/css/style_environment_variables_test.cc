@@ -489,7 +489,7 @@ TEST_F(StyleEnvironmentVariablesTest, KeyboardInset_AfterLoad) {
 }
 
 TEST_F(StyleEnvironmentVariablesTest, TwoDimensionalVariables_BasicResolve) {
-  ScopedCSSFoldablesForTest scoped_feature(true);
+  ScopedViewportSegmentsForTest scoped_feature(true);
   String env_contents("viewport-segment-top 1 0");
   InitializeTestPageWithVariableNamed(GetFrame(), env_contents);
   SetTwoDimensionalVariableOnRoot(
@@ -506,7 +506,7 @@ TEST_F(StyleEnvironmentVariablesTest, TwoDimensionalVariables_BasicResolve) {
 }
 
 TEST_F(StyleEnvironmentVariablesTest, TwoDimensionalVariables_UpdateValue) {
-  ScopedCSSFoldablesForTest scoped_feature(true);
+  ScopedViewportSegmentsForTest scoped_feature(true);
   String env_contents("viewport-segment-top 1 0");
   InitializeTestPageWithVariableNamed(GetFrame(), env_contents);
   SetTwoDimensionalVariableOnRoot(
@@ -531,7 +531,7 @@ TEST_F(StyleEnvironmentVariablesTest, TwoDimensionalVariables_UpdateValue) {
 
 TEST_F(StyleEnvironmentVariablesTest,
        TwoDimensionalVariables_UndefinedFallsBack) {
-  ScopedCSSFoldablesForTest scoped_feature(true);
+  ScopedViewportSegmentsForTest scoped_feature(true);
   String env_contents(
       "viewport-segment-width 10 20, env(viewport-segment-width 0 0, blue)");
   InitializeTestPageWithVariableNamed(GetFrame(), env_contents);
@@ -550,7 +550,7 @@ TEST_F(StyleEnvironmentVariablesTest,
 
 TEST_F(StyleEnvironmentVariablesTest,
        TwoDimensionalVariables_IncorrectDimensionsFallsBack) {
-  ScopedCSSFoldablesForTest scoped_feature(true);
+  ScopedViewportSegmentsForTest scoped_feature(true);
   String env_contents("viewport-segment-width 0 0 0 0, blue");
   InitializeTestPageWithVariableNamed(GetFrame(), env_contents);
   SetTwoDimensionalVariableOnRoot(
@@ -568,7 +568,7 @@ TEST_F(StyleEnvironmentVariablesTest,
 
 TEST_F(StyleEnvironmentVariablesTest,
        TwoDimensionalVariables_NormalVariableWithDimensionFallsBack) {
-  ScopedCSSFoldablesForTest scoped_feature(true);
+  ScopedViewportSegmentsForTest scoped_feature(true);
   String env_contents("safe-area-inset-left 0, blue");
   InitializeTestPageWithVariableNamed(GetFrame(), env_contents);
   SetVariableOnRoot("safe-area-inset-left", "red");
@@ -585,7 +585,7 @@ TEST_F(StyleEnvironmentVariablesTest,
 
 TEST_F(StyleEnvironmentVariablesTest,
        TwoDimensionalVariables_NegativeIndicesInvalid) {
-  ScopedCSSFoldablesForTest scoped_feature(true);
+  ScopedViewportSegmentsForTest scoped_feature(true);
   String env_contents("viewport-segment-top -1 -1, blue");
   InitializeTestPageWithVariableNamed(GetFrame(), env_contents);
   SetTwoDimensionalVariableOnRoot(
@@ -605,7 +605,7 @@ TEST_F(StyleEnvironmentVariablesTest,
 
 TEST_F(StyleEnvironmentVariablesTest,
        TwoDimensionalVariables_NonCommaAfterIndexInvalid) {
-  ScopedCSSFoldablesForTest scoped_feature(true);
+  ScopedViewportSegmentsForTest scoped_feature(true);
   String env_contents("viewport-segment-left 1 1 ident");
   InitializeTestPageWithVariableNamed(GetFrame(), env_contents);
   SetTwoDimensionalVariableOnRoot(
@@ -623,7 +623,7 @@ TEST_F(StyleEnvironmentVariablesTest,
 
 TEST_F(StyleEnvironmentVariablesTest,
        TwoDimensionalVariables_NonIntegerIndicesInvalid) {
-  ScopedCSSFoldablesForTest scoped_feature(true);
+  ScopedViewportSegmentsForTest scoped_feature(true);
   String env_contents("viewport-segment-top 0.5 0.5, blue");
   InitializeTestPageWithVariableNamed(GetFrame(), env_contents);
   SetTwoDimensionalVariableOnRoot(
@@ -643,7 +643,7 @@ TEST_F(StyleEnvironmentVariablesTest,
 
 TEST_F(StyleEnvironmentVariablesTest,
        TwoDimensionalVariables_NoIndicesFallsBack) {
-  ScopedCSSFoldablesForTest scoped_feature(true);
+  ScopedViewportSegmentsForTest scoped_feature(true);
   String env_contents("viewport-segment-height, blue");
   InitializeTestPageWithVariableNamed(GetFrame(), env_contents);
   SetTwoDimensionalVariableOnRoot(
@@ -660,7 +660,7 @@ TEST_F(StyleEnvironmentVariablesTest,
 }
 
 TEST_F(StyleEnvironmentVariablesTest, TwoDimensionalVariables_Removal) {
-  ScopedCSSFoldablesForTest scoped_feature(true);
+  ScopedViewportSegmentsForTest scoped_feature(true);
   String env_contents("viewport-segment-height 0 0, blue");
   InitializeTestPageWithVariableNamed(GetFrame(), env_contents);
   SetTwoDimensionalVariableOnRoot(

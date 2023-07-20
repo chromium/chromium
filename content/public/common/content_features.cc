@@ -1334,6 +1334,12 @@ BASE_FEATURE(kVideoPlaybackQuality,
              "VideoPlaybackQuality",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enable the viewport segments API.
+// Tracking bug for enabling viewport segments API: https://crbug.com/1039050.
+BASE_FEATURE(kViewportSegments,
+             "ViewportSegments",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables future V8 VM features
 BASE_FEATURE(kV8VmFuture, "V8VmFuture", base::FEATURE_DISABLED_BY_DEFAULT);
 

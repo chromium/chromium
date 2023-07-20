@@ -62789,6 +62789,7 @@ from previous Chrome versions.
   <int value="-806549905"
       label="TabbedAppOverflowMenuThreeButtonActionbar:disabled"/>
   <int value="-806480547" label="SyncDeviceInfoInTransportMode:enabled"/>
+  <int value="-806208718" label="ViewportSegments:disabled"/>
   <int value="-805927945" label="CrOSEnforceSystemAecNsAgc:disabled"/>
   <int value="-805480822" label="RemoteCopyImageNotification:disabled"/>
   <int value="-804520763" label="WifiConnectMacAddressRandomization:enabled"/>
@@ -65650,6 +65651,7 @@ from previous Chrome versions.
   <int value="672255299" label="WebAuthFlowInBrowserTab:disabled"/>
   <int value="672599279" label="WebUiSystemFont:disabled"/>
   <int value="673588373" label="OmniboxPedalSuggestions:disabled"/>
+  <int value="673960072" label="ViewportSegments:enabled"/>
   <int value="674627327" label="MagnifierNewFocusFollowing:enabled"/>
   <int value="674788251" label="EnableNewBadgeOnMenuItems:enabled"/>
   <int value="676353150" label="OmniboxRetainSuggestionsWithHeaders:disabled"/>

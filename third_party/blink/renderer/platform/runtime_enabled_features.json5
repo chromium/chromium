@@ -867,11 +867,6 @@
       base_feature: "none",
     },
     {
-      name: "CSSFoldables",
-      status: "experimental",
-      base_feature: "none",
-    },
-    {
       // @font-face Font property descriptors auto range.
       // https://www.w3.org/TR/css-fonts-4/#font-prop-desc
       name: "CSSFontFaceAutoVariableRange",
@@ -3692,6 +3687,7 @@
     {
       name: "ViewportSegments",
       status: "experimental",
+      public: true,
       base_feature: "none",
     },
     {

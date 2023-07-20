@@ -1488,8 +1488,9 @@ void LocalFrame::MediaQueryAffectingValueChangedForLocalSubtree(
 
 void LocalFrame::WindowSegmentsChanged(
     const WebVector<gfx::Rect>& window_segments) {
-  if (!RuntimeEnabledFeatures::CSSFoldablesEnabled())
+  if (!RuntimeEnabledFeatures::ViewportSegmentsEnabled()) {
     return;
+  }
 
   DCHECK(IsLocalRoot());
 
@@ -1504,7 +1505,7 @@ void LocalFrame::WindowSegmentsChanged(
 
 void LocalFrame::UpdateViewportSegmentCSSEnvironmentVariables(
     const WebVector<gfx::Rect>& window_segments) {
-  DCHECK(RuntimeEnabledFeatures::CSSFoldablesEnabled());
+  DCHECK(RuntimeEnabledFeatures::ViewportSegmentsEnabled());
 
   // Update the variable values on the root instance so that documents that
   // are created after the values change automatically have the right values.

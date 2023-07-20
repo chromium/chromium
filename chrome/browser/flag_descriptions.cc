@@ -842,6 +842,11 @@ const char kDevicePostureName[] = "Device Posture API";
 const char kDevicePostureDescription[] =
     "Enables Device Posture API (foldable devices)";
 
+const char kViewportSegmentsName[] = "Viewport Segments API";
+const char kViewportSegmentsDescription[] =
+    "Enable the viewport segment API, giving information about the logical "
+    "segments of the device (dual screen and foldable devices)";
+
 const char kDiscountConsentV2Name[] = "Discount Consent V2";
 const char kDiscountConsentV2Description[] = "Enables Discount Consent V2";
 

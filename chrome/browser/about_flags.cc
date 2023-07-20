@@ -7856,6 +7856,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDevicePostureDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kDevicePosture)},
 
+    {"viewport-segments", flag_descriptions::kViewportSegmentsName,
+     flag_descriptions::kViewportSegmentsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kViewportSegments)},
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"device-force-scheduled-reboot",
      flag_descriptions::kDeviceForceScheduledRebootName,
