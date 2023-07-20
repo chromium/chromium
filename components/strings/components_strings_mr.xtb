@@ -319,6 +319,7 @@
 <translation id="160851722280695521">Chrome मध्ये Dino Run गेम खेळा</translation>
 <translation id="161042844686301425">निळसर</translation>
 <translation id="1611101756749861742">दुसरा रोल</translation>
+<translation id="1615178538289490617"><ph name="PORT_NAME" /> साठी अ‍ॅक्सेस मागे घ्या</translation>
 <translation id="1615402009686901181">गोपनीय आशय दृश्यमान असेल तेव्हा अ‍ॅडमिनिस्ट्रेटर धोरण स्‍क्रीन कॅप्‍चर बंद करते</translation>
 <translation id="1617276713587758852">क्रॉसओव्हर</translation>
 <translation id="1618571384971354160">टोइंग आणि गाडी चालवताना आलेल्या समस्येबाबत साहाय्य</translation>
@@ -625,6 +626,7 @@
 <translation id="2276057643614339130">प्रिंट बेस</translation>
 <translation id="2277103315734023688">पुढे जा</translation>
 <translation id="2277753418458118549">कनेक्शनचे तपशील दाखवा</translation>
+<translation id="22792995594807632">डाउनलोड करण्यापूर्वी पुनरावलोकन करणे आवश्यक आहे</translation>
 <translation id="2283340219607151381">पत्ते भरा आणि सेव्ह करा</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' हटवले</translation>
 <translation id="2286383991450886080">34 x 44 in</translation>
@@ -1275,6 +1277,7 @@
 <translation id="3736520371357197498">तुम्ही तुमच्या सुरक्षिततेच्या जोखमी समजत असल्यास, धोकादायक प्रोग्राम काढण्यापूर्वी तुम्ही <ph name="BEGIN_LINK" />या असुरक्षित साइटला भेट देऊ शकता<ph name="END_LINK" />.</translation>
 <translation id="3738166223076830879">तुमचा ब्राउझर तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्थापित केला जातो.</translation>
 <translation id="3740319564441798148">लांब पल्ल्याची बस आणि रेल्वे</translation>
+<translation id="3740447166056383374">कॉपी करण्यापूर्वी पुनरावलोकन करणे आवश्यक आहे</translation>
 <translation id="374325029554577103">फिटनेसशी संबंधित तांत्रिक उत्पादने</translation>
 <translation id="3743765582345153106">ऑटोफिल वापरत असताना नेहमी पडताळणी करा</translation>
 <translation id="3744111561329211289">पार्श्वभूमी सिंक</translation>
@@ -1795,6 +1798,7 @@
 <translation id="4852429274334674023">ऑपरेटिंग सिस्टीम</translation>
 <translation id="4854853140771946034">Google Keep मध्ये नवीन टीप झटपट तयार करा</translation>
 <translation id="485902285759009870">कोडची पडताळणी करत आहे...</translation>
+<translation id="4862630594858951805">किंमत कमी झाल्यानंतर ईमेल हवा आहे का?</translation>
 <translation id="486459320933704969">तुम्ही या वेबसाइटला भेट देऊ शकता अशी पालकांनी मंजुरी देणे आवश्यक आहे</translation>
 <translation id="4866506163384898554">तुमचा कर्सर दाखवण्यासाठी |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| प्रेस करा</translation>
 <translation id="4873616204573862158">आयवेअर</translation>
@@ -1990,6 +1994,7 @@
 <translation id="5255690596502591079">तरीही कॅप्चर करा</translation>
 <translation id="5255833070095767006">३५० x ४६० मिमी</translation>
 <translation id="5257739419779698609">{0,plural, =1{अ‍ॅडमिनिस्ट्रेटर धोरण ही फाइल <ph name="DESTINATION_NAME" /> वर कॉपी करण्याची शिफारस करत नाही}other{अ‍ॅडमिनिस्ट्रेटर धोरण ही फाइल <ph name="DESTINATION_NAME" /> वर कॉपी करण्याची शिफारस करत नाही}}</translation>
+<translation id="5263867360296733198">अपलोड करण्यापूर्वी पुनरावलोकन करणे आवश्यक आहे</translation>
 <translation id="5266128565379329178">बाइंड टॉप</translation>
 <translation id="5269225904387178860">क्वाड पंच बॉटम</translation>
 <translation id="5269999699920406580">संपूर्ण सिस्टमला लागू होणारी वैशिष्‍ट्ये फक्त मालकाद्वारे सेट केली जाऊ शकतात: <ph name="OWNER_EMAIL" /></translation>
@@ -2063,6 +2068,7 @@
 <translation id="5412236728747081950">तुम्हाला आणखी उपयुक्त जाहिराती दाखवण्यासाठी ही साइट Chrome मधून तुमची स्वारस्ये मिळवते</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">स्टॅकर ४</translation>
+<translation id="5414446060143308245">ट्रान्सफर करण्यापूर्वी पुनरावलोकन करणे आवश्यक आहे</translation>
 <translation id="5414511064953050917">तरीही हलवा</translation>
 <translation id="5421136146218899937">ब्राउझिंग डेटा साफ करा...</translation>
 <translation id="5423269318075950257">किमतीचा माग ठेवा</translation>
@@ -2147,6 +2153,7 @@
 <translation id="5595485650161345191">पत्ता संपादित करा</translation>
 <translation id="5596939519753369075">२ x ३.५ इं</translation>
 <translation id="560412284261940334">व्यवस्थापनाला सपोर्ट नाही</translation>
+<translation id="5605249000617390290">किंमत ट्रॅक करण्याबद्दल अधिक जाणून घ्या</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5610142619324316209">कनेक्शन तपासणे</translation>
 <translation id="5610807607761827392">तुम्ही कार्ड आणि पत्ते <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> मध्ये व्यवस्थापित करू शकता.</translation>
@@ -2283,6 +2290,7 @@
 <translation id="5921639886840618607">Google खात्यात कार्ड सेव्ह करायचे?</translation>
 <translation id="5922853866070715753">जवळजवळ पूर्ण झाले</translation>
 <translation id="5923492272538889093">CVC ऐवजी डिव्हाइस अनलॉक ‌वापरायचे आहे का?</translation>
+<translation id="5924510104057992926">उघडण्यापूर्वी पुनरावलोकन करणे आवश्यक आहे</translation>
 <translation id="5924782825030413055">शेवटच्या संमती अपडेटचा स्रोत:</translation>
 <translation id="5925040402342933574">ऑप्टिकल डिस्क (सेमी-ग्लॉस)</translation>
 <translation id="5926982310317673627">जिम आणि आरोग्य क्लब</translation>
@@ -2509,6 +2517,7 @@
 <translation id="6394852772105848029">या साइटला <ph name="APP_NAME" /> हे ॲप उघडायचे आहे</translation>
 <translation id="6398765197997659313">पूर्ण स्क्रीनमधून निर्गमन करा</translation>
 <translation id="6401136357288658127">हे धोरण कालबाह्य झाले आहे. तुम्ही त्याऐवजी <ph name="NEW_POLICY" /> धोरण वापरले पाहिजे.</translation>
+<translation id="6402537308870515461">हलवण्‍यापूर्वी पुनरावलोकन करणे आवश्यक आहे</translation>
 <translation id="6403167778944553">बेडरूम आणि बाथरूम</translation>
 <translation id="6404511346730675251">बुकमार्क संपादित करा</translation>
 <translation id="6405181733356710802"><ph name="APP_NAME" /> वर पुढे सुरू ठेवायचे आहे का?</translation>
@@ -2657,6 +2666,7 @@
 <translation id="6710594484020273272">&lt;शोध संज्ञा एंटर करा&gt;</translation>
 <translation id="671076103358959139">नोंदणी टोकन:</translation>
 <translation id="6711464428925977395">प्रॉक्सी सर्व्हरमध्ये काहीतरी चुकीचे आहे किंवा पत्ता चुकीचा आहे.</translation>
+<translation id="6716013836112872184">कोणत्याही साइटवर किंमत कमी झाल्यानंतर <ph name="EMAIL" /> वर ईमेल मिळवा.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> ला तुमच्या आसपासच्या परिसराचा 3D नकाशा तयार करायचा आणि कॅमेर्‍याचे स्थान ट्रॅक करायचे आहे</translation>
 <translation id="6718612893943028815">कॅमेरा वापरायचा का?</translation>
 <translation id="6721164594124191969">लेबल (ग्लॉसी)</translation>
@@ -3187,6 +3197,7 @@
 <translation id="7767278989746220252">पॅशिओ, लॉन आणि बाग</translation>
 <translation id="776749070095465053">फॅब्रिक</translation>
 <translation id="7773005668374414287">तोच क्रम ठेवून फेस अप</translation>
+<translation id="7779418012194492374"><ph name="DEVICE_NAME" /> साठी अ‍ॅक्सेस मागे घ्या</translation>
 <translation id="7781829728241885113">काल</translation>
 <translation id="7785790577395078482">हा टॅबलेट</translation>
 <translation id="7786368602962652765">भरणे आवश्यक असलेले फील्ड रिकामे आहे. सेव्ह करण्याआधी भरा.</translation>
@@ -3465,6 +3476,7 @@
 <translation id="8390725133630534698">अ‍ॅडमिनिस्ट्रेटर धोरणाद्वारे <ph name="ORIGIN_NAME" /> वरून <ph name="VM_NAME" /> वर शेअर करणे ब्लॉक केले आहे</translation>
 <translation id="8396522675989118466">हा <ph name="SIDE_OF_CARD" /> असलेला <ph name="NUMBER_OF_DIGITS" /> अंकी कोड आहे</translation>
 <translation id="8398335999901363925">स्पर्श करून भरण्यासाठी उपलब्ध पेमेंट पद्धती पूर्ण उंचीवर उघडल्या आहेत.</translation>
+<translation id="8398446215576328011">लागू होणारी धोरणे रिव्हर्ट करा</translation>
 <translation id="8398790343843005537">तुमचा फोन शोधा</translation>
 <translation id="8403506619177967839">फॅन फिक्शन</translation>
 <translation id="8405579342203358118">Chrome सेटिंग्जमध्ये तुम्ही कोणती माहिती सिंक करता ते व्यवस्थापित करा</translation>
@@ -3809,6 +3821,7 @@
 <translation id="9155211586651734179">ऑडिओ उपकरणे कनेक्ट केली</translation>
 <translation id="9155646082713385498">मासिके</translation>
 <translation id="9157595877708044936">सेट अप करीत आहे...</translation>
+<translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> यामध्ये संवेदनशील आशय असू शकतो}other{<ph name="FILE_COUNT" /> या फाइलमध्ये संवेदनशील आशय असू शकतो}}</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">तुम्ही भेट दिलेल्या साइट या साइटवरील तुमच्या अ‍ॅक्टिव्हिटीवर आधारित तुम्हाला काय आवडते हेदेखील निर्धारित करू शकतात. उदाहरणार्थ, तुम्ही लांब पल्ले धावण्यासाठीच्या शूज विकणाऱ्या साइटला भेट दिल्यास, तुम्हाला मॅरेथॉन धावण्यात स्वारस्य आहे असे साइट ठरवू शकते.</translation>
 <translation id="9166851138617700776">साइटने सुचवलेल्या जाहिराती आणि जाहिरात मापन याबद्दल अधिक माहिती</translation>

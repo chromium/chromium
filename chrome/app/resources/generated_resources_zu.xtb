@@ -3306,6 +3306,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3721119614952978349">Wena ne-Google</translation>
 <translation id="3722108462506185496">Iphutha ukuqalisa isevisi yomshini wokubuka. Sicela uzame futhi.</translation>
 <translation id="3722624153992426516">Umyalelo we-<ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> utholiwe</translation>
+<translation id="3724897774652282549">Gcwalisa ifomu</translation>
 <translation id="3726965532284929944">I-QT</translation>
 <translation id="3727144509609414201">Amanethiwekhi we-WiFi atholakalayo</translation>
 <translation id="3727187387656390258">Hlola isigelekeqe</translation>
@@ -7245,6 +7246,7 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7067396782363924830">Imibala ye-ambient</translation>
 <translation id="7067725467529581407">Ungabonisi lokhu futhi.</translation>
 <translation id="7068279399556423026">Ngena Ngemva Ukuze Ubone Amathebhu Kusuka Kwamanye Amadivayisi</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Iphasiwedi entsha yaleli sayithi}one{Amaphasiwedi amasha waleli sayithi}other{Amaphasiwedi amasha waleli sayithi}}</translation>
 <translation id="7070484045139057854">Lokhu kungafunda kuphinde kuguqule idatha yesayithi</translation>
 <translation id="7072010813301522126">Igama lesinqamuleli</translation>
 <translation id="7074066049407662839">Ngena ngemvume ukuze ulondoloze amaphasiwedi</translation>
@@ -9632,6 +9634,7 @@ Izimvume ozinikezile kakade amawebhusayithi nama-app zingase zisebenze kule akha
 <translation id="9068598199622656904">Cindezela inkinobho eyodwa ngesikhathi ukuze uthole izinqamuleli zekhibhodi esikhundleni sokubamba izinkinobho phansi ngesikhathi esisodwa</translation>
 <translation id="9068878141610261315">Uhlobo lwefayela olungasekelwe</translation>
 <translation id="9069665781180028115">Izinto ezikhethiwe zizotholakala kule Chromebook. Uma umusha ku-Chromebook, vumelanisa zonke izinto ukuze okuncamelayo kwenziwe isipele. Yenza izinguquko noma nini Kumasethingi &gt; Ama-akhawunti.</translation>
+<translation id="9070231741075992882">Izimvume ozivumelayo ze-<ph name="APP_NAME" /> zizophinde futhi ivunyelwe kuma-app ayo afakiwe nasakaziwe.</translation>
 <translation id="9070342919388027491">Ithebhu ishone ngakwesobunxele</translation>
 <translation id="9074739597929991885">I-Bluetooth</translation>
 <translation id="9074836595010225693">Igundane le-USB lixhunyiwe</translation>

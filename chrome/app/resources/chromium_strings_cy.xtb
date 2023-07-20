@@ -61,6 +61,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="2359808026110333948">Parhau</translation>
 <translation id="2384373936468275798">Ni allai ChromiumOS gysoni'ch data gan fod manylion mewngofnodi eich cyfrif yn hen.</translation>
 <translation id="2396765026452590966">Mae'r estyniad "<ph name="EXTENSION_NAME" />" wedi newid pa dudalen sy'n cael ei dangos pan fyddwch yn dechrau Chromium.</translation>
+<translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Roedd 1 ddyfais HID yn cael ei chyrchu gan un neu'n fwy o estyniadau Chromium}=1{Mae 1 ddyfais HID yn cael ei chyrchu gan un neu'n fwy o estyniadau Chromium}two{Mae # ddyfais HID yn cael eu cyrchu gan un neu'n fwy o estyniadau Chromium}few{Mae # dyfais HID yn cael eu cyrchu gan un neu'n fwy o estyniadau Chromium}many{Mae # dyfais HID yn cael eu cyrchu gan un neu'n fwy o estyniadau Chromium}other{Mae # dyfais HID yn cael eu cyrchu gan un neu'n fwy o estyniadau Chromium}}</translation>
 <translation id="2401032172288869980">Mae angen caniatâd camera a meicroffon ar Chromium ar gyfer y wefan hon</translation>
 <translation id="2451727308784734061">Defnyddiwch eich llwybr byr i gyrraedd Rheolwr Cyfrineiriau yn gyflym. Gallwch symud eich llwybr byr i sgrîn hafan neu lansiwr ap eich cyfrifiadur.</translation>
 <translation id="2478295928299953161">Bydd Chromium yn cau yn fuan</translation>
@@ -93,6 +94,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="3032787606318309379">Wrthi'n ychwanegu at Chromium...</translation>
 <translation id="3038232873781883849">Wrthi'n aros i osod...</translation>
 <translation id="3068515742935458733">Helpwch i wneud Chromium yn well drwy anfon adroddiadau damweiniau a <ph name="UMA_LINK" /> at Google</translation>
+<translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Roedd 1 ddyfais USB yn cael ei chyrchu gan un neu'n fwy o estyniadau Chromium}=1{Mae 1 ddyfais USB yn cael ei chyrchu gan un neu'n fwy o estyniadau Chromium}two{Mae # ddyfais USB yn cael eu cyrchu gan un neu'n fwy o estyniadau Chromium}few{Mae # dyfais USB yn cael eu cyrchu gan un neu'n fwy o estyniadau Chromium}many{Mae # dyfais USB yn cael eu cyrchu gan un neu'n fwy o estyniadau Chromium}other{Mae # dyfais USB yn cael eu cyrchu gan un neu'n fwy o estyniadau Chromium}}</translation>
 <translation id="3101560983689755071">Mae eich hanes pori yn effeithio ar yr hysbysebion rydych yn eu gweld a'r diddordebau fel yr amcangyfrifir isod. Er mwyn amddiffyn eich preifatrwydd, mae Chromium yn dileu'ch diddordebau yn awtomatig bob mis. Gall diddordebau ail-lwytho oni bai eich bod yn eu tynnu.</translation>
 <translation id="3103660991484857065">Methodd y gosodwr ag anghywasgu archif. Lawrlwythwch Chromium eto.</translation>
 <translation id="3130323860337406239">Mae Chromium yn defnyddio'ch meicroffon.</translation>

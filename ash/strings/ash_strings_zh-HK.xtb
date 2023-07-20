@@ -32,7 +32,7 @@
 <translation id="1117719261843403176">切換流動數據。<ph name="STATE" />。</translation>
 <translation id="112308213915226829">自動隱藏捷徑列</translation>
 <translation id="1142002900084379065">最近的相片</translation>
-<translation id="114221662579355151">這將允許「<ph name="APP1_NAME" />」、「<ph name="APP2_NAME" />」與具有攝影機權限的所有應用程式和網站存取。系統可能會要求你重新整理網頁或重新啟動應用程式。</translation>
+<translation id="114221662579355151">此操作會允許「<ph name="APP1_NAME" />」、「<ph name="APP2_NAME" />」以及所有具備相機權限的應用程式和網站存取相機。系統可能會要求你重新整理網頁或重新啟動應用程式。</translation>
 <translation id="1148499908455722006">打開 <ph name="USER_NAME" /> 嘅資料對話框</translation>
 <translation id="1150989369772528668">日曆</translation>
 <translation id="1153356358378277386">已配對的裝置</translation>
@@ -119,18 +119,17 @@
 <translation id="14648076227129703">此操作會允許 <ph name="APP1_NAME" />、<ph name="APP2_NAME" /> 以及具備相機權限的所有應用程式和網站存取相機</translation>
 <translation id="1467432559032391204">向左</translation>
 <translation id="146902737843070955">管理員已要求此變更</translation>
-<translation id="1469148162491666137">這將允許「<ph name="APP1_NAME" />」、「<ph name="APP2_NAME" />」與具有攝影機和麥克風權限的所有應用程式和網站存取。系統可能會要求你重新整理網頁或重新啟動應用程式。</translation>
+<translation id="1469148162491666137">此操作會允許「<ph name="APP1_NAME" />」、「<ph name="APP2_NAME" />」以及所有具備相機和麥克風權限的應用程式和網站存取。系統可能會要求你重新整理網頁或重新啟動應用程式。</translation>
 <translation id="147310119694673958">手機電量 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">浮動式無障礙選單</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />，㩒 Enter 制就可以開日曆檢視畫面</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540">「<ph name="FIRST_ITEM_TITLE" />」同「<ph name="SECOND_ITEM_TITLE" />」調換咗</translation>
 <translation id="1500926532737552529">顯示所有建議</translation>
-<translation id="1503394326855300303">擁有者帳戶必須是多重登入工作階段中第一個登入的帳戶。</translation>
 <translation id="1510238584712386396">啟動器</translation>
 <translation id="1516740043221086139">「請勿騷擾」模式已開啟。</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{顯示通知設定。已關閉 1 個應用程式的通知}other{顯示通知設定。已關閉 # 個應用程式的通知}}</translation>
-<translation id="1523032696246003">電池電量：<ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" />後充飽</translation>
+<translation id="1523032696246003">電量：<ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" />後便完成充電</translation>
 <translation id="1525508553941733066">關閉</translation>
 <translation id="1526448108126799339">在新視窗中開啟新分頁</translation>
 <translation id="1528259147807435347">上星期編輯過</translation>
@@ -143,7 +142,7 @@
 <translation id="1550523713251050646">點擊即可取得更多選項</translation>
 <translation id="1555130319947370107">藍色</translation>
 <translation id="1557622599341396706">顯示桌面名稱</translation>
-<translation id="1569384531973824928">這將允許具有攝影機和麥克風權限的所有應用程式和網站存取。系統可能會要求你重新整理網頁或重新啟動應用程式。</translation>
+<translation id="1569384531973824928">此操作會允許所有具備相機和麥克風權限的應用程式和網站存取。系統可能會要求你重新整理網頁或重新啟動應用程式。</translation>
 <translation id="1576623706766186887">放大鏡開啟時縮小畫面</translation>
 <translation id="1586324912145647027">前往桌面 1 至 8</translation>
 <translation id="1589090746204042747">存取此工作階段的所有活動紀錄</translation>
@@ -316,7 +315,7 @@
 <translation id="2369165858548251131">「你好」嘅英文</translation>
 <translation id="2382875860893882175">投放已暫停。您可以隨時繼續或停止投放。</translation>
 <translation id="2386292613071805067">選取頁面上所有內容</translation>
-<translation id="2396594569364254378">記憶體用量：<ph name="USED_MEMORY" /> | 總量：<ph name="TOTAL_MEMORY" /></translation>
+<translation id="2396594569364254378">記憶體用量：<ph name="USED_MEMORY" /> (總記憶體：<ph name="TOTAL_MEMORY" />)</translation>
 <translation id="2397416548179033562">顯示 Chrome 選單</translation>
 <translation id="240006516586367791">媒體控制項</translation>
 <translation id="2402411679569069051">如要解鎖 Chromebook，請使用指紋或解鎖手機</translation>
@@ -647,7 +646,7 @@
 <translation id="3799080171973636491">您已按下全螢幕放大鏡的鍵盤快速鍵。確定要旋轉螢幕嗎？</translation>
 <translation id="380165613292957338">你好，有咩可以幫到你？</translation>
 <translation id="3804737937830804242">收合相機調整大小的按鈕</translation>
-<translation id="3824784079442479685">這將允許「<ph name="APP_NAME" />」和具有攝影機權限的所有應用程式和網站存取攝影機。系統可能會要求你重新整理網頁或重新啟動應用程式。</translation>
+<translation id="3824784079442479685">此操作會允許「<ph name="APP_NAME" />」和所有具備相機權限的應用程式和網站存取相機。系統可能會要求你重新整理網頁或重新啟動應用程式。</translation>
 <translation id="3826099427150913765">改用密碼</translation>
 <translation id="383058930331066723">「慳電模式」已開啟</translation>
 <translation id="383629559565718788">顯示鍵盤設定</translation>
@@ -703,7 +702,7 @@
 <translation id="4066027111132117168">已開啟，<ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">開啟下載頁面</translation>
 <translation id="4072264167173457037">訊號中等</translation>
-<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" /> 份作業已交回，共 <ph name="TOTAL_NUM_OF_SUBMISSIONS" /> 份 • <ph name="NUM_GRADED" /> 份作業已完成評分</translation>
+<translation id="4076455981957565732">已提交 <ph name="NUM_TURNED_IN" /> 份功課，總共有 <ph name="TOTAL_NUM_OF_SUBMISSIONS" /> 份 • <ph name="NUM_GRADED" /> 份功課已完成評分</translation>
 <translation id="4086921558679520050">開啟裝置上的實體麥克風開關</translation>
 <translation id="4101772068965291327">開啟首頁</translation>
 <translation id="4112140312785995938">向後回轉</translation>
@@ -863,7 +862,7 @@
 <translation id="4752784485658729358">只允許儲存 6 個桌面。請移除一個桌面以儲存新桌面。</translation>
 <translation id="4759238208242260848">下載</translation>
 <translation id="4762573482154983647">隱藏應用程式</translation>
-<translation id="4763885921995354846">這將允許具有攝影機權限的所有應用程式和網站存取攝影機。系統可能會要求你重新整理網頁或重新啟動應用程式。</translation>
+<translation id="4763885921995354846">此操作會允許所有具備相機權限的應用程式和網站存取相機。系統可能會要求你重新整理網頁或重新啟動應用程式。</translation>
 <translation id="4774338217796918551">明天<ph name="COME_BACK_TIME" /> 後才可使用。</translation>
 <translation id="4776584068981882959">系統仍然無法驗證您的密碼。請再試一次。</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> 的密碼</translation>
@@ -1065,7 +1064,7 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">我們已將您的連線切換至更優質的網絡</translation>
 <translation id="5619862035903135339">管理員政策停用擷取螢幕截圖功能</translation>
-<translation id="5620979661744857819">這將允許「<ph name="APP_NAME" />」與具有攝影機和麥克風權限的所有應用程式和網站存取。系統可能會要求你重新整理網頁或重新啟動應用程式。</translation>
+<translation id="5620979661744857819">此操作會允許「<ph name="APP_NAME" />」和所有具備相機和麥克風權限的應用程式和網站存取。系統可能會要求你重新整理網頁或重新啟動應用程式。</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">無法驗證您的密碼。請再試一次。</translation>
 <translation id="5646376287012673985">位置</translation>
@@ -1118,7 +1117,7 @@
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> 未啟用。</translation>
 <translation id="5860033963881614850">關閉</translation>
 <translation id="5860491529813859533">開啟</translation>
-<translation id="5864748620896638071">電池電量：<ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5864748620896638071">電量：<ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">正在收集網絡資料</translation>
 <translation id="5867606971598166637">系統管理員正在監控您的畫面</translation>
 <translation id="5876666360658629066">輸入家長存取碼</translation>
@@ -1492,7 +1491,7 @@
 <translation id="7561982940498449837">關閉選單</translation>
 <translation id="7564874036684306347">將視窗移至其他桌面可能會導致非預期的行為。後續的通知、視窗和對話框可能會在不同的桌面上分開顯示。</translation>
 <translation id="7569509451529460200">已啟用點字和 ChromeVox</translation>
-<translation id="7571361473021531288">電池電量：<ph name="BATTERY_PERCENTAGE" />% | 還可使用 <ph name="TIME" /></translation>
+<translation id="7571361473021531288">電量：<ph name="BATTERY_PERCENTAGE" />% | 還可使用 <ph name="TIME" /></translation>
 <translation id="7573585051776738856">用緊嘅視固定咗喺畫面右邊。</translation>
 <translation id="7579778809502851308">擷取螢幕畫面</translation>
 <translation id="7593891976182323525">搜尋鍵或 Shift 鍵</translation>
@@ -1817,7 +1816,7 @@
 <translation id="9024331582947483881">全螢幕</translation>
 <translation id="9029736946581028033">裝置即將關閉</translation>
 <translation id="9030319654231318877">關閉，直到日落</translation>
-<translation id="9030665205623277906">CPU 用量數據匯報：<ph name="CPU_USEAGE" />%</translation>
+<translation id="9030665205623277906">CPU 使用情況快覽：<ph name="CPU_USEAGE" />%</translation>
 <translation id="9034924485347205037">Linux 檔案</translation>
 <translation id="9047624247355796468">打開<ph name="NETWORK_NAME" />設定</translation>
 <translation id="9059834730836941392">收合通知</translation>

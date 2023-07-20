@@ -126,7 +126,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540">Troca de <ph name="FIRST_ITEM_TITLE" /> por <ph name="SECOND_ITEM_TITLE" /> realizada</translation>
 <translation id="1500926532737552529">Mostrar todas as sugestões</translation>
-<translation id="1503394326855300303">Esta conta de proprietário precisa ser a primeira conta a fazer login em uma sessão de login múltiplo.</translation>
 <translation id="1510238584712386396">Iniciador</translation>
 <translation id="1516740043221086139">O "Não perturbe" está ativado.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostrar configurações de notificação. As notificações estão desativadas para um app}one{Mostrar configurações de notificação. As notificações estão desativadas para # app}other{Mostrar configurações de notificação. As notificações estão desativadas para # apps}}</translation>

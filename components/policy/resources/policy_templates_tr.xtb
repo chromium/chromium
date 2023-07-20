@@ -4529,9 +4529,6 @@ Politika, Yanlış değerine ayarlanırsa varsayılan davranış kullanılır.</
 <translation id="4970046075219007744">Web uygulamalarının, kullanıcıdan File Handling API üzerinden dosya türlerine erişim istemesine izin ver</translation>
 <translation id="4970855112942626932">Tarayıcıda oturum açmayı devre dışı bırak</translation>
 <translation id="4974091268178043378">ChromeOS renk modu</translation>
-<translation id="4976928720873547342">Bu politika ayarlanırsa belirtilen tüm veri türleri hem <ph name="CHROME_SYNC_NAME" /> senkronizasyonunun hem de dolaşım profili senkronizasyonunun dışında tutulur. Bu, dolaşım profilinin boyutunu küçültmeye veya <ph name="CHROME_SYNC_NAME" /> sunucularına yüklenen veri türlerini sınırlandırmaya yarayabilir.
-
-      Şu anda bu politika kapsamında bulunan veri türleri şunlardır: "bookmarks", "readingList", "preferences", "passwords", "autofill", "themes", "typedUrls", "extensions", "apps", "tabs", "wifiConfigurations". Bu adlar büyük/küçük harfe duyarlıdır.</translation>
 <translation id="4977702914571821981">Engellenebilir (ör. etkin) karma içeriği (ör. HTTPS sitelerindeki HTTP içeriği) görüntülemelerine izin verilmeyen sitelerin belirtildiği ve isteğe bağlı olarak engellenebilir (ör. pasif) karma içeriğin yükseltileceği bir URL kalıpları listesini ayarlamanıza olanak tanır.
 
           Bu politika ayarlanmadan bırakılırsa engellenebilir karma içerik engellenir ve isteğe bağlı olarak engellenebilir karma içerik yükseltilir, ancak kullanıcıların belirli sitelerde buna izin vermek üzere istisnalar ayarlamasına izin verilir.

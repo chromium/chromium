@@ -3675,6 +3675,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3995138139523574647">USB-C-enhet (bakre porten på högra sidan)</translation>
 <translation id="3995963973192100066">Spela upp animation</translation>
 <translation id="399788104667917863">Fäst i verktygsfältet</translation>
+<translation id="3998976413398910035">Hantera skrivare</translation>
 <translation id="4001540981461989979">Framhäv muspekaren när den rör sig</translation>
 <translation id="4002440992267487163">Konfigurera pinkod</translation>
 <translation id="4005817994523282006">Metod för tidszonsidentifiering</translation>
@@ -6320,6 +6321,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="628352644014831790">4 sekunder</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> brukar inte laddas ned och kan vara skadlig.</translation>
 <translation id="6285770818046456882">Enheten som delar med dig har avbrutit överföringen</translation>
+<translation id="628726841779494414">Hantera dina skrivare i skrivarinställningarna</translation>
 <translation id="6290613030083731160">Det finns inga enheter i närheten som delar. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Aktiveringskoden verifieras. Det kan ta några minuter.</translation>
 <translation id="6291741848715722067">Bekräftelsekod</translation>
@@ -9637,6 +9639,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="9068598199622656904">Använd kortkommandon genom att trycka på en tangent i taget i stället för att hålla ned alla samtidigt</translation>
 <translation id="9068878141610261315">Filtypen stöds inte</translation>
 <translation id="9069665781180028115">Valda objekt blir tillgängliga på denna Chromebook. Om du inte har använt en Chromebook tidigare synkroniserar du alla objekt så att dina inställningar säkerhetskopieras. Du kan göra ändringar när du vill i Inställningar &gt; Konton.</translation>
+<translation id="9070231741075992882">Behörigheter som du tillåter för <ph name="APP_NAME" /> tillåts även för installerade och streamade appar.</translation>
 <translation id="9070342919388027491">Fliken flyttades åt vänster</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB-mus har anslutits</translation>

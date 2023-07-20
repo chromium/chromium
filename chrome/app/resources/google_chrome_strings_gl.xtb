@@ -82,6 +82,7 @@
 <translation id="235650106824528204">O administrador do perfil de traballo pode quitar os datos de Chrome que se xeren durante o uso deste perfil (por exemplo, os marcadores, o historial, os contrasinais e outras opcións de configuración). <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2401189691232800402">Sistema Chrome OS</translation>
+<translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Unha ou varias extensións de Chrome estaban accedendo a 1 dispositivo de interface humana}=1{Unha ou varias extensións de Chrome estaban accedendo a 1 dispositivo de interface humana}other{Unha ou varias extensións de Chrome estaban accedendo a # dispositivos de interface humana}}</translation>
 <translation id="2424440923901031101">Esta extensión infrinxe a política de Chrome Web Store e podería non ser segura. Quítaa de Chrome para que deixe de ver e cambiar os teus datos nos sitios que visites, como a túa información persoal.</translation>
 <translation id="2467438592969358367">Google Chrome quere exportar os teus contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="2472092250898121027">Esta extensión contén software malicioso, polo que non é segura. Quítaa de Chrome para que deixe de ver e cambiar os teus datos nos sitios que visites, como a túa información persoal.</translation>
@@ -339,6 +340,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="7398801000654795464">Iniciaches sesión en Chrome como <ph name="USER_EMAIL_ADDRESS" />. Utiliza a mesma conta para iniciar sesión de novo.</translation>
 <translation id="7410958280246779049">Chrome bloqueou este ficheiro porque é perigoso</translation>
 <translation id="7412494426921990001">Fai clic no Menú de Chrome</translation>
+<translation id="742463671275348370">{NUM_DEVICES,plural, =0{Unha ou varias extensións de Chrome estaban accedendo a 1 dispositivo USB}=1{Unha ou varias extensións de Chrome estaban accedendo a 1 dispositivo USB}other{Unha ou varias extensións de Chrome estaban accedendo a # dispositivos USB}}</translation>
 <translation id="7426611252293106642">Pode que Google Chrome non funcione correctamente porque xa non é compatible con esta distribución de Linux</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{A túa organización pechará Chrome automaticamente cando leve 1 minuto sen usarse.}other{A túa organización pechará Chrome automaticamente cando leve # minutos sen usarse.}}</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{A túa organización eliminará os datos de navegación automaticamente cando Chrome leve 1 minuto sen usarse. Entre esa información, poderían incluírse o historial, os datos da función de autocompletar e as descargas. As pestanas permanecerán abertas.}other{A túa organización eliminará os datos de navegación automaticamente cando Chrome leve # minutos sen usarse. Entre esa información, poderían incluírse o historial, os datos da función de autocompletar e as descargas. As pestanas permanecerán abertas.}}</translation>

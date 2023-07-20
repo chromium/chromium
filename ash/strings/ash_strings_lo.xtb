@@ -126,7 +126,6 @@
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540">ສະຫຼັບ <ph name="FIRST_ITEM_TITLE" /> ກັບ <ph name="SECOND_ITEM_TITLE" /> ແລ້ວ</translation>
 <translation id="1500926532737552529">ສະແດງການແນະນຳທັງໝົດ</translation>
-<translation id="1503394326855300303">ບັນຊີຜູ້ເປັນເຈົ້າຂອງຕ້ອງເປັນບັນຊີລົງຊື່ເຂົ້າໃຊ້ທໍາອິດຢູ່ໃນຊ່ວງເວລາເຂົ້າໃຊ້ການລົງຊື່ເຂົ້າໃຊ້ຫຼາຍອັນ.</translation>
 <translation id="1510238584712386396">ຕົວ​ເປີດ​ໃຊ້</translation>
 <translation id="1516740043221086139">ໂໝດຫ້າມລົບກວນເປີດຢູ່.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{ສະແດງການຕັ້ງຄ່າການແຈ້ງເຕືອນ. ການແຈ້ງເຕືອນປິດຢູ່ສຳລັບໜຶ່ງແອັບ}other{ສະແດງການຕັ້ງຄ່າການແຈ້ງເຕືອນ. ການແຈ້ງເຕືອນປິດຢູ່ສຳລັບ # ແອັບ}}</translation>

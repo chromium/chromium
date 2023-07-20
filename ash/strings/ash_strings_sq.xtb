@@ -32,6 +32,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1117719261843403176">Aktivizo/çaktivizo të dhënat celulare. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Fshih raftin automatikisht</translation>
 <translation id="1142002900084379065">Fotot e fundit</translation>
+<translation id="114221662579355151">Kjo lejon qasjen te kamera për <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> dhe të gjitha aplikacionet dhe sajtet e uebit me lejen e kamerës. Mund të duhet të rifreskosh faqen e uebit ose të rinisësh aplikacionin.</translation>
 <translation id="1148499908455722006">Hap dialogun e informacioneve për <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Kalendari</translation>
 <translation id="1153356358378277386">Pajisjet e çiftuara</translation>
@@ -118,16 +119,17 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="14648076227129703">Kjo lejon qasjen te kamera për <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> dhe të gjitha aplikacionet dhe sajtet e uebit me lejen e kamerës</translation>
 <translation id="1467432559032391204">Majtas</translation>
 <translation id="146902737843070955">Ky ndryshim është kërkuar nga administratori yt</translation>
+<translation id="1469148162491666137">Kjo lejon qasjen për <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> dhe të gjitha aplikacionet dhe sajtet e uebit që kanë lejen për kamerën dhe mikrofonin. Mund të duhet të rifreskosh faqen e uebit ose të rinisësh aplikacionin.</translation>
 <translation id="147310119694673958">Bateria e telefonit <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">Menyja pluskuese e qasshmërisë</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />. Shtyp tastin Enter për të hapur pamjen e "Kalendarit"</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> u ndërrua me <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Shfaq të gjitha sugjerimet</translation>
-<translation id="1503394326855300303">Kjo llogari zotëruesi duhet të jetë llogaria e parë e identifikimit në një sesion me identifikime të shumëfishta.</translation>
 <translation id="1510238584712386396">Nisësi</translation>
 <translation id="1516740043221086139">Modaliteti "Mos shqetëso" është aktiv.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Shfaq cilësimet e njoftimeve. Njoftimet janë joaktive për një aplikacion}other{Shfaq cilësimet e njoftimeve. Njoftimet janë joaktive për # aplikacione}}</translation>
+<translation id="1523032696246003">Bateria <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> deri në karikimin e plotë</translation>
 <translation id="1525508553941733066">ANULO</translation>
 <translation id="1526448108126799339">Hape skedën e re në një dritare të re</translation>
 <translation id="1528259147807435347">Modifikuar javën e kaluar</translation>
@@ -140,6 +142,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1550523713251050646">Kliko për opsione të tjera</translation>
 <translation id="1555130319947370107">E kaltër</translation>
 <translation id="1557622599341396706">Shfaq emrin e tavolinës së punës</translation>
+<translation id="1569384531973824928">Kjo lejon qasjen për të gjitha aplikacionet dhe sajtet e uebit që kanë lejen për kamerën dhe mikrofonin. Mund të duhet të rifreskosh faqen e uebit ose të rinisësh aplikacionin.</translation>
 <translation id="1576623706766186887">Zvogëlo kur zmadhuesi është aktiv</translation>
 <translation id="1586324912145647027">Shko te tavolina e punës nga 1 deri në 8</translation>
 <translation id="1589090746204042747">Qasu te të gjitha aktivitetet e tua në këtë sesion</translation>
@@ -312,6 +315,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2369165858548251131">"Përshëndetje" në kinezisht</translation>
 <translation id="2382875860893882175">Transmetimi është vendosur aktualisht në pauzë. Mund ta vazhdosh ose ta ndalosh transmetimin në çdo kohë.</translation>
 <translation id="2386292613071805067">Zgjidh gjithçka në faqe</translation>
+<translation id="2396594569364254378">Memoria: <ph name="USED_MEMORY" /> | <ph name="TOTAL_MEMORY" /> në total</translation>
 <translation id="2397416548179033562">Shfaq menynë e Chrome</translation>
 <translation id="240006516586367791">Kontrollet e medias</translation>
 <translation id="2402411679569069051">Për të shkyçur Chromebook-un tënd, përdor gjurmën e gishtit ose shkyç telefonin</translation>
@@ -640,6 +644,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="3799080171973636491">Ke shtypur shkurtoren e tastierës për zmadhuesin në ekran të plotë. Dëshiron ta aktivizosh?</translation>
 <translation id="380165613292957338">Përshëndetje, si mund të të ndihmoj?</translation>
 <translation id="3804737937830804242">Palos kamerën</translation>
+<translation id="3824784079442479685">Kjo lejon qasjen te kamera për <ph name="APP_NAME" /> dhe të gjitha aplikacionet dhe sajtet e uebit me lejen e kamerës. Mund të duhet të rifreskosh faqen e uebit ose të rinisësh aplikacionin.</translation>
 <translation id="3826099427150913765">Kalo te fjalëkalimi</translation>
 <translation id="383058930331066723">Modaliteti i kursimit të baterisë është aktiv</translation>
 <translation id="383629559565718788">Shfaq cilësimet e tastierës</translation>
@@ -695,6 +700,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="4066027111132117168">Aktive, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">Hap faqen e "Shkarkimeve"</translation>
 <translation id="4072264167173457037">Sinjal mesatar</translation>
+<translation id="4076455981957565732">Të dorëzuara: <ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> • Të vlerësuara: <ph name="NUM_GRADED" /></translation>
 <translation id="4086921558679520050">Aktivizo çelësin fizik të mikrofonit në pajisjen tënde</translation>
 <translation id="4101772068965291327">Hap faqen kryesore</translation>
 <translation id="4112140312785995938">Kërko prapa</translation>
@@ -853,6 +859,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="4752784485658729358">Lejohen vetëm 6 tavolina të ruajtura pune. Hiq një tavolinë pune për të ruajtur një të re.</translation>
 <translation id="4759238208242260848">Shkarkimet</translation>
 <translation id="4762573482154983647">Fshi aplikacionet</translation>
+<translation id="4763885921995354846">Kjo lejon qasjen te kamera për të gjitha aplikacionet dhe sajtet e uebit me lejen e kamerës. Mund të duhet të rifreskosh faqen e uebit ose të rinisësh aplikacionin.</translation>
 <translation id="4774338217796918551">Kthehu përsëri nesër në <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Fjalëkalimi yt nuk mund të verifikohej ende. Provo përsëri.</translation>
 <translation id="4776917500594043016">Fjalëkalimi për <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -880,6 +887,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="4871905435473761992">Shfaq detajet e zonës së qasjes për internet. Rrjeti yt celular nuk e mbështet zonën e qasjes për internet.</translation>
 <translation id="4872237917498892622">Alt+Kërko ose Shift</translation>
 <translation id="4872852897273142380">Fokuso ose thekso shiritin e faqeshënuesve (nëse shfaqet)</translation>
+<translation id="4881323000405981760">Efektet nuk mbështeten në aplikacionet e Linux</translation>
 <translation id="4881695831933465202">Hap</translation>
 <translation id="4889868803215848840">Jep komente opsionale për të përmirësuar sugjerimet:</translation>
 <translation id="4890187583552566966">"Asistenti i Google" është çaktivizuar nga administratori yt.</translation>
@@ -1054,6 +1062,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="5601503069213153581">Kodi PIN</translation>
 <translation id="5618148318840095371">Të kemi kaluar në një rrjet më të mirë</translation>
 <translation id="5619862035903135339">Politika e administratorit çaktivizon regjistrimin e ekranit</translation>
+<translation id="5620979661744857819">Kjo lejon qasjen për <ph name="APP_NAME" /> dhe të gjitha aplikacionet dhe sajtet e uebit që kanë lejen për kamerën dhe mikrofonin. Mund të duhet të rifreskosh faqen e uebit ose të rinisësh aplikacionin.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Fjalëkalimi yt nuk mund të verifikohej. Provo përsëri.</translation>
 <translation id="5646376287012673985">Vendndodhja</translation>
@@ -1105,6 +1114,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> nuk është aktivizuar.</translation>
 <translation id="5860033963881614850">Çaktivizuar</translation>
 <translation id="5860491529813859533">Aktivizo</translation>
+<translation id="5864748620896638071">Bateria <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">Po mblidhet informacioni i rrjetit</translation>
 <translation id="5867606971598166637">Administratori i sistemit po monitoron ekranet e tua</translation>
 <translation id="5876666360658629066">Fut kodin e prindit</translation>
@@ -1478,6 +1488,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="7561982940498449837">Mbyll menynë</translation>
 <translation id="7564874036684306347">Zhvendosja e dritareve te një desktop tjetër mund të shkaktojë një sjellje të papritur. Njoftimet pasuese, dritarja dhe dialogët mund të ndahen mes desktopëve.</translation>
 <translation id="7569509451529460200">Braille dhe ChromeVox janë aktivizuar</translation>
+<translation id="7571361473021531288">Bateria <ph name="BATTERY_PERCENTAGE" />% | Koha e mbetur: <ph name="TIME" /></translation>
 <translation id="7573585051776738856">Dritarja aktive u pozicionua në të djathtë.</translation>
 <translation id="7579778809502851308">Regjistrimi i ekranit</translation>
 <translation id="7593891976182323525">Kërko ose Shift</translation>
@@ -1800,6 +1811,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="9024331582947483881">ekrani i plotë</translation>
 <translation id="9029736946581028033">Pajisja do të fiket së shpejti</translation>
 <translation id="9030319654231318877">Joaktive deri në perëndim</translation>
+<translation id="9030665205623277906">Përmbledhja për përdorimin e njësisë CPU: <ph name="CPU_USEAGE" />%</translation>
 <translation id="9034924485347205037">Skedarët e Linux</translation>
 <translation id="9047624247355796468">Hap cilësimet për <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Palos njoftimin</translation>

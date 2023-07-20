@@ -32,6 +32,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1117719261843403176">Activa o desactiva los datos móviles. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Ocultar la barra automáticamente</translation>
 <translation id="1142002900084379065">Fotos recientes</translation>
+<translation id="114221662579355151">Permite el acceso a la cámara para <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> y todas las apps y sitios web con el permiso correspondiente. Es posible que debas actualizar la página web o reiniciar la app.</translation>
 <translation id="1148499908455722006">Abrir el diálogo de información de <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Calendario</translation>
 <translation id="1153356358378277386">Dispositivos sincronizados</translation>
@@ -118,16 +119,17 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="14648076227129703">Permite el acceso a la cámara para <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> y todas las apps y sitios web con el permiso correspondiente</translation>
 <translation id="1467432559032391204">Izquierda</translation>
 <translation id="146902737843070955">Tu administrador solicitó este cambio</translation>
+<translation id="1469148162491666137">Esto permite el acceso para <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> y todas las apps y sitios web con los permisos de cámara y micrófono. Es posible que debas actualizar la página web o reiniciar la app.</translation>
 <translation id="147310119694673958">Batería del teléfono: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">Menú de accesibilidad flotante</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />, presiona la tecla Intro para abrir la vista del Calendario</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540">Se intercambió <ph name="FIRST_ITEM_TITLE" /> con <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Mostrar todas las sugerencias</translation>
-<translation id="1503394326855300303">El propietario de esta cuenta requiere que sea la primera a la que se acceda al crear una sesión de acceso múltiple.</translation>
 <translation id="1510238584712386396">Selector</translation>
 <translation id="1516740043221086139">No interrumpir está activado.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostrar la configuración de las notificaciones: Están desactivadas para una app}other{Mostrar la configuración de las notificaciones: Están desactivadas para # apps}}</translation>
+<translation id="1523032696246003"><ph name="BATTERY_PERCENTAGE" />% de batería | <ph name="TIME" /> para completar</translation>
 <translation id="1525508553941733066">IGNORAR</translation>
 <translation id="1526448108126799339">Abrir una pestaña nueva en una ventana nueva</translation>
 <translation id="1528259147807435347">Se editó la semana pasada</translation>
@@ -140,6 +142,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1550523713251050646">Haz clic para obtener más opciones</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1557622599341396706">Mostrar el nombre del escritorio</translation>
+<translation id="1569384531973824928">Esto permite el acceso a todas las apps y sitios web con los permisos de cámara y micrófono. Es posible que debas actualizar la página web o reiniciar la app.</translation>
 <translation id="1576623706766186887">Alejar cuando la lupa esté activada</translation>
 <translation id="1586324912145647027">Ir al escritorio 1 al 8</translation>
 <translation id="1589090746204042747">Accede a toda tu actividad en esta sesión</translation>
@@ -312,6 +315,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2369165858548251131">"Hola" en chino</translation>
 <translation id="2382875860893882175">La transmisión está en pausa. Puedes reanudar o detener la transmisión en cualquier momento.</translation>
 <translation id="2386292613071805067">Seleccionar todo en la página</translation>
+<translation id="2396594569364254378"><ph name="USED_MEMORY" /> de memoria | <ph name="TOTAL_MEMORY" /> en total</translation>
 <translation id="2397416548179033562">Mostrar el menú de Chrome</translation>
 <translation id="240006516586367791">Controles multimedia</translation>
 <translation id="2402411679569069051">Para desbloquear la Chromebook, utiliza la huella dactilar o desbloquea el teléfono</translation>
@@ -641,6 +645,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="3799080171973636491">Presionaste la combinación de teclas para activar la lupa de pantalla completa. ¿Quieres activarla?</translation>
 <translation id="380165613292957338">Hola, ¿cómo puedo ayudarte?</translation>
 <translation id="3804737937830804242">Contraer la cámara</translation>
+<translation id="3824784079442479685">Permite el acceso a la cámara para <ph name="APP_NAME" /> y todas las apps y sitios web con el permiso correspondiente. Es posible que debas actualizar la página web o reiniciar la app.</translation>
 <translation id="3826099427150913765">Cambiar a contraseña</translation>
 <translation id="383058930331066723">El modo de Ahorro de batería está activado</translation>
 <translation id="383629559565718788">Mostrar la configuración del teclado</translation>
@@ -696,6 +701,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4066027111132117168">Sí (<ph name="REMAINING_TIME" />)</translation>
 <translation id="4069532248403319695">Abrir la página de Descargas</translation>
 <translation id="4072264167173457037">Señal media</translation>
+<translation id="4076455981957565732">Tareas entregadas: <ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> • Tareas calificadas: <ph name="NUM_GRADED" /></translation>
 <translation id="4086921558679520050">Activa el interruptor del micrófono físico del dispositivo</translation>
 <translation id="4101772068965291327">Abrir página principal</translation>
 <translation id="4112140312785995938">Buscar más atrás</translation>
@@ -854,6 +860,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4752784485658729358">Se permiten únicamente 6 escritorios guardados. Para guardar un escritorio nuevo, deberás quitar uno.</translation>
 <translation id="4759238208242260848">Descargas</translation>
 <translation id="4762573482154983647">Ocultar apps</translation>
+<translation id="4763885921995354846">Permite el acceso a la cámara para todas las apps y sitios web con el permiso correspondiente. Es posible que debas actualizar la página web o reiniciar la app.</translation>
 <translation id="4774338217796918551">Regresa mañana a las <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Aún no se pudo verificar tu contraseña. Vuelve a intentarlo.</translation>
 <translation id="4776917500594043016">Contraseña para <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -881,6 +888,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4871905435473761992">Mostrar detalles del hotspot. Tu red móvil no es compatible con el hotspot.</translation>
 <translation id="4872237917498892622">Alt+tecla de búsqueda o Mayús</translation>
 <translation id="4872852897273142380">Enfocar o destacar la barra de favoritos (si está visible)</translation>
+<translation id="4881323000405981760">No se admiten efectos en las apps de Linux</translation>
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="4889868803215848840">Envía comentarios opcionales para mejorar las sugerencias:</translation>
 <translation id="4890187583552566966">Tu administrador inhabilitó el Asistente de Google.</translation>
@@ -1055,6 +1063,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Te cambiamos a una red mejor</translation>
 <translation id="5619862035903135339">La política del administrador inhabilita el modo de captura de pantalla.</translation>
+<translation id="5620979661744857819">Esto permite el acceso para <ph name="APP_NAME" /> y todas las apps y sitios web con los permisos de cámara y micrófono. Es posible que debas actualizar la página web o reiniciar la app.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">No se pudo verificar tu contraseña. Vuelve a intentarlo.</translation>
 <translation id="5646376287012673985">Ubicación</translation>
@@ -1106,6 +1115,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5856638668464565213">La red <ph name="NETWORK_NAME" /> no está activa.</translation>
 <translation id="5860033963881614850">Desactivado</translation>
 <translation id="5860491529813859533">Activar</translation>
+<translation id="5864748620896638071"><ph name="BATTERY_PERCENTAGE" />% de batería</translation>
 <translation id="5867217927013474703">Recopilando información de la red</translation>
 <translation id="5867606971598166637">El administrador del sistema está supervisando las pantallas</translation>
 <translation id="5876666360658629066">Ingresa el código parental</translation>
@@ -1479,6 +1489,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="7561982940498449837">Cerrar menú</translation>
 <translation id="7564874036684306347">Si mueves las ventanas a otro escritorio, puede producirse un comportamiento inesperado. Es posible que las próximas notificaciones, ventanas y cuadros de diálogo se dividan entre los escritorios.</translation>
 <translation id="7569509451529460200">Se habilitaron el braille y ChromeVox</translation>
+<translation id="7571361473021531288"><ph name="BATTERY_PERCENTAGE" />% de batería | Tiempo restante: <ph name="TIME" /></translation>
 <translation id="7573585051776738856">Se ancló la ventana activa en la derecha.</translation>
 <translation id="7579778809502851308">Captura de pantalla</translation>
 <translation id="7593891976182323525">Tecla de búsqueda o Mayús</translation>
@@ -1801,6 +1812,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="9024331582947483881">pantalla completa</translation>
 <translation id="9029736946581028033">El dispositivo se apagará pronto</translation>
 <translation id="9030319654231318877">Desactivado hasta el atardecer</translation>
+<translation id="9030665205623277906">Resumen de uso de la CPU: <ph name="CPU_USEAGE" />%</translation>
 <translation id="9034924485347205037">Archivos de Linux</translation>
 <translation id="9047624247355796468">Abrir la configuración para <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Contraer notificación</translation>

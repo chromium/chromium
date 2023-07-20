@@ -372,6 +372,7 @@
 <translation id="397105322502079400">Računanje…</translation>
 <translation id="39823212440917567">Zadaci za štampanje stariji od <ph name="NUMBER_OF_DAYS" /> dana će se ukloniti</translation>
 <translation id="3993704782688964914">Vaš uređaj <ph name="DEVICE_NAME" /> je sada ažuriran</translation>
+<translation id="3998976413398910035">Upravljajte pisačima</translation>
 <translation id="4003384961948020559">Nije uspjelo – izlaz je pun</translation>
 <translation id="4021031199988160623">Prebacite se na način rada laptopa da testirate</translation>
 <translation id="4034824040120875894">Štampač</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">Samo interno</translation>
 <translation id="5649768706273821470">Poslušajte</translation>
 <translation id="5655283760733841251">Pojačavanje osvjetljenja tastature</translation>
+<translation id="5655776422854483175">Nema zadataka ispisa</translation>
 <translation id="5659593005791499971">E-pošta</translation>
 <translation id="5662240986744577912">uključivanje/isključivanje ekrana privatnosti</translation>
 <translation id="5669267381087807207">Aktiviranje</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Uključi tamnu temu</translation>
+<translation id="628726841779494414">Upravljajte pisačima u postavkama pisača</translation>
 <translation id="629550705077076970">zatamnjenje tastature</translation>
 <translation id="6302401976930124515">Test "<ph name="TEST_NAME" />" je otkazan</translation>
 <translation id="631063167932043783">Aplikacija Istraži</translation>

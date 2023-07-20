@@ -126,7 +126,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540">Element <ph name="FIRST_ITEM_TITLE" /> został zastąpiony elementem <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Pokaż wszystkie sugestie</translation>
-<translation id="1503394326855300303">W sesji wielokrotnego logowania trzeba w pierwszej kolejności zalogować się na konto tego właściciela.</translation>
 <translation id="1510238584712386396">Menu z aplikacjami</translation>
 <translation id="1516740043221086139">Tryb Nie przeszkadzać jest włączony.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Pokaż ustawienia powiadomień. Jedna aplikacja ma wyłączone powiadomienia.}few{Pokaż ustawienia powiadomień. # aplikacje mają wyłączone powiadomienia.}many{Pokaż ustawienia powiadomień. # aplikacji ma wyłączone powiadomienia.}other{Pokaż ustawienia powiadomień. # aplikacji ma wyłączone powiadomienia.}}</translation>

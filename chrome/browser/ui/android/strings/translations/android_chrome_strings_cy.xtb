@@ -454,6 +454,7 @@ Mae tocynnau ymddiriedaeth yn gwella eich preifatrwydd ar y we ac ni ellir eu de
 <translation id="3479552764303398839">Nid nawr</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /> am gynnwys a awgrymir</translation>
 <translation id="3495219333887281978">Mae'r ddalen waelod mewngofnodi wedi'i hagor ar hanner uchder.</translation>
+<translation id="3498338220321963224">Bydd eich data sydd wedi'u cadw yn cael eu dileu os tynnir y clo proffil yn nes ymlaen.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="350276055892098337">Trefnu yn ôl hynaf</translation>
 <translation id="3507132249039706973">Mae Amddiffyniad Safonol ymlaen</translation>
@@ -619,6 +620,7 @@ Mae tocynnau ymddiriedaeth yn gwella eich preifatrwydd ar y we ac ni ellir eu de
 <translation id="4409271659088619928"><ph name="DSE" /> yw eich peiriant chwilio. Gweler ei gyfarwyddiadau ar gyfer dileu eich hanes chwilio, os yw'n berthnasol.</translation>
 <translation id="441383202534727410">Gall gymryd hyd at wythnos i restr o wefannau ymddangos yma yn seiliedig ar eich hanes pori.</translation>
 <translation id="4415276339145661267">Rheoli'ch Cyfrif Google</translation>
+<translation id="4417111749295506837">I gysoni'ch gwybodaeth Chrome a chadw'ch data'n ddiogel yn y car, rhaid i chi greu clo proffil. Byddwch yn defnyddio cod neu gyfrinair bob tro y byddwch yn mynd i mewn i'r car.</translation>
 <translation id="4425140285732600465">Yn dilyn y pris. Cael hysbysiadau os bydd y pris yn gostwng ar unrhyw wefan.</translation>
 <translation id="442518031075347249">Ni fyddwch yn gallu defnyddio eich cerdyn rhithwir gyda Google Pay mwyach. <ph name="BEGIN_LINK1" />Dysgu rhagor am gardiau rhithwir<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">Personoleiddio hysbysebion</translation>
@@ -986,6 +988,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="6363990818884053551">I ddechrau cysoni, cadarnhewch mai chi sydd yno</translation>
 <translation id="6364438453358674297">Tynnu'r awgrym o'r hanes?</translation>
 <translation id="6380100320871303656">Yn amlach yn rhaglwytho tudalennau y mae Chrome yn meddwl eich bod yn debygol o ymweld â nhw. Gall y gosodiad hwn arwain at fwy o ddefnydd o ddata.</translation>
+<translation id="6391355955030242704">I gysoni'ch gwybodaeth Chrome a chadw'ch data'n ddiogel yn y car, rhaid i chi greu clo proffil yn eich gosodiadau diogelwch. Byddwch yn defnyddio cod neu gyfrinair bob tro y byddwch yn mynd i mewn i'r car.</translation>
 <translation id="6394791151443660613">Chwilio: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">DOLEN</translation>
 <translation id="6397616442223433927">Yn ôl ar-lein</translation>

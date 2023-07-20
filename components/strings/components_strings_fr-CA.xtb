@@ -319,6 +319,7 @@
 <translation id="160851722280695521">Jouer au jeu du dinosaure dans Chrome</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611101756749861742">Deuxième rouleau</translation>
+<translation id="1615178538289490617">Révoquer l'accès pour <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">La politique définie par l'administrateur désactive les captures d'écran lorsque du contenu confidentiel est visible</translation>
 <translation id="1617276713587758852">Véhicules multisegments</translation>
 <translation id="1618571384971354160">Services de remorquage et d'assistance routière</translation>
@@ -625,6 +626,7 @@
 <translation id="2276057643614339130">Base d'impression</translation>
 <translation id="2277103315734023688">Rechercher vers l'avant</translation>
 <translation id="2277753418458118549">Afficher les détails de la connexion</translation>
+<translation id="22792995594807632">Examen requis avant le téléchargement</translation>
 <translation id="2283340219607151381">Enregistrer et remplir les adresses</translation>
 <translation id="2283447177162560884">« <ph name="PAGE_TITLE" /> » supprimé</translation>
 <translation id="2286383991450886080">34 po x 44 po</translation>
@@ -1276,6 +1278,7 @@
 <translation id="3736520371357197498">Si vous comprenez les risques pour votre sécurité, vous pouvez <ph name="BEGIN_LINK" />visiter ce site dangereux<ph name="END_LINK" /> avant que les programmes dangereux aient été supprimés.</translation>
 <translation id="3738166223076830879">Votre navigateur est géré par votre administrateur.</translation>
 <translation id="3740319564441798148">Bus et train longue distance</translation>
+<translation id="3740447166056383374">Examen requis avant de copier</translation>
 <translation id="374325029554577103">Produits technologiques de mise en forme</translation>
 <translation id="3743765582345153106">Toujours vérifier lors de l'utilisation de la saisie automatique</translation>
 <translation id="3744111561329211289">Synchronisation en arrière-plan</translation>
@@ -1796,6 +1799,7 @@
 <translation id="4852429274334674023">Systèmes d'exploitation</translation>
 <translation id="4854853140771946034">Créer rapidement une note dans Google Keep</translation>
 <translation id="485902285759009870">Vérification du code en cours…</translation>
+<translation id="4862630594858951805">Vous souhaitez recevoir des courriels lorsque les prix baissent?</translation>
 <translation id="486459320933704969">Un parent ou un tuteur doit indiquer que tu as l'autorisation de consulter ce site Web</translation>
 <translation id="4866506163384898554">Appuyez sur |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| pour afficher votre curseur</translation>
 <translation id="4873616204573862158">Lunettes</translation>
@@ -1991,6 +1995,7 @@
 <translation id="5255690596502591079">Prendre une capture d'écran quand même</translation>
 <translation id="5255833070095767006">350 mm x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{La politique de l'administrateur ne recommande pas de transférer ce fichier vers <ph name="DESTINATION_NAME" />}one{La politique de l'administrateur ne recommande pas de transférer ce fichier vers <ph name="DESTINATION_NAME" />}other{La politique de l'administrateur ne recommande pas de transférer ces fichiers vers <ph name="DESTINATION_NAME" />}}</translation>
+<translation id="5263867360296733198">Examen requis avant le téléversement</translation>
 <translation id="5266128565379329178">Reliure en haut</translation>
 <translation id="5269225904387178860">Quadruple perforation en bas</translation>
 <translation id="5269999699920406580">Seul le propriétaire suivant peut définir les fonctionnalités qui s'appliquent à tout le système : <ph name="OWNER_EMAIL" /></translation>
@@ -2064,6 +2069,7 @@
 <translation id="5412236728747081950">Ce site récupère vos centres d'intérêt de Chrome pour vous montrer des annonces plus pertinentes</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> : <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Empileur 4</translation>
+<translation id="5414446060143308245">Examen requis avant le transfert</translation>
 <translation id="5414511064953050917">Transférer quand même</translation>
 <translation id="5421136146218899937">Effacer les données de navigation...</translation>
 <translation id="5423269318075950257">Suivre le prix</translation>
@@ -2148,6 +2154,7 @@
 <translation id="5595485650161345191">Modifier l'adresse</translation>
 <translation id="5596939519753369075">2 po x 3,5 po</translation>
 <translation id="560412284261940334">La gestion n'est pas prise en charge</translation>
+<translation id="5605249000617390290">En savoir plus sur le suivi des prix</translation>
 <translation id="5605670050355397069">Grand livre</translation>
 <translation id="5610142619324316209">De vérifier la connexion</translation>
 <translation id="5610807607761827392">Vous pouvez gérer les cartes et les adresses dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
@@ -2284,6 +2291,7 @@
 <translation id="5921639886840618607">Enregistrer la carte dans votre compte Google?</translation>
 <translation id="5922853866070715753">Vous avez presque terminé</translation>
 <translation id="5923492272538889093">Utiliser le déverrouillage de l'appareil au lieu du code CVC?</translation>
+<translation id="5924510104057992926">Examen requis avant l'ouverture</translation>
 <translation id="5924782825030413055">Source de la dernière mise à jour du consentement :</translation>
 <translation id="5925040402342933574">Disque optique (semi-brillant)</translation>
 <translation id="5926982310317673627">Centres d'entraînement physique</translation>
@@ -2509,6 +2517,7 @@
 <translation id="6394852772105848029">Ce site veut ouvrir l'application <ph name="APP_NAME" /></translation>
 <translation id="6398765197997659313">Quitter le mode plein écran</translation>
 <translation id="6401136357288658127">Cette politique est obsolète. Vous devriez utiliser la politique <ph name="NEW_POLICY" /> à la place.</translation>
+<translation id="6402537308870515461">Examen requis avant de déplacer les fichiers sélectionnés</translation>
 <translation id="6403167778944553">Chambres et salles de bain</translation>
 <translation id="6404511346730675251">Modifier le favori</translation>
 <translation id="6405181733356710802">Continuer vers <ph name="APP_NAME" />?</translation>
@@ -2657,6 +2666,7 @@
 <translation id="6710594484020273272">&lt;Entrez un terme de recherche&gt;</translation>
 <translation id="671076103358959139">Jeton d'inscription :</translation>
 <translation id="6711464428925977395">Un problème est survenu avec le serveur mandataire, ou l'adresse est incorrecte.</translation>
+<translation id="6716013836112872184">Recevez des courriels à l'adresse <ph name="EMAIL" /> lorsque les prix baissent sur n'importe quel site.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> souhaite créer une carte 3D de votre environnement et faire le suivi de la position de l'appareil photo</translation>
 <translation id="6718612893943028815">Utiliser la caméra?</translation>
 <translation id="6721164594124191969">Étiquettes (brillantes)</translation>
@@ -3187,6 +3197,7 @@ Détails supplémentaires :
 <translation id="7767278989746220252">Patio, pelouse et jardin</translation>
 <translation id="776749070095465053">Tissu</translation>
 <translation id="7773005668374414287">Même ordre, face vers le haut</translation>
+<translation id="7779418012194492374">Révoquer l'accès pour <ph name="DEVICE_NAME" /></translation>
 <translation id="7781829728241885113">Hier</translation>
 <translation id="7785790577395078482">cette tablette</translation>
 <translation id="7786368602962652765">Un champ obligatoire est vide. Remplissez-le avant d'enregistrer.</translation>
@@ -3809,6 +3820,7 @@ Détails supplémentaires :
 <translation id="9155211586651734179">Périphériques audio connectés</translation>
 <translation id="9155646082713385498">Magazines</translation>
 <translation id="9157595877708044936">Configuration en cours...</translation>
+<translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> peut comporter du contenu de nature délicate}one{<ph name="FILE_COUNT" /> fichier peut comporter du contenu de nature délicate}other{<ph name="FILE_COUNT" /> fichiers peuvent comporter du contenu de nature délicate}}</translation>
 <translation id="9164742147345933553">os://indicateurs</translation>
 <translation id="9165305804774426672">Les sites que vous visitez peuvent également déterminer ce qui vous intéresse en fonction de votre activité sur ceux-ci. Par exemple, si vous visitez un site qui vend des chaussures de course de fond, le site peut déterminer que vous vous intéressez aux marathons.</translation>
 <translation id="9166851138617700776">En savoir plus sur les annonces suggérées par les sites et sur la mesure des annonces</translation>

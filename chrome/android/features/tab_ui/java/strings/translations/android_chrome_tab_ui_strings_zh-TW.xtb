@@ -3,7 +3,6 @@
 <translationbundle lang="zh-TW">
 <translation id="1075622780330595106">你有 <ph name="NUMBER_OF_TABS" /> 個分頁最近沒有使用過。要關閉這些分頁嗎？</translation>
 <translation id="125153950246128346">輕觸即可查看另一個分頁</translation>
-<translation id="1403228085774130835">在 Chrome 主選單下方「最近開啟的分頁」中，可以查看關閉的分頁。</translation>
 <translation id="1455506303394048917">你在這些無痕分頁中的活動將從這部裝置上清除</translation>
 <translation id="1499635324672558517">要關閉所有無痕分頁嗎？</translation>
 <translation id="1657719826150349398">將分頁向下移</translation>
@@ -38,6 +37,7 @@
 <translation id="4133493477912226187">似乎有 <ph name="NUMBER_OF_TABS" /> 個相關的分頁。要將這些分頁加入群組嗎？</translation>
 <translation id="4212246570487010370">繼續瀏覽</translation>
 <translation id="4648718555153979859">你的分頁都集中顯示在這裡</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{輕觸 Chrome 主選單的「最近開啟的分頁」，即可查看已關閉的分頁。}=1{輕觸 Chrome 主選單的「最近開啟的分頁」，即可查看已關閉的分頁。當你輕觸這個選項後，系統會關閉無痕分頁。}other{輕觸 Chrome 主選單的「最近開啟的分頁」，即可查看已關閉的分頁。當你輕觸這個選項後，系統會關閉 # 個無痕分頁。}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> 則評論)}other{(<ph name="REVIEWS_COUNT_MANY" /> 則評論)}}</translation>
 <translation id="4850886885716139402">檢視</translation>
 <translation id="4870911314065352661">要關閉所有分頁嗎？</translation>

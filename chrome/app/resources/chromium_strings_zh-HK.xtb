@@ -61,7 +61,7 @@
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2384373936468275798">您的帳戶登入詳情已過時，因此 Chromium 作業系統無法同步處理您的資料。</translation>
 <translation id="2396765026452590966">擴充功能「<ph name="EXTENSION_NAME" />」已變更 Chromium 啟動時所顯示的網頁。</translation>
-<translation id="2398377054246527950">{NUM_DEVICES,plural, =0{至少有 1 個 Chromium 擴充功能當時正在存取 1 部 HID 裝置}=1{至少有 1 個 Chromium 擴充功能正在存取 1 部 HID 裝置}other{至少有 1 個 Chromium 擴充功能正在存取 # 部 HID 裝置}}</translation>
+<translation id="2398377054246527950">{NUM_DEVICES,plural, =0{當時至少有一個 Chromium 擴充程式正在存取 1 部 HID 裝置}=1{至少有一個 Chromium 擴充程式正在存取 1 部 HID 裝置}other{至少有一個 Chromium 擴充程式正在存取 # 部 HID 裝置}}</translation>
 <translation id="2401032172288869980">Chromium 需要相機權限和麥克風權限，才能執行此網站要求的功能</translation>
 <translation id="2451727308784734061">透過捷徑快速開啟「密碼管理工具」。您可將捷徑移至電腦的主畫面或應用程式啟動器。</translation>
 <translation id="2478295928299953161">Chromium 即將關閉</translation>
@@ -94,7 +94,7 @@
 <translation id="3032787606318309379">正在新增至 Chromium…</translation>
 <translation id="3038232873781883849">正在等待安裝…</translation>
 <translation id="3068515742935458733">將當機報告和<ph name="UMA_LINK" />傳送給 Google，助我們一臂之力，讓 Google Chrome 更臻完美</translation>
-<translation id="3079753320517721795">{NUM_DEVICES,plural, =0{至少有 1 個 Chromium 擴充功能當時正在存取 1 部 USB 裝置}=1{至少有 1 個 Chromium 擴充功能正在存取 1 部 USB 裝置}other{至少有 1 個 Chromium 擴充功能正在存取 # 部 USB 裝置}}</translation>
+<translation id="3079753320517721795">{NUM_DEVICES,plural, =0{當時至少有一個 Chromium 擴充程式正在存取 1 部 USB 裝置}=1{至少有一個 Chromium 擴充程式正在存取 1 部 USB 裝置}other{至少有一個 Chromium 擴充程式正在存取 # 部 USB 裝置}}</translation>
 <translation id="3101560983689755071">您的瀏覽記錄會影響系統顯示的廣告，以及下列由系統推測的興趣。為保障您的私隱，Chromium 每個月都會自動刪除您的興趣。除非您移除興趣，否則系統會重新整理興趣。</translation>
 <translation id="3103660991484857065">安裝程式無法解壓縮封存檔案，請重新下載 Chromium。</translation>
 <translation id="3130323860337406239">Chromium 正在使用您的麥克風。</translation>

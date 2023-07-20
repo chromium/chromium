@@ -319,6 +319,7 @@
 <translation id="160851722280695521">‏הפעלת המשחק Dino Run ב-Chrome</translation>
 <translation id="161042844686301425">ציאן</translation>
 <translation id="1611101756749861742">גליל שני</translation>
+<translation id="1615178538289490617">ביטול הגישה אל <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">בהתאם למדיניות מנהל המערכת, צילום המסך מושבת כשמוצג תוכן סודי</translation>
 <translation id="1617276713587758852">רכבי קרוסאובר</translation>
 <translation id="1618571384971354160">גרירה ושירותי דרך</translation>
@@ -625,6 +626,7 @@
 <translation id="2276057643614339130">בסיס הדפסה</translation>
 <translation id="2277103315734023688">הרצה קדימה</translation>
 <translation id="2277753418458118549">הצגת פרטי החיבור</translation>
+<translation id="22792995594807632">נדרשת בדיקה לפני ההורדה</translation>
 <translation id="2283340219607151381">שמירה ומילוי של כתובות</translation>
 <translation id="2283447177162560884">בוצעה מחיקה של '<ph name="PAGE_TITLE" />'</translation>
 <translation id="2286383991450886080">‏34x44 אינץ'</translation>
@@ -1276,6 +1278,7 @@
 <translation id="3736520371357197498">אם הבנת את הסיכונים בנוגע לאבטחה שלך, באפשרותך <ph name="BEGIN_LINK" />להיכנס לאתר לא בטוח זה<ph name="END_LINK" /> לפני הסרת התוכניות המסוכנות.</translation>
 <translation id="3738166223076830879">הדפדפן מנוהל על ידי מנהל המערכת</translation>
 <translation id="3740319564441798148">אוטובוסים ורכבות למרחקים ארוכים</translation>
+<translation id="3740447166056383374">נדרשת בדיקה לפני ההעתקה</translation>
 <translation id="374325029554577103">מוצרי כושר טכנולוגיים</translation>
 <translation id="3743765582345153106">תמיד יתבצע אימות כשיש שימוש במילוי אוטומטי</translation>
 <translation id="3744111561329211289">סנכרון ברקע</translation>
@@ -1800,6 +1803,7 @@ Del</translation>
 <translation id="4852429274334674023">מערכות הפעלה</translation>
 <translation id="4854853140771946034">‏יצירת הערה חדשה ב-Google Keep במהירות</translation>
 <translation id="485902285759009870">הקוד בתהליך אימות…</translation>
+<translation id="4862630594858951805">רוצה לקבל אימיילים על ירידות במחיר?</translation>
 <translation id="486459320933704969">כדי לבקר באתר הזה, עליך לקבל אישור מהורה או מאפוטרופוס</translation>
 <translation id="4866506163384898554">צריך להקיש על |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| כדי להציג את הסמן</translation>
 <translation id="4873616204573862158">משקפיים</translation>
@@ -1995,6 +1999,7 @@ Del</translation>
 <translation id="5255690596502591079">אני בכל זאת רוצה לצלם</translation>
 <translation id="5255833070095767006">‏350x460 מ"מ</translation>
 <translation id="5257739419779698609">{0,plural, =1{בהתאם למדיניות האדמין, לא מומלץ להעתיק את הקובץ הזה אל <ph name="DESTINATION_NAME" />}one{בהתאם למדיניות האדמין, לא מומלץ להעתיק את הקבצים האלה אל <ph name="DESTINATION_NAME" />}two{בהתאם למדיניות האדמין, לא מומלץ להעתיק את הקבצים האלה אל <ph name="DESTINATION_NAME" />}other{בהתאם למדיניות האדמין, לא מומלץ להעתיק את הקבצים האלה אל <ph name="DESTINATION_NAME" />}}</translation>
+<translation id="5263867360296733198">נדרשת בדיקה לפני ההעלאה</translation>
 <translation id="5266128565379329178">כריכה בקצה העליון</translation>
 <translation id="5269225904387178860">4 ניקובים בחלק התחתון</translation>
 <translation id="5269999699920406580">רק הבעלים יכול להגדיר תכונות שחלות על כל המערכת: <ph name="OWNER_EMAIL" /></translation>
@@ -2068,6 +2073,7 @@ Del</translation>
 <translation id="5412236728747081950">‏יוצגו לך מודעות רלוונטיות יותר באתר על סמך תחומי העניין שלך מ-Chrome</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">מערים 4</translation>
+<translation id="5414446060143308245">נדרשת בדיקה לפני ההעברה</translation>
 <translation id="5414511064953050917">אעביר בכל זאת</translation>
 <translation id="5421136146218899937">ניקוי נתוני גלישה...</translation>
 <translation id="5423269318075950257">מעקב אחר המחיר</translation>
@@ -2153,6 +2159,7 @@ Del</translation>
 <translation id="5595485650161345191">עריכת כתובת</translation>
 <translation id="5596939519753369075">‏2x3.5 אינץ'</translation>
 <translation id="560412284261940334">ניהול אינו נתמך</translation>
+<translation id="5605249000617390290">מידע נוסף על המעקב אחר מחירים</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5610142619324316209">לבדוק את החיבור</translation>
 <translation id="5610807607761827392">אפשר לנהל את הכרטיסים והכתובות דרך ה<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
@@ -2289,6 +2296,7 @@ Del</translation>
 <translation id="5921639886840618607">‏לשמור את הכרטיס בחשבון Google?</translation>
 <translation id="5922853866070715753">עוד רגע מסיימים</translation>
 <translation id="5923492272538889093">‏להשתמש בביטול נעילת המכשיר במקום בקוד האימות (CVC)?</translation>
+<translation id="5924510104057992926">נדרשת בדיקה לפני הפתיחה</translation>
 <translation id="5924782825030413055">מקור העדכון האחרון של סטטוס ההסכמה:</translation>
 <translation id="5925040402342933574">Optical Disc (Semi-Gloss)</translation>
 <translation id="5926982310317673627">מכוני כושר ומועדוני בריאות</translation>
@@ -2514,6 +2522,7 @@ Del</translation>
 <translation id="6394852772105848029">האתר הזה מבקש לפתוח את האפליקציה <ph name="APP_NAME" /></translation>
 <translation id="6398765197997659313">יציאה ממסך מלא</translation>
 <translation id="6401136357288658127">המדיניות הזו הוצאה משימוש. במקומה יש להשתמש במדיניות <ph name="NEW_POLICY" />.</translation>
+<translation id="6402537308870515461">נדרשת בדיקה לפני ההעברה</translation>
 <translation id="6403167778944553">חדרי שינה ורחצה</translation>
 <translation id="6404511346730675251">עריכת סימנייה</translation>
 <translation id="6405181733356710802">להמשיך אל <ph name="APP_NAME" />?</translation>
@@ -2662,6 +2671,7 @@ Del</translation>
 <translation id="6710594484020273272">&lt;יש להקליד מונח חיפוש&gt;</translation>
 <translation id="671076103358959139">אסימון הרשמה:</translation>
 <translation id="6711464428925977395">‏משהו אינו תקין בשרת ה-proxy, או שהכתובת שגויה.</translation>
+<translation id="6716013836112872184">יישלחו אימיילים לכתובת <ph name="EMAIL" /> כשתהיה ירידה במחיר באתר כלשהו.</translation>
 <translation id="6716672519412350405">האתר <ph name="URL" /> רוצה ליצור מפה בתלת ממד של הסביבה שלך ולעקוב אחר מיקום המצלמה</translation>
 <translation id="6718612893943028815">להשתמש במצלמה?</translation>
 <translation id="6721164594124191969">Labels (Glossy)</translation>
@@ -3192,6 +3202,7 @@ Del</translation>
 <translation id="7767278989746220252">פטיו, חצר וגינה</translation>
 <translation id="776749070095465053">Fabric</translation>
 <translation id="7773005668374414287">באותו סדר עם הפנים כלפי מעלה</translation>
+<translation id="7779418012194492374">ביטול הגישה אל <ph name="DEVICE_NAME" /></translation>
 <translation id="7781829728241885113">אתמול</translation>
 <translation id="7785790577395078482">הטאבלט הזה</translation>
 <translation id="7786368602962652765">יש שדה חובה ריק. עליך למלא אותו לפני השמירה.</translation>
@@ -3470,6 +3481,7 @@ Del</translation>
 <translation id="8390725133630534698">השיתוף מ-<ph name="ORIGIN_NAME" /> אל <ph name="VM_NAME" /> חסום בהתאם למדיניות של מנהל המערכת</translation>
 <translation id="8396522675989118466">זהו הקוד בן <ph name="NUMBER_OF_DIGITS" /> הספרות שמופיע ב<ph name="SIDE_OF_CARD" /></translation>
 <translation id="8398335999901363925">רשימת אמצעי התשלום הזמינים למילוי במגע נפתחה בגובה המלא של המסך.</translation>
+<translation id="8398446215576328011">ביטול כללי המדיניות שהוחלו</translation>
 <translation id="8398790343843005537">אתר את הטלפון שלך</translation>
 <translation id="8403506619177967839">ספרות חובבים</translation>
 <translation id="8405579342203358118">‏ניתן לקבוע איזה מידע יסונכרן בהגדרות Chrome</translation>
@@ -3814,6 +3826,7 @@ Del</translation>
 <translation id="9155211586651734179">ציוד האודיו הההיקפי מחובר</translation>
 <translation id="9155646082713385498">כתבי עת</translation>
 <translation id="9157595877708044936">ההגדרה מתבצעת...</translation>
+<translation id="9161794544616754735">{0,plural, =1{יכול להיות שהקובץ <ph name="FILE_NAME" /> מכיל תוכן רגיש}one{יכול להיות ש-<ph name="FILE_COUNT" /> קבצים מכילים תוכן רגיש}two{יכול להיות ש-<ph name="FILE_COUNT" /> קבצים מכילים תוכן רגיש}other{יכול להיות ש-<ph name="FILE_COUNT" /> קבצים מכילים תוכן רגיש}}</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">אתרים שבחרת לבקר בהם יכולים לזהות אילו דברים מעניינים אותך גם לפי הפעילות שלך באתר. לדוגמה, אם בחרת לבקר באתר למכירת נעלי ריצה למרחקים ארוכים, האתר עשוי להעריך שאחד מנושאי העניין שלך הוא ריצת מרתונים.</translation>
 <translation id="9166851138617700776">מידע נוסף על מודעות שאתרים מציעים ועל מדידת הנתונים של המודעות</translation>

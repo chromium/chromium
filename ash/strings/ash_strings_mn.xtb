@@ -126,7 +126,6 @@
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" />-г <ph name="SECOND_ITEM_TITLE" />-р сольсон</translation>
 <translation id="1500926532737552529">Бүх зөвлөмжийг харуулах</translation>
-<translation id="1503394326855300303">Эзэмшигчийн дансанд эхлээд олон нэвтрэх хэсэгт нэвтэрсэн байх шаардлагтай.</translation>
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="1516740043221086139">Бүү саад бол горим асаалттай байна.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Мэдэгдлийн тохиргоог харуулна уу. Аппын мэдэгдлийг унтраасан байна}other{Мэдэгдлийн тохиргоог харуулна уу. # аппын мэдэгдлийг унтраасан байна}}</translation>
@@ -513,6 +512,7 @@
 <translation id="3294437725009624529">Зочин</translation>
 <translation id="3298690094479023523">Таны ПИН эсвэл нууц үгийг баталгаажуулж чадсангүй. Дахин оролдоно уу.</translation>
 <translation id="3300193645498960160">Та дууг нь хаасан үед яривал танд мэдэгдэнэ. Аудио таны төхөөрөмжөөс гадагш хэзээ ч гарахгүй.</translation>
+<translation id="3306386552969601301"><ph name="DEVICE_NAME" />-н сүлжээний цэгтэй <ph name="DEVICECOUNT" /> төхөөрөмж холбогдсон</translation>
 <translation id="3307642347673023554">Зөөврийн компьютерын горим руу сэлгэсэн</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> дараа нэвтрэх боломжтой хэвээр байна.</translation>
 <translation id="3321628682574733415">Эцэг эхийн код буруу байна</translation>
@@ -552,6 +552,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин</translation>
 <translation id="3445925074670675829">USB-C төхөөрөмж</translation>
 <translation id="3455468639467374593">Загвар, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="3456931972722214204"><ph name="DEVICE_NAME" />-н сүлжээний цэгтэй 1 төхөөрөмж холбогдсон</translation>
 <translation id="346243998268439747">Томруулах түвшинг шинэчлэх</translation>
 <translation id="3465223694362104965">Таныг сүүлд нэвтэрснээс хойш энэ төхөөрөмжид өөр гар холбогдсон байна. Энэ гарыг ашиглахаасаа өмнө та итгэж болох эсэхээ шалгана уу.</translation>
 <translation id="3465356146291925647">Таны администратор удирддаг</translation>
@@ -765,6 +766,7 @@
 <translation id="4324840740119394760">Энэ нь <ph name="APP_NAME" /> болон камерын зөвшөөрөлтэй бүх апп болон вебсайтад камерын хандалтыг зөвшөөрнө</translation>
 <translation id="4333628967105022692">Олон хэрэглэгч нэвтэрсэн үед Lacros-г дэмждэггүй.</translation>
 <translation id="4338109981321384717">Томруулдаг шил</translation>
+<translation id="4356872429719185452">Сүлжээний цэгийн дэлгэрэнгүйг харуулна уу. Сүлжээний цэгийг асааж байна.</translation>
 <translation id="4371348193907997655">Дамжуулах тохиргоо</translation>
 <translation id="4375482231364171368">Хаяг оруулах хэсгээс хайх</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, дохионы хүч <ph name="SIGNAL_STRENGTH" /> хувь</translation>
@@ -1112,6 +1114,7 @@
 <translation id="5825969630400862129">Холбогдсон төхөөрөмжүүдийн тохиргоо</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />-г <ph name="ROUTE_TITLE" />-д дамжуулахаа зогсоох</translation>
 <translation id="5841296711770970362">Дараагийн дууны зам руу очих</translation>
+<translation id="5842553299352339114"><ph name="DEVICE_NAME" />-н сүлжээний цэг асаалттай бөгөөд холбогдсон ямар ч төхөөрөмж байхгүй</translation>
 <translation id="584525477304726060">Томруулахын тулд удаан дарна уу</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" />-г идэвхжүүлээгүй.</translation>
 <translation id="5860033963881614850">Идэвхгүй байна</translation>
@@ -1374,6 +1377,7 @@
 <translation id="6981291220124935078">Хандалтыг асаах</translation>
 <translation id="6981982820502123353">Хандалт</translation>
 <translation id="698231206551913481">Энэ хэрэглэгчийг устгасан тохиолдолд холбоотой бүх файл болон дотоод өгөгдөл нь бүрмөсөн устах болно.</translation>
+<translation id="7004910047186208204">Мобайл датад холбогдох</translation>
 <translation id="7005239792648594238">Эхлүүлэхийн тулд аппыг нээнэ үү</translation>
 <translation id="7007983414944123363">Таны ПИН эсвэл нууц үгийг баталгаажуулж чадсангүй. Дахин оролдоно уу.</translation>
 <translation id="7014684956566476813"><ph name="DEVICE_NAME" /> нэртэй төхөөрөмжид холбогдсон</translation>
@@ -1528,6 +1532,7 @@
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 мэдэгдэл}other{# мэдэгдэл}}</translation>
 <translation id="7723703419796509666">Хөгжүүлэгчийн хэрэгслийн консолыг харуулах эсвэл нуух</translation>
 <translation id="7724603315864178912">Хайчлах</translation>
+<translation id="7725108879223146004">Сүлжээний цэгийн дэлгэрэнгүйг харуулна уу. Сүлжээний цэгийг унтрааж байна.</translation>
 <translation id="7727952505535211425">Хаяг оруулах хэсэг дэх вебсайтыг шинэ табд нээх</translation>
 <translation id="77365090426890123">санах ойн ашиглалт</translation>
 <translation id="7742327441377685481">Мэдэгдэл алга</translation>
@@ -1663,6 +1668,7 @@
 <translation id="8308637677604853869">Өмнөх цэс</translation>
 <translation id="830868413617744215">Бета</translation>
 <translation id="8314772463905284467">Caps Lock асаалттай байна</translation>
+<translation id="8315514906653279104">Асааж байна...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> цонх сонгосон</translation>
 <translation id="8349964124165471584">Холбоосыг шинэ цонхонд нээх</translation>

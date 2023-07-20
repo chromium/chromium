@@ -3307,6 +3307,7 @@
 <translation id="3721119614952978349">나와 Google의 관계</translation>
 <translation id="3722108462506185496">가상 머신 서비스를 시작하지 못했습니다. 다시 시도해 주세요.</translation>
 <translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> 안내 받음</translation>
+<translation id="3724897774652282549">양식 작성</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">사용 가능한 Wi-Fi 네트워크</translation>
 <translation id="3727187387656390258">팝업 검사</translation>
@@ -7240,6 +7241,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7067396782363924830">주변 색상</translation>
 <translation id="7067725467529581407">다시 표시하지 않음</translation>
 <translation id="7068279399556423026">다른 기기의 탭을 보려면 로그인하세요.</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{이 사이트의 새 비밀번호}other{이 사이트의 새 비밀번호}}</translation>
 <translation id="7070484045139057854">사이트 데이터를 읽고 변경할 수 있음</translation>
 <translation id="7072010813301522126">바로가기 이름</translation>
 <translation id="7074066049407662839">비밀번호를 저장하려면 로그인하세요</translation>
@@ -9628,6 +9630,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9068598199622656904">키를 동시에 누르는 대신 한 번에 하나의 키를 눌러 단축키에 사용하세요</translation>
 <translation id="9068878141610261315">지원되지 않는 파일 형식입니다.</translation>
 <translation id="9069665781180028115">선택한 항목을 이 Chromebook에서 사용할 수 있습니다. Chromebook을 처음 사용하는 경우 모든 항목을 동기화하여 환경설정을 백업합니다. 설정 &gt; 계정에서 언제든지 변경할 수 있습니다.</translation>
+<translation id="9070231741075992882"><ph name="APP_NAME" />에 허용하는 권한은 설치된 앱 및 스트리밍된 앱에도 허용됩니다.</translation>
 <translation id="9070342919388027491">왼쪽으로 탭을 이동함</translation>
 <translation id="9074739597929991885">블루투스</translation>
 <translation id="9074836595010225693">USB 마우스 연결됨</translation>

@@ -1002,6 +1002,7 @@
       <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">知道您是否正在使用此裝置</translation>
 <translation id="3180358318770512945">育兒</translation>
+<translation id="3182185041786697613">要儲存安全碼嗎？</translation>
 <translation id="3185635157430775689">電腦零件</translation>
 <translation id="3187306450550410410">彈性工作安排</translation>
 <translation id="3187472288455401631">廣告評估功能</translation>
@@ -1798,7 +1799,7 @@
 <translation id="4852429274334674023">作業系統</translation>
 <translation id="4854853140771946034">在 Google Keep 中快速建立新筆記</translation>
 <translation id="485902285759009870">正在確認驗證碼…</translation>
-<translation id="4862630594858951805">想在商品降價時收到電子郵件通知嗎？</translation>
+<translation id="4862630594858951805">想在產品降價時接收電郵通知嗎？</translation>
 <translation id="486459320933704969">您必須獲得家長或監護人許可，才能瀏覽此網站</translation>
 <translation id="4866506163384898554">按下 |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| 即可顯示游標</translation>
 <translation id="4873616204573862158">眼鏡</translation>
@@ -1849,7 +1850,7 @@
 <translation id="4953689047182316270">回應無障礙功能事件</translation>
 <translation id="4957080528849277028">睇 Chrome 記錄按鈕，啟用之後就可以喺 Chrome 設定度睇同管理瀏覽記錄</translation>
 <translation id="4958444002117714549">展開清單</translation>
-<translation id="4960068118612257147">您可在 Chrome 廣告私隱設定中作出變更</translation>
+<translation id="4960068118612257147">你可前往 Chrome 廣告私隱設定作出變更</translation>
 <translation id="4964505745997821360">醫療保險</translation>
 <translation id="4968522289500246572">此應用程式專為流動裝置而設，可能無法正常調整大小。應用程式可能會發生問題或重新啟動。</translation>
 <translation id="4968665849807487749">可以要求在您所有的顯示屏上管理視窗</translation>
@@ -1994,7 +1995,7 @@
 <translation id="5255690596502591079">仍要擷取</translation>
 <translation id="5255833070095767006">350 x 460 毫米</translation>
 <translation id="5257739419779698609">{0,plural, =1{管理員政策不建議複製此檔案到<ph name="DESTINATION_NAME" />}other{管理員政策不建議複製這些檔案到<ph name="DESTINATION_NAME" />}}</translation>
-<translation id="5263867360296733198">上傳檔案前請務必確認</translation>
+<translation id="5263867360296733198">上載檔案前請務必確認</translation>
 <translation id="5266128565379329178">釘裝 (頂端)</translation>
 <translation id="5269225904387178860">四孔 (底部)</translation>
 <translation id="5269999699920406580">這些功能會套用至整個系統，只有以下擁有者可設定：<ph name="OWNER_EMAIL" /></translation>
@@ -2153,7 +2154,7 @@
 <translation id="5595485650161345191">編輯地址</translation>
 <translation id="5596939519753369075">2 x 3.5 吋</translation>
 <translation id="560412284261940334">系統不支援管理</translation>
-<translation id="5605249000617390290">進一步瞭解價格追蹤功能</translation>
+<translation id="5605249000617390290">進一步瞭解追蹤價格</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5610142619324316209">檢查連線狀態</translation>
 <translation id="5610807607761827392">您可在「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」中管理名片和地址。</translation>
@@ -2360,7 +2361,7 @@
 <translation id="6051898664905071243">頁數：</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053584886670442526">您可在不同的 Google 產品中使用已儲存的地址。此地址已儲存在您的 Google 帳戶 (<ph name="ACCOUNT" />)。</translation>
-<translation id="6053735090575989697">如要進一步瞭解 Google 如何保護您的資料，請參閱我們的《私隱權政策》。</translation>
+<translation id="6053735090575989697">請查看《私隱權政策》，進一步瞭解 Google 如何保護你的資料。</translation>
 <translation id="6055888660316801977">冇相符安全付款憑證工作表</translation>
 <translation id="6055982527635883756">信封 (封存用)</translation>
 <translation id="6058977677006700226">要在所有裝置上使用您的卡嗎？</translation>
@@ -2665,7 +2666,7 @@
 <translation id="6710594484020273272">&lt;輸入搜尋字詞&gt;</translation>
 <translation id="671076103358959139">註冊憑證：</translation>
 <translation id="6711464428925977395">Proxy 伺服器發生錯誤，或地址不正確。</translation>
-<translation id="6716013836112872184">商品在任何網站上降價時，系統會傳送電子郵件到 <ph name="EMAIL" />。</translation>
+<translation id="6716013836112872184">產品在任何網站上降價時，系統會傳送電郵至 <ph name="EMAIL" />。</translation>
 <translation id="6716672519412350405"><ph name="URL" /> 要求建立您身處環境的 3D 地圖並追蹤攝錄機位置</translation>
 <translation id="6718612893943028815">要使用攝錄機嗎？</translation>
 <translation id="6721164594124191969">標籤 (光面)</translation>
@@ -3196,7 +3197,7 @@
 <translation id="7767278989746220252">露台、草坪和園藝</translation>
 <translation id="776749070095465053">布料</translation>
 <translation id="7773005668374414287">相同順序 (正面朝上)</translation>
-<translation id="7779418012194492374">撤銷「<ph name="DEVICE_NAME" />」的存取權</translation>
+<translation id="7779418012194492374">撤銷 <ph name="DEVICE_NAME" /> 的存取權</translation>
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7785790577395078482">此平板電腦</translation>
 <translation id="7786368602962652765">必填欄位沒有內容，請填寫後再儲存。</translation>
@@ -3443,6 +3444,7 @@
 <translation id="830498451218851433">對摺</translation>
 <translation id="8308653357438598313">直播影片串流</translation>
 <translation id="8311895354659782580">房地產出售</translation>
+<translation id="8317570861267063617">在裝置上儲存這張卡片的信用卡驗證碼可加快結帳速度</translation>
 <translation id="8319269383395457801">住宅出售</translation>
 <translation id="831997045666694187">傍晚</translation>
 <translation id="8321476692217554900">通知</translation>
@@ -3768,7 +3770,7 @@
 <translation id="9049981332609050619">您嘗試連線至 <ph name="DOMAIN" />，但伺服器提供的憑證無效。</translation>
 <translation id="9050666287014529139">複雜密碼</translation>
 <translation id="9051072642122229460">咖啡及濃縮咖啡機</translation>
-<translation id="9053840549256861041">我們即將推出名為「廣告成效評估」的全新廣告私隱功能。Chrome 只會在網站間分享非常有限的資料 (例如向使用者放送廣告的時段)，讓網站評估廣告成效。</translation>
+<translation id="9053840549256861041">我們即將推出名為「廣告成效評估」的全新廣告私隱功能。Chrome 只會在網站間分享非常有限的資料 (例如向使用者放送廣告的時段)，以協助網站評估廣告成效。</translation>
 <translation id="9056953843249698117">商店</translation>
 <translation id="9062620674789239642">此檔案可能已被移動、編輯或刪除。</translation>
 <translation id="9063398205799684336">Kaku 2 信封</translation>
@@ -3820,7 +3822,7 @@
 <translation id="9155211586651734179">已連結的音訊周邊裝置</translation>
 <translation id="9155646082713385498">雜誌</translation>
 <translation id="9157595877708044936">設定中…</translation>
-<translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> 可能含有敏感內容}other{<ph name="FILE_COUNT" /> 個檔案可能含有敏感內容}}</translation>
+<translation id="9161794544616754735">{0,plural, =1{「<ph name="FILE_NAME" />」可能含有敏感內容}other{<ph name="FILE_COUNT" /> 個檔案可能含有敏感內容}}</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">您瀏覽的網站亦可根據您的網站活動判斷您喜歡的內容。例如，如果您瀏覽售賣長跑運動鞋的網站，該網站可能會判斷您有興趣參加馬拉松。</translation>
 <translation id="9166851138617700776">進一步瞭解網站建議廣告和廣告評估</translation>

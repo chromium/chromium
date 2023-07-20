@@ -126,7 +126,6 @@
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> және <ph name="SECOND_ITEM_TITLE" /> өзара ауыстырылды.</translation>
 <translation id="1500926532737552529">Барлық ұсынысты көрсету</translation>
-<translation id="1503394326855300303">Бұл иеленуші аккаунтсы көп кіру сеансында алғашқы жүйеге кірген аккаунт болуы керек.</translation>
 <translation id="1510238584712386396">Іске қосу құрылғысы</translation>
 <translation id="1516740043221086139">Мазаламау режимі қосулы.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Хабарландыру параметрлерін көрсету. Қолданбаның хабарландырулары өшірулі}other{Хабарландыру параметрлерін көрсету. # қолданбаның хабарландырулары өшірулі}}</translation>
@@ -513,6 +512,7 @@
 <translation id="3294437725009624529">Қонақ</translation>
 <translation id="3298690094479023523">PIN кодыңыз не құпия сөзіңіз әлі расталмады. Қайталап көріңіз.</translation>
 <translation id="3300193645498960160">Дыбысы өшірілген күйде сөйлессеңіз, сізге хабарландыру келеді. Аудио құрылғыңыздан ешқашан кетпейді.</translation>
+<translation id="3306386552969601301"><ph name="DEVICECOUNT" /> құрылғы <ph name="DEVICE_NAME" /> хотспотына қосылған</translation>
 <translation id="3307642347673023554">Ноутбук режиміне ауысты.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> кейінірек те кіре алады.</translation>
 <translation id="3321628682574733415">Ата-ана коды дұрыс емес</translation>
@@ -552,6 +552,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> минут</translation>
 <translation id="3445925074670675829">USB-C құрылғысы</translation>
 <translation id="3455468639467374593">Үлгі: <ph name="TEMPLATE_NAME" /></translation>
+<translation id="3456931972722214204">1 құрылғы <ph name="DEVICE_NAME" /> хотспотына қосылған</translation>
 <translation id="346243998268439747">Масштабтау деңгейін бастапқы күйге қайтару</translation>
 <translation id="3465223694362104965">Аккаунтқа соңғы рет кіргеннен бері осы құрылғыға басқа пернетақта жалғанды. Оны пайдаланбас бұрын, бұл пернетақтаның сенімді екеніне көз жеткізіңіз.</translation>
 <translation id="3465356146291925647">Әкімшіңіз басқарады</translation>
@@ -764,6 +765,7 @@
 <translation id="4324840740119394760">Бұл — камера рұқсаты бар барлық қолданба мен веб-сайт және <ph name="APP_NAME" /> қолданбасы үшін камераны пайдалануға мүмкіндік береді.</translation>
 <translation id="4333628967105022692">Бірнеше пайдаланушы кірген жағдайда, Lacros браузеріне қолдау көрсетілмейді.</translation>
 <translation id="4338109981321384717">Ұлғайтқыш шыны</translation>
+<translation id="4356872429719185452">Хотспот мәліметтерін көрсету. Хотспот қосылып жатыр.</translation>
 <translation id="4371348193907997655">Трансляция параметрлері</translation>
 <translation id="4375482231364171368">Мекенжай жолағынан іздеу</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, сигнал күші <ph name="SIGNAL_STRENGTH" /> пайыз.</translation>
@@ -1111,6 +1113,7 @@
 <translation id="5825969630400862129">Байланыстырылған құрылғылар параметрлері</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> қабылдағышында <ph name="ROUTE_TITLE" /> трансляциясын тоқтату</translation>
 <translation id="5841296711770970362">Келесі саундтрекке өту</translation>
+<translation id="5842553299352339114"><ph name="DEVICE_NAME" /> хотспоты қосулы, ешбір құрылғы қосылмаған</translation>
 <translation id="584525477304726060">Үлкейту үшін басып тұрыңыз.</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> іске қосылмады.</translation>
 <translation id="5860033963881614850">Өшірулі</translation>
@@ -1373,6 +1376,7 @@
 <translation id="6981291220124935078">Пайдалануға рұқсат беру</translation>
 <translation id="6981982820502123353">Арнайы мүмкіндіктер</translation>
 <translation id="698231206551913481">Бұл пайдаланушы өшірілгеннен кейін, оған қатысты барлық файлдар және жергілікті деректер біржола жойылады.</translation>
+<translation id="7004910047186208204">Мобильдік интернетке қосылу</translation>
 <translation id="7005239792648594238">Іске қосу үшін қолданбаны ашыңыз.</translation>
 <translation id="7007983414944123363">PIN кодыңыз не құпия сөзіңіз расталмады. Қайталап көріңіз.</translation>
 <translation id="7014684956566476813">"<ph name="DEVICE_NAME" />" деп аталатын құрылғыға қосылды.</translation>
@@ -1527,6 +1531,7 @@
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 хабарландыру}other{# хабарландыру}}</translation>
 <translation id="7723703419796509666">"Әзірлеуші құралдары" консолін көрсету немесе жасыру</translation>
 <translation id="7724603315864178912">Қиып алу</translation>
+<translation id="7725108879223146004">Хотспот мәліметтерін көрсету. Хотспот өшіріліп жатыр.</translation>
 <translation id="7727952505535211425">Мекенжай жолағындағы веб-сайтты жаңа қойындыда ашу</translation>
 <translation id="77365090426890123">жадтың пайдаланылуы</translation>
 <translation id="7742327441377685481">Хабарландырулар жоқ</translation>
@@ -1662,6 +1667,7 @@
 <translation id="8308637677604853869">Алдыңғы мәзір</translation>
 <translation id="830868413617744215">Бета</translation>
 <translation id="8314772463905284467">Caps Lock қосулы</translation>
+<translation id="8315514906653279104">Қосылып жатыр…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> терезесі таңдалды</translation>
 <translation id="8349964124165471584">Сілтемені жаңа терезеде ашу</translation>

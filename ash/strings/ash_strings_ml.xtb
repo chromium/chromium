@@ -126,7 +126,6 @@
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" />, <ph name="SECOND_ITEM_TITLE" />-മായി സ്വാപ്പ് ചെയ്‌തു</translation>
 <translation id="1500926532737552529">എല്ലാ നിർദ്ദേശങ്ങളും കാണിക്കുക</translation>
-<translation id="1503394326855300303">ഒന്നിലധികം സൈൻ ഇൻ സെഷനിൽ സൈൻ ഇൻ ചെയ്തിരിക്കുന്ന ആദ്യ അക്കൗണ്ട്, ഈ ഉടമ അക്കൗണ്ടായിരിക്കണം.</translation>
 <translation id="1510238584712386396">ലോഞ്ചർ</translation>
 <translation id="1516740043221086139">ശല്യപ്പെടുത്തരുത് മോഡ് ഓണാണ്.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{അറിയിപ്പ് ക്രമീകരണം കാണിക്കുക. ഒരു ആപ്പിന് അറിയിപ്പുകൾ ഓഫാണ്}other{അറിയിപ്പ് ക്രമീകരണം കാണിക്കുക. # ആപ്പുകൾക്ക് അറിയിപ്പുകൾ ഓഫാണ്}}</translation>
@@ -513,6 +512,7 @@
 <translation id="3294437725009624529">അതിഥി</translation>
 <translation id="3298690094479023523">നിങ്ങളുടെ പിൻ അല്ലെങ്കിൽ പാസ്‌വേഡ് ഇപ്പോഴും പരിശോധിച്ചുറപ്പിക്കാനായില്ല. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="3300193645498960160">മ്യൂട്ട് ചെയ്തിരിക്കുമ്പോൾ സംസാരിക്കുകയാണെങ്കിൽ, നിങ്ങൾക്ക് അറിയിപ്പ് ലഭിക്കും. ഓഡിയോ നിങ്ങളുടെ ഉപകരണത്തിൽ നിന്ന് ഒരിക്കലും പുറത്തുപോകില്ല.</translation>
+<translation id="3306386552969601301"><ph name="DEVICE_NAME" /> ഹോട്ട്‌സ്‌പോട്ടിലേക്ക് <ph name="DEVICECOUNT" /> ഉപകരണങ്ങൾ കണക്റ്റ് ചെയ്‌തു</translation>
 <translation id="3307642347673023554">ലാപ്ടോപ്പ് മോഡിലേക്ക് മാറി</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> എന്നതിന് പിന്നീട്, തുടർന്നും സൈൻ ഇൻ ചെയ്യാനാവും.</translation>
 <translation id="3321628682574733415">രക്ഷാകർതൃ കോഡ് തെറ്റാണ്</translation>
@@ -552,6 +552,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> മി.</translation>
 <translation id="3445925074670675829">USB-C ഉപകരണം</translation>
 <translation id="3455468639467374593">ടെംപ്ലേറ്റ്, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="3456931972722214204">ഒരു ഉപകരണം <ph name="DEVICE_NAME" /> ഹോട്ട്‌സ്‌പോട്ടിലേക്ക് കണക്റ്റ് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="346243998268439747">സൂം നില റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="3465223694362104965">നിങ്ങൾ അവസാനമായി സൈൻ ഇൻ ചെയ്‌തതിന് ശേഷം ഈ ഉപകരണത്തിലേക്ക് മറ്റൊരു കീബോഡ് കണക്‌റ്റ് ചെയ്‌തിരിക്കുന്നു. ഉപയോഗിക്കുന്നതിന് മുമ്പായി, വിശ്വസിക്കാനാവുന്ന കീബോഡാണ് ഇതെന്ന് ഉറപ്പ് വരുത്തുക.</translation>
 <translation id="3465356146291925647">നിങ്ങളുടെ അഡ്‌മിൻ മാനേജ് ചെയ്യുന്നത്</translation>
@@ -764,6 +765,7 @@
 <translation id="4324840740119394760"><ph name="APP_NAME" /> എന്നതിനും ക്യാമറ ആക്‌സസ് ചെയ്യാൻ അനുമതിയുള്ള എല്ലാ ആപ്പുകൾക്കും വെബ്സൈറ്റുകൾക്കും ഇത് ക്യാമറയിലേക്ക് ആക്‌സസ് അനുവദിക്കുന്നു</translation>
 <translation id="4333628967105022692">ഒന്നിലേറെ ഉപയോക്താക്കൾ സൈൻ ഇൻ ചെയ്തിരിക്കുമ്പോൾ Lacros-ന് പിന്തുണയുണ്ടാകില്ല.</translation>
 <translation id="4338109981321384717">മാഗ്‌നിഫൈയിംഗ് ഗ്ലാസ്</translation>
+<translation id="4356872429719185452">ഹോട്ട്സ്പോട്ട് വിശദാംശങ്ങൾ കാണിക്കുക. ഹോട്ട്‌സ്‌പോട്ട് ഓണാക്കുന്നു.</translation>
 <translation id="4371348193907997655">കാസ്‌റ്റ് ക്രമീകരണം</translation>
 <translation id="4375482231364171368">വിലാസ ബാറിൽ തിരയുക</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" /> ശതമാനം</translation>
@@ -1111,6 +1113,7 @@
 <translation id="5825969630400862129">കണക്റ്റ് ചെയ്തിരിക്കുന്ന ഉപകരണങ്ങൾക്കുള്ള ക്രമീകരണം</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />-ൽ <ph name="ROUTE_TITLE" /> നിർത്തുക</translation>
 <translation id="5841296711770970362">അടുത്ത ട്രാക്കിലേക്ക് പോകുക</translation>
+<translation id="5842553299352339114"><ph name="DEVICE_NAME" /> ഹോട്ട്‌സ്‌പോട്ട് ഓണാണ്, ഉപകരണങ്ങളൊന്നും കണക്‌റ്റ് ചെയ്‌തിട്ടില്ല</translation>
 <translation id="584525477304726060">വലുതാക്കാൻ ക്ലിക്ക് ചെയ്‌ത് പിടിക്കുക</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> സജീവമാക്കിയിട്ടില്ല.</translation>
 <translation id="5860033963881614850">ഓഫാക്കുക</translation>
@@ -1373,6 +1376,7 @@
 <translation id="6981291220124935078">ആക്സസ് ഓണാക്കുക</translation>
 <translation id="6981982820502123353">ഉപയോഗസഹായി</translation>
 <translation id="698231206551913481">ഈ ഉപയോക്താവിനെ നീക്കംചെയ്യുമ്പോൾ അതോടൊപ്പം അയാളുമായി ബന്ധപ്പെട്ട എല്ലാ ഫയലുകളും പ്രാദേശിക വിവരങ്ങളും ശാശ്വതമായി ഇല്ലാതാക്കപ്പെടും.</translation>
+<translation id="7004910047186208204">മൊബൈൽ ഡാറ്റയിലേക്ക് കണക്റ്റ് ചെയ്യുക</translation>
 <translation id="7005239792648594238">ആരംഭിക്കാൻ ഒരു ആപ്പ് തുറക്കുക</translation>
 <translation id="7007983414944123363">നിങ്ങളുടെ പിൻ അല്ലെങ്കിൽ പാസ്‌വേഡ് പരിശോധിച്ചുറപ്പിക്കാനായില്ല. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="7014684956566476813"><ph name="DEVICE_NAME" /> എന്ന് പേരുള്ള ഉപകരണത്തിലേക്ക് കണക്റ്റ് ചെയ്തിരിക്കുന്നു</translation>
@@ -1527,6 +1531,7 @@
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{ഒരു അറിയിപ്പ്}other{# അറിയിപ്പുകൾ}}</translation>
 <translation id="7723703419796509666">ഡെവലപ്പർ ടൂളുകളുടെ കൺസോൾ കാണിക്കുക അല്ലെങ്കിൽ മറയ്ക്കുക</translation>
 <translation id="7724603315864178912">മുറിക്കുക</translation>
+<translation id="7725108879223146004">ഹോട്ട്സ്പോട്ട് വിശദാംശങ്ങൾ കാണിക്കുക. ഹോട്ട്‌സ്‌പോട്ട് ഓഫാക്കുന്നു.</translation>
 <translation id="7727952505535211425">പുതിയ ടാബിലെ വിലാസ ബാറിൽ വെബ്സൈറ്റ് തുറക്കുക</translation>
 <translation id="77365090426890123">മെമ്മറി ഉപയോഗം</translation>
 <translation id="7742327441377685481">അറിയിപ്പുകൾ ഒന്നുമില്ല</translation>
@@ -1662,6 +1667,7 @@
 <translation id="8308637677604853869">മുൻ മെനു</translation>
 <translation id="830868413617744215">ബീറ്റ</translation>
 <translation id="8314772463905284467">Caps Lock ഓൺ ആണ്</translation>
+<translation id="8315514906653279104">ഓണാക്കുന്നു...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> വിന്‍ഡോ തിരഞ്ഞടുത്തു</translation>
 <translation id="8349964124165471584">പുതിയ വിൻഡോയിൽ ലിങ്ക് തുറക്കുക</translation>

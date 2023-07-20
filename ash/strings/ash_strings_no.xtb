@@ -126,7 +126,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> har byttet plass med <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Vis alle forslag</translation>
-<translation id="1503394326855300303">Denne eierkontoen må være den første påloggingskontoen i en multipåloggingsøkt.</translation>
 <translation id="1510238584712386396">Appoversikt</translation>
 <translation id="1516740043221086139">Ikke forstyrr er på.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Vis innstillinger for varsler. Varsler er slått av for en app}other{Vis innstillinger for varsler. Varsler er slått av for # apper}}</translation>
@@ -513,6 +512,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3294437725009624529">Gjest</translation>
 <translation id="3298690094479023523">PIN-koden eller passordet kunne fremdeles ikke verifiseres. Prøv på nytt.</translation>
 <translation id="3300193645498960160">Du blir varslet hvis du snakker mens mikrofonen er avslått. Lyden forlater aldri enheten.</translation>
+<translation id="3306386552969601301"><ph name="DEVICECOUNT" /> enheter er koblet til wifi-sonen på <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Byttet til laptopmodus</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan fortsatt logge på senere.</translation>
 <translation id="3321628682574733415">Feil kode for foreldertilgang</translation>
@@ -552,6 +552,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C-enhet</translation>
 <translation id="3455468639467374593">Mal, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="3456931972722214204">1 enhet er koblet til wifi-sonen på <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">Tilbakestill zoomnivået</translation>
 <translation id="3465223694362104965">Et annet tastatur er koblet til denne enheten siden du sist logget på. Sørg for at du stoler på dette tastaturet før du bruker det.</translation>
 <translation id="3465356146291925647">Administreres av administratoren din</translation>
@@ -764,6 +765,7 @@ Koble enheten til strøm.</translation>
 <translation id="4324840740119394760">Dette gir <ph name="APP_NAME" /> og alle apper og nettsteder som har kameratillatelsen, tilgang til kameraet</translation>
 <translation id="4333628967105022692">Lacros støttes ikke når flere brukere er logget på.</translation>
 <translation id="4338109981321384717">Forstørrelsesglass</translation>
+<translation id="4356872429719185452">Vis detaljer for wifi-sonen. Wifi-sonen slås på.</translation>
 <translation id="4371348193907997655">Cast-innstillinger</translation>
 <translation id="4375482231364171368">Søk i adressefeltet</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> prosent.</translation>
@@ -1111,6 +1113,7 @@ Koble enheten til strøm.</translation>
 <translation id="5825969630400862129">Innstillinger for tilkoblede enheter</translation>
 <translation id="5837036133683224804">Stopp <ph name="ROUTE_TITLE" /> på <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Gå til neste spor</translation>
+<translation id="5842553299352339114">Wifi-sonen på <ph name="DEVICE_NAME" /> er på – ingen enheter er tilkoblet</translation>
 <translation id="584525477304726060">Hold for å maksimere</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> er ikke aktivert.</translation>
 <translation id="5860033963881614850">Av</translation>
@@ -1373,6 +1376,7 @@ Nylig installert</translation>
 <translation id="6981291220124935078">Slå på tilgang</translation>
 <translation id="6981982820502123353">Tilgjengelighet</translation>
 <translation id="698231206551913481">Alle filer og lokale data som er tilknyttet denne brukeren, slettes permanent når brukeren fjernes.</translation>
+<translation id="7004910047186208204">Koble til mobildata</translation>
 <translation id="7005239792648594238">Åpne en app for å komme i gang</translation>
 <translation id="7007983414944123363">PIN-koden eller passordet kunne ikke verifiseres. Prøv på nytt.</translation>
 <translation id="7014684956566476813">Koblet til enheten <ph name="DEVICE_NAME" /></translation>
@@ -1527,6 +1531,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 varsel}other{# varsler}}</translation>
 <translation id="7723703419796509666">Vis eller skjul utviklerverktøy-konsollen</translation>
 <translation id="7724603315864178912">Klipp ut</translation>
+<translation id="7725108879223146004">Vis detaljer for wifi-sonen. Wifi-sonen slås av.</translation>
 <translation id="7727952505535211425">Åpne nettstedet i adressefeltet i en ny fane</translation>
 <translation id="77365090426890123">minnebruk</translation>
 <translation id="7742327441377685481">Ingen varsler</translation>
@@ -1662,6 +1667,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8308637677604853869">Forrige meny</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock er på</translation>
+<translation id="8315514906653279104">Slår på …</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /><ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Vinduet <ph name="WINDOW_TITLE" /> er valgt</translation>
 <translation id="8349964124165471584">Åpne link i et nytt vindu</translation>

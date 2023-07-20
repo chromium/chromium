@@ -126,7 +126,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> ditukar dengan <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Tampilkan semua saran</translation>
-<translation id="1503394326855300303">Akun pemilik ini harus akun yang masuk pertama dalam sesi fitur masuk banyak akun.</translation>
 <translation id="1510238584712386396">Peluncur</translation>
 <translation id="1516740043221086139">Mode Jangan Ganggu aktif.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Tampilkan setelan notifikasi. Notifikasi nonaktif untuk satu aplikasi}other{Tampilkan setelan notifikasi. Notifikasi nonaktif untuk # aplikasi}}</translation>
@@ -513,6 +512,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3294437725009624529">Tamu</translation>
 <translation id="3298690094479023523">PIN atau sandi Anda masih tidak dapat diverifikasi. Coba lagi.</translation>
 <translation id="3300193645498960160">Anda akan mendapatkan notifikasi jika berbicara saat mikrofon dibisukan. Audio tidak pernah dikirim keluar perangkat.</translation>
+<translation id="3306386552969601301"><ph name="DEVICECOUNT" /> perangkat terhubung ke hotspot <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Beralih ke mode laptop</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> tetap dapat login di lain waktu.</translation>
 <translation id="3321628682574733415">Kode induk salah</translation>
@@ -552,6 +552,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> menit</translation>
 <translation id="3445925074670675829">Perangkat USB-C</translation>
 <translation id="3455468639467374593">Template, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="3456931972722214204">1 perangkat terhubung ke hotspot <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">Mereset tingkat zoom</translation>
 <translation id="3465223694362104965">Keyboard lain telah terhubung ke perangkat ini sejak terakhir kali Anda login. Pastikan Anda memercayai keyboard ini sebelum menggunakannya.</translation>
 <translation id="3465356146291925647">Dikelola oleh Administrator Anda</translation>
@@ -764,6 +765,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="4324840740119394760">Tindakan ini akan mengizinkan akses kamera untuk <ph name="APP_NAME" /> dan semua aplikasi serta situs yang memiliki izin kamera</translation>
 <translation id="4333628967105022692">Lacros tidak didukung saat beberapa pengguna login.</translation>
 <translation id="4338109981321384717">Kaca pembesar</translation>
+<translation id="4356872429719185452">Tampilkan detail hotspot. Hotspot sedang diaktifkan.</translation>
 <translation id="4371348193907997655">Setelan Transmisi</translation>
 <translation id="4375482231364171368">Telusuri dalam kolom URL</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, kekuatan sinyal <ph name="SIGNAL_STRENGTH" /> persen</translation>
@@ -1111,6 +1113,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="5825969630400862129">Setelan perangkat yang terhubung</translation>
 <translation id="5837036133683224804">Hentikan <ph name="ROUTE_TITLE" /> di <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Putar lagu berikutnya</translation>
+<translation id="5842553299352339114">Hotspot <ph name="DEVICE_NAME" /> aktif, tidak ada perangkat yang terhubung</translation>
 <translation id="584525477304726060">Tahan untuk memaksimalkan</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> tidak diaktifkan.</translation>
 <translation id="5860033963881614850">Nonaktif</translation>
@@ -1373,6 +1376,7 @@ Baru diinstal</translation>
 <translation id="6981291220124935078">Aktifkan akses</translation>
 <translation id="6981982820502123353">Aksesibilitas</translation>
 <translation id="698231206551913481">Semua file dan data lokal yang dikaitkan ke pengguna ini akan dihapus secara permanen setelah pengguna ini dihapus.</translation>
+<translation id="7004910047186208204">Hubungkan ke data seluler</translation>
 <translation id="7005239792648594238">Buka aplikasi untuk memulai</translation>
 <translation id="7007983414944123363">PIN atau sandi Anda tidak dapat diverifikasi. Coba lagi.</translation>
 <translation id="7014684956566476813">Terhubung ke perangkat bernama <ph name="DEVICE_NAME" /></translation>
@@ -1527,6 +1531,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notifikasi}other{# notifikasi}}</translation>
 <translation id="7723703419796509666">Tampilkan atau sembunyikan konsol Developer Tools</translation>
 <translation id="7724603315864178912">Potong</translation>
+<translation id="7725108879223146004">Tampilkan detail hotspot. Hotspot sedang dinonaktifkan.</translation>
 <translation id="7727952505535211425">Buka situs di kolom URL di tab baru</translation>
 <translation id="77365090426890123">penggunaan memori</translation>
 <translation id="7742327441377685481">Tidak ada notifikasi</translation>
@@ -1662,6 +1667,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8308637677604853869">Menu sebelumnya</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock aktif</translation>
+<translation id="8315514906653279104">Mengaktifkan...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Jendela <ph name="WINDOW_TITLE" /> dipilih</translation>
 <translation id="8349964124165471584">Buka link di jendela baru</translation>

@@ -126,7 +126,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> is verwisseld met <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Alle suggesties tonen</translation>
-<translation id="1503394326855300303">Dit eigenaarsaccount is het eerste account waarop moet worden ingelogd wanneer meerdere inlogsessies worden uitgevoerd.</translation>
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="1516740043221086139">Niet storen staat aan.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Instellingen voor meldingen bekijken. Meldingen staan uit voor een app}other{Instellingen voor meldingen bekijken. Meldingen staan uit voor # apps}}</translation>
@@ -513,6 +512,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3294437725009624529">Gast</translation>
 <translation id="3298690094479023523">Je pincode of wachtwoord kan nog steeds niet worden geverifieerd. Probeer het opnieuw.</translation>
 <translation id="3300193645498960160">Je krijgt een melding als je praat terwijl het geluid uitstaat. De audio verlaat je apparaat nooit.</translation>
+<translation id="3306386552969601301"><ph name="DEVICECOUNT" /> apparaten verbonden met <ph name="DEVICE_NAME" />-hotspot</translation>
 <translation id="3307642347673023554">Overgeschakeld naar laptopmodus</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan later nog inloggen.</translation>
 <translation id="3321628682574733415">Onjuiste oudercode</translation>
@@ -552,6 +552,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="3445925074670675829">USB-C-apparaat</translation>
 <translation id="3455468639467374593">Template, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="3456931972722214204">1 apparaat verbonden met <ph name="DEVICE_NAME" />-hotspot</translation>
 <translation id="346243998268439747">Zoomniveau opnieuw instellen</translation>
 <translation id="3465223694362104965">Een ander toetsenbord heeft verbinding met dit apparaat gemaakt sinds de laatste keer dat je bent ingelogd. Controleer of je dit toetsenbord vertrouwt voordat je het gebruikt.</translation>
 <translation id="3465356146291925647">Beheerd door je beheerder</translation>
@@ -764,6 +765,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4324840740119394760">Hiermee geef je <ph name="APP_NAME" /> en alle apps en websites met camerarechten toegang tot de camera</translation>
 <translation id="4333628967105022692">Lacros wordt niet ondersteund terwijl er meerdere gebruikers zijn ingelogd.</translation>
 <translation id="4338109981321384717">Vergrootglas</translation>
+<translation id="4356872429719185452">Toon de hotspotdetails. Hotspot wordt aangezet.</translation>
 <translation id="4371348193907997655">Cast-instellingen</translation>
 <translation id="4375482231364171368">Zoeken via adresbalk</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, signaalsterkte <ph name="SIGNAL_STRENGTH" /> procent</translation>
@@ -1111,6 +1113,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5825969630400862129">Instellingen voor verbonden apparaten</translation>
 <translation id="5837036133683224804"><ph name="ROUTE_TITLE" /> in <ph name="RECEIVER_NAME" /> stopzetten</translation>
 <translation id="5841296711770970362">Naar de volgende track gaan</translation>
+<translation id="5842553299352339114"><ph name="DEVICE_NAME" />-hotspot staat aan, geen apparaten verbonden</translation>
 <translation id="584525477304726060">Vasthouden om te maximaliseren</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> is niet geactiveerd.</translation>
 <translation id="5860033963881614850">Uit</translation>
@@ -1373,6 +1376,7 @@ Nieuwe installatie</translation>
 <translation id="6981291220124935078">Toegang aanzetten</translation>
 <translation id="6981982820502123353">Toegankelijkheid</translation>
 <translation id="698231206551913481">Alle bestanden en lokale gegevens die zijn gekoppeld aan deze gebruiker, worden definitief verwijderd zodra deze gebruiker is verwijderd.</translation>
+<translation id="7004910047186208204">Verbinding maken via mobiele data</translation>
 <translation id="7005239792648594238">Open een app om aan de slag te gaan</translation>
 <translation id="7007983414944123363">Je pincode of wachtwoord kan niet worden geverifieerd. Probeer het opnieuw.</translation>
 <translation id="7014684956566476813">Verbonden met een apparaat met de naam <ph name="DEVICE_NAME" /></translation>
@@ -1524,6 +1528,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{Eén melding}other{# meldingen}}</translation>
 <translation id="7723703419796509666">Developer Tools-console tonen of verbergen</translation>
 <translation id="7724603315864178912">Knip</translation>
+<translation id="7725108879223146004">Toon de hotspotdetails. Hotspot wordt uitgezet.</translation>
 <translation id="7727952505535211425">De website in de adresbalk openen in een nieuw tabblad</translation>
 <translation id="77365090426890123">geheugengebruik</translation>
 <translation id="7742327441377685481">Geen meldingen</translation>
@@ -1659,6 +1664,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8308637677604853869">Vorig menu</translation>
 <translation id="830868413617744215">Bèta</translation>
 <translation id="8314772463905284467">Caps Lock staat aan</translation>
+<translation id="8315514906653279104">Aanzetten…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Venster <ph name="WINDOW_TITLE" /> geselecteerd</translation>
 <translation id="8349964124165471584">Link openen in een nieuw venster</translation>

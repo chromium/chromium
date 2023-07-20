@@ -126,7 +126,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> ir samainīts ar <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Rādīt visus ieteikumus</translation>
-<translation id="1503394326855300303">Vairākkārtējas pierakstīšanās sesijā šim īpašnieka kontam ir jābūt pirmajam kontam, kurā jāpierakstās.</translation>
 <translation id="1510238584712386396">Lietojumprogrammu palaidējs</translation>
 <translation id="1516740043221086139">Režīms “Netraucēt” ir ieslēgts.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Rādīt paziņojumu iestatījumus. Paziņojumi lietotnei ir izslēgti}zero{Rādīt paziņojumu iestatījumus. Paziņojumi ir izslēgti # lietotnēm}one{Rādīt paziņojumu iestatījumus. Paziņojumi ir izslēgti # lietotnei}other{Rādīt paziņojumu iestatījumus. Paziņojumi ir izslēgti # lietotnēm}}</translation>

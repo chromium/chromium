@@ -4504,9 +4504,6 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 <translation id="4970046075219007744">Consenti alle app web di richiedere all'utente l'accesso ai tipi di file tramite l'API File Handling</translation>
 <translation id="4970855112942626932">Disattiva accesso al browser</translation>
 <translation id="4974091268178043378">Modalità colore di ChromeOS</translation>
-<translation id="4976928720873547342">Se questo criterio viene impostato, tutti i tipi di dati specificati verranno esclusi dalla sincronizzazione sia per <ph name="CHROME_SYNC_NAME" /> sia per la sincronizzazione del profilo di roaming. Questa operazione può essere utile per ridurre le dimensioni del profilo di roaming o per limitare il tipo di dati caricati sui server di <ph name="CHROME_SYNC_NAME" />.
-
-      Attualmente i tipi di dati per questo criterio sono: "bookmarks", "readingList", "preferences", "passwords", "autofill", "themes", "typedUrls", "extensions", "apps", "tabs", "wifiConfigurations". Tali nomi sono sensibili alle maiuscole.</translation>
 <translation id="4977702914571821981">Consente di impostare un elenco di pattern URL che specifica i siti non autorizzati a mostrare contenuti misti (ossia contenuti HTTP su siti HTTPS) bloccabili (ossia attivi) e per i quali i contenuti misti bloccabili facoltativi (ossia passivi) verranno aggiornati.
 
           Se questo criterio non viene impostato, i contenuti misti bloccabili verranno bloccati e quelli bloccabili facoltativi verranno aggiornati, ma gli utenti potranno configurare eccezioni per consentire i contenuti misti per siti specifici.

@@ -3476,6 +3476,7 @@
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" />-დან <ph name="VM_NAME" />-ში გაზიარება დაბლოკილია ადმინისტრატორის წესების მიხედვით</translation>
 <translation id="8396522675989118466">ეს არის <ph name="NUMBER_OF_DIGITS" />-ციფრიანი კოდი <ph name="SIDE_OF_CARD" /></translation>
 <translation id="8398335999901363925">იმ გადახდის მეთოდების სია, რომელთა შევსებაც შესაძლებელია შეხებით, გახსნილია სრულ სიმაღლეზე.</translation>
+<translation id="8398446215576328011">წესების გადაყენება</translation>
 <translation id="8398790343843005537">მოძებნეთ თქვენი ტელეფონი</translation>
 <translation id="8403506619177967839">ფანფიქცია</translation>
 <translation id="8405579342203358118">თქვენ მიერ სინქრონიზებული ინფორმაციის მართვა Chrome-ის პარამეტრებიდან</translation>

@@ -3293,6 +3293,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3721119614952978349">Tu e Google</translation>
 <translation id="3722108462506185496">Errore durante l'avvio del servizio macchina virtuale. Riprova.</translation>
 <translation id="3722624153992426516">È stata ricevuta l'istruzione <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /></translation>
+<translation id="3724897774652282549">Compila il modulo</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Reti Wi-Fi disponibili</translation>
 <translation id="3727187387656390258">Ispeziona popup</translation>
@@ -3659,6 +3660,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3995138139523574647">Dispositivo USB-C (porta posteriore destra)</translation>
 <translation id="3995963973192100066">Riproduci l'animazione</translation>
 <translation id="399788104667917863">Blocca sulla barra degli strumenti</translation>
+<translation id="3998976413398910035">Gestisci stampanti</translation>
 <translation id="4001540981461989979">Evidenzia il puntatore del mouse quando si muove</translation>
 <translation id="4002440992267487163">Configurazione del PIN</translation>
 <translation id="4005817994523282006">Metodo di rilevamento del fuso orario</translation>
@@ -6300,6 +6302,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="628352644014831790">4 secondi</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> non viene scaricato spesso e potrebbe essere pericoloso.</translation>
 <translation id="6285770818046456882">Il dispositivo che stava condividendo dei contenuti ha annullato il trasferimento</translation>
+<translation id="628726841779494414">Gestisci le stampanti nelle impostazioni delle stampanti</translation>
 <translation id="6290613030083731160">Non sono disponibili dispositivi per condividere contenuti nelle vicinanze. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Verifica del codice di attivazione in corso. Questa operazione può richiedere alcuni minuti.</translation>
 <translation id="6291741848715722067">Codice di conferma</translation>
@@ -7228,6 +7231,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7067396782363924830">Colori ambient</translation>
 <translation id="7067725467529581407">Non visualizzare più questo messaggio.</translation>
 <translation id="7068279399556423026">Accedi per visualizzare le schede di altri dispositivi</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Nuova password per questo sito}other{Nuove password per questo sito}}</translation>
 <translation id="7070484045139057854">Può leggere e cambiare i dati dei siti</translation>
 <translation id="7072010813301522126">Nome scorciatoia</translation>
 <translation id="7074066049407662839">Accedi per salvare le password</translation>
@@ -9616,6 +9620,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="9068598199622656904">Premi un tasto alla volta per le scorciatoie da tastiera anziché tenere premuti contemporaneamente i tasti</translation>
 <translation id="9068878141610261315">Tipo di file non supportato</translation>
 <translation id="9069665781180028115">Gli elementi selezionati saranno disponibili su questo Chromebook. Se è la prima volta che utilizzi Chromebook, sincronizza tutti gli elementi in modo che venga eseguito il backup delle tue preferenze. Puoi apportare modifiche in qualsiasi momento in Impostazioni &gt; Account.</translation>
+<translation id="9070231741075992882">Le autorizzazioni consentite per <ph name="APP_NAME" /> saranno consentite anche per le relative app installate e in streaming.</translation>
 <translation id="9070342919388027491">Scheda spostata a sinistra</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Mouse USB collegato</translation>

@@ -127,7 +127,6 @@
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540">تم استبدال <ph name="FIRST_ITEM_TITLE" /> بالعنصر <ph name="SECOND_ITEM_TITLE" />.</translation>
 <translation id="1500926532737552529">عرض كل الاقتراحات</translation>
-<translation id="1503394326855300303">يجب أن يكون حساب المالك هذا أول حساب يتم تسجيل الدخول إليه في جلسة تسجيل دخول متعدد.</translation>
 <translation id="1510238584712386396">مشغِّل التطبيقات</translation>
 <translation id="1516740043221086139">وضع "عدم الإزعاج" مُفعَّل.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لتطبيق واحد}zero{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيق}two{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لتطبيقين (#)}few{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيقات}many{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيقًا}other{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيق}}</translation>
@@ -514,6 +513,7 @@
 <translation id="3294437725009624529">ضيف</translation>
 <translation id="3298690094479023523">لا يمكن حتى الآن التأكد من رقم التعريف الشخصي أو كلمة المرور لحسابك. يُرجى إعادة المحاولة.</translation>
 <translation id="3300193645498960160">ستتلقّى إشعارًا إذا تحدّثت عندما يكون صوت الميكروفون مكتومًا. ولن يتم بث الصوت خارج جهازك مطلقًا.</translation>
+<translation id="3306386552969601301">هناك <ph name="DEVICECOUNT" /> جهاز متصل بنقطة اتصال <ph name="DEVICE_NAME" />.</translation>
 <translation id="3307642347673023554">تمّ التبديل إلى وضع الكمبيوتر المحمول.</translation>
 <translation id="3308453408813785101">سيظل بإمكان <ph name="USER_EMAIL_ADDRESS" /> تسجيل الدخول لاحقًا.</translation>
 <translation id="3321628682574733415">رمز أحد الوالدين غير صحيح</translation>
@@ -553,6 +553,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> دقيقة</translation>
 <translation id="3445925074670675829">‏جهاز USB-C</translation>
 <translation id="3455468639467374593">النموذج <ph name="TEMPLATE_NAME" /></translation>
+<translation id="3456931972722214204">هناك جهاز واحد متصل بنقطة اتصال <ph name="DEVICE_NAME" />.</translation>
 <translation id="346243998268439747">إعادة ضبط مستوى التكبير أو التصغير</translation>
 <translation id="3465223694362104965">تم ربط لوحة مفاتيح أخرى بهذا الجهاز منذ آخر مرة سجَّلت الدخول فيها. يُرجى التأكُّد من أن لوحة المفاتيح هذه موثوقة قبل استخدامها.</translation>
 <translation id="3465356146291925647">يديرها المشرف</translation>
@@ -766,6 +767,7 @@
 <translation id="4324840740119394760">يتيح هذا الإجراء إمكانية الوصول إلى الكاميرا من "<ph name="APP_NAME" />" وجميع التطبيقات والمواقع الإلكترونية التي لديها هذا الإذن.</translation>
 <translation id="4333628967105022692">‏لا يمكن استخدام متصفِّح Lacros إذا سجّل العديد من المستخدمين دخولهم.</translation>
 <translation id="4338109981321384717">العدسة المكبرة</translation>
+<translation id="4356872429719185452">يمكنك عرض تفاصيل نقطة الاتصال. ويجري الآن تفعيل نقطة الاتصال.</translation>
 <translation id="4371348193907997655">إعدادات البث</translation>
 <translation id="4375482231364171368">البحث في شريط العناوين</translation>
 <translation id="4378479437904450384">قوة إشارة شبكة <ph name="WIRELESS_PROVIDER" /> هي <ph name="SIGNAL_STRENGTH" /> في المئة.</translation>
@@ -1113,6 +1115,7 @@
 <translation id="5825969630400862129">إعدادات الأجهزة المتّصلة</translation>
 <translation id="5837036133683224804">إيقاف <ph name="ROUTE_TITLE" /> في <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">الانتقال إلى المقطع الصوتي التالي</translation>
+<translation id="5842553299352339114">نقطة اتصال <ph name="DEVICE_NAME" /> مفعَّلة، وما مِن أجهزة متصلة بها.</translation>
 <translation id="584525477304726060">انقر مع الاستمرار على النافذة لتكبيرها.</translation>
 <translation id="5856638668464565213">الشبكة <ph name="NETWORK_NAME" /> غير مفعّلة.</translation>
 <translation id="5860033963881614850">غير مفعّلة</translation>
@@ -1375,6 +1378,7 @@
 <translation id="6981291220124935078">منح إذن الوصول</translation>
 <translation id="6981982820502123353">تسهيل الاستخدام</translation>
 <translation id="698231206551913481">سيتم حذف جميع الملفات والبيانات المحلية المرتبطة بهذا المستخدم نهائيًا بمجرد إزالة هذا المستخدم.</translation>
+<translation id="7004910047186208204">الاتصال بشبكة بيانات الجوّال</translation>
 <translation id="7005239792648594238">للبدء، افتح تطبيقًا.</translation>
 <translation id="7007983414944123363">تعذّر التحقُّق من رقم التعريف الشخصي أو كلمة المرور الخاصّة بك. يُرجى إعادة المحاولة.</translation>
 <translation id="7014684956566476813">تم الربط بالجهاز الذي يحمل الاسم <ph name="DEVICE_NAME" />.</translation>
@@ -1529,6 +1533,7 @@
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{إشعار واحد}zero{# إشعار}two{إشعاران (#)}few{# إشعارات}many{# إشعارًا}other{# إشعار}}</translation>
 <translation id="7723703419796509666">إظهار وحدة تحكُّم "أدوات المطوِّرين" أو إخفاؤها</translation>
 <translation id="7724603315864178912">قص</translation>
+<translation id="7725108879223146004">يمكنك عرض تفاصيل نقطة الاتصال. ويجري الآن إيقاف نقطة الاتصال.</translation>
 <translation id="7727952505535211425">فتح الموقع الإلكتروني بشريط العناوين في علامة تبويب جديدة</translation>
 <translation id="77365090426890123">استخدام الذاكرة</translation>
 <translation id="7742327441377685481">ما مِن إشعارات</translation>
@@ -1664,6 +1669,7 @@
 <translation id="8308637677604853869">القائمة السابقة</translation>
 <translation id="830868413617744215">تجريبي</translation>
 <translation id="8314772463905284467">‏مفتاح Caps Lock قيد التفعيل</translation>
+<translation id="8315514906653279104">جارٍ تفعيل نقطة الاتصال…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">تم اختيار النافذة <ph name="WINDOW_TITLE" />.</translation>
 <translation id="8349964124165471584">فتح الرابط في نافذة جديدة</translation>

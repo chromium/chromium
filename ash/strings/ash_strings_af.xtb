@@ -126,7 +126,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> is geruil met <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Wys alle voorstelle</translation>
-<translation id="1503394326855300303">Hierdie eienaarrekening moet die eerste rekening wees waarby in 'n veelvuldige aanmeldsessie aangemeld word.</translation>
 <translation id="1510238584712386396">Lanseerder</translation>
 <translation id="1516740043221086139">Moenie Steur Nie is aan.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Wys kennisgewinginstellings. Kennisgewings is af vir 'n program}other{Wys kennisgewinginstellings. Kennisgewings is af vir # programme}}</translation>
@@ -513,6 +512,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3294437725009624529">Gas</translation>
 <translation id="3298690094479023523">Jou PIN of wagwoord kon steeds nie geverifieer word nie. Probeer weer.</translation>
 <translation id="3300193645498960160">Jy sal in kennis gestel word as jy praat terwyl gedemp aan is. Oudio verlaat nooit jou toestel nie.</translation>
+<translation id="3306386552969601301"><ph name="DEVICECOUNT" /> toestelle is aan <ph name="DEVICE_NAME" />-warmkol gekoppel</translation>
 <translation id="3307642347673023554">Het na skootrekenaarmodus oorgeskakel</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan steeds later aanmeld.</translation>
 <translation id="3321628682574733415">Verkeerde ouerkode</translation>
@@ -552,6 +552,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="3445925074670675829">USB C-toestel</translation>
 <translation id="3455468639467374593">Templaat, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="3456931972722214204">1 toestel is aan <ph name="DEVICE_NAME" />-warmkol gekoppel</translation>
 <translation id="346243998268439747">Stel zoemvlak terug</translation>
 <translation id="3465223694362104965">Nog 'n sleutelbord is aan hierdie toestel gekoppel vandat jy laas aangemeld het. Maak seker jy vertrou hierdie sleutelbord voordat jy dit gebruik.</translation>
 <translation id="3465356146291925647">Deur jou administrateur bestuur</translation>
@@ -765,6 +766,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4324840740119394760">Dit gee kameratoegang vir <ph name="APP_NAME" /> en alle apps en webwerwe met die kameratoestemming</translation>
 <translation id="4333628967105022692">Lacros word nie gesteun terwyl veelvuldige gebruikers aangemeld is nie.</translation>
 <translation id="4338109981321384717">Vergrootglas</translation>
+<translation id="4356872429719185452">Wys warmkolbesonderhede. Warmkol skakel tans aan.</translation>
 <translation id="4371348193907997655">Uitsaai-instellings</translation>
 <translation id="4375482231364171368">Soek in adresbalk</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />; seinsterkte <ph name="SIGNAL_STRENGTH" /> persent</translation>
@@ -1112,6 +1114,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5825969630400862129">Instellings vir gekoppelde toestelle</translation>
 <translation id="5837036133683224804">Stop <ph name="ROUTE_TITLE" /> op <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Gaan na volgende snit</translation>
+<translation id="5842553299352339114"><ph name="DEVICE_NAME" />-warmkol is aan; geen toestelle is gekoppel nie</translation>
 <translation id="584525477304726060">Hou om groot te maak</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> is nie geaktiveer nie.</translation>
 <translation id="5860033963881614850">Af</translation>
@@ -1374,6 +1377,7 @@ Nuwe installasie</translation>
 <translation id="6981291220124935078">Skakel toegang aan</translation>
 <translation id="6981982820502123353">Toeganklikheid</translation>
 <translation id="698231206551913481">Alle lêers en plaaslike data wat met hierdie gebruiker geassosieer word, sal permanent uitgevee word sodra hierdie gebruiker verwyder word.</translation>
+<translation id="7004910047186208204">Koppel aan mobiele data</translation>
 <translation id="7005239792648594238">Maak ’n program oop om te begin</translation>
 <translation id="7007983414944123363">Jou PIN of wagwoord kon nie geverifieer word nie. Probeer weer.</translation>
 <translation id="7014684956566476813">Gekoppel aan 'n toestel genaamd <ph name="DEVICE_NAME" /></translation>
@@ -1528,6 +1532,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 kennisgewing}other{# kennisgewings}}</translation>
 <translation id="7723703419796509666">Wys of versteek ontwikkelaarnutsgoedkonsole</translation>
 <translation id="7724603315864178912">Knip</translation>
+<translation id="7725108879223146004">Wys warmkolbesonderhede. Warmkol skakel tans af.</translation>
 <translation id="7727952505535211425">Maak die webwerf in die adresbalk in ’n nuwe oortjie oop</translation>
 <translation id="77365090426890123">geheuegebruik</translation>
 <translation id="7742327441377685481">Geen kennisgewings nie</translation>
@@ -1663,6 +1668,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8308637677604853869">Vorige kieslys</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Hoofletterslot is aan</translation>
+<translation id="8315514906653279104">Skakel tans aan …</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" />-venster gekies</translation>
 <translation id="8349964124165471584">Maak skakel in nuwe venster oop</translation>

@@ -319,6 +319,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="160851722280695521">Igranje igre Dino Run v Chromu</translation>
 <translation id="161042844686301425">Cianova</translation>
 <translation id="1611101756749861742">Kolut 2</translation>
+<translation id="1615178538289490617">Umik dostopa za vrata <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">Pravilnik skrbnika onemogoča zajem zaslona, če je vidna zaupna vsebina.</translation>
 <translation id="1617276713587758852">Križanci (CUV)</translation>
 <translation id="1618571384971354160">Vleka vozil in pomoč na cesti</translation>
@@ -625,6 +626,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2276057643614339130">Osnova za tiskanje</translation>
 <translation id="2277103315734023688">Išči naprej</translation>
 <translation id="2277753418458118549">Prikaži podrobnosti o povezavi</translation>
+<translation id="22792995594807632">Pred prenosom je zahtevan pregled</translation>
 <translation id="2283340219607151381">Shranjevanje in izpolnjevanje naslovov</translation>
 <translation id="2283447177162560884">Stran »<ph name="PAGE_TITLE" />« je izbrisana</translation>
 <translation id="2286383991450886080">34 x 44 palcev</translation>
@@ -1276,6 +1278,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3736520371357197498">Če se zavedate varnostnega tveganja, lahko <ph name="BEGIN_LINK" />obiščete to spletno mesto, ki ni varno<ph name="END_LINK" />, preden bodo nevarni programi odstranjeni.</translation>
 <translation id="3738166223076830879">Brskalnik upravlja vaš skrbnik.</translation>
 <translation id="3740319564441798148">Medmestni avtobusi in vlaki</translation>
+<translation id="3740447166056383374">Pred kopiranjem je zahtevan pregled</translation>
 <translation id="374325029554577103">Tehnološke naprave za rekreacijo</translation>
 <translation id="3743765582345153106">Vedno preveri ob uporabi samodejnega izpolnjevanja</translation>
 <translation id="3744111561329211289">Sinhroniziranje v ozadju</translation>
@@ -1796,6 +1799,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4852429274334674023">Operacijski sistemi</translation>
 <translation id="4854853140771946034">Hitro ustvarjanje novega zapiska v Googlu Keep</translation>
 <translation id="485902285759009870">Preverjanje kode …</translation>
+<translation id="4862630594858951805">Ali želite prejemati e-poštna sporočila, ko se cena zniža?</translation>
 <translation id="486459320933704969">Starš ali skrbnik mora potrditi, da lahko obiščeš to spletno mesto.</translation>
 <translation id="4866506163384898554">Pritisnite |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| za prikaz kazalca</translation>
 <translation id="4873616204573862158">Očala</translation>
@@ -1991,6 +1995,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5255690596502591079">Vseeno zajemi</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Pravilnik skrbnika ne priporoča kopiranja te datoteke sem: <ph name="DESTINATION_NAME" />.}one{Pravilnik skrbnika ne priporoča kopiranja teh datotek sem: <ph name="DESTINATION_NAME" />.}two{Pravilnik skrbnika ne priporoča kopiranja teh datotek sem: <ph name="DESTINATION_NAME" />.}few{Pravilnik skrbnika ne priporoča kopiranja teh datotek sem: <ph name="DESTINATION_NAME" />.}other{Pravilnik skrbnika ne priporoča kopiranja teh datotek sem: <ph name="DESTINATION_NAME" />.}}</translation>
+<translation id="5263867360296733198">Pred nalaganjem je zahtevan pregled</translation>
 <translation id="5266128565379329178">Vezava zgoraj</translation>
 <translation id="5269225904387178860">Četverno luknjanje spodaj</translation>
 <translation id="5269999699920406580">Funkcije, ki se uporabijo v celotnem sistemu, lahko nastavi samo lastnik: <ph name="OWNER_EMAIL" />.</translation>
@@ -2064,6 +2069,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5412236728747081950">To spletno mesto pridobi vaša zanimanja iz Chroma, da vam pokaže ustreznejše oglase.</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Zlagalnik 4</translation>
+<translation id="5414446060143308245">Pred prenosom je zahtevan pregled</translation>
 <translation id="5414511064953050917">Vseeno premakni</translation>
 <translation id="5421136146218899937">Izbriši podatke brskanja ...</translation>
 <translation id="5423269318075950257">Spremljanje cene</translation>
@@ -2148,6 +2154,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5595485650161345191">Uredi naslov</translation>
 <translation id="5596939519753369075">2 x 3,5 palcev</translation>
 <translation id="560412284261940334">Upravljanje ni podprto</translation>
+<translation id="5605249000617390290">Preberite več o spremljanju cen</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5610142619324316209">preveriti povezavo</translation>
 <translation id="5610807607761827392">Kartice in naslove je mogoče upravljati v <ph name="BEGIN_LINK" />nastavitvah<ph name="END_LINK" />.</translation>
@@ -2284,6 +2291,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5921639886840618607">Ali želite kartico shraniti v Google Račun?</translation>
 <translation id="5922853866070715753">Skoraj končano</translation>
 <translation id="5923492272538889093">Želite uporabiti odklepanje naprave namesto kode CVC?</translation>
+<translation id="5924510104057992926">Pred odpiranjem je zahtevan pregled</translation>
 <translation id="5924782825030413055">Vir zadnje spremembe privolitve:</translation>
 <translation id="5925040402342933574">Optical Disc (Semi-Gloss)</translation>
 <translation id="5926982310317673627">Športni centri</translation>
@@ -2509,6 +2517,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6394852772105848029">To spletno mesto želi odpreti aplikacijo <ph name="APP_NAME" />.</translation>
 <translation id="6398765197997659313">Izhod iz celozaslonskega načina</translation>
 <translation id="6401136357288658127">Ta pravilnik je zastarel. Uporabite pravilnik <ph name="NEW_POLICY" />.</translation>
+<translation id="6402537308870515461">Pred premikom je zahtevan pregled</translation>
 <translation id="6403167778944553">Oprema za spalnice in kopalniška oprema</translation>
 <translation id="6404511346730675251">Uredi zaznamek</translation>
 <translation id="6405181733356710802">Želite nadaljevati v aplikacijo <ph name="APP_NAME" />?</translation>
@@ -2657,6 +2666,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6710594484020273272">&lt;Vnesite iskalno poizvedbo&gt;</translation>
 <translation id="671076103358959139">Žeton za včlanitev:</translation>
 <translation id="6711464428925977395">Nekaj je narobe s strežnikom proxy ali pa naslov ni pravilen.</translation>
+<translation id="6716013836112872184">Prejmite e-poštna sporočila na naslov <ph name="EMAIL" />, ko se cena zniža na katerem koli spletnem mestu.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> želi ustvariti 3D-zemljevid vaše okolice in spremljati položaj kamere</translation>
 <translation id="6718612893943028815">Želite uporabiti kamero?</translation>
 <translation id="6721164594124191969">Labels (Glossy)</translation>
@@ -3187,6 +3197,7 @@ Dodatne podrobnosti:
 <translation id="7767278989746220252">Dvorišče, zelenica in vrt</translation>
 <translation id="776749070095465053">Fabric</translation>
 <translation id="7773005668374414287">V istem vrstnem redu s tiskom na zgornji strani</translation>
+<translation id="7779418012194492374">Umik dostopa za napravo <ph name="DEVICE_NAME" /></translation>
 <translation id="7781829728241885113">Včeraj</translation>
 <translation id="7785790577395078482">s tem tabličnim računalnikom</translation>
 <translation id="7786368602962652765">Obvezno polje je prazno. Pred shranjevanjem ga izpolnite.</translation>
@@ -3809,6 +3820,7 @@ Dodatne podrobnosti:
 <translation id="9155211586651734179">Priključena zvočna dodatna oprema</translation>
 <translation id="9155646082713385498">Revije</translation>
 <translation id="9157595877708044936">Nastavljanje ...</translation>
+<translation id="9161794544616754735">{0,plural, =1{Datoteka <ph name="FILE_NAME" /> morda vsebuje občutljivo vsebino}one{<ph name="FILE_COUNT" /> datoteka morda vsebuje občutljivo vsebino}two{<ph name="FILE_COUNT" /> datoteki morda vsebujeta občutljivo vsebino}few{<ph name="FILE_COUNT" /> datoteke morda vsebujejo občutljivo vsebino}other{<ph name="FILE_COUNT" /> datotek morda vsebuje občutljivo vsebino}}</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Spletna mesta, ki jih obiščete, lahko tudi določijo, kaj vam je všeč, na podlagi vaše dejavnosti na spletnem mestu. Če na primer obiščete spletno mesto, ki prodaja tekaško obutev za dolge razdalje, se lahko spletno mesto odloči, da vas zanimajo maratoni.</translation>
 <translation id="9166851138617700776">Več o oglasih, ki jih predlaga spletno mesto, in merjenju oglasov</translation>

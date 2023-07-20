@@ -3301,6 +3301,7 @@
 <translation id="3721119614952978349">Та болон Google</translation>
 <translation id="3722108462506185496">Виртуал машины үйлчилгээг эхлүүлэхэд алдаа гарлаа. Дахин оролдоно уу.</translation>
 <translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> зааварчилгаа хүлээн авсан</translation>
+<translation id="3724897774652282549">Маягтыг бөглөх</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Боломжтой Wi-Fi сүлжээ</translation>
 <translation id="3727187387656390258">Зар сурталчилгааг шалгах</translation>
@@ -7235,6 +7236,7 @@
 <translation id="7067396782363924830">Орчиндоо зохицох өнгө</translation>
 <translation id="7067725467529581407">Үүнийг дахиж бүү харуулаарай.</translation>
 <translation id="7068279399556423026">Бусад төхөөрөмжийн табыг харахын тулд нэвтэрнэ үү</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Энэ сайтын шинэ нууц үг}other{Энэ сайтын шинэ нууц үгнүүд}}</translation>
 <translation id="7070484045139057854">Энэ нь сайтын өгөгдлийг унших болон өөрчлөх боломжтой</translation>
 <translation id="7072010813301522126">Shortcut-н нэр</translation>
 <translation id="7074066049407662839">Нууц үгээ хадгалахын тулд нэвтэрнэ үү</translation>
@@ -9618,6 +9620,7 @@
 <translation id="9068598199622656904">Товчлуурын шууд холбоосыг ашиглахын тулд товчлууруудыг нэгэн зэрэг удаан дарахын оронд нэг удаад нэг товчлуур дарна уу</translation>
 <translation id="9068878141610261315">Файлын төрөл дэмжигдээгүй байна</translation>
 <translation id="9069665781180028115">Сонгосон зүйлс энэ Chromebook-д боломжтой болно. Хэрэв та Chromebook-г шинээр ашиглаж байгаа бол бүх зүйлээ синк хийснээр таны сонголтыг хуулбарлана. Тохиргоо &gt; Бүртгэл хэсэгт хүссэн үедээ өөрчлөлт хийгээрэй.</translation>
+<translation id="9070231741075992882">Таны <ph name="APP_NAME" />-д зөвшөөрсөн зөвшөөрлүүдийг мөн үүний суулгасан болон дамжуулсан аппуудад зөвшөөрнө.</translation>
 <translation id="9070342919388027491">Табыг зүүн тийш зөөсөн</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB хулгана холбогдсон</translation>

@@ -454,6 +454,7 @@
 <translation id="3479552764303398839">後で</translation>
 <translation id="3493531032208478708">詳しくは、<ph name="BEGIN_LINK" />おすすめのコンテンツ<ph name="END_LINK" />についての説明をご覧ください</translation>
 <translation id="3495219333887281978">ログインのボトムシートが画面の下半分に表示されています。</translation>
+<translation id="3498338220321963224">保存したデータは、後ほどプロフィールのロックを削除すると消去されます。</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="350276055892098337">古い順に並べ替え</translation>
 <translation id="3507132249039706973">標準保護機能がオンになっています</translation>
@@ -619,6 +620,7 @@
 <translation id="4409271659088619928">検索エンジンは <ph name="DSE" /> に設定されています。検索履歴を削除する場合は、検索エンジンの手順をご確認ください（該当する場合）。</translation>
 <translation id="441383202534727410">閲覧履歴に基づいてウェブサイトのリストがここに表示されるようになるまで 1 週間ほどかかる場合があります。</translation>
 <translation id="4415276339145661267">Google アカウントの管理</translation>
+<translation id="4417111749295506837">車内で Chrome 情報を同期してデータを安全に保つには、プロフィールのロックを作成する必要があります。作成すると、車に乗るたびにコードまたはパスワードの入力が求められるようになります。</translation>
 <translation id="4425140285732600465">価格をトラッキングします。値下げしたサイトがある場合に通知します。</translation>
 <translation id="442518031075347249">Google Pay で仮想カードを使用できなくなります。<ph name="BEGIN_LINK1" />仮想カードの詳細<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">広告のカスタマイズ</translation>
@@ -986,6 +988,7 @@
 <translation id="6363990818884053551">同期を開始するには、本人確認を行ってください</translation>
 <translation id="6364438453358674297">履歴から候補を削除しますか？</translation>
 <translation id="6380100320871303656">Chrome によってアクセスする可能性があると判断されたページが、より頻繁にプリロードされます。この設定によりデータの使用量が増える可能性があります。</translation>
+<translation id="6391355955030242704">車内で Chrome 情報を同期してデータを安全に保つには、セキュリティ設定でプロフィールのロックを作成する必要があります。作成すると、車に乗るたびにコードまたはパスワードの入力が求められるようになります。</translation>
 <translation id="6394791151443660613">検索: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">リンク</translation>
 <translation id="6397616442223433927">オンラインに復帰</translation>

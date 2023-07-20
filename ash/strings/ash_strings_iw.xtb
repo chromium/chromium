@@ -32,6 +32,7 @@
 <translation id="1117719261843403176">החלפת המצב של חבילת הגלישה. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">הסתרה אוטומטית של המדף</translation>
 <translation id="1142002900084379065">תמונות אחרונות</translation>
+<translation id="114221662579355151">הפעולה הזו תאפשר גישה למצלמה לאפליקציות <ph name="APP1_NAME" />,‏ <ph name="APP2_NAME" /> ולכל האפליקציות והאתרים שיש להם הרשאת גישה למצלמה. יכול להיות שיהיה צורך לרענן את דף האינטרנט או להפעיל מחדש את האפליקציה.</translation>
 <translation id="1148499908455722006">פתיחת תיבת דו-שיח עם מידע על <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">יומן</translation>
 <translation id="1153356358378277386">מכשירים מותאמים</translation>
@@ -118,16 +119,17 @@
 <translation id="14648076227129703">הפעולה הזו מאפשרת גישה למצלמה לאפליקציות <ph name="APP1_NAME" /> וגם <ph name="APP2_NAME" />, ולכל האפליקציות והאתרים שיש להם הרשאת גישה למצלמה</translation>
 <translation id="1467432559032391204">שמאלה</translation>
 <translation id="146902737843070955">האדמין שלך ביקש את השינוי הזה</translation>
+<translation id="1469148162491666137">הפעולה הזו תאפשר לאפליקציות <ph name="APP1_NAME" /> ו-<ph name="APP2_NAME" /> גישה למצלמה ולמיקרופון. בנוסף, תתאפשר גישה למצלמה ולמיקרופון גם לכל האפליקציות והאתרים שיש להם הרשאות לכך. יכול להיות שיהיה צורך לרענן את דף האינטרנט או להפעיל מחדש את האפליקציה.</translation>
 <translation id="147310119694673958">טעינת הסוללה של הטלפון: %<ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="1479909375538722835">תפריט נגישות צף</translation>
 <translation id="1480845547124508962">‏<ph name="CURRENT_TIME" />, אפשר לפתוח את תצוגת היומן בלחיצה על Enter</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540">הפריט <ph name="SECOND_ITEM_TITLE" /> החליף את <ph name="FIRST_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">הצגת כל ההצעות</translation>
-<translation id="1503394326855300303">החשבון של בעלים זה צריך להיות החשבון הראשון שאליו נכנסים בעת כניסה לפעילות באתר מחשבונות מרובים.</translation>
 <translation id="1510238584712386396">מרכז האפליקציות</translation>
 <translation id="1516740043221086139">מצב 'נא לא להפריע' מופעל.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{צפייה בהגדרות של הודעות. ההודעות מושבתות באפליקציה אחת}one{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}two{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}other{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}}</translation>
+<translation id="1523032696246003">סוללה: %<ph name="BATTERY_PERCENTAGE" /> | הזמן שנותר לטעינה מלאה: <ph name="TIME" /></translation>
 <translation id="1525508553941733066">סגירה</translation>
 <translation id="1526448108126799339">פתיחת כרטיסייה חדשה בחלון חדש</translation>
 <translation id="1528259147807435347">נערך בשבוע האחרון</translation>
@@ -140,6 +142,7 @@
 <translation id="1550523713251050646">יש ללחוץ לקבלת אפשרויות נוספות</translation>
 <translation id="1555130319947370107">כחול</translation>
 <translation id="1557622599341396706">הצגת השם של שולחן העבודה הווירטואלי</translation>
+<translation id="1569384531973824928">הפעולה הזו תאפשר גישה למצלמה ולמיקרופון לכל האפליקציות והאתרים שיש להם הרשאות לכך. יכול להיות שיהיה צורך לרענן את דף האינטרנט או להפעיל מחדש את האפליקציה.</translation>
 <translation id="1576623706766186887">הקטנת התצוגה כשמפעילים את הזכוכית המגדלת</translation>
 <translation id="1586324912145647027">מעבר לשולחנות העבודה הווירטואליים 1 עד 8</translation>
 <translation id="1589090746204042747">גישה לכל הפעילות שלך בסשן הזה</translation>
@@ -312,6 +315,7 @@
 <translation id="2369165858548251131">"שלום" בסינית</translation>
 <translation id="2382875860893882175">‏ההעברה (cast) מושהית. אפשר להמשיך בהעברה או להפסיק אותה בכל שלב.</translation>
 <translation id="2386292613071805067">בחירת כל תוכן הדף</translation>
+<translation id="2396594569364254378">שימוש בזיכרון: <ph name="USED_MEMORY" /> | הנפח הכולל: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="2397416548179033562">‏הצגת תפריט Chrome</translation>
 <translation id="240006516586367791">פקדי מדיה</translation>
 <translation id="2402411679569069051">‏כדי לבטל את נעילת ה-Chromebook, עליך להשתמש בטביעת האצבע או לבטל את נעילת הטלפון שלך</translation>
@@ -508,6 +512,7 @@
 <translation id="3294437725009624529">אורח</translation>
 <translation id="3298690094479023523">לא הצלחנו לאמת את קוד האימות או את הסיסמה שלך. יש לנסות שוב.</translation>
 <translation id="3300193645498960160">תתקבל הודעה במקרים של דיבור כשההשתקה פועלת. האודיו אף פעם לא נשלח מהמכשיר.</translation>
+<translation id="3306386552969601301">‏<ph name="DEVICECOUNT" /> מכשירים מחוברים לנקודה לשיתוף אינטרנט (Hotspot) של <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">עברת למצב מחשב נייד</translation>
 <translation id="3308453408813785101">ל-<ph name="USER_EMAIL_ADDRESS" /> תהיה עדיין אפשרות להיכנס לחשבון מאוחר יותר.</translation>
 <translation id="3321628682574733415">קוד הורה שגוי</translation>
@@ -547,6 +552,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> דק'</translation>
 <translation id="3445925074670675829">‏מכשיר עם יציאת USB-C</translation>
 <translation id="3455468639467374593">תבנית, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="3456931972722214204">‏מכשיר אחד מחובר לנקודה לשיתוף אינטרנט (Hotspot) של <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">איפוס המרחק מהתצוגה</translation>
 <translation id="3465223694362104965">מקלדת אחרת חוברה למכשיר לאחר הכניסה האחרונה שלך. חשוב לוודא שזו מקלדת מהימנה לפני שמשתמשים בה.</translation>
 <translation id="3465356146291925647">הרשת מנוהלת על ידי מנהל המערכת שלך</translation>
@@ -640,6 +646,7 @@
 <translation id="3799080171973636491">הקשת על מקש הקיצור של זכוכית מגדלת במסך מלא. להפעיל אותה?</translation>
 <translation id="380165613292957338">היי, איך אפשר לעזור?</translation>
 <translation id="3804737937830804242">כיווץ המצלמה</translation>
+<translation id="3824784079442479685">הפעולה הזו תאפשר גישה למצלמה לאפליקציה <ph name="APP_NAME" /> ולכל האפליקציות והאתרים שיש להם הרשאת גישה למצלמה. יכול להיות שיהיה צורך לרענן את דף האינטרנט או להפעיל מחדש את האפליקציה.</translation>
 <translation id="3826099427150913765">מעבר לסיסמה</translation>
 <translation id="383058930331066723">מצב חיסכון בסוללה מופעל</translation>
 <translation id="383629559565718788">צפייה בהגדרות המקלדת</translation>
@@ -695,6 +702,7 @@
 <translation id="4066027111132117168">פועל, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">פתיחת דף ההורדות</translation>
 <translation id="4072264167173457037">אות בינוני</translation>
+<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" /> מתוך <ph name="TOTAL_NUM_OF_SUBMISSIONS" /> הגישו • <ph name="NUM_GRADED" /> קיבלו ציון</translation>
 <translation id="4086921558679520050">הפעלת מתג המיקרופון הפיזי במכשיר</translation>
 <translation id="4101772068965291327">פתיחה של דף הבית</translation>
 <translation id="4112140312785995938">הרצה לאחור</translation>
@@ -757,6 +765,7 @@
 <translation id="4324840740119394760">הפעולה הזו מאפשרת גישה למצלמה לאפליקציה <ph name="APP_NAME" /> ולכל האפליקציות והאתרים שיש להם הרשאת גישה למצלמה</translation>
 <translation id="4333628967105022692">‏אין תמיכה בדפדפן Lacros כאשר יש כמה משתמשים מחוברים.</translation>
 <translation id="4338109981321384717">זכוכית מגדלת</translation>
+<translation id="4356872429719185452">‏הצגת פרטי הנקודה לשיתוף אינטרנט (Hotspot). מתבצעת הפעלה של הנקודה לשיתוף אינטרנט.</translation>
 <translation id="4371348193907997655">‏הגדרות העברה (cast)</translation>
 <translation id="4375482231364171368">חיפוש בסרגל הכתובות</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, עוצמת אות <ph name="SIGNAL_STRENGTH" /> אחוז</translation>
@@ -853,6 +862,7 @@
 <translation id="4752784485658729358">ניתן לשמור רק 6 שולחנות עבודה וירטואליים. צריך להסיר שולחן עבודה וירטואלי כדי לשמור אחד חדש.</translation>
 <translation id="4759238208242260848">הורדות</translation>
 <translation id="4762573482154983647">הסתרת אפליקציות</translation>
+<translation id="4763885921995354846">הפעולה הזו תאפשר גישה למצלמה לכל האפליקציות והאתרים שיש להם הרשאת גישה למצלמה. יכול להיות שיהיה צורך לרענן את דף האינטרנט או להפעיל מחדש את האפליקציה.</translation>
 <translation id="4774338217796918551">אפשר לחזור מחר בשעה <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">לא הצלחנו לאמת את הסיסמה שלך. יש לנסות שוב.</translation>
 <translation id="4776917500594043016">סיסמה עבור <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -880,6 +890,7 @@
 <translation id="4871905435473761992">‏הצגת פרטי הנקודה לשיתוף אינטרנט (Hotspot). ברשת הסלולרית שלך אין תמיכה בנקודת אינטרנט.</translation>
 <translation id="4872237917498892622">‏Alt + חיפוש או Shift</translation>
 <translation id="4872852897273142380">התמקדות בסרגל הסימניות או הדגשה שלו (אם הסרגל מוצג)</translation>
+<translation id="4881323000405981760">‏באפליקציות ל-Linux אין תמיכה באפקטים</translation>
 <translation id="4881695831933465202">פתיחה</translation>
 <translation id="4889868803215848840">אפשר להוסיף משוב לשיפור ההצעות:</translation>
 <translation id="4890187583552566966">‏Google Assistant הושבתה על-ידי מנהל המערכת.</translation>
@@ -1054,6 +1065,7 @@
 <translation id="5601503069213153581">קוד אימות</translation>
 <translation id="5618148318840095371">העברנו אותך לרשת טובה יותר</translation>
 <translation id="5619862035903135339">לפי המדיניות של מנהל המערכת, צילום המסך מושבת</translation>
+<translation id="5620979661744857819">הפעולה הזו תאפשר לאפליקציה <ph name="APP_NAME" /> גישה למצלמה ולמיקרופון. בנוסף, תתאפשר גישה למצלמה ולמיקרופון גם לכל האפליקציות והאתרים שיש להם הרשאות לכך. יכול להיות שיהיה צורך לרענן את דף האינטרנט או להפעיל מחדש את האפליקציה.</translation>
 <translation id="5625955975703555628">+LTE</translation>
 <translation id="5627392655516693966">לא ניתן היה לאמת את הסיסמה. יש לנסות שוב.</translation>
 <translation id="5646376287012673985">מיקום</translation>
@@ -1101,10 +1113,12 @@
 <translation id="5825969630400862129">הגדרות של מכשירים מחוברים</translation>
 <translation id="5837036133683224804">הפסקת <ph name="ROUTE_TITLE" /> במכשיר <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">מעבר לטראק הבא</translation>
+<translation id="5842553299352339114">‏הנקודה לשיתוף אינטרנט (Hotspot) של <ph name="DEVICE_NAME" /> פועלת, אין מכשירים מחוברים</translation>
 <translation id="584525477304726060">כדי להגדיל, צריך ללחוץ לחיצה ארוכה</translation>
 <translation id="5856638668464565213">הרשת <ph name="NETWORK_NAME" /> לא מופעלת.</translation>
 <translation id="5860033963881614850">כבוי</translation>
 <translation id="5860491529813859533">הפעלה</translation>
+<translation id="5864748620896638071">סוללה: %<ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="5867217927013474703">מתבצע איסוף של פרטי הרשת</translation>
 <translation id="5867606971598166637">האדמין עוקב אחר המסכים שלך</translation>
 <translation id="5876666360658629066">יש להזין קוד גישה להורים</translation>
@@ -1362,6 +1376,7 @@
 <translation id="6981291220124935078">להפעלת הגישה</translation>
 <translation id="6981982820502123353">נגישות</translation>
 <translation id="698231206551913481">כל הקבצים והנתונים המשויכים למשתמש זה יימחקו לצמיתות ברגע שהמשתמש יוסר.</translation>
+<translation id="7004910047186208204">התחברות לחבילת גלישה</translation>
 <translation id="7005239792648594238">כדי להתחיל, צריך לפתוח אפליקציה</translation>
 <translation id="7007983414944123363">לא הצלחנו לאמת את קוד האימות או את הסיסמה שלך. אפשר לנסות שוב.</translation>
 <translation id="7014684956566476813">המכשיר <ph name="DEVICE_NAME" /> מחובר</translation>
@@ -1480,6 +1495,7 @@
 
 ייתכן שהודעות, חלונות ותיבות דו-שיח יתפצלו בהמשך בין שולחנות עבודה.</translation>
 <translation id="7569509451529460200">‏כתב ברייל ו-ChromeVox מופעלים</translation>
+<translation id="7571361473021531288">סוללה: %<ph name="BATTERY_PERCENTAGE" /> | הזמן שנותר לשימוש: <ph name="TIME" /></translation>
 <translation id="7573585051776738856">החלון הפעיל מוצמד לצד שמאל.</translation>
 <translation id="7579778809502851308">צילום מסך</translation>
 <translation id="7593891976182323525">‏חיפוש או Shift</translation>
@@ -1517,6 +1533,7 @@
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{הודעה אחת}one{# הודעות}two{2 הודעות}other{# הודעות}}</translation>
 <translation id="7723703419796509666">הצגה או הסתרה של מסוף הכלים למפתחים</translation>
 <translation id="7724603315864178912">חיתוך</translation>
+<translation id="7725108879223146004">‏הצגת פרטי הנקודה לשיתוף אינטרנט (Hotspot). מתבצעת השבתה של הנקודה לשיתוף אינטרנט.</translation>
 <translation id="7727952505535211425">פתיחת האתר שרשום בסרגל הכתובות בכרטיסייה חדשה</translation>
 <translation id="77365090426890123">שימוש בזיכרון</translation>
 <translation id="7742327441377685481">אין התראות</translation>
@@ -1652,6 +1669,7 @@
 <translation id="8308637677604853869">התפריט הקודם</translation>
 <translation id="830868413617744215">ביטא</translation>
 <translation id="8314772463905284467">‏Caps Lock מופעל</translation>
+<translation id="8315514906653279104">מתבצעת הפעלה…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">נבחר החלון <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349964124165471584">פתיחת הקישור בחלון חדש</translation>
@@ -1802,6 +1820,7 @@
 <translation id="9024331582947483881">מסך מלא</translation>
 <translation id="9029736946581028033">המכשיר ייכבה בקרוב</translation>
 <translation id="9030319654231318877">התכונה כבויה עד השקיעה</translation>
+<translation id="9030665205623277906">‏תמונת מצב של השימוש במעבד (CPU): %<ph name="CPU_USEAGE" /></translation>
 <translation id="9034924485347205037">‏קובצי Linux</translation>
 <translation id="9047624247355796468">פתיחת ההגדרות של <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">כיווץ ההודעה</translation>

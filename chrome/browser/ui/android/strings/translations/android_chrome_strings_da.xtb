@@ -454,6 +454,7 @@ Private state tokens forbedrer beskyttelsen af personlige oplysninger på nettet
 <translation id="3479552764303398839">Ikke nu</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /> om anbefalet indhold</translation>
 <translation id="3495219333887281978">Loginfeltet i bunden er åbnet i halv højde.</translation>
+<translation id="3498338220321963224">Dine gemte data ryddes, hvis profillåsen fjernes på et senere tidspunkt.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="350276055892098337">Sortér efter ældste</translation>
 <translation id="3507132249039706973">Standardbeskyttelse er aktiveret</translation>
@@ -619,6 +620,7 @@ Private state tokens forbedrer privatlivsbeskyttelsen på nettet og kan ikke bru
 <translation id="4409271659088619928">Dine standardsøgemaskine er <ph name="DSE" />. Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis det er relevant.</translation>
 <translation id="441383202534727410">Der kan gå op til en uge, før en liste over websites vises her baseret på din browserhistorik.</translation>
 <translation id="4415276339145661267">Administrer din Google-konto</translation>
+<translation id="4417111749295506837">Hvis du vil synkronisere dine Chrome-oplysninger og beskytte dine data i bilen, skal du oprette en profillås. Du skal bruge en kode eller adgangskode, hver gang du sætter dig ind i bilen.</translation>
 <translation id="4425140285732600465">Der holdes øje med prisen. Få besked, hvis prisen falder på et website.</translation>
 <translation id="442518031075347249">Du vil ikke længere kunne bruge dit virtuelle kort med Google Pay. <ph name="BEGIN_LINK1" />Få flere oplysninger om virtuelle kort<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">Personlig tilpasning af annoncer</translation>
@@ -986,6 +988,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6363990818884053551">Verificer din identitet for at starte synkroniseringen</translation>
 <translation id="6364438453358674297">Vil du fjerne forslaget fra historikken?</translation>
 <translation id="6380100320871303656">Forudindlæser oftere sider, som Chrome tror, der er stor chance for, at du besøger. Denne indstilling kan medføre et højere dataforbrug.</translation>
+<translation id="6391355955030242704">Hvis du vil synkronisere dine Chrome-oplysninger og beskytte dine data i bilen, skal du oprette en profillås i dine sikkerhedsindstillinger. Du skal bruge en kode eller adgangskode, hver gang du sætter dig ind i bilen.</translation>
 <translation id="6394791151443660613">Søg: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LINK</translation>
 <translation id="6397616442223433927">Online igen</translation>

@@ -32,6 +32,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1117719261843403176">Basculer les données cellulaires. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Masquer automatiquement l'étagère</translation>
 <translation id="1142002900084379065">Photos récentes</translation>
+<translation id="114221662579355151">Cela autorise l'accès à l'appareil photo pour <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> et pour toutes les applications et tous les sites Web disposant de l'autorisation d'accès à l'appareil photo. Vous devrez peut-être actualiser la page Web ou redémarrer l'application.</translation>
 <translation id="1148499908455722006">Ouvrir la boîte de dialogue d'information pour <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Agenda</translation>
 <translation id="1153356358378277386">Appareils associés</translation>
@@ -118,16 +119,17 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="14648076227129703">Cela donne à l'appareil photo l'accès à <ph name="APP1_NAME" />, à <ph name="APP2_NAME" /> et à toutes les applications et tous les sites Web disposant de l'autorisation pour l'appareil photo</translation>
 <translation id="1467432559032391204">À gauche</translation>
 <translation id="146902737843070955">Votre administrateur a demandé cette modification</translation>
+<translation id="1469148162491666137">Cela autorise l'accès pour <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> et pour toutes les applications et tous les sites Web disposant de l'autorisation d'accès à l'appareil photo et au microphone. Vous devrez peut-être actualiser la page Web ou redémarrer l'application.</translation>
 <translation id="147310119694673958">Pile du téléphone : <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="1479909375538722835">Menu d'accessibilité flottant</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />, Appuyez sur Entrée pour ouvrir la vue d'Agenda</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> a changé de place avec <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Afficher toutes les suggestions</translation>
-<translation id="1503394326855300303">Ce compte de propriétaire doit être le premier compte à être connecté lors de sessions de connexion multicompte.</translation>
 <translation id="1510238584712386396">Lanceur</translation>
 <translation id="1516740043221086139">Le mode Ne pas déranger est activé.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Afficher les paramètres de notification. Les notifications sont désactivées pour une application}one{Afficher les paramètres de notification. Les notifications sont désactivées pour # application}other{Afficher les paramètres de notification. Les notifications sont désactivées pour # applications}}</translation>
+<translation id="1523032696246003">Pile à <ph name="BATTERY_PERCENTAGE" /> % | Recharge complète dans <ph name="TIME" /></translation>
 <translation id="1525508553941733066">IGNORER</translation>
 <translation id="1526448108126799339">Ouvrir un nouvel onglet dans une nouvelle fenêtre</translation>
 <translation id="1528259147807435347">Modifié au cours de la semaine dernière</translation>
@@ -140,6 +142,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1550523713251050646">Cliquez pour afficher plus d'options</translation>
 <translation id="1555130319947370107">Bleu</translation>
 <translation id="1557622599341396706">Afficher le nom du bureau</translation>
+<translation id="1569384531973824928">Cela autorise l'accès pour toutes les applications et tous les sites Web disposant des autorisations d'accès à l'appareil photo et au microphone. Vous devrez peut-être actualiser la page Web ou redémarrer l'application.</translation>
 <translation id="1576623706766186887">Dézoomer lorsque la loupe est activée</translation>
 <translation id="1586324912145647027">Accédez aux bureaux 1 à 8</translation>
 <translation id="1589090746204042747">Accédez à toute l'activité de votre session</translation>
@@ -312,6 +315,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2369165858548251131">Comment dit-on « Bonjour » en chinois?</translation>
 <translation id="2382875860893882175">La diffusion est actuellement en pause. Vous pouvez reprendre ou arrêter la diffusion à tout moment.</translation>
 <translation id="2386292613071805067">Tout sélectionner sur la page</translation>
+<translation id="2396594569364254378">Mémoire <ph name="USED_MEMORY" /> | Total de <ph name="TOTAL_MEMORY" /></translation>
 <translation id="2397416548179033562">Afficher le menu Chrome</translation>
 <translation id="240006516586367791">Commandes multimédias</translation>
 <translation id="2402411679569069051">Pour déverrouiller votre Chromebook, utilisez votre empreinte digitale ou déverrouillez votre téléphone</translation>
@@ -640,6 +644,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3799080171973636491">Vous avez appuyé sur le raccourci-clavier de loupe en mode plein écran. Voulez-vous l'activer?</translation>
 <translation id="380165613292957338">Bonjour, comment puis-je vous aider?</translation>
 <translation id="3804737937830804242">Réduire le bouton caméra</translation>
+<translation id="3824784079442479685">Cela autorise l'accès à l'appareil photo pour <ph name="APP_NAME" /> et pour toutes les applications et tous les sites Web disposant de l'autorisation d'accès à l'appareil photo. Vous devrez peut-être actualiser la page Web ou redémarrer l'application.</translation>
 <translation id="3826099427150913765">Passer au mot de passe</translation>
 <translation id="383058930331066723">Le mode Économiseur de pile est activé</translation>
 <translation id="383629559565718788">Afficher les paramètres du clavier</translation>
@@ -695,6 +700,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4066027111132117168">Activé, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">Ouvrir la page de téléchargements</translation>
 <translation id="4072264167173457037">Signal moyen</translation>
+<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> rendus • <ph name="NUM_GRADED" /> notés</translation>
 <translation id="4086921558679520050">Activer le commutateur du micro physique sur votre appareil</translation>
 <translation id="4101772068965291327">Ouvrir la page d'accueil</translation>
 <translation id="4112140312785995938">Rechercher vers l'arrière</translation>
@@ -853,6 +859,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4752784485658729358">Vous pouvez utiliser jusqu'à six bureaux. Retirez un bureau pour en enregistrer un nouveau.</translation>
 <translation id="4759238208242260848">Téléchargements</translation>
 <translation id="4762573482154983647">Masquer les applications</translation>
+<translation id="4763885921995354846">Cela autorise l'accès à l'appareil photo pour toutes les applications et tous les sites Web disposant de l'autorisation d'accès à l'appareil photo. Vous devrez peut-être actualiser la page Web ou redémarrer l'application.</translation>
 <translation id="4774338217796918551">Reviens demain à <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Votre mot de passe n'a toujours pas pu être vérifié. Réessayez.</translation>
 <translation id="4776917500594043016">Mot de passe pour <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -880,6 +887,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4871905435473761992">Afficher les détails du point d'accès sans fil. Votre réseau mobile ne prend pas en charge les points d'accès sans fil.</translation>
 <translation id="4872237917498892622">Alt + Recherche ou Maj.</translation>
 <translation id="4872852897273142380">Sélectionner ou mettre en évidence la barre de favoris (si elle est visible)</translation>
+<translation id="4881323000405981760">Les effets ne sont pas pris en charge dans les applications Linux</translation>
 <translation id="4881695831933465202">Ouvrir</translation>
 <translation id="4889868803215848840">Fournissez des commentaires facultatifs pour améliorer les suggestions :</translation>
 <translation id="4890187583552566966">L'Assistant Google est désactivé par votre administrateur.</translation>
@@ -1054,6 +1062,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5601503069213153581">NIP</translation>
 <translation id="5618148318840095371">Nous vous avons connecté à un meilleur réseau</translation>
 <translation id="5619862035903135339">La politique définie par l'administrateur désactive les captures d'écran</translation>
+<translation id="5620979661744857819">Cela autorise l'accès pour <ph name="APP_NAME" /> et pour toutes les applications et tous les sites Web disposant des autorisations d'accès à l'appareil photo et au microphone. Vous devrez peut-être actualiser la page Web ou redémarrer l'application.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Votre mot de passe n'a pas pu être vérifié. Réessayez.</translation>
 <translation id="5646376287012673985">Lieu</translation>
@@ -1105,6 +1114,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> n'est pas activé.</translation>
 <translation id="5860033963881614850">Désactivé</translation>
 <translation id="5860491529813859533">Activer</translation>
+<translation id="5864748620896638071">Pile à <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="5867217927013474703">Collecte de renseignements relatifs au réseau en cours…</translation>
 <translation id="5867606971598166637">Votre administrateur système surveille vos écrans</translation>
 <translation id="5876666360658629066">Entrez le code d'accès parental</translation>
@@ -1478,6 +1488,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7561982940498449837">Fermer le menu</translation>
 <translation id="7564874036684306347">Si vous déplacez des fenêtres sur un autre bureau, elles peuvent présenter des comportements inattendus. À la suite d'une telle opération, les notifications, les fenêtres et les boîtes de dialogue peuvent s'afficher sur les deux écrans.</translation>
 <translation id="7569509451529460200">Braille et ChromeVox activés</translation>
+<translation id="7571361473021531288">Pile à <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> d'autonomie</translation>
 <translation id="7573585051776738856">Fenêtre active ancrée à droite.</translation>
 <translation id="7579778809502851308">Capture d'écran</translation>
 <translation id="7593891976182323525">Recherche ou Majuscule</translation>
@@ -1799,6 +1810,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="9024331582947483881">plein écran</translation>
 <translation id="9029736946581028033">L'appareil va s'éteindre sous peu</translation>
 <translation id="9030319654231318877">Désactivé jusqu'au couchant</translation>
+<translation id="9030665205623277906">Aperçu de l'utilisation du processeur : <ph name="CPU_USEAGE" /> %</translation>
 <translation id="9034924485347205037">Fichiers Linux</translation>
 <translation id="9047624247355796468">Ouvrir les paramètres pour <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Réduire la notification</translation>

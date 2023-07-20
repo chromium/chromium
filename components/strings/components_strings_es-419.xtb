@@ -319,6 +319,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="160851722280695521">Jugar al juego del dinosaurio de Chrome</translation>
 <translation id="161042844686301425">Cian</translation>
 <translation id="1611101756749861742">Segundo rollo</translation>
+<translation id="1615178538289490617">Revocar el acceso a <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">La política del administrador inhabilita la captura de pantalla cuando hay contenido confidencial a la vista.</translation>
 <translation id="1617276713587758852">Vehículos mixtos</translation>
 <translation id="1618571384971354160">Asistencia en ruta y remolque de automóviles</translation>
@@ -625,6 +626,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2276057643614339130">Base de impresión</translation>
 <translation id="2277103315734023688">Buscar más adelante</translation>
 <translation id="2277753418458118549">Mostrar detalles de la conexión</translation>
+<translation id="22792995594807632">Se debe revisar antes de descargar los archivos</translation>
 <translation id="2283340219607151381">Guardar y completar direcciones</translation>
 <translation id="2283447177162560884">Se borró "<ph name="PAGE_TITLE" />"</translation>
 <translation id="2286383991450886080">86.36 × 111.76 cm</translation>
@@ -1277,6 +1279,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3736520371357197498">Si comprendes los riesgos para tu seguridad, puedes <ph name="BEGIN_LINK" />visitar este sitio no seguro<ph name="END_LINK" /> antes de que se hayan eliminado los programas peligrosos.</translation>
 <translation id="3738166223076830879">Tu administrador gestiona el navegador.</translation>
 <translation id="3740319564441798148">Autobuses y trenes de larga distancia</translation>
+<translation id="3740447166056383374">Se debe revisar antes de copiar los archivos</translation>
 <translation id="374325029554577103">Productos tecnológicos para la actividad física</translation>
 <translation id="3743765582345153106">Verificar siempre que se use Autocompletar</translation>
 <translation id="3744111561329211289">Sincronización en segundo plano</translation>
@@ -1797,6 +1800,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4852429274334674023">Sistemas operativos</translation>
 <translation id="4854853140771946034">Crea una nota nueva en Google Keep rápidamente</translation>
 <translation id="485902285759009870">Verificando código…</translation>
+<translation id="4862630594858951805">¿Quieres recibir correos electrónicos cuando haya descuentos?</translation>
 <translation id="486459320933704969">Para poder visitar este sitio web, tu padre, madre o tutor debe aprobar tu solicitud.</translation>
 <translation id="4866506163384898554">Presiona |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| para mostrar tu cursor</translation>
 <translation id="4873616204573862158">Lentes y accesorios</translation>
@@ -1992,6 +1996,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5255690596502591079">Capturar de todos modos</translation>
 <translation id="5255833070095767006">350 × 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{La política del administrador no recomienda copiar este archivo a <ph name="DESTINATION_NAME" />.}other{La política del administrador no recomienda copiar estos archivos a <ph name="DESTINATION_NAME" />.}}</translation>
+<translation id="5263867360296733198">Se debe revisar antes de subir los archivos</translation>
 <translation id="5266128565379329178">Encuadernado en la parte superior</translation>
 <translation id="5269225904387178860">Perforación cuádruple en la parte inferior</translation>
 <translation id="5269999699920406580">El propietario es el único que puede configurar las funciones que se aplican a todo el sistema: <ph name="OWNER_EMAIL" />.</translation>
@@ -2065,6 +2070,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5412236728747081950">Este sitio obtiene tus intereses de Chrome para mostrarte anuncios más relevantes</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Apilador 4</translation>
+<translation id="5414446060143308245">Se debe revisar antes de transferir los archivos</translation>
 <translation id="5414511064953050917">Mover de todos modos</translation>
 <translation id="5421136146218899937">Borrar datos de navegación...</translation>
 <translation id="5423269318075950257">Seguimiento de precios</translation>
@@ -2149,6 +2155,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5595485650161345191">Editar dirección</translation>
 <translation id="5596939519753369075">5.1 × 8.9 cm (2 × 3.5 in)</translation>
 <translation id="560412284261940334">No se admite la administración.</translation>
+<translation id="5605249000617390290">Más información sobre el seguimiento de precios</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5610142619324316209">Comprobar la conexión.</translation>
 <translation id="5610807607761827392">Puedes administrar tarjetas y direcciones en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
@@ -2285,6 +2292,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5921639886840618607">¿Quieres guardar la tarjeta en la Cuenta de Google?</translation>
 <translation id="5922853866070715753">Ya casi</translation>
 <translation id="5923492272538889093">¿Quieres usar el desbloqueo del dispositivo en lugar del CVC?</translation>
+<translation id="5924510104057992926">Se debe revisar antes de abrir los archivos</translation>
 <translation id="5924782825030413055">Fuente de la última actualización de consentimiento:</translation>
 <translation id="5925040402342933574">Disco óptico (semibrillante)</translation>
 <translation id="5926982310317673627">Gimnasios y centros de actividad física y estética</translation>
@@ -2510,6 +2518,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6394852772105848029">Este sitio quiere abrir la app de <ph name="APP_NAME" /></translation>
 <translation id="6398765197997659313">Salir de pantalla completa</translation>
 <translation id="6401136357288658127">Esta política es obsoleta. En su lugar, debes usar la política <ph name="NEW_POLICY" />.</translation>
+<translation id="6402537308870515461">Se debe revisar antes de mover los archivos</translation>
 <translation id="6403167778944553">Dormitorio y baño</translation>
 <translation id="6404511346730675251">Editar marcador</translation>
 <translation id="6405181733356710802">¿Quieres continuar a <ph name="APP_NAME" />?</translation>
@@ -2658,6 +2667,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6710594484020273272">&lt;Escribe el término de búsqueda&gt;</translation>
 <translation id="671076103358959139">Token de inscripción:</translation>
 <translation id="6711464428925977395">Hay un error en el servidor proxy o la dirección es incorrecta.</translation>
+<translation id="6716013836112872184">Recibe correos electrónicos en <ph name="EMAIL" /> cuando haya descuentos en cualquier sitio.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> desea crear un mapa 3D de tu entorno y hacer un seguimiento de la posición de la cámara</translation>
 <translation id="6718612893943028815">¿Quieres permitir el uso de la cámara?</translation>
 <translation id="6721164594124191969">Etiquetas (brillante)</translation>
@@ -3188,6 +3198,7 @@ Detalles adicionales:
 <translation id="7767278989746220252">Mantenimiento de césped y jardines</translation>
 <translation id="776749070095465053">Tela</translation>
 <translation id="7773005668374414287">Mismo orden hacia arriba</translation>
+<translation id="7779418012194492374">Revocar el acceso a <ph name="DEVICE_NAME" /></translation>
 <translation id="7781829728241885113">Ayer</translation>
 <translation id="7785790577395078482">esta tablet</translation>
 <translation id="7786368602962652765">Un campo obligatorio está vacío. Llénalo antes de guardar.</translation>
@@ -3811,6 +3822,7 @@ Detalles adicionales:
 <translation id="9155211586651734179">Periféricos de audio conectados</translation>
 <translation id="9155646082713385498">Revistas</translation>
 <translation id="9157595877708044936">Configurando...</translation>
+<translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> puede incluir contenido sensible}other{<ph name="FILE_COUNT" /> archivos pueden incluir contenido sensible}}</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Los sitios que visitas también pueden determinar lo que te gusta en función de tu actividad en el sitio. Por ejemplo, si visitas un sitio que vende calzado para correr largas distancias, el sitio podría inferir que te interesa correr maratones.</translation>
 <translation id="9166851138617700776">Obtén más información sobre los anuncios sugeridos por sitios y la medición de anuncios</translation>

@@ -1001,6 +1001,7 @@
       <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">知道你使用這部裝置的時間</translation>
 <translation id="3180358318770512945">子女教養</translation>
+<translation id="3182185041786697613">要儲存安全碼嗎？</translation>
 <translation id="3185635157430775689">電腦組件</translation>
 <translation id="3187306450550410410">彈性工作安排</translation>
 <translation id="3187472288455401631">廣告評估功能</translation>
@@ -3443,6 +3444,7 @@
 <translation id="830498451218851433">對折</translation>
 <translation id="8308653357438598313">即時影片串流</translation>
 <translation id="8311895354659782580">房地產資訊</translation>
+<translation id="8317570861267063617">在裝置上儲存這張卡片的信用卡驗證碼可加快結帳速度</translation>
 <translation id="8319269383395457801">住宅出售</translation>
 <translation id="831997045666694187">傍晚</translation>
 <translation id="8321476692217554900">通知</translation>
@@ -3475,6 +3477,7 @@
 <translation id="8390725133630534698">系統管理員政策禁止將 <ph name="ORIGIN_NAME" /> 的內容分享到 <ph name="VM_NAME" /></translation>
 <translation id="8396522675989118466">這是<ph name="SIDE_OF_CARD" />的 <ph name="NUMBER_OF_DIGITS" /> 位數安全碼</translation>
 <translation id="8398335999901363925">付款方式已顯示在整個畫面上，輕觸即可填入。</translation>
+<translation id="8398446215576328011">還原已套用的政策</translation>
 <translation id="8398790343843005537">搜尋你的手機</translation>
 <translation id="8403506619177967839">同人誌</translation>
 <translation id="8405579342203358118">在 Chrome 設定中管理要同步處理哪些資訊</translation>

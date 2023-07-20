@@ -1854,6 +1854,7 @@ Lưu ý: Việc bạn bỏ qua một trường nghĩa là mọi giá trị đề
 <translation id="2608887839902987727">Ngăn quá trình xác thực qua trang xác thực bỏ qua cài đặt proxy</translation>
 <translation id="2608985885792348429">Chế độ cài đặt bảng nhớ tạm mặc định</translation>
 <translation id="2615240493030733717">Báo cáo thông tin về múi giờ</translation>
+<translation id="2619258867868873629">Đích "Lưu dưới dạng PDF" cũng như đích "Lưu vào Google Drive" trên các thiết bị <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="2621290137818374425">Nếu bạn đặt chính sách này, hệ thống sẽ tắt các yêu cầu tiết lộ về Tính minh bạch của chứng chỉ cho các tên máy chủ trong URL đã chỉ định. Mặc dù điều này khiến việc phát hiện các chứng chỉ bị cấp sai trở nên khó khăn hơn nhưng máy chủ có thể tiếp tục sử dụng các chứng chỉ lẽ ra không được tin cậy (vì các chứng chỉ này không được tiết lộ công khai theo cách thích hợp).
 
       Không đặt chính sách này đồng nghĩa với việc nếu bạn không tiết lộ những chứng chỉ buộc phải tiết lộ thông qua Tính minh bạch của chứng chỉ thì <ph name="PRODUCT_NAME" /> sẽ không tin cậy những chứng chỉ đó.
@@ -4573,9 +4574,6 @@ Nếu bạn đặt chính sách này thành False (Sai), thì chế độ mặc 
 <translation id="4970046075219007744">Cho phép các ứng dụng web yêu cầu người dùng cấp quyền truy cập vào các loại tệp thông qua API Xử lý tệp</translation>
 <translation id="4970855112942626932">Vô hiệu hóa đăng nhập vào trình duyệt</translation>
 <translation id="4974091268178043378">Chế độ màu trên ChromeOS</translation>
-<translation id="4976928720873547342">Nếu bạn đặt chính sách này, thì hệ thống sẽ loại trừ tất cả loại dữ liệu đã chỉ định khỏi quá trình đồng bộ hóa của <ph name="CHROME_SYNC_NAME" /> cũng như quá trình đồng bộ hóa cấu hình chuyển vùng. Điều này có thể giúp giảm kích thước của cấu hình chuyển vùng hoặc giới hạn loại dữ liệu đã tải lên các máy chủ <ph name="CHROME_SYNC_NAME" />.
-
-      Chính sách này hiện áp dụng cho các loại dữ liệu sau: "bookmarks", "readingList", "preferences", "passwords", "autofill", "themes", "typedUrls", "extensions", "apps", "tabs", "wifiConfigurations". Tên của các loại dữ liệu đó phân biệt chữ hoa chữ thường!</translation>
 <translation id="4977702914571821981">Cho phép bạn đặt một danh sách mẫu url chỉ định các trang web không được phép hiển thị nội dung hỗn hợp (nghĩa là nội dung HTTP trên các trang web HTTPS) có thể chặn (nghĩa là chủ động) và các trang web có nội dung hỗn hợp có thể tùy ý chặn (nghĩa là bị động) sẽ được nâng cấp.
 
           Nếu bạn không đặt chính sách này, nội dung hỗn hợp có thể chặn sẽ bị chặn và nội dung hỗn hợp có thể tùy ý chặn sẽ được nâng cấp. Tuy nhiên, người dùng sẽ được phép đặt các trường hợp ngoại lệ để cho phép nâng cấp các trang web cụ thể.
@@ -8564,6 +8562,7 @@ Nếu bạn tắt chính sách, thì trang sẽ bị chặn.</translation>
 
       Cảnh báo: Không nên định cấu hình các giới hạn phiên bản vì những giới hạn này có thể khiến người dùng không thể nhận được các bản cập nhật phần mềm và các bản vá bảo mật quan trọng. Giới hạn cập nhật ở một tiền tố phiên bản cụ thể có thể khiến người dùng gặp rủi ro.</translation>
 <translation id="8508489378025029342">Bật tính năng báo cáo thời gian hoạt động của thiết bị</translation>
+<translation id="8510357716574220408"><ph name="CLOUD_PRINT_NAME" /> (Không dùng nữa)</translation>
 <translation id="8511192250554640451">Cho phép việc điều tiết các đồng hồ tính giờ JavaScript trong nền được kiểm soát theo logic của Chrome và do người dùng định cấu hình</translation>
 <translation id="8511708772548158302">Khôi phục thiết bị về phiên bản đích nếu phiên bản hệ điều hành hiện tại mới hơn phiên bản đích. Thiết bị này đã được định dạng lại nhưng cấu hình mạng trên toàn thiết bị không có chứng chỉ vẫn được lưu giữ và thiết bị tự động đăng ký lại.
 Không hỗ trợ khôi phục về <ph name="PRODUCT_OS_NAME" /> phiên bản 106 trở xuống.</translation>

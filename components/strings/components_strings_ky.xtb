@@ -319,6 +319,7 @@
 <translation id="160851722280695521">Dino Run оюнун Chrome'до ойноо</translation>
 <translation id="161042844686301425">Көгүлтүр</translation>
 <translation id="1611101756749861742">Экинчи барабан</translation>
+<translation id="1615178538289490617"><ph name="PORT_NAME" /> портун пайдалануу мүмкүнчүлүгүн жоюу</translation>
 <translation id="1615402009686901181">Купуя нерселер көрүнүп турганда, Администратордун саясатына ылайык экрандагыны сүрөткө тартып алууга болбойт</translation>
 <translation id="1617276713587758852">Кроссоверлер</translation>
 <translation id="1618571384971354160">Эвакуация жана жолдо жардам берүү</translation>
@@ -625,6 +626,7 @@
 <translation id="2276057643614339130">Басып чыгаруу негизи</translation>
 <translation id="2277103315734023688">Алдыга түрдүрүү</translation>
 <translation id="2277753418458118549">Туташуунун чоо-жайын көрүү</translation>
+<translation id="22792995594807632">Жүктөп алуудан мурун текшерүү керек</translation>
 <translation id="2283340219607151381">Даректерди сактоо жана автоматтык түрдө толтуруу</translation>
 <translation id="2283447177162560884">"<ph name="PAGE_TITLE" />" өчүрүлдү</translation>
 <translation id="2286383991450886080">34 x 44 дюйм</translation>
@@ -1275,6 +1277,7 @@
 <translation id="3736520371357197498">Эгер коопсуздугуңузга кандай коркунуч келтирилип жаткандыгын түшүнсөңүз, коркунучтуу программалар алынып салынганга чейин бул <ph name="BEGIN_LINK" />кооптуу сайтка<ph name="END_LINK" /> кире берсеңиз болот.</translation>
 <translation id="3738166223076830879">Серепчиңизди администраторуңуз башкарат.</translation>
 <translation id="3740319564441798148">Алыскы жолдук автобус жана темир жол</translation>
+<translation id="3740447166056383374">Көчүрүүдөн мурун текшерүү керек</translation>
 <translation id="374325029554577103">Фитнес-технология товарлары</translation>
 <translation id="3743765582345153106">Автотолтурууну колдонгондо ар дайым текшерилсин</translation>
 <translation id="3744111561329211289">Фонду шайкештирүү</translation>
@@ -1795,6 +1798,7 @@
 <translation id="4852429274334674023">Операциялык тутумдар</translation>
 <translation id="4854853140771946034">Google Keep'те жаңы эскертмени тез жазуу</translation>
 <translation id="485902285759009870">Код текшерилүүдө…</translation>
+<translation id="4862630594858951805">Баалардын арзандаганы тууралуу электрондук каттарды алгыңыз келеби?</translation>
 <translation id="486459320933704969">Ата-энең же камкорчуң вебсайтка кирүүңө уруксат бериши керек</translation>
 <translation id="4866506163384898554">Курсорду көрсөтүү үчүн |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| баскычтарын басыңыз</translation>
 <translation id="4873616204573862158">Көз айнектер</translation>
@@ -1990,6 +1994,7 @@
 <translation id="5255690596502591079">Баары бир тартып алуу</translation>
 <translation id="5255833070095767006">350 x 460 мм.</translation>
 <translation id="5257739419779698609">{0,plural, =1{Администратордун саясаты бул файлды төмөнкүгө көчүрүүнү сунуштабайт: <ph name="DESTINATION_NAME" />}other{Администратордун саясаты бул файлдарды төмөнкүгө көчүрүүнү сунуштабайт: <ph name="DESTINATION_NAME" />}}</translation>
+<translation id="5263867360296733198">Жүктөп берүүдөн мурун текшерүү керек</translation>
 <translation id="5266128565379329178">Жогорку жагын байлоо</translation>
 <translation id="5269225904387178860">Төмөнкү жагын төрт жолу тешүү</translation>
 <translation id="5269999699920406580">Кеңири тутумду колдонгон функцияларды <ph name="OWNER_EMAIL" /> ээси гана коё алат</translation>
@@ -2063,6 +2068,7 @@
 <translation id="5412236728747081950">Бул сайт Сhrome'дон кызыккан нерселериңиз тууралуу маалымат алып, сизге ылайыктуу жарнамаларды көрсөтүп турат</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" />, <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">4-төшөгүч</translation>
+<translation id="5414446060143308245">Өткөрүүдөн мурун текшерүү керек</translation>
 <translation id="5414511064953050917">Баарибир жылдыруу</translation>
 <translation id="5421136146218899937">Серептөө дайындарын тазалап салуу…</translation>
 <translation id="5423269318075950257">Баага көз салуу</translation>
@@ -2147,6 +2153,7 @@
 <translation id="5595485650161345191">Даректи өзгөртүү</translation>
 <translation id="5596939519753369075">2 x 3,5 дюйм</translation>
 <translation id="560412284261940334">Башкаруу колдоого алынбайт</translation>
+<translation id="5605249000617390290">Баага көз салуу жөнүндө кеңири маалымат</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5610142619324316209">Туташууну текшерип көрүңүз</translation>
 <translation id="5610807607761827392">Карточкаларды жана даректерди <ph name="BEGIN_LINK" />Параметрлерден<ph name="END_LINK" /> башкарсаңыз болот.</translation>
@@ -2283,6 +2290,7 @@
 <translation id="5921639886840618607">Карта Google аккаунтуңузда сакталсынбы?</translation>
 <translation id="5922853866070715753">Бүткөнү калды</translation>
 <translation id="5923492272538889093">CVC'нин ордуна түзмөктүн кулпусун ачуу колдонулсунбу?</translation>
+<translation id="5924510104057992926">Ачуудан мурун текшерүү керек</translation>
 <translation id="5924782825030413055">Макулдук тууралуу акыркы маалымат кайсы булактан алынды:</translation>
 <translation id="5925040402342933574">Оптикалык диск (жарым жылтырак)</translation>
 <translation id="5926982310317673627">Спорт залдары жана ден соолук клубдары</translation>
@@ -2508,6 +2516,7 @@
 <translation id="6394852772105848029">Бул сайт <ph name="APP_NAME" /> колдонмосун ачканы жатат</translation>
 <translation id="6398765197997659313">Толук экран режиминен чыгуу</translation>
 <translation id="6401136357288658127">Бул саясат жоюлган. Анын ордуна <ph name="NEW_POLICY" /> саясатын колдонуңуз.</translation>
+<translation id="6402537308870515461">Жылдыруудан мурун текшерүү керек</translation>
 <translation id="6403167778944553">Керебет жана ванна</translation>
 <translation id="6404511346730675251">Кыстарманы түзөтүү</translation>
 <translation id="6405181733356710802"><ph name="APP_NAME" /> колдонмосуна өтөсүзбү?</translation>
@@ -2656,6 +2665,7 @@
 <translation id="6710594484020273272">&lt;Изделүүчү сөздү териңиз&gt;</translation>
 <translation id="671076103358959139">Катталуу токени:</translation>
 <translation id="6711464428925977395">Прокси серверден кандайдыр бир ката кетти же дарек туура эмес.</translation>
+<translation id="6716013836112872184">Кандайдыр бир сайтта баасы арзандаганда, <ph name="EMAIL" /> дарегине электрондук каттарды алуу.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> айланаңыздын 3D картасын түзүүгө же камераңыздын абалына көз салууга уруксат сурап жатат</translation>
 <translation id="6718612893943028815">Камера колдонулсунбу?</translation>
 <translation id="6721164594124191969">Энбелгилер (жылтырак)</translation>
@@ -3186,6 +3196,7 @@
 <translation id="7767278989746220252">Патио, газон жана бакча</translation>
 <translation id="776749070095465053">Кездеме</translation>
 <translation id="7773005668374414287">Ошол эле иретте алдыңкы бетин өйдө каратып</translation>
+<translation id="7779418012194492374"><ph name="DEVICE_NAME" /> түзмөгүн пайдалануу мүмкүнчүлүгүн жоюу</translation>
 <translation id="7781829728241885113">Кечээ</translation>
 <translation id="7785790577395078482">ушул планшет</translation>
 <translation id="7786368602962652765">Талап кылынган талаа бош калды. Сактоодон мурда аны толтуруңуз.</translation>
@@ -3808,6 +3819,7 @@
 <translation id="9155211586651734179">Аудио түзмөктүн көмөкчү жабдыктары тиркелди</translation>
 <translation id="9155646082713385498">Журналдар</translation>
 <translation id="9157595877708044936">Орнотууда…</translation>
+<translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> файлында купуя контент болушу мүмкүн}other{<ph name="FILE_COUNT" /> файлда купуя контент болушу мүмкүн}}</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Ошондой эле, сиз кирген сайттар аларда жасаган аракеттериңиздин негизинде сизге эмне жагарын аныктай алат. Мисалы, узак аралыкка чуркоо үчүн бут кийим карасаңыз, сайт "марафондо чуркоону" кызыккан нерсеңиз катары аныктайт.</translation>
 <translation id="9166851138617700776">Сайт сунуштаган жарнамалар жана алардын майнаптуулугун баалоо тууралуу кеңири маалымат</translation>

@@ -319,6 +319,7 @@
 <translation id="160851722280695521">Chrome-এ ডাইনো রান গেম খেলুন</translation>
 <translation id="161042844686301425">নীলাভ</translation>
 <translation id="1611101756749861742">Second Roll</translation>
+<translation id="1615178538289490617"><ph name="PORT_NAME" />-এর জন্য অ্যাক্সেস তুলে নিন</translation>
 <translation id="1615402009686901181">কোনও গোপনীয় কন্টেন্ট দেখা গেলে অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী স্ক্রিন ক্যাপচার করার সুবিধা বন্ধ করে দেওয়া হয়</translation>
 <translation id="1617276713587758852">ক্রসওভার</translation>
 <translation id="1618571384971354160">টোয়িং ও রাস্তায় সহায়তা</translation>
@@ -626,6 +627,7 @@
 <translation id="2276057643614339130">প্রিন্ট বেস</translation>
 <translation id="2277103315734023688">এগিয়ে যান</translation>
 <translation id="2277753418458118549">কানেকশন সংক্রান্ত বিবরণ দেখুন</translation>
+<translation id="22792995594807632">ডাউনলোড করার আগে পর্যালোচনা করা প্রয়োজন</translation>
 <translation id="2283340219607151381">অ্যাড্রেস পূরণ করে সেভ করুন</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' মুছে ফেলা হয়েছে</translation>
 <translation id="2286383991450886080">৩৪ x ৪৪ ইঞ্চি</translation>
@@ -1277,6 +1279,7 @@
 <translation id="3736520371357197498">আপনি যদি আপনার নিরাপত্তার ঝুঁকিগুলি বুঝতে পারেন, তাহলে ক্ষতিকারক প্রোগ্রাম সরানোর আগে আপনি <ph name="BEGIN_LINK" />বিপজ্জনক সাইটে যেতে পারেন<ph name="END_LINK" />।</translation>
 <translation id="3738166223076830879">আপনার অ্যাডমিনিস্ট্রেটর ব্রাউজারটি ম্যানেজ করেন।</translation>
 <translation id="3740319564441798148">দূরপাল্লার বাস ও রেল</translation>
+<translation id="3740447166056383374">কপি করার আগে পর্যালোচনা করা প্রয়োজন</translation>
 <translation id="374325029554577103">ফিটনেস প্রযুক্তির প্রোডাক্ট</translation>
 <translation id="3743765582345153106">অটোফিল ব্যবহার করলে যাচাই করুন</translation>
 <translation id="3744111561329211289">পটভূমি সিঙ্ক</translation>
@@ -1797,6 +1800,7 @@
 <translation id="4852429274334674023">অপারেটিং সিস্টেম</translation>
 <translation id="4854853140771946034">Google Keep-এ চটপট নতুন নোট তৈরি করুন</translation>
 <translation id="485902285759009870">কোড যাচাই করা হচ্ছে…</translation>
+<translation id="4862630594858951805">দাম কমলে ইমেল পেতে চান?</translation>
 <translation id="486459320933704969">একজন প্যারেন্ট বা অভিভাবককে বলতে হবে যে এই ওয়েবসাইটটি দেখার জন্য আপনার পক্ষে ঠিক আছে</translation>
 <translation id="4866506163384898554">আপনার কার্সার দেখাতে |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| প্রেস করুন</translation>
 <translation id="4873616204573862158">চশমা</translation>
@@ -1992,6 +1996,7 @@
 <translation id="5255690596502591079">তবুও ক্যাপচার করুন</translation>
 <translation id="5255833070095767006">৩৫০ x ৪৬০ মিমি</translation>
 <translation id="5257739419779698609">{0,plural, =1{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল কপি করা যাবে না}one{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল কপি করা যাবে না}other{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল কপি করা যাবে না}}</translation>
+<translation id="5263867360296733198">আপলোড করার আগে পর্যালোচনা করা প্রয়োজন</translation>
 <translation id="5266128565379329178">উপরে বাঁধাই</translation>
 <translation id="5269225904387178860">নিচে কোয়াড পাঞ্চ</translation>
 <translation id="5269999699920406580">যেসব ফিচার সিস্টেম জুড়ে প্রয়োগ করা হয় সেগুলি শুধুমাত্র মালিক সেট করতে পারবেন: <ph name="OWNER_EMAIL" /></translation>
@@ -2065,6 +2070,7 @@
 <translation id="5412236728747081950">এই সাইটটি আপনাকে আরও প্রাসঙ্গিক বিজ্ঞাপন দেখানোর জন্য Chrome থেকে আপনার আগ্রহগুলি নেয়।</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">স্ট্যাকার ৪</translation>
+<translation id="5414446060143308245">ট্রান্সফার করার আগেই পর্যালোচনা করা প্রয়োজন</translation>
 <translation id="5414511064953050917">যেকোনওভাবে সরান</translation>
 <translation id="5421136146218899937">ব্রাউজিং ডেটা সাফ করুন...</translation>
 <translation id="5423269318075950257">দাম ট্র্যাক করুন</translation>
@@ -2149,6 +2155,7 @@
 <translation id="5595485650161345191">ঠিকানা সম্পাদনা করুন</translation>
 <translation id="5596939519753369075">২ x ৩.৫ ইঞ্চি</translation>
 <translation id="560412284261940334">পরিচালনা সমর্থিত নয়</translation>
+<translation id="5605249000617390290">দাম ট্র্যাক করা সম্পর্কে আরও জানুন</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5610142619324316209">সংযোগ পরীক্ষা করে দেখুন</translation>
 <translation id="5610807607761827392">আপনি <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> থেকে কার্ড এবং ঠিকানাগুলি পরিচালনা করতে পারেন।</translation>
@@ -2285,6 +2292,7 @@
 <translation id="5921639886840618607">Google অ্যাকাউন্টে কার্ড সেভ করবেন?</translation>
 <translation id="5922853866070715753">প্রায় শেষ</translation>
 <translation id="5923492272538889093">সিভিসি কোডের পরিবর্তে ডিভাইস আনলক ব্যবহার করবেন?</translation>
+<translation id="5924510104057992926">খোলার আগে পর্যালোচনা করা প্রয়োজন</translation>
 <translation id="5924782825030413055">শেষ সম্মতি আপডেটের সোর্স:</translation>
 <translation id="5925040402342933574">অপটিকাল ডিস্ক (সেমি-গ্লস)</translation>
 <translation id="5926982310317673627">জিম ও হেলথ ক্লাব</translation>
@@ -2509,6 +2517,7 @@
 <translation id="6394852772105848029">এই সাইট <ph name="APP_NAME" /> অ্যাপ খুলতে চায়</translation>
 <translation id="6398765197997659313">পূর্ণ স্ক্রীণ বন্ধ করুন</translation>
 <translation id="6401136357288658127">এই নীতি বন্ধ করে দেওয়া হয়েছে। পরিবর্তে আপনাকে <ph name="NEW_POLICY" /> নীতি ব্যবহার করতে হবে।</translation>
+<translation id="6402537308870515461">সরানোর আগে পর্যালোচনা করা প্রয়োজন</translation>
 <translation id="6403167778944553">বেড ও বাথ</translation>
 <translation id="6404511346730675251">বুকমার্ক সম্পাদনা করুন</translation>
 <translation id="6405181733356710802"><ph name="APP_NAME" />-এ চালিয়ে যেতে চান?</translation>
@@ -2657,6 +2666,7 @@
 <translation id="6710594484020273272">&lt;সার্চের পদ লিখুন&gt;</translation>
 <translation id="671076103358959139">নথিভুক্ত করার জন্য টোকেন:</translation>
 <translation id="6711464428925977395">প্রক্সী সার্ভারের কোনো সমস্যা হয়েছে, অথবা ঠিকানাটি ভুল।</translation>
+<translation id="6716013836112872184">কোনও সাইটে দাম কমে গেলে <ph name="EMAIL" />-এ ইমেল পান।</translation>
 <translation id="6716672519412350405"><ph name="URL" /> আপনার আশেপাশের এলাকার একটি 3D ম্যাপ তৈরি করতে এবং ক্যামেরার অবস্থান ট্র্যাক করতে চাইছে</translation>
 <translation id="6718612893943028815">ক্যামেরা ব্যবহার করবেন?</translation>
 <translation id="6721164594124191969">লেবেল (গ্লসি)</translation>
@@ -3187,6 +3197,7 @@
 <translation id="7767278989746220252">উঠোন, লন ও বাগান</translation>
 <translation id="776749070095465053">ফ্যাব্রিক</translation>
 <translation id="7773005668374414287">একই অর্ডার, সামনের দিক উপরে</translation>
+<translation id="7779418012194492374"><ph name="DEVICE_NAME" />-এর জন্য অ্যাক্সেস তুলে নিন</translation>
 <translation id="7781829728241885113">গতকাল</translation>
 <translation id="7785790577395078482">এই ট্যাবলেট</translation>
 <translation id="7786368602962652765">ফাঁকা রাখা যাবে না এমন ফিল্ড খালি আছে। সেভ করার আগে এটি পূরণ করুন।</translation>
@@ -3809,6 +3820,7 @@
 <translation id="9155211586651734179">অডিও পেরিফেরাল অ্যাটাচ করা হয়েছে</translation>
 <translation id="9155646082713385498">ম্যাগাজিন</translation>
 <translation id="9157595877708044936">সেট-আপ হচ্ছে...</translation>
+<translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" />-এ সংবেদনশীল কন্টেন্ট থাকতে পারে}one{<ph name="FILE_COUNT" />-এ সংবেদনশীল কন্টেন্ট থাকতে পারে}other{<ph name="FILE_COUNT" />-এ সংবেদনশীল কন্টেন্ট থাকতে পারে}}</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">আপনি যে সাইটগুলি ভিজিট করেন সেগুলি সাইটে আপনার অ্যাক্টিভিটির উপর ভিত্তি করে আপনি কী পছন্দ করেন তা নির্ধারণ করতে পারে। যেমন, আপনি যদি দৌড়োনোর জুতো বিক্রি করে এমন একটি ওয়েবসাইট ভিজিট করেন, তাহলে সাইটগুলি অনুমান করতে পারে যে আপনি ম্যারাথনে দৌড়তে আগ্রহী।</translation>
 <translation id="9166851138617700776">সাইট-প্রস্তাবিত বিজ্ঞাপন এবং বিজ্ঞাপন পরিমাপ সম্পর্কে আরও অনেক কিছু</translation>

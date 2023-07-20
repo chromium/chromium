@@ -446,6 +446,7 @@ Pinapahusay ng mga private state token ang privacy sa web at hindi magagamit ang
 <translation id="3429160811076349561">Naka-off ang mga feature ng trial</translation>
 <translation id="3435465986463792564">Maraming window? Puwede mong pamahalaan ang mga ito mula rito</translation>
 <translation id="3435738964857648380">Seguridad</translation>
+<translation id="3439276997620616816">Makikita mo rito ang iyong mga kamakailang tab</translation>
 <translation id="3443221991560634068">I-reload ang kasalukuyang page</translation>
 <translation id="3444179773590444986">Magbahagi ng feedback sa madilim na tema para sa mga site?</translation>
 <translation id="3452832259067974318">Para protektahan ang iyong privacy, hindi io-autofill ng Chrome ang password mo sa field na ito.</translation>
@@ -454,6 +455,7 @@ Pinapahusay ng mga private state token ang privacy sa web at hindi magagamit ang
 <translation id="3479552764303398839">Hindi ngayon</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /> tungkol sa iminumungkahing content</translation>
 <translation id="3495219333887281978">Nakabukas ang bottom sheet sa pag-sign in nang kalahati ang taas.</translation>
+<translation id="3498338220321963224">Buburahin ang iyong naka-save na data kung aalisin sa ibang pagkakataon ang lock ng profile.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="350276055892098337">Ayon sa pinakaluma</translation>
 <translation id="3507132249039706973">Naka-on ang Standard Protection</translation>
@@ -619,6 +621,7 @@ Pinapahusay ng mga private state token ang privacy sa web at hindi magagamit ang
 <translation id="4409271659088619928"><ph name="DSE" /> ang iyong search engine. Tingnan ang mga tagubilin nito para sa pag-delete sa iyong history ng paghahanap, kung naaangkop.</translation>
 <translation id="441383202534727410">Posibleng abutin nang hanggang isang linggo bago lumabas dito ang listahan ng mga site batay sa iyong history ng pag-browse.</translation>
 <translation id="4415276339145661267">Pamahalaan ang iyong Google Account</translation>
+<translation id="4417111749295506837">Para ma-sync ang iyong impormasyon sa Chrome at mapanatiling secure ang data mo sa kotse, dapat kang gumawa ng lock ng profile. Gagamit ka ng code o password sa tuwing papasok ka sa kotse.</translation>
 <translation id="4425140285732600465">Sinusubaybayan ang presyo. Makatanggap ng mga alerto kapag bumaba ang presyo sa alinmang site.</translation>
 <translation id="442518031075347249">Hindi mo na magagamit ang iyong virtual na card sa Google Pay. <ph name="BEGIN_LINK1" />Matuto pa tungkol sa mga virtual na card<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">Pag-personalize ng ad</translation>
@@ -986,6 +989,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6363990818884053551">Para simulan ang pag-sync, i-verify na ikaw ito</translation>
 <translation id="6364438453358674297">Alisin ang suhestyon mula sa history?</translation>
 <translation id="6380100320871303656">Mas madalas na nagpi-preload ng mga page na sa palagay ng Chrome ay malamang mong bisitahin. Posibleng magresulta sa mas malakas na paggamit ng data ang setting na ito.</translation>
+<translation id="6391355955030242704">Para ma-sync ang iyong impormasyon sa Chrome at mapanatiling secure ang data mo sa kotse, dapat kang gumawa ng lock ng profile sa iyong mga setting ng seguridad. Gagamit ka ng code o password sa tuwing papasok ka sa kotse.</translation>
 <translation id="6394791151443660613">Hanapin: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LINK</translation>
 <translation id="6397616442223433927">Online ulit</translation>

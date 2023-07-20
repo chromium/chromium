@@ -126,7 +126,6 @@
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> लाई <ph name="SECOND_ITEM_TITLE" /> सँग साटियो</translation>
 <translation id="1500926532737552529">सबै सुझावहरू देखाइयोस्</translation>
-<translation id="1503394326855300303">यो मालिक खाता मल्टिपल साइन-इन सत्रमा पहिलो पटक साइन-इन गरिएको खाता हुनुपर्दछ।</translation>
 <translation id="1510238584712386396">लन्चर</translation>
 <translation id="1516740043221086139">बाधा नपुर्‍याउनुहोस् नामक मोड सक्रिय छ।</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{सूचनासम्बन्धी सेटिङहरू देखाउनुहोस्। एउटा एपका लागि सूचनाहरू निष्क्रिय छन्}other{सूचनासम्बन्धी सेटिङहरू देखाउनुहोस्। # एपका लागि सूचनाहरू निष्क्रिय छन्}}</translation>
@@ -513,6 +512,7 @@
 <translation id="3294437725009624529">पाहुना</translation>
 <translation id="3298690094479023523">तपाईंको PIN वा पासवर्ड अझै पनि पुष्टि गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3300193645498960160">तपाईं म्युट गरिएका बेला बोल्नुभयो भने तपाईंलाई सूचित गरिने छ। अडियो तपाईंको डिभाइसमै रहन्छ।</translation>
+<translation id="3306386552969601301"><ph name="DEVICECOUNT" /> वटा डिभाइस <ph name="DEVICE_NAME" /> को हटस्पटमा कनेक्ट गरिएका छन्</translation>
 <translation id="3307642347673023554">ल्यापटप मोड प्रयोग गर्न थालियो</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> अझै पनि पछि साइन इन गर्न सक्नुहुन्छ।</translation>
 <translation id="3321628682574733415">अभिभावकको कोड गलत छ</translation>
@@ -552,6 +552,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> मिनेट</translation>
 <translation id="3445925074670675829">USB-C यन्त्र</translation>
 <translation id="3455468639467374593">टेम्प्लेट, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="3456931972722214204"><ph name="DEVICE_NAME" /> को हटस्पटमा एउटा डिभाइस कनेक्ट गरिएको छ</translation>
 <translation id="346243998268439747">जुमको स्तर रिसेट गर्नुहोस्</translation>
 <translation id="3465223694362104965">तपाईंले पछिल्लो पटक साइन इन गरेयता यो डिभाइसमा अर्को किबोर्ड जडान गरिएको छ। यो किबोर्डको प्रयोग थाल्नुअघि तपाईं यसमाथि भरोसा गर्नुहुन्छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="3465356146291925647">तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ</translation>
@@ -764,6 +765,7 @@
 <translation id="4324840740119394760">यसले <ph name="APP_NAME" /> र क्यामेरा प्रयोग गर्ने अनुमति भएका सबै एप तथा वेबसाइटहरूलाई क्यामेरा प्रयोग गर्ने अनुमति दिन्छ</translation>
 <translation id="4333628967105022692">एकभन्दा बढी प्रयोगकर्ताहरू साइन इन अवस्थामा हुँदा Lacros ले काम गर्दैन।</translation>
 <translation id="4338109981321384717">म्याग्निफाइङ्ग ग्लास</translation>
+<translation id="4356872429719185452">हटस्पटसम्बन्धी विवरणहरू देखाइऊन्। हटस्पट अन हुँदै छ।</translation>
 <translation id="4371348193907997655">कास्टका सेटिङहरू</translation>
 <translation id="4375482231364171368">एड्रेस बारमा खोज्नुहोस्</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" /> प्रतिशत छ</translation>
@@ -1111,6 +1113,7 @@
 <translation id="5825969630400862129">कनेक्ट गरिएका यन्त्रहरूसम्बन्धी सेटिङ</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> मा <ph name="ROUTE_TITLE" /> बन्द गर्नुहोस्</translation>
 <translation id="5841296711770970362">अर्को ट्र्याक प्ले गर्नुहोस्</translation>
+<translation id="5842553299352339114"><ph name="DEVICE_NAME" /> को हटस्पट अन छ, कुनै पनि डिभाइस कनेक्ट गरिएको छैन</translation>
 <translation id="584525477304726060">अधिकतम बनाउन होल्ड गर्नुहोस्</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> एक्टिभेट गरिएको छैन।</translation>
 <translation id="5860033963881614850">बन्द</translation>
@@ -1373,6 +1376,7 @@
 <translation id="6981291220124935078">प्रयोग गर्ने अनुमति दिनुहोस्</translation>
 <translation id="6981982820502123353">पहुँच</translation>
 <translation id="698231206551913481">एक पटक यस प्रयोगकर्तालाई मेटाइएपछि यस प्रयोगकर्तासँग सम्बन्धित सबै फाइलहरू र  स्थानीय डेटा सदाका लागि मेटिनेछन्।</translation>
+<translation id="7004910047186208204">मोबाइल डेटामा कनेक्ट गर्नुहोस्</translation>
 <translation id="7005239792648594238">सुरु गर्न कुनै एप खोल्नुहोस्</translation>
 <translation id="7007983414944123363">तपाईंको PIN वा पासवर्ड पुष्टि गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="7014684956566476813"><ph name="DEVICE_NAME" /> नामक डिभाइसमा कनेक्ट गरिएको छ</translation>
@@ -1527,6 +1531,7 @@
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{१ सूचना}other{# सूचनाहरू}}</translation>
 <translation id="7723703419796509666">डेभलपर टुल कन्सोल देखाउनुहोस् वा लुकाउनुहोस्</translation>
 <translation id="7724603315864178912">काट्नुहोस्</translation>
+<translation id="7725108879223146004">हटस्पटसम्बन्धी विवरणहरू देखाइऊन्। हटस्पट अफ हुँदै छ।</translation>
 <translation id="7727952505535211425">एड्रेस बारमा हालिएको वेबसाइट नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="77365090426890123">मेमोरीको प्रयोग</translation>
 <translation id="7742327441377685481">कुनै पनि सूचना छैन</translation>
@@ -1662,6 +1667,7 @@
 <translation id="8308637677604853869">अघिल्लो मेनु</translation>
 <translation id="830868413617744215">बेटा</translation>
 <translation id="8314772463905284467">क्याप्स लक अन छ</translation>
+<translation id="8315514906653279104">अन हुँदै छ…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> नामक विन्डो चयन गरियो</translation>
 <translation id="8349964124165471584">यो लिंक नयाँ विन्डोमा खोल्नुहोस्</translation>

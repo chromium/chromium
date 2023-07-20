@@ -3296,6 +3296,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3721119614952978349">Teie ja Google</translation>
 <translation id="3722108462506185496">Viga virtuaalseadme teenuse käivitamisel. Proovige uuesti.</translation>
 <translation id="3722624153992426516">Juhis <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> võeti vastu</translation>
+<translation id="3724897774652282549">Täitke vorm</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Saadaolevad WiFi-võrgud</translation>
 <translation id="3727187387656390258">Hüpiku kontrollimine</translation>
@@ -7230,6 +7231,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7067396782363924830">Taustavärv</translation>
 <translation id="7067725467529581407">Ära seda kunagi enam näita.</translation>
 <translation id="7068279399556423026">Logige sisse, et näha muudest seadmetest pärinevaid vahelehti</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Uus parool selle saidi jaoks}other{Uued paroolid selle saidi jaoks}}</translation>
 <translation id="7070484045139057854">Laiendus võib lugeda ja muuta saidiandmeid</translation>
 <translation id="7072010813301522126">Otsetee nimi</translation>
 <translation id="7074066049407662839">Paroolide salvestamiseks logige sisse</translation>

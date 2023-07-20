@@ -126,7 +126,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> è stato scambiato con <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Mostra tutti i suggerimenti</translation>
-<translation id="1503394326855300303">Questo account proprietario deve essere il primo account registrato in una sessione con accesso simultaneo.</translation>
 <translation id="1510238584712386396">Avvio app</translation>
 <translation id="1516740043221086139">La modalità Non disturbare è attiva.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostra impostazioni di notifica. Le notifiche sono disattivate per un'app}other{Mostra impostazioni di notifica. Le notifiche sono disattivate per # app}}</translation>
@@ -513,6 +512,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3294437725009624529">Ospite</translation>
 <translation id="3298690094479023523">Ancora impossibile verificare il PIN o la password. Riprova.</translation>
 <translation id="3300193645498960160">Se parli mentre l'audio è disattivato, riceverai una notifica. I dati audio non vengono mai inoltrati dal tuo dispositivo.</translation>
+<translation id="3306386552969601301"><ph name="DEVICECOUNT" /> dispositivi connessi all'hotspot di <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Passaggio alla modalità laptop effettuato</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> può ancora accedere in seguito.</translation>
 <translation id="3321628682574733415">Codice genitore errato</translation>
@@ -552,6 +552,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Dispositivo USB-C</translation>
 <translation id="3455468639467374593">Modello, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="3456931972722214204">1 dispositivo connesso all'hotspot di <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">Reimposta il livello di zoom</translation>
 <translation id="3465223694362104965">Dal tuo ultimo accesso, un'altra tastiera si è connessa a questo dispositivo. Prima di usarla, assicurati che sia attendibile.</translation>
 <translation id="3465356146291925647">Gestita dall'amministratore</translation>
@@ -761,6 +762,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4324840740119394760">Consente l'accesso alla fotocamera per <ph name="APP_NAME" />, tutte le app e tutti i siti web che hanno l'autorizzazione di accesso alla fotocamera</translation>
 <translation id="4333628967105022692">Lacros non è supportato quando più utenti hanno effettuato l'accesso.</translation>
 <translation id="4338109981321384717">Lente d'ingrandimento</translation>
+<translation id="4356872429719185452">Mostra i dettagli relativi all'hotspot. È in corso l'attivazione dell'hotspot.</translation>
 <translation id="4371348193907997655">Impostazioni di trasmissione</translation>
 <translation id="4375482231364171368">Cerca nella barra degli indirizzi</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, intensità segnale: <ph name="SIGNAL_STRENGTH" /> percento</translation>
@@ -1108,6 +1110,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="5825969630400862129">Impostazioni dei dispositivi connessi</translation>
 <translation id="5837036133683224804">Interrompi <ph name="ROUTE_TITLE" /> su <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Vai alla traccia successiva</translation>
+<translation id="5842553299352339114">Hotspot di <ph name="DEVICE_NAME" /> attivo, nessun dispositivo connesso</translation>
 <translation id="584525477304726060">Tieni premuto per ingrandire</translation>
 <translation id="5856638668464565213">La rete <ph name="NETWORK_NAME" /> non è attiva.</translation>
 <translation id="5860033963881614850">Off</translation>
@@ -1370,6 +1373,7 @@ Nuova installazione</translation>
 <translation id="6981291220124935078">Attiva l'accesso</translation>
 <translation id="6981982820502123353">Accessibilità</translation>
 <translation id="698231206551913481">Tutti i file e i dati locali associati a questo utente verranno eliminati definitivamente in seguito alla rimozione dell'utente.</translation>
+<translation id="7004910047186208204">Connettiti ai dati mobili</translation>
 <translation id="7005239792648594238">Apri un'app per iniziare</translation>
 <translation id="7007983414944123363">Impossibile verificare il PIN o la password. Riprova.</translation>
 <translation id="7014684956566476813">Connessione stabilita con un dispositivo di nome <ph name="DEVICE_NAME" /></translation>
@@ -1524,6 +1528,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notifica}other{# notifiche}}</translation>
 <translation id="7723703419796509666">Mostra o nascondi la console Strumenti per sviluppatori</translation>
 <translation id="7724603315864178912">Taglia</translation>
+<translation id="7725108879223146004">Mostra i dettagli relativi all'hotspot. È in corso la disattivazione dell'hotspot.</translation>
 <translation id="7727952505535211425">Apri il sito web nella barra degli indirizzi in una nuova scheda</translation>
 <translation id="77365090426890123">memoria utilizzata</translation>
 <translation id="7742327441377685481">Nessuna notifica</translation>
@@ -1659,6 +1664,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8308637677604853869">Menu precedente</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Bloc maiusc è attivo</translation>
+<translation id="8315514906653279104">Attivazione in corso…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Finestra <ph name="WINDOW_TITLE" /> selezionata</translation>
 <translation id="8349964124165471584">Apri link in una nuova finestra</translation>

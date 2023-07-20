@@ -82,7 +82,7 @@
 <translation id="235650106824528204">工作設定檔管理員可移除任何在使用此設定檔時產生的 Chrome 資料 (例如建立的書籤、記錄、密碼和其他設定)。<ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2401189691232800402">Chrome OS 系統</translation>
-<translation id="2409816192575564775">{NUM_DEVICES,plural, =0{至少有 1 個 Chrome 擴充功能當時正在存取 1 部 HID 裝置}=1{至少有 1 個 Chrome 擴充功能正在存取 1 部 HID 裝置}other{至少有 1 個 Chrome 擴充功能正在存取 # 部 HID 裝置}}</translation>
+<translation id="2409816192575564775">{NUM_DEVICES,plural, =0{當時至少有一個 Chrome 擴充功能正在存取 1 部 HID 裝置}=1{至少有一個 Chrome 擴充功能正在存取 1 部 HID 裝置}other{至少有一個 Chrome 擴充功能正在存取 # 部 HID 裝置}}</translation>
 <translation id="2424440923901031101">此擴充程式違反了 Chrome 網上應用程式商店政策，且可能不安全。請從 Chrome 中移除此擴充程式，令其無法再查看及變更您瀏覽的網站相關資料，包括您的個人資料。</translation>
 <translation id="2467438592969358367">Google Chrome 想匯出您的密碼。請輸入 Windows 密碼以允許此操作。</translation>
 <translation id="2472092250898121027">此擴充程式含有惡意軟件且不安全。請從 Chrome 中移除此擴充程式，令其無法再查看及變更您瀏覽的網站相關資料，包括您的個人資料。</translation>
@@ -340,7 +340,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7398801000654795464">您使用了 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入 Chrome，請使用相同帳戶重新登入。</translation>
 <translation id="7410958280246779049">由於此檔案不安全，因此 Chrome 已封鎖此檔案</translation>
 <translation id="7412494426921990001">按一下 Chrome 選單</translation>
-<translation id="742463671275348370">{NUM_DEVICES,plural, =0{至少有 1 個 Chrome 擴充功能當時正在存取 1 部 USB 裝置}=1{至少有 1 個 Chrome 擴充功能正在存取 1 部 USB 裝置}other{至少有 1 個 Chrome 擴充功能正在存取 # 部 USB 裝置}}</translation>
+<translation id="742463671275348370">{NUM_DEVICES,plural, =0{當時至少有一個 Chrome 擴充功能正在存取 1 部 USB 裝置}=1{至少有一個 Chrome 擴充功能正在存取 1 部 USB 裝置}other{至少有一個 Chrome 擴充功能正在存取 # 部 USB 裝置}}</translation>
 <translation id="7426611252293106642">Google Chrome 不再支援此 Linux 發行版本，因此可能無法正常運作</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{根據機構規定，Chrome 會在閒置 1 分鐘後自動關閉。}other{根據機構規定，Chrome 會在閒置 # 分鐘後自動關閉。}}</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{根據機構規定，Chrome 會在閒置 1 分鐘後自動刪除瀏覽資料。當中可能包括記錄、自動填入資料和下載檔案。這些分頁仍會保持開啟。}other{根據機構規定，Chrome 會在閒置 # 分鐘後自動刪除瀏覽資料。當中可能包括記錄、自動填入資料和下載檔案。這些分頁仍會保持開啟。}}</translation>

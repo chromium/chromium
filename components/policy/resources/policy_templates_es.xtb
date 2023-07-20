@@ -4493,9 +4493,6 @@ Si se asigna el valor False a esta política, se usará el comportamiento predet
 <translation id="4970046075219007744">Permite que las aplicaciones web soliciten al usuario que les conceda acceso a ciertos tipos de archivo a través de la API File Handling</translation>
 <translation id="4970855112942626932">Inhabilitar inicio de sesión en el navegador</translation>
 <translation id="4974091268178043378">Modo de color de Chrome OS</translation>
-<translation id="4976928720873547342">Si se establece esta política, todos los tipos de datos especificados se excluirán de la sincronización de <ph name="CHROME_SYNC_NAME" /> y de la sincronización del perfil de roaming. Esto puede ser útil para reducir el tamaño del perfil de roaming o para limitar el tipo de datos que se suban a los servidores de <ph name="CHROME_SYNC_NAME" />.
-
-      Los tipos de datos actuales para esta política son los siguientes: "bookmarks", "readingList", "preferences", "passwords", "autofill", "themes", "typedUrls", "extensions", "apps", "tabs" y "wifiConfigurations". Estos nombres distinguen entre mayúsculas y minúsculas.</translation>
 <translation id="4977702914571821981">Permite crear una lista de patrones de URL donde se especifique qué sitios no pueden mostrar contenido mixto (es decir, contenido HTTP en sitios HTTPS) bloqueable (es decir, activo), y qué contenido mixto opcionalmente bloqueable (es decir, pasivo) se actualizará.
 
           Si no se establece esta política, el contenido mixto bloqueable se bloqueará y el contenido mixto opcionalmente bloqueable se actualizará, y los usuarios podrán establecer excepciones para permitir este contenido en sitios concretos.

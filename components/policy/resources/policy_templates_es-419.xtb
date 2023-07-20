@@ -1869,6 +1869,7 @@ Nota: Si se omite un campo, todos los valores coincidirán con ese campo en part
 <translation id="2608887839902987727">Impedir que la autenticación del portal cautivo ignore la configuración de proxy</translation>
 <translation id="2608985885792348429">Configuración predeterminada del portapapeles</translation>
 <translation id="2615240493030733717">Envía información sobre la zona horaria</translation>
+<translation id="2619258867868873629">El destino de "Guardar como PDF" y el destino de "Guardar en Google Drive" en dispositivos <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="2621290137818374425">Si estableces la política, se desactivarán los requisitos de divulgación del Certificado de transparencia para los nombres de host en las URLs especificadas. Si bien esta acción dificulta la detección de los certificados que se usan de forma incorrecta, los hosts pueden seguir usando certificados que, de otra manera, no serían de confianza (porque no se divulgaron correctamente a nivel público).
 
       Si no estableces esta política, <ph name="PRODUCT_NAME" /> considerará que no son de confianza los certificados que requieran divulgación mediante el Certificado de transparencia y, a pesar de ello, no se hayan divulgado.
@@ -4596,9 +4597,6 @@ Si la estableces como falsa, se usará el comportamiento predeterminado.</transl
 <translation id="4970046075219007744">Permitir que las aplicaciones web le soliciten al usuario acceso a determinados tipos de archivos a través de la API de File Handling</translation>
 <translation id="4970855112942626932">Inhabilitar el acceso en el navegador</translation>
 <translation id="4974091268178043378">Modo de color de ChromeOS</translation>
-<translation id="4976928720873547342">Si estableces esta política, todos los tipos de datos especificados se excluirán de la sincronización para <ph name="CHROME_SYNC_NAME" /> y de la sincronización de perfiles en roaming. Esta política puede ayudar a reducir el tamaño del perfil de roaming o limitar los tipos de datos que se suben a los servidores de <ph name="CHROME_SYNC_NAME" />.
-
-      Los tipos de datos actuales para esta política son los siguientes: "bookmarks", "readingList", "preferences", "passwords", "autofill", "themes", "typedUrls", "extensions", "apps", "tabs" y "wifiConfigurations". Estos nombres distinguen mayúsculas de minúsculas.</translation>
 <translation id="4977702914571821981">Te permite configurar una lista de patrones de URL donde se indiquen los sitios que no pueden mostrar contenido mixto (p. ej., contenido HTTP en sitios HTTPS) bloqueable (p. ej., activo) y para los cuales se actualizará el contenido mixto bloqueable de forma opcional (p. ej., pasivo).
 
           Si no estableces esta política, se bloqueará el contenido mixto bloqueable y se actualizará el contenido mixto bloqueable de forma opcional, pero los usuarios podrán establecer excepciones para permitir ese contenido en sitios específicos.
@@ -8646,6 +8644,7 @@ del dispositivo durante el acceso del usuario.</translation>
 
       Advertencia: No se recomienda configurar restricciones de la versión, ya que pueden impedir que los usuarios reciban actualizaciones de software y correcciones de seguridad muy importantes. La restricción de las actualizaciones a un prefijo de una versión específica puede poner en riesgo a los usuarios.</translation>
 <translation id="8508489378025029342">Habilitar los informes de tiempo de actividad del dispositivo</translation>
+<translation id="8510357716574220408"><ph name="CLOUD_PRINT_NAME" /> (obsoleto)</translation>
 <translation id="8511192250554640451">Permitir que los usuarios configuren la limitación de los temporizadores de JavaScript en segundo plano y que la controle la lógica de Chrome</translation>
 <translation id="8511708772548158302">Revierte el dispositivo a la versión de destino si la versión actual del SO es más reciente que la de destino. Powerwash se usa en el dispositivo, pero la configuración de red de todo el dispositivo sin certificados se conserva y este se vuelve a inscribir automáticamente.
 No se admite la reversión a la versión 106 de <ph name="PRODUCT_OS_NAME" /> ni a versiones anteriores.</translation>

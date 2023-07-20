@@ -60,6 +60,7 @@
 <translation id="2359808026110333948">सुरू ठेवा</translation>
 <translation id="2384373936468275798">तुमच्या खात्याचे साइन-इन तपशील कालबाह्य झाल्यामुळे, ChromiumOS ला तुमचा डेटा सिंक करता आला नाही.</translation>
 <translation id="2396765026452590966">तुम्ही Chromium सुरू करता तेव्हा कोणते पेज दर्शविले जाते हे "<ph name="EXTENSION_NAME" />" एक्स्टेंशनने बदलले आहे.</translation>
+<translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 HID device was being accessed by one or more Chromium extensions}=1{१ HID डिव्हाइस हे एक किंवा त्याहून अधिक Chromium एक्स्टेंशनद्वारे अ‍ॅक्सेस केले जात आहे}other{# HID डिव्हाइस ही एक किंवा त्याहून अधिक Chromium एक्स्टेंशनद्वारे अ‍ॅक्सेस केली जात आहेत}}</translation>
 <translation id="2401032172288869980">Chromium ला या साइटसाठी कॅमेरा आणि मायक्रोफोनची परवानगी आवश्यक आहे</translation>
 <translation id="2451727308784734061">Password Manager वर झटपट जाण्यासाठी तुमचा शॉर्टकट वापरा. तुम्ही तुमचा शॉर्टकट तुमच्या कॉंप्युटरच्या होम स्क्रीनवर किंवा अ‍ॅप लाँचरवर हलवू शकता.</translation>
 <translation id="2478295928299953161">Chromium लवकरच बंद होईल</translation>
@@ -92,6 +93,7 @@
 <translation id="3032787606318309379">Chromium वर जोडत आहे...</translation>
 <translation id="3038232873781883849">इंस्टॉल करण्यासाठी प्रतीक्षा करत आहे...</translation>
 <translation id="3068515742935458733">Google कडे क्रॅश अहवाल आणि <ph name="UMA_LINK" /> पाठवून Chromium अधिक चांगले करण्यात मदत करा</translation>
+<translation id="3079753320517721795">{NUM_DEVICES,plural, =0{1 USB device was being accessed by one or more Chromium extensions}=1{१ USB डिव्हाइस हे एक किंवा त्याहून अधिक Chromium एक्स्टेंशनद्वारे अ‍ॅक्सेस केले जात आहे}other{# USB डिव्हाइस ही एक किंवा त्याहून अधिक Chromium एक्स्टेंशनद्वारे अ‍ॅक्सेस केली जात आहेत}}</translation>
 <translation id="3101560983689755071">तुमचा ब्राउझिंग इतिहास हा तुम्ही पाहता त्या जाहिराती आणि खाली दिलेली अंदाजित स्वारस्ये यांवर परिणाम करतो. तुमच्या गोपनीयतेचे संरक्षण करण्यासाठी, Chromium दर महिन्याला रोलिंगच्या आधारे तुमची स्वारस्ये ऑटो-डिलीट करते. तुम्ही स्वारस्ये काढून टाकत नाही तोपर्यंत ती रिफ्रेश करू शकता.</translation>
 <translation id="3103660991484857065">संग्रहण अनकॉम्प्रेस करण्यास इन्स्टॉलर अयशस्वी. कृपया Chromium पुन्हा डाउनलोड करा.</translation>
 <translation id="3130323860337406239">Chromium तुमचा मायक्रोफोन वापरत आहे.</translation>

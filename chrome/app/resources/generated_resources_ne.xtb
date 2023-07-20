@@ -3288,6 +3288,7 @@
 <translation id="3721119614952978349">तपाईं र Google</translation>
 <translation id="3722108462506185496">भर्चुअल मेसिन सेवा सुरु गर्ने क्रममा त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> सम्बन्धी निर्देशन प्राप्त भयो</translation>
+<translation id="3724897774652282549">फारम भर्नुहोस्</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">उपलब्ध WiFi नेटवर्कहरू</translation>
 <translation id="3727187387656390258">पपअप निरीक्षण गर्नुहोस्</translation>
@@ -7220,6 +7221,7 @@
 <translation id="7067396782363924830">परिवेशी रङ्ग</translation>
 <translation id="7067725467529581407">यो फेरि कहिल्यै पनि नदेखाउनुहोस्।</translation>
 <translation id="7068279399556423026">अन्य डिभाइसका ट्याबहरू हेर्न सइन इन गर्नुहोस्</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{यो साइटको नयाँ पासवर्ड}other{यो साइटका नयाँ पासवर्डहरू}}</translation>
 <translation id="7070484045139057854">यसले साइटको डेटा पढ्न र परिवर्तन गर्न सक्छ</translation>
 <translation id="7072010813301522126">शर्टकट नाम</translation>
 <translation id="7074066049407662839">पासवर्ड सेभ गर्न साइन इन गर्नुहोस्</translation>
@@ -9607,6 +9609,7 @@
 <translation id="9068598199622656904">किबोर्डका सर्टकट प्रयोग गर्दा विभिन्न की एकै पटक थिच्नुको साटो एक पटकमा एउटा मात्र की थिच्नुहोस्</translation>
 <translation id="9068878141610261315">यस प्रकारको फाइल सेयर गर्न सकिँदैन</translation>
 <translation id="9069665781180028115">यो Chromebook मा उपलब्ध हुने सामग्रीहरू चयन गर्नुहोस्। तपाईं Chromebook को नयाँ प्रयोगकर्ता हुनुहुन्छ भने तपाईंका प्राथमिकताहरू ब्याक अप गरिऊन् भन्नाका लागि सबै सामग्रीहरू सिंक गर्नुहोस्। जुनसुकै बेला "सेटिङ &gt; खाताहरू" मा गई परिवर्तनहरू गर्नुहोस्।</translation>
+<translation id="9070231741075992882">तपाईंले <ph name="APP_NAME" /> लाई दिने अनुमतिहरू यसका इन्स्टल गरिएका र स्ट्रिम गरिएका एपहरूलाई पनि दिइने छ।</translation>
 <translation id="9070342919388027491">यो ट्याब बायाँतिर सारियो</translation>
 <translation id="9074739597929991885">ब्लुटुथ</translation>
 <translation id="9074836595010225693">USB माउस जडित</translation>

@@ -32,6 +32,7 @@
 <translation id="1117719261843403176">মোবাইল ডেটা টগল করুন। <ph name="STATE" />।</translation>
 <translation id="112308213915226829">তাককে স্বয়ংক্রিয়ভাবে লুকান</translation>
 <translation id="1142002900084379065">সাম্প্রতিক ফটো</translation>
+<translation id="114221662579355151">এর ফলে <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> এবং ক্যামেরা ও মাইক্রোফোন ব্যবহার করার অনুমতি আছে এমন সমস্ত অ্যাপ ও ওয়েবসাইটে ক্যামেরা অ্যাক্সেস করা যায়। আপনাকে ওয়েব পেজ রিফ্রেশ করতে বা অ্যাপটি রিস্টার্ট করতে হতে পারে।</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" />-এর জন্য অ্যাকাউন্টের তথ্য সহ ডায়ালগ খুলুন</translation>
 <translation id="1150989369772528668">ক্যালেন্ডার</translation>
 <translation id="1153356358378277386">যুক্ত করা ডিভাইসগুলি</translation>
@@ -118,16 +119,17 @@
 <translation id="14648076227129703">ক্যামেরা সম্পর্কিত অনুমতির মাধ্যমে এটি <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ও সব অ্যাপ এবং ওয়েবসাইটের জন্য ক্যামেরা অ্যাক্সেস করার অনুমতি দেয়</translation>
 <translation id="1467432559032391204">বামে</translation>
 <translation id="146902737843070955">আপনার অ্যাডমিনিস্ট্রেটর এই পরিবর্তন করার জন্য অনুরোধ করেছেন</translation>
+<translation id="1469148162491666137">এর ফলে <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> এবং ক্যামেরা ও মাইক্রোফোন ব্যবহার করার অনুমতি আছে এমন সমস্ত অ্যাপ ও ওয়েবসাইট অ্যাক্সেস করা যায়। আপনাকে ওয়েব পেজ রিফ্রেশ করতে বা অ্যাপটি রিস্টার্ট করতে হতে পারে।</translation>
 <translation id="147310119694673958">ফোনে <ph name="BATTERY_PERCENTAGE" />% চার্জ আছে</translation>
 <translation id="1479909375538722835">ভাসমান অ্যাক্সেসিবিলিটি মেনু</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />, Calendar ভিউ খোলার জন্য এন্টার প্রেস করুন</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" />-কে <ph name="SECOND_ITEM_TITLE" /> দিয়ে পাল্টানো হয়েছে</translation>
 <translation id="1500926532737552529">সমস্ত পরামর্শ দেখুন</translation>
-<translation id="1503394326855300303">একাধিক সাইন-ইন সেশনে এই মালিক অ্যাকাউন্টটি প্রথম সাইন-ইন অ্যাকাউন্ট হতে হবে৷</translation>
 <translation id="1510238584712386396">লঞ্চার</translation>
 <translation id="1516740043221086139">'বিরক্ত করবে না' মোড চালু আছে।</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{বিজ্ঞপ্তির সেটিংস দেখান। একটি অ্যাপের জন্য বিজ্ঞপ্তির নোটিফিকেশন বন্ধ আছে}one{বিজ্ঞপ্তির সেটিংস দেখান। #টি অ্যাপের জন্য নোটিফিকেশন বন্ধ আছে}other{বিজ্ঞপ্তির সেটিংস দেখান। #টি অ্যাপের জন্য নোটিফিকেশন বন্ধ আছে}}</translation>
+<translation id="1523032696246003">ব্যাটারি <ph name="BATTERY_PERCENTAGE" />% | সম্পূর্ণ চার্জ হতে <ph name="TIME" /> বাকি আছে</translation>
 <translation id="1525508553941733066">খারিজ করুন</translation>
 <translation id="1526448108126799339">নতুন উইন্ডোতে নতুন ট্যাব খুলুন</translation>
 <translation id="1528259147807435347">গত সপ্তাহে এডিট করা হয়েছে</translation>
@@ -140,6 +142,7 @@
 <translation id="1550523713251050646">আরও বিকল্পের জন্য ক্লিক করুন</translation>
 <translation id="1555130319947370107">নীল</translation>
 <translation id="1557622599341396706">ডেস্কের নাম দেখুন</translation>
+<translation id="1569384531973824928">এর ফলে ক্যামেরা ও মাইক্রোফোন ব্যবহার করার অনুমতি আছে এমন সমস্ত অ্যাপ ও ওয়েবসাইট অ্যাক্সেস করা যায়। আপনাকে ওয়েব পেজ রিফ্রেশ করতে বা অ্যাপটি রিস্টার্ট করতে হতে পারে।</translation>
 <translation id="1576623706766186887">ম্যাগনিফায়ার চালু থাকাকালীন ছোট করুন</translation>
 <translation id="1586324912145647027">১ থেকে ৮ নম্বর ডেস্কে যান</translation>
 <translation id="1589090746204042747">এই সেশনে আপনার সব অ্যাক্টিভিটি অ্যাক্সেস করুন</translation>
@@ -312,6 +315,7 @@
 <translation id="2369165858548251131">চীনা ভাষায় "হ্যালো"</translation>
 <translation id="2382875860893882175">বর্তমানে কাস্টিং পজ করা আছে। আপনি যেকোনও সময় আবার কাস্টিং চালু অথবা বন্ধ করতে পারবেন।</translation>
 <translation id="2386292613071805067">পৃষ্ঠাতে থাকা সবকিছুই বেছে নিন</translation>
+<translation id="2396594569364254378"><ph name="USED_MEMORY" /> মেমরি | মোট <ph name="TOTAL_MEMORY" /></translation>
 <translation id="2397416548179033562">Chrome মেনু দেখান</translation>
 <translation id="240006516586367791">মিডিয়া কন্ট্রোল</translation>
 <translation id="2402411679569069051">ফিঙ্গারপ্রিন্ট বা ফোনের সাহায্যে আপনার Chromebook আনলক করুন</translation>
@@ -508,6 +512,7 @@
 <translation id="3294437725009624529">অতিথি</translation>
 <translation id="3298690094479023523">আপনার পিন বা পাসওয়ার্ড এখনও যাচাই করা যায়নি। আবার চেষ্টা করুন।</translation>
 <translation id="3300193645498960160">আপনি মিউট করা অবস্থায় কথা বললে, আপনাকে জানানো হবে। আপনার ডিভাইসে সব সময় অডিও থাকবে।</translation>
+<translation id="3306386552969601301"><ph name="DEVICE_NAME" />-এর হটস্পটের সাথে <ph name="DEVICECOUNT" />টি ডিভাইস কানেক্ট করা আছে</translation>
 <translation id="3307642347673023554">'ল্যাপটপ' মোডে পাল্টানো হয়েছে</translation>
 <translation id="3308453408813785101">তা সত্ত্বেও, <ph name="USER_EMAIL_ADDRESS" /> পরে সাইন-ইন করতে পারবেন।</translation>
 <translation id="3321628682574733415">ভুল অভিভাবকীয় কোড</translation>
@@ -547,6 +552,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> মিনিট</translation>
 <translation id="3445925074670675829">USB-C ডিভাইস</translation>
 <translation id="3455468639467374593">টেমপ্লেট, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="3456931972722214204"><ph name="DEVICE_NAME" />-এর হটস্পটের সাথে ১টি ডিভাইস কানেক্ট করা আছে</translation>
 <translation id="346243998268439747">জুম লেভেল রিসেট করুন</translation>
 <translation id="3465223694362104965">আপনি শেষবার সাইন-ইন করার পরে আরেকটি কীবোর্ড এই ডিভাইসে কানেক্ট করা হয়েছে। এটি ব্যবহার করার আগে কীবোর্ডটিকে আপনি নিরাপদ বলে মনে করেন কিনা তা দেখে নিন।</translation>
 <translation id="3465356146291925647">আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
@@ -640,6 +646,7 @@
 <translation id="3799080171973636491">ফুল-স্ক্রিন ম্যাগনিফায়ারের জন্য আপনি কীবোর্ড শর্টকাট টিপেছেন। আপনি কি এটি চালু করতে চান?</translation>
 <translation id="380165613292957338">হাই, আমি কীভাবে সাহায্য করতে পারি?</translation>
 <translation id="3804737937830804242">ক্যামেরা আড়াল করুন</translation>
+<translation id="3824784079442479685">এর ফলে <ph name="APP_NAME" /> এবং ক্যামেরা ব্যবহার করার অনুমতি আছে এমন সমস্ত অ্যাপ ও ওয়েবসাইটে ক্যামেরা অ্যাক্সেস করা যায়। আপনাকে ওয়েব পেজ রিফ্রেশ করতে বা অ্যাপটি রিস্টার্ট করতে হতে পারে।</translation>
 <translation id="3826099427150913765">যাচাইকরণের জন্য পাসওয়ার্ড ব্যবহার করুন</translation>
 <translation id="383058930331066723">'ব্যাটারি সেভার' মোড চালু আছে</translation>
 <translation id="383629559565718788">কীবোর্ড সেটিংস দেখান</translation>
@@ -695,6 +702,7 @@
 <translation id="4066027111132117168"><ph name="REMAINING_TIME" />-এ</translation>
 <translation id="4069532248403319695">ডাউনলোড পৃষ্ঠা খুলুন</translation>
 <translation id="4072264167173457037">মাঝারি সিগন্যাল</translation>
+<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> জমা দেওয়া হয়েছে • <ph name="NUM_GRADED" /> গ্রেড করা হয়েছে</translation>
 <translation id="4086921558679520050">আপনার ডিভাইসে ফিজিক্যাল মাইকের সুইচ চালু করুন</translation>
 <translation id="4101772068965291327">হোম পৃষ্ঠাটি খুলুন</translation>
 <translation id="4112140312785995938">পিছিয়ে যান</translation>
@@ -757,6 +765,7 @@
 <translation id="4324840740119394760">ক্যামেরা সম্পর্কিত অনুমতির মাধ্যমে এটি <ph name="APP_NAME" /> ও সব অ্যাপ এবং ওয়েবসাইটের জন্য ক্যামেরা অ্যাক্সেস করার অনুমতি দেয়</translation>
 <translation id="4333628967105022692">একাধিক ব্যবহারকারী সাইন-ইন করে থাকাকালীন, Lacros কাজ করে না।</translation>
 <translation id="4338109981321384717">আতস কাচ</translation>
+<translation id="4356872429719185452">হটস্পটের বিবরণ দেখুন। হটস্পট চালু করা হচ্ছে।</translation>
 <translation id="4371348193907997655">কাস্ট সেটিংস</translation>
 <translation id="4375482231364171368">অ্যাড্রেস বারে সার্চ করুন</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, সিগন্যাল ক্ষমতা <ph name="SIGNAL_STRENGTH" /> শতাংশ</translation>
@@ -853,6 +862,7 @@
 <translation id="4752784485658729358">সেভ করা শুধুমাত্র ৬টি ডেস্কের অনুমতি আছে। নতুন একটি সেভের জন্য ডেস্ক সরান।</translation>
 <translation id="4759238208242260848">ডাউনলোড</translation>
 <translation id="4762573482154983647">অ্যাপ লুকান</translation>
+<translation id="4763885921995354846">এর ফলে এবং ক্যামেরা ও মাইক্রোফোন ব্যবহার করার অনুমতি আছে এমন সমস্ত অ্যাপ ও ওয়েবসাইটে ক্যামেরা অ্যাক্সেস করা যায়। আপনাকে ওয়েব পেজ রিফ্রেশ করতে বা অ্যাপটি রিস্টার্ট করতে হতে পারে।</translation>
 <translation id="4774338217796918551">আগামীকাল <ph name="COME_BACK_TIME" />-এ আবার ব্যবহার করতে পারবেন।</translation>
 <translation id="4776584068981882959">আপনার পাসওয়ার্ড এখনও যাচাই করা যায়নি। আবার চেষ্টা করুন।</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" />-এর জন্য পাসওয়ার্ড</translation>
@@ -880,6 +890,7 @@
 <translation id="4871905435473761992">হটস্পটের বিবরণ দেখুন। আপনার মোবাইল নেটওয়ার্কে হটস্পট ব্যবহার করতে পারবেন না।</translation>
 <translation id="4872237917498892622">Alt+Search অথবা Shift</translation>
 <translation id="4872852897273142380">বুকমার্ক বারে ফোকাস করুন অথবা হাইলাইট করুন (দেখানো হলে)</translation>
+<translation id="4881323000405981760">Linux অ্যাপে এফেক্ট কাজ করে না</translation>
 <translation id="4881695831933465202">খুলুন</translation>
 <translation id="4889868803215848840">সাজেশন উন্নত করতে অতিরিক্ত মতামত দিন:</translation>
 <translation id="4890187583552566966">আপনার প্রশাসকের দ্বারা Google অ্যাসিস্ট্যান্ট অক্ষম করা হয়েছে।</translation>
@@ -1054,6 +1065,7 @@
 <translation id="5601503069213153581">পিন</translation>
 <translation id="5618148318840095371">আপনাকে আরও ভাল নেটওয়ার্কের সাথে কানেক্ট করা হয়েছে</translation>
 <translation id="5619862035903135339">অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী স্ক্রিন ক্যাপচার করার সুবিধা বন্ধ করে দেওয়া হয়েছে</translation>
+<translation id="5620979661744857819">এর ফলে <ph name="APP_NAME" /> এবং ক্যামেরা ও মাইক্রোফোন ব্যবহার করার অনুমতি আছে এমন সমস্ত অ্যাপ ও ওয়েবসাইট অ্যাক্সেস করা যায়। আপনাকে ওয়েব পেজ রিফ্রেশ করতে বা অ্যাপটি রিস্টার্ট করতে হতে পারে।</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">আপনার পাসওয়ার্ড যাচাই করা যায়নি। আবার চেষ্টা করুন।</translation>
 <translation id="5646376287012673985">লোকেশন</translation>
@@ -1101,10 +1113,12 @@
 <translation id="5825969630400862129">কানেক্ট করা ডিভাইসের সেটিংস</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />-এ <ph name="ROUTE_TITLE" /> বন্ধ করুন</translation>
 <translation id="5841296711770970362">পরবর্তী ট্র্যাকে যান</translation>
+<translation id="5842553299352339114"><ph name="DEVICE_NAME" />-এর হটস্পট চালু আছে, কোনও ডিভাইস কানেক্ট করা নেই</translation>
 <translation id="584525477304726060">বড় করে দেখার জন্য ধরে থাকুন</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> অ্যাক্টিভেট করা হয়নি।</translation>
 <translation id="5860033963881614850">বন্ধ করুন</translation>
 <translation id="5860491529813859533">চালু করুন</translation>
+<translation id="5864748620896638071">ব্যাটারি <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">নেটওয়ার্ক সংক্রান্ত তথ্য সংগ্রহ করা হচ্ছে</translation>
 <translation id="5867606971598166637">আপনার সিস্টেম অ্যাডমিনিস্ট্রেটর আপনার স্ক্রিন মনিটর করছেন</translation>
 <translation id="5876666360658629066">অভিভাবকীয় কোডটি লিখুন</translation>
@@ -1362,6 +1376,7 @@
 <translation id="6981291220124935078">অ্যাক্সেস চালু করুন</translation>
 <translation id="6981982820502123353">ব্যবহারযোগ্যতা</translation>
 <translation id="698231206551913481">একবার এই ব্যবহারকারীকে সরানো হলে এর সঙ্গে সংশ্লিষ্ট সমস্ত ফাইল এবং স্থানীয় ডেটা স্থায়ীভাবে মুছে ফেলা হবে।</translation>
+<translation id="7004910047186208204">মোবাইল ডেটার সাথে কানেক্ট করুন</translation>
 <translation id="7005239792648594238">শুরু করার জন্য অ্যাপ খুলুন</translation>
 <translation id="7007983414944123363">আপনার পিন বা পাসওয়ার্ড যাচাই করা যায়নি। আবার চেষ্টা করুন।</translation>
 <translation id="7014684956566476813"><ph name="DEVICE_NAME" /> নামের ডিভাইসে কানেক্ট করা হয়েছে</translation>
@@ -1478,6 +1493,7 @@
 <translation id="7561982940498449837">মেনু বন্ধ করুন</translation>
 <translation id="7564874036684306347">কোনও উইন্ডো অন্য ডেস্কটপে সরানো হলে সেটির আচরণে অপ্রত্যাশিত পরিবর্তন হতে পারে। পরবর্তী বিজ্ঞপ্তি, উইন্ডো এবং ডায়ালগ দুটি ডেস্কটপ মিলিয়ে দেখানো হতে পারে।</translation>
 <translation id="7569509451529460200">ব্রেল এবং ChromeVox সক্ষম করেছেন</translation>
+<translation id="7571361473021531288">ব্যাটারিতে আর <ph name="BATTERY_PERCENTAGE" />% চার্জ | <ph name="TIME" /> বাকি আছে</translation>
 <translation id="7573585051776738856">অ্যাক্টিভ উইন্ডোটি ডানদিকে ডক করা আছে।</translation>
 <translation id="7579778809502851308">স্ক্রিন ক্যাপচার করুন</translation>
 <translation id="7593891976182323525">Search অথবা Shift</translation>
@@ -1515,6 +1531,7 @@
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{১টি বিজ্ঞপ্তি}one{#টি বিজ্ঞপ্তি}other{#টি বিজ্ঞপ্তি}}</translation>
 <translation id="7723703419796509666">ডেভেলপার টুল কনসোল দেখুন অথবা লুকান</translation>
 <translation id="7724603315864178912">কাটুন</translation>
+<translation id="7725108879223146004">হটস্পটের বিবরণ দেখুন। হটস্পট বন্ধ করা হচ্ছে।</translation>
 <translation id="7727952505535211425">একটি নতুন ট্যাবে অ্যাড্রেস বারে ওয়েবসাইটটি খুলুন</translation>
 <translation id="77365090426890123">মেমরি ব্যবহার</translation>
 <translation id="7742327441377685481">কোনও বিজ্ঞপ্তি নেই</translation>
@@ -1650,6 +1667,7 @@
 <translation id="8308637677604853869">পূর্ববর্তী মেনু</translation>
 <translation id="830868413617744215">বিটা</translation>
 <translation id="8314772463905284467">Caps Lock চালু</translation>
+<translation id="8315514906653279104">চালু করা হচ্ছে…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" />টি উইন্ডো বেছে নেওয়া হয়েছে</translation>
 <translation id="8349964124165471584">নতুন উইন্ডোতে লিঙ্ক খুলুন</translation>
@@ -1800,6 +1818,7 @@
 <translation id="9024331582947483881">পূর্ণ স্ক্রিন</translation>
 <translation id="9029736946581028033">শীঘ্রই ডিভাইসের চার্জ শেষ হয়ে যাবে</translation>
 <translation id="9030319654231318877">সূর্যাস্ত পর্যন্ত বন্ধ আছে</translation>
+<translation id="9030665205623277906">সিপিইউ ব্যবহারের স্ন্যাপশট: <ph name="CPU_USEAGE" />%</translation>
 <translation id="9034924485347205037">Linux ফাইল</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> নেটওয়ার্কের জন্য সেটিংস খুলুন</translation>
 <translation id="9059834730836941392">বিজ্ঞপ্তি সঙ্কুচিত করুন</translation>

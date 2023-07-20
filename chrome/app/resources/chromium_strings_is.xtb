@@ -61,6 +61,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="2359808026110333948">Halda áfram</translation>
 <translation id="2384373936468275798">ChromiumOS gat ekki samstillt gögnin vegna þess að innskráningarupplýsingar reikningsins þíns eru úreltar.</translation>
 <translation id="2396765026452590966">Viðbótin „<ph name="EXTENSION_NAME" />“ hefur breytt því hvaða síða birtist þegar þú ræsir Chromium.</translation>
+<translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Ein eða fleiri Chromium-viðbætur fengu aðgang að 1 HID-tæki}=1{Ein eða fleiri Chromium-viðbætur hafa aðgang að 1 HID-tæki}one{Ein eða fleiri Chromium-viðbætur hafa aðgang að # HID-tæki}other{Ein eða fleiri Chromium-viðbætur hafa aðgang að # HID-tækjum}}</translation>
 <translation id="2401032172288869980">Chromium verður að fá leyfi fyrir myndavél og hljóðnema fyrir þetta vefsvæði</translation>
 <translation id="2451727308784734061">Notaðu flýtileiðina til að komast í Aðgangsorðastjórnun á skjótan hátt. Þú getur fært flýtileiðina á heimaskjá tölvunnar eða í ræsiforritið.</translation>
 <translation id="2478295928299953161">Chromium lokast bráðlega</translation>
@@ -93,6 +94,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="3032787606318309379">Bætir við Chromium...</translation>
 <translation id="3038232873781883849">Bíður eftir uppsetningu...</translation>
 <translation id="3068515742935458733">Hjálpaðu til við að bæta Chromium með því að senda tilkynningar um hrun og <ph name="UMA_LINK" /> til Google</translation>
+<translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Ein eða fleiri Chromium-viðbætur fengu aðgang að 1 USB-tæki}=1{Ein eða fleiri Chromium-viðbætur hafa aðgang að 1 USB-tæki}one{Ein eða fleiri Chromium-viðbætur hafa aðgang að # USB-tæki}other{Ein eða fleiri Chromium-viðbætur hafa aðgang að # USB-tækjum}}</translation>
 <translation id="3101560983689755071">Vafraferillinn þinn hefur áhrif á auglýsingarnar sem þú sérð og áhugasviðin sem eru áætluð hér fyrir neðan. Til að gæta persónuverndar þinnar eyðir Chromium áhugamálunum þínum sjálfkrafa mánaðarlega. Áhugasvið verða hugsanlega endurnýjuð nema þú fjarlægir þau.</translation>
 <translation id="3103660991484857065">Uppsetningarforritinu mistókst að afþjappa safnskránni. Sæktu Chromium aftur.</translation>
 <translation id="3130323860337406239">Chromium er að nota hljóðnemann þinn.</translation>

@@ -59,6 +59,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="2359808026110333948">Jatka</translation>
 <translation id="2384373936468275798">Chromium-käyttöjärjestelmä ei voi synkronoida tietoja, sillä tilin kirjautumistiedot ovat vanhentuneet.</translation>
 <translation id="2396765026452590966">Laajennus <ph name="EXTENSION_NAME" /> on vaihtanut Chromiumin aloitussivun.</translation>
+<translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Yhdellä tai useammalla Chromium-laajennuksella oli pääsy yhdelle HID-laitteelle}=1{Yhdellä tai useammalla Chromium-laajennuksella on pääsy yhdelle HID-laitteelle}other{Yhdellä tai useammalla Chromium-laajennuksella on pääsy # HID-laitteelle}}</translation>
 <translation id="2401032172288869980">Chromium tarvitsee kameran ja mikrofonin luvan tällä sivustolla</translation>
 <translation id="2451727308784734061">Käytä Salasanoja nopeasti pikakuvakkeen avulla. Voit siirtää pikakuvakkeen tietokoneen aloitusnäytölle tai sovelluksien käynnistysohjelmaan.</translation>
 <translation id="2478295928299953161">Chromium suljetaan pian</translation>
@@ -91,6 +92,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="3032787606318309379">Lisätään Chromiumiin...</translation>
 <translation id="3038232873781883849">Asennetaan…</translation>
 <translation id="3068515742935458733">Auta parantamaan Chromiumia lähettämällä kaatumisilmoitukset ja <ph name="UMA_LINK" /> Googlelle</translation>
+<translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Yhdellä tai useammalla Chromium-laajennuksella oli pääsy yhdelle USB-laitteelle}=1{Yhdellä tai useammalla Chromium-laajennuksella on pääsy yhdelle USB-laitteelle}other{Yhdellä tai useammalla Chromium-laajennuksella on pääsy # USB-laitteelle}}</translation>
 <translation id="3101560983689755071">Selaushistoria vaikuttaa näkemiisi mainoksiin ja alla kuvatulla tavalla arvioituihin kiinnostuksen kohteisiisi. Yksityisyytesi suojaamiseksi Chromium poistaa kiinnostuksen kohteesi automaattisesti kuukausittain. Kiinnostuksen kohteet voivat päivittyä, ellet poista niitä.</translation>
 <translation id="3103660991484857065">Asennusohjelma ei pystynyt purkamaan arkistotiedostoa. Lataa Chromium uudelleen.</translation>
 <translation id="3130323860337406239">Chromium käyttää mikrofoniasi.</translation>
@@ -297,6 +299,7 @@ Kaikki ominaisuudet eivät ehkä ole käytettävissä. Määritä jokin muu prof
 <translation id="7025789849649390912">Asennus keskeytyi.</translation>
 <translation id="705851970750939768">Päivitä Chromium</translation>
 <translation id="7067091210845072982">Jos kuvalla ei ole hyödyllistä kuvausta, Chromium yrittää luoda sellaisen. Kuvat lähetetään Googlelle kuvausten luomista varten.</translation>
+<translation id="7141270731789036260">Yksilöi Chrome for Testing ‑versiota</translation>
 <translation id="7173822816570314652">Kun Chromium-data on ollut käyttämättömänä <ph name="TIMEOUT_DURATION" />, organisaatiosi poistaa sen. Data voi sisältää historian, automaattisen täytön ja lataukset.</translation>
 <translation id="718435575166326686">Chromium tarvitsee kameran luvan tällä sivustolla</translation>
 <translation id="7196312274710523067">Chromiumin käynnistäminen epäonnistui. Yritä uudelleen.</translation>

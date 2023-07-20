@@ -126,7 +126,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> har bytts ut mot <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Visa alla förslag</translation>
-<translation id="1503394326855300303">Det här ägarkontot måste vara det första inloggade kontot i en session med flera inloggningar.</translation>
 <translation id="1510238584712386396">Starttangent</translation>
 <translation id="1516740043221086139">Stör ej har aktiverats.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Visa aviseringsinställningar. Aviseringar har inaktiverats för 1 app}other{Visa aviseringsinställningar. Aviseringar har inaktiverats för # appar}}</translation>

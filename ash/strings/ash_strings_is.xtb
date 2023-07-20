@@ -32,6 +32,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1117719261843403176">Kveikja/slökkva á farsímagögnum. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Fela hillu sjálfkrafa</translation>
 <translation id="1142002900084379065">Nýlegar myndir</translation>
+<translation id="114221662579355151">Þetta veitir <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> og öllum forritum og vefsvæðum með myndavélarheimild aðgang að myndavél. Þú gætir þurft að endurnýja vefsíðuna eða endurræsa forritið.</translation>
 <translation id="1148499908455722006">Opna upplýsingaglugga fyrir <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Dagatal</translation>
 <translation id="1153356358378277386">Pöruð tæki</translation>
@@ -118,16 +119,17 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="14648076227129703">Þetta veitir <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> og öllum forritum og vefsvæðum með myndavélarheimild aðgang að myndavél</translation>
 <translation id="1467432559032391204">Rangsælis</translation>
 <translation id="146902737843070955">Kerfisstjórinn bað um þessa breytingu</translation>
+<translation id="1469148162491666137">Þetta veitir <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> og öllum forritum og vefsvæðum með myndavélar- og hljóðnemaheimildir aðgang. Þú gætir þurft að endurnýja vefsíðuna eða endurræsa forritið.</translation>
 <translation id="147310119694673958">Símarafhlaða <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">Fljótandi aðgengisvalmynd</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" /> – ýttu á Enter til að opna Dagatalsyfirlit</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> skipt út fyrir <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Sýna allar tillögur</translation>
-<translation id="1503394326855300303">Þessi eigandareikningur verður að vera fyrsti innskráði reikningurinn í lotu fyrir margar innskráningar.</translation>
 <translation id="1510238584712386396">Ræsiforrit</translation>
 <translation id="1516740043221086139">Kveikt er á „Ónáðið ekki“.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Sýna tilkynningastillingar. Slökkt er á tilkynningum fyrir forrit}one{Sýna tilkynningastillingar. Slökkt er á tilkynningum fyrir # forrit}other{Sýna tilkynningastillingar. Slökkt er á tilkynningum fyrir # forrit}}</translation>
+<translation id="1523032696246003">Rafhlaða <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> að fullri hleðslu</translation>
 <translation id="1525508553941733066">LOKA</translation>
 <translation id="1526448108126799339">Opna nýjan flipa í nýjum glugga</translation>
 <translation id="1528259147807435347">Breytt í liðinni viku</translation>
@@ -140,6 +142,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1550523713251050646">Smelltu til að sjá fleiri valkosti</translation>
 <translation id="1555130319947370107">Blár</translation>
 <translation id="1557622599341396706">Sýna heiti skrifborðs</translation>
+<translation id="1569384531973824928">Þetta veitir öllum forritum og vefsvæðum með myndavélar- og hljóðnemaheimildir aðgang. Þú gætir þurft að endurnýja vefsíðuna eða endurræsa forritið.</translation>
 <translation id="1576623706766186887">Minnka þegar kveikt er á stækkunargleri</translation>
 <translation id="1586324912145647027">Opna skrifborð 1 til 8</translation>
 <translation id="1589090746204042747">Fengið aðgang að öllum aðgerðum þínum í þessari lotu</translation>
@@ -312,6 +315,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2369165858548251131">„Halló“ á kínversku</translation>
 <translation id="2382875860893882175">Hlé var gert á vörpun. Þú getur haldið áfram að varpa eða hætt því hvenær sem er.</translation>
 <translation id="2386292613071805067">Velja allt á síðu</translation>
+<translation id="2396594569364254378">Minni <ph name="USED_MEMORY" /> | <ph name="TOTAL_MEMORY" /> samtals</translation>
 <translation id="2397416548179033562">Sýna valmynd Chrome</translation>
 <translation id="240006516586367791">Efnisstýringar</translation>
 <translation id="2402411679569069051">Notaðu fingrafar eða taktu símann þinn úr lás til að taka Chromebook úr lás</translation>
@@ -640,6 +644,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="3799080171973636491">Þú ýttir á flýtilykilinn fyrir stækkun alls skjásins. Viltu stækka skjáinn?</translation>
 <translation id="380165613292957338">Hæ, hvernig get ég aðstoðað?</translation>
 <translation id="3804737937830804242">Minnka myndavél</translation>
+<translation id="3824784079442479685">Þetta veitir <ph name="APP_NAME" /> og öllum forritum og vefsvæðum með myndavélarheimild aðgang að myndavél. Þú gætir þurft að endurnýja vefsíðuna eða endurræsa forritið.</translation>
 <translation id="3826099427150913765">Skipta yfir í aðgangsorð</translation>
 <translation id="383058930331066723">Kveikt er á rafhlöðusparnaði</translation>
 <translation id="383629559565718788">Sýna lyklaborðsstillingar</translation>
@@ -695,6 +700,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="4066027111132117168">Kveikt, <ph name="REMAINING_TIME" /></translation>
 <translation id="4069532248403319695">Opna niðurhalssíðuna</translation>
 <translation id="4072264167173457037">Miðlungssendistyrkur</translation>
+<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> skilað inn • <ph name="NUM_GRADED" /> með einkunn</translation>
 <translation id="4086921558679520050">Kveiktu á áþreifanlega hljóðnemarofanum á tækinu</translation>
 <translation id="4101772068965291327">Opna heimasíðu</translation>
 <translation id="4112140312785995938">Spóla til baka</translation>
@@ -853,6 +859,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="4752784485658729358">Aðeins 6 vistuð skrifborð leyfð. Fjarlægðu skrifborð til að vista nýtt.</translation>
 <translation id="4759238208242260848">Niðurhal</translation>
 <translation id="4762573482154983647">Fela forrit</translation>
+<translation id="4763885921995354846">Þetta veitir öllum forritum og vefsvæðum með myndavélarheimild aðgang að myndavél. Þú gætir þurft að endurnýja vefsíðuna eða endurræsa forritið.</translation>
 <translation id="4774338217796918551">Komdu aftur á morgun klukkan <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Enn tókst ekki að staðfesta aðgangsorðið þitt. Reyndu aftur.</translation>
 <translation id="4776917500594043016">Aðgangsorð fyrir <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -880,6 +887,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="4871905435473761992">Sýna upplýsingar um heitan reit. Farsímakerfið þitt styður ekki heitan reit.</translation>
 <translation id="4872237917498892622">Alt+leitarlykill eða Shift</translation>
 <translation id="4872852897273142380">Auðkenna eða setja fókus á bókamerkjastiku (ef hún er sýnd)</translation>
+<translation id="4881323000405981760">Ekki er stuðningur við myndbrellur í Linux-forritum</translation>
 <translation id="4881695831933465202">Opna</translation>
 <translation id="4889868803215848840">Sendu valfrjálsar ábendingar til að bæta tillögur:</translation>
 <translation id="4890187583552566966">Kerfisstjóri hefur slökkt á Google hjálpara</translation>
@@ -1054,6 +1062,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="5601503069213153581">PIN-númer</translation>
 <translation id="5618148318840095371">Við tengdum þig við betra netkerfi</translation>
 <translation id="5619862035903135339">Slökkt er á skjáupptöku vegna reglu kerfisstjóra</translation>
+<translation id="5620979661744857819">Þetta veitir <ph name="APP_NAME" /> og öllum forritum og vefsvæðum með myndavélar- og hljóðnemaheimildir aðgang. Þú gætir þurft að endurnýja vefsíðuna eða endurræsa forritið.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Ekki var hægt að staðfesta auðkenni þitt. Reyndu aftur.</translation>
 <translation id="5646376287012673985">Staðsetning</translation>
@@ -1105,6 +1114,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="5856638668464565213">Ekki er kveikt á <ph name="NETWORK_NAME" />.</translation>
 <translation id="5860033963881614850">Slökkt</translation>
 <translation id="5860491529813859533">Kveikja</translation>
+<translation id="5864748620896638071">Rafhlaða <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">Safnar upplýsingum um netkerfi</translation>
 <translation id="5867606971598166637">Kerfisstjórinn fylgist með skjáunum þínum</translation>
 <translation id="5876666360658629066">Sláðu inn kóða foreldris</translation>
@@ -1478,6 +1488,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="7561982940498449837">Loka valmynd</translation>
 <translation id="7564874036684306347">Ef gluggar eru færðir á annað skjáborð getur það valdið óvæntri hegðun. Frekari tilkynningum, gluggum og svargluggum verður hugsanlega deilt á milli skjáborða.</translation>
 <translation id="7569509451529460200">Kveikt á blindraletri og ChromeVox</translation>
+<translation id="7571361473021531288">Rafhlaða <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> eftir</translation>
 <translation id="7573585051776738856">Virkur gluggi festur hægra megin.</translation>
 <translation id="7579778809502851308">Skjámyndataka</translation>
 <translation id="7593891976182323525">Leit eða Shift</translation>
@@ -1800,6 +1811,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="9024331582947483881">allur skjárinn</translation>
 <translation id="9029736946581028033">Tækið slekkur fljótlega á sér</translation>
 <translation id="9030319654231318877">Slökkt til sólarlags</translation>
+<translation id="9030665205623277906">Yfirlit yfir örgjörvanotkun: <ph name="CPU_USEAGE" />%</translation>
 <translation id="9034924485347205037">Linux-skrár</translation>
 <translation id="9047624247355796468">Opna stillingar fyrir <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Draga tilkynningu saman</translation>

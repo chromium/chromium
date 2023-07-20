@@ -59,6 +59,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="2359808026110333948">Fortsæt</translation>
 <translation id="2384373936468275798">Chromium OS kunne ikke synkronisere dine data, fordi loginoplysningerne til din konto er forældede.</translation>
 <translation id="2396765026452590966">Udvidelsen "<ph name="EXTENSION_NAME" />" har ændret din startside i Chromium.</translation>
+<translation id="2398377054246527950">{NUM_DEVICES,plural, =0{En eller flere Chromium-udvidelser havde adgang til 1 HID-enhed}=1{En eller flere Chromium-udvidelser har adgang til 1 HID-enhed}one{En eller flere Chromium-udvidelser har adgang til # HID-enhed}other{En eller flere Chromium-udvidelser har adgang til # HID-enheder}}</translation>
 <translation id="2401032172288869980">Chromium skal have adgangstilladelse til kamera og mikrofon for at bruge dette website</translation>
 <translation id="2451727308784734061">Brug din genvej til hurtigt at gå til Adgangskodeadministrator. Du kan flytte din genvej til din computers startskærm eller appliste.</translation>
 <translation id="2478295928299953161">Chromium lukkes snart</translation>
@@ -91,6 +92,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="3032787606318309379">Føjer til Chromium...</translation>
 <translation id="3038232873781883849">Venter på at installere…</translation>
 <translation id="3068515742935458733">Hjælp med at gøre Chromium bedre ved at sende fejlrapporter og <ph name="UMA_LINK" /> til Google</translation>
+<translation id="3079753320517721795">{NUM_DEVICES,plural, =0{En eller flere Chromium-udvidelser havde adgang til 1 USB-enhed}=1{En eller flere Chromium-udvidelser har adgang til 1 USB-enhed}one{En eller flere Chromium-udvidelser har adgang til # USB-enhed}other{En eller flere Chromium-udvidelser har adgang til # USB-enheder}}</translation>
 <translation id="3101560983689755071">Din browserhistorik påvirker de annoncer, som du ser, og de interesser, som er estimeret nedenfor. Af hensyn til privatlivsbeskyttelsen sletter Chromium automatisk dine interesser en gang om måneden. Interesserne kan blive opdateret, medmindre du fjerner dem.</translation>
 <translation id="3103660991484857065">Installationsprogrammet kunne ikke pakke arkivet ud. Download Chromium igen.</translation>
 <translation id="3130323860337406239">Chromium bruger din mikrofon.</translation>

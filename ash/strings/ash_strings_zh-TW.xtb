@@ -126,7 +126,6 @@
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540">「<ph name="FIRST_ITEM_TITLE" />」已替換為「<ph name="SECOND_ITEM_TITLE" />」</translation>
 <translation id="1500926532737552529">顯示所有建議</translation>
-<translation id="1503394326855300303">擁有者帳戶必須是多重登入工作階段中第一個登入的帳戶。</translation>
 <translation id="1510238584712386396">啟動器</translation>
 <translation id="1516740043221086139">零打擾模式已開啟。</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{顯示通知設定。已關閉一個應用程式的通知}other{顯示通知設定。已關閉 # 個應用程式的通知}}</translation>

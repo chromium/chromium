@@ -454,6 +454,7 @@ Les jetons d'état privés améliorent la confidentialité sur le Web et ne peuv
 <translation id="3479552764303398839">Pas maintenant</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /> sur le contenu suggéré</translation>
 <translation id="3495219333887281978">Bottom sheet de connexion ouverte à mi-hauteur.</translation>
+<translation id="3498338220321963224">Si vous désactivez le verrouillage du profil plus tard, vos données enregistrées seront effacées.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="350276055892098337">Trier par le plus ancien</translation>
 <translation id="3507132249039706973">La protection standard est activée</translation>
@@ -619,6 +620,7 @@ Les jetons d'état privés améliorent la confidentialité sur le Web et ne peuv
 <translation id="4409271659088619928">Votre moteur de recherche est <ph name="DSE" />. Lisez ses instructions pour supprimer l'historique de vos recherches, le cas échéant.</translation>
 <translation id="441383202534727410">Comptez jusqu'à une semaine pour qu'une liste de sites s'affiche ici en fonction de votre historique de navigation.</translation>
 <translation id="4415276339145661267">Gérer votre compte Google</translation>
+<translation id="4417111749295506837">Pour synchroniser vos informations Chrome et protéger vos données dans la voiture, vous devez créer un verrouillage du profil. Vous saisirez un code ou un mot de passe chaque fois que vous entrerez dans la voiture.</translation>
 <translation id="4425140285732600465">Suivi du prix activé. Recevez des alertes si le prix baisse sur un site.</translation>
 <translation id="442518031075347249">Vous ne pourrez plus utiliser votre carte virtuelle avec Google Pay. <ph name="BEGIN_LINK1" />En savoir plus sur les cartes virtuelles<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">Personnalisation des annonces</translation>
@@ -986,6 +988,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6363990818884053551">Pour lancer la synchronisation, confirmez votre identité</translation>
 <translation id="6364438453358674297">Supprimer la suggestion de l'historique ?</translation>
 <translation id="6380100320871303656">Les pages que vous êtes susceptible de consulter selon Chrome sont préchargées plus souvent (cela peut augmenter la consommation des données).</translation>
+<translation id="6391355955030242704">Pour synchroniser vos informations Chrome et protéger vos données dans la voiture, vous devez créer un verrouillage du profil dans vos paramètres de sécurité. Vous saisirez un code ou un mot de passe chaque fois que vous entrerez dans la voiture.</translation>
 <translation id="6394791151443660613">Rechercher : <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LIEN</translation>
 <translation id="6397616442223433927">Connexion rétablie</translation>

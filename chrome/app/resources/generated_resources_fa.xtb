@@ -3302,6 +3302,7 @@
 <translation id="3721119614952978349">‏شما و Google</translation>
 <translation id="3722108462506185496">هنگام شروع سرویس دستگاه مجازی خطایی روی داد. لطفاً دوباره امتحان کنید.</translation>
 <translation id="3722624153992426516">دستورالعمل <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> دریافت شده است</translation>
+<translation id="3724897774652282549">فرم را تکمیل کنید</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">‏شبکه‌های WiFi دردسترس</translation>
 <translation id="3727187387656390258">بازرسی پنجره بازشو</translation>
@@ -7239,6 +7240,7 @@
 <translation id="7067396782363924830">رنگ‌های محیطی</translation>
 <translation id="7067725467529581407">هرگز دوباره نشان داده نشود.</translation>
 <translation id="7068279399556423026">به سیستم وارد شوید تا برگه‌های دستگاه‌های دیگر را ببینید</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{گذرواژه جدید برای این سایت}one{گذرواژه جدید برای این سایت}other{گذرواژه‌های جدید برای این سایت}}</translation>
 <translation id="7070484045139057854">می‌تواند داده‌های سایت را بخواند و تغییر دهد</translation>
 <translation id="7072010813301522126">نام میان‌بر</translation>
 <translation id="7074066049407662839">برای ذخیره کردن گذرواژه‌ها، به سیستم وارد شوید</translation>

@@ -3475,6 +3475,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8390725133630534698">Deling fra <ph name="ORIGIN_NAME" /> til <ph name="VM_NAME" /> er blokkert av en administratorregel</translation>
 <translation id="8396522675989118466">Dette er den <ph name="NUMBER_OF_DIGITS" />-sifrede koden på <ph name="SIDE_OF_CARD" /></translation>
 <translation id="8398335999901363925">Betalingsmåter som kan fylles ut ved å trykkes på, åpnes i full høyde.</translation>
+<translation id="8398446215576328011">Tilbakestill regler som er tatt i bruk</translation>
 <translation id="8398790343843005537">Finn telefonen din</translation>
 <translation id="8403506619177967839">Fanfiksjon</translation>
 <translation id="8405579342203358118">Administrer hvilken informasjon du synkroniserer, i Chrome-innstillingene</translation>

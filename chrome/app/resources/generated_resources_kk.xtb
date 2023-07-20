@@ -3290,6 +3290,7 @@
 <translation id="3721119614952978349">Сіз және Google</translation>
 <translation id="3722108462506185496">Виртуалдық құрылғы қызметін іске қосу кезінде қате шықты. Кейінірек қайталап көріңіз.</translation>
 <translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> нұсқауы алынды</translation>
+<translation id="3724897774652282549">Үлгіні толтыру</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Қолжетімді WiFi желілері</translation>
 <translation id="3727187387656390258">Қалқымалы терезені тексеру</translation>
@@ -3656,6 +3657,7 @@
 <translation id="3995138139523574647">USB-C құрылғысы (оң жақ артқы порты)</translation>
 <translation id="3995963973192100066">Анимацияны ойнату</translation>
 <translation id="399788104667917863">Құралдар тақтасына бекіту</translation>
+<translation id="3998976413398910035">Принтерлерді басқару</translation>
 <translation id="4001540981461989979">Жылжытқанда тінтуір курсорын бөлектеу</translation>
 <translation id="4002440992267487163">PIN кодын орнату</translation>
 <translation id="4005817994523282006">Уақыт белдеуін анықтау әдісі</translation>
@@ -6297,6 +6299,7 @@
 <translation id="628352644014831790">4 секунд</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> әдетте жүктеп алынбайды және ол қауіпті болуы мүмкін.</translation>
 <translation id="6285770818046456882">Сізбен бөлісіп жатқан құрылғы тасымалдауды тоқтатты.</translation>
+<translation id="628726841779494414">Принтер параметрлерінде принтерлерді басқарыңыз.</translation>
 <translation id="6290613030083731160">Маңайда сізбен бөлісіп жатқан ешқандай құрылғы жоқ. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Белсендіру коды тексерілуде. Бұл бірнеше минутқа созылуы мүмкін.</translation>
 <translation id="6291741848715722067">Растау коды</translation>
@@ -7225,6 +7228,7 @@
 <translation id="7067396782363924830">Орта түстері</translation>
 <translation id="7067725467529581407">Ешқашан қайта көрсетпеу.</translation>
 <translation id="7068279399556423026">Басқа құрылғылардың қойындыларын көру үшін кіріңіз</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Бұл сайтқа арналған жаңа құпия сөз}other{Бұл сайтқа арналған жаңа құпия сөздер}}</translation>
 <translation id="7070484045139057854">Сайт деректерін оқи және өзгерте алады</translation>
 <translation id="7072010813301522126">Таңбаша атауы</translation>
 <translation id="7074066049407662839">Құпия сөздерді сақтау үшін аккаунтқа кіріңіз</translation>
@@ -9611,6 +9615,7 @@
 <translation id="9068598199622656904">Перне тіркесіміндегі пернелердің барлығын бірге емес, бір-бірлеп басу</translation>
 <translation id="9068878141610261315">Бұл файл түрі қолданылмайды.</translation>
 <translation id="9069665781180028115">Таңдалған элементтер осы Chromebook-та қолжетімді болады. Chromebook-қа жаңадан кірсеңіз, параметрлеріңіздің сақтық көшірмесі жасалауы үшін, барлық элементті синхрондаңыз. "Параметрлер" &gt; "Аккаунттар" тармағында кез келген уақытта өзгерістер енгізіңіз.</translation>
+<translation id="9070231741075992882">Сіз <ph name="APP_NAME" /> қолданбасына берген рұқсаттар орнатылған және трансляцияланған қолданбаларына да беріледі.</translation>
 <translation id="9070342919388027491">Қойынды сол жаққа жылжытылды.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB тінтуірі қосылды</translation>

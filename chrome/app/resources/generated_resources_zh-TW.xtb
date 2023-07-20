@@ -1556,6 +1556,7 @@
 <translation id="2263189956353037928">登出再重新登入</translation>
 <translation id="2263371730707937087">畫面重新整理頻率</translation>
 <translation id="2263679799334060788">你的寶貴意見可協助我們讓 Google Cast 更臻完美。如需排解投放問題的相關說明，請參閱<ph name="BEGIN_LINK" />說明中心<ph name="END_LINK" />的文章。</translation>
+<translation id="22649924370461580">已儲存的分頁群組</translation>
 <translation id="2266957463645820432">USB 型 IPP (IPPUSB)</translation>
 <translation id="2268130516524549846">藍牙已停用</translation>
 <translation id="2268182915828370037">要關閉檔案同步處理功能嗎？</translation>
@@ -1783,6 +1784,7 @@
 <translation id="2435248616906486374">網路已中斷連線</translation>
 <translation id="2435457462613246316">顯示密碼</translation>
 <translation id="2436385001956947090">複製連結(&amp;L)</translation>
+<translation id="2438853563451647815">未連上印表機</translation>
 <translation id="2439626940657133600">正在載入<ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">檢視原始碼(&amp;O)</translation>
 <translation id="2440823041667407902">位置資訊存取權</translation>
@@ -4444,6 +4446,7 @@
 <translation id="4683629100208651599">使用小寫字母</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (預設)</translation>
 <translation id="4684427112815847243">同步處理所有資料</translation>
+<translation id="4687238339694011189">請確認印表機已開啟並連上 Chromebook 使用的 Wi-Fi 網路，或使用 USB 傳輸線</translation>
 <translation id="4687613760714619596">不明裝置 (<ph name="DEVICE_ID" />)</translation>
 <translation id="4687718960473379118">網站建議廣告</translation>
 <translation id="4688036121858134881">本機記錄 ID：<ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />。</translation>
@@ -6093,6 +6096,7 @@
 <translation id="6113434369102685411">設定 Chrome 瀏覽器和 <ph name="DEVICE_TYPE" /> 啟動器的預設搜尋引擎</translation>
 <translation id="6113942107547980621">如要使用 Smart Lock，請在手機上切換到主要使用者設定檔</translation>
 <translation id="6116921718742659598">變更語言和輸入設定</translation>
+<translation id="6119008366402292080">沒有可用的印表機</translation>
 <translation id="6119927814891883061">將裝置命名為「<ph name="DEVICE_NAME" />」</translation>
 <translation id="6119972796024789243">色彩校正</translation>
 <translation id="6120707837086723438">系統會根據你最近搜尋的食譜，向你顯示推薦食譜。
@@ -6103,6 +6107,7 @@
 <translation id="6122081475643980456">你的網際網路連線目前受到控制</translation>
 <translation id="6122093587541546701">電子郵件地址 (選填)：</translation>
 <translation id="6122095009389448667">繼續禁止這個網站讀取剪貼簿</translation>
+<translation id="6122513630797178831">儲存信用卡驗證碼</translation>
 <translation id="6122600716821516697">要與這部裝置分享內容嗎？</translation>
 <translation id="6122831415929794347">要停用安全瀏覽功能嗎？</translation>
 <translation id="6124650939968185064">下列擴充功能與這個擴充功能之間有相依關係：</translation>
@@ -9605,6 +9610,7 @@
 <translation id="9068598199622656904">透過一次按下一個按鍵的方式使用鍵盤快速鍵，而不是同時按住多個按鍵</translation>
 <translation id="9068878141610261315">不支援的檔案類型</translation>
 <translation id="9069665781180028115">所選項目將可在這部 Chromebook 上使用。如果你是第一次使用 Chromebook，建議同步處理所有項目，讓系統備份你的偏好設定。你隨時可以前往「設定」&gt;「帳戶」進行變更。</translation>
+<translation id="9070231741075992882">如果你將權限授予「<ph name="APP_NAME" />」，該應用程式的已安裝串流應用程式也會取得同樣的權限。</translation>
 <translation id="9070342919388027491">分頁已移動到左側</translation>
 <translation id="9074739597929991885">藍牙</translation>
 <translation id="9074836595010225693">已連接 USB 滑鼠</translation>

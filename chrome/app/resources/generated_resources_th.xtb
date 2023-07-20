@@ -1282,6 +1282,7 @@
 <translation id="204497730941176055">ชื่อแม่แบบใบรับรองของ Microsoft</translation>
 <translation id="2045117674524495717">ตัวช่วยเหลือสำหรับแป้นพิมพ์ลัด</translation>
 <translation id="2045211794962848221">คุณจะไม่เห็นข้อความที่เจาะจงแบบนี้อีก</translation>
+<translation id="2045838962742066664">การพิมพ์ด้วยชวเลข</translation>
 <translation id="2045969484888636535">ปิดกั้นคุกกี้ต่อไป</translation>
 <translation id="204622017488417136">อุปกรณ์จะเปลี่ยนกลับเป็นเวอร์ชันก่อนหน้าของ Chrome ที่ติดตั้งไว้ บัญชีผู้ใช้ทั้งหมดและข้อมูลในเครื่องจะถูกนำออก โดยขั้นตอนนี้ไม่สามารถยกเลิกได้</translation>
 <translation id="2046702855113914483">ราเม็ง</translation>
@@ -1838,6 +1839,7 @@
 <translation id="2471506181342525583">อนุญาตให้เข้าถึงตำแหน่ง</translation>
 <translation id="2473195200299095979">แปลหน้านี้</translation>
 <translation id="2475982808118771221">มีข้อผิดพลาดเกิดขึ้น</translation>
+<translation id="2476901513051581836">ล้างพื้นที่เก็บข้อมูลไม่ได้จนกว่าจะทราบขนาดพื้นที่เก็บข้อมูลออฟไลน์</translation>
 <translation id="2476974672882258506">ปิด Windows เพื่อถอนการติดตั้ง <ph name="PARALLELS_DESKTOP" /></translation>
 <translation id="2477065602824695373">ระบบได้ปิดการสแกนอัตโนมัติไว้เนื่องจากคุณตั้งค่าสวิตช์หลายอัน</translation>
 <translation id="2478176599153288112">สิทธิ์ไฟล์สื่อสำหรับ "<ph name="EXTENSION" />"</translation>
@@ -2222,6 +2224,7 @@
 <translation id="2794522004398861033">เชื่อมต่อ Wi-Fi หรืออีเทอร์เน็ตเพื่อตั้งค่า eSIM</translation>
 <translation id="2794977172822818797">เพิ่มเว็บไซต์ปัจจุบัน</translation>
 <translation id="2795716239552913152">โดยปกติแล้วเว็บไซต์จะใช้ตำแหน่งของคุณเพื่อดำเนินการตามฟีเจอร์หรือข้อมูลที่เกี่ยวข้อง เช่น ข่าวท้องถิ่นหรือร้านค้าในบริเวณใกล้เคียง</translation>
+<translation id="2795950023277268902">เชื่อมต่อ <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> เพื่อเข้าถึงไฟล์ในไดรฟ์ในแอป Files</translation>
 <translation id="2796740370559399562">อนุญาตการใช้คุกกี้ต่อไป</translation>
 <translation id="2798347533012571708">รับการอัปเดตต่อไป</translation>
 <translation id="2799223571221894425">เปิดใหม่</translation>
@@ -3656,6 +3659,7 @@
 <translation id="3995138139523574647">อุปกรณ์ USB-C (พอร์ตด้านหลังขวา)</translation>
 <translation id="3995963973192100066">เล่นภาพเคลื่อนไหว</translation>
 <translation id="399788104667917863">ปักหมุดไว้บนแถบเครื่องมือ</translation>
+<translation id="3998976413398910035">จัดการเครื่องพิมพ์</translation>
 <translation id="4001540981461989979">ไฮไลต์เคอร์เซอร์เมาส์เมื่อเคลื่อนไหว</translation>
 <translation id="4002440992267487163">ตั้งค่า PIN</translation>
 <translation id="4005817994523282006">วิธีการตรวจหาเขตเวลา</translation>
@@ -3763,6 +3767,7 @@
 <translation id="4098667039111970300">เครื่องมือสไตลัสในแถบเครื่องมือ</translation>
 <translation id="4099060993766194518">คืนค่าเป็นเครื่องมือค้นหาเริ่มต้นไหม</translation>
 <translation id="4099874310852108874">เกิดข้อผิดพลาดเกี่ยวกับเครือข่าย</translation>
+<translation id="4100020874626534113">อนุญาตให้ระบุเครื่องหมายเสริมสัทอักษรแบบยืดหยุ่น ตัวอย่างเช่น คุณสามารถพิมพ์ "anhs" หรือ "asnh" เพื่อให้เป็น "ánh" ได้</translation>
 <translation id="4100733287846229632">พื้นที่ดิสก์เกือบเต็มแล้ว</translation>
 <translation id="4100853287411968461">เวลาอยู่หน้าจอสูงสุดใหม่</translation>
 <translation id="4101352914005291489">SSID ที่ซ่อนไว้</translation>
@@ -4759,6 +4764,7 @@
 <translation id="4953808748584563296">รูปโปรไฟล์เริ่มต้นสีส้ม</translation>
 <translation id="4955710816792587366">เลือก PIN ของคุณ</translation>
 <translation id="4959262764292427323">เราจะบันทึกรหัสผ่านไว้ในบัญชี Google เพื่อให้คุณใช้ในอุปกรณ์เครื่องใดก็ได้</translation>
+<translation id="4960020053211143927">บางแอปไม่รองรับ</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">แคสต์หน้าจอ</translation>
 <translation id="4961361269522589229">ไอเดียสูตรอาหาร</translation>
@@ -4958,6 +4964,7 @@
 <translation id="5139823398361067371">ป้อน PIN ของคีย์ความปลอดภัย หากไม่ทราบ PIN คุณจะต้องรีเซ็ตคีย์ความปลอดภัย</translation>
 <translation id="5139955368427980650">เ&amp;ปิด</translation>
 <translation id="5141421572306659464">บัญชีหลัก</translation>
+<translation id="5141957579434225843">ตัวอย่างเช่น ใช้ oà, oè, uỳ แทน òa, òe, ùy</translation>
 <translation id="5142793792982256885">ความเร็วในการเลื่อนทัชแพด</translation>
 <translation id="5143374789336132547">ส่วนขยาย "<ph name="EXTENSION_NAME" />" ได้เปลี่ยนหน้าที่จะแสดงเมื่อคุณคลิกปุ่มหน้าแรก</translation>
 <translation id="5143612243342258355">ไฟล์นี้เป็นอันตราย</translation>
@@ -6294,6 +6301,7 @@
 <translation id="628352644014831790">4 วินาที</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> ไม่ได้ถูกดาวน์โหลดตามปกติและอาจเป็นอันตราย</translation>
 <translation id="6285770818046456882">อุปกรณ์ที่กำลังแชร์เนื้อหากับคุณยกเลิกการโอนแล้ว</translation>
+<translation id="628726841779494414">จัดการเครื่องพิมพ์ของคุณในการตั้งค่าเครื่องพิมพ์</translation>
 <translation id="6290613030083731160">ไม่มีอุปกรณ์ที่กำลังแชร์อยู่ใกล้เคียง <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">กำลังตรวจสอบรหัสเปิดใช้งาน การดำเนินการนี้อาจใช้เวลาสักครู่</translation>
 <translation id="6291741848715722067">รหัสยืนยัน</translation>
@@ -7006,6 +7014,7 @@
 <translation id="6897688156970667447">มีประโยชน์ในสภาวะแสงน้อยและประหยัดแบตเตอรี่</translation>
 <translation id="6897972855231767338">ดูข้อมูลเพิ่มเติมเกี่ยวกับการท่องเว็บในฐานะผู้มาเยือน</translation>
 <translation id="6898440773573063262">แอปพลิเคชันคีออสก์สามารถกำหนดค่าให้เปิดอัตโนมัติบนอุปกรณ์นี้ได้แล้ว</translation>
+<translation id="6899427698619335650">อนุญาตให้ระบุเครื่องหมายเสริมสัทอักษรแบบยืดหยุ่น ตัวอย่างเช่น คุณสามารถพิมพ์ "anh1" หรือ "a1nh" เพื่อให้เป็น "ánh" ได้</translation>
 <translation id="6900284862687837908">แอปพื้นหลัง: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">การปกป้องที่ปรับปรุงแล้ว</translation>
 <translation id="6900651018461749106">ลงชื่อเข้าใช้อีกครั้งเพื่ออัปเดต <ph name="USER_EMAIL" /></translation>
@@ -9608,6 +9617,7 @@
 <translation id="9068598199622656904">กดทีละ 1 แป้นสำหรับแป้นพิมพ์ลัดแทนการกดแป้นค้างไว้พร้อมกัน</translation>
 <translation id="9068878141610261315">ประเภทไฟล์ที่ไม่รองรับ</translation>
 <translation id="9069665781180028115">รายการที่เลือกจะพร้อมใช้งานบน Chromebook เครื่องนี้ หากเพิ่งเริ่มใช้ Chromebook โปรดซิงค์รายการทั้งหมดเพื่อให้ระบบสำรองข้อมูลค่ากำหนดของคุณ คุณเปลี่ยนแปลงได้ทุกเมื่อในการตั้งค่า &gt; บัญชี</translation>
+<translation id="9070231741075992882">สิทธิ์ที่คุณให้กับ <ph name="APP_NAME" /> จะอนุญาตสำหรับแอปที่ติดตั้งและที่สตรีมด้วย</translation>
 <translation id="9070342919388027491">แท็บถูกย้ายไปทางซ้าย</translation>
 <translation id="9074739597929991885">บลูทูธ</translation>
 <translation id="9074836595010225693">เชื่อมต่อเมาส์ USB แล้ว</translation>

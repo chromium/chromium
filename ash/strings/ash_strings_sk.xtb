@@ -126,7 +126,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540">Položka <ph name="FIRST_ITEM_TITLE" /> bola vymenená za <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Zobraziť všetky návrhy</translation>
-<translation id="1503394326855300303">Tento účet vlastníka musí byť prvým prihláseným účtom v relácii viacerých prihlásení.</translation>
 <translation id="1510238584712386396">Spúšťač</translation>
 <translation id="1516740043221086139">Režim Nerušiť je zapnutý.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Zobraziť nastavenia upozornení. Upozornenia sú pre aplikáciu vypnuté}few{Zobraziť nastavenia upozornení. Upozornenia sú vypnuté pre # aplikácie}many{Show notification settings. Notifications are off for # apps}other{Zobraziť nastavenia upozornení. Upozornenia sú vypnuté pre # aplikácií}}</translation>

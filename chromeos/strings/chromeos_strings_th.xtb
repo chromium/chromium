@@ -372,6 +372,7 @@
 <translation id="397105322502079400">กำลังคำนวณ...</translation>
 <translation id="39823212440917567">ระบบจะนำงานพิมพ์ที่เก่ากว่า <ph name="NUMBER_OF_DAYS" /> วันออก</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> เป็นเวอร์ชันล่าสุดแล้ว</translation>
+<translation id="3998976413398910035">จัดการเครื่องพิมพ์</translation>
 <translation id="4003384961948020559">ไม่สำเร็จ - ถาดกระดาษขาออกเต็ม</translation>
 <translation id="4021031199988160623">เปลี่ยนเป็นโหมดแล็ปท็อปเพื่อทดสอบ</translation>
 <translation id="4034824040120875894">เครื่องพิมพ์</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">ภายในเท่านั้น</translation>
 <translation id="5649768706273821470">ฟัง</translation>
 <translation id="5655283760733841251">เพิ่มความสว่างของแป้นพิมพ์</translation>
+<translation id="5655776422854483175">ไม่มีงานพิมพ์</translation>
 <translation id="5659593005791499971">อีเมล</translation>
 <translation id="5662240986744577912">เปิด/ปิดหน้าจอความเป็นส่วนตัว</translation>
 <translation id="5669267381087807207">กำลังเปิดใช้</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">ธีม</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">เปิดธีมมืด</translation>
+<translation id="628726841779494414">จัดการเครื่องพิมพ์ของคุณในการตั้งค่าเครื่องพิมพ์</translation>
 <translation id="629550705077076970">การหรี่แสงแป้นพิมพ์</translation>
 <translation id="6302401976930124515">ยกเลิกการทดสอบ<ph name="TEST_NAME" />แล้ว</translation>
 <translation id="631063167932043783">แอป "สำรวจ"</translation>

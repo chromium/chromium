@@ -126,7 +126,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> a fost înlocuit cu <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Vezi toate sugestiile</translation>
-<translation id="1503394326855300303">Acest cont de proprietar trebuie să fie primul conectat într-o sesiune de conectare multiplă.</translation>
 <translation id="1510238584712386396">Lansator</translation>
 <translation id="1516740043221086139">Funcția Nu deranja este activată.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Afișează setările pentru notificări. Notificările sunt dezactivate pentru o aplicație}few{Afișează setările pentru notificări. Notificările sunt dezactivate pentru # aplicații}other{Afișează setările pentru notificări. Notificările sunt dezactivate pentru # de aplicații}}</translation>
@@ -513,6 +512,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3294437725009624529">Invitat</translation>
 <translation id="3298690094479023523">Codul PIN sau parola tot nu au putut fi confirmate. Încearcă din nou.</translation>
 <translation id="3300193645498960160">Vei primi o notificare dacă vorbești cu sunetul dezactivat. Conținutul audio nu părăsește niciodată dispozitivul.</translation>
+<translation id="3306386552969601301"><ph name="DEVICECOUNT" /> dispozitive conectate la hotspotul <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">S-a comutat la modul laptop</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> se poate conecta în continuare mai târziu.</translation>
 <translation id="3321628682574733415">Codul pentru părinte este incorect</translation>
@@ -552,6 +552,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="3445925074670675829">Dispozitiv USB-C</translation>
 <translation id="3455468639467374593">Șablon, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="3456931972722214204">Un dispozitiv conectat la hotspotul <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">Resetează nivelul de zoom</translation>
 <translation id="3465223694362104965">La acest dispozitiv s-a conectat o altă tastatură de când l-ai folosit ultima dată. Asigură-te că ai încredere în această tastatură înainte să o folosești.</translation>
 <translation id="3465356146291925647">Gestionată de administratorul tău</translation>
@@ -764,6 +765,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="4324840740119394760">Astfel, accesul la cameră este permis pentru <ph name="APP_NAME" /> și toate aplicațiile și site-urile care au permisiunea adecvată</translation>
 <translation id="4333628967105022692">Lacros nu este acceptat dacă se conectează mai mulți utilizatori.</translation>
 <translation id="4338109981321384717">Lupă</translation>
+<translation id="4356872429719185452">Afișează detaliile despre hotspot. Hotspotul se activează.</translation>
 <translation id="4371348193907997655">Setări pentru proiectare</translation>
 <translation id="4375482231364171368">Caută în bara de adrese</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %</translation>
@@ -1111,6 +1113,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="5825969630400862129">Setări pentru dispozitivele conectate</translation>
 <translation id="5837036133683224804">Întrerupe <ph name="ROUTE_TITLE" /> pe <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Accesează melodia următoare</translation>
+<translation id="5842553299352339114">Hotspotul <ph name="DEVICE_NAME" /> este activat. Nu s-a conectat niciun dispozitiv.</translation>
 <translation id="584525477304726060">Apasă lung pentru a maximiza</translation>
 <translation id="5856638668464565213">Rețeaua <ph name="NETWORK_NAME" /> nu este activată.</translation>
 <translation id="5860033963881614850">Dezactivat</translation>
@@ -1373,6 +1376,7 @@ Instalare nouă</translation>
 <translation id="6981291220124935078">Activează accesul</translation>
 <translation id="6981982820502123353">Accesibilitate</translation>
 <translation id="698231206551913481">Toate fișierele și datele locale asociate acestui utilizator vor fi șterse definitiv după eliminarea utilizatorului.</translation>
+<translation id="7004910047186208204">Conectează-te la un serviciu de date mobile</translation>
 <translation id="7005239792648594238">Deschide o aplicație pentru a începe</translation>
 <translation id="7007983414944123363">Codul PIN sau parola nu au putut fi confirmate. Încearcă din nou.</translation>
 <translation id="7014684956566476813">S-a conectat la dispozitivul <ph name="DEVICE_NAME" /></translation>
@@ -1527,6 +1531,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{O notificare}few{# notificări}other{# de notificări}}</translation>
 <translation id="7723703419796509666">Afișează sau ascunde consola Developer Tools</translation>
 <translation id="7724603315864178912">Decupează</translation>
+<translation id="7725108879223146004">Afișează detaliile despre hotspot. Hotspotul se dezactivează.</translation>
 <translation id="7727952505535211425">Deschide site-ul în bara de adrese într-o filă nouă</translation>
 <translation id="77365090426890123">utilizarea memoriei</translation>
 <translation id="7742327441377685481">Nicio notificare</translation>
@@ -1662,6 +1667,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8308637677604853869">Meniul anterior</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Tasta Caps Lock este activată</translation>
+<translation id="8315514906653279104">Se activează…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> fereastră selectată</translation>
 <translation id="8349964124165471584">Deschide linkul într-o fereastră nouă</translation>

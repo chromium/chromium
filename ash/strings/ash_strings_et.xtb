@@ -126,7 +126,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> vahetati üksuse <ph name="SECOND_ITEM_TITLE" /> vastu</translation>
 <translation id="1500926532737552529">Kuva kõik soovitused</translation>
-<translation id="1503394326855300303">See omaniku konto peab olema esimene sisselogitud konto mitmele kontole sisselogimise seansil.</translation>
 <translation id="1510238584712386396">Käivitaja</translation>
 <translation id="1516740043221086139">Režiim Mitte segada on sees.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Kuvab märguandeseaded. Märguanded on rakenduse jaoks välja lülitatud}other{Kuvab märguandeseaded. Märguanded on # rakenduse jaoks välja lülitatud}}</translation>
@@ -513,6 +512,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3294437725009624529">Külaline</translation>
 <translation id="3298690094479023523">Teie PIN-koodi või parooli ei õnnestunud ikka kinnitada. Proovige uuesti.</translation>
 <translation id="3300193645498960160">Teid teavitatakse, kui räägite vaigistatuna. Teie seade ei edasta heli.</translation>
+<translation id="3306386552969601301">Seadme <ph name="DEVICE_NAME" /> kuumkohaga on ühendatud <ph name="DEVICECOUNT" /> seadet</translation>
 <translation id="3307642347673023554">Lülitati sülearvutirežiimile</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> saab siiski hiljem sisse logida.</translation>
 <translation id="3321628682574733415">Vanema kood on vale</translation>
@@ -552,6 +552,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">C-tüüpi USB-seade</translation>
 <translation id="3455468639467374593">Mall, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="3456931972722214204">Seadme <ph name="DEVICE_NAME" /> kuumkohaga on ühendatud 1 seade</translation>
 <translation id="346243998268439747">Suumimistaseme lähtestamine</translation>
 <translation id="3465223694362104965">Pärast teie viimast sisselogimist lõi muu klaviatuur seadmega ühenduse. Enne klaviatuuri kasutamist veenduge, et see oleks usaldusväärne.</translation>
 <translation id="3465356146291925647">Võrku haldab teie administraator</translation>
@@ -765,6 +766,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4324840740119394760">See lubab rakendusel <ph name="APP_NAME" /> ning kõikidel kaamerale juurdepääsemise loaga rakendustel ja veebisaitidel kaamerale juurde pääseda</translation>
 <translation id="4333628967105022692">Lacros ei ole toetatud, kui sisse on logitud mitu kasutajat.</translation>
 <translation id="4338109981321384717">Suurendusklaas</translation>
+<translation id="4356872429719185452">Kuumkoha üksikasjade kuvamine. Kuumkohta lülitatakse sisse.</translation>
 <translation id="4371348193907997655">Ülekandmise seaded</translation>
 <translation id="4375482231364171368">Aadressiribal otsimine</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, signaalitugevus <ph name="SIGNAL_STRENGTH" /> protsenti</translation>
@@ -1112,6 +1114,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5825969630400862129">Ühendatud seadmete seaded</translation>
 <translation id="5837036133683224804">Katkesta <ph name="ROUTE_TITLE" /> asukohas <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Mine järgmisele loole</translation>
+<translation id="5842553299352339114">Seadme <ph name="DEVICE_NAME" /> kuumkoht on sisse lülitatud, ükski seade pole ühendatud</translation>
 <translation id="584525477304726060">Maksimeerimiseks hoidke all</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> pole aktiveeritud.</translation>
 <translation id="5860033963881614850">Väljas</translation>
@@ -1374,6 +1377,7 @@ Uus installimine</translation>
 <translation id="6981291220124935078">Lülita juurdepääs sisse</translation>
 <translation id="6981982820502123353">Juurdepääsetavus</translation>
 <translation id="698231206551913481">Kõik selle kasutajaga seotud failid ja kohalikud andmed kustutatakse jäädavalt kohe, kui see kasutaja eemaldatakse.</translation>
+<translation id="7004910047186208204">Looge ühendus mobiilse andmesidega</translation>
 <translation id="7005239792648594238">Alustamiseks avage rakendus</translation>
 <translation id="7007983414944123363">Teie PIN-koodi või parooli ei saanud kinnitada. Proovige uuesti.</translation>
 <translation id="7014684956566476813">Ühendatud seadmega <ph name="DEVICE_NAME" /></translation>
@@ -1528,6 +1532,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 märguanne}other{# märguannet}}</translation>
 <translation id="7723703419796509666">Arendajatööriistade konsooli kuvamine või peitmine</translation>
 <translation id="7724603315864178912">Lõika</translation>
+<translation id="7725108879223146004">Kuumkoha üksikasjade kuvamine. Kuumkohta lülitatakse välja.</translation>
 <translation id="7727952505535211425">Veebisaidi avamine uue vahelehe aadressiribal</translation>
 <translation id="77365090426890123">mälukasutus</translation>
 <translation id="7742327441377685481">Märguandeid pole</translation>
@@ -1663,6 +1668,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8308637677604853869">Eelmine menüü</translation>
 <translation id="830868413617744215">Beeta</translation>
 <translation id="8314772463905284467">Suurtähelukk on sisse lülitatud</translation>
+<translation id="8315514906653279104">Sisselülitamine …</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Valitud on aken <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349964124165471584">Lingi avamine uues aknas</translation>

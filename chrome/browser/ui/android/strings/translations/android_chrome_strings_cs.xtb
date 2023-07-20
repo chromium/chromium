@@ -454,6 +454,7 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="3479552764303398839">Teď ne</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /> o navrhovaném obsahu</translation>
 <translation id="3495219333887281978">Spodní tabulka s přihlášením je otevřená na polovinu výšky</translation>
+<translation id="3498338220321963224">Pokud zámek profilu později odstraníte, vaše uložená data budou vymazána.</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="350276055892098337">Seřadit od nejstarších</translation>
 <translation id="3507132249039706973">Je zapnutá standardní ochrana</translation>
@@ -619,6 +620,7 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="4409271659088619928">Váš vyhledávač je <ph name="DSE" />. Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud je k dispozici).</translation>
 <translation id="441383202534727410">Může trvat až týden, než se zde seznam webů na základě vaší historie prohlížení objeví.</translation>
 <translation id="4415276339145661267">Spravovat účet Google</translation>
+<translation id="4417111749295506837">Pokud chcete synchronizovat své informace v Chromu a mít svá data v autě v bezpečí, musíte si vytvořit zámek profilu. Při každém nastoupení do auta bude potřeba použít kód nebo heslo.</translation>
 <translation id="4425140285732600465">Sledování ceny. Pokud cena na některém webu klesne, dostanete upozornění.</translation>
 <translation id="442518031075347249">Virtuální kartu již se službou Google Pay nebudete moci používat. <ph name="BEGIN_LINK1" />Další informace o virtuálních kartách<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">Personalizace reklam</translation>
@@ -986,6 +988,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6363990818884053551">Pokud chcete zahájit synchronizaci, ověřte svoji totožnost</translation>
 <translation id="6364438453358674297">Odstranit návrh z historie?</translation>
 <translation id="6380100320871303656">Častěji předběžně načítá stránky, které byste podle Chromu mohli navštívit. Toto nastavení může vést ke zvýšenému využití dat.</translation>
+<translation id="6391355955030242704">Pokud chcete synchronizovat své informace v Chromu a mít svá data v autě v bezpečí, musíte si v nastavení zabezpečení vytvořit zámek profilu. Při každém nastoupení do auta bude potřeba použít kód nebo heslo.</translation>
 <translation id="6394791151443660613">Vyhledat: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">ODKAZ</translation>
 <translation id="6397616442223433927">Opět online</translation>

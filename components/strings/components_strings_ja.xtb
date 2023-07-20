@@ -319,6 +319,7 @@
 <translation id="160851722280695521">Chrome で Dino Run ゲームをプレイします</translation>
 <translation id="161042844686301425">シアン</translation>
 <translation id="1611101756749861742">ロール 2</translation>
+<translation id="1615178538289490617"><ph name="PORT_NAME" /> へのアクセス権を取り消します</translation>
 <translation id="1615402009686901181">管理者のポリシーによって、機密コンテンツが表示されているときは、スクリーン キャプチャが無効になります</translation>
 <translation id="1617276713587758852">クロスオーバー</translation>
 <translation id="1618571384971354160">牽引サービス、ロード アシスタンス</translation>
@@ -625,6 +626,7 @@
 <translation id="2276057643614339130">印刷ベース</translation>
 <translation id="2277103315734023688">前方に移動</translation>
 <translation id="2277753418458118549">接続の詳細を表示</translation>
+<translation id="22792995594807632">ダウンロードする前に確認が必要です</translation>
 <translation id="2283340219607151381">住所の保存と入力</translation>
 <translation id="2283447177162560884">「<ph name="PAGE_TITLE" />」を削除しました</translation>
 <translation id="2286383991450886080">34x44 インチ</translation>
@@ -1276,6 +1278,7 @@
 <translation id="3736520371357197498">危険なプログラムが削除されるより前に<ph name="BEGIN_LINK" />この安全でないサイトにアクセスする<ph name="END_LINK" />場合は、セキュリティ上のリスクについてご承知おきください。</translation>
 <translation id="3738166223076830879">お使いのブラウザは管理者によって管理されています。</translation>
 <translation id="3740319564441798148">長距離バス、列車</translation>
+<translation id="3740447166056383374">コピーする前に確認が必要です</translation>
 <translation id="374325029554577103">フィットネス商品</translation>
 <translation id="3743765582345153106">自動入力を使用するときは常に確認する</translation>
 <translation id="3744111561329211289">バックグラウンド同期</translation>
@@ -1796,6 +1799,7 @@
 <translation id="4852429274334674023">オペレーティング システム</translation>
 <translation id="4854853140771946034">Google Keep で新しいメモをすばやく作成します</translation>
 <translation id="485902285759009870">コードを確認しています...</translation>
+<translation id="4862630594858951805">値下げがあったときにメールでお知らせしますか？</translation>
 <translation id="486459320933704969">保護者の方から、このウェブサイトを開いてもよいという承認をもらう必要があります</translation>
 <translation id="4866506163384898554">カーソルを表示するには |<ph name="ACCELERATOR1" />|+|<ph name="ACCELERATOR2" />| を押します</translation>
 <translation id="4873616204573862158">眼鏡</translation>
@@ -1991,6 +1995,7 @@
 <translation id="5255690596502591079">このままキャプチャする</translation>
 <translation id="5255833070095767006">350x460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{管理者のポリシーでは、このファイルを <ph name="DESTINATION_NAME" /> にコピーすることは推奨されていません}other{管理者のポリシーでは、これらのファイルを <ph name="DESTINATION_NAME" /> にコピーすることは推奨されていません}}</translation>
+<translation id="5263867360296733198">アップロードする前に確認が必要です</translation>
 <translation id="5266128565379329178">製本（上綴じ）</translation>
 <translation id="5269225904387178860">4 穴パンチ（下）</translation>
 <translation id="5269999699920406580">システム全体に適用される機能は所有者（<ph name="OWNER_EMAIL" />）のみが設定できます</translation>
@@ -2033,7 +2038,7 @@
 <translation id="5334145288572353250">住所を保存しますか？</translation>
 <translation id="5340250774223869109">アプリケーションがブロックされました</translation>
 <translation id="534295439873310000">NFC デバイス</translation>
-<translation id="5344522958567249764">広告のプライバシーを管理</translation>
+<translation id="5344522958567249764">広告プライバシーを管理</translation>
 <translation id="5344579389779391559">このページでは課金される恐れがあります</translation>
 <translation id="5345249337934847112">紙（厚手コート）</translation>
 <translation id="5349543692327946794">ラベル（インクジェット）</translation>
@@ -2064,6 +2069,7 @@
 <translation id="5412236728747081950">このサイトでは Chrome からお客様の興味や関心に関する情報を取得して、関連性の高い広告を表示しています</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">スタッカー 4</translation>
+<translation id="5414446060143308245">移行する前に確認が必要です</translation>
 <translation id="5414511064953050917">このまま移動</translation>
 <translation id="5421136146218899937">閲覧履歴データを削除...</translation>
 <translation id="5423269318075950257">価格のトラッキング</translation>
@@ -2148,6 +2154,7 @@
 <translation id="5595485650161345191">住所の編集</translation>
 <translation id="5596939519753369075">2x3.5 インチ</translation>
 <translation id="560412284261940334">管理はサポートされていません</translation>
+<translation id="5605249000617390290">価格トラッキングの詳細</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5610142619324316209">接続を確認する</translation>
 <translation id="5610807607761827392">カードと住所は [<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] で管理できます。</translation>
@@ -2284,6 +2291,7 @@
 <translation id="5921639886840618607">カードを Google アカウントに保存しますか？</translation>
 <translation id="5922853866070715753">ほぼ完了です</translation>
 <translation id="5923492272538889093">CVC の代わりにデバイスのロック解除を使用しますか？</translation>
+<translation id="5924510104057992926">開く前に確認が必要です</translation>
 <translation id="5924782825030413055">前回の同意更新時のソース:</translation>
 <translation id="5925040402342933574">光ディスク（半光沢）</translation>
 <translation id="5926982310317673627">ジム、フィットネス クラブ</translation>
@@ -2509,6 +2517,7 @@
 <translation id="6394852772105848029">このサイトは <ph name="APP_NAME" /> アプリを開くよう要求しています</translation>
 <translation id="6398765197997659313">全画面表示を終了</translation>
 <translation id="6401136357288658127">このポリシーはサポートが終了したため、代わりに <ph name="NEW_POLICY" /> ポリシーを使用してください。</translation>
+<translation id="6402537308870515461">移動する前に確認が必要です</translation>
 <translation id="6403167778944553">寝室、風呂用品</translation>
 <translation id="6404511346730675251">ブックマークを編集</translation>
 <translation id="6405181733356710802"><ph name="APP_NAME" /> に移動しますか？</translation>
@@ -2657,6 +2666,7 @@
 <translation id="6710594484020273272">&lt;検索キーワードを入力&gt;</translation>
 <translation id="671076103358959139">登録トークン:</translation>
 <translation id="6711464428925977395">プロキシ サーバーに問題がある、またはアドレスが正しくありません。</translation>
+<translation id="6716013836112872184">値下げしたサイトがあったときに、<ph name="EMAIL" /> にメールでお知らせします。</translation>
 <translation id="6716672519412350405"><ph name="URL" /> が周囲の 3D マップの作成とカメラ位置の追跡を求めています</translation>
 <translation id="6718612893943028815">カメラを使用しますか？</translation>
 <translation id="6721164594124191969">ラベル（光沢）</translation>
@@ -3187,6 +3197,7 @@
 <translation id="7767278989746220252">パティオ、芝生、庭</translation>
 <translation id="776749070095465053">布</translation>
 <translation id="7773005668374414287">同じ順序（上向き）</translation>
+<translation id="7779418012194492374"><ph name="DEVICE_NAME" /> へのアクセス権を取り消します</translation>
 <translation id="7781829728241885113">昨日</translation>
 <translation id="7785790577395078482">このタブレット</translation>
 <translation id="7786368602962652765">必須項目が空白です。保存する前に入力してください。</translation>
@@ -3810,6 +3821,7 @@
 <translation id="9155211586651734179">接続されたオーディオ周辺機器</translation>
 <translation id="9155646082713385498">雑誌</translation>
 <translation id="9157595877708044936">セットアップ中...</translation>
+<translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> にはデリケートなコンテンツが含まれている可能性があります}other{<ph name="FILE_COUNT" /> 個のファイルにデリケートなコンテンツが含まれている可能性があります}}</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">アクセスするウェブサイトによっては、そのウェブサイト上でのアクティビティに基づいてユーザーの好みが判断される場合もあります。たとえば、長距離ランニング シューズを販売するウェブサイトにアクセスすると、そのユーザーはマラソンに興味があるとされるかもしれません。</translation>
 <translation id="9166851138617700776">ウェブサイトによる広告提案と広告測定の詳細</translation>

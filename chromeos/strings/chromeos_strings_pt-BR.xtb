@@ -372,6 +372,7 @@
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="39823212440917567">Trabalhos de impressão enviados há mais de <ph name="NUMBER_OF_DAYS" /> dias serão removidos</translation>
 <translation id="3993704782688964914">O <ph name="DEVICE_NAME" /> está atualizado</translation>
+<translation id="3998976413398910035">Gerenciar impressoras</translation>
 <translation id="4003384961948020559">Falha - Saída cheia</translation>
 <translation id="4021031199988160623">Mude para o modo laptop para testar</translation>
 <translation id="4034824040120875894">Impressora</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">Somente uso interno</translation>
 <translation id="5649768706273821470">Ouvir</translation>
 <translation id="5655283760733841251">Aumentar o brilho do teclado</translation>
+<translation id="5655776422854483175">Nenhum trabalho de impressão</translation>
 <translation id="5659593005791499971">E-mail</translation>
 <translation id="5662240986744577912">ativar ou desativar a tela de privacidade</translation>
 <translation id="5669267381087807207">Ativando</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Ativar o tema escuro</translation>
+<translation id="628726841779494414">Gerencie suas impressoras nas configurações de impressora</translation>
 <translation id="629550705077076970">escurecimento do teclado</translation>
 <translation id="6302401976930124515">O teste de <ph name="TEST_NAME" /> foi cancelado</translation>
 <translation id="631063167932043783">App Explorar</translation>

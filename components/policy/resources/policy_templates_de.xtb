@@ -4476,9 +4476,6 @@ Wenn die Richtlinie auf „False“ gesetzt ist, wird die Standardeinstellung ve
 <translation id="4970046075219007744">Webanwendungen erlauben, um Zugriff auf Dateitypen über die File Handling API zu bitten</translation>
 <translation id="4970855112942626932">Browseranmeldung deaktivieren</translation>
 <translation id="4974091268178043378">Chrome OS-Farbmodus</translation>
-<translation id="4976928720873547342">Wenn du diese Richtlinie konfigurierst, werden alle angegebenen Datentypen von der Synchronisierung ausgeschlossen. Dies gilt sowohl für die <ph name="CHROME_SYNC_NAME" /> als auch für die Synchronisierung von Roaming-Profilen. Dadurch lässt sich die Größe von Roaming-Profilen reduzieren und du kannst einschränken, welche Arten von Daten auf die <ph name="CHROME_SYNC_NAME" />-Server hochgeladen werden.
-
-      Aktuell werden folgende Datentypen unterstützt: „bookmarks“, „readingList“, „preferences“, „passwords“, „autofill“, „themes“, „typedUrls“, „extensions“, „apps“, „tabs“ und „wifiConfigurations“. Bei diesen Namen muss die Groß- und Kleinschreibung beachtet werden.</translation>
 <translation id="4977702914571821981">Mit dieser Richtlinie kannst du eine Liste von URL-Mustern festlegen, die angeben, auf welchen Websites blockierbare (aktive) gemischte Inhalte (HTTP-Inhalte auf HTTPS-Websites) nicht angezeigt werden dürfen und auf welchen Websites optional blockierbare (passive) gemischte Inhalte auf HTTPS geändert werden.
 
           Wenn du diese Richtlinie nicht konfigurierst, werden blockierbare gemischte Inhalte gesperrt und optional blockierbare gemischte Inhalte auf HTTPS geändert. Nutzer können jedoch Ausnahmen für bestimmte Websites festlegen.

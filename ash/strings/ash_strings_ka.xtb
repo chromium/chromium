@@ -126,7 +126,6 @@
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> ჩანაცვლდა შემდეგით: <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">ყველა შეთავაზების ჩვენება</translation>
-<translation id="1503394326855300303">მფლობელის ეს ანგარიში გახდეს პირველი შესული ანგარიში მრავალპროფილიან სესიაში.</translation>
 <translation id="1510238584712386396">გამშვები</translation>
 <translation id="1516740043221086139">„არ შემაწუხოთ“ ჩართულია.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{შეტყობინების პარამეტრების ჩვენება. შეტყობინებები გამორთულია აპისთვის}other{შეტყობინების პარამეტრების ჩვენება. შეტყობინებები გამორთულია # აპისთვის}}</translation>
@@ -513,6 +512,7 @@
 <translation id="3294437725009624529">სტუმარი</translation>
 <translation id="3298690094479023523">თქვენი PIN-კოდი ან პაროლი კვლავ ვერ დადასტურდა. ცადეთ ხელახლა.</translation>
 <translation id="3300193645498960160">თუ საუბრისას თქვენი ხმა არ ისმის, შეტყობინებას მიიღებთ. ხმა არ გამოდის თქვენი მოწყობილობიდან.</translation>
+<translation id="3306386552969601301"><ph name="DEVICE_NAME" />-ის უსადენო ქსელთან დაკავშირებულია <ph name="DEVICECOUNT" /> მოწყობილობა</translation>
 <translation id="3307642347673023554">გადართულია ლეპტოპის რეჟიმზე</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> მაინც შეძლებს სისტემაში შესვლას მოგვიანებით.</translation>
 <translation id="3321628682574733415">მშობლის კოდი არასწორია</translation>
@@ -552,6 +552,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> წთ</translation>
 <translation id="3445925074670675829">USB-C მოწყობილობა</translation>
 <translation id="3455468639467374593">შაბლონი, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="3456931972722214204"><ph name="DEVICE_NAME" />-ის უსადენო ქსელთან დაკავშირებულია 1 მოწყობილობა</translation>
 <translation id="346243998268439747">მასშტაბის დონის გადაყენება</translation>
 <translation id="3465223694362104965">სისტემაში თქვენი ბოლო შესვლის შემდეგ ამ მოწყობილობასთან დაკავშირდა სხვა კლავიატურა. აღნიშნული კლავიატურის გამოყენებამდე დარწმუნდით, რომ მას ენდობით.</translation>
 <translation id="3465356146291925647">მართავს თქვენი ადმინისტრატორი</translation>
@@ -764,6 +765,7 @@
 <translation id="4324840740119394760"><ph name="APP_NAME" />-ს, ასევე, ყველა აპსა და ვებსაიტს, რომლებსაც აქვს კამერის გამოყენების ნებართვა, მიენიჭება კამერაზე წვდომა</translation>
 <translation id="4333628967105022692">Lacros მხარდაუჭერელია, როცა სისტემაში შესულია რამდენიმე მომხმარებელი.</translation>
 <translation id="4338109981321384717">გამადიდებელი შუშა</translation>
+<translation id="4356872429719185452">უსადენო ქსელის დეტალების ჩვენება. მიმდინარეობს უსადენო ქსელის ჩართვა.</translation>
 <translation id="4371348193907997655">ტრანსლირების პარამეტრები</translation>
 <translation id="4375482231364171368">მისამართთა ზოლში ძიება</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, სიგნალის სიძლიერეა <ph name="SIGNAL_STRENGTH" /> პროცენტი</translation>
@@ -1111,6 +1113,7 @@
 <translation id="5825969630400862129">დაკავშირებული მოწყობილობების პარამეტრები</translation>
 <translation id="5837036133683224804"><ph name="ROUTE_TITLE" />-ის შეწყვეტა „<ph name="RECEIVER_NAME" />“-ში</translation>
 <translation id="5841296711770970362">მომდევნო ჩანაწერზე გადასვლა</translation>
+<translation id="5842553299352339114"><ph name="DEVICE_NAME" />-ის უსადენო ქსელი ჩართულია, მოწყობილობები დაკავშირებული არ არის</translation>
 <translation id="584525477304726060">გეჭიროთ გასაშლელად</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> არ არის გააქტიურებული.</translation>
 <translation id="5860033963881614850">გამორთვა</translation>
@@ -1373,6 +1376,7 @@
 <translation id="6981291220124935078">წვდომის ჩართვა</translation>
 <translation id="6981982820502123353">სპეციალური შესაძლებლობები</translation>
 <translation id="698231206551913481">ამ მომხმარებლის ამოშლის შემდეგ, მასთან დაკავშირებული ყველა ფაილი და ადგილობრივი მონაცემი სამუდამოდ წაიშლება.</translation>
+<translation id="7004910047186208204">დაუკავშირდით მობილურ ინტერნეტს</translation>
 <translation id="7005239792648594238">დასაწყებად გახსენით აპი</translation>
 <translation id="7007983414944123363">თქვენი PIN-კოდის ან პაროლის დადასტურება ვერ მოხერხდა. ცადეთ ხელახლა.</translation>
 <translation id="7014684956566476813">დაკავშირებულია მოწყობილობასთან, სახელად <ph name="DEVICE_NAME" /></translation>
@@ -1527,6 +1531,7 @@
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 შეტყობინება}other{# შეტყობინება}}</translation>
 <translation id="7723703419796509666">დეველოპერის ხელსაწყოების კონსოლის ჩვენება ან დამალვა</translation>
 <translation id="7724603315864178912">ამოჭრა</translation>
+<translation id="7725108879223146004">უსადენო ქსელის დეტალების ჩვენება. მიმდინარეობს უსადენო ქსელის გამორთვა.</translation>
 <translation id="7727952505535211425">მისამართთა ზოლში მითითებული ვებსაიტის გახსნა ახალ ჩანართში</translation>
 <translation id="77365090426890123">მეხსიერების მოხმარება</translation>
 <translation id="7742327441377685481">შეტყობინებები არ არის</translation>
@@ -1662,6 +1667,7 @@
 <translation id="8308637677604853869">წინა მენიუ</translation>
 <translation id="830868413617744215">ბეტა</translation>
 <translation id="8314772463905284467">Caps Lock ჩართულია</translation>
+<translation id="8315514906653279104">მიმდინარეობს ჩართვა...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">არჩეულია ფანჯარა „<ph name="WINDOW_TITLE" />“</translation>
 <translation id="8349964124165471584">ბმულის გახსნა ახალ ფანჯარაში</translation>

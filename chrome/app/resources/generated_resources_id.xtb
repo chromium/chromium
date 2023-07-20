@@ -3305,6 +3305,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3721119614952978349">Anda dan Google</translation>
 <translation id="3722108462506185496">Error saat memulai layanan mesin virtual. Harap coba lagi nanti.</translation>
 <translation id="3722624153992426516">Petunjuk <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> diterima</translation>
+<translation id="3724897774652282549">Isi formulir</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Jaringan WiFi yang tersedia</translation>
 <translation id="3727187387656390258">Periksa pop-up</translation>
@@ -7240,6 +7241,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7067396782363924830">Warna sekitar</translation>
 <translation id="7067725467529581407">Jangan tampilkan ini lagi.</translation>
 <translation id="7068279399556423026">Login untuk Melihat Tab dari Perangkat Lain</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Sandi baru untuk situs ini}other{Sandi baru untuk situs ini}}</translation>
 <translation id="7070484045139057854">Ekstensi Ini Dapat Membaca dan Mengubah Data Situs</translation>
 <translation id="7072010813301522126">Nama pintasan</translation>
 <translation id="7074066049407662839">Login untuk menyimpan sandi</translation>
@@ -9627,6 +9629,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="9068598199622656904">Jangan tekan tombol pintasan keyboard secara bersamaan, tapi tekanlah satu per satu</translation>
 <translation id="9068878141610261315">Jenis file tidak didukung</translation>
 <translation id="9069665781180028115">Item yang dipilih akan tersedia di Chromebook ini. Jika Anda baru menggunakan Chromebook, sinkronkan semua item agar preferensi Anda dicadangkan. Buat perubahan kapan saja di Setelan &gt; Akun.</translation>
+<translation id="9070231741075992882">Izin yang Anda berikan untuk <ph name="APP_NAME" /> juga akan diberikan untuk aplikasi yang diinstal dan di-streaming.</translation>
 <translation id="9070342919388027491">Tab dipindah ke kiri</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Mouse USB terhubung</translation>

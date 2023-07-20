@@ -3291,6 +3291,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3721119614952978349">Tu și Google</translation>
 <translation id="3722108462506185496">A apărut o eroare la pornirea serviciului mașinii virtuale. Încearcă din nou.</translation>
 <translation id="3722624153992426516">S-a primit instrucțiunea <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /></translation>
+<translation id="3724897774652282549">Completează formularul</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Rețele Wi-Fi disponibile</translation>
 <translation id="3727187387656390258">Fereastră pop-up de inspectare</translation>
@@ -7227,6 +7228,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7067396782363924830">Culori ambientale</translation>
 <translation id="7067725467529581407">Nu mai afișa niciodată acest mesaj.</translation>
 <translation id="7068279399556423026">Conectează-te pentru a vedea filele de pe alte dispozitive</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Parolă nouă pentru acest site}few{Parole noi pentru acest site}other{Parole noi pentru acest site}}</translation>
 <translation id="7070484045139057854">Poate să citească și să modifice datele site-ului</translation>
 <translation id="7072010813301522126">Numele comenzii rapide</translation>
 <translation id="7074066049407662839">Conectează-te pentru a salva parolele</translation>
@@ -9616,6 +9618,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="9068598199622656904">Apasă pe o tastă odată pentru comenzi rapide de la tastatură în loc să ții apăsate tastele simultan</translation>
 <translation id="9068878141610261315">Tip de fișier neacceptat</translation>
 <translation id="9069665781180028115">Elementele selectate vor fi disponibile pe acest Chromebook. Dacă nu ai mai folosit un Chromebook, sincronizează toate elementele, astfel încât să faci backup preferințelor tale. Fă modificări oricând din Setări &gt; Conturi.</translation>
+<translation id="9070231741075992882">Permisiunile pe care le acorzi pentru <ph name="APP_NAME" /> vor fi acordate și pentru aplicațiile instalate și redate în stream.</translation>
 <translation id="9070342919388027491">Fila a fost mutată spre stânga</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Mouse USB conectat</translation>

@@ -82,6 +82,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="235650106824528204">Laneko profilaren administratzaileak kendu egin ditzake profil hau erabiltzean sortutako Chrome-ko datuak (adibidez, sortutako laster-markak, historia, pasahitzak eta bestelako ezarpenak). <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Egin aurrera</translation>
 <translation id="2401189691232800402">Chrome OS sistema</translation>
+<translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Chrome-rako luzapen bat edo gehiago giza interfazeko gailu bat erabiltzen ari ziren}=1{Chrome-rako luzapen bat edo gehiago giza interfazeko gailu bat erabiltzen ari dira}other{Chrome-rako luzapen bat edo gehiago giza interfazeko # gailu erabiltzen ari dira}}</translation>
 <translation id="2424440923901031101">Luzapenak Chrome Web Store-ren gidalerroak urratzen ditu, eta agian ez da segurua. Ken ezazu Chrome-tik, bisitatzen dituzun webguneetan zure datuak ikusi eta aldatu ezin izan ditzan, informazio pertsonala barne.</translation>
 <translation id="2467438592969358367">Google Chrome-k pasahitzak esportatu nahi ditu. Hori baimentzeko, idatzi Windows pasahitza.</translation>
 <translation id="2472092250898121027">Luzapenak malwarea dauka, eta ez da segurua. Ken ezazu Chrome-tik, bisitatzen dituzun webguneetan zure datuak ikusi eta aldatu ezin izan ditzan, informazio pertsonala barne.</translation>
@@ -339,6 +340,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="7398801000654795464">Chrome arakatzaileko saioa <ph name="USER_EMAIL_ADDRESS" /> gisa hasi duzu. Saioa berriro hasteko, erabili hasiera batean erabilitako kontu bera.</translation>
 <translation id="7410958280246779049">Chrome-k fitxategia blokeatu du arriskutsua delako</translation>
 <translation id="7412494426921990001">Sakatu Chrome-ko menua</translation>
+<translation id="742463671275348370">{NUM_DEVICES,plural, =0{Chrome-rako luzapen bat edo gehiago USB bidezko gailu bat erabiltzen ari ziren}=1{Chrome-rako luzapen bat edo gehiago USB bidezko gailu bat erabiltzen ari dira}other{Chrome-rako luzapen bat edo gehiago USB bidezko # gailu erabiltzen ari dira}}</translation>
 <translation id="7426611252293106642">Google Chrome-k agian ez du behar bezala funtzionatuko ez delako jada bateragarria Linux banaketa honekin</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{Erakundeak automatikoki itxiko du Chrome minutu batez erabiltzen ez bada.}other{Erakundeak automatikoki itxiko du Chrome # minutuz erabiltzen ez bada.}}</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{Erakundeak automatikoki ezabatuko ditu arakatze-datuak Chrome minutu batez erabiltzen ez bada. Arakatze-datuetan, historia, automatikoki betetako datuak eta deskargak daude. Fitxak irekita mantenduko dira.}other{Erakundeak automatikoki ezabatuko ditu arakatze-datuak Chrome # minutuz erabiltzen ez bada. Arakatze-datuetan, historia, automatikoki betetako datuak eta deskargak daude. Fitxak irekita mantenduko dira.}}</translation>

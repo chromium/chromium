@@ -4447,9 +4447,6 @@
 <translation id="4970046075219007744">允许 Web 应用通过 File Handling API 请求用户授权其访问各类文件</translation>
 <translation id="4970855112942626932">禁止登录浏览器</translation>
 <translation id="4974091268178043378">ChromeOS 颜色模式</translation>
-<translation id="4976928720873547342">如果您设置了此政策，系统将会从同步操作（无论是 <ph name="CHROME_SYNC_NAME" />还是漫游个人资料同步）中排除所有指定的数据类型。这有助于缩减漫游个人资料的大小，或者限制向 <ph name="CHROME_SYNC_NAME" />服务器上传的数据类型。
-
-      此政策当前可用的数据类型为：“bookmarks”、“readingList”、“preferences”、“passwords”、“autofill”、“themes”、“typedUrls”、“extensions”、“apps”、“tabs”、“wifiConfiguration”。这些名称区分大小写！</translation>
 <translation id="4977702914571821981">让您能够设置一系列网址格式，从而指定不允许哪些网站显示可屏蔽的（即主动型）混合内容（即 HTTPS 网站上的 HTTP 内容），以及要为哪些网站升级可选的可屏蔽（即被动型）混合内容。
 
           如果您未设置此政策，可屏蔽的混合内容将被屏蔽，同时可选的可屏蔽混合内容将被升级，但用户将能设置例外情况以允许在特定网站上显示此类内容。

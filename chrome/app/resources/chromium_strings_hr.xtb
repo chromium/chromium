@@ -59,6 +59,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2384373936468275798">Chromium OS nije mogao sinkronizirati podatke vašeg računa jer su podaci prijave na račun zastarjeli.</translation>
 <translation id="2396765026452590966">Proširenje "<ph name="EXTENSION_NAME" />" promijenilo je stranicu koja se prikazuje prilikom pokretanja Chromiuma.</translation>
+<translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Jedno ili više Chromiumovih proširenja pristupalo je jednom HID uređaju}=1{Jedno ili više Chromiumovih proširenja pristupa jednom HID uređaju}one{Jedno ili više Chromiumovih proširenja pristupa # HID uređaju}few{Jedno ili više Chromiumovih proširenja pristupa # HID uređaja}other{Jedno ili više Chromiumovih proširenja pristupa # HID uređaja}}</translation>
 <translation id="2401032172288869980">Chromium treba dopuštenje za fotoaparat i mikrofon za ovu web-lokaciju</translation>
 <translation id="2451727308784734061">Pomoću prečaca brzo pristupite Upravitelju zaporki. Prečac možete premjestiti na početni zaslon računala ili u pokretač aplikacija.</translation>
 <translation id="2478295928299953161">Chromium će se uskoro zatvoriti</translation>
@@ -91,6 +92,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="3032787606318309379">Dodavanje u preglednik Chromium...</translation>
 <translation id="3038232873781883849">Čekanje na instaliranje...</translation>
 <translation id="3068515742935458733">Pomognite nam poboljšati Chromium šaljući izvješća o rušenju programa i <ph name="UMA_LINK" /> Googleu</translation>
+<translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Jedno ili više Chromiumovih proširenja pristupalo je jednom USB uređaju}=1{Jedno ili više Chromiumovih proširenja pristupa jednom USB uređaju}one{Jedno ili više Chromiumovih proširenja pristupa # USB uređaju}few{Jedno ili više Chromiumovih proširenja pristupa # USB uređaja}other{Jedno ili više Chromiumovih proširenja pristupa # USB uređaja}}</translation>
 <translation id="3101560983689755071">Vaša povijest pregledavanja utječe na oglase koji vam se prikazuju i interese procijenjene u nastavku. Da bi zaštitio vašu privatnost, Chromium automatski kontinuirano briše vaše interese svakog mjeseca. Interesi se mogu osvježiti ako ih ne uklonite.</translation>
 <translation id="3103660991484857065">Program za instalaciju nije dekomprimirao arhivu. Ponovo preuzmite Chromium.</translation>
 <translation id="3130323860337406239">Chromium upotrebljava vaš mikrofon.</translation>

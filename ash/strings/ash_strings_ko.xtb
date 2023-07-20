@@ -126,7 +126,6 @@
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" />(HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> 항목과 <ph name="SECOND_ITEM_TITLE" /> 항목의 위치를 서로 바꿈</translation>
 <translation id="1500926532737552529">모든 추천 표시</translation>
-<translation id="1503394326855300303">이 소유자 계정이 멀티 로그인 세션에서 처음으로 로그인하는 계정이 되어야 합니다.</translation>
 <translation id="1510238584712386396">런처</translation>
 <translation id="1516740043221086139">방해 금지 모드가 사용 설정되어 있습니다.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{알림 설정을 표시합니다. 앱 1개의 알림이 사용 중지되어 있습니다.}other{알림 설정을 표시합니다. 앱 #개의 알림이 사용 중지되어 있습니다.}}</translation>
@@ -513,6 +512,7 @@
 <translation id="3294437725009624529">게스트</translation>
 <translation id="3298690094479023523">여전히 PIN 또는 비밀번호를 확인할 수 없습니다. 다시 시도하세요.</translation>
 <translation id="3300193645498960160">음소거 상태에서 말하면 알림을 받습니다. 오디오는 기기 외부에서 들리지 않습니다.</translation>
+<translation id="3306386552969601301">기기 <ph name="DEVICECOUNT" />개가 <ph name="DEVICE_NAME" /> 핫스팟에 연결되어 있습니다.</translation>
 <translation id="3307642347673023554">노트북 모드로 전환됨</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" />님은 나중에도 로그인할 수 있습니다.</translation>
 <translation id="3321628682574733415">잘못된 부모 코드</translation>
@@ -552,6 +552,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" />분</translation>
 <translation id="3445925074670675829">USB-C 기기</translation>
 <translation id="3455468639467374593">템플릿, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="3456931972722214204">기기 1개가 <ph name="DEVICE_NAME" /> 핫스팟에 연결되어 있습니다.</translation>
 <translation id="346243998268439747">확대/축소 수준 재설정</translation>
 <translation id="3465223694362104965">마지막으로 로그인한 이후로 다른 키보드가 이 기기에 연결되었습니다. 사용하기 전에 이 키보드를 신뢰하는지 확인하세요.</translation>
 <translation id="3465356146291925647">관리자가 관리함</translation>
@@ -764,6 +765,7 @@
 <translation id="4324840740119394760">카메라 액세스 권한이 있는 <ph name="APP_NAME" /> 앱을 포함한 모든 앱 및 웹사이트에서 카메라에 액세스할 수 있게 됩니다.</translation>
 <translation id="4333628967105022692">Lacros는 여러 사용자가 로그인된 상태에서 지원되지 않습니다.</translation>
 <translation id="4338109981321384717">돋보기</translation>
+<translation id="4356872429719185452">핫스팟 세부정보를 표시합니다. 핫스팟을 켜는 중입니다.</translation>
 <translation id="4371348193907997655">전송 설정</translation>
 <translation id="4375482231364171368">주소 표시줄에서 검색</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />퍼센트</translation>
@@ -1111,6 +1113,7 @@
 <translation id="5825969630400862129">연결된 기기 설정</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />에서 <ph name="ROUTE_TITLE" /> 중지</translation>
 <translation id="5841296711770970362">다음 트랙으로 이동</translation>
+<translation id="5842553299352339114"><ph name="DEVICE_NAME" /> 핫스팟이 켜져 있으며 연결된 기기가 없습니다.</translation>
 <translation id="584525477304726060">눌러서 최대화</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> 네트워크가 활성화되지 않음.</translation>
 <translation id="5860033963881614850">사용 안함</translation>
@@ -1373,6 +1376,7 @@
 <translation id="6981291220124935078">액세스 권한 사용 설정</translation>
 <translation id="6981982820502123353">접근성</translation>
 <translation id="698231206551913481">이 사용자를 제거하면 해당 사용자와 연결되어 있는 모든 파일 및 로컬 데이터가 영구적으로 삭제됩니다.</translation>
+<translation id="7004910047186208204">모바일 데이터에 연결</translation>
 <translation id="7005239792648594238">시작하려면 앱을 여세요.</translation>
 <translation id="7007983414944123363">PIN 또는 비밀번호를 확인할 수 없습니다. 다시 시도하세요.</translation>
 <translation id="7014684956566476813">이름이 <ph name="DEVICE_NAME" />인 기기에 연결됨</translation>
@@ -1527,6 +1531,7 @@
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{알림 1개}other{알림 #개}}</translation>
 <translation id="7723703419796509666">개발자 도구 콘솔 표시 또는 숨기기</translation>
 <translation id="7724603315864178912">잘라내기</translation>
+<translation id="7725108879223146004">핫스팟 세부정보를 표시합니다. 핫스팟을 끄는 중입니다.</translation>
 <translation id="7727952505535211425">새 탭의 주소 표시줄에서 웹사이트 열기</translation>
 <translation id="77365090426890123">메모리 사용량</translation>
 <translation id="7742327441377685481">알림 없음</translation>
@@ -1662,6 +1667,7 @@
 <translation id="8308637677604853869">이전 메뉴</translation>
 <translation id="830868413617744215">베타</translation>
 <translation id="8314772463905284467">Caps Lock이 켜져 있습니다.</translation>
+<translation id="8315514906653279104">켜는 중...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> 창 선택됨</translation>
 <translation id="8349964124165471584">새 창에서 링크 열기</translation>

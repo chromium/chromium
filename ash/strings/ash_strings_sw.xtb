@@ -126,7 +126,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> na <ph name="SECOND_ITEM_TITLE" /> zimebadilishana nafasi</translation>
 <translation id="1500926532737552529">Onyesha mapendekezo yote</translation>
-<translation id="1503394326855300303">Akaunti hii ya mmiliki lazima iwe ya kwanza kuingiwa katika kipindi cha kuingia katika akaunti mara nyingi.</translation>
 <translation id="1510238584712386396">Kizindua</translation>
 <translation id="1516740043221086139">Hali ya 'Usinisumbue' imewashwa</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Onyesha mipangilio ya arifa. Umezima arifa katika programu moja}other{Onyesha mipangilio ya arifa. Umezima arifa katika programu #}}</translation>
@@ -513,6 +512,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3294437725009624529">Mgeni</translation>
 <translation id="3298690094479023523">Bado imeshindwa kuthibitisha PIN au nenosiri lako. Jaribu tena.</translation>
 <translation id="3300193645498960160">Utaarifiwa ukizungumza huku umezima maikrofoni. Kamwe sauti haiondoki kwenye kifaa chako.</translation>
+<translation id="3306386552969601301">Vifaa <ph name="DEVICECOUNT" /> vimeunganishwa kwenye mtandao pepe wa <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Inatumia hali ya kompyuta ya kupakata</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> bado anaweza kuingia katika akaunti baadaye.</translation>
 <translation id="3321628682574733415">Msimbo wa mzazi si sahihi</translation>
@@ -552,6 +552,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3445288400492335833">Dakika <ph name="MINUTES" /></translation>
 <translation id="3445925074670675829">Kifaa cha USB-C</translation>
 <translation id="3455468639467374593">Kiolezo cha, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="3456931972722214204">Kifaa 1 kimeunganishwa na mtandao pepe wa <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">Badilisha kiwango cha ukuzaji</translation>
 <translation id="3465223694362104965">Kibodi nyingine imeunganishwa kwenye kifaa hiki tangu ulipoingia kwenye akaunti maya ya mwisho. Hakikisha kibodi hii ni salama kabla ya kuitumia.</translation>
 <translation id="3465356146291925647">Unadhibitiwa na Msimamizi wako</translation>
@@ -764,6 +765,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="4324840740119394760">Hatua hii huruhusu ufikiaji wa kamera katika <ph name="APP_NAME" /> na programu pamoja na tovuti zote zilizo na ruhusa ya kufikia kamera</translation>
 <translation id="4333628967105022692">Lacros haiwezi kutumiwa wakati watumiaji wengi wameingia katika akaunti.</translation>
 <translation id="4338109981321384717">Lenzi</translation>
+<translation id="4356872429719185452">Onyesha maelezo ya mtandao pepe. Mtandao pepe unawashwa.</translation>
 <translation id="4371348193907997655">Mipangilio ya Kutuma</translation>
 <translation id="4375482231364171368">Tafuta sehemu ya anwani</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, uthabiti wa mtandao asilimia<ph name="SIGNAL_STRENGTH" /></translation>
@@ -1111,6 +1113,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="5825969630400862129">Mipangilio ya vifaa vilivyounganishwa</translation>
 <translation id="5837036133683224804">Komesha <ph name="ROUTE_TITLE" /> kwenye <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Cheza wimbo unaofuata</translation>
+<translation id="5842553299352339114">Mtandao pepe wa <ph name="DEVICE_NAME" /> umewashwa, hakuna vifaa vilivyounganishwa</translation>
 <translation id="584525477304726060">Shikilia ili upanue dirisha</translation>
 <translation id="5856638668464565213">Mtandao wa <ph name="NETWORK_NAME" /> haujawashwa.</translation>
 <translation id="5860033963881614850">Kimezimwa</translation>
@@ -1373,6 +1376,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="6981291220124935078">Washa ufikiaji</translation>
 <translation id="6981982820502123353">Ufikivu</translation>
 <translation id="698231206551913481">Faili na data zote zilizo kwenye kifaa zinazohusishwa na mtumiaji zitafutwa kabisa pindi tu mtumiaji huyu atakapoondolewa.</translation>
+<translation id="7004910047186208204">Unganisha kwenye data ya mtandao wa simu</translation>
 <translation id="7005239792648594238">Fungua programu ili uanze kuitumia</translation>
 <translation id="7007983414944123363">Imeshindwa kuthibitisha PIN au nenosiri lako. Jaribu tena.</translation>
 <translation id="7014684956566476813">Imeunganishwa kwenye kifaa kiitwacho <ph name="DEVICE_NAME" /></translation>
@@ -1528,6 +1532,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{Arifa 1}other{Arifa #}}</translation>
 <translation id="7723703419796509666">Onyesha au ufiche dashibodi ya Zana za Msanidi Programu</translation>
 <translation id="7724603315864178912">Kata</translation>
+<translation id="7725108879223146004">Onyesha maelezo ya mtandao pepe. Mtandao pepe unazimwa.</translation>
 <translation id="7727952505535211425">Fungua tovuti kwenye sehemu ya anwani katika kichupo kipya</translation>
 <translation id="77365090426890123">matumizi ya hifadhi</translation>
 <translation id="7742327441377685481">Hakuna arifa</translation>
@@ -1663,6 +1668,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8308637677604853869">Menyu ya awali</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Kitufe cha Caps Lock kimewashwa</translation>
+<translation id="8315514906653279104">Inawasha...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Umechagua dirisha la <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349964124165471584">Fungua kiungo kwenye dirisha jipya</translation>

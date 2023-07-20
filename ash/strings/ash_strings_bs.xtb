@@ -126,7 +126,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540">Stavka <ph name="FIRST_ITEM_TITLE" /> je zamijenjena stavkom <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Prikaži sve prijedloge</translation>
-<translation id="1503394326855300303">Ovaj vlasnik računa mora biti prvi prijavljeni račun u sesiji višestruke prijave.</translation>
 <translation id="1510238584712386396">Pokretač</translation>
 <translation id="1516740043221086139">Uključen je način rada Ne ometaj.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Prikaži postavke obavještenja. Obavještenja aplikacije su isključena.}one{Prikaži postavke obavještenja. Obavještenja za # aplikaciju su isključena.}few{Prikaži postavke obavještenja. Obavještenja za # aplikacije su isključena.}other{Prikaži postavke obavještenja. Obavještenja za # aplikacija su isključena.}}</translation>
@@ -513,7 +512,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3294437725009624529">Gost</translation>
 <translation id="3298690094479023523">Potvrđivanje PIN-a ili lozinke i dalje nije uspjelo. Pokušajte ponovo.</translation>
 <translation id="3300193645498960160">Dobit ćete obavještenje ako govorite dok je isključen zvuk. Zvuk ne napušta vaš uređaj.</translation>
-<translation id="3306386552969601301">Uređaji (<ph name="DEVICECOUNT" />) povezani su sa žarišnom točkom uređaja <ph name="DEVICE_NAME" /></translation>
+<translation id="3306386552969601301">Više uređaja (ukupno <ph name="DEVICECOUNT" />) je povezano s pristupnom tačkom uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Promijenjeno u način rada za laptop</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> se može ponovo prijaviti kasnije.</translation>
 <translation id="3321628682574733415">Pogrešan kôd za roditelja</translation>
@@ -553,7 +552,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C uređaj</translation>
 <translation id="3455468639467374593">Šablon, <ph name="TEMPLATE_NAME" /></translation>
-<translation id="3456931972722214204">1 uređaj povezan je sa žarišnom točkom uređaja <ph name="DEVICE_NAME" /></translation>
+<translation id="3456931972722214204">1 uređaj je povezan s pristupnom tačkom uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">Poništavanje razine zumiranja</translation>
 <translation id="3465223694362104965">Od vaše posljednje prijave na ovaj uređaj je povezana još jedna tastatura. Prije nego što upotrijebite tu tastaturu, provjerite je li pouzdana.</translation>
 <translation id="3465356146291925647">Upravlja vaš administrator</translation>
@@ -766,7 +765,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="4324840740119394760">Ovo omogućava pristup kameri za aplikaciju <ph name="APP_NAME" /> i sve aplikacije i web lokacije s odobrenjem za nju</translation>
 <translation id="4333628967105022692">Preglednik Lacros nije podržan dok je istovremeno prijavljeno više korisnika.</translation>
 <translation id="4338109981321384717">Lupa</translation>
-<translation id="4356872429719185452">Prikažite pojedinosti žarišne točke. Žarišna točka se uključuje.</translation>
+<translation id="4356872429719185452">Pogledajte detalje pristupne tačke. Pristupna tačka se uključuje.</translation>
 <translation id="4371348193907997655">Postavke emitiranja</translation>
 <translation id="4375482231364171368">Pretraživanje u traci za adresu</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, jačina signala je <ph name="SIGNAL_STRENGTH" /> posto</translation>
@@ -1114,7 +1113,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="5825969630400862129">Postavke povezanih uređaja</translation>
 <translation id="5837036133683224804">Zaustavi <ph name="ROUTE_TITLE" /> na primaocu <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Odlazak na sljedeću numeru</translation>
-<translation id="5842553299352339114">Žarišna točka uređaja <ph name="DEVICE_NAME" /> je uključena, nije povezan nijedan uređaj</translation>
+<translation id="5842553299352339114">Pristupna tačka na uređaju <ph name="DEVICE_NAME" /> je uključena, a nijedan uređaj nije povezan</translation>
 <translation id="584525477304726060">Držite da maksimizirate</translation>
 <translation id="5856638668464565213">Mreža <ph name="NETWORK_NAME" /> nije aktivirana.</translation>
 <translation id="5860033963881614850">Isklj.</translation>
@@ -1377,7 +1376,7 @@ Nova instalacija</translation>
 <translation id="6981291220124935078">Uključi pristup</translation>
 <translation id="6981982820502123353">Pristupačnost</translation>
 <translation id="698231206551913481">Nakon što se ukloni ovaj korisnik, trajno će se izbrisati svi fajlovi i lokalni podaci povezani s njim.</translation>
-<translation id="7004910047186208204">Povežite se s mobilnom podatkovnom mrežom</translation>
+<translation id="7004910047186208204">Povežite se s prijenosom podataka na mobilnoj mreži</translation>
 <translation id="7005239792648594238">Otvorite aplikaciju da započnete</translation>
 <translation id="7007983414944123363">Potvrđivanje PIN-a ili lozinke nije uspjelo. Pokušajte ponovo.</translation>
 <translation id="7014684956566476813">Povezano je s uređajem pod nazivom <ph name="DEVICE_NAME" /></translation>
@@ -1532,7 +1531,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 obavještenje}one{# obavještenje}few{# obavještenja}other{# obavještenja}}</translation>
 <translation id="7723703419796509666">Prikazivanje ili sakrivanje konzole s alatima za programere</translation>
 <translation id="7724603315864178912">Izreži</translation>
-<translation id="7725108879223146004">Prikažite pojedinosti žarišne točke. Žarišna točka se isključuje.</translation>
+<translation id="7725108879223146004">Pogledajte detalje pristupne tačke. Pristupna tačka se isključuje.</translation>
 <translation id="7727952505535211425">Otvaranje web lokacije u traci za adresu u novoj kartici</translation>
 <translation id="77365090426890123">korištenje memorije</translation>
 <translation id="7742327441377685481">Nema obavještenja</translation>
@@ -1668,7 +1667,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="8308637677604853869">Prethodni meni</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Uključena su velika slova</translation>
-<translation id="8315514906653279104">Uključivanje...</translation>
+<translation id="8315514906653279104">Uključivanje…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Odabran je prozor <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349964124165471584">Otvaranje linka u novom prozoru</translation>

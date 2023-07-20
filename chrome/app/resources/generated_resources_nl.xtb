@@ -3290,6 +3290,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="3721119614952978349">Jij en Google</translation>
 <translation id="3722108462506185496">Fout bij starten van service voor virtuele machines. Probeer het opnieuw.</translation>
 <translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" />-instructie ontvangen</translation>
+<translation id="3724897774652282549">Formulier invullen</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Beschikbare wifi-netwerken</translation>
 <translation id="3727187387656390258">Pop-up controleren</translation>
@@ -7217,6 +7218,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7067396782363924830">Omgevingskleuren</translation>
 <translation id="7067725467529581407">Nooit meer bekijken.</translation>
 <translation id="7068279399556423026">Log in om tabbladen van andere apparaten te bekijken</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Nieuw wachtwoord voor deze site}other{Nieuwe wachtwoorden voor deze site}}</translation>
 <translation id="7070484045139057854">Hiermee kun je sitegegevens lezen en wijzigen</translation>
 <translation id="7072010813301522126">Naam van snelkoppeling</translation>
 <translation id="7074066049407662839">Log in om wachtwoorden op te slaan</translation>
@@ -9603,6 +9605,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9068598199622656904">Druk op 1 toets tegelijk voor sneltoetsen in plaats van dat je toetsen tegelijk ingedrukt moet houden.</translation>
 <translation id="9068878141610261315">Niet-ondersteund bestandstype</translation>
 <translation id="9069665781180028115">Geselecteerde items zijn beschikbaar op deze Chromebook. Als je nieuw bent bij Chromebook, synchroniseer je alle items zodat om een back-up van je voorkeuren te maken. Je kunt altijd wijzigingen aanbrengen via Instellingen &gt; Accounts.</translation>
+<translation id="9070231741075992882">Rechten die je toestaat voor <ph name="APP_NAME" />, zijn ook toegestaan voor de geïnstalleerde en gestreamde versies van de app.</translation>
 <translation id="9070342919388027491">Tabblad naar links verplaatst</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB-muis aangesloten</translation>

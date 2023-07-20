@@ -126,7 +126,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> swapped with <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Show all suggestions</translation>
-<translation id="1503394326855300303">This owner account has to be the first signed-in account in a multiple sign-in session.</translation>
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="1516740043221086139">Do Not Disturb is on.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Show notification settings. Notifications are off for an app}other{Show notification settings. Notifications are off for # apps}}</translation>

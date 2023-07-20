@@ -126,7 +126,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> y <ph name="SECOND_ITEM_TITLE" /> se han intercambiado</translation>
 <translation id="1500926532737552529">Mostrar todas las sugerencias</translation>
-<translation id="1503394326855300303">La cuenta de este propietario debe ser la primera cuenta que ha iniciado sesión en un inicio de sesión múltiple.</translation>
 <translation id="1510238584712386396">Menú de aplicaciones</translation>
 <translation id="1516740043221086139">El modo No molestar está activado.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Muestra la configuración de notificaciones. Las notificaciones están desactivadas para una aplicación.}other{Muestra la configuración de notificaciones. Las notificaciones están desactivadas para # aplicaciones.}}</translation>

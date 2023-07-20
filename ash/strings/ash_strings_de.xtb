@@ -124,7 +124,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> und <ph name="SECOND_ITEM_TITLE" /> haben die Plätze getauscht</translation>
 <translation id="1500926532737552529">Alle Vorschläge anzeigen</translation>
-<translation id="1503394326855300303">Dieses Inhaberkonto muss in einer Sitzung mit Mehrfachanmeldung das erste angemeldete Konto sein.</translation>
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="1516740043221086139">„Bitte nicht stören“ ist aktiviert.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Benachrichtigungseinstellungen anzeigen. Benachrichtigungen sind für eine App deaktiviert.}other{Benachrichtigungseinstellungen anzeigen. Benachrichtigungen sind für # Apps deaktiviert.}}</translation>

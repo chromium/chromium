@@ -323,6 +323,7 @@
 <translation id="160851722280695521">Խաղալ Dino Run խաղը Chrome-ում</translation>
 <translation id="161042844686301425">Երկնագույն</translation>
 <translation id="1611101756749861742">Երկրորդ գլանափաթեթ</translation>
+<translation id="1615178538289490617">Չեղարկել <ph name="PORT_NAME" /> միացքի հասանելիությունը</translation>
 <translation id="1615402009686901181">Ըստ ադմինիստրատորի սահմանած կանոնի՝ էկրանի տեսագրման հնարավորությունն անջատվում է, երբ գաղտնի բովանդակություն է տեսանելի</translation>
 <translation id="1617276713587758852">Քրոսովերներ</translation>
 <translation id="1618571384971354160">Քարշակ մեքենաների ծառայություններ և ճանապարհային օգնություն</translation>
@@ -629,6 +630,7 @@
 <translation id="2276057643614339130">Տպման հիմք</translation>
 <translation id="2277103315734023688">Առաջ գնալ</translation>
 <translation id="2277753418458118549">Ցույց տալ միացման մանրամասները</translation>
+<translation id="22792995594807632">Նախքան ներբեռնելը ստուգեք ֆայլերը</translation>
 <translation id="2283340219607151381">Պահել հասցեները և դրանցով ինքնալրացնել ձևերը</translation>
 <translation id="2283447177162560884">«<ph name="PAGE_TITLE" />» էջը ջնջվեց</translation>
 <translation id="2286383991450886080">34 x 44 դյույմ</translation>
@@ -1282,6 +1284,7 @@
 <translation id="3736520371357197498">Եթե դուք հասկանում եք ձեզ սպառնացող վտանգը, ապա կարող եք նախքան վտանգավոր ծրագրերի հեռացնելը <ph name="BEGIN_LINK" />այցելել այս ոչ ապահով կայքը<ph name="END_LINK" />:</translation>
 <translation id="3738166223076830879">Ձեր դիտարկիչը կառավարվում է ադմինիստրատորի կողմից։</translation>
 <translation id="3740319564441798148">Միջքաղաքային ավտոբուսներ և գնացքներ</translation>
+<translation id="3740447166056383374">Նախքան պատճենելը ստուգեք ֆայլերը</translation>
 <translation id="374325029554577103">Ֆիթնեսի գաջեթներ</translation>
 <translation id="3743765582345153106">Ինքնալրացում օգտագործելիս միշտ հաստատել</translation>
 <translation id="3744111561329211289">Ֆոնային համաժամացում</translation>
@@ -1804,6 +1807,7 @@
 <translation id="4852429274334674023">Օպերացիոն համակարգեր</translation>
 <translation id="4854853140771946034">Արագ ստեղծել նշում Google Keep-ում</translation>
 <translation id="485902285759009870">Կոդը ստուգվում է…</translation>
+<translation id="4862630594858951805">Ուզո՞ւմ եք նամակով տեղեկացվել, երբ գնիջեցում լինի</translation>
 <translation id="486459320933704969">Ծնողը կամ խնամակալը պետք է թույլատրի ձեզ այցելել այս կայք</translation>
 <translation id="4866506163384898554">Նշորդը ցույց տալու համար սեղմեք |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
 <translation id="4873616204573862158">Ակնոցներ</translation>
@@ -2000,6 +2004,7 @@
 <translation id="5255690596502591079">Լուսանկարել</translation>
 <translation id="5255833070095767006">350 x 460 մմ</translation>
 <translation id="5257739419779698609">{0,plural, =1{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը պատճենել այստեղ՝ <ph name="DESTINATION_NAME" />}one{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը պատճենել այստեղ՝ <ph name="DESTINATION_NAME" />}other{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլերը պատճենել այստեղ՝ <ph name="DESTINATION_NAME" />}}</translation>
+<translation id="5263867360296733198">Նախքան վերբեռնելը ստուգեք ֆայլերը</translation>
 <translation id="5266128565379329178">Ամրակար վերևում</translation>
 <translation id="5269225904387178860">Չորս անցք ներքևում</translation>
 <translation id="5269999699920406580">Գործառույթները, որոնք վերաբերում են ողջ համակարգին, կարող է կարգավորել միայն սեփականատերը` <ph name="OWNER_EMAIL" />:</translation>
@@ -2075,6 +2080,7 @@
 <translation id="5412236728747081950">Այս կայքը Chrome-ից ստանում է ձեզ հետաքրքրող թեմաների մասին տվյալներ՝ ավելի համապատասխան գովազդ ցուցադրելու համար</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Շեղջիչ 4</translation>
+<translation id="5414446060143308245">Նախքան փոխանցելը ստուգեք ֆայլերը</translation>
 <translation id="5414511064953050917">Տեղափոխել</translation>
 <translation id="5421136146218899937">Մաքրել դիտարկումների տվյալները…</translation>
 <translation id="5423269318075950257">Հետևեք գներին</translation>
@@ -2159,6 +2165,7 @@
 <translation id="5595485650161345191">Փոխել հասցեն</translation>
 <translation id="5596939519753369075">2 x 3,5 դյույմ</translation>
 <translation id="560412284261940334">Սարքերի կառավարումը չի աջակցվում</translation>
+<translation id="5605249000617390290">Իմանալ ավելին գների հետագծման մասին</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5610142619324316209">Ստուգել կապակցումը</translation>
 <translation id="5610807607761827392">Քարտերն ու հասցեները կարող եք կառավարել <ph name="BEGIN_LINK" />Կարգավորումներում<ph name="END_LINK" />:</translation>
@@ -2295,6 +2302,7 @@
 <translation id="5921639886840618607">Պահե՞լ քարտը Google հաշվում</translation>
 <translation id="5922853866070715753">Գրեթե պատրաստ է</translation>
 <translation id="5923492272538889093">Օգտագործե՞լ սարքի ապակողպումը՝ CVC-ի փոխարեն</translation>
+<translation id="5924510104057992926">Նախքան բացելը ստուգեք ֆայլերը</translation>
 <translation id="5924782825030413055">Համաձայնության վերջին թարմացման աղբյուրը՝</translation>
 <translation id="5925040402342933574">Օպտիկական սկավառակ (կիսափայլուն)</translation>
 <translation id="5926982310317673627">Մարզասրահներ և մարզակումբներ</translation>
@@ -2520,6 +2528,7 @@
 <translation id="6394852772105848029">Այս կայքին անհրաժեշտ է բացել <ph name="APP_NAME" /> հավելվածը</translation>
 <translation id="6398765197997659313">Ելնել լիաէկրան ռեժիմից</translation>
 <translation id="6401136357288658127">Այս կանոնը հնացել է: Փոխարենն օգտագործեք <ph name="NEW_POLICY" /> կանոնը։</translation>
+<translation id="6402537308870515461">Նախքան տեղափոխելը ստուգեք ֆայլերը</translation>
 <translation id="6403167778944553">Ննջասենյակ և լոգարան</translation>
 <translation id="6404511346730675251">Փոփոխել էջանիշը</translation>
 <translation id="6405181733356710802">Անցնե՞լ <ph name="APP_NAME" /></translation>
@@ -2668,6 +2677,7 @@
 <translation id="6710594484020273272">&lt;Մուտքագրեք որոնման հարցումը&gt;</translation>
 <translation id="671076103358959139">Գրանցման թոքեն՝</translation>
 <translation id="6711464428925977395">Պրոքսի սերվերի հետ ինչ-որ բան այն չէ, կամ հասցեն սխալ է:</translation>
+<translation id="6716013836112872184">Ստացեք նամակներ <ph name="EMAIL" /> հասցեին, երբ որևէ կայքում գնիջեցում լինի։</translation>
 <translation id="6716672519412350405"><ph name="URL" /> կայքն ուզում է ստեղծել ձեր շրջակայքի եռաչափ քարտեզը և հետագծել տեսախցիկի դիրքը</translation>
 <translation id="6718612893943028815">Օգտագործե՞լ տեսախցիկը</translation>
 <translation id="6721164594124191969">Պիտակներ (փայլուն)</translation>
@@ -3198,6 +3208,7 @@
 <translation id="7767278989746220252">Ներքնաբակ, սիզամարգ և այգի</translation>
 <translation id="776749070095465053">Գործվածք</translation>
 <translation id="7773005668374414287">Նույն հերթականությամբ՝ երեսի կողմով վերև</translation>
+<translation id="7779418012194492374">Չեղարկել <ph name="DEVICE_NAME" /> սարքի հասանելիությունը</translation>
 <translation id="7781829728241885113">Երեկ</translation>
 <translation id="7785790577395078482">այս պլանշետը</translation>
 <translation id="7786368602962652765">Չլրացված պարտադիր դաշտ կա։ Պահելուց առաջ լրացրեք այն։</translation>
@@ -3820,6 +3831,7 @@
 <translation id="9155211586651734179">Կցված աուդիո սարքերը</translation>
 <translation id="9155646082713385498">Ամսագրեր</translation>
 <translation id="9157595877708044936">Տեղակայում…</translation>
+<translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> ֆայլը պարունակում է զգայուն բովանդակություն}one{<ph name="FILE_COUNT" /> ֆայլ պարունակում է զգայուն բովանդակություն}other{<ph name="FILE_COUNT" /> ֆայլ պարունակում է զգայուն բովանդակություն}}</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Ձեր այցելած կայքերը կարող են որոշել ձեր նախասիրությունները՝ հիմնվելով կայքում ձեր գործողությունների վրա։ Օրինակ, եթե դուք այցելում եք կայք, որում վաճառվում են երկար տարածությունների վազքի մարզակոշիկներ, այդ կայքը կարող է որոշել, որ դուք հետաքրքրված եք մարաթոններով։</translation>
 <translation id="9166851138617700776">Իմանալ ավելին կայքերի կողմից առաջարկվող գովազդների և գովազդի արդյունավետության գնահատման մասին</translation>

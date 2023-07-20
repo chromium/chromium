@@ -4465,9 +4465,6 @@ Als je het beleid instelt op False, wordt het standaardgedrag gebruikt.</transla
 <translation id="4970046075219007744">Web-apps toestaan om de gebruiker toegang te geven tot bestandstypen via de File Handling API</translation>
 <translation id="4970855112942626932">Inloggen bij browser uitzetten</translation>
 <translation id="4974091268178043378">Chrome OS-kleurmodus</translation>
-<translation id="4976928720873547342">Als je het beleid instelt, worden alle opgegeven gegevenstypen uitgesloten van synchronisatie voor zowel <ph name="CHROME_SYNC_NAME" /> als synchronisatie van roamingprofielen. Dit kan handig zijn om het roamingprofiel te verkleinen of het type gegevens te beperken dat wordt geüpload naar de <ph name="CHROME_SYNC_NAME" />-servers.
-
-      De huidige gegevenstypen voor dit beleid zijn: 'bookmarks', 'readingList', 'preferences', 'passwords', 'autofill', 'themes', 'typedUrls', 'extensions', 'apps', 'tabs', 'wifiConfigurations'. Die namen zijn hoofdlettergevoelig.</translation>
 <translation id="4977702914571821981">Hiermee kun je een lijst met URL-patronen opgeven van sites waarop blokkeerbare (actieve) gemengde content (zoals HTTP-content op HTTPS-sites) niet mag worden getoond en waarvoor optioneel blokkeerbare (passieve) gemengde content wordt geüpgraded.
 
           Als je dit beleid niet instelt, wordt blokkeerbare gemengde content geblokkeerd en wordt optioneel blokkeerbare gemengde content geüpgraded. Gebruikers kunnen wel uitzonderingen instellen om dergelijke content toe te staan voor specifieke sites.

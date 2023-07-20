@@ -61,6 +61,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2384373936468275798">Chromium OS n'a pas pu synchroniser vos données, car vos renseignements de connexion ne sont plus à jour.</translation>
 <translation id="2396765026452590966">L'extension « <ph name="EXTENSION_NAME" /> » a modifié la page qui s'affiche au démarrage de Chromium.</translation>
+<translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Une ou plusieurs extensions Chromium ont accédé à 1 appareil HID}=1{Une ou plusieurs extensions Chromium ont accédé à 1 appareil HID}one{Une ou plusieurs extensions Chromium ont accédé à # appareil HID}other{Une ou plusieurs extensions Chromium ont accédé à # appareils HID}}</translation>
 <translation id="2401032172288869980">Chromium requiert l'autorisation d'accéder au microphone et à l'appareil photo pour ce site</translation>
 <translation id="2451727308784734061">Utilisez votre raccourci pour accéder rapidement au gestionnaire de mots de passe. Vous pouvez déplacer votre raccourci vers l'écran d'accueil ou le lanceur d'applications de votre ordinateur.</translation>
 <translation id="2478295928299953161">Chromium va bientôt se fermer</translation>
@@ -93,6 +94,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="3032787606318309379">Ajout à Chromium en cours...</translation>
 <translation id="3038232873781883849">Installation en attente…</translation>
 <translation id="3068515742935458733">Aidez-nous à améliorer Chromium en nous envoyant des rapports d'erreur et des <ph name="UMA_LINK" />.</translation>
+<translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Une ou plusieurs extensions Chromium ont accédé à 1 appareil USB}=1{Une ou plusieurs extensions Chromium ont accédé à 1 appareil USB}one{Une ou plusieurs extensions Chromium ont accédé à # appareil USB}other{Une ou plusieurs extensions Chromium ont accédé à # appareils USB}}</translation>
 <translation id="3101560983689755071">Votre historique de navigation a une incidence sur les annonces que vous voyez ainsi que sur les centres d'intérêt tels qu'ils sont estimés ci-dessous. Afin de protéger votre confidentialité, Chromium supprime automatiquement et de façon continue vos centres d'intérêt chaque mois. Les centres d'intérêt peuvent être actualisés à moins que vous ne les retiriez.</translation>
 <translation id="3103660991484857065">Le programme d'installation n'a pas réussi à décompresser l'archive. Veuillez télécharger Chromium de nouveau.</translation>
 <translation id="3130323860337406239">Chromium se sert de votre microphone.</translation>

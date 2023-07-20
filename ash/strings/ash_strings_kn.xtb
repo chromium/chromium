@@ -126,7 +126,6 @@
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="SECOND_ITEM_TITLE" /> ಜೊತೆಗೆ <ph name="FIRST_ITEM_TITLE" /> ಅನ್ನು ಸ್ವ್ಯಾಪ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1500926532737552529">ಎಲ್ಲಾ ಸಲಹೆಗಳನ್ನು ತೋರಿಸಿ</translation>
-<translation id="1503394326855300303">ಬಹು ಸೈನ್-ಇನ್ ಸೆಷನ್‌ನಲ್ಲಿ ಈ ಮಾಲೀಕರ ಖಾತೆಯೇ ಮೊದಲ ಸೈನ್-ಇನ್ ಮಾಡಿದ ಖಾತೆ ಆಗಿರಬೇಕು.</translation>
 <translation id="1510238584712386396">ಲಾಂಚರ್</translation>
 <translation id="1516740043221086139">'ಅಡಚಣೆ ಮಾಡಬೇಡಿ' ಆನ್ ಆಗಿದೆ.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{ನೋಟಿಫಿಕೇಶನ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ. ಒಂದು ಆ್ಯಪ್‌ಗೆ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ}one{ನೋಟಿಫಿಕೇಶನ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ. # ಆ್ಯಪ್‌ಗಳಿಗೆ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ}other{ನೋಟಿಫಿಕೇಶನ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ. # ಆ್ಯಪ್‌ಗಳಿಗೆ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ}}</translation>
@@ -513,6 +512,7 @@
 <translation id="3294437725009624529">ಅತಿಥಿ</translation>
 <translation id="3298690094479023523">ನಿಮ್ಮ ಪಿನ್ ಅಥವಾ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಇನ್ನೂ ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="3300193645498960160">ಮ್ಯೂಟ್ ಮಾಡಿದ್ದಾಗ ನೀವು ಮಾತನಾಡಿದರೆ ನಿಮಗೆ ನೋಟಿಫಿಕೇಶನ್ ಸಿಗುತ್ತದೆ. ಆಡಿಯೋ ಎಂದಿಗೂ ನಿಮ್ಮ ಸಾಧನವನ್ನು ತೊರೆಯುವುದಿಲ್ಲ.</translation>
+<translation id="3306386552969601301"><ph name="DEVICECOUNT" /> ಸಾಧನಗಳು <ph name="DEVICE_NAME" /> ಹಾಟ್‌ಸ್ಪಾಟ್‌ಗೆ ಕನೆಕ್ಟ್ ಆಗಿವೆ</translation>
 <translation id="3307642347673023554">ಲ್ಯಾಪ್‌ಟಾಪ್ ಮೋಡ್‌ಗೆ ಬದಲಿಸಲಾಗಿದೆ</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" />, ಆನಂತರ ಕೂಡಾ ಸೈನ್ ಇನ್ ಮಾಡಬಹುದು.</translation>
 <translation id="3321628682574733415">ತಪ್ಪಾದ ಪೋಷಕ ಕೋಡ್</translation>
@@ -552,6 +552,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> ನಿಮಿಷ</translation>
 <translation id="3445925074670675829">USB-C ಸಾಧನ</translation>
 <translation id="3455468639467374593">ಟೆಂಪ್ಲೇಟ್‌‌, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="3456931972722214204">1 ಸಾಧನವು <ph name="DEVICE_NAME" /> ಹಾಟ್‌ಸ್ಪಾಟ್‌ಗೆ ಕನೆಕ್ಟ್ ಆಗಿದೆ</translation>
 <translation id="346243998268439747">ಝೂಮ್‌ ಮಟ್ಟವನ್ನು ಮರುಹೊಂದಿಸಿ</translation>
 <translation id="3465223694362104965">ನೀವು ಕೊನೆಯದಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗಿನಿಂದ ಇನ್ನೊಂದು ಕೀಬೋರ್ಡ್ ಈ ಸಾಧನಕ್ಕೆ ಸಂಪರ್ಕಗೊಂಡಿದೆ. ನೀವು ಈ ಕೀಬೋರ್ಡ್ ಬಳಸುವ ಮೊದಲು ಅದರ ಮೇಲಿನ ನಿಮ್ಮ ನಂಬಿಕೆಯನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="3465356146291925647">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸಿದ್ದಾರೆ</translation>
@@ -764,6 +765,7 @@
 <translation id="4324840740119394760">ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಲು ಅನುಮತಿ ಹೊಂದಿರುವ <ph name="APP_NAME" /> ಮತ್ತು ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಇದು ಕ್ಯಾಮರಾಗೆ ಆ್ಯಕ್ಸೆಸ್ ನೀಡುತ್ತದೆ</translation>
 <translation id="4333628967105022692">ಅನೇಕ ಬಳಕೆದಾರರು ಸೈನ್ ಇನ್ ಆಗಿರುವಾಗ ಲ್ಯಾಕ್ರೋಸ್ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ.</translation>
 <translation id="4338109981321384717">ಭೂತಕನ್ನಡಿ</translation>
+<translation id="4356872429719185452">ಹಾಟ್‌ಸ್ಪಾಟ್ ವಿವರಗಳನ್ನು ತೋರಿಸಿ. ಹಾಟ್‌ಸ್ಪಾಟ್ ಆನ್ ಮಾಡಲಾಗುತ್ತಿದೆ.</translation>
 <translation id="4371348193907997655">ಕ್ಯಾಸ್ಟ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="4375482231364171368">ವಿಳಾಸ ಪಟ್ಟಿಯಲ್ಲಿ ಹುಡುಕಿ</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ ಶೇಕಡಾ <ph name="SIGNAL_STRENGTH" /> ಶೇಕಡಾ</translation>
@@ -1111,6 +1113,7 @@
 <translation id="5825969630400862129">ಕನೆಕ್ಟ್ ಮಾಡಿದ ಸಾಧನಗಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> ನಲ್ಲಿ <ph name="ROUTE_TITLE" /> ನಿಲ್ಲಿಸಿ</translation>
 <translation id="5841296711770970362">ಮುಂದಿನ ಟ್ರ್ಯಾಕ್‌ಗೆ ಹೋಗಿ</translation>
+<translation id="5842553299352339114"><ph name="DEVICE_NAME" /> ಹಾಟ್‌ಸ್ಪಾಟ್ ಆನ್ ಆಗಿದೆ, ಯಾವುದೇ ಸಾಧನಗಳು ಕನೆಕ್ಟ್ ಆಗಿಲ್ಲ</translation>
 <translation id="584525477304726060">ಹಿಗ್ಗಿಸಲು ಹೋಲ್ಡ್ ಮಾಡಿ</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿಲ್ಲ.</translation>
 <translation id="5860033963881614850">ಆಫ್</translation>
@@ -1373,6 +1376,7 @@
 <translation id="6981291220124935078">ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="6981982820502123353">ಪ್ರವೇಶ</translation>
 <translation id="698231206551913481">ಒಮ್ಮೆ ಈ ಬಳಕೆದಾರರನ್ನು ತೆಗೆದುಹಾಕಿದಾಗ ಈ ಬಳಕೆದಾರರೊಂದಿಗೆ ಸಂಯೋಜಿತವಾಗಿರುವ ಎಲ್ಲಾ ಫೈಲ್‌ಗಳು ಮತ್ತು ಸ್ಥಳೀಯ ಡೇಟಾವನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲಾಗುತ್ತದೆ.</translation>
+<translation id="7004910047186208204">ಮೊಬೈಲ್ ಡೇಟಾಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ</translation>
 <translation id="7005239792648594238">ಪ್ರಾರಂಭಿಸಲು ಆ್ಯಪ್ ತೆರೆಯಿರಿ</translation>
 <translation id="7007983414944123363">ನಿಮ್ಮ ಪಿನ್ ಅಥವಾ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="7014684956566476813"><ph name="DEVICE_NAME" /> ಹೆಸರಿನ ಸಾಧನಕ್ಕೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -1527,6 +1531,7 @@
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 ನೋಟಿಫಿಕೇಶನ್}one{# ನೋಟಿಫಿಕೇಶನ್‍ಗಳು}other{# ನೋಟಿಫಿಕೇಶನ್‍ಗಳು}}</translation>
 <translation id="7723703419796509666">ಡೆವಲಪರ್ ಪರಿಕರಗಳ ಕನ್ಸೋಲ್ ಅನ್ನು ತೋರಿಸಿ ಅಥವಾ ಮರೆಮಾಡಿ</translation>
 <translation id="7724603315864178912">ಕತ್ತರಿಸು</translation>
+<translation id="7725108879223146004">ಹಾಟ್‌ಸ್ಪಾಟ್ ವಿವರಗಳನ್ನು ತೋರಿಸಿ. ಹಾಟ್‌ಸ್ಪಾಟ್ ಆಫ್ ಮಾಡಲಾಗುತ್ತಿದೆ.</translation>
 <translation id="7727952505535211425">ಹೊಸ ಟ್ಯಾಬ್‌ ಒಂದರಲ್ಲಿನ ವಿಳಾಸ ಪಟ್ಟಿಯಲ್ಲಿ ವೆಬ್‌ಸೈಟ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="77365090426890123">ಮೆಮೊರಿ ಬಳಕೆ</translation>
 <translation id="7742327441377685481">ಯಾವುದೇ ಅಧಿಸೂಚನೆಗಳಿಲ್ಲ</translation>
@@ -1662,6 +1667,7 @@
 <translation id="8308637677604853869">ಹಿಂದಿನ ಮೆನು</translation>
 <translation id="830868413617744215">ಬೀಟಾ</translation>
 <translation id="8314772463905284467">CAPS LOCK ಆನ್ ಆಗಿದೆ</translation>
+<translation id="8315514906653279104">ಆನ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> ವಿಂಡೋ ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8349964124165471584">ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಲಿಂಕ್ ತೆರೆಯಿರಿ</translation>

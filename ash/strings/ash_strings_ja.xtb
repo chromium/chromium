@@ -32,6 +32,7 @@
 <translation id="1117719261843403176">モバイルデータのオンとオフを切り替える。<ph name="STATE" />。</translation>
 <translation id="112308213915226829">シェルフを自動的に非表示にする</translation>
 <translation id="1142002900084379065">最近の写真</translation>
+<translation id="114221662579355151">カメラへのアクセス権を持つ <ph name="APP1_NAME" />、<ph name="APP2_NAME" />、およびすべてのアプリとウェブサイトに対して、カメラへのアクセスを許可します。ウェブページの更新またはアプリの再起動が必要となる場合があります。</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> の情報ダイアログを開きます</translation>
 <translation id="1150989369772528668">カレンダー</translation>
 <translation id="1153356358378277386">ペア設定されたデバイス</translation>
@@ -118,16 +119,17 @@
 <translation id="14648076227129703">カメラへのアクセス権を持つ <ph name="APP1_NAME" />、<ph name="APP2_NAME" />、およびすべてのアプリとウェブサイトに対して、カメラへのアクセスを許可します</translation>
 <translation id="1467432559032391204">左</translation>
 <translation id="146902737843070955">管理者がこの変更をリクエストしました</translation>
+<translation id="1469148162491666137">カメラとマイクへのアクセス権を持つ <ph name="APP1_NAME" />、<ph name="APP2_NAME" />、およびすべてのアプリとウェブサイトに対して、アクセスを許可します。ウェブページの更新またはアプリの再起動が必要となる場合があります。</translation>
 <translation id="147310119694673958">スマートフォンのバッテリー <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">フローティング ユーザー補助機能メニュー</translation>
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />、カレンダー表示を開くには Enter キーを押してください</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" />（HDMI / DP）</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> と <ph name="SECOND_ITEM_TITLE" /> が置き換わりました</translation>
 <translation id="1500926532737552529">提案をすべて表示</translation>
-<translation id="1503394326855300303">この所有者アカウントは、マルチログイン セッションで最初にログインするアカウントである必要があります。</translation>
 <translation id="1510238584712386396">ランチャー</translation>
 <translation id="1516740043221086139">サイレント モードはオンです。</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{通知設定を表示します。1 件のアプリで通知がオフになっています}other{通知設定を表示します。# 件のアプリで通知がオフになっています}}</translation>
+<translation id="1523032696246003">バッテリー残量 <ph name="BATTERY_PERCENTAGE" />% | 充電完了まで <ph name="TIME" /></translation>
 <translation id="1525508553941733066">閉じる</translation>
 <translation id="1526448108126799339">新しいタブを新しいウィンドウで開く</translation>
 <translation id="1528259147807435347">過去 1 週間以内に編集したファイル</translation>
@@ -140,6 +142,7 @@
 <translation id="1550523713251050646">クリックするとその他のオプションが表示されます</translation>
 <translation id="1555130319947370107">青</translation>
 <translation id="1557622599341396706">デスク名を表示</translation>
+<translation id="1569384531973824928">カメラとマイクへのアクセス権を持つすべてのアプリとウェブサイトに対して、アクセスを許可します。ウェブページの更新またはアプリの再起動が必要となる場合があります。</translation>
 <translation id="1576623706766186887">拡大鏡がオンのときにズームアウトします</translation>
 <translation id="1586324912145647027">デスク 1～8 に移動する</translation>
 <translation id="1589090746204042747">このセッションのすべてのアクティビティにアクセスする</translation>
@@ -312,6 +315,7 @@
 <translation id="2369165858548251131">中国語で「こんにちは」ってどう言うの</translation>
 <translation id="2382875860893882175">キャストは現在一時停止しています。いつでもキャストを再開または停止できます。</translation>
 <translation id="2386292613071805067">ページ上のすべてを選択する</translation>
+<translation id="2396594569364254378">メモリ <ph name="USED_MEMORY" /> | 合計 <ph name="TOTAL_MEMORY" /></translation>
 <translation id="2397416548179033562">Chrome メニューを表示</translation>
 <translation id="240006516586367791">メディア コントロール</translation>
 <translation id="2402411679569069051">Chromebook のロックを解除するには、指紋認証を使用するか、スマートフォンのロックを解除します</translation>
@@ -508,6 +512,7 @@
 <translation id="3294437725009624529">ゲスト</translation>
 <translation id="3298690094479023523">PIN またはパスワードはまだ確認されていません。もう一度お試しください。</translation>
 <translation id="3300193645498960160">ミュートしているときに話すと、通知されます。音声がデバイスの外部に送信されることはありません。</translation>
+<translation id="3306386552969601301"><ph name="DEVICECOUNT" /> 台のデバイスが <ph name="DEVICE_NAME" /> のアクセス ポイントに接続されています</translation>
 <translation id="3307642347673023554">ノートパソコン モードに切り替えました</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> が後でログインすることは引き続き可能です。</translation>
 <translation id="3321628682574733415">保護者のコードが間違っています</translation>
@@ -547,6 +552,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" />分</translation>
 <translation id="3445925074670675829">USB-C デバイス</translation>
 <translation id="3455468639467374593">テンプレート、<ph name="TEMPLATE_NAME" /></translation>
+<translation id="3456931972722214204">1 台のデバイスが <ph name="DEVICE_NAME" /> のアクセス ポイントに接続されています</translation>
 <translation id="346243998268439747">拡大縮小をリセットする</translation>
 <translation id="3465223694362104965">前回のログイン後に、別のキーボードがこのデバイスに接続されました。このキーボードを使用する前に信頼できるものかどうか確認してください。</translation>
 <translation id="3465356146291925647">管理者によって管理</translation>
@@ -640,6 +646,7 @@
 <translation id="3799080171973636491">全画面拡大鏡のキーボード ショートカットを押しました。この機能をオンにしますか？</translation>
 <translation id="380165613292957338">はい、どんなご用でしょう？</translation>
 <translation id="3804737937830804242">カメラをたたむ</translation>
+<translation id="3824784079442479685">カメラへのアクセス権を持つ <ph name="APP_NAME" /> およびすべてのアプリとウェブサイトに対して、カメラへのアクセスを許可します。ウェブページの更新またはアプリの再起動が必要となる場合があります。</translation>
 <translation id="3826099427150913765">パスワードに切り替える</translation>
 <translation id="383058930331066723">バッテリー セーバー モードがオンです</translation>
 <translation id="383629559565718788">キーボード設定を表示</translation>
@@ -695,6 +702,7 @@
 <translation id="4066027111132117168">オン（<ph name="REMAINING_TIME" />）</translation>
 <translation id="4069532248403319695">[ダウンロード] ページを開く</translation>
 <translation id="4072264167173457037">電波: 中程度</translation>
+<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> 件提出済み • <ph name="NUM_GRADED" /> 件評価済み</translation>
 <translation id="4086921558679520050">デバイスの物理的なマイクスイッチをオンにする</translation>
 <translation id="4101772068965291327">ホームページを開く</translation>
 <translation id="4112140312785995938">後方に移動</translation>
@@ -757,6 +765,7 @@
 <translation id="4324840740119394760">カメラへのアクセス権を持つ <ph name="APP_NAME" /> およびすべてのアプリとウェブサイトに対して、カメラへのアクセスを許可します</translation>
 <translation id="4333628967105022692">複数のユーザーがログインしている場合、Lacros はサポートされません。</translation>
 <translation id="4338109981321384717">虫メガネ</translation>
+<translation id="4356872429719185452">アクセス ポイントの詳細を表示します。アクセス ポイントはオンです。</translation>
 <translation id="4371348193907997655">キャスト設定</translation>
 <translation id="4375482231364171368">アドレスバーで検索する</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />、電波強度 <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -853,6 +862,7 @@
 <translation id="4752784485658729358">保存できるデスクは 6 つまでです。新しいデスクを保存するには、デスクを削除してください。</translation>
 <translation id="4759238208242260848">ダウンロード</translation>
 <translation id="4762573482154983647">アプリを非表示</translation>
+<translation id="4763885921995354846">カメラへのアクセス権を持つすべてのアプリとウェブサイトに対して、カメラへのアクセスを許可します。ウェブページの更新またはアプリの再起動が必要となる場合があります。</translation>
 <translation id="4774338217796918551">明日の <ph name="COME_BACK_TIME" /> になったら利用を再開できます。</translation>
 <translation id="4776584068981882959">パスワードはまだ確認されていません。もう一度お試しください。</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> のパスワード</translation>
@@ -880,6 +890,7 @@
 <translation id="4871905435473761992">アクセス ポイントの詳細を表示します。ご利用のモバイル ネットワークはアクセス ポイントに対応していません。</translation>
 <translation id="4872237917498892622">Alt+ 検索/Shift</translation>
 <translation id="4872852897273142380">ブックマーク バーにフォーカスするかハイライト表示する（ブックマーク バーが表示されている場合）</translation>
+<translation id="4881323000405981760">エフェクトは Linux アプリでサポートされていません</translation>
 <translation id="4881695831933465202">開く</translation>
 <translation id="4889868803215848840">提案内容を改善するため、よろしければフィードバックをご提供ください:</translation>
 <translation id="4890187583552566966">Google アシスタントは管理者によって無効にされています。</translation>
@@ -1054,6 +1065,7 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">より安全なネットワークに切り替えました</translation>
 <translation id="5619862035903135339">管理者が設定したポリシーにより、スクリーン キャプチャは無効になっています</translation>
+<translation id="5620979661744857819">カメラとマイクへのアクセス権を持つ <ph name="APP_NAME" /> およびすべてのアプリとウェブサイトに対して、アクセスを許可します。ウェブページの更新またはアプリの再起動が必要となる場合があります。</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">パスワードを確認できませんでした。もう一度お試しください。</translation>
 <translation id="5646376287012673985">保存先</translation>
@@ -1101,10 +1113,12 @@
 <translation id="5825969630400862129">接続済みデバイスの設定</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> の「<ph name="ROUTE_TITLE" />」を停止します</translation>
 <translation id="5841296711770970362">次のトラックに移動する</translation>
+<translation id="5842553299352339114"><ph name="DEVICE_NAME" /> のアクセス ポイントはオンです。デバイスが接続されていません</translation>
 <translation id="584525477304726060">長押しして最大化</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> が無効です。</translation>
 <translation id="5860033963881614850">OFF</translation>
 <translation id="5860491529813859533">オンにする</translation>
+<translation id="5864748620896638071">バッテリー残量 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">ネットワーク情報を収集しています</translation>
 <translation id="5867606971598166637">システム管理者が画面をモニタリングしています</translation>
 <translation id="5876666360658629066">保護者のコードを入力してください</translation>
@@ -1362,6 +1376,7 @@
 <translation id="6981291220124935078">アクセスをオンにする</translation>
 <translation id="6981982820502123353">ユーザー補助機能</translation>
 <translation id="698231206551913481">このユーザーを削除すると、このユーザーに関連付けられているファイルとローカルデータもすべて完全に削除されます。</translation>
+<translation id="7004910047186208204">モバイルデータに接続する</translation>
 <translation id="7005239792648594238">開始するにはアプリを開きます</translation>
 <translation id="7007983414944123363">PIN またはパスワードを確認できませんでした。もう一度お試しください。</translation>
 <translation id="7014684956566476813"><ph name="DEVICE_NAME" /> という名前のデバイスに接続しています</translation>
@@ -1479,6 +1494,7 @@
 <translation id="7561982940498449837">メニューを閉じる</translation>
 <translation id="7564874036684306347">ウィンドウを別のデスクトップに移動すると、予期しない動作が起こることがあります。以降の通知、ウィンドウ、ダイアログは、複数のデスクトップに分かれて表示される可能性があります。</translation>
 <translation id="7569509451529460200">Braille と ChromeVox が有効になっています</translation>
+<translation id="7571361473021531288">バッテリー残量 <ph name="BATTERY_PERCENTAGE" />% | 残り使用時間 <ph name="TIME" /></translation>
 <translation id="7573585051776738856">アクティブなウィンドウを右側に固定しました。</translation>
 <translation id="7579778809502851308">スクリーン キャプチャ</translation>
 <translation id="7593891976182323525">検索/Shift</translation>
@@ -1516,6 +1532,7 @@
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 件の通知}other{# 件の通知}}</translation>
 <translation id="7723703419796509666">デベロッパー ツール コンソールの表示と非表示を切り替える</translation>
 <translation id="7724603315864178912">切り取り</translation>
+<translation id="7725108879223146004">アクセス ポイントの詳細を表示します。アクセス ポイントはオフです。</translation>
 <translation id="7727952505535211425">新しいタブのアドレスバーでウェブサイトを開く</translation>
 <translation id="77365090426890123">メモリ使用状況</translation>
 <translation id="7742327441377685481">通知なし</translation>
@@ -1651,6 +1668,7 @@
 <translation id="8308637677604853869">前のメニュー</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock がオンになっています</translation>
+<translation id="8315514906653279104">オンにしています...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> ウィンドウが選択されています</translation>
 <translation id="8349964124165471584">新しいウィンドウでリンクを開く</translation>
@@ -1800,6 +1818,7 @@
 <translation id="9024331582947483881">全画面表示</translation>
 <translation id="9029736946581028033">デバイスの電源がまもなく切れます</translation>
 <translation id="9030319654231318877">日の入りまでオフ</translation>
+<translation id="9030665205623277906">CPU 使用率のスナップショット: <ph name="CPU_USEAGE" />%</translation>
 <translation id="9034924485347205037">Linux ファイル</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> の設定を開く</translation>
 <translation id="9059834730836941392">通知を折りたたむ</translation>

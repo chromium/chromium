@@ -126,7 +126,6 @@
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540">สลับ <ph name="FIRST_ITEM_TITLE" /> กับ <ph name="SECOND_ITEM_TITLE" /> แล้ว</translation>
 <translation id="1500926532737552529">แสดงคำแนะนำทั้งหมด</translation>
-<translation id="1503394326855300303">บัญชีเจ้าของนี้ต้องเป็นบัญชีที่ลงชื่อเข้าใช้บัญชีแรกในเซสชันการลงชื่อเข้าใช้พร้อมกัน</translation>
 <translation id="1510238584712386396">ตัวเรียกใช้งาน</translation>
 <translation id="1516740043221086139">โหมดห้ามรบกวนเปิดอยู่</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{แสดงการตั้งค่าการแจ้งเตือน ปิดการแจ้งเตือนไว้สำหรับ 1 แอป}other{แสดงการตั้งค่าการแจ้งเตือน ปิดการแจ้งเตือนไว้สำหรับ # แอป}}</translation>

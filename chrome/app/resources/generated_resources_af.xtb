@@ -3305,6 +3305,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3721119614952978349">Jy en Google</translation>
 <translation id="3722108462506185496">Kon nie die virtuelemasjiendiens begin nie. Probeer asseblief weer.</translation>
 <translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" />-instruksie is ontvang</translation>
+<translation id="3724897774652282549">Vul die vorm in</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Beskikbare wi-fi-netwerke</translation>
 <translation id="3727187387656390258">Ondersoek opspringer</translation>
@@ -7241,6 +7242,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7067396782363924830">Agtergrondkleure</translation>
 <translation id="7067725467529581407">Moet dit nooit weer wys nie.</translation>
 <translation id="7068279399556423026">Meld aan om oortjies van ander toestelle af te sien</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Nuwe wagwoord vir hierdie werf}other{Nuwe wagwoorde vir hierdie werf}}</translation>
 <translation id="7070484045139057854">Dit kan werfdata lees en verander</translation>
 <translation id="7072010813301522126">Kortpadnaam</translation>
 <translation id="7074066049407662839">Meld aan om wagwoorde te stoor</translation>

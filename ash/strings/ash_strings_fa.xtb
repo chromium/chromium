@@ -126,7 +126,6 @@
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> با <ph name="SECOND_ITEM_TITLE" /> جابه‌جا شد</translation>
 <translation id="1500926532737552529">نمایش همه پیشنهادها</translation>
-<translation id="1503394326855300303">این حساب مالک باید اولین حسابی باشد که در یک جلسه ورود به سیستم چندگانه به سیستم وارد می‌شود.</translation>
 <translation id="1510238584712386396">راه‌انداز</translation>
 <translation id="1516740043221086139">«مزاحم نشوید» روشن است.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{نشان دادن تنظیمات اعلان. اعلان‌های یک برنامه خاموش است}one{نشان دادن تنظیمات اعلان. اعلان‌های # برنامه خاموش است}other{نشان دادن تنظیمات اعلان. اعلان‌های # برنامه خاموش است}}</translation>
@@ -513,6 +512,7 @@
 <translation id="3294437725009624529">مهمان</translation>
 <translation id="3298690094479023523">همچنان نمی‌توان پین یا گذرواژه شما را تأیید کرد. دوباره امتحان کنید.</translation>
 <translation id="3300193645498960160">اگر هنگام بی‌صدا بودن صحبت کنید به شما اطلاع داده می‌شود. صدا هرگز از دستگاهتان خارج نمی‌شود.</translation>
+<translation id="3306386552969601301"><ph name="DEVICECOUNT" /> دستگاه به نقطه اتصال <ph name="DEVICE_NAME" /> متصل است</translation>
 <translation id="3307642347673023554">به حالت رایانه کیفی رفته‌اید</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> همچنان می‌تواند بعداً به سیستم وارد شود.</translation>
 <translation id="3321628682574733415">کد والدین نادرست است</translation>
@@ -552,6 +552,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> دقیقه</translation>
 <translation id="3445925074670675829">‏دستگاه USB-C</translation>
 <translation id="3455468639467374593">الگو، <ph name="TEMPLATE_NAME" /></translation>
+<translation id="3456931972722214204">یک دستگاه به نقطه اتصال <ph name="DEVICE_NAME" /> متصل است</translation>
 <translation id="346243998268439747">بازنشانی بزرگ‌نمایی</translation>
 <translation id="3465223694362104965">از آخرین باری که به سیستم وارد شدید، صفحه‌کلید دیگری به این دستگاه متصل شده است. قبل از استفاده از این صفحه‌کلید، مطمئن شوید به آن اعتماد دارید.</translation>
 <translation id="3465356146291925647">تحت‌مدیریت سرپرست</translation>
@@ -763,6 +764,7 @@
 <translation id="4324840740119394760">با این کار، دسترسی به دوربین برای <ph name="APP_NAME" /> و همه برنامه‌ها و وب‌سایت‌های دارای اجازه دوربین مجاز می‌شود</translation>
 <translation id="4333628967105022692">‏وقتی چند کاربر به سیستم وارد شده باشند، از Lacros پشتیبانی نمی‌شود.</translation>
 <translation id="4338109981321384717">ذره‌بین</translation>
+<translation id="4356872429719185452">نمایش جزئیات نقطه اتصال. نقطه اتصال درحال روشن شدن است.</translation>
 <translation id="4371348193907997655">تنظیمات پخش محتوا</translation>
 <translation id="4375482231364171368">جستجو در نوار نشانی</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" /> درصد</translation>
@@ -1110,6 +1112,7 @@
 <translation id="5825969630400862129">تنظیمات دستگاه‌های متصل</translation>
 <translation id="5837036133683224804">توقف <ph name="ROUTE_TITLE" /> به <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">رفتن به آهنگ بعدی</translation>
+<translation id="5842553299352339114">نقطه اتصال <ph name="DEVICE_NAME" /> روشن است، هیچ دستگاهی متصل نیست</translation>
 <translation id="584525477304726060">برای بزرگ کردن، نگه دارید</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> فعال نیست.</translation>
 <translation id="5860033963881614850">خاموش</translation>
@@ -1372,6 +1375,7 @@
 <translation id="6981291220124935078">روشن کردن دسترسی</translation>
 <translation id="6981982820502123353">دسترس‌پذیری</translation>
 <translation id="698231206551913481">اگر کاربر حذف شود، همه فایل‌ها و داده‌های محلی مربوط به او به‌طور دائم حذف خواهند شد.</translation>
+<translation id="7004910047186208204">اتصال به شبکه داده تلفن همراه</translation>
 <translation id="7005239792648594238">برای شروع کار، برنامه‌ای را باز کنید</translation>
 <translation id="7007983414944123363">نمی‌توان پین یا گذرواژه را تأیید کرد. دوباره امتحان کنید.</translation>
 <translation id="7014684956566476813">متصل به دستگاهی با نام <ph name="DEVICE_NAME" /></translation>
@@ -1526,6 +1530,7 @@
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{۱ اعلان}one{# اعلان}other{# اعلان}}</translation>
 <translation id="7723703419796509666">نشان دادن یا پنهان کردن کنسول «ابزار توسعه‌دهندگان»</translation>
 <translation id="7724603315864178912">برش</translation>
+<translation id="7725108879223146004">نمایش جزئیات نقطه اتصال. نقطه اتصال درحال خاموش شدن است.</translation>
 <translation id="7727952505535211425">باز کردن وب‌سایت در نوار نشانی در برگه جدید</translation>
 <translation id="77365090426890123">استفاده از حافظه</translation>
 <translation id="7742327441377685481">اعلانی ندارید</translation>
@@ -1661,6 +1666,7 @@
 <translation id="8308637677604853869">منوی قبلی</translation>
 <translation id="830868413617744215">بتا</translation>
 <translation id="8314772463905284467">‏Caps Lock روشن است</translation>
+<translation id="8315514906653279104">درحال روشن کردن…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">پنجره <ph name="WINDOW_TITLE" /> انتخاب شد</translation>
 <translation id="8349964124165471584">باز کردن پیوند در پنجره جدید</translation>
