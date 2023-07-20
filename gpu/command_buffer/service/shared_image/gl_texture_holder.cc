@@ -64,7 +64,8 @@ viz::SharedImageFormat GLTextureHolder::GetPlaneFormat(
   if (format == viz::MultiPlaneFormat::kNV12) {
     return plane_index == 0 ? viz::SinglePlaneFormat::kR_8
                             : viz::SinglePlaneFormat::kRG_88;
-  } else if (format == viz::MultiPlaneFormat::kYV12) {
+  } else if (format == viz::MultiPlaneFormat::kYV12 ||
+             format == viz::MultiPlaneFormat::kI420) {
     return viz::SinglePlaneFormat::kR_8;
   }
 

@@ -117,6 +117,8 @@ uint64_t StorageBytesPerElement(SharedImageFormat::ChannelFormat channel) {
 
 const char* PlaneConfigToString(SharedImageFormat::PlaneConfig plane) {
   switch (plane) {
+    case SharedImageFormat::PlaneConfig::kY_U_V:
+      return "Y_U_V";
     case SharedImageFormat::PlaneConfig::kY_V_U:
       return "Y_V_U";
     case SharedImageFormat::PlaneConfig::kY_UV:
@@ -181,6 +183,7 @@ int SharedImageFormat::NumberOfPlanes() const {
   if (is_single_plane())
     return 1;
   switch (plane_config()) {
+    case PlaneConfig::kY_U_V:
     case PlaneConfig::kY_V_U:
       return 3;
     case PlaneConfig::kY_UV:
@@ -259,6 +262,7 @@ gfx::Size SharedImageFormat::GetPlaneSize(int plane_index,
     return size;
 
   switch (plane_config()) {
+    case PlaneConfig::kY_U_V:
     case PlaneConfig::kY_V_U:
       if (plane_index == 0) {
         return size;
@@ -287,6 +291,7 @@ gfx::Size SharedImageFormat::GetPlaneSize(int plane_index,
 int SharedImageFormat::NumChannelsInPlane(int plane_index) const {
   DCHECK(IsValidPlaneIndex(plane_index));
   switch (plane_config()) {
+    case PlaneConfig::kY_U_V:
     case PlaneConfig::kY_V_U:
       return 1;
     case PlaneConfig::kY_UV:
@@ -357,6 +362,7 @@ bool SharedImageFormat::HasAlpha() const {
     }
   }
   switch (plane_config()) {
+    case PlaneConfig::kY_U_V:
     case PlaneConfig::kY_V_U:
     case PlaneConfig::kY_UV:
       return false;

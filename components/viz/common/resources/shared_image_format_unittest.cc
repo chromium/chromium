@@ -60,6 +60,21 @@ TEST_F(SharedImageFormatTest, MultiPlaneYVU) {
   EXPECT_EQ(format.EstimatedSizeInBytes(kOddSize), 131u);
 }
 
+TEST_F(SharedImageFormatTest, MultiPlaneI420) {
+  // 8-bit 4:2:0 Y_U_V format (I420)
+  SharedImageFormat format = MultiPlaneFormat::kI420;
+  // Test for NumChannelsInPlane
+  std::vector<int> expected_channels = {1, 1, 1};
+  TestNumChannelsInPlane(expected_channels, format);
+
+  EXPECT_EQ(format.EstimatedSizeInBytes(kDefaultSize), 15000u);
+
+  // Y: 9 bytes per row (1 channel * 1 byte * 9 width) * 9 rows = 81 bytes.
+  // V: 5 bytes per row (1 channels * 1 byte * 5 width) * 5 rows = 25 bytes.
+  // U: 5 bytes per row (1 channels * 1 byte * 5 width) * 5 rows = 25 bytes.
+  EXPECT_EQ(format.EstimatedSizeInBytes(kOddSize), 131u);
+}
+
 TEST_F(SharedImageFormatTest, MultiPlaneP010) {
   // 10-bit 4:2:0 Y_UV biplanar format (P010)
   SharedImageFormat format = MultiPlaneFormat::kP010;

@@ -66,12 +66,14 @@ gfx::BufferFormat ToBufferFormat(viz::SharedImageFormat format) {
   } else if (format == viz::MultiPlaneFormat::kP010) {
     return gfx::BufferFormat::P010;
   }
-  NOTREACHED();
+  NOTREACHED() << "format=" << format.ToString();
   return gfx::BufferFormat::RGBA_8888;
 }
 
 SkYUVAInfo::PlaneConfig ToSkYUVAPlaneConfig(viz::SharedImageFormat format) {
   switch (format.plane_config()) {
+    case viz::SharedImageFormat::PlaneConfig::kY_U_V:
+      return SkYUVAInfo::PlaneConfig::kY_U_V;
     case viz::SharedImageFormat::PlaneConfig::kY_V_U:
       return SkYUVAInfo::PlaneConfig::kY_V_U;
     case viz::SharedImageFormat::PlaneConfig::kY_UV:
@@ -219,7 +221,8 @@ bool HasVkFormat(viz::SharedImageFormat format) {
         format);
   } else if (format == viz::MultiPlaneFormat::kYV12 ||
              format == viz::MultiPlaneFormat::kNV12 ||
-             format == viz::MultiPlaneFormat::kP010) {
+             format == viz::MultiPlaneFormat::kP010 ||
+             format == viz::MultiPlaneFormat::kI420) {
     return true;
   }
 
@@ -237,7 +240,8 @@ VkFormat ToVkFormat(viz::SharedImageFormat format, int plane_index) {
   // The following SharedImageFormat constants have PrefersExternalSampler()
   // false so they create a separate VkImage per plane and return the single
   // planar equivalents.
-  if (format == viz::MultiPlaneFormat::kYV12) {
+  if (format == viz::MultiPlaneFormat::kYV12 ||
+      format == viz::MultiPlaneFormat::kI420) {
     // Based on VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM.
     return VK_FORMAT_R8_UNORM;
   } else if (format == viz::MultiPlaneFormat::kNV12) {

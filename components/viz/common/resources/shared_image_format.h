@@ -40,6 +40,7 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat {
   // specified, e.g. for kY_UV Y is in channel 0 of plane 0, U is in channel 0
   // of plane 1, and V is in channel 1 of plane 1.
   enum class PlaneConfig : uint8_t {
+    kY_U_V,   // Plane 0: Y, Plane 1: U,  Plane 2: V
     kY_V_U,   // Plane 0: Y, Plane 1: V,  Plane 2: U
     kY_UV,    // Plane 0: Y, Plane 1: UV
     kY_UV_A,  // Plane 0: Y, Plane 1: UV, Plane 2: A
@@ -328,6 +329,12 @@ inline constexpr SharedImageFormat kP010 =
     SharedImageFormat::MultiPlane(SharedImageFormat::PlaneConfig::kY_UV,
                                   SharedImageFormat::Subsampling::k420,
                                   SharedImageFormat::ChannelFormat::k10);
+// NOTE: This format does not have an equivalent BufferFormat as it is not used
+// with GpuMemoryBuffers.
+inline constexpr SharedImageFormat kI420 =
+    SharedImageFormat::MultiPlane(SharedImageFormat::PlaneConfig::kY_U_V,
+                                  SharedImageFormat::Subsampling::k420,
+                                  SharedImageFormat::ChannelFormat::k8);
 }  // namespace MultiPlaneFormat
 
 }  // namespace viz

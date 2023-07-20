@@ -53,6 +53,7 @@ GLTextureImageBackingFactory::GLTextureImageBackingFactory(
     auto& rg_info = rg_iter->second[0];
     supported_formats_[viz::MultiPlaneFormat::kNV12] = {r_info, rg_info};
     supported_formats_[viz::MultiPlaneFormat::kYV12] = {r_info, r_info, r_info};
+    supported_formats_[viz::MultiPlaneFormat::kI420] = {r_info, r_info, r_info};
   }
 }
 

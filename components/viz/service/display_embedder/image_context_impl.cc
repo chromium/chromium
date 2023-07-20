@@ -40,6 +40,7 @@ SkColor4f GetFallbackColorForPlane(viz::SharedImageFormat format,
   if (format.is_single_plane())
     return SkColors::kWhite;
   switch (format.plane_config()) {
+    case viz::SharedImageFormat::PlaneConfig::kY_U_V:
     case viz::SharedImageFormat::PlaneConfig::kY_V_U:
       return plane_index == 0 ? SkColors::kWhite : SkColors::kGray;
     case viz::SharedImageFormat::PlaneConfig::kY_UV:

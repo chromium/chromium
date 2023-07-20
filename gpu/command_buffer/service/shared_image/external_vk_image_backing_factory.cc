@@ -213,7 +213,8 @@ bool ExternalVkImageBackingFactory::IsSupported(
     }
 
     if (format != viz::MultiPlaneFormat::kNV12 &&
-        format != viz::MultiPlaneFormat::kYV12) {
+        format != viz::MultiPlaneFormat::kYV12 &&
+        format != viz::MultiPlaneFormat::kI420) {
       return false;
     }
   }

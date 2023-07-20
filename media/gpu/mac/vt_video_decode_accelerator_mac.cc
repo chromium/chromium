@@ -402,7 +402,7 @@ gfx::BufferFormat ToBufferFormat(viz::SharedImageFormat format) {
   if (format == viz::MultiPlaneFormat::kP010) {
     return gfx::BufferFormat::P010;
   }
-  NOTREACHED();
+  NOTREACHED() << "format=" << format.ToString();
   return gfx::BufferFormat::RGBA_8888;
 }
 

@@ -83,6 +83,7 @@ gfx::BufferPlane GetBufferPlane(viz::SharedImageFormat format,
                                 int plane_index) {
   DCHECK(format.IsValidPlaneIndex(plane_index));
   switch (format.plane_config()) {
+    case viz::SharedImageFormat::PlaneConfig::kY_U_V:
     case viz::SharedImageFormat::PlaneConfig::kY_V_U:
       switch (plane_index) {
         case 0:

@@ -35,6 +35,7 @@ bool GLTextureImageBacking::SupportsPixelReadbackWithFormat(
     viz::SharedImageFormat format) {
   return (format == viz::MultiPlaneFormat::kNV12 ||
           format == viz::MultiPlaneFormat::kYV12 ||
+          format == viz::MultiPlaneFormat::kI420 ||
           format == viz::SinglePlaneFormat::kRGBA_8888 ||
           format == viz::SinglePlaneFormat::kBGRA_8888 ||
           format == viz::SinglePlaneFormat::kR_8 ||
@@ -47,6 +48,7 @@ bool GLTextureImageBacking::SupportsPixelUploadWithFormat(
     viz::SharedImageFormat format) {
   return (format == viz::MultiPlaneFormat::kNV12 ||
           format == viz::MultiPlaneFormat::kYV12 ||
+          format == viz::MultiPlaneFormat::kI420 ||
           format == viz::SinglePlaneFormat::kRGBA_8888 ||
           format == viz::SinglePlaneFormat::kRGBA_4444 ||
           format == viz::SinglePlaneFormat::kBGRA_8888 ||

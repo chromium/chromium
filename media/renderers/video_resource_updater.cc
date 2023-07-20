@@ -182,7 +182,7 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
         return VideoFrameResourceType::YUV;
       } else {
         DCHECK_EQ(num_textures, 1u);
-        si_formats[0] = viz::MultiPlaneFormat::kYV12;
+        si_formats[0] = viz::MultiPlaneFormat::kI420;
         return VideoFrameResourceType::RGB;
       }
 

@@ -220,7 +220,8 @@ const auto kFormats = ::testing::Values(viz::SinglePlaneFormat::kALPHA_8,
                                         viz::SinglePlaneFormat::kRGBX_8888,
                                         viz::SinglePlaneFormat::kRGBA_1010102,
                                         viz::MultiPlaneFormat::kNV12,
-                                        viz::MultiPlaneFormat::kYV12);
+                                        viz::MultiPlaneFormat::kYV12,
+                                        viz::MultiPlaneFormat::kI420);
 
 INSTANTIATE_TEST_SUITE_P(
     ,
