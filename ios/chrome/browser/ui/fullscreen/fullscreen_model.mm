@@ -54,6 +54,10 @@ void FullscreenModel::DecrementDisabledCounter() {
   }
 }
 
+void FullscreenModel::ForceEnterFullscreen() {
+  SetProgress(0.0);
+}
+
 void FullscreenModel::ResetForNavigation() {
   progress_ = 1.0;
   scrolling_ = false;

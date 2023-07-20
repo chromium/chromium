@@ -105,6 +105,10 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
   void IncrementDisabledCounter();
   void DecrementDisabledCounter();
 
+  // Force enter fullscreen without animation. Setting the progress to 0.0 even
+  // when fullscreen is disabled.
+  void ForceEnterFullscreen();
+
   // Recalculates the fullscreen progress for a new navigation.
   void ResetForNavigation();
 

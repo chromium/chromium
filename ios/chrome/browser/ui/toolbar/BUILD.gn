@@ -120,6 +120,7 @@ source_set("toolbar_ui") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/ui/fullscreen:ui",
     "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/ntp:ntp",

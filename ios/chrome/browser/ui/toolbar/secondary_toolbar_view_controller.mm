@@ -10,6 +10,8 @@
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
+#import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view_controller+subclassing.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
@@ -60,6 +62,19 @@ const NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
   }
 }
 
+#pragma mark - AdaptiveToolbarViewController
+
+- (void)collapsedToolbarButtonTapped {
+  [super collapsedToolbarButtonTapped];
+
+  if ([self.view.locationBarKeyboardConstraint isActive]) {
+    CHECK(IsBottomOmniboxSteadyStateEnabled());
+    CHECK([self hasOmnibox]);
+    UIResponder* responder = GetFirstResponder();
+    [responder resignFirstResponder];
+  }
+}
+
 #pragma mark - FullscreenUIElement
 
 - (void)updateForFullscreenProgress:(CGFloat)progress {
@@ -89,8 +104,8 @@ const NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
 
 #pragma mark - Private
 
-// Returns the vertical margin to the location bar based on fullscreen
-// `progress`, aligned to the nearest pixel.
+/// Returns the vertical margin to the location bar based on fullscreen
+/// `progress`, aligned to the nearest pixel.
 - (CGFloat)verticalMarginForLocationBarForFullscreenProgress:(CGFloat)progress {
   const CGFloat clampedFontSizeMultiplier = ToolbarClampedFontSizeMultiplier(
       self.traitCollection.preferredContentSizeCategory);
@@ -100,6 +115,27 @@ const NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
        kBottomAdaptiveLocationBarVerticalMarginFullscreen * (1 - progress)) *
           clampedFontSizeMultiplier +
       (clampedFontSizeMultiplier - 1) * kLocationBarVerticalMarginDynamicType);
+}
+
+/// Collapses secondary toolbar when it's moved above the keyboard.
+- (void)collapseForKeyboard {
+  // Disable fullscreen because:
+  // - It interfers with the animation when moving the secondary toolbar above
+  // the keyboard.
+  // - Fullscreen should not resize the toolbar it's above the keyboard.
+  if (_fullscreenController) {
+    _fullscreenController->IncrementDisabledCounter();
+    _fullscreenController->ForceEnterFullscreen();
+  }
+  self.view.locationBarTopConstraint.constant = 0;
+}
+
+/// Resets secondary toolbar when it's detached from the keyboard.
+- (void)removeFromKeyboard {
+  if (_fullscreenController) {
+    _fullscreenController->DecrementDisabledCounter();
+    _fullscreenController->ExitFullscreen();
+  }
 }
 
 /// Updates keyboard constraints with `notification`. When
@@ -113,7 +149,10 @@ const NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
       // Enable the constraint only when the keyboard is showing for web
       // content. This will not evaluate to true each time the keyboard's frame
       // is updating. Thus, update the keyboard's frame even if this is false.
-      self.view.locationBarKeyboardConstraint.active = YES;
+      if (![self.view.locationBarKeyboardConstraint isActive]) {
+        self.view.locationBarKeyboardConstraint.active = YES;
+        [self collapseForKeyboard];
+      }
     }
     const CGRect keyboardFrame =
         [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
@@ -138,8 +177,9 @@ const NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
                        [self.view layoutIfNeeded];
                      }
                      completion:nil];
-  } else {
+  } else if ([self.view.locationBarKeyboardConstraint isActive]) {
     self.view.locationBarKeyboardConstraint.active = NO;
+    [self removeFromKeyboard];
   }
   [self.view layoutIfNeeded];
 }

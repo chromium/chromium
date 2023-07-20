@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_coordinator+subclassing.h"
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_keyboard_state_provider.h"
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_view_controller.h"
@@ -43,6 +44,9 @@
   self.viewController.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
   self.viewController.keyboardStateProvider = self;
+  FullscreenController* controller =
+      FullscreenController::FromBrowser(self.browser);
+  self.viewController.fullscreenController = controller;
 
   [super start];
 }

@@ -110,6 +110,10 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
                         completion:nil];
 }
 
+- (BOOL)hasOmnibox {
+  return self.locationBarViewController != nil;
+}
+
 #pragma mark - UIViewController
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -149,9 +153,10 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
             kFullscreenProgressFullyExpanded];
 
   // CollapsedToolbarButton exit fullscreen.
-  [self.view.collapsedToolbarButton addTarget:self
-                                       action:@selector(exitFullscreen)
-                             forControlEvents:UIControlEventTouchUpInside];
+  [self.view.collapsedToolbarButton
+             addTarget:self
+                action:@selector(collapsedToolbarButtonTapped)
+      forControlEvents:UIControlEventTouchUpInside];
   UIHoverGestureRecognizer* hoverGestureRecognizer =
       [[UIHoverGestureRecognizer alloc]
           initWithTarget:self
@@ -365,8 +370,8 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
                           }];
 }
 
-- (BOOL)hasOmnibox {
-  return self.locationBarViewController != nil;
+- (void)collapsedToolbarButtonTapped {
+  [self exitFullscreen];
 }
 
 #pragma mark - PopupMenuUIUpdating

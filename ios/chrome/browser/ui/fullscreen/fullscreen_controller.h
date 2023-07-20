@@ -86,6 +86,11 @@ class FullscreenController : public base::SupportsUserData::Data {
   // 1.0.
   virtual void ExitFullscreen() = 0;
 
+  // Force enters fullscreen mode, without animation, resetting the progress to
+  // 0.0. Calling this forces the progress to 0.0 even when fullscreen is
+  // disabled.
+  virtual void ForceEnterFullscreen() = 0;
+
   virtual void FreezeToolbarHeight(bool freeze_toolbar_height) = 0;
 
   // Force horizontal content resize, when content isn't tracking resize by

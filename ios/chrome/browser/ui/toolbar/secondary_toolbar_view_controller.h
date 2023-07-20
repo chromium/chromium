@@ -7,6 +7,8 @@
 
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view_controller.h"
 
+class FullscreenController;
+
 @protocol SecondaryToolbarKeyboardStateProvider;
 
 /// View controller for the secondary part of the adaptive toolbar. It is the
@@ -16,6 +18,9 @@
 /// Protocol to retrieve the keyboard state on the active web state.
 @property(nonatomic, weak) id<SecondaryToolbarKeyboardStateProvider>
     keyboardStateProvider;
+
+/// Fullscreen controller used for collapsing the view above the keyboard.
+@property(nonatomic, assign) FullscreenController* fullscreenController;
 
 @end
 

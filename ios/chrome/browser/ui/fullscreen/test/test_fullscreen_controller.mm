@@ -98,6 +98,12 @@ void TestFullscreenController::ExitFullscreen() {
     model_->ResetForNavigation();
 }
 
+void TestFullscreenController::ForceEnterFullscreen() {
+  if (model_) {
+    model_->ForceEnterFullscreen();
+  }
+}
+
 void TestFullscreenController::OnFullscreenViewportInsetRangeChanged(
     UIEdgeInsets min_viewport_insets,
     UIEdgeInsets max_viewport_insets) {

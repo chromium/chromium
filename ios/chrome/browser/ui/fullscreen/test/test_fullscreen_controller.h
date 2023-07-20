@@ -40,6 +40,7 @@ class TestFullscreenController : public FullscreenController {
   UIEdgeInsets GetCurrentViewportInsets() const override;
   void EnterFullscreen() override;
   void ExitFullscreen() override;
+  void ForceEnterFullscreen() override;
   void ResizeHorizontalViewport() override;
   void FreezeToolbarHeight(bool freeze_toolbar_height) override;
 
