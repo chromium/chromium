@@ -1521,6 +1521,90 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self.delegate didTapInactiveTabsSettingsLinkInGridViewController:self];
 }
 
+#pragma mark - Public Editing Mode Selection
+
+- (void)selectAllItemsForEditing {
+  if (_mode != TabGridModeSelection) {
+    return;
+  }
+
+  for (TabSwitcherItem* item in self.items) {
+    [self selectItemWithIDForEditing:item.identifier];
+  }
+  [self.collectionView reloadData];
+}
+
+- (void)deselectAllItemsForEditing {
+  if (_mode != TabGridModeSelection) {
+    return;
+  }
+
+  for (TabSwitcherItem* item in self.items) {
+    [self deselectItemWithIDForEditing:item.identifier];
+  }
+  [self.collectionView reloadData];
+}
+
+- (NSArray<NSString*>*)selectedItemIDsForEditing {
+  return [self.selectedEditingItemIDs allObjects];
+}
+
+- (NSArray<NSString*>*)selectedShareableItemIDsForEditing {
+  return [self.selectedSharableEditingItemIDs allObjects];
+}
+
+- (BOOL)allItemsSelectedForEditing {
+  return _mode == TabGridModeSelection &&
+         self.items.count == self.selectedEditingItemIDs.count;
+}
+
+#pragma mark - Private Editing Mode Selection
+
+- (BOOL)isItemWithIDSelectedForEditing:(NSString*)identifier {
+  return [self.selectedEditingItemIDs containsObject:identifier];
+}
+
+- (void)selectItemWithIDForEditing:(NSString*)identifier {
+  [self.selectedEditingItemIDs addObject:identifier];
+  if ([self.shareableItemsProvider isItemWithIdentifierSharable:identifier]) {
+    [self.selectedSharableEditingItemIDs addObject:identifier];
+  }
+}
+
+- (void)deselectItemWithIDForEditing:(NSString*)identifier {
+  [self.selectedEditingItemIDs removeObject:identifier];
+  [self.selectedSharableEditingItemIDs removeObject:identifier];
+}
+
+#pragma mark - Suggested Actions Section
+
+- (void)updateSuggestedActionsSection {
+  if (!self.suggestedActionsDelegate) {
+    return;
+  }
+  // In search mode if there is already a search query, and the suggested
+  // actions section section is not yet added, add it. otherwise remove the
+  // section if it exists and the search mode is not active.
+  auto updateSectionBlock = ^{
+    NSIndexSet* sections =
+        [NSIndexSet indexSetWithIndex:kSuggestedActionsSectionIndex];
+    if (self.mode == TabGridModeSearch && self.searchText.length) {
+      if (!self.showingSuggestedActions) {
+        [self.collectionView insertSections:sections];
+        self.showingSuggestedActions = YES;
+      }
+    } else {
+      if (self.showingSuggestedActions) {
+        [self.collectionView deleteSections:sections];
+        self.showingSuggestedActions = NO;
+      }
+    }
+  };
+  [UIView performWithoutAnimation:^{
+    [self.collectionView performBatchUpdates:updateSectionBlock completion:nil];
+  }];
+}
+
 #pragma mark - Private properties
 
 - (NSUInteger)selectedIndex {
@@ -1976,89 +2060,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   // Note: At this point, `header` could be nil if not visible, or if the
   // supplementary view is not an InactiveTabsPreambleHeader.
   header.daysThreshold = self.inactiveTabsDaysThreshold;
-}
-
-#pragma mark Suggested Actions Section
-
-- (void)updateSuggestedActionsSection {
-  if (!self.suggestedActionsDelegate)
-    return;
-  // In search mode if there is already a search query, and the suggested
-  // actions section section is not yet added, add it. otherwise remove the
-  // section if it exists and the search mode is not active.
-  auto updateSectionBlock = ^{
-    NSIndexSet* sections =
-        [NSIndexSet indexSetWithIndex:kSuggestedActionsSectionIndex];
-    if (self.mode == TabGridModeSearch && self.searchText.length) {
-      if (!self.showingSuggestedActions) {
-        [self.collectionView insertSections:sections];
-        self.showingSuggestedActions = YES;
-      }
-    } else {
-      if (self.showingSuggestedActions) {
-        [self.collectionView deleteSections:sections];
-        self.showingSuggestedActions = NO;
-      }
-    }
-  };
-  [UIView performWithoutAnimation:^{
-    [self.collectionView performBatchUpdates:updateSectionBlock completion:nil];
-  }];
-}
-
-#pragma mark - Public Editing Mode Selection
-
-- (void)selectAllItemsForEditing {
-  if (_mode != TabGridModeSelection) {
-    return;
-  }
-
-  for (TabSwitcherItem* item in self.items) {
-    [self selectItemWithIDForEditing:item.identifier];
-  }
-  [self.collectionView reloadData];
-}
-
-- (void)deselectAllItemsForEditing {
-  if (_mode != TabGridModeSelection) {
-    return;
-  }
-
-  for (TabSwitcherItem* item in self.items) {
-    [self deselectItemWithIDForEditing:item.identifier];
-  }
-  [self.collectionView reloadData];
-}
-
-- (NSArray<NSString*>*)selectedItemIDsForEditing {
-  return [self.selectedEditingItemIDs allObjects];
-}
-
-- (NSArray<NSString*>*)selectedShareableItemIDsForEditing {
-  return [self.selectedSharableEditingItemIDs allObjects];
-}
-
-- (BOOL)allItemsSelectedForEditing {
-  return _mode == TabGridModeSelection &&
-         self.items.count == self.selectedEditingItemIDs.count;
-}
-
-#pragma mark - Private Editing Mode Selection
-
-- (BOOL)isItemWithIDSelectedForEditing:(NSString*)identifier {
-  return [self.selectedEditingItemIDs containsObject:identifier];
-}
-
-- (void)selectItemWithIDForEditing:(NSString*)identifier {
-  [self.selectedEditingItemIDs addObject:identifier];
-  if ([self.shareableItemsProvider isItemWithIdentifierSharable:identifier]) {
-    [self.selectedSharableEditingItemIDs addObject:identifier];
-  }
-}
-
-- (void)deselectItemWithIDForEditing:(NSString*)identifier {
-  [self.selectedEditingItemIDs removeObject:identifier];
-  [self.selectedSharableEditingItemIDs removeObject:identifier];
 }
 
 @end
