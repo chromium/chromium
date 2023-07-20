@@ -232,6 +232,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   ui::LayerType GetLayerType() const override;
 
   // views::View:
+  void AddedToWidget() override;
   gfx::Size CalculatePreferredSize() const override;
   int GetHeightForWidth(int width) const override;
   void OnMouseEntered(const ui::MouseEvent& event) override;

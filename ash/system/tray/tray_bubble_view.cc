@@ -509,6 +509,15 @@ std::u16string TrayBubbleView::GetAccessibleWindowTitle() const {
   }
 }
 
+void TrayBubbleView::AddedToWidget() {
+  // If the view has a shadow on texture layer, should make it observe widget
+  // theme change to update its colors. The function is called here since we
+  // should guarantee that `GetWidget()` returns non-nullptr.
+  if (params_.has_shadow && params_.has_large_corner_radius) {
+    shadow_->ObserveColorProviderSource(GetWidget());
+  }
+}
+
 gfx::Size TrayBubbleView::CalculatePreferredSize() const {
   return gfx::Size(preferred_width_, GetHeightForWidth(preferred_width_));
 }
