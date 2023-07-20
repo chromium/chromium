@@ -521,7 +521,20 @@ void DualLayerUserPrefStore::DisableTypeAndClearAccountStore(
     }
   }
 
-  CHECK(!active_types_.empty() || account_pref_store_->GetValues().empty());
+  if (active_types_.empty()) {
+    // Clear the account store of any garbage value without notifications. This
+    // can happen if a previously syncable pref was persisted to the account
+    // store but is no longer syncable.
+    // TODO(crbug.com/1466439): Look into if the garbage values can cleared on
+    // browser startup.
+
+    // Since there's no direct way to clear the pref store or get a list of all
+    // keys (because of the dotted paths) and `RemoveValuesByPrefixSilently("")`
+    // is disallowed, the following workaround is used to clear the store.
+    for (auto [key, value] : account_pref_store_->GetValues()) {
+      account_pref_store_->RemoveValuesByPrefixSilently(key);
+    }
+  }
 }
 
 bool DualLayerUserPrefStore::IsPrefKeyMergeable(const std::string& key) const {

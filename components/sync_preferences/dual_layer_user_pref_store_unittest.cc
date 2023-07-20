@@ -29,7 +29,7 @@ constexpr char kPref3[] = "regular.pref3";
 constexpr char kPrefName[] = "regular.pref";
 constexpr char kPriorityPrefName[] = "priority.pref";
 constexpr char kNonExistentPrefName[] = "nonexistent-pref";
-constexpr char kNonSyncablePrefName[] = "nonsyncable-pref";
+constexpr char kNonSyncablePrefName[] = "nonsyncable.pref";
 constexpr char kHistorySensitivePrefName[] = "sensitive.pref";
 
 // Assigning an id of 0 to all the test prefs.
@@ -1037,6 +1037,38 @@ TEST_F(DualLayerUserPrefStoreTestForTypes,
     ASSERT_TRUE(store()->GetMutableValue(kPrefName, &value));
     EXPECT_EQ(*value, base::Value("pref-value"));
   }
+}
+
+TEST_F(DualLayerUserPrefStoreTestForTypes,
+       ShouldClearAllPrefsFromAccountStoreOnDisableAllTypes) {
+  store()->EnableType(syncer::PREFERENCES);
+
+  account_store()->SetValue(kPrefName, base::Value("pref-value"), 0);
+  // Garbage value in account store.
+  account_store()->SetValue(kNonSyncablePrefName,
+                            base::Value("non-syncable-pref-value"), 0);
+
+  ASSERT_TRUE(ValueInStoreIs(*store(), kPrefName, "pref-value"));
+  // Non-syncable prefs are not returned by the getters.
+  ASSERT_TRUE(ValueInStoreIsAbsent(*store(), kNonSyncablePrefName));
+  ASSERT_TRUE(ValueInStoreIs(*account_store(), kNonSyncablePrefName,
+                             "non-syncable-pref-value"));
+
+  testing::StrictMock<MockPrefStoreObserver> observer;
+  store()->AddObserver(&observer);
+
+  // Notification for syncable prefs.
+  EXPECT_CALL(observer, OnPrefValueChanged(kPrefName));
+  // No notification for garbage values.
+  EXPECT_CALL(observer, OnPrefValueChanged(kNonSyncablePrefName)).Times(0);
+
+  store()->DisableTypeAndClearAccountStore(syncer::PREFERENCES);
+
+  // All values get removed from the account store when all types are disabled.
+  EXPECT_TRUE(ValueInStoreIsAbsent(*account_store(), kPrefName));
+  EXPECT_TRUE(ValueInStoreIsAbsent(*account_store(), kNonSyncablePrefName));
+
+  store()->RemoveObserver(&observer);
 }
 
 class MergeTestPrefModelAssociatorClient : public PrefModelAssociatorClient {
