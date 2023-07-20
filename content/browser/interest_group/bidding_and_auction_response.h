@@ -20,7 +20,7 @@
 
 namespace content {
 
-absl::optional<base::span<const uint8_t>>
+absl::optional<base::span<const uint8_t>> CONTENT_EXPORT
 ExtractCompressedBiddingAndAuctionResponse(
     base::span<const uint8_t> decrypted_data);
 

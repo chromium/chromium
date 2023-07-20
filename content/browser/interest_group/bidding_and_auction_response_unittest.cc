@@ -480,5 +480,36 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
   }
 }
 
+TEST(BiddingAndAuctionResponseTest, RemovingFramingSucceeds) {
+  struct {
+    std::vector<uint8_t> input;
+    std::vector<uint8_t> expected_output;
+  } kTestCases[] = {
+      // Small one to test basic functionality
+      {
+          {0x02, 0x00, 0x00, 0x00, 0x01, 0xFE, 0x02},
+          {0xFE},
+      },
+      // Bigger one to check that we have the size right.
+      {
+          []() {
+            std::vector<uint8_t> unframed_input(1000, ' ');
+            std::vector<uint8_t> framing = {0x02, 0x00, 0x00, 0x02, 0xFF};
+            std::copy(framing.begin(), framing.end(),
+                      std::inserter(unframed_input, unframed_input.begin()));
+            return unframed_input;
+          }(),
+          std::vector<uint8_t>(0x2FF, ' '),
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    absl::optional<base::span<const uint8_t>> result =
+        ExtractCompressedBiddingAndAuctionResponse(test_case.input);
+    ASSERT_TRUE(result);
+    EXPECT_THAT(*result, testing::ElementsAreArray(test_case.expected_output));
+  }
+}
+
 }  // namespace
 }  // namespace content

@@ -24,9 +24,9 @@ ExtractCompressedBiddingAndAuctionResponse(
     // Bad version and compression information
     return absl::nullopt;
   }
-  size_t response_length =
-      ((decrypted_data[1] << 24) & 0xff) | ((decrypted_data[2] << 16) & 0xff) |
-      ((decrypted_data[3] << 8) & 0xff) | ((decrypted_data[4] << 0) & 0xff);
+  size_t response_length = (decrypted_data[1] << 24) |
+                           (decrypted_data[2] << 16) |
+                           (decrypted_data[3] << 8) | (decrypted_data[4] << 0);
   if (decrypted_data.size() < kFramingHeaderSize + response_length) {
     // Incomplete Data.
     return absl::nullopt;
