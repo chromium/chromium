@@ -334,9 +334,9 @@ class Capturer {
     }
   }
 
-  toggleVideoRecordingPause() {
+  async toggleVideoRecordingPause(): Promise<void> {
     if (this.modes.current instanceof Video) {
-      this.modes.current.togglePaused();
+      await this.modes.current.togglePaused();
     }
   }
 }
@@ -362,6 +362,8 @@ export class OperationScheduler {
   private ongoingOperationType: OperationType|null = null;
 
   private pendingReconfigureWaiters: Array<CancelableEvent<boolean>> = [];
+
+  private togglePausedEvent: Promise<void>|null = null;
 
   constructor(
       private readonly listener: EventListener,
@@ -424,9 +426,18 @@ export class OperationScheduler {
     }
   }
 
-  toggleVideoRecordingPause(): void {
-    if (this.ongoingOperationType === OperationType.CAPTURE) {
-      this.capturer.toggleVideoRecordingPause();
+  async toggleVideoRecordingPause(): Promise<void> {
+    if (this.ongoingOperationType !== OperationType.CAPTURE ||
+        this.togglePausedEvent !== null) {
+      return;
+    }
+    try {
+      this.togglePausedEvent = this.capturer.toggleVideoRecordingPause();
+      await this.togglePausedEvent;
+    } catch (e) {
+      error.reportError(ErrorType.RESUME_PAUSE_FAILURE, ErrorLevel.ERROR, e);
+    } finally {
+      this.togglePausedEvent = null;
     }
   }
 
@@ -468,10 +479,18 @@ export class OperationScheduler {
     }
   }
 
-  stopCapture(): void {
-    if (this.ongoingOperationType === OperationType.CAPTURE) {
-      this.capturer.stop();
+  async stopCapture(): Promise<void> {
+    if (this.ongoingOperationType !== OperationType.CAPTURE) {
+      return;
     }
+    if (this.togglePausedEvent !== null) {
+      try {
+        await this.togglePausedEvent;
+      } catch (e) {
+        // The error is handled in toggleVideoRecordingPause().
+      }
+    }
+    this.capturer.stop();
   }
 
   private async startReconfigure(onReconfigured: CancelableEvent<boolean>):
