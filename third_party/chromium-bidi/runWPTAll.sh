@@ -28,6 +28,3 @@ else
     HEADLESS=false npm run wpt
     HEADLESS=true npm run wpt
 fi
-
-# Grep for errors if $LOG is set.
-[[ -n "$LOG" ]] && [[ -r "$LOG_FILE" ]] && less -p error "$LOG_FILE"
