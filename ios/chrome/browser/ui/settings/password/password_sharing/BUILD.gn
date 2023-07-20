@@ -23,6 +23,13 @@ source_set("password_sharing_ui") {
     "family_picker_view_controller.mm",
     "password_picker_view_controller.h",
     "password_picker_view_controller.mm",
+    "recipient_info.h",
+    "recipient_info.mm",
   ]
-  deps = [ "//ios/chrome/browser/shared/ui/bottom_sheet" ]
+  deps = [
+    "//ios/chrome/browser/shared/ui/bottom_sheet",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/ui/authentication:authentication_constants",
+    "//ios/chrome/browser/ui/settings/cells",
+  ]
 }
