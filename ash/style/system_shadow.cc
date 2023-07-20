@@ -48,12 +48,8 @@ int SystemShadow::GetElevationFromType(Type type) {
   switch (type) {
     case Type::kElevation4:
       return 4;
-    case Type::kElevation8:
-      return 8;
     case Type::kElevation12:
       return 12;
-    case Type::kElevation16:
-      return 16;
     case Type::kElevation24:
       return 24;
   }

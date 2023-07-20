@@ -32,10 +32,8 @@ class ASH_EXPORT SystemShadow : public ui::ColorProviderSourceObserver {
   // Shadow types of system UI components. The shadows with different elevations
   // have different appearance.
   enum class Type {
-    kElevation4,  // corresponds to cros.sys.system-elevation1.
-    kElevation8,
+    kElevation4,   // corresponds to cros.sys.system-elevation1.
     kElevation12,  // corresponds to cros.sys.system-elevation3.
-    kElevation16,
     kElevation24,  // corresponds to cros.sys.system-elevation5.
   };
 
