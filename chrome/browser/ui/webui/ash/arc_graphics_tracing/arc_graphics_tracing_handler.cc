@@ -291,10 +291,6 @@ void ArcGraphicsTracingHandler::OnWindowActivated(ActivationReason reason,
   tracing_time_min_ = TRACE_TIME_TICKS_NOW();
 }
 
-base::TimeDelta ArcGraphicsTracingHandler::GetMaxInterval() const {
-  return max_tracing_time_;
-}
-
 void ArcGraphicsTracingHandler::OnWindowPropertyChanged(aura::Window* window,
                                                         const void* key,
                                                         intptr_t old) {
@@ -381,7 +377,7 @@ void ArcGraphicsTracingHandler::StartTracing() {
   if (jank_detector_)
     jank_detector_->Reset();
   system_stat_collector_ = std::make_unique<arc::ArcSystemStatCollector>();
-  system_stat_collector_->Start(GetMaxInterval());
+  system_stat_collector_->Start(max_tracing_time_);
 
   // Timestamp and app information would be updated when |OnTracingStarted| is
   // called.
@@ -475,14 +471,18 @@ void ArcGraphicsTracingHandler::OnGraphicsModelReady(
 
 void ArcGraphicsTracingHandler::HandleSetMaxTime(
     const base::Value::List& args) {
-  DCHECK_EQ(1U, args.size());
-
-  if (!args[0].is_int()) {
-    LOG(ERROR) << "Invalid input";
+  if (args.size() != 1) {
+    LOG(ERROR) << "Expect 1 numeric arg";
     return;
   }
-  max_tracing_time_ = base::Seconds(args[0].GetInt());
-  DCHECK_GE(max_tracing_time_, base::Seconds(1));
+
+  auto new_time = args[0].GetIfDouble();
+  if (!new_time.has_value() || *new_time < 1.0) {
+    LOG(ERROR) << "Interval too small or not a number: " << args[0];
+    return;
+  }
+
+  max_tracing_time_ = base::Seconds(*new_time);
 }
 
 void ArcGraphicsTracingHandler::HandleLoadFromText(

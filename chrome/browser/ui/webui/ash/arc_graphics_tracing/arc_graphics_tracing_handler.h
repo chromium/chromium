@@ -102,9 +102,6 @@ class ArcGraphicsTracingHandler : public content::WebUIMessageHandler,
   // Stops tracking ARC window for janks.
   void DiscardActiveArcWindow();
 
-  // Returns max sampling interval to display.
-  base::TimeDelta GetMaxInterval() const;
-
   // Indicates that tracing was initiated by this handler.
   bool tracing_active_ = false;
 
