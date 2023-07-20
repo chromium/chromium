@@ -147,8 +147,8 @@ TEST_F(GuestOsMountProviderTest, MountDiskMountsDisk) {
   ExpectMountCalls(1);
   bool result = false;
 
-  provider_->Mount(profile_.get(), base::BindLambdaForTesting(
-                                       [&result](bool res) { result = res; }));
+  provider_->Mount(
+      base::BindLambdaForTesting([&result](bool res) { result = res; }));
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(result);
@@ -167,16 +167,13 @@ TEST_F(GuestOsMountProviderTest, MountDiskMountsDisk) {
 TEST_F(GuestOsMountProviderTest, MultipleCallsAreQueuedAndOnlyMountOnce) {
   ExpectMountCalls(1);
   int successes = 0;
-  provider_->Mount(profile_.get(),
-                   base::BindLambdaForTesting(
-                       [&successes](bool result) { successes += result; }));
-  provider_->Mount(profile_.get(),
-                   base::BindLambdaForTesting(
-                       [&successes](bool result) { successes += result; }));
+  provider_->Mount(base::BindLambdaForTesting(
+      [&successes](bool result) { successes += result; }));
+  provider_->Mount(base::BindLambdaForTesting(
+      [&successes](bool result) { successes += result; }));
   task_environment_.RunUntilIdle();
-  provider_->Mount(profile_.get(),
-                   base::BindLambdaForTesting(
-                       [&successes](bool result) { successes += result; }));
+  provider_->Mount(base::BindLambdaForTesting(
+      [&successes](bool result) { successes += result; }));
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(successes, 3);
@@ -197,13 +194,13 @@ TEST_F(GuestOsMountProviderTest, CanRemountAfterUnmount) {
             std::move(callback).Run(ash::MountError::kSuccess);
           }));
 
-  provider_->Mount(profile_.get(), base::BindLambdaForTesting(
-                                       [](bool res) { EXPECT_TRUE(res); }));
+  provider_->Mount(
+      base::BindLambdaForTesting([](bool res) { EXPECT_TRUE(res); }));
   task_environment_.RunUntilIdle();
   provider_->Unmount();
   task_environment_.RunUntilIdle();
-  provider_->Mount(profile_.get(), base::BindLambdaForTesting(
-                                       [](bool res) { EXPECT_TRUE(res); }));
+  provider_->Mount(
+      base::BindLambdaForTesting([](bool res) { EXPECT_TRUE(res); }));
   task_environment_.RunUntilIdle();
 
   base::FilePath path;
@@ -228,46 +225,10 @@ TEST_F(GuestOsMountProviderTest, PrepareFailureFailsMounting) {
   bool result = true;
 
   fail_provider.Mount(
-      profile_.get(),
       base::BindLambdaForTesting([&result](bool res) { result = res; }));
   task_environment_.RunUntilIdle();
 
   EXPECT_FALSE(result);
-}
-
-TEST_F(GuestOsMountProviderTest, VolumesMountedOnChildProfiles) {
-  Profile* otr_profile = profile_->GetOffTheRecordProfile(
-      Profile::OTRProfileID::CreateUniqueForTesting(), true);
-  file_manager::VolumeManagerFactory::GetInstance()->SetTestingFactory(
-      otr_profile, base::BindRepeating(&BuildVolumeManager));
-  auto* otr_volume_manager =
-      file_manager::VolumeManagerFactory::Get(otr_profile);
-  MockVolumeManagerObserver otr_volume_manager_observer;
-  otr_volume_manager->AddObserver(&otr_volume_manager_observer);
-
-  ExpectMountCalls(1);
-  EXPECT_CALL(otr_volume_manager_observer, OnVolumeMounted).Times(1);
-  bool result = false;
-
-  provider_->Mount(otr_profile, base::BindLambdaForTesting(
-                                    [&result](bool res) { result = res; }));
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(result);
-  provider_->Mount(profile_.get(), base::BindLambdaForTesting(
-                                       [&result](bool res) { result = res; }));
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(result);
-
-  auto volume = volume_manager_->FindVolumeById("guest_os:" + kMountName);
-  ASSERT_TRUE(volume);
-  auto otr_volume =
-      otr_volume_manager->FindVolumeById("guest_os:" + kMountName);
-  ASSERT_TRUE(otr_volume);
-
-  // If we don't destroy the OTR profile now then it lives until the parent
-  // profile gets destroyed, resulting in some services getting destroyed in the
-  // wrong order.
-  profile_->DestroyOffTheRecordProfile(otr_profile);
 }
 
 }  // namespace guest_os
