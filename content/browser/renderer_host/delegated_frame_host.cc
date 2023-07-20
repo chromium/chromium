@@ -23,6 +23,7 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/gpu/compositor_util.h"
 #include "content/public/common/content_switches.h"
@@ -282,6 +283,11 @@ void DelegatedFrameHost::EmbedSurface(
         surface_dip_size_ != current_frame_size_in_dip_) {
       client_->DelegatedFrameHostGetLayer()->SetOldestAcceptableFallback(
           new_primary_surface_id);
+
+      // Invalidates `bfcache_fallback_` as resize-while-hidden has given us the
+      // latest `local_surface_id_`.
+      bfcache_fallback_ =
+          viz::ParentLocalSurfaceIdAllocator::InvalidLocalSurfaceId();
     }
     // Don't update the SurfaceLayer when invisible to avoid blocking on
     // renderers that do not submit CompositorFrames. Next time the renderer
@@ -293,6 +299,16 @@ void DelegatedFrameHost::EmbedSurface(
   // which shouldn't count against the saved frames.
   if (!new_dip_size.IsEmpty())
     frame_evictor_->OnNewSurfaceEmbedded();
+
+  if (bfcache_fallback_.is_valid()) {
+    // Inform Viz to show the primary surface with new ID asap; if the new
+    // surface isn't ready, use the fallback.
+    deadline_policy = cc::DeadlinePolicy::UseSpecifiedDeadline(0u);
+    client_->DelegatedFrameHostGetLayer()->SetOldestAcceptableFallback(
+        viz::SurfaceId(frame_sink_id_, bfcache_fallback_));
+    bfcache_fallback_ =
+        viz::ParentLocalSurfaceIdAllocator::InvalidLocalSurfaceId();
+  }
 
   if (!primary_surface_id ||
       primary_surface_id->local_surface_id() != local_surface_id_) {
@@ -364,8 +380,10 @@ void DelegatedFrameHost::ResetFallbackToFirstNavigationSurface() {
     return;
   }
 
-  // We never completed navigation, evict our surfaces.
-  if (pre_navigation_local_surface_id_.is_valid() &&
+  // If we have a surface from before a navigation and we are not in BFCache,
+  // evict it as well.
+  if (!bfcache_fallback_.is_valid() &&
+      pre_navigation_local_surface_id_.is_valid() &&
       !first_local_surface_id_after_navigation_.is_valid()) {
     EvictDelegatedFrame(frame_evictor_->CollectSurfaceIdsForEviction());
   }
@@ -530,16 +548,37 @@ void DelegatedFrameHost::DidNavigate() {
   first_local_surface_id_after_navigation_ = local_surface_id_;
 }
 
-void DelegatedFrameHost::OnNavigateToNewPage() {
+void DelegatedFrameHost::DidNavigateMainFramePreCommit() {
   // We are navigating to a different page, so the current |local_surface_id_|
   // and the fallback option of |first_local_surface_id_after_navigation_| are
   // no longer valid, as they represent older content from a different source.
   //
   // Cache the current |local_surface_id_| so that if navigation fails we can
   // evict it when transitioning to becoming visible.
+  //
+  // If the current page enters BFCache, `pre_navigation_local_surface_id_` will
+  // be restored as the primary `LocalSurfaceId` for this `DelegatedFrameHost`.
   pre_navigation_local_surface_id_ = local_surface_id_;
   first_local_surface_id_after_navigation_ = viz::LocalSurfaceId();
   local_surface_id_ = viz::LocalSurfaceId();
+}
+
+void DelegatedFrameHost::DidEnterBackForwardCache() {
+  if (local_surface_id_.is_valid()) {
+    // Resize while hidden (`EmbedSurface` called after
+    // `DidNavigateMainFramePreCommit` and before `DidEnterBackForwardCache`).
+    //
+    // The `EmbedSurface` for the resize will invalidate
+    // `pre_navigation_local_surface_id_`. In this case we shouldn't restore the
+    // `local_surface_id_` because the surface with a different size should have
+    // a new ID.
+    CHECK(!pre_navigation_local_surface_id_.is_valid());
+    CHECK(!bfcache_fallback_.is_valid());
+  } else {
+    local_surface_id_ = pre_navigation_local_surface_id_;
+    bfcache_fallback_ = pre_navigation_local_surface_id_;
+    pre_navigation_local_surface_id_ = viz::LocalSurfaceId();
+  }
 }
 
 void DelegatedFrameHost::WindowTitleChanged(const std::string& title) {

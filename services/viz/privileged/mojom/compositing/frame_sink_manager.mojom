@@ -158,7 +158,8 @@ interface FrameSinkManager {
   // Creates a FrameSinkVideoCapturer instance.
   CreateVideoCapturer(pending_receiver<FrameSinkVideoCapturer> receiver);
 
-  // Marks the given SurfaceIds for destruction.
+  // Marks the given SurfaceIds for destruction. The client must supply a sorted
+  // `surface_ids`.
   EvictSurfaces(array<SurfaceId> surface_ids);
 
   // Throttles the frame sinks specified by |frame_sink_ids| and all their

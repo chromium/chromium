@@ -1467,7 +1467,7 @@ void RenderWidgetHostViewAndroid::ResetGestureDetection() {
   }
 }
 
-void RenderWidgetHostViewAndroid::OnDidNavigateMainFrameToNewPage() {
+void RenderWidgetHostViewAndroid::DidNavigateMainFramePreCommit() {
   // Move to front only if we are the primary page (we don't want to receive
   // events in the Prerender). GetMainRenderFrameHost() may be null in
   // tests.
@@ -1481,7 +1481,25 @@ void RenderWidgetHostViewAndroid::OnDidNavigateMainFrameToNewPage() {
   }
   ResetGestureDetection();
   if (delegated_frame_host_)
-    delegated_frame_host_->OnNavigateToNewPage();
+    delegated_frame_host_->DidNavigateMainFramePreCommit();
+}
+
+void RenderWidgetHostViewAndroid::DidEnterBackForwardCache() {
+  local_surface_id_allocator_.GenerateId();
+  delegated_frame_host_->DidEnterBackForwardCache();
+  // If we have the fallback content timer running, force it to stop. Else, when
+  // the page is restored the timer could also fire, setting whatever
+  // `DelegatedFrameHostAndroid::first_local_surface_id_after_navigation_`
+  // as the fallback to our Surfacelayer.
+  //
+  // This is safe for BFCache restore because we will supply specific fallback
+  // surfaces for BFCache.
+  //
+  // We do not want to call this in `RWHImpl::WasHidden()` because in the case
+  // of `Visibility::OCCLUDED` we still want to keep the timer running.
+  //
+  // Called after to prevent prematurely evict the BFCached surface.
+  host()->ForceFirstFrameAfterNavigationTimeout();
 }
 
 void RenderWidgetHostViewAndroid::SetDoubleTapSupportEnabled(bool enabled) {

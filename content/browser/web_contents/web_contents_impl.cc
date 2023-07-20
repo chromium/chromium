@@ -47,6 +47,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/download/public/common/download_stats.h"
 #include "components/url_formatter/url_formatter.h"
+#include "components/viz/common/features.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
@@ -6144,6 +6145,15 @@ void WebContentsImpl::DidNavigateMainFramePreCommit(
     ExitFullscreen(false);
   DCHECK(!IsFullscreen());
 
+  if (base::FeatureList::IsEnabled(
+          features::kInvalidateLocalSurfaceIdPreCommit)) {
+    auto* rwhvb = static_cast<RenderWidgetHostViewBase*>(
+        frame_tree_node->current_frame_host()->GetView());
+    if (rwhvb) {
+      rwhvb->DidNavigateMainFramePreCommit();
+    }
+  }
+
   // Clean up keyboard lock state when navigating.
   CancelKeyboardLock(keyboard_lock_widget_);
 }
@@ -6169,10 +6179,14 @@ void WebContentsImpl::DidNavigateMainFramePostCommit(
       ClearTargetURL();
     }
 
-    RenderWidgetHostViewBase* rwhvb = static_cast<RenderWidgetHostViewBase*>(
-        render_frame_host->GetMainFrame()->GetView());
-    if (rwhvb)
-      rwhvb->OnDidNavigateMainFrameToNewPage();
+    if (!base::FeatureList::IsEnabled(
+            features::kInvalidateLocalSurfaceIdPreCommit)) {
+      RenderWidgetHostViewBase* rwhvb = static_cast<RenderWidgetHostViewBase*>(
+          render_frame_host->GetMainFrame()->GetView());
+      if (rwhvb) {
+        rwhvb->DidNavigateMainFramePreCommit();
+      }
+    }
   }
 
   PageImpl& page = render_frame_host->GetPage();

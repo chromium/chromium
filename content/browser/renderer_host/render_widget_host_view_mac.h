@@ -134,7 +134,8 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   void UpdateCursor(const ui::Cursor& cursor) override;
   void DisplayCursor(const ui::Cursor& cursor) override;
   CursorManager* GetCursorManager() override;
-  void OnDidNavigateMainFrameToNewPage() override;
+  void DidNavigateMainFramePreCommit() override;
+  void DidEnterBackForwardCache() override;
   void SetIsLoading(bool is_loading) override;
   void RenderProcessGone() override;
   void ShowWithVisibility(PageVisibilityState page_visibility) final;
