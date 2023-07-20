@@ -151385,7 +151385,7 @@
        ]
       ],
       "mask-objectboundingbox-content-clip-transform.svg": [
-       "e3ca1fbdba7da3de6c5465f9af9a9e0666debfe3",
+       "397f56d19023f850b15dfe41797ad74dd24a17cc",
        [
         null,
         [
@@ -151405,7 +151405,7 @@
             ],
             [
              0,
-             200
+             268
             ]
            ]
           ]
@@ -151414,7 +151414,7 @@
        ]
       ],
       "mask-objectboundingbox-content-clip.svg": [
-       "47cf9006974d7edc11eb142485b53db5d486b94e",
+       "c87fedec4f88eb0df0e3ef72d1095c8626970328",
        [
         null,
         [
@@ -151434,7 +151434,7 @@
             ],
             [
              0,
-             200
+             376
             ]
            ]
           ]
@@ -151443,7 +151443,7 @@
        ]
       ],
       "mask-userspaceonuse-content-clip-transform.svg": [
-       "03310225e209da75aafb57f081a610d6c7f18e01",
+       "624084a07bcd0a177c94bc7e1c1114df1771a808",
        [
         null,
         [
@@ -151463,7 +151463,7 @@
             ],
             [
              0,
-             200
+             268
             ]
            ]
           ]
@@ -151472,7 +151472,7 @@
        ]
       ],
       "mask-userspaceonuse-content-clip.svg": [
-       "09eb2dfcd01be0775ba6f352b9cff7ce8cd2640f",
+       "f1bfbdda58320b1007d937ad74c6c85d2c721174",
        [
         null,
         [
@@ -151492,7 +151492,7 @@
             ],
             [
              0,
-             200
+             376
             ]
            ]
           ]
@@ -276055,7 +276055,7 @@
      ]
     },
     "web-identity": [
-     "2095182bd040631d1ecaaa70d456d67dee3aee15",
+     "6f1260dbc373c19505e5d6c9a7328d63ef4eef2f",
      []
     ]
    },
@@ -283581,11 +283581,11 @@
      ],
      "fedcm": {
       "accounts.py": [
-       "11c1c32b61af839917e54cc86c8af294dd86c3cf",
+       "1ec7f7dc1242449d7bc38a52fa2ac906a9d9a27d",
        []
       ],
       "client_metadata.py": [
-       "bfc8027412df0a941468df4a7368f754de0ab13e",
+       "61d8aaf2367fc6dfaf1da062ee7b6837d0477818",
        []
       ],
       "client_metadata.py.headers": [
@@ -283609,7 +283609,7 @@
        []
       ],
       "manifest.py": [
-       "6105db007b0948a150d2ba7098ba97e30d333a15",
+       "8a8fff74bc955c965e8874e9a84a4d8378c3e579",
        []
       ],
       "manifest_redirect_accounts.json": [
@@ -283637,19 +283637,19 @@
        []
       ],
       "single_account.py": [
-       "b388ef55a4b11760f388b4b3d468cf7cc52a3c25",
+       "5f05dc4be50d8c98b9b8d48600f316200ef954a5",
        []
       ],
       "token.py": [
-       "cd73394bc4f83efd3f78705b6ba2a51e53625bf7",
+       "54150325524728ab3c86bea5731d2a0f8b708ddf",
        []
       ],
       "token_with_account_id.py": [
-       "8bdfec8f6d9a9dabbe34a78d73afd404afdf9bbb",
+       "4b8ae9a5651105d53b7e36ac242055c6edc52848",
        []
       ],
       "two_accounts.py": [
-       "97ee92f676042ad393c872f29e4a4f7c3c283039",
+       "c355d21f1f2062516edd383a6ba953d4dc408eb5",
        []
       ],
       "userinfo-iframe.html": [
@@ -315942,22 +315942,6 @@
       ],
       "clip-path-shape-circle-005.svg.ini": [
        "3aec77ad90ece9f31dfbc78ae40556dc8ab77c62",
-       []
-      ],
-      "mask-objectboundingbox-content-clip-transform.svg.ini": [
-       "fd6b99f2609e4d765ff34224fa62be363d2e39d1",
-       []
-      ],
-      "mask-objectboundingbox-content-clip.svg.ini": [
-       "80eb57e09717eae22ad50352f75304235b44d3a5",
-       []
-      ],
-      "mask-userspaceonuse-content-clip-transform.svg.ini": [
-       "9061444009abb262dcb261d9bcf804f99d2e9720",
-       []
-      ],
-      "mask-userspaceonuse-content-clip.svg.ini": [
-       "0be7e18c3fe0d1aea3407f0d7f9c2822fc673675",
        []
       ],
       "reference": {
@@ -449261,7 +449245,7 @@
        ]
       ],
       "color-invalid-rgb.html": [
-       "81facf91a36f84af9fdd818e4ebb26dd0b0ddd60",
+       "90dd082f2ae9a2024e411669bbbe68a82868fa2f",
        [
         null,
         {}
@@ -465567,7 +465551,7 @@
       ],
       "parsing": {
        "contain-intrinsic-size-computed.html": [
-        "1de987c0a10257b509d64c629e17f253752b7af7",
+        "305fe621cd595c6b3cf91432520ea3d44a1f017a",
         [
          null,
          {}
