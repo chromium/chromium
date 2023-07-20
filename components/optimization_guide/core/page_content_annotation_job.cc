@@ -54,7 +54,8 @@ PageContentAnnotationJob::~PageContentAnnotationJob() {
 }
 
 void PageContentAnnotationJob::FillWithNullOutputs() {
-  for (size_t i = 0; i < CountOfRemainingNonNullInputs(); i++) {
+  size_t remaining = CountOfRemainingNonNullInputs();
+  for (size_t i = 0; i < remaining; i++) {
     std::string input = *GetNextInput();
     switch (type()) {
       case AnnotationType::kPageEntities:

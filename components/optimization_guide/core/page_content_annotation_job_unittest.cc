@@ -74,4 +74,16 @@ TEST_F(PageContentAnnotationJobTest, DeathOnUncompleted) {
   EXPECT_DCHECK_DEATH(job.OnComplete());
 }
 
+TEST_F(PageContentAnnotationJobTest, FillWithNullOutputs) {
+  PageContentAnnotationJob job(base::DoNothing(), {"1", "2", "3"},
+                               AnnotationType::kContentVisibility);
+
+  EXPECT_EQ(job.CountOfRemainingNonNullInputs(), 3U);
+
+  job.FillWithNullOutputs();
+  job.OnComplete();  // Should not die with the `!inputs_.empty()` DCHECK.
+
+  EXPECT_EQ(job.CountOfRemainingNonNullInputs(), 0U);
+}
+
 }  // namespace optimization_guide
