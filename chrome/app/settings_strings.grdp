@@ -2068,7 +2068,7 @@
     When on, a list of sites you visit that guess your interests appears here
   </message>
   <message name="IDS_SETTINGS_FLEDGE_PAGE_CURRENT_SITES_DESCRIPTION_EMPTY" desc="1 of 2 descriptions that appear if there are no sites in the list. This string is for the case that the Site-suggested ads setting IS on, but the user hasn't browsed any sites that have called the Site-suggested ads API.">
-    It can take up to a week for a list of sites to appear here based on your browsing history
+    No sites to show right now
   </message>
   <message name="IDS_SETTINGS_FLEDGE_PAGE_CURRENT_SITES_REGION_A11Y_DESCRIPTION" desc="Read by screen readers to describe a list of sites that appear on the page.">
     List of recent sites you visited that can suggest ads to other sites as you keep browsing
