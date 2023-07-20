@@ -7,7 +7,7 @@ create {
     script { name: "fetch.py" }
     unpack_archive: true
     subdir: 'current'
-    patch_version: "cr2"
+    patch_version: "cr3"
   }
 
   # This will execute the `install.sh` script in 3pp dir after the source CIPD
