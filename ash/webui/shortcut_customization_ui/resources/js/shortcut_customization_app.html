@@ -62,6 +62,32 @@
     padding-inline: var(--container-padding-nav);
     padding-top: 8px;
   }
+
+  #restoreDialog::part(dialog) {
+    width: 320px;
+  }
+
+  #restoreTitle {
+    color: var(--cros-text-color-secondary);
+    display: flex;
+    font: var(--cros-body-1-font);
+    margin-block-end: 32px;
+    padding-inline: 32px;
+  }
+
+  #buttonContainer {
+    margin-block-end: 28px;
+    margin-inline-end: 32px;
+    padding: 0;
+  }
+
+  #cancelButton, #confirmButton {
+    border-radius: 999px;
+  }
+
+  #cancelButton {
+    margin-inline-end: 8px;
+  }
 </style>
 <navigation-view-panel id="navigationPanel" title="[[i18n('appTitle')]]"
     show-tool-bar has-search="[[!shouldHideSearchBox()]]">
@@ -96,10 +122,10 @@
 <template is="dom-if" if="[[showRestoreAllDialog]]" restamp>
   <cr-dialog id="restoreDialog" show-on-attach
       on-close="closeRestoreAllDialog">
-    <div slot="body">
+    <div id="restoreTitle" slot="body">
       [[i18n('confirmResetAllShortcutsTitle')]]
     </div>
-    <div slot="button-container">
+    <div id="buttonContainer" slot="button-container">
       <cr-button id="cancelButton" on-click="onCancelRestoreButtonClicked">
         [[i18n('cancel')]]
       </cr-button>
