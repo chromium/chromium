@@ -81726,6 +81726,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="Invalid Organization Identifier"/>
   <int value="6" label="Invalid expiration time"/>
   <int value="7" label="Shill Profile error"/>
+  <int value="8" label="Credentials already exist"/>
 </enum>
 
 <enum name="PasspointRemovalResult">
