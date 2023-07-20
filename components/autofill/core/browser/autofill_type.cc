@@ -69,6 +69,8 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case ADDRESS_HOME_ADMIN_LEVEL2:
     case ADDRESS_HOME_STREET_LOCATION:
     case ADDRESS_HOME_OVERFLOW:
+    case ADDRESS_HOME_OVERFLOW_AND_LANDMARK:
+    case ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK:
     case DELIVERY_INSTRUCTIONS:
       return FieldTypeGroup::kAddressHome;
 

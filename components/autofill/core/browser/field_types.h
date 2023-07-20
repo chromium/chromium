@@ -376,6 +376,9 @@ enum ServerFieldType {
   // recognized to understand where the building is situated.
   ADDRESS_HOME_LANDMARK = 136,
 
+  // Combination of types ADDRESS_HOME_OVERFLOW and ADDRESS_HOME_LANDMARK.
+  ADDRESS_HOME_OVERFLOW_AND_LANDMARK = 140,
+
   // Administrative area level 2. A sub-division of a state, e.g. a Municipio in
   // Brazil or Mexico.
   ADDRESS_HOME_ADMIN_LEVEL2 = 141,
@@ -387,6 +390,9 @@ enum ServerFieldType {
   // The type indicates that the address is at the intersection between two
   // streets. This is a common way of writing addresses in Mexico.
   ADDRESS_HOME_BETWEEN_STREETS = 143,
+
+  // Combination of types ADDRESS_HOME_BETWEEN_STREETS or ADDRESS_HOME_LANDMARK.
+  ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK = 144,
 
   // The meaning of the field is the same as ADDRESS_HOME_BETWEEN_STREETS. The
   // field type should be used for "Entre calle 1" in MX forms which also

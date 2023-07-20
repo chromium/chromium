@@ -118,7 +118,11 @@ static constexpr auto kTypeNameToFieldType =
          {"ADDRESS_HOME_OVERFLOW", ADDRESS_HOME_OVERFLOW},
          {"ADDRESS_HOME_STREET_LOCATION", ADDRESS_HOME_STREET_LOCATION},
          {"ADDRESS_HOME_BETWEEN_STREETS_1", ADDRESS_HOME_BETWEEN_STREETS_1},
-         {"ADDRESS_HOME_BETWEEN_STREETS_2", ADDRESS_HOME_BETWEEN_STREETS_2}});
+         {"ADDRESS_HOME_BETWEEN_STREETS_2", ADDRESS_HOME_BETWEEN_STREETS_2},
+         {"ADDRESS_HOME_OVERFLOW_AND_LANDMARK",
+          ADDRESS_HOME_OVERFLOW_AND_LANDMARK},
+         {"ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK",
+          ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK}});
 
 ServerFieldType ToSafeServerFieldType(
     std::underlying_type_t<ServerFieldType> raw_value,
@@ -143,7 +147,7 @@ ServerFieldType ToSafeServerFieldType(
            !(20 <= t && t <= 24) &&
            // Reserved for server-side only use.
            t != 127 && !(130 <= t && t <= 132) && t != 134 &&
-           !(137 <= t && t <= 140) && !(144 <= t && t <= 150);
+           !(137 <= t && t <= 139) && !(145 <= t && t <= 150);
   };
   return IsValid(raw_value) ? static_cast<ServerFieldType>(raw_value)
                             : fallback_value;
@@ -202,6 +206,8 @@ bool IsFillableFieldType(ServerFieldType field_type) {
     case ADDRESS_HOME_ADMIN_LEVEL2:
     case ADDRESS_HOME_OVERFLOW:
     case ADDRESS_HOME_STREET_LOCATION:
+    case ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK:
+    case ADDRESS_HOME_OVERFLOW_AND_LANDMARK:
     case DELIVERY_INSTRUCTIONS:
       return true;
 
@@ -398,11 +404,11 @@ base::StringPiece FieldTypeToDeveloperRepresentationString(
     case ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME:
       return "Street and dependent street name";
     case ADDRESS_HOME_BETWEEN_STREETS:
-      return "Address between streets";
+      return "Address between-streets";
     case ADDRESS_HOME_BETWEEN_STREETS_1:
-      return "Address between streets 1";
+      return "Address between-streets 1";
     case ADDRESS_HOME_BETWEEN_STREETS_2:
-      return "Address between streets 2";
+      return "Address between-streets 2";
     case ADDRESS_HOME_LINE1:
       return "Address line 1";
     case ADDRESS_HOME_LINE2:
@@ -437,6 +443,10 @@ base::StringPiece FieldTypeToDeveloperRepresentationString(
       return "Country";
     case ADDRESS_HOME_OVERFLOW:
       return "Address overflow";
+    case ADDRESS_HOME_OVERFLOW_AND_LANDMARK:
+      return "Address overflow and landmark";
+    case ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK:
+      return "Address between-streets and landmark";
     case DELIVERY_INSTRUCTIONS:
       return "Delivery instructions";
     case BIRTHDATE_DAY:
