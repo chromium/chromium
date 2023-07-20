@@ -702,7 +702,8 @@ TEST_P(FPNMErrorStatusNotification, ErrorShowsBlockNotification_Single) {
   auto notification = display_service_tester.GetNotification(notification_id);
   ASSERT_TRUE(notification.has_value());
   EXPECT_EQ(notification->title(), title);
-  EXPECT_EQ(notification->message(), u"File was blocked");
+  EXPECT_EQ(notification->message(),
+            u"test1.txt was blocked because of policy");
   EXPECT_EQ(notification->buttons()[0].title, u"Dismiss");
   EXPECT_EQ(notification->buttons()[1].title,
             l10n_util::GetStringUTF16(IDS_LEARN_MORE));
@@ -852,7 +853,8 @@ TEST_P(FPNMShowBlockTest, ShowDlpBlockNotification_Single) {
       display_service_tester.GetNotification(kNotificationId);
   EXPECT_TRUE(notification.has_value());
   EXPECT_EQ(notification->title(), title);
-  EXPECT_EQ(notification->message(), u"File was blocked");
+  EXPECT_EQ(notification->message(),
+            u"file1.txt was blocked because of policy");
   EXPECT_EQ(notification->buttons()[0].title, u"Dismiss");
   EXPECT_EQ(notification->buttons()[1].title,
             l10n_util::GetStringUTF16(IDS_LEARN_MORE));

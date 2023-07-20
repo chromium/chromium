@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_string_util.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
@@ -102,29 +103,7 @@ void FilesPolicyWarnDialog::MaybeAddConfidentialRows() {
 }
 
 std::u16string FilesPolicyWarnDialog::GetOkButton() {
-  switch (action_) {
-    case dlp::FileAction::kDownload:
-      return l10n_util::GetStringUTF16(
-          IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_CONTINUE_BUTTON);
-    case dlp::FileAction::kUpload:
-      return l10n_util::GetStringUTF16(
-          IDS_POLICY_DLP_FILES_UPLOAD_WARN_CONTINUE_BUTTON);
-    case dlp::FileAction::kCopy:
-      return l10n_util::GetStringUTF16(
-          IDS_POLICY_DLP_FILES_COPY_WARN_CONTINUE_BUTTON);
-    case dlp::FileAction::kMove:
-      return l10n_util::GetStringUTF16(
-          IDS_POLICY_DLP_FILES_MOVE_WARN_CONTINUE_BUTTON);
-    case dlp::FileAction::kOpen:
-    case dlp::FileAction::kShare:
-      return l10n_util::GetStringUTF16(
-          IDS_POLICY_DLP_FILES_OPEN_WARN_CONTINUE_BUTTON);
-    case dlp::FileAction::kTransfer:
-    case dlp::FileAction::kUnknown:
-      // TODO(crbug.com/1361900): Set proper text when file action is unknown.
-      return l10n_util::GetStringUTF16(
-          IDS_POLICY_DLP_FILES_TRANSFER_WARN_CONTINUE_BUTTON);
-  }
+  return policy::files_string_util::GetContinueAnywayButton(action_);
 }
 
 std::u16string FilesPolicyWarnDialog::GetCancelButton() {
@@ -225,7 +204,7 @@ std::u16string FilesPolicyWarnDialog::GetMessage() {
       break;
     case dlp::FileAction::kTransfer:
     case dlp::FileAction::kUnknown:
-      // TODO(crbug.com/1361900): Set proper text when file action is unknown.
+      // kUnknown is used for internal checks - treat as kTransfer.
       destination_str = GetDestination(destination_val);
       message_id = IDS_POLICY_DLP_FILES_TRANSFER_WARN_MESSAGE;
       break;

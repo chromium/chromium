@@ -54,6 +54,8 @@ class FilesPolicyErrorDialog : public FilesPolicyDialog {
 
   // Maps each policy reason to the list of files blocked because of it.
   std::map<Policy, std::vector<DlpConfidentialFile>> files_;
+  // Total number of blocked files for all policies.
+  size_t file_count_;
 
   base::WeakPtrFactory<FilesPolicyErrorDialog> weak_factory_{this};
 };

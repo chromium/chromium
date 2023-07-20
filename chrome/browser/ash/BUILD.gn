@@ -2341,6 +2341,8 @@ source_set("ash") {
     "policy/dlp/files_policy_notification_manager.h",
     "policy/dlp/files_policy_notification_manager_factory.cc",
     "policy/dlp/files_policy_notification_manager_factory.h",
+    "policy/dlp/files_policy_string_util.cc",
+    "policy/dlp/files_policy_string_util.h",
     "policy/enrollment/account_status_check_fetcher.cc",
     "policy/enrollment/account_status_check_fetcher.h",
     "policy/enrollment/auto_enrollment_client.h",
