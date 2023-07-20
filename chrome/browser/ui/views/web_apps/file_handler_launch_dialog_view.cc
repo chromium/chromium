@@ -138,7 +138,7 @@ FileHandlerLaunchDialogView::CreateBelowAppInfoView() {
                                              0.95 * available_width);
                  });
   if (file_paths_.size() > displayed_file_name_count)
-    file_names.emplace_back(std::u16string(gfx::kEllipsisUTF16));
+    file_names.emplace_back(gfx::kEllipsisUTF16);
 
   auto* files_label =
       files_view->AddChildView(std::make_unique<views::Label>(base::JoinString(
