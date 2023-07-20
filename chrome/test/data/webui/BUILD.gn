@@ -161,11 +161,8 @@ if (include_js_tests) {
     ]
 
     gen_include_files = [
-      "a11y/accessibility_audit_rules.js",
-      "a11y/accessibility_test.js",
       "net_internals/net_internals_test_base.js",
       "polymer_browser_test_base.js",
-      "//third_party/axe-core/axe.js",
     ]
 
     deps = [

@@ -13,7 +13,6 @@ def _CommonChecks(input_api, output_api):
   EXCLUDE_PATH_SUFFIXES = [
       '_browsertest.js',
       '_interactive_ui_tests.js',
-      '_accessibility_test.js',
   ]
 
   def allow_js(f):
