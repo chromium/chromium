@@ -8,6 +8,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_devtools_manager_delegate.h"
+#include "wolvic/browser/session_settings.h"
 #include "wolvic/wolvic_browser_context.h"
 #include "wolvic/wolvic_content_main_delegate.h"
 #include "wolvic/wolvic_main_parts.h"
@@ -17,6 +18,18 @@ namespace content {
 namespace {
 
 WolvicContentBrowserClient* g_instance = nullptr;
+
+// Adds the given platform to the user agent string. For example, if
+// we add "Mobile VR" platform to the following user agent
+// "Mozilla/5.0 (Linux; Android 8.0.0; Quest 2)", the result will be:
+// "Mozilla/5.0 (Linux; Android 8.0.0; Quest 2; Mobile VR)".
+void AddPlatformToUserAgent(const std::string& platform,
+                            std::string& user_agent) {
+  size_t pos = user_agent.find(')');
+  if (pos != std::string::npos) {
+    user_agent.insert(pos, "; " + platform);
+  }
+}
 
 }  // namespace
 
@@ -64,41 +77,44 @@ XrIntegrationClient* WolvicContentBrowserClient::GetXrIntegrationClient() {
 #endif
 
 std::string WolvicContentBrowserClient::GetUserAgent() {
-  return embedder_support::GetUserAgent();
-}
+  typedef wolvic::SessionSettings::UserAgentMode UserAgentMode;
 
-std::string WolvicContentBrowserClient::GetUserAgentBasedOnPolicy(
-    content::BrowserContext* context) {
-  auto* delegate = WolvicContentMainDelegate::Get();
+  auto user_agent_override =
+      wolvic::SessionSettings::Get()->GetUserAgentOverride();
+  if (user_agent_override)
+    return *user_agent_override;
 
-  const PrefService* prefs = delegate->GetPrefs();
-  embedder_support::ForceMajorVersionToMinorPosition
-      force_major_version_to_minor =
-          embedder_support::GetMajorToMinorFromPrefs(prefs);
-  embedder_support::UserAgentReductionEnterprisePolicyState
-      user_agent_reduction =
-          embedder_support::GetUserAgentReductionFromPrefs(prefs);
-  switch (user_agent_reduction) {
-    case embedder_support::UserAgentReductionEnterprisePolicyState::
-        kForceDisabled:
-      return embedder_support::GetFullUserAgent(force_major_version_to_minor);
-    case embedder_support::UserAgentReductionEnterprisePolicyState::
-        kForceEnabled:
-      return embedder_support::GetReducedUserAgent(
-          force_major_version_to_minor);
-    case embedder_support::UserAgentReductionEnterprisePolicyState::kDefault:
-    default:
-      return embedder_support::GetUserAgent(force_major_version_to_minor,
-                                            user_agent_reduction);
+  std::string user_agent = embedder_support::GetUserAgent();
+  auto user_agent_mode = wolvic::SessionSettings::Get()->GetUserAgentMode();
+  switch (user_agent_mode) {
+    case UserAgentMode::kMobile:
+      AddPlatformToUserAgent("Mobile", user_agent);
+      break;
+    case UserAgentMode::kMobileVR:
+      AddPlatformToUserAgent("Mobile VR", user_agent);
+      break;
+    case UserAgentMode::kDesktop:
+      // do nothing
+      break;
   }
+  return user_agent;
 }
 
-std::string WolvicContentBrowserClient::GetFullUserAgent() {
-  return embedder_support::GetFullUserAgent();
-}
+blink::UserAgentMetadata WolvicContentBrowserClient::GetUserAgentMetadata() {
+  typedef wolvic::SessionSettings::UserAgentMode UserAgentMode;
 
-std::string WolvicContentBrowserClient::GetReducedUserAgent() {
-  return embedder_support::GetReducedUserAgent();
+  auto metadata = embedder_support::GetUserAgentMetadata();
+  auto user_agent_mode = wolvic::SessionSettings::Get()->GetUserAgentMode();
+  switch (user_agent_mode) {
+    case UserAgentMode::kMobile:
+    case UserAgentMode::kMobileVR:
+      metadata.mobile = true;
+      break;
+    case UserAgentMode::kDesktop:
+      metadata.mobile = false;
+      break;
+  }
+  return metadata;
 }
 
 }  // namespace content

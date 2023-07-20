@@ -153,7 +153,8 @@ base::flat_set<url::Origin> GetIsolatedContextOriginSetFromFlag() {
   return {};
 }
 
-WolvicContentMainDelegate::WolvicContentMainDelegate() {}
+WolvicContentMainDelegate::WolvicContentMainDelegate()
+    : session_settings_(std::make_unique<wolvic::SessionSettings>()) {}
 
 WolvicContentMainDelegate::~WolvicContentMainDelegate() {}
 
@@ -387,6 +388,5 @@ void WolvicContentMainDelegate::SetUpFieldTrials() {
       &platform_field_trials, &safe_seed_manager,
       /*low_entropy_source_value=*/false);
 }
-
 
 }  // namespace content

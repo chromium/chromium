@@ -21,12 +21,6 @@ class WolvicContentBrowserClient : public ContentBrowserClient {
   WolvicContentBrowserClient& operator=(const WolvicContentBrowserClient&) =
       delete;
 
-  std::string GetUserAgent() override;
-  std::string GetUserAgentBasedOnPolicy(
-      content::BrowserContext* context) override;
-  std::string GetFullUserAgent() override;
-  std::string GetReducedUserAgent() override;
-
   ~WolvicContentBrowserClient() override;
 
   // Returns the single instance.
@@ -36,6 +30,8 @@ class WolvicContentBrowserClient : public ContentBrowserClient {
   content::BrowserContext* GetBrowserContext();
 
   // ContentBrowserClient overrides.
+  std::string GetUserAgent() override;
+  blink::UserAgentMetadata GetUserAgentMetadata() override;
   std::unique_ptr<BrowserMainParts> CreateBrowserMainParts(
       bool is_integration_test) override;
   std::unique_ptr<content::DevToolsManagerDelegate>
