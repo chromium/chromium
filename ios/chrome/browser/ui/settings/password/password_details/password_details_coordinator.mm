@@ -173,6 +173,7 @@
   [self.mediator disconnect];
   self.mediator = nil;
   self.viewController = nil;
+  [self dismissAlertCoordinator];
 }
 
 #pragma mark - PasswordDetailsHandler
@@ -204,7 +205,9 @@
       [OpenNewTabCommand commandWithURLFromChrome:GURL(kPasscodeArticleURL)];
 
   [self.alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_OK)
-                                   action:nil
+                                   action:^{
+                                     [weakSelf dismissAlertCoordinator];
+                                   }
                                     style:UIAlertActionStyleCancel];
 
   [self.alertCoordinator
@@ -217,6 +220,7 @@
                           ApplicationCommands);
                   [applicationCommandsHandler
                       closeSettingsUIAndOpenURL:command];
+                  [weakSelf dismissAlertCoordinator];
                 }
                  style:UIAlertActionStyleDefault];
 
@@ -389,8 +393,11 @@
                                                    message:message];
 
   NSString* cancelButtonText = l10n_util::GetNSString(IDS_CANCEL);
+  __weak PasswordDetailsCoordinator* weakSelf = self;
   [self.alertCoordinator addItemWithTitle:cancelButtonText
-                                   action:nil
+                                   action:^{
+                                     [weakSelf dismissAlertCoordinator];
+                                   }
                                     style:UIAlertActionStyleDefault];
 
   NSString* dismissButtonText =
@@ -400,6 +407,7 @@
       addItemWithTitle:dismissButtonText
                 action:^{
                   [weakMediator didConfirmWarningDismissalForPassword:password];
+                  [weakSelf dismissAlertCoordinator];
                 }
                  style:UIAlertActionStyleDefault
              preferred:YES
@@ -422,6 +430,11 @@
 - (void)dismissActionSheetCoordinator {
   [self.actionSheetCoordinator stop];
   self.actionSheetCoordinator = nil;
+}
+
+- (void)dismissAlertCoordinator {
+  [self.alertCoordinator stop];
+  self.alertCoordinator = nil;
 }
 
 @end
