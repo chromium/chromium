@@ -268,7 +268,7 @@ CGFloat const kSpacing = 10;
                                     : kTableViewHorizontalSpacing;
   cell.separatorInset = UIEdgeInsetsMake(0.f, separatorLeftMargin, 0.f, 0.f);
 
-  if ([self selectedRow] == indexPath.row) {
+  if (_creditCardData.count > 1 && [self selectedRow] == indexPath.row) {
     cell.accessoryType = UITableViewCellAccessoryCheckmark;
   } else {
     cell.accessoryType = UITableViewCellAccessoryNone;
