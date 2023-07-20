@@ -133,6 +133,113 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   aura::Window* window() { return window_; }
   const aura::Window* window() const { return window_; }
 
+  bool is_moving_to_another_display() const {
+    return is_moving_to_another_display_;
+  }
+  void set_is_moving_to_another_display(bool moving) {
+    is_moving_to_another_display_ = moving;
+  }
+
+  absl::optional<float> snap_ratio() const { return snap_ratio_; }
+
+  // True if the window should be unminimized to the restore bounds, as
+  // opposed to the window's current bounds. |unminimized_to_restore_bounds_| is
+  // reset to the default value after the window is unminimized.
+  bool unminimize_to_restore_bounds() const {
+    return unminimize_to_restore_bounds_;
+  }
+  void set_unminimize_to_restore_bounds(bool value) {
+    unminimize_to_restore_bounds_ = value;
+  }
+
+  // Gets/sets whether the shelf should be autohidden when this window is
+  // fullscreen or active.
+  // Note: if true, this will override the logic controlled by
+  // hide_shelf_when_fullscreen.
+  bool autohide_shelf_when_maximized_or_fullscreen() const {
+    return autohide_shelf_when_maximized_or_fullscreen_;
+  }
+  void set_autohide_shelf_when_maximized_or_fullscreen(bool value) {
+    autohide_shelf_when_maximized_or_fullscreen_ = value;
+  }
+
+  // TODO(minch): Rename the multiple setters below to be for example
+  // `set_pre_auto_manage_window_bounds`.
+  // Gets/Sets the bounds of the window before it was moved by the auto window
+  // management. As long as it was not auto-managed, it will return NULL.
+  const absl::optional<gfx::Rect> pre_auto_manage_window_bounds() {
+    return pre_auto_manage_window_bounds_;
+  }
+  void SetPreAutoManageWindowBounds(const gfx::Rect& bounds) {
+    pre_auto_manage_window_bounds_ = absl::make_optional(bounds);
+  }
+
+  // Gets/Sets the property that is used on window added to workspace event.
+  const absl::optional<gfx::Rect> pre_added_to_workspace_window_bounds() {
+    return pre_added_to_workspace_window_bounds_;
+  }
+  void SetPreAddedToWorkspaceWindowBounds(const gfx::Rect& bounds) {
+    pre_added_to_workspace_window_bounds_ = absl::make_optional(bounds);
+  }
+
+  // Gets/Sets the persistent window info that is used on restoring persistent
+  // window bounds in multi-displays scenario.
+  const absl::optional<PersistentWindowInfo>
+  persistent_window_info_of_display_removal() {
+    return persistent_window_info_of_display_removal_;
+  }
+  void SetPersistentWindowInfoOfDisplayRemoval(
+      const PersistentWindowInfo& info) {
+    persistent_window_info_of_display_removal_ = absl::make_optional(info);
+  }
+  void ResetPersistentWindowInfoOfDisplayRemoval() {
+    persistent_window_info_of_display_removal_.reset();
+  }
+
+  // Gets/Sets the persistent window info that is used to restore persistent
+  // window bounds on screen rotation.
+  const absl::optional<PersistentWindowInfo>
+  persistent_window_info_of_screen_rotation() {
+    return persistent_window_info_of_screen_rotation_;
+  }
+  void SetPersistentWindowInfoOfScreenRotation(
+      const PersistentWindowInfo& info) {
+    persistent_window_info_of_screen_rotation_ = absl::make_optional(info);
+  }
+
+  // Whether the window is being dragged.
+  bool is_dragged() const { return !!drag_details_; }
+
+  // Whether or not the window's position or size was changed by a user.
+  bool bounds_changed_by_user() const { return bounds_changed_by_user_; }
+  void set_bounds_changed_by_user(bool bounds_changed_by_user);
+
+  // True if the window should not adjust the window's bounds when
+  // virtual keyboard bounds changes.
+  // TODO(oshima): This is hack. Replace this with proper
+  // implementation based on EnsureCaretNotInRect.
+  bool ignore_keyboard_bounds_change() const {
+    return ignore_keyboard_bounds_change_;
+  }
+  void set_ignore_keyboard_bounds_change(bool ignore_keyboard_bounds_change) {
+    ignore_keyboard_bounds_change_ = ignore_keyboard_bounds_change;
+  }
+
+  // True if the window bounds can be updated directly using SET_BOUNDS event.
+  void set_allow_set_bounds_direct(bool value) {
+    allow_set_bounds_direct_ = value;
+  }
+  bool allow_set_bounds_direct() const { return allow_set_bounds_direct_; }
+
+  // Returns a pointer to DragDetails during drag operations.
+  const DragDetails* drag_details() const { return drag_details_.get(); }
+  DragDetails* drag_details() { return drag_details_.get(); }
+
+  const std::vector<chromeos::WindowStateType>& window_state_restore_history()
+      const {
+    return window_state_restore_history_;
+  }
+
   bool HasDelegate() const;
   void SetDelegate(std::unique_ptr<WindowStateDelegate> delegate);
 
@@ -178,13 +285,6 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
 
   // Returns true if the window's location can be controlled by the user.
   bool IsUserPositionable() const;
-
-  bool is_moving_to_another_display() const {
-    return is_moving_to_another_display_;
-  }
-  void set_is_moving_to_another_display(bool moving) {
-    is_moving_to_another_display_ = moving;
-  }
 
   // Checks if the window can change its state accordingly.
   bool CanMaximize() const;
@@ -285,83 +385,19 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // Should be called by snap events and bound events, or when resizing a
   // snapped window.
   void UpdateSnapRatio();
-  absl::optional<float> snap_ratio() const { return snap_ratio_; }
-
-  // True if the window should be unminimized to the restore bounds, as
-  // opposed to the window's current bounds. |unminimized_to_restore_bounds_| is
-  // reset to the default value after the window is unminimized.
-  bool unminimize_to_restore_bounds() const {
-    return unminimize_to_restore_bounds_;
-  }
-  void set_unminimize_to_restore_bounds(bool value) {
-    unminimize_to_restore_bounds_ = value;
-  }
 
   // Gets/sets whether the shelf should be hidden when this window is
   // fullscreen.
   bool GetHideShelfWhenFullscreen() const;
   void SetHideShelfWhenFullscreen(bool value);
 
-  // Gets/sets whether the shelf should be autohidden when this window is
-  // fullscreen or active.
-  // Note: if true, this will override the logic controlled by
-  // hide_shelf_when_fullscreen.
-  bool autohide_shelf_when_maximized_or_fullscreen() const {
-    return autohide_shelf_when_maximized_or_fullscreen_;
-  }
-
-  void set_autohide_shelf_when_maximized_or_fullscreen(bool value) {
-    autohide_shelf_when_maximized_or_fullscreen_ = value;
-  }
-
-  // Gets/Sets the bounds of the window before it was moved by the auto window
-  // management. As long as it was not auto-managed, it will return NULL.
-  const absl::optional<gfx::Rect> pre_auto_manage_window_bounds() {
-    return pre_auto_manage_window_bounds_;
-  }
-  void SetPreAutoManageWindowBounds(const gfx::Rect& bounds);
-
-  // Gets/Sets the property that is used on window added to workspace event.
-  const absl::optional<gfx::Rect> pre_added_to_workspace_window_bounds() {
-    return pre_added_to_workspace_window_bounds_;
-  }
-  void SetPreAddedToWorkspaceWindowBounds(const gfx::Rect& bounds);
-
-  // Gets/Sets the persistent window info that is used on restoring persistent
-  // window bounds in multi-displays scenario.
-  const absl::optional<PersistentWindowInfo>
-  persistent_window_info_of_display_removal() {
-    return persistent_window_info_of_display_removal_;
-  }
-  void SetPersistentWindowInfoOfDisplayRemoval(
-      const PersistentWindowInfo& info);
-  void ResetPersistentWindowInfoOfDisplayRemoval();
-
-  // Gets/Sets the persistent window info that is used to restore persistent
-  // window bounds on screen rotation.
-  const absl::optional<PersistentWindowInfo>
-  persistent_window_info_of_screen_rotation() {
-    return persistent_window_info_of_screen_rotation_;
-  }
-  void SetPersistentWindowInfoOfScreenRotation(
-      const PersistentWindowInfo& info);
-
-  // Layout related properties
-
   void AddObserver(WindowStateObserver* observer);
   void RemoveObserver(WindowStateObserver* observer);
-
-  // Whether the window is being dragged.
-  bool is_dragged() const { return !!drag_details_; }
 
   // Whether or not the window's position can be managed by the
   // auto management logic.
   bool GetWindowPositionManaged() const;
   void SetWindowPositionManaged(bool managed);
-
-  // Whether or not the window's position or size was changed by a user.
-  bool bounds_changed_by_user() const { return bounds_changed_by_user_; }
-  void set_bounds_changed_by_user(bool bounds_changed_by_user);
 
   // True if the window should be offered a chance to consume special system
   // keys such as brightness, volume, etc. that are usually handled by the
@@ -374,23 +410,6 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // the top portion of the window through a touch / mouse gesture. It might
   // also allow the shelf to be shown in some situations.
   bool IsInImmersiveFullscreen() const;
-
-  // True if the window should not adjust the window's bounds when
-  // virtual keyboard bounds changes.
-  // TODO(oshima): This is hack. Replace this with proper
-  // implementation based on EnsureCaretNotInRect.
-  bool ignore_keyboard_bounds_change() const {
-    return ignore_keyboard_bounds_change_;
-  }
-  void set_ignore_keyboard_bounds_change(bool ignore_keyboard_bounds_change) {
-    ignore_keyboard_bounds_change_ = ignore_keyboard_bounds_change;
-  }
-
-  // True if the window bounds can be updated directly using SET_BOUNDS event.
-  void set_allow_set_bounds_direct(bool value) {
-    allow_set_bounds_direct_ = value;
-  }
-  bool allow_set_bounds_direct() const { return allow_set_bounds_direct_; }
 
   // Creates and takes ownership of a pointer to DragDetails when resizing is
   // active. This should be done before a resizer gets created.
@@ -430,15 +449,6 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
 
   // Allows for caller to prevent property changes within scope.
   base::AutoReset<bool> GetScopedIgnorePropertyChange();
-
-  // Returns a pointer to DragDetails during drag operations.
-  const DragDetails* drag_details() const { return drag_details_.get(); }
-  DragDetails* drag_details() { return drag_details_.get(); }
-
-  const std::vector<chromeos::WindowStateType>& window_state_restore_history()
-      const {
-    return window_state_restore_history_;
-  }
 
   class TestApi {
    public:

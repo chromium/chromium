@@ -676,28 +676,6 @@ void WindowState::UpdateSnapRatio() {
   MaybeRecordPartialDuration();
 }
 
-void WindowState::SetPreAutoManageWindowBounds(const gfx::Rect& bounds) {
-  pre_auto_manage_window_bounds_ = absl::make_optional(bounds);
-}
-
-void WindowState::SetPreAddedToWorkspaceWindowBounds(const gfx::Rect& bounds) {
-  pre_added_to_workspace_window_bounds_ = absl::make_optional(bounds);
-}
-
-void WindowState::SetPersistentWindowInfoOfDisplayRemoval(
-    const PersistentWindowInfo& info) {
-  persistent_window_info_of_display_removal_ = absl::make_optional(info);
-}
-
-void WindowState::ResetPersistentWindowInfoOfDisplayRemoval() {
-  persistent_window_info_of_display_removal_.reset();
-}
-
-void WindowState::SetPersistentWindowInfoOfScreenRotation(
-    const PersistentWindowInfo& info) {
-  persistent_window_info_of_screen_rotation_ = absl::make_optional(info);
-}
-
 void WindowState::AddObserver(WindowStateObserver* observer) {
   observer_list_.AddObserver(observer);
 }
