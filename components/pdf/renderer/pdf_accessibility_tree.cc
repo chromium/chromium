@@ -106,6 +106,13 @@ bool PdfOcrService::IsQueueEmpty() const {
   return queued_requests_.empty();
 }
 
+void PdfOcrService::SetScreenAIAnnotatorForTesting(
+    mojo::PendingRemote<screen_ai::mojom::ScreenAIAnnotator>
+        screen_ai_annotator) {
+  screen_ai_annotator_.reset();
+  screen_ai_annotator_.Bind(std::move(screen_ai_annotator));
+}
+
 void PdfOcrService::ScheduleNextQueuedTask() {
   if (queued_requests_.empty()) {
     return;
@@ -2205,12 +2212,13 @@ void PdfAccessibilityTree::OnOcrDataReceived(
   nodes_.clear();
 }
 
-void PdfAccessibilityTree::CreateOcrService() {
+PdfAccessibilityTree::PdfOcrService* PdfAccessibilityTree::CreateOcrService() {
   VLOG(2) << "Creating OCR service.";
   ocr_service_ = std::make_unique<PdfOcrService>(
       *render_frame_,
       base::BindRepeating(&PdfAccessibilityTree::OnOcrDataReceived,
                           weak_ptr_factory_.GetWeakPtr()));
+  return ocr_service_.get();
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
