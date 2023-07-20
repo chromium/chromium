@@ -235,6 +235,7 @@ source_set("browser_view") {
     "//ios/third_party/material_components_ios",
     "//ios/third_party/webkit",
     "//ios/web",
+    "//ios/web/common:features",
     "//ios/web/public",
     "//services/metrics/public/cpp:ukm_builders",
     "//third_party/abseil-cpp:absl",

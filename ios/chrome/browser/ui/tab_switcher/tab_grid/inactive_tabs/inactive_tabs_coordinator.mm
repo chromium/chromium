@@ -30,6 +30,10 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/strings/grit/ui_strings.h"
 
+// To get access to UseSessionSerializationOptimizations().
+// TODO(crbug.com/1383087): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -188,8 +192,11 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
   [super start];
 
   // Create the mediator.
-  SessionRestorationBrowserAgent* sessionRestorationBrowserAgent =
-      SessionRestorationBrowserAgent::FromBrowser(self.browser);
+  SessionRestorationBrowserAgent* sessionRestorationBrowserAgent = nullptr;
+  if (!web::features::UseSessionSerializationOptimizations()) {
+    sessionRestorationBrowserAgent =
+        SessionRestorationBrowserAgent::FromBrowser(self.browser);
+  }
   SnapshotBrowserAgent* snapshotBrowserAgent =
       SnapshotBrowserAgent::FromBrowser(self.browser);
   sessions::TabRestoreService* tabRestoreService =

@@ -27,6 +27,10 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 
+// To get access to UseSessionSerializationOptimizations().
+// TODO(crbug.com/1383087): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -262,7 +266,8 @@
 
 - (void)didInsertActiveWebState:(web::WebState*)newWebState {
   DCHECK(newWebState);
-  if (_sessionRestorationBrowserAgent->IsRestoringSession()) {
+  if (web::features::UseSessionSerializationOptimizations() ||
+      _sessionRestorationBrowserAgent->IsRestoringSession()) {
     return;
   }
   auto* animationTabHelper =

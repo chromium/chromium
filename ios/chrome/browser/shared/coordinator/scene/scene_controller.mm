@@ -163,6 +163,10 @@
 #import "net/base/mac/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
 
+// To get access to UseSessionSerializationOptimizations().
+// TODO(crbug.com/1383087): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -3466,9 +3470,11 @@ void InjectNTP(Browser* browser) {
   // does not load the session, the only risk is if the application were to
   // crash before the deletion could complete (in which case the user may
   // see the previous state of the app before closing the last incognito tab).
-  [[SessionServiceIOS sharedService]
-      deleteAllSessionFilesInDirectory:otrBrowserState->GetStatePath()
-                            completion:base::DoNothing()];
+  if (!web::features::UseSessionSerializationOptimizations()) {
+    [[SessionServiceIOS sharedService]
+        deleteAllSessionFilesInDirectory:otrBrowserState->GetStatePath()
+                              completion:base::DoNothing()];
+  }
 
   // Record off-the-record metrics before detroying the BrowserState.
   SessionMetrics::FromBrowserState(otrBrowserState)

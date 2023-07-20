@@ -49,6 +49,7 @@ source_set("prerender") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/web",
+    "//ios/web/common:features",
     "//ui/base",
     "//url",
   ]

@@ -579,9 +579,11 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
 // Removes directories for sessions with `session_ids`
 void BrowsingDataRemoverImpl::RemoveSessionsData(
     NSArray<NSString*>* session_ids) {
-  [session_service_ deleteSessions:session_ids
-                         directory:browser_state_->GetStatePath()
-                        completion:base::DoNothing()];
+  if (session_service_) {
+    [session_service_ deleteSessions:session_ids
+                           directory:browser_state_->GetStatePath()
+                          completion:base::DoNothing()];
+  }
 }
 
 // TODO(crbug.com/619783): removing data from WkWebsiteDataStore should be

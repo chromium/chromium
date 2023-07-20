@@ -45,6 +45,7 @@ source_set("grid") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_page_mutator",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu:tab_item",
     "//ios/chrome/browser/web_state_list",
+    "//ios/web/common:features",
     "//ios/web/public",
     "//ios/web/public/navigation",
     "//net",

@@ -72,6 +72,7 @@ source_set("agents") {
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/web:tab_helper_delegates",
     "//ios/components/security_interstitials:security_interstitials",
+    "//ios/web/common:features",
     "//ios/web/public",
     "//ios/web/public/js_messaging:js_messaging",
   ]

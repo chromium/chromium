@@ -24,6 +24,10 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
+// To get access to UseSessionSerializationOptimizations().
+// TODO(crbug.com/1383087): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -42,10 +46,12 @@ WebStateListMetricsBrowserAgent::WebStateListMetricsBrowserAgent(
   web_state_forwarder_.reset(
       new AllWebStateObservationForwarder(web_state_list_, this));
 
-  SessionRestorationBrowserAgent* restoration_agent =
-      SessionRestorationBrowserAgent::FromBrowser(browser);
-  if (restoration_agent) {
-    restoration_agent->AddObserver(this);
+  if (!web::features::UseSessionSerializationOptimizations()) {
+    SessionRestorationBrowserAgent* restoration_agent =
+        SessionRestorationBrowserAgent::FromBrowser(browser);
+    if (restoration_agent) {
+      restoration_agent->AddObserver(this);
+    }
   }
 }
 
@@ -177,10 +183,12 @@ void WebStateListMetricsBrowserAgent::PageLoaded(
 void WebStateListMetricsBrowserAgent::BrowserDestroyed(Browser* browser) {
   DCHECK_EQ(browser->GetWebStateList(), web_state_list_);
 
-  SessionRestorationBrowserAgent* restoration_agent =
-      SessionRestorationBrowserAgent::FromBrowser(browser);
-  if (restoration_agent) {
-    restoration_agent->RemoveObserver(this);
+  if (!web::features::UseSessionSerializationOptimizations()) {
+    SessionRestorationBrowserAgent* restoration_agent =
+        SessionRestorationBrowserAgent::FromBrowser(browser);
+    if (restoration_agent) {
+      restoration_agent->RemoveObserver(this);
+    }
   }
 
   web_state_forwarder_.reset(nullptr);

@@ -33,6 +33,10 @@
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/main/wrangled_browser.h"
 
+// To get access to UseSessionSerializationOptimizations().
+// TODO(crbug.com/1383087): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -121,7 +125,9 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
   [_mainBrowserCoordinator start];
 
   // Restore the session after creating the coordinator.
-  SessionRestorationBrowserAgent::FromBrowser(mainBrowser)->RestoreSession();
+  if (!web::features::UseSessionSerializationOptimizations()) {
+    SessionRestorationBrowserAgent::FromBrowser(mainBrowser)->RestoreSession();
+  }
 
   DCHECK(_mainBrowserCoordinator.viewController);
   _mainInterface =
@@ -138,8 +144,10 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
   Browser* inactiveBrowser = self.mainBrowser->CreateInactiveBrowser();
   [self setupBrowser:inactiveBrowser];
 
-  SessionRestorationBrowserAgent::FromBrowser(inactiveBrowser)
-      ->RestoreSession();
+  if (!web::features::UseSessionSerializationOptimizations()) {
+    SessionRestorationBrowserAgent::FromBrowser(inactiveBrowser)
+        ->RestoreSession();
+  }
 
   if (IsInactiveTabsEnabled()) {
     // Ensure there is no active element in the restored inactive browser. It
@@ -228,7 +236,9 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
   if (!allTabsClosed) {
     // Restore the session after creating the coordinator, but only if not
     // recreating the Off-The-Record UI after closing all the tabs.
-    SessionRestorationBrowserAgent::FromBrowser(otrBrowser)->RestoreSession();
+    if (!web::features::UseSessionSerializationOptimizations()) {
+      SessionRestorationBrowserAgent::FromBrowser(otrBrowser)->RestoreSession();
+    }
   }
 
   DCHECK(_incognitoBrowserCoordinator.viewController);
@@ -494,8 +504,10 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
 
   SnapshotBrowserAgent::FromBrowser(browser)->SetSessionID(sceneSessionID);
 
-  SessionRestorationBrowserAgent::FromBrowser(browser)->SetSessionID(
-      sceneSessionID);
+  if (!web::features::UseSessionSerializationOptimizations()) {
+    SessionRestorationBrowserAgent::FromBrowser(browser)->SetSessionID(
+        sceneSessionID);
+  }
 }
 
 @end

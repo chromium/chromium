@@ -122,6 +122,7 @@ source_set("main") {
     "//ios/chrome/browser/web:tab_helper_delegates",
     "//ios/chrome/browser/web:web_internal",
     "//ios/chrome/common/ui/colors",
+    "//ios/web/common:features",
     "//net",
   ]
 

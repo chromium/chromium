@@ -66,6 +66,10 @@
 #import "net/base/mac/url_conversions.h"
 #import "ui/gfx/image/image.h"
 
+// To get access to UseSessionSerializationOptimizations().
+// TODO(crbug.com/1383087): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -687,11 +691,15 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
       return;
     }
 
-    self.closedSessionWindow = SerializeWebStateList(self.webStateList);
+    if (!web::features::UseSessionSerializationOptimizations()) {
+      self.closedSessionWindow = SerializeWebStateList(self.webStateList);
+    }
     self.webStateList->CloseAllNonPinnedWebStates(
         WebStateList::CLOSE_USER_ACTION);
   } else {
-    self.closedSessionWindow = SerializeWebStateList(self.webStateList);
+    if (!web::features::UseSessionSerializationOptimizations()) {
+      self.closedSessionWindow = SerializeWebStateList(self.webStateList);
+    }
     self.webStateList->CloseAllWebStates(WebStateList::CLOSE_USER_ACTION);
   }
 
@@ -707,10 +715,12 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
   if (!self.closedSessionWindow) {
     return;
   }
-  SessionRestorationBrowserAgent::FromBrowser(self.browser)
-      ->RestoreSessionWindow(self.closedSessionWindow,
-                             SessionRestorationScope::kRegularOnly);
-  self.closedSessionWindow = nil;
+  if (!web::features::UseSessionSerializationOptimizations()) {
+    SessionRestorationBrowserAgent::FromBrowser(self.browser)
+        ->RestoreSessionWindow(self.closedSessionWindow,
+                               SessionRestorationScope::kRegularOnly);
+    self.closedSessionWindow = nil;
+  }
   [self removeEntriesFromTabRestoreService];
   self.syncedClosedTabsCount = 0;
 }

@@ -13,6 +13,10 @@
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
 
+// To get access to UseSessionSerializationOptimizations().
+// TODO(crbug.com/1383087): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -61,17 +65,19 @@
   // Since the app is about to be backgrounded or terminated, save the sessions
   // immediately.
   Browser* mainBrowser = browserProviderInterface.mainBrowserProvider.browser;
-  SessionRestorationBrowserAgent::FromBrowser(mainBrowser)
-      ->SaveSession(/*immediately=*/true);
-  Browser* inactiveBrowser =
-      browserProviderInterface.mainBrowserProvider.inactiveBrowser;
-  SessionRestorationBrowserAgent::FromBrowser(inactiveBrowser)
-      ->SaveSession(/*immediately=*/true);
-  if (browserProviderInterface.hasIncognitoBrowserProvider) {
-    Browser* incognitoBrowser =
-        browserProviderInterface.incognitoBrowserProvider.browser;
-    SessionRestorationBrowserAgent::FromBrowser(incognitoBrowser)
+  if (!web::features::UseSessionSerializationOptimizations()) {
+    SessionRestorationBrowserAgent::FromBrowser(mainBrowser)
         ->SaveSession(/*immediately=*/true);
+    Browser* inactiveBrowser =
+        browserProviderInterface.mainBrowserProvider.inactiveBrowser;
+    SessionRestorationBrowserAgent::FromBrowser(inactiveBrowser)
+        ->SaveSession(/*immediately=*/true);
+    if (browserProviderInterface.hasIncognitoBrowserProvider) {
+      Browser* incognitoBrowser =
+          browserProviderInterface.incognitoBrowserProvider.browser;
+      SessionRestorationBrowserAgent::FromBrowser(incognitoBrowser)
+          ->SaveSession(/*immediately=*/true);
+    }
   }
 
   // Save a grey version of the active webstates.

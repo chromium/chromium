@@ -31,6 +31,10 @@
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/device_form_factor.h"
 
+// To get access to UseSessionSerializationOptimizations().
+// TODO(crbug.com/1383087): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -131,7 +135,8 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   CHECK(IsInactiveTabsAvailable());
   CHECK(webStateList);
   CHECK(prefService);
-  CHECK(sessionRestorationAgent);
+  CHECK(sessionRestorationAgent ||
+        web::features::UseSessionSerializationOptimizations());
   CHECK(snapshotAgent);
   CHECK(snapshotAgent->snapshot_cache());
   CHECK(tabRestoreService);
@@ -390,7 +395,9 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   }
   // TODO(crbug.com/1418021): Add metrics when the user closes all inactive
   // tabs from regular tab grid.
-  _closedSessionWindow = SerializeWebStateList(_webStateList);
+  if (!web::features::UseSessionSerializationOptimizations()) {
+    _closedSessionWindow = SerializeWebStateList(_webStateList);
+  }
   int oldSize = _tabRestoreService ? _tabRestoreService->entries().size() : 0;
   _webStateList->CloseAllWebStates(WebStateList::CLOSE_USER_ACTION);
   _syncedClosedTabsCount =
@@ -403,10 +410,12 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   }
   // TODO(crbug.com/1418021): Add metrics when the user restores all inactive
   // tabs from regular tab grid.
-  _sessionRestorationAgent->RestoreSessionWindow(
-      _closedSessionWindow, SessionRestorationScope::kRegularOnly);
+  if (_sessionRestorationAgent) {
+    _sessionRestorationAgent->RestoreSessionWindow(
+        _closedSessionWindow, SessionRestorationScope::kRegularOnly);
+    _closedSessionWindow = nil;
+  }
 
-  _closedSessionWindow = nil;
   [self removeEntriesFromTabRestoreService];
   _syncedClosedTabsCount = 0;
 }
