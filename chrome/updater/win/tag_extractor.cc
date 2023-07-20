@@ -20,6 +20,9 @@
 
 namespace updater {
 
+std::string ReadTagUtf8(std::vector<uint8_t>::const_iterator cert_begin,
+                        std::vector<uint8_t>::const_iterator cert_end);
+
 namespace {
 
 // Magic strings used to identify the tag in the binary.
@@ -34,54 +37,25 @@ constexpr uint8_t kTagEndMagicUtf16[] = {0, 'a', 0, 'h', 0, 'a', 0, 'm',
 
 // Converts a big-endian 2-byte value to little-endian and returns it
 // as a uint16_t.
-uint16_t BigEndianReadU16(BinaryConstIt it) {
+uint16_t BigEndianReadU16(std::vector<uint8_t>::const_iterator it) {
   static_assert(ARCH_CPU_LITTLE_ENDIAN, "Machine should be little-endian.");
   return (uint16_t{*it} << 8) + (uint16_t{*(it + 1)});
 }
 
-std::string ReadTagUtf8(BinaryConstIt cert_begin, BinaryConstIt cert_end) {
-  const uint8_t* magic_begin = std::begin(kTagStartMagicUtf8);
-  const uint8_t* magic_end = std::end(kTagStartMagicUtf8);
-
-  BinaryConstIt magic_str =
-      std::search(cert_begin, cert_end, magic_begin, magic_end);
-  if (magic_str == cert_end)
-    return std::string();
-
-  BinaryConstIt taglen_buf =
-      AdvanceIt(magic_str, magic_end - magic_begin, cert_end);
-
-  // Checks that the stored tag length is found within the binary.
-  if (!CheckRange(taglen_buf, sizeof(uint16_t), cert_end))
-    return std::string();
-
-  // Tag length is stored as a big-endian uint16_t.
-  const uint16_t tag_len = BigEndianReadU16(taglen_buf);
-
-  BinaryConstIt tag_buf = AdvanceIt(taglen_buf, sizeof(uint16_t), cert_end);
-  if (tag_buf == cert_end)
-    return std::string();
-
-  // Checks that the specified tag is found within the binary.
-  if (!CheckRange(tag_buf, tag_len, cert_end))
-    return std::string();
-
-  return std::string(tag_buf, tag_buf + tag_len);
-}
-
-std::string ReadTagUtf16(BinaryConstIt cert_begin, BinaryConstIt cert_end) {
+std::string ReadTagUtf16(std::vector<uint8_t>::const_iterator cert_begin,
+                         std::vector<uint8_t>::const_iterator cert_end) {
   const uint8_t* magic_begin = std::begin(kTagStartMagicUtf16);
   const uint8_t* magic_end = std::end(kTagStartMagicUtf16);
 
-  BinaryConstIt magic_str =
+  std::vector<uint8_t>::const_iterator magic_str =
       std::search(cert_begin, cert_end, magic_begin, magic_end);
   if (magic_str == cert_end)
     return std::string();
 
-  BinaryConstIt tag_buf =
+  std::vector<uint8_t>::const_iterator tag_buf =
       AdvanceIt(magic_str, magic_end - magic_begin, cert_end);
 
-  BinaryConstIt tag_buf_end =
+  std::vector<uint8_t>::const_iterator tag_buf_end =
       std::search(tag_buf, cert_end, std::begin(kTagEndMagicUtf16),
                   std::end(kTagEndMagicUtf16));
   if (tag_buf_end == cert_end)
@@ -116,7 +90,7 @@ std::string ReadTagUtf16(BinaryConstIt cert_begin, BinaryConstIt cert_end) {
 
 struct CallbackContext {
   TagEncoding encoding = TagEncoding::kUtf8;
-  BinaryConstIt binary_begin;
+  std::vector<uint8_t>::const_iterator binary_begin;
   std::string tag;
 };
 
@@ -130,8 +104,9 @@ bool SearchCertForTag(uint16_t revision,
   CallbackContext* callback_context =
       reinterpret_cast<CallbackContext*>(context);
 
-  BinaryConstIt cert_it = callback_context->binary_begin +
-                          (certificate_data - &*callback_context->binary_begin);
+  std::vector<uint8_t>::const_iterator cert_it =
+      callback_context->binary_begin +
+      (certificate_data - &*callback_context->binary_begin);
 
   switch (callback_context->encoding) {
     case TagEncoding::kUtf8:
@@ -149,7 +124,10 @@ bool SearchCertForTag(uint16_t revision,
 
 }  // namespace
 
-BinaryConstIt AdvanceIt(BinaryConstIt it, size_t distance, BinaryConstIt end) {
+std::vector<uint8_t>::const_iterator AdvanceIt(
+    std::vector<uint8_t>::const_iterator it,
+    size_t distance,
+    std::vector<uint8_t>::const_iterator end) {
   if (it >= end)
     return end;
 
@@ -160,7 +138,9 @@ BinaryConstIt AdvanceIt(BinaryConstIt it, size_t distance, BinaryConstIt end) {
   return it + std::min(distance, static_cast<size_t>(dist_to_end));
 }
 
-bool CheckRange(BinaryConstIt it, size_t size, BinaryConstIt end) {
+bool CheckRange(std::vector<uint8_t>::const_iterator it,
+                size_t size,
+                std::vector<uint8_t>::const_iterator end) {
   if (it >= end || size == 0)
     return false;
 
@@ -169,6 +149,42 @@ bool CheckRange(BinaryConstIt it, size_t size, BinaryConstIt end) {
     return false;
 
   return size <= static_cast<size_t>(dist_to_end);
+}
+
+std::string ReadTagUtf8(std::vector<uint8_t>::const_iterator cert_begin,
+                        std::vector<uint8_t>::const_iterator cert_end) {
+  const uint8_t* magic_begin = std::begin(kTagStartMagicUtf8);
+  const uint8_t* magic_end = std::end(kTagStartMagicUtf8);
+
+  std::vector<uint8_t>::const_iterator magic_str =
+      std::search(cert_begin, cert_end, magic_begin, magic_end);
+  if (magic_str == cert_end) {
+    return std::string();
+  }
+
+  std::vector<uint8_t>::const_iterator taglen_buf =
+      AdvanceIt(magic_str, magic_end - magic_begin, cert_end);
+
+  // Checks that the stored tag length is found within the binary.
+  if (!CheckRange(taglen_buf, sizeof(uint16_t), cert_end)) {
+    return std::string();
+  }
+
+  // Tag length is stored as a big-endian uint16_t.
+  const uint16_t tag_len = BigEndianReadU16(taglen_buf);
+
+  std::vector<uint8_t>::const_iterator tag_buf =
+      AdvanceIt(taglen_buf, sizeof(uint16_t), cert_end);
+  if (tag_buf == cert_end) {
+    return std::string();
+  }
+
+  // Checks that the specified tag is found within the binary.
+  if (!CheckRange(tag_buf, tag_len, cert_end)) {
+    return std::string();
+  }
+
+  return std::string(tag_buf, tag_buf + tag_len);
 }
 
 std::string ExtractTagFromBuffer(const std::vector<uint8_t>& binary,

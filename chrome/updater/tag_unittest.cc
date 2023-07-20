@@ -5,6 +5,7 @@
 #include "chrome/updater/tag.h"
 
 #include "base/strings/string_piece.h"
+#include "chrome/updater/util/unit_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -115,30 +116,7 @@ void VerifyTagParseSuccess(
   TagArgs actual;
   ASSERT_EQ(ErrorCode::kSuccess, Parse(tag, app_installer_data_args, &actual));
 
-  EXPECT_EQ(expected.bundle_name, actual.bundle_name);
-  EXPECT_EQ(expected.installation_id, actual.installation_id);
-  EXPECT_EQ(expected.brand_code, actual.brand_code);
-  EXPECT_EQ(expected.client_id, actual.client_id);
-  EXPECT_EQ(expected.experiment_labels, actual.experiment_labels);
-  EXPECT_EQ(expected.referral_id, actual.referral_id);
-  EXPECT_EQ(expected.language, actual.language);
-  EXPECT_EQ(expected.browser_type, actual.browser_type);
-  EXPECT_EQ(expected.usage_stats_enable, actual.usage_stats_enable);
-
-  EXPECT_EQ(expected.apps.size(), actual.apps.size());
-  for (size_t i = 0; i < actual.apps.size(); ++i) {
-    const AppArgs& app_expected = expected.apps[i];
-    const AppArgs& app_actual = actual.apps[i];
-
-    EXPECT_EQ(app_expected.app_id, app_actual.app_id);
-    EXPECT_EQ(app_expected.app_name, app_actual.app_name);
-    EXPECT_EQ(app_expected.needs_admin, app_actual.needs_admin);
-    EXPECT_EQ(app_expected.ap, app_actual.ap);
-    EXPECT_EQ(app_expected.encoded_installer_data,
-              app_actual.encoded_installer_data);
-    EXPECT_EQ(app_expected.install_data_index, app_actual.install_data_index);
-    EXPECT_EQ(app_expected.experiment_labels, app_actual.experiment_labels);
-  }
+  updater::test::ExpectTagArgsEqual(actual, expected);
 }
 
 void VerifyTagParseFail(

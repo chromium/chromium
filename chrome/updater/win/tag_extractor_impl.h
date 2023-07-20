@@ -13,17 +13,20 @@
 
 namespace updater {
 
-using BinaryConstIt = std::vector<uint8_t>::const_iterator;
-
 // These functions are available for unit testing.
 
 // Advances the iterator by |distance| and makes sure that it remains valid,
 // else returns |end|.
-BinaryConstIt AdvanceIt(BinaryConstIt it, size_t distance, BinaryConstIt end);
+std::vector<uint8_t>::const_iterator AdvanceIt(
+    std::vector<uint8_t>::const_iterator it,
+    size_t distance,
+    std::vector<uint8_t>::const_iterator end);
 
 // Checks that the range [it, it + size) is found within the binary. |size| must
 // be > 0.
-bool CheckRange(BinaryConstIt it, size_t size, BinaryConstIt end);
+bool CheckRange(std::vector<uint8_t>::const_iterator it,
+                size_t size,
+                std::vector<uint8_t>::const_iterator end);
 
 // Included in this header for fuzz testing.
 std::string ExtractTagFromBuffer(const std::vector<uint8_t>& binary,

@@ -847,7 +847,7 @@ if (is_win || is_mac || is_linux) {
         "test/data/tagged_msi/GUH-invalid-key.msi",
         "test/data/tagged_msi/GUH-invalid-length.msi",
         "test/data/tagged_msi/GUH-invalid-marker.msi",
-        "test/data/tagged_msi/GUH-invalid-value.msi",
+        "test/data/tagged_msi/GUH-special-value.msi",
         "test/data/tagged_msi/GUH-multiple.msi",
         "//chrome/test/data/updater/OfflineManifest.gup",
         "//chrome/test/data/updater/updater_qualification_app_exe.crx",

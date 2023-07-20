@@ -6,11 +6,12 @@
 
 #include <string>
 
-#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "chrome/updater/tag.h"
 #include "chrome/updater/util/unit_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -32,16 +33,26 @@ class MsiTagExtractorTest : public testing::Test {
   base::FilePath tagged_msi_path_;
 };
 
-TEST_F(MsiTagExtractorTest, ExtractTagMap) {
+TEST_F(MsiTagExtractorTest, ExtractTagArgs) {
   const struct {
     const wchar_t* msi_file_name;
-    const base::flat_map<std::string, std::string> expected_tag_map;
+    const tagging::TagArgs expected_tag_args;
   } test_cases[] = {
       // tag:BRAND=QAQA.
-      {L"GUH-brand-only.msi", {{"brand", "QAQA"}}},
+      {L"GUH-brand-only.msi",
+       []() {
+         tagging::TagArgs tag_args;
+         tag_args.brand_code = "QAQA";
+         return tag_args;
+       }()},
 
       // tag:BRAND=QAQA&.
-      {L"GUH-ampersand-ending.msi", {{"brand", "QAQA"}}},
+      {L"GUH-ampersand-ending.msi",
+       []() {
+         tagging::TagArgs tag_args;
+         tag_args.brand_code = "QAQA";
+         return tag_args;
+       }()},
 
       // tag:
       //   appguid={8A69D345-D564-463C-AFF1-A69D9E530F96}&
@@ -50,21 +61,37 @@ TEST_F(MsiTagExtractorTest, ExtractTagMap) {
       //   needsadmin=prefers&brand=CHMB&
       //   installdataindex=defaultbrowser.
       {L"GUH-multiple.msi",
-       {{"appguid", "{8A69D345-D564-463C-AFF1-A69D9E530F96}"},
-        {"iid", "{2D8C18E9-8D3A-4EFC-6D61-AE23E3530EA2}"},
-        {"lang", "en"},
-        {"browser", "4"},
-        {"usagestats", "0"},
-        {"appname", "Google%20Chrome"},
-        {"needsadmin", "prefers"},
-        {"brand", "CHMB"},
-        {"installdataindex", "defaultbrowser"}}},
+       []() {
+         tagging::TagArgs tag_args;
+         tag_args.bundle_name = "Google Chrome";
+         tag_args.installation_id = "{2D8C18E9-8D3A-4EFC-6D61-AE23E3530EA2}";
+         tag_args.brand_code = "CHMB";
+         tag_args.language = "en";
+         tag_args.browser_type = tagging::TagArgs::BrowserType::kChrome;
+         tag_args.usage_stats_enable = false;
+
+         tagging::AppArgs app_args("{8A69D345-D564-463C-AFF1-A69D9E530F96}");
+         app_args.app_name = "Google Chrome";
+         app_args.install_data_index = "defaultbrowser";
+         app_args.needs_admin = tagging::AppArgs::NeedsAdmin::kPrefers;
+         tag_args.apps = {app_args};
+
+         return tag_args;
+       }()},
+
+      // special character in the tag value.
+      {L"GUH-special-value.msi",
+       []() {
+         tagging::TagArgs tag_args;
+         tag_args.brand_code = "QA*A";
+         return tag_args;
+       }()},
 
       // tag: =value&BRAND=QAQA.
-      {L"GUH-empty-key.msi", {{"brand", "QAQA"}}},
+      {L"GUH-empty-key.msi", {}},
 
-      // tag: =value&BRAND=QAQA.
-      {L"GUH-empty-value.msi", {{"brand", ""}}},
+      // tag: BRAND=.
+      {L"GUH-empty-value.msi", {}},
 
       // tag:(empty string).
       {L"GUH-empty-tag.msi", {}},
@@ -75,9 +102,6 @@ TEST_F(MsiTagExtractorTest, ExtractTagMap) {
       // invalid characters in the tag key.
       {L"GUH-invalid-key.msi", {}},
 
-      // invalid characters in the tag value.
-      {L"GUH-invalid-value.msi", {}},
-
       // invalid tag format.
       {L"GUH-bad-format.msi", {}},
 
@@ -86,9 +110,9 @@ TEST_F(MsiTagExtractorTest, ExtractTagMap) {
   };
 
   for (const auto& test_case : test_cases) {
-    EXPECT_EQ(ExtractTagMap(GetMsiFilePath(test_case.msi_file_name)),
-              test_case.expected_tag_map)
-        << test_case.msi_file_name;
+    test::ExpectTagArgsEqual(
+        ExtractTagArgs(GetMsiFilePath(test_case.msi_file_name)),
+        test_case.expected_tag_args);
   }
 }
 

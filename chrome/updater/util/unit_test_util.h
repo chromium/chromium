@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/process/process_iterator.h"
 #include "base/synchronization/waitable_event.h"
+#include "chrome/updater/tag.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -134,6 +135,10 @@ void SetupMockUpdater(const base::FilePath& mock_updater_path);
 // Expect only a single file `mock_updater_path` and nothing else under
 // `mock_updater_path.DirName()`.
 void ExpectOnlyMockUpdater(const base::FilePath& mock_updater_path);
+
+// Expects that all members of `actual` and `expected` are the same.
+void ExpectTagArgsEqual(const updater::tagging::TagArgs& actual,
+                        const updater::tagging::TagArgs& expected);
 
 }  // namespace updater::test
 

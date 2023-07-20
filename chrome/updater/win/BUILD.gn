@@ -158,5 +158,9 @@ source_set("msi_tag_extractor") {
     "msi_tag_extractor.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    ":tag_extractor",
+    "//base",
+    "//chrome/updater:public_sources",
+  ]
 }

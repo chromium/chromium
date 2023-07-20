@@ -38,6 +38,7 @@
 #include "chrome/updater/policy/manager.h"
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/prefs.h"
+#include "chrome/updater/tag.h"
 #include "chrome/updater/test_scope.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
@@ -540,6 +541,34 @@ void ExpectOnlyMockUpdater(const base::FilePath& mock_updater_path) {
       });
 
   EXPECT_EQ(count_mock_updater_path, 1);
+}
+
+void ExpectTagArgsEqual(const updater::tagging::TagArgs& actual,
+                        const updater::tagging::TagArgs& expected) {
+  EXPECT_EQ(actual.bundle_name, expected.bundle_name);
+  EXPECT_EQ(actual.installation_id, expected.installation_id);
+  EXPECT_EQ(actual.brand_code, expected.brand_code);
+  EXPECT_EQ(actual.client_id, expected.client_id);
+  EXPECT_EQ(actual.experiment_labels, expected.experiment_labels);
+  EXPECT_EQ(actual.referral_id, expected.referral_id);
+  EXPECT_EQ(actual.language, expected.language);
+  EXPECT_EQ(actual.browser_type, expected.browser_type);
+  EXPECT_EQ(actual.usage_stats_enable, expected.usage_stats_enable);
+
+  EXPECT_EQ(actual.apps.size(), expected.apps.size());
+  for (size_t i = 0; i < expected.apps.size(); ++i) {
+    const updater::tagging::AppArgs& app_actual = actual.apps[i];
+    const updater::tagging::AppArgs& app_expected = expected.apps[i];
+
+    EXPECT_EQ(app_actual.app_id, app_expected.app_id);
+    EXPECT_EQ(app_actual.app_name, app_expected.app_name);
+    EXPECT_EQ(app_actual.needs_admin, app_expected.needs_admin);
+    EXPECT_EQ(app_actual.ap, app_expected.ap);
+    EXPECT_EQ(app_actual.encoded_installer_data,
+              app_expected.encoded_installer_data);
+    EXPECT_EQ(app_actual.install_data_index, app_expected.install_data_index);
+    EXPECT_EQ(app_actual.experiment_labels, app_expected.experiment_labels);
+  }
 }
 
 }  // namespace updater::test

@@ -43,7 +43,7 @@ TEST(TagExtractorTest, AdvanceIt) {
               empty_binary.end());
 
   const std::vector<uint8_t> binary(5);
-  BinaryConstIt it = binary.begin();
+  std::vector<uint8_t>::const_iterator it = binary.begin();
   ASSERT_TRUE(AdvanceIt(it, 0, binary.end()) == it);
   ASSERT_TRUE(AdvanceIt(it, 4, binary.end()) == (it + 4));
   ASSERT_TRUE(AdvanceIt(it, 5, binary.end()) == binary.end());
@@ -56,7 +56,7 @@ TEST(TagExtractorTest, CheckRange) {
 
   const std::vector<uint8_t> binary(5);
 
-  BinaryConstIt it = binary.begin();
+  std::vector<uint8_t>::const_iterator it = binary.begin();
   ASSERT_FALSE(CheckRange(it, 0, binary.end()));
   ASSERT_TRUE(CheckRange(it, 1, binary.end()));
   ASSERT_TRUE(CheckRange(it, 5, binary.end()));
