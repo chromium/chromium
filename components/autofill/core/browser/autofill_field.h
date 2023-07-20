@@ -59,6 +59,8 @@ class AutofillField : public FormFieldData {
 
   AutofillField(const AutofillField&) = delete;
   AutofillField& operator=(const AutofillField&) = delete;
+  AutofillField(AutofillField&&);
+  AutofillField& operator=(AutofillField&&);
 
   virtual ~AutofillField();
 
