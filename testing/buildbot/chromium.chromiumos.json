@@ -5286,7 +5286,7 @@
       },
       {
         "args": [
-          "--gtest_filter=-NativeExtensionBindingsSystemUnittest*:BluetoothSocketApiUnittest.CreateThenClose"
+          "--gtest_filter=-NativeExtensionBindingsSystemUnittest*"
         ],
         "isolate_profile_data": true,
         "merge": {

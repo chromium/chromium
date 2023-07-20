@@ -37382,7 +37382,7 @@
       },
       {
         "args": [
-          "--gtest_filter=-NativeExtensionBindingsSystemUnittest*:BluetoothSocketApiUnittest.CreateThenClose"
+          "--gtest_filter=-NativeExtensionBindingsSystemUnittest*"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
