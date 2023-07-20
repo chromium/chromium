@@ -428,7 +428,7 @@ TEST_F(AutofillWalletSyncBridgeTest,
   card2.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::ENROLLED);
   card2.set_virtual_card_enrollment_type(
-      CreditCard::VirtualCardEnrollmentType::NETWORK);
+      CreditCard::VirtualCardEnrollmentType::kNetwork);
   table()->SetServerCreditCards({card1, card2, card_with_nickname});
   PaymentsCustomerData customer_data{/*customer_id=*/kCustomerDataId};
   table()->SetPaymentsCustomerData(&customer_data);

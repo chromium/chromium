@@ -292,9 +292,9 @@ class VirtualCardUsageData;
 //   card_issuer_id     The id of the card's issuer.
 //   virtual_card_enrollment_type
 //                      An enum indicating the type of virtual card enrollment
-//                      of this card. TYPE_UNSPECIFIED is the default value.
-//                      ISSUER denotes that it is an issuer-level enrollment.
-//                      NETWORK denotes that it is a network-level enrollment.
+//                      of this card. kTypeUnspecified is the default value.
+//                      kIssuer denotes that it is an issuer-level enrollment.
+//                      kNetwork denotes that it is a network-level enrollment.
 // unmasked_credit_cards
 //                      When a masked credit credit card is unmasked and the
 //                      full number is downloaded or when the full number is

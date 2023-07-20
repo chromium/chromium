@@ -66,7 +66,8 @@ class AutofillOptimizationGuideTest : public testing::Test {
             std::make_unique<AutofillOptimizationGuide>(decider_.get())) {
     CreditCard card = test::GetVirtualCard();
     test_api(card).set_network_for_virtual_card(kVisaCard);
-    card.set_virtual_card_enrollment_type(CreditCard::NETWORK);
+    card.set_virtual_card_enrollment_type(
+        CreditCard::VirtualCardEnrollmentType::kNetwork);
     personal_data_manager_->Init(
         /*profile_database=*/nullptr,
         /*account_database=*/nullptr,
@@ -193,7 +194,7 @@ TEST_F(AutofillOptimizationGuideTest,
   form_structure.DetermineHeuristicTypes(
       /*form_interactions_ukm_logger=*/nullptr, /*log_manager=*/nullptr);
   personal_data_manager_->GetCreditCards()[0]->set_virtual_card_enrollment_type(
-      CreditCard::ISSUER);
+      CreditCard::VirtualCardEnrollmentType::kIssuer);
 
   EXPECT_CALL(*decider_, RegisterOptimizationTypes).Times(0);
 
@@ -429,7 +430,8 @@ TEST_F(AutofillOptimizationGuideTest,
       features::kAutofillEnableMerchantOptOutClientSideUrlFiltering);
   GURL url("https://example.com/");
   CreditCard virtual_card = test::GetVirtualCard();
-  virtual_card.set_virtual_card_enrollment_type(CreditCard::NETWORK);
+  virtual_card.set_virtual_card_enrollment_type(
+      CreditCard::VirtualCardEnrollmentType::kNetwork);
   test_api(virtual_card).set_network_for_virtual_card(kVisaCard);
 
   ON_CALL(*decider_,
@@ -454,7 +456,8 @@ TEST_F(AutofillOptimizationGuideTest,
       features::kAutofillEnableMerchantOptOutClientSideUrlFiltering);
   GURL url("https://example.com/");
   CreditCard virtual_card = test::GetVirtualCard();
-  virtual_card.set_virtual_card_enrollment_type(CreditCard::NETWORK);
+  virtual_card.set_virtual_card_enrollment_type(
+      CreditCard::VirtualCardEnrollmentType::kNetwork);
   test_api(virtual_card).set_network_for_virtual_card(kVisaCard);
 
   ON_CALL(*decider_,
@@ -480,7 +483,8 @@ TEST_F(AutofillOptimizationGuideTest,
       features::kAutofillEnableMerchantOptOutClientSideUrlFiltering);
   GURL url("https://example.com/");
   CreditCard virtual_card = test::GetVirtualCard();
-  virtual_card.set_virtual_card_enrollment_type(CreditCard::NETWORK);
+  virtual_card.set_virtual_card_enrollment_type(
+      CreditCard::VirtualCardEnrollmentType::kNetwork);
   test_api(virtual_card).set_network_for_virtual_card(kVisaCard);
 
   EXPECT_CALL(
@@ -505,7 +509,8 @@ TEST_F(AutofillOptimizationGuideTest,
       features::kAutofillEnableMerchantOptOutClientSideUrlFiltering);
   GURL url("https://example.com/");
   CreditCard virtual_card = test::GetVirtualCard();
-  virtual_card.set_virtual_card_enrollment_type(CreditCard::ISSUER);
+  virtual_card.set_virtual_card_enrollment_type(
+      CreditCard::VirtualCardEnrollmentType::kIssuer);
   test_api(virtual_card).set_network_for_virtual_card(kVisaCard);
 
   EXPECT_CALL(
@@ -532,7 +537,8 @@ TEST_F(
       features::kAutofillEnableMerchantOptOutClientSideUrlFiltering);
   GURL url("https://example.com/");
   CreditCard virtual_card = test::GetVirtualCard();
-  virtual_card.set_virtual_card_enrollment_type(CreditCard::NETWORK);
+  virtual_card.set_virtual_card_enrollment_type(
+      CreditCard::VirtualCardEnrollmentType::kNetwork);
   test_api(virtual_card).set_network_for_virtual_card(kMasterCard);
 
   EXPECT_CALL(

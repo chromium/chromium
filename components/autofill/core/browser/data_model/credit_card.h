@@ -84,14 +84,14 @@ class CreditCard : public AutofillDataModel {
   // The enrollment type of the virtual card attached to this card, if one is
   // present. This must stay in sync with the proto enum in
   // autofill_specifics.proto.
-  enum VirtualCardEnrollmentType {
+  enum class VirtualCardEnrollmentType {
     // Type unspecified. This is the default value of this enum. Should not be
     // used with cards that have a virtual card enrolled.
-    TYPE_UNSPECIFIED = 0,
+    kTypeUnspecified = 0,
     // Issuer-level enrollment.
-    ISSUER = 1,
+    kIssuer = 1,
     // Network-level enrollment.
-    NETWORK = 2,
+    kNetwork = 2,
   };
 
   // Creates a copy of the passed in credit card, and sets its `record_type` to
@@ -534,7 +534,8 @@ class CreditCard : public AutofillDataModel {
   // virtual cards. An example of differing functionality is if this virtual
   // card enrollment type is a network-level enrollment, and we are on a URL
   // that is opted out of virtual cards with the network of this card.
-  VirtualCardEnrollmentType virtual_card_enrollment_type_ = TYPE_UNSPECIFIED;
+  VirtualCardEnrollmentType virtual_card_enrollment_type_ =
+      VirtualCardEnrollmentType::kTypeUnspecified;
 
   // The url to fetch the rich card art image.
   GURL card_art_url_;

@@ -1984,7 +1984,7 @@ TEST_F(AutofillTableTest, SetGetServerCards) {
   inputs[0].set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::UNENROLLED);
   inputs[0].set_virtual_card_enrollment_type(
-      CreditCard::VirtualCardEnrollmentType::ISSUER);
+      CreditCard::VirtualCardEnrollmentType::kIssuer);
   inputs[0].set_product_description(u"Fake description");
   inputs[0].set_cvc(u"000");
 
@@ -2002,7 +2002,7 @@ TEST_F(AutofillTableTest, SetGetServerCards) {
   inputs[1].set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::ENROLLED);
   inputs[1].set_virtual_card_enrollment_type(
-      CreditCard::VirtualCardEnrollmentType::NETWORK);
+      CreditCard::VirtualCardEnrollmentType::kNetwork);
   inputs[1].set_card_art_url(GURL("https://www.example.com"));
   inputs[1].set_cvc(u"111");
 
@@ -2043,9 +2043,9 @@ TEST_F(AutofillTableTest, SetGetServerCards) {
   EXPECT_EQ(CreditCard::VirtualCardEnrollmentState::ENROLLED,
             outputs[1]->virtual_card_enrollment_state());
 
-  EXPECT_EQ(CreditCard::VirtualCardEnrollmentType::ISSUER,
+  EXPECT_EQ(CreditCard::VirtualCardEnrollmentType::kIssuer,
             outputs[0]->virtual_card_enrollment_type());
-  EXPECT_EQ(CreditCard::VirtualCardEnrollmentType::NETWORK,
+  EXPECT_EQ(CreditCard::VirtualCardEnrollmentType::kNetwork,
             outputs[1]->virtual_card_enrollment_type());
 
   EXPECT_EQ(GURL(), outputs[0]->card_art_url());
@@ -2269,7 +2269,7 @@ TEST_F(AutofillTableTest, SetServerCardsData) {
   inputs[0].set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::ENROLLED);
   inputs[0].set_virtual_card_enrollment_type(
-      CreditCard::VirtualCardEnrollmentType::ISSUER);
+      CreditCard::VirtualCardEnrollmentType::kIssuer);
   inputs[0].set_card_art_url(GURL("https://www.example.com"));
   inputs[0].set_product_description(u"Fake description");
 
@@ -2291,7 +2291,7 @@ TEST_F(AutofillTableTest, SetServerCardsData) {
   EXPECT_EQ(CreditCard::VirtualCardEnrollmentState::ENROLLED,
             outputs[0]->virtual_card_enrollment_state());
 
-  EXPECT_EQ(CreditCard::VirtualCardEnrollmentType::ISSUER,
+  EXPECT_EQ(CreditCard::VirtualCardEnrollmentType::kIssuer,
             outputs[0]->virtual_card_enrollment_type());
 
   EXPECT_EQ(CreditCard::Issuer::kExternalIssuer, outputs[0]->card_issuer());

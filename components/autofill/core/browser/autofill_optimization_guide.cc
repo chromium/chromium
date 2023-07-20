@@ -28,7 +28,8 @@ GetVcnMerchantOptOutOptimizationTypeForCard(const CreditCard* card) {
 
   // If `card` is not a network-level enrollment, do not return an optimization
   // type.
-  if (card->virtual_card_enrollment_type() != CreditCard::NETWORK) {
+  if (card->virtual_card_enrollment_type() !=
+      CreditCard::VirtualCardEnrollmentType::kNetwork) {
     return optimization_guide::proto::TYPE_UNSPECIFIED;
   }
 

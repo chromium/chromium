@@ -131,13 +131,16 @@ CreditCard CardFromSpecifics(const sync_pb::WalletMaskedCreditCard& card) {
     CreditCard::VirtualCardEnrollmentType virtual_card_enrollment_type;
     switch (card.virtual_card_enrollment_type()) {
       case sync_pb::WalletMaskedCreditCard::TYPE_UNSPECIFIED:
-        virtual_card_enrollment_type = CreditCard::TYPE_UNSPECIFIED;
+        virtual_card_enrollment_type =
+            CreditCard::VirtualCardEnrollmentType::kTypeUnspecified;
         break;
       case sync_pb::WalletMaskedCreditCard::ISSUER:
-        virtual_card_enrollment_type = CreditCard::ISSUER;
+        virtual_card_enrollment_type =
+            CreditCard::VirtualCardEnrollmentType::kIssuer;
         break;
       case sync_pb::WalletMaskedCreditCard::NETWORK:
-        virtual_card_enrollment_type = CreditCard::NETWORK;
+        virtual_card_enrollment_type =
+            CreditCard::VirtualCardEnrollmentType::kNetwork;
         break;
     }
     result.set_virtual_card_enrollment_type(virtual_card_enrollment_type);
@@ -332,14 +335,14 @@ void SetAutofillWalletSpecificsFromServerCard(
     sync_pb::WalletMaskedCreditCard::VirtualCardEnrollmentType
         virtual_card_enrollment_type;
     switch (card.virtual_card_enrollment_type()) {
-      case CreditCard::TYPE_UNSPECIFIED:
+      case CreditCard::VirtualCardEnrollmentType::kTypeUnspecified:
         virtual_card_enrollment_type =
             sync_pb::WalletMaskedCreditCard::TYPE_UNSPECIFIED;
         break;
-      case CreditCard::ISSUER:
+      case CreditCard::VirtualCardEnrollmentType::kIssuer:
         virtual_card_enrollment_type = sync_pb::WalletMaskedCreditCard::ISSUER;
         break;
-      case CreditCard::NETWORK:
+      case CreditCard::VirtualCardEnrollmentType::kNetwork:
         virtual_card_enrollment_type = sync_pb::WalletMaskedCreditCard::NETWORK;
         break;
     }
