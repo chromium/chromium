@@ -61,6 +61,11 @@ class GuestOsDlcInstallation {
   ~GuestOsDlcInstallation();
 
  private:
+  void CheckState();
+
+  void OnGetDlcStateCompleted(const std::string& err,
+                              const dlcservice::DlcState& dlc_state);
+
   void StartInstall();
 
   void OnDlcInstallCompleted(

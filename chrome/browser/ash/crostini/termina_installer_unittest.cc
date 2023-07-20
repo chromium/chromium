@@ -198,8 +198,6 @@ TEST_F(TerminaInstallTest, InstallDlcCancell) {
   termina_installer_.Install(result_future.GetCallback());
   termina_installer_.CancelInstall();
   EXPECT_EQ(TerminaInstaller::InstallResult::Cancelled, result_future.Get());
-
-  CheckDlcInstallCalledTimes(1);
 }
 
 TEST_F(TerminaInstallTest, InstallDlcError) {
