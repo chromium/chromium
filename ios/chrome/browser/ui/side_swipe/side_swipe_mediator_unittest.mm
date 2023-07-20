@@ -76,6 +76,8 @@ class SideSwipeMediatorTest : public PlatformTest {
     [side_swipe_mediator_ addHorizontalGesturesToView:view_];
   }
 
+  ~SideSwipeMediatorTest() override { [side_swipe_mediator_ disconnect]; }
+
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<Browser> browser_;

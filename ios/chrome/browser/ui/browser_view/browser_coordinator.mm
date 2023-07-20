@@ -986,6 +986,7 @@ enum class ToolbarKind {
 
   _legacyTabStripCoordinator = nil;
   _tabStripCoordinator = nil;
+  [_sideSwipeMediator disconnect];
   _sideSwipeMediator = nil;
   _toolbarCoordinator = nil;
   _loadQueryCommandsHandler = nil;

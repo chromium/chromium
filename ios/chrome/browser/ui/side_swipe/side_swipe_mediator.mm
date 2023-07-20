@@ -162,6 +162,11 @@ const NSUInteger kIpadGreySwipeTabCount = 8;
 }
 
 - (void)dealloc {
+  // TODO(crbug.com/1466454);
+  DUMP_WILL_BE_CHECK(!_fullscreenController);
+}
+
+- (void)disconnect {
   if (self.webStateList) {
     self.webStateList->RemoveObserver(_webStateListObserver.get());
   }

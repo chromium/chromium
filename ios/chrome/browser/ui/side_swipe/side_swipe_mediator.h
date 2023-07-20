@@ -70,6 +70,9 @@ extern NSString* const kSideSwipeDidStopNotification;
             snapshotBrowserAgent:(SnapshotBrowserAgent*)snapshotBrowserAgent
                     webStateList:(WebStateList*)webStateList;
 
+// Disconnects the mediator.
+- (void)disconnect;
+
 // Set up swipe gesture recognizers.
 - (void)addHorizontalGesturesToView:(UIView*)view;
 

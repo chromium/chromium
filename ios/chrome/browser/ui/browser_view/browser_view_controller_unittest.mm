@@ -343,6 +343,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     [tab_strip_coordinator_ stop];
     [popup_menu_coordinator_ stop];
     [NTPCoordinator_ stop];
+    [side_swipe_mediator_ disconnect];
 
     BlockCleanupTest::TearDown();
   }
