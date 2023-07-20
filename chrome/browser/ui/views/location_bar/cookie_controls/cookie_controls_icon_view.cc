@@ -42,6 +42,11 @@ CookieControlsIconView::CookieControlsIconView(
 
 CookieControlsIconView::~CookieControlsIconView() = default;
 
+CookieControlsBubbleCoordinator*
+CookieControlsIconView::GetCoordinatorForTesting() const {
+  return bubble_coordinator_.get();
+}
+
 void CookieControlsIconView::UpdateImpl() {
   auto* web_contents = delegate()->GetWebContentsForPageActionIconView();
   if (web_contents) {

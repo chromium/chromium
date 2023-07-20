@@ -41,6 +41,8 @@ class CookieControlsBubbleViewController
   void OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel level) override;
 
+  void SetSubjectUrlNameForTesting(const std::u16string& name);
+
  private:
   friend class CookieControlsBubbleViewBrowserTest;
 
@@ -62,6 +64,8 @@ class CookieControlsBubbleViewController
   // content::WebContentsObserver
   void DidStopLoading() override;
 
+  std::u16string GetSubjectUrlName(content::WebContents* web_contents) const;
+
   raw_ptr<CookieControlsBubbleView> bubble_view_ = nullptr;
 
   // Used for favicon loading tasks.
@@ -77,6 +81,9 @@ class CookieControlsBubbleViewController
 
   bool waiting_for_reload_ = false;
   bool requires_reload_ = false;
+
+  // Testing override for GetSubjectUrlName().
+  absl::optional<std::u16string> subject_url_name_for_testing_;
 
   base::WeakPtrFactory<CookieControlsBubbleViewController> weak_factory_{this};
 };

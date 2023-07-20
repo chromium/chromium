@@ -17,6 +17,7 @@ ChromeLabsUiTest.*
 ConfirmBubbleTest.*
 ContentAnalysysDialogUiTest.*
 ContentSettingBubbleDialogTest.*
+CookieControlsBubbleViewDialogBrowserTest.*
 OldCookieControlsBubbleViewTest.*
 CryptoModulePasswordDialogTest.*
 DeepScanningFailureModalDialogTest.*

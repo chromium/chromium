@@ -35,6 +35,10 @@ void CookieControlsBubbleCoordinator::ShowBubble(
 
   view_controller_ = std::make_unique<CookieControlsBubbleViewController>(
       bubble_view_, controller, web_contents);
+  if (display_name_for_testing_.has_value()) {
+    view_controller_->SetSubjectUrlNameForTesting(
+        display_name_for_testing_.value());
+  }
 
   views::Widget* const widget =
       views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
@@ -46,9 +50,13 @@ CookieControlsBubbleViewImpl* CookieControlsBubbleCoordinator::GetBubble() {
   return bubble_view_;
 }
 
-CookieControlsBubbleViewController*
-CookieControlsBubbleCoordinator::GetViewControllerForTesting() {
-  return view_controller_.get();
+void CookieControlsBubbleCoordinator::SetDisplayNameForTesting(
+    const std::u16string& name) {
+  display_name_for_testing_ = name;
+  if (view_controller_ != nullptr) {
+    view_controller_->SetSubjectUrlNameForTesting(
+        display_name_for_testing_.value());
+  }
 }
 
 void CookieControlsBubbleCoordinator::OnViewIsDeleting(

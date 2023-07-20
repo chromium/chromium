@@ -42,6 +42,8 @@ class CookieControlsIconView : public PageActionIconView,
   views::BubbleDialogDelegate* GetBubble() const override;
   void UpdateImpl() override;
 
+  CookieControlsBubbleCoordinator* GetCoordinatorForTesting() const;
+
  protected:
   void OnExecuting(PageActionIconView::ExecuteSource source) override;
   const gfx::VectorIcon& GetVectorIcon() const override;

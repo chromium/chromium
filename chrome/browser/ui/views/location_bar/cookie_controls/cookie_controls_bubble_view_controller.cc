@@ -48,15 +48,6 @@ constexpr UrlIdentity::FormatOptions kUrlIdentityOptions{
     .default_options = {UrlIdentity::DefaultFormatOptions::
                             kOmitSchemePathAndTrivialSubdomains}};
 
-std::u16string GetSubjectUrlName(content::WebContents* web_contents) {
-  CHECK(web_contents);
-  return UrlIdentity::CreateFromUrl(
-             Profile::FromBrowserContext(web_contents->GetBrowserContext()),
-             web_contents->GetVisibleURL(), kUrlIdentityAllowedTypes,
-             kUrlIdentityOptions)
-      .name;
-}
-
 const gfx::VectorIcon& GetToggleIcon(bool enabled) {
   if (enabled) {
     return features::IsChromeRefresh2023() ? views::kEyeRefreshIcon
@@ -285,4 +276,23 @@ void CookieControlsBubbleViewController::DidStopLoading() {
   if (waiting_for_reload_) {
     bubble_view_->CloseWidget();
   }
+}
+
+std::u16string CookieControlsBubbleViewController::GetSubjectUrlName(
+    content::WebContents* web_contents) const {
+  if (subject_url_name_for_testing_.has_value()) {
+    return subject_url_name_for_testing_.value();
+  }
+  CHECK(web_contents);
+  return UrlIdentity::CreateFromUrl(
+             Profile::FromBrowserContext(web_contents->GetBrowserContext()),
+             web_contents->GetVisibleURL(), kUrlIdentityAllowedTypes,
+             kUrlIdentityOptions)
+      .name;
+}
+
+void CookieControlsBubbleViewController::SetSubjectUrlNameForTesting(
+    const std::u16string& name) {
+  subject_url_name_for_testing_ = name;
+  bubble_view_->UpdateSubtitle(GetSubjectUrlName(/*web_contents=*/nullptr));
 }
