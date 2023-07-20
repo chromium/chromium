@@ -1017,6 +1017,29 @@ TEST_F(FormStructureRationalizerTest,
                         HasTypeAndOffset(CREDIT_CARD_NUMBER, 0)));
 }
 
+// Tests that in <input maxlength=4> <input maxlength=8> <input maxlength=4> the
+// last <input> starts a new group. Regression test for crbug.com/1465573.
+TEST_F(FormStructureRationalizerTest, RationalizeCreditCardNumberOffsets_) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillSplitCreditCardNumbersCautiously);
+  EXPECT_THAT(*BuildFormStructure(
+                  {
+                      {.field_type = CREDIT_CARD_NAME_FULL},
+                      {.field_type = CREDIT_CARD_NUMBER, .max_length = 4},
+                      {.field_type = CREDIT_CARD_NUMBER, .max_length = 8},
+                      {.field_type = CREDIT_CARD_NUMBER, .max_length = 4},
+                      {.field_type = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+                      {.field_type = CREDIT_CARD_NUMBER},
+                  },
+                  /*run_heuristics=*/false),
+              AreFields(HasTypeAndOffset(CREDIT_CARD_NAME_FULL, 0),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 0),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 4),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 0),
+                        HasTypeAndOffset(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 0),
+                        HasTypeAndOffset(CREDIT_CARD_NUMBER, 0)));
+}
+
 struct RationalizeAutocompleteTestParam {
   std::vector<FieldTemplate> fields;
   std::vector<ServerFieldType> final_types;

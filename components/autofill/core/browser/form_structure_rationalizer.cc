@@ -474,8 +474,7 @@ void FormStructureRationalizer::RationalizeCreditCardNumberOffsets(
                CREDIT_CARD_NUMBER &&
            group[last]->renderer_form_id() == group[0]->renderer_form_id() &&
            group[last]->IsFocusable() == group[0]->IsFocusable() &&
-           (group[last]->max_length == group[0]->max_length ||
-            (last >= 1 && group[last - 1]->max_length == group[0]->max_length));
+           (last == 0 || group[last - 1]->max_length == group[0]->max_length);
   };
 
   // `has_reasonable_length({f, f + N + 1})` is true iff
