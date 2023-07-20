@@ -66,6 +66,7 @@ struct ASH_EXPORT GlanceablesClassroomAssignment {
       const std::string& course_work_title,
       const GURL& link,
       const absl::optional<base::Time>& due,
+      const base::Time& last_update,
       absl::optional<GlanceablesClassroomAggregatedSubmissionsState>
           submissions_state);
   GlanceablesClassroomAssignment(const GlanceablesClassroomAssignment&) =
@@ -88,6 +89,9 @@ struct ASH_EXPORT GlanceablesClassroomAssignment {
 
   // Due date and time in UTC of this course work item.
   const absl::optional<base::Time> due;
+
+  // The timestamp of the last course work item update.
+  const base::Time last_update;
 
   // Stats about overall student submissions state of the assignment.
   const absl::optional<GlanceablesClassroomAggregatedSubmissionsState>

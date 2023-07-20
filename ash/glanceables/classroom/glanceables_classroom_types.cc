@@ -44,12 +44,14 @@ GlanceablesClassroomAssignment::GlanceablesClassroomAssignment(
     const std::string& course_work_title,
     const GURL& link,
     const absl::optional<base::Time>& due,
+    const base::Time& last_update,
     absl::optional<GlanceablesClassroomAggregatedSubmissionsState>
         submissions_state)
     : course_title(course_title),
       course_work_title(course_work_title),
       link(link),
       due(due),
+      last_update(last_update),
       submissions_state(std::move(submissions_state)) {}
 
 std::string GlanceablesClassroomAssignment::ToString() const {
@@ -59,6 +61,7 @@ std::string GlanceablesClassroomAssignment::ToString() const {
   if (due.has_value()) {
     ss << ", Due: " << base::TimeFormatHTTP(due.value());
   }
+  ss << ", Last Update: " << base::TimeFormatHTTP(last_update);
   if (submissions_state.has_value()) {
     ss << ", total_submission_count: " << submissions_state->total_count
        << ", number turned in: " << submissions_state->number_turned_in

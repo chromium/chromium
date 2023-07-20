@@ -241,6 +241,7 @@ void GlanceablesClassroomClientImpl::
 
   auto due_predicate = base::BindRepeating(
       [](const base::Time& now, const absl::optional<base::Time>& due) {
+        // Only include items which an approaching due date.
         return due.has_value() && now < due.value();
       },
       base::Time::Now());
@@ -250,10 +251,18 @@ void GlanceablesClassroomClientImpl::
         return state != GlanceablesClassroomStudentSubmissionState::kGraded;
       });
 
+  auto sort_comparator = base::BindRepeating(
+      [](const std::unique_ptr<GlanceablesClassroomAssignment>& lhs,
+         const std::unique_ptr<GlanceablesClassroomAssignment>& rhs) {
+        // Order by due date in ascending order.
+        return lhs->due < rhs->due;
+      });
+
   InvokeOnceTeacherDataFetched(base::BindOnce(
       &GlanceablesClassroomClientImpl::GetFilteredTeacherAssignments,
       weak_factory_.GetWeakPtr(), std::move(due_predicate),
-      std::move(submissions_state_predicate), std::move(callback)));
+      std::move(submissions_state_predicate), std::move(sort_comparator),
+      std::move(callback)));
 }
 
 void GlanceablesClassroomClientImpl::GetTeacherAssignmentsRecentlyDue(
@@ -262,6 +271,7 @@ void GlanceablesClassroomClientImpl::GetTeacherAssignmentsRecentlyDue(
 
   auto due_predicate = base::BindRepeating(
       [](const base::Time& now, const absl::optional<base::Time>& due) {
+        //  Only include items with a due date in the past.
         return due.has_value() && now > due.value();
       },
       base::Time::Now());
@@ -271,10 +281,18 @@ void GlanceablesClassroomClientImpl::GetTeacherAssignmentsRecentlyDue(
         return state != GlanceablesClassroomStudentSubmissionState::kGraded;
       });
 
+  auto sort_comparator = base::BindRepeating(
+      [](const std::unique_ptr<GlanceablesClassroomAssignment>& lhs,
+         const std::unique_ptr<GlanceablesClassroomAssignment>& rhs) {
+        // Order by due date in descending order.
+        return lhs->due > rhs->due;
+      });
+
   InvokeOnceTeacherDataFetched(base::BindOnce(
       &GlanceablesClassroomClientImpl::GetFilteredTeacherAssignments,
       weak_factory_.GetWeakPtr(), std::move(due_predicate),
-      std::move(submissions_state_predicate), std::move(callback)));
+      std::move(submissions_state_predicate), std::move(sort_comparator),
+      std::move(callback)));
 }
 
 void GlanceablesClassroomClientImpl::GetTeacherAssignmentsWithoutDueDate(
@@ -289,10 +307,18 @@ void GlanceablesClassroomClientImpl::GetTeacherAssignmentsWithoutDueDate(
         return state != GlanceablesClassroomStudentSubmissionState::kGraded;
       });
 
+  auto sort_comparator = base::BindRepeating(
+      [](const std::unique_ptr<GlanceablesClassroomAssignment>& lhs,
+         const std::unique_ptr<GlanceablesClassroomAssignment>& rhs) {
+        // Order by last update time in descending order.
+        return lhs->last_update > rhs->last_update;
+      });
+
   InvokeOnceTeacherDataFetched(base::BindOnce(
       &GlanceablesClassroomClientImpl::GetFilteredTeacherAssignments,
       weak_factory_.GetWeakPtr(), std::move(due_predicate),
-      std::move(submissions_state_predicate), std::move(callback)));
+      std::move(submissions_state_predicate), std::move(sort_comparator),
+      std::move(callback)));
 }
 
 void GlanceablesClassroomClientImpl::GetGradedTeacherAssignments(
@@ -305,10 +331,21 @@ void GlanceablesClassroomClientImpl::GetGradedTeacherAssignments(
         return state == GlanceablesClassroomStudentSubmissionState::kGraded;
       });
 
+  auto sort_comparator = base::BindRepeating(
+      [](const std::unique_ptr<GlanceablesClassroomAssignment>& lhs,
+         const std::unique_ptr<GlanceablesClassroomAssignment>& rhs) {
+        // TODO(b/291609743): Order by when last student submission was graded,
+        // in descending order.
+        // For now, order by the assignment's last update time in descending
+        // order.
+        return lhs->last_update > rhs->last_update;
+      });
+
   InvokeOnceTeacherDataFetched(base::BindOnce(
       &GlanceablesClassroomClientImpl::GetFilteredTeacherAssignments,
       weak_factory_.GetWeakPtr(), std::move(due_predicate),
-      std::move(submissions_state_predicate), std::move(callback)));
+      std::move(submissions_state_predicate), std::move(sort_comparator),
+      std::move(callback)));
 }
 
 void GlanceablesClassroomClientImpl::OpenUrl(const GURL& url) const {
@@ -804,6 +841,7 @@ void GlanceablesClassroomClientImpl::GetFilteredTeacherAssignments(
         due_predicate,
     base::RepeatingCallback<bool(GlanceablesClassroomStudentSubmissionState)>
         submission_state_predicate,
+    SortComparator sort_comparator,
     GetAssignmentsCallback callback) {
   CHECK(due_predicate);
   CHECK(callback);
@@ -829,6 +867,13 @@ void GlanceablesClassroomClientImpl::GetFilteredTeacherAssignments(
       }
     }
   }
+
+  std::sort(filtered_assignments.begin(), filtered_assignments.end(),
+            [sort_comparator](
+                const std::unique_ptr<GlanceablesClassroomAssignment>& lhs,
+                const std::unique_ptr<GlanceablesClassroomAssignment>& rhs) {
+              return sort_comparator.Run(lhs, rhs);
+            });
 
   std::move(callback).Run(std::move(filtered_assignments));
 }

@@ -285,7 +285,7 @@ TEST_F(ClassroomBubbleStudentViewTest, RendersListItems) {
                   base::StringPrintf("Course work title %zu", i + 1),
                   GURL(base::StringPrintf(
                       "https://classroom.google.com/test-link-%zu", i + 1)),
-                  absl::nullopt, absl::nullopt));
+                  absl::nullopt, base::Time(), absl::nullopt));
         }
         std::move(cb).Run(std::move(assignments));
       });
@@ -311,7 +311,7 @@ TEST_F(ClassroomBubbleTeacherViewTest, RendersListItems) {
                   base::StringPrintf("Course work title %zu", i + 1),
                   GURL(base::StringPrintf(
                       "https://classroom.google.com/test-link-%zu", i + 1)),
-                  absl::nullopt,
+                  absl::nullopt, base::Time(),
                   GlanceablesClassroomAggregatedSubmissionsState(0, 0, 0)));
         }
         std::move(cb).Run(std::move(assignments));
@@ -334,7 +334,7 @@ TEST_F(ClassroomBubbleStudentViewTest, OpensClassroomUrlForListItem) {
         assignments.push_back(std::make_unique<GlanceablesClassroomAssignment>(
             "Course title", "Course work title",
             GURL("https://classroom.google.com/test-link"), absl::nullopt,
-            absl::nullopt));
+            base::Time(), absl::nullopt));
         std::move(cb).Run(std::move(assignments));
       });
   ASSERT_TRUE(GetComboBoxView());
@@ -359,6 +359,7 @@ TEST_F(ClassroomBubbleTeacherViewTest, OpensClassroomUrlForListItem) {
         assignments.push_back(std::make_unique<GlanceablesClassroomAssignment>(
             "Course title", "Course work title",
             GURL("https://classroom.google.com/test-link"), absl::nullopt,
+            base::Time(),
             GlanceablesClassroomAggregatedSubmissionsState(0, 0, 0)));
         std::move(cb).Run(std::move(assignments));
       });

@@ -110,6 +110,9 @@ class GlanceablesClassroomCourseWorkItem {
   // Due date and time in UTC of this course work item.
   absl::optional<base::Time> due_;
 
+  // The timestamp of the last course work item update.
+  base::Time last_update_;
+
   // The total number of students that have course work assigned to them.
   int total_submissions_ = 0;
 

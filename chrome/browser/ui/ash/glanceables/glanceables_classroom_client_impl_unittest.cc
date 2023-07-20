@@ -1665,7 +1665,7 @@ TEST_F(GlanceablesClassroomClientImplTest,
                 },
                 {
                   "id": "course-work-item-2",
-                  "title": "Math assignment - approaching due date",
+                  "title": "Math assignment - approaching due date 1",
                   "state": "PUBLISHED",
                   "alternateLink": "https://classroom.google.com/test-link-2",
                   "dueDate": {"year": 2023, "month": 4, "day": 25},
@@ -1682,6 +1682,32 @@ TEST_F(GlanceablesClassroomClientImplTest,
                   "state": "PUBLISHED",
                   "alternateLink": "https://classroom.google.com/test-link-3",
                   "dueDate": {"year": 2023, "month": 4, "day": 25},
+                  "dueTime": {
+                    "hours": 15,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                },
+                {
+                  "id": "course-work-item-4",
+                  "title": "Math assignment - approaching due date 2",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-4",
+                  "dueDate": {"year": 2023, "month": 4, "day": 12},
+                  "dueTime": {
+                    "hours": 15,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                },
+                {
+                  "id": "course-work-item-5",
+                  "title": "Math assignment - approaching due date 3",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-5",
+                  "dueDate": {"year": 2023, "month": 7, "day": 15},
                   "dueTime": {
                     "hours": 15,
                     "minutes": 9,
@@ -1738,24 +1764,78 @@ TEST_F(GlanceablesClassroomClientImplTest,
                 }
               ]
               })"))));
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(Field(
+          &HttpRequest::relative_url,
+          HasSubstr("courseWork/course-work-item-4/studentSubmissions?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "studentSubmissions": [
+                {
+                  "id": "student-submission-4",
+                  "courseWorkId": "course-work-item-4",
+                  "state": "NEW"
+                }
+              ]
+              })"))));
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(Field(
+          &HttpRequest::relative_url,
+          HasSubstr("courseWork/course-work-item-5/studentSubmissions?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "studentSubmissions": [
+                {
+                  "id": "student-submission-5",
+                  "courseWorkId": "course-work-item-5",
+                  "state": "NEW"
+                }
+              ]
+              })"))));
   TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
       future;
   client()->GetTeacherAssignmentsWithApproachingDueDate(future.GetCallback());
 
   const auto assignments = future.Take();
-  ASSERT_EQ(assignments.size(), 1u);
+  ASSERT_EQ(assignments.size(), 3u);
 
   EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
   EXPECT_EQ(assignments.at(0)->course_work_title,
-            "Math assignment - approaching due date");
+            "Math assignment - approaching due date 2");
   EXPECT_EQ(assignments.at(0)->link,
-            "https://classroom.google.com/test-link-2");
+            "https://classroom.google.com/test-link-4");
   EXPECT_EQ(FormatTimeAsString(assignments.at(0)->due.value()),
-            "2023-04-25T15:09:25.250Z");
+            "2023-04-12T15:09:25.250Z");
   ASSERT_TRUE(assignments.at(0)->submissions_state);
   EXPECT_EQ(assignments.at(0)->submissions_state->total_count, 1);
   EXPECT_EQ(assignments.at(0)->submissions_state->number_turned_in, 0);
   EXPECT_EQ(assignments.at(0)->submissions_state->number_graded, 0);
+
+  EXPECT_EQ(assignments.at(1)->course_title, "Active Course 1");
+  EXPECT_EQ(assignments.at(1)->course_work_title,
+            "Math assignment - approaching due date 1");
+  EXPECT_EQ(assignments.at(1)->link,
+            "https://classroom.google.com/test-link-2");
+  EXPECT_EQ(FormatTimeAsString(assignments.at(1)->due.value()),
+            "2023-04-25T15:09:25.250Z");
+  ASSERT_TRUE(assignments.at(1)->submissions_state);
+  EXPECT_EQ(assignments.at(1)->submissions_state->total_count, 1);
+  EXPECT_EQ(assignments.at(1)->submissions_state->number_turned_in, 0);
+  EXPECT_EQ(assignments.at(1)->submissions_state->number_graded, 0);
+
+  EXPECT_EQ(assignments.at(2)->course_title, "Active Course 1");
+  EXPECT_EQ(assignments.at(2)->course_work_title,
+            "Math assignment - approaching due date 3");
+  EXPECT_EQ(assignments.at(2)->link,
+            "https://classroom.google.com/test-link-5");
+  EXPECT_EQ(FormatTimeAsString(assignments.at(2)->due.value()),
+            "2023-07-15T15:09:25.250Z");
+  ASSERT_TRUE(assignments.at(2)->submissions_state);
+  EXPECT_EQ(assignments.at(2)->submissions_state->total_count, 1);
+  EXPECT_EQ(assignments.at(2)->submissions_state->number_turned_in, 0);
+  EXPECT_EQ(assignments.at(2)->submissions_state->number_graded, 0);
 }
 
 TEST_F(GlanceablesClassroomClientImplTest,
@@ -1780,7 +1860,7 @@ TEST_F(GlanceablesClassroomClientImplTest,
                   "title": "Math assignment - missed due date",
                   "state": "PUBLISHED",
                   "alternateLink": "https://classroom.google.com/test-link-1",
-                  "dueDate": {"year": 2023, "month": 4, "day": 5},
+                  "dueDate": {"year": 2023, "month": 3, "day": 5},
                   "dueTime": {
                     "hours": 15,
                     "minutes": 9,
@@ -1819,7 +1899,7 @@ TEST_F(GlanceablesClassroomClientImplTest,
                   "title": "Math assignment - missed due date, turned in",
                   "state": "PUBLISHED",
                   "alternateLink": "https://classroom.google.com/test-link-4",
-                  "dueDate": {"year": 2023, "month": 4, "day": 5},
+                  "dueDate": {"year": 2023, "month": 4, "day": 1},
                   "dueTime": {
                     "hours": 15,
                     "minutes": 9,
@@ -1914,38 +1994,38 @@ TEST_F(GlanceablesClassroomClientImplTest,
 
   EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
   EXPECT_EQ(assignments.at(0)->course_work_title,
-            "Math assignment - missed due date");
+            "Math assignment - missed due date, some completed");
   EXPECT_EQ(assignments.at(0)->link,
-            "https://classroom.google.com/test-link-1");
+            "https://classroom.google.com/test-link-3");
   EXPECT_EQ(FormatTimeAsString(assignments.at(0)->due.value()),
             "2023-04-05T15:09:25.250Z");
   ASSERT_TRUE(assignments.at(0)->submissions_state);
-  EXPECT_EQ(assignments.at(0)->submissions_state->total_count, 1);
-  EXPECT_EQ(assignments.at(0)->submissions_state->number_turned_in, 0);
-  EXPECT_EQ(assignments.at(0)->submissions_state->number_graded, 0);
+  EXPECT_EQ(assignments.at(0)->submissions_state->total_count, 4);
+  EXPECT_EQ(assignments.at(0)->submissions_state->number_turned_in, 2);
+  EXPECT_EQ(assignments.at(0)->submissions_state->number_graded, 1);
 
   EXPECT_EQ(assignments.at(1)->course_title, "Active Course 1");
   EXPECT_EQ(assignments.at(1)->course_work_title,
-            "Math assignment - missed due date, some completed");
+            "Math assignment - missed due date, turned in");
   EXPECT_EQ(assignments.at(1)->link,
-            "https://classroom.google.com/test-link-3");
+            "https://classroom.google.com/test-link-4");
   EXPECT_EQ(FormatTimeAsString(assignments.at(1)->due.value()),
-            "2023-04-05T15:09:25.250Z");
+            "2023-04-01T15:09:25.250Z");
   ASSERT_TRUE(assignments.at(1)->submissions_state);
-  EXPECT_EQ(assignments.at(1)->submissions_state->total_count, 4);
-  EXPECT_EQ(assignments.at(1)->submissions_state->number_turned_in, 2);
-  EXPECT_EQ(assignments.at(1)->submissions_state->number_graded, 1);
+  EXPECT_EQ(assignments.at(1)->submissions_state->total_count, 1);
+  EXPECT_EQ(assignments.at(1)->submissions_state->number_turned_in, 1);
+  EXPECT_EQ(assignments.at(1)->submissions_state->number_graded, 0);
 
   EXPECT_EQ(assignments.at(2)->course_title, "Active Course 1");
   EXPECT_EQ(assignments.at(2)->course_work_title,
-            "Math assignment - missed due date, turned in");
+            "Math assignment - missed due date");
   EXPECT_EQ(assignments.at(2)->link,
-            "https://classroom.google.com/test-link-4");
+            "https://classroom.google.com/test-link-1");
   EXPECT_EQ(FormatTimeAsString(assignments.at(2)->due.value()),
-            "2023-04-05T15:09:25.250Z");
+            "2023-03-05T15:09:25.250Z");
   ASSERT_TRUE(assignments.at(2)->submissions_state);
   EXPECT_EQ(assignments.at(2)->submissions_state->total_count, 1);
-  EXPECT_EQ(assignments.at(2)->submissions_state->number_turned_in, 1);
+  EXPECT_EQ(assignments.at(2)->submissions_state->number_turned_in, 0);
   EXPECT_EQ(assignments.at(2)->submissions_state->number_graded, 0);
 }
 
@@ -1970,7 +2050,8 @@ TEST_F(GlanceablesClassroomClientImplTest,
                   "id": "course-work-item-1",
                   "title": "Math assignment",
                   "state": "PUBLISHED",
-                  "alternateLink": "https://classroom.google.com/test-link-1"
+                  "alternateLink": "https://classroom.google.com/test-link-1",
+                  "updateTime": "2023-03-15T15:09:25.250Z"
                 },
                 {
                   "id": "course-work-item-2",
@@ -1990,6 +2071,19 @@ TEST_F(GlanceablesClassroomClientImplTest,
                   "title": "Math assignment - submission graded",
                   "state": "PUBLISHED",
                   "alternateLink": "https://classroom.google.com/test-link-3"
+                },
+                {
+                  "id": "course-work-item-4",
+                  "title": "Math assignment - for sorting",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-4",
+                  "updateTime": "2023-04-05T15:09:25.250Z"
+                },{
+                  "id": "course-work-item-5",
+                  "title": "Math assignment - for sorting",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-5",
+                  "updateTime": "2023-03-25T15:09:25.250Z"
                 }
               ]
             })"))));
@@ -2039,22 +2133,80 @@ TEST_F(GlanceablesClassroomClientImplTest,
                 }
               ]
             })"))));
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(Field(
+          &HttpRequest::relative_url,
+          HasSubstr("courseWork/course-work-item-4/studentSubmissions?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "studentSubmissions": [
+                {
+                  "id": "student-submission-4",
+                  "courseWorkId": "course-work-item-4",
+                  "state": "NEW"
+                }
+              ]
+            })"))));
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(Field(
+          &HttpRequest::relative_url,
+          HasSubstr("courseWork/course-work-item-5/studentSubmissions?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "studentSubmissions": [
+                {
+                  "id": "student-submission-5",
+                  "courseWorkId": "course-work-item-5",
+                  "state": "NEW"
+                }
+              ]
+            })"))));
   TestFuture<std::vector<std::unique_ptr<GlanceablesClassroomAssignment>>>
       future;
   client()->GetTeacherAssignmentsWithoutDueDate(future.GetCallback());
 
   const auto assignments = future.Take();
-  ASSERT_EQ(assignments.size(), 1u);
+  ASSERT_EQ(assignments.size(), 3u);
 
   EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
-  EXPECT_EQ(assignments.at(0)->course_work_title, "Math assignment");
+  EXPECT_EQ(assignments.at(0)->course_work_title,
+            "Math assignment - for sorting");
   EXPECT_EQ(assignments.at(0)->link,
-            "https://classroom.google.com/test-link-1");
+            "https://classroom.google.com/test-link-4");
   EXPECT_FALSE(assignments.at(0)->due);
+  EXPECT_EQ(FormatTimeAsString(assignments.at(0)->last_update),
+            "2023-04-05T15:09:25.250Z");
   ASSERT_TRUE(assignments.at(0)->submissions_state);
   EXPECT_EQ(assignments.at(0)->submissions_state->total_count, 1);
   EXPECT_EQ(assignments.at(0)->submissions_state->number_turned_in, 0);
   EXPECT_EQ(assignments.at(0)->submissions_state->number_graded, 0);
+
+  EXPECT_EQ(assignments.at(1)->course_title, "Active Course 1");
+  EXPECT_EQ(assignments.at(1)->course_work_title,
+            "Math assignment - for sorting");
+  EXPECT_EQ(assignments.at(1)->link,
+            "https://classroom.google.com/test-link-5");
+  EXPECT_FALSE(assignments.at(1)->due);
+  EXPECT_EQ(FormatTimeAsString(assignments.at(1)->last_update),
+            "2023-03-25T15:09:25.250Z");
+  ASSERT_TRUE(assignments.at(1)->submissions_state);
+  EXPECT_EQ(assignments.at(1)->submissions_state->total_count, 1);
+  EXPECT_EQ(assignments.at(1)->submissions_state->number_turned_in, 0);
+  EXPECT_EQ(assignments.at(1)->submissions_state->number_graded, 0);
+
+  EXPECT_EQ(assignments.at(2)->course_title, "Active Course 1");
+  EXPECT_EQ(assignments.at(2)->course_work_title, "Math assignment");
+  EXPECT_EQ(assignments.at(2)->link,
+            "https://classroom.google.com/test-link-1");
+  EXPECT_FALSE(assignments.at(2)->due);
+  EXPECT_EQ(FormatTimeAsString(assignments.at(2)->last_update),
+            "2023-03-15T15:09:25.250Z");
+  ASSERT_TRUE(assignments.at(2)->submissions_state);
+  EXPECT_EQ(assignments.at(2)->submissions_state->total_count, 1);
+  EXPECT_EQ(assignments.at(2)->submissions_state->number_turned_in, 0);
+  EXPECT_EQ(assignments.at(2)->submissions_state->number_graded, 0);
 }
 
 TEST_F(GlanceablesClassroomClientImplTest, ReturnsGradedTeacherAssignments) {

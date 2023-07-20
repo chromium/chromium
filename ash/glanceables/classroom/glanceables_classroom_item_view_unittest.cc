@@ -65,7 +65,7 @@ TEST_F(GlanceablesClassroomItemViewTest, RendersWithoutDueDateTime) {
   const auto assignment = GlanceablesClassroomAssignment(
       "Algebra", "Solve equation",
       GURL("https://classroom.google.com/test-link-1"), absl::nullopt,
-      absl::nullopt);
+      base::Time(), absl::nullopt);
   const auto view =
       GlanceablesClassroomItemView(&assignment, base::DoNothing());
 
@@ -106,7 +106,8 @@ TEST_F(GlanceablesClassroomItemViewTest, RendersWithDueDateTime) {
   for (size_t i = 0; i < 9; ++i) {
     const auto assignment = GlanceablesClassroomAssignment(
         "Algebra", "Solve equation",
-        GURL("https://classroom.google.com/test-link-1"), due, absl::nullopt);
+        GURL("https://classroom.google.com/test-link-1"), due, base::Time(),
+        absl::nullopt);
     const auto view =
         GlanceablesClassroomItemView(&assignment, base::DoNothing());
 
@@ -129,7 +130,8 @@ TEST_F(GlanceablesClassroomItemViewTest, RendersDueTimeIn24HrFormat) {
 
   const auto assignment = GlanceablesClassroomAssignment(
       "Algebra", "Solve equation",
-      GURL("https://classroom.google.com/test-link-1"), due, absl::nullopt);
+      GURL("https://classroom.google.com/test-link-1"), due, base::Time(),
+      absl::nullopt);
   const auto view =
       GlanceablesClassroomItemView(&assignment, base::DoNothing());
   const auto* const due_time_label = GetDueTimeLabel(view);
@@ -148,7 +150,8 @@ TEST_F(GlanceablesClassroomItemViewTest, DoesNotRenderDueTimeFor2359) {
 
   const auto assignment = GlanceablesClassroomAssignment(
       "Algebra", "Solve equation",
-      GURL("https://classroom.google.com/test-link-1"), due, absl::nullopt);
+      GURL("https://classroom.google.com/test-link-1"), due, base::Time(),
+      absl::nullopt);
   const auto view =
       GlanceablesClassroomItemView(&assignment, base::DoNothing());
   const auto* const due_time_label = GetDueTimeLabel(view);

@@ -79,6 +79,7 @@ void GlanceablesClassroomCourseWorkItem::SetCourseWorkItem(
   title_ = course_work->title();
   link_ = course_work->alternate_link();
   due_ = ConvertCourseWorkItemDue(course_work->due_date_time());
+  last_update_ = course_work->last_update();
 }
 
 void GlanceablesClassroomCourseWorkItem::AddStudentSubmission(
@@ -140,7 +141,8 @@ GlanceablesClassroomCourseWorkItem::CreateClassroomAssignment(
         total_submissions_, turned_in_submissions_, graded_submissions_);
   }
   return std::make_unique<GlanceablesClassroomAssignment>(
-      course_name, title_, link_, due_, aggregated_submissions_state);
+      course_name, title_, link_, due_, last_update_,
+      aggregated_submissions_state);
 }
 
 bool GlanceablesClassroomCourseWorkItem::IsValid() const {

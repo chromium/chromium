@@ -51,6 +51,10 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
           const std::vector<std::string>& scopes,
           const net::NetworkTrafficAnnotationTag& traffic_annotation_tag)>;
 
+  using SortComparator = base::RepeatingCallback<bool(
+      const std::unique_ptr<GlanceablesClassroomAssignment>& lhs,
+      const std::unique_ptr<GlanceablesClassroomAssignment>& rhs)>;
+
   GlanceablesClassroomClientImpl(
       Profile* profile,
       const CreateRequestSenderCallback& create_request_sender_callback);
@@ -340,12 +344,15 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   // `graded`                     - whether or not we only want to include
   //                                course work which has a grade for every
   //                                submission.
+  // `sort_comparator`            - the function used when comparing two
+  //                                assignments for sorting.
   // `callback`                   - invoked with filtered results.
   void GetFilteredTeacherAssignments(
       base::RepeatingCallback<bool(const absl::optional<base::Time>&)>
           due_predicate,
       base::RepeatingCallback<bool(GlanceablesClassroomStudentSubmissionState)>
           submission_state_predicate,
+      SortComparator sort_comparator,
       GetAssignmentsCallback callback);
 
   // Removes all invalid course work items from `course_work` for courses in
