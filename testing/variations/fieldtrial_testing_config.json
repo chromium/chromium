@@ -9207,6 +9207,7 @@
                         "AdaptiveSuggestionsVisibleGroupEligibilityUpdate",
                         "AndroidAuxiliarySearch",
                         "NewTabPageTilesTitleWrapAround",
+                        "OmniboxActionsInSuggest",
                         "OmniboxDynamicMaxAutocomplete",
                         "OmniboxFocusTriggersSRPZeroSuggest",
                         "OmniboxHeaderPaddingUpdate",
