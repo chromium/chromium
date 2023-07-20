@@ -125,6 +125,39 @@ class ChromeNativeAppWindowViewsAuraAshBrowserTest
     fs_changed.Wait();
   }
 
+  // Verifies that changing the fullscreen |type| sets the expected shelf
+  // visibility. |is_shelf_hidden| expects the shelf to hide when the Chrome App
+  // is in fullscreen, otherwise the shelf will autohide.
+  void VerifyShelfHiddenForFullscreenType(
+      extensions::AppWindow::FullscreenType type,
+      bool is_shelf_hidden) {
+    app_window_->SetFullscreen(type, /*enabled=*/true);
+    EXPECT_EQ(is_shelf_hidden,
+              window()->widget()->GetNativeWindow()->GetProperty(
+                  chromeos::kHideShelfWhenFullscreenKey));
+    app_window_->SetFullscreen(type, /*enabled=*/false);
+  }
+
+  // Verifies the shelf visibility for all fullscreen types.
+  void VerifyShelfBehaviorWhenFullscreen() {
+    InitWindow();
+    ASSERT_TRUE(window());
+    EXPECT_TRUE(window()->widget()->GetNativeWindow()->GetProperty(
+        chromeos::kHideShelfWhenFullscreenKey));
+
+    VerifyShelfHiddenForFullscreenType(
+        extensions::AppWindow::FULLSCREEN_TYPE_WINDOW_API,
+        /*is_shelf_hidden=*/true);
+    VerifyShelfHiddenForFullscreenType(
+        extensions::AppWindow::FULLSCREEN_TYPE_HTML_API,
+        /*is_shelf_hidden=*/true);
+    VerifyShelfHiddenForFullscreenType(
+        extensions::AppWindow::FULLSCREEN_TYPE_FORCED,
+        /*is_shelf_hidden=*/true);
+    VerifyShelfHiddenForFullscreenType(
+        extensions::AppWindow::FULLSCREEN_TYPE_OS, /*is_shelf_hidden=*/false);
+  }
+
   raw_ptr<extensions::AppWindow, ExperimentalAsh> app_window_ = nullptr;
 };
 
@@ -227,6 +260,21 @@ IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
   EXPECT_FALSE(IsImmersiveActive());
   ash::ShellTestApi().SetTabletModeEnabledForTest(false);
   EXPECT_FALSE(IsImmersiveActive());
+}
+
+// Verify that the shelf behavior when requesting fullscreen is consistent
+// for regular user sessions.
+IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
+                       ShelfBehaviorWhenFullscreenForRegularUserSessions) {
+  VerifyShelfBehaviorWhenFullscreen();
+}
+
+// Verify that the shelf behavior when requesting fullscreen is consistent
+// for managed guest sessions.
+IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
+                       ShelfBehaviorWhenFullscreenForManagedGuestSessions) {
+  ash::ScopedTestPublicSessionLoginState login_state;
+  VerifyShelfBehaviorWhenFullscreen();
 }
 
 // Verify that immersive mode stays disabled in the public session, no matter

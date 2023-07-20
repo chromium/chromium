@@ -292,10 +292,8 @@ void ChromeNativeAppWindowViewsAuraAsh::SetFullscreen(int fullscreen_types) {
         /*force_update=*/false);
   }
 
-  // Autohide the shelf instead of hiding the shelf completely when only in
-  // OS fullscreen or when in a public session.
+  // Autohide the shelf instead of hiding it completely for OS fullscreen.
   const bool should_hide_shelf =
-      !profiles::IsPublicSession() &&
       fullscreen_types != AppWindow::FULLSCREEN_TYPE_OS;
   widget()->GetNativeWindow()->SetProperty(
       chromeos::kHideShelfWhenFullscreenKey, should_hide_shelf);
