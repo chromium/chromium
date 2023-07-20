@@ -52,6 +52,10 @@ def __step_config(ctx, step_config):
                 "third_party/android_sdk/public/platforms/android-34/optional/android.test.base.jar",
                 "third_party/android_sdk/public/platforms/android-34/optional/org.apache.http.legacy.jar",
             ],
+            "outputs_map": {
+                # Slow actions that exceed deadline on the default worker pool.
+                "./obj/chrome/android/chrome_test_java.turbine.jar": {"platform_ref": "large"},
+            },
             # TODO(crbug.com/1452038): include only required jar files in GN config.
             "indirect_inputs": {
                 "includes": ["*.jar"],
@@ -65,8 +69,17 @@ def __step_config(ctx, step_config):
             "command_prefix": "python3 ../../build/android/gyp/compile_resources.py",
             "handler": "android_compile_resources",
             "inputs": [
-                "third_party/protobuf/python/google/protobuf/__init__.py",
+                "third_party/protobuf/python/google:pyprotolib",
             ],
+            "outputs_map": {
+                # Slow actions that exceed deadline on the default worker pool.
+                "./gen/android_webview/system_webview_64_base_bundle_module__compile_resources.srcjar": {"platform_ref": "large"},
+                "./gen/chrome/android/chrome_public_apk__compile_resources.srcjar": {"platform_ref": "large"},
+                "./gen/chrome/android/chrome_public_bundle__base_bundle_module__compile_resources.srcjar": {"platform_ref": "large"},
+                "./gen/chrome/android/monochrome_64_public_apk__compile_resources.srcjar": {"platform_ref": "large"},
+                "./gen/chrome/android/monochrome_64_public_bundle__base_bundle_module__compile_resources.srcjar": {"platform_ref": "large"},
+                "./gen/chrome/android/trichrome_chrome_64_bundle__base_bundle_module__compile_resources.srcjar": {"platform_ref": "large"},
+            },
             "remote": remote_run,
             "canonicalize_dir": True,
             "timeout": "2m",
@@ -203,6 +216,24 @@ def __android_compile_resources_handler(ctx, cmd):
     )
 
 def __android_compile_java_handler(ctx, cmd):
+    # Script:
+    #   https://crsrc.org/c/build/android/gyp/compile_java.py
+    # GN Config:
+    #   https://crsrc.org/c/build/config/android/internal_rules.gni;l=2995;drc=775b3a9ebccd468c79592dad43ef46632d3a411f
+    # Sample args:
+    #   --depfile=gen/chrome/android/chrome_test_java__compile_java.d
+    #   --generated-dir=gen/chrome/android/chrome_test_java/generated_java
+    #   --jar-path=obj/chrome/android/chrome_test_java.javac.jar
+    #   --java-srcjars=\[\"gen/chrome/browser/tos_dialog_behavior_generated_enum.srcjar\",\ \"gen/chrome/android/chrome_test_java__assetres.srcjar\",\ \"gen/chrome/android/chrome_test_java.generated.srcjar\"\]
+    #   --target-name //chrome/android:chrome_test_java__compile_java
+    #   --classpath=@FileArg\(gen/chrome/android/chrome_test_java.build_config.json:android:sdk_interface_jars\)
+    #   --header-jar obj/chrome/android/chrome_test_java.turbine.jar
+    #   --classpath=\[\"obj/chrome/android/chrome_test_java.turbine.jar\"\]
+    #   --classpath=@FileArg\(gen/chrome/android/chrome_test_java.build_config.json:deps_info:javac_full_interface_classpath\)
+    #   --chromium-code=1
+    #   --warnings-as-errors
+    #   --jar-info-exclude-globs=\[\"\*/R.class\",\ \"\*/R\\\$\*.class\",\ \"\*/Manifest.class\",\ \"\*/Manifest\\\$\*.class\",\ \"\*/\*GEN_JNI.class\"\]
+    #   @gen/chrome/android/chrome_test_java.sources
     out = cmd.outputs[0]
     outputs = [
         out + ".md5.stamp",
@@ -210,6 +241,10 @@ def __android_compile_java_handler(ctx, cmd):
 
     inputs = []
     for i, arg in enumerate(cmd.args):
+        # read .sources file.
+        if arg.startswith("@"):
+            sources = str(ctx.fs.read(ctx.fs.canonpath(arg.removeprefix("@")))).splitlines()
+            inputs += sources
         for k in ["--java-srcjars=", "--classpath=", "--bootclasspath=", "--processorpath="]:
             if arg.startswith(k):
                 arg = arg.removeprefix(k)
@@ -297,15 +332,6 @@ __handlers = {
     "android_write_build_config": __android_write_build_config_handler,
 }
 
-__filegroups = {
-    # TODO(b/285078792): converge this file group with
-    # `third_party/protobuf/python/google:pyprotolib` in proto_linux.star.
-    "third_party/protobuf/python/google:google": {
-        "type": "glob",
-        "includes": ["*.py"],
-    },
-}
-
 def __input_deps(ctx, input_deps):
     # TODO(crrev.com/c/4596899): Add Java inputs in GN config.
     input_deps["third_party/jdk/current:current"] = [
@@ -348,7 +374,7 @@ android = module(
     "android",
     enabled = __enabled,
     step_config = __step_config,
-    filegroups = __filegroups,
+    filegroups = {},
     handlers = __handlers,
     input_deps = __input_deps,
 )

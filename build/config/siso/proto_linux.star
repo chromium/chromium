@@ -10,8 +10,6 @@ load("./config.star", "config")
 load("./protoc_wrapper.star", "protoc_wrapper")
 
 __filegroups = {
-    # TODO(b/285078792): converge this file group with
-    # `third_party/protobuf/python/google:google` in android.star.
     "third_party/protobuf/python/google:pyprotolib": {
         "type": "glob",
         "includes": ["*.py"],
