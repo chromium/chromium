@@ -70,8 +70,6 @@ class StoreMetricsReporter : public PasswordStoreConsumer {
 
   bool custom_passphrase_enabled_;
 
-  BulkCheckDone bulk_check_done_;
-
   bool is_opted_in_account_storage_;
 
   bool is_safe_browsing_enabled_;

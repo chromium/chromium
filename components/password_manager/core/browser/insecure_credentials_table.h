@@ -19,8 +19,6 @@ class Database;
 
 namespace password_manager {
 
-using BulkCheckDone = base::StrongAlias<class BulkCheckDoneTag, bool>;
-
 enum class RemoveInsecureCredentialsReason {
   // If the password was updated in the password store.
   kUpdate = 0,

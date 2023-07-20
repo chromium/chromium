@@ -420,7 +420,6 @@ void ReportDuplicateCredentialsMetrics(
 }
 
 void ReportPasswordIssuesMetrics(
-    BulkCheckDone bulk_check_done,
     const std::vector<std::unique_ptr<PasswordForm>>& forms) {
   int count_leaked = base::ranges::count_if(forms, [](const auto& form) {
     return form->password_issues.contains(InsecureType::kLeaked);
@@ -428,12 +427,6 @@ void ReportPasswordIssuesMetrics(
   base::UmaHistogramCounts100(
       base::StrCat({kPasswordManager, ".CompromisedCredentials3.CountLeaked"}),
       count_leaked);
-  if (bulk_check_done) {
-    base::UmaHistogramCounts100(
-        base::StrCat({kPasswordManager,
-                      ".CompromisedCredentials3.CountLeakedAfterBulkCheck"}),
-        count_leaked);
-  }
 
   int count_phished = base::ranges::count_if(forms, [](const auto& form) {
     return form->password_issues.contains(InsecureType::kPhished);
@@ -457,7 +450,6 @@ void ReportPasswordProtectedMetrics(
 void ReportStoreMetrics(bool is_account_store,
                         bool custom_passphrase_enabled,
                         const std::string& sync_username,
-                        BulkCheckDone bulk_check_done,
                         bool is_safe_browsing_enabled,
                         std::vector<std::unique_ptr<PasswordForm>> results) {
   ReportNumberOfAccountsMetrics(is_account_store, custom_passphrase_enabled,
@@ -483,7 +475,7 @@ void ReportStoreMetrics(bool is_account_store,
 
   ReportSyncingAccountStateMetrics(sync_username, results);
   ReportDuplicateCredentialsMetrics(results);
-  ReportPasswordIssuesMetrics(bulk_check_done, results);
+  ReportPasswordIssuesMetrics(results);
 }
 
 void ReportMultiStoreMetrics(
@@ -566,7 +558,6 @@ void ReportMultiStoreMetrics(
 
 void ReportAllMetrics(bool custom_passphrase_enabled,
                       const std::string& sync_username,
-                      BulkCheckDone bulk_check_done,
                       bool is_opted_in_account_storage,
                       bool is_safe_browsing_enabled,
                       absl::optional<std::vector<std::unique_ptr<PasswordForm>>>
@@ -605,12 +596,12 @@ void ReportAllMetrics(bool custom_passphrase_enabled,
 
   if (profile_store_results.has_value()) {
     ReportStoreMetrics(/*is_account_store=*/false, custom_passphrase_enabled,
-                       sync_username, bulk_check_done, is_safe_browsing_enabled,
+                       sync_username, is_safe_browsing_enabled,
                        std::move(profile_store_results).value());
   }
   if (account_store_results.has_value()) {
     ReportStoreMetrics(/*is_account_store=*/true, custom_passphrase_enabled,
-                       sync_username, bulk_check_done, is_safe_browsing_enabled,
+                       sync_username, is_safe_browsing_enabled,
                        std::move(account_store_results).value());
   }
 
@@ -691,9 +682,6 @@ StoreMetricsReporter::StoreMetricsReporter(
   custom_passphrase_enabled_ = IsCustomPassphraseEnabled(
       password_manager_util::GetPasswordSyncState(sync_service));
 
-  bulk_check_done_ =
-      BulkCheckDone(prefs->HasPrefPath(prefs::kLastTimePasswordCheckCompleted));
-
   is_opted_in_account_storage_ =
       features_util::IsOptedInForAccountStorage(prefs, sync_service);
 
@@ -757,8 +745,8 @@ void StoreMetricsReporter::OnGetPasswordStoreResultsFrom(
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(&ReportAllMetrics, custom_passphrase_enabled_,
-                     sync_username_, bulk_check_done_,
-                     is_opted_in_account_storage_, is_safe_browsing_enabled_,
+                     sync_username_, is_opted_in_account_storage_,
+                     is_safe_browsing_enabled_,
                      std::exchange(profile_store_results_, absl::nullopt),
                      std::exchange(account_store_results_, absl::nullopt)),
       base::BindOnce(&OnMetricsReportingCompleted,

@@ -1120,7 +1120,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.CompromisedCredentials3.{Issue}"
-    units="credentials" expires_after="M118">
+    units="credentials" expires_after="M122">
   <owner>vasilii@chromium.org</owner>
   <owner>vsemeniuk@google.com</owner>
   <summary>
@@ -1128,9 +1128,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Issue">
     <variant name="CountLeaked" summary="leaked credentials in the database"/>
-    <variant name="CountLeakedAfterBulkCheck"
-        summary="leaked credentials in the database if password bulk check
-                 was executed at least once"/>
     <variant name="CountPhished" summary="phished credentials in the database"/>
   </token>
 </histogram>
