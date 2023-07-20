@@ -56,7 +56,6 @@ import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.PasswordAccesso
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.AsyncViewProvider;
@@ -70,8 +69,8 @@ import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
 /**
  * These tests render screenshots of various accessory sheets and compare them to a gold standard.
@@ -79,7 +78,6 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES})
-@EnableFeatures({ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AccessorySheetRenderTest {
     @ParameterAnnotations.ClassParameter
@@ -106,7 +104,6 @@ public class AccessorySheetRenderTest {
     public AccessorySheetRenderTest(boolean nightModeEnabled, boolean useRtlLayout) {
         Map<String, Boolean> featureMap = new HashMap<>();
         featureMap.put(ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES, false);
-        featureMap.put(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY, true);
         FeatureList.setTestFeatures(featureMap);
 
         setRtlForTesting(useRtlLayout);

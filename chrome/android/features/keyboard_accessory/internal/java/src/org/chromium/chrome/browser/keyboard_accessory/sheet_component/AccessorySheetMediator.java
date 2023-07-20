@@ -18,7 +18,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetTrigger;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecorder;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
@@ -48,9 +47,7 @@ class AccessorySheetMediator implements PropertyObservable.PropertyObserver<Prop
         mModel = model;
         mModel.addObserver(this);
         mSheetVisibilityDelegate = sheetVisibilityDelegate;
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) {
-            mModel.set(SHOW_KEYBOARD_CALLBACK, this::onKeyboardRequested);
-        }
+        mModel.set(SHOW_KEYBOARD_CALLBACK, this::onKeyboardRequested);
     }
 
     @Nullable

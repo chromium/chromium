@@ -61,8 +61,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@EnableFeatures({ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY, ChromeFeatureList.PORTALS,
-        ChromeFeatureList.PORTALS_CROSS_ORIGIN})
+@EnableFeatures({ChromeFeatureList.PORTALS, ChromeFeatureList.PORTALS_CROSS_ORIGIN})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AutofillKeyboardAccessoryIntegrationTest {
     @Rule

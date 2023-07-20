@@ -15,7 +15,6 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
@@ -44,11 +43,7 @@ class KeyboardAccessoryTabLayoutMediator
     KeyboardAccessoryTabLayoutMediator(PropertyModel model) {
         mModel = model;
         mModel.addObserver(this);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) {
-            mModel.set(BUTTON_SELECTION_CALLBACKS, this);
-            return;
-        }
-        mModel.set(TAB_SELECTION_CALLBACKS, this);
+        mModel.set(BUTTON_SELECTION_CALLBACKS, this);
     }
 
     ViewPager.OnPageChangeListener getStableOnPageChangeListener() {

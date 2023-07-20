@@ -34,15 +34,12 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.FakeKeyboard;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.ui.test.util.UiDisableIf;
 
@@ -53,7 +50,6 @@ import java.util.concurrent.TimeoutException;
  */
 
 @RunWith(ChromeJUnit4ClassRunner.class)
-@EnableFeatures({ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class CreditCardAccessoryIntegrationTest {
     @Rule
@@ -84,18 +80,6 @@ public class CreditCardAccessoryIntegrationTest {
     @Test
     @SmallTest
     public void testCreditCardSheetAvailable_whenManualFallbackEnabled() {
-        mHelper.loadTestPage(false);
-
-        CriteriaHelper.pollUiThread(() -> {
-            return mHelper.getOrCreateCreditCardAccessorySheet() != null;
-        }, "Credit Card sheet should be bound to accessory sheet.");
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_MANUAL_FALLBACK_FOR_VIRTUAL_CARDS})
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY})
-    public void testCreditCardSheetAvailable_whenManualFallbackForVirtualCardsEnabled() {
         mHelper.loadTestPage(false);
 
         CriteriaHelper.pollUiThread(() -> {

@@ -43,7 +43,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryToggleType;
@@ -66,7 +65,6 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {CustomShadowAsyncTask.class})
-@Features.EnableFeatures(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
 public class PasswordAccessorySheetControllerTest {
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
@@ -153,32 +151,6 @@ public class PasswordAccessorySheetControllerTest {
     }
 
     @Test
-    @Features.DisableFeatures(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
-    public void testSplitsTabDataToList() {
-        final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
-        final AccessorySheetData testData =
-                new AccessorySheetData(AccessoryTabType.PASSWORDS, "Passwords for this site", "");
-        testData.getUserInfoList().add(new UserInfo("www.example.com", true));
-        testData.getUserInfoList().get(0).addField(
-                new UserInfoField("Name", "Name", "", false, null));
-        testData.getUserInfoList().get(0).addField(
-                new UserInfoField("Password", "Password for Name", "", true, field -> {}));
-        testData.getFooterCommands().add(new FooterCommand("Manage passwords", result -> {}));
-
-        mCoordinator.registerDataProvider(testProvider);
-        testProvider.notifyObservers(testData);
-
-        assertThat(mSheetDataPieces.size(), is(3));
-        assertThat(getType(mSheetDataPieces.get(0)), is(TITLE));
-        assertThat(getType(mSheetDataPieces.get(1)), is(PASSWORD_INFO));
-        assertThat(getType(mSheetDataPieces.get(2)), is(FOOTER_COMMAND));
-        assertThat(mSheetDataPieces.get(0).getDataPiece(), is(equalTo("Passwords for this site")));
-        assertThat(mSheetDataPieces.get(1).getDataPiece(), is(testData.getUserInfoList().get(0)));
-        assertThat(mSheetDataPieces.get(2).getDataPiece(), is(testData.getFooterCommands().get(0)));
-    }
-
-    @Test
-    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
     public void testUsesTabTitleOnlyForEmptyListsForModernDesign() {
         final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
         final AccessorySheetData testData =

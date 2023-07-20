@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.sheet_component;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY;
 import static org.chromium.ui.base.LocalizationUtils.isLayoutRtl;
 
 import android.content.Context;
@@ -20,7 +19,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 
 /**
@@ -46,14 +44,12 @@ class AccessorySheetView extends LinearLayout {
         mViewPager = findViewById(R.id.keyboard_accessory_sheet);
         mTopShadow = findViewById(R.id.accessory_sheet_shadow);
         mFrameLayout = findViewById(R.id.keyboard_accessory_sheet_frame);
-        if (ChromeFeatureList.isEnabled(AUTOFILL_KEYBOARD_ACCESSORY)) {
-            mKeyboardToggle = findViewById(R.id.show_keyboard);
-            mKeyboardToggle.setImageDrawable(
-                    AppCompatResources.getDrawable(getContext(), R.drawable.ic_arrow_back_24dp));
-            mSheetTitle = findViewById(R.id.sheet_title);
-            findViewById(R.id.sheet_header).setVisibility(View.VISIBLE);
-            findViewById(R.id.sheet_header_shadow).setVisibility(View.VISIBLE);
-        }
+        mKeyboardToggle = findViewById(R.id.show_keyboard);
+        mKeyboardToggle.setImageDrawable(
+                AppCompatResources.getDrawable(getContext(), R.drawable.ic_arrow_back_24dp));
+        mSheetTitle = findViewById(R.id.sheet_title);
+        findViewById(R.id.sheet_header).setVisibility(View.VISIBLE);
+        findViewById(R.id.sheet_header_shadow).setVisibility(View.VISIBLE);
 
         // Ensure that sub components of the sheet use the RTL direction:
         int layoutDirection = isLayoutRtl() ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR;
@@ -90,13 +86,11 @@ class AccessorySheetView extends LinearLayout {
     }
 
     void setTitle(String title) {
-        if (!ChromeFeatureList.isEnabled(AUTOFILL_KEYBOARD_ACCESSORY)) return;
         assert mSheetTitle != null : "setTitle called before view initialized";
         mSheetTitle.setText(title);
     }
 
     void setShowKeyboardCallback(Runnable runnable) {
-        if (!ChromeFeatureList.isEnabled(AUTOFILL_KEYBOARD_ACCESSORY)) return;
         assert mKeyboardToggle != null : "setShowKeyboardCallback called before view initialized";
         mKeyboardToggle.setOnClickListener(runnable == null ? null : view -> runnable.run());
     }

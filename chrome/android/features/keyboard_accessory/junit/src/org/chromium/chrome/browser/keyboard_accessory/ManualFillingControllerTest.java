@@ -245,10 +245,7 @@ public class ManualFillingControllerTest {
          * @return The {@link Action} last captured with {@link #record(int, Action[])}.
          */
         Action getFirstRecordedAction() {
-            int firstNonTabLayoutAction = 1;
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) {
-                firstNonTabLayoutAction = 0;
-            }
+            int firstNonTabLayoutAction = 0;
             assert mRecordedActions.size() >= firstNonTabLayoutAction;
             return mRecordedActions.get(firstNonTabLayoutAction);
         }
