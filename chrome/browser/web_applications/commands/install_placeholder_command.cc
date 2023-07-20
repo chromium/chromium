@@ -9,7 +9,7 @@
 
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
@@ -121,7 +121,7 @@ void InstallPlaceholderCommand::OnCustomIconFetched(
     return;
   }
   // Retry download.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&InstallPlaceholderCommand::FetchCustomIcon,
                      weak_factory_.GetWeakPtr(), image_url, retries_left - 1),

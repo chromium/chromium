@@ -19,7 +19,7 @@
 #include "base/one_shot_event.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/web_applications/externally_managed_app_install_task.h"
@@ -122,7 +122,7 @@ class TestExternallyManagedAppInstallTaskManager {
       return;
     }
     // Post a task to simulate tasks completing asynchronously.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(install_request));
   }
 
@@ -357,7 +357,7 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManager {
                                                    base::Seconds(40)),
           externally_managed_app_manager_impl_(
               externally_managed_app_manager_impl) {
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&TestExternallyManagedAppRegistrationTask::OnProgress,
                          weak_ptr_factory_.GetWeakPtr(), install_url));
@@ -446,7 +446,7 @@ class TestWebAppCommandScheduler : public WebAppCommandScheduler {
     CHECK(!app_id.has_value() || app_id == preset_app_id);
     next_uninstall_external_web_app_results_.erase(install_url);
 
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         location,
         base::BindLambdaForTesting(
             [&, preset_app_id, code, callback = std::move(callback)]() mutable {
@@ -463,7 +463,7 @@ class TestWebAppCommandScheduler : public WebAppCommandScheduler {
       UninstallJob::Callback callback,
       const base::Location& location = FROM_HERE) override {
     UnregisterApp(app_id);
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         location, base::BindOnce(std::move(callback),
                                  webapps::UninstallResultCode::kSuccess));
   }

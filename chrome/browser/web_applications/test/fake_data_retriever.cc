@@ -9,7 +9,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_params.h"
@@ -113,7 +113,7 @@ void FakeDataRetriever::BuildDefaultDataToRetrieve(const GURL& url,
 
 void FakeDataRetriever::ScheduleCompletionCallback() {
   // If |this| DataRetriever destroyed, the completion callback gets cancelled.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&FakeDataRetriever::CallCompletionCallback,
                                 weak_ptr_factory_.GetWeakPtr()));
 }

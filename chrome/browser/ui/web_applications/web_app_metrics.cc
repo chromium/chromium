@@ -20,7 +20,6 @@
 #include "base/power_monitor/power_monitor.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/after_startup_task_utils.h"
@@ -120,7 +119,7 @@ WebAppMetrics::WebAppMetrics(Profile* profile)
   if (base::FeatureList::IsEnabled(features::kDesktopPWAsIconHealthChecks) &&
       !g_disable_automatic_icon_health_checks_for_testing) {
     AfterStartupTaskUtils::PostTask(
-        FROM_HERE, base::SingleThreadTaskRunner::GetCurrentDefault(),
+        FROM_HERE, base::SequencedTaskRunner::GetCurrentDefault(),
         base::BindOnce(&WebAppIconHealthChecks::Start,
                        icon_health_checks_.GetWeakPtr(), base::DoNothing()));
   }

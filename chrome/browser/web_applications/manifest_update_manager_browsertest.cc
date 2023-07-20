@@ -28,7 +28,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -309,7 +309,7 @@ class DidFinishLoadObserver : public content::WebContentsObserver {
   bool AwaitCorrectPageLoaded() {
     on_load_run_loop_finished_.Run();
     base::test::TestFuture<void> future;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, future.GetCallback());
     EXPECT_TRUE(future.Wait());
     return correct_page_loaded_;

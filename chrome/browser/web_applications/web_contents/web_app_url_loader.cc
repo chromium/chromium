@@ -13,7 +13,7 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
@@ -161,7 +161,7 @@ class LoaderTask : public content::WebContentsObserver {
     Observe(nullptr);
     // Post a task to avoid reentrancy issues e.g. adding a WebContentsObserver
     // while a previous observer call is being executed.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback_), result));
   }
 
@@ -230,7 +230,7 @@ void WebAppUrlLoader::LoadUrlInternal(
     UrlComparison url_comparison,
     ResultCallback callback) {
   if (!web_contents) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
                        WebAppUrlLoader::Result::kFailedWebContentsDestroyed));

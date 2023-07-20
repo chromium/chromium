@@ -13,7 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
@@ -91,7 +91,7 @@ void WebAppDataRetriever::GetWebAppInstallInfo(
   content::NavigationEntry* entry =
       web_contents->GetController().GetLastCommittedEntry();
   if (entry->IsInitialEntry()) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&WebAppDataRetriever::CallCallbackOnError,
                        weak_ptr_factory_.GetWeakPtr(), absl::nullopt));
@@ -190,7 +190,7 @@ void WebAppDataRetriever::WebContentsDestroyed() {
   Observe(nullptr);
 
   // Avoid initiating new work during web contents destruction.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&WebAppDataRetriever::CallCallbackOnError,
                      weak_ptr_factory_.GetWeakPtr(),

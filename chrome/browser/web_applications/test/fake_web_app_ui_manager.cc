@@ -8,7 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -48,7 +48,7 @@ size_t FakeWebAppUiManager::GetNumWindowsForApp(const AppId& app_id) {
 void FakeWebAppUiManager::NotifyOnAllAppWindowsClosed(
     const AppId& app_id,
     base::OnceClosure callback) {
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindLambdaForTesting(
                      [&, app_id, callback = std::move(callback)]() mutable {
                        app_id_to_num_windows_map_[app_id] = 0;

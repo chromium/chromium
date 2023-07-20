@@ -2399,7 +2399,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
     while (u"Manifest with file handlers" ==
            shell_integration::GetApplicationNameForScheme(test_file_url)) {
       base::RunLoop delay_loop;
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE, delay_loop.QuitClosure(), base::Milliseconds(100));
       delay_loop.Run();
     }
