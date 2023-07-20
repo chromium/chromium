@@ -45,12 +45,6 @@ class ShutdownNotifierFactory
     DependsOn(PermissionHelper::GetFactoryInstance());
   }
   ~ShutdownNotifierFactory() override {}
-
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override {
-    return ExtensionsBrowserClient::Get()->GetContextOwnInstance(
-        context, /*force_guest_profile=*/true);
-  }
 };
 
 }  // namespace

@@ -61,8 +61,8 @@ KeyedService* MimeHandlerStreamManagerFactory::BuildServiceInstanceFor(
 content::BrowserContext*
 MimeHandlerStreamManagerFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
-  return extensions::ExtensionsBrowserClient::Get()
-      ->GetContextRedirectedToOriginal(context, /*force_guest_profile=*/true);
+  return extensions::ExtensionsBrowserClient::Get()->GetOriginalContext(
+      context);
 }
 
 }  // namespace

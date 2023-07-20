@@ -113,11 +113,6 @@ content::BrowserContext* TestExtensionsBrowserClient::GetContextForOriginalOnly(
   return context->IsOffTheRecord() ? nullptr : context;
 }
 
-bool TestExtensionsBrowserClient::AreExtensionsDisabledForContext(
-    content::BrowserContext* context) {
-  return false;
-}
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 std::string TestExtensionsBrowserClient::GetUserIdHashFromContext(
     content::BrowserContext* context) {

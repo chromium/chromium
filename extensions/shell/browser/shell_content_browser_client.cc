@@ -37,7 +37,6 @@
 #include "extensions/browser/extension_protocols.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_web_contents_observer.h"
-#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/guest_view/extensions_guest_view.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/process_map.h"
@@ -248,12 +247,8 @@ std::vector<std::unique_ptr<content::NavigationThrottle>>
 ShellContentBrowserClient::CreateThrottlesForNavigation(
     content::NavigationHandle* navigation_handle) {
   std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
-  if (!extensions::ExtensionsBrowserClient::Get()
-           ->AreExtensionsDisabledForContext(
-               navigation_handle->GetWebContents()->GetBrowserContext())) {
-    throttles.push_back(
-        std::make_unique<ExtensionNavigationThrottle>(navigation_handle));
-  }
+  throttles.push_back(
+      std::make_unique<ExtensionNavigationThrottle>(navigation_handle));
   return throttles;
 }
 

@@ -276,12 +276,6 @@ ChromeExtensionsBrowserClient::GetContextForOriginalOnly(
   return selections.ApplyProfileSelection(Profile::FromBrowserContext(context));
 }
 
-bool ChromeExtensionsBrowserClient::AreExtensionsDisabledForContext(
-    content::BrowserContext* context) {
-  return ChromeContentBrowserClientExtensionsPart::
-      AreExtensionsDisabledForProfile(Profile::FromBrowserContext(context));
-}
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 std::string ChromeExtensionsBrowserClient::GetUserIdHashFromContext(
     content::BrowserContext* context) {

@@ -5028,20 +5028,14 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
     throttles.push_back(std::move(url_to_apps_throttle));
 #endif
 
-  Profile* profile = Profile::FromBrowserContext(
-      handle->GetWebContents()->GetBrowserContext());
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (!ChromeContentBrowserClientExtensionsPart::
-          AreExtensionsDisabledForProfile(profile)) {
-    throttles.push_back(
-        std::make_unique<extensions::ExtensionNavigationThrottle>(handle));
+  throttles.push_back(
+      std::make_unique<extensions::ExtensionNavigationThrottle>(handle));
 
-    MaybeAddThrottle(extensions::ExtensionsBrowserClient::Get()
-                         ->GetUserScriptListener()
-                         ->CreateNavigationThrottle(handle),
-                     &throttles);
-  }
+  MaybeAddThrottle(extensions::ExtensionsBrowserClient::Get()
+                       ->GetUserScriptListener()
+                       ->CreateNavigationThrottle(handle),
+                   &throttles);
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -5173,6 +5167,9 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
         performance_manager_registry->CreateThrottlesForNavigation(handle),
         &throttles);
   }
+
+  Profile* profile = Profile::FromBrowserContext(
+      handle->GetWebContents()->GetBrowserContext());
 
   if (profile && profile->GetPrefs()) {
     MaybeAddThrottle(

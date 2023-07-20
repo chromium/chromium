@@ -182,12 +182,6 @@ class ExtensionsBrowserClient {
       content::BrowserContext* context,
       bool force_guest_profile) = 0;
 
-  // Returns whether the `context` has extensions disabled.
-  // An example of an implementation of `BrowserContext` that has extensions
-  // disabled is `Profile` of type System Profile.
-  virtual bool AreExtensionsDisabledForContext(
-      content::BrowserContext* context) = 0;
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Returns a user id hash from |context| or an empty string if no hash could
   // be extracted.

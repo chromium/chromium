@@ -15,7 +15,6 @@
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/events/event_ack_data.h"
 #include "extensions/browser/extension_registry_factory.h"
-#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/common/extension_messages.h"
@@ -45,12 +44,6 @@ class ShutdownNotifierFactory
     DependsOn(ProcessManagerFactory::GetInstance());
   }
   ~ShutdownNotifierFactory() override = default;
-
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override {
-    return ExtensionsBrowserClient::Get()->GetContextOwnInstance(
-        context, /*force_guest_profile=*/true);
-  }
 };
 
 }  // namespace

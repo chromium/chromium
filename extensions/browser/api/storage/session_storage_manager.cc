@@ -54,8 +54,7 @@ content::BrowserContext* SessionStorageManagerFactory::GetBrowserContextToUse(
     content::BrowserContext* browser_context) const {
   // Share storage between incognito and on-the-record profiles by using the
   // original context of an incognito window.
-  return ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
-      browser_context, /*force_guest_profile=*/true);
+  return ExtensionsBrowserClient::Get()->GetOriginalContext(browser_context);
 }
 
 KeyedService* SessionStorageManagerFactory::BuildServiceInstanceFor(
