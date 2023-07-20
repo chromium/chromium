@@ -234,7 +234,7 @@
 <translation id="5317780077021120954">保存</translation>
 <translation id="5335288049665977812">サイトに JavaScript の実行を許可する（推奨）</translation>
 <translation id="534295439873310000">NFC デバイス</translation>
-<translation id="5344522958567249764">広告のプライバシーを管理</translation>
+<translation id="5344522958567249764">広告プライバシーを管理</translation>
 <translation id="5354152178998424783">サイトにより保存された <ph name="DATASIZE" /> のデータと Cookie が削除されます。</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{（他 1 件）}other{（他 # 件）}}</translation>
 <translation id="5403592356182871684">名前</translation>

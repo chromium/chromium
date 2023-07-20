@@ -9100,7 +9100,7 @@ Se a política é deixada sem definição, o <ph name="PRODUCT_NAME" /> pode col
       - <ph name="FALLBACK_APP_NAME_LABEL" />
       (da versão 90 em diante do <ph name="PRODUCT_NAME" />)
       permite substituir o nome do app se ele não for um
-      Progressive Web App (PWA) ou o nome do app instalado
+      App Web Progressivo (PWA) ou o nome do app instalado
       temporariamente se ele for um PWA, mas a autenticação for exigida antes de
       concluir a instalação. Se um
       <ph name="CUSTOM_NAME_LABEL" /> e um
