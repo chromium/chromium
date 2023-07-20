@@ -302,6 +302,15 @@ WaylandSurfaceFactory::GetPreferredFormatForSolidColor() const {
   return gfx::BufferFormat::RGBA_8888;
 }
 
+bool WaylandSurfaceFactory::SupportsDrmModifiersFilter() const {
+  return true;
+}
+
+void WaylandSurfaceFactory::SetDrmModifiersFilter(
+    std::unique_ptr<DrmModifiersFilter> filter) {
+  buffer_manager_->set_drm_modifiers_filter(std::move(filter));
+}
+
 std::vector<gfx::BufferFormat>
 WaylandSurfaceFactory::GetSupportedFormatsForTexturing() const {
 #if defined(WAYLAND_GBM)

@@ -23,6 +23,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/mojom/wayland_buffer_manager.mojom.h"
+#include "ui/ozone/public/drm_modifiers_filter.h"
 
 namespace gfx {
 enum class SwapResult;
@@ -173,12 +174,17 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   bool supports_clip_rect() const { return supports_clip_rect_; }
   bool supports_affine_transform() const { return supports_affine_transform_; }
 
+  void set_drm_modifiers_filter(
+      std::unique_ptr<DrmModifiersFilter> drm_modifiers_filter) {
+    drm_modifiers_filter_ = std::move(drm_modifiers_filter);
+  }
+
   // Adds a WaylandBufferManagerGpu binding.
   void AddBindingWaylandBufferManagerGpu(
       mojo::PendingReceiver<ozone::mojom::WaylandBufferManagerGpu> receiver);
 
   // Returns supported modifiers for the supplied |buffer_format|.
-  const std::vector<uint64_t>& GetModifiersForBufferFormat(
+  const std::vector<uint64_t> GetModifiersForBufferFormat(
       gfx::BufferFormat buffer_format) const;
 
   // Allocates a unique buffer ID.
@@ -298,6 +304,10 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   // Determines whether Wayland server supports delegating non axis-aligned 2d
   // transforms.
   bool supports_affine_transform_ = false;
+
+  // A DRM modifiers filter to ensure we don't allocate buffers with modifiers
+  // not supported by Vulkan.
+  std::unique_ptr<DrmModifiersFilter> drm_modifiers_filter_;
 
   mojo::ReceiverSet<ozone::mojom::WaylandBufferManagerGpu> receiver_set_;
 

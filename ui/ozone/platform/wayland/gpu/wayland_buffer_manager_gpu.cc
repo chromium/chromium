@@ -376,15 +376,17 @@ void WaylandBufferManagerGpu::AddBindingWaylandBufferManagerGpu(
   receiver_set_.Add(this, std::move(receiver));
 }
 
-const std::vector<uint64_t>&
+const std::vector<uint64_t>
 WaylandBufferManagerGpu::GetModifiersForBufferFormat(
     gfx::BufferFormat buffer_format) const {
   auto it = supported_buffer_formats_with_modifiers_.find(buffer_format);
   if (it != supported_buffer_formats_with_modifiers_.end()) {
+    if (drm_modifiers_filter_) {
+      return drm_modifiers_filter_->Filter(buffer_format, it->second);
+    }
     return it->second;
   }
-  static std::vector<uint64_t> dummy;
-  return dummy;
+  return {};
 }
 
 uint32_t WaylandBufferManagerGpu::AllocateBufferID() {
