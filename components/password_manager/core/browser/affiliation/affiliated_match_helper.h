@@ -44,6 +44,9 @@ class AffiliatedMatchHelper {
       absl::variant<std::vector<std::unique_ptr<PasswordForm>>,
                     PasswordStoreBackendError>)>;
 
+  using PSLExtensionCallback =
+      base::OnceCallback<void(const base::flat_set<std::string>&)>;
+
   // The |password_store| must outlive |this|. Both arguments must be non-NULL,
   // except in tests which do not Initialize() the object.
   explicit AffiliatedMatchHelper(AffiliationService* affiliation_service);
@@ -66,6 +69,8 @@ class AffiliatedMatchHelper {
       std::vector<std::unique_ptr<PasswordForm>> forms,
       PasswordFormsOrErrorCallback result_callback);
 
+  virtual void GetPSLExtensions(PSLExtensionCallback callback);
+
   // Returns whether or not |form| represents a valid Web credential for the
   // purposes of affiliation-based matching.
   static bool IsValidWebCredential(const PasswordFormDigest& form);
@@ -86,7 +91,13 @@ class AffiliatedMatchHelper {
       const AffiliatedFacets& results,
       bool success);
 
+  void OnPSLExtensionsReceived(std::vector<std::string> psl_extensions);
+
   const raw_ptr<AffiliationService> affiliation_service_;
+
+  absl::optional<base::flat_set<std::string>> psl_extensions_;
+
+  std::vector<PSLExtensionCallback> psl_extensions_callbacks_;
 
   base::WeakPtrFactory<AffiliatedMatchHelper> weak_ptr_factory_{this};
 };

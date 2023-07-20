@@ -30,14 +30,6 @@ namespace password_manager {
 
 namespace {
 
-#if BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/1450848): Use PSL - extension list to determine PSL matches on
-// Android.
-constexpr bool kRequestPSLExtension = false;
-#else
-constexpr bool kRequestPSLExtension = true;
-#endif
-
 void IgnoreResult(base::OnceClosure callback, const AffiliatedFacets&, bool) {
   std::move(callback).Run();
 }
@@ -424,9 +416,8 @@ bool AffiliationBackend::OnCanSendNetworkRequest() {
 
   // TODO(crbug.com/1354196): There is no need to request psl extension every
   // time, find a better way of caching it.
-  fetcher_->StartRequest(
-      requested_facet_uris,
-      {.branding_info = true, .psl_extension_list = kRequestPSLExtension});
+  fetcher_->StartRequest(requested_facet_uris,
+                         {.branding_info = true, .psl_extension_list = true});
   ReportStatistics(requested_facet_uris.size());
   return true;
 }

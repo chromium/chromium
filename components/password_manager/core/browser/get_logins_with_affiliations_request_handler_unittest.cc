@@ -81,6 +81,8 @@ class GetLoginsWithAffiliationsRequestHandlerTest : public testing::Test {
 };
 
 TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, NoMatchesTest) {
+  EXPECT_CALL(affiliation_service(), GetPSLExtensions)
+      .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
   EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
       .WillOnce(RunOnceCallback<2>(std::vector<Facet>(), true));
 
@@ -101,6 +103,8 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, ExactAndPslMatchesTest) {
                            base::DoNothing());
   RunUntilIdle();
 
+  EXPECT_CALL(affiliation_service(), GetPSLExtensions)
+      .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
   EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
       .WillOnce(RunOnceCallback<2>(std::vector<Facet>(), true));
 
@@ -128,6 +132,8 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, AffiliatedMatchesOnlyTest) {
       base::DoNothing());
   RunUntilIdle();
 
+  EXPECT_CALL(affiliation_service(), GetPSLExtensions)
+      .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
   std::vector<Facet> facets;
   facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kAffiliatedWebURL));
   facets.emplace_back(
@@ -167,6 +173,8 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
       base::DoNothing());
   RunUntilIdle();
 
+  EXPECT_CALL(affiliation_service(), GetPSLExtensions)
+      .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
   std::vector<Facet> facets;
   facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kAffiliatedWebURL));
   facets.emplace_back(
@@ -203,6 +211,8 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, AffiliationsArePSLTest) {
                            base::DoNothing());
   RunUntilIdle();
 
+  EXPECT_CALL(affiliation_service(), GetPSLExtensions)
+      .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
   std::vector<Facet> facets;
   facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kTestWebURL));
   facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kTestPSLURL));
@@ -232,6 +242,8 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, GroupedMatchesOnlyTest) {
                            base::DoNothing());
   RunUntilIdle();
 
+  EXPECT_CALL(affiliation_service(), GetPSLExtensions)
+      .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
   EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
       .WillOnce(RunOnceCallback<2>(std::vector<Facet>(), true));
 
@@ -265,6 +277,8 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
   backend()->AddLoginAsync(*CreateForm(kGroupWebURL, u"username2", u"password"),
                            base::DoNothing());
   RunUntilIdle();
+  EXPECT_CALL(affiliation_service(), GetPSLExtensions)
+      .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
 
   std::vector<Facet> facets;
   facets.emplace_back(FacetURI::FromPotentiallyInvalidSpec(kTestWebURL));
@@ -308,7 +322,7 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, AffiliatedMatchHelperNull) {
   RunUntilIdle();
 
   EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding).Times(0);
-
+  EXPECT_CALL(affiliation_service(), GetPSLExtensions).Times(0);
   base::MockCallback<LoginsOrErrorReply> result_callback;
   PasswordFormDigest observed_form = CreateFormDigest(kTestWebURL);
   GetLoginsWithAffiliationsRequestHandler(observed_form, backend(),
@@ -320,6 +334,33 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, AffiliatedMatchHelperNull) {
   expected_forms.back()->match_type = PasswordForm::MatchType::kExact;
   expected_forms.push_back(CreateForm(kTestPSLURL, u"username2", u"password"));
   expected_forms.back()->match_type = PasswordForm::MatchType::kPSL;
+
+  EXPECT_CALL(result_callback, Run(LoginsResultsOrErrorAre(&expected_forms)));
+  RunUntilIdle();
+}
+
+TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
+       PslMatchesFilteredBecauseOfExtensionListTest) {
+  backend()->AddLoginAsync(
+      *CreateForm("https://a.slack.com/", u"test", u"test"), base::DoNothing());
+  backend()->AddLoginAsync(
+      *CreateForm("https://b.slack.com/", u"test", u"test"), base::DoNothing());
+  RunUntilIdle();
+
+  EXPECT_CALL(affiliation_service(), GetPSLExtensions)
+      .WillOnce(RunOnceCallback<0>(std::vector<std::string>{"slack.com"}));
+  EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
+      .WillOnce(RunOnceCallback<2>(std::vector<Facet>(), true));
+
+  base::MockCallback<LoginsOrErrorReply> result_callback;
+  PasswordFormDigest observed_form = CreateFormDigest("https://a.slack.com/");
+  GetLoginsWithAffiliationsRequestHandler(
+      observed_form, backend(), &match_helper(), result_callback.Get());
+
+  std::vector<std::unique_ptr<PasswordForm>> expected_forms;
+  expected_forms.push_back(
+      CreateForm("https://a.slack.com/", u"test", u"test"));
+  expected_forms.back()->match_type = PasswordForm::MatchType::kExact;
 
   EXPECT_CALL(result_callback, Run(LoginsResultsOrErrorAre(&expected_forms)));
   RunUntilIdle();

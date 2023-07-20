@@ -237,7 +237,6 @@ LoginsResult FakePasswordStoreBackend::FillMatchingLoginsHelper(
     if (realm_matches || (realm_psl_matches && include_psl) ||
         (form.scheme == PasswordForm::Scheme::kHtml &&
          password_manager::IsFederatedRealm(elements.first, form.url))) {
-      const bool is_psl = !realm_matches && realm_psl_matches;
       for (const auto& stored_form : elements.second) {
         // Repeat the condition above with an additional check for origin.
         if (realm_matches || realm_psl_matches ||
@@ -247,9 +246,6 @@ LoginsResult FakePasswordStoreBackend::FillMatchingLoginsHelper(
              password_manager::IsFederatedRealm(stored_form.signon_realm,
                                                 form.url))) {
           matched_forms.push_back(std::make_unique<PasswordForm>(stored_form));
-          matched_forms.back()->match_type =
-              is_psl ? PasswordForm::MatchType::kPSL
-                     : PasswordForm::MatchType::kExact;
         }
       }
     }

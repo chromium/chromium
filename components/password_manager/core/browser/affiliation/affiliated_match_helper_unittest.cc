@@ -371,4 +371,44 @@ TEST_F(AffiliatedMatchHelperTest, InjectAffiliationAndBrandingInformation) {
   EXPECT_THAT(result_forms[2]->affiliated_web_realm, IsEmpty());
 }
 
+TEST_F(AffiliatedMatchHelperTest, GetPSLExtensions) {
+  base::MockCallback<AffiliatedMatchHelper::PSLExtensionCallback>
+      result_callback;
+  base::OnceCallback<void(std::vector<std::string>)> extensions_callback;
+
+  EXPECT_CALL(*mock_affiliation_service(), GetPSLExtensions)
+      .WillOnce(MoveArg<0>(&extensions_callback));
+  EXPECT_TRUE(extensions_callback.is_null());
+
+  // Callback isn't called immediately.
+  EXPECT_CALL(result_callback, Run).Times(0);
+  match_helper()->GetPSLExtensions(result_callback.Get());
+
+  EXPECT_FALSE(extensions_callback.is_null());
+
+  std::vector<std::string> pls_extensions = {"a.com", "b.com"};
+  EXPECT_CALL(result_callback,
+              Run(testing::UnorderedElementsAreArray(pls_extensions)));
+  std::move(extensions_callback).Run(pls_extensions);
+}
+
+TEST_F(AffiliatedMatchHelperTest, GetPSLExtensionsCachesResult) {
+  base::MockCallback<AffiliatedMatchHelper::PSLExtensionCallback>
+      result_callback;
+  std::vector<std::string> pls_extensions = {"a.com", "b.com"};
+  EXPECT_CALL(*mock_affiliation_service(), GetPSLExtensions)
+      .WillOnce(RunOnceCallback<0>(pls_extensions));
+  EXPECT_CALL(result_callback,
+              Run(testing::UnorderedElementsAreArray(pls_extensions)));
+
+  match_helper()->GetPSLExtensions(result_callback.Get());
+
+  testing::Mock::VerifyAndClearExpectations(mock_affiliation_service());
+  // Now affiliation service isn't called.
+  EXPECT_CALL(*mock_affiliation_service(), GetPSLExtensions).Times(0);
+  EXPECT_CALL(result_callback,
+              Run(testing::UnorderedElementsAreArray(pls_extensions)));
+  match_helper()->GetPSLExtensions(result_callback.Get());
+}
+
 }  // namespace password_manager

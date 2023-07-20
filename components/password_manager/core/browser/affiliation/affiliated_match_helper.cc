@@ -166,6 +166,24 @@ void AffiliatedMatchHelper::InjectAffiliationAndBrandingInformation(
   }
 }
 
+void AffiliatedMatchHelper::GetPSLExtensions(
+    base::OnceCallback<void(const base::flat_set<std::string>&)> callback) {
+  if (psl_extensions_.has_value()) {
+    std::move(callback).Run(psl_extensions_.value());
+    return;
+  }
+
+  psl_extensions_callbacks_.push_back(std::move(callback));
+
+  if (psl_extensions_callbacks_.size() > 1) {
+    return;
+  }
+
+  affiliation_service_->GetPSLExtensions(
+      base::BindOnce(&AffiliatedMatchHelper::OnPSLExtensionsReceived,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
 // static
 bool AffiliatedMatchHelper::IsValidWebCredential(
     const PasswordFormDigest& form) {
@@ -208,6 +226,17 @@ void AffiliatedMatchHelper::CompleteInjectAffiliationAndBrandingInformation(
   }
 
   std::move(barrier_closure).Run();
+}
+
+void AffiliatedMatchHelper::OnPSLExtensionsReceived(
+    std::vector<std::string> psl_extensions) {
+  psl_extensions_ = base::flat_set<std::string>(
+      std::make_move_iterator(psl_extensions.begin()),
+      std::make_move_iterator(psl_extensions.end()));
+
+  for (auto& callback : std::exchange(psl_extensions_callbacks_, {})) {
+    std::move(callback).Run(psl_extensions_.value());
+  }
 }
 
 }  // namespace password_manager
