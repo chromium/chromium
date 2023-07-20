@@ -163,14 +163,12 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
     autohide_shelf_when_maximized_or_fullscreen_ = value;
   }
 
-  // TODO(minch): Rename the multiple setters below to be for example
-  // `set_pre_auto_manage_window_bounds`.
   // Gets/Sets the bounds of the window before it was moved by the auto window
   // management. As long as it was not auto-managed, it will return NULL.
   const absl::optional<gfx::Rect> pre_auto_manage_window_bounds() {
     return pre_auto_manage_window_bounds_;
   }
-  void SetPreAutoManageWindowBounds(const gfx::Rect& bounds) {
+  void set_pre_auto_manage_window_bounds(const gfx::Rect& bounds) {
     pre_auto_manage_window_bounds_ = absl::make_optional(bounds);
   }
 
@@ -178,7 +176,7 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   const absl::optional<gfx::Rect> pre_added_to_workspace_window_bounds() {
     return pre_added_to_workspace_window_bounds_;
   }
-  void SetPreAddedToWorkspaceWindowBounds(const gfx::Rect& bounds) {
+  void set_pre_added_to_workspace_window_bounds(const gfx::Rect& bounds) {
     pre_added_to_workspace_window_bounds_ = absl::make_optional(bounds);
   }
 
@@ -188,11 +186,11 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   persistent_window_info_of_display_removal() {
     return persistent_window_info_of_display_removal_;
   }
-  void SetPersistentWindowInfoOfDisplayRemoval(
+  void set_persistent_window_info_of_display_removal(
       const PersistentWindowInfo& info) {
     persistent_window_info_of_display_removal_ = absl::make_optional(info);
   }
-  void ResetPersistentWindowInfoOfDisplayRemoval() {
+  void reset_persistent_window_info_of_display_removal() {
     persistent_window_info_of_display_removal_.reset();
   }
 
@@ -202,7 +200,7 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   persistent_window_info_of_screen_rotation() {
     return persistent_window_info_of_screen_rotation_;
   }
-  void SetPersistentWindowInfoOfScreenRotation(
+  void set_persistent_window_info_of_screen_rotation(
       const PersistentWindowInfo& info) {
     persistent_window_info_of_screen_rotation_ = absl::make_optional(info);
   }

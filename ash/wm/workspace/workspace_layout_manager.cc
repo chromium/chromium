@@ -165,10 +165,10 @@ void WorkspaceLayoutManager::OnWillRemoveWindowFromLayout(aura::Window* child) {
   // to a new workspace layout or destroyed.
   if (!window_state->pre_added_to_workspace_window_bounds()) {
     if (window_state->pre_auto_manage_window_bounds()) {
-      window_state->SetPreAddedToWorkspaceWindowBounds(
+      window_state->set_pre_added_to_workspace_window_bounds(
           *window_state->pre_auto_manage_window_bounds());
     } else {
-      window_state->SetPreAddedToWorkspaceWindowBounds(child->bounds());
+      window_state->set_pre_added_to_workspace_window_bounds(child->bounds());
     }
   }
 

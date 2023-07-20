@@ -955,7 +955,7 @@ TEST_F(WorkspaceControllerTest, TestUserHandledWindowRestore) {
   window1->SetBounds(user_pos);
   WindowState* window1_state = WindowState::Get(window1.get());
 
-  window1_state->SetPreAutoManageWindowBounds(user_pos);
+  window1_state->set_pre_auto_manage_window_bounds(user_pos);
   gfx::Rect desktop_area = window1->parent()->bounds();
 
   // Create a second window to let the auto manager kick in.

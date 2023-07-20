@@ -93,7 +93,7 @@ void PersistentWindowController::OnDisplayRemoved(
     const display::Display& old_display) {
   for (aura::Window* window : need_persistent_info_windows_.windows()) {
     WindowState* window_state = WindowState::Get(window);
-    window_state->SetPersistentWindowInfoOfDisplayRemoval(
+    window_state->set_persistent_window_info_of_display_removal(
         PersistentWindowInfo(window, /*is_landscape_before_rotation=*/false));
   }
   need_persistent_info_windows_.RemoveAll();
@@ -132,7 +132,7 @@ void PersistentWindowController::OnDisplayMetricsChanged(
         window_state->IsFullscreen()) {
       continue;
     }
-    window_state->SetPersistentWindowInfoOfScreenRotation(
+    window_state->set_persistent_window_info_of_screen_rotation(
         PersistentWindowInfo(window, was_landscape_before_rotation));
   }
   screen_rotation_restore_callback_ =
@@ -218,7 +218,7 @@ void PersistentWindowController::
       window_state->SetRestoreBoundsInScreen(restore_bounds);
     }
     // Reset persistent window info every time the window bounds have restored.
-    window_state->ResetPersistentWindowInfoOfDisplayRemoval();
+    window_state->reset_persistent_window_info_of_display_removal();
 
     ++window_restored_count;
   }
