@@ -13,14 +13,12 @@ ChromeVoxAutoScrollHandlerTest = class extends ChromeVoxE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    await Promise.all([
-      // Alphabetical based on file path.
-      importModule(
-          'AutoScrollHandler', '/chromevox/background/auto_scroll_handler.js'),
-      importModule(
-          'ChromeVoxState', '/chromevox/background/chromevox_state.js'),
-      importModule('CursorRange', '/common/cursors/range.js'),
-    ]);
+    // Alphabetical based on file path.
+    await importModule(
+        'AutoScrollHandler', '/chromevox/background/auto_scroll_handler.js');
+    await importModule(
+        'ChromeVoxState', '/chromevox/background/chromevox_state.js');
+    await importModule('CursorRange', '/common/cursors/range.js');
 
     globalThis.EventType = chrome.automation.EventType;
     globalThis.RoleType = chrome.automation.RoleType;

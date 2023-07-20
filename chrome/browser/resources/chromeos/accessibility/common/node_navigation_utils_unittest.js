@@ -11,13 +11,12 @@ SelectToSpeakNodeNavigationUtilsUnitTest = class extends SelectToSpeakE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    await Promise.all([
-      importModule('NodeNavigationUtils', '/common/node_navigation_utils.js'),
-      importModule('ParagraphUtils', '/common/paragraph_utils.js'),
-      importModule(
-          ['createMockNode', 'generateTestNodeGroup'],
-          '/common/testing/test_node_generator.js'),
-    ]);
+    await importModule(
+        'NodeNavigationUtils', '/common/node_navigation_utils.js');
+    await importModule('ParagraphUtils', '/common/paragraph_utils.js');
+    await importModule(
+        ['createMockNode', 'generateTestNodeGroup'],
+        '/common/testing/test_node_generator.js');
   }
 };
 

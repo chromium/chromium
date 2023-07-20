@@ -24,17 +24,15 @@ ChromeVoxPanelNodeMenuBackgroundTest = class extends ChromeVoxE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    await Promise.all([
-      // Alphabetical based on file path.
-      importModule(
-          'PanelBackground', '/chromevox/background/panel/panel_background.js'),
-      importModule(
-          'PanelNodeMenuBackground',
-          '/chromevox/background/panel/panel_node_menu_background.js'),
-      importModule(
-          ['PanelNodeMenuId', 'ALL_PANEL_MENU_NODE_DATA'],
-          '/chromevox/common/panel_menu_data.js'),
-    ]);
+    // Alphabetical based on file path.
+    await importModule(
+        'PanelBackground', '/chromevox/background/panel/panel_background.js');
+    await importModule(
+        'PanelNodeMenuBackground',
+        '/chromevox/background/panel/panel_node_menu_background.js');
+    await importModule(
+        ['PanelNodeMenuId', 'ALL_PANEL_MENU_NODE_DATA'],
+        '/chromevox/common/panel_menu_data.js');
   }
 
   assertMenuItemIndicatesNoNodesFound(item) {

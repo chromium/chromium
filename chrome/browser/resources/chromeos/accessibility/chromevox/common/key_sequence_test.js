@@ -69,11 +69,9 @@ ChromeVoxKeySequenceUnitTest = class extends AccessibilityTestBase {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    await Promise.all([
-      // Alphabetical based on file path.
-      importModule('KeyCode', '/common/key_code.js'),
-      importModule('KeySequence', '/chromevox/common/key_sequence.js'),
-    ]);
+    // Alphabetical based on file path.
+    await importModule('KeyCode', '/common/key_code.js');
+    await importModule('KeySequence', '/chromevox/common/key_sequence.js');
 
     // Set up mock ChromeVox modifier
     KeySequence.modKeyStr = 'Alt';

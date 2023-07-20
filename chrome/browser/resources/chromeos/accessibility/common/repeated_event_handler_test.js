@@ -12,11 +12,10 @@ AccessibilityExtensionRepeatedEventHandlerTest =
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    await Promise.all([
-      importModule('EventGenerator', '/common/event_generator.js'),
-      importModule('KeyCode', '/common/key_code.js'),
-      importModule('RepeatedEventHandler', '/common/repeated_event_handler.js'),
-    ]);
+    await importModule('EventGenerator', '/common/event_generator.js');
+    await importModule('KeyCode', '/common/key_code.js');
+    await importModule(
+        'RepeatedEventHandler', '/common/repeated_event_handler.js');
   }
 };
 

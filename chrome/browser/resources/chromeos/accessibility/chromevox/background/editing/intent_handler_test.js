@@ -18,14 +18,12 @@ ChromeVoxIntentHandlerTest = class extends ChromeVoxE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    await Promise.all([
-      // Alphabetical based on file path.
-      importModule(
-          'IntentHandler', '/chromevox/background/editing/intent_handler.js'),
-      importModule('Output', '/chromevox/background/output/output.js'),
-      importModule(
-          'OutputCustomEvent', '/chromevox/background/output/output_types.js'),
-    ]);
+    // Alphabetical based on file path.
+    await importModule(
+        'IntentHandler', '/chromevox/background/editing/intent_handler.js');
+    await importModule('Output', '/chromevox/background/output/output.js');
+    await importModule(
+        'OutputCustomEvent', '/chromevox/background/output/output_types.js');
 
     globalThis.Dir = constants.Dir;
     globalThis.IntentTextBoundaryType =

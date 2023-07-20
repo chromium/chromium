@@ -9,11 +9,9 @@ SwitchAccessTextNavigationManagerTest = class extends SwitchAccessE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    await Promise.all([
-      importModule(
-          'TextNavigationManager', '/switch_access/text_navigation_manager.js'),
-      importModule('Navigator', '/switch_access/navigator.js'),
-    ]);
+    await importModule(
+        'TextNavigationManager', '/switch_access/text_navigation_manager.js');
+    await importModule('Navigator', '/switch_access/navigator.js');
     this.textNavigationManager = TextNavigationManager.instance;
     this.navigationManager = Navigator.byItem;
   }

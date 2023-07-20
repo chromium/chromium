@@ -42,13 +42,12 @@ ChromeVoxDownloadTest = class extends ChromeVoxE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    await Promise.all([
-      // Alphabetical based on file path.
-      importModule(
-          'DownloadHandler', '/chromevox/background/download_handler.js'),
-      importModule('LocalStorage', '/common/local_storage.js'),
-      importModule('SettingsManager', '/chromevox/common/settings_manager.js'),
-    ]);
+    // Alphabetical based on file path.
+    await importModule(
+        'DownloadHandler', '/chromevox/background/download_handler.js');
+    await importModule('LocalStorage', '/common/local_storage.js');
+    await importModule(
+        'SettingsManager', '/chromevox/common/settings_manager.js');
   }
 
   /**

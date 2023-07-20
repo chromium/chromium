@@ -17,13 +17,12 @@
  */
 const TestUtility = {
   async setup() {
-    await Promise.all([
-      importModule('FocusRingManager', '/switch_access/focus_ring_manager.js'),
-      importModule('Navigator', '/switch_access/navigator.js'),
-      importModule('SwitchAccess', '/switch_access/switch_access.js'),
-      importModule(
-          'SwitchAccessPredicate', '/switch_access/switch_access_predicate.js'),
-    ]);
+    await importModule(
+        'FocusRingManager', '/switch_access/focus_ring_manager.js');
+    await importModule('Navigator', '/switch_access/navigator.js');
+    await importModule('SwitchAccess', '/switch_access/switch_access.js');
+    await importModule(
+        'SwitchAccessPredicate', '/switch_access/switch_access_predicate.js');
 
     FocusRingManager.instance.observer_ = TestUtility.whenFocusChanges_;
   },

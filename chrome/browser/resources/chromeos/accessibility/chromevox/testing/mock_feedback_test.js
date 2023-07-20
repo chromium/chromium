@@ -30,14 +30,13 @@ MockFeedbackUnitTest = class extends AccessibilityTestBase {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    await Promise.all([
-      // Alphabetical based on file path.
-      importModule('ChromeVox', '/chromevox/background/chromevox.js'),
-      importModule('NavBraille', '/chromevox/common/braille/nav_braille.js'),
-      importModule('EarconId', '/chromevox/common/earcon_id.js'),
-      importModule('Spannable', '/chromevox/common/spannable.js'),
-      importModule('QueueMode', '/chromevox/common/tts_types.js'),
-    ]);
+    // Alphabetical based on file path.
+    await importModule('ChromeVox', '/chromevox/background/chromevox.js');
+    await importModule(
+        'NavBraille', '/chromevox/common/braille/nav_braille.js');
+    await importModule('EarconId', '/chromevox/common/earcon_id.js');
+    await importModule('Spannable', '/chromevox/common/spannable.js');
+    await importModule('QueueMode', '/chromevox/common/tts_types.js');
   }
 };
 
