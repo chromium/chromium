@@ -32,10 +32,9 @@ include, but are not limited to:
    IOSurfaces on Mac, or CPU side shared memory). Because of their cross
    process use case, these objects will almost always be shared between a
    renderer or browser process and the GPU process.
- * **GLImages**: GLImages are a platform-independent abstraction around GPU
-   memory, similar to GPU Memory Buffers. In many cases, GLImages are created
-   from GPUMemoryBuffers. The primary difference is that GLImages are designed
-   to be bound to an OpenGL texture using the image extension.
+ * **SharedImages**: SharedImages are a platform-independent abstraction around GPU
+   memory, similar to GPU Memory Buffers. In many cases, SharedImages are created
+   from GPUMemoryBuffers.
 
 GPU Memory can be found across a number of different processes, in a few
 different categories.
@@ -80,7 +79,7 @@ _effective size_ is 0:
 
 ![Effective size of zero][non-owner-size]
 
-Other types, such as GPUMemoryBuffers and GLImages have similar sharing
+Other types, such as GPUMemoryBuffers and SharedImages have similar sharing
 patterns.
 
 When trying to get an overview of the absolute memory usage tied to the GPU,

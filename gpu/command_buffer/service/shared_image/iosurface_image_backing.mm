@@ -1238,8 +1238,8 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateEndAccess(
   // to be copied to the internal texture via a Bind() when the GPU starts a
   // subsequent read. Note also that this logic assumes that writes are
   // serialized with respect to reads (so that the end of a write always
-  // triggers a release and copy). By design, GLImageBackingFactory enforces
-  // this property for this use case.
+  // triggers a release and copy). By design, IOSurfaceImageBackingFactory
+  // enforces this property for this use case.
   bool needs_sync_for_swangle =
       (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader &&
        (num_ongoing_read_accesses_ == 0));
@@ -1247,11 +1247,12 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateEndAccess(
   // Similarly, when ANGLE's metal backend is used, we have to signal a call to
   // waitUntilScheduled() using the same method on EndAccess to ensure IOSurface
   // synchronization. In this case, it is sufficient to release the image at the
-  // end of a write. As above, GLImageBackingFactory enforces serialization of
-  // reads and writes for this use case.
+  // end of a write. As above, IOSurfaceImageBackingFactory enforces
+  // serialization of reads and writes for this use case.
   // TODO(https://anglebug.com/7626): Enable on Metal only when
   // CPU_READ or SCANOUT is specified. When doing so, adjust the conditions for
-  // disallowing concurrent read/write in GLImageBackingFactory as suitable.
+  // disallowing concurrent read/write in IOSurfaceImageBackingFactory as
+  // suitable.
   bool needs_sync_for_metal =
       (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal &&
        !readonly);

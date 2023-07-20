@@ -12,8 +12,7 @@ class GrPromiseImageTexture;
 
 namespace gpu {
 
-// Implementation of SharedImageBacking that creates a GL Texture that is not
-// backed by a GLImage.
+// Implementation of SharedImageBacking that uses GL Textures as storage.
 class GLTextureImageBacking : public ClearTrackingSharedImageBacking {
  public:
   static bool SupportsPixelUploadWithFormat(viz::SharedImageFormat format);
