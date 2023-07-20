@@ -1247,12 +1247,6 @@ void FakeUserDataAuthClient::AuthenticateAuthFactor(
           [&](const RecoveryFactor& recovery) {
             const auto& recovery_input = auth_input.cryptohome_recovery_input();
 
-            if (recovery_input.mediator_pub_key().empty()) {
-              LOG(ERROR) << "Missing mediate pub key";
-              reply.set_error(
-                  ::user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED);
-              return;
-            }
             if (recovery_input.epoch_response().empty()) {
               LOG(ERROR) << "Missing epoch response";
               reply.set_error(
@@ -1354,6 +1348,8 @@ void FakeUserDataAuthClient::GetRecoveryRequest(
     const ::user_data_auth::GetRecoveryRequestRequest& request,
     GetRecoveryRequestCallback callback) {
   ::user_data_auth::GetRecoveryRequestReply reply;
+  reply.set_error(CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET);
+  reply.set_recovery_request("fake-recovery-request");
   ReplyOnReturn auto_reply(&reply, std::move(callback));
 }
 

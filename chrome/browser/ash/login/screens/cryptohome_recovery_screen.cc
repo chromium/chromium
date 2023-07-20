@@ -43,7 +43,6 @@ std::string CryptohomeRecoveryScreen::GetResultString(Result result) {
   }
 }
 
-// TODO(b/285079648): add browser test for the recovery flow.
 CryptohomeRecoveryScreen::CryptohomeRecoveryScreen(
     base::WeakPtr<CryptohomeRecoveryScreenView> view,
     const ScreenExitCallback& exit_callback)

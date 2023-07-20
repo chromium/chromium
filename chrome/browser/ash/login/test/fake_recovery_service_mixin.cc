@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/functional/bind.h"
+#include "chromeos/ash/components/login/auth/recovery/service_constants.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -14,8 +15,6 @@ namespace {
 using ::net::test_server::BasicHttpResponse;
 using ::net::test_server::HttpRequest;
 using ::net::test_server::HttpResponse;
-
-constexpr char kReauthRequestTokenPath[] = "/v1/rart";
 
 }  // namespace
 
@@ -33,12 +32,10 @@ void FakeRecoveryServiceMixin::SetUp() {
 
 void FakeRecoveryServiceMixin::SetUpCommandLine(
     base::CommandLine* command_line) {
-  // Retrieve the URL from the embedded test server and override the reauth
-  // request token URL.
-  std::string reauth_request_token_url =
-      test_server_->base_url().Resolve(kReauthRequestTokenPath).spec();
-  command_line->AppendSwitchASCII(switches::kCryptohomeRecoveryReauthUrl,
-                                  reauth_request_token_url);
+  // Retrieve the URL from the embedded test server and override the recovery
+  // service URL.
+  command_line->AppendSwitchASCII(switches::kCryptohomeRecoveryServiceBaseUrl,
+                                  test_server_->base_url().spec());
 }
 
 void FakeRecoveryServiceMixin::SetErrorResponse(
@@ -62,12 +59,29 @@ std::unique_ptr<HttpResponse> FakeRecoveryServiceMixin::HandleRequest(
     return std::move(http_response);
   }
 
-  if (request_path == kReauthRequestTokenPath) {
+  if (request_path == GetRecoveryServiceReauthTokenURL().path()) {
     http_response->set_code(net::HTTP_OK);
     http_response->set_content_type("application/json");
     http_response->set_content(
         R"({
           "encodedReauthRequestToken": "fake-reauth-request-token"
+        })");
+    return std::move(http_response);
+  } else if (request_path == GetRecoveryServiceEpochURL().path()) {
+    http_response->set_code(net::HTTP_OK);
+    http_response->set_content_type("application/json");
+    http_response->set_content(
+        R"({
+          "epochPubKey": "fake-epoch-pub-key",
+          "epochMetaData": "fake-epoch-metadata",
+        })");
+    return std::move(http_response);
+  } else if (request_path == GetRecoveryServiceMediateURL().path()) {
+    http_response->set_code(net::HTTP_OK);
+    http_response->set_content_type("application/json");
+    http_response->set_content(
+        R"({
+          "cborCryptoRecoveryResponse": "fake-recovery-response",
         })");
     return std::move(http_response);
   }

@@ -61,6 +61,11 @@ bool IsUsingTestEnvironment() {
 }
 
 GURL GetRecoveryServiceBaseURL() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kCryptohomeRecoveryServiceBaseUrl)) {
+    return GURL(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+        switches::kCryptohomeRecoveryServiceBaseUrl));
+  }
   if (IsUsingTestEnvironment()) {
     return GURL(kTestingRecoveryServiceUrl);
   }

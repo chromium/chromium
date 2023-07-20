@@ -35,12 +35,7 @@ const char kApiKeyParameter[] = "key";
 constexpr base::TimeDelta kWaitTimeout = base::Seconds(5);
 
 GURL GetFetchReauthTokenUrl() {
-  GURL url =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kCryptohomeRecoveryReauthUrl)
-          ? GURL(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-                switches::kCryptohomeRecoveryReauthUrl))
-          : GetRecoveryServiceReauthTokenURL();
+  GURL url = GetRecoveryServiceReauthTokenURL();
   return net::AppendQueryParameter(url, kApiKeyParameter,
                                    google_apis::GetAPIKey());
 }

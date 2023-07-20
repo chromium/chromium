@@ -302,9 +302,9 @@ const char kChildWallpaperSmall[] = "child-wallpaper-small";
 // Forces CrOS region value.
 const char kCrosRegion[] = "cros-region";
 
-// Overrides the url for fetching a reauth request token for Cryptohome recovery
-// flow.
-const char kCryptohomeRecoveryReauthUrl[] = "cryptohome-recovery-reauth-url";
+// Overrides the base url for the Cryptohome recovery service.
+const char kCryptohomeRecoveryServiceBaseUrl[] =
+    "cryptohome-recovery-service-base-url";
 
 // Forces cryptohome recovery process to use test environment (test keys /
 // URLs).
