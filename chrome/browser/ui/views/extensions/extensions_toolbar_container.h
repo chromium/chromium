@@ -257,6 +257,9 @@ class ExtensionsToolbarContainer
   // Updates the controls visibility.
   void UpdateControlsVisibility();
 
+  // Maybe displays the In-Product-Help with a specific priority order.
+  void MaybeShowIPH();
+
   // TabStripModelObserver:
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,

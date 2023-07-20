@@ -523,6 +523,8 @@ void ExtensionsToolbarContainer::OnTabStripModelChanged(
     extensions_controls_->ResetConfirmation();
     UpdateControlsVisibility();
   }
+
+  MaybeShowIPH();
 }
 
 void ExtensionsToolbarContainer::TabChangedAt(content::WebContents* contents,
@@ -549,6 +551,8 @@ void ExtensionsToolbarContainer::TabChangedAt(content::WebContents* contents,
     extensions_controls_->ResetConfirmation();
     UpdateControlsVisibility();
   }
+
+  MaybeShowIPH();
 }
 
 void ExtensionsToolbarContainer::OnToolbarActionAdded(
@@ -1017,6 +1021,32 @@ void ExtensionsToolbarContainer::UpdateControlsVisibility() {
 
   extensions_controls_->UpdateControls(is_restricted_url, actions_,
                                        site_setting, web_contents, browser_);
+}
+
+void ExtensionsToolbarContainer::MaybeShowIPH() {
+  // IPH is only shown for the kExtensionsMenuAccessControl feature.
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    return;
+  }
+
+  CHECK(browser_->window());
+
+  // Display IPH, with priority order.
+  if (extensions_controls_->request_access_button()->GetVisible()) {
+    const int extensions_size =
+        extensions_controls_->request_access_button()->GetExtensionsCount();
+    browser_->window()->MaybeShowFeaturePromo(
+        feature_engagement::kIPHExtensionsRequestAccessButtonFeature,
+        /*close_callback=*/base::DoNothing(), /*body_params=*/extensions_size,
+        /*title_params=*/extensions_size);
+  }
+
+  if (extensions_controls_->extensions_button()->state() ==
+      ExtensionsToolbarButton::State::kAnyExtensionHasAccess) {
+    browser_->window()->MaybeShowFeaturePromo(
+        feature_engagement::kIPHExtensionsMenuFeature);
+  }
 }
 
 void ExtensionsToolbarContainer::UpdateToolbarActionHoverCard(
