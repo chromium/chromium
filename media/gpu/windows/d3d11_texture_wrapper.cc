@@ -275,8 +275,10 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
   std::vector<std::unique_ptr<gpu::SharedImageBacking>> shared_image_backings;
   if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
     DCHECK_EQ(mailboxes.size(), 1u);
-    // TODO(crbug.com/1430349): Switch |texture_target| to GL_TEXTURE_2D since
-    // it's now supported by ANGLE.
+    // The target must be GL_TEXTURE_EXTERNAL_OES as the texture is not created
+    // with D3D11_BIND_RENDER_TARGET bind flag and so it cannot be bound to the
+    // framebuffer. To prevent Skia trying to bind it for read pixels, we need
+    // it to be GL_TEXTURE_EXTERNAL_OES.
     std::unique_ptr<gpu::SharedImageBacking> backing =
         gpu::D3DImageBacking::Create(
             mailboxes[0], DXGIFormatToMultiPlanarSharedImageFormat(dxgi_format),

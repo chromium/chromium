@@ -236,8 +236,6 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
   }
   ri->Flush();
 
-  const size_t num_planes = dst_video_frame->layout().num_planes();
-
 #if BUILDFLAG(IS_WIN)
   // For shared memory GMBs on Windows we needed to explicitly request a copy
   // from the shared image GPU texture to the GMB.
@@ -249,7 +247,7 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
   ri->GenUnverifiedSyncTokenCHROMIUM(blit_done_sync_token.GetData());
 
   auto* sii = provider->SharedImageInterface();
-  for (size_t plane = 0; plane < num_planes; ++plane) {
+  for (size_t plane = 0; plane < dst_video_frame->NumTextures(); ++plane) {
     const auto& mailbox = dst_video_frame->mailbox_holder(plane).mailbox;
     sii->CopyToGpuMemoryBuffer(blit_done_sync_token, mailbox);
   }
@@ -268,8 +266,9 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
   gpu::SyncToken completion_sync_token;
   ri->GenSyncTokenCHROMIUM(completion_sync_token.GetData());
   SimpleSyncTokenClient simple_client(completion_sync_token);
-  for (size_t plane = 0; plane < num_planes; ++plane)
+  for (size_t plane = 0; plane < dst_video_frame->NumTextures(); ++plane) {
     dst_video_frame->UpdateMailboxHolderSyncToken(plane, &simple_client);
+  }
   dst_video_frame->UpdateReleaseSyncToken(&simple_client);
   return true;
 }

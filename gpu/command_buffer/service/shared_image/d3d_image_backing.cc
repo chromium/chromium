@@ -381,8 +381,10 @@ D3DImageBacking::CreateFromVideoTexture(
     // value from default-construction.
     constexpr gfx::ColorSpace kInvalidColorSpace;
 
-    // TODO(crbug.com/1430349): Switch to GL_TEXTURE_2D since it's now supported
-    // by ANGLE.
+    // The target must be GL_TEXTURE_EXTERNAL_OES as the texture is not created
+    // with D3D11_BIND_RENDER_TARGET bind flag and so it cannot be bound to the
+    // framebuffer. To prevent Skia trying to bind it for read pixels, we need
+    // it to be GL_TEXTURE_EXTERNAL_OES.
     constexpr GLenum kTextureTarget = GL_TEXTURE_EXTERNAL_OES;
 
     // Do not cache GL textures in the backing since it's owned by the video
