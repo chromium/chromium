@@ -947,47 +947,9 @@ bool Dpi::operator==(const Dpi& other) const {
 Media::Media()
     : size_name(MediaSize::CUSTOM_MEDIA), is_continuous_feed(false) {}
 
-Media::Media(MediaSize size_name)
-    : Media(size_name, FindMediaSizeByType(size_name)) {}
-
-Media::Media(MediaSize size_name, const gfx::Size& size_um)
-    : Media(size_name, size_um, gfx::Rect(size_um)) {}
-
-Media::Media(MediaSize size_name,
-             const gfx::Size& size_um,
-             const gfx::Rect& printable_area_um)
-    : size_name(size_name),
-      size_um(size_um),
-      is_continuous_feed(size_um.width() <= 0 || size_um.height() <= 0),
-      printable_area_um(printable_area_um) {}
-
-Media::Media(const std::string& custom_display_name,
-             const std::string& vendor_id,
-             const gfx::Size& size_um)
-    : Media(custom_display_name, vendor_id, size_um, gfx::Rect(size_um)) {}
-
-Media::Media(const std::string& custom_display_name,
-             const std::string& vendor_id,
-             const gfx::Size& size_um,
-             const gfx::Rect& printable_area_um)
-    : size_name(MediaSize::CUSTOM_MEDIA),
-      size_um(size_um),
-      is_continuous_feed(size_um.width() <= 0 || size_um.height() <= 0),
-      custom_display_name(custom_display_name),
-      vendor_id(vendor_id),
-      printable_area_um(printable_area_um) {}
-
 Media::Media(const Media& other) = default;
 
 Media& Media::operator=(const Media& other) = default;
-
-bool Media::MatchBySize() {
-  const MediaDefinition* media = FindMediaBySize(size_um);
-  if (!media)
-    return false;
-  size_name = media->id;
-  return true;
-}
 
 bool Media::IsValid() const {
   if (is_continuous_feed) {
@@ -1007,6 +969,67 @@ bool Media::operator==(const Media& other) const {
   return size_name == other.size_name && size_um == other.size_um &&
          is_continuous_feed == other.is_continuous_feed &&
          printable_area_um == other.printable_area_um;
+}
+
+MediaBuilder::MediaBuilder() = default;
+
+MediaBuilder& MediaBuilder::WithStandardName(MediaSize size_name) {
+  size_name_ = size_name;
+  custom_display_name_.clear();
+  vendor_id_.clear();
+  return *this;
+}
+
+MediaBuilder& MediaBuilder::WithCustomName(
+    const std::string& custom_display_name,
+    const std::string& vendor_id) {
+  size_name_ = MediaSize::CUSTOM_MEDIA;
+  custom_display_name_ = custom_display_name;
+  vendor_id_ = vendor_id;
+  return *this;
+}
+
+MediaBuilder& MediaBuilder::WithSizeAndDefaultPrintableArea(
+    const gfx::Size& size_um) {
+  return WithSizeAndPrintableArea(size_um, gfx::Rect(size_um));
+}
+
+MediaBuilder& MediaBuilder::WithSizeAndPrintableArea(
+    const gfx::Size& size_um,
+    const gfx::Rect& printable_area_um) {
+  size_um_ = size_um;
+  printable_area_um_ = printable_area_um;
+  return *this;
+}
+
+MediaBuilder& MediaBuilder::WithNameMaybeBasedOnSize(
+    const std::string& custom_display_name,
+    const std::string& vendor_id) {
+  WithCustomName(custom_display_name, vendor_id);
+  const MediaDefinition* media = FindMediaBySize(size_um_);
+  if (media) {
+    size_name_ = media->id;
+  }
+  return *this;
+}
+
+MediaBuilder& MediaBuilder::WithSizeAndPrintableAreaBasedOnStandardName() {
+  return WithSizeAndDefaultPrintableArea(FindMediaSizeByType(size_name_));
+}
+
+Media MediaBuilder::Build() const {
+  Media result;
+  result.size_name = size_name_;
+  result.size_um = size_um_;
+  result.is_continuous_feed = IsContinuousFeed();
+  result.custom_display_name = custom_display_name_;
+  result.vendor_id = vendor_id_;
+  result.printable_area_um = printable_area_um_;
+  return result;
+}
+
+bool MediaBuilder::IsContinuousFeed() const {
+  return size_um_.width() <= 0 || size_um_.height() <= 0;
 }
 
 Interval::Interval() : start(0), end(0) {

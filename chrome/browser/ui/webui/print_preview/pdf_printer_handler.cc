@@ -125,29 +125,40 @@ base::Value::Dict GetPdfCapabilities(
   }
   color.SaveTo(&description);
 
-  static const MediaSize kPdfMedia[] = {
+  static constexpr MediaSize kPdfMedia[] = {
       MediaSize::ISO_A0,   MediaSize::ISO_A1,    MediaSize::ISO_A2,
       MediaSize::ISO_A3,   MediaSize::ISO_A4,    MediaSize::ISO_A5,
       MediaSize::NA_LEGAL, MediaSize::NA_LETTER, MediaSize::NA_LEDGER};
-  const gfx::Size default_media_size = GetDefaultPdfMediaSizeMicrons();
-  cloud_devices::printer::Media default_media(std::string(), std::string(),
-                                              default_media_size);
-  if (!default_media.MatchBySize() ||
-      !base::Contains(kPdfMedia, default_media.size_name)) {
-    default_media = cloud_devices::printer::Media(
-        locale == "en-US" ? MediaSize::NA_LETTER : MediaSize::ISO_A4);
+  cloud_devices::printer::Media default_media =
+      cloud_devices::printer::MediaBuilder()
+          .WithSizeAndDefaultPrintableArea(GetDefaultPdfMediaSizeMicrons())
+          .WithNameMaybeBasedOnSize(/*custom_display_name=*/"",
+                                    /*vendor_id=*/"")
+          .Build();
+  if (!base::Contains(kPdfMedia, default_media.size_name)) {
+    default_media =
+        cloud_devices::printer::MediaBuilder()
+            .WithStandardName(locale == "en-US" ? MediaSize::NA_LETTER
+                                                : MediaSize::ISO_A4)
+            .WithSizeAndPrintableAreaBasedOnStandardName()
+            .Build();
   }
   cloud_devices::printer::MediaCapability media;
   for (const auto& pdf_media : kPdfMedia) {
-    cloud_devices::printer::Media media_option(pdf_media);
+    cloud_devices::printer::Media media_option =
+        cloud_devices::printer::MediaBuilder()
+            .WithStandardName(pdf_media)
+            .WithSizeAndPrintableAreaBasedOnStandardName()
+            .Build();
     media.AddDefaultOption(media_option,
                            default_media.size_name == media_option.size_name);
   }
   for (const PrinterSemanticCapsAndDefaults::Paper& paper : custom_papers) {
-    cloud_devices::printer::Media media_option(
-        paper.display_name(), paper.vendor_id(), paper.size_um(),
-        paper.printable_area_um());
-    media.AddOption(media_option);
+    media.AddOption(cloud_devices::printer::MediaBuilder()
+                        .WithCustomName(paper.display_name(), paper.vendor_id())
+                        .WithSizeAndPrintableArea(paper.size_um(),
+                                                  paper.printable_area_um())
+                        .Build());
   }
   media.SaveTo(&description);
 

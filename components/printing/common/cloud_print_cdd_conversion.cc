@@ -77,10 +77,10 @@ printer::Media ConvertPaperToMedia(
         paper_printable_area.y(), paper_printable_area.x(),
         paper_printable_area.height(), paper_printable_area.width());
   }
-  printer::Media new_media(paper.display_name(), paper.vendor_id(), paper_size,
-                           paper_printable_area);
-  new_media.MatchBySize();
-  return new_media;
+  return printer::MediaBuilder()
+      .WithSizeAndPrintableArea(paper_size, paper_printable_area)
+      .WithNameMaybeBasedOnSize(paper.display_name(), paper.vendor_id())
+      .Build();
 }
 
 printer::MediaCapability GetMediaCapabilities(
@@ -90,10 +90,13 @@ printer::MediaCapability GetMediaCapabilities(
 
   const printing::PrinterSemanticCapsAndDefaults::Paper& default_paper =
       semantic_info.default_paper;
-  printer::Media default_media(
-      default_paper.display_name(), default_paper.vendor_id(),
-      default_paper.size_um(), default_paper.printable_area_um());
-  default_media.MatchBySize();
+  printer::Media default_media =
+      printer::MediaBuilder()
+          .WithSizeAndPrintableArea(default_paper.size_um(),
+                                    default_paper.printable_area_um())
+          .WithNameMaybeBasedOnSize(default_paper.display_name(),
+                                    default_paper.vendor_id())
+          .Build();
 
   for (const auto& paper : semantic_info.papers) {
     printer::Media new_media = ConvertPaperToMedia(paper);
