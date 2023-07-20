@@ -587,6 +587,12 @@ class GTestTest(RemoteTest):
       device_test_script_contents += [
           'stop ui',
       ]
+      # Send a user activity ping to powerd to ensure the display is on.
+      device_test_script_contents += [
+          'dbus-send --system --type=method_call'
+          ' --dest=org.chromium.PowerManager /org/chromium/PowerManager'
+          ' org.chromium.PowerManager.HandleUserActivity int32:0'
+      ]
       # The UI service on the device owns the chronos user session, so shutting
       # it down as chronos kills the entire execution of the test. So we'll have
       # to run as root up until the test invocation.
