@@ -43,6 +43,8 @@ SavedDeskSaveDeskButton::SavedDeskSaveDeskButton(
           ? views::HighlightBorder::Type::kHighlightBorderNoShadow
           : views::HighlightBorder::Type::kHighlightBorder2));
 
+  SetEnableBackgroundBlur(true);
+
   View* background_view = AddChildView(std::make_unique<views::View>());
   background_view->SetPaintToLayer();
 
