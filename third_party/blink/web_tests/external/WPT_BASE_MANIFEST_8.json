@@ -276046,6 +276046,16 @@
    }
   },
   "support": {
+   ".cache": {
+    "gitignore2.json": [
+     "cb64b88c1062777b8367ff87b8c538a5a5b000b4",
+     []
+    ],
+    "mtime.json": [
+     "887107cb52427ce1561c16062ac9fb9caac5783c",
+     []
+    ]
+   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -276375,7 +276385,7 @@
       []
      ],
      "support-promises.js": [
-      "9128bfe151ab9cda59ff6e3d4487024b0b7cd0cb",
+      "1a5b8270842cd80234b3f7028d8683620904ec71",
       []
      ],
      "support.js": [
@@ -287845,6 +287855,10 @@
       ],
       "block-formatting-contexts-008-ref.xht": [
        "ca0852790e172283400646780c9338fa49cd3507",
+       []
+      ],
+      "block-formatting-contexts-009.xht.ini": [
+       "ece48084498e35fbb9c8095cd32708674baf8b6a",
        []
       ],
       "block-formatting-contexts-011-ref.xht": [
@@ -299850,6 +299864,10 @@
      ],
      "css-flexbox-row-ref.html": [
       "21e7a010c7e63ef35c48c3da272daea2fa7f19b7",
+      []
+     ],
+     "css-flexbox-row.html.ini": [
+      "1383811078306f2e915bed975f4081eb6a12d060",
       []
      ],
      "css-flexbox-test1-ref.html": [
@@ -319810,6 +319828,14 @@
       "de372b7314e09d0b0a4df946bdaf320bf526dd81",
       []
      ],
+     "register-property-syntax-parsing-expected.txt": [
+      "15761d390c9a52032a35e1d8d4005ff4404c35f4",
+      []
+     ],
+     "register-property-syntax-parsing.html.ini": [
+      "e890f3b748efa4a98cb3d34cb9ec7bc0eb0f388d",
+      []
+     ],
      "register-property.html.ini": [
       "6a1d5036693e054d22fc94b47401227961a6b2f6",
       []
@@ -326709,8 +326735,16 @@
        "76f7a437eb01e5b4c6fcaa4ba678072388ce24e7",
        []
       ],
+      "text-autospace-computed.html.ini": [
+       "ee8a16ff464957a22c2ee4db94277a9c2426a8b2",
+       []
+      ],
       "text-autospace-valid-expected.txt": [
        "cabc2aac5b99d3678f3dc0cfe94916607a193b56",
+       []
+      ],
+      "text-autospace-valid.html.ini": [
+       "b1e141f78fa576b0b498d5f6f819835eb3bd5fdc",
        []
       ],
       "text-group-align-valid-expected.txt": [
@@ -334143,8 +334177,28 @@
        "ea5128bc85b90815807b9c224a8d4a6208ed555d",
        []
       ],
+      "kind-of-widget-fallback-checkbox-input-border-block-start-width-001.html.ini": [
+       "f5098abc696bb5fe3d97f15a3bf7351d732d6e60",
+       []
+      ],
+      "kind-of-widget-fallback-checkbox-input-border-bottom-right-radius-001.html.ini": [
+       "f456222dd501fe5617db3e3c858f69f1c1843624",
+       []
+      ],
       "kind-of-widget-fallback-checkbox-input-border-end-end-radius-001.html.ini": [
        "eef678da369883388b29b003298bc1cf6e17bedd",
+       []
+      ],
+      "kind-of-widget-fallback-checkbox-input-border-end-start-radius-001.html.ini": [
+       "e6518f8adeaaf4ea2bb3fe1a242587b58b15e7e5",
+       []
+      ],
+      "kind-of-widget-fallback-checkbox-input-border-image-width-001.html.ini": [
+       "17ddd28859636ebfcb5eaa234f9ef46f2cb6e074",
+       []
+      ],
+      "kind-of-widget-fallback-checkbox-input-border-left-style-001.html.ini": [
+       "e3704a4872ac32acc0887a870618488163a62124",
        []
       ],
       "kind-of-widget-fallback-checkbox-input-border-right-style-001.html.ini": [
@@ -334788,7 +334842,7 @@
        []
       ],
       "kind-of-widget-fallback-input-submit-border-end-end-radius-001.html.ini": [
-       "9fb5aa8b0650b8c93494d521c3bb94d17e6b018e",
+       "6b9846bf7dee2c5d7e12389ad12d813957437478",
        []
       ],
       "kind-of-widget-fallback-input-submit-border-end-start-radius-001.html.ini": [
@@ -367042,6 +367096,10 @@
         "ee9751ca76c08095ee0fb16ce903fb3dbb0a6f7c",
         []
        ],
+       "nontraditional-about-srcdoc.html.ini": [
+        "384246e1876e2ca3247f971b01c9c1b52f23865e",
+        []
+       ],
        "resources": {
         "echo-referrer-text.py": [
          "8a48d3346a6ad71e9fee2b103abfd97148e3bb43",
@@ -371682,7 +371740,7 @@
        []
       ],
       "popover-attribute-basic.html.ini": [
-       "61c9197bec9c1c6280f67c342d75f4679f8d3193",
+       "a67fc09134f2e9e434e64859273498f7ec8899d5",
        []
       ],
       "popover-backdrop-appearance-ref.html": [
@@ -384630,7 +384688,7 @@
      []
     ],
     "pointerevent_support.js": [
-     "56accf8561084c07170453ce8f91112d0ff5a5d9",
+     "19f0c2e6175e6dce3edfd8290447bcc988839833",
      []
     ],
     "pointerevent_touch-action-auto-css_touch.html.ini": [
@@ -385086,7 +385144,7 @@
      []
     ],
     "modulepreload-as.html.ini": [
-     "305eafe77569e821ef49912750882c027263097e",
+     "215e1f7c62f2d234aefcb7890c8e6588a3cb168c",
      []
     ],
     "modulepreload-expected.txt": [
@@ -392366,6 +392424,10 @@
      }
     },
     "focus-navigation": {
+     "focus-navigation-with-delegatesFocus.html.ini": [
+      "0e23a41a83cc85a8f0c1a762a3504bc4391d5360",
+      []
+     ],
      "resources": {
       "focus-utils.js": [
        "0cd4fd26f494eac4e518ec94b91bbd713721ca32",
@@ -393401,7 +393463,7 @@
       []
      ],
      "csp-script-src-self.html.ini": [
-      "7edc9ee8e187ba93a05a8b42a49744674a0ad4a4",
+      "3100561549fae8de47e2c9a8f914a5b10820b6da",
       []
      ],
      "csp-script-src-strict-dynamic.html.ini": [
@@ -400208,7 +400270,7 @@
      []
     ],
     "full-cycle-test.https.any.js.ini": [
-     "bba92595aac07c17cf7ed410c19de765acce21ab",
+     "e65143bac13cf36c795bd4a1eb9c2cc10fb006a7",
      []
     ],
     "h264.annexb": [
@@ -400252,7 +400314,7 @@
      []
     ],
     "reconfiguring-encoder.https.any.js.ini": [
-     "148e7567882ef916faf4d44a9f7a7a461c1bc88f",
+     "0463e5094047709bd33450cd75214f2e099e181e",
      []
     ],
     "sfx-aac.mp4": [
@@ -414413,7 +414475,7 @@
      ]
     ],
     "nested-cloning-large.html": [
-     "8b3cbc57266527548c5797ab36327a2d5e05d54a",
+     "0cd8cb48ceec704ef70ea70dae8da76d8928ef12",
      [
       null,
       {
@@ -462251,7 +462313,7 @@
       ]
      ],
      "register-property-syntax-parsing.html": [
-      "5bda1c4c5b23ecc95ac98ef939a9bbba62cf196d",
+      "664ccabd33c3a1ac62b5dbad83b8ed8640053bc8",
       [
        null,
        {}
@@ -580833,7 +580895,7 @@
       ]
      ],
      "loaf-script-block.html": [
-      "866eea09e0907622ad62c53c8b5f020566ba559f",
+      "5cd82c2c1320ac8baf4cb95f76777a543fa2d685",
       [
        null,
        {
@@ -594075,7 +594137,7 @@
      ]
     ],
     "pointerevent_pointercancel_touch.html": [
-     "9d0314655df54e5bb921b68f85dd744e812b9311",
+     "687b6a3f32c3de068b795cb29688f057f7d0a8e1",
      [
       null,
       {
@@ -612668,7 +612730,7 @@
       ]
      },
      "svg-graphics-element.html": [
-      "5f54646b6c3d64454ce3354f794aefb97f5202de",
+      "9b100a0b6420a35e33e130e48f0bfc6abd1c416c",
       [
        null,
        {}
