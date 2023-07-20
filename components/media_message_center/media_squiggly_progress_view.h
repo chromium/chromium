@@ -84,8 +84,8 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaSquigglyProgressView
   base::TimeDelta media_duration_ = base::TimeDelta::Max();
 
   // Fraction of the progress amplitude used for progress path to transition
-  // between squiggly and straight lines.
-  double progress_amp_fraction_ = 1;
+  // between squiggly and straight lines, in the range from 0.0 to 1.0.
+  double progress_amp_fraction_ = 0;
 
   // The percentage progress value last announced for accessibility.
   int last_announced_percentage_ = -1;
@@ -98,8 +98,8 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaSquigglyProgressView
   // lines.
   gfx::SlideAnimation slide_animation_;
 
-  // Timer to continuously update the progress value.
-  base::RepeatingTimer update_progress_timer_;
+  // Timer to continuously update the progress value if the media is playing.
+  base::OneShotTimer update_progress_timer_;
 
   // True if the media is paused.
   bool is_paused_ = true;

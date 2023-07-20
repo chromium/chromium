@@ -27,7 +27,7 @@ constexpr int kStrokeWidth = 2;
 
 // The height of squiggly progress that user can click to seek to a new media
 // position. This is slightly larger than the painted progress height.
-constexpr int kProgressClickHeight = 10;
+constexpr int kProgressClickHeight = 14;
 
 // Defines the x of where the painting of squiggly progress should start since
 // we own the OnPaint() function.
@@ -37,12 +37,16 @@ constexpr int kWidthInset = 8;
 constexpr int kProgressWavelength = 32;
 constexpr int kProgressAmplitude = 2;
 
-// The radius of the circle at the end of the foreground squiggly progress. This
-// should be larger than the progress amplitude to cover it.
-constexpr int kProgressCircleRadius = 5;
-
 // Progress wave speed in pixels per second.
 constexpr int kProgressPhaseSpeed = 28;
+
+// The size of the rounded rectangle indicator at the end of the foreground
+// squiggly progress.
+constexpr gfx::SizeF kProgressIndicatorSize =
+    gfx::SizeF(6, kProgressClickHeight);
+
+// The radius of the rounded rectangle indicator.
+constexpr float kProgressIndicatorRadius = 3.0;
 
 // Defines how long the animation for progress transitioning between squiggly
 // and straight lines will take.
@@ -140,8 +144,7 @@ void MediaSquigglyProgressView::OnPaint(gfx::Canvas* canvas) {
   const auto* color_provider = GetColorProvider();
   const int view_width = GetContentsBounds().width() - kWidthInset * 2;
   const int view_height = GetContentsBounds().height();
-  const int progress_width =
-      static_cast<int>(view_width * std::min(current_value_, 1.0) + 0.5);
+  const int progress_width = static_cast<int>(view_width * current_value_);
 
   // Create the paint flags which will be reused for painting.
   cc::PaintFlags flags;
@@ -179,17 +182,22 @@ void MediaSquigglyProgressView::OnPaint(gfx::Canvas* canvas) {
   canvas->DrawPath(progress_path, flags);
   canvas->Restore();
 
-  // Paint the progress circle indicator.
+  // Paint the progress rectangle indicator.
   flags.setStyle(cc::PaintFlags::kFill_Style);
-  canvas->DrawCircle(gfx::Point(progress_width, view_height / 2),
-                     kProgressCircleRadius, flags);
+  canvas->DrawRoundRect(
+      gfx::RectF(
+          gfx::PointF(progress_width - kProgressIndicatorSize.width() / 2,
+                      (view_height - kProgressIndicatorSize.height()) / 2),
+          kProgressIndicatorSize),
+      kProgressIndicatorRadius, flags);
 
   // Paint the background straight line.
-  if (progress_width + kProgressCircleRadius < view_width) {
+  if (progress_width + kProgressIndicatorSize.width() / 2 < view_width) {
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setColor(color_provider->GetColor(background_color_id_));
     canvas->DrawLine(
-        gfx::PointF(progress_width + kProgressCircleRadius, view_height / 2),
+        gfx::PointF(progress_width + kProgressIndicatorSize.width() / 2,
+                    view_height / 2),
         gfx::PointF(view_width, view_height / 2), flags);
   }
   canvas->Restore();
@@ -274,6 +282,10 @@ void MediaSquigglyProgressView::OnGestureEvent(ui::GestureEvent* event) {
 
 void MediaSquigglyProgressView::UpdateProgress(
     const media_session::MediaPosition& media_position) {
+  // Always stop the timer since it may have been triggered by an old media
+  // position and the timer will be re-started if needed.
+  update_progress_timer_.Stop();
+
   bool is_paused = media_position.playback_rate() == 0;
   if (is_paused_ != is_paused) {
     if (is_paused_) {
@@ -286,12 +298,6 @@ void MediaSquigglyProgressView::UpdateProgress(
       slide_animation_.Hide();
     }
     is_paused_ = is_paused;
-  }
-
-  // If the media is paused and |update_progress_timer_| is still running, stop
-  // the timer.
-  if (is_paused_ && update_progress_timer_.IsRunning()) {
-    update_progress_timer_.Stop();
   }
 
   current_position_ = media_position.GetPosition();
@@ -317,8 +323,8 @@ void MediaSquigglyProgressView::UpdateProgress(
 
     update_progress_timer_.Start(
         FROM_HERE, kProgressUpdateFrequency,
-        base::BindRepeating(&MediaSquigglyProgressView::UpdateProgress,
-                            base::Unretained(this), media_position));
+        base::BindOnce(&MediaSquigglyProgressView::UpdateProgress,
+                       base::Unretained(this), media_position));
   }
 }
 
