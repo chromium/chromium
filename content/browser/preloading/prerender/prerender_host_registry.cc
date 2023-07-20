@@ -236,7 +236,6 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
       NOTREACHED_NORETURN();
     case PrerenderFinalStatus::kTriggerBackgrounded:
       return PreloadingEligibility::kHidden;
-    case PrerenderFinalStatus::kEmbedderTriggeredAndCrossOriginRedirected:
     case PrerenderFinalStatus::kMemoryLimitExceeded:
     case PrerenderFinalStatus::kFailToGetMemoryUsage:
       NOTREACHED_NORETURN();

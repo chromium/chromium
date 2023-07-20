@@ -39,9 +39,6 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Preload::PrerenderFinalStatusEnum::DidFailLoad;
     case PrerenderFinalStatus::kDownload:
       return Preload::PrerenderFinalStatusEnum::Download;
-    case PrerenderFinalStatus::kEmbedderTriggeredAndCrossOriginRedirected:
-      return Preload::PrerenderFinalStatusEnum::
-          EmbedderTriggeredAndCrossOriginRedirected;
     case PrerenderFinalStatus::kFailToGetMemoryUsage:
       return Preload::PrerenderFinalStatusEnum::FailToGetMemoryUsage;
     case PrerenderFinalStatus::kInProgressNavigation:

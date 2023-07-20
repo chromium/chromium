@@ -11210,7 +11210,6 @@ experimental domain Preload
       AudioOutputDeviceRequested
       MixedContent
       TriggerBackgrounded
-      EmbedderTriggeredAndCrossOriginRedirected
       MemoryLimitExceeded
       # Prerenders can be cancelled when Chrome uses excessive memory. This is
       # recorded when it fails to get the memory usage.

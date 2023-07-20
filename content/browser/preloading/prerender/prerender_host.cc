@@ -1011,7 +1011,6 @@ void PrerenderHost::SetFailureReason(
     case PrerenderFinalStatus::kBlockedByClient:
     case PrerenderFinalStatus::kMixedContent:
     case PrerenderFinalStatus::kTriggerBackgrounded:
-    case PrerenderFinalStatus::kEmbedderTriggeredAndCrossOriginRedirected:
     case PrerenderFinalStatus::kMemoryLimitExceeded:
     case PrerenderFinalStatus::kFailToGetMemoryUsage:
     case PrerenderFinalStatus::kDataSaverEnabled:

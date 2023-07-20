@@ -65,7 +65,8 @@ enum class PrerenderFinalStatus {
   // Deprecate since same origin redirection is allowed considering that the
   // initial prerender origin is a safe site.
   // kEmbedderTriggeredAndSameOriginRedirected = 33,
-  kEmbedderTriggeredAndCrossOriginRedirected = 34,
+  // Deprecated. Use kCrossSiteRedirectInInitialNavigation instead.
+  // kEmbedderTriggeredAndCrossOriginRedirected = 34,
   // Deprecated. This has the same meaning as kTriggerDestroyed because the
   // metric's name includes trigger type.
   // kEmbedderTriggeredAndDestroyed = 35,
