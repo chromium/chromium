@@ -250,8 +250,14 @@ TEST_F(SyncPrefsTest, SetTypeDisabledByCustodian) {
       sync_prefs_->IsTypeManagedByCustodian(UserSelectableType::kAutofill));
 
   // Set up a custodian enforcement to disable bookmarks.
-  pref_service_.SetSupervisedUserPref(prefs::internal::kSyncBookmarks,
-                                      base::Value(false));
+  PrefValueMap supervised_user_prefs;
+  SyncPrefs::SetTypeDisabledByCustodian(&supervised_user_prefs,
+                                        UserSelectableType::kBookmarks);
+  // Copy the supervised user prefs map over into the PrefService.
+  for (const auto& supervised_user_pref : supervised_user_prefs) {
+    pref_service_.SetSupervisedUserPref(supervised_user_pref.first,
+                                        supervised_user_pref.second.Clone());
+  }
 
   // The restriction should take effect and disable bookmarks.
   EXPECT_FALSE(

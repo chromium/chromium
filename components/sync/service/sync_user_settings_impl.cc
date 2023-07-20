@@ -126,6 +126,11 @@ bool SyncUserSettingsImpl::IsTypeManagedByPolicy(
   return prefs_->IsTypeManagedByPolicy(type);
 }
 
+bool SyncUserSettingsImpl::IsTypeManagedByCustodian(
+    UserSelectableType type) const {
+  return prefs_->IsTypeManagedByCustodian(type);
+}
+
 void SyncUserSettingsImpl::SetSelectedTypes(bool sync_everything,
                                             UserSelectableTypeSet types) {
   UserSelectableTypeSet registered_types = GetRegisteredSelectableTypes();

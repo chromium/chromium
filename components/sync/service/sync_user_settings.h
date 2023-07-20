@@ -50,6 +50,7 @@ class SyncUserSettings {
   // users.
   virtual UserSelectableTypeSet GetSelectedTypes() const = 0;
   virtual bool IsTypeManagedByPolicy(UserSelectableType type) const = 0;
+  virtual bool IsTypeManagedByCustodian(UserSelectableType type) const = 0;
 
   // Whether the "Sync everything" is enabled. This only has an effect if
   // Sync-the-feature is enabled. Note that even if this is true, some types may

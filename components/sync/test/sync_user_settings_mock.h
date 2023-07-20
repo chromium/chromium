@@ -32,6 +32,10 @@ class SyncUserSettingsMock : public SyncUserSettings {
               IsTypeManagedByPolicy,
               (UserSelectableType),
               (const override));
+  MOCK_METHOD(bool,
+              IsTypeManagedByCustodian,
+              (UserSelectableType),
+              (const override));
   MOCK_METHOD(void,
               SetSelectedTypes,
               (bool, UserSelectableTypeSet),

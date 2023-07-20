@@ -189,6 +189,12 @@ class SyncPrefs {
   static void SetTypeDisabledByPolicy(PrefValueMap* policy_prefs,
                                       UserSelectableType type);
 
+  // Sets |type| as disabled in the given |supervised_user_prefs|, which should
+  // correspond to the custodian-controlled pref store (i.e. controlled by
+  // parent/guardian of a child account).
+  static void SetTypeDisabledByCustodian(PrefValueMap* supervised_user_prefs,
+                                         UserSelectableType type);
+
   // Gets the local sync backend enabled state.
   bool IsLocalSyncEnabled() const;
 

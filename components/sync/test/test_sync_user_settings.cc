@@ -101,6 +101,11 @@ bool TestSyncUserSettings::IsTypeManagedByPolicy(
   return managed_types_.Has(type);
 }
 
+bool TestSyncUserSettings::IsTypeManagedByCustodian(
+    UserSelectableType type) const {
+  return false;
+}
+
 ModelTypeSet TestSyncUserSettings::GetPreferredDataTypes() const {
   ModelTypeSet types = UserSelectableTypesToModelTypes(GetSelectedTypes());
   types.PutAll(AlwaysPreferredUserTypes());

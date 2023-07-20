@@ -148,6 +148,12 @@ public class SyncServiceImpl extends SyncService {
     }
 
     @Override
+    public boolean isTypeManagedByCustodian(@UserSelectableType int type) {
+        ThreadUtils.assertOnUiThread();
+        return SyncServiceImplJni.get().isTypeManagedByCustodian(mSyncServiceAndroidBridge, type);
+    }
+
+    @Override
     public boolean hasKeepEverythingSynced() {
         ThreadUtils.assertOnUiThread();
         return SyncServiceImplJni.get().hasKeepEverythingSynced(mSyncServiceAndroidBridge);
@@ -422,6 +428,7 @@ public class SyncServiceImpl extends SyncService {
         int[] getActiveDataTypes(long nativeSyncServiceAndroidBridge);
         int[] getSelectedTypes(long nativeSyncServiceAndroidBridge);
         boolean isTypeManagedByPolicy(long nativeSyncServiceAndroidBridge, int type);
+        boolean isTypeManagedByCustodian(long nativeSyncServiceAndroidBridge, int type);
         void setSelectedTypes(long nativeSyncServiceAndroidBridge, boolean syncEverything,
                 int[] userSelectableTypeArray);
         boolean isCustomPassphraseAllowed(long nativeSyncServiceAndroidBridge);

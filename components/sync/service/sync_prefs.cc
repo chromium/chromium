@@ -524,7 +524,17 @@ void SyncPrefs::SetTypeDisabledByPolicy(PrefValueMap* policy_prefs,
                                         UserSelectableType type) {
   const char* pref_name = syncer::SyncPrefs::GetPrefNameForType(type);
   CHECK(pref_name);
+  CHECK(policy_prefs);
   policy_prefs->SetValue(pref_name, base::Value(false));
+}
+
+// static void
+void SyncPrefs::SetTypeDisabledByCustodian(PrefValueMap* supervised_user_prefs,
+                                           UserSelectableType type) {
+  const char* pref_name = syncer::SyncPrefs::GetPrefNameForType(type);
+  CHECK(pref_name);
+  CHECK(supervised_user_prefs);
+  supervised_user_prefs->SetValue(pref_name, base::Value(false));
 }
 
 // static

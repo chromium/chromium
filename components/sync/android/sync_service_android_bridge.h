@@ -50,6 +50,7 @@ class SyncServiceAndroidBridge : public syncer::SyncServiceObserver {
   base::android::ScopedJavaLocalRef<jintArray> GetActiveDataTypes(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jintArray> GetSelectedTypes(JNIEnv* env);
   jboolean IsTypeManagedByPolicy(JNIEnv* env, jint type);
+  jboolean IsTypeManagedByCustodian(JNIEnv* env, jint type);
   void SetSelectedTypes(JNIEnv* env,
                         jboolean sync_everything,
                         const base::android::JavaParamRef<jintArray>&

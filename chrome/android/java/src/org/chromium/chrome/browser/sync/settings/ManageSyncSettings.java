@@ -594,13 +594,14 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
             // PAYMENTS can only be selected if AUTOFILL is also selected.
             // TODO(crbug.com/1435431): Remove this coupling.
             if (type == UserSelectableType.PAYMENTS) {
-                pref.setEnabled(!syncEverything
-                        && selectedSyncTypes.contains(UserSelectableType.AUTOFILL)
-                        && !Profile.getLastUsedRegularProfile().isChild());
+                // TODO(crbug.com/1459963): Consider overriding the delegate's
+                // isPreferenceControlledByCustodian() instead.
+                pref.setEnabled(!syncEverything && !mSyncService.isTypeManagedByCustodian(type)
+                        && selectedSyncTypes.contains(UserSelectableType.AUTOFILL));
                 pref.setChecked(selectedSyncTypes.contains(type)
                         && selectedSyncTypes.contains(UserSelectableType.AUTOFILL));
             } else {
-                pref.setEnabled(!syncEverything);
+                pref.setEnabled(!syncEverything && !mSyncService.isTypeManagedByCustodian(type));
                 pref.setChecked(selectedSyncTypes.contains(type));
             }
 

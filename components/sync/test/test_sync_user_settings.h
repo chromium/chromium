@@ -34,6 +34,7 @@ class TestSyncUserSettings : public SyncUserSettings {
   bool IsSyncEverythingEnabled() const override;
   UserSelectableTypeSet GetSelectedTypes() const override;
   bool IsTypeManagedByPolicy(UserSelectableType type) const override;
+  bool IsTypeManagedByCustodian(UserSelectableType type) const override;
   void SetSelectedTypes(bool sync_everything,
                         UserSelectableTypeSet types) override;
   void SetSelectedType(UserSelectableType type, bool is_type_on) override;
