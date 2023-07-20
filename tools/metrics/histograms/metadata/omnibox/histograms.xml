@@ -1660,6 +1660,48 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.Shortcuts.NumberOfDuplicatesPerShortcutIterated"
+    units="matches" expires_after="2023-11-30">
+  <owner>manukh@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    For each autocomplete input, the shortcut provider 1) searches its index for
+    all matching shortcuts, 2) dedupes them, 3) prunes them to 3, 4) and lastly
+    converts them to `AutocompleteMatch`s.
+
+    This metric records the number of duplicates per shortcut found in step (2).
+
+    See the related `Omnibox.Shortcuts.NumberOfUniqueShortcutsIterated`.
+
+    Recorded once per unique shortcut found each time the shortcut provider is
+    ran with want-async input - i.e. the user editing the omnibox text. But some
+    inputs (e.g. starter pack scopes) won't run the shortcut provider, and some
+    actions (e.g. typing in chrome://omnibox) will also run the shortcut
+    provider.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.Shortcuts.NumberOfUniqueShortcutsIterated"
+    units="matches" expires_after="2023-11-30">
+  <owner>manukh@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    For each autocomplete input, the shortcut provider 1) searches its index for
+    all matching shortcuts, 2) dedupes them, 3) prunes them to 3, 4) and lastly
+    converts them to `AutocompleteMatch`s.
+
+    This metric records the number of unique matching shortcuts (i.e. after step
+    2, before step 3).
+
+    See the related `Omnibox.Shortcuts.NumberOfDuplicatesPerShortcutIterated`.
+
+    Recorded once each time the shortcut provider is ran with want-async input -
+    i.e. the user editing the omnibox text. But some inputs (e.g. starter pack
+    scopes) won't run the shortcut provider, and some actions (e.g. typing in
+    chrome://omnibox) will also run the shortcut provider.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.Start.WantAsyncMatches" enum="Boolean"
     expires_after="2023-12-24">
   <owner>tommycli@chromium.org</owner>

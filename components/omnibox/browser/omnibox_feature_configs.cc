@@ -41,6 +41,14 @@ ShortcutBoosting::ShortcutBoosting() {
   counterfactual = base::FeatureParam<bool>(
                        &kShortcutBoost, "ShortcutBoostCounterfactual", false)
                        .Get();
+  non_top_hit_threshold =
+      base::FeatureParam<int>(&kShortcutBoost,
+                              "ShortcutBoostNonTopHitThreshold", 0)
+          .Get();
+  group_with_searches =
+      base::FeatureParam<bool>(&kShortcutBoost,
+                               "ShortcutBoostGroupWithSearches", false)
+          .Get();
 }
 
 }  // namespace omnibox_feature_configs

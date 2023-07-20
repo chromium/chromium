@@ -264,9 +264,9 @@ class ShortcutsProviderTest : public testing::Test {
       size_t input_length,
       const std::vector<const ShortcutsDatabase::Shortcut*>& shortcuts);
 
-  // Passthrough to the private `GetMatches`. Enables populating scoring
+  // Passthrough to the private `DoAutocomplete`. Enables populating scoring
   // signals.
-  void GetMatchesWithScoringSignals(const AutocompleteInput& input);
+  void DoAutocompleteWithScoringSignals(const AutocompleteInput& input);
 
   // ScopedFeatureList needs to be defined before TaskEnvironment, so that it is
   // destroyed after TaskEnvironment, to prevent data races on the
@@ -329,10 +329,10 @@ int ShortcutsProviderTest::CalculateAggregateScore(
       .relevance;
 }
 
-void ShortcutsProviderTest::GetMatchesWithScoringSignals(
+void ShortcutsProviderTest::DoAutocompleteWithScoringSignals(
     const AutocompleteInput& input) {
   provider_->matches_.clear();
-  provider_->GetMatches(input, /*populate_scoring_signals=*/true);
+  provider_->DoAutocomplete(input, /*populate_scoring_signals=*/true);
 }
 
 // Actual tests ---------------------------------------------------------------
@@ -715,7 +715,7 @@ TEST_F(ShortcutsProviderTest, DoesNotProvideOnFocus) {
   EXPECT_TRUE(provider_->matches().empty());
 }
 
-TEST_F(ShortcutsProviderTest, GetMatches) {
+TEST_F(ShortcutsProviderTest, DoAutocomplete) {
   {
     // When multiple shortcuts with the same destination URL match the input,
     // they should be scored together (i.e. their visit counts summed, the most
@@ -808,13 +808,13 @@ TEST_F(ShortcutsProviderTest, GetMatches) {
   }
 }
 
-TEST_F(ShortcutsProviderTest, GetMatchesWithScoringSignals) {
+TEST_F(ShortcutsProviderTest, DoAutocompleteWithScoringSignals) {
   // When multiple shortcuts with the same destination URL match the input,
   // they should be scored together (i.e. their visit counts summed, the most
   // recent visit date and shortest text considered).
   AutocompleteInput input(u"wi", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
-  GetMatchesWithScoringSignals(input);
+  DoAutocompleteWithScoringSignals(input);
   auto& matches = provider_->matches();
   EXPECT_EQ(matches.size(), 3u);
   // These matches are all HISTORY_URL type, so should have scoring signals
@@ -840,7 +840,7 @@ TEST_F(ShortcutsProviderTest, GetMatchesWithScoringSignals) {
   // that the match does not have scoring signals attached.
   AutocompleteInput input2(u"que", metrics::OmniboxEventProto::OTHER,
                            TestSchemeClassifier());
-  GetMatchesWithScoringSignals(input2);
+  DoAutocompleteWithScoringSignals(input2);
   EXPECT_EQ(matches.size(), 1u);
 
   EXPECT_FALSE(
@@ -925,6 +925,9 @@ TEST_F(ShortcutsProviderTest, ScoreBoost) {
       create_shortcut_data("searches-before-urls", false, 1),
       create_shortcut_data("urls-before-searches", false, 2),
       create_shortcut_data("urls-before-searches", true, 1),
+      create_shortcut_data("urls-saddling-searches", false, 3),
+      create_shortcut_data("urls-saddling-searches", true, 2),
+      create_shortcut_data("urls-saddling-searches", false, 1),
   };
 
   PopulateShortcutsBackendWithTestData(client_->GetShortcutsBackend(),
@@ -1033,6 +1036,63 @@ TEST_F(ShortcutsProviderTest, ScoreBoost) {
               "https://urls-before-searches.com/1");
     EXPECT_LE(matches[0].relevance, kMaxUnboostedScore);
     EXPECT_LE(matches[1].relevance, kMaxUnboostedScore);
+    EXPECT_TRUE(trigger_service->GetFeatureTriggeredInSession(trigger_feature));
+  }
+
+  {
+    // All URLs meeting `ShortcutBoostNonTopHitThreshold` should be boosted.
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        omnibox_feature_configs::ShortcutBoosting::kShortcutBoost,
+        {{"ShortcutBoostUrlScore", "1300"},
+         {"ShortcutBoostNonTopHitThreshold", "1"}});
+    scoped_config.Reset();
+
+    trigger_service->ResetSession();
+    AutocompleteInput input(u"urls-saddling-searches",
+                            metrics::OmniboxEventProto::OTHER,
+                            TestSchemeClassifier());
+    provider_->Start(input, false);
+    const auto& matches = provider_->matches();
+    EXPECT_EQ(matches.size(), 3u);
+    EXPECT_EQ(matches[0].destination_url.spec(),
+              "https://urls-saddling-searches.com/3");
+    EXPECT_EQ(matches[1].destination_url.spec(),
+              "https://urls-saddling-searches.com/1");
+    EXPECT_EQ(matches[2].destination_url.spec(),
+              "https://urls-saddling-searches.com/2");
+    EXPECT_EQ(matches[0].relevance, 1303);
+    EXPECT_EQ(matches[1].relevance, 1301);
+    EXPECT_LE(matches[2].relevance, kMaxUnboostedScore);
+    EXPECT_TRUE(trigger_service->GetFeatureTriggeredInSession(trigger_feature));
+  }
+
+  {
+    // URLs not meeting `ShortcutBoostNonTopHitThreshold` should not be boosted
+    // except for the top shortcut.
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        omnibox_feature_configs::ShortcutBoosting::kShortcutBoost,
+        {{"ShortcutBoostUrlScore", "1300"},
+         {"ShortcutBoostNonTopHitThreshold", "10"}});
+    scoped_config.Reset();
+
+    trigger_service->ResetSession();
+    AutocompleteInput input(u"urls-saddling-searches",
+                            metrics::OmniboxEventProto::OTHER,
+                            TestSchemeClassifier());
+    provider_->Start(input, false);
+    const auto& matches = provider_->matches();
+    EXPECT_EQ(matches.size(), 3u);
+    EXPECT_EQ(matches[0].destination_url.spec(),
+              "https://urls-saddling-searches.com/3");
+    EXPECT_EQ(matches[1].destination_url.spec(),
+              "https://urls-saddling-searches.com/2");
+    EXPECT_EQ(matches[2].destination_url.spec(),
+              "https://urls-saddling-searches.com/1");
+    EXPECT_EQ(matches[0].relevance, 1300);
+    EXPECT_LE(matches[1].relevance, kMaxUnboostedScore);
+    EXPECT_LE(matches[2].relevance, kMaxUnboostedScore);
     EXPECT_TRUE(trigger_service->GetFeatureTriggeredInSession(trigger_feature));
   }
 }

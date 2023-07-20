@@ -1466,6 +1466,10 @@ const FeatureEntry::FeatureParam kShortcutBoostUrl1414[] = {
 const FeatureEntry::FeatureParam kShortcutBoostSearchAndUrl1200[] = {
     {"ShortcutBoostSearchScore", "1200"},
     {"ShortcutBoostUrlScore", "1200"}};
+const FeatureEntry::FeatureParam kShortcutBoostMultipleUrls2[] = {
+    {"ShortcutBoostNonTopHitThreshold", "2"},
+    {"ShortcutBoostGroupWithSearches", "true"},
+    {"ShortcutBoostUrlScore", "1420"}};
 
 const FeatureEntry::FeatureVariation kOmniboxShortcutBoostVariations[] = {
     {"Searches & URLs - aggressive (1414)", kShortcutBoostSearchAndUrl1414,
@@ -1474,6 +1478,8 @@ const FeatureEntry::FeatureVariation kOmniboxShortcutBoostVariations[] = {
      std::size(kShortcutBoostUrl1414), nullptr},
     {"Searches & URLs - conservative (1200)", kShortcutBoostSearchAndUrl1200,
      std::size(kShortcutBoostSearchAndUrl1200), nullptr},
+    {"Multiple URLs - super aggressive (2)", kShortcutBoostMultipleUrls2,
+     std::size(kShortcutBoostMultipleUrls2), nullptr},
 };
 
 // A limited number of combinations of the rich autocompletion params.
