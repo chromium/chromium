@@ -1823,7 +1823,6 @@ absl::btree_map
 absl::btree_set
 absl::btree_multimap
 absl::btree_multiset
-absl::InlinedVector
 absl::FixedArray
 ```
 
@@ -1837,6 +1836,10 @@ in the general case.
 **Notes:**
 *** promo
 Supplements `base/containers/`.
+
+absl::InlinedVector is explicitly allowed, see the [discussion
+thread](https://groups.google.com/a/chromium.org/g/cxx/c/jTfqVfU-Ka0/m/caaal90NCgAJ).
+
 ***
 
 ### CRC32C library <sup>[tbd]</sup>

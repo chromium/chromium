@@ -5,6 +5,11 @@
 #ifndef BASE_CONTAINERS_STACK_CONTAINER_H_
 #define BASE_CONTAINERS_STACK_CONTAINER_H_
 
+// ================== DEPRECATION NOTICE ==================
+// These classes are deprecated and will be removed soon. Use
+// absl::InlinedVector instead. If absl::InlinedVector doesn't fit your use
+// case, please email cxx@chromium.org with details.
+
 #include <stddef.h>
 #include <memory>
 #include <vector>
@@ -211,6 +216,8 @@ auto end(const StackContainer<TContainerType, stack_capacity>& stack_container)
 }
 
 // StackVector -----------------------------------------------------------------
+
+// THIS CLASS IS DEPRECATED. Use absl::InlinedVector instead.
 
 // Example:
 //   StackVector<int, 16> foo;
