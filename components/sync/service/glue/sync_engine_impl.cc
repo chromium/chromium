@@ -8,7 +8,6 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -24,10 +23,7 @@
 #include "components/invalidation/public/invalidator_state.h"
 #include "components/invalidation/public/topic_invalidation_map.h"
 #include "components/sync/engine/data_type_activation_response.h"
-#include "components/sync/engine/engine_components_factory.h"
-#include "components/sync/engine/engine_components_factory_impl.h"
 #include "components/sync/engine/events/protocol_event.h"
-#include "components/sync/engine/net/http_bridge.h"
 #include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/engine/polling_constants.h"
 #include "components/sync/engine/sync_engine_host.h"
@@ -36,16 +32,10 @@
 #include "components/sync/service/active_devices_provider.h"
 #include "components/sync/service/glue/sync_engine_backend.h"
 #include "components/sync/service/glue/sync_transport_data_prefs.h"
-#include "components/sync/service/sync_prefs.h"
 
 namespace syncer {
 
 namespace {
-
-// Enables updating invalidator state for Sync standalone invalidations.
-BASE_FEATURE(kSyncUpdateInvalidatorState,
-             "SyncUpdateInvalidatorState",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Reads from prefs into a struct, to be posted across sequences.
 SyncEngineBackend::RestoredLocalTransportData
@@ -633,8 +623,7 @@ void SyncEngineImpl::ClearLocalTransportDataAndNotify() {
 
 void SyncEngineImpl::UpdateStandaloneInvalidationsState() {
   DCHECK(sync_invalidations_service_);
-  if (!sync_invalidations_service_->GetFCMRegistrationToken().has_value() &&
-      base::FeatureList::IsEnabled(kSyncUpdateInvalidatorState)) {
+  if (!sync_invalidations_service_->GetFCMRegistrationToken().has_value()) {
     OnInvalidatorStateChange(invalidation::TRANSIENT_INVALIDATION_ERROR);
     return;
   }
@@ -644,6 +633,9 @@ void SyncEngineImpl::UpdateStandaloneInvalidationsState() {
   // comparison between an optional and a string, so use has_value() directly.
   DCHECK(!sync_invalidations_service_->GetFCMRegistrationToken().has_value() ||
          sync_invalidations_service_->GetFCMRegistrationToken().value() != "");
+
+  // TODO(crbug.com/1442156): wait for FCM token to be committed before change
+  // the state to enabled.
   OnInvalidatorStateChange(invalidation::INVALIDATIONS_ENABLED);
 }
 
