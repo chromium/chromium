@@ -73,6 +73,11 @@ WKWebViewConfigurationProvider::FromBrowserState(BrowserState* browser_state) {
       browser_state->GetUserData(kWKWebViewConfigProviderKeyName)));
 }
 
+base::WeakPtr<WKWebViewConfigurationProvider>
+WKWebViewConfigurationProvider::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 WKWebViewConfigurationProvider::WKWebViewConfigurationProvider(
     BrowserState* browser_state)
     : browser_state_(browser_state),

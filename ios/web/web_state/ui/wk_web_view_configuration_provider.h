@@ -7,6 +7,7 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
 
@@ -35,6 +36,9 @@ class WKWebViewConfigurationProvider : public base::SupportsUserData::Data {
   // does not exist. `browser_state` can not be null.
   static web::WKWebViewConfigurationProvider& FromBrowserState(
       web::BrowserState* browser_state);
+
+  // Returns a WeakPtr to the current instance.
+  base::WeakPtr<WKWebViewConfigurationProvider> AsWeakPtr();
 
   // Resets the configuration saved in this WKWebViewConfigurationProvider
   // using the given `configuration`. First `configuration` is shallow cloned
@@ -98,6 +102,9 @@ class WKWebViewConfigurationProvider : public base::SupportsUserData::Data {
   // will add more complixity if they are destructed on the IO thread.
   base::ObserverList<WKWebViewConfigurationProviderObserver, false>::Unchecked
       observers_;
+
+  // Weak pointer factory.
+  base::WeakPtrFactory<WKWebViewConfigurationProvider> weak_ptr_factory_{this};
 };
 
 }  // namespace web

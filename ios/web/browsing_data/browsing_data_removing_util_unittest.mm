@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/browsing_data/browsing_data_remover.h"
+#import "ios/web/public/browsing_data/browsing_data_removing_util.h"
 
 #import <WebKit/WebKit.h>
 
@@ -17,8 +17,8 @@
 #error "This file requires ARC support."
 #endif
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForCookiesTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
 
@@ -83,14 +83,13 @@ namespace {
 // called.
 [[nodiscard]] bool RemoveCookies(web::BrowserState* browser_state,
                                  web::ClearBrowsingDataMask types) {
-  web::BrowsingDataRemover* remover =
-      web::BrowsingDataRemover::FromBrowserState(browser_state);
   __block bool closure_called = false;
   base::OnceClosure closure = base::BindOnce(^{
     closure_called = true;
   });
-  remover->ClearBrowsingData(types, base::Time::Now() - base::Minutes(1),
-                             std::move(closure));
+  web::ClearBrowsingData(browser_state, types,
+                         base::Time::Now() - base::Minutes(1),
+                         std::move(closure));
 
   return WaitUntilConditionOrTimeout(kWaitForCookiesTimeout, ^bool {
     return closure_called;
@@ -101,7 +100,7 @@ namespace {
 
 namespace web {
 
-class BrowsingDataRemoverTest : public PlatformTest {
+class ClearBrowsingDataTest : public PlatformTest {
  public:
   void SetUp() override {
     PlatformTest::SetUp();
@@ -139,10 +138,6 @@ class BrowsingDataRemoverTest : public PlatformTest {
   }
 
  protected:
-  BrowsingDataRemover* GetRemover() {
-    return BrowsingDataRemover::FromBrowserState(&browser_state_);
-  }
-
   base::test::TaskEnvironment task_environment_;
   FakeBrowserState browser_state_;
   // The key window's original root view controller, to be  restored at the end
@@ -150,24 +145,8 @@ class BrowsingDataRemoverTest : public PlatformTest {
   UIViewController* original_root_view_controller_;
 };
 
-TEST_F(BrowsingDataRemoverTest, DifferentRemoverForDifferentBrowserState) {
-  FakeBrowserState browser_state_1;
-  FakeBrowserState browser_state_2;
-
-  BrowsingDataRemover* remover_1 =
-      BrowsingDataRemover::FromBrowserState(&browser_state_1);
-  BrowsingDataRemover* remover_2 =
-      BrowsingDataRemover::FromBrowserState(&browser_state_2);
-
-  EXPECT_NE(remover_1, remover_2);
-
-  BrowsingDataRemover* remover_1_again =
-      BrowsingDataRemover::FromBrowserState(&browser_state_1);
-  EXPECT_EQ(remover_1_again, remover_1);
-}
-
 // Tests that removing the cookies remove them from the cookie store.
-TEST_F(BrowsingDataRemoverTest, RemoveCookie) {
+TEST_F(ClearBrowsingDataTest, RemoveCookie) {
   ASSERT_TRUE(AddCookie());
   ASSERT_TRUE(HasCookies(true));
 
@@ -179,7 +158,7 @@ TEST_F(BrowsingDataRemoverTest, RemoveCookie) {
 }
 
 // Tests that removing the anything but cookies leave the cookies in the store.
-TEST_F(BrowsingDataRemoverTest, RemoveNothing) {
+TEST_F(ClearBrowsingDataTest, RemoveNothing) {
   ASSERT_TRUE(AddCookie());
   ASSERT_TRUE(HasCookies(true));
 
@@ -192,7 +171,7 @@ TEST_F(BrowsingDataRemoverTest, RemoveNothing) {
 }
 
 // Tests that removing nothing still call the closure.
-TEST_F(BrowsingDataRemoverTest, KeepCookie) {
+TEST_F(ClearBrowsingDataTest, KeepCookie) {
   ASSERT_TRUE(AddCookie());
 
   // Don't remove anything but check that the closure is still called.

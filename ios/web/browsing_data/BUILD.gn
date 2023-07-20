@@ -4,8 +4,6 @@
 
 source_set("browsing_data") {
   sources = [
-    "browsing_data_remover.h",
-    "browsing_data_remover.mm",
     "browsing_data_removing_util.mm",
     "system_cookie_store_util.mm",
   ]
@@ -22,6 +20,8 @@ source_set("browsing_data") {
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
+
+  frameworks = [ "WebKit.framework" ]
 }
 
 source_set("browsing_data_unittests") {
@@ -43,7 +43,7 @@ source_set("browsing_data_unittests") {
   ]
 
   sources = [
-    "browsing_data_remover_unittest.mm",
+    "browsing_data_removing_util_unittest.mm",
     "system_cookie_store_util_unittest.mm",
   ]
 }
