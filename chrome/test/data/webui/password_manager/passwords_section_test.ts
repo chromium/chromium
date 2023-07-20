@@ -278,6 +278,35 @@ suite('PasswordsSectionTest', function() {
         section, passwordManager.data.groups.slice(1), 'bar.uk');
   });
 
+  test('search by group name ranked higher', async function() {
+    passwordManager.data.groups = [
+      createCredentialGroup({
+        name: 'bar.com',
+        credentials: [
+          createPasswordEntry({
+            username: 'test@foo.com',
+          }),
+        ],
+      }),
+      createCredentialGroup({
+        name: 'foo.com',
+      }),
+    ];
+
+    const section = await createPasswordsSection();
+
+    validatePasswordsSubsection(section, passwordManager.data.groups, '');
+
+    const query = new URLSearchParams();
+    query.set(UrlParam.SEARCH_TERM, 'foo');
+    Router.getInstance().updateRouterParams(query);
+    await flushTasks();
+
+    // Now foo.com is the first item because the group name matches query.
+    validatePasswordsSubsection(
+        section, passwordManager.data.groups.reverse(), 'foo');
+  });
+
   test('clicking add button opens an add password dialog', async function() {
     const section: PasswordsSectionElement =
         document.createElement('passwords-section');
