@@ -8,9 +8,11 @@ import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
+import org.junit.runners.model.Statement;
 import org.robolectric.DefaultTestLifecycle;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.TestLifecycle;
+import org.robolectric.internal.SandboxTestRunner;
 import org.robolectric.internal.bytecode.InstrumentationConfiguration;
 import org.robolectric.internal.bytecode.Sandbox;
 
@@ -39,7 +41,36 @@ import java.lang.reflect.Method;
  */
 public class BaseRobolectricTestRunner extends RobolectricTestRunner {
     /**
-     * Enables a per-test setUp / tearDown hook.
+     * Tracks whether tests pass / fail for use in BaseTestLifecycle.
+     */
+    protected static class HelperTestRunner extends RobolectricTestRunner.HelperTestRunner {
+        public static boolean sTestFailed;
+        public HelperTestRunner(Class bootstrappedTestClass) throws InitializationError {
+            super(bootstrappedTestClass);
+        }
+
+        @Override
+        protected Statement methodBlock(final FrameworkMethod method) {
+            Statement orig = super.methodBlock(method);
+            return new Statement() {
+                // Does not run the sandbox classloader.
+                // Called after Lifecycle.beforeTest(), and before Lifecycle.afterTest().
+                @Override
+                public void evaluate() throws Throwable {
+                    try {
+                        orig.evaluate();
+                    } catch (Throwable t) {
+                        sTestFailed = true;
+                        throw t;
+                    }
+                    sTestFailed = false;
+                }
+            };
+        }
+    }
+
+    /**
+     * Before / after hooks that run in the context of the sandbox classloader.
      */
     public static class BaseTestLifecycle extends DefaultTestLifecycle {
         @Override
@@ -60,22 +91,26 @@ public class BaseRobolectricTestRunner extends RobolectricTestRunner {
         @Override
         public void afterTest(Method method) {
             try {
-                LifetimeAssert.assertAllInstancesDestroyedForTesting();
+                // https://crbug.com/1392817 for context as to why we do this.
+                PostTask.flushJobsAndResetForTesting();
+            } catch (InterruptedException e) {
+                HelperTestRunner.sTestFailed = true;
+                throw new RuntimeException(e);
             } finally {
-                try {
-                    // https://crbug.com/1392817 for context as to why we do this.
-                    PostTask.flushJobsAndResetForTesting();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                } finally {
-                    CommandLineFlags.tearDownMethod();
-                    CommandLineFlags.tearDownClass();
-                    ResettersForTesting.onAfterMethod();
-                    ApplicationStatus.destroyForJUnitTests();
-                    ContextUtils.clearApplicationContextForTests();
-                    PathUtils.resetForTesting();
-                    ThreadUtils.clearUiThreadForTesting();
-                    super.afterTest(method);
+                CommandLineFlags.tearDownMethod();
+                CommandLineFlags.tearDownClass();
+                ResettersForTesting.onAfterMethod();
+                ApplicationStatus.destroyForJUnitTests();
+                ContextUtils.clearApplicationContextForTests();
+                PathUtils.resetForTesting();
+                ThreadUtils.clearUiThreadForTesting();
+                super.afterTest(method);
+                // Run assertions only when the test has not already failed so as to not mask
+                // failures. https://crbug.com/1466313
+                if (HelperTestRunner.sTestFailed) {
+                    LifetimeAssert.resetForTesting();
+                } else {
+                    LifetimeAssert.assertAllInstancesDestroyedForTesting();
                 }
             }
         }
@@ -83,6 +118,15 @@ public class BaseRobolectricTestRunner extends RobolectricTestRunner {
 
     public BaseRobolectricTestRunner(Class<?> testClass) throws InitializationError {
         super(testClass);
+    }
+
+    @Override
+    protected SandboxTestRunner.HelperTestRunner getHelperTestRunner(Class bootstrappedTestClass) {
+        try {
+            return new HelperTestRunner(bootstrappedTestClass);
+        } catch (InitializationError initializationError) {
+            throw new RuntimeException(initializationError);
+        }
     }
 
     @Override
@@ -115,6 +159,7 @@ public class BaseRobolectricTestRunner extends RobolectricTestRunner {
     @Override
     protected InstrumentationConfiguration createClassLoaderConfig(final FrameworkMethod method) {
         return new InstrumentationConfiguration.Builder(super.createClassLoaderConfig(method))
+                .doNotAcquireClass(HelperTestRunner.class)
                 .doNotAcquireClass(TimeoutTimer.class) // Requires access to non-fake SystemClock.
                 .doNotAcquireClass(ResettersForTesting.class)
                 .build();
