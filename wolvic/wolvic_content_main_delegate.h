@@ -14,6 +14,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/shell/browser/shell_paths.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "wolvic/browser/session_settings.h"
 
 class PrefService;
 
@@ -63,6 +64,7 @@ class WolvicContentMainDelegate : public ContentMainDelegate {
   std::unique_ptr<PrefService> CreateLocalState();
   void SetUpFieldTrials();
 
+  std::unique_ptr<wolvic::SessionSettings> session_settings_;
   std::unique_ptr<PrefService> local_state_;
   std::unique_ptr<WolvicContentBrowserClient> browser_client_;
   std::unique_ptr<ContentGpuClient> gpu_client_;
