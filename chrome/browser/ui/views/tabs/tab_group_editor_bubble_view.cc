@@ -53,7 +53,6 @@
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/pointer/touch_ui_controller.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
@@ -100,10 +99,6 @@ std::unique_ptr<views::LabelButton> CreateMenuItem(
 
   auto button = CreateBubbleMenuItem(button_id, name, callback, icon);
   button->SetBorder(views::CreateEmptyBorder(control_insets));
-  if (features::IsChromeRefresh2023()) {
-    button->SetTitleTextStyle(views::style::STYLE_BODY_3_EMPHASIS,
-                              SK_ColorTRANSPARENT);
-  }
 
   return button;
 }
@@ -526,17 +521,13 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
     // utilizes a different view (view::Label) that does not have an option to
     // take in an image like the other line items do.
     save_group_icon = save_group_line_container->AddChildView(
-        std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            features::IsChromeRefresh2023() ? kSaveGroupRefreshIcon
-                                            : kSaveGroupIcon)));
+        std::make_unique<views::ImageView>(
+            ui::ImageModel::FromVectorIcon(kSaveGroupIcon)));
 
     save_group_label =
         save_group_line_container->AddChildView(std::make_unique<views::Label>(
             l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_SAVE_GROUP)));
     save_group_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    if (features::IsChromeRefresh2023()) {
-      save_group_label->SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS);
-    }
 
     save_group_toggle_ = save_group_line_container->AddChildView(
         std::make_unique<views::ToggleButton>(
@@ -559,9 +550,7 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP),
       base::BindRepeating(&TabGroupEditorBubbleView::NewTabInGroupPressed,
                           base::Unretained(this)),
-      ui::ImageModel::FromVectorIcon(features::IsChromeRefresh2023()
-                                         ? kNewTabInGroupRefreshIcon
-                                         : kNewTabInGroupIcon)));
+      ui::ImageModel::FromVectorIcon(kNewTabInGroupIcon)));
   menu_items_.push_back(new_tab_menu_item);
 
   menu_items_.push_back(AddChildView(CreateMenuItem(
@@ -569,17 +558,13 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_UNGROUP),
       base::BindRepeating(&TabGroupEditorBubbleView::UngroupPressed,
                           base::Unretained(this), header_view),
-      ui::ImageModel::FromVectorIcon(features::IsChromeRefresh2023()
-                                         ? kUngroupRefreshIcon
-                                         : kUngroupIcon))));
+      ui::ImageModel::FromVectorIcon(kUngroupIcon))));
 
   views::LabelButton* close_group_menu_item = AddChildView(CreateMenuItem(
       TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP, GetTextForCloseButton(),
       base::BindRepeating(&TabGroupEditorBubbleView::CloseGroupPressed,
                           base::Unretained(this)),
-      ui::ImageModel::FromVectorIcon(features::IsChromeRefresh2023()
-                                         ? kCloseGroupRefreshIcon
-                                         : kCloseGroupIcon)));
+      ui::ImageModel::FromVectorIcon(kCloseGroupIcon)));
   close_group_menu_item->SetProperty(views::kElementIdentifierKey,
                                      kTabGroupEditorBubbleCloseGroupButtonId);
   menu_items_.push_back(close_group_menu_item);
@@ -591,9 +576,7 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
       base::BindRepeating(
           &TabGroupEditorBubbleView::MoveGroupToNewWindowPressed,
           base::Unretained(this)),
-      ui::ImageModel::FromVectorIcon(features::IsChromeRefresh2023()
-                                         ? kMoveGroupToNewWindowRefreshIcon
-                                         : kMoveGroupToNewWindowIcon)));
+      ui::ImageModel::FromVectorIcon(kMoveGroupToNewWindowIcon)));
   move_menu_item->SetEnabled(
       tab_strip_model->count() !=
       tab_strip_model->group_model()->GetTabGroup(group_)->tab_count());
