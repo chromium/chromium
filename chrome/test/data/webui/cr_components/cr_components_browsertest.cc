@@ -50,6 +50,11 @@ IN_PROC_BROWSER_TEST_F(CrComponentsTest, HelpBubble) {
   RunTest("cr_components/help_bubble_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrComponentsTest, HorizontalCarousel) {
+  RunTest("cr_components/history_clusters/horizontal_carousel_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrComponentsTest, ManagedDialog) {
   RunTest("cr_components/managed_dialog_test.js", "mocha.run()");
 }
@@ -116,7 +121,8 @@ class CrComponentsHistoryClustersTest : public WebUIMochaBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(CrComponentsHistoryClustersTest, All) {
-  RunTest("cr_components/history_clusters_test.js", "mocha.run()");
+  RunTest("cr_components/history_clusters/history_clusters_test.js",
+          "mocha.run()");
 }
 
 class CrComponentsMostVisitedTest : public WebUIMochaBrowserTest {

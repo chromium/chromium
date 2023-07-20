@@ -25,13 +25,15 @@ declare global {
 
 const HorizontalCarouselElementBase = I18nMixin(PolymerElement);
 
-interface HorizontalCarouselElement {
+export interface HorizontalCarouselElement {
   $: {
+    carouselBackButton: HTMLElement,
     carouselContainer: HTMLElement,
+    carouselForwardButton: HTMLElement,
   };
 }
 
-class HorizontalCarouselElement extends HorizontalCarouselElementBase {
+export class HorizontalCarouselElement extends HorizontalCarouselElementBase {
   static get is() {
     return 'horizontal-carousel';
   }
