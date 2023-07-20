@@ -1187,7 +1187,6 @@ http/tests/history/scroll-restoration/scroll-restoration-same-doc.html
 http/tests/html/validation-bubble-oopif-clip.html
 http/tests/images/document-policy-oversized-images-forced-layout.php
 http/tests/images/document-policy-oversized-images-resize.php
-http/tests/images/document-policy-oversized-images-responsive-image.php
 http/tests/images/document-policy-oversized-images-styles.php
 http/tests/images/document-policy-oversized-images.php
 http/tests/inspector-protocol/accessibility/accessibility-getRootNode.js

@@ -282,7 +282,6 @@ crbug.com/1179570 virtual/text-antialias/incorrect-fixed-pitch-font.html [ Failu
 
 # Text failures. these did not produce any output in highdpi runs but there were expected files.
 crbug.com/1179554 http/tests/images/document-policy-oversized-images-forced-layout.php [ Failure ]
-crbug.com/1179554 http/tests/images/document-policy-oversized-images-resize.php [ Failure ]
 crbug.com/1179554 http/tests/images/document-policy-oversized-images-responsive-image.php [ Failure ]
 crbug.com/1179554 http/tests/images/document-policy-oversized-images-styles.php [ Failure ]
 

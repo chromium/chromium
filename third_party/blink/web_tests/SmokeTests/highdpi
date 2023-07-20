@@ -1319,7 +1319,6 @@ http/tests/csspaint/transform-with-page-zoom-003.html
 http/tests/document-policy/document-policy-in-xsl.php
 http/tests/document-policy/document-policy-report-only-in-xsl.php
 http/tests/images/document-policy-oversized-images-forced-layout.php
-http/tests/images/document-policy-oversized-images-resize.php
 http/tests/images/document-policy-oversized-images-responsive-image.php
 http/tests/images/document-policy-oversized-images-styles.php
 http/tests/images/jpeg-partial-load.html
