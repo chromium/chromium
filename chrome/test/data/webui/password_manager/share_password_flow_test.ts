@@ -40,22 +40,11 @@ suite('SharePasswordFlowTest', function() {
 
   test('Has correct loading state', async function() {
     const shareElement = startPasswordShare(/*passwordName=*/ SITE);
-    assertEquals(ShareFlowState.FETCHING, shareElement.flowState);
-    flush();
 
+    assertEquals(ShareFlowState.FETCHING, shareElement.flowState);
     const dialog =
         shareElement.shadowRoot!.querySelector('share-password-loading-dialog');
     assertTrue(!!dialog);
-
-    const header =
-        dialog.shadowRoot!.querySelector('share-password-dialog-header');
-    assertTrue(!!header);
-    assertEquals(
-        shareElement.i18n('shareDialogTitle', SITE), header.innerHTML!.trim());
-
-    const spinner = dialog.shadowRoot!.querySelector('paper-spinner-lite');
-    assertTrue(!!spinner);
-    assertTrue(spinner.active);
 
     await passwordManager.whenCalled('fetchFamilyMembers');
   });
