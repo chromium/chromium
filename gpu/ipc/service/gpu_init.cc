@@ -608,8 +608,9 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     // On Windows, MITIGATION_FORCE_MS_SIGNED_BINS is used which disallows
     // loading any .dll that is not signed by Microsoft. Preload the SwiftShader
     // .dll so it may be accessed later. This is needed for WebGPU to
-    // initialize a software fallback adapter.
-    // Don't handle errors as failure here is non-fatal. Loading SwiftShader
+    // initialize a software fallback adapter. Also do the same for DXC,
+    // which WebGPU may use on D3D12 devices.
+    // Don't handle errors as failure here is non-fatal. Loading either DLL
     // again at a later point will fail as well.
     PauseGpuWatchdog(watchdog_thread_.get());
 
@@ -617,6 +618,10 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     if (base::PathService::Get(base::DIR_MODULE, &module_path)) {
       base::LoadNativeLibrary(module_path.Append(L"vk_swiftshader.dll"),
                               nullptr);
+
+#if defined(DAWN_USE_BUILT_DXC)
+      base::LoadNativeLibrary(module_path.Append(L"dxcompiler.dll"), nullptr);
+#endif
     }
 
     ResumeGpuWatchdog(watchdog_thread_.get());

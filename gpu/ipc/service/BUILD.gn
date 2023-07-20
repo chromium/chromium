@@ -8,6 +8,7 @@ import("//testing/test.gni")
 if (is_mac) {
   import("//build/config/mac/mac_sdk.gni")
 }
+import("//third_party/dawn/scripts/dawn_features.gni")
 
 declare_args() {
   subpixel_font_rendering_disabled = false
@@ -51,6 +52,9 @@ component("service") {
   defines = [ "GPU_IPC_SERVICE_IMPLEMENTATION" ]
   if (subpixel_font_rendering_disabled) {
     defines += [ "SUBPIXEL_FONT_RENDERING_DISABLED" ]
+  }
+  if (dawn_use_built_dxc) {
+    defines += [ "DAWN_USE_BUILT_DXC" ]
   }
   public_deps = [
     "//base",
