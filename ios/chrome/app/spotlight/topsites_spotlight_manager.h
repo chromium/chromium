@@ -5,9 +5,12 @@
 #ifndef IOS_CHROME_APP_SPOTLIGHT_TOPSITES_SPOTLIGHT_MANAGER_H_
 #define IOS_CHROME_APP_SPOTLIGHT_TOPSITES_SPOTLIGHT_MANAGER_H_
 
-#import "ios/chrome/app/spotlight/base_spotlight_manager.h"
+#import <Foundation/Foundation.h>
 
 class ChromeBrowserState;
+
+@class SpotlightInterface;
+@class SearchableItemFactory;
 
 // This spotlight manager handles indexing of sites shown on the NTP. Because of
 // privacy concerns, only sites shown on the NTP are indexed; therefore, this
@@ -15,10 +18,18 @@ class ChromeBrowserState;
 // uses suggestions (most likely) as a data source if the user is logged in and
 // top sites otherwise.
 
-@interface TopSitesSpotlightManager : BaseSpotlightManager
+@interface TopSitesSpotlightManager : NSObject
 
 + (TopSitesSpotlightManager*)topSitesSpotlightManagerWithBrowserState:
     (ChromeBrowserState*)browserState;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+/// Facade interface for the spotlight API.
+@property(nonatomic, readonly) SpotlightInterface* spotlightInterface;
+
+/// A searchable item factory to create searchable items.
+@property(nonatomic, readonly) SearchableItemFactory* searchableItemFactory;
 
 // Reindexes all top sites, batching reindexes by 1 second.
 - (void)reindexTopSites;
