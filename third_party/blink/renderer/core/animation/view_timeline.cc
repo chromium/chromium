@@ -295,7 +295,6 @@ void ViewTimeline::CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
   DCHECK(subject_size);
 
   // TODO(crbug.com/1448801): Handle nested sticky elements.
-
   double target_offset = physical_orientation == kHorizontalScroll
                              ? subject_position->x()
                              : subject_position->y();
@@ -491,9 +490,10 @@ absl::optional<gfx::Size> ViewTimeline::SubjectSize() const {
   }
 
   if (subject_layout_object->IsSVGChild()) {
-    gfx::RectF bounds =
-        SVGLayoutSupport::LocalVisualRect(*subject_layout_object);
-    return gfx::Size(std::round(bounds.width()), std::round(bounds.height()));
+    return SVGLayoutSupport::VisualRectInAncestorSpace(
+               *subject_layout_object,
+               *To<SVGElement>(subject())->ownerSVGElement()->GetLayoutBox())
+        .PixelSnappedSize();
   }
 
   NOTREACHED();

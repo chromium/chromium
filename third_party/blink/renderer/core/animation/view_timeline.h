@@ -60,6 +60,7 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
 
   absl::optional<gfx::Size> SubjectSize() const;
   absl::optional<gfx::PointF> SubjectPosition(Node* resolved_source) const;
+
   void ApplyStickyAdjustments(ScrollOffsets& scroll_offsets,
                               ViewOffsets& view_offsets,
                               double viewport_size,
