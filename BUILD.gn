@@ -834,7 +834,9 @@ group("gn_all") {
     ]
 
     # Rust build targets.
-    deps += [ ":all_rust" ]
+    if (enable_rust) {
+      deps += [ ":all_rust" ]
+    }
 
     if (!is_android && !is_ios) {
       deps += [ "//components/cronet:cronet_tests" ]
@@ -847,24 +849,20 @@ group("gn_all") {
 group("all_rust") {
   testonly = true
 
-  # Unconditional because this includes things that should work whether or not
-  # Rust is enabled.
   deps = [ ":rust_build_tests" ]
 
-  if (toolchain_has_rust) {
-    # There is rust stuff behind flags in here.
-    deps += [ "//base:base_unittests" ]
+  # There is rust stuff behind flags in here.
+  deps += [ "//base:base_unittests" ]
 
-    if (enable_rust_mojo) {
-      deps += [
-        "//mojo/public/rust",
-        "//mojo/public/rust:mojo_rust_integration_unittests",
-        "//mojo/public/rust:mojo_rust_unittests",
-      ]
-    }
-    if (enable_rust_gtest_interop) {
-      deps += [ "//testing/rust_gtest_interop:rust_gtest_interop_unittests" ]
-    }
+  if (enable_rust_mojo) {
+    deps += [
+      "//mojo/public/rust",
+      "//mojo/public/rust:mojo_rust_integration_unittests",
+      "//mojo/public/rust:mojo_rust_unittests",
+    ]
+  }
+  if (enable_rust_gtest_interop) {
+    deps += [ "//testing/rust_gtest_interop:rust_gtest_interop_unittests" ]
   }
 }
 
