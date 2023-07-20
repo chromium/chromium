@@ -226,19 +226,7 @@ int SpdyHttpStream::SendRequest(const HttpRequestHeaders& request_headers,
 
   CHECK(!callback.is_null());
   CHECK(response);
-
-  // SendRequest can be called in two cases.
-  //
-  // a) A client initiated request. In this case, |response_info_| should be
-  //    NULL to start with.
-  // b) A client request which matches a response that the server has already
-  //    pushed.
-  if (push_response_info_.get()) {
-    *response = *(push_response_info_.get());
-    push_response_info_.reset();
-  } else {
-    DCHECK_EQ(static_cast<HttpResponseInfo*>(nullptr), response_info_);
-  }
+  DCHECK(!response_info_);
 
   response_info_ = response;
 

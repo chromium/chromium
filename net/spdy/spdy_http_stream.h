@@ -187,10 +187,8 @@ class NET_EXPORT_PRIVATE SpdyHttpStream : public SpdyStream::Delegate,
 
   // |response_info_| is the HTTP response data object which is filled in
   // when a response HEADERS comes in for the stream.
-  // It is not owned by this stream object, or point to |push_response_info_|.
+  // It is not owned by this stream object.
   raw_ptr<HttpResponseInfo> response_info_ = nullptr;
-
-  std::unique_ptr<HttpResponseInfo> push_response_info_;
 
   bool response_headers_complete_ = false;
 
