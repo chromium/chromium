@@ -92,6 +92,15 @@ void ChromeBrowserMainPartsLacros::PostProfileInit(Profile* profile,
   prefs_ash_observer_->InitPostProfileInitialized(profile);
 }
 
+void ChromeBrowserMainPartsLacros::PostMainMessageLoopRun() {
+  // Reset MetricsReportingObserver here to guarantee it's destroyed before
+  // `g_browser_process->metrics_service()` is destructed as
+  // MetricsReportingObserver depends on metrics service.
+  metrics_reporting_observer_.reset();
+
+  ChromeBrowserMainParts::PostMainMessageLoopRun();
+}
+
 void ChromeBrowserMainPartsLacros::PostDestroyThreads() {
   chromeos::LacrosShutdownDBus();
 

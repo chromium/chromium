@@ -40,7 +40,7 @@ class MetricsServiceProxyImpl
   }
 
  private:
-  raw_ptr<metrics::MetricsService, DanglingUntriaged> metrics_service_;
+  raw_ptr<metrics::MetricsService> metrics_service_;
 };
 
 std::unique_ptr<MetricsReportingObserver>

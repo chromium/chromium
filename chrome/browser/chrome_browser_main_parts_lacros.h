@@ -29,6 +29,7 @@ class ChromeBrowserMainPartsLacros : public ChromeBrowserMainPartsLinux {
   void PostCreateThreads() override;
   void PreProfileInit() override;
   void PostProfileInit(Profile* profile, bool is_initial_profile) override;
+  void PostMainMessageLoopRun() override;
   void PostDestroyThreads() override;
 
  private:
