@@ -17,8 +17,18 @@ export {Route};
  */
 const CANONICAL_PATH_REGEX = /(^\/)([\/-\w]+)(\/$)/;
 
-/** The singleton instance. */
+/** The Router singleton instance. */
 let routerInstance: Router|null = null;
+
+/**
+ * Represents the available set of routes for the Router singleton. This is
+ * exported as a convenience to avoid always calling the more verbose way
+ * `Router.getInstance().routes`.
+ *
+ * When the Router singleton is updated (i.e. from tests), this export should
+ * also be updated to reflect the new set of routes.
+ */
+export let routes: OsSettingsRoutes;
 
 export class Router {
   static getInstance(): Router {
@@ -29,6 +39,7 @@ export class Router {
   static setInstance(instance: Router): void {
     assert(routerInstance === null, 'Router instance has already been set.');
     routerInstance = instance;
+    routes = instance.routes;
   }
 
   static resetInstanceForTesting(instance: Router): void {
@@ -36,6 +47,7 @@ export class Router {
       instance.routeObservers_ = routerInstance.routeObservers_;
     }
     routerInstance = instance;
+    routes = instance.routes;
   }
 
   private currentRoute_: Route;
@@ -283,59 +295,54 @@ export class Router {
   }
 }
 
-function buildRouter(): Router {
+/**
+ * Creates a Router instance and returns it. Use `Router.setInstance()` with
+ * this instance as an argument to set the singleton instance.
+ *
+ * Can be used from tests to re-create a Router with a new set of routes.
+ */
+export function createRouter() {
   return new Router(createRoutes());
 }
 
-Router.setInstance(buildRouter());
+Router.setInstance(createRouter());
 
 window.addEventListener('popstate', () => {
   // On pop state, do not push the state onto the window.history again.
   const router = Router.getInstance();
   router.setCurrentRoute(
-      router.getRouteForPath(window.location.pathname) || router.routes.BASIC,
+      router.getRouteForPath(window.location.pathname) || routes.BASIC,
       new URLSearchParams(window.location.search), true);
 });
 
-export const routes = Router.getInstance().routes;
-
 /**
  * @returns true if this route exists under the Advanced section.
- * Note: Use the routes contained by the Router instance to ensure the routes
- * are up-to-date (ie. in the case the routes are overridden in tests)
  */
 export function isAdvancedRoute(route: Route|null): boolean {
   if (!route) {
     return false;
   }
-  const routes = Router.getInstance().routes;
   return routes.ADVANCED.contains(route);
 }
 
 /**
  * @returns true if this route exists under the Basic section (not advanced
  * section).
- * Note: Use the routes contained by the Router instance to ensure the routes
- * are up-to-date (ie. in the case the routes are overridden in tests)
  */
 export function isBasicRoute(route: Route|null): boolean {
   if (!route) {
     return false;
   }
-  const routes = Router.getInstance().routes;
   return routes.BASIC.contains(route);
 }
 
 /**
  * @returns true if this route exists under the About page
- * Note: Use the routes contained by the Router instance to ensure the routes
- * are up-to-date (ie. in the case the routes are overridden in tests)
  */
 export function isAboutRoute(route: Route|null): boolean {
   if (!route) {
     return false;
   }
-  const routes = Router.getInstance().routes;
   return routes.ABOUT.contains(route);
 }
 
@@ -347,8 +354,6 @@ export function isNavigableRoute(route: Route|null): boolean {
   if (!route) {
     return false;
   }
-  const routes = Router.getInstance().routes;
-
   // The ADVANCED route is not navigable. It only serves as a parent to group
   // child routes.
   return route !== routes.ADVANCED;

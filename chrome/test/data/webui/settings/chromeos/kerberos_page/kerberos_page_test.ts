@@ -5,8 +5,9 @@
 import 'chrome://os-settings/os_settings.js';
 
 import {KerberosAccountsBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
-import {createSectionForTesting, createSubpageForTesting, Router, routes, routesMojom, SettingsKerberosPageElement} from 'chrome://os-settings/os_settings.js';
+import {createRouterForTesting, Router, routes, SettingsKerberosPageElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 
@@ -17,14 +18,11 @@ suite('<settings-kerberos-page>', () => {
   let browserProxy: TestKerberosAccountsBrowserProxy;
 
   suiteSetup(() => {
-    routes.KERBEROS = createSectionForTesting(
-        routes.BASIC, routesMojom.KERBEROS_SECTION_PATH,
-        routesMojom.Section.kKerberos);
-    routes.KERBEROS_ACCOUNTS_V2 = createSubpageForTesting(
-        routes.KERBEROS, routesMojom.KERBEROS_ACCOUNTS_V2_SUBPAGE_PATH,
-        routesMojom.Subpage.kKerberosAccountsV2);
+    // Reinitialize Router and routes based on load time data
+    loadTimeData.overrideValues({isKerberosEnabled: true});
 
-    Router.resetInstanceForTesting(new Router(routes));
+    const testRouter = createRouterForTesting();
+    Router.resetInstanceForTesting(testRouter);
   });
 
   setup(() => {

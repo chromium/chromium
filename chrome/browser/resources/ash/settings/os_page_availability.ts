@@ -16,7 +16,7 @@
  */
 
 import {Section} from './mojom-webui/routes.mojom-webui.js';
-import {Router} from './router.js';
+import {routes} from './router.js';
 
 /**
  * Defines which top-level pages/sections are available to the user. Page keys
@@ -33,8 +33,6 @@ export type OsPageAvailability = Record<Section, boolean>;
  * object with expected values after overriding the set of available routes.
  */
 export function createPageAvailability(): OsPageAvailability {
-  const routes = Router.getInstance().routes;
-
   return {
     [Section.kAboutChromeOs]: !!routes.ABOUT,
     [Section.kAccessibility]: !!routes.OS_ACCESSIBILITY,

@@ -8,7 +8,7 @@
  * Separated into a separate file to mitigate test timeouts.
  */
 
-import {createRoutesForTesting, CrSettingsPrefs, MainPageContainerElement, OsSettingsMainElement, OsSettingsUiElement, PageDisplayerElement, Router, routesMojom, SettingsIdleLoadElement} from 'chrome://os-settings/os_settings.js';
+import {createRouterForTesting, CrSettingsPrefs, MainPageContainerElement, OsSettingsMainElement, OsSettingsUiElement, PageDisplayerElement, Router, routesMojom, SettingsIdleLoadElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -95,9 +95,8 @@ suite('<os-settings-ui> page availability', () => {
         allowPowerwash: true,     // Simulate reset route exists
       });
 
-      // Recreate routes based on load time data
-      const testRoutes = createRoutesForTesting();
-      const testRouter = new Router(testRoutes);
+      // Reinitialize Router and routes based on load time data
+      const testRouter = createRouterForTesting();
       Router.resetInstanceForTesting(testRouter);
 
       await createUi();
@@ -146,9 +145,8 @@ suite('<os-settings-ui> page availability', () => {
         allowPowerwash: true,     // Simulate reset route exists
       });
 
-      // Recreate routes based on load time data
-      const testRoutes = createRoutesForTesting();
-      const testRouter = new Router(testRoutes);
+      // Reinitialize Router and routes based on load time data
+      const testRouter = createRouterForTesting();
       Router.resetInstanceForTesting(testRouter);
 
       await createUi();

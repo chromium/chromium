@@ -215,7 +215,7 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   SYNC_ADVANCED: Route;
 }
 
-export function createSection(
+function createSection(
     parent: Route|null, path: string, section: routesMojom.Section,
     title?: string): Route {
   let route: Route;
@@ -228,7 +228,7 @@ export function createSection(
   return route;
 }
 
-export function createSubpage(
+function createSubpage(
     parent: Route, path: string, _subpage: routesMojom.Subpage): Route {
   // TODO(khorimoto): Add |subpage| to the Route object.
   return parent.createChild('/' + path);

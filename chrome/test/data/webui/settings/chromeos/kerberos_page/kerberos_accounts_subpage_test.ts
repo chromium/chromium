@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {KerberosAccountsBrowserProxyImpl, SettingsKerberosAccountsSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {createSectionForTesting, createSubpageForTesting, Router, routes, routesMojom} from 'chrome://os-settings/os_settings.js';
+import {createRouterForTesting, Router, routes} from 'chrome://os-settings/os_settings.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
@@ -31,14 +31,11 @@ suite('<settings-kerberos-accounts-subpage>', () => {
   };
 
   suiteSetup(() => {
-    routes.KERBEROS = createSectionForTesting(
-        routes.BASIC, routesMojom.KERBEROS_SECTION_PATH,
-        routesMojom.Section.kKerberos);
-    routes.KERBEROS_ACCOUNTS_V2 = createSubpageForTesting(
-        routes.KERBEROS, routesMojom.KERBEROS_ACCOUNTS_V2_SUBPAGE_PATH,
-        routesMojom.Subpage.kKerberosAccountsV2);
+    // Reinitialize Router and routes based on load time data
+    loadTimeData.overrideValues({isKerberosEnabled: true});
 
-    Router.resetInstanceForTesting(new Router(routes));
+    const testRouter = createRouterForTesting();
+    Router.resetInstanceForTesting(testRouter);
   });
 
   setup(() => {

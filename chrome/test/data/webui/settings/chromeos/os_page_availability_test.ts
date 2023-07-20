@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {createPageAvailabilityForTesting, createRoutesForTesting, OsPageAvailability, Router, routesMojom} from 'chrome://os-settings/os_settings.js';
+import {createPageAvailabilityForTesting, createRouterForTesting, OsPageAvailability, Router, routesMojom} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -12,8 +12,7 @@ const {Section} = routesMojom;
 type SectionName = keyof typeof Section;
 
 function initializePageAvailability(): OsPageAvailability {
-  const testRoutes = createRoutesForTesting();
-  const testRouter = new Router(testRoutes);
+  const testRouter = createRouterForTesting();
   Router.resetInstanceForTesting(testRouter);
   return createPageAvailabilityForTesting();
 }

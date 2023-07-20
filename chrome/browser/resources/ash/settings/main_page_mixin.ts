@@ -38,7 +38,6 @@ function classifyRoute(route: Route|undefined): RouteState {
   if (!route) {
     return RouteState.INITIAL;
   }
-  const routes = Router.getInstance().routes;
   if (route === routes.BASIC) {
     return RouteState.ROOT;
   }
