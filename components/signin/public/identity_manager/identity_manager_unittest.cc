@@ -352,6 +352,10 @@ class IdentityManagerTest : public testing::Test {
 
     ASSERT_TRUE(temp_profile_dir_.CreateUniqueTempDir());
 
+#if BUILDFLAG(IS_ANDROID)
+    // Required to create AccountTrackerService on Android.
+    SetUpMockAccountManagerFacade();
+#endif
     auto account_tracker_service = std::make_unique<AccountTrackerService>();
     account_tracker_service->Initialize(&pref_service_,
                                         temp_profile_dir_.GetPath());

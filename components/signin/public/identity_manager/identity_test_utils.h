@@ -328,8 +328,10 @@ void EnableAccountCapabilitiesFetches(IdentityManager* identity_manager);
 
 #if BUILDFLAG(IS_ANDROID)
 // Stubs AccountManagerFacade, which requires special initialization of the java
-// subsystems.
-void SetUpMockAccountManagerFacade();
+// subsystems. By default sets up a mock with no real method implementation
+// using Mockito. If `useFakeImpl` is `true` uses FakeAccountManagerFacade
+// instead which has fake method implementations.
+void SetUpMockAccountManagerFacade(bool useFakeImpl = false);
 #endif
 
 // Cancels all ongoing operations related to the accounts in the Gaia cookie.

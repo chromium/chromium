@@ -297,6 +297,11 @@ IdentityTestEnvironment::BuildIdentityManagerForTests(
     PrefService* pref_service,
     base::FilePath user_data_dir,
     AccountConsistencyMethod account_consistency) {
+#if BUILDFLAG(IS_ANDROID)
+  // Required to create AccountTrackerService on Android. Uses FakeImpl instead
+  // of Mockito because it is incompatible for tests that are run on VM.
+  SetUpMockAccountManagerFacade(/*useFakeImpl =*/true);
+#endif
   auto account_tracker_service = std::make_unique<AccountTrackerService>();
   account_tracker_service->Initialize(pref_service, user_data_dir);
   auto token_service =

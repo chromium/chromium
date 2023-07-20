@@ -66,7 +66,7 @@ public class AccountTrackerService implements AccountsChangeObserver {
     private final Queue<Runnable> mRunnablesWaitingForAccountsSeeding;
     private @AccountsSeedingStatus int mAccountsSeedingStatus;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
-    private boolean mAccountsChangeObserverAdded;
+    private final AccountManagerFacade mAccountManagerFacade;
 
     @VisibleForTesting
     @CalledByNative
@@ -74,6 +74,14 @@ public class AccountTrackerService implements AccountsChangeObserver {
         mNativeAccountTrackerService = nativeAccountTrackerService;
         mAccountsSeedingStatus = AccountsSeedingStatus.NOT_STARTED;
         mRunnablesWaitingForAccountsSeeding = new ConcurrentLinkedDeque<>();
+        mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
+        mAccountManagerFacade.addObserver(this);
+    }
+
+    @VisibleForTesting
+    @CalledByNative
+    void destroy() {
+        mAccountManagerFacade.removeObserver(this);
     }
 
     /**
@@ -145,18 +153,11 @@ public class AccountTrackerService implements AccountsChangeObserver {
      */
     private void seedAccounts(boolean accountsChanged) {
         ThreadUtils.assertOnUiThread();
-        final AccountManagerFacade accountManagerFacade =
-                AccountManagerFacadeProvider.getInstance();
         assert mAccountsSeedingStatus
                 != AccountsSeedingStatus.IN_PROGRESS : "There is already a seeding in progress!";
         mAccountsSeedingStatus = AccountsSeedingStatus.IN_PROGRESS;
 
-        if (!mAccountsChangeObserverAdded) {
-            mAccountsChangeObserverAdded = true;
-            accountManagerFacade.addObserver(this);
-        }
-
-        accountManagerFacade.getCoreAccountInfos().then(
+        mAccountManagerFacade.getCoreAccountInfos().then(
                 coreAccountInfos -> { finishSeedingAccounts(coreAccountInfos, accountsChanged); });
     }
 

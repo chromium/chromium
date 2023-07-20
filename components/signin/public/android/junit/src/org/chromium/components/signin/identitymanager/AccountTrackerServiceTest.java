@@ -8,7 +8,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -25,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -36,6 +36,7 @@ import org.chromium.base.Promise;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -98,10 +99,30 @@ public class AccountTrackerServiceTest {
     }
 
     @Test
+    public void testAccountManagerFacadeObserverAddedOnCreate() {
+        AccountManagerFacade accountManagerFacadeMock = Mockito.mock(AccountManagerFacade.class);
+        AccountManagerFacadeProvider.setInstanceForTests(accountManagerFacadeMock);
+
+        mService = new AccountTrackerService(ACCOUNT_TRACKER_SERVICE_NATIVE);
+
+        verify(accountManagerFacadeMock).addObserver(mService);
+    }
+
+    @Test
+    public void testAccountManagerFacadeObserverRemovedOnDestroy() {
+        AccountManagerFacade accountManagerFacadeMock = Mockito.mock(AccountManagerFacade.class);
+        AccountManagerFacadeProvider.setInstanceForTests(accountManagerFacadeMock);
+        mService = new AccountTrackerService(ACCOUNT_TRACKER_SERVICE_NATIVE);
+
+        mService.destroy();
+
+        verify(accountManagerFacadeMock).removeObserver(mService);
+    }
+
+    @Test
     public void testSeedAccountsIfNeededBeforeAccountsAreSeeded() {
         mService.seedAccountsIfNeeded(mRunnableMock);
 
-        verify(mFakeAccountManagerFacade).addObserver(notNull());
         verify(mNativeMock)
                 .seedAccountsInfo(
                         eq(ACCOUNT_TRACKER_SERVICE_NATIVE), mCoreAccountInfosArrayCaptor.capture());
@@ -135,7 +156,6 @@ public class AccountTrackerServiceTest {
 
         mService.seedAccountsIfNeeded(mRunnableMock);
 
-        verify(mFakeAccountManagerFacade).addObserver(notNull());
         // Accounts should be seeded only once
         verify(mNativeMock)
                 .seedAccountsInfo(

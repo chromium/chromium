@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_android.h"
+#include <memory>
+#include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -46,7 +48,8 @@ MATCHER(CoreAccountInfoEq,
 
 class OAuth2TokenServiceDelegateAndroidTest : public testing::Test {
  public:
-  OAuth2TokenServiceDelegateAndroidTest() {}
+  OAuth2TokenServiceDelegateAndroidTest()
+      : account_tracker_service_(CreateAccountTrackerService()) {}
   ~OAuth2TokenServiceDelegateAndroidTest() override = default;
 
  protected:
@@ -64,6 +67,13 @@ class OAuth2TokenServiceDelegateAndroidTest : public testing::Test {
   void TearDown() override {
     delegate_->RemoveObserver(&observer_);
     testing::Test::TearDown();
+  }
+
+  AccountTrackerService CreateAccountTrackerService() {
+#if BUILDFLAG(IS_ANDROID)
+    SetUpMockAccountManagerFacade();
+#endif
+    return AccountTrackerService();
   }
 
   AccountInfo CreateAccountInfo(const std::string& gaia_id,

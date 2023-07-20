@@ -194,6 +194,10 @@ AccountTrackerService::AccountTrackerService() {
 
 AccountTrackerService::~AccountTrackerService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#if BUILDFLAG(IS_ANDROID)
+  JNIEnv* env = base::android::AttachCurrentThread();
+  signin::Java_AccountTrackerService_destroy(env, java_ref_);
+#endif
   pref_service_ = nullptr;
   accounts_.clear();
 }

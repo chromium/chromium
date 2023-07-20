@@ -632,9 +632,9 @@ void EnableAccountCapabilitiesFetches(IdentityManager* identity_manager) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void SetUpMockAccountManagerFacade() {
+void SetUpMockAccountManagerFacade(bool useFakeImpl) {
   Java_AccountManagerFacadeUtil_setUpMockFacade(
-      base::android::AttachCurrentThread());
+      base::android::AttachCurrentThread(), useFakeImpl);
 }
 #endif
 

@@ -4,6 +4,7 @@
 
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -19,6 +20,7 @@
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/access_token_constants.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
@@ -63,7 +65,7 @@ class AccessTokenFetcherTest
         access_token_info_("access token",
                            base::Time::Now() + base::Hours(1),
                            std::string(kIdTokenEmptyServices)),
-        account_tracker_(std::make_unique<AccountTrackerService>()),
+        account_tracker_(CreateAccountTrackerService()),
         primary_account_manager_(&signin_client_,
                                  &token_service_,
                                  account_tracker_.get()) {
@@ -162,6 +164,13 @@ class AccessTokenFetcherTest
   AccessTokenInfo access_token_info() { return access_token_info_; }
 
  private:
+  std::unique_ptr<AccountTrackerService> CreateAccountTrackerService() {
+#if BUILDFLAG(IS_ANDROID)
+    SetUpMockAccountManagerFacade();
+#endif
+    return std::make_unique<AccountTrackerService>();
+  }
+
   std::unique_ptr<AccessTokenFetcher> CreateFetcher(
       const CoreAccountId& account_id,
       AccessTokenFetcher::TokenCallback callback,
