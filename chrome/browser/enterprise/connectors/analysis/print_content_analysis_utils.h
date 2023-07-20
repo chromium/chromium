@@ -51,19 +51,23 @@ enum class PrintScanningContext {
 
 };
 
-// This function takes something to print (`data`) and scans it if the policy is
-// enabled on a managed browser. It also passes on print metadata (e.g.
-// `printer_name`) to content scans and `hides_preview` for the local ones. On
-// receiving the verdict after the scan this function calls `on_verdict` with
-// true or false. In the non enterprise case where no scan is required, this
-// function directly calls `on_verdict` with true. This function can return
-// asynchronously.
-void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> data,
+// These functions take something to print (`data`) and scans it if the policy
+// is enabled on a managed browser. It also passes on print metadata (e.g.
+// `printer_name` or `scanning_data`) to content scans and `hides_preview`
+// for the local ones. On receiving the verdict after the scan these functions
+// calls `on_verdict` with true or false. In the non enterprise case where no
+// scan is required, these functions directly calls `on_verdict` with true.
+// These functions can return asynchronously.
+void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> print_data,
                             content::WebContents* initiator,
                             std::string printer_name,
                             PrintScanningContext context,
                             base::OnceCallback<void(bool)> on_verdict,
                             base::OnceClosure hide_preview);
+void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> print_data,
+                            content::WebContents* initiator,
+                            ContentAnalysisDelegate::Data scanning_data,
+                            base::OnceCallback<void(bool)> on_verdict);
 
 // Returns a `ContentAnalysisDelegate::Data` object with information about how
 // content scanning should proceed, or nullopt if it shouldn't.

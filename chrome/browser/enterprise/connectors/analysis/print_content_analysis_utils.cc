@@ -10,7 +10,6 @@
 #include "base/feature_list.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/device_event_log/device_event_log.h"
 #include "content/public/browser/web_contents.h"
@@ -20,36 +19,6 @@
 namespace enterprise_connectors {
 
 namespace {
-
-void ScanAndPrint(scoped_refptr<base::RefCountedMemory> data,
-                  content::WebContents* initiator,
-                  ContentAnalysisDelegate::Data scanning_data,
-                  base::OnceCallback<void(bool)> on_verdict) {
-  // The preview document bytes are copied so that the content analysis code
-  // can arbitrarily use them without having to handle ownership issues with
-  // other printing code.
-  base::MappedReadOnlyRegion region =
-      base::ReadOnlySharedMemoryRegion::Create(data->size());
-  if (!region.IsValid()) {
-    // Allow printing if the scan can't happen due to memory failure.
-    PRINTER_LOG(ERROR) << "Printed without analysis due to memory failure";
-    std::move(on_verdict).Run(/*allowed=*/true);
-    return;
-  }
-  std::memcpy(region.mapping.memory(), data->front(), data->size());
-  scanning_data.page = std::move(region.region);
-
-  auto on_scan_result = base::BindOnce(
-      [](base::OnceCallback<void(bool should_proceed)> callback,
-         const ContentAnalysisDelegate::Data& data,
-         ContentAnalysisDelegate::Result& result) {
-        std::move(callback).Run(result.page_result);
-      },
-      std::move(on_verdict));
-  ContentAnalysisDelegate::CreateForWebContents(
-      initiator, std::move(scanning_data), std::move(on_scan_result),
-      safe_browsing::DeepScanAccessPoint::PRINT);
-}
 
 bool ShouldDoLocalScan(PrintScanningContext context) {
   if (base::FeatureList::IsEnabled(
@@ -117,7 +86,7 @@ bool ShouldScan(PrintScanningContext context,
 
 }  // namespace
 
-void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> data,
+void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> print_data,
                             content::WebContents* initiator,
                             std::string printer_name,
                             PrintScanningContext context,
@@ -150,8 +119,47 @@ void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> data,
   // takes place in the cloud instead of locally.
   std::move(hide_preview).Run();
 
-  ScanAndPrint(data, web_contents, std::move(*scanning_data),
-               std::move(on_verdict));
+  PrintIfAllowedByPolicy(print_data, web_contents, std::move(*scanning_data),
+                         std::move(on_verdict));
+}
+
+void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> print_data,
+                            content::WebContents* initiator,
+                            ContentAnalysisDelegate::Data scanning_data,
+                            base::OnceCallback<void(bool)> on_verdict) {
+  // The preview document bytes are copied so that the content analysis code
+  // can arbitrarily use them without having to handle ownership issues with
+  // other printing code.
+  base::MappedReadOnlyRegion region =
+      base::ReadOnlySharedMemoryRegion::Create(print_data->size());
+  if (!region.IsValid()) {
+    // Allow printing if the scan can't happen due to memory failure.
+    PRINTER_LOG(ERROR) << "Printed without analysis due to memory failure";
+    std::move(on_verdict).Run(/*allowed=*/true);
+    return;
+  }
+  std::memcpy(region.mapping.memory(), print_data->front(), print_data->size());
+  scanning_data.page = std::move(region.region);
+
+  auto on_scan_result = base::BindOnce(
+      [](base::OnceCallback<void(bool should_proceed)> callback,
+         const ContentAnalysisDelegate::Data& data,
+         ContentAnalysisDelegate::Result& result) {
+        std::move(callback).Run(result.page_result);
+      },
+      std::move(on_verdict));
+
+  // This needs to be done to avoid having an embedded page compare against
+  // policies and report its URL. This is especially important when Chrome's PDF
+  // reader is used, as a cryptic extension URL will be sent for
+  // scanning/reporting in that case.
+  // TODO(b/289243948): Add browser test coverage for web contents received and
+  // passed to the delegate.
+  content::WebContents* web_contents = initiator->GetOutermostWebContents();
+
+  ContentAnalysisDelegate::CreateForWebContents(
+      web_contents, std::move(scanning_data), std::move(on_scan_result),
+      safe_browsing::DeepScanAccessPoint::PRINT);
 }
 
 absl::optional<ContentAnalysisDelegate::Data> GetPrintAnalysisData(
