@@ -48,8 +48,7 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
   std::unique_ptr<ProfilePickerSignedInFlowController>
   CreateSignedInFlowController(
       Profile* signed_in_profile,
-      std::unique_ptr<content::WebContents> contents,
-      FinishFlowCallback finish_flow_callback) override;
+      std::unique_ptr<content::WebContents> contents) override;
 
   const ProfilePicker::EntryPoint entry_point_;
 

@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_MANAGEMENT_FLOW_CONTROLLER_IMPL_H_
 
 #include <memory>
+
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 class ProfilePickerWebContentsHost;
@@ -39,9 +39,9 @@ class ProfileManagementFlowControllerImpl
       StepSwitchFinishedCallback step_switch_finished_callback);
 
   virtual std::unique_ptr<ProfilePickerSignedInFlowController>
-  CreateSignedInFlowController(Profile* signed_in_profile,
-                               std::unique_ptr<content::WebContents> contents,
-                               FinishFlowCallback finish_flow_callback) = 0;
+  CreateSignedInFlowController(
+      Profile* signed_in_profile,
+      std::unique_ptr<content::WebContents> contents) = 0;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Creates, registers and switches to steps to implement the identity flow

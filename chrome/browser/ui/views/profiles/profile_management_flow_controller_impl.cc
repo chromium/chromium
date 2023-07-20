@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_provider.h"
@@ -77,18 +76,9 @@ std::unique_ptr<ProfileManagementStepController>
 ProfileManagementFlowControllerImpl::CreatePostSignInStep(
     Profile* signed_in_profile,
     std::unique_ptr<content::WebContents> contents) {
-  auto finish_flow_callback = FinishFlowCallback(base::BindOnce(
-      &ProfileManagementFlowControllerImpl::FinishFlowAndRunInBrowser,
-      // Unretained ok: the callback is passed to a step that
-      // the `this` will own and outlive.
-      base::Unretained(this),
-      // Unretained ok: the steps register a profile alive and
-      // will be alive until this callback runs.
-      base::Unretained(signed_in_profile)));
   return ProfileManagementStepController::CreateForPostSignInFlow(
       host(),
-      CreateSignedInFlowController(signed_in_profile, std::move(contents),
-                                   std::move(finish_flow_callback)));
+      CreateSignedInFlowController(signed_in_profile, std::move(contents)));
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -96,18 +86,16 @@ std::unique_ptr<ProfileManagementStepController>
 ProfileManagementFlowControllerImpl::CreateSamlStep(
     Profile* signed_in_profile,
     std::unique_ptr<content::WebContents> contents) {
-  auto finish_flow_callback = FinishFlowCallback(base::BindOnce(
-      &ProfileManagementFlowControllerImpl::FinishFlowAndRunInBrowser,
-      // Unretained ok: the callback is passed to a step that
-      // the `flow_controller_` will own and outlive.
-      base::Unretained(this),
-      // Unretained ok: the steps register a profile alive and
-      // will be alive until this callback runs.
-      base::Unretained(signed_in_profile)));
-
   return ProfileManagementStepController::CreateForFinishSamlSignIn(
       host(), signed_in_profile, std::move(contents),
-      std::move(finish_flow_callback));
+      base::BindOnce(
+          &ProfileManagementFlowControllerImpl::FinishFlowAndRunInBrowser,
+          // Unretained ok: the callback is passed to a step that
+          // the `flow_controller_` will own and outlive.
+          base::Unretained(this),
+          // Unretained ok: the steps register a profile alive and
+          // will be alive until this callback runs.
+          base::Unretained(signed_in_profile)));
 }
 
 void ProfileManagementFlowControllerImpl::HandleSignInCompleted(

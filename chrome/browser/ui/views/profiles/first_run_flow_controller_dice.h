@@ -48,11 +48,15 @@ class FirstRunFlowControllerDice : public ProfileManagementFlowControllerImpl {
   std::unique_ptr<ProfilePickerSignedInFlowController>
   CreateSignedInFlowController(
       Profile* signed_in_profile,
-      std::unique_ptr<content::WebContents> contents,
-      FinishFlowCallback flow_finished_callback) override;
+      std::unique_ptr<content::WebContents> contents) override;
 
  private:
   void HandleIntroSigninChoice(IntroChoice choice);
+
+  // To be called when the sign-in and/or sync steps of the flow are completed
+  // (or skipped), to proceed with additional steps or finish the flow.
+  void HandleIdentityStepsCompleted(
+      PostHostClearedCallback post_host_cleared_callback);
 
   const raw_ptr<Profile> profile_;
   ProfilePicker::FirstRunExitedCallback first_run_exited_callback_;

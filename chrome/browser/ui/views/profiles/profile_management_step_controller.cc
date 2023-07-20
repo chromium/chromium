@@ -137,19 +137,21 @@ class FinishSamlSignInStepController : public ProfileManagementStepController {
       ProfilePickerWebContentsHost* host,
       Profile* profile,
       std::unique_ptr<content::WebContents> contents,
-      FinishFlowCallback finish_flow_callback)
+      base::OnceCallback<void(PostHostClearedCallback)>
+          finish_picker_section_callback)
       : ProfileManagementStepController(host),
         profile_(profile),
         contents_(std::move(contents)),
-        finish_flow_callback_(std::move(finish_flow_callback)) {
-    DCHECK(finish_flow_callback_.value());
+        finish_picker_section_callback_(
+            std::move(finish_picker_section_callback)) {
+    DCHECK(finish_picker_section_callback_);
     profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
         profile_, ProfileKeepAliveOrigin::kProfileCreationSamlFlow);
   }
 
   ~FinishSamlSignInStepController() override {
-    if (finish_flow_callback_.value()) {
-      finish_flow_callback_->Reset();
+    if (finish_picker_section_callback_) {
+      finish_picker_section_callback_.Reset();
     }
   }
 
@@ -181,25 +183,33 @@ class FinishSamlSignInStepController : public ProfileManagementStepController {
   }
 
   void OnSignInContentsFreedUp() {
-    DCHECK(finish_flow_callback_.value());
+    DCHECK(finish_picker_section_callback_);
 
     ProfileMetrics::LogProfileAddNewUser(
         ProfileMetrics::ADD_NEW_PROFILE_PICKER_SIGNED_IN);
 
+    // Second, ensure the profile creation and set up is complete.
     FinalizeNewProfileSetup(profile_,
                             profiles::GetDefaultNameForNewEnterpriseProfile(),
                             /*is_default_name=*/false);
 
+    // Finally, instruct the flow terminate in the picker and continue in a full
+    // browser window.
     auto continue_callback = PostHostClearedCallback(
         base::BindOnce(&FinishSamlSignInStepController::ContinueSAMLSignin,
                        std::move(contents_)));
-    std::move(finish_flow_callback_.value()).Run(std::move(continue_callback));
+    std::move(finish_picker_section_callback_)
+        .Run(std::move(continue_callback));
   }
 
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
   raw_ptr<Profile> profile_;
   std::unique_ptr<content::WebContents> contents_;
-  FinishFlowCallback finish_flow_callback_;
+
+  // Callback to be executed to close the flow host, when it is ready to
+  // continue the SAML sign-in in the full browser.
+  base::OnceCallback<void(PostHostClearedCallback)>
+      finish_picker_section_callback_;
 
   base::WeakPtrFactory<FinishSamlSignInStepController> weak_ptr_factory_{this};
 };
@@ -261,9 +271,11 @@ ProfileManagementStepController::CreateForFinishSamlSignIn(
     ProfilePickerWebContentsHost* host,
     Profile* profile,
     std::unique_ptr<content::WebContents> contents,
-    FinishFlowCallback finish_flow_callback) {
+    base::OnceCallback<void(PostHostClearedCallback)>
+        finish_picker_section_callback) {
   return std::make_unique<FinishSamlSignInStepController>(
-      host, profile, std::move(contents), std::move(finish_flow_callback));
+      host, profile, std::move(contents),
+      std::move(finish_picker_section_callback));
 }
 
 #endif

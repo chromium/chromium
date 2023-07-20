@@ -96,7 +96,7 @@ class IntroStepController : public ProfileManagementStepController {
   base::WeakPtrFactory<IntroStepController> weak_ptr_factory_{this};
 };
 
-// Instance allowing `TurnSyncOnHelper` to  drive the interface in the
+// Instance allowing `TurnSyncOnHelper` to drive the interface in the
 // `kPostSignIn` step.
 //
 // Not following the `*SignedInFlowController` naming pattern to avoid confusion
@@ -104,17 +104,18 @@ class IntroStepController : public ProfileManagementStepController {
 // `ProfilePickerSignedInFlowController` should eventually be renamed.
 class FirstRunPostSignInAdapter : public ProfilePickerSignedInFlowController {
  public:
-  FirstRunPostSignInAdapter(ProfilePickerWebContentsHost* host,
-                            Profile* profile,
-                            std::unique_ptr<content::WebContents> contents,
-                            FinishFlowCallback finish_flow_callback)
+  FirstRunPostSignInAdapter(
+      ProfilePickerWebContentsHost* host,
+      Profile* profile,
+      std::unique_ptr<content::WebContents> contents,
+      base::OnceCallback<void(PostHostClearedCallback)> step_completed_callback)
       : ProfilePickerSignedInFlowController(host,
                                             profile,
                                             std::move(contents),
                                             kAccessPoint,
                                             /*profile_color=*/absl::nullopt),
-        finish_flow_callback_(std::move(finish_flow_callback)) {
-    DCHECK(finish_flow_callback_.value());
+        step_completed_callback_(std::move(step_completed_callback)) {
+    DCHECK(step_completed_callback_);
   }
 
   void Init() override {
@@ -131,14 +132,15 @@ class FirstRunPostSignInAdapter : public ProfilePickerSignedInFlowController {
     // Do nothing if this has already been called. Note that this can get called
     // first time from a special case handling (such as the Settings link) and
     // than second time when the TurnSyncOnHelper finishes.
-    if (finish_flow_callback_->is_null())
+    if (!step_completed_callback_) {
       return;
+    }
 
-    std::move(finish_flow_callback_.value()).Run(std::move(callback));
+    std::move(step_completed_callback_).Run(std::move(callback));
   }
 
  private:
-  FinishFlowCallback finish_flow_callback_;
+  base::OnceCallback<void(PostHostClearedCallback)> step_completed_callback_;
 };
 
 }  // namespace
@@ -186,14 +188,14 @@ void FirstRunFlowControllerDice::Init(
 }
 
 void FirstRunFlowControllerDice::CancelPostSignInFlow() {
-  // TODO(crbug.com/1375277): If on enterprise profile welcome, sign the user
+  // TODO(crbug.com/1465779): If on enterprise profile welcome, sign the user
   // out and continue with a local profile. Probably would just consist in
   // aborting the TSOH's flow, which should remove the account. Maybe we'd need
   // to advance to a separate step to allow deleting all the objects and getting
   // the account fully removed before opening the browser?
   NOTIMPLEMENTED();
 
-  FinishFlowAndRunInBrowser(profile_, PostHostClearedCallback());
+  HandleIdentityStepsCompleted(PostHostClearedCallback());
 }
 
 bool FirstRunFlowControllerDice::PreFinishWithBrowser() {
@@ -210,12 +212,19 @@ void FirstRunFlowControllerDice::HandleIntroSigninChoice(IntroChoice choice) {
   }
 
   if (choice == IntroChoice::kContinueWithoutAccount) {
-    FinishFlowAndRunInBrowser(profile_, PostHostClearedCallback());
+    HandleIdentityStepsCompleted(PostHostClearedCallback());
     return;
   }
 
   SwitchToIdentityStepsFromAccountSelection(
       /*step_switch_finished_callback=*/base::DoNothing());
+}
+
+void FirstRunFlowControllerDice::HandleIdentityStepsCompleted(
+    PostHostClearedCallback post_host_cleared_callback) {
+  // TODO(crbug.com/1465822): Show the default browser promo.
+
+  FinishFlowAndRunInBrowser(profile_, std::move(post_host_cleared_callback));
 }
 
 std::unique_ptr<ProfilePickerDiceSignInProvider>
@@ -227,10 +236,12 @@ FirstRunFlowControllerDice::CreateDiceSignInProvider() {
 std::unique_ptr<ProfilePickerSignedInFlowController>
 FirstRunFlowControllerDice::CreateSignedInFlowController(
     Profile* signed_in_profile,
-    std::unique_ptr<content::WebContents> contents,
-    FinishFlowCallback finish_flow_callback) {
+    std::unique_ptr<content::WebContents> contents) {
   DCHECK_EQ(profile_, signed_in_profile);
   return std::make_unique<FirstRunPostSignInAdapter>(
       host(), signed_in_profile, std::move(contents),
-      std::move(finish_flow_callback));
+      base::BindOnce(&FirstRunFlowControllerDice::HandleIdentityStepsCompleted,
+                     // Unretained ok: the callback is passed to a step that
+                     // the `this` will own and outlive.
+                     base::Unretained(this)));
 }

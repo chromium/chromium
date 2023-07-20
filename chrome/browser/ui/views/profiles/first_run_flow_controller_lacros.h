@@ -38,8 +38,7 @@ class FirstRunFlowControllerLacros
   std::unique_ptr<ProfilePickerSignedInFlowController>
   CreateSignedInFlowController(
       Profile* signed_in_profile,
-      std::unique_ptr<content::WebContents> contents,
-      FinishFlowCallback finish_flow_callback) override;
+      std::unique_ptr<content::WebContents> contents) override;
 
  private:
   void MarkSyncConfirmationSeen();

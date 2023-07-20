@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -130,7 +129,7 @@ class ProfileCreationSignedInFlowController
       Profile* profile,
       std::unique_ptr<content::WebContents> contents,
       absl::optional<SkColor> profile_color,
-      FinishFlowCallback finish_flow_callback)
+      base::OnceCallback<void(PostHostClearedCallback)> finish_flow_callback)
       : ProfilePickerSignedInFlowController(host,
                                             profile,
                                             std::move(contents),
@@ -228,7 +227,7 @@ class ProfileCreationSignedInFlowController
                  "profile_path", profile()->GetPath().AsUTF8Unsafe());
     DCHECK(!name_for_signed_in_profile.empty());
     DCHECK(callback.value());
-    DCHECK(finish_flow_callback_.value());
+    DCHECK(finish_flow_callback_);
 
     profile_name_resolver_.reset();
 
@@ -238,7 +237,7 @@ class ProfileCreationSignedInFlowController
     ProfileMetrics::LogProfileAddNewUser(
         ProfileMetrics::ADD_NEW_PROFILE_PICKER_SIGNED_IN);
 
-    std::move(finish_flow_callback_.value()).Run(std::move(callback));
+    std::move(finish_flow_callback_).Run(std::move(callback));
   }
 
   // Controls whether the flow still needs to finalize (which includes showing
@@ -246,7 +245,7 @@ class ProfileCreationSignedInFlowController
   bool is_finishing_ = false;
 
   std::unique_ptr<ProfileNameResolver> profile_name_resolver_;
-  FinishFlowCallback finish_flow_callback_;
+  base::OnceCallback<void(PostHostClearedCallback)> finish_flow_callback_;
 };
 
 }  // namespace
@@ -361,9 +360,18 @@ ProfilePickerFlowController::CreateDiceSignInProvider() {
 std::unique_ptr<ProfilePickerSignedInFlowController>
 ProfilePickerFlowController::CreateSignedInFlowController(
     Profile* signed_in_profile,
-    std::unique_ptr<content::WebContents> contents,
-    FinishFlowCallback finish_flow_callback) {
+    std::unique_ptr<content::WebContents> contents) {
   DCHECK(!weak_signed_in_flow_controller_);
+
+  auto finish_flow_callback =
+      base::BindOnce(&ProfilePickerFlowController::FinishFlowAndRunInBrowser,
+                     // Unretained ok: the callback is passed to a step that
+                     // the `this` will own and outlive.
+                     base::Unretained(this),
+                     // Unretained ok: the steps register a profile alive and
+                     // will be alive until this callback runs.
+                     base::Unretained(signed_in_profile));
+
   auto signed_in_flow = std::make_unique<ProfileCreationSignedInFlowController>(
       host(), signed_in_profile, std::move(contents), suggested_profile_color_,
       std::move(finish_flow_callback));
