@@ -52,6 +52,13 @@ found in the LICENSE file.
     </view>
 
     <ViewStub
+        android:id="@+id/target_view_stub"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/tab_strip_height"
+        android:layout_height="@dimen/toolbar_height_no_shadow"
+        android:layout="@layout/drag_drop_target_view" />
+
+    <ViewStub
         android:id="@+id/tab_switcher_toolbar_stub"
         android:layout_width="match_parent"
         android:layout_marginTop="@dimen/tab_strip_height"
