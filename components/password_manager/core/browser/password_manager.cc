@@ -47,6 +47,7 @@
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/password_manager/core/common/password_manager_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -1261,9 +1262,6 @@ void PasswordManager::ProcessAutofillPredictions(
       continue;
     }
 
-    if (form->has_password_field())
-      continue;
-
     const FormPredictions* form_predictions =
         &predictions_[form->form_signature()];
     // Do not skip the form if it either contains a field for the Username
@@ -1273,7 +1271,13 @@ void PasswordManager::ProcessAutofillPredictions(
       continue;
     }
 
-    CreateFormManager(driver, form->ToFormData());
+    const FormData& form_data = form->ToFormData();
+    // If the renderer recognizes `form` as a credential form, then we will be
+    // informed about this form via `OnFormsParsed()` and `OnFormsSeen()`.
+    if (util::IsRendererRecognizedCredentialForm(form_data)) {
+      continue;
+    }
+    CreateFormManager(driver, form_data);
   }
 
   for (auto& manager : form_managers_)

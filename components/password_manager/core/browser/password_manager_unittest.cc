@@ -2969,6 +2969,63 @@ TEST_F(PasswordManagerTest, AutofillPredictionBeforeFormParsed) {
   task_environment_.RunUntilIdle();
 }
 
+// Username first flows are not yet available on iOS (crbug.com/1064560).
+#if !BUILDFLAG(IS_IOS)
+// Check that when autofill predictions for a `SINGLE_USERNAME` field are
+// received, a fill password request is sent to the renderer even
+// if `OnPasswordFormsParsed` is never called.
+TEST_F(PasswordManagerTest,
+       AutofillPredictionBeforeFormParsedWithoutAutocompleteAttribute) {
+  PasswordFormManager::set_wait_for_server_predictions_for_filling(true);
+
+  PasswordForm form(MakeSimpleFormWithOnlyUsernameField());
+  store_->AddLogin(form);
+
+  FormStructure form_structure(form.form_data);
+  form_structure.field(0)->set_server_predictions(
+      {CreateFieldPrediction(autofill::SINGLE_USERNAME)});
+  manager()->ProcessAutofillPredictions(&driver_, {&form_structure});
+
+  EXPECT_CALL(driver_, SetPasswordFillData);
+
+  // We do not call `OnPasswordFormsParsed()` (to simulate the renderer) because
+  // the renderer does not recognize it as a relevant form, since the field does
+  // not have an autocomplete="username" attribute.
+  task_environment_.RunUntilIdle();
+}
+
+// Check that when autofill predictions for a `SINGLE_USERNAME` field with an
+// autocomplete attribute set to "username" are received, no fill password
+// request is sent to the renderer until `OnPasswordFormsParsed()` is called,
+// since we expect the renderer to see the form and notify `PasswordManager`
+// about it.
+TEST_F(PasswordManagerTest,
+       AutofillPredictionBeforeFormParsedWithAutocompleteAttribute) {
+  PasswordFormManager::set_wait_for_server_predictions_for_filling(true);
+
+  PasswordForm form(MakeSimpleFormWithOnlyUsernameField());
+  store_->AddLogin(form);
+
+  // The renderer would detect the autocomplete attribute below.
+  form.form_data.fields[0].autocomplete_attribute = "username";
+  FormStructure form_structure(form.form_data);
+  form_structure.field(0)->set_server_predictions(
+      {CreateFieldPrediction(autofill::SINGLE_USERNAME)});
+
+  // No fill call is sent to the renderer during prediction processing.
+  EXPECT_CALL(driver_, SetPasswordFillData).Times(0);
+  manager()->ProcessAutofillPredictions(&driver_, {&form_structure});
+  Mock::VerifyAndClearExpectations(&driver_);
+
+  // But once the renderer notifies `PasswordManager` that the forms have been
+  // parsed, the fill call is made.
+  EXPECT_CALL(driver_, SetPasswordFillData);
+  manager()->OnPasswordFormsParsed(&driver_, {form.form_data});
+
+  task_environment_.RunUntilIdle();
+}
+#endif  // !BUIDFLAG(IS_IOS)
+
 // Check that when autofill predictions are received before a form is found then
 // server predictions are not ignored and used for filling in case there are
 // multiple forms on a page, including forms that have UsernameFirstFlow votes.
