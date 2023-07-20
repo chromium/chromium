@@ -7,6 +7,7 @@ import {LoadImageRequest, LoadImageResponseStatus} from 'chrome-extension://pmfj
 import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js';
 
 import {FileType} from '../../../common/js/file_type.js';
+import {getSanitizedScriptUrl} from '../../../common/js/trusted_script_url_policy_util.js';
 import {util} from '../../../common/js/util.js';
 import {ThumbnailLoader} from '../thumbnail_loader.js';
 
@@ -75,7 +76,7 @@ export class ContentMetadataProvider extends MetadataProvider {
     const options =
         ContentMetadataProvider.loadAsModule_ ? {type: 'module'} : {};
 
-    const worker = new SharedWorker(script, options);
+    const worker = new SharedWorker(getSanitizedScriptUrl(script), options);
     worker.onerror = () => {
       console.warn(
           'Error to initialize the ContentMetadataProvider ' +

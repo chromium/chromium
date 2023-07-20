@@ -4,6 +4,7 @@
 
 import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js';
 import {dispatchSimpleEvent, getPropertyDescriptor, PropertyKind} from 'chrome://resources/ash/common/cr_deprecated.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
 import {isEntryInsideDrive} from '../../../common/js/entry_utils.js';
@@ -223,7 +224,8 @@ class FilesTreeItem extends TreeItem {
     this.parentTree_ = tree;
 
     const innerHTML = directorytree.createRowElementContent(id);
-    this.rowElement.innerHTML = innerHTML;
+    this.rowElement.innerHTML =
+        sanitizeInnerHtml(innerHTML, {attrs: ['class', 'id']});
     this.label = label;
   }
 

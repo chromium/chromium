@@ -93,7 +93,7 @@ export class InstallLinuxPackageDialog extends FileManagerDialogBase {
    * @param {string|null} message The (optional) message to display.
    */
   resetDetailsFrame_(message) {
-    this.details_frame_.innerHTML = '';
+    this.details_frame_.innerHTML = trustedTypes.emptyHTML;
     this.details_frame_.appendChild(this.details_label_);
     if (message) {
       const text = this.document_.createElement('div');

@@ -126,8 +126,8 @@ export const parseHtmlSubset = (function() {
    * @type {!Set<string>}
    * @const
    */
-  const allowedTags =
-      new Set(['A', 'B', 'BR', 'DIV', 'KBD', 'P', 'PRE', 'SPAN', 'STRONG']);
+  const allowedTags = new Set(
+      ['A', 'B', 'BR', 'DIV', 'EM', 'KBD', 'P', 'PRE', 'SPAN', 'STRONG']);
 
   /**
    * Allow-list of optional tag names in parseHtmlSubset.

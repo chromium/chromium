@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
+
 import {htmlEscape} from '../../../common/js/dom_utils.js';
 import {FileType} from '../../../common/js/file_type.js';
 import {strf} from '../../../common/js/util.js';
@@ -48,8 +50,8 @@ export class SearchAutocompleteListItem extends ListItem {
     if ('isHeaderItem' in item) {
       const searchItem = item as SearchItem;
       icon.setAttribute('search-icon', '');
-      text.innerHTML =
-          strf('SEARCH_DRIVE_HTML', htmlEscape(searchItem.searchQuery));
+      text.innerHTML = sanitizeInnerHtml(
+          strf('SEARCH_DRIVE_HTML', htmlEscape(searchItem.searchQuery)));
     } else {
       const driveItem =
           item as chrome.fileManagerPrivate.DriveMetadataSearchResult;
@@ -57,7 +59,7 @@ export class SearchAutocompleteListItem extends ListItem {
       icon.setAttribute('file-type-icon', iconType);
       // highlightedBaseName is a piece of HTML with meta characters properly
       // escaped. See the comment at fileManagerPrivate.searchDriveMetadata().
-      text.innerHTML = driveItem.highlightedBaseName;
+      text.innerHTML = sanitizeInnerHtml(driveItem.highlightedBaseName);
     }
     this.appendChild(icon);
     this.appendChild(text);

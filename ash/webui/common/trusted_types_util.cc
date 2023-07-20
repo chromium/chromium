@@ -30,7 +30,9 @@ void EnableTrustedTypesCSP(content::WebUIDataSource* source) {
       // Add TrustedTypes policy for creating the PDF plugin.
       "print-preview-plugin-loader "
       // Add TrustedTypes policies necessary for using Polymer.
-      "polymer-html-literal polymer-template-event-attribute-policy;");
+      "polymer-html-literal polymer-template-event-attribute-policy "
+      // Added TrustedTypes policy for trusted script URLs.
+      "file-manager-trusted-script;");
 }
 
 }  // namespace ash

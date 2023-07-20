@@ -48,6 +48,7 @@ static_library("file_manager_ui") {
     ":file_manager_untrusted_ui",
     "//ash",
     "//ash/constants:constants",
+    "//ash/webui/common:trusted_types_util",
     "//ash/webui/file_manager/mojom",
     "//ash/webui/file_manager/resources:file_manager_swa_resources",
     "//ash/webui/system_apps/public:system_web_app_config",
