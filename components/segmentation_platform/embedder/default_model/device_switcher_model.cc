@@ -62,7 +62,7 @@ std::unique_ptr<Config> DeviceSwitcherModel::GetConfig() {
   config->AddSegmentId(kDeviceSwitcherModelId,
                        std::make_unique<DeviceSwitcherModel>());
   config->is_boolean_segment = false;
-  config->on_demand_execution = true;
+  config->auto_execute_and_cache = false;
   return config;
 }
 

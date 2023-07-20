@@ -26,7 +26,7 @@ std::unique_ptr<Config> TabResumptionRanker::GetConfig() {
   config->segmentation_key = kTabResumptionClassifierKey;
   config->segmentation_uma_name = kTabResumptionClassifierUmaName;
   config->AddSegmentId(kSegmentId, std::make_unique<TabResumptionRanker>());
-  config->on_demand_execution = true;
+  config->auto_execute_and_cache = false;
   return config;
 }
 

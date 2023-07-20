@@ -5,13 +5,11 @@
 #include "components/segmentation_platform/internal/database/cached_result_writer.h"
 
 #include "base/logging.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/logging.h"
 #include "components/segmentation_platform/internal/post_processor/post_processor.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
-#include "components/segmentation_platform/public/result.h"
 
 namespace segmentation_platform {
 
@@ -25,8 +23,7 @@ void CachedResultWriter::UpdatePrefsIfExpired(
     const Config* config,
     const proto::ClientResult& client_result,
     const PlatformOptions& platform_options) {
-  if (!IsPrefUpdateRequiredForClient(config, client_result, platform_options) ||
-      config->on_demand_execution) {
+  if (!IsPrefUpdateRequiredForClient(config, client_result, platform_options)) {
     return;
   }
   VLOG(1) << "CachedResultWriter updating prefs with new result: "

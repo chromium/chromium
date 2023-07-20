@@ -232,7 +232,7 @@ TEST_F(SegmentSelectorTest, FindBestSegmentFlowWithTwoSegments) {
 
 TEST_F(SegmentSelectorTest, RunSelectionOnDemand) {
   auto config = CreateTestConfig();
-  config->on_demand_execution = true;
+  config->auto_execute_and_cache = false;
   SetUpWithConfig(std::move(config));
   EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
       .WillRepeatedly(Return(true));
@@ -284,7 +284,7 @@ TEST_F(SegmentSelectorTest, RunSelectionOnDemand) {
 
 TEST_F(SegmentSelectorTest, RunSelectionOnDemandCallbackInvokedOnFailure) {
   auto config = CreateTestConfig();
-  config->on_demand_execution = true;
+  config->auto_execute_and_cache = false;
   SetUpWithConfig(std::move(config));
   EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
       .WillRepeatedly(Return(true));

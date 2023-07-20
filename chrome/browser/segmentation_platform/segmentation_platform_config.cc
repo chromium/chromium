@@ -108,7 +108,7 @@ std::unique_ptr<Config> GetConfigForContextualPageActions(
   config->AddSegmentId(
       SegmentId::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING,
       std::make_unique<ContextualPageActionsModel>());
-  config->on_demand_execution = true;
+  config->auto_execute_and_cache = false;
   return config;
 }
 
@@ -120,7 +120,7 @@ std::unique_ptr<Config> GetConfigForWebAppInstallationPromo() {
   config->segmentation_uma_name = kWebAppInstallationPromoUmaName;
   config->AddSegmentId(
       SegmentId::OPTIMIZATION_TARGET_WEB_APP_INSTALLATION_PROMO);
-  config->on_demand_execution = true;
+  config->auto_execute_and_cache = false;
   return config;
 }
 

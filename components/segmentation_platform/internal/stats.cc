@@ -228,8 +228,9 @@ void RecordSegmentSelectionComputed(
                                ? previous_selection.value()
                                : SegmentId::OPTIMIZATION_TARGET_UNKNOWN;
 
-  if (prev_segment == new_selection || config.on_demand_execution)
+  if (prev_segment == new_selection || !config.auto_execute_and_cache) {
     return;
+  }
 
   std::string switched_hist =
       base::StrCat({"SegmentationPlatform.", config.segmentation_uma_name,
@@ -261,10 +262,6 @@ void RecordClassificationResultUpdated(
     const Config& config,
     const absl::optional<proto::PredictionResult>& old_result,
     const proto::PredictionResult& new_result) {
-  if (config.on_demand_execution) {
-    return;
-  }
-
   PostProcessor post_processor;
   int new_result_top_label = post_processor.GetIndexOfTopLabel(new_result);
   int old_result_top_label =

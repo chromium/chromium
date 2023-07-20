@@ -19,8 +19,7 @@ void FieldTrialRecorder::RecordFieldTrialAtStartup(
     const std::vector<std::unique_ptr<Config>>& configs,
     CachedResultProvider* cached_result_provider) {
   for (const auto& config : configs) {
-    if (config->on_demand_execution ||
-        metadata_utils::ConfigUsesLegacyOutput(config.get())) {
+    if (metadata_utils::ConfigUsesLegacyOutput(config.get())) {
       continue;
     }
 

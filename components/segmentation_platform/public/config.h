@@ -67,10 +67,10 @@ struct Config {
   };
   base::flat_map<proto::SegmentId, std::unique_ptr<SegmentMetadata>> segments;
 
-  // The selection only supports returning results from on-demand model
-  // executions instead of returning result from previous sessions. The
-  // selection TTLs are ignored in this config.
-  bool on_demand_execution = false;
+  // The service will run models in the background and keep results ready for
+  // use at all times. The TTL settings in the model metadata should be used to
+  // specify how often to refresh results.
+  bool auto_execute_and_cache = true;
 
   // List of custom  inputs provided for running the segments. The delegate will
   // be invoked for input based on the model metadata's input processing config.

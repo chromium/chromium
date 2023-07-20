@@ -172,8 +172,7 @@ SegmentSelectionResult SegmentSelectorImpl::GetCachedSegmentResult() {
 void SegmentSelectorImpl::GetSelectedSegmentOnDemand(
     scoped_refptr<InputContext> input_context,
     SegmentSelectionCallback callback) {
-  DCHECK(config_->on_demand_execution);
-
+  DCHECK(!config_->auto_execute_and_cache);
   // Wrap callback to record metrics.
   auto wrapped_callback = base::BindOnce(
       &SegmentSelectorImpl::CallbackWrapper, weak_ptr_factory_.GetWeakPtr(),
@@ -221,7 +220,7 @@ bool SegmentSelectorImpl::IsPreviousSelectionInvalid() {
 }
 
 void SegmentSelectorImpl::SelectSegmentAndStoreToPrefs() {
-  if (config_->on_demand_execution) {
+  if (!config_->auto_execute_and_cache) {
     return;
   }
   GetRankForNextSegment(std::make_unique<SegmentRanks>(), nullptr,
@@ -238,7 +237,7 @@ void SegmentSelectorImpl::GetRankForNextSegment(
           std::make_unique<SegmentResultProvider::GetResultOptions>();
       options->segment_id = needed_segment.first;
       options->discrete_mapping_key = config_->segmentation_key;
-      options->ignore_db_scores = config_->on_demand_execution;
+      options->ignore_db_scores = !config_->auto_execute_and_cache;
       options->input_context = input_context;
       options->callback = base::BindOnce(
           &SegmentSelectorImpl::OnGetResultForSegmentSelection,
@@ -252,7 +251,7 @@ void SegmentSelectorImpl::GetRankForNextSegment(
 
   // Finished fetching ranks for all segments.
   auto segment_id_and_rank = FindBestSegment(*ranks);
-  if (config_->on_demand_execution) {
+  if (!config_->auto_execute_and_cache) {
     DCHECK(!callback.is_null());
     SegmentSelectionResult result;
     result.is_ready = true;
@@ -278,7 +277,7 @@ void SegmentSelectorImpl::OnGetResultForSegmentSelection(
   if (!result->rank) {
     stats::RecordSegmentSelectionFailure(*config_,
                                          GetFailureReason(result->state));
-    if (config_->on_demand_execution && !callback.is_null()) {
+    if (!config_->auto_execute_and_cache && !callback.is_null()) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(callback), SegmentSelectionResult()));
@@ -287,7 +286,7 @@ void SegmentSelectorImpl::OnGetResultForSegmentSelection(
   }
   ranks->insert(std::make_pair(current_segment_id, *result->rank));
 
-  if (config_->on_demand_execution && training_data_collector_) {
+  if (!config_->auto_execute_and_cache && training_data_collector_) {
     // Collect training data on demand.
     training_data_collector_->OnDecisionTime(
         current_segment_id, input_context,
@@ -374,7 +373,7 @@ void SegmentSelectorImpl::UpdateSelectedSegment(SegmentId new_selection,
 
 void SegmentSelectorImpl::RecordFieldTrials() const {
   // Register can be nullptr in tests.
-  if (config_->on_demand_execution || !field_trial_register_) {
+  if (!config_->auto_execute_and_cache || !field_trial_register_) {
     return;
   }
   const std::string& trial_name = config_->GetSegmentationFilterName();

@@ -59,8 +59,7 @@ class ResultRefreshManager {
   // tries to get the result from database, else tries to get the result by
   // executing model. It also saves to the result to database after model
   // execution.
-  void GetCachedResultOrRunModel(SegmentResultProvider* segment_result_provider,
-                                 const Config* config,
+  void GetCachedResultOrRunModel(const Config* config,
                                  ExecutionService* execution_service);
 
   void OnGetCachedResultOrRunModel(

@@ -66,7 +66,7 @@ std::vector<std::unique_ptr<Config>> CreateTestConfigs() {
     config->segment_selection_ttl = base::Days(14);
     config->AddSegmentId(
         SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER);
-    config->on_demand_execution = true;
+    config->auto_execute_and_cache = false;
     configs.push_back(std::move(config));
   }
   {
