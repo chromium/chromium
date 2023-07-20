@@ -248,34 +248,6 @@ TEST_F(
       runMochaSuite('ClearBrowsingDataDesktop');
     });
 
-var CrSettingsMainPageTest = class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/settings_main_test.js';
-  }
-};
-
-// Copied from Polymer 2 version of tests:
-// Times out on Windows Tests (dbg). See https://crbug.com/651296.
-// Times out / crashes on chromium.linux/Linux Tests (dbg) crbug.com/667882
-// Flaky everywhere crbug.com/1197768
-TEST_F('CrSettingsMainPageTest', 'DISABLED_MainPage', function() {
-  mocha.run();
-});
-
-// TODO(crbug.com/1420597): Clean up this test after Password Manager redesign
-// is launched.
-var CrSettingsAutofillPageTest = class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/autofill_page_test.js';
-  }
-};
-
-TEST_F('CrSettingsAutofillPageTest', 'All', function() {
-  mocha.run();
-});
-
 var CrSettingsAutofillSectionCompanyEnabledTest =
     class extends CrSettingsBrowserTest {
   /** @override */
@@ -285,18 +257,6 @@ var CrSettingsAutofillSectionCompanyEnabledTest =
 };
 
 TEST_F('CrSettingsAutofillSectionCompanyEnabledTest', 'All', function() {
-  mocha.run();
-});
-
-
-var CrSettingsSafetyCheckPageTest = class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/safety_check_page_test.js';
-  }
-};
-
-TEST_F('CrSettingsSafetyCheckPageTest', 'All', function() {
   mocha.run();
 });
 
@@ -408,17 +368,6 @@ TEST_F('CrSettingsSiteDetailsTest', 'MAYBE_SiteDetails', function() {
   mocha.run();
 });
 
-var CrSettingsPerformanceMenuTest = class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/settings_performance_menu_test.js';
-  }
-};
-
-TEST_F('CrSettingsPerformanceMenuTest', 'All', function() {
-  mocha.run();
-});
-
 var CrSettingsPerformancePageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -487,29 +436,6 @@ TEST_F(
     'ExceptionList', function() {
       runMochaSuite('TabDiscardExceptionList');
     });
-
-var CrSettingsBatteryPageTest = class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/battery_page_test.js';
-  }
-};
-
-TEST_F('CrSettingsBatteryPageTest', 'All', function() {
-  mocha.run();
-});
-
-var CrSettingsTabDiscardExceptionDialogTest =
-    class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/tab_discard_exception_dialog_test.js';
-  }
-};
-
-TEST_F('CrSettingsTabDiscardExceptionDialogTest', 'All', function() {
-  mocha.run();
-});
 
 var CrSettingsPersonalizationOptionsTest = class extends CrSettingsBrowserTest {
   /** @override */
@@ -940,70 +866,6 @@ TEST_F(
 TEST_F('CrSettingsSiteSettingsPageTest', 'SafetyHubDisabled', function() {
   runMochaSuite('SafetyHubDisabled');
 });
-
-[
-    // Flaky on all OSes. TODO(crbug.com/1302405): Enable the test.
-    ['Subpage', 'settings_subpage_test.js', 'DISABLED_All'],
-].forEach(test => registerTest(...test));
-
-// Timeout on Linux dbg bots: https://crbug.com/1394737
-GEN('#if !(BUILDFLAG(IS_LINUX) && !defined(NDEBUG))');
-[['PeoplePageSyncPage', 'people_page_sync_page_test.js']].forEach(
-    test => registerTest(...test));
-GEN('#endif');
-
-GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
-[['PeoplePageChromeOS', 'people_page_test_cros.js'],
- // Copied from Polymer 2 test. TODO(crbug.com/929455): flaky, fix.
- ['SiteListChromeOS', 'site_list_tests_cros.js', 'DISABLED_AndroidSmsInfo'],
-].forEach(test => registerTest(...test));
-GEN('#endif');
-
-GEN('#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH)');
-[['EditDictionaryPage', 'edit_dictionary_page_test.js'],
-].forEach(test => registerTest(...test));
-GEN('#endif');
-
-GEN('#if !BUILDFLAG(IS_CHROMEOS)');
-[['DefaultBrowser', 'default_browser_test.js'],
- ['ImportDataDialog', 'import_data_dialog_test.js'],
- ['SystemPage', 'system_page_test.js'],
- // TODO(crbug.com/1350019) Test is flaky on ChromeOS
- ['AppearancePage', 'appearance_page_test.js'],
-].forEach(test => registerTest(...test));
-GEN('#endif');
-
-GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH)');
-[['PeoplePageManageProfile', 'people_page_manage_profile_test.js'],
- ['Languages', 'languages_test.js'],
- ['RelaunchConfirmationDialog', 'relaunch_confirmation_dialog_test.js'],
-].forEach(test => registerTest(...test));
-GEN('#endif');
-
-GEN('#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)');
-[['PasskeysSubpage', 'passkeys_subpage_test.js'],
-].forEach(test => registerTest(...test));
-GEN('#endif');
-
-GEN('#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)');
-registerTest('MetricsReporting', 'metrics_reporting_test.js');
-GEN('#endif');
-
-GEN('#if BUILDFLAG(GOOGLE_CHROME_BRANDING)');
-registerTest('GetMostChromePage', 'get_most_chrome_page_test.js');
-GEN('#endif');
-
-function registerTest(testName, module, caseName) {
-  const className = `CrSettings${testName}Test`;
-  this[className] = class extends CrSettingsBrowserTest {
-    /** @override */
-    get browsePreload() {
-      return `chrome://settings/test_loader.html?module=settings/${module}`;
-    }
-  };
-
-  TEST_F(className, caseName || 'All', () => mocha.run());
-}
 
 // Some tests files are too large to run as a single "All" test (e.g. as above),
 // and flake on some bots. Each test suite can instead be run as an individual
