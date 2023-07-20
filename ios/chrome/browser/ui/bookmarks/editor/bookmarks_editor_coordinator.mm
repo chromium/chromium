@@ -122,6 +122,7 @@
   [super stop];
   DCHECK(_navigationController);
   [_mediator disconnect];
+  [self dismissActionSheetCoordinator];
   _mediator.consumer = nil;
   _mediator = nil;
   _viewController.delegate = nil;
@@ -190,6 +191,7 @@
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_VIEW_CONTROLLER_DISMISS_SAVE_CHANGES)
                 action:^{
+                  [weakSelf dismissActionSheetCoordinator];
                   BookmarksEditorCoordinator* strongSelf = weakSelf;
                   if (strongSelf != nil) {
                     [strongSelf->_viewController save];
@@ -200,6 +202,7 @@
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_VIEW_CONTROLLER_DISMISS_DISCARD_CHANGES)
                 action:^{
+                  [weakSelf dismissActionSheetCoordinator];
                   BookmarksEditorCoordinator* strongSelf = weakSelf;
                   if (strongSelf != nil) {
                     [strongSelf->_viewController cancel];
@@ -210,6 +213,7 @@
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_VIEW_CONTROLLER_DISMISS_CANCEL_CHANGES)
                 action:^{
+                  [weakSelf dismissActionSheetCoordinator];
                   BookmarksEditorCoordinator* strongSelf = weakSelf;
                   if (strongSelf != nil) {
                     [strongSelf->_viewController setNavigationItemsEnabled:YES];
@@ -288,6 +292,13 @@
     [_viewController.view endEditing:YES];
     [self.delegate bookmarksEditorCoordinatorShouldStop:self];
   }
+}
+
+#pragma mark - Private
+
+- (void)dismissActionSheetCoordinator {
+  [self.actionSheetCoordinator stop];
+  self.actionSheetCoordinator = nil;
 }
 
 @end
