@@ -99,8 +99,6 @@ import org.chromium.components.minidump_uploader.CrashFileManager;
 import org.chromium.components.optimization_guide.proto.HintsProto;
 import org.chromium.components.signin.AccountManagerFacadeImpl;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.components.version_info.Channel;
-import org.chromium.components.version_info.VersionConstants;
 import org.chromium.components.version_info.VersionInfo;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
@@ -543,10 +541,8 @@ public class ProcessInitializationHandler {
                         new CrashFileManager(ContextUtils.getApplicationContext().getCacheDir());
                 crashFileManager.cleanOutAllNonFreshMinidumpFiles();
 
-                // Restricting ANR collection to Canary until we are totally happy with it.
                 // ANR collection is only available on R+.
-                if (VersionConstants.CHANNEL == Channel.CANARY
-                        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     crashFileManager.collectAndWriteAnrs();
                 }
                 // Next, identify any minidumps that lack logcat output, and are too old to add
