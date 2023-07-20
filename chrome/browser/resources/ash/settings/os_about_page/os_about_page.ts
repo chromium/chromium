@@ -38,7 +38,7 @@ import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
+import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, AboutPageUpdateInfo, BrowserChannel, browserChannelToI18nId, RegulatoryInfo, TpmFirmwareUpdateStatusChangedEvent, UpdateStatus, UpdateStatusChangedEvent} from './about_page_browser_proxy.js';
@@ -58,7 +58,7 @@ interface OsAboutPageElement {
 }
 
 const OsAboutPageBase = DeepLinkingMixin(
-    RouteObserverMixin(I18nMixin(WebUiListenerMixin(PolymerElement))));
+    RouteOriginMixin(I18nMixin(WebUiListenerMixin(PolymerElement))));
 
 class OsAboutPageElement extends OsAboutPageBase {
   static get is() {
@@ -192,19 +192,6 @@ class OsAboutPageElement extends OsAboutPageBase {
             'currentUpdateStatusEvent_, hasCheckedForUpdates_, hasEndOfLife_)',
       },
 
-      focusConfig_: {
-        type: Object,
-        value() {
-          const map = new Map();
-          if (routes.ABOUT_DETAILED_BUILD_INFO) {
-            map.set(
-                routes.ABOUT_DETAILED_BUILD_INFO.path,
-                '#detailed-build-info-trigger');
-          }
-          return map;
-        },
-      },
-
       showUpdateWarningDialog_: {
         type: Boolean,
         value: false,
@@ -271,7 +258,6 @@ class OsAboutPageElement extends OsAboutPageBase {
   private eolMessageWithMonthAndYear_: string;
   private hasInternetConnection_: boolean;
   private firmwareUpdateCount_: number;
-  private focusConfig_: Map<string, string>;
   private showCrostiniLicense_: boolean;
   private showUpdateStatus_: boolean;
   private showButtonContainer_: boolean;
@@ -288,6 +274,9 @@ class OsAboutPageElement extends OsAboutPageBase {
 
   constructor() {
     super();
+
+    /** RouteOriginMixin override */
+    this.route = routes.ABOUT;
 
     this.aboutBrowserProxy_ = AboutPageBrowserProxyImpl.getInstance();
   }
@@ -334,9 +323,18 @@ class OsAboutPageElement extends OsAboutPageBase {
     }
   }
 
-  override currentRouteChanged(newRoute: Route): void {
+  override ready() {
+    super.ready();
+
+    this.addFocusConfig(
+        routes.ABOUT_DETAILED_BUILD_INFO, '#detailedBuildInfoTrigger');
+  }
+
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
+    super.currentRouteChanged(newRoute, oldRoute);
+
     // Does not apply to this page.
-    if (newRoute !== routes.ABOUT) {
+    if (newRoute !== this.route) {
       return;
     }
 

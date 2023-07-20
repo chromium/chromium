@@ -601,8 +601,11 @@ suite('AboutPageTest', function() {
       aboutPageEndOfLifeMessage: 'message',
     });
     await initNewPage();
-    assertTrue(!!page.$['detailed-build-info-trigger']);
-    page.$['detailed-build-info-trigger'].click();
+
+    const subpageTrigger =
+        page.shadowRoot.querySelector('#detailedBuildInfoTrigger');
+    assertTrue(!!subpageTrigger);
+    subpageTrigger.click();
     const buildInfoPage =
         page.shadowRoot.querySelector('settings-detailed-build-info-subpage');
     assertTrue(!!buildInfoPage);
@@ -628,8 +631,10 @@ suite('AboutPageTest', function() {
       aboutPageEndOfLifeMessage: '',
     });
     await initNewPage();
-    assertTrue(!!page.$['detailed-build-info-trigger']);
-    page.$['detailed-build-info-trigger'].click();
+    let subpageTrigger =
+        page.shadowRoot.querySelector('#detailedBuildInfoTrigger');
+    assertTrue(!!subpageTrigger);
+    subpageTrigger.click();
     const buildInfoPage =
         page.shadowRoot.querySelector('settings-detailed-build-info-subpage');
     assertTrue(!!buildInfoPage);
@@ -641,14 +646,42 @@ suite('AboutPageTest', function() {
       aboutPageEndOfLifeMessage: 'message',
     });
     await initNewPage();
-    assertTrue(!!page.$['detailed-build-info-trigger']);
-    page.$['detailed-build-info-trigger'].click();
+    subpageTrigger = page.shadowRoot.querySelector('#detailedBuildInfoTrigger');
+    assertTrue(!!subpageTrigger);
+    subpageTrigger.click();
     checkEndOfLifeSection();
   });
 
+  test(
+      'Detailed build info subpage trigger is focused when returning ' +
+          'from subpage',
+      async () => {
+        const triggerSelector = '#detailedBuildInfoTrigger';
+        const subpageTrigger = page.shadowRoot.querySelector(triggerSelector);
+        assertTrue(!!subpageTrigger);
+
+        // Sub-page trigger navigates to Detailed build info subpage
+        subpageTrigger.click();
+        assertEquals(
+            routes.ABOUT_DETAILED_BUILD_INFO,
+            Router.getInstance().currentRoute);
+
+        // Navigate back
+        const popStateEventPromise = eventToPromise('popstate', window);
+        Router.getInstance().navigateToPreviousRoute();
+        await popStateEventPromise;
+        await waitAfterNextRender(page);
+
+        assertEquals(
+            subpageTrigger, page.shadowRoot.activeElement,
+            `${triggerSelector} should be focused.`);
+      });
+
   function getBuildInfoPage() {
-    assertTrue(!!page.$['detailed-build-info-trigger']);
-    page.$['detailed-build-info-trigger'].click();
+    const subpageTrigger =
+        page.shadowRoot.querySelector('#detailedBuildInfoTrigger');
+    assertTrue(!!subpageTrigger);
+    subpageTrigger.click();
     const buildInfoPage =
         page.shadowRoot.querySelector('settings-detailed-build-info-subpage');
     assertTrue(!!buildInfoPage);

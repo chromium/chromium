@@ -80,9 +80,7 @@
     query-matches="{{isDarkModeActive_}}">
 </iron-media-query>
 
-  <os-settings-animated-pages id="pages"
-      section="[[section_]]"
-      focus-config="[[focusConfig_]]">
+  <os-settings-animated-pages id="pages" section="[[section_]]">
     <div route-path="default">
       <settings-card header-text="$i18n{aboutOsPageTitle}">
         <div class="settings-box two-line first">
@@ -228,7 +226,7 @@
                 firmwareUpdateCount_)]]">
           </div>
         </cr-link-row>
-        <cr-link-row class="hr" id="detailed-build-info-trigger"
+        <cr-link-row class="hr" id="detailedBuildInfoTrigger"
             on-click="onDetailedBuildInfoClick_"
             label="$i18n{aboutDetailedBuildInfo}"
             role-description="$i18n{subpageArrowRoleDescription}">
