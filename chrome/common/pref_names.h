@@ -1036,6 +1036,10 @@ inline constexpr char kLastChildScreenTimeReset[] =
 inline constexpr char kHelpAppNotificationLastShownMilestone[] =
     "help_app_notification_last_shown_milestone";
 
+// Last milestone on which an `UpdateNotification` was shown.
+inline constexpr char kUpdateNotificationLastShownMilestone[] =
+    "update_notification_last_shown_milestone";
+
 // Amount of times the release notes suggestion chip should be
 // shown before it disappears.
 inline constexpr char kReleaseNotesSuggestionChipTimesLeftToShow[] =

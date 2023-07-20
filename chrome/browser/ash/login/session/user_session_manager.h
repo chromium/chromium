@@ -63,6 +63,7 @@ class TokenHandleFetcher;
 class EolNotification;
 class InputEventsBlocker;
 class U2FNotification;
+class UpdateNotificationShowingController;
 
 namespace test {
 class UserSessionManagerTestApi;
@@ -334,7 +335,7 @@ class UserSessionManager
   void MaybeShowU2FNotification();
 
   // Shows update notification if necessary.
-  void MaybeShowUpdateNotification();
+  void MaybeShowUpdateNotification(Profile* profile);
 
   // Shows Help App release notes notification, if a notification for the help
   // app has not yet been shown in the current milestone.
@@ -362,6 +363,7 @@ class UserSessionManager
   // Observes the Device Account's LST and informs UserSessionManager about it.
   class DeviceAccountGaiaTokenObserver;
   friend class test::UserSessionManagerTestApi;
+  friend class UpdateNotificationTest;
   friend struct base::DefaultSingletonTraits<UserSessionManager>;
 
   using SigninSessionRestoreStateSet = std::set<AccountId>;
@@ -535,6 +537,11 @@ class UserSessionManager
   HelpAppNotificationController* GetHelpAppNotificationController(
       Profile* profile);
 
+  // Get a reference of the `UpdateNotificationController`, creating it if it
+  // doesn't exist.
+  UpdateNotificationShowingController* GetUpdateNotificationShowingController(
+      Profile* profile);
+
   base::WeakPtr<UserSessionManagerDelegate> delegate_;
 
   // Used to listen to network changes.
@@ -638,6 +645,9 @@ class UserSessionManager
 
   std::unique_ptr<HelpAppNotificationController>
       help_app_notification_controller_;
+
+  std::unique_ptr<UpdateNotificationShowingController>
+      update_notification_showing_controller_;
 
   bool token_handle_backfill_tried_for_testing_ = false;
 
