@@ -70,7 +70,7 @@ void WebIDBCallbacksImpl::DetachCallbackFromRequest() {
   if (request_) {
     async_task_context_.Cancel();
 #if DCHECK_IS_ON()
-    DCHECK_EQ(static_cast<WebIDBCallbacks*>(this), request_->WebCallbacks());
+    DCHECK_EQ(this, request_->WebCallbacks());
 #endif  // DCHECK_IS_ON()
     request_->WebCallbacksDestroyed();
   }
@@ -78,10 +78,6 @@ void WebIDBCallbacksImpl::DetachCallbackFromRequest() {
 
 void WebIDBCallbacksImpl::DetachRequestFromCallback() {
   request_.Clear();
-}
-
-void WebIDBCallbacksImpl::SetState(int64_t transaction_id) {
-  transaction_id_ = transaction_id;
 }
 
 void WebIDBCallbacksImpl::Error(mojom::blink::IDBException code,
@@ -126,20 +122,6 @@ void WebIDBCallbacksImpl::SuccessDatabase(
   } else if (db) {
     db->Close();
   }
-}
-
-void WebIDBCallbacksImpl::SuccessValue(
-    mojom::blink::IDBReturnValuePtr return_value) {
-  if (!request_)
-    return;
-
-  std::unique_ptr<IDBValue> value = IDBValue::ConvertReturnValue(return_value);
-  probe::AsyncTask async_task(request_->GetExecutionContext(),
-                              &async_task_context_, "success");
-  value->SetIsolate(request_->GetIsolate());
-  IDBRequest* request = request_.Get();
-  Detach();
-  request->HandleResponse(std::move(value));
 }
 
 void WebIDBCallbacksImpl::SuccessInteger(int64_t value) {

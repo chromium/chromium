@@ -321,7 +321,7 @@ const String& IDBRequest::readyState() const {
   return indexed_db_names::kDone;
 }
 
-std::unique_ptr<WebIDBCallbacks> IDBRequest::CreateWebCallbacks() {
+std::unique_ptr<WebIDBCallbacksImpl> IDBRequest::CreateWebCallbacks() {
   DCHECK(!web_callbacks_);
   auto callbacks = std::make_unique<WebIDBCallbacksImpl>(this);
   web_callbacks_ = callbacks.get();

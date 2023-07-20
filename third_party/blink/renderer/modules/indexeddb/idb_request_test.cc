@@ -56,7 +56,7 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_value_wrapping.h"
 #include "third_party/blink/renderer/modules/indexeddb/mock_idb_database.h"
 #include "third_party/blink/renderer/modules/indexeddb/mock_idb_transaction.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_callbacks.h"
+#include "third_party/blink/renderer/modules/indexeddb/web_idb_callbacks_impl.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_database.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_transaction.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -412,7 +412,8 @@ TEST_F(IDBRequestTest, ConnectionsAfterStopping) {
         std::move(transaction_backend), kTransactionId, kVersion,
         IDBRequest::AsyncTraceState(), mojo::NullRemote());
     EXPECT_EQ(request->readyState(), "pending");
-    std::unique_ptr<WebIDBCallbacks> callbacks = request->CreateWebCallbacks();
+    std::unique_ptr<WebIDBCallbacksImpl> callbacks =
+        request->CreateWebCallbacks();
 
     scope.GetExecutionContext()->NotifyContextDestroyed();
     callbacks->UpgradeNeeded(remote.Unbind(), kOldVersion,
@@ -436,7 +437,8 @@ TEST_F(IDBRequestTest, ConnectionsAfterStopping) {
         std::move(transaction_backend), kTransactionId, kVersion,
         IDBRequest::AsyncTraceState(), mojo::NullRemote());
     EXPECT_EQ(request->readyState(), "pending");
-    std::unique_ptr<WebIDBCallbacks> callbacks = request->CreateWebCallbacks();
+    std::unique_ptr<WebIDBCallbacksImpl> callbacks =
+        request->CreateWebCallbacks();
 
     scope.GetExecutionContext()->NotifyContextDestroyed();
     callbacks->SuccessDatabase(remote.Unbind(), metadata);

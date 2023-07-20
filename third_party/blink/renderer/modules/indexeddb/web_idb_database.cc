@@ -228,7 +228,7 @@ void WebIDBDatabase::DidBecomeInactive() {
 
 mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks>
 WebIDBDatabase::GetCallbacksProxy(
-    std::unique_ptr<WebIDBCallbacks> callbacks_impl) {
+    std::unique_ptr<WebIDBCallbacksImpl> callbacks_impl) {
   mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks> pending_callbacks;
   mojo::MakeSelfOwnedAssociatedReceiver(
       std::move(callbacks_impl),

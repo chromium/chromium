@@ -13,14 +13,8 @@
 #include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_range.h"
-#include "third_party/blink/renderer/modules/indexeddb/mock_web_idb_callbacks.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_transaction.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
-
-using testing::_;
-using testing::Invoke;
-using testing::StrictMock;
-using testing::WithArgs;
 
 namespace blink {
 

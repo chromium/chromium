@@ -32,9 +32,9 @@
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
-#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/core/probe/async_task_context.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_callbacks.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -43,7 +43,8 @@ namespace blink {
 class IDBRequest;
 struct IDBDatabaseMetadata;
 
-class WebIDBCallbacksImpl final : public WebIDBCallbacks {
+class MODULES_EXPORT WebIDBCallbacksImpl final
+    : public mojom::blink::IDBCallbacks {
   USING_FAST_MALLOC(WebIDBCallbacksImpl);
 
  public:
@@ -55,16 +56,13 @@ class WebIDBCallbacksImpl final : public WebIDBCallbacks {
   explicit WebIDBCallbacksImpl(IDBRequest*);
   ~WebIDBCallbacksImpl() override;
 
-  void SetState(int64_t transaction_id) override;
+  void DetachRequestFromCallback();
 
-  // Pointers transfer ownership.
   void Error(mojom::blink::IDBException code, const String& message) override;
   void SuccessDatabase(
       mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase> pending_database,
       const IDBDatabaseMetadata& metadata) override;
-  void SuccessValue(mojom::blink::IDBReturnValuePtr) override;
   void SuccessInteger(int64_t) override;
-
   void Blocked(int64_t old_version) override;
   void UpgradeNeeded(
       mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase> pending_database,
@@ -72,14 +70,12 @@ class WebIDBCallbacksImpl final : public WebIDBCallbacks {
       mojom::IDBDataLoss data_loss,
       const String& data_loss_message,
       const IDBDatabaseMetadata&) override;
-  void DetachRequestFromCallback() override;
 
  private:
   void Detach();
   void DetachCallbackFromRequest();
 
   Persistent<IDBRequest> request_;
-  int64_t transaction_id_;
   probe::AsyncTaskContext async_task_context_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };

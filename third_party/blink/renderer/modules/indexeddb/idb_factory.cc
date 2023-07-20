@@ -53,7 +53,6 @@
 #include "third_party/blink/renderer/modules/indexed_db_names.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_database.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_callbacks.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_callbacks_impl.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_transaction.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -327,7 +326,6 @@ void IDBFactory::OpenInternalImpl(
   }
 
   auto callbacks = request->CreateWebCallbacks();
-  callbacks->SetState(WebIDBCallbacksImpl::kNoTransaction);
   factory->Open(GetCallbacksProxy(std::move(callbacks)),
                 std::move(callbacks_remote), name, version,
                 std::move(transaction_receiver), transaction_id);
@@ -410,7 +408,6 @@ void IDBFactory::DeleteDatabaseInternalImpl(
   }
 
   auto callbacks = request->CreateWebCallbacks();
-  callbacks->SetState(WebIDBCallbacksImpl::kNoTransaction);
   factory->DeleteDatabase(GetCallbacksProxy(std::move(callbacks)), name,
                           force_close);
 }
@@ -494,7 +491,8 @@ void IDBFactory::DidAllowIndexedDB(base::OnceCallback<void()> callback,
 }
 
 mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks>
-IDBFactory::GetCallbacksProxy(std::unique_ptr<WebIDBCallbacks> callbacks_impl) {
+IDBFactory::GetCallbacksProxy(
+    std::unique_ptr<WebIDBCallbacksImpl> callbacks_impl) {
   mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks> pending_callbacks;
   mojo::MakeSelfOwnedAssociatedReceiver(
       std::move(callbacks_impl),

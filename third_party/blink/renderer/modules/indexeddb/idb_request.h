@@ -232,22 +232,22 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
 
   const String& readyState() const;
 
-  // Returns a new WebIDBCallbacks for this request.
+  // Returns a new WebIDBCallbacksImpl for this request.
   //
   // Each call must be paired with a WebCallbacksDestroyed() call. Most requests
-  // have a single WebIDBCallbacks instance created for them.
+  // have a single WebIDBCallbacksImpl instance created for them.
   //
   // Requests used to open and iterate cursors are special, because they are
   // reused between openCursor() and continue() / advance() calls. These
-  // requests have a new WebIDBCallbacks instance created for each of the
+  // requests have a new WebIDBCallbacksImpl instance created for each of the
   // above-mentioned calls that they are involved in.
-  std::unique_ptr<WebIDBCallbacks> CreateWebCallbacks();
+  std::unique_ptr<WebIDBCallbacksImpl> CreateWebCallbacks();
   void WebCallbacksDestroyed() {
     DCHECK(web_callbacks_);
     web_callbacks_ = nullptr;
   }
 #if DCHECK_IS_ON()
-  WebIDBCallbacks* WebCallbacks() const { return web_callbacks_; }
+  WebIDBCallbacksImpl* WebCallbacks() const { return web_callbacks_; }
 #endif  // DCHECK_IS_ON()
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(success, kSuccess)
@@ -286,7 +286,7 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
   //
   // Some types of requests, such as indexedDB.openDatabase(), cannot be issued
   // after a request that needs Blob processing, so their results are handled by
-  // having WebIDBCallbacksImpl call directly into EnqueueResponse(),
+  // having WebIDBCallbacksImplImpl call directly into EnqueueResponse(),
   // EnqueueBlocked(), or EnqueueUpgradeNeeded().
 
   void HandleResponse(DOMException*);
@@ -459,9 +459,9 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
   bool prevent_propagation_ = false;
   bool result_dirty_ = true;
 
-  // Pointer back to the WebIDBCallbacks that holds a persistent reference to
-  // this object.
-  WebIDBCallbacks* web_callbacks_ = nullptr;
+  // Pointer back to the WebIDBCallbacksImpl that holds a persistent reference
+  // to this object.
+  WebIDBCallbacksImpl* web_callbacks_ = nullptr;
 
   // Non-null while this request is queued behind other requests that are still
   // getting post-processed.

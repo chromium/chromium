@@ -16,7 +16,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink-forward.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_callbacks.h"
+#include "third_party/blink/renderer/modules/indexeddb/web_idb_callbacks_impl.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace blink {
@@ -38,7 +38,7 @@ class MODULES_EXPORT WebIDBTransaction final {
            mojom::blink::IDBPutMode,
            Vector<IDBIndexKeys>,
            mojom::blink::IDBTransaction::PutCallback callback);
-  void PutCallback(std::unique_ptr<WebIDBCallbacks> callbacks,
+  void PutCallback(std::unique_ptr<WebIDBCallbacksImpl> callbacks,
                    mojom::blink::IDBTransactionPutResultPtr result);
   void Commit(int64_t num_errors_handled);
 
