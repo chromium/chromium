@@ -611,10 +611,12 @@ bool RootWindowController::CanWindowReceiveEvents(aura::Window* window) {
   window_util::GetBlockingContainersForRoot(
       GetRootWindow(), &blocking_container, &modal_container);
   SystemModalContainerLayoutManager* modal_layout_manager = nullptr;
-  modal_layout_manager = static_cast<SystemModalContainerLayoutManager*>(
-      modal_container->layout_manager());
+  if (modal_container && modal_container->layout_manager()) {
+    modal_layout_manager = static_cast<SystemModalContainerLayoutManager*>(
+        modal_container->layout_manager());
+  }
 
-  if (modal_layout_manager->has_window_dimmer()) {
+  if (modal_layout_manager && modal_layout_manager->has_window_dimmer()) {
     blocking_container = modal_container;
   } else {
     modal_container = nullptr;  // Don't check modal dialogs.

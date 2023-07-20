@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/metadata/view_factory.h"
@@ -203,6 +204,7 @@ VIEW_BUILDER_VIEW_TYPE_PROPERTY(views::View, MiddleContentView)
 VIEW_BUILDER_VIEW_TYPE_PROPERTY(views::View, AdditionalViewInButtonRow)
 VIEW_BUILDER_PROPERTY(views::LayoutAlignment, TopContentAlignment)
 VIEW_BUILDER_PROPERTY(views::LayoutAlignment, MiddleContentAlignment)
+VIEW_BUILDER_PROPERTY(ui::ModalType, ModalType)
 END_VIEW_BUILDER
 
 }  // namespace ash

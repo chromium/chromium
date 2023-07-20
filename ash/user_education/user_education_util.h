@@ -13,6 +13,7 @@
 #include "components/user_education/common/help_bubble_params.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/ui_base_types.h"
 
 class AccountId;
 
@@ -40,6 +41,10 @@ CreateExtendedProperties(HelpBubbleId help_bubble_id);
 // Returns extended properties for a help bubble having set `help_bubble_style`.
 ASH_EXPORT user_education::HelpBubbleParams::ExtendedProperties
 CreateExtendedProperties(HelpBubbleStyle help_bubble_style);
+
+// Returns extended properties for a help bubble having set `modal_type`.
+ASH_EXPORT user_education::HelpBubbleParams::ExtendedProperties
+CreateExtendedProperties(ui::ModalType modal_type);
 
 /*
 Creates an extended properties instance by merging `properties`.
@@ -71,6 +76,11 @@ GetHelpBubbleAnchorBoundsChangedEventType();
 
 // Returns help bubble ID from the specified `extended_properties`.
 ASH_EXPORT HelpBubbleId GetHelpBubbleId(
+    const user_education::HelpBubbleParams::ExtendedProperties&
+        extended_properties);
+
+// Returns modal type from the specified `extended_properties`.
+ASH_EXPORT ui::ModalType GetHelpBubbleModalType(
     const user_education::HelpBubbleParams::ExtendedProperties&
         extended_properties);
 

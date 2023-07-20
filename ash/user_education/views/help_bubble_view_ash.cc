@@ -627,6 +627,8 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
     SetInitiallyFocusedView(close_button_);
   }
 
+  SetModalType(
+      user_education_util::GetHelpBubbleModalType(params.extended_properties));
   SetProperty(views::kElementIdentifierKey, kHelpBubbleElementIdForTesting);
   set_margins(gfx::Insets());
   set_title_margins(gfx::Insets());

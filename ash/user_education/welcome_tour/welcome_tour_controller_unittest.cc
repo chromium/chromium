@@ -5,6 +5,7 @@
 #include "ash/user_education/welcome_tour/welcome_tour_controller.h"
 
 #include <map>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -14,8 +15,10 @@
 #include "ash/public/cpp/system_notification_builder.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/session/test_session_controller_client.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/power/battery_notification.h"
+#include "ash/test/test_widget_builder.h"
 #include "ash/user_education/mock_user_education_delegate.h"
 #include "ash/user_education/user_education_ash_test_base.h"
 #include "ash/user_education/user_education_types.h"
@@ -42,10 +45,13 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/events/types/event_type.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view.h"
 
 namespace ash {
 namespace {
@@ -65,6 +71,7 @@ using ::testing::Mock;
 using ::testing::NotNull;
 using ::testing::Pair;
 using ::testing::Property;
+using ::testing::Return;
 using ::testing::StrictMock;
 using ::user_education::HelpBubbleArrow;
 using ::user_education::TutorialDescription;
@@ -142,6 +149,14 @@ MATCHER_P2(ShownStep, element_specifier, context_mode, "") {
          Matches(ElementSpecifierEq(element_specifier))(arg) &&
          arg.context_mode() == context_mode;
 }
+
+// MockView --------------------------------------------------------------------
+
+// A mocked view to expose received events.
+class MockView : public views::View {
+ public:
+  MOCK_METHOD(void, OnEvent, (ui::Event*), (override));
+};
 
 // Helpers ---------------------------------------------------------------------
 
@@ -451,6 +466,11 @@ class WelcomeTourControllerRunTest : public WelcomeTourControllerTest {
             Eq(primary_account_id), Eq(ash::SystemWebAppType::HELP),
             Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())));
 
+    // Click `accept_button` to close the Welcome Tour dialog.
+    const views::View* const accept_button = GetDialogAcceptButton();
+    ASSERT_TRUE(accept_button);
+    LeftClickOn(accept_button);
+
     // Complete the tutorial by invoking the cached callback.
     std::move(completed_callback).Run();
     EXPECT_TRUE(ended_future.Wait());
@@ -459,6 +479,57 @@ class WelcomeTourControllerRunTest : public WelcomeTourControllerTest {
 };
 
 // Tests -----------------------------------------------------------------------
+
+TEST_F(WelcomeTourControllerRunTest, BlockInteractionsWithIrrelevantWindow) {
+  // Create a random widget to interact with.
+  std::unique_ptr<views::Widget> widget =
+      TestWidgetBuilder()
+          .SetBounds(gfx::Rect(100, 100))
+          .SetParent(Shell::GetPrimaryRootWindow()->GetChildById(
+              kShellWindowId_LockScreenContainer))
+          .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
+          .BuildOwnsNativeWidget();
+  MockView* const contents_view =
+      widget->SetContentsView(std::make_unique<MockView>());
+  widget->GetFocusManager()->SetFocusedView(contents_view);
+
+  // `contents_view` should be interactive before the Welcome Tour.
+  EXPECT_CALL(*contents_view,
+              OnEvent(Property(&ui::Event::type, Eq(ui::ET_MOUSE_ENTERED))));
+  EXPECT_CALL(*contents_view,
+              OnEvent(Property(&ui::Event::type, Eq(ui::ET_MOUSE_PRESSED))));
+  EXPECT_CALL(*contents_view,
+              OnEvent(Property(&ui::Event::type, Eq(ui::ET_MOUSE_EXITED))));
+  EXPECT_CALL(*contents_view,
+              OnEvent(Property(&ui::Event::type, Eq(ui::ET_KEY_PRESSED))));
+  EXPECT_CALL(*contents_view,
+              OnEvent(Property(&ui::Event::type, Eq(ui::ET_KEY_RELEASED))));
+  LeftClickOn(contents_view);
+  PressAndReleaseKey(ui::VKEY_A);
+
+  ASSERT_NO_FATAL_FAILURE(
+      Run(/*in_progress_callback=*/base::BindLambdaForTesting([&]() {
+        // During the Welcome Tour, `contents_view` should NOT be interactive.
+        EXPECT_CALL(*contents_view, OnEvent).Times(0);
+        LeftClickOn(contents_view);
+        PressAndReleaseKey(ui::VKEY_A);
+      })));
+
+  // Perform the same set of actions after the Welcome Tour. `contents_view`
+  // should be interactive.
+  EXPECT_CALL(*contents_view,
+              OnEvent(Property(&ui::Event::type, Eq(ui::ET_MOUSE_ENTERED))));
+  EXPECT_CALL(*contents_view,
+              OnEvent(Property(&ui::Event::type, Eq(ui::ET_MOUSE_PRESSED))));
+  EXPECT_CALL(*contents_view,
+              OnEvent(Property(&ui::Event::type, Eq(ui::ET_MOUSE_EXITED))));
+  EXPECT_CALL(*contents_view,
+              OnEvent(Property(&ui::Event::type, Eq(ui::ET_KEY_PRESSED))));
+  EXPECT_CALL(*contents_view,
+              OnEvent(Property(&ui::Event::type, Eq(ui::ET_KEY_RELEASED))));
+  LeftClickOn(contents_view);
+  PressAndReleaseKey(ui::VKEY_A);
+}
 
 // Verifies that notifications are blocked during and only during the Welcome
 // Tour.

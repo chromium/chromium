@@ -245,7 +245,7 @@ enum NonContainerWindowId {
 // A list of system modal container IDs. The order of the list is important that
 // the more restrictive container appears before the less restrictive ones.
 constexpr int kSystemModalContainerIds[] = {
-    kShellWindowId_LockSystemModalContainer,
+    kShellWindowId_LockSystemModalContainer, kShellWindowId_HelpBubbleContainer,
     kShellWindowId_SystemModalContainer};
 
 // Returns the list of container ids of containers which may contain windows

@@ -15,6 +15,7 @@
 #include "components/account_id/account_id.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_education/common/help_bubble.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
@@ -24,6 +25,7 @@ namespace {
 
 // Keys used in `user_education::HelpBubbleParams::ExtendedProperties`.
 constexpr char kHelpBubbleIdKey[] = "helpBubbleId";
+constexpr char kHelpBubbleModalTypeKey[] = "helpBubbleModalType";
 constexpr char kHelpBubbleStyleKey[] = "helpBubbleStyle";
 
 // Helpers ---------------------------------------------------------------------
@@ -73,6 +75,14 @@ user_education::HelpBubbleParams::ExtendedProperties CreateExtendedProperties(
   return extended_properties;
 }
 
+user_education::HelpBubbleParams::ExtendedProperties CreateExtendedProperties(
+    ui::ModalType modal_type) {
+  user_education::HelpBubbleParams::ExtendedProperties extended_properties;
+  extended_properties.values().Set(kHelpBubbleModalTypeKey,
+                                   static_cast<int>(modal_type));
+  return extended_properties;
+}
+
 const AccountId& GetAccountId(const UserSession* user_session) {
   return user_session ? user_session->user_info.account_id : EmptyAccountId();
 }
@@ -86,6 +96,16 @@ HelpBubbleId GetHelpBubbleId(
         extended_properties) {
   return static_cast<HelpBubbleId>(
       extended_properties.values().FindInt(kHelpBubbleIdKey).value());
+}
+
+ui::ModalType GetHelpBubbleModalType(
+    const user_education::HelpBubbleParams::ExtendedProperties&
+        extended_properties) {
+  if (const absl::optional<int> model_type =
+          extended_properties.values().FindInt(kHelpBubbleModalTypeKey)) {
+    return static_cast<ui::ModalType>(model_type.value());
+  }
+  return ui::ModalType::MODAL_TYPE_NONE;
 }
 
 absl::optional<HelpBubbleStyle> GetHelpBubbleStyle(

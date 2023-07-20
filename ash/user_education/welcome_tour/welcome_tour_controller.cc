@@ -27,6 +27,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
@@ -40,6 +41,14 @@ namespace {
 WelcomeTourController* g_instance = nullptr;
 
 // Helpers ---------------------------------------------------------------------
+
+user_education::HelpBubbleParams::ExtendedProperties
+CreateHelpBubbleExtendedProperties(HelpBubbleId bubble_id) {
+  return user_education_util::CreateExtendedProperties(
+      user_education_util::CreateExtendedProperties(bubble_id),
+      user_education_util::CreateExtendedProperties(
+          ui::ModalType::MODAL_TYPE_SYSTEM));
+}
 
 int64_t GetPrimaryDisplayId() {
   return display::Screen::GetScreen()->GetPrimaryDisplay().id();
@@ -143,7 +152,7 @@ WelcomeTourController::GetTutorialDescriptions() {
       user_education::TutorialDescription::BubbleStep(kShelfViewElementId)
           .SetBubbleArrow(user_education::HelpBubbleArrow::kTopRight)
           .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_SHELF_BUBBLE_BODY_TEXT)
-          .SetExtendedProperties(user_education_util::CreateExtendedProperties(
+          .SetExtendedProperties(CreateHelpBubbleExtendedProperties(
               HelpBubbleId::kWelcomeTourShelf))
           .AddDefaultNextButton());
 
@@ -164,7 +173,7 @@ WelcomeTourController::GetTutorialDescriptions() {
           kUnifiedSystemTrayElementName)
           .SetBubbleArrow(user_education::HelpBubbleArrow::kTopRight)
           .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_BODY_TEXT)
-          .SetExtendedProperties(user_education_util::CreateExtendedProperties(
+          .SetExtendedProperties(CreateHelpBubbleExtendedProperties(
               HelpBubbleId::kWelcomeTourStatusArea))
           .AddDefaultNextButton()
           .InAnyContext());
@@ -185,7 +194,7 @@ WelcomeTourController::GetTutorialDescriptions() {
       user_education::TutorialDescription::BubbleStep(kHomeButtonElementName)
           .SetBubbleArrow(user_education::HelpBubbleArrow::kTopRight)
           .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT)
-          .SetExtendedProperties(user_education_util::CreateExtendedProperties(
+          .SetExtendedProperties(CreateHelpBubbleExtendedProperties(
               HelpBubbleId::kWelcomeTourHomeButton))
           .AddCustomNextButton(base::BindRepeating([](ui::TrackedElement*) {
             Shell::Get()->app_list_controller()->Show(
@@ -200,7 +209,7 @@ WelcomeTourController::GetTutorialDescriptions() {
       user_education::TutorialDescription::BubbleStep(kSearchBoxViewElementId)
           .SetBubbleArrow(user_education::HelpBubbleArrow::kTopRight)
           .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_BODY_TEXT)
-          .SetExtendedProperties(user_education_util::CreateExtendedProperties(
+          .SetExtendedProperties(CreateHelpBubbleExtendedProperties(
               HelpBubbleId::kWelcomeTourSearchBox))
           .AddDefaultNextButton()
           .InAnyContext());
@@ -217,7 +226,7 @@ WelcomeTourController::GetTutorialDescriptions() {
       user_education::TutorialDescription::BubbleStep(kSettingsAppElementId)
           .SetBubbleArrow(user_education::HelpBubbleArrow::kTopRight)
           .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_BODY_TEXT)
-          .SetExtendedProperties(user_education_util::CreateExtendedProperties(
+          .SetExtendedProperties(CreateHelpBubbleExtendedProperties(
               HelpBubbleId::kWelcomeTourSettingsApp))
           .AddDefaultNextButton()
           .InSameContext());
@@ -234,7 +243,7 @@ WelcomeTourController::GetTutorialDescriptions() {
       user_education::TutorialDescription::BubbleStep(kExploreAppElementId)
           .SetBubbleArrow(user_education::HelpBubbleArrow::kTopRight)
           .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_EXPLORE_APP_BUBBLE_BODY_TEXT)
-          .SetExtendedProperties(user_education_util::CreateExtendedProperties(
+          .SetExtendedProperties(CreateHelpBubbleExtendedProperties(
               HelpBubbleId::kWelcomeTourExploreApp))
           .InSameContext());
 

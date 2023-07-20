@@ -15,6 +15,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -77,6 +78,7 @@ WelcomeTourDialog::WelcomeTourDialog(base::OnceClosure accept_callback,
       .SetCloseCallback(std::move(close_callback))
       .SetDescription(l10n_util::GetStringUTF16(
           IDS_ASH_WELCOME_TOUR_DIALOG_DESCRIPTION_TEXT))
+      .SetModalType(ui::ModalType::MODAL_TYPE_SYSTEM)
       .SetProperty(views::kElementIdentifierKey, kWelcomeTourDialogElementId)
       .SetTitleText(
           l10n_util::GetStringUTF16(IDS_ASH_WELCOME_TOUR_DIALOG_TITLE_TEXT))
