@@ -966,17 +966,6 @@ void ClearLacrosSelectionCacheForTest() {
   g_lacros_selection_cache.reset();
 }
 
-MigrationMode GetMigrationMode(const user_manager::User* user,
-                               PolicyInitState policy_init_state) {
-  if (base::FeatureList::IsEnabled(
-          ash::features::kLacrosMoveProfileMigration) ||
-      !IsAshWebBrowserEnabledForMigration(user, policy_init_state)) {
-    return MigrationMode::kMove;
-  }
-
-  return MigrationMode::kCopy;
-}
-
 bool IsProfileMigrationCompletedForUser(PrefService* local_state,
                                         const std::string& user_id_hash,
                                         bool print_mode) {
