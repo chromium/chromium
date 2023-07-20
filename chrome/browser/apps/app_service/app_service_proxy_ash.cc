@@ -38,6 +38,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/full_restore_save_handler.h"
@@ -142,7 +143,9 @@ void AppServiceProxyAsh::Initialize() {
           crosapi::BrowserManager::Feature::kAppService);
     }
   }
-  if (!profile_->AsTestingProfile()) {
+  if (!profile_->AsTestingProfile() &&
+      (!::ash::features::IsShimlessRMA3pDiagnosticsEnabled() ||
+       !::ash::IsShimlessRmaAppBrowserContext(profile_))) {
     app_platform_metrics_service_ =
         std::make_unique<apps::AppPlatformMetricsService>(profile_);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
