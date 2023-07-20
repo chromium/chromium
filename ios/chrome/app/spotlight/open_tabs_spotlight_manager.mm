@@ -10,6 +10,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/app/spotlight/searchable_item_factory.h"
 #import "ios/chrome/app/spotlight/spotlight_interface.h"
 #import "ios/chrome/app/spotlight/spotlight_logger.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
@@ -60,23 +61,35 @@ using web::WebState;
 
 + (OpenTabsSpotlightManager*)openTabsSpotlightManagerWithBrowserState:
     (ChromeBrowserState*)browserState {
+  favicon::LargeIconService* largeIconService =
+      IOSChromeLargeIconServiceFactory::GetForBrowserState(browserState);
+  SearchableItemFactory* searchableItemFactory = [[SearchableItemFactory alloc]
+      initWithLargeIconService:largeIconService
+                        domain:spotlight::DOMAIN_OPEN_TABS];
+
   return [[OpenTabsSpotlightManager alloc]
-      initWithLargeIconService:IOSChromeLargeIconServiceFactory::
-                                   GetForBrowserState(browserState)
+      initWithLargeIconService:largeIconService
                    browserList:BrowserListFactory::GetForBrowserState(
                                    browserState)
-            spotlightInterface:[SpotlightInterface defaultInterface]];
+            spotlightInterface:[SpotlightInterface defaultInterface]
+         searchableItemFactory:searchableItemFactory];
 }
 
 - (instancetype)
     initWithLargeIconService:(favicon::LargeIconService*)largeIconService
                  browserList:(BrowserList*)browserList
-          spotlightInterface:(SpotlightInterface*)spotlightInterface {
-  self = [super initWithLargeIconService:largeIconService
-                                  domain:spotlight::DOMAIN_OPEN_TABS
-                      spotlightInterface:spotlightInterface];
+          spotlightInterface:(SpotlightInterface*)spotlightInterface
+       searchableItemFactory:(SearchableItemFactory*)searchableItemFactory {
+  // Expect no regular browsers at creation. There is no backfill from any
+  // existing browsers. If the DCHECK below fails make sure to either adapt this
+  // class so that it observes initial browsers or instantiate it before having
+  // any initial browsers.
+  DCHECK(browserList->AllRegularBrowsers().empty());
+
   if (self) {
     _browserList = browserList;
+    _spotlightInterface = spotlightInterface;
+    _searchableItemFactory = searchableItemFactory;
     _browserListObserverBridge =
         std::make_unique<BrowserListObserverBridge>(self);
     _browserList->AddObserver(_browserListObserverBridge.get());
@@ -92,33 +105,20 @@ using web::WebState;
                                            browserListNotAvailableError]];
     return;
   }
+  __weak OpenTabsSpotlightManager* weakSelf = self;
+
   [self.spotlightInterface
       deleteSearchableItemsWithDomainIdentifiers:@[
         StringFromSpotlightDomain(spotlight::DOMAIN_OPEN_TABS)
       ]
                                completionHandler:^(NSError*) {
-                                 [self indexAllOpenTabs];
+                                 [weakSelf indexAllOpenTabs];
                                }];
-  __weak OpenTabsSpotlightManager* weakSelf = self;
-  [self clearAllSpotlightItems:^(NSError* error) {
-    if (error) {
-      [SpotlightLogger logSpotlightError:error];
-      return;
-    }
-    [weakSelf indexAllOpenTabs];
-  }];
-}
-
-#pragma mark - BaseSpotlightManager
-
-// In Open Tabs model, URLs are unique keys. Titles are ignored.
-- (NSString*)spotlightIDForURL:(const GURL&)URL title:(NSString*)title {
-  return [super spotlightIDForURL:URL title:@""];
 }
 
 - (void)shutdown {
+  [self.searchableItemFactory cancelAllLargeIconPendingTasks];
   [self shutdownAllObservation];
-  [super shutdown];
 }
 
 #pragma mark - BrowserListObserver
@@ -268,10 +268,6 @@ using web::WebState;
              }];
 }
 
-- (NSString*)spotlightIDForURL:(const GURL&)URL {
-  return [self spotlightIDForURL:URL title:nil];
-}
-
 /// Only index valid HTTP(S) URLs.
 + (BOOL)shouldIndexURL:(GURL)URL {
   return URL.is_valid() && URL.SchemeIsHTTPOrHTTPS();
@@ -290,7 +286,8 @@ using web::WebState;
       // The URL doesn't correspond to any open tab anymore, remove it from the
       // index.
       [self.spotlightInterface deleteSearchableItemsWithIdentifiers:@[
-        [self spotlightIDForURL:lastKnownURL]
+        // In Open Tabs model, URLs are unique keys. Titles are ignored.
+        [self.searchableItemFactory spotlightIDForURL:lastKnownURL title:@""]
       ]
                                                   completionHandler:nil];
     }
@@ -301,7 +298,13 @@ using web::WebState;
     _knownURLCounts[*URL]++;
     if (_knownURLCounts[*URL] == 1) {
       // The URL is newly added, update Spotlight index.
-      [self refreshItemsWithURL:*URL title:title];
+      [self.searchableItemFactory
+          generateSearchableItem:*URL
+                           title:title
+              additionalKeywords:@[]
+               completionHandler:^(CSSearchableItem* item) {
+                 [self.spotlightInterface indexSearchableItems:@[ item ]];
+               }];
     }
   } else {
     _lastCommittedURLs.erase(sessionID);

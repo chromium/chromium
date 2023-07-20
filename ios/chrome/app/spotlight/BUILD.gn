@@ -78,6 +78,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "bookmark_spotlight_manager_unittest.mm",
+    "open_tabs_spotlight_manager_unittest.mm",
     "reading_list_spotlight_manager_unittest.mm",
   ]
   deps = [
@@ -91,9 +92,14 @@ source_set("unit_tests") {
     "//components/favicon_base",
     "//components/reading_list/core",
     "//ios/chrome/browser/bookmarks",
+    "//ios/chrome/browser/main:main",
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/reading_list:test_support",
+    "//ios/chrome/browser/shared/model/browser:browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/web_state_list:web_state_list",
+    "//ios/web/public/test/fakes:fakes",
     "//net",
     "//testing/gtest",
     "//third_party/ocmock",
