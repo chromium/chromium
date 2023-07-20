@@ -81,36 +81,13 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 // icon (in iPad multitasking).
 @property(nonatomic, assign) BOOL shareButtonEnabled;
 
-// Stores whether the clipboard currently stores copied content.
-@property(nonatomic, assign) BOOL hasCopiedContent;
-// Stores the current content type in the clipboard. This is only valid if
-// `hasCopiedContent` is YES.
-@property(nonatomic, assign) ClipboardContentType copiedContentType;
-// Stores whether the cached clipboard state is currently being updated. See
-// `-updateCachedClipboardState` for more information.
-@property(nonatomic, assign) BOOL isUpdatingCachedClipboardState;
-
 // Starts voice search, updating the layout guide to be constrained to the
 // trailing button.
 - (void)startVoiceSearch;
 
-// Displays the long press menu.
-- (void)showLongPressMenu:(UILongPressGestureRecognizer*)sender;
-
 @end
 
 @implementation LocationBarViewController
-@synthesize editView = _editView;
-@synthesize locationBarSteadyView = _locationBarSteadyView;
-@synthesize incognito = _incognito;
-@synthesize delegate = _delegate;
-@synthesize dispatcher = _dispatcher;
-@synthesize voiceSearchEnabled = _voiceSearchEnabled;
-@synthesize trailingButtonState = _trailingButtonState;
-@synthesize hideShareButtonWhileOnIncognitoNTP =
-    _hideShareButtonWhileOnIncognitoNTP;
-@synthesize shareButtonEnabled = _shareButtonEnabled;
-@synthesize offsetProvider = _offsetProvider;
 
 #pragma mark - public
 
@@ -198,16 +175,8 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
                 action:@selector(locationBarSteadyViewTapped)
       forControlEvents:UIControlEventTouchUpInside];
 
-  if (base::FeatureList::IsEnabled(kIOSLocationBarUseNativeContextMenu)) {
-    [_locationBarSteadyView addInteraction:[[UIContextMenuInteraction alloc]
-                                               initWithDelegate:self]];
-  } else {
-    UILongPressGestureRecognizer* recognizer =
-        [[UILongPressGestureRecognizer alloc]
-            initWithTarget:self
-                    action:@selector(showLongPressMenu:)];
-    [_locationBarSteadyView.locationButton addGestureRecognizer:recognizer];
-  }
+  [_locationBarSteadyView
+      addInteraction:[[UIContextMenuInteraction alloc] initWithDelegate:self]];
 
   UIIndirectScribbleInteraction* scribbleInteraction =
       [[UIIndirectScribbleInteraction alloc] initWithDelegate:self];
@@ -535,73 +504,10 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   [self.delegate recordShareButtonPressed];
 }
 
-// Updates the cached clipboard content type and calls `completion` when the
-// update process is finished.  If this is called while an update is already in
-// progress, it will return NO and the completion will never be called.
-// Otherwise, returns YES.
-- (BOOL)updateCachedClipboardStateWithCompletion:(void (^)(void))completion {
-  // Sometimes, checking the clipboard state itself causes the clipboard to
-  // emit a UIPasteboardChangedNotification, leading to an infinite loop. For
-  // now, just prevent re-checking the clipboard state, but hopefully this will
-  // be fixed in a future iOS version (see crbug.com/1049053 for crash details).
-  if (self.isUpdatingCachedClipboardState) {
-    return NO;
-  }
-  self.isUpdatingCachedClipboardState = YES;
-  self.hasCopiedContent = NO;
-  ClipboardRecentContent* clipboardRecentContent =
-      ClipboardRecentContent::GetInstance();
-  std::set<ClipboardContentType> desired_types;
-  desired_types.insert(ClipboardContentType::URL);
-  desired_types.insert(ClipboardContentType::Text);
-  desired_types.insert(ClipboardContentType::Image);
-  __weak __typeof(self) weakSelf = self;
-  clipboardRecentContent->HasRecentContentFromClipboard(
-      desired_types, base::BindOnce(^(std::set<ClipboardContentType> types) {
-        [weakSelf onClipboardContentTypeReceived:types];
-        completion();
-      }));
-  return YES;
-}
-
 - (BOOL)shouldUseLensInLongPressMenu {
   return ios::provider::IsLensSupported() &&
          base::FeatureList::IsEnabled(kEnableLensInOmniboxCopiedImage) &&
          self.lensImageEnabled;
-}
-
-#pragma mark - UIMenu
-
-- (void)showLongPressMenu:(UILongPressGestureRecognizer*)sender {
-  DCHECK(!base::FeatureList::IsEnabled(kIOSLocationBarUseNativeContextMenu));
-  if (sender.state == UIGestureRecognizerStateBegan) {
-    [self.locationBarSteadyView becomeFirstResponder];
-
-    UIMenuController* menu = [UIMenuController sharedMenuController];
-    RegisterEditMenuItem([[UIMenuItem alloc]
-        initWithTitle:l10n_util::GetNSString(
-                          (IDS_IOS_SEARCH_COPIED_IMAGE_WITH_LENS))
-               action:@selector(lensCopiedImage:)]);
-    RegisterEditMenuItem([[UIMenuItem alloc]
-        initWithTitle:l10n_util::GetNSString((IDS_IOS_SEARCH_COPIED_IMAGE))
-               action:@selector(searchCopiedImage:)]);
-    RegisterEditMenuItem([[UIMenuItem alloc]
-        initWithTitle:l10n_util::GetNSString(IDS_IOS_VISIT_COPIED_LINK)
-               action:@selector(visitCopiedLink:)]);
-    RegisterEditMenuItem([[UIMenuItem alloc]
-        initWithTitle:l10n_util::GetNSString(IDS_IOS_SEARCH_COPIED_TEXT)
-               action:@selector(searchCopiedText:)]);
-
-    BOOL updateSuccessful = [self updateCachedClipboardStateWithCompletion:^() {
-      [menu showMenuFromView:self.view rect:self.locationBarSteadyView.frame];
-      // When the menu is manually presented, it doesn't get focused by
-      // Voiceover. This notification forces voiceover to select the
-      // presented menu.
-      UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
-                                      menu);
-    }];
-    DCHECK(updateSuccessful);
-  }
 }
 
 #pragma mark - UIContextMenuInteractionDelegate
@@ -695,7 +601,6 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 - (UIContextMenuConfiguration*)contextMenuInteraction:
                                    (UIContextMenuInteraction*)interaction
                        configurationForMenuAtLocation:(CGPoint)location {
-  DCHECK(base::FeatureList::IsEnabled(kIOSLocationBarUseNativeContextMenu));
   __weak LocationBarViewController* weakSelf = self;
 
   return [UIContextMenuConfiguration
@@ -713,28 +618,6 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
     return YES;
   }
 
-  BOOL isClipboardAction = action == @selector(searchCopiedImage:) ||
-                           action == @selector(lensCopiedImage:) ||
-                           action == @selector(visitCopiedLink:) ||
-                           action == @selector(searchCopiedText:);
-  if (self.locationBarSteadyView.isFirstResponder && isClipboardAction) {
-    if (!self.hasCopiedContent) {
-      return NO;
-    }
-    if (self.copiedContentType == ClipboardContentType::Image) {
-      if ([self shouldUseLensInLongPressMenu]) {
-        return action == @selector(lensCopiedImage:);
-      }
-      return action == @selector(searchCopiedImage:);
-    }
-    if (self.copiedContentType == ClipboardContentType::URL) {
-      return action == @selector(visitCopiedLink:);
-    }
-    if (self.copiedContentType == ClipboardContentType::Text) {
-      return action == @selector(searchCopiedText:);
-    }
-    return NO;
-  }
   return NO;
 }
 
@@ -787,20 +670,6 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
           [self.dispatcher cancelOmniboxEdit];
         });
       }));
-}
-
-- (void)onClipboardContentTypeReceived:
-    (const std::set<ClipboardContentType>&)types {
-  self.hasCopiedContent = !types.empty();
-  if (base::Contains(types, ClipboardContentType::Image) &&
-      (self.searchByImageEnabled || self.shouldUseLensInLongPressMenu)) {
-    self.copiedContentType = ClipboardContentType::Image;
-  } else if (base::Contains(types, ClipboardContentType::URL)) {
-    self.copiedContentType = ClipboardContentType::URL;
-  } else if (base::Contains(types, ClipboardContentType::Text)) {
-    self.copiedContentType = ClipboardContentType::Text;
-  }
-  self.isUpdatingCachedClipboardState = NO;
 }
 
 @end

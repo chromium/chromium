@@ -137,10 +137,6 @@ BASE_FEATURE(kIOSNewOmniboxImplementation,
              "kIOSNewOmniboxImplementation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIOSLocationBarUseNativeContextMenu,
-             "IOSLocationBarUseNativeContextMenu",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kIOSLensUseDirectUpload,
              "IOSLensUseDirectUpload",
              base::FEATURE_DISABLED_BY_DEFAULT);

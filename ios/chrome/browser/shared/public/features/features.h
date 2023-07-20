@@ -111,10 +111,6 @@ bool IsSearchWithEnabled();
 // Feature flag to hide search web in the edit menu.
 BASE_DECLARE_FEATURE(kIOSEditMenuHideSearchWeb);
 
-// Feature flag that shows iOS 15 context menu, instead of tooltip popover,
-// during a location bar long press gesture.
-BASE_DECLARE_FEATURE(kIOSLocationBarUseNativeContextMenu);
-
 // Feature flag that swaps the omnibox textfield implementation.
 BASE_DECLARE_FEATURE(kIOSNewOmniboxImplementation);
 
