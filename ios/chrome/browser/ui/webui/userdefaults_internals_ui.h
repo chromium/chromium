@@ -13,7 +13,7 @@ namespace web {
 class WebUIIOS;
 }  // namespace web
 
-// The WebUIController for the chrome://userdefaults-internal page on iOS.
+// The WebUIController for the chrome://userdefaults-internals page on iOS.
 class UserDefaultsInternalsUI : public web::WebUIIOSController {
  public:
   UserDefaultsInternalsUI(web::WebUIIOS* web_ui, const std::string& host);

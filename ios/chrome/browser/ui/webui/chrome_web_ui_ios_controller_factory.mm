@@ -143,7 +143,7 @@ WebUIIOSFactoryFunction GetWebUIIOSFactoryFunction(const GURL& url) {
     return &NewWebUIIOS<VersionUI>;
   if (url_host == kChromeUIPolicyHost)
     return &NewWebUIIOS<PolicyUI>;
-  if (url_host == kChromeUIUserDefaultsInternalHost &&
+  if (url_host == kChromeUIUserDefaultsInternalsHost &&
       GetChannel() != Channel::STABLE) {
     return &NewWebUIIOS<UserDefaultsInternalsUI>;
   }

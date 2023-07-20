@@ -281,15 +281,15 @@ using chrome_test_util::ForwardButton;
   [ChromeEarlGrey waitForWebStateContainingText:"Autofill Internals"];
 }
 
-// Test chrome://userdefaults-internal page.
+// Test chrome://userdefaults-internals page.
 - (void)testChromeUserdefaultsInternalSite {
   if (GetChannel() == version_info::Channel::STABLE) {
     // This page is not supported on STABLE build.
     return;
   }
 
-  // Start with NTP and load chrome://userdefaults-internal.
-  GURL URL = WebUIPageUrlWithHost(kChromeUIUserDefaultsInternalHost);
+  // Start with NTP and load chrome://userdefaults-internals.
+  GURL URL = WebUIPageUrlWithHost(kChromeUIUserDefaultsInternalsHost);
   [ChromeEarlGrey loadURL:URL];
 
   // Autofill-Internals stores the log filter configuration in the URL's
@@ -301,15 +301,15 @@ using chrome_test_util::ForwardButton;
   [ChromeEarlGrey waitForWebStateContainingText:"List of user defaults:"];
 }
 
-// Test chrome://userdefaults-internal page in incognito.
+// Test chrome://userdefaults-internals page in incognito.
 - (void)testChromeUserdefaultsInternalIncognitoSite {
   if (GetChannel() == version_info::Channel::STABLE) {
     // This page is not supported on STABLE build.
     return;
   }
 
-  // Start with incognito NTP and load chrome://userdefaults-internal.
-  GURL URL = WebUIPageUrlWithHost(kChromeUIUserDefaultsInternalHost);
+  // Start with incognito NTP and load chrome://userdefaults-internals.
+  GURL URL = WebUIPageUrlWithHost(kChromeUIUserDefaultsInternalsHost);
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey loadURL:URL];
 

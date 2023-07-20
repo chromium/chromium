@@ -60,7 +60,7 @@ extern const char kChromeUITermsHost[];
 extern const char kChromeUITranslateInternalsHost[];
 extern const char kChromeUIURLKeyedMetricsHost[];
 extern const char kChromeUIUserActionsHost[];
-extern const char kChromeUIUserDefaultsInternalHost[];
+extern const char kChromeUIUserDefaultsInternalsHost[];
 extern const char kChromeUIVersionHost[];
 
 // Gets the hosts/domains that are shown in chrome://chrome-urls.
