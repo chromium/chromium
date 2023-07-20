@@ -82,7 +82,7 @@ void LiveTranslateController::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
   registry->RegisterStringPref(prefs::kLiveTranslateTargetLanguageCode,
-                               speech::kUsEnglishLocale,
+                               speech::kEnglishLocaleNoCountry,
                                user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
