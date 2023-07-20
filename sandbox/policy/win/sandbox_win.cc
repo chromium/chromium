@@ -5,6 +5,8 @@
 #include "sandbox/policy/win/sandbox_win.h"
 
 #include <stddef.h>
+#include <windows.h>
+#include <winternl.h>
 
 #include <map>
 #include <sstream>
@@ -59,7 +61,6 @@
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_nt_util.h"
 #include "sandbox/win/src/sandbox_policy_base.h"
-#include "sandbox/win/src/win_utils.h"
 
 namespace sandbox {
 namespace policy {
@@ -348,8 +349,6 @@ typedef BOOL(WINAPI* DuplicateHandleFunctionPtr)(HANDLE source_process_handle,
 
 DuplicateHandleFunctionPtr g_iat_orig_duplicate_handle;
 
-NtQueryObjectFunction g_QueryObject = NULL;
-
 static const char* kDuplicateHandleWarning =
     "You are attempting to duplicate a privileged handle into a sandboxed"
     " process.\n Please contact security@chromium.org for assistance.";
@@ -361,7 +360,8 @@ void CheckDuplicateHandle(HANDLE handle) {
       reinterpret_cast<OBJECT_TYPE_INFORMATION*>(buffer);
   ULONG size = sizeof(buffer) - sizeof(wchar_t);
   NTSTATUS error;
-  error = g_QueryObject(handle, ObjectTypeInformation, type_info, size, &size);
+  error =
+      ::NtQueryObject(handle, ObjectTypeInformation, type_info, size, &size);
   CHECK(NT_SUCCESS(error));
   type_info->Name.Buffer[type_info->Name.Length / sizeof(wchar_t)] = L'\0';
 
@@ -369,7 +369,7 @@ void CheckDuplicateHandle(HANDLE handle) {
   OBJECT_BASIC_INFORMATION basic_info;
   size = sizeof(basic_info);
   error =
-      g_QueryObject(handle, ObjectBasicInformation, &basic_info, size, &size);
+      ::NtQueryObject(handle, ObjectBasicInformation, &basic_info, size, &size);
   CHECK(NT_SUCCESS(error));
 
   CHECK(!(basic_info.GrantedAccess & WRITE_DAC)) << kDuplicateHandleWarning;
@@ -905,7 +905,6 @@ bool SandboxWin::InitBrokerServices(BrokerServices* broker_services) {
                               &module));
     DWORD result = ::GetModuleFileNameW(module, module_name, MAX_PATH);
     if (result && (result != MAX_PATH)) {
-      ResolveNTFunctionPtr("NtQueryObject", &g_QueryObject);
       result = GetIATPatchFunctionHandle().Patch(
           module_name, "kernel32.dll", "DuplicateHandle",
           reinterpret_cast<void*>(DuplicateHandlePatch));
