@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/pickle.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/network_isolation_key.h"
 #include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
@@ -22,6 +23,8 @@ namespace net {
 namespace {
 
 constexpr char kHistogramTag[] = "SharedDictionary";
+
+constexpr char kHistogramPrefix[] = "Net.SharedDictionaryStore.";
 
 constexpr char kTableName[] = "dictionaries";
 
@@ -148,6 +151,23 @@ base::OnceCallback<void(ResultType)> WrapCallbackWithWeakPtrCheck(
       std::move(weak_ptr), std::move(callback));
 }
 
+void RecordErrorHistogram(const char* method_name,
+                          SQLitePersistentSharedDictionaryStore::Error error) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({kHistogramPrefix, method_name, ".Error"}), error);
+}
+
+template <typename ResultType>
+void RecordErrorHistogram(
+    const char* method_name,
+    base::expected<ResultType, SQLitePersistentSharedDictionaryStore::Error>
+        result) {
+  RecordErrorHistogram(method_name,
+                       result.has_value()
+                           ? SQLitePersistentSharedDictionaryStore::Error::kOk
+                           : result.error());
+}
+
 }  // namespace
 
 SQLitePersistentSharedDictionaryStore::RegisterDictionaryResult::
@@ -198,24 +218,24 @@ class SQLitePersistentSharedDictionaryStore::Backend
   Backend(const Backend&) = delete;
   Backend& operator=(const Backend&) = delete;
 
-#define DEFINE_CROSS_SEQUENCE_CALL_METHOD(Name)                              \
-  template <typename ResultType, typename... Args>                           \
-  void Name(base::OnceCallback<void(ResultType)> callback, Args&&... args) { \
-    CHECK(client_task_runner()->RunsTasksInCurrentSequence());               \
-    PostBackgroundTask(                                                      \
-        FROM_HERE,                                                           \
-        base::BindOnce(                                                      \
-            [](scoped_refptr<Backend> backend,                               \
-               base::OnceCallback<void(ResultType)> callback,                \
-               Args&&... args) {                                             \
-              backend->PostClientTask(                                       \
-                  FROM_HERE,                                                 \
-                  base::BindOnce(                                            \
-                      std::move(callback),                                   \
-                      backend->Name##Impl(std::forward<Args>(args)...)));    \
-            },                                                               \
-            scoped_refptr<Backend>(this), std::move(callback),               \
-            std::forward<Args>(args)...));                                   \
+#define DEFINE_CROSS_SEQUENCE_CALL_METHOD(Name)                               \
+  template <typename ResultType, typename... Args>                            \
+  void Name(base::OnceCallback<void(ResultType)> callback, Args&&... args) {  \
+    CHECK(client_task_runner()->RunsTasksInCurrentSequence());                \
+    PostBackgroundTask(                                                       \
+        FROM_HERE,                                                            \
+        base::BindOnce(                                                       \
+            [](scoped_refptr<Backend> backend,                                \
+               base::OnceCallback<void(ResultType)> callback,                 \
+               Args&&... args) {                                              \
+              auto result = backend->Name##Impl(std::forward<Args>(args)...); \
+              RecordErrorHistogram(#Name, result);                            \
+              backend->PostClientTask(                                        \
+                  FROM_HERE,                                                  \
+                  base::BindOnce(std::move(callback), std::move(result)));    \
+            },                                                                \
+            scoped_refptr<Backend>(this), std::move(callback),                \
+            std::forward<Args>(args)...));                                    \
   }
 
   // The following methods call *Impl() method in the background task runner,
@@ -616,10 +636,10 @@ SQLitePersistentSharedDictionaryStore::Backend::
   }
 
   base::UmaHistogramMemoryKB(
-      "Net.SharedDictionaryStore.DictionarySizeKBPerSiteWhenAdded",
+      base::StrCat({kHistogramPrefix, "DictionarySizeKBPerSiteWhenAdded"}),
       size_per_site.value());
   base::UmaHistogramCounts1000(
-      "Net.SharedDictionaryStore.DictionaryCountPerSiteWhenAdded",
+      base::StrCat({kHistogramPrefix, "DictionaryCountPerSiteWhenAdded"}),
       count_per_site.value());
 
   if ((max_size_per_site == 0 || size_per_site.value() <= max_size_per_site) &&

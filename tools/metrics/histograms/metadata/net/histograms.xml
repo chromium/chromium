@@ -4912,6 +4912,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.SharedDictionaryStore.{MethodName}.Error"
+    enum="SharedDictionaryStoreError" expires_after="2023-12-01">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/extras/shared_dictionary/OWNERS</owner>
+  <summary>
+    Records the status (OK or error code) returned by
+    SQLitePersistentSharedDictionaryStore. Recorded when the database operation
+    finishes.
+  </summary>
+  <token key="MethodName">
+    <variant name="ClearAllDictionaries"/>
+    <variant name="ClearDictionaries"/>
+    <variant name="ClearDictionariesForIsolationKey"/>
+    <variant name="DeleteDictionariesByDiskCacheKeyTokens"/>
+    <variant name="DeleteExpiredDictionaries"/>
+    <variant name="GetAllDictionaries"/>
+    <variant name="GetAllDiskCacheKeyTokens"/>
+    <variant name="GetDictionaries"/>
+    <variant name="GetTotalDictionarySize"/>
+    <variant name="GetUsageInfo"/>
+    <variant name="ProcessEviction"/>
+    <variant name="RegisterDictionary"/>
+  </token>
+</histogram>
+
 <histogram
     name="Net.SharedDictionaryTransaction.DictionaryReadLatency.{SuccessOrFailure}"
     units="ms" expires_after="2023-12-01">

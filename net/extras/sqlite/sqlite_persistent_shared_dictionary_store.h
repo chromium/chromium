@@ -34,17 +34,20 @@ class SharedDictionaryIsolationKey;
 // storage.
 class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class Error {
-    kOk,
-    kFailedToInitializeDatabase,
-    kInvalidSql,
-    kFailedToExecuteSql,
-    kFailedToBeginTransaction,
-    kFailedToCommitTransaction,
-    kInvalidTotalDictSize,
-    kFailedToGetTotalDictSize,
-    kFailedToSetTotalDictSize,
-    kTooBigDictionary,
+    kOk = 0,
+    kFailedToInitializeDatabase = 1,
+    kInvalidSql = 2,
+    kFailedToExecuteSql = 3,
+    kFailedToBeginTransaction = 4,
+    kFailedToCommitTransaction = 5,
+    kInvalidTotalDictSize = 6,
+    kFailedToGetTotalDictSize = 7,
+    kFailedToSetTotalDictSize = 8,
+    kTooBigDictionary = 9,
+    kMaxValue = kTooBigDictionary
   };
   class COMPONENT_EXPORT(NET_EXTRAS) RegisterDictionaryResult {
    public:

@@ -97309,6 +97309,19 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   </int>
 </enum>
 
+<enum name="SharedDictionaryStoreError">
+  <int value="0" label="Ok"/>
+  <int value="1" label="FailedToInitializeDatabase"/>
+  <int value="2" label="InvalidSql"/>
+  <int value="3" label="FailedToExecuteSql"/>
+  <int value="4" label="FailedToBeginTransaction"/>
+  <int value="5" label="FailedToCommitTransaction"/>
+  <int value="6" label="InvalidTotalDictSize"/>
+  <int value="7" label="FailedToGetTotalDictSize"/>
+  <int value="8" label="FailedToSetTotalDictSize"/>
+  <int value="9" label="TooBigDictionary"/>
+</enum>
+
 <enum name="SharedImageBackingType">
   <summary>Corresponds to SharedImageBacking implementations.</summary>
   <int value="0" label="TestImageBacking"/>
