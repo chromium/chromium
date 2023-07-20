@@ -90,6 +90,8 @@ VIZ_COMMON_EXPORT extern const char kPredictorLinear1[];
 VIZ_COMMON_EXPORT extern const char kPredictorLinear2[];
 VIZ_COMMON_EXPORT extern const char kPredictorLsq[];
 
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDrawImmediatelyWhenInteractive);
+
 #if BUILDFLAG(IS_ANDROID)
 VIZ_COMMON_EXPORT bool IsDynamicColorGamutEnabled();
 #endif
@@ -100,7 +102,7 @@ VIZ_COMMON_EXPORT bool ShouldUseRealBuffersForPageFlipTest();
 VIZ_COMMON_EXPORT bool ShouldWebRtcLogCapturePipeline();
 #if BUILDFLAG(IS_WIN)
 VIZ_COMMON_EXPORT bool ShouldUseSetPresentDuration();
-#endif  // BUILDFLAG(IS_WIN)y
+#endif  // BUILDFLAG(IS_WIN)
 VIZ_COMMON_EXPORT absl::optional<int> ShouldDrawPredictedInkPoints();
 VIZ_COMMON_EXPORT std::string InkPredictor();
 VIZ_COMMON_EXPORT bool ShouldUsePlatformDelegatedInk();
@@ -113,6 +115,7 @@ VIZ_COMMON_EXPORT bool ShouldOverrideThrottledFrameRateParams();
 VIZ_COMMON_EXPORT bool ShouldOnBeginFrameThrottleVideo();
 VIZ_COMMON_EXPORT bool ShouldRendererAllocateImages();
 VIZ_COMMON_EXPORT bool IsOnBeginFrameAcksEnabled();
+VIZ_COMMON_EXPORT bool ShouldDrawImmediatelyWhenInteractive();
 
 }  // namespace features
 

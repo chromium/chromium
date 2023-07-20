@@ -24,7 +24,8 @@ bool FakeSurfaceObserver::IsSurfaceDamaged(const SurfaceId& surface_id) const {
 }
 
 bool FakeSurfaceObserver::OnSurfaceDamaged(const SurfaceId& surface_id,
-                                           const BeginFrameAck& ack) {
+                                           const BeginFrameAck& ack,
+                                           bool is_actively_scrolling) {
   if (ack.has_damage)
     damaged_surfaces_.insert(surface_id);
   last_ack_ = ack;

@@ -44,7 +44,8 @@ class VIZ_SERVICE_EXPORT SurfaceObserver {
   // |ack.sequence_number| is only valid if called in response to a BeginFrame.
   // Should return true if this causes a Display to be damaged.
   virtual bool OnSurfaceDamaged(const SurfaceId& surface_id,
-                                const BeginFrameAck& ack);
+                                const BeginFrameAck& ack,
+                                bool is_actively_scrolling);
 
   // Called when a Surface's CompositorFrame producer has received a BeginFrame
   // and, thus, is expected to produce damage soon.

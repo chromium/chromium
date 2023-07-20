@@ -45,10 +45,12 @@ class TestDisplayDamageTracker : public DisplayDamageTracker {
 
   void SurfaceDamagedForTest(const SurfaceId& surface_id,
                              const BeginFrameAck& ack,
-                             bool display_damaged) {
+                             bool display_damaged,
+                             bool is_actively_scrolling = false) {
     if (display_damaged)
       undrawn_surfaces_.insert(surface_id);
-    ProcessSurfaceDamage(surface_id, ack, display_damaged);
+    ProcessSurfaceDamage(surface_id, ack, display_damaged,
+                         is_actively_scrolling);
   }
   void ClearUndrawnSurfaces() { undrawn_surfaces_.clear(); }
   void SetRootFrameMissingForTest(bool missing) {
@@ -961,6 +963,82 @@ TEST_F(DynamicDisplaySchedulerTest, DynamicBeginFrameArgsDeadline) {
   EXPECT_EQ(args.deadline,
             next_frame_time -
                 client_.GetEstimatedDisplayDrawTime(kVSyncInterval, 0.0));
+}
+
+// Tests the DisplayScheduler when we enable drawing immediately when
+// interactive.
+class ImmediateInteractiveDrawTest : public DisplaySchedulerTest {
+ public:
+  ImmediateInteractiveDrawTest();
+  ~ImmediateInteractiveDrawTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+ImmediateInteractiveDrawTest::ImmediateInteractiveDrawTest() {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kDrawImmediatelyWhenInteractive);
+}
+
+TEST_F(ImmediateInteractiveDrawTest, DoNotWaitWhenInteracting) {
+  SurfaceId root_surface_id(
+      kArbitraryFrameSinkId,
+      LocalSurfaceId(1, base::UnguessableToken::Create()));
+  SurfaceId sid1(kArbitraryFrameSinkId,
+                 LocalSurfaceId(2, base::UnguessableToken::Create()));
+  SurfaceId sid2(kArbitraryFrameSinkId,
+                 LocalSurfaceId(3, base::UnguessableToken::Create()));
+
+  scheduler_->SetVisible(true);
+  SetNewRootSurface(root_surface_id);
+  EXPECT_EQ(BeginFrameAck(), client_.last_begin_frame_ack());
+
+  AdvanceTimeAndBeginFrameForTest({sid1, sid2});
+  EXPECT_EQ(BeginFrameAck(), client_.last_begin_frame_ack());
+
+  BeginFrameAck ack = AckForCurrentBeginFrame();
+  ack.has_damage = true;
+  bool display_damaged = true;
+  bool is_actively_scrolling = true;
+  damage_tracker_->SurfaceDamagedForTest(sid1, ack, display_damaged,
+                                         is_actively_scrolling);
+
+  // Despite the fact that we have pending surfaces, we should still be
+  // scheduled to draw immediately.
+  EXPECT_TRUE(scheduler_->has_pending_surfaces());
+  EXPECT_EQ(base::TimeTicks(),
+            scheduler_->DesiredBeginFrameDeadlineTimeForTest());
+}
+
+TEST_F(ImmediateInteractiveDrawTest, WaitWhenNotInteracting) {
+  SurfaceId root_surface_id(
+      kArbitraryFrameSinkId,
+      LocalSurfaceId(1, base::UnguessableToken::Create()));
+  SurfaceId sid1(kArbitraryFrameSinkId,
+                 LocalSurfaceId(2, base::UnguessableToken::Create()));
+  SurfaceId sid2(kArbitraryFrameSinkId,
+                 LocalSurfaceId(3, base::UnguessableToken::Create()));
+
+  scheduler_->SetVisible(true);
+  SetNewRootSurface(root_surface_id);
+  EXPECT_EQ(BeginFrameAck(), client_.last_begin_frame_ack());
+
+  AdvanceTimeAndBeginFrameForTest({sid1, sid2});
+  EXPECT_EQ(BeginFrameAck(), client_.last_begin_frame_ack());
+
+  BeginFrameAck ack = AckForCurrentBeginFrame();
+  ack.has_damage = true;
+  bool display_damaged = true;
+  bool is_actively_scrolling = false;
+  damage_tracker_->SurfaceDamagedForTest(sid1, ack, display_damaged,
+                                         is_actively_scrolling);
+
+  // Since the damage was not related to active scrolling, we should not be
+  // attempting to draw immediately.
+  EXPECT_TRUE(scheduler_->has_pending_surfaces());
+  EXPECT_LT(base::TimeTicks(),
+            scheduler_->DesiredBeginFrameDeadlineTimeForTest());
 }
 
 }  // namespace

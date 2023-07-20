@@ -71,6 +71,11 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
     return metadata.is_resourceless_software_draw_with_scroll_or_animation;
   }
 
+  static bool is_actively_scrolling(
+      const viz::CompositorFrameMetadata& metadata) {
+    return metadata.is_actively_scrolling;
+  }
+
   static SkColor4f root_background_color(
       const viz::CompositorFrameMetadata& metadata) {
     return metadata.root_background_color;

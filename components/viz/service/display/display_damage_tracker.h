@@ -66,6 +66,9 @@ class VIZ_SERVICE_EXPORT DisplayDamageTracker : public SurfaceObserver {
   // replied with Ack yet.
   bool HasPendingSurfaces(const BeginFrameArgs& begin_frame_args);
 
+  // Returns true if any of the damage received was due to an ongoing scroll.
+  bool HasDamageDueToActiveScroller();
+
   bool root_frame_missing() const { return root_frame_missing_; }
   bool IsRootSurfaceValid() const;
 
@@ -80,7 +83,8 @@ class VIZ_SERVICE_EXPORT DisplayDamageTracker : public SurfaceObserver {
   // SurfaceObserver implementation.
   void OnSurfaceMarkedForDestruction(const SurfaceId& surface_id) override;
   bool OnSurfaceDamaged(const SurfaceId& surface_id,
-                        const BeginFrameAck& ack) override;
+                        const BeginFrameAck& ack,
+                        bool is_actively_scrolling) override;
   void OnSurfaceDamageExpected(const SurfaceId& surface_id,
                                const BeginFrameArgs& args) override;
 
@@ -88,6 +92,7 @@ class VIZ_SERVICE_EXPORT DisplayDamageTracker : public SurfaceObserver {
   struct SurfaceBeginFrameState {
     BeginFrameArgs last_args;
     BeginFrameAck last_ack;
+    bool last_is_actively_scrolling;
   };
 
   virtual bool SurfaceHasUnackedFrame(const SurfaceId& surface_id) const;
@@ -105,7 +110,8 @@ class VIZ_SERVICE_EXPORT DisplayDamageTracker : public SurfaceObserver {
   // Indicates that there was damage to one of the surfaces.
   void ProcessSurfaceDamage(const SurfaceId& surface_id,
                             const BeginFrameAck& ack,
-                            bool display_damaged);
+                            bool display_damaged,
+                            bool is_actively_scrolling);
 
   // Used to send corresponding notifications to observers.
   void NotifyDisplayDamaged(SurfaceId surface_id);

@@ -494,7 +494,8 @@ void CompositorFrameSinkSupport::DidNotProduceFrame(const BeginFrameAck& ack) {
   modified_ack.has_damage = false;
 
   if (last_activated_surface_id_.is_valid())
-    surface_manager_->SurfaceModified(last_activated_surface_id_, modified_ack);
+    surface_manager_->SurfaceModified(last_activated_surface_id_, modified_ack,
+                                      false);
 
   if (begin_frame_source_) {
     begin_frame_source_->DidFinishFrame(this);
@@ -1074,7 +1075,7 @@ void CompositorFrameSinkSupport::RequestCopyOfOutput(
   if (last_activated_surface_id_.is_valid()) {
     BeginFrameAck ack;
     ack.has_damage = true;
-    surface_manager_->SurfaceModified(last_activated_surface_id_, ack);
+    surface_manager_->SurfaceModified(last_activated_surface_id_, ack, false);
   }
 }
 

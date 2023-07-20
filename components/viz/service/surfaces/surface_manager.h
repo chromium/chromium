@@ -108,7 +108,9 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   // in response to a BeginFrame, or a CopyOutputRequest is issued.
   //
   // |ack.sequence_number| is only valid if called in response to a BeginFrame.
-  bool SurfaceModified(const SurfaceId& surface_id, const BeginFrameAck& ack);
+  bool SurfaceModified(const SurfaceId& surface_id,
+                       const BeginFrameAck& ack,
+                       bool is_actively_scrolling);
 
   // Called when a surface has an active frame for the first time.
   void FirstSurfaceActivation(const SurfaceInfo& surface_info);

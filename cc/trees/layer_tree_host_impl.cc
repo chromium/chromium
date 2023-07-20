@@ -2320,6 +2320,9 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
         actively_scrolling || mutator_host_->NeedsTickAnimations();
   }
 
+  metadata.is_actively_scrolling =
+      GetActivelyScrollingType() != ActivelyScrollingType::kNone;
+
   const base::flat_set<viz::SurfaceRange>& referenced_surfaces =
       active_tree_->SurfaceRanges();
   for (auto& surface_range : referenced_surfaces)
