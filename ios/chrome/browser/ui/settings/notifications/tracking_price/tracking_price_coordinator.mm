@@ -73,6 +73,10 @@
                                            animated:YES];
 }
 
+- (void)stop {
+  [self dimissAlertCoordinator];
+}
+
 #pragma mark - TrackingPriceViewControllerPresentationDelegate
 
 - (void)trackingPriceViewControllerDidRemove:
@@ -98,6 +102,7 @@
   NSString* settingsTitle = l10n_util::GetNSString(
       IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_REDIRECT);
 
+  __weak TrackingPriceCoordinator* weakSelf = self;
   [_alertCoordinator stop];
   _alertCoordinator =
       [[AlertCoordinator alloc] initWithBaseViewController:self.viewController
@@ -105,7 +110,9 @@
                                                      title:alertTitle
                                                    message:alertMessage];
   [_alertCoordinator addItemWithTitle:cancelTitle
-                               action:nil
+                               action:^{
+                                 [weakSelf dimissAlertCoordinator];
+                               }
                                 style:UIAlertActionStyleCancel];
   [_alertCoordinator
       addItemWithTitle:settingsTitle
@@ -114,9 +121,17 @@
                                 openURL:[NSURL URLWithString:settingURL]
                                 options:{}
                       completionHandler:nil];
+                  [weakSelf dimissAlertCoordinator];
                 }
                  style:UIAlertActionStyleDefault];
   [_alertCoordinator start];
+}
+
+#pragma mark - Private
+
+- (void)dimissAlertCoordinator {
+  [_alertCoordinator stop];
+  _alertCoordinator = nil;
 }
 
 @end
