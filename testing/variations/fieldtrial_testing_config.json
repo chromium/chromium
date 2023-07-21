@@ -8138,6 +8138,21 @@
             ]
         }
     ],
+    "MacSetDefaultTaskRole": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MacSetDefaultTaskRole"
+                    ]
+                }
+            ]
+        }
+    ],
     "MacWebContentsOcclusion": [
         {
             "platforms": [
