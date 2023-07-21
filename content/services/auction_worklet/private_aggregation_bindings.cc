@@ -4,6 +4,8 @@
 
 #include "content/services/auction_worklet/private_aggregation_bindings.h"
 
+#include <stdint.h>
+
 #include <cmath>
 #include <iterator>
 #include <memory>
@@ -17,19 +19,23 @@
 #include "base/strings/string_util.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
-#include "content/services/worklet_utils/private_aggregation_utils.h"
 #include "gin/arguments.h"
+#include "gin/converter.h"
 #include "gin/dictionary.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
+#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
+#include "v8/include/v8-context.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-external.h"
 #include "v8/include/v8-function-callback.h"
 #include "v8/include/v8-function.h"
+#include "v8/include/v8-isolate.h"
 #include "v8/include/v8-local-handle.h"
 #include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
 
 namespace auction_worklet {
 
@@ -54,7 +60,33 @@ absl::optional<auction_worklet::mojom::BaseValue> BaseValueStringToEnum(
 }
 
 // If returns `absl::nullopt`, will output an error to `error_out`.
-// Modified from `worklet_utils::ConvertBigIntToUint128()`.
+absl::optional<absl::uint128> ConvertBigIntToUint128(
+    v8::Local<v8::BigInt> bigint,
+    std::string* error_out) {
+  if (bigint.IsEmpty()) {
+    *error_out = "Failed to interpret as BigInt";
+    return absl::nullopt;
+  }
+  if (bigint->WordCount() > 2) {
+    *error_out = "BigInt is too large";
+    return absl::nullopt;
+  }
+  // Signals the size of the `words` array to `ToWordsArray()`. The number of
+  // elements actually used is then written here by the function.
+  int word_count = 2;
+  int sign_bit = 0;
+  uint64_t words[2] = {0, 0};  // Least significant to most significant.
+  bigint->ToWordsArray(&sign_bit, &word_count, words);
+  if (sign_bit) {
+    *error_out = "BigInt must be non-negative";
+    return absl::nullopt;
+  }
+
+  return absl::MakeUint128(words[1], words[0]);
+}
+
+// If returns `absl::nullopt`, will output an error to `error_out`.
+// Modified from `ConvertBigIntToUint128()`.
 absl::optional<auction_worklet::mojom::BucketOffsetPtr>
 ConvertBigIntToBucketOffset(v8::Local<v8::BigInt> bigint,
                             std::string* error_out) {
@@ -191,8 +223,7 @@ auction_worklet::mojom::ForEventSignalBucketPtr GetBucket(
   if (js_bucket->IsBigInt()) {
     std::string bucket_error;
     absl::optional<absl::uint128> maybe_bucket =
-        worklet_utils::ConvertBigIntToUint128(js_bucket.As<v8::BigInt>(),
-                                              &bucket_error);
+        ConvertBigIntToUint128(js_bucket.As<v8::BigInt>(), &bucket_error);
     if (!maybe_bucket.has_value()) {
       CHECK(base::IsStringUTF8(bucket_error));
       *error = bucket_error;
@@ -290,6 +321,51 @@ ParseForEventContribution(v8::Isolate* isolate,
 
   return auction_worklet::mojom::AggregatableReportForEventContribution::New(
       std::move(bucket), std::move(value), std::move(event_type));
+}
+
+v8::Local<v8::String> CreateStringFromLiteral(v8::Isolate* isolate,
+                                              const char* ascii_string) {
+  DCHECK(base::IsStringASCII(ascii_string));
+  return v8::String::NewFromUtf8(isolate, ascii_string,
+                                 v8::NewStringType::kNormal,
+                                 strlen(ascii_string))
+      .ToLocalChecked();
+}
+
+v8::MaybeLocal<v8::String> CreateUtf8String(v8::Isolate* isolate,
+                                            base::StringPiece utf8_string) {
+  if (!base::IsStringUTF8(utf8_string)) {
+    return v8::MaybeLocal<v8::String>();
+  }
+  return v8::String::NewFromUtf8(isolate, utf8_string.data(),
+                                 v8::NewStringType::kNormal,
+                                 utf8_string.length());
+}
+
+// In case of failure, will return `absl::nullopt` and output an error to
+// `error_out`.
+absl::optional<uint64_t> ParseDebugKey(v8::Local<v8::Value> js_debug_key,
+                                       v8::Local<v8::Context>& context,
+                                       std::string* error_out) {
+  if (js_debug_key.IsEmpty() || js_debug_key->IsNullOrUndefined()) {
+    return absl::nullopt;
+  }
+
+  if (js_debug_key->IsBigInt()) {
+    absl::optional<absl::uint128> maybe_debug_key =
+        ConvertBigIntToUint128(js_debug_key.As<v8::BigInt>(), error_out);
+    if (!maybe_debug_key.has_value()) {
+      return absl::nullopt;
+    }
+    if (absl::Uint128High64(maybe_debug_key.value()) != 0) {
+      *error_out = "BigInt is too large";
+      return absl::nullopt;
+    }
+    return absl::Uint128Low64(maybe_debug_key.value());
+  }
+
+  *error_out = "debugKey must be a BigInt";
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -393,18 +469,103 @@ void PrivateAggregationBindings::ContributeToHistogram(
       static_cast<PrivateAggregationBindings*>(
           v8::External::Cast(*args.Data())->Value());
 
-  blink::mojom::AggregatableReportHistogramContributionPtr contribution =
-      worklet_utils::ParseContributeToHistogramArguments(
-          gin::Arguments(args),
-          bindings->private_aggregation_permissions_policy_allowed_);
-  if (contribution.is_null()) {
-    // Indicates an exception was thrown.
+  gin::Arguments gin_args(args);
+  v8::Isolate* isolate = gin_args.isolate();
+
+  if (!bindings->private_aggregation_permissions_policy_allowed_) {
+    isolate->ThrowException(v8::Exception::TypeError(CreateStringFromLiteral(
+        isolate,
+        "The \"private-aggregation\" Permissions Policy denied the method on "
+        "privateAggregation")));
+    return;
+  }
+
+  std::vector<v8::Local<v8::Value>> argument_list = gin_args.GetAll();
+
+  // Any additional arguments are ignored.
+  if (argument_list.size() == 0 || argument_list[0].IsEmpty() ||
+      !argument_list[0]->IsObject()) {
+    isolate->ThrowException(v8::Exception::TypeError(CreateStringFromLiteral(
+        isolate, "contributeToHistogram requires 1 object parameter")));
+    return;
+  }
+
+  gin::Dictionary dict(isolate);
+
+  bool success = gin::ConvertFromV8(isolate, argument_list[0], &dict);
+  DCHECK(success);
+
+  v8::Local<v8::Value> js_bucket;
+  v8::Local<v8::Value> js_value;
+
+  if (!dict.Get("bucket", &js_bucket)) {
+    // Propagate any exception
+    return;
+  }
+  if (js_bucket.IsEmpty() || js_bucket->IsNullOrUndefined()) {
+    isolate->ThrowException(v8::Exception::TypeError(CreateStringFromLiteral(
+        isolate,
+        "Invalid or missing bucket in contributeToHistogram argument")));
+    return;
+  }
+
+  if (!dict.Get("value", &js_value)) {
+    // Propagate any exception
+    return;
+  }
+  if (js_value.IsEmpty() || js_value->IsNullOrUndefined()) {
+    isolate->ThrowException(v8::Exception::TypeError(CreateStringFromLiteral(
+        isolate,
+        "Invalid or missing value in contributeToHistogram argument")));
+    return;
+  }
+
+  absl::uint128 bucket;
+  int value;
+
+  if (js_bucket->IsBigInt()) {
+    std::string error;
+    absl::optional<absl::uint128> maybe_bucket =
+        ConvertBigIntToUint128(js_bucket.As<v8::BigInt>(), &error);
+    if (!maybe_bucket.has_value()) {
+      DCHECK(base::IsStringUTF8(error));
+      isolate->ThrowException(v8::Exception::TypeError(
+          CreateUtf8String(isolate, error).ToLocalChecked()));
+      return;
+    }
+    bucket = maybe_bucket.value();
+  } else {
+    isolate->ThrowException(v8::Exception::TypeError(
+        CreateStringFromLiteral(isolate, "bucket must be a BigInt")));
+    return;
+  }
+
+  if (js_value->IsNumber()) {
+    v8::Maybe<int32_t> converted_value =
+        js_value->Int32Value(isolate->GetCurrentContext());
+    CHECK(converted_value.IsJust());
+    value = converted_value.ToChecked();
+  } else if (js_value->IsBigInt()) {
+    isolate->ThrowException(v8::Exception::TypeError(
+        CreateStringFromLiteral(isolate, "Value cannot be a BigInt")));
+    return;
+  } else {
+    isolate->ThrowException(v8::Exception::TypeError(
+        CreateStringFromLiteral(isolate, "Value must be a Number")));
+    return;
+  }
+
+  if (value < 0) {
+    isolate->ThrowException(v8::Exception::TypeError(
+        CreateStringFromLiteral(isolate, "Value must be non-negative")));
     return;
   }
 
   bindings->private_aggregation_contributions_.push_back(
       auction_worklet::mojom::AggregatableReportContribution::
-          NewHistogramContribution(std::move(contribution)));
+          NewHistogramContribution(
+              blink::mojom::AggregatableReportHistogramContribution::New(
+                  bucket, value)));
 }
 
 void PrivateAggregationBindings::ContributeToHistogramOnEvent(
@@ -457,10 +618,58 @@ void PrivateAggregationBindings::EnableDebugMode(
       static_cast<PrivateAggregationBindings*>(
           v8::External::Cast(*args.Data())->Value());
 
-  worklet_utils::ParseAndApplyEnableDebugModeArguments(
-      gin::Arguments(args),
-      bindings->private_aggregation_permissions_policy_allowed_,
-      bindings->debug_mode_details_);
+  gin::Arguments gin_args(args);
+  v8::Isolate* isolate = gin_args.isolate();
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+
+  if (!bindings->private_aggregation_permissions_policy_allowed_) {
+    isolate->ThrowException(v8::Exception::TypeError(CreateStringFromLiteral(
+        isolate,
+        "The \"private-aggregation\" Permissions Policy denied the method on "
+        "privateAggregation")));
+    return;
+  }
+
+  std::vector<v8::Local<v8::Value>> argument_list = gin_args.GetAll();
+
+  if (bindings->debug_mode_details_.is_enabled) {
+    isolate->ThrowException(v8::Exception::TypeError(CreateStringFromLiteral(
+        isolate, "enableDebugMode may be called at most once")));
+    return;
+  }
+
+  // If no arguments are provided, no debug key is set.
+  if (argument_list.size() >= 1 && !argument_list[0].IsEmpty()) {
+    gin::Dictionary dict(isolate);
+
+    if (!gin::ConvertFromV8(isolate, argument_list[0], &dict)) {
+      isolate->ThrowException(v8::Exception::TypeError(CreateStringFromLiteral(
+          isolate, "Invalid argument in enableDebugMode")));
+      return;
+    }
+
+    v8::Local<v8::Value> js_debug_key;
+
+    if (!dict.Get("debugKey", &js_debug_key)) {
+      // Propagate any exception
+      return;
+    }
+
+    std::string error;
+    absl::optional<uint64_t> maybe_debug_key =
+        ParseDebugKey(js_debug_key, context, &error);
+    if (!maybe_debug_key.has_value()) {
+      DCHECK(base::IsStringUTF8(error));
+      isolate->ThrowException(v8::Exception::TypeError(
+          CreateUtf8String(isolate, error).ToLocalChecked()));
+      return;
+    }
+
+    bindings->debug_mode_details_.debug_key =
+        blink::mojom::DebugKey::New(maybe_debug_key.value());
+  }
+
+  bindings->debug_mode_details_.is_enabled = true;
 }
 
 }  // namespace auction_worklet
