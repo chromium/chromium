@@ -65666,6 +65666,7 @@ from previous Chrome versions.
   <int value="670404276" label="ImeUsEnglishModelUpdate:disabled"/>
   <int value="671427343"
       label="DnsOverHttpsWithIdentifiersReuseOldPolicy:enabled"/>
+  <int value="671541178" label="CrosComponents:disabled"/>
   <int value="672067370" label="InstallableAmbientBadgeMessage:enabled"/>
   <int value="672255299" label="WebAuthFlowInBrowserTab:disabled"/>
   <int value="672599279" label="WebUiSystemFont:disabled"/>
@@ -67224,6 +67225,7 @@ from previous Chrome versions.
   <int value="1474861626" label="disable-multi-mirroring"/>
   <int value="1475210901" label="AvatarToolbarButton:disabled"/>
   <int value="1475771788" label="BackgroundResourceFetch:enabled"/>
+  <int value="1475987503" label="CrosComponents:enabled"/>
   <int value="1478075250" label="QuickAnswersTextAnnotator:disabled"/>
   <int value="1478461926" label="GlobalMediaControlsPictureInPicture:enabled"/>
   <int value="1479248574" label="disable-voice-input"/>

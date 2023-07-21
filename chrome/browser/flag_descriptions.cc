@@ -6256,6 +6256,10 @@ const char kImeUsEnglishModelUpdateDescription[] =
 const char kJellyColorsName[] = "Jelly Colors";
 const char kJellyColorsDescription[] = "Enable Jelly coloring";
 
+const char kCrosComponentsName[] = "Cros Components";
+const char kCrosComponentsDescription[] =
+    "Enable cros-component UI elements, replacing other elements.";
+
 const char kLacrosAvailabilityIgnoreName[] =
     "Ignore lacros-availability policy";
 const char kLacrosAvailabilityIgnoreDescription[] =

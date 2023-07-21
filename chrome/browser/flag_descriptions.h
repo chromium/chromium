@@ -3612,6 +3612,9 @@ extern const char kImeUsEnglishModelUpdateDescription[];
 extern const char kJellyColorsName[];
 extern const char kJellyColorsDescription[];
 
+extern const char kCrosComponentsName[];
+extern const char kCrosComponentsDescription[];
+
 extern const char kLacrosAvailabilityIgnoreName[];
 extern const char kLacrosAvailabilityIgnoreDescription[];
 

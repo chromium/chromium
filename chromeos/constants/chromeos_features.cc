@@ -31,6 +31,12 @@ BASE_FEATURE(kCloudGamingDevice,
              "CloudGamingDevice",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the use of cros-component UI elements. Contact:
+// cros-jellybean-team@google.com.
+BASE_FEATURE(kCrosComponents,
+             "CrosComponents",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables Demo Mode System Web App migration
 BASE_FEATURE(kDemoModeSWA, "DemoModeSWA", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -113,6 +119,10 @@ bool IsCloudGamingDeviceEnabled() {
 #else
   return base::FeatureList::IsEnabled(kCloudGamingDevice);
 #endif
+}
+
+bool IsCrosComponentsEnabled() {
+  return base::FeatureList::IsEnabled(kCrosComponents) && IsJellyEnabled();
 }
 
 bool IsDemoModeSWAEnabled() {
