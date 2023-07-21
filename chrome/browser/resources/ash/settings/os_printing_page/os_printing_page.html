@@ -1,10 +1,8 @@
 <style include="settings-shared"></style>
-<os-settings-animated-pages id="pages"
-    section="[[section_]]"
-    focus-config="[[focusConfig_]]">
+<os-settings-animated-pages id="pages" section="[[section_]]">
   <div route-path="default">
     <settings-card header-text="$i18n{printingPageTitle}">
-      <cr-link-row id="cupsPrinters" label="$i18n{cupsPrintersTitle}"
+      <cr-link-row id="cupsPrintersRow" label="$i18n{cupsPrintersTitle}"
           on-click="onTapCupsPrinters_"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>

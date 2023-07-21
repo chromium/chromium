@@ -15,19 +15,19 @@ import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
+import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl} from './cups_printers_browser_proxy.js';
 import {getTemplate} from './os_printing_page.html.js';
 
 const OsSettingsPrintingPageElementBase =
-    DeepLinkingMixin(RouteObserverMixin(PolymerElement));
+    DeepLinkingMixin(RouteOriginMixin(PolymerElement));
 
 export class OsSettingsPrintingPageElement extends
     OsSettingsPrintingPageElementBase {
-  static get is(): string {
-    return 'os-settings-printing-page';
+  static get is() {
+    return 'os-settings-printing-page' as const;
   }
 
   static get template() {
@@ -57,17 +57,6 @@ export class OsSettingsPrintingPageElement extends
         type: String,
       },
 
-      focusConfig_: {
-        type: Object,
-        value() {
-          const map = new Map();
-          if (routes.CUPS_PRINTERS) {
-            map.set(routes.CUPS_PRINTERS.path, '#cupsPrinters');
-          }
-          return map;
-        },
-      },
-
       /**
        * Used by DeepLinkingMixin to focus this page's deep links.
        */
@@ -83,18 +72,28 @@ export class OsSettingsPrintingPageElement extends
   searchTerm: string;
 
   private browserProxy_: CupsPrintersBrowserProxy;
-  private focusConfig_: Map<string, string>;
   private section_: Section;
 
   constructor() {
     super();
 
+    /** RouteOriginMixin override */
+    this.route = routes.OS_PRINTING;
+
     this.browserProxy_ = CupsPrintersBrowserProxyImpl.getInstance();
   }
 
-  override currentRouteChanged(route: Route): void {
+  override ready(): void {
+    super.ready();
+
+    this.addFocusConfig(routes.CUPS_PRINTERS, '#cupsPrintersRow');
+  }
+
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
+    super.currentRouteChanged(newRoute, oldRoute);
+
     // Does not apply to this page.
-    if (route !== routes.OS_PRINTING) {
+    if (newRoute !== this.route) {
       return;
     }
 
@@ -117,7 +116,7 @@ export class OsSettingsPrintingPageElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'os-settings-printing-page': OsSettingsPrintingPageElement;
+    [OsSettingsPrintingPageElement.is]: OsSettingsPrintingPageElement;
   }
 }
 
