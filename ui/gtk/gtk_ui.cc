@@ -463,6 +463,14 @@ bool GtkUi::PreferDarkTheme() const {
   return dark;
 }
 
+void GtkUi::SetDarkTheme(bool dark) {
+  auto* settings = gtk_settings_get_default();
+  g_object_set(settings, "gtk-application-prefer-dark-theme", dark, nullptr);
+  // OnThemeChanged() will be called via the
+  // notify::gtk-application-prefer-dark-theme handler to update the native
+  // theme.
+}
+
 bool GtkUi::AnimationsEnabled() const {
   gboolean animations_enabled = false;
   g_object_get(gtk_settings_get_default(), "gtk-enable-animations",

@@ -67,7 +67,7 @@ DarkModeManagerLinux::DarkModeManagerLinux()
   if (auto* linux_ui_theme = ui::GetDefaultLinuxUiTheme()) {
     auto* native_theme = linux_ui_theme->GetNativeTheme();
     native_theme_observer_.Observe(native_theme);
-    SetColorScheme(native_theme->ShouldUseDarkColors());
+    SetColorScheme(native_theme->ShouldUseDarkColors(), true);
   }
 }
 
@@ -80,7 +80,7 @@ DarkModeManagerLinux::~DarkModeManagerLinux() {
 
 void DarkModeManagerLinux::OnNativeThemeUpdated(
     ui::NativeTheme* observed_theme) {
-  SetColorScheme(observed_theme->ShouldUseDarkColors());
+  SetColorScheme(observed_theme->ShouldUseDarkColors(), true);
 }
 
 void DarkModeManagerLinux::OnSignalConnected(const std::string& interface_name,
@@ -114,7 +114,7 @@ void DarkModeManagerLinux::OnPortalSettingChanged(dbus::Signal* signal) {
     return;
   }
 
-  SetColorScheme(new_color_scheme == kFreedesktopColorSchemeDark);
+  SetColorScheme(new_color_scheme == kFreedesktopColorSchemeDark, false);
 }
 
 void DarkModeManagerLinux::OnReadColorSchemeResponse(dbus::Response* response) {
@@ -137,13 +137,23 @@ void DarkModeManagerLinux::OnReadColorSchemeResponse(dbus::Response* response) {
     return;
   }
 
-  // Ignore future updates from the toolkit theme.
-  native_theme_observer_.Reset();
+  // Once we read the org.freedesktop.appearance color-scheme setting successfully,
+  // it should always take precedence over the toolkit color scheme.
+  ignore_toolkit_theme_changes_ = true;
 
-  SetColorScheme(new_color_scheme == kFreedesktopColorSchemeDark);
+  SetColorScheme(new_color_scheme == kFreedesktopColorSchemeDark, false);
 }
 
-void DarkModeManagerLinux::SetColorScheme(bool prefer_dark_theme) {
+void DarkModeManagerLinux::SetColorScheme(bool prefer_dark_theme,
+                                          bool from_toolkit_theme) {
+  if (from_toolkit_theme && ignore_toolkit_theme_changes_) {
+    return;
+  }
+  if (!from_toolkit_theme) {
+    for (auto* linux_ui_theme : ui::GetLinuxUiThemes()) {
+      linux_ui_theme->SetDarkTheme(prefer_dark_theme);
+    }
+  }
   if (prefer_dark_theme_ == prefer_dark_theme) {
     return;
   }

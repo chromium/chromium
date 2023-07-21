@@ -44,12 +44,13 @@ class DarkModeManagerLinux : public NativeThemeObserver {
   void OnReadColorSchemeResponse(dbus::Response* response);
 
   // Sets `prefer_dark_theme_` and propagates to the web theme.
-  void SetColorScheme(bool prefer_dark_theme);
+  void SetColorScheme(bool prefer_dark_theme, bool from_toolkit_theme);
 
   scoped_refptr<dbus::Bus> bus_;
   raw_ptr<dbus::ObjectProxy> settings_proxy_;
 
   bool prefer_dark_theme_ = false;
+  bool ignore_toolkit_theme_changes_ = false;
 
   base::ScopedObservation<NativeTheme, NativeThemeObserver>
       native_theme_observer_{this};

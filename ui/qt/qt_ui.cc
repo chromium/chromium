@@ -356,6 +356,11 @@ bool QtUi::PreferDarkTheme() const {
 }
 
 DISABLE_CFI_VCALL
+void QtUi::SetDarkTheme(bool dark) {
+  // Qt::ColorScheme is only available in QT 6.5 and later.
+}
+
+DISABLE_CFI_VCALL
 bool QtUi::AnimationsEnabled() const {
   return shim_->GetAnimationDurationMs() > 0;
 }

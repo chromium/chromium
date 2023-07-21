@@ -82,6 +82,7 @@ class QtUi : public ui::LinuxUiAndTheme, QtInterface::Delegate {
   void GetInactiveSelectionBgColor(SkColor* color) const override;
   void GetInactiveSelectionFgColor(SkColor* color) const override;
   bool PreferDarkTheme() const override;
+  void SetDarkTheme(bool dark) override;
   std::unique_ptr<ui::NavButtonProvider> CreateNavButtonProvider() override;
   ui::WindowFrameProvider* GetWindowFrameProvider(bool solid_frame) override;
 

@@ -300,6 +300,10 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUiTheme {
   // preferred.
   virtual bool PreferDarkTheme() const = 0;
 
+  // Override the toolkit's dark mode preference.  Used when the dark mode
+  // setting is provided by org.freedesktop.appearance instead of the toolkit.
+  virtual void SetDarkTheme(bool dark) = 0;
+
   // Returns a new NavButtonProvider, or nullptr if the underlying
   // toolkit does not support drawing client-side navigation buttons.
   virtual std::unique_ptr<NavButtonProvider> CreateNavButtonProvider() = 0;

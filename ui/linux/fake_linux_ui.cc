@@ -93,6 +93,8 @@ bool FakeLinuxUi::PreferDarkTheme() const {
   return false;
 }
 
+void FakeLinuxUi::SetDarkTheme(bool dark) {}
+
 bool FakeLinuxUi::AnimationsEnabled() const {
   return true;
 }

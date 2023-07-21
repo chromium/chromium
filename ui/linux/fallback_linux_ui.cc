@@ -112,7 +112,11 @@ LinuxUi::WindowFrameAction FallbackLinuxUi::GetWindowFrameAction(
 }
 
 bool FallbackLinuxUi::PreferDarkTheme() const {
-  return false;
+  return theme_is_dark_;
+}
+
+void FallbackLinuxUi::SetDarkTheme(bool dark) {
+  theme_is_dark_ = dark;
 }
 
 bool FallbackLinuxUi::AnimationsEnabled() const {
