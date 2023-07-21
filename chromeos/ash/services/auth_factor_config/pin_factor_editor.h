@@ -44,6 +44,11 @@ class PinFactorEditor : public mojom::PinFactorEditor {
       std::unique_ptr<UserContext> context,
       base::OnceCallback<void(mojom::ConfigureResult)> callback,
       bool success);
+  void OnIsPinConfiguredForRemove(
+      const std::string& auth_token,
+      std::unique_ptr<UserContext> context,
+      base::OnceCallback<void(mojom::ConfigureResult)> callback,
+      bool is_pin_configured);
 
   raw_ptr<AuthFactorConfig> auth_factor_config_;
   raw_ptr<PinBackendDelegate> pin_backend_;

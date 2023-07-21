@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config_utils.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 
 namespace ash::auth {
@@ -129,8 +130,24 @@ void AuthFactorConfig::IsConfigured(const std::string& auth_token,
       return;
     }
     case mojom::AuthFactor::kPin: {
-      std::move(callback).Run(
-          config.HasConfiguredFactor(cryptohome::AuthFactorType::kPin));
+      // We have to consider both cryptohome based PIN and legacy pref PIN.
+      if (config.HasConfiguredFactor(cryptohome::AuthFactorType::kPin)) {
+        std::move(callback).Run(true);
+        return;
+      }
+
+      const PrefService* prefs = quick_unlock_storage_->GetPrefService(*user);
+      if (!prefs) {
+        LOG(ERROR) << "No pref service for user";
+        std::move(callback).Run(false);
+        return;
+      }
+
+      const bool has_prefs_pin =
+          !prefs->GetString(prefs::kQuickUnlockPinSecret).empty() &&
+          !prefs->GetString(prefs::kQuickUnlockPinSalt).empty();
+
+      std::move(callback).Run(has_prefs_pin);
       return;
     }
     case mojom::AuthFactor::kGaiaPassword: {

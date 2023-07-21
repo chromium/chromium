@@ -59,15 +59,27 @@ void PinFactorEditor::RemovePin(
   }
   auto context = std::make_unique<UserContext>(*user_context_ptr);
 
-  const bool has_pin =
-      user_context_ptr->GetAuthFactorsConfiguration().HasConfiguredFactor(
-          cryptohome::AuthFactorType::kPin);
-  if (!has_pin) {
+  auth_factor_config_->IsConfigured(
+      auth_token, mojom::AuthFactor::kPin,
+      base::BindOnce(&PinFactorEditor::OnIsPinConfiguredForRemove,
+                     weak_factory_.GetWeakPtr(), auth_token, std::move(context),
+                     std::move(callback)));
+}
+
+void PinFactorEditor::OnIsPinConfiguredForRemove(
+    const std::string& auth_token,
+    std::unique_ptr<UserContext> context,
+    base::OnceCallback<void(mojom::ConfigureResult)> callback,
+    bool is_pin_configured) {
+  if (!is_pin_configured) {
+    LOG(WARNING)
+        << "No PIN configured, ignoring PinFactorEditor::RemovePin call";
     std::move(callback).Run(mojom::ConfigureResult::kSuccess);
     return;
   }
 
-  pin_backend_->Remove(user->GetAccountId(), auth_token,
+  AccountId account_id = context->GetAccountId();
+  pin_backend_->Remove(account_id, auth_token,
                        base::BindOnce(&PinFactorEditor::OnPinConfigured,
                                       weak_factory_.GetWeakPtr(),
                                       std::move(context), std::move(callback)));
