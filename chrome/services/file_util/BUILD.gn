@@ -21,6 +21,7 @@ source_set("file_util") {
     "//components/safe_browsing:buildflags",
     "//extensions/buildflags:buildflags",
     "//mojo/public/cpp/bindings",
+    "//third_party/zlib",
   ]
 
   public_deps = [
