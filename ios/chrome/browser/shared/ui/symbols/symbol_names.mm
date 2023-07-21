@@ -55,6 +55,7 @@ NSString* const kPlusCircleFillSymbol = @"plus_circle_fill";
 
 // Default symbol names.
 NSString* const kChartBarXAxisSymbol = @"chart.bar.xaxis";
+NSString* const kCircleSymbol = @"circle";
 NSString* const kCircleFillSymbol = @"circle.fill";
 NSString* const kSyncEnabledSymbol = @"arrow.triangle.2.circlepath";
 NSString* const kSyncCircleSymbol = @"arrow.triangle.2.circlepath.circle.fill";

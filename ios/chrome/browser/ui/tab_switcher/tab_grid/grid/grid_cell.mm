@@ -28,9 +28,6 @@ namespace {
 // The size of symbol icons.
 NSInteger kIconSymbolPointSize = 13;
 
-// Specific symbol image used as a badge for unslected tabs.
-NSString* kCircleSymbol = @"circle";
-
 // Size of activity indicator replacing fav icon when active.
 const CGFloat kIndicatorSize = 16.0;
 

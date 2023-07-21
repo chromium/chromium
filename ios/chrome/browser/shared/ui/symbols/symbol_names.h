@@ -63,6 +63,7 @@ extern NSString* const kIncognitoCircleFilliOS14Symbol;
 
 // Default symbol names.
 extern NSString* const kChartBarXAxisSymbol;
+extern NSString* const kCircleSymbol;
 extern NSString* const kCircleFillSymbol;
 extern NSString* const kSyncEnabledSymbol;
 extern NSString* const kSyncCircleSymbol;
