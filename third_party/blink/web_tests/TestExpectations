@@ -6564,4 +6564,4 @@ crbug.com/1459304 [ Mac11 ] virtual/coop-restrict-properties/external/wpt/html/c
 crbug.com/1465723 [ Mac ] virtual/prefetch-no-vary-search/wpt_internal/speculation-rules/prefetch/no-vary-search/prefetch-single-non-eager-with-hint.https.html* [ Pass Timeout ]
 
 # Gardener 2023-07-21
-crbug.com/1180274 http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Failure Pass Timeout Crash ]
+crbug.com/1180274 http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Crash Failure Pass Timeout ]
