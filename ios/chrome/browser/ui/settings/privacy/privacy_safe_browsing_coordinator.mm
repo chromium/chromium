@@ -87,6 +87,10 @@
                                            animated:YES];
 }
 
+- (void)stop {
+  [self stopSafeBrowsingEnhancedProtectionCoordinator];
+}
+
 #pragma mark - SafeBrowsingViewControllerPresentationDelegate
 
 - (void)privacySafeBrowsingViewControllerDidRemove:
@@ -162,9 +166,7 @@
 - (void)safeBrowsingEnhancedProtectionCoordinatorDidRemove:
     (SafeBrowsingEnhancedProtectionCoordinator*)coordinator {
   DCHECK_EQ(self.safeBrowsingEnhancedProtectionCoordinator, coordinator);
-  [self.safeBrowsingEnhancedProtectionCoordinator stop];
-  self.safeBrowsingEnhancedProtectionCoordinator.delegate = nil;
-  self.safeBrowsingEnhancedProtectionCoordinator = nil;
+  [self stopSafeBrowsingEnhancedProtectionCoordinator];
 }
 
 #pragma mark - SafeBrowsingStandardProtectionCoordinatorDelegate
@@ -175,6 +177,14 @@
   [self.safeBrowsingStandardProtectionCoordinator stop];
   self.safeBrowsingStandardProtectionCoordinator.delegate = nil;
   self.safeBrowsingStandardProtectionCoordinator = nil;
+}
+
+#pragma mark - Private
+
+- (void)stopSafeBrowsingEnhancedProtectionCoordinator {
+  [self.safeBrowsingEnhancedProtectionCoordinator stop];
+  self.safeBrowsingEnhancedProtectionCoordinator.delegate = nil;
+  self.safeBrowsingEnhancedProtectionCoordinator = nil;
 }
 
 @end
