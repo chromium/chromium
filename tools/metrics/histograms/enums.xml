@@ -66894,6 +66894,7 @@ from previous Chrome versions.
   <int value="1587972722" label="TimeOfDayWallpaper:disabled"/>
   <int value="1588716465" label="CrostiniUseLxd4:disabled"/>
   <int value="1589341623" label="disable-easy-unlock"/>
+  <int value="1590173007" label="AsynchronousScannerDiscovery:enabled"/>
   <int value="1590278995"
       label="AutofillSendExperimentIdsInPaymentsRPCs:enabled"/>
   <int value="1590300329" label="CCTModulePostMessage:enabled"/>
@@ -67035,6 +67036,7 @@ from previous Chrome versions.
   <int value="1657713458" label="disable-virtual-keyboard-overscroll"/>
   <int value="1658644418" label="disable-app-list-voice-search"/>
   <int value="1658656322" label="IncognitoDownloadsWarning:enabled"/>
+  <int value="1658676520" label="AsynchronousScannerDiscovery:disabled"/>
   <int value="1659082220" label="EnableManualSaving:disabled"/>
   <int value="1659372520" label="WebXrRenderPath:disabled"/>
   <int value="1659489775" label="TailoredSecurityDesktopNotice:disabled"/>

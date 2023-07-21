@@ -415,6 +415,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "asynchronous-scanner-discovery",
+    "owners": [ "bmgordon", "project-bolton@google.com" ],
+    "expiry_milestone": 123
+  },
+  {
     "name": "attribution-reporting-debug-mode",
     "owners": [ "//content/browser/attribution_reporting/OWNERS" ],
     "expiry_milestone": 117

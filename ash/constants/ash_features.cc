@@ -173,6 +173,12 @@ BASE_FEATURE(kAssistantNativeIcons,
              "AssistantNativeIcons",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether document scanners are discovered with the synchronous
+// ListScanners API or the new asynchronous StartScannerDiscovery API.
+BASE_FEATURE(kAsynchronousScannerDiscovery,
+             "AsynchronousScannerDiscovery",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables warning in the quick settings when NBS device is in use.
 BASE_FEATURE(kAudioHFPNbsWarning,
              "AudioHFPNbsWarning",
@@ -2781,6 +2787,10 @@ bool IsArcInputOverlayAlphaV2Enabled() {
 
 bool IsAssistantNativeIconsEnabled() {
   return base::FeatureList::IsEnabled(kAssistantNativeIcons);
+}
+
+bool IsAsynchronousScannerDiscoveryEnabled() {
+  return base::FeatureList::IsEnabled(kAsynchronousScannerDiscovery);
 }
 
 bool IsAutoNightLightEnabled() {
