@@ -41,14 +41,11 @@ void TestMailtoHandlerService::DismissAllMailtoHandlerInterfaces() {
 
 void TestMailtoHandlerService::HandleMailtoURL(NSURL* url,
                                                base::OnceClosure completion) {
-  __block base::OnceClosure block_completion = std::move(completion);
-  [[UIApplication sharedApplication] openURL:url
-      options:@{}
-      completionHandler:^(BOOL success) {
-        if (block_completion) {
-          std::move(block_completion).Run();
-        }
-      }];
+  auto callback = base::IgnoreArgs<BOOL>(std::move(completion));
+  [[UIApplication sharedApplication]
+                openURL:url
+                options:@{}
+      completionHandler:base::CallbackToBlock(std::move(callback))];
 }
 
 }  // namespace
