@@ -314,6 +314,11 @@ class BrowserView : public BrowserWindow,
   // Valid only for PictureInPicture browsers.
   float GetInitialAspectRatio() const;
 
+  // Returns the document picture in picture options from |browser_|'s
+  // CreateParams.
+  absl::optional<blink::mojom::PictureInPictureWindowOptions>
+  GetDocumentPictureInPictureOptions() const;
+
   // Returns the lock_aspect_ratio parameter from |browser_|'s CreateParams.
   // Valid only for PictureInPicture browsers.
   bool GetLockAspectRatio() const;

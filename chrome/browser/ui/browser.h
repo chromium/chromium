@@ -320,9 +320,8 @@ class Browser : public TabStripModelObserver,
     // maximizable.
     bool can_maximize = true;
 
-    // Aspect ratio parameters specific to TYPE_PICTURE_IN_PICTURE.
-    double initial_aspect_ratio = 1.0;
-    bool lock_aspect_ratio = false;
+    // Document Picture in Picture options, specific to TYPE_PICTURE_IN_PICTURE.
+    absl::optional<blink::mojom::PictureInPictureWindowOptions> pip_options;
 
    private:
     friend class Browser;

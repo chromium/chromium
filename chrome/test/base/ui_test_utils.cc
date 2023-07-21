@@ -678,4 +678,47 @@ void BrowserChangeObserver::OnBrowserRemoved(Browser* browser) {
   }
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// CheckWaiter:
+
+CheckWaiter::CheckWaiter(base::RepeatingCallback<bool()> callback,
+                         bool expected,
+                         const base::TimeDelta& timeout)
+    : callback_(callback),
+      expected_(expected),
+      timeout_(base::TimeTicks::Now() + timeout) {}
+
+CheckWaiter::~CheckWaiter() = default;
+
+void CheckWaiter::Wait() {
+  if (Check()) {
+    return;
+  }
+
+  base::RunLoop run_loop;
+  quit_ = run_loop.QuitClosure();
+  run_loop.Run();
+}
+
+bool CheckWaiter::Check() {
+  if (callback_.Run() != expected_ && base::TimeTicks::Now() < timeout_) {
+    // Check again after a short timeout. Important: Don't use an immediate
+    // task to check again, because the pump would be allowed to run it
+    // immediately without processing system events (system events are
+    // required for the state to change).
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(base::IgnoreResult(&CheckWaiter::Check),
+                       base::Unretained(this)),
+        TestTimeouts::tiny_timeout());
+    return false;
+  }
+
+  // Quit the run_loop to end the wait.
+  if (!quit_.is_null()) {
+    std::move(quit_).Run();
+  }
+  return true;
+}
+
 }  // namespace ui_test_utils

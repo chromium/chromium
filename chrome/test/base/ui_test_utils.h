@@ -319,6 +319,31 @@ class BrowserChangeObserver : public BrowserListObserver {
   base::RunLoop run_loop_;
 };
 
+// Encapsulates waiting for the browser window to change state. This is
+// needed for example on Chrome desktop linux, where window state change is done
+// asynchronously as an event received from a different process.
+class CheckWaiter {
+ public:
+  CheckWaiter(base::RepeatingCallback<bool()> callback,
+              bool expected,
+              const base::TimeDelta& timeout);
+  CheckWaiter(const CheckWaiter&) = delete;
+  CheckWaiter& operator=(const CheckWaiter&) = delete;
+  ~CheckWaiter();
+
+  // Blocks until the browser window becomes maximized.
+  void Wait();
+
+ private:
+  bool Check();
+
+  base::RepeatingCallback<bool()> callback_;
+  bool expected_;
+  const base::TimeTicks timeout_;
+  // The waiter's RunLoop quit closure.
+  base::RepeatingClosure quit_;
+};
+
 }  // namespace ui_test_utils
 
 #endif  // CHROME_TEST_BASE_UI_TEST_UTILS_H_

@@ -40,6 +40,11 @@
 #include "ui/views/window/frame_background.h"
 #include "ui/views/window/window_shape.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "ui/base/win/hwnd_metrics.h"
+#include "ui/views/win/hwnd_util.h"
+#endif
+
 #if !BUILDFLAG(IS_MAC)
 // Mac does not use Aura
 #include "ui/aura/window.h"
@@ -412,6 +417,52 @@ int PictureInPictureBrowserFrameView::GetTopInset(bool restored) const {
 
 int PictureInPictureBrowserFrameView::GetThemeBackgroundXInset() const {
   return 0;
+}
+
+void PictureInPictureBrowserFrameView::OnBrowserViewInitViewsComplete() {
+  BrowserNonClientFrameView::OnBrowserViewInitViewsComplete();
+
+#if BUILDFLAG(IS_WIN)
+  const gfx::Insets insets = GetClientAreaInsets(
+      MonitorFromWindow(HWNDForView(this), MONITOR_DEFAULTTONEAREST));
+#else
+  const gfx::Insets insets;
+#endif
+
+  const gfx::Size initial_browser_size =
+      browser_view()->browser()->override_bounds().size();
+  if (initial_browser_size.width() >=
+          GetMinimumSize().width() + insets.width() &&
+      initial_browser_size.height() >=
+          GetMinimumSize().height() + insets.height()) {
+    return;
+  }
+
+  const absl::optional<blink::mojom::PictureInPictureWindowOptions>
+      pip_options = browser_view()->GetDocumentPictureInPictureOptions();
+
+  if (!pip_options.has_value()) {
+    return;
+  }
+
+  // Get the current display. This is needed by
+  // |AdjustPictureInPictureWindowBounds| to determine the work area
+  // dimensions and the allowed maximum window size.
+  const BrowserWindow* const browser_window =
+      browser_view()->browser()->window();
+  const gfx::NativeWindow native_window =
+      browser_window ? browser_window->GetNativeWindow() : gfx::NativeWindow();
+  const display::Screen* const screen = display::Screen::GetScreen();
+  const display::Display display =
+      browser_window ? screen->GetDisplayNearestWindow(native_window)
+                     : screen->GetDisplayForNewWindows();
+
+  const gfx::Rect window_bounds =
+      PictureInPictureWindowManager::AdjustPictureInPictureWindowBounds(
+          pip_options.value(), display,
+          GetMinimumSize() + gfx::Size(insets.width(), insets.height()));
+
+  browser_view()->browser()->set_override_bounds(window_bounds);
 }
 
 gfx::Rect PictureInPictureBrowserFrameView::GetBoundsForClientView() const {
@@ -938,6 +989,15 @@ gfx::ShadowValues PictureInPictureBrowserFrameView::GetShadowValues() {
   int elevation = ChromeLayoutProvider::Get()->GetShadowElevationMetric(
       views::Emphasis::kMaximum);
   return gfx::ShadowValue::MakeMdShadowValues(elevation);
+}
+#endif
+
+#if BUILDFLAG(IS_WIN)
+gfx::Insets PictureInPictureBrowserFrameView::GetClientAreaInsets(
+    HMONITOR monitor) const {
+  const int frame_thickness = ui::GetFrameThickness(monitor);
+  return gfx::Insets::TLBR(0, frame_thickness, frame_thickness,
+                           frame_thickness);
 }
 #endif
 

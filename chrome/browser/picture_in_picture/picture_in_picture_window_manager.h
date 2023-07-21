@@ -85,10 +85,26 @@ class PictureInPictureWindowManager {
   // picture-in-picture if either of them is present.
   absl::optional<gfx::Rect> GetPictureInPictureWindowBounds() const;
 
-  // Used for Document picture-in-picture windows only.
+  // Used for Document picture-in-picture windows only. The returned dimensions
+  // represent the outer window bounds.
+  // This method is called from the |BrowserNavigator|. Note that the window
+  // bounds may be later re-adjusted by the |PictureInPictureBrowserFrameView|
+  // to accommodate non-client view elements, while respecting the minimum inner
+  // window size.
   static gfx::Rect CalculateInitialPictureInPictureWindowBounds(
       const blink::mojom::PictureInPictureWindowOptions& pip_options,
       const display::Display& display);
+
+  // Used for Document picture-in-picture windows only. The returned dimensions
+  // represent the outer window bounds.
+  // This method is called from |PictureInPictureBrowserFrameView|. Picture in
+  // picture window bounds are only adjusted when, the requested window size
+  // would cause the minimum inner window size to be smaller than the allowed
+  // minimum (|GetMinimumInnerWindowSize|).
+  static gfx::Rect AdjustPictureInPictureWindowBounds(
+      const blink::mojom::PictureInPictureWindowOptions& pip_options,
+      const display::Display& display,
+      const gfx::Size& minimum_window_size);
 
   // Used for Document picture-in-picture windows only.
   // Note that this is meant to represent the inner window bounds. When the pip
@@ -106,6 +122,13 @@ class PictureInPictureWindowManager {
 #if !BUILDFLAG(IS_ANDROID)
   class DocumentWebContentsObserver;
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  // Helper method Used to calculate the outer window bounds for Document
+  // picture-in-picture windows only.
+  static gfx::Rect CalculatePictureInPictureWindowBounds(
+      const blink::mojom::PictureInPictureWindowOptions& pip_options,
+      const display::Display& display,
+      const gfx::Size& minimum_outer_window_size);
 
   // Create a Picture-in-Picture window and register it in order to be closed
   // when needed.

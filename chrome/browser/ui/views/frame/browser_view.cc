@@ -1195,11 +1195,20 @@ bool BrowserView::GetIsPictureInPictureType() const {
 }
 
 float BrowserView::GetInitialAspectRatio() const {
-  return browser_->create_params().initial_aspect_ratio;
+  const absl::optional<blink::mojom::PictureInPictureWindowOptions>
+      pip_options = browser_->create_params().pip_options;
+  return pip_options.has_value() ? pip_options->initial_aspect_ratio : 1.0;
+}
+
+absl::optional<blink::mojom::PictureInPictureWindowOptions>
+BrowserView::GetDocumentPictureInPictureOptions() const {
+  return browser_->create_params().pip_options;
 }
 
 bool BrowserView::GetLockAspectRatio() const {
-  return browser_->create_params().lock_aspect_ratio;
+  const absl::optional<blink::mojom::PictureInPictureWindowOptions>
+      pip_options = browser_->create_params().pip_options;
+  return pip_options.has_value() ? pip_options->lock_aspect_ratio : false;
 }
 
 bool BrowserView::GetTopControlsSlideBehaviorEnabled() const {

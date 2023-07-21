@@ -62,6 +62,7 @@ class PictureInPictureBrowserFrameView
                                views::Label& window_title_label) const override;
   int GetTopInset(bool restored) const override;
   int GetThemeBackgroundXInset() const override;
+  void OnBrowserViewInitViewsComplete() override;
   void UpdateThrobber(bool running) override {}
   gfx::Rect GetBoundsForClientView() const override;
   gfx::Rect GetWindowBoundsForClientBounds(
@@ -174,6 +175,10 @@ class PictureInPictureBrowserFrameView
   // Gets the shadow metrics (radius, offset, and number of shadows) even if
   // shadows are not drawn.
   static gfx::ShadowValues GetShadowValues();
+#endif
+
+#if BUILDFLAG(IS_WIN)
+  gfx::Insets GetClientAreaInsets(HMONITOR monitor) const;
 #endif
 
   // Helper functions for testing.

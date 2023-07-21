@@ -179,10 +179,10 @@ PictureInPictureWindowManager::GetPictureInPictureWindowBounds() const {
 }
 
 // static
-gfx::Rect
-PictureInPictureWindowManager::CalculateInitialPictureInPictureWindowBounds(
+gfx::Rect PictureInPictureWindowManager::CalculatePictureInPictureWindowBounds(
     const blink::mojom::PictureInPictureWindowOptions& pip_options,
-    const display::Display& display) {
+    const display::Display& display,
+    const gfx::Size& minimum_outer_window_size) {
   // TODO(https://crbug.com/1327797): This copies a bunch of logic from
   // VideoOverlayWindowViews. That class and this one should be refactored so
   // VideoOverlayWindowViews uses PictureInPictureWindowManager to calculate
@@ -195,7 +195,7 @@ PictureInPictureWindowManager::CalculateInitialPictureInPictureWindowBounds(
     gfx::Size window_size(base::saturated_cast<int>(pip_options.width),
                           base::saturated_cast<int>(pip_options.height));
     window_size.SetToMin(GetMaximumWindowSize(display));
-    window_size.SetToMax(GetMinimumInnerWindowSize());
+    window_size.SetToMax(minimum_outer_window_size);
     window_bounds = gfx::Rect(window_size);
   } else {
     // Otherwise, fall back to the aspect ratio.
@@ -204,7 +204,7 @@ PictureInPictureWindowManager::CalculateInitialPictureInPictureWindowBounds(
                                       : 1.0;
     gfx::Size window_size(work_area.width() / 5, work_area.height() / 5);
     window_size.SetToMin(GetMaximumWindowSize(display));
-    window_size.SetToMax(GetMinimumInnerWindowSize());
+    window_size.SetToMax(minimum_outer_window_size);
     window_bounds = gfx::Rect(window_size);
     gfx::SizeRectToAspectRatio(gfx::ResizeEdge::kTopLeft, initial_aspect_ratio,
                                GetMinimumInnerWindowSize(),
@@ -223,6 +223,24 @@ PictureInPictureWindowManager::CalculateInitialPictureInPictureWindowBounds(
   window_bounds.set_origin(default_origin);
 
   return window_bounds;
+}
+
+// static
+gfx::Rect
+PictureInPictureWindowManager::CalculateInitialPictureInPictureWindowBounds(
+    const blink::mojom::PictureInPictureWindowOptions& pip_options,
+    const display::Display& display) {
+  return CalculatePictureInPictureWindowBounds(pip_options, display,
+                                               GetMinimumInnerWindowSize());
+}
+
+// static
+gfx::Rect PictureInPictureWindowManager::AdjustPictureInPictureWindowBounds(
+    const blink::mojom::PictureInPictureWindowOptions& pip_options,
+    const display::Display& display,
+    const gfx::Size& minimum_window_size) {
+  return CalculatePictureInPictureWindowBounds(pip_options, display,
+                                               minimum_window_size);
 }
 
 // static
