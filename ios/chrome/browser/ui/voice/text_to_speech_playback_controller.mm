@@ -79,50 +79,17 @@ void TextToSpeechPlaybackController::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateListStatus& status) {
-  switch (change.type()) {
-    case WebStateListChange::Type::kStatusOnly:
-      // TODO(crbug.com/1442546): Move the implementation from
-      // WebStateActivatedAt() to here. Note that here is reachable only when
-      // `reason` == ActiveWebStateChangeReason::Activated.
-      break;
-    case WebStateListChange::Type::kDetach: {
-      const WebStateListChangeDetach& detach_change =
-          change.As<WebStateListChangeDetach>();
-      if (web_state_ == detach_change.detached_web_state()) {
-        SetWebState(nullptr);
-      }
-      break;
-    }
-    case WebStateListChange::Type::kMove:
-      // Do nothing when a WebState is moved.
-      break;
-    case WebStateListChange::Type::kReplace: {
-      const WebStateListChangeReplace& replace_change =
-          change.As<WebStateListChangeReplace>();
-      web::WebState* inserted_web_state = replace_change.inserted_web_state();
-      if (inserted_web_state == web_state_list->GetActiveWebState()) {
-        SetWebState(inserted_web_state);
-      }
-      break;
-    }
-    case WebStateListChange::Type::kInsert: {
-      const WebStateListChangeInsert& insert_change =
-          change.As<WebStateListChangeInsert>();
-      if (status.active_web_state_change()) {
-        SetWebState(insert_change.inserted_web_state());
-      }
-      break;
+  if (change.type() == WebStateListChange::Type::kDetach) {
+    const WebStateListChangeDetach& detach_change =
+        change.As<WebStateListChangeDetach>();
+    if (web_state_ == detach_change.detached_web_state()) {
+      SetWebState(nullptr);
     }
   }
-}
 
-void TextToSpeechPlaybackController::WebStateActivatedAt(
-    WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int active_index,
-    ActiveWebStateChangeReason reason) {
-  SetWebState(new_web_state);
+  if (status.active_web_state_change()) {
+    SetWebState(status.new_active_web_state);
+  }
 }
 
 #pragma mark WebStateObserver
