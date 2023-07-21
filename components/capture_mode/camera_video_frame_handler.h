@@ -81,10 +81,8 @@ class CAPTURE_MODE_EXPORT CameraVideoFrameHandler
 
   // Creates an instance of this class which will subscribe to the given
   // `camera_video_source` requesting to receive video frames of its feed with
-  // the given `capture_format`. The video frames will then be provided to the
-  // `delegate`.
+  // the given `capture_format`.
   CameraVideoFrameHandler(
-      Delegate* delegate,
       ui::ContextFactory* context_factory,
       mojo::Remote<video_capture::mojom::VideoSource> camera_video_source,
       const media::VideoCaptureFormat& capture_format);
@@ -92,8 +90,9 @@ class CAPTURE_MODE_EXPORT CameraVideoFrameHandler
   CameraVideoFrameHandler& operator=(const CameraVideoFrameHandler&) = delete;
   ~CameraVideoFrameHandler() override;
 
-  // Activates the subscription so we start receiving video frames.
-  void StartHandlingFrames();
+  // Activates the subscription so we start receiving video frames. The video
+  // frames will then be provided to the `delegate`.
+  void StartHandlingFrames(Delegate* delegate);
 
   // Closes the camera video stream subscription and immediately rejects any
   // new frames received at `OnFrameReadyInBuffer()`. The callback is invoked
@@ -109,6 +108,9 @@ class CAPTURE_MODE_EXPORT CameraVideoFrameHandler
   // step and just deletes the `VideoFrameHandler` then it's possible for
   // buffers to be allocated and held in limbo until the video stream is
   // stopped.
+  //
+  // `delegate_` is nullified by this method so it is safe to free the memory
+  // backing `delegate_` any time after this point.
   void Close(base::OnceClosure close_complete_callback);
 
   // video_capture::mojom::VideoFrameHandler:
@@ -148,7 +150,7 @@ class CAPTURE_MODE_EXPORT CameraVideoFrameHandler
   // `VideoSource` gets disconnected.
   void OnFatalErrorOrDisconnection();
 
-  const raw_ptr<Delegate> delegate_;
+  raw_ptr<Delegate> delegate_ = nullptr;
 
   const raw_ptr<ui::ContextFactory> context_factory_;
 

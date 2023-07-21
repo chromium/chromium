@@ -498,15 +498,12 @@ std::unique_ptr<BufferHandleHolder> BufferHandleHolder::Create(
 // CameraVideoFrameHandler:
 
 CameraVideoFrameHandler::CameraVideoFrameHandler(
-    Delegate* delegate,
     ui::ContextFactory* context_factory,
     mojo::Remote<video_capture::mojom::VideoSource> camera_video_source,
     const media::VideoCaptureFormat& capture_format)
-    : delegate_(delegate),
-      context_factory_(context_factory),
+    : context_factory_(context_factory),
       camera_video_source_remote_(std::move(camera_video_source)) {
-  DCHECK(delegate_);
-  DCHECK(camera_video_source_remote_);
+  CHECK(camera_video_source_remote_);
 
   camera_video_source_remote_.set_disconnect_handler(
       base::BindOnce(&CameraVideoFrameHandler::OnFatalErrorOrDisconnection,
@@ -540,14 +537,19 @@ CameraVideoFrameHandler::CameraVideoFrameHandler(
 
 CameraVideoFrameHandler::~CameraVideoFrameHandler() = default;
 
-void CameraVideoFrameHandler::StartHandlingFrames() {
-  DCHECK(camera_video_stream_subsciption_remote_);
-  camera_video_stream_subsciption_remote_->Activate();
+void CameraVideoFrameHandler::StartHandlingFrames(Delegate* delegate) {
+  CHECK(delegate);
+  CHECK(camera_video_stream_subsciption_remote_);
+  delegate_ = delegate;
   active_ = true;
+  camera_video_stream_subsciption_remote_->Activate();
 }
 
 void CameraVideoFrameHandler::Close(base::OnceClosure close_complete_callback) {
   active_ = false;
+  // `delegate_` might be freed any time after this point, so nullify it to
+  // reflect that.
+  delegate_ = nullptr;
   camera_video_stream_subsciption_remote_->Close(
       std::move(close_complete_callback));
 }
@@ -574,7 +576,7 @@ void CameraVideoFrameHandler::OnFrameAccessHandlerReady(
 void CameraVideoFrameHandler::OnFrameReadyInBuffer(
     video_capture::mojom::ReadyFrameInBufferPtr buffer,
     std::vector<video_capture::mojom::ReadyFrameInBufferPtr> scaled_buffers) {
-  DCHECK(video_frame_access_handler_remote_);
+  CHECK(video_frame_access_handler_remote_);
 
   // Ignore scaled buffers for now.
   for (auto& scaled_buffer : scaled_buffers) {
@@ -589,9 +591,11 @@ void CameraVideoFrameHandler::OnFrameReadyInBuffer(
     video_frame_access_handler_remote_->OnFinishedConsumingBuffer(buffer_id);
     return;
   }
+  // `delegate_` should still exist if the handler is active.
+  CHECK(delegate_);
 
   const auto& iter = buffer_map_.find(buffer_id);
-  DCHECK(iter != buffer_map_.end());
+  CHECK(iter != buffer_map_.end());
 
   const auto& buffer_handle_holder = iter->second;
   scoped_refptr<media::VideoFrame> frame =
@@ -645,7 +649,7 @@ void CameraVideoFrameHandler::SetForceUseGpuMemoryBufferForTest(bool value) {
 }
 
 void CameraVideoFrameHandler::OnVideoFrameGone(int buffer_id) {
-  DCHECK(video_frame_access_handler_remote_);
+  CHECK(video_frame_access_handler_remote_);
   video_frame_access_handler_remote_->OnFinishedConsumingBuffer(buffer_id);
 }
 
@@ -656,10 +660,11 @@ void CameraVideoFrameHandler::OnFatalErrorOrDisconnection() {
   video_frame_handler_receiver_.reset();
   camera_video_source_remote_.reset();
   camera_video_stream_subsciption_remote_.reset();
-  video_frame_access_handler_remote_.reset();
 
-  delegate_->OnFatalErrorOrDisconnection();
-  // Caution as the delegate may choose to delete `this` after the above call.
+  if (delegate_) {
+    delegate_->OnFatalErrorOrDisconnection();
+    // Caution as the delegate may choose to delete `this` after the above call.
+  }
 }
 
 }  // namespace capture_mode

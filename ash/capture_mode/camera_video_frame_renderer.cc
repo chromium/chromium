@@ -39,8 +39,7 @@ CameraVideoFrameRenderer::CameraVideoFrameRenderer(
     const media::VideoCaptureFormat& capture_format,
     bool should_flip_frames_horizontally)
     : host_window_(/*delegate=*/nullptr),
-      video_frame_handler_(/*delegate=*/this,
-                           GetContextFactory(),
+      video_frame_handler_(GetContextFactory(),
                            std::move(camera_video_source),
                            capture_format),
       context_provider_(
@@ -76,7 +75,7 @@ void CameraVideoFrameRenderer::Initialize() {
       /*use_gpu_memory_buffer_resources=*/false,
       /*use_r16_texture=*/false, max_texture_size);
 
-  video_frame_handler_.StartHandlingFrames();
+  video_frame_handler_.StartHandlingFrames(/*delegate=*/this);
 }
 
 void CameraVideoFrameRenderer::OnCameraVideoFrame(
