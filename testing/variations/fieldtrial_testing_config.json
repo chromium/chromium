@@ -14388,7 +14388,7 @@
             ],
             "experiments": [
                 {
-                    "name": "FlushBasedOnTime60",
+                    "name": "FlushCodeBasedOnTime60",
                     "params": {
                         "V8FlushCodeOldTime": "60"
                     },
@@ -14397,7 +14397,52 @@
                     ]
                 },
                 {
-                    "name": "FlushBasedOnTabVisibility",
+                    "name": "FlushCodeBasedOnTime10",
+                    "params": {
+                        "V8FlushCodeOldTime": "10"
+                    },
+                    "enable_features": [
+                        "V8FlushCodeBasedOnTime"
+                    ]
+                },
+                {
+                    "name": "FlushCodeBasedOnTime30",
+                    "params": {
+                        "V8FlushCodeOldTime": "30"
+                    },
+                    "enable_features": [
+                        "V8FlushCodeBasedOnTime"
+                    ]
+                },
+                {
+                    "name": "FlushCodeBasedOnTime45",
+                    "params": {
+                        "V8FlushCodeOldTime": "45"
+                    },
+                    "enable_features": [
+                        "V8FlushCodeBasedOnTime"
+                    ]
+                },
+                {
+                    "name": "FlushCodeBasedOnTime60",
+                    "params": {
+                        "V8FlushCodeOldTime": "60"
+                    },
+                    "enable_features": [
+                        "V8FlushCodeBasedOnTime"
+                    ]
+                },
+                {
+                    "name": "FlushCodeBasedOnTime180",
+                    "params": {
+                        "V8FlushCodeOldTime": "180"
+                    },
+                    "enable_features": [
+                        "V8FlushCodeBasedOnTime"
+                    ]
+                },
+                {
+                    "name": "FlushCodeBasedOnTabVisibility",
                     "enable_features": [
                         "V8FlushCodeBasedOnTabVisibility"
                     ]
