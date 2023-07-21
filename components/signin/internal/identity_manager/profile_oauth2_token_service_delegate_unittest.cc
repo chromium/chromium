@@ -64,6 +64,7 @@ TEST_F(ProfileOAuth2TokenServiceDelegateTest, InvalidateTokensForMultilogin) {
             GoogleServiceAuthError::NONE);
 }
 
+// Contains all non-deprecated Google service auth error states.
 const GoogleServiceAuthError::State table[] = {
     GoogleServiceAuthError::NONE,
     GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS,
@@ -74,6 +75,7 @@ const GoogleServiceAuthError::State table[] = {
     GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE,
     GoogleServiceAuthError::SERVICE_ERROR,
     GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR,
+    GoogleServiceAuthError::CHALLENGE_RESPONSE_REQUIRED,
 };
 
 TEST_F(ProfileOAuth2TokenServiceDelegateTest, UpdateAuthError_PersistenErrors) {

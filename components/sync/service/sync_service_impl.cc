@@ -844,6 +844,7 @@ SyncService::UserActionableError SyncServiceImpl::GetUserActionableError()
     case GoogleServiceAuthError::SERVICE_UNAVAILABLE:
     case GoogleServiceAuthError::CONNECTION_FAILED:
     case GoogleServiceAuthError::REQUEST_CANCELED:
+    case GoogleServiceAuthError::CHALLENGE_RESPONSE_REQUIRED:
       // Transient errors aren't reachable.
       NOTREACHED();
       break;

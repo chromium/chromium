@@ -60,6 +60,10 @@ const char kGrantedScopesKey[] = "grantedScopes";
 const char kError[] = "error";
 const char kMessage[] = "message";
 
+const char kTokenBindingResponseKey[] = "tokenBindingResponse";
+const char kRetryResponseKey[] = "retryResponse";
+const char kChallengeKey[] = "challenge";
+
 static GoogleServiceAuthError CreateAuthError(
     int net_error,
     const network::mojom::URLResponseHead* head,
@@ -98,6 +102,22 @@ static GoogleServiceAuthError CreateAuthError(
         "Not able to find an error message within a service error.");
   }
   return GoogleServiceAuthError::FromServiceError(*message);
+}
+
+std::string* FindTokenBindingChallenge(base::Value::Dict& dict) {
+  base::Value::Dict* token_binding_response =
+      dict.FindDict(kTokenBindingResponseKey);
+  if (!token_binding_response) {
+    return nullptr;
+  }
+
+  base::Value::Dict* retry_response =
+      token_binding_response->FindDict(kRetryResponseKey);
+  if (!retry_response) {
+    return nullptr;
+  }
+
+  return retry_response->FindString(kChallengeKey);
 }
 
 bool AreCookiesEqual(const net::CanonicalCookie& lhs,
@@ -285,6 +305,16 @@ void OAuth2MintTokenFlow::ProcessApiCallSuccess(
   }
 
   base::Value::Dict& dict = value->GetDict();
+
+  std::string* challenge = FindTokenBindingChallenge(dict);
+  if (challenge) {
+    RecordApiCallResult(
+        OAuth2MintTokenApiCallResult::kChallengeResponseRequiredFailure);
+    ReportFailure(
+        GoogleServiceAuthError::FromTokenBindingChallenge(*challenge));
+    return;
+  }
+
   std::string* issue_advice_value = dict.FindString(kIssueAdviceKey);
   if (!issue_advice_value) {
     RecordApiCallResult(

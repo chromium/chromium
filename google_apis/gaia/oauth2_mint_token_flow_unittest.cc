@@ -34,7 +34,7 @@ using testing::StrictMock;
 
 namespace {
 
-static const char kValidTokenResponse[] =
+const char kValidTokenResponse[] =
     "{"
     "  \"token\": \"at1\","
     "  \"issueAdvice\": \"Auto\","
@@ -42,14 +42,14 @@ static const char kValidTokenResponse[] =
     "  \"grantedScopes\": \"http://scope1 http://scope2\""
     "}";
 
-static const char kTokenResponseNoGrantedScopes[] =
+const char kTokenResponseNoGrantedScopes[] =
     "{"
     "  \"token\": \"at1\","
     "  \"issueAdvice\": \"Auto\","
     "  \"expiresIn\": \"3600\""
     "}";
 
-static const char kTokenResponseEmptyGrantedScopes[] =
+const char kTokenResponseEmptyGrantedScopes[] =
     "{"
     "  \"token\": \"at1\","
     "  \"issueAdvice\": \"Auto\","
@@ -57,12 +57,12 @@ static const char kTokenResponseEmptyGrantedScopes[] =
     "  \"grantedScopes\": \"\""
     "}";
 
-static const char kTokenResponseNoAccessToken[] =
+const char kTokenResponseNoAccessToken[] =
     "{"
     "  \"issueAdvice\": \"Auto\""
     "}";
 
-static const char kValidRemoteConsentResponse[] =
+const char kValidRemoteConsentResponse[] =
     "{"
     "  \"issueAdvice\": \"remoteConsent\","
     "  \"resolutionData\": {"
@@ -88,13 +88,23 @@ static const char kValidRemoteConsentResponse[] =
     "  }"
     "}";
 
-static const char kInvalidRemoteConsentResponse[] =
+const char kInvalidRemoteConsentResponse[] =
     "{"
     "  \"issueAdvice\": \"remoteConsent\","
     "  \"resolutionData\": {"
     "    \"resolutionApproach\": \"resolveInBrowser\""
     "  }"
     "}";
+
+const char kTokenBindingChallengeResponse[] = R"(
+    {
+      "tokenBindingResponse" : {
+        "retryResponse" : {
+          "challenge" : "SIGN_ME"
+        }
+      }
+    }
+  )";
 
 constexpr base::StringPiece kVersion = "test_version";
 constexpr base::StringPiece kChannel = "test_channel";
@@ -626,6 +636,18 @@ TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallSuccess_RemoteConsentFailure) {
   histogram_tester_.ExpectUniqueSample(
       kOAuth2MintTokenApiCallResultHistogram,
       OAuth2MintTokenApiCallResult::kParseRemoteConsentFailure, 1);
+}
+
+TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallSuccess_TokenBindingChallenge) {
+  CreateFlow(OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE);
+  GoogleServiceAuthError expected_error =
+      GoogleServiceAuthError::FromTokenBindingChallenge("SIGN_ME");
+  EXPECT_CALL(delegate_, OnMintTokenFailure(expected_error));
+  ProcessApiCallSuccess(head_200_.get(), std::make_unique<std::string>(
+                                             kTokenBindingChallengeResponse));
+  histogram_tester_.ExpectUniqueSample(
+      kOAuth2MintTokenApiCallResultHistogram,
+      OAuth2MintTokenApiCallResult::kChallengeResponseRequiredFailure, 1);
 }
 
 TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallFailure_NullDelegate) {

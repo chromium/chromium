@@ -45,7 +45,8 @@ enum class OAuth2MintTokenApiCallResult {
   kParseRemoteConsentFailure = 9,
   // DEPRECATED:
   // kMintTokenSuccessWithFallbackScopes = 10,
-  kMaxValue = kParseRemoteConsentFailure
+  kChallengeResponseRequiredFailure = 11,
+  kMaxValue = kChallengeResponseRequiredFailure
 };
 
 // Data for the remote consent resolution:
@@ -214,13 +215,6 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintTokenFlow
       const base::Value::Dict& dict,
       RemoteConsentResolutionData* resolution_data);
 
-  // Currently, grantedScopes is a new parameter for an unlaunched feature, so
-  // it may not always be populated in server responses. In those cases,
-  // ParseMintTokenResponse can still succeed and will just leave the
-  // granted_scopes set unmodified. When the grantedScopes parameter is present
-  // and the function returns true, granted_scopes will include the scopes
-  // returned by the server. Once the feature is fully launched, this function
-  // will be updated to fail if the grantedScopes parameter is missing.
   static bool ParseMintTokenResponse(const base::Value::Dict& dict,
                                      std::string* access_token,
                                      std::set<std::string>* granted_scopes,

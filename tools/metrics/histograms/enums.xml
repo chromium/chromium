@@ -49104,6 +49104,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="12" label="SERVICE_ERROR"/>
   <int value="13" label="WEB_LOGIN_REQUIRED (deprecated)"/>
   <int value="14" label="SCOPE_LIMITED_UNRECOVERABLE_ERROR"/>
+  <int value="15" label="CHALLENGE_RESPONSE_REQUIRED"/>
 </enum>
 
 <enum name="GoogleUpdateAfterItemClickedActions">
@@ -77289,6 +77290,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="9" label="Parse remote consent failure"/>
   <int value="10"
       label="Mint token success with fallback scopes (deprecated 02/2021)"/>
+  <int value="11" label="Token binding challenge success"/>
 </enum>
 
 <enum name="OAuth2Response">

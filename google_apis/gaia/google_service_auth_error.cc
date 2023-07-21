@@ -39,7 +39,8 @@ bool GoogleServiceAuthError::operator==(
   return (state_ == b.state_) && (network_error_ == b.network_error_) &&
          (error_message_ == b.error_message_) &&
          (invalid_gaia_credentials_reason_ ==
-          b.invalid_gaia_credentials_reason_);
+          b.invalid_gaia_credentials_reason_) &&
+         (token_binding_challenge_ == b.token_binding_challenge_);
 }
 
 bool GoogleServiceAuthError::operator!=(
@@ -108,6 +109,15 @@ GoogleServiceAuthError GoogleServiceAuthError::FromUnexpectedServiceResponse(
 }
 
 // static
+GoogleServiceAuthError GoogleServiceAuthError::FromTokenBindingChallenge(
+    const std::string& challenge) {
+  GoogleServiceAuthError error =
+      GoogleServiceAuthError(CHALLENGE_RESPONSE_REQUIRED, /*error=*/0);
+  error.token_binding_challenge_ = challenge;
+  return error;
+}
+
+// static
 GoogleServiceAuthError GoogleServiceAuthError::AuthErrorNone() {
   return GoogleServiceAuthError(NONE);
 }
@@ -124,6 +134,7 @@ bool GoogleServiceAuthError::IsValid(State state) {
     case UNEXPECTED_SERVICE_RESPONSE:
     case SERVICE_ERROR:
     case SCOPE_LIMITED_UNRECOVERABLE_ERROR:
+    case CHALLENGE_RESPONSE_REQUIRED:
       return true;
     case NUM_STATES:
       return false;
@@ -144,9 +155,14 @@ const std::string& GoogleServiceAuthError::error_message() const {
   return error_message_;
 }
 
+const std::string& GoogleServiceAuthError::GetTokenBindingChallenge() const {
+  CHECK_EQ(CHALLENGE_RESPONSE_REQUIRED, state());
+  return token_binding_challenge_;
+}
+
 GoogleServiceAuthError::InvalidGaiaCredentialsReason
 GoogleServiceAuthError::GetInvalidGaiaCredentialsReason() const {
-  DCHECK_EQ(INVALID_GAIA_CREDENTIALS, state());
+  CHECK_EQ(INVALID_GAIA_CREDENTIALS, state());
   return invalid_gaia_credentials_reason_;
 }
 
@@ -175,6 +191,8 @@ std::string GoogleServiceAuthError::ToString() const {
     case SCOPE_LIMITED_UNRECOVERABLE_ERROR:
       return base::StringPrintf("Service responded with error: '%s'",
                                 error_message_.c_str());
+    case CHALLENGE_RESPONSE_REQUIRED:
+      return "Service responded with a token binding challenge.";
     case NUM_STATES:
       NOTREACHED();
       return std::string();
@@ -196,10 +214,11 @@ bool GoogleServiceAuthError::IsTransientError() const {
   case GoogleServiceAuthError::CONNECTION_FAILED:
   case GoogleServiceAuthError::SERVICE_UNAVAILABLE:
   case GoogleServiceAuthError::REQUEST_CANCELED:
-    return true;
+  case GoogleServiceAuthError::CHALLENGE_RESPONSE_REQUIRED:
+      return true;
   // Everything else will have the same result.
   default:
-    return false;
+      return false;
   }
 }
 
