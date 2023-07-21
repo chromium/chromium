@@ -680,6 +680,12 @@ BASE_FEATURE(kEnableBackgroundBlur,
              "EnableBackgroundBlur",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables exporting of the selected Preferences so that they can be accessed
+// early in the sign-in flow, before loading Profile.
+BASE_FEATURE(kEnableEarlyPrefs,
+             "EnableEarlyPrefs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables external keyboard testers in the diagnostics app.
 BASE_FEATURE(kEnableExternalKeyboardsInDiagnostics,
              "EnableExternalKeyboardsInDiagnosticsApp",
