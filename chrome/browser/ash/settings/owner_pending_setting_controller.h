@@ -112,7 +112,7 @@ class OwnerPendingSettingController
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> local_state_;
+  raw_ptr<PrefService, ExperimentalAsh> local_state_;
   absl::optional<base::Value> value_notified_to_observers_;
   base::RepeatingClosureList callback_list_;
   base::CallbackListSubscription setting_subscription_;
