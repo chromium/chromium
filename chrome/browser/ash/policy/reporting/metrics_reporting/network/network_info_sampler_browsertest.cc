@@ -178,6 +178,9 @@ class NetworkInfoSamplerBrowserTest
     auto [priority, record] = observer->GetNextEnqueuedRecord();
     EXPECT_THAT(priority, Eq(Priority::SLOW_BATCH));
     EXPECT_THAT(record.destination(), Eq(Destination::INFO_METRIC));
+    ASSERT_TRUE(record.has_source_info());
+    EXPECT_THAT(record.source_info().source(), Eq(SourceInfo::ASH));
+
     MetricData record_data;
     ASSERT_TRUE(record_data.ParseFromString(record.data()));
     EXPECT_TRUE(record_data.has_timestamp_ms());

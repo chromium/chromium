@@ -133,6 +133,9 @@ IN_PROC_BROWSER_TEST_F(OsUpdatesReporterBrowserTest, ReportUpdateSuccessEvent) {
       /*current_operation=*/update_engine::Operation::UPDATED_NEED_REBOOT);
 
   const Record& update_record = GetNextOsEventsRecord(&observer);
+  ASSERT_TRUE(update_record.has_source_info());
+  EXPECT_THAT(update_record.source_info().source(),
+              Eq(::reporting::SourceInfo::ASH));
   OsEventsRecord update_record_data;
   ASSERT_TRUE(update_record_data.ParseFromString(update_record.data()));
 
@@ -160,6 +163,9 @@ IN_PROC_BROWSER_TEST_P(OsUpdatesReporterBrowserErrorTest, ReportErrorEvent) {
       /*current_operation=*/test_case.operation);
 
   const Record& update_record = GetNextOsEventsRecord(&observer);
+  ASSERT_TRUE(update_record.has_source_info());
+  EXPECT_THAT(update_record.source_info().source(),
+              Eq(::reporting::SourceInfo::ASH));
   OsEventsRecord update_record_data;
   ASSERT_TRUE(update_record_data.ParseFromString(update_record.data()));
 
@@ -255,6 +261,9 @@ IN_PROC_BROWSER_TEST_F(OsUpdatesReporterPowerwashBrowserTest, RemotePowerwash) {
 
   EXPECT_EQ(result.result(), em::RemoteCommandResult_ResultType_RESULT_SUCCESS);
   const Record& update_record = GetNextOsEventsRecord(&observer);
+  ASSERT_TRUE(update_record.has_source_info());
+  EXPECT_THAT(update_record.source_info().source(),
+              Eq(::reporting::SourceInfo::ASH));
   OsEventsRecord update_record_data;
   ASSERT_TRUE(update_record_data.ParseFromString(update_record.data()));
 

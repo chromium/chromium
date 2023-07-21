@@ -58,6 +58,7 @@
 #include "components/reporting/metrics/periodic_event_collector.h"
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
+#include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/util/rate_limiter_slide_window.h"
 #include "components/user_manager/user.h"
 
@@ -148,19 +149,24 @@ void MetricReportingManager::OnLogin(Profile* profile) {
   // profile only available after login. These should rely on the
   // `telemetry_report_queue_` for periodic uploads to avoid overlapping flush
   // operations.
+  SourceInfo source_info;
+  source_info.set_source(SourceInfo::ASH);
   user_telemetry_report_queue_ = delegate_->CreateMetricReportQueue(
-      EventType::kUser, Destination::TELEMETRY_METRIC, Priority::MANUAL_BATCH);
+      EventType::kUser, Destination::TELEMETRY_METRIC, Priority::MANUAL_BATCH,
+      /*rate_limiter=*/nullptr, source_info);
   user_event_report_queue_ = delegate_->CreateMetricReportQueue(
-      EventType::kUser, Destination::EVENT_METRIC, Priority::SLOW_BATCH);
+      EventType::kUser, Destination::EVENT_METRIC, Priority::SLOW_BATCH,
+      /*rate_limiter=*/nullptr, source_info);
 
   auto app_event_rate_limiter = std::make_unique<RateLimiterSlideWindow>(
       kAppEventsTotalSize, kAppEventsWindow, kAppEventsBucketCount);
   app_event_report_queue_ = delegate_->CreateMetricReportQueue(
       EventType::kUser, Destination::EVENT_METRIC, Priority::SLOW_BATCH,
-      std::move(app_event_rate_limiter));
+      std::move(app_event_rate_limiter), source_info);
   user_peripheral_events_and_telemetry_report_queue_ =
       delegate_->CreateMetricReportQueue(
-          EventType::kUser, Destination::PERIPHERAL_EVENTS, Priority::SECURITY);
+          EventType::kUser, Destination::PERIPHERAL_EVENTS, Priority::SECURITY,
+          /*rate_limiter=*/nullptr, std::move(source_info));
 
   DCHECK(profile);
   user_reporting_settings_ =
@@ -204,14 +210,20 @@ MetricReportingManager::MetricReportingManager(
   if (delegate_->IsDeprovisioned()) {
     return;
   }
+
+  SourceInfo source_info;
+  source_info.set_source(SourceInfo::ASH);
   info_report_queue_ = delegate_->CreateMetricReportQueue(
-      EventType::kDevice, Destination::INFO_METRIC, Priority::SLOW_BATCH);
+      EventType::kDevice, Destination::INFO_METRIC, Priority::SLOW_BATCH,
+      /*rate_limiter=*/nullptr, source_info);
   telemetry_report_queue_ = delegate_->CreatePeriodicUploadReportQueue(
       EventType::kDevice, Destination::TELEMETRY_METRIC, Priority::MANUAL_BATCH,
       &reporting_settings_, ::ash::kReportUploadFrequency,
-      metrics::GetDefaultReportUploadFrequency());
+      metrics::GetDefaultReportUploadFrequency(), /*rate_unit_to_ms=*/1,
+      source_info);
   event_report_queue_ = delegate_->CreateMetricReportQueue(
-      EventType::kDevice, Destination::EVENT_METRIC, Priority::SLOW_BATCH);
+      EventType::kDevice, Destination::EVENT_METRIC, Priority::SLOW_BATCH,
+      /*rate_limiter=*/nullptr, std::move(source_info));
   DelayedInit();
 
   if (managed_session_service) {

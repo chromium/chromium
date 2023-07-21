@@ -102,15 +102,18 @@ IN_PROC_BROWSER_TEST_F(AudioEventsBrowserTest,
       ash::cros_healthd::mojom::EventCategoryEnum::kAudio,
       ash::cros_healthd::mojom::EventInfo::NewAudioEventInfo(info.Clone()));
 
-  const Record& record = GetNextRecord(&missive_observer_);
+  const auto record = GetNextRecord(&missive_observer_);
+  ASSERT_TRUE(record.has_dm_token());
+  EXPECT_THAT(record.dm_token(), ::testing::StrEq(kDMToken));
+  ASSERT_TRUE(record.has_source_info());
+  EXPECT_THAT(record.source_info().source(), Eq(SourceInfo::ASH));
+
   MetricData record_data;
   ASSERT_TRUE(record_data.ParseFromString(record.data()));
 
   // Testing event found successfully.
   EXPECT_THAT(record_data.event_data().type(),
               Eq(::reporting::MetricEventType::AUDIO_SEVERE_UNDERRUN));
-  ASSERT_TRUE(record.has_dm_token());
-  EXPECT_THAT(record.dm_token(), ::testing::StrEq(kDMToken));
 }
 
 }  // namespace

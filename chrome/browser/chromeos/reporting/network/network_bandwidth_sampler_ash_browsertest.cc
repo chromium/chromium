@@ -43,6 +43,8 @@ void AssertNetworkBandwidthTelemetryData(Priority priority,
   EXPECT_THAT(record.destination(), Eq(Destination::TELEMETRY_METRIC));
   ASSERT_TRUE(record.has_dm_token());
   EXPECT_THAT(record.dm_token(), StrEq(kDMToken));
+  ASSERT_TRUE(record.has_source_info());
+  EXPECT_THAT(record.source_info().source(), Eq(SourceInfo::ASH));
 
   MetricData record_data;
   ASSERT_TRUE(record_data.ParseFromString(record.data()));
@@ -52,8 +54,6 @@ void AssertNetworkBandwidthTelemetryData(Priority priority,
                   .bandwidth_data()
                   .download_speed_kbps(),
               Eq(download_speed_kbps));
-  // No source info specified for Ash.
-  EXPECT_FALSE(record.has_source_info());
 }
 
 // Returns true if the record includes network bandwidth telemetry. False

@@ -41,19 +41,14 @@ constexpr char kDMToken[] = "token";
 // Device idle state threshold.
 constexpr base::TimeDelta kIdleStateThreshold = base::Minutes(5);
 
-// Assert device activity status telemetry data in a record with relevant DM
-// token and returns the underlying `MetricData` object.
-const MetricData AssertDeviceActivityStatusTelemetryData(Priority priority,
-                                                         const Record& record) {
+void AssertRecordData(Priority priority, const Record& record) {
   EXPECT_THAT(priority, Eq(Priority::MANUAL_BATCH));
+  ASSERT_TRUE(record.has_destination());
   EXPECT_THAT(record.destination(), Eq(Destination::TELEMETRY_METRIC));
-
-  MetricData record_data;
-  EXPECT_TRUE(record_data.ParseFromString(record.data()));
-  EXPECT_TRUE(record_data.has_timestamp_ms());
-  EXPECT_TRUE(record.has_dm_token());
+  ASSERT_TRUE(record.has_dm_token());
   EXPECT_THAT(record.dm_token(), StrEq(kDMToken));
-  return record_data;
+  ASSERT_TRUE(record.has_source_info());
+  EXPECT_THAT(record.source_info().source(), Eq(SourceInfo::ASH));
 }
 
 // Returns true if the record includes user status telemetry. False otherwise.
@@ -131,8 +126,10 @@ IN_PROC_BROWSER_TEST_F(DeviceActivitySamplerBrowserTest,
   test::MockClock::Get().Advance(
       metrics::kDefaultDeviceActivityHeartbeatCollectionRate);
   const auto [priority, record] = missive_observer.GetNextEnqueuedRecord();
-  const auto metric_data =
-      AssertDeviceActivityStatusTelemetryData(priority, record);
+  AssertRecordData(priority, record);
+  MetricData metric_data;
+  ASSERT_TRUE(metric_data.ParseFromString(record.data()));
+  EXPECT_TRUE(metric_data.has_timestamp_ms());
   EXPECT_THAT(metric_data.telemetry_data()
                   .user_status_telemetry()
                   .device_activity_state(),
@@ -160,8 +157,10 @@ IN_PROC_BROWSER_TEST_F(DeviceActivitySamplerBrowserTest, ReportIdleState) {
   test::MockClock::Get().Advance(
       metrics::kDefaultDeviceActivityHeartbeatCollectionRate);
   const auto [priority, record] = missive_observer.GetNextEnqueuedRecord();
-  const auto metric_data =
-      AssertDeviceActivityStatusTelemetryData(priority, record);
+  AssertRecordData(priority, record);
+  MetricData metric_data;
+  ASSERT_TRUE(metric_data.ParseFromString(record.data()));
+  EXPECT_TRUE(metric_data.has_timestamp_ms());
   EXPECT_THAT(metric_data.telemetry_data()
                   .user_status_telemetry()
                   .device_activity_state(),
@@ -193,8 +192,10 @@ IN_PROC_BROWSER_TEST_F(DeviceActivitySamplerBrowserTest, ReportActiveState) {
   test::MockClock::Get().Advance(
       metrics::kDefaultDeviceActivityHeartbeatCollectionRate);
   const auto [priority, record] = missive_observer.GetNextEnqueuedRecord();
-  const auto metric_data =
-      AssertDeviceActivityStatusTelemetryData(priority, record);
+  AssertRecordData(priority, record);
+  MetricData metric_data;
+  ASSERT_TRUE(metric_data.ParseFromString(record.data()));
+  EXPECT_TRUE(metric_data.has_timestamp_ms());
   EXPECT_THAT(metric_data.telemetry_data()
                   .user_status_telemetry()
                   .device_activity_state(),

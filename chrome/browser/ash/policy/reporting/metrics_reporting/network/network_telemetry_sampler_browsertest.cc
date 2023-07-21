@@ -275,6 +275,8 @@ IN_PROC_BROWSER_TEST_F(NetworkTelemetrySamplerBrowserTest, Default) {
     const auto [priority, record] = missive_observer.GetNextEnqueuedRecord();
 
     EXPECT_THAT(priority, Eq(Priority::MANUAL_BATCH));
+    ASSERT_TRUE(record.has_source_info());
+    EXPECT_THAT(record.source_info().source(), Eq(SourceInfo::ASH));
     ASSERT_TRUE(record_data.ParseFromString(record.data()));
     VerifyNetworkTelemetryData(record_data);
     ASSERT_FALSE(missive_observer.HasNewEnqueuedRecords());
@@ -288,6 +290,8 @@ IN_PROC_BROWSER_TEST_F(NetworkTelemetrySamplerBrowserTest, Default) {
     const auto [priority, record] = missive_observer.GetNextEnqueuedRecord();
 
     EXPECT_THAT(priority, Eq(Priority::MANUAL_BATCH));
+    ASSERT_TRUE(record.has_source_info());
+    EXPECT_THAT(record.source_info().source(), Eq(SourceInfo::ASH));
     ASSERT_TRUE(record_data.ParseFromString(record.data()));
     VerifyNetworkTelemetryData(record_data);
     ASSERT_FALSE(missive_observer.HasNewEnqueuedRecords());
@@ -318,6 +322,8 @@ IN_PROC_BROWSER_TEST_F(NetworkTelemetrySamplerBrowserTest, Default) {
     const auto [priority, record] = missive_observer.GetNextEnqueuedRecord();
 
     EXPECT_THAT(priority, Eq(Priority::MANUAL_BATCH));
+    ASSERT_TRUE(record.has_source_info());
+    EXPECT_THAT(record.source_info().source(), Eq(SourceInfo::ASH));
     ASSERT_TRUE(record_data.ParseFromString(record.data()));
     VerifyNetworkTelemetryData(record_data);
     ASSERT_FALSE(missive_observer.HasNewEnqueuedRecords());
@@ -339,6 +345,8 @@ IN_PROC_BROWSER_TEST_F(NetworkTelemetrySamplerBrowserTest, Default) {
     const auto [priority, record] = missive_observer.GetNextEnqueuedRecord();
 
     EXPECT_THAT(priority, Eq(Priority::MANUAL_BATCH));
+    ASSERT_TRUE(record.has_source_info());
+    EXPECT_THAT(record.source_info().source(), Eq(SourceInfo::ASH));
     ASSERT_TRUE(record_data.ParseFromString(record.data()));
     VerifyNetworkTelemetryData(record_data);
     ASSERT_FALSE(missive_observer.HasNewEnqueuedRecords());

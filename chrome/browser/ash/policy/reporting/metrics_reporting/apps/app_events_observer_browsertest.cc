@@ -57,21 +57,21 @@ constexpr char kDMToken[] = "token";
 // Standalone webapp start URL.
 constexpr char kWebAppUrl[] = "https://test.example.com/";
 
-// Assert event data in a record with relevant DM token and returns the
-// underlying `MetricData` object.
-const MetricData AssertEvent(Priority priority, const Record& record) {
+void AssertRecordData(Priority priority, const Record& record) {
   EXPECT_THAT(priority, Eq(Priority::SLOW_BATCH));
+  ASSERT_TRUE(record.has_destination());
   EXPECT_THAT(record.destination(), Eq(Destination::EVENT_METRIC));
-
-  MetricData record_data;
-  EXPECT_TRUE(record_data.ParseFromString(record.data()));
-  EXPECT_TRUE(record_data.has_timestamp_ms());
-  EXPECT_TRUE(record_data.has_event_data());
-  EXPECT_TRUE(record_data.has_telemetry_data());
-  EXPECT_TRUE(record_data.telemetry_data().has_app_telemetry());
-  EXPECT_TRUE(record.has_dm_token());
+  ASSERT_TRUE(record.has_dm_token());
   EXPECT_THAT(record.dm_token(), StrEq(kDMToken));
-  return record_data;
+  ASSERT_TRUE(record.has_source_info());
+  EXPECT_THAT(record.source_info().source(), Eq(SourceInfo::ASH));
+}
+
+void AssertMetricData(const MetricData& metric_data) {
+  EXPECT_TRUE(metric_data.has_timestamp_ms());
+  EXPECT_TRUE(metric_data.has_event_data());
+  ASSERT_TRUE(metric_data.has_telemetry_data());
+  EXPECT_TRUE(metric_data.telemetry_data().has_app_telemetry());
 }
 
 // Returns true if the record includes the specified metric event type. False
@@ -156,7 +156,10 @@ IN_PROC_BROWSER_TEST_F(AppEventsObserverBrowserTest, ReportInstalledApp) {
       &IsMetricEventOfType, MetricEventType::APP_INSTALLED));
   const auto app_id = InstallStandaloneWebApp(GURL(kWebAppUrl));
   const auto [priority, record] = missive_observer.GetNextEnqueuedRecord();
-  const auto metric_data = AssertEvent(priority, record);
+  AssertRecordData(priority, record);
+  MetricData metric_data;
+  ASSERT_TRUE(metric_data.ParseFromString(record.data()));
+  AssertMetricData(metric_data);
   ASSERT_TRUE(
       metric_data.telemetry_data().app_telemetry().has_app_install_data());
   const auto& app_install_data =
@@ -225,7 +228,10 @@ IN_PROC_BROWSER_TEST_F(AppEventsObserverBrowserTest, ReportLaunchedApp) {
       base::BindRepeating(&IsMetricEventOfType, MetricEventType::APP_LAUNCHED));
   ::web_app::LaunchWebAppBrowser(profile(), app_id);
   const auto [priority, record] = missive_observer.GetNextEnqueuedRecord();
-  const auto metric_data = AssertEvent(priority, record);
+  AssertRecordData(priority, record);
+  MetricData metric_data;
+  ASSERT_TRUE(metric_data.ParseFromString(record.data()));
+  AssertMetricData(metric_data);
   ASSERT_TRUE(
       metric_data.telemetry_data().app_telemetry().has_app_launch_data());
   const auto& app_launch_data =
@@ -257,7 +263,10 @@ IN_PROC_BROWSER_TEST_F(AppEventsObserverBrowserTest, ReportUninstalledApp) {
       &IsMetricEventOfType, MetricEventType::APP_UNINSTALLED));
   UninstallStandaloneWebApp(app_id);
   const auto [priority, record] = missive_observer.GetNextEnqueuedRecord();
-  const auto metric_data = AssertEvent(priority, record);
+  AssertRecordData(priority, record);
+  MetricData metric_data;
+  ASSERT_TRUE(metric_data.ParseFromString(record.data()));
+  AssertMetricData(metric_data);
   ASSERT_TRUE(
       metric_data.telemetry_data().app_telemetry().has_app_uninstall_data());
   const auto& app_uninstall_data =
