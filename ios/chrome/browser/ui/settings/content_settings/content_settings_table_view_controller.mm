@@ -505,6 +505,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self.defaultModeViewCoordinator stop];
   self.defaultModeViewCoordinator = nil;
   _browser = nullptr;
+  [self.defaultModeViewCoordinator stop];
+  self.defaultModeViewCoordinator = nil;
 }
 
 @end
