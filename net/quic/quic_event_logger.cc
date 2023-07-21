@@ -168,6 +168,7 @@ base::Value::Dict NetLogQuicRstStreamFrameParams(
   base::Value::Dict dict;
   dict.Set("stream_id", static_cast<int>(frame->stream_id));
   dict.Set("quic_rst_stream_error", static_cast<int>(frame->error_code));
+  dict.Set("ietf_error_code", static_cast<int>(frame->ietf_error_code));
   dict.Set("offset", NetLogNumberValue(frame->byte_offset));
   return dict;
 }
@@ -321,6 +322,7 @@ base::Value::Dict NetLogQuicStopSendingFrameParams(
   base::Value::Dict dict;
   dict.Set("stream_id", static_cast<int>(frame.stream_id));
   dict.Set("quic_rst_stream_error", static_cast<int>(frame.error_code));
+  dict.Set("ietf_error_code", static_cast<int>(frame.ietf_error_code));
   return dict;
 }
 
