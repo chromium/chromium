@@ -16,11 +16,9 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
-namespace network {
-namespace mojom {
+namespace network::mojom {
 class URLLoaderFactory;
 }
-}  // namespace network
 
 namespace content {
 
@@ -29,7 +27,7 @@ class SharedCorsOriginAccessList;
 class CONTENT_EXPORT FileURLLoaderObserver
     : public mojo::FilteredDataSource::Filter {
  public:
-  FileURLLoaderObserver() {}
+  FileURLLoaderObserver() = default;
 
   FileURLLoaderObserver(const FileURLLoaderObserver&) = delete;
   FileURLLoaderObserver& operator=(const FileURLLoaderObserver&) = delete;
