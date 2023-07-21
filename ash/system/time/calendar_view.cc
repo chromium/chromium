@@ -2059,7 +2059,7 @@ void CalendarView::SetCalendarSlidingSurfaceBounds(bool event_list_view_open) {
     const int up_next_view_preferred_height =
         up_next_view_->GetPreferredSize().height();
     calendar_sliding_surface_->SetBounds(
-        x_position, GetVisibleBounds().bottom() - up_next_view_preferred_height,
+        x_position, GetLocalBounds().bottom() - up_next_view_preferred_height,
         width, event_list_view_height);
     return;
   }
