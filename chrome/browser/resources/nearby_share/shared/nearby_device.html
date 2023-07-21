@@ -19,28 +19,59 @@
     outline: none;
   }
 
-  :host(:focus) #wrapper {
+  /* TODO(b/279623883): Remove once Jelly is launched. */
+  :host-context(body:not(.jelly-enabled)):host(:focus) #wrapper{
     box-shadow: 0 0 0 2px var(--cros-focus-aura-color);
   }
 
-  :host([is-selected]) #wrapper {
+  :host-context(body.jelly-enabled):host(:focus) #wrapper {
+    border: 2px solid var(--cros-sys-focus_ring);
+  }
+
+  :host-context(body.jelly-enabled):host(:hover) #wrapper {
+    background-color: var(--cros-sys-hover_on_subtle);
+  }
+
+  /* TODO(b/279623883): Remove once Jelly is launched. */
+  :host-context(body:not(.jelly-enabled)):host([is-selected]) #wrapper {
     border-color: var(--cros-button-icon-color-secondary);
+  }
+
+  :host-context(body.jelly-enabled):host([is-selected]) #wrapper {
+    background-color: var(--cros-sys-primary_container);
   }
 
   :host([is-selected]) #done {
     display: flex;
   }
 
-  :host([is-selected]) #name {
+  /* TODO(b/279623883): Remove once Jelly is launched. */
+  :host-context(body:not(.jelly-enabled)):host([is-selected]) #name {
     color: var(--cros-text-color-prominent);
   }
 
+  :host-context(body.jelly-enabled):host([is-selected]) #name {
+    color: var(--cros-sys-primary);
+  }
+
+  :host-context(body.jelly-enabled):host([is-selected]) #share-target-image {
+    border: 1px solid var(--cros-sys-primary);
+  }
+
   #done {
-    color: var(--cros-text-color-prominent);
     display: none;
     flex-shrink: 0;
     height: 17px;
     width: 17px;
+  }
+
+  /* TODO(b/279623883): Remove once Jelly is launched. */
+  :host-context(body:not(.jelly-enabled)) #done {
+    color: var(--cros-text-color-prominent);
+  }
+
+  :host-context(body.jelly-enabled) #done {
+    color: var(--cros-sys-primary);
   }
 
   #icon {
@@ -48,6 +79,16 @@
     flex-shrink: 0;
     height: var(--target-image-size);
     width: var(--target-image-size);
+  }
+
+  :host-context(body.jelly-enabled) #icon {
+    --nearby-device-icon-color: var(--cros-sys-on_primary_container);
+    --nearby-device-icon-background-color: var(--cros-sys-primary_container);
+  }
+
+  :host-context(body.jelly-enabled):host([is-selected]) #icon {
+    --nearby-device-icon-color: var(--cros-sys-on_primary);
+    --nearby-device-icon-background-color: var(--cros-sys-primary);
   }
 
   #share-target-image {
@@ -59,10 +100,13 @@
     width: var(--target-image-size);
   }
 
+  :host-context(body.jelly-enabled) #share-target-image {
+    /* Have a placeholder so that the image doesn't enlarge when focused. */
+    border: 1px solid var(--cr-card-background-color);
+  }
+
   #name {
-    color: var(--cros-text-color-secondary);
     flex-grow: 1;
-    letter-spacing: 0.3px;
     margin-inline-start: 11px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -71,14 +115,16 @@
 
   /* TODO(b/279623883): Remove once Jelly is launched. */
   :host-context(body:not(.jelly-enabled)) #name {
+    color: var(--cros-text-color-secondary);
     font-size: 11px;
     font-weight: 500;
+    letter-spacing: 0.3px;
   }
 
   :host-context(body.jelly-enabled) #name {
+    color: var(--cros-sys-secondary);
     font: var(--cros-button-2-font);
   }
-
 </style>
 
 <div id="wrapper" title="[[shareTarget.name]]">
