@@ -16,7 +16,7 @@
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (የቅጥያ መታወቂያ «<ph name="EXTENSION_ID" />») በአስተዳዳሪው ታግዷል። <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">ጥቅል መጫን አልተቻለም፦ «<ph name="ERROR_CODE" />»</translation>
 <translation id="3115238746683532089">ያልታወቀ ምርት <ph name="PRODUCT_ID" /> ከ<ph name="VENDOR_ID" /> ሻጭ (ተከታታይ ቁጥር <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="3144135466825225871">የcrx ፋይል መተካት አልተቻለም። ፋይሉ ስራ ላይ እየዋለ ከሆነ ያረጋግጡ።</translation>
+<translation id="3144135466825225871">የcrx ፋይል መተካት አልተቻለም። ፋይሉ ሥራ ላይ እየዋለ ከሆነ ያረጋግጡ።</translation>
 <translation id="3163201441334626963">ያልታወቀ ምርት <ph name="PRODUCT_ID" /> ከ<ph name="VENDOR_ID" /> ሻጭ</translation>
 <translation id="3302709122321372472">ለይዘት ስክሪፕት ሲ ኤስ ኤስ «<ph name="RELATIVE_PATH" />» መጫን አልተቻለም።</translation>
 <translation id="3369521687965833290">ቅጥያ መበተን አይቻልም።  አንድ ቅጥያ ደህንነቱ በተጠበቀ መልኩ ለመበተን በአንጻፊ ፊደሉ የሚጀምርና መገጣጠሚያ፣ የማፈናጠጫ ነጥብ ወይም ተምሳሌታዊ መጠሪያ ያልያዘ ወደ የመገለጫ ማውጫዎ የሚወስድ ዱካ መኖር አለበት።  እንደዚህ ያሉ ዱካዎች ለመገለጫዎ የሉም።</translation>

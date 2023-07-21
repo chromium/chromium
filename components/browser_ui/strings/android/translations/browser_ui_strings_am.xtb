@@ -46,7 +46,7 @@
 <translation id="1919345977826869612">ማስታወቂያዎች</translation>
 <translation id="1919950603503897840">ዕውቂያዎችን ምረጥ</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
-<translation id="1979673356880165407">የሚጎበኟቸው ሁሉም ጣቢያዎች ላይ ጽሑፍ እና ምስሎችን ይበልጥ ትልቅ ወይም ትንሽ ያድርጉ</translation>
+<translation id="1979673356880165407">የሚጎበኟቸው ሁሉም ጣቢያዎች ላይ ጽሁፍ እና ምስሎችን ይበልጥ ትልቅ ወይም ትንሽ ያድርጉ</translation>
 <translation id="1984937141057606926">የተፈቀደ፣ ከሶስተኛ ወገን በቀር</translation>
 <translation id="1989112275319619282">አስስ</translation>
 <translation id="1994173015038366702">የጣቢያ ዩአርኤል</translation>
@@ -78,7 +78,7 @@
 <translation id="2390272837142897736">ማጉላትን ጨምር</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> ሜባ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ እና <ph name="NUM_MORE" /> ተጨማሪ ተፈቅደዋል}one{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" /> እና <ph name="NUM_MORE" /> ተጨማሪ ተፈቅደዋል}other{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" /> እና <ph name="NUM_MORE" /> ተጨማሪ ተፈቅደዋል}}</translation>
-<translation id="2410940059315936967">እርስዎ የሚጎበኙት ጣቢያ ከሌሎች ጣቢያዎች ይዘት መክተት ይችላል ለምሳሌ፣ ምስሎች፣ ማስታወቂያዎች እና ጽሑፍ። በእነዚህ ሌሎች ጣቢያዎች የተቀናበሩ ኩኪዎች የሦስተኛ ወገን ኩኪዎች ይባላሉ።</translation>
+<translation id="2410940059315936967">እርስዎ የሚጎበኙት ጣቢያ ከሌሎች ጣቢያዎች ይዘት መክተት ይችላል ለምሳሌ፣ ምስሎች፣ ማስታወቂያዎች እና ጽሁፍ። በእነዚህ ሌሎች ጣቢያዎች የተቀናበሩ ኩኪዎች የሦስተኛ ወገን ኩኪዎች ይባላሉ።</translation>
 <translation id="2434158240863470628">ማውረድ ተጠናቅቋል <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="244264527810019436">በአንዳንድ ጣቢያዎች ላይ ያሉ ባህሪያት ማንነትን በማያሳውቅ ሁነታ ውስጥ ላይሰሩ ይችላሉ</translation>
 <translation id="2442870161001914531">ሁልጊዜ የዴስክቶፕ ጣቢያን ጠይቅ</translation>

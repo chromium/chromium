@@ -1432,7 +1432,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2191754378957563929">Aktiv</translation>
 <translation id="2192505247865591433">Nga:</translation>
 <translation id="2193365732679659387">Cilësimet e besimit</translation>
-<translation id="2194856509914051091">Gjëra për të pasur parasysh</translation>
+<translation id="2194856509914051091">Gjëra për t'u pasur parasysh</translation>
 <translation id="2195331105963583686">Do të jesh sërish në gjendje ta përdorësh këtë <ph name="DEVICE_TYPE" /> pas kësaj kohe, por pajisja nuk do të marrë më përditësime automatike të softuerëve dhe të sigurisë</translation>
 <translation id="2195729137168608510">Mbrojtja e mail-it</translation>
 <translation id="2198625180564913276">Po shton profilin. Kjo mund të zgjasë disa minuta.</translation>
@@ -2213,7 +2213,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2844169650293029770">Pajisja USB-C (porta e përparme, majtas)</translation>
 <translation id="2844809857160214557">Shiko dhe menaxho printimet</translation>
 <translation id="2845382757467349449">Shfaq gjithmonë shiritin e faqeshënuesve</translation>
-<translation id="2845751331501453107">Kur shfleton, nëse një reklamë që shikon është e personalizuar, kjo varet nga ky cilësim, nga <ph name="BEGIN_LINK1" />Reklamat e sugjeruara nga sajtet<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />cilësimet e tua të kukive<ph name="LINK_END2" /> dhe nëse sajti që po shikon ti i personalizon reklamat</translation>
+<translation id="2845751331501453107">Kur shfleton, nëse një reklamë që shikon është e personalizuar, kjo varet nga ky cilësim, nga <ph name="BEGIN_LINK1" />Reklamat e sugjeruara nga sajtet<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />cilësimet e tua të kukive<ph name="LINK_END2" />, si dhe nëse sajti që po shikon ti i personalizon reklamat</translation>
 <translation id="284581348330507117">Krijo fjalëkalime unike</translation>
 <translation id="284805635805850872">Të hiqet softueri keqdashës?</translation>
 <translation id="2849035674501872372">Shiko</translation>
@@ -7571,7 +7571,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7634337648687970851">Rikuperimi i të dhënave lokale nuk mbështetet aktualisht.</translation>
 <translation id="7634566076839829401">Ndodhi një gabim. Provo përsëri.</translation>
 <translation id="7635048370253485243">Gozhduar nga administratori yt</translation>
-<translation id="7635711411613274199">Kur shfleton, nëse një reklamë që shikon është e personalizuar, kjo varet nga ky cilësim, nga <ph name="BEGIN_LINK1" />Temat e reklamave<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />cilësimet e tua të kukive<ph name="LINK_END2" /> dhe nëse sajti që po shikon ti i personalizon reklamat</translation>
+<translation id="7635711411613274199">Kur shfleton, nëse një reklamë që shikon është e personalizuar, kjo varet nga ky cilësim, nga <ph name="BEGIN_LINK1" />Temat e reklamave<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />cilësimet e tua të kukive<ph name="LINK_END2" />, si dhe nëse sajti që po shikon ti i personalizon reklamat</translation>
 <translation id="7636919061354591437">Instaloje në këtë pajisje</translation>
 <translation id="7637253234491814483">Prek sensorin e gjurmës së gishtit në këndin lart djathtas të tastierës, pranë butonit të energjisë. Të dhënat e gjurmëve të tua të gishtave ruhen në mënyrë të sigurt dhe asnjëherë nuk largohen nga pajisja jote <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7637272932128132922">Kur kjo skedë ishte joaktive, "Kursyesi i memories" liroi memorien për detyra të tjera. Këtë mund ta ndryshosh në çdo kohë te "<ph name="SETTINGS_LINK" />".</translation>

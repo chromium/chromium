@@ -327,7 +327,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1263733306853729545">Usar as teclas <ph name="MINUS" /> e <ph name="EQUAL" /> para numerar uma lista de candidatos</translation>
 <translation id="126387934568812801">Incluir esta captura de tela e os títulos das guias abertas</translation>
 <translation id="1264083566674525434">Editar permissões do site</translation>
-<translation id="1264337193001759725">Os registros de IU de rede podem ser vistos em: <ph name="DEVICE_LOG_LINK" /></translation>
+<translation id="1264337193001759725">Os registros de interface de rede podem ser vistos em: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">Seus apps e configurações serão sincronizados em todos os dispositivos ChromeOS Flex conectados à sua Conta do Google. Para ver as opções de sincronização do navegador, acesse as <ph name="LINK_BEGIN" />configurações do Chrome<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Idioma de tradução:</translation>
 <translation id="126768002343224824">16x</translation>
@@ -2106,7 +2106,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2740876196999178364">Essas chaves de acesso são salvas apenas neste dispositivo, não na sua Conta do Google.</translation>
 <translation id="2741713322780029189">Abrir terminal de recuperação</translation>
-<translation id="2741912629735277980">Exibir IU na tela de login</translation>
+<translation id="2741912629735277980">Exibir interface na tela de login</translation>
 <translation id="2742448780373473567">A instalação do <ph name="DEVICE_OS" /> limpará todos os dados do disco rígido.</translation>
 <translation id="274290345632688601">Restaurando apps e arquivos do Linux</translation>
 <translation id="274318651891194348">Procurando teclado</translation>
@@ -3648,7 +3648,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4093865285251893588">Imagem do perfil</translation>
 <translation id="4093955363990068916">Arquivo local:</translation>
 <translation id="4094647278880271855">Você está usando uma variável de ambiente não compatível: <ph name="BAD_VAR" />. Isso causará problemas de estabilidade e segurança.</translation>
-<translation id="4095264805865317199">Abrir IU de ativação da rede celular</translation>
+<translation id="4095264805865317199">Abrir interface de ativação da rede celular</translation>
 <translation id="4095507791297118304">Tela principal</translation>
 <translation id="4096508467498758490">Desativar extensões no modo de desenvolvedor</translation>
 <translation id="4096797685681362305">Visualizado na última semana</translation>
@@ -3993,7 +3993,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4410545552906060960">Use um número (PIN) em vez de uma senha para desbloquear o dispositivo. Para definir seu PIN mais tarde, acesse as configurações.</translation>
 <translation id="4411578466613447185">Signatário do código</translation>
 <translation id="4411719918614785832">Essas chaves de acesso são salvas no Windows Hello neste computador, não na sua Conta do Google.</translation>
-<translation id="4412632005703201014">Os apps do Chrome estão migrando para Progressive Web Apps. Este app do Chrome foi instalado no navegador pela sua organização. Para abrir o Progressive Web App na página "Detalhes do app", primeiro entre em contato com o administrador e peça para desinstalar o app do Chrome. Enquanto isso, você pode acessar <ph name="EXTENSION_LAUNCH_URL" /> para abrir a extensão <ph name="EXTENSION_NAME" /> na Web.</translation>
+<translation id="4412632005703201014">Os apps do Chrome estão migrando para App Web Progressivos. Este app do Chrome foi instalado no navegador pela sua organização. Para abrir o App Web Progressivo na página "Detalhes do app", primeiro entre em contato com o administrador e peça para desinstalar o app do Chrome. Enquanto isso, você pode acessar <ph name="EXTENSION_LAUNCH_URL" /> para abrir a extensão <ph name="EXTENSION_NAME" /> na Web.</translation>
 <translation id="4412698727486357573">Central de Ajuda</translation>
 <translation id="4412992751769744546">Permitir cookies de terceiros</translation>
 <translation id="44141919652824029">Permitir que o app <ph name="APP_NAME" /> receba a lista dos seus dispositivos USB conectados?</translation>
@@ -4869,7 +4869,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> quer verificar se você está usando um dispositivo ChromeOS qualificado.</translation>
 <translation id="5208926629108082192">Informações da rede móvel do dispositivo</translation>
 <translation id="5208988882104884956">Extensão parcial</translation>
-<translation id="520902706163766447">Ative um balão pop-up na IU superior do Chrome para fazer pesquisas fora das guias abertas.</translation>
+<translation id="520902706163766447">Ative um balão pop-up na interface superior do Chrome para fazer pesquisas fora das guias abertas.</translation>
 <translation id="5209320130288484488">Nenhum dispositivo foi encontrado</translation>
 <translation id="5209513429611499188">Dispositivos HID com usos da página de uso <ph name="USAGE_PAGE" /></translation>
 <translation id="5210365745912300556">Fechar guia</translation>
@@ -6566,7 +6566,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6723661294526996303">Importar favoritos e configurações...</translation>
 <translation id="6723839827191551955">Controlar a mídia que está sendo transmitida</translation>
 <translation id="6723839937902243910">Energia</translation>
-<translation id="6725073593266469338">Serviço de IU</translation>
+<translation id="6725073593266469338">Serviço de interface</translation>
 <translation id="6725206449694821596">Protocolo de impressão via Internet (IPP)</translation>
 <translation id="6725970970008349185">Número de candidatos a serem exibidos por página</translation>
 <translation id="672609503628871915">Veja o que há de novo</translation>

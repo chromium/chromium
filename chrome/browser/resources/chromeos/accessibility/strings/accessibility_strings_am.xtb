@@ -24,7 +24,7 @@
 <translation id="1146441463334103638">ማያ ገጹን ያብሩ ወይም ያጥፉ</translation>
 <translation id="1156488781945104845">የአሁኑ ሰዓት</translation>
 <translation id="1161762950103988776">ዝለል</translation>
-<translation id="1164857107703583584">የዝላይ ትዕዛዞች አንድ ድረ-ገጽን በቅልጥፍና ለመዳሰስ ስራ ላይ ሊውሉ ይችላሉ።</translation>
+<translation id="1164857107703583584">የዝላይ ትዕዛዞች አንድ ድረ-ገጽን በቅልጥፍና ለመዳሰስ ሥራ ላይ ሊውሉ ይችላሉ።</translation>
 <translation id="116896278675803795">የተመረጠውን ይዘት እንዲመሳሰል በራስ-ሰር ቋንቋን ይለውጡ</translation>
 <translation id="1175914831232945926">አኃዞች</translation>
 <translation id="1188858454923323853">ማሟያ</translation>
@@ -594,7 +594,7 @@
 <translation id="4973717656530883744">ዝቅተኛ <ph name="X" /></translation>
 <translation id="4974612477719259470">ምንም ቀዳሚ አዝራር የለም</translation>
 <translation id="4979404613699303341">ቀዳሚ አዝራር</translation>
-<translation id="4982917827052020884">በመደበኝነት በሚጠቀሙባቸው ጥቂት ቁልፎች እንጀምር። የControl ቁልፍ አሁን ያለ ማንኛውም ንግግርን ለማቆም ስራ ላይ ሊውል ይችላል። የControl ቁልፉን በቁልፍ ሰሌዳዎ ታች ግራ ጥግ ላይ ያግኙት። ለመቀጠል የControl ቁልፉን ይጫኑ።</translation>
+<translation id="4982917827052020884">በመደበኝነት በሚጠቀሙባቸው ጥቂት ቁልፎች እንጀምር። የControl ቁልፍ አሁን ያለ ማንኛውም ንግግርን ለማቆም ሥራ ላይ ሊውል ይችላል። የControl ቁልፉን በቁልፍ ሰሌዳዎ ታች ግራ ጥግ ላይ ያግኙት። ለመቀጠል የControl ቁልፉን ይጫኑ።</translation>
 <translation id="4983588134362688868">ወደ የገጹ ላይኛው ክፍል ይዝለሉ</translation>
 <translation id="4986606102545753256"><ph name="NAME" />፣ መስኮት</translation>
 <translation id="4993152509206108683">ፍጥነቱ <ph name="PERCENT" /> በመቶ</translation>
@@ -1042,7 +1042,7 @@
 <translation id="8129445297241948503">ከላይ ምንም ሕዋስ የለም</translation>
 <translation id="8132248161074464367">ቀዳሚ ልክ ያልሆነ ንጥል</translation>
 <translation id="8138880386467279117">ይንኩ</translation>
-<translation id="8146613869421949343">ቀጥለው ስለSearch ቁልፉ ይማራሉ። የSearch ቁልፉ ከሌሎች የChromeVox ትዕዛዞች ቁልፎች ጋር በጥምረት ስራ ላይ ይውላል። የSearch ቁልፉ ከግራ Shift ቁልፉ በላይ ይገኛል። ለመቀጠል የSearch ቁልፉን ይጫኑት።</translation>
+<translation id="8146613869421949343">ቀጥለው ስለSearch ቁልፉ ይማራሉ። የSearch ቁልፉ ከሌሎች የChromeVox ትዕዛዞች ቁልፎች ጋር በጥምረት ሥራ ላይ ይውላል። የSearch ቁልፉ ከግራ Shift ቁልፉ በላይ ይገኛል። ለመቀጠል የSearch ቁልፉን ይጫኑት።</translation>
 <translation id="8158033275290782295">ሁሉንም ምረጥ</translation>
 <translation id="816818801578874684">ይህ የመጀመሪያው ርዕስ ነው። ወደ ቀጣዩ ርዕስ ለመሄድ Search + H ን ይጫኑ።</translation>
 <translation id="8173092779156526980">አራት ጣቶችን ወደ ግራ ያንሸራትቱ</translation>
