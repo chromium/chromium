@@ -37,6 +37,10 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/device_form_factor.h"
 
+// To get access to web::features::kEnableSessionSerializationOptimizations.
+// TODO(crbug.com/1383087): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -64,11 +68,14 @@ namespace {
 
 class BrowserViewWranglerTest : public PlatformTest {
  protected:
-  BrowserViewWranglerTest()
-      : fake_scene_(FakeSceneWithIdentifier([[NSUUID UUID] UUIDString])),
-        scene_state_(
-            [[SceneStateWithFakeScene alloc] initWithScene:fake_scene_]),
-        test_session_service_([[TestSessionService alloc] init]) {
+  BrowserViewWranglerTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        web::features::kEnableSessionSerializationOptimizations);
+
+    fake_scene_ = FakeSceneWithIdentifier([[NSUUID UUID] UUIDString]);
+    scene_state_ = [[SceneStateWithFakeScene alloc] initWithScene:fake_scene_];
+    test_session_service_ = [[TestSessionService alloc] init];
+
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         SendTabToSelfSyncServiceFactory::GetInstance(),
@@ -112,6 +119,7 @@ class BrowserViewWranglerTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   id fake_scene_;

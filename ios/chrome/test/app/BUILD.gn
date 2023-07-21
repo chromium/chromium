@@ -104,6 +104,7 @@ source_set("test_support") {
     "//ios/testing:open_url_context",
     "//ios/third_party/material_components_ios",
     "//ios/web",
+    "//ios/web/common:features",
     "//ios/web/public/security",
     "//ios/web/public/test",
     "//net",

@@ -89,6 +89,10 @@
 #import "services/metrics/public/cpp/ukm_recorder.h"
 #import "ui/base/device_form_factor.h"
 
+// To get access to UseSessionSerializationOptimizations().
+// TODO(crbug.com/1383087): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -190,15 +194,17 @@ NSString* SerializedValue(const base::Value* value) {
 }
 
 + (void)saveSessionImmediately {
-  SessionRestorationBrowserAgent::FromBrowser(
-      chrome_test_util::GetMainBrowser())
-      ->SaveSession(/*immediately=*/true);
-  dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-  ProceduralBlock completionBlock = ^{
-    dispatch_semaphore_signal(semaphore);
-  };
-  [[SessionServiceIOS sharedService] shutdownWithCompletion:completionBlock];
-  dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+  if (!web::features::UseSessionSerializationOptimizations()) {
+    SessionRestorationBrowserAgent::FromBrowser(
+        chrome_test_util::GetMainBrowser())
+        ->SaveSession(/*immediately=*/true);
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    ProceduralBlock completionBlock = ^{
+      dispatch_semaphore_signal(semaphore);
+    };
+    [[SessionServiceIOS sharedService] shutdownWithCompletion:completionBlock];
+    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+  }
 }
 
 + (NSError*)clearAllWebStateBrowsingData {

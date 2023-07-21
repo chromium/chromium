@@ -29,6 +29,10 @@
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/testing/open_url_context.h"
 
+// To get access to UseSessionSerializationOptimizations().
+// TODO(crbug.com/1383087): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -183,8 +187,10 @@ void CloseAllTabs() {
     DCHECK(browser);
     browser->GetWebStateList()->CloseAllWebStates(
         WebStateList::CLOSE_USER_ACTION);
-    SessionRestorationBrowserAgent::FromBrowser(browser)->SaveSession(
-        /*immediately=*/true);
+    if (!web::features::UseSessionSerializationOptimizations()) {
+      SessionRestorationBrowserAgent::FromBrowser(browser)->SaveSession(
+          /*immediately=*/true);
+    }
   }
   if (GetMainTabCount() && GetForegroundActiveScene()) {
     Browser* browser =
@@ -193,8 +199,10 @@ void CloseAllTabs() {
     DCHECK(browser);
     browser->GetWebStateList()->CloseAllWebStates(
         WebStateList::CLOSE_USER_ACTION);
-    SessionRestorationBrowserAgent::FromBrowser(browser)->SaveSession(
-        /*immediately=*/true);
+    if (!web::features::UseSessionSerializationOptimizations()) {
+      SessionRestorationBrowserAgent::FromBrowser(browser)->SaveSession(
+          /*immediately=*/true);
+    }
   }
   if (GetInactiveTabCount() && GetForegroundActiveScene()) {
     Browser* browser =
@@ -203,8 +211,10 @@ void CloseAllTabs() {
     DCHECK(browser);
     browser->GetWebStateList()->CloseAllWebStates(
         WebStateList::CLOSE_USER_ACTION);
-    SessionRestorationBrowserAgent::FromBrowser(browser)->SaveSession(
-        /*immediately=*/true);
+    if (!web::features::UseSessionSerializationOptimizations()) {
+      SessionRestorationBrowserAgent::FromBrowser(browser)->SaveSession(
+          /*immediately=*/true);
+    }
   }
 }
 

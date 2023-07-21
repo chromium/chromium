@@ -59,7 +59,6 @@
 #import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/web/common/features.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -71,6 +70,10 @@
 #import "third_party/abseil-cpp/absl/types/optional.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+
+// To get access to web::features::kEnableSessionSerializationOptimizations.
+// TODO(crbug.com/1383087): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -127,6 +130,8 @@ class BaseGridMediatorTest : public PlatformTest {
 
   void SetUp() override {
     PlatformTest::SetUp();
+    InitializeFeatureFlags();
+
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(IOSChromeTabRestoreServiceFactory::GetInstance(),
                               base::BindRepeating(BuildFakeTabRestoreService));
@@ -242,13 +247,6 @@ class BaseGridMediatorTest : public PlatformTest {
         ->SetPriceDropForTesting(std::move(price_drop));
   }
 
-  void SetPriceDropIndicatorsFlag() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{commerce::kCommercePriceTracking,
-          {{kPriceTrackingWithOptimizationGuideParam, "true"}}}},
-        {});
-  }
-
   bool WaitForConsumerUpdates(size_t expected_count) {
     return WaitUntilConditionOrTimeout(
         kWaitForTabCollectionConsumerUpdateTimeout, ^{
@@ -258,7 +256,13 @@ class BaseGridMediatorTest : public PlatformTest {
   }
 
  protected:
+  virtual void InitializeFeatureFlags() {
+    scoped_feature_list_.InitAndDisableFeature(
+        web::features::kEnableSessionSerializationOptimizations);
+  }
+
   web::WebTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
   sessions::TabRestoreService* tab_restore_service_;
@@ -270,8 +274,19 @@ class BaseGridMediatorTest : public PlatformTest {
   std::unique_ptr<Browser> browser_;
   BrowserList* browser_list_;
   base::UserActionTester user_action_tester_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   AuthenticationService* auth_service_ = nullptr;
+};
+
+// Variation on BaseGridMediatorTest which enable PriceDropIndicatorsFlag.
+class BaseGridMediatorWithPriceDropIndicatorsTest
+    : public BaseGridMediatorTest {
+ protected:
+  void InitializeFeatureFlags() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{commerce::kCommercePriceTracking,
+          {{kPriceTrackingWithOptimizationGuideParam, "true"}}}},
+        {web::features::kEnableSessionSerializationOptimizations});
+  }
 };
 
 #pragma mark - Consumer tests
@@ -617,8 +632,8 @@ TEST_F(BaseGridMediatorTest, resetToAllItems) {
   }
 }
 
-TEST_F(BaseGridMediatorTest, TestSelectItemWithNoPriceDrop) {
-  SetPriceDropIndicatorsFlag();
+TEST_F(BaseGridMediatorWithPriceDropIndicatorsTest,
+       TestSelectItemWithNoPriceDrop) {
   web::WebState* web_state_to_select =
       browser_->GetWebStateList()->GetWebStateAt(2);
   // No need to set a null price drop - it will be null by default. Simply
@@ -629,8 +644,8 @@ TEST_F(BaseGridMediatorTest, TestSelectItemWithNoPriceDrop) {
   EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasPriceDropUserAction));
 }
 
-TEST_F(BaseGridMediatorTest, TestSelectItemWithPriceDrop) {
-  SetPriceDropIndicatorsFlag();
+TEST_F(BaseGridMediatorWithPriceDropIndicatorsTest,
+       TestSelectItemWithPriceDrop) {
   web::WebState* web_state_to_select =
       browser_->GetWebStateList()->GetWebStateAt(2);
   ShoppingPersistedDataTabHelper::CreateForWebState(web_state_to_select);

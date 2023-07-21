@@ -32,6 +32,10 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
+// To get access to web::features::kEnableSessionSerializationOptimizations.
+// TODO(crbug.com/1383087): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -41,7 +45,10 @@ namespace {
 // Fixture Class. Takes care of deleting the directory used to store test data.
 class SessionServiceTest : public PlatformTest {
  public:
-  SessionServiceTest() = default;
+  SessionServiceTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        web::features::kEnableSessionSerializationOptimizations);
+  }
 
   SessionServiceTest(const SessionServiceTest&) = delete;
   SessionServiceTest& operator=(const SessionServiceTest&) = delete;
@@ -108,6 +115,7 @@ class SessionServiceTest : public PlatformTest {
  private:
   base::ScopedTempDir scoped_temp_directory_;
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   SessionServiceIOS* session_service_ = nil;
   FakeWebStateListDelegate web_state_list_delegate_;
   base::FilePath directory_;
