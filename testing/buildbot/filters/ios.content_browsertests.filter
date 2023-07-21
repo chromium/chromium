@@ -172,6 +172,33 @@
 -WebRtcGetUserMediaBrowserTest.TestGetUserMediaAspectRatio1To1
 -WebRtcGetUserMediaBrowserTest.TestGetUserMediaAspectRatio4To3
 
+# TODO(crbug.com/1466880): cannot create shared image.
+-Default/MediaTest.LoadManyVideos/0
+-Default/MediaTest.VideoBearMp4/1
+-Default/MediaTest.VideoBearMp4Hevc10bit/1
+-Default/MediaTest.VideoBearMp4Hevc10bit422/1
+-Default/MediaTest.VideoBearMp4Hevc10bit444/1
+-Default/MediaTest.VideoBearRotated0/1
+-Default/MediaTest.VideoBearRotated180/1
+-Default/MediaTest.VideoBearRotated270/1
+-Default/MediaTest.VideoBearRotated90/1
+-Default/MediaTest.VideoBearSilentMp4/1
+-MediaColorTest.Yuv420pH264
+-MediaColorTest.Yuv420pHighBitDepth
+-MediaColorTest.Yuv420pRec709H264
+-MediaColorTest.Yuvj420pH264
+-MediaSourceTest.Playback_Video_MP4_Audio_WEBM
+
+# TODO(crbug.com/1466881): hitting unexpected driver errors.
+-ProprietaryCodec/WebRtcMediaRecorderTest.RecordWithTransparency/0
+-ProprietaryCodec/WebRtcMediaRecorderTest.RecordWithTransparency/1
+-ProprietaryCodec/WebRtcMediaRecorderTest.ResumeAndDataAvailable/0
+-ProprietaryCodec/WebRtcMediaRecorderTest.ResumeAndDataAvailable/1
+-ProprietaryCodec/WebRtcMediaRecorderTest.StartAndDataAvailable/0
+-ProprietaryCodec/WebRtcMediaRecorderTest.StartAndDataAvailable/1
+-ProprietaryCodec/WebRtcMediaRecorderTest.StartWithTimeSlice/0
+-ProprietaryCodec/WebRtcMediaRecorderTest.StartWithTimeSlice/1
+
 # These tests are flaky.
 -All/CoopRestrictPropertiesReportingBrowserTest.NavigationVirtualBrowsingContextGroup/RDCrashedFrame_BFCacheDisabled
 -All/DumpAccessibilityTreeTest.AccessibilityAriaTime/blink
