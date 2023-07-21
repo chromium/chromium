@@ -10,7 +10,8 @@ import("//build/config/gclient_args.gni")
 import("//build/config/python.gni")
 import("//build/util/generate_wrapper.gni")
 
-assert(is_chromeos && is_chromeos_device)
+assert(is_chromeos)
+assert(is_chromeos_device)
 
 # Determine the real paths for various items in the SDK, which may be used
 # in the 'generate_runner_script' template below. We do so outside the template
@@ -376,7 +377,7 @@ template("generate_runner_script") {
       # gtest unit tests don't need this. However there's no good way to
       # differentiate them, and we don't want to maintain a list based on
       # target names. So here it applies to all gtest targets.
-      if (is_chromeos_lacros && is_chromeos_device) {
+      if (is_chromeos_lacros) {
         executable_args += [
           "--env-var",
           "XDG_RUNTIME_DIR",

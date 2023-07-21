@@ -656,7 +656,7 @@ test("gpu_unittests") {
     ]
   }
 
-  if (is_linux || is_chromeos || is_android || is_chromeos) {
+  if (is_linux || is_chromeos || is_android) {
     sources += [ "command_buffer/service/gpu_fence_manager_unittest.cc" ]
   }
 
