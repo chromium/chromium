@@ -1590,6 +1590,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSLensUseDirectUploadName,
      flag_descriptions::kIOSLensUseDirectUploadDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSLensUseDirectUpload)},
+    {"autofill-enable-payments-mandatory-reauth-on-bling",
+     flag_descriptions::kAutofillEnablePaymentsMandatoryReauthOnBlingName,
+     flag_descriptions::
+         kAutofillEnablePaymentsMandatoryReauthOnBlingDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnablePaymentsMandatoryReauthOnBling)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

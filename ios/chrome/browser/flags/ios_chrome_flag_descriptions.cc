@@ -61,6 +61,14 @@ const char kAutofillEnableCardArtImageDescription[] =
     "When enabled, card product images (instead of network icons) will be "
     "shown in Payments Autofill UI.";
 
+const char kAutofillEnablePaymentsMandatoryReauthOnBlingName[] =
+    "Enable mandatory re-auth for payments autofill on Bling";
+const char kAutofillEnablePaymentsMandatoryReauthOnBlingDescription[] =
+    "When this and the kAutofillEnablePaymentsMandatoryReauth are both "
+    "enabled, in use-cases where we would not have triggered any user-visible "
+    "authentication to autofill payment methods, we will trigger a device "
+    "authentication a device authentication on Bling.";
+
 const char kAutofillEnableRankingFormulaAddressProfilesName[] =
     "Enable new Autofill suggestion ranking formula for address profiles";
 const char kAutofillEnableRankingFormulaAddressProfilesDescription[] =

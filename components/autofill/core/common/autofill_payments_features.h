@@ -61,6 +61,7 @@ extern const base::FeatureParam<int>
 
 #if BUILDFLAG(IS_IOS)
 BASE_DECLARE_FEATURE(kAutofillUseTwoDotsForLastFourDigits);
+BASE_DECLARE_FEATURE(kAutofillEnablePaymentsMandatoryReauthOnBling);
 #endif
 
 // Return whether a [No thanks] button and new messaging is shown in the save
