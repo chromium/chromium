@@ -390,7 +390,6 @@ class FormDataImporter : public PersonalDataManagerObserver {
   // The personal data manager, used to save and load personal data to/from the
   // web database.  This is overridden by the BrowserAutofillManagerTest.
   // Weak reference.
-  // May be NULL.  NULL indicates OTR.
   raw_ptr<PersonalDataManager> personal_data_manager_;
 
   // Represents the type of the credit card import candidate from the submitted

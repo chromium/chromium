@@ -444,7 +444,6 @@ class CreditCardAccessManager : public CreditCardCvcAuthenticator::Requester,
   // The personal data manager, used to save and load personal data to/from the
   // web database.
   // Weak reference.
-  // May be NULL. NULL indicates OTR.
   raw_ptr<PersonalDataManager> personal_data_manager_;
 
   // For logging metrics.

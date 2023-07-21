@@ -348,8 +348,7 @@ class VirtualCardEnrollmentManager {
                            UpstreamAnimationSync_ResponseFirst);
 
   // The associated personal data manager, used to save and load personal data
-  // to/from the web database. Weak reference. May be nullptr, which indicates
-  // OTR.
+  // to/from the web database.
   raw_ptr<PersonalDataManager, DanglingUntriaged> personal_data_manager_;
 
   // The associated |payments_client_| that is used for all requests to the

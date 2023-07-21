@@ -228,7 +228,6 @@ class LocalCardMigrationManager {
   // The personal data manager, used to save and load personal data to/from the
   // web database.  This is overridden by the BrowserAutofillManagerTest.
   // Weak reference.
-  // May be NULL.  NULL indicates OTR.
   raw_ptr<PersonalDataManager> personal_data_manager_;
 
   // The imported credit card number from the form submission.
