@@ -391,7 +391,7 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   //
   // AVOID ADDING THESE. These are low-level observer notifications that are
   // called for every pref change. This can lead to inefficiency, and the lack
-  // of a "registrar" model makes it easy to forget to undregister. It is
+  // of a "registrar" model makes it easy to forget to unregister. It is
   // really designed for integrating other notification systems, not for normal
   // observation.
   void AddPrefObserverAllPrefs(PrefObserver* obs);
