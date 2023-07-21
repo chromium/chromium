@@ -608,6 +608,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self stopClearBrowsingDataCoordinator];
   [self stopPrivacySafeBrowsingCoordinator];
   [self stopPrivacySettingsCoordinator];
+  [self stopInactiveTabSettingsCoordinator];
 
   // Reset the delegate to prevent any queued transitions from attempting to
   // close the settings.
@@ -810,6 +811,12 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self.clearBrowsingDataCoordinator stop];
   self.clearBrowsingDataCoordinator.delegate = nil;
   self.clearBrowsingDataCoordinator = nil;
+}
+
+// Stops the underlying inactive tabs settings coordinator if it exists.
+- (void)stopInactiveTabSettingsCoordinator {
+  [self.inactiveTabsSettingsCoordinator stop];
+  self.inactiveTabsSettingsCoordinator = nil;
 }
 
 // Stops the underlying SafetyCheck coordinator if it exists.
