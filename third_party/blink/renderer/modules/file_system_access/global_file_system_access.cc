@@ -8,8 +8,6 @@
 
 #include "base/notreached.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-blink.h"
@@ -28,6 +26,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_error.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_access_manager.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_directory_handle.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_file_handle.h"
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
@@ -247,60 +246,52 @@ ScriptPromise ShowFilePickerImpl(
       script_state, exception_state.GetContext());
   ScriptPromise resolver_result = resolver->Promise();
 
-  // TODO(mek): Cache mojo::Remote<mojom::blink::FileSystemAccessManager>
-  // associated with an ExecutionContext, so we don't have to request a new one
-  // for each operation, and can avoid code duplication between here and other
-  // uses.
-  mojo::Remote<mojom::blink::FileSystemAccessManager> manager;
-  window.GetBrowserInterfaceBroker().GetInterface(
-      manager.BindNewPipeAndPassReceiver());
+  FileSystemAccessManager::From(resolver->GetExecutionContext())
+      ->ChooseEntries(
+          std::move(options), std::move(common_options),
+          WTF::BindOnce(
+              [](ScriptPromiseResolver* resolver, bool return_as_sequence,
+                 LocalFrame* local_frame,
+                 mojom::blink::FileSystemAccessErrorPtr file_operation_result,
+                 Vector<mojom::blink::FileSystemAccessEntryPtr> entries) {
+                ExecutionContext* context = resolver->GetExecutionContext();
+                if (!context) {
+                  return;
+                }
+                if (file_operation_result->status !=
+                    mojom::blink::FileSystemAccessStatus::kOk) {
+                  file_system_access_error::Reject(resolver,
+                                                   *file_operation_result);
+                  return;
+                }
 
-  auto* raw_manager = manager.get();
-  raw_manager->ChooseEntries(
-      std::move(options), std::move(common_options),
-      WTF::BindOnce(
-          [](ScriptPromiseResolver* resolver,
-             mojo::Remote<mojom::blink::FileSystemAccessManager>,
-             bool return_as_sequence, LocalFrame* local_frame,
-             mojom::blink::FileSystemAccessErrorPtr file_operation_result,
-             Vector<mojom::blink::FileSystemAccessEntryPtr> entries) {
-            ExecutionContext* context = resolver->GetExecutionContext();
-            if (!context)
-              return;
-            if (file_operation_result->status !=
-                mojom::blink::FileSystemAccessStatus::kOk) {
-              file_system_access_error::Reject(resolver,
-                                               *file_operation_result);
-              return;
-            }
+                // While it would be better to not trust the renderer process,
+                // we're doing this here to avoid potential mojo message pipe
+                // ordering problems, where the frame activation state
+                // reconciliation messages would compete with concurrent File
+                // System Access messages to the browser.
+                // TODO(https://crbug.com/1017270): Remove this after spec
+                // change, or when activation moves to browser.
+                LocalFrame::NotifyUserActivation(
+                    local_frame, mojom::blink::UserActivationNotificationType::
+                                     kFileSystemAccess);
 
-            // While it would be better to not trust the renderer process,
-            // we're doing this here to avoid potential mojo message pipe
-            // ordering problems, where the frame activation state
-            // reconciliation messages would compete with concurrent File
-            // System Access messages to the browser.
-            // TODO(https://crbug.com/1017270): Remove this after spec change,
-            // or when activation moves to browser.
-            LocalFrame::NotifyUserActivation(
-                local_frame, mojom::blink::UserActivationNotificationType::
-                                 kFileSystemAccess);
-
-            if (return_as_sequence) {
-              HeapVector<Member<FileSystemHandle>> results;
-              results.ReserveInitialCapacity(entries.size());
-              for (auto& entry : entries) {
-                results.push_back(FileSystemHandle::CreateFromMojoEntry(
-                    std::move(entry), context));
-              }
-              resolver->Resolve(results);
-            } else {
-              DCHECK_EQ(1u, entries.size());
-              resolver->Resolve(FileSystemHandle::CreateFromMojoEntry(
-                  std::move(entries[0]), context));
-            }
-          },
-          WrapPersistent(resolver), std::move(manager), return_as_sequence,
-          WrapPersistent(window.GetFrame())));
+                if (return_as_sequence) {
+                  HeapVector<Member<FileSystemHandle>> results;
+                  results.ReserveInitialCapacity(entries.size());
+                  for (auto& entry : entries) {
+                    results.push_back(FileSystemHandle::CreateFromMojoEntry(
+                        std::move(entry), context));
+                  }
+                  resolver->Resolve(results);
+                } else {
+                  DCHECK_EQ(1u, entries.size());
+                  resolver->Resolve(FileSystemHandle::CreateFromMojoEntry(
+                      std::move(entries[0]), context));
+                }
+              },
+              WrapPersistent(resolver), return_as_sequence,
+              WrapPersistent(window.GetFrame())));
   return resolver_result;
 }
 
