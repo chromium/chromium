@@ -18,6 +18,7 @@
 #include "base/unguessable_token.h"
 #include "components/media_device_salt/media_device_id_salt.h"
 #include "components/media_device_salt/media_device_salt_database.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace media_device_salt {
 
@@ -135,6 +136,38 @@ void MediaDeviceSaltService::FinalizeDeleteSalts(
     monitor->ProcessDevicesChanged(base::SystemMonitor::DEVTYPE_AUDIO);
   }
   std::move(done_closure).Run();
+}
+
+void MediaDeviceSaltService::DeleteSalt(const blink::StorageKey& storage_key,
+                                        base::OnceClosure done_closure) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!base::FeatureList::IsEnabled(kMediaDeviceIdPartitioning)) {
+    std::move(done_closure).Run();
+    return;
+  }
+  db_.AsyncCall(&MediaDeviceSaltDatabase::DeleteEntry)
+      .WithArgs(storage_key)
+      .Then(base::BindOnce(&MediaDeviceSaltService::FinalizeDeleteSalts,
+                           weak_factory_.GetWeakPtr(),
+                           std::move(done_closure)));
+}
+
+void MediaDeviceSaltService::GetAllStorageKeys(
+    base::OnceCallback<void(std::vector<blink::StorageKey>)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!base::FeatureList::IsEnabled(kMediaDeviceIdPartitioning)) {
+    std::move(callback).Run({});
+    return;
+  }
+  db_.AsyncCall(&MediaDeviceSaltDatabase::GetAllStorageKeys)
+      .Then(base::BindOnce(&MediaDeviceSaltService::FinalizeGetAllStorageKeys,
+                           weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void MediaDeviceSaltService::FinalizeGetAllStorageKeys(
+    base::OnceCallback<void(std::vector<blink::StorageKey>)> callback,
+    std::vector<blink::StorageKey> storage_keys) {
+  std::move(callback).Run(std::move(storage_keys));
 }
 
 std::string MediaDeviceSaltService::GetGlobalSalt() {

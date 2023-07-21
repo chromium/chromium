@@ -50,10 +50,22 @@ class MediaDeviceSaltService : public KeyedService {
                    content::StoragePartition::StorageKeyMatcherFunction matcher,
                    base::OnceClosure done_closure);
 
+  // Deletes the salt for the given `storage_key`. `done_closure` is invoked
+  // after the operation is complete.
+  void DeleteSalt(const blink::StorageKey& storage_key,
+                  base::OnceClosure done_closure);
+
+  // Returns all the storage keys that have an associated salt (via `callback`).
+  void GetAllStorageKeys(
+      base::OnceCallback<void(std::vector<blink::StorageKey>)> callback);
+
  private:
   void FinalizeGetSalt(base::OnceCallback<void(const std::string&)> callback,
                        absl::optional<std::string> new_salt);
   void FinalizeDeleteSalts(base::OnceClosure done_closure);
+  void FinalizeGetAllStorageKeys(
+      base::OnceCallback<void(std::vector<blink::StorageKey>)> callback,
+      std::vector<blink::StorageKey> storage_keys);
 
   // TODO(crbug.com/1462956): Remove these operations.
   std::string GetGlobalSalt();

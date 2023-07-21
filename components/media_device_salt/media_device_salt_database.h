@@ -53,6 +53,12 @@ class MediaDeviceSaltDatabase {
       content::StoragePartition::StorageKeyMatcherFunction matcher =
           content::StoragePartition::StorageKeyMatcherFunction());
 
+  // Deletes the entry with the given `storage_key`.
+  void DeleteEntry(const blink::StorageKey& storage_key);
+
+  // Returns all storage keys for which there is an entry.
+  std::vector<blink::StorageKey> GetAllStorageKeys();
+
   void ForceErrorForTesting() { force_error_ = true; }
   sql::Database& DatabaseForTesting() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

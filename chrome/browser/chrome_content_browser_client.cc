@@ -7257,6 +7257,9 @@ void ChromeContentBrowserClient::GetMediaDeviceIDSalt(
   bool allowed = cookie_settings->IsFullCookieAccessAllowed(
       url, site_for_cookies, top_frame_origin,
       cookie_settings->SettingOverridesForStorage());
+  ChromeBrowsingDataModelDelegate::BrowsingDataAccessed(
+      rfh, storage_key,
+      ChromeBrowsingDataModelDelegate::StorageType::kMediaDeviceSalt, !allowed);
   media_device_salt::MediaDeviceSaltService* salt_service =
       MediaDeviceSaltServiceFactory::GetInstance()->GetForBrowserContext(
           browser_context);

@@ -7,8 +7,10 @@
 #include <memory>
 
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
+#include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/media_device_salt/media_device_salt_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "url/origin.h"
@@ -79,12 +81,14 @@ void ChromeBrowsingDataModelDelegate::GetAllDataKeys(
   if (web_app_provider && storage_partition_->GetConfig().is_default()) {
     web_app_provider->scheduler().GetIsolatedWebAppBrowsingData(
         base::BindOnce(&IsolatedWebAppBrowsingDataToDelegateEntries)
-            .Then(std::move(callback)));
+            .Then(base::BindOnce(
+                &ChromeBrowsingDataModelDelegate::GetAllMediaDeviceSaltDataKeys,
+                weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
   } else {
-    std::move(callback).Run({});
+    GetAllMediaDeviceSaltDataKeys(std::move(callback), {});
   }
 #else
-  std::move(callback).Run({});
+  GetAllMediaDeviceSaltDataKeys(std::move(callback), {});
 #endif
 
   // TODO(crbug.com/1271155): Implement data retrieval for remaining data types.
@@ -102,6 +106,13 @@ void ChromeBrowsingDataModelDelegate::RemoveDataKey(
     auto* browsing_topics_service =
         browsing_topics::BrowsingTopicsServiceFactory::GetForProfile(profile_);
     browsing_topics_service->ClearTopicsDataForOrigin(*origin);
+  } else if (storage_types.Has(static_cast<BrowsingDataModel::StorageType>(
+                 StorageType::kMediaDeviceSalt))) {
+    if (const blink::StorageKey* storage_key =
+            absl::get_if<blink::StorageKey>(&data_key)) {
+      RemoveMediaDeviceSalt(*storage_key, std::move(callback));
+      return;
+    }
   }
 
   // TODO(crbug.com/1271155): Utilize the callback in remaining data
@@ -124,7 +135,54 @@ ChromeBrowsingDataModelDelegate::GetDataOwner(
           << "Unsupported Topics DataKey type: " << data_key.index();
       return absl::get<url::Origin>(data_key).host();
 
+    case StorageType::kMediaDeviceSalt:
+      CHECK(absl::holds_alternative<blink::StorageKey>(data_key))
+          << "Unsupported MediaDeviceSalt DataKey type: " << data_key.index();
+      return absl::get<blink::StorageKey>(data_key).origin().host();
+
     default:
       return absl::nullopt;
+  }
+}
+
+void ChromeBrowsingDataModelDelegate::GetAllMediaDeviceSaltDataKeys(
+    base::OnceCallback<void(std::vector<DelegateEntry>)> callback,
+    std::vector<DelegateEntry> entries) {
+  if (auto* service =
+          MediaDeviceSaltServiceFactory::GetInstance()->GetForBrowserContext(
+              profile_)) {
+    service->GetAllStorageKeys(base::BindOnce(
+        &ChromeBrowsingDataModelDelegate::GotAllMediaDeviceSaltDataKeys,
+        weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+        std::move(entries)));
+  } else {
+    std::move(callback).Run(std::move(entries));
+  }
+}
+
+void ChromeBrowsingDataModelDelegate::GotAllMediaDeviceSaltDataKeys(
+    base::OnceCallback<void(std::vector<DelegateEntry>)> callback,
+    std::vector<DelegateEntry> entries,
+    std::vector<blink::StorageKey> storage_keys) {
+  static constexpr uint64_t kMediaDeviceSaltEntrySize = 100;
+  for (const auto& key : storage_keys) {
+    entries.emplace_back(key,
+                         static_cast<BrowsingDataModel::StorageType>(
+                             StorageType::kMediaDeviceSalt),
+                         kMediaDeviceSaltEntrySize);
+  }
+  std::move(callback).Run(std::move(entries));
+}
+
+void ChromeBrowsingDataModelDelegate::RemoveMediaDeviceSalt(
+    const blink::StorageKey& storage_key,
+    base::OnceClosure callback) {
+  media_device_salt::MediaDeviceSaltService* service =
+      MediaDeviceSaltServiceFactory::GetInstance()->GetForBrowserContext(
+          profile_);
+  if (service) {
+    service->DeleteSalt(storage_key, std::move(callback));
+  } else {
+    std::move(callback).Run();
   }
 }

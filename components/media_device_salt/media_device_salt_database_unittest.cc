@@ -164,7 +164,7 @@ TEST_P(MediaDeviceSaltDatabaseTest, DeleteAllEntries) {
   EXPECT_TRUE(GetAllStoredEntries().empty());
 }
 
-TEST_P(MediaDeviceSaltDatabaseTest, DeleteSingleStorageKey) {
+TEST_P(MediaDeviceSaltDatabaseTest, DeleteSingleStorageKeyUsingMatcher) {
   db().GetOrInsertSalt(StorageKey1(), "salt1");
   db().GetOrInsertSalt(StorageKey2(), "salt2");
   db().GetOrInsertSalt(StorageKey3(), "salt3");
@@ -175,7 +175,7 @@ TEST_P(MediaDeviceSaltDatabaseTest, DeleteSingleStorageKey) {
                                    std::pair(StorageKey3(), "salt3")));
 }
 
-TEST_P(MediaDeviceSaltDatabaseTest, DeleteSomeStorageKeys) {
+TEST_P(MediaDeviceSaltDatabaseTest, DeleteSomeStorageKeysUsingMatcher) {
   db().GetOrInsertSalt(StorageKey1(), "salt1");
   db().GetOrInsertSalt(StorageKey2(), "salt2");
   db().GetOrInsertSalt(StorageKey3(), "salt3");
@@ -185,9 +185,41 @@ TEST_P(MediaDeviceSaltDatabaseTest, DeleteSomeStorageKeys) {
               ElementsAre(std::pair(StorageKey2(), "salt2")));
 }
 
+TEST_P(MediaDeviceSaltDatabaseTest, DeleteSingleStorageKey) {
+  db().GetOrInsertSalt(StorageKey1(), "salt1");
+  db().GetOrInsertSalt(StorageKey2(), "salt2");
+  db().GetOrInsertSalt(StorageKey3(), "salt3");
+
+  db().DeleteEntry(StorageKey1());
+  EXPECT_THAT(GetAllStoredEntries(),
+              UnorderedElementsAre(std::pair(StorageKey2(), "salt2"),
+                                   std::pair(StorageKey3(), "salt3")));
+
+  db().DeleteEntry(StorageKey3());
+  EXPECT_THAT(GetAllStoredEntries(),
+              ElementsAre(std::pair(StorageKey2(), "salt2")));
+}
+
 TEST_P(MediaDeviceSaltDatabaseTest, DatabaseErrors) {
   db().ForceErrorForTesting();
   EXPECT_FALSE(db().GetOrInsertSalt(StorageKey1()).has_value());
+}
+
+TEST_P(MediaDeviceSaltDatabaseTest, GetAllStorageKeys) {
+  db().GetOrInsertSalt(StorageKey1(), "salt1");
+  db().GetOrInsertSalt(StorageKey2(), "salt2");
+  db().GetOrInsertSalt(StorageKey3(), "salt3");
+
+  EXPECT_THAT(
+      db().GetAllStorageKeys(),
+      UnorderedElementsAre(StorageKey1(), StorageKey2(), StorageKey3()));
+
+  db().DeleteEntry(StorageKey3());
+  EXPECT_THAT(db().GetAllStorageKeys(),
+              UnorderedElementsAre(StorageKey1(), StorageKey2()));
+
+  db().DeleteEntries(base::Time::Min(), base::Time::Max());
+  EXPECT_THAT(db().GetAllStorageKeys(), IsEmpty());
 }
 
 INSTANTIATE_TEST_SUITE_P(All, MediaDeviceSaltDatabaseTest, testing::Bool());

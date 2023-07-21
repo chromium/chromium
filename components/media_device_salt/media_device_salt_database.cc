@@ -145,6 +145,41 @@ void MediaDeviceSaltDatabase::DeleteEntries(
   delete_statement.Run() && transaction.Commit();
 }
 
+void MediaDeviceSaltDatabase::DeleteEntry(
+    const blink::StorageKey& storage_key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (storage_key.origin().opaque() || !EnsureOpen()) {
+    return;
+  }
+  static constexpr char kDeleteStorageKeySql[] =
+      "DELETE FROM media_device_salts "
+      "WHERE storage_key=?";
+  DCHECK(db_.IsSQLValid(kDeleteStorageKeySql));
+  sql::Statement statement(db_.GetUniqueStatement(kDeleteStorageKeySql));
+  statement.BindString(0, storage_key.Serialize());
+  statement.Run();
+}
+
+std::vector<blink::StorageKey> MediaDeviceSaltDatabase::GetAllStorageKeys() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureOpen()) {
+    return {};
+  }
+  std::vector<blink::StorageKey> storage_keys;
+  static constexpr char kGetStorageKeysSql[] =
+      "SELECT storage_key FROM media_device_salts";
+  DCHECK(db_.IsSQLValid(kGetStorageKeysSql));
+  sql::Statement statement(db_.GetUniqueStatement(kGetStorageKeysSql));
+  while (statement.Step()) {
+    absl::optional<blink::StorageKey> key =
+        blink::StorageKey::Deserialize(statement.ColumnString(0));
+    if (key.has_value()) {
+      storage_keys.push_back(*key);
+    }
+  }
+  return storage_keys;
+}
+
 bool MediaDeviceSaltDatabase::EnsureOpen(bool is_retry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (db_.is_open()) {
