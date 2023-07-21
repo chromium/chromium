@@ -1163,16 +1163,14 @@ class PrintRenderFrameHelperPreviewTest
       int expected_margin_right,
       bool expected_all_pages_have_custom_size,
       bool expected_all_pages_have_custom_orientation) {
-    EXPECT_NE(preview_ui()->page_layout(), nullptr);
-    EXPECT_EQ(expected_content_width,
-              preview_ui()->page_layout()->content_width);
-    EXPECT_EQ(expected_content_height,
-              preview_ui()->page_layout()->content_height);
-    EXPECT_EQ(expected_margin_top, preview_ui()->page_layout()->margin_top);
-    EXPECT_EQ(expected_margin_right, preview_ui()->page_layout()->margin_right);
-    EXPECT_EQ(expected_margin_left, preview_ui()->page_layout()->margin_left);
-    EXPECT_EQ(expected_margin_bottom,
-              preview_ui()->page_layout()->margin_bottom);
+    const mojom::PageSizeMargins* page_layout = preview_ui()->page_layout();
+    ASSERT_TRUE(page_layout);
+    EXPECT_EQ(expected_content_width, page_layout->content_width);
+    EXPECT_EQ(expected_content_height, page_layout->content_height);
+    EXPECT_EQ(expected_margin_top, page_layout->margin_top);
+    EXPECT_EQ(expected_margin_right, page_layout->margin_right);
+    EXPECT_EQ(expected_margin_left, page_layout->margin_left);
+    EXPECT_EQ(expected_margin_bottom, page_layout->margin_bottom);
     EXPECT_EQ(expected_all_pages_have_custom_size,
               preview_ui()->all_pages_have_custom_size());
     EXPECT_EQ(expected_all_pages_have_custom_orientation,
