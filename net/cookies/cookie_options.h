@@ -272,13 +272,6 @@ class NET_EXPORT CookieOptions {
   }
   uint32_t full_party_context_size() const { return full_party_context_size_; }
 
-  void set_is_in_nontrivial_first_party_set(bool is_member) {
-    is_in_nontrivial_first_party_set_ = is_member;
-  }
-  bool is_in_nontrivial_first_party_set() const {
-    return is_in_nontrivial_first_party_set_;
-  }
-
   // Convenience method for where you need a CookieOptions that will
   // work for getting/setting all types of cookies, including HttpOnly and
   // SameSite cookies. Also specifies not to update the access time, because
@@ -298,13 +291,6 @@ class NET_EXPORT CookieOptions {
   // The size of the isolation_info.party_context plus the top-frame site.
   // Stored for logging purposes.
   uint32_t full_party_context_size_ = 0;
-  // Whether the site requesting cookie access (as opposed to e.g. the
-  // `site_for_cookies`) is a member (or owner) of a nontrivial First-Party
-  // Set.
-  // This is included here temporarily, for the purpose of ignoring SameParty
-  // for sites that are not participating in the Origin Trial.
-  // TODO(https://crbug.com/1163990): remove this field.
-  bool is_in_nontrivial_first_party_set_ = false;
 };
 
 NET_EXPORT bool operator==(

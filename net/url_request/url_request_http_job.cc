@@ -146,8 +146,7 @@ void LogTrustAnchor(const net::HashValueVector& spki_hashes) {
 
 net::CookieOptions CreateCookieOptions(
     net::CookieOptions::SameSiteCookieContext same_site_context,
-    const net::IsolationInfo& isolation_info,
-    bool is_in_nontrivial_first_party_set) {
+    const net::IsolationInfo& isolation_info) {
   net::CookieOptions options;
   options.set_return_excluded_cookies();
   options.set_include_httponly();
@@ -157,8 +156,6 @@ net::CookieOptions CreateCookieOptions(
     options.set_full_party_context_size(isolation_info.party_context()->size() +
                                         1);
   }
-  options.set_is_in_nontrivial_first_party_set(
-      is_in_nontrivial_first_party_set);
   return options;
 }
 
@@ -667,11 +664,8 @@ void URLRequestHttpJob::AddCookieHeaderAndStart() {
           request_->site_for_cookies(), request_->initiator(),
           is_main_frame_navigation, force_ignore_site_for_cookies);
 
-  bool is_in_nontrivial_first_party_set =
-      first_party_set_metadata_.frame_entry().has_value();
   CookieOptions options =
-      CreateCookieOptions(same_site_context, request_->isolation_info(),
-                          is_in_nontrivial_first_party_set);
+      CreateCookieOptions(same_site_context, request_->isolation_info());
 
   cookie_store->GetCookieListWithOptionsAsync(
       request_->url(), options,
@@ -903,11 +897,8 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
           request_->initiator(), is_main_frame_navigation,
           force_ignore_site_for_cookies);
 
-  bool is_in_nontrivial_first_party_set =
-      first_party_set_metadata_.frame_entry().has_value();
   CookieOptions options =
-      CreateCookieOptions(same_site_context, request_->isolation_info(),
-                          is_in_nontrivial_first_party_set);
+      CreateCookieOptions(same_site_context, request_->isolation_info());
 
   // Set all cookies, without waiting for them to be set. Any subsequent
   // read will see the combined result of all cookie operation.

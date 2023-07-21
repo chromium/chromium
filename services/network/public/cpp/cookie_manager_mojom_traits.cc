@@ -589,9 +589,6 @@ bool StructTraits<network::mojom::CookieOptionsDataView, net::CookieOptions>::
   cookie_options->set_full_party_context_size(
       mojo_options.full_party_context_size());
 
-  cookie_options->set_is_in_nontrivial_first_party_set(
-      mojo_options.is_in_nontrivial_first_party_set());
-
   return true;
 }
 

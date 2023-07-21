@@ -173,9 +173,6 @@ bool CookieChangeSubscription::ShouldObserveChangeTo(
   net::CookieOptions net_options;
   net_options.set_same_site_cookie_context(
       net::CookieOptions::SameSiteCookieContext::MakeInclusive());
-  // It doesn't matter which we choose here, since SameSite semantics should
-  // allow this access. But we make a choice to be explicit.
-  net_options.set_is_in_nontrivial_first_party_set(true);
 
   return cookie
       .IncludeForRequestURL(url_, net_options,
