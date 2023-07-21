@@ -681,8 +681,11 @@
   <message name="IDS_SETTINGS_PASSWORDS_AUTOSIGNIN_CHECKBOX_DESC" desc="Text that describes the 'Auto Sign-in' functionality to users.">
     Automatically sign in to sites and apps using saved credentials. If turned off, you'll be asked for confirmation every time before signing in to a site or app.
   </message>
-  <message name="IDS_SETTINGS_PASSWORDS_LEAK_DETECTION_LABEL" desc="Label for a checkbox that allows users to choose whether chrome should check that credentials have been part of a leak.">
+  <message name="IDS_SETTINGS_PASSWORDS_LEAK_DETECTION_LABEL" desc="Label for a checkbox that allows users to choose whether Chrome should check that credentials have been part of a leak.">
     Warn you if passwords are exposed in a data breach
+  </message>
+  <message name="IDS_SETTINGS_PASSWORDS_LEAK_DETECTION_LABEL_UPDATED" desc="Label for a checkbox that allows users to choose whether chrome should check that credentials have been part of a leak.">
+    Warn you if a password was compromised in a data breach
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_LEAK_DETECTION_SIGNED_OUT_ENABLED_DESC" desc="Text that describes the 'Password Leak Detection' functionality to signed-out users who have not disabled the feature. This text always follows a sentence describing the feature.">
     When you sign in to your Google Account, this feature is turned on.
@@ -2586,6 +2589,9 @@
   </message>
   <message name="IDS_SETTINGS_SAFEBROWSING_STANDARD_DESC" desc="Description for safe browsing standard protection mode">
     Standard protection against websites, downloads, and extensions that are known to be dangerous
+  </message>
+  <message name="IDS_SETTINGS_SAFEBROWSING_STANDARD_DESC_UPDATED" desc="Description for safe browsing standard protection mode">
+    Protects against sites, downloads, and extensions that are known to be dangerous. If a page does something suspicious, URLs and bits of page content are sent to Google Safe Browsing.
   </message>
   <message name="IDS_SETTINGS_SAFEBROWSING_STANDARD_EXPAND_ACCESSIBILITY_LABEL" desc="Label for the button that toggles showing the detailed description of safe browsing standard protection. Only visible by screen reader software.">
     Show standard protection details

@@ -57,6 +57,7 @@ suite('SecurityPage', function() {
       enableSecurityKeysSubpage: true,
       showHttpsOnlyModeSetting: true,
       showChromeRootStoreCertificates: true,
+      enableFriendlierSafeBrowsingSettings: true,
     });
   });
 
@@ -155,6 +156,22 @@ suite('SecurityPage', function() {
     assertEquals(lockedSubLabel, toggle.subLabel);
   });
 
+  test('UpdatedStandardProtectionDropdown', function() {
+    const standardProtection = page.$.safeBrowsingStandard;
+    const updatedSpSubLabel =
+        loadTimeData.getString('safeBrowsingStandardDescUpdated');
+    assertEquals(updatedSpSubLabel, standardProtection.subLabel);
+
+    const passwordsLeakToggle = page.$.passwordsLeakToggle;
+    const updatedPasswordLeakLabel =
+        loadTimeData.getString('passwordsLeakDetectionLabelUpdated');
+    assertEquals(updatedPasswordLeakLabel, passwordsLeakToggle.label);
+
+    const updatedPasswordLeakSubLabel = loadTimeData.getString(
+        'passwordsLeakDetectionGeneralDescriptionUpdated');
+    assertEquals(updatedPasswordLeakSubLabel, passwordsLeakToggle.subLabel);
+  });
+
 });
 
 suite('SecurityPage_FlagsDisabled', function() {
@@ -164,6 +181,7 @@ suite('SecurityPage_FlagsDisabled', function() {
     loadTimeData.overrideValues({
       enableSecurityKeysSubpage: false,
       showHttpsOnlyModeSetting: false,
+      enableFriendlierSafeBrowsingSettings: false,
     });
   });
 
@@ -200,6 +218,23 @@ suite('SecurityPage_FlagsDisabled', function() {
 
   test('HttpsOnlyModeSettingHidden', function() {
     assertFalse(isChildVisible(page, '#httpsOnlyModeToggle'));
+  });
+
+  // TODO(crbug.com/1466292): Remove once friendlier safe browsing settings
+  // launched.
+  test('NotUpdatedStandardProtectionDropdown', function() {
+    const standardProtection = page.$.safeBrowsingStandard;
+    const spSubLabel = loadTimeData.getString('safeBrowsingStandardDesc');
+    assertEquals(spSubLabel, standardProtection.subLabel);
+
+    const passwordsLeakToggle = page.$.passwordsLeakToggle;
+    const passwordLeakLabel =
+        loadTimeData.getString('passwordsLeakDetectionLabel');
+    assertEquals(passwordLeakLabel, passwordsLeakToggle.label);
+
+    const passwordLeakSubLabel =
+        loadTimeData.getString('passwordsLeakDetectionGeneralDescription');
+    assertEquals(passwordLeakSubLabel, passwordsLeakToggle.subLabel);
   });
 });
 
