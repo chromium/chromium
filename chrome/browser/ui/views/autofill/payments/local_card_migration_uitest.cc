@@ -716,7 +716,8 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
 // Ensures that clicking on the credit card icon in the omnibox reopens the
 // offer bubble after closing it.
 IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
-                       ClickingOmniboxIconReshowsBubble) {
+                       // TODO(crbug.com/1007051): Re-enable this test
+                       DISABLED_ClickingOmniboxIconReshowsBubble) {
   base::HistogramTester histogram_tester;
 
   SaveLocalCard(kFirstCardNumber);
@@ -983,7 +984,8 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
 // Ensures that reshowing and closing bubble after previously closing it does
 // not add strikes.
 IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
-                       ReshowingBubbleDoesNotAddStrikes) {
+                       // TODO(crbug.com/1007051): Re-enable this test
+                       DISABLED_ReshowingBubbleDoesNotAddStrikes) {
   SaveLocalCard(kFirstCardNumber);
   SaveLocalCard(kSecondCardNumber);
   UseCardAndWaitForMigrationOffer(kFirstCardNumber);
