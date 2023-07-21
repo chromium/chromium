@@ -140,8 +140,27 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveRedirect(
   // |owner| as a RaceNetworkResponse's response, we stop the race and back the
   // response to the fetch handler only instead, so that we guarantee the fetch
   // handler completion.
-  owner_->SetCommitResponsibility(FetchResponseFrom::kServiceWorker);
-  forwarding_client_->OnReceiveRedirect(redirect_info, head->Clone());
+  switch (owner_->commit_responsibility()) {
+    case FetchResponseFrom::kNoResponseYet:
+      // This happens when the response is faster than the fetch handler.
+      owner_->SetCommitResponsibility(FetchResponseFrom::kServiceWorker);
+      forwarding_client_->OnReceiveRedirect(redirect_info, head->Clone());
+      break;
+    case FetchResponseFrom::kServiceWorker:
+      // This happens when the fetch handler is faster, so basically
+      // RaceNetworkRequest does not handle the response anymore. The fetch
+      // handler is already executed but in rare case in-flight request may be
+      // used. Let the fetch handler side client to handle the rest. The fetch
+      // handler side close the connection if it's not needed anyway.
+      forwarding_client_->OnReceiveRedirect(redirect_info, head->Clone());
+      break;
+    case FetchResponseFrom::kWithoutServiceWorker:
+      // This happens when the fetch handler is faster and the result is
+      // fallback. In this case in-flight RaceNetworkRequest will be used as a
+      // fallback request.
+      owner_->HandleRedirect(redirect_info, head);
+      break;
+  }
   redirected_ = true;
 }
 

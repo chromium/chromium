@@ -614,6 +614,16 @@ void ServiceWorkerSubresourceLoader::OnFallback(
       SetCommitResponsibility(FetchResponseFrom::kServiceWorker);
       break;
     case FetchResponseFrom::kServiceWorker:
+      // RaceNetworkRequest comes first ant it's a redirect.
+      // When redirect happens, RaceNetworkRequest defer the remaining response
+      // to the fetch handler (FetchResponseFrom::kServiceWorker). However, if
+      // the fetch handler result is a fallback, the fetch handler itself can't
+      // handle the response anymore because the execution is already completed.
+      // It costs additional request but we cancel the in-flight
+      // RaceNetworkRequest and start the new network equest.
+      if (did_start_race_network_request_) {
+        race_network_request_loader_client_.reset();
+      }
       break;
     case FetchResponseFrom::kWithoutServiceWorker:
       // If the fetch response is handled by RaceNetworkRequest, the new
