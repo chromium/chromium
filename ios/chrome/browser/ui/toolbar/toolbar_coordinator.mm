@@ -8,6 +8,7 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_util.h"
+#import "ios/chrome/browser/overlays/public/overlay_presentation_context.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -239,6 +240,15 @@
 #pragma mark Omnibox and LocationBar
 
 - (void)transitionToLocationBarFocusedState:(BOOL)focused {
+  // Disable infobarBanner overlays when focusing the omnibox as they overlap
+  // with primary toolbar.
+  OverlayPresentationContext* infobarBannerContext =
+      OverlayPresentationContext::FromBrowser(self.browser,
+                                              OverlayModality::kInfobarBanner);
+  if (infobarBannerContext) {
+    infobarBannerContext->SetUIDisabled(focused);
+  }
+
   if (self.traitEnvironment.traitCollection.verticalSizeClass ==
       UIUserInterfaceSizeClassUnspecified) {
     return;
