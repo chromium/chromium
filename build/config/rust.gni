@@ -101,12 +101,8 @@ declare_args() {
   # Support for Rust mojo bindings.
   enable_rust_mojo = enable_rust && enable_all_rust_features
 
-  # Rust gtest interop
-  # TODO(https://bugs.chromium.org/p/gn/issues/detail?id=340): Framework search
-  # paths produce invalid Ninja files with GN, and they show up in the iOS
-  # build here.
-  enable_rust_gtest_interop =
-      enable_rust && (!is_ios || enable_all_rust_features)
+  # Rust gtest interop.
+  enable_rust_gtest_interop = enable_rust
 
   # Enable Boringssl Rust bindings generation
   enable_rust_boringssl = enable_rust && enable_all_rust_features

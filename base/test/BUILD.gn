@@ -163,6 +163,7 @@ static_library("test_support") {
     "//base",
     "//base:base_static",
     "//base:i18n",
+    "//build:blink_buildflags",
     "//testing/gmock",
     "//testing/gtest",
   ]

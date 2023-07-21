@@ -9,6 +9,7 @@
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
 #include "base/test/test_switches.h"
+#include "build/blink_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #include <iostream>
@@ -17,10 +18,16 @@
 int kNumTests = 10;
 
 bool is_subprocess() {
+#if !BUILDFLAG(USE_BLINK)
+  // On iOS-without-blink a separate unit test launcher (base::LaunchUnitTests)
+  // is used which just runs the tests serially in process.
+  return true;
+#else
   // The test launching process spawns a subprocess to run tests, and it
   // includes this flag.
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       base::kGTestFlagfileFlag);
+#endif
 }
 
 int main(int argc, char** argv) {
@@ -39,26 +46,36 @@ int main(int argc, char** argv) {
   my_argv.push_back(filter.data());
   my_argv.push_back(nullptr);  // GTest reads past argc until null.
 
-  base::TestSuite test_suite(my_argv.size() - 1u, my_argv.data());
+  struct InteropTestSuite : public base::TestSuite {
+    InteropTestSuite(int argc, char** argv) : base::TestSuite(argc, argv) {}
 
-  int result = base::LaunchUnitTests(
-      my_argv.size() - 1u, my_argv.data(),
-      base::BindOnce(&base::TestSuite::Run, base::Unretained(&test_suite)));
+    int Run() {
+      int result = base::TestSuite::Run();
 
-  if (is_subprocess()) {
-    // Double-check that we actually ran all the tests. If this fails we'll see
-    // all the tests marked as "fail on exit" since the whole process is
-    // considered a failure.
-    auto succeed = testing::UnitTest::GetInstance()->successful_test_count();
-    int expected_success = kNumTests;
-    if (succeed != expected_success) {
-      std::cerr << "***ERROR***: Expected " << expected_success
-                << " tests to succeed, but we saw: " << succeed << '\n';
-      return 1;
-    } else {
-      std::cerr << "***OK***: Ran " << succeed << " tests, yay!\n";
+      if (is_subprocess()) {
+        // Double-check that we actually ran all the tests. If this fails we'll
+        // see all the tests marked as "fail on exit" since the whole process is
+        // considered a failure.
+        auto succeed =
+            testing::UnitTest::GetInstance()->successful_test_count();
+        int expected_success = kNumTests;
+        if (succeed != expected_success) {
+          std::cerr << "***ERROR***: Expected " << expected_success
+                    << " tests to succeed, but we saw: " << succeed << '\n';
+          return 1;
+        } else {
+          std::cerr << "***OK***: Ran " << succeed << " tests, yay!\n";
+        }
+      }
+
+      return result;
     }
-  }
+  };
 
-  return result;
+  InteropTestSuite test_suite(my_argv.size() - 1u, my_argv.data());
+  // Note: With the iOS test launcher, this does not return, so we do the check
+  // for which tests ran in the TestSuite.
+  return base::LaunchUnitTests(
+      my_argv.size() - 1u, my_argv.data(),
+      base::BindOnce(&InteropTestSuite::Run, base::Unretained(&test_suite)));
 }

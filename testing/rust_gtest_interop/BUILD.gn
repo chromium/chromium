@@ -71,6 +71,7 @@ if (enable_rust) {
     deps = [
       "//base",
       "//base/test:test_support",
+      "//build:blink_buildflags",
       "//testing/gtest",
     ]
   }
