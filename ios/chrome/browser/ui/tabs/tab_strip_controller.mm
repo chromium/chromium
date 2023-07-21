@@ -504,20 +504,32 @@ const CGFloat kSymbolSize = 18;
     UIImage* buttonNewTabImage =
         DefaultSymbolWithPointSize(kPlusSymbol, kSymbolSize);
 
-    // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-    // iOS 15.
-    if (base::ios::IsRunningOnIOS15OrLater() &&
-        IsUIButtonConfigurationEnabled()) {
-      if (@available(iOS 15, *)) {
-        UIButtonConfiguration* buttonConfiguration =
-            [UIButtonConfiguration plainButtonConfiguration];
-        buttonConfiguration.contentInsets =
-            NSDirectionalEdgeInsetsMake(0, kNewTabButtonLeadingImageInset,
-                                        kNewTabButtonBottomImageInset, 0);
-        buttonConfiguration.image = buttonNewTabImage;
-        _buttonNewTab.tintColor = [UIColor colorNamed:kGrey500Color];
-        _buttonNewTab.configuration = buttonConfiguration;
-      }
+    if (IsUIButtonConfigurationEnabled()) {
+      UIButtonConfiguration* buttonConfiguration =
+          [UIButtonConfiguration plainButtonConfiguration];
+      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+          0, kNewTabButtonLeadingImageInset, kNewTabButtonBottomImageInset, 0);
+      buttonConfiguration.image = buttonNewTabImage;
+      buttonConfiguration.baseForegroundColor =
+          [UIColor colorNamed:kGrey500Color];
+      _buttonNewTab.configurationUpdateHandler = ^(UIButton* incomingButton) {
+        UIButtonConfiguration* updatedConfig = incomingButton.configuration;
+        switch (incomingButton.state) {
+          case UIControlStateHighlighted: {
+            updatedConfig.baseForegroundColor =
+                [UIColor colorNamed:kGrey700Color];
+            break;
+          }
+          case UIControlStateNormal:
+            updatedConfig.baseForegroundColor =
+                [UIColor colorNamed:kGrey500Color];
+            break;
+          default:
+            break;
+        }
+        incomingButton.configuration = updatedConfig;
+      };
+      _buttonNewTab.configuration = buttonConfiguration;
     } else {
       UIEdgeInsets imageInsets = UIEdgeInsetsMake(
           0, kNewTabButtonLeadingImageInset, kNewTabButtonBottomImageInset, 0);
