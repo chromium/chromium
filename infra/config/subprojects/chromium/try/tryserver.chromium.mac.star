@@ -504,6 +504,7 @@ ios_builder(
     mirrors = [
         "ci/ios-simulator-noncq",
     ],
+    cpu = cpu.ARM64,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     tryjob = try_.job(
         location_filters = [
