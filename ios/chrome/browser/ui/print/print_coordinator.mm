@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/print/print_controller.h"
+#import "ios/chrome/browser/ui/print/print_coordinator.h"
 
 #import "base/logging.h"
 #import "base/metrics/user_metrics.h"
@@ -14,28 +14,21 @@
 #error "This file requires ARC support."
 #endif
 
-@interface PrintController () <UIPrintInteractionControllerDelegate>
-// The view controller the system print dialog should be presented from if not
-// specified in the print* command.
-@property(nonatomic, weak) UIViewController* defaultBaseViewController;
-
+@interface PrintCoordinator () <UIPrintInteractionControllerDelegate>
 // The view controller the system print dialog should be presented from.
-// This can be passed in the print* method or `defaultBaseViewController` will
+// This can be passed in the print* method or `baseViewController` will
 // be used.
-@property(nonatomic, weak) UIViewController* baseViewController;
+@property(nonatomic, weak) UIViewController* defaultBaseViewController;
 
 @end
 
-@implementation PrintController
+@implementation PrintCoordinator
 
 #pragma mark - Public Methods
 
 - (instancetype)initWithBaseViewController:
     (UIViewController*)baseViewController {
-  self = [super init];
-  if (self) {
-    self.defaultBaseViewController = baseViewController;
-  }
+  self = [super initWithBaseViewController:baseViewController browser:nil];
   return self;
 }
 
@@ -66,11 +59,16 @@
       dismissAnimated:animated];
 }
 
+#pragma mark - ChromeCoordinator
+
+- (void)stop {
+  self.defaultBaseViewController = nil;
+}
+
 #pragma mark - WebStatePrinter
 
 - (void)printWebState:(web::WebState*)webState {
-  [self printWebState:webState
-      baseViewController:self.defaultBaseViewController];
+  [self printWebState:webState baseViewController:self.baseViewController];
 }
 
 - (void)printWebState:(web::WebState*)webState
@@ -83,7 +81,7 @@
 #pragma mark - UIPrintInteractionControllerDelegate
 - (UIViewController*)printInteractionControllerParentViewController:
     (UIPrintInteractionController*)printInteractionController {
-  return self.baseViewController;
+  return self.defaultBaseViewController;
 }
 
 #pragma mark - Private methods
@@ -98,7 +96,7 @@
   // Only one item must be passed.
   DCHECK_EQ((renderer ? 1 : 0) + (item ? 1 : 0), 1);
   DCHECK(baseViewController);
-  self.baseViewController = baseViewController;
+  self.defaultBaseViewController = baseViewController;
   base::RecordAction(base::UserMetricsAction("MobilePrintMenuAirPrint"));
   UIPrintInteractionController* printInteractionController =
       [UIPrintInteractionController sharedPrintController];
@@ -116,9 +114,10 @@
         presentAnimated:YES
       completionHandler:^(UIPrintInteractionController* controller,
                           BOOL completed, NSError* error) {
-        if (error)
+        if (error) {
           DLOG(ERROR) << "Air printing error: "
                       << base::SysNSStringToUTF8(error.description);
+        }
       }];
 }
 

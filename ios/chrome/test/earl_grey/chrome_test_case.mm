@@ -86,7 +86,7 @@ NSArray* multitaskingTests = @[
   @"testShowJavaScriptAlert",                   // JavaScriptDialogTestCase
   @"testKeyboardCommands_RecentTabsPresented",  // KeyboardCommandsTestCase
   @"testAccessibilityOnMostVisited",            // NewTabPageTestCase
-  @"testPrintNormalPage",                       // PrintControllerTestCase
+  @"testPrintNormalPage",                       // PrintCoordinatorTestCase
   @"testQRScannerUIIsShown",                 // QRScannerViewControllerTestCase
   @"testMarkMixedEntriesRead",               // ReadingListTestCase
   @"testClosedTabAppearsInRecentTabsPanel",  // RecentTabsTableTestCase

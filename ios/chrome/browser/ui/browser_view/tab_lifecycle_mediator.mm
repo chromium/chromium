@@ -25,7 +25,7 @@
 #import "ios/chrome/browser/ssl/captive_portal_tab_helper.h"
 #import "ios/chrome/browser/ui/download/download_manager_coordinator.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
-#import "ios/chrome/browser/ui/print/print_controller.h"
+#import "ios/chrome/browser/ui/print/print_coordinator.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator.h"
 #import "ios/chrome/browser/web/annotations/annotations_tab_helper.h"
 #import "ios/chrome/browser/web/print/print_tab_helper.h"
@@ -116,8 +116,8 @@
   AutofillTabHelper::FromWebState(webState)->SetBaseViewController(
       _baseViewController);
 
-  DCHECK(_printController);
-  PrintTabHelper::FromWebState(webState)->set_printer(_printController);
+  DCHECK(_printCoordinator);
+  PrintTabHelper::FromWebState(webState)->set_printer(_printCoordinator);
 
   RepostFormTabHelper::FromWebState(webState)->SetDelegate(_repostFormDelegate);
 

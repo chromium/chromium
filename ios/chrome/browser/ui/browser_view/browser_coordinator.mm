@@ -153,7 +153,7 @@
 #import "ios/chrome/browser/ui/presenters/vertical_animation_container.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_iph_coordinator.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_view_coordinator.h"
-#import "ios/chrome/browser/ui/print/print_controller.h"
+#import "ios/chrome/browser/ui/print/print_coordinator.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_coordinator.h"
 #import "ios/chrome/browser/ui/qr_scanner/qr_scanner_legacy_coordinator.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_coordinator.h"
@@ -396,8 +396,7 @@ enum class ToolbarKind {
     PriceNotificationsViewCoordinator* priceNotificationsViewCoordiantor;
 
 // Used to display the Print UI. Nil if not visible.
-// TODO(crbug.com/910017): Convert to coordinator.
-@property(nonatomic, strong) PrintController* printController;
+@property(nonatomic, strong) PrintCoordinator* printCoordinator;
 
 // Coordinator for app-wide promos.
 @property(nonatomic, strong) PromosManagerCoordinator* promosManagerCoordinator;
@@ -602,7 +601,7 @@ enum class ToolbarKind {
                            dismissOmnibox:(BOOL)dismissOmnibox {
   [self.passKitCoordinator stop];
 
-  [self.printController dismissAnimated:YES];
+  [self.printCoordinator dismissAnimated:YES];
 
   [self.readingListCoordinator stop];
   self.readingListCoordinator.delegate = nil;
@@ -1054,10 +1053,10 @@ enum class ToolbarKind {
                                                    browser:self.browser];
   [self.vcardCoordinator start];
 
-  self.printController =
-      [[PrintController alloc] initWithBaseViewController:self.viewController];
+  self.printCoordinator =
+      [[PrintCoordinator alloc] initWithBaseViewController:self.viewController];
   // Updates the printControllar value inside tabLifecycleMediator.
-  self.tabLifecycleMediator.printController = self.printController;
+  self.tabLifecycleMediator.printCoordinator = self.printCoordinator;
 
   // Help should only show in regular, non-incognito.
   if (!self.browser->GetBrowserState()->IsOffTheRecord()) {
@@ -1213,7 +1212,8 @@ enum class ToolbarKind {
   [self.paymentsSuggestionBottomSheetCoordinator stop];
   self.paymentsSuggestionBottomSheetCoordinator = nil;
 
-  self.printController = nil;
+  [self.printCoordinator stop];
+  self.printCoordinator = nil;
 
   [self.priceNotificationsViewCoordiantor stop];
   self.priceNotificationsViewCoordiantor = nil;
@@ -1465,20 +1465,20 @@ enum class ToolbarKind {
 #pragma mark - BrowserCoordinatorCommands
 
 - (void)printTabWithBaseViewController:(UIViewController*)baseViewController {
-  DCHECK(self.printController);
+  DCHECK(self.printCoordinator);
   web::WebState* webState =
       self.browser->GetWebStateList()->GetActiveWebState();
-  [self.printController printWebState:webState
-                   baseViewController:baseViewController];
+  [self.printCoordinator printWebState:webState
+                    baseViewController:baseViewController];
 }
 
 - (void)printImage:(UIImage*)image
                  title:(NSString*)title
     baseViewController:(UIViewController*)baseViewController {
-  DCHECK(self.printController);
-  [self.printController printImage:image
-                             title:title
-                baseViewController:baseViewController];
+  DCHECK(self.printCoordinator);
+  [self.printCoordinator printImage:image
+                              title:title
+                 baseViewController:baseViewController];
 }
 
 - (void)showReadingList {

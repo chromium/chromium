@@ -13,7 +13,7 @@
 @protocol FollowIPHPresenter;
 @protocol PasswordControllerDelegate;
 class PrerenderService;
-@class PrintController;
+@class PrintCoordinator;
 @protocol RepostFormTabHelperDelegate;
 @class SadTabCoordinator;
 @protocol SnapshotGeneratorDelegate;
@@ -42,7 +42,7 @@ class WebStateList;
 @property(nonatomic, weak) id<NewTabPageTabHelperDelegate> NTPTabHelperDelegate;
 @property(nonatomic, weak) id<PriceNotificationsIPHPresenter>
     priceNotificationsIPHPresenter;
-@property(nonatomic, weak) PrintController* printController;
+@property(nonatomic, weak) PrintCoordinator* printCoordinator;
 @property(nonatomic, weak) id<RepostFormTabHelperDelegate> repostFormDelegate;
 @property(nonatomic, weak) id<FollowIPHPresenter> followIPHPresenter;
 @property(nonatomic, assign) TabInsertionBrowserAgent* tabInsertionBrowserAgent;
