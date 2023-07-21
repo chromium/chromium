@@ -6,6 +6,7 @@ package org.chromium.chrome.features.tasks;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -23,6 +24,7 @@ import static org.chromium.chrome.features.tasks.SingleTabViewProperties.URL;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -150,12 +152,38 @@ public class SingleTabModuleViewBinderUnitTest {
     @Test
     @SmallTest
     public void testSetTabThumbnail() {
+        // Fake a layout so the UI has a size.
+        mSingleTabModuleView.measure(0, 0);
+        mSingleTabModuleView.layout(0, 0, 100, 100);
+
         ImageView thumbnail = mSingleTabModuleView.findViewById(R.id.tab_thumbnail);
         assertNull(thumbnail.getDrawable());
 
         Bitmap bitmap = Bitmap.createBitmap(300, 400, Bitmap.Config.ALPHA_8);
         mPropertyModel.set(TAB_THUMBNAIL, bitmap);
         assertNotNull(thumbnail.getDrawable());
+
+        assertNotEquals(new Matrix(), thumbnail.getImageMatrix());
+    }
+
+    @Test
+    @SmallTest
+    public void testSetTabThumbnailUpdateMatrixOnResize() {
+        ImageView thumbnail = mSingleTabModuleView.findViewById(R.id.tab_thumbnail);
+        assertNull(thumbnail.getDrawable());
+
+        Bitmap bitmap = Bitmap.createBitmap(300, 400, Bitmap.Config.ALPHA_8);
+        mPropertyModel.set(TAB_THUMBNAIL, bitmap);
+        assertNotNull(thumbnail.getDrawable());
+
+        Matrix identityMatrix = new Matrix();
+        assertEquals(identityMatrix, thumbnail.getImageMatrix());
+
+        // Fake a layout so the UI has a size.
+        mSingleTabModuleView.measure(0, 0);
+        mSingleTabModuleView.layout(0, 0, 100, 100);
+
+        assertNotEquals(identityMatrix, thumbnail.getImageMatrix());
     }
 
     @Test
