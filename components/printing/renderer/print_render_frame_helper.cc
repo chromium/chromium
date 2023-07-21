@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/json/json_writer.h"
@@ -88,6 +89,11 @@
 #include "ui/accessibility/ax_tree_update.h"
 #endif
 
+#if DCHECK_IS_ON()
+#include "base/containers/circular_deque.h"
+#include "components/crash/core/common/crash_key.h"
+#endif
+
 using blink::web_pref::WebPreferences;
 
 namespace printing {
@@ -121,6 +127,33 @@ const char kPageLoadScriptFormat[] =
 const char kPageSetupScriptFormat[] = "setupHeaderFooterTemplate(%s);";
 
 constexpr int kAllowedIpcDepthForPrint = 1;
+
+void RecordBeforeAfterPrintEventForDebugging(int line) {
+#if DCHECK_IS_ON()
+  // TODO(crbug.com/1459437): Remove after fixing the bug.
+  constexpr uint32_t kMaxCrashKeySize = 64;
+  // Each entry is a 4 digit line number from this file plus a separator.
+  constexpr uint32_t kMaxCrashKeyEntrySize = 5;
+  constexpr uint32_t kMaxCrashKeyEntries =
+      kMaxCrashKeySize / kMaxCrashKeyEntrySize;
+  static crash_reporter::CrashKeyString<kMaxCrashKeySize>
+      before_after_print_info("print_before_after_events");
+
+  static base::circular_deque<int> recent_events;
+  recent_events.push_back(line);
+  if (recent_events.size() > kMaxCrashKeyEntries) {
+    recent_events.pop_front();
+  }
+
+  std::string recent_events_str;
+  recent_events_str.reserve(kMaxCrashKeyEntrySize * recent_events.size());
+  for (int val : recent_events) {
+    recent_events_str += base::NumberToString(val);
+    recent_events_str += ';';
+  }
+  before_after_print_info.Set(recent_events_str);
+#endif  // DCHECK_IS_ON()
+}
 
 void ExecuteScript(blink::WebLocalFrame* frame,
                    const char* script_format,
@@ -1340,6 +1373,7 @@ void PrintRenderFrameHelper::ScriptedPrint(bool user_initiated) {
                         /*already_notified_frame=*/false);
 #endif
   } else {
+    RecordBeforeAfterPrintEventForDebugging(__LINE__);
     web_frame->DispatchBeforePrintEvent(/*print_client=*/nullptr);
     if (!weak_this)
       return;
@@ -1348,6 +1382,7 @@ void PrintRenderFrameHelper::ScriptedPrint(bool user_initiated) {
     if (!weak_this)
       return;
 
+    RecordBeforeAfterPrintEventForDebugging(__LINE__);
     web_frame->DispatchAfterPrintEvent();
   }
   if (!weak_this)
@@ -1380,6 +1415,7 @@ void PrintRenderFrameHelper::PrintRequestedPages() {
   if (ipc_nesting_level_ > kAllowedIpcDepthForPrint)
     return;
 
+  RecordBeforeAfterPrintEventForDebugging(__LINE__);
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
   frame->DispatchBeforePrintEvent(/*print_client=*/nullptr);
   // Don't print if the RenderFrame is gone.
@@ -1392,8 +1428,10 @@ void PrintRenderFrameHelper::PrintRequestedPages() {
 
   Print(frame, plugin, PrintRequestType::kRegular);
 
-  if (!render_frame_gone_)
+  if (!render_frame_gone_) {
+    RecordBeforeAfterPrintEventForDebugging(__LINE__);
     frame->DispatchAfterPrintEvent();
+  }
   // WARNING: |this| may be gone at this point. Do not do any more work here and
   // just return.
 }
@@ -1414,6 +1452,7 @@ void PrintRenderFrameHelper::PrintWithParams(
     return;
   }
 
+  RecordBeforeAfterPrintEventForDebugging(__LINE__);
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
   frame->DispatchBeforePrintEvent(/*print_client=*/nullptr);
   // Don't print if the RenderFrame is gone.
@@ -1442,8 +1481,10 @@ void PrintRenderFrameHelper::PrintWithParams(
   PrintPages();
   FinishFramePrinting();
 
-  if (!render_frame_gone_)
+  if (!render_frame_gone_) {
+    RecordBeforeAfterPrintEventForDebugging(__LINE__);
     frame->DispatchAfterPrintEvent();
+  }
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -1470,8 +1511,10 @@ void PrintRenderFrameHelper::PrintForSystemDialog() {
 
   Print(frame, print_preview_context_.source_node(),
         PrintRequestType::kRegular);
-  if (!render_frame_gone_)
+  if (!render_frame_gone_) {
+    RecordBeforeAfterPrintEventForDebugging(__LINE__);
     print_preview_context_.DispatchAfterPrintEvent();
+  }
   // WARNING: |this| may be gone at this point. Do not do any more work here and
   // just return.
 }
@@ -1569,8 +1612,10 @@ void PrintRenderFrameHelper::PrintPreview(base::Value::Dict settings) {
 
 void PrintRenderFrameHelper::OnPrintPreviewDialogClosed() {
   ScopedIPC scoped_ipc(weak_ptr_factory_.GetWeakPtr());
-  if (!render_frame_gone_)
+  if (!render_frame_gone_) {
+    RecordBeforeAfterPrintEventForDebugging(__LINE__);
     print_preview_context_.DispatchAfterPrintEvent();
+  }
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
@@ -1587,6 +1632,7 @@ void PrintRenderFrameHelper::PrintFrameContent(
     return;
   }
 
+  RecordBeforeAfterPrintEventForDebugging(__LINE__);
   auto weak_this = weak_ptr_factory_.GetWeakPtr();
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
   frame->DispatchBeforePrintEvent(/*print_client=*/nullptr);
@@ -1645,8 +1691,10 @@ void PrintRenderFrameHelper::PrintFrameContent(
     DLOG(ERROR) << "CopyMetafileDataToSharedMem failed";
   }
 
-  if (!render_frame_gone_)
+  if (!render_frame_gone_) {
+    RecordBeforeAfterPrintEventForDebugging(__LINE__);
     frame->DispatchAfterPrintEvent();
+  }
 }
 
 void PrintRenderFrameHelper::PrintingDone(bool success) {
@@ -2124,6 +2172,7 @@ void PrintRenderFrameHelper::PrintNode(const blink::WebNode& node) {
     if (!frame)
       return;
 
+    RecordBeforeAfterPrintEventForDebugging(__LINE__);
     auto weak_this = weak_ptr_factory_.GetWeakPtr();
     frame->DispatchBeforePrintEvent(/*print_client=*/nullptr);
     if (!weak_this)
@@ -2135,6 +2184,7 @@ void PrintRenderFrameHelper::PrintNode(const blink::WebNode& node) {
     if (!weak_this)
       return;
 
+    RecordBeforeAfterPrintEventForDebugging(__LINE__);
     frame->DispatchAfterPrintEvent();
     if (!weak_this)
       return;
@@ -2662,6 +2712,7 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type,
                                                  bool already_notified_frame) {
   auto weak_this = weak_ptr_factory_.GetWeakPtr();
   if (!already_notified_frame) {
+    RecordBeforeAfterPrintEventForDebugging(__LINE__);
     print_preview_context_.DispatchBeforePrintEvent(weak_this);
   }
   if (!weak_this)
