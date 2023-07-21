@@ -22,8 +22,9 @@ class Source {
 };
 
 // Represents a draw call.
-// This is currently only used for drawing rects and positional text.
-
+// This is currently only used for drawing rect. But this (or something like
+// this) could potentially be also used for drawing logs etc.
+//
 class DrawCall {
   constructor(json) {
     // e.g. {"drawindex":"44", option":{"alpha":"1.000000","color":"#ffffff"}
@@ -32,7 +33,6 @@ class DrawCall {
     this.sourceIndex_ = parseInt(json.source_index);
     this.drawIndex_ = parseInt(json.drawindex);
     this.threadId_ = parseInt(json.thread_id);
-    this.text = json.text;
     this.size_ = {
       width: json.size[0],
       height: json.size[1],

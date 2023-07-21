@@ -32,14 +32,17 @@ class VizDebuggerInternal : public VizDebugger {
   // Returns copies of corresponding buffers/vectors in the
   // VizDebugger instance.
   std::vector<DrawCall> GetDrawRectCalls();
+  std::vector<DrawTextCall> GetDrawTextCalls();
   std::vector<LogCall> GetLogs();
 
   // These functions return the tail index of each type of buffers.
   int GetRectCallsTailIdx();
+  int GetTextCallsTailIdx();
   int GetLogsTailIdx();
 
   // These functions get the size of each buffer.
   int GetRectCallsSize();
+  int GetTextCallsSize();
   int GetLogsSize();
 
   // This function returns a pointer to the Read-Write lock used
@@ -50,6 +53,7 @@ class VizDebuggerInternal : public VizDebugger {
 
   using VizDebugger::CallSubmitCommon;
   using VizDebugger::DrawCall;
+  using VizDebugger::DrawTextCall;
   using VizDebugger::FrameAsJson;
   using VizDebugger::LogCall;
   using VizDebugger::UpdateFilters;
