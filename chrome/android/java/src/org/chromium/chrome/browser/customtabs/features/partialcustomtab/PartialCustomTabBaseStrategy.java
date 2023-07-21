@@ -14,6 +14,7 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.InsetDrawable;
 import android.os.Handler;
@@ -479,6 +480,9 @@ public abstract class PartialCustomTabBaseStrategy
 
     protected void resetCoordinatorLayoutInsets() {
         ViewGroup coordinatorLayout = getCoordinatorLayout();
+        Drawable backgroundDrawable = coordinatorLayout.getBackground();
+        if (backgroundDrawable == null) return;
+
         // Get the insets of the CoordinatorLayout
         int insetLeft = coordinatorLayout.getPaddingLeft();
         int insetTop = coordinatorLayout.getPaddingTop();
@@ -486,8 +490,8 @@ public abstract class PartialCustomTabBaseStrategy
         int insetBottom = coordinatorLayout.getPaddingBottom();
 
         // Set the CoordinatorLayout to a new InsetDrawable with insets all offset back to 0.
-        InsetDrawable newDrawable = new InsetDrawable(coordinatorLayout.getBackground(), -insetLeft,
-                -insetTop, -insetRight, -insetBottom);
+        InsetDrawable newDrawable = new InsetDrawable(
+                backgroundDrawable, -insetLeft, -insetTop, -insetRight, -insetBottom);
         coordinatorLayout.setBackground(newDrawable);
     }
 
