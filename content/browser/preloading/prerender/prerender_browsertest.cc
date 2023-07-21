@@ -11627,4 +11627,24 @@ IN_PROC_BROWSER_TEST_F(PrerenderSessionHistoryBrowserTest,
                        PrerenderBackNavigationEligibility::kTargetIsNonHttp));
 }
 
+// PrerenderHosts created through speculation rules are not suitable for use in
+// session history navigations. In particular, the SiteInstances would be
+// mismatched.
+IN_PROC_BROWSER_TEST_F(
+    PrerenderSessionHistoryBrowserTest,
+    BackButtonNavigationDoesNotUseSpeculationRulePrerenders) {
+  const GURL url1 = GetUrl("/title1.html");
+  const GURL url2 = GetUrl("/title2.html");
+  ASSERT_TRUE(NavigateToURL(shell(), url1));
+  ASSERT_TRUE(NavigateToURL(shell(), url2));
+  ClearBackForwardCache();
+
+  int host_id = AddPrerender(url1);
+  test::PrerenderHostObserver prerender_observer(*web_contents(), host_id);
+
+  PerformBackNavigation();
+
+  EXPECT_FALSE(prerender_observer.was_activated());
+}
+
 }  // namespace content
