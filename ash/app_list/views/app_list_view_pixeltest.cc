@@ -36,7 +36,7 @@ namespace ash {
 
 namespace {
 
-using TestVariantsParam = std::tuple<bool, bool, bool>;
+using TestVariantsParam = std::tuple<bool, bool, bool, bool>;
 
 bool IsRtl(TestVariantsParam param) {
   return std::get<0>(param);
@@ -50,6 +50,10 @@ bool IsTabletMode(TestVariantsParam param) {
   return std::get<2>(param);
 }
 
+bool JellyEnabled(TestVariantsParam param) {
+  return std::get<3>(param);
+}
+
 std::string GenerateTestSuffix(
     const testing::TestParamInfo<TestVariantsParam>& info) {
   std::string suffix;
@@ -58,6 +62,10 @@ std::string GenerateTestSuffix(
   suffix.append(IsDarkMode(info.param) ? "dark" : "light");
   suffix.append("_");
   suffix.append(IsTabletMode(info.param) ? "tablet" : "clamshell");
+  // Only add a suffix is Jelly is disabled so this is easier to delete.
+  if (!JellyEnabled(info.param)) {
+    suffix.append("PreJelly");
+  }
   return suffix;
 }
 
@@ -258,6 +266,9 @@ class AppListViewLauncherSearchIphTest
   }
 
   void SetUp() override {
+    scoped_features_.InitWithFeatureState(chromeos::features::kJelly,
+                                          JellyEnabled(GetParam()));
+
     AssistantAshTestBase::SetUp();
 
     DarkLightModeController::Get()->SetDarkModeEnabledForTest(
@@ -272,11 +283,15 @@ class AppListViewLauncherSearchIphTest
         true);
     GetAppListTestHelper()->GetSearchBoxView()->SetIsIphAllowed(true);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_features_;
 };
 
 INSTANTIATE_TEST_SUITE_P(RTL,
                          AppListViewLauncherSearchIphTest,
                          testing::Combine(testing::Bool(),
+                                          testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool()),
                          &GenerateTestSuffix);
@@ -435,7 +450,8 @@ INSTANTIATE_TEST_SUITE_P(RTL,
                          AppListViewAssistantZeroStateTest,
                          testing::Combine(/*IsRtl=*/testing::Bool(),
                                           /*IsDarkMode=*/testing::Bool(),
-                                          /*IsTabletMode=*/testing::Bool()),
+                                          /*IsTabletMode=*/testing::Bool(),
+                                          /*JellyEnabled=*/testing::Bool()),
                          &GenerateTestSuffix);
 
 TEST_P(AppListViewAssistantZeroStateTest, Basic) {
@@ -443,7 +459,8 @@ TEST_P(AppListViewAssistantZeroStateTest, Basic) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "app_list_view_assistant_zero_state", /*revision_number=*/1,
+      "app_list_view_assistant_zero_state",
+      /*revision_number=*/JellyEnabled(GetParam()) ? 0 : 1,
       page_view()->GetViewByID(AssistantViewID::kZeroStateView)));
 }
 
