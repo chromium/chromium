@@ -37,10 +37,11 @@ TEST_F(TextFinderManagerTest, SingleTextFinderTest) {
           [](std::pair<std::string, bool> text_found) { return; });
   const auto id = manager->CreateTextFinder(
       text_directive, std::move(finished_finding_callback));
+  EXPECT_TRUE(id.has_value());
   EXPECT_EQ(manager->Size(), 1u);
 
   // Remove text finder.
-  manager->RemoveTextFinder(id);
+  manager->RemoveTextFinder(id.value());
   EXPECT_EQ(manager->Size(), 0u);
 }
 

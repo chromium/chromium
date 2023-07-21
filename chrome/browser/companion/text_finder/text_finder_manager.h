@@ -34,7 +34,7 @@ class TextFinderManager : public content::PageUserData<TextFinderManager> {
   // Calls `callback` with the boolean search result indicating found or not
   // found. Removes the finder from manager upon finishing searching or agent
   // disconnection. Returns the id associated with the created text finder.
-  base::UnguessableToken CreateTextFinder(
+  absl::optional<base::UnguessableToken> CreateTextFinder(
       const std::string& text_directive,
       TextFinder::FinishedCallback callback);
 
