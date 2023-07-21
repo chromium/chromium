@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(WebUIMochaSuccessFailureTest, TestFailureFails) {
   EXPECT_FATAL_FAILURE(
       RunTestStatic("js/test_suite_self_test.js",
                     "mocha.fgrep('TestSuiteSelfTest Failure').run();"),
-      "Mocha test failures detected.");
+      "Mocha test failures detected in file: ");
 }
 
 // Test that when the underlying Mocha test succeeds, the C++ test also passes.

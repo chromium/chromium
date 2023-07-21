@@ -120,7 +120,8 @@ void WebUIMochaBrowserTest::RunTest(const std::string& file,
   }
 
   if (!success) {
-    FAIL() << "Mocha test failures detected.";
+    FAIL() << "Mocha test failures detected in file: " << file
+           << ", triggered by '" << trigger << "'";
   }
 }
 
