@@ -605,17 +605,18 @@ XnnPadding2D GetXnnPadding2D(const OptionsType* options,
     }
     case V8MLAutoPad::Enum::kSameUpper:
     case V8MLAutoPad::Enum::kSameLower: {
+      webnn::AutoPad auto_pad =
+          BlinkAutoPadToComponent(options->autoPad().AsEnum());
       // Calculate the XNNPACK padding based on WebNN auto padding mode and
       // sizes.
-      auto padding_sizes_height = MLGraphBuilder::CalculateConv2dPadding(
-          options->autoPad().AsEnum(), input_height, filter_height,
-          stride_height, dilation_height);
+      auto padding_sizes_height =
+          webnn::CalculateConv2dPadding(auto_pad, input_height, filter_height,
+                                        stride_height, dilation_height);
       CHECK(padding_sizes_height);
       xnn_padding.top = padding_sizes_height.value().begin;
       xnn_padding.bottom = padding_sizes_height.value().end;
-      auto padding_sizes_width = MLGraphBuilder::CalculateConv2dPadding(
-          options->autoPad().AsEnum(), input_width, filter_width, stride_width,
-          dilation_width);
+      auto padding_sizes_width = webnn::CalculateConv2dPadding(
+          auto_pad, input_width, filter_width, stride_width, dilation_width);
       CHECK(padding_sizes_width);
       xnn_padding.left = padding_sizes_width.value().begin;
       xnn_padding.right = padding_sizes_width.value().end;

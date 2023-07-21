@@ -189,4 +189,16 @@ MLNamedArrayBufferViews* CreateNamedArrayBufferViews(
   return target_views;
 }
 
+webnn::AutoPad BlinkAutoPadToComponent(blink::V8MLAutoPad::Enum type) {
+  switch (type) {
+    case blink::V8MLAutoPad::Enum::kExplicit:
+      return webnn::AutoPad::kExplicit;
+    case blink::V8MLAutoPad::Enum::kSameUpper:
+      return webnn::AutoPad::kSameUpper;
+    case blink::V8MLAutoPad::Enum::kSameLower:
+      return webnn::AutoPad::kSameLower;
+  }
+  NOTREACHED_NORETURN();
+}
+
 }  // namespace blink

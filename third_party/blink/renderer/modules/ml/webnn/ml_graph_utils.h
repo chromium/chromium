@@ -8,6 +8,8 @@
 #include <utility>
 #include <vector>
 
+#include "components/ml/webnn/graph_validation_utils.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_auto_pad.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
@@ -72,6 +74,8 @@ TransferNamedArrayBufferViews(v8::Isolate* isolate,
 
 MLNamedArrayBufferViews* CreateNamedArrayBufferViews(
     std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>> views_info);
+
+webnn::AutoPad BlinkAutoPadToComponent(blink::V8MLAutoPad::Enum type);
 
 }  // namespace blink
 

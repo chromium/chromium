@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/numerics/checked_math.h"
-#include "components/ml/webnn/graph_validation_utils.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
@@ -27,6 +26,7 @@
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
@@ -103,6 +103,82 @@ webnn::Operand::DataType BlinkOperandTypeToComponent(
 webnn::Operand ConvertToComponentOperand(const blink::MLOperand* ml_operand) {
   return webnn::Operand(BlinkOperandTypeToComponent(ml_operand->Type()),
                         ml_operand->Dimensions());
+}
+
+webnn::InputOperandLayout BlinkInputOperandLayoutToComponent(
+    blink::V8MLInputOperandLayout::Enum type) {
+  switch (type) {
+    case blink::V8MLInputOperandLayout::Enum::kNchw:
+      return webnn::InputOperandLayout::kNchw;
+    case blink::V8MLInputOperandLayout::Enum::kNhwc:
+      return webnn::InputOperandLayout::kNhwc;
+  }
+  NOTREACHED_NORETURN();
+}
+
+webnn::RoundingType BlinkRoundingTypeToComponent(
+    blink::V8MLRoundingType::Enum type) {
+  switch (type) {
+    case blink::V8MLRoundingType::Enum::kFloor:
+      return webnn::RoundingType::kFloor;
+    case blink::V8MLRoundingType::Enum::kCeil:
+      return webnn::RoundingType::kCeil;
+  }
+  NOTREACHED_NORETURN();
+}
+
+base::expected<webnn::Pool2dAttributes, std::string> ConvertToPool2dAttributes(
+    const blink::MLPool2dOptions* options) {
+  CHECK(options);
+  webnn::Pool2dAttributes attributes;
+  if (options->hasWindowDimensions()) {
+    auto& window_dimensions = options->windowDimensions();
+    if (window_dimensions.size() != 2) {
+      return base::unexpected("The length of window dimensions should be 2.");
+    }
+    attributes.window_dimensions = webnn::Size2d{.height = window_dimensions[0],
+                                                 .width = window_dimensions[1]};
+  }
+
+  // If padding is not present, the values are assumed to be [0,0,0,0].
+  auto padding = options->getPaddingOr({0, 0, 0, 0});
+  if (padding.size() != 4) {
+    return base::unexpected("The length of padding should be 4.");
+  }
+  attributes.padding = webnn::Padding2d{
+      .beginning = webnn::Size2d{.height = padding[0], .width = padding[2]},
+      .ending = webnn::Size2d{.height = padding[1], .width = padding[3]}};
+
+  // If strides is not present, the values are assumed to be [1,1].
+  auto strides = options->getStridesOr({1, 1});
+  if (strides.size() != 2) {
+    return base::unexpected("The length of strides should be 2.");
+  }
+  attributes.strides = webnn::Size2d{.height = strides[0], .width = strides[1]};
+
+  // If dilations is not present, the values are assumed to be [1,1].
+  auto dilations = options->getDilationsOr({1, 1});
+  if (dilations.size() != 2) {
+    return base::unexpected("The length of dilations should be 2.");
+  }
+  attributes.dilations =
+      webnn::Size2d{.height = dilations[0], .width = dilations[1]};
+  attributes.auto_pad = BlinkAutoPadToComponent(options->autoPad().AsEnum());
+  attributes.layout =
+      BlinkInputOperandLayoutToComponent(options->layout().AsEnum());
+  attributes.rounding_type =
+      BlinkRoundingTypeToComponent(options->roundingType().AsEnum());
+  if (options->hasOutputSizes()) {
+    // TODO(ningxin.hu@intel.com): report a DevTools warning message if rounding
+    // type is provided but ignored.
+    auto& output_size = options->outputSizes();
+    if (output_size.size() != 2) {
+      return base::unexpected("The length of output sizes should be 2.");
+    }
+    attributes.output_sizes =
+        webnn::Size2d{.height = output_size[0], .width = output_size[1]};
+  }
+  return attributes;
 }
 
 bool ValidateClampOptions(const MLClampOptions* options,
@@ -282,292 +358,33 @@ MLOperand* BuildReduce(MLGraphBuilder* builder,
   return output.value();
 }
 
-// Calculate the output size for conv2d based on WebNN spec:
-// https://www.w3.org/TR/webnn/#api-mlgraphbuilder-conv2d
-// Return the calculated output size if no error.
-base::expected<double, String> CalculateConv2dOutputSize(
-    const uint32_t input_size,
-    const uint32_t filter_size,
-    const uint32_t beginning_padding,
-    const uint32_t ending_padding,
-    const uint32_t stride,
-    const uint32_t dilation) {
-  // Calculate the dilated filter sizes.
-  auto checked_effective_filter_size =
-      (base::MakeCheckedNum<uint32_t>(filter_size) - 1) * dilation + 1;
-  if (!checked_effective_filter_size.IsValid()) {
-    return base::unexpected("The effective filter size is too large.");
-  }
-
-  // Calculate the output size in double precision floating point number that
-  // ensures all dimension values of type uint32_t can be exactly represented.
-  // https://en.wikipedia.org/wiki/Double-precision_floating-point_format#Precision_limitations_on_integer_values
-  // The max value of checked_output_size should be 3 * UINT_MAX + 1,
-  // which is smaller than the max safe integer value for double type.
-  auto checked_output_size =
-      (base::MakeCheckedNum<double>(input_size) -
-       checked_effective_filter_size + beginning_padding + ending_padding) /
-          stride +
-      1;
-
-  if (checked_output_size.ValueOrDie() < 0) {
-    return base::unexpected("The input size is too small to fill the window.");
-  }
-
-  // Check if the value is valid for rounding to uint32_t type.
-  if (!checked_output_size.IsValid<uint32_t>()) {
-    return base::unexpected("The output size is too large.");
-  }
-
-  return checked_output_size.ValueOrDie();
-}
-
-struct FloatSize2D {
-  double height;
-  double width;
-};
-
-// Validate and calculate the output spatial dimensions of conv2d given
-// input sizes, filter sizes, padding, strides and dilations.
-// Return the calculated output sizes in double precision floating point number
-// if no errors.
-base::expected<FloatSize2D, String> ValidateAndCalculateConv2dOutputSizes(
-    const uint32_t input_height,
-    const uint32_t input_width,
-    const uint32_t filter_height,
-    const uint32_t filter_width,
-    const Vector<uint32_t>& padding,
-    const Vector<uint32_t>& strides,
-    const Vector<uint32_t>& dilations,
-    const V8MLAutoPad auto_pad,
-    ExceptionState& exception_state) {
-  // Validate padding and get its values.
-  if (padding.size() != 4) {
-    return base::unexpected("The length of padding should be 4.");
-  }
-  uint32_t padding_beginning_height = padding[0];
-  uint32_t padding_ending_height = padding[1];
-  uint32_t padding_beginning_width = padding[2];
-  uint32_t padding_ending_width = padding[3];
-
-  // Validate strides and get its values.
-  if (strides.size() != 2) {
-    return base::unexpected("The length of strides should be 2.");
-  }
-  if (base::ranges::any_of(strides, [](uint32_t x) { return x == 0; })) {
-    return base::unexpected("All strides should be greater than 0.");
-  }
-  const uint32_t stride_height = strides[0];
-  const uint32_t stride_width = strides[1];
-
-  // Validate dilations and get its values.
-  if (dilations.size() != 2) {
-    return base::unexpected("The length of dilations should be 2.");
-  }
-  if (base::ranges::any_of(dilations, [](uint32_t x) { return x == 0; })) {
-    return base::unexpected("All dilations should be greater than 0.");
-  }
-  const uint32_t dilation_height = dilations[0];
-  const uint32_t dilation_width = dilations[1];
-
-  // When the autoPad is other than "explicit", the values in the
-  // options.padding array are ignored and the explicit padding values need to
-  // be calculated.
-  if (auto_pad != V8MLAutoPad::Enum::kExplicit) {
-    auto padding_sizes_height = MLGraphBuilder::CalculateConv2dPadding(
-        auto_pad.AsEnum(), input_height, filter_height, stride_height,
-        dilation_height);
-    if (!padding_sizes_height) {
-      return base::unexpected(
-          "Overflow occurred when calculating the padding along the height "
-          "dimension.");
-    }
-    padding_beginning_height = padding_sizes_height->begin;
-    padding_ending_height = padding_sizes_height->end;
-    auto padding_sizes_width = MLGraphBuilder::CalculateConv2dPadding(
-        auto_pad.AsEnum(), input_width, filter_width, stride_width,
-        dilation_width);
-    if (!padding_sizes_width) {
-      return base::unexpected(
-          "Overflow occurred when calculating the padding along the width "
-          "dimension.");
-    }
-    padding_beginning_width = padding_sizes_width->begin;
-    padding_ending_width = padding_sizes_width->end;
-  }
-
-  auto float_output_height = CalculateConv2dOutputSize(
-      input_height, filter_height, padding_beginning_height,
-      padding_ending_height, stride_height, dilation_height);
-  if (!float_output_height.has_value()) {
-    return base::unexpected("Failed to calculate the output height: " +
-                            float_output_height.error());
-  }
-
-  auto float_output_width = CalculateConv2dOutputSize(
-      input_width, filter_width, padding_beginning_width, padding_ending_width,
-      stride_width, dilation_width);
-  if (!float_output_width.has_value()) {
-    return base::unexpected("Failed to calculate the output width: " +
-                            float_output_width.error());
-  }
-
-  return FloatSize2D({.height = float_output_height.value(),
-                      .width = float_output_width.value()});
-}
-
 MLOperand* BuildPool2d(MLGraphBuilder* builder,
                        MLOperator::OperatorKind kind,
                        const MLOperand* input,
                        const MLPool2dOptions* options,
                        ExceptionState& exception_state) {
-  // Validate input operand and set its sizes.
-  const auto input_shape = input->Dimensions();
-  if (input_shape.size() != 4) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "The input should be a 4-D tensor.");
+  auto pool2d_attributes = ConvertToPool2dAttributes(options);
+  if (!pool2d_attributes.has_value()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        WTF::String::FromUTF8(pool2d_attributes.error()));
     return nullptr;
   }
-  // The layout option specifies the layout format of the input tensor.
-  uint32_t input_batches, input_channels, input_height, input_width;
-  switch (options->layout().AsEnum()) {
-    case V8MLInputOperandLayout::Enum::kNchw:
-      // "nchw": [batches, channels, height, width]
-      input_batches = input_shape[0];
-      input_channels = input_shape[1];
-      input_height = input_shape[2];
-      input_width = input_shape[3];
-      break;
-    case V8MLInputOperandLayout::Enum::kNhwc:
-      // "nhwc": [batches, height, width, channels]
-      input_batches = input_shape[0];
-      input_height = input_shape[1];
-      input_width = input_shape[2];
-      input_channels = input_shape[3];
-      break;
-  }
 
-  // Validate windowDimensions and get its values. If not present, the window
-  // dimensions are assumed to be the height and width dimensions of the input
-  // shape.
-  uint32_t window_height = input_height;
-  uint32_t window_width = input_width;
-  if (options->hasWindowDimensions()) {
-    if (options->windowDimensions().size() != 2) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          "The length of window dimensions should be 2.");
-      return nullptr;
-    }
-    if (std::any_of(options->windowDimensions().begin(),
-                    options->windowDimensions().end(),
-                    [](uint32_t x) { return x == 0; })) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          "All window dimensions should be greater than 0.");
-      return nullptr;
-    }
-    window_height = options->windowDimensions()[0];
-    window_width = options->windowDimensions()[1];
-  }
-
-  // Reuse ValidateAndCalculateConv2dOutputSizes to calculate pool2d output
-  // sizes.
-  const auto output_sizes = ValidateAndCalculateConv2dOutputSizes(
-      input_height, input_width, window_height, window_width,
-      // If padding is not present, the values are assumed to be [0,0,0,0].
-      options->getPaddingOr({0, 0, 0, 0}),
-      // If strides is not present, the values are assumed to be [1,1].
-      options->getStridesOr({1, 1}),
-      // If dilations is not present, the values are assumed to be [1, 1].
-      options->getDilationsOr({1, 1}), options->autoPad(), exception_state);
-  if (!output_sizes.has_value()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      output_sizes.error());
+  auto validated_output = webnn::ValidatePool2dAndInferOutput(
+      ConvertToComponentOperand(input), std::move(pool2d_attributes.value()));
+  if (!validated_output.has_value()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        WTF::String::FromUTF8(validated_output.error()));
     return nullptr;
-  }
-  const uint32_t floor_output_height =
-      base::ClampFloor<uint32_t>(output_sizes->height);
-  const uint32_t ceil_output_height =
-      base::ClampCeil<uint32_t>(output_sizes->height);
-  const uint32_t floor_output_width =
-      base::ClampFloor<uint32_t>(output_sizes->width);
-  const uint32_t ceil_output_width =
-      base::ClampCeil<uint32_t>(output_sizes->width);
-
-  uint32_t output_height, output_width;
-  if (options->hasOutputSizes()) {
-    // TODO(ningxin.hu@intel.com): report a DevTools warning message if rounding
-    // type is provided but ignored.
-    if (options->outputSizes().size() != 2) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          "The length of output sizes should be 2.");
-      return nullptr;
-    }
-    if (base::ranges::any_of(options->outputSizes(),
-                             [](uint32_t x) { return x == 0; })) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          "All output sizes should be greater than 0.");
-      return nullptr;
-    }
-    uint32_t user_output_height = options->outputSizes()[0];
-    uint32_t user_output_width = options->outputSizes()[1];
-
-    // Check whether the user supplied output sizes is either floor or ceil
-    // rounding of the calculated output sizes. The backend implementation
-    // should check whether the indicated rounding type is supported.
-    if ((user_output_height == floor_output_height &&
-         user_output_width == floor_output_width) ||
-        (user_output_height == ceil_output_height &&
-         user_output_width == ceil_output_width)) {
-      output_height = user_output_height;
-      output_width = user_output_width;
-    } else {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          (floor_output_height == ceil_output_height &&
-           floor_output_width == ceil_output_width)
-              ? String::Format("The output sizes should be [%u, %u].",
-                               floor_output_height, floor_output_width)
-              : String::Format(
-                    "The output sizes should be either [%u, %u] or [%u, %u].",
-                    floor_output_height, floor_output_width, ceil_output_height,
-                    ceil_output_width));
-      return nullptr;
-    }
-  } else {
-    switch (options->roundingType().AsEnum()) {
-      case V8MLRoundingType::Enum::kFloor:
-        output_height = floor_output_height;
-        output_width = floor_output_width;
-        break;
-      case V8MLRoundingType::Enum::kCeil:
-        output_height = ceil_output_height;
-        output_width = ceil_output_width;
-        break;
-    }
-  }
-  // The layout option specifies the layout format of the output tensor.
-  Vector<uint32_t> output_shape;
-  switch (options->layout().AsEnum()) {
-    case V8MLInputOperandLayout::Enum::kNchw:
-      // "nchw": [batches, channels, height, width]
-      output_shape = {input_batches, input_channels, output_height,
-                      output_width};
-      break;
-    case V8MLInputOperandLayout::Enum::kNhwc:
-      // "nhwc": [batches, height, width, channels]
-      output_shape = {input_batches, output_height, output_width,
-                      input_channels};
-      break;
   }
   // Create pool2d operator and its output operand. Connect the pool2d operator
   // to its input and output operands.
   auto* pool2d = MakeGarbageCollected<MLOperator>(builder, kind, options);
   auto output = MLOperand::ValidateAndCreateOutput(
-      builder, input->Type(), std::move(output_shape), pool2d);
+      builder, input->Type(), Vector<uint32_t>(validated_output->dimensions),
+      pool2d);
   if (!output.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
                                       output.error());
@@ -622,50 +439,7 @@ MLContext* MLGraphBuilder::GetContext() const {
 }
 
 // static
-absl::optional<MLGraphBuilder::PaddingSizes>
-MLGraphBuilder::CalculateConv2dPadding(V8MLAutoPad::Enum auto_pad,
-                                       const uint32_t input_size,
-                                       const uint32_t filter_size,
-                                       const uint32_t stride,
-                                       const uint32_t dilation) {
-  auto checked_output_size =
-      (base::MakeCheckedNum<uint32_t>(input_size) + stride - 1) / stride;
-  auto checked_dilated_filter_size =
-      (base::MakeCheckedNum<uint32_t>(filter_size) - 1) * dilation + 1;
-  auto checked_needed_input_size =
-      (checked_output_size - 1) * stride + checked_dilated_filter_size;
-  if (!checked_needed_input_size.IsValid()) {
-    return absl::nullopt;
-  }
-  auto checked_total_padding =
-      checked_needed_input_size.ValueOrDie() > input_size
-          ? checked_needed_input_size - input_size
-          : base::MakeCheckedNum<uint32_t>(0);
-  base::CheckedNumeric<uint32_t> checked_padding_begin, checked_padding_end;
-  switch (auto_pad) {
-    case V8MLAutoPad::Enum::kSameUpper:
-      checked_padding_begin = checked_total_padding / 2;
-      checked_padding_end = (checked_total_padding + 1) / 2;
-      break;
-    case V8MLAutoPad::Enum::kSameLower:
-      checked_padding_begin = (checked_total_padding + 1) / 2;
-      checked_padding_end = checked_total_padding / 2;
-      break;
-    case V8MLAutoPad::Enum::kExplicit:
-      // The case has been ruled out before the function be called.
-      NOTREACHED_NORETURN()
-          << "Invalid auto pad value when calculating conv2d padding.";
-  }
-  uint32_t padding_begin, padding_end;
-  if (!checked_padding_begin.AssignIfValid(&padding_begin) ||
-      !checked_padding_end.AssignIfValid(&padding_end)) {
-    return absl::nullopt;
-  }
-  return PaddingSizes({.begin = padding_begin, .end = padding_end});
-}
-
-// static
-absl::optional<MLGraphBuilder::PaddingSizes>
+absl::optional<webnn::PaddingSizes>
 MLGraphBuilder::CalculateConvTransposed2dPadding(
     V8MLAutoPad::Enum auto_pad,
     const uint32_t input_size,
@@ -700,7 +474,7 @@ MLGraphBuilder::CalculateConvTransposed2dPadding(
       !checked_padding_end.AssignIfValid(&padding_end)) {
     return absl::nullopt;
   }
-  return PaddingSizes({.begin = padding_begin, .end = padding_end});
+  return webnn::PaddingSizes({.begin = padding_begin, .end = padding_end});
 }
 
 // Calculate the output size for convTranspose2d based on WebNN spec:
@@ -1088,18 +862,39 @@ MLOperand* MLGraphBuilder::conv2d(const MLOperand* input,
                                       "channels to filter input channels.");
     return nullptr;
   }
-
+  // If padding is not present, the values are assumed to be [0,0,0,0].
+  auto padding = options->getPaddingOr({0, 0, 0, 0});
+  if (padding.size() != 4) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "The length of padding should be 4.");
+    return nullptr;
+  }
+  // If strides is not present, the values are assumed to be [1,1].
+  auto strides = options->getStridesOr({1, 1});
+  if (strides.size() != 2) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "The length of strides should be 2.");
+    return nullptr;
+  }
+  // If dilations is not present, the values are assumed to be [1,1].
+  auto dilations = options->getDilationsOr({1, 1});
+  if (dilations.size() != 2) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "The length of dilations should be 2.");
+    return nullptr;
+  }
   const auto output_sizes = ValidateAndCalculateConv2dOutputSizes(
       input_height, input_width, filter_height, filter_width,
-      // If padding is not present, the values are assumed to be [0,0,0,0].
-      options->getPaddingOr({0, 0, 0, 0}),
-      // If strides is not present, the values are assumed to be [1,1].
-      options->getStridesOr({1, 1}),
-      // If dilations is not present, the values are assumed to be [1, 1].
-      options->getDilationsOr({1, 1}), options->autoPad(), exception_state);
+      webnn::Padding2d{
+          .beginning = webnn::Size2d{.height = padding[0], .width = padding[2]},
+          .ending = webnn::Size2d{.height = padding[1], .width = padding[3]}},
+      webnn::Size2d{.height = strides[0], .width = strides[1]},
+      webnn::Size2d{.height = dilations[0], .width = dilations[1]},
+      BlinkAutoPadToComponent(options->autoPad().AsEnum()));
   if (!output_sizes.has_value()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      output_sizes.error());
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        WTF::String::FromUTF8(output_sizes.error()));
     return nullptr;
   }
   const uint32_t output_height =

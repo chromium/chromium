@@ -36,9 +36,53 @@ struct ClampAttributes {
   float max_value;
 };
 
+// Represents the `MLInputOperandLayout` that specifies the layout format of
+// the input tensor. `kChannelsFirst` means `nchw` (batches, channels, height,
+// width), `kChannelsLast` means `nhwc` (batches, height, width, channels).
+// The type is used to get the spatial dimension from input tensor, thus safe to
+// represent as enum.
+enum InputOperandLayout { kChannelsFirst, kChannelsLast };
+
+// A size has height and width values.
+struct Size2d {
+  uint32 height;
+  uint32 width;
+};
+
+// The additional rows and columns added to the beginning and ending of each
+// spatial dimension of input.
+struct Padding2d {
+  // The height and width padding at the beginning of input tensor.
+  Size2d beginning;
+  // The height and width padding at the ending of input tensor.
+  Size2d ending;
+};
+
+// Contains the attributes of pool2d operator.
+// The `roundingType` and `outputSizes` array in MLPool2dOptions are not
+// included because they are used to calculate the output dimensions of poo2d in
+// blink side.
+struct Pool2dAttributes {
+  // The dimensions of the sliding window which is supplied by user or the
+  // element of input operand height and width.
+  Size2d window_dimensions;
+  // The padding of input tensor which is the explicit pad or calculated pad
+  // with `MLAutoPad` type, input sizes, window dimensions, strides and
+  // dilations in blink side.
+  Padding2d padding;
+  // The element stride of the sliding window for each spatial dimension of
+  // input.
+  Size2d strides;
+  // The dilation factor for each spatial dimension of input.
+  Size2d dilations;
+  // The layout format of the input.
+  InputOperandLayout layout;
+};
+
 // Holds one of operator attributes.
 union OperatorAttributes {
   ClampAttributes clamp;
+  Pool2dAttributes pool2d;
 };
 
 // Represents the operations defined in `MLGraphBuilder` that describes the
