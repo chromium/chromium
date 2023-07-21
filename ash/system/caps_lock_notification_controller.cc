@@ -104,8 +104,7 @@ void CapsLockNotificationController::OnCapsLockChanged(bool enabled) {
   if (enabled) {
     base::RecordAction(base::UserMetricsAction("StatusArea_CapsLock_Popup"));
     MessageCenter::Get()->AddNotification(CreateNotification());
-  } else if (MessageCenter::Get()->FindVisibleNotificationById(
-                 kCapsLockNotificationId)) {
+  } else {
     MessageCenter::Get()->RemoveNotification(kCapsLockNotificationId, false);
   }
 }
