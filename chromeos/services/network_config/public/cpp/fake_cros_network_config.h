@@ -128,6 +128,10 @@ class FakeCrosNetworkConfig : public mojom::CrosNetworkConfig {
   // and `OnActiveNetworksChanged` for all observers in `observers_`.
   void ClearNetworksAndDevices();
 
+  // Removes the passed in `index` of the current networks from the list and
+  // calls `OnDeviceStateListChanged` for all observer in `observers_`.
+  void RemoveNthNetworks(size_t index);
+
   // Returns how many times `RequestNetworkScan` was requested for the specified
   // network type.
   int GetScanCount(mojom::NetworkType type);

@@ -108,6 +108,11 @@ class ASH_EXPORT NetworkDetailedNetworkView {
   virtual void UpdateWifiStatus(bool enabled) = 0;
   virtual void UpdateMobileStatus(bool enabled) = 0;
 
+  // Provides some virtual methods to get and set the scroll view's position
+  // before and after reordering the network list.
+  virtual void ScrollToPosition(int position) {}
+  virtual int GetScrollPosition();
+
  protected:
   explicit NetworkDetailedNetworkView(Delegate* delegate);
 

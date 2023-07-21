@@ -185,6 +185,8 @@ void NetworkListViewControllerImpl::GetNetworkStateList() {
 
 void NetworkListViewControllerImpl::OnGetNetworkStateList(
     std::vector<NetworkStatePropertiesPtr> networks) {
+  int old_position = network_detailed_network_view()->GetScrollPosition();
+
   // Indicates the current position a view will be added to in
   // `NetworkDetailedNetworkView` scroll list.
   size_t index = 0;
@@ -369,6 +371,10 @@ void NetworkListViewControllerImpl::OnGetNetworkStateList(
 
   FocusLastSelectedView();
   network_detailed_network_view()->NotifyNetworkListChanged();
+
+  // Resets the scrolling position to the old position to avoid and position
+  // change during reordering the child views in the list.
+  network_detailed_network_view()->ScrollToPosition(old_position);
 }
 
 void NetworkListViewControllerImpl::UpdateNetworkTypeExistence(

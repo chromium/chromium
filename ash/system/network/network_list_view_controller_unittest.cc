@@ -17,6 +17,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/switch.h"
 #include "ash/system/model/system_tray_model.h"
+#include "ash/system/network/network_detailed_network_view.h"
 #include "ash/system/network/network_detailed_network_view_impl.h"
 #include "ash/system/network/network_utils.h"
 #include "ash/system/network/tray_network_state_model.h"
@@ -479,6 +480,11 @@ class NetworkListViewControllerTest : public AshTestBase,
         .IsRunning();
   }
 
+  NetworkDetailedNetworkView* network_detailed_network_view() {
+    return static_cast<NetworkDetailedNetworkView*>(
+        network_list_view_controller_impl_->network_detailed_network_view_);
+  }
+
   views::View* network_list(NetworkType type) {
     return static_cast<NetworkDetailedNetworkView*>(
                network_detailed_network_view_)
@@ -934,6 +940,73 @@ TEST_P(NetworkListViewControllerTest, HasCorrectWifiNetworkList) {
     EXPECT_EQ(
         1, user_action_tester.GetActionCount("QS_Subpage_Network_JoinNetwork"));
   }
+}
+
+TEST_P(NetworkListViewControllerTest,
+       StaysInTheSamePositionAfterUpdatingNetworks) {
+  // Sets a screen with a limited height to make sure it can be scrollable.
+  UpdateDisplay("500x200");
+
+  // Adds an enabled wifi device.
+  cros_network()->AddNetworkAndDevice(
+      CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
+          kWifiName, NetworkType::kWiFi, ConnectionStateType::kNotConnected));
+
+  CheckNetworkListOrdering(/*ethernet_network_count=*/0,
+                           /*mobile_network_count=*/-1,
+                           /*wifi_network_count=*/1);
+
+  // Adds mobile network.
+  cros_network()->AddNetworkAndDevice(
+      CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
+          kCellularName, NetworkType::kCellular,
+          ConnectionStateType::kConnected));
+
+  CheckNetworkListOrdering(/*ethernet_network_count=*/0,
+                           /*mobile_network_count=*/1,
+                           /*wifi_network_count=*/1);
+
+  // Lets the network list scroll to a random number.
+  network_detailed_network_view()->ScrollToPosition(23);
+
+  // Adds 5 more Wifi network. The scroll position should not change after each
+  // time the new network is added.
+  cros_network()->AddNetworkAndDevice(
+      CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
+          kWifiName2, NetworkType::kWiFi, ConnectionStateType::kNotConnected));
+  EXPECT_EQ(23, network_detailed_network_view()->GetScrollPosition());
+
+  cros_network()->AddNetworkAndDevice(
+      CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
+          "wifi_3", NetworkType::kWiFi, ConnectionStateType::kNotConnected));
+  EXPECT_EQ(23, network_detailed_network_view()->GetScrollPosition());
+
+  // Scrolls to another position.
+  network_detailed_network_view()->ScrollToPosition(37);
+  cros_network()->AddNetworkAndDevice(
+      CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
+          "wifi_4", NetworkType::kWiFi, ConnectionStateType::kNotConnected));
+  EXPECT_EQ(37, network_detailed_network_view()->GetScrollPosition());
+
+  cros_network()->RemoveNthNetworks(0);
+  EXPECT_EQ(37, network_detailed_network_view()->GetScrollPosition());
+
+  cros_network()->AddNetworkAndDevice(
+      CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
+          "wifi_5", NetworkType::kWiFi, ConnectionStateType::kNotConnected));
+  EXPECT_EQ(37, network_detailed_network_view()->GetScrollPosition());
+
+  cros_network()->RemoveNthNetworks(1);
+  EXPECT_EQ(37, network_detailed_network_view()->GetScrollPosition());
+
+  cros_network()->AddNetworkAndDevice(
+      CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
+          "wifi_6", NetworkType::kWiFi, ConnectionStateType::kNotConnected));
+
+  CheckNetworkListOrdering(/*ethernet_network_count=*/0,
+                           /*mobile_network_count=*/1,
+                           /*wifi_network_count=*/4);
+  EXPECT_EQ(37, network_detailed_network_view()->GetScrollPosition());
 }
 
 TEST_P(NetworkListViewControllerTest,

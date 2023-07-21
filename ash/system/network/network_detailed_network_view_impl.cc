@@ -27,6 +27,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
@@ -235,6 +236,17 @@ void NetworkDetailedNetworkViewImpl::UpdateMobileStatus(bool enabled) {
   if (mobile_network_list_view_) {
     mobile_network_list_view_->SetVisible(enabled);
   }
+}
+
+void NetworkDetailedNetworkViewImpl::ScrollToPosition(int position) {
+  if (GetScrollPosition() == position) {
+    return;
+  }
+  scroller()->ScrollToPosition(scroller()->vertical_scroll_bar(), position);
+}
+
+int NetworkDetailedNetworkViewImpl::GetScrollPosition() {
+  return scroller()->GetVisibleRect().y();
 }
 
 void NetworkDetailedNetworkViewImpl::OnMobileToggleClicked(bool new_state) {

@@ -159,6 +159,15 @@ void FakeCrosNetworkConfig::ClearNetworksAndDevices() {
   base::RunLoop().RunUntilIdle();
 }
 
+void FakeCrosNetworkConfig::RemoveNthNetworks(size_t index) {
+  DCHECK(index < visible_networks_.size() && index >= 0);
+  visible_networks_.erase(visible_networks_.begin() + index);
+  for (auto& observer : observers_) {
+    observer->OnDeviceStateListChanged();
+  }
+  base::RunLoop().RunUntilIdle();
+}
+
 int FakeCrosNetworkConfig::GetScanCount(mojom::NetworkType type) {
   return scan_count_[type];
 }

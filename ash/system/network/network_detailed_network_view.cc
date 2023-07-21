@@ -33,4 +33,8 @@ void NetworkDetailedNetworkView::Factory::SetFactoryForTesting(
   g_test_factory = test_factory;
 }
 
+int NetworkDetailedNetworkView::GetScrollPosition() {
+  return 0;
+}
+
 }  // namespace ash

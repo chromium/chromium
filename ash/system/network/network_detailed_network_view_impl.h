@@ -59,6 +59,8 @@ class ASH_EXPORT NetworkDetailedNetworkViewImpl
   void MaybeRemoveFirstListView() override;
   void UpdateWifiStatus(bool enabled) override;
   void UpdateMobileStatus(bool enabled) override;
+  void ScrollToPosition(int position) override;
+  int GetScrollPosition() override;
 
   // NetworkListNetworkHeaderView::Delegate:
   void OnMobileToggleClicked(bool new_state) override;
