@@ -404,7 +404,7 @@ protocol::Response OverlayAgentViews::setInspectMode(
 protocol::Response OverlayAgentViews::highlightNode(
     std::unique_ptr<protocol::Overlay::HighlightConfig> highlight_config,
     protocol::Maybe<int> node_id) {
-  return HighlightNode(node_id.fromJust());
+  return HighlightNode(node_id.value());
 }
 
 protocol::Response OverlayAgentViews::hideHighlight() {

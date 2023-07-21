@@ -358,7 +358,7 @@ void TracingAgent::start(
     return;
   }
 
-  if (!categories.isJust() && !options.isJust()) {
+  if (!categories.has_value() && !options.has_value()) {
     callback->sendFailure(
         Response::InvalidParams("categories+options should be specified."));
     return;
@@ -366,7 +366,7 @@ void TracingAgent::start(
 
   did_initiate_recording_ = true;
   buffer_usage_reporting_interval_ =
-      buffer_usage_reporting_interval.fromMaybe(0);
+      buffer_usage_reporting_interval.value_or(0);
 
   // Since we want minimum changes to the devtools frontend, enable the
   // tracing categories for ui_devtools here.
@@ -375,7 +375,7 @@ void TracingAgent::start(
       "timeline.frame,views,latency,toplevel,"
       "benchmark,cc,viz,input,latency,gpu,rail,viz,ui";
   trace_config_ = base::trace_event::TraceConfig(ui_devtools_categories,
-                                                 options.fromMaybe(""));
+                                                 options.value_or(""));
   StartTracing(std::move(callback));
 }
 
