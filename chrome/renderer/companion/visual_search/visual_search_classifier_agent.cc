@@ -42,6 +42,10 @@ EligibilitySpec CreateEligibilitySpec(std::string config_proto) {
 
   if (!config_proto.empty()) {
     eligibility_spec.ParseFromString(config_proto);
+    if (!eligibility_spec.has_additional_cheap_pruning_options()) {
+      eligibility_spec.mutable_additional_cheap_pruning_options()
+          ->set_z_index_overlap_fraction(0.85);
+    }
   } else {
     // This is the default configuration if a config is not provided.
     auto* new_rule = eligibility_spec.add_cheap_pruning_rules()->add_rules();
@@ -76,6 +80,8 @@ EligibilitySpec CreateEligibilitySpec(std::string config_proto) {
     sensitivity_rule->set_feature_name(FeatureLibrary::SENS_CLASSIFIER_SCORE);
     sensitivity_rule->set_thresholding_op(FeatureLibrary::LT);
     sensitivity_rule->set_threshold(0.5);
+    eligibility_spec.mutable_additional_cheap_pruning_options()
+        ->set_z_index_overlap_fraction(0.85);
   }
 
   return eligibility_spec;
@@ -94,10 +100,7 @@ void FindImageElements(blink::WebElement element,
     }
   } else {
     if (element.HasAttribute("src")) {
-      auto index_value = element.GetComputedValue("z-index");
-      if (index_value.IsNull() || index_value.Ascii() != "-1") {
-        images.emplace_back(element);
-      }
+      images.emplace_back(element);
     }
   }
 }

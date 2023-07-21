@@ -96,12 +96,25 @@ message SortingClause {
   optional FeatureLibrary.SortingOrder sorting_order = 2;
 }
 
+// Contains any additional options for cheap pruning that cannot be neatly
+// expressed as an OrOfThresholdingRules.
+message AdditionalCheapPruningOptions {
+  // Providing a value for this setting enables filtering out overlapping
+  // images by using the z-index setting (when available). When the
+  // overlap of the images is >= to the provided fraction (eg. 0.99),
+  // and there is a z-index value present, we will filter out the image
+  // with a lower z-index value.
+  optional float z_index_overlap_fraction = 1;
+}
+
 // Overall spec for the whole module.
 message EligibilitySpec {
   // List of light-weight thresholding rules that we use in the first-cut run to
   // cheaply prune ineligible images. All of the eligibility rules must be
   // satisfied for an image to be considered eligible.
   repeated OrOfThresholdingRules cheap_pruning_rules = 1;
+  optional AdditionalCheapPruningOptions additional_cheap_pruning_options = 5;
+
   // These are thresholding rules that depend on more expensive-to-compute
   // inputs such as the sensitivity and intent classifications.
   repeated OrOfThresholdingRules classifier_score_rules = 2;

@@ -18,6 +18,9 @@ namespace companion::visual_search {
 
 namespace {
 using ::tflite::task::vision::ImageClassifier;
+constexpr char kPosition[] = "position";
+constexpr char kStatic[] = "static";
+constexpr char kZIndex[] = "z-index";
 
 // TODO(b/284645622): This info should be contained in the image metadata. See
 // if we can get it out.
@@ -197,6 +200,20 @@ VisualClassificationAndEligibility::ExtractFeaturesForEligibility(
   geometry_features.image_identifier = image_identifier;
   geometry_features.original_image_size = element.GetImageSize();
   geometry_features.onpage_rect = element.BoundsInWidget();
+  const auto position_value = element.GetComputedValue(kPosition);
+  // The z index does not have an effect when the position is static,
+  // which is the default value.
+  if (!position_value.IsNull() && position_value.Ascii() != kStatic) {
+    const auto z_index_value = element.GetComputedValue(kZIndex);
+    if (!z_index_value.IsNull()) {
+      int z_index;
+      if (absl::SimpleAtoi(z_index_value.Ascii(), &z_index)) {
+        geometry_features.z_index = z_index;
+      } else {
+        geometry_features.z_index = 0;
+      }
+    }
+  }
   return geometry_features;
 }
 
