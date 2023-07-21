@@ -2548,7 +2548,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // 2. Check if we should swap tabs and track the new destination index.
         int destIndex = TabModel.INVALID_TAB_INDEX;
-        boolean isAnimating = mRunningAnimator != null && mRunningAnimator.isRunning();
         boolean towardEnd = (offset >= 0) ^ LocalizationUtils.isLayoutRtl();
         boolean isInGroup = TabUiFeatureUtilities.isTabletTabGroupsEnabled(mContext)
                 && mTabGroupModelFilter.hasOtherRelatedTabs(getTabById(mInteractingTab.getId()));
@@ -2558,7 +2557,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                 : mStripTabs[curIndex - 1].getTrailingMargin() == mTabMarginWidth;
         boolean approachingMargin = towardEnd ? hasTrailingMargin : hasStartingMargin;
 
-        if (!isAnimating && approachingMargin) {
+        if (approachingMargin) {
             if (isInGroup) {
                 // 2.a. Tab is in a group and approaching a margin. Maybe drag out of group.
                 destIndex = maybeMoveOutOfGroup(offset, curIndex, towardEnd);
@@ -2571,7 +2570,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                     destIndex = maybeMovePastGroup(offset, curIndex, towardEnd);
                 }
             }
-        } else if (!isAnimating) {
+        } else {
             // 2.d Tab is not interacting with tab groups. Reorder as normal.
             boolean pastLeftThreshold = offset < -flipThreshold;
             boolean pastRightThreshold = offset > flipThreshold;
