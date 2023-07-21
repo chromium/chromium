@@ -267,20 +267,22 @@ class FinchTestCase(common.BaseIsolatedScriptArgsAdapter):
     return True
 
   def enable_internet(self):
+    # Commands here need root permission.
     self._device.RunShellCommand(
-        ['settings', 'put', 'global', 'airplane_mode_on', '0'])
+        ['settings', 'put', 'global', 'airplane_mode_on', '0'], as_root=True)
     self._device.RunShellCommand(
         ['am', 'broadcast', '-a',
-         'android.intent.action.AIRPLANE_MODE'])
-    self._device.RunShellCommand(['svc', 'wifi', 'enable'])
-    self._device.RunShellCommand(['svc', 'data', 'enable'])
+         'android.intent.action.AIRPLANE_MODE'], as_root=True)
+    self._device.RunShellCommand(['svc', 'wifi', 'enable'], as_root=True)
+    self._device.RunShellCommand(['svc', 'data', 'enable'], as_root=True)
 
   def disable_internet(self):
+    # Commands here need root permission.
     self._device.RunShellCommand(
-        ['settings', 'put', 'global', 'airplane_mode_on', '1'])
+        ['settings', 'put', 'global', 'airplane_mode_on', '1'], as_root=True)
     self._device.RunShellCommand(
         ['am', 'broadcast', '-a',
-         'android.intent.action.AIRPLANE_MODE'])
+         'android.intent.action.AIRPLANE_MODE'], as_root=True)
 
   @contextlib.contextmanager
   def _archive_logcat(self, filename, endpoint_name):
