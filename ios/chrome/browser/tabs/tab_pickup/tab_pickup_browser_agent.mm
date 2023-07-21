@@ -68,14 +68,16 @@ void TabPickupBrowserAgent::BrowserDestroyed(Browser* browser) {
 
 #pragma mark - WebStateListObserver
 
-void TabPickupBrowserAgent::WebStateActivatedAt(
+void TabPickupBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int active_index,
-    ActiveWebStateChangeReason reason) {
-  DCHECK_EQ(active_web_state_, old_web_state);
-  active_web_state_ = new_web_state;
+    const WebStateListChange& change,
+    const WebStateListStatus& status) {
+  if (!status.active_web_state_change()) {
+    return;
+  }
+
+  DCHECK_EQ(active_web_state_, status.old_active_web_state);
+  active_web_state_ = status.new_active_web_state;
 }
 
 #pragma mark - web::WebStateObserver
