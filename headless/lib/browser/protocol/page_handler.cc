@@ -18,7 +18,7 @@ namespace protocol {
 #if BUILDFLAG(ENABLE_PRINTING)
 template <typename T>
 absl::optional<T> OptionalFromMaybe(const Maybe<T>& maybe) {
-  return maybe.isJust() ? absl::optional<T>(maybe.fromJust()) : absl::nullopt;
+  return maybe.has_value() ? absl::optional<T>(maybe.value()) : absl::nullopt;
 }
 #endif
 
@@ -87,11 +87,11 @@ void PageHandler::PrintToPDF(Maybe<bool> landscape,
   DCHECK(absl::holds_alternative<printing::mojom::PrintPagesParamsPtr>(
       print_pages_params));
 
-  bool return_as_stream = transfer_mode.fromMaybe("") ==
+  bool return_as_stream = transfer_mode.value_or("") ==
                           Page::PrintToPDF::TransferModeEnum::ReturnAsStream;
   HeadlessPrintManager::FromWebContents(web_contents_.get())
       ->PrintToPdf(
-          web_contents_->GetPrimaryMainFrame(), page_ranges.fromMaybe(""),
+          web_contents_->GetPrimaryMainFrame(), page_ranges.value_or(""),
           std::move(absl::get<printing::mojom::PrintPagesParamsPtr>(
               print_pages_params)),
           base::BindOnce(&PageHandler::PDFCreated, weak_factory_.GetWeakPtr(),

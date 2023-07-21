@@ -50,7 +50,7 @@ Response BrowserHandler::GetWindowForTarget(
     std::unique_ptr<Browser::Bounds>* out_bounds) {
   HeadlessWebContentsImpl* web_contents = HeadlessWebContentsImpl::From(
       browser_->GetWebContentsForDevToolsAgentHostId(
-          target_id.fromMaybe(target_id_)));
+          target_id.value_or(target_id_)));
   if (!web_contents)
     return Response::ServerError("No web contents for the given target id");
 
