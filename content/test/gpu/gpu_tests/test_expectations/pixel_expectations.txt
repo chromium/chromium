@@ -294,7 +294,6 @@ crbug.com/950932 [ android-webview-instrumentation android-nexus-5x ] * [ RetryO
 crbug.com/984734 [ android android-webview-instrumentation android-nexus-5x ] Pixel_Video_Context_Loss_VP9 [ Failure ]
 
 # Failing on Linux and Windows, both Intel HD 630 and NVIDIA Quadro P400
-crbug.com/974380 [ angle-vulkan display-server-x linux nvidia-0x2184 renderer-skia-vulkan ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositing [ Failure ]
 crbug.com/974380 [ angle-vulkan display-server-x linux nvidia-0x2184 renderer-skia-vulkan ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWorker [ Failure ]
 
 # Failing on Lacros x64 Release Intel
@@ -317,8 +316,6 @@ crbug.com/1420067 [ fuchsia fuchsia-board-astro ] Pixel_Video* [ Failure ]
 crbug.com/1420067 [ fuchsia fuchsia-board-sherlock ] Pixel_Video* [ Failure ]
 
 
-# Pixel_WebGPUDisplayP3 socket timeout on Mac FYI Retina Release (NVIDIA)
-crbug.com/1392819 [ mojave no-asan nvidia ] Pixel_WebGPUDisplayP3 [ Failure ]
 
 # Failures on Sherlock
 # These two tests causes a crash on Swarming. Skipping so that we have a signal for other tests.
@@ -342,8 +339,6 @@ crbug.com/1290953 [ android android-pixel-4 android-webview-instrumentation ] Pi
 crbug.com/1345777 [ android ] Pixel_VideoStreamFromWebGLCanvas [ Skip ]
 
 # WebGPU interop fails -- pixel color diff
-crbug.com/1395227 [ mac-x86_64 mojave no-asan nvidia-0xfe9 release ] Pixel_WebGPUImportVideoFrameUnaccelerated [ Failure ]
-crbug.com/1395227 [ mac-x86_64 mojave no-asan nvidia-0xfe9 release ] Pixel_WebGPUImportVideoFrame [ Failure ]
 crbug.com/1395227 [ amd-0x7340 no-clang-coverage release-x64 target-cpu-64 win ] Pixel_WebGPUImportVideoFrameUnaccelerated [ Failure ]
 crbug.com/1395227 [ amd-0x7340 no-clang-coverage release-x64 target-cpu-64 win ] Pixel_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
 crbug.com/1445575 [ debug-x64 no-clang-coverage nvidia-0x2184 passthrough target-cpu-64 win10 ] Pixel_WebGPUImportVideoFrameUnaccelerated [ Failure ]
