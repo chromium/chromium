@@ -82,7 +82,6 @@ def main(argv):
       # Wait up to 120s till the idp_urls fields are filled.
       while count < 20:
         driver.get(_POLICY_URL)
-        WebDriverWait(driver=driver, timeout=_TIMEOUT)
         count += 1
         # Only click `Reload-policies` button on the key_creation because
         # a newly enrolled Chrome does not have policies cached. The button
@@ -91,7 +90,6 @@ def main(argv):
         if test_case == 'key_creation':
           wait_element(driver, By.CSS_SELECTOR, '#reload-policies')
           driver.find_element(By.CSS_SELECTOR, '#reload-policies').click()
-          WebDriverWait(driver=driver, timeout=30)
         wait_element(driver, By.CSS_SELECTOR, 'policy-table')
         policy_table = driver.find_element(By.CSS_SELECTOR, 'policy-table')
         row_groups = getElementsFromShadowRoot(driver, policy_table,
@@ -136,12 +134,9 @@ def main(argv):
       while count < 20:
         count += 1
         driver.get(_CONNECTOR_INTERNAL_URL)
-        WebDriverWait(driver=driver, timeout=_TIMEOUT)
         wait_element(driver, By.CSS_SELECTOR, 'connectors-internals-app')
         connectors_internals_app = driver.find_element(
             By.CSS_SELECTOR, 'connectors-internals-app')
-        WebDriverWait(driver=driver, timeout=_TIMEOUT)
-
         connectors_tabs = getElementFromShadowRoot(driver,
                                                    connectors_internals_app,
                                                    'connectors-tabs')
@@ -198,9 +193,6 @@ def main(argv):
       result['FakeIdP'] = idp_url
       result['DeviceId'] = device_id
       driver.get(idp_url)
-      WebDriverWait(driver=driver, timeout=_TIMEOUT)
-      # artificially wait for another 3 seconds
-      time.sleep(3)
       wait_element(driver, By.XPATH, '//*[@id="content"]/div[2]/a')
       driver.find_element(By.XPATH, '//*[@id="content"]/div[2]/a').click()
 
