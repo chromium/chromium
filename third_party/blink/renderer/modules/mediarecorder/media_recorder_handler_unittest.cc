@@ -78,7 +78,7 @@ struct MediaRecorderTestParams {
 static const MediaRecorderTestParams kMediaRecorderTestParams[] = {
     {true, false, "video/webm", "vp8", true},
     {true, false, "video/webm", "vp9", true},
-    {true, false, "video/webm", "av1", false},
+    {true, false, "video/webm", "av01", false},
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     {true, false, "video/x-matroska", "avc1", false},
 #endif
@@ -232,7 +232,7 @@ class MediaRecorderHandlerTest : public TestWithParam<MediaRecorderTestParams>,
     }
 #endif
 #if !BUILDFLAG(ENABLE_LIBAOM)
-    if (std::string(GetParam().codecs) == "av1") {
+    if (std::string(GetParam().codecs) == "av01") {
       return false;
     }
 #endif
@@ -288,7 +288,7 @@ TEST_P(MediaRecorderHandlerTest, CanSupportMimeType) {
   EXPECT_TRUE(media_recorder_handler_->CanSupportMimeType(
       mime_type_audio, example_good_codecs_7));
 
-  const String example_good_codecs_8("AV1,opus");
+  const String example_good_codecs_8("AV01,opus");
   EXPECT_TRUE(media_recorder_handler_->CanSupportMimeType(
       mime_type_video, example_good_codecs_5));
 
@@ -805,7 +805,7 @@ static const MediaRecorderPassthroughTestParams
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
         {"video/x-matroska;codecs=avc1", media::VideoCodec::kH264},
 #endif
-        {"video/webm;codecs=av1", media::VideoCodec::kAV1},
+        {"video/webm;codecs=av01", media::VideoCodec::kAV1},
 };
 
 class MediaRecorderHandlerPassthroughTest

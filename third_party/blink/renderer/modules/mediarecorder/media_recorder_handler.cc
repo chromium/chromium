@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -142,7 +143,10 @@ VideoTrackRecorder::CodecProfile VideoStringToCodecProfile(
       return {codec_id, profile, level};
   }
 #endif
-  if (codecs_str.Find("av1") != kNotFound) {
+  // TODO(crbug.com/1465734): Remove the wrong AV1 codecs string, "av1", once
+  // we confirm nobody uses this in product.
+  if (codecs_str.Find("av01") != kNotFound ||
+      codecs_str.Find("av1") != kNotFound) {
     codec_id = VideoTrackRecorder::CodecId::kAv1;
   }
   return VideoTrackRecorder::CodecProfile(codec_id);
@@ -199,6 +203,9 @@ bool MediaRecorderHandler::CanSupportMimeType(const String& type,
     "h264",
     "avc1",
 #endif
+    "av01",
+    // TODO(crbug.com/1465734): Remove the wrong AV1 codecs string, "av1", once
+    // we confirm nobody uses this in product.
     "av1",
     "opus",
     "pcm"
@@ -216,7 +223,16 @@ bool MediaRecorderHandler::CanSupportMimeType(const String& type,
     String codec_string = String::FromUTF8(codec);
     if (std::none_of(relevant_codecs_begin, relevant_codecs_end,
                      [&codec_string](const char* name) {
-                       return EqualIgnoringASCIICase(codec_string, name);
+                       if (!EqualIgnoringASCIICase(codec_string, name)) {
+                         return false;
+                       }
+                       std::string_view name_str(name);
+                       if (name_str == "av01" || name_str == "av1") {
+                         base::UmaHistogramBoolean(
+                             "Media.MediaRecorder.HasCorrectAV1CodecString",
+                             name_str == "av01");
+                       }
+                       return true;
                      })) {
       return false;
     }
@@ -533,7 +549,7 @@ String MediaRecorderHandler::ActualMimeType() {
         break;
 #endif
       case VideoTrackRecorder::CodecId::kAv1:
-        mime_type.Append("av1");
+        mime_type.Append("av01");
         break;
       case VideoTrackRecorder::CodecId::kLast:
         DCHECK_NE(audio_codec_id_, AudioTrackRecorder::CodecId::kLast);
