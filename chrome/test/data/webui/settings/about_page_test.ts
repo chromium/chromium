@@ -298,8 +298,19 @@ suite('AboutPageTest_AllBuilds', function() {
     fireStatusChanged(UpdateStatus.DISABLED_BY_ADMIN);
     assertTrue(relaunch.hidden);
   });
+
+  // <if expr="_google_chrome or _is_chrome_for_testing_branded">
+  test('TermsOfService', function() {
+    const termsOfServiceEl =
+        page.shadowRoot!.querySelector<HTMLAnchorElement>('a#tos');
+    assertTrue(!!termsOfServiceEl);
+
+    assertEquals(page.i18n('aboutProductTos'), termsOfServiceEl.textContent);
+    assertEquals(page.i18n('aboutTermsURL'), termsOfServiceEl.href);
+  });
   // </if>
 
+  // </if>
   test('GetHelp', function() {
     assertTrue(!!page.shadowRoot!.querySelector('#help'));
     page.shadowRoot!.querySelector<HTMLElement>('#help')!.click();
