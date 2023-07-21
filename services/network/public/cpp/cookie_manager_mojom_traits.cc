@@ -586,9 +586,6 @@ bool StructTraits<network::mojom::CookieOptionsDataView, net::CookieOptions>::
   else
     cookie_options->unset_return_excluded_cookies();
 
-  cookie_options->set_full_party_context_size(
-      mojo_options.full_party_context_size());
-
   return true;
 }
 

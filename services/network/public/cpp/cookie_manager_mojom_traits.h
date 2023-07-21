@@ -194,10 +194,6 @@ struct StructTraits<network::mojom::CookieOptionsDataView, net::CookieOptions> {
     return o.return_excluded_cookies();
   }
 
-  static uint32_t full_party_context_size(const net::CookieOptions& o) {
-    return o.full_party_context_size();
-  }
-
   static bool Read(network::mojom::CookieOptionsDataView mojo_options,
                    net::CookieOptions* cookie_options);
 };

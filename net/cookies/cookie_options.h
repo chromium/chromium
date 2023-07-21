@@ -266,12 +266,6 @@ class NET_EXPORT CookieOptions {
   void unset_return_excluded_cookies() { return_excluded_cookies_ = false; }
   bool return_excluded_cookies() const { return return_excluded_cookies_; }
 
-  // Getter/setter of |full_party_context_size_| for logging purposes.
-  void set_full_party_context_size(uint32_t len) {
-    full_party_context_size_ = len;
-  }
-  uint32_t full_party_context_size() const { return full_party_context_size_; }
-
   // Convenience method for where you need a CookieOptions that will
   // work for getting/setting all types of cookies, including HttpOnly and
   // SameSite cookies. Also specifies not to update the access time, because
@@ -287,10 +281,6 @@ class NET_EXPORT CookieOptions {
   SameSiteCookieContext same_site_cookie_context_;
   bool update_access_time_ = true;
   bool return_excluded_cookies_ = false;
-
-  // The size of the isolation_info.party_context plus the top-frame site.
-  // Stored for logging purposes.
-  uint32_t full_party_context_size_ = 0;
 };
 
 NET_EXPORT bool operator==(

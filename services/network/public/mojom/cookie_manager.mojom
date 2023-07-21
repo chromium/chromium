@@ -164,9 +164,6 @@ struct CookieOptions {
   CookieSameSiteContext same_site_cookie_context;
   bool update_access_time = true;
   bool return_excluded_cookies = false;
-  // The size of the isolation_info.party_context plus the top-frame site for
-  // logging purposes.
-  uint32 full_party_context_size = 0;
 };
 
 // See net/cookies/canonical_cookie.{h,cc} for documentation.

@@ -62,7 +62,6 @@ net::CookieOptions MakeOptionsForSet(
     mojom::RestrictedCookieManagerRole role,
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
-    const net::IsolationInfo& isolation_info,
     const CookieSettings& cookie_settings) {
   net::CookieOptions options;
   bool force_ignore_site_for_cookies =
@@ -79,11 +78,6 @@ net::CookieOptions MakeOptionsForSet(
         net::cookie_util::ComputeSameSiteContextForSubresource(
             url, site_for_cookies, force_ignore_site_for_cookies));
   }
-  if (isolation_info.party_context().has_value()) {
-    // Count the top-frame site since it's not in the party_context.
-    options.set_full_party_context_size(isolation_info.party_context()->size() +
-                                        1);
-  }
 
   return options;
 }
@@ -92,7 +86,6 @@ net::CookieOptions MakeOptionsForGet(
     mojom::RestrictedCookieManagerRole role,
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
-    const net::IsolationInfo& isolation_info,
     const CookieSettings& cookie_settings) {
   // TODO(https://crbug.com/925311): Wire initiator here.
   net::CookieOptions options;
@@ -110,11 +103,6 @@ net::CookieOptions MakeOptionsForGet(
     options.set_same_site_cookie_context(
         net::cookie_util::ComputeSameSiteContextForSubresource(
             url, site_for_cookies, force_ignore_site_for_cookies));
-  }
-  if (isolation_info.party_context().has_value()) {
-    // Count the top-frame site since it's not in the party_context.
-    options.set_full_party_context_size(isolation_info.party_context()->size() +
-                                        1);
   }
 
   return options;
@@ -448,8 +436,8 @@ void RestrictedCookieManager::GetAllForUrl(
 
   // TODO(morlovich): Try to validate site_for_cookies as well.
 
-  net::CookieOptions net_options = MakeOptionsForGet(
-      role_, url, site_for_cookies, isolation_info_, cookie_settings());
+  net::CookieOptions net_options =
+      MakeOptionsForGet(role_, url, site_for_cookies, cookie_settings());
   // TODO(https://crbug.com/977040): remove set_return_excluded_cookies() once
   // removing deprecation warnings.
   net_options.set_return_excluded_cookies();
@@ -700,8 +688,8 @@ void RestrictedCookieManager::SetCanonicalCookie(
   IncrementSharedVersion();
 
   net::CanonicalCookie cookie_copy = *sanitized_cookie;
-  net::CookieOptions options = MakeOptionsForSet(
-      role_, url, site_for_cookies, isolation_info_, cookie_settings());
+  net::CookieOptions options =
+      MakeOptionsForSet(role_, url, site_for_cookies, cookie_settings());
 
   net::CookieAccessResult cookie_access_result(status);
   cookie_store_->SetCanonicalCookieAsync(
@@ -750,8 +738,8 @@ void RestrictedCookieManager::AddChangeListener(
     return;
   }
 
-  net::CookieOptions net_options = MakeOptionsForGet(
-      role_, url, site_for_cookies, isolation_info_, cookie_settings());
+  net::CookieOptions net_options =
+      MakeOptionsForGet(role_, url, site_for_cookies, cookie_settings());
   auto listener = std::make_unique<Listener>(
       cookie_store_, this, url, site_for_cookies, top_frame_origin,
       has_storage_access, cookie_partition_key_, net_options,
