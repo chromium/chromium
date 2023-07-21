@@ -37,6 +37,7 @@ namespace ash {
 namespace {
 
 LorgnetteManagerClient* g_instance = nullptr;
+constexpr char kListScannersDiscoveryClientId[] = "ListScanners";
 
 // The LorgnetteManagerClient implementation used in production.
 class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
@@ -50,6 +51,26 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
   void ListScanners(
       chromeos::DBusMethodCallback<lorgnette::ListScannersResponse> callback)
       override {
+    if (features::IsAsynchronousScannerDiscoveryEnabled()) {
+      lorgnette::StartScannerDiscoveryRequest request;
+      // ListScanners doesn't support concurrent calls and completes the session
+      // before it finishes, so hardcoding a single client id shouldn't cause
+      // cross-caller interference.
+      request.set_client_id(kListScannersDiscoveryClientId);
+      request.set_preferred_only(true);
+
+      StartScannerDiscovery(
+          std::move(request),
+          base::BindRepeating(
+              &LorgnetteManagerClientImpl::ListScannersDiscoveryScannersUpdated,
+              weak_ptr_factory_.GetWeakPtr()),
+          base::BindOnce(
+              &LorgnetteManagerClientImpl::OnListScannersDiscoverySession,
+              weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+
+      return;
+    }
+
     dbus::MethodCall method_call(lorgnette::kManagerServiceInterface,
                                  lorgnette::kListScannersMethod);
     lorgnette_daemon_proxy_->CallMethod(
@@ -280,9 +301,13 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
 
   struct DiscoverySessionState {
     absl::optional<
+        chromeos::DBusMethodCallback<lorgnette::ListScannersResponse>>
+        session_end_callback;
+    absl::optional<
         base::RepeatingCallback<void(lorgnette::ScannerListChangedSignal)>>
         signal_callback;
     std::string session_id;
+    lorgnette::ListScannersResponse response;
   };
 
   // Helper function to send a GetNextImage request to lorgnette for the scan
@@ -579,6 +604,23 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     std::move(response_callback).Run(std::move(response));
   }
 
+  void OnListScannersDiscoverySession(
+      chromeos::DBusMethodCallback<lorgnette::ListScannersResponse> callback,
+      absl::optional<lorgnette::StartScannerDiscoveryResponse> response) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    if (!response.has_value()) {
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+
+    // This will have been created already by OnStartScannerDiscoveryResponse,
+    // so no need to search for it first.
+    DCHECK(base::Contains(discovery_sessions_, response->session_id()));
+    discovery_sessions_[response->session_id()].session_end_callback =
+        std::move(callback);
+  }
+
   void OnStopScannerDiscoveryResponse(
       std::string session_id,
       chromeos::DBusMethodCallback<lorgnette::StopScannerDiscoveryResponse>
@@ -673,6 +715,37 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
       return;
     }
     session.signal_callback->Run(std::move(signal));
+  }
+
+  void ListScannersDiscoveryScannersUpdated(
+      lorgnette::ScannerListChangedSignal signal) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK(base::Contains(discovery_sessions_, signal.session_id()));
+    DiscoverySessionState& session = discovery_sessions_[signal.session_id()];
+
+    switch (signal.event_type()) {
+      case lorgnette::ScannerListChangedSignal::SCANNER_ADDED:
+        PRINTER_LOG(EVENT) << "Discovered SANE scanner: "
+                           << signal.scanner().name();
+        *session.response.add_scanners() = std::move(signal.scanner());
+        break;
+      case lorgnette::ScannerListChangedSignal::SCANNER_REMOVED:
+        break;
+      case lorgnette::ScannerListChangedSignal::ENUM_COMPLETE: {
+        lorgnette::StopScannerDiscoveryRequest request;
+        request.set_session_id(session.session_id);
+        StopScannerDiscovery(request, base::DoNothing());
+        break;
+      }
+      case lorgnette::ScannerListChangedSignal::SESSION_ENDING:
+        DCHECK(session.session_end_callback);
+        std::move(*session.session_end_callback)
+            .Run(std::move(session.response));
+        discovery_sessions_.erase(session.session_id);
+        break;
+      default:
+        NOTREACHED();
+    }
   }
 
   void LorgnetteSignalConnected(const std::string& interface_name,

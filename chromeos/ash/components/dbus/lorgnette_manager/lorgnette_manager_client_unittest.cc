@@ -601,6 +601,54 @@ TEST_F(LorgnetteManagerClientTest, ListScanners) {
   run_loop.Run();
 }
 
+TEST_F(LorgnetteManagerClientTest, ListScannersViaAsyncDiscovery) {
+  auto feature = base::test::ScopedFeatureList(
+      ash::features::kAsynchronousScannerDiscovery);
+
+  std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
+  const lorgnette::StartScannerDiscoveryResponse kExpectedResponse =
+      CreateStartScannerDiscoveryResponse("session");
+  const lorgnette::ListScannersResponse kExpectedScannerList =
+      CreateListScannersResponse();
+  ASSERT_TRUE(dbus::MessageWriter(response.get())
+                  .AppendProtoAsArrayOfBytes(kExpectedResponse));
+  SetStartScannerDiscoveryExpectation(response.get());
+
+  std::unique_ptr<dbus::Response> stop_response = dbus::Response::CreateEmpty();
+  const lorgnette::StopScannerDiscoveryResponse kExpectedStopResponse =
+      CreateStopScannerDiscoveryResponse();
+  ASSERT_TRUE(dbus::MessageWriter(stop_response.get())
+                  .AppendProtoAsArrayOfBytes(kExpectedStopResponse));
+  SetStopScannerDiscoveryExpectation(stop_response.get());
+
+  base::RunLoop run_loop;
+  GetClient()->ListScanners(base::BindLambdaForTesting(
+      [&](absl::optional<lorgnette::ListScannersResponse> result) {
+        ASSERT_TRUE(result.has_value());
+        EXPECT_THAT(result.value(), ProtobufEquals(kExpectedScannerList));
+        run_loop.Quit();
+      }));
+
+  run_loop.RunUntilIdle();
+
+  // Discover all scanners.
+  for (const auto& scanner : kExpectedScannerList.scanners()) {
+    EmitScannerListChangedSignal(
+        "session", lorgnette::ScannerListChangedSignal::SCANNER_ADDED, scanner);
+  }
+
+  // Tell client all scanners have been found.  The client will call
+  // StopScannerDiscovery.
+  EmitScannerListChangedSignal(
+      "session", lorgnette::ScannerListChangedSignal::ENUM_COMPLETE, {});
+
+  // Tell client the session is ending so ListScanners can return its response.
+  EmitScannerListChangedSignal(
+      "session", lorgnette::ScannerListChangedSignal::SESSION_ENDING, {});
+
+  run_loop.Run();
+}
+
 // Test that the client handles a null response to a kListScannersMethod D-Bus
 // call.
 TEST_F(LorgnetteManagerClientTest, NullResponseToListScanners) {
@@ -671,11 +719,8 @@ TEST_F(LorgnetteManagerClientTest, AsyncDiscoverySession) {
               case lorgnette::ScannerListChangedSignal::ENUM_COMPLETE: {
                 lorgnette::StopScannerDiscoveryRequest request;
                 request.set_session_id("session");
-                GetClient()->StopScannerDiscovery(
-                    std::move(request),
-                    base::BindOnce(
-                        [](absl::optional<
-                            lorgnette::StopScannerDiscoveryResponse>) {}));
+                GetClient()->StopScannerDiscovery(std::move(request),
+                                                  base::DoNothing());
                 break;
               }
               case lorgnette::ScannerListChangedSignal::SESSION_ENDING:
