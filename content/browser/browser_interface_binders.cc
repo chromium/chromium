@@ -1139,7 +1139,7 @@ void PopulateBinderMapWithContext(
     map->Add<blink::mojom::BrowsingTopicsDocumentService>(
         base::BindRepeating(&BrowsingTopicsDocumentHost::CreateMojoService));
   }
-  if (base::FeatureList::IsEnabled(features::kWebEnvironmentIntegrity)) {
+  if (base::FeatureList::IsEnabled(blink::features::kWebEnvironmentIntegrity)) {
     map->Add<blink::mojom::EnvironmentIntegrityService>(base::BindRepeating(
         &EmptyBinderForFrame<blink::mojom::EnvironmentIntegrityService>));
   }

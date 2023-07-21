@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "url/origin.h"
 
 namespace environment_integrity {
@@ -82,12 +83,12 @@ AndroidEnvironmentIntegrityService::GetDataManager() {
 void AndroidEnvironmentIntegrityService::GetEnvironmentIntegrity(
     const std::vector<uint8_t>& content_binding,
     GetEnvironmentIntegrityCallback callback) {
-  if (!base::FeatureList::IsEnabled(features::kWebEnvironmentIntegrity)) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kWebEnvironmentIntegrity)) {
     ReportBadMessageAndDeleteThis(
         "Feature not enabled. IPC call not expected.");
     return;
   }
-
   if (!integrity_service_->IsIntegrityAvailable()) {
     std::move(callback).Run(EnvironmentIntegrityResponseCode::kInternalError,
                             std::vector<uint8_t>());

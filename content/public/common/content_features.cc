@@ -1418,11 +1418,6 @@ BASE_FEATURE(kWebBluetoothNewPermissionsBackend,
              "WebBluetoothNewPermissionsBackend",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the Web Environment Integrity API.
-BASE_FEATURE(kWebEnvironmentIntegrity,
-             "WebEnvironmentIntegrity",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If WebGL Image Chromium is allowed, this feature controls whether it is
 // enabled.
 BASE_FEATURE(kWebGLImageChromium,

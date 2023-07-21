@@ -22,6 +22,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/environment_integrity/environment_integrity_service.mojom.h"
 
 namespace environment_integrity {
@@ -109,7 +110,8 @@ class AndroidEnvironmentIntegrityServiceTest
  public:
   void SetUp() override {
     BaseAndroidEnvironmentIntegrityServiceTest::SetUp();
-    feature_list_.InitAndEnableFeature(features::kWebEnvironmentIntegrity);
+    feature_list_.InitAndEnableFeature(
+        blink::features::kWebEnvironmentIntegrity);
   }
 };
 
@@ -467,7 +469,8 @@ class AndroidEnvironmentIntegrityServiceDisabledFeatureTest
  public:
   void SetUp() override {
     BaseAndroidEnvironmentIntegrityServiceTest::SetUp();
-    feature_list_.InitAndDisableFeature(features::kWebEnvironmentIntegrity);
+    feature_list_.InitAndDisableFeature(
+        blink::features::kWebEnvironmentIntegrity);
   }
 };
 

@@ -3906,8 +3906,13 @@
     {
       name: "WebEnvironmentIntegrity",
       status: "experimental",
-      base_feature: "none",
       origin_trial_feature_name: "WebEnvironmentIntegrity",
+      // base_feature is meant as kill-switch. The RuntimeFeature should follow
+      // the `status` field or Origin Trial unless explicitly overriden by
+      // Finch / command line flags.
+      base_feature_status: "enabled",
+      copied_from_base_feature_if: "overridden",
+      origin_trial_allows_third_party: true,
     },
     {
       name: "WebFontResizeLCP",

@@ -4,6 +4,7 @@ include_rules = [
   "+components/background_task_scheduler/android/java",
   "+components/component_updater/android/java",
   "+components/embedder_support/android/metrics/java",
+  "+components/environment_integrity/android/java",
   "+components/minidump_uploader/android/java",
   "+components/minidump_uploader/android/javatests",
   "+components/policy/android/java",

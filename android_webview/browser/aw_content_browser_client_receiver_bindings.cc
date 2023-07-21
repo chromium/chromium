@@ -8,6 +8,7 @@
 #include "android_webview/browser/aw_print_manager.h"
 #include "android_webview/browser/renderer_host/aw_render_view_host_ext.h"
 #include "android_webview/browser/safe_browsing/aw_url_checker_delegate_impl.h"
+#include "base/feature_list.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"
 #include "components/content_capture/browser/onscreen_content_provider.h"
@@ -29,6 +30,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/environment_integrity/environment_integrity_service.mojom.h"
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
@@ -215,7 +217,7 @@ void AwContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
   map->Add<network_hints::mojom::NetworkHintsHandler>(
       base::BindRepeating(&BindNetworkHintsHandler));
 
-  if (base::FeatureList::IsEnabled(features::kWebEnvironmentIntegrity)) {
+  if (base::FeatureList::IsEnabled(blink::features::kWebEnvironmentIntegrity)) {
     map->Add<blink::mojom::EnvironmentIntegrityService>(base::BindRepeating(
         &environment_integrity::AndroidEnvironmentIntegrityService::Create));
   }

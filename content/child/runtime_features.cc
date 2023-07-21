@@ -392,7 +392,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {"WebAppTabStrip", raw_ref(features::kDesktopPWAsTabStrip)},
     {"WebAppTabStripCustomizations",
      raw_ref(blink::features::kDesktopPWAsTabStripCustomizations)},
-    {"WebEnvironmentIntegrity", raw_ref(features::kWebEnvironmentIntegrity)},
     {"WebSerialBluetooth",
      raw_ref(features::kEnableBluetoothSerialPortProfileInSerialApi)},
     {"WGIGamepadTriggerRumble",

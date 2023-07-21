@@ -472,7 +472,7 @@ public final class ProductionSupportedFlagList {
                             + "Only onNetwork(Connected|Disconnected|SoonToDisconnect|MadeDefault) signals are propagated."),
             Flag.baseFeature(BlinkFeatures.REMOVE_NON_STANDARD_APPEARANCE_VALUE,
                     "Remove non-standard CSS appearance values."),
-            Flag.baseFeature(ContentFeatures.WEB_ENVIRONMENT_INTEGRITY,
+            Flag.baseFeature(BlinkFeatures.WEB_ENVIRONMENT_INTEGRITY,
                     "Enables Web Environment Integrity APIs. "
                             + "See https://chromestatus.com/feature/5796524191121408."),
             // Add new commandline switches and features above. The final entry should have a

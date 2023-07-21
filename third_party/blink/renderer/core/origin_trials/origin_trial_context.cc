@@ -548,6 +548,10 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
     return base::FeatureList::IsEnabled(features::kComputePressure);
   }
 
+  if (trial_name == "WebEnvironmentIntegrity") {
+    return base::FeatureList::IsEnabled(features::kWebEnvironmentIntegrity);
+  }
+
   return true;
 }
 

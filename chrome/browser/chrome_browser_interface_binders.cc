@@ -102,6 +102,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/image_annotation/public/mojom/image_annotation.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom.h"
 #include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom.h"
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom.h"
@@ -880,7 +881,7 @@ void PopulateChromeFrameBinders(
   }
   map->Add<blink::mojom::ShareService>(base::BindRepeating(
       &ForwardToJavaWebContents<blink::mojom::ShareService>));
-  if (base::FeatureList::IsEnabled(features::kWebEnvironmentIntegrity)) {
+  if (base::FeatureList::IsEnabled(blink::features::kWebEnvironmentIntegrity)) {
     map->Add<blink::mojom::EnvironmentIntegrityService>(base::BindRepeating(
         &environment_integrity::AndroidEnvironmentIntegrityService::Create));
   }
