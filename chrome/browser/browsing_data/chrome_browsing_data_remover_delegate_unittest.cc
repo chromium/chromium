@@ -3935,9 +3935,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateMediaDeviceSaltTest, RemoveAllSalts) {
   std::string salt2 = GetSalt(StorageKey2());
   std::string salt3 = GetSalt(StorageKey3());
 
-  BlockUntilBrowsingDataRemoved(
-      base::Time(), base::Time::Max(),
-      content::BrowsingDataRemover::DATA_TYPE_MEDIA_DEVICE_SALTS, false);
+  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
+                                content::BrowsingDataRemover::DATA_TYPE_COOKIES,
+                                false);
   EXPECT_NE(GetSalt(StorageKey1()), salt1);
   EXPECT_NE(GetSalt(StorageKey2()), salt2);
   EXPECT_NE(GetSalt(StorageKey3()), salt3);
@@ -3955,11 +3955,10 @@ TEST_F(ChromeBrowsingDataRemoverDelegateMediaDeviceSaltTest, PreserveOneSalt) {
   std::unique_ptr<BrowsingDataFilterBuilder> filter(
       BrowsingDataFilterBuilder::Create(
           BrowsingDataFilterBuilder::Mode::kPreserve));
-  filter->AddOrigin(url::Origin::Create(GURL("https://example1.com")));
-  BlockUntilOriginDataRemoved(
-      base::Time(), base::Time::Max(),
-      content::BrowsingDataRemover::DATA_TYPE_MEDIA_DEVICE_SALTS,
-      std::move(filter));
+  filter->AddRegisterableDomain(StorageKey1().origin().host());
+  BlockUntilOriginDataRemoved(base::Time(), base::Time::Max(),
+                              content::BrowsingDataRemover::DATA_TYPE_COOKIES,
+                              std::move(filter));
   EXPECT_EQ(GetSalt(StorageKey1()), salt1);
   EXPECT_NE(GetSalt(StorageKey2()), salt2);
   EXPECT_NE(GetSalt(StorageKey3()), salt3);
@@ -3973,11 +3972,10 @@ TEST_F(ChromeBrowsingDataRemoverDelegateMediaDeviceSaltTest, RemoveOneSalt) {
   std::unique_ptr<BrowsingDataFilterBuilder> filter(
       BrowsingDataFilterBuilder::Create(
           BrowsingDataFilterBuilder::Mode::kDelete));
-  filter->AddOrigin(url::Origin::Create(GURL("https://example1.com")));
-  BlockUntilOriginDataRemoved(
-      base::Time(), base::Time::Max(),
-      content::BrowsingDataRemover::DATA_TYPE_MEDIA_DEVICE_SALTS,
-      std::move(filter));
+  filter->AddRegisterableDomain(StorageKey1().origin().host());
+  BlockUntilOriginDataRemoved(base::Time(), base::Time::Max(),
+                              content::BrowsingDataRemover::DATA_TYPE_COOKIES,
+                              std::move(filter));
   EXPECT_NE(GetSalt(StorageKey1()), salt1);
   EXPECT_EQ(GetSalt(StorageKey2()), salt2);
   EXPECT_EQ(GetSalt(StorageKey3()), salt3);
@@ -3994,9 +3992,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateMediaDeviceSaltTest,
   std::string salt3 = GetSalt(StorageKey3());
 
   // Remove salt for StorageKey3()
-  BlockUntilBrowsingDataRemoved(
-      time3, base::Time::Max(),
-      content::BrowsingDataRemover::DATA_TYPE_MEDIA_DEVICE_SALTS, false);
+  BlockUntilBrowsingDataRemoved(time3, base::Time::Max(),
+                                content::BrowsingDataRemover::DATA_TYPE_COOKIES,
+                                false);
   std::string salt1b = GetSalt(StorageKey1());
   std::string salt2b = GetSalt(StorageKey2());
   std::string salt3b = GetSalt(StorageKey3());
@@ -4005,9 +4003,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateMediaDeviceSaltTest,
   EXPECT_NE(salt3b, salt3);
 
   // Remove salt for StorageKey1()
-  BlockUntilBrowsingDataRemoved(
-      base::Time(), time1,
-      content::BrowsingDataRemover::DATA_TYPE_MEDIA_DEVICE_SALTS, false);
+  BlockUntilBrowsingDataRemoved(base::Time(), time1,
+                                content::BrowsingDataRemover::DATA_TYPE_COOKIES,
+                                false);
   std::string salt1c = GetSalt(StorageKey1());
   std::string salt2c = GetSalt(StorageKey2());
   std::string salt3c = GetSalt(StorageKey3());

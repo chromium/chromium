@@ -671,6 +671,18 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       if (delegate)
         delegate->ClearPersistedTokens();
     }
+
+    if (auto* media_device_salt_service =
+            MediaDeviceSaltServiceFactory::GetInstance()->GetForBrowserContext(
+                profile_)) {
+      content::StoragePartition::StorageKeyMatcherFunction storage_key_matcher;
+      if (!filter_builder->MatchesAllOriginsAndDomains()) {
+        storage_key_matcher = filter_builder->BuildStorageKeyFilter();
+      }
+      media_device_salt_service->DeleteSalts(
+          delete_begin_, delete_end_, std::move(storage_key_matcher),
+          CreateTaskCompletionClosure(TracingDataType::kMediaDeviceSalts));
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -1260,25 +1272,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
   if (remove_mask &
       (constants::DATA_TYPE_SITE_DATA | constants::DATA_TYPE_HISTORY)) {
     login_detection::prefs::RemoveLoginDetectionData(prefs);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  // DATA_TYPE_MEDIA_DEVICE_SALTS
-  if ((remove_mask &
-       content::BrowsingDataRemover::DATA_TYPE_MEDIA_DEVICE_SALTS) &&
-      (origin_type_mask &
-       content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB)) {
-    if (auto* media_device_salt_service =
-            MediaDeviceSaltServiceFactory::GetInstance()->GetForBrowserContext(
-                profile_)) {
-      content::StoragePartition::StorageKeyMatcherFunction storage_key_matcher;
-      if (!filter_builder->MatchesAllOriginsAndDomains()) {
-        storage_key_matcher = filter_builder->BuildStorageKeyFilter();
-      }
-      media_device_salt_service->DeleteSalts(
-          delete_begin_, delete_end_, std::move(storage_key_matcher),
-          CreateTaskCompletionClosure(TracingDataType::kMediaDeviceSalts));
-    }
   }
 }
 

@@ -43,6 +43,7 @@
 namespace {
 
 const char kMainWebrtcTestHtmlPage[] = "/webrtc/webrtc_jsep01_test.html";
+const char kClearCookiesPage[] = "/clear_cookies";
 
 const char kDeviceKindAudioInput[] = "audioinput";
 const char kDeviceKindVideoInput[] = "videoinput";
@@ -61,7 +62,7 @@ class WebRtcMediaDevicesInteractiveUITest
   WebRtcMediaDevicesInteractiveUITest()
       : has_audio_output_devices_initialized_(false),
         has_audio_output_devices_(false) {
-    if (GetParam()) {
+    if (IsMediaDeviceIdRandomSaltsPerStorageKeyEnabled()) {
       scoped_feature_list_.InitWithFeatures(
           {features::kUserMediaCaptureOnFocus,
            media_device_salt::kMediaDeviceIdPartitioning,
@@ -74,6 +75,8 @@ class WebRtcMediaDevicesInteractiveUITest
            media_device_salt::kMediaDeviceIdRandomSaltsPerStorageKey});
     }
   }
+
+  bool IsMediaDeviceIdRandomSaltsPerStorageKeyEnabled() { return GetParam(); }
 
   void SetUpInProcessBrowserTestFixture() override {
     DetectErrorsInJavaScript();  // Look for errors in our rather complex js.
@@ -285,7 +288,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaDevicesInteractiveUITest,
 }
 
 IN_PROC_BROWSER_TEST_P(WebRtcMediaDevicesInteractiveUITest,
-                       DeviceIdDiffersAfterClearingBrowsingData) {
+                       DeviceIdDiffersAfterClearingCookies) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL(kMainWebrtcTestHtmlPage));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -301,7 +304,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaDevicesInteractiveUITest,
   content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
   remover->RemoveAndReply(
       base::Time(), base::Time::Max(),
-      content::BrowsingDataRemover::DATA_TYPE_DOM_STORAGE,
+      content::BrowsingDataRemover::DATA_TYPE_COOKIES,
       content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
       &completion_observer);
   completion_observer.BlockUntilCompletion();
@@ -364,6 +367,50 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaDevicesInteractiveUITest,
   std::vector<MediaDeviceInfo> devices2;
   EnumerateDevices(tab, &devices2);
 
+  EXPECT_EQ(devices.size(), devices2.size());
+  CheckEnumerationsAreDifferent(devices, devices2);
+}
+
+IN_PROC_BROWSER_TEST_P(WebRtcMediaDevicesInteractiveUITest,
+                       DeviceIdDiffersAfterClearSiteDataHeader) {
+  if (!IsMediaDeviceIdRandomSaltsPerStorageKeyEnabled()) {
+    return;
+  }
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.GetURL().path() == kClearCookiesPage) {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->AddCustomHeader("Clear-Site-Data", "\"cookies\"");
+          response->set_code(net::HTTP_OK);
+          response->set_content_type("text/html");
+          response->set_content(std::string());
+          return response;
+        }
+
+        // Use the default handler for other requests.
+        return nullptr;
+      }));
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kMainWebrtcTestHtmlPage)));
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  EXPECT_TRUE(GetUserMediaAndAccept(tab));
+  std::vector<MediaDeviceInfo> devices;
+  EnumerateDevices(tab, &devices);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kClearCookiesPage)));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kMainWebrtcTestHtmlPage)));
+
+  std::vector<MediaDeviceInfo> devices2;
+  EnumerateDevices(tab, &devices2);
   EXPECT_EQ(devices.size(), devices2.size());
   CheckEnumerationsAreDifferent(devices, devices2);
 }

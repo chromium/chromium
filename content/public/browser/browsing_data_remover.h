@@ -73,10 +73,6 @@ class BrowsingDataRemover {
   static constexpr DataType DATA_TYPE_CACHE_STORAGE = 1 << 6;
   // This is also persisted, keep with storage datatypes.
   static constexpr DataType DATA_TYPE_BACKGROUND_FETCH = 1 << 14;
-  // Salts used to generate persistent media device IDs.
-  // https://w3c.github.io/mediacapture-main/#dom-mediadeviceinfo-deviceid
-  // This is also persisted, keep with storage datatypes.
-  static constexpr DataType DATA_TYPE_MEDIA_DEVICE_SALTS = 1 << 24;
 
   // Used to request the deletion of embedder-specific storage datatypes.
   static constexpr DataType DATA_TYPE_EMBEDDER_DOM_STORAGE = 1 << 7;
@@ -87,8 +83,7 @@ class BrowsingDataRemover {
   static constexpr DataType DATA_TYPE_DOM_STORAGE =
       DATA_TYPE_FILE_SYSTEMS | DATA_TYPE_INDEXED_DB | DATA_TYPE_LOCAL_STORAGE |
       DATA_TYPE_WEB_SQL | DATA_TYPE_SERVICE_WORKERS | DATA_TYPE_CACHE_STORAGE |
-      DATA_TYPE_EMBEDDER_DOM_STORAGE | DATA_TYPE_BACKGROUND_FETCH |
-      DATA_TYPE_MEDIA_DEVICE_SALTS;
+      DATA_TYPE_EMBEDDER_DOM_STORAGE | DATA_TYPE_BACKGROUND_FETCH;
 
   // Other datatypes.
   static constexpr DataType DATA_TYPE_COOKIES = 1 << 8;
@@ -149,12 +144,10 @@ class BrowsingDataRemover {
   // information.
   static constexpr DataType DATA_TYPE_INTEREST_GROUPS_INTERNAL = 1 << 23;
 
-  // 24 is already taken by DATA_TYPE_MEDIA_DEVICE_SALTS.
-
   // Web Environment Integrity
   // (https://github.com/RupertBenWiser/Web-Environment-Integrity/blob/main/explainer.md)
   // persistent storage.
-  static constexpr DataType DATA_TYPE_ENVIRONMENT_INTEGRITY = 1 << 25;
+  static constexpr DataType DATA_TYPE_ENVIRONMENT_INTEGRITY = 1 << 24;
 
   // Embedders can add more datatypes beyond this point.
   static constexpr DataType DATA_TYPE_CONTENT_END =
