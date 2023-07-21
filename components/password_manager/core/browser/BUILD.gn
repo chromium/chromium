@@ -690,6 +690,7 @@ source_set("unit_tests") {
     "possible_username_data_unittest.cc",
     "psl_matching_helper_unittest.cc",
     "sharing/incoming_password_sharing_invitation_sync_bridge_unittest.cc",
+    "sharing/outgoing_password_sharing_invitation_sync_bridge_unittest.cc",
     "sharing/password_receiver_service_impl_unittest.cc",
     "sharing/password_sharing_recipients_downloader_unittest.cc",
     "sql_table_builder_unittest.cc",

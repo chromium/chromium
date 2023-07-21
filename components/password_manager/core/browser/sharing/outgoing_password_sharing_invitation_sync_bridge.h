@@ -5,9 +5,13 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SHARING_OUTGOING_PASSWORD_SHARING_INVITATION_SYNC_BRIDGE_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SHARING_OUTGOING_PASSWORD_SHARING_INVITATION_SYNC_BRIDGE_H_
 
+#include <map>
 #include <memory>
+#include <string>
+
 #include "base/sequence_checker.h"
 #include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/protocol/password_sharing_invitation_specifics.pb.h"
 
 namespace syncer {
 class MetadataChangeList;
@@ -15,6 +19,9 @@ class ModelTypeChangeProcessor;
 }  // namespace syncer
 
 namespace password_manager {
+
+struct CredentialUIEntry;
+struct PasswordRecipient;
 
 // Sync bridge implementation for OUTGOING_PASSWORD_SHARING_INVITATION model
 // type.
@@ -28,6 +35,9 @@ class OutgoingPasswordSharingInvitationSyncBridge
   OutgoingPasswordSharingInvitationSyncBridge& operator=(
       const OutgoingPasswordSharingInvitationSyncBridge&) = delete;
   ~OutgoingPasswordSharingInvitationSyncBridge() override;
+
+  void SendPassword(const CredentialUIEntry& credential_ui_entry,
+                    const PasswordRecipient& recipient);
 
   // ModelTypeSyncBridge implementation.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
@@ -46,11 +56,14 @@ class OutgoingPasswordSharingInvitationSyncBridge
   bool SupportsGetStorageKey() const override;
   void ApplyDisableSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
                                    delete_metadata_change_list) override;
-  sync_pb::EntitySpecifics TrimAllSupportedFieldsFromRemoteSpecifics(
-      const sync_pb::EntitySpecifics& entity_specifics) const override;
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Last sent passwords are cached until they are committed to the server. This
+  // is required to keep data in case of retries.
+  std::map<std::string, sync_pb::OutgoingPasswordSharingInvitationSpecifics>
+      storage_key_to_outgoing_invitations_in_flight_;
 };
 
 }  // namespace password_manager
