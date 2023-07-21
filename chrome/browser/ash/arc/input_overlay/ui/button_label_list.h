@@ -14,7 +14,7 @@ class RadioButtonGroup;
 
 namespace arc::input_overlay {
 
-class ButtonOptionsMenu;
+class Action;
 class DisplayOverlayController;
 
 // ButtonLabelList displays a list of action names that can be assigned to the
@@ -34,11 +34,8 @@ class DisplayOverlayController;
 // +----------------------------------+
 class ButtonLabelList : public ArrowContainer {
  public:
-  static ButtonLabelList* Show(DisplayOverlayController* controller,
-                               ButtonOptionsMenu* button_options_menu);
-
   ButtonLabelList(DisplayOverlayController* display_overlay_controller,
-                  ButtonOptionsMenu* button_options_menu);
+                  Action* action);
   ButtonLabelList(const ButtonLabelList&) = delete;
   ButtonLabelList& operator=(const ButtonLabelList&) = delete;
   ~ButtonLabelList() override;
@@ -49,16 +46,13 @@ class ButtonLabelList : public ArrowContainer {
   void AddHeader();
   void AddActionLabels();
 
-  // Calculate and set position.
-  void CalculatePosition();
-
   // Handle button functions.
   void OnActionLabelPressed();
   void OnBackButtonPressed();
 
   // DisplayOverlayController owns this class, no need to deallocate.
   const raw_ptr<DisplayOverlayController> display_overlay_controller_ = nullptr;
-  raw_ptr<ButtonOptionsMenu> button_options_menu_ = nullptr;
+  raw_ptr<Action> action_ = nullptr;
   raw_ptr<ash::RadioButtonGroup> button_group_ = nullptr;
 };
 

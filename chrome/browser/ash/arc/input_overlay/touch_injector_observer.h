@@ -24,6 +24,7 @@ class TouchInjectorObserver : public base::CheckedObserver {
   virtual void OnActionTypeChanged(Action* action, Action* new_action) {}
   virtual void OnActionInputBindingUpdated(const Action& action) {}
   virtual void OnActionNameUpdated(const Action& action) {}
+  virtual void OnContentBoundsSizeChanged() {}
 
  protected:
   ~TouchInjectorObserver() override;

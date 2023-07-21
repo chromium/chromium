@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_DISPLAY_OVERLAY_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_DISPLAY_OVERLAY_CONTROLLER_H_
 
+#include "ash/public/cpp/arc_game_controls_flag.h"
+#include "ash/public/cpp/window_properties.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
 #include "ui/aura/window_observer.h"
@@ -13,6 +15,10 @@
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+
+namespace ash {
+class GameDashboardWidget;
+}
 
 namespace views {
 class View;
@@ -48,6 +54,11 @@ class DisplayOverlayController : public ui::EventHandler,
   ~DisplayOverlayController() override;
 
   void SetDisplayModeAlpha(DisplayMode mode);
+  void SetDisplayMode(DisplayMode mode);
+
+  // Turn on/off the `flag` for current registered window.
+  void TurnFlag(ash::ArcGameControlsFlag flag, bool turn_on);
+
   // Get the bounds of |menu_entry_| in screen coordinates.
   absl::optional<gfx::Rect> GetOverlayMenuEntryBounds();
 
@@ -94,6 +105,20 @@ class DisplayOverlayController : public ui::EventHandler,
   void AddTouchInjectorObserver(TouchInjectorObserver* observer);
   void RemoveTouchInjectorObserver(TouchInjectorObserver* observer);
 
+  void AddButtonOptionsMenuWidget(Action* action);
+  void RemoveButtonOptionsMenuWidget();
+  void OnButtonOptionsMenuButtonLabelPressed(Action* action);
+
+  void AddButtonLabelListWidget(Action* action);
+  void RemoveButtonLabelListWidget();
+  void OnButtonLabelListBackButtonPressed();
+
+  // Update widget bounds if the view content is changed or the app window
+  // bounds are changed.
+  void UpdateButtonOptionsMenuWidgetBounds(Action* action);
+  void UpdateInputMappingWidgetBounds();
+  void UpdateEditingListWidgetBounds();
+
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
@@ -122,6 +147,7 @@ class DisplayOverlayController : public ui::EventHandler,
   friend class InputMenuView;
   friend class MenuEntryView;
   friend class MenuEntryViewTest;
+  friend class OverlayViewTestBase;
 
   // Display overlay is added for starting |display_mode|.
   void AddOverlay(DisplayMode display_mode);
@@ -157,15 +183,6 @@ class DisplayOverlayController : public ui::EventHandler,
   void RemoveEducationalView();
   void OnEducationalViewDismissed();
 
-  void AddButtonOptionsMenu(Action* action);
-  void RemoveButtonOptionsMenu();
-
-  void AddButtonLabelList();
-  void RemoveButtonLabelList();
-
-  void AddEditingList();
-  void RemoveEditingList();
-
   views::Widget* GetOverlayWidget();
   views::View* GetOverlayWidgetContentsView();
   bool HasMenuView() const;
@@ -192,6 +209,27 @@ class DisplayOverlayController : public ui::EventHandler,
 
   void UpdateForBoundsChanged();
 
+  // For beta.
+  void RemoveAllWidgets();
+
+  void AddInputMappingWidget();
+  void RemoveInputMappingWidget();
+
+  void AddEditingListWidget();
+  void RemoveEditingListWidget();
+
+  // `widget` bounds is in screen coordinate. `bounds_in_root_window` is the
+  // window bounds in root window. Convert `bounds_in_root_window` in screen
+  // coordinates to set `widget` bounds.
+  void UpdateWidgetBoundsInRootWindow(ash::GameDashboardWidget* widget,
+                                      const gfx::Rect& bounds_in_root_window);
+
+  // `TouchInjector` only rewrite events in `kView` mode. When changing between
+  // edit mode and view mode or the feature is disabled from menu or if the game
+  // dashboard menu shows up, it needs to tell `TouchInjector` if it can rewrite
+  // events.
+  void UpdateEventRewriteCapability();
+
   // For test:
   gfx::Rect GetInputMappingViewBoundsForTesting();
   void DismissEducationalViewForTesting();
@@ -203,8 +241,6 @@ class DisplayOverlayController : public ui::EventHandler,
   // References to UI elements owned by the overlay widget.
   raw_ptr<InputMappingView, DanglingUntriaged> input_mapping_view_ = nullptr;
   raw_ptr<InputMenuView, DanglingUntriaged> input_menu_view_ = nullptr;
-  raw_ptr<ButtonOptionsMenu, DanglingUntriaged> button_options_menu_ = nullptr;
-  raw_ptr<ButtonLabelList> button_label_list_ = nullptr;
   raw_ptr<MenuEntryView, DanglingUntriaged> menu_entry_ = nullptr;
   raw_ptr<EditFinishView, DanglingUntriaged> edit_finish_view_ = nullptr;
   raw_ptr<MessageView, DanglingUntriaged> message_ = nullptr;
@@ -213,6 +249,12 @@ class DisplayOverlayController : public ui::EventHandler,
   raw_ptr<EditingList, DanglingUntriaged> editing_list_ = nullptr;
 
   DisplayMode display_mode_ = DisplayMode::kNone;
+
+  // For beta.
+  std::unique_ptr<ash::GameDashboardWidget> input_mapping_widget_;
+  std::unique_ptr<ash::GameDashboardWidget> editing_list_widget_;
+  std::unique_ptr<ash::GameDashboardWidget> button_options_widget_;
+  std::unique_ptr<ash::GameDashboardWidget> button_label_list_widget_;
 };
 
 }  // namespace arc::input_overlay

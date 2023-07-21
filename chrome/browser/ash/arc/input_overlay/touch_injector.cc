@@ -288,7 +288,9 @@ void TouchInjector::UpdateFlags() {
       ash::ArcGameControlsFlag::kKnown | ash::ArcGameControlsFlag::kAvailable |
       (actions_.empty() ? ash::ArcGameControlsFlag::kEmpty : 0) |
       (touch_injector_enable_ ? ash::ArcGameControlsFlag::kEnabled : 0) |
-      (input_mapping_visible_ ? ash::ArcGameControlsFlag::kHint : 0));
+      (touch_injector_enable_ && input_mapping_visible_
+           ? ash::ArcGameControlsFlag::kHint
+           : 0));
   window_->SetProperty(ash::kArcGameControlsFlagsKey, flags);
 }
 
@@ -354,11 +356,13 @@ void TouchInjector::OnApplyPendingBinding() {
 }
 
 void TouchInjector::OnBindingSave() {
+  DCHECK(display_overlay_controller_);
   // Pending is already applied for beta version.
-  if (!IsBeta()) {
+  if (IsBeta()) {
+    display_overlay_controller_->TurnFlag(ash::ArcGameControlsFlag::kEdit,
+                                          /*turn_on=*/false);
+  } else {
     OnApplyPendingBinding();
-  }
-  if (display_overlay_controller_) {
     display_overlay_controller_->SetDisplayModeAlpha(DisplayMode::kView);
   }
   OnSaveProtoFile();
@@ -452,9 +456,17 @@ void TouchInjector::UpdatePositionsForRegister() {
 
 void TouchInjector::UpdateForOverlayBoundsChanged(
     const gfx::RectF& new_bounds) {
+  bool should_update_view = content_bounds_f_.width() != new_bounds.width() ||
+                            content_bounds_f_.height() != new_bounds.height();
+
   content_bounds_f_ = new_bounds;
-  for (auto& action : actions_)
+  for (auto& action : actions_) {
     action->UpdateTouchDownPositions();
+  }
+
+  if (should_update_view) {
+    NotifyContentBoundsSizeChanged();
+  }
 }
 
 void TouchInjector::CleanupTouchEvents() {
@@ -592,8 +604,10 @@ bool TouchInjector::LocatedEventOnMenuEntry(const ui::Event& event,
   auto menu_anchor_bounds =
       display_overlay_controller_->GetOverlayMenuEntryBounds();
   if (!menu_anchor_bounds) {
-    DCHECK(display_mode_ != DisplayMode::kView &&
-           display_mode_ != DisplayMode::kPreMenu);
+    if (!IsBeta()) {
+      DCHECK(display_mode_ != DisplayMode::kView &&
+             display_mode_ != DisplayMode::kPreMenu);
+    }
     return false;
   }
 
@@ -632,60 +646,62 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
     const ui::EventRewriter::Continuation continuation) {
   continuation_ = continuation;
 
-  // This is for Tab key as Accessibility requirement.
-  // - For key event, Tab key is used to enter into the |kPreMenu| mode. And any
-  // keys, except Space and Enter keys, are used to exit the |kPreMenu| and
-  // enter into the |kView| mode, and continue events in |kView| mode.
-  // - For any located events in |kPreMenu| mode, if it doesn't happen on the
-  // menu entry button, then it enters into the |kView| mode and continues
-  // events in |kView| mode.
-  if (display_mode_ == DisplayMode::kView && event.IsKeyEvent() &&
-      views::FocusManager::IsTabTraversalKeyEvent(*(event.AsKeyEvent()))) {
-    if (event.AsKeyEvent()->type() == ui::ET_KEY_PRESSED) {
-      CleanupTouchEvents();
-      display_overlay_controller_->SetDisplayModeAlpha(DisplayMode::kPreMenu);
-    }
-    return SendEvent(continuation, &event);
-  } else if (display_mode_ == DisplayMode::kPreMenu) {
-    if (event.IsKeyEvent()) {
-      if (ProcessKeyEventOnFocusedMenuEntry(*event.AsKeyEvent())) {
-        return SendEvent(continuation, &event);
-      }
-      display_overlay_controller_->SetDisplayModeAlpha(DisplayMode::kView);
-    } else if (LocatedEventOnMenuEntry(event, content_bounds_f_,
-                                       /*press_required=*/false)) {
+  if (IsBeta()) {
+    if (!can_rewrite_event_) {
       return SendEvent(continuation, &event);
-    } else {
-      display_overlay_controller_->SetDisplayModeAlpha(DisplayMode::kView);
+    }
+  } else {
+    // This is for Tab key as Accessibility requirement.
+    // - For key event, Tab key is used to enter into the |kPreMenu| mode. And
+    // any keys, except Space and Enter keys, are used to exit the |kPreMenu|
+    // and enter into the |kView| mode, and continue events in |kView| mode.
+    // - For any located events in |kPreMenu| mode, if it doesn't happen on the
+    // menu entry button, then it enters into the |kView| mode and continues
+    // events in |kView| mode.
+    if (display_mode_ == DisplayMode::kView && event.IsKeyEvent() &&
+        views::FocusManager::IsTabTraversalKeyEvent(*(event.AsKeyEvent()))) {
+      if (event.AsKeyEvent()->type() == ui::ET_KEY_PRESSED) {
+        CleanupTouchEvents();
+        display_overlay_controller_->SetDisplayModeAlpha(DisplayMode::kPreMenu);
+      }
+      return SendEvent(continuation, &event);
+    } else if (display_mode_ == DisplayMode::kPreMenu) {
+      if (event.IsKeyEvent()) {
+        if (ProcessKeyEventOnFocusedMenuEntry(*event.AsKeyEvent())) {
+          return SendEvent(continuation, &event);
+        }
+        display_overlay_controller_->SetDisplayModeAlpha(DisplayMode::kView);
+      } else if (LocatedEventOnMenuEntry(event, content_bounds_f_,
+                                         /*press_required=*/false)) {
+        return SendEvent(continuation, &event);
+      } else {
+        display_overlay_controller_->SetDisplayModeAlpha(DisplayMode::kView);
+      }
+    }
+
+    if (display_mode_ != DisplayMode::kView) {
+      return SendEvent(continuation, &event);
+    }
+
+    if (display_overlay_controller_ && display_mode_ == DisplayMode::kView) {
+      display_overlay_controller_->SetMenuEntryHoverState(
+          LocatedEventOnMenuEntry(event, content_bounds_f_,
+                                  /*press_required=*/false));
+    }
+
+    // |display_overlay_controller_| is null for unittest.
+    if (display_overlay_controller_ &&
+        LocatedEventOnMenuEntry(event, content_bounds_f_,
+                                /*press_required=*/true)) {
+      // Release all active touches when the display mode is changed from
+      // |kView| to |kMenu|.
+      CleanupTouchEvents();
+      display_overlay_controller_->SetDisplayModeAlpha(DisplayMode::kMenu);
+      return SendEvent(continuation, &event);
     }
   }
 
-  if (display_mode_ != DisplayMode::kView) {
-    return SendEvent(continuation, &event);
-  }
-
-  if (display_overlay_controller_ && display_mode_ == DisplayMode::kView) {
-    display_overlay_controller_->SetMenuEntryHoverState(
-        LocatedEventOnMenuEntry(event, content_bounds_f_,
-                                /*press_required=*/false));
-  }
-
-  // |display_overlay_controller_| is null for unittest.
-  if (display_overlay_controller_ &&
-      LocatedEventOnMenuEntry(event, content_bounds_f_,
-                              /*press_required=*/true)) {
-    // Release all active touches when the display mode is changed from |kView|
-    // to |kMenu|.
-    CleanupTouchEvents();
-    display_overlay_controller_->SetDisplayModeAlpha(DisplayMode::kMenu);
-    return SendEvent(continuation, &event);
-  }
-
-  if (text_input_active_) {
-    return SendEvent(continuation, &event);
-  }
-
-  if (!touch_injector_enable_) {
+  if (!touch_injector_enable_ || text_input_active_) {
     return SendEvent(continuation, &event);
   }
 
@@ -1035,6 +1051,12 @@ void TouchInjector::NotifyActionInputBindingUpdated(const Action& action) {
 void TouchInjector::NotifyActionNameUpdated(const Action& action) {
   for (auto& observer : observers_) {
     observer.OnActionNameUpdated(action);
+  }
+}
+
+void TouchInjector::NotifyContentBoundsSizeChanged() {
+  for (auto& observer : observers_) {
+    observer.OnContentBoundsSizeChanged();
   }
 }
 

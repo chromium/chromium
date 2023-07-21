@@ -5012,6 +5012,8 @@ source_set("unit_tests") {
     "arc/input_overlay/test/arc_test_window.h",
     "arc/input_overlay/test/event_capturer.cc",
     "arc/input_overlay/test/event_capturer.h",
+    "arc/input_overlay/test/overlay_view_test_base.cc",
+    "arc/input_overlay/test/overlay_view_test_base.h",
     "arc/input_overlay/test/test_utils.cc",
     "arc/input_overlay/test/test_utils.h",
     "arc/input_overlay/test/view_test_base.cc",

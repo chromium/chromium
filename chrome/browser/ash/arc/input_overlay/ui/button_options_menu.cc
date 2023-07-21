@@ -7,9 +7,7 @@
 #include "ash/bubble/bubble_utils.h"
 #include "ash/login/ui/views_utils.h"
 #include "ash/public/cpp/ash_view_ids.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/rounded_container.h"
 #include "ash/style/typography.h"
@@ -17,12 +15,12 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
+#include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_type_button_group.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_labels.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/name_tag.h"
-#include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
-#include "components/vector_icons/vector_icons.h"
+#include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -31,37 +29,14 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/table_layout.h"
-#include "ui/views/vector_icons.h"
 
 namespace arc::input_overlay {
-
-namespace {
-
-// Whole Menu measurements.
-constexpr int kMenuWidth = 316;
-
-// Triangle measurements.
-constexpr int kTriangleHeight = 14;
-
-// Spacing.
-constexpr int kMenuActionGap = 8;
-
-}  // namespace
-
-// static
-ButtonOptionsMenu* ButtonOptionsMenu::Show(DisplayOverlayController* controller,
-                                           Action* action) {
-  auto* parent = controller->GetOverlayWidgetContentsView();
-  auto* button_options_menu = parent->AddChildView(
-      std::make_unique<ButtonOptionsMenu>(controller, action));
-  button_options_menu->Init();
-  return button_options_menu;
-}
 
 ButtonOptionsMenu::ButtonOptionsMenu(DisplayOverlayController* controller,
                                      Action* action)
     : TouchInjectorObserver(), controller_(controller), action_(action) {
   controller_->AddTouchInjectorObserver(this);
+  Init();
 }
 
 ButtonOptionsMenu::~ButtonOptionsMenu() {
@@ -72,20 +47,11 @@ void ButtonOptionsMenu::Init() {
   SetUseDefaultFillLayout(true);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-  SetBorder(views::CreateEmptyBorder(
-      action_->on_left_or_middle_side()
-          ? gfx::Insets::TLBR(16, 16 + kTriangleHeight, 16, 16)
-          : gfx::Insets::TLBR(16, 16, 16, 16 + kTriangleHeight)));
-
   AddHeader();
   AddEditTitle();
   AddActionSelection();
   AddActionEdit();
   AddActionNameLabel();
-
-  SizeToPreferredSize();
-  SetArrowVerticalOffset(CalculateActionOffset(GetHeightForWidth(kMenuWidth)));
-  CalculatePosition();
 }
 
 void ButtonOptionsMenu::AddHeader() {
@@ -223,49 +189,22 @@ void ButtonOptionsMenu::AddActionNameLabel() {
   action_name_tile_->SetVisible(true);
 }
 
-void ButtonOptionsMenu::CalculatePosition() {
-  auto* action_view = action_->action_view();
-  int x = action_view->x();
-  int y = action_->GetUICenterPosition().y();
-  auto parent_size = controller_->GetOverlayWidgetContentsView()->size();
-
-  if (action_->on_left_or_middle_side()) {
-    x += action_view->width() + kMenuActionGap;
-  } else {
-    x -= width() + kMenuActionGap;
-  }
-
-  y -= height() / 2;
-  // The range of values for the y-position of the menu are [0, parent_height -
-  // height]. If the calculated y-position is beyond this range, adjust it based
-  // on whether the y-position is over or under the range by setting it to the
-  // maximum or minimum value respectively.
-  if (y > parent_size.height() - height()) {
-    y = std::max(0, parent_size.height() - height());
-  } else if (y < 0) {
-    y = 0;
-  }
-
-  SetPosition(gfx::Point(x, y));
-}
-
 void ButtonOptionsMenu::OnTrashButtonPressed() {
   controller_->RemoveAction(action_);
 }
 
 void ButtonOptionsMenu::OnDoneButtonPressed() {
   controller_->SaveToProtoFile();
-  controller_->RemoveButtonOptionsMenu();
+  controller_->RemoveButtonOptionsMenuWidget();
 }
 
 void ButtonOptionsMenu::OnButtonLabelAssignmentPressed() {
-  SetVisible(false);
-  controller_->AddButtonLabelList();
+  controller_->OnButtonOptionsMenuButtonLabelPressed(action_);
 }
 
 void ButtonOptionsMenu::OnActionRemoved(const Action& action) {
   DCHECK_EQ(action_, &action);
-  controller_->RemoveButtonOptionsMenu();
+  controller_->RemoveButtonOptionsMenuWidget();
 }
 
 void ButtonOptionsMenu::OnActionTypeChanged(Action* action,
@@ -277,8 +216,7 @@ void ButtonOptionsMenu::OnActionTypeChanged(Action* action,
   labels_view_ =
       action_edit_container_->AddChildView(EditLabels::CreateEditLabels(
           controller_, action_, key_name_tag_, /*set_title=*/false));
-  SizeToPreferredSize();
-  SetArrowVerticalOffset(CalculateActionOffset(GetHeightForWidth(kMenuWidth)));
+  controller_->UpdateButtonOptionsMenuWidgetBounds(action_);
 }
 
 void ButtonOptionsMenu::OnActionInputBindingUpdated(const Action& action) {
@@ -294,23 +232,6 @@ void ButtonOptionsMenu::OnActionNameUpdated(const Action& action) {
       action_name_tile_->SetSubLabel(*name_label);
     }
   }
-}
-
-int ButtonOptionsMenu::CalculateActionOffset(int height) {
-  int action_center_y = action_->GetUICenterPosition().y();
-  // If the position of the action is too close to the top, return the
-  // negative difference between the action position and half the height.
-  if (action_center_y < height / 2) {
-    return action_center_y - height / 2;
-  }
-  // If the position of the action is too close to the bottom, return
-  // the positive difference between the action position and half the
-  // height.
-  if (action_center_y > parent()->height() - height / 2) {
-    return action_center_y - (parent()->height() - height / 2);
-  }
-  // Otherwise, return an offset of zero.
-  return 0;
 }
 
 }  // namespace arc::input_overlay

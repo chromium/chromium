@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ui/events/keycodes/dom/dom_code.h"
-#include "ui/gfx/canvas.h"
 
 namespace arc::input_overlay {
 

@@ -181,4 +181,13 @@ void InputMappingView::OnActionInputBindingUpdated(const Action& action) {
   }
 }
 
+void InputMappingView::OnContentBoundsSizeChanged() {
+  if (!IsBeta()) {
+    return;
+  }
+
+  for (auto* const child : children()) {
+    static_cast<ActionView*>(child)->OnContentBoundsSizeChanged();
+  }
+}
 }  // namespace arc::input_overlay

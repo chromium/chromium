@@ -26,6 +26,10 @@
 
 namespace arc::input_overlay {
 
+namespace {
+constexpr int kAttachMargin = 8;
+}
+
 ActionView::ActionView(Action* action,
                        DisplayOverlayController* display_overlay_controller)
     : views::View(),
@@ -35,6 +39,10 @@ ActionView::~ActionView() = default;
 
 void ActionView::OnActionInputBindingUpdated() {
   SetViewContent(BindingOption::kCurrent);
+}
+
+void ActionView::OnContentBoundsSizeChanged() {
+  SetPositionFromCenterPosition(action_->GetUICenterPosition());
 }
 
 void ActionView::SetDisplayMode(DisplayMode mode, ActionLabel* editing_label) {
@@ -239,7 +247,7 @@ void ActionView::SetTouchPointCenter(const gfx::Point& touch_point_center) {
 
 void ActionView::ShowButtonOptionsMenu() {
   DCHECK(display_overlay_controller_);
-  display_overlay_controller_->AddButtonOptionsMenu(action_);
+  display_overlay_controller_->AddButtonOptionsMenuWidget(action_);
 }
 
 void ActionView::AddTouchPoint(ActionType action_type) {
@@ -269,6 +277,81 @@ gfx::Point ActionView::GetTouchCenterInWindow() const {
   auto pos = *touch_point_center_;
   pos.Offset(origin().x(), origin().y());
   return pos;
+}
+
+gfx::Point ActionView::CalculateAttachViewPositionInRootWindow(
+    const gfx::Rect& root_window_bounds,
+    const gfx::Point& window_content_origin,
+    ArrowContainer* attached_view) const {
+  auto origin_in_window = origin();
+  origin_in_window.Offset(window_content_origin.x(), window_content_origin.y());
+
+  // Check if `attached_view` can be placed on the left side or right side of
+  // this view. It depends on if there is enough space in its own display. If
+  // there is enough space on both sides, `can_attach_on_left` and
+  // `can_attach_on_right` are true.
+  bool can_attach_on_left = false, can_attach_on_right = false;
+
+  const auto attached_view_size = attached_view->GetPreferredSize();
+  // Width of `attached_view` including the margin of this view.
+  const int attached_view_width_extra =
+      kAttachMargin + attached_view_size.width();
+  if (origin_in_window.x() + width() + attached_view_width_extra <=
+      root_window_bounds.width()) {
+    can_attach_on_right = true;
+  }
+
+  if (origin_in_window.x() - attached_view_width_extra >= 0) {
+    can_attach_on_left = true;
+  }
+
+  // Calculate the position of x.
+  int x = 0;
+  const auto touch_center_in_window = GetTouchCenterInWindow();
+  // If the display space is not considered, the position of `attached_view` is
+  // toward to the center of the game window, which means if this view is on the
+  // left of the window, then `attached_view` should be placed on the right side
+  // of this view.
+  bool should_attach_on_right =
+      touch_center_in_window.x() < parent()->size().width() / 2.0;
+
+  // `final_attach_on_left` is the final decision based on
+  // `should_attach_on_right`, `can_attach_on_left` and `can_attach_on_right`.
+  bool final_attach_on_left = false;
+  if (should_attach_on_right) {
+    if (!can_attach_on_right && can_attach_on_left) {
+      // Attach `attached_view` on the left side of this view.
+      x = origin_in_window.x() - attached_view_width_extra;
+      final_attach_on_left = true;
+    } else {
+      // Attach `attached_view` on the right side of this view.
+      x = origin_in_window.x() + width() + kAttachMargin;
+      if (x + attached_view_size.width() > root_window_bounds.width()) {
+        x = root_window_bounds.width() - attached_view_size.width();
+      }
+    }
+  } else {
+    if (!can_attach_on_left && can_attach_on_right) {
+      // Attach `attached_view` on the right side of this view.
+      x = origin_in_window.x() + width() + kAttachMargin;
+    } else {
+      // Attach `attached_view` on the left side of this view.
+      x = std::max(0, origin_in_window.x() - attached_view_width_extra);
+      final_attach_on_left = true;
+    }
+  }
+
+  attached_view->SetArrowOnLeft(!final_attach_on_left);
+
+  // Check y position to make sure that `attached_view` shows completely inside
+  // of the display.
+  int y = std::max(0, window_content_origin.y() + touch_center_in_window.y() -
+                          attached_view_size.height() / 2);
+  y = std::min(y, root_window_bounds.height() - attached_view_size.height());
+  attached_view->SetArrowVerticalOffset(
+      touch_center_in_window.y() -
+      (y - window_content_origin.y() + attached_view_size.height() / 2));
+  return gfx::Point(x, y);
 }
 
 void ActionView::AddedToWidget() {

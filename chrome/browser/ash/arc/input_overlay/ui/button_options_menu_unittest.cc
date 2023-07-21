@@ -6,11 +6,10 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
+#include "chrome/browser/ash/arc/input_overlay/test/overlay_view_test_base.h"
 #include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
-#include "chrome/browser/ash/arc/input_overlay/test/view_test_base.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_type_button_group.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"
@@ -22,22 +21,7 @@
 
 namespace arc::input_overlay {
 
-namespace {
-
-class TestButtonOptionsMenu : public ButtonOptionsMenu {
- public:
-  TestButtonOptionsMenu(DisplayOverlayController* controller, Action* action)
-      : ButtonOptionsMenu(controller, action) {}
-  ~TestButtonOptionsMenu() override = default;
-
- private:
-  // ButtonOptionsMenu:
-  void CalculatePosition() override {}
-};
-
-}  // namespace
-
-class ButtonOptionsMenuTest : public ViewTestBase {
+class ButtonOptionsMenuTest : public OverlayViewTestBase {
  public:
   ButtonOptionsMenuTest() = default;
   ~ButtonOptionsMenuTest() override = default;
@@ -53,50 +37,28 @@ class ButtonOptionsMenuTest : public ViewTestBase {
     return 0;
   }
 
-  size_t GetActionViewSize() {
-    DCHECK(input_mapping_view_);
-    return input_mapping_view_->children().size();
-  }
+  size_t GetActionViewSize() { return input_mapping_view_->children().size(); }
 
   bool IsEditingListInZeroState() { return editing_list_->is_zero_state_; }
 
-  void ShowButtonOptionsMenu(ActionType action_type) {
-    switch (action_type) {
-      case ActionType::TAP:
-        tap_action_menu_.reset();
-        tap_action_menu_ = std::make_unique<TestButtonOptionsMenu>(
-            display_overlay_controller_.get(), tap_action_);
-        tap_action_menu_->Init();
-        break;
-      case ActionType::MOVE:
-        move_action_menu_.reset();
-        move_action_menu_ = std::make_unique<TestButtonOptionsMenu>(
-            display_overlay_controller_.get(), move_action_);
-        move_action_menu_->Init();
-        break;
-      default:
-        NOTREACHED();
-    }
-  }
-
-  void PressTrashButton(TestButtonOptionsMenu* menu) {
+  void PressTrashButton(ButtonOptionsMenu* menu) {
     DCHECK(menu);
     menu->OnTrashButtonPressed();
   }
 
-  ActionType GetActionType(TestButtonOptionsMenu* menu) {
+  ActionType GetActionType(ButtonOptionsMenu* menu) {
     DCHECK(menu);
     return menu->action()->GetType();
   }
 
-  void PressActionMoveButton(TestButtonOptionsMenu* menu) {
+  void PressActionMoveButton(ButtonOptionsMenu* menu) {
     DCHECK(menu);
     ActionTypeButtonGroup* button_group = menu->button_group_;
     DCHECK(button_group);
     button_group->OnActionMoveButtonPressed();
   }
 
-  void PressTapButton(TestButtonOptionsMenu* menu) {
+  void PressTapButton(ButtonOptionsMenu* menu) {
     DCHECK(menu);
     ActionTypeButtonGroup* button_group = menu->button_group_;
     DCHECK(button_group);
@@ -124,82 +86,84 @@ class ButtonOptionsMenuTest : public ViewTestBase {
     return false;
   }
 
-  std::unique_ptr<EditingList> editing_list_;
-  std::unique_ptr<TestButtonOptionsMenu> tap_action_menu_;
-  std::unique_ptr<TestButtonOptionsMenu> move_action_menu_;
-
  private:
   void SetUp() override {
     ui::ResourceBundle::SetLottieParsingFunctions(
         &lottie::ParseLottieAsStillImage,
         &lottie::ParseLottieAsThemedStillImage);
 
-    ViewTestBase::SetUp();
-    InitWithFeature(ash::features::kArcInputOverlayBeta);
-    SetDisplayMode(DisplayMode::kEdit);
-
-    editing_list_ =
-        std::make_unique<EditingList>(display_overlay_controller_.get());
-    editing_list_->Init();
-    DCHECK(editing_list_->scroll_content_);
-  }
-
-  void TearDown() override {
-    editing_list_.reset();
-    ViewTestBase::TearDown();
+    OverlayViewTestBase::SetUp();
   }
 };
 
 TEST_F(ButtonOptionsMenuTest, TestRemoveAction) {
-  CheckActions(touch_injector_.get(), /*expect_size=*/2u, /*expect_types=*/
-               {ActionType::TAP, ActionType::MOVE}, /*expect_ids=*/{1, 0});
-  EXPECT_EQ(2u, GetActionListItemsSize());
-  EXPECT_EQ(2u, GetActionViewSize());
-  EXPECT_FALSE(touch_injector_->actions()[0]->IsDeleted());
-  EXPECT_FALSE(touch_injector_->actions()[1]->IsDeleted());
+  CheckActions(touch_injector_, /*expect_size=*/3u, /*expect_types=*/
+               {ActionType::TAP, ActionType::TAP, ActionType::MOVE},
+               /*expect_ids=*/{0, 1, 2});
+  EXPECT_EQ(3u, GetActionListItemsSize());
+  EXPECT_EQ(3u, GetActionViewSize());
+  EXPECT_FALSE(tap_action_->IsDeleted());
+  EXPECT_FALSE(tap_action_two_->IsDeleted());
+  EXPECT_FALSE(move_action_->IsDeleted());
 
   // Remove Action Tap.
-  ShowButtonOptionsMenu(ActionType::TAP);
-  PressTrashButton(tap_action_menu_.get());
-  tap_action_menu_.reset();
+  auto* menu = ShowButtonOptionsMenu(tap_action_);
+  PressTrashButton(menu);
   // Default action is still in the list even it is deleted and it is marked as
   // deleted. But it doesn't show up visually.
-  CheckActions(touch_injector_.get(), /*expect_size=*/2u, /*expect_types=*/
-               {ActionType::TAP, ActionType::MOVE}, /*expect_ids=*/{1, 0});
-  EXPECT_TRUE(touch_injector_->actions()[0]->IsDeleted());
-  EXPECT_FALSE(touch_injector_->actions()[1]->IsDeleted());
-  EXPECT_EQ(1u, GetActionListItemsSize());
+  CheckActions(touch_injector_, /*expect_size=*/3u, /*expect_types=*/
+               {ActionType::TAP, ActionType::TAP, ActionType::MOVE},
+               /*expect_ids=*/{0, 1, 2});
+  EXPECT_TRUE(tap_action_->IsDeleted());
+  EXPECT_FALSE(tap_action_two_->IsDeleted());
+  EXPECT_FALSE(move_action_->IsDeleted());
+  EXPECT_EQ(2u, GetActionListItemsSize());
+  EXPECT_EQ(2u, GetActionViewSize());
+
+  // Remove Action Move.
+  menu = ShowButtonOptionsMenu(move_action_);
+  PressTrashButton(menu);
+  // Default action is still in the list even it is deleted and it is marked as
+  // deleted. But it doesn't show up visually.
+  CheckActions(touch_injector_, /*expect_size=*/3u, /*expect_types=*/
+               {ActionType::TAP, ActionType::TAP, ActionType::MOVE},
+               /*expect_ids=*/{0, 1, 2});
+  EXPECT_TRUE(tap_action_->IsDeleted());
+  EXPECT_FALSE(tap_action_two_->IsDeleted());
+  EXPECT_TRUE(move_action_->IsDeleted());
+  EXPECT_FALSE(IsEditingListInZeroState());
   EXPECT_EQ(1u, GetActionViewSize());
 
   // Remove Action Move.
-  ShowButtonOptionsMenu(ActionType::MOVE);
-  PressTrashButton(move_action_menu_.get());
-  move_action_menu_.reset();
+  menu = ShowButtonOptionsMenu(tap_action_two_);
+  PressTrashButton(menu);
   // Default action is still in the list even it is deleted and it is marked as
   // deleted. But it doesn't show up visually.
-  CheckActions(touch_injector_.get(), /*expect_size=*/2u, /*expect_types=*/
-               {ActionType::TAP, ActionType::MOVE}, /*expect_ids=*/{1, 0});
-  EXPECT_TRUE(touch_injector_->actions()[0]->IsDeleted());
-  EXPECT_TRUE(touch_injector_->actions()[1]->IsDeleted());
+  CheckActions(touch_injector_, /*expect_size=*/3u, /*expect_types=*/
+               {ActionType::TAP, ActionType::TAP, ActionType::MOVE},
+               /*expect_ids=*/{0, 1, 2});
+  EXPECT_TRUE(tap_action_->IsDeleted());
+  EXPECT_TRUE(tap_action_two_->IsDeleted());
+  EXPECT_TRUE(move_action_->IsDeleted());
   EXPECT_TRUE(IsEditingListInZeroState());
   EXPECT_EQ(0u, GetActionViewSize());
 }
 
 TEST_F(ButtonOptionsMenuTest, TestChangeActionType) {
   // Change Action Tap.
-  ShowButtonOptionsMenu(ActionType::TAP);
-  PressActionMoveButton(tap_action_menu_.get());
-  EXPECT_EQ(GetActionType(tap_action_menu_.get()), ActionType::MOVE);
-  EXPECT_TRUE(IsActionInTouchInjector(tap_action_menu_->action()));
-  EXPECT_TRUE(IsActionInEditingList(tap_action_menu_->action()));
-  tap_action_menu_.reset();
+  auto* menu = ShowButtonOptionsMenu(tap_action_);
+  EXPECT_EQ(GetActionType(menu), ActionType::TAP);
+  PressActionMoveButton(menu);
+  EXPECT_EQ(GetActionType(menu), ActionType::MOVE);
+  EXPECT_TRUE(IsActionInTouchInjector(menu->action()));
+  EXPECT_TRUE(IsActionInEditingList(menu->action()));
   // Change Action Move.
-  ShowButtonOptionsMenu(ActionType::MOVE);
-  PressTapButton(move_action_menu_.get());
-  EXPECT_EQ(GetActionType(move_action_menu_.get()), ActionType::TAP);
-  EXPECT_TRUE(IsActionInTouchInjector(move_action_menu_->action()));
-  EXPECT_TRUE(IsActionInEditingList(move_action_menu_->action()));
-  move_action_menu_.reset();
+  menu = ShowButtonOptionsMenu(move_action_);
+  EXPECT_EQ(GetActionType(menu), ActionType::MOVE);
+  PressTapButton(menu);
+  EXPECT_EQ(GetActionType(menu), ActionType::TAP);
+  EXPECT_TRUE(IsActionInTouchInjector(menu->action()));
+  EXPECT_TRUE(IsActionInEditingList(menu->action()));
 }
 
 }  // namespace arc::input_overlay

@@ -35,6 +35,7 @@
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/wm/core/window_util.h"
 
 namespace arc::input_overlay {
 namespace {
@@ -279,12 +280,53 @@ void ArcInputOverlayManager::OnWindowFocused(aura::Window* gained_focus,
     gained_focus_top_level_window = gained_focus->GetToplevelWindow();
   }
 
-  if (lost_focus_top_level_window == gained_focus_top_level_window) {
-    return;
-  }
+  // For beta, the window is still considered as focused when the focus is on
+  // its transient sibling window or the game dashboard main menu.
+  if (IsBeta()) {
+    // If `gained_window_by_transient` is nullptr, it means
+    // `gained_focus_top_level_window` is nullptr or not a transient window.
+    auto* gained_window_by_transient =
+        gained_focus_top_level_window
+            ? wm::GetTransientParent(gained_focus_top_level_window)
+            : nullptr;
+    // If `lost_window_by_transient` is nullptr, it means
+    // `lost_focus_top_level_window` is nullptr or not a transient window.
+    auto* lost_window_by_transient =
+        lost_focus_top_level_window
+            ? wm::GetTransientParent(lost_focus_top_level_window)
+            : nullptr;
 
-  UnRegisterWindow(lost_focus_top_level_window);
-  RegisterWindow(gained_focus_top_level_window);
+    // Check if the focus is on the GD main menu view.
+    auto* gained_window_by_main_menu =
+        GetGameWindow(gained_focus_top_level_window);
+
+    auto* lost_window_by_main_menu = GetGameWindow(lost_focus_top_level_window);
+
+    auto* real_gained_window =
+        gained_window_by_main_menu
+            ? gained_window_by_main_menu
+            : (gained_window_by_transient ? gained_window_by_transient
+                                          : gained_focus_top_level_window);
+    auto* real_lost_window =
+        lost_window_by_main_menu
+            ? lost_window_by_main_menu
+            : (lost_window_by_transient ? lost_window_by_transient
+                                        : lost_focus_top_level_window);
+
+    if (real_gained_window == real_lost_window) {
+      return;
+    }
+
+    UnRegisterWindow(real_lost_window);
+    RegisterWindow(real_gained_window);
+  } else {
+    if (lost_focus_top_level_window == gained_focus_top_level_window) {
+      return;
+    }
+
+    UnRegisterWindow(lost_focus_top_level_window);
+    RegisterWindow(gained_focus_top_level_window);
+  }
 }
 
 void ArcInputOverlayManager::OnTabletModeStarting() {
@@ -480,9 +522,14 @@ void ArcInputOverlayManager::RegisterWindow(aura::Window* window) {
       registered_top_level_window_ == window) {
     return;
   }
-  DCHECK_EQ(ash::window_util::GetFocusedWindow()->GetToplevelWindow(), window);
-  if (ash::window_util::GetFocusedWindow()->GetToplevelWindow() != window) {
-    return;
+
+  // It should always unregister the window first, then register another window.
+  DCHECK(!registered_top_level_window_);
+
+  // For Beta version, it may focus on its transient sibling window.
+  if (!IsBeta()) {
+    DCHECK_EQ(ash::window_util::GetFocusedWindow()->GetToplevelWindow(),
+              window);
   }
 
   auto it = input_overlay_enabled_windows_.find(window);
@@ -549,8 +596,18 @@ void ArcInputOverlayManager::RemoveDisplayOverlayController() {
   if (!registered_top_level_window_) {
     return;
   }
-  DCHECK(display_overlay_controller_);
-  display_overlay_controller_.reset();
+
+  // There is only one `display_overlay_controller_` active at a time. When
+  // window is destroyed, the attached sibling window is destroyed first, which
+  // triggers the window focus change. And then it also triggers the window
+  // unregister and gets `display_overlay_controller_` reset before here.
+  if (!IsBeta()) {
+    DCHECK(display_overlay_controller_);
+  }
+
+  if (display_overlay_controller_) {
+    display_overlay_controller_.reset();
+  }
 }
 
 void ArcInputOverlayManager::ResetForPendingTouchInjector(
@@ -591,6 +648,18 @@ void ArcInputOverlayManager::OnLoadingFinished(
   input_overlay_enabled_windows_.emplace(window, std::move(touch_injector));
   loading_data_windows_.erase(window);
   RegisterFocusedWindow();
+}
+
+aura::Window* ArcInputOverlayManager::GetGameWindow(aura::Window* window) {
+  if (!window || window->GetName() != "GameDashboardMainMenuView") {
+    return nullptr;
+  }
+
+  auto* widget = views::Widget::GetWidgetForNativeWindow(window);
+  DCHECK(widget);
+  DCHECK(widget->parent());
+  DCHECK(widget->parent()->GetNativeWindow());
+  return wm::GetTransientParent(widget->parent()->GetNativeWindow());
 }
 
 }  // namespace arc::input_overlay

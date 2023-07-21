@@ -7,14 +7,14 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "chrome/browser/ash/arc/input_overlay/test/overlay_view_test_base.h"
 #include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
-#include "chrome/browser/ash/arc/input_overlay/test/view_test_base.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
 
 namespace arc::input_overlay {
 
-class EditingListTest : public ViewTestBase {
+class EditingListTest : public OverlayViewTestBase {
  public:
   EditingListTest() = default;
   ~EditingListTest() override = default;
@@ -42,41 +42,24 @@ class EditingListTest : public ViewTestBase {
     DCHECK(editing_list_);
     editing_list_->OnAddButtonPressed();
   }
-
-  std::unique_ptr<EditingList> editing_list_;
-
- private:
-  void SetUp() override {
-    ViewTestBase::SetUp();
-    InitWithFeature(ash::features::kArcInputOverlayBeta);
-    SetDisplayMode(DisplayMode::kEdit);
-
-    editing_list_ =
-        std::make_unique<EditingList>(display_overlay_controller_.get());
-    editing_list_->Init();
-    DCHECK(editing_list_->scroll_content_);
-  }
-
-  void TearDown() override {
-    editing_list_.reset();
-    ViewTestBase::TearDown();
-  }
 };
 
 TEST_F(EditingListTest, TestEditingListAddNewAction) {
-  CheckActions(touch_injector_.get(), /*expect_size=*/2u, /*expect_types=*/
-               {ActionType::TAP, ActionType::MOVE}, /*expect_ids=*/{1, 0});
-  EXPECT_EQ(2u, GetActionListItemsSize());
-  EXPECT_EQ(2u, GetActionViewSize());
-  EXPECT_EQ(2u, GetTouchInjectorActionSize());
-  // Add a new action by pressing add button.
-  PressAddButton();
-  CheckActions(touch_injector_.get(), /*expect_size=*/3u, /*expect_types=*/
-               {ActionType::TAP, ActionType::MOVE, ActionType::TAP},
-               /*expect_ids=*/{1, 0, kMaxDefaultActionID + 1});
+  CheckActions(touch_injector_, /*expect_size=*/3u, /*expect_types=*/
+               {ActionType::TAP, ActionType::TAP, ActionType::MOVE},
+               /*expect_ids=*/{0, 1, 2});
   EXPECT_EQ(3u, GetActionListItemsSize());
   EXPECT_EQ(3u, GetActionViewSize());
   EXPECT_EQ(3u, GetTouchInjectorActionSize());
+  // Add a new action by pressing add button.
+  PressAddButton();
+  CheckActions(
+      touch_injector_, /*expect_size=*/4u, /*expect_types=*/
+      {ActionType::TAP, ActionType::TAP, ActionType::MOVE, ActionType::TAP},
+      /*expect_ids=*/{0, 1, 2, kMaxDefaultActionID + 1});
+  EXPECT_EQ(4u, GetActionListItemsSize());
+  EXPECT_EQ(4u, GetActionViewSize());
+  EXPECT_EQ(4u, GetTouchInjectorActionSize());
 }
 
 }  // namespace arc::input_overlay

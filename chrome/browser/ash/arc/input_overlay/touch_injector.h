@@ -142,7 +142,7 @@ class TouchInjector : public ui::EventRewriter {
       const ui::Event& event,
       const Continuation continuation) override;
 
-  aura::Window* window() { return window_; }
+  aura::Window* window() const { return window_; }
   const std::string& package_name() const { return package_name_; }
   const gfx::RectF& content_bounds_f() const { return content_bounds_f_; }
   const gfx::Rect content_bounds() const {
@@ -164,6 +164,10 @@ class TouchInjector : public ui::EventRewriter {
   bool input_mapping_visible() const { return input_mapping_visible_; }
   void store_input_mapping_visible(bool enable) {
     input_mapping_visible_ = enable;
+  }
+
+  void set_can_rewrite_event(bool can_rewrite_event) {
+    can_rewrite_event_ = can_rewrite_event;
   }
 
   bool first_launch() const { return first_launch_; }
@@ -267,6 +271,7 @@ class TouchInjector : public ui::EventRewriter {
   void NotifyActionTypeChanged(Action* action, Action* new_action);
   void NotifyActionInputBindingUpdated(const Action& action);
   void NotifyActionNameUpdated(const Action& action);
+  void NotifyContentBoundsSizeChanged();
 
   // For test.
   int GetRewrittenTouchIdForTesting(ui::PointerId original_id);
@@ -298,6 +303,8 @@ class TouchInjector : public ui::EventRewriter {
   // Linked to input mapping toggle in the menu. Set it enabled by default. This
   // is to save status if display overlay is destroyed during window operations.
   bool input_mapping_visible_ = true;
+
+  bool can_rewrite_event_ = true;
 
   // Used for UMA stats. Don't record the stats when users just switch the
   // toggle back and forth and finish at the same state. Only record the state

@@ -13,10 +13,7 @@
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
-#include "chrome/browser/ash/arc/input_overlay/ui/button_options_menu.h"
-#include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/gfx/canvas.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/view_class_properties.h"
@@ -26,43 +23,23 @@ namespace arc::input_overlay {
 namespace {
 
 constexpr int kMenuWidth = 316;
-constexpr int kTriangleHeight = 14;
-constexpr int kMenuActionSpacing = 8;
 
 }  // namespace
 
-// static
-ButtonLabelList* ButtonLabelList::Show(DisplayOverlayController* controller,
-                                       ButtonOptionsMenu* button_options_menu) {
-  auto* parent = controller->GetOverlayWidgetContentsView();
-  auto* action_list = parent->AddChildView(
-      std::make_unique<ButtonLabelList>(controller, button_options_menu));
-  action_list->Init();
-  return action_list;
-}
-
 ButtonLabelList::ButtonLabelList(
     DisplayOverlayController* display_overlay_controller,
-    ButtonOptionsMenu* button_options_menu)
-    : display_overlay_controller_(display_overlay_controller),
-      button_options_menu_(button_options_menu) {}
+    Action* action)
+    : display_overlay_controller_(display_overlay_controller), action_(action) {
+  Init();
+}
 
 ButtonLabelList::~ButtonLabelList() = default;
 
 void ButtonLabelList::Init() {
-  SetUseDefaultFillLayout(true);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-  SetBorder(views::CreateEmptyBorder(
-      button_options_menu_->action()->on_left_or_middle_side()
-          ? gfx::Insets::TLBR(16, 16 + kTriangleHeight, 16, 16)
-          : gfx::Insets::TLBR(16, 16, 16, 16 + kTriangleHeight)));
-
   AddHeader();
   AddActionLabels();
-
-  SizeToPreferredSize();
-  CalculatePosition();
 }
 
 void ButtonLabelList::AddHeader() {
@@ -112,7 +89,6 @@ void ButtonLabelList::AddActionLabels() {
           /*icon_type=*/ash::RadioButton::IconType::kCheck,
           /*radio_button_padding=*/gfx::Insets::VH(10, 10)));
 
-  auto name_label = button_options_menu_->action()->name_label();
   // TODO(b/274690042): Replace placeholder text with localized strings.
   const std::vector<std::u16string> action_name_list = {
       u"Move", u"Jump",  u"Attack", u"Special ability", u"Crouch",
@@ -122,6 +98,8 @@ void ButtonLabelList::AddActionLabels() {
         base::BindRepeating(&ButtonLabelList::OnActionLabelPressed,
                             base::Unretained(this)),
         action_name);
+
+    auto name_label = action_->name_label();
     if (name_label && !(*name_label).compare(action_name)) {
       button->SetSelected(true);
     }
@@ -130,41 +108,12 @@ void ButtonLabelList::AddActionLabels() {
 
 void ButtonLabelList::OnActionLabelPressed() {
   auto* selected_button = button_group_->GetSelectedButtons()[0];
-  display_overlay_controller_->ChangeActionName(button_options_menu_->action(),
+  display_overlay_controller_->ChangeActionName(action_,
                                                 selected_button->GetText());
 }
 
 void ButtonLabelList::OnBackButtonPressed() {
-  button_options_menu_->SetVisible(true);
-  display_overlay_controller_->RemoveButtonLabelList();
-}
-
-void ButtonLabelList::CalculatePosition() {
-  auto* action = button_options_menu_->action();
-  auto* action_view = action->action_view();
-  int x = action_view->x();
-  int y = action->GetUICenterPosition().y();
-  auto parent_size =
-      display_overlay_controller_->GetOverlayWidgetContentsView()->size();
-
-  if (action->on_left_or_middle_side()) {
-    x += action_view->width() + kMenuActionSpacing;
-  } else {
-    x -= width() + kMenuActionSpacing;
-  }
-
-  y -= height() / 2;
-  // The range of values for the y-position of the menu are [0, parent_height -
-  // height]. If the calculated y-position is beyond this range, adjust it based
-  // on whether the y-position is over or under the range by setting it to the
-  // maximum or minimum value respectively.
-  if (y > parent_size.height() - height()) {
-    y = std::max(0, parent_size.height() - height());
-  } else if (y < 0) {
-    y = 0;
-  }
-
-  SetPosition(gfx::Point(x, y));
+  display_overlay_controller_->OnButtonLabelListBackButtonPressed();
 }
 
 }  // namespace arc::input_overlay

@@ -44,16 +44,10 @@ class NameTag;
 // +----------------------------------+
 class ButtonOptionsMenu : public ArrowContainer, public TouchInjectorObserver {
  public:
-  static ButtonOptionsMenu* Show(DisplayOverlayController* controller,
-                                 Action* action);
-
   ButtonOptionsMenu(DisplayOverlayController* controller, Action* action);
   ButtonOptionsMenu(const ButtonOptionsMenu&) = delete;
   ButtonOptionsMenu& operator=(const ButtonOptionsMenu&) = delete;
   ~ButtonOptionsMenu() override;
-
-  // Calculates triangle wedge offset.
-  int CalculateActionOffset(int height);
 
   Action* action() const { return action_; }
 
@@ -74,9 +68,6 @@ class ButtonOptionsMenu : public ArrowContainer, public TouchInjectorObserver {
   void OnTrashButtonPressed();
   void OnDoneButtonPressed();
   void OnButtonLabelAssignmentPressed();
-
-  // View position calculation. Make it virtual for unit test.
-  virtual void CalculatePosition();
 
   // TouchInjectorObserver:
   void OnActionRemoved(const Action& action) override;
