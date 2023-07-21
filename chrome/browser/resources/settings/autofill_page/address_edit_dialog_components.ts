@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+
 type AddressEntry = chrome.autofillPrivate.AddressEntry;
 
 /**
@@ -21,10 +23,9 @@ function isValueNonEmpty(value: string|undefined): boolean {
  * property, which is how interface controls (e.g. input) communicate with it.
  */
 export class AddressComponentUi {
-  protected readonly property: KeySubset<AddressEntry, string|undefined>;
-
   private readonly address_: AddressEntry;
   private readonly originalAddress_?: AddressEntry;
+  private readonly property_: KeySubset<AddressEntry, string|undefined>;
   private readonly skipValidation_: boolean;
   private isValidatable_: boolean;
   readonly isTextarea: boolean;
@@ -35,6 +36,7 @@ export class AddressComponentUi {
   constructor(
       address: AddressEntry,
       originalAddress: AddressEntry|undefined,
+      fieldType: chrome.autofillPrivate.ServerFieldType,
       label: string,
       additionalClassName: string = '',
       isTextarea: boolean = false,
@@ -43,6 +45,7 @@ export class AddressComponentUi {
   ) {
     this.address_ = address;
     this.originalAddress_ = originalAddress;
+    this.property_ = this.getProperty(fieldType);
     this.label = label;
     this.additionalClassName = additionalClassName;
     this.isTextarea = isTextarea;
@@ -104,58 +107,55 @@ export class AddressComponentUi {
     this.isValidatable_ = true;
   }
 
+  // TODO(crbug.com/1441904): remove this switch case in favour of field
+  // mapping in AddressEntry.
+  protected getProperty(fieldType: chrome.autofillPrivate.ServerFieldType):
+      KeySubset<AddressEntry, string|undefined> {
+    switch (fieldType) {
+      case chrome.autofillPrivate.ServerFieldType.NAME_FULL:
+        return 'fullName';
+      case chrome.autofillPrivate.ServerFieldType.NAME_HONORIFIC_PREFIX:
+        return 'honorific';
+      case chrome.autofillPrivate.ServerFieldType.COMPANY_NAME:
+        return 'companyName';
+      case chrome.autofillPrivate.ServerFieldType.ADDRESS_HOME_STREET_ADDRESS:
+        return 'addressLines';
+      case chrome.autofillPrivate.ServerFieldType.ADDRESS_HOME_STATE:
+        return 'addressLevel1';
+      case chrome.autofillPrivate.ServerFieldType.ADDRESS_HOME_CITY:
+        return 'addressLevel2';
+      case chrome.autofillPrivate.ServerFieldType
+          .ADDRESS_HOME_DEPENDENT_LOCALITY:
+        return 'addressLevel3';
+      case chrome.autofillPrivate.ServerFieldType.ADDRESS_HOME_ZIP:
+        return 'postalCode';
+      case chrome.autofillPrivate.ServerFieldType.ADDRESS_HOME_SORTING_CODE:
+        return 'sortingCode';
+      case chrome.autofillPrivate.ServerFieldType.ADDRESS_HOME_COUNTRY:
+        return 'countryCode';
+      case chrome.autofillPrivate.ServerFieldType.PHONE_HOME_WHOLE_NUMBER:
+        return 'phoneNumber';
+      case chrome.autofillPrivate.ServerFieldType.EMAIL_ADDRESS:
+        return 'emailAddress';
+    }
+    assertNotReached('Unsupported field type: ' + fieldType);
+  }
+
   /**
    * Gets the value from the address that's associated with this component.
    */
   protected getValue(address: AddressEntry): string|undefined {
-    return address[this.property];
+    return address[this.property_];
   }
 
   /**
    * Sets the value in the address that's associated with this component.
    */
   protected setValue(value: string|undefined, address: AddressEntry): void {
-    address[this.property] = value;
+    address[this.property_] = value;
   }
 
   private hasValue_(address = this.address_): boolean {
     return isValueNonEmpty(this.getValue(address));
   }
-}
-
-export class HonorificComponentUi extends AddressComponentUi {
-  protected override readonly property = 'honorific';
-}
-export class CompanyNameComponentUi extends AddressComponentUi {
-  protected override readonly property = 'companyName';
-}
-export class FullNamesComponentUi extends AddressComponentUi {
-  protected override readonly property = 'fullName';
-}
-export class AddressLinesComponentUi extends AddressComponentUi {
-  protected override readonly property = 'addressLines';
-}
-export class AddressLevel1ComponentUi extends AddressComponentUi {
-  protected override readonly property = 'addressLevel1';
-}
-export class AddressLevel2ComponentUi extends AddressComponentUi {
-  protected override readonly property = 'addressLevel2';
-}
-export class AddressLevel3ComponentUi extends AddressComponentUi {
-  protected override readonly property = 'addressLevel3';
-}
-export class PostalCodeComponentUi extends AddressComponentUi {
-  protected override readonly property = 'postalCode';
-}
-export class CountryCodeComponentUi extends AddressComponentUi {
-  protected override readonly property = 'countryCode';
-}
-export class SortingCodeComponentUi extends AddressComponentUi {
-  protected override readonly property = 'sortingCode';
-}
-export class PhoneComponentUi extends AddressComponentUi {
-  protected override readonly property = 'phoneNumber';
-}
-export class EmailComponentUi extends AddressComponentUi {
-  protected override readonly property = 'emailAddress';
 }

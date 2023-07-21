@@ -45,7 +45,7 @@ type AddressEntry = chrome.autofillPrivate.AddressEntry;
 type AccountInfo = chrome.autofillPrivate.AccountInfo;
 type AddressComponents = chrome.autofillPrivate.AddressComponents;
 const AddressSource = chrome.autofillPrivate.AddressSource;
-const AddressField = chrome.autofillPrivate.AddressField;
+const ServerFieldType = chrome.autofillPrivate.ServerFieldType;
 const SettingsAddressEditDialogElementBase = I18nMixin(PolymerElement);
 
 export class SettingsAddressEditDialogElement extends
@@ -186,31 +186,32 @@ export class SettingsAddressEditDialogElement extends
       this.components_ = [];
       for (const row of format.components) {
         // If this is the name field, add a honorific title row before it.
-        if (row.row[0].field === AddressField.FULL_NAME &&
+        if (row.row[0].field === ServerFieldType.NAME_FULL &&
             this.showHonorific_) {
-          this.components_.push(
-              [new ADDRESS_FIELD_COMPONENT_UI[AddressField.HONORIFIC](
-                  this.address, this.originalAddress_,
-                  this.i18n('honorificLabel'), 'long')]);
+          this.components_.push([new uiComponents.AddressComponentUi(
+              this.address, this.originalAddress_,
+              ServerFieldType.NAME_HONORIFIC_PREFIX,
+              this.i18n('honorificLabel'), 'long')]);
         }
 
         this.components_.push(row.row.map(
-            component => new ADDRESS_FIELD_COMPONENT_UI[component.field](
-                this.address, this.originalAddress_, component.fieldName,
-                component.isLongField ? 'long' : '',
-                component.field === AddressField.ADDRESS_LINES, skipValidation,
-                component.isRequired)));
+            component => new uiComponents.AddressComponentUi(
+                this.address, this.originalAddress_, component.field,
+                component.fieldName, component.isLongField ? 'long' : '',
+                component.field === ServerFieldType.ADDRESS_HOME_STREET_ADDRESS,
+                skipValidation, component.isRequired)));
       }
 
       // Phone and email do not come in the address format as fields, but
       // should be editable and saveable in the resulting address.
       this.components_.push([
-        new uiComponents.PhoneComponentUi(
-            this.address, this.originalAddress_, this.i18n('addressPhone'),
+        new uiComponents.AddressComponentUi(
+            this.address, this.originalAddress_,
+            ServerFieldType.PHONE_HOME_WHOLE_NUMBER, this.i18n('addressPhone'),
             'last-row'),
-        new uiComponents.EmailComponentUi(
-            this.address, this.originalAddress_, this.i18n('addressEmail'),
-            'long last-row'),
+        new uiComponents.AddressComponentUi(
+            this.address, this.originalAddress_, ServerFieldType.EMAIL_ADDRESS,
+            this.i18n('addressEmail'), 'long last-row'),
       ]);
 
       // Because of potentially added honorific field the resulting components
@@ -409,21 +410,6 @@ declare global {
 
 customElements.define(
     SettingsAddressEditDialogElement.is, SettingsAddressEditDialogElement);
-
-export const ADDRESS_FIELD_COMPONENT_UI: Record<
-    chrome.autofillPrivate.AddressField,
-    typeof uiComponents.AddressComponentUi> = {
-  [AddressField.HONORIFIC]: uiComponents.HonorificComponentUi,
-  [AddressField.COMPANY_NAME]: uiComponents.CompanyNameComponentUi,
-  [AddressField.FULL_NAME]: uiComponents.FullNamesComponentUi,
-  [AddressField.ADDRESS_LINES]: uiComponents.AddressLinesComponentUi,
-  [AddressField.ADDRESS_LEVEL_1]: uiComponents.AddressLevel1ComponentUi,
-  [AddressField.ADDRESS_LEVEL_2]: uiComponents.AddressLevel2ComponentUi,
-  [AddressField.ADDRESS_LEVEL_3]: uiComponents.AddressLevel3ComponentUi,
-  [AddressField.POSTAL_CODE]: uiComponents.PostalCodeComponentUi,
-  [AddressField.COUNTRY_CODE]: uiComponents.CountryCodeComponentUi,
-  [AddressField.SORTING_CODE]: uiComponents.SortingCodeComponentUi,
-};
 
 export interface CountryDetailManager {
   /**
