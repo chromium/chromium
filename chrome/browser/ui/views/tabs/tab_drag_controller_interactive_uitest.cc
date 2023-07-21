@@ -29,6 +29,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -1993,6 +1994,53 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
   EXPECT_EQ("1", IDString(browser()->tab_strip_model()));
   EXPECT_FALSE(GetIsDragged(browser()));
+}
+
+// Replaces a tab being dragged before the user moved enough to start a drag.
+#if (BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH))
+// TODO(crbug.com/1466682) Test is flaky on ChromeOS/Lacros - releasing input
+// does not always end the drag.
+#define MAYBE_ReplaceBeforeStartedDragging DISABLED_ReplaceBeforeStartedDragging
+#else
+#define MAYBE_ReplaceBeforeStartedDragging ReplaceBeforeStartedDragging
+#endif
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+                       MAYBE_ReplaceBeforeStartedDragging) {
+  AddTabsAndResetBrowser(browser(), 1);
+  TabStrip* tab_strip = GetTabStripForBrowser(browser());
+
+  // Click on the first tab, but don't move it.
+  gfx::Point tab_0_center(GetCenterInScreenCoordinates(tab_strip->tab_at(0)));
+  ASSERT_TRUE(PressInput(tab_0_center));
+
+  // A drag session should exist, but the drag should not have started.
+  ASSERT_TRUE(tab_strip->GetDragContext()->IsDragSessionActive());
+  ASSERT_TRUE(TabDragController::IsActive());
+  ASSERT_FALSE(HasDragStarted(tab_strip));
+
+  // Replace the tab being dragged.
+  std::unique_ptr<content::WebContents> new_web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->profile()));
+  browser()->tab_strip_model()->ReplaceWebContentsAt(
+      0, std::move(new_web_contents));
+
+  // The drag session should still exist, and still not be started.
+  ASSERT_TRUE(tab_strip->GetDragContext()->IsDragSessionActive());
+  ASSERT_TRUE(TabDragController::IsActive());
+  ASSERT_FALSE(HasDragStarted(tab_strip));
+
+  // Move the mouse enough to start the drag.  It doesn't matter whether this
+  // is enough to create a window or not.
+  ASSERT_TRUE(DragInputTo(gfx::Point(tab_0_center.x() + 40, tab_0_center.y())));
+
+  // Drag should now have started.
+  ASSERT_TRUE(HasDragStarted(tab_strip));
+
+  // The replaced webcontents should not have an id character.
+  EXPECT_EQ("? 1", IDString(browser()->tab_strip_model()));
+
+  EXPECT_TRUE(ReleaseInput());
 }
 
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,

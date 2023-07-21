@@ -495,6 +495,13 @@ void TabDragController::Init(TabDragContext* source_context,
         NOTREACHED_NORETURN();
     }
   }
+
+  // Start listening for tabs to be closed or replaced in `source_context_`, in
+  // case this happens before the mouse is moved enough to fully start the drag.
+  // See crbug/1445776.
+  attached_context_tabs_closed_tracker_ =
+      std::make_unique<DraggedTabsClosedTracker>(
+          source_context_->GetTabStripModel(), this);
 }
 
 // static
@@ -588,6 +595,13 @@ void TabDragController::Drag(const gfx::Point& point_in_screen) {
   if (current_state_ == DragState::kNotStarted) {
     if (!CanStartDrag(point_in_screen))
       return;  // User hasn't dragged far enough yet.
+
+    // If any of the tabs have disappeared (e.g. closed or discarded), cancel
+    // the drag session. See crbug.com/1445776.
+    if (GetViewsMatchingDraggedContents(source_context_).empty()) {
+      EndDrag(END_DRAG_CANCEL);
+      return;
+    }
 
     // On windows SaveFocus() may trigger a capture lost, which destroys us.
     {
@@ -1740,10 +1754,11 @@ gfx::Point TabDragController::GetAttachedDragPoint(
 
 std::vector<TabSlotView*> TabDragController::GetViewsMatchingDraggedContents(
     TabDragContext* context) {
-  TabStripModel* model = attached_context_->GetTabStripModel();
+  const TabStripModel* const model = context->GetTabStripModel();
   std::vector<TabSlotView*> views;
   for (size_t i = first_tab_index(); i < drag_data_.size(); ++i) {
-    int model_index = model->GetIndexOfWebContents(drag_data_[i].contents);
+    const int model_index =
+        model->GetIndexOfWebContents(drag_data_[i].contents);
     if (model_index == TabStripModel::kNoTab)
       return std::vector<TabSlotView*>();
     views.push_back(context->GetTabAt(model_index));
