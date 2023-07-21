@@ -48,7 +48,7 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest,
       cx_events::AudioJackDeviceType::kMicrophone);
 }
 
-TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardConnectionType) {
+TEST(CrosTelemetryEventServiceConvertersTest, ConvertKeyboardConnectionType) {
   EXPECT_EQ(
       Convert(crosapi::TelemetryKeyboardConnectionType::kUnmappedEnumField),
       cx_events::KeyboardConnectionType::kNone);
@@ -66,7 +66,7 @@ TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardConnectionType) {
             cx_events::KeyboardConnectionType::kUnknown);
 }
 
-TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardPhysicalLayout) {
+TEST(CrosTelemetryEventServiceConvertersTest, ConvertKeyboardPhysicalLayout) {
   EXPECT_EQ(
       Convert(crosapi::TelemetryKeyboardPhysicalLayout::kUnmappedEnumField),
       cx_events::PhysicalKeyboardLayout::kNone);
@@ -78,7 +78,7 @@ TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardPhysicalLayout) {
             cx_events::PhysicalKeyboardLayout::kChromeOs);
 }
 
-TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardMechanicalLayout) {
+TEST(CrosTelemetryEventServiceConvertersTest, ConvertKeyboardMechanicalLayout) {
   EXPECT_EQ(
       Convert(crosapi::TelemetryKeyboardMechanicalLayout::kUnmappedEnumField),
       cx_events::MechanicalKeyboardLayout::kNone);
@@ -96,7 +96,8 @@ TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardMechanicalLayout) {
             cx_events::MechanicalKeyboardLayout::kJis);
 }
 
-TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardNumberPadPresence) {
+TEST(CrosTelemetryEventServiceConvertersTest,
+     ConvertKeyboardNumberPadPresence) {
   EXPECT_EQ(
       Convert(crosapi::TelemetryKeyboardNumberPadPresence::kUnmappedEnumField),
       cx_events::KeyboardNumberPadPresence::kNone);
@@ -111,7 +112,7 @@ TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardNumberPadPresence) {
             cx_events::KeyboardNumberPadPresence::kNotPresent);
 }
 
-TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardTopRowKey) {
+TEST(CrosTelemetryEventServiceConvertersTest, ConvertKeyboardTopRowKey) {
   EXPECT_EQ(Convert(crosapi::TelemetryKeyboardTopRowKey::kUnmappedEnumField),
             cx_events::KeyboardTopRowKey::kNone);
 
@@ -187,7 +188,7 @@ TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardTopRowKey) {
             cx_events::KeyboardTopRowKey::kDelete);
 }
 
-TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardTopRightKey) {
+TEST(CrosTelemetryEventServiceConvertersTest, ConvertKeyboardTopRightKey) {
   EXPECT_EQ(Convert(crosapi::TelemetryKeyboardTopRightKey::kUnmappedEnumField),
             cx_events::KeyboardTopRightKey::kNone);
 
