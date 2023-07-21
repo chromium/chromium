@@ -4,6 +4,7 @@
     --prefers-color-scheme:invalid;
     --prefers-reduced-motion:invalid;
     --prefers-reduced-data:invalid;
+    --prefers-reduced-transparency:invalid;
     --prefers-contrast:invalid;
     --color-gamut:invalid;
     --forced-colors:invalid;
@@ -15,6 +16,8 @@
   @media (prefers-reduced-motion: reduce) { p { --prefers-reduced-motion:reduce; } }
   @media (prefers-reduced-data: no-preference) { p { --prefers-reduced-data:no-preference; } }
   @media (prefers-reduced-data: reduce) { p { --prefers-reduced-data:reduce; } }
+  @media (prefers-reduced-transparency: no-preference) { p { --prefers-reduced-transparency:no-preference; } }
+  @media (prefers-reduced-transparency: reduce) { p { --prefers-reduced-transparency:reduce; } }
   @media (prefers-contrast: no-preference) { p { --prefers-contrast:no-preference; } }
   @media (prefers-contrast: more) { p { --prefers-contrast:more; } }
   @media (prefers-contrast: less) { p { --prefers-contrast:less; } }
