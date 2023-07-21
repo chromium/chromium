@@ -42,25 +42,17 @@ void RepostFormTabHelper::PresentDialog(
     return;
   }
 
+  is_presenting_dialog_ = true;
   base::OnceClosure on_dialog_presented = base::BindOnce(
       &RepostFormTabHelper::OnDialogPresented, weak_factory_.GetWeakPtr());
 
-  __block base::OnceCallback<void(bool)> block_callback = base::BindOnce(
-      [](base::OnceClosure on_dialog_presented,
-         base::OnceCallback<void(bool)> callback, bool should_continue) {
-        if (!on_dialog_presented.IsCancelled())
-          std::move(on_dialog_presented).Run();
-        std::move(callback).Run(should_continue);
-      },
-      std::move(on_dialog_presented), std::move(callback));
+  callback = std::move(callback).Then(std::move(on_dialog_presented));
 
-  is_presenting_dialog_ = true;
   [delegate_ repostFormTabHelper:this
       presentRepostFormDialogForWebState:web_state_
                            dialogAtPoint:location
-                       completionHandler:^(BOOL should_continue) {
-                         std::move(block_callback).Run(should_continue);
-                       }];
+                       completionHandler:base::CallbackToBlock(
+                                             std::move(callback))];
 }
 
 void RepostFormTabHelper::SetDelegate(
