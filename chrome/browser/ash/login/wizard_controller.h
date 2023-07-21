@@ -344,8 +344,12 @@ class WizardController : public OobeUI::Observer {
   // Shows images login screen.
   void ShowLoginScreen();
 
-  // Check if advancing to `screen` is allowed using screen priorities. Return
-  // true if the priority of `screen` is higher or equal to current screen.
+  // Show OOBE screen: resume if pending screen otherwise show welcome screen.
+  void ContinueOobeFlow();
+
+  // Check if advancing to `screen` is allowed using screen priorities.
+  // Return true if the priority of `screen` is higher or equal to current
+  // screen.
   bool CanNavigateTo(OobeScreenId screen_id);
 
   // Shows default screen depending on device ownership.

@@ -261,6 +261,8 @@ const StaticOobeScreenId kResumableOobeScreens[] = {
     UpdateView::kScreenId,
     EnrollmentScreenView::kScreenId,
     AutoEnrollmentCheckScreenView::kScreenId,
+    UserCreationView::kScreenId,
+    AddChildScreenView::kScreenId,
 };
 
 const StaticOobeScreenId kResumablePostLoginScreens[] = {
@@ -551,6 +553,17 @@ void WizardController::OnDestroyingOobeUI() {
 
 void WizardController::HideCurrentScreen() {
   SetCurrentScreen(nullptr);
+}
+
+void WizardController::ContinueOobeFlow() {
+  // Use the saved screen preference from Local State if exist.
+  const std::string screen_pref =
+      GetLocalState()->GetString(prefs::kOobeScreenPending);
+  if (!screen_pref.empty() && HasScreen(PrefToScreenId(screen_pref))) {
+    AdvanceToScreen(PrefToScreenId(screen_pref));
+  } else {
+    ShowPackagedLicenseScreen();
+  }
 }
 
 void WizardController::AdvanceToScreenAfterHIDDetection(
@@ -964,7 +977,7 @@ void WizardController::ShowNetworkScreen() {
 void WizardController::OnOwnershipStatusCheckDone(
     DeviceSettingsService::OwnershipStatus status) {
   if (status == DeviceSettingsService::OwnershipStatus::kOwnershipNone) {
-    ShowPackagedLicenseScreen();
+    ContinueOobeFlow();
   } else {
     ShowLoginScreen();
   }
@@ -2446,7 +2459,8 @@ void WizardController::SetCurrentScreen(BaseScreen* new_current) {
 
   // First remember how far have we reached so that we can resume if needed.
   if (!demo_setup_controller_) {
-    if (is_out_of_box_ && IsResumableOobeScreen(current_screen_->screen_id())) {
+    if (!wizard_context_->is_add_person_flow &&
+        IsResumableOobeScreen(current_screen_->screen_id())) {
       StartupUtils::SaveOobePendingScreen(current_screen_->screen_id().name);
     } else if (IsResumablePostLoginScreen(current_screen_->screen_id()) &&
                !wizard_context_->is_cloud_ready_update_flow &&
