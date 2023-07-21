@@ -7223,7 +7223,7 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="ContentSuggestions.Feed.SignIn.ShowSyncnHalfSheetFromFeed">
+<action name="ContentSuggestions.Feed.SignIn.ShowSyncHalfSheetFromFeed">
   <owner>sczs@google.com</owner>
   <owner>tinazwang@chromium.org</owner>
   <owner>feed@chromium.org</owner>
