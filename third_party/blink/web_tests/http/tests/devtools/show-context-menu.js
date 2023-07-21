@@ -6,10 +6,7 @@ import {TestRunner} from 'test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests type checks in DevToolsHost.showContextMenuAtPoint\n`);
-  try {
-    InspectorFrontendHost.showContextMenuAtPoint(1.1, 2.2, [0x41414141]);
-  } catch (e) {
-    TestRunner.completeTest();
-  }
+  InspectorFrontendHost.showContextMenuAtPoint(1.1, 2.2, [0x41414141]);
+  TestRunner.completeTest();
 })();
 
