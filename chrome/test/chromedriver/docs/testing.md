@@ -18,7 +18,8 @@ taking no more than a few milliseconds) and be very stable.
 We run them on the commit queue on all desktop platforms.
 
 Here are the commands to build and run the unit tests:
-```
+
+```bash
 autoninja -C out/Default chromedriver_unittests
 out/Default/chromedriver_unittests
 ```
@@ -37,7 +38,8 @@ are in a chromium checkout.
 
 To run these tests, first build Chrome and ChromeDriver, and then
 invoke `run_py_tests.py`:
-```
+
+```bash
 autoninja -C out/Default chrome chromedriver
 vpython3 <CHROMEDRIVER_DIR>/test/run_py_tests.py --chromedriver=out/Default/chromedriver
 ```
@@ -60,12 +62,12 @@ The `*` character can be used inside the filter as a wildcard.
 
 To specify multiple tests in the filter, separate them with `:` characters.
 
-### Disabling a test
+### Disabling an integration test
 
 If there are any test cases that fail or are flaky, and you can't fix them
 quickly, please add the test names to one of the filters near the beginning
 of `run_py_tests.py`. If the failure is due to a bug, please file an issue at
-https://crbug.com/chromedriver/new and include the link to the issue as a
+<https://crbug.com/chromedriver/new> and include the link to the issue as a
 comment. If the failure is intentional (e.g., a feature is not supported on a
 particilar platform), explain it in a comment.
 
@@ -76,6 +78,7 @@ named `chromedriver_py_tests`.
 
 When running inside the CQ, the `--test-type=integration` option is passed to
 the `run_py_tests.py` command line. This has the following effects:
+
 * All tests listed in
   [`_INTEGRATION_NEGATIVE_FILTER`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/chromedriver/test/run_py_tests.py?q=_INTEGRATION_NEGATIVE_FILTER)
   are skipped. Tests in this list should have comments indicating why they
@@ -88,6 +91,7 @@ the `run_py_tests.py` command line. This has the following effects:
 
 The Python integration tests can be used to verify ChromeDriver interaction
 with Chrome running on Android devices. This requires the following equipment:
+
 * A Linux machine to run the Python script and ChromeDriver.
   (While ChromeDriver can also control Android Chrome from Windows and Mac, the
   Python integration tests only support controlling Android Chrome from Linux.)
@@ -96,6 +100,7 @@ with Chrome running on Android devices. This requires the following equipment:
 
 To run the tests, invoke `run_py_tests.py` with `--android-package=package_name`
 option, where `package_name` can be one of the following values:
+
 * `chrome_stable`: normal in-box Chrome that is installed by the system.
 * `chrome_beta`: Beta build of Chrome.
 * `chromium`: [Open source Chromium build](https://chromium.googlesource.com/chromium/src/+/main/docs/android_build_instructions.md).
@@ -110,23 +115,25 @@ They are not currently run on any bots, but we have plan to include these tests
 in the commit queue in the future.
 
 The source code for these tests are in the Selenium repository at
-https://github.com/SeleniumHQ/selenium/tree/master/java/client/test/org/openqa/selenium.
+<https://github.com/SeleniumHQ/selenium/tree/master/java/client/test/org/openqa/selenium>.
 We compile these tests, and store them in a special repository at
-https://chromium.googlesource.com/chromium/deps/webdriver/.
+<https://chromium.googlesource.com/chromium/deps/webdriver/>.
 We use a Python script
 [`test/run_java_tests.py`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/chromedriver/test/run_java_tests.py)
 to drive these tests.
 
 Before running these tests, you need to do a one-time setup with the following
 commands:
-```
+
+```bash
 mkdir <CHROMEDRIVER_DIR>/third_party
 cd <CHROMEDRIVER_DIR>/third_party
 git clone https://chromium.googlesource.com/chromium/deps/webdriver java_tests
 ```
 
 After the setup, the tests can be run with
-```
+
+```bash
 python3 <CHROMEDRIVER_DIR>/test/run_java_tests.py --chromedriver=out/Default/chromedriver
 ```
 
@@ -135,7 +142,7 @@ Run it with `--help` for more information.
 The only require option is `--chromedriver` to specify the location of
 the ChromeDriver binary.
 
-### Disabling a test
+### Disabling a Java acceptance test
 
 If there are any test cases that fail or are flaky, and you can't fix them
 quickly, please add the test names to one of the filters in
@@ -147,11 +154,16 @@ file in the same directory as `run_java_tests.py`.
 The Web Platform Tests (WPT) project is a W3C-coordinated attempt to build a
 cross-browser testsuit to verify how well browsers conform to web platform
 standards. Here, we will only focus on the WebDriver portion of WPT.
+You can either use the tests [bundled](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/external/wpt)
+with Chromium source code or the tests checked out externally from the
+[WPT official repo](https://github.com/web-platform-tests/wpt).
+
+### External WPT checkout
 
 To run WPT WebDriver tests, first clone the tests from GitHub into an empty
 directory:
 
-```
+```bash
 git clone https://github.com/web-platform-tests/wpt
 ```
 
@@ -159,14 +171,14 @@ If necessary, install Python `virtualenv` module on your system.
 This only needs to be done once. The command for the installation depends on
 your system, but is usually something like:
 
-```
+```bash
 pip install virtualenv
 ```
 
 Now you can change into the WPT repository location,
 and run WPT WebDriver tests with the following command:
 
-```
+```bash
 ./wpt run [options] chrome webdriver
 ```
 
@@ -198,9 +210,24 @@ WebDriver command defined in the W3C spec. You can select a subset of the tests
 with the last argument on the WPT command line. For example, to run all tests
 for the New Session command, use
 
-```
+```bash
 ./wpt run [options] chrome webdriver/tests/new_session
 ```
+
+### Bundled WPT
+
+The tests are located in [//third_party/blink/web_tests/external/wpt](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/external/wpt)
+directory.
+You can use the following command to run them.
+
+```bash
+testing/xvfb.py chrome/test/chromedriver/test/run_webdriver_tests.py \
+                --chromedriver=out/Release/chromedriver \
+                --test-path=third_party/blink/web_tests/external/wpt/<test-offset>
+```
+
+Note: The path to the tests must be specified relatively to the Chromium source
+code root.
 
 ## JavaScript Unit Tests
 
