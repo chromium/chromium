@@ -3,6 +3,10 @@
     padding-inline-start: var(--cr-section-padding);
   }
 
+  .list-frame[use-cr-section-left-padding] {
+    padding-inline-start: var(--cr-section-padding);
+  }
+
   .dependent {
     padding-inline-start: var(--cr-section-indent-padding);
   }
@@ -17,7 +21,8 @@
     <template is="dom-if" if="[[shouldShowTitle(section)]]">
       <h2>[[section.title]]</h2>
     </template>
-    <div class="list-frame">
+    <div class="list-frame"
+      use-cr-section-left-padding$="[[!shouldShowTitle(section)]]">
       <template is="dom-repeat" items="[[section.options]]" as="option">
         <div class="list-item">
           <template is="dom-if" if="[[isSubmenuButton_(option.uiType)]]">
