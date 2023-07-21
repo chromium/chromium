@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/3pcd_heuristics/opener_heuristic_tab_helper.h"
+#include "chrome/browser/3pcd/heuristics/opener_heuristic_tab_helper.h"
 
 #include <utility>
 
@@ -11,8 +11,8 @@
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
-#include "chrome/browser/3pcd_heuristics/opener_heuristic_metrics.h"
-#include "chrome/browser/3pcd_heuristics/opener_heuristic_utils.h"
+#include "chrome/browser/3pcd/heuristics/opener_heuristic_metrics.h"
+#include "chrome/browser/3pcd/heuristics/opener_heuristic_utils.h"
 #include "chrome/browser/dips/dips_bounce_detector.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_utils.h"

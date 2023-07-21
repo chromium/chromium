@@ -13,7 +13,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/3pcd_heuristics/opener_heuristic_tab_helper.h"
+#include "chrome/browser/3pcd/heuristics/opener_heuristic_tab_helper.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_tab_helper.h"
 #include "chrome/browser/browser_process.h"

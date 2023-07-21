@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/3pcd_heuristics/opener_heuristic_metrics.h"
+#include "chrome/browser/3pcd/heuristics/opener_heuristic_metrics.h"
 
 #include <memory>
 
