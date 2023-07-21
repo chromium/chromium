@@ -27,7 +27,7 @@
 
 template <typename T>
 absl::optional<T> OptionalFromMaybe(const protocol::Maybe<T>& maybe) {
-  return maybe.isJust() ? absl::optional<T>(maybe.fromJust()) : absl::nullopt;
+  return maybe.has_value() ? absl::optional<T>(maybe.value()) : absl::nullopt;
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -197,8 +197,8 @@ void PageHandler::GotManifestIcons(
   protocol::Maybe<protocol::Binary> primaryIconAsBinary;
 
   if (primary_icon && !primary_icon->empty()) {
-    primaryIconAsBinary = std::move(protocol::Binary::fromRefCounted(
-        gfx::Image::CreateFrom1xBitmap(*primary_icon).As1xPNGBytes()));
+    primaryIconAsBinary = protocol::Binary::fromRefCounted(
+        gfx::Image::CreateFrom1xBitmap(*primary_icon).As1xPNGBytes());
   }
 
   callback->sendSuccess(std::move(primaryIconAsBinary));
@@ -255,7 +255,7 @@ void PageHandler::PrintToPDF(protocol::Maybe<bool> landscape,
       print_pages_params));
 
   bool return_as_stream =
-      transfer_mode.fromMaybe("") ==
+      transfer_mode.value_or("") ==
       protocol::Page::PrintToPDF::TransferModeEnum::ReturnAsStream;
 
   // First check if headless printer manager is active and use it if so.
@@ -265,7 +265,7 @@ void PageHandler::PrintToPDF(protocol::Maybe<bool> landscape,
   if (auto* print_manager = headless::HeadlessPrintManager::FromWebContents(
           web_contents_.get())) {
     print_manager->PrintToPdf(
-        web_contents_->GetPrimaryMainFrame(), page_ranges.fromMaybe(""),
+        web_contents_->GetPrimaryMainFrame(), page_ranges.value_or(""),
         std::move(absl::get<printing::mojom::PrintPagesParamsPtr>(
             print_pages_params)),
         base::BindOnce(&PageHandler::OnPDFCreated,
@@ -279,7 +279,7 @@ void PageHandler::PrintToPDF(protocol::Maybe<bool> landscape,
   if (auto* print_manager =
           ActivePrintManager::FromWebContents(web_contents_.get())) {
     print_manager->PrintToPdf(
-        web_contents_->GetPrimaryMainFrame(), page_ranges.fromMaybe(""),
+        web_contents_->GetPrimaryMainFrame(), page_ranges.value_or(""),
         std::move(absl::get<printing::mojom::PrintPagesParamsPtr>(
             print_pages_params)),
         base::BindOnce(&PageHandler::OnPDFCreated,

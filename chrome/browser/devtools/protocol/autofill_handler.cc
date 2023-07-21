@@ -89,11 +89,11 @@ void AutofillHandler::FinishTrigger(
 
   autofill::LocalFrameToken frame_token(
       outermost_primary_rfh->GetFrameToken().value());
-  if (frame_id.isJust()) {
+  if (frame_id.has_value()) {
     bool found = false;
     outermost_primary_rfh->ForEachRenderFrameHost(
         [&frame_token, &frame_id, &found](content::RenderFrameHost* rfh) {
-          if (rfh->GetDevToolsFrameToken().ToString() == frame_id.fromJust()) {
+          if (rfh->GetDevToolsFrameToken().ToString() == frame_id.value()) {
             frame_token =
                 autofill::LocalFrameToken(rfh->GetFrameToken().value());
             found = true;

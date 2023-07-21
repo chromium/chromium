@@ -81,8 +81,8 @@ protocol::Response TargetHandler::CreateTarget(
     protocol::Maybe<bool> for_tab,
     std::string* out_target_id) {
   Profile* profile = nullptr;
-  if (browser_context_id.isJust()) {
-    std::string profile_id = browser_context_id.fromJust();
+  if (browser_context_id.has_value()) {
+    std::string profile_id = browser_context_id.value();
     profile =
         DevToolsBrowserContextManager::GetInstance().GetProfileById(profile_id);
     if (!profile) {
@@ -94,8 +94,8 @@ protocol::Response TargetHandler::CreateTarget(
     DCHECK(profile);
   }
 
-  bool create_new_window = new_window.fromMaybe(false);
-  bool create_in_background = background.fromMaybe(false);
+  bool create_new_window = new_window.value_or(false);
+  bool create_in_background = background.value_or(false);
   Browser* target_browser = nullptr;
 
   // Must find target_browser if new_window not explicitly true.
@@ -111,7 +111,7 @@ protocol::Response TargetHandler::CreateTarget(
     }
   }
 
-  bool explicit_old_window = !new_window.fromMaybe(true);
+  bool explicit_old_window = !new_window.value_or(true);
   if (explicit_old_window && !target_browser) {
     return protocol::Response::ServerError(
         "Failed to open new tab - "
@@ -136,7 +136,7 @@ protocol::Response TargetHandler::CreateTarget(
   if (!params.navigated_or_inserted_contents)
     return protocol::Response::ServerError("Failed to open a new tab");
 
-  if (for_tab.fromMaybe(false)) {
+  if (for_tab.value_or(false)) {
     *out_target_id = content::DevToolsAgentHost::GetOrCreateForTab(
                          params.navigated_or_inserted_contents)
                          ->GetId();

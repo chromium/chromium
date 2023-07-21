@@ -81,7 +81,7 @@ Response BrowserHandler::GetWindowForTarget(
     int* out_window_id,
     std::unique_ptr<protocol::Browser::Bounds>* out_bounds) {
   auto host =
-      content::DevToolsAgentHost::GetForId(target_id.fromMaybe(target_id_));
+      content::DevToolsAgentHost::GetForId(target_id.value_or(target_id_));
   if (!host)
     return Response::ServerError("No target with given id");
   content::WebContents* web_contents = host->GetWebContents();
@@ -185,9 +185,10 @@ protocol::Response BrowserHandler::SetDockTile(
     protocol::Maybe<std::string> label,
     protocol::Maybe<protocol::Binary> image) {
   std::vector<gfx::ImagePNGRep> reps;
-  if (image.isJust())
-    reps.emplace_back(image.fromJust().bytes(), 1);
-  DevToolsDockTile::Update(label.fromMaybe(std::string()),
+  if (image.has_value()) {
+    reps.emplace_back(image.value().bytes(), 1);
+  }
+  DevToolsDockTile::Update(label.value_or(std::string()),
                            !reps.empty() ? gfx::Image(reps) : gfx::Image());
   return Response::Success();
 }
