@@ -126,7 +126,7 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
 
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_THAT(fixture.changed_prefs()->FindBoolByDottedPath(
-                  syncer::prefs::internal::kAutofillWalletImportEnabled),
+                  syncer::prefs::internal::kSyncPayments),
               false);
 #endif
 

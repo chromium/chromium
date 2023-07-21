@@ -63,7 +63,7 @@ TEST(SyncPolicyHandlerTest, SyncTypesListDisabled) {
   prefs.SetBoolean(prefs::internal::kSyncReadingList, true);
   prefs.SetBoolean(prefs::internal::kSyncPreferences, true);
   prefs.SetBoolean(prefs::internal::kSyncAutofill, true);
-  prefs.SetBoolean(prefs::internal::kAutofillWalletImportEnabled, true);
+  prefs.SetBoolean(prefs::internal::kSyncPayments, true);
   prefs.SetBoolean(prefs::internal::kSyncThemes, true);
 
   // Create a policy that disables some types.
@@ -91,8 +91,7 @@ TEST(SyncPolicyHandlerTest, SyncTypesListDisabled) {
   // Prefs that are not part of the policy are still enabled.
   ASSERT_TRUE(prefs.GetBoolean(prefs::internal::kSyncAutofill, &enabled));
   EXPECT_TRUE(enabled);
-  ASSERT_TRUE(prefs.GetBoolean(prefs::internal::kAutofillWalletImportEnabled,
-                               &enabled));
+  ASSERT_TRUE(prefs.GetBoolean(prefs::internal::kSyncPayments, &enabled));
   EXPECT_TRUE(enabled);
   ASSERT_TRUE(prefs.GetBoolean(prefs::internal::kSyncThemes, &enabled));
   EXPECT_TRUE(enabled);
@@ -106,7 +105,7 @@ TEST(SyncPolicyHandlerTest, SyncTypesListDisabledAutofill) {
   prefs.SetBoolean(prefs::internal::kSyncReadingList, true);
   prefs.SetBoolean(prefs::internal::kSyncPreferences, true);
   prefs.SetBoolean(prefs::internal::kSyncAutofill, true);
-  prefs.SetBoolean(prefs::internal::kAutofillWalletImportEnabled, true);
+  prefs.SetBoolean(prefs::internal::kSyncPayments, true);
   prefs.SetBoolean(prefs::internal::kSyncThemes, true);
 
   // Create a policy that disables autofill.
@@ -124,8 +123,7 @@ TEST(SyncPolicyHandlerTest, SyncTypesListDisabledAutofill) {
   bool enabled;
   ASSERT_TRUE(prefs.GetBoolean(prefs::internal::kSyncAutofill, &enabled));
   EXPECT_FALSE(enabled);
-  ASSERT_TRUE(prefs.GetBoolean(prefs::internal::kAutofillWalletImportEnabled,
-                               &enabled));
+  ASSERT_TRUE(prefs.GetBoolean(prefs::internal::kSyncPayments, &enabled));
   EXPECT_FALSE(enabled);
 
   // Prefs that are not part of the policy are still enabled.

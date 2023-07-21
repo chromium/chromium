@@ -27,6 +27,10 @@ namespace {
 using ::testing::InSequence;
 using ::testing::StrictMock;
 
+// Copy of the same constant in sync_prefs.cc, for testing purposes.
+constexpr char kObsoleteAutofillWalletImportEnabled[] =
+    "autofill.wallet_import_enabled";
+
 class SyncPrefsTest : public testing::Test {
  protected:
   SyncPrefsTest() {
@@ -761,6 +765,33 @@ class SyncPrefsMigrationTest : public testing::Test {
   TestingPrefServiceSimple pref_service_;
   signin::GaiaIdHash gaia_id_hash_;
 };
+
+TEST_F(SyncPrefsMigrationTest, MigrateAutofillWalletImportEnabledPrefIfSet) {
+  pref_service_.SetBoolean(kObsoleteAutofillWalletImportEnabled, false);
+  ASSERT_TRUE(
+      pref_service_.GetUserPrefValue(kObsoleteAutofillWalletImportEnabled));
+
+  SyncPrefs::MigrateAutofillWalletImportEnabledPref(&pref_service_);
+
+  SyncPrefs prefs(&pref_service_);
+
+  EXPECT_TRUE(pref_service_.GetUserPrefValue(
+      SyncPrefs::GetPrefNameForTypeForTesting(UserSelectableType::kPayments)));
+  EXPECT_FALSE(pref_service_.GetBoolean(
+      SyncPrefs::GetPrefNameForTypeForTesting(UserSelectableType::kPayments)));
+}
+
+TEST_F(SyncPrefsMigrationTest, MigrateAutofillWalletImportEnabledPrefIfUnset) {
+  ASSERT_FALSE(
+      pref_service_.GetUserPrefValue(kObsoleteAutofillWalletImportEnabled));
+
+  SyncPrefs::MigrateAutofillWalletImportEnabledPref(&pref_service_);
+
+  SyncPrefs prefs(&pref_service_);
+
+  EXPECT_FALSE(pref_service_.GetUserPrefValue(
+      SyncPrefs::GetPrefNameForTypeForTesting(UserSelectableType::kPayments)));
+}
 
 TEST_F(SyncPrefsMigrationTest, SyncToSignin_NoMigrationForSignedOutUser) {
   base::test::ScopedFeatureList enable_sync_to_signin(

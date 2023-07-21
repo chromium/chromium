@@ -509,4 +509,5 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
 
   // Added 07/2023.
   prefs->ClearPref(kUnifiedConsentMigrationState);
+  syncer::SyncPrefs::MigrateAutofillWalletImportEnabledPref(prefs);
 }

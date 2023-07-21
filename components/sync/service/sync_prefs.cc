@@ -29,6 +29,12 @@
 
 namespace {
 
+// Historic artifact for payment methods, migrated since 2023/07 to
+// prefs::internal::kSyncPayments to make the name consistent with other
+// user-selectable types.
+constexpr char kObsoleteAutofillWalletImportEnabled[] =
+    "autofill.wallet_import_enabled";
+
 // State of the migration done by
 // MaybeMigratePrefsForSyncToSigninPart1() and
 // MaybeMigratePrefsForSyncToSigninPart2(). Should be cleaned up
@@ -108,6 +114,9 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::internal::kSyncPassphrasePromptMutedProductVersion, 0);
   registry->RegisterBooleanPref(prefs::kEnableLocalSyncBackend, false);
   registry->RegisterFilePathPref(prefs::kLocalSyncBackendDir, base::FilePath());
+
+  // Obsolete prefs (registered for migrations only).
+  registry->RegisterBooleanPref(kObsoleteAutofillWalletImportEnabled, true);
 }
 
 void SyncPrefs::AddSyncPrefObserver(SyncPrefObserver* sync_pref_observer) {
@@ -513,7 +522,7 @@ const char* SyncPrefs::GetPrefNameForType(UserSelectableType type) {
     case UserSelectableType::kSavedTabGroups:
       return prefs::internal::kSyncSavedTabGroups;
     case UserSelectableType::kPayments:
-      return prefs::internal::kAutofillWalletImportEnabled;
+      return prefs::internal::kSyncPayments;
   }
   NOTREACHED();
   return nullptr;
@@ -626,9 +635,6 @@ void SyncPrefs::ClearPassphrasePromptMutedProductVersion() {
 void SyncPrefs::MaybeMigratePrefsForSyncToSigninPart1(
     SyncAccountState account_state,
     signin::GaiaIdHash gaia_id_hash) {
-  // TODO(crbug.com/1459963): Consider a prefereces data migration to avoid the
-  // historic name in kAutofillWalletImportEnabled.
-
   if (!base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos)) {
     // Ensure that the migration runs again when the feature gets enabled.
     pref_service_->ClearPref(kSyncToSigninMigrationState);
@@ -746,6 +752,22 @@ void SyncPrefs::MaybeMigratePrefsForSyncToSigninPart2(
     account_settings->Set(GetPrefNameForType(UserSelectableType::kAutofill),
                           false);
   }
+}
+
+// static
+void SyncPrefs::MigrateAutofillWalletImportEnabledPref(
+    PrefService* pref_service) {
+  if (!pref_service->GetUserPrefValue(kObsoleteAutofillWalletImportEnabled)) {
+    // Nothing to migrate.
+    return;
+  }
+
+  pref_service->SetBoolean(
+      prefs::internal::kSyncPayments,
+      pref_service->GetBoolean(kObsoleteAutofillWalletImportEnabled));
+  pref_service->ClearPref(kObsoleteAutofillWalletImportEnabled);
+
+  CHECK(!pref_service->GetUserPrefValue(kObsoleteAutofillWalletImportEnabled));
 }
 
 void SyncPrefs::MarkPartialSyncToSigninMigrationFullyDone() {

@@ -2517,6 +2517,7 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kPowerMetricsIdleSuspendCount);
   profile_prefs->ClearPref(kPowerMetricsLidClosedSuspendCount);
 #endif
+  syncer::SyncPrefs::MigrateAutofillWalletImportEnabledPref(profile_prefs);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

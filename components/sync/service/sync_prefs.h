@@ -228,6 +228,8 @@ class SyncPrefs {
   // temporary state from the above migration.
   void MarkPartialSyncToSigninMigrationFullyDone();
 
+  static void MigrateAutofillWalletImportEnabledPref(PrefService* pref_service);
+
  private:
   static void RegisterTypeSelectedPref(PrefRegistrySimple* prefs,
                                        UserSelectableType type);
