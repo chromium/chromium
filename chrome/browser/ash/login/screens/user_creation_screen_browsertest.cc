@@ -290,7 +290,7 @@ IN_PROC_BROWSER_TEST_F(UserCreationScreenSoftwareUpdateTest, NotEnrollDevice) {
   test::OobeJS().TapOnPath(kTriageNotEnrollButton);
   test::OobeJS().TapOnPath(kEnrollTriageNextButton);
   WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(), UserCreationScreen::Result::SIGNIN);
+  EXPECT_EQ(screen_result_.value(), UserCreationScreen::Result::SIGNIN_TRIAGE);
 }
 
 // Verify that enroll-device in the enorll triage step in user creation

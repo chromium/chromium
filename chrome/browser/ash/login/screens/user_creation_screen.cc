@@ -21,6 +21,7 @@ namespace ash {
 namespace {
 
 constexpr char kUserActionSignIn[] = "signin";
+constexpr char kUserActionSignInTriage[] = "signin-triage";
 constexpr char kUserActionAddChild[] = "add-child";
 constexpr char kUserActionCancel[] = "cancel";
 
@@ -40,6 +41,8 @@ std::string UserCreationScreen::GetResultString(Result result) {
   switch (result) {
     case Result::SIGNIN:
       return "SignIn";
+    case Result::SIGNIN_TRIAGE:
+      return "SignInTriage";
     case Result::ADD_CHILD:
       return "AddChild";
     case Result::ENTERPRISE_ENROLL:
@@ -152,6 +155,8 @@ void UserCreationScreen::OnUserAction(const base::Value::List& args) {
     } else {
       view_->SetTriageStep();
     }
+  } else if (action_id == kUserActionSignInTriage) {
+    RunExitCallback(Result::SIGNIN_TRIAGE);
   } else if (action_id == kUserActionChildSetup) {
     view_->SetChildSetupStep();
   } else {

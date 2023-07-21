@@ -1255,6 +1255,9 @@ void WizardController::OnUserCreationScreenExit(
   OnScreenExit(UserCreationView::kScreenId,
                UserCreationScreen::GetResultString(result));
   switch (result) {
+    case UserCreationScreen::Result::SIGNIN_TRIAGE:
+      AdvanceToSigninScreen();
+      break;
     case UserCreationScreen::Result::SIGNIN:
     case UserCreationScreen::Result::SKIPPED:
       if (features::IsOobeGaiaInfoScreenEnabled()) {
@@ -1303,6 +1306,15 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
       break;
     case GaiaScreen::Result::BACK:
     case GaiaScreen::Result::CANCEL: {
+      if (features::IsOobeSoftwareUpdateEnabled()) {
+        // When `OobeSoftwareUpdate` is enabled, clicking the back button should
+        // return the user to the user creation screen if it was enabled.
+        if (wizard_context_->is_user_creation_enabled &&
+            result == GaiaScreen::Result::BACK) {
+          AdvanceToScreen(UserCreationView::kScreenId);
+          break;
+        }
+      }
       if (features::IsOobeGaiaInfoScreenEnabled()) {
         if (wizard_context_->is_user_creation_enabled) {
           // `Result::BACK` and `Result::BACK_CHILD` are only triggered when
