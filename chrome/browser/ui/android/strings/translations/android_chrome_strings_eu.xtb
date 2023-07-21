@@ -180,7 +180,7 @@ Arakatze-historia ezabatzen duzunean (osorik nahiz webgune zehatz bat), neurketa
 <translation id="1986685561493779662">Dagoeneko erabiltzen da izen hori</translation>
 <translation id="1995884366040846621">Aurrera egiteko, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hornitzaileak zure izena, helbide elektronikoa eta profileko argazkia partekatuko ditu webgune honekin. Ikusi webgunearen <ph name="BEGIN_LINK1" />pribatutasun-gidalerroak<ph name="END_LINK1" />.</translation>
 <translation id="200114059308480249">Barne hartu nahi al duzu inguruko testua Google-ko bilaketetan?</translation>
-<translation id="2009341475524975924">Iragarkien errendimendua neurtzeko, datu mota jakin batzuk soilik parteka ditzakete webguneek elkarrekin; adibidez, zer ordutan erakutsi dizuten iragarki bat.</translation>
+<translation id="2009341475524975924">Iragarkien errendimendua neurtzeko, datu mota jakin batzuk soilik parteka ditzakete webguneek elkarren artean; adibidez, zer ordutan erakutsi dizuten iragarki bat.</translation>
 <translation id="201060170519281460">Profilaren blokeoak autoan babestuta mantentzen du informazioa, sinkronizatutako pasahitzak eta ordainketak barne.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fitxategi}other{# fitxategi}}</translation>
 <translation id="2021896219286479412">Webgunearen pantaila osoko aukerak</translation>
@@ -608,7 +608,7 @@ Egoeraren token pribatuek sareko pribatutasuna hobetzen dute eta ezin dira erabi
 <translation id="4335835283689002019">Desaktibatuta dago arakatze segurua</translation>
 <translation id="4351244548802238354">Itxi leihoa</translation>
 <translation id="4355272626458588338">Garrantzitsuak iruditzen zaizkizun orriak bizkor atzitu ahal izateko, gehi iezazkiezu laster-markak</translation>
-<translation id="4369735607080757018">Iragarkien errendimendua neurtzeko, datu mota jakin batzuk soilik partekatzen dituzte webguneek elkarrekin; adibidez, zer ordutan erakutsi dizuten iragarki bat.</translation>
+<translation id="4369735607080757018">Iragarkien errendimendua neurtzeko, datu mota jakin batzuk soilik partekatzen dituzte webguneek elkarren artean; adibidez, zer ordutan erakutsi dizuten iragarki bat.</translation>
 <translation id="4378154925671717803">Telefonoa</translation>
 <translation id="438319986296050901">Partekatu txartela soilik</translation>
 <translation id="4384468725000734951">Sogou erabiliko da bilatzaile gisa</translation>

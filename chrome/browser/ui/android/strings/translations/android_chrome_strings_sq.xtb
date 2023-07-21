@@ -213,7 +213,7 @@ Kur ti fshin historikun tënd të shfletimit — të gjithë ose për një sajt 
 <translation id="2175927920773552910">Kodi QR</translation>
 <translation id="218608176142494674">Ndarja</translation>
 <translation id="2189903024544168260">Interesi u hoq</translation>
-<translation id="2194856509914051091">Gjëra për të pasur parasysh</translation>
+<translation id="2194856509914051091">Gjëra për t'u pasur parasysh</translation>
 <translation id="2200113223741723867">Menaxho ndarjen e të dhënave të përdorimit</translation>
 <translation id="2218567645332692482">Përmirëso navigimet në HTTPS dhe paralajmëro përpara ngarkimit të faqeve që nuk e mbështetin</translation>
 <translation id="2227444325776770048">Vazhdo si <ph name="USER_FULL_NAME" /></translation>
@@ -631,7 +631,7 @@ Kodet e gjendjes private përmirësojnë privatësinë në ueb dhe nuk mund të 
 <translation id="449126573531210296">Enkripto fjalëkalimet e sinkronizuara me "Llogarinë tënde të Google"</translation>
 <translation id="4504667196171871375">Me Wi-Fi dhe të dhëna celulare</translation>
 <translation id="4508528996305412043">Menyja e kartave të furnizimit është hapur</translation>
-<translation id="4509501256689523862">Kur shfleton, nëse një reklamë që shikon është e personalizuar, kjo varet nga ky cilësim, nga <ph name="BEGIN_LINK_1" />Temat e reklamave<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />cilësimet e tua të kukive<ph name="END_LINK_2" /> dhe nëse sajti që po shikon i personalizon reklamat</translation>
+<translation id="4509501256689523862">Kur shfleton, nëse një reklamë që shikon është e personalizuar, kjo varet nga ky cilësim, nga <ph name="BEGIN_LINK_1" />Temat e reklamave<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />cilësimet e tua të kukive<ph name="END_LINK_2" />, si dhe nëse sajti që po shikon i personalizon reklamat</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# ditë më parë}other{# ditë më parë}}</translation>
 <translation id="451872707440238414">Kërko te faqeshënuesit</translation>
 <translation id="4521489764227272523">Të dhënat e zgjedhura janë hequr nga Chrome dhe nga pajisjet e sinkronizuara.
@@ -751,7 +751,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5032430150487044192">Kodi QR nuk mund të krijohet</translation>
 <translation id="5039804452771397117">Lejo</translation>
 <translation id="5040262127954254034">Privatësia</translation>
-<translation id="504456571576643789">Gjëra për të pasur parasysh</translation>
+<translation id="504456571576643789">Gjëra për t'u pasur parasysh</translation>
 <translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Forma të tjera aktiviteti<ph name="END_LINK1" /> mund të ruhen në "Llogarinë tënde të Google" kur je i identifikuar. Mund t'i fshish ato në çdo kohë.</translation>
 <translation id="506254248375231072">Nuk ka skeda</translation>
 <translation id="5091199029769593641">Së shpejti do të shikosh histori nga <ph name="SITE_NAME" /> kur të hapësh një skedë të re. Sajtet që ndjek ruhen në llogarinë tënde të Google. Mund t'i menaxhosh te cilësimet e "Zbulo".</translation>
@@ -1285,7 +1285,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="7851858861565204677">Pajisjet e tjera</translation>
 <translation id="7853202427316060426">Aktiviteti</translation>
 <translation id="7859988229622350291">Mos përkthe asnjëherë</translation>
-<translation id="7864208933699511058">Kur shfleton, nëse një reklamë që shikon është e personalizuar, kjo varet nga ky cilësim, nga <ph name="BEGIN_LINK_1" />Reklamat e sugjeruara nga sajtet<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />cilësimet e tua të kukive<ph name="END_LINK_2" /> dhe nëse sajti që po shikon i personalizon reklamat</translation>
+<translation id="7864208933699511058">Kur shfleton, nëse një reklamë që shikon është e personalizuar, kjo varet nga ky cilësim, nga <ph name="BEGIN_LINK_1" />Reklamat e sugjeruara nga sajtet<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />cilësimet e tua të kukive<ph name="END_LINK_2" />, si dhe nëse sajti që po shikon i personalizon reklamat</translation>
 <translation id="7866213166286285359">Përkthe faqet këtu</translation>
 <translation id="78707286264420418"><ph name="PRODUCT_NAME" /> ka nevojë për lejen "Pajisje në afërsi" për të lidhur pajisjen tënde</translation>
 <translation id="7875915731392087153">Krijo mail</translation>

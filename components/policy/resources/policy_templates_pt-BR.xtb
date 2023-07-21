@@ -140,7 +140,7 @@ isso não impede capturas de tela com apps do sistema operacional ou de terceiro
           Se a política for definida como verdadeira ou deixada sem definição, o recurso poderá ser ativado ou desativado pelo usuário.</translation>
 <translation id="1138294736309071213">Esta política é ativa somente no modo de varejo. Determina o tempo antes do protetor de tela ser mostrado na tela de login para os dispositivos no modo de varejo. O valor da política deve ser especificado em milésimos de segundos.</translation>
 <translation id="1143257335984030879">Esta política controla a disponibilidade do recurso da lista de compras.
-      Se for ativada, os usuários vão receber uma IU para monitorar o preço do produto mostrado na página atual. O produto é mostrado no painel lateral de favoritos.
+      Se for ativada, os usuários vão receber uma interface para monitorar o preço do produto mostrado na página atual. O produto é mostrado no painel lateral de favoritos.
       Se a política for ativada ou deixada sem definição, a lista de compras vai ficar disponível para os usuários.
       Se for desativada, o recurso da lista de compras vai ficar indisponível.
       </translation>
@@ -199,7 +199,7 @@ isso não impede capturas de tela com apps do sistema operacional ou de terceiro
       Se esta política for definida como verdadeira ou não for configurada, quando uma confirmação de protocolo externo for exibida, o usuário poderá selecionar "Sempre permitir" para pular todos os futuros prompts de confirmação para o protocolo nesse site.
 
       Se esta política for definida como falsa, a caixa de seleção "Sempre permitir" não será exibida, e o usuário precisará confirmar sempre que um protocolo externo for invocado.</translation>
-<translation id="1181598794547737681">Ativar IU de download em balão</translation>
+<translation id="1181598794547737681">Ativar interface de download em balão</translation>
 <translation id="1184562656144537588">O Manifest v2 está ativado apenas para extensões forçadas</translation>
 <translation id="11903325225202653">Se esta política for definida como verdadeira, o modo de alto contraste permanece ativado. Se esta política for definida como falsa, o modo de alto contraste será desativado.
 
@@ -372,7 +372,7 @@ No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em in
       Se esta configuração for ativada, o SafeSearch na Pesquisa Google e o Modo restrito moderado no YouTube sempre ficarão ativos.
 
       Se você desativar esta configuração ou não definir um valor, o SafeSearch na Pesquisa Google e o Modo restrito no YouTube não serão impostos.</translation>
-<translation id="134745581157553029">Se a política DeviceArcDataSnapshotHours for definida, o mecanismo de resumo de dados ARC será ativado e a atualização dele poderá ser iniciada automaticamente durante os intervalos de tempo definidos. Quando um intervalo for iniciado, a atualização for necessária e nenhum usuário estiver conectado, o processo de atualização do resumo de dados ARC será iniciado sem notificar o usuário. Se a sessão do usuário estiver ativa, a notificação da IU será exibida e precisará ser aceita para reinicializar um dispositivo e iniciar o processo de atualização do resumo de dados ARC. Observação: não é possível usar o dispositivo durante o processo de atualização do resumo de dados ARC.</translation>
+<translation id="134745581157553029">Se a política DeviceArcDataSnapshotHours for definida, o mecanismo de resumo de dados ARC será ativado e a atualização dele poderá ser iniciada automaticamente durante os intervalos de tempo definidos. Quando um intervalo for iniciado, a atualização for necessária e nenhum usuário estiver conectado, o processo de atualização do resumo de dados ARC será iniciado sem notificar o usuário. Se a sessão do usuário estiver ativa, a notificação da interface será exibida e precisará ser aceita para reinicializar um dispositivo e iniciar o processo de atualização do resumo de dados ARC. Observação: não é possível usar o dispositivo durante o processo de atualização do resumo de dados ARC.</translation>
 <translation id="1348603614848418219">Desativar a migração de dispositivos gerenciados por <ph name="MS_AD_NAME" /> no gerenciamento de nuvem.</translation>
 <translation id="1352799151662469739">O tempo, em milissegundos, sem entrada do usuário até que a tela seja bloqueada quando o dispositivo estiver funcionando com energia CA.</translation>
 <translation id="1353416417709895349">Desativar verificações de interceptação de DNS e barras de informações oferecendo "http://intranetsite/" como alternativa.</translation>
@@ -705,7 +705,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="1641117061932613266">Ativar o serviço <ph name="PRODUCT_NAME" /> V2</translation>
 <translation id="1641394008743444477">Permite que você defina uma lista de recursos do <ph name="PRODUCT_OS_NAME" /> que serão desativados.
 
-      Desativar um desses recursos significa que o usuário não poderá acessá-lo pela IU, onde será exibido como "desativado pelo administrador". A experiência do usuário com recursos desativados é decidida por <ph name="SYSTEM_FEATURES_DISABLE_MODE" />
+      Desativar um desses recursos significa que o usuário não poderá acessá-lo pela interface, onde será exibido como "desativado pelo administrador". A experiência do usuário com recursos desativados é decidida por <ph name="SYSTEM_FEATURES_DISABLE_MODE" />
 
       Se a política não for definida, todos os recursos do <ph name="PRODUCT_OS_NAME" /> ficarão ativados por padrão, e o usuário poderá usar qualquer um deles.
 
@@ -862,7 +862,7 @@ Esta política não vai ter efeito se a opção de manter os dados de navegaçã
 <translation id="1798559516913615713">Ciclo de vida do cache do GPO</translation>
 <translation id="180130467244315277">Esta política permite que administradores configurem a ordem dos idiomas preferidos nas configurações do <ph name="PRODUCT_NAME" />.
 
-      A lista aparecerá nessa mesma ordem na seção "Ordenar idiomas com base na sua preferência" em chrome://settings/languages. Os usuários não poderão remover ou reorganizar os idiomas definidos pela política, mas será possível adicionar mais idiomas abaixo deles. Além disso, os usuários terão total controle sobre as configurações de tradução/verificação ortográfica e o idioma da IU do navegador, a menos que eles sejam impostos por outras políticas.
+      A lista aparecerá nessa mesma ordem na seção "Ordenar idiomas com base na sua preferência" em chrome://settings/languages. Os usuários não poderão remover ou reorganizar os idiomas definidos pela política, mas será possível adicionar mais idiomas abaixo deles. Além disso, os usuários terão total controle sobre as configurações de tradução/verificação ortográfica e o idioma da interface do navegador, a menos que eles sejam impostos por outras políticas.
 
       Se a política não for definida, será possível manipular toda a lista de idiomas preferidos.</translation>
 <translation id="1803646570632580723">Lista de aplicativos fixados a serem mostrados no iniciador</translation>
@@ -946,9 +946,9 @@ A disponibilidade das extensões ainda é controlada por outras políticas.</tra
 <translation id="1885782360784839335">Ativar a exibição de conteúdo promocional em guia cheia</translation>
 <translation id="1888871729456797026">Token de inscrição da política de nuvem na área de trabalho</translation>
 <translation id="1890850749633603276">Restaurar o comportamento da <ph name="WEBVIEW_TAG_NAME" /> permitida dos apps do Chrome</translation>
-<translation id="1893271062894546361">Quando esta política é ativada, a IU dos controles de mídia fica disponível para sessões do <ph name="PRODUCT_NAME" /> iniciadas por outros dispositivos na rede local.
+<translation id="1893271062894546361">Quando esta política é ativada, a interface dos controles de mídia fica disponível para sessões do <ph name="PRODUCT_NAME" /> iniciadas por outros dispositivos na rede local.
 
-      Se a política for deixada sem definição para usuários corporativos ou for desativada, a IU dos controles de mídia vai ficar indisponível para as sessões do <ph name="PRODUCT_NAME" /> iniciadas por outros dispositivos na rede local.
+      Se a política for deixada sem definição para usuários corporativos ou for desativada, a interface dos controles de mídia vai ficar indisponível para as sessões do <ph name="PRODUCT_NAME" /> iniciadas por outros dispositivos na rede local.
 
       Se a política <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> for desativada, o valor desta não terá efeito, já que a funcionalidade do <ph name="PRODUCT_NAME" /> vai estar desativada.</translation>
 <translation id="1894790493260633497">Ativar o modo de impressão de gráficos de segundo plano por padrão</translation>
@@ -1840,7 +1840,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       </translation>
 <translation id="2691668238491124549">A definição da política (apenas como recomendado) move localidades recomendadas de uma sessão gerenciada para o topo da lista, na ordem em que elas aparecem na política. A primeira localidade recomendada é pré-selecionada.
 
-      Se a política não for definida, a localidade atual da IU será pré-selecionada.
+      Se a política não for definida, a localidade atual da interface será pré-selecionada.
 
       Se houver mais de uma localidade recomendada, presumiremos que o usuário quer escolher entre elas. A seleção de localidade e de layout do teclado ficará em destaque ao iniciar uma sessão gerenciada. Caso contrário, presumiremos que a maioria dos usuários quer usar a localidade pré-selecionada. A seleção de localidade e de layout do teclado terá menos destaque ao iniciar uma sessão gerenciada.
 
@@ -2366,7 +2366,7 @@ Essa política é temporária e vai ser removida.</translation>
       Os campos <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> são usados para configurar uma mensagem que informa ao usuário quando um aviso é mostrado após uma verificação apresentar um veredito não limpo. O campo "message" contém o texto que é mostrado ao usuário e pode ter no máximo 200 caracteres. O campo "learn_more_url" contém um URL fornecido pelo administrador em que o usuário pode clicar para receber mais informações fornecidas pelo cliente sobre o motivo de a ação ter sido bloqueada. O campo "language" é opcional e contém o idioma da mensagem. Deixar esse campo vazio ou com um valor "default" (padrão) indica uma mensagem que será usada quando o idioma do usuário não tiver mensagens. O campo "tag" especifica para quais tipos de verificação a mensagem é mostrada. A lista "custom_messages" pode ter zero ou mais entradas e cada uma delas precisa ter campos "message" e "tag" não vazios.
 
       Configurações extras são necessárias para que essa política seja aplicada. Acesse https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting para mais informações.</translation>
-<translation id="3159375329008977062">O usuário tem permissão para exportar/importar contêineres do Crostini por meio da IU</translation>
+<translation id="3159375329008977062">O usuário tem permissão para exportar/importar contêineres do Crostini por meio da interface</translation>
 <translation id="3163167792874598128">Quando a política é ativada ou deixada sem definição, a promoção de avaliação na App Store pode ser mostrada para o usuário, no máximo uma vez por ano.
 Se a política for desativada, a promoção de avaliação na App Store não vai ser mostrada ao usuário.</translation>
 <translation id="3164531087779621747">Modo PostScript de impressão</translation>
@@ -3068,7 +3068,7 @@ Na versão 114 e mais recentes, o <ph name="DOH_SALT_POLICY_NAME" /> é opcional
 <translation id="3760148113224469113">Sempre pedir que os usuários confirmem solicitações de protocolo externas</translation>
 <translation id="3760231600118073732">Bloquear a sessão atual.</translation>
 <translation id="3761222804122755011">O WebRTC usará apenas a interface conectada à Internet pública, mas poderá se conectar usando endereços IP particulares.</translation>
-<translation id="3762520180381586267">Se a política for definida como "Ativada", o <ph name="PRODUCT_OS_NAME" /> acionará uma reinicialização quando os usuários desligarem o dispositivo. O <ph name="PRODUCT_OS_NAME" /> substitui todos os botões de desligamento na IU por botões de reinicialização. Se os usuários desligarem os dispositivos usando o botão liga/desliga, eles não poderão reinicializar automaticamente, mesmo se a política estiver ativada.
+<translation id="3762520180381586267">Se a política for definida como "Ativada", o <ph name="PRODUCT_OS_NAME" /> acionará uma reinicialização quando os usuários desligarem o dispositivo. O <ph name="PRODUCT_OS_NAME" /> substitui todos os botões de desligamento na interface por botões de reinicialização. Se os usuários desligarem os dispositivos usando o botão liga/desliga, eles não poderão reinicializar automaticamente, mesmo se a política estiver ativada.
 
       Se a política for definida como "Desativada" ou não for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá o desligamento do dispositivo.</translation>
 <translation id="376375951585423504">Desativar cota persistente.</translation>
@@ -3311,7 +3311,7 @@ Esta política é uma solução temporária e vai ser removida em marcos futuros
 <translation id="3982322576186033243">Não permitir hashes não seguros em handshakes do TLS</translation>
 <translation id="3983162212222338509">A resolução de DNS pode ser executada dentro ou fora do processo de rede, ou parcialmente dentro e parcialmente fora, dependendo da configuração do sistema e das flags de recursos.</translation>
 <translation id="3986700049001404598">Permitir que os usuários encerrem processos no gerenciador de tarefas do Chrome</translation>
-<translation id="398884292557092447">Se a política for definida como verdadeira ou não for definida, os usuários poderão controlar as sugestões de preenchimento automático para cartões de crédito na IU.
+<translation id="398884292557092447">Se a política for definida como verdadeira ou não for definida, os usuários poderão controlar as sugestões de preenchimento automático para cartões de crédito na interface.
 
       Se a política for definida como falsa, o preenchimento automático nunca fará sugestões ou preencherá informações de cartão de crédito nem salvará outros dados desse tipo que os usuários enviarem ao navegar na Web.</translation>
 <translation id="3989829840000169163">Bloquear pontos de extensão legados do navegador</translation>
@@ -4099,7 +4099,7 @@ Se a política for deixada sem definição, os usuários poderão mudar a lista 
 <translation id="4650044303940238102">Configurações de fontes locais</translation>
 <translation id="4650759511838826572">Desativar esquemas do protocolo de URL</translation>
 <translation id="465099050592230505">URL da loja on-line da empresa (uso suspenso)</translation>
-<translation id="4653465451589191309">Se a política for definida como "Ativada" ou não for definida, será possível gerenciar (desconectar ou modificar) conexões VPN. Se a conexão VPN tiver sido criada com um app de VPN, a IU do app não será afetada. Portanto, usuários ainda poderão usar o app para modificar a conexão VPN. Use esta política com o recurso "VPN sempre ativa", que permite ao administrador decidir estabelecer uma conexão VPN ao ligar um dispositivo.
+<translation id="4653465451589191309">Se a política for definida como "Ativada" ou não for definida, será possível gerenciar (desconectar ou modificar) conexões VPN. Se a conexão VPN tiver sido criada com um app de VPN, a interface do app não será afetada. Portanto, usuários ainda poderão usar o app para modificar a conexão VPN. Use esta política com o recurso "VPN sempre ativa", que permite ao administrador decidir estabelecer uma conexão VPN ao ligar um dispositivo.
 
       Se a política for definida como "Desativada", as interfaces do usuário do <ph name="PRODUCT_OS_NAME" /> que permitem desconectar ou modificar conexões VPN serão desativadas.</translation>
 <translation id="4654729794394330974">Definir a política especifica os nome de domínio impostos aos clientes de acesso remoto. Os usuários não poderão mudar isso. Apenas clientes de um dos domínios especificados poderão se conectar ao host.
@@ -4443,7 +4443,7 @@ da versão do ChromeOS ou do dispositivo) serão sempre exibidas ou ocultas na t
 <translation id="4996161752665479028">Ativar SSH no app Terminal System</translation>
 <translation id="4997074784107449343">Não usar "Imprimir como imagem" como padrão na visualização da impressão de documentos PDF quando a opção estiver disponível.</translation>
 <translation id="500149597848135831">Permitir todas as variações</translation>
-<translation id="5017369989680827157">Se a política for definida como verdadeira ou não for definida, os usuários poderão controlar o preenchimento automático de endereços na IU.
+<translation id="5017369989680827157">Se a política for definida como verdadeira ou não for definida, os usuários poderão controlar o preenchimento automático de endereços na interface.
 
       Se ela for definida como falsa, o preenchimento automático nunca fará sugestões ou preencherá informações de endereço nem salvará outros dados desse tipo que os usuários enviarem ao navegar na Web.</translation>
 <translation id="5017691827598069017">Ativar o Pareamento rápido (pareamento rápido por Bluetooth)</translation>
@@ -6606,7 +6606,7 @@ Se ela for definida como "false" ou deixada sem definição, o layout não ficar
 <translation id="6881447940489194100">Hash SHA-256 dos dados codificado em hexadecimal.</translation>
 <translation id="68818134518270542">A definição da política especifica os apps que os usuários podem ativar para fazer anotações na tela de bloqueio do <ph name="PRODUCT_OS_NAME" />.
 
-      Se o app preferencial for ativado na tela de bloqueio, será exibido um elemento de IU para abri-lo. Quando iniciado, o app poderá criar uma janela própria na parte superior da tela de bloqueio e anotações no contexto dessa tela. Quando a sessão do usuário principal for desbloqueada, será possível importar para ela as notas criadas. Apenas os apps de anotação do <ph name="PRODUCT_NAME" /> são compatíveis com a tela de bloqueio.
+      Se o app preferencial for ativado na tela de bloqueio, será exibido um elemento de interface para abri-lo. Quando iniciado, o app poderá criar uma janela própria na parte superior da tela de bloqueio e anotações no contexto dessa tela. Quando a sessão do usuário principal for desbloqueada, será possível importar para ela as notas criadas. Apenas os apps de anotação do <ph name="PRODUCT_NAME" /> são compatíveis com a tela de bloqueio.
 
       Se a política for definida, o usuário poderá ativar um app na tela de bloqueio caso o ID da extensão do app esteja contido no valor da lista da política. Como consequência, a definição desta política como uma lista vazia desativará por completo a anotação na tela de bloqueio. A política que contém um ID de app não indica necessariamente que o usuário poderá ativar esse app para anotação na tela de bloqueio. Por exemplo, no <ph name="PRODUCT_NAME" /> 61, o conjunto de apps disponíveis também é limitado pela plataforma.
 
@@ -6957,7 +6957,7 @@ O <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica a quantidade míni
 <translation id="7157329428182136164">Ativar suporte a APIs de gráficos 3D</translation>
 <translation id="7158358621906236999">Configuração padrão de sensores</translation>
 <translation id="7161568070244869726">Forçar a ativação do AppCache</translation>
-<translation id="7165882688932913315">Esta política controla o acesso a recursos controláveis na IU de detecção local (<ph name="CHROME_DEVICES_LINK" />), que mostra dispositivos detectáveis próximos do usuário, assim como dispositivos na nuvem registrados neles. Em todos os sistemas operacionais, exceto no <ph name="PRODUCT_OS_NAME" />, a IU de detecção local também permite que os usuários adicionem ao <ph name="CLOUD_PRINT_NAME" /> impressoras clássicas conectadas aos computadores deles.
+<translation id="7165882688932913315">Esta política controla o acesso a recursos controláveis na interface de detecção local (<ph name="CHROME_DEVICES_LINK" />), que mostra dispositivos detectáveis próximos do usuário, assim como dispositivos na nuvem registrados neles. Em todos os sistemas operacionais, exceto no <ph name="PRODUCT_OS_NAME" />, a interface de detecção local também permite que os usuários adicionem ao <ph name="CLOUD_PRINT_NAME" /> impressoras clássicas conectadas aos computadores deles.
 
       Se a política for definida como "Ativada" ou não for definida, a detecção de dispositivos locais será permitida.
 
@@ -7410,7 +7410,7 @@ vão falhar e usar na tela de <ph name="LOG_IN" /> apenas a
 resolução de localização baseada no <ph name="IP" />.</translation>
 <translation id="7608186022704392724">O recurso de envio automático do PIN muda a forma como ele é inserido no <ph name="PRODUCT_OS_NAME" />.
           Em vez de mostrar o mesmo campo de texto usado na entrada de senha, esse
-          recurso apresenta uma IU especial que mostra claramente ao usuário quantos
+          recurso apresenta uma interface especial que mostra claramente ao usuário quantos
           dígitos são necessários para o PIN. Como consequência, o tamanho do PIN do usuário será armazenado fora dos dados criptografados. Apenas PINs com
           6 a 12 dígitos serão permitidos.
 
@@ -8661,7 +8661,7 @@ Se a política for deixada sem definição, nenhuma senha salva será importada 
 <translation id="874149307422233209">Esta política permite que os administradores controlem como o Google processa os dados dos usuários enviados à Pesquisa pelos recursos do <ph name="PRODUCT_OS_NAME" />.
 Quando ela está ativada, o usuário pode usar a caixa de pesquisa do acesso rápido do <ph name="PRODUCT_OS_NAME" /> e a caixa de endereço do navegador <ph name="PRODUCT_NAME" /> no <ph name="PRODUCT_OS_NAME" />. Assim, o histórico de pesquisa não é vinculado à identidade da pessoa.
 Quando a política é deixada sem definição ou desativada, os dados do usuário que fez as pesquisas são vinculados à identidade dele.</translation>
-<translation id="8744844164152340112">Controla o tema usado para renderizar a IU na configuração inicial feita pelo usuário e durante a sessão (escuro/claro/automático).
+<translation id="8744844164152340112">Controla o tema usado para renderizar a interface na configuração inicial feita pelo usuário e durante a sessão (escuro/claro/automático).
       O modo automático troca automaticamente entre os temas claro e escuro ao amanhecer e ao anoitecer.
       Esta política precisa ser recomendada para dar aos usuários a possibilidade de mudar o tema nas configurações do sistema.</translation>
 <translation id="8745669971728319820">Esta política controla a permissão de fornecimento de informações sobre extensões e plug-ins.
@@ -9142,7 +9142,7 @@ Se a política é deixada sem definição, o <ph name="PRODUCT_NAME" /> pode col
 <translation id="9133526448421932754">Luz de fundo amarela do teclado</translation>
 <translation id="9135033364005346124">Ativar proxy do <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="9135095804754272364">Mostrar uma notificação quando um dispositivo USB for detectado</translation>
-<translation id="9136212796239682721">Desativar a IU de download em balão</translation>
+<translation id="9136212796239682721">Desativar a interface de download em balão</translation>
 <translation id="9136399279941091445">Intervalos de horas de inatividade quando as políticas do dispositivo específicas são lançadas</translation>
 <translation id="9142561920976791097">O novo comportamento para envio de eventos em controles de formulário desativados vai ser usado.</translation>
 <translation id="9148720248753722892">Não permitir certificados assinados SHA-1</translation>
@@ -9154,7 +9154,7 @@ Se a política é deixada sem definição, o <ph name="PRODUCT_NAME" /> pode col
 
       Se ela não for definida ou for definida como uma lista vazia, os usuários poderão especificar os idiomas preferidos.
 
-      Se ela for definida como uma lista com valores inválidos, esses valores serão ignorados. Se os usuários adicionarem à lista idiomas não permitidos por esta política, eles serão removidos. Se o <ph name="PRODUCT_OS_NAME" /> estiver sendo exibido em um idioma não permitido por esta política, na próxima vez em que o login for realizado, ele será trocado por um idioma de IU permitido. Caso contrário, se esta política tiver apenas entradas inválidas, o <ph name="PRODUCT_OS_NAME" /> fará a troca para o primeiro valor válido especificado pela política ou para uma localidade substituta, como en-US.</translation>
+      Se ela for definida como uma lista com valores inválidos, esses valores serão ignorados. Se os usuários adicionarem à lista idiomas não permitidos por esta política, eles serão removidos. Se o <ph name="PRODUCT_OS_NAME" /> estiver sendo exibido em um idioma não permitido por esta política, na próxima vez em que o login for realizado, ele será trocado por um idioma de interface permitido. Caso contrário, se esta política tiver apenas entradas inválidas, o <ph name="PRODUCT_OS_NAME" /> fará a troca para o primeiro valor válido especificado pela política ou para uma localidade substituta, como en-US.</translation>
 <translation id="9159126470527871268">Notifica os usuários de que é preciso reiniciar o <ph name="PRODUCT_NAME" /> ou o <ph name="PRODUCT_OS_NAME" /> para aplicar uma atualização pendente.
 
       A configuração desta política ativa notificações para informar o usuário de que a reinicialização do navegador ou do dispositivo é recomendada ou obrigatória. Se a política não for definida, o <ph name="PRODUCT_NAME" /> indicará para o usuário que a reinicialização é necessária por meio de pequenas alterações no menu dele, enquanto o <ph name="PRODUCT_OS_NAME" /> indicará isso por meio de uma notificação na bandeja do sistema. Se a política for definida como "Recomendada", um aviso recorrente será exibido para o usuário, informando que a reinicialização é recomendada. O usuário pode dispensar esse aviso para adiar a reinicialização. Se a política for definida como "Obrigatória", um aviso recorrente será exibido para o usuário, indicando que a reinicialização do navegador será forçada assim que o período de notificação terminar. O período padrão é de sete dias para o <ph name="PRODUCT_NAME" /> e de quatro dias para o <ph name="PRODUCT_OS_NAME" />. Também é possível configurar esse período por meio da definição da política <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />.
@@ -9208,7 +9208,7 @@ Se a política é deixada sem definição, o <ph name="PRODUCT_NAME" /> pode col
 
       Para o <ph name="PRODUCT_NAME" />, esta política só é eficaz quando a máquina está registrada no <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
       Para o <ph name="PRODUCT_OS_NAME" />, ela sempre é eficaz.</translation>
-<translation id="927384371566552478">Se a política for definida como "Ativada" ou não for definida, a IU de exportação/importação ficará disponível para o usuário. Se a política for definida como "Desativada", a IU de exportação/importação não ficará disponível para o usuário.</translation>
+<translation id="927384371566552478">Se a política for definida como "Ativada" ou não for definida, a interface de exportação/importação ficará disponível para o usuário. Se a política for definida como "Desativada", a interface de exportação/importação não ficará disponível para o usuário.</translation>
 <translation id="927444535723396977">Se a política for definida como 1, os sites poderão executar o JavaScript. Se for definida como 2, o JavaScript não será executado.
 
       Se ela não for definida, o JavaScript será executado, mas os usuários poderão mudar essa configuração.</translation>

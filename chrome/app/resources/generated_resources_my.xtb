@@ -2592,7 +2592,7 @@
 <translation id="3183944777708523606">မော်နီတာ အစီအစဉ်</translation>
 <translation id="3184536091884214176">CUPS ပုံနှိပ်စက်များကို စနစ်ထည့်သွင်းပါ သို့မဟုတ် စီမံပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{ဤအက်ပ်ကို ပိတ်ထားသည်}other{အက်ပ်အချို့ကို ပိတ်ထားသည်}}</translation>
-<translation id="3187472288455401631">ကြော်ငြာ တိုင်းတာအကဲဖြတ်ခြင်း</translation>
+<translation id="3187472288455401631">ကြော်ငြာတိုင်းတာခြင်း</translation>
 <translation id="3188257591659621405">ကျွန်ုပ်၏ဖိုင်များ</translation>
 <translation id="3188465121994729530">ပျမ်းမျှ ရွေ့ပေးနေ</translation>
 <translation id="3189187154924005138">ကာဆာ အကြီး</translation>
@@ -8079,7 +8079,7 @@
 <translation id="8023801379949507775">အိတ်စတန်းရှင်းအား ယခု အဆင့်မြှင့်မည်</translation>
 <translation id="8025151549289123443">လော့ခ်ချထားချိန် ဖန်သားပြင်နှင့် လက်မှတ်ထိုးဝင်ခြင်း</translation>
 <translation id="8025291188699172126">အပ်ဒိတ်များအကြောင်း</translation>
-<translation id="8026334261755873520">ဘရောက်လုပ်ထားသည့် အချက်လက်များ ရှင်းလင်းရန်</translation>
+<translation id="8026334261755873520">ဘရောက်စ်ဒေတာ ရှင်းထုတ်ရန်</translation>
 <translation id="8026471514777758216">သင့်စက်အားလုံး</translation>
 <translation id="8027581147000338959">ဝင်းဒိုးအသစ်တွင် ဖွင့်ရန်</translation>
 <translation id="8028060951694135607">Microsoft ကီး ပြန်လည်ဖေါ်ထုတ်ရန်</translation>
