@@ -4,13 +4,47 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/shared_passwords_notifications_bubble_controller.h"
 
+#include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/test_password_store.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using password_manager::PasswordForm;
+using testing::Each;
+using testing::Field;
+using testing::Return;
+using testing::ReturnRef;
+
+namespace {
+
+constexpr char kUrl[] = "http://example.com";
+
+std::unique_ptr<PasswordForm> CreateUnnoitifiedSharedPasswordForm(
+    const std::u16string& username) {
+  auto shared_credentials = std::make_unique<PasswordForm>();
+  shared_credentials->url = GURL(kUrl);
+  shared_credentials->signon_realm = shared_credentials->url.spec();
+  shared_credentials->username_value = username;
+  shared_credentials->password_value = u"12345";
+  shared_credentials->match_type = PasswordForm::MatchType::kExact;
+  shared_credentials->type = PasswordForm::Type::kReceivedViaSharing;
+  shared_credentials->sharing_notification_displayed = false;
+  return shared_credentials;
+}
+
+}  // namespace
 
 class SharedPasswordsNotificationBubbleControllerTest : public ::testing::Test {
  public:
   SharedPasswordsNotificationBubbleControllerTest() {
+    test_web_contents_ =
+        content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
     mock_delegate_ =
         std::make_unique<testing::NiceMock<PasswordsModelDelegateMock>>();
     controller_ = std::make_unique<SharedPasswordsNotificationBubbleController>(
@@ -19,21 +53,81 @@ class SharedPasswordsNotificationBubbleControllerTest : public ::testing::Test {
   ~SharedPasswordsNotificationBubbleControllerTest() override = default;
 
   void SetUp() override {
+    store_ = CreateAndUseTestPasswordStore(&profile_);
     ON_CALL(*delegate(), GetCurrentForms)
-        .WillByDefault(testing::ReturnRef(current_forms_));
+        .WillByDefault(ReturnRef(current_forms_));
+    ON_CALL(*delegate(), GetWebContents())
+        .WillByDefault(Return(test_web_contents_.get()));
   }
+
+  void TearDown() override {
+    store_->ShutdownOnUIThread();
+    testing::Test::TearDown();
+  }
+
+  void SetupSharedCredentialsInStore() {
+    // Store two shared credentials that still need notifications.
+    std::unique_ptr<password_manager::PasswordForm> shared_credentials1 =
+        CreateUnnoitifiedSharedPasswordForm(u"username1");
+    std::unique_ptr<password_manager::PasswordForm> shared_credentials2 =
+        CreateUnnoitifiedSharedPasswordForm(u"username2");
+
+    store_->AddLogin(*shared_credentials1);
+    store_->AddLogin(*shared_credentials2);
+
+    RunUntilIdle();
+
+    current_forms().push_back(std::move(shared_credentials1));
+    current_forms().push_back(std::move(shared_credentials2));
+  }
+
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   PasswordsModelDelegateMock* delegate() { return mock_delegate_.get(); }
   SharedPasswordsNotificationBubbleController* controller() {
     return controller_.get();
   }
+  password_manager::TestPasswordStore& store() { return *store_; }
+  std::vector<std::unique_ptr<password_manager::PasswordForm>>&
+  current_forms() {
+    return current_forms_;
+  }
 
  private:
+  content::BrowserTaskEnvironment task_environment_;
+  content::RenderViewHostTestEnabler rvh_enabler_;
   std::vector<std::unique_ptr<password_manager::PasswordForm>> current_forms_;
   std::unique_ptr<PasswordsModelDelegateMock> mock_delegate_;
   std::unique_ptr<SharedPasswordsNotificationBubbleController> controller_;
+  TestingProfile profile_;
+  std::unique_ptr<content::WebContents> test_web_contents_;
+  scoped_refptr<password_manager::TestPasswordStore> store_;
 };
 
 TEST_F(SharedPasswordsNotificationBubbleControllerTest, HasTitle) {
   EXPECT_FALSE(controller()->GetTitle().empty());
+}
+
+TEST_F(SharedPasswordsNotificationBubbleControllerTest,
+       ShouldMarkCredentialsAsNotifiedUponClickingManagePassword) {
+  SetupSharedCredentialsInStore();
+
+  controller()->OnManagePasswordsClicked();
+
+  RunUntilIdle();
+
+  EXPECT_THAT(store().stored_passwords().at(GURL(kUrl).spec()),
+              Each(Field(&PasswordForm::sharing_notification_displayed, true)));
+}
+
+TEST_F(SharedPasswordsNotificationBubbleControllerTest,
+       ShouldMarkCredentialsAsNotifiedUponClickingGotIt) {
+  SetupSharedCredentialsInStore();
+
+  controller()->OnAcknowledgeClicked();
+
+  RunUntilIdle();
+
+  EXPECT_THAT(store().stored_passwords().at(GURL(kUrl).spec()),
+              Each(Field(&PasswordForm::sharing_notification_displayed, true)));
 }

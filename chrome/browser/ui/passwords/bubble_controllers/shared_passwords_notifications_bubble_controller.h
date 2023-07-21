@@ -38,6 +38,12 @@ class SharedPasswordsNotificationBubbleController
   // notified about them yet.
   std::vector<password_manager::PasswordForm*>
   GetSharedCredentialsRequiringNotification() const;
+
+  // Marks all credentials returned by
+  // GetSharedCredentialsRequiringNotification() in the password store as
+  // notified, in the sense that the user has been notified about them and no
+  // need to show the notification again.
+  void MarkSharedCredentialAsNotifiedInPasswordStore();
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_BUBBLE_CONTROLLERS_SHARED_PASSWORDS_NOTIFICATIONS_BUBBLE_CONTROLLER_H_
