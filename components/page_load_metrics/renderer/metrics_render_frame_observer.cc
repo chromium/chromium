@@ -613,6 +613,24 @@ MetricsRenderFrameObserver::GetSoftNavigationMetrics() const {
           ->image_request_priority_valid = false;
     }
 
+    // Set largest image discovery time.
+    if (soft_navigation_lcp_details_.image_discovery_time.has_value()) {
+      base::TimeDelta image_discovery_time_relative_to_navigation_start =
+          CreateTimeDeltaFromTimestampsInSeconds(
+              (soft_navigation_lcp_details_.image_discovery_time.value())
+                  .InSecondsF(),
+              navigation_start);
+
+      base::TimeDelta image_discovery_time_relative_to_soft_navigation_start =
+          CreateTimeDeltaFromTimestampsInSeconds(
+              image_discovery_time_relative_to_navigation_start.InSecondsF(),
+              soft_navigation_start_relative_to_navigation_start);
+
+      soft_navigation_metrics->largest_contentful_paint
+          ->largest_image_discovery_time =
+          image_discovery_time_relative_to_soft_navigation_start;
+    }
+
     // Set largest image load start.
     if (soft_navigation_lcp_details_.image_load_start.has_value()) {
       base::TimeDelta image_load_start_relative_to_navigation_start =

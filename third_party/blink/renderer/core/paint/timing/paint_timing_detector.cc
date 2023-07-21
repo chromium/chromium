@@ -308,8 +308,11 @@ void PaintTimingDetector::OnInputOrScroll() {
   largest_contentful_paint_calculator_ = nullptr;
   record_lcp_to_ukm_ = false;
 
-  DCHECK_EQ(first_input_or_scroll_notified_timestamp_, base::TimeTicks());
-  first_input_or_scroll_notified_timestamp_ = base::TimeTicks::Now();
+  // Set first_input_or_scroll_notified_timestamp_ only once.
+  if (first_input_or_scroll_notified_timestamp_ == base::TimeTicks()) {
+    first_input_or_scroll_notified_timestamp_ = base::TimeTicks::Now();
+  }
+
   DidChangePerformanceTiming();
 }
 
@@ -343,7 +346,6 @@ bool PaintTimingDetector::NeedToNotifyInputOrScroll() const {
 void PaintTimingDetector::RestartRecordingLCP() {
   text_paint_timing_detector_->RestartRecordingLargestTextPaint();
   image_paint_timing_detector_->RestartRecordingLargestImagePaint();
-  first_input_or_scroll_notified_timestamp_ = base::TimeTicks();
   lcp_was_restarted_ = true;
   lcp_details_.Reset();
 }
@@ -351,7 +353,6 @@ void PaintTimingDetector::RestartRecordingLCP() {
 void PaintTimingDetector::RestartRecordingLCPToUkm() {
   text_paint_timing_detector_->RestartRecordingLargestTextPaint();
   image_paint_timing_detector_->RestartRecordingLargestImagePaint();
-  first_input_or_scroll_notified_timestamp_ = base::TimeTicks();
   record_soft_navigation_lcp_for_ukm_ = true;
   // Reset the lcp candidate and the soft navigation LCP for reporting to UKM
   // when a new soft navigation happens. When this resetting happens, the

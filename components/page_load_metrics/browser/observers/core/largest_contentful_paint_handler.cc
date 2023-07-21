@@ -269,7 +269,7 @@ LargestContentfulPaintHandler::MergeMainFrameAndSubframes() const {
 void LargestContentfulPaintHandler::UpdateSoftNavigationLargestContentfulPaint(
     const page_load_metrics::mojom::LargestContentfulPaintTiming&
         largest_contentful_paint) {
-  if (IsValid(largest_contentful_paint.largest_text_paint)) {
+  if (largest_contentful_paint.largest_text_paint.has_value()) {
     // Image load start/end are not applicable to text LCP elements.
     soft_navigation_contentful_paint_candidate_.Text().Reset(
         largest_contentful_paint.largest_text_paint,
@@ -282,8 +282,7 @@ void LargestContentfulPaintHandler::UpdateSoftNavigationLargestContentfulPaint(
         /*image_load_start=*/absl::nullopt,
         /*image_load_end=*/absl::nullopt);
   }
-
-  if (IsValid(largest_contentful_paint.largest_image_paint)) {
+  if (largest_contentful_paint.largest_image_paint.has_value()) {
     soft_navigation_contentful_paint_candidate_.Image().Reset(
         largest_contentful_paint.largest_image_paint,
         largest_contentful_paint.largest_image_paint_size,

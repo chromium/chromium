@@ -76,9 +76,10 @@
 
       const soft_nav_lcp_entries = await new Promise(resolve => {
         (new PerformanceObserver(list => {
-          if (list.getEntries().length >= 2) {
-            resolve(list.getEntries().filter(
-              e => soft_nav_entry_navigation_ids.includes(e.navigationId)));
+          let soft_nav_entries = list.getEntries().filter(
+            e => soft_nav_entry_navigation_ids.includes(e.navigationId));
+          if (soft_nav_entries.length >= 2) {
+            resolve(soft_nav_entries);
           }
         })).observe({
           type: 'largest-contentful-paint', buffered: true,
