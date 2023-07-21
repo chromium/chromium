@@ -9,7 +9,9 @@ import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.FormFactor;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SpacingRecyclerViewItemDecoration;
@@ -21,8 +23,14 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
  * Binder for the Carousel suggestions.
  */
 public final class BaseCarouselSuggestionViewBinder {
+    private static int sTileViewPadding = -1;
     /** @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object) */
     public static void bind(PropertyModel model, BaseCarouselSuggestionView view, PropertyKey key) {
+        // Initialize resources we will be frequently accessing.
+        if (sTileViewPadding < 0) {
+            sTileViewPadding = view.getResources().getDimensionPixelSize(R.dimen.tile_view_padding);
+        }
+
         if (key == BaseCarouselSuggestionViewProperties.TILES) {
             var items = model.get(BaseCarouselSuggestionViewProperties.TILES);
             var adapter = (SimpleRecyclerViewAdapter) view.getAdapter();
@@ -37,9 +45,17 @@ public final class BaseCarouselSuggestionViewBinder {
                 itemDecoration--;
                 view.removeItemDecorationAt(itemDecoration);
             }
-            int spacing = getItemSpacingPx(
+
+            var context = view.getContext();
+            // Adjust the initial offset of the MV Carousel to match the offset of the
+            // suggestion header.
+            int initialSpacing = OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
+                    ? OmniboxResourceProvider.getHeaderStartPadding(context) - sTileViewPadding
+                    : OmniboxResourceProvider.getSideSpacing(context);
+            int itemSpacing = getItemSpacingPx(
                     model.get(SuggestionCommonProperties.DEVICE_FORM_FACTOR), view.getResources());
-            view.addItemDecoration(new SpacingRecyclerViewItemDecoration(0, spacing / 2));
+            view.addItemDecoration(
+                    new SpacingRecyclerViewItemDecoration(initialSpacing, itemSpacing / 2));
         } else if (key == BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE) {
             view.setHorizontalFadingEdgeEnabled(
                     model.get(BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE));

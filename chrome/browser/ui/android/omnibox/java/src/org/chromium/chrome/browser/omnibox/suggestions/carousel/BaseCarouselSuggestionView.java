@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.MockedInTests;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
@@ -37,17 +36,11 @@ public class BaseCarouselSuggestionView extends RecyclerView {
         setFocusableInTouchMode(true);
         setItemAnimator(null);
         setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-        setClipToPadding(false);
 
         int topPadding = OmniboxResourceProvider.getCarouselTopPadding(context);
         int bottomPadding = OmniboxResourceProvider.getCarouselBottomPadding(context);
         getResources().getDimensionPixelSize(R.dimen.omnibox_carousel_suggestion_padding);
-        int startPadding = OmniboxResourceProvider.getSideSpacing(context);
-        if (OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
-            startPadding -= context.getResources().getDimensionPixelSize(
-                    R.dimen.omnibox_carousel_start_padding_reduction);
-        }
-        setPaddingRelative(startPadding, topPadding, getPaddingEnd(), bottomPadding);
+        setPaddingRelative(0, topPadding, getPaddingEnd(), bottomPadding);
 
         mSelectionManager = new BaseCarouselSuggestionSelectionManager(getLayoutManager());
         addOnChildAttachStateChangeListener(mSelectionManager);

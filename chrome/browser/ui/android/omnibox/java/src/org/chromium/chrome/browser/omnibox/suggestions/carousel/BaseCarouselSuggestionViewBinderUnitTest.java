@@ -28,11 +28,13 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.FormFactor;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SpacingRecyclerViewItemDecoration;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -185,8 +187,9 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
                 ArgumentCaptor.forClass(SpacingRecyclerViewItemDecoration.class);
         verify(mView, times(1)).addItemDecoration(captor.capture());
         var decoration = captor.getValue();
-        Assert.assertEquals(decoration.leadInSpace, 0);
-        Assert.assertEquals(decoration.elementSpace, spacingPx / 2);
+        Assert.assertEquals(
+                OmniboxResourceProvider.getSideSpacing(mContext), decoration.leadInSpace);
+        Assert.assertEquals(spacingPx / 2, decoration.elementSpace);
     }
 
     @Test
@@ -237,5 +240,56 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
         RecycledViewPool testRecycledViewPool = new RecycledViewPool();
         mModel.set(BaseCarouselSuggestionViewProperties.RECYCLED_VIEW_POOL, testRecycledViewPool);
         Assert.assertEquals(testRecycledViewPool, mView.getRecycledViewPool());
+    }
+
+    @Test
+    public void customVisualAlignment_classicUi() {
+        createMVCForTest();
+        mModel.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, FormFactor.TABLET);
+        ArgumentCaptor<SpacingRecyclerViewItemDecoration> captor =
+                ArgumentCaptor.forClass(SpacingRecyclerViewItemDecoration.class);
+        verify(mView, times(1)).addItemDecoration(captor.capture());
+        var decoration = captor.getValue();
+        Assert.assertEquals(
+                OmniboxResourceProvider.getSideSpacing(mContext), decoration.leadInSpace);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
+    public void customVisualAlignment_modernUi_regular() {
+        runCustomVisualAlignmentTest();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
+    public void customVisualAlignment_modernUi_smaller() {
+        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLER_MARGINS.setForTesting(true);
+        runCustomVisualAlignmentTest();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
+    public void customVisualAlignment_modernUi_smallest() {
+        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS.setForTesting(true);
+        runCustomVisualAlignmentTest();
+    }
+
+    void runCustomVisualAlignmentTest() {
+        createMVCForTest();
+        mModel.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, FormFactor.TABLET);
+        ArgumentCaptor<SpacingRecyclerViewItemDecoration> captor =
+                ArgumentCaptor.forClass(SpacingRecyclerViewItemDecoration.class);
+        verify(mView, times(1)).addItemDecoration(captor.capture());
+        var decoration = captor.getValue();
+        Assert.assertEquals(OmniboxResourceProvider.getHeaderStartPadding(mContext)
+                        - mContext.getResources().getDimensionPixelSize(R.dimen.tile_view_padding),
+                decoration.leadInSpace);
+    }
+
+    @Test
+    public void invalidDeviceFormFactorThrowsException() {
+        createMVCForTest();
+        Assert.assertThrows(AssertionError.class,
+                () -> mModel.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, 9));
     }
 }
