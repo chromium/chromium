@@ -148,6 +148,15 @@ void ProcessMetricsDecorator::OnMetricsInterestTokenReleased() {
   }
 }
 
+void ProcessMetricsDecorator::RequestImmediateMetrics() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (state_ == State::kWaitingForResponse) {
+    // A measurement is already being taken and will be available immediately.
+    return;
+  }
+  OnRequestImmediateMetrics();
+}
+
 void ProcessMetricsDecorator::StartTimer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // The timer should only be started immediately after processing the response
@@ -182,12 +191,10 @@ void ProcessMetricsDecorator::RefreshMetrics() {
       &ProcessMetricsDecorator::DidGetMemoryUsage, weak_factory_.GetWeakPtr()));
 }
 
-void ProcessMetricsDecorator::RequestImmediateMetrics() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (state_ == State::kWaitingForResponse) {
-    // A measurement is already being taken and will be available immediately.
-    return;
-  }
+void ProcessMetricsDecorator::OnRequestImmediateMetrics() {
+  // This function is replaced during testing, so all state checking should
+  // be done in the calling function, RequestImmediateMetrics().
+
   // Stop the timer so the next metrics sample will be 2 minutes after this to
   // avoid re-sampling shortly after updating the metrics.
   StopTimer();

@@ -10666,7 +10666,8 @@
                         "high_efficiency_chart_pmf_50_percentile_bytes": "117440512",
                         "high_efficiency_chart_pmf_75_percentile_bytes": "206569472",
                         "high_efficiency_chart_pmf_99_percentile_bytes": "838860800",
-                        "memory_usage_in_hovercards_high_threshold_bytes": "838860800"
+                        "memory_usage_in_hovercards_high_threshold_bytes": "838860800",
+                        "update_memory_on_navigation": "true"
                     },
                     "enable_features": [
                         "DiscardExceptionsImprovements",

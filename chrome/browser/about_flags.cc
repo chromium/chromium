@@ -3428,6 +3428,16 @@ const FeatureEntry::FeatureVariation kDiscardedTabTreatmentVariations[] = {
 
 };
 
+const FeatureEntry::FeatureParam
+    kMemoryUsageInHovercardsUpdateOnNavigationVariations[] = {
+        {"update_memory_on_navigation", "true"},
+};
+const FeatureEntry::FeatureVariation kMemoryUsageInHovercardsVariations[] = {
+    {"With Update on Navigation",
+     kMemoryUsageInHovercardsUpdateOnNavigationVariations,
+     std::size(kMemoryUsageInHovercardsUpdateOnNavigationVariations), nullptr},
+};
+
 const FeatureEntry::FeatureParam kMemorySavingsReportingFrequent[] = {
     // 100 * 1024 * 1024
     {"expanded_high_efficiency_chip_threshold_bytes", "104857600"},
@@ -9905,8 +9915,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHighEfficiencyMemoryUsageInHovercardsName,
      flag_descriptions::kHighEfficiencyMemoryUsageInHovercardsDescription,
      kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         performance_manager::features::kMemoryUsageInHovercards)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         performance_manager::features::kMemoryUsageInHovercards,
+         kMemoryUsageInHovercardsVariations,
+         "MemoryUsageInHovercards")},
 
     {"memory-saver-discard-exceptions-improvements",
      flag_descriptions::kHighEfficiencyDiscardExceptionsImprovementsName,

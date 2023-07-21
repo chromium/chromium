@@ -82,6 +82,10 @@ class ProcessMetricsDecorator
   // Asynchronously refreshes the metrics for all the process nodes.
   void RefreshMetrics();
 
+  // Calls RefreshMetrics() and adjusts `refresh_timer_` to compensate for the
+  // extra refresh. Virtual to make a test seam.
+  virtual void OnRequestImmediateMetrics();
+
   // Query the MemoryInstrumentation service to get the memory metrics for all
   // processes and run |callback| with the result. Virtual to make a test seam.
   virtual void RequestProcessesMemoryMetrics(
