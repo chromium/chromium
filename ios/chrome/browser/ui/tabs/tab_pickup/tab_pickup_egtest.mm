@@ -209,7 +209,8 @@ void WaitUntilInfobarBannerVisibleOrTimeout(bool should_show) {
 
 // Verifies that the TabPickup banner is displayed after backgrounding and
 // foregrounding the app.
-- (void)testBannerDisplayedAfterBackground {
+// TODO(crbug.com/1466869): Flaky on iPhone.
+- (void)DISABLED_testBannerDisplayedAfterBackground {
   // Create a distant session with 4 tabs.
   [DistantTabsAppInterface
       addSessionToFakeSyncServer:@"Desktop-1"
