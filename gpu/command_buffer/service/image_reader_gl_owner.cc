@@ -321,14 +321,6 @@ void ImageReaderGLOwner::UpdateTexImage() {
   current_image_ref_.emplace(this, image, std::move(scoped_acquire_fence_fd));
 }
 
-void ImageReaderGLOwner::EnsureTexImageBound(GLuint service_id) {
-  // This method is supposed to be called only if the TextureOwner instance
-  // binds the texture on update, which ImageReaderGLOwner does not. If this
-  // method *is* ever called on this class it will not work as the caller is
-  // expecting; hence CHECK to ensure that any such instances are caught.
-  CHECK(false);
-}
-
 std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
 ImageReaderGLOwner::GetAHardwareBuffer() {
   base::AutoLock auto_lock(lock_);

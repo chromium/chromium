@@ -131,8 +131,6 @@ void CodecOutputBufferRenderer::EnsureBoundIfNeeded(BindingsMode mode,
 
   if (mode == BindingsMode::kBindImage) {
     DCHECK_GT(service_id, 0u);
-    codec_buffer_wait_coordinator_->texture_owner()->EnsureTexImageBound(
-        service_id);
     was_tex_image_bound_ = true;
   }
 }
