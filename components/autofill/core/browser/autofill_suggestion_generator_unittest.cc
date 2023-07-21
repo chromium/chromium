@@ -516,7 +516,7 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldShowVirtualCardOption) {
   CreditCard server_card =
       CreateServerCard(/*guid=*/"00000000-0000-0000-0000-000000000001");
   server_card.set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::ENROLLED);
+      CreditCard::VirtualCardEnrollmentState::kEnrolled);
   personal_data()->AddServerCreditCard(server_card);
 
   // Create a local card with same information.
@@ -537,7 +537,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
   CreditCard server_card =
       CreateServerCard(/*guid=*/"00000000-0000-0000-0000-000000000001");
   server_card.set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::ENROLLED);
+      CreditCard::VirtualCardEnrollmentState::kEnrolled);
   personal_data()->AddServerCreditCard(server_card);
   autofill_client()->ResetAutofillOptimizationGuide();
 
@@ -559,7 +559,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
   CreditCard server_card =
       CreateServerCard(/*guid=*/"00000000-0000-0000-0000-000000000001");
   server_card.set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::ENROLLED);
+      CreditCard::VirtualCardEnrollmentState::kEnrolled);
   personal_data()->AddServerCreditCard(server_card);
 
   // Create a local card with same information.
@@ -586,7 +586,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
   CreditCard server_card =
       CreateServerCard(/*guid=*/"00000000-0000-0000-0000-000000000001");
   server_card.set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::UNSPECIFIED);
+      CreditCard::VirtualCardEnrollmentState::kUnspecified);
   personal_data()->AddServerCreditCard(server_card);
 
   // Create a local card with same information.

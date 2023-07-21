@@ -174,9 +174,9 @@ TEST_F(AutofillSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
 
   // Verify that the virtual_card_enrollment_state is set correctly.
   EXPECT_EQ(wallet_cards.front().virtual_card_enrollment_state(),
-            CreditCard::UNENROLLED);
+            CreditCard::VirtualCardEnrollmentState::kUnenrolled);
   EXPECT_EQ(wallet_cards.back().virtual_card_enrollment_state(),
-            CreditCard::ENROLLED);
+            CreditCard::VirtualCardEnrollmentState::kEnrolled);
 
   // Verify that the virtual_card_enrollment_type is set correctly.
   EXPECT_EQ(wallet_cards.back().virtual_card_enrollment_type(),

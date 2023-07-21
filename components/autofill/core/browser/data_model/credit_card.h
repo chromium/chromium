@@ -67,18 +67,18 @@ class CreditCard : public AutofillDataModel {
   // stay in sync with the proto enum in autofill_specifics.proto. A java
   // IntDef@ is generated from this.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
-  enum VirtualCardEnrollmentState {
+  enum class VirtualCardEnrollmentState {
     // State unspecified. This is the default value of this enum. Should not be
     // ever used with cards.
-    UNSPECIFIED = 0,
+    kUnspecified = 0,
     // Deprecated. Card is not enrolled and does not have related virtual card.
-    UNENROLLED = 1,
+    kUnenrolled = 1,
     // Card is enrolled and has related virtual cards.
-    ENROLLED = 2,
+    kEnrolled = 2,
     // Card is not enrolled and is not eligible for enrollment.
-    UNENROLLED_AND_NOT_ELIGIBLE = 3,
+    kUnenrolledAndNotEligible = 3,
     // Card is not enrolled but is eligible for enrollment.
-    UNENROLLED_AND_ELIGIBLE = 4,
+    kUnenrolledAndEligible = 4,
   };
 
   // The enrollment type of the virtual card attached to this card, if one is
@@ -525,9 +525,10 @@ class CreditCard : public AutofillDataModel {
   // TODO(crbug.com/1121806): remove server_id_ after full deprecation
   int64_t instrument_id_;
 
-  // The virtual card enrollment state of this card. If it is ENROLLED, then
+  // The virtual card enrollment state of this card. If it is kEnrolled, then
   // this card has virtual cards linked to it.
-  VirtualCardEnrollmentState virtual_card_enrollment_state_ = UNSPECIFIED;
+  VirtualCardEnrollmentState virtual_card_enrollment_state_ =
+      VirtualCardEnrollmentState::kUnspecified;
 
   // The virtual card enrollment type of this card. This will be used when the
   // enrollment type can make a difference in the functionality we offer for

@@ -194,7 +194,8 @@ TEST_F(CreditCardAccessoryControllerTest,
       PersonalDataManagerFactory::GetForProfile(profile());
   // Add a virtual card.
   CreditCard card = test::GetMaskedServerCard();
-  card.set_virtual_card_enrollment_state(CreditCard::ENROLLED);
+  card.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::kEnrolled);
   personal_data_manager->AddServerCreditCardForTest(
       std::make_unique<CreditCard>(card));
 
@@ -291,7 +292,8 @@ class CreditCardAccessoryControllerCardUnmaskTest
         // The CreditCardAccessoryController will automatically create a virtual
         // card for this masked server card.
         CreditCard card = test::GetMaskedServerCard();
-        card.set_virtual_card_enrollment_state(CreditCard::ENROLLED);
+        card.set_virtual_card_enrollment_state(
+            CreditCard::VirtualCardEnrollmentState::kEnrolled);
         return card;
       }
     }
@@ -532,7 +534,8 @@ TEST_F(
     RefreshSuggestionsAddsVirtualCardWhenOriginalCardIsEnrolledForVirtualCards) {
   // Add a masked card to PersonalDataManager.
   CreditCard masked_card = test::GetMaskedServerCard();
-  masked_card.set_virtual_card_enrollment_state(CreditCard::ENROLLED);
+  masked_card.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::kEnrolled);
   data_manager_.AddCreditCard(masked_card);
 
   AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
@@ -577,7 +580,8 @@ TEST_F(CreditCardAccessoryControllerTest, VirtualCreditCardWithCardArtUrl) {
   // Add a masked card to PersonalDataManager.
   CreditCard masked_card = test::GetMaskedServerCard();
   masked_card.set_card_art_url(GURL("http://www.example.com/image.png"));
-  masked_card.set_virtual_card_enrollment_state(CreditCard::ENROLLED);
+  masked_card.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::kEnrolled);
   data_manager_.AddCreditCard(masked_card);
 
   AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,

@@ -4708,13 +4708,13 @@ TEST_F(PersonalDataManagerTest, LogStoredCreditCardMetrics) {
 
   // Sets the virtual card enrollment state for the first three server cards.
   server_cards[0].set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::ENROLLED);
+      CreditCard::VirtualCardEnrollmentState::kEnrolled);
   server_cards[0].set_card_art_url(GURL("https://www.example.com/image1"));
   server_cards[1].set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::ENROLLED);
+      CreditCard::VirtualCardEnrollmentState::kEnrolled);
   server_cards[1].set_card_art_url(GURL("https://www.example.com/image1"));
   server_cards[2].set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::ENROLLED);
+      CreditCard::VirtualCardEnrollmentState::kEnrolled);
   server_cards[2].set_card_art_url(GURL("https://www.example.com/image2"));
 
   SetServerCards(server_cards);

@@ -281,10 +281,10 @@ class VirtualCardUsageData;
 //                      legacy version of this.
 //   virtual_card_enrollment_state
 //                      An enum indicating the virtual card enrollment state of
-//                      this card. UNSPECIFIED is the default value. UNENROLLED
-//                      means this card has not been enrolled to have virtual
-//                      cards. ENROLLED means the card has been enrolled and
-//                      has related virtual credit cards.
+//                      this card. kUnspecified is the default value.
+//                      kUnenrolled means this card has not been enrolled to
+//                      have virtual cards. kEnrolled means the card has been
+//                      enrolled and has related virtual credit cards.
 //   card_art_url       URL to generate the card art image for this card.
 //   product_description
 //                      The product description for the card. Used to be shown

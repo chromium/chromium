@@ -122,7 +122,8 @@ TouchToFillDelegateAndroidImpl::DryRun(FormGlobalId form_id,
   // before the actual card.
   std::vector<autofill::CreditCard> real_and_virtual_cards;
   for (const CreditCard& card : cards_to_suggest) {
-    if (card.virtual_card_enrollment_state() == CreditCard::ENROLLED &&
+    if (card.virtual_card_enrollment_state() ==
+            CreditCard::VirtualCardEnrollmentState::kEnrolled &&
         base::FeatureList::IsEnabled(
             features::kAutofillVirtualCardsOnTouchToFillAndroid)) {
       real_and_virtual_cards.push_back(CreditCard::CreateVirtualCard(card));

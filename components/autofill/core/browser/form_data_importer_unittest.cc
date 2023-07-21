@@ -4197,7 +4197,7 @@ TEST_F(FormDataImporterNonParameterizedTest,
   extracted_credit_card.SetNetworkForMaskedCard(kAmericanExpressCard);
   extracted_credit_card.set_instrument_id(1111);
   extracted_credit_card.set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_ELIGIBLE);
+      CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible);
   absl::optional<std::string> extracted_upi_id;
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultCreditCardFormStructure();

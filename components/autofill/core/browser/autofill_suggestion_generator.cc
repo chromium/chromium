@@ -705,7 +705,8 @@ bool AutofillSuggestionGenerator::ShouldShowVirtualCardOptionForServerCard(
 
   // If the card is not enrolled into virtual cards, we should not show a
   // virtual card suggestion for it.
-  if (card->virtual_card_enrollment_state() != CreditCard::ENROLLED) {
+  if (card->virtual_card_enrollment_state() !=
+      CreditCard::VirtualCardEnrollmentState::kEnrolled) {
     return false;
   }
 

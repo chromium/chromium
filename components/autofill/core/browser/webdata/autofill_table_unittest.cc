@@ -1982,7 +1982,7 @@ TEST_F(AutofillTableTest, SetGetServerCards) {
   inputs[0].set_card_issuer(CreditCard::Issuer::kGoogle);
   inputs[0].set_instrument_id(321);
   inputs[0].set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::UNENROLLED);
+      CreditCard::VirtualCardEnrollmentState::kUnenrolled);
   inputs[0].set_virtual_card_enrollment_type(
       CreditCard::VirtualCardEnrollmentType::kIssuer);
   inputs[0].set_product_description(u"Fake description");
@@ -2000,7 +2000,7 @@ TEST_F(AutofillTableTest, SetGetServerCards) {
   inputs[1].set_issuer_id("amex");
   inputs[1].set_instrument_id(123);
   inputs[1].set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::ENROLLED);
+      CreditCard::VirtualCardEnrollmentState::kEnrolled);
   inputs[1].set_virtual_card_enrollment_type(
       CreditCard::VirtualCardEnrollmentType::kNetwork);
   inputs[1].set_card_art_url(GURL("https://www.example.com"));
@@ -2038,9 +2038,9 @@ TEST_F(AutofillTableTest, SetGetServerCards) {
   EXPECT_EQ(321, outputs[0]->instrument_id());
   EXPECT_EQ(123, outputs[1]->instrument_id());
 
-  EXPECT_EQ(CreditCard::VirtualCardEnrollmentState::UNENROLLED,
+  EXPECT_EQ(CreditCard::VirtualCardEnrollmentState::kUnenrolled,
             outputs[0]->virtual_card_enrollment_state());
-  EXPECT_EQ(CreditCard::VirtualCardEnrollmentState::ENROLLED,
+  EXPECT_EQ(CreditCard::VirtualCardEnrollmentState::kEnrolled,
             outputs[1]->virtual_card_enrollment_state());
 
   EXPECT_EQ(CreditCard::VirtualCardEnrollmentType::kIssuer,
@@ -2267,7 +2267,7 @@ TEST_F(AutofillTableTest, SetServerCardsData) {
   inputs[0].set_issuer_id("amex");
   inputs[0].set_instrument_id(1);
   inputs[0].set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::ENROLLED);
+      CreditCard::VirtualCardEnrollmentState::kEnrolled);
   inputs[0].set_virtual_card_enrollment_type(
       CreditCard::VirtualCardEnrollmentType::kIssuer);
   inputs[0].set_card_art_url(GURL("https://www.example.com"));
@@ -2288,7 +2288,7 @@ TEST_F(AutofillTableTest, SetServerCardsData) {
 
   EXPECT_EQ(inputs[0], *outputs[0]);
 
-  EXPECT_EQ(CreditCard::VirtualCardEnrollmentState::ENROLLED,
+  EXPECT_EQ(CreditCard::VirtualCardEnrollmentState::kEnrolled,
             outputs[0]->virtual_card_enrollment_state());
 
   EXPECT_EQ(CreditCard::VirtualCardEnrollmentType::kIssuer,

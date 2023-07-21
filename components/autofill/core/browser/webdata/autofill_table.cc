@@ -3748,7 +3748,8 @@ void AutofillTable::AddMaskedCreditCards(
     masked_insert.BindInt(index++, static_cast<int>(card.card_issuer()));
     masked_insert.BindString(index++, card.issuer_id());
     masked_insert.BindInt64(index++, card.instrument_id());
-    masked_insert.BindInt(index++, card.virtual_card_enrollment_state());
+    masked_insert.BindInt(
+        index++, static_cast<int>(card.virtual_card_enrollment_state()));
     masked_insert.BindInt(index++, static_cast<int>(
                                    card.virtual_card_enrollment_type()));
     masked_insert.BindString(index++, card.card_art_url().spec());

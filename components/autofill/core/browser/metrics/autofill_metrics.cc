@@ -1642,7 +1642,7 @@ void AutofillMetrics::LogStoredCreditCardMetrics(
   size_t virtual_card_enabled_card_count = base::ranges::count_if(
       server_cards, [](const std::unique_ptr<CreditCard>& card) {
         return card->virtual_card_enrollment_state() ==
-               CreditCard::VirtualCardEnrollmentState::ENROLLED;
+               CreditCard::VirtualCardEnrollmentState::kEnrolled;
       });
   base::UmaHistogramCounts1000(
       "Autofill.StoredCreditCardCount.Server.WithVirtualCardMetadata",

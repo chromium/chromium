@@ -510,7 +510,7 @@ double CreditCard::GetRankingScore(base::Time current_time) const {
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableRankingFormulaCreditCards)) {
     int virtual_card_boost =
-        virtual_card_enrollment_state_ != VirtualCardEnrollmentState::ENROLLED
+        virtual_card_enrollment_state_ != VirtualCardEnrollmentState::kEnrolled
             ? 0
             : features::kAutofillRankingFormulaVirtualCardBoost.Get() *
                   exp(-GetDaysSinceLastUse(current_time) /
@@ -1321,8 +1321,8 @@ std::ostream& operator<<(std::ostream& os, const CreditCard& credit_card) {
             << " "
             << " " << credit_card.issuer_id() << " "
             << credit_card.instrument_id() << " "
-            << credit_card.virtual_card_enrollment_state() << " "
-            << credit_card.card_art_url().spec() << " "
+            << base::to_underlying(credit_card.virtual_card_enrollment_state())
+            << " " << credit_card.card_art_url().spec() << " "
             << base::UTF16ToUTF8(credit_card.product_description()) << " "
             << credit_card.cvc();
 }

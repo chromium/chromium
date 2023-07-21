@@ -447,7 +447,7 @@ CreditCard GetMaskedServerCardWithNickname() {
 CreditCard GetMaskedServerCardEnrolledIntoVirtualCardNumber() {
   CreditCard credit_card = GetMaskedServerCard();
   credit_card.set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::ENROLLED);
+      CreditCard::VirtualCardEnrollmentState::kEnrolled);
   return credit_card;
 }
 
@@ -466,7 +466,7 @@ CreditCard GetVirtualCard() {
                           "10", test::NextYear().c_str(), "1");
   credit_card.set_record_type(CreditCard::RecordType::VIRTUAL_CARD);
   credit_card.set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::ENROLLED);
+      CreditCard::VirtualCardEnrollmentState::kEnrolled);
   test_api(credit_card).set_network_for_virtual_card(kMasterCard);
   return credit_card;
 }

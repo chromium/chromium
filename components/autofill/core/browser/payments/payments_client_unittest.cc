@@ -1411,7 +1411,7 @@ TEST_F(PaymentsClientTest, UploadSuccessEmptyResponse) {
   EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_FALSE(upload_card_response_details_.instrument_id.has_value());
   EXPECT_TRUE(upload_card_response_details_.virtual_card_enrollment_state ==
-              CreditCard::VirtualCardEnrollmentState::UNSPECIFIED);
+              CreditCard::VirtualCardEnrollmentState::kUnspecified);
   EXPECT_TRUE(upload_card_response_details_.card_art_url.is_empty());
 }
 
@@ -1430,9 +1430,9 @@ TEST_F(PaymentsClientTest, UploadSuccessInstrumentIdPresent) {
 TEST_F(PaymentsClientTest, UploadSuccessVirtualCardEnrollmentStatePresent) {
   bool oauth_token_issued = false;
   for (CreditCard::VirtualCardEnrollmentState virtual_card_enrollment_state :
-       {CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_NOT_ELIGIBLE,
-        CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_ELIGIBLE,
-        CreditCard::VirtualCardEnrollmentState::ENROLLED}) {
+       {CreditCard::VirtualCardEnrollmentState::kUnenrolledAndNotEligible,
+        CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible,
+        CreditCard::VirtualCardEnrollmentState::kEnrolled}) {
     StartUploading(UploadCardOptions());
     // An OAuthToken needs to be issued to initiate the first UploadCard call
     // from PaymentsClientTest::StartUploading(), but only for the first call.
@@ -1443,23 +1443,23 @@ TEST_F(PaymentsClientTest, UploadSuccessVirtualCardEnrollmentStatePresent) {
       oauth_token_issued = true;
     }
     switch (virtual_card_enrollment_state) {
-      case CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_NOT_ELIGIBLE:
+      case CreditCard::VirtualCardEnrollmentState::kUnenrolledAndNotEligible:
         ReturnResponse(net::HTTP_OK,
                        "{ \"virtual_card_metadata\": { \"status\": "
                        "\"ENROLLMENT_STATUS_UNSPECIFIED\" } }");
         break;
-      case CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_ELIGIBLE:
+      case CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible:
         ReturnResponse(net::HTTP_OK,
                        "{ \"virtual_card_metadata\": { \"status\": "
                        "\"ENROLLMENT_ELIGIBLE\" } }");
         break;
-      case CreditCard::VirtualCardEnrollmentState::ENROLLED:
+      case CreditCard::VirtualCardEnrollmentState::kEnrolled:
         ReturnResponse(
             net::HTTP_OK,
             "{ \"virtual_card_metadata\": { \"status\": \"ENROLLED\" } }");
         break;
-      case CreditCard::VirtualCardEnrollmentState::UNENROLLED:
-      case CreditCard::VirtualCardEnrollmentState::UNSPECIFIED:
+      case CreditCard::VirtualCardEnrollmentState::kUnenrolled:
+      case CreditCard::VirtualCardEnrollmentState::kUnspecified:
         break;
     }
     EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
@@ -1482,7 +1482,7 @@ TEST_F(PaymentsClientTest,
                  "\"context_token\": \"some_token\"} } }");
   EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ(upload_card_response_details_.virtual_card_enrollment_state,
-            CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_ELIGIBLE);
+            CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible);
   EXPECT_EQ(
       upload_card_response_details_.get_details_for_enrollment_response_details
           .value()

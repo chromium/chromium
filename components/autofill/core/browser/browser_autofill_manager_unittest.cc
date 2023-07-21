@@ -8996,7 +8996,8 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_VirtualCard) {
                           "04", "2999", "1");
   masked_server_card.SetNetworkForMaskedCard(kVisaCard);
   masked_server_card.set_guid(MakeGuid(7));
-  masked_server_card.set_virtual_card_enrollment_state(CreditCard::ENROLLED);
+  masked_server_card.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::kEnrolled);
   masked_server_card.SetNickname(u"nickname");
   personal_data().AddServerCreditCard(masked_server_card);
 

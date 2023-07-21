@@ -217,7 +217,8 @@ TEST_F(AutofillOptimizationGuideTest,
   form_structure.DetermineHeuristicTypes(
       /*form_interactions_ukm_logger=*/nullptr, /*log_manager=*/nullptr);
   personal_data_manager_->GetCreditCards()[0]
-      ->set_virtual_card_enrollment_state(CreditCard::UNENROLLED_AND_ELIGIBLE);
+      ->set_virtual_card_enrollment_state(
+          CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible);
 
   EXPECT_CALL(*decider_, RegisterOptimizationTypes).Times(0);
 

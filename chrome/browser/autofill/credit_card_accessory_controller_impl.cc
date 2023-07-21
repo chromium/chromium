@@ -110,7 +110,8 @@ UserInfo TranslateCachedCard(const CachedServerCardInfo* data, bool enabled) {
 }
 
 bool ShouldCreateVirtualCard(const CreditCard* card) {
-  return card->virtual_card_enrollment_state() == CreditCard::ENROLLED;
+  return card->virtual_card_enrollment_state() ==
+         CreditCard::VirtualCardEnrollmentState::kEnrolled;
 }
 
 const CreditCard* UnwrapCardOrVirtualCard(
@@ -277,7 +278,7 @@ bool CreditCardAccessoryController::AllowedForWebContents(
           personal_data_manager->GetCreditCardsToSuggest();
       bool has_virtual_card = base::ranges::any_of(cards, [](const auto& card) {
         return card->virtual_card_enrollment_state() ==
-               CreditCard::VirtualCardEnrollmentState::ENROLLED;
+               CreditCard::VirtualCardEnrollmentState::kEnrolled;
       });
       if (has_virtual_card) {
         // Virtual cards are available. We should always show manual fallback

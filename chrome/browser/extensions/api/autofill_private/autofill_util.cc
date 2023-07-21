@@ -244,13 +244,13 @@ autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
       credit_card.IsValid() && !personal_data.IsServerCard(&credit_card);
   card.metadata->is_virtual_card_enrollment_eligible =
       credit_card.virtual_card_enrollment_state() ==
-          autofill::CreditCard::VirtualCardEnrollmentState::ENROLLED ||
+          autofill::CreditCard::VirtualCardEnrollmentState::kEnrolled ||
       credit_card.virtual_card_enrollment_state() ==
           autofill::CreditCard::VirtualCardEnrollmentState::
-              UNENROLLED_AND_ELIGIBLE;
+              kUnenrolledAndEligible;
   card.metadata->is_virtual_card_enrolled =
       credit_card.virtual_card_enrollment_state() ==
-      autofill::CreditCard::VirtualCardEnrollmentState::ENROLLED;
+      autofill::CreditCard::VirtualCardEnrollmentState::kEnrolled;
 
   return card;
 }

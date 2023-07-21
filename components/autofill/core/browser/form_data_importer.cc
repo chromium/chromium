@@ -113,7 +113,7 @@ bool ShouldOfferVirtualCardEnrollment(
   }
 
   if (extracted_credit_card->virtual_card_enrollment_state() !=
-      CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_ELIGIBLE) {
+      CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible) {
     return false;
   }
 

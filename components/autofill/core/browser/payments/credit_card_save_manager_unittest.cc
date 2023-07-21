@@ -5178,9 +5178,9 @@ TEST_F(CreditCardSaveManagerTest,
 // enrollment is offered when a card becomes eligible after upload.
 TEST_F(CreditCardSaveManagerTest, OnDidUploadCard_VirtualCardEnrollment) {
   for (CreditCard::VirtualCardEnrollmentState enrollment_state :
-       {CreditCard::VirtualCardEnrollmentState::UNENROLLED,
-        CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_ELIGIBLE,
-        CreditCard::VirtualCardEnrollmentState::ENROLLED}) {
+       {CreditCard::VirtualCardEnrollmentState::kUnenrolled,
+        CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible,
+        CreditCard::VirtualCardEnrollmentState::kEnrolled}) {
     for (bool is_update_virtual_card_enrollment_enabled : {true, false}) {
       base::test::ScopedFeatureList feature_list;
       if (is_update_virtual_card_enrollment_enabled) {
@@ -5202,7 +5202,7 @@ TEST_F(CreditCardSaveManagerTest, OnDidUploadCard_VirtualCardEnrollment) {
       VirtualCardEnrollmentSource arg_virtual_card_enrollment_source;
       if (is_update_virtual_card_enrollment_enabled &&
           enrollment_state ==
-              CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_ELIGIBLE) {
+              CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible) {
         EXPECT_CALL(autofill_client_, GetVirtualCardEnrollmentManager).Times(1);
         EXPECT_CALL(*virtual_card_enrollment_manager_,
                     InitVirtualCardEnroll(_, _, _, _, _, _))
@@ -5219,7 +5219,7 @@ TEST_F(CreditCardSaveManagerTest, OnDidUploadCard_VirtualCardEnrollment) {
       // enrollment should be offered.
       if (is_update_virtual_card_enrollment_enabled &&
           enrollment_state ==
-              CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_ELIGIBLE) {
+              CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible) {
         EXPECT_EQ(arg_credit_card.card_art_url(),
                   upload_card_response_details.card_art_url);
         EXPECT_EQ(arg_credit_card.instrument_id(),
@@ -5232,7 +5232,7 @@ TEST_F(CreditCardSaveManagerTest, OnDidUploadCard_VirtualCardEnrollment) {
         EXPECT_TRUE(arg_credit_card.card_art_url().is_empty());
         EXPECT_EQ(arg_credit_card.instrument_id(), 0);
         EXPECT_EQ(arg_credit_card.virtual_card_enrollment_state(),
-                  CreditCard::VirtualCardEnrollmentState::UNSPECIFIED);
+                  CreditCard::VirtualCardEnrollmentState::kUnspecified);
       }
     }
   }
@@ -5249,7 +5249,7 @@ TEST_F(
   upload_card_response_details.card_art_url = GURL("https://example.com/");
   upload_card_response_details.instrument_id = 9223372036854775807;
   upload_card_response_details.virtual_card_enrollment_state =
-      CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_ELIGIBLE;
+      CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible;
 
   payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails
       get_details_for_enrollment_response_details;

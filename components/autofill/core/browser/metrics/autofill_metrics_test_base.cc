@@ -237,7 +237,7 @@ void AutofillMetricsBaseTest::CreateCreditCards(
     masked_server_credit_card.SetNumber(u"9424");
     if (masked_card_is_enrolled_for_virtual_card) {
       masked_server_credit_card.set_virtual_card_enrollment_state(
-          CreditCard::ENROLLED);
+          CreditCard::VirtualCardEnrollmentState::kEnrolled);
     }
     personal_data().AddServerCreditCard(masked_server_credit_card);
   }

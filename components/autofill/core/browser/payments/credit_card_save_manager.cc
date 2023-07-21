@@ -343,7 +343,7 @@ void CreditCardSaveManager::OnDidUploadCard(
       // fields in the response that will be required for server requests in the
       // virtual card enrollment flow, so we set them here and start the flow.
       if (upload_card_response_details.virtual_card_enrollment_state ==
-          CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_ELIGIBLE) {
+          CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible) {
         DCHECK(upload_card_response_details.instrument_id.has_value());
         CreditCard* uploaded_card = &upload_request_.card;
         if (!upload_card_response_details.card_art_url.is_empty()) {
