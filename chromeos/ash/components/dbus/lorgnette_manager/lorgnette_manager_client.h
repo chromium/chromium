@@ -83,6 +83,22 @@ class COMPONENT_EXPORT(LORGNETTE_MANAGER) LorgnetteManagerClient
   // scan running at a time.
   virtual void CancelScan(chromeos::VoidDBusMethodCallback cancel_callback) = 0;
 
+  // Starts a new scanner discovery session.  A handle to the session is
+  // returned in the response.  While the session is active, device update
+  // callbacks will be made.
+  virtual void StartScannerDiscovery(
+      const lorgnette::StartScannerDiscoveryRequest& request,
+      base::RepeatingCallback<void(lorgnette::ScannerListChangedSignal)>
+          signal_callback,
+      chromeos::DBusMethodCallback<lorgnette::StartScannerDiscoveryResponse>
+          response_callback) = 0;
+
+  // Stops an existing scanner discovery session.
+  virtual void StopScannerDiscovery(
+      const lorgnette::StopScannerDiscoveryRequest& request,
+      chromeos::DBusMethodCallback<lorgnette::StopScannerDiscoveryResponse>
+          callback) = 0;
+
  protected:
   friend class LorgnetteManagerClientTest;
 

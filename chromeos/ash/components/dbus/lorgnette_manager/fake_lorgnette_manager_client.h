@@ -43,6 +43,16 @@ class COMPONENT_EXPORT(LORGNETTE_MANAGER) FakeLorgnetteManagerClient
       override;
   void CancelScan(
       chromeos::VoidDBusMethodCallback completion_callback) override;
+  void StartScannerDiscovery(
+      const lorgnette::StartScannerDiscoveryRequest& request,
+      base::RepeatingCallback<void(lorgnette::ScannerListChangedSignal)>
+          signal_callback,
+      chromeos::DBusMethodCallback<lorgnette::StartScannerDiscoveryResponse>
+          callback) override;
+  void StopScannerDiscovery(
+      const lorgnette::StopScannerDiscoveryRequest& request,
+      chromeos::DBusMethodCallback<lorgnette::StopScannerDiscoveryResponse>
+          callback) override;
 
   // Sets the response returned by ListScanners().
   void SetListScannersResponse(
