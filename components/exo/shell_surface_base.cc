@@ -2052,9 +2052,10 @@ void ShellSurfaceBase::CommitWidget() {
     auto* window = widget_->GetNativeWindow();
     auto* window_state = ash::WindowState::Get(window);
 
-    // TODO(crbug.com/1261321): correct the initial origin once lacros can
-    // communicate it instead of centering.
-    if (window_state && window_state->IsMaximizedOrFullscreenOrPinned()) {
+    // TODO(oshima): This should be set to the
+    // `views::Widget::InitParams.bounds`
+    if (window_state && window_state->IsMaximizedOrFullscreenOrPinned() &&
+        (!initial_bounds_ || initial_bounds_->IsEmpty())) {
       gfx::Size current_content_size = CalculatePreferredSize();
       gfx::Rect restore_bounds = display::Screen::GetScreen()
                                      ->GetDisplayNearestWindow(window)
@@ -2085,6 +2086,7 @@ void ShellSurfaceBase::CommitWidget() {
     }
 
     if (initially_activated_) {
+      // Widget will minimize itself if the initial state is minimized.
       widget_->Show();
     } else {
       widget_->ShowInactive();

@@ -214,6 +214,11 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
 
   void AttemptToStartDrag(int component);
 
+  // Utility methods to resolve the initial bounds for the first commit.
+  gfx::Rect GetInitialBoundsForState(
+      const chromeos::WindowStateType state) const;
+  display::Display GetDisplayForInitialBounds() const;
+
   std::unique_ptr<ash::ScopedAnimationDisabler> animations_disabler_;
 
   std::unique_ptr<ui::CompositorLock> configure_compositor_lock_;
@@ -239,6 +244,7 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
 
   int resize_component_ = HTCAPTION;  // HT constant (see ui/base/hit_test.h)
   int pending_resize_component_ = HTCAPTION;
+  // TODO(oshima): Use WindowStateType instead.
   ui::WindowShowState initial_show_state_ = ui::SHOW_STATE_DEFAULT;
   bool notify_bounds_changes_ = true;
   bool window_state_is_changing_ = false;

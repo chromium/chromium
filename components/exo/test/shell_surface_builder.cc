@@ -272,6 +272,25 @@ ShellSurfaceBuilder& ShellSurfaceBuilder::DisableSupportsFloatedState() {
   return *this;
 }
 
+ShellSurfaceBuilder& ShellSurfaceBuilder::SetDisplayId(int64_t display_id) {
+  DCHECK(!built_);
+  DCHECK_NE(display_id, display::kInvalidDisplayId);
+  display_id_ = display_id;
+  return *this;
+}
+
+ShellSurfaceBuilder& ShellSurfaceBuilder::SetBounds(const gfx::Rect& bounds) {
+  DCHECK(!built_);
+  bounds_.emplace(bounds);
+  return *this;
+}
+
+ShellSurfaceBuilder& ShellSurfaceBuilder::SetConfigureCallback(
+    ShellSurface::ConfigureCallback configure_callback) {
+  configure_callback_ = configure_callback;
+  return *this;
+}
+
 // static
 void ShellSurfaceBuilder::DestroyRootSurface(ShellSurfaceBase* shell_surface) {
   Holder* holder =
@@ -291,12 +310,18 @@ Surface* ShellSurfaceBuilder::AddChildSurface(Surface* parent,
 std::unique_ptr<ShellSurface> ShellSurfaceBuilder::BuildShellSurface() {
   // Create a ShellSurface instance.
   DCHECK(!built_);
-  DCHECK(isConfigurationValidForShellSurface());
+  DCHECK(IsConfigurationValidForShellSurface());
   built_ = true;
+
   auto holder = std::make_unique<Holder>();
   holder->AddRootSurface(root_buffer_size_, root_buffer_format_);
   auto shell_surface = std::make_unique<ShellSurface>(
       holder->root_surface, origin_, can_minimize_, GetContainer());
+
+  if (!configure_callback_.is_null()) {
+    shell_surface->set_configure_callback(configure_callback_);
+  }
+
   shell_surface->host_window()->SetProperty(kBuilderResourceHolderKey,
                                             std::move(holder));
 
@@ -308,6 +333,27 @@ std::unique_ptr<ShellSurface> ShellSurfaceBuilder::BuildShellSurface() {
   if (menu_)
     shell_surface->SetMenu();
 
+  if (window_state_.has_value()) {
+    switch (window_state_.value()) {
+      case chromeos::WindowStateType::kDefault:
+      case chromeos::WindowStateType::kNormal:
+        shell_surface->Restore();
+        break;
+      case chromeos::WindowStateType::kMaximized:
+        shell_surface->Maximize();
+        break;
+      case chromeos::WindowStateType::kMinimized:
+        shell_surface->Minimize();
+        break;
+      case chromeos::WindowStateType::kFullscreen:
+        shell_surface->SetFullscreen(/*fullscreen=*/true);
+        break;
+      default:
+        // Other states are not supported as initial state in ShellSurface.
+        NOTREACHED();
+    }
+  }
+
   SetCommonPropertiesAndCommitIfNecessary(shell_surface.get());
 
   return shell_surface;
@@ -317,7 +363,7 @@ std::unique_ptr<ClientControlledShellSurface>
 ShellSurfaceBuilder::BuildClientControlledShellSurface() {
   // Create a ClientControlledShellSurface instance.
   DCHECK(!built_);
-  DCHECK(isConfigurationValidForClientControlledShellSurface());
+  DCHECK(IsConfigurationValidForClientControlledShellSurface());
   built_ = true;
   auto holder = std::make_unique<Holder>();
   holder->AddRootSurface(root_buffer_size_, root_buffer_format_);
@@ -341,6 +387,7 @@ ShellSurfaceBuilder::BuildClientControlledShellSurface() {
         std::make_unique<ClientControlledShellSurfaceDelegate>(
             shell_surface.get()));
   }
+
   if (window_state_.has_value()) {
     switch (window_state_.value()) {
       case chromeos::WindowStateType::kDefault:
@@ -383,18 +430,25 @@ ShellSurfaceBuilder::BuildClientControlledShellSurface() {
   return shell_surface;
 }
 
-bool ShellSurfaceBuilder::isConfigurationValidForShellSurface() {
-  return !default_scale_cancellation_ && !window_state_.has_value() &&
-         !delegate_;
+bool ShellSurfaceBuilder::IsConfigurationValidForShellSurface() {
+  return !default_scale_cancellation_ && !delegate_;
 }
 
 bool ShellSurfaceBuilder::
-    isConfigurationValidForClientControlledShellSurface() {
+    IsConfigurationValidForClientControlledShellSurface() {
   return !parent_shell_surface_ && !popup_;
 }
 
 void ShellSurfaceBuilder::SetCommonPropertiesAndCommitIfNecessary(
     ShellSurfaceBase* shell_surface) {
+  if (display_id_ != display::kInvalidDisplayId) {
+    shell_surface->SetDisplay(display_id_);
+  }
+
+  if (bounds_) {
+    shell_surface->SetWindowBounds(*bounds_);
+  }
+
   if (disable_movement_)
     shell_surface->DisableMovement();
 

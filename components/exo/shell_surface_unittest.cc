@@ -4,6 +4,7 @@
 
 #include "components/exo/shell_surface.h"
 
+#include <sstream>
 #include <vector>
 
 #include "ash/accessibility/accessibility_delegate.h"
@@ -111,6 +112,7 @@ struct ConfigureData {
   bool is_resizing = false;
   bool is_active = false;
   float raster_scale = 1.0f;
+  size_t count = 0;
 };
 
 uint32_t Configure(ConfigureData* config_data,
@@ -125,6 +127,7 @@ uint32_t Configure(ConfigureData* config_data,
   config_data->is_resizing = resizing;
   config_data->is_active = activated;
   config_data->raster_scale = raster_scale;
+  config_data->count++;
   return 0;
 }
 
@@ -3318,6 +3321,114 @@ TEST_F(ShellSurfaceTest, SetShapeUpdatesAndUnsetsCorrectlyAfterCommit) {
   shell_surface->root_surface()->Commit();
   layer_shape_rects = shell_surface->host_window()->layer()->alpha_shape();
   EXPECT_FALSE(layer_shape_rects);
+}
+
+TEST_F(ShellSurfaceTest, MaximizedOrFullscreenInitialState) {
+  UpdateDisplay("800x600, 800x600");
+  constexpr gfx::Size kEmptySize{0, 0};
+  // on secondary display.
+  constexpr gfx::Rect kInitialBounds{800, 0, 100, 100};
+  const auto primary_display = GetPrimaryDisplay();
+  const auto secondary_display = GetSecondaryDisplay();
+  for (auto initial_state : {chromeos::WindowStateType::kMaximized,
+                             chromeos::WindowStateType::kFullscreen}) {
+    std::stringstream ss;
+    ss << initial_state;
+    SCOPED_TRACE(ss.str());
+    gfx::Rect primary_bounds =
+        initial_state == chromeos::WindowStateType::kMaximized
+            ? primary_display.work_area()
+            : primary_display.bounds();
+    gfx::Rect secondary_bounds =
+        initial_state == chromeos::WindowStateType::kMaximized
+            ? secondary_display.work_area()
+            : secondary_display.bounds();
+    // While it is possible to start in fullscreen, SessionRestore restores the
+    // originally fullscreen window to maximized, so the fullscreen window won't
+    // have restore bounds.
+    bool verify_restore_bounds =
+        initial_state == chromeos::WindowStateType::kMaximized;
+    {
+      ConfigureData config_data;
+      std::unique_ptr<ShellSurface> shell_surface =
+          test::ShellSurfaceBuilder(kEmptySize)
+              .SetConfigureCallback(base::BindRepeating(
+                  &Configure, base::Unretained(&config_data)))
+              .SetWindowState(initial_state)
+              .BuildShellSurface();
+      EXPECT_EQ(1u, config_data.count);
+      EXPECT_EQ(initial_state, config_data.state_type);
+      EXPECT_EQ(primary_bounds, config_data.suggested_bounds);
+    }
+    {
+      ConfigureData config_data;
+      std::unique_ptr<ShellSurface> shell_surface =
+          test::ShellSurfaceBuilder(kEmptySize)
+              .SetConfigureCallback(base::BindRepeating(
+                  &Configure, base::Unretained(&config_data)))
+              .SetWindowState(initial_state)
+              .SetDisplayId(secondary_display.id())
+              .BuildShellSurface();
+      EXPECT_EQ(1u, config_data.count);
+      EXPECT_EQ(initial_state, config_data.state_type);
+      EXPECT_EQ(secondary_bounds, config_data.suggested_bounds);
+    }
+    {
+      ConfigureData config_data;
+      std::unique_ptr<ShellSurface> shell_surface =
+          test::ShellSurfaceBuilder(kEmptySize)
+              .SetConfigureCallback(base::BindRepeating(
+                  &Configure, base::Unretained(&config_data)))
+              .SetWindowState(initial_state)
+              .SetBounds(kInitialBounds)
+              .BuildShellSurface();
+      EXPECT_EQ(1u, config_data.count);
+      EXPECT_EQ(initial_state, config_data.state_type);
+      EXPECT_EQ(secondary_bounds, config_data.suggested_bounds);
+      EXPECT_EQ(secondary_bounds,
+                shell_surface->GetWidget()->GetWindowBoundsInScreen());
+      if (verify_restore_bounds) {
+        EXPECT_EQ(kInitialBounds,
+                  shell_surface->GetWidget()->GetRestoredBounds());
+      }
+    }
+    {
+      ConfigureData config_data;
+      std::unique_ptr<ShellSurface> shell_surface =
+          test::ShellSurfaceBuilder(kEmptySize)
+              .SetConfigureCallback(base::BindRepeating(
+                  &Configure, base::Unretained(&config_data)))
+              .SetWindowState(initial_state)
+              .SetBounds(kInitialBounds)
+              .BuildShellSurface();
+      EXPECT_EQ(1u, config_data.count);
+      EXPECT_EQ(initial_state, config_data.state_type);
+      EXPECT_EQ(secondary_bounds, config_data.suggested_bounds);
+      if (verify_restore_bounds) {
+        EXPECT_EQ(kInitialBounds,
+                  shell_surface->GetWidget()->GetRestoredBounds());
+      }
+    }
+    {
+      // The display id has higher priority.
+      ConfigureData config_data;
+      std::unique_ptr<ShellSurface> shell_surface =
+          test::ShellSurfaceBuilder(kEmptySize)
+              .SetConfigureCallback(base::BindRepeating(
+                  &Configure, base::Unretained(&config_data)))
+              .SetWindowState(initial_state)
+              .SetBounds(kInitialBounds)
+              .SetDisplayId(primary_display.id())
+              .BuildShellSurface();
+      EXPECT_EQ(1u, config_data.count);
+      EXPECT_EQ(initial_state, config_data.state_type);
+      EXPECT_EQ(primary_bounds, config_data.suggested_bounds);
+      if (verify_restore_bounds) {
+        EXPECT_EQ(kInitialBounds,
+                  shell_surface->GetWidget()->GetRestoredBounds());
+      }
+    }
+  }
 }
 
 }  // namespace exo

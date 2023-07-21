@@ -793,12 +793,10 @@ void ShellSurface::Configure(bool ends_drag) {
                                        IsResizing(), widget_->IsActive(),
                                        origin_offset, pending_raster_scale_);
     } else {
-      gfx::Rect bounds;
-      if (initial_bounds_)
-        bounds.set_origin(initial_bounds_->origin());
-      serial = configure_callback_.Run(
-          bounds, chromeos::WindowStateType::kNormal, false, false,
-          origin_offset, pending_raster_scale_);
+      auto state = chromeos::ToWindowStateType(initial_show_state_);
+      gfx::Rect bounds = GetInitialBoundsForState(state);
+      serial = configure_callback_.Run(bounds, state, false, false,
+                                       origin_offset, pending_raster_scale_);
     }
   }
 
@@ -869,6 +867,32 @@ void ShellSurface::AttemptToStartDrag(int component) {
 void ShellSurface::EndDrag() {
   if (!IsMoveComponent(resize_component_))
     Configure(/*ends_drag=*/true);
+}
+
+gfx::Rect ShellSurface::GetInitialBoundsForState(
+    const chromeos::WindowStateType state) const {
+  if (state == chromeos::WindowStateType::kMaximized) {
+    return GetDisplayForInitialBounds().work_area();
+  }
+  if (IsFullscreenOrPinnedWindowStateType(state)) {
+    return GetDisplayForInitialBounds().bounds();
+  }
+  if (initial_bounds_) {
+    // TODO(oshima): Consider just using the `initial_bounds_`.
+    return gfx::Rect(initial_bounds_->origin(), {});
+  }
+  return gfx::Rect();
+}
+
+display::Display ShellSurface::GetDisplayForInitialBounds() const {
+  auto* screen = display::Screen::GetScreen();
+  display::Display display = screen->GetDisplayForNewWindows();
+  // Use `pending_display_id_` as this is called before first commit.
+  if (!screen->GetDisplayWithDisplayId(pending_display_id_, &display) &&
+      initial_bounds_ && !initial_bounds_->IsEmpty()) {
+    display = screen->GetDisplayMatching(*initial_bounds_);
+  }
+  return display;
 }
 
 }  // namespace exo

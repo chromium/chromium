@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "cc/base/region.h"
 #include "components/exo/client_controlled_shell_surface.h"
+#include "components/exo/shell_surface.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/class_property.h"
 #include "ui/gfx/buffer_types.h"
@@ -61,6 +62,8 @@ class ShellSurfaceBuilder {
   ShellSurfaceBuilder& SetParent(ShellSurface* shell_surface);
   ShellSurfaceBuilder& SetAsPopup();
   ShellSurfaceBuilder& SetAsMenu();
+  ShellSurfaceBuilder& SetConfigureCallback(
+      ShellSurface::ConfigureCallback callback);
 
   // Sets parameters defined in ClientControlledShellSurface.
   ShellSurfaceBuilder& SetWindowState(chromeos::WindowStateType window_state);
@@ -68,6 +71,8 @@ class ShellSurfaceBuilder {
   ShellSurfaceBuilder& SetDelegate(
       std::unique_ptr<ClientControlledShellSurface::Delegate> delegate);
   ShellSurfaceBuilder& DisableSupportsFloatedState();
+  ShellSurfaceBuilder& SetDisplayId(int64_t display_id);
+  ShellSurfaceBuilder& SetBounds(const gfx::Rect& bounds);
 
   // Must be called only once for either of the below and the object cannot
   // be used to create multiple windows.
@@ -81,8 +86,8 @@ class ShellSurfaceBuilder {
                                   const gfx::Rect& bounds);
 
  private:
-  bool isConfigurationValidForShellSurface();
-  bool isConfigurationValidForClientControlledShellSurface();
+  bool IsConfigurationValidForShellSurface();
+  bool IsConfigurationValidForClientControlledShellSurface();
   void SetCommonPropertiesAndCommitIfNecessary(ShellSurfaceBase* shell_surface);
   int GetContainer();
 
@@ -105,11 +110,14 @@ class ShellSurfaceBuilder {
   bool disable_movement_ = false;
   bool centered_ = false;
   bool built_ = false;
+  int64_t display_id_ = display::kInvalidDisplayId;
+  absl::optional<gfx::Rect> bounds_;
 
   // ShellSurface-specific parameters.
   raw_ptr<ShellSurface, ExperimentalAsh> parent_shell_surface_ = nullptr;
   bool popup_ = false;
   bool menu_ = false;
+  ShellSurface::ConfigureCallback configure_callback_;
 
   // ClientControlledShellSurface-specific parameters.
   absl::optional<chromeos::WindowStateType> window_state_;
