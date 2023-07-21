@@ -1016,7 +1016,7 @@ void WebTransport::OnReceivedResetStream(uint32_t stream_id,
 
 void WebTransport::OnReceivedStopSending(uint32_t stream_id,
                                          uint32_t stream_error_code) {
-  DVLOG(1) << "WebTransport::OnReceivedResetStream(" << stream_id << ", "
+  DVLOG(1) << "WebTransport::OnReceivedStopSending(" << stream_id << ", "
            << stream_error_code << ") this=" << this;
 
   auto it = outgoing_stream_map_.find(stream_id);
