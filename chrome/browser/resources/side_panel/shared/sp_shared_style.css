@@ -44,7 +44,7 @@
 :host-context([chrome-refresh-2023]) .sp-scroller::-webkit-scrollbar-thumb {
   background: var(--color-side-panel-scrollbar-thumb);
   background-clip: content-box;
-  border: solid 2px transparent;
+  border: solid 1.5px transparent;
   border-radius: 100px;
 }
 
