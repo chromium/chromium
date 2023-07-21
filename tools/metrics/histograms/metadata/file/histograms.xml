@@ -562,6 +562,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FileBrowser.GoogleDrive.BulkPinning.EnableDocsOfflineResult"
+    enum="DriveFileError" expires_after="2024-06-01">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Result returned when trying to enable the Docs offline functionality when
+    pinning items.
+  </summary>
+</histogram>
+
 <histogram name="FileBrowser.GoogleDrive.BulkPinning.Listing.Error"
     enum="GoogleDrive.BulkPinning.Stage" expires_after="2024-06-01">
   <owner>simmonsjosh@google.com</owner>

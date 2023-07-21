@@ -140,7 +140,10 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
   MockDriveFs(const MockDriveFs&) = delete;
   MockDriveFs& operator=(const MockDriveFs&) = delete;
 
-  mojom::DriveFs* GetForwardingInterface() override { NOTREACHED_NORETURN(); }
+  mojom::DriveFs* GetForwardingInterface() override {
+    NOTREACHED_NORETURN()
+        << "No calls should make it to the forwarding interface";
+  }
 
   MOCK_METHOD(void, OnStartSearchQuery, (const QueryParameters&));
 
@@ -180,6 +183,11 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
   MOCK_METHOD(void,
               GetMetadataByStableId,
               (int64_t, OnceCallback<void(FileError, FileMetadataPtr)>),
+              (override));
+
+  MOCK_METHOD(void,
+              SetDocsOfflineEnabled,
+              (bool, OnceCallback<void(FileError)>),
               (override));
 
  private:
@@ -3004,6 +3012,9 @@ TEST_F(DriveFsPinManagerTest, StartPinning) {
   manager.progress_.free_space = int64_t(4) << 30;  // 4 GB
   manager.should_pin_ = false;
 
+  EXPECT_CALL(drivefs_, SetDocsOfflineEnabled(true, _))
+      .Times(1)
+      .WillOnce(RunOnceCallback<1>(drive::FILE_ERROR_OK));
   manager.StartPinning();
   EXPECT_EQ(manager.progress_.stage, Stage::kSuccess);
 

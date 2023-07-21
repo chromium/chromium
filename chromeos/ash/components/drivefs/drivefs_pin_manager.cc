@@ -1136,6 +1136,8 @@ void PinManager::StartPinning() {
   progress_.stage = Stage::kSyncing;
   NotifyProgress();
 
+  EnableDocsOffline();
+
   SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(&PinManager::CheckStalledFiles, GetWeakPtr()),
       kStalledFileInterval);
@@ -1172,6 +1174,19 @@ void PinManager::StopMonitoringSpace() {
     spaced_ = nullptr;
     VLOG(1) << "Removed SpacedClient::Observer";
   }
+}
+
+void PinManager::EnableDocsOffline() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(drivefs_);
+  drivefs_->SetDocsOfflineEnabled(
+      true, base::BindOnce([](drive::FileError error) {
+        LOG_IF(ERROR, error != drive::FILE_ERROR_OK)
+            << "Failed to enable Docs offline: " << error;
+        base::UmaHistogramExactLinear(
+            "FileBrowser.GoogleDrive.BulkPinning.EnableDocsOfflineResult",
+            1 - error, 2 - drive::FILE_ERROR_MAX);
+      }));
 }
 
 void PinManager::PinSomeFiles() {

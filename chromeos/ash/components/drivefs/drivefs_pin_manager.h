@@ -431,6 +431,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   bool StartMonitoringSpace();
   void StopMonitoringSpace();
 
+  // Sends a message to the Docs offline extension telling it to enable offline
+  // mode.
+  void EnableDocsOffline();
+
   // Counts the files that have been marked as pinned and that are still being
   // tracked. Should always be equal to progress_.syncing_files. For debugging
   // only.
