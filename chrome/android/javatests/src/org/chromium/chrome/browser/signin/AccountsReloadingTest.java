@@ -17,7 +17,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -135,7 +134,6 @@ public class AccountsReloadingTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1466490")
     public void testRefreshTokenUpdateWhenSecondaryAccountSignsInWithoutSync() {
         final CoreAccountInfo account1 = mSigninTestRule.addAccount(TEST_EMAIL1);
         CriteriaHelper.pollUiThread(() -> mObserver.mCallCount == 0);

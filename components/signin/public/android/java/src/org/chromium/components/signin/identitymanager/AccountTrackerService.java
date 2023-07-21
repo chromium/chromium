@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -158,8 +159,15 @@ public class AccountTrackerService implements AccountsChangeObserver {
                 != AccountsSeedingStatus.IN_PROGRESS : "There is already a seeding in progress!";
         mAccountsSeedingStatus = AccountsSeedingStatus.IN_PROGRESS;
 
-        mAccountManagerFacade.getCoreAccountInfos().then(
-                coreAccountInfos -> { finishSeedingAccounts(coreAccountInfos, accountsChanged); });
+        Promise<List<CoreAccountInfo>> coreAccountInfosPromise =
+                mAccountManagerFacade.getCoreAccountInfos();
+        if (coreAccountInfosPromise.isFulfilled()) {
+            finishSeedingAccounts(coreAccountInfosPromise.getResult(), accountsChanged);
+        } else {
+            coreAccountInfosPromise.then(coreAccountInfos -> {
+                finishSeedingAccounts(coreAccountInfos, accountsChanged);
+            });
+        }
     }
 
     private void finishSeedingAccounts(
