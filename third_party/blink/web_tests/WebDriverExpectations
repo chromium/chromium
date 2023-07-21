@@ -829,3 +829,6 @@ crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/perform_actions/
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/perform_actions/pointer_touch.py>>test_touch_pointer_in_shadow_tree[outer-closed] [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/perform_actions/wheel.py>>test_wheel_scroll_shadow_tree[inner-closed] [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/perform_actions/wheel.py>>test_wheel_scroll_shadow_tree[outer-closed] [ Failure ]
+
+# Sheriff 2023-07-21
+crbug.com/1466764 [ Linux ] external/wpt/webdriver/tests/classic/is_element_selected/selected.py>>test_stale_element_reference[child_context] [ Failure Pass ]
