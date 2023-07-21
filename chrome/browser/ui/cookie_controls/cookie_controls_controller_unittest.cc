@@ -326,6 +326,39 @@ TEST_F(CookieControlsTest, Incognito) {
   testing::Mock::VerifyAndClearExpectations(&incognito_mock_);
 }
 
+TEST_F(CookieControlsTest, CookieBlockingChanged) {
+  // Check that the controller correctly keeps track of whether the effective
+  // cookie blocking setting for the page has been changed by
+  // OnCookieBlockingEnabledForSite().
+  cookie_controls()->Update(web_contents());
+  NavigateAndCommit(GURL("https://example.com"));
+  EXPECT_FALSE(cookie_controls()->HasCookieBlockingChangedForSite());
+
+  // Setting to the same effective value should not result in a change.
+  cookie_controls()->OnCookieBlockingEnabledForSite(true);
+  EXPECT_FALSE(cookie_controls()->HasCookieBlockingChangedForSite());
+
+  // While a different one, should.
+  cookie_controls()->OnCookieBlockingEnabledForSite(false);
+  EXPECT_TRUE(cookie_controls()->HasCookieBlockingChangedForSite());
+
+  // Setting it back should clear it.
+  cookie_controls()->OnCookieBlockingEnabledForSite(true);
+  EXPECT_FALSE(cookie_controls()->HasCookieBlockingChangedForSite());
+
+  // Navigating to the same page should clear it.
+  cookie_controls()->OnCookieBlockingEnabledForSite(false);
+  EXPECT_TRUE(cookie_controls()->HasCookieBlockingChangedForSite());
+  NavigateAndCommit(GURL("https://example.com"));
+  EXPECT_FALSE(cookie_controls()->HasCookieBlockingChangedForSite());
+
+  // Navigating to a different page should also clear it.
+  cookie_controls()->OnCookieBlockingEnabledForSite(true);
+  EXPECT_TRUE(cookie_controls()->HasCookieBlockingChangedForSite());
+  NavigateAndCommit(GURL("https://thirdparty.com"));
+  EXPECT_FALSE(cookie_controls()->HasCookieBlockingChangedForSite());
+}
+
 class CookieControlsUserBypassTest : public CookieControlsTest,
                                      public testing::WithParamInterface<bool> {
  public:

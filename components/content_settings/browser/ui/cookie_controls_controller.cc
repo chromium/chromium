@@ -223,6 +223,11 @@ bool CookieControlsController::FirstPartyCookiesBlocked() {
       net::CookieSettingOverrides());
 }
 
+bool CookieControlsController::HasCookieBlockingChangedForSite() {
+  auto current_status = GetStatus(GetWebContents());
+  return current_status.status != initial_page_cookie_controls_status_;
+}
+
 int CookieControlsController::GetAllowedCookieCount() const {
   auto* pscs = content_settings::PageSpecificContentSettings::GetForPage(
       GetWebContents()->GetPrimaryPage());
@@ -302,6 +307,11 @@ void CookieControlsController::PresentBlockedCookieCounter() {
 }
 
 void CookieControlsController::OnPageReloadDetected(int recent_reloads_count) {
+  auto status = GetStatus(GetWebContents());
+  initial_page_cookie_controls_status_ = status.status;
+  CHECK(initial_page_cookie_controls_status_ !=
+        CookieControlsStatus::kUninitialized);
+
   if (!base::FeatureList::IsEnabled(
           content_settings::features::kUserBypassUI)) {
     return;
@@ -313,7 +323,6 @@ void CookieControlsController::OnPageReloadDetected(int recent_reloads_count) {
     return;
   }
 
-  auto status = GetStatus(GetWebContents());
   int allowed_sites = GetAllowedSitesCount();
   int blocked_sites = GetBlockedSitesCount();
 

@@ -83,7 +83,7 @@ CookieControlsBubbleViewController::CookieControlsBubbleViewController(
 void CookieControlsBubbleViewController::OnUserClosedContentView() {
   controller_observation_.Reset();
 
-  if (!requires_reload_) {
+  if (!controller_->HasCookieBlockingChangedForSite()) {
     bubble_view_->CloseWidget();
     return;
   }
@@ -196,10 +196,6 @@ void CookieControlsBubbleViewController::SetCallbacks() {
 
 void CookieControlsBubbleViewController::OnToggleButtonPressed(bool new_value) {
   controller_->OnCookieBlockingEnabledForSite(!new_value);
-
-  // A reload is only required when the end toggle state differs from the start
-  // toggle state. Keep track of this by flipping a bool back and forth.
-  requires_reload_ = !requires_reload_;
 }
 
 void CookieControlsBubbleViewController::OnFeedbackButtonPressed() {

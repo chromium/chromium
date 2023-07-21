@@ -55,6 +55,11 @@ class CookieControlsController
   // Returns whether first-party cookies are blocked.
   bool FirstPartyCookiesBlocked();
 
+  // Returns whether, due to calls to OnCookingEnabledForSite(), the cookie
+  // blocking setting for the current site is different than what it was when
+  // the page was loaded.
+  bool HasCookieBlockingChangedForSite();
+
   void AddObserver(OldCookieControlsObserver* obs);
   void RemoveObserver(OldCookieControlsObserver* obs);
 
@@ -159,6 +164,11 @@ class CookieControlsController
 
   // The number of page reloads in last 30 seconds.
   int recent_reloads_count_ = 0;
+
+  // Record the initial control status when the page was navigated to, to allow
+  // querying of whether the effective cookie control status has changed.
+  CookieControlsStatus initial_page_cookie_controls_status_ =
+      CookieControlsStatus::kUninitialized;
 
   base::ObserverList<OldCookieControlsObserver> old_observers_;
   base::ObserverList<CookieControlsObserver> observers_;

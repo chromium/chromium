@@ -80,7 +80,6 @@ class CookieControlsBubbleViewController
       controller_observation_{this};
 
   bool waiting_for_reload_ = false;
-  bool requires_reload_ = false;
 
   // Testing override for GetSubjectUrlName().
   absl::optional<std::u16string> subject_url_name_for_testing_;
