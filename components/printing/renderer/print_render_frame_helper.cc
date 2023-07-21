@@ -83,6 +83,8 @@
 #include "third_party/blink/public/web/web_view_client.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
 
 #if BUILDFLAG(ENABLE_TAGGED_PDF)
@@ -346,13 +348,15 @@ void GetPageSizeAndContentAreaFromPageLayout(
     gfx::Size* page_size,
     gfx::Rect* content_area,
     gfx::Rect* canvas_area) {
-  *page_size = gfx::Size(page_layout.content_width + page_layout.margin_right +
-                             page_layout.margin_left,
-                         page_layout.content_height + page_layout.margin_top +
-                             page_layout.margin_bottom);
-  *content_area =
-      gfx::Rect(page_layout.margin_left, page_layout.margin_top,
-                page_layout.content_width, page_layout.content_height);
+  // Note: Use {rect,size}_conversions code to avoid truncating float values.
+  float page_width = page_layout.content_width + page_layout.margin_left +
+                     page_layout.margin_right;
+  float page_height = page_layout.content_height + page_layout.margin_top +
+                      page_layout.margin_bottom;
+  *page_size = gfx::ToRoundedSize(gfx::SizeF(page_width, page_height));
+  *content_area = gfx::ToEnclosedRect(
+      gfx::RectF(page_layout.margin_left, page_layout.margin_top,
+                 page_layout.content_width, page_layout.content_height));
   *canvas_area =
       params.display_header_footer ? gfx::Rect(*page_size) : *content_area;
 }
