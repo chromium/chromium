@@ -78,7 +78,7 @@ def fyi_ios_builder(*, name, **kwargs):
     if kwargs.get("builderless", False):
         kwargs.setdefault("os", os.MAC_DEFAULT)
     kwargs.setdefault("reclient_scandeps_server", True)
-    kwargs.setdefault("xcode", xcode.x14main)
+    kwargs.setdefault("xcode", xcode.x15main)
     return ci.builder(name = name, **kwargs)
 
 def mac_builder_defaults(**kwargs):
@@ -1138,7 +1138,7 @@ fyi_mac_reclient_comparison_builder(
     execution_timeout = 10 * time.hour,
     reclient_cache_silo = "Comparison ios - cache siloed",
     reclient_instance = reclient.instance.TEST_TRUSTED,
-    xcode = xcode.x14main,
+    xcode = xcode.x15main,
 )
 
 fyi_reclient_comparison_builder(
@@ -1259,7 +1259,7 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     reclient_cache_silo = "Comparison ios CQ - cache siloed",
     reclient_instance = reclient.instance.TEST_UNTRUSTED,
     reclient_jobs = 150,
-    xcode = xcode.x14main,
+    xcode = xcode.x15main,
 )
 
 # Build Perf builders use CQ reclient instance and high reclient jobs/cores and

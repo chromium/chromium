@@ -847,6 +847,30 @@ targets.mixin(
     ),
 )
 
+# TODO(crbug.com/1464635): Remove this once Mac13.4 upgrade
+# is complete. This is only a temp workaround to roll Xcode 15.
+targets.mixin(
+    name = "mac_13.4_arm64",
+    swarming = targets.swarming(
+        dimensions = {
+            "cpu": "arm64",
+            "os": "Mac-13.4",
+        },
+    ),
+)
+
+# TODO(crbug.com/1464635): Remove this once Mac13.4 upgrade
+# is complete. This is only a temp workaround to roll Xcode 15.
+targets.mixin(
+    name = "mac_13.4_x64",
+    swarming = targets.swarming(
+        dimensions = {
+            "cpu": "x86-64",
+            "os": "Mac-13.4",
+        },
+    ),
+)
+
 targets.mixin(
     name = "mac_13_arm64",
     swarming = targets.swarming(
@@ -1576,23 +1600,6 @@ targets.mixin(
     ),
 )
 
-# Xcode 14 on iOS main.
-targets.mixin(
-    name = "xcode_14_main",
-    args = [
-        "--xcode-build-version",
-        "14c18",
-    ],
-    swarming = targets.swarming(
-        named_caches = [
-            swarming.cache(
-                name = "xcode_ios_14c18",
-                path = "Xcode.app",
-            ),
-        ],
-    ),
-)
-
 targets.mixin(
     name = "xcode_14_readline_timeout",
     args = [
@@ -1603,6 +1610,22 @@ targets.mixin(
 
 targets.mixin(
     name = "xcode_15_beta",
+    args = [
+        "--xcode-build-version",
+        "15a5195m",
+    ],
+    swarming = targets.swarming(
+        named_caches = [
+            swarming.cache(
+                name = "xcode_ios_15a5195m",
+                path = "Xcode.app",
+            ),
+        ],
+    ),
+)
+
+targets.mixin(
+    name = "xcode_15_main",
     args = [
         "--xcode-build-version",
         "15a5195m",

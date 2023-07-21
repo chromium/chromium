@@ -53,7 +53,7 @@ consoles.console_view(
 
 def ios_builder(*, name, **kwargs):
     kwargs.setdefault("sheriff_rotations", sheriff_rotations.IOS)
-    kwargs.setdefault("xcode", xcode.x14main)
+    kwargs.setdefault("xcode", xcode.x15main)
     return ci.builder(name = name, **kwargs)
 
 ci.builder(
@@ -574,7 +574,4 @@ ios_builder(
             short_name = "non",
         ),
     ],
-    # We don't have necessary capacity to run this configuration in CQ, but it
-    # is part of the main waterfall
-    xcode = xcode.x14main,
 )
