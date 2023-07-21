@@ -8933,6 +8933,26 @@
             ]
         }
     ],
+    "NavigationNetworkResponseQueue": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230717",
+                    "enable_features": [
+                        "BeforeUnloadBrowserResponseQueue",
+                        "NavigationNetworkResponseQueue"
+                    ]
+                }
+            ]
+        }
+    ],
     "NavigationPredictor": [
         {
             "platforms": [
