@@ -5,6 +5,9 @@
 import("//build/config/android/build_vars.gni")
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
+import("//build/config/clang/clang.gni")
+import("//build/config/coverage/coverage.gni")
+import("//build/config/gclient_args.gni")
 import("//build/config/python.gni")
 import("//build_overrides/build.gni")
 
@@ -150,6 +153,13 @@ python_library("test_runner_core_py") {
     "//third_party/requests/",
   ]
   data_deps = [ ":logdog_wrapper_py" ]
+  if (use_clang_coverage && checkout_clang_coverage_tools) {
+    # Test runner script may use `llvm-profdata` (if exists) to merge
+    # clang code coverage data after each instrumentation test to
+    # save space. The tool only exists when `checkout_clang_coverage_tools`
+    # gclient custom_var is true.
+    data += [ "${clang_base_path}/bin/llvm-profdata" ]
+  }
 }
 
 group("test_runner_device_support") {
