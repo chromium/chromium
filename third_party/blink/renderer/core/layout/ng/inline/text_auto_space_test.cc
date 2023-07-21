@@ -66,6 +66,7 @@ struct HtmlData {
     {u"<span>ああA</span>ああ", {2, 3}},
     {u"ああ<span>A</span>ああ", {2, 3}},
     {u"ああ<span>Aああ</span>", {2, 3}},
+    {u"ああ 12 ああ", {}},
 };
 class HtmlTest : public RenderingTest,
                  public testing::WithParamInterface<HtmlData> {};
