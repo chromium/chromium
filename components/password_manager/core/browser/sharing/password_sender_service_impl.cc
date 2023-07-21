@@ -17,8 +17,8 @@ PasswordSenderServiceImpl::PasswordSenderServiceImpl(
 
 PasswordSenderServiceImpl::~PasswordSenderServiceImpl() = default;
 
-void PasswordSenderServiceImpl::SendPassword(
-    const std::vector<PasswordForm>& credentials,
+void PasswordSenderServiceImpl::SendPasswords(
+    const std::vector<PasswordForm>& passwords,
     const PasswordRecipient& recipient) {
   // TODO(crbug.com/1455407): Implement.
 }

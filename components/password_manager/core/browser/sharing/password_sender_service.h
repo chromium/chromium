@@ -33,9 +33,9 @@ class PasswordSenderService : public KeyedService {
   PasswordSenderService& operator=(const PasswordSenderService&) = delete;
   ~PasswordSenderService() override = default;
 
-  // Sends `credentials` to the specified `recipient`.
-  virtual void SendPassword(const std::vector<PasswordForm>& credentials,
-                            const PasswordRecipient& recipient) = 0;
+  // Sends `passwords` to the specified `recipient`.
+  virtual void SendPasswords(const std::vector<PasswordForm>& passwords,
+                             const PasswordRecipient& recipient) = 0;
 
   // Used to wire sync data type.
   virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
