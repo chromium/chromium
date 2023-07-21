@@ -8,7 +8,6 @@ import android.os.Handler;
 import android.os.Looper;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.annotations.JNINamespace;
@@ -195,7 +194,6 @@ public final class AwCookieManager {
      * Sets whether cookies for insecure schemes (http:) are permitted to include the "Secure"
      * directive.
      */
-    @VisibleForTesting
     public void setWorkaroundHttpSecureCookiesForTesting(boolean allow) {
         AwCookieManagerJni.get().setWorkaroundHttpSecureCookiesForTesting(
                 mNativeCookieManager, AwCookieManager.this, allow);

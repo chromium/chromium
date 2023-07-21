@@ -9,7 +9,6 @@ import android.os.Bundle;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
@@ -362,7 +361,6 @@ public class IncognitoReauthControllerImpl
         }
     }
 
-    @VisibleForTesting
     IncognitoReauthManager.IncognitoReauthCallback getIncognitoReauthCallbackForTesting() {
         return mIncognitoReauthCallback;
     }

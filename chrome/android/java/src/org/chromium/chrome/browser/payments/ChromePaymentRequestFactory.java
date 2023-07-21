@@ -126,7 +126,6 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
     }
 
     /** Set an observer for the payment request service, cannot be null. */
-    @VisibleForTesting
     public static void setChromePaymentRequestDelegateImplObserverForTest(
             ChromePaymentRequestDelegateImplObserverForTest observer) {
         assert observer != null;

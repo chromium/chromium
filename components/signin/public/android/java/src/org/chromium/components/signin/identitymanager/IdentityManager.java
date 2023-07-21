@@ -211,7 +211,6 @@ public class IdentityManager {
         mProfileOAuth2TokenServiceDelegate.invalidateAccessToken(accessToken);
     }
 
-    @VisibleForTesting
     public void setRefreshTokenUpdateObserverForTests(Callback<CoreAccountInfo> callback) {
         mRefreshTokenUpdateObserver = callback;
     }

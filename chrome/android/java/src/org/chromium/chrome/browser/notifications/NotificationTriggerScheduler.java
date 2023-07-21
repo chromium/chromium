@@ -41,7 +41,6 @@ public class NotificationTriggerScheduler {
 
     private static NotificationTriggerScheduler sInstanceForTests;
 
-    @VisibleForTesting
     protected static void setInstanceForTests(NotificationTriggerScheduler instance) {
         sInstanceForTests = instance;
         ResettersForTesting.register(() -> sInstanceForTests = null);

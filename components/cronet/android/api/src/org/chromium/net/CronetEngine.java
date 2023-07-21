@@ -866,7 +866,6 @@ public abstract class CronetEngine {
      *         computing
      * the effective connection type or when writing the prefs.
      */
-    @VisibleForTesting
     public void configureNetworkQualityEstimatorForTesting(boolean useLocalHostRequests,
             boolean useSmallerResponses, boolean disableOfflineCheck) {}
 

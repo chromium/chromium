@@ -8,8 +8,6 @@ import android.app.PendingIntent;
 import android.net.Uri;
 import android.os.Parcel;
 
-import androidx.annotation.VisibleForTesting;
-
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -30,7 +28,6 @@ import java.util.List;
 public class Fido2ApiCallHelper {
     private static Fido2ApiCallHelper sInstance;
 
-    @VisibleForTesting
     public static void overrideInstanceForTesting(Fido2ApiCallHelper instance) {
         sInstance = instance;
     }

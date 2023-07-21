@@ -6,8 +6,6 @@ package org.chromium.components.browser_ui.media;
 
 import android.util.SparseArray;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.supplier.Supplier;
 
 /**
@@ -88,7 +86,6 @@ public class MediaNotificationManager {
         return sControllers.get(notificationId);
     }
 
-    @VisibleForTesting
     public static void setControllerForTesting(
             int notificationId, MediaNotificationController controller) {
         sControllers.put(notificationId, controller);

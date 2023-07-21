@@ -31,7 +31,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.MarginLayoutParamsCompat;
 
@@ -644,29 +643,24 @@ public class EditorDialogView
     }
 
     /** @return The View with all fields of this editor. */
-    @VisibleForTesting
     public View getContentViewForTest() {
         return mContentView;
     }
 
     /** @return All editable text fields in the editor. Used only for tests. */
-    @VisibleForTesting
     public List<EditText> getEditableTextFieldsForTest() {
         return mEditableTextFields;
     }
 
     /** @return All dropdown fields in the editor. Used only for tests. */
-    @VisibleForTesting
     public List<Spinner> getDropdownFieldsForTest() {
         return mDropdownFields;
     }
 
-    @VisibleForTesting
     public AlertDialog getConfirmationDialogForTest() {
         return mConfirmationDialog;
     }
 
-    @VisibleForTesting
     public static void setEditorObserverForTest(EditorObserverForTest observerForTest) {
         sObserverForTest = observerForTest;
         DropdownFieldView.setEditorObserverForTest(sObserverForTest);

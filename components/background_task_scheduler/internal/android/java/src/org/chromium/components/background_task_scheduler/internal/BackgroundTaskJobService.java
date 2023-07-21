@@ -8,8 +8,6 @@ import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.os.SystemClock;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
@@ -26,7 +24,6 @@ public class BackgroundTaskJobService extends JobService {
 
     private BackgroundTaskSchedulerJobService.Clock mClock = System::currentTimeMillis;
 
-    @VisibleForTesting
     void setClockForTesting(BackgroundTaskSchedulerJobService.Clock clock) {
         var oldValue = mClock;
         mClock = clock;

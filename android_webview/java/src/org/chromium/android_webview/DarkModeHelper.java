@@ -9,7 +9,6 @@ import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Build;
 
-import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.ColorUtils;
 
 import org.chromium.base.Log;
@@ -88,7 +87,6 @@ public class DarkModeHelper {
         return lightTheme;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public static void setsLightThemeForTesting(@LightTheme int lightThemeForTesting) {
         sLightThemeForTesting = Integer.valueOf(lightThemeForTesting);
     }

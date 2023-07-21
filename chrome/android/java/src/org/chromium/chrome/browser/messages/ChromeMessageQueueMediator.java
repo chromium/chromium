@@ -318,7 +318,6 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
             mRunOnControlsFullyVisible = runnable;
         }
 
-        @VisibleForTesting
         Runnable getRunnableForTesting() {
             return mRunOnControlsFullyVisible;
         }
@@ -328,12 +327,10 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
         }
     }
 
-    @VisibleForTesting
     void setQueueHandlerForTesting(Handler handler) {
         mQueueHandler = handler;
     }
 
-    @VisibleForTesting
     int getUrlFocusTokenForTesting() {
         return mUrlFocusToken;
     }

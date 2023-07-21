@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.speech.RecognizerIntent;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.ResettersForTesting;
@@ -100,13 +99,11 @@ public class VoiceRecognitionUtil {
      * finished.
      * @param isVoiceSearchEnabled
      */
-    @VisibleForTesting
     public static void setIsVoiceSearchEnabledForTesting(@Nullable Boolean isVoiceSearchEnabled) {
         sIsVoiceSearchEnabledForTesting = isVoiceSearchEnabled;
         ResettersForTesting.register(() -> sIsVoiceSearchEnabledForTesting = null);
     }
 
-    @VisibleForTesting
     static void setHasRecognitionIntentHandlerForTesting(@Nullable Boolean hasIntentHandler) {
         var oldValue = sHasRecognitionIntentHandler;
         sHasRecognitionIntentHandler = hasIntentHandler;

@@ -156,7 +156,6 @@ public class TabInteractionRecorder {
         pref.removeKey(ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION);
     }
 
-    @VisibleForTesting
     public static void setInstanceForTesting(TabInteractionRecorder instance) {
         sInstanceForTesting = instance;
         ResettersForTesting.register(() -> sInstanceForTesting = null);

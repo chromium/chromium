@@ -235,7 +235,6 @@ public class HiddenTabHolder {
         return mSpeculation != null;
     }
 
-    @VisibleForTesting
     @Nullable SpeculationParams getSpeculationParamsForTesting() {
         return mSpeculation;
     }

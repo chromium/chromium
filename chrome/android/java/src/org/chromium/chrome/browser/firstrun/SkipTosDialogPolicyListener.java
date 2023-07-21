@@ -8,7 +8,6 @@ import android.os.SystemClock;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
@@ -209,7 +208,6 @@ public class SkipTosDialogPolicyListener implements OneshotSupplier<Boolean> {
         }
     }
 
-    @VisibleForTesting
     public PolicyLoadListener getPolicyLoadListenerForTesting() {
         return mPolicyLoadListener;
     }

@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.contextmenu;
 
 import android.net.Uri;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.lens.LensController;
@@ -37,7 +35,6 @@ public class LensChipDelegate implements ChipDelegate {
     /**
      * Whether it should skip the Lens chip eligiblity check for testing.
      */
-    @VisibleForTesting
     protected static void setShouldSkipIsEnabledCheckForTesting(boolean shouldSkipIsEnabledCheck) {
         sShouldSkipIsEnabledCheckForTesting = shouldSkipIsEnabledCheck;
         ResettersForTesting.register(() -> sShouldSkipIsEnabledCheckForTesting = false);

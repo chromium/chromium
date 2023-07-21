@@ -9,7 +9,6 @@ import android.view.View;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
@@ -109,13 +108,11 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
     }
 
     /** Simulates a click on the security icon of the payment handler toolbar. */
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public void clickSecurityIconForTest() {
         mToolbarView.mSecurityIconView.performClick();
     }
 
     /** Simulates a click on the close button of the payment handler toolbar. */
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public void clickCloseButtonForTest() {
         mToolbarView.mCloseButton.performClick();
     }

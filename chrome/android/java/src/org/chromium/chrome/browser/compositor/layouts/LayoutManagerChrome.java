@@ -447,7 +447,6 @@ public class LayoutManagerChrome
      * @return The grid tab switcher layout {@link Layout} managed by this class. This is non-null
      * when the Start surface refactor is enabled.
      */
-    @VisibleForTesting
     public Layout getTabSwitcherLayoutForTesting() {
         return mTabSwitcherLayout;
     }

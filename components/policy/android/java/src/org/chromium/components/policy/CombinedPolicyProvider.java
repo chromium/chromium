@@ -146,7 +146,6 @@ public class CombinedPolicyProvider {
         }
     }
 
-    @VisibleForTesting
     List<PolicyProvider> getPolicyProvidersForTesting() {
         return mPolicyProviders;
     }

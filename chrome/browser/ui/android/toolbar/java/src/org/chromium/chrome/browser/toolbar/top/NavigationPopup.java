@@ -22,7 +22,6 @@ import android.widget.TextView;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 
@@ -165,7 +164,6 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
         mFaviconSize = resources.getDimensionPixelSize(R.dimen.default_favicon_size);
     }
 
-    @VisibleForTesting
     ListPopupWindow getPopupForTesting() {
         return mPopup;
     }

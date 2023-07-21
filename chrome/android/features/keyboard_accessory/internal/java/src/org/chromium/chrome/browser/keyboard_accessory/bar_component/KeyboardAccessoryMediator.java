@@ -17,7 +17,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -328,7 +327,6 @@ class KeyboardAccessoryMediator
         return mModel.get(VISIBLE) && mTabSwitcher.getActiveTab() != null;
     }
 
-    @VisibleForTesting
     PropertyModel getModelForTesting() {
         return mModel;
     }

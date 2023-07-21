@@ -8,8 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.util.Size;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.Callback;
 import org.chromium.base.MemoryPressureLevel;
 import org.chromium.base.TraceEvent;
@@ -69,7 +67,6 @@ public class PlayerFrameBitmapState {
         mVisibleBitmaps = new boolean[rows][cols];
     }
 
-    @VisibleForTesting
     boolean[][] getRequiredBitmapsForTest() {
         return mRequiredBitmaps;
     }
@@ -405,7 +402,6 @@ public class PlayerFrameBitmapState {
         }
     }
 
-    @VisibleForTesting
     public boolean checkRequiredBitmapsLoadedForTest() {
         if (mBitmapMatrix == null || mRequiredBitmaps == null) return false;
 

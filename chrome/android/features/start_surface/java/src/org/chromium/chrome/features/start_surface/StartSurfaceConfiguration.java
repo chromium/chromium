@@ -152,7 +152,6 @@ public class StartSurfaceConfiguration {
         return false;
     }
 
-    @VisibleForTesting
     static void setFeedVisibilityForTesting(boolean isVisible) {
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE, isVisible);

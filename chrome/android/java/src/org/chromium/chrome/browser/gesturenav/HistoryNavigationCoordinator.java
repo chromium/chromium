@@ -10,7 +10,6 @@ import android.os.Build;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -308,12 +307,10 @@ public class HistoryNavigationCoordinator
         }
     }
 
-    @VisibleForTesting
     NavigationHandler getNavigationHandlerForTesting() {
         return mNavigationHandler;
     }
 
-    @VisibleForTesting
     HistoryNavigationLayout getLayoutForTesting() {
         return mNavigationLayout;
     }

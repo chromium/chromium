@@ -22,7 +22,6 @@ import android.widget.TextView;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -572,7 +571,6 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
         return mContentView;
     }
 
-    @VisibleForTesting
     public static void setSkipShowCheckForTesting(boolean skip) {
         sSkipShowCheckForTesting = skip;
     }

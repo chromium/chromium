@@ -1111,7 +1111,6 @@ public class TabGroupModelFilter extends TabModelFilter {
         return mGroupIdToGroupIndexMap.get(groupId);
     }
 
-    @VisibleForTesting
     int getGroupLastShownTabIdForTesting(int groupId) {
         return mGroupIdToGroupMap.get(groupId).getLastShownTabId();
     }

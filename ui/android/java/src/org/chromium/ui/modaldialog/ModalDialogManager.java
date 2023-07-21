@@ -9,7 +9,6 @@ import android.util.SparseArray;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
@@ -537,24 +536,20 @@ public class ModalDialogManager {
         }
     }
 
-    @VisibleForTesting
     public PropertyModel getCurrentDialogForTest() {
         return mCurrentPresenter == null ? null : mCurrentPresenter.getDialogModel();
     }
 
-    @VisibleForTesting
     public @Nullable List<PropertyModel> getPendingDialogsForTest(@ModalDialogType int dialogType) {
         @ModalDialogPriority
         int priority = getDefaultPriorityByType(dialogType);
         return mPendingDialogContainer.get(dialogType, priority);
     }
 
-    @VisibleForTesting
     public Presenter getPresenterForTest(@ModalDialogType int dialogType) {
         return mPresenters.get(dialogType);
     }
 
-    @VisibleForTesting
     public Presenter getCurrentPresenterForTest() {
         return mCurrentPresenter;
     }

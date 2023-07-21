@@ -109,7 +109,6 @@ public class TrustedCdn extends TabWebContentsUserData {
         return trustedCdn;
     }
 
-    @VisibleForTesting
     public static void setPublisherUrlForTesting(@NonNull Tab tab, @Nullable String publisherUrl) {
         from(tab).setPublisherUrl(publisherUrl);
     }

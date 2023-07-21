@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.SystemClock;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -172,7 +171,6 @@ public class CustomizationProviderDelegateUpstreamImpl implements CustomizationP
                 .build();
     }
 
-    @VisibleForTesting
     static void setProviderAuthorityForTesting(String providerAuthority) {
         var oldValue = sProviderAuthority;
         sProviderAuthority = providerAuthority;
@@ -186,7 +184,6 @@ public class CustomizationProviderDelegateUpstreamImpl implements CustomizationP
      *
      * @param ignore whether we should ignore browser provider system package checking.
      */
-    @VisibleForTesting
     static void ignoreBrowserProviderSystemPackageCheckForTesting(boolean ignore) {
         sIgnoreSystemPackageCheckForTesting = ignore;
     }

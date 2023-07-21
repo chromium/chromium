@@ -839,12 +839,10 @@ public class PickerVideoPlayer
         ResettersForTesting.register(() -> sShortAnimationTimesForTesting = false);
     }
 
-    @VisibleForTesting
     public void singleTapForTesting() {
         onSingleTapVideo();
     }
 
-    @VisibleForTesting
     public void doubleTapForTesting(float x) {
         onDoubleTapVideo(x);
     }

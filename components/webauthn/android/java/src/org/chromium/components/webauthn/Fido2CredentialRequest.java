@@ -459,17 +459,14 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         callback.onResponse(matchingCredentialIds);
     }
 
-    @VisibleForTesting
     public void overrideBrowserBridgeForTesting(WebAuthnBrowserBridge bridge) {
         mBrowserBridge = bridge;
     }
 
-    @VisibleForTesting
     public void setOverrideVersionCheckForTesting(boolean override) {
         mOverrideVersionCheckForTesting = override;
     }
 
-    @VisibleForTesting
     public void setCredManClassesForTesting(Object credentialManager, Class createRequestBuilder,
             Class getRequestBuilder, Class credentialOptionBuilder,
             CredManMetricsHelper metricsHelper) {

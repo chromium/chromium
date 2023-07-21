@@ -493,7 +493,6 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
         }
     }
 
-    @VisibleForTesting
     protected static void resetMigrationTaskForTesting() {
         sMigrationTask = null;
     }

@@ -1200,12 +1200,10 @@ public class LayoutManagerImpl
         overlay.getHandleBackPressChangedSupplier().addObserver((v) -> onBackPressStateChanged());
     }
 
-    @VisibleForTesting
     void setSceneOverlayOrderForTesting(Map<Class, Integer> order) {
         mOverlayOrderMap = order;
     }
 
-    @VisibleForTesting
     List<SceneOverlay> getSceneOverlaysForTesting() {
         return mSceneOverlays;
     }
@@ -1224,7 +1222,6 @@ public class LayoutManagerImpl
         return mHost.getWidth() > mHost.getHeight() ? Orientation.LANDSCAPE : Orientation.PORTRAIT;
     }
 
-    @VisibleForTesting
     public LayoutTab getLayoutTabForTesting(int tabId) {
         return mTabCache.get(tabId);
     }

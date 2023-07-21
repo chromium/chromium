@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.base.Callback;
@@ -904,17 +903,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         return mAppBrowserControlsVisibilityDelegate;
     }
 
-    @VisibleForTesting
     public StatusIndicatorCoordinator getStatusIndicatorCoordinatorForTesting() {
         return mStatusIndicatorCoordinator;
     }
 
-    @VisibleForTesting
     public HistoryNavigationCoordinator getHistoryNavigationCoordinatorForTesting() {
         return mHistoryNavigationCoordinator;
     }
 
-    @VisibleForTesting
     public NavigationSheet getNavigationSheetForTesting() {
         return mNavigationSheet;
     }
@@ -972,7 +968,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mActivity, mModalDialogManagerSupplier, () -> ApplicationLifetime.terminate(true));
     }
 
-    @VisibleForTesting
     public static void setDisableStatusIndicatorAnimationsForTesting(boolean disable) {
         sDisableStatusIndicatorAnimationsForTesting = disable;
         ResettersForTesting.register(() -> sDisableStatusIndicatorAnimationsForTesting = false);

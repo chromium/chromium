@@ -72,7 +72,6 @@ public class ShortcutHelper {
     /**
      * Sets the delegate to use.
      */
-    @VisibleForTesting
     public static void setDelegateForTests(Delegate delegate) {
         var oldValue = sDelegate;
         sDelegate = delegate;

@@ -65,7 +65,6 @@ public abstract class EnterpriseInfo {
      * behavior of {@link EnterpriseInfo#getDeviceEnterpriseInfo( Callback )}. Suggested that
      * callers consider using {@link FakeEnterpriseInfo}.
      */
-    @VisibleForTesting
     public static void setInstanceForTest(EnterpriseInfo instance) {
         var oldValue = sInstance;
         sInstance = instance;

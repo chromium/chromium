@@ -19,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
@@ -798,13 +797,11 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
         doneHiding();
     }
 
-    @VisibleForTesting
     public void setPerfListenerForTesting(PerfListener perfListener) {
         mPerfListenerForTesting = perfListener;
         ResettersForTesting.register(() -> mPerfListenerForTesting = null);
     }
 
-    @VisibleForTesting
     public StartSurface getStartSurfaceForTesting() {
         return mStartSurface;
     }

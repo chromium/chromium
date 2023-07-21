@@ -18,7 +18,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -124,7 +123,6 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
         updateSaveButtonEnabled();
     }
 
-    @VisibleForTesting
     public static void setObserverForTest(Callback<Fragment> observerForTest) {
         sObserverForTest = observerForTest;
         ResettersForTesting.register(() -> sObserverForTest = null);

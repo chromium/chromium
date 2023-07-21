@@ -217,12 +217,10 @@ public class MostVisitedTilesGridLayout extends FrameLayout implements MostVisit
         mIsMultiColumnFeedOnTabletEnabled = isMultiColumnFeedOnTabletEnabled;
     }
 
-    @VisibleForTesting
     public int getMinHorizontalSpacingForTesting() {
         return mMinHorizontalSpacing;
     }
 
-    @VisibleForTesting
     public int getMaxHorizontalSpacingForTesting() {
         return mMaxHorizontalSpacing;
     }

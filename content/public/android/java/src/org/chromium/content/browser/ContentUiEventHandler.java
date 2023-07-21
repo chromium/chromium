@@ -49,7 +49,6 @@ public class ContentUiEventHandler implements UserData {
                 ContentUiEventHandlerJni.get().init(ContentUiEventHandler.this, webContents);
     }
 
-    @VisibleForTesting
     static ContentUiEventHandler createForTesting(
             WebContents webContents, long nativeContentUiEventHandler) {
         ContentUiEventHandler contentUiEventHandler = new ContentUiEventHandler(webContents);

@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.RadioGroup;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
@@ -166,22 +165,18 @@ public class RadioButtonGroupSafeBrowsingPreference extends Preference
         mNoProtection.setChecked(checkedState == SafeBrowsingState.NO_SAFE_BROWSING);
     }
 
-    @VisibleForTesting
     public @SafeBrowsingState int getSafeBrowsingStateForTesting() {
         return mSafeBrowsingState;
     }
 
-    @VisibleForTesting
     public RadioButtonWithDescriptionAndAuxButton getEnhancedProtectionButtonForTesting() {
         return mEnhancedProtection;
     }
 
-    @VisibleForTesting
     public RadioButtonWithDescriptionAndAuxButton getStandardProtectionButtonForTesting() {
         return mStandardProtection;
     }
 
-    @VisibleForTesting
     public RadioButtonWithDescription getNoProtectionButtonForTesting() {
         return mNoProtection;
     }

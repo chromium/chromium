@@ -631,18 +631,15 @@ public class SelectableListToolbar<E>
                 !ColorUtils.shouldUseLightForegroundOnBackground(color));
     }
 
-    @VisibleForTesting
     public View getSearchViewForTests() {
         return mSearchView;
     }
 
-    @VisibleForTesting
     public int getNavigationButtonForTests() {
         return mNavigationButton;
     }
 
     /** Ends any in-progress animations. */
-    @VisibleForTesting
     public void endAnimationsForTesting() {
         mNumberRollView.endAnimationsForTesting();
     }

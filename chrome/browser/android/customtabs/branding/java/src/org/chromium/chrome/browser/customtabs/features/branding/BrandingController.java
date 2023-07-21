@@ -245,7 +245,6 @@ public class BrandingController {
     }
 
     @BrandingDecision
-    @VisibleForTesting
     Integer getBrandingDecisionForTest() {
         return mBrandingDecision.get();
     }

@@ -10,7 +10,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -171,7 +170,6 @@ public class PageZoomCoordinator {
      * Used for testing only, allows a mocked value for the {@link shouldShowMenuItem} method.
      * @param isEnabled     Should show the menu item or not.
      */
-    @VisibleForTesting
     public static void setShouldShowMenuItemForTesting(@Nullable Boolean isEnabled) {
         sShouldShowMenuItemForTesting = isEnabled;
         ResettersForTesting.register(() -> sShouldShowMenuItemForTesting = null);

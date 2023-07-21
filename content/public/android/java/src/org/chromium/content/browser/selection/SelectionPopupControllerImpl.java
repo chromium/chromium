@@ -1133,7 +1133,6 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     /**
      * Testing use only. Initialize the menu items for processing text, if there is any.
      */
-    @VisibleForTesting
     /* package */ void initializeTextProcessingMenuForTesting(ActionMode mode, Menu menu) {
         if (!isSelectActionModeAllowed(MENU_ITEM_PROCESS_TEXT)) {
             return;
@@ -1394,7 +1393,6 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     /**
      * @return true if the current selection is an insertion point.
      */
-    @VisibleForTesting
     public boolean isInsertionForTesting() {
         return mIsInsertionForTesting;
     }

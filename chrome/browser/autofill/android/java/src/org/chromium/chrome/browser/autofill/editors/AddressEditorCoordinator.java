@@ -10,7 +10,6 @@ import android.app.Activity;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.autofill.AutofillAddress;
 import org.chromium.chrome.browser.autofill.AutofillProfile;
@@ -193,7 +192,6 @@ public class AddressEditorCoordinator {
     /**
      * @return editor dialog view for testing purposes.
      */
-    @VisibleForTesting
     public EditorDialogView getEditorDialogForTesting() {
         return mEditorDialog;
     }

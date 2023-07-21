@@ -48,7 +48,6 @@ public class NfcBlocklist {
         return sInstance;
     }
 
-    @VisibleForTesting
     public static void overrideNfcBlocklistForTests(String serverProvidedValues) {
         sInstance = new NfcBlocklist(serverProvidedValues);
         ResettersForTesting.register(() -> sInstance = null);

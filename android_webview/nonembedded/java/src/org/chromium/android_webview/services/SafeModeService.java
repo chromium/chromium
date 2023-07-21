@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.Nonnull;
 import javax.annotation.concurrent.GuardedBy;
 
 /**
@@ -311,7 +310,6 @@ public final class SafeModeService extends Service {
         return timeSinceLastSafeModeConfig >= SAFE_MODE_ENABLED_TIME_LIMIT_MS;
     }
 
-    @VisibleForTesting
     public static void setClockForTesting(Clock clock) {
         synchronized (sLock) {
             sClock = clock;
@@ -342,19 +340,16 @@ public final class SafeModeService extends Service {
         }
     }
 
-    @Nonnull
     public static long getLastModifiedTime() {
         return getSharedPreferences().getLong(LAST_MODIFIED_TIME_KEY, 0L);
     }
 
-    @VisibleForTesting
     public static void clearSharedPrefsForTesting() {
         synchronized (sLock) {
             getSharedPreferences().edit().clear().apply();
         }
     }
 
-    @VisibleForTesting
     public static void removeSharedPrefKeyForTesting(String key) {
         synchronized (sLock) {
             getSharedPreferences().edit().remove(key).apply();

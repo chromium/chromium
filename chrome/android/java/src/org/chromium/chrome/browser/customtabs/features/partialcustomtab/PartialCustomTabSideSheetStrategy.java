@@ -457,12 +457,10 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         if (mShowMaximizeButton) ((CustomTabToolbar) mToolbarView).removeSideSheetMaximizeButton();
     }
 
-    @VisibleForTesting
     void setSlideDownAnimationForTesting(boolean slideDown) {
         mSlideDownAnimation = slideDown;
     }
 
-    @VisibleForTesting
     void setSheetOnRightForTesting(boolean right) {
         mSheetOnRight = right;
     }

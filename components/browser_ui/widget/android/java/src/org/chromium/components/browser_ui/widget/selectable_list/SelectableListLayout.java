@@ -17,7 +17,6 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -430,7 +429,6 @@ public class SelectableListLayout<E> extends FrameLayout
         mToolbar.setSearchEnabled(mAdapter.getItemCount() != 0);
     }
 
-    @VisibleForTesting
     public View getToolbarShadowForTests() {
         return mToolbarShadow;
     }

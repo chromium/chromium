@@ -17,7 +17,6 @@ import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
@@ -228,7 +227,6 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
         super.onDestroyView();
     }
 
-    @VisibleForTesting
     public static void setObserverForTest(EditorObserverForTest observerForTest) {
         sObserverForTest = observerForTest;
         EditorDialogView.setEditorObserverForTest(sObserverForTest);
@@ -296,7 +294,6 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
         return getPreferenceManager().getContext();
     }
 
-    @VisibleForTesting
     EditorDialogView getEditorDialogForTest() {
         return mAddressEditor.getEditorDialogForTesting();
     }

@@ -157,7 +157,6 @@ public class FirstRunUtils {
         return durationMs;
     }
 
-    @VisibleForTesting
     public static void setDisableDelayOnExitFreForTest(boolean isDisable) {
         sDisableDelayOnExitFreForTest = isDisable;
         ResettersForTesting.register(() -> sDisableDelayOnExitFreForTest = false);

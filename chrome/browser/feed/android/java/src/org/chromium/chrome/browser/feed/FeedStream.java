@@ -1260,28 +1260,23 @@ public class FeedStream implements Stream {
         }
     }
 
-    @VisibleForTesting
     void setHelpAndFeedbackLauncherForTest(HelpAndFeedbackLauncher launcher) {
         mHelpAndFeedbackLauncher = launcher;
     }
 
-    @VisibleForTesting
     void setShareWrapperForTest(ShareHelperWrapper shareWrapper) {
         mShareHelper = shareWrapper;
     }
 
     /** @returns True if this feed has been bound. */
-    @VisibleForTesting
     public boolean getBoundStatusForTest() {
         return mContentManager != null;
     }
 
-    @VisibleForTesting
     RecyclerView.OnScrollListener getScrollListenerForTest() {
         return mMainScrollListener;
     }
 
-    @VisibleForTesting
     UnreadContentObserver getUnreadContentObserverForTest() {
         return mUnreadContentObserver;
     }

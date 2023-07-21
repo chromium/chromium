@@ -118,7 +118,6 @@ public class WebappRegistry {
         getInstance().initStorages(null);
     }
 
-    @VisibleForTesting
     public static void refreshSharedPrefsForTesting() {
         Holder.sInstance = new WebappRegistry();
         getInstance().clearStoragesForTesting();
@@ -307,14 +306,12 @@ public class WebappRegistry {
     /**
      * Returns the list of web app IDs which are written to SharedPreferences.
      */
-    @VisibleForTesting
     public static Set<String> getRegisteredWebappIdsForTesting() {
         // Wrap with unmodifiableSet to ensure it's never modified. See crbug.com/568369.
         return Collections.unmodifiableSet(
                 openSharedPreferences().getStringSet(KEY_WEBAPP_SET, Collections.emptySet()));
     }
 
-    @VisibleForTesting
     void clearForTesting() {
         Iterator<HashMap.Entry<String, WebappDataStorage>> it = mStorages.entrySet().iterator();
         while (it.hasNext()) {

@@ -526,7 +526,6 @@ public class WebLayer {
         return getWebLayerLoader(context).getIWebLayer();
     }
 
-    @VisibleForTesting
     /* package */ static Context getApplicationContextForTesting(Context appContext) {
         try {
             return (Context) ObjectWrapper.unwrap(

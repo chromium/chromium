@@ -81,7 +81,6 @@ public class EntryManager {
         updateGeneratorStatus(EntryStatus.CAPTURE_IN_PROGRESS);
     }
 
-    @VisibleForTesting
     public BitmapGenerator getBitmapGeneratorForTesting() {
         return mGenerator;
     }

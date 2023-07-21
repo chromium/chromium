@@ -257,12 +257,10 @@ class PasswordEditDialogCoordinator {
         return nonEmptyStrings;
     }
 
-    @VisibleForTesting
     PropertyModel getDialogModelForTesting() {
         return mDialogModel;
     }
 
-    @VisibleForTesting
     PropertyModel getDialogViewModelForTesting() {
         return mDialogViewModel;
     }

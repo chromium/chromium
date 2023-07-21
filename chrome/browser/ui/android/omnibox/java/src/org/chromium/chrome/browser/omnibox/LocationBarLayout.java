@@ -311,12 +311,10 @@ public class LocationBarLayout extends FrameLayout {
         mStatusCoordinator.setUnfocusedLocationBarWidth(unfocusedWidth);
     }
 
-    @VisibleForTesting
     public StatusCoordinator getStatusCoordinatorForTesting() {
         return mStatusCoordinator;
     }
 
-    @VisibleForTesting
     public void setStatusCoordinatorForTesting(StatusCoordinator statusCoordinator) {
         mStatusCoordinator = statusCoordinator;
     }

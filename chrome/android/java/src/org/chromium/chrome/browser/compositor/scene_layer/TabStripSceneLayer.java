@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.compositor.scene_layer;
 import android.content.Context;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -221,7 +220,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 long nativeTabStripSceneLayer, TabStripSceneLayer caller, SceneLayer contentTree);
     }
 
-    @VisibleForTesting
     public void initializeNativeForTesting() {
         this.initializeNative();
     }

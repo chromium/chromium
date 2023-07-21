@@ -14,8 +14,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Process;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
@@ -156,7 +154,6 @@ class GeolocationTracker {
         }
     }
 
-    @VisibleForTesting
     static void setLocationForTesting(
             Location networkLocationForTesting, Location gpsLocationForTesting) {
         sNetworkLocationForTesting = networkLocationForTesting;
@@ -164,7 +161,6 @@ class GeolocationTracker {
         sUseLocationForTesting = true;
     }
 
-    @VisibleForTesting
     static void setLocationAgeForTesting(Long locationAgeForTesting) {
         if (locationAgeForTesting == null) {
             sUseLocationAgeForTesting = false;

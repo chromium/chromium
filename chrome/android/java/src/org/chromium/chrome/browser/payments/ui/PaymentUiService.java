@@ -10,7 +10,6 @@ import android.os.Handler;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
@@ -847,7 +846,6 @@ public class PaymentUiService
 
     // Implements PaymentUiServiceTestInterface:
     @Override
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public WebContents getPaymentHandlerWebContentsForTest() {
         if (mPaymentHandlerUi == null) return null;
         return mPaymentHandlerUi.getWebContentsForTest();
@@ -855,7 +853,6 @@ public class PaymentUiService
 
     // Implements PaymentUiServiceTestInterface:
     @Override
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public boolean clickPaymentHandlerSecurityIconForTest() {
         if (mPaymentHandlerUi == null) return false;
         mPaymentHandlerUi.clickSecurityIconForTest();
@@ -864,7 +861,6 @@ public class PaymentUiService
 
     // Implements PaymentUiServiceTestInterface:
     @Override
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public boolean clickPaymentHandlerCloseButtonForTest() {
         if (mPaymentHandlerUi == null) return false;
         mPaymentHandlerUi.clickCloseButtonForTest();
@@ -873,7 +869,6 @@ public class PaymentUiService
 
     // Implements PaymentUiServiceTestInterface:
     @Override
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public boolean closeDialogForTest() {
         if (!mHasClosed) close();
         return true;

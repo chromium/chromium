@@ -249,13 +249,11 @@ public class AdaptiveToolbarStatePredictor {
     }
 
     /** For testing only. */
-    @VisibleForTesting
     public static void setSegmentationResultsForTesting(Pair<Boolean, Integer> results) {
         sSegmentationResultsForTesting = results;
     }
 
     /** For testing only. */
-    @VisibleForTesting
     public static void setToolbarStateForTesting(Integer toolbarState) {
         sToolbarStateForTesting = toolbarState;
     }

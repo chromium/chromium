@@ -187,7 +187,6 @@ class BindingManager implements ComponentCallbacks2 {
      * Override the default behavior which is based on Android version. This can be removed once
      * Android P support ends.
      */
-    @VisibleForTesting
     static void setUseNotPerceptibleBindingForTesting(boolean useNotPerceptibleBinding) {
         sUseNotPerceptibleBindingForTesting = useNotPerceptibleBinding;
         ResettersForTesting.register(() -> sUseNotPerceptibleBindingForTesting = null);

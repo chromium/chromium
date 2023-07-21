@@ -17,7 +17,6 @@ import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
@@ -150,7 +149,6 @@ public class WebFeedMainMenuItem extends FrameLayout {
                 this::onFaviconFetched);
     }
 
-    @VisibleForTesting
     public void setContextForTest(Context newContext) {
         mContext = newContext;
     }

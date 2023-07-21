@@ -21,7 +21,6 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.widget.ImageViewCompat;
@@ -428,7 +427,6 @@ public class MessageBannerView extends BoundedLinearLayout {
         }
     }
 
-    @VisibleForTesting
     ListMenuButton getSecondaryButtonForTesting() {
         return mSecondaryButton;
     }

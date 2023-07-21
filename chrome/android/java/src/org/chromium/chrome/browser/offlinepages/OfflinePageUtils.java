@@ -906,14 +906,12 @@ public class OfflinePageUtils {
         }
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static void setInstanceForTesting(Internal instance) {
         var oldValue = sInstance;
         sInstance = instance;
         ResettersForTesting.register(() -> sInstance = oldValue);
     }
 
-    @VisibleForTesting
     public static void setSnackbarDurationForTesting(int durationMs) {
         var oldValue = sSnackbarDurationMs;
         sSnackbarDurationMs = durationMs;

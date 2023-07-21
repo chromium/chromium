@@ -289,7 +289,6 @@ public class OfflineIndicatorControllerV2 {
         sMockElapsedTimeSupplier = supplier;
     }
 
-    @VisibleForTesting
     void setHandlerForTesting(Handler handler) {
         mHandler = handler;
     }

@@ -353,7 +353,6 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
         notifyHomepageUpdated();
     }
 
-    @VisibleForTesting
     public void setSettingsLauncherForTesting(SettingsLauncher launcher) {
         var oldValue = mSettingsLauncher;
         mSettingsLauncher = launcher;

@@ -14,7 +14,6 @@ import android.view.ViewTreeObserver;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
@@ -165,12 +164,10 @@ public class SplashController
         mParentView.addView(mSplashView);
     }
 
-    @VisibleForTesting
     public View getSplashScreenForTests() {
         return mSplashView;
     }
 
-    @VisibleForTesting
     public boolean wasSplashScreenHiddenForTests() {
         return mSplashShownTimestamp > 0 && mSplashView == null;
     }

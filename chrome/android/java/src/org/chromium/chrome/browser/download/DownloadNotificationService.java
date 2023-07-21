@@ -114,7 +114,6 @@ public class DownloadNotificationService {
         return sInstanceForTesting == null ? LazyHolder.INSTANCE : sInstanceForTesting;
     }
 
-    @VisibleForTesting
     static void setInstanceForTests(DownloadNotificationService service) {
         sInstanceForTesting = service;
         ResettersForTesting.register(() -> sInstanceForTesting = null);

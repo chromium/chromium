@@ -9,8 +9,6 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.os.UserManager;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
@@ -196,7 +194,6 @@ class FirstRunAppRestrictionInfo {
         }
     }
 
-    @VisibleForTesting
     static void setInitializedInstanceForTest(
             FirstRunAppRestrictionInfo firstRunAppRestrictionInfo) {
         var oldValue = sInitializedInstance;

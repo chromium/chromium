@@ -713,12 +713,10 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         return mDistillationStatus;
     }
 
-    @VisibleForTesting
     void muteSiteForTesting(GURL url) {
         sMutedSites.add(urlToHash(url));
     }
 
-    @VisibleForTesting
     void clearSavedSitesForTesting() {
         sMutedSites.clear();
     }

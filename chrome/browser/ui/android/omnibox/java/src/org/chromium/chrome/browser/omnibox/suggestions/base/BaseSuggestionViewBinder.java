@@ -380,7 +380,6 @@ public final class BaseSuggestionViewBinder<T extends View>
     }
 
     /** @return Cached ConstantState for testing. */
-    @VisibleForTesting
     public static Drawable.ConstantState getFocusableDrawableStateForTesting() {
         return sFocusableDrawableState;
     }

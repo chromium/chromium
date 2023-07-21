@@ -43,7 +43,6 @@ public class InternalAuthenticator {
         mAuthenticator = new AuthenticatorImpl(context, intentSender, renderFrameHost, topOrigin);
     }
 
-    @VisibleForTesting
     public static InternalAuthenticator createForTesting(Context context,
             WebAuthenticationDelegate.IntentSender intentSender, RenderFrameHost renderFrameHost,
             Origin topOrigin) {

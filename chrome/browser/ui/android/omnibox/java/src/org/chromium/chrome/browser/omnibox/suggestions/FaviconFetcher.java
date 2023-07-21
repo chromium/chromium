@@ -11,7 +11,6 @@ import android.util.LruCache;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
@@ -219,7 +218,6 @@ public class FaviconFetcher {
      * Overrides RoundedIconGenerator for testing.
      * @param generator RoundedIconGenerator to use.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     void setRoundedIconGeneratorForTesting(@NonNull RoundedIconGenerator generator) {
         mIconGenerator = generator;
     }
@@ -228,7 +226,6 @@ public class FaviconFetcher {
      * Overrides desired favicon size for testing.
      * @param desiredFaviconSizePx Desired favicon size in pixels.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     void setDesiredFaviconSizeForTesting(int desiredFaviconSizePx) {
         mDesiredFaviconWidthPx = desiredFaviconSizePx;
     }

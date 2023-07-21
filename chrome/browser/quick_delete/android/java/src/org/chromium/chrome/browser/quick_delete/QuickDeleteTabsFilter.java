@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.quick_delete;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.tab.Tab;
@@ -60,7 +59,6 @@ class QuickDeleteTabsFilter {
         }
     }
 
-    @VisibleForTesting
     void setCurrentTimeForTesting(long currentTime) {
         mCurrentTimeForTesting = currentTime;
     }

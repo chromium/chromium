@@ -233,7 +233,6 @@ public class TabSuggestionMessageService extends MessageService implements TabSu
         sendInvalidNotification();
     }
 
-    @VisibleForTesting
     public static boolean isSuggestionAvailableForTesting() {
         return sSuggestionAvailableForTesting;
     }

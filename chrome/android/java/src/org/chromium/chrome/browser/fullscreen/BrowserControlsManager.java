@@ -799,17 +799,14 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         if (mTabControlsObserver != null) mTabControlsObserver.destroy();
     }
 
-    @VisibleForTesting
     public TabModelSelectorTabObserver getTabControlsObserverForTesting() {
         return mTabControlsObserver;
     }
 
-    @VisibleForTesting
     ValueAnimator getControlsAnimatorForTesting() {
         return mControlsAnimator;
     }
 
-    @VisibleForTesting
     int getControlsAnimationDurationMsForTesting() {
         return CONTROLS_ANIMATION_DURATION_MS;
     }

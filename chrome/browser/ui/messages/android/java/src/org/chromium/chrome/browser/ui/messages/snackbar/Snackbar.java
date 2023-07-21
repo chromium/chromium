@@ -339,17 +339,14 @@ public class Snackbar {
     }
 
     /** So tests can trigger a press on a Snackbar. */
-    @VisibleForTesting
     public Object getActionDataForTesting() {
         return mActionData;
     }
 
-    @VisibleForTesting
     public int getIdentifierForTesting() {
         return mIdentifier;
     }
 
-    @VisibleForTesting
     public CharSequence getTextForTesting() {
         return mText;
     }

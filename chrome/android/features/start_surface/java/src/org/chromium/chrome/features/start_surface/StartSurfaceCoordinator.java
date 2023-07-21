@@ -536,7 +536,6 @@ public class StartSurfaceCoordinator implements StartSurface {
         }
     }
 
-    @VisibleForTesting
     public StartSurfaceMediator getMediatorForTesting() {
         return mStartSurfaceMediator;
     }
@@ -783,22 +782,18 @@ public class StartSurfaceCoordinator implements StartSurface {
                 multiWindowModeStateDispatcher, rootView, incognitoReauthControllerSupplier);
     }
 
-    @VisibleForTesting
     public boolean isInitPendingForTesting() {
         return mIsInitPending;
     }
 
-    @VisibleForTesting
     public boolean isInitializedWithNativeForTesting() {
         return mIsInitializedWithNative;
     }
 
-    @VisibleForTesting
     public boolean isSecondaryTaskInitPendingForTesting() {
         return mIsSecondaryTaskInitPending;
     }
 
-    @VisibleForTesting
     public boolean isMVTilesCleanedUpForTesting() {
         if (mTasksSurface != null) {
             return mTasksSurface.isMVTilesCleanedUp();
@@ -809,7 +804,6 @@ public class StartSurfaceCoordinator implements StartSurface {
         return false;
     }
 
-    @VisibleForTesting
     public boolean isMVTilesInitializedForTesting() {
         if (mTasksSurface != null) {
             return mTasksSurface.isMVTilesInitialized();
@@ -817,7 +811,6 @@ public class StartSurfaceCoordinator implements StartSurface {
         return mIsMVTilesInitialized;
     }
 
-    @VisibleForTesting
     public TileGroupDelegateImpl getTileGroupDelegateForTesting() {
         if (mTasksSurface != null) {
             return mTasksSurface.getTileGroupDelegate();
@@ -1128,12 +1121,10 @@ public class StartSurfaceCoordinator implements StartSurface {
         mStartSurfaceMediator.performSearchQuery(queryText, searchParams);
     }
 
-    @VisibleForTesting
     boolean isSecondaryTasksSurfaceEmptyForTesting() {
         return mSecondaryTasksSurface == null;
     }
 
-    @VisibleForTesting
     FeedSwipeRefreshLayout getFeedSwipeRefreshLayoutForTesting() {
         return mSwipeRefreshLayout;
     }

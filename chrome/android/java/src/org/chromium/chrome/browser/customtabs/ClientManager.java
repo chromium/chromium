@@ -596,7 +596,6 @@ class ClientManager {
     /**
      * @return The postMessage origin for the given session.
      */
-    @VisibleForTesting
     Uri getPostMessageOriginForSessionForTesting(CustomTabsSessionToken session) {
         return callOnSession(session, null,
                 params -> params.postMessageHandler.getPostMessageUriForTesting() // IN-TEST
@@ -606,7 +605,6 @@ class ClientManager {
     /**
      * @return The postMessage target origin for the given session.
      */
-    @VisibleForTesting
     Uri getPostMessageTargetOriginForSessionForTesting(CustomTabsSessionToken session) {
         return callOnSession(session, null,
                 params -> params.postMessageHandler.getPostMessageTargetUriForTesting() // IN-TEST

@@ -26,7 +26,6 @@ import android.widget.ImageView;
 import android.widget.TextView.OnEditorActionListener;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -257,7 +256,6 @@ class TextFieldView extends FrameLayout implements FieldView {
         }
     }
 
-    @VisibleForTesting
     public static void setEditorObserverForTest(EditorObserverForTest observerForTest) {
         sObserverForTest = observerForTest;
         ResettersForTesting.register(() -> sObserverForTest = null);

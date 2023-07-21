@@ -117,7 +117,6 @@ public class NotificationPlatformBridge {
      * @return The instance of the NotificationPlatformBridge, if any.
      */
     @Nullable
-    @VisibleForTesting
     static NotificationPlatformBridge getInstanceForTests() {
         return sInstance;
     }
@@ -129,7 +128,6 @@ public class NotificationPlatformBridge {
      *
      * @param notificationManager The notification manager instance to use instead of the system's.
      */
-    @VisibleForTesting
     static void overrideNotificationManagerForTesting(
             NotificationManagerProxy notificationManager) {
         sNotificationManagerOverride = notificationManager;

@@ -546,7 +546,6 @@ public class CreatorCoordinator
         if (mSheetObserver != null) mBottomSheetController.removeObserver(mSheetObserver);
     }
 
-    @VisibleForTesting
     void setStreamForTest(Stream stream) {
         mStream = stream;
     }

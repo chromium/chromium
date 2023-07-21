@@ -8,8 +8,6 @@ import static org.chromium.base.ThreadUtils.assertOnUiThread;
 
 import android.content.Context;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerBackendException;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
@@ -57,7 +55,6 @@ public abstract class CredentialManagerLauncherFactory {
                 CredentialManagerError.BACKEND_NOT_AVAILABLE);
     }
 
-    @VisibleForTesting
     public static void setFactoryForTesting(
             CredentialManagerLauncherFactory credentialManagerLauncherFactory) {
         var oldValue = sInstance;

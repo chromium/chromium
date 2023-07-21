@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.device_reauth;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.CalledByNative;
@@ -72,7 +70,6 @@ public class ReauthenticatorBridge {
     }
 
     /** For testing only. */
-    @VisibleForTesting
     public static void setInstanceForTesting(ReauthenticatorBridge instance) {
         sReauthenticatorBridgeForTesting = instance;
         ResettersForTesting.register(() -> sReauthenticatorBridgeForTesting = null);

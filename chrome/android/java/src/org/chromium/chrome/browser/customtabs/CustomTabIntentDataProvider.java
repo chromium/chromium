@@ -1164,7 +1164,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      * Set the callback object for {@link PendingIntent}s that are sent in this class. For testing
      * purpose only.
      */
-    @VisibleForTesting
     void setPendingIntentOnFinishedForTesting(PendingIntent.OnFinished onFinished) {
         mOnFinishedForTesting = onFinished;
         ResettersForTesting.register(() -> mOnFinishedForTesting = null);

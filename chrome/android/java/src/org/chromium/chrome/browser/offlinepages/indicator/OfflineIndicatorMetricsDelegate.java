@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.offlinepages.indicator;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -302,7 +300,6 @@ public class OfflineIndicatorMetricsDelegate {
                 ChromePreferenceKeys.OFFLINE_INDICATOR_V2_NUM_TIMES_BACKGROUNDED);
     }
 
-    @VisibleForTesting
     static void setClockForTesting(Clock clock) {
         var oldValue = sClock;
         sClock = clock;

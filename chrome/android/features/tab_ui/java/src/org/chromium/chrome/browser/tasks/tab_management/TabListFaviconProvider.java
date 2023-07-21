@@ -316,7 +316,6 @@ public class TabListFaviconProvider {
         }
     }
 
-    @VisibleForTesting
     public void initForTesting(Profile profile, FaviconHelper helper) {
         assert !mIsInitialized;
         mProfile = profile;

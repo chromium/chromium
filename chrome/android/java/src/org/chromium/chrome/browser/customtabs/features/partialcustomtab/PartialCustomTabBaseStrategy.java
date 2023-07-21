@@ -28,7 +28,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.StringRes;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
@@ -582,7 +581,6 @@ public abstract class PartialCustomTabBaseStrategy
         }
     }
 
-    @VisibleForTesting
     void setMockViewForTesting(
             ViewGroup coordinatorLayout, CustomTabToolbar toolbar, View toolbarCoordinator) {
         mPositionUpdater = this::updatePosition;
@@ -592,18 +590,15 @@ public abstract class PartialCustomTabBaseStrategy
         onPostInflationStartup();
     }
 
-    @VisibleForTesting
     void setFullscreenSupplierForTesting(BooleanSupplier fullscreen) {
         mIsFullscreenForTesting = fullscreen;
     }
 
-    @VisibleForTesting
     int getTopMarginForTesting() {
         var mlp = (ViewGroup.MarginLayoutParams) mToolbarCoordinator.getLayoutParams();
         return mlp.topMargin;
     }
 
-    @VisibleForTesting
     int getShadowOffsetForTesting() {
         return mShadowOffset;
     }

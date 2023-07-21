@@ -116,7 +116,6 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
 
     // Testing methods
 
-    @VisibleForTesting
     AppMenuHandlerImpl getAppMenuHandlerImplForTesting() {
         return mAppMenuHandler;
     }
@@ -125,7 +124,6 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
      * @param hasPermanentMenuKey Overrides {@link ViewConfiguration#hasPermanentMenuKey()} for
      *         testing. Pass null to reset.
      */
-    @VisibleForTesting
     static void setHasPermanentMenuKeyForTesting(Boolean hasPermanentMenuKey) {
         sHasPermanentMenuKeyForTesting = hasPermanentMenuKey;
         ResettersForTesting.register(() -> sHasPermanentMenuKeyForTesting = null);

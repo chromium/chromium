@@ -13,7 +13,6 @@ import android.view.accessibility.AccessibilityManager.TouchExplorationStateChan
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
@@ -226,7 +225,6 @@ public class AccessibilityUtil {
      * has finished.
      * @param isEnabled whether the device has accessibility enabled.
      */
-    @VisibleForTesting
     public void setAccessibilityEnabledForTesting(@Nullable Boolean isEnabled) {
         ThreadUtils.assertOnUiThread();
         mIsAccessibilityEnabled = isEnabled;
@@ -238,7 +236,6 @@ public class AccessibilityUtil {
      * test has finished.
      * @param isEnabled whether the device has touch exploration enabled.
      */
-    @VisibleForTesting
     public void setTouchExplorationEnabledForTesting(@Nullable Boolean isEnabled) {
         ThreadUtils.assertOnUiThread();
         mIsTouchExplorationEnabled = isEnabled;

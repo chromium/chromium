@@ -4,8 +4,6 @@
 
 package org.chromium.ui.base;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -67,7 +65,6 @@ public class ApplicationViewportInsetSupplier
         super.set(new ViewportInsets());
     }
 
-    @VisibleForTesting
     public static ApplicationViewportInsetSupplier createForTests() {
         return new ApplicationViewportInsetSupplier();
     }

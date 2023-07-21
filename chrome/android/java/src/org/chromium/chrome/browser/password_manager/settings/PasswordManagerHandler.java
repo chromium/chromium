@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.password_manager.settings;
 import android.app.Activity;
 import android.content.Context;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.Callback;
 import org.chromium.base.IntStringCallback;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -22,7 +20,6 @@ public interface PasswordManagerHandler {
     /**
      * Called to insert a password entry into the password store.
      */
-    @VisibleForTesting
     public void insertPasswordEntryForTesting(String origin, String username, String password);
 
     /**

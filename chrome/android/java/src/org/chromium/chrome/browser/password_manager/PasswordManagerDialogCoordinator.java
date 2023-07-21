@@ -13,8 +13,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -66,7 +64,6 @@ public class PasswordManagerDialogCoordinator {
                 .build();
     }
 
-    @VisibleForTesting
     public PasswordManagerDialogMediator getMediatorForTesting() {
         return mMediator;
     }

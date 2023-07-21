@@ -116,7 +116,6 @@ public class MessageDispatcherImpl implements ManagedMessageDispatcher {
         mMessageQueueManager.setDelegate(delegate);
     }
 
-    @VisibleForTesting
     MessageQueueManager getMessageQueueManagerForTesting() {
         return mMessageQueueManager;
     }

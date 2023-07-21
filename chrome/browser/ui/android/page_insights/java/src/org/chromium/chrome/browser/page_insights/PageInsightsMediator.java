@@ -10,7 +10,6 @@ import android.os.SystemClock;
 import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -259,7 +258,6 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         mBottomUiController.removeObserver(mBottomUiObserver);
     }
 
-    @VisibleForTesting
     float getCornerRadiusForTesting() {
         float[] radii = mBackgroundDrawable.getCornerRadii();
         assert radii[0] == radii[1] && radii[1] == radii[2] && radii[2] == radii[3];

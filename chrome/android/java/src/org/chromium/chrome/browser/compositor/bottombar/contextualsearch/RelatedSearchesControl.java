@@ -254,17 +254,14 @@ public class RelatedSearchesControl {
     // Test support API
     // ============================================================================================
 
-    @VisibleForTesting
     public void selectChipForTest(int chipIndex) {
         handleChipTapped(mChips.get(chipIndex).model);
     }
 
-    @VisibleForTesting
     public ModelList getChipsForTest() {
         return mControlView.getChipsForTest(); // IN-TEST
     }
 
-    @VisibleForTesting
     public int getSelectedChipForTest() {
         return mSelectedChip;
     }
@@ -636,7 +633,6 @@ public class RelatedSearchesControl {
             return false;
         }
 
-        @VisibleForTesting
         ModelList getChipsForTest() {
             updateChips();
             return mChips;

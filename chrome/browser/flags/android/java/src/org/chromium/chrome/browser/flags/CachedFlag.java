@@ -145,7 +145,6 @@ public class CachedFlag extends Flag {
         }
     }
 
-    @VisibleForTesting
     public static void resetDiskForTesting() {
         SharedPreferencesManager.getInstance().removeKeysWithPrefix(
                 ChromePreferenceKeys.FLAGS_CACHED);

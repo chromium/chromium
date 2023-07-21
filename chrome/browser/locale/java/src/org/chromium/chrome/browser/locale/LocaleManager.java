@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.locale;
 import android.app.Activity;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
@@ -230,7 +229,6 @@ public class LocaleManager implements DefaultSearchEngineDialogHelper.Delegate {
     }
 
     /** Set a LocaleManagerDelegate to be used for testing. */
-    @VisibleForTesting
     public void setDelegateForTest(LocaleManagerDelegate delegate) {
         mDelegate = delegate;
         mDelegate.setDefaulSearchEngineDelegate(this);

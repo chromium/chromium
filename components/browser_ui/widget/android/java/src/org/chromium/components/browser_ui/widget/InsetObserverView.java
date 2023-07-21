@@ -13,7 +13,6 @@ import android.view.WindowInsets;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsAnimationCompat;
 import androidx.core.view.WindowInsetsAnimationCompat.BoundsCompat;
@@ -240,7 +239,6 @@ public class InsetObserverView extends View {
         mObservers.removeObserver(observer);
     }
 
-    @VisibleForTesting
     public WindowInsetsAnimationCompat.Callback getInsetAnimationProxyCallbackForTesting() {
         return mWindowInsetsAnimationProxyCallback;
     }

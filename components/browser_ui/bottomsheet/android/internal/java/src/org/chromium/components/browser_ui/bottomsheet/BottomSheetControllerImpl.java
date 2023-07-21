@@ -424,17 +424,14 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
         mSheetStateBeforeSuppress = SheetState.NONE;
     }
 
-    @VisibleForTesting
     void setSheetStateForTesting(@SheetState int state, boolean animate) {
         mBottomSheet.setSheetState(state, animate);
     }
 
-    @VisibleForTesting
     View getBottomSheetViewForTesting() {
         return mBottomSheet;
     }
 
-    @VisibleForTesting
     public void endAnimationsForTesting() {
         mBottomSheet.endAnimations();
     }
@@ -608,7 +605,6 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
         return !mBottomSheet.isSheetOpen();
     }
 
-    @VisibleForTesting
     boolean hasSuppressionTokensForTesting() {
         return mSuppressionTokens.hasTokens();
     }

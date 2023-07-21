@@ -397,7 +397,6 @@ public class StaticLayout extends Layout {
                 mTopUiThemeColorProvider.get().calculateColor(tab, tab.getThemeColor()));
     }
 
-    @VisibleForTesting
     void setTextBoxBackgroundColorForTesting(Integer color) {
         sToolbarTextBoxBackgroundColorForTesting = color;
     }
@@ -486,27 +485,22 @@ public class StaticLayout extends Layout {
         }
     }
 
-    @VisibleForTesting
     PropertyModel getModelForTesting() {
         return mModel;
     }
 
-    @VisibleForTesting
     TabModelSelector getTabModelSelectorForTesting() {
         return mTabModelSelector;
     }
 
-    @VisibleForTesting
     TabContentManager getTabContentManagerForTesting() {
         return mTabContentManager;
     }
 
-    @VisibleForTesting
     BrowserControlsStateProvider getBrowserControlsStateProviderForTesting() {
         return mBrowserControlsStateProvider;
     }
 
-    @VisibleForTesting
     public int getCurrentTabIdForTesting() {
         return mModel.get(LayoutTab.TAB_ID);
     }

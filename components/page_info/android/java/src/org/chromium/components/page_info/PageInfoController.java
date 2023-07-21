@@ -457,12 +457,10 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         return !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 
-    @VisibleForTesting
     public View getPageInfoViewForTesting() {
         return mContainer;
     }
 
-    @VisibleForTesting
     public boolean isDialogShowingForTesting() {
         return mDialog != null;
     }
@@ -505,7 +503,6 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
                 delegate, pageInfoHighlight));
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static PageInfoController getLastPageInfoControllerForTesting() {
         return sLastPageInfoControllerForTesting != null ? sLastPageInfoControllerForTesting.get()
                                                          : null;

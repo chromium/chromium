@@ -13,7 +13,6 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.SynchronousInitializationActivity;
 import org.chromium.chrome.browser.ui.device_lock.DeviceLockCoordinator;
@@ -48,7 +47,6 @@ public class DeviceLockActivity
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    @VisibleForTesting
     void setIntentRequestTrackerForTesting(IntentRequestTracker intentRequestTracker) {
         mIntentRequestTracker = intentRequestTracker;
     }

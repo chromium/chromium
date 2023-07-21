@@ -14,7 +14,6 @@ import android.view.ContextThemeWrapper;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -124,7 +123,6 @@ public class NightModeUtils {
         }
     }
 
-    @VisibleForTesting
     public static void setNightModeSupportedForTesting(@Nullable Boolean nightModeSupported) {
         sNightModeSupportedForTest = nightModeSupported;
         ResettersForTesting.register(() -> sNightModeSupportedForTest = null);

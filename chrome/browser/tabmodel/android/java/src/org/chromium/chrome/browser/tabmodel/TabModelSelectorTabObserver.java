@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -124,7 +122,6 @@ public class TabModelSelectorTabObserver
         mTabRegistrationObserver.destroy();
     }
 
-    @VisibleForTesting
     boolean isDeferredInitializationFinishedForTesting() {
         return mIsDeferredInitializationFinished;
     }

@@ -158,7 +158,6 @@ public class TrustedVaultClient {
         mBackend = backend;
     }
 
-    @VisibleForTesting
     public static void setInstanceForTesting(TrustedVaultClient instance) {
         var oldValue = sInstance;
         sInstance = instance;

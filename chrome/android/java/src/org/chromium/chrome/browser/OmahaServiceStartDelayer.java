@@ -88,7 +88,6 @@ public class OmahaServiceStartDelayer {
     /**
      * Sets the runnable that contains the actions to do when the device is interactive.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     void setOmahaRunnableForTesting(Runnable runnable) {
         cancelAndCleanup();
         mOmahaRunnable = runnable;

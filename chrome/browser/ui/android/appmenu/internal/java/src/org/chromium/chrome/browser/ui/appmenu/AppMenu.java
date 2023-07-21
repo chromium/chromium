@@ -653,7 +653,6 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
         return headerView.getMeasuredHeight();
     }
 
-    @VisibleForTesting
     void finishAnimationsForTests() {
         if (mMenuItemEnterAnimator != null) mMenuItemEnterAnimator.end();
     }

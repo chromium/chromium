@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.password_manager;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.password_manager.PasswordStoreAndroidBackend.BackendException;
 
@@ -56,7 +54,6 @@ public abstract class PasswordSettingsAccessorFactory {
                 AndroidBackendErrorType.BACKEND_NOT_AVAILABLE);
     }
 
-    @VisibleForTesting
     public static void setupFactoryForTesting(PasswordSettingsAccessorFactory accessorFactory) {
         var oldValue = sInstance;
         sInstance = accessorFactory;

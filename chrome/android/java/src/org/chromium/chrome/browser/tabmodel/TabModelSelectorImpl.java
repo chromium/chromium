@@ -195,7 +195,6 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
      * @param normalModel The normal tab model.
      * @param incognitoModel The incognito tab model.
      */
-    @VisibleForTesting
     public void initializeForTesting(TabModel normalModel, IncognitoTabModel incognitoModel) {
         initialize(normalModel, incognitoModel);
     }

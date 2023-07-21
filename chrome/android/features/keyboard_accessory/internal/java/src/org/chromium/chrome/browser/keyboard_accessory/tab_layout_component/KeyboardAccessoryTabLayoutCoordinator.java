@@ -11,7 +11,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_componen
 
 import android.view.View;
 
-import androidx.annotation.VisibleForTesting;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
@@ -193,12 +192,10 @@ public class KeyboardAccessoryTabLayoutCoordinator {
         return mMediator.getStableOnPageChangeListener();
     }
 
-    @VisibleForTesting
     PropertyModel getModelForTesting() {
         return mModel;
     }
 
-    @VisibleForTesting
     KeyboardAccessoryTabLayoutMediator getMediatorForTesting() {
         return mMediator;
     }

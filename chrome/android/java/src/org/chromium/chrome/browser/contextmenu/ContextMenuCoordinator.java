@@ -386,7 +386,6 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         mDialog.dismiss();
     }
 
-    @VisibleForTesting
     Callback<ChipRenderParams> getChipRenderParamsCallbackForTesting(ChipDelegate chipDelegate) {
         return (chipRenderParams) -> {
             if (chipDelegate.isValidChipRenderParams(chipRenderParams) && mDialog.isShowing()) {
@@ -395,14 +394,12 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         };
     }
 
-    @VisibleForTesting
     void initializeHeaderCoordinatorForTesting(Activity activity, ContextMenuParams params,
             Profile profile, ContextMenuNativeDelegate nativeDelegate) {
         mHeaderCoordinator =
                 new ContextMenuHeaderCoordinator(activity, params, profile, nativeDelegate);
     }
 
-    @VisibleForTesting
     void simulateShoppyImageClassificationForTesting() {
         // Don't need to initialize controller because that should be triggered by
         // forcing feature flags.
@@ -414,7 +411,6 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         mChipController.showChip(chipRenderParamsForTesting);
     }
 
-    @VisibleForTesting
     void simulateTranslateImageClassificationForTesting() {
         // Don't need to initialize controller because that should be triggered by
         // forcing feature flags.
@@ -426,7 +422,6 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         mChipController.showChip(chipRenderParamsForTesting);
     }
 
-    @VisibleForTesting
     ChipRenderParams simulateImageClassificationForTesting() {
         // Don't need to initialize controller because that should be triggered by
         // forcing feature flags.
@@ -474,12 +469,10 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         return null;
     }
 
-    @VisibleForTesting
     public ContextMenuDialog getDialogForTest() {
         return mDialog;
     }
 
-    @VisibleForTesting
     public ContextMenuListView getListViewForTest() {
         return mListView;
     }

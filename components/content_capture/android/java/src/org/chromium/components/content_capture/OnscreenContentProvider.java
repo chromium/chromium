@@ -204,7 +204,6 @@ public class OnscreenContentProvider {
         return result;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public List<ContentCaptureConsumer> getConsumersForTesting() {
         return mContentCaptureConsumers;
     }

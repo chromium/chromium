@@ -258,7 +258,6 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
     /**
      * Overrides the list of accepted file types for testing purposes.
      */
-    @VisibleForTesting
     public void setFileTypesForTests(List<String> fileTypes) {
         List<String> oldValue = mFileTypes;
         mFileTypes = fileTypes;

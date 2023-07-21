@@ -8,8 +8,6 @@ import android.os.SystemClock;
 import android.util.Pair;
 import android.view.View;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.CalledByNative;
@@ -193,19 +191,16 @@ public class ContextMenuHelper {
         RecordHistogram.recordTimesHistogram(histogramName, timeToTakeActionMs);
     }
 
-    @VisibleForTesting
     public static void setMenuShownCallbackForTests(Callback<ContextMenuCoordinator> callback) {
         sMenuShownCallbackForTesting = callback;
         ResettersForTesting.register(() -> sMenuShownCallbackForTesting = null);
     }
 
-    @VisibleForTesting
     public static ContextMenuHelper createForTesting(
             long nativeContextMenuHelper, WebContents webContents) {
         return create(nativeContextMenuHelper, webContents);
     }
 
-    @VisibleForTesting
     void showContextMenuForTesting(ContextMenuPopulatorFactory populatorFactory,
             final ContextMenuParams params, RenderFrameHost renderFrameHost, View view,
             float topContentOffsetPx) {

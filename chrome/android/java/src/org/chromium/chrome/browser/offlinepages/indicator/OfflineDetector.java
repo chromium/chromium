@@ -285,7 +285,6 @@ class OfflineDetector
         sMockElapsedTimeSupplier = supplier;
     }
 
-    @VisibleForTesting
     void setHandlerForTesting(Handler handler) {
         mHandler = handler;
     }

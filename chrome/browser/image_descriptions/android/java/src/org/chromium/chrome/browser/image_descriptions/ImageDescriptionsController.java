@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.image_descriptions;
 
 import android.content.Context;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.device.DeviceConditions;
@@ -98,7 +96,6 @@ public class ImageDescriptionsController {
      * Set the ImageDescriptionsControllerDelegate delegate one time, used for testing purposes.
      * @param delegate      The new ImageDescriptionsControllerDelegate delegate to use.
      */
-    @VisibleForTesting
     public void setDelegateForTesting(ImageDescriptionsControllerDelegate delegate) {
         var oldValue = this.mDelegate;
         this.mDelegate = delegate;

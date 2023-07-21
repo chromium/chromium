@@ -18,7 +18,6 @@ import android.widget.TextView;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
@@ -406,7 +405,6 @@ public abstract class BookmarkRow
         }
     }
 
-    @VisibleForTesting
     public View getDragHandleViewForTesting() {
         return mDragHandle;
     }

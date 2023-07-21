@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.widget.Button;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
@@ -120,7 +119,6 @@ public class DefaultSearchEnginePromoDialog extends PromoDialog {
     }
 
     /** See {@link #sObserverForTesting}. */
-    @VisibleForTesting
     public static void setObserverForTests(DefaultSearchEnginePromoDialogObserver observer) {
         sObserverForTesting = observer;
         ResettersForTesting.register(() -> sObserverForTesting = null);

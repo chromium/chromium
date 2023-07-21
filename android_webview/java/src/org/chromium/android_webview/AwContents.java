@@ -1705,13 +1705,11 @@ public class AwContents implements SmartClipProvider {
                 crashed, AwContentsJni.get().getEffectivePriority(mNativeAwContents)));
     }
 
-    @VisibleForTesting
     public @RendererPriority int getEffectivePriorityForTesting() {
         assert !isDestroyed(NO_WARN);
         return AwContentsJni.get().getEffectivePriority(mNativeAwContents);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public AwDarkMode getAwDarkModeForTesting() {
         return mAwDarkMode;
     }
@@ -1818,7 +1816,6 @@ public class AwContents implements SmartClipProvider {
         return mNavigationController;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public AutofillProvider getAutofillProviderForTesting() {
         return mAutofillProvider;
     }
@@ -2361,7 +2358,6 @@ public class AwContents implements SmartClipProvider {
         mAwViewMethods.setLayerType(layerType, paint);
     }
 
-    @VisibleForTesting
     public int getEffectiveBackgroundColorForTesting() {
         return getEffectiveBackgroundColor();
     }
@@ -2388,12 +2384,10 @@ public class AwContents implements SmartClipProvider {
         return mSettings.supportsMultiTouchZoom();
     }
 
-    @VisibleForTesting
     public View getZoomControlsViewForTest() {
         return mZoomControls.getZoomControlsViewForTest();
     }
 
-    @VisibleForTesting
     public AwZoomControls getZoomControlsForTest() {
         return mZoomControls;
     }
@@ -3434,7 +3428,6 @@ public class AwContents implements SmartClipProvider {
         return mDrawFunctor != null;
     }
 
-    @VisibleForTesting
     public void setPostDelayedTaskForTesting(BiFunction<Runnable, Long, Void> fn) {
         mPostDelayedTaskForTesting = fn;
     }
@@ -3485,7 +3478,6 @@ public class AwContents implements SmartClipProvider {
      * Returns true if the web contents has an associated interstitial.
      * This method is only called by tests.
      */
-    @VisibleForTesting
     public boolean isDisplayingInterstitialForTesting() {
         return AwContentsJni.get().isDisplayingInterstitialForTesting(mNativeAwContents);
     }
@@ -3994,7 +3986,6 @@ public class AwContents implements SmartClipProvider {
      * Return the device locale in the same format we use to populate the 'hl' query parameter for
      * Safe Browsing interstitial urls, as done in BaseUIManager::app_locale().
      */
-    @VisibleForTesting
     public static String getSafeBrowsingLocaleForTesting() {
         return AwContentsJni.get().getSafeBrowsingLocaleForTesting();
     }
@@ -4184,7 +4175,6 @@ public class AwContents implements SmartClipProvider {
         }
     }
 
-    @VisibleForTesting
     public static void resetRecordMemoryForTesting() {
         sLastCollectionTime = -MEMORY_COLLECTION_INTERVAL_MS;
     }

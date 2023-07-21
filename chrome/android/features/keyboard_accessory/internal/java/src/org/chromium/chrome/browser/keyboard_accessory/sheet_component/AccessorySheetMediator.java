@@ -14,7 +14,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.Acc
 
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
-import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
@@ -56,7 +55,6 @@ class AccessorySheetMediator implements PropertyObservable.PropertyObserver<Prop
         return mModel.get(TABS).get(mModel.get(ACTIVE_TAB_INDEX));
     }
 
-    @VisibleForTesting
     PropertyModel getModelForTesting() {
         return mModel;
     }

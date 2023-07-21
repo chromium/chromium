@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.browserservices;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
@@ -65,7 +64,6 @@ public class ManageTrustedWebActivityDataActivity extends AppCompatActivity {
         }
     }
 
-    @VisibleForTesting
     public static void setCallingPackageForTesting(String packageName) {
         sCallingPackageForTesting = packageName;
         ResettersForTesting.register(() -> sCallingPackageForTesting = null);

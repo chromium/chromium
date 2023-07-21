@@ -231,12 +231,10 @@ class DirectWritingTrigger
         return mCallback;
     }
 
-    @VisibleForTesting
     void setServiceCallbackForTest(DirectWritingServiceCallback serviceCallback) {
         mCallback = serviceCallback;
     }
 
-    @VisibleForTesting
     void setServiceBinderForTest(DirectWritingServiceBinder serviceBinder) {
         mBinder = serviceBinder;
     }

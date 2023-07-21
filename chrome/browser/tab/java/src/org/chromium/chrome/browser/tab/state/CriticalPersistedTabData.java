@@ -851,7 +851,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
         mObservers.removeObserver(criticalPersistedTabDataObserver);
     }
 
-    @VisibleForTesting
     public void setShouldSaveForTesting(boolean shouldSaveForTesting) {
         mShouldSaveForTesting = shouldSaveForTesting;
         ResettersForTesting.register(() -> mShouldSaveForTesting = false);
@@ -869,7 +868,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
         mShouldSave = true;
     }
 
-    @VisibleForTesting
     public boolean getShouldSaveForTesting() {
         return mShouldSave;
     }

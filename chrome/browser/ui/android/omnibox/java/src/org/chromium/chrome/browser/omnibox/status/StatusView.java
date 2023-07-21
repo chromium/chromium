@@ -24,7 +24,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
@@ -572,12 +571,10 @@ public class StatusView extends LinearLayout {
                                                       : mIconAnimationDurationForTests;
     }
 
-    @VisibleForTesting
     TouchDelegate getTouchDelegateForTesting() {
         return mTouchDelegate;
     }
 
-    @VisibleForTesting
     void setIconAnimationDurationForTesting(int duration) {
         mIconAnimationDurationForTests = duration;
     }

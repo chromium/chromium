@@ -284,26 +284,22 @@ public class MostVisitedSitesMetadataUtils {
         }
     }
 
-    @VisibleForTesting
     public Runnable getCurrentTaskForTesting() {
         return mCurrentTask;
     }
 
-    @VisibleForTesting
     public void setCurrentTaskForTesting(Runnable currentTask) {
         var oldValue = mCurrentTask;
         mCurrentTask = currentTask;
         ResettersForTesting.register(() -> mCurrentTask = oldValue);
     }
 
-    @VisibleForTesting
     public void setPendingTaskForTesting(Runnable pendingTask) {
         var oldValue = mPendingTask;
         mPendingTask = pendingTask;
         ResettersForTesting.register(() -> mPendingTask = oldValue);
     }
 
-    @VisibleForTesting
     public int getPendingTaskTilesNumForTesting() {
         return mPendingTaskTilesNumForTesting;
     }

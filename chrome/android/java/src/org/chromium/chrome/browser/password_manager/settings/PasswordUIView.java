@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.password_manager.settings;
 import android.app.Activity;
 import android.content.Context;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.Callback;
 import org.chromium.base.IntStringCallback;
 import org.chromium.base.annotations.CalledByNative;
@@ -55,7 +53,6 @@ public final class PasswordUIView implements PasswordManagerHandler {
     }
 
     @Override
-    @VisibleForTesting
     public void insertPasswordEntryForTesting(String origin, String username, String password) {
         PasswordUIViewJni.get().insertPasswordEntryForTesting(
                 mNativePasswordUIViewAndroid, origin, username, password);

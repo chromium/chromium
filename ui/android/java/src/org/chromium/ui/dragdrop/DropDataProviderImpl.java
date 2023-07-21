@@ -19,7 +19,6 @@ import android.webkit.MimeTypeMap;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -400,21 +399,18 @@ public class DropDataProviderImpl {
         return null;
     }
 
-    @VisibleForTesting
     byte[] getImageBytesForTesting() {
         synchronized (LOCK) {
             return mImageBytes;
         }
     }
 
-    @VisibleForTesting
     Handler getHandlerForTesting() {
         synchronized (LOCK) {
             return mHandler;
         }
     }
 
-    @VisibleForTesting
     void clearLastUriCreatedTimestampForTesting() {
         synchronized (LOCK) {
             mLastUriCreatedTimestamp = 0;

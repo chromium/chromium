@@ -16,7 +16,6 @@ import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
@@ -113,7 +112,6 @@ public class ClosableTabGridView extends ViewLookupCachingFrameLayout {
         scaleAnimator.start();
     }
 
-    @VisibleForTesting
     boolean getIsAnimatingForTesting() {
         return mIsAnimating;
     }

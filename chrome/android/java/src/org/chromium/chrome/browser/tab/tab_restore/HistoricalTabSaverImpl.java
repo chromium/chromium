@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tab.tab_restore;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.annotations.JNINamespace;
@@ -218,7 +217,6 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
         return (state == null) ? tempState : state;
     }
 
-    @VisibleForTesting
     void ignoreUrlSchemesForTesting(boolean ignore) {
         mIgnoreUrlSchemesForTesting = ignore;
     }

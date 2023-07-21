@@ -86,7 +86,6 @@ public final class ConnectivityChecker {
         void onResult(int result);
     }
 
-    @VisibleForTesting
     static void overrideUrlsForTest(String httpUrl, String httpsUrl) {
         ThreadUtils.assertOnUiThread();
         sHttpNoContentUrl = httpUrl;

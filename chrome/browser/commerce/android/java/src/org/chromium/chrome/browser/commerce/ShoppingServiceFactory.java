@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.commerce;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -32,7 +30,6 @@ public final class ShoppingServiceFactory {
         return ShoppingServiceFactoryJni.get().getForProfile(profile);
     }
 
-    @VisibleForTesting
     public static void setShoppingServiceForTesting(ShoppingService shoppingService) {
         sShoppingServiceForTesting = shoppingService;
         ResettersForTesting.register(() -> sShoppingServiceForTesting = null);

@@ -309,7 +309,6 @@ public abstract class FirstRunFlowSequencer  {
     }
 
     /** Allows specifying an alternative delegate for testing. */
-    @VisibleForTesting
     public static void setDelegateFactoryForTesting(DelegateFactoryForTesting factory) {
         sDelegateFactoryForTesting = factory;
         ResettersForTesting.register(() -> sDelegateFactoryForTesting = null);

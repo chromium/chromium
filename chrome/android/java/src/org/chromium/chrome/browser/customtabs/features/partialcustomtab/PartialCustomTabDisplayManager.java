@@ -327,22 +327,18 @@ public class PartialCustomTabDisplayManager
 
     private void updatePosition() {}
 
-    @VisibleForTesting
     SizeStrategyCreator getSizeStrategyCreatorForTesting() {
         return mSizeStrategyCreator;
     }
 
-    @VisibleForTesting
     PartialCustomTabBaseStrategy getSizeStrategyForTesting() {
         return mStrategy;
     }
 
-    @VisibleForTesting
     int getBreakPointDpForTesting() {
         return mBreakPointDp;
     }
 
-    @VisibleForTesting
     void setMocksForTesting(ViewGroup coordinatorLayout, CustomTabToolbar toolbar,
             View toolbarCoordinator, PartialCustomTabHandleStrategyFactory handleStrategyFactory,
             SizeStrategyCreator sizeStrategyCreator) {

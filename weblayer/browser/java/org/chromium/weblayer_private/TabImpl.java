@@ -395,7 +395,6 @@ public final class TabImpl extends ITab.Stub {
         }
     }
 
-    @VisibleForTesting
     public AutofillProvider getAutofillProviderForTesting() {
         // The test needs to make sure the |mAutofillProvider| is not null.
         return mAutofillProvider;
@@ -547,7 +546,6 @@ public final class TabImpl extends ITab.Stub {
         return mNativeTab;
     }
 
-    @VisibleForTesting
     public InfoBarContainer getInfoBarContainerForTesting() {
         return mInfoBarContainer;
     }
@@ -1217,12 +1215,10 @@ public final class TabImpl extends ITab.Stub {
         return viewController != null && viewController.getTab() == this ? viewController : null;
     }
 
-    @VisibleForTesting
     public boolean canInfoBarContainerScrollForTesting() {
         return mInfoBarContainer.getContainerViewForTesting().isAllowedToAutoHide();
     }
 
-    @VisibleForTesting
     public String getTranslateInfoBarTargetLanguageForTesting() {
         if (!mInfoBarContainer.hasInfoBars()) return null;
 

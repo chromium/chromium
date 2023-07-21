@@ -31,7 +31,6 @@ import android.widget.TextView;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -1360,50 +1359,41 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
         }
     }
 
-    @VisibleForTesting
     public static void setEditorObserverForTest(EditorObserverForTest editorObserverForTest) {
         sEditorObserverForTest = editorObserverForTest;
         EditorDialogView.setEditorObserverForTest(sEditorObserverForTest);
     }
 
-    @VisibleForTesting
     public static void setPaymentRequestObserverForTest(
             PaymentRequestObserverForTest paymentRequestObserverForTest) {
         sPaymentRequestObserverForTest = paymentRequestObserverForTest;
         ResettersForTesting.register(() -> sPaymentRequestObserverForTest = null);
     }
 
-    @VisibleForTesting
     public Dialog getDialogForTest() {
         return mDialog.getDialogForTest();
     }
 
-    @VisibleForTesting
     public TextView getOrderSummaryTotalTextViewForTest() {
         return mOrderSummarySection.getSummaryRightTextView();
     }
 
-    @VisibleForTesting
     public LineItemBreakdownSection getOrderSummarySectionForTest() {
         return mOrderSummarySection;
     }
 
-    @VisibleForTesting
     public OptionSection getShippingAddressSectionForTest() {
         return mShippingAddressSection;
     }
 
-    @VisibleForTesting
     public OptionSection getShippingOptionSectionForTest() {
         return mShippingOptionSection;
     }
 
-    @VisibleForTesting
     public ViewGroup getPaymentMethodSectionForTest() {
         return mPaymentMethodSection;
     }
 
-    @VisibleForTesting
     public PaymentRequestSection getContactDetailsSectionForTest() {
         return mContactDetailsSection;
     }

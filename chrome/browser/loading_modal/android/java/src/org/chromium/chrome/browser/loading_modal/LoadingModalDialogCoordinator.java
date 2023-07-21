@@ -146,12 +146,10 @@ public class LoadingModalDialogCoordinator {
         return mMediator.getState();
     }
 
-    @VisibleForTesting
     void skipDelayForTesting() {
         mMediator.skipDelays();
     }
 
-    @VisibleForTesting
     void disableTimeoutForTesting() {
         mMediator.disableTimeout();
     }

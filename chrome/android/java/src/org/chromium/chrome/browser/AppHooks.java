@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -60,7 +59,6 @@ public abstract class AppHooks {
     /**
      * Sets a mocked instance for testing.
      */
-    @VisibleForTesting
     public static void setInstanceForTesting(AppHooksImpl instance) {
         sInstanceForTesting = instance;
         ResettersForTesting.register(() -> sInstanceForTesting = null);

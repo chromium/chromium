@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.flags;
 
 import androidx.annotation.AnyThread;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.FieldTrialList;
@@ -58,7 +57,6 @@ public class CachedFeatureFlags {
      *
      * Do not call this from tests; use @EnableFeatures/@DisableFeatures annotations instead.
      */
-    @VisibleForTesting
     public static void setFeaturesForTesting(Map<String, Boolean> features) {
         assert features != null;
 
@@ -304,19 +302,16 @@ public class CachedFeatureFlags {
         return value;
     }
 
-    @VisibleForTesting
     public static void resetFlagsForTesting() {
         ValuesReturned.clearForTesting();
         sValuesOverridden.removeOverrides();
         CachedFlagsSafeMode.getInstance().clearMemoryForTesting();
     }
 
-    @VisibleForTesting
-    static void setOverrideTestValue(String preferenceKey, String overrideValue) {
-        sValuesOverridden.setOverrideTestValue(preferenceKey, overrideValue);
+    static void setOverrideForTesting(String preferenceKey, String overrideValue) {
+        sValuesOverridden.setOverrideForTesting(preferenceKey, overrideValue);
     }
 
-    @VisibleForTesting
     static void setSafeModeExperimentEnabledForTesting(Boolean value) {
         CachedFlagsSafeMode.getInstance().setExperimentEnabledForTesting(value);
     }

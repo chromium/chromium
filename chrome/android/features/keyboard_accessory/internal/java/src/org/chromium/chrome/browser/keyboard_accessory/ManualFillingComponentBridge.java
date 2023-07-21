@@ -235,7 +235,6 @@ class ManualFillingComponentBridge {
                 webContents, available);
     }
 
-    @VisibleForTesting
     public static void disableServerPredictionsForTesting() {
         ManualFillingComponentBridgeJni.get().disableServerPredictionsForTesting();
     }

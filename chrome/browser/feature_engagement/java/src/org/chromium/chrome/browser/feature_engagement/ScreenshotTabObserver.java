@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.feature_engagement;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
@@ -129,7 +128,6 @@ public class ScreenshotTabObserver extends EmptyTabObserver implements UserData 
         }
     }
 
-    @VisibleForTesting
     public void setOnReportCompleteForTesting(Runnable onReportCompleteForTesting) {
         mOnReportCompleteForTesting = onReportCompleteForTesting;
     }

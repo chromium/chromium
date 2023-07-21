@@ -346,7 +346,6 @@ public class TileRenderer {
         return 0;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public void setIconGeneratorForTesting(RoundedIconGenerator generator) {
         mIconGenerator = generator;
     }

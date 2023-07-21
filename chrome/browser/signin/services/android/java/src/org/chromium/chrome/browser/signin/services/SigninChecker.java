@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.signin.services;
 import android.accounts.Account;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
@@ -77,7 +76,6 @@ public class SigninChecker implements AccountTrackerService.Observer {
         });
     }
 
-    @VisibleForTesting
     public int getNumOfChildAccountChecksDoneForTests() {
         return mNumOfChildAccountChecksDone;
     }

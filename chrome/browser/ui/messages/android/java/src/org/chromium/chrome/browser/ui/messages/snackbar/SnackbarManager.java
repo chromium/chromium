@@ -312,7 +312,6 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
     /**
      * Disables the snackbar manager. This is only intended for testing purposes.
      */
-    @VisibleForTesting
     public void disableForTesting() {
         mIsDisabledForTesting = true;
     }
@@ -321,7 +320,6 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
      * Overrides the default snackbar duration with a custom value for testing.
      * @param durationMs The duration to use in ms.
      */
-    @VisibleForTesting
     public static void setDurationForTesting(int durationMs) {
         sSnackbarDurationMs = durationMs;
         sAccessibilitySnackbarDurationMs = durationMs;
@@ -330,18 +328,15 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
     /**
      * Clears any overrides set for testing.
      */
-    @VisibleForTesting
     public static void resetDurationForTesting() {
         sSnackbarDurationMs = DEFAULT_SNACKBAR_DURATION_MS;
         sAccessibilitySnackbarDurationMs = ACCESSIBILITY_MODE_SNACKBAR_DURATION_MS;
     }
 
-    @VisibleForTesting
     static int getDefaultDurationForTesting() {
         return sSnackbarDurationMs;
     }
 
-    @VisibleForTesting
     static int getDefaultA11yDurationForTesting() {
         return sAccessibilitySnackbarDurationMs;
     }
@@ -349,7 +344,6 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
     /**
      * @return The currently showing snackbar. For testing only.
      */
-    @VisibleForTesting
     public Snackbar getCurrentSnackbarForTesting() {
         return mSnackbars.getCurrent();
     }
@@ -357,7 +351,6 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
     /**
      * @return The currently showing snackbar view. For testing only.
      */
-    @VisibleForTesting
     public SnackbarView getCurrentSnackbarViewForTesting() {
         return mView;
     }

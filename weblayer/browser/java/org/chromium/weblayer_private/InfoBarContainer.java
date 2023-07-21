@@ -244,7 +244,6 @@ public class InfoBarContainer implements KeyboardVisibilityListener, InfoBar.Con
         mInfoBarContainerView.addInfoBar(infoBar);
     }
 
-    @VisibleForTesting
     public View getViewForTesting() {
         return mInfoBarContainerView;
     }
@@ -253,7 +252,6 @@ public class InfoBarContainer implements KeyboardVisibilityListener, InfoBar.Con
      * Adds an InfoBar to the view hierarchy.
      * @param infoBar InfoBar to add to the View hierarchy.
      */
-    @VisibleForTesting
     public void addInfoBarForTesting(InfoBar infoBar) {
         addInfoBar(infoBar);
     }
@@ -317,7 +315,6 @@ public class InfoBarContainer implements KeyboardVisibilityListener, InfoBar.Con
     /**
      * @return all of the InfoBars held in this container.
      */
-    @VisibleForTesting
     public ArrayList<InfoBar> getInfoBarsForTesting() {
         return mInfoBars;
     }
@@ -461,7 +458,6 @@ public class InfoBarContainer implements KeyboardVisibilityListener, InfoBar.Con
     /**
      * @return The {@link InfoBarContainerView} this class holds.
      */
-    @VisibleForTesting
     public InfoBarContainerView getContainerViewForTesting() {
         return mInfoBarContainerView;
     }

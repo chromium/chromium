@@ -4,8 +4,6 @@
 
 package org.chromium.components.bookmarks;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.url.GURL;
@@ -104,7 +102,6 @@ public class BookmarkItem {
     }
 
     // TODO(https://crbug.com/1019217): Remove when BookmarkModel is stubbed in tests instead.
-    @VisibleForTesting
     public void forceEditableForTesting() {
         mForceEditableForTesting = true;
     }

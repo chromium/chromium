@@ -835,7 +835,6 @@ public class VoiceRecognitionHandler {
         return VoiceRecognitionUtil.isRecognitionIntentPresent(useCachedValue);
     }
 
-    @VisibleForTesting
     /*package*/ static void setIsRecognitionIntentPresentForTesting(
             Boolean isRecognitionIntentPresent) {
         sIsRecognitionIntentPresentForTesting = isRecognitionIntentPresent;

@@ -145,12 +145,10 @@ public class FoldTransitionController {
         savedInstanceState.putBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, true);
     }
 
-    @VisibleForTesting
     boolean getKeyboardVisibleDuringFoldTransitionForTesting() {
         return mKeyboardVisibleDuringFoldTransition;
     }
 
-    @VisibleForTesting
     Long getKeyboardVisibilityTimestampForTesting() {
         return mKeyboardVisibilityTimestamp;
     }

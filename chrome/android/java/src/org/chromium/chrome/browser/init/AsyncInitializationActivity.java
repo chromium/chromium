@@ -435,7 +435,6 @@ public abstract class AsyncInitializationActivity
         if (mFirstDrawComplete) onFirstDrawComplete();
     }
 
-    @VisibleForTesting
     public void startDelayedNativeInitializationForTests() {
         mStartupDelayed = true;
         startDelayedNativeInitialization();

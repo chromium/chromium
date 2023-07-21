@@ -12,7 +12,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -83,7 +82,6 @@ public class PasswordReauthenticationFragment extends Fragment {
     /**
      * Prevent calling the {@link #lockDevice} method in {@link #onCreate}.
      */
-    @VisibleForTesting
     public static void preventLockingForTesting() {
         sPreventLockDevice = true;
     }

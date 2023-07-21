@@ -149,7 +149,6 @@ public class LauncherShortcutActivity extends Activity {
         return newIntent;
     }
 
-    @VisibleForTesting
     public static void setDynamicShortcutStringForTesting(String label) {
         sLabelForTesting = label;
         ResettersForTesting.register(() -> sLabelForTesting = null);

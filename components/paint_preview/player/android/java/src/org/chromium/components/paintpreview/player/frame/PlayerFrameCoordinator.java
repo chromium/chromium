@@ -153,17 +153,14 @@ public class PlayerFrameCoordinator {
         return mView;
     }
 
-    @VisibleForTesting
     public boolean checkRequiredBitmapsLoadedForTest() {
         return mMediator.checkRequiredBitmapsLoadedForTest();
     }
 
-    @VisibleForTesting
     PlayerFrameScaleController getScaleControllerForTest() {
         return mScaleController;
     }
 
-    @VisibleForTesting
     PlayerFrameScrollController getScrollControllerForTest() {
         return mScrollController;
     }

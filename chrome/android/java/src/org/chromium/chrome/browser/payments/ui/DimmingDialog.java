@@ -23,8 +23,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.AlwaysDismissedDialog;
 import org.chromium.ui.UiUtils;
@@ -263,7 +261,6 @@ import java.util.Collection;
         }
     }
 
-    @VisibleForTesting
     public Dialog getDialogForTest() {
         return mDialog;
     }

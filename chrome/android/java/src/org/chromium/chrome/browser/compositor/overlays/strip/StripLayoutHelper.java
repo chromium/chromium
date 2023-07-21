@@ -1974,7 +1974,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                                                                            : deltaToOptimalEnd;
     }
 
-    @VisibleForTesting
     void setTabAtPositionForTesting(StripLayoutTab tab) {
         mTabAtPositionForTesting = tab;
     }
@@ -2053,19 +2052,16 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         animationList.add(set);
     }
 
-    @VisibleForTesting
     public boolean getInReorderModeForTesting() {
         return mInReorderMode;
     }
 
-    @VisibleForTesting
     public void startReorderModeAtIndexForTesting(int index) {
         StripLayoutTab tab = mStripTabs[index];
         updateStrip();
         startReorderMode(INVALID_TIME, 0f, tab.getDrawX() + (tab.getWidth() / 2));
     }
 
-    @VisibleForTesting
     public void stopReorderModeForTesting() {
         stopReorderMode();
     }
@@ -2936,7 +2932,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         mTabMenu.performItemClick(menuItemId);
     }
 
-    @VisibleForTesting
     int getScrollDurationForTesting() {
         return getScrollDuration();
     }
@@ -2984,7 +2979,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     /**
      * Set the value of mStripTabs for testing
      */
-    @VisibleForTesting
     void setStripLayoutTabsForTest(StripLayoutTab[] stripTabs) {
         this.mStripTabs = stripTabs;
     }
@@ -3008,12 +3002,10 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     /**
      * Disables animations for testing purposes.
      */
-    @VisibleForTesting
     public void disableAnimationsForTesting() {
         mAnimationsDisabledForTesting = true;
     }
 
-    @VisibleForTesting
     protected Animator getRunningAnimatorForTesting() {
         return mRunningAnimator;
     }
@@ -3023,7 +3015,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         return mMultiStepTabCloseAnimRunning;
     }
 
-    @VisibleForTesting
     protected boolean isInReorderModeForTesting() {
         return mInReorderMode;
     }

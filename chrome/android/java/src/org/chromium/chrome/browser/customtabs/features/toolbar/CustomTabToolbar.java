@@ -396,12 +396,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
      * @return The custom action button with the given {@code index}. For test purpose only.
      * @param index The index of the custom action button to return.
      */
-    @VisibleForTesting
     public ImageButton getCustomActionButtonForTest(int index) {
         return (ImageButton) mCustomActionButtons.getChildAt(index);
     }
 
-    @VisibleForTesting
     public ImageButton getMaximizeButtonForTest() {
         return (ImageButton) findViewById(R.id.custom_tabs_sidepanel_maximize);
     }
@@ -1360,18 +1358,15 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             return false;
         }
 
-        @VisibleForTesting
         void setAnimDelegateForTesting(CustomTabToolbarAnimationDelegate animDelegate) {
             mAnimDelegate = animDelegate;
         }
 
-        @VisibleForTesting
         void setTitleUrlContainerForTesting(View titleUrlContainer) {
             mTitleUrlContainer = titleUrlContainer;
         }
     }
 
-    @VisibleForTesting
     boolean isMaximizeButtonEnabledForTesting() {
         return mMaximizeButtonEnabled;
     }

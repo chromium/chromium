@@ -21,7 +21,6 @@ import android.widget.LinearLayout;
 import android.widget.RemoteViews;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -477,7 +476,6 @@ public class CustomTabBottomBarDelegate
                 && getBottomBarView().getVisibility() == View.VISIBLE;
     }
 
-    @VisibleForTesting
     void setBottomBarViewForTesting(CustomTabBottomBarView bottomBarView) {
         mBottomBarView = bottomBarView;
     }

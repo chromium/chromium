@@ -781,13 +781,11 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
          * Returns the line item amount at the specified |index|. Returns null if there is no amount
          * at that index.
          */
-        @VisibleForTesting
         public TextView getLineItemAmountForTest(int index) {
             return mLineItemAmountsForTest.get(index);
         }
 
         /** @return The number of line items. */
-        @VisibleForTesting
         public int getNumberOfLineItemsForTest() {
             return mLineItemAmountsForTest.size();
         }
@@ -1069,7 +1067,6 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
             }
 
             /** Returns the edit icon for the option row. */
-            @VisibleForTesting
             public View getEditIconForTest() {
                 return mEditIcon;
             }
@@ -1470,7 +1467,6 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
          * Returns the label at the specified |labelIndex|. Returns null if there is no label at
          * that index.
          */
-        @VisibleForTesting
         public TextView getOptionLabelsForTest(int labelIndex) {
             return mLabelsForTest.get(labelIndex);
         }
@@ -1478,7 +1474,6 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
         /**
          * Returns the label of the section summary.
          */
-        @VisibleForTesting
         public TextView getLeftSummaryLabelForTest() {
             return getSummaryLeftTextView();
         }
@@ -1486,13 +1481,11 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
         /**
          * Returns the right summary text view.
          */
-        @VisibleForTesting
         public TextView getRightSummaryLabelForTest() {
             return getSummaryRightTextView();
         }
 
         /** Returns the number of option labels. */
-        @VisibleForTesting
         public int getNumberOfOptionLabelsForTest() {
             return mLabelsForTest.size();
         }

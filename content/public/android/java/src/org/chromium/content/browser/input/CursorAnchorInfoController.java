@@ -12,7 +12,6 @@ import android.view.inputmethod.EditorBoundsInfo;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
 
@@ -106,7 +105,6 @@ final class CursorAnchorInfoController {
         mInputMethodManagerWrapper = inputMethodManagerWrapper;
     }
 
-    @VisibleForTesting
     public static CursorAnchorInfoController createForTest(
             InputMethodManagerWrapper inputMethodManagerWrapper,
             ComposingTextDelegate composingTextDelegate,

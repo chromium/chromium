@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 
-import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.IntentUtils;
@@ -45,7 +44,6 @@ public class WebappActivity extends BaseCustomTabActivity {
                 : WebApkIntentDataProviderFactory.create(intent);
     }
 
-    @VisibleForTesting
     public static void setIntentDataProviderForTesting(
             BrowserServicesIntentDataProvider intentDataProvider) {
         sIntentDataProviderForTesting = intentDataProvider;

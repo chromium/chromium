@@ -1189,7 +1189,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
      * makes the panel notify its subcomponents that the transition has been completed.
      * @param panelState The "to" state that has just been completed by the test.
      */
-    @VisibleForTesting
     public void updatePanelToStateForTest(@PanelState int panelState) {
         // Use a switch to just support the implemented state(s) and fail if others are attempted.
         switch (panelState) {

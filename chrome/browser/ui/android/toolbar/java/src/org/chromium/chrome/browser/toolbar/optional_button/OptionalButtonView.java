@@ -29,7 +29,6 @@ import android.widget.TextView;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
@@ -282,7 +281,6 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         }
     }
 
-    @VisibleForTesting
     void setHandlerForTesting(Handler handler) {
         mHandlerForTesting = handler;
     }
@@ -715,7 +713,6 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         mState = State.RUNNING_SHOW_TRANSITION;
     }
 
-    @VisibleForTesting
     public void setFakeBeginDelayedTransitionForTesting(
             Callback<Transition> fakeBeginDelayedTransition) {
         mFakeBeginTransitionForTesting = fakeBeginDelayedTransition;

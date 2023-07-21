@@ -355,7 +355,6 @@ public class HistoryClustersCoordinator extends RecyclerView.OnScrollListener
         return mRecyclerView;
     }
 
-    @VisibleForTesting
     public SelectableListToolbar getToolbarForTesting() {
         return mToolbar;
     }

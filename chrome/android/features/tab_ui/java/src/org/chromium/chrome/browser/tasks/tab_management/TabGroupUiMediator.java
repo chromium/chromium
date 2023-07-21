@@ -9,7 +9,6 @@ import android.os.Handler;
 import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
@@ -472,7 +471,6 @@ public class TabGroupUiMediator implements BackPressHandler {
         mIncognitoStateProvider.removeObserver(mIncognitoStateObserver);
     }
 
-    @VisibleForTesting
     boolean getIsShowingOverViewModeForTesting() {
         return mIsShowingOverViewMode;
     }

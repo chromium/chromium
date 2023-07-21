@@ -249,7 +249,6 @@ public class ExternalAuthUtils {
     /**
      * @return this object's {@link ExternalAuthGoogleDelegate} instance.
      */
-    @VisibleForTesting
     public ExternalAuthGoogleDelegate getGoogleDelegateForTesting() {
         return mGoogleDelegate;
     }

@@ -8,7 +8,6 @@ import android.view.View;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -78,7 +77,6 @@ class IncognitoReauthDialog {
         mModalDialogManager.dismissDialog(mModalDialogPropertyModel, dismissalCause);
     }
 
-    @VisibleForTesting
     public PropertyModel getModalDialogPropertyModelForTesting() {
         return mModalDialogPropertyModel;
     }

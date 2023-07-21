@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.dom_distiller;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -116,7 +114,6 @@ public class DomDistillerTabUtils {
                 && getDistillerHeuristics() == DistillerHeuristicsType.ADABOOST_MODEL;
     }
 
-    @VisibleForTesting
     public static void setExcludeMobileFriendlyForTesting(boolean excludeForTesting) {
         sExcludeMobileFriendlyForTesting = excludeForTesting;
         ResettersForTesting.register(() -> sExcludeMobileFriendlyForTesting = null);
@@ -125,7 +122,6 @@ public class DomDistillerTabUtils {
     /**
      * Set a test value of DistillerHeuristicsType.
      */
-    @VisibleForTesting
     public static void setDistillerHeuristicsForTesting(
             @DistillerHeuristicsType Integer distillerHeuristicsType) {
         sHeuristicsForTesting = distillerHeuristicsType;

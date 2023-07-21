@@ -226,7 +226,6 @@ public class TextSuggestionHost implements WindowEventObserver, HideablePopup, U
     /**
      * @return The TextSuggestionsPopupWindow, if one exists.
      */
-    @VisibleForTesting
     public SuggestionsPopupWindow getTextSuggestionsPopupWindowForTesting() {
         return mTextSuggestionsPopupWindow;
     }
@@ -234,7 +233,6 @@ public class TextSuggestionHost implements WindowEventObserver, HideablePopup, U
     /**
      * @return The SpellCheckPopupWindow, if one exists.
      */
-    @VisibleForTesting
     public SuggestionsPopupWindow getSpellCheckPopupWindowForTesting() {
         return mSpellCheckPopupWindow;
     }

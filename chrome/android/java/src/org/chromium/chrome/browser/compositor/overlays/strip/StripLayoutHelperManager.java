@@ -602,7 +602,6 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         return rightFadeDrawable;
     }
 
-    @VisibleForTesting
     void setModelSelectorButtonVisibleForTesting(boolean isVisible) {
         mModelSelectorButton.setVisible(isVisible);
     }

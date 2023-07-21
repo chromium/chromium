@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.history;
 
 import android.os.Bundle;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SnackbarActivity;
@@ -53,7 +51,6 @@ public class HistoryActivity extends SnackbarActivity {
         super.onDestroy();
     }
 
-    @VisibleForTesting
     HistoryManager getHistoryManagerForTests() {
         return mHistoryManager;
     }

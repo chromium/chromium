@@ -194,7 +194,6 @@ public class CronetUrlRequestContext extends CronetEngineBase {
         return mLogger;
     }
 
-    @VisibleForTesting
     public boolean getEnableTelemetryForTesting() {
         return mEnableTelemetry;
     }

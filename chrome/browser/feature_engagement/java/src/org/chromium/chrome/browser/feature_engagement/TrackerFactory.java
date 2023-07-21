@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.feature_engagement;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.NativeMethods;
@@ -54,7 +53,6 @@ public final class TrackerFactory {
      * @param testTracker The {@Tracker} to use for testing, or null if the real tracker should be
      *                    used.
      */
-    @VisibleForTesting
     public static void setTrackerForTests(@Nullable Tracker testTracker) {
         sTrackerForTesting = testTracker;
         ResettersForTesting.register(() -> sTrackerForTesting = null);

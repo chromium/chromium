@@ -23,7 +23,6 @@ import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.ui.UiUtils;
@@ -332,7 +331,6 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
         return mIsPopup && mShouldRemoveScrim && mTouchEventDelegateView != null;
     }
 
-    @VisibleForTesting
     OnDragListener getOnDragListenerForTesting() {
         return mDragEventDispatchHelper;
     }

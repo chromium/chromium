@@ -11,7 +11,6 @@ import android.util.TypedValue;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
@@ -127,7 +126,6 @@ public class TextScalePreference extends Preference implements SeekBar.OnSeekBar
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {}
 
-    @VisibleForTesting
     public CharSequence getAmountForTesting() {
         return mAmount.getText();
     }

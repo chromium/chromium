@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -222,31 +221,26 @@ public interface TabSwitcher {
          * {@link TabListMediator.ThumbnailFetcher} for testing.
          * @param callback The callback to send bitmaps through.
          */
-        @VisibleForTesting
         void setBitmapCallbackForTesting(Callback<Bitmap> callback);
 
         /**
          * @return The number of thumbnail fetching for testing.
          */
-        @VisibleForTesting
         int getBitmapFetchCountForTesting();
 
         /**
          * Reset the current count of thumbnail fetches for testing.
          */
-        @VisibleForTesting
         default void resetBitmapFetchCountForTesting(){};
 
         /**
          * @return The soft cleanup delay for testing.
          */
-        @VisibleForTesting
         int getSoftCleanupDelayForTesting();
 
         /**
          * @return The cleanup delay for testing.
          */
-        @VisibleForTesting
         int getCleanupDelayForTesting();
 
         /**
@@ -258,7 +252,6 @@ public interface TabSwitcher {
         /**
          * @return The mode of the list of Tabs.
          */
-        @VisibleForTesting
         int getListModeForTesting();
 
         /**

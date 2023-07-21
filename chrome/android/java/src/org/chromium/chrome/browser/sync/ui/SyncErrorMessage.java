@@ -368,13 +368,11 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
         }
     }
 
-    @VisibleForTesting
     public static void setMessageDispatcherForTesting(MessageDispatcher dispatcherForTesting) {
         sMessageDispatcherForTesting = dispatcherForTesting;
         ResettersForTesting.register(() -> sMessageDispatcherForTesting = null);
     }
 
-    @VisibleForTesting
     public static UnownedUserDataKey<SyncErrorMessage> getKeyForTesting() {
         return SYNC_ERROR_MESSAGE_KEY;
     }

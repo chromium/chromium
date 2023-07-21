@@ -830,7 +830,6 @@ public class TabImpl implements Tab {
         mIsTabSaveEnabledSupplier.set(isTabSaveEnabled);
     }
 
-    @VisibleForTesting
     public ObservableSupplierImpl<Boolean> getIsTabSaveEnabledSupplierForTesting() {
         return mIsTabSaveEnabledSupplier;
     }

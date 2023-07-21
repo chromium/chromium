@@ -9,7 +9,6 @@ import android.os.SystemClock;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
@@ -248,7 +247,6 @@ public class PseudoTab {
      * This should/can be called when emulating restarting in instrumented tests, or between
      * Robolectric tests.
      */
-    @VisibleForTesting
     public static void clearForTesting() {
         synchronized (sLock) {
             sAllTabs.clear();
@@ -308,7 +306,6 @@ public class PseudoTab {
         return related;
     }
 
-    @VisibleForTesting
     static int getAllTabsCountForTests() {
         synchronized (sLock) {
             return sAllTabs.size();

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.night_mode;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import org.chromium.base.CommandLine;
@@ -70,7 +69,6 @@ public class GlobalNightModeStateProviderHolder {
         return sInstance;
     }
 
-    @VisibleForTesting
     static void setInstanceForTesting(NightModeStateProvider instance) {
         sInstance = instance;
         ResettersForTesting.register(() -> sInstance = null);

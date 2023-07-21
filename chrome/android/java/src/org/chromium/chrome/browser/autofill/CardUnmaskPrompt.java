@@ -625,14 +625,12 @@ public class CardUnmaskPrompt implements EmptyTextWatcher, OnClickListener,
                 "Autofill.CardUnmask.ScreenLockCheckBox.UserChecked", isChecked);
     }
 
-    @VisibleForTesting
     public static void setObserverForTest(CardUnmaskObserverForTest observerForTest) {
         var oldValue = sObserverForTest;
         sObserverForTest = observerForTest;
         ResettersForTesting.register(() -> sObserverForTest = oldValue);
     }
 
-    @VisibleForTesting
     public PropertyModel getDialogForTest() {
         return mDialogModel;
     }

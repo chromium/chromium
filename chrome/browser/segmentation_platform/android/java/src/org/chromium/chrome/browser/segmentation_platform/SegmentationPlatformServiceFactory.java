@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.segmentation_platform;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.NativeMethods;
@@ -41,7 +40,6 @@ public final class SegmentationPlatformServiceFactory {
      * @param testService The {@SegmentationPlatformService} to use for testing, or null if the real
      *         service should be used.
      */
-    @VisibleForTesting
     public static void setForTests(@Nullable SegmentationPlatformService testService) {
         sSegmentationPlatformServiceForTesting = testService;
         ResettersForTesting.register(() -> sSegmentationPlatformServiceForTesting = null);

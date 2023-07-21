@@ -507,7 +507,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         }));
     }
 
-    @VisibleForTesting
     CustomTabHeightStrategy getCustomTabSizeStrategyForTesting() {
         return mCustomTabHeightStrategy;
     }

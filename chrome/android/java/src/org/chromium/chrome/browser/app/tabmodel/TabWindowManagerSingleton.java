@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.app.tabmodel;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorFactory;
@@ -40,13 +38,11 @@ public class TabWindowManagerSingleton {
      * for testing.
      * @param factory A {@link TabModelSelectorFactory} instance.
      */
-    @VisibleForTesting
     public static void setTabModelSelectorFactoryForTesting(TabModelSelectorFactory factory) {
         assert sInstance == null;
         sSelectorFactoryForTesting = factory;
     }
 
-    @VisibleForTesting
     public static void resetTabModelSelectorFactoryForTesting() {
         sInstance = null;
         sSelectorFactoryForTesting = null;

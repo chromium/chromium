@@ -162,7 +162,6 @@ public class AwBrowserContext implements BrowserContextHandle {
         AwBrowserContextJni.get().setWebLayerRunningInSameProcess(mNativeAwBrowserContext);
     }
 
-    @VisibleForTesting
     public void clearPersistentOriginTrialStorageForTesting() {
         AwBrowserContextJni.get().clearPersistentOriginTrialStorageForTesting(
                 mNativeAwBrowserContext);

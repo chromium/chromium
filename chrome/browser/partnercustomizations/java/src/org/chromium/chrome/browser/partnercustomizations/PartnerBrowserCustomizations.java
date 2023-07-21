@@ -444,7 +444,6 @@ public class PartnerBrowserCustomizations {
         return true;
     }
 
-    @VisibleForTesting
     public static void setInstanceForTesting(PartnerBrowserCustomizations instance) {
         var oldValue = sInstance;
         sInstance = instance;

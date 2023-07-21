@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.flags;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
 /**
@@ -47,9 +45,8 @@ public class BooleanCachedFieldTrialParameter extends CachedFieldTrialParameter 
      *
      * @param overrideValue the value to be returned
      */
-    @VisibleForTesting
     public void setForTesting(boolean overrideValue) {
-        CachedFeatureFlags.setOverrideTestValue(
+        CachedFeatureFlags.setOverrideForTesting(
                 getSharedPreferenceKey(), String.valueOf(overrideValue));
     }
 }

@@ -120,7 +120,6 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
         return mNativePaintPreviewBaseService;
     }
 
-    @VisibleForTesting
     public boolean hasNativeServiceForTesting() {
         return mNativePaintPreviewTabService != 0;
     }
@@ -230,7 +229,6 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
                 mNativePaintPreviewTabService, activeTabIds);
     }
 
-    @VisibleForTesting
     public static void setAccessibilityEnabledForTesting(boolean isAccessibilityEnabled) {
         sIsAccessibilityEnabledForTesting = isAccessibilityEnabled;
         ResettersForTesting.register(() -> sIsAccessibilityEnabledForTesting = false);

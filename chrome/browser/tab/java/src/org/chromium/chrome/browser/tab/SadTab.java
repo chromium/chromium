@@ -266,7 +266,6 @@ public class SadTab extends EmptyTabObserver implements UserData, TabViewProvide
     }
 
     // Bare minimum set up so |isShowing| returns true.
-    @VisibleForTesting
     public static void initForTesting(Tab tab, SadTab sadTab) {
         tab.getUserDataHost().setUserData(USER_DATA_KEY, sadTab);
     }

@@ -517,13 +517,11 @@ public class SyncPromoController {
         RecordUserAction.record(mImpressionUserActionName);
     }
 
-    @VisibleForTesting
     public static void setPrefSigninPromoDeclinedBookmarksForTests(boolean isDeclined) {
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.SIGNIN_PROMO_BOOKMARKS_DECLINED, isDeclined);
     }
 
-    @VisibleForTesting
     public static int getMaxImpressionsBookmarksForTests() {
         return MAX_IMPRESSIONS_BOOKMARKS;
     }

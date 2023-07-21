@@ -603,12 +603,10 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         return mPagerAdapter != null && mPagerAdapter.getItemCount() > 0;
     }
 
-    @VisibleForTesting
     public FirstRunFragment getCurrentFragmentForTesting() {
         return mPagerAdapter.getFirstRunFragment(mPager.getCurrentItem());
     }
 
-    @VisibleForTesting
     public static void setObserverForTest(FirstRunActivityObserver observer) {
         assert sObserver == null;
         sObserver = observer;

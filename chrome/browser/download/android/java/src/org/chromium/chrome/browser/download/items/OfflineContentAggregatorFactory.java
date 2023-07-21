@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.download.items;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.NativeMethods;
@@ -27,7 +26,6 @@ public class OfflineContentAggregatorFactory {
      * pulled from a {@link Profile}.
      * @param provider The {@link OfflineContentProvider} to return.
      */
-    @VisibleForTesting
     public static void setOfflineContentProviderForTests(
             @Nullable OfflineContentProvider provider) {
         var oldValue = sProvider;

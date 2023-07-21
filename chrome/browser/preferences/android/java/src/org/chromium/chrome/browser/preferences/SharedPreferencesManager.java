@@ -60,7 +60,6 @@ public class SharedPreferencesManager {
         }
     }
 
-    @VisibleForTesting
     BaseChromePreferenceKeyChecker swapKeyCheckerForTesting(
             BaseChromePreferenceKeyChecker newChecker) {
         BaseChromePreferenceKeyChecker swappedOut = mKeyChecker;
@@ -68,7 +67,6 @@ public class SharedPreferencesManager {
         return swappedOut;
     }
 
-    @VisibleForTesting
     public void disableKeyCheckerForTesting() {
         mKeyChecker = new BaseChromePreferenceKeyChecker();
     }

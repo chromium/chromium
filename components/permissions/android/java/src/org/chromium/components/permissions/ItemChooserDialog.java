@@ -381,7 +381,6 @@ public class ItemChooserDialog implements DeviceItemAdapter.Observer {
     /**
      * Returns the dialog associated with this class. For use with tests only.
      */
-    @VisibleForTesting
     public Dialog getDialogForTesting() {
         return mDialog;
     }
@@ -389,7 +388,6 @@ public class ItemChooserDialog implements DeviceItemAdapter.Observer {
     /**
      * Returns the ItemAdapter associated with this class. For use with tests only.
      */
-    @VisibleForTesting
     public DeviceItemAdapter getItemAdapterForTesting() {
         return mItemAdapter;
     }

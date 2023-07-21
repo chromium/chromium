@@ -10,7 +10,6 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.blink_public.input.SelectionGranularity;
 import org.chromium.ui.OverscrollRefreshHandler;
@@ -375,7 +374,6 @@ public interface WebContents extends Parcelable {
      *                 will be made on the main thread.
      *                 If no result is required, pass null.
      */
-    @VisibleForTesting
     void evaluateJavaScriptForTests(String script, @Nullable JavaScriptCallback callback);
 
     /**

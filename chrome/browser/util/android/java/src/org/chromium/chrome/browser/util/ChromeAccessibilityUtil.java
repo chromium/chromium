@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.util;
 import android.app.Activity;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -75,14 +74,12 @@ public class ChromeAccessibilityUtil extends AccessibilityUtil {
     }
 
     @Override
-    @VisibleForTesting
     public void setAccessibilityEnabledForTesting(@Nullable Boolean isEnabled) {
         mWasAccessibilityEnabledForTestingCalled = isEnabled != null;
         super.setAccessibilityEnabledForTesting(isEnabled);
     }
 
     @Override
-    @VisibleForTesting
     public void setTouchExplorationEnabledForTesting(@Nullable Boolean isEnabled) {
         mWasTouchExplorationEnabledForTestingCalled = isEnabled != null;
         super.setTouchExplorationEnabledForTesting(isEnabled);

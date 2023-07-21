@@ -10,7 +10,6 @@ import android.os.Handler;
 import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -162,7 +161,6 @@ class WebFeedFollowIntroView {
     private void turnOffHighlightForFollowMenuItem() {
         mAppMenuHandler.clearMenuHighlight();
     }
-    @VisibleForTesting
     boolean wasFollowBubbleShownForTesting() {
         return mFollowBubble != null;
     }

@@ -9,8 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ViewFlipper;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.ScreenType;
@@ -97,17 +95,14 @@ public class RestoreTabsCoordinator {
         mMediator.showHomeScreen(foreignSessionHelper, sessions, delegate);
     }
 
-    @VisibleForTesting
     PropertyModel getPropertyModelForTesting() {
         return mModel;
     }
 
-    @VisibleForTesting
     ViewFlipper getViewFlipperForTesting() {
         return mViewFlipperView;
     }
 
-    @VisibleForTesting
     View getContentViewForTesting() {
         return mContent.getContentView();
     }

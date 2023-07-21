@@ -295,7 +295,6 @@ public class TabbedPaintPreview implements UserData {
         return sPaintPreviewTabServiceForTesting;
     }
 
-    @VisibleForTesting
     static void overridePaintPreviewTabServiceForTesting(PaintPreviewTabService service) {
         sPaintPreviewTabServiceForTesting = service;
     }
@@ -305,12 +304,10 @@ public class TabbedPaintPreview implements UserData {
         return mWasEverShown;
     }
 
-    @VisibleForTesting
     View getViewForTesting() {
         return mTabbedPaintPreviewViewProvider.getView();
     }
 
-    @VisibleForTesting
     PlayerManager getPlayerManagerForTesting() {
         return mPlayerManager;
     }

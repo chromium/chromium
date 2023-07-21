@@ -1175,13 +1175,11 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         return IncognitoUtils.isIncognitoModeEnabled();
     }
 
-    @VisibleForTesting
     static void setPageBookmarkedForTesting(Boolean bookmarked) {
         sItemBookmarkedForTesting = bookmarked;
         ResettersForTesting.register(() -> sItemBookmarkedForTesting = null);
     }
 
-    @VisibleForTesting
     void setStartSurfaceStateForTesting(@StartSurfaceState int state) {
         mStartSurfaceState = state;
     }

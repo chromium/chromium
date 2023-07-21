@@ -204,22 +204,18 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
         return mAutodismissDurationMs.get();
     }
 
-    @VisibleForTesting
     void setMessageBannerForTesting(MessageBannerCoordinator messageBanner) {
         mMessageBanner = messageBanner;
     }
 
-    @VisibleForTesting
     void setViewForTesting(MessageBannerView view) {
         mView = view;
     }
 
-    @VisibleForTesting
     boolean getMessageDismissedForTesting() {
         return mMessageDismissed;
     }
 
-    @VisibleForTesting
     PropertyModel getModelForTesting() {
         return mModel;
     }

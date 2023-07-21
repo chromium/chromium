@@ -294,7 +294,6 @@ public class WarmupManager {
     /**
      * Removes the singleton instance for the WarmupManager for testing.
      */
-    @VisibleForTesting
     public static void deInitForTesting() {
         sWarmupManager = null;
     }

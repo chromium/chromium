@@ -33,7 +33,6 @@ import android.widget.RelativeLayout;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -757,12 +756,10 @@ class TabListRecyclerView
                 || action == R.id.move_tab_up || action == R.id.move_tab_down;
     }
 
-    @VisibleForTesting
     ImageView getShadowImageViewForTesting() {
         return mShadowImageView;
     }
 
-    @VisibleForTesting
     int getToolbarHairlineColorForTesting() {
         return mToolbarHairlineColor;
     }

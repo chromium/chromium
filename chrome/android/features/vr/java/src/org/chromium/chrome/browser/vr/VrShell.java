@@ -282,7 +282,6 @@ public class VrShell extends GvrLayout implements SurfaceHolder.Callback {
      * is run and the parent consumed the event.
      * @param callback The Callback to be run.
      */
-    @VisibleForTesting
     public void setOnDispatchTouchEventForTesting(OnDispatchTouchEventCallback callback) {
         mOnDispatchTouchEventForTesting = callback;
         ResettersForTesting.register(() -> mOnDispatchTouchEventForTesting = null);
@@ -293,13 +292,11 @@ public class VrShell extends GvrLayout implements SurfaceHolder.Callback {
      * Android Window's VSyncs.
      * @param callback The Runnable to be run.
      */
-    @VisibleForTesting
     public void setOnVSyncPausedForTesting(Runnable callback) {
         mOnVSyncPausedForTesting = callback;
         ResettersForTesting.register(() -> mOnVSyncPausedForTesting = null);
     }
 
-    @VisibleForTesting
     public View getPresentationViewForTesting() {
         return mPresentationView;
     }

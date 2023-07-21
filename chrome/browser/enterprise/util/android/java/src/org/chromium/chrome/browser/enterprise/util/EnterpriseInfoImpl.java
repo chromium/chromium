@@ -166,7 +166,6 @@ public class EnterpriseInfoImpl extends EnterpriseInfo {
      * If mOwnedState != null then this function has no effect and a task to service the
      * callback will be posted immediately.
      */
-    @VisibleForTesting
     void setSkipAsyncCheckForTesting(boolean skip) {
         mSkipAsyncCheckForTesting = skip;
         ResettersForTesting.register(() -> mSkipAsyncCheckForTesting = false);

@@ -105,7 +105,6 @@ public class Clipboard {
      * across test runs and the Clipboard instance would hold onto an older no longer used
      * application context instance.
      */
-    @VisibleForTesting
     public static void resetForTesting() {
         sInstance = null;
     }

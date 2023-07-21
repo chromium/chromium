@@ -381,7 +381,6 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
                 System.currentTimeMillis() - shareStartTime);
     }
 
-    @VisibleForTesting
     protected void disableFirstPartyFeaturesForTesting() {
         mExcludeFirstParty = true;
     }

@@ -26,7 +26,6 @@ import android.view.accessibility.AccessibilityManager;
 import android.view.autofill.AutofillManager;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationState;
@@ -719,7 +718,6 @@ public class AccessibilityState {
     // ForTesting methods.
     // clang-format off
 
-    @VisibleForTesting
     public static void setIsScreenReaderEnabledForTesting(boolean enabled) {
         if (!sInitialized) updateAccessibilityServices();
 
@@ -736,7 +734,6 @@ public class AccessibilityState {
         updateAndNotifyStateChange(newState);
     }
 
-    @VisibleForTesting
     public static void setIsTouchExplorationEnabledForTesting(boolean enabled) {
         if (!sInitialized) updateAccessibilityServices();
 
@@ -753,7 +750,6 @@ public class AccessibilityState {
         updateAndNotifyStateChange(newState);
     }
 
-    @VisibleForTesting
     public static void setIsPerformGesturesEnabledForTesting(boolean enabled) {
         if (!sInitialized) updateAccessibilityServices();
 
@@ -770,7 +766,6 @@ public class AccessibilityState {
         updateAndNotifyStateChange(newState);
     }
 
-    @VisibleForTesting
     public static void setIsAnyAccessibilityServiceEnabledForTesting(boolean enabled) {
         if (!sInitialized) updateAccessibilityServices();
 
@@ -787,7 +782,6 @@ public class AccessibilityState {
         updateAndNotifyStateChange(newState);
     }
 
-    @VisibleForTesting
     public static void setIsAccessibilityToolPresentForTesting(boolean enabled) {
         if (!sInitialized) updateAccessibilityServices();
 
@@ -804,7 +798,6 @@ public class AccessibilityState {
         updateAndNotifyStateChange(newState);
     }
 
-    @VisibleForTesting
     public static void setIsSpokenFeedbackServicePresentForTesting(boolean enabled) {
         if (!sInitialized) updateAccessibilityServices();
 
@@ -821,7 +814,6 @@ public class AccessibilityState {
         updateAndNotifyStateChange(newState);
     }
 
-    @VisibleForTesting
     public static void setIsTextShowPasswordEnabledForTesting(boolean enabled) {
         if (!sInitialized) updateAccessibilityServices();
 
@@ -838,7 +830,6 @@ public class AccessibilityState {
         updateAndNotifyStateChange(newState);
     }
 
-    @VisibleForTesting
     public static void setIsOnlyPasswordManagersEnabledForTesting(boolean enabled) {
         if (!sInitialized) updateAccessibilityServices();
 
@@ -855,7 +846,6 @@ public class AccessibilityState {
         updateAndNotifyStateChange(newState);
     }
 
-    @VisibleForTesting
     public static void setEventTypeMaskForTesting(int mask) {
         if (!sInitialized) updateAccessibilityServices();
 

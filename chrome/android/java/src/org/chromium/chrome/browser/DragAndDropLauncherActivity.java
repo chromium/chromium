@@ -120,7 +120,6 @@ public class DragAndDropLauncherActivity extends Activity {
                                                   : sLinkDropTimeoutForTesting;
     }
 
-    @VisibleForTesting
     static void setLinkDropTimeoutMsForTesting(Long timeout) {
         sLinkDropTimeoutForTesting = timeout;
         ResettersForTesting.register(() -> sLinkDropTimeoutForTesting = null);

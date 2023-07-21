@@ -106,14 +106,12 @@ public class TabStateDirectory {
     /**
      * Sets where the base state directory is in tests.
      */
-    @VisibleForTesting
     public static void setBaseStateDirectoryForTests(File directory) {
         var oldValue = BaseStateDirectoryHolder.sDirectory;
         BaseStateDirectoryHolder.sDirectory = directory;
         ResettersForTesting.register(() -> BaseStateDirectoryHolder.sDirectory = oldValue);
     }
 
-    @VisibleForTesting
     public static void resetTabbedModeStateDirectoryForTesting() {
         sTabbedModeStateDirectory = null;
     }

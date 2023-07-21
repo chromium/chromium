@@ -685,7 +685,6 @@ public class ToolbarTablet
     }
 
     @Override
-    @VisibleForTesting
     public View getOptionalButtonViewForTesting() {
         return mOptionalButton;
     }
@@ -820,12 +819,10 @@ public class ToolbarTablet
         return mToolbarButtons;
     }
 
-    @VisibleForTesting
     void enableButtonVisibilityChangeAnimationForTesting() {
         mShouldAnimateButtonVisibilityChange = true;
     }
 
-    @VisibleForTesting
     void setToolbarButtonsVisibleForTesting(boolean value) {
         mToolbarButtonsVisible = value;
     }

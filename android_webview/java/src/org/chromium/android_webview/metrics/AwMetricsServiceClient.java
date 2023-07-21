@@ -4,8 +4,6 @@
 
 package org.chromium.android_webview.metrics;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.android_webview.ManifestMetadataUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.JNINamespace;
@@ -29,12 +27,10 @@ public class AwMetricsServiceClient {
                 userConsent, !ManifestMetadataUtil.isAppOptedOutFromMetricsCollection());
     }
 
-    @VisibleForTesting
     public static void setFastStartupForTesting(boolean fastStartupForTesting) {
         AwMetricsServiceClientJni.get().setFastStartupForTesting(fastStartupForTesting);
     }
 
-    @VisibleForTesting
     public static void setUploadIntervalForTesting(long uploadIntervalMs) {
         AwMetricsServiceClientJni.get().setUploadIntervalForTesting(uploadIntervalMs);
     }
@@ -42,12 +38,10 @@ public class AwMetricsServiceClient {
     /**
      * Sets a callback to run each time after final metrics have been collected.
      */
-    @VisibleForTesting
     public static void setOnFinalMetricsCollectedListenerForTesting(Runnable listener) {
         AwMetricsServiceClientJni.get().setOnFinalMetricsCollectedListenerForTesting(listener);
     }
 
-    @VisibleForTesting
     public static void setAppPackageNameLoggingRuleForTesting(String version, long expiryDateMs) {
         ThreadUtils.assertOnUiThread();
         AwMetricsServiceClientJni.get().setAppPackageNameLoggingRuleForTesting(

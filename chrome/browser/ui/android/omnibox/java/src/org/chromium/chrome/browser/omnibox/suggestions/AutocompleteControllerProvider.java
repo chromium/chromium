@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.LifetimeAssert;
 import org.chromium.base.ResettersForTesting;
@@ -117,7 +116,6 @@ public class AutocompleteControllerProvider implements UnownedUserData {
      * @param provider Testing version of the AutocompleteControllerProvider, or null to reset the
      *         overridde.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static void setControllerForTesting(@Nullable AutocompleteController controller) {
         sControllerForTesting = controller;
         ResettersForTesting.register(() -> sControllerForTesting = null);

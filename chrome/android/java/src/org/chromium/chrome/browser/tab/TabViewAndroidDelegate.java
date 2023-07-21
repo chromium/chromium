@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tab;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.dragdrop.ChromeDragAndDropBrowserDelegate;
@@ -165,7 +164,6 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
         }
     }
 
-    @VisibleForTesting
     DragAndDropBrowserDelegate getDragAndDropBrowserDelegateForTesting() {
         return mDragAndDropBrowserDelegate;
     }

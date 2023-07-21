@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.browserservices;
 import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.PostMessageBackend;
@@ -207,7 +206,6 @@ public class PostMessageHandler implements OriginVerificationListener {
         mPostMessageTargetUri = postMessageTargetUri;
     }
 
-    @VisibleForTesting
     public Uri getPostMessageTargetUriForTesting() {
         return mPostMessageTargetUri;
     }
@@ -215,7 +213,6 @@ public class PostMessageHandler implements OriginVerificationListener {
     /**
      * @return The PostMessage Uri that has been declared for this handler.
      */
-    @VisibleForTesting
     public Uri getPostMessageUriForTesting() {
         return mPostMessageSourceUri;
     }

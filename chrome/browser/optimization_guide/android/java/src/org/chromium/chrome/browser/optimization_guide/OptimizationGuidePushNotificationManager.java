@@ -195,7 +195,6 @@ public class OptimizationGuidePushNotificationManager {
                 optimizationType.toString());
     }
 
-    @VisibleForTesting
     public static void setNativeIsInitializedForTesting(Boolean nativeIsInitialized) {
         var oldValue = sNativeIsInitialized;
         sNativeIsInitialized = nativeIsInitialized;

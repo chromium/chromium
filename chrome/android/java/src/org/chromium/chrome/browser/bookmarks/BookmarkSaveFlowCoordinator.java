@@ -281,7 +281,6 @@ public class BookmarkSaveFlowCoordinator {
         }
     }
 
-    @VisibleForTesting
     View getViewForTesting() {
         return mBookmarkSaveFlowView;
     }

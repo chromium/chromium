@@ -613,12 +613,10 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         return mToolbarBackground;
     }
 
-    @VisibleForTesting
     void setLocationBarBackgroundDrawableForTesting(GradientDrawable background) {
         mLocationBarBackground = background;
     }
 
-    @VisibleForTesting
     void setOptionalButtonCoordinatorForTesting(
             OptionalButtonCoordinator optionalButtonCoordinator) {
         mOptionalButtonCoordinator = optionalButtonCoordinator;
@@ -2579,7 +2577,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     }
 
     @Override
-    @VisibleForTesting
     public View getOptionalButtonViewForTesting() {
         if (mOptionalButtonCoordinator != null) {
             return mOptionalButtonCoordinator.getButtonViewForTesting();
@@ -2737,7 +2734,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     }
 
     @Override
-    @VisibleForTesting
     public boolean isAnimationRunningForTesting() {
         return mUrlFocusChangeInProgress || mBrandColorTransitionActive
                 || mOptionalButtonAnimationRunning;

@@ -131,7 +131,6 @@ public class AppIndexingUtil {
         getAppIndexingReporter().reportWebPageView(tab.getUrl().getSpec(), tab.getTitle());
     }
 
-    @VisibleForTesting
     static void setCallbackForTesting(Callback<WebPage> callback) {
         sCallbackForTesting = callback;
         ResettersForTesting.register(() -> sCallbackForTesting = null);

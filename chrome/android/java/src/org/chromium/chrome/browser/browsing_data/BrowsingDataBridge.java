@@ -158,7 +158,6 @@ public final class BrowsingDataBridge {
     }
 
     /** This lets us mark an origin as important for testing. */
-    @VisibleForTesting
     public static void markOriginAsImportantForTesting(String origin) {
         BrowsingDataBridgeJni.get().markOriginAsImportantForTesting(getProfile(), origin);
     }

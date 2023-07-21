@@ -1751,7 +1751,6 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
                 : mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE;
     }
 
-    @VisibleForTesting
     public FeedActionDelegate getFeedActionDelegateForTesting() {
         assert mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR) != null;
         return mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR)

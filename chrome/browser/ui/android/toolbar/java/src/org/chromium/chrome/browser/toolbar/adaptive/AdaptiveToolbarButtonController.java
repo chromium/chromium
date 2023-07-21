@@ -12,7 +12,6 @@ import android.content.res.Configuration;
 import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
@@ -273,7 +272,6 @@ public class AdaptiveToolbarButtonController
 
     /** Returns the {@link ButtonDataProvider} used in a single-variant mode. */
     @Nullable
-    @VisibleForTesting
     public ButtonDataProvider getSingleProviderForTesting() {
         return mSingleProvider;
     }

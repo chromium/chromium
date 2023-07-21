@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.device;
 
 import android.content.Context;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.CommandLine;
 import org.chromium.base.SysUtils;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
@@ -170,7 +168,6 @@ public class DeviceClassManager {
     /**
      * Reset the instance for testing.
      */
-    @VisibleForTesting
     public static void resetForTesting() {
         sInstance = null;
     }

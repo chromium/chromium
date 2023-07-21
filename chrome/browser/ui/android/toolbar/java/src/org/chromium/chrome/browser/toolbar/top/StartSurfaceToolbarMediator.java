@@ -511,12 +511,10 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
         return mLayoutType;
     }
 
-    @VisibleForTesting
     boolean isLogoVisibleForTesting() {
         return mLogoCoordinator != null && mLogoCoordinator.isLogoVisible();
     }
 
-    @VisibleForTesting
     LogoCoordinator getLogoCoordinatorForTesting() {
         return mLogoCoordinator;
     }

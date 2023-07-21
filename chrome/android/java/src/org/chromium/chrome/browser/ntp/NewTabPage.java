@@ -869,7 +869,6 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     /**
      * @return Whether the NTP has finished loaded.
      */
-    @VisibleForTesting
     public boolean isLoadedForTests() {
         return mIsLoaded;
     }
@@ -998,28 +997,23 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                 && (mOmniboxStub != null && mOmniboxStub.isUrlBarFocused());
     }
 
-    @VisibleForTesting
     public FeedSurfaceCoordinator getCoordinatorForTesting() {
         return (FeedSurfaceCoordinator) mFeedSurfaceProvider;
     }
 
-    @VisibleForTesting
     public NewTabPageManager getNewTabPageManagerForTesting() {
         return mNewTabPageManager;
     }
 
-    @VisibleForTesting
     public TileGroup.Delegate getTileGroupDelegateForTesting() {
         return mTileGroupDelegate;
     }
 
-    @VisibleForTesting
     public FeedActionDelegate getFeedActionDelegateForTesting() {
         return ((FeedSurfaceCoordinator) mFeedSurfaceProvider)
                 .getActionDelegateForTesting(); // IN-TEST
     }
 
-    @VisibleForTesting
     TabObserver getTabObserverForTesting() {
         return mTabObserver;
     }
@@ -1131,7 +1125,6 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                         || !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context));
     }
 
-    @VisibleForTesting
     public boolean isSingleTabCardVisibleForTesting() {
         if (mSingleTabSwitcherCoordinator == null) return false;
 
@@ -1147,7 +1140,6 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         mSingleTabSwitcherCoordinator = null;
     }
 
-    @VisibleForTesting
     public boolean getSnapshotSingleTabCardChangedForTesting() {
         return mSnapshotSingleTabCardChanged;
     }

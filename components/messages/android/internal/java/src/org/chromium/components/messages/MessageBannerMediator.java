@@ -18,7 +18,6 @@ import android.content.res.Resources;
 import android.view.MotionEvent;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.Supplier;
@@ -355,7 +354,6 @@ class MessageBannerMediator implements SwipeHandler {
         return mModel.get(TRANSLATION_Y) == 0.f && mModel.get(TRANSLATION_X) == 0.f;
     }
 
-    @VisibleForTesting
     Supplier<Float> getMaxHorizontalTranslationSupplierForTesting() {
         return mMaxHorizontalTranslationPx;
     }

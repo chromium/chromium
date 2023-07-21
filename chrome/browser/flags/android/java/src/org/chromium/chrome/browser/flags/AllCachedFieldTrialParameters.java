@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.flags;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -65,9 +63,8 @@ public class AllCachedFieldTrialParameters extends CachedFieldTrialParameter {
     /**
      * Sets the parameters for the specified feature when used in tests.
      */
-    @VisibleForTesting
     public static void setForTesting(String featureName, Map<String, String> params) {
-        CachedFeatureFlags.setOverrideTestValue(
+        CachedFeatureFlags.setOverrideForTesting(
                 generateSharedPreferenceKey(featureName, ""), encodeParams(params));
     }
 }

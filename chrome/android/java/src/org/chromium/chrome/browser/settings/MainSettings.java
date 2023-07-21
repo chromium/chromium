@@ -21,7 +21,6 @@ import android.text.style.SuperscriptSpan;
 import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -401,7 +400,6 @@ public class MainSettings extends PreferenceFragmentCompat
         updatePasswordsPreference();
     }
 
-    @VisibleForTesting
     public ManagedPreferenceDelegate getManagedPreferenceDelegateForTest() {
         return mManagedPreferenceDelegate;
     }

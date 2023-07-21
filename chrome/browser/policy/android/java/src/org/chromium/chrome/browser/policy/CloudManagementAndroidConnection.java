@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.policy;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.CalledByNative;
 
@@ -58,7 +56,6 @@ public class CloudManagementAndroidConnection {
     /** Overrides {@link mDelegate} if not null. */
     private static CloudManagementAndroidConnectionDelegate sDelegateForTesting;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static void setDelegateForTesting(CloudManagementAndroidConnectionDelegate delegate) {
         sDelegateForTesting = delegate;
         ResettersForTesting.register(() -> sDelegateForTesting = null);

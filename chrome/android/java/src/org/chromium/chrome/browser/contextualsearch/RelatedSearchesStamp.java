@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
@@ -238,7 +237,6 @@ class RelatedSearchesStamp {
         return allowedLanguages;
     }
 
-    @VisibleForTesting
     void disableDefaultAllowedLanguagesForTesting(boolean disableDefaultAllowedLanguages) {
         mDisableDefaultAllowedLanguagesForTesting = disableDefaultAllowedLanguages;
     }

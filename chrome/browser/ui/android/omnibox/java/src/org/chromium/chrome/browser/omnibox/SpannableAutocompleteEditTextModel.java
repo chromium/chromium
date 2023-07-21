@@ -106,7 +106,6 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
         return mInputConnection;
     }
 
-    @VisibleForTesting
     public void setInputConnectionForTesting(AutocompleteInputConnection connection) {
         mInputConnection = connection;
     }

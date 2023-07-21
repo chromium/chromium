@@ -518,38 +518,31 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
         if (mObserver != null) mObserver.onConnectionStateChanged(mConnectionState);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static void setDelegateForTesting(Delegate delegate) {
         sDelegateForTesting = delegate;
         ResettersForTesting.register(() -> sDelegateForTesting = null);
     }
 
-    @VisibleForTesting
     static void overrideDefaultProbeUrlForTesting(String url) {
         sDefaultProbeUrl = url;
     }
 
-    @VisibleForTesting
     static void resetDefaultProbeUrlForTesting() {
         sDefaultProbeUrl = DEFAULT_PROBE_URL;
     }
 
-    @VisibleForTesting
     static void overrideFallbackProbeUrlForTesting(String url) {
         sFallbackProbeUrl = url;
     }
 
-    @VisibleForTesting
     static void resetFallbackProbeUrlForTesting() {
         sFallbackProbeUrl = FALLBACK_PROBE_URL;
     }
 
-    @VisibleForTesting
     static void overrideProbeMethodForTesting(String method) {
         sProbeMethod = method;
     }
 
-    @VisibleForTesting
     static void resetProbeMethodForTesting() {
         sProbeMethod = PROBE_METHOD;
     }
@@ -559,17 +552,14 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
         sConnectivityCheckInitialDelayMs = delayMs;
     }
 
-    @VisibleForTesting
     void forceConnectionStateForTesting(@ConnectionState int connectionState) {
         mConnectionState = connectionState;
     }
 
-    @VisibleForTesting
     Handler getHandlerForTesting() {
         return mHandler;
     }
 
-    @VisibleForTesting
     void setUseDefaultUrlForTesting(boolean useDefaultUrl) {
         mConnectivityCheckingStage = useDefaultUrl ? ConnectivityCheckingStage.PROBE_DEFAULT_URL
                                                    : ConnectivityCheckingStage.PROBE_FALLBACK_URL;

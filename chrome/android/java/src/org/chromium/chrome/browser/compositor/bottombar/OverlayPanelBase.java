@@ -1127,7 +1127,6 @@ abstract class OverlayPanelBase {
     /**
      * @param height The height of the Overlay Panel to be set.
      */
-    @VisibleForTesting
     public void setHeightForTesting(float height) {
         mHeight = height;
         mIsShowingSupplier.set(isShowing());
@@ -1137,7 +1136,6 @@ abstract class OverlayPanelBase {
      * @param offsetY The vertical offset of the Overlay Panel to be
      *            set.
      */
-    @VisibleForTesting
     public void setOffsetYForTesting(float offsetY) {
         mOffsetY = offsetY;
     }
@@ -1146,7 +1144,6 @@ abstract class OverlayPanelBase {
      * @param isMaximized The setting for whether the Overlay Panel is fully
      *            maximized.
      */
-    @VisibleForTesting
     public void setMaximizedForTesting(boolean isMaximized) {
         mIsMaximized = isMaximized;
     }
@@ -1154,7 +1151,6 @@ abstract class OverlayPanelBase {
     /**
      * @param barHeight The height of the Overlay Bar to be set.
      */
-    @VisibleForTesting
     public void setSearchBarHeightForTesting(float barHeight) {
         mBarHeight = barHeight;
     }
@@ -1164,7 +1160,6 @@ abstract class OverlayPanelBase {
      *
      * @param isFullWidthSizePanel Whether the Panel has a full width size.
      */
-    @VisibleForTesting
     public void setIsFullWidthSizePanelForTesting(boolean isFullWidthSizePanel) {
         mOverrideIsFullWidthSizePanelForTesting = true;
         mIsFullWidthSizePanelForTesting = isFullWidthSizePanel;

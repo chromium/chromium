@@ -477,7 +477,6 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         return TrustedCdn.getPublisherUrl(mTab) == null;
     }
 
-    @VisibleForTesting
     LruCache<SpannableDisplayTextCacheKey, SpannableStringBuilder> getCacheForTesting() {
         return mSpannableDisplayTextCache;
     }

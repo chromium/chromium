@@ -1168,7 +1168,6 @@ public class DownloadManagerService implements DownloadController.Observer,
     /**
      * Called by tests to disable listening to network connection changes.
      */
-    @VisibleForTesting
     static void disableNetworkListenerForTest() {
         sIsNetworkListenerDisabled = true;
     }
@@ -1177,7 +1176,6 @@ public class DownloadManagerService implements DownloadController.Observer,
      * Called by tests to set the network type.
      * @isNetworkMetered Whether the network should appear to be metered.
      */
-    @VisibleForTesting
     static void setIsNetworkMeteredForTest(boolean isNetworkMetered) {
         var oldValue = sIsNetworkMetered;
         sIsNetworkMetered = isNetworkMetered;

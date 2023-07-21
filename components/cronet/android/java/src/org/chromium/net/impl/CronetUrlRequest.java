@@ -362,20 +362,17 @@ public final class CronetUrlRequest extends UrlRequestBase {
         postTaskToExecutor(task);
     }
 
-    @VisibleForTesting
     public void setOnDestroyedCallbackForTesting(Runnable onDestroyedCallbackForTesting) {
         synchronized (mUrlRequestAdapterLock) {
             mOnDestroyedCallbackForTesting = onDestroyedCallbackForTesting;
         }
     }
 
-    @VisibleForTesting
     public void setOnDestroyedUploadCallbackForTesting(
             Runnable onDestroyedUploadCallbackForTesting) {
         mUploadDataStream.setOnDestroyedCallbackForTesting(onDestroyedUploadCallbackForTesting);
     }
 
-    @VisibleForTesting
     public long getUrlRequestAdapterForTesting() {
         synchronized (mUrlRequestAdapterLock) {
             return mUrlRequestAdapter;

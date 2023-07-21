@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.history;
 import android.app.Activity;
 import android.net.Uri;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersConstants;
@@ -74,7 +72,6 @@ public class HistoryPage extends BasicNativePage {
         super.destroy();
     }
 
-    @VisibleForTesting
     public HistoryManager getHistoryManagerForTesting() {
         return mHistoryManager;
     }

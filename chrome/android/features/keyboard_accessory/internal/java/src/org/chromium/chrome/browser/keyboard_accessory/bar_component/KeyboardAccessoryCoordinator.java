@@ -274,7 +274,6 @@ public class KeyboardAccessoryCoordinator {
         return mTabLayout.getStablePageChangeListener();
     }
 
-    @VisibleForTesting
     public KeyboardAccessoryMediator getMediatorForTesting() {
         return mMediator;
     }

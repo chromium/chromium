@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.password_manager;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.password_manager.PasswordStoreAndroidBackend.BackendException;
@@ -59,7 +58,6 @@ public abstract class PasswordStoreAndroidBackendFactory {
                 AndroidBackendErrorType.BACKEND_NOT_AVAILABLE);
     }
 
-    @VisibleForTesting
     public static void setFactoryInstanceForTesting(
             @Nullable PasswordStoreAndroidBackendFactory factory) {
         var oldValue = sInstance;

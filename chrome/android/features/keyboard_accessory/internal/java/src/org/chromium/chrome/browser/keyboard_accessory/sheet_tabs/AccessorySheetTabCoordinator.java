@@ -16,7 +16,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -123,7 +122,6 @@ public abstract class AccessorySheetTabCoordinator implements KeyboardAccessoryD
         sheetDataProvider.addObserver(getMediator());
     }
 
-    @VisibleForTesting
     AccessorySheetTabItemsModel getSheetDataPiecesForTesting() {
         return mModel.get(ITEMS);
     }

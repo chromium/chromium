@@ -7,8 +7,6 @@ package org.chromium.chrome.features.start_surface;
 import android.animation.Animator;
 import android.content.Context;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
@@ -140,7 +138,6 @@ public class StartSurfaceHomeLayout extends Layout {
         mBackgroundTabAnimation.start();
     }
 
-    @VisibleForTesting
     public StartSurface getStartSurfaceForTesting() {
         return mStartSurface;
     }

@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.recent_tabs;
 
 import android.app.Activity;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -162,7 +160,6 @@ public class RestoreTabsFeatureHelper {
         return false;
     }
 
-    @VisibleForTesting
     void setRestoreTabsControllerDelegateForTesting(RestoreTabsControllerDelegate delegate) {
         mDelegateForTesting = delegate;
     }

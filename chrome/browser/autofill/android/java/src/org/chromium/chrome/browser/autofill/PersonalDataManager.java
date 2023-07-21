@@ -8,8 +8,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.text.format.DateUtils;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
@@ -588,7 +586,6 @@ public class PersonalDataManager {
                 mPersonalDataManagerAndroid, PersonalDataManager.this, cardNumber, emptyIfInvalid);
     }
 
-    @VisibleForTesting
     public void addServerCreditCardForTest(CreditCard card) {
         ThreadUtils.assertOnUiThread();
         assert !card.getIsLocal();
@@ -596,7 +593,6 @@ public class PersonalDataManager {
                 mPersonalDataManagerAndroid, PersonalDataManager.this, card);
     }
 
-    @VisibleForTesting
     public void addServerCreditCardForTestWithAdditionalFields(
             CreditCard card, String nickname, int cardIssuer) {
         ThreadUtils.assertOnUiThread();
@@ -644,21 +640,18 @@ public class PersonalDataManager {
                 mPersonalDataManagerAndroid, PersonalDataManager.this, guid);
     }
 
-    @VisibleForTesting
     protected void setProfileUseStatsForTesting(String guid, int count, int daysSinceLastUsed) {
         ThreadUtils.assertOnUiThread();
         PersonalDataManagerJni.get().setProfileUseStatsForTesting(mPersonalDataManagerAndroid,
                 PersonalDataManager.this, guid, count, daysSinceLastUsed);
     }
 
-    @VisibleForTesting
     int getProfileUseCountForTesting(String guid) {
         ThreadUtils.assertOnUiThread();
         return PersonalDataManagerJni.get().getProfileUseCountForTesting(
                 mPersonalDataManagerAndroid, PersonalDataManager.this, guid);
     }
 
-    @VisibleForTesting
     long getProfileUseDateForTesting(String guid) {
         ThreadUtils.assertOnUiThread();
         return PersonalDataManagerJni.get().getProfileUseDateForTesting(
@@ -678,49 +671,42 @@ public class PersonalDataManager {
                 mPersonalDataManagerAndroid, PersonalDataManager.this, guid);
     }
 
-    @VisibleForTesting
     protected void setCreditCardUseStatsForTesting(String guid, int count, int daysSinceLastUsed) {
         ThreadUtils.assertOnUiThread();
         PersonalDataManagerJni.get().setCreditCardUseStatsForTesting(mPersonalDataManagerAndroid,
                 PersonalDataManager.this, guid, count, daysSinceLastUsed);
     }
 
-    @VisibleForTesting
     int getCreditCardUseCountForTesting(String guid) {
         ThreadUtils.assertOnUiThread();
         return PersonalDataManagerJni.get().getCreditCardUseCountForTesting(
                 mPersonalDataManagerAndroid, PersonalDataManager.this, guid);
     }
 
-    @VisibleForTesting
     long getCreditCardUseDateForTesting(String guid) {
         ThreadUtils.assertOnUiThread();
         return PersonalDataManagerJni.get().getCreditCardUseDateForTesting(
                 mPersonalDataManagerAndroid, PersonalDataManager.this, guid);
     }
 
-    @VisibleForTesting
     long getCurrentDateForTesting() {
         ThreadUtils.assertOnUiThread();
         return PersonalDataManagerJni.get().getCurrentDateForTesting(
                 mPersonalDataManagerAndroid, PersonalDataManager.this);
     }
 
-    @VisibleForTesting
     long getDateNDaysAgoForTesting(int days) {
         ThreadUtils.assertOnUiThread();
         return PersonalDataManagerJni.get().getDateNDaysAgoForTesting( // IN-TEST
                 mPersonalDataManagerAndroid, PersonalDataManager.this, days);
     }
 
-    @VisibleForTesting
     protected void clearServerDataForTesting() {
         ThreadUtils.assertOnUiThread();
         PersonalDataManagerJni.get().clearServerDataForTesting(
                 mPersonalDataManagerAndroid, PersonalDataManager.this);
     }
 
-    @VisibleForTesting
     public static void setInstanceForTesting(PersonalDataManager manager) {
         var oldValue = sManager;
         sManager = manager;
@@ -917,14 +903,12 @@ public class PersonalDataManager {
         return PersonalDataManagerJni.get().isAutofillCreditCardManaged();
     }
 
-    @VisibleForTesting
     public static void setRequestTimeoutForTesting(int timeout) {
         var oldValue = sRequestTimeoutSeconds;
         sRequestTimeoutSeconds = timeout;
         ResettersForTesting.register(() -> sRequestTimeoutSeconds = oldValue);
     }
 
-    @VisibleForTesting
     public void setSyncServiceForTesting() {
         PersonalDataManagerJni.get().setSyncServiceForTesting(mPersonalDataManagerAndroid);
     }
@@ -992,7 +976,6 @@ public class PersonalDataManager {
         return null;
     }
 
-    @VisibleForTesting
     public void setImageFetcherForTesting(ImageFetcher imageFetcher) {
         var oldValue = this.mImageFetcher;
         this.mImageFetcher = imageFetcher;

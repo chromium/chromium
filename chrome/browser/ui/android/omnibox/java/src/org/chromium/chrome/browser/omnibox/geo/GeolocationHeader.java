@@ -444,19 +444,16 @@ public class GeolocationHeader {
         return locationSettings.getContentSetting(profile);
     }
 
-    @VisibleForTesting
     static void setLocationSourceForTesting(int locationSourceForTesting) {
         sLocationSourceForTesting = locationSourceForTesting;
         sUseLocationSourceForTesting = true;
     }
 
-    @VisibleForTesting
     static void setAppPermissionGrantedForTesting(boolean appPermissionGrantedForTesting) {
         sAppPermissionGrantedForTesting = appPermissionGrantedForTesting;
         sUseAppPermissionGrantedForTesting = true;
     }
 
-    @VisibleForTesting
     static long getFirstLocationTimeForTesting() {
         return sFirstLocationTime;
     }

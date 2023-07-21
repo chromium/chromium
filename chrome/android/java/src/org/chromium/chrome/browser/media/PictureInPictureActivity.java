@@ -736,7 +736,6 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         return original;
     }
 
-    @VisibleForTesting
     /* package */ View getViewForTesting() {
         return mCompositorView.getView();
     }

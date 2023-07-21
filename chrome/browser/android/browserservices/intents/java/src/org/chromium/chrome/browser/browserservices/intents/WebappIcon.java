@@ -10,8 +10,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Base64;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 
@@ -70,7 +68,6 @@ public class WebappIcon {
         return mBitmap;
     }
 
-    @VisibleForTesting
     public int resourceIdForTesting() {
         return mResourceId;
     }

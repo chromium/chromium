@@ -120,7 +120,6 @@ public class HomeButton extends ListMenuButton {
     /**
      * @param saveContextMenuForTests Whether we want to store the context menu for testing
      */
-    @VisibleForTesting
     public static void setSaveContextMenuForTests(boolean saveContextMenuForTests) {
         sSaveContextMenuForTests = saveContextMenuForTests;
         ResettersForTesting.register(() -> sSaveContextMenuForTests = false);
@@ -129,7 +128,6 @@ public class HomeButton extends ListMenuButton {
     /**
      * @return Latest context menu created.
      */
-    @VisibleForTesting
     public ModelList getMenuForTests() {
         return mMenuForTests;
     }

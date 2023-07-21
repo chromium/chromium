@@ -881,7 +881,6 @@ public class NewTabPageLayout extends LinearLayout {
         }
     }
 
-    @VisibleForTesting
     MostVisitedTilesCoordinator getMostVisitedTilesCoordinatorForTesting() {
         return mMostVisitedTilesCoordinator;
     }
@@ -995,7 +994,6 @@ public class NewTabPageLayout extends LinearLayout {
                 MeasureSpec.makeMeasureSpec(heightPx, MeasureSpec.EXACTLY));
     }
 
-    @VisibleForTesting
     LogoCoordinator getLogoCoordinatorForTesting() {
         return mLogoCoordinator;
     }

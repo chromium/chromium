@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.Switch;
 
 import androidx.annotation.MainThread;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -62,12 +61,10 @@ public class FreUMADialogCoordinator {
         mDialogManager.showDialog(mModel, ModalDialogType.APP);
     }
 
-    @VisibleForTesting
     void dismissDialogForTesting() {
         mDialogManager.dismissDialog(mModel, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
     }
 
-    @VisibleForTesting
     View getDialogViewForTesting() {
         return mView;
     }

@@ -113,12 +113,10 @@ class DirectWritingServiceBinder {
         }
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     void setRemoteServiceForTest(IDirectWritingService remoteService) {
         mRemoteDwService = remoteService;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     void setTriggerCallbackForTest(DirectWritingTriggerCallback callback) {
         mTriggerCallback = callback;
     }

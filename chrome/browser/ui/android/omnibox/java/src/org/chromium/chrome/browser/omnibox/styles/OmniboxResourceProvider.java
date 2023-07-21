@@ -17,7 +17,6 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Px;
 import androidx.annotation.StringRes;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import com.google.android.material.color.MaterialColors;
@@ -90,12 +89,10 @@ public class OmniboxResourceProvider {
         sDrawableCache.clear();
     }
 
-    @VisibleForTesting
     public static SparseArray<ConstantState> getDrawableCacheForTesting() {
         return sDrawableCache;
     }
 
-    @VisibleForTesting
     public static SparseArray<String> getStringCacheForTesting() {
         return sStringCache;
     }

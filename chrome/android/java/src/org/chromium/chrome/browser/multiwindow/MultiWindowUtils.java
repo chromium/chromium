@@ -151,7 +151,6 @@ public class MultiWindowUtils implements ActivityStateListener {
         return ApiCompatibilityUtils.getTargetableDisplayIds(activity).size() == 2;
     }
 
-    @VisibleForTesting
     public void setIsInMultiWindowModeForTesting(boolean isInMultiWindowMode) {
         mIsInMultiWindowModeForTesting = isInMultiWindowMode;
         ResettersForTesting.register(() -> mIsInMultiWindowModeForTesting = false);

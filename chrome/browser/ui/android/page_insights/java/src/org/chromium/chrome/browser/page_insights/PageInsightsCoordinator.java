@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.page_insights;
 import android.content.Context;
 import android.view.View;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -102,7 +100,6 @@ public class PageInsightsCoordinator {
         if (mMediator != null) mMediator.destroy();
     }
 
-    @VisibleForTesting
     float getCornerRadiusForTesting() {
         return mMediator.getCornerRadiusForTesting();
     }

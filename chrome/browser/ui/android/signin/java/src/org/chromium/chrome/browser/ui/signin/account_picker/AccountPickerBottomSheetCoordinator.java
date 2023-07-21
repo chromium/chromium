@@ -8,7 +8,6 @@ import android.view.View;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
@@ -145,7 +144,6 @@ public class AccountPickerBottomSheetCoordinator {
         }
     }
 
-    @VisibleForTesting
     public View getBottomSheetViewForTesting() {
         return mView.getContentView();
     }

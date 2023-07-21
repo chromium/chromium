@@ -293,27 +293,22 @@ public class BackPressManager implements Destroyable {
             : String.format("%s didn't correctly handle back press; handled by %s.", msg, succeed);
     }
 
-    @VisibleForTesting
     public BackPressHandler[] getHandlersForTesting() {
         return mHandlers;
     }
 
-    @VisibleForTesting
     public int getLastCalledHandlerForTesting() {
         return mLastCalledHandlerForTesting;
     }
 
-    @VisibleForTesting
     public void resetLastCalledHandlerForTesting() {
         mLastCalledHandlerForTesting = -1;
     }
 
-    @VisibleForTesting
     public static String getHistogramForTesting() {
         return HISTOGRAM;
     }
 
-    @VisibleForTesting
     public static int getHistogramValueForTesting(int type) {
         return sMetricsMap.get(type);
     }

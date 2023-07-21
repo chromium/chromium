@@ -19,7 +19,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.ViewCompat;
@@ -438,7 +437,6 @@ public class BookmarkFolderSelectActivity
         }
     }
 
-    @VisibleForTesting
     int getFolderPositionForTesting(BookmarkId bookmarkId) {
         for (int i = 0; i < mBookmarkIdsAdapter.mEntryList.size(); i++) {
             FolderListEntry entry = mBookmarkIdsAdapter.mEntryList.get(i);
@@ -447,7 +445,6 @@ public class BookmarkFolderSelectActivity
         return -1;
     }
 
-    @VisibleForTesting
     void performClickForTesting(int adapterPosition) {
         onItemClick(mBookmarkIdsList, null, adapterPosition, adapterPosition);
     }

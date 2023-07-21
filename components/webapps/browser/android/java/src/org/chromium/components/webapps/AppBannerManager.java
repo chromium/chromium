@@ -168,43 +168,36 @@ public class AppBannerManager {
     }
 
     /** Sets the app-banner-showing logic to ignore the Chrome channel. */
-    @VisibleForTesting
     public static void ignoreChromeChannelForTesting() {
         AppBannerManagerJni.get().ignoreChromeChannelForTesting();
     }
 
     /** Returns whether the native AppBannerManager is working. */
-    @VisibleForTesting
     public boolean isRunningForTesting() {
         return AppBannerManagerJni.get().isRunningForTesting(mNativePointer, AppBannerManager.this);
     }
 
     /** Returns the state of the current pipeline. */
-    @VisibleForTesting
     public int getPipelineStatusForTesting() {
         return AppBannerManagerJni.get().getPipelineStatusForTesting(mNativePointer);
     }
 
     /** Returns the state of the ambient badge. */
-    @VisibleForTesting
     public int getBadgeStatusForTesting() {
         return AppBannerManagerJni.get().getBadgeStatusForTesting(mNativePointer);
     }
 
     /** Sets constants (in days) the banner should be blocked for after dismissing and ignoring. */
-    @VisibleForTesting
     public static void setDaysAfterDismissAndIgnoreForTesting(int dismissDays, int ignoreDays) {
         AppBannerManagerJni.get().setDaysAfterDismissAndIgnoreToTrigger(dismissDays, ignoreDays);
     }
 
     /** Sets a constant (in days) that gets added to the time when the current time is requested. */
-    @VisibleForTesting
     public static void setTimeDeltaForTesting(int days) {
         AppBannerManagerJni.get().setTimeDeltaForTesting(days);
     }
 
     /** Sets the total required engagement to trigger the banner. */
-    @VisibleForTesting
     public static void setTotalEngagementForTesting(double engagement) {
         AppBannerManagerJni.get().setTotalEngagementToTrigger(engagement);
     }

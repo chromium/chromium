@@ -247,7 +247,6 @@ public class NativePageFactory {
         return page;
     }
 
-    @VisibleForTesting
     void setNativePageBuilderForTesting(NativePageBuilder builder) {
         mNativePageBuilder = builder;
     }

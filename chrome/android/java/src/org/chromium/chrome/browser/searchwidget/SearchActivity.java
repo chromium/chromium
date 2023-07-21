@@ -615,14 +615,12 @@ public class SearchActivity extends AsyncInitializationActivity
     }
 
     /** See {@link #sDelegate}. */
-    @VisibleForTesting
     static void setDelegateForTests(SearchActivityDelegate delegate) {
         var oldValue = sDelegate;
         sDelegate = delegate;
         ResettersForTesting.register(() -> sDelegate = oldValue);
     }
 
-    @VisibleForTesting
     public View getAnchorViewForTesting() {
         return mAnchorView;
     }

@@ -6,8 +6,6 @@ package org.chromium.components.paintpreview.player;
 
 import android.graphics.Rect;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.UnguessableToken;
 
 import java.util.Arrays;
@@ -146,7 +144,6 @@ class PaintPreviewFrame {
         return sb.toString();
     }
 
-    @VisibleForTesting
     static PaintPreviewFrame createInstanceForTest(UnguessableToken guid, int contentWidth,
             int contentHeight, int initialScrollX, int initialScrollY,
             PaintPreviewFrame[] subFrames, Rect[] subFrameClips) {

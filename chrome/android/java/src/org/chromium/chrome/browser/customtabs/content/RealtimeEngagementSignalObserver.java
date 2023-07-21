@@ -525,7 +525,6 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
             return SystemClock.elapsedRealtime() - mTimeLastOnScrollEnded;
         }
 
-        @VisibleForTesting
         static void setInstanceForTesting(ScrollState instance) {
             sInstanceForTesting = instance;
             ResettersForTesting.register(() -> sInstanceForTesting = null);

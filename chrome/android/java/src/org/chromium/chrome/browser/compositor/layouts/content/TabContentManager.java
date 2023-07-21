@@ -692,13 +692,11 @@ public class TabContentManager {
         }
     }
 
-    @VisibleForTesting
     public void setCaptureMinRequestTimeForTesting(int timeMs) {
         TabContentManagerJni.get().setCaptureMinRequestTimeForTesting(
                 mNativeTabContentManager, timeMs);
     }
 
-    @VisibleForTesting
     public int getPendingReadbacksForTesting() {
         return TabContentManagerJni.get().getPendingReadbacksForTesting(mNativeTabContentManager);
     }

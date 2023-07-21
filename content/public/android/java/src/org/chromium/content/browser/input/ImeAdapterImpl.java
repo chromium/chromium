@@ -432,12 +432,10 @@ public class ImeAdapterImpl
         mInputConnectionFactory = factory;
     }
 
-    @VisibleForTesting
     ChromiumBaseInputConnection.Factory getInputConnectionFactoryForTest() {
         return mInputConnectionFactory;
     }
 
-    @VisibleForTesting
     public void setTriggerDelayedOnCreateInputConnectionForTest(boolean trigger) {
         mInputConnectionFactory.setTriggerDelayedOnCreateInputConnection(trigger);
     }

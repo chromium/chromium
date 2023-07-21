@@ -187,14 +187,12 @@ public class AutofillProvider {
         }
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public static void setAutofillManagerWrapperFactoryForTesting(
             AutofillManagerWrapperFactoryForTesting factory) {
         sAutofillManagerFactoryForTesting = factory;
         ResettersForTesting.register(() -> sAutofillManagerFactoryForTesting = null);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public void replaceAutofillManagerWrapperForTesting(AutofillManagerWrapper wrapper) {
         mAutofillManager = wrapper;
     }
@@ -587,7 +585,6 @@ public class AutofillProvider {
         }
     }
 
-    @VisibleForTesting
     public AutofillPopup getDatalistPopupForTesting() {
         return mDatalistPopup;
     }

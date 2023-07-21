@@ -13,7 +13,6 @@ import android.view.View;
 import android.widget.ScrollView;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -188,12 +187,10 @@ public class RestoreTabsPromoSheetContent implements BottomSheetContent {
         }
     }
 
-    @VisibleForTesting
     void setRecyclerViewForTesting(RecyclerView recyclerView) {
         mRecyclerView = recyclerView;
     }
 
-    @VisibleForTesting
     void setScrollViewForTesting(ScrollView scrollView) {
         mScrollView = scrollView;
     }

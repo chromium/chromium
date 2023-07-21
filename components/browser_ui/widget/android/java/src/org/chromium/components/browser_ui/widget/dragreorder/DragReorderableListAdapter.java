@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.res.Resources;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -278,7 +277,6 @@ public abstract class DragReorderableListAdapter<T> extends RecyclerView.Adapter
      * @param start The index of the ViewHolder that you want to drag.
      * @param end The index this ViewHolder should be dragged to and dropped at.
      */
-    @VisibleForTesting
     public void simulateDragForTests(int start, int end) {
         ViewHolder viewHolder = mRecyclerView.findViewHolderForAdapterPosition(start);
         mItemTouchHelper.startDrag(viewHolder);

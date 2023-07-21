@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.os.SystemClock;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
@@ -285,7 +284,6 @@ public abstract class FirstRunActivityBase
      * Forces the {@link FirstRunActivityBase}'s constructor to use a {@link PolicyLoadListener}
      * defined by a test, instead of creating its own instance.
      */
-    @VisibleForTesting
     public static void setPolicyLoadListenerFactoryForTesting(
             PolicyLoadListenerFactory policyLoadListenerFactory) {
         sPolicyLoadListenerFactoryForTesting = policyLoadListenerFactory;

@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.feed;
 
 import android.content.Context;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.CommandLine;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator.StreamTabId;
@@ -131,7 +129,6 @@ public final class FeedFeatures {
         return UserPrefs.get(Profile.getLastUsedRegularProfile());
     }
 
-    @VisibleForTesting
     public static void setFakePrefsForTest(PrefService fakePref) {
         sFakePrefServiceForTest = fakePref;
         ResettersForTesting.register(() -> sFakePrefServiceForTest = null);

@@ -326,7 +326,6 @@ public class DragReorderableRecyclerViewAdapter extends SimpleRecyclerViewAdapte
      * @param start The index of the ViewHolder that you want to drag.
      * @param end The index this ViewHolder should be dragged to and dropped at.
      */
-    @VisibleForTesting
     public void simulateDragForTests(int start, int end) {
         RecyclerView.ViewHolder viewHolder = mRecyclerView.findViewHolderForAdapterPosition(start);
         mItemTouchHelper.startDrag(viewHolder);

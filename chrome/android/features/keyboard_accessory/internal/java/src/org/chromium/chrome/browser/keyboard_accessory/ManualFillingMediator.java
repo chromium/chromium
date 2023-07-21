@@ -909,22 +909,18 @@ class ManualFillingMediator
         return idealHeight;
     }
 
-    @VisibleForTesting
     TabModelObserver getTabModelObserverForTesting() {
         return mTabModelObserver;
     }
 
-    @VisibleForTesting
     TabObserver getTabObserverForTesting() {
         return mTabObserver;
     }
 
-    @VisibleForTesting
     ManualFillingStateCache getStateCacheForTesting() {
         return mStateCache;
     }
 
-    @VisibleForTesting
     PropertyModel getModelForTesting() {
         return mModel;
     }

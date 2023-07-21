@@ -97,13 +97,11 @@ public class NetworkStatusListenerAndroid implements BackgroundNetworkStatusList
             }
         }
 
-        @VisibleForTesting
         public Handler getHandlerForTesting() {
             return mNetworkThreadHandler;
         }
     }
 
-    @VisibleForTesting
     static Helper getHelperForTesting() {
         return sSingletonHelper;
     }

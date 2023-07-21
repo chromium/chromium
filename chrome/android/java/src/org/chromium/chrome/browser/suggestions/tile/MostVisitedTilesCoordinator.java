@@ -170,7 +170,6 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
         mUiConfig.updateDisplayStyle();
     }
 
-    @VisibleForTesting
     public void onTemplateURLServiceChangedForTesting() {
         mMediator.onTemplateURLServiceChanged();
     }

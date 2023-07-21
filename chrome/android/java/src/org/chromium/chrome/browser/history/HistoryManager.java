@@ -860,22 +860,18 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
         notifyHistoryClustersCoordinatorOfDeletion();
     }
 
-    @VisibleForTesting
     TextView getEmptyViewForTests() {
         return mEmptyView;
     }
 
-    @VisibleForTesting
     public HistoryContentManager getContentManagerForTests() {
         return mContentManager;
     }
 
-    @VisibleForTesting
     SelectionDelegate<HistoryItem> getSelectionDelegateForTests() {
         return mSelectionDelegate;
     }
 
-    @VisibleForTesting
     HistoryManagerToolbar getToolbarForTests() {
         return mToolbar;
     }

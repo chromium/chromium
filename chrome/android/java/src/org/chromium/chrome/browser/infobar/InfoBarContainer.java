@@ -244,7 +244,6 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
         return tab.getUserDataHost().getUserData(USER_DATA_KEY);
     }
 
-    @VisibleForTesting
     public static void removeInfoBarContainerForTesting(Tab tab) {
         InfoBarContainer container = get(tab);
         if (container != null) {
@@ -342,7 +341,6 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
      * Adds an InfoBar to the view hierarchy.
      * @param infoBar InfoBar to add to the View hierarchy.
      */
-    @VisibleForTesting
     public void addInfoBarForTesting(InfoBar infoBar) {
         addInfoBar(infoBar);
     }
@@ -406,7 +404,6 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
     /**
      * @return all of the InfoBars held in this container.
      */
-    @VisibleForTesting
     public ArrayList<InfoBar> getInfoBarsForTesting() {
         return mInfoBars;
     }
@@ -589,7 +586,6 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
     /**
      * @return The {@link InfoBarContainerView} this class holds.
      */
-    @VisibleForTesting
     public InfoBarContainerView getContainerViewForTesting() {
         return mInfoBarContainerView;
     }

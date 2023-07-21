@@ -2751,7 +2751,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         return true;
     }
 
-    @VisibleForTesting
     public RootUiCoordinator getRootUiCoordinatorForTesting() {
         return mRootUiCoordinator;
     }
@@ -2807,32 +2806,26 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         return false;
     }
 
-    @VisibleForTesting
     public @Nullable BookmarkModel getBookmarkModelForTesting() {
         return mBookmarkModelSupplier.get();
     }
 
-    @VisibleForTesting
     public Configuration getSavedConfigurationForTesting() {
         return mConfig;
     }
 
-    @VisibleForTesting
     public boolean deferredStartupPostedForTesting() {
         return mDeferredStartupPosted;
     }
 
-    @VisibleForTesting
     public DisplayAndroidObserver getDisplayAndroidObserverForTesting() {
         return mDisplayAndroidObserver;
     }
 
-    @VisibleForTesting
     public BackPressManager getBackPressManagerForTesting() {
         return mBackPressManager;
     }
 
-    @VisibleForTesting
     public boolean recreatingForTabletModeChangeForTesting() {
         return mIsRecreatingForTabletModeChange;
     }

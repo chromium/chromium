@@ -78,7 +78,6 @@ public class MerchantTrustSignalsEventStorage {
     }
 
     @MainThread
-    @VisibleForTesting
     public void deleteForTesting(MerchantTrustSignalsEvent event, Runnable onComplete) {
         makeNativeAssertion();
         MerchantTrustSignalsEventStorageJni.get().delete(
@@ -94,7 +93,6 @@ public class MerchantTrustSignalsEventStorage {
     }
 
     @MainThread
-    @VisibleForTesting
     public void deleteAllForTesting(Runnable onComplete) {
         makeNativeAssertion();
         MerchantTrustSignalsEventStorageJni.get().deleteAll(mNativeMerchantSignalDB, onComplete);
@@ -115,7 +113,6 @@ public class MerchantTrustSignalsEventStorage {
         }
     }
 
-    @VisibleForTesting
     static void setSkipNativeAssertionsForTesting(boolean skipNativeAssertionsForTesting) {
         sSkipNativeAssertionsForTesting = skipNativeAssertionsForTesting;
         ResettersForTesting.register(() -> sSkipNativeAssertionsForTesting = false);

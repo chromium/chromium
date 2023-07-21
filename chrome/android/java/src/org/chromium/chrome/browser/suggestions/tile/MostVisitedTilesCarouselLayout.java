@@ -87,7 +87,6 @@ public class MostVisitedTilesCarouselLayout extends LinearLayout implements Most
     }
 
     @Nullable
-    @VisibleForTesting
     public SuggestionsTileView findTileViewForTesting(SiteSuggestion suggestion) {
         int childCount = getChildCount();
         for (int i = 0; i < childCount; i++) {
@@ -162,28 +161,23 @@ public class MostVisitedTilesCarouselLayout extends LinearLayout implements Most
         mIsMultiColumnFeedOnTabletEnabled = isMultiColumnFeedOnTabletEnabled;
     }
 
-    @VisibleForTesting
     boolean getIsMultiColumnFeedOnTabletEnabledForTesting() {
         return mIsMultiColumnFeedOnTabletEnabled;
     }
 
-    @VisibleForTesting
     public void setInitialTileNumForTesting(int initialTileNum) {
         mInitialTileNum = initialTileNum;
     }
 
-    @VisibleForTesting
     public void setTileViewWidthForTesting(int tileViewWidth) {
         mTileViewWidth = tileViewWidth;
     }
 
-    @VisibleForTesting
     public void setTileViewMinIntervalPaddingTabletForTesting(
             int tileViewMinIntervalPaddingTablet) {
         mTileViewMinIntervalPaddingTablet = tileViewMinIntervalPaddingTablet;
     }
 
-    @VisibleForTesting
     public void setTileViewMaxIntervalPaddingTabletForTesting(
             int tileViewMaxIntervalPaddingTablet) {
         mTileViewMaxIntervalPaddingTablet = tileViewMaxIntervalPaddingTablet;

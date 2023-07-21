@@ -10,7 +10,6 @@ import static org.chromium.components.browser_ui.site_settings.WebsitePreference
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
@@ -607,7 +606,6 @@ public class WebsitePermissionsFetcher {
         }
     }
 
-    @VisibleForTesting
     public void setWebsitePreferenceBridgeForTesting(
             WebsitePreferenceBridge websitePreferenceBridge) {
         mWebsitePreferenceBridge = websitePreferenceBridge;

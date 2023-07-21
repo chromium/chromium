@@ -12,8 +12,6 @@ import android.provider.Settings;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.incognito.R;
@@ -65,7 +63,6 @@ public class IncognitoReauthSettingUtils {
         return i;
     }
 
-    @VisibleForTesting
     public static void setIsDeviceScreenLockEnabledForTesting(boolean value) {
         sIsDeviceScreenLockEnabledForTesting = value;
         ResettersForTesting.register(() -> sIsDeviceScreenLockEnabledForTesting = null);

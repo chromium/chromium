@@ -323,13 +323,11 @@ public class FourStateCookieSettingsPreference extends Preference
         }
     }
 
-    @VisibleForTesting
     public boolean isButtonEnabledForTesting(CookieSettingsState state) {
         assert getButton(state) != null;
         return getButton(state).isEnabled();
     }
 
-    @VisibleForTesting
     public boolean isButtonCheckedForTesting(CookieSettingsState state) {
         assert getButton(state) != null;
         return getButton(state).isChecked();

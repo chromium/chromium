@@ -13,8 +13,6 @@ import android.util.FloatProperty;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.ui.interpolators.Interpolators;
 
 import java.text.NumberFormat;
@@ -150,7 +148,6 @@ public class NumberRollView extends FrameLayout {
     }
 
     /** Ends any in-progress animations. */
-    @VisibleForTesting
     public void endAnimationsForTesting() {
         if (mLastRollAnimator != null) mLastRollAnimator.end();
     }

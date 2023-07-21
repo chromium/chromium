@@ -17,7 +17,6 @@ import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -250,7 +249,6 @@ public class CustomTabToolbarCoordinator {
     /**
      * Set the callback object for the {@link PendingIntent} which is sent by the custom buttons.
      */
-    @VisibleForTesting
     public void setCustomButtonPendingIntentOnFinishedForTesting(
             PendingIntent.OnFinished onFinished) {
         mButtonClickOnFinishedForTesting = onFinished;

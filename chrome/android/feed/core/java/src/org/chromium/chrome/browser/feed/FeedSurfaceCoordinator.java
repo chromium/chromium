@@ -834,7 +834,6 @@ public class FeedSurfaceCoordinator
     }
 
     /** @return The {@link SectionHeaderListProperties} model for the Feed section header. */
-    @VisibleForTesting
     PropertyModel getSectionHeaderModelForTest() {
         return mSectionHeaderModel;
     }
@@ -868,22 +867,18 @@ public class FeedSurfaceCoordinator
         setHeaders(headers);
     }
 
-    @VisibleForTesting
     public FeedSurfaceMediator getMediatorForTesting() {
         return mMediator;
     }
 
-    @VisibleForTesting
     public void setMediatorForTesting(FeedSurfaceMediator mediator) {
         mMediator = mediator;
     }
 
-    @VisibleForTesting
     public View getSignInPromoViewForTesting() {
         return getSigninPromoView();
     }
 
-    @VisibleForTesting
     public View getSectionHeaderViewForTesting() {
         return mSectionHeaderView;
     }
@@ -1096,19 +1091,16 @@ public class FeedSurfaceCoordinator
                 R.dimen.ntp_header_lateral_paddings_v2);
     }
 
-    @VisibleForTesting
     public void setReliabilityLoggerForTesting(FeedReliabilityLogger logger) {
         var oldValue = mReliabilityLogger;
         mReliabilityLogger = logger;
         ResettersForTesting.register(() -> mReliabilityLogger = oldValue);
     }
 
-    @VisibleForTesting
     public void clearScrollableContainerDelegateForTesting() {
         mScrollableContainerDelegate = null;
     }
 
-    @VisibleForTesting
     public FeedActionDelegate getActionDelegateForTesting() {
         return mActionDelegate;
     }

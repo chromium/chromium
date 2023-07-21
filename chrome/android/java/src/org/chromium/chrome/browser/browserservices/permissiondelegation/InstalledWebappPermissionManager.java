@@ -192,7 +192,6 @@ public class InstalledWebappPermissionManager {
         return mStore.getStoredOrigins();
     }
 
-    @VisibleForTesting
     void clearForTesting() {
         mStore.clearForTesting();
     }

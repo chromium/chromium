@@ -408,30 +408,25 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
     }
 
     /** @return Suggestions Dropdown view, showing the list of suggestions. */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public OmniboxSuggestionsDropdown getSuggestionsDropdownForTest() {
         return mDropdown;
     }
 
     /** @return The current receiving OnSuggestionsReceived events. */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public OnSuggestionsReceivedListener getSuggestionsReceivedListenerForTest() {
         return mMediator;
     }
 
     /** @return The ModelList for the currently shown suggestions. */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public ModelList getSuggestionModelListForTest() {
         return mMediator.getSuggestionModelListForTest();
     }
 
-    @VisibleForTesting
     public @NonNull ModalDialogManager getModalDialogManagerForTest() {
         assert mModalDialogManagerSupplier.hasValue();
         return mModalDialogManagerSupplier.get();
     }
 
-    @VisibleForTesting
     public void stopAutocompleteForTest(boolean clearResults) {
         mMediator.stopAutocomplete(clearResults);
     }
