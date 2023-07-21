@@ -135,8 +135,7 @@ class GaiaScreenHandler
     FRAME_STATE_UNKNOWN = 0,
     FRAME_STATE_LOADING,
     FRAME_STATE_LOADED,
-    FRAME_STATE_ERROR,
-    FRAME_STATE_BLOCKED
+    FRAME_STATE_ERROR
   };
 
   GaiaScreenHandler(
@@ -196,8 +195,6 @@ class GaiaScreenHandler
   void set_offline_timeout_for_testing(base::TimeDelta offline_timeout) {
     offline_timeout_ = offline_timeout;
   }
-
-  bool IsNavigationBlockedForTesting() const;
 
  private:
   void LoadGaia(const login::GaiaContext& context);

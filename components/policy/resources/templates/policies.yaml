@@ -1130,8 +1130,6 @@ policies:
   1129: MidiAllowedForUrls
   1130: MidiBlockedForUrls
   1131: GlanceablesEnabled
-  1132: DeviceAuthenticationURLBlocklist
-  1133: DeviceAuthenticationURLAllowlist
 atomic_groups:
   1: Homepage
   2: RemoteAccess

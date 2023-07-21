@@ -693,40 +693,6 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
                   POLICY_SOURCE_CLOUD, base::Value(std::move(image_urls)),
                   nullptr);
   }
-
-  if (policy.has_device_authentication_url_blocklist()) {
-    const em::StringListPolicyProto& container(
-        policy.device_authentication_url_blocklist());
-
-    base::Value::List blocklist;
-    if (container.has_value()) {
-      for (const auto& entry : container.value().entries()) {
-        blocklist.Append(entry);
-      }
-    }
-
-    policies->Set(key::kDeviceAuthenticationURLBlocklist,
-                  POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                  POLICY_SOURCE_CLOUD, base::Value(std::move(blocklist)),
-                  nullptr);
-  }
-
-  if (policy.has_device_authentication_url_allowlist()) {
-    const em::StringListPolicyProto& container(
-        policy.device_authentication_url_allowlist());
-
-    base::Value::List allowlist;
-    if (container.has_value()) {
-      for (const auto& entry : container.value().entries()) {
-        allowlist.Append(entry);
-      }
-    }
-
-    policies->Set(key::kDeviceAuthenticationURLAllowlist,
-                  POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                  POLICY_SOURCE_CLOUD, base::Value(std::move(allowlist)),
-                  nullptr);
-  }
 }
 
 void DecodeNetworkPolicies(const em::ChromeDeviceSettingsProto& policy,
