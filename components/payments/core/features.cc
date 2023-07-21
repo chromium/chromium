@@ -4,7 +4,6 @@
 
 #include "components/payments/core/features.h"
 
-#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
 namespace payments {
@@ -58,11 +57,17 @@ BASE_FEATURE(kSecurePaymentConfirmationUseCredentialStoreAPIs,
 #endif
 );
 
+#if !BUILDFLAG(IS_ANDROID)
 // The blink-side feature of the same name is disabled by default, and can be
 // enabled directly or via origin trial.
 BASE_FEATURE(kPaymentHandlerMinimalHeaderUX,
              "PaymentHandlerMinimalHeaderUX",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPaymentHandlerWindowInTaskManager,
+             "PaymentHandlerWindowInTaskManager",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 }  // namespace features
 }  // namespace payments
