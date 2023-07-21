@@ -19,6 +19,7 @@ class LabelButton;
 namespace ash {
 
 struct AnchoredNudgeData;
+class SystemShadow;
 
 // The System Nudge view. (go/cros-educationalnudge-spec)
 // This view supports different configurations depending on the provided
@@ -47,6 +48,11 @@ class ASH_EXPORT SystemNudgeView : public views::FlexLayoutView {
   raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<views::LabelButton> first_button_ = nullptr;
   raw_ptr<views::LabelButton> second_button_ = nullptr;
+
+  std::unique_ptr<SystemShadow> shadow_;
+
+  // views::View:
+  void AddedToWidget() override;
 
   // Sets the maximum width for `title_label_` and `body_label_`.
   void SetLabelsMaxWidth(int max_width);

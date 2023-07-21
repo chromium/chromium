@@ -13,12 +13,14 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/pill_button.h"
+#include "ash/style/system_shadow.h"
 #include "ash/style/typography.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -61,6 +63,9 @@ constexpr gfx::Insets kButtonsMargins = gfx::Insets::VH(0, 8);
 constexpr int kButtonContainerTopPadding = 16;
 constexpr int kImageViewTrailingPadding = 20;
 constexpr int kTitleBottomPadding = 8;
+
+// Shadow constants
+constexpr gfx::Point kShadowOrigin = gfx::Point(8, 8);
 
 void AddPaddingView(views::View* parent, int width, int height) {
   parent->AddChildView(std::make_unique<views::View>())
@@ -220,6 +225,22 @@ SystemNudgeView::SystemNudgeView(const AnchoredNudgeData& nudge_data) {
 }
 
 SystemNudgeView::~SystemNudgeView() = default;
+
+void SystemNudgeView::AddedToWidget() {
+  // Since nudges have a large corner radius, we use the shadow on texture
+  // layer. Refer to `ash::SystemShadowOnTextureLayer` for more details.
+  shadow_ =
+      SystemShadow::CreateShadowOnTextureLayer(SystemShadow::Type::kElevation4);
+  shadow_->SetRoundedCornerRadius(kNudgeCornerRadius);
+  shadow_->SetContentBounds(gfx::Rect(kShadowOrigin, GetPreferredSize()));
+
+  // Attach the shadow at the bottom of the widget layer.
+  auto* shadow_layer = shadow_->GetLayer();
+  auto* widget_layer = GetWidget()->GetLayer();
+
+  widget_layer->Add(shadow_layer);
+  widget_layer->StackAtBottom(shadow_layer);
+}
 
 void SystemNudgeView::SetLabelsMaxWidth(int max_width) {
   if (title_label_) {
