@@ -14,7 +14,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/untrusted_bubble_web_ui_controller.h"
 
-class ReadAnythingPageHandler;
+class ReadAnythingUntrustedPageHandler;
 
 class ReadAnythingUIUntrustedConfig : public content::WebUIConfig {
  public:
@@ -56,7 +56,8 @@ class ReadAnythingUI
       mojo::PendingReceiver<read_anything::mojom::UntrustedPageHandler>
           receiver) override;
 
-  std::unique_ptr<ReadAnythingPageHandler> read_anything_page_handler_;
+  std::unique_ptr<ReadAnythingUntrustedPageHandler>
+      read_anything_untrusted_page_handler_;
   mojo::Receiver<read_anything::mojom::UntrustedPageHandlerFactory>
       read_anything_page_factory_receiver_{this};
 

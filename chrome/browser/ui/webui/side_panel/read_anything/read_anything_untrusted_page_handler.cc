@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_page_handler.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.h"
 
 #include <string>
 #include <utility>
@@ -27,7 +27,7 @@ using read_anything::mojom::ReadAnythingTheme;
 using read_anything::mojom::UntrustedPage;
 using read_anything::mojom::UntrustedPageHandler;
 
-ReadAnythingPageHandler::ReadAnythingPageHandler(
+ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
     mojo::PendingRemote<UntrustedPage> page,
     mojo::PendingReceiver<UntrustedPageHandler> receiver,
     content::WebUI* web_ui)
@@ -62,12 +62,13 @@ ReadAnythingPageHandler::ReadAnythingPageHandler(
   OnActiveWebContentsChanged();
 }
 
-ReadAnythingPageHandler::~ReadAnythingPageHandler() {
+ReadAnythingUntrustedPageHandler::~ReadAnythingUntrustedPageHandler() {
   TabStripModelObserver::StopObservingAll(this);
   Observe(nullptr);
 
-  if (!coordinator_)
+  if (!coordinator_) {
     return;
+  }
 
   // If |this| is destroyed before the |ReadAnythingCoordinator|, then remove
   // |this| from the observer lists. In the cases where the coordinator is
@@ -80,7 +81,7 @@ ReadAnythingPageHandler::~ReadAnythingPageHandler() {
 // ui::AXActionHandlerObserver:
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReadAnythingPageHandler::TreeRemoved(ui::AXTreeID ax_tree_id) {
+void ReadAnythingUntrustedPageHandler::TreeRemoved(ui::AXTreeID ax_tree_id) {
   page_->OnAXTreeDestroyed(ax_tree_id);
 }
 
@@ -88,12 +89,13 @@ void ReadAnythingPageHandler::TreeRemoved(ui::AXTreeID ax_tree_id) {
 // read_anything::mojom::UntrustedPageHandler:
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReadAnythingPageHandler::OnCopy() {
+void ReadAnythingUntrustedPageHandler::OnCopy() {
   web_contents()->Copy();
 }
 
-void ReadAnythingPageHandler::OnLinkClicked(const ui::AXTreeID& target_tree_id,
-                                            ui::AXNodeID target_node_id) {
+void ReadAnythingUntrustedPageHandler::OnLinkClicked(
+    const ui::AXTreeID& target_tree_id,
+    ui::AXNodeID target_node_id) {
   ui::AXActionData action_data;
   action_data.target_tree_id = target_tree_id;
   action_data.action = ax::mojom::Action::kDoDefault;
@@ -107,7 +109,7 @@ void ReadAnythingPageHandler::OnLinkClicked(const ui::AXTreeID& target_tree_id,
   handler->PerformAction(action_data);
 }
 
-void ReadAnythingPageHandler::OnSelectionChange(
+void ReadAnythingUntrustedPageHandler::OnSelectionChange(
     const ui::AXTreeID& target_tree_id,
     ui::AXNodeID anchor_node_id,
     int anchor_offset,
@@ -133,7 +135,7 @@ void ReadAnythingPageHandler::OnSelectionChange(
 // ReadAnythingModel::Observer:
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReadAnythingPageHandler::OnReadAnythingThemeChanged(
+void ReadAnythingUntrustedPageHandler::OnReadAnythingThemeChanged(
     const std::string& font_name,
     double font_scale,
     ui::ColorId foreground_color_id,
@@ -162,12 +164,12 @@ void ReadAnythingPageHandler::OnReadAnythingThemeChanged(
 // ReadAnythingCoordinator::Observer:
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReadAnythingPageHandler::Activate(bool active) {
+void ReadAnythingUntrustedPageHandler::Activate(bool active) {
   active_ = active;
   OnActiveWebContentsChanged();
 }
 
-void ReadAnythingPageHandler::OnCoordinatorDestroyed() {
+void ReadAnythingUntrustedPageHandler::OnCoordinatorDestroyed() {
   coordinator_ = nullptr;
 }
 
@@ -176,7 +178,7 @@ void ReadAnythingPageHandler::OnCoordinatorDestroyed() {
 ///////////////////////////////////////////////////////////////////////////////
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-void ReadAnythingPageHandler::StateChanged(
+void ReadAnythingUntrustedPageHandler::StateChanged(
     screen_ai::ScreenAIInstallState::State state) {
   DCHECK(features::IsReadAnythingWithScreen2xEnabled());
   // If Screen AI library is downloaded but not initialized yet, ensure it is
@@ -197,7 +199,7 @@ void ReadAnythingPageHandler::StateChanged(
 // TabStripModelObserver:
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReadAnythingPageHandler::OnTabStripModelChanged(
+void ReadAnythingUntrustedPageHandler::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
@@ -206,7 +208,7 @@ void ReadAnythingPageHandler::OnTabStripModelChanged(
   }
 }
 
-void ReadAnythingPageHandler::OnTabStripModelDestroyed(
+void ReadAnythingUntrustedPageHandler::OnTabStripModelDestroyed(
     TabStripModel* tab_strip_model) {
   // If the TabStripModel is destroyed before |this|, remove |this| as an
   // observer.
@@ -218,11 +220,11 @@ void ReadAnythingPageHandler::OnTabStripModelDestroyed(
 // content::WebContentsObserver:
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReadAnythingPageHandler::PrimaryPageChanged(content::Page& page) {
+void ReadAnythingUntrustedPageHandler::PrimaryPageChanged(content::Page& page) {
   OnActiveAXTreeIDChanged();
 }
 
-void ReadAnythingPageHandler::AccessibilityEventReceived(
+void ReadAnythingUntrustedPageHandler::AccessibilityEventReceived(
     const content::AXEventNotificationDetails& details) {
   page_->AccessibilityEventReceived(details.ax_tree_id, details.updates,
                                     details.events);
@@ -230,7 +232,7 @@ void ReadAnythingPageHandler::AccessibilityEventReceived(
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void ReadAnythingPageHandler::OnActiveWebContentsChanged() {
+void ReadAnythingUntrustedPageHandler::OnActiveWebContentsChanged() {
   // TODO(crbug.com/1266555): Disable accessibility.and stop observing events
   // on the now inactive tab. But make sure that we don't disable it for
   // assistive technology users. Some options here are:
@@ -255,7 +257,7 @@ void ReadAnythingPageHandler::OnActiveWebContentsChanged() {
   OnActiveAXTreeIDChanged();
 }
 
-void ReadAnythingPageHandler::OnActiveAXTreeIDChanged() {
+void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
   ui::AXTreeID tree_id = ui::AXTreeIDUnknown();
   ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
   GURL visible_url;

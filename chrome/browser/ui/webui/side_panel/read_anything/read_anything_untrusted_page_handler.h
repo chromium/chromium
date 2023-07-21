@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_PAGE_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_PAGE_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_UNTRUSTED_PAGE_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_UNTRUSTED_PAGE_HANDLER_H_
 
 #include <string>
 
@@ -25,14 +25,14 @@
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
-// ReadAnythingPageHandler
+// ReadAnythingUntrustedPageHandler
 //
 //  A handler of the Read Anything app
 //  (chrome/browser/resources/side_panel/read_anything/app.ts).
 //  This class is created and owned by ReadAnythingUI and has the same lifetime
 //  as the Side Panel view.
 //
-class ReadAnythingPageHandler
+class ReadAnythingUntrustedPageHandler
     : public ui::AXActionHandlerObserver,
       public read_anything::mojom::UntrustedPageHandler,
       public ReadAnythingModel::Observer,
@@ -43,14 +43,16 @@ class ReadAnythingPageHandler
       public TabStripModelObserver,
       public content::WebContentsObserver {
  public:
-  ReadAnythingPageHandler(
+  ReadAnythingUntrustedPageHandler(
       mojo::PendingRemote<read_anything::mojom::UntrustedPage> page,
       mojo::PendingReceiver<read_anything::mojom::UntrustedPageHandler>
           receiver,
       content::WebUI* web_ui);
-  ReadAnythingPageHandler(const ReadAnythingPageHandler&) = delete;
-  ReadAnythingPageHandler& operator=(const ReadAnythingPageHandler&) = delete;
-  ~ReadAnythingPageHandler() override;
+  ReadAnythingUntrustedPageHandler(const ReadAnythingUntrustedPageHandler&) =
+      delete;
+  ReadAnythingUntrustedPageHandler& operator=(
+      const ReadAnythingUntrustedPageHandler&) = delete;
+  ~ReadAnythingUntrustedPageHandler() override;
 
  private:
   // ui::AXActionHandlerObserver:
@@ -135,4 +137,4 @@ class ReadAnythingPageHandler
 #endif
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_PAGE_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_UNTRUSTED_PAGE_HANDLER_H_

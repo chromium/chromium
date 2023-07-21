@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_page_handler.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -99,8 +99,9 @@ void ReadAnythingUI::CreateUntrustedPageHandler(
     mojo::PendingReceiver<read_anything::mojom::UntrustedPageHandler>
         receiver) {
   DCHECK(page);
-  read_anything_page_handler_ = std::make_unique<ReadAnythingPageHandler>(
-      std::move(page), std::move(receiver), web_ui());
+  read_anything_untrusted_page_handler_ =
+      std::make_unique<ReadAnythingUntrustedPageHandler>(
+          std::move(page), std::move(receiver), web_ui());
   if (embedder())
     embedder()->ShowUI();
 }

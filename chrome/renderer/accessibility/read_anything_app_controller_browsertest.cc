@@ -27,10 +27,10 @@ class MockAXTreeDistiller : public AXTreeDistiller {
               (override));
 };
 
-class MockReadAnythingPageHandler
+class MockReadAnythingUntrustedPageHandler
     : public read_anything::mojom::UntrustedPageHandler {
  public:
-  MockReadAnythingPageHandler() = default;
+  MockReadAnythingUntrustedPageHandler() = default;
 
   MOCK_METHOD(void,
               OnLinkClicked,
@@ -253,7 +253,7 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   ui::AXTreeID tree_id_;
   MockAXTreeDistiller* distiller_ = nullptr;
-  testing::StrictMock<MockReadAnythingPageHandler> page_handler_;
+  testing::StrictMock<MockReadAnythingUntrustedPageHandler> page_handler_;
 
  private:
   // ReadAnythingAppController constructor and destructor are private so it's
