@@ -42,7 +42,7 @@ public class SharedPreferencesManager {
 
     private SharedPreferencesManager() {
         maybeInitializeChecker();
-        // In production builds, use a dummy key checker.
+        // In production builds, use a placeholder key checker.
         if (mKeyChecker == null) {
             mKeyChecker = new BaseChromePreferenceKeyChecker();
         }

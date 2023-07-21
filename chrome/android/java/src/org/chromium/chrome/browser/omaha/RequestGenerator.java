@@ -53,7 +53,7 @@ public abstract class RequestGenerator {
     /**
      * Generates the XML for the current request. Follows the format laid out at
      * https://github.com/google/omaha/blob/master/doc/ServerProtocolV3.md
-     * with some additional dummy values supplied.
+     * with some additional placeholder values supplied.
      */
     public String generateXML(String sessionID, String versionName, long installAge,
             int lastCheckDate, RequestData data) throws RequestFailureException {

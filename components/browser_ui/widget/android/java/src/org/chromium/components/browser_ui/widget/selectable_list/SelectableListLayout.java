@@ -237,7 +237,7 @@ public class SelectableListLayout<E> extends FrameLayout
     public TextView initializeEmptyView(int emptyStringResId) {
         setEmptyViewText(emptyStringResId);
 
-        // Dummy listener to have the touch events dispatched to this view tree for navigation UI.
+        // Empty listener to have the touch events dispatched to this view tree for navigation UI.
         mEmptyViewWrapper.setOnTouchListener((v, event) -> true);
 
         return mEmptyView;

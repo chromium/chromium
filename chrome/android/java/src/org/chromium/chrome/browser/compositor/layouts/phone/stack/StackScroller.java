@@ -447,8 +447,8 @@ public class StackScroller {
         private static final int MAX_SNAP_SCROLL_MIN_VELOCITY = 5000;
 
         // If we receive a fling within this many milliseconds of receiving a previous fling that
-        // caused us to do a maximum distance scroll (and a few other sanity checks hold), we lower
-        // the velocity threshold for the new fling to also do a maximum velocity scroll;
+        // caused us to do a maximum distance scroll (and a few other validity checks hold), we
+        // lower the velocity threshold for the new fling to also do a maximum velocity scroll;
         private static final int REPEATED_FLING_TIMEOUT = 1500;
         // Minimum velocity for a "repeated fling" (see previous comment) to trigger a maximum
         // velocity scroll;

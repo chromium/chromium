@@ -468,7 +468,7 @@ public class OmahaBase {
 
     /**
      * Reads the data back from the file it was saved to.  Uses SharedPreferences to handle I/O.
-     * Sanity checks are performed on the timestamps to guard against clock changing.
+     * Validity checks are performed on the timestamps to guard against clock changing.
      */
     private void restoreState() {
         if (mStateHasBeenRestored) return;

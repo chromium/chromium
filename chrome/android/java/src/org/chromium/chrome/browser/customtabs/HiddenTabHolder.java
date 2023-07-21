@@ -156,7 +156,7 @@ public class HiddenTabHolder {
         Tab tab = new TabBuilder()
                           .setWindow(new WindowAndroid(context))
                           .setLaunchType(TabLaunchType.FROM_SPECULATIVE_BACKGROUND_CREATION)
-                          .setDelegateFactory(CustomTabDelegateFactory.createDummy())
+                          .setDelegateFactory(CustomTabDelegateFactory.createEmpty())
                           .setInitiallyHidden(true)
                           .build();
 

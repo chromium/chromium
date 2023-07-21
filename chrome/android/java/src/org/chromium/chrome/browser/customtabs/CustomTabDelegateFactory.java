@@ -329,7 +329,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
      * Creates a basic/empty {@link TabDelegateFactory} for use when creating a hidden tab. It will
      * be replaced when the hidden Tab becomes shown.
      */
-    static CustomTabDelegateFactory createDummy() {
+    static CustomTabDelegateFactory createEmpty() {
         return new CustomTabDelegateFactory(null, false, false, null, DisplayMode.BROWSER, false,
                 null, null, null, null,
                 ()

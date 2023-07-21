@@ -55,8 +55,8 @@ public class AutocompleteMatchBuilder {
     public static AutocompleteMatchBuilder searchWithType(@OmniboxSuggestionType int type) {
         return new AutocompleteMatchBuilder(type)
                 .setIsSearch(true)
-                .setDisplayText("Dummy Suggestion")
-                .setDescription("Dummy Description")
+                .setDisplayText("Placeholder Suggestion")
+                .setDescription("Placeholder Description")
                 // Use either JUnitTest or actual GURL (depends on whether ShadowGURL is applied).
                 .setUrl(new GURL(JUnitTestGURLs.SEARCH_URL));
     }

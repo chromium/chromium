@@ -800,7 +800,7 @@ class ClientManager {
     /** Tries to bind to a client to keep it alive, and returns true for success. */
     public synchronized boolean keepAliveForSession(CustomTabsSessionToken session, Intent intent) {
         // When an application is bound to a service, its priority is raised to
-        // be at least equal to the application's one. This binds to a dummy
+        // be at least equal to the application's one. This binds to a placeholder
         // service (no calls to this service are made).
         if (intent == null || intent.getComponent() == null) return false;
         SessionParams params = mSessionParams.get(session);

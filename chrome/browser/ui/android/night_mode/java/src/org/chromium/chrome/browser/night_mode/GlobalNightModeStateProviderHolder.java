@@ -22,10 +22,10 @@ public class GlobalNightModeStateProviderHolder {
     /**
      * Created when night mode is not available or not supported.
      */
-    private static class DummyNightModeStateProvider implements NightModeStateProvider {
+    private static class PlaceholderNightModeStateProvider implements NightModeStateProvider {
         final boolean mIsNightModeForceEnabled;
 
-        private DummyNightModeStateProvider() {
+        private PlaceholderNightModeStateProvider() {
             mIsNightModeForceEnabled =
                     CommandLine.getInstance().hasSwitch(ChromeSwitches.FORCE_ENABLE_NIGHT_MODE);
             // Always stay in night mode if night mode is force enabled, and always stay in light
@@ -57,7 +57,7 @@ public class GlobalNightModeStateProviderHolder {
         if (sInstance == null) {
             if (CommandLine.getInstance().hasSwitch(ChromeSwitches.FORCE_ENABLE_NIGHT_MODE)
                     || !NightModeUtils.isNightModeSupported()) {
-                sInstance = new DummyNightModeStateProvider();
+                sInstance = new PlaceholderNightModeStateProvider();
             } else {
                 sInstance = new GlobalNightModeStateController(SystemNightModeMonitor.getInstance(),
                         PowerSavingModeMonitor.getInstance(),

@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.preferences;
 
 /**
- * A dummy key checker that never throws exceptions. Used in production builds.
+ * A placeholder key checker that never throws exceptions. Used in production builds.
  */
 class BaseChromePreferenceKeyChecker {
     void checkIsKeyInUse(String key) {
