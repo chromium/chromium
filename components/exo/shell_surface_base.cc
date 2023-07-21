@@ -1756,8 +1756,14 @@ void ShellSurfaceBase::UpdateSurfaceBounds() {
   gfx::Point origin = GetClientViewBounds().origin();
 
   origin += GetSurfaceOrigin().OffsetFromOrigin();
-  origin -= ToFlooredVector2d(ScaleVector2d(
-      root_surface_origin().OffsetFromOrigin(), 1.f / GetScaleFactor()));
+  const gfx::Vector2dF scaled_root_origin = ScaleVector2d(
+      root_surface_origin().OffsetFromOrigin(), 1.f / GetScaleFactor());
+  origin -= ToFlooredVector2d(scaled_root_origin);
+  // Set subpixel offset to the diff between the scaled origin in float and its
+  // floored value to adjust root surface origin to be at the same position.
+  host_window()->layer()->SetSubpixelPositionOffset(
+      ToFlooredVector2d(scaled_root_origin) - scaled_root_origin);
+
   gfx::Rect surface_bounds(origin, host_window()->bounds().size());
   if (host_window()->bounds() == surface_bounds)
     return;

@@ -477,6 +477,7 @@ void ShellSurface::OnWindowBoundsChanged(aura::Window* window,
     if (new_bounds.size() == old_bounds.size()) {
       if (!origin_change_callback_.is_null())
         origin_change_callback_.Run(GetClientBoundsInScreen(widget_).origin());
+      UpdateSurfaceBounds();
       return;
     }
 
