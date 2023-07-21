@@ -75,8 +75,12 @@ class TabGridPanelViewBinder {
      * @param propertyKey The key for the property to update for.
      */
     public static void bind(PropertyModel model, ViewHolder viewHolder, PropertyKey propertyKey) {
-        // Only one model should be binding to the DialogView at a time. Use a binding token of the
-        // hashCode of the currently active {@link TabGridDialogMediator} to enforce this.
+        // The TabGridDialogView is effectively a singleton in the UI with multiple Mediators and
+        // PropertyModel's attempting to managed it. This BINDING_TOKEN system prevents collisions.
+        //
+        // Only one PropertyModel should be binding to the DialogView at a time. To enforce this
+        // the {@link TabGridDialogMediator} currently using the view must provide its hashCode as
+        // a BINDING_TOKEN.
         final Integer bindingToken = model.get(BINDING_TOKEN);
         final Integer oldBindingToken = viewHolder.dialogView.getBindingToken();
         if (BINDING_TOKEN == propertyKey) {
@@ -87,6 +91,7 @@ class TabGridPanelViewBinder {
             viewHolder.dialogView.setBindingToken(bindingToken);
             if (bindingToken == null) return;
 
+            // Re-bind if the binding token ever changes.
             for (PropertyKey key : TabGridPanelProperties.ALL_KEYS) {
                 if (BINDING_TOKEN == key) continue;
 
@@ -99,6 +104,10 @@ class TabGridPanelViewBinder {
             return;
         }
 
+        // The null checks in the following blocks are there for if
+        // 1) The dialogView is not initialized.
+        // 2) ALL_KEYS are being re-bound upon changing BINDING_TOKEN and a value is unset in the
+        //    newly bound model.
         if (COLLAPSE_CLICK_LISTENER == propertyKey) {
             viewHolder.toolbarView.setLeftButtonOnClickListener(model.get(COLLAPSE_CLICK_LISTENER));
         } else if (ADD_CLICK_LISTENER == propertyKey) {
@@ -167,9 +176,9 @@ class TabGridPanelViewBinder {
                 RecyclerView view = viewHolder.contentView;
                 if (view.getWidth() == 0 || view.getHeight() == 0) {
                     // If layout hasn't happened post the scroll index change until layout happens.
-                    view.post(()
-                                      -> setScrollIndex(model.get(BROWSER_CONTROLS_STATE_PROVIDER),
-                                              view, index));
+                    view.post(() -> {
+                        setScrollIndex(model.get(BROWSER_CONTROLS_STATE_PROVIDER), view, index);
+                    });
                     return;
                 }
                 setScrollIndex(
