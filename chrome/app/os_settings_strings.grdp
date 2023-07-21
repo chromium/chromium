@@ -3221,14 +3221,8 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTER_SETUP_BUTTON" desc="Text for the button which allows the user to manually setup a CUPS printer.">
     Set up
   </message>
-  <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTER_SETUP_BUTTON_ARIA" desc="Label to be read aloud by the screen reader for the button which allows the user to manually setup a CUPS printer.">
-    Set up <ph name="PRINTER_NAME">$1<ex>HP OfficeJet 500</ex></ph>
-  </message>
   <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTER_SAVE_BUTTON" desc="Text for the button which allows the user to add an automatically discovered printer to the user's saved printer list.">
     Save
-  </message>
-  <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTER_SAVE_BUTTON_ARIA" desc="Label to be read aloud by the screen reader for the button which allows the user to add an automatically discovered printer to the user's saved printer list.">
-    Save <ph name="PRINTER_NAME">$1<ex>HP OfficeJet 500</ex></ph>
   </message>
   <message name="IDS_SETTINGS_PRINTING_CUPS_SEARCH_LABEL" desc="The placeholder text in the printer search field.">
     Search printers
@@ -3517,6 +3511,9 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_PRINTING_PRINTER_STATUS_TRAY_MISSING" desc="Error label to show under the destination dropdown when the printer is missing a tray.">
     Tray is missing
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_PRINTER_ENTRY_ARIA_LABEL" is_accessibility_with_no_ui="true" desc="Aria label spoken by ChromeVox announcing the printer's position in the list of printers.">
+    <ph name="PRINTER_NAME">$1<ex>HP 3100</ex></ph> <ph name="PRINTER_STATUS">$2<ex>Low on ink</ex></ph>. Printer <ph name="ITEM_POSITION">$3<ex>2</ex></ph> of <ph name="NUM_PRINTERS">$4<ex>4</ex></ph>.
   </message>
 
   <!-- Internet page (OS settings) -->

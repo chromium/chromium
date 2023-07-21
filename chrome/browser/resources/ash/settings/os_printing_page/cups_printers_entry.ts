@@ -65,6 +65,9 @@ export class SettingsCupsPrintersEntryElement extends
         reflectToAttribute: true,
       },
 
+      /** Number of printers in the respective list this row is part of. */
+      numPrinters: Number,
+
       /**
        * True when the "printer-settings-printer-status" feature flag is
        * enabled.
@@ -105,6 +108,7 @@ export class SettingsCupsPrintersEntryElement extends
   savingPrinter: boolean;
   userPrintersAllowed: boolean;
   printerStatusReasonCache: Map<string, PrinterStatusReason>;
+  numPrinters: number;
   private hasHighSeverityError_: boolean;
   private isPrinterSettingsRevampEnabled_: boolean;
   private isPrinterSettingsPrinterStatusEnabled_: boolean;
@@ -278,6 +282,17 @@ export class SettingsCupsPrintersEntryElement extends
         STATUS_REASON_STRING_KEY_MAP.get(printerStatusReason);
     return statusReasonStringKey ? this.i18nAdvanced(statusReasonStringKey) :
                                    window.trustedTypes!.emptyHTML;
+  }
+
+  private getAriaLabel_(): string {
+    if (!this.printerEntry) {
+      return '';
+    }
+
+    return this.i18n(
+        'printerEntryAriaLabel', this.printerEntry.printerInfo.printerName,
+        this.getStatusReasonString_().toString(), this.focusRowIndex + 1,
+        this.numPrinters);
   }
 }
 

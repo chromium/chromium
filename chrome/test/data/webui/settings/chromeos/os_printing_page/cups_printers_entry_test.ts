@@ -260,4 +260,30 @@ suite('<settings-cups-printers-entry>', () => {
             'Printing.CUPS.SettingsUserAction',
             PrinterSettingsUserAction.SAVE_PRINTER));
   });
+
+  // Verify the correct ARIA label is computed based on the entry attributes.
+  test('entryAriaLabel', () => {
+    initializePrinterEntryTestElement();
+
+    const printerStatusReasonCache = new Map();
+    printerStatusReasonCache.set('id1', PrinterStatusReason.OUT_OF_INK);
+    printerEntryTestElement.printerStatusReasonCache = printerStatusReasonCache;
+    printerEntryTestElement.printerEntry =
+        createPrinterEntry(PrinterType.SAVED);
+
+    const printerName = 'Test name';
+    const index = 0;
+    const numPrinters = 3;
+    printerEntryTestElement.focusRowIndex = index;
+    printerEntryTestElement.numPrinters = numPrinters;
+    printerEntryTestElement.set('printerEntry.printerInfo.printerId', 'id1');
+
+    flush();
+    assertEquals(
+        loadTimeData.getStringF(
+            'printerEntryAriaLabel', printerName, 'Out of ink', index + 1,
+            numPrinters),
+        printerEntryTestElement.shadowRoot!
+            .querySelector<HTMLElement>('#entry')!.ariaLabel!.trim());
+  });
 });
