@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/drive_pinning_screen_handler.h"
+#include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
 #include "components/drive/drive_pref_names.h"
 #include "ui/base/text/bytes_formatting.h"
 
@@ -68,6 +69,8 @@ void DrivePinningScreen::ApplyDrivePinningPref(Profile* profile) {
       profile->GetPrefs()->GetBoolean(prefs::kOobeDrivePinningEnabledDeferred);
   profile->GetPrefs()->SetBoolean(drive::prefs::kDriveFsBulkPinningEnabled,
                                   drive_pinning);
+  drivefs::pinning::RecordBulkPinningEnabledSource(
+      drivefs::pinning::BulkPinningEnabledSource::kChoobe);
   prefs->ClearPref(prefs::kOobeDrivePinningEnabledDeferred);
 }
 

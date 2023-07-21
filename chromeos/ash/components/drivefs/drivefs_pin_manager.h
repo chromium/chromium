@@ -45,7 +45,8 @@ enum class BulkPinningEnabledSource {
   kBanner = 0,
   kSystemSettings = 1,
   kDriveInternal = 2,
-  kMaxValue = kDriveInternal,
+  kChoobe = 3,
+  kMaxValue = kChoobe,
 };
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)

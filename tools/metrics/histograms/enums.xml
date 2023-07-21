@@ -45685,6 +45685,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="0" label="Banner"/>
   <int value="1" label="System Settings"/>
   <int value="2" label="Drive Internals"/>
+  <int value="3" label="CHOOBE"/>
 </enum>
 
 <enum name="FileManagerListType">
