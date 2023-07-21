@@ -1,7 +1,7 @@
 Name: Java Development Kit
 Short Name: JDK
 URL: https://openjdk.java.net/
-Version: 20
+Version: 17
 License: GPL v2
 Security Critical: no
 Shipped: no
@@ -31,8 +31,9 @@ To roll to a new JDK major version:
  * Change the package in 3pp/fetch.py
  * Pause the auto-roller
  * Wait for the 3pp packager to create a new package
- * Land a manual roll (by setting the instance in //DEPS) at the same time as
-   updating the Version: at the top of this file.
+ * Land a manual roll:
+   * Update Instance ID in //DEPS
+   * Update Version: at the top of this file.
 
 Local Modifications:
 None

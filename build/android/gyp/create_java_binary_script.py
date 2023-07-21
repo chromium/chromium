@@ -40,6 +40,11 @@ if os.getcwd() != self_dir:
   classpath = [fix_path(p) for p in classpath]
   java_path = fix_path(java_path)
 java_cmd = [java_path]
+
+# https://github.com/iBotPeaches/Apktool/issues/3174
+# https://chromium-review.googlesource.com/c/chromium/src/+/4697557/3
+java_cmd += ['-Djdk.util.zip.disableZip64ExtraFieldValidation=true']
+
 # This is a simple argparser for jvm, jar, and classpath arguments.
 parser = argparse.ArgumentParser(add_help=False)
 parser.add_argument('--jar-args')

@@ -45,6 +45,10 @@ def JavaCmd(xmx='1G'):
   # bots to OOM when many java commands are runnig at the same time
   # https://crbug.com/1098333
   ret += ['-Xmx' + xmx]
+  # JDK17 bug.
+  # See: https://chromium-review.googlesource.com/c/chromium/src/+/4705883/3
+  # https://github.com/iBotPeaches/Apktool/issues/3174
+  ret += ['-Djdk.util.zip.disableZip64ExtraFieldValidation=true']
   return ret
 
 
