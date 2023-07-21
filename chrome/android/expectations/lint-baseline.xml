@@ -4374,28 +4374,6 @@
     </issue>
 
     <issue
-        id="UseSwitchCompatOrMaterialCode"
-        message="Use `SwitchCompat` from AppCompat or `SwitchMaterial` from Material library"
-        errorLine1="        final Switch umaSwitch = mView.findViewById(R.id.fre_uma_dialog_switch);"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/ui/android/signin/java/src/org/chromium/chrome/browser/ui/signin/fre/FreUMADialogCoordinator.java"
-            line="56"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="UseSwitchCompatOrMaterialXml"
-        message="Use `SwitchCompat` from AppCompat or `SwitchMaterial` from Material library"
-        errorLine1="            &lt;Switch"
-        errorLine2="            ^">
-        <location
-            file="../../chrome/browser/ui/android/signin/java/res/layout/fre_uma_dialog.xml"
-            line="35"
-            column="13"/>
-    </issue>
-
-    <issue
         id="VectorRaster"
         message="Limit vector icons sizes to 200×200 to keep icon drawing fast; see https://developer.android.com/studio/write/vector-asset-studio#when for more"
         errorLine1="    android:width=&quot;360dp&quot;"

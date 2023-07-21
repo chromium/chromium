@@ -7,9 +7,10 @@ package org.chromium.chrome.browser.ui.signin.fre;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Switch;
 
 import androidx.annotation.MainThread;
+
+import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -52,7 +53,7 @@ public class FreUMADialogCoordinator {
         mView.findViewById(R.id.fre_uma_dialog_dismiss_button).setOnClickListener(v -> {
             mDialogManager.dismissDialog(mModel, DialogDismissalCause.ACTION_ON_CONTENT);
         });
-        final Switch umaSwitch = mView.findViewById(R.id.fre_uma_dialog_switch);
+        final SwitchMaterial umaSwitch = mView.findViewById(R.id.fre_uma_dialog_switch);
         umaSwitch.setChecked(allowMetricsAndCrashUploading);
         umaSwitch.setOnCheckedChangeListener(
                 (compoundButton,
