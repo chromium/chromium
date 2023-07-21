@@ -248,8 +248,9 @@ absl::optional<std::string> GetDisableReason(
     return app_id.has_value() &&
            registrar->IsInstalledByDefaultManagement(app_id.value());
   }();
-  if (in_user_uninstalled_prefs && ignore_user_uninstalled_prefs)
+  if (in_user_uninstalled_prefs && ignore_user_uninstalled_prefs) {
     ++corrupt_user_uninstall_prefs_count;
+  }
   bool was_previously_uninstalled_by_user =
       in_user_uninstalled_prefs && !ignore_user_uninstalled_prefs;
 
@@ -336,8 +337,9 @@ absl::optional<std::string> GetDisableReason(
     bool was_previously_preinstalled = false;
     if (app_id.has_value()) {
       const WebApp* web_app = registrar->GetAppById(app_id.value());
-      if (web_app && web_app->IsPreinstalledApp())
+      if (web_app && web_app->IsPreinstalledApp()) {
         was_previously_preinstalled = true;
+      }
     }
 
     if (!was_previously_preinstalled) {
@@ -725,8 +727,9 @@ void PreinstalledWebAppManager::Load(ConsumeInstallOptions callback) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // With Lacros, web apps are not installed using the Ash browser.
-  if (IsWebAppsCrosapiEnabled())
+  if (IsWebAppsCrosapiEnabled()) {
     preinstalling_enabled = false;
+  }
 #endif
 
   if (!preinstalling_enabled) {
@@ -796,8 +799,9 @@ void PreinstalledWebAppManager::PostProcessConfigs(
     ConsumeInstallOptions callback,
     ParsedConfigs parsed_configs) {
   // Add hard coded configs.
-  for (ExternalInstallOptions& options : GetPreinstalledWebApps())
+  for (ExternalInstallOptions& options : GetPreinstalledWebApps()) {
     parsed_configs.options_list.push_back(std::move(options));
+  }
 
   // Set common install options.
   for (ExternalInstallOptions& options : parsed_configs.options_list) {
@@ -888,9 +892,10 @@ void PreinstalledWebAppManager::Synchronize(
 
   std::map<InstallUrl, std::vector<AppId>> desired_uninstalls;
   for (const auto& entry : desired_apps_install_options) {
-    if (!entry.uninstall_and_replace.empty())
+    if (!entry.uninstall_and_replace.empty()) {
       desired_uninstalls.emplace(entry.install_url,
                                  entry.uninstall_and_replace);
+    }
   }
   provider_->externally_managed_app_manager().SynchronizeInstalledApps(
       std::move(desired_apps_install_options),
@@ -929,14 +934,16 @@ void PreinstalledWebAppManager::OnExternalWebAppsSynchronized(
       ++uninstall_and_replace_count;
     }
 
-    if (!IsSuccess(result.code))
+    if (!IsSuccess(result.code)) {
       continue;
+    }
 
     DCHECK(result.app_id.has_value());
 
     auto iter = desired_uninstalls.find(url_and_result.first);
-    if (iter == desired_uninstalls.end())
+    if (iter == desired_uninstalls.end()) {
       continue;
+    }
 
     for (const AppId& replace_id : iter->second) {
       // We mark the app as migrated to a web app as long as the
@@ -956,13 +963,15 @@ void PreinstalledWebAppManager::OnExternalWebAppsSynchronized(
               is_installed = apps_util::IsInstalled(app.Readiness());
             });
 
-        if (!is_installed)
+        if (!is_installed) {
           continue;
+        }
 
         ++app_to_replace_still_installed_count;
 
-        if (extensions::IsExtensionDefaultInstalled(profile_, replace_id))
+        if (extensions::IsExtensionDefaultInstalled(profile_, replace_id)) {
           ++app_to_replace_still_default_installed_count;
+        }
 
         if (provider_->ui_manager().CanAddAppToQuickLaunchBar()) {
           if (provider_->ui_manager().IsAppInQuickLaunchBar(
