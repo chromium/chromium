@@ -442,9 +442,9 @@ void SiteInstanceImpl::ReuseExistingProcessIfPossible(
 
 void SiteInstanceImpl::SetProcessInternal(RenderProcessHost* process) {
   if (!site_instance_group_) {
-    site_instance_group_ =
-        browsing_instance_->site_instance_group_manager()
-            .GetOrCreateGroupForNewSiteInstance(this, process);
+    site_instance_group_ = base::WrapRefCounted(
+        new SiteInstanceGroup(browsing_instance(), process));
+    site_instance_group_->AddSiteInstance(this);
   }
 
   LockProcessIfNeeded();

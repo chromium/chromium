@@ -35,22 +35,6 @@ RenderProcessHost* SiteInstanceGroupManager::GetExistingGroupProcess(
   return default_process_;
 }
 
-scoped_refptr<SiteInstanceGroup>
-SiteInstanceGroupManager::GetOrCreateGroupForNewSiteInstance(
-    SiteInstanceImpl* site_instance,
-    RenderProcessHost* process) {
-  DCHECK(!site_instance->group());
-
-  // TODO(crbug.com/1291351, yangsharon): For now, each SiteInstance gets its
-  // own SiteInstanceGroup, and we can always create a new group for each new
-  // SiteInstance here. When grouping policies are introduced, this function may
-  // return an existing SiteInstanceGroup for a new SiteInstance.
-  scoped_refptr<SiteInstanceGroup> site_instance_group = base::WrapRefCounted(
-      new SiteInstanceGroup(site_instance->browsing_instance(), process));
-  site_instance_group->AddSiteInstance(site_instance);
-  return site_instance_group;
-}
-
 void SiteInstanceGroupManager::OnSiteInfoSet(SiteInstanceImpl* site_instance,
                                              bool has_process) {
   if (!default_process_ && has_process)
