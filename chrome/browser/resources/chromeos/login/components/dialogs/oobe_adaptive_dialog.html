@@ -161,6 +161,9 @@ found in the LICENSE file.
   #oobe-title {
     padding-top: var(--oobe-adaptive-dialog-title-top-padding);
   }
+  :host-context(.jelly-enabled) #oobe-title {
+    padding-top: var(--oobe-adaptive-dialog-item-vertical-padding);
+  }
 
   #oobe-progress ::slotted(paper-progress) {
     /* TODO(https://crbug.com/1320715) Revise the colors */
@@ -170,13 +173,21 @@ found in the LICENSE file.
     margin-top: 32px;
     width: 100%;
   }
-  :host-context(body.jelly-enabled) #oobe-progress ::slotted(paper-progress) {
+  :host-context(.jelly-enabled) #oobe-progress ::slotted(paper-progress) {
     --paper-progress-active-color: var(--cros-sys-primary);
     --paper-progress-container-color: var(--cros-sys-primary_container);
+    margin-top: var(--oobe-adaptive-dialog-item-vertical-padding);
   }
 
   #oobe-subtitle {
     padding-top: 16px;
+  }
+  /* Avoid applying the padding twice if there's no text */
+  :host-context(.jelly-enabled) #oobe-subtitle {
+    padding-top: 0;
+  }
+  :host-context(.jelly-enabled) #oobe-subtitle ::slotted(*) {
+    padding-top: var(--oobe-adaptive-dialog-item-vertical-padding);
   }
 
   #contentContainer {
