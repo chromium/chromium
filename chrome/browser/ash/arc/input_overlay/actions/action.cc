@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/arc/input_overlay/touch_id_manager.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
+#include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "ui/aura/window.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -151,7 +152,7 @@ absl::optional<std::pair<ui::DomCode, int>> ParseKeyboardKey(
 }
 
 Action::Action(TouchInjector* touch_injector)
-    : touch_injector_(touch_injector), beta_(touch_injector->beta()) {}
+    : touch_injector_(touch_injector) {}
 
 Action::~Action() = default;
 
@@ -297,7 +298,7 @@ void Action::PrepareToBindInput(std::unique_ptr<InputElement> input_element) {
   }
   pending_input_ = std::move(input_element);
 
-  if (beta_ || !action_view_) {
+  if (IsBeta() || !action_view_) {
     return;
   }
   action_view_->SetViewContent(BindingOption::kPending);
@@ -356,11 +357,11 @@ void Action::PrepareToBindPosition(const gfx::Point& new_touch_center) {
   // Keep the customized position to default type.
   pending_position_ = std::make_unique<Position>(PositionType::kDefault);
   pending_position_->Normalize(new_touch_center,
-                               touch_injector_->content_bounds());
+                               touch_injector_->content_bounds_f());
 
   // "Restore to default" and "Cancel" functions are removed for Beta version,
   // so the change is applied immediately after change.
-  if (beta_) {
+  if (IsBeta()) {
     BindPending();
   }
 }
@@ -448,7 +449,7 @@ int Action::GetUIRadius() {
     return kMinRadius;
   }
 
-  const auto& content_bounds = touch_injector_->content_bounds();
+  const auto& content_bounds = touch_injector_->content_bounds_f();
   int min = std::min(content_bounds.width(), content_bounds.height());
   return std::max(static_cast<int>(*radius_ * min), kMinRadius);
 }
@@ -527,7 +528,7 @@ bool Action::VerifyOnKeyRelease(ui::DomCode code) {
 }
 
 void Action::PostUnbindInputProcess() {
-  if (beta_ || !action_view_) {
+  if (IsBeta() || !action_view_) {
     return;
   }
   action_view_->SetViewContent(BindingOption::kPending);
@@ -547,7 +548,7 @@ std::unique_ptr<ActionProto> Action::ConvertToProtoIfCustomized() const {
     // Check if the default action is customized.
     bool customized = false;
 
-    if (beta_) {
+    if (IsBeta()) {
       DCHECK(original_type_);
       if (*original_type_ != GetType()) {
         customized = true;
@@ -571,7 +572,7 @@ std::unique_ptr<ActionProto> Action::ConvertToProtoIfCustomized() const {
     if (!customized) {
       return nullptr;
     }
-  } else if (beta_) {
+  } else if (IsBeta()) {
     // Save everything for user-added action.
     proto->set_allocated_input_element(
         current_input_->ConvertToProto().release());
@@ -591,7 +592,7 @@ void Action::UpdateTouchDownPositions() {
   }
 
   touch_down_positions_.clear();
-  const auto& content_bounds = touch_injector_->content_bounds();
+  const auto& content_bounds = touch_injector_->content_bounds_f();
   for (size_t i = 0; i < original_positions_.size(); i++) {
     auto point = current_positions_[i].CalculatePosition(content_bounds);
     const auto calculated_point = point.ToString();

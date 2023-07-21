@@ -5,7 +5,9 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/message_view.h"
 
 #include "ash/ambient/util/ambient_util.h"
+#include "ash/public/cpp/view_shadow.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/size.h"

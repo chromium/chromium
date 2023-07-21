@@ -11,6 +11,7 @@
 #include "ash/public/cpp/arc_game_controls_flag.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/utility/transformer_util.h"
+#include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_ukm.h"
 #include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_uma.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
+#include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_id_manager.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector_observer.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
@@ -30,6 +32,8 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_source.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
@@ -255,7 +259,7 @@ TouchInjector::TouchInjector(aura::Window* top_level_window,
                              OnSaveProtoFileCallback save_file_callback)
     : window_(top_level_window),
       package_name_(package_name),
-      content_bounds_(CalculateWindowContentBounds(window_)),
+      content_bounds_f_(CalculateWindowContentBounds(window_)),
       save_file_callback_(save_file_callback) {}
 
 TouchInjector::~TouchInjector() {
@@ -337,10 +341,10 @@ void TouchInjector::OnInputBindingChange(
   if (IsBeta()) {
     if (overlapped_action) {
       overlapped_action->BindPending();
-      NotifyActionUpdated(*overlapped_action);
+      NotifyActionInputBindingUpdated(*overlapped_action);
     }
     target_action->BindPending();
-    NotifyActionUpdated(*target_action);
+    NotifyActionInputBindingUpdated(*target_action);
   }
 }
 
@@ -387,7 +391,7 @@ void TouchInjector::OnProtoDataAvailable(AppDataProto& proto) {
         continue;
       }
       OverwriteDefaultAction(action_proto, action);
-    } else if (beta_) {
+    } else if (IsBeta()) {
       AddUserAddedActionFromProto(action_proto);
     } else {
       // Disregard the user-added actions if they system is pre-beta version.
@@ -421,9 +425,13 @@ void TouchInjector::NotifyFirstTimeLaunch() {
 
 void TouchInjector::SaveMenuEntryLocation(
     gfx::Point menu_entry_location_point) {
+  float width = content_bounds_f_.width();
+  float height = content_bounds_f_.height();
+  DCHECK_GT(width, 1);
+  DCHECK_GT(height, 1);
   menu_entry_location_ = absl::make_optional<gfx::Vector2dF>(
-      1.0 * menu_entry_location_point.x() / content_bounds().width(),
-      1.0 * menu_entry_location_point.y() / content_bounds().height());
+      menu_entry_location_point.x() / width,
+      menu_entry_location_point.y() / height);
 }
 
 void TouchInjector::UpdatePositionsForRegister() {
@@ -444,7 +452,7 @@ void TouchInjector::UpdatePositionsForRegister() {
 
 void TouchInjector::UpdateForOverlayBoundsChanged(
     const gfx::RectF& new_bounds) {
-  content_bounds_ = new_bounds;
+  content_bounds_f_ = new_bounds;
   for (auto& action : actions_)
     action->UpdateTouchDownPositions();
 }
@@ -644,7 +652,7 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
         return SendEvent(continuation, &event);
       }
       display_overlay_controller_->SetDisplayMode(DisplayMode::kView);
-    } else if (LocatedEventOnMenuEntry(event, content_bounds_,
+    } else if (LocatedEventOnMenuEntry(event, content_bounds_f_,
                                        /*press_required=*/false)) {
       return SendEvent(continuation, &event);
     } else {
@@ -658,13 +666,13 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
 
   if (display_overlay_controller_ && display_mode_ == DisplayMode::kView) {
     display_overlay_controller_->SetMenuEntryHoverState(
-        LocatedEventOnMenuEntry(event, content_bounds_,
+        LocatedEventOnMenuEntry(event, content_bounds_f_,
                                 /*press_required=*/false));
   }
 
   // |display_overlay_controller_| is null for unittest.
   if (display_overlay_controller_ &&
-      LocatedEventOnMenuEntry(event, content_bounds_,
+      LocatedEventOnMenuEntry(event, content_bounds_f_,
                               /*press_required=*/true)) {
     // Release all active touches when the display mode is changed from |kView|
     // to |kMenu|.
@@ -687,7 +695,7 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
     window_->GetHost()->ConvertPixelsToDIP(&location);
     auto location_f = gfx::PointF(location);
     // Send touch event as it is if the event is outside of the content bounds.
-    if (!content_bounds_.Contains(location_f)) {
+    if (!content_bounds_f_.Contains(location_f)) {
       return SendEvent(continuation, &event);
     }
 
@@ -974,7 +982,7 @@ void TouchInjector::OverwriteDefaultAction(const ActionProto& proto,
   DCHECK(action);
   DCHECK_LE(proto.id(), kMaxDefaultActionID);
   DCHECK_EQ(proto.id(), action->id());
-  if (beta_ && action->GetType() != proto.action_type()) {
+  if (IsBeta() && action->GetType() != proto.action_type()) {
     auto new_action = CreateRawAction(proto.action_type(), this);
     new_action->InitByChangingActionType(action);
     new_action->OverwriteDefaultActionFromProto(proto);
@@ -1018,9 +1026,9 @@ void TouchInjector::NotifyActionTypeChanged(Action* action,
   }
 }
 
-void TouchInjector::NotifyActionUpdated(const Action& action) {
+void TouchInjector::NotifyActionInputBindingUpdated(const Action& action) {
   for (auto& observer : observers_) {
-    observer.OnActionUpdated(action);
+    observer.OnActionInputBindingUpdated(action);
   }
 }
 

@@ -157,9 +157,6 @@ class ArcInputOverlayManager : public KeyedService,
   std::unique_ptr<DataController> data_controller_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  // TODO(b/253646354): This can be removed when removing the flag.
-  bool beta_ = ash::features::IsArcInputOverlayBetaEnabled();
-
   base::WeakPtrFactory<ArcInputOverlayManager> weak_ptr_factory_{this};
 };
 

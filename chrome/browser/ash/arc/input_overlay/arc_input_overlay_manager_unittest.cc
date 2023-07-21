@@ -4,13 +4,17 @@
 
 #include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_manager.h"
 
+#include <memory>
+
 #include "ash/components/arc/test/fake_compatibility_mode_instance.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
+#include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/test/arc_test_window.h"
 #include "chrome/browser/ash/arc/input_overlay/test/event_capturer.h"
 #include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
@@ -123,25 +127,24 @@ class ArcInputOverlayManagerTest : public ash::AshTestBase {
     return arc_test_input_overlay_manager_->display_overlay_controller_.get();
   }
 
-  void EnableBetaFlag() { arc_test_input_overlay_manager_->beta_ = true; }
-
   bool IsObserving(aura::Window* window) const {
     return arc_test_input_overlay_manager_->window_observations_
         .IsObservingSource(window);
   }
 
  protected:
-  std::unique_ptr<ArcInputOverlayManager> arc_test_input_overlay_manager_;
-
- private:
-  aura::test::TestWindowDelegate dummy_delegate_;
-
+  // ash::AshTestBase:
   void SetUp() override {
     ash::AshTestBase::SetUp();
     arc_test_input_overlay_manager_ =
         base::WrapUnique(new TestArcInputOverlayManager());
   }
 
+  std::unique_ptr<ArcInputOverlayManager> arc_test_input_overlay_manager_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+ private:
+  // ash::AshTestBase:
   void TearDown() override {
     arc_test_input_overlay_manager_->Shutdown();
     arc_test_input_overlay_manager_.reset();
@@ -149,7 +152,34 @@ class ArcInputOverlayManagerTest : public ash::AshTestBase {
   }
 };
 
-TEST_F(ArcInputOverlayManagerTest, TestPropertyChangeAndWindowDestroy) {
+// -----------------------------------------------------------------------------
+// VersionArcInputOverlayManagerTest:
+// Test fixture to test both pre-beta and beta version depending on the test
+// param (true for beta version, false for pre-beta version).
+class VersionArcInputOverlayManagerTest
+    : public ArcInputOverlayManagerTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  VersionArcInputOverlayManagerTest() = default;
+  ~VersionArcInputOverlayManagerTest() override = default;
+
+  // ArcInputOverlayManagerTest:
+  void SetUp() override {
+    ArcInputOverlayManagerTest::SetUp();
+    if (IsBetaVersion()) {
+      scoped_feature_list_.InitWithFeatures(
+          {ash::features::kGameDashboard, ash::features::kArcInputOverlayBeta},
+          {});
+    } else {
+      scoped_feature_list_.InitWithFeatures({}, {});
+    }
+  }
+
+ protected:
+  bool IsBetaVersion() const { return GetParam(); }
+};
+
+TEST_P(VersionArcInputOverlayManagerTest, TestPropertyChangeAndWindowDestroy) {
   aura::client::FocusClient* focus_client =
       aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
   // Test app with input overlay data.
@@ -178,7 +208,7 @@ TEST_F(ArcInputOverlayManagerTest, TestPropertyChangeAndWindowDestroy) {
   EXPECT_FALSE(IsInputOverlayEnabled(arc_window_no_data->GetNativeWindow()));
 }
 
-TEST_F(ArcInputOverlayManagerTest, TestWindowDestroyNoWait) {
+TEST_P(VersionArcInputOverlayManagerTest, TestWindowDestroyNoWait) {
   // This test is to check UAF issue reported in crbug.com/1363030.
   task_environment()->RunUntilIdle();
   auto arc_window =
@@ -195,7 +225,7 @@ TEST_F(ArcInputOverlayManagerTest, TestWindowDestroyNoWait) {
   EXPECT_FALSE(IsInputOverlayEnabled(arc_window_ptr));
 }
 
-TEST_F(ArcInputOverlayManagerTest, TestInputMethodObsever) {
+TEST_P(VersionArcInputOverlayManagerTest, TestInputMethodObsever) {
   ASSERT_FALSE(GetInputMethod());
   ASSERT_FALSE(IsTextInputActive());
   aura::client::FocusClient* focus_client =
@@ -218,7 +248,7 @@ TEST_F(ArcInputOverlayManagerTest, TestInputMethodObsever) {
   input_method->SetFocusedTextInputClient(nullptr);
 }
 
-TEST_F(ArcInputOverlayManagerTest, TestWindowFocusChange) {
+TEST_P(VersionArcInputOverlayManagerTest, TestWindowFocusChange) {
   aura::client::FocusClient* focus_client =
       aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
   auto arc_window = CreateArcWindowSyncAndWait(
@@ -243,7 +273,7 @@ TEST_F(ArcInputOverlayManagerTest, TestWindowFocusChange) {
   EXPECT_TRUE(!GetRegisteredWindow() && !GetDisplayOverlayController());
 }
 
-TEST_F(ArcInputOverlayManagerTest, TestTabletMode) {
+TEST_P(VersionArcInputOverlayManagerTest, TestTabletMode) {
   // Launch app in tablet mode and switch to desktop mode.
   ash::TabletModeControllerTestApi().EnterTabletMode();
   auto arc_window = CreateArcWindowSyncAndWait(
@@ -266,7 +296,8 @@ TEST_F(ArcInputOverlayManagerTest, TestTabletMode) {
   EXPECT_FALSE(GetRegisteredWindow());
 }
 
-TEST_F(ArcInputOverlayManagerTest, TestKeyEventSourceRewriterForMultiDisplay) {
+TEST_P(VersionArcInputOverlayManagerTest,
+       TestKeyEventSourceRewriterForMultiDisplay) {
   aura::client::FocusClient* focus_client =
       aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
   UpdateDisplay("1000x900,1000x900");
@@ -371,7 +402,7 @@ TEST_F(ArcInputOverlayManagerTest, TestKeyEventSourceRewriterForMultiDisplay) {
   root_windows[0]->RemovePostTargetHandler(&event_capturer);
 }
 
-TEST_F(ArcInputOverlayManagerTest, TestWindowBoundsChanged) {
+TEST_P(VersionArcInputOverlayManagerTest, TestWindowBoundsChanged) {
   auto* focus_client =
       aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
   auto arc_window = CreateArcWindowSyncAndWait(
@@ -385,7 +416,7 @@ TEST_F(ArcInputOverlayManagerTest, TestWindowBoundsChanged) {
                             ->frame_view()
                             ->GetWindowBoundsForClientBounds(gfx::Rect())
                             .y();
-  EXPECT_EQ(injector->content_bounds(),
+  EXPECT_EQ(injector->content_bounds_f(),
             gfx::RectF(10, 10 + caption_height, 100, 100 - caption_height));
   EXPECT_POINTF_NEAR(
       injector->actions()[0]->touch_down_positions()[0],
@@ -402,7 +433,7 @@ TEST_F(ArcInputOverlayManagerTest, TestWindowBoundsChanged) {
       ash::Shell::GetPrimaryRootWindow()->GetBoundsInScreen());
   arc_window->GetNativeWindow()->SetBoundsInScreen(gfx::Rect(10, 10, 150, 150),
                                                    display);
-  EXPECT_EQ(injector->content_bounds(),
+  EXPECT_EQ(injector->content_bounds_f(),
             gfx::RectF(10, 10 + caption_height, 150, 150 - caption_height));
   EXPECT_POINTF_NEAR(
       injector->actions()[0]->touch_down_positions()[0],
@@ -414,7 +445,7 @@ TEST_F(ArcInputOverlayManagerTest, TestWindowBoundsChanged) {
       kTolerance);
 }
 
-TEST_F(ArcInputOverlayManagerTest, TestDisplayRotationChanged) {
+TEST_P(VersionArcInputOverlayManagerTest, TestDisplayRotationChanged) {
   aura::client::FocusClient* focus_client =
       aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
   auto arc_window = CreateArcWindowSyncAndWait(
@@ -431,7 +462,7 @@ TEST_F(ArcInputOverlayManagerTest, TestDisplayRotationChanged) {
                             .y();
   auto expect_bounds =
       gfx::RectF(10, 10 + caption_height, 100, 100 - caption_height);
-  EXPECT_EQ(injector->content_bounds(), expect_bounds);
+  EXPECT_EQ(injector->content_bounds_f(), expect_bounds);
   auto expect_touch_a =
       gfx::PointF(60, (100 - caption_height) * 0.5 + 10 + caption_height);
   EXPECT_POINTF_NEAR(injector->actions()[0]->touch_down_positions()[0],
@@ -444,7 +475,7 @@ TEST_F(ArcInputOverlayManagerTest, TestDisplayRotationChanged) {
   // Confirm the touch down positions are updated after display rotated.
   UpdateDisplay("800x600/r");
   EXPECT_TRUE(injector->rotation_transform());
-  EXPECT_EQ(injector->content_bounds(), expect_bounds);
+  EXPECT_EQ(injector->content_bounds_f(), expect_bounds);
   expect_touch_a = injector->rotation_transform()->MapPoint(expect_touch_a);
   EXPECT_POINTF_NEAR(injector->actions()[0]->touch_down_positions()[0],
                      expect_touch_a, kTolerance);
@@ -453,50 +484,50 @@ TEST_F(ArcInputOverlayManagerTest, TestDisplayRotationChanged) {
                      expect_touch_b, kTolerance);
 }
 
-TEST_F(ArcInputOverlayManagerTest, TestFeatureAvailability) {
+TEST_P(VersionArcInputOverlayManagerTest, TestFeatureAvailability) {
   std::unique_ptr<TestingProfile> profile = std::make_unique<TestingProfile>();
   ArcAppTest arc_app_test;
   arc_app_test.set_wait_compatibility_mode(true);
   arc_app_test.SetUp(profile.get());
 
-  // Test without enabling beta flag.
-  arc_app_test.compatibility_mode_instance()->set_is_gio_applicable(false);
+  // Test with a random non-O4C game.
+  arc_app_test.compatibility_mode_instance()->set_is_gio_applicable(
+      IsBetaVersion());
   task_environment()->RunUntilIdle();
   auto game_window =
       CreateArcWindow(ash::Shell::GetPrimaryRootWindow(),
                       gfx::Rect(10, 10, 100, 100), kRandomGamePackageName);
   task_environment()->FastForwardBy(kIORead);
   auto* injector = GetTouchInjector(game_window->GetNativeWindow());
-  EXPECT_FALSE(injector);
+  if (IsBetaVersion()) {
+    EXPECT_TRUE(injector);
+  } else {
+    EXPECT_FALSE(injector);
+  }
   game_window.reset();
+  arc_app_test.TearDown();
 
-  // Test when enabling beta flag.
-  EnableBetaFlag();
-  // Create an app with default mapping.
-  task_environment()->RunUntilIdle();
+  // Test with a game with default mapping.
   auto mapped_window =
       CreateArcWindow(ash::Shell::GetPrimaryRootWindow(),
                       gfx::Rect(10, 10, 100, 100), kEnabledPackageName);
   task_environment()->FastForwardBy(kIORead);
   injector = GetTouchInjector(mapped_window->GetNativeWindow());
   EXPECT_TRUE(injector);
-  // Create a random non-game app.
-  task_environment()->RunUntilIdle();
+  mapped_window.reset();
+
+  // Test a random non-game app.
   auto app_window =
       CreateArcWindow(ash::Shell::GetPrimaryRootWindow(),
                       gfx::Rect(10, 10, 100, 100), kRandomPackageName);
   task_environment()->FastForwardBy(kIORead);
   injector = GetTouchInjector(app_window->GetNativeWindow());
   EXPECT_FALSE(injector);
-  arc_app_test.compatibility_mode_instance()->set_is_gio_applicable(true);
-  task_environment()->RunUntilIdle();
-  game_window =
-      CreateArcWindow(ash::Shell::GetPrimaryRootWindow(),
-                      gfx::Rect(10, 10, 100, 100), kRandomGamePackageName);
-  task_environment()->FastForwardBy(kIORead);
-  injector = GetTouchInjector(game_window->GetNativeWindow());
-  EXPECT_TRUE(injector);
-  arc_app_test.TearDown();
+  app_window.reset();
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         VersionArcInputOverlayManagerTest,
+                         ::testing::Bool());
 
 }  // namespace arc::input_overlay

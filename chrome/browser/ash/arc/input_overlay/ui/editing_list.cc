@@ -232,13 +232,13 @@ void EditingList::OnActionTypeChanged(Action* action, Action* new_action) {
   OnActionAdded(*new_action);
 }
 
-void EditingList::OnActionUpdated(const Action& action) {
+void EditingList::OnActionInputBindingUpdated(const Action& action) {
   DCHECK(scroll_content_);
   for (auto* child : scroll_content_->children()) {
     auto* list_item = static_cast<ActionViewListItem*>(child);
     DCHECK(list_item);
     if (list_item->action() == &action) {
-      list_item->OnActionUpdated();
+      list_item->OnActionInputBindingUpdated();
       break;
     }
   }

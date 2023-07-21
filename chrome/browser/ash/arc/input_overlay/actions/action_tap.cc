@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/arc/input_overlay/touch_id_manager.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_label.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/touch_point.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "ui/aura/window.h"
@@ -247,7 +248,7 @@ bool ActionTap::RewriteEvent(const ui::Event& origin,
   DCHECK_NE(IsKeyboardBound(*current_input_), IsMouseBound(*current_input_));
   LogEvent(origin);
   // Rewrite for key event.
-  auto content_bounds = touch_injector_->content_bounds();
+  auto content_bounds = touch_injector_->content_bounds_f();
   if (IsKeyboardBound(*current_input())) {
     auto* key_event = origin.AsKeyEvent();
     bool rewritten =
@@ -269,7 +270,7 @@ bool ActionTap::RewriteEvent(const ui::Event& origin,
 
 gfx::PointF ActionTap::GetUICenterPosition() {
   return GetCurrentDisplayedPosition().CalculatePosition(
-      touch_injector_->content_bounds());
+      touch_injector_->content_bounds_f());
 }
 
 std::unique_ptr<ActionView> ActionTap::CreateView(

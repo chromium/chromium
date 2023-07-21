@@ -28,7 +28,7 @@ class EditLabel : public views::LabelButton {
   EditLabel& operator=(const EditLabel&) = delete;
   ~EditLabel() override;
 
-  void OnActionUpdated();
+  void OnActionInputBindingUpdated();
   // Returns true if the EditLabel shows "?".
   bool IsInputUnbound();
 

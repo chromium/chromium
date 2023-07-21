@@ -8,19 +8,21 @@
 
 #include "ash/app_list/app_list_util.h"
 #include "base/functional/bind.h"
-#include "base/strings/string_piece.h"
-#include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/action.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
 #include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_uma.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_label.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/arrow_container.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/reposition_controller.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/touch_point.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chrome/grit/generated_resources.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
-#include "ui/views/controls/button/image_button_factory.h"
 
 namespace arc::input_overlay {
 
@@ -28,11 +30,10 @@ ActionView::ActionView(Action* action,
                        DisplayOverlayController* display_overlay_controller)
     : views::View(),
       action_(action),
-      display_overlay_controller_(display_overlay_controller),
-      beta_(display_overlay_controller->touch_injector()->beta()) {}
+      display_overlay_controller_(display_overlay_controller) {}
 ActionView::~ActionView() = default;
 
-void ActionView::OnActionUpdated() {
+void ActionView::OnActionInputBindingUpdated() {
   SetViewContent(BindingOption::kCurrent);
 }
 

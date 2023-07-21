@@ -281,9 +281,9 @@ void ButtonOptionsMenu::OnActionTypeChanged(Action* action,
   SetArrowVerticalOffset(CalculateActionOffset(GetHeightForWidth(kMenuWidth)));
 }
 
-void ButtonOptionsMenu::OnActionUpdated(const Action& action) {
+void ButtonOptionsMenu::OnActionInputBindingUpdated(const Action& action) {
   if (action_ == &action) {
-    labels_view_->OnActionUpdated();
+    labels_view_->OnActionInputBindingUpdated();
   }
 }
 

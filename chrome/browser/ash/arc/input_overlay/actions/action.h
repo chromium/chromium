@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/action_label.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/geometry/rect_f.h"
 
 namespace arc::input_overlay {
 
@@ -247,10 +246,6 @@ class Action {
                         std::list<ui::TouchEvent>& touch_events);
 
   void PrepareToBindPositionForTesting(std::unique_ptr<Position> position);
-
-  // Corresponds to |kArcInputOverlayBeta| flag to turn on/off the editor
-  // feature of adding or removing actions.
-  bool beta_;
 };
 
 }  // namespace arc::input_overlay

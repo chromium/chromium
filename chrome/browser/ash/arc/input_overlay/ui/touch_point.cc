@@ -20,6 +20,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/widget/widget.h"
 
 namespace arc::input_overlay {
 

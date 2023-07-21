@@ -36,7 +36,7 @@ EditLabel::EditLabel(DisplayOverlayController* controller,
 
 EditLabel::~EditLabel() = default;
 
-void EditLabel::OnActionUpdated() {
+void EditLabel::OnActionInputBindingUpdated() {
   if (action_->GetCurrentDisplayedInput().input_sources() ==
       InputSource::IS_NONE) {
     SetTextLabel(kUnknownBind);
@@ -65,7 +65,7 @@ void EditLabel::Init() {
   SetHasInkDropActionOnClick(false);
   ash::bubble_utils::ApplyStyle(label(), ash::TypographyToken::kCrosHeadline1,
                                 cros_tokens::kCrosSysOnPrimaryContainer);
-  OnActionUpdated();
+  OnActionInputBindingUpdated();
 }
 
 void EditLabel::SetTextLabel(const std::u16string& text) {

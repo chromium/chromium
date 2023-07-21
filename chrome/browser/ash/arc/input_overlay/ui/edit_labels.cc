@@ -54,9 +54,9 @@ void EditLabels::Init() {
   }
 }
 
-void EditLabels::OnActionUpdated() {
+void EditLabels::OnActionInputBindingUpdated() {
   for (auto* label : labels_) {
-    label->OnActionUpdated();
+    label->OnActionInputBindingUpdated();
   }
 
   UpdateNameTag();

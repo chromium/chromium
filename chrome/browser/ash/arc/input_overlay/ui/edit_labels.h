@@ -49,7 +49,7 @@ class EditLabels : public views::View {
   EditLabels& operator=(const EditLabels&) = delete;
   ~EditLabels() override;
 
-  void OnActionUpdated();
+  void OnActionInputBindingUpdated();
 
   void SetNameTagState(bool is_error, const std::u16string& error_tooltip);
 

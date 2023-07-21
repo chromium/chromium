@@ -28,7 +28,7 @@ class ActionViewListItem : public views::View {
   ActionViewListItem& operator=(const ActionViewListItem&) = delete;
   ~ActionViewListItem() override;
 
-  void OnActionUpdated();
+  void OnActionInputBindingUpdated();
   void OnActionNameUpdated();
 
   Action* action() const { return action_; }

@@ -28,8 +28,8 @@ ActionViewListItem::ActionViewListItem(DisplayOverlayController* controller,
 
 ActionViewListItem::~ActionViewListItem() = default;
 
-void ActionViewListItem::OnActionUpdated() {
-  labels_view_->OnActionUpdated();
+void ActionViewListItem::OnActionInputBindingUpdated() {
+  labels_view_->OnActionInputBindingUpdated();
 }
 
 void ActionViewListItem::OnActionNameUpdated() {

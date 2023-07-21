@@ -22,6 +22,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/input_overlay_resources_util.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -360,7 +361,7 @@ void ArcInputOverlayManager::OnFinishReadDefaultData(
   std::string package_name = touch_injector->package_name();
 
   if (touch_injector->actions().empty()) {
-    if (!beta_) {
+    if (!IsBeta()) {
       ResetForPendingTouchInjector(std::move(touch_injector));
       return;
     }

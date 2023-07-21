@@ -45,7 +45,7 @@ class InputMappingView : public views::View, public TouchInjectorObserver {
   void OnActionAdded(Action& action) override;
   void OnActionRemoved(const Action& action) override;
   void OnActionTypeChanged(Action* action, Action* new_action) override;
-  void OnActionUpdated(const Action& action) override;
+  void OnActionInputBindingUpdated(const Action& action) override;
 
   const raw_ptr<DisplayOverlayController> controller_ = nullptr;
   DisplayMode current_display_mode_ = DisplayMode::kNone;

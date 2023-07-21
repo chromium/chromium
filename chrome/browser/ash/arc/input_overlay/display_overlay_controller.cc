@@ -759,7 +759,7 @@ void DisplayOverlayController::EnsureTaskWindowToFrontForViewMode(
 
 void DisplayOverlayController::UpdateForBoundsChanged() {
   auto content_bounds = CalculateWindowContentBounds(touch_injector_->window());
-  if (content_bounds == touch_injector_->content_bounds()) {
+  if (content_bounds == touch_injector_->content_bounds_f()) {
     return;
   }
   touch_injector_->UpdateForOverlayBoundsChanged(content_bounds);
