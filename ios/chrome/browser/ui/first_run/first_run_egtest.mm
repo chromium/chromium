@@ -169,7 +169,9 @@ void DismissDefaultBrowserPromo() {
   config.relaunch_policy = ForceRelaunchByKilling;
 
   if ([self isRunningTest:@selector(testHistorySyncSkippedIfNoSignIn)] ||
-      [self isRunningTest:@selector(testHistorySyncShownAfterSignIn)]) {
+      [self isRunningTest:@selector(testHistorySyncShownAfterSignIn)] ||
+      [self isRunningTest:@selector
+            (testSignInSubtitleIfHistorySyncOptInEnabled)]) {
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
@@ -930,6 +932,25 @@ void DismissDefaultBrowserPromo() {
       selectElementWithMatcher:grey_accessibilityID(
                                    kHistorySyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that the correct subtitle is shown in the FRE sign-in screen if the
+// History Sync Opt-In feature is enabled.
+- (void)testSignInSubtitleIfHistorySyncOptInEnabled {
+  // Verify that the first run screen is present.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     first_run::kFirstRunSignInScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
+  // Validate the subtitle text.
+  NSString* subtitle =
+      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_BENEFITS_SUBTITLE_SHORT);
+  [[self elementInteractionWithGreyMatcher:grey_allOf(
+                                               grey_text(subtitle),
+                                               grey_sufficientlyVisible(), nil)
+                      scrollViewIdentifier:
+                          kPromoStyleScrollViewAccessibilityIdentifier]
+      assertWithMatcher:grey_notNil()];
 }
 
 #pragma mark - Helper

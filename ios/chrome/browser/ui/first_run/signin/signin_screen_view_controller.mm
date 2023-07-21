@@ -6,6 +6,7 @@
 
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/public/commands/tos_commands.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_view.h"
 #import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
@@ -72,7 +73,11 @@ NSString* const kEnterpriseIconName = @"enterprise_icon";
     case SigninScreenConsumerSigninStatusAvailable: {
       self.titleText = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
       self.subtitleText =
-          l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT);
+          base::FeatureList::IsEnabled(
+              syncer::kReplaceSyncPromosWithSignInPromos)
+              ? l10n_util::GetNSString(
+                    IDS_IOS_FIRST_RUN_SIGNIN_BENEFITS_SUBTITLE_SHORT)
+              : l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT);
       break;
     }
     case SigninScreenConsumerSigninStatusForced: {

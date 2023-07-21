@@ -1147,6 +1147,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_FIRST_RUN_SCREEN_READ_MORE" desc="The label on the primary button of some screens in the first run experience if the content requires scrolling to the end [iOS only]">
         More
       </message>
+      <message name="IDS_IOS_FIRST_RUN_SIGNIN_BENEFITS_SUBTITLE_SHORT" desc="This string is on a promotion about signing in to Chrome with the user's Google Account. It explains the overarching user benefit of signing in (access to bookmarks, passwords, history, settings, etc.). We want users to understand why signing in is beneficial, and click 'Continue as name' to sign in to their Google Account. The tone should be informative and lightweight.">
+        Sign in to get your bookmarks, passwords, and more on all your devices.
+      </message>
       <message name="IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE" desc="In Title Case: Button on the very first screen of Chrome to continue into Chrome. [iOS only]">
         Continue
       </message>
