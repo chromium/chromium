@@ -1228,6 +1228,9 @@ class KURLPortTest
     if (disallow_port_overflow) {
       scoped_feature_list_.InitAndEnableFeature(
           features::kURLSetPortCheckOverflow);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kURLSetPortCheckOverflow);
     }
   }
 

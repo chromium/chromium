@@ -1706,17 +1706,6 @@
   },
 
   {
-    "prefix": "url-port-overflow",
-    "platforms": ["Linux"],
-    "bases": [
-      "external/wpt/url/url-setters.any.js",
-      "external/wpt/url/url-setters-a-area.window.js"
-    ],
-    "args": ["--enable-features=URLSetPortCheckOverflow"],
-    "expires": "Jul 1, 2023"
-  },
-
-  {
     "prefix": "origin-agent-cluster-default-warning",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [ "wpt_internal/origin-agent-cluster-default-warning" ],
