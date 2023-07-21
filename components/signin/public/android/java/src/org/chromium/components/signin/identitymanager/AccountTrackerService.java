@@ -137,6 +137,7 @@ public class AccountTrackerService implements AccountsChangeObserver {
         // will be overwritten by the new seeding process.
         if (mAccountsSeedingStatus != AccountsSeedingStatus.IN_PROGRESS) {
             mAccountsSeedingStatus = AccountsSeedingStatus.NOT_STARTED;
+            seedAccounts(false);
         }
     }
 

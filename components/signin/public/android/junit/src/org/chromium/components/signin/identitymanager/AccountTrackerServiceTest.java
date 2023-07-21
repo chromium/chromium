@@ -120,6 +120,13 @@ public class AccountTrackerServiceTest {
     }
 
     @Test
+    public void testInvalidatingAccountSeedingStatusReseedsAccounts() {
+        mService.invalidateAccountsSeedingStatus();
+
+        verify(mNativeMock).seedAccountsInfo(anyLong(), any());
+    }
+
+    @Test
     public void testSeedAccountsIfNeededBeforeAccountsAreSeeded() {
         mService.seedAccountsIfNeeded(mRunnableMock);
 
