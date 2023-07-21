@@ -13116,6 +13116,7 @@
                         "sw_warm_up_wait_for_load": "false"
                     },
                     "enable_features": [
+                        "ServiceWorkerEventQueueWaitForScriptEvaluation",
                         "SpeculativeServiceWorkerWarmUp"
                     ],
                     "disable_features": [

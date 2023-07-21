@@ -226,42 +226,6 @@ TEST_F(ServiceWorkerEventQueueTest, InflightEventBeforeStart) {
   EXPECT_FALSE(is_idle);
 }
 
-// Tests whether idle_time_ won't be updated in Start() when there was an
-// event. The timeline is something like:
-// [StartEvent] [EndEvent]
-//       +----------+
-//                  ^
-//                  +-- idle_time_ --+
-//                                   v
-//                           [TimerStart]         [UpdateStatus]
-//                                 +-- kUpdateInterval --+
-// In the first UpdateStatus() the idle callback should be triggered.
-TEST_F(ServiceWorkerEventQueueTest, EventFinishedBeforeStart) {
-  bool is_idle = false;
-  ServiceWorkerEventQueue event_queue(
-      base::DoNothing(), CreateReceiverWithCalledFlag(&is_idle), task_runner(),
-      task_runner()->GetMockTickClock());
-  // Start and finish an event before starting the timer.
-  MockEvent event;
-  event.EnqueueTo(&event_queue);
-  task_runner()->FastForwardBy(base::Seconds(1));
-  event_queue.EndEvent(event.event_id());
-
-  // Move the time ticks to almost before |idle_time_| so that |idle_callback|
-  // will get called at the first update check.
-  task_runner()->FastForwardBy(
-      base::Seconds(mojom::blink::kServiceWorkerDefaultIdleDelayInSeconds) -
-      base::Seconds(1));
-
-  event_queue.Start();
-
-  // Make sure the timer calls UpdateStatus().
-  task_runner()->FastForwardBy(base::Seconds(1));
-  // |idle_callback| should be fired because enough time passed since the last
-  // event.
-  EXPECT_TRUE(is_idle);
-}
-
 TEST_F(ServiceWorkerEventQueueTest, EventTimer) {
   ServiceWorkerEventQueue event_queue(base::DoNothing(), base::DoNothing(),
                                       task_runner(),
