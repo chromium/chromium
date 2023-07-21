@@ -372,6 +372,7 @@
 <translation id="397105322502079400">ანგარიშობს…</translation>
 <translation id="39823212440917567">ბეჭდვის <ph name="NUMBER_OF_DAYS" /> დღეზე ძველი დავალებები ამოიშლება</translation>
 <translation id="3993704782688964914">თქვენი <ph name="DEVICE_NAME" /> ახლა განახლებულია</translation>
+<translation id="3998976413398910035">პრინტერების მართვა</translation>
 <translation id="4003384961948020559">ვერ მოხერხდა — გამომტანი სავსეა</translation>
 <translation id="4021031199988160623">შესამოწმებლად გადადით ლეპტოპის რეჟიმზე</translation>
 <translation id="4034824040120875894">პრინტერი</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">მხოლოდ შიდა გამოყენებისთვის</translation>
 <translation id="5649768706273821470">მოსმენა</translation>
 <translation id="5655283760733841251">კლავიატურის სიკაშკაშის მომატება</translation>
+<translation id="5655776422854483175">ბეჭდვის დავალებები არ არის</translation>
 <translation id="5659593005791499971">ელფოსტა</translation>
 <translation id="5662240986744577912">კონფიდენციალურობის ეკრანის გადართვა</translation>
 <translation id="5669267381087807207">გააქტიურება</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">თემა</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">მუქი თემის გააქტიურება</translation>
+<translation id="628726841779494414">პრინტერების მართვა შეგიძლიათ პრინტერების პარამეტრებიდან</translation>
 <translation id="629550705077076970">კლავიატურის დაბნელება</translation>
 <translation id="6302401976930124515">ტესტი „<ph name="TEST_NAME" />“ გაუქმდა</translation>
 <translation id="631063167932043783">გაცნობის აპი</translation>

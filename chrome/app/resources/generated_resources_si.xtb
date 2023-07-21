@@ -3294,6 +3294,7 @@
 <translation id="3721119614952978349">ඔබ සහ Google</translation>
 <translation id="3722108462506185496">අථත්‍ය යාන්ත්‍රණ සේවාව ආරම්භ කිරීමේ දෝෂයකි. කරුණාකර නැවත උත්සාහ කරන්න.</translation>
 <translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> උපදෙස් ලැබී ඇත</translation>
+<translation id="3724897774652282549">පෝරමය පුරවන්න</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">ලබා ගත හැකි WiFi ජාල</translation>
 <translation id="3727187387656390258">පොප්-අප් විමර්ශනය</translation>
@@ -6471,7 +6472,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6444070574980481588">දිනය සහ වේලාව සකසන්න</translation>
 <translation id="6444147596556711162">තිරයෙහි ඇති අයිතම අතර යාමට "ඊළඟ" සහ "පෙර" භාවිත කරන්න</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> - බ්ලූටූත් ස්කෑන් සක්‍රියයි</translation>
-<translation id="6445395161658447009">ඔබේ බ්‍රවුස් කිරීමේ ඉතිහාසය මත පදනම්ව මෙහි දිස් වන අඩවි ලැයිස්තුවක් සඳහා සතියක් දක්වා ගත විය හැක</translation>
 <translation id="6445450263907939268">ඔබට මෙම වෙනස්වීම් අවශ්‍ය නොවිණි නම්, ඔබට ඔබග‍ේ පෙර සැකසුම් ප්‍රතිසාධනය කළ හැකියිය.</translation>
 <translation id="6446213738085045933">ඩෙස්ක්ටොප් කෙටි මඟ තනන්න</translation>
 <translation id="6447842834002726250">කුකීස්</translation>
@@ -7230,6 +7230,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7067396782363924830">ස්ථානික වර්ණ</translation>
 <translation id="7067725467529581407">මෙය කවදාවත් නොපෙන්වන්න.</translation>
 <translation id="7068279399556423026">වෙනත් උපාංගවලින් පටිති බැලීමට පුරන්න</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{මෙම අඩවිය සඳහා නව මුරපදය}one{මෙම අඩවිය සඳහා නව මුරපද}other{මෙම අඩවිය සඳහා නව මුරපද}}</translation>
 <translation id="7070484045139057854">මෙයට වෙබ් අඩවි දත්ත කියවීමට සහ වෙනස් කිරීමට හැකිය</translation>
 <translation id="7072010813301522126">කෙටිමං නම</translation>
 <translation id="7074066049407662839">මුරපද සුරැකීමට පුරන්න</translation>
@@ -9617,6 +9618,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="9068598199622656904">යතුරු පුවරු කෙටිමං සඳහා එකවර යතුරු ඔබාගෙන සිටීම වෙනුවට වරකට යතුරක් ඔබන්න</translation>
 <translation id="9068878141610261315">සහාය නොදක්වන ගොනු වර්ගයකි</translation>
 <translation id="9069665781180028115">තෝරන ලද අයිතම මෙම Chromebook හි ලබා ගත හැකි වනු ඇත. ඔබ Chromebook වෙත අලුත් නම්, ඔබේ මනාපයන් උපස්ථ වනු ඇති පරිදි සියලු අයිතම සමමුහුර්ත කරන්න. සැකසීම් &gt; ගිණුම් තුළ ඕනෑම වේලාවක වෙනස්කම් කරන්න.</translation>
+<translation id="9070231741075992882">ඔබ <ph name="APP_NAME" /> සඳහා ඉඩ දෙන අවසර එහි ස්ථාපිත සහ ප්‍රවාහය කරන ලද යෙදුම් සඳහා ද ඉඩ දෙනු ලැබේ.</translation>
 <translation id="9070342919388027491">ටැබය වමට ගෙන යන ලදි</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB මවුසය සබඳකර ඇත</translation>

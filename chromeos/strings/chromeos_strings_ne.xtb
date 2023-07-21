@@ -372,6 +372,7 @@
 <translation id="397105322502079400">हिसाब गर्दै...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> दिनभन्दा पहिलेका प्रिन्टसम्बन्धी कार्यहरू हटाइने छ</translation>
 <translation id="3993704782688964914">तपाईंको <ph name="DEVICE_NAME" /> अप टु डेट छ</translation>
+<translation id="3998976413398910035">प्रिन्टरहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4003384961948020559">प्रिन्ट गर्न सकिएन - ट्रे भरियो</translation>
 <translation id="4021031199988160623">परीक्षण गर्न ल्यापटप मोड प्रयोग गर्नुहोस्</translation>
 <translation id="4034824040120875894">प्रिन्टर</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">आन्तरिक प्रयोजनका लागि मात्र</translation>
 <translation id="5649768706273821470">सुन्नुहोस्</translation>
 <translation id="5655283760733841251">किबोर्डको चमक बढाउने की</translation>
+<translation id="5655776422854483175">कुनै पनि प्रिन्टसम्बन्धी कार्य भइरहेको छैन</translation>
 <translation id="5659593005791499971">इमेल</translation>
 <translation id="5662240986744577912">"प्राइभेसी स्क्रिन टगल गर्नुहोस्" जनाउने आइकन</translation>
 <translation id="5669267381087807207">सक्रिय गर्दै</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">विषयवस्तु</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">अँध्यारो थिम अन गर्नुहोस्‌</translation>
+<translation id="628726841779494414">प्रिन्टरसम्बन्धी सेटिङमा गई आफ्ना प्रिन्टरहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="629550705077076970">किबोर्डको ब्याकलाइटको चमक कम गर्नुहोस्</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> परीक्षण रद्द गरिएको छ</translation>
 <translation id="631063167932043783">एक्स्प्लोर एप</translation>

@@ -512,6 +512,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3294437725009624529">Invité</translation>
 <translation id="3298690094479023523">Impossible de valider votre code ou votre mot de passe pour la deuxième fois. Réessayez.</translation>
 <translation id="3300193645498960160">Vous recevrez une notification si vous parlez lorsque le son est coupé. Votre appareil ne transmet jamais les données audio.</translation>
+<translation id="3306386552969601301"><ph name="DEVICECOUNT" /> appareils connectés au point d'accès <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Mode ordinateur portable activé</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> pourra toujours se connecter plus tard.</translation>
 <translation id="3321628682574733415">Code parental incorrect</translation>
@@ -551,6 +552,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Appareil USB de type C</translation>
 <translation id="3455468639467374593">Modèle, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="3456931972722214204">1 appareil connecté au point d'accès <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">Réinitialiser le niveau de zoom</translation>
 <translation id="3465223694362104965">Un autre clavier a été connecté à cet appareil depuis votre dernière connexion. Avant d'utiliser ce clavier, assurez-vous qu'il s'agit d'un clavier de confiance.</translation>
 <translation id="3465356146291925647">Géré par votre administrateur</translation>
@@ -762,6 +764,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4324840740119394760">L'accès à l'appareil photo est accordé à <ph name="APP_NAME" /> ainsi qu'à l'ensemble des sites Web et applis ayant l'autorisation d'y accéder</translation>
 <translation id="4333628967105022692">Lacros ne peut pas fonctionner lorsque plusieurs utilisateurs sont connectés.</translation>
 <translation id="4338109981321384717">Loupe</translation>
+<translation id="4356872429719185452">Voir les détails du point d'accès. Il est en cours d'activation.</translation>
 <translation id="4371348193907997655">Paramètres Cast</translation>
 <translation id="4375482231364171368">Rechercher dans la barre d'adresse</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %</translation>
@@ -1109,6 +1112,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5825969630400862129">Paramètres des appareils connectés</translation>
 <translation id="5837036133683224804">Arrêter <ph name="ROUTE_TITLE" /> vers <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Passer au titre suivant</translation>
+<translation id="5842553299352339114">Le point d'accès <ph name="DEVICE_NAME" /> est activé, aucun appareil connecté</translation>
 <translation id="584525477304726060">Maintenez pour agrandir</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> n'est pas activé.</translation>
 <translation id="5860033963881614850">Désactivé</translation>
@@ -1371,6 +1375,7 @@ Nouvelle installation</translation>
 <translation id="6981291220124935078">Activer l'accès</translation>
 <translation id="6981982820502123353">Accessibilité</translation>
 <translation id="698231206551913481">L'ensemble des données locales et des fichiers associés à cet utilisateur seront définitivement supprimés en même temps que ce dernier.</translation>
+<translation id="7004910047186208204">Connecter aux données mobiles</translation>
 <translation id="7005239792648594238">Ouvrez une appli pour commencer</translation>
 <translation id="7007983414944123363">Impossible de valider votre code ou votre mot de passe. Réessayez.</translation>
 <translation id="7014684956566476813">Connecté à un appareil nommé "<ph name="DEVICE_NAME" />"</translation>
@@ -1525,6 +1530,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notification}one{# notification}other{# notifications}}</translation>
 <translation id="7723703419796509666">Afficher ou masquer la console des outils pour les développeurs</translation>
 <translation id="7724603315864178912">Couper</translation>
+<translation id="7725108879223146004">Voir les détails du point d'accès. Il est en cours de désactivation.</translation>
 <translation id="7727952505535211425">Ouvrir dans un nouvel onglet le site indiqué dans la barre d'adresse</translation>
 <translation id="77365090426890123">utilisation de mémoire</translation>
 <translation id="7742327441377685481">Aucune notification</translation>
@@ -1660,6 +1666,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8308637677604853869">Menu précédent</translation>
 <translation id="830868413617744215">Bêta</translation>
 <translation id="8314772463905284467">Touche Verr Maj activée</translation>
+<translation id="8315514906653279104">Activation…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Fenêtre <ph name="WINDOW_TITLE" /> sélectionnée</translation>
 <translation id="8349964124165471584">Ouvrir le lien dans une nouvelle fenêtre</translation>

@@ -372,6 +372,7 @@
 <translation id="397105322502079400">गणना की जा रही है...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> से ज़्यादा पुरानी, प्रिंट की गई फ़ाइलों को हटा दिया जाएगा</translation>
 <translation id="3993704782688964914">अब आपका <ph name="DEVICE_NAME" /> अप-टू-डेट है</translation>
+<translation id="3998976413398910035">प्रिंटर मैनेज करें</translation>
 <translation id="4003384961948020559">प्रिंट नहीं हो पाया - प्रिंटर आउटपुट फ़ुल है</translation>
 <translation id="4021031199988160623">जांच करने के लिए, लैपटॉप मोड पर स्विच करें</translation>
 <translation id="4034824040120875894">प्रिंटर</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">सिर्फ़ अंदरूनी</translation>
 <translation id="5649768706273821470">सुनें</translation>
 <translation id="5655283760733841251">कीबोर्ड की रोशनी बढ़ाने वाला बटन</translation>
+<translation id="5655776422854483175">कोई प्रिंट जॉब नहीं है</translation>
 <translation id="5659593005791499971">ईमेल</translation>
 <translation id="5662240986744577912">निजता स्क्रीन का बटन टॉगल करें</translation>
 <translation id="5669267381087807207">चालू हो रहा है</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">थीम</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">गहरे रंग वाली थीम चालू करें</translation>
+<translation id="628726841779494414">प्रिंटर की सेटिंग में जाकर, अपने प्रिंटर मैनेज करें</translation>
 <translation id="629550705077076970">कीबोर्ड की रोशनी कम करें</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> टेस्ट को रद्द कर दिया गया है</translation>
 <translation id="631063167932043783">Explore ऐप्लिकेशन</translation>

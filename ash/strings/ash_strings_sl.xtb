@@ -512,6 +512,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3294437725009624529">Gost</translation>
 <translation id="3298690094479023523">Vaše kode PIN ali gesla še vedno ni bilo mogoče preveriti. Poskusite znova.</translation>
 <translation id="3300193645498960160">Prejeli boste obvestilo, če govorite med izklopljenim zvokom. Zvok nikoli ne zapusti naprave.</translation>
+<translation id="3306386552969601301">Z dostopno točko naprave <ph name="DEVICE_NAME" /> je povezanih toliko naprav: <ph name="DEVICECOUNT" /></translation>
 <translation id="3307642347673023554">Preklopljeno v način prenosnika</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> se še vedno lahko prijavi pozneje.</translation>
 <translation id="3321628682574733415">Nepravilna koda starša</translation>
@@ -551,6 +552,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Naprava USB-C</translation>
 <translation id="3455468639467374593">Predloga, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="3456931972722214204">1 naprava je povezana z dostopno točko naprave <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">Ponastavitev povečave/pomanjšave</translation>
 <translation id="3465223694362104965">Odkar ste se nazadnje prijavili, se je s to napravo povezala druga tipkovnica. Pred uporabo te tipkovnice se prepričajte, da ji zaupate.</translation>
 <translation id="3465356146291925647">Upravlja ga vaš skrbnik</translation>
@@ -763,6 +765,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="4324840740119394760">To omogoča dostop do kamere za aplikacijo <ph name="APP_NAME" /> in vse aplikacije ter spletna mesta z dovoljenjem za kamero.</translation>
 <translation id="4333628967105022692">Lacros ni podprt, če je prijavljenih več uporabnikov.</translation>
 <translation id="4338109981321384717">Povečevalno steklo</translation>
+<translation id="4356872429719185452">Prikaz podrobnosti dostopne točke. Dostopna točka se vklaplja.</translation>
 <translation id="4371348193907997655">Nastavitve predvajanja</translation>
 <translation id="4375482231364171368">Iskanje v naslovni vrstici</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, moč signala: <ph name="SIGNAL_STRENGTH" /> %</translation>
@@ -1110,6 +1113,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="5825969630400862129">Nastavitve povezanih naprav</translation>
 <translation id="5837036133683224804">Ustavi zavihek <ph name="ROUTE_TITLE" /> v sprejemniku <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Na naslednjo skladbo</translation>
+<translation id="5842553299352339114">Dostopna točka naprave <ph name="DEVICE_NAME" /> je vklopljena, ni povezanih naprav</translation>
 <translation id="584525477304726060">Pridržite, če želite maksimirati</translation>
 <translation id="5856638668464565213">Omrežje <ph name="NETWORK_NAME" /> ni aktivirano.</translation>
 <translation id="5860033963881614850">Izklopljeno</translation>
@@ -1372,6 +1376,7 @@ Nova namestitev</translation>
 <translation id="6981291220124935078">Vklopi dostop</translation>
 <translation id="6981982820502123353">Dostopnost</translation>
 <translation id="698231206551913481">Vse datoteke in lokalni podatki, povezani s tem uporabnikom, bodo trajno izbrisani, ko odstranite uporabnika.</translation>
+<translation id="7004910047186208204">Povezava z mobilnim podatkovnim omrežjem</translation>
 <translation id="7005239792648594238">Če želite začeti, odprite aplikacijo</translation>
 <translation id="7007983414944123363">Vaše kode PIN ali gesla ni bilo mogoče preveriti. Poskusite znova.</translation>
 <translation id="7014684956566476813">Vzpostavljena je povezava z napravo <ph name="DEVICE_NAME" /></translation>
@@ -1526,6 +1531,7 @@ Nova namestitev</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 obvestilo}one{# obvestilo}two{# obvestili}few{# obvestila}other{# obvestil}}</translation>
 <translation id="7723703419796509666">Prikaz ali skrivanje konzole orodij za razvijalce</translation>
 <translation id="7724603315864178912">Izreži</translation>
+<translation id="7725108879223146004">Prikaz podrobnosti dostopne točke. Dostopna točka se izklaplja.</translation>
 <translation id="7727952505535211425">Odpiranje spletnega mesta v naslovni vrstici na novem zavihku</translation>
 <translation id="77365090426890123">uporaba pomnilnika</translation>
 <translation id="7742327441377685481">Ni obvestil</translation>
@@ -1661,6 +1667,7 @@ Nova namestitev</translation>
 <translation id="8308637677604853869">Prejšnji meni</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Tipka Caps Lock je vklopljena</translation>
+<translation id="8315514906653279104">Vklapljanje …</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Izbrano je okno <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349964124165471584">Odpiranje povezave v novem oknu</translation>

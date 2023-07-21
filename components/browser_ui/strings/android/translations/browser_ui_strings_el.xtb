@@ -301,6 +301,7 @@
 <translation id="6439114592976064011">Αποκλείστε τη χρήση της συσκευής και των δεδομένων εικονικής πραγματικότητας από ιστοτόπους.</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6467852467360539617">Διαγραφή δεδομένων και επαναφορά αδειών</translation>
+<translation id="6500423977866688905">Όταν το παράθυρο είναι στενό, ζητήστε προβολή για κινητά</translation>
 <translation id="6527303717912515753">Κοινοποίηση</translation>
 <translation id="6545864417968258051">Σάρωση Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Οι άδειες <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη αποκλείστηκαν.}other{Οι άδειες <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη αποκλείστηκαν.}}</translation>

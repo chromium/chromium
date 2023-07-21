@@ -277,7 +277,6 @@
 <translation id="2571834852878229351">创建我自己的密码</translation>
 <translation id="2573452357057307036">了解如何将 Chrome 设为默认浏览器</translation>
 <translation id="2574249610672786438">要查看您在其他设备上用 Chrome 打开的标签页，请在所有设备上登录</translation>
-<translation id="257470231920177468">开启此设置后，这里会列出您访问过的哪些网站会推测您的兴趣。</translation>
 <translation id="2580436639406015883">“垃圾内容和欺诈行为削减”功能依靠私密状态令牌来协助网站打击欺诈行为并将机器人与真人区分开来。
 
 网站可以根据您与其进行的互动（例如定期登录帐号）向您的浏览器颁发私密状态令牌。之后，如果您访问的其他网站搜寻并找到有效的私密状态令牌，就更有可能将您视为真人而非机器人。
@@ -433,6 +432,7 @@
 <translation id="3341262203274374114">无法取消关注。出了点问题。</translation>
 <translation id="3359667936385849800">使用您当前的服务提供商</translation>
 <translation id="3365271666488085187">Chrome 可能会根据此兴趣来展示广告</translation>
+<translation id="3373701465337594448">开启此设置后，这里会列出您访问过的哪些网站会推测您的兴趣</translation>
 <translation id="3373979091428520308">如果想将此页分享到其他设备，请在相应设备上的 Chrome 设置中开启同步</translation>
 <translation id="3374023511497244703">您的书签、历史记录、密码和其他 Chrome 数据将不再同步到您的 Google 帐号中</translation>
 <translation id="3384347053049321195">分享图片</translation>
@@ -619,7 +619,6 @@
 <translation id="4405224443901389797">移动到…</translation>
 <translation id="4405636711880428279">移除您的虚拟卡？</translation>
 <translation id="4409271659088619928">您所用的搜索引擎是<ph name="DSE" />。请查看它的相关说明，了解如何删除您的搜索记录（若适用）。</translation>
-<translation id="441383202534727410">网站列表最多可能需要 1 周的时间才会显示在这里，具体取决于您的浏览记录。</translation>
 <translation id="4415276339145661267">管理您的 Google 帐号</translation>
 <translation id="4417111749295506837">若要在车载系统中同步 Chrome 信息并确保数据安全，您必须设置个人资料锁定功能。之后，每当您上车时，系统都会要求您输入验证码或密码。</translation>
 <translation id="4425140285732600465">正在跟踪价格。当任一网站上的商品降价时，您会收到提醒。</translation>

@@ -372,6 +372,7 @@
 <translation id="397105322502079400">Hesaplanıyor...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> günden eski yazdırma işleri silinir</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> cihazınız artık güncel</translation>
+<translation id="3998976413398910035">Yazıcıları yönetme</translation>
 <translation id="4003384961948020559">İşlem başarısız - Çıkış dolu</translation>
 <translation id="4021031199988160623">Test etmek için dizüstü bilgisayar moduna geçin</translation>
 <translation id="4034824040120875894">Yazıcı</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">Yalnızca dahili</translation>
 <translation id="5649768706273821470">Dinle</translation>
 <translation id="5655283760733841251">Klavye parlaklığını artır</translation>
+<translation id="5655776422854483175">Yazdırma işi yok</translation>
 <translation id="5659593005791499971">E-posta</translation>
 <translation id="5662240986744577912">gizlilik ekranını aç/kapat</translation>
 <translation id="5669267381087807207">Etkinleştiriliyor</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Koyu temayı aç</translation>
+<translation id="628726841779494414">Yazıcılarınızı yazıcı ayarlarından yönetin</translation>
 <translation id="629550705077076970">klavye karartma</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> testi iptal edildi</translation>
 <translation id="631063167932043783">Keşfet uygulaması</translation>

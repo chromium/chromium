@@ -372,6 +372,7 @@
 <translation id="397105322502079400">Calcul en cours...</translation>
 <translation id="39823212440917567">Les tâches d'impression datant de plus de <ph name="NUMBER_OF_DAYS" /> jours seront supprimées</translation>
 <translation id="3993704782688964914">Votre <ph name="DEVICE_NAME" /> est maintenant à jour</translation>
+<translation id="3998976413398910035">Gérer les imprimantes</translation>
 <translation id="4003384961948020559">Échec : bac de sortie plein</translation>
 <translation id="4021031199988160623">Passer en mode ordinateur portable pour tester</translation>
 <translation id="4034824040120875894">Imprimante</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">Pour usage interne seulement</translation>
 <translation id="5649768706273821470">Écouter</translation>
 <translation id="5655283760733841251">Augmenter la luminosité du clavier</translation>
+<translation id="5655776422854483175">Aucune tâche d'impression</translation>
 <translation id="5659593005791499971">Courriel</translation>
 <translation id="5662240986744577912">basculer l'écran de confidentialité</translation>
 <translation id="5669267381087807207">Activation…</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">Thème</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Activer le thème sombre</translation>
+<translation id="628726841779494414">Gérez vos imprimantes dans les paramètres d'impression</translation>
 <translation id="629550705077076970">assombrissement du clavier</translation>
 <translation id="6302401976930124515">Le test <ph name="TEST_NAME" /> a été annulé</translation>
 <translation id="631063167932043783">Application Explorer</translation>

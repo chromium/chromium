@@ -37,6 +37,7 @@
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> välilehteä vaikuttaa liittyvän toisiinsa. Lisätäänkö ne ryhmäksi?</translation>
 <translation id="4212246570487010370">Jatka selaamista</translation>
 <translation id="4648718555153979859">Välilehtesi on koottu tänne</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{Löydät suljetut välilehdet Chromen päävalikon Viimeaikaiset välilehdet ‑kohdasta.}=1{Löydät suljetut välilehdet Chromen päävalikon Viimeaikaiset välilehdet ‑kohdasta. Incognito-välilehti ei ole käytettävissä.}other{Löydät suljetut välilehdet Chromen päävalikon Viimeaikaiset välilehdet ‑kohdasta. # incognito-välilehteä ei ole käytettävissä.}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> arvostelu)}other{(<ph name="REVIEWS_COUNT_MANY" /> arvostelua)}}</translation>
 <translation id="4850886885716139402">Näytä</translation>
 <translation id="4870911314065352661">Suljetaanko kaikki välilehdet?</translation>

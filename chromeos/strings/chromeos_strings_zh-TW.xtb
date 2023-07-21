@@ -372,6 +372,7 @@
 <translation id="397105322502079400">計算中…</translation>
 <translation id="39823212440917567">系統會移除 <ph name="NUMBER_OF_DAYS" /> 天前的列印工作</translation>
 <translation id="3993704782688964914">你的「<ph name="DEVICE_NAME" />」目前是最新版本</translation>
+<translation id="3998976413398910035">管理印表機</translation>
 <translation id="4003384961948020559">失敗 - 輸出紙匣已滿</translation>
 <translation id="4021031199988160623">請切換成筆電模式進行測試</translation>
 <translation id="4034824040120875894">印表機</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">僅供內部使用</translation>
 <translation id="5649768706273821470">聆聽</translation>
 <translation id="5655283760733841251">鍵盤亮度調高</translation>
+<translation id="5655776422854483175">沒有任何列印工作</translation>
 <translation id="5659593005791499971">電子郵件</translation>
 <translation id="5662240986744577912">切換隱私保護畫面</translation>
 <translation id="5669267381087807207">啟用中</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">主題</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">開啟深色主題</translation>
+<translation id="628726841779494414">前往印表機設定管理印表機</translation>
 <translation id="629550705077076970">將鍵盤調暗</translation>
 <translation id="6302401976930124515">已取消<ph name="TEST_NAME" />測試</translation>
 <translation id="631063167932043783">探索應用程式</translation>

@@ -37,6 +37,7 @@
 <translation id="4133493477912226187">有 <ph name="NUMBER_OF_TABS" /> 个标签页似乎彼此相关。为它们建组？</translation>
 <translation id="4212246570487010370">继续浏览</translation>
 <translation id="4648718555153979859">您的标签页会按组列在此处</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{您可通过在 Chrome 主菜单中点击“最近打开的标签页”找到您已关闭的标签页。}=1{您可通过在 Chrome 主菜单中点击“最近打开的标签页”找到您已关闭的标签页。不过，那里不会显示您已关闭的无痕式标签页。}other{您可通过在 Chrome 主菜单中点击“最近打开的标签页”找到您已关闭的标签页。不过，那里不会显示您已关闭的 # 个无痕式标签页。}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{（共有 <ph name="REVIEWS_COUNT_ONE" /> 条评价）}other{（共有 <ph name="REVIEWS_COUNT_MANY" /> 条评价）}}</translation>
 <translation id="4850886885716139402">视图</translation>
 <translation id="4870911314065352661">要关闭所有标签页吗？</translation>

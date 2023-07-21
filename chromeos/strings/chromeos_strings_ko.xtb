@@ -372,6 +372,7 @@
 <translation id="397105322502079400">계산 중...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" />일 이상 경과한 인쇄 작업은 삭제됩니다.</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> 버전이 최신임</translation>
+<translation id="3998976413398910035">프린터 관리</translation>
 <translation id="4003384961948020559">실패 - 출력 가득 참</translation>
 <translation id="4021031199988160623">테스트하려면 노트북 모드로 전환하세요.</translation>
 <translation id="4034824040120875894">프린터</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">내부용</translation>
 <translation id="5649768706273821470">듣기</translation>
 <translation id="5655283760733841251">키보드 밝기 높이기</translation>
+<translation id="5655776422854483175">인쇄 작업 없음</translation>
 <translation id="5659593005791499971">이메일</translation>
 <translation id="5662240986744577912">개인 정보 보호 화면을 전환합니다</translation>
 <translation id="5669267381087807207">활성화 중</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">테마</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">어두운 테마 사용 설정</translation>
+<translation id="628726841779494414">프린터 설정에서 프린터 관리</translation>
 <translation id="629550705077076970">키보드 밝기 낮추기</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> 테스트가 취소됨</translation>
 <translation id="631063167932043783">탐색 앱</translation>

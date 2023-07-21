@@ -3280,6 +3280,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3721119614952978349">Google und ich</translation>
 <translation id="3722108462506185496">Fehler beim Starten des Dienstes für die virtuelle Maschine. Bitte versuche es noch einmal.</translation>
 <translation id="3722624153992426516">Anweisung „<ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" />“ erhalten</translation>
+<translation id="3724897774652282549">Formular ausfüllen</translation>
 <translation id="3726965532284929944">Qt</translation>
 <translation id="3727144509609414201">Verfügbare WLANs</translation>
 <translation id="3727187387656390258">Pop-up prüfen</translation>
@@ -6448,7 +6449,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6444070574980481588">Datum und Uhrzeit festlegen</translation>
 <translation id="6444147596556711162">Mit „Weiter“ und „Zurück“ kannst du zwischen Elementen auf dem Bildschirm wechseln</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> – Bluetooth-Suche läuft</translation>
-<translation id="6445395161658447009">Es kann bis zu einer Woche dauern, bis hier eine Liste mit Websites basierend auf deinem Browserverlauf angezeigt wird</translation>
 <translation id="6445450263907939268">Wenn du diese Änderungen nicht beabsichtigt hattest, kannst du deine vorherigen Einstellungen wiederherstellen.</translation>
 <translation id="6446213738085045933">Desktopverknüpfung erstellen</translation>
 <translation id="6447842834002726250">Cookies</translation>
@@ -7206,6 +7206,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7067396782363924830">Umgebungsfarben</translation>
 <translation id="7067725467529581407">Nicht mehr anzeigen.</translation>
 <translation id="7068279399556423026">Anmelden, um Tabs von anderen Geräten zu sehen</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Neues Passwort für diese Website}other{Neue Passwörter für diese Website}}</translation>
 <translation id="7070484045139057854">Kann Websitedaten lesen und ändern</translation>
 <translation id="7072010813301522126">Verknüpfungsname</translation>
 <translation id="7074066049407662839">Anmelden, um Passwörter zu speichern</translation>
@@ -9591,6 +9592,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9068598199622656904">Tasten für Tastenkombinationen können nacheinander gedrückt werden, anstatt sie gleichzeitig gedrückt zu halten</translation>
 <translation id="9068878141610261315">Nicht unterstützter Dateityp</translation>
 <translation id="9069665781180028115">Die ausgewählten Elemente sind auf diesem Chromebook verfügbar. Wenn du neu bei Chromebook bist, synchronisiere alle Elemente, damit deine Einstellungen gesichert werden. Unter „Einstellungen“ &gt; „Konten“ kannst du jederzeit Änderungen vornehmen.</translation>
+<translation id="9070231741075992882">Für die App „<ph name="APP_NAME" />“ erteilte Berechtigungen werden auch auf Apps übertragen, die von der App installiert oder gestreamt werden.</translation>
 <translation id="9070342919388027491">Tab wurde nach links verschoben</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB-Maus angeschlossen</translation>

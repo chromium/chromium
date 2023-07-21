@@ -6465,7 +6465,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6444070574980481588">Definir data e hora</translation>
 <translation id="6444147596556711162">Para desprazarte entre os distintos elementos dunha pantalla, utiliza Seguinte e Anterior</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" />; busca de dispositivos Bluetooth activa</translation>
-<translation id="6445395161658447009">En función do teu historial de navegación, a lista de sitios pode tardar ata unha semana en aparecer aquí</translation>
 <translation id="6445450263907939268">Se non querías realizar estes cambios, podes restaurar a túa configuración anterior.</translation>
 <translation id="6446213738085045933">Crear acceso directo do escritorio</translation>
 <translation id="6447842834002726250">Cookies</translation>
@@ -9612,6 +9611,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9068598199622656904">Preme as teclas dos atallos de teclado unha por unha en lugar de mantelas premidas ao mesmo tempo</translation>
 <translation id="9068878141610261315">O tipo de ficheiro non é compatible</translation>
 <translation id="9069665781180028115">Os elementos seleccionados tamén estarán dispoñibles neste Chromebook. Se é o teu primeiro Chromebook, sincroniza todos os elementos para que se faga unha copia de seguranza das túas preferencias. Podes facer cambios en calquera momento en Configuración &gt; Contas.</translation>
+<translation id="9070231741075992882">Os permisos que lle concedas a <ph name="APP_NAME" /> tamén se concederán ás súas aplicacións instaladas e de acceso en remoto.</translation>
 <translation id="9070342919388027491">A pestana moveuse á esquerda</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Rato USB conectado</translation>

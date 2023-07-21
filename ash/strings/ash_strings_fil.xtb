@@ -146,6 +146,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1576623706766186887">Mag-zoom out kapag naka-on ang magnifier</translation>
 <translation id="1586324912145647027">Pumunta sa desk 1 hanggang 8</translation>
 <translation id="1589090746204042747">I-access ang lahat ng iyong aktibidad sa session na ito</translation>
+<translation id="1592682369233288537">Susunod na Desk: <ph name="NEXT_DESK_NAME" />, gamitin ang Search+Space para i-activate.</translation>
 <translation id="1604857178818051494">Mag-pause ng media</translation>
 <translation id="1610778689852195798">"I-undo"</translation>
 <translation id="1611993646327628135">Naka-on</translation>
@@ -157,6 +158,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1647986356840967552">Nakaraang page</translation>
 <translation id="1651914502370159744">Buksan ang page ng History</translation>
 <translation id="1654477262762802994">Magsimula ng query gamit ang boses</translation>
+<translation id="1662667383227796099">Hanapin ang iyong mga file, app, at higit pa sa Launcher. Puwede ka ring makakuha ng mga sagot sa iyong mga tanong tungkol sa Chromebook mo.</translation>
 <translation id="1668469839109562275">Built-in na VPN</translation>
 <translation id="1675844249244994876">I-update ang kanang window</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> na lang ang natitira</translation>
@@ -512,6 +514,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3294437725009624529">Bisita</translation>
 <translation id="3298690094479023523">Hindi pa rin ma-verify ang iyong PIN o password. Subukan ulit.</translation>
 <translation id="3300193645498960160">Aabisuhan ka kapag nagsasalita ka habang naka-mute. Hindi naipapadala ang audio mula sa iyong device.</translation>
+<translation id="3306386552969601301"><ph name="DEVICECOUNT" /> (na) device ang nakakonekta sa hotspot ng <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Lumipat sa laptop mode</translation>
 <translation id="3308453408813785101">Maaari pa ring mag-sign in si <ph name="USER_EMAIL_ADDRESS" /> sa ibang pagkakataon.</translation>
 <translation id="3321628682574733415">Maling code ng magulang</translation>
@@ -551,6 +554,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> (na) min</translation>
 <translation id="3445925074670675829">USB-C device</translation>
 <translation id="3455468639467374593">Template, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="3456931972722214204">1 device ang nakakonekta sa hotspot ng <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">I-reset ang antas ng pag-zoom</translation>
 <translation id="3465223694362104965">May isa pang keyboard na kumonekta sa device na ito mula noong huling beses kang nag-sign in. Tiyaking pinagkakatiwalaan mo ang keyboard na ito bago mo ito gamitin.</translation>
 <translation id="3465356146291925647">Pinapamahalaan ng iyong Administrator</translation>
@@ -558,6 +562,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Awtomatikong itinago ang shelf</translation>
+<translation id="3503243067695520519">Kumusta. Medyo naiiba ang mga Chromebook.</translation>
 <translation id="3505066820268455558">Nagcha-charge ang Baterya</translation>
 <translation id="3509391053705095206">Hindi makita ang iyong telepono. Tiyaking naka-on ang Bluetooth ng iyong telepono.</translation>
 <translation id="3510164367642747937">I-highlight ang cursor ng mouse</translation>
@@ -682,6 +687,7 @@ Isaksak ang iyong device.</translation>
 <translation id="3977512764614765090">Nasa <ph name="PERCENTAGE" />% ang baterya at nagcha-charge.</translation>
 <translation id="3984536049089846927">Susunod na page</translation>
 <translation id="3986082989454912832">Sagutin</translation>
+<translation id="3990002060657467458">Nasa Mga Mabilisang Setting ang mga madalas gamiting kontrol tulad ng Wi-Fi, Bluetooth, at volume. Puwede ka rin pumunta rito para kumuha ng mga screenshot.</translation>
 <translation id="3995138139523574647">USB-C device (port sa kanang bahagi sa likod)</translation>
 <translation id="40062176907008878">Sulat-kamay</translation>
 <translation id="4017989525502048489">Laser pointer</translation>
@@ -745,6 +751,7 @@ Isaksak ang iyong device.</translation>
 <translation id="4269883910223712419">May kakayahan ang admin ng device na ito na:</translation>
 <translation id="4274537685965975248">Nagbago ang keyboard shortcut na Ctrl + Alt + Pababang Arrow. Para magamit ang End key, pindutin ang <ph name="LAUNCHER_KEY_NAME" /> key + Pakanang Arrow.</translation>
 <translation id="4275283744500212192">Buksan ang mga opsyon sa layout ng window</translation>
+<translation id="4278138729651139331">I-customize at i-personalize ang iyong Chromebook sa Mga Setting. Subukang palitan ang iyong wallpaper o magtakda ng screen saver.</translation>
 <translation id="4279490309300973883">Nagmi-mirror</translation>
 <translation id="4280601795273309128">Natapos na ang mga update sa seguridad. I-upgrade ang iyong device.</translation>
 <translation id="4283888303416325161">Ilagay ang password para sa higit pang seguridad</translation>
@@ -763,6 +770,7 @@ Isaksak ang iyong device.</translation>
 <translation id="4324840740119394760">Pinapayagan nito ang access sa camera para sa <ph name="APP_NAME" /> at lahat ng app at website na may pahintulot sa camera</translation>
 <translation id="4333628967105022692">Hindi sinusuportahan ang Lacros kapag maraming user ang naka-sign in.</translation>
 <translation id="4338109981321384717">Magnifying glass</translation>
+<translation id="4356872429719185452">Ipakita ang mga detalye ng hotspot. Ino-on ang hotspot.</translation>
 <translation id="4371348193907997655">Mga Cast Setting</translation>
 <translation id="4375482231364171368">Maghanap sa address bar</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, lakas ng signal <ph name="SIGNAL_STRENGTH" /> porsyento</translation>
@@ -800,6 +808,7 @@ Isaksak ang iyong device.</translation>
 <translation id="4505050298327493054">Aktibong desk.</translation>
 <translation id="450584155212756404">Dev Channel</translation>
 <translation id="4513946894732546136">Feedback</translation>
+<translation id="4516212064498225455">Kasalukuyang Desk: <ph name="CURRENT_DESK_NAME" />, gamitin ang Search+Space para buksan ang menu ng lahat ng desk.</translation>
 <translation id="4518404433291145981">Para i-unlock ang iyong Chromebook, i-unlock muna ang telepono mo</translation>
 <translation id="4527045527269911712">Gusto ng bluetooth device na "<ph name="DEVICE_NAME" />" na magpares.</translation>
 <translation id="4533343294786968049">China-charge ang iyong baterya Magfu-full charge ang baterya bago sumapit ang <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -967,6 +976,7 @@ Isaksak ang iyong device.</translation>
 <translation id="5207949376430453814">I-highlight ang text caret</translation>
 <translation id="5208059991603368177">Naka-on</translation>
 <translation id="5216991270656129561">Naka-off hanggang <ph name="TIME" /></translation>
+<translation id="5217646019792206018">Susunod na Desk: <ph name="NEXT_DESK_NAME" />, gamitin ang Search+Space o keyboard shortcut: Shift+Search+<ph name="NEXT_DESK_INDEX" /> para i-activate.</translation>
 <translation id="5221423477036820198">Mabilis na magpadala ng o sumagot sa mga mensahe sa telepono mo gamit ang Phone Hub.</translation>
 <translation id="5222676887888702881">Mag-sign out</translation>
 <translation id="5229343007215035173">I-on/i-off ang privacy screen</translation>
@@ -1032,6 +1042,7 @@ Isaksak ang iyong device.</translation>
 <translation id="550391772491508736">Ipagpatuloy ang pag-cast</translation>
 <translation id="5506975627792768506">I-on o i-off ang magnifier</translation>
 <translation id="5512042095225963688">I-delete ang nakaraang salita</translation>
+<translation id="5518068085000130971">Iyon ang mga pangunahing kaalaman! Magpatuloy sa Explore, ang aming built-in na app para sa mga tip at tulong. Makakakita ka ng mga tip para sa pagsisimula, mga inirerekomendang app, mga espesyal na alok, at mga pinakabagong feature ng Chromebook.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Inalis ng iyong administrator ang lahat ng profile ng eSIM. Makipag-ugnayan sa iyong administrator para sa higit pang impormasyon.</translation>
 <translation id="5523434445161341166">Kumokonekta ang <ph name="FEATURE_NAME" />.</translation>
@@ -1110,6 +1121,7 @@ Isaksak ang iyong device.</translation>
 <translation id="5825969630400862129">Mga setting ng mga nakakonektang device</translation>
 <translation id="5837036133683224804">Ihinto ang <ph name="ROUTE_TITLE" /> sa <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Pumunta sa susunod na track</translation>
+<translation id="5842553299352339114">Naka-on ang hotspot ng <ph name="DEVICE_NAME" />, walang nakakonektang device</translation>
 <translation id="584525477304726060">I-hold para i-maximize</translation>
 <translation id="5856638668464565213">Hindi na-activate ang <ph name="NETWORK_NAME" />.</translation>
 <translation id="5860033963881614850">Naka-off</translation>
@@ -1356,6 +1368,7 @@ Kaka-install lang</translation>
 <translation id="6896758677409633944">Copy</translation>
 <translation id="6901883536534621389">Sumubok ng mga galaw para mag-navigate</translation>
 <translation id="6912841030378044227">Tumuon sa address bar</translation>
+<translation id="6912901278692845878">Quick tour</translation>
 <translation id="6919251195245069855">Hindi makilala ang iyong smart card. Subukan ulit.</translation>
 <translation id="6920245099716267363">I-toggle ang Hotspot. Naka-on ang Hotspot, 1 device ang nakakonekta.</translation>
 <translation id="6931576957638141829">I-save sa</translation>
@@ -1372,6 +1385,7 @@ Kaka-install lang</translation>
 <translation id="6981291220124935078">I-on ang access</translation>
 <translation id="6981982820502123353">Accessibility</translation>
 <translation id="698231206551913481">Permanenteng made-delete ang lahat ng file at lokal na data na nauugnay sa user na ito kapag inalis na ang user na ito.</translation>
+<translation id="7004910047186208204">Kumonekta sa mobile data</translation>
 <translation id="7005239792648594238">Magbukas ng app para magsimula</translation>
 <translation id="7007983414944123363">Hindi ma-verify ang iyong PIN o password. Subukan ulit.</translation>
 <translation id="7014684956566476813">Nakakonekta sa isang device na may pangalang <ph name="DEVICE_NAME" /></translation>
@@ -1526,6 +1540,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notification}one{# notification}other{# na notification}}</translation>
 <translation id="7723703419796509666">Ipakita o i-hide ang console ng Mga Tool ng Developer</translation>
 <translation id="7724603315864178912">I-cut</translation>
+<translation id="7725108879223146004">Ipakita ang mga detalye ng hotspot. Ino-off ang hotspot.</translation>
 <translation id="7727952505535211425">Buksan ang website sa address bar sa bagong tab</translation>
 <translation id="77365090426890123">paggamit ng memory</translation>
 <translation id="7742327441377685481">Walang notification</translation>
@@ -1660,7 +1675,9 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8297006494302853456">Mahina</translation>
 <translation id="8308637677604853869">Nakaraang menu</translation>
 <translation id="830868413617744215">Beta</translation>
+<translation id="8312557488404088015">Mag-quick tour para makapagsimula nang maayos. Sa 6 na hakbang, aabutin lang ito nang ilang minuto.</translation>
 <translation id="8314772463905284467">Naka-on ang Caps Lock</translation>
+<translation id="8315514906653279104">Ino-on...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Napili ang window ng <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349964124165471584">Buksan ang link sa bagong window</translation>
@@ -1708,6 +1725,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8517041960877371778">Maaaring hindi mag-charge ang iyong <ph name="DEVICE_TYPE" /> habang naka-on ito.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Kinokontrol ng <ph name="APP_NAME" /> ang input ng mic}one{Kinokontrol ng # app ang input ng mic}other{Kinokontrol ng # na app ang input ng mic}}</translation>
 <translation id="8535393432370007982">I-undo ang ayos ng pagkakasunod-sunod ayon sa kulay</translation>
+<translation id="853768060447955562">Nakaraang Desk: <ph name="PREVIOUS_DESK_NAME" />, gamitin ang Search+Space o keyboard shortcut: Shift+Search+<ph name="PREVIOUS_DESK_INDEX" /> para i-activate.</translation>
 <translation id="8541078764854166027">Camera framing</translation>
 <translation id="8542053257095774575">Walang naka-save na desk o template</translation>
 <translation id="8546059259582788728">Na-undo ang pagbubukod-bukod</translation>
@@ -1858,11 +1876,13 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="925832987464884575">Itago ang mga preview</translation>
 <translation id="937214777182567951">Hinihiling sa iyo ng <ph name="MANAGER" /> na i-update kaagad ang <ph name="DEVICE_TYPE" /> mo</translation>
 <translation id="938963181863597773">Ano'ng nakaiskedyul sa kalendaryo ko?</translation>
+<translation id="943067377221312471">Nakaraang Desk: <ph name="PREVIOUS_DESK_NAME" />, gamitin ang Search+Space para i-activate.</translation>
 <translation id="945383118875625837">I-drag ang link papunta sa bookmarks bar</translation>
 <translation id="945522503751344254">Magpadala ng feedback</translation>
 <translation id="951991426597076286">Tanggihan</translation>
 <translation id="953431725143473984">I-shut down ang device?</translation>
 <translation id="954052413789300507">Walang sapat na espasyo para sa <ph name="FILENAME" />. Magbakante ng espasyo.</translation>
+<translation id="968627661524972577">Gumamit ng mga app para gawin ang lahat ng kailangan mong gawin sa iyong Chromebook. Makikita mo ang iyong mga app sa Launcher. Puwede mo ring pindutin ang Launcher key sa keyboard.</translation>
 <translation id="974545358917229949">Ipinapakita ang <ph name="RESULT_COUNT" /> (na) resulta para sa <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Pumunta sa dulo ng dokumento</translation>
 <translation id="987589956647469042">Naka-on ang mobile data</translation>

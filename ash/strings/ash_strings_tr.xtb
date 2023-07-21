@@ -512,6 +512,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3294437725009624529">Misafir</translation>
 <translation id="3298690094479023523">PIN'iniz veya şifreniz hâlâ doğrulanamadı. Tekrar deneyin.</translation>
 <translation id="3300193645498960160">Mikrofonunuz kapalıyken konuşursanız bildirim alırsınız. Cihazınızdan hiç ses aktarılmaz.</translation>
+<translation id="3306386552969601301"><ph name="DEVICE_NAME" /> hotspot'una <ph name="DEVICECOUNT" /> cihaz bağlı</translation>
 <translation id="3307642347673023554">Dizüstü bilgisayar moduna geçildi</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> daha sonra yine oturum açabilir.</translation>
 <translation id="3321628682574733415">Ebeveyn kodu yanlış</translation>
@@ -551,6 +552,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> dk.</translation>
 <translation id="3445925074670675829">USB-C cihaz</translation>
 <translation id="3455468639467374593">Şablon, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="3456931972722214204"><ph name="DEVICE_NAME" /> hotspot'una 1 cihaz bağlı</translation>
 <translation id="346243998268439747">Yakınlaştırma düzeyini sıfırlar</translation>
 <translation id="3465223694362104965">Açtığınız son oturumdan sonra bu cihaza başka bir klavye bağlandı. Kullanmadan önce bu klavyeye güvendiğinizden emin olun.</translation>
 <translation id="3465356146291925647">Yöneticiniz tarafından yönetiliyor</translation>
@@ -763,6 +765,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="4324840740119394760">Bu işlem, <ph name="APP_NAME" /> ile birlikte kamera izni olan tüm uygulamaların ve web sitelerinin kameraya erişmesine izin verir</translation>
 <translation id="4333628967105022692">Lacros, birden fazla kullanıcı oturum açmış durumdayken desteklenmiyor.</translation>
 <translation id="4338109981321384717">Büyüteç</translation>
+<translation id="4356872429719185452">Hotspot ayrıntılarını göster. Hotspot açılıyor.</translation>
 <translation id="4371348193907997655">Yayınlama Ayarları</translation>
 <translation id="4375482231364171368">Adres çubuğunda ara</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, sinyal gücü yüzde <ph name="SIGNAL_STRENGTH" /></translation>
@@ -1110,6 +1113,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="5825969630400862129">Bağlı cihaz ayarları</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> adlı alıcıya <ph name="ROUTE_TITLE" /> yayınını durdur</translation>
 <translation id="5841296711770970362">Sonraki parçaya gidin</translation>
+<translation id="5842553299352339114"><ph name="DEVICE_NAME" /> hotspot'u açık, hiçbir cihaz bağlı değil</translation>
 <translation id="584525477304726060">Büyütmek için basılı tutun</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> etkinleştirilmedi.</translation>
 <translation id="5860033963881614850">Kapalı</translation>
@@ -1372,6 +1376,7 @@ Yeni yüklenmiş</translation>
 <translation id="6981291220124935078">Erişimi etkinleştir</translation>
 <translation id="6981982820502123353">Erişilebilirlik</translation>
 <translation id="698231206551913481">Bu kullanıcıyla ilişkilendirilen tüm dosyalar ve yerel veriler, bu kullanıcı kaldırıldıktan sonra kalıcı olarak silinir.</translation>
+<translation id="7004910047186208204">Hücresel veri bağlantısı kurma</translation>
 <translation id="7005239792648594238">Başlamak için bir uygulama açın</translation>
 <translation id="7007983414944123363">PIN'iniz veya şifreniz doğrulanamadı. Tekrar deneyin.</translation>
 <translation id="7014684956566476813"><ph name="DEVICE_NAME" /> adlı cihaza bağlanıldı</translation>
@@ -1526,6 +1531,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 bildirim}other{# bildirim}}</translation>
 <translation id="7723703419796509666">Geliştirici Araçları konsolunu göster veya gizle</translation>
 <translation id="7724603315864178912">Kes</translation>
+<translation id="7725108879223146004">Hotspot ayrıntılarını göster. Hotspot kapatılıyor.</translation>
 <translation id="7727952505535211425">Adres çubuğundaki web sitesini yeni bir sekmede aç</translation>
 <translation id="77365090426890123">bellek kullanımı</translation>
 <translation id="7742327441377685481">Bildirim yok</translation>
@@ -1661,6 +1667,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8308637677604853869">Önceki menü</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock açık</translation>
+<translation id="8315514906653279104">Açılıyor...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> penceresi seçildi</translation>
 <translation id="8349964124165471584">Bağlantıyı yeni pencerede aç</translation>

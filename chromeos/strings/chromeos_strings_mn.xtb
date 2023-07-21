@@ -372,6 +372,7 @@
 <translation id="397105322502079400">Тооцоолж байна ...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> хоногоос дээш хугацаагаар хадгалсан хэвлэлийн ажлуудыг хасах болно</translation>
 <translation id="3993704782688964914">Таны <ph name="DEVICE_NAME" /> одоо шинэчлэгдсэн</translation>
+<translation id="3998976413398910035">Хэвлэгчдийг удирдах</translation>
 <translation id="4003384961948020559">Амжилтгүй болсон - Гаралт дүүрсэн</translation>
 <translation id="4021031199988160623">Туршихын тулд зөөврийн компьютерын горим руу сэлгэнэ үү</translation>
 <translation id="4034824040120875894">Хэвлэгч</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">Зөвхөн дотоодод</translation>
 <translation id="5649768706273821470">Сонсох</translation>
 <translation id="5655283760733841251">Гарны гэрэлтүүлгийг нэмэгдүүлэх</translation>
+<translation id="5655776422854483175">Ямар ч хэвлэх ажил байхгүй</translation>
 <translation id="5659593005791499971">И-мэйл хаяг</translation>
 <translation id="5662240986744577912">нууцлалтай дэлгэцийг асаах/унтраах</translation>
 <translation id="5669267381087807207">Идэвхжиж байна</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">Загвар</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Бараан загварыг асаах</translation>
+<translation id="628726841779494414">Хэвлэгчийн тохиргоонд хэвлэгчдээ удирдана уу</translation>
 <translation id="629550705077076970">гарыг бүдгэрүүлэх</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> тестийг цуцалсан байна</translation>
 <translation id="631063167932043783">Аппыг судлах</translation>

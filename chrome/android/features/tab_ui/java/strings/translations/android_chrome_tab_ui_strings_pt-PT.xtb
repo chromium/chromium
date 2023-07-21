@@ -37,6 +37,7 @@
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> separadores parecem estar relacionados. Pretende agrupá-los?</translation>
 <translation id="4212246570487010370">Continue a navegar</translation>
 <translation id="4648718555153979859">Os separadores estão agrupados aqui.</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{Pode encontrar os seus separadores fechados em Separadores recentes no menu principal do Chrome.}=1{Pode encontrar os seus separadores fechados em Separadores recentes no menu principal do Chrome. O separador de navegação anónima não estará disponível.}other{Pode encontrar os seus separadores fechados em Separadores recentes no menu principal do Chrome. Os # separadores de navegação anónima não estarão disponíveis.}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> crítica)}other{(<ph name="REVIEWS_COUNT_MANY" /> críticas)}}</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="4870911314065352661">Fechar todos os separadores?</translation>

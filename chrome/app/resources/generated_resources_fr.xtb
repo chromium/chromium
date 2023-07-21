@@ -3291,6 +3291,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3721119614952978349">Google et vous</translation>
 <translation id="3722108462506185496">Erreur lors du démarrage du service de machine virtuelle. Veuillez réessayer.</translation>
 <translation id="3722624153992426516">Instruction <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> reçue</translation>
+<translation id="3724897774652282549">Remplir le formulaire</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Réseaux Wi-Fi disponibles</translation>
 <translation id="3727187387656390258">Inspecter le pop-up</translation>
@@ -6467,7 +6468,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6444070574980481588">Définir la date et l'heure</translation>
 <translation id="6444147596556711162">Appuyez sur "Suivant" et "Précédent" pour naviguer entre les éléments affichés</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> – Recherche d'appareils Bluetooth</translation>
-<translation id="6445395161658447009">Comptez jusqu'à une semaine pour qu'une liste de sites s'affiche ici en fonction de votre historique de navigation</translation>
 <translation id="6445450263907939268">Si vous ne souhaitiez pas effectuer ces modifications, vous pouvez restaurer les paramètres précédents.</translation>
 <translation id="6446213738085045933">Créer un raccourci sur le Bureau</translation>
 <translation id="6447842834002726250">Cookies</translation>
@@ -7228,6 +7228,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7067396782363924830">Couleurs ambiantes</translation>
 <translation id="7067725467529581407">Ne plus afficher</translation>
 <translation id="7068279399556423026">Connectez-vous pour voir les onglets d'autres appareils</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Nouveau mot de passe pour ce site}one{Nouveau mot de passe pour ce site}other{Nouveaux mots de passe pour ce site}}</translation>
 <translation id="7070484045139057854">Possibilité de lire et de modifier les données du site</translation>
 <translation id="7072010813301522126">Nom du raccourci</translation>
 <translation id="7074066049407662839">Connectez-vous pour enregistrer des mots de passe</translation>
@@ -9617,6 +9618,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="9068598199622656904">Appuyez sur une touche à la fois plutôt que sur plusieurs en même temps de manière prolongée pour les raccourcis clavier</translation>
 <translation id="9068878141610261315">Type de fichier non compatible</translation>
 <translation id="9069665781180028115">Les éléments sélectionnés seront disponibles sur ce Chromebook. Si vous utilisez un Chromebook pour la première fois, synchronisez tous les éléments pour sauvegarder vos préférences. Vous pouvez apporter des modifications à tout moment dans Paramètres &gt; Comptes.</translation>
+<translation id="9070231741075992882">Les autorisations que vous accordez à <ph name="APP_NAME" /> le seront également pour ses applis installées et diffusées en streaming.</translation>
 <translation id="9070342919388027491">Onglet déplacé vers la gauche</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Souris USB connectée.</translation>

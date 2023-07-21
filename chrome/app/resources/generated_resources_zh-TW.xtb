@@ -1282,6 +1282,7 @@
 <translation id="204497730941176055">Microsoft 憑證範本名稱</translation>
 <translation id="2045117674524495717">鍵盤快速鍵說明</translation>
 <translation id="2045211794962848221">你不會再看到這一則訊息</translation>
+<translation id="2045838962742066664">快速輸入</translation>
 <translation id="2045969484888636535">繼續封鎖 Cookie</translation>
 <translation id="204622017488417136">你的裝置將還原至上一個安裝的 Chrome 版本，且所有使用者帳戶和本機資料都會遭到移除。這項操作無法復原。</translation>
 <translation id="2046702855113914483">拉麵</translation>
@@ -1840,6 +1841,7 @@
 <translation id="2471506181342525583">已允許存取位置資訊</translation>
 <translation id="2473195200299095979">翻譯這個網頁</translation>
 <translation id="2475982808118771221">發生錯誤</translation>
+<translation id="2476901513051581836">離線儲存空間大小不明，因此無法清理儲存空間。</translation>
 <translation id="2476974672882258506">請關閉 Windows 以解除安裝 <ph name="PARALLELS_DESKTOP" />。</translation>
 <translation id="2477065602824695373">你已設定多個外接切換裝置，因此自動掃描功能已關閉。</translation>
 <translation id="2478176599153288112">「<ph name="EXTENSION" />」的媒體檔案權限</translation>
@@ -2224,6 +2226,7 @@
 <translation id="2794522004398861033">如要設定 eSIM 卡，請連上 Wi-Fi 或乙太網路</translation>
 <translation id="2794977172822818797">新增目前網站</translation>
 <translation id="2795716239552913152">網站通常會使用你的位置資訊，以提供地方新聞或附近商家等相關功能或資訊</translation>
+<translation id="2795950023277268902">連結 <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> 即可透過「檔案」應用程式存取雲端硬碟檔案</translation>
 <translation id="2796740370559399562">繼續允許 Cookie</translation>
 <translation id="2798347533012571708">保留更新</translation>
 <translation id="2799223571221894425">重新啟動</translation>
@@ -3658,6 +3661,7 @@
 <translation id="3995138139523574647">USB-C 裝置 (右後方連接埠)</translation>
 <translation id="3995963973192100066">播放動畫</translation>
 <translation id="399788104667917863">在工具列中固定</translation>
+<translation id="3998976413398910035">管理印表機</translation>
 <translation id="4001540981461989979">移動時醒目顯示滑鼠游標</translation>
 <translation id="4002440992267487163">PIN 碼設定</translation>
 <translation id="4005817994523282006">時區偵測方法</translation>
@@ -3765,6 +3769,7 @@
 <translation id="4098667039111970300">工具列中的觸控筆工具</translation>
 <translation id="4099060993766194518">要還原預設搜尋引擎嗎？</translation>
 <translation id="4099874310852108874">網路發生錯誤。</translation>
+<translation id="4100020874626534113">允許彈性指定變音符號。例如，無論輸入「anhs」或「asnh」，都能打出「ánh」這個字。</translation>
 <translation id="4100733287846229632">裝置空間嚴重不足</translation>
 <translation id="4100853287411968461">新的裝置使用時間限制</translation>
 <translation id="4101352914005291489">隱藏的 SSID</translation>
@@ -4760,6 +4765,7 @@
 <translation id="4953808748584563296">預設的橘色顯示圖片</translation>
 <translation id="4955710816792587366">選擇 PIN 碼</translation>
 <translation id="4959262764292427323">系統會將密碼儲存在你的 Google 帳戶中，方便你在任何裝置上使用密碼</translation>
+<translation id="4960020053211143927">部分應用程式不支援這項功能</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">投放螢幕</translation>
 <translation id="4961361269522589229">食譜建議</translation>
@@ -4959,6 +4965,7 @@
 <translation id="5139823398361067371">請輸入安全金鑰的 PIN 碼。如果你不知道 PIN 碼，則必須重設安全金鑰。</translation>
 <translation id="5139955368427980650">開啟(&amp;O)</translation>
 <translation id="5141421572306659464">主要帳戶</translation>
+<translation id="5141957579434225843">例如，請使用 oà、oè、uỳ，而非 òa、òe、ùy</translation>
 <translation id="5142793792982256885">觸控板捲動速度</translation>
 <translation id="5143374789336132547">擴充功能「<ph name="EXTENSION_NAME" />」已變更您點選 [首頁] 按鈕時所顯示的網頁。</translation>
 <translation id="5143612243342258355">這個檔案不安全</translation>
@@ -6296,6 +6303,7 @@
 <translation id="628352644014831790">4 秒</translation>
 <translation id="6285120108426285413">一般使用者不常下載 <ph name="FILE_NAME" />，代表這個檔案可能不安全。</translation>
 <translation id="6285770818046456882">原本與你分享內容的裝置已取消傳輸作業</translation>
+<translation id="628726841779494414">前往印表機設定管理印表機</translation>
 <translation id="6290613030083731160">附近沒有可分享內容的裝置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">正在驗證啟用代碼。請稍候片刻。</translation>
 <translation id="6291741848715722067">確認碼</translation>
@@ -6464,7 +6472,6 @@
 <translation id="6444070574980481588">設定日期和時間</translation>
 <translation id="6444147596556711162">使用代表「下一個」和「上一個」的外接切換裝置，在畫面上的項目之間移動</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> - 藍牙掃描啟用中</translation>
-<translation id="6445395161658447009">系統可能需要一週的時間，才會根據瀏覽記錄在這裡列出網站</translation>
 <translation id="6445450263907939268">如果你不想套用這些變更，可以還原為先前的設定。</translation>
 <translation id="6446213738085045933">建立桌面捷徑</translation>
 <translation id="6447842834002726250">Cookie</translation>
@@ -7008,6 +7015,7 @@
 <translation id="6897688156970667447">適合在低光源環境中使用，且可以省電</translation>
 <translation id="6897972855231767338">進一步瞭解如何以訪客模式瀏覽</translation>
 <translation id="6898440773573063262">Kiosk 應用程式現可設為自動在這個裝置上啟動。</translation>
+<translation id="6899427698619335650">允許彈性指定變音符號。例如，無論輸入「anh1」或「a1nh」，都能打出「ánh」這個字。</translation>
 <translation id="6900284862687837908">背景應用程式：<ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">強化防護</translation>
 <translation id="6900651018461749106">請再次登入並更新 <ph name="USER_EMAIL" /></translation>
@@ -9628,7 +9636,7 @@
 <translation id="9081543426177426948">無痕模式不會儲存你造訪的網站</translation>
 <translation id="9084064520949870008">在視窗中開啟</translation>
 <translation id="9085256200913095638">複製所選分頁</translation>
-<translation id="9085446486797400519">相機存取權</translation>
+<translation id="9085446486797400519">攝影機存取權</translation>
 <translation id="9085776959277692427">未選取<ph name="LANGUAGE" />。按下搜尋鍵加空白鍵即可選取。</translation>
 <translation id="9087949559523851360">新增受限制的使用者</translation>
 <translation id="9088234649737575428">「<ph name="PLUGIN_NAME" />」遭到企業政策封鎖</translation>

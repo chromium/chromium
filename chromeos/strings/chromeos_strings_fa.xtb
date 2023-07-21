@@ -372,6 +372,7 @@
 <translation id="397105322502079400">در حال محاسبه…</translation>
 <translation id="39823212440917567">کارهای چاپ قدیمی‌تر از <ph name="NUMBER_OF_DAYS" /> روز برداشته می‌شوند</translation>
 <translation id="3993704782688964914">اکنون <ph name="DEVICE_NAME" /> شما به‌روز است</translation>
+<translation id="3998976413398910035">مدیریت چاپگرها</translation>
 <translation id="4003384961948020559">انجام نشد - خروجی پُر است</translation>
 <translation id="4021031199988160623">برای آزمایش کردن، به حالت رایانه کیفی بروید</translation>
 <translation id="4034824040120875894">چاپگر</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">فقط داخلی</translation>
 <translation id="5649768706273821470">گوش دادن</translation>
 <translation id="5655283760733841251">افزایش روشنایی صفحه‌کلید</translation>
+<translation id="5655776422854483175">هیچ کار چاپی وجود ندارد</translation>
 <translation id="5659593005791499971">ایمیل</translation>
 <translation id="5662240986744577912">روشن/خاموش کردن صفحه حریم‌خصوصی</translation>
 <translation id="5669267381087807207">فعالسازی</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">زمینه</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">روشن کردن زمینه تیره</translation>
+<translation id="628726841779494414">چاپگرهایتان را در تنظیمات چاپگر مدیریت کنید</translation>
 <translation id="629550705077076970">کم‌نور کردن صفحه‌کلید</translation>
 <translation id="6302401976930124515">آزمایش <ph name="TEST_NAME" /> لغو شده است</translation>
 <translation id="631063167932043783">برنامه کاوش</translation>

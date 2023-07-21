@@ -372,6 +372,7 @@
 <translation id="397105322502079400">計算しています...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> 日より前の印刷ジョブは削除されます</translation>
 <translation id="3993704782688964914">お使いの「<ph name="DEVICE_NAME" />」は最新の状態です</translation>
+<translation id="3998976413398910035">プリンタを管理</translation>
 <translation id="4003384961948020559">失敗 - 出力がいっぱいです</translation>
 <translation id="4021031199988160623">テストするにはノートパソコン モードに切り替えます</translation>
 <translation id="4034824040120875894">プリンタ</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">内部専用</translation>
 <translation id="5649768706273821470">聴く</translation>
 <translation id="5655283760733841251">キーボードの明るさを上げる</translation>
+<translation id="5655776422854483175">印刷ジョブなし</translation>
 <translation id="5659593005791499971">メール</translation>
 <translation id="5662240986744577912">プライバシー スクリーンを切り替える</translation>
 <translation id="5669267381087807207">有効化中</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">テーマ</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">ダークモードをオンにする</translation>
+<translation id="628726841779494414">プリンタ設定でプリンタを管理</translation>
 <translation id="629550705077076970">キーボードを薄暗くする</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> テストがキャンセルされました</translation>
 <translation id="631063167932043783">アプリについてもっと知る</translation>

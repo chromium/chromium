@@ -6,6 +6,7 @@
 <translation id="1352919863522755794">Google 密码管理工具无法检查您的密码。请尝试检查您的互联网连接。</translation>
 <translation id="1462727070346936664">登录即可充分利用 Chrome。</translation>
 <translation id="1479202195792305274">您需要先登录 Google 帐号才能使用 Chrome 的密码检查功能。</translation>
+<translation id="1491435845014430217">开启“在您关闭 Chrome 时锁定无痕式标签页”。</translation>
 <translation id="1493827051843127077">将 Chrome 设为默认同步您所有设备上的标签页、密码和付款信息</translation>
 <translation id="1504372625950710826">Chrome 无法检查是否有更新。请尝试检查您的互联网连接。</translation>
 <translation id="1511320244449497906">您已登录，且正在将您的数据同步到由 <ph name="DOMAIN" /> 管理的帐号。此网域的管理员现在可以专门针对该帐号设置用户规范，这可能会改变 Chrome 的行为。</translation>
@@ -80,6 +81,7 @@
 <translation id="5395376160638294582">请确保您可以一直使用 Google 帐号中的 Chrome 数据</translation>
 <translation id="5460571915754665838">4. 选择“Chrome”</translation>
 <translation id="5492504007368565877">Google 密码管理工具无法检查您的密码。</translation>
+<translation id="5527026824954593399">点按“在 Chrome 上通过 Google 地图查看”。</translation>
 <translation id="5552137475244467770">Chrome 会定期检查您的密码是否已被列在网上发布的外泄密码列表内。当 Chrome 进行这项检查时，您的密码和用户名都会被加密，所以绝不会被任何人员/任何一方（包括 Google）读取。</translation>
 <translation id="5639704535586432836">打开“设置”&gt;“隐私”&gt;“相机”&gt;“Google Chrome”，然后开启相机。</translation>
 <translation id="5642200033778930880">Google Chrome 无法在分割视图模式下使用您的相机</translation>
@@ -120,6 +122,7 @@
 <translation id="7501046334262221972">若要将 Chrome 设为默认浏览器，请打开“设置”，点按“默认浏览器应用”，然后选择“Chrome”。</translation>
 <translation id="756809126120519699">已清除 Chrome 数据</translation>
 <translation id="7662994914830945754">要查看您在其他设备上用 Chrome 打开的标签页，请登录帐号并开启同步功能</translation>
+<translation id="7669869107155339016">前往 Chrome 设置。</translation>
 <translation id="7693590760643069321">现在，每当点按消息、文档和其他应用中的链接时，您都可以使用 Chrome 打开链接。</translation>
 <translation id="7698568245838009292">Chrome 想要访问相机</translation>
 <translation id="7754633291442704733">贵组织 (<ph name="DOMAIN" />) 将能够访问您在此帐号中存储的 Chrome 数据、书签、历史记录、密码和其他设置。当您退出帐号时，系统将从这部设备上清除您的数据。不过，您的数据仍会存储在您名下受管理的 Google 帐号中，且可供贵组织访问。贵组织也可专门针对上述帐号设置用户规范，这可能会改变 Chrome 的行为。</translation>

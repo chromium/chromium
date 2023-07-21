@@ -372,6 +372,7 @@
 <translation id="397105322502079400">Lasketaan...</translation>
 <translation id="39823212440917567">Yli <ph name="NUMBER_OF_DAYS" /> päivää vanhat tulostustyöt poistetaan</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> on nyt ajan tasalla</translation>
+<translation id="3998976413398910035">Hallinnoi tulostimia</translation>
 <translation id="4003384961948020559">Epäonnistui – Syöte täynnä</translation>
 <translation id="4021031199988160623">Vaihda tietokonetilaan testaamista varten</translation>
 <translation id="4034824040120875894">Tulostin</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">Vain sisäinen</translation>
 <translation id="5649768706273821470">Kuuntele</translation>
 <translation id="5655283760733841251">Lisää näppäimistön kirkkautta</translation>
+<translation id="5655776422854483175">Ei tulostustöitä</translation>
 <translation id="5659593005791499971">Sähköposti</translation>
 <translation id="5662240986744577912">yksityinen näkyvyys päälle tai pois päältä</translation>
 <translation id="5669267381087807207">Aktivoidaan</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">Teema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Laita tumma teema päälle</translation>
+<translation id="628726841779494414">Hallinnoi tulostimia tulostinasetuksista</translation>
 <translation id="629550705077076970">näppäimistön himmennys</translation>
 <translation id="6302401976930124515">Testi on peruttu: <ph name="TEST_NAME" /></translation>
 <translation id="631063167932043783">Tutustu sovellukseen</translation>

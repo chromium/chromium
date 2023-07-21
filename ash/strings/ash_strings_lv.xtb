@@ -512,6 +512,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3294437725009624529">Viesis</translation>
 <translation id="3298690094479023523">Joprojām nevarēja verificēt jūsu PIN vai paroli. Mēģiniet vēlreiz.</translation>
 <translation id="3300193645498960160">Ja runāsiet, kad ir izslēgta skaņa, saņemsiet paziņojumu. Jūsu audio vienmēr atrodas tikai jūsu ierīcē.</translation>
+<translation id="3306386552969601301">Šīs ierīces (<ph name="DEVICE_NAME" />) tīklājam ir pievienotas vairākas ierīces (<ph name="DEVICECOUNT" />).</translation>
 <translation id="3307642347673023554">Ieslēgts klēpjdatora režīms</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> joprojām varēs pierakstīties vēlāk.</translation>
 <translation id="3321628682574733415">Nepareizs vecāku kods</translation>
@@ -551,6 +552,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C ierīce</translation>
 <translation id="3455468639467374593">Veidne, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="3456931972722214204">Šīs ierīces (<ph name="DEVICE_NAME" />) tīklājam ir pievienota viena ierīce.</translation>
 <translation id="346243998268439747">Atiestatīt tālummaiņas līmeni</translation>
 <translation id="3465223694362104965">Kopš pēdējoreiz pierakstījāties, šai ierīcei ir pievienota cita tastatūra. Pirms izmantojat šo tastatūru, pārliecinieties, ka tā ir uzticama.</translation>
 <translation id="3465356146291925647">Pārvalda jūsu administrators</translation>
@@ -763,6 +765,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="4324840740119394760">Atļauj piekļuvi kamerai lietotnei <ph name="APP_NAME" /> un visām lietotnēm un vietnēm, kurām ir kameras atļauja.</translation>
 <translation id="4333628967105022692">Pārlūks Lacros netiek atbalstīts, ja ir pierakstījušies vairāki lietotāji.</translation>
 <translation id="4338109981321384717">Lupa</translation>
+<translation id="4356872429719185452">Rādīt informāciju par tīklāju. Notiek tīklāja ieslēgšana.</translation>
 <translation id="4371348193907997655">Apraides iestatījumi</translation>
 <translation id="4375482231364171368">Meklēt adreses joslā</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, signāla stiprums ir <ph name="SIGNAL_STRENGTH" />%.</translation>
@@ -1110,6 +1113,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="5825969630400862129">Saistīto ierīču iestatījumi</translation>
 <translation id="5837036133683224804">Pārtraukt “<ph name="ROUTE_TITLE" />” apraidi ierīcē “<ph name="RECEIVER_NAME" />”</translation>
 <translation id="5841296711770970362">Pāriet uz nākamo ierakstu</translation>
+<translation id="5842553299352339114">Šīs ierīces (<ph name="DEVICE_NAME" />) tīklājs ir ieslēgts, un nav pievienota neviena ierīce.</translation>
 <translation id="584525477304726060">Turiet, lai maksimizētu</translation>
 <translation id="5856638668464565213">Tīkls <ph name="NETWORK_NAME" /> nav aktivizēts.</translation>
 <translation id="5860033963881614850">Izsl.</translation>
@@ -1372,6 +1376,7 @@ Jauna instalācija</translation>
 <translation id="6981291220124935078">Ieslēgt piekļuvi</translation>
 <translation id="6981982820502123353">Pieejamība</translation>
 <translation id="698231206551913481">Visi faili un lokālie dati, kas ir saistīti ar šo lietotāju, tiks neatgriezeniski dzēsti, tiklīdz šis lietotājs tiks noņemts.</translation>
+<translation id="7004910047186208204">Mobilo datu savienojuma izveide</translation>
 <translation id="7005239792648594238">Lai sāktu, atveriet kādu lietotni</translation>
 <translation id="7007983414944123363">Nevarēja verificēt jūsu PIN vai paroli. Mēģiniet vēlreiz.</translation>
 <translation id="7014684956566476813">Izveidots savienojums ar ierīci “<ph name="DEVICE_NAME" />”</translation>
@@ -1526,6 +1531,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 paziņojums}zero{# paziņojumu}one{# paziņojums}other{# paziņojumi}}</translation>
 <translation id="7723703419796509666">Rādīt vai paslēpt izstrādātāja rīku konsoli</translation>
 <translation id="7724603315864178912">Izgriezt</translation>
+<translation id="7725108879223146004">Rādīt informāciju par tīklāju. Notiek tīklāja izslēgšana.</translation>
 <translation id="7727952505535211425">Atvērt adreses joslā norādīto vietni jaunā cilnē</translation>
 <translation id="77365090426890123">atmiņas lietojums</translation>
 <translation id="7742327441377685481">Paziņojumu nav</translation>
@@ -1661,6 +1667,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8308637677604853869">Iepriekšējā izvēlne</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Funkcija Caps Lock ir ieslēgta</translation>
+<translation id="8315514906653279104">Notiek ieslēgšana…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Atlasīts logs “<ph name="WINDOW_TITLE" />”</translation>
 <translation id="8349964124165471584">Atvērt saiti jaunā logā</translation>

@@ -146,6 +146,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1576623706766186887">Pomniejsz, gdy lupa jest włączona</translation>
 <translation id="1586324912145647027">Przejdź do biurka z zakresu od 1 do 8</translation>
 <translation id="1589090746204042747">uzyskiwać dostęp do całej Twojej aktywności w tej sesji;</translation>
+<translation id="1592682369233288537">Następne biurko: <ph name="NEXT_DESK_NAME" />. Aby je aktywować, naciśnij klawisz wyszukiwania i spację.</translation>
 <translation id="1604857178818051494">Wstrzymaj multimedia</translation>
 <translation id="1610778689852195798">„Cofnij”</translation>
 <translation id="1611993646327628135">Włączono</translation>
@@ -157,6 +158,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1647986356840967552">Poprzednia strona</translation>
 <translation id="1651914502370159744">Otwórz stronę Historia</translation>
 <translation id="1654477262762802994">Rozpocznij zapytanie głosowe</translation>
+<translation id="1662667383227796099">W Menu z aplikacjami możesz wyszukiwać pliki, aplikacje i inne rzeczy, a nawet zadawać pytania na temat Chromebooka.</translation>
 <translation id="1668469839109562275">Wbudowana sieć VPN</translation>
 <translation id="1675844249244994876">Zaktualizuj okno po prawej stronie</translation>
 <translation id="1677472565718498478">Pozostało <ph name="TIME" /></translation>
@@ -560,6 +562,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3477079411857374384">Control+Shift+spacja</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Półka ukryta automatycznie</translation>
+<translation id="3503243067695520519">Cześć. Chromebooki działają trochę inaczej.</translation>
 <translation id="3505066820268455558">Bateria się ładuje</translation>
 <translation id="3509391053705095206">Nie udało się znaleźć telefonu. Sprawdź, czy jest na nim włączony Bluetooth.</translation>
 <translation id="3510164367642747937">Podświetlaj wskaźnik myszy</translation>
@@ -684,6 +687,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="3977512764614765090">Naładowanie baterii: <ph name="PERCENTAGE" />%. Trwa ładowanie.</translation>
 <translation id="3984536049089846927">Następna strona</translation>
 <translation id="3986082989454912832">Odpowiedz</translation>
+<translation id="3990002060657467458">Często używane elementy sterujące dotyczące np. Wi-Fi, Bluetootha czy głośności znajdziesz w Szybkich ustawieniach. Możesz tam też robić zrzuty ekranu.</translation>
 <translation id="3995138139523574647">Urządzenie USB-C (tylny port na prawym boku)</translation>
 <translation id="40062176907008878">Pismo odręczne</translation>
 <translation id="4017989525502048489">Wskaźnik laserowy</translation>
@@ -747,6 +751,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4269883910223712419">Administrator tego urządzenia może:</translation>
 <translation id="4274537685965975248">Skrót klawiszowy Ctrl + Alt + strzałka w dół został zmieniony. Aby użyć klawisza End, naciśnij klawisz <ph name="LAUNCHER_KEY_NAME" /> + strzałka w prawo.</translation>
 <translation id="4275283744500212192">Otwórz opcje układu okna</translation>
+<translation id="4278138729651139331">Jeśli chcesz spersonalizować swojego Chromebooka, otwórz Ustawienia. Możesz na przykład zmienić tapetę albo ustawić wygaszacz ekranu.</translation>
 <translation id="4279490309300973883">Odbicie lustrzane</translation>
 <translation id="4280601795273309128">Dobiegły końca aktualizacje zabezpieczeń. Zmień urządzenie na nowsze.</translation>
 <translation id="4283888303416325161">Dla większego bezpieczeństwa wpisz hasło</translation>
@@ -803,6 +808,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4505050298327493054">Aktywne biurko.</translation>
 <translation id="450584155212756404">Wersja deweloperska</translation>
 <translation id="4513946894732546136">Twoja opinia</translation>
+<translation id="4516212064498225455">Bieżące biurko: <ph name="CURRENT_DESK_NAME" />. Aby otworzyć menu wszystkich biurek, naciśnij klawisz wyszukiwania i spację.</translation>
 <translation id="4518404433291145981">Aby odblokować Chromebooka, najpierw odblokuj swój telefon</translation>
 <translation id="4527045527269911712">Urządzenie Bluetooth „<ph name="DEVICE_NAME" />” chce się sparować.</translation>
 <translation id="4533343294786968049">Wydłużam czas pracy na baterii. Bateria zostanie w pełni naładowana do <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -970,6 +976,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="5207949376430453814">Podświetlaj kursor tekstu</translation>
 <translation id="5208059991603368177">Włączono</translation>
 <translation id="5216991270656129561">Wyłączone do <ph name="TIME" /></translation>
+<translation id="5217646019792206018">Następne biurko: <ph name="NEXT_DESK_NAME" />. Aby je aktywować, naciśnij klawisz wyszukiwania i spację lub użyj skrótu klawiszowego Shift +klawisz wyszukiwania + <ph name="NEXT_DESK_INDEX" />.</translation>
 <translation id="5221423477036820198">Korzystając z funkcji sterowania telefonem, możesz szybko wysyłać wiadomości i odpowiadać na nie na telefonie.</translation>
 <translation id="5222676887888702881">Wyloguj się</translation>
 <translation id="5229343007215035173">Włącz/wyłącz filtr prywatności</translation>
@@ -1035,6 +1042,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="550391772491508736">Wznów przesyłanie</translation>
 <translation id="5506975627792768506">Włącz lub wyłącz lupę</translation>
 <translation id="5512042095225963688">Usuń poprzednie słowo</translation>
+<translation id="5518068085000130971">To były podstawy. Jeśli potrzebujesz bardziej szczegółowych wskazówek i instrukcji, skorzystaj z wbudowanej aplikacji Odkrywaj. Znajdziesz w niej porady na początek, listę polecanych aplikacji, oferty specjalne oraz opis najnowszych funkcji Chromebooka.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Administrator usunął wszystkie profile eSIM. Aby dowiedzieć się więcej, skontaktuj się z administratorem.</translation>
 <translation id="5523434445161341166">Funkcja <ph name="FEATURE_NAME" /> nawiązuje połączenie.</translation>
@@ -1359,6 +1367,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="6896758677409633944">Kopiuj</translation>
 <translation id="6901883536534621389">Poruszaj się za pomocą gestów</translation>
 <translation id="6912841030378044227">Zaznacz pasek adresu</translation>
+<translation id="6912901278692845878">Krótka prezentacja</translation>
 <translation id="6919251195245069855">Nie udało się rozpoznać karty elektronicznej. Spróbuj ponownie.</translation>
 <translation id="6920245099716267363">Przełącz hotspota. Hotspot jest włączony. Jedno urządzenie jest połączone.</translation>
 <translation id="6931576957638141829">Zapisz w</translation>
@@ -1665,6 +1674,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8297006494302853456">Słaby</translation>
 <translation id="8308637677604853869">Poprzednie menu</translation>
 <translation id="830868413617744215">Beta</translation>
+<translation id="8312557488404088015">Na dobry początek obejrzyj krótką prezentację. Wykonanie tych 6 kroków zajmie tylko kilka minut.</translation>
 <translation id="8314772463905284467">Caps Lock jest włączony.</translation>
 <translation id="8315514906653279104">Włączam…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
@@ -1714,6 +1724,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> nie może się ładować, gdy jest włączony.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Wejściem mikrofonu steruje <ph name="APP_NAME" />}few{Wejściem mikrofonu sterują # aplikacje}many{Wejściem mikrofonu steruje # aplikacji}other{Wejściem mikrofonu steruje # aplikacji}}</translation>
 <translation id="8535393432370007982">Cofnij sortowanie według koloru</translation>
+<translation id="853768060447955562">Poprzednie biurko: <ph name="PREVIOUS_DESK_NAME" />. Aby je aktywować, naciśnij klawisz wyszukiwania i spację lub użyj skrótu klawiszowego Shift + klawisz wyszukiwania + <ph name="PREVIOUS_DESK_INDEX" />.</translation>
 <translation id="8541078764854166027">Kadrowanie</translation>
 <translation id="8542053257095774575">Nie ma zapisanych biurek ani szablonów</translation>
 <translation id="8546059259582788728">Sortowanie zostało cofnięte</translation>
@@ -1865,11 +1876,13 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="925832987464884575">Ukryj podglądy</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> wymaga jak najszybszego zaktualizowania urządzenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">Co mam w kalendarzu?</translation>
+<translation id="943067377221312471">Poprzednie biurko: <ph name="PREVIOUS_DESK_NAME" />. Aby je aktywować, naciśnij klawisz wyszukiwania i spację.</translation>
 <translation id="945383118875625837">Przeciągnij link na pasek zakładek</translation>
 <translation id="945522503751344254">Prześlij opinię</translation>
 <translation id="951991426597076286">Odrzuć</translation>
 <translation id="953431725143473984">Wyłączyć urządzenie?</translation>
 <translation id="954052413789300507">Za mało miejsca na plik <ph name="FILENAME" />. Zwolnij miejsce.</translation>
+<translation id="968627661524972577">Dzięki aplikacjom możesz robić na Chromebooku wszystko, co chcesz. Znajdziesz je w Menu z aplikacjami. Możesz też nacisnąć klawisz Menu z aplikacjami na klawiaturze.</translation>
 <translation id="974545358917229949">Wyświetlam wyniki (<ph name="RESULT_COUNT" />) dla zapytania <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Przejdź na koniec dokumentu</translation>
 <translation id="987589956647469042">Mobilna transmisja danych jest włączona</translation>

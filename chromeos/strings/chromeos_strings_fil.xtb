@@ -372,6 +372,7 @@
 <translation id="397105322502079400">Kinakalkula...</translation>
 <translation id="39823212440917567">Aalisin ang mga pag-print na lampas <ph name="NUMBER_OF_DAYS" /> (na) araw na</translation>
 <translation id="3993704782688964914">Up to date na ngayon ang iyong <ph name="DEVICE_NAME" /></translation>
+<translation id="3998976413398910035">Pamahalaan ang mga printer</translation>
 <translation id="4003384961948020559">Hindi na-print - Puno ang output</translation>
 <translation id="4021031199988160623">Lumipat sa laptop mode para suriin</translation>
 <translation id="4034824040120875894">Printer</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">Internal lang</translation>
 <translation id="5649768706273821470">Pakinggan</translation>
 <translation id="5655283760733841251">Taasan ang liwanag ng keyboard</translation>
+<translation id="5655776422854483175">Walang pag-print</translation>
 <translation id="5659593005791499971">Email</translation>
 <translation id="5662240986744577912">i-toggle ang privacy screen</translation>
 <translation id="5669267381087807207">Ina-activate</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">I-on ang madilim na tema</translation>
+<translation id="628726841779494414">Pamahalaan ang iyong mga printer sa mga setting ng printer</translation>
 <translation id="629550705077076970">pag-dim ng keyboard</translation>
 <translation id="6302401976930124515">Nakansela ang pagsubok na <ph name="TEST_NAME" /></translation>
 <translation id="631063167932043783">Explore app</translation>

@@ -512,6 +512,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3294437725009624529">Gwestai</translation>
 <translation id="3298690094479023523">Ni ellid dilysu eich PIN neu gyfrinair o hyd. Rhowch gynnig arall arni.</translation>
 <translation id="3300193645498960160">Byddwch yn cael gwybod os byddwch yn siarad tra byddwch wedi'ch distewi. Nid yw sain byth yn gadael eich dyfais.</translation>
+<translation id="3306386552969601301">Mae <ph name="DEVICECOUNT" /> o ddyfeisiau wedi'u cysylltu â phoethfan <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Newid i'r modd gliniadur</translation>
 <translation id="3308453408813785101">Gall <ph name="USER_EMAIL_ADDRESS" /> fewngofnodi'n nes ymlaen.</translation>
 <translation id="3321628682574733415">Cod rhiant anghywir</translation>
@@ -551,6 +552,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> munud</translation>
 <translation id="3445925074670675829">Dyfais USB-C</translation>
 <translation id="3455468639467374593">Templed, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="3456931972722214204">Mae 1 ddyfais wedi'i chysylltu â phoethfan <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">Ailosod lefel chwyddo</translation>
 <translation id="3465223694362104965">Mae bysellfwrdd arall wedi cysylltu â'r ddyfais hon ers i chi fewngofnodi ddiwethaf. Sicrhewch eich bod yn ymddiried yn y bysellfwrdd hwn cyn i chi ei ddefnyddio.</translation>
 <translation id="3465356146291925647">Rheolir gan eich Gweinyddwr</translation>
@@ -763,6 +765,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="4324840740119394760">Mae hyn yn caniatáu mynediad camera ar gyfer <ph name="APP_NAME" /> a phob ap a gwefan gyda chaniatâd y camera</translation>
 <translation id="4333628967105022692">Ni chefnogir Lacros tra bod sawl defnyddiwr wedi'u mewngofnodi.</translation>
 <translation id="4338109981321384717">Chwyddwydr</translation>
+<translation id="4356872429719185452">Dangos manylion y boethfan. Mae'r boethfan yn troi ymlaen.</translation>
 <translation id="4371348193907997655">Gosodiadau Castio</translation>
 <translation id="4375482231364171368">Chwilio yn y bar cyfeiriad</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, cryfder signal <ph name="SIGNAL_STRENGTH" /> y cant</translation>
@@ -1110,6 +1113,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5825969630400862129">Gosodiadau dyfeisiau cysylltiedig</translation>
 <translation id="5837036133683224804">Stopio <ph name="ROUTE_TITLE" /> ar <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Mynd i'r trac nesaf</translation>
+<translation id="5842553299352339114">Mae'r boethfan <ph name="DEVICE_NAME" /> ymlaen, dim dyfeisiau wedi'u cysylltu</translation>
 <translation id="584525477304726060">Daliwch i fwyhau</translation>
 <translation id="5856638668464565213">Nid yw <ph name="NETWORK_NAME" /> wedi'i weithredu.</translation>
 <translation id="5860033963881614850">Diffodd</translation>
@@ -1372,6 +1376,7 @@ Gosodiad newydd</translation>
 <translation id="6981291220124935078">Troi mynediad ymlaen</translation>
 <translation id="6981982820502123353">Hygyrchedd</translation>
 <translation id="698231206551913481">Bydd yr holl ffeiliau a data lleol sy'n gysylltiedig â'r defnyddiwr hwn yn cael eu dileu'n barhaol unwaith y bydd y defnyddiwr hwn wedi'i dynnu.</translation>
+<translation id="7004910047186208204">Cysylltu â data symudol</translation>
 <translation id="7005239792648594238">Agorwch ap i gychwyn arni</translation>
 <translation id="7007983414944123363">Ni ellid dilysu eich PIN neu gyfrinair. Rhowch gynnig arall arni.</translation>
 <translation id="7014684956566476813">Wedi'i gysylltu â dyfais o'r enw <ph name="DEVICE_NAME" /></translation>
@@ -1526,6 +1531,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 hysbysiad}zero{# hysbysiad}two{# hysbysiad}few{# hysbysiad}many{# hysbysiad}other{# hysbysiad}}</translation>
 <translation id="7723703419796509666">Dangos neu guddio'r consol Offer Datblygwyr</translation>
 <translation id="7724603315864178912">Torri</translation>
+<translation id="7725108879223146004">Dangos manylion y boethfan. Mae'r boethfan yn diffodd.</translation>
 <translation id="7727952505535211425">Agor y wefan yn y bar cyfeiriad mewn tab newydd</translation>
 <translation id="77365090426890123">defnydd cof</translation>
 <translation id="7742327441377685481">Dim hysbysiadau</translation>
@@ -1661,6 +1667,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8308637677604853869">Dewislen flaenorol</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Mae Caps Lock wedi'i droi ymlaen</translation>
+<translation id="8315514906653279104">Wrthi'n troi ymlaen...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Mae'r ffenestr <ph name="WINDOW_TITLE" /> wedi'i dewis</translation>
 <translation id="8349964124165471584">Agor dolen mewn ffenestr newydd</translation>

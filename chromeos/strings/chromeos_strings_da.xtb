@@ -372,6 +372,7 @@
 <translation id="397105322502079400">Beregner...</translation>
 <translation id="39823212440917567">Udskriftsjobs, der er ældre end <ph name="NUMBER_OF_DAYS" /> dage, fjernes</translation>
 <translation id="3993704782688964914">Din <ph name="DEVICE_NAME" /> er nu opdateret</translation>
+<translation id="3998976413398910035">Administrer printere</translation>
 <translation id="4003384961948020559">Handlingen mislykkedes – Fuld udskriftsbakke</translation>
 <translation id="4021031199988160623">Skift til computertilstand for at teste</translation>
 <translation id="4034824040120875894">Printer</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">Kun internt</translation>
 <translation id="5649768706273821470">Lyt</translation>
 <translation id="5655283760733841251">Øg tastaturets lysstyrke</translation>
+<translation id="5655776422854483175">Ingen udskriftsjob</translation>
 <translation id="5659593005791499971">Mail</translation>
 <translation id="5662240986744577912">slå privatlivsfilter til/fra</translation>
 <translation id="5669267381087807207">Aktiverer</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Aktivér Mørkt tema</translation>
+<translation id="628726841779494414">Administrer dine printere i printerindstillingerne</translation>
 <translation id="629550705077076970">dæmp tastaturlys</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />-testen er annulleret</translation>
 <translation id="631063167932043783">Appen Udforsk</translation>

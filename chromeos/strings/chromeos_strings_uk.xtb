@@ -372,6 +372,7 @@
 <translation id="397105322502079400">Обчислення...</translation>
 <translation id="39823212440917567">Завдання друку, старіші за <ph name="NUMBER_OF_DAYS" /> дн., буде вилучено</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" />: пристрій оновлено</translation>
+<translation id="3998976413398910035">Керувати принтерами</translation>
 <translation id="4003384961948020559">Не надруковано – вихідний лоток заповнений</translation>
 <translation id="4021031199988160623">Щоб перевірити клавіатуру, перейдіть у режим ноутбука</translation>
 <translation id="4034824040120875894">Принтер</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">Лише для внутрішнього використання</translation>
 <translation id="5649768706273821470">Слухати</translation>
 <translation id="5655283760733841251">Збільшити яскравість клавіатури</translation>
+<translation id="5655776422854483175">Немає завдань друку</translation>
 <translation id="5659593005791499971">Ел. пошта</translation>
 <translation id="5662240986744577912">увімкнути або вимкнути екран конфіденційності</translation>
 <translation id="5669267381087807207">Активація</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Увімкнути темну тему</translation>
+<translation id="628726841779494414">Керуйте принтерами в налаштуваннях принтера</translation>
 <translation id="629550705077076970">зменшення яскравості клавіатури</translation>
 <translation id="6302401976930124515">Тест "<ph name="TEST_NAME" />" скасовано</translation>
 <translation id="631063167932043783">Додаток Можливості</translation>

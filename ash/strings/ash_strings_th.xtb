@@ -146,6 +146,7 @@
 <translation id="1576623706766186887">ซูมออกเมื่อแว่นขยายเปิดอยู่</translation>
 <translation id="1586324912145647027">ไปที่เดสก์ 1 ถึง 8</translation>
 <translation id="1589090746204042747">เข้าถึงกิจกรรมทั้งหมดของคุณในเซสชันนี้</translation>
+<translation id="1592682369233288537">เดสก์ถัดไป: <ph name="NEXT_DESK_NAME" /> ใช้ Search+Space เพื่อเปิดใช้งาน</translation>
 <translation id="1604857178818051494">หยุดสื่อชั่วคราว</translation>
 <translation id="1610778689852195798">"เลิกทำ"</translation>
 <translation id="1611993646327628135">เปิด</translation>
@@ -157,6 +158,7 @@
 <translation id="1647986356840967552">หน้าที่แล้ว</translation>
 <translation id="1651914502370159744">เปิดหน้าประวัติการเข้าชม</translation>
 <translation id="1654477262762802994">เริ่มการค้นหาด้วยเสียง</translation>
+<translation id="1662667383227796099">ค้นหาไฟล์ แอป และอื่นๆ ใน Launcher คุณยังหาคำตอบสำหรับคำถามเกี่ยวกับ Chromebook ได้ด้วย</translation>
 <translation id="1668469839109562275">VPN ในตัว</translation>
 <translation id="1675844249244994876">อัปเดตหน้าต่างด้านขวา</translation>
 <translation id="1677472565718498478">ใช้ได้อีก <ph name="TIME" /></translation>
@@ -512,6 +514,7 @@
 <translation id="3294437725009624529">ผู้มาเยือน</translation>
 <translation id="3298690094479023523">ยังคงยืนยัน PIN หรือรหัสผ่านของคุณไม่ได้ โปรดลองอีกครั้ง</translation>
 <translation id="3300193645498960160">คุณจะได้รับการแจ้งเตือนเมื่อพูดขณะที่ปิดเสียงอยู่ โดยจะไม่มีการส่งออกเสียงไปที่อื่น</translation>
+<translation id="3306386552969601301">อุปกรณ์ <ph name="DEVICECOUNT" /> เครื่องเชื่อมต่ออยู่กับฮอตสปอต <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">เปลี่ยนเป็นโหมดแล็ปท็อปแล้ว</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> ยังมีสิทธิ์ลงชื่อเข้าใช้ภายหลังได้</translation>
 <translation id="3321628682574733415">รหัสผู้ปกครองไม่ถูกต้อง</translation>
@@ -551,6 +554,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> นาที</translation>
 <translation id="3445925074670675829">อุปกรณ์ USB-C</translation>
 <translation id="3455468639467374593">เทมเพลต <ph name="TEMPLATE_NAME" /></translation>
+<translation id="3456931972722214204">อุปกรณ์ 1 เครื่องเชื่อมต่ออยู่กับฮอตสปอต <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">รีเซ็ตระดับการซูม</translation>
 <translation id="3465223694362104965">แป้นพิมพ์อีกรายการหนึ่งเชื่อมต่อกับอุปกรณ์นี้นับจากที่คุณลงชื่อเข้าใช้ครั้งล่าสุด โปรดตรวจสอบว่าแป้นพิมพ์นี้เชื่อถือได้ก่อนใช้งาน</translation>
 <translation id="3465356146291925647">จัดการโดยผู้ดูแลระบบ</translation>
@@ -558,6 +562,7 @@
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">ซ่อนชั้นวางโดยอัตโนมัติ</translation>
+<translation id="3503243067695520519">สวัสดี Chromebook มีอะไรแตกต่างไปเล็กน้อย</translation>
 <translation id="3505066820268455558">กำลังชาร์จแบตเตอรี่</translation>
 <translation id="3509391053705095206">ไม่พบโทรศัพท์ ตรวจสอบว่าบลูทูธของโทรศัพท์เปิดอยู่</translation>
 <translation id="3510164367642747937">ไฮไลต์เคอร์เซอร์เมาส์</translation>
@@ -678,6 +683,7 @@
 <translation id="3977512764614765090">แบตเตอรี่เหลือ <ph name="PERCENTAGE" />% และกำลังชาร์จ</translation>
 <translation id="3984536049089846927">หน้าถัดไป</translation>
 <translation id="3986082989454912832">ตอบ</translation>
+<translation id="3990002060657467458">การควบคุมที่ใช้บ่อย เช่น Wi-Fi, บลูทูธ และระดับเสียงจะอยู่ในการตั้งค่าด่วน คุณยังจับภาพหน้าจอได้จากที่นี่ด้วย</translation>
 <translation id="3995138139523574647">อุปกรณ์ USB-C (พอร์ตด้านหลังขวา)</translation>
 <translation id="40062176907008878">การเขียนด้วยลายมือ</translation>
 <translation id="4017989525502048489">ตัวชี้เลเซอร์</translation>
@@ -741,6 +747,7 @@
 <translation id="4269883910223712419">ผู้ดูแลระบบของอุปกรณ์เครื่องนี้ทำสิ่งต่อไปนี้ได้</translation>
 <translation id="4274537685965975248">มีการเปลี่ยนแปลงแป้นพิมพ์ลัด Ctrl + Alt + ลูกศรลง หากต้องการใช้แป้น End ให้กดแป้น <ph name="LAUNCHER_KEY_NAME" /> + ลูกศรขวา</translation>
 <translation id="4275283744500212192">เปิดตัวเลือกเลย์เอาต์หน้าต่าง</translation>
+<translation id="4278138729651139331">ปรับแต่งและปรับเปลี่ยน Chromebook ในแบบของคุณในการตั้งค่า ลองเปลี่ยนวอลเปเปอร์หรือตั้งค่าภาพพักหน้าจอ</translation>
 <translation id="4279490309300973883">กำลังแสดงผล</translation>
 <translation id="4280601795273309128">การอัปเดตความปลอดภัยสิ้นสุดแล้ว โปรดอัปเกรดอุปกรณ์</translation>
 <translation id="4283888303416325161">ป้อนรหัสผ่านเพื่อความปลอดภัยมากขึ้น</translation>
@@ -759,6 +766,7 @@
 <translation id="4324840740119394760">การดำเนินการนี้ช่วยให้ <ph name="APP_NAME" /> รวมถึงแอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์สามารถเข้าถึงกล้องได้</translation>
 <translation id="4333628967105022692">ไม่รองรับ Lacros ขณะที่มีผู้ใช้ลงชื่อเข้าใช้หลายคน</translation>
 <translation id="4338109981321384717">แว่นขยาย</translation>
+<translation id="4356872429719185452">แสดงรายละเอียดฮอตสปอต กำลังเปิดฮอตสปอต</translation>
 <translation id="4371348193907997655">การตั้งค่าการแคสต์</translation>
 <translation id="4375482231364171368">ค้นหาในแถบที่อยู่</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" /> ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" /> เปอร์เซ็นต์</translation>
@@ -796,6 +804,7 @@
 <translation id="4505050298327493054">เดสก์ที่ใช้งานอยู่</translation>
 <translation id="450584155212756404">เวอร์ชันที่กำลังพัฒนา</translation>
 <translation id="4513946894732546136">ข้อเสนอแนะ</translation>
+<translation id="4516212064498225455">เดสก์ปัจจุบัน: <ph name="CURRENT_DESK_NAME" /> ใช้ Search+Space เพื่อเปิดเมนูเดสก์ทั้งหมด</translation>
 <translation id="4518404433291145981">ก่อนอื่นให้ปลดล็อกโทรศัพท์เพื่อปลดล็อก Chromebook</translation>
 <translation id="4527045527269911712">อุปกรณ์บลูทูธ "<ph name="DEVICE_NAME" />" ต้องการสิทธิ์ในการจับคู่</translation>
 <translation id="4533343294786968049">กำลังยืดอายุการใช้งานแบตเตอรี่ แบตเตอรี่จะชาร์จจนเต็มภายใน <ph name="FULLY_CHARGE_TIME" /></translation>
@@ -963,6 +972,7 @@
 <translation id="5207949376430453814">ไฮไลต์เครื่องหมาย Caret ของข้อความ</translation>
 <translation id="5208059991603368177">เปิด</translation>
 <translation id="5216991270656129561">ปิดจนถึง <ph name="TIME" /></translation>
+<translation id="5217646019792206018">เดสก์ถัดไป: <ph name="NEXT_DESK_NAME" /> ใช้ Search+Space หรือแป้นพิมพ์ลัด: Shift+Search+<ph name="NEXT_DESK_INDEX" /> เพื่อเปิดใช้งาน</translation>
 <translation id="5221423477036820198">ส่งหรือตอบกลับข้อความในโทรศัพท์ได้อย่างรวดเร็วโดยใช้ฮับโทรศัพท์</translation>
 <translation id="5222676887888702881">ออกจากระบบ</translation>
 <translation id="5229343007215035173">เปิด/ปิดหน้าจอความเป็นส่วนตัว</translation>
@@ -1028,6 +1038,7 @@
 <translation id="550391772491508736">แคสต์ต่อ</translation>
 <translation id="5506975627792768506">เปิดหรือปิดแว่นขยาย</translation>
 <translation id="5512042095225963688">ลบคำก่อนหน้า</translation>
+<translation id="5518068085000130971">นี่คือข้อมูลเบื้องต้น ดูต่อใน "สำรวจ" ซึ่งเป็นแอปในตัวที่มาพร้อมกับเคล็ดลับและความช่วยเหลือ คุณจะพบเคล็ดลับในการเริ่มต้นใช้งาน แอปที่แนะนำ ข้อเสนอพิเศษ และฟีเจอร์ใหม่ล่าสุดของ Chromebook</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">ผู้ดูแลระบบได้นำโปรไฟล์ eSIM ทั้งหมดออก ติดต่อผู้ดูแลระบบเพื่อสอบถามข้อมูลเพิ่มเติม</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> กำลังเชื่อมต่อ</translation>
@@ -1106,6 +1117,7 @@
 <translation id="5825969630400862129">การตั้งค่าอุปกรณ์ที่เชื่อมต่อ</translation>
 <translation id="5837036133683224804">หยุด <ph name="ROUTE_TITLE" /> ใน<ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">ไปที่แทร็กถัดไป</translation>
+<translation id="5842553299352339114">ฮอตสปอต <ph name="DEVICE_NAME" /> เปิดอยู่ ไม่มีอุปกรณ์ใดเชื่อมต่อ</translation>
 <translation id="584525477304726060">กดค้างเพื่อขยายใหญ่สุด</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> ไม่ได้เปิดใช้งาน</translation>
 <translation id="5860033963881614850">ปิด</translation>
@@ -1352,6 +1364,7 @@
 <translation id="6896758677409633944">คัดลอก</translation>
 <translation id="6901883536534621389">ลองใช้ท่าทางสัมผัสเพื่อไปยังส่วนต่างๆ</translation>
 <translation id="6912841030378044227">โฟกัสแถบที่อยู่</translation>
+<translation id="6912901278692845878">การแนะนำสั้นๆ</translation>
 <translation id="6919251195245069855">ไม่พบสมาร์ทการ์ดของคุณ ลองใหม่</translation>
 <translation id="6920245099716267363">เปิด/ปิดฮอตสปอต ฮอตสปอตเปิดอยู่ เชื่อมต่ออุปกรณ์อยู่ 1 เครื่อง</translation>
 <translation id="6931576957638141829">บันทึกไปยัง</translation>
@@ -1368,6 +1381,7 @@
 <translation id="6981291220124935078">เปิดการเข้าถึง</translation>
 <translation id="6981982820502123353">การช่วยเหลือพิเศษ</translation>
 <translation id="698231206551913481">ระบบจะลบไฟล์ทั้งหมดและข้อมูลในเครื่องที่เชื่อมโยงกับผู้ใช้รายนี้ออกอย่างถาวรหลังจากนำผู้ใช้รายนี้ออกแล้ว</translation>
+<translation id="7004910047186208204">เชื่อมต่ออินเทอร์เน็ตมือถือ</translation>
 <translation id="7005239792648594238">เปิดแอปเพื่อเริ่มต้นใช้งาน</translation>
 <translation id="7007983414944123363">ยืนยัน PIN หรือรหัสผ่านของคุณไม่ได้ ลองใหม่</translation>
 <translation id="7014684956566476813">เชื่อมต่ออยู่กับอุปกรณ์ชื่อ <ph name="DEVICE_NAME" /></translation>
@@ -1522,6 +1536,7 @@
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{การแจ้งเตือน 1 รายการ}other{การแจ้งเตือน # รายการ}}</translation>
 <translation id="7723703419796509666">แสดงหรือซ่อนคอนโซลเครื่องมือสำหรับนักพัฒนาแอป</translation>
 <translation id="7724603315864178912">ตัด</translation>
+<translation id="7725108879223146004">แสดงรายละเอียดฮอตสปอต กำลังปิดฮอตสปอต</translation>
 <translation id="7727952505535211425">เปิดเว็บไซต์ในแถบที่อยู่ในแท็บใหม่</translation>
 <translation id="77365090426890123">การใช้งานหน่วยความจำ</translation>
 <translation id="7742327441377685481">ไม่มีการแจ้งเตือน</translation>
@@ -1656,7 +1671,9 @@
 <translation id="8297006494302853456">อ่อน</translation>
 <translation id="8308637677604853869">เมนูก่อนหน้า</translation>
 <translation id="830868413617744215">เบต้า</translation>
+<translation id="8312557488404088015">ดูการแนะนำสั้นๆ เพื่อเริ่มต้นใช้งานได้อย่างราบรื่น โดยจะใช้เวลาเพียงไม่กี่นาทีด้วย 6 ขั้นตอน</translation>
 <translation id="8314772463905284467">Caps Lock เปิดอยู่</translation>
+<translation id="8315514906653279104">กำลังเปิด...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">เลือกหน้าต่าง <ph name="WINDOW_TITLE" /> ไว้</translation>
 <translation id="8349964124165471584">เปิดลิงก์ในหน้าต่างใหม่</translation>
@@ -1704,6 +1721,7 @@
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> ของคุณอาจไม่ชาร์จเมื่อเครื่องเปิดอยู่</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{อินพุตไมค์ควบคุมโดย <ph name="APP_NAME" />}other{อินพุตไมค์ควบคุมโดย # แอป}}</translation>
 <translation id="8535393432370007982">เลิกทำการจัดเรียงลำดับตามสี</translation>
+<translation id="853768060447955562">เดสก์ก่อนหน้า: <ph name="PREVIOUS_DESK_NAME" /> ใช้ Search+Space หรือแป้นพิมพ์ลัด: Shift+Search+<ph name="PREVIOUS_DESK_INDEX" /> เพื่อเปิดใช้งาน</translation>
 <translation id="8541078764854166027">จัดเฟรมกล้อง</translation>
 <translation id="8542053257095774575">ไม่มีเดสก์หรือเทมเพลตที่บันทึกไว้</translation>
 <translation id="8546059259582788728">เลิกทำการจัดเรียงเรียบร้อยแล้ว</translation>
@@ -1855,11 +1873,13 @@
 <translation id="925832987464884575">ซ่อนตัวอย่าง</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> กำหนดให้คุณต้องอัปเดต <ph name="DEVICE_TYPE" /> โดยทันที</translation>
 <translation id="938963181863597773">มีอะไรในปฏิทินของฉันบ้าง</translation>
+<translation id="943067377221312471">เดสก์ก่อนหน้า: <ph name="PREVIOUS_DESK_NAME" /> ใช้ Search+Space เพื่อเปิดใช้งาน</translation>
 <translation id="945383118875625837">ลากลิงก์ไปยังแถบบุ๊กมาร์ก</translation>
 <translation id="945522503751344254">ส่งความคิดเห็น</translation>
 <translation id="951991426597076286">ปฏิเสธ</translation>
 <translation id="953431725143473984">ปิดอุปกรณ์ใช่ไหม</translation>
 <translation id="954052413789300507">มีพื้นที่ไม่เพียงพอสำหรับ <ph name="FILENAME" /> เพิ่มพื้นที่ว่าง</translation>
+<translation id="968627661524972577">ใช้แอปเพื่อทำทุกอย่างที่คุณต้องการใน Chromebook คุณค้นหาแอปได้ใน Launcher และยังกดแป้น Launcher บนแป้นพิมพ์ได้ด้วย</translation>
 <translation id="974545358917229949">กำลังแสดงผลการค้นหา <ph name="RESULT_COUNT" /> รายการสำหรับ "<ph name="QUERY" />"</translation>
 <translation id="98120814841227350">ไปที่ส่วนท้ายของเอกสาร</translation>
 <translation id="987589956647469042">อินเทอร์เน็ตมือถือเปิดอยู่</translation>

@@ -37,6 +37,7 @@
 <translation id="4133493477912226187">Zdá sa, že niekoľko (<ph name="NUMBER_OF_TABS" />) kariet spolu súvisí. Chcete ich zoskupiť?</translation>
 <translation id="4212246570487010370">Pokračovať v prehliadaní</translation>
 <translation id="4648718555153979859">Tu sú zoskupené vaše karty</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{Zatvorené karty nájdete v hlavnej ponuke Chromu na kartách Nedávne.}=1{Zatvorené karty nájdete v hlavnej ponuke Chromu na kartách Nedávne. Karta inkognito nebude k dispozícii.}few{Zatvorené karty nájdete v hlavnej ponuke Chromu na kartách Nedávne. # karty inkognito nebudú k dispozícii.}many{You can find your closed tabs in Recent tabs under the Chrome main menu. Your # Incognito tabs won't be available.}other{Zatvorené karty nájdete v hlavnej ponuke Chromu na kartách Nedávne. # kariet inkognito nebude k dispozícii.}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> recenzia)}few{(<ph name="REVIEWS_COUNT_MANY" /> recenzie)}many{(<ph name="REVIEWS_COUNT_MANY" /> reviews)}other{(<ph name="REVIEWS_COUNT_MANY" /> recenzií)}}</translation>
 <translation id="4850886885716139402">Zobraziť</translation>
 <translation id="4870911314065352661">Chcete zavrieť všetky karty?</translation>

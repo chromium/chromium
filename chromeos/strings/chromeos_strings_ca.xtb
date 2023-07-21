@@ -372,6 +372,7 @@
 <translation id="397105322502079400">S’està calculant...</translation>
 <translation id="39823212440917567">Se suprimiran les tasques d'impressió amb una antiguitat superior a <ph name="NUMBER_OF_DAYS" /> dies</translation>
 <translation id="3993704782688964914">El dispositiu <ph name="DEVICE_NAME" /> s'acaba d'actualitzar</translation>
+<translation id="3998976413398910035">Gestiona les impressores</translation>
 <translation id="4003384961948020559">Error: safata de sortida plena</translation>
 <translation id="4021031199988160623">Canvia al mode de portàtil per fer la prova</translation>
 <translation id="4034824040120875894">Impressora</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">Només intern</translation>
 <translation id="5649768706273821470">Escolta</translation>
 <translation id="5655283760733841251">Augmenta la brillantor del teclat</translation>
+<translation id="5655776422854483175">No hi ha tasques d'impressió</translation>
 <translation id="5659593005791499971">Adreça electrònica</translation>
 <translation id="5662240986744577912">commuta la pantalla de privadesa</translation>
 <translation id="5669267381087807207">Activant</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Activa el tema fosc</translation>
+<translation id="628726841779494414">Gestiona les teves impressores a la configuració de la impressora</translation>
 <translation id="629550705077076970">atenuació del teclat</translation>
 <translation id="6302401976930124515">La prova <ph name="TEST_NAME" /> s'ha cancel·lat</translation>
 <translation id="631063167932043783">Aplicació Explora</translation>

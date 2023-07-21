@@ -3458,6 +3458,13 @@
 <translation id="402759845255257575">不允许任何网站运行 JavaScript</translation>
 <translation id="4027608872760987929">启用默认搜索服务提供商</translation>
 <translation id="4030152268425532846">禁止取消自动登录</translation>
+<translation id="4039065751874009354">此政策是一项临时的选择停用机制，针对由 beforeunload 事件显示的确认对话框的行为提供了两个相关修复方案。
+如果已启用此政策，系统将使用新的正确行为。如果已停用此政策，系统将使用旧行为。如果未设置此政策，系统将使用默认行为。
+此政策是一种临时的变通方案，很快就会被移除。
+
+新的正确行为：在 beforeunload 中，调用 event.preventDefault() 会触发确认对话框。将 event.returnValue 设置为空字符串不会触发确认对话框。
+
+旧行为：在 beforeunload 中，调用 event.preventDefault() 不会触发确认对话框。将 event.returnValue 设置为空字符串会触发确认对话框。</translation>
 <translation id="4043796890723386527">禁止用户在 <ph name="LACROS_NAME" /> 浏览器中创建和使用次级个人资料以及使用访客模式</translation>
 <translation id="4051723201852944592">启用窗口遮挡</translation>
 <translation id="4052529125939620019">在浏览器启动时加载 CryptoToken 组件扩展程序</translation>
@@ -4197,6 +4204,9 @@
 
       如果此政策未设置，系统会对所有网站使用全局默认值（不自动授予访问权限）。</translation>
 <translation id="471360812659157054">window.webkitStorageInfo 将无法使用。</translation>
+<translation id="4714143485020697862">如果您设置了此政策，系统将会从同步操作（无论是 <ph name="CHROME_SYNC_NAME" />还是漫游个人资料同步）中排除所有指定的数据类型。这有助于缩减漫游个人资料的大小，或者限制向 <ph name="CHROME_SYNC_NAME" />服务器上传的数据类型。
+
+      此政策当前可用的数据类型为：“bookmarks”“readingList”“preferences”“passwords”“autofill”“themes”“typedUrls”“extensions”“apps”“tabs”“wifiConfigurations”“savedTabGroups”。这些名称区分大小写！</translation>
 <translation id="4715773950737036924">控制能否使用 Chrome 应用商店中处于未发布状态的扩展程序。</translation>
 <translation id="4722122254122249791">为指定的来源启用网站隔离功能</translation>
 <translation id="4722761845551711583">当为登录屏幕设定的屏保有多张可显示的图片时，此政策可用于指定图片显示的间隔时间（以秒为单位）。
@@ -4796,6 +4806,7 @@
       如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。此政策只能根据来源进行匹配，因此网址格式中的任何路径都会被忽略。</translation>
 <translation id="5318185076587284965">允许远程访问主机使用中继服务器</translation>
 <translation id="5323200200131319468">在登录屏幕上启用语音反馈</translation>
+<translation id="5323271643727095577">针对 beforeunload 事件调用 event.preventDefault() 时不显示取消对话框。当 beforeunload 事件的 event.returnValue 是空字符串时，显示取消对话框。</translation>
 <translation id="5323355956693037267">为登录屏幕启用屏幕键盘</translation>
 <translation id="532848608876725157">启用 DNS-over-HTTPS，且允许改用不安全的查询</translation>
 <translation id="5328965694451556034">报告登录/退出</translation>
@@ -5484,6 +5495,7 @@
 <translation id="5979376378555121803">托管应用程序</translation>
 <translation id="5984099692320899605">不使用 NTLM 身份验证</translation>
 <translation id="5984237109586500246">接受通过 Signed HTTP Exchange (SXG) 提供的网络内容</translation>
+<translation id="5991707691018985057">针对 beforeunload 事件调用 event.preventDefault() 时显示取消对话框。当 beforeunload 事件的 event.returnValue 是空字符串时，不显示取消对话框。</translation>
 <translation id="5997543603646547632">默认情况下，使用24小时制</translation>
 <translation id="5997846976342452720">指定是否应停用插件查找器（已弃用）</translation>
 <translation id="5998198091336830580">此政策是下面这个原子政策组的一部分（系统仅会应用该组中来源优先级最高的政策）：</translation>
@@ -5613,6 +5625,7 @@
 
       否则，可将此政策设为以下值之一：“tls1.2”或“tls1.3”。如果您已配置此政策，<ph name="PRODUCT_NAME" /> 将不会使用比指定版本高的 SSL/TLS 版本。无法识别的值会被忽略。</translation>
 <translation id="6123052603197028610">不允许向 Google 服务器发送检索时间戳的查询</translation>
+<translation id="6130360423841559818">控制由 beforeunload 事件生成的取消对话框的新行为</translation>
 <translation id="6131803221304830537">停用“渲染程序代码完整性”</translation>
 <translation id="6132506775968708399">禁用第三方 Cookie</translation>
 <translation id="6133088669883929098">允许所有网站使用密钥生成功能</translation>

@@ -372,6 +372,7 @@
 <translation id="397105322502079400">Se calculează...</translation>
 <translation id="39823212440917567">Sarcinile de printare mai vechi de <ph name="NUMBER_OF_DAYS" /> zile vor fi eliminate</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> este actualizat</translation>
+<translation id="3998976413398910035">Gestionează imprimantele</translation>
 <translation id="4003384961948020559">Nereușită – Tavă de ieșire plină</translation>
 <translation id="4021031199988160623">Treci la modul laptop pentru a testa</translation>
 <translation id="4034824040120875894">Imprimantă</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">Numai intern</translation>
 <translation id="5649768706273821470">Ascultă</translation>
 <translation id="5655283760733841251">Creșterea luminozității tastaturii</translation>
+<translation id="5655776422854483175">Nicio sarcină de printare</translation>
 <translation id="5659593005791499971">Adresă de e-mail</translation>
 <translation id="5662240986744577912">activează sau dezactivează ecranul de confidențialitate</translation>
 <translation id="5669267381087807207">Se activează</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">Temă</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Activează tema întunecată</translation>
+<translation id="628726841779494414">Gestionează imprimantele din setările pentru imprimantă</translation>
 <translation id="629550705077076970">reducerea luminozității tastaturii</translation>
 <translation id="6302401976930124515">Testul <ph name="TEST_NAME" /> a fost anulat</translation>
 <translation id="631063167932043783">Explorează aplicația</translation>

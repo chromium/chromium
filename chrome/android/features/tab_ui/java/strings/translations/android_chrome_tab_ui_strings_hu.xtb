@@ -37,6 +37,7 @@
 <translation id="4133493477912226187">Úgy tűnik, <ph name="NUMBER_OF_TABS" /> lap kapcsolódik egymáshoz. Csoportosítja őket?</translation>
 <translation id="4212246570487010370">Böngészés folytatása</translation>
 <translation id="4648718555153979859">A lapok itt vannak csoportosítva</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{A bezárt lapjait a Chrome főmenüjének Nemrég megnyitott lapok szakaszában találja.}=1{A bezárt lapjait a Chrome főmenüjének Nemrég megnyitott lapok szakaszában találja. Az inkognitó lap nem lesz hozzáférhető.}other{A bezárt lapjait a Chrome főmenüjének Nemrég megnyitott lapok szakaszában találja. # inkognitó lap nem lesz hozzáférhető.}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> vélemény)}other{(<ph name="REVIEWS_COUNT_MANY" /> vélemény)}}</translation>
 <translation id="4850886885716139402">Nézet</translation>
 <translation id="4870911314065352661">Az összes lapot bezárja?</translation>
