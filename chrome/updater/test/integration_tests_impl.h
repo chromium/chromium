@@ -45,7 +45,8 @@ enum class AppBundleWebCreateMode {
 // the platforms where a setup program is not provided.
 base::FilePath GetSetupExecutablePath();
 
-// Returns the names for processes which may be running during unit tests.
+// Returns the non-duplicate, unique names for processes which may be running
+// during unit tests.
 std::set<base::FilePath::StringType> GetTestProcessNames();
 
 // Ensures test processes are not running after the function is called.

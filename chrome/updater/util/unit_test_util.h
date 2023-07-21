@@ -87,15 +87,14 @@ base::FilePath StartProcmonLogging();
 // `C:\\tools\\Procmon.exe`, and `pml_file` needs to be a valid path to a
 // procmon PML file returned from `StartProcmonLogging`.
 void StopProcmonLogging(const base::FilePath& pml_file);
+#endif
 
 // Returns a list of processes matching `executable_name`.
 const base::ProcessIterator::ProcessEntries FindProcesses(
     const base::FilePath::StringType& executable_name);
 
-// Returns a log string of processes matching `executable_name`.
-base::FilePath::StringType PrintProcesses(
-    const base::FilePath::StringType& executable_name);
-#endif
+// Returns a formatted string of processes matching `executable_name`.
+std::string PrintProcesses(const base::FilePath::StringType& executable_name);
 
 // Waits for a given `predicate` to become true. Invokes `still_waiting`
 // periodically to provide a indication of progress. Returns true if the

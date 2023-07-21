@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <sstream>
 #include <string>
 #include <utility>
 
@@ -405,42 +406,6 @@ void StopProcmonLogging(const base::FilePath& pml_file) {
   }
 }
 
-const base::ProcessIterator::ProcessEntries FindProcesses(
-    const base::FilePath::StringType& executable_name) {
-  return base::NamedProcessIterator(executable_name, nullptr).Snapshot();
-}
-
-base::FilePath::StringType PrintProcesses(
-    const base::FilePath::StringType& executable_name) {
-  base::FilePath::StringType message(L"Found processes:\n");
-  base::FilePath::StringType demarcation(72, L'=');
-  demarcation += L'\n';
-  message += demarcation;
-
-  for (const base::ProcessEntry& entry : FindProcesses(executable_name)) {
-    message += base::StrCat(
-        {entry.exe_file(), L", pid=", base::NumberToWString(entry.pid()),
-         L", creation time=",
-         [](base::ProcessId pid) {
-           const base::Process process = base::Process::Open(pid);
-           return process.IsValid() ? base::ASCIIToWide(base::TimeFormatHTTP(
-                                          process.CreationTime()))
-                                    : L"n/a";
-         }(entry.pid()),
-         L", cmdline=",
-         [](base::ProcessId pid) {
-           std::unique_ptr<ProcessInspector> process_inspector =
-               ProcessInspector::Create(base::Process::OpenWithAccess(
-                   pid, PROCESS_ALL_ACCESS | PROCESS_VM_READ));
-           return process_inspector ? process_inspector->command_line()
-                                    : L"n/a";
-         }(entry.pid()),
-         L"\n"});
-  }
-
-  return message + demarcation;
-}
-
 EventHolder CreateWaitableEventForTest() {
   NamedObjectAttributes attr = GetNamedObjectAttributes(
       base::NumberToWString(::GetCurrentProcessId()).c_str(), GetTestScope());
@@ -448,8 +413,38 @@ EventHolder CreateWaitableEventForTest() {
               ::CreateEvent(&attr.sa, FALSE, FALSE, attr.name.c_str()))),
           attr.name};
 }
-
 #endif  // BUILDFLAG(IS_WIN)
+
+const base::ProcessIterator::ProcessEntries FindProcesses(
+    const base::FilePath::StringType& executable_name) {
+  return base::NamedProcessIterator(executable_name, nullptr).Snapshot();
+}
+
+std::string PrintProcesses(const base::FilePath::StringType& executable_name) {
+  const std::string demarcation(72, '=');
+  std::stringstream message;
+  message << "Found processes:" << std::endl << demarcation << std::endl;
+  for (const base::ProcessEntry& entry : FindProcesses(executable_name)) {
+    message << entry.exe_file() << ", pid=" << entry.pid()
+            << ", creation time=" << [](base::ProcessId pid) {
+                 const base::Process process = base::Process::Open(pid);
+                 return process.IsValid()
+                            ? base::TimeFormatHTTP(process.CreationTime())
+                            : "n/a";
+               }(entry.pid());
+#if BUILDFLAG(IS_WIN)
+    message << ", cmdline=" << [](base::ProcessId pid) {
+      std::unique_ptr<ProcessInspector> process_inspector =
+          ProcessInspector::Create(base::Process::OpenWithAccess(
+              pid, PROCESS_ALL_ACCESS | PROCESS_VM_READ));
+      return process_inspector ? process_inspector->command_line() : L"n/a";
+    }(entry.pid());
+#endif
+    message << std::endl;
+  }
+  message << demarcation << std::endl;
+  return message.str();
+}
 
 bool WaitFor(base::FunctionRef<bool()> predicate,
              base::FunctionRef<void()> still_waiting) {

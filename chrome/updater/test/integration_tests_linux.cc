@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/process/process_iterator.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -68,13 +69,11 @@ absl::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope) {
 }
 
 bool WaitForUpdaterExit(UpdaterScope /*scope*/) {
+  const std::set<base::FilePath::StringType> process_names =
+      GetTestProcessNames();
   return WaitFor(
-      []() {
-        return !base::NamedProcessIterator(
-                    GetExecutableRelativePath().MaybeAsASCII(), nullptr)
-                    .NextProcessEntry() &&
-               !base::NamedProcessIterator(kLauncherName, nullptr)
-                    .NextProcessEntry();
+      [&process_names]() {
+        return base::ranges::none_of(process_names, IsProcessRunning);
       },
       [] { VLOG(0) << "Still waiting for updater to exit..."; });
 }

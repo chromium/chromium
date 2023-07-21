@@ -76,6 +76,8 @@
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/test/test_executables.h"
 #include "chrome/updater/win/win_constants.h"
+#elif BUILDFLAG(IS_LINUX)
+#include "chrome/updater/util/linux_util.h"
 #endif
 
 namespace updater::test {
@@ -865,7 +867,7 @@ std::set<base::FilePath::StringType> GetTestProcessNames() {
       }(),
   };
 #else
-  return {GetExecutableRelativePath().BaseName().value()};
+  return {GetExecutableRelativePath().BaseName().value(), kLauncherName};
 #endif
 }
 
@@ -881,7 +883,8 @@ void CleanProcesses() {
 
 void ExpectCleanProcesses() {
   for (const base::FilePath::StringType& process_name : GetTestProcessNames()) {
-    EXPECT_FALSE(IsProcessRunning(process_name)) << process_name;
+    EXPECT_FALSE(IsProcessRunning(process_name))
+        << PrintProcesses(process_name);
   }
 }
 

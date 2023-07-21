@@ -9,11 +9,14 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/function_ref.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
@@ -22,6 +25,7 @@
 #include "chrome/updater/test_scope.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/re2/src/re2/re2.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -33,8 +37,35 @@
 #endif
 
 namespace updater::test {
+namespace {
+
+template <typename StringT>
+std::string ToString(const StringT& s) {
+  if constexpr (std::is_same_v<StringT, std::wstring>) {
+    return base::WideToUTF8(s);
+  } else {
+    return s;
+  }
+}
+
+}  // namespace
 
 TEST(UnitTestUtil, Processes) {
+  auto print_processes_tester =
+      [](const base::FilePath::StringType& process_name) {
+        const std::string print_processes = PrintProcesses(process_name);
+        const std::string regex_string = base::StringPrintf(
+            R"(Found processes:\n)"
+            R"(={72}\n(%s, pid=\d*, creation time=.*\n){2}={72}\n$)",
+            ToString(process_name).c_str());
+        bool is_match =
+            re2::RE2::FullMatch(print_processes, re2::RE2(regex_string));
+        if (!is_match) {
+          ADD_FAILURE() << "regex:'" << regex_string << "'" << std::endl
+                        << print_processes;
+        }
+        return is_match;
+      };
 #if BUILDFLAG(IS_WIN)
   // Ensure the test process is not running before the test.
   EXPECT_TRUE(KillProcesses(kTestProcessExecutableName, 0));
@@ -52,6 +83,8 @@ TEST(UnitTestUtil, Processes) {
     EXPECT_TRUE(p.IsValid());
   }
   EXPECT_TRUE(IsProcessRunning(kTestProcessExecutableName));
+
+  EXPECT_TRUE(print_processes_tester(kTestProcessExecutableName));
 
   // Terminate the long-lived processes, expect to find them not running, then
   // inspect their exit code.
@@ -77,6 +110,7 @@ TEST(UnitTestUtil, Processes) {
   }();
   EXPECT_TRUE(IsProcessRunning(unit_test));
   EXPECT_FALSE(WaitForProcessesToExit(unit_test, base::Milliseconds(1)));
+  EXPECT_TRUE(print_processes_tester(unit_test));
 #endif  // IS_WIN
 }
 
