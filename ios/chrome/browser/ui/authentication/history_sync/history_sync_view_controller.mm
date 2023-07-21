@@ -19,6 +19,8 @@
   self.view.accessibilityIdentifier = kHistorySyncViewAccessibilityIdentifier;
   self.shouldHideBanner = YES;
   self.hasAvatarImage = YES;
+  self.avatarBackgroundImage =
+      [UIImage imageNamed:@"history_sync_opt_in_background"];
   // TODO(crbug.com/1442218): Replace these temporary strings with the
   // definitive ones.
   self.titleText = @"** Save Time, Type Less **";

@@ -45,6 +45,10 @@
 // Sets the avatar image. Needs to `hasAvatarImage` to `YES` before.
 @property(nonatomic, strong) UIImage* avatarImage;
 
+// Sets a background image for the avatar. Must be set before the view is
+// loaded.
+@property(nonatomic, strong) UIImage* avatarBackgroundImage;
+
 // Sets the avatar accessibility label. Needs to `hasAvatarImage` to `YES`
 // before.
 @property(nonatomic, copy) NSString* avatarAccessibilityLabel;

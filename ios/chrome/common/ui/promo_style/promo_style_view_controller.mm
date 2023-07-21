@@ -30,9 +30,12 @@ namespace {
 constexpr CGFloat kDefaultMargin = 16;
 // Default margin between the subtitle and the content view.
 constexpr CGFloat kDefaultSubtitleBottomMargin = 22;
-// Top margin for AvatarFullImageView in percentage of the dialog size.
-constexpr CGFloat kAvatarFullImageViewTopMarginPercentage = 0.04;
-constexpr CGFloat kFullAvatarImagerBottomMargin = 5;
+// Top margin for no background avatar in percentage of the dialog size.
+constexpr CGFloat kNoBackgroundAvatarTopMarginPercentage = 0.04;
+constexpr CGFloat kNoBackgroundAvatarBottomMargin = 5;
+// Top margin for avatar with background in percentage of the dialog size.
+constexpr CGFloat kAvatarBackgroundTopMarginPercentage = 0.1;
+constexpr CGFloat kAvatarBackgroundBottomMargin = 34;
 constexpr CGFloat kTitleHorizontalMargin = 18;
 constexpr CGFloat kActionsBottomMargin = 10;
 constexpr CGFloat kTallBannerMultiplier = 0.35;
@@ -61,6 +64,9 @@ constexpr CGFloat kFullAvatarImageSize = 100;
 @property(nonatomic, strong) UIView* fullAvatarImageView;
 // This view contains only the avatar image.
 @property(nonatomic, strong) UIImageView* avatarImageView;
+// This view contains the background image for the avatar. The avatar view will
+// be placed at the center of it.
+@property(nonatomic, strong) UIImageView* avatarBackgroundImageView;
 @property(nonatomic, strong) UILabel* subtitleLabel;
 @property(nonatomic, strong) UITextView* disclaimerView;
 @property(nonatomic, strong) UIStackView* actionStackView;
@@ -68,8 +74,9 @@ constexpr CGFloat kFullAvatarImageSize = 100;
 @property(nonatomic, strong) UIButton* secondaryActionButton;
 @property(nonatomic, strong) UIButton* tertiaryActionButton;
 
-// Layout constraint for `fullAvatarImageView` top margin.
-@property(nonatomic, strong) NSLayoutConstraint* avatarFullImageViewTopMargin;
+// Layout constraint for `avatarBackgroundImageView` top margin.
+@property(nonatomic, strong)
+    NSLayoutConstraint* avatarBackgroundImageViewTopMargin;
 
 @property(nonatomic, strong) UIView* separator;
 @property(nonatomic, assign) CGFloat scrollViewBottomOffsetY;
@@ -137,7 +144,8 @@ constexpr CGFloat kFullAvatarImageSize = 100;
   self.scrollContentView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.scrollContentView addSubview:self.imageView];
   if (self.hasAvatarImage) {
-    [self.scrollContentView addSubview:self.fullAvatarImageView];
+    [self.scrollContentView addSubview:self.avatarBackgroundImageView];
+    [self.avatarBackgroundImageView addSubview:self.fullAvatarImageView];
     [self.fullAvatarImageView addSubview:self.avatarImageView];
   }
   [self.scrollContentView addSubview:self.titleLabel];
@@ -274,15 +282,23 @@ constexpr CGFloat kFullAvatarImageSize = 100;
   ]];
 
   if (self.hasAvatarImage) {
-    self.avatarFullImageViewTopMargin = [self.fullAvatarImageView.topAnchor
-        constraintEqualToAnchor:self.imageView.bottomAnchor];
+    self.avatarBackgroundImageViewTopMargin =
+        [self.avatarBackgroundImageView.topAnchor
+            constraintEqualToAnchor:self.imageView.bottomAnchor];
+    CGFloat avatarBottomMargin = self.avatarBackgroundImage == nil
+                                     ? kNoBackgroundAvatarBottomMargin
+                                     : kAvatarBackgroundBottomMargin;
     [NSLayoutConstraint activateConstraints:@[
-      self.avatarFullImageViewTopMargin,
+      self.avatarBackgroundImageViewTopMargin,
       [self.titleLabel.topAnchor
-          constraintEqualToAnchor:self.fullAvatarImageView.bottomAnchor
-                         constant:kFullAvatarImagerBottomMargin],
-      [self.fullAvatarImageView.centerXAnchor
+          constraintEqualToAnchor:self.avatarBackgroundImageView.bottomAnchor
+                         constant:avatarBottomMargin],
+      [self.avatarBackgroundImageView.centerXAnchor
           constraintEqualToAnchor:self.scrollContentView.centerXAnchor],
+      [self.avatarBackgroundImageView.centerXAnchor
+          constraintEqualToAnchor:self.fullAvatarImageView.centerXAnchor],
+      [self.avatarBackgroundImageView.centerYAnchor
+          constraintEqualToAnchor:self.fullAvatarImageView.centerYAnchor],
       [self.fullAvatarImageView.centerXAnchor
           constraintEqualToAnchor:self.avatarImageView.centerXAnchor],
       [self.fullAvatarImageView.centerYAnchor
@@ -291,11 +307,21 @@ constexpr CGFloat kFullAvatarImageSize = 100;
           constraintEqualToConstant:kFullAvatarImageSize],
       [self.fullAvatarImageView.heightAnchor
           constraintEqualToConstant:kFullAvatarImageSize],
+      [self.avatarBackgroundImageView.widthAnchor
+          constraintGreaterThanOrEqualToConstant:kFullAvatarImageSize],
+      [self.avatarBackgroundImageView.heightAnchor
+          constraintGreaterThanOrEqualToConstant:kFullAvatarImageSize],
       [self.avatarImageView.widthAnchor
           constraintEqualToConstant:kAvatarImageSize],
       [self.avatarImageView.heightAnchor
           constraintEqualToConstant:kAvatarImageSize],
     ]];
+    [self.avatarBackgroundImageView
+        setContentHuggingPriority:UILayoutPriorityDefaultHigh
+                          forAxis:UILayoutConstraintAxisHorizontal];
+    [self.avatarBackgroundImageView
+        setContentHuggingPriority:UILayoutPriorityDefaultHigh
+                          forAxis:UILayoutConstraintAxisVertical];
   } else {
     [NSLayoutConstraint activateConstraints:@[
       [self.titleLabel.topAnchor
@@ -429,8 +455,11 @@ constexpr CGFloat kFullAvatarImageSize = 100;
 
 - (void)viewWillLayoutSubviews {
   [super viewWillLayoutSubviews];
-  self.avatarFullImageViewTopMargin.constant = AlignValueToPixel(
-      self.view.bounds.size.height * kAvatarFullImageViewTopMarginPercentage);
+  CGFloat avatarTopMarginPercentage =
+      self.avatarBackgroundImage == nil ? kNoBackgroundAvatarTopMarginPercentage
+                                        : kAvatarBackgroundTopMarginPercentage;
+  self.avatarBackgroundImageViewTopMargin.constant = AlignValueToPixel(
+      self.view.bounds.size.height * avatarTopMarginPercentage);
 }
 
 #pragma mark - UITraitEnvironment
@@ -541,6 +570,18 @@ constexpr CGFloat kFullAvatarImageSize = 100;
     self.avatarImageView.isAccessibilityElement =
         avatarAccessibilityLabel != nil;
   }
+}
+
+- (UIImageView*)avatarBackgroundImageView {
+  if (!_avatarBackgroundImageView) {
+    CHECK(self.hasAvatarImage);
+    _avatarBackgroundImageView =
+        [[UIImageView alloc] initWithImage:self.avatarBackgroundImage];
+    _avatarBackgroundImageView.translatesAutoresizingMaskIntoConstraints = NO;
+    _avatarBackgroundImageView.accessibilityLabel =
+        kPromoStyleAvatarBackgroundAccessibilityIdentifier;
+  }
+  return _avatarBackgroundImageView;
 }
 
 - (UILabel*)titleLabel {

@@ -1,0 +1,9 @@
+import("//build/config/ios/asset_catalog.gni")
+
+imageset("history_sync_opt_in_background") {
+  sources = [
+    "history_sync_opt_in_background.imageset/Contents.json",
+    "history_sync_opt_in_background.imageset/history_sync_opt_in_background.pdf",
+    "history_sync_opt_in_background.imageset/history_sync_opt_in_background_dark.pdf",
+  ]
+}

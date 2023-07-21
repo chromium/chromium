@@ -9,6 +9,8 @@
 #error "This file requires ARC support."
 #endif
 
+NSString* const kPromoStyleAvatarBackgroundAccessibilityIdentifier =
+    @"PromoStyleAvatarBackgroundAccessibilityIdentifier";
 NSString* const kPromoStyleTitleAccessibilityIdentifier =
     @"PromoStyleTitleAccessibilityIdentifier";
 NSString* const kPromoStyleSubtitleAccessibilityIdentifier =
