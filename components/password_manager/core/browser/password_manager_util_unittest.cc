@@ -471,9 +471,10 @@ TEST(PasswordManagerUtil, FindBestMatches) {
   const base::Time k2DaysAgo = kNow - base::Days(2);
   const int kNotFound = -1;
   struct TestMatch {
-    bool is_psl_match;
+    PasswordForm::MatchType match_type;
     base::Time date_last_used;
     std::u16string username;
+    std::string signon_realm = kTestURL;
   };
   struct TestCase {
     const char* description;
@@ -482,51 +483,93 @@ TEST(PasswordManagerUtil, FindBestMatches) {
     std::map<std::string, size_t> expected_best_matches_indices;
   } test_cases[] = {
       {"Empty matches", {}, kNotFound, {}},
-      {"1 non-psl match",
-       {{.is_psl_match = false, .date_last_used = kNow, .username = u"u"}},
-       0,
+      {"1 exact match",
+       {{.match_type = PasswordForm::MatchType::kExact,
+         .date_last_used = kNow,
+         .username = u"u"}},
+       /*expected_preferred_match_index=*/0,
        {{"u", 0}}},
       {"1 psl match",
-       {{.is_psl_match = true, .date_last_used = kNow, .username = u"u"}},
-       0,
+       {{.match_type = PasswordForm::MatchType::kPSL,
+         .date_last_used = kNow,
+         .username = u"u"}},
+       /*expected_preferred_match_index=*/0,
        {{"u", 0}}},
       {"2 matches with the same username",
-       {{.is_psl_match = false, .date_last_used = kNow, .username = u"u"},
-        {.is_psl_match = false,
+       {{.match_type = PasswordForm::MatchType::kExact,
+         .date_last_used = kNow,
+         .username = u"u"},
+        {.match_type = PasswordForm::MatchType::kExact,
          .date_last_used = kYesterday,
          .username = u"u"}},
-       0,
+       /*expected_preferred_match_index=*/0,
        {{"u", 0}}},
       {"2 matches with different usernames, most recently used taken",
-       {{.is_psl_match = false, .date_last_used = kNow, .username = u"u1"},
-        {.is_psl_match = false,
+       {{.match_type = PasswordForm::MatchType::kExact,
+         .date_last_used = kNow,
+         .username = u"u1"},
+        {.match_type = PasswordForm::MatchType::kExact,
          .date_last_used = kYesterday,
          .username = u"u2"}},
-       0,
+       /*expected_preferred_match_index=*/0,
        {{"u1", 0}, {"u2", 1}}},
-      {"2 matches with different usernames, non-psl much taken",
-       {{.is_psl_match = false,
+      {"2 matches with different usernames, exact match taken",
+       {{.match_type = PasswordForm::MatchType::kExact,
          .date_last_used = kYesterday,
          .username = u"u1"},
-        {.is_psl_match = true, .date_last_used = kNow, .username = u"u2"}},
-       0,
+        {.match_type = PasswordForm::MatchType::kPSL,
+         .date_last_used = kNow,
+         .username = u"u2"}},
+       /*expected_preferred_match_index=*/0,
        {{"u1", 0}, {"u2", 1}}},
       {"8 matches, 3 usernames",
-       {{.is_psl_match = false,
+       {{.match_type = PasswordForm::MatchType::kExact,
          .date_last_used = kYesterday,
          .username = u"u2"},
-        {.is_psl_match = true, .date_last_used = kYesterday, .username = u"u3"},
-        {.is_psl_match = true, .date_last_used = kYesterday, .username = u"u1"},
-        {.is_psl_match = false, .date_last_used = k2DaysAgo, .username = u"u3"},
-        {.is_psl_match = true, .date_last_used = kNow, .username = u"u1"},
-        {.is_psl_match = false, .date_last_used = kNow, .username = u"u2"},
-        {.is_psl_match = true, .date_last_used = kYesterday, .username = u"u3"},
-        {.is_psl_match = false,
+        {.match_type = PasswordForm::MatchType::kPSL,
+         .date_last_used = kYesterday,
+         .username = u"u3"},
+        {.match_type = PasswordForm::MatchType::kPSL,
+         .date_last_used = kYesterday,
+         .username = u"u1"},
+        {.match_type = PasswordForm::MatchType::kExact,
+         .date_last_used = k2DaysAgo,
+         .username = u"u3"},
+        {.match_type = PasswordForm::MatchType::kPSL,
+         .date_last_used = kNow,
+         .username = u"u1"},
+        {.match_type = PasswordForm::MatchType::kExact,
+         .date_last_used = kNow,
+         .username = u"u2"},
+        {.match_type = PasswordForm::MatchType::kPSL,
+         .date_last_used = kYesterday,
+         .username = u"u3"},
+        {.match_type = PasswordForm::MatchType::kExact,
          .date_last_used = k2DaysAgo,
          .username = u"u1"}},
-       5,
+       /*expected_preferred_match_index=*/5,
        {{"u1", 7}, {"u2", 5}, {"u3", 3}}},
-
+      {"Affiliated Android app and exact matches, exact match taken",
+       {{.match_type = PasswordForm::MatchType::kAffiliated,
+         .date_last_used = kNow,
+         .username = u"uAndroid",
+         .signon_realm = kTestAndroidRealm},
+        {.match_type = PasswordForm::MatchType::kExact,
+         .date_last_used = kYesterday,
+         .username = u"uExact"}},
+       /*expected_preferred_match_index=*/1,
+       {{"uExact", 1}, {"uAndroid", 0}}},
+      {"Affiliated Android app and affiliated website matches, most recently "
+       "used taken",
+       {{.match_type = PasswordForm::MatchType::kAffiliated,
+         .date_last_used = kYesterday,
+         .username = u"uAffiliatedAndroid",
+         .signon_realm = kTestAndroidRealm},
+        {.match_type = PasswordForm::MatchType::kAffiliated,
+         .date_last_used = kNow,
+         .username = u"uAffiliatedWebsite"}},
+       /*expected_preferred_match_index=*/1,
+       {{"uAffiliatedWebsite", 1}, {"uAffiliatedAndroid", 0}}},
   };
 
   for (const TestCase& test_case : test_cases) {
@@ -536,8 +579,8 @@ TEST(PasswordManagerUtil, FindBestMatches) {
     std::vector<PasswordForm> owning_matches;
     for (const TestMatch& match : test_case.matches) {
       PasswordForm form;
-      form.match_type = match.is_psl_match ? PasswordForm::MatchType::kPSL
-                                           : PasswordForm::MatchType::kExact;
+      form.match_type = match.match_type;
+      form.signon_realm = match.signon_realm;
       form.date_last_used = match.date_last_used;
       form.username_value = match.username;
       owning_matches.push_back(form);

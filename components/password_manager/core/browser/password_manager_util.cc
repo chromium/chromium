@@ -58,18 +58,13 @@ namespace {
 
 std::tuple<int, base::Time, int> GetPriorityProperties(
     const PasswordForm* form) {
-  GetLoginMatchType match_type = GetMatchType(*form);
-  // Treat affiliated android apps the same way as exact matches.
-  if (match_type == GetLoginMatchType::kAffiliated &&
-      password_manager::IsValidAndroidFacetURI(form->signon_realm)) {
-    match_type = GetLoginMatchType::kExact;
-  }
-  return std::make_tuple(-static_cast<int>(match_type), form->date_last_used,
+  return std::make_tuple(-static_cast<int>(GetMatchType(*form)),
+                         form->date_last_used,
                          static_cast<int>(form->in_store));
 }
 
 // Consider the following properties:
-// 1. Match strength for the original form (Exact > Web Affiliations > PSL).
+// 1. Match strength for the original form (Exact > Affiliations > PSL).
 // 2. Last time used. Most recent is better.
 // 3. Account vs. profile store. Account is better.
 bool IsBetterMatch(const PasswordForm* lhs, const PasswordForm* rhs) {
