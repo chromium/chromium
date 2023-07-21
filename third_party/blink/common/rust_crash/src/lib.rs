@@ -5,7 +5,7 @@
 //! Code to generate an artificial Rust panic to exercise our crash handling
 //! logic and ensure it works for Rust crashes.
 
-#[cxx::bridge]
+#[cxx::bridge(namespace = "blink")]
 mod ffi {
     extern "Rust" {
         fn crash_in_rust(); // step 1 of main crash trigger. We bounce back to C++
