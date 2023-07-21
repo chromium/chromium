@@ -2313,10 +2313,6 @@ class ContentAnalysisPrintBrowserTestBase
     return manager_ptr;
   }
 
-  int new_document_called_count() {
-    return test_printing_context_factory()->new_document_called_count();
-  }
-
   int scanning_responses_count() { return scanning_responses_; }
 
   bool SandboxService() override { return true; }

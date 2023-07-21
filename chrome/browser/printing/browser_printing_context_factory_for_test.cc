@@ -79,11 +79,9 @@ BrowserPrintingContextFactoryForTest::CreatePrintingContext(
 
   context->SetUserSettings(*test::MakeUserModifiedPrintSettings(printer_name_));
 
-  context->SetOnNewDocumentCallback(
-      base::BindRepeating(&BrowserPrintingContextFactoryForTest::OnNewDocument,
-                          base::Unretained(this)));
+  context->SetOnNewDocumentCallback(on_new_document_callback_);
 
-  return std::move(context);
+  return context;
 }
 
 void BrowserPrintingContextFactoryForTest::SetPrinterNameForSubsequentContexts(
@@ -139,10 +137,9 @@ void BrowserPrintingContextFactoryForTest::
 }
 #endif
 
-void BrowserPrintingContextFactoryForTest::OnNewDocument(
-    const PrintSettings& settings) {
-  ++new_document_called_count_;
-  document_print_settings_ = settings;
+void BrowserPrintingContextFactoryForTest::SetOnNewDocumentCallback(
+    TestPrintingContext::OnNewDocumentCallback callback) {
+  on_new_document_callback_ = std::move(callback);
 }
 
 }  // namespace printing

@@ -418,6 +418,8 @@ PrintBrowserTest::~PrintBrowserTest() = default;
 void PrintBrowserTest::SetUp() {
   test_print_backend_ = base::MakeRefCounted<TestPrintBackend>();
   PrintBackend::SetPrintBackendForTesting(test_print_backend_.get());
+  test_printing_context_factory_.SetOnNewDocumentCallback(base::BindRepeating(
+      &PrintBrowserTest::OnNewDocument, base::Unretained(this)));
   PrintingContext::SetPrintingContextFactoryForTest(
       &test_printing_context_factory_);
 
@@ -587,6 +589,12 @@ void PrintBrowserTest::OverrideBinderForTesting(
       base::BindRepeating(
           &TestPrintRenderFrame::Bind,
           base::Unretained(GetFrameContent(render_frame_host))));
+}
+
+void PrintBrowserTest::OnNewDocument(const PrintSettings& settings) {
+  new_document_called_count_++;
+  DVLOG(1) << " Observed: new document";
+  document_print_settings_ = settings;
 }
 
 void PrintBrowserTest::ShowPrintErrorDialog() {

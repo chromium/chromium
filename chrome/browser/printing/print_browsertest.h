@@ -70,6 +70,8 @@ class PrintBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
+  void OnNewDocument(const PrintSettings& settings);
+
   TestPrintBackend* test_print_backend() { return test_print_backend_.get(); }
 
   BrowserPrintingContextFactoryForTest* test_printing_context_factory() {
@@ -80,8 +82,10 @@ class PrintBrowserTest : public InProcessBrowserTest {
     rendered_page_count_ = page_count;
   }
 
+  int new_document_called_count() const { return new_document_called_count_; }
+
   const absl::optional<PrintSettings>& document_print_settings() const {
-    return test_printing_context_factory_.document_print_settings();
+    return document_print_settings_;
   }
 
  private:
@@ -92,6 +96,8 @@ class PrintBrowserTest : public InProcessBrowserTest {
   void OverrideBinderForTesting(content::RenderFrameHost* render_frame_host);
   void ShowPrintErrorDialog();
 
+  int new_document_called_count_ = 0;
+  absl::optional<PrintSettings> document_print_settings_;
   uint32_t error_dialog_shown_count_ = 0;
   uint32_t rendered_page_count_ = 0;
   unsigned int num_expected_messages_;
