@@ -51,6 +51,7 @@ source_set("signin_impl") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/signin/ios/browser",
+    "//components/sync/base:features",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",

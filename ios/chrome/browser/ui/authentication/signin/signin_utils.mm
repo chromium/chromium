@@ -11,6 +11,7 @@
 #import "components/policy/policy_constants.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/features.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -121,8 +122,12 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
 
   AuthenticationService* auth_service =
       AuthenticationServiceFactory::GetForBrowserState(browser_state);
-  // Do not show the SSO promo if the user is already syncing.
-  if (auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSync)) {
+  // Do not show the SSO promo if the user is already signed-in.
+  signin::ConsentLevel upgradeLevel =
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+          ? signin::ConsentLevel::kSignin
+          : signin::ConsentLevel::kSync;
+  if (auth_service->HasPrimaryIdentity(upgradeLevel)) {
     return false;
   }
 
@@ -244,6 +249,8 @@ IdentitySigninState GetPrimaryIdentitySigninState(
       AuthenticationServiceFactory::GetForBrowserState(browser_state);
   SyncSetupService* syncSetupService =
       SyncSetupServiceFactory::GetForBrowserState(browser_state);
+  // TODO(crbug.com/1462552): After phase 3 migration of kSync users, Remove
+  // this usage.
   if (auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSync) &&
       syncSetupService->IsInitialSyncFeatureSetupComplete()) {
     return IdentitySigninStateSignedInWithSyncEnabled;

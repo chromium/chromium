@@ -89,8 +89,6 @@ using unified_consent::metrics::RecordSyncSetupDataTypesHistrogam;
     case IdentitySigninStateSignedInWithSyncDisabled: {
       // Sync consent is not granted in Advanced Settings, therefore
       // there should be no syncing identity.
-      DCHECK(!self.authenticationService->GetPrimaryIdentity(
-          signin::ConsentLevel::kSync));
       break;
     }
     case IdentitySigninStateSignedInWithSyncEnabled: {

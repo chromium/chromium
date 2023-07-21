@@ -19,6 +19,8 @@ typedef NS_ENUM(NSUInteger, SigninCoordinatorResult) {
 };
 
 // User's signed-in state as defined by AuthenticationService.
+// TODO(crbug.com/1462552): After phase 3 migration of syncing users, remove
+// `Sync` from enum name and refactor.
 typedef NS_ENUM(NSUInteger, IdentitySigninState) {
   IdentitySigninStateSignedOut,
   IdentitySigninStateSignedInWithSyncDisabled,
