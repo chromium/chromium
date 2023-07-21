@@ -21,6 +21,10 @@ config("ios_enable_shortcuts_widget") {
   swiftflags = [ "-DIOS_ENABLE_SHORTCUTS_WIDGET" ]
 }
 
+config("ios_enable_password_manager_widget") {
+  swiftflags = [ "-DIOS_ENABLE_PASSWORD_MANAGER_WIDGET" ]
+}
+
 source_set("crash_helper") {
   sources = [
     "crash_helper.h",
@@ -82,6 +86,11 @@ swift_source_set("widget_kit_extension_swift") {
   if (ios_enable_shortcuts_widget) {
     configs += [ ":ios_enable_shortcuts_widget" ]
     sources += [ "shortcuts_widget.swift" ]
+  }
+
+  if (ios_enable_password_manager_widget) {
+    configs += [ ":ios_enable_password_manager_widget" ]
+    sources += [ "password_manager_widget.swift" ]
   }
 
   frameworks = [
