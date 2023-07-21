@@ -67,14 +67,12 @@ class FakeAppLauncherTabHelperDelegate : public AppLauncherTabHelperDelegate {
                              const GURL& url,
                              bool link_transition,
                              base::OnceClosure completion) override {
-    __block base::OnceClosure block_completion = std::move(completion);
-    __block const GURL app_url = url;
+    const GURL app_url = url;
+    void (^block_completion)() = base::CallbackToBlock(std::move(completion));
     app_launch_completion_ = base::BindOnce(^{
       last_launched_app_url_ = app_url;
       ++app_launch_count_;
-      if (block_completion) {
-        std::move(block_completion).Run();
-      }
+      block_completion();
     });
 
     if (should_complete_app_launch_immediately_) {
