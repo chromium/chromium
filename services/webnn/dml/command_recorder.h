@@ -9,15 +9,15 @@
 #include <wrl.h>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
-#include "services/webnn/dml/command_queue.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace webnn::dml {
 
 using Microsoft::WRL::ComPtr;
 
-class Adapter;
+class CommandQueue;
 
 // CommandRecorder is mainly responsible for the initialization and execution of
 // a DirectML graph. It wraps a DirectML command recorder, and manages the
@@ -26,7 +26,8 @@ class Adapter;
 class CommandRecorder final {
  public:
   static std::unique_ptr<CommandRecorder> Create(
-      scoped_refptr<Adapter> adapter);
+      scoped_refptr<CommandQueue> queue,
+      ComPtr<IDMLDevice> dml_device);
 
   ~CommandRecorder();
   CommandRecorder(const CommandRecorder&) = delete;
@@ -110,8 +111,24 @@ class CommandRecorder final {
       base::span<const DML_BINDING_DESC> output_bindings,
       const absl::optional<DML_BINDING_DESC>& persistent_resource_binding);
 
+  // Create a resource with `size` bytes in
+  // D3D12_RESOURCE_STATE_UNORDERED_ACCESS state from the default heap of the
+  // owned D3D12 device. For this method and the other two, if there are no
+  // errors, S_OK is returned and the created resource is returned via
+  // `resource`. Otherwise, the corresponding HRESULT error code is returned.
+  HRESULT CreateDefaultBuffer(uint64_t size, ComPtr<ID3D12Resource>& resource);
+
+  // Create a resource with `size` bytes in D3D12_RESOURCE_STATE_GENERIC_READ
+  // state from the uploading heap of the owned D3D12 device.
+  HRESULT CreateUploadBuffer(uint64_t size, ComPtr<ID3D12Resource>& resource);
+
+  // Create a resource with `size` bytes in D3D12_RESOURCE_STATE_COPY_DEST state
+  // from the reading-back heap of the owned D3D12 device.
+  HRESULT CreateReadbackBuffer(uint64_t size, ComPtr<ID3D12Resource>& resource);
+
  private:
-  CommandRecorder(scoped_refptr<Adapter> adapter,
+  CommandRecorder(scoped_refptr<CommandQueue> command_queue,
+                  ComPtr<IDMLDevice> dml_device,
                   ComPtr<ID3D12CommandAllocator> command_allocator,
                   ComPtr<IDMLCommandRecorder> command_recorder);
 
@@ -119,7 +136,9 @@ class CommandRecorder final {
   // The first call to `CloseAndExecute()` sets the first submitted fence value.
   uint64_t last_submitted_fence_value_ = UINT64_MAX;
 
-  scoped_refptr<Adapter> adapter_;
+  scoped_refptr<CommandQueue> command_queue_;
+  ComPtr<IDMLDevice> dml_device_;
+  ComPtr<ID3D12Device> d3d12_device_;
   ComPtr<ID3D12CommandAllocator> command_allocator_;
   ComPtr<ID3D12GraphicsCommandList> command_list_;
   ComPtr<IDMLOperatorInitializer> operator_initializer_;

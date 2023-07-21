@@ -8,6 +8,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
+#include "services/webnn/dml/error.h"
 
 namespace webnn::dml {
 
@@ -71,6 +72,13 @@ uint64_t CalculateDMLBufferTensorSize(
       (CalculateElementCount(dimensions, strides) * element_size + 3) & ~3ull;
 
   return buffer_tensor_size.ValueOrDie();
+}
+
+ComPtr<ID3D12Device> GetD3D12Device(IDMLDevice* dml_device) {
+  CHECK(dml_device);
+  ComPtr<ID3D12Device> d3d12_device;
+  CHECK_EQ(dml_device->GetParentDevice(IID_PPV_ARGS(&d3d12_device)), S_OK);
+  return d3d12_device;
 }
 
 }  // namespace webnn::dml

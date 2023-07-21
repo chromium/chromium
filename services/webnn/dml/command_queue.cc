@@ -24,7 +24,7 @@ CommandQueue::CommandQueue(ComPtr<ID3D12CommandQueue> command_queue,
 CommandQueue::~CommandQueue() = default;
 
 // static
-std::unique_ptr<CommandQueue> CommandQueue::Create(ID3D12Device* d3d12_device) {
+scoped_refptr<CommandQueue> CommandQueue::Create(ID3D12Device* d3d12_device) {
   ComPtr<ID3D12CommandQueue> command_queue;
   D3D12_COMMAND_QUEUE_DESC command_queue_desc = {};
   command_queue_desc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
@@ -46,7 +46,7 @@ std::unique_ptr<CommandQueue> CommandQueue::Create(ID3D12Device* d3d12_device) {
     return nullptr;
   }
 
-  return base::WrapUnique(
+  return base::WrapRefCounted(
       new CommandQueue(std::move(command_queue), std::move(fence)));
 }
 

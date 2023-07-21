@@ -57,7 +57,7 @@ TEST_F(WebNNCommandQueueTest, WaitSyncForGpuWorkCompleted) {
                                              command_allocator.Get(), nullptr,
                                              IID_PPV_ARGS(&command_list)),
             S_OK);
-  std::unique_ptr<CommandQueue> command_queue =
+  scoped_refptr<CommandQueue> command_queue =
       CommandQueue::Create(d3d12_device_.Get());
   ASSERT_NE(command_queue.get(), nullptr);
   ASSERT_EQ(command_list->Close(), S_OK);
@@ -81,7 +81,7 @@ TEST_F(WebNNCommandQueueTest, WaitAsyncOnce) {
                                              command_allocator.Get(), nullptr,
                                              IID_PPV_ARGS(&command_list)),
             S_OK);
-  std::unique_ptr<CommandQueue> command_queue =
+  scoped_refptr<CommandQueue> command_queue =
       CommandQueue::Create(d3d12_device_.Get());
   ASSERT_NE(command_queue.get(), nullptr);
   ASSERT_EQ(command_list->Close(), S_OK);
@@ -115,7 +115,7 @@ TEST_F(WebNNCommandQueueTest, WaitAsyncMultipleTimesOnIncreasingFenceValue) {
                                              command_allocator.Get(), nullptr,
                                              IID_PPV_ARGS(&command_list)),
             S_OK);
-  std::unique_ptr<CommandQueue> command_queue =
+  scoped_refptr<CommandQueue> command_queue =
       CommandQueue::Create(d3d12_device_.Get());
   ASSERT_NE(command_queue.get(), nullptr);
   ASSERT_EQ(command_list->Close(), S_OK);
@@ -169,7 +169,7 @@ TEST_F(WebNNCommandQueueTest, WaitAsyncMultipleTimesOnSameFenceValue) {
                                              command_allocator.Get(), nullptr,
                                              IID_PPV_ARGS(&command_list)),
             S_OK);
-  std::unique_ptr<CommandQueue> command_queue =
+  scoped_refptr<CommandQueue> command_queue =
       CommandQueue::Create(d3d12_device_.Get());
   ASSERT_NE(command_queue.get(), nullptr);
   ASSERT_EQ(command_list->Close(), S_OK);
@@ -205,7 +205,7 @@ TEST_F(WebNNCommandQueueTest, WaitAsyncMultipleTimesOnSameFenceValue) {
 }
 
 TEST_F(WebNNCommandQueueTest, ReferenceAndRelease) {
-  std::unique_ptr<CommandQueue> command_queue =
+  scoped_refptr<CommandQueue> command_queue =
       CommandQueue::Create(d3d12_device_.Get());
   ASSERT_NE(command_queue.get(), nullptr);
 
