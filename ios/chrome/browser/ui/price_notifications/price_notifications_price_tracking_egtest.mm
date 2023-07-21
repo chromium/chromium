@@ -51,7 +51,8 @@
       assertWithMatcher:grey_notNil()];
 }
 
-- (void)testPriceTrackingIsNotVisibleInIncognito {
+// TODO(crbug.com/1466839): Flaky on iPhone.
+- (void)DISABLED_testPriceTrackingIsNotVisibleInIncognito {
   CGFloat const kMenuScrollDisplacement = 150;
   id<GREYAction> scrollRight =
       grey_scrollInDirection(kGREYDirectionRight, kMenuScrollDisplacement);
