@@ -6722,16 +6722,6 @@ Called by update_autofill_enums.py.-->
   <int value="209" label="PHONE_HOME_CITY_AND_NUMBER: accepted"/>
   <int value="224" label="PHONE_HOME_WHOLE_NUMBER: edited"/>
   <int value="225" label="PHONE_HOME_WHOLE_NUMBER: accepted"/>
-  <int value="320" label="PHONE_FAX_NUMBER: edited"/>
-  <int value="321" label="PHONE_FAX_NUMBER: accepted"/>
-  <int value="336" label="PHONE_FAX_CITY_CODE: edited"/>
-  <int value="337" label="PHONE_FAX_CITY_CODE: accepted"/>
-  <int value="352" label="PHONE_FAX_COUNTRY_CODE: edited"/>
-  <int value="353" label="PHONE_FAX_COUNTRY_CODE: accepted"/>
-  <int value="368" label="PHONE_FAX_CITY_AND_NUMBER: edited"/>
-  <int value="369" label="PHONE_FAX_CITY_AND_NUMBER: accepted"/>
-  <int value="384" label="PHONE_FAX_WHOLE_NUMBER: edited"/>
-  <int value="385" label="PHONE_FAX_WHOLE_NUMBER: accepted"/>
   <int value="480" label="ADDRESS_HOME_LINE1: edited"/>
   <int value="481" label="ADDRESS_HOME_LINE1: accepted"/>
   <int value="496" label="ADDRESS_HOME_LINE2: edited"/>
@@ -6746,20 +6736,6 @@ Called by update_autofill_enums.py.-->
   <int value="561" label="ADDRESS_HOME_ZIP: accepted"/>
   <int value="576" label="ADDRESS_HOME_COUNTRY: edited"/>
   <int value="577" label="ADDRESS_HOME_COUNTRY: accepted"/>
-  <int value="592" label="ADDRESS_BILLING_LINE1: edited"/>
-  <int value="593" label="ADDRESS_BILLING_LINE1: accepted"/>
-  <int value="608" label="ADDRESS_BILLING_LINE2: edited"/>
-  <int value="609" label="ADDRESS_BILLING_LINE2: accepted"/>
-  <int value="624" label="ADDRESS_BILLING_APT_NUM: edited"/>
-  <int value="625" label="ADDRESS_BILLING_APT_NUM: accepted"/>
-  <int value="640" label="ADDRESS_BILLING_CITY: edited"/>
-  <int value="641" label="ADDRESS_BILLING_CITY: accepted"/>
-  <int value="656" label="ADDRESS_BILLING_STATE: edited"/>
-  <int value="657" label="ADDRESS_BILLING_STATE: accepted"/>
-  <int value="672" label="ADDRESS_BILLING_ZIP: edited"/>
-  <int value="673" label="ADDRESS_BILLING_ZIP: accepted"/>
-  <int value="688" label="ADDRESS_BILLING_COUNTRY: edited"/>
-  <int value="689" label="ADDRESS_BILLING_COUNTRY: accepted"/>
   <int value="816" label="CREDIT_CARD_NAME_FULL: edited"/>
   <int value="817" label="CREDIT_CARD_NAME_FULL: accepted"/>
   <int value="832" label="CREDIT_CARD_NUMBER: edited"/>
@@ -6782,28 +6758,6 @@ Called by update_autofill_enums.py.-->
   <int value="961" label="COMPANY_NAME: accepted"/>
   <int value="976" label="FIELD_WITH_DEFAULT_VALUE: edited"/>
   <int value="977" label="FIELD_WITH_DEFAULT_VALUE: accepted"/>
-  <int value="992" label="PHONE_BILLING_NUMBER: edited"/>
-  <int value="993" label="PHONE_BILLING_NUMBER: accepted"/>
-  <int value="1008" label="PHONE_BILLING_CITY_CODE: edited"/>
-  <int value="1009" label="PHONE_BILLING_CITY_CODE: accepted"/>
-  <int value="1024" label="PHONE_BILLING_COUNTRY_CODE: edited"/>
-  <int value="1025" label="PHONE_BILLING_COUNTRY_CODE: accepted"/>
-  <int value="1040" label="PHONE_BILLING_CITY_AND_NUMBER: edited"/>
-  <int value="1041" label="PHONE_BILLING_CITY_AND_NUMBER: accepted"/>
-  <int value="1056" label="PHONE_BILLING_WHOLE_NUMBER: edited"/>
-  <int value="1057" label="PHONE_BILLING_WHOLE_NUMBER: accepted"/>
-  <int value="1072" label="NAME_BILLING_FIRST: edited"/>
-  <int value="1073" label="NAME_BILLING_FIRST: accepted"/>
-  <int value="1088" label="NAME_BILLING_MIDDLE: edited"/>
-  <int value="1089" label="NAME_BILLING_MIDDLE: accepted"/>
-  <int value="1104" label="NAME_BILLING_LAST: edited"/>
-  <int value="1105" label="NAME_BILLING_LAST: accepted"/>
-  <int value="1120" label="NAME_BILLING_MIDDLE_INITIAL: edited"/>
-  <int value="1121" label="NAME_BILLING_MIDDLE_INITIAL: accepted"/>
-  <int value="1136" label="NAME_BILLING_FULL: edited"/>
-  <int value="1137" label="NAME_BILLING_FULL: accepted"/>
-  <int value="1152" label="NAME_BILLING_SUFFIX: edited"/>
-  <int value="1153" label="NAME_BILLING_SUFFIX: accepted"/>
   <int value="1168" label="MERCHANT_EMAIL_SIGNUP: edited"/>
   <int value="1169" label="MERCHANT_EMAIL_SIGNUP: accepted"/>
   <int value="1184" label="MERCHANT_PROMO_CODE: edited"/>
@@ -6814,20 +6768,12 @@ Called by update_autofill_enums.py.-->
   <int value="1217" label="ACCOUNT_CREATION_PASSWORD: accepted"/>
   <int value="1232" label="ADDRESS_HOME_STREET_ADDRESS: edited"/>
   <int value="1233" label="ADDRESS_HOME_STREET_ADDRESS: accepted"/>
-  <int value="1248" label="ADDRESS_BILLING_STREET_ADDRESS: edited"/>
-  <int value="1249" label="ADDRESS_BILLING_STREET_ADDRESS: accepted"/>
   <int value="1264" label="ADDRESS_HOME_SORTING_CODE: edited"/>
   <int value="1265" label="ADDRESS_HOME_SORTING_CODE: accepted"/>
-  <int value="1280" label="ADDRESS_BILLING_SORTING_CODE: edited"/>
-  <int value="1281" label="ADDRESS_BILLING_SORTING_CODE: accepted"/>
   <int value="1296" label="ADDRESS_HOME_DEPENDENT_LOCALITY: edited"/>
   <int value="1297" label="ADDRESS_HOME_DEPENDENT_LOCALITY: accepted"/>
-  <int value="1312" label="ADDRESS_BILLING_DEPENDENT_LOCALITY: edited"/>
-  <int value="1313" label="ADDRESS_BILLING_DEPENDENT_LOCALITY: accepted"/>
   <int value="1328" label="ADDRESS_HOME_LINE3: edited"/>
   <int value="1329" label="ADDRESS_HOME_LINE3: accepted"/>
-  <int value="1344" label="ADDRESS_BILLING_LINE3: edited"/>
-  <int value="1345" label="ADDRESS_BILLING_LINE3: accepted"/>
   <int value="1360" label="NOT_ACCOUNT_CREATION_PASSWORD: edited"/>
   <int value="1361" label="NOT_ACCOUNT_CREATION_PASSWORD: accepted"/>
   <int value="1376" label="USERNAME: edited"/>
@@ -7985,85 +7931,6 @@ Called by update_autofill_enums.py.-->
   <int value="90"
       label="PHONE_HOME_WHOLE_NUMBER - Predictions different - Value agrees
              with both predictions"/>
-  <int value="121" label="PHONE_FAX_NUMBER - Predictions equal - Value agrees"/>
-  <int value="122"
-      label="PHONE_FAX_NUMBER - Predictions equal - Value disagrees"/>
-  <int value="123"
-      label="PHONE_FAX_NUMBER - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="124"
-      label="PHONE_FAX_NUMBER - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="125"
-      label="PHONE_FAX_NUMBER - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="126"
-      label="PHONE_FAX_NUMBER - Predictions different - Value agrees with
-             both predictions"/>
-  <int value="127"
-      label="PHONE_FAX_CITY_CODE - Predictions equal - Value agrees"/>
-  <int value="128"
-      label="PHONE_FAX_CITY_CODE - Predictions equal - Value disagrees"/>
-  <int value="129"
-      label="PHONE_FAX_CITY_CODE - Predictions different - Value agrees with
-             old prediction"/>
-  <int value="130"
-      label="PHONE_FAX_CITY_CODE - Predictions different - Value agrees with
-             new prediction"/>
-  <int value="131"
-      label="PHONE_FAX_CITY_CODE - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="132"
-      label="PHONE_FAX_CITY_CODE - Predictions different - Value agrees with
-             both predictions"/>
-  <int value="133"
-      label="PHONE_FAX_COUNTRY_CODE - Predictions equal - Value agrees"/>
-  <int value="134"
-      label="PHONE_FAX_COUNTRY_CODE - Predictions equal - Value disagrees"/>
-  <int value="135"
-      label="PHONE_FAX_COUNTRY_CODE - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="136"
-      label="PHONE_FAX_COUNTRY_CODE - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="137"
-      label="PHONE_FAX_COUNTRY_CODE - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="138"
-      label="PHONE_FAX_COUNTRY_CODE - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="139"
-      label="PHONE_FAX_CITY_AND_NUMBER - Predictions equal - Value agrees"/>
-  <int value="140"
-      label="PHONE_FAX_CITY_AND_NUMBER - Predictions equal - Value disagrees"/>
-  <int value="141"
-      label="PHONE_FAX_CITY_AND_NUMBER - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="142"
-      label="PHONE_FAX_CITY_AND_NUMBER - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="143"
-      label="PHONE_FAX_CITY_AND_NUMBER - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="144"
-      label="PHONE_FAX_CITY_AND_NUMBER - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="145"
-      label="PHONE_FAX_WHOLE_NUMBER - Predictions equal - Value agrees"/>
-  <int value="146"
-      label="PHONE_FAX_WHOLE_NUMBER - Predictions equal - Value disagrees"/>
-  <int value="147"
-      label="PHONE_FAX_WHOLE_NUMBER - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="148"
-      label="PHONE_FAX_WHOLE_NUMBER - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="149"
-      label="PHONE_FAX_WHOLE_NUMBER - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="150"
-      label="PHONE_FAX_WHOLE_NUMBER - Predictions different - Value agrees
-             with both predictions"/>
   <int value="181"
       label="ADDRESS_HOME_LINE1 - Predictions equal - Value agrees"/>
   <int value="182"
@@ -8175,118 +8042,6 @@ Called by update_autofill_enums.py.-->
   <int value="222"
       label="ADDRESS_HOME_COUNTRY - Predictions different - Value agrees with
              both predictions"/>
-  <int value="223"
-      label="ADDRESS_BILLING_LINE1 - Predictions equal - Value agrees"/>
-  <int value="224"
-      label="ADDRESS_BILLING_LINE1 - Predictions equal - Value disagrees"/>
-  <int value="225"
-      label="ADDRESS_BILLING_LINE1 - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="226"
-      label="ADDRESS_BILLING_LINE1 - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="227"
-      label="ADDRESS_BILLING_LINE1 - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="228"
-      label="ADDRESS_BILLING_LINE1 - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="229"
-      label="ADDRESS_BILLING_LINE2 - Predictions equal - Value agrees"/>
-  <int value="230"
-      label="ADDRESS_BILLING_LINE2 - Predictions equal - Value disagrees"/>
-  <int value="231"
-      label="ADDRESS_BILLING_LINE2 - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="232"
-      label="ADDRESS_BILLING_LINE2 - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="233"
-      label="ADDRESS_BILLING_LINE2 - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="234"
-      label="ADDRESS_BILLING_LINE2 - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="235"
-      label="ADDRESS_BILLING_APPT_NUM - Predictions equal - Value agrees"/>
-  <int value="236"
-      label="ADDRESS_BILLING_APPT_NUM - Predictions equal - Value disagrees"/>
-  <int value="237"
-      label="ADDRESS_BILLING_APPT_NUM - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="238"
-      label="ADDRESS_BILLING_APPT_NUM - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="239"
-      label="ADDRESS_BILLING_APPT_NUM - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="240"
-      label="ADDRESS_BILLING_APPT_NUM - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="241"
-      label="ADDRESS_BILLING_CITY - Predictions equal - Value agrees"/>
-  <int value="242"
-      label="ADDRESS_BILLING_CITY - Predictions equal - Value disagrees"/>
-  <int value="243"
-      label="ADDRESS_BILLING_CITY - Predictions different - Value agrees with
-             old prediction"/>
-  <int value="244"
-      label="ADDRESS_BILLING_CITY - Predictions different - Value agrees with
-             new prediction"/>
-  <int value="245"
-      label="ADDRESS_BILLING_CITY - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="246"
-      label="ADDRESS_BILLING_CITY - Predictions different - Value agrees with
-             both predictions"/>
-  <int value="247"
-      label="ADDRESS_BILLING_STATE - Predictions equal - Value agrees"/>
-  <int value="248"
-      label="ADDRESS_BILLING_STATE - Predictions equal - Value disagrees"/>
-  <int value="249"
-      label="ADDRESS_BILLING_STATE - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="250"
-      label="ADDRESS_BILLING_STATE - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="251"
-      label="ADDRESS_BILLING_STATE - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="252"
-      label="ADDRESS_BILLING_STATE - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="253"
-      label="ADDRESS_BILLING_ZIP - Predictions equal - Value agrees"/>
-  <int value="254"
-      label="ADDRESS_BILLING_ZIP - Predictions equal - Value disagrees"/>
-  <int value="255"
-      label="ADDRESS_BILLING_ZIP - Predictions different - Value agrees with
-             old prediction"/>
-  <int value="256"
-      label="ADDRESS_BILLING_ZIP - Predictions different - Value agrees with
-             new prediction"/>
-  <int value="257"
-      label="ADDRESS_BILLING_ZIP - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="258"
-      label="ADDRESS_BILLING_ZIP - Predictions different - Value agrees with
-             both predictions"/>
-  <int value="259"
-      label="ADDRESS_BILLING_COUNTRY - Predictions equal - Value agrees"/>
-  <int value="260"
-      label="ADDRESS_BILLING_COUNTRY - Predictions equal - Value disagrees"/>
-  <int value="261"
-      label="ADDRESS_BILLING_COUNTRY - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="262"
-      label="ADDRESS_BILLING_COUNTRY - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="263"
-      label="ADDRESS_BILLING_COUNTRY - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="264"
-      label="ADDRESS_BILLING_COUNTRY - Predictions different - Value agrees
-             with both predictions"/>
   <int value="307"
       label="CREDIT_CARD_NAME_FULL - Predictions equal - Value agrees"/>
   <int value="308"
@@ -8467,184 +8222,6 @@ Called by update_autofill_enums.py.-->
   <int value="372"
       label="FIELD_WITH_DEFAULT_VALUE - Predictions different - Value agrees
              with both predictions"/>
-  <int value="373"
-      label="PHONE_BILLING_NUMBER - Predictions equal - Value agrees"/>
-  <int value="374"
-      label="PHONE_BILLING_NUMBER - Predictions equal - Value disagrees"/>
-  <int value="375"
-      label="PHONE_BILLING_NUMBER - Predictions different - Value agrees with
-             old prediction"/>
-  <int value="376"
-      label="PHONE_BILLING_NUMBER - Predictions different - Value agrees with
-             new prediction"/>
-  <int value="377"
-      label="PHONE_BILLING_NUMBER - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="378"
-      label="PHONE_BILLING_NUMBER - Predictions different - Value agrees with
-             both predictions"/>
-  <int value="379"
-      label="PHONE_BILLING_CITY_CODE - Predictions equal - Value agrees"/>
-  <int value="380"
-      label="PHONE_BILLING_CITY_CODE - Predictions equal - Value disagrees"/>
-  <int value="381"
-      label="PHONE_BILLING_CITY_CODE - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="382"
-      label="PHONE_BILLING_CITY_CODE - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="383"
-      label="PHONE_BILLING_CITY_CODE - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="384"
-      label="PHONE_BILLING_CITY_CODE - Predictions different - Value agrees
-             with both predictions"/>
-  <int value="385"
-      label="PHONE_BILLING_COUNTRY_CODE - Predictions equal - Value agrees"/>
-  <int value="386"
-      label="PHONE_BILLING_COUNTRY_CODE - Predictions equal - Value disagrees"/>
-  <int value="387"
-      label="PHONE_BILLING_COUNTRY_CODE - Predictions different - Value
-             agrees with old prediction"/>
-  <int value="388"
-      label="PHONE_BILLING_COUNTRY_CODE - Predictions different - Value
-             agrees with new prediction"/>
-  <int value="389"
-      label="PHONE_BILLING_COUNTRY_CODE - Predictions different - Value
-             agrees with neither prediction"/>
-  <int value="390"
-      label="PHONE_BILLING_COUNTRY_CODE - Predictions different - Value
-             agrees with both predictions"/>
-  <int value="391"
-      label="PHONE_BILLING_CITY_AND_NUMBER - Predictions equal - Value agrees"/>
-  <int value="392"
-      label="PHONE_BILLING_CITY_AND_NUMBER - Predictions equal - Value
-             disagrees"/>
-  <int value="393"
-      label="PHONE_BILLING_CITY_AND_NUMBER - Predictions different - Value
-             agrees with old prediction"/>
-  <int value="394"
-      label="PHONE_BILLING_CITY_AND_NUMBER - Predictions different - Value
-             agrees with new prediction"/>
-  <int value="395"
-      label="PHONE_BILLING_CITY_AND_NUMBER - Predictions different - Value
-             agrees with neither prediction"/>
-  <int value="396"
-      label="PHONE_BILLING_CITY_AND_NUMBER - Predictions different - Value
-             agrees with both predictions"/>
-  <int value="397"
-      label="PHONE_BILLING_WHOLE_NUMBER - Predictions equal - Value agrees"/>
-  <int value="398"
-      label="PHONE_BILLING_WHOLE_NUMBER - Predictions equal - Value disagrees"/>
-  <int value="399"
-      label="PHONE_BILLING_WHOLE_NUMBER - Predictions different - Value
-             agrees with old prediction"/>
-  <int value="400"
-      label="PHONE_BILLING_WHOLE_NUMBER - Predictions different - Value
-             agrees with new prediction"/>
-  <int value="401"
-      label="PHONE_BILLING_WHOLE_NUMBER - Predictions different - Value
-             agrees with neither prediction"/>
-  <int value="402"
-      label="PHONE_BILLING_WHOLE_NUMBER - Predictions different - Value
-             agrees with both predictions"/>
-  <int value="403"
-      label="NAME_BILLING_FIRST - Predictions equal - Value agrees"/>
-  <int value="404"
-      label="NAME_BILLING_FIRST - Predictions equal - Value disagrees"/>
-  <int value="405"
-      label="NAME_BILLING_FIRST - Predictions different - Value agrees with
-             old prediction"/>
-  <int value="406"
-      label="NAME_BILLING_FIRST - Predictions different - Value agrees with
-             new prediction"/>
-  <int value="407"
-      label="NAME_BILLING_FIRST - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="408"
-      label="NAME_BILLING_FIRST - Predictions different - Value agrees with
-             both predictions"/>
-  <int value="409"
-      label="NAME_BILLING_MIDDLE - Predictions equal - Value agrees"/>
-  <int value="410"
-      label="NAME_BILLING_MIDDLE - Predictions equal - Value disagrees"/>
-  <int value="411"
-      label="NAME_BILLING_MIDDLE - Predictions different - Value agrees with
-             old prediction"/>
-  <int value="412"
-      label="NAME_BILLING_MIDDLE - Predictions different - Value agrees with
-             new prediction"/>
-  <int value="413"
-      label="NAME_BILLING_MIDDLE - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="414"
-      label="NAME_BILLING_MIDDLE - Predictions different - Value agrees with
-             both predictions"/>
-  <int value="415"
-      label="NAME_BILLING_LAST - Predictions equal - Value agrees"/>
-  <int value="416"
-      label="NAME_BILLING_LAST - Predictions equal - Value disagrees"/>
-  <int value="417"
-      label="NAME_BILLING_LAST - Predictions different - Value agrees with
-             old prediction"/>
-  <int value="418"
-      label="NAME_BILLING_LAST - Predictions different - Value agrees with
-             new prediction"/>
-  <int value="419"
-      label="NAME_BILLING_LAST - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="420"
-      label="NAME_BILLING_LAST - Predictions different - Value agrees with
-             both predictions"/>
-  <int value="421"
-      label="NAME_BILLING_MIDDLE_INITIAL - Predictions equal - Value agrees"/>
-  <int value="422"
-      label="NAME_BILLING_MIDDLE_INITIAL - Predictions equal - Value
-             disagrees"/>
-  <int value="423"
-      label="NAME_BILLING_MIDDLE_INITIAL - Predictions different - Value
-             agrees with old prediction"/>
-  <int value="424"
-      label="NAME_BILLING_MIDDLE_INITIAL - Predictions different - Value
-             agrees with new prediction"/>
-  <int value="425"
-      label="NAME_BILLING_MIDDLE_INITIAL - Predictions different - Value
-             agrees with neither prediction"/>
-  <int value="426"
-      label="NAME_BILLING_MIDDLE_INITIAL - Predictions different - Value
-             agrees with both predictions"/>
-  <int value="427"
-      label="NAME_BILLING_FULL - Predictions equal - Value agrees"/>
-  <int value="428"
-      label="NAME_BILLING_FULL - Predictions equal - Value disagrees"/>
-  <int value="429"
-      label="NAME_BILLING_FULL - Predictions different - Value agrees with
-             old prediction"/>
-  <int value="430"
-      label="NAME_BILLING_FULL - Predictions different - Value agrees with
-             new prediction"/>
-  <int value="431"
-      label="NAME_BILLING_FULL - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="432"
-      label="NAME_BILLING_FULL - Predictions different - Value agrees with
-             both predictions"/>
-  <int value="433"
-      label="NAME_BILLING_SUFFIX - Predictions equal - Value agrees"/>
-  <int value="434"
-      label="NAME_BILLING_SUFFIX - Predictions equal - Value disagrees"/>
-  <int value="435"
-      label="NAME_BILLING_SUFFIX - Predictions different - Value agrees with
-             old prediction"/>
-  <int value="436"
-      label="NAME_BILLING_SUFFIX - Predictions different - Value agrees with
-             new prediction"/>
-  <int value="437"
-      label="NAME_BILLING_SUFFIX - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="438"
-      label="NAME_BILLING_SUFFIX - Predictions different - Value agrees with
-             both predictions"/>
   <int value="439"
       label="MERCHANT_EMAIL_SIGNUP - Predictions equal - Value agrees"/>
   <int value="440"
@@ -8724,24 +8301,6 @@ Called by update_autofill_enums.py.-->
   <int value="468"
       label="ADDRESS_HOME_STREET_ADDRESS - Predictions different - Value
              agrees with both predictions"/>
-  <int value="469"
-      label="ADDRESS_BILLING_STREET_ADDRESS - Predictions equal - Value
-             agrees"/>
-  <int value="470"
-      label="ADDRESS_BILLING_STREET_ADDRESS - Predictions equal - Value
-             disagrees"/>
-  <int value="471"
-      label="ADDRESS_BILLING_STREET_ADDRESS - Predictions different - Value
-             agrees with old prediction"/>
-  <int value="472"
-      label="ADDRESS_BILLING_STREET_ADDRESS - Predictions different - Value
-             agrees with new prediction"/>
-  <int value="473"
-      label="ADDRESS_BILLING_STREET_ADDRESS - Predictions different - Value
-             agrees with neither prediction"/>
-  <int value="474"
-      label="ADDRESS_BILLING_STREET_ADDRESS - Predictions different - Value
-             agrees with both predictions"/>
   <int value="475"
       label="ADDRESS_HOME_SORTING_CODE - Predictions equal - Value agrees"/>
   <int value="476"
@@ -8758,23 +8317,6 @@ Called by update_autofill_enums.py.-->
   <int value="480"
       label="ADDRESS_HOME_SORTING_CODE - Predictions different - Value agrees
              with both predictions"/>
-  <int value="481"
-      label="ADDRESS_BILLING_SORTING_CODE - Predictions equal - Value agrees"/>
-  <int value="482"
-      label="ADDRESS_BILLING_SORTING_CODE - Predictions equal - Value
-             disagrees"/>
-  <int value="483"
-      label="ADDRESS_BILLING_SORTING_CODE - Predictions different - Value
-             agrees with old prediction"/>
-  <int value="484"
-      label="ADDRESS_BILLING_SORTING_CODE - Predictions different - Value
-             agrees with new prediction"/>
-  <int value="485"
-      label="ADDRESS_BILLING_SORTING_CODE - Predictions different - Value
-             agrees with neither prediction"/>
-  <int value="486"
-      label="ADDRESS_BILLING_SORTING_CODE - Predictions different - Value
-             agrees with both predictions"/>
   <int value="487"
       label="ADDRESS_HOME_DEPENDENT_LOCALITY - Predictions equal - Value
              agrees"/>
@@ -8793,24 +8335,6 @@ Called by update_autofill_enums.py.-->
   <int value="492"
       label="ADDRESS_HOME_DEPENDENT_LOCALITY - Predictions different - Value
              agrees with both predictions"/>
-  <int value="493"
-      label="ADDRESS_BILLING_DEPENDENT_LOCALITY - Predictions equal - Value
-             agrees"/>
-  <int value="494"
-      label="ADDRESS_BILLING_DEPENDENT_LOCALITY - Predictions equal - Value
-             disagrees"/>
-  <int value="495"
-      label="ADDRESS_BILLING_DEPENDENT_LOCALITY - Predictions different -
-             Value agrees with old prediction"/>
-  <int value="496"
-      label="ADDRESS_BILLING_DEPENDENT_LOCALITY - Predictions different -
-             Value agrees with new prediction"/>
-  <int value="497"
-      label="ADDRESS_BILLING_DEPENDENT_LOCALITY - Predictions different -
-             Value agrees with neither prediction"/>
-  <int value="498"
-      label="ADDRESS_BILLING_DEPENDENT_LOCALITY - Predictions different -
-             Value agrees with both predictions"/>
   <int value="499"
       label="ADDRESS_HOME_LINE3 - Predictions equal - Value agrees"/>
   <int value="500"
@@ -8827,22 +8351,6 @@ Called by update_autofill_enums.py.-->
   <int value="504"
       label="ADDRESS_HOME_LINE3 - Predictions different - Value agrees with
              both predictions"/>
-  <int value="505"
-      label="ADDRESS_BILLING_LINE3 - Predictions equal - Value agrees"/>
-  <int value="506"
-      label="ADDRESS_BILLING_LINE3 - Predictions equal - Value disagrees"/>
-  <int value="507"
-      label="ADDRESS_BILLING_LINE3 - Predictions different - Value agrees
-             with old prediction"/>
-  <int value="508"
-      label="ADDRESS_BILLING_LINE3 - Predictions different - Value agrees
-             with new prediction"/>
-  <int value="509"
-      label="ADDRESS_BILLING_LINE3 - Predictions different - Value agrees
-             with neither prediction"/>
-  <int value="510"
-      label="ADDRESS_BILLING_LINE3 - Predictions different - Value agrees
-             with both predictions"/>
   <int value="511"
       label="NOT_ACCOUNT_CREATION_PASSWORD - Predictions equal - Value agrees"/>
   <int value="512"
@@ -8983,24 +8491,6 @@ Called by update_autofill_enums.py.-->
   <int value="564"
       label="PHONE_HOME_EXTENSION - Predictions different - Value agrees with
              both predictions"/>
-  <int value="565"
-      label="PROBABLY_ACCOUNT_CREATION_PASSWORD - Predictions equal - Value
-             agrees"/>
-  <int value="566"
-      label="PROBABLY_ACCOUNT_CREATION_PASSWORD - Predictions equal - Value
-             disagrees"/>
-  <int value="567"
-      label="PROBABLY_ACCOUNT_CREATION_PASSWORD - Predictions different -
-             Value agrees with old prediction"/>
-  <int value="568"
-      label="PROBABLY_ACCOUNT_CREATION_PASSWORD - Predictions different -
-             Value agrees with new prediction"/>
-  <int value="569"
-      label="PROBABLY_ACCOUNT_CREATION_PASSWORD - Predictions different -
-             Value agrees with neither prediction"/>
-  <int value="570"
-      label="PROBABLY_ACCOUNT_CREATION_PASSWORD - Predictions different -
-             Value agrees with both predictions"/>
   <int value="571"
       label="CONFIRMATION_PASSWORD - Predictions equal - Value agrees"/>
   <int value="572"
@@ -9904,11 +9394,6 @@ Called by update_autofill_enums.py.-->
   <int value="12" label="PHONE_HOME_COUNTRY_CODE"/>
   <int value="13" label="PHONE_HOME_CITY_AND_NUMBER"/>
   <int value="14" label="PHONE_HOME_WHOLE_NUMBER"/>
-  <int value="20" label="PHONE_FAX_NUMBER"/>
-  <int value="21" label="PHONE_FAX_CITY_CODE"/>
-  <int value="22" label="PHONE_FAX_COUNTRY_CODE"/>
-  <int value="23" label="PHONE_FAX_CITY_AND_NUMBER"/>
-  <int value="24" label="PHONE_FAX_WHOLE_NUMBER"/>
   <int value="30" label="ADDRESS_HOME_LINE1"/>
   <int value="31" label="ADDRESS_HOME_LINE2"/>
   <int value="32" label="ADDRESS_HOME_APT_NUM"/>
@@ -9916,13 +9401,6 @@ Called by update_autofill_enums.py.-->
   <int value="34" label="ADDRESS_HOME_STATE"/>
   <int value="35" label="ADDRESS_HOME_ZIP"/>
   <int value="36" label="ADDRESS_HOME_COUNTRY"/>
-  <int value="37" label="ADDRESS_BILLING_LINE1"/>
-  <int value="38" label="ADDRESS_BILLING_LINE2"/>
-  <int value="39" label="ADDRESS_BILLING_APT_NUM"/>
-  <int value="40" label="ADDRESS_BILLING_CITY"/>
-  <int value="41" label="ADDRESS_BILLING_STATE"/>
-  <int value="42" label="ADDRESS_BILLING_ZIP"/>
-  <int value="43" label="ADDRESS_BILLING_COUNTRY"/>
   <int value="51" label="CREDIT_CARD_NAME_FULL"/>
   <int value="52" label="CREDIT_CARD_NUMBER"/>
   <int value="53" label="CREDIT_CARD_EXP_MONTH"/>
@@ -9934,29 +9412,14 @@ Called by update_autofill_enums.py.-->
   <int value="59" label="CREDIT_CARD_VERIFICATION_CODE"/>
   <int value="60" label="COMPANY_NAME"/>
   <int value="61" label="FIELD_WITH_DEFAULT_VALUE"/>
-  <int value="62" label="PHONE_BILLING_NUMBER"/>
-  <int value="63" label="PHONE_BILLING_CITY_CODE"/>
-  <int value="64" label="PHONE_BILLING_COUNTRY_CODE"/>
-  <int value="65" label="PHONE_BILLING_CITY_AND_NUMBER"/>
-  <int value="66" label="PHONE_BILLING_WHOLE_NUMBER"/>
-  <int value="67" label="NAME_BILLING_FIRST"/>
-  <int value="68" label="NAME_BILLING_MIDDLE"/>
-  <int value="69" label="NAME_BILLING_LAST"/>
-  <int value="70" label="NAME_BILLING_MIDDLE_INITIAL"/>
-  <int value="71" label="NAME_BILLING_FULL"/>
-  <int value="72" label="NAME_BILLING_SUFFIX"/>
   <int value="73" label="MERCHANT_EMAIL_SIGNUP"/>
   <int value="74" label="MERCHANT_PROMO_CODE"/>
   <int value="75" label="PASSWORD"/>
   <int value="76" label="ACCOUNT_CREATION_PASSWORD"/>
   <int value="77" label="ADDRESS_HOME_STREET_ADDRESS"/>
-  <int value="78" label="ADDRESS_BILLING_STREET_ADDRESS"/>
   <int value="79" label="ADDRESS_HOME_SORTING_CODE"/>
-  <int value="80" label="ADDRESS_BILLING_SORTING_CODE"/>
   <int value="81" label="ADDRESS_HOME_DEPENDENT_LOCALITY"/>
-  <int value="82" label="ADDRESS_BILLING_DEPENDENT_LOCALITY"/>
   <int value="83" label="ADDRESS_HOME_LINE3"/>
-  <int value="84" label="ADDRESS_BILLING_LINE3"/>
   <int value="85" label="NOT_ACCOUNT_CREATION_PASSWORD"/>
   <int value="86" label="USERNAME"/>
   <int value="87" label="USERNAME_AND_EMAIL_ADDRESS"/>
@@ -9998,7 +9461,6 @@ Called by update_autofill_enums.py.-->
   <int value="124" label="PHONE_HOME_NUMBER_SUFFIX"/>
   <int value="125" label="IBAN_VALUE"/>
   <int value="126" label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE"/>
-  <int value="127" label="RESERVED"/>
   <int value="128" label="NUMERIC_QUANTITY"/>
   <int value="129" label="ONE_TIME_CODE"/>
   <int value="133" label="DELIVERY_INSTRUCTIONS"/>
