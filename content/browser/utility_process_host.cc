@@ -314,6 +314,8 @@ bool UtilityProcessHost::StartProcess() {
       network::switches::kIPAnonymizationProxyAllowList,
       network::switches::kIPAnonymizationProxyPassword,
       network::switches::kIPAnonymizationProxyServer,
+      network::switches::kLogNetLog,
+      network::switches::kNetLogCaptureMode,
       network::switches::kTestThirdPartyCookiePhaseout,
       sandbox::policy::switches::kNoSandbox,
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)

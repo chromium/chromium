@@ -16,7 +16,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/environment.h"
 #include "base/feature_list.h"
-#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -25,10 +24,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/timer.h"
-#include "base/types/pass_key.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
@@ -602,15 +599,15 @@ void NetworkService::SetSystemDnsResolver(
 }
 
 void NetworkService::StartNetLog(base::File file,
-                                 uint64_t max_total_size,
                                  net::NetLogCaptureMode capture_mode,
-                                 base::Value::Dict constants) {
-  if (max_total_size == net::FileNetLogObserver::kNoLimit) {
-    StartNetLogUnbounded(std::move(file), capture_mode, std::move(constants));
-  } else {
-    StartNetLogBounded(std::move(file), max_total_size, capture_mode,
-                       std::move(constants));
-  }
+                                 base::Value::Dict client_constants) {
+  base::Value::Dict constants = net::GetNetConstants();
+  constants.Merge(std::move(client_constants));
+
+  file_net_log_observer_ = net::FileNetLogObserver::CreateUnboundedPreExisting(
+      std::move(file), capture_mode,
+      std::make_unique<base::Value::Dict>(std::move(constants)));
+  file_net_log_observer_->StartObserving(net_log_);
 }
 
 void NetworkService::AttachNetLogProxy(
@@ -938,54 +935,6 @@ void NetworkService::SetFirstPartySets(net::GlobalFirstPartySets sets) {
 void NetworkService::SetExplicitlyAllowedPorts(
     const std::vector<uint16_t>& ports) {
   net::SetExplicitlyAllowedPorts(ports);
-}
-
-void NetworkService::StartNetLogBounded(base::File file,
-                                        uint64_t max_total_size,
-                                        net::NetLogCaptureMode capture_mode,
-                                        base::Value::Dict client_constants) {
-  base::Value::Dict constants = net::GetNetConstants();
-  constants.Merge(std::move(client_constants));
-
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&NetLogExporter::CreateScratchDirForNetworkService,
-                     base::PassKey<NetworkService>()),
-
-      base::BindOnce(
-          &NetworkService::OnStartNetLogBoundedScratchDirectoryCreated,
-          base::Unretained(this), std::move(file), max_total_size, capture_mode,
-          std::move(constants)));
-}
-
-void NetworkService::OnStartNetLogBoundedScratchDirectoryCreated(
-    base::File file,
-    uint64_t max_total_size,
-    net::NetLogCaptureMode capture_mode,
-    base::Value::Dict constants,
-    const base::FilePath& inprogress_dir_path) {
-  if (inprogress_dir_path.empty()) {
-    LOG(ERROR) << "Unable to create scratch directory for net-log.";
-    return;
-  }
-
-  file_net_log_observer_ = net::FileNetLogObserver::CreateBoundedPreExisting(
-      inprogress_dir_path, std::move(file), max_total_size, capture_mode,
-      std::make_unique<base::Value::Dict>(std::move(constants)));
-  file_net_log_observer_->StartObserving(net_log_);
-}
-
-void NetworkService::StartNetLogUnbounded(base::File file,
-                                          net::NetLogCaptureMode capture_mode,
-                                          base::Value::Dict client_constants) {
-  base::Value::Dict constants = net::GetNetConstants();
-  constants.Merge(std::move(client_constants));
-
-  file_net_log_observer_ = net::FileNetLogObserver::CreateUnboundedPreExisting(
-      std::move(file), capture_mode,
-      std::make_unique<base::Value::Dict>(std::move(constants)));
-  file_net_log_observer_->StartObserving(net_log_);
 }
 
 std::unique_ptr<net::HttpAuthHandlerFactory>
