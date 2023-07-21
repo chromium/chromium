@@ -841,6 +841,26 @@ class _VersionCodeTest(unittest.TestCase):
     self.assertEqual(abi, 'arm_64_32_high')
     self.assertEqual(is_next_build, False)
 
+  def testArm_64_32HighTranslateM113(self):
+    """Test for a build with Trichrome and arm_64_32_high."""
+    build, patch, package, abi, is_next_build = TranslateVersionCode(
+        '567217639')
+    self.assertEqual(abi, 'x86_64')
+
+    build, patch, package, abi, is_next_build = TranslateVersionCode(
+        '567217539')
+    self.assertEqual(abi, 'arm_64_32_high')
+
+  def testArm_64_32HighTranslateM114(self):
+    """Test for a build with Trichrome and arm_64_32_high."""
+    build, patch, package, abi, is_next_build = TranslateVersionCode(
+        '573505339')
+    self.assertEqual(abi, 'x86_64')
+
+    build, patch, package, abi, is_next_build = TranslateVersionCode(
+        '573505239')
+    self.assertEqual(abi, 'arm_64_32_high')
+
   def testX86_64Translate(self):
     """Test for a build with x86_64."""
     build, patch, package, abi, is_next_build = TranslateVersionCode(
