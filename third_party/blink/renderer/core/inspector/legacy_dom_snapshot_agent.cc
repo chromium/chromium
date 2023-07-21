@@ -134,12 +134,13 @@ protocol::Response LegacyDOMSnapshotAgent::GetSnapshot(
     css_property_filter_->emplace_back(entry, property_id);
   }
 
-  if (include_paint_order.fromMaybe(false))
+  if (include_paint_order.value_or(false)) {
     paint_order_map_ = InspectorDOMSnapshotAgent::BuildPaintLayerTree(document);
+  }
 
   // Actual traversal.
-  VisitNode(document, include_event_listeners.fromMaybe(false),
-            include_user_agent_shadow_tree.fromMaybe(false));
+  VisitNode(document, include_event_listeners.value_or(false),
+            include_user_agent_shadow_tree.value_or(false));
 
   // Extract results from state and reset.
   *dom_nodes = std::move(dom_nodes_);

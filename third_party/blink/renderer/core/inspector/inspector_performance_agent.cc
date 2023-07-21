@@ -82,7 +82,7 @@ void InspectorPerformanceAgent::InnerEnable() {
 
 protocol::Response InspectorPerformanceAgent::enable(
     Maybe<String> optional_time_domain) {
-  String time_domain = optional_time_domain.fromMaybe(TimeDomain::TimeTicks);
+  String time_domain = optional_time_domain.value_or(TimeDomain::TimeTicks);
   if (enabled_.Get()) {
     if (!HasTimeDomain(time_domain)) {
       return protocol::Response::ServerError(

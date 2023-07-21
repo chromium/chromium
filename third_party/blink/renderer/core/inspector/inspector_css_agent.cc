@@ -1049,7 +1049,7 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
             style_sheet->BuildObjectForStyle(style_sheet->InlineStyle()));
       }
     }
-    inherited_entries->fromJust()->emplace_back(std::move(entry));
+    inherited_entries->value().emplace_back(std::move(entry));
   }
 
   *css_keyframes_rules = AnimationsForNode(element, animating_element);
@@ -1069,14 +1069,14 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
       std::make_unique<protocol::Array<protocol::CSS::PseudoElementMatches>>();
 
   for (InspectorCSSMatchedRules* match : resolver.PseudoElementRules()) {
-    pseudo_id_matches->fromJust()->emplace_back(
+    pseudo_id_matches->value().emplace_back(
         protocol::CSS::PseudoElementMatches::create()
             .setPseudoType(
                 InspectorDOMAgent::ProtocolPseudoElementType(match->pseudo_id))
             .setMatches(BuildArrayForMatchedRuleList(match->matched_rules))
             .build());
     if (match->view_transition_name) {
-      pseudo_id_matches->fromJust()->back()->setPseudoIdentifier(
+      pseudo_id_matches->value().back()->setPseudoIdentifier(
           match->view_transition_name);
     }
   }
@@ -1108,7 +1108,7 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
                 .setPseudoElements(std::move(parent_pseudo_element_matches))
                 .build();
 
-    inherited_pseudo_id_matches->fromJust()->emplace_back(
+    inherited_pseudo_id_matches->value().emplace_back(
         std::move(inherited_pseudo_element_matches));
   }
 
@@ -2956,7 +2956,7 @@ protocol::Response InspectorCSSAgent::getBackgroundColors(
   if (bgcolors.size()) {
     *background_colors = std::make_unique<protocol::Array<String>>();
     for (const auto& color : bgcolors) {
-      background_colors->fromJust()->emplace_back(
+      background_colors->value().emplace_back(
           cssvalue::CSSColor::SerializeAsCSSComponentValue(color));
     }
   }

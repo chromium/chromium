@@ -159,7 +159,7 @@ protocol::Response InspectorAuditsAgent::getEncodedResponse(
 
   Vector<unsigned char> encoded_image;
   if (!EncodeAsImage(base64_decoded_buffer.data(), base64_decoded_buffer.size(),
-                     encoding, quality.fromMaybe(kDefaultEncodeQuality),
+                     encoding, quality.value_or(kDefaultEncodeQuality),
                      &encoded_image)) {
     return protocol::Response::ServerError(
         "Could not encode image with given settings");
@@ -168,7 +168,7 @@ protocol::Response InspectorAuditsAgent::getEncodedResponse(
   *out_original_size = static_cast<int>(base64_decoded_buffer.size());
   *out_encoded_size = static_cast<int>(encoded_image.size());
 
-  if (!size_only.fromMaybe(false)) {
+  if (!size_only.value_or(false)) {
     *out_body = protocol::Binary::fromVector(std::move(encoded_image));
   }
   return protocol::Response::Success();
@@ -197,8 +197,7 @@ protocol::Response InspectorAuditsAgent::checkContrast(
   if (!main_window)
     return protocol::Response::ServerError("Document is not available");
 
-  CheckContrastForDocument(main_window->document(),
-                           report_aaa.fromMaybe(false));
+  CheckContrastForDocument(main_window->document(), report_aaa.value_or(false));
 
   return protocol::Response::Success();
 }

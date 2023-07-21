@@ -97,12 +97,12 @@ protocol::Response InspectorMemoryAgent::startSampling(
     protocol::Maybe<int> in_sampling_interval,
     protocol::Maybe<bool> in_suppressRandomness) {
   int interval =
-      in_sampling_interval.fromMaybe(kDefaultNativeMemorySamplingInterval);
+      in_sampling_interval.value_or(kDefaultNativeMemorySamplingInterval);
   if (interval <= 0)
     return protocol::Response::ServerError("Invalid sampling rate.");
   base::SamplingHeapProfiler::Get()->SetSamplingInterval(interval);
   sampling_profile_interval_.Set(interval);
-  if (in_suppressRandomness.fromMaybe(false)) {
+  if (in_suppressRandomness.value_or(false)) {
     randomness_suppressor_ = std::make_unique<
         base::PoissonAllocationSampler::ScopedSuppressRandomnessForTesting>();
   }

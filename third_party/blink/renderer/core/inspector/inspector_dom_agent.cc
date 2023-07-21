@@ -399,18 +399,20 @@ protocol::Response InspectorDOMAgent::AssertNode(
     const protocol::Maybe<int>& backend_node_id,
     const protocol::Maybe<String>& object_id,
     Node*& node) {
-  if (node_id.isJust())
-    return AssertNode(node_id.fromJust(), node);
+  if (node_id.has_value()) {
+    return AssertNode(node_id.value(), node);
+  }
 
-  if (backend_node_id.isJust()) {
-    node = DOMNodeIds::NodeForId(backend_node_id.fromJust());
+  if (backend_node_id.has_value()) {
+    node = DOMNodeIds::NodeForId(backend_node_id.value());
     return !node ? protocol::Response::ServerError(
                        "No node found for given backend id")
                  : protocol::Response::Success();
   }
 
-  if (object_id.isJust())
-    return NodeForRemoteObjectId(object_id.fromJust(), node);
+  if (object_id.has_value()) {
+    return NodeForRemoteObjectId(object_id.value(), node);
+  }
 
   return protocol::Response::ServerError(
       "Either nodeId, backendNodeId or objectId must be specified");
@@ -504,7 +506,7 @@ protocol::Response InspectorDOMAgent::enable(Maybe<String> includeWhitespace) {
   if (!enabled_.Get()) {
     EnableAndReset();
     include_whitespace_.Set(static_cast<int32_t>(
-        includeWhitespace.fromMaybe(
+        includeWhitespace.value_or(
             protocol::DOM::Enable::IncludeWhitespaceEnum::None) ==
                 protocol::DOM::Enable::IncludeWhitespaceEnum::All
             ? InspectorDOMAgent::IncludeWhitespaceEnum::ALL
@@ -538,12 +540,12 @@ protocol::Response InspectorDOMAgent::getDocument(
 
   DiscardFrontendBindings();
 
-  int sanitized_depth = depth.fromMaybe(2);
+  int sanitized_depth = depth.value_or(2);
   if (sanitized_depth == -1)
     sanitized_depth = INT_MAX;
 
   *root = BuildObjectForNode(document_.Get(), sanitized_depth,
-                             pierce.fromMaybe(false),
+                             pierce.value_or(false),
                              document_node_to_id_map_.Get());
   return protocol::Response::Success();
 }
@@ -605,7 +607,7 @@ protocol::Response InspectorDOMAgent::getNodesForSubtreeByStyle(
   HeapVector<Member<Node>> nodes;
 
   CollectNodes(
-      root_node, INT_MAX, pierce.fromMaybe(false), IncludeWhitespace(),
+      root_node, INT_MAX, pierce.value_or(false), IncludeWhitespace(),
       WTF::BindRepeating(&NodeHasMatchingStyles, WTF::Unretained(&properties)),
       &nodes);
 
@@ -631,13 +633,13 @@ protocol::Response InspectorDOMAgent::getFlattenedDocument(
 
   DiscardFrontendBindings();
 
-  int sanitized_depth = depth.fromMaybe(-1);
+  int sanitized_depth = depth.value_or(-1);
   if (sanitized_depth == -1)
     sanitized_depth = INT_MAX;
 
   *nodes = std::make_unique<protocol::Array<protocol::DOM::Node>>();
   (*nodes)->emplace_back(BuildObjectForNode(
-      document_.Get(), sanitized_depth, pierce.fromMaybe(false),
+      document_.Get(), sanitized_depth, pierce.value_or(false),
       document_node_to_id_map_.Get(), nodes->get()));
   return protocol::Response::Success();
 }
@@ -735,7 +737,7 @@ protocol::Response InspectorDOMAgent::requestChildNodes(
     int node_id,
     Maybe<int> depth,
     Maybe<bool> maybe_taverse_frames) {
-  int sanitized_depth = depth.fromMaybe(1);
+  int sanitized_depth = depth.value_or(1);
   if (sanitized_depth == 0 || sanitized_depth < -1) {
     return protocol::Response::ServerError(
         "Please provide a positive integer as a depth or -1 for entire "
@@ -745,7 +747,7 @@ protocol::Response InspectorDOMAgent::requestChildNodes(
     sanitized_depth = INT_MAX;
 
   PushChildNodesToFrontend(node_id, sanitized_depth,
-                           maybe_taverse_frames.fromMaybe(false));
+                           maybe_taverse_frames.value_or(false));
   return protocol::Response::Success();
 }
 
@@ -944,12 +946,13 @@ protocol::Response InspectorDOMAgent::setAttributesAsText(int element_id,
 
   bool should_ignore_case = is_html_document && element->IsHTMLElement();
   String case_adjusted_name = should_ignore_case
-                                  ? name.fromMaybe("").DeprecatedLower()
-                                  : name.fromMaybe("");
+                                  ? name.value_or("").DeprecatedLower()
+                                  : name.value_or("");
 
   AttributeCollection attributes = parsed_element->Attributes();
-  if (attributes.IsEmpty() && name.isJust())
+  if (attributes.IsEmpty() && name.has_value()) {
     return dom_editor_->RemoveAttribute(element, case_adjusted_name);
+  }
 
   bool found_original_attribute = false;
   for (auto& attribute : attributes) {
@@ -958,15 +961,15 @@ protocol::Response InspectorDOMAgent::setAttributesAsText(int element_id,
     if (should_ignore_case)
       attribute_name = attribute_name.DeprecatedLower();
     found_original_attribute |=
-        name.isJust() && attribute_name == case_adjusted_name;
+        name.has_value() && attribute_name == case_adjusted_name;
     response =
         dom_editor_->SetAttribute(element, attribute_name, attribute.Value());
     if (!response.IsSuccess())
       return response;
   }
 
-  if (!found_original_attribute && name.isJust() &&
-      name.fromJust().LengthWithStrippedWhiteSpace() > 0) {
+  if (!found_original_attribute && name.has_value() &&
+      name.value().LengthWithStrippedWhiteSpace() > 0) {
     return dom_editor_->RemoveAttribute(element, case_adjusted_name);
   }
   return protocol::Response::Success();
@@ -1151,7 +1154,7 @@ protocol::Response InspectorDOMAgent::performSearch(
   //    pushing next / previous result is sufficient.
 
   bool include_user_agent_shadow_dom =
-      optional_include_user_agent_shadow_dom.fromMaybe(false);
+      optional_include_user_agent_shadow_dom.value_or(false);
 
   unsigned query_length = whitespace_trimmed_query.length();
   bool start_tag_found = !whitespace_trimmed_query.find('<');
@@ -1349,9 +1352,9 @@ protocol::Response InspectorDOMAgent::copyTo(int node_id,
     return response;
 
   Node* anchor_node = nullptr;
-  if (anchor_node_id.isJust() && anchor_node_id.fromJust()) {
-    response = AssertEditableChildNode(target_element,
-                                       anchor_node_id.fromJust(), anchor_node);
+  if (anchor_node_id.has_value() && anchor_node_id.value()) {
+    response = AssertEditableChildNode(target_element, anchor_node_id.value(),
+                                       anchor_node);
     if (!response.IsSuccess())
       return response;
   }
@@ -1393,9 +1396,9 @@ protocol::Response InspectorDOMAgent::moveTo(int node_id,
   }
 
   Node* anchor_node = nullptr;
-  if (anchor_node_id.isJust() && anchor_node_id.fromJust()) {
-    response = AssertEditableChildNode(target_element,
-                                       anchor_node_id.fromJust(), anchor_node);
+  if (anchor_node_id.has_value() && anchor_node_id.value()) {
+    response = AssertEditableChildNode(target_element, anchor_node_id.value(),
+                                       anchor_node);
     if (!response.IsSuccess())
       return response;
   }
@@ -1536,7 +1539,7 @@ protocol::Response InspectorDOMAgent::getNodeForLocation(
     String* frame_id,
     Maybe<int>* node_id) {
   bool include_user_agent_shadow_dom =
-      optional_include_user_agent_shadow_dom.fromMaybe(false);
+      optional_include_user_agent_shadow_dom.value_or(false);
   Document* document = inspected_frames_->Root()->GetDocument();
   PhysicalOffset document_point(
       LayoutUnit(x * inspected_frames_->Root()->PageZoomFactor()),
@@ -1544,8 +1547,9 @@ protocol::Response InspectorDOMAgent::getNodeForLocation(
   HitTestRequest::HitTestRequestType hit_type =
       HitTestRequest::kMove | HitTestRequest::kReadOnly |
       HitTestRequest::kAllowChildFrameContent;
-  if (optional_ignore_pointer_events_none.fromMaybe(false))
+  if (optional_ignore_pointer_events_none.value_or(false)) {
     hit_type |= HitTestRequest::kIgnorePointerEventsNone;
+  }
   HitTestRequest request(hit_type);
   HitTestLocation location(document->View()->DocumentToFrame(document_point));
   HitTestResult result(request, location);
@@ -1574,18 +1578,19 @@ protocol::Response InspectorDOMAgent::resolveNode(
     protocol::Maybe<int> execution_context_id,
     std::unique_ptr<v8_inspector::protocol::Runtime::API::RemoteObject>*
         result) {
-  String object_group_name = object_group.fromMaybe("");
+  String object_group_name = object_group.value_or("");
   Node* node = nullptr;
 
-  if (node_id.isJust() == backend_node_id.isJust()) {
+  if (node_id.has_value() == backend_node_id.has_value()) {
     return protocol::Response::ServerError(
         "Either nodeId or backendNodeId must be specified.");
   }
 
-  if (node_id.isJust())
-    node = NodeForId(node_id.fromJust());
-  else
-    node = DOMNodeIds::NodeForId(backend_node_id.fromJust());
+  if (node_id.has_value()) {
+    node = NodeForId(node_id.value());
+  } else {
+    node = DOMNodeIds::NodeForId(backend_node_id.value());
+  }
 
   if (!node)
     return protocol::Response::ServerError("No node with given id found");
@@ -1637,26 +1642,22 @@ protocol::Response InspectorDOMAgent::getContainerForNode(
   // frontend catches up. Change value here to kLogicalAxisNone.
   LogicalAxes logical = kLogicalAxisInline;
 
-  if (physical_axes.isJust()) {
-    if (physical_axes.fromJust() ==
-        protocol::DOM::PhysicalAxesEnum::Horizontal) {
+  if (physical_axes.has_value()) {
+    if (physical_axes.value() == protocol::DOM::PhysicalAxesEnum::Horizontal) {
       physical = kPhysicalAxisHorizontal;
-    } else if (physical_axes.fromJust() ==
+    } else if (physical_axes.value() ==
                protocol::DOM::PhysicalAxesEnum::Vertical) {
       physical = kPhysicalAxisVertical;
-    } else if (physical_axes.fromJust() ==
-               protocol::DOM::PhysicalAxesEnum::Both) {
+    } else if (physical_axes.value() == protocol::DOM::PhysicalAxesEnum::Both) {
       physical = kPhysicalAxisBoth;
     }
   }
-  if (logical_axes.isJust()) {
-    if (logical_axes.fromJust() == protocol::DOM::LogicalAxesEnum::Inline) {
+  if (logical_axes.has_value()) {
+    if (logical_axes.value() == protocol::DOM::LogicalAxesEnum::Inline) {
       logical = kLogicalAxisInline;
-    } else if (logical_axes.fromJust() ==
-               protocol::DOM::LogicalAxesEnum::Block) {
+    } else if (logical_axes.value() == protocol::DOM::LogicalAxesEnum::Block) {
       logical = kLogicalAxisBlock;
-    } else if (logical_axes.fromJust() ==
-               protocol::DOM::LogicalAxesEnum::Both) {
+    } else if (logical_axes.value() == protocol::DOM::LogicalAxesEnum::Both) {
       logical = kLogicalAxisBoth;
     }
   }
@@ -1668,7 +1669,7 @@ protocol::Response InspectorDOMAgent::getContainerForNode(
   // scopes.
   Element* container = style_resolver.FindContainerForElement(
       element,
-      ContainerSelector(AtomicString(container_name.fromMaybe(g_null_atom)),
+      ContainerSelector(AtomicString(container_name.value_or(g_null_atom)),
                         physical, logical),
       nullptr /* selector_tree_scope */);
   if (container)
@@ -2582,8 +2583,8 @@ protocol::Response InspectorDOMAgent::describeNode(
     return response;
   if (!node)
     return protocol::Response::ServerError("Node not found");
-  *result = BuildObjectForNode(node, depth.fromMaybe(0),
-                               pierce.fromMaybe(false), nullptr, nullptr);
+  *result = BuildObjectForNode(node, depth.value_or(0), pierce.value_or(false),
+                               nullptr, nullptr);
   return protocol::Response::Success();
 }
 
@@ -2613,13 +2614,11 @@ protocol::Response InspectorDOMAgent::scrollIntoViewIfNeeded(
   }
   PhysicalRect rect_to_scroll =
       PhysicalRect::EnclosingRect(layout_object->AbsoluteBoundingBoxRectF());
-  if (rect.isJust()) {
-    rect_to_scroll.SetX(rect_to_scroll.X() +
-                        LayoutUnit(rect.fromJust()->getX()));
-    rect_to_scroll.SetY(rect_to_scroll.Y() +
-                        LayoutUnit(rect.fromJust()->getY()));
-    rect_to_scroll.SetWidth(LayoutUnit(rect.fromJust()->getWidth()));
-    rect_to_scroll.SetHeight(LayoutUnit(rect.fromJust()->getHeight()));
+  if (rect.has_value()) {
+    rect_to_scroll.SetX(rect_to_scroll.X() + LayoutUnit(rect.value().getX()));
+    rect_to_scroll.SetY(rect_to_scroll.Y() + LayoutUnit(rect.value().getY()));
+    rect_to_scroll.SetWidth(LayoutUnit(rect.value().getWidth()));
+    rect_to_scroll.SetHeight(LayoutUnit(rect.value().getHeight()));
   }
   scroll_into_view_util::ScrollRectToVisible(
       *layout_object, rect_to_scroll,

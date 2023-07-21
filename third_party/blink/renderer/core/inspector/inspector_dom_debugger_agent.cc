@@ -243,7 +243,7 @@ protocol::Response InspectorDOMDebuggerAgent::setEventListenerBreakpoint(
     const String& event_name,
     Maybe<String> target_name) {
   return SetBreakpoint(String(listenerEventCategoryType) + event_name,
-                       target_name.fromMaybe(String()));
+                       target_name.value_or(String()));
 }
 
 protocol::Response InspectorDOMDebuggerAgent::setInstrumentationBreakpoint(
@@ -267,7 +267,7 @@ protocol::Response InspectorDOMDebuggerAgent::removeEventListenerBreakpoint(
     const String& event_name,
     Maybe<String> target_name) {
   return RemoveBreakpoint(String(listenerEventCategoryType) + event_name,
-                          target_name.fromMaybe(String()));
+                          target_name.value_or(String()));
 }
 
 protocol::Response InspectorDOMDebuggerAgent::removeInstrumentationBreakpoint(
@@ -470,9 +470,8 @@ protocol::Response InspectorDOMDebuggerAgent::getEventListeners(
   v8::Context::Scope scope(context);
   V8EventListenerInfoList event_information;
   InspectorDOMDebuggerAgent::EventListenersInfoForTarget(
-      context->GetIsolate(), object, depth.fromMaybe(1),
-      pierce.fromMaybe(false), dom_agent_->IncludeWhitespace(),
-      &event_information);
+      context->GetIsolate(), object, depth.value_or(1), pierce.value_or(false),
+      dom_agent_->IncludeWhitespace(), &event_information);
   *listeners_array = BuildObjectsForEventListeners(event_information, context,
                                                    object_group->string());
   return protocol::Response::Success();

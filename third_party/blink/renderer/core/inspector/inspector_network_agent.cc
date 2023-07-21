@@ -1950,10 +1950,10 @@ protocol::Response InspectorNetworkAgent::enable(
     Maybe<int> total_buffer_size,
     Maybe<int> resource_buffer_size,
     Maybe<int> max_post_data_size) {
-  total_buffer_size_.Set(total_buffer_size.fromMaybe(kDefaultTotalBufferSize));
+  total_buffer_size_.Set(total_buffer_size.value_or(kDefaultTotalBufferSize));
   resource_buffer_size_.Set(
-      resource_buffer_size.fromMaybe(kDefaultResourceBufferSize));
-  max_post_data_size_.Set(max_post_data_size.fromMaybe(0));
+      resource_buffer_size.value_or(kDefaultResourceBufferSize));
+  max_post_data_size_.Set(max_post_data_size.value_or(0));
   Enable();
   return protocol::Response::Success();
 }
@@ -2141,8 +2141,8 @@ protocol::Response InspectorNetworkAgent::emulateNetworkConditions(
     double upload_throughput,
     Maybe<String> connection_type) {
   WebConnectionType type = kWebConnectionTypeUnknown;
-  if (connection_type.isJust()) {
-    type = ToWebConnectionType(connection_type.fromJust());
+  if (connection_type.has_value()) {
+    type = ToWebConnectionType(connection_type.value());
     if (type == kWebConnectionTypeUnknown)
       return protocol::Response::ServerError("Unknown connection type");
   }
@@ -2297,7 +2297,7 @@ protocol::Response InspectorNetworkAgent::searchInResponseBody(
 
   auto results = v8_session_->searchInTextByLines(
       ToV8InspectorStringView(content), ToV8InspectorStringView(query),
-      case_sensitive.fromMaybe(false), is_regex.fromMaybe(false));
+      case_sensitive.value_or(false), is_regex.value_or(false));
   *matches = std::make_unique<
       protocol::Array<v8_inspector::protocol::Debugger::API::SearchMatch>>(
       std::move(results));

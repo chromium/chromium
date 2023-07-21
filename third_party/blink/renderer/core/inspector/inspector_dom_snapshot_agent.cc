@@ -309,15 +309,15 @@ protocol::Response InspectorDOMSnapshotAgent::captureSnapshot(
     css_property_filter_->push_back(&property);
   }
 
-  if (include_paint_order.fromMaybe(false)) {
+  if (include_paint_order.value_or(false)) {
     paint_order_map_ =
         InspectorDOMSnapshotAgent::BuildPaintLayerTree(main_window->document());
   }
 
-  include_snapshot_dom_rects_ = include_dom_rects.fromMaybe(false);
+  include_snapshot_dom_rects_ = include_dom_rects.value_or(false);
   include_blended_background_colors_ =
-      include_blended_background_colors.fromMaybe(false);
-  include_text_color_opacities_ = include_text_color_opacities.fromMaybe(false);
+      include_blended_background_colors.value_or(false);
+  include_text_color_opacities_ = include_text_color_opacities.value_or(false);
 
   for (LocalFrame* frame : *inspected_frames_) {
     if (Document* document = frame->GetDocument())
