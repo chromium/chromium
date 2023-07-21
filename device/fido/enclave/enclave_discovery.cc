@@ -12,7 +12,7 @@
 namespace device::enclave {
 
 EnclaveAuthenticatorDiscovery::EnclaveAuthenticatorDiscovery(
-    std::vector<EnclavePasskey> passkeys)
+    std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys)
     : FidoDiscoveryBase(FidoTransportProtocol::kInternal),
       passkeys_(std::move(passkeys)) {}
 

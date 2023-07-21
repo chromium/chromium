@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device/fido/enclave/authenticator_json_conversions.h"
+#include "device/fido/enclave/enclave_protocol_utils.h"
 
 #include <array>
 
 #include "base/base64.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_transport_protocol.h"
@@ -17,6 +18,12 @@
 namespace device {
 
 namespace {
+
+// JSON keys for front-end service HTTP request bodies.
+const char kCommandRequestCommandTag[] = "command";
+
+// JSON keys for GetAssertion request fields.
+const char kGetAssertionRequestEntityTag[] = "entity";
 
 // JSON value keys
 const char kRpIdKey[] = "rpid";
@@ -122,6 +129,23 @@ AuthenticatorGetAssertionRequestFromJson(const std::string& json) {
     response.user_entity = std::move(user);
   }
   return {std::move(response), std::string()};
+}
+
+void BuildGetAssertionRequestBody(
+    const sync_pb::WebauthnCredentialSpecifics& passkey,
+    const std::string& request,
+    std::string* out_request_body) {
+  base::Value::Dict request_values;
+  // TODO(kenrb): Add the correct inner command structure. Add CBOR encoding.
+  // Add other command fields to the outer |request_values|.
+  std::string serialized_passkey;
+  CHECK(passkey.SerializeToString(&serialized_passkey));
+  request_values.Set(kCommandRequestCommandTag, request);
+  request_values.Set(
+      kGetAssertionRequestEntityTag,
+      serialized_passkey);  // This isn't correct in the protocol, but will be
+                            // moved to a deeper layer later.
+  base::JSONWriter::Write(request_values, out_request_body);
 }
 
 }  // namespace device

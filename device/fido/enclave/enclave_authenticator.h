@@ -11,10 +11,10 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
+#include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/ctap_get_assertion_request.h"
-#include "device/fido/enclave/enclave_passkey.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -39,7 +39,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
   EnclaveAuthenticator(
       const GURL& service_url,
       base::span<const uint8_t, device::kP256X962Length> peer_identity,
-      std::vector<EnclavePasskey> passkeys);
+      std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys);
   ~EnclaveAuthenticator() override;
 
   EnclaveAuthenticator(const EnclaveAuthenticator&) = delete;
@@ -85,11 +85,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
   absl::optional<std::array<uint8_t, 32>> handshake_hash_;
   std::unique_ptr<cablev2::Crypter> crypter_;
 
-  // GetAssertion arguments while waiting the connection to be established.
-  std::string pending_json_request_;
+  // GetAssertion arguments while waiting for the connection to be established.
+  std::string pending_request_body_;
   GetAssertionCallback pending_get_assertion_callback_;
 
-  std::vector<EnclavePasskey> available_passkeys_;
+  std::vector<sync_pb::WebauthnCredentialSpecifics> available_passkeys_;
 
   base::WeakPtrFactory<EnclaveAuthenticator> weak_factory_{this};
 };

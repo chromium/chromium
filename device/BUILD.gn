@@ -538,6 +538,7 @@ if (is_win || is_linux || is_mac) {
     deps = [
       "//base",
       "//build/win:default_exe_manifest",
+      "//components/sync/protocol:protocol",
       "//device/fido",
       "//net",
     ]

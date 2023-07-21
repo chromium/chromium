@@ -9,8 +9,11 @@
 
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
-#include "device/fido/enclave/enclave_passkey.h"
 #include "device/fido/fido_discovery_base.h"
+
+namespace sync_pb {
+class WebauthnCredentialSpecifics;
+}
 
 namespace device::enclave {
 
@@ -21,7 +24,8 @@ class EnclaveAuthenticator;
 class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticatorDiscovery
     : public FidoDiscoveryBase {
  public:
-  explicit EnclaveAuthenticatorDiscovery(std::vector<EnclavePasskey> passkeys);
+  explicit EnclaveAuthenticatorDiscovery(
+      std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys);
   ~EnclaveAuthenticatorDiscovery() override;
 
   // FidoDiscoveryBase:
@@ -31,7 +35,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticatorDiscovery
   void AddAuthenticator();
 
   std::unique_ptr<EnclaveAuthenticator> authenticator_;
-  std::vector<EnclavePasskey> passkeys_;
+  std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys_;
 
   base::WeakPtrFactory<EnclaveAuthenticatorDiscovery> weak_factory_{this};
 };

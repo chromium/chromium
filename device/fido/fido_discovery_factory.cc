@@ -185,7 +185,7 @@ void FidoDiscoveryFactory::set_hid_ignore_list(
 }
 
 void FidoDiscoveryFactory::SetEnclavePasskeys(
-    std::vector<EnclavePasskey> passkeys) {
+    std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys) {
   enclave_passkeys_ = std::move(passkeys);
 }
 

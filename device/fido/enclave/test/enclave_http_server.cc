@@ -19,7 +19,7 @@
 #include "device/fido/authenticator_data.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/cable/v2_handshake.h"
-#include "device/fido/enclave/authenticator_json_conversions.h"
+#include "device/fido/enclave/enclave_protocol_utils.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_transport_protocol.h"

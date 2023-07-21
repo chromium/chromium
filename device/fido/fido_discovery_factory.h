@@ -14,10 +14,10 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/ctap_get_assertion_request.h"
-#include "device/fido/enclave/enclave_passkey.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_request_handler_base.h"
@@ -95,7 +95,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
 
   // Provides the passkeys that will be made available to use for cloud-based
   // enclave authentication.
-  void SetEnclavePasskeys(std::vector<EnclavePasskey> passkeys);
+  void SetEnclavePasskeys(
+      std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys);
 
 #if BUILDFLAG(IS_MAC)
   // Configures the Touch ID authenticator. Set to absl::nullopt to disable it.
@@ -181,7 +182,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
       get_assertion_request_for_legacy_credential_check_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   base::flat_set<VidPid> hid_ignore_list_;
-  std::vector<EnclavePasskey> enclave_passkeys_;
+  std::vector<sync_pb::WebauthnCredentialSpecifics> enclave_passkeys_;
 };
 
 }  // namespace device

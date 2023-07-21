@@ -12,17 +12,20 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/enclave/enclave_authenticator.h"
-#include "device/fido/enclave/enclave_passkey.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/public_key_credential_descriptor.h"
 
 namespace device {
 namespace {
 
 const GURL kLocalUrl = GURL("http://127.0.0.1:8880");
+
+const uint8_t kCredentialId[] = {10, 11, 12, 13};
 
 // Corresponds to identity seed {1, 2, 3, 4}.
 const uint8_t kPeerPublicKey[kP256X962Length] = {
@@ -52,12 +55,17 @@ class EnclaveTestClient {
 };
 
 int EnclaveTestClient::StartTransaction() {
-  std::vector<EnclavePasskey> passkeys;
+  std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys{
+      sync_pb::WebauthnCredentialSpecifics::default_instance()};
+  // Set RP ID and allow credentials only, for test purposes.
+  CtapGetAssertionRequest request("https://passkey.example", "");
+  std::vector<uint8_t> cred_id(std::begin(kCredentialId),
+                               std::end(kCredentialId));
+  request.allow_list.emplace_back(PublicKeyCredentialDescriptor(
+      CredentialType::kPublicKey, cred_id, {FidoTransportProtocol::kInternal}));
+  passkeys[0].set_credential_id(cred_id.data(), cred_id.size());
   device_ = std::make_unique<enclave::EnclaveAuthenticator>(
       kLocalUrl, kPeerPublicKey, std::move(passkeys));
-  std::vector<uint8_t> msg = {'a', 'b', 'c', 'd'};
-  // Set RP ID only, for test purposes.
-  CtapGetAssertionRequest request("https://passkey.example", "");
   device_->GetAssertion(
       request, CtapGetAssertionOptions(),
       base::BindOnce(&EnclaveTestClient::Terminate, base::Unretained(this)));

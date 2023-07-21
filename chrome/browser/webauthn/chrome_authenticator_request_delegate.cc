@@ -60,7 +60,6 @@
 #include "crypto/random.h"
 #include "device/fido/cable/v2_handshake.h"
 #include "device/fido/discoverable_credential_metadata.h"
-#include "device/fido/enclave/enclave_passkey.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_discovery_factory.h"
@@ -1036,23 +1035,13 @@ void ChromeAuthenticatorRequestDelegate::ConfigureEnclaveDiscovery(
           Profile::FromBrowserContext(GetBrowserContext()));
   CHECK(passkey_model);
 
-  std::vector<device::EnclavePasskey> enclave_passkeys;
-  for (const sync_pb::WebauthnCredentialSpecifics& entity :
+  std::vector<sync_pb::WebauthnCredentialSpecifics> filtered_passkeys;
+  for (sync_pb::WebauthnCredentialSpecifics& entity :
        passkey_model->GetAllPasskeys()) {
     if (entity.rp_id() != rp_id) {
       continue;
     }
-    enclave_passkeys.emplace_back(
-        device::DiscoverableCredentialMetadata(
-            device::AuthenticatorType::kEnclave, entity.rp_id(),
-            std::vector<uint8_t>(entity.credential_id().begin(),
-                                 entity.credential_id().end()),
-            device::PublicKeyCredentialUserEntity(
-                std::vector<uint8_t>(entity.user_id().begin(),
-                                     entity.user_id().end()),
-                entity.user_name(), entity.user_display_name())),
-        std::vector<uint8_t>(entity.private_key().begin(),
-                             entity.private_key().end()));
+    filtered_passkeys.emplace_back(std::move(entity));
   }
-  discovery_factory->SetEnclavePasskeys(std::move(enclave_passkeys));
+  discovery_factory->SetEnclavePasskeys(std::move(filtered_passkeys));
 }
