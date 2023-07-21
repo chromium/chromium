@@ -203,6 +203,10 @@ using password_manager::WarningType;
   self.passwordSettingsCoordinator.delegate = nil;
   self.passwordSettingsCoordinator = nil;
 
+  [self.addPasswordCoordinator stop];
+  self.addPasswordCoordinator.delegate = nil;
+  self.addPasswordCoordinator = nil;
+
   [self.mediator disconnect];
 }
 
