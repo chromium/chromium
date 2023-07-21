@@ -582,8 +582,6 @@ component("net") {
     "first_party_sets/first_party_sets_context_config.h",
     "first_party_sets/global_first_party_sets.cc",
     "first_party_sets/global_first_party_sets.h",
-    "first_party_sets/same_party_context.cc",
-    "first_party_sets/same_party_context.h",
     "http/alternative_service.cc",
     "http/alternative_service.h",
     "http/bidirectional_stream.cc",
