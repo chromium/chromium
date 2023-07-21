@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/main/browser_list_impl.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_impl.h"
 
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -33,31 +33,35 @@ void BrowserListImpl::AddBrowser(Browser* browser) {
   DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
   browsers_.insert(browser);
   browser->AddObserver(this);
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnBrowserAdded(this, browser);
+  }
 }
 
 void BrowserListImpl::AddIncognitoBrowser(Browser* browser) {
   DCHECK(browser->GetBrowserState()->IsOffTheRecord());
   incognito_browsers_.insert(browser);
   browser->AddObserver(this);
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnIncognitoBrowserAdded(this, browser);
+  }
 }
 
 void BrowserListImpl::RemoveBrowser(Browser* browser) {
   if (browsers_.erase(browser) > 0) {
     browser->RemoveObserver(this);
-    for (auto& observer : observers_)
+    for (auto& observer : observers_) {
       observer.OnBrowserRemoved(this, browser);
+    }
   }
 }
 
 void BrowserListImpl::RemoveIncognitoBrowser(Browser* browser) {
   if (incognito_browsers_.erase(browser) > 0) {
     browser->RemoveObserver(this);
-    for (auto& observer : observers_)
+    for (auto& observer : observers_) {
       observer.OnIncognitoBrowserRemoved(this, browser);
+    }
   }
 }
 

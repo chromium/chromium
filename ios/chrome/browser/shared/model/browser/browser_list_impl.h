@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_MAIN_BROWSER_LIST_IMPL_H_
-#define IOS_CHROME_BROWSER_MAIN_BROWSER_LIST_IMPL_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_BROWSER_LIST_IMPL_H_
+#define IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_BROWSER_LIST_IMPL_H_
 
 #include "base/observer_list.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#include "ios/chrome/browser/shared/model/browser/browser_list.h"
 #include "ios/chrome/browser/shared/model/browser/browser_list_observer.h"
-#import "ios/chrome/browser/shared/model/browser/browser_observer.h"
+#include "ios/chrome/browser/shared/model/browser/browser_observer.h"
 
 // The concrete implementation of BrowserList returned by the
 // BrowserListFactory.
@@ -45,4 +45,4 @@ class BrowserListImpl : public BrowserList, public BrowserObserver {
   base::ObserverList<BrowserListObserver, true> observers_;
 };
 
-#endif  // IOS_CHROME_BROWSER_MAIN_BROWSER_LIST_IMPL_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_BROWSER_LIST_IMPL_H_

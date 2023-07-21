@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/main/browser_list_impl.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_impl.h"
 
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"

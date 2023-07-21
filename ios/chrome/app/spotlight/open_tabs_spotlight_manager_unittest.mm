@@ -10,7 +10,7 @@
 #import "ios/chrome/app/spotlight/fake_searchable_item_factory.h"
 #import "ios/chrome/app/spotlight/fake_spotlight_interface.h"
 #import "ios/chrome/app/spotlight/spotlight_util.h"
-#import "ios/chrome/browser/main/browser_list_impl.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
