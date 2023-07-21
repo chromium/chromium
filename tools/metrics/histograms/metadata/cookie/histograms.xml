@@ -386,20 +386,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.FirstPartySets.ComputeContext.Latency"
-    units="microseconds" expires_after="M124">
-  <owner>cfredric@chromium.org</owner>
-  <owner>chrome-first-party-sets@chromium.org</owner>
-  <summary>
-    This histogram records the (TimeTicks) latency of computing the
-    same-partiness of a given context.
-
-    This metric is sampled every time a SamePartyContext is computed (e.g. when
-    computing the cookies for a URL request, once per request). Only sampled for
-    users with high-resolution clocks.
-  </summary>
-</histogram>
-
 <histogram name="Cookie.FirstPartySets.ContextDelayedQueriesCount"
     units="queries" expires_after="M124">
   <owner>shuuran@chromium.org</owner>

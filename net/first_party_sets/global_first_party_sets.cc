@@ -11,9 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/function_ref.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
-#include "base/timer/elapsed_timer.h"
 #include "base/types/optional_util.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/addition_overlaps_union_find.h"
@@ -176,13 +174,6 @@ FirstPartySetMetadata GlobalFirstPartySets::ComputeMetadata(
     const SchemefulSite* top_frame_site,
     const std::set<SchemefulSite>& party_context,
     const FirstPartySetsContextConfig& fps_context_config) const {
-  const base::ElapsedTimer timer;
-
-  // TODO(https://crbug.com/1348588): Remove this histogram.
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "Cookie.FirstPartySets.ComputeContext.Latency", timer.Elapsed(),
-      base::Microseconds(1), base::Milliseconds(100), 50);
-
   absl::optional<FirstPartySetEntry> top_frame_entry =
       top_frame_site ? FindEntry(*top_frame_site, fps_context_config)
                      : absl::nullopt;
