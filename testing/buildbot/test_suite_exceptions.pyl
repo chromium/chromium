@@ -2194,6 +2194,15 @@
           '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
         ],
       },
+      'win10-code-coverage': {
+        'swarming': {
+          'shards': 40,
+          'dimension_sets': [{
+            'pool': 'chromium.tests.coverage',
+            'ssd': '1',
+          }],
+        }
+      },
       'win10-rel-no-external-ip': {
         # crbug.com/868082
         'args': [
