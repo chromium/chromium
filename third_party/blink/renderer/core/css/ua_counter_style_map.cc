@@ -300,16 +300,18 @@ HashMap<AtomicString, String> CollectUACounterStyleRules() {
 
   // 子 丑 寅 卯 辰 巳 午 未 申 酉 戌 亥
   ua_rules.Set(AtomicString("cjk-earthly-branch"), R"CSS(
-    system: alphabetic;
+    system: fixed;
     symbols: "\5B50" "\4E11" "\5BC5" "\536F" "\8FB0" "\5DF3" "\5348" "\672A" "\7533" "\9149" "\620C" "\4EA5";
     suffix: "\3001";
+    fallback: cjk-decimal;
   )CSS");
 
   // 甲 乙 丙 丁 戊 己 庚 辛 壬 癸
   ua_rules.Set(AtomicString("cjk-heavenly-stem"), R"CSS(
-    system: alphabetic;
+    system: fixed;
     symbols: "\7532" "\4E59" "\4E19" "\4E01" "\620A" "\5DF1" "\5E9A" "\8F9B" "\58EC" "\7678";
     suffix: "\3001";
+    fallback: cjk-decimal;
   )CSS");
 
   // https://drafts.csswg.org/css-counter-styles-3/#limited-japanese

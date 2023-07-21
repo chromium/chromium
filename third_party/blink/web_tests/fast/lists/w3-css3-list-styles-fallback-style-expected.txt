@@ -103,16 +103,6 @@ PASS list marker is 0.
 PASS list marker is I.
 
 Alphabetic
-cjk-earthly-branch
-PASS list marker is -1.
-PASS list marker is 0.
-PASS list marker is 子.
-
-cjk-heavenly-stem
-PASS list marker is -1.
-PASS list marker is 0.
-PASS list marker is 甲.
-
 ethiopic-halehame
 PASS list marker is -1.
 PASS list marker is 0.
@@ -187,4 +177,15 @@ upper-latin
 PASS list marker is -1.
 PASS list marker is 0.
 PASS list marker is A.
+
+Fixed
+cjk-earthly-branch
+PASS list marker is -1.
+PASS list marker is 〇.
+PASS list marker is 子.
+
+cjk-heavenly-stem
+PASS list marker is -1.
+PASS list marker is 〇.
+PASS list marker is 甲.
 

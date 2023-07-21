@@ -121,9 +121,9 @@ TEST_F(CounterStyleTest, FixedAlgorithm) {
   EXPECT_EQ(String(u"\u5B50"), eb.GenerateRepresentation(1));
   EXPECT_EQ(String(u"\u4EA5"), eb.GenerateRepresentation(12));
 
-  // Fallback to decimal
+  // Fallback to cjk-decimal
   EXPECT_EQ("-1", eb.GenerateRepresentation(-1));
-  EXPECT_EQ("0", eb.GenerateRepresentation(0));
+  EXPECT_EQ(String(u"\u3007"), eb.GenerateRepresentation(0));
 }
 
 TEST_F(CounterStyleTest, SymbolicAlgorithm) {
