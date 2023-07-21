@@ -489,6 +489,11 @@ struct Media {
   std::string custom_display_name;
   std::string vendor_id;
   gfx::Rect printable_area_um;
+  // When `is_continuous_feed` is true, the min height will be stored in
+  // `size_um` and the max height is stored in `max_height_um`.  When
+  // `is_continuous_feed` is false, `max_height_um` is not used.  This only
+  // supports a variable height, not width, so the width is always fixed.
+  int max_height_um;
 };
 
 // Builds `Media` structs. The caller must call at least one method that sets
@@ -516,6 +521,7 @@ class MediaBuilder {
   MediaBuilder& WithSizeAndDefaultPrintableArea(const gfx::Size& size_um);
   MediaBuilder& WithSizeAndPrintableArea(const gfx::Size& size_um,
                                          const gfx::Rect& printable_area_um);
+  MediaBuilder& WithMaxHeight(int max_height_um);
 
   // This is equivalent to calling WithCustomName(), except it also tries to
   // match the name to a standard `MediaSize`.
@@ -543,6 +549,7 @@ class MediaBuilder {
 
   gfx::Size size_um_;
   gfx::Rect printable_area_um_;
+  int max_height_um_ = 0;
 };
 
 struct Interval {

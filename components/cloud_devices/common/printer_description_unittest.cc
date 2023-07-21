@@ -153,6 +153,8 @@ const char kCdd[] = R"(
             "height_microns": 7777
           }, {
             "width_microns": 1111,
+            "min_height_microns": 2222,
+            "max_height_microns": 9999,
             "is_continuous_feed": true,
             "custom_display_name": "Feed",
             "vendor_id": "FEED"
@@ -534,6 +536,77 @@ const char kPinOnlyCdd[] = R"(
     })";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// Invalid because `is_continuous_feed` is true and `min_height_microns` is
+// missing.
+const char kInvalidCustomMediaNoMinHeightCdd[] = R"(
+    {
+      "version": "1.0",
+      "printer": {
+        "media_size": {
+          "option": [ {
+            "width_microns": 1111,
+            "max_height_microns": 9999,
+            "is_continuous_feed": true,
+            "custom_display_name": "Feed",
+            "vendor_id": "FEED"
+          } ]
+        }
+      }
+    })";
+
+// Invalid because `is_continuous_feed` is true and `width_microns` is missing.
+const char kInvalidCustomMediaNoWidthCdd[] = R"(
+    {
+      "version": "1.0",
+      "printer": {
+        "media_size": {
+          "option": [ {
+            "min_height_microns": 1111,
+            "max_height_microns": 9999,
+            "is_continuous_feed": true,
+            "custom_display_name": "Feed",
+            "vendor_id": "FEED"
+          } ]
+        }
+      }
+    })";
+
+// Invalid because `max_height_microns` is less than `min_height_microns`.
+const char kInvalidCustomMediaBadMaxHeightCdd[] = R"(
+    {
+      "version": "1.0",
+      "printer": {
+        "media_size": {
+          "option": [ {
+            "width_microns": 1111,
+            "min_height_microns": 9999,
+            "max_height_microns": 2222,
+            "is_continuous_feed": true,
+            "custom_display_name": "Feed",
+            "vendor_id": "FEED"
+          } ]
+        }
+      }
+    })";
+
+// Invalid because `min_height_microns` is 0.
+const char kInvalidCustomMediaBadMinHeightCdd[] = R"(
+    {
+      "version": "1.0",
+      "printer": {
+        "media_size": {
+          "option": [ {
+            "width_microns": 1111,
+            "min_height_microns": 0,
+            "max_height_microns": 2222,
+            "is_continuous_feed": true,
+            "custom_display_name": "Feed",
+            "vendor_id": "FEED"
+          } ]
+        }
+      }
+    })";
+
 const char kCjt[] = R"(
     {
       "version": "1.0",
@@ -758,7 +831,8 @@ TEST(PrinterDescriptionTest, CddSetAll) {
                       .Build());
   media.AddOption(MediaBuilder()
                       .WithCustomName("Feed", "FEED")
-                      .WithSizeAndDefaultPrintableArea({1111, 0})
+                      .WithSizeAndDefaultPrintableArea({1111, 2222})
+                      .WithMaxHeight(9999)
                       .Build());
 
   collate.set_default_value(false);
@@ -1160,6 +1234,34 @@ TEST(PrinterDescriptionTest, CddSetPin) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+TEST(PrinterDescriptionTest, CddInvalidCustomMediaNoMinHeight) {
+  CloudDeviceDescription description;
+  ASSERT_TRUE(description.InitFromString(kInvalidCustomMediaNoMinHeightCdd));
+  MediaCapability media_capability;
+  EXPECT_FALSE(media_capability.LoadFrom(description));
+}
+
+TEST(PrinterDescriptionTest, CddInvalidCustomMediaNoWidth) {
+  CloudDeviceDescription description;
+  ASSERT_TRUE(description.InitFromString(kInvalidCustomMediaNoWidthCdd));
+  MediaCapability media_capability;
+  EXPECT_FALSE(media_capability.LoadFrom(description));
+}
+
+TEST(PrinterDescriptionTest, CddInvalidCustomMediaBadMaxHeight) {
+  CloudDeviceDescription description;
+  ASSERT_TRUE(description.InitFromString(kInvalidCustomMediaBadMaxHeightCdd));
+  MediaCapability media_capability;
+  EXPECT_FALSE(media_capability.LoadFrom(description));
+}
+
+TEST(PrinterDescriptionTest, CddInvalidCustomMediaBadMinHeight) {
+  CloudDeviceDescription description;
+  ASSERT_TRUE(description.InitFromString(kInvalidCustomMediaBadMinHeightCdd));
+  MediaCapability media_capability;
+  EXPECT_FALSE(media_capability.LoadFrom(description));
+}
+
 TEST(PrinterDescriptionTest, CddGetAll) {
   CloudDeviceDescription description;
   ASSERT_TRUE(description.InitFromString(kCdd));
@@ -1190,7 +1292,6 @@ TEST(PrinterDescriptionTest, CddGetAll) {
   EXPECT_TRUE(media.LoadFrom(description));
   EXPECT_TRUE(collate.LoadFrom(description));
   EXPECT_TRUE(reverse.LoadFrom(description));
-  EXPECT_TRUE(media.LoadFrom(description));
   EXPECT_TRUE(pwg_raster_config.LoadFrom(description));
 
   EXPECT_TRUE(content_types.Contains("image/pwg-raster"));
@@ -1253,7 +1354,8 @@ TEST(PrinterDescriptionTest, CddGetAll) {
                                  .Build()));
   EXPECT_TRUE(media.Contains(MediaBuilder()
                                  .WithCustomName("Feed", "FEED")
-                                 .WithSizeAndDefaultPrintableArea({1111, 0})
+                                 .WithSizeAndDefaultPrintableArea({1111, 2222})
+                                 .WithMaxHeight(9999)
                                  .Build()));
   EXPECT_EQ(default_media, media.GetDefault());
 
@@ -1454,6 +1556,7 @@ TEST(PrinterDescriptionMediaBuilderTest, StandardName) {
   EXPECT_TRUE(media_a1.custom_display_name.empty());
   EXPECT_TRUE(media_a1.vendor_id.empty());
   EXPECT_EQ(gfx::Rect(100, 200), media_a1.printable_area_um);
+  EXPECT_EQ(0, media_a1.max_height_um);
   EXPECT_TRUE(media_a1.IsValid());
 
   Media media_a4_with_printable_area =
@@ -1469,6 +1572,7 @@ TEST(PrinterDescriptionMediaBuilderTest, StandardName) {
   EXPECT_TRUE(media_a4_with_printable_area.vendor_id.empty());
   EXPECT_EQ(gfx::Rect(5, 6, 50, 60),
             media_a4_with_printable_area.printable_area_um);
+  EXPECT_EQ(0, media_a4_with_printable_area.max_height_um);
   EXPECT_TRUE(media_a4_with_printable_area.IsValid());
 }
 
@@ -1485,6 +1589,7 @@ TEST(PrinterDescriptionMediaBuilderTest, CustomName) {
   EXPECT_EQ("name", media_custom1.custom_display_name);
   EXPECT_EQ("id", media_custom1.vendor_id);
   EXPECT_EQ(gfx::Rect(100, 150, 1800, 2000), media_custom1.printable_area_um);
+  EXPECT_EQ(0, media_custom1.max_height_um);
   EXPECT_TRUE(media_custom1.IsValid());
 
   Media media_custom2 =
@@ -1499,6 +1604,7 @@ TEST(PrinterDescriptionMediaBuilderTest, CustomName) {
   EXPECT_EQ("name2", media_custom2.custom_display_name);
   EXPECT_TRUE(media_custom2.vendor_id.empty());
   EXPECT_EQ(gfx::Rect(50, 60, 120, 200), media_custom2.printable_area_um);
+  EXPECT_EQ(0, media_custom2.max_height_um);
   EXPECT_TRUE(media_custom2.IsValid());
 }
 
@@ -1510,11 +1616,11 @@ TEST(PrinterDescriptionMediaBuilderTest, EmptySize) {
 
   EXPECT_EQ(MediaSize::NA_LETTER, media_empty_size.size_name);
   EXPECT_EQ(gfx::Size(0, 0), media_empty_size.size_um);
-  // While this value is true, the media as a whole is invalid.
-  EXPECT_TRUE(media_empty_size.is_continuous_feed);
+  EXPECT_FALSE(media_empty_size.is_continuous_feed);
   EXPECT_TRUE(media_empty_size.custom_display_name.empty());
   EXPECT_TRUE(media_empty_size.vendor_id.empty());
   EXPECT_EQ(gfx::Rect(0, 0), media_empty_size.printable_area_um);
+  EXPECT_EQ(0, media_empty_size.max_height_um);
   EXPECT_FALSE(media_empty_size.IsValid());
 
   Media media_no_size =
@@ -1522,41 +1628,45 @@ TEST(PrinterDescriptionMediaBuilderTest, EmptySize) {
 
   EXPECT_EQ(MediaSize::NA_LEGAL, media_no_size.size_name);
   EXPECT_EQ(gfx::Size(0, 0), media_no_size.size_um);
-  // While this value is true, the media as a whole is invalid.
-  EXPECT_TRUE(media_no_size.is_continuous_feed);
+  EXPECT_FALSE(media_no_size.is_continuous_feed);
   EXPECT_TRUE(media_no_size.custom_display_name.empty());
   EXPECT_TRUE(media_no_size.vendor_id.empty());
   EXPECT_EQ(gfx::Rect(0, 0), media_no_size.printable_area_um);
+  EXPECT_EQ(0, media_no_size.max_height_um);
   EXPECT_FALSE(media_no_size.IsValid());
 }
 
-TEST(PrinterDescriptionMediaBuilderTest, ContinuousFeedWidth) {
-  Media media_continuous_width = MediaBuilder()
-                                     .WithStandardName(MediaSize::NA_LETTER)
-                                     .WithSizeAndDefaultPrintableArea({0, 100})
-                                     .Build();
+TEST(PrinterDescriptionMediaBuilderTest, EmptyWidth) {
+  Media media_empty_width = MediaBuilder()
+                                .WithStandardName(MediaSize::NA_LETTER)
+                                .WithSizeAndDefaultPrintableArea({0, 100})
+                                .Build();
 
-  EXPECT_EQ(MediaSize::NA_LETTER, media_continuous_width.size_name);
-  EXPECT_EQ(gfx::Size(0, 100), media_continuous_width.size_um);
-  EXPECT_TRUE(media_continuous_width.is_continuous_feed);
-  EXPECT_TRUE(media_continuous_width.custom_display_name.empty());
-  EXPECT_TRUE(media_continuous_width.vendor_id.empty());
-  EXPECT_EQ(gfx::Rect(0, 100), media_continuous_width.printable_area_um);
-  EXPECT_TRUE(media_continuous_width.IsValid());
+  EXPECT_EQ(MediaSize::NA_LETTER, media_empty_width.size_name);
+  EXPECT_EQ(gfx::Size(0, 100), media_empty_width.size_um);
+  EXPECT_FALSE(media_empty_width.is_continuous_feed);
+  EXPECT_TRUE(media_empty_width.custom_display_name.empty());
+  EXPECT_TRUE(media_empty_width.vendor_id.empty());
+  EXPECT_EQ(gfx::Rect(0, 100), media_empty_width.printable_area_um);
+  EXPECT_EQ(0, media_empty_width.max_height_um);
+  EXPECT_FALSE(media_empty_width.IsValid());
 }
 
 TEST(PrinterDescriptionMediaBuilderTest, ContinuousFeedHeight) {
-  Media media_continuous_height = MediaBuilder()
-                                      .WithStandardName(MediaSize::NA_LETTER)
-                                      .WithSizeAndDefaultPrintableArea({200, 0})
-                                      .Build();
+  Media media_continuous_height =
+      MediaBuilder()
+          .WithCustomName("FEED", "feed")
+          .WithSizeAndDefaultPrintableArea({100, 200})
+          .WithMaxHeight(500)
+          .Build();
 
-  EXPECT_EQ(MediaSize::NA_LETTER, media_continuous_height.size_name);
-  EXPECT_EQ(gfx::Size(200, 0), media_continuous_height.size_um);
+  EXPECT_EQ(MediaSize::CUSTOM_MEDIA, media_continuous_height.size_name);
+  EXPECT_EQ(gfx::Size(100, 200), media_continuous_height.size_um);
   EXPECT_TRUE(media_continuous_height.is_continuous_feed);
-  EXPECT_TRUE(media_continuous_height.custom_display_name.empty());
-  EXPECT_TRUE(media_continuous_height.vendor_id.empty());
-  EXPECT_EQ(gfx::Rect(200, 0), media_continuous_height.printable_area_um);
+  EXPECT_EQ("FEED", media_continuous_height.custom_display_name);
+  EXPECT_EQ("feed", media_continuous_height.vendor_id);
+  EXPECT_EQ(gfx::Rect(100, 200), media_continuous_height.printable_area_um);
+  EXPECT_EQ(500, media_continuous_height.max_height_um);
   EXPECT_TRUE(media_continuous_height.IsValid());
 }
 
@@ -1574,6 +1684,7 @@ TEST(PrinterDescriptionMediaBuilderTest, WithNameMaybeBasedOnSize) {
   EXPECT_EQ("custom_letter", media_letter.custom_display_name);
   EXPECT_EQ("vendor_letter", media_letter.vendor_id);
   EXPECT_EQ(gfx::Rect(215900, 279400), media_letter.printable_area_um);
+  EXPECT_EQ(0, media_letter.max_height_um);
   EXPECT_TRUE(media_letter.IsValid());
 
   Media media_non_standard =
@@ -1589,6 +1700,7 @@ TEST(PrinterDescriptionMediaBuilderTest, WithNameMaybeBasedOnSize) {
   EXPECT_EQ("123x456", media_non_standard.custom_display_name);
   EXPECT_EQ("vendor_123x456", media_non_standard.vendor_id);
   EXPECT_EQ(gfx::Rect(123000, 456000), media_non_standard.printable_area_um);
+  EXPECT_EQ(0, media_non_standard.max_height_um);
   EXPECT_TRUE(media_non_standard.IsValid());
 }
 
@@ -1605,6 +1717,7 @@ TEST(PrinterDescriptionMediaBuilderTest,
   EXPECT_TRUE(media.custom_display_name.empty());
   EXPECT_TRUE(media.vendor_id.empty());
   EXPECT_EQ(gfx::Rect(297000, 420000), media.printable_area_um);
+  EXPECT_EQ(0, media.max_height_um);
   EXPECT_TRUE(media.IsValid());
 }
 
@@ -1621,6 +1734,7 @@ TEST(PrinterDescriptionMediaBuilderTest, MultipleBuilds) {
   EXPECT_TRUE(media1.custom_display_name.empty());
   EXPECT_TRUE(media1.vendor_id.empty());
   EXPECT_EQ(gfx::Rect(100, 200), media1.printable_area_um);
+  EXPECT_EQ(0, media1.max_height_um);
   EXPECT_TRUE(media1.IsValid());
 
   EXPECT_EQ(media1.size_name, media2.size_name);
@@ -1629,6 +1743,7 @@ TEST(PrinterDescriptionMediaBuilderTest, MultipleBuilds) {
   EXPECT_EQ(media1.custom_display_name, media2.custom_display_name);
   EXPECT_EQ(media1.vendor_id, media2.vendor_id);
   EXPECT_EQ(media1.printable_area_um, media2.printable_area_um);
+  EXPECT_EQ(media1.max_height_um, media2.max_height_um);
   EXPECT_TRUE(media2.IsValid());
 }
 

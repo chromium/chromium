@@ -86,6 +86,8 @@ constexpr char kMediaImageableAreaLeft[] = "imageable_area_left_microns";
 constexpr char kMediaImageableAreaBottom[] = "imageable_area_bottom_microns";
 constexpr char kMediaImageableAreaRight[] = "imageable_area_right_microns";
 constexpr char kMediaImageableAreaTop[] = "imageable_area_top_microns";
+constexpr char kMediaMinHeight[] = "min_height_microns";
+constexpr char kMediaMaxHeight[] = "max_height_microns";
 
 constexpr char kPageRangeInterval[] = "interval";
 constexpr char kPageRangeEnd[] = "end";
@@ -945,30 +947,37 @@ bool Dpi::operator==(const Dpi& other) const {
 }
 
 Media::Media()
-    : size_name(MediaSize::CUSTOM_MEDIA), is_continuous_feed(false) {}
+    : size_name(MediaSize::CUSTOM_MEDIA),
+      is_continuous_feed(false),
+      max_height_um(0) {}
 
 Media::Media(const Media& other) = default;
 
 Media& Media::operator=(const Media& other) = default;
 
 bool Media::IsValid() const {
+  if (size_um.width() <= 0 || size_um.height() <= 0) {
+    return false;
+  }
+
   if (is_continuous_feed) {
-    if (size_um.width() <= 0 && size_um.height() <= 0)
-      return false;
-  } else {
-    if (size_um.width() <= 0 || size_um.height() <= 0)
-      return false;
-    if (!gfx::Rect(size_um).Contains(printable_area_um)) {
+    if (max_height_um <= size_um.height()) {
       return false;
     }
   }
+
+  if (!gfx::Rect(size_um).Contains(printable_area_um)) {
+    return false;
+  }
+
   return true;
 }
 
 bool Media::operator==(const Media& other) const {
   return size_name == other.size_name && size_um == other.size_um &&
          is_continuous_feed == other.is_continuous_feed &&
-         printable_area_um == other.printable_area_um;
+         printable_area_um == other.printable_area_um &&
+         max_height_um == other.max_height_um;
 }
 
 MediaBuilder::MediaBuilder() = default;
@@ -1017,6 +1026,11 @@ MediaBuilder& MediaBuilder::WithSizeAndPrintableAreaBasedOnStandardName() {
   return WithSizeAndDefaultPrintableArea(FindMediaSizeByType(size_name_));
 }
 
+MediaBuilder& MediaBuilder::WithMaxHeight(int max_height_um) {
+  max_height_um_ = max_height_um;
+  return *this;
+}
+
 Media MediaBuilder::Build() const {
   Media result;
   result.size_name = size_name_;
@@ -1025,11 +1039,12 @@ Media MediaBuilder::Build() const {
   result.custom_display_name = custom_display_name_;
   result.vendor_id = vendor_id_;
   result.printable_area_um = printable_area_um_;
+  result.max_height_um = max_height_um_;
   return result;
 }
 
 bool MediaBuilder::IsContinuousFeed() const {
-  return size_um_.width() <= 0 || size_um_.height() <= 0;
+  return max_height_um_ > 0;
 }
 
 Interval::Interval() : start(0), end(0) {
@@ -1401,15 +1416,6 @@ class MediaTraits : public ItemsTraits<kOptionMediaSize> {
     if (type && !TypeFromString(kMediaDefinitions, *type, &option->size_name)) {
       return false;
     }
-    absl::optional<int> width_um = dict.FindInt(kMediaWidth);
-    if (width_um)
-      option->size_um.set_width(width_um.value());
-    absl::optional<int> height_um = dict.FindInt(kMediaHeight);
-    if (height_um)
-      option->size_um.set_height(height_um.value());
-    absl::optional<bool> is_continuous_feed = dict.FindBool(kMediaIsContinuous);
-    if (is_continuous_feed)
-      option->is_continuous_feed = is_continuous_feed.value();
     const std::string* custom_display_name =
         dict.FindString(kKeyCustomDisplayName);
     if (custom_display_name)
@@ -1417,13 +1423,35 @@ class MediaTraits : public ItemsTraits<kOptionMediaSize> {
     const std::string* vendor_id = dict.FindString(kKeyVendorId);
     if (vendor_id)
       option->vendor_id = *vendor_id;
+    absl::optional<int> width_um = dict.FindInt(kMediaWidth);
+    if (width_um) {
+      option->size_um.set_width(width_um.value());
+    }
+    absl::optional<bool> is_continuous_feed = dict.FindBool(kMediaIsContinuous);
+    if (is_continuous_feed) {
+      option->is_continuous_feed = is_continuous_feed.value();
+    }
+    if (is_continuous_feed.value_or(false)) {
+      // The min/max height is required for continuous feed media.
+      absl::optional<int> min_height_um = dict.FindInt(kMediaMinHeight);
+      absl::optional<int> max_height_um = dict.FindInt(kMediaMaxHeight);
+      if (!min_height_um || !max_height_um) {
+        return false;
+      }
+      // For variable height media, the min height is stored in the height
+      // attribute of the `size_um` parameter.
+      option->size_um.set_height(min_height_um.value());
+      option->max_height_um = max_height_um.value();
 
-    if (is_continuous_feed && *is_continuous_feed) {
       // When `option` is a continuous feed, the printable area is not
       // applicable. For consistency with the constructors, set the printable
       // area to the default page size value.
       option->printable_area_um = gfx::Rect(option->size_um);
       return true;
+    }
+    absl::optional<int> height_um = dict.FindInt(kMediaHeight);
+    if (height_um) {
+      option->size_um.set_height(height_um.value());
     }
     absl::optional<int> imageable_area_left =
         dict.FindInt(kMediaImageableAreaLeft);
@@ -1456,11 +1484,16 @@ class MediaTraits : public ItemsTraits<kOptionMediaSize> {
       dict->Set(kKeyVendorId, option.vendor_id);
     if (option.size_um.width() > 0)
       dict->Set(kMediaWidth, option.size_um.width());
-    if (option.size_um.height() > 0)
-      dict->Set(kMediaHeight, option.size_um.height());
-    if (option.is_continuous_feed)
+    if (option.is_continuous_feed) {
+      // For variable height media, the height from `size_um` represents the min
+      // height, so it gets stored in `kMediaMinHeight`, not in `kMediaHeight`.
       dict->Set(kMediaIsContinuous, true);
-    if (!option.printable_area_um.IsEmpty() &&
+      dict->Set(kMediaMinHeight, option.size_um.height());
+      dict->Set(kMediaMaxHeight, option.max_height_um);
+    } else if (option.size_um.height() > 0) {
+      dict->Set(kMediaHeight, option.size_um.height());
+    }
+    if (!option.is_continuous_feed && !option.printable_area_um.IsEmpty() &&
         gfx::Rect(option.size_um).Contains(option.printable_area_um)) {
       dict->Set(kMediaImageableAreaLeft, option.printable_area_um.x());
       dict->Set(kMediaImageableAreaBottom, option.printable_area_um.y());
