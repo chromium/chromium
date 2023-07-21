@@ -32,6 +32,7 @@ CookieControlsIconView::CookieControlsIconView(
                          page_action_icon_delegate,
                          "CookieControls") {
   SetUpForInOutAnimation(/*duration=*/base::Seconds(12));
+  SetPaintLabelOverSolidBackground(true);
   SetAccessibilityProperties(
       /*role*/ absl::nullopt,
       l10n_util::GetStringUTF16(IDS_COOKIE_CONTROLS_TOOLTIP));
