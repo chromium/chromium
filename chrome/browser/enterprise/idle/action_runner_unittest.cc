@@ -327,6 +327,11 @@ class FakeBrowsingDataRemover : public BrowsingDataRemover {
   uint64_t GetLastUsedOriginTypeMaskForTesting() override {
     return origin_type_mask_;
   }
+  absl::optional<content::StoragePartitionConfig>
+  GetLastUsedStoragePartitionConfigForTesting() override {
+    return absl::nullopt;
+  }
+  uint64_t GetPendingTaskCountForTesting() override { return 0; }
 
   void SetFailedDataTypesForTesting(uint64_t failed_data_types) {
     failed_data_types_ = failed_data_types;
