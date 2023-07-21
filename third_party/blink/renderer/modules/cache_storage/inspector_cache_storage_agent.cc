@@ -634,8 +634,8 @@ void InspectorCacheStorageAgent::requestCacheNames(
   TRACE_EVENT_WITH_FLOW0("CacheStorage",
                          "InspectorCacheStorageAgent::requestCacheNames",
                          TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT);
-  if (maybe_security_origin.isJust() + maybe_storage_key.isJust() +
-          maybe_storage_bucket.isJust() !=
+  if (maybe_security_origin.has_value() + maybe_storage_key.has_value() +
+          maybe_storage_bucket.has_value() !=
       1) {
     callback->sendFailure(ProtocolResponse::InvalidParams(
         "At least and at most one of security_origin, "
@@ -643,10 +643,10 @@ void InspectorCacheStorageAgent::requestCacheNames(
     return;
   }
   String storage_key, security_origin;
-  if (maybe_storage_key.isJust() || maybe_storage_bucket.isJust()) {
-    storage_key = maybe_storage_key.isJust()
-                      ? maybe_storage_key.fromJust()
-                      : maybe_storage_bucket.fromJust()->getStorageKey();
+  if (maybe_storage_key.has_value() || maybe_storage_bucket.has_value()) {
+    storage_key = maybe_storage_key.has_value()
+                      ? maybe_storage_key.value()
+                      : maybe_storage_bucket.value().getStorageKey();
     absl::optional<StorageKey> key =
         StorageKey::Deserialize(StringUTF8Adaptor(storage_key).AsStringPiece());
     if (!key.has_value()) {
@@ -657,7 +657,7 @@ void InspectorCacheStorageAgent::requestCacheNames(
     security_origin =
         SecurityOrigin::CreateFromUrlOrigin(key->origin())->ToString();
   } else {
-    security_origin = maybe_security_origin.fromJust();
+    security_origin = maybe_security_origin.value();
     scoped_refptr<SecurityOrigin> sec_origin =
         SecurityOrigin::CreateFromString(security_origin);
     // Cache Storage API is restricted to trustworthy origins.
@@ -672,9 +672,8 @@ void InspectorCacheStorageAgent::requestCacheNames(
   }
 
   absl::optional<WTF::String> bucket_name;
-  if (maybe_storage_bucket.isJust() &&
-      maybe_storage_bucket.fromJust()->hasName()) {
-    bucket_name = maybe_storage_bucket.fromJust()->getName("");
+  if (maybe_storage_bucket.has_value() && maybe_storage_bucket->hasName()) {
+    bucket_name = maybe_storage_bucket->getName("");
   }
 
   auto callback_wrapper =
@@ -710,9 +709,8 @@ void InspectorCacheStorageAgent::requestCacheNames(
                           BuildCacheId(storage_key, bucket_name, cache_name))
                       .build();
 
-              if (maybe_storage_bucket.isJust()) {
-                protocol_cache->setStorageBucket(
-                    maybe_storage_bucket.fromJust()->Clone());
+              if (maybe_storage_bucket.has_value()) {
+                protocol_cache->setStorageBucket(maybe_storage_bucket->Clone());
               }
 
               array->emplace_back(std::move(protocol_cache));
@@ -747,9 +745,9 @@ void InspectorCacheStorageAgent::requestEntries(
   }
 
   DataRequestParams params;
-  params.page_size = page_size.fromMaybe(-1);
-  params.skip_count = skip_count.fromMaybe(0);
-  params.path_filter = path_filter.fromMaybe("");
+  params.page_size = page_size.value_or(-1);
+  params.skip_count = skip_count.value_or(0);
+  params.path_filter = path_filter.value_or("");
   params.cache_name = cache_name;
 
   cache_storage.value()->Open(
