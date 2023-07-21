@@ -13,9 +13,10 @@
 </style>
 <cr-segmented-button
     selected="[[currentMode_.id]]"
-    group-aria-label="[[i18n('colorSchemeModeLabel')]]">
+    group-aria-label="[[i18n('colorSchemeModeLabel')]]"
+    on-selected-changed="onSelectedChanged_">
   <template is="dom-repeat" id="options" items="[[colorSchemeModeOptions_]]">
-      <cr-segmented-button-option name="[[item.id]]" on-click="onClick_">
+      <cr-segmented-button-option name="[[item.id]]">
         <div id="[[item.id]]" class="cr-icon" slot="prefix-icon"></div>
         [[i18n(item.id)]]
       </cr-segmented-button-option>

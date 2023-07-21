@@ -8,7 +8,7 @@ import 'chrome://resources/cr_elements/cr_segmented_button/cr_segmented_button_o
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CustomizeColorSchemeModeBrowserProxy} from './browser_proxy.js';
 import {getTemplate} from './customize_color_scheme_mode.html.js';
@@ -85,8 +85,12 @@ export class CustomizeColorSchemeModeElement extends
     super.disconnectedCallback();
   }
 
-  private onClick_(e: DomRepeatEvent<ColorSchemeModeOption>) {
-    this.handler_.setColorSchemeMode(e.model.item.value);
+  private onSelectedChanged_(e: CustomEvent<{value: string}>) {
+    const selected = colorSchemeModeOptions.find((option) => {
+      return option.id === e.detail.value;
+    });
+    this.handler_.setColorSchemeMode(
+        selected ? selected.value : ColorSchemeMode.kSystem);
   }
 }
 
