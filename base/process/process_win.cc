@@ -249,7 +249,7 @@ void Process::Exited(int exit_code) const {}
 
 bool Process::IsProcessBackgrounded() const {
   DCHECK(IsValid());
-  int priority = GetPriority();
+  int priority = GetOSPriority();
   if (priority == 0)
     return false;  // Failure case.
   return ((priority == BELOW_NORMAL_PRIORITY_CLASS) ||
@@ -292,7 +292,7 @@ bool Process::SetProcessBackgrounded(bool value) {
   return (::SetPriorityClass(Handle(), priority) != 0);
 }
 
-int Process::GetPriority() const {
+int Process::GetOSPriority() const {
   DCHECK(IsValid());
   return static_cast<int>(::GetPriorityClass(Handle()));
 }

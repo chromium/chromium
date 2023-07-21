@@ -207,7 +207,7 @@ bool Process::IsProcessBackgrounded() const {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  return GetPriority() == kBackgroundPriority;
+  return GetOSPriority() == kBackgroundPriority;
 }
 
 bool Process::SetProcessBackgrounded(bool background) {

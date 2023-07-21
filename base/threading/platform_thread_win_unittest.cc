@@ -39,7 +39,7 @@ TEST(PlatformThreadWinTest, SetBackgroundThreadModeFailsInIdlePriorityProcess) {
   EXPECT_EQ(::GetPriorityClass(Process::Current().Handle()),
             static_cast<DWORD>(NORMAL_PRIORITY_CLASS));
   ::SetPriorityClass(Process::Current().Handle(), IDLE_PRIORITY_CLASS);
-  EXPECT_EQ(Process::Current().GetPriority(),
+  EXPECT_EQ(Process::Current().GetOSPriority(),
             static_cast<int>(IDLE_PRIORITY_CLASS));
 
   // GetThreadPriority() stays NORMAL. Memory priority stays NORMAL.

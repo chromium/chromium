@@ -110,7 +110,7 @@ bool Process::SetProcessBackgrounded(bool value) {
   return false;
 }
 
-int Process::GetPriority() const {
+int Process::GetOSPriority() const {
   return -1;
 }
 

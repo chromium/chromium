@@ -537,7 +537,7 @@ void TracingSamplerProfiler::TracingProfileBuilder::WriteSampleToTrace(
         trace_packet->set_streaming_profile_packet();
     streaming_profile_packet->add_callstack_iid(callstack_id);
 
-    int32_t current_process_priority = base::Process::Current().GetPriority();
+    int32_t current_process_priority = base::Process::Current().GetOSPriority();
     if (current_process_priority != 0) {
       streaming_profile_packet->set_process_priority(current_process_priority);
     }

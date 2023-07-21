@@ -166,7 +166,7 @@ int main(int argc, char** argv) {
 #if BUILDFLAG(IS_WIN)
   updater::test::MaybeExcludePathsFromWindowsDefender();
 
-  VLOG(0) << "Process priority: " << base::Process::Current().GetPriority();
+  VLOG(0) << "Process priority: " << base::Process::Current().GetOSPriority();
   VLOG(0) << updater::GetUACState();
 
   // The test suite runner expects the swarming task to run with normal priority

@@ -352,7 +352,7 @@ TEST_F(ProcessTest, SetProcessBackgrounded) {
   if (!Process::CanBackgroundProcesses())
     return;
   Process process(SpawnChild("SimpleChildProcess"));
-  int old_priority = process.GetPriority();
+  int old_os_priority = process.GetOSPriority();
 #if BUILDFLAG(IS_APPLE)
   // On the Mac, backgrounding a process requires a port to that process.
   // In the browser it's available through the MachBroker class, which is not
@@ -372,8 +372,8 @@ TEST_F(ProcessTest, SetProcessBackgrounded) {
   EXPECT_TRUE(process.SetProcessBackgrounded(false));
   EXPECT_FALSE(process.IsProcessBackgrounded());
 #endif
-  int new_priority = process.GetPriority();
-  EXPECT_EQ(old_priority, new_priority);
+  int new_os_priority = process.GetOSPriority();
+  EXPECT_EQ(old_os_priority, new_os_priority);
 }
 
 // Consumers can use WaitForExitWithTimeout(base::TimeDelta(), nullptr) to check

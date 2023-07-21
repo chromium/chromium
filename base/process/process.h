@@ -225,7 +225,7 @@ class BASE_EXPORT Process {
 
   // Returns an integer representing the priority of a process. The meaning
   // of this value is OS dependent.
-  int GetPriority() const;
+  int GetOSPriority() const;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Get the PID in its PID namespace.

@@ -92,7 +92,7 @@ base::Value GetProcessValueDict(const base::Process& process) {
 
   if (process.IsValid()) {
     // These properties can only be accessed for valid processes.
-    ret.Set("os_priority", process.GetPriority());
+    ret.Set("os_priority", process.GetOSPriority());
 #if !BUILDFLAG(IS_APPLE)
     ret.Set("is_backgrounded", process.IsProcessBackgrounded());
 #endif

@@ -281,7 +281,7 @@ bool Process::SetProcessBackgrounded(bool value) {
   return false;
 }
 
-int Process::GetPriority() const {
+int Process::GetOSPriority() const {
   DCHECK(IsValid());
   // No process priorities on Fuchsia.
   return 0;
