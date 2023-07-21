@@ -234,7 +234,7 @@ T ConvertLocatedEventForRootView(const SubmenuView& submenu,
   T converted_event = event;
   if (submenu.GetWidget()->GetRootView() != &root_view) {
     converted_event.set_location(View::ConvertPointFromScreen(
-        &root_view, View::ConvertPointToScreen(&submenu, event.location())));
+        &root_view, ConvertToScreen(submenu, event.location())));
   }
   return converted_event;
 }
