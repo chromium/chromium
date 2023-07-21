@@ -121,6 +121,8 @@ NSString* const kAuthenticationSnackbarCategory =
         }
         break;
     }
+  } else if (completion) {
+    completion();
   }
   _delegate = nil;
   [self stopWatchdogTimer];

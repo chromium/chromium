@@ -127,4 +127,17 @@ TEST_F(AuthenticationFlowPerformerTest,
   EXPECT_TRUE(completion_called);
 }
 
+// Tests the AuthenticationFlowPerformer is interrupted and the interrupt
+// completion is called.
+TEST_F(AuthenticationFlowPerformerTest,
+       TestSimpleInterruptWithoutDialogDisplayed) {
+  __block BOOL completion_called = NO;
+  [authentication_flow_performer_
+      interruptWithAction:SigninCoordinatorInterrupt::DismissWithAnimation
+               completion:^() {
+                 completion_called = YES;
+               }];
+  EXPECT_TRUE(completion_called);
+}
+
 }  // namespace
