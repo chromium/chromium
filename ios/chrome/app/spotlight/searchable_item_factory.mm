@@ -170,7 +170,7 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
   return spotlightID;
 }
 
-- (void)cancelAllLargeIconPendingTasks {
+- (void)cancelItemsGeneration {
   _largeIconTaskTracker->TryCancelAll();
 }
 

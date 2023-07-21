@@ -51,7 +51,7 @@
   return base::SysUTF8ToNSString(URL.spec());
 }
 
-- (void)cancelAllLargeIconPendingTasks {
+- (void)cancelItemsGeneration {
 }
 
 @end

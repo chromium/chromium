@@ -46,8 +46,8 @@ class GURL;
 // Returns the spotlight ID for an item indexing URL.
 - (NSString*)spotlightIDForURL:(const GURL&)URL;
 
-// Cancel all large icon tasks if there are any.
-- (void)cancelAllLargeIconPendingTasks;
+// Cancel all item generations if there are any.
+- (void)cancelItemsGeneration;
 
 @end
 

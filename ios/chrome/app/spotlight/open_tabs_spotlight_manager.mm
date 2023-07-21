@@ -117,7 +117,7 @@ using web::WebState;
 }
 
 - (void)shutdown {
-  [self.searchableItemFactory cancelAllLargeIconPendingTasks];
+  [self.searchableItemFactory cancelItemsGeneration];
   [self shutdownAllObservation];
 }
 

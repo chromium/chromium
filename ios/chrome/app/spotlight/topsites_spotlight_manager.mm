@@ -156,7 +156,7 @@ class SpotlightTopSitesBridge : public history::TopSitesObserver {
 
 - (void)updateAllTopSitesSpotlightItems {
   __weak TopSitesSpotlightManager* weakSelf = self;
-  [self.searchableItemFactory cancelAllLargeIconPendingTasks];
+  [self.searchableItemFactory cancelItemsGeneration];
   [self.spotlightInterface
       deleteSearchableItemsWithDomainIdentifiers:@[
         spotlight::StringFromSpotlightDomain(spotlight::DOMAIN_TOPSITES)

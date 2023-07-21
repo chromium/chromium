@@ -204,7 +204,7 @@ class SpotlightBookmarkModelBridge : public bookmarks::BookmarkModelObserver {
 }
 
 - (void)clearAllBookmarkSpotlightItems:(BlockWithError)completionHandler {
-  [self.searchableItemFactory cancelAllLargeIconPendingTasks];
+  [self.searchableItemFactory cancelItemsGeneration];
   [self.spotlightInterface
       deleteSearchableItemsWithDomainIdentifiers:@[
         spotlight::StringFromSpotlightDomain(spotlight::DOMAIN_BOOKMARKS)

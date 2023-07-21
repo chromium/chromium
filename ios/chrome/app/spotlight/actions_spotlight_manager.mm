@@ -171,7 +171,7 @@ BOOL SetStartupParametersForSpotlightAction(
     (BOOL)isGoogleDefaultSearchEngine {
   __weak ActionsSpotlightManager* weakSelf = self;
 
-  [self.searchableItemFactory cancelAllLargeIconPendingTasks];
+  [self.searchableItemFactory cancelItemsGeneration];
   [self.spotlightInterface
       deleteSearchableItemsWithDomainIdentifiers:@[
         spotlight::StringFromSpotlightDomain(spotlight::DOMAIN_ACTIONS)
@@ -259,7 +259,7 @@ BOOL SetStartupParametersForSpotlightAction(
 }
 
 - (void)shutdown {
-  [self.searchableItemFactory cancelAllLargeIconPendingTasks];
+  [self.searchableItemFactory cancelItemsGeneration];
 }
 
 @end
