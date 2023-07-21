@@ -1052,9 +1052,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     NSIndexPath* dropIndexPath = CreateIndexPath(destinationIndex);
     // Drop synchronously if local object is available.
     if (item.dragItem.localObject) {
-      __weak __typeof(self) weakSelf = self;
       _dropAnimationInProgress = YES;
-      [self.delegate gridViewControllerDropAnimationWillBegin:weakSelf];
+      [self.delegate gridViewControllerDropAnimationWillBegin:self];
+      __weak __typeof(self) weakSelf = self;
       [[coordinator dropItem:item.dragItem toItemAtIndexPath:dropIndexPath]
           addCompletion:^(UIViewAnimatingPosition finalPosition) {
             [weakSelf.delegate gridViewControllerDropAnimationDidEnd:weakSelf];
@@ -1287,9 +1287,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     [self removeEmptyStateAnimated:YES];
     [self.collectionView insertItemsAtIndexPaths:@[ CreateIndexPath(index) ]];
   };
-
   __weak __typeof(self) weakSelf = self;
-  auto completion = ^(BOOL finished) {
+  auto completion = ^{
     __typeof(self) strongSelf = weakSelf;
     if (!strongSelf) {
       return;
@@ -1314,8 +1313,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   };
 
   [self performModelUpdates:modelUpdates
-                collectionViewUpdates:collectionViewUpdates
-      collectionViewUpdatesCompletion:completion];
+      collectionViewUpdates:collectionViewUpdates
+                 completion:completion];
 
   [self updateVisibleCellZIndex];
   [self updateVisibleCellIdentifiers];
@@ -1343,9 +1342,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       [self animateEmptyStateIn];
     }
   };
-
   __weak __typeof(self) weakSelf = self;
-  auto completion = ^(BOOL finished) {
+  auto completion = ^{
     __typeof(self) strongSelf = weakSelf;
     if (!strongSelf) {
       return;
@@ -1364,8 +1362,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   };
 
   [self performModelUpdates:modelUpdates
-                collectionViewUpdates:collectionViewUpdates
-      collectionViewUpdatesCompletion:completion];
+      collectionViewUpdates:collectionViewUpdates
+                 completion:completion];
 
   [self updateVisibleCellZIndex];
   [self updateVisibleCellIdentifiers];
@@ -1422,16 +1420,15 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     [self.collectionView moveItemAtIndexPath:CreateIndexPath(fromIndex)
                                  toIndexPath:CreateIndexPath(toIndex)];
   };
-
   __weak __typeof(self) weakSelf = self;
-  auto completion = ^(BOOL finished) {
+  auto completion = ^{
     [weakSelf.delegate gridViewController:weakSelf
                         didMoveItemWithID:itemID
                                   toIndex:toIndex];
   };
   [self performModelUpdates:modelUpdates
-                collectionViewUpdates:collectionViewUpdates
-      collectionViewUpdatesCompletion:completion];
+      collectionViewUpdates:collectionViewUpdates
+                 completion:completion];
 
   [self updateVisibleCellZIndex];
   [self updateVisibleCellIdentifiers];
@@ -1654,9 +1651,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 // Performs model updates and view updates together.
 - (void)performModelUpdates:(ProceduralBlock)modelUpdates
-              collectionViewUpdates:(ProceduralBlock)collectionViewUpdates
-    collectionViewUpdatesCompletion:
-        (void (^)(BOOL))collectionViewUpdatesCompletion {
+      collectionViewUpdates:(ProceduralBlock)collectionViewUpdates
+                 completion:(ProceduralBlock)completion {
   [self.collectionView
       performBatchUpdates:^{
         self.updating = YES;
@@ -1665,7 +1661,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
         collectionViewUpdates();
       }
       completion:^(BOOL completed) {
-        collectionViewUpdatesCompletion(completed);
+        completion();
         self.updating = NO;
       }];
 }
