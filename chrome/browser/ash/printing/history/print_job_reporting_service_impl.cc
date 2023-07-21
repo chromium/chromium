@@ -22,7 +22,9 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/reporting/client/report_queue.h"
+#include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/client/report_queue_factory.h"
+#include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/proto/synced/status.pb.h"
 #include "components/reporting/util/status.h"
@@ -191,9 +193,14 @@ class PrintJobReportingServiceImpl : public PrintJobReportingService {
 
 // static
 std::unique_ptr<PrintJobReportingService> PrintJobReportingService::Create() {
+  ::reporting::SourceInfo source_info;
+  source_info.set_source(::reporting::SourceInfo::ASH);
   auto report_queue =
       ::reporting::ReportQueueFactory::CreateSpeculativeReportQueue(
-          ::reporting::EventType::kUser, ::reporting::Destination::PRINT_JOBS);
+          ::reporting::ReportQueueConfiguration::Create(
+              {.event_type = ::reporting::EventType::kUser,
+               .destination = ::reporting::Destination::PRINT_JOBS})
+              .SetSourceInfo(std::move(source_info)));
   return std::make_unique<PrintJobReportingServiceImpl>(
       std::move(report_queue));
 }

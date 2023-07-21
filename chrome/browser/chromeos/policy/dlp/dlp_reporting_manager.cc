@@ -16,7 +16,9 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "components/reporting/client/report_queue.h"
+#include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/client/report_queue_factory.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/status.h"
 #include "url/gurl.h"
 
@@ -274,9 +276,14 @@ DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
 
 DlpReportingManager::DlpReportingManager()
     : report_queue_(
-          ::reporting::ReportQueueFactory::CreateSpeculativeReportQueue(
-              ::reporting::EventType::kUser,
-              ::reporting::Destination::DLP_EVENTS)) {}
+          ::reporting::ReportQueueFactory::CreateSpeculativeReportQueue([]() {
+            ::reporting::SourceInfo source_info;
+            source_info.set_source(::reporting::SourceInfo::ASH);
+            return ::reporting::ReportQueueConfiguration::Create(
+                       {.event_type = ::reporting::EventType::kUser,
+                        .destination = ::reporting::Destination::DLP_EVENTS})
+                .SetSourceInfo(std::move(source_info));
+          }())) {}
 
 DlpReportingManager::~DlpReportingManager() = default;
 

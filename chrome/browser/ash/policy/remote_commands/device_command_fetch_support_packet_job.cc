@@ -38,6 +38,7 @@
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/client/report_queue_factory.h"
+#include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/util/status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -364,8 +365,13 @@ void DeviceCommandFetchSupportPacketJob::OnDataExported(
     return;
   }
 
-  reporting::ReportQueueFactory::Create(
-      reporting::EventType::kDevice, reporting::Destination::LOG_UPLOAD,
+  ::reporting::SourceInfo source_info;
+  source_info.set_source(::reporting::SourceInfo::ASH);
+  ::reporting::ReportQueueFactory::Create(
+      ::reporting::ReportQueueConfiguration::Create(
+          {.event_type = ::reporting::EventType::kDevice,
+           .destination = ::reporting::Destination::LOG_UPLOAD})
+          .SetSourceInfo(std::move(source_info)),
       base::BindOnce(&DeviceCommandFetchSupportPacketJob::OnReportQueueCreated,
                      weak_ptr_factory_.GetWeakPtr()));
 }
