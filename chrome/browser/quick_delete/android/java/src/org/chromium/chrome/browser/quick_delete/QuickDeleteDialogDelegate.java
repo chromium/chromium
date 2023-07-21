@@ -9,27 +9,20 @@ import static org.chromium.chrome.browser.browsing_data.TimePeriodUtils.getTimeP
 import android.content.Context;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.browsing_data.TimePeriodUtils.TimePeriodSpinnerOption;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
-import org.chromium.components.browser_ui.widget.text.TemplatePreservingTextView;
-import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -45,68 +38,28 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
  */
 class QuickDeleteDialogDelegate {
     /**
-     * A data-structure to hold the strings for the Browsing history row in the dialog.
+     * An observer for changes made to the spinner in the quick delete dialog.
      */
-    static class DomainVisitsData {
-        final String mLastVisitedDomain;
-        final int mDomainsCount;
-
+    interface TimePeriodChangeObserver {
         /**
-         * @param lastVisitedDomain The last visited domain shown inside the browsing history row of
-         *         the dialog.
-         * @param domainsCount The number of synced unique domains shown inside the browsing history
-         *         row of the dialog.
+         * @param timePeriod The new {@link TimePeriod} selected by the user.
          */
-        DomainVisitsData(@NonNull String lastVisitedDomain, int domainsCount) {
-            mLastVisitedDomain = lastVisitedDomain;
-            mDomainsCount = domainsCount;
-        }
-    }
-
-    /**
-     * Stores the data needed for the dialog.
-     */
-    static class QuickDeleteDialogData {
-        private final DomainVisitsData mDomainVisitsData;
-        private final int mTabsToCloseCount;
-
-        /**
-         * @param domainVisitsData {@link DomainVisitsData} shown inside the browsing history row.
-         * @param tabsToCloseCount the count of tabs that the user visited within range and will
-         *         be closed with the deletion.
-         */
-        QuickDeleteDialogData(@NonNull DomainVisitsData domainVisitsData, int tabsToCloseCount) {
-            mDomainVisitsData = domainVisitsData;
-            mTabsToCloseCount = tabsToCloseCount;
-        }
-
-        @VisibleForTesting
-        QuickDeleteDialogData(int tabsToCloseCount) {
-            mDomainVisitsData = new DomainVisitsData("", 0);
-            mTabsToCloseCount = tabsToCloseCount;
-        }
-
-        @VisibleForTesting
-        QuickDeleteDialogData() {
-            mDomainVisitsData = new DomainVisitsData("", 0);
-            mTabsToCloseCount = 0;
-        }
-
-        @VisibleForTesting
-        QuickDeleteDialogData(@NonNull DomainVisitsData domainVisitsData) {
-            mDomainVisitsData = domainVisitsData;
-            mTabsToCloseCount = 0;
-        }
+        void onTimePeriodChanged(@TimePeriod int timePeriod);
     }
 
     private final @NonNull ModalDialogManager mModalDialogManager;
     private final @NonNull Context mContext;
+    private final @NonNull View mQuickDeleteView;
     private final @NonNull Callback<Integer> mOnDismissCallback;
     private final @NonNull TabModelSelector mTabModelSelector;
-    private final @NonNull Profile mProfile;
+    // TODO(crbug.com/1412087): Remove this and instead specify ON_MORE_OPTIONS_CLICKED property and
+    // bind the launcher from the {@link QuickDeleteController}.
     private final @NonNull SettingsLauncher mSettingsLauncher;
-    /**The {@link PropertyModel} of the underlying dialog where the quick dialog view would be
-     * shown.*/
+    private final @NonNull TimePeriodChangeObserver mTimePeriodChangeObserver;
+    /**
+     * The {@link PropertyModel} of the underlying dialog where the quick dialog view would be
+     * shown.
+     */
     private PropertyModel mModalDialogPropertyModel;
     private TimePeriodSpinnerOption mCurrentTimePeriodOption;
 
@@ -134,6 +87,7 @@ class QuickDeleteDialogDelegate {
 
     /**
      * @param context            The associated {@link Context}.
+     * @param quickDeleteView    {@link View} of the quick delete.
      * @param modalDialogManager A {@link ModalDialogManager} responsible for showing the quick
      *                           delete modal dialog.
      * @param onDismissCallback  A {@link Callback} that will be notified when the user
@@ -141,22 +95,23 @@ class QuickDeleteDialogDelegate {
      *                           cancels the deletion;
      * @param tabModelSelector   {@link TabModelSelector} to use for opening the links in search
      *                           history disambiguation notice.
-     * @param profile            The {@link Profile} for which to check if the user is signed in
-     *                           or syncing.
-     * @param settingsLauncher @link SettingsLauncher} used to launch the Clear browsing data
-     *         settings fragment.
+     * @param settingsLauncher   @link SettingsLauncher} used to launch the Clear browsing data
+     *                           settings fragment.
+     * @param timePeriodChangeObserver {@link TimePeriodChangeObserver} which would be notified when
+     *         the spinner is toggled.
      */
-    QuickDeleteDialogDelegate(@NonNull Context context,
+    QuickDeleteDialogDelegate(@NonNull Context context, @NonNull View quickDeleteView,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull Callback<Integer> onDismissCallback,
-            @NonNull TabModelSelector tabModelSelector, @NonNull Profile profile,
-            @NonNull SettingsLauncher settingsLauncher) {
+            @NonNull TabModelSelector tabModelSelector, @NonNull SettingsLauncher settingsLauncher,
+            @NonNull TimePeriodChangeObserver timePeriodChangeObserver) {
         mContext = context;
+        mQuickDeleteView = quickDeleteView;
         mModalDialogManager = modalDialogManager;
         mOnDismissCallback = onDismissCallback;
         mTabModelSelector = tabModelSelector;
-        mProfile = profile;
         mSettingsLauncher = settingsLauncher;
+        mTimePeriodChangeObserver = timePeriodChangeObserver;
 
         mCurrentTimePeriodOption = new TimePeriodSpinnerOption(TimePeriod.LAST_15_MINUTES,
                 mContext.getString(R.string.clear_browsing_data_tab_period_15_minutes));
@@ -164,42 +119,24 @@ class QuickDeleteDialogDelegate {
 
     /**
      * A method to create the dialog attributes for the quick delete dialog.
-     * @param quickDeleteDialogData The dialog related data.
      */
-    private PropertyModel createQuickDeleteDialogProperty(
-            @NonNull QuickDeleteDialogData quickDeleteDialogData) {
-        View quickDeleteDialogView =
-                LayoutInflater.from(mContext).inflate(R.layout.quick_delete_dialog, /*root=*/null);
-
+    private PropertyModel createQuickDeleteDialogProperty() {
         // Update Spinner
-        Spinner quickDeleteSpinner = quickDeleteDialogView.findViewById(R.id.quick_delete_spinner);
+        Spinner quickDeleteSpinner = mQuickDeleteView.findViewById(R.id.quick_delete_spinner);
         updateSpinner(quickDeleteSpinner);
 
-        // Add the browsing history row.
-        ViewGroup quickDeleteHistoryRow =
-                quickDeleteDialogView.findViewById(R.id.quick_delete_history_row);
-        addBrowsingHistoryRowIfAvailable(quickDeleteHistoryRow, quickDeleteDialogData);
-
-        // Add the tabs close row.
-        TextViewWithCompoundDrawables quickDeleteTabsCloseRow =
-                quickDeleteDialogView.findViewById(R.id.quick_delete_tabs_close_row);
-        addTabsCloseRowIfAvailable(quickDeleteTabsCloseRow, quickDeleteDialogData);
-
-        // Add search history disambiguation notice.
-        TextViewWithClickableSpans searchHistoryDisambiguation =
-                quickDeleteDialogView.findViewById(R.id.search_history_disambiguation);
-        addSearchHistoryDisambiguationTextIfRequired(searchHistoryDisambiguation);
-
         // Update the "More options" chip.
-        ChipView moreOptionsView =
-                quickDeleteDialogView.findViewById(R.id.quick_delete_more_options);
+        ChipView moreOptionsView = mQuickDeleteView.findViewById(R.id.quick_delete_more_options);
         updateMoreOptions(moreOptionsView);
+
+        // Update search history text
+        setUpSearchHistoryText();
 
         return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                 .with(ModalDialogProperties.CONTROLLER, mModalDialogController)
                 .with(ModalDialogProperties.TITLE,
                         mContext.getString(R.string.quick_delete_dialog_title))
-                .with(ModalDialogProperties.CUSTOM_VIEW, quickDeleteDialogView)
+                .with(ModalDialogProperties.CUSTOM_VIEW, mQuickDeleteView)
                 .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                         mContext.getString(R.string.delete))
                 .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
@@ -214,20 +151,13 @@ class QuickDeleteDialogDelegate {
      * Sets up the {@link Spinner} shown in the dialog.
      *
      * @param quickDeleteSpinner The quick delete {@link Spinner} which would be shown in the
-     *         dialog.
+     *                           dialog.
      */
     private void updateSpinner(@NonNull Spinner quickDeleteSpinner) {
         TimePeriodSpinnerOption[] options = getTimePeriodSpinnerOptions(mContext);
         ArrayAdapter<TimePeriodSpinnerOption> adapter = new ArrayAdapter<>(
                 mContext, android.R.layout.simple_spinner_dropdown_item, options);
         quickDeleteSpinner.setAdapter(adapter);
-
-        /**
-         * TODO(crbug.com/1412087): We need to add the logic here to refresh the information
-         * shown inside the dialog when a new time period is chosen. This may require
-         * refactoring the code a bit to pass {@link Runnables} to re-create {@link
-         * QuickDeleteDialogData}.
-         */
         quickDeleteSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(
@@ -235,6 +165,8 @@ class QuickDeleteDialogDelegate {
                 TimePeriodSpinnerOption item =
                         (TimePeriodSpinnerOption) adapterView.getItemAtPosition(position);
                 mCurrentTimePeriodOption = item;
+                mTimePeriodChangeObserver.onTimePeriodChanged(
+                        mCurrentTimePeriodOption.getTimePeriod());
             }
 
             @Override
@@ -246,82 +178,21 @@ class QuickDeleteDialogDelegate {
         });
     }
 
-    /**
-     * Checks whether the user has any browsing history in range to delete and updates the views
-     * accordingly.
-     * @param row The browsing history row view.
-     * @param data The dialog related data.
-     */
-    private void addBrowsingHistoryRowIfAvailable(
-            @NonNull ViewGroup row, @NonNull QuickDeleteDialogData data) {
-        if (data.mDomainVisitsData.mDomainsCount < 1) return;
-
-        TemplatePreservingTextView title = row.findViewById(R.id.quick_delete_history_row_title);
-        TextView subtitle = row.findViewById(R.id.quick_delete_history_row_subtitle);
-        int domainsCount = data.mDomainVisitsData.mDomainsCount;
-
-        // Subtract 1 from the domainsCount to not count the lastVisitedDomain twice.
-        domainsCount--;
-
-        // If there is at least 1 other site counted, add the count template, eg `+ 1 site`.
-        if (domainsCount > 0) {
-            String domainCountText = mContext.getResources().getQuantityString(
-                    R.plurals.quick_delete_dialog_browsing_history_domain_count_text, domainsCount,
-                    domainsCount);
-            String browsingHistoryRowTitleTemplate = "%s " + domainCountText;
-            title.setTemplate(browsingHistoryRowTitleTemplate);
-        }
-
-        title.setText(data.mDomainVisitsData.mLastVisitedDomain);
-        row.setVisibility(View.VISIBLE);
-        if (QuickDeleteDelegate.isSyncingHistory(mProfile)) {
-            subtitle.setVisibility(View.VISIBLE);
-        }
-    }
-
-    /**
-     * Checks whether the user has any tabs in range to close and updates the views accordingly.
-     * @param row The tabs close row view.
-     * @param data The dialog related data.
-     */
-    private void addTabsCloseRowIfAvailable(
-            @NonNull TextViewWithCompoundDrawables row, @NonNull QuickDeleteDialogData data) {
-        if (data.mTabsToCloseCount > 0) {
-            String tabDescription = mContext.getResources().getQuantityString(
-                    R.plurals.quick_delete_dialog_tabs_closed_text, data.mTabsToCloseCount,
-                    data.mTabsToCloseCount);
-            row.setText(tabDescription);
-        } else {
-            row.setVisibility(View.GONE);
-        }
-    }
-
-    /**
-     * Checks whether the user is signed in and updates the views accordingly.
-     * @param text The search history disambiguation text.
-     */
-    private void addSearchHistoryDisambiguationTextIfRequired(
-            @NonNull TextViewWithClickableSpans text) {
-        if (QuickDeleteDelegate.isSignedIn(mProfile)) {
-            // Add search history and other activity links to search history disambiguation notice
-            // in the dialog.
-            final SpannableString searchHistoryText = SpanApplier.applySpans(
-                    mContext.getString(
-                            R.string.quick_delete_dialog_search_history_disambiguation_text),
-                    new SpanApplier.SpanInfo("<link1>", "</link1>",
-                            new NoUnderlineClickableSpan(mContext,
-                                    (widget)
-                                            -> openUrlInNewTab(
-                                                    UrlConstants.GOOGLE_SEARCH_HISTORY_URL_IN_QD))),
-                    new SpanApplier.SpanInfo("<link2>", "</link2>",
-                            new NoUnderlineClickableSpan(mContext,
-                                    (widget)
-                                            -> openUrlInNewTab(
-                                                    UrlConstants.MY_ACTIVITY_URL_IN_QD))));
-            text.setText(searchHistoryText);
-            text.setMovementMethod(LinkMovementMethod.getInstance());
-            text.setVisibility(View.VISIBLE);
-        }
+    private void setUpSearchHistoryText() {
+        TextViewWithClickableSpans text =
+                mQuickDeleteView.findViewById(R.id.search_history_disambiguation);
+        final SpannableString searchHistoryText = SpanApplier.applySpans(
+                mContext.getString(R.string.quick_delete_dialog_search_history_disambiguation_text),
+                new SpanApplier.SpanInfo("<link1>", "</link1>",
+                        new NoUnderlineClickableSpan(mContext,
+                                (widget)
+                                        -> openUrlInNewTab(
+                                                UrlConstants.GOOGLE_SEARCH_HISTORY_URL_IN_QD))),
+                new SpanApplier.SpanInfo("<link2>", "</link2>",
+                        new NoUnderlineClickableSpan(mContext,
+                                (widget) -> openUrlInNewTab(UrlConstants.MY_ACTIVITY_URL_IN_QD))));
+        text.setText(searchHistoryText);
+        text.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     // TODO(crbug.com/1412087): Add logic here to update the primary text to "More options" and
@@ -339,8 +210,9 @@ class QuickDeleteDialogDelegate {
 
     /**
      * Opens a url in a new non-incognito tab and dismisses the dialog.
+     *
      * @param url The URL of the page to load, either GOOGLE_SEARCH_HISTORY_URL_IN_QD or
-     *         MY_ACTIVITY_URL_IN_QD.
+     *            MY_ACTIVITY_URL_IN_QD.
      */
     private void openUrlInNewTab(final String url) {
         mTabModelSelector.openNewTab(new LoadUrlParams(url), TabLaunchType.FROM_CHROME_UI,
@@ -351,10 +223,9 @@ class QuickDeleteDialogDelegate {
 
     /**
      * Shows the Quick delete dialog.
-     * @param quickDeleteDialogData The dialog related data.
      */
-    void showDialog(@NonNull QuickDeleteDialogData quickDeleteDialogData) {
-        mModalDialogPropertyModel = createQuickDeleteDialogProperty(quickDeleteDialogData);
+    void showDialog() {
+        mModalDialogPropertyModel = createQuickDeleteDialogProperty();
         mModalDialogManager.showDialog(
                 mModalDialogPropertyModel, ModalDialogManager.ModalDialogType.APP);
     }

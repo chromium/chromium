@@ -21,6 +21,26 @@ import org.chromium.components.sync.SyncService;
  */
 abstract class QuickDeleteDelegate {
     /**
+     * A data-structure to hold the strings for the Browsing history row in the dialog.
+     */
+    static class DomainVisitsData {
+        final String mLastVisitedDomain;
+        final int mDomainsCount;
+
+        /**
+         * @param lastVisitedDomain The last visited domain shown inside the browsing history row of
+         *                          the dialog.
+         * @param domainsCount      The number of synced unique domains shown inside the browsing
+         *  history
+         *                          row of the dialog.
+         */
+        DomainVisitsData(@NonNull String lastVisitedDomain, int domainsCount) {
+            mLastVisitedDomain = lastVisitedDomain;
+            mDomainsCount = domainsCount;
+        }
+    }
+
+    /**
      * @param {@link Profile} from which to query the signed-in status.
      *
      * @return A boolean indicating whether the user is signed in or not.

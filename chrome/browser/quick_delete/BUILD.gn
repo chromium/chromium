@@ -11,8 +11,11 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteController.java",
     "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteDelegate.java",
     "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteDialogDelegate.java",
+    "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteMediator.java",
     "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteMetricsDelegate.java",
+    "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteProperties.java",
     "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteTabsFilter.java",
+    "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteViewBinder.java",
   ]
   deps = [
     ":java_resources",
@@ -67,8 +70,10 @@ robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.quick_delete"
   sources = [
     "android/junit/src/org/chromium/chrome/browser/quick_delete/QuickDeleteDialogDelegateUnitTest.java",
+    "android/junit/src/org/chromium/chrome/browser/quick_delete/QuickDeleteMediatorTest.java",
     "android/junit/src/org/chromium/chrome/browser/quick_delete/QuickDeleteMetricsDelegateTest.java",
     "android/junit/src/org/chromium/chrome/browser/quick_delete/QuickDeleteTabsFilterTest.java",
+    "android/junit/src/org/chromium/chrome/browser/quick_delete/QuickDeleteViewBinderTest.java",
   ]
   deps = [
     ":java",
@@ -94,6 +99,7 @@ robolectric_library("junit") {
     "//components/signin/public/android:signin_java_test_support",
     "//components/sync/android:sync_java",
     "//content/public/android:content_full_java",
+    "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
