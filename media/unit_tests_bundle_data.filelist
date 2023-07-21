@@ -147,6 +147,7 @@
 //media/test/data/bear-320x240-vp9_profile2.webm
 //media/test/data/bear-320x240.webm
 //media/test/data/bear-320x240_corrupted_after_init_segment.webm
+//media/test/data/bear-3840x2160-hevc.mp4
 //media/test/data/bear-640x360-a_frag-cbcs.mp4
 //media/test/data/bear-640x360-a_frag-cenc-key_rotation.mp4
 //media/test/data/bear-640x360-a_frag-cenc.mp4

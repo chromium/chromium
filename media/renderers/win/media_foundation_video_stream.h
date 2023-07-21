@@ -42,6 +42,7 @@ class MediaFoundationH264VideoStream : public MediaFoundationVideoStream {
 // The HEVC specific video stream.
 class MediaFoundationHEVCVideoStream : public MediaFoundationVideoStream {
  protected:
+  HRESULT GetMediaType(IMFMediaType** media_type_out) override;
   bool AreFormatChangesEnabled() override;
 };
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC) ||

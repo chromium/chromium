@@ -135,6 +135,7 @@ data/bear-320x240-video-only.webm
 data/bear-320x240-vp9_profile2.webm
 data/bear-320x240.webm
 data/bear-320x240_corrupted_after_init_segment.webm
+data/bear-3840x2160-hevc.mp4
 data/bear-640x360-a_frag-cbcs.mp4
 data/bear-640x360-a_frag-cenc-key_rotation.mp4
 data/bear-640x360-a_frag-cenc.mp4

@@ -381,6 +381,14 @@ bool MediaFoundationH264VideoStream::AreFormatChangesEnabled() {
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+HRESULT MediaFoundationHEVCVideoStream::GetMediaType(
+    IMFMediaType** media_type_out) {
+  RETURN_IF_FAILED(MediaFoundationVideoStream::GetMediaType(media_type_out));
+  // Enable conversion to Annex-B
+  demuxer_stream_->EnableBitstreamConverter();
+  return S_OK;
+}
+
 bool MediaFoundationHEVCVideoStream::AreFormatChangesEnabled() {
   // Disable explicit format change event for HEVC to allow switching to the
   // new stream without a full re-create, which will be much faster. This is
