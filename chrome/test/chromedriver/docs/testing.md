@@ -32,6 +32,9 @@ They are written in Python script, in
 We run these tests on the CQ (commit queue) on all desktop platforms,
 and plan to run them on Android as well in the future.
 
+In the examples below `CHROMEDRIVER_DIR` is `chrome/test/chromedriver` if you
+are in a chromium checkout.
+
 To run these tests, first build Chrome and ChromeDriver, and then
 invoke `run_py_tests.py`:
 ```
@@ -128,7 +131,7 @@ python3 <CHROMEDRIVER_DIR>/test/run_java_tests.py --chromedriver=out/Default/chr
 ```
 
 The `run_py_tests.py` script has a number of options.
-Run it with `--help` for more information. 
+Run it with `--help` for more information.
 The only require option is `--chromedriver` to specify the location of
 the ChromeDriver binary.
 
