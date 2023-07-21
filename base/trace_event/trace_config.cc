@@ -208,6 +208,13 @@ TraceConfig::EventFilterConfig& TraceConfig::EventFilterConfig::operator=(
   return *this;
 }
 
+bool TraceConfig::EventFilterConfig::IsEquivalentTo(
+    const EventFilterConfig& other) const {
+  return predicate_name_ == other.predicate_name_ &&
+         category_filter_.IsEquivalentTo(category_filter_) &&
+         args_ == other.args_;
+}
+
 void TraceConfig::EventFilterConfig::InitializeFromConfigDict(
     const Value::Dict& event_filter) {
   category_filter_.InitializeFromConfigDict(event_filter);
@@ -312,6 +319,38 @@ TraceConfig& TraceConfig::operator=(const TraceConfig& rhs) {
   histogram_names_ = rhs.histogram_names_;
   systrace_events_ = rhs.systrace_events_;
   return *this;
+}
+
+bool TraceConfig::IsEquivalentTo(const TraceConfig& other) const {
+  if (enable_systrace_ != other.enable_systrace_ ||
+      enable_argument_filter_ != other.enable_argument_filter_ ||
+      enable_event_package_name_filter_ !=
+          other.enable_event_package_name_filter_ ||
+      histogram_names_ != other.histogram_names_ ||
+      systrace_events_ != other.systrace_events_ ||
+      process_filter_config_ != other.process_filter_config_ ||
+      memory_dump_config_ != other.memory_dump_config_ ||
+      !category_filter_.IsEquivalentTo(other.category_filter_)) {
+    return false;
+  }
+
+  if (event_filters_.size() != other.event_filters_.size()) {
+    return false;
+  }
+  for (const auto& filter : event_filters_) {
+    bool equivalent_found = false;
+    for (const auto& other_filter : other.event_filters_) {
+      if (other_filter.IsEquivalentTo(filter)) {
+        equivalent_found = true;
+        break;
+      }
+    }
+    if (!equivalent_found) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 std::string TraceConfig::ToString() const {

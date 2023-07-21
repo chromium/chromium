@@ -156,6 +156,8 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
     void OnSetup(const perfetto::DataSourceBase::SetupArgs&) override;
     void OnStart(const perfetto::DataSourceBase::StartArgs&) override;
     void OnStop(const perfetto::DataSourceBase::StopArgs&) override;
+    bool CanAdoptStartupSession(const perfetto::DataSourceConfig&,
+                                const perfetto::DataSourceConfig&) override;
 
     static constexpr bool kSupportsMultipleInstances = false;
 
@@ -385,7 +387,25 @@ void PerfettoTracedProcess::DataSourceProxy<T>::OnStop(
               &PerfettoTracedProcess::DataSourceBase::StopTracingImpl,
               base::Unretained(*data_source_ptr_), std::move(stop_callback)));
 }
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+
+template <typename T>
+bool PerfettoTracedProcess::DataSourceProxy<T>::CanAdoptStartupSession(
+    const perfetto::DataSourceConfig& startup_config,
+    const perfetto::DataSourceConfig& service_config) {
+  if (!startup_config.has_chrome_config() ||
+      !service_config.has_chrome_config()) {
+    return perfetto::DataSourceBase::CanAdoptStartupSession(startup_config,
+                                                            service_config);
+  }
+
+  base::trace_event::TraceConfig startup_trace_config(
+      startup_config.chrome_config().trace_config());
+  base::trace_event::TraceConfig service_trace_config(
+      service_config.chrome_config().trace_config());
+
+  return startup_trace_config.IsEquivalentTo(service_trace_config);
+}
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 }  // namespace tracing
 #endif  // SERVICES_TRACING_PUBLIC_CPP_PERFETTO_PERFETTO_TRACED_PROCESS_H_

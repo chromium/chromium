@@ -731,4 +731,29 @@ TEST(TraceConfigTest, SystraceEventsSerialization) {
   EXPECT_TRUE(tc2.systrace_events().count("timer:tick_stop"));
 }
 
+TEST(TraceConfigTest, IsConfigEquivalent) {
+  TraceConfig tc1("foo,bar", "");
+  TraceConfig tc2("bar,foo", "");
+  EXPECT_TRUE(tc1.IsEquivalentTo(tc2));
+
+  tc1.EnableHistogram("Foo.Bar1");
+  tc1.EnableHistogram("Foo.Bar2");
+  tc2.EnableHistogram("Foo.Bar2");
+  tc2.EnableHistogram("Foo.Bar1");
+  EXPECT_TRUE(tc1.IsEquivalentTo(tc2));
+
+  tc1.SetEventPackageNameFilterEnabled(true);
+  EXPECT_FALSE(tc1.IsEquivalentTo(tc2));
+
+  // This is an example of a config that comes from Perfetto UI. Check that
+  // it is still equivalent after converting to a string and back (this is
+  // important for startup session adoption).
+  TraceConfig tc3(
+      "{\"record_mode\":\"record-until-full\","
+      "\"included_categories\":[\"foo,bar\"],"
+      "\"excluded_categories\":[\"*\"],\"memory_dump_config\":{}}");
+  TraceConfig tc4(tc3.ToString());
+  EXPECT_TRUE(tc3.IsEquivalentTo(tc4));
+}
+
 }  // namespace base::trace_event
