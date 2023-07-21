@@ -736,6 +736,14 @@ bool GPUQueue::CopyFromCanvasSourceImage(
   PaintImage paint_image = image->PaintImageForCurrentFrame();
   SkImageInfo source_image_info = paint_image.GetSkImageInfo();
 
+  // TODO(crbug.com/1457649): If CPU backed source input discard the color
+  // space info(e.g. ImageBitmap created with flag colorSpaceConversion: none).
+  // disable using use_webgpu_mailbox_texture to fix alpha premultiplied isseu.
+  if (!image->IsTextureBacked() && !image->IsPremultiplied() &&
+      source_image_info.refColorSpace() == nullptr) {
+    use_webgpu_mailbox_texture = false;
+  }
+
   // Source and dst might have different constants
   ColorSpaceConversionConstants color_space_conversion_constants = {};
 
