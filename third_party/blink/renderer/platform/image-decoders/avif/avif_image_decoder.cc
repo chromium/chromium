@@ -14,6 +14,7 @@
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
@@ -319,7 +320,7 @@ scoped_refptr<blink::SegmentReader> CreateGainmapSegmentReader(
 
 // Stream object for use with libavifinfo.
 struct AvifInfoSegmentReaderStream {
-  const blink::SegmentReader* reader = nullptr;
+  raw_ptr<const blink::SegmentReader> reader = nullptr;
   size_t num_read_bytes = 0;
   uint8_t buffer[AVIFINFO_MAX_NUM_READ_BYTES];
 };
@@ -512,7 +513,7 @@ void AVIFImageDecoder::DecodeToYUV() {
     }
     return;
   }
-  const auto* image = decoded_image_;
+  const auto* image = decoded_image_.get();
 
   DCHECK(!image->alphaPlane);
   static_assert(cc::YUVIndex::kY == static_cast<cc::YUVIndex>(AVIF_CHAN_Y), "");
@@ -760,7 +761,7 @@ void AVIFImageDecoder::Decode(wtf_size_t index) {
     SetFailed();
     return;
   }
-  const auto* image = decoded_image_;
+  const auto* image = decoded_image_.get();
 
   // ImageDecoder::SizeCalculationMayOverflow(), called by UpdateDemuxer()
   // before being here, made sure the image height fits in an int.

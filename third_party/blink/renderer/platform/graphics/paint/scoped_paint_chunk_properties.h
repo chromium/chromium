@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_SCOPED_PAINT_CHUNK_PROPERTIES_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_SCOPED_PAINT_CHUNK_PROPERTIES_H_
 
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
@@ -25,8 +26,9 @@ class ScopedPaintChunkProperties {
       : paint_controller_(paint_controller),
         previous_properties_(paint_controller.CurrentPaintChunkProperties()) {
     PaintChunk::Id id(client.Id(), type);
-    paint_controller_.UpdateCurrentPaintChunkProperties(id, client, properties);
-    paint_controller_.RecordDebugInfo(client);
+    paint_controller_->UpdateCurrentPaintChunkProperties(id, client,
+                                                         properties);
+    paint_controller_->RecordDebugInfo(client);
   }
 
   // Use new transform state, and keep the current other properties.
@@ -72,7 +74,7 @@ class ScopedPaintChunkProperties {
     // ScopedPaintChunkProperties. The painter should create another scope of
     // paint properties with new id, or the new chunk will use the id of the
     // first display item as its id.
-    paint_controller_.UpdateCurrentPaintChunkProperties(previous_properties_);
+    paint_controller_->UpdateCurrentPaintChunkProperties(previous_properties_);
   }
 
  private:
@@ -103,7 +105,7 @@ class ScopedPaintChunkProperties {
     return properties;
   }
 
-  PaintController& paint_controller_;
+  const raw_ref<PaintController> paint_controller_;
   PropertyTreeStateOrAlias previous_properties_;
 };
 

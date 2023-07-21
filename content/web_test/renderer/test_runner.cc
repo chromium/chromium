@@ -18,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -233,7 +234,7 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
     void OnDestruct() override { bindings_->OnFrameDestroyed(); }
 
    private:
-    TestRunnerBindings* const bindings_;
+    const raw_ptr<TestRunnerBindings> bindings_;
   };
 
   explicit TestRunnerBindings(TestRunner* test_runner,
@@ -421,9 +422,9 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
   // stop doing anything.
   bool invalid_ = false;
 
-  TestRunner* runner_;
-  WebFrameTestProxy* const frame_;
-  SpellCheckClient* const spell_check_;
+  raw_ptr<TestRunner> runner_;
+  const raw_ptr<WebFrameTestProxy> frame_;
+  const raw_ptr<SpellCheckClient> spell_check_;
   TestPreferences prefs_;
   std::unique_ptr<AppBannerService> app_banner_service_;
 
@@ -2212,7 +2213,7 @@ class TestRunner::MainWindowTracker : public blink::WebViewObserver {
   }
 
  private:
-  TestRunner* const test_runner_;
+  const raw_ptr<TestRunner> test_runner_;
 };
 
 TestRunner::WorkQueue::WorkQueue(TestRunner* controller)

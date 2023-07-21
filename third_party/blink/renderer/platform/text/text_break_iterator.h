@@ -28,6 +28,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
@@ -344,9 +345,9 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
 
   static const unsigned kPriorContextCapacity = 2;
   String string_;
-  const LayoutLocale* locale_ = nullptr;
+  raw_ptr<const LayoutLocale> locale_ = nullptr;
   mutable AtomicString locale_with_keyword_;
-  mutable TextBreakIterator* iterator_;
+  mutable raw_ptr<TextBreakIterator> iterator_;
   UChar prior_context_[kPriorContextCapacity];
   mutable PriorContext cached_prior_context_;
   unsigned start_offset_ = 0;
@@ -440,7 +441,7 @@ class PLATFORM_EXPORT NonSharedCharacterBreakIterator final {
   unsigned length_;
 
   // For 16 bit strings, we use a TextBreakIterator.
-  TextBreakIterator* iterator_;
+  raw_ptr<TextBreakIterator> iterator_;
 };
 
 // Counts the number of grapheme clusters. A surrogate pair or a sequence

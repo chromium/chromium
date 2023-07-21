@@ -28,6 +28,7 @@
 
 #include <atomic>
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
@@ -169,14 +170,14 @@ class MODULES_EXPORT DeferredTaskHandler final
 
    public:
     explicit GraphAutoLocker(DeferredTaskHandler& handler) : handler_(handler) {
-      handler_.lock();
+      handler_->lock();
     }
     explicit GraphAutoLocker(const BaseAudioContext*);
 
-    ~GraphAutoLocker() { handler_.unlock(); }
+    ~GraphAutoLocker() { handler_->unlock(); }
 
    private:
-    DeferredTaskHandler& handler_;
+    const raw_ref<DeferredTaskHandler> handler_;
   };
 
   // This is for locking offline render thread (which is considered as the
@@ -189,10 +190,10 @@ class MODULES_EXPORT DeferredTaskHandler final
    public:
     explicit OfflineGraphAutoLocker(OfflineAudioContext*);
 
-    ~OfflineGraphAutoLocker() { handler_.unlock(); }
+    ~OfflineGraphAutoLocker() { handler_->unlock(); }
 
    private:
-    DeferredTaskHandler& handler_;
+    const raw_ref<DeferredTaskHandler> handler_;
   };
 
   HashSet<scoped_refptr<AudioHandler>>* GetActiveSourceHandlers() {

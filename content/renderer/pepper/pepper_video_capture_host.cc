@@ -147,7 +147,7 @@ void PepperVideoCaptureHost::OnFrameReady(
         // TODO(ihf): handle size mismatches gracefully here.
         return;
       }
-      uint8_t* dst = reinterpret_cast<uint8_t*>(buffers_[i].data);
+      uint8_t* dst = reinterpret_cast<uint8_t*>(buffers_[i].data.get());
       static_assert(media::VideoFrame::kYPlane == 0, "y plane should be 0");
       static_assert(media::VideoFrame::kUPlane == 1, "u plane should be 1");
       static_assert(media::VideoFrame::kVPlane == 2, "v plane should be 2");

@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
@@ -269,7 +270,7 @@ class RTCVideoEncoderTest {
     mock_vea_ = new media::MockVideoEncodeAccelerator();
 
     EXPECT_CALL(*mock_gpu_factories_.get(), DoCreateVideoEncodeAccelerator())
-        .WillRepeatedly(Return(mock_vea_));
+        .WillRepeatedly(Return(mock_vea_.get()));
     EXPECT_CALL(*mock_vea_,
                 Initialize(CheckConfig(pixel_format, storage_type), _, _))
         .WillOnce(Invoke(this, &RTCVideoEncoderTest::Initialize));
@@ -533,10 +534,10 @@ class RTCVideoEncoderTest {
     return base::FeatureList::IsEnabled(features::kWebRtcEncoderAsyncEncode);
   }
 
-  media::MockVideoEncodeAccelerator* mock_vea_;
+  raw_ptr<media::MockVideoEncodeAccelerator> mock_vea_;
   std::unique_ptr<RTCVideoEncoderWrapper> rtc_encoder_;
   absl::optional<media::VideoEncodeAccelerator::Config> config_;
-  media::VideoEncodeAccelerator::Client* client_;
+  raw_ptr<media::VideoEncodeAccelerator::Client> client_;
   base::Thread encoder_thread_;
 
   base::test::ScopedFeatureList feature_list_;

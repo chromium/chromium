@@ -35,6 +35,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ref.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
@@ -127,7 +128,7 @@ class NameSource {
   bool superseded = false;
   bool invalid = false;
   ax::mojom::blink::NameFrom type = ax::mojom::blink::NameFrom::kNone;
-  const QualifiedName& attribute;
+  const raw_ref<const QualifiedName> attribute;
   AtomicString attribute_value;
   AXTextSource native_source = kAXTextFromNativeSourceUninitialized;
   AXRelatedObjectVector related_objects;
@@ -150,7 +151,7 @@ class DescriptionSource {
   bool invalid = false;
   ax::mojom::blink::DescriptionFrom type =
       ax::mojom::blink::DescriptionFrom::kNone;
-  const QualifiedName& attribute;
+  const raw_ref<const QualifiedName> attribute;
   AtomicString attribute_value;
   AXTextSource native_source = kAXTextFromNativeSourceUninitialized;
   AXRelatedObjectVector related_objects;

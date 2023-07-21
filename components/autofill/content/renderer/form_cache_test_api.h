@@ -8,6 +8,8 @@
 #include <stddef.h>
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "components/autofill/content/renderer/form_cache.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
 

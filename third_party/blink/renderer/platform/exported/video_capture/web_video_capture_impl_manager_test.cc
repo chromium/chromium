@@ -7,6 +7,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/bind_post_task.h"
@@ -110,7 +111,7 @@ class MockVideoCaptureImpl : public VideoCaptureImpl,
                     media::VideoCaptureFrameDropReason));
   MOCK_METHOD2(OnLog, void(const base::UnguessableToken&, const String&));
 
-  PauseResumeCallback* const pause_callback_;
+  const raw_ptr<PauseResumeCallback> pause_callback_;
   base::OnceClosure destruct_callback_;
 };
 
@@ -136,7 +137,7 @@ class MockVideoCaptureImplManager : public WebVideoCaptureImplManager {
     return std::move(video_capture_impl);
   }
 
-  PauseResumeCallback* const pause_callback_;
+  const raw_ptr<PauseResumeCallback> pause_callback_;
   const base::RepeatingClosure stop_capture_callback_;
 };
 
@@ -246,7 +247,7 @@ class VideoCaptureImplManagerTest : public ::testing::Test,
       platform_;
   base::RunLoop cleanup_run_loop_;
   std::unique_ptr<MockVideoCaptureImplManager> manager_;
-  BrowserInterfaceBrokerProxy* browser_interface_broker_;
+  raw_ptr<BrowserInterfaceBrokerProxy> browser_interface_broker_;
 };
 
 // Multiple clients with the same session id. There is only one

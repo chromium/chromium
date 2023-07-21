@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ref.h"
 #include "base/test/scoped_feature_list.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -62,7 +63,7 @@ class FakeWebNNContext : public blink_mojom::WebNNContext {
   // Override methods from webnn::mojom::WebNNContext.
   void CreateGraph(blink_mojom::GraphInfoPtr graph_info,
                    CreateGraphCallback callback) override {
-    helper_.SetGraphInfo(std::move(graph_info));
+    helper_->SetGraphInfo(std::move(graph_info));
 
     mojo::PendingRemote<blink_mojom::WebNNGraph> blink_remote;
     // The receiver bind to FakeWebNNGraph.
@@ -72,7 +73,7 @@ class FakeWebNNContext : public blink_mojom::WebNNContext {
 
     std::move(callback).Run(std::move(blink_remote));
   }
-  MLGraphTestMojo& helper_;
+  const raw_ref<MLGraphTestMojo> helper_;
 };
 
 class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
@@ -102,14 +103,14 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
     mojo::PendingRemote<blink_mojom::WebNNContext> blink_remote;
     // The receiver bind to FakeWebNNContext.
     mojo::MakeSelfOwnedReceiver<blink_mojom::WebNNContext>(
-        std::make_unique<FakeWebNNContext>(helper_),
+        std::make_unique<FakeWebNNContext>(*helper_),
         blink_remote.InitWithNewPipeAndPassReceiver());
 
     std::move(callback).Run(blink_mojom::CreateContextResult::kOk,
                             std::move(blink_remote));
   }
 
-  MLGraphTestMojo& helper_;
+  const raw_ref<MLGraphTestMojo> helper_;
   mojo::Receiver<blink_mojom::WebNNContextProvider> receiver_;
 };
 
@@ -121,7 +122,7 @@ class ScopedWebNNServiceBinder {
             std::make_unique<FakeWebNNContextProvider>(helper)),
         interface_broker_(
             scope.GetExecutionContext()->GetBrowserInterfaceBroker()) {
-    interface_broker_.SetBinderForTesting(
+    interface_broker_->SetBinderForTesting(
         blink_mojom::WebNNContextProvider::Name_,
         WTF::BindRepeating(
             &FakeWebNNContextProvider::BindRequest,
@@ -129,7 +130,7 @@ class ScopedWebNNServiceBinder {
   }
 
   ~ScopedWebNNServiceBinder() {
-    interface_broker_.SetBinderForTesting(
+    interface_broker_->SetBinderForTesting(
         blink_mojom::WebNNContextProvider::Name_, base::NullCallback());
   }
 
@@ -139,7 +140,7 @@ class ScopedWebNNServiceBinder {
 
  private:
   std::unique_ptr<FakeWebNNContextProvider> fake_webnn_context_provider_;
-  const BrowserInterfaceBrokerProxy& interface_broker_;
+  const raw_ref<const BrowserInterfaceBrokerProxy> interface_broker_;
 };
 
 MLGraphMojo* ToMLGraphMojo(V8TestingScope* scope, ScriptValue value) {

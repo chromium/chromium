@@ -8,6 +8,7 @@
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/companion/visual_search.mojom.h"
 #include "content/public/renderer/render_frame.h"
@@ -64,7 +65,7 @@ class VisualSearchClassifierAgent : public content::RenderFrameObserver,
   bool is_classifying_ = false;
 
   // Pointer to RenderFrame used for DOM traversal and extract image bytes.
-  content::RenderFrame* render_frame_ = nullptr;
+  raw_ptr<content::RenderFrame> render_frame_ = nullptr;
 
   // Using a memory-mapped file to reduce memory consumption of model bytes.
   base::MemoryMappedFile visual_model_;

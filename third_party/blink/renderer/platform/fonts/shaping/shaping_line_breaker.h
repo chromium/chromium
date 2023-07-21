@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPING_LINE_BREAKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPING_LINE_BREAKER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/run_segmenter.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
@@ -158,10 +159,10 @@ class PLATFORM_EXPORT ShapingLineBreaker final {
   void SetBreakOffset(const BreakOpportunity&, const String&, Result*);
 
   const ShapeCallback shape_callback_;
-  void* shape_callback_context_;
+  raw_ptr<void> shape_callback_context_;
   scoped_refptr<const ShapeResult> result_;
-  const LazyLineBreakIterator* break_iterator_;
-  const Hyphenation* hyphenation_;
+  raw_ptr<const LazyLineBreakIterator> break_iterator_;
+  raw_ptr<const Hyphenation> hyphenation_;
 
   friend class ShapingLineBreakerTest;
 };

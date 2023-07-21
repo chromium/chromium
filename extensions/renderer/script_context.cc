@@ -477,7 +477,7 @@ std::string ScriptContext::GetDebugString() const {
       "  context_type:           %s\n"
       "  effective extension id: %s\n"
       "  effective context type: %s",
-      extension_.get() ? extension_->id().c_str() : "(none)", web_frame_,
+      extension_.get() ? extension_->id().c_str() : "(none)", web_frame_.get(),
       url_.spec().c_str(), GetContextTypeDescription().c_str(),
       effective_extension_.get() ? effective_extension_->id().c_str()
                                  : "(none)",

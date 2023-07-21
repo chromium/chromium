@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_chunks_to_cc_layer.h"
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/numerics/safe_conversions.h"
 #include "cc/input/layer_selection_bound.h"
 #include "cc/layers/layer.h"
@@ -59,7 +61,7 @@ class ConversionContext {
         current_transform_(&layer_state.Transform()),
         current_clip_(&layer_state.Clip()),
         current_effect_(&layer_state.Effect()),
-        chunk_to_layer_mapper_(layer_state_, layer_offset_),
+        chunk_to_layer_mapper_(*layer_state_, layer_offset_),
         result_(result) {}
   ~ConversionContext();
 
@@ -178,9 +180,9 @@ class ConversionContext {
   }
 
   void AppendRestore() {
-    result_.StartPaint();
+    result_->StartPaint();
     push<cc::RestoreOp>();
-    result_.EndPaintOfPairedEnd();
+    result_->EndPaintOfPairedEnd();
   }
 
   // Starts an effect state by adjusting clip and transform state, applying
@@ -206,7 +208,7 @@ class ConversionContext {
 
   template <typename T, typename... Args>
   size_t push(Args&&... args) {
-    return result_.template push<T>(std::forward<Args>(args)...);
+    return result_->template push<T>(std::forward<Args>(args)...);
   }
 
   // State stack.
@@ -234,11 +236,11 @@ class ConversionContext {
     bool NeedsRestore() const { return type_ != kClipOmitted; }
 
     // These fields are neve nullptr.
-    const TransformPaintPropertyNode* transform;
-    const ClipPaintPropertyNode* clip;
-    const EffectPaintPropertyNode* effect;
+    raw_ptr<const TransformPaintPropertyNode> transform;
+    raw_ptr<const ClipPaintPropertyNode> clip;
+    raw_ptr<const EffectPaintPropertyNode> effect;
     // See ConversionContext<Result>::previous_transform_.
-    const TransformPaintPropertyNode* previous_transform;
+    raw_ptr<const TransformPaintPropertyNode> previous_transform;
 #if DCHECK_IS_ON()
     bool has_pre_cap_effect_hierarchy_issue = false;
 #endif
@@ -250,14 +252,14 @@ class ConversionContext {
   void PopState();
   Vector<StateEntry> state_stack_;
 
-  const PropertyTreeState& layer_state_;
+  const raw_ref<const PropertyTreeState> layer_state_;
   const gfx::Vector2dF layer_offset_;
   bool translated_for_layer_offset_ = false;
 
   // These fields are never nullptr.
-  const TransformPaintPropertyNode* current_transform_;
-  const ClipPaintPropertyNode* current_clip_;
-  const EffectPaintPropertyNode* current_effect_;
+  raw_ptr<const TransformPaintPropertyNode> current_transform_;
+  raw_ptr<const ClipPaintPropertyNode> current_clip_;
+  raw_ptr<const EffectPaintPropertyNode> current_effect_;
 
   // The previous transform state before SwitchToTransform() within the current
   // clip/effect state. When the next chunk's transform is different from the
@@ -266,7 +268,7 @@ class ConversionContext {
   // the value of this field will be saved into the state stack and set to
   // nullptr. When the clip/effect state ends, this field will be restored to
   // the saved value.
-  const TransformPaintPropertyNode* previous_transform_ = nullptr;
+  raw_ptr<const TransformPaintPropertyNode> previous_transform_ = nullptr;
 
   // This structure accumulates bounds of all chunks under an effect. When an
   // effect starts, we emit a SaveLayer[Alpha]Op with null bounds, and push a
@@ -278,7 +280,7 @@ class ConversionContext {
     // UpdateSaveLayerBounds().
     size_t save_layer_id;
     // The transform space when the SaveLayer[Alpha]Op was emitted.
-    const TransformPaintPropertyNode* transform;
+    raw_ptr<const TransformPaintPropertyNode> transform;
     // Records the bounds of the effect which initiated the entry. Note that
     // the effect is not |effect| (which is the previous effect), but the
     // |current_effect_| when this entry is the top of the stack.
@@ -288,7 +290,7 @@ class ConversionContext {
 
   ChunkToLayerMapper chunk_to_layer_mapper_;
 
-  Result& result_;
+  const raw_ref<Result> result_;
 };
 
 template <typename Result>
@@ -310,10 +312,10 @@ void ConversionContext<Result>::TranslateForLayerOffsetOnce() {
   if (translated_for_layer_offset_ || layer_offset_ == gfx::Vector2dF())
     return;
 
-  result_.StartPaint();
+  result_->StartPaint();
   push<cc::SaveOp>();
   push<cc::TranslateOp>(-layer_offset_.x(), -layer_offset_.y());
-  result_.EndPaintOfPairedBegin();
+  result_->EndPaintOfPairedBegin();
   translated_for_layer_offset_ = true;
 }
 
@@ -457,7 +459,7 @@ void ConversionContext<Result>::StartClip(
         lowest_combined_clip_node.LocalTransformSpace().Unalias();
     if (&local_transform != current_transform_)
       EndTransform();
-    result_.StartPaint();
+    result_->StartPaint();
     push<cc::SaveOp>();
     ApplyTransform(local_transform);
     const bool antialias = true;
@@ -472,7 +474,7 @@ void ConversionContext<Result>::StartClip(
       push<cc::ClipPathOp>(clip_path->GetSkPath(), SkClipOp::kIntersect,
                            antialias);
     }
-    result_.EndPaintOfPairedBegin();
+    result_->EndPaintOfPairedBegin();
 
     PushState(StateEntry::kClip);
     current_transform_ = &local_transform;
@@ -591,7 +593,7 @@ void ConversionContext<Result>::StartEffect(
   DCHECK(!has_filter || !(has_opacity || has_other_effects));
 
   // Apply effects.
-  result_.StartPaint();
+  result_->StartPaint();
   if (!has_filter) {
     if (has_other_effects) {
       cc::PaintFlags flags;
@@ -610,7 +612,7 @@ void ConversionContext<Result>::StartEffect(
         effect.Filter().AsCcFilterOperations()));
     save_layer_id = push<cc::SaveLayerOp>(filter_flags);
   }
-  result_.EndPaintOfPairedBegin();
+  result_->EndPaintOfPairedBegin();
 
   DCHECK_NE(save_layer_id, kNotFound);
 
@@ -633,8 +635,8 @@ void ConversionContext<Result>::StartEffect(
     effect_bounds_stack_.back().bounds = filtered_bounds;
     // Emit an empty paint operation to add the filtered bounds (mapped to layer
     // space) to the visual rect of the filter's SaveLayerOp.
-    result_.StartPaint();
-    result_.EndPaintOfUnpaired(chunk_to_layer_mapper_.MapVisualRect(
+    result_->StartPaint();
+    result_->EndPaintOfUnpaired(chunk_to_layer_mapper_.MapVisualRect(
         gfx::ToEnclosingRect(filtered_bounds)));
   }
 }
@@ -668,14 +670,14 @@ void ConversionContext<Result>::EndEffect() {
   gfx::RectF bounds = bounds_info.bounds;
   if (current_effect_->Filter().IsEmpty()) {
     if (!bounds.IsEmpty()) {
-      result_.UpdateSaveLayerBounds(bounds_info.save_layer_id,
-                                    gfx::RectFToSkRect(bounds));
+      result_->UpdateSaveLayerBounds(bounds_info.save_layer_id,
+                                     gfx::RectFToSkRect(bounds));
     }
   } else {
     // We need an empty bounds for empty filter to avoid performance issue of
     // PDF renderer. See crbug.com/740824.
-    result_.UpdateSaveLayerBounds(bounds_info.save_layer_id,
-                                  gfx::RectFToSkRect(bounds));
+    result_->UpdateSaveLayerBounds(bounds_info.save_layer_id,
+                                   gfx::RectFToSkRect(bounds));
     // We need to propagate the filtered bounds to the parent.
     bounds = current_effect_->MapRect(bounds);
   }
@@ -737,7 +739,7 @@ void ConversionContext<Result>::SwitchToTransform(
   if (projection.IsIdentity())
     return;
 
-  result_.StartPaint();
+  result_->StartPaint();
   push<cc::SaveOp>();
   if (projection.IsIdentityOr2dTranslation()) {
     gfx::Vector2dF translation = projection.To2dTranslation();
@@ -745,7 +747,7 @@ void ConversionContext<Result>::SwitchToTransform(
   } else {
     push<cc::ConcatOp>(gfx::TransformToSkM44(projection));
   }
-  result_.EndPaintOfPairedBegin();
+  result_->EndPaintOfPairedBegin();
   previous_transform_ = current_transform_;
   current_transform_ = &target_transform;
 }
@@ -755,9 +757,9 @@ void ConversionContext<Result>::EndTransform() {
   if (!previous_transform_)
     return;
 
-  result_.StartPaint();
+  result_->StartPaint();
   push<cc::RestoreOp>();
-  result_.EndPaintOfPairedEnd();
+  result_->EndPaintOfPairedEnd();
   current_transform_ = previous_transform_;
   previous_transform_ = nullptr;
 }
@@ -817,11 +819,11 @@ void ConversionContext<Result>::Convert(const PaintChunkSubset& chunks,
         continue;
       }
 
-      result_.StartPaint();
+      result_->StartPaint();
       if (!record.empty()) {
         push<cc::DrawRecordOp>(std::move(record));
       }
-      result_.EndPaintOfUnpaired(visual_rect);
+      result_->EndPaintOfUnpaired(visual_rect);
     }
 
     // If we have an empty paint chunk, then we would prefer ignoring it.
@@ -856,10 +858,10 @@ void PaintChunksToCcLayer::ConvertInto(
     PaintOpBufferExt buffer;
     ConversionContext(layer_state, layer_offset, buffer).Convert(chunks);
     recorder.getRecordingCanvas()->drawPicture(buffer.ReleaseAsRecord());
-    params.tracking.CheckUnderInvalidations(params.debug_name,
-                                            recorder.finishRecordingAsPicture(),
-                                            params.interest_rect);
-    auto under_invalidation_record = params.tracking.UnderInvalidationRecord();
+    params.tracking->CheckUnderInvalidations(
+        params.debug_name, recorder.finishRecordingAsPicture(),
+        params.interest_rect);
+    auto under_invalidation_record = params.tracking->UnderInvalidationRecord();
     if (!under_invalidation_record.empty()) {
       cc_list.StartPaint();
       cc_list.push<cc::DrawRecordOp>(std::move(under_invalidation_record));
@@ -909,14 +911,15 @@ class LayerPropertiesUpdater {
   void UpdateLayerSelection(const LayerSelectionData&);
 
   ChunkToLayerMapper chunk_to_layer_mapper_;
-  cc::Layer& layer_;
-  const PaintChunkSubset& chunks_;
-  cc::LayerSelection& layer_selection_;
+  const raw_ref<cc::Layer> layer_;
+  const raw_ref<const PaintChunkSubset> chunks_;
+  const raw_ref<cc::LayerSelection> layer_selection_;
   bool selection_only_;
 
   cc::TouchActionRegion touch_action_region_;
   TouchAction last_disable_cursor_control_ = TouchAction::kNone;
-  const ScrollPaintPropertyNode* last_disable_cursor_control_scroll_ = nullptr;
+  raw_ptr<const ScrollPaintPropertyNode> last_disable_cursor_control_scroll_ =
+      nullptr;
 
   cc::Region wheel_event_region_;
   cc::Region non_fast_scrollable_region_;
@@ -1000,7 +1003,7 @@ void LayerPropertiesUpdater::UpdateScrollHitTestData(
       return;
     }
     auto scroll_element_id = scroll_node->GetCompositorElementId();
-    if (layer_.element_id() == scroll_element_id) {
+    if (layer_->element_id() == scroll_element_id) {
       // layer_ is the composited layer of the scroll hit test chunk.
       return;
     }
@@ -1080,24 +1083,24 @@ LayerPropertiesUpdater::PaintedSelectionBoundToLayerSelectionBound(
 void LayerPropertiesUpdater::UpdateLayerSelection(
     const LayerSelectionData& layer_selection_data) {
   if (layer_selection_data.start) {
-    layer_selection_.start =
+    layer_selection_->start =
         PaintedSelectionBoundToLayerSelectionBound(*layer_selection_data.start);
-    layer_selection_.start.layer_id = layer_.id();
+    layer_selection_->start.layer_id = layer_->id();
   }
 
   if (layer_selection_data.end) {
-    layer_selection_.end =
+    layer_selection_->end =
         PaintedSelectionBoundToLayerSelectionBound(*layer_selection_data.end);
-    layer_selection_.end.layer_id = layer_.id();
+    layer_selection_->end.layer_id = layer_->id();
   }
 }
 
 void LayerPropertiesUpdater::Update() {
   bool any_selection_was_painted = false;
-  for (auto it = chunks_.begin(); it != chunks_.end(); ++it) {
+  for (auto it = chunks_->begin(); it != chunks_->end(); ++it) {
     const PaintChunk& chunk = *it;
     const auto* non_composited_scrollbar =
-        NonCompositedScrollbarDisplayItem(it, layer_);
+        NonCompositedScrollbarDisplayItem(it, *layer_);
     if ((!selection_only_ && (chunk.hit_test_data || non_composited_scrollbar ||
                               chunk.region_capture_data)) ||
         chunk.layer_selection_data) {
@@ -1124,24 +1127,24 @@ void LayerPropertiesUpdater::Update() {
   }
 
   if (!selection_only_) {
-    layer_.SetTouchActionRegion(std::move(touch_action_region_));
-    layer_.SetWheelEventRegion(std::move(wheel_event_region_));
-    layer_.SetNonFastScrollableRegion(std::move(non_fast_scrollable_region_));
-    layer_.SetCaptureBounds(std::move(capture_bounds_));
+    layer_->SetTouchActionRegion(std::move(touch_action_region_));
+    layer_->SetWheelEventRegion(std::move(wheel_event_region_));
+    layer_->SetNonFastScrollableRegion(std::move(non_fast_scrollable_region_));
+    layer_->SetCaptureBounds(std::move(capture_bounds_));
   }
 
   if (any_selection_was_painted) {
     // If any selection was painted, but we didn't see the start or end bound
     // recorded, it could have been outside of the painting cull rect thus
     // invisible. Mark the bound as such if this is the case.
-    if (layer_selection_.start.type == gfx::SelectionBound::EMPTY) {
-      layer_selection_.start.type = gfx::SelectionBound::LEFT;
-      layer_selection_.start.hidden = true;
+    if (layer_selection_->start.type == gfx::SelectionBound::EMPTY) {
+      layer_selection_->start.type = gfx::SelectionBound::LEFT;
+      layer_selection_->start.hidden = true;
     }
 
-    if (layer_selection_.end.type == gfx::SelectionBound::EMPTY) {
-      layer_selection_.end.type = gfx::SelectionBound::RIGHT;
-      layer_selection_.end.hidden = true;
+    if (layer_selection_->end.type == gfx::SelectionBound::EMPTY) {
+      layer_selection_->end.type = gfx::SelectionBound::RIGHT;
+      layer_selection_->end.hidden = true;
     }
   }
 }

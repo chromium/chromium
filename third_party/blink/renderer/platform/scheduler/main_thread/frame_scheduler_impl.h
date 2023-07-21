@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequence_manager/task_queue.h"
@@ -305,9 +306,9 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   TraceableVariableController tracing_controller_;
   std::unique_ptr<FrameTaskQueueController> frame_task_queue_controller_;
 
-  MainThreadSchedulerImpl* const main_thread_scheduler_;  // NOT OWNED
-  PageSchedulerImpl* parent_page_scheduler_;              // NOT OWNED
-  FrameScheduler::Delegate* delegate_;                    // NOT OWNED
+  const raw_ptr<MainThreadSchedulerImpl> main_thread_scheduler_;  // NOT OWNED
+  raw_ptr<PageSchedulerImpl> parent_page_scheduler_;              // NOT OWNED
+  raw_ptr<FrameScheduler::Delegate> delegate_;                    // NOT OWNED
   SchedulingLifecycleState throttling_state_;
   TraceableState<bool, TracingCategory::kInfo> frame_visible_;
   TraceableState<bool, TracingCategory::kInfo> frame_paused_;

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DISPLAY_ITEM_CACHE_SKIPPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DISPLAY_ITEM_CACHE_SKIPPER_H_
 
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -22,11 +23,11 @@ class DisplayItemCacheSkipper final {
   DisplayItemCacheSkipper(const DisplayItemCacheSkipper&) = delete;
   DisplayItemCacheSkipper& operator=(const DisplayItemCacheSkipper&) = delete;
   ~DisplayItemCacheSkipper() {
-    context_.GetPaintController().EndSkippingCache();
+    context_->GetPaintController().EndSkippingCache();
   }
 
  private:
-  GraphicsContext& context_;
+  const raw_ref<GraphicsContext> context_;
 };
 
 }  // namespace blink

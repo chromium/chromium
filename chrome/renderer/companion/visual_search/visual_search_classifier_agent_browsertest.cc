@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/memory/discardable_memory_allocator.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_discardable_memory_allocator.h"
@@ -97,7 +98,7 @@ class VisualSearchClassifierAgentTest : public ChromeRenderViewTest {
   }
 
  protected:
-  VisualSearchClassifierAgent* agent_;  // Owned by RenderFrame
+  raw_ptr<VisualSearchClassifierAgent> agent_;  // Owned by RenderFrame
   base::HistogramTester histogram_tester_;
   TestVisualResultHandler test_handler_;
   base::File model_file_;

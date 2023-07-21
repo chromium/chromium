@@ -22,7 +22,7 @@ DrawingRecorder::DrawingRecorder(GraphicsContext& context,
   // Must check DrawingRecorder::UseCachedDrawingIfPossible before creating the
   // DrawingRecorder.
 #if DCHECK_IS_ON()
-  context_.GetPaintController().AssertLastCheckedCachedItem(client_, type_);
+  context_->GetPaintController().AssertLastCheckedCachedItem(*client_, type_);
   DCHECK(DisplayItem::IsDrawingType(display_item_type));
 #endif
 
@@ -40,14 +40,14 @@ DrawingRecorder::DrawingRecorder(GraphicsContext& context,
 
 DrawingRecorder::~DrawingRecorder() {
   if (dom_node_id_to_restore_)
-    context_.SetDOMNodeId(dom_node_id_to_restore_.value());
+    context_->SetDOMNodeId(dom_node_id_to_restore_.value());
 
-  context_.SetInDrawingRecorder(false);
+  context_->SetInDrawingRecorder(false);
 
-  context_.GetPaintController().CreateAndAppend<DrawingDisplayItem>(
-      client_, type_, visual_rect_, context_.EndRecording(),
-      client_.VisualRectOutsetForRasterEffects(),
-      client_.GetPaintInvalidationReason());
+  context_->GetPaintController().CreateAndAppend<DrawingDisplayItem>(
+      *client_, type_, visual_rect_, context_->EndRecording(),
+      client_->VisualRectOutsetForRasterEffects(),
+      client_->GetPaintInvalidationReason());
 }
 
 }  // namespace blink

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "media/base/mock_filters.h"
 #include "media/base/video_frame.h"
 #include "media/mojo/clients/mock_mojo_video_encoder_metrics_provider.h"
@@ -101,7 +102,7 @@ class MockVideoEncoderWrapper : public media::VideoEncoder {
   }
 
  private:
-  media::MockVideoEncoder* const mock_encoder_;
+  const raw_ptr<media::MockVideoEncoder> mock_encoder_;
   base::OnceClosure dtor_cb_;
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -192,7 +193,7 @@ class MediaRecorderEncoderWrapperTest : public ::testing::Test {
   media::VideoEncoder::OutputCB output_cb;
 
   media::MockVideoEncoder mock_encoder_;
-  media::MockMojoVideoEncoderMetricsProvider* mock_metrics_provider_;
+  raw_ptr<media::MockMojoVideoEncoderMetricsProvider> mock_metrics_provider_;
   MediaRecorderEncoderWrapper encoder_wrapper_;
 };
 

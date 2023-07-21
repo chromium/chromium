@@ -30,6 +30,8 @@
 
 #include "base/check_op.h"
 #include "base/containers/lru_cache.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/numerics/checked_math.h"
 #include "base/task/single_thread_task_runner.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
@@ -130,7 +132,7 @@ class ScopedRGBEmulationColorMask {
   ~ScopedRGBEmulationColorMask();
 
  private:
-  WebGLRenderingContextBase* context_;
+  raw_ptr<WebGLRenderingContextBase> context_;
   GLboolean color_mask_[4];
   const bool requires_emulation_;
 };
@@ -1065,7 +1067,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
     }
 
    private:
-    Member<T>& extension_field_;
+    raw_ref<Member<T>> extension_field_;
     // ExtensionTracker holds it's own reference to the extension to ensure
     // that it is not deleted before this object's destructor is called
     Member<T> extension_;
@@ -1125,8 +1127,8 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
     }
 
    private:
-    DrawingBuffer* drawing_buffer_;
-    WebGLFramebuffer* read_framebuffer_binding_;
+    raw_ptr<DrawingBuffer> drawing_buffer_;
+    raw_ptr<WebGLFramebuffer> read_framebuffer_binding_;
     bool succeeded_;
   };
 
