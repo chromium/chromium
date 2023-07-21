@@ -82,7 +82,7 @@ declare_args() {
   #
   # TODO(crbug.com/1463749): Enable on ChromeOS.
   enable_rust_base_conversions =
-      enable_rust && (!is_chromeos || enable_all_rust_features)
+      enable_rust && (!(is_chromeos || is_ios) || enable_all_rust_features)
 
   # The base::JSONReader implementation. Requires base conversions.
   enable_rust_json = enable_rust && enable_all_rust_features
@@ -92,11 +92,13 @@ declare_args() {
 
   # Support for QR code generation - see https://crbug.com/1431991.
   #
-  # Note the QR code component is not used on all enabled platforms (e.g iOS),
-  # but by enabling it here it is available where it is depended on.
+  # Per go/rusty-qr-code-generator the feature is not actually used on iOS, but
+  # `is_ios` below is checked for parity with `enable_rust_base_conversions`
+  # (which is a dependency of `enable_rust_qr`).
   #
   # TODO(crbug.com/1463749): Enable on ChromeOS.
-  enable_rust_qr = enable_rust && (!is_chromeos || enable_all_rust_features)
+  enable_rust_qr =
+      enable_rust && (!(is_chromeos || is_ios) || enable_all_rust_features)
 
   # Support for Rust mojo bindings.
   enable_rust_mojo = enable_rust && enable_all_rust_features
