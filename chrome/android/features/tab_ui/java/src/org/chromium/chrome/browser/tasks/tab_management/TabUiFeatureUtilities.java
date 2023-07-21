@@ -51,23 +51,6 @@ public class TabUiFeatureUtilities {
             new IntCachedFieldTrialParameter(
                     ChromeFeatureList.TAB_TO_GTS_ANIMATION, MIN_MEMORY_MB_PARAM, 2048);
 
-    // Field trial parameter for removing tab group auto creation from target-blank links and adding
-    // both "Open in new tab" and "Open in new tab in group" as context menu items.
-    private static final String TAB_GROUP_AUTO_CREATION_PARAM = "enable_tab_group_auto_creation";
-
-    public static final BooleanCachedFieldTrialParameter ENABLE_TAB_GROUP_AUTO_CREATION =
-            new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
-                    TAB_GROUP_AUTO_CREATION_PARAM, false);
-
-    // Field trial parameter for configuring the "Open in new tab" and "Open in new tab in group"
-    // item order in the context menu.
-    private static final String SHOW_OPEN_IN_TAB_GROUP_MENU_ITEM_FIRST_PARAM =
-            "show_open_in_tab_group_menu_item_first";
-
-    public static final BooleanCachedFieldTrialParameter SHOW_OPEN_IN_TAB_GROUP_MENU_ITEM_FIRST =
-            new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
-                    SHOW_OPEN_IN_TAB_GROUP_MENU_ITEM_FIRST_PARAM, true);
-
     // Field trial parameter for disabling new tab button anchor for tab strip redesign.
     private static final String TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR_PARAM = "disable_ntb_anchor";
     public static final BooleanCachedFieldTrialParameter TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR =
@@ -215,17 +198,5 @@ public class TabUiFeatureUtilities {
         return !DeviceClassManager.enableAccessibilityLayout(context)
                 && ChromeFeatureList.sInstantStart.isEnabled() && !isTablet
                 && !SysUtils.isLowEndDevice();
-    }
-
-    public static Float sTabMinWidthForTesting;
-
-    /**
-     * @return Whether the "Open in new tab in group" context menu item should show before the
-     * "Open in new tab" item.
-     */
-    public static boolean showContextMenuOpenNewTabInGroupItemFirst() {
-        assert !ENABLE_TAB_GROUP_AUTO_CREATION.getValue();
-
-        return SHOW_OPEN_IN_TAB_GROUP_MENU_ITEM_FIRST.getValue();
     }
 }

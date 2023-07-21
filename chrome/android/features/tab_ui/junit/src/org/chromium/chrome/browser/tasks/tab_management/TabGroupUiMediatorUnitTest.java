@@ -555,26 +555,7 @@ public class TabGroupUiMediatorUnitTest {
 
     @Test
     @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
-    public void tabAddition_SingleTab_Refresh_WithAutoGroupCreation() {
-        TabUiFeatureUtilities.ENABLE_TAB_GROUP_AUTO_CREATION.setForTesting(true);
-        initAndAssertProperties(mTab1);
-
-        TabImpl newTab = prepareTab(TAB4_ID, TAB4_ID);
-        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, newTab));
-        doReturn(tabs).when(mTabGroupModelFilter).getRelatedTabList(TAB4_ID);
-
-        mTabModelObserverArgumentCaptor.getValue().didAddTab(newTab,
-                TabLaunchType.FROM_LONGPRESS_BACKGROUND, TabCreationState.LIVE_IN_FOREGROUND,
-                false);
-
-        // Strip should be be reset when long pressing a link and add a tab into group.
-        verifyResetStrip(true, tabs);
-    }
-
-    @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     public void tabAddition_SingleTab_Refresh_WithoutAutoGroupCreation() {
-        TabUiFeatureUtilities.ENABLE_TAB_GROUP_AUTO_CREATION.setForTesting(false);
         initAndAssertProperties(mTab1);
 
         TabImpl newTab = prepareTab(TAB4_ID, TAB4_ID);
@@ -587,9 +568,6 @@ public class TabGroupUiMediatorUnitTest {
 
         // Strip should be be reset when long pressing a link and add a tab into group.
         verifyResetStrip(true, tabs);
-
-        // The default value is true. Reset back to the default value.
-        TabUiFeatureUtilities.ENABLE_TAB_GROUP_AUTO_CREATION.setForTesting(true);
     }
 
     @Test

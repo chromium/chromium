@@ -38,11 +38,11 @@ import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.UserDataHost;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -53,14 +53,13 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 /**
  * Tests for {@link TabGroupModelFilter}.
  */
 @SuppressWarnings("ResultOfMethodCallIgnored")
-@RunWith(ParameterizedRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabGroupModelFilterUnitTest {
     private static final int TAB1_ID = 456;
@@ -120,17 +119,6 @@ public class TabGroupModelFilterUnitTest {
 
     private TabGroupModelFilter mTabGroupModelFilter;
     private InOrder mTabModelInOrder;
-
-    private final boolean mSupportAutoGroupCreation;
-
-    @ParameterizedRobolectricTestRunner.Parameters(name = "SupportAutoGroupCreation_{0}")
-    public static Collection autoGroupCreationParams() {
-        return Arrays.asList(new Object[][] {{true}, {false}});
-    }
-
-    public TabGroupModelFilterUnitTest(boolean supportAutoGroupCreation) {
-        mSupportAutoGroupCreation = supportAutoGroupCreation;
-    }
 
     private Tab prepareTab(int tabId, int rootId, int parentTabId) {
         Tab tab = mock(Tab.class);
@@ -221,7 +209,7 @@ public class TabGroupModelFilterUnitTest {
     private void setupTabGroupModelFilter(boolean isTabRestoreCompleted, boolean isIncognito) {
         mTabs.clear();
         doReturn(isIncognito).when(mTabModel).isIncognito();
-        mTabGroupModelFilter = new TabGroupModelFilter(mTabModel, mSupportAutoGroupCreation);
+        mTabGroupModelFilter = new TabGroupModelFilter(mTabModel);
         mTabGroupModelFilter.addTabGroupObserver(mTabGroupModelFilterObserver);
 
         doReturn(isIncognito).when(mTab1).isIncognito();
@@ -349,11 +337,7 @@ public class TabGroupModelFilterUnitTest {
     public void addTab_SetRootId() {
         Tab newTab = prepareTab(NEW_TAB_ID_0, NEW_TAB_ID_0, TAB1_ID);
 
-        if (mSupportAutoGroupCreation) {
-            doReturn(TabLaunchType.FROM_CHROME_UI).when(newTab).getLaunchType();
-        } else {
-            doReturn(TabLaunchType.FROM_TAB_GROUP_UI).when(newTab).getLaunchType();
-        }
+        doReturn(TabLaunchType.FROM_TAB_GROUP_UI).when(newTab).getLaunchType();
 
         addTabToTabModel(POSITION1 + 1, newTab);
         assertThat(CriticalPersistedTabData.from(newTab).getRootId(), equalTo(TAB1_ROOT_ID));
@@ -384,11 +368,7 @@ public class TabGroupModelFilterUnitTest {
         doReturn(TabLaunchType.FROM_CHROME_UI).when(newTab).getLaunchType();
         addTabToTabModel(POSITION1 + 1, newTab);
 
-        if (mSupportAutoGroupCreation) {
-            assertThat(CriticalPersistedTabData.from(newTab).getRootId(), equalTo(TAB1_ROOT_ID));
-        } else {
-            assertThat(CriticalPersistedTabData.from(newTab).getRootId(), equalTo(NEW_TAB_ID_0));
-        }
+        assertThat(CriticalPersistedTabData.from(newTab).getRootId(), equalTo(NEW_TAB_ID_0));
     }
 
     @Test
