@@ -223,7 +223,9 @@ void Mp4TrackFragmentRunBoxWriter::Write(BoxByteStream& writer) {
            mp4::writable_boxes::TrackFragmentRunFlags::kSampleFlagsPresent));
 
   if (duration_exists) {
-    CHECK_EQ(box_.sample_count, box_.sample_durations.size());
+    // fragment, if not last, has an additional timestamp entry for last
+    // item duration calculation.
+    CHECK_EQ(box_.sample_count + 1, box_.sample_timestamps.size());
   }
 
   if (size_exists) {
@@ -236,7 +238,11 @@ void Mp4TrackFragmentRunBoxWriter::Write(BoxByteStream& writer) {
 
   for (uint32_t i = 0; i < box_.sample_count; ++i) {
     if (duration_exists) {
-      writer.WriteU32(box_.sample_durations[i].InMilliseconds());
+      // TODO(crbug.com://1465031): sample_timestamps will be converted to
+      // per sample duration with timescale.
+      writer.WriteU32(
+          (box_.sample_timestamps[i + 1] - box_.sample_timestamps[i])
+              .InMilliseconds());
     }
 
     if (size_exists) {

@@ -104,6 +104,9 @@ void Mp4MovieHeaderBoxWriter::Write(BoxByteStream& writer) {
   WriteIsoTime(writer, box_.creation_time);
   WriteIsoTime(writer, box_.modification_time);
   writer.WriteU32(box_.timescale);
+
+  // TODO(crbug.com://1465031): The conversion to timescale will be made in
+  // the box writer with its duration calculation.
   writer.WriteU64(box_.duration.InMilliseconds());
 
   writer.WriteU32(0x00010000);  // normal rate.

@@ -1576,3 +1576,14 @@ ffmpeg -i bear6.wav -c:a dtsxS -b:a 160000 -movflags frag_keyframe -y bear_dtsx.
 ```
 ### one_frame_1280x720.mjpeg
 It's a single frame mjpeg data. Resolution: 1280x720, color primary: sRGB, transfer function: BT.709, color matrix: BT.601, color range: full-range.
+
+### avc-bitstream-format-0.h264
+The first 2 frames of the H.264 with bitstream format (NALU length)
+
+avc-bitstream-format-0.h264: IDR
+- ffmpeg -y -i bear-1280x720.mp4 -vcodec copy -f m4v avc-bitstream-format-0.h264
+avc-bitstream-format-1.h264: Non-IDR
+- split bear-1280x720.mp4 to annexb files by command of
+  ffmpeg -i %1 -f image2 -vcodec copy -bsf h264_mp4toannexb "%d.h264"
+- manually convert one of created Non-IDR annexb file to avc bitstream.
+  (replace annexb start code with length)

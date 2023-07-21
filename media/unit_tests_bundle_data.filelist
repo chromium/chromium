@@ -44,6 +44,8 @@
 //media/test/data/av1-monochrome-I-frame-320x240-8bpp
 //media/test/data/av1-show_existing_frame.ivf
 //media/test/data/av1-svc-L2T2.ivf
+//media/test/data/avc-bitstream-format-0.h264
+//media/test/data/avc-bitstream-format-1.h264
 //media/test/data/bali_640x360_P420.yuv
 //media/test/data/basketball_2_layers.vvc
 //media/test/data/bbb-320x240-2video-2audio.mp4

@@ -5,6 +5,10 @@
 #ifndef MEDIA_MUXERS_MP4_MUXER_DELEGATE_H_
 #define MEDIA_MUXERS_MP4_MUXER_DELEGATE_H_
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "base/thread_annotations.h"
@@ -13,13 +17,13 @@
 #include "media/base/video_encoder.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/writable_box_definitions.h"
+#include "media/muxers/mp4_muxer_context.h"
 #include "media/muxers/muxer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
 class AudioParameters;
-class Mp4MuxerNaluReader;
 
 // Mp4MuxerDelegate builds the MP4 boxes from the encoded stream.
 // The boxes fields will start to be populated from the first stream and
@@ -36,12 +40,14 @@ class MEDIA_EXPORT Mp4MuxerDelegate {
       const Muxer::VideoParameters& params,
       base::StringPiece encoded_data,
       absl::optional<VideoEncoder::CodecDescription> codec_description,
-      base::TimeTicks timestamp);
+      base::TimeTicks timestamp,
+      bool is_key_frame);
 
-  void AddAudioFrame(const AudioParameters& params,
-                     base::StringPiece encoded_data,
-                     const AudioEncoder::CodecDescription& codec_description,
-                     base::TimeTicks timestamp);
+  void AddAudioFrame(
+      const AudioParameters& params,
+      base::StringPiece encoded_data,
+      absl::optional<AudioEncoder::CodecDescription> codec_description,
+      base::TimeTicks timestamp);
   // Write to the big endian ISO-BMFF boxes and call `write_callback`.
   void Flush();
 
@@ -56,26 +62,28 @@ class MEDIA_EXPORT Mp4MuxerDelegate {
     mp4::writable_boxes::MediaData mdat;
   };
 
-  void PopulateMovieHeader();
-  void PopulateInitialVideoTrack(const Muxer::VideoParameters& params,
-                                 base::StringPiece encoded_data,
-                                 int index);
-  void PopulateVideoFragment(const Muxer::VideoParameters& params,
-                             base::StringPiece encoded_data,
-                             base::TimeTicks timestamp);
-  void AddSampleDataToTrunAndMdat(mp4::writable_boxes::TrackFragmentRun& trun,
-                                  Mp4MuxerDelegate::Fragment* fragment,
-                                  Mp4MuxerNaluReader& nalu_reader,
-                                  base::StringPiece encoded_data,
-                                  base::TimeTicks timestamp,
-                                  uint32_t timescale);
-  void AddSampleDuration(mp4::writable_boxes::TrackFragmentRun& trun,
-                         base::TimeTicks timestamp,
-                         uint32_t timescale);
+  void BuildMovieBox();
+  void BuildVideoTrackWithKeyframe(
+      const Muxer::VideoParameters& params,
+      base::StringPiece encoded_data,
+      VideoEncoder::CodecDescription codec_description);
+  void BuildVideoFragment(const Muxer::VideoParameters& params,
+                          base::StringPiece encoded_data,
+                          base::TimeTicks timestamp,
+                          bool is_key_frame);
+  void AddNewVideoFragment(Mp4MuxerDelegate::Fragment& fragment);
+  void AddDataToMdat(Mp4MuxerDelegate::Fragment& fragment,
+                     base::StringPiece encoded_data);
+  void AddLastVideoSampleTimestamp();
   int GetNextTrackIndex();
+  void EnsureInitialized();
+  void Reset();
+
+  std::unique_ptr<Mp4MuxerContext> context_;
+  Muxer::WriteDataCB write_callback_;
 
   // The MP4 has single movie box and multiple fragment boxes.
-  mp4::writable_boxes::Movie movie_box_;
+  std::unique_ptr<mp4::writable_boxes::Movie> moov_;
 
   // Only key video frame has `SPS` and `PPS` and it will be a
   // signal of new fragment. In Windows, key frame is every 100th frame.
@@ -83,10 +91,14 @@ class MEDIA_EXPORT Mp4MuxerDelegate {
 
   // video and audio index is a 0 based index that is an item of the container.
   // The track id would be plus one on this index value.
-  int video_track_index_ = -1;
+  absl::optional<int> video_track_index_;
   int next_track_index_ = 0;
-  std::vector<base::TimeTicks> video_captured_time_;
 
+  // Duration time delta for the video track.
+  base::TimeTicks start_video_time_;
+  base::TimeTicks last_video_time_;
+
+  double video_frame_rate_;
   Muxer::WriteDataCB write_data_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);

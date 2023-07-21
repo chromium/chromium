@@ -725,6 +725,8 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4Fragments) {
   std::vector<uint8_t> written_data;
   CreateContext(written_data);
 
+  // TODO(crbug.com://1465031): The client passes the timestamp.
+  // Duration conversion will be done in the box writer.
   constexpr uint32_t kSampleDurations[] = {960, 960, 960};
   constexpr uint32_t kSampleSizes[] = {6400, 333, 333};
   constexpr uint32_t kSampleCount = 3u;
@@ -779,12 +781,16 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4Fragments) {
            static_cast<S>(mp4::writable_boxes::FragmentSampleFlags::
                               kSampleFlagDependsYes));
 
-      std::vector<base::TimeDelta> durations;
+      std::vector<base::TimeTicks> time_ticks;
+      base::TimeTicks base_time_ticks = base::TimeTicks::Now();
+      time_ticks.push_back(base_time_ticks);
+      base::TimeDelta delta;
       for (auto* iter = std::begin(kSampleDurations);
            iter != std::end(kSampleDurations); ++iter) {
-        durations.push_back(base::Milliseconds(*iter));
+        delta += base::Milliseconds(*iter);
+        time_ticks.push_back(base_time_ticks + delta);
       }
-      video_trun.sample_durations = std::move(durations);
+      video_trun.sample_timestamps = std::move(time_ticks);
       video_fragment.run = std::move(video_trun);
     }
     moof.track_fragments.push_back(std::move(video_fragment));
@@ -828,12 +834,16 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4Fragments) {
            static_cast<S>(mp4::writable_boxes::FragmentSampleFlags::
                               kSampleFlagDependsYes));
 
-      std::vector<base::TimeDelta> durations;
+      std::vector<base::TimeTicks> time_ticks;
+      base::TimeTicks base_time_ticks = base::TimeTicks::Now();
+      time_ticks.push_back(base_time_ticks);
+      base::TimeDelta delta = base::Milliseconds(0);
       for (auto* iter = std::begin(kSampleDurations);
            iter != std::end(kSampleDurations); ++iter) {
-        durations.push_back(base::Milliseconds(*iter));
+        delta += base::Milliseconds(*iter);
+        time_ticks.push_back(base_time_ticks + delta);
       }
-      audio_trun.sample_durations = std::move(durations);
+      audio_trun.sample_timestamps = std::move(time_ticks);
 
       std::vector<uint32_t> sizes(std::begin(kSampleSizes),
                                   std::end(kSampleSizes));

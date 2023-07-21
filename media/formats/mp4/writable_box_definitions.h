@@ -300,7 +300,7 @@ struct MEDIA_EXPORT TrackFragmentRun : FullBox {
 
   // Optional fields, presence is indicated in `flags`. If not present, the
   // default value established in the `TrackFragmentHeader` is used.
-  std::vector<base::TimeDelta> sample_durations;
+  std::vector<base::TimeTicks> sample_timestamps;
   std::vector<uint32_t> sample_sizes;
   std::vector<uint32_t> sample_flags;
   // We don't support sample_composition_time_offsets as we don't know
