@@ -11,7 +11,7 @@ found in the LICENSE file.
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/welcome_main_layout"
+        android:id="@+id/history_sync_main_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:animateLayoutChanges="true"

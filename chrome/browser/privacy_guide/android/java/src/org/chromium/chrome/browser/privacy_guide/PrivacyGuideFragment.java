@@ -99,6 +99,9 @@ public class PrivacyGuideFragment
         mPagerAdapter = new PrivacyGuidePagerAdapter(this, new StepDisplayHandlerImpl());
         mNavbarVisibilityDelegate = new NavbarVisibilityDelegate(mPagerAdapter.getItemCount());
         mViewPager.setAdapter(mPagerAdapter);
+        if (ChromeFeatureList.sPrivacyGuidePostMVP.isEnabled()) {
+            mViewPager.setPageTransformer(new PrivacyGuidePageTransformer());
+        }
         mViewPager.setUserInputEnabled(false);
 
         mTabLayout = mView.findViewById(R.id.tab_layout);

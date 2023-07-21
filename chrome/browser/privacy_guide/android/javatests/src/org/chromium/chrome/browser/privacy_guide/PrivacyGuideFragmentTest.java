@@ -13,6 +13,9 @@ import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.anyIntent;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
+import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
+import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -27,12 +30,14 @@ import static org.mockito.Mockito.verify;
 
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Intent;
 import android.view.View;
 
+import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.intent.matcher.IntentMatchers;
 import androidx.test.filters.LargeTest;
@@ -69,6 +74,7 @@ import org.chromium.components.content_settings.PrefNames;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -247,7 +253,8 @@ public class PrivacyGuideFragmentTest {
         }
     }
 
-    private void testButtons(boolean nextVisible, boolean backVisible, boolean finishVisible) {
+    private void testButtonVisibility(
+            boolean nextVisible, boolean backVisible, boolean finishVisible) {
         testButtonVisibility(R.string.next, nextVisible);
         testButtonVisibility(R.string.back, backVisible);
         testButtonVisibility(R.string.privacy_guide_finish_button, finishVisible);
@@ -261,6 +268,10 @@ public class PrivacyGuideFragmentTest {
         onView(allOf(withId(R.id.expand_arrow),
                        withParent(hasSibling(withChild(withText(textId))))))
                 .perform(scrollTo(), click());
+    }
+
+    private ViewInteraction onInternalRadioButtonOfViewWithId(int viewId) {
+        return onView(allOf(withId(R.id.radio_button), isDescendantOfA(withId(viewId))));
     }
 
     @Test
@@ -339,47 +350,79 @@ public class PrivacyGuideFragmentTest {
     @Test
     @LargeTest
     @Feature({"PrivacyGuide"})
-    public void testForwardNavigation() {
+    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
+    public void testForwardNavAllActions() {
+        setMSBBState(false);
+        setHistorySyncState(false);
+        setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
+        setCookieControlsMode(CookieControlsMode.INCOGNITO_ONLY);
+
         launchPrivacyGuide();
-        testButtons(false, false, false);
+        testButtonVisibility(false, false, false);
 
         navigateFromWelcomeToMSBBCard();
-        testButtons(true, true, false);
+        testButtonVisibility(true, true, false);
+        onView(withId(R.id.msbb_switch)).perform(click());
+        onView(withId(R.id.msbb_switch)).check(matches(isChecked()));
 
         navigateFromMSBBToHistorySyncCard();
-        testButtons(true, true, false);
+        testButtonVisibility(true, true, false);
+        onView(withId(R.id.history_sync_switch)).perform(click());
+        onView(withId(R.id.history_sync_switch)).check(matches(isChecked()));
 
         navigateFromHistorySyncToSBCard();
-        testButtons(true, true, false);
+        testButtonVisibility(true, true, false);
+        onView(withId(R.id.enhanced_option)).perform(click());
+        onInternalRadioButtonOfViewWithId(R.id.enhanced_option).check(matches(isChecked()));
 
         navigateFromSBToCookiesCard();
-        testButtons(false, true, true);
+        testButtonVisibility(false, true, true);
+        onView(withId(R.id.block_third_party)).perform(click());
+        onInternalRadioButtonOfViewWithId(R.id.block_third_party).check(matches(isChecked()));
 
         navigateFromCookiesToCompletionCard();
-        testButtons(false, false, false);
+        testButtonVisibility(false, false, false);
     }
 
     @Test
     @LargeTest
     @Feature({"PrivacyGuide"})
     @Features.EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
-    public void testBackButtonNavigation() {
+    public void testBackwardNavAllActions() {
+        setMSBBState(false);
+        setHistorySyncState(false);
+        setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
+        setCookieControlsMode(CookieControlsMode.INCOGNITO_ONLY);
+
         launchPrivacyGuide();
         goToCompletionCard();
 
         pressBack();
+        waitForView(withText(R.string.privacy_guide_done_title), ViewUtils.VIEW_GONE);
         onViewWaiting(withText(R.string.privacy_guide_cookies_intro));
+        onInternalRadioButtonOfViewWithId(R.id.block_third_party).perform(click());
+        onInternalRadioButtonOfViewWithId(R.id.block_third_party).check(matches(isChecked()));
 
         pressBack();
+        waitForView(withText(R.string.privacy_guide_cookies_intro), ViewUtils.VIEW_GONE);
         onViewWaiting(withText(R.string.privacy_guide_safe_browsing_intro));
+        onInternalRadioButtonOfViewWithId(R.id.enhanced_option).perform(click());
+        onInternalRadioButtonOfViewWithId(R.id.enhanced_option).check(matches(isChecked()));
 
         pressBack();
-        onViewWaiting(withText(R.string.privacy_guide_history_sync_toggle));
+        waitForView(withText(R.string.privacy_guide_safe_browsing_intro), ViewUtils.VIEW_GONE);
+        onViewWaiting(allOf(withId(R.id.history_sync_switch), isCompletelyDisplayed()));
+        onView(withId(R.id.history_sync_switch)).perform(click());
+        onView(withId(R.id.history_sync_switch)).check(matches(isChecked()));
 
         pressBack();
-        onViewWaiting(withText(R.string.url_keyed_anonymized_data_title));
+        waitForView(withText(R.string.privacy_guide_history_sync_toggle), ViewUtils.VIEW_GONE);
+        onViewWaiting(allOf(withId(R.id.msbb_switch), isCompletelyDisplayed()));
+        onView(withId(R.id.msbb_switch)).perform(click());
+        onView(withId(R.id.msbb_switch)).check(matches(isChecked()));
 
         pressBack();
+        waitForView(withText(R.string.url_keyed_anonymized_data_title), ViewUtils.VIEW_GONE);
         onViewWaiting(withText(R.string.privacy_guide_fragment_title));
     }
 
