@@ -32,6 +32,11 @@ struct Manifest {
   // This is empty if the start_url is empty.
   url.mojom.Url id;
 
+  // TODO(crbug.com/1466730): Investigate if this should return the
+  // document_url_ if ManifestParser fails to parse the start_url as per
+  // the spec. This can sometimes be an empty KURL, which can be
+  // intentional so that the non existence of a start URL can be handled
+  // further down the callstack.
   url.mojom.Url start_url;
 
   DisplayMode display;
