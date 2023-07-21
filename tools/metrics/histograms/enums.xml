@@ -64641,6 +64641,8 @@ from previous Chrome versions.
   <int value="139569991" label="SharingDeviceExpiration:disabled"/>
   <int value="140257184" label="ChromeOSAmbientModeNewUrl:enabled"/>
   <int value="140427435" label="OmniboxReportSearchboxStats:enabled"/>
+  <int value="140778694"
+      label="CrOSLateBootAudioSuppressSetRTCAudioActive:enabled"/>
   <int value="141482401" label="ConsumerAutoUpdateToggleAllowed:disabled"/>
   <int value="141830539" label="MediaAppPdfSignature:enabled"/>
   <int value="143725809" label="DownloadProgressInfoBar:enabled"/>
@@ -66214,6 +66216,8 @@ from previous Chrome versions.
   <int value="957458620" label="MediaRouterOTRInstance:enabled"/>
   <int value="963457392" label="ChromeHomeModernLayout:disabled"/>
   <int value="963671232" label="DrawOcclusion:disabled"/>
+  <int value="964606028"
+      label="CrOSLateBootAudioSuppressSetRTCAudioActive:disabled"/>
   <int value="964613807" label="ContextualSearchTranslationModel:disabled"/>
   <int value="964801437" label="OmniboxDefaultBrowserPedal:disabled"/>
   <int value="964995928" label="LauncherHideContinueSection:enabled"/>

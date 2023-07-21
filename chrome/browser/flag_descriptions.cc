@@ -5329,6 +5329,11 @@ const char kAudioHFPSwbName[] = "Audio Bluetooth HFP Super-wide-band support";
 const char kAudioHFPSwbDescription[] =
     "Enable Bluetooth HFP Super-wide-band codec if supported.";
 
+const char kAudioSuppressSetRTCAudioActiveName[] =
+    "Suppress calling the SetRTCAudioActive D-Bus method";
+const char kAudioSuppressSetRTCAudioActiveDescription[] =
+    "Don't call the SetRTCAudioActive D-Bus method in CRAS.";
+
 const char kAutoFramingOverrideName[] = "Auto-framing control override";
 const char kAutoFramingOverrideDescription[] =
     "Overrides the default to forcibly enable or disable the auto-framing "

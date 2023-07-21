@@ -460,6 +460,11 @@
     "expiry_milestone": 117
   },
   {
+    "name": "audio-suppress-set-rtc-audio-active",
+    "owners": [ "aaronyu", "chromeos-audio@google.com" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "auto-framing-override",
     "owners": [ "kamesan", "chromeos-camera-eng@google.com" ],
     "expiry_milestone": 116

@@ -3078,6 +3078,9 @@ extern const char kAudioHFPSwbDescription[];
 extern const char kAudioHFPOffloadName[];
 extern const char kAudioHFPOffloadDescription[];
 
+extern const char kAudioSuppressSetRTCAudioActiveName[];
+extern const char kAudioSuppressSetRTCAudioActiveDescription[];
+
 extern const char kAutoFramingOverrideName[];
 extern const char kAutoFramingOverrideDescription[];
 
