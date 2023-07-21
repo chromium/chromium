@@ -17,17 +17,17 @@ import java.util.List;
 /**
  * Reads and writes preferences related to Secure DNS.
  */
-class SecureDnsBridge {
+public class SecureDnsBridge {
     /**
      * An Entry represents the subset of a net::DohProviderEntry that is relevant
      * for display in the UI.
      */
-    static class Entry {
+    public static class Entry {
         public final @NonNull String name; // Display name
         public final @NonNull String config; // DoH config, or "" for the custom entry.
         public final @NonNull String privacy; // Privacy policy link
 
-        Entry(String name, String config, String privacy) {
+        public Entry(String name, String config, String privacy) {
             this.name = name;
             this.config = config;
             this.privacy = privacy;
@@ -65,7 +65,7 @@ class SecureDnsBridge {
      *
      * @param mode The desired new Secure DNS mode.
      */
-    static void setMode(@SecureDnsMode int mode) {
+    public static void setMode(@SecureDnsMode int mode) {
         SecureDnsBridgeJni.get().setMode(mode);
     }
 
@@ -79,7 +79,7 @@ class SecureDnsBridge {
     /**
      * @return The built-in DoH providers that should be displayed to the user.
      */
-    static List<Entry> getProviders() {
+    public static List<Entry> getProviders() {
         String[][] values = SecureDnsBridgeJni.get().getProviders();
         ArrayList<Entry> entries = new ArrayList<>(values.length);
         for (String[] v : values) {
@@ -95,7 +95,7 @@ class SecureDnsBridge {
      *
      * @return The current DoH config for use in "secure" mode, or "" if there is none.
      */
-    static String getConfig() {
+    public static String getConfig() {
         return SecureDnsBridgeJni.get().getConfig();
     }
 
@@ -105,7 +105,7 @@ class SecureDnsBridge {
      * @param config The DoH config to store, or "" to clear the setting.
      * @return True if the input was valid.
      */
-    static boolean setConfig(String config) {
+    public static boolean setConfig(String config) {
         return SecureDnsBridgeJni.get().setConfig(config);
     }
 

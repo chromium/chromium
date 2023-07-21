@@ -12,16 +12,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingStart="@dimen/context_menu_list_lateral_padding"
-    android:paddingEnd="@dimen/context_menu_list_lateral_padding">
+    android:paddingStart="8dp"
+    android:paddingEnd="8dp">
 
     <FrameLayout
         android:id="@+id/menu_header_image_container"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/context_menu_header_vertical_padding"
-        android:layout_marginBottom="@dimen/context_menu_bottom_padding"
-        android:layout_marginEnd="16dp">
+        android:layout_height="wrap_content">
 
         <!-- Circle background for when we have a favicon or monogram -->
         <View
@@ -34,9 +31,9 @@
 
         <ImageView
             android:id="@+id/menu_header_image"
-            android:layout_width="@dimen/context_menu_header_image_max_size"
-            android:layout_height="@dimen/context_menu_header_image_max_size"
-            android:scaleType="centerInside"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:scaleType="centerCrop"
             android:importantForAccessibility="no"
             android:src="@color/thumbnail_placeholder_on_primary_bg" />
     </FrameLayout>
@@ -47,8 +44,8 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_gravity="center_vertical"
-        android:paddingTop="@dimen/context_menu_header_vertical_padding"
-        android:paddingBottom="@dimen/context_menu_bottom_padding">
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
 
         <org.chromium.ui.widget.TextViewWithLeading
             android:id="@+id/menu_header_title"

@@ -214,19 +214,19 @@ public class ArkTabDelegateFactory implements TabDelegateFactory {
                                                   boolean hasHeader) {
             List<MVCListAdapter.ListItem> itemList = new ArrayList<>();
 
-            // Start with the header
-            if (hasHeader) {
-                PropertyModel model = ContextMenuHeaderCoordinator.buildModel(activity, params);
-                itemList.add(new MVCListAdapter.ListItem(ContextMenuCoordinator.ListItemType.HEADER,
-                        model));
-            }
+            // TODO Start with the header
+//            if (hasHeader) {
+//                PropertyModel model = ContextMenuHeaderCoordinator.buildModel(activity, params);
+//                itemList.add(new MVCListAdapter.ListItem(ContextMenuCoordinator.ListItemType.HEADER,
+//                        model));
+//            }
 
             for (Pair<Integer, MVCListAdapter.ModelList> group : items) {
                 // Add a divider
-                if (group.second.size() > 0) {
-                    itemList.add(new MVCListAdapter.ListItem(
-                            ContextMenuCoordinator.ListItemType.DIVIDER, new PropertyModel()));
-                }
+//                if (group.second.size() > 0) {
+//                    itemList.add(new MVCListAdapter.ListItem(
+//                            ContextMenuCoordinator.ListItemType.DIVIDER, new PropertyModel()));
+//                }
                 for (MVCListAdapter.ListItem listItem : group.second) {
                     itemList.add(listItem);
                 }

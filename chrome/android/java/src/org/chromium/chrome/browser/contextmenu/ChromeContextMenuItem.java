@@ -198,12 +198,6 @@ class ChromeContextMenuItem {
      * @return Returns the string that describes the action of the item.
      */
     private static @StringRes int getStringId(Context context, @Item int item) {
-        assert STRING_IDS.length == Item.NUM_ENTRIES;
-
-        if (item == Item.OPEN_IN_NEW_TAB) {
-            return R.string.contextmenu_open_in_new_tab_group;
-        }
-
         return STRING_IDS[item];
     }
 

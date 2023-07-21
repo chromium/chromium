@@ -42,6 +42,13 @@
                         app:z_setting_titleText="清除浏览数据"
                         />
 
+                    <com.zpj.widget.setting.CommonSettingItem
+                        android:id="@+id/item_secure_dns"
+                        style="@style/setting_item_style"
+                        app:z_setting_titleText="使用安全 DNS"
+                        app:z_setting_infoText="确定如何通过安全连接来连接到网站"
+                        />
+
                     <com.zpj.widget.setting.SwitchSettingItem
                         android:id="@+id/item_navigation_error"
                         style="@style/setting_item_style"

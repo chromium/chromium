@@ -336,11 +336,11 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                         linkGroup.add(createListItem(Item.OPEN_IN_NEW_WINDOW));
                     }
                 }
-                if ((mMode == ContextMenuMode.NORMAL || mMode == ContextMenuMode.CUSTOM_TAB)) {
-                    mShowEphemeralTabNewLabel = shouldTriggerEphemeralTabHelpUi();
-                    linkGroup.add(
-                            createListItem(Item.OPEN_IN_EPHEMERAL_TAB, mShowEphemeralTabNewLabel));
-                }
+//                if ((mMode == ContextMenuMode.NORMAL || mMode == ContextMenuMode.CUSTOM_TAB)) {
+//                    mShowEphemeralTabNewLabel = shouldTriggerEphemeralTabHelpUi();
+//                    linkGroup.add(
+//                            createListItem(Item.OPEN_IN_EPHEMERAL_TAB, mShowEphemeralTabNewLabel));
+//                }
             }
             if (!MailTo.isMailTo(mParams.getLinkUrl().getSpec())
                     && !UrlUtilities.isTelScheme(mParams.getLinkUrl())) {
@@ -387,30 +387,26 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             boolean isSrcDownloadableScheme =
                     UrlUtilities.isDownloadableScheme(mParams.getSrcUrl());
             // Avoid showing open image option for same image which is already opened.
-            if (mMode == ContextMenuMode.CUSTOM_TAB
-                    && !mItemDelegate.getPageUrl().equals(mParams.getSrcUrl())) {
-                imageGroup.add(createListItem(Item.OPEN_IMAGE));
-            }
-            if (mMode == ContextMenuMode.NORMAL) {
-                imageGroup.add(createListItem(Item.OPEN_IMAGE_IN_NEW_TAB));
-            }
-            if ((mMode == ContextMenuMode.NORMAL || mMode == ContextMenuMode.CUSTOM_TAB)) {
-                if (mShowEphemeralTabNewLabel == null) {
-                    mShowEphemeralTabNewLabel = shouldTriggerEphemeralTabHelpUi();
-                }
-                imageGroup.add(createListItem(
-                        Item.OPEN_IMAGE_IN_EPHEMERAL_TAB, mShowEphemeralTabNewLabel));
-            }
+//            if (mMode == ContextMenuMode.CUSTOM_TAB
+//                    && !mItemDelegate.getPageUrl().equals(mParams.getSrcUrl())) {
+//                imageGroup.add(createListItem(Item.OPEN_IMAGE));
+//            }
+            imageGroup.add(createListItem(Item.OPEN_IMAGE));
+//            if ((mMode == ContextMenuMode.NORMAL || mMode == ContextMenuMode.CUSTOM_TAB)) {
+//                if (mShowEphemeralTabNewLabel == null) {
+//                    mShowEphemeralTabNewLabel = shouldTriggerEphemeralTabHelpUi();
+//                }
+//                imageGroup.add(createListItem(
+//                        Item.OPEN_IMAGE_IN_EPHEMERAL_TAB, mShowEphemeralTabNewLabel));
+//            }
             imageGroup.add(createListItem(Item.COPY_IMAGE));
             if (isSrcDownloadableScheme) {
                 imageGroup.add(createListItem(Item.SAVE_IMAGE));
                 hasSaveImage = true;
             }
 
-            if (mMode == ContextMenuMode.CUSTOM_TAB || mMode == ContextMenuMode.NORMAL) {
-                if (checkSupportsGoogleSearchByImage(isSrcDownloadableScheme)) {
-                    imageGroup.add(createListItem(Item.SEARCH_BY_IMAGE));
-                }
+            if (checkSupportsGoogleSearchByImage(isSrcDownloadableScheme)) {
+                imageGroup.add(createListItem(Item.SEARCH_BY_IMAGE));
             }
 
             recordSaveImageContextMenuResult(isSrcDownloadableScheme);

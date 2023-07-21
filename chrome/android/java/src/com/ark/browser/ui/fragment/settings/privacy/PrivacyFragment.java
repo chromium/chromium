@@ -1,11 +1,15 @@
 package com.ark.browser.ui.fragment.settings.privacy;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import com.ark.browser.core.UserAgentManager;
 import com.ark.browser.ui.fragment.base.BaseSwipeBackFragment;
+import com.zpj.fragmentation.dialog.IDialog;
+import com.zpj.fragmentation.dialog.ZDialog;
 import com.zpj.toast.ZToast;
 import com.zpj.widget.setting.CheckableSettingItem;
 import com.zpj.widget.setting.CommonSettingItem;
@@ -14,6 +18,11 @@ import com.zpj.widget.setting.OnCommonItemClickListener;
 import com.zpj.widget.setting.SwitchSettingItem;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.privacy.secure_dns.SecureDnsBridge;
+import org.chromium.net.SecureDnsMode;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PrivacyFragment extends BaseSwipeBackFragment
         implements OnCheckableItemClickListener, OnCommonItemClickListener {
@@ -76,6 +85,10 @@ public class PrivacyFragment extends BaseSwipeBackFragment
 
         CommonSettingItem clearBrowsingDataItem = view.findViewById(R.id.item_clear_browsing_data);
         clearBrowsingDataItem.setOnItemClickListener(this);
+
+        CommonSettingItem secureDnsItem = view.findViewById(R.id.item_secure_dns);
+        secureDnsItem.setInfoText(getSecureDnsConfig());
+        secureDnsItem.setOnItemClickListener(this);
     }
 
     @Override
@@ -106,6 +119,107 @@ public class PrivacyFragment extends BaseSwipeBackFragment
     public void onItemClick(CommonSettingItem item) {
         if (item.getId() == R.id.item_clear_browsing_data) {
             start(new ClearBrowsingDataFragment());
+        } else if (item.getId() == R.id.item_secure_dns) {
+            new SecureDnsSelectDialog()
+                    .onSingleSelect(new IDialog.OnSingleSelectListener<SecureDnsBridge.Entry, ZDialog.BottomSelectDialogFragmentImpl<SecureDnsBridge.Entry>>() {
+                        @Override
+                        public void onSelect(ZDialog.BottomSelectDialogFragmentImpl<SecureDnsBridge.Entry> fragment, int i, SecureDnsBridge.Entry entry) {
+                            if (i == 0) {
+                                item.setInfoText("已关闭");
+                            } else {
+                                item.setInfoText(entry.name);
+                            }
+                        }
+                    })
+                    .show(item.getContext());
+        }
+    }
+
+    private static String getSecureDnsConfig() {
+
+        int mode = SecureDnsBridge.getMode();
+        if (mode == SecureDnsMode.OFF) {
+            return "已关闭";
+        } else if (mode == SecureDnsMode.AUTOMATIC) {
+            return "系统默认";
+        } else {
+            List<SecureDnsBridge.Entry> allDns = SecureDnsBridge.getProviders();
+            String config = SecureDnsBridge.getConfig();
+            for (int i = 0; i < allDns.size(); i++) {
+                SecureDnsBridge.Entry entry = allDns.get(i);
+                if (TextUtils.equals(config, entry.config)) {
+                    return entry.name;
+                }
+            }
+        }
+        return "已关闭";
+    }
+
+    public static class SecureDnsSelectDialog extends ZDialog.BottomSelectDialogFragmentImpl<SecureDnsBridge.Entry> {
+
+        @Override
+        protected int getImplLayoutId() {
+            return R.layout.fragment_dialog_layout_center_impl_list;
+        }
+
+        public SecureDnsSelectDialog() {
+            setTitle("使用安全 DNS");
+
+
+            List<SecureDnsBridge.Entry> allDns = SecureDnsBridge.getProviders();
+
+            int selected = 0;
+            int mode = SecureDnsBridge.getMode();
+            if (mode == SecureDnsMode.OFF) {
+                selected = 0;
+            } else if (mode == SecureDnsMode.AUTOMATIC) {
+                selected = 1;
+            } else {
+                // TODO
+
+                String config = SecureDnsBridge.getConfig();
+                for (int i = 0; i < allDns.size(); i++) {
+                    SecureDnsBridge.Entry entry = allDns.get(i);
+                    if (TextUtils.equals(config, entry.config)) {
+                        selected = i + 2;
+                        break;
+                    }
+                }
+
+            }
+
+            List<SecureDnsBridge.Entry> entries = new ArrayList<>();
+            entries.add(new SecureDnsBridge.Entry("关闭安全 DNS", "开启安全 DNS", null));
+            entries.add(new SecureDnsBridge.Entry("系统默认", "使用您当前的服务提供商，安全 DNS 未必一直可用", null));
+            entries.addAll(allDns);
+
+            setData(entries);
+            setSelected(selected);
+            onBindTitle((titleView, item, position) -> titleView.setText(item.name));
+            onBindSubtitle((subtitleView, item, position) -> subtitleView.setText(item.config));
+        }
+
+        @Override
+        protected void initView(View view, @Nullable Bundle savedInstanceState) {
+            super.initView(view, savedInstanceState);
+            findViewById(R.id.btn_close).setOnClickListener(v -> dismiss());
+        }
+
+        @Override
+        public ZDialog.BottomSelectDialogFragmentImpl<SecureDnsBridge.Entry> onSingleSelect(IDialog.OnSingleSelectListener<SecureDnsBridge.Entry, ZDialog.BottomSelectDialogFragmentImpl<SecureDnsBridge.Entry>> onSingleSelectListener) {
+            return super.onSingleSelect((fragment, i, entry) -> {
+                if (i == 0) {
+                    SecureDnsBridge.setMode(SecureDnsMode.OFF);
+                } else if (i == 1) {
+                    SecureDnsBridge.setMode(SecureDnsMode.AUTOMATIC);
+                } else {
+                    SecureDnsBridge.setMode(SecureDnsMode.SECURE);
+                    SecureDnsBridge.setConfig(entry.config);
+                }
+                if (onSingleSelectListener != null) {
+                    onSingleSelectListener.onSelect(fragment, i, entry);
+                }
+            });
         }
     }
 }

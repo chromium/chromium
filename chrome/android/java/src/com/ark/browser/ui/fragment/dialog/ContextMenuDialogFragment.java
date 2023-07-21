@@ -15,6 +15,7 @@ import android.graphics.PorterDuff;
 import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -58,7 +61,7 @@ public class ContextMenuDialogFragment extends RecyclerAttachDialogFragment<MVCL
 
     public ContextMenuDialogFragment() {
         setAdapter(this);
-        mMinWidth = (int) (ScreenUtils.getScreenWidth() / 1.8f);
+        mMinWidth = (int) (ScreenUtils.getScreenWidth() / 2.1f);
     }
 
     public ContextMenuDialogFragment setOnItemClicked(Callback<Integer> onItemClicked) {
@@ -89,7 +92,8 @@ public class ContextMenuDialogFragment extends RecyclerAttachDialogFragment<MVCL
     @Override
     protected DialogAnimator onCreateDialogAnimator(ViewGroup contentView) {
         DialogAnimator animator = super.onCreateDialogAnimator(contentView);
-        if (!isShowUp) {
+        boolean isFromBottom = !isShowUp;
+        if (isFromBottom) {
             mRecycler.getRecyclerView().setLayoutManager(
                     new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, true));
         }
@@ -97,8 +101,15 @@ public class ContextMenuDialogFragment extends RecyclerAttachDialogFragment<MVCL
     }
 
     @Override
+    protected void initView(View view, @Nullable Bundle savedInstanceState) {
+        super.initView(view, savedInstanceState);
+        CardView cardView = findViewById(R.id.cv_container);
+        cardView.setElevation(ScreenUtils.dp2pxInt(4));
+    }
+
+    @Override
     public void onRecyclerViewCreated(RecyclerView recyclerView, List<MVCListAdapter.ListItem> items) {
-        int dp12 = ScreenUtils.dp2pxInt(12);
+        int dp10 = ScreenUtils.dp2pxInt(10);
         int dp18 = ScreenUtils.dp2pxInt(18);
         int textColor = DialogThemeUtils.getMajorTextColor(context);
 
@@ -119,22 +130,37 @@ public class ContextMenuDialogFragment extends RecyclerAttachDialogFragment<MVCL
                 })
                 .onBindViewHolder((holder, list, position, payloads) -> {
                     if (mRecycler.getItemCount() == 1) {
-                        holder.setPadding(dp12, dp18, dp12, dp18);
+                        holder.setPadding(dp10, dp18, dp10, dp18);
                     } else if (position == 0) {
                         if (isShowUp) {
-                            holder.setPadding(dp12, dp18, dp12, dp12);
+                            holder.setPadding(dp10, dp10, dp10, dp18);
                         } else {
-                            holder.setPadding(dp12, dp12, dp12, dp18);
+                            holder.setPadding(dp10, dp18, dp10, dp10);
                         }
-                    } else if (position == items.size() - 1) {
+                    } else if (position == list.size() - 1) {
                         if (isShowUp) {
-                            holder.setPadding(dp12, dp12, dp12, dp18);
+                            holder.setPadding(dp10, dp18, dp10, dp10);
                         } else {
-                            holder.setPadding(dp12, dp18, dp12, dp12);
+                            holder.setPadding(dp10, dp10, dp10, dp18);
                         }
                     } else {
-                        holder.setPadding(dp12, dp12, dp12, dp12);
+                        holder.setPadding(dp10, dp10, dp10, dp10);
                     }
+
+//                    if (mRecycler.getItemCount() == 1) {
+//                        holder.setPadding(dp10, (int) (dp10 * 1.5f), dp10, (int) (dp10 * 1.5f));
+//                    } else if (position == 0) {
+//                        holder.setPadding(dp10, (int) (dp10 * 1.5f), dp10, dp10);
+//                    } else if (position == items.size() - 1) {
+//                        if (isReverse) {
+//                            holder.setPadding(dp10, dp18, dp10, dp10);
+//                        } else {
+//                            holder.setPadding(dp10, dp10, dp10, dp18);
+//                        }
+//                        holder.setPadding(dp10, dp10, dp10, (int) (dp10 * 1.5f));
+//                    } else {
+//                        holder.setPadding(dp10, dp10, dp10, dp10);
+//                    }
 
                     MVCListAdapter.ListItem item = list.get(position);
                     int viewType = holder.getViewType();
@@ -177,7 +203,7 @@ public class ContextMenuDialogFragment extends RecyclerAttachDialogFragment<MVCL
                         }
 
                     } else if (ContextMenuCoordinator.ListItemType.DIVIDER == viewType) {
-                        holder.setPadding(dp12, 0, dp12, 0);
+                        holder.setPadding(dp10, 0, dp10, 0);
                     } else if (ContextMenuCoordinator.ListItemType.CONTEXT_MENU_ITEM == viewType) {
                         holder.setTextColor(R.id.tv_text, textColor);
                         holder.setText(R.id.tv_text, item.model.get(TEXT));

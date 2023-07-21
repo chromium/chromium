@@ -62,9 +62,9 @@
         android:id="@+id/card_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:cardCornerRadius="16dp"
+        app:cardCornerRadius="24dp"
         app:cardUseCompatPadding="false"
-        app:cardElevation="0dp"
+        app:cardElevation="1dp"
         app:cardBackgroundColor="?attr/backgroundColor"
         >
 
