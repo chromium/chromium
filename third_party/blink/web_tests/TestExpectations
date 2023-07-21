@@ -6580,3 +6580,6 @@ crbug.com/1459304 [ Mac11 ] virtual/coop-restrict-properties/external/wpt/html/c
 
 # Gardener 2023-07-20
 crbug.com/1465723 [ Mac ] virtual/prefetch-no-vary-search/wpt_internal/speculation-rules/prefetch/no-vary-search/prefetch-single-non-eager-with-hint.https.html* [ Pass Timeout ]
+
+# This test is unreliable because of delayed update of history.length during cross-document navigation.
+crbug.com/1466474 fast/history/history-back-twice-with-subframes-assert.html [ Pass Timeout ]
