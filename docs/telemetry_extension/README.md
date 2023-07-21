@@ -141,6 +141,8 @@ APIs, the following requirements need to be satisfied:
 
     b. The user is the device owner (the first user of the device).
 
+    c. The user is in Shimless RMA flow.
+
 2. The PWA UI associated with the Telemetry extension must be opened for the
 extension to have access to APIs.
 
