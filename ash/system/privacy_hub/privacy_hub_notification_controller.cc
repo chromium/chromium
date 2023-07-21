@@ -141,7 +141,8 @@ PrivacyHubNotificationController::PrivacyHubNotificationController() {
       SensorSet{Sensor::kCamera, Sensor::kMicrophone},
       IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_TITLE,
       std::vector<int>{
-          IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_BUTTON},
+          IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_BUTTON,
+          IDS_PRIVACY_HUB_OPEN_SETTINGS_PAGE_BUTTON},
       combined_messages);
 
   combined_notification_descriptor.delegate()->SetSecondButtonCallback(

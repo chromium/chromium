@@ -172,6 +172,7 @@ TEST_F(PrivacyHubNotificationControllerTest, CameraNotificationShowAndHide) {
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_TITLE),
       notification_ptr->title());
+  EXPECT_EQ(1u, notification_ptr->buttons().size());
 
   RemoveNotification(Sensor::kCamera);
 
@@ -190,6 +191,7 @@ TEST_F(PrivacyHubNotificationControllerTest,
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_MICROPHONE_MUTED_BY_SW_SWITCH_NOTIFICATION_TITLE),
             notification_ptr->title());
+  EXPECT_EQ(1u, notification_ptr->buttons().size());
 
   RemoveNotification(Sensor::kMicrophone);
 
@@ -207,6 +209,7 @@ TEST_F(PrivacyHubNotificationControllerTest,
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_PRIVACY_HUB_GEOLOCATION_OFF_NOTIFICATION_TITLE),
             notification_ptr->title());
+  EXPECT_EQ(2u, notification_ptr->buttons().size());
 
   RemoveNotification(Sensor::kLocation);
   EXPECT_FALSE(GetGeolocationNotification());
@@ -286,6 +289,7 @@ TEST_F(PrivacyHubNotificationControllerTest, CombinedNotificationShowAndHide) {
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_TITLE),
             notification_ptr->title());
+  EXPECT_EQ(2u, notification_ptr->buttons().size());
 
   RemoveCombinedNotification();
 
