@@ -127,7 +127,8 @@ std::string SelectMediaCodec(const VideoDecoderConfig& config,
       continue;
     }
 
-    if (config.level() != kNoVideoCodecLevel && config.level() > info.level) {
+    if (config.level() != kNoVideoCodecLevel &&
+        info.level != kNoVideoCodecLevel && config.level() > info.level) {
       continue;
     }
 
