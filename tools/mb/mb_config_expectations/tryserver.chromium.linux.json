@@ -626,7 +626,8 @@
       "proprietary_codecs": true,
       "symbol_level": 0,
       "use_remoteexec": true,
-      "use_v4l2_codec": true
+      "use_v4l2_codec": true,
+      "use_vaapi": false
     }
   },
   "linux-viz-rel": {

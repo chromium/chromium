@@ -4706,7 +4706,9 @@
     },
 
     'v4l2_codec': {
-      'gn_args': 'use_v4l2_codec=true',
+      # The build system dislikes enabling both V4L2 and VA-API.
+      # Be explicit about which one we want to avoid platform defaults.
+      'gn_args': 'use_v4l2_codec=true use_vaapi=false',
     },
 
     'v8_enable_debugging_features': {
