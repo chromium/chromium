@@ -118,6 +118,18 @@
       'ios_runtime_cache_15_5',
     ],
   },
+  'SIM_IPAD_AIR_3RD_GEN_16_2': {
+    'args': [
+      '--platform',
+      'iPad Air (3rd generation)',
+      '--version',
+      '16.2'
+    ],
+    'identifier': 'iPad Air (3rd generation) 16.2',
+    'mixins': [
+      'ios_runtime_cache_16_2',
+    ],
+  },
   'SIM_IPAD_AIR_5TH_GEN_15_5': {
     'args': [
       '--platform',
@@ -204,18 +216,6 @@
       'ios_runtime_cache_16_4',
     ],
   },
-  'SIM_IPAD_PRO_6TH_GEN_17_0': {
-    'args': [
-      '--platform',
-      'iPad Pro (12.9-inch) (6th generation)',
-      '--version',
-      '17.0',
-    ],
-    'identifier': 'iPad Pro (12.9-inch) (6th generation) 17.0',
-    'mixins': [
-      'ios_runtime_cache_17_0',
-    ],
-  },
   'SIM_IPAD_10TH_GEN_16_2': {
     'args': [
       '--platform',
@@ -240,18 +240,6 @@
       'ios_runtime_cache_16_4',
     ],
   },
-  'SIM_IPAD_10TH_GEN_17_0': {
-    'args': [
-      '--platform',
-      'iPad (10th generation)',
-      '--version',
-      '17.0',
-    ],
-    'identifier': 'iPad (10th generation) 17.0',
-    'mixins': [
-      'ios_runtime_cache_17_0',
-    ],
-  },
   'SIM_IPHONE_6S_15_5': {
     'args': [
       '--platform',
@@ -264,6 +252,18 @@
       'ios_runtime_cache_15_5',
     ],
   },
+  'SIM_IPHONE_12_16_2': {
+    'args': [
+      '--platform',
+      'iPhone 12',
+      '--version',
+      '16.2',
+    ],
+    'identifier': 'iPhone 12 16.2',
+    'mixins': [
+      'ios_runtime_cache_16_2',
+    ],
+  },
   'SIM_IPHONE_13_15_5': {
     'args': [
       '--platform',
@@ -272,6 +272,30 @@
       '15.5',
     ],
     'identifier': 'iPhone 13 15.5',
+    'mixins': [
+      'ios_runtime_cache_15_5',
+    ],
+  },
+  'SIM_IPHONE_13_16_2': {
+    'args': [
+      '--platform',
+      'iPhone 13',
+      '--version',
+      '16.2',
+    ],
+    'identifier': 'iPhone 13 16.2',
+    'mixins': [
+      'ios_runtime_cache_16_2',
+    ],
+  },
+  'SIM_IPHONE_13_PRO_MAX_15_5': {
+    'args': [
+      '--platform',
+      'iPhone 13 Pro Max',
+      '--version',
+      '15.5',
+    ],
+    'identifier': 'iPhone 13 Pro Max 15.5',
     'mixins': [
       'ios_runtime_cache_15_5',
     ],
@@ -324,18 +348,6 @@
       'ios_runtime_cache_16_2',
     ],
   },
-  'SIM_IPHONE_14_PLUS_17_0': {
-    'args': [
-      '--platform',
-      'iPhone 14 Plus',
-      '--version',
-      '17.0',
-    ],
-    'identifier': 'iPhone 14 Plus 17.0',
-    'mixins': [
-      'ios_runtime_cache_17_0',
-    ],
-  },
   'SIM_IPHONE_14_PRO_MAX_16_2': {
     'args': [
       '--platform',
@@ -358,18 +370,6 @@
     'identifier': 'iPhone 14 Pro Max 16.4',
     'mixins': [
       'ios_runtime_cache_16_4',
-    ],
-  },
-  'SIM_IPHONE_14_PRO_MAX_17_0': {
-    'args': [
-      '--platform',
-      'iPhone 14 Pro Max',
-      '--version',
-      '17.0',
-    ],
-    'identifier': 'iPhone 14 Pro Max 17.0',
-    'mixins': [
-      'ios_runtime_cache_17_0',
     ],
   },
   'SIM_IPHONE_SE_3RD_GEN_15_5': {
@@ -430,6 +430,18 @@
     'identifier': 'iPhone X 15.5',
     'mixins': [
       'ios_runtime_cache_15_5',
+    ],
+  },
+  'SIM_IPHONE_X_16_2': {
+    'args': [
+      '--platform',
+      'iPhone X',
+      '--version',
+      '16.2',
+    ],
+    'identifier': 'iPhone X 16.2',
+    'mixins': [
+      'ios_runtime_cache_16_2',
     ],
   },
   'WEBVIEW_TRICHROME_FULL_CTS_TESTS': {
