@@ -13,10 +13,12 @@ import {SettingsManager} from '../common/settings_manager.js';
 export class PanelMenuItem {
   /**
    * @param {string} menuItemTitle The title of the menu item.
-   * @param {string} menuItemShortcut The keystrokes to select this item.
-   * @param {string} menuItemBraille The braille keystrokes to select this item.
-   * @param {string} gesture The gesture to select this item.
-   * @param {function() : !Promise} callback The function to call if this item
+   * @param {string|undefined} menuItemShortcut The keystrokes to select this
+   *     item.
+   * @param {string|undefined} menuItemBraille The braille keystrokes to select
+   *     this item.
+   * @param {string|undefined} gesture The gesture to select this item.
+   * @param {function(): !Promise} callback The function to call if this item
    *     is selected.
    * @param {string=} opt_id An optional id for the menu item element.
    */
@@ -25,13 +27,13 @@ export class PanelMenuItem {
       opt_id) {
     /** @type {string} */
     this.menuItemTitle = menuItemTitle;
-    /** @type {string} */
+    /** @type {string|undefined} */
     this.menuItemShortcut = menuItemShortcut;
-    /** @type {string} */
+    /** @type {string|undefined} */
     this.menuItemBraille = menuItemBraille;
-    /** @type {string} */
+    /** @type {string|undefined} */
     this.gesture = gesture;
-    /** @type {function() : !Promise} */
+    /** @type {function(): !Promise} */
     this.callback = callback;
 
     /** @type {Element} */

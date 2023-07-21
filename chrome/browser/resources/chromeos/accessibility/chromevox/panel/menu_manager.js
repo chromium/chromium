@@ -8,7 +8,7 @@
 import {AsyncUtil} from '../../common/async_util.js';
 import {EventGenerator} from '../../common/event_generator.js';
 import {KeyCode} from '../../common/key_code.js';
-import {Command, CommandStore} from '../common/command_store.js';
+import {Command, CommandCategory, CommandStore} from '../common/command_store.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelNodeMenuData, PanelNodeMenuId, PanelNodeMenuItemData} from '../common/panel_menu_data.js';
 
@@ -231,6 +231,30 @@ export class MenuManager {
     const specifiedMenu =
         this.menus_.find(menu => menu.menuMsg === opt_menuTitle);
     return specifiedMenu || this.searchMenu_ || this.menus_[0];
+  }
+
+  /**
+   * @param {!PanelMenu} actionsMenu
+   * @param {!PanelMenu} chromevoxMenu
+   * @param {!PanelMenu} jumpMenu
+   * @param {!PanelMenu} speechMenu
+   * @return {!Object<!CommandCategory, ?PanelMenu>}
+   */
+  makeCategoryMapping(actionsMenu, chromevoxMenu, jumpMenu, speechMenu) {
+    return {
+      [CommandCategory.ACTIONS]: actionsMenu,
+      [CommandCategory.BRAILLE]: null,
+      [CommandCategory.CONTROLLING_SPEECH]: speechMenu,
+      [CommandCategory.DEVELOPER]: null,
+      [CommandCategory.HELP_COMMANDS]: chromevoxMenu,
+      [CommandCategory.INFORMATION]: speechMenu,
+      [CommandCategory.JUMP_COMMANDS]: jumpMenu,
+      [CommandCategory.MODIFIER_KEYS]: chromevoxMenu,
+      [CommandCategory.NAVIGATION]: jumpMenu,
+      [CommandCategory.NO_CATEGORY]: null,
+      [CommandCategory.OVERVIEW]: jumpMenu,
+      [CommandCategory.TABLES]: jumpMenu,
+    };
   }
 
   /**
