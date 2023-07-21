@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/commerce/push_notification/commerce_push_notification_client.h"
 
 #import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
 #import "base/run_loop.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
@@ -68,6 +69,8 @@ void CommercePushNotificationClient::HandleNotificationInteraction(
 UIBackgroundFetchResult
 CommercePushNotificationClient::HandleNotificationReception(
     NSDictionary<NSString*, id>* notification) {
+  base::RecordAction(base::UserMetricsAction(
+      "Commerce.PriceTracking.PushNotification.Received"));
   return UIBackgroundFetchResultNoData;
 }
 
@@ -170,6 +173,13 @@ void CommercePushNotificationClient::HandleNotificationInteraction(
     UrlLoadParams params = UrlLoadParams::InNewTab(
         GURL(price_drop_notification.destination_url()));
     UrlLoadingBrowserAgent::FromBrowser(browser)->Load(params);
+    if ([action_identifier isEqualToString:kVisitSiteActionIdentifier]) {
+      base::RecordAction(base::UserMetricsAction(
+          "Commerce.PriceTracking.PushNotification.VisitSiteTapped"));
+    } else if ([action_identifier isEqualToString:kDefaultActionIdentifier]) {
+      base::RecordAction(base::UserMetricsAction(
+          "Commerce.PriceTracking.PushNotification.NotificationTapped"));
+    }
   } else if ([action_identifier isEqualToString:kUntrackPriceIdentifier]) {
     const bookmarks::BookmarkNode* bookmark =
         GetBookmarkModel()->GetMostRecentlyAddedUserNodeForURL(
@@ -191,5 +201,7 @@ void CommercePushNotificationClient::HandleNotificationInteraction(
           base::UmaHistogramBoolean("Commerce.PriceTracking.Untrack.Success",
                                     success);
         }));
+    base::RecordAction(base::UserMetricsAction(
+        "Commerce.PriceTracking.PushNotification.UnTrackProductTapped"));
   }
 }
