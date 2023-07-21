@@ -20,7 +20,6 @@
 
 class Profile;
 class SkBitmap;
-class WebAppUninstallDialogViews;
 
 // WebAppIdentityUpdateConfirmationView provides views for showing which parts
 // of the app's identity changed so the user can make a determination whether to
@@ -55,7 +54,7 @@ class WebAppIdentityUpdateConfirmationView
   bool Cancel() override;
 
   void OnDialogAccepted();
-  void OnWebAppUninstallScheduled();
+  void OnWebAppUninstallScheduled(bool uninstall_scheduled);
 
   const raw_ptr<Profile> profile_;
 
@@ -69,9 +68,6 @@ class WebAppIdentityUpdateConfirmationView
 
   // A callback to relay the results of the app identity update dialog.
   web_app::AppIdentityDialogCallback callback_;
-
-  // The app uninstall dialog, shown to confirm the uninstallation.
-  std::unique_ptr<WebAppUninstallDialogViews> uninstall_dialog_;
 
   base::WeakPtrFactory<WebAppIdentityUpdateConfirmationView> weak_factory_{
       this};

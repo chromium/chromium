@@ -20,8 +20,11 @@
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/webapps/browser/uninstall_result_code.h"
+#include "ui/gfx/native_widget_types.h"
 
 class Browser;
+class BrowserWindow;
 class Profile;
 
 namespace content {
@@ -34,6 +37,10 @@ namespace web_app {
 class AppLock;
 // WebAppUiManagerImpl can be used only in UI code.
 class WebAppUiManagerImpl;
+
+using UninstallScheduledCallback = base::OnceCallback<void(bool)>;
+using UninstallCompleteCallback =
+    base::OnceCallback<void(webapps::UninstallResultCode code)>;
 
 // Overrides the app identity update dialog's behavior for testing, allowing the
 // test to auto-accept or auto-skip the dialog.
@@ -171,6 +178,32 @@ class WebAppUiManager {
   // there is an installable web app. This will show the dialog even if the app
   // is already installed.
   virtual void TriggerInstallDialog(content::WebContents* web_contents) = 0;
+
+  // The uninstall dialog will be modal to |parent_window|, or a non-modal if
+  // |parent_window| is nullptr. Use this API if a Browser window needs to be
+  // passed in along with an UninstallCompleteCallback.
+  virtual void PresentUserUninstallDialog(
+      const AppId& app_id,
+      webapps::WebappUninstallSource uninstall_source,
+      BrowserWindow* parent_window,
+      UninstallCompleteCallback callback) = 0;
+
+  // Use this API if a gfx::NativeWindow needs to be passed in along with an
+  // UninstallCompleteCallback.
+  virtual void PresentUserUninstallDialog(
+      const AppId& app_id,
+      webapps::WebappUninstallSource uninstall_source,
+      gfx::NativeWindow parent_window,
+      UninstallCompleteCallback callback) = 0;
+
+  // Use this API if a gfx::NativeWindow needs to be passed in along with a
+  // UninstallCompleteCallback and an UninstallScheduledCallback.
+  virtual void PresentUserUninstallDialog(
+      const AppId& app_id,
+      webapps::WebappUninstallSource uninstall_source,
+      gfx::NativeWindow parent_window,
+      UninstallCompleteCallback callback,
+      UninstallScheduledCallback scheduled_callback) = 0;
 
  private:
   base::ObserverList<WebAppUiManagerObserver, /*check_empty=*/true> observers_;

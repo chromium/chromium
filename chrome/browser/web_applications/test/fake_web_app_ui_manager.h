@@ -80,6 +80,25 @@ class FakeWebAppUiManager : public WebAppUiManager {
   content::WebContents* CreateNewTab() override;
   void TriggerInstallDialog(content::WebContents* web_contents) override;
 
+  void PresentUserUninstallDialog(
+      const AppId& app_id,
+      webapps::WebappUninstallSource uninstall_source,
+      BrowserWindow* parent_window,
+      UninstallCompleteCallback callback) override;
+
+  void PresentUserUninstallDialog(
+      const AppId& app_id,
+      webapps::WebappUninstallSource uninstall_source,
+      gfx::NativeWindow parent_window,
+      UninstallCompleteCallback callback) override;
+
+  void PresentUserUninstallDialog(
+      const AppId& app_id,
+      webapps::WebappUninstallSource uninstall_source,
+      gfx::NativeWindow parent_window,
+      UninstallCompleteCallback callback,
+      UninstallScheduledCallback scheduled_callback) override;
+
  private:
   base::flat_map<AppId, size_t> app_id_to_num_windows_map_;
   // Closures waiting to be called when all windows for a given `AppId` are

@@ -57,7 +57,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/web_applications/web_app_dialog_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -412,13 +411,11 @@ void UninstallImpl(WebAppProvider* provider,
   }
 
   if (provider->registrar_unsafe().CanUserUninstallWebApp(app_id)) {
-    WebAppDialogManager& web_app_dialog_manager =
-        web_app_ui_manager->dialog_manager();
     webapps::WebappUninstallSource webapp_uninstall_source =
         WebAppPublisherHelper::ConvertUninstallSourceToWebAppUninstallSource(
             uninstall_source);
-    web_app_dialog_manager.UninstallWebApp(app_id, webapp_uninstall_source,
-                                           parent_window, base::DoNothing());
+    web_app_ui_manager->PresentUserUninstallDialog(
+        app_id, webapp_uninstall_source, parent_window, base::DoNothing());
   }
 }
 

@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
-#include "chrome/browser/ui/web_applications/web_app_dialog_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
@@ -601,9 +600,9 @@ bool WebAppBrowserController::CanUserUninstall() const {
 void WebAppBrowserController::Uninstall(
     webapps::WebappUninstallSource webapp_uninstall_source) {
   WebAppUiManagerImpl::Get(&*provider_)
-      ->dialog_manager()
-      .UninstallWebApp(app_id(), webapps::WebappUninstallSource::kAppMenu,
-                       browser()->window(), base::DoNothing());
+      ->PresentUserUninstallDialog(app_id(),
+                                   webapps::WebappUninstallSource::kAppMenu,
+                                   browser()->window(), base::DoNothing());
 }
 
 bool WebAppBrowserController::IsInstalled() const {

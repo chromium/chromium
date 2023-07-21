@@ -298,6 +298,10 @@ void WebAppProvider::Shutdown() {
   is_registry_ready_ = false;
 }
 
+base::WeakPtr<WebAppProvider> WebAppProvider::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void WebAppProvider::StartImpl() {
   StartSyncBridge();
   MaybeScheduleGarbageCollection();
@@ -393,8 +397,8 @@ void WebAppProvider::ConnectSubsystems() {
 }
 
 void WebAppProvider::StartSyncBridge() {
-  sync_bridge_->Init(base::BindOnce(&WebAppProvider::OnSyncBridgeReady,
-                                    weak_ptr_factory_.GetWeakPtr()));
+  sync_bridge_->Init(
+      base::BindOnce(&WebAppProvider::OnSyncBridgeReady, AsWeakPtr()));
 }
 
 void WebAppProvider::OnSyncBridgeReady() {
@@ -413,7 +417,7 @@ void WebAppProvider::OnSyncBridgeReady() {
               return;
             provider->on_external_managers_synchronized_.Signal();
           },
-          weak_ptr_factory_.GetWeakPtr()));
+          AsWeakPtr()));
 
   registrar_->Start();
   install_finalizer_->Start();

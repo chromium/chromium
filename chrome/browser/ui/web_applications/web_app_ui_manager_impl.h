@@ -9,15 +9,25 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/native_widget_types.h"
 
-class Profile;
 class Browser;
+class BrowserWindow;
+class Profile;
+
+namespace views {
+class NativeWindowTracker;
+}  // namespace views
 
 namespace web_app {
 
@@ -83,6 +93,25 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
   content::WebContents* CreateNewTab() override;
   void TriggerInstallDialog(content::WebContents* web_contents) override;
 
+  void PresentUserUninstallDialog(
+      const AppId& app_id,
+      webapps::WebappUninstallSource uninstall_source,
+      BrowserWindow* parent_window,
+      UninstallCompleteCallback callback) override;
+
+  void PresentUserUninstallDialog(
+      const AppId& app_id,
+      webapps::WebappUninstallSource uninstall_source,
+      gfx::NativeWindow parent_window,
+      UninstallCompleteCallback callback) override;
+
+  void PresentUserUninstallDialog(
+      const AppId& app_id,
+      webapps::WebappUninstallSource uninstall_source,
+      gfx::NativeWindow parent_window,
+      UninstallCompleteCallback callback,
+      UninstallScheduledCallback scheduled_callback) override;
+
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;
   void OnBrowserRemoved(Browser* browser) override;
@@ -103,16 +132,32 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
 
   void OnExtensionSystemReady();
 
-  std::unique_ptr<WebAppDialogManager> dialog_manager_;
+  void OnIconsReadForUninstall(
+      const AppId& app_id,
+      webapps::WebappUninstallSource uninstall_source,
+      gfx::NativeWindow parent_window,
+      std::unique_ptr<views::NativeWindowTracker> parent_window_tracker,
+      UninstallCompleteCallback complete_callback,
+      UninstallScheduledCallback uninstall_scheduled_callback,
+      std::map<SquareSizePx, SkBitmap> icon_bitmaps);
+
+  void ScheduleUninstallIfUserRequested(
+      const AppId& app_id,
+      webapps::WebappUninstallSource uninstall_source,
+      UninstallCompleteCallback complete_callback,
+      UninstallScheduledCallback uninstall_scheduled_callback,
+      bool user_wants_uninstall);
+
+  void OnUninstallCancelled(
+      UninstallCompleteCallback complete_callback,
+      UninstallScheduledCallback uninstall_scheduled_callback);
 
   const raw_ptr<Profile> profile_;
-
   std::map<AppId, std::vector<base::OnceClosure>> windows_closed_requests_map_;
   std::map<AppId, size_t> num_windows_for_apps_map_;
   bool started_ = false;
 
   base::WeakPtrFactory<WebAppUiManagerImpl> weak_ptr_factory_{this};
-
 };
 
 }  // namespace web_app

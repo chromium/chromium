@@ -210,6 +210,8 @@ class WebAppProvider : public KeyedService {
   // Returns whether the app registry is ready.
   bool is_registry_ready() const { return is_registry_ready_; }
 
+  base::WeakPtr<WebAppProvider> AsWeakPtr();
+
  protected:
   virtual void StartImpl();
 
