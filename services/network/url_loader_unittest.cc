@@ -5314,41 +5314,6 @@ TEST_F(URLLoaderTest, CookieReporting) {
             CookieAccessType::kRead,
             CookieOrLine("a=b", mojom::CookieOrLine::Tag::kCookie), true)));
   }
-
-  {
-    TestURLLoaderClient loader_client;
-    ResourceRequest request = CreateResourceRequest(
-        "GET", test_server()->GetURL("/set-cookie?invalid=foo;SameParty"));
-
-    MockCookieObserver cookie_observer;
-    base::RunLoop delete_run_loop;
-    mojo::PendingRemote<mojom::URLLoader> loader;
-    context().mutable_factory_params().process_id = kProcessId;
-    context().mutable_factory_params().is_corb_enabled = false;
-    URLLoaderOptions url_loader_options;
-    url_loader_options.cookie_observer = cookie_observer.GetRemote();
-    std::unique_ptr<URLLoader> url_loader = url_loader_options.MakeURLLoader(
-        context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
-        loader.InitWithNewPipeAndPassReceiver(), request,
-        loader_client.CreateRemote());
-
-    delete_run_loop.Run();
-    loader_client.RunUntilComplete();
-    EXPECT_EQ(net::OK, loader_client.completion_status().error_code);
-
-    cookie_observer.WaitForCookies(2u);
-    EXPECT_THAT(
-        cookie_observer.observed_cookies(),
-        testing::ElementsAre(
-            MatchesCookieDetails(
-                CookieAccessType::kRead,
-                CookieOrLine("a=b", mojom::CookieOrLine::Tag::kCookie), true),
-            MatchesCookieDetails(
-                CookieAccessType::kChange,
-                CookieOrLine("invalid=foo;SameParty",
-                             mojom::CookieOrLine::Tag::kCookieString),
-                false)));
-  }
 }
 
 TEST_F(URLLoaderTest, CookieReportingRedirect) {

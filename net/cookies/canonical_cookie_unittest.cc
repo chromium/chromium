@@ -685,21 +685,17 @@ TEST(CanonicalCookieTest, CreateSameParty) {
   EXPECT_TRUE(cookie->IsSameParty());
   EXPECT_EQ(CookieSameSite::LAX_MODE, cookie->SameSite());
 
-  // SameParty cookie with SameSite=Strict is invalid.
+  // SameParty cookie with SameSite=Strict is valid, since SameParty is ignored.
   cookie = CanonicalCookie::Create(
       url, "A=2; SameParty; SameSite=Strict; Secure", creation_time,
       server_time, absl::nullopt /* cookie_partition_key */, &status);
-  EXPECT_FALSE(cookie.get());
-  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::EXCLUDE_INVALID_SAMEPARTY}));
+  EXPECT_TRUE(cookie.get());
 
-  // SameParty cookie without Secure is invalid.
+  // SameParty cookie without Secure is valid, since SameParty is ignored.
   cookie = CanonicalCookie::Create(
       url, "A=2; SameParty; SameSite=Lax", creation_time, server_time,
       absl::nullopt /* cookie_partition_key */, &status);
-  EXPECT_FALSE(cookie.get());
-  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::EXCLUDE_INVALID_SAMEPARTY}));
+  EXPECT_TRUE(cookie.get());
 }
 
 TEST(CanonicalCookieTest, CreateWithPartitioned) {
@@ -2103,33 +2099,6 @@ TEST(CanonicalCookieTest, IncludeForRequestURLSameParty) {
   EXPECT_EQ(CookieEffectiveSameSite::LAX_MODE,
             cookie_samesite_lax->GetEffectiveSameSiteForTesting());
   EXPECT_TRUE(cookie_samesite_lax->IsSameParty());
-
-  for (const CanonicalCookie* cookie : {
-           cookie_samesite_unspecified.get(),
-           cookie_samesite_none.get(),
-           cookie_samesite_lax.get(),
-       }) {
-    // SameParty cookies that should be excluded result in the appropriate
-    // exclusion reason, and removes SAMESITE exclusion reasons.
-    for (CookieAccessSemantics access_semantics : {
-             CookieAccessSemantics::UNKNOWN,
-             CookieAccessSemantics::LEGACY,
-             CookieAccessSemantics::NONLEGACY,
-         }) {
-      EXPECT_THAT(
-          cookie->IncludeForRequestURL(
-              url, options,
-              CookieAccessParams{access_semantics,
-                                 /*delegate_treats_url_as_trustworthy=*/false}),
-          MatchesCookieAccessResult(
-              Not(HasExclusionReason(
-                  CookieInclusionStatus::
-                      EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT)),
-              _, _, true))
-          << "SameSite = " << static_cast<int>(cookie->SameSite())
-          << ", access_semantics = " << static_cast<int>(access_semantics);
-    }
-  }
 }
 
 TEST(CanonicalCookieTest, IncludeForRequestURL_SameSiteNone_Metrics) {
@@ -3349,19 +3318,19 @@ TEST(CanonicalCookieTest, IsCanonical) {
                   CookieSameSite::LAX_MODE, COOKIE_PRIORITY_LOW, true)
                   ->IsCanonical());
 
-  // SameParty without Secure is not canonical.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "A", "B", "x.y", "/", base::Time(), base::Time(),
-                   base::Time(), base::Time(), false, false,
-                   CookieSameSite::LAX_MODE, COOKIE_PRIORITY_LOW, true)
-                   ->IsCanonical());
+  // SameParty without Secure is canonical, since SameParty is ignored.
+  EXPECT_TRUE(CanonicalCookie::CreateUnsafeCookieForTesting(
+                  "A", "B", "x.y", "/", base::Time(), base::Time(),
+                  base::Time(), base::Time(), false, false,
+                  CookieSameSite::LAX_MODE, COOKIE_PRIORITY_LOW, true)
+                  ->IsCanonical());
 
-  // SameParty with SameSite=Strict is not canonical.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "A", "B", "x.y", "/", base::Time(), base::Time(),
-                   base::Time(), base::Time(), true, false,
-                   CookieSameSite::STRICT_MODE, COOKIE_PRIORITY_LOW, true)
-                   ->IsCanonical());
+  // SameParty with SameSite=Strict is canonical, since SameParty is ignored.
+  EXPECT_TRUE(CanonicalCookie::CreateUnsafeCookieForTesting(
+                  "A", "B", "x.y", "/", base::Time(), base::Time(),
+                  base::Time(), base::Time(), true, false,
+                  CookieSameSite::STRICT_MODE, COOKIE_PRIORITY_LOW, true)
+                  ->IsCanonical());
 
   // Partitioned attribute used correctly (__Host- prefix, no SameParty).
   EXPECT_TRUE(CanonicalCookie::CreateUnsafeCookieForTesting(
@@ -4283,34 +4252,29 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
       false /*same_party*/, absl::nullopt /*partition_key*/, &status));
   EXPECT_TRUE(status.IsInclude());
 
-  // SameParty attribute requires Secure and forbids SameSite=Strict.
+  // SameParty attribute is ignored, so it imposes no additional constraints on
+  // other attributes.
   EXPECT_TRUE(CanonicalCookie::CreateSanitizedCookie(
       GURL("https://www.foo.com"), "A", "B", ".www.foo.com", "/", two_hours_ago,
       one_hour_from_now, one_hour_ago, true /*secure*/, false,
       CookieSameSite::NO_RESTRICTION, CookiePriority::COOKIE_PRIORITY_DEFAULT,
       true /*same_party*/, absl::nullopt /*partition_key*/, &status));
   EXPECT_TRUE(status.IsInclude());
-  EXPECT_FALSE(CanonicalCookie::CreateSanitizedCookie(
+  EXPECT_TRUE(CanonicalCookie::CreateSanitizedCookie(
       GURL("https://www.foo.com"), "A", "B", ".www.foo.com", "/", two_hours_ago,
       one_hour_from_now, one_hour_ago, false /*secure*/, false,
       CookieSameSite::LAX_MODE, CookiePriority::COOKIE_PRIORITY_DEFAULT,
       true /*same_party*/, absl::nullopt /*partition_key*/, &status));
-  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::EXCLUDE_INVALID_SAMEPARTY}));
-  EXPECT_FALSE(CanonicalCookie::CreateSanitizedCookie(
+  EXPECT_TRUE(CanonicalCookie::CreateSanitizedCookie(
       GURL("https://www.foo.com"), "A", "B", ".www.foo.com", "/", two_hours_ago,
       one_hour_from_now, one_hour_ago, true /*secure*/, false,
       CookieSameSite::STRICT_MODE, CookiePriority::COOKIE_PRIORITY_DEFAULT,
       true /*same_party*/, absl::nullopt /*partition_key*/, &status));
-  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::EXCLUDE_INVALID_SAMEPARTY}));
-  EXPECT_FALSE(CanonicalCookie::CreateSanitizedCookie(
+  EXPECT_TRUE(CanonicalCookie::CreateSanitizedCookie(
       GURL("https://www.foo.com"), "A", "B", ".www.foo.com", "/", two_hours_ago,
       one_hour_from_now, one_hour_ago, false /*secure*/, false,
       CookieSameSite::STRICT_MODE, CookiePriority::COOKIE_PRIORITY_DEFAULT,
       true /*same_party*/, absl::nullopt /*partition_key*/, &status));
-  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::EXCLUDE_INVALID_SAMEPARTY}));
 
   // Partitioned attribute requires __Host- and forbids SameParty.
   status = CookieInclusionStatus();
@@ -4435,8 +4399,7 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
       absl::nullopt /*partition_key*/, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE,
-       CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN,
-       CookieInclusionStatus::EXCLUDE_INVALID_SAMEPARTY}));
+       CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN}));
 
   // Check that RFC6265bis name + value string length limits are enforced.
   std::string max_name(ParsedCookie::kMaxCookieNamePlusValueSize, 'a');

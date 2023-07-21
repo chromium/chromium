@@ -1487,16 +1487,6 @@ std::unique_ptr<protocol::Array<protocol::String>> BuildExclusionReasons(
         protocol::Audits::CookieExclusionReasonEnum::ExcludeSameSiteStrict);
   }
   if (status.HasExclusionReason(
-          net::CookieInclusionStatus::EXCLUDE_INVALID_SAMEPARTY)) {
-    exclusion_reasons->push_back(
-        protocol::Audits::CookieExclusionReasonEnum::ExcludeInvalidSameParty);
-  }
-  if (status.HasExclusionReason(
-          net::CookieInclusionStatus::EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT)) {
-    exclusion_reasons->push_back(protocol::Audits::CookieExclusionReasonEnum::
-                                     ExcludeSamePartyCrossPartyContext);
-  }
-  if (status.HasExclusionReason(
           net::CookieInclusionStatus::EXCLUDE_DOMAIN_NON_ASCII)) {
     exclusion_reasons->push_back(
         protocol::Audits::CookieExclusionReasonEnum::ExcludeDomainNonASCII);

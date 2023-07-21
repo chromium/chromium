@@ -4318,10 +4318,9 @@ TEST_F(CookieMonsterTest, SetSamePartyCookies) {
   EXPECT_TRUE(
       CreateAndSetCookieReturnStatus(&cm, https_url, "A=B;").IsInclude());
 
-  // A SameParty cookie cannot be set without the Secure attribute.
-  EXPECT_THAT(CreateAndSetCookieReturnStatus(&cm, https_url, "A=B; SameParty"),
-              CookieInclusionStatus::MakeFromReasonsForTesting(
-                  {CookieInclusionStatus::EXCLUDE_INVALID_SAMEPARTY}));
+  // A SameParty cookie can be set without the Secure attribute.
+  EXPECT_TRUE(CreateAndSetCookieReturnStatus(&cm, https_url, "A=B; SameParty")
+                  .IsInclude());
 
   // A SameParty cookie can be set from a URL with a secure scheme.
   EXPECT_TRUE(

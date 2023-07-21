@@ -614,12 +614,6 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
     status->AddExclusionReason(CookieInclusionStatus::EXCLUDE_INVALID_PREFIX);
   }
 
-  bool is_same_party_valid = IsCookieSamePartyValid(parsed_cookie);
-  if (!is_same_party_valid) {
-    status->AddExclusionReason(
-        CookieInclusionStatus::EXCLUDE_INVALID_SAMEPARTY);
-  }
-
   bool partition_has_nonce = CookiePartitionKey::HasNonce(cookie_partition_key);
   bool is_partitioned_valid =
       IsCookiePartitionedValid(url, parsed_cookie, partition_has_nonce);
@@ -885,10 +879,6 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
         net::CookieInclusionStatus::EXCLUDE_INVALID_PREFIX);
   }
 
-  if (!IsCookieSamePartyValid(same_party, secure, same_site)) {
-    status->AddExclusionReason(
-        net::CookieInclusionStatus::EXCLUDE_INVALID_SAMEPARTY);
-  }
   if (!IsCookiePartitionedValid(url, secure,
                                 /*is_partitioned=*/partition_key.has_value(),
                                 /*partition_has_nonce=*/
@@ -1475,9 +1465,6 @@ bool CanonicalCookie::IsCanonicalForFromStorage() const {
   if (name_ == "" && HasHiddenPrefixName(value_))
     return false;
 
-  if (!IsCookieSamePartyValid(same_party_, secure_, same_site_))
-    return false;
-
   if (IsPartitioned()) {
     if (CookiePartitionKey::HasNonce(partition_key_))
       return true;
@@ -1722,23 +1709,6 @@ bool CanonicalCookie::HasHiddenPrefixName(
 
 bool CanonicalCookie::IsRecentlyCreated(base::TimeDelta age_threshold) const {
   return (base::Time::Now() - creation_date_) <= age_threshold;
-}
-
-// static
-bool CanonicalCookie::IsCookieSamePartyValid(
-    const ParsedCookie& parsed_cookie) {
-  return IsCookieSamePartyValid(parsed_cookie.IsSameParty(),
-                                parsed_cookie.IsSecure(),
-                                parsed_cookie.SameSite());
-}
-
-// static
-bool CanonicalCookie::IsCookieSamePartyValid(bool is_same_party,
-                                             bool is_secure,
-                                             CookieSameSite same_site) {
-  if (!is_same_party)
-    return true;
-  return is_secure && (same_site != CookieSameSite::STRICT_MODE);
 }
 
 // static

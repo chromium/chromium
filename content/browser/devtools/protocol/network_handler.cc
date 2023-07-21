@@ -784,11 +784,6 @@ GetProtocolBlockedSetCookieReason(net::CookieInclusionStatus status) {
         Network::SetCookieBlockedReasonEnum::ThirdPartyBlockedInFirstPartySet);
   }
   if (status.HasExclusionReason(
-          net::CookieInclusionStatus::EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT)) {
-    blockedReasons->push_back(
-        Network::SetCookieBlockedReasonEnum::SamePartyFromCrossPartyContext);
-  }
-  if (status.HasExclusionReason(
           net::CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE)) {
     blockedReasons->push_back(Network::SetCookieBlockedReasonEnum::SyntaxError);
   }
@@ -811,11 +806,6 @@ GetProtocolBlockedSetCookieReason(net::CookieInclusionStatus status) {
           net::CookieInclusionStatus::EXCLUDE_INVALID_PREFIX)) {
     blockedReasons->push_back(
         Network::SetCookieBlockedReasonEnum::InvalidPrefix);
-  }
-  if (status.HasExclusionReason(
-          net::CookieInclusionStatus::EXCLUDE_INVALID_SAMEPARTY)) {
-    blockedReasons->push_back(Network::SetCookieBlockedReasonEnum::
-                                  SamePartyConflictsWithOtherAttributes);
   }
   if (status.HasExclusionReason(net::CookieInclusionStatus::
                                     EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE)) {
@@ -893,11 +883,6 @@ GetProtocolBlockedCookieReason(net::CookieInclusionStatus status) {
               EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET)) {
     blockedReasons->push_back(
         Network::CookieBlockedReasonEnum::ThirdPartyBlockedInFirstPartySet);
-  }
-  if (status.HasExclusionReason(
-          net::CookieInclusionStatus::EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT)) {
-    blockedReasons->push_back(
-        Network::CookieBlockedReasonEnum::SamePartyFromCrossPartyContext);
   }
   if (status.HasExclusionReason(net::CookieInclusionStatus::
                                     EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE)) {

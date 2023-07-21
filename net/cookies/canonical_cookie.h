@@ -532,14 +532,6 @@ class NET_EXPORT CanonicalCookie {
   // Returns whether the cookie was created at most |age_threshold| ago.
   bool IsRecentlyCreated(base::TimeDelta age_threshold) const;
 
-  // Returns true iff the cookie does not violate any rules associated with
-  // creating a cookie with the SameParty attribute. In particular, if a cookie
-  // has SameParty, then it must be Secure and must not be SameSite=Strict.
-  static bool IsCookieSamePartyValid(const ParsedCookie& parsed_cookie);
-  static bool IsCookieSamePartyValid(bool is_same_party,
-                                     bool is_secure,
-                                     CookieSameSite same_site);
-
   // Returns true iff the cookie is a partitioned cookie with a nonce or that
   // does not violate the semantics of the Partitioned attribute:
   // - Must have the Secure attribute OR the cookie partition contains a nonce.
