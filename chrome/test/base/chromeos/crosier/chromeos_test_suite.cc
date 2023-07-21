@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/test/base/chromeos/crosint/chromeos_test_suite.h"
+#include "chrome/test/base/chromeos/crosier/chromeos_test_suite.h"
 
 #include "build/chromeos_buildflags.h"
 

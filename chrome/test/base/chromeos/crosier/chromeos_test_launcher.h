@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_TEST_BASE_CHROMEOS_CROSINT_CHROMEOS_TEST_LAUNCHER_H_
-#define CHROME_TEST_BASE_CHROMEOS_CROSINT_CHROMEOS_TEST_LAUNCHER_H_
+#ifndef CHROME_TEST_BASE_CHROMEOS_CROSIER_CHROMEOS_TEST_LAUNCHER_H_
+#define CHROME_TEST_BASE_CHROMEOS_CROSIER_CHROMEOS_TEST_LAUNCHER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/app/chrome_main_delegate.h"
@@ -65,4 +65,4 @@ int LaunchChromeOSTests(content::TestLauncherDelegate* delegate,
                         int argc,
                         char** argv);
 
-#endif  // CHROME_TEST_BASE_CHROMEOS_CROSINT_CHROMEOS_TEST_LAUNCHER_H_
+#endif  // CHROME_TEST_BASE_CHROMEOS_CROSIER_CHROMEOS_TEST_LAUNCHER_H_

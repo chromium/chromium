@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_TEST_BASE_CHROMEOS_CROSINT_CHROMEOS_TEST_SUITE_H_
-#define CHROME_TEST_BASE_CHROMEOS_CROSINT_CHROMEOS_TEST_SUITE_H_
+#ifndef CHROME_TEST_BASE_CHROMEOS_CROSIER_CHROMEOS_TEST_SUITE_H_
+#define CHROME_TEST_BASE_CHROMEOS_CROSIER_CHROMEOS_TEST_SUITE_H_
 
 #include "build/chromeos_buildflags.h"
 #include "content/public/test/content_test_suite_base.h"
@@ -32,4 +32,4 @@ class ChromeOSTestSuite : public content::ContentTestSuiteBase {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
-#endif  // CHROME_TEST_BASE_CHROMEOS_CROSINT_CHROMEOS_TEST_SUITE_H_
+#endif  // CHROME_TEST_BASE_CHROMEOS_CROSIER_CHROMEOS_TEST_SUITE_H_

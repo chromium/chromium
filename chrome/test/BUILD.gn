@@ -245,10 +245,10 @@ static_library("test_support") {
 
   if (is_chromeos && is_chromeos_device) {
     sources += [
-      "base/chromeos/crosint/chromeos_test_launcher.cc",
-      "base/chromeos/crosint/chromeos_test_launcher.h",
-      "base/chromeos/crosint/chromeos_test_suite.cc",
-      "base/chromeos/crosint/chromeos_test_suite.h",
+      "base/chromeos/crosier/chromeos_test_launcher.cc",
+      "base/chromeos/crosier/chromeos_test_launcher.h",
+      "base/chromeos/crosier/chromeos_test_suite.cc",
+      "base/chromeos/crosier/chromeos_test_suite.h",
     ]
   }
 
@@ -956,8 +956,8 @@ if (is_chromeos && is_chromeos_device) {
       "CHROME_VERSION_MAJOR=" + chrome_version_major,
     ]
     sources = [
-      "base/chromeos/crosint/chromeos_tests_main.cc",
-      "base/chromeos/crosint/demo_integration_test.cc",
+      "base/chromeos/crosier/chromeos_tests_main.cc",
+      "base/chromeos/crosier/demo_integration_test.cc",
     ]
     deps = [ ":test_support" ]
     if (is_chromeos_ash) {

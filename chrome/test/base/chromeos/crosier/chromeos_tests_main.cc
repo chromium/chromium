@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "chrome/test/base/chromeos/crosint/chromeos_test_launcher.h"
-#include "chrome/test/base/chromeos/crosint/chromeos_test_suite.h"
+#include "chrome/test/base/chromeos/crosier/chromeos_test_launcher.h"
+#include "chrome/test/base/chromeos/crosier/chromeos_test_suite.h"
 
 int main(int argc, char** argv) {
   base::CommandLine::Init(argc, argv);

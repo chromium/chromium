@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/test/base/chromeos/crosint/chromeos_test_launcher.h"
+#include "chrome/test/base/chromeos/crosier/chromeos_test_launcher.h"
 
 #include "base/test/allow_check_is_test_for_testing.h"
 #include "base/test/task_environment.h"
 #include "chrome/app/chrome_crash_reporter_client.h"
 #include "chrome/browser/chrome_content_browser_client.h"
-#include "chrome/test/base/chromeos/crosint/chromeos_test_suite.h"
+#include "chrome/test/base/chromeos/crosier/chromeos_test_suite.h"
 #include "chrome/utility/chrome_content_utility_client.h"
 #include "content/public/test/network_service_test_helper.h"
 #include "mojo/public/cpp/bindings/service_factory.h"
