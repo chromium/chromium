@@ -137,6 +137,8 @@ protocol::String BuildCookieWarningReason(
           WarnAttributeValueExceedsMaxSize;
     case blink::mojom::blink::CookieWarningReason::kWarnDomainNonASCII:
       return protocol::Audits::CookieWarningReasonEnum::WarnDomainNonASCII;
+    case blink::mojom::blink::CookieWarningReason::kWarnThirdPartyPhaseout:
+      return protocol::Audits::CookieWarningReasonEnum::WarnThirdPartyPhaseout;
   }
 }
 

@@ -496,6 +496,7 @@ experimental domain Audits
       WarnSameSiteLaxCrossDowngradeLax
       WarnAttributeValueExceedsMaxSize
       WarnDomainNonASCII
+      WarnThirdPartyPhaseout
 
   type CookieOperation extends string
     enum

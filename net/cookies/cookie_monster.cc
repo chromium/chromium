@@ -1680,6 +1680,11 @@ void CookieMonster::SetCanonicalCookie(
 
     UMA_HISTOGRAM_ENUMERATION("Cookie.CookieSourceSchemeName",
                               GetSchemeNameEnum(source_url));
+  } else {
+    // If the cookie would be excluded, don't bother warning about the 3p cookie
+    // phaseout.
+    access_result.status.RemoveWarningReason(
+        net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT);
   }
 
   // TODO(chlily): Log metrics.

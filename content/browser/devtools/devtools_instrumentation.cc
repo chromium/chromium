@@ -1560,6 +1560,12 @@ std::unique_ptr<protocol::Array<protocol::String>> BuildWarningReasons(
         protocol::Audits::CookieWarningReasonEnum::WarnDomainNonASCII);
   }
 
+  if (status.HasWarningReason(
+          net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT)) {
+    warning_reasons->push_back(
+        protocol::Audits::CookieWarningReasonEnum::WarnThirdPartyPhaseout);
+  }
+
   return warning_reasons;
 }
 
