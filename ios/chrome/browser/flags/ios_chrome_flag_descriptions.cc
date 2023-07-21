@@ -475,11 +475,6 @@ const char kEnableVariationsGoogleGroupFilteringDescription[] =
     "is experimental and is used only for dogfooding, and only for users who "
     "are signed in and have Chrome Sync enabled.";
 
-const char kEnableWebChannelsName[] = "Enable WebFeed";
-const char kEnableWebChannelsDescription[] =
-    "Enable folowing content from web and display Following feed on NTP based "
-    "on sites that users followed.";
-
 const char kTailoredSecurityIntegrationName[] =
     "Enable Tailored Security Integration";
 const char kTailoredSecurityIntegrationDescription[] =

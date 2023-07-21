@@ -2354,11 +2354,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-default-following-feed-sort-type",
-    "owners": [ "adamta", "sczs"],
-    "expiry_milestone": 115
-  },
-  {
     "name": "enable-delay-temp-strip-removal",
     "owners": [ "skavuluru@google.com", "nemco@google.com", "clank-app-team@google.com" ],
     "expiry_milestone": 120
@@ -8044,11 +8039,6 @@
   {
     "name": "web-feed-feedback-reroute",
     "owners": ["zekunjiang", "tinazwang", "chrome-with-friends@google.com"],
-    "expiry_milestone": 122
-  },
-  {
-    "name": "web-feed-ios",
-    "owners": [ "adamta", "sczs", "tinazwang" ],
     "expiry_milestone": 122
   },
   {

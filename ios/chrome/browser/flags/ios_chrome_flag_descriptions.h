@@ -406,11 +406,6 @@ extern const char kEnableUserPolicyDescription[];
 extern const char kEnableVariationsGoogleGroupFilteringName[];
 extern const char kEnableVariationsGoogleGroupFilteringDescription[];
 
-// Title and description for the flag to introduce following web channels on
-// Chrome iOS.
-extern const char kEnableWebChannelsName[];
-extern const char kEnableWebChannelsDescription[];
-
 // Title and description for the flag to enable feed background refresh.
 extern const char kFeedBackgroundRefreshName[];
 extern const char kFeedBackgroundRefreshDescription[];
