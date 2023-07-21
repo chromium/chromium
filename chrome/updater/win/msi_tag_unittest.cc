@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/win/msi_tag_extractor.h"
+#include "chrome/updater/win/msi_tag.h"
 
 #include <string>
 
@@ -15,7 +15,7 @@
 
 namespace updater {
 
-class MsiTagExtractorTest : public testing::Test {
+class MsiTagTest : public testing::Test {
  protected:
   void SetUp() override {
     tagged_msi_path_ = test::GetTestFilePath("tagged_msi");
@@ -33,7 +33,7 @@ class MsiTagExtractorTest : public testing::Test {
   base::FilePath tagged_msi_path_;
 };
 
-TEST_F(MsiTagExtractorTest, ExtractTagArgs) {
+TEST_F(MsiTagTest, ExtractTagArgs) {
   const struct {
     const wchar_t* msi_file_name;
     const tagging::TagArgs expected_tag_args;

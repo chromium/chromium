@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UPDATER_WIN_MSI_TAG_EXTRACTOR_H_
-#define CHROME_UPDATER_WIN_MSI_TAG_EXTRACTOR_H_
+#ifndef CHROME_UPDATER_WIN_MSI_TAG_H_
+#define CHROME_UPDATER_WIN_MSI_TAG_H_
 
 #include "chrome/updater/tag.h"
 
@@ -45,4 +45,4 @@ tagging::TagArgs ExtractTagArgs(const base::FilePath& filename);
 
 }  // namespace updater
 
-#endif  // CHROME_UPDATER_WIN_MSI_TAG_EXTRACTOR_H_
+#endif  // CHROME_UPDATER_WIN_MSI_TAG_H_
