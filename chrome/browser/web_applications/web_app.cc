@@ -690,6 +690,11 @@ void WebApp::SetIsolationData(IsolationData isolation_data) {
   isolation_data_ = isolation_data;
 }
 
+void WebApp::SetIsDefaultAppForSupportedLinks(
+    bool is_default_app_for_supported_links) {
+  is_default_app_for_supported_links_ = is_default_app_for_supported_links;
+}
+
 void WebApp::AddPlaceholderInfoToManagementExternalConfigMap(
     WebAppManagement::Type type,
     bool is_placeholder) {
@@ -961,7 +966,8 @@ bool WebApp::operator==(const WebApp& other) const {
         app.tab_strip_,
         app.always_show_toolbar_in_fullscreen_,
         app.current_os_integration_states_,
-        app.isolation_data_
+        app.isolation_data_,
+        app.is_default_app_for_supported_links_
         // clang-format on
     );
   };
@@ -1171,6 +1177,9 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
            OsStatesDebugValue(current_os_integration_states_));
 
   root.Set("isolation_data", OptionalAsDebugValue(isolation_data_));
+
+  root.Set("is_default_app_for_supported_links",
+           is_default_app_for_supported_links_);
 
   return base::Value(std::move(root));
 }

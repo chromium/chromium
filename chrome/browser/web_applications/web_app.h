@@ -406,6 +406,10 @@ class WebApp {
     return isolation_data_;
   }
 
+  bool is_default_app_for_supported_links() const {
+    return is_default_app_for_supported_links_;
+  }
+
   // A Web App can be installed from multiple sources simultaneously. Installs
   // add a source to the app. Uninstalls remove a source from the app.
   void AddSource(WebAppManagement::Type source);
@@ -496,6 +500,8 @@ class WebApp {
   void SetCurrentOsIntegrationStates(
       proto::WebAppOsIntegrationState current_os_integration_states);
   void SetIsolationData(IsolationData isolation_data);
+  void SetIsDefaultAppForSupportedLinks(
+      bool is_default_app_for_supported_links);
 
   void AddPlaceholderInfoToManagementExternalConfigMap(
       WebAppManagement::Type source_type,
@@ -633,6 +639,8 @@ class WebApp {
       proto::WebAppOsIntegrationState();
 
   absl::optional<IsolationData> isolation_data_;
+
+  bool is_default_app_for_supported_links_ = false;
 
   // New fields must be added to:
   //  - |operator==|

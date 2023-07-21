@@ -896,6 +896,9 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     }
   }
 
+  local_data->set_is_default_app_for_supported_links(
+      web_app.is_default_app_for_supported_links());
+
   return local_data;
 }
 
@@ -1641,6 +1644,11 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
 
     web_app->SetIsolationData(WebApp::IsolationData(
         *location, version, controlled_frame_partitions, pending_update_info));
+  }
+
+  if (local_data.has_is_default_app_for_supported_links()) {
+    web_app->SetIsDefaultAppForSupportedLinks(
+        local_data.is_default_app_for_supported_links());
   }
 
   return web_app;

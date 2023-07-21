@@ -439,4 +439,8 @@ message WebAppProto {
   // https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
   // for association requirements.
   repeated WebAppScopeExtensionProto scope_extensions_validated = 62;
+
+  // Stores whether the current web app is set as the default app to capture
+  // links.
+  optional bool is_default_app_for_supported_links = 63;
 }
