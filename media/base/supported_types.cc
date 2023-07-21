@@ -324,19 +324,6 @@ bool IsDolbyVisionProfileSupported(const VideoType& type) {
 #endif
 }
 
-bool IsDolbyAudioCodecSupported(const AudioType& type) {
-#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
-#if BUILDFLAG(IS_WIN)
-  return GetSupplementalAudioTypeCache()->IsProfileSupported(type);
-#else
-  // Keep 'true' for other platforms as old code snippet
-  return true;
-#endif  // BUILDFLAG(IS_WIN)
-#else
-  return false;
-#endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
-}
-
 }  // namespace
 
 bool IsSupportedAudioType(const AudioType& type) {
@@ -423,7 +410,11 @@ bool IsDefaultSupportedAudioType(const AudioType& type) {
 #endif
     case AudioCodec::kAC3:
     case AudioCodec::kEAC3:
-      return IsDolbyAudioCodecSupported(type);
+#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+      return true;
+#else
+      return false;
+#endif
   }
 }
 
