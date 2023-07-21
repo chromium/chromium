@@ -84,8 +84,20 @@ def main(argv):
     def _map_import_vars(path, variables):
         for (map_path, (old, new)) in import_var_mappings:
             if map_path in path:
-                variables = re.sub(rf"\b{old}\b", new,
-                                   variables).replace(f'{new} as {new}', new)
+                # Rewrite direct imports:
+                # import {html} from "lit/static-html" -->
+                # import {staticHtml as html} from "lit/static-html"
+                variables = re.sub(rf"\b({old})(\s*[,}}])", rf"{new} as \1\2",
+                                   variables)
+                # Rewrite aliased imports:
+                # import {html as foo} from "lit/static-html" -->
+                # import {staticHtml as foo} from "lit/static-html"
+                variables = re.sub(rf"\b{old} (as \w+)", rf"{new} \1",
+                                   variables)
+                # Cleanup aliases:
+                # import {staticHtml as staticHtml} from "lit/static-html" -->
+                # import {staticHtml} from "lit/static-html"
+                variables = variables.replace(f'{new} as {new}', new)
         return variables
 
     for f in args.in_files:
