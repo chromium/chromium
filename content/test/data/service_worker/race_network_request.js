@@ -41,25 +41,23 @@ self.addEventListener("fetch", async e => {
   const url = new URL(request.url);
 
   // Force slow response
-  let timeout = Promise.resolve();
   if (url.search.includes('sw_slow')) {
-    timeout = new Promise(resolve => setTimeout(resolve, 1500));
+    const start = Date.now();
+    while (true) {
+      if (Date.now() - start > 1500) {
+        break;
+      }
+    }
   }
 
   // Force fallback
   if (url.search.includes('sw_fallback')) {
-    await timeout;
     return;
   }
 
   // Force respond from the cache
   if (url.search.includes('sw_respond')) {
-    e.respondWith(
-      (async () => {
-        await timeout;
-        return composeCustomResponse();
-      })()
-    );
+    e.respondWith(composeCustomResponse());
   }
 
   if (url.search.includes('sw_pass_through')) {
