@@ -17453,7 +17453,7 @@
           "--test-launcher-print-test-stdio=always",
           "--combine-ash-logs-on-bots",
           "--asan-symbolize-output",
-          "--gtest_filter=-NativeExtensionBindingsSystemUnittest*"
+          "--gtest_filter=-NativeExtensionBindingsSystemUnittest.AccessToAliasDoesntGiveAliasSourceAccess:NativeExtensionBindingsSystemUnittest.AliasedAPIsAreDifferentObjects"
         ],
         "isolate_profile_data": true,
         "merge": {

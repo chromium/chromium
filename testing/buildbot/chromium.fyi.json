@@ -37382,7 +37382,7 @@
       },
       {
         "args": [
-          "--gtest_filter=-NativeExtensionBindingsSystemUnittest*"
+          "--gtest_filter=-NativeExtensionBindingsSystemUnittest.AccessToAliasDoesntGiveAliasSourceAccess:NativeExtensionBindingsSystemUnittest.AliasedAPIsAreDifferentObjects"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"

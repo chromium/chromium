@@ -2667,23 +2667,27 @@
       # https://crbug.com/1111979
       'linux-lacros-asan-lsan-rel': {
         'args': [
-          '--gtest_filter=-NativeExtensionBindingsSystemUnittest*',
+          '--gtest_filter=-NativeExtensionBindingsSystemUnittest.AccessToAliasDoesntGiveAliasSourceAccess:'
+          'NativeExtensionBindingsSystemUnittest.AliasedAPIsAreDifferentObjects',
         ],
       },
       # https://crbug.com/1111979,
       'linux-lacros-code-coverage': {
         'args': [
-          '--gtest_filter=-NativeExtensionBindingsSystemUnittest.*',
+          '--gtest_filter=-NativeExtensionBindingsSystemUnittest.AccessToAliasDoesntGiveAliasSourceAccess:'
+          'NativeExtensionBindingsSystemUnittest.AliasedAPIsAreDifferentObjects',
         ],
       },
       'linux-lacros-dbg-tests-fyi': {
         'args': [
-          '--gtest_filter=-NativeExtensionBindingsSystemUnittest*',
+          '--gtest_filter=-NativeExtensionBindingsSystemUnittest.AccessToAliasDoesntGiveAliasSourceAccess:'
+          'NativeExtensionBindingsSystemUnittest.AliasedAPIsAreDifferentObjects',
         ],
       },
       'linux-lacros-tester-rel': {
         'args': [
-          '--gtest_filter=-NativeExtensionBindingsSystemUnittest*',
+          '--gtest_filter=-NativeExtensionBindingsSystemUnittest.AccessToAliasDoesntGiveAliasSourceAccess:'
+          'NativeExtensionBindingsSystemUnittest.AliasedAPIsAreDifferentObjects',
         ],
       },
     },
