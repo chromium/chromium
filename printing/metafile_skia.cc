@@ -272,8 +272,8 @@ mojom::MetafileDataType MetafileSkia::GetDataType() const {
 }
 
 gfx::Rect MetafileSkia::GetPageBounds(unsigned int page_number) const {
-  if (page_number < data_->pages.size()) {
-    SkSize size = data_->pages[page_number].size;
+  if (page_number > 0 && page_number - 1 < data_->pages.size()) {
+    SkSize size = data_->pages[page_number - 1].size;
     return gfx::Rect(base::ClampRound(size.width()),
                      base::ClampRound(size.height()));
   }

@@ -126,8 +126,9 @@ class COMPONENT_EXPORT(PRINTING_METAFILE) MetafileSkia : public Metafile {
   ui::AXTreeUpdate& accessibility_tree() { return accessibility_tree_; }
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(MetafileSkiaTest, TestFrameContent);
-  FRIEND_TEST_ALL_PREFIXES(MetafileSkiaTest, TestMultiPictureDocumentTypefaces);
+  FRIEND_TEST_ALL_PREFIXES(MetafileSkiaTest, FrameContent);
+  FRIEND_TEST_ALL_PREFIXES(MetafileSkiaTest, GetPageBounds);
+  FRIEND_TEST_ALL_PREFIXES(MetafileSkiaTest, MultiPictureDocumentTypefaces);
 
   // The following three functions are used for tests only.
   void AppendPage(const SkSize& page_size, cc::PaintRecord record);

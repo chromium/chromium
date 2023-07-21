@@ -27,7 +27,7 @@
 
 namespace printing {
 
-TEST(MetafileSkiaTest, TestFrameContent) {
+TEST(MetafileSkiaTest, FrameContent) {
   constexpr int kPictureSideLen = 100;
   constexpr int kPageSideLen = 150;
 
@@ -94,7 +94,47 @@ TEST(MetafileSkiaTest, TestFrameContent) {
   EXPECT_EQ(bitmap.getColor(kPictureSideLen, kPictureSideLen), SK_ColorWHITE);
 }
 
-TEST(MetafileSkiaTest, TestMultiPictureDocumentTypefaces) {
+TEST(MetafileSkiaTest, GetPageBounds) {
+  constexpr int kPictureSideLen = 100;
+  constexpr int kPageSideWidth = 150;
+  constexpr int kPageSideHeight = 120;
+
+  // Create a placeholder picture.
+  sk_sp<SkPicture> pic_holder = SkPicture::MakePlaceholder(
+      SkRect::MakeXYWH(0, 0, kPictureSideLen, kPictureSideLen));
+
+  // Create the page with nested content which is the placeholder and will be
+  // replaced later.
+  cc::PaintOpBuffer buffer;
+  cc::PaintFlags flags;
+  flags.setColor(SK_ColorWHITE);
+  const SkRect page_rect =
+      SkRect::MakeXYWH(0, 0, kPageSideWidth, kPageSideHeight);
+  buffer.push<cc::DrawRectOp>(page_rect, flags);
+  const uint32_t content_id = pic_holder->uniqueID();
+  buffer.push<cc::CustomDataOp>(content_id);
+  SkSize page_size = SkSize::Make(kPageSideWidth, kPageSideHeight);
+
+  // Finish creating the entire metafile.
+  MetafileSkia metafile(mojom::SkiaDocumentType::kMSKP, 1);
+  metafile.AppendPage(page_size, buffer.ReleaseAsRecord());
+  metafile.AppendSubframeInfo(content_id, base::UnguessableToken::Create(),
+                              std::move(pic_holder));
+  metafile.FinishFrameContent();
+
+  // Confirm there is 1 page in the doc.
+  EXPECT_EQ(1u, metafile.GetPageCount());
+
+  // Test in bound case.
+  EXPECT_EQ(gfx::Rect(kPageSideWidth, kPageSideHeight),
+            metafile.GetPageBounds(/*page_number=*/1));
+
+  // Test out of bounds cases.
+  EXPECT_EQ(gfx::Rect(), metafile.GetPageBounds(/*page_number=*/0));
+  EXPECT_EQ(gfx::Rect(), metafile.GetPageBounds(/*page_number=*/2));
+}
+
+TEST(MetafileSkiaTest, MultiPictureDocumentTypefaces) {
   constexpr int kPictureSideLen = 100;
   constexpr int kPageSideLen = 150;
   constexpr int kDocumentCookie = 1;
