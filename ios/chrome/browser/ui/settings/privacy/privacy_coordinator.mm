@@ -87,6 +87,7 @@
   [self.clearBrowsingDataCoordinator stop];
   self.clearBrowsingDataCoordinator = nil;
   [self stopLockdownModeCoordinator];
+  [self stopSafeBrowsingCoordinator];
 
   self.viewController = nil;
 }
@@ -150,9 +151,7 @@
 - (void)privacySafeBrowsingCoordinatorDidRemove:
     (PrivacySafeBrowsingCoordinator*)coordinator {
   DCHECK_EQ(self.safeBrowsingCoordinator, coordinator);
-  [self.safeBrowsingCoordinator stop];
-  self.safeBrowsingCoordinator.delegate = nil;
-  self.safeBrowsingCoordinator = nil;
+  [self stopSafeBrowsingCoordinator];
 }
 
 #pragma mark - LockdownModeCoordinatorDelegate
@@ -168,6 +167,14 @@
   [self.lockdownModeCoordinator stop];
   self.lockdownModeCoordinator.delegate = nil;
   self.lockdownModeCoordinator = nil;
+}
+
+#pragma mark - Private
+
+- (void)stopSafeBrowsingCoordinator {
+  [self.safeBrowsingCoordinator stop];
+  self.safeBrowsingCoordinator.delegate = nil;
+  self.safeBrowsingCoordinator = nil;
 }
 
 @end
