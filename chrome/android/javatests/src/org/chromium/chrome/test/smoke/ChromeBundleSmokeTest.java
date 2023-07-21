@@ -35,7 +35,9 @@ import org.chromium.chrome.test.pagecontroller.utils.UiLocatorHelper;
 public class ChromeBundleSmokeTest {
     private static final String TARGET_ACTIVITY =
             "org.chromium.chrome.browser.test_dummy.TestDummyActivity";
-    private static final long STARTUP_TIMEOUT = 10000;
+    // 10s was not enough for slow & overheated test devices.
+    // https://ci.chromium.org/ui/p/chromium/builders/try/android-pie-arm64-dbg/6903/overview
+    private static final long STARTUP_TIMEOUT = 20000;
 
     public ChromeUiAutomatorTestRule mRule = new ChromeUiAutomatorTestRule();
     public ChromeUiApplicationTestRule mChromeUiRule = new ChromeUiApplicationTestRule();
