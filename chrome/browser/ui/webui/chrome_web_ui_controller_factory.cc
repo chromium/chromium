@@ -1120,6 +1120,7 @@ ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
     GURL(chrome::kChromeUISystemURL),
     GURL(chrome::kChromeUITermsURL),
     GURL(chrome::kChromeUIVersionURL),
+    GURL(chrome::kChromeUIWebAppInternalsURL),
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Pages that exist only in Ash, i.e. have no immediate counterpart in

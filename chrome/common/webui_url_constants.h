@@ -268,6 +268,7 @@ extern const char kChromeUIUntrustedReadAnythingSidePanelURL[];
 extern const char kChromeUIUserNotesSidePanelHost[];
 extern const char kChromeUIUserNotesSidePanelURL[];
 extern const char kChromeUIWebAppInternalsHost[];
+extern const char kChromeUIWebAppInternalsURL[];
 extern const char kChromeUIWebUITestHost[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
