@@ -20672,6 +20672,9 @@ Called by update_net_error_codes.py.-->
   <int value="6" label="TPM Wipe"/>
   <int value="7" label="TRNG Stall"/>
   <int value="8" label="Dcrypto Failure"/>
+  <int value="9" label="AP RO Verification Failure"/>
+  <int value="10" label="FIPS Failure"/>
+  <int value="11" label="Invalid Board Properties"/>
   <int value="200" label="Nvmem Malloc"/>
   <int value="201" label="Nvmem Page Header Size Mismatch"/>
   <int value="202" label="Nvmem Read Underrun"/>
@@ -105519,6 +105522,17 @@ would be helpful to identify which type is being sent.
   <int value="397" label="TPM_CC_ZGen_2Phase"/>
   <int value="398" label="TPM_CC_EC_Ephemeral"/>
   <int value="399" label="TPM_CC_PolicyNvWritten"/>
+  <int value="400" label="TPM_CC_PolicyTemplate"/>
+  <int value="401" label="TPM_CC_CreateLoaded"/>
+  <int value="402" label="TPM_CC_PolicyAuthorizeNV"/>
+  <int value="403" label="TPM_CC_EncryptDecrypt2"/>
+  <int value="404" label="TPM_CC_AC_GetCapability"/>
+  <int value="405" label="TPM_CC_AC_Send"/>
+  <int value="406" label="TPM_CC_Policy_AC_SendSelect"/>
+  <int value="407" label="TPM_CC_CertifyX509"/>
+  <int value="408" label="TPM_CC_ACT_SetTimeout"/>
+  <int value="409" label="TPM_CC_ECC_Encrypt"/>
+  <int value="410" label="TPM_CC_ECC_Decrypt"/>
   <int value="536903681" label="TPM_CCE_PolicyFidoSigned"/>
 </enum>
 
@@ -105635,6 +105649,19 @@ would be helpful to identify which type is being sent.
   <int value="395" label="TPM_RC_HANDLE_1"/>
   <int value="651" label="TPM_RC_HANDLE_2"/>
   <int value="1163" label="TPM_RC_HANDLE_3"/>
+  <int value="1280" label="VENDOR_RC_SUCCESS"/>
+  <int value="1281" label="VENDOR_RC_BOGUS_ARGS"/>
+  <int value="1282" label="VENDOR_RC_READ_FLASH_FAIL"/>
+  <int value="1283" label="VENDOR_RC_WRITE_FLASH_FAIL"/>
+  <int value="1284" label="VENDOR_RC_REQUEST_TOO_BIG"/>
+  <int value="1285" label="VENDOR_RC_RESPONSE_TOO_BIG"/>
+  <int value="1286" label="VENDOR_RC_INTERNAL_ERROR"/>
+  <int value="1287" label="VENDOR_RC_NOT_ALLOWED"/>
+  <int value="1288" label="VENDOR_RC_NO_SUCH_SUBCOMMAND"/>
+  <int value="1289" label="VENDOR_RC_IN_PROGRESS"/>
+  <int value="1290" label="VENDOR_RC_PASSWORD_REQUIRED"/>
+  <int value="1291" label="VENDOR_RC_NVMEM_LOCKED"/>
+  <int value="1407" label="VENDOR_RC_NO_SUCH_COMMAND"/>
   <int value="2187" label="TPM_RC_HANDLE_4"/>
   <int value="2305" label="TPM_RC_CONTEXT_GAP"/>
   <int value="2306" label="TPM_RC_OBJECT_MEMORY"/>
@@ -105665,6 +105692,9 @@ would be helpful to identify which type is being sent.
   <int value="2338" label="TPM_RC_RETRY"/>
   <int value="2339" label="TPM_RC_NV_UNAVAILABLE"/>
   <int value="2431" label="TPM_RC_NOT_USED"/>
+  <int value="2454" label="Session 1: TPM_RC_SYMMETRIC"/>
+  <int value="2461" label="Session 1: TPM_RC_POLICY_FAIL"/>
+  <int value="2466" label="Session 1: TPM_RC_BAD_AUTH"/>
   <int value="2560" label="TPM_RC_A"/>
   <int value="2816" label="TPM_RC_B"/>
   <int value="3072" label="TPM_RC_C"/>
