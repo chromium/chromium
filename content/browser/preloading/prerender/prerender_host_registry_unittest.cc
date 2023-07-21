@@ -629,8 +629,7 @@ TEST_F(PrerenderHostRegistryTest,
 
   {
     MockCommitDeferringConditionInstaller installer(
-        kPrerenderingUrl,
-        /*is_ready_to_commit=*/false);
+        kPrerenderingUrl, CommitDeferringCondition::Result::kDefer);
     // Start trying to activate the prerendered page.
     navigation = CreateActivation(kPrerenderingUrl, *contents());
     navigation->Start();
@@ -692,8 +691,7 @@ TEST_F(PrerenderHostRegistryTest,
 
   {
     MockCommitDeferringConditionInstaller installer(
-        kPrerenderingUrl,
-        /*is_ready_to_commit=*/false);
+        kPrerenderingUrl, CommitDeferringCondition::Result::kDefer);
     // Start trying to activate the prerendered page.
     navigation = CreateActivation(kPrerenderingUrl, *contents());
     navigation->Start();

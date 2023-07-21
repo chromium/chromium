@@ -2467,8 +2467,8 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   WebContents* web_contents = shell()->web_contents();
   ReadyToCommitObserver observer(web_contents);
 
-  MockCommitDeferringConditionInstaller installer(simple_url,
-                                                  /*is_ready_to_commit=*/true);
+  MockCommitDeferringConditionInstaller installer(
+      simple_url, CommitDeferringCondition::Result::kProceed);
 
   shell()->LoadURL(simple_url);
   ASSERT_TRUE(manager.WaitForResponse());
@@ -2492,9 +2492,9 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   WebContents* web_contents = shell()->web_contents();
 
   MockCommitDeferringConditionInstaller installer1(
-      simple_url, /*is_ready_to_commit=*/false);
+      simple_url, CommitDeferringCondition::Result::kDefer);
   MockCommitDeferringConditionInstaller installer2(
-      simple_url, /*is_ready_to_commit=*/false);
+      simple_url, CommitDeferringCondition::Result::kDefer);
 
   ReadyToCommitObserver observer(web_contents);
 
@@ -2540,12 +2540,12 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   WebContents* web_contents = shell()->web_contents();
 
   MockCommitDeferringConditionInstaller installer1(
-      simple_url, /*is_ready_to_commit=*/false);
+      simple_url, CommitDeferringCondition::Result::kDefer);
 
   // We'll cancel the navigation while the first condition is deferred so this
   // is added only to make sure it's never invoked.
   MockCommitDeferringConditionInstaller installer2(
-      simple_url, /*is_ready_to_commit=*/false);
+      simple_url, CommitDeferringCondition::Result::kDefer);
 
   shell()->LoadURL(simple_url);
   ASSERT_TRUE(manager.WaitForResponse());
