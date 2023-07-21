@@ -5798,11 +5798,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.WebTransport.NegotiatedHttpDatagramVersion"
-    enum="NegotiatedHttpDatagramVersion" expires_after="2024-01-14">
+    enum="NegotiatedHttpDatagramVersion" expires_after="2024-07-20">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
     Negotiated HTTP Datagram version. Recorded when a WebTransport session
+    becomes ready.
+  </summary>
+</histogram>
+
+<histogram name="Net.WebTransport.NegotiatedWebTransportVersion"
+    enum="NegotiatedWebTransportVersion" expires_after="2024-07-20">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Negotiated WebTransport version. Recorded when a WebTransport session
     becomes ready.
   </summary>
 </histogram>

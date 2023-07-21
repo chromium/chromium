@@ -73840,6 +73840,11 @@ Called by update_use_counter_css.py.-->
   <int value="2" label="rfc"/>
 </enum>
 
+<enum name="NegotiatedWebTransportVersion">
+  <int value="0" label="draft-02"/>
+  <int value="1" label="draft-07"/>
+</enum>
+
 <enum name="NeighborLinkMonitorFailureType">
   <int value="0" label="Unknown type of failure"/>
   <int value="1" label="IPv4 gateway neighbor lost"/>
