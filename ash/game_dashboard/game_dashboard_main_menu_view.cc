@@ -239,7 +239,7 @@ GameDashboardMainMenuView::GameDashboardMainMenuView(
 GameDashboardMainMenuView::~GameDashboardMainMenuView() = default;
 
 void GameDashboardMainMenuView::OnToolbarTilePressed() {
-  context_->ToggleToolbar();
+  toolbar_tile_->SetToggled(context_->ToggleToolbar());
 }
 
 void GameDashboardMainMenuView::OnRecordGameTilePressed() {
@@ -323,13 +323,14 @@ void GameDashboardMainMenuView::AddShortcutTilesRow() {
   container->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   container->SetBetweenChildSpacing(kCenterPadding);
 
-  container->AddChildView(CreateTile(
+  toolbar_tile_ = container->AddChildView(CreateTile(
       base::BindRepeating(&GameDashboardMainMenuView::OnToolbarTilePressed,
                           base::Unretained(this)),
-      /*is_togglable=*/false, FeatureTile::TileType::kCompact,
+      /*is_togglable=*/true, FeatureTile::TileType::kCompact,
       VIEW_ID_GD_TOOLBAR_TILE, kGdToolbarIcon,
       l10n_util::GetStringUTF16(
           IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_BUTTON_TITLE)));
+  toolbar_tile_->SetToggled(context_->IsToolbarVisible());
 
   MaybeAddGameControlsTile(container);
 

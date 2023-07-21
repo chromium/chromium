@@ -89,6 +89,7 @@ class GameDashboardMainMenuView : public views::BubbleDialogDelegateView {
   // Allows this class to access `GameDashboardContext` owned functions/objects.
   const raw_ptr<GameDashboardContext, ExperimentalAsh> context_;
 
+  raw_ptr<FeatureTile> toolbar_tile_ = nullptr;
   raw_ptr<FeatureTile> game_controls_tile_ = nullptr;
   raw_ptr<FeatureDetailsRow> game_controls_details_ = nullptr;
   raw_ptr<PillButton> game_controls_setup_button_ = nullptr;

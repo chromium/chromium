@@ -42,11 +42,14 @@ class GameDashboardContext {
   void ToggleMainMenu();
 
   // Toggles the creation/deletion of the toolbar within the game window.
-  void ToggleToolbar();
+  // Returns the toolbar visibility state.
+  bool ToggleToolbar();
 
   // Conditionally, updates the toolbar widget's bounds and location, relative
   // to the `game_window_`.
   void MaybeUpdateToolbarWidgetBounds();
+
+  bool IsToolbarVisible() const;
 
  private:
   // Indicator for the 4 quadrants that the toolbar is able to be placed.

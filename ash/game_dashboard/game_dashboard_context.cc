@@ -91,7 +91,7 @@ void GameDashboardContext::ToggleMainMenu() {
   }
 }
 
-void GameDashboardContext::ToggleToolbar() {
+bool GameDashboardContext::ToggleToolbar() {
   if (!toolbar_widget_) {
     toolbar_widget_ = CreateTransientChildWidget(
         game_window_, "GameDashboardToolbar",
@@ -100,15 +100,21 @@ void GameDashboardContext::ToggleToolbar() {
               wm::GetTransientParent(toolbar_widget_->GetNativeWindow()));
     MaybeUpdateToolbarWidgetBounds();
     toolbar_widget_->Show();
-  } else {
-    toolbar_widget_.reset();
+    return true;
   }
+
+  toolbar_widget_.reset();
+  return false;
 }
 
 void GameDashboardContext::MaybeUpdateToolbarWidgetBounds() {
   if (toolbar_widget_) {
     toolbar_widget_->SetBounds(CalculateToolbarWidgetBounds());
   }
+}
+
+bool GameDashboardContext::IsToolbarVisible() const {
+  return toolbar_widget_ && toolbar_widget_->IsVisible();
 }
 
 void GameDashboardContext::CreateAndAddMainMenuButtonWidget() {

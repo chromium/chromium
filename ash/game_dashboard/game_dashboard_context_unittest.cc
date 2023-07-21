@@ -563,12 +563,14 @@ TEST_P(GameTypeGameDashboardContextTest, OpenAndCloseToolbarWidget) {
   FeatureTile* toolbar_tile =
       static_cast<FeatureTile*>(GetMainMenuViewById(VIEW_ID_GD_TOOLBAR_TILE));
   ASSERT_TRUE(toolbar_tile);
+  EXPECT_FALSE(toolbar_tile->IsToggled());
   EXPECT_FALSE(GetToolbarWidget());
 
   LeftClickOn(toolbar_tile);
 
-  // Verify that the toolbar widget is now available.
+  // Verify that the toolbar widget is now available and is toggled on.
   EXPECT_TRUE(GetToolbarWidget());
+  EXPECT_TRUE(toolbar_tile->IsToggled());
 
   // Verify available feature buttons.
   EXPECT_TRUE(GetToolbarGamepadButton());
@@ -582,8 +584,9 @@ TEST_P(GameTypeGameDashboardContextTest, OpenAndCloseToolbarWidget) {
 
   LeftClickOn(toolbar_tile);
 
-  // Verify that the toolbar widget is no longer available.
+  // Verify that the toolbar widget is no longer available and is toggled off.
   EXPECT_FALSE(GetToolbarWidget());
+  EXPECT_FALSE(toolbar_tile->IsToggled());
 }
 
 // Verifies the toolbar screenshot button will take a screenshot of the game
