@@ -35,6 +35,19 @@ constexpr base::TimeDelta kTimeRangeIncomingNotificationHistogramMax =
 // Number of buckets for the time range histograms.
 constexpr int kTimeRangeHistogramBucketCount = 30;
 
+// The histogram used to record a push notification's current lifecycle state on
+// the device.
+const char kLifecycleEventsHistogram[] = "IOS.PushNotification.LifecyleEvents";
+
+// This enum is used to represent a point along the push notification's
+// lifecycle.
+enum class PushNotificationLifecycleEvent {
+  kNotificationReception,
+  kNotificationForegroundPresentation,
+  kNotificationInteraction,
+  kMaxValue = kNotificationInteraction
+};
+
 // This function creates a dictionary that maps signed-in user's GAIA IDs to a
 // map of each user's preferences for each push notification enabled feature.
 GaiaIdToPushNotificationPreferenceMap*
@@ -87,6 +100,8 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
 - (void)userNotificationCenter:(UNUserNotificationCenter*)center
     didReceiveNotificationResponse:(UNNotificationResponse*)response
              withCompletionHandler:(void (^)(void))completionHandler {
+  [self recordLifeCycleEvent:PushNotificationLifecycleEvent::
+                                 kNotificationInteraction];
   // This method is invoked by iOS to process the user's response to a delivered
   // notification.
   auto* clientManager = GetApplicationContext()
@@ -104,6 +119,8 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
          withCompletionHandler:
              (void (^)(UNNotificationPresentationOptions options))
                  completionHandler {
+  [self recordLifeCycleEvent:PushNotificationLifecycleEvent::
+                                 kNotificationForegroundPresentation];
   // This method is invoked by iOS to process a notification that arrived while
   // the app was running in the foreground.
   auto* clientManager = GetApplicationContext()
@@ -122,6 +139,9 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
 
 - (UIBackgroundFetchResult)applicationWillProcessIncomingRemoteNotification:
     (NSDictionary*)userInfo {
+  [self recordLifeCycleEvent:PushNotificationLifecycleEvent::
+                                 kNotificationReception];
+
   double incomingNotificationTime = base::Time::Now().ToDoubleT();
   auto* clientManager = GetApplicationContext()
                             ->GetPushNotificationService()
@@ -131,7 +151,7 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
       clientManager->HandleNotificationReception(userInfo);
 
   double processingTime =
-      incomingNotificationTime - base::Time::Now().ToDoubleT();
+      base::Time::Now().ToDoubleT() - incomingNotificationTime;
   UmaHistogramCustomTimes(
       "IOS.PushNotification.IncomingNotificationProcessingTime",
       base::Milliseconds(processingTime),
@@ -193,6 +213,11 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
           ->GetPushNotificationClientManager();
   DCHECK(clientManager);
   clientManager->OnSceneActiveForegroundBrowserReady();
+}
+
+#pragma mark - Private
+- (void)recordLifeCycleEvent:(PushNotificationLifecycleEvent)event {
+  base::UmaHistogramEnumeration(kLifecycleEventsHistogram, event);
 }
 
 @end

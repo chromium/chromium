@@ -87755,6 +87755,11 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="2" label="Not responded"/>
 </enum>
 
+<enum name="PriceNotificationProductStatus">
+  <int value="0" label="Product is Tracked"/>
+  <int value="1" label="Product is Untracked"/>
+</enum>
+
 <enum name="PriceTrackingState">
   <int value="0" label="Price tracking shown"/>
   <int value="1" label="Price tracking enabled"/>
@@ -89645,6 +89650,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="6" label="Storage corrupt"/>
   <int value="7" label="Renderer shutdown"/>
   <int value="8" label="No live Service Worker"/>
+</enum>
+
+<enum name="PushNotificationLifecycleEvent">
+  <int value="0" label="Notification received on device"/>
+  <int value="1"
+      label="Notification presented on device while is in foreground"/>
+  <int value="2" label="User tapped on notification"/>
 </enum>
 
 <enum name="PushNotificationPermissionPromptStatus">
