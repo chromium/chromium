@@ -39,6 +39,7 @@
 #include "chrome/browser/web_applications/web_app_translation_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/content_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -886,7 +887,7 @@ int WebAppRegistrar::CountUserInstalledNotLocallyInstalledApps() const {
 std::vector<content::StoragePartitionConfig>
 WebAppRegistrar::GetIsolatedWebAppStoragePartitionConfigs(
     const AppId& isolated_web_app_id) const {
-  if (!base::FeatureList::IsEnabled(features::kIsolatedWebApps)) {
+  if (!content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(profile_)) {
     return {};
   }
 
