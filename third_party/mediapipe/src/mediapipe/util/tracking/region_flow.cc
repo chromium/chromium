@@ -22,6 +22,7 @@
 
 #include "absl/container/node_hash_map.h"
 #include "absl/container/node_hash_set.h"
+#include "absl/log/absl_check.h"
 #include "absl/strings/str_cat.h"
 #include "mediapipe/framework/port/integral_types.h"
 #include "mediapipe/util/tracking/measure_time.h"
@@ -76,8 +77,8 @@ void GetRegionFlowFeatureList(const RegionFlowFrame& region_flow_frame,
 
 float RegionFlowFeatureDistance(const PatchDescriptor& patch_desc_1,
                                 const PatchDescriptor& patch_desc_2) {
-  DCHECK_EQ(patch_desc_1.data_size(), patch_desc_2.data_size());
-  DCHECK_GE(patch_desc_1.data_size(), 3);
+  ABSL_DCHECK_EQ(patch_desc_1.data_size(), patch_desc_2.data_size());
+  ABSL_DCHECK_GE(patch_desc_1.data_size(), 3);
 
   constexpr int kNumMeans = 3;
   float sq_distance_sum = 0;
@@ -212,7 +213,7 @@ void GetRegionFlowFeatureIRLSWeights(
 void SetRegionFlowFeatureIRLSWeights(const std::vector<float>& irls_weights,
                                      RegionFlowFeatureList* flow_feature_list) {
   CHECK(flow_feature_list != nullptr);
-  CHECK_EQ(irls_weights.size(), flow_feature_list->feature_size());
+  ABSL_CHECK_EQ(irls_weights.size(), flow_feature_list->feature_size());
   int idx = 0;
   for (auto feature = flow_feature_list->mutable_feature()->begin();
        feature != flow_feature_list->mutable_feature()->end();
@@ -515,7 +516,7 @@ void CopyToEmptyFeatureList(RegionFlowFeatureList* src,
   src->mutable_feature()->Swap(empty_list.mutable_feature());
 
   // src_features should be empty as in the beginning.
-  CHECK_EQ(0, empty_list.feature_size());
+  ABSL_CHECK_EQ(0, empty_list.feature_size());
 }
 
 void IntersectRegionFlowFeatureList(
@@ -607,10 +608,10 @@ void LongFeatureStream::AddFeatures(const RegionFlowFeatureList& feature_list,
     if (find_pos != tracks_.end()) {
       // Track is present, add to it.
       if (check_connectivity) {
-        CHECK_LT((FeatureLocation(find_pos->second.back()) -
-                  FeatureMatchLocation(feature))
-                     .Norm2(),
-                 1e-4);
+        ABSL_CHECK_LT((FeatureLocation(find_pos->second.back()) -
+                       FeatureMatchLocation(feature))
+                          .Norm2(),
+                      1e-4);
       }
       find_pos->second.push_back(feature);
     } else {

@@ -18,6 +18,7 @@
 #include <utility>
 #include <vector>
 
+#include "absl/log/absl_check.h"
 #include "mediapipe/calculators/util/non_max_suppression_calculator.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/formats/detection.pb.h"
@@ -171,9 +172,9 @@ class NonMaxSuppressionCalculator : public CalculatorBase {
     cc->SetOffset(TimestampDiff(0));
 
     options_ = cc->Options<NonMaxSuppressionCalculatorOptions>();
-    CHECK_GT(options_.num_detection_streams(), 0)
+    ABSL_CHECK_GT(options_.num_detection_streams(), 0)
         << "At least one detection stream need to be specified.";
-    CHECK_NE(options_.max_num_detections(), 0)
+    ABSL_CHECK_NE(options_.max_num_detections(), 0)
         << "max_num_detections=0 is not a valid value. Please choose a "
         << "positive number of you want to limit the number of output "
         << "detections, or set -1 if you do not want any limit.";

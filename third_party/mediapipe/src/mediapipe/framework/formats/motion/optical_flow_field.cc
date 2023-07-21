@@ -18,6 +18,7 @@
 
 #include <cmath>
 
+#include "absl/log/absl_check.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
 #include "mediapipe/framework/deps/mathutil.h"
@@ -105,7 +106,7 @@ cv::Mat OpticalFlowField::GetVisualizationInternal(
         std::max(std::numeric_limits<float>::epsilon(),
                  MaxAbsoluteValueIgnoringHuge(magnitudes, kHugeToIgnore));
   }
-  CHECK_LT(0, max_magnitude);
+  ABSL_CHECK_LT(0, max_magnitude);
   cv::Mat hsv = MakeVisualizationHsv(angles, magnitudes, max_magnitude);
   cv::Mat viz;
   cv::cvtColor(hsv, viz, 71 /*cv::COLOR_HSV2RGB_FULL*/);
@@ -119,7 +120,7 @@ cv::Mat OpticalFlowField::GetVisualization() const {
 
 cv::Mat OpticalFlowField::GetVisualizationSaturatedAt(
     float max_magnitude) const {
-  CHECK_LT(0, max_magnitude)
+  ABSL_CHECK_LT(0, max_magnitude)
       << "Specified saturation magnitude must be positive.";
   return GetVisualizationInternal(max_magnitude, true);
 }
@@ -147,9 +148,9 @@ void OpticalFlowField::Resize(int new_width, int new_height) {
 }
 
 void OpticalFlowField::CopyFromTensor(const tensorflow::Tensor& tensor) {
-  CHECK_EQ(tensorflow::DT_FLOAT, tensor.dtype());
-  CHECK_EQ(3, tensor.dims()) << "Tensor must be height x width x 2.";
-  CHECK_EQ(2, tensor.dim_size(2)) << "Tensor must be height x width x 2.";
+  ABSL_CHECK_EQ(tensorflow::DT_FLOAT, tensor.dtype());
+  ABSL_CHECK_EQ(3, tensor.dims()) << "Tensor must be height x width x 2.";
+  ABSL_CHECK_EQ(2, tensor.dim_size(2)) << "Tensor must be height x width x 2.";
   const int height = tensor.dim_size(0);
   const int width = tensor.dim_size(1);
   Allocate(width, height);
@@ -163,8 +164,8 @@ void OpticalFlowField::CopyFromTensor(const tensorflow::Tensor& tensor) {
 }
 
 void OpticalFlowField::SetFromProto(const OpticalFlowFieldData& proto) {
-  CHECK_EQ(proto.width() * proto.height(), proto.dx_size());
-  CHECK_EQ(proto.width() * proto.height(), proto.dy_size());
+  ABSL_CHECK_EQ(proto.width() * proto.height(), proto.dx_size());
+  ABSL_CHECK_EQ(proto.width() * proto.height(), proto.dy_size());
   flow_data_.create(proto.height(), proto.width());
   int i = 0;
   for (int r = 0; r < flow_data_.rows; ++r) {
@@ -205,10 +206,10 @@ bool OpticalFlowField::FollowFlow(float x, float y, float* new_x,
 
 cv::Point2f OpticalFlowField::InterpolatedFlowAt(float x, float y) const {
   // Sanity bounds checks.
-  CHECK_GE(x, 0);
-  CHECK_GE(y, 0);
-  CHECK_LE(x, flow_data_.cols - 1);
-  CHECK_LE(y, flow_data_.rows - 1);
+  ABSL_CHECK_GE(x, 0);
+  ABSL_CHECK_GE(y, 0);
+  ABSL_CHECK_LE(x, flow_data_.cols - 1);
+  ABSL_CHECK_LE(y, flow_data_.rows - 1);
 
   const int x0 = static_cast<int>(std::floor(x));
   const int y0 = static_cast<int>(std::floor(y));
@@ -265,9 +266,9 @@ void OpticalFlowField::EstimateMotionConsistencyOcclusions(
     const OpticalFlowField& forward, const OpticalFlowField& backward,
     double spatial_distance_threshold, Location* occluded_mask,
     Location* disoccluded_mask) {
-  CHECK_EQ(forward.width(), backward.width())
+  ABSL_CHECK_EQ(forward.width(), backward.width())
       << "Flow fields have different widths.";
-  CHECK_EQ(forward.height(), backward.height())
+  ABSL_CHECK_EQ(forward.height(), backward.height())
       << "Flow fields have different heights.";
   if (occluded_mask != nullptr) {
     *occluded_mask = FindMotionInconsistentPixels(forward, backward,

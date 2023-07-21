@@ -14,6 +14,7 @@
 
 #include <memory>
 
+#include "absl/log/absl_check.h"
 #include "absl/strings/str_cat.h"
 #include "mediapipe/calculators/util/annotation_overlay_calculator.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
@@ -172,7 +173,7 @@ class AnnotationOverlayCalculator : public CalculatorBase {
 REGISTER_CALCULATOR(AnnotationOverlayCalculator);
 
 absl::Status AnnotationOverlayCalculator::GetContract(CalculatorContract* cc) {
-  CHECK_GE(cc->Inputs().NumEntries(), 1);
+  ABSL_CHECK_GE(cc->Inputs().NumEntries(), 1);
 
   bool use_gpu = false;
 

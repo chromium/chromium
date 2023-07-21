@@ -17,6 +17,7 @@
 
 #include <vector>
 
+#include "absl/log/absl_check.h"
 #include "mediapipe/util/tracking/camera_motion.pb.h"
 #include "mediapipe/util/tracking/motion_models.h"
 #include "mediapipe/util/tracking/region_flow.pb.h"
@@ -236,7 +237,7 @@ void DownsampleMotionModels(
     std::vector<Model>* downsampled_models,
     std::vector<CameraMotion::Type>* downsampled_types) {
   if (model_type) {
-    CHECK_EQ(models.size(), model_type->size());
+    ABSL_CHECK_EQ(models.size(), model_type->size());
     CHECK(downsampled_models) << "Expecting output models.";
   }
 

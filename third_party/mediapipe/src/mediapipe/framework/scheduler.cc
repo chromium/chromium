@@ -19,6 +19,7 @@
 #include <utility>
 #include <vector>
 
+#include "absl/log/absl_check.h"
 #include "absl/memory/memory.h"
 #include "absl/synchronization/mutex.h"
 #include "mediapipe/framework/calculator_graph.h"
@@ -77,7 +78,7 @@ void Scheduler::Reset() {
 void Scheduler::CloseAllSourceNodes() { shared_.stopping = true; }
 
 void Scheduler::SetExecutor(Executor* executor) {
-  CHECK_EQ(state_, STATE_NOT_STARTED)
+  ABSL_CHECK_EQ(state_, STATE_NOT_STARTED)
       << "SetExecutor must not be called after the scheduler has started";
   default_queue_.SetExecutor(executor);
 }
@@ -198,7 +199,7 @@ void Scheduler::Start() {
   shared_.timer.StartRun();
   {
     absl::MutexLock lock(&state_mutex_);
-    CHECK_EQ(state_, STATE_NOT_STARTED);
+    ABSL_CHECK_EQ(state_, STATE_NOT_STARTED);
     state_ = STATE_RUNNING;
     SetQueuesRunning(true);
 
@@ -427,8 +428,9 @@ bool Scheduler::TryToScheduleNextSourceLayer() {
 }
 
 void Scheduler::AddUnopenedSourceNode(CalculatorNode* node) {
-  CHECK_EQ(state_, STATE_NOT_STARTED) << "AddUnopenedSourceNode can only be "
-                                         "called before starting the scheduler";
+  ABSL_CHECK_EQ(state_, STATE_NOT_STARTED)
+      << "AddUnopenedSourceNode can only be "
+         "called before starting the scheduler";
   unopened_sources_.insert(node);
 }
 
@@ -539,7 +541,7 @@ void Scheduler::CleanupAfterRun() {
 }
 
 internal::SchedulerTimes Scheduler::GetSchedulerTimes() {
-  CHECK_EQ(state_, STATE_TERMINATED);
+  ABSL_CHECK_EQ(state_, STATE_TERMINATED);
   return shared_.timer.GetSchedulerTimes();
 }
 

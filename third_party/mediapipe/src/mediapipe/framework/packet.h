@@ -23,6 +23,7 @@
 #include <type_traits>
 
 #include "absl/base/macros.h"
+#include "absl/log/absl_check.h"
 #include "absl/memory/memory.h"
 #include "absl/strings/str_cat.h"
 #include "absl/synchronization/mutex.h"
@@ -742,7 +743,7 @@ inline Packet& Packet::operator=(Packet&& packet) {
 inline bool Packet::IsEmpty() const { return holder_ == nullptr; }
 
 inline TypeId Packet::GetTypeId() const {
-  CHECK(holder_);
+  ABSL_CHECK(holder_);
   return holder_->GetTypeId();
 }
 
@@ -761,13 +762,13 @@ inline Timestamp Packet::Timestamp() const { return timestamp_; }
 
 template <typename T>
 Packet Adopt(const T* ptr) {
-  CHECK(ptr != nullptr);
+  ABSL_CHECK(ptr != nullptr);
   return packet_internal::Create(new packet_internal::Holder<T>(ptr));
 }
 
 template <typename T>
 Packet PointToForeign(const T* ptr) {
-  CHECK(ptr != nullptr);
+  ABSL_CHECK(ptr != nullptr);
   return packet_internal::Create(new packet_internal::ForeignHolder<T>(ptr));
 }
 

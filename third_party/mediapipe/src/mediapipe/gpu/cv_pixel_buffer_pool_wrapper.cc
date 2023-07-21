@@ -17,6 +17,7 @@
 #include <tuple>
 
 #include "CoreFoundation/CFBase.h"
+#include "absl/log/absl_check.h"
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/objc/CFHolder.h"
 #include "mediapipe/objc/util.h"
@@ -27,7 +28,7 @@ CvPixelBufferPoolWrapper::CvPixelBufferPoolWrapper(
     int width, int height, GpuBufferFormat format, CFTimeInterval maxAge,
     CvTextureCacheManager* texture_caches) {
   OSType cv_format = CVPixelFormatForGpuBufferFormat(format);
-  CHECK_NE(cv_format, -1) << "unsupported pixel format";
+  ABSL_CHECK_NE(cv_format, -1) << "unsupported pixel format";
   pool_ = MakeCFHolderAdopting(
       /* keep count is 0 because the age param keeps buffers around anyway */
       CreateCVPixelBufferPool(width, height, cv_format, 0, maxAge));
@@ -73,7 +74,7 @@ void CvPixelBufferPoolWrapper::Flush() { CVPixelBufferPoolFlush(*pool_, 0); }
 CFHolder<CVPixelBufferRef> CvPixelBufferPoolWrapper::CreateBufferWithoutPool(
     const internal::GpuBufferSpec& spec) {
   OSType cv_format = CVPixelFormatForGpuBufferFormat(spec.format);
-  CHECK_NE(cv_format, -1) << "unsupported pixel format";
+  ABSL_CHECK_NE(cv_format, -1) << "unsupported pixel format";
   CVPixelBufferRef buffer;
   CVReturn err = CreateCVPixelBufferWithoutPool(spec.width, spec.height,
                                                 cv_format, &buffer);

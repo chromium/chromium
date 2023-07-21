@@ -17,6 +17,7 @@
 #include <memory>
 #include <string>
 
+#include "absl/log/absl_check.h"
 #include "absl/strings/numbers.h"
 #include "absl/strings/str_split.h"
 #include "absl/strings/string_view.h"
@@ -620,7 +621,7 @@ void MotionAnalysisCalculator::OutputMotionAnalyzedFrames(
   const int num_results = motion_analysis_->GetResults(
       flush, &features, &camera_motions, with_saliency_ ? &saliency : nullptr);
 
-  CHECK_LE(num_results, buffer_size);
+  ABSL_CHECK_LE(num_results, buffer_size);
 
   if (num_results == 0) {
     return;
@@ -695,7 +696,7 @@ void MotionAnalysisCalculator::OutputMotionAnalyzedFrames(
 
   if (hybrid_meta_analysis_) {
     hybrid_meta_offset_ -= num_results;
-    CHECK_GE(hybrid_meta_offset_, 0);
+    ABSL_CHECK_GE(hybrid_meta_offset_, 0);
   }
 
   timestamp_buffer_.erase(timestamp_buffer_.begin(),
@@ -901,7 +902,7 @@ void MotionAnalysisCalculator::AddMetaMotion(
     const CameraMotion& meta_motion, const RegionFlowFeatureList& meta_features,
     RegionFlowFeatureList* features, CameraMotion* motion) {
   // Restore old feature location.
-  CHECK_EQ(meta_features.feature_size(), features->feature_size());
+  ABSL_CHECK_EQ(meta_features.feature_size(), features->feature_size());
   for (int k = 0; k < meta_features.feature_size(); ++k) {
     auto feature = features->mutable_feature(k);
     const auto& meta_feature = meta_features.feature(k);
@@ -947,8 +948,9 @@ void MotionAnalysisCalculator::AppendCameraMotionsFromHomographies(
   }
 
   const int models_per_frame = options_.meta_models_per_frame();
-  CHECK_GT(models_per_frame, 0) << "At least one model per frame is needed";
-  CHECK_EQ(0, homographies.size() % models_per_frame);
+  ABSL_CHECK_GT(models_per_frame, 0)
+      << "At least one model per frame is needed";
+  ABSL_CHECK_EQ(0, homographies.size() % models_per_frame);
   const int num_frames = homographies.size() / models_per_frame;
 
   // Heuristic sigma, similar to what we use for rolling shutter removal.

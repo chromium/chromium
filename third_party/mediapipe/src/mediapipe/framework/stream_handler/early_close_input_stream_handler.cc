@@ -16,6 +16,7 @@
 #include <memory>
 #include <vector>
 
+#include "absl/log/absl_check.h"
 #include "absl/strings/substitute.h"
 #include "mediapipe/framework/input_stream_handler.h"
 
@@ -56,13 +57,13 @@ class EarlyCloseInputStreamHandler : public InputStreamHandler {
       *min_stream_timestamp = std::min(*min_stream_timestamp, stream_timestamp);
     }
 
-    CHECK_NE(*min_stream_timestamp, Timestamp::Done());
+    ABSL_CHECK_NE(*min_stream_timestamp, Timestamp::Done());
 
     if (min_bound > *min_stream_timestamp) {
       return NodeReadiness::kReadyForProcess;
     }
 
-    CHECK_EQ(min_bound, *min_stream_timestamp);
+    ABSL_CHECK_EQ(min_bound, *min_stream_timestamp);
     return NodeReadiness::kNotReady;
   }
 
@@ -78,7 +79,7 @@ class EarlyCloseInputStreamHandler : public InputStreamHandler {
       bool stream_is_done = false;
       Packet current_packet = stream->PopPacketAtTimestamp(
           input_timestamp, &num_packets_dropped, &stream_is_done);
-      CHECK_EQ(num_packets_dropped, 0)
+      ABSL_CHECK_EQ(num_packets_dropped, 0)
           << absl::Substitute("Dropped $0 packet(s) on input stream \"$1\".",
                               num_packets_dropped, stream->Name());
       AddPacketToShard(&input_set->Get(id), std::move(current_packet),

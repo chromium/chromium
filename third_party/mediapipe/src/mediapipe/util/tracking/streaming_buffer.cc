@@ -14,6 +14,7 @@
 
 #include "mediapipe/util/tracking/streaming_buffer.h"
 
+#include "absl/log/absl_check.h"
 #include "absl/strings/str_cat.h"
 
 namespace mediapipe {
@@ -21,7 +22,7 @@ namespace mediapipe {
 StreamingBuffer::StreamingBuffer(
     const std::vector<TaggedType>& data_configuration, int overlap)
     : overlap_(overlap) {
-  CHECK_GE(overlap, 0);
+  ABSL_CHECK_GE(overlap, 0);
   for (auto& item : data_configuration) {
     CHECK(data_config_.find(item.first) == data_config_.end())
         << "Tag " << item.first << " already exists";

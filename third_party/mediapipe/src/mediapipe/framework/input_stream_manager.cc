@@ -17,6 +17,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "absl/log/absl_check.h"
 #include "absl/strings/str_cat.h"
 #include "absl/synchronization/mutex.h"
 #include "mediapipe/framework/packet.h"
@@ -252,7 +253,7 @@ Packet InputStreamManager::PopPacketAtTimestamp(Timestamp timestamp,
   {
     absl::MutexLock stream_lock(&stream_mutex_);
     // Make sure timestamp didn't decrease from last time.
-    CHECK_LE(last_select_timestamp_, timestamp);
+    ABSL_CHECK_LE(last_select_timestamp_, timestamp);
     last_select_timestamp_ = timestamp;
 
     // Make sure AddPacket and SetNextTimestampBound are not called with

@@ -17,6 +17,7 @@
 #include <memory>
 #include <unordered_set>
 
+#include "absl/log/absl_check.h"
 #include "absl/memory/memory.h"
 #include "absl/strings/numbers.h"
 #include "mediapipe/calculators/video/box_detector_calculator.pb.h"
@@ -359,7 +360,7 @@ absl::Status BoxDetectorCalculator::Process(CalculatorContext* cc) {
 
     const auto& descriptors = descriptor_stream->Get<std::vector<float>>();
     const int dims = options_.detector_options().descriptor_dims();
-    CHECK_GE(descriptors.size(), feature_size * dims);
+    ABSL_CHECK_GE(descriptors.size(), feature_size * dims);
     cv::Mat descriptors_mat(feature_size, dims, CV_32F);
     for (int j = 0; j < feature_size; ++j) {
       features_vec[j].Set(features[j].pt.x * inv_scale,

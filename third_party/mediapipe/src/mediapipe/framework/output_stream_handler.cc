@@ -14,6 +14,7 @@
 
 #include "mediapipe/framework/output_stream_handler.h"
 
+#include "absl/log/absl_check.h"
 #include "absl/synchronization/mutex.h"
 #include "mediapipe/framework/collection_item_id.h"
 #include "mediapipe/framework/output_stream_shard.h"
@@ -79,7 +80,7 @@ void OutputStreamHandler::UpdateTaskTimestampBound(Timestamp timestamp) {
     if (task_timestamp_bound_ == timestamp) {
       return;
     }
-    CHECK_GT(timestamp, task_timestamp_bound_);
+    ABSL_CHECK_GT(timestamp, task_timestamp_bound_);
     task_timestamp_bound_ = timestamp;
     if (propagation_state_ == kPropagatingBound) {
       propagation_state_ = kPropagationPending;

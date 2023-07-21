@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "absl/log/absl_check.h"
 #include "mediapipe/gpu/gl_context.h"
 #include "mediapipe/gpu/gpu_buffer_storage_image_frame.h"
 #include "mediapipe/objc/util.h"
@@ -17,7 +18,7 @@ typedef CVOpenGLESTextureRef CVTextureType;
 GpuBufferStorageCvPixelBuffer::GpuBufferStorageCvPixelBuffer(
     int width, int height, GpuBufferFormat format) {
   OSType cv_format = CVPixelFormatForGpuBufferFormat(format);
-  CHECK_NE(cv_format, -1) << "unsupported pixel format";
+  ABSL_CHECK_NE(cv_format, -1) << "unsupported pixel format";
   CVPixelBufferRef buffer;
   CVReturn err =
       CreateCVPixelBufferWithoutPool(width, height, cv_format, &buffer);

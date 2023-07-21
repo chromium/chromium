@@ -16,6 +16,7 @@
 #include <memory>
 #include <vector>
 
+#include "absl/log/absl_check.h"
 #include "mediapipe/framework/input_stream_handler.h"
 
 namespace mediapipe {
@@ -67,7 +68,7 @@ class BarrierInputStreamHandler : public InputStreamHandler {
       *min_stream_timestamp = std::min(*min_stream_timestamp, stream_timestamp);
     }
 
-    CHECK_NE(*min_stream_timestamp, Timestamp::Done());
+    ABSL_CHECK_NE(*min_stream_timestamp, Timestamp::Done());
     if (all_available) {
       return NodeReadiness::kReadyForProcess;
     }

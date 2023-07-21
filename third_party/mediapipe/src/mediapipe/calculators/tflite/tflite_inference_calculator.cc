@@ -17,6 +17,7 @@
 #include <string>
 #include <vector>
 
+#include "absl/log/absl_check.h"
 #include "absl/memory/memory.h"
 #include "mediapipe/calculators/tflite/tflite_inference_calculator.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
@@ -109,8 +110,8 @@ std::unique_ptr<tflite::Interpreter> BuildEdgeTpuInterpreter(
     edgetpu::EdgeTpuContext* edgetpu_context) {
   resolver->AddCustom(edgetpu::kCustomOp, edgetpu::RegisterCustomOp());
   std::unique_ptr<tflite::Interpreter> interpreter;
-  CHECK_EQ(tflite::InterpreterBuilder(model, *resolver)(&interpreter),
-           kTfLiteOk);
+  ABSL_CHECK_EQ(tflite::InterpreterBuilder(model, *resolver)(&interpreter),
+                kTfLiteOk);
   interpreter->SetExternalContext(kTfLiteEdgeTpuContext, edgetpu_context);
   return interpreter;
 }

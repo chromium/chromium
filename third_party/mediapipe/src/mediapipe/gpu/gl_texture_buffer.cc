@@ -20,6 +20,7 @@
 #include "mediapipe/gpu/gpu_buffer_storage_image_frame.h"
 
 #if MEDIAPIPE_GPU_BUFFER_USE_CV_PIXEL_BUFFER
+#include "absl/log/absl_check.h"
 #include "mediapipe/gpu/gl_texture_util.h"
 #include "mediapipe/gpu/gpu_buffer_storage_cv_pixel_buffer.h"
 #endif  // MEDIAPIPE_GPU_BUFFER_USE_CV_PIXEL_BUFFER
@@ -152,7 +153,7 @@ bool GlTextureBuffer::CreateInternal(const void* data, int alignment) {
   CHECK(!deletion_callback_);
   deletion_callback_ = [this,
                         context](std::shared_ptr<GlSyncPoint> sync_token) {
-    CHECK_NE(name_, 0);
+    ABSL_CHECK_NE(name_, 0);
     GLuint name_to_delete = name_;
     context->RunWithoutWaiting([name_to_delete]() {
       // Note that we do not wait for consumers to be done before deleting the
@@ -264,7 +265,7 @@ GlTextureView GlTextureBuffer::GetReadView(internal::types<GlTextureView>,
                                            int plane) const {
   auto gl_context = GlContext::GetCurrent();
   CHECK(gl_context);
-  CHECK_EQ(plane, 0);
+  ABSL_CHECK_EQ(plane, 0);
   // Note that this method is only supposed to be called by GpuBuffer, which
   // ensures this condition is satisfied.
   DCHECK(!weak_from_this().expired())
@@ -285,7 +286,7 @@ GlTextureView GlTextureBuffer::GetWriteView(internal::types<GlTextureView>,
                                             int plane) {
   auto gl_context = GlContext::GetCurrent();
   CHECK(gl_context);
-  CHECK_EQ(plane, 0);
+  ABSL_CHECK_EQ(plane, 0);
   // Note that this method is only supposed to be called by GpuBuffer, which
   // ensures this condition is satisfied.
   DCHECK(!weak_from_this().expired())

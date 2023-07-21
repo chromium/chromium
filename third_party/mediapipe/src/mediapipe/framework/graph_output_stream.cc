@@ -14,6 +14,7 @@
 
 #include "mediapipe/framework/graph_output_stream.h"
 
+#include "absl/log/absl_check.h"
 #include "absl/synchronization/mutex.h"
 #include "mediapipe/framework/port/status.h"
 
@@ -212,7 +213,7 @@ bool OutputStreamPollerImpl::Next(Packet* packet) {
     bool stream_is_done = false;
     *packet = input_stream_->PopPacketAtTimestamp(
         min_timestamp, &num_packets_dropped, &stream_is_done);
-    CHECK_EQ(num_packets_dropped, 0)
+    ABSL_CHECK_EQ(num_packets_dropped, 0)
         << absl::Substitute("Dropped $0 packet(s) on input stream \"$1\".",
                             num_packets_dropped, input_stream_->Name());
   } else if (timestamp_bound_changed) {

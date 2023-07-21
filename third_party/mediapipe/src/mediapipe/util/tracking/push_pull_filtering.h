@@ -33,6 +33,7 @@
 #include <string>
 #include <vector>
 
+#include "absl/log/absl_check.h"
 #include "mediapipe/framework/port/opencv_core_inc.h"
 #include "mediapipe/util/tracking/image_util.h"
 #include "mediapipe/util/tracking/push_pull_filtering.pb.h"
@@ -148,7 +149,7 @@ class PushPullFiltering {
   // Returns domain size of n-th pyramid level (including border depending on
   // filter_type).
   cv::Size NthPyramidDomain(int level) {
-    CHECK_LT(level, PyramidLevels());
+    ABSL_CHECK_LT(level, PyramidLevels());
     return downsample_pyramid_[level].size();
   }
 
@@ -469,14 +470,14 @@ template <int C, class FilterWeightMultiplier>
 void PushPullFiltering<C, FilterWeightMultiplier>::InitializeImagePyramid(
     const cv::Mat& input_frame, std::vector<cv::Mat>* pyramid) {
   CHECK(pyramid != nullptr);
-  CHECK_GT(pyramid->size(), 0);
+  ABSL_CHECK_GT(pyramid->size(), 0);
 
   cv::Mat base_level((*pyramid)[0],
                      cv::Range(border_, (*pyramid)[0].rows - border_),
                      cv::Range(border_, (*pyramid)[0].cols - border_));
-  CHECK_EQ(base_level.rows, input_frame.rows);
-  CHECK_EQ(base_level.cols, input_frame.cols);
-  CHECK_EQ(base_level.type(), input_frame.type());
+  ABSL_CHECK_EQ(base_level.rows, input_frame.rows);
+  ABSL_CHECK_EQ(base_level.cols, input_frame.cols);
+  ABSL_CHECK_EQ(base_level.type(), input_frame.type());
 
   input_frame.copyTo(base_level);
   CopyNecessaryBorder<uint8, 3>(&(*pyramid)[0]);
@@ -743,11 +744,11 @@ void PushPullFiltering<C, FilterWeightMultiplier>::PerformPushPull(
     cv::Point2i origin, int readout_level,
     const std::vector<float>* data_weights, const cv::Mat* input_frame,
     cv::Mat* results) {
-  CHECK_EQ(data_locations.size(), data_values.size());
+  ABSL_CHECK_EQ(data_locations.size(), data_values.size());
   CHECK(results != nullptr);
 
   if (data_weights) {
-    CHECK_EQ(data_weights->size(), data_locations.size());
+    ABSL_CHECK_EQ(data_weights->size(), data_locations.size());
   }
 
   origin.x += border_;
@@ -760,13 +761,13 @@ void PushPullFiltering<C, FilterWeightMultiplier>::PerformPushPull(
     mip_map[i] = &downsample_pyramid_[i];
   }
 
-  CHECK_GE(readout_level, 0);
-  CHECK_LT(readout_level, PyramidLevels());
+  ABSL_CHECK_GE(readout_level, 0);
+  ABSL_CHECK_LT(readout_level, PyramidLevels());
 
   // CHECK if passed results matrix is compatible w.r.t. type and domain.
-  CHECK_EQ(downsample_pyramid_[readout_level].cols, results->cols);
-  CHECK_EQ(downsample_pyramid_[readout_level].rows, results->rows);
-  CHECK_EQ(downsample_pyramid_[readout_level].type(), results->type());
+  ABSL_CHECK_EQ(downsample_pyramid_[readout_level].cols, results->cols);
+  ABSL_CHECK_EQ(downsample_pyramid_[readout_level].rows, results->rows);
+  ABSL_CHECK_EQ(downsample_pyramid_[readout_level].type(), results->type());
 
   // Use caller-allocated results Mat.
   mip_map[readout_level] = results;
@@ -815,18 +816,18 @@ void PushPullFiltering<C, FilterWeightMultiplier>::PerformPushPullMat(
     mip_map[i] = &downsample_pyramid_[i];
   }
 
-  CHECK_GE(readout_level, 0);
-  CHECK_LT(readout_level, PyramidLevels());
+  ABSL_CHECK_GE(readout_level, 0);
+  ABSL_CHECK_LT(readout_level, PyramidLevels());
 
   // CHECK if passed mip_map at level[0] is compatible w.r.t. type and domain.
-  CHECK_EQ(mip_map_level_0.cols, results->cols);
-  CHECK_EQ(mip_map_level_0.rows, results->rows);
-  CHECK_EQ(mip_map_level_0.type(), results->type());
+  ABSL_CHECK_EQ(mip_map_level_0.cols, results->cols);
+  ABSL_CHECK_EQ(mip_map_level_0.rows, results->rows);
+  ABSL_CHECK_EQ(mip_map_level_0.type(), results->type());
 
   // CHECK if passed results matrix is compatible w.r.t. type and domain.
-  CHECK_EQ(downsample_pyramid_[readout_level].cols, results->cols);
-  CHECK_EQ(downsample_pyramid_[readout_level].rows, results->rows);
-  CHECK_EQ(downsample_pyramid_[readout_level].type(), results->type());
+  ABSL_CHECK_EQ(downsample_pyramid_[readout_level].cols, results->cols);
+  ABSL_CHECK_EQ(downsample_pyramid_[readout_level].rows, results->rows);
+  ABSL_CHECK_EQ(downsample_pyramid_[readout_level].type(), results->type());
 
   // Use caller-allocated results Mat.
   mip_map[readout_level] = results;
@@ -1049,7 +1050,7 @@ void PushPullFiltering<C, FilterWeightMultiplier>::PullDownSampling(
           }
         }
 
-        DCHECK_GE(weight_sum, 0);
+        ABSL_DCHECK_GE(weight_sum, 0);
 
         if (weight_sum >= kBilateralEps * kBilateralEps) {
           const float inv_weight_sum = 1.f / weight_sum;

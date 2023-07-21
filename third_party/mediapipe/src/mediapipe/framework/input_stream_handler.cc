@@ -14,6 +14,7 @@
 
 #include "mediapipe/framework/input_stream_handler.h"
 
+#include "absl/log/absl_check.h"
 #include "absl/strings/str_join.h"
 #include "absl/strings/substitute.h"
 #include "mediapipe/framework/collection_item_id.h"
@@ -102,7 +103,7 @@ void InputStreamHandler::SetHeader(CollectionItemId id, const Packet& header) {
     return;
   }
   if (!input_stream_managers_.Get(id)->BackEdge()) {
-    CHECK_GT(unset_header_count_, 0);
+    ABSL_CHECK_GT(unset_header_count_, 0);
     if (unset_header_count_.fetch_sub(1, std::memory_order_acq_rel) == 1) {
       headers_ready_callback_();
     }
@@ -321,9 +322,11 @@ void InputStreamHandler::SetBatchSize(int batch_size) {
       << "Batching cannot be combined with parallel execution.";
   CHECK(!late_preparation_ || batch_size == 1)
       << "Batching cannot be combined with late preparation.";
-  CHECK_GE(batch_size, 1) << "Batch size has to be greater than or equal to 1.";
+  ABSL_CHECK_GE(batch_size, 1)
+      << "Batch size has to be greater than or equal to 1.";
   // Source nodes shouldn't specify batch_size even if it's set to 1.
-  CHECK_GE(NumInputStreams(), 0) << "Source nodes cannot batch input packets.";
+  ABSL_CHECK_GE(NumInputStreams(), 0)
+      << "Source nodes cannot batch input packets.";
   batch_size_ = batch_size;
 }
 
@@ -412,7 +415,7 @@ void SyncSet::FillInputSet(Timestamp input_timestamp,
     bool stream_is_done = false;
     Packet current_packet = stream->PopPacketAtTimestamp(
         input_timestamp, &num_packets_dropped, &stream_is_done);
-    CHECK_EQ(num_packets_dropped, 0)
+    ABSL_CHECK_EQ(num_packets_dropped, 0)
         << absl::Substitute("Dropped $0 packet(s) on input stream \"$1\".",
                             num_packets_dropped, stream->Name());
     input_stream_handler_->AddPacketToShard(

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "absl/log/absl_check.h"
 #include "absl/strings/substitute.h"
 #include "absl/synchronization/mutex.h"
 #include "mediapipe/framework/collection_item_id.h"
@@ -73,8 +74,8 @@ class MuxInputStreamHandler : public InputStreamHandler {
     Packet control_packet = control_stream->QueueHead();
     CHECK(!control_packet.IsEmpty());
     int control_value = control_packet.Get<int>();
-    CHECK_LE(0, control_value);
-    CHECK_LT(control_value, input_stream_managers_.NumEntries() - 1);
+    ABSL_CHECK_LE(0, control_value);
+    ABSL_CHECK_LT(control_value, input_stream_managers_.NumEntries() - 1);
     const auto& data_stream = input_stream_managers_.Get(
         input_stream_managers_.BeginId() + control_value);
 
@@ -100,7 +101,7 @@ class MuxInputStreamHandler : public InputStreamHandler {
       // indicated as timestamp boun update.
       return NodeReadiness::kReadyForProcess;
     }
-    CHECK_EQ(stream_timestamp, *min_stream_timestamp);
+    ABSL_CHECK_EQ(stream_timestamp, *min_stream_timestamp);
     return NodeReadiness::kReadyForProcess;
   }
 
@@ -118,7 +119,7 @@ class MuxInputStreamHandler : public InputStreamHandler {
     bool stream_is_done = false;
     Packet control_packet = control_stream->PopPacketAtTimestamp(
         input_timestamp, &num_packets_dropped, &stream_is_done);
-    CHECK_EQ(num_packets_dropped, 0)
+    ABSL_CHECK_EQ(num_packets_dropped, 0)
         << absl::Substitute("Dropped $0 packet(s) on input stream \"$1\".",
                             num_packets_dropped, control_stream->Name());
     CHECK(!control_packet.IsEmpty());
@@ -128,13 +129,13 @@ class MuxInputStreamHandler : public InputStreamHandler {
 
     const CollectionItemId data_stream_id =
         input_stream_managers_.BeginId() + control_value;
-    CHECK_LE(input_stream_managers_.BeginId(), data_stream_id);
-    CHECK_LT(data_stream_id, control_stream_id);
+    ABSL_CHECK_LE(input_stream_managers_.BeginId(), data_stream_id);
+    ABSL_CHECK_LT(data_stream_id, control_stream_id);
     auto& data_stream = input_stream_managers_.Get(data_stream_id);
     stream_is_done = false;
     Packet data_packet = data_stream->PopPacketAtTimestamp(
         input_timestamp, &num_packets_dropped, &stream_is_done);
-    CHECK_EQ(num_packets_dropped, 0)
+    ABSL_CHECK_EQ(num_packets_dropped, 0)
         << absl::Substitute("Dropped $0 packet(s) on input stream \"$1\".",
                             num_packets_dropped, data_stream->Name());
     AddPacketToShard(&input_set->Get(data_stream_id), std::move(data_packet),

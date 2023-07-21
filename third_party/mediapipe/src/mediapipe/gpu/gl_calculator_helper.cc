@@ -14,6 +14,7 @@
 
 #include "mediapipe/gpu/gl_calculator_helper.h"
 
+#include "absl/log/absl_check.h"
 #include "mediapipe/framework/formats/image.h"
 #include "mediapipe/framework/formats/image_frame.h"
 #include "mediapipe/framework/legacy_calculator_support.h"
@@ -71,7 +72,7 @@ absl::Status GlCalculatorHelper::SetupInputSidePackets(
     PacketTypeSet* input_side_packets) {
   auto cc = LegacyCalculatorSupport::Scoped<CalculatorContract>::current();
   if (cc) {
-    CHECK_EQ(input_side_packets, &cc->InputSidePackets());
+    ABSL_CHECK_EQ(input_side_packets, &cc->InputSidePackets());
     return UpdateContract(cc);
   }
 

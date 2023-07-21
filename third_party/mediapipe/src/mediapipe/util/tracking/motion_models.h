@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "absl/container/node_hash_map.h"
+#include "absl/log/absl_check.h"
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/singleton.h"
 #include "mediapipe/framework/port/vector.h"
@@ -762,8 +763,8 @@ Model UniformModelParameters(const float value) {
 template <class Model>
 Model BlendModels(const Model& a, const Model& b, float weight_b) {
   Model blended;
-  DCHECK_GE(weight_b, 0);
-  DCHECK_LE(weight_b, 1);
+  ABSL_DCHECK_GE(weight_b, 0);
+  ABSL_DCHECK_LE(weight_b, 1);
   const float weight_a = 1 - weight_b;
   for (int p = 0; p < ModelAdapter<Model>::NumParameters(); ++p) {
     const float pa = ModelAdapter<Model>::GetParameter(a, p);
@@ -822,8 +823,8 @@ class MixtureRowWeights {
 
   const float* RowWeights(float y) const {
     int bin_y = y * y_scale_ + 0.5;
-    DCHECK_LT(bin_y, frame_height_ + margin_);
-    DCHECK_GE(bin_y, -margin_);
+    ABSL_DCHECK_LT(bin_y, frame_height_ + margin_);
+    ABSL_DCHECK_GE(bin_y, -margin_);
     return &weights_[(bin_y + margin_) * num_models_];
   }
 
@@ -1398,7 +1399,7 @@ inline Homography ModelAdapter<Homography>::Compose(const Homography& lhs,
   Homography result;
   const float z =
       lhs.h_20() * rhs.h_02() + lhs.h_21() * rhs.h_12() + 1.0f * 1.0f;
-  CHECK_NE(z, 0) << "Degenerate homography. See proto.";
+  ABSL_CHECK_NE(z, 0) << "Degenerate homography. See proto.";
   const float inv_z = 1.0 / z;
 
   result.set_h_00((lhs.h_00() * rhs.h_00() + lhs.h_01() * rhs.h_10() +
@@ -1631,7 +1632,7 @@ MixtureModelAdapterBase<MixtureTraits>::LinearModel(
     }
 
     const double denom = sum_xx - inv_models * sum_x * sum_x;
-    CHECK_NE(denom, 0);  // As num_models > 1.
+    ABSL_CHECK_NE(denom, 0);  // As num_models > 1.
     const double a = (sum_xy - inv_models * sum_x * sum_y) * denom;
     const double b = inv_models * (sum_y - a * sum_x);
 
@@ -1688,7 +1689,7 @@ Vector2_f MixtureModelAdapter<MixtureTraits>::TransformPoint(
         BaseModelAdapter::TransformPoint3(model.model(i), pt3 * weights[i]);
   }
 
-  DCHECK_NE(result.z(), 0) << "Degenerate mapping.";
+  ABSL_DCHECK_NE(result.z(), 0) << "Degenerate mapping.";
   return Vector2_f(result.x() / result.z(), result.y() / result.z());
 }
 
@@ -1818,7 +1819,7 @@ inline Vector2_f MixtureModelAdapter<HomographyTraits>::TransformPoint(
       LOG(FATAL) << "Unknown type.";
   }
 
-  DCHECK_NE(result.z(), 0) << "Degenerate mapping.";
+  ABSL_DCHECK_NE(result.z(), 0) << "Degenerate mapping.";
   return Vector2_f(result.x() / result.z(), result.y() / result.z());
 }
 

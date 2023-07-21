@@ -25,6 +25,7 @@
 
 #include "absl/container/fixed_array.h"
 #include "absl/container/flat_hash_set.h"
+#include "absl/log/absl_check.h"
 #include "absl/memory/memory.h"
 #include "absl/status/status.h"
 #include "absl/strings/str_cat.h"
@@ -904,7 +905,7 @@ absl::Status CalculatorGraph::AddPacketToInputStreamInternal(
       "graph input stream.",
       stream_name);
   int node_id = mediapipe::FindOrDie(graph_input_stream_node_ids_, stream_name);
-  CHECK_GE(node_id, validated_graph_->CalculatorInfos().size());
+  ABSL_CHECK_GE(node_id, validated_graph_->CalculatorInfos().size());
   {
     absl::MutexLock lock(&full_input_streams_mutex_);
     if (full_input_streams_.empty()) {
@@ -1155,10 +1156,10 @@ void CalculatorGraph::UpdateThrottledNodes(InputStreamManager* stream,
                                 .set_stream_id(&stream->Name()));
         bool was_throttled = !full_input_streams_[node_id].empty();
         if (stream_is_full) {
-          DCHECK_EQ(full_input_streams_[node_id].count(stream), 0);
+          ABSL_DCHECK_EQ(full_input_streams_[node_id].count(stream), 0);
           full_input_streams_[node_id].insert(stream);
         } else {
-          DCHECK_EQ(full_input_streams_[node_id].count(stream), 1);
+          ABSL_DCHECK_EQ(full_input_streams_[node_id].count(stream), 1);
           full_input_streams_[node_id].erase(stream);
         }
 

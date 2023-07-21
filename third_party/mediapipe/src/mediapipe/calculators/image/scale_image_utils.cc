@@ -18,6 +18,7 @@
 
 #include <string>
 
+#include "absl/log/absl_check.h"
 #include "absl/strings/str_split.h"
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/ret_check.h"
@@ -83,8 +84,8 @@ absl::Status FindCropDimensions(int input_width, int input_height,    //
     }
   }
 
-  CHECK_LE(*crop_width, input_width);
-  CHECK_LE(*crop_height, input_height);
+  ABSL_CHECK_LE(*crop_width, input_width);
+  ABSL_CHECK_LE(*crop_height, input_height);
   return absl::OkStatus();
 }
 

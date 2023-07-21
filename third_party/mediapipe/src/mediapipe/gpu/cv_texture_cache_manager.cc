@@ -14,6 +14,7 @@
 
 #include "mediapipe/gpu/cv_texture_cache_manager.h"
 
+#include "absl/log/absl_check.h"
 #include "mediapipe/framework/port/logging.h"
 
 namespace mediapipe {
@@ -48,7 +49,7 @@ void CvTextureCacheManager::UnregisterTextureCache(CVTextureCacheType cache) {
 }
 
 CvTextureCacheManager::~CvTextureCacheManager() {
-  CHECK_EQ(texture_caches_.size(), 0)
+  ABSL_CHECK_EQ(texture_caches_.size(), 0)
       << "Failed to unregister texture caches before deleting manager";
 }
 

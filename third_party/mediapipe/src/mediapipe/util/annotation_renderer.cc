@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include "absl/log/absl_check.h"
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/vector.h"
 #include "mediapipe/util/color.pb.h"
@@ -49,8 +50,8 @@ bool NormalizedtoPixelCoordinates(double normalized_x, double normalized_y,
                                   int* y_px) {
   CHECK(x_px != nullptr);
   CHECK(y_px != nullptr);
-  CHECK_GT(image_width, 0);
-  CHECK_GT(image_height, 0);
+  ABSL_CHECK_GT(image_width, 0);
+  ABSL_CHECK_GT(image_height, 0);
 
   if (normalized_x < 0 || normalized_x > 1.0 || normalized_y < 0 ||
       normalized_y > 1.0) {

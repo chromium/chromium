@@ -22,6 +22,7 @@
 #include "absl/container/flat_hash_set.h"
 #include "absl/container/node_hash_map.h"
 #include "absl/container/node_hash_set.h"
+#include "absl/log/absl_check.h"
 #include "absl/strings/numbers.h"
 #include "mediapipe/calculators/video/box_tracker_calculator.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
@@ -323,8 +324,8 @@ void ConvertCoordinateForRotation(float in_top, float in_left, float in_bottom,
   const float in_center_y = (in_top + in_bottom) * 0.5f;
   const float in_width = in_right - in_left;
   const float in_height = in_bottom - in_top;
-  CHECK_GT(in_width, 0);
-  CHECK_GT(in_height, 0);
+  ABSL_CHECK_GT(in_width, 0);
+  ABSL_CHECK_GT(in_height, 0);
   float out_center_x;
   float out_center_y;
   float out_width;
@@ -999,7 +1000,7 @@ void BoxTrackerCalculator::OutputRandomAccessTrack(
 
     const int init_frame = timestamp_pos - track_timestamps_.begin() +
                            track_timestamps_base_index_;
-    CHECK_GE(init_frame, 0);
+    ABSL_CHECK_GE(init_frame, 0);
 
     MotionBoxMap single_map =
         PrepareRandomAccessTrack(start, init_frame, forward_track, start_data);
@@ -1233,7 +1234,7 @@ void BoxTrackerCalculator::FastForwardStartPos(
     // Start at previous frame.
     const int init_frame = timestamp_pos - track_timestamps_.begin() +
                            track_timestamps_base_index_;
-    CHECK_GE(init_frame, 0);
+    ABSL_CHECK_GE(init_frame, 0);
 
     // Locate corresponding tracking data.
     auto start_data = std::find_if(

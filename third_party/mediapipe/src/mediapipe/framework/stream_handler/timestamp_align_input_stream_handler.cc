@@ -17,6 +17,7 @@
 #include <utility>
 #include <vector>
 
+#include "absl/log/absl_check.h"
 #include "absl/strings/substitute.h"
 #include "absl/synchronization/mutex.h"
 #include "mediapipe/framework/collection_item_id.h"
@@ -178,7 +179,7 @@ NodeReadiness TimestampAlignInputStreamHandler::GetNodeReadiness(
     return NodeReadiness::kReadyForProcess;
   }
 
-  CHECK_EQ(min_bound, *min_stream_timestamp);
+  ABSL_CHECK_EQ(min_bound, *min_stream_timestamp);
   return NodeReadiness::kNotReady;
 }
 
@@ -198,7 +199,7 @@ void TimestampAlignInputStreamHandler::FillInputSet(
         if (id == timestamp_base_stream_id_) {
           current_packet = stream->PopPacketAtTimestamp(
               input_timestamp, &num_packets_dropped, &stream_is_done);
-          CHECK_EQ(num_packets_dropped, 0) << absl::Substitute(
+          ABSL_CHECK_EQ(num_packets_dropped, 0) << absl::Substitute(
               "Dropped $0 packet(s) on input stream \"$1\".",
               num_packets_dropped, stream->Name());
         }
@@ -218,10 +219,10 @@ void TimestampAlignInputStreamHandler::FillInputSet(
     Packet current_packet = stream->PopPacketAtTimestamp(
         stream_timestamp, &num_packets_dropped, &stream_is_done);
     if (!current_packet.IsEmpty()) {
-      CHECK_EQ(current_packet.Timestamp(), stream_timestamp);
+      ABSL_CHECK_EQ(current_packet.Timestamp(), stream_timestamp);
       current_packet = current_packet.At(input_timestamp);
     }
-    CHECK_EQ(num_packets_dropped, 0)
+    ABSL_CHECK_EQ(num_packets_dropped, 0)
         << absl::Substitute("Dropped $0 packet(s) on input stream \"$1\".",
                             num_packets_dropped, stream->Name());
     AddPacketToShard(&input_set->Get(id), std::move(current_packet),

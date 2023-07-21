@@ -15,6 +15,7 @@
 #include <algorithm>
 
 // TODO: Move protos in another CL after the C++ code migration.
+#include "absl/log/absl_check.h"
 #include "absl/strings/substitute.h"
 #include "absl/synchronization/mutex.h"
 #include "mediapipe/framework/collection_item_id.h"
@@ -102,7 +103,7 @@ void SyncSetInputStreamHandler::PrepareForRun(
     std::set<CollectionItemId> used_ids;
     for (const auto& sync_set : handler_options.sync_set()) {
       std::vector<CollectionItemId> stream_ids;
-      CHECK_LT(0, sync_set.tag_index_size());
+      ABSL_CHECK_LT(0, sync_set.tag_index_size());
       for (const auto& tag_index : sync_set.tag_index()) {
         std::string tag;
         int index;
@@ -185,7 +186,7 @@ void SyncSetInputStreamHandler::FillInputSet(Timestamp input_timestamp,
                                              InputStreamShardSet* input_set) {
   // Assume that all current packets are already cleared.
   absl::MutexLock lock(&mutex_);
-  CHECK_LE(0, ready_sync_set_index_);
+  ABSL_CHECK_LE(0, ready_sync_set_index_);
   sync_sets_[ready_sync_set_index_].FillInputSet(input_timestamp, input_set);
   for (int i = 0; i < sync_sets_.size(); ++i) {
     if (i != ready_sync_set_index_) {

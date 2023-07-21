@@ -23,6 +23,7 @@
 #include <string>
 #include <vector>
 
+#include "absl/log/absl_check.h"
 #include "mediapipe/framework/port/integral_types.h"
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/opencv_core_inc.h"
@@ -593,8 +594,8 @@ void ToneModelMethods<Model, Adapter>::MapImageIndependent(
     const Model& model, bool log_domain, bool normalized_model,
     const cv::Mat& input, cv::Mat* output) {
   CHECK(output != nullptr);
-  CHECK_EQ(input.channels(), C);
-  CHECK_EQ(output->channels(), C);
+  ABSL_CHECK_EQ(input.channels(), C);
+  ABSL_CHECK_EQ(output->channels(), C);
 
   // Input LUT which will be mapped to the output LUT by the tone change model.
   // Needs 3 channels to represent input RGB colors, but since they are assumed

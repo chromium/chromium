@@ -17,6 +17,7 @@
 #include <fstream>
 #include <memory>
 
+#include "absl/log/absl_check.h"
 #include "absl/strings/str_format.h"
 #include "absl/strings/string_view.h"
 #include "mediapipe/calculators/video/flow_packager_calculator.pb.h"
@@ -160,7 +161,7 @@ absl::Status FlowPackagerCalculator::Process(CalculatorContext* cc) {
           timestamp.Value() / 1000 / options_.caching_chunk_size_msec();
       tracking_chunk_.set_first_chunk(true);
     }
-    CHECK_GE(chunk_idx_, 0);
+    ABSL_CHECK_GE(chunk_idx_, 0);
 
     TrackingDataChunk::Item* item = tracking_chunk_.add_item();
     item->set_frame_idx(frame_idx_);

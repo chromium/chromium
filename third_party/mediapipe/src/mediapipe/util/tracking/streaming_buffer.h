@@ -23,6 +23,7 @@
 #include <vector>
 
 #include "absl/container/node_hash_map.h"
+#include "absl/log/absl_check.h"
 #include "absl/types/any.h"
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/tool/type_util.h"
@@ -324,7 +325,7 @@ template <class T>
 void StreamingBuffer::AddDatum(const std::string& tag,
                                std::unique_ptr<T> pointer) {
   CHECK(HasTag(tag));
-  CHECK_EQ(data_config_[tag], kTypeId<PointerType<T>>.hash_code());
+  ABSL_CHECK_EQ(data_config_[tag], kTypeId<PointerType<T>>.hash_code());
   auto& buffer = data_[tag];
   absl::any packet(PointerType<T>(CreatePointer(pointer.release())));
   buffer.push_back(packet);
@@ -344,7 +345,7 @@ void StreamingBuffer::AddDatumCopy(const std::string& tag, const T& datum) {
 template <class... Types>
 void StreamingBuffer::AddData(const std::vector<std::string>& tags,
                               std::unique_ptr<Types>... pointers) {
-  CHECK_EQ(tags.size(), sizeof...(pointers))
+  ABSL_CHECK_EQ(tags.size(), sizeof...(pointers))
       << "Number of tags and data pointers is inconsistent";
   return AddDataImpl(tags, std::move(pointers)...);
 }
@@ -387,7 +388,7 @@ T& StreamingBuffer::GetDatumRef(const std::string& tag, int frame_index) const {
 template <class T>
 T* StreamingBuffer::GetMutableDatum(const std::string& tag,
                                     int frame_index) const {
-  CHECK_GE(frame_index, 0);
+  ABSL_CHECK_GE(frame_index, 0);
   CHECK(HasTag(tag));
   auto& buffer = data_.find(tag)->second;
   if (frame_index > buffer.size()) {
@@ -488,7 +489,7 @@ template <class T>
 std::unique_ptr<T> StreamingBuffer::ReleaseDatum(const std::string& tag,
                                                  int frame_index) {
   CHECK(HasTag(tag));
-  CHECK_GE(frame_index, 0);
+  ABSL_CHECK_GE(frame_index, 0);
 
   auto& buffer = data_.find(tag)->second;
   if (frame_index >= buffer.size()) {

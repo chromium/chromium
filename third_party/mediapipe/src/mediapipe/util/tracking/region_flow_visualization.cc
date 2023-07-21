@@ -19,6 +19,7 @@
 #include <memory>
 #include <numeric>
 
+#include "absl/log/absl_check.h"
 #include "absl/strings/str_cat.h"
 #include "mediapipe/framework/port/integral_types.h"
 #include "mediapipe/util/tracking/measure_time.h"
@@ -138,7 +139,7 @@ void VisualizeLongFeatureStreamImpl(const LongFeatureStream& stream,
     if (min_track_length > 0 && pts.size() < min_track_length) {
       continue;
     }
-    CHECK_GT(pts.size(), 1);  // Should have at least two points per track.
+    ABSL_CHECK_GT(pts.size(), 1);  // Should have at least two points per track.
 
     // Tracks are ordered with oldest point first, most recent one last.
     const int start_k =

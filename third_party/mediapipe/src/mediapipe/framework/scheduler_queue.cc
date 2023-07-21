@@ -18,6 +18,7 @@
 #include <queue>
 #include <utility>
 
+#include "absl/log/absl_check.h"
 #include "absl/synchronization/mutex.h"
 #include "mediapipe/framework/calculator_node.h"
 #include "mediapipe/framework/executor.h"
@@ -104,7 +105,7 @@ bool SchedulerQueue::IsIdle() {
 void SchedulerQueue::SetRunning(bool running) {
   absl::MutexLock lock(&mutex_);
   running_count_ += running ? 1 : -1;
-  DCHECK_LE(running_count_, 1);
+  ABSL_DCHECK_LE(running_count_, 1);
 }
 
 void SchedulerQueue::AddNode(CalculatorNode* node, CalculatorContext* cc) {
@@ -221,7 +222,7 @@ void SchedulerQueue::RunNextTask() {
   bool is_idle;
   {
     absl::MutexLock lock(&mutex_);
-    DCHECK_GT(num_pending_tasks_, 0);
+    ABSL_DCHECK_GT(num_pending_tasks_, 0);
     --num_pending_tasks_;
     is_idle = IsIdle();
   }
@@ -299,8 +300,8 @@ void SchedulerQueue::CleanupAfterRun() {
   {
     absl::MutexLock lock(&mutex_);
     was_idle = IsIdle();
-    CHECK_EQ(num_pending_tasks_, 0);
-    CHECK_EQ(num_tasks_to_add_, queue_.size());
+    ABSL_CHECK_EQ(num_pending_tasks_, 0);
+    ABSL_CHECK_EQ(num_tasks_to_add_, queue_.size());
     num_tasks_to_add_ = 0;
     while (!queue_.empty()) {
       queue_.pop();

@@ -23,6 +23,7 @@
 #include <limits>
 #include <type_traits>
 
+#include "absl/log/absl_check.h"
 #include "mediapipe/framework/port/integral_types.h"
 #include "mediapipe/framework/port/logging.h"
 
@@ -364,7 +365,7 @@ class MathUtil {
   // absolute margin of error.
   template <typename T>
   static bool WithinMargin(const T x, const T y, const T margin) {
-    DCHECK_GE(margin, 0);
+    ABSL_DCHECK_GE(margin, 0);
     return (std::abs(x) <= std::abs(y) + margin) &&
            (std::abs(x) >= std::abs(y) - margin);
   }

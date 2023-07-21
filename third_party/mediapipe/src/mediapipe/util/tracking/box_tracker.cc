@@ -19,6 +19,7 @@
 #include <fstream>
 #include <limits>
 
+#include "absl/log/absl_check.h"
 #include "absl/strings/str_cat.h"
 #include "absl/synchronization/mutex.h"
 #include "absl/time/clock.h"
@@ -36,7 +37,7 @@ static constexpr int kInitCheckpoint = -1;
 
 void MotionBoxStateQuadToVertices(const MotionBoxState::Quad& quad,
                                   std::vector<Vector2_f>* vertices) {
-  CHECK_EQ(TimedBox::kNumQuadVertices * 2, quad.vertices_size());
+  ABSL_CHECK_EQ(TimedBox::kNumQuadVertices * 2, quad.vertices_size());
   CHECK(vertices != nullptr);
   vertices->clear();
   for (int i = 0; i < TimedBox::kNumQuadVertices; ++i) {
@@ -47,7 +48,7 @@ void MotionBoxStateQuadToVertices(const MotionBoxState::Quad& quad,
 
 void VerticesToMotionBoxStateQuad(const std::vector<Vector2_f>& vertices,
                                   MotionBoxState::Quad* quad) {
-  CHECK_EQ(TimedBox::kNumQuadVertices, vertices.size());
+  ABSL_CHECK_EQ(TimedBox::kNumQuadVertices, vertices.size());
   CHECK(quad != nullptr);
   for (const Vector2_f& vertex : vertices) {
     quad->add_vertices(vertex.x());
@@ -113,7 +114,7 @@ namespace {
 
 TimedBox BlendTimedBoxes(const TimedBox& lhs, const TimedBox& rhs,
                          int64_t time_msec) {
-  CHECK_LT(lhs.time_msec, rhs.time_msec);
+  ABSL_CHECK_LT(lhs.time_msec, rhs.time_msec);
   const double alpha =
       (time_msec - lhs.time_msec) * 1.0 / (rhs.time_msec - lhs.time_msec);
   return TimedBox::Blend(lhs, rhs, alpha);
@@ -245,10 +246,10 @@ BoxTracker::BoxTracker(
 
 void BoxTracker::AddTrackingDataChunk(const TrackingDataChunk* chunk,
                                       bool copy_data) {
-  CHECK_GT(chunk->item_size(), 0) << "Empty chunk.";
+  ABSL_CHECK_GT(chunk->item_size(), 0) << "Empty chunk.";
   int64_t chunk_time_msec = chunk->item(0).timestamp_usec() / 1000;
   int chunk_idx = ChunkIdxFromTime(chunk_time_msec);
-  CHECK_GE(chunk_idx, tracking_data_.size()) << "Chunk is out of order.";
+  ABSL_CHECK_GE(chunk_idx, tracking_data_.size()) << "Chunk is out of order.";
   if (chunk_idx > tracking_data_.size()) {
     LOG(INFO) << "Resize tracking_data_ to " << chunk_idx;
     tracking_data_.resize(chunk_idx);
@@ -688,7 +689,7 @@ bool BoxTracker::WaitForChunkFile(int id, int checkpoint,
 
 int BoxTracker::ClosestFrameIndex(int64_t msec,
                                   const TrackingDataChunk& chunk) const {
-  CHECK_GT(chunk.item_size(), 0);
+  ABSL_CHECK_GT(chunk.item_size(), 0);
   typedef TrackingDataChunk::Item Item;
   Item item_to_find;
   item_to_find.set_timestamp_usec(msec * 1000);
@@ -749,8 +750,8 @@ void BoxTracker::TrackingImpl(const TrackingImplArgs& a) {
   MotionBox motion_box(track_step_options);
   const int chunk_data_size = a.chunk_data->item_size();
 
-  CHECK_GE(a.start_frame, 0);
-  CHECK_LT(a.start_frame, chunk_data_size);
+  ABSL_CHECK_GE(a.start_frame, 0);
+  ABSL_CHECK_LT(a.start_frame, chunk_data_size);
 
   VLOG(1) << " a.start_frame = " << a.start_frame << " @"
           << a.chunk_data->item(a.start_frame).timestamp_usec() << " with "

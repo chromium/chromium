@@ -20,6 +20,7 @@
 #include <deque>
 #include <memory>
 
+#include "absl/log/absl_check.h"
 #include "absl/strings/str_format.h"
 #include "mediapipe/framework/port/integral_types.h"
 #include "mediapipe/framework/port/logging.h"
@@ -92,8 +93,8 @@ MotionAnalysis::MotionAnalysis(const MotionAnalysisOptions& options,
       use_spatial_bias;
 
   if (compute_feature_descriptors_) {
-    CHECK_EQ(RegionFlowComputationOptions::FORMAT_RGB,
-             options_.flow_options().image_format())
+    ABSL_CHECK_EQ(RegionFlowComputationOptions::FORMAT_RGB,
+                  options_.flow_options().image_format())
         << "Feature descriptors only support RGB currently.";
     prev_frame_.reset(new cv::Mat(frame_height_, frame_width_, CV_8UC3));
   }
@@ -479,7 +480,7 @@ int MotionAnalysis::GetResults(
 
   const int num_features_lists = buffer_->BufferSize("features");
   const int num_new_feature_lists = num_features_lists - overlap_start_;
-  CHECK_GE(num_new_feature_lists, 0);
+  ABSL_CHECK_GE(num_new_feature_lists, 0);
 
   if (!flush && num_new_feature_lists < options_.estimation_clip_size()) {
     // Nothing to compute, return.
@@ -487,7 +488,7 @@ int MotionAnalysis::GetResults(
   }
 
   const bool compute_saliency = options_.compute_motion_saliency();
-  CHECK_EQ(compute_saliency, saliency != nullptr)
+  ABSL_CHECK_EQ(compute_saliency, saliency != nullptr)
       << "Computing saliency requires saliency output and vice versa";
 
   // Estimate motions for newly buffered RegionFlowFeatureLists, which also
@@ -528,7 +529,7 @@ int MotionAnalysis::OutputResults(
     std::vector<std::unique_ptr<CameraMotion>>* camera_motion,
     std::vector<std::unique_ptr<SalientPointFrame>>* saliency) {
   const bool compute_saliency = options_.compute_motion_saliency();
-  CHECK_EQ(compute_saliency, saliency != nullptr)
+  ABSL_CHECK_EQ(compute_saliency, saliency != nullptr)
       << "Computing saliency requires saliency output and vice versa";
   CHECK(buffer_->HaveEqualSize({"features", "motion"}));
 
@@ -598,7 +599,7 @@ int MotionAnalysis::OutputResults(
 
   // Reset for next chunk.
   prev_overlap_start_ = num_output_frames - new_overlap_start;
-  CHECK_GE(prev_overlap_start_, 0);
+  ABSL_CHECK_GE(prev_overlap_start_, 0);
 
   CHECK(buffer_->TruncateBuffer(flush));
 
@@ -612,8 +613,8 @@ void MotionAnalysis::RenderResults(const RegionFlowFeatureList& feature_list,
                                    cv::Mat* rendered_results) {
 #ifndef NO_RENDERING
   CHECK(rendered_results != nullptr);
-  CHECK_EQ(frame_width_, rendered_results->cols);
-  CHECK_EQ(frame_height_, rendered_results->rows);
+  ABSL_CHECK_EQ(frame_width_, rendered_results->cols);
+  ABSL_CHECK_EQ(frame_height_, rendered_results->rows);
 
   const auto viz_options = options_.visualization_options();
 
@@ -797,7 +798,7 @@ void MotionAnalysis::VisualizeBlurAnalysisRegions(cv::Mat* input_view) {
 
 void MotionAnalysis::ComputeSaliency() {
   MEASURE_TIME << "Saliency computation.";
-  CHECK_EQ(overlap_start_, buffer_->BufferSize("saliency"));
+  ABSL_CHECK_EQ(overlap_start_, buffer_->BufferSize("saliency"));
 
   const int num_features_lists = buffer_->BufferSize("features");
 

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "absl/log/absl_check.h"
 #include "absl/memory/memory.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_join.h"
@@ -239,7 +240,7 @@ void DetectionsToRenderDataCalculator::AddLabels(
          "is present.";
   const auto num_labels =
       std::max(detection.label_size(), detection.label_id_size());
-  CHECK_EQ(detection.score_size(), num_labels)
+  ABSL_CHECK_EQ(detection.score_size(), num_labels)
       << "Number of scores and labels should match for detection.";
 
   // Extracts all "label(_id),score" for the detection.

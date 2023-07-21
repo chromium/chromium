@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "absl/container/btree_map.h"
+#include "absl/log/absl_check.h"
 #include "absl/strings/string_view.h"
 #include "google/protobuf/message_lite.h"
 #include "mediapipe/framework/api2/port.h"
@@ -109,7 +110,7 @@ class MultiPort : public Single {
       : Single(vec), vec_(*vec) {}
 
   Single operator[](int index) {
-    CHECK_GE(index, 0);
+    ABSL_CHECK_GE(index, 0);
     return Single{&GetWithAutoGrow(&vec_, index)};
   }
 

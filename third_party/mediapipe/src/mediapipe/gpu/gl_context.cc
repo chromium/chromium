@@ -34,6 +34,7 @@
 
 #ifndef __EMSCRIPTEN__
 #include "absl/debugging/leak_check.h"
+#include "absl/log/absl_check.h"
 #include "mediapipe/gpu/gl_thread_collector.h"
 #endif
 
@@ -69,17 +70,17 @@ static void SetThreadName(const char* name) {
 }
 
 GlContext::DedicatedThread::DedicatedThread() {
-  CHECK_EQ(pthread_create(&gl_thread_id_, nullptr, ThreadBody, this), 0);
+  ABSL_CHECK_EQ(pthread_create(&gl_thread_id_, nullptr, ThreadBody, this), 0);
 }
 
 GlContext::DedicatedThread::~DedicatedThread() {
   if (IsCurrentThread()) {
     CHECK(self_destruct_);
-    CHECK_EQ(pthread_detach(gl_thread_id_), 0);
+    ABSL_CHECK_EQ(pthread_detach(gl_thread_id_), 0);
   } else {
     // Give an invalid job to signal termination.
     PutJob({});
-    CHECK_EQ(pthread_join(gl_thread_id_, nullptr), 0);
+    ABSL_CHECK_EQ(pthread_join(gl_thread_id_, nullptr), 0);
   }
 }
 

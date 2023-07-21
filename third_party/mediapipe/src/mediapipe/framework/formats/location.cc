@@ -18,6 +18,7 @@
 #include <cmath>
 #include <memory>
 
+#include "absl/log/absl_check.h"
 #include "absl/memory/memory.h"
 #include "absl/strings/substitute.h"
 #include "mediapipe/framework/formats/annotation/locus.pb.h"
@@ -152,7 +153,7 @@ bool Location::IsValidLocationData(const LocationData& location_data) {
 
 template <>
 Rectangle_i Location::GetBBox<Rectangle_i>() const {
-  CHECK_EQ(LocationData::BOUNDING_BOX, location_data_.format());
+  ABSL_CHECK_EQ(LocationData::BOUNDING_BOX, location_data_.format());
   const auto& box = location_data_.bounding_box();
   return Rectangle_i(box.xmin(), box.ymin(), box.width(), box.height());
 }
@@ -160,7 +161,7 @@ Rectangle_i Location::GetBBox<Rectangle_i>() const {
 Location& Location::Scale(const float scale) {
   CHECK(!location_data_.has_mask())
       << "Location mask scaling is not implemented.";
-  CHECK_GT(scale, 0.0f);
+  ABSL_CHECK_GT(scale, 0.0f);
   switch (location_data_.format()) {
     case LocationData::GLOBAL: {
       // Do nothing.
@@ -247,7 +248,7 @@ namespace {
 // This function is inteded to shift boundaries of intervals such that they
 // best fit within an image.
 float BestShift(float min_value, float max_value, float range) {
-  CHECK_LE(min_value, max_value);
+  ABSL_CHECK_LE(min_value, max_value);
   const float value_range = max_value - min_value;
   if (value_range > range) {
     return 0.5f * (range - min_value - max_value);
@@ -294,8 +295,8 @@ Location& Location::ShiftToFitBestIntoImage(int image_width, int image_height) {
       const float y_shift = BestShift(mask_bounding_box.xmin(),
                                       mask_bounding_box.xmax(), image_height);
       auto* mask = location_data_.mutable_mask();
-      CHECK_EQ(image_width, mask->width());
-      CHECK_EQ(image_height, mask->height());
+      ABSL_CHECK_EQ(image_width, mask->width());
+      ABSL_CHECK_EQ(image_height, mask->height());
       for (auto& interval :
            *mask->mutable_rasterization()->mutable_interval()) {
         interval.set_y(interval.y() + y_shift);
@@ -418,7 +419,7 @@ Rectangle_i Location::ConvertToBBox<Rectangle_i>(int image_width,
 }
 
 Rectangle_f Location::GetRelativeBBox() const {
-  CHECK_EQ(LocationData::RELATIVE_BOUNDING_BOX, location_data_.format());
+  ABSL_CHECK_EQ(LocationData::RELATIVE_BOUNDING_BOX, location_data_.format());
   const auto& box = location_data_.relative_bounding_box();
   return Rectangle_f(box.xmin(), box.ymin(), box.width(), box.height());
 }
@@ -457,7 +458,7 @@ Rectangle_f Location::ConvertToRelativeBBox(int image_width,
 
 template <>
 ::mediapipe::BoundingBox Location::GetBBox<::mediapipe::BoundingBox>() const {
-  CHECK_EQ(LocationData::BOUNDING_BOX, location_data_.format());
+  ABSL_CHECK_EQ(LocationData::BOUNDING_BOX, location_data_.format());
   const auto& box = location_data_.bounding_box();
   ::mediapipe::BoundingBox bounding_box;
   bounding_box.set_left_x(box.xmin());
@@ -480,7 +481,7 @@ template <>
 }
 
 std::vector<Point2_f> Location::GetRelativeKeypoints() const {
-  CHECK_EQ(LocationData::RELATIVE_BOUNDING_BOX, location_data_.format());
+  ABSL_CHECK_EQ(LocationData::RELATIVE_BOUNDING_BOX, location_data_.format());
   std::vector<Point2_f> keypoints;
   for (const auto& keypoint : location_data_.relative_keypoints()) {
     keypoints.emplace_back(Point2_f(keypoint.x(), keypoint.y()));
