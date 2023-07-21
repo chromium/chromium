@@ -617,6 +617,9 @@ template("msvc_rust_host_build_tools_toolchain") {
         generate_linker_map = false
       }
     }
+  } else {
+    not_needed(invoker, "*")
+    not_needed([ "target_name" ])
   }
 }
 
