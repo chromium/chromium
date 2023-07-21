@@ -23,7 +23,7 @@ class PasswordSenderServiceImpl : public PasswordSenderService {
   ~PasswordSenderServiceImpl() override;
 
   // PasswordSenderService implementation
-  void SendPassword(const CredentialUIEntry& credential_ui_entry,
+  void SendPassword(const std::vector<PasswordForm>& credentials,
                     const PasswordRecipient& recipient) override;
   base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
       override;
