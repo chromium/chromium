@@ -15524,7 +15524,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </if>
 
     <!-- Waffle strings -->
-    <if expr="not chromeos_lacros and not is_android and _google_chrome">
+    <if expr="enable_waffle_desktop">
       <message name="IDS_WAFFLE_PAGE_TITLE" desc="The title for the Waffle page."
         translateable="false">
         Lorem ipsum dolor sit amet
