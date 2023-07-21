@@ -865,6 +865,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   CreatePrefetchServiceDelegate(
       content::BrowserContext* browser_context) override;
 
+  std::unique_ptr<content::PrerenderWebContentsDelegate>
+  CreatePrerenderWebContentsDelegate() override;
+
   void OnWebContentsCreated(content::WebContents* web_contents) override;
 
   bool IsFindInPageDisabledForOrigin(const url::Origin& origin) override;

@@ -64,6 +64,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
+#include "content/public/browser/prerender_web_contents_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_switches.h"
@@ -215,6 +216,33 @@ void ExpectWebContentsIsForNewTabPrerendering(WebContentsImpl& web_contents) {
   // The prerendering WebContents should be hidden until prerender activation.
   EXPECT_TRUE(web_contents.IsHidden());
 }
+
+// This is a fake implementation of PrerenderWebContentsDelegate. This is used
+// for WebContents hosting a prerendered page for a new tab.
+class FakePrerenderWebContentsDelegate : public PrerenderWebContentsDelegate {
+ public:
+  // WebContentsDelegate overrides.
+  PreloadingEligibility IsPrerender2Supported(
+      WebContents& web_contents) override {
+    return PreloadingEligibility::kEligible;
+  }
+};
+
+// This is an implementation of ContentBrowserTestContentBrowserClient to handle
+// creation of FakePrerenderWebContentsDelegate. Thanks to the parent class, the
+// incumbent ContentBrowserClient is swapped with an instance of this class on
+// the constructor and then reset to that on the destructor, so the name is
+// prefixed with Scoped.
+class ScopedPrerenderContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  ScopedPrerenderContentBrowserClient() = default;
+
+  std::unique_ptr<PrerenderWebContentsDelegate>
+  CreatePrerenderWebContentsDelegate() override {
+    return std::make_unique<FakePrerenderWebContentsDelegate>();
+  }
+};
 
 class PrerenderBrowserTest : public ContentBrowserTest,
                              public WebContentsObserver {
@@ -848,6 +876,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ActivateOnLinkClick_TargetBlank) {
 // prerender whose target_hint is "_blank".
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        ActivateOnLinkClick_TargetBlank_WithTargetHintBlank) {
+  ScopedPrerenderContentBrowserClient prerender_content_browser_client;
+
   const GURL kInitialUrl = GetUrl("/simple_links.html");
   const GURL kPrerenderingUrl = GetUrl("/title2.html");
 
@@ -934,6 +964,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     PrerenderBrowserTest,
     ActivateOnLinkClick_TargetBlankWithNoopener_WithTargetHintBlank) {
+  ScopedPrerenderContentBrowserClient prerender_content_browser_client;
+
   const GURL kInitialUrl = GetUrl("/simple_links.html");
   const GURL kPrerenderingUrl = GetUrl("/title2.html");
 
@@ -1026,6 +1058,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     PrerenderBrowserTest,
     ActivateOnLinkClick_TargetBlankWithOpener_WithTargetHintBlank) {
+  ScopedPrerenderContentBrowserClient prerender_content_browser_client;
+
   const GURL kInitialUrl = GetUrl("/simple_links.html");
   const GURL kPrerenderingUrl = GetUrl("/title2.html");
 
@@ -4041,6 +4075,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 // "target=_blank" are canceled when it times out in the background .
 void PrerenderBrowserTest::TestCancelPrerenderWithTargetBlankWhenTimeout(
     Visibility visibility) {
+  ScopedPrerenderContentBrowserClient prerender_content_browser_client;
+
   const GURL kInitialUrl = GetUrl("/simple_links.html");
   const GURL kPrerenderUrl = GetUrl("/title2.html");
 
@@ -5803,6 +5839,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
 // them succeed.
 IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
                        MultipleNewTabPrerendering) {
+  ScopedPrerenderContentBrowserClient prerender_content_browser_client;
+
   GURL initial_url = GetUrl("/simple_links.html");
   std::vector<GURL> prerendering_urls = {GetUrl("/title2.html"),
                                          GetUrl("/title2.html?2"),

@@ -1373,6 +1373,8 @@ static_library("browser") {
     "preloading/prerender/prerender_manager.h",
     "preloading/prerender/prerender_utils.cc",
     "preloading/prerender/prerender_utils.h",
+    "preloading/prerender/prerender_web_contents_delegate.cc",
+    "preloading/prerender/prerender_web_contents_delegate.h",
     "privacy/privacy_metrics_service.cc",
     "privacy/privacy_metrics_service.h",
     "privacy/privacy_metrics_service_factory.cc",

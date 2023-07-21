@@ -14,24 +14,6 @@
 
 namespace content {
 
-// This is used as the delegate of WebContents created for a new tab where
-// prerendering runs.
-class PrerenderNewTabHandle::WebContentsDelegateImpl
-    : public WebContentsDelegate {
- public:
-  WebContentsDelegateImpl() = default;
-  ~WebContentsDelegateImpl() override = default;
-
-  PreloadingEligibility IsPrerender2Supported(
-      WebContents& web_contents) override {
-    // This should be checked in the initiator's WebContents.
-    NOTREACHED_NORETURN();
-  }
-
-  // TODO(crbug.com/1350676): Investigate if we have to override other
-  // functions on WebContentsDelegateImpl.
-};
-
 PrerenderNewTabHandle::PrerenderNewTabHandle(
     const PrerenderAttributes& attributes,
     BrowserContext& browser_context)
@@ -62,7 +44,8 @@ PrerenderNewTabHandle::PrerenderNewTabHandle(
       WebContents::Create(web_contents_create_params_).release()));
 
   // The delegate is swapped with a proper one on activation.
-  web_contents_delegate_ = std::make_unique<WebContentsDelegateImpl>();
+  web_contents_delegate_ =
+      GetContentClient()->browser()->CreatePrerenderWebContentsDelegate();
   web_contents_->SetDelegate(web_contents_delegate_.get());
 
   CHECK_EQ(web_contents_->GetVisibility(), Visibility::HIDDEN);

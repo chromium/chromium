@@ -1453,6 +1453,11 @@ ContentBrowserClient::CreatePrefetchServiceDelegate(
   return nullptr;
 }
 
+std::unique_ptr<PrerenderWebContentsDelegate>
+ContentBrowserClient::CreatePrerenderWebContentsDelegate() {
+  return nullptr;
+}
+
 bool ContentBrowserClient::IsFindInPageDisabledForOrigin(
     const url::Origin& origin) {
   return false;
