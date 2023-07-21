@@ -326,19 +326,12 @@ tast_disabled_tests_from_chrome_all = [
 
   # b/291854686
   "inputs.InputMethodShelfInputs",
-  "inputs.VirtualKeyboardGlideTyping.clamshell_a11y_docked",
+  "inputs.VirtualKeyboardAutocorrect.*",
+  "inputs.VirtualKeyboardGlideTyping.*",
+  "inputs.VirtualKeyboardHandwriting.docked",
   "inputs.VirtualKeyboardHandwriting.floating",
   "inputs.VirtualKeyboardTypingApps",
   "inputs.VirtualKeyboardTypingUserMode.incognito",
-  "inputs.InputMethodManagement",
-  "inputs.PhysicalKeyboardEmojiSuggestion",
-  "inputs.PhysicalKeyboardEmojiSuggestion.incognito",
-  "inputs.VirtualKeyboardAutoShift",
-  "inputs.VirtualKeyboardAutocorrect.*",
-  "inputs.PhysicalKeyboardKoreanTyping",
-  "inputs.VirtualKeyboardChangeInput.tablet",
-  "inputs.VirtualKeyboardGlideTyping.clamshell_a11y_floating",
-  "inputs.VirtualKeyboardHandwriting.docked",
 
   # b/287525851
   "arc.AudioValidity.playback",
