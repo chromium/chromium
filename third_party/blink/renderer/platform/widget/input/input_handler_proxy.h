@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/input/input_handler.h"
@@ -328,14 +327,14 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
 
   bool HasQueuedEventsReadyForDispatch(bool frame_aligned);
 
-  raw_ptr<InputHandlerProxyClient> client_;
+  InputHandlerProxyClient* client_;
 
   // The input handler object is owned by the compositor delegate. The input
   // handler must call WillShutdown() on this class before it is deleted at
   // which point this pointer will be cleared.
-  raw_ptr<cc::InputHandler> input_handler_;
+  cc::InputHandler* input_handler_;
 
-  raw_ptr<SynchronousInputHandler> synchronous_input_handler_;
+  SynchronousInputHandler* synchronous_input_handler_;
 
   // This should be true when a pinch is in progress. The sequence of events is
   // as follows: GSB GPB GSU GPU ... GPE GSE.
@@ -390,7 +389,7 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   // latency component should be added for injected GestureScrollUpdates.
   bool last_injected_gesture_was_begin_;
 
-  raw_ptr<const base::TickClock> tick_clock_;
+  const base::TickClock* tick_clock_;
 
   std::unique_ptr<cc::SnapFlingController> snap_fling_controller_;
 

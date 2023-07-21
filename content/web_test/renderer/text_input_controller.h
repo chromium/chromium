@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 namespace blink {
@@ -61,7 +60,7 @@ class TextInputController {
   // accepting IME. Could return nullptr if no such frame exists.
   blink::WebInputMethodController* GetInputMethodController();
 
-  const raw_ptr<WebFrameTestProxy> web_frame_test_proxy_;
+  WebFrameTestProxy* const web_frame_test_proxy_;
 
   base::WeakPtrFactory<TextInputController> weak_factory_{this};
 };

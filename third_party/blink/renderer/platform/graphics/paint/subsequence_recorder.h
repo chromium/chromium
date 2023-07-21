@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_SUBSEQUENCE_RECORDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_SUBSEQUENCE_RECORDER_H_
 
-#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
@@ -37,19 +36,19 @@ class SubsequenceRecorder final {
 
   SubsequenceRecorder(GraphicsContext& context, const DisplayItemClient& client)
       : paint_controller_(context.GetPaintController()) {
-    subsequence_index_ = paint_controller_->BeginSubsequence(client);
-    paint_controller_->MarkClientForValidation(client);
+    subsequence_index_ = paint_controller_.BeginSubsequence(client);
+    paint_controller_.MarkClientForValidation(client);
   }
 
   SubsequenceRecorder(const SubsequenceRecorder&) = delete;
   SubsequenceRecorder& operator=(const SubsequenceRecorder&) = delete;
 
   ~SubsequenceRecorder() {
-    paint_controller_->EndSubsequence(subsequence_index_);
+    paint_controller_.EndSubsequence(subsequence_index_);
   }
 
  private:
-  const raw_ref<PaintController> paint_controller_;
+  PaintController& paint_controller_;
   wtf_size_t subsequence_index_;
 };
 

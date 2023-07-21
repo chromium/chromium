@@ -212,7 +212,7 @@ void ServiceWorkerGlobalScopeProxy::DidCloseWorkerGlobalScope() {
   PostCrossThreadTask(
       *parent_thread_default_task_runner_, FROM_HERE,
       CrossThreadBindOnce(&WebEmbeddedWorkerImpl::TerminateWorkerContext,
-                          CrossThreadUnretained(embedded_worker_.get())));
+                          CrossThreadUnretained(embedded_worker_)));
 
   // NOTE: WorkerThread calls WillDestroyWorkerGlobalScope() synchronously after
   // this function returns, since it calls DidCloseWorkerGlobalScope() then

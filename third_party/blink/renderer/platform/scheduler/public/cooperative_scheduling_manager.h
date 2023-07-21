@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_COOPERATIVE_SCHEDULING_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_COOPERATIVE_SCHEDULING_MANAGER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -31,7 +30,7 @@ class PLATFORM_EXPORT CooperativeSchedulingManager {
     ~AllowedStackScope();
 
    private:
-    const raw_ptr<CooperativeSchedulingManager> cooperative_scheduling_manager_;
+    CooperativeSchedulingManager* const cooperative_scheduling_manager_;
   };
 
   // Returns an shared instance for the current thread.
@@ -68,7 +67,7 @@ class PLATFORM_EXPORT CooperativeSchedulingManager {
   int allowed_stack_scope_depth_ = 0;
   bool running_nested_loop_ = false;
   base::TimeTicks wait_until_;
-  raw_ptr<const base::TickClock> clock_;
+  const base::TickClock* clock_;
   bool feature_enabled_ = true;
 };
 

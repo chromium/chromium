@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/memory/raw_ptr.h"
 #include "base/types/strong_alias.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
@@ -542,7 +541,7 @@ class MODULES_EXPORT ManifestParser {
   const String data_;
   KURL manifest_url_;
   KURL document_url_;
-  raw_ptr<ExecutionContext> execution_context_;
+  ExecutionContext* execution_context_;
 
   // The total number of file extensions seen so far while parsing
   // `file_handlers` `accept` entries.

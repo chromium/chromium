@@ -322,13 +322,13 @@ void DeferredTaskHandler::ContextWillBeDestroyed() {
 DeferredTaskHandler::GraphAutoLocker::GraphAutoLocker(
     const BaseAudioContext* context)
     : handler_(context->GetDeferredTaskHandler()) {
-  handler_->lock();
+  handler_.lock();
 }
 
 DeferredTaskHandler::OfflineGraphAutoLocker::OfflineGraphAutoLocker(
     OfflineAudioContext* context)
     : handler_(context->GetDeferredTaskHandler()) {
-  handler_->OfflineLock();
+  handler_.OfflineLock();
 }
 
 void DeferredTaskHandler::AddRenderingOrphanHandler(

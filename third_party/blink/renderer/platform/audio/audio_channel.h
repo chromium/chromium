@@ -30,7 +30,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_CHANNEL_H_
 
 #include <memory>
-#include "base/memory/raw_ptr.h"
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -77,11 +76,11 @@ class PLATFORM_EXPORT AudioChannel {
   // Direct access to PCM sample data. Non-const accessor clears silent flag.
   float* MutableData() {
     ClearSilentFlag();
-    return raw_pointer_ ? raw_pointer_.get() : mem_buffer_->Data();
+    return raw_pointer_ ? raw_pointer_ : mem_buffer_->Data();
   }
 
   const float* Data() const {
-    return raw_pointer_ ? raw_pointer_.get() : mem_buffer_->Data();
+    return raw_pointer_ ? raw_pointer_ : mem_buffer_->Data();
   }
 
   // Zeroes out all sample values in buffer.
@@ -125,7 +124,7 @@ class PLATFORM_EXPORT AudioChannel {
  private:
   uint32_t length_;
 
-  raw_ptr<float> raw_pointer_;
+  float* raw_pointer_;
   std::unique_ptr<AudioFloatArray> mem_buffer_;
   bool silent_;
 };

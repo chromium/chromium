@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -128,7 +127,7 @@ class VideoEncoderShim::EncoderImpl {
     ~BitstreamBuffer() {}
 
     media::BitstreamBuffer buffer;
-    raw_ptr<uint8_t> mem;
+    uint8_t* mem;
   };
 
   void DoEncode();

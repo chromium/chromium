@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "content/public/renderer/plugin_ax_tree_source.h"
@@ -260,10 +259,10 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   // ‌PdfAccessibilityTree belongs to the PDF plugin which is created by the
   // renderer. `render_frame_` is reset when renderer sends OnDestruct() to its
   // observers.
-  raw_ptr<content::RenderFrame> render_frame_;
+  content::RenderFrame* render_frame_;
 
   // Unowned. Must outlive `this`.
-  const raw_ptr<chrome_pdf::PdfAccessibilityActionHandler> action_handler_;
+  chrome_pdf::PdfAccessibilityActionHandler* const action_handler_;
 
   // `zoom_` signifies the zoom level set in for the browser content.
   // `scale_` signifies the scale level set by user. Scale is applied

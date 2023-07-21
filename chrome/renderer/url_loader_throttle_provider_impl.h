@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "extensions/buildflags/buildflags.h"
@@ -50,7 +49,7 @@ class URLLoaderThrottleProviderImpl : public blink::URLLoaderThrottleProvider {
   URLLoaderThrottleProviderImpl(const URLLoaderThrottleProviderImpl& other);
 
   blink::URLLoaderThrottleProviderType type_;
-  const raw_ptr<ChromeContentRendererClient> chrome_content_renderer_client_;
+  ChromeContentRendererClient* const chrome_content_renderer_client_;
 
   mojo::PendingRemote<safe_browsing::mojom::SafeBrowsing> safe_browsing_remote_;
   mojo::Remote<safe_browsing::mojom::SafeBrowsing> safe_browsing_;

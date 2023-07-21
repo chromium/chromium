@@ -11,8 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -206,7 +204,7 @@ class AutofillAgent : public content::RenderFrameObserver,
     FieldRendererId focused_field_id_;
     mojom::FocusedFieldType focused_field_type_ =
         mojom::FocusedFieldType::kUnknown;
-    const raw_ref<AutofillAgent> agent_;
+    AutofillAgent& agent_;
   };
 
   // content::RenderFrameObserver:
@@ -361,9 +359,8 @@ class AutofillAgent : public content::RenderFrameObserver,
   // reset when the AutofillAgent is pending deletion.
   std::unique_ptr<FormCache> form_cache_;
 
-  raw_ptr<PasswordAutofillAgent> password_autofill_agent_;  // Weak reference.
-  raw_ptr<PasswordGenerationAgent>
-      password_generation_agent_;  // Weak reference.
+  PasswordAutofillAgent* password_autofill_agent_;      // Weak reference.
+  PasswordGenerationAgent* password_generation_agent_;  // Weak reference.
 
   // The element corresponding to the last request sent for form field Autofill.
   blink::WebFormControlElement element_;

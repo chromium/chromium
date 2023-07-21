@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_bloberizer.h"
 
 #include <memory>
-#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
@@ -55,7 +54,7 @@ class ShapeResultBloberizerTest : public FontTestBase {
   FontDescription font_description;
   Font font;
   std::unique_ptr<ShapeCache> cache;
-  raw_ptr<HashSet<const SimpleFontData*>> fallback_fonts;
+  HashSet<const SimpleFontData*>* fallback_fonts;
   unsigned start_index = 0;
   unsigned num_glyphs = 0;
   hb_script_t script = HB_SCRIPT_INVALID;

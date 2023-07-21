@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_OPEN_TYPE_CAPS_SUPPORT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_OPEN_TYPE_CAPS_SUPPORT_H_
 
-#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/case_mapping_harfbuzz_buffer_filler.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
@@ -44,7 +43,7 @@ class PLATFORM_EXPORT OpenTypeCapsSupport {
   bool SupportsOpenTypeFeature(hb_script_t, uint32_t tag) const;
   bool SyntheticSmallCapsAllowed() const;
 
-  raw_ptr<const HarfBuzzFace> harfbuzz_face_ = nullptr;
+  const HarfBuzzFace* harfbuzz_face_ = nullptr;
   FontDescription::FontVariantCaps requested_caps_ =
       FontDescription::kCapsNormal;
   FontDescription::FontSynthesisSmallCaps font_synthesis_small_caps_ =

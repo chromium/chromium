@@ -29,7 +29,6 @@
 #include <map>
 
 #include "base/lazy_instance.h"
-#include "base/memory/raw_ptr.h"
 
 namespace content {
 
@@ -56,7 +55,7 @@ class RenderFrameObserverTracker {
   }
 
  private:
-  raw_ptr<const RenderFrame> render_frame_;
+  const RenderFrame* render_frame_;
 
   static typename base::LazyInstance<
       std::map<const RenderFrame*, RenderFrameObserverTracker<T>*>>::

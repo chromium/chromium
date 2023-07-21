@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "media/base/text_track.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
@@ -49,7 +48,7 @@ class PLATFORM_EXPORT TextTrackImpl : public media::TextTrack {
                             std::unique_ptr<WebInbandTextTrackImpl> text_track);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  raw_ptr<WebMediaPlayerClient> client_;
+  WebMediaPlayerClient* client_;
   std::unique_ptr<WebInbandTextTrackImpl> text_track_;
 };
 

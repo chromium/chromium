@@ -8,7 +8,6 @@
 #include <set>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "components/page_load_metrics/renderer/page_timing_sender.h"
@@ -167,7 +166,7 @@ class FakePageTimingSender : public PageTimingSender {
       base::ReadOnlySharedMemoryRegion shared_memory) override;
 
  private:
-  const raw_ptr<PageTimingValidator> validator_;
+  PageTimingValidator* const validator_;
 };
 
 }  // namespace page_load_metrics

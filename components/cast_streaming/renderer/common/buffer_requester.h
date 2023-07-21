@@ -9,7 +9,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -136,7 +135,7 @@ class BufferRequester
   std::unique_ptr<DecoderBufferProviderImpl<ConfigType>> buffer_provider_;
   BufferProviderRequestCB buffer_request_cb_;
 
-  const raw_ptr<Client> client_;
+  Client* const client_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   mojo::Remote<TMojoRemoteType> remote_;

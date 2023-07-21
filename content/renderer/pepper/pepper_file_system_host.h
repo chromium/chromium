@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/files/file.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ppapi/c/pp_file_info.h"
@@ -76,7 +75,7 @@ class PepperFileSystemHost
 
   blink::mojom::FileSystemManager* GetFileSystemManager();
 
-  raw_ptr<RendererPpapiHost> renderer_ppapi_host_;
+  RendererPpapiHost* renderer_ppapi_host_;
   ppapi::host::ReplyMessageContext reply_context_;
 
   PP_FileSystemType type_;

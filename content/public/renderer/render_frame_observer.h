@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -380,7 +379,7 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   // can null out its pointer.
   void RenderFrameGone();
 
-  raw_ptr<RenderFrame> render_frame_;
+  RenderFrame* render_frame_;
   // The routing ID of the associated RenderFrame.
   int routing_id_;
 };

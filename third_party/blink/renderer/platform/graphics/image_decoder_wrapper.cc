@@ -114,7 +114,7 @@ bool ImageDecoderWrapper::Decode(ImageDecoderFactory* factory,
   DCHECK(!resume_decoding || decoder);
 
   if (resume_decoding) {
-    decoder->SetData(data_.get(), all_data_received_);
+    decoder->SetData(data_, all_data_received_);
   } else {
     new_decoder = CreateDecoderWithData(factory);
     if (!new_decoder)
@@ -296,7 +296,7 @@ std::unique_ptr<ImageDecoder> ImageDecoderWrapper::CreateDecoderWithData(
   if (factory) {
     auto decoder = factory->Create();
     if (decoder)
-      decoder->SetData(data_.get(), all_data_received_);
+      decoder->SetData(data_, all_data_received_);
     return decoder;
   }
 
@@ -307,7 +307,7 @@ std::unique_ptr<ImageDecoder> ImageDecoderWrapper::CreateDecoderWithData(
               : ImageDecoder::kDefaultBitDepth;
 
   // The newly created decoder just grabbed the data.  No need to reset it.
-  return ImageDecoder::Create(data_.get(), all_data_received_,
+  return ImageDecoder::Create(data_, all_data_received_,
                               PixmapAlphaOption(pixmap_),
                               high_bit_depth_decoding_option,
                               decoder_color_behavior_, pixmap_.dimensions());

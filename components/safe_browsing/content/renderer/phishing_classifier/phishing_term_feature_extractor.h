@@ -25,7 +25,6 @@
 #include <unordered_set>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/time/tick_clock.h"
@@ -150,13 +149,12 @@ class PhishingTermFeatureExtractor {
   const size_t shingle_size_;
 
   // Non-owned pointer to our clock.
-  raw_ptr<const base::TickClock> clock_;
+  const base::TickClock* clock_;
 
   // The output parameters from the most recent call to ExtractFeatures().
-  raw_ptr<const std::u16string>
-      page_text_;                 // The caller keeps ownership of this.
-  raw_ptr<FeatureMap> features_;  // The caller keeps ownership of this.
-  raw_ptr<std::set<uint32_t>> shingle_hashes_;
+  const std::u16string* page_text_;  // The caller keeps ownership of this.
+  FeatureMap* features_;             // The caller keeps ownership of this.
+  std::set<uint32_t>* shingle_hashes_;
   DoneCallback done_callback_;
 
   // Stores the current state of term extraction from |page_text_|.

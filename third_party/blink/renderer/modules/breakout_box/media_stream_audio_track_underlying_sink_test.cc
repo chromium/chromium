@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_audio_track_underlying_sink.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
@@ -101,7 +100,7 @@ class MediaStreamAudioTrackUnderlyingSinkTest : public testing::Test {
   Persistent<MediaStreamSource> media_stream_source_;
   Persistent<MediaStreamComponent> media_stream_component_;
 
-  raw_ptr<PushableMediaStreamAudioSource> pushable_audio_source_;
+  PushableMediaStreamAudioSource* pushable_audio_source_;
 };
 
 TEST_F(MediaStreamAudioTrackUnderlyingSinkTest,

@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/webaudio/audio_node_wiring.h"
 
-#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
 #include "third_party/blink/renderer/modules/webaudio/deferred_task_handler.h"
@@ -17,7 +16,7 @@ namespace {
 using AudioNodeOutputSet = HashSet<AudioNodeOutput*>;
 
 struct FindOutputResult {
-  const raw_ref<AudioNodeOutputSet> output_set;
+  AudioNodeOutputSet& output_set;
   AudioNodeOutputSet::const_iterator iterator;
   bool is_disabled;
 };
@@ -34,16 +33,16 @@ FindOutputResult FindOutput(AudioNodeOutput& output,
                             AudioNodeOutputSet& disabled_outputs) {
   auto it = outputs.find(&output);
   if (it != outputs.end()) {
-    return {raw_ref(outputs), it, false};
+    return {outputs, it, false};
   }
 
   it = disabled_outputs.find(&output);
   if (it != disabled_outputs.end()) {
-    return {raw_ref(disabled_outputs), it, true};
+    return {disabled_outputs, it, true};
   }
 
   NOTREACHED() << "The output must be connected to the input.";
-  return {raw_ref(outputs), {}, false};
+  return {outputs, {}, false};
 }
 
 }  // namespace
@@ -110,7 +109,7 @@ void AudioNodeWiring::Disconnect(AudioNodeOutput& output,
   auto result = FindOutput(output, input.outputs_, input.disabled_outputs_);
 
   // Erase the pointers from both sets.
-  result.output_set->erase(result.iterator);
+  result.output_set.erase(result.iterator);
   output.inputs_.erase(&input);
 
   // If an active connection was disconnected, the input may need to have its

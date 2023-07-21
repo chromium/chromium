@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
 
-#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
@@ -37,9 +36,9 @@ struct SameSizeAsPaintChunk {
   gfx::Rect bounds;
   gfx::Rect drawable_bounds;
   gfx::Rect rect_known_to_be_opaque;
-  raw_ptr<void> hit_test_data;
-  raw_ptr<void> region_capture_data;
-  raw_ptr<void> layer_selection;
+  void* hit_test_data;
+  void* region_capture_data;
+  void* layer_selection;
   bool b[2];
 };
 

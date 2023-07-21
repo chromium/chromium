@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_IIR_FILTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_IIR_FILTER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
@@ -64,8 +63,8 @@ class PLATFORM_EXPORT IIRFilter final {
 
   // Coefficients of the IIR filter.  To minimize storage, these point to the
   // arrays given in the constructor.
-  raw_ptr<const AudioDoubleArray> feedback_;
-  raw_ptr<const AudioDoubleArray> feedforward_;
+  const AudioDoubleArray* feedback_;
+  const AudioDoubleArray* feedforward_;
 };
 
 }  // namespace blink

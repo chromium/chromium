@@ -21,7 +21,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_FALLBACK_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_FALLBACK_LIST_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/renderer/platform/fonts/fallback_list_composite_key.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
@@ -138,7 +137,7 @@ class PLATFORM_EXPORT FontFallbackList : public RefCounted<FontFallbackList> {
   bool ComputeCanShapeWordByWord(const FontDescription&);
 
   Vector<scoped_refptr<FontData>, 1> font_list_;
-  raw_ptr<const SimpleFontData> cached_primary_simple_font_data_ = nullptr;
+  const SimpleFontData* cached_primary_simple_font_data_ = nullptr;
   const WeakPersistent<FontFallbackMap> font_fallback_map_;
   int family_index_ = 0;
   const uint16_t generation_;

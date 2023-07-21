@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
@@ -51,7 +50,7 @@ class MockAudioRendererSink : public media::AudioRendererSink {
   MOCK_METHOD(bool, IsOptimizedForHardwareParameters, (), (override));
   MOCK_METHOD(bool, CurrentThreadIsRenderingThread, (), (override));
 
-  raw_ptr<media::AudioRendererSink::RenderCallback> callback_ = nullptr;
+  media::AudioRendererSink::RenderCallback* callback_ = nullptr;
 
  private:
   ~MockAudioRendererSink() override = default;

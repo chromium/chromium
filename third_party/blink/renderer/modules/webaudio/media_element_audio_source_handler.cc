@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ref.h"
 #include "base/synchronization/lock.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_element_audio_source_options.h"
@@ -39,7 +38,7 @@ class MediaElementAudioSourceHandlerLocker final {
   explicit MediaElementAudioSourceHandlerLocker(
       MediaElementAudioSourceHandler& lockable)
       : lockable_(lockable) {
-    lockable_->lock();
+    lockable_.lock();
   }
 
   MediaElementAudioSourceHandlerLocker(
@@ -47,10 +46,10 @@ class MediaElementAudioSourceHandlerLocker final {
   MediaElementAudioSourceHandlerLocker& operator=(
       const MediaElementAudioSourceHandlerLocker&) = delete;
 
-  ~MediaElementAudioSourceHandlerLocker() { lockable_->unlock(); }
+  ~MediaElementAudioSourceHandlerLocker() { lockable_.unlock(); }
 
  private:
-  const raw_ref<MediaElementAudioSourceHandler> lockable_;
+  MediaElementAudioSourceHandler& lockable_;
 };
 
 MediaElementAudioSourceHandler::MediaElementAudioSourceHandler(

@@ -6,7 +6,6 @@
 #define CHROME_RENDERER_CHROME_CONTENT_SETTINGS_AGENT_DELEGATE_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "components/content_settings/renderer/content_settings_agent_impl.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -63,12 +62,12 @@ class ChromeContentSettingsAgentDelegate
       const blink::WebSecurityOrigin& origin) const;
 
   // Owned by ChromeContentRendererClient and outlive us.
-  raw_ptr<extensions::Dispatcher> extension_dispatcher_ = nullptr;
+  extensions::Dispatcher* extension_dispatcher_ = nullptr;
 #endif
 
   base::flat_set<std::string> temporarily_allowed_plugins_;
 
-  raw_ptr<content::RenderFrame> render_frame_ = nullptr;
+  content::RenderFrame* render_frame_ = nullptr;
 };
 
 #endif  // CHROME_RENDERER_CHROME_CONTENT_SETTINGS_AGENT_DELEGATE_H_

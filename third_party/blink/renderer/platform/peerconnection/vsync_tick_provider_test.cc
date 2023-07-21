@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -93,7 +92,7 @@ class VSyncTickProviderTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<FakeDefaultTickProvider> fake_default_tick_provider_holder_ =
       std::make_unique<FakeDefaultTickProvider>();
-  raw_ptr<FakeDefaultTickProvider> fake_default_tick_provider_ =
+  FakeDefaultTickProvider* fake_default_tick_provider_ =
       fake_default_tick_provider_holder_.get();
   FakeVSyncProvider fake_begin_frame_provider_;
   std::unique_ptr<VSyncTickProvider> begin_frame_tick_provider_ =

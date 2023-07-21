@@ -8,7 +8,6 @@
 #include <map>
 
 #include "base/containers/id_map.h"
-#include "base/memory/raw_ref.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/associated_interfaces.mojom.h"
@@ -133,7 +132,7 @@ class CONTENT_EXPORT AgentSchedulingGroup
   std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
       agent_group_scheduler_;
 
-  const raw_ref<RenderThread> render_thread_;
+  RenderThread& render_thread_;
 
   // Implementation of `mojom::AgentSchedulingGroup`, used for responding to
   // calls from the (browser-side) `AgentSchedulingGroupHost`.

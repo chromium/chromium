@@ -9,7 +9,6 @@
 #include <cmath>
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "content/common/android/gin_java_bridge_value.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,7 +38,7 @@ class GinJavaBridgeValueConverterTest : public testing::Test {
 
   void TearDown() override { context_.Reset(); }
 
-  raw_ptr<v8::Isolate> isolate_;
+  v8::Isolate* isolate_;
 
   // Context for the JavaScript in the test.
   v8::Persistent<v8::Context> context_;

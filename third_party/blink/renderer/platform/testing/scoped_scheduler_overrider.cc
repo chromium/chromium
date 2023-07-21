@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/testing/scoped_scheduler_overrider.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
@@ -28,7 +27,7 @@ class ThreadWithCustomScheduler : public MainThread {
   }
 
  private:
-  raw_ptr<ThreadScheduler> scheduler_;
+  ThreadScheduler* scheduler_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 

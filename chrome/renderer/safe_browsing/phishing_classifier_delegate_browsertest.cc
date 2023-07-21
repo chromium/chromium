@@ -8,7 +8,6 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "chrome/test/base/chrome_unit_test_suite.h"
@@ -200,9 +199,8 @@ class PhishingClassifierDelegateTest : public ChromeRenderViewTest {
     EXPECT_FALSE(verdict.is_phishing());
   }
 
-  raw_ptr<StrictMock<MockPhishingClassifier>>
-      classifier_;                                // Owned by |delegate_|.
-  raw_ptr<PhishingClassifierDelegate> delegate_;  // Owned by the RenderFrame.
+  StrictMock<MockPhishingClassifier>* classifier_;  // Owned by |delegate_|.
+  PhishingClassifierDelegate* delegate_;            // Owned by the RenderFrame.
 };
 
 TEST_F(PhishingClassifierDelegateTest, Navigation) {

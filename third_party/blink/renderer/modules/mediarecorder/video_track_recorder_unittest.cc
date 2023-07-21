@@ -6,7 +6,6 @@
 
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
@@ -219,7 +218,7 @@ class VideoTrackRecorderTest
     const String track_id("dummy");
     source_ = MakeGarbageCollected<MediaStreamSource>(
         track_id, MediaStreamSource::kTypeVideo, track_id, false /*remote*/,
-        base::WrapUnique(mock_source_.get()));
+        base::WrapUnique(mock_source_));
     EXPECT_CALL(*mock_source_, OnRequestRefreshFrame())
         .Times(testing::AnyNumber());
     EXPECT_CALL(*mock_source_, OnCapturingLinkSecured(_))
@@ -322,9 +321,9 @@ class VideoTrackRecorderTest
 
   // All members are non-const due to the series of initialize() calls needed.
   // |mock_source_| is owned by |source_|, |track_| by |component_|.
-  raw_ptr<MockMediaStreamVideoSource> mock_source_;
+  MockMediaStreamVideoSource* mock_source_;
   Persistent<MediaStreamSource> source_;
-  raw_ptr<MediaStreamVideoTrack> track_;
+  MediaStreamVideoTrack* track_;
   Persistent<MediaStreamComponent> component_;
 
   std::unique_ptr<VideoTrackRecorderImpl> video_track_recorder_;
@@ -855,7 +854,7 @@ class VideoTrackRecorderPassthroughTest
     const String track_id("dummy");
     source_ = MakeGarbageCollected<MediaStreamSource>(
         track_id, MediaStreamSource::kTypeVideo, track_id, false /*remote*/,
-        base::WrapUnique(mock_source_.get()));
+        base::WrapUnique(mock_source_));
     component_ = MakeGarbageCollected<MediaStreamComponentImpl>(
         source_, std::make_unique<MediaStreamVideoTrack>(
                      mock_source_,
@@ -887,7 +886,7 @@ class VideoTrackRecorderPassthroughTest
 
   // All members are non-const due to the series of initialize() calls needed.
   // |mock_source_| is owned by |source_|.
-  raw_ptr<MockMediaStreamVideoSource> mock_source_;
+  MockMediaStreamVideoSource* mock_source_;
   Persistent<MediaStreamSource> source_;
   Persistent<MediaStreamComponent> component_;
 

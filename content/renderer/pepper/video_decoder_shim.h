@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/containers/queue.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/video_decoder_config.h"
@@ -89,7 +88,7 @@ class VideoDecoderShim : public media::VideoDecodeAccelerator {
   std::unique_ptr<DecoderImpl> decoder_impl_;
   State state_;
 
-  raw_ptr<PepperVideoDecoderHost> host_;
+  PepperVideoDecoderHost* host_;
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   scoped_refptr<viz::ContextProviderCommandBuffer>
       shared_main_thread_context_provider_;

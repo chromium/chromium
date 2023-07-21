@@ -13,7 +13,6 @@
 #include <set>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "content/renderer/pepper/video_decoder_shim.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "ppapi/c/pp_codecs.h"
@@ -126,7 +125,7 @@ class PepperVideoDecoderHost : public ppapi::host::ResourceHost,
   PendingDecodeList::iterator GetPendingDecodeById(int32_t decode_id);
 
   // Non-owning pointer.
-  raw_ptr<RendererPpapiHost> renderer_ppapi_host_;
+  RendererPpapiHost* renderer_ppapi_host_;
 
   media::VideoCodecProfile profile_;
 

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "extensions/renderer/v8_schema_registry.h"
 
@@ -45,7 +44,7 @@ class ServiceWorkerData {
  private:
   const int64_t service_worker_version_id_;
   const base::UnguessableToken activation_sequence_;
-  const raw_ptr<ScriptContext> context_ = nullptr;
+  ScriptContext* const context_ = nullptr;
 
   std::unique_ptr<V8SchemaRegistry> v8_schema_registry_;
   std::unique_ptr<NativeExtensionBindingsSystem> bindings_system_;

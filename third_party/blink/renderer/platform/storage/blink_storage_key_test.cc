@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 
-#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -368,68 +367,67 @@ TEST(BlinkStorageKeyTest, FromWireReturnValue) {
 
   const struct TestCase {
     scoped_refptr<const SecurityOrigin> origin;
-    const raw_ref<const BlinkSchemefulSite> top_level_site;
-    const raw_ref<const BlinkSchemefulSite>
-        top_level_site_if_third_party_enabled;
-    const raw_ref<const absl::optional<base::UnguessableToken>> nonce;
+    const BlinkSchemefulSite& top_level_site;
+    const BlinkSchemefulSite& top_level_site_if_third_party_enabled;
+    const absl::optional<base::UnguessableToken>& nonce;
     AncestorChainBit ancestor_chain_bit;
     AncestorChainBit ancestor_chain_bit_if_third_party_enabled;
     bool result;
   } test_cases[] = {
       // Passing cases:
-      {o1, raw_ref(site1), raw_ref(site1), absl::nullopt,
-       AncestorChainBit::kSameSite, AncestorChainBit::kSameSite, true},
-      {o1, raw_ref(site1), raw_ref(site1), nonce1, AncestorChainBit::kCrossSite,
+      {o1, site1, site1, absl::nullopt, AncestorChainBit::kSameSite,
+       AncestorChainBit::kSameSite, true},
+      {o1, site1, site1, nonce1, AncestorChainBit::kCrossSite,
        AncestorChainBit::kCrossSite, true},
-      {o1, raw_ref(site1), raw_ref(site2), absl::nullopt,
-       AncestorChainBit::kSameSite, AncestorChainBit::kCrossSite, true},
-      {o1, raw_ref(site1), raw_ref(site1), absl::nullopt,
-       AncestorChainBit::kSameSite, AncestorChainBit::kCrossSite, true},
-      {o1, raw_ref(site1), raw_ref(site1), nonce1, AncestorChainBit::kCrossSite,
+      {o1, site1, site2, absl::nullopt, AncestorChainBit::kSameSite,
        AncestorChainBit::kCrossSite, true},
-      {opaque, raw_ref(site1), raw_ref(site1), absl::nullopt,
+      {o1, site1, site1, absl::nullopt, AncestorChainBit::kSameSite,
+       AncestorChainBit::kCrossSite, true},
+      {o1, site1, site1, nonce1, AncestorChainBit::kCrossSite,
+       AncestorChainBit::kCrossSite, true},
+      {opaque, site1, site1, absl::nullopt, AncestorChainBit::kCrossSite,
+       AncestorChainBit::kCrossSite, true},
+      {o1, site1, opaque_site, absl::nullopt, AncestorChainBit::kSameSite,
+       AncestorChainBit::kCrossSite, true},
+      {o1, opaque_site, opaque_site, absl::nullopt,
        AncestorChainBit::kCrossSite, AncestorChainBit::kCrossSite, true},
-      {o1, raw_ref(site1), raw_ref(opaque_site), absl::nullopt,
-       AncestorChainBit::kSameSite, AncestorChainBit::kCrossSite, true},
-      {o1, raw_ref(opaque_site), raw_ref(opaque_site), absl::nullopt,
-       AncestorChainBit::kCrossSite, AncestorChainBit::kCrossSite, true},
-      {opaque, raw_ref(opaque_site), raw_ref(opaque_site), absl::nullopt,
+      {opaque, opaque_site, opaque_site, absl::nullopt,
        AncestorChainBit::kCrossSite, AncestorChainBit::kCrossSite, true},
       // Failing cases:
       // If a 3p key is indicated, the *if_third_party_enabled pieces should
       // match their counterparts.
-      {o1, raw_ref(site2), raw_ref(site3), absl::nullopt,
-       AncestorChainBit::kSameSite, AncestorChainBit::kSameSite, false},
-      {o1, raw_ref(site1), raw_ref(site1), absl::nullopt,
-       AncestorChainBit::kCrossSite, AncestorChainBit::kSameSite, false},
+      {o1, site2, site3, absl::nullopt, AncestorChainBit::kSameSite,
+       AncestorChainBit::kSameSite, false},
+      {o1, site1, site1, absl::nullopt, AncestorChainBit::kCrossSite,
+       AncestorChainBit::kSameSite, false},
       // If the top_level_site* is cross-site to the origin, the
       // ancestor_chain_bit* must indicate cross-site.
-      {o1, raw_ref(site2), raw_ref(site2), absl::nullopt,
-       AncestorChainBit::kSameSite, AncestorChainBit::kCrossSite, false},
-      {o1, raw_ref(site1), raw_ref(site2), absl::nullopt,
-       AncestorChainBit::kSameSite, AncestorChainBit::kSameSite, false},
-      {o1, raw_ref(site2), raw_ref(site2), absl::nullopt,
-       AncestorChainBit::kSameSite, AncestorChainBit::kSameSite, false},
+      {o1, site2, site2, absl::nullopt, AncestorChainBit::kSameSite,
+       AncestorChainBit::kCrossSite, false},
+      {o1, site1, site2, absl::nullopt, AncestorChainBit::kSameSite,
+       AncestorChainBit::kSameSite, false},
+      {o1, site2, site2, absl::nullopt, AncestorChainBit::kSameSite,
+       AncestorChainBit::kSameSite, false},
       // If there is a nonce, all other values must indicate same-site to
       // origin.
-      {o1, raw_ref(site2), raw_ref(site2), nonce1, AncestorChainBit::kSameSite,
+      {o1, site2, site2, nonce1, AncestorChainBit::kSameSite,
        AncestorChainBit::kSameSite, false},
-      {o1, raw_ref(site1), raw_ref(site1), nonce1, AncestorChainBit::kSameSite,
+      {o1, site1, site1, nonce1, AncestorChainBit::kSameSite,
        AncestorChainBit::kSameSite, false},
-      {o1, raw_ref(site1), raw_ref(site1), nonce1, AncestorChainBit::kSameSite,
+      {o1, site1, site1, nonce1, AncestorChainBit::kSameSite,
        AncestorChainBit::kCrossSite, false},
       // If the top_level_site* is opaque, the ancestor_chain_bit* must be
       // same-site.
-      {o1, raw_ref(site1), raw_ref(opaque_site), absl::nullopt,
-       AncestorChainBit::kCrossSite, AncestorChainBit::kSameSite, false},
-      {o1, raw_ref(opaque_site), raw_ref(opaque_site), absl::nullopt,
-       AncestorChainBit::kSameSite, AncestorChainBit::kSameSite, false},
+      {o1, site1, opaque_site, absl::nullopt, AncestorChainBit::kCrossSite,
+       AncestorChainBit::kSameSite, false},
+      {o1, opaque_site, opaque_site, absl::nullopt, AncestorChainBit::kSameSite,
+       AncestorChainBit::kSameSite, false},
       // If the origin is opaque, the ancestor_chain_bit* must be cross-site.
-      {opaque, raw_ref(opaque_site), raw_ref(opaque_site), absl::nullopt,
+      {opaque, opaque_site, opaque_site, absl::nullopt,
        AncestorChainBit::kSameSite, AncestorChainBit::kSameSite, false},
-      {opaque, raw_ref(opaque_site), raw_ref(opaque_site), absl::nullopt,
+      {opaque, opaque_site, opaque_site, absl::nullopt,
        AncestorChainBit::kCrossSite, AncestorChainBit::kSameSite, false},
-      {opaque, raw_ref(opaque_site), raw_ref(opaque_site), absl::nullopt,
+      {opaque, opaque_site, opaque_site, absl::nullopt,
        AncestorChainBit::kSameSite, AncestorChainBit::kCrossSite, false},
   };
 
@@ -440,8 +438,8 @@ TEST(BlinkStorageKeyTest, FromWireReturnValue) {
     EXPECT_EQ(
         test_case.result,
         BlinkStorageKey::FromWire(
-            test_case.origin, *test_case.top_level_site,
-            *test_case.top_level_site_if_third_party_enabled, *test_case.nonce,
+            test_case.origin, test_case.top_level_site,
+            test_case.top_level_site_if_third_party_enabled, test_case.nonce,
             test_case.ancestor_chain_bit,
             test_case.ancestor_chain_bit_if_third_party_enabled, result_key));
     if (!test_case.result) {

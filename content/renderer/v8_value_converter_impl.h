@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
 #include "content/public/renderer/v8_value_converter.h"
@@ -89,7 +88,7 @@ class CONTENT_EXPORT V8ValueConverterImpl : public V8ValueConverter {
   bool avoid_identity_hash_for_testing_;
 
   // Strategy object that changes the converter's behavior.
-  raw_ptr<Strategy> strategy_;
+  Strategy* strategy_;
 };
 
 }  // namespace content

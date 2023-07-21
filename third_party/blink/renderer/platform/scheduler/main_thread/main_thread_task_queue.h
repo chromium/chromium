@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/common/lazy_now.h"
@@ -379,7 +378,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     QueueType queue_type;
     TaskQueue::Spec spec;
     WeakPersistent<AgentGroupSchedulerImpl> agent_group_scheduler;
-    raw_ptr<FrameSchedulerImpl> frame_scheduler = nullptr;
+    FrameSchedulerImpl* frame_scheduler = nullptr;
     QueueTraits queue_traits;
     absl::optional<WebSchedulingQueueType> web_scheduling_queue_type;
     absl::optional<WebSchedulingPriority> web_scheduling_priority;
@@ -574,17 +573,17 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   absl::optional<WebSchedulingPriority> web_scheduling_priority_;
 
   // Needed to notify renderer scheduler about completed tasks.
-  raw_ptr<MainThreadSchedulerImpl> main_thread_scheduler_;  // NOT OWNED
+  MainThreadSchedulerImpl* main_thread_scheduler_;  // NOT OWNED
 
   WeakPersistent<AgentGroupSchedulerImpl> agent_group_scheduler_;
 
   // Set in the constructor. Cleared in `DetachTaskQueue()` and
   // `ShutdownTaskQueue()`. Can never be set to a different value afterwards
   // (except in tests).
-  raw_ptr<FrameSchedulerImpl> frame_scheduler_;  // NOT OWNED
+  FrameSchedulerImpl* frame_scheduler_;  // NOT OWNED
 
   // The WakeUpBudgetPool for this TaskQueue, if any.
-  raw_ptr<WakeUpBudgetPool> wake_up_budget_pool_{nullptr};  // NOT OWNED
+  WakeUpBudgetPool* wake_up_budget_pool_{nullptr};  // NOT OWNED
 
   std::unique_ptr<TaskQueue::OnTaskPostedCallbackHandle>
       on_ipc_task_posted_callback_handle_;

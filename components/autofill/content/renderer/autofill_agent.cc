@@ -17,7 +17,6 @@
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/location.h"
-#include "base/memory/raw_ref.h"
 #include "base/metrics/field_trial.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -132,8 +131,8 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
  private:
   template <typename F, typename... Args>
   void SendMsg(F fn, Args&&... args) {
-    if (auto* autofill_driver = agent_->unsafe_autofill_driver()) {
-      DCHECK(!agent_->IsPrerendering());
+    if (auto* autofill_driver = agent_.unsafe_autofill_driver()) {
+      DCHECK(!agent_.IsPrerendering());
       DCHECK_NE(autofill_driver, this);
       (autofill_driver->*fn)(std::forward<Args>(args)...);
     }
@@ -141,8 +140,8 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
 
   template <typename F, typename... Args>
   void DeferMsg(F fn, Args... args) {
-    if (auto* render_frame = agent_->unsafe_render_frame()) {
-      DCHECK(agent_->IsPrerendering());
+    if (auto* render_frame = agent_.unsafe_render_frame()) {
+      DCHECK(agent_.IsPrerendering());
       render_frame->GetWebFrame()
           ->GetDocument()
           .AddPostPrerenderingActivationStep(base::BindOnce(
@@ -224,7 +223,7 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
              field, old_value);
   }
 
-  const raw_ref<AutofillAgent> agent_;
+  AutofillAgent& agent_;
   base::WeakPtrFactory<DeferringAutofillDriver> weak_ptr_factory_{this};
 };
 
@@ -271,7 +270,7 @@ FocusedFieldType AutofillAgent::FocusStateNotifier::GetFieldType(
   if (input_element.IsPasswordFieldForAutofill()) {
     return FocusedFieldType::kFillablePasswordField;
   }
-  if (agent_->password_autofill_agent_->IsUsernameInputField(input_element)) {
+  if (agent_.password_autofill_agent_->IsUsernameInputField(input_element)) {
     return FocusedFieldType::kFillableUsernameField;
   }
   if (form_util::IsWebauthnTaggedElement(node)) {
@@ -291,8 +290,8 @@ void AutofillAgent::FocusStateNotifier::NotifyIfChanged(
   }
 
   // TODO(crbug.com/1425166): Move FocusedInputChanged to AutofillDriver.
-  agent_->GetPasswordManagerDriver().FocusedInputChanged(
-      new_focused_field_id, new_focused_field_type);
+  agent_.GetPasswordManagerDriver().FocusedInputChanged(new_focused_field_id,
+                                                        new_focused_field_type);
 
   focused_field_type_ = new_focused_field_type;
   focused_field_id_ = new_focused_field_id;

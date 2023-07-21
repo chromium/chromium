@@ -10,7 +10,6 @@
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -150,7 +149,7 @@ class NullableCharBuffer final {
   size_t size() const { return size_; }
 
  private:
-  raw_ptr<char> data_;
+  char* data_;
   size_t size_;
 };
 
@@ -176,7 +175,7 @@ struct BackgroundTaskParams final {
 
   const scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner;
   const scoped_refptr<ParkableStringImpl> string;
-  raw_ptr<const void> data;
+  const void* data;
   const size_t size;
 };
 
@@ -696,7 +695,7 @@ void ParkableStringImpl::CompressInBackground(
   // Compression touches the string.
   AsanUnpoisonString(params->string->string_);
   bool ok;
-  base::StringPiece data(reinterpret_cast<const char*>(params->data.get()),
+  base::StringPiece data(reinterpret_cast<const char*>(params->data),
                          params->size);
   std::unique_ptr<Vector<uint8_t>> compressed;
 

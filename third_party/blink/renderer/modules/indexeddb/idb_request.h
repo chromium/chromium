@@ -33,7 +33,6 @@
 #include <utility>
 
 #include "base/dcheck_is_on.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -374,7 +373,7 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
                                   // async onsuccess; ignore vs. assert.
   // Maintain the isolate so that all externally allocated memory can be
   // registered against it.
-  raw_ptr<v8::Isolate> isolate_;
+  v8::Isolate* isolate_;
 
   AsyncTraceState metrics_;
 
@@ -437,13 +436,13 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
 
   // Pointer back to the WebIDBCallbacks that holds a persistent reference to
   // this object.
-  raw_ptr<WebIDBCallbacks> web_callbacks_ = nullptr;
+  WebIDBCallbacks* web_callbacks_ = nullptr;
 
   // Non-null while this request is queued behind other requests that are still
   // getting post-processed.
   //
   // The IDBRequestQueueItem is owned by the result queue in IDBTransaction.
-  raw_ptr<IDBRequestQueueItem> queue_item_ = nullptr;
+  IDBRequestQueueItem* queue_item_ = nullptr;
 
   probe::AsyncTaskContext async_task_context_;
 };

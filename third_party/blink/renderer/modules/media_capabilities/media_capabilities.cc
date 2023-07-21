@@ -837,7 +837,7 @@ ScriptPromise MediaCapabilities::decodingInfo(
     ScriptPromise promise = resolver->Promise();
 
     if (auto* handler = webrtc_decoding_info_handler_for_test_
-                            ? webrtc_decoding_info_handler_for_test_.get()
+                            ? webrtc_decoding_info_handler_for_test_
                             : WebrtcDecodingInfoHandler::Instance()) {
       const int callback_id = CreateCallbackId();
       pending_cb_map_.insert(
@@ -1041,7 +1041,7 @@ ScriptPromise MediaCapabilities::encodingInfo(
                       WebFeature::kMediaCapabilitiesEncodingInfoWebrtc);
 
     if (auto* handler = webrtc_encoding_info_handler_for_test_
-                            ? webrtc_encoding_info_handler_for_test_.get()
+                            ? webrtc_encoding_info_handler_for_test_
                             : WebrtcEncodingInfoHandler::Instance()) {
       const int callback_id = CreateCallbackId();
       pending_cb_map_.insert(

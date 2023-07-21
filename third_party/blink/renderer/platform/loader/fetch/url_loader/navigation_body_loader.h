@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -153,7 +152,7 @@ class PLATFORM_EXPORT NavigationBodyLoader
   mojo::Remote<network::mojom::URLLoader> url_loader_;
   mojo::Receiver<network::mojom::URLLoaderClient> url_loader_client_receiver_{
       this};
-  raw_ptr<WebNavigationBodyLoader::Client> client_ = nullptr;
+  WebNavigationBodyLoader::Client* client_ = nullptr;
 
   // The handle and watcher are live while loading the body.
   mojo::ScopedDataPipeConsumerHandle handle_;

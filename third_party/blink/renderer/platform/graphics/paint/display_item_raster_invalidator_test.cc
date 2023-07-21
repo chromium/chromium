@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_raster_invalidator.h"
 
 #include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ref.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller_test.h"
@@ -42,20 +41,20 @@ class RasterInvalidationCycleScope : public PaintControllerCycleScope {
         invalidator_(invalidator) {}
   ~RasterInvalidationCycleScope() {
     ++sequence_number_;
-    controller_->CommitNewDisplayItems();
-    invalidator_->Generate(
+    controller_.CommitNewDisplayItems();
+    invalidator_.Generate(
         base::DoNothing(),
-        PaintChunkSubset(controller_->GetPaintArtifactShared()),
+        PaintChunkSubset(controller_.GetPaintArtifactShared()),
         // The layer bounds are big enough not to clip display item raster
         // invalidation rects in the tests.
         gfx::Vector2dF(), gfx::Size(20000, 20000), PropertyTreeState::Root());
-    for (auto& chunk : controller_->PaintChunks()) {
+    for (auto& chunk : controller_.PaintChunks()) {
       chunk.properties.ClearChangedToRoot(sequence_number_);
     }
   }
 
  private:
-  const raw_ref<RasterInvalidator> invalidator_;
+  RasterInvalidator& invalidator_;
   static int sequence_number_;
 };
 

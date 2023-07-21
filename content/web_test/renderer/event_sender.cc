@@ -16,7 +16,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -568,7 +567,7 @@ class EventSenderBindings : public gin::Wrappable<EventSenderBindings> {
     void OnDestruct() override { bindings_->OnFrameDestroyed(); }
 
    private:
-    const raw_ptr<EventSenderBindings> bindings_;
+    EventSenderBindings* const bindings_;
   };
 
   explicit EventSenderBindings(base::WeakPtr<EventSender> sender,
@@ -665,7 +664,7 @@ class EventSenderBindings : public gin::Wrappable<EventSenderBindings> {
   EventSenderBindingsRenderFrameObserver frame_observer_;
 
   base::WeakPtr<EventSender> sender_;
-  const raw_ptr<blink::WebLocalFrame> frame_;
+  blink::WebLocalFrame* const frame_;
 };
 
 gin::WrapperInfo EventSenderBindings::kWrapperInfo = {gin::kEmbedderNativeGin};

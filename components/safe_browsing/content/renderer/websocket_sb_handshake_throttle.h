@@ -11,7 +11,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/core/common/safe_browsing_url_checker.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -60,7 +59,7 @@ class WebSocketSBHandshakeThrottle : public blink::WebSocketHandshakeThrottle,
   GURL url_;
   blink::WebSocketHandshakeThrottle::OnCompletion completion_callback_;
   mojo::Remote<mojom::SafeBrowsingUrlChecker> url_checker_;
-  raw_ptr<mojom::SafeBrowsing> safe_browsing_;
+  mojom::SafeBrowsing* safe_browsing_;
   std::unique_ptr<mojo::Receiver<mojom::UrlCheckNotifier>> notifier_receiver_;
 
   // |state_| is used to validate that events happen in the right order. It

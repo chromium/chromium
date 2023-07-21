@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "pdf/pdf_view_web_plugin.h"
 
@@ -84,12 +83,12 @@ class PdfViewWebPluginClient : public chrome_pdf::PdfViewWebPlugin::Client {
  private:
   blink::WebLocalFrame* GetFrame() const;
 
-  const raw_ptr<content::RenderFrame> render_frame_;
+  content::RenderFrame* const render_frame_;
 
   const std::unique_ptr<content::V8ValueConverter> v8_value_converter_;
-  const raw_ptr<v8::Isolate> isolate_;
+  v8::Isolate* const isolate_;
 
-  raw_ptr<blink::WebPluginContainer> plugin_container_;
+  blink::WebPluginContainer* plugin_container_;
 
   base::WeakPtrFactory<PdfViewWebPluginClient> weak_factory_{this};
 };

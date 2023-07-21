@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_TASK_ATTRIBUTION_TRACKER_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_TASK_ATTRIBUTION_TRACKER_IMPL_H_
 
-#include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -135,7 +134,7 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
     ScriptState* GetScriptState() const { return script_state_; }
 
    private:
-    raw_ptr<TaskAttributionTrackerImpl> task_tracker_;
+    TaskAttributionTrackerImpl* task_tracker_;
     TaskAttributionId scope_task_id_;
     absl::optional<TaskAttributionId> running_task_id_to_be_restored_;
     Persistent<ScriptWrappableTaskState> continuation_state_to_be_restored_;

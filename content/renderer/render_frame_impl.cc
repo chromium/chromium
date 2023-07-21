@@ -25,8 +25,6 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
@@ -684,10 +682,9 @@ class LinkRewritingDelegate : public WebFrameSerializer::LinkRewritingDelegate {
 
   bool RewriteFrameSource(WebFrame* frame, WebString* rewritten_link) override {
     const blink::FrameToken frame_token = frame->GetFrameToken();
-    auto it = frame_token_to_local_path_->find(frame_token);
-    if (it == frame_token_to_local_path_->end()) {
+    auto it = frame_token_to_local_path_.find(frame_token);
+    if (it == frame_token_to_local_path_.end())
       return false;  // This can happen because of https://crbug.com/541354.
-    }
 
     const base::FilePath& local_path = it->second;
     *rewritten_link = ConvertRelativePathToHtmlAttribute(local_path);
@@ -695,10 +692,9 @@ class LinkRewritingDelegate : public WebFrameSerializer::LinkRewritingDelegate {
   }
 
   bool RewriteLink(const WebURL& url, WebString* rewritten_link) override {
-    auto it = url_to_local_path_->find(GURL(url));
-    if (it == url_to_local_path_->end()) {
+    auto it = url_to_local_path_.find(GURL(url));
+    if (it == url_to_local_path_.end())
       return false;
-    }
 
     const base::FilePath& local_path = it->second;
     *rewritten_link = ConvertRelativePathToHtmlAttribute(local_path);
@@ -706,8 +702,8 @@ class LinkRewritingDelegate : public WebFrameSerializer::LinkRewritingDelegate {
   }
 
  private:
-  const raw_ref<const base::flat_map<GURL, base::FilePath>> url_to_local_path_;
-  const raw_ref<const base::flat_map<blink::FrameToken, base::FilePath>>
+  const base::flat_map<GURL, base::FilePath>& url_to_local_path_;
+  const base::flat_map<blink::FrameToken, base::FilePath>&
       frame_token_to_local_path_;
 };
 
@@ -727,11 +723,11 @@ class MHTMLPartsGenerationDelegate
         serialized_resources_uri_digests_(serialized_resources_uri_digests) {
     DCHECK(serialized_resources_uri_digests_);
     // Digests must be sorted for binary search.
-    DCHECK(std::is_sorted(params_->digests_of_uris_to_skip.begin(),
-                          params_->digests_of_uris_to_skip.end()));
+    DCHECK(std::is_sorted(params_.digests_of_uris_to_skip.begin(),
+                          params_.digests_of_uris_to_skip.end()));
     // URLs are not duplicated.
-    DCHECK(base::ranges::adjacent_find(params_->digests_of_uris_to_skip) ==
-           params_->digests_of_uris_to_skip.end());
+    DCHECK(base::ranges::adjacent_find(params_.digests_of_uris_to_skip) ==
+           params_.digests_of_uris_to_skip.end());
   }
 
   MHTMLPartsGenerationDelegate(const MHTMLPartsGenerationDelegate&) = delete;
@@ -740,13 +736,12 @@ class MHTMLPartsGenerationDelegate
 
   bool ShouldSkipResource(const WebURL& url) override {
     std::string digest =
-        crypto::SHA256HashString(params_->salt + GURL(url).spec());
+        crypto::SHA256HashString(params_.salt + GURL(url).spec());
 
     // Skip if the |url| already covered by serialization of an *earlier* frame.
-    if (std::binary_search(params_->digests_of_uris_to_skip.begin(),
-                           params_->digests_of_uris_to_skip.end(), digest)) {
+    if (std::binary_search(params_.digests_of_uris_to_skip.begin(),
+                           params_.digests_of_uris_to_skip.end(), digest))
       return true;
-    }
 
     // Let's record |url| as being serialized for the *current* frame.
     auto pair = serialized_resources_uri_digests_->insert(digest);
@@ -756,15 +751,15 @@ class MHTMLPartsGenerationDelegate
     return false;
   }
 
-  bool UseBinaryEncoding() override { return params_->mhtml_binary_encoding; }
+  bool UseBinaryEncoding() override { return params_.mhtml_binary_encoding; }
 
   bool RemovePopupOverlay() override {
-    return params_->mhtml_popup_overlay_removal;
+    return params_.mhtml_popup_overlay_removal;
   }
 
  private:
-  const raw_ref<const mojom::SerializeAsMHTMLParams> params_;
-  raw_ptr<std::unordered_set<std::string>> serialized_resources_uri_digests_;
+  const mojom::SerializeAsMHTMLParams& params_;
+  std::unordered_set<std::string>* serialized_resources_uri_digests_;
 };
 
 bool IsHttpPost(const blink::WebURLRequest& request) {
@@ -817,7 +812,7 @@ class MHTMLHandleWriterDelegate {
   }
 
  private:
-  raw_ptr<MHTMLHandleWriter> handle_;
+  MHTMLHandleWriter* handle_;
 };
 
 mojo::PendingRemote<blink::mojom::BlobURLToken> CloneBlobURLToken(
@@ -1301,7 +1296,7 @@ class RenderFrameImpl::MHTMLBodyLoaderClient
  private:
   // |RenderFrameImpl| owns |this|, so |frame_| is guaranteed to outlive |this|.
   // Will be nulled if |Detach()| has been called.
-  raw_ptr<RenderFrameImpl> frame_;
+  RenderFrameImpl* frame_;
   bool committing_ = false;
   WebData data_;
   std::unique_ptr<blink::WebNavigationParams> navigation_params_;
@@ -1848,7 +1843,7 @@ RenderFrameImpl::RenderFrameImpl(CreateParams params)
   DCHECK(params.browser_interface_broker.is_valid());
   browser_interface_broker_proxy_.Bind(
       std::move(params.browser_interface_broker),
-      agent_scheduling_group_->agent_group_scheduler().DefaultTaskRunner());
+      agent_scheduling_group_.agent_group_scheduler().DefaultTaskRunner());
 
   // Save the pending remote for lazy binding in
   // `GetRemoteAssociatedInterfaces().
@@ -1857,7 +1852,7 @@ RenderFrameImpl::RenderFrameImpl(CreateParams params)
       std::move(params.associated_interface_provider);
 
   delayed_state_sync_timer_.SetTaskRunner(
-      agent_scheduling_group_->agent_group_scheduler().DefaultTaskRunner());
+      agent_scheduling_group_.agent_group_scheduler().DefaultTaskRunner());
 
   // Must call after binding our own remote interfaces.
   media_factory_.SetupMojo();
@@ -1892,7 +1887,7 @@ RenderFrameImpl::~RenderFrameImpl() {
 
   base::trace_event::TraceLog::GetInstance()->RemoveProcessLabel(routing_id_);
   g_routing_id_frame_map.Get().erase(routing_id_);
-  agent_scheduling_group_->RemoveRoute(routing_id_);
+  agent_scheduling_group_.RemoveRoute(routing_id_);
 }
 
 void RenderFrameImpl::Initialize(blink::WebFrame* parent) {
@@ -1932,7 +1927,7 @@ void RenderFrameImpl::Initialize(blink::WebFrame* parent) {
   frame_receiver_.Bind(
       std::move(pending_frame_receiver_),
       GetTaskRunner(blink::TaskType::kInternalNavigationAssociated));
-  agent_scheduling_group_->AddFrameRoute(
+  agent_scheduling_group_.AddFrameRoute(
       routing_id_, this,
       GetTaskRunner(blink::TaskType::kInternalNavigationAssociated));
 }
@@ -2002,7 +1997,7 @@ void RenderFrameImpl::ScriptedPrint() {
 }
 
 bool RenderFrameImpl::Send(IPC::Message* message) {
-  return agent_scheduling_group_->Send(message);
+  return agent_scheduling_group_.Send(message);
 }
 
 bool RenderFrameImpl::OnMessageReceived(const IPC::Message& msg) {
@@ -2094,7 +2089,7 @@ void RenderFrameImpl::Unload(
   // itself is asynchronous to ensure that any postMessage calls (which schedule
   // IPCs as well) made from unload handlers are routed to the browser process
   // before the corresponding `RenderFrameHostImpl` is torn down.
-  auto& agent_scheduling_group = *agent_scheduling_group_;
+  auto& agent_scheduling_group = agent_scheduling_group_;
   blink::LocalFrameToken frame_token = frame_->GetLocalFrameToken();
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       GetTaskRunner(blink::TaskType::kInternalPostMessageForwarding);
@@ -2477,7 +2472,7 @@ void RenderFrameImpl::Clone(
         pending_resource_load_info_notifier) {
   resource_load_info_notifier_receivers_.Add(
       this, std::move(pending_resource_load_info_notifier),
-      agent_scheduling_group_->agent_group_scheduler().DefaultTaskRunner());
+      agent_scheduling_group_.agent_group_scheduler().DefaultTaskRunner());
 }
 
 void RenderFrameImpl::GetInterfaceProvider(
@@ -3309,7 +3304,7 @@ blink::WebMediaPlayer* RenderFrameImpl::CreateMediaPlayer(
   return media_factory_.CreateMediaPlayer(
       source, client, inspector_context, encrypted_client, initial_cdm, sink_id,
       GetLocalRootWebFrameWidget()->GetFrameSinkId(), *settings,
-      agent_scheduling_group_->agent_group_scheduler().CompositorTaskRunner(),
+      agent_scheduling_group_.agent_group_scheduler().CompositorTaskRunner(),
       std::move(compositor_worker_task_runner));
 }
 
@@ -3347,7 +3342,7 @@ RenderFrameImpl::CreateWorkerFetchContext() {
   resource_load_info_notifier_receivers_.Add(
       this,
       pending_resource_load_info_notifier.InitWithNewPipeAndPassReceiver(),
-      agent_scheduling_group_->agent_group_scheduler().DefaultTaskRunner());
+      agent_scheduling_group_.agent_group_scheduler().DefaultTaskRunner());
 
   std::vector<std::string> cors_exempt_header_list =
       RenderThreadImpl::current()->cors_exempt_header_list();
@@ -3402,7 +3397,7 @@ RenderFrameImpl::CreateWorkerFetchContextForPlzDedicatedWorker(
   resource_load_info_notifier_receivers_.Add(
       this,
       pending_resource_load_info_notifier.InitWithNewPipeAndPassReceiver(),
-      agent_scheduling_group_->agent_group_scheduler().DefaultTaskRunner());
+      agent_scheduling_group_.agent_group_scheduler().DefaultTaskRunner());
 
   scoped_refptr<blink::WebDedicatedOrSharedWorkerFetchContext>
       web_dedicated_or_shared_worker_fetch_context =
@@ -3559,7 +3554,7 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
 
   // Create the RenderFrame and WebLocalFrame, linking the two.
   RenderFrameImpl* child_render_frame = RenderFrameImpl::Create(
-      *agent_scheduling_group_, child_routing_id,
+      agent_scheduling_group_, child_routing_id,
       std::move(pending_frame_receiver), std::move(browser_interface_broker),
       std::move(associated_interface_provider), devtools_frame_token);
   child_render_frame->loader_factories_ = CloneLoaderFactories();
@@ -3789,7 +3784,7 @@ void RenderFrameImpl::DidCommitNavigation(
     // BrowserInterfaceBroker interface request is bound by the
     // RenderFrameHostImpl.
     browser_interface_broker_receiver = browser_interface_broker_proxy_.Reset(
-        agent_scheduling_group_->agent_group_scheduler().DefaultTaskRunner());
+        agent_scheduling_group_.agent_group_scheduler().DefaultTaskRunner());
 
     // blink::AudioOutputIPCFactory::io_task_runner_ may be null in tests.
     auto& factory = blink::AudioOutputIPCFactory::GetInstance();
@@ -4551,7 +4546,7 @@ RenderFrameImpl::GetAudioInputStreamFactory() {
   if (!audio_input_stream_factory_)
     GetBrowserInterfaceBroker()->GetInterface(
         audio_input_stream_factory_.BindNewPipeAndPassReceiver(
-            agent_scheduling_group_->agent_group_scheduler()
+            agent_scheduling_group_.agent_group_scheduler()
                 .DefaultTaskRunner()));
   return audio_input_stream_factory_.get();
 }
@@ -6250,7 +6245,7 @@ RenderFrameImpl::CloneLoaderFactories() {
 
 blink::scheduler::WebAgentGroupScheduler&
 RenderFrameImpl::GetAgentGroupScheduler() {
-  return agent_scheduling_group_->agent_group_scheduler();
+  return agent_scheduling_group_.agent_group_scheduler();
 }
 
 url::Origin RenderFrameImpl::GetSecurityOriginOfTopFrame() {
@@ -6478,7 +6473,7 @@ WebView* RenderFrameImpl::CreateNewWindow(
   view_params->hidden = is_background_tab;
   view_params->never_composited = never_composited;
 
-  WebView* web_view = agent_scheduling_group_->CreateWebView(
+  WebView* web_view = agent_scheduling_group_.CreateWebView(
       std::move(view_params),
       /*was_created_by_renderer=*/true, base_url);
 

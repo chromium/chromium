@@ -29,7 +29,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -226,7 +225,7 @@ class IDBRequestTest : public testing::Test {
     EXPECT_TRUE(!exception_state.HadException());
   }
 
-  raw_ptr<URLLoaderMockFactory> url_loader_mock_factory_;
+  URLLoaderMockFactory* url_loader_mock_factory_;
   Persistent<IDBDatabase> db_;
   Persistent<IDBTransaction> transaction_;
   Persistent<IDBObjectStore> store_;

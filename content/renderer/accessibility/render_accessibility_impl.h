@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
@@ -268,10 +267,10 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   static void IgnoreProtocolChecksForTesting();
 
   // The RenderAccessibilityManager that owns us.
-  raw_ptr<RenderAccessibilityManager> render_accessibility_manager_;
+  RenderAccessibilityManager* render_accessibility_manager_;
 
   // The associated RenderFrameImpl by means of the RenderAccessibilityManager.
-  raw_ptr<RenderFrameImpl> render_frame_;
+  RenderFrameImpl* render_frame_;
 
   // This keeps accessibility enabled as long as it lives.
   std::unique_ptr<blink::WebAXContext> ax_context_;
@@ -281,7 +280,7 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
 
   using PluginAXTreeSerializer = ui::AXTreeSerializer<const ui::AXNode*>;
   std::unique_ptr<PluginAXTreeSerializer> plugin_serializer_;
-  raw_ptr<PluginAXTreeSource> plugin_tree_source_;
+  PluginAXTreeSource* plugin_tree_source_;
 
   // Nonzero if the browser requested we reset the accessibility state.
   // We need to return this token in the next IPC.

@@ -9,7 +9,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBTRANSPORT_TEST_UTILS_H_
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -78,8 +77,7 @@ class TestWebTransportCreator final
   // |browser_interface_broker_| is cached here because we need to use it in the
   // destructor. This means ScopedWebTransporHelper must always be destroyed
   // before the ExecutionContext that owns the BrowserInterfaceBrokerProxy.
-  raw_ptr<const BrowserInterfaceBrokerProxy> browser_interface_broker_ =
-      nullptr;
+  const BrowserInterfaceBrokerProxy* browser_interface_broker_ = nullptr;
   Persistent<WebTransport> web_transport_;
   mojo::Remote<network::mojom::blink::WebTransportClient> client_remote_;
   mojo::Receiver<mojom::blink::WebTransportConnector> connector_receiver_{this};

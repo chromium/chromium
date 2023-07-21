@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/web_test/common/web_test.mojom.h"
 #include "content/web_test/renderer/accessibility_controller.h"
@@ -106,7 +105,7 @@ class WebFrameTestProxy : public RenderFrameImpl,
 
   TestRunner* test_runner();
 
-  const raw_ptr<TestRunner> test_runner_;
+  TestRunner* const test_runner_;
 
   std::unique_ptr<SpellCheckClient> spell_check_;
 

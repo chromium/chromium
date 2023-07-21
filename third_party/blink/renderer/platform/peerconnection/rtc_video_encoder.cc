@@ -14,7 +14,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -127,8 +126,8 @@ class SignaledValue {
   bool IsValid() { return event; }
 
  private:
-  raw_ptr<base::WaitableEvent> event;
-  raw_ptr<int32_t> val;
+  base::WaitableEvent* event;
+  int32_t* val;
 };
 
 class ScopedSignaledValue {
@@ -654,7 +653,7 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Factory for creating VEAs, shared memory buffers, etc.
-  raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_;
+  media::GpuVideoAcceleratorFactories* gpu_factories_;
 
   // webrtc::VideoEncoder expects InitEncode() and Encode() to be synchronous.
   // Do this by waiting on the |async_init_event_| when initialization
@@ -753,8 +752,8 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
 
   // webrtc::VideoEncoder encode complete callback.
   // TODO(b/257021675): Don't guard this by |lock_|
-  raw_ptr<webrtc::EncodedImageCallback> encoded_image_callback_
-      GUARDED_BY(lock_){nullptr};
+  webrtc::EncodedImageCallback* encoded_image_callback_ GUARDED_BY(lock_){
+      nullptr};
 
   // They are bound to |gpu_task_runner_|, which is sequence checked by
   // |sequence_checker|.

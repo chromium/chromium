@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/containers/span.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/mock_callback.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -325,7 +324,7 @@ class WebTransportTest : public ::testing::Test {
         mojom::blink::WebTransportConnector::Name_, {});
   }
 
-  raw_ptr<const BrowserInterfaceBrokerProxy> interface_broker_ = nullptr;
+  const BrowserInterfaceBrokerProxy* interface_broker_ = nullptr;
   WTF::Deque<AcceptUnidirectionalStreamCallback>
       pending_unidirectional_accept_callbacks_;
   WTF::Deque<AcceptBidirectionalStreamCallback>

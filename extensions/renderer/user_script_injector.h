@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
 #include "extensions/common/mojom/host_id.mojom.h"
@@ -76,12 +75,12 @@ class UserScriptInjector : public ScriptInjector,
 
   // The associated user script. Owned by the UserScriptSet that created this
   // object.
-  raw_ptr<const UserScript> script_;
+  const UserScript* script_;
 
   // The UserScriptSet that eventually owns the UserScript this
   // UserScriptInjector points to. Outlives `this` unless the UserScriptSet may
   // be destroyed first, and `this` will be destroyed immediately after.
-  const raw_ptr<UserScriptSet> user_script_set_;
+  UserScriptSet* const user_script_set_;
 
   // The id of the associated user script. We cache this because when we update
   // the |script_| associated with this injection, the old reference may be

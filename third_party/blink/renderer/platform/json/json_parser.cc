@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
@@ -59,8 +58,8 @@ String FormatErrorMessage(Error error, int line, int column) {
 template <typename CharType>
 struct Cursor {
   int line;
-  raw_ptr<const CharType> line_start;
-  raw_ptr<const CharType> pos;
+  const CharType* line_start;
+  const CharType* pos;
 };
 
 enum Token {
@@ -496,7 +495,7 @@ Error BuildValue(Cursor<CharType>* cursor,
     }
     case kStringLiteral: {
       String value;
-      error = DecodeString(&token_start, cursor->pos.get(), &value);
+      error = DecodeString(&token_start, cursor->pos, &value);
       if (error != Error::kNoError) {
         *cursor = token_start;
         return error;
@@ -556,7 +555,7 @@ Error BuildValue(Cursor<CharType>* cursor,
           return Error::kUnexpectedToken;
         }
         String key;
-        error = DecodeString(&token_start, cursor->pos.get(), &key);
+        error = DecodeString(&token_start, cursor->pos, &key);
         if (error != Error::kNoError) {
           *cursor = token_start;
           return error;

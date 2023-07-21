@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PLUGINS_RENDERER_PLUGIN_PLACEHOLDER_H_
 #define COMPONENTS_PLUGINS_RENDERER_PLUGIN_PLACEHOLDER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "components/plugins/renderer/webview_plugin.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "gin/handle.h"
@@ -55,7 +54,7 @@ class PluginPlaceholderBase : public content::RenderFrameObserver,
   void OnDestruct() override;
 
   blink::WebPluginParams plugin_params_;
-  raw_ptr<WebViewPlugin> plugin_;
+  WebViewPlugin* plugin_;
 
   bool hidden_;
 };

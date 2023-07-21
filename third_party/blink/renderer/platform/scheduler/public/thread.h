@@ -27,7 +27,6 @@
 
 #include <stdint.h>
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/task_observer.h"
 #include "base/threading/thread.h"
@@ -65,7 +64,7 @@ struct PLATFORM_EXPORT ThreadCreationParams {
 
   ThreadType thread_type;
   const char* name;
-  raw_ptr<FrameOrWorkerScheduler> frame_or_worker_scheduler;  // NOT OWNED
+  FrameOrWorkerScheduler* frame_or_worker_scheduler;  // NOT OWNED
 
   // Do NOT set the thread priority for non-WebAudio usages. Please consult
   // scheduler-dev@ first in order to use an elevated thread priority.

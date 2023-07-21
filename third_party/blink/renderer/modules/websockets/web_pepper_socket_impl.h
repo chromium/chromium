@@ -32,7 +32,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBSOCKETS_WEB_PEPPER_SOCKET_IMPL_H_
 
 #include <memory>
-#include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_pepper_socket.h"
 #include "third_party/blink/public/web/web_pepper_socket_client.h"
@@ -76,7 +75,7 @@ class WebPepperSocketImpl final : public WebPepperSocket {
 
  private:
   Persistent<WebSocketChannel> private_;
-  raw_ptr<WebPepperSocketClient> client_;
+  WebPepperSocketClient* client_;
   Persistent<WebPepperSocketChannelClientProxy> channel_proxy_;
   WebString subprotocol_;
   bool is_closing_or_closed_;

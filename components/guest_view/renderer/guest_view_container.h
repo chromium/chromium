@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/circular_deque.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-persistent-handle.h"
@@ -71,7 +70,7 @@ class GuestViewContainer {
   std::unique_ptr<GuestViewAttachRequest> pending_response_;
 
   v8::Global<v8::Function> destruction_callback_;
-  raw_ptr<v8::Isolate> destruction_isolate_ = nullptr;
+  v8::Isolate* destruction_isolate_ = nullptr;
 
   base::WeakPtrFactory<GuestViewContainer> weak_ptr_factory_{this};
 };

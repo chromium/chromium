@@ -5,7 +5,6 @@
 #ifndef CONTENT_RENDERER_ACCESSIBILITY_AX_TREE_SNAPSHOTTER_IMPL_H_
 #define CONTENT_RENDERER_ACCESSIBILITY_AX_TREE_SNAPSHOTTER_IMPL_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "content/public/renderer/render_frame.h"
 #include "ui/accessibility/ax_tree_update_forward.h"
@@ -29,7 +28,7 @@ class AXTreeSnapshotterImpl : public AXTreeSnapshotter {
                 ui::AXTreeUpdate* accessibility_tree) override;
 
  private:
-  raw_ptr<RenderFrameImpl> render_frame_;
+  RenderFrameImpl* render_frame_;
   std::unique_ptr<blink::WebAXContext> context_;
 
   AXTreeSnapshotterImpl(const AXTreeSnapshotterImpl&) = delete;

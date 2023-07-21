@@ -21,8 +21,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -265,7 +263,7 @@ class CONTENT_EXPORT RenderFrameImpl
     CreateParams(CreateParams&&);
     CreateParams& operator=(CreateParams&&);
 
-    raw_ptr<AgentSchedulingGroup> agent_scheduling_group;
+    AgentSchedulingGroup* agent_scheduling_group;
     int32_t routing_id;
     mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver;
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
@@ -822,7 +820,7 @@ class CONTENT_EXPORT RenderFrameImpl
 
    private:
     base::WeakPtr<RenderFrameImpl> weak_frame_;
-    raw_ptr<T> scoped_variable_;
+    T* scoped_variable_;
     T original_value_;
   };
 
@@ -1147,10 +1145,10 @@ class CONTENT_EXPORT RenderFrameImpl
   // constructor until BindToFrame() is called, and it is null after
   // FrameDetached() is called until destruction (which is asynchronous in the
   // case of the main frame, but not subframes).
-  raw_ptr<blink::WebNavigationControl> frame_ = nullptr;
+  blink::WebNavigationControl* frame_ = nullptr;
 
   // The `AgentSchedulingGroup` this frame is associated with.
-  const raw_ref<AgentSchedulingGroup> agent_scheduling_group_;
+  AgentSchedulingGroup& agent_scheduling_group_;
 
   // False until Initialize() is run, to avoid actions before the frame's
   // observers are created.
@@ -1178,7 +1176,7 @@ class CONTENT_EXPORT RenderFrameImpl
    private:
     blink::WebLocalFrame* GetWebFrame() const;
 
-    raw_ptr<RenderFrameImpl> render_frame_;
+    RenderFrameImpl* render_frame_;
   };
   UniqueNameFrameAdapter unique_name_frame_adapter_;
   blink::UniqueNameHelper unique_name_helper_;
@@ -1269,7 +1267,7 @@ class CONTENT_EXPORT RenderFrameImpl
   PepperPluginSet active_pepper_instances_;
 
   // Whether or not the focus is on a PPAPI plugin
-  raw_ptr<PepperPluginInstanceImpl> focused_pepper_plugin_;
+  PepperPluginInstanceImpl* focused_pepper_plugin_;
 
   mojo::AssociatedRemote<mojom::PepperHost> pepper_host_remote_;
 #endif
