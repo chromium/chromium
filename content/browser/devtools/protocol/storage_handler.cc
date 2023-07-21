@@ -691,8 +691,8 @@ void StorageHandler::OverrideQuotaForOrigin(
 
   quota_override_handle_->OverrideQuotaForStorageKey(
       blink::StorageKey::CreateFirstParty(origin),
-      quota_size.isJust() ? absl::make_optional(quota_size.fromJust())
-                          : absl::nullopt,
+      quota_size.has_value() ? absl::make_optional(quota_size.value())
+                             : absl::nullopt,
       base::BindOnce(&OverrideQuotaForOriginCallback::sendSuccess,
                      std::move(callback)));
 }
@@ -1333,7 +1333,7 @@ void StorageHandler::SetSharedStorageEntry(
   DCHECK(!owner_origin.opaque());
 
   auto set_behavior =
-      ignore_if_present.fromMaybe(false)
+      ignore_if_present.value_or(false)
           ? storage::SharedStorageManager::SetBehavior::kIgnoreIfPresent
           : storage::SharedStorageManager::SetBehavior::kDefault;
 

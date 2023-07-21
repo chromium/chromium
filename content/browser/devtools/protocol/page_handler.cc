@@ -432,8 +432,8 @@ void PageHandler::Reload(Maybe<bool> bypassCache,
   // renderer could prepare beforehand.
   callback->fallThrough();
   outermost_main_frame->frame_tree()->controller().Reload(
-      bypassCache.fromMaybe(false) ? ReloadType::BYPASSING_CACHE
-                                   : ReloadType::NORMAL,
+      bypassCache.value_or(false) ? ReloadType::BYPASSING_CACHE
+                                  : ReloadType::NORMAL,
       false);
 }
 
@@ -523,7 +523,7 @@ void PageHandler::Navigate(const std::string& url,
 
   ui::PageTransition type;
   std::string transition_type =
-      maybe_transition_type.fromMaybe(Page::TransitionTypeEnum::Typed);
+      maybe_transition_type.value_or(Page::TransitionTypeEnum::Typed);
   if (transition_type == Page::TransitionTypeEnum::Link)
     type = ui::PAGE_TRANSITION_LINK;
   else if (transition_type == Page::TransitionTypeEnum::Typed)
@@ -554,7 +554,7 @@ void PageHandler::Navigate(const std::string& url,
   type = ui::PageTransitionFromInt(type | ui::PAGE_TRANSITION_FROM_API);
 
   std::string out_frame_id =
-      frame_id.fromMaybe(host_->devtools_frame_token().ToString());
+      frame_id.value_or(host_->devtools_frame_token().ToString());
   FrameTreeNode* frame_tree_node = FrameTreeNodeFromDevToolsFrameToken(
       host_->frame_tree_node(), out_frame_id);
 
@@ -566,8 +566,8 @@ void PageHandler::Navigate(const std::string& url,
 
   NavigationController::LoadURLParams params(gurl);
   network::mojom::ReferrerPolicy policy =
-      ParsePolicyFromString(referrer_policy.fromMaybe(""));
-  params.referrer = Referrer(GURL(referrer.fromMaybe("")), policy);
+      ParsePolicyFromString(referrer_policy.value_or(""));
+  params.referrer = Referrer(GURL(referrer.value_or("")), policy);
   params.transition_type = type;
   params.frame_tree_node_id = frame_tree_node->frame_tree_node_id();
   if (navigation_initiator_origin_.has_value()) {
@@ -767,7 +767,7 @@ void PageHandler::CaptureSnapshot(
     std::unique_ptr<CaptureSnapshotCallback> callback) {
   if (!CanExecuteGlobalCommands(this, callback))
     return;
-  std::string snapshot_format = format.fromMaybe(kMhtml);
+  std::string snapshot_format = format.value_or(kMhtml);
   if (snapshot_format != kMhtml) {
     callback->sendFailure(Response::ServerError("Unsupported snapshot format"));
     return;
@@ -828,8 +828,8 @@ void PageHandler::CaptureScreenshot(
     return;
 
   // Check if full page screenshot is expected and get dimensions accordingly.
-  if (from_surface.fromMaybe(true) &&
-      capture_beyond_viewport.fromMaybe(false) && !clip.isJust()) {
+  if (from_surface.value_or(true) && capture_beyond_viewport.value_or(false) &&
+      !clip.has_value()) {
     blink::mojom::LocalMainFrame* main_frame =
         host_->GetAssociatedLocalMainFrame();
     main_frame->GetFullPageSize(base::BindOnce(
@@ -838,13 +838,13 @@ void PageHandler::CaptureScreenshot(
         std::move(callback)));
     return;
   }
-  if (clip.isJust()) {
-    if (clip.fromJust()->GetWidth() == 0) {
+  if (clip.has_value()) {
+    if (clip->GetWidth() == 0) {
       callback->sendFailure(
           Response::ServerError("Cannot take screenshot with 0 width."));
       return;
     }
-    if (clip.fromJust()->GetHeight() == 0) {
+    if (clip->GetHeight() == 0) {
       callback->sendFailure(
           Response::ServerError("Cannot take screenshot with 0 height."));
       return;
@@ -853,16 +853,16 @@ void PageHandler::CaptureScreenshot(
 
   RenderWidgetHostImpl* widget_host = host_->GetRenderWidgetHost();
   auto encoder =
-      GetEncoder(format.fromMaybe(Page::CaptureScreenshot::FormatEnum::Png),
-                 quality.fromMaybe(kDefaultScreenshotQuality),
-                 optimize_for_speed.fromMaybe(false));
+      GetEncoder(format.value_or(Page::CaptureScreenshot::FormatEnum::Png),
+                 quality.value_or(kDefaultScreenshotQuality),
+                 optimize_for_speed.value_or(false));
   if (absl::holds_alternative<Response>(encoder)) {
     callback->sendFailure(absl::get<Response>(encoder));
     return;
   }
 
   // We don't support clip/emulation when capturing from window, bail out.
-  if (!from_surface.fromMaybe(true)) {
+  if (!from_surface.value_or(true)) {
     if (!is_trusted_) {
       callback->sendFailure(
           Response::ServerError("Only screenshots from surface are allowed."));
@@ -888,7 +888,7 @@ void PageHandler::CaptureScreenshot(
   // Capture original view size if we know we are going to destroy it. We use
   // it in ScreenshotCaptured to restore.
   gfx::Size original_view_size =
-      emulation_enabled || clip.isJust()
+      emulation_enabled || clip.has_value()
           ? widget_host->GetView()->GetViewBounds().size()
           : gfx::Size();
   gfx::Size emulated_view_size = modified_params.view_size;
@@ -916,9 +916,9 @@ void PageHandler::CaptureScreenshot(
                    : 1;
     // When clip is specified, we scale viewport via clip, otherwise we use
     // scale.
-    modified_params.scale = clip.isJust() ? 1 : dpfactor;
+    modified_params.scale = clip.has_value() ? 1 : dpfactor;
     modified_params.view_size = emulated_view_size;
-  } else if (clip.isJust()) {
+  } else if (clip.has_value()) {
     // When not emulating, still need to emulate the page size.
     modified_params.view_size = original_view_size;
     modified_params.screen_size = gfx::Size();
@@ -927,15 +927,15 @@ void PageHandler::CaptureScreenshot(
   }
 
   // Set up viewport in renderer.
-  if (clip.isJust()) {
-    modified_params.viewport_offset.SetPoint(clip.fromJust()->GetX(),
-                                             clip.fromJust()->GetY());
-    modified_params.viewport_scale = clip.fromJust()->GetScale() * dpfactor;
+  if (clip) {
+    modified_params.viewport_offset.SetPoint(clip.value().GetX(),
+                                             clip.value().GetY());
+    modified_params.viewport_scale = clip.value().GetScale() * dpfactor;
     modified_params.viewport_offset.Scale(widget_host_device_scale_factor);
   }
 
   absl::optional<blink::web_pref::WebPreferences> maybe_original_web_prefs;
-  if (capture_beyond_viewport.fromMaybe(false)) {
+  if (capture_beyond_viewport.value_or(false)) {
     blink::web_pref::WebPreferences original_web_prefs =
         host_->render_view_host()->GetDelegate()->GetOrCreateWebPreferences();
     maybe_original_web_prefs = original_web_prefs;
@@ -962,26 +962,26 @@ void PageHandler::CaptureScreenshot(
   emulation_handler_->SetDeviceEmulationParams(modified_params);
 
   // Set view size for the screenshot right after emulating.
-  if (clip.isJust()) {
-    double scale = dpfactor * clip.fromJust()->GetScale();
+  if (clip.has_value()) {
+    double scale = dpfactor * clip->GetScale();
     widget_host->GetView()->SetSize(
-        gfx::Size(base::ClampRound(clip.fromJust()->GetWidth() * scale),
-                  base::ClampRound(clip.fromJust()->GetHeight() * scale)));
+        gfx::Size(base::ClampRound(clip->GetWidth() * scale),
+                  base::ClampRound(clip->GetHeight() * scale)));
   } else if (emulation_enabled) {
     widget_host->GetView()->SetSize(
         gfx::ScaleToFlooredSize(emulated_view_size, dpfactor));
   }
   gfx::Size requested_image_size = gfx::Size();
-  if (emulation_enabled || clip.isJust()) {
-    if (clip.isJust()) {
-      requested_image_size =
-          gfx::Size(clip.fromJust()->GetWidth(), clip.fromJust()->GetHeight());
+  if (emulation_enabled || clip.has_value()) {
+    if (clip.has_value()) {
+      requested_image_size = gfx::Size(clip->GetWidth(), clip->GetHeight());
     } else {
       requested_image_size = emulated_view_size;
     }
     double scale = widget_host_device_scale_factor * dpfactor;
-    if (clip.isJust())
-      scale *= clip.fromJust()->GetScale();
+    if (clip.has_value()) {
+      scale *= clip->GetScale();
+    }
     requested_image_size = gfx::ScaleToRoundedSize(requested_image_size, scale);
   }
 
@@ -1007,20 +1007,20 @@ Response PageHandler::StartScreencast(Maybe<std::string> format,
     return Response::InternalError();
 
   auto encoder =
-      GetEncoder(format.fromMaybe(Page::CaptureScreenshot::FormatEnum::Png),
-                 quality.fromMaybe(kDefaultScreenshotQuality),
+      GetEncoder(format.value_or(Page::CaptureScreenshot::FormatEnum::Png),
+                 quality.value_or(kDefaultScreenshotQuality),
                  /* optimize_for_speed= */ true);
   if (absl::holds_alternative<Response>(encoder))
     return absl::get<Response>(encoder);
 
   screencast_encoder_ = absl::get<BitmapEncoder>(encoder);
 
-  screencast_max_width_ = max_width.fromMaybe(-1);
-  screencast_max_height_ = max_height.fromMaybe(-1);
+  screencast_max_width_ = max_width.value_or(-1);
+  screencast_max_height_ = max_height.value_or(-1);
   ++session_id_;
   frame_counter_ = 0;
   frames_in_flight_ = 0;
-  capture_every_nth_frame_ = every_nth_frame.fromMaybe(1);
+  capture_every_nth_frame_ = every_nth_frame.value_or(1);
   bool visible = !widget_host->is_hidden();
   NotifyScreencastVisibility(visible);
 
@@ -1065,8 +1065,9 @@ Response PageHandler::HandleJavaScriptDialog(bool accept,
     return Response::InvalidParams("No dialog is showing");
 
   std::u16string prompt_override;
-  if (prompt_text.isJust())
-    prompt_override = base::UTF8ToUTF16(prompt_text.fromJust());
+  if (prompt_text.has_value()) {
+    prompt_override = base::UTF8ToUTF16(prompt_text.value());
+  }
   std::move(pending_dialog_).Run(accept, prompt_override);
 
   // Clean up the dialog UI if any.
@@ -1077,7 +1078,7 @@ Response PageHandler::HandleJavaScriptDialog(bool accept,
     if (manager) {
       manager->HandleJavaScriptDialog(
           web_contents, accept,
-          prompt_text.isJust() ? &prompt_override : nullptr);
+          prompt_text.has_value() ? &prompt_override : nullptr);
     }
   }
 

@@ -990,8 +990,8 @@ Response InterceptionJob::InnerContinueRequest(
   }
   waiting_for_resolution_ = false;
   TRACE_EVENT_NESTABLE_ASYNC_END0("devtools", "Fetch.requestPaused", this);
-  if (modifications->intercept_response.isJust()) {
-    if (modifications->intercept_response.fromJust()) {
+  if (modifications->intercept_response.has_value()) {
+    if (modifications->intercept_response.value()) {
       if (stage_ == InterceptionStage::REQUEST)
         stage_ = InterceptionStage::BOTH;
       else
@@ -1048,7 +1048,7 @@ Response InterceptionJob::InnerContinueRequest(
   }
 
   if (state_ == State::kFollowRedirect) {
-    if (!modifications->modified_url.isJust()) {
+    if (!modifications->modified_url.has_value()) {
       // TODO(caseq): report error if other modifications are present.
       state_ = State::kRequestSent;
       std::vector<std::string> removed_headers;
@@ -1075,8 +1075,8 @@ Response InterceptionJob::InnerContinueRequest(
   }
   if (state_ == State::kRedirectReceived) {
     // TODO(caseq): report error if other modifications are present.
-    if (modifications->modified_url.isJust()) {
-      std::string location = modifications->modified_url.fromJust();
+    if (modifications->modified_url.has_value()) {
+      std::string location = modifications->modified_url.value();
       CancelRequest();
       response_metadata_->head->headers->SetHeader("location", location);
       GURL redirect_url = create_loader_params_->request.url.Resolve(location);
@@ -1132,18 +1132,19 @@ void InterceptionJob::ApplyModificationsToRequest(
 
   // Note this redirect is not visible to the page by design. If they want a
   // visible redirect they can mock a response with a 302.
-  if (modifications->modified_url.isJust()) {
+  if (modifications->modified_url.has_value()) {
     DCHECK_EQ(url_chain_.back(), request->url);
-    const GURL new_url(modifications->modified_url.fromJust());
+    const GURL new_url(modifications->modified_url.value());
     request->url = new_url;
     url_chain_.back() = new_url;
   }
 
-  if (modifications->modified_method.isJust())
-    request->method = modifications->modified_method.fromJust();
+  if (modifications->modified_method.has_value()) {
+    request->method = modifications->modified_method.value();
+  }
 
-  if (modifications->modified_post_data.isJust()) {
-    const auto& post_data = modifications->modified_post_data.fromJust();
+  if (modifications->modified_post_data.has_value()) {
+    const auto& post_data = modifications->modified_post_data.value();
     request->request_body = network::ResourceRequestBody::CreateFromBytes(
         reinterpret_cast<const char*>(post_data.data()), post_data.size());
   }

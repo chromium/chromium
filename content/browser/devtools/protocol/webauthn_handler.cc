@@ -160,7 +160,7 @@ Response WebAuthnHandler::Enable(Maybe<bool> enable_ui) {
 
   AuthenticatorEnvironment::GetInstance()->EnableVirtualAuthenticatorFor(
       frame_host_->frame_tree_node(),
-      enable_ui.fromMaybe(/*default_value=*/false));
+      enable_ui.value_or(/*default_value=*/false));
   return Response::Success();
 }
 
@@ -291,9 +291,9 @@ Response WebAuthnHandler::SetResponseOverrideBits(
     return Response::InvalidParams(kAuthenticatorNotFound);
 
   authenticator->set_bogus_signature(
-      is_bogus_signature.fromMaybe(/*default_value=*/false));
-  authenticator->set_bad_uv_bit(is_bad_uv.fromMaybe(/*default_value=*/false));
-  authenticator->set_bad_up_bit(is_bad_up.fromMaybe(/*default_value=*/false));
+      is_bogus_signature.value_or(/*default_value=*/false));
+  authenticator->set_bad_uv_bit(is_bad_uv.value_or(/*default_value=*/false));
+  authenticator->set_bad_up_bit(is_bad_up.value_or(/*default_value=*/false));
   return Response::Success();
 }
 

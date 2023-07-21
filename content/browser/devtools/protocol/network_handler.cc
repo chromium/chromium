@@ -400,12 +400,12 @@ MakeCookieFromProtocolValues(const std::string& name,
     cp = net::CookiePriority::COOKIE_PRIORITY_LOW;
 
   absl::optional<net::CookiePartitionKey> deserialized_partition_key;
-  if (partition_key.isJust()) {
+  if (partition_key.has_value()) {
     if (!base::FeatureList::IsEnabled(net::features::kPartitionedCookies)) {
       return Response::InvalidParams(
           "Partitioned cookies disabled. Cannot set cookie partition key");
     }
-    if (!net::CookiePartitionKey::Deserialize(partition_key.fromJust(),
+    if (!net::CookiePartitionKey::Deserialize(partition_key.value(),
                                               deserialized_partition_key)) {
       return Response::InvalidParams(
           "Deserializing cookie partition key failed");
@@ -423,9 +423,9 @@ MakeCookieFromProtocolValues(const std::string& name,
 
   // Update the cookie's sourceScheme unless it's undefined in which case we'll
   // keep the value that was implied from `url` via CreateSanitizedCookie.
-  if (source_scheme.isJust()) {
+  if (source_scheme.has_value()) {
     auto cookie_source_scheme_or_error =
-        GetSourceSchemeFromProtocol(source_scheme.fromJust());
+        GetSourceSchemeFromProtocol(source_scheme.value());
     if (absl::holds_alternative<Response>(cookie_source_scheme_or_error)) {
       return absl::get<Response>(std::move(cookie_source_scheme_or_error));
     }
@@ -443,9 +443,8 @@ MakeCookieFromProtocolValues(const std::string& name,
 
   // Update the cookie's port unless it's undefined in which case we'll
   // keep the value that was implied from `url` via CreateSanitizedCookie.
-  if (source_port.isJust()) {
-    auto cookie_source_port_or_error =
-        GetCookieSourcePort(source_port.fromJust());
+  if (source_port.has_value()) {
+    auto cookie_source_port_or_error = GetCookieSourcePort(source_port.value());
     if (absl::holds_alternative<Response>(cookie_source_port_or_error)) {
       return absl::get<Response>(std::move(cookie_source_port_or_error));
     }
@@ -470,9 +469,10 @@ std::vector<GURL> ComputeCookieURLs(RenderFrameHostImpl* frame_host,
                                     Maybe<Array<String>>& protocol_urls) {
   std::vector<GURL> urls;
 
-  if (protocol_urls.isJust()) {
-    for (const std::string& url : *protocol_urls.fromJust())
+  if (protocol_urls.has_value()) {
+    for (const std::string& url : protocol_urls.value()) {
       urls.emplace_back(url);
+    }
   } else {
     base::queue<RenderFrameHostImpl*> queue;
     queue.push(frame_host);
@@ -1545,10 +1545,10 @@ void NetworkHandler::SetCookie(const std::string& name,
   }
 
   auto cookie_or_error = MakeCookieFromProtocolValues(
-      name, value, url.fromMaybe(""), domain.fromMaybe(""), path.fromMaybe(""),
-      secure.fromMaybe(false), http_only.fromMaybe(false),
-      same_site.fromMaybe(""), expires.fromMaybe(-1), priority.fromMaybe(""),
-      same_party.fromMaybe(false), source_scheme, source_port, partition_key);
+      name, value, url.value_or(""), domain.value_or(""), path.value_or(""),
+      secure.value_or(false), http_only.value_or(false), same_site.value_or(""),
+      expires.value_or(-1), priority.value_or(""), same_party.value_or(false),
+      source_scheme, source_port, partition_key);
 
   if (absl::holds_alternative<Response>(cookie_or_error)) {
     callback->sendFailure(absl::get<Response>(std::move(cookie_or_error)));
@@ -1659,14 +1659,14 @@ void NetworkHandler::DeleteCookies(
     callback->sendFailure(Response::InternalError());
     return;
   }
-  if (!url_spec.isJust() && !domain.isJust()) {
+  if (!url_spec.has_value() && !domain.has_value()) {
     callback->sendFailure(Response::InvalidParams(
         "At least one of the url and domain needs to be specified"));
   }
 
-  std::string normalized_domain = domain.fromMaybe("");
+  std::string normalized_domain = domain.value_or("");
   if (normalized_domain.empty()) {
-    GURL url(url_spec.fromMaybe(""));
+    GURL url(url_spec.value_or(""));
     if (!url.SchemeIsHTTPOrHTTPS()) {
       callback->sendFailure(Response::InvalidParams(
           "An http or https url URL must be specified"));
@@ -1680,7 +1680,7 @@ void NetworkHandler::DeleteCookies(
 
   cookie_manager->GetAllCookies(base::BindOnce(
       &DeleteFilteredCookies, base::Unretained(cookie_manager), name,
-      normalized_domain, path.fromMaybe(""), std::move(callback)));
+      normalized_domain, path.value_or(""), std::move(callback)));
 }
 
 Response NetworkHandler::SetExtraHTTPHeaders(
@@ -2565,8 +2565,8 @@ void NetworkHandler::ContinueInterceptedRequest(
   scoped_refptr<base::RefCountedMemory> response_body;
   size_t body_offset = 0;
 
-  if (raw_response.isJust()) {
-    const protocol::Binary& raw = raw_response.fromJust();
+  if (raw_response.has_value()) {
+    const protocol::Binary& raw = raw_response.value();
 
     std::string raw_headers;
     size_t header_size = net::HttpUtil::LocateEndOfHeaders(
@@ -2586,9 +2586,9 @@ void NetworkHandler::ContinueInterceptedRequest(
   }
 
   absl::optional<net::Error> error;
-  if (error_reason.isJust()) {
+  if (error_reason.has_value()) {
     bool ok;
-    error = NetErrorFromString(error_reason.fromJust(), &ok);
+    error = NetErrorFromString(error_reason.value(), &ok);
     if (!ok) {
       callback->sendFailure(Response::InvalidParams("Invalid errorReason."));
       return;
@@ -2597,8 +2597,8 @@ void NetworkHandler::ContinueInterceptedRequest(
 
   std::unique_ptr<DevToolsURLLoaderInterceptor::Modifications::HeadersVector>
       override_headers;
-  if (opt_headers.isJust()) {
-    const base::Value::Dict& headers = *opt_headers.fromJust();
+  if (opt_headers.has_value()) {
+    const base::Value::Dict& headers = opt_headers.value();
     override_headers = std::make_unique<
         DevToolsURLLoaderInterceptor::Modifications::HeadersVector>();
     for (const auto entry : headers) {
@@ -2613,8 +2613,8 @@ void NetworkHandler::ContinueInterceptedRequest(
   using AuthChallengeResponse =
       DevToolsURLLoaderInterceptor::AuthChallengeResponse;
   std::unique_ptr<AuthChallengeResponse> override_auth;
-  if (auth_challenge_response.isJust()) {
-    std::string type = auth_challenge_response.fromJust()->GetResponse();
+  if (auth_challenge_response.has_value()) {
+    std::string type = auth_challenge_response->GetResponse();
     if (type == Network::AuthChallengeResponse::ResponseEnum::Default) {
       override_auth = std::make_unique<AuthChallengeResponse>(
           AuthChallengeResponse::kDefault);
@@ -2625,10 +2625,8 @@ void NetworkHandler::ContinueInterceptedRequest(
     } else if (type == Network::AuthChallengeResponse::ResponseEnum::
                            ProvideCredentials) {
       override_auth = std::make_unique<AuthChallengeResponse>(
-          base::UTF8ToUTF16(
-              auth_challenge_response.fromJust()->GetUsername("")),
-          base::UTF8ToUTF16(
-              auth_challenge_response.fromJust()->GetPassword("")));
+          base::UTF8ToUTF16(auth_challenge_response->GetUsername("")),
+          base::UTF8ToUTF16(auth_challenge_response->GetPassword("")));
     } else {
       callback->sendFailure(
           Response::InvalidParams("Unrecognized authChallengeResponse."));
@@ -2637,8 +2635,9 @@ void NetworkHandler::ContinueInterceptedRequest(
   }
 
   Maybe<protocol::Binary> post_data_bytes;
-  if (post_data.isJust())
-    post_data_bytes = protocol::Binary::fromString(post_data.fromJust());
+  if (post_data.has_value()) {
+    post_data_bytes = protocol::Binary::fromString(post_data.value());
+  }
 
   auto modifications =
       std::make_unique<DevToolsURLLoaderInterceptor::Modifications>(
@@ -2955,7 +2954,7 @@ DispatchResponse NetworkHandler::GetSecurityIsolationStatus(
     std::unique_ptr<protocol::Network::SecurityIsolationStatus>* out_info) {
   scoped_refptr<DevToolsAgentHostImpl> host =
       DevToolsAgentHostImpl::GetForId(host_id_);
-  std::string id = frame_id.fromMaybe("");
+  std::string id = frame_id.value_or("");
   auto maybe_coep = host->cross_origin_embedder_policy(id);
   auto maybe_coop = host->cross_origin_opener_policy(id);
   auto maybe_csp = host->content_security_policy(id);
@@ -3142,13 +3141,13 @@ void NetworkHandler::LoadNetworkResource(
 
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory;
   if (host_) {
-    if (!maybe_frame_id.isJust()) {
+    if (!maybe_frame_id.has_value()) {
       callback->sendFailure(Response::InvalidParams(
           "Parameter frameId must be provided for frame targets"));
       return;
     }
     FrameTreeNode* node = FrameTreeNodeFromDevToolsFrameToken(
-        host_->frame_tree_node(), maybe_frame_id.fromJust());
+        host_->frame_tree_node(), maybe_frame_id.value());
     RenderFrameHostImpl* frame = node ? node->current_frame_host() : nullptr;
     if (!frame) {
       callback->sendFailure(Response::InvalidParams("Frame not found"));

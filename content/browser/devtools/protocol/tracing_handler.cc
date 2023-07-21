@@ -732,17 +732,17 @@ void TracingHandler::Start(Maybe<std::string> categories,
                            Maybe<Binary> perfetto_config,
                            Maybe<std::string> tracing_backend,
                            std::unique_ptr<StartCallback> callback) {
-  bool return_as_stream = transfer_mode.fromMaybe("") ==
+  bool return_as_stream = transfer_mode.value_or("") ==
                           Tracing::Start::TransferModeEnum::ReturnAsStream;
-  bool gzip_compression = transfer_compression.fromMaybe("") ==
-                          Tracing::StreamCompressionEnum::Gzip;
+  bool gzip_compression =
+      transfer_compression.value_or("") == Tracing::StreamCompressionEnum::Gzip;
   bool proto_format =
-      transfer_format.fromMaybe("") == Tracing::StreamFormatEnum::Proto;
+      transfer_format.value_or("") == Tracing::StreamFormatEnum::Proto;
 
   perfetto::TraceConfig trace_config;
-  if (perfetto_config.isJust()) {
-    bool parsed = trace_config.ParseFromArray(
-        perfetto_config.fromJust().data(), perfetto_config.fromJust().size());
+  if (perfetto_config.has_value()) {
+    bool parsed = trace_config.ParseFromArray(perfetto_config.value().data(),
+                                              perfetto_config.value().size());
     if (!parsed) {
       callback->sendFailure(Response::InvalidParams(
           "Couldn't parse the supplied perfettoConfig."));
@@ -770,21 +770,21 @@ void TracingHandler::Start(Maybe<std::string> categories,
   } else {
     base::trace_event::TraceConfig browser_config =
         base::trace_event::TraceConfig();
-    if (config.isJust()) {
+    if (config.has_value()) {
       base::Value::Dict dict;
-      CHECK(crdtp::ConvertProtocolValue(*config.fromJust(), &dict));
+      CHECK(crdtp::ConvertProtocolValue(config.value(), &dict));
       browser_config =
           GetTraceConfigFromDevToolsConfig(base::Value(std::move(dict)));
-    } else if (categories.isJust() || options.isJust()) {
-      browser_config = base::trace_event::TraceConfig(categories.fromMaybe(""),
-                                                      options.fromMaybe(""));
+    } else if (categories.has_value() || options.has_value()) {
+      browser_config = base::trace_event::TraceConfig(categories.value_or(""),
+                                                      options.value_or(""));
     }
     trace_config = CreatePerfettoConfiguration(browser_config, return_as_stream,
                                                proto_format);
   }
 
   absl::optional<perfetto::BackendType> backend = GetBackendTypeFromParameters(
-      tracing_backend.fromMaybe(Tracing::TracingBackendEnum::Auto),
+      tracing_backend.value_or(Tracing::TracingBackendEnum::Auto),
       trace_config);
 
   if (!backend) {
@@ -811,7 +811,7 @@ void TracingHandler::Start(Maybe<std::string> categories,
     return;
   }
 
-  if (config.isJust() && (categories.isJust() || options.isJust())) {
+  if (config.has_value() && (categories.has_value() || options.has_value())) {
     callback->sendFailure(Response::InvalidParams(
         "Either trace config (preferred), or categories+options should be "
         "specified, but not both."));
@@ -828,7 +828,7 @@ void TracingHandler::Start(Maybe<std::string> categories,
   gzip_compression_ = gzip_compression;
   proto_format_ = proto_format;
   buffer_usage_reporting_interval_ =
-      buffer_usage_reporting_interval.fromMaybe(0);
+      buffer_usage_reporting_interval.value_or(0);
   did_initiate_recording_ = true;
   trace_config_ = std::move(trace_config);
 
@@ -1009,7 +1009,7 @@ void TracingHandler::RequestMemoryDump(
   }
 
   absl::optional<base::trace_event::MemoryDumpLevelOfDetail> memory_detail =
-      StringToMemoryDumpLevelOfDetail(level_of_detail.fromMaybe(
+      StringToMemoryDumpLevelOfDetail(level_of_detail.value_or(
           Tracing::MemoryDumpLevelOfDetailEnum::Detailed));
 
   if (!memory_detail) {
@@ -1018,7 +1018,7 @@ void TracingHandler::RequestMemoryDump(
     return;
   }
 
-  auto determinism = deterministic.fromMaybe(false)
+  auto determinism = deterministic.value_or(false)
                          ? base::trace_event::MemoryDumpDeterminism::FORCE_GC
                          : base::trace_event::MemoryDumpDeterminism::NONE;
 
