@@ -305,17 +305,20 @@ TEST_P(AppListViewLauncherSearchIphTest, DISABLED_Basic) {
 
 class AppListViewTabletPixelTest
     : public AshTestBase,
-      public testing::WithParamInterface</*tablet_mode=*/bool> {
+      public testing::WithParamInterface<
+          std::tuple</*jelly_enabled=*/bool, /*rtl=*/bool>> {
  public:
   // AshTestBase:
   absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     pixel_test::InitParams init_params;
-    init_params.under_rtl = GetParam();
+    init_params.under_rtl = IsRtl();
     return init_params;
   }
 
   void SetUp() override {
+    scoped_features_.InitWithFeatureState(chromeos::features::kJelly,
+                                          IsJellyEnabled());
     AshTestBase::SetUp();
 
     Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
@@ -326,15 +329,26 @@ class AppListViewTabletPixelTest
         /*num_apps=*/32, AppListTestHelper::IconColorType::kAlternativeColor,
         /*set_name=*/true);
   }
+
+ protected:
+  bool IsJellyEnabled() const { return std::get<0>(GetParam()); }
+
+  bool IsRtl() const { return std::get<1>(GetParam()); }
+
+ private:
+  base::test::ScopedFeatureList scoped_features_;
 };
 
-INSTANTIATE_TEST_SUITE_P(RTL, AppListViewTabletPixelTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(RTL,
+                         AppListViewTabletPixelTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 // Verifies the default layout for tablet mode launcher.
 TEST_P(AppListViewTabletPixelTest, Basic) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "tablet_launcher_basics",
-      /*revision_number=*/1, GetAppListTestHelper()->GetAppsContainerView()));
+      /*revision_number=*/IsJellyEnabled() ? 2 : 1,
+      GetAppListTestHelper()->GetAppsContainerView()));
 }
 
 // Verifies that the top gradient zone of the tablet mode launcher works
@@ -355,7 +369,8 @@ TEST_P(AppListViewTabletPixelTest, TopGradientZone) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "tablet_launcher_top_gradient_zone",
-      /*revision_number=*/1, GetAppListTestHelper()->GetAppsContainerView()));
+      /*revision_number=*/IsJellyEnabled() ? 2 : 1,
+      GetAppListTestHelper()->GetAppsContainerView()));
 }
 
 // Verifies that the bottom gradient zone of the tablet mode launcher works
@@ -376,7 +391,8 @@ TEST_P(AppListViewTabletPixelTest, BottomGradientZone) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "tablet_launcher_bottom_gradient_zone",
-      /*revision_number=*/1, GetAppListTestHelper()->GetAppsContainerView()));
+      /*revision_number=*/IsJellyEnabled() ? 2 : 1,
+      GetAppListTestHelper()->GetAppsContainerView()));
 }
 
 TEST_P(AppListViewTabletPixelTest, SearchBoxViewActive) {
@@ -385,7 +401,8 @@ TEST_P(AppListViewTabletPixelTest, SearchBoxViewActive) {
   search_box_view->SetSearchBoxActive(true, ui::EventType::ET_UNKNOWN);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "search_box_view_active", /*revision_number=*/0, search_box_view));
+      "search_box_view_active",
+      /*revision_number=*/IsJellyEnabled() ? 1 : 0, search_box_view));
 }
 
 class AppListViewAssistantZeroStateTest
