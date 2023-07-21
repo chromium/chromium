@@ -95,8 +95,6 @@ crbug.com/1417006 [ fuchsia fuchsia-board-sherlock ] ExpectedColor_MediaRecorder
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
-# Flaking frequently on Fuchsia and nobody has triaged why.
-crbug.com/1288217 [ angle-swiftshader fuchsia fuchsia-board-qemu-x64 google-0xc0de no-clang-coverage ] ExpectedColor_maps [ Failure ]
 
 # ExpectedColor_MediaRecorderFromVideoElement fails on several FYI bots
 crbug.com/1382332 [ chromeos target-cpu-64 ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
