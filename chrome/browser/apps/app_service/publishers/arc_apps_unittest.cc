@@ -646,15 +646,13 @@ TEST_F(ArcAppsPublisherTest, OnInstallationStarted_RegistersPromiseApp) {
       apps::PackageId(apps::AppType::kArc, package_name);
 
   // Verify that the promise app is not yet registered.
-  const apps::PromiseApp* promise_app_before =
-      cache->GetPromiseAppForTesting(package_id);
+  const apps::PromiseApp* promise_app_before = cache->GetPromiseApp(package_id);
   EXPECT_FALSE(promise_app_before);
 
   arc_test()->app_instance()->SendInstallationStarted(package_name);
 
   // Verify that the promise app is now registered.
-  const apps::PromiseApp* promise_app_after =
-      cache->GetPromiseAppForTesting(package_id);
+  const apps::PromiseApp* promise_app_after = cache->GetPromiseApp(package_id);
   EXPECT_TRUE(promise_app_after);
 }
 
@@ -678,8 +676,7 @@ TEST_F(ArcAppsPublisherTest, OnInstallationProgressChanged_UpdatesPromiseApp) {
   cache->OnPromiseApp(std::move(promise_app));
 
   // Check that the initial progress value is correct.
-  const apps::PromiseApp* promise_app_result =
-      cache->GetPromiseAppForTesting(package_id);
+  const apps::PromiseApp* promise_app_result = cache->GetPromiseApp(package_id);
   EXPECT_TRUE(promise_app_result);
   EXPECT_TRUE(promise_app_result->progress.has_value());
   EXPECT_EQ(promise_app_result->progress.value(), progress_initial);
@@ -687,7 +684,7 @@ TEST_F(ArcAppsPublisherTest, OnInstallationProgressChanged_UpdatesPromiseApp) {
   // Send an update and check the progress value.
   arc_test()->app_instance()->SendInstallationProgressChanged(package_name,
                                                               progress_next);
-  promise_app_result = cache->GetPromiseAppForTesting(package_id);
+  promise_app_result = cache->GetPromiseApp(package_id);
   EXPECT_TRUE(promise_app_result);
   EXPECT_TRUE(promise_app_result->progress.has_value());
   EXPECT_EQ(promise_app_result->progress.value(), progress_next);
@@ -711,21 +708,20 @@ TEST_F(ArcAppsPublisherTest, OnInstallationActiveChanged_UpdatesPromiseApp) {
   cache->OnPromiseApp(std::move(promise_app));
 
   // Check that the initial status is correct.
-  const apps::PromiseApp* promise_app_result =
-      cache->GetPromiseAppForTesting(package_id);
+  const apps::PromiseApp* promise_app_result = cache->GetPromiseApp(package_id);
   EXPECT_TRUE(promise_app_result);
   EXPECT_EQ(promise_app_result->status, apps::PromiseStatus::kPending);
 
   // Send an update and check the status.
   arc_test()->app_instance()->SendInstallationActiveChanged(package_name, true);
-  promise_app_result = cache->GetPromiseAppForTesting(package_id);
+  promise_app_result = cache->GetPromiseApp(package_id);
   EXPECT_TRUE(promise_app_result);
   EXPECT_EQ(promise_app_result->status, apps::PromiseStatus::kInstalling);
 
   // Send an update and check the status.
   arc_test()->app_instance()->SendInstallationActiveChanged(package_name,
                                                             false);
-  promise_app_result = cache->GetPromiseAppForTesting(package_id);
+  promise_app_result = cache->GetPromiseApp(package_id);
   EXPECT_TRUE(promise_app_result);
   EXPECT_EQ(promise_app_result->status, apps::PromiseStatus::kPending);
 }

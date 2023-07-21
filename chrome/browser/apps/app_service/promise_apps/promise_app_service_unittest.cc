@@ -168,8 +168,7 @@ TEST_F(PromiseAppServiceTest, OnPromiseApp_AlmanacResponseUpdatesPromiseApp) {
   // Wait for all the updates to trigger.
   WaitForPromiseAppUpdates();
 
-  const PromiseApp* promise_app_result =
-      cache()->GetPromiseAppForTesting(kTestPackageId);
+  const PromiseApp* promise_app_result = cache()->GetPromiseApp(kTestPackageId);
   EXPECT_TRUE(promise_app_result->name.has_value());
   EXPECT_EQ(promise_app_result->name.value(), "Name");
 }
@@ -225,8 +224,7 @@ TEST_F(PromiseAppServiceTest, OnPromiseApp_IconsDownloaded) {
                                    gfx::test::CreateBitmap(1024, 1024)));
 
   // Verify that the promise app is allowed to be visible now.
-  const PromiseApp* promise_app_result =
-      cache()->GetPromiseAppForTesting(kTestPackageId);
+  const PromiseApp* promise_app_result = cache()->GetPromiseApp(kTestPackageId);
   EXPECT_TRUE(promise_app_result->should_show);
 }
 
@@ -315,7 +313,7 @@ TEST_F(PromiseAppServiceTest, RemovePromiseApp) {
 
   // Confirm that the promise app gets registered.
   const PromiseApp* promise_app_registered =
-      cache()->GetPromiseAppForTesting(kTestPackageId);
+      cache()->GetPromiseApp(kTestPackageId);
   EXPECT_TRUE(promise_app_registered);
   EXPECT_TRUE(promise_app_registered->should_show.has_value());
   EXPECT_TRUE(promise_app_registered->should_show.value());

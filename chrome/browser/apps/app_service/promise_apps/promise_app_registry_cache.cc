@@ -71,7 +71,7 @@ bool PromiseAppRegistryCache::HasPromiseApp(const PackageId& package_id) {
   return FindPromiseApp(package_id) != nullptr;
 }
 
-const PromiseApp* PromiseAppRegistryCache::GetPromiseAppForTesting(
+const PromiseApp* PromiseAppRegistryCache::GetPromiseApp(
     const PackageId& package_id) const {
   return FindPromiseApp(package_id);
 }
