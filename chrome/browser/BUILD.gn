@@ -1138,8 +1138,6 @@ static_library("browser") {
     "permissions/crowd_deny_preload_data.h",
     "permissions/crowd_deny_safe_browsing_request.cc",
     "permissions/crowd_deny_safe_browsing_request.h",
-    "permissions/notification_permission_review_service_factory.cc",
-    "permissions/notification_permission_review_service_factory.h",
     "permissions/notifications_engagement_service_factory.cc",
     "permissions/notifications_engagement_service_factory.h",
     "permissions/notifications_permission_revocation_config.cc",

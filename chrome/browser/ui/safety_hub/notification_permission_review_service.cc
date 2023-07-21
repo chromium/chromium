@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/permissions/notification_permission_review_service.h"
+#include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
 
 #include <map>
 #include <set>
@@ -13,23 +13,23 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/permissions/notifications_engagement_service.h"
 
-namespace permissions {
+namespace {
 
 constexpr char kExcludedKey[] = "exempted";
 constexpr char kDisplayedKey[] = "display_count";
 // The daily average is calculated over the past this many days.
 constexpr int kDays = 7;
 
-namespace {
-
 int ExtractNotificationCount(ContentSettingPatternSource item,
                              std::string date) {
-  if (!item.setting_value.is_dict())
+  if (!item.setting_value.is_dict()) {
     return 0;
+  }
 
   base::Value::Dict* bucket = item.setting_value.GetDict().FindDict(date);
-  if (!bucket)
+  if (!bucket) {
     return 0;
+  }
   return bucket->FindInt(kDisplayedKey).value_or(0);
 }
 
@@ -40,8 +40,8 @@ int GetDailyAverageNotificationCount(ContentSettingPatternSource item) {
 
   for (int day = 0; day < kDays; ++day) {
     notification_count_total += ExtractNotificationCount(
-        item,
-        NotificationsEngagementService::GetBucketLabel(date - base::Days(day)));
+        item, permissions::NotificationsEngagementService::GetBucketLabel(
+                  date - base::Days(day)));
   }
 
   return std::ceil(notification_count_total / kDays);
@@ -141,17 +141,20 @@ NotificationPermissionsReviewService::GetNotificationSiteListForReview() {
     std::pair pair(item.primary_pattern, item.secondary_pattern);
 
     // Blocklisted permissions should not be in the review list.
-    if (base::Contains(ignored_patterns_set, pair))
+    if (base::Contains(ignored_patterns_set, pair)) {
       continue;
+    }
 
     // Only granted permissions should be in the review list.
-    if (item.GetContentSetting() != CONTENT_SETTING_ALLOW)
+    if (item.GetContentSetting() != CONTENT_SETTING_ALLOW) {
       continue;
+    }
 
     // Only URLs that belong to a single origin should be in the review list.
-    if (!content_settings::PatternAppliesToSingleOrigin(item.primary_pattern,
-                                                        item.secondary_pattern))
+    if (!content_settings::PatternAppliesToSingleOrigin(
+            item.primary_pattern, item.secondary_pattern)) {
       continue;
+    }
 
     int notification_count = notification_count_map[pair];
     notification_permissions_list.emplace_back(
@@ -182,5 +185,3 @@ void NotificationPermissionsReviewService::
       primary_pattern, secondary_pattern,
       ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW, {});
 }
-
-}  // namespace permissions

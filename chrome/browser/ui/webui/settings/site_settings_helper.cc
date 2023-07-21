@@ -27,11 +27,11 @@
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
-#include "chrome/browser/permissions/notification_permission_review_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/serial/serial_chooser_context.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
+#include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
 #include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
@@ -1104,8 +1104,8 @@ base::Value::List PopulateNotificationPermissionReviewData(Profile* profile) {
 
   // Sort notification permissions by their priority for surfacing to the user.
   auto notification_permission_ordering =
-      [](const permissions::NotificationPermissions& left,
-         const permissions::NotificationPermissions& right) {
+      [](const NotificationPermissions& left,
+         const NotificationPermissions& right) {
         return left.notification_count > right.notification_count;
       };
   std::sort(notification_permissions.begin(), notification_permissions.end(),

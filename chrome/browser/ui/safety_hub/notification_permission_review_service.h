@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERMISSIONS_NOTIFICATION_PERMISSION_REVIEW_SERVICE_H_
-#define COMPONENTS_PERMISSIONS_NOTIFICATION_PERMISSION_REVIEW_SERVICE_H_
+#ifndef CHROME_BROWSER_UI_SAFETY_HUB_NOTIFICATION_PERMISSION_REVIEW_SERVICE_H_
+#define CHROME_BROWSER_UI_SAFETY_HUB_NOTIFICATION_PERMISSION_REVIEW_SERVICE_H_
 
 #include <vector>
 
@@ -12,8 +12,6 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/keyed_service/core/keyed_service.h"
-
-namespace permissions {
 
 struct NotificationPermissions {
   ContentSettingsPattern primary_pattern;
@@ -75,6 +73,4 @@ class NotificationPermissionsReviewService : public KeyedService,
       content_settings_observation_{this};
 };
 
-}  // namespace permissions
-
-#endif  // COMPONENTS_PERMISSIONS_NOTIFICATION_PERMISSION_REVIEW_SERVICE_H_
+#endif  // CHROME_BROWSER_UI_SAFETY_HUB_NOTIFICATION_PERMISSION_REVIEW_SERVICE_H_

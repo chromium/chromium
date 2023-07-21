@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PERMISSIONS_NOTIFICATION_PERMISSION_REVIEW_SERVICE_FACTORY_H_
-#define CHROME_BROWSER_PERMISSIONS_NOTIFICATION_PERMISSION_REVIEW_SERVICE_FACTORY_H_
+#ifndef CHROME_BROWSER_UI_SAFETY_HUB_NOTIFICATION_PERMISSION_REVIEW_SERVICE_FACTORY_H_
+#define CHROME_BROWSER_UI_SAFETY_HUB_NOTIFICATION_PERMISSION_REVIEW_SERVICE_FACTORY_H_
 
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
-#include "components/permissions/notification_permission_review_service.h"
+#include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
 
 class Profile;
 
@@ -24,8 +24,7 @@ class NotificationPermissionsReviewServiceFactory
  public:
   static NotificationPermissionsReviewServiceFactory* GetInstance();
 
-  static permissions::NotificationPermissionsReviewService* GetForProfile(
-      Profile* profile);
+  static NotificationPermissionsReviewService* GetForProfile(Profile* profile);
 
   // Non-copyable, non-moveable.
   NotificationPermissionsReviewServiceFactory(
@@ -44,4 +43,4 @@ class NotificationPermissionsReviewServiceFactory
       content::BrowserContext* context) const override;
 };
 
-#endif  // CHROME_BROWSER_PERMISSIONS_NOTIFICATION_PERMISSION_REVIEW_SERVICE_FACTORY_H_
+#endif  // CHROME_BROWSER_UI_SAFETY_HUB_NOTIFICATION_PERMISSION_REVIEW_SERVICE_FACTORY_H_

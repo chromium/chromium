@@ -2,22 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/permissions/notification_permission_review_service_factory.h"
+#include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
 
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
-#include "components/permissions/notification_permission_review_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace permissions {
-
-#if !BUILDFLAG(IS_ANDROID)
 class NotificationPermissionReviewServiceTest : public testing::Test {
  protected:
   TestingProfile* profile() { return &profile_; }
@@ -140,6 +137,3 @@ TEST_F(NotificationPermissionReviewServiceTest,
   EXPECT_EQ(GURL(notification_permissions[0].primary_pattern.ToString()),
             urls[0]);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-}  // namespace permissions

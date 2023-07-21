@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/permissions/notification_permission_review_service_factory.h"
+#include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
 
 #include "base/no_destructor.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -17,9 +17,9 @@ NotificationPermissionsReviewServiceFactory::GetInstance() {
 }
 
 // static
-permissions::NotificationPermissionsReviewService*
+NotificationPermissionsReviewService*
 NotificationPermissionsReviewServiceFactory::GetForProfile(Profile* profile) {
-  return static_cast<permissions::NotificationPermissionsReviewService*>(
+  return static_cast<NotificationPermissionsReviewService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
@@ -42,6 +42,6 @@ NotificationPermissionsReviewServiceFactory::
 KeyedService*
 NotificationPermissionsReviewServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new permissions::NotificationPermissionsReviewService(
+  return new NotificationPermissionsReviewService(
       HostContentSettingsMapFactory::GetForProfile(context));
 }
