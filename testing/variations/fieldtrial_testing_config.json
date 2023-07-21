@@ -6437,6 +6437,63 @@
             ]
         }
     ],
+    "GridTabSwitcherTablet": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "TabStripRedesign.FolioWithoutButtonStyleOnly.Enabled_20230718",
+                    "params": {
+                        "disable_btn_style": "true",
+                        "enable_folio": "true"
+                    },
+                    "enable_features": [
+                        "TabStripRedesign"
+                    ]
+                },
+                {
+                    "name": "TabStripRedesign.DetachedWithoutButtonStyleOnly.Enabled_20230718",
+                    "params": {
+                        "disable_btn_style": "true",
+                        "enable_detached": "true"
+                    },
+                    "enable_features": [
+                        "TabStripRedesign"
+                    ]
+                },
+                {
+                    "name": "TabStripRedesign.FolioWithoutNtbAnchorAndWithoutBtnStyle.Enabled_20230718",
+                    "params": {
+                        "disable_btn_style": "true",
+                        "disable_ntb_anchor": "true",
+                        "enable_folio": "true"
+                    },
+                    "enable_features": [
+                        "TabStripRedesign"
+                    ]
+                },
+                {
+                    "name": "TabStripRedesign.DetachedWithoutNtbAnchorAndWithoutBtnStyle.Enabled_20230718",
+                    "params": {
+                        "disable_btn_style": "true",
+                        "disable_ntb_anchor": "true",
+                        "enable_detached": "true"
+                    },
+                    "enable_features": [
+                        "TabStripRedesign"
+                    ]
+                },
+                {
+                    "name": "TabletToolbarReorderingEnabled_20230718",
+                    "enable_features": [
+                        "TabletToolbarReordering"
+                    ]
+                }
+            ]
+        }
+    ],
     "GwpAsanAndroid": [
         {
             "platforms": [
