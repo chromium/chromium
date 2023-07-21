@@ -10,6 +10,7 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
 import("//build/config/win/console_app.gni")
 import("//build/config/win/manifest.gni")
+import("//device/vr/buildflags/buildflags.gni")
 import("//gpu/vulkan/features.gni")
 import("//media/media_options.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
@@ -526,6 +527,10 @@ repack("pak") {
     "//ui/resources",
     "//ui/strings",
   ]
+
+  if (enable_vr) {
+    sources += [ "$root_gen_dir/content/webxr_internals_resources.pak" ]
+  }
 
   if (!is_android) {
     deps += [ "//content/browser/tracing:resources" ]

@@ -271,6 +271,7 @@ source_set("common_sources") {
     # This looks needless as we have //content/common in public_deps, but it's
     # needed because of allow_circular_includes_from.
     "//content/common:mojo_bindings",
+    "//device/vr/buildflags",
     "//media",
     "//media/mojo/mojom",
     "//ppapi/buildflags",

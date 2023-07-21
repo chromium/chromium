@@ -248,6 +248,10 @@ group("dev_ui_resources") {
     "//content/browser/webrtc/resources",
   ]
 
+  if (enable_vr) {
+    public_deps += [ "//content/browser/resources/webxr_internals:resources" ]
+  }
+
   if (is_android) {
     public_deps += [
       "//chrome/browser/resources/feed_internals:resources",
@@ -294,6 +298,10 @@ repack("dev_ui_paks") {
     "$root_gen_dir/content/process_resources.pak",
     "$root_gen_dir/content/service_worker_resources.pak",
   ]
+
+  if (enable_vr) {
+    sources += [ "$root_gen_dir/content/webxr_internals_resources.pak" ]
+  }
 
   if (is_android) {
     sources += [

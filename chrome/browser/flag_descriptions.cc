@@ -7232,6 +7232,13 @@ const char kPaintPreviewDemoDescription[] =
     "previews.";
 #endif  // ENABLE_PAINT_PREVIEW && BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(ENABLE_VR)
+const char kWebXrInternalsName[] = "WebXR Internals Debugging Page";
+const char kWebXrInternalsDescription[] =
+    "Enables the webxr-internals developer page which can be used to help "
+    "debug issues with the WebXR Device API.";
+#endif  // #if defined(ENABLE_VR)
+
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 const char kWebUITabStripFlagId[] = "webui-tab-strip";
 const char kWebUITabStripName[] = "WebUI tab strip";

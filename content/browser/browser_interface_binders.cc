@@ -201,6 +201,11 @@
 #include "media/mojo/mojom/remoting.mojom-forward.h"
 #endif
 
+#if BUILDFLAG(ENABLE_VR)
+#include "content/browser/xr/webxr_internals/mojom/webxr_internals.mojom.h"
+#include "content/browser/xr/webxr_internals/webxr_internals_ui.h"
+#endif
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
 #include "content/public/browser/service_process_host.h"
 #else
@@ -1202,6 +1207,10 @@ void PopulateBinderMapWithContext(
                                          ProcessInternalsUI>(map);
   RegisterWebUIControllerInterfaceBinder<storage::mojom::QuotaInternalsHandler,
                                          QuotaInternalsUI>(map);
+#if BUILDFLAG(ENABLE_VR)
+  RegisterWebUIControllerInterfaceBinder<webxr::mojom::WebXrInternalsHandler,
+                                         WebXrInternalsUI>(map);
+#endif
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   map->Add<blink::mojom::DateTimeChooser>(
       base::BindRepeating(&BindDateTimeChooserForFrame));

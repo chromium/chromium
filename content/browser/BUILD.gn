@@ -3380,11 +3380,16 @@ source_set("browser") {
       "xr/service/xr_permission_results.h",
       "xr/service/xr_runtime_manager_impl.cc",
       "xr/service/xr_runtime_manager_impl.h",
+      "xr/webxr_internals/webxr_internals_handler_impl.cc",
+      "xr/webxr_internals/webxr_internals_handler_impl.h",
+      "xr/webxr_internals/webxr_internals_ui.cc",
+      "xr/webxr_internals/webxr_internals_ui.h",
       "xr/xr_utils.cc",
       "xr/xr_utils.h",
     ]
 
     deps += [
+      "//content/browser/xr/webxr_internals/mojom:mojo_bindings",
       "//device/vr/buildflags",
       "//device/vr/orientation",
       "//services/metrics/public/cpp:ukm_builders",

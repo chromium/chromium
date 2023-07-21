@@ -64204,6 +64204,7 @@ from previous Chrome versions.
   <int value="192693676"
       label="QueryTilesRemoveTrendingAfterInactivity:disabled"/>
   <int value="193865288" label="EnableSuggestedLocalFiles:enabled"/>
+  <int value="193885882" label="WebXrInternals:disabled"/>
   <int value="194573877" label="MacViewsNativeDialogs:disabled"/>
   <int value="194645300" label="FileTransferEnterpriseConnector:disabled"/>
   <int value="194822286"
@@ -65320,6 +65321,7 @@ from previous Chrome versions.
   <int value="756897997" label="PaintHoldingCrossOrigin:disabled"/>
   <int value="757645375" label="AndroidDarkSearch:disabled"/>
   <int value="758299873" label="OmniboxSuggestionHoverFillShape:enabled"/>
+  <int value="758845666" label="WebXrInternals:enabled"/>
   <int value="759296601" label="DiscountConsentV2:disabled"/>
   <int value="760542355" label="ServiceWorkerScriptFullCodeCache:enabled"/>
   <int value="761770770"

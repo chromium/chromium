@@ -4185,6 +4185,11 @@ extern const char kPaintPreviewDemoName[];
 extern const char kPaintPreviewDemoDescription[];
 #endif  // ENABLE_PAINT_PREVIEW && BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(ENABLE_VR)
+extern const char kWebXrInternalsName[];
+extern const char kWebXrInternalsDescription[];
+#endif  // #if defined(ENABLE_VR)
+
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 extern const char kWebUITabStripFlagId[];
 extern const char kWebUITabStripName[];
