@@ -166,4 +166,11 @@ void DesksTestApi::ResetDeskVisitedMetrics(Desk* desk) {
   desk->last_day_visited_ = current_date;
 }
 
+// static
+void DesksTestApi::WaitForDeskBarUiUpdate(DeskBarViewBase* desk_bar_view) {
+  base::RunLoop run_loop;
+  desk_bar_view->on_update_ui_closure_for_testing_ = run_loop.QuitClosure();
+  run_loop.Run();
+}
+
 }  // namespace ash

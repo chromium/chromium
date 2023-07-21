@@ -162,12 +162,6 @@ void PositionWindowsInOverview() {
   controller->overview_session()->PositionWindows(true);
 }
 
-void UpdateAccessibilityFocusInOverview() {
-  auto* controller = Shell::Get()->overview_controller();
-  DCHECK(controller->InOverviewSession());
-  controller->overview_session()->UpdateAccessibilityFocus();
-}
-
 // Performs a fade out animation on `removed_mini_view`'s layer by changing its
 // opacity from 1 to 0 and scales down it around the center of `bar_view` while
 // switching back to zero state. `removed_mini_view_` will be deleted when the
@@ -232,96 +226,91 @@ void AnimateDeskMiniViewRemove(DeskMiniView* removed_mini_view,
       .SetOpacity(layer, 0.f, tween_type);
 }
 
-// A self-deleting object that performs bounds changes animation for the desk
-// bar while it switches between zero state and expanded state.
-// `is_bounds_animation_on_going_` will be used to help hold Layout calls during
-// the animation. Since Layout is expensive and will be called lots of times
-// during the bounds changes animation without doing this. The object itself
-// will be deleted when the animation is complete.
-class DeskBarBoundsAnimation : public ui::ImplicitAnimationObserver {
- public:
-  DeskBarBoundsAnimation(DeskBarViewBase* bar_view, bool to_zero_state)
-      : bar_view_(bar_view) {
-    auto* desks_widget = bar_view_->GetWidget();
-    const gfx::Rect current_widget_bounds =
-        desks_widget->GetWindowBoundsInScreen();
-    gfx::Rect target_widget_bounds = current_widget_bounds;
-    // When `to_zero_state` is false, desk bar is switching from zero to
-    // expanded state.
-    if (to_zero_state) {
-      target_widget_bounds.set_height(kDeskBarZeroStateHeight);
+void AnimateDeskBarBounds(DeskBarViewBase* bar_view, bool to_zero_state) {
+  CHECK(bar_view);
 
-      if (chromeos::features::IsJellyrollEnabled()) {
-        // When `Jellyroll` is enabled, setting desk bar's bounds to its bounds
-        // at zero state directly to layout its contents at the correct position
-        // first before the animation. When `Jellyroll` is enabled, we use the
-        // same buttons (default desk button and library) for both expanded
-        // state and zero state, the scale up and fade in animation is applied
-        // to the buttona during the desk bar states transition, thus the
-        // buttons need to be layout and put at the correct positions before the
-        // animation starts.
-        desks_widget->SetBounds(target_widget_bounds);
-        bar_view_->set_is_bounds_animation_on_going(true);
-        desks_widget->SetBounds(current_widget_bounds);
-      } else {
-        bar_view_->set_is_bounds_animation_on_going(true);
-      }
+  auto* desk_widget = bar_view->GetWidget();
+  const gfx::Rect current_widget_bounds =
+      desk_widget->GetWindowBoundsInScreen();
+  gfx::Rect target_widget_bounds = current_widget_bounds;
+  // When `to_zero_state` is false, desk bar is switching from zero to
+  // expanded state.
+  if (to_zero_state) {
+    target_widget_bounds.set_height(kDeskBarZeroStateHeight);
+
+    if (chromeos::features::IsJellyrollEnabled()) {
+      // When `Jellyroll` is enabled, setting desk bar's bounds to its bounds at
+      // zero state directly to layout its contents at the correct position
+      // first before the animation. When `Jellyroll` is enabled, we use the
+      // same buttons (default desk button and library) for both expanded state
+      // and zero state, the scale up and fade in animation is applied to the
+      // button during the desk bar states transition, thus the buttons need to
+      // be layout and put at the correct positions before the animation starts.
+      desk_widget->SetBounds(target_widget_bounds);
+      bar_view->set_is_bounds_animation_on_going(true);
+      desk_widget->SetBounds(current_widget_bounds);
     } else {
-      // While switching desk bar from zero state to expanded state, setting
-      // its bounds to its bounds at expanded state directly without animation,
-      // which will trigger Layout and make sure the contents of
-      // desk bar(e.g, desk mini view, new desk button) are at the correct
-      // positions before the animation. And set `is_bounds_animation_on_going_`
-      // to be true, which will help hold Layout until the animation is done.
-      // Then set the bounds of the desk bar back to its bounds at zero state
-      // to start the bounds change animation. See more details at
-      // `is_bounds_animation_on_going_`.
-      target_widget_bounds.set_height(DeskBarViewBase::GetPreferredBarHeight(
-          desks_widget->GetNativeWindow()->GetRootWindow(),
-          DeskBarViewBase::Type::kOverview, DeskBarViewBase::State::kExpanded));
-      desks_widget->SetBounds(target_widget_bounds);
-      bar_view_->set_is_bounds_animation_on_going(true);
-      desks_widget->SetBounds(current_widget_bounds);
+      bar_view->set_is_bounds_animation_on_going(true);
     }
-
-    ui::ScopedLayerAnimationSettings settings{
-        desks_widget->GetLayer()->GetAnimator()};
-    const base::TimeDelta animation_duration =
-        chromeos::features::IsJellyrollEnabled()
-            ? kZeroStateAnimationDurationCrOSNext
-            : kZeroStateAnimationDuration;
-    InitScopedAnimationSettings(&settings, animation_duration);
-    settings.AddObserver(this);
-    desks_widget->SetBounds(target_widget_bounds);
+  } else {
+    // While switching desk bar from zero state to expanded state, setting
+    // its bounds to its bounds at expanded state directly without animation,
+    // which will trigger Layout and make sure the contents of
+    // desk bar(e.g, desk mini view, new desk button) are at the correct
+    // positions before the animation. And set `is_bounds_animation_on_going_`
+    // to be true, which will help hold Layout until the animation is done.
+    // Then set the bounds of the desk bar back to its bounds at zero state
+    // to start the bounds change animation. See more details at
+    // `is_bounds_animation_on_going_`.
+    target_widget_bounds.set_height(DeskBarViewBase::GetPreferredBarHeight(
+        desk_widget->GetNativeWindow()->GetRootWindow(),
+        DeskBarViewBase::Type::kOverview, DeskBarViewBase::State::kExpanded));
+    desk_widget->SetBounds(target_widget_bounds);
+    bar_view->set_is_bounds_animation_on_going(true);
+    desk_widget->SetBounds(current_widget_bounds);
   }
 
-  DeskBarBoundsAnimation(const DeskBarBoundsAnimation&) = delete;
-  DeskBarBoundsAnimation& operator=(const DeskBarBoundsAnimation&) = delete;
+  ui::Layer* layer = desk_widget->GetLayer();
+  const base::TimeDelta animation_duration =
+      chromeos::features::IsJellyrollEnabled()
+          ? kZeroStateAnimationDurationCrOSNext
+          : kZeroStateAnimationDuration;
+  const gfx::Tween::Type tween_type = chromeos::features::IsJellyrollEnabled()
+                                          ? gfx::Tween::ACCEL_20_DECEL_100
+                                          : gfx::Tween::ACCEL_20_DECEL_60;
+  base::OnceClosure ondone = base::BindOnce(
+      base::BindOnce([](DeskBarViewBase* bar_view) {
+        bar_view->set_is_bounds_animation_on_going(false);
 
-  ~DeskBarBoundsAnimation() override {
-    CHECK(bar_view_);
-    bar_view_->set_is_bounds_animation_on_going(false);
+        // Updated the desk buttons and layout the desk bar to make sure the
+        // buttons visibility will be updated on desk bar state changes. Also
+        // make sure the button's text will be updated correctly while going
+        // back to zero state.
+        bar_view->UpdateDeskButtonsVisibility();
+        bar_view->Layout();
+        if (OverviewController* overview_controller =
+                Shell::Get()->overview_controller()) {
+          if (overview_controller->InOverviewSession()) {
+            overview_controller->overview_session()->UpdateAccessibilityFocus();
+          }
+        }
 
-    // Updated the desk buttons and layout the desk bar to make sure the
-    // buttons visibility will be updated on desk bar state changes. Also
-    // make sure the button's text will be updated correctly while going back
-    // to zero state.
-    bar_view_->UpdateDeskButtonsVisibility();
-    bar_view_->Layout();
-    if (OverviewController* overview_controller =
-            Shell::Get()->overview_controller()) {
-      if (overview_controller->InOverviewSession()) {
-        UpdateAccessibilityFocusInOverview();
-      }
-    }
-  }
-
-  // ui::ImplicitAnimationObserver:
-  void OnImplicitAnimationsCompleted() override { delete this; }
-
- private:
-  const raw_ptr<DeskBarViewBase, ExperimentalAsh> bar_view_;
-};
+        bar_view->OnUiUpdateDone();
+      }),
+      base::Unretained(bar_view));
+  views::AnimationBuilder animation_builder;
+  bar_view->set_animation_abort_handle(animation_builder.GetAbortHandle());
+  auto split = base::SplitOnceCallback(std::move(ondone));
+  animation_builder
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(std::move(split.first))
+      .OnAborted(std::move(split.second))
+      .Once()
+      .SetDuration(animation_duration)
+      .SetTransform(layer, kEndTransform, tween_type);
+  desk_widget->SetBounds(target_widget_bounds);
+}
 
 // A self-deleting class that performs the scale up / down animation for the
 // desk icon button.
@@ -517,7 +506,7 @@ void PerformRemoveDeskMiniViewAnimation(
 
 void PerformZeroStateToExpandedStateMiniViewAnimation(
     DeskBarViewBase* bar_view) {
-  new DeskBarBoundsAnimation(bar_view, /*to_zero_state=*/false);
+  AnimateDeskBarBounds(bar_view, /*to_zero_state=*/false);
   const int bar_x_center = bar_view->bounds().CenterPoint().x();
   for (auto* mini_view : bar_view->mini_views())
     ScaleUpAndFadeInView(mini_view, bar_x_center);
@@ -548,7 +537,7 @@ void PerformZeroStateToExpandedStateMiniViewAnimationCrOSNext(
     }
   }
 
-  new DeskBarBoundsAnimation(bar_view, /*to_zero_state=*/false);
+  AnimateDeskBarBounds(bar_view, /*to_zero_state=*/false);
 
   const int bar_x_center = bar_view->bounds().CenterPoint().x();
   for (auto* mini_view : bar_view->mini_views()) {
@@ -576,7 +565,7 @@ void PerformExpandedStateToZeroStateMiniViewAnimation(
   for (auto* mini_view : removed_mini_views) {
     AnimateDeskMiniViewRemove(mini_view, /*to_zero_state=*/true);
   }
-  new DeskBarBoundsAnimation(bar_view, /*to_zero_state=*/true);
+  AnimateDeskBarBounds(bar_view, /*to_zero_state=*/true);
   const gfx::Rect bounds = bar_view->bounds();
   ScaleDownAndFadeOutView(bar_view->expanded_state_new_desk_button(),
                           bounds.CenterPoint().x());

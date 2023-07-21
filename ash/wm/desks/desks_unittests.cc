@@ -7488,31 +7488,30 @@ TEST_P(DesksTest, ClickTargetLocationOfDroppedDesk) {
   ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
 
   auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
-  const auto* desks_bar_view = overview_grid->desks_bar_view();
+  DeskBarViewBase* desk_bar_view = overview_grid->desks_bar_view();
 
   // Add a desk.
   NewDesk();
 
   // Cache the second desk's mini view.
-  DeskMiniView* mini_view = desks_bar_view->mini_views()[1];
+  DeskMiniView* mini_view = desk_bar_view->mini_views()[1];
 
   auto* event_generator = GetEventGenerator();
 
   // Drag the second desk away from the desk bar.
   StartDragDeskPreview(mini_view, event_generator);
-  EXPECT_TRUE(desks_bar_view->IsDraggingDesk());
+  EXPECT_TRUE(desk_bar_view->IsDraggingDesk());
 
-  event_generator->MoveMouseBy(0, desks_bar_view->height());
+  event_generator->MoveMouseBy(0, desk_bar_view->height());
 
   ui::ScopedAnimationDurationScaleMode normal_anim(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   // Drop the desk and click on the mini view.
   event_generator->ReleaseLeftButton();
-  EXPECT_TRUE(desks_bar_view->IsDraggingDesk());
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  EXPECT_TRUE(desk_bar_view->IsDraggingDesk());
   DeskSwitchAnimationWaiter waiter;
   ClickOnView(mini_view, event_generator);
+  DesksTestApi::WaitForDeskBarUiUpdate(desk_bar_view);
   waiter.Wait();
 }
 
@@ -9267,18 +9266,15 @@ class DeskBarTest
     }
   }
 
-  void WaitForDeskBarAnimation(
+  // TODO(yongshun): Rely on a callback to know when the desk bar is created.
+  void WaitForDeskBar(
       aura::Window* root = Shell::Get()->GetPrimaryRootWindow()) {
-    WaitForDeskBarAnimation(root, bar_type_);
+    WaitForDeskBar(root, bar_type_);
   }
 
-  void WaitForDeskBarAnimation(aura::Window* root,
-                               DeskBarViewBase::Type bar_type) {
-    // TODO(yongshun): Find a better way to wait for animation.
+  void WaitForDeskBar(aura::Window* root, DeskBarViewBase::Type bar_type) {
     int wait_time = 1000;
-    while (wait_time > 0 &&
-           (!GetDeskBarView(root, bar_type) ||
-            GetDeskBarView(root, bar_type)->is_bounds_animation_on_going())) {
+    while (wait_time > 0 && !GetDeskBarView(root, bar_type)) {
       WaitForMilliseconds(100);
       wait_time -= 100;
     }
@@ -9788,14 +9784,21 @@ TEST_P(DeskBarTest, LibraryButton) {
 
   auto test_library_button = [&](const std::string& trace_message) {
     SCOPED_TRACE(trace_message);
-    OpenDeskBar();
-    WaitForDeskBarAnimation();
-    EnterLibrary();
-    WaitForDeskBarAnimation();
 
-    // Overview desk bar will show up once we enter library page.
+    OpenDeskBar();
+    if (bar_type_ == DeskBarViewBase::Type::kOverview) {
+      WaitForDeskBar();
+    }
+
+    EnterLibrary();
     auto* root = Shell::GetPrimaryRootWindow();
-    WaitForDeskBarAnimation(root, DeskBarViewBase::Type::kOverview);
+    if (bar_type_ == DeskBarViewBase::Type::kOverview) {
+      // Clicking on library button in zero state overview desk bar would
+      // trigger a bar bounds animation.
+      DesksTestApi::WaitForDeskBarUiUpdate(
+          GetDeskBarView(root, DeskBarViewBase::Type::kOverview));
+    }
+
     CloseDeskBar(root, DeskBarViewBase::Type::kOverview);
   };
 

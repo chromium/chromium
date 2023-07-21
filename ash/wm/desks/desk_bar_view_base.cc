@@ -1243,13 +1243,14 @@ bool DeskBarViewBase::HandleReleaseEvent(DeskMiniView* mini_view,
 }
 
 void DeskBarViewBase::OnActivateDeskTimer(const base::Uuid& uuid) {
-  auto* controller = DesksController::Get();
+  OnUiUpdateDone();
 
-  if (Desk* desk = controller->GetDeskByUuid(uuid)) {
-    controller->ActivateDesk(desk,
-                             type_ == Type::kDeskButton
-                                 ? DesksSwitchSource::kDeskButtonMiniViewButton
-                                 : DesksSwitchSource::kMiniViewButton);
+  auto* desk_controller = DesksController::Get();
+  if (Desk* desk = desk_controller->GetDeskByUuid(uuid)) {
+    desk_controller->ActivateDesk(
+        desk, type_ == Type::kDeskButton
+                  ? DesksSwitchSource::kDeskButtonMiniViewButton
+                  : DesksSwitchSource::kMiniViewButton);
   }
 }
 
@@ -1630,6 +1631,12 @@ void DeskBarViewBase::SwitchToExpandedState() {
     PerformZeroStateToExpandedStateMiniViewAnimationCrOSNext(this);
   } else {
     PerformZeroStateToExpandedStateMiniViewAnimation(this);
+  }
+}
+
+void DeskBarViewBase::OnUiUpdateDone() {
+  if (on_update_ui_closure_for_testing_) {
+    std::move(on_update_ui_closure_for_testing_).Run();
   }
 }
 

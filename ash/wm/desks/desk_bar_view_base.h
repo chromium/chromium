@@ -152,6 +152,13 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
     library_ui_visibility_ = library_ui_visibility;
   }
 
+  // Sets the animation abort handle. Please note, it will abort the existing
+  // animation first (if there is one) when a new one comes.
+  void set_animation_abort_handle(
+      std::unique_ptr<views::AnimationAbortHandle> animation_abort_handle) {
+    animation_abort_handle_ = std::move(animation_abort_handle);
+  }
+
   // views::View:
   void Layout() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
@@ -323,6 +330,10 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // Animate the bar from the zero state to the expanded state.
   void SwitchToExpandedState();
 
+  // Triggered when the bar UI update is done. This is triggered when the bar is
+  // done with its animation or when `desk_activation_timer_` fires.
+  void OnUiUpdateDone();
+
  protected:
   friend class DeskBarScrollViewLayout;
   friend class DesksTestApi;
@@ -474,6 +485,11 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   base::OneShotTimer desk_activation_timer_;
 
   raw_ptr<aura::Window> root_;
+
+  std::unique_ptr<views::AnimationAbortHandle> animation_abort_handle_;
+
+  // Test closure that runs after the UI has been updated asynchronously.
+  base::OnceClosure on_update_ui_closure_for_testing_;
 };
 
 }  // namespace ash

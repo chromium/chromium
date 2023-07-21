@@ -6,8 +6,6 @@
 #define ASH_WM_DESKS_DESKS_TEST_API_H_
 
 #include "ash/wm/desks/desk_bar_view_base.h"
-#include "base/time/clock.h"
-#include "third_party/skia/include/core/SkColor.h"
 
 namespace aura {
 class Window;
@@ -72,6 +70,9 @@ class DesksTestApi {
   // Resets `first_day_visited_` and `last_day_visited_` of `desk` for testing
   // to the current date.
   static void ResetDeskVisitedMetrics(Desk* desk);
+
+  // Waits for `desk_bar_view` to finish its UI update.
+  static void WaitForDeskBarUiUpdate(DeskBarViewBase* desk_bar_view);
 };
 
 }  // namespace ash
