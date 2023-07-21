@@ -8,6 +8,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/test/ui_controls_ash.h"
+#include "base/command_line.h"
+#include "content/public/common/content_switches.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/check.h"
 #include "base/files/file_util.h"
@@ -23,6 +25,8 @@ void ChromeOSTestSuite::Initialize() {
   content::ContentTestSuiteBase::Initialize();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::test::EnableUIControlsAsh();
+  base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
+  cmdline->AppendSwitch(switches::kDisableMojoBroker);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   // The lacros binary receives certain paths from ash very early in startup.
   // Simulate that behavior here. See chrome_paths_lacros.cc for details. The

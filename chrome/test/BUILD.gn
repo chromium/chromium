@@ -249,6 +249,8 @@ static_library("test_support") {
       "base/chromeos/crosier/chromeos_test_launcher.h",
       "base/chromeos/crosier/chromeos_test_suite.cc",
       "base/chromeos/crosier/chromeos_test_suite.h",
+      "base/chromeos/crosier/crosier_mixin.cc",
+      "base/chromeos/crosier/crosier_mixin.h",
     ]
   }
 
