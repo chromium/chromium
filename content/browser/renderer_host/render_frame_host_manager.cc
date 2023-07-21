@@ -2234,18 +2234,11 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
   // BrowsingInstance. This is why this block is after security checks, but
   // before proactive BrowsingInstance swap.
   if (destination_instance) {
-    // TODO(ahemery): We should not have to specify here if we are going to swap
-    // BrowsingInstance. DetermineSiteInstanceForURL will reuse the
-    // destination_instance unless it is unfit because of a security concern
-    // flagged by above blocks. This is only used by BackForwardCache metrics to
-    // know if we have swapped BrowsingInstance, and it would be more
-    // appropriate to get this information in DetermineSiteInstanceForURL.
-    //
-    // For this reason, it is not important to distinguish between a
-    // BrowsingInstance that is within the same CoopRelatedGroup, as both are
-    // recorded as a kForceSwap by the BFCache.
-    if (!destination_instance->IsRelatedSiteInstance(current_instance)) {
+    if (!destination_instance->IsCoopRelatedSiteInstance(current_instance)) {
       return BrowsingContextGroupSwap::CreateSecuritySwap();
+    }
+    if (!destination_instance->IsRelatedSiteInstance(current_instance)) {
+      return BrowsingContextGroupSwap::CreateRelatedCoopSwap();
     }
     return BrowsingContextGroupSwap::CreateNoSwap(
         ShouldSwapBrowsingInstance::kNo_AlreadyHasMatchingBrowsingInstance);
@@ -3219,7 +3212,7 @@ scoped_refptr<SiteInstanceImpl> RenderFrameHostManager::ConvertToSiteInstance(
   // `candidate_instance` is the SiteInstance that was created at request start
   // time.
   if (candidate_instance &&
-      !current_instance->IsRelatedSiteInstance(candidate_instance) &&
+      !current_instance->IsCoopRelatedSiteInstance(candidate_instance) &&
       candidate_instance->DoesSiteInfoForURLMatch(dest_url_info)) {
     return candidate_instance;
   }

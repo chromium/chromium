@@ -6577,8 +6577,20 @@ IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesBrowserTest,
   EXPECT_TRUE(
       second_popup_si->IsCoopRelatedSiteInstance(initial_popup_si.get()));
 
+  TestNavigationManager nav_manager(popup_window, regular_page);
   popup_window->GetController().GoBack();
-  ASSERT_TRUE(WaitForLoadStop(popup_window));
+
+  // Check that the proper speculative SiteInstance was selected.
+  ASSERT_TRUE(nav_manager.WaitForRequestStart());
+  RenderFrameHostImpl* speculative_rfh = popup_window->GetPrimaryFrameTree()
+                                             .root()
+                                             ->render_manager()
+                                             ->speculative_frame_host();
+  ASSERT_TRUE(speculative_rfh);
+  EXPECT_EQ(initial_popup_si.get(), speculative_rfh->GetSiteInstance());
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+
+  // Check that the speculative SiteInstance was then committed.
   scoped_refptr<SiteInstanceImpl> back_si(
       popup_window->GetPrimaryMainFrame()->GetSiteInstance());
   EXPECT_EQ(initial_popup_si.get(), back_si.get());
