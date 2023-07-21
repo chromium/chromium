@@ -9326,7 +9326,8 @@
                         "OmniboxSteadyStateBackgroundColor",
                         "OmniboxSteadyStateHeight",
                         "OmniboxSteadyStateTextColor",
-                        "OmniboxSuggestionHoverFillShape"
+                        "OmniboxSuggestionHoverFillShape",
+                        "kOmniboxCR23SteadyStateIcons"
                     ]
                 }
             ]
