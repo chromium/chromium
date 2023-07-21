@@ -1378,6 +1378,10 @@ void ServiceWorkerVersion::OnStarted(
     } else {
       // Starting the installed service worker should not change the existence
       // of the fetch handler.
+      SCOPED_CRASH_KEY_NUMBER("SWVersion", "old_FHType",
+                              static_cast<int32_t>(*fetch_handler_type_));
+      SCOPED_CRASH_KEY_NUMBER("SWVersion", "new_FHType",
+                              static_cast<int32_t>(new_fetch_handler_type));
       DCHECK_EQ(*fetch_handler_type_ != FetchHandlerType::kNoHandler,
                 new_fetch_handler_type != FetchHandlerType::kNoHandler);
       fetch_handler_type_ = new_fetch_handler_type;
