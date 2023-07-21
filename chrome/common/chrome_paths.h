@@ -88,8 +88,9 @@ enum {
                              // bundled Widevine CDM.
   DIR_COMPONENT_UPDATED_WIDEVINE_CDM,  // Base directory of the Widevine CDM
                                        // downloaded by the component updater.
-  FILE_COMPONENT_WIDEVINE_CDM_HINT,    // A file in a known location that points
-                                       // to the component updated Widevine CDM.
+  FILE_COMPONENT_WIDEVINE_CDM_HINT,    // A file in a known location that
+                                       // points to the component updated
+                                       // Widevine CDM.
 #endif
   FILE_RESOURCES_PACK,  // Full path to the .pak file containing binary data.
                         // This includes data for internal pages (e.g., html
@@ -140,6 +141,10 @@ enum {
 
   // Flag file indicating SRK ROCA vulnerability status.
   FILE_CHROME_OS_TPM_FIRMWARE_UPDATE_SRK_VULNERABLE_ROCA,
+
+  // Base directory where user cryptohome mount point (named as hash of
+  // username) resides.
+  DIR_CHROMEOS_HOMEDIR_MOUNT,
 #endif                                       // BUILDFLAG(IS_CHROMEOS_ASH)
   DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS,  // Directory where verified models
                                              // downloaded by the Optimization

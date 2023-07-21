@@ -69,6 +69,13 @@ const base::FilePath::CharType kChromeOSTPMFirmwareUpdateLocation[] =
     FILE_PATH_LITERAL("/run/tpm_firmware_update_location");
 const base::FilePath::CharType kChromeOSTPMFirmwareUpdateSRKVulnerableROCA[] =
     FILE_PATH_LITERAL("/run/tpm_firmware_update_srk_vulnerable_roca");
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
+const base::FilePath::CharType kChromeOSCryptohomeMountRoot[] =
+    FILE_PATH_LITERAL("/home/user");
+#else
+const base::FilePath::CharType kFakeCryptohomeMountRootDirname[] =
+    FILE_PATH_LITERAL(".home_user");
+#endif  // BUILDFLAG(IS_CHROMEOS_DEVICE)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 base::FilePath& GetInvalidSpecifiedUserDataDirInternal() {
@@ -576,6 +583,16 @@ bool PathProvider(int key, base::FilePath* result) {
       break;
     case chrome::FILE_CHROME_OS_TPM_FIRMWARE_UPDATE_SRK_VULNERABLE_ROCA:
       cur = base::FilePath(kChromeOSTPMFirmwareUpdateSRKVulnerableROCA);
+      break;
+    case chrome::DIR_CHROMEOS_HOMEDIR_MOUNT:
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
+      cur = base::FilePath(kChromeOSCryptohomeMountRoot);
+#else
+      if (!base::PathService::Get(chrome::DIR_USER_DATA, &cur)) {
+        return false;
+      }
+      cur = cur.Append(kFakeCryptohomeMountRootDirname);
+#endif  // BUILDFLAG(IS_CHROMEOS_DEVICE)
       break;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     case chrome::DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS:
