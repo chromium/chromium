@@ -66,7 +66,7 @@ void DebuggerCaptureBufferCallback(
                          gfx::Vector2dF(), gfx::SizeF(si_info->size));
   DBG_DRAW_RECTANGLE_OPT_BUFF_UV(
       "skia_gpu.captured_buffer.image", DBG_OPT_BLACK, gfx::Vector2dF(),
-      gfx::SizeF(si_info->size), &submit_id, DEFAULT_UV);
+      gfx::SizeF(si_info->size), &submit_id, DBG_DEFAULT_UV);
 
   viz::VizDebugger::BufferInfo buffer_info;
   buffer_info.bitmap.setInfo(SkImageInfo::MakeN32(
