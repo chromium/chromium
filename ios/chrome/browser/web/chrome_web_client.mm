@@ -407,49 +407,41 @@ void ChromeWebClient::PrepareErrorPage(
     return;
   }
   DCHECK(error);
-  __block NSString* error_html = nil;
-  __block base::OnceCallback<void(NSString*)> error_html_callback =
-      std::move(callback);
   NSError* final_underlying_error =
       base::ios::GetFinalUnderlyingErrorFromError(error);
   if ([final_underlying_error.domain
           isEqualToString:kSafeBrowsingErrorDomain]) {
     // Only kUnsafeResourceErrorCode is supported.
     DCHECK_EQ(kUnsafeResourceErrorCode, final_underlying_error.code);
-    std::move(error_html_callback)
-        .Run(GetSafeBrowsingErrorPageHTML(web_state, navigation_id));
+    std::move(callback).Run(
+        GetSafeBrowsingErrorPageHTML(web_state, navigation_id));
   } else if ([final_underlying_error.domain
                  isEqualToString:kLookalikeUrlErrorDomain]) {
     // Only kLookalikeUrlErrorCode is supported.
     DCHECK_EQ(kLookalikeUrlErrorCode, final_underlying_error.code);
-    std::move(error_html_callback)
-        .Run(GetLookalikeUrlErrorPageHtml(web_state, navigation_id));
+    std::move(callback).Run(
+        GetLookalikeUrlErrorPageHtml(web_state, navigation_id));
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   } else if ([final_underlying_error.domain
                  isEqualToString:kSupervisedUserInterstitialErrorDomain]) {
     CHECK_EQ(kSupervisedUserInterstitialErrorCode, final_underlying_error.code);
-    std::move(error_html_callback)
-        .Run(GetSupervisedUserErrorPageHTML(web_state, navigation_id, url));
+    std::move(callback).Run(
+        GetSupervisedUserErrorPageHTML(web_state, navigation_id, url));
 #endif
   } else if ([final_underlying_error.domain
                  isEqualToString:kHttpsOnlyModeErrorDomain]) {
     // Only kHttpsOnlyModeErrorCode is supported.
     DCHECK_EQ(kHttpsOnlyModeErrorCode, final_underlying_error.code);
-    std::move(error_html_callback)
-        .Run(GetHttpsOnlyModeErrorPageHtml(web_state, navigation_id));
+    std::move(callback).Run(
+        GetHttpsOnlyModeErrorPageHtml(web_state, navigation_id));
   } else if (ssl_info.has_value()) {
-    base::OnceCallback<void(NSString*)> blocking_page_callback =
-        base::BindOnce(^(NSString* blocking_page_html) {
-          error_html = blocking_page_html;
-          std::move(error_html_callback).Run(error_html);
-        });
     IOSSSLErrorHandler::HandleSSLError(
         web_state, net::MapCertStatusToNetError(ssl_info.value().cert_status),
         ssl_info.value(), url, ssl_info.value().is_fatal_cert_error,
-        navigation_id, std::move(blocking_page_callback));
+        navigation_id, std::move(callback));
   } else {
-    std::move(error_html_callback)
-        .Run(GetErrorPage(url, error, is_post, is_off_the_record));
+    std::move(callback).Run(
+        GetErrorPage(url, error, is_post, is_off_the_record));
   }
 }
 
