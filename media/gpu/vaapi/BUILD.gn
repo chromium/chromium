@@ -9,6 +9,7 @@ import("//media/gpu/args.gni")
 import("//media/media_options.gni")
 import("//testing/test.gni")
 import("//tools/generate_stubs/rules.gni")
+import("//ui/gl/features.gni")
 
 assert(is_linux || is_chromeos)
 assert(use_vaapi)
@@ -16,6 +17,9 @@ assert(use_vaapi)
 generate_stubs("libva_stubs") {
   extra_header = "va_stub_header.fragment"
   sigs = [ "va.sigs" ]
+  if (use_vaapi_x11) {
+    sigs += [ "va_x11.sigs" ]
+  }
   if (is_chromeos_ash) {
     sigs += [ "va_prot.sigs" ]
   }
@@ -107,6 +111,7 @@ source_set("vaapi") {
   public_deps = [
     "//media",
     "//skia",
+    "//ui/gl",
   ]
 
   if (is_chromeos_ash) {
@@ -166,6 +171,7 @@ source_set("common") {
     "//ui/base:features",
     "//ui/gfx:memory_buffer",
     "//ui/gfx/linux:drm",
+    "//ui/gl",
   ]
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
