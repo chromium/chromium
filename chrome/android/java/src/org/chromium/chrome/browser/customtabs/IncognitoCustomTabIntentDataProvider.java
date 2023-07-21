@@ -47,7 +47,7 @@ import java.util.List;
  * to activity re-creation.
  */
 public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentDataProvider {
-    private static final int MAX_CUSTOM_MENU_ITEMS = 5;
+    private static final int MAX_CUSTOM_MENU_ITEMS = 7;
 
     private final Intent mIntent;
     private final CustomTabsSessionToken mSession;

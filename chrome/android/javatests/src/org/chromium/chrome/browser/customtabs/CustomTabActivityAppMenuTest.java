@@ -86,7 +86,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class CustomTabActivityAppMenuTest {
-    private static final int MAX_MENU_CUSTOM_ITEMS = 5;
+    private static final int MAX_MENU_CUSTOM_ITEMS = 7;
     private static final int NUM_CHROME_MENU_ITEMS = 5;
     private static final int NUM_CHROME_MENU_ITEMS_WITH_DIVIDER = 6;
     private static final String TEST_PAGE = "/chrome/test/data/android/google.html";
@@ -434,13 +434,13 @@ public class CustomTabActivityAppMenuTest {
     }
 
     /**
-     * Test that only up to 5 entries are added to the custom menu.
+     * Test that only up to 7 entries are added to the custom menu.
      */
     @Test
     @SmallTest
     public void testMaxMenuItems() throws Exception {
         Intent intent = createMinimalCustomTabIntent();
-        int numMenuEntries = 7;
+        int numMenuEntries = 9;
         Assert.assertTrue(MAX_MENU_CUSTOM_ITEMS < numMenuEntries);
         CustomTabsIntentTestUtils.addMenuEntriesToIntent(intent, numMenuEntries, TEST_MENU_TITLE);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);

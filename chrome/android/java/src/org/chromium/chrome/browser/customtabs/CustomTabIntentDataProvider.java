@@ -207,7 +207,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     private static final int DEFAULT_BREAKPOINT_DP = 840;
 
-    private static final int MAX_CUSTOM_MENU_ITEMS = 5;
+    private static final int MAX_CUSTOM_MENU_ITEMS = 7;
 
     private static final int MAX_CUSTOM_TOOLBAR_ITEMS = 2;
 
