@@ -482,7 +482,8 @@ class CrExtensionsOptionsDialogTest : public ExtensionSettingsTestBase {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(CrExtensionsOptionsDialogTest, Layout) {
+// TODO(crbug.com/1028357): Flaky on multiple platforms.
+IN_PROC_BROWSER_TEST_F(CrExtensionsOptionsDialogTest, DISABLED_Layout) {
   InstallExtensionWithInPageOptions();
   RunTest("extensions/options_dialog_test.js",
           "runMochaTest('ExtensionOptionsDialogTests', 'Layout')");
