@@ -8,7 +8,7 @@
 #include <unordered_map>
 
 #include "base/i18n/case_conversion.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
@@ -81,7 +81,10 @@ void CompileRulesFromData(const std::string& data_string,
 class Cache {
  public:
   // Return the singleton instance of the cache.
-  static Cache* GetInstance() { return base::Singleton<Cache>::get(); }
+  static Cache* GetInstance() {
+    static base::NoDestructor<Cache> instance;
+    return instance.get();
+  }
 
   Cache(const Cache&) = delete;
   Cache& operator=(const Cache&) = delete;
@@ -137,7 +140,7 @@ class Cache {
   // The cache of compiled rules, keyed by region.
   CompiledRuleCache data_;
 
-  friend struct base::DefaultSingletonTraits<Cache>;
+  friend class base::NoDestructor<Cache>;
 };
 
 }  // namespace
