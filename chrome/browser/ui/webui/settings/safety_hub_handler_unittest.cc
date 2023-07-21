@@ -62,12 +62,10 @@ class SafetyHubHandlerTest : public testing::Test {
     handler()->AllowJavascript();
 
     // Create a revoked permission.
-    base::Value::Dict dict = base::Value::Dict();
-    base::Value::List permission_type_list = base::Value::List();
-    permission_type_list.Append(
-        static_cast<int32_t>(ContentSettingsType::GEOLOCATION));
-    dict.Set(permissions::kRevokedKey,
-             base::Value::List(std::move(permission_type_list)));
+    auto dict = base::Value::Dict().Set(
+        permissions::kRevokedKey,
+        base::Value::List().Append(
+            static_cast<int32_t>(ContentSettingsType::GEOLOCATION)));
 
     hcsm()->SetWebsiteSettingDefaultScope(
         GURL(kUnusedTestSite), GURL(kUnusedTestSite),

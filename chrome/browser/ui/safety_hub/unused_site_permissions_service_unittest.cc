@@ -371,11 +371,9 @@ TEST_F(UnusedSitePermissionsServiceTest, RegrantPermissionsForOrigin) {
   const std::string url2 = "https://example2.com:443";
   const ContentSettingsType type = ContentSettingsType::GEOLOCATION;
 
-  base::Value::Dict dict = base::Value::Dict();
-  base::Value::List permission_type_list = base::Value::List();
-  permission_type_list.Append(static_cast<int32_t>(type));
-  dict.Set(permissions::kRevokedKey,
-           base::Value::List(std::move(permission_type_list)));
+  auto dict = base::Value::Dict().Set(
+      permissions::kRevokedKey,
+      base::Value::List().Append(static_cast<int32_t>(type)));
 
   // Add `url1` and `url2` to revoked permissions list.
   hcsm()->SetWebsiteSettingDefaultScope(
@@ -537,11 +535,9 @@ TEST_F(UnusedSitePermissionsServiceTest, ClearRevokedPermissionsList) {
   const std::string url2 = "https://example2.com:443";
   const ContentSettingsType type = ContentSettingsType::GEOLOCATION;
 
-  base::Value::Dict dict = base::Value::Dict();
-  base::Value::List permission_type_list = base::Value::List();
-  permission_type_list.Append(static_cast<int32_t>(type));
-  dict.Set(permissions::kRevokedKey,
-           base::Value::List(std::move(permission_type_list)));
+  auto dict = base::Value::Dict().Set(
+      permissions::kRevokedKey,
+      base::Value::List().Append(static_cast<int32_t>(type)));
 
   // Add `url1` and `url2` to revoked permissions list.
   hcsm()->SetWebsiteSettingDefaultScope(
@@ -569,12 +565,9 @@ TEST_F(UnusedSitePermissionsServiceTest, ClearRevokedPermissionsList) {
 
 TEST_F(UnusedSitePermissionsServiceTest, RecordRegrantMetricForAllowAgain) {
   const std::string url = "https://example.com:443";
-  base::Value::Dict dict = base::Value::Dict();
-  base::Value::List permission_type_list = base::Value::List();
-  permission_type_list.Append(
-      static_cast<int32_t>(ContentSettingsType::GEOLOCATION));
-  dict.Set(permissions::kRevokedKey,
-           base::Value::List(std::move(permission_type_list)));
+  auto dict = base::Value::Dict().Set(
+      permissions::kRevokedKey, base::Value::List().Append(static_cast<int32_t>(
+                                    ContentSettingsType::GEOLOCATION)));
 
   auto cleanUpThreshold =
       content_settings::features::
@@ -616,11 +609,9 @@ TEST_F(UnusedSitePermissionsServiceTest,
   const GURL url2 = GURL("https://example2.com:443");
   const ContentSettingsType type = ContentSettingsType::GEOLOCATION;
 
-  base::Value::Dict dict = base::Value::Dict();
-  base::Value::List permission_type_list = base::Value::List();
-  permission_type_list.Append(static_cast<int32_t>(type));
-  dict.Set(permissions::kRevokedKey,
-           base::Value::List(std::move(permission_type_list)));
+  auto dict = base::Value::Dict().Set(
+      permissions::kRevokedKey,
+      base::Value::List().Append(static_cast<int32_t>(type)));
 
   // Add url1 and url2 to revoked permissions list.
   hcsm()->SetWebsiteSettingDefaultScope(
