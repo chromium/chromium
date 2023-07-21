@@ -660,9 +660,6 @@ def main():
         print('--build-mac-arm only valid on intel to cross-build arm')
         return 1
 
-    if args.sync_for_gnrt:
-        args.skip_llvm_build = True
-
     args.gcc_toolchain = None
     if sys.platform.startswith('linux') and not args.sync_for_gnrt:
         # Fetch GCC package here and pass it to build.py to avoid it doing the
@@ -721,12 +718,12 @@ def main():
     if not args.skip_checkout:
         CheckoutGitRepo('Rust', RUST_GIT_URL, checkout_revision, RUST_SRC_DIR)
 
-    path = FetchBetaPackage('cargo', checkout_revision)
-    if sys.platform == 'win32':
-        cargo_bin = os.path.join(path, 'cargo', 'bin', 'cargo.exe')
-    else:
-        cargo_bin = os.path.join(path, 'cargo', 'bin', 'cargo')
-    CargoVendor(cargo_bin)
+        path = FetchBetaPackage('cargo', checkout_revision)
+        if sys.platform == 'win32':
+            cargo_bin = os.path.join(path, 'cargo', 'bin', 'cargo.exe')
+        else:
+            cargo_bin = os.path.join(path, 'cargo', 'bin', 'cargo')
+        CargoVendor(cargo_bin)
 
     # Gnrt needs the checkout to be up-to-date, workspace submodules to be
     # synced for cargo to work, and the cargo binary itself. All this is done,
