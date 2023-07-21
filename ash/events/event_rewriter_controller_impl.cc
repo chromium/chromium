@@ -7,11 +7,13 @@
 #include <utility>
 
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
+#include "ash/constants/ash_features.h"
 #include "ash/display/mirror_window_controller.h"
 #include "ash/display/privacy_screen_controller.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/events/accessibility_event_rewriter.h"
 #include "ash/events/keyboard_driven_event_rewriter.h"
+#include "ash/events/peripheral_customization_event_rewriter.h"
 #include "ash/public/cpp/accessibility_event_rewriter_delegate.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
@@ -64,6 +66,15 @@ void EventRewriterControllerImpl::Initialize(
           Shell::Get()->sticky_keys_controller(), privacy_screen_supported);
   event_rewriter_ash_ = event_rewriter_ash.get();
 
+  std::unique_ptr<PeripheralCustomizationEventRewriter>
+      peripheral_customization_event_rewriter;
+  if (features::IsPeripheralCustomizationEnabled()) {
+    peripheral_customization_event_rewriter =
+        std::make_unique<PeripheralCustomizationEventRewriter>();
+    peripheral_customization_event_rewriter_ =
+        peripheral_customization_event_rewriter.get();
+  }
+
   std::unique_ptr<AccessibilityEventRewriter> accessibility_event_rewriter =
       std::make_unique<AccessibilityEventRewriter>(
           event_rewriter_ash.get(), accessibility_event_rewriter_delegate);
@@ -71,6 +82,9 @@ void EventRewriterControllerImpl::Initialize(
 
   // EventRewriters are notified in the order they are added.
   AddEventRewriter(std::move(accessibility_event_rewriter));
+  if (features::IsPeripheralCustomizationEnabled()) {
+    AddEventRewriter(std::move(peripheral_customization_event_rewriter));
+  }
   AddEventRewriter(std::move(keyboard_driven_event_rewriter));
   AddEventRewriter(std::move(event_rewriter_ash));
 }
