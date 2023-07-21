@@ -49,6 +49,8 @@ class CookieControlsIconView : public PageActionIconView,
   const gfx::VectorIcon& GetVectorIcon() const override;
 
  private:
+  friend class CookieControlsIconViewUnitTest;
+
   bool GetAssociatedBubble() const;
   bool ShouldBeVisible() const;
 

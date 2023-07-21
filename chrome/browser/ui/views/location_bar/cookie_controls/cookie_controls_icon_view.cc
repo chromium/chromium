@@ -137,6 +137,11 @@ bool CookieControlsIconView::ShouldBeVisible() const {
     return false;
   }
 
+  if (status_ == CookieControlsStatus::kDisabled) {
+    // Don't show the icon if third-party cookies are enabled by default.
+    return false;
+  }
+
   // Only show the icon for medium & high confidence.
   return (confidence_ == CookieControlsBreakageConfidenceLevel::kMedium ||
           confidence_ == CookieControlsBreakageConfidenceLevel::kHigh);
