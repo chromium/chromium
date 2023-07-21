@@ -320,9 +320,10 @@ views::ProgressBar* SetupChildProgressBarView(views::FlexLayoutView* parent,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kUnbounded,
                                /*adjust_height_for_width=*/false));
-  // TODO(b/263994165): Replace these color with the colors within the UI spec.
-  progress_bar_view->SetForegroundColorId(kColorAshProgressBarColorForeground);
-  progress_bar_view->SetBackgroundColorId(kColorAshProgressBarColorBackground);
+  progress_bar_view->SetForegroundColorId(
+      kColorAshSystemInfoBarChartColorForeground);
+  progress_bar_view->SetBackgroundColorId(
+      kColorAshSystemInfoBarChartColorBackground);
   return progress_bar_view;
 }
 

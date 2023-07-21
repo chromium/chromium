@@ -695,6 +695,12 @@ void AddAshColorMixer(ui::ColorProvider* provider,
 
   mixer[kColorAshEcheIconColorStreaming] = {ui::ColorTransform(SK_ColorGREEN)};
 
+  mixer[kColorAshSystemInfoBarChartColorBackground] =
+      use_dark_color ? ui::ColorTransform(gfx::kGoogleGrey500)
+                     : ui::ColorTransform(gfx::kGoogleGrey400);
+
+  mixer[kColorAshSystemInfoBarChartColorForeground] = {gfx::kGoogleBlue300};
+
   mixer[kColorAshMultiSelectTextColor] =
       use_dark_color ? ui::ColorTransform(gfx::kGoogleBlue100)
                      : ui::ColorTransform(gfx::kGoogleBlue800);
