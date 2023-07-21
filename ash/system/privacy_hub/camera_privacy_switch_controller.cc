@@ -19,7 +19,10 @@
 #include "ash/system/system_notification_controller.h"
 #include "base/check.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/sequence_checker.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "camera_privacy_switch_controller.h"
 #include "components/prefs/pref_service.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
@@ -55,6 +58,9 @@ void VCDPrivacyAdapter::SetCameraSWPrivacySwitch(
     }
   }
 }
+
+const base::TimeDelta kCameraLedFallbackNotificationExtensionPeriod =
+    base::Seconds(10);
 
 }  // namespace
 
@@ -142,6 +148,8 @@ void CameraPrivacySwitchController::OnCameraSWPrivacySwitchStateChanged(
 
 void CameraPrivacySwitchController::ActiveApplicationsChanged(
     bool application_added) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (application_added) {
     active_applications_using_camera_count_++;
   } else {
@@ -169,15 +177,23 @@ void CameraPrivacySwitchController::ActiveApplicationsChanged(
   // `MicrophonePrivacySwitchController`.
   if (active_applications_using_camera_count_ == 0) {
     // Always remove the notification when active applications go to 0.
-    privacy_hub_notification_controller->RemoveSoftwareSwitchNotification(
-        SensorDisabledNotificationDelegate::Sensor::kCamera);
+    RemoveNotification();
   } else if (application_added) {
-    privacy_hub_notification_controller->ShowSoftwareSwitchNotification(
-        SensorDisabledNotificationDelegate::Sensor::kCamera);
+    if (InNotificationExtensionPeriod()) {
+      // Notification is not re-shown, but only updated in the extension period.
+      UpdateNotification();
+    } else {
+      ShowNotification();
+    }
+    if (UsingCameraLEDFallback()) {
+      ScheduleNotificationRemoval();
+    }
   } else {
     // Application removed, update the notifications message.
-    privacy_hub_notification_controller->UpdateSoftwareSwitchNotification(
-        SensorDisabledNotificationDelegate::Sensor::kCamera);
+    UpdateNotification();
+    if (UsingCameraLEDFallback()) {
+      ScheduleNotificationRemoval();
+    }
   }
 }
 
@@ -205,6 +221,57 @@ bool CameraPrivacySwitchController::CheckCameraLEDFallbackDirectly() {
   CHECK(file_size_read_success);
 
   return (file_size != 0ll);
+}
+
+void CameraPrivacySwitchController::ShowNotification() {
+  last_active_notification_update_time_ = base::Time::Now();
+  auto* privacy_hub_notification_controller =
+      PrivacyHubNotificationController::Get();
+  CHECK(privacy_hub_notification_controller);
+
+  privacy_hub_notification_controller->ShowSoftwareSwitchNotification(
+      SensorDisabledNotificationDelegate::Sensor::kCamera);
+}
+
+void CameraPrivacySwitchController::RemoveNotification() {
+  if (InNotificationExtensionPeriod()) {
+    // Do not remove notification within the extension period.
+    return;
+  }
+
+  auto* privacy_hub_notification_controller =
+      PrivacyHubNotificationController::Get();
+  CHECK(privacy_hub_notification_controller);
+
+  last_active_notification_update_time_ = base::Time::Min();
+  privacy_hub_notification_controller->RemoveSoftwareSwitchNotification(
+      SensorDisabledNotificationDelegate::Sensor::kCamera);
+}
+
+void CameraPrivacySwitchController::UpdateNotification() {
+  auto* privacy_hub_notification_controller =
+      PrivacyHubNotificationController::Get();
+  CHECK(privacy_hub_notification_controller);
+
+  last_active_notification_update_time_ = base::Time::Now();
+  privacy_hub_notification_controller->UpdateSoftwareSwitchNotification(
+      SensorDisabledNotificationDelegate::Sensor::kCamera);
+}
+
+void CameraPrivacySwitchController::ScheduleNotificationRemoval() {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&CameraPrivacySwitchController::RemoveNotification,
+                     weak_ptr_factory_.GetWeakPtr()),
+      kCameraLedFallbackNotificationExtensionPeriod);
+}
+
+bool CameraPrivacySwitchController::InNotificationExtensionPeriod() {
+  if (!UsingCameraLEDFallback()) {
+    return false;
+  }
+  return base::Time::Now() < (last_active_notification_update_time_ +
+                              kCameraLedFallbackNotificationExtensionPeriod);
 }
 
 }  // namespace ash

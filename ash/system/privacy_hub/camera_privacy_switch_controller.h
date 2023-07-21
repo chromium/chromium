@@ -12,7 +12,9 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/privacy_hub/privacy_hub_notification.h"
 #include "base/functional/callback.h"
+#include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
+#include "base/time/time.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 
@@ -93,12 +95,26 @@ class ASH_EXPORT CameraPrivacySwitchController
   // Can be called only once.
   void InitUsingCameraLEDFallback();
 
+  void ShowNotification() VALID_CONTEXT_REQUIRED(sequence_checker_);
+  void RemoveNotification() VALID_CONTEXT_REQUIRED(sequence_checker_);
+  void UpdateNotification() VALID_CONTEXT_REQUIRED(sequence_checker_);
+  void ScheduleNotificationRemoval() VALID_CONTEXT_REQUIRED(sequence_checker_);
+  bool InNotificationExtensionPeriod()
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   std::unique_ptr<CameraPrivacySwitchAPI> switch_api_;
-  int active_applications_using_camera_count_ = 0;
+  int GUARDED_BY_CONTEXT(sequence_checker_)
+      active_applications_using_camera_count_ = 0;
   bool is_camera_observer_added_ = false;
   int camera_count_ = -1;
   bool using_camera_led_fallback_ = true;
+  base::Time GUARDED_BY_CONTEXT(sequence_checker_)
+      last_active_notification_update_time_;
+
+  base::WeakPtrFactory<CameraPrivacySwitchController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
