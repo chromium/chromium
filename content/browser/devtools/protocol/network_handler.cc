@@ -2988,7 +2988,8 @@ void NetworkHandler::OnRequestWillBeSentExtraInfo(
       GetRawHeaders(request_headers), GetConnectTiming(timestamp),
       MaybeBuildClientSecurityState(security_state),
       other_partition_info
-          ? other_partition_info->site_has_cookie_in_other_partition
+          ? Maybe<bool>(
+                other_partition_info->site_has_cookie_in_other_partition)
           : Maybe<bool>());
 }
 
@@ -3017,8 +3018,9 @@ void NetworkHandler::OnResponseReceivedExtraInfo(
       response_headers_text.has_value() ? response_headers_text.value()
                                         : Maybe<String>(),
       std::move(frontend_partition_key),
-      cookie_partition_key ? !cookie_partition_key->IsSerializeable()
-                           : Maybe<bool>());
+      cookie_partition_key
+          ? Maybe<bool>(!cookie_partition_key->IsSerializeable())
+          : Maybe<bool>());
 }
 
 void NetworkHandler::OnLoadNetworkResourceFinished(
