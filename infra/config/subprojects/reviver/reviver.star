@@ -61,8 +61,8 @@ polymorphic.launcher(
 
 polymorphic.launcher(
     name = "android-coverage-launcher",
-    # To avoid peak hours, we run it at 10AM UTC.
-    schedule = "0 6 * * *",
+    # Match the replicated builder's schedule for comparable data
+    schedule = "0 4 * * *",
     pool = ci.DEFAULT_POOL,
     os = os.LINUX_DEFAULT,
     runner = "reviver/coverage-runner",
