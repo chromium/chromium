@@ -2983,6 +2983,7 @@ bool Textfield::HandleGestureForSelectionDragging(ui::GestureEvent* event) {
       return true;
     case ui::ET_GESTURE_LONG_PRESS:
       selection_dragging_state_ = SelectionDraggingState::kSelectedWord;
+      DestroyTouchSelection();
       event->SetHandled();
       return true;
     case ui::ET_GESTURE_LONG_TAP:
@@ -3069,8 +3070,12 @@ bool Textfield::StartSelectionDragging(const ui::GestureEvent& event) {
     return true;
   } else if (selection_dragging_state_ == SelectionDraggingState::kNone &&
              std::fabs(delta_x) >= std::fabs(delta_y)) {
-    // Only start dragging the cursor if the gesture begins in a horizontal
-    // direction.
+    // If a horizontal dragging gesture begins while the cursor is present (i.e.
+    // empty selection), use the gesture to move the cursor. Temporarily destroy
+    // the touch selection controller so that the touch handles don't appear in
+    // the wrong spot before the cursor is moved.
+    DestroyTouchSelection();
+    MoveCursorTo(event.location(), false);
     selection_dragging_state_ = SelectionDraggingState::kDraggingCursor;
     return true;
   }
