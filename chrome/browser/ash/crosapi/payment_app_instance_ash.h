@@ -8,7 +8,10 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chromeos/components/payments/mojom/payment_app.mojom.h"
 #include "chromeos/components/payments/mojom/payment_app_types.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -18,10 +21,15 @@ namespace arc {
 class ArcPaymentAppBridge;
 }
 
+namespace apps {
+class InstanceRegistry;
+}
+
 namespace crosapi {
 
 class PaymentAppInstanceAsh
-    : public chromeos::payments::mojom::PaymentAppInstance {
+    : public chromeos::payments::mojom::PaymentAppInstance,
+      public ProfileObserver {
  public:
   PaymentAppInstanceAsh();
   PaymentAppInstanceAsh(const PaymentAppInstanceAsh&) = delete;
@@ -50,10 +58,17 @@ class PaymentAppInstanceAsh
   void SetPaymentAppServiceForTesting(
       arc::ArcPaymentAppBridge* payment_app_service);
 
+  void SetInstanceRegistryForTesting(apps::InstanceRegistry* instance_registry);
+
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+
  private:
-  raw_ptr<arc::ArcPaymentAppBridge, ExperimentalAsh> payment_app_service_ =
-      nullptr;
+  raw_ptr<arc::ArcPaymentAppBridge> payment_app_service_ = nullptr;
+  raw_ptr<apps::InstanceRegistry> instance_registry_ = nullptr;
   mojo::ReceiverSet<chromeos::payments::mojom::PaymentAppInstance> receivers_;
+  // Observe profile destruction to reset prefs observation.
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

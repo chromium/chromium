@@ -63,6 +63,8 @@ class AndroidAppCommunicationTest : public testing::Test {
   std::unique_ptr<AndroidAppCommunicationTestSupport> support_;
   content::TestWebContentsFactory web_contents_factory_;
   raw_ptr<content::WebContents> web_contents_;
+  absl::optional<base::UnguessableToken> twa_instance_identifier_ =
+      base::UnguessableToken::Create();
 };
 
 TEST_F(AndroidAppCommunicationTest, OneInstancePerBrowserContext) {
@@ -486,7 +488,8 @@ TEST_F(AndroidAppCommunicationTest, NoPaymentInstanceForInvokePaymentApp) {
       "com.example.app", "com.example.app.Activity", stringified_method_data,
       GURL("https://top-level-origin.com"),
       GURL("https://payment-request-origin.com"), "payment-request-id",
-      base::UnguessableToken::Create(), web_contents_, future.GetCallback());
+      base::UnguessableToken::Create(), web_contents_, twa_instance_identifier_,
+      future.GetCallback());
   auto error = future.Get<0>();
   const auto& is_activity_result_ok = future.Get<1>();
   const auto& payment_method_identifier = future.Get<2>();
@@ -517,7 +520,8 @@ TEST_F(AndroidAppCommunicationTest, TwaPaymentOnlyWithPlayBilling) {
       "com.example.app", "com.example.app.Activity", stringified_method_data,
       GURL("https://top-level-origin.com"),
       GURL("https://payment-request-origin.com"), "payment-request-id",
-      base::UnguessableToken::Create(), web_contents_, future.GetCallback());
+      base::UnguessableToken::Create(), web_contents_, twa_instance_identifier_,
+      future.GetCallback());
   auto error = future.Get<0>();
   const auto& is_activity_result_ok = future.Get<1>();
   const auto& payment_method_identifier = future.Get<2>();
@@ -556,7 +560,8 @@ TEST_F(AndroidAppCommunicationTest, NoPaymentWithMoreThanOnePaymentMethodData) {
       "com.example.app", "com.example.app.Activity", stringified_method_data,
       GURL("https://top-level-origin.com"),
       GURL("https://payment-request-origin.com"), "payment-request-id",
-      base::UnguessableToken::Create(), web_contents_, future.GetCallback());
+      base::UnguessableToken::Create(), web_contents_, twa_instance_identifier_,
+      future.GetCallback());
   auto error = future.Get<0>();
   const auto& is_activity_result_ok = future.Get<1>();
   const auto& payment_method_identifier = future.Get<2>();
@@ -598,7 +603,8 @@ TEST_F(AndroidAppCommunicationTest, PaymentWithEmptyMethodData) {
       "com.example.app", "com.example.app.Activity", stringified_method_data,
       GURL("https://top-level-origin.com"),
       GURL("https://payment-request-origin.com"), "payment-request-id",
-      base::UnguessableToken::Create(), web_contents_, future.GetCallback());
+      base::UnguessableToken::Create(), web_contents_, twa_instance_identifier_,
+      future.GetCallback());
   auto error = future.Get<0>();
   const auto& is_activity_result_ok = future.Get<1>();
   const auto& payment_method_identifier = future.Get<2>();
@@ -637,7 +643,8 @@ TEST_F(AndroidAppCommunicationTest, UserCancelInvokePaymentApp) {
       "com.example.app", "com.example.app.Activity", stringified_method_data,
       GURL("https://top-level-origin.com"),
       GURL("https://payment-request-origin.com"), "payment-request-id",
-      base::UnguessableToken::Create(), web_contents_, future.GetCallback());
+      base::UnguessableToken::Create(), web_contents_, twa_instance_identifier_,
+      future.GetCallback());
   auto error = future.Get<0>();
   const auto& is_activity_result_ok = future.Get<1>();
   const auto& payment_method_identifier = future.Get<2>();
@@ -676,7 +683,8 @@ TEST_F(AndroidAppCommunicationTest, UserConfirmInvokePaymentApp) {
       "com.example.app", "com.example.app.Activity", stringified_method_data,
       GURL("https://top-level-origin.com"),
       GURL("https://payment-request-origin.com"), "payment-request-id",
-      base::UnguessableToken::Create(), web_contents_, future.GetCallback());
+      base::UnguessableToken::Create(), web_contents_, twa_instance_identifier_,
+      future.GetCallback());
   auto error = future.Get<0>();
   const auto& is_activity_result_ok = future.Get<1>();
   const auto& payment_method_identifier = future.Get<2>();

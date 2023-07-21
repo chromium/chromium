@@ -4,6 +4,7 @@
 
 #include "components/payments/content/android_payment_app_factory.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -156,6 +157,8 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest,
                               AppCreationFailureReason::UNKNOWN))
       .Times(support_->AreAndroidAppsSupportedOnThisPlatform() ? 1 : 0);
   EXPECT_CALL(*delegate_, OnPaymentAppCreated(testing::_)).Times(0);
+  EXPECT_CALL(*delegate_, GetChromeOSTWAInstanceId()).Times(0);
+
   support_->ExpectNoListOfPaymentAppsQuery();
   support_->ExpectNoIsReadyToPayQuery();
 
@@ -179,6 +182,8 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest, NoErrorsWhenNoApps) {
   EXPECT_CALL(*delegate_, OnPaymentAppCreationError(testing::_, testing::_))
       .Times(0);
   EXPECT_CALL(*delegate_, OnPaymentAppCreated(testing::_)).Times(0);
+  EXPECT_CALL(*delegate_, GetChromeOSTWAInstanceId()).Times(0);
+
   support_->ExpectQueryListOfPaymentAppsAndRespond({});
   support_->ExpectNoIsReadyToPayQuery();
 
@@ -213,6 +218,8 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest,
               OnPaymentAppCreated(PaymentAppMatches(
                   PaymentApp::Type::NATIVE_MOBILE_APP, "com.example.app",
                   "https://play.google.com/billing")))
+      .Times(support_->AreAndroidAppsSupportedOnThisPlatform() ? 1 : 0);
+  EXPECT_CALL(*delegate_, GetChromeOSTWAInstanceId())
       .Times(support_->AreAndroidAppsSupportedOnThisPlatform() ? 1 : 0);
 
   // This app does not have an IS_READY_TO_PAY service.
@@ -259,6 +266,9 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest,
                   "https://play.google.com/billing")))
       .Times(support_->AreAndroidAppsSupportedOnThisPlatform() ? 1 : 0);
 
+  EXPECT_CALL(*delegate_, GetChromeOSTWAInstanceId())
+      .Times(support_->AreAndroidAppsSupportedOnThisPlatform() ? 1 : 0);
+
   std::vector<std::unique_ptr<AndroidAppDescription>> apps;
   apps.emplace_back(std::make_unique<AndroidAppDescription>());
   apps.back()->package = "com.example.app";
@@ -299,6 +309,8 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest,
                   PaymentApp::Type::NATIVE_MOBILE_APP, "com.twa.app",
                   "https://play.google.com/billing")))
       .Times(support_->AreAndroidAppsSupportedOnThisPlatform() ? 1 : 0);
+  EXPECT_CALL(*delegate_, GetChromeOSTWAInstanceId())
+      .Times(support_->AreAndroidAppsSupportedOnThisPlatform() ? 1 : 0);
 
   std::vector<std::unique_ptr<AndroidAppDescription>> apps;
   apps.emplace_back(std::make_unique<AndroidAppDescription>());
@@ -332,6 +344,7 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest,
   EXPECT_CALL(*delegate_, OnPaymentAppCreationError(testing::_, testing::_))
       .Times(0);
   EXPECT_CALL(*delegate_, OnPaymentAppCreated(testing::_)).Times(0);
+  EXPECT_CALL(*delegate_, GetChromeOSTWAInstanceId()).Times(0);
 
   std::vector<std::unique_ptr<AndroidAppDescription>> apps;
   apps.emplace_back(std::make_unique<AndroidAppDescription>());
@@ -375,6 +388,8 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest, FindTheCorrectTwaAppInTwaMode) {
                   PaymentApp::Type::NATIVE_MOBILE_APP, "com.different.app",
                   "https://play.google.com/billing")))
       .Times(0);
+  EXPECT_CALL(*delegate_, GetChromeOSTWAInstanceId())
+      .Times(support_->AreAndroidAppsSupportedOnThisPlatform() ? 1 : 0);
 
   std::vector<std::unique_ptr<AndroidAppDescription>> apps;
   apps.emplace_back(std::make_unique<AndroidAppDescription>());
@@ -417,6 +432,7 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest, IgnoreNonTwaAppsInTwaMode) {
   EXPECT_CALL(*delegate_, OnPaymentAppCreationError(testing::_, testing::_))
       .Times(0);
   EXPECT_CALL(*delegate_, OnPaymentAppCreated(testing::_)).Times(0);
+  EXPECT_CALL(*delegate_, GetChromeOSTWAInstanceId()).Times(0);
 
   std::vector<std::unique_ptr<AndroidAppDescription>> apps;
   apps.emplace_back(std::make_unique<AndroidAppDescription>());
@@ -450,6 +466,8 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest,
   EXPECT_CALL(*delegate_, OnPaymentAppCreationError(testing::_, testing::_))
       .Times(0);
   EXPECT_CALL(*delegate_, OnPaymentAppCreated(testing::_)).Times(0);
+  EXPECT_CALL(*delegate_, GetChromeOSTWAInstanceId()).Times(0);
+
   support_->ExpectNoListOfPaymentAppsQuery();
 
   factory_.Create(delegate_->GetWeakPtr());
@@ -477,6 +495,8 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest,
   EXPECT_CALL(*delegate_, OnPaymentAppCreationError(testing::_, testing::_))
       .Times(0);
   EXPECT_CALL(*delegate_, OnPaymentAppCreated(testing::_)).Times(0);
+  EXPECT_CALL(*delegate_, GetChromeOSTWAInstanceId()).Times(0);
+
   support_->ExpectNoListOfPaymentAppsQuery();
   support_->ExpectNoIsReadyToPayQuery();
 
@@ -499,6 +519,7 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest, IgnoreNonTwaMethodInTheTwa) {
   EXPECT_CALL(*delegate_, OnPaymentAppCreationError(testing::_, testing::_))
       .Times(0);
   EXPECT_CALL(*delegate_, OnPaymentAppCreated(testing::_)).Times(0);
+  EXPECT_CALL(*delegate_, GetChromeOSTWAInstanceId()).Times(0);
 
   std::vector<std::unique_ptr<AndroidAppDescription>> apps;
   apps.emplace_back(std::make_unique<AndroidAppDescription>());
@@ -541,6 +562,8 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest,
                               PaymentApp::Type::NATIVE_MOBILE_APP,
                               "com.twa.app", "https://example.test")))
       .Times(0);
+  EXPECT_CALL(*delegate_, GetChromeOSTWAInstanceId())
+      .Times(support_->AreAndroidAppsSupportedOnThisPlatform() ? 1 : 0);
 
   std::vector<std::unique_ptr<AndroidAppDescription>> apps;
   apps.emplace_back(std::make_unique<AndroidAppDescription>());
@@ -587,6 +610,7 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest,
       .Times(support_->AreAndroidAppsSupportedOnThisPlatform() ? 1 : 0);
 
   EXPECT_CALL(*delegate_, OnPaymentAppCreated(testing::_)).Times(0);
+  EXPECT_CALL(*delegate_, GetChromeOSTWAInstanceId()).Times(0);
 
   std::vector<std::unique_ptr<AndroidAppDescription>> apps;
   apps.emplace_back(std::make_unique<AndroidAppDescription>());

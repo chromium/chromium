@@ -78,6 +78,8 @@ class TestContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
       const std::string& rp_id,
       base::OnceClosure response_callback,
       base::OnceClosure opt_out_callback) override;
+  absl::optional<base::UnguessableToken> GetChromeOSTWAInstanceId()
+      const override;
 
   // Must be called if GetRenderFrameHost() needs to return non-null.
   void set_frame_routing_id(content::GlobalRenderFrameHostId frame_routing_id) {

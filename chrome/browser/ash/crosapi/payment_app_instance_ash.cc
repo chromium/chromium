@@ -7,11 +7,35 @@
 #include <utility>
 
 #include "ash/components/arc/pay/arc_payment_app_bridge.h"
+#include "ash/public/cpp/external_arc/overlay/arc_overlay_manager.h"
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/logging.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/payments/core/native_error_strings.h"
+#include "components/services/app_service/public/cpp/instance_registry.h"
+#include "content/public/browser/browser_thread.h"
+
+namespace {
+
+void OnInvokePaymentApp(
+    crosapi::PaymentAppInstanceAsh::InvokePaymentAppCallback callback,
+    base::OnceClosure overlay_state,
+    chromeos::payments::mojom::InvokePaymentAppResultPtr response) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Dismiss and prevent any further overlays
+  if (overlay_state) {
+    std::move(overlay_state).Run();
+  }
+
+  std::move(callback).Run(std::move(response));
+}
+
+}  // namespace
 
 namespace crosapi {
 
@@ -27,8 +51,18 @@ void PaymentAppInstanceAsh::BindReceiver(
 
 void PaymentAppInstanceAsh::Initialize() {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  // This method would be called on the crosapi binding, which could happen
+  // more than one times if Lacros instance is created more than one times
+  // (e.g. crash and restart).
+  if (profile_observation_.IsObservingSource(profile)) {
+    return;
+  }
+  profile_observation_.Observe(profile);
   payment_app_service_ =
       arc::ArcPaymentAppBridge::GetForBrowserContext(profile);
+  instance_registry_ = &apps::AppServiceProxyFactory::GetForProfile(
+                            ProfileManager::GetPrimaryUserProfile())
+                            ->InstanceRegistry();
 }
 
 void PaymentAppInstanceAsh::IsPaymentImplemented(
@@ -75,18 +109,41 @@ void PaymentAppInstanceAsh::InvokePaymentApp(
     chromeos::payments::mojom::PaymentParametersPtr parameters,
     InvokePaymentAppCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!payment_app_service_ || !parameters->request_token.has_value()) {
+  if (!payment_app_service_ || !parameters->request_token.has_value() ||
+      !parameters->twa_instance_identifier.has_value() || !instance_registry_) {
     std::move(callback).Run(
         chromeos::payments::mojom::InvokePaymentAppResult::NewError(
             payments::errors::kUnableToInvokeAndroidPaymentApps));
     return;
   }
 
-  // TODO(https://crbug.com/1385989): Pass instance id over crosapi to find
-  // the correct host window to put overlay on.
+  ash::ArcOverlayManager* const overlay_manager =
+      ash::ArcOverlayManager::instance();
 
-  payment_app_service_->InvokePaymentApp(std::move(parameters),
-                                         std::move(callback));
+  aura::Window* host_window = nullptr;
+
+  instance_registry_->ForOneInstance(
+      parameters->twa_instance_identifier.value(),
+      [&host_window](const apps::InstanceUpdate& update) {
+        host_window = update.Window();
+      });
+
+  if (!host_window) {
+    std::move(callback).Run(
+        chromeos::payments::mojom::InvokePaymentAppResult::NewError(
+            payments::errors::kUnableToInvokeAndroidPaymentApps));
+    return;
+  }
+
+  base::OnceClosure overlay_state =
+      overlay_manager
+          ->RegisterHostWindow(parameters->request_token.value(), host_window)
+          .Release();
+
+  payment_app_service_->InvokePaymentApp(
+      std::move(parameters),
+      base::BindOnce(&OnInvokePaymentApp, std::move(callback),
+                     std::move(overlay_state)));
 }
 
 void PaymentAppInstanceAsh::AbortPaymentApp(const std::string& request_token,
@@ -104,6 +161,17 @@ void PaymentAppInstanceAsh::AbortPaymentApp(const std::string& request_token,
 void PaymentAppInstanceAsh::SetPaymentAppServiceForTesting(
     arc::ArcPaymentAppBridge* payment_app_service) {
   payment_app_service_ = payment_app_service;
+}
+
+void PaymentAppInstanceAsh::SetInstanceRegistryForTesting(
+    apps::InstanceRegistry* instance_registry) {
+  instance_registry_ = instance_registry;
+}
+
+void PaymentAppInstanceAsh::OnProfileWillBeDestroyed(Profile* profile) {
+  payment_app_service_ = nullptr;
+  instance_registry_ = nullptr;
+  profile_observation_.Reset();
 }
 
 }  // namespace crosapi

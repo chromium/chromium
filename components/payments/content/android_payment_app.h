@@ -43,7 +43,8 @@ class AndroidPaymentApp : public PaymentApp {
       const std::string& payment_request_id,
       std::unique_ptr<AndroidAppDescription> description,
       base::WeakPtr<AndroidAppCommunication> communication,
-      content::GlobalRenderFrameHostId frame_routing_id);
+      content::GlobalRenderFrameHostId frame_routing_id,
+      const absl::optional<base::UnguessableToken>& twa_instance_identifier);
   ~AndroidPaymentApp() override;
 
   AndroidPaymentApp(const AndroidPaymentApp& other) = delete;
@@ -96,6 +97,11 @@ class AndroidPaymentApp : public PaymentApp {
   // True when InvokePaymentApp() has been called but no response has been
   // received yet.
   bool payment_app_open_;
+  // Token used to uniquely identify a particular TWA instance that invoked
+  // the payment request. This is used to map the TWA instance in
+  // Lacros (the Chrome OS browser) and browser window that hosts the TWA
+  // instance in Ash (the Chrome OS system UI).
+  absl::optional<base::UnguessableToken> twa_instance_identifier_;
 
   base::WeakPtrFactory<AndroidPaymentApp> weak_ptr_factory_{this};
 };

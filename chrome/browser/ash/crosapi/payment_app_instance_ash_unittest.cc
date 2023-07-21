@@ -9,15 +9,19 @@
 #include <vector>
 
 #include "ash/components/arc/test/arc_payment_app_bridge_test_support.h"
+#include "ash/public/cpp/external_arc/overlay/test/test_arc_overlay_manager.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/unguessable_token.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chromeos/components/payments/mojom/payment_app.mojom.h"
 #include "chromeos/components/payments/mojom/payment_app_types.mojom-forward.h"
 #include "components/payments/core/android_app_description.h"
+#include "components/services/app_service/public/cpp/instance_registry.h"
+#include "components/services/app_service/public/cpp/instance_update.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -39,16 +43,31 @@ class PaymentAppInstanceAshTest : public testing::Test {
     payment_app_instance_ash_->SetPaymentAppServiceForTesting(
         arc::ArcPaymentAppBridge::GetForBrowserContextForTesting(
             support_.context()));
+    payment_app_instance_ash_->SetInstanceRegistryForTesting(
+        &instance_registry_);
+  }
+  base::UnguessableToken CreateTWAInstance() {
+    aura::Window window(nullptr);
+    window.Init(ui::LAYER_NOT_DRAWN);
+    instance_registry_.CreateOrUpdateInstance(
+        apps::InstanceParams("twa_app_id", &window));
+    base::UnguessableToken twa_instance_id;
+    instance_registry_.ForInstancesWithWindow(
+        &window, [&twa_instance_id](const apps::InstanceUpdate& update) {
+          twa_instance_id = update.InstanceId();
+        });
+    return twa_instance_id;
   }
 
  protected:
-  // base::test::TaskEnvironment task_environment_;
   arc::ArcPaymentAppBridgeTestSupport support_;
   mojo::Remote<chromeos::payments::mojom::PaymentAppInstance>
       payment_app_instance_remote_;
   std::unique_ptr<crosapi::PaymentAppInstanceAsh> payment_app_instance_ash_;
   std::unique_ptr<arc::ArcPaymentAppBridgeTestSupport::ScopedSetInstance>
       scoped_set_instance_;
+  ash::TestArcOverlayManager overlay_manager_;
+  apps::InstanceRegistry instance_registry_;
 };
 
 TEST_F(PaymentAppInstanceAshTest, IsPaymentImplemented) {
@@ -189,6 +208,7 @@ TEST_F(PaymentAppInstanceAshTest, InvokePaymentAppResultOK) {
 
   auto params = chromeos::payments::mojom::PaymentParameters::New();
   params->request_token = "Abc";
+  params->twa_instance_identifier = CreateTWAInstance();
 
   base::test::TestFuture<chromeos::payments::mojom::InvokePaymentAppResultPtr>
       future;
@@ -217,6 +237,7 @@ TEST_F(PaymentAppInstanceAshTest, InvokePaymentAppError) {
 
   auto params = chromeos::payments::mojom::PaymentParameters::New();
   params->request_token = "Abc";
+  params->twa_instance_identifier = CreateTWAInstance();
 
   base::test::TestFuture<chromeos::payments::mojom::InvokePaymentAppResultPtr>
       future;

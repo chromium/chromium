@@ -10,8 +10,10 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/unguessable_token.h"
 #include "components/payments/content/payment_request_display_manager.h"
 #include "components/payments/core/payment_request_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 template <class T>
 class scoped_refptr;
@@ -94,6 +96,13 @@ class ContentPaymentRequestDelegate : public PaymentRequestDelegate {
       const std::string& rp_id,
       base::OnceClosure response_callback,
       base::OnceClosure opt_out_callback) = 0;
+
+  // Returns an instance id for the TWA that invokes the payment app. The
+  // instance id is used to find the TWA window in the ash so that we can
+  // attach the payment dialog to it. This interface should only be used
+  // in ChromeOS.
+  virtual absl::optional<base::UnguessableToken> GetChromeOSTWAInstanceId()
+      const = 0;
 
   // Returns a weak pointer to this delegate.
   base::WeakPtr<ContentPaymentRequestDelegate> GetContentWeakPtr();

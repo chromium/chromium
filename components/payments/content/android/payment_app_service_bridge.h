@@ -92,6 +92,8 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
   void SetCanMakePaymentEvenWithoutApps() override;
   base::WeakPtr<CSPChecker> GetCSPChecker() override;
   void SetOptOutOffered() override;
+  absl::optional<base::UnguessableToken> GetChromeOSTWAInstanceId()
+      const override;
 
  private:
   // Prevents direct instantiation. Callers should use Create() instead.

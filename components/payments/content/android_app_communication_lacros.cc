@@ -91,17 +91,18 @@ class AndroidAppCommunicationLacros : public AndroidAppCommunication {
         std::move(parameters),
         base::BindOnce(&OnIsReadyToPay, std::move(callback)));
   }
-
-  void InvokePaymentApp(const std::string& package_name,
-                        const std::string& activity_name,
-                        const std::map<std::string, std::set<std::string>>&
-                            stringified_method_data,
-                        const GURL& top_level_origin,
-                        const GURL& payment_request_origin,
-                        const std::string& payment_request_id,
-                        const base::UnguessableToken& request_token,
-                        content::WebContents* web_contents,
-                        InvokePaymentAppCallback callback) override {
+  void InvokePaymentApp(
+      const std::string& package_name,
+      const std::string& activity_name,
+      const std::map<std::string, std::set<std::string>>&
+          stringified_method_data,
+      const GURL& top_level_origin,
+      const GURL& payment_request_origin,
+      const std::string& payment_request_id,
+      const base::UnguessableToken& request_token,
+      content::WebContents* web_contents,
+      const absl::optional<base::UnguessableToken>& twa_instance_identifier,
+      InvokePaymentAppCallback callback) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     // TODO(crbug.com/1385989): Ensure the Android Play Billing interface is
     // overlaid on top of the browser window.
@@ -132,6 +133,7 @@ class AndroidAppCommunicationLacros : public AndroidAppCommunication {
       return;
     }
     parameters->request_token = request_token.ToString();
+    parameters->twa_instance_identifier = twa_instance_identifier;
     payment_app_instance->InvokePaymentApp(
         std::move(parameters),
         base::BindOnce(&OnPaymentAppResponse, std::move(callback),
