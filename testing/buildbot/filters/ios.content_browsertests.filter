@@ -204,6 +204,9 @@
 # and fallback ID.
 -BFCachedRenderWidgetHostViewBrowserTest.BFCachedPageResizedWhileHiddenShouldNotHavePreservedFallback
 
+# TODO(crbug.com/1466927): unexpected level of support for codec.
+-MediaCanPlayTypeTest.CodecSupportTest_mp4
+
 # These tests are flaky.
 -All/CoopRestrictPropertiesReportingBrowserTest.NavigationVirtualBrowsingContextGroup/RDCrashedFrame_BFCacheDisabled
 -All/DumpAccessibilityTreeTest.AccessibilityAriaTime/blink
