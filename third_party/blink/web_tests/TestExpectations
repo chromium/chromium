@@ -4582,11 +4582,6 @@ crbug.com/1179461 [ Win ] external/wpt/webxr/depth-sensing/gpu/depth_sensing_gpu
 crbug.com/1179461 [ Mac ] external/wpt/webxr/depth-sensing/gpu/depth_sensing_gpu_staleView.https.html [ Failure ]
 crbug.com/1179461 [ Win ] external/wpt/webxr/depth-sensing/gpu/depth_sensing_gpu_staleView.https.html [ Failure ]
 
-
-crbug.com/1180274 crbug.com/1046784 [ Win ] http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Failure Pass Timeout ]
-crbug.com/1180274 crbug.com/1046784 [ Linux ] http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Failure Pass Timeout ]
-crbug.com/1341227 [ Mac ] http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Crash Failure Pass Timeout ]
-
 # Sheriff 2021-02-24
 crbug.com/1181857 external/wpt/webaudio/the-audio-api/the-analysernode-interface/test-analyser-output.html [ Failure Pass ]
 
@@ -5472,13 +5467,6 @@ crbug.com/1341090 external/wpt/webmessaging/without-ports/021.html [ Failure Pas
 
 # Sheriff 2022-07-07
 crbug.com/1097040 media/controls/overflow-menu-always-visible.html [ Failure Pass ]
-
-# Sheriff 2022-07-08
-crbug.com/1180274 virtual/plz-dedicated-worker/http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Crash Failure Pass Timeout ]
-crbug.com/1180274 virtual/first-party-sets/http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Crash Failure Pass Timeout ]
-crbug.com/1180274 [ Linux ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Crash Failure Pass Timeout ]
-crbug.com/1180274 [ Mac ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Crash Failure Pass Timeout ]
-crbug.com/1180274 [ Release Win10.20h2 ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Crash Failure Pass Timeout ]
 
 # Sheriff 2022-07-12
 crbug.com/1343674 editing/deleting/460938.html [ Failure Pass ]
@@ -6574,3 +6562,6 @@ crbug.com/1459304 [ Mac11 ] virtual/coop-restrict-properties/external/wpt/html/c
 
 # Gardener 2023-07-20
 crbug.com/1465723 [ Mac ] virtual/prefetch-no-vary-search/wpt_internal/speculation-rules/prefetch/no-vary-search/prefetch-single-non-eager-with-hint.https.html* [ Pass Timeout ]
+
+# Gardener 2023-07-21
+crbug.com/1180274 http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Failure Pass Timeout Crash ]
