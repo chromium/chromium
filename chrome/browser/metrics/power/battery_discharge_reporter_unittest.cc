@@ -13,7 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/metrics/power/power_metrics.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
-#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
+#include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/performance_manager/test_support/fake_frame_throttling_delegate.h"
 #include "chrome/browser/performance_manager/test_support/fake_high_efficiency_mode_delegate.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
@@ -123,14 +123,12 @@ class BatteryDischargeReporterTest : public testing::Test {
         std::make_unique<NoopSamplingEventSource>(),
         std::make_unique<NoopBatteryLevelProvider>());
 
-    test_user_performance_tuning_manager_ = base::WrapUnique(
-        new performance_manager::user_tuning::UserPerformanceTuningManager(
-            &testing_local_state_, nullptr,
+    test_battery_saver_mode_manager_ = base::WrapUnique(
+        new performance_manager::user_tuning::BatterySaverModeManager(
+            &testing_local_state_,
             std::make_unique<performance_manager::FakeFrameThrottlingDelegate>(
-                &throttling_enabled_),
-            std::make_unique<performance_manager::user_tuning::
-                                 FakeHighEfficiencyModeDelegate>()));
-    test_user_performance_tuning_manager_->Start();
+                &throttling_enabled_)));
+    test_battery_saver_mode_manager_->Start();
   }
 
   // Tests that the right BatteryDischargeMode histogram sample is emitted given
@@ -169,9 +167,8 @@ class BatteryDischargeReporterTest : public testing::Test {
 
   TestingPrefServiceSimple testing_local_state_;
   bool throttling_enabled_ = false;
-  std::unique_ptr<
-      performance_manager::user_tuning::UserPerformanceTuningManager>
-      test_user_performance_tuning_manager_;
+  std::unique_ptr<performance_manager::user_tuning::BatterySaverModeManager>
+      test_battery_saver_mode_manager_;
 };
 
 TEST_F(BatteryDischargeReporterTest, Simple_BatterySaverInactive) {

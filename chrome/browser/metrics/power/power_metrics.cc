@@ -9,7 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/metrics/power/process_metrics_recorder_util.h"
-#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
+#include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
@@ -236,11 +236,10 @@ void ReportBatteryHistograms(
 #endif  // BUILDFLAG(IS_WIN)
 
   bool battery_saver_enabled =
-      performance_manager::user_tuning::UserPerformanceTuningManager::
+      performance_manager::user_tuning::BatterySaverModeManager::
           GetInstance() &&
-      performance_manager::user_tuning::UserPerformanceTuningManager::
-          GetInstance()
-              ->IsBatterySaverActive();
+      performance_manager::user_tuning::BatterySaverModeManager::GetInstance()
+          ->IsBatterySaverActive();
 
   const char* interval_type_suffixes[] = {
       "", is_initial_interval ? ".Initial" : ".Periodic"};

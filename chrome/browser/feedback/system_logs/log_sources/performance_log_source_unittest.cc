@@ -20,7 +20,7 @@
 #include "components/performance_manager/public/user_tuning/prefs.h"
 
 class QuitRunLoopOnPowerStateChangeObserver
-    : public performance_manager::user_tuning::UserPerformanceTuningManager::
+    : public performance_manager::user_tuning::BatterySaverModeManager::
           Observer {
  public:
   explicit QuitRunLoopOnPowerStateChangeObserver(
@@ -58,11 +58,7 @@ class PerformanceLogSourceTest : public BrowserWithTestWindowTest {
 
   ~PerformanceLogSourceTest() override = default;
 
-  void SetUp() override {
-    environment_.SetUp(local_state_);
-    tuning_manager_ = performance_manager::user_tuning::
-        UserPerformanceTuningManager::GetInstance();
-  }
+  void SetUp() override { environment_.SetUp(local_state_); }
 
   void TearDown() override {
     base::PowerMonitor::ShutdownForTesting();
@@ -103,19 +99,18 @@ class PerformanceLogSourceTest : public BrowserWithTestWindowTest {
     std::unique_ptr<QuitRunLoopOnPowerStateChangeObserver> observer =
         std::make_unique<QuitRunLoopOnPowerStateChangeObserver>(
             run_loop.QuitClosure());
-    tuning_manager_->AddObserver(observer.get());
+    performance_manager::user_tuning::BatterySaverModeManager::GetInstance()
+        ->AddObserver(observer.get());
     environment_.power_monitor_source()->SetOnBatteryPower(on_battery_power);
     run_loop.Run();
-    tuning_manager_->RemoveObserver(observer.get());
+    performance_manager::user_tuning::BatterySaverModeManager::GetInstance()
+        ->RemoveObserver(observer.get());
   }
 
   ScopedTestingLocalState testing_local_state_;
   performance_manager::user_tuning::TestUserPerformanceTuningManagerEnvironment
       environment_;
   raw_ptr<TestingPrefServiceSimple> local_state_ = nullptr;
-  raw_ptr<performance_manager::user_tuning::UserPerformanceTuningManager,
-          DanglingUntriaged>
-      tuning_manager_ = nullptr;
 };
 
 TEST_F(PerformanceLogSourceTest, CheckHighEfficiencyModeLogs) {

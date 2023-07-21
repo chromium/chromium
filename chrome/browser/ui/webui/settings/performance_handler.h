@@ -5,14 +5,14 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_PERFORMANCE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_PERFORMANCE_HANDLER_H_
 
-#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
+#include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
 namespace settings {
 
 class PerformanceHandler : public SettingsPageUIHandler,
                            public performance_manager::user_tuning::
-                               UserPerformanceTuningManager::Observer {
+                               BatterySaverModeManager::Observer {
  public:
   PerformanceHandler();
 
@@ -31,11 +31,11 @@ class PerformanceHandler : public SettingsPageUIHandler,
   FRIEND_TEST_ALL_PREFIXES(PerformanceHandlerTest, GetCurrentOpenSites);
 
   base::ScopedObservation<
-      performance_manager::user_tuning::UserPerformanceTuningManager,
-      performance_manager::user_tuning::UserPerformanceTuningManager::Observer>
+      performance_manager::user_tuning::BatterySaverModeManager,
+      performance_manager::user_tuning::BatterySaverModeManager::Observer>
       performance_handler_observer_{this};
 
-  // UserPerformanceTuningManager::Observer:
+  // BatterySaverModeManager::Observer:
   void OnDeviceHasBatteryChanged(bool device_has_battery) override;
 
   /**

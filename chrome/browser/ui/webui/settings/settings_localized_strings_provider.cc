@@ -25,6 +25,7 @@
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
+#include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
@@ -761,7 +762,7 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_BELOW_THRESHOLD_LABEL,
           base::NumberToString16(
-              performance_manager::user_tuning::UserPerformanceTuningManager::
+              performance_manager::user_tuning::BatterySaverModeManager::
                   kLowBatteryThresholdPercent)));
   html_source->AddString(
       "tabDiscardingExceptionsAddDialogHelp",

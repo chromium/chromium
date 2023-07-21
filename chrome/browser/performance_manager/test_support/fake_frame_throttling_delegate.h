@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_TEST_SUPPORT_FAKE_FRAME_THROTTLING_DELEGATE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
+#include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 
 namespace performance_manager {
 
 class FakeFrameThrottlingDelegate
-    : public performance_manager::user_tuning::UserPerformanceTuningManager::
+    : public performance_manager::user_tuning::BatterySaverModeManager::
           FrameThrottlingDelegate {
  public:
   void StartThrottlingAllFrameSinks() override;

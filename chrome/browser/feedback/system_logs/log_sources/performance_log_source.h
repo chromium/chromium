@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_FEEDBACK_SYSTEM_LOGS_LOG_SOURCES_PERFORMANCE_LOG_SOURCE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 
@@ -28,6 +29,8 @@ class PerformanceLogSource : public SystemLogsSource {
   void PopulatePerformanceSettingLogs(SystemLogsResponse* response);
   void PopulateBatteryDetailLogs(SystemLogsResponse* response);
 
+  raw_ptr<performance_manager::user_tuning::BatterySaverModeManager>
+      battery_saver_mode_manager_ = nullptr;
   raw_ptr<performance_manager::user_tuning::UserPerformanceTuningManager>
       tuning_manager_ = nullptr;
 };

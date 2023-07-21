@@ -18,8 +18,8 @@ void BatterySaverButtonController::Init(
 
   delegate_ = delegate;
 
-  auto* manager = performance_manager::user_tuning::
-      UserPerformanceTuningManager::GetInstance();
+  auto* manager =
+      performance_manager::user_tuning::BatterySaverModeManager::GetInstance();
   battery_saver_observer_.Observe(manager);
 
   // Update the initial state of the delegate based on the current state

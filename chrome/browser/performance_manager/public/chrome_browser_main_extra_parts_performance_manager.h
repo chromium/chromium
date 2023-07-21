@@ -41,6 +41,7 @@ class ExtensionWatcher;
 #endif
 
 namespace user_tuning {
+class BatterySaverModeManager;
 class ProfileDiscardOptOutListHelper;
 class UserPerformanceTuningManager;
 }  // namespace user_tuning
@@ -119,6 +120,8 @@ class ChromeBrowserMainExtraPartsPerformanceManager
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<performance_manager::user_tuning::BatterySaverModeManager>
+      battery_saver_mode_manager_;
   std::unique_ptr<
       performance_manager::user_tuning::UserPerformanceTuningManager>
       user_performance_tuning_manager_;

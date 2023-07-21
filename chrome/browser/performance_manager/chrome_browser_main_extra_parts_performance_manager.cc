@@ -72,6 +72,7 @@
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "chrome/browser/performance_manager/policies/page_freezing_policy.h"
 #include "chrome/browser/performance_manager/policies/urgent_page_discarding_policy.h"
+#include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/performance_manager/user_tuning/user_performance_tuning_notifier.h"
 #include "chrome/browser/tab_contents/form_interaction_tab_helper.h"
@@ -216,9 +217,10 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
 #if !BUILDFLAG(IS_ANDROID)
   profile_discard_opt_out_list_helper_ = std::make_unique<
       performance_manager::user_tuning::ProfileDiscardOptOutListHelper>();
-  // Create the UserPerformanceTuningManager here so that early UI code can
-  // register observers, but only start it in PreMainMessageLoopRun because it
-  // requires the HostFrameSinkManager to exist.
+  // Create the UserPerformanceTuningManager and BatterySaverMode here so that
+  // early UI code can register observers, but only start them in
+  // PreMainMessageLoopRun because they require other systems like the
+  // HostFrameSinkManager to exist.
   uint64_t system_memory_kb = base::SysInfo::AmountOfPhysicalMemory() / 1024;
   user_performance_tuning_manager_ = base::WrapUnique(
       new performance_manager::user_tuning::UserPerformanceTuningManager(
@@ -235,6 +237,9 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
               /*tab_count_threshold=*/
               performance_manager::user_tuning::UserPerformanceTuningNotifier::
                   kTabCountThresholdForPromo)));
+  battery_saver_mode_manager_ = base::WrapUnique(
+      new performance_manager::user_tuning::BatterySaverModeManager(
+          g_browser_process->local_state()));
 #endif
 
   page_load_metrics_observer_ =
@@ -275,6 +280,8 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PreMainMessageLoopRun() {
 #if !BUILDFLAG(IS_ANDROID)
   // This object requires the host frame sink manager to exist, which is
   // created after all the extra parts have run their PostCreateThreads.
+  performance_manager::user_tuning::BatterySaverModeManager::GetInstance()
+      ->Start();
   performance_manager::user_tuning::UserPerformanceTuningManager::GetInstance()
       ->Start();
 
@@ -302,6 +309,7 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostMainMessageLoopRun() {
   page_load_metrics_observer_.reset();
 
 #if !BUILDFLAG(IS_ANDROID)
+  battery_saver_mode_manager_.reset();
   user_performance_tuning_manager_.reset();
   profile_discard_opt_out_list_helper_.reset();
 
