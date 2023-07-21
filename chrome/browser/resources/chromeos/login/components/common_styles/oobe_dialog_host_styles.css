@@ -38,11 +38,15 @@
         }
 
         .oobe-tos-webview {
-          /* TODO(https://crbug.com/1320715) Revise the colors */
           border: 1px solid var(--cros-app-shield-color);
           border-radius: 4px;
-          box-shadow: inset 0 0 4px 4px rgba(var(--cros-textfield-background-color-disabled-rgb), 0.5);
           padding: 13px 0;
+        }
+        :host-context(.jelly-enabled) .oobe-tos-webview {
+          border: medium none white;
+          border-radius: 16px;
+          overflow: hidden;
+          padding: 0;
         }
 
         /* Center-align both vertically and horizontally */
