@@ -38,6 +38,13 @@ import parse
 import proxy
 
 
+_EXTRACT_NATIVES_REGEX = re.compile(
+    r'(@NativeClassQualifiedName'
+    r'\(\"(?P<native_class_name>\S*?)\"\)\s+)?'
+    r'(?P<qualifiers>\w+\s\w+|\w+|\s+)\s*native\s+'
+    r'(?P<return_type>\S*)\s+'
+    r'(?P<name>native\w+)\((?P<params>.*?)\);', re.DOTALL)
+
 # Use 100 columns rather than 80 because it makes many lines more readable.
 _WRAP_LINE_LENGTH = 100
 # WrapOutput() is fairly slow. Pre-creating TextWrappers helps a bit.
@@ -50,16 +57,29 @@ _WRAPPERS_BY_INDENT = [
         break_long_words=False) for indent in range(50)
 ]  # 50 chosen experimentally.
 
+class ParseError(SyntaxError):
+  """Exception thrown when we can't parse the input file."""
 
-class NativeMethod:
-  """Describes a C/C++ method that is called by Java."""
-  def __init__(self, parsed_method, *, java_class, is_proxy):
-    self.name = parsed_method.name
-    self.signature = parsed_method.signature
-    self.is_proxy = is_proxy
-    self.static = is_proxy or parsed_method.static
-    self.native_class_name = parsed_method.native_class_name
+  def __init__(self, description, *context_lines):
+    super().__init__(description)
+    self.context_lines = context_lines
 
+  def __str__(self):
+    context = '\n'.join(self.context_lines)
+    return '***\nERROR: %s\n\n%s\n***' % (self.msg, context)
+
+
+class NativeMethod(object):
+  """Describes a C/C++ method that is called by Java code"""
+
+  def __init__(self, **kwargs):
+    return_type = kwargs['return_type']
+    self.signature = java_types.JavaSignature.from_params(
+        return_type, kwargs['params'])
+    self.is_proxy = kwargs.get('is_proxy', False)
+    self.static = kwargs.get('static', self.is_proxy)
+
+    self.name = kwargs['name']
     # Proxy methods don't have a native prefix so the first letter is
     # lowercase. But we still want the CPP declaration to use upper camel
     # case for the method name.
@@ -69,7 +89,7 @@ class NativeMethod:
     if self.is_proxy:
       self.proxy_signature = self.signature.to_proxy()
       self.proxy_name, self.hashed_proxy_name = proxy.create_method_names(
-          java_class, self.name, self.is_test_only)
+          kwargs['java_class'], self.name, self.is_test_only)
       self.switch_num = None
     else:
       self.proxy_signature = self.signature
@@ -78,12 +98,15 @@ class NativeMethod:
     if (first_param and first_param.java_type.is_primitive()
         and first_param.java_type.primitive_name == 'long'
         and first_param.name.startswith('native')):
-      if parsed_method.native_class_name:
-        self.first_param_cpp_type = parsed_method.native_class_name
-      else:
-        self.first_param_cpp_type = first_param.name[len('native'):]
+      self.type = 'method'
+      self.p0_type = kwargs.get('p0_type')
+      if self.p0_type is None:
+        self.p0_type = first_param.name[len('native'):]
+        if kwargs.get('native_class_name'):
+          self.p0_type = kwargs['native_class_name']
     else:
-      self.first_param_cpp_type = None
+      self.type = 'function'
+    self.method_id_var_name = kwargs.get('method_id_var_name', None)
 
   @property
   def return_type(self):
@@ -102,27 +125,23 @@ class NativeMethod:
     return self.proxy_signature.param_list
 
 
-class CalledByNative:
+class CalledByNative(object):
   """Describes a java method exported to c/c++"""
 
-  def __init__(self,
-               parsed_called_by_native,
-               *,
-               is_system_class,
-               unchecked=False):
-    self.name = parsed_called_by_native.name
-    self.signature = parsed_called_by_native.signature
-    self.static = parsed_called_by_native.static
-    self.unchecked = parsed_called_by_native.unchecked or unchecked
-    self.java_class = parsed_called_by_native.java_class
-    self.is_system_class = is_system_class
-
-    # Computed once we know if overloads exist.
-    self.method_id_var_name = None
-
-  @property
-  def is_constructor(self):
-    return self.name == '<init>'
+  def __init__(self, **kwargs):
+    return_type = kwargs['return_type']
+    self.system_class = kwargs['system_class']
+    self.unchecked = kwargs['unchecked']
+    self.static = kwargs['static']
+    self.java_class_name = kwargs['java_class_name']
+    self.name = kwargs['name']
+    self.descriptor = kwargs.get('descriptor')
+    self.signature = java_types.JavaSignature.from_params(
+        return_type, kwargs['params'])
+    self.method_id_var_name = kwargs.get('method_id_var_name', None)
+    self.is_constructor = kwargs.get('is_constructor', False)
+    self.env_call = GetEnvCall(self.is_constructor, self.static, return_type)
+    self.static_cast = GetStaticCastForReturnType(return_type)
 
   @property
   def return_type(self):
@@ -131,6 +150,13 @@ class CalledByNative:
   @property
   def params(self):
     return self.signature.param_list
+
+
+class ConstantField(object):
+
+  def __init__(self, **kwargs):
+    self.name = kwargs['name']
+    self.value = kwargs['value']
 
 
 def JavaTypeToCForDeclaration(java_type):
@@ -195,28 +221,44 @@ def _NameIsTestOnly(name):
   return name.endswith(('ForTest', 'ForTests', 'ForTesting'))
 
 
+def ExtractNatives(type_resolver, contents):
+  """Returns a list of dict containing information about a native method."""
+  natives = []
+  for match in _EXTRACT_NATIVES_REGEX.finditer(contents):
+    return_type = parse.parse_type(type_resolver, match.group('return_type'))
+    params = parse.parse_param_list(type_resolver, match.group('params'))
+    native = NativeMethod(static='static' in match.group('qualifiers'),
+                          native_class_name=match.group('native_class_name'),
+                          return_type=return_type,
+                          params=params,
+                          name=match.group('name').replace('native', ''))
+    natives.append(native)
+  natives.sort(key=lambda x: (x.name, x.signature))
+  return natives
+
+
 def GetRegistrationFunctionName(fully_qualified_class):
   """Returns the register name with a given class."""
   return 'RegisterNative_' + common.escape_class_name(fully_qualified_class)
 
 
-def _StaticCastForType(java_type):
-  if java_type.is_primitive():
+def GetStaticCastForReturnType(return_type):
+  if return_type.is_primitive():
     return None
-  ret = java_type.to_cpp()
+  ret = return_type.to_cpp()
   return None if ret == 'jobject' else ret
 
 
-def _GetEnvCall(called_by_native):
-  """Maps the types available via env->Call__Method."""
-  if called_by_native.is_constructor:
+def GetEnvCall(is_constructor, is_static, return_type):
+  """Maps the types availabe via env->Call__Method."""
+  if is_constructor:
     return 'NewObject'
-  if called_by_native.return_type.is_primitive():
-    name = called_by_native.return_type.primitive_name
-    call = common.capitalize(called_by_native.return_type.primitive_name)
+  if return_type.is_primitive():
+    name = return_type.primitive_name
+    call = common.capitalize(return_type.primitive_name)
   else:
     call = 'Object'
-  if called_by_native.static:
+  if is_static:
     call = 'Static' + call
   return 'Call' + call + 'Method'
 
@@ -237,7 +279,7 @@ def MangledType(java_type):
   return ''.join(ret)
 
 
-def GetMangledMethodName(name, return_type, param_types):
+def GetMangledMethodName(name, signature):
   """Returns a mangled method name for the given signature.
 
      The returned name can be used as a C identifier and will be unique for all
@@ -247,33 +289,44 @@ def GetMangledMethodName(name, return_type, param_types):
       A mangled name.
   """
   mangled_items = []
-  for java_type in (return_type, ) + param_types:
+  for java_type in (signature.return_type, ) + signature.param_types:
     mangled_items.append(MangledType(java_type))
   mangled_name = name + '_'.join(mangled_items)
   assert re.match(r'[0-9a-zA-Z_]+', mangled_name)
   return mangled_name
 
 
-def _AssignMethodIdVarNames(called_by_natives):
-  """Mangles all the overloads from the called_by_natives list."""
-  method_counts = collections.defaultdict(int)
+def MangleCalledByNatives(called_by_natives):
+  """Mangles all the overloads from the call_by_natives list."""
+  method_counts = collections.defaultdict(
+      lambda: collections.defaultdict(lambda: 0))
   for called_by_native in called_by_natives:
-    class_name = called_by_native.java_class.full_name_with_slashes
+    java_class_name = called_by_native.java_class_name
     name = called_by_native.name
-    method_counts[(class_name, name)] += 1
+    method_counts[java_class_name][name] += 1
   for called_by_native in called_by_natives:
-    class_name = called_by_native.java_class.full_name_with_slashes
-    if called_by_native.is_constructor:
-      method_name = 'Constructor'
-      return_type = called_by_native.java_class.as_type()
-    else:
-      method_name = called_by_native.name
-      return_type = called_by_native.return_type
+    java_class_name = called_by_native.java_class_name
+    method_name = called_by_native.name
     method_id_var_name = method_name
-    if method_counts[(class_name, called_by_native.name)] > 1:
-      method_id_var_name = GetMangledMethodName(
-          method_name, return_type, called_by_native.signature.param_types)
+    if method_counts[java_class_name][method_name] > 1:
+      method_id_var_name = GetMangledMethodName(method_name,
+                                                called_by_native.signature)
     called_by_native.method_id_var_name = method_id_var_name
+  return called_by_natives
+
+
+# Regex to match a string like "@CalledByNative public void foo(int bar)".
+RE_CALLED_BY_NATIVE = re.compile(
+    r'@CalledByNative((?P<Unchecked>(?:Unchecked)?|ForTesting))'
+    r'(?:\("(?P<annotation>.*)"\))?'
+    r'(?:\s+@\w+(?:\(.*\))?)*'  # Ignore any other annotations.
+    r'\s+(?P<prefix>('
+    r'(private|protected|public|static|abstract|final|default|synchronized)'
+    r'\s*)*)'
+    r'(?:\s*@\w+)?'  # Ignore annotations in return types.
+    r'\s*(?P<return_type>\S*?)'
+    r'\s*(?P<name>\w+)'
+    r'\s*\((?P<params>[^\)]*)\)')
 
 
 # Removes empty lines that are indented (i.e. start with 2x spaces).
@@ -281,24 +334,132 @@ def RemoveIndentedEmptyLines(string):
   return re.sub('^(?: {2})+$\n', '', string, flags=re.MULTILINE)
 
 
-class JNIFromJavaP:
+def ExtractCalledByNatives(type_resolver, contents):
+  """Parses all methods annotated with @CalledByNative.
+
+  Returns:
+    A list of dict with information about the annotated methods.
+    TODO(bulach): return a CalledByNative object.
+
+  Raises:
+    ParseError: if unable to parse.
+  """
+  called_by_natives = []
+  for match in re.finditer(RE_CALLED_BY_NATIVE, contents):
+    return_type = match.group('return_type')
+    name = match.group('name')
+    if not return_type:
+      is_constructor = True
+      return_type = name
+      name = "Constructor"
+    else:
+      is_constructor = False
+
+    return_type = parse.parse_type(type_resolver, return_type)
+    params = parse.parse_param_list(type_resolver, match.group('params'))
+    called_by_natives.append(
+        CalledByNative(system_class=False,
+                       unchecked='Unchecked' in match.group('Unchecked'),
+                       static='static' in match.group('prefix'),
+                       java_class_name=match.group('annotation') or '',
+                       return_type=return_type,
+                       params=params,
+                       name=name,
+                       is_constructor=is_constructor))
+  # Check for any @CalledByNative occurrences that weren't matched.
+  unmatched_lines = re.sub(RE_CALLED_BY_NATIVE, '', contents).split('\n')
+  for line1, line2 in zip(unmatched_lines, unmatched_lines[1:]):
+    if '@CalledByNative' in line1:
+      raise ParseError('could not parse @CalledByNative method signature',
+                       line1, line2)
+  called_by_natives.sort(key=lambda x: (x.java_class_name, x.name, x.signature))
+  return MangleCalledByNatives(called_by_natives)
+
+
+def _ParseJavapDescriptor(line):
+  prefix = 'descriptor: '
+  index = line.index(prefix)
+  return line[index + len(prefix):]
+
+
+class JNIFromJavaP(object):
   """Uses 'javap' to parse a .class file and generate the JNI header file."""
 
-  def __init__(self, parsed_file, options):
+  def __init__(self, contents, options):
+    contents = parse.remove_generics(contents)
+    lines = contents.splitlines()
     self.options = options
-    self.type_resolver = parsed_file.type_resolver
-
-    called_by_natives = []
-    for parsed_called_by_native in parsed_file.called_by_natives:
-      called_by_natives.append(
-          CalledByNative(parsed_called_by_native,
-                         unchecked=options.unchecked_exceptions,
-                         is_system_class=True))
-    _AssignMethodIdVarNames(called_by_natives)
-    self.called_by_natives = called_by_natives
-
-    self.constant_fields = parsed_file.constant_fields
+    for line in lines:
+      m = re.match('.*?(?:public).*?(?:class|interface) (\S+?)(?: |\Z)', line)
+      if m:
+        fqn = m.group(1).split('<', 1)[0].replace('.', '/')
+        self.java_class = java_types.JavaClass(fqn)
+        break
+    else:
+      raise SyntaxError('Could not find java class in javap output')
+    type_resolver = java_types.TypeResolver(self.java_class)
+    self.type_resolver = type_resolver
     self.jni_namespace = options.namespace or 'JNI_' + self.java_class.name
+    re_method = re.compile('(?P<prefix>.*?)(?P<return_type>\S+?) (?P<name>\w+?)'
+                           '\((?P<params>.*?)\)')
+    self.called_by_natives = []
+    for lineno, content in enumerate(lines[2:], 2):
+      match = re.match(re_method, content)
+      if not match:
+        continue
+      return_type = parse.parse_type(type_resolver, match.group('return_type'))
+      params = parse.parse_param_list(type_resolver,
+                                      match.group('params'),
+                                      has_names=False)
+      descriptor = _ParseJavapDescriptor(lines[lineno + 1])
+
+      self.called_by_natives.append(
+          CalledByNative(system_class=True,
+                         unchecked=options.unchecked_exceptions,
+                         static='static' in match.group('prefix'),
+                         java_class_name='',
+                         return_type=return_type,
+                         params=params,
+                         name=match.group('name'),
+                         descriptor=descriptor))
+    re_constructor = re.compile('(.*?)public ' +
+                                self.java_class.full_name_with_dots +
+                                '\((?P<params>.*?)\)')
+    for lineno, content in enumerate(lines[2:], 2):
+      match = re.match(re_constructor, content)
+      if not match:
+        continue
+      return_type = java_types.JavaType(java_class=self.java_class)
+      params = parse.parse_param_list(type_resolver,
+                                      match.group('params'),
+                                      has_names=False)
+      descriptor = _ParseJavapDescriptor(lines[lineno + 1])
+
+      self.called_by_natives.append(
+          CalledByNative(system_class=True,
+                         unchecked=options.unchecked_exceptions,
+                         static=False,
+                         java_class_name='',
+                         return_type=return_type,
+                         params=params,
+                         name='Constructor',
+                         descriptor=descriptor,
+                         is_constructor=True))
+    self.called_by_natives = MangleCalledByNatives(self.called_by_natives)
+    self.constant_fields = []
+    re_constant_field = re.compile('.*?public static final int (?P<name>.*?);')
+    re_constant_field_value = re.compile(
+        '.*?Constant(Value| value): int (?P<value>(-*[0-9]+)?)')
+    for lineno, content in enumerate(lines[2:], 2):
+      match = re.match(re_constant_field, content)
+      if not match:
+        continue
+      value = re.match(re_constant_field_value, lines[lineno + 2])
+      if not value:
+        value = re.match(re_constant_field_value, lines[lineno + 3])
+      if value:
+        self.constant_fields.append(
+            ConstantField(name=match.group('name'), value=value.group('value')))
 
   def GetContent(self):
     # We pass in an empty string for the module (which will make the JNI use the
@@ -310,48 +471,45 @@ class JNIFromJavaP:
                                        self.options)
     return generator.GetContent()
 
-  @property
-  def java_class(self):
-    return self.type_resolver.java_class
+  @staticmethod
+  def CreateFromClass(class_file, options):
+    class_name = os.path.splitext(os.path.basename(class_file))[0]
+    javap_path = os.path.abspath(options.javap)
+    p = subprocess.Popen(
+        args=[javap_path, '-c', '-verbose', '-s', class_name],
+        cwd=os.path.dirname(class_file),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        universal_newlines=True)
+    stdout, _ = p.communicate()
+    jni_from_javap = JNIFromJavaP(stdout, options)
+    return jni_from_javap
 
-
-class JNIFromJavaSource:
+class JNIFromJavaSource(object):
   """Uses the given java source file to generate the JNI header file."""
 
   def __init__(self, parsed_file, options):
     self.options = options
     self.filename = parsed_file.filename
+    self.java_class = parsed_file.java_class
     self.type_resolver = parsed_file.type_resolver
     self.jni_namespace = parsed_file.jni_namespace or options.namespace
     self.module_name = parsed_file.module_name
     self.proxy_interface = parsed_file.proxy_interface
     self.proxy_visibility = parsed_file.proxy_visibility
 
-    natives = []
+    proxy_natives = []
     for parsed_method in parsed_file.proxy_methods:
-      natives.append(
-          NativeMethod(parsed_method, java_class=self.java_class,
-                       is_proxy=True))
-
-    for parsed_method in parsed_file.non_proxy_methods:
-      natives.append(
-          NativeMethod(parsed_method,
+      proxy_natives.append(
+          NativeMethod(is_proxy=True,
                        java_class=self.java_class,
-                       is_proxy=False))
+                       name=parsed_method.name,
+                       return_type=parsed_method.return_type,
+                       params=parsed_method.params,
+                       native_class_name=parsed_method.native_class_name))
 
-    self.natives = natives
-
-    called_by_natives = []
-    for parsed_called_by_native in parsed_file.called_by_natives:
-      called_by_natives.append(
-          CalledByNative(parsed_called_by_native, is_system_class=False))
-
-    _AssignMethodIdVarNames(called_by_natives)
-    self.called_by_natives = called_by_natives
-
-  @property
-  def java_class(self):
-    return self.type_resolver.java_class
+    self.natives = proxy_natives + parsed_file.non_proxy_natives
+    self.called_by_natives = parsed_file.called_by_natives
 
   @property
   def proxy_natives(self):
@@ -371,21 +529,27 @@ class JNIFromJavaSource:
                                        self.type_resolver, self.options)
     return generator.GetContent()
 
+  @staticmethod
+  def CreateFromFile(filename, options):
+    parsed_file = parse.parse_java_file(filename,
+                                        package_prefix=options.package_prefix)
+    return JNIFromJavaSource(parsed_file, options)
+
 
 class HeaderFileGeneratorHelper(object):
   """Include helper methods for header generators."""
 
   def __init__(self,
-               java_class,
-               *,
+               class_name,
                module_name,
+               fully_qualified_class,
+               use_proxy_hash=False,
                package_prefix=None,
                split_name=None,
-               use_proxy_hash=False,
                enable_jni_multiplexing=False):
-    self.class_name = java_class.name
+    self.class_name = class_name
     self.module_name = module_name
-    self.fully_qualified_class = java_class.full_name_with_slashes
+    self.fully_qualified_class = fully_qualified_class
     self.use_proxy_hash = use_proxy_hash
     self.package_prefix = package_prefix
     self.split_name = split_name
@@ -431,12 +595,11 @@ class HeaderFileGeneratorHelper(object):
         continue
       ret[self.class_name] = self.fully_qualified_class
 
-      if isinstance(entry, CalledByNative):
-        class_name = entry.java_class.name
-        jni_class_path = entry.java_class.full_name_with_slashes
-      else:
-        class_name = self.class_name
-        jni_class_path = self.fully_qualified_class
+      class_name = self.class_name
+      jni_class_path = self.fully_qualified_class
+      if isinstance(entry, CalledByNative) and entry.java_class_name:
+        class_name = entry.java_class_name
+        jni_class_path = self.fully_qualified_class + '$' + class_name
       ret[class_name] = jni_class_path
     return ret
 
@@ -521,10 +684,12 @@ class InlHeaderFileGenerator(object):
       kwargs['enable_jni_multiplexing'] = options.enable_jni_multiplexing
       kwargs['package_prefix'] = options.package_prefix
 
-    self.helper = HeaderFileGeneratorHelper(java_class,
-                                            module_name=module_name,
-                                            split_name=options.split_name,
-                                            **kwargs)
+    self.helper = HeaderFileGeneratorHelper(
+        java_class.name,
+        module_name,
+        self.java_class.full_name_with_slashes,
+        split_name=options.split_name,
+        **kwargs)
 
   def GetContent(self):
     """Returns the content of the JNI binding file."""
@@ -650,7 +815,9 @@ $METHOD_STUBS
     return 'JNI_%s_%s' % (self.java_class.name, native.cpp_name)
 
   def GetNativeStub(self, native):
-    if native.first_param_cpp_type:
+    is_method = native.type == 'method'
+
+    if is_method:
       params = native.params[1:]
     else:
       params = native.params
@@ -695,14 +862,14 @@ $METHOD_STUBS
     }
 
     namespace_qual = self.namespace + '::' if self.namespace else ''
-    if native.first_param_cpp_type:
+    if is_method:
       optional_error_return = native.return_type.to_cpp_default_value()
       if optional_error_return:
         optional_error_return = ', ' + optional_error_return
       values.update({
           'OPTIONAL_ERROR_RETURN': optional_error_return,
           'PARAM0_NAME': native.params[0].name,
-          'P0_TYPE': native.first_param_cpp_type,
+          'P0_TYPE': native.p0_type,
       })
       template = Template("""\
 JNI_GENERATOR_EXPORT ${RETURN} ${STUB_NAME}(
@@ -739,8 +906,10 @@ ${PROFILING_ENTERED_NATIVE}\
 
   def GetCalledByNativeValues(self, called_by_native):
     """Fills in necessary values for the CalledByNative methods."""
-    java_class_only = called_by_native.java_class.nested_name
-    java_class = called_by_native.java_class.full_name_with_slashes
+    java_class_only = called_by_native.java_class_name or self.java_class.name
+    java_class = self.java_class.full_name_with_slashes
+    if called_by_native.java_class_name:
+      java_class += '$' + called_by_native.java_class_name
 
     if called_by_native.static or called_by_native.is_constructor:
       first_param_in_declaration = ''
@@ -757,46 +926,48 @@ ${PROFILING_ENTERED_NATIVE}\
         self.GetArgument(p) for p in called_by_native.params)
     if params_in_call:
       params_in_call = ', ' + params_in_call
+    pre_call = ''
+    post_call = ''
+    if called_by_native.static_cast:
+      pre_call = 'static_cast<%s>(' % called_by_native.static_cast
+      post_call = ')'
     check_exception = 'Unchecked'
     method_id_member_name = 'call_context.method_id'
     if not called_by_native.unchecked:
       check_exception = 'Checked'
       method_id_member_name = 'call_context.base.method_id'
-    if called_by_native.is_constructor:
-      return_type = called_by_native.java_class.as_type()
-    else:
-      return_type = called_by_native.return_type
-    pre_call = ''
-    post_call = ''
-    static_cast = _StaticCastForType(return_type)
-    if static_cast:
-      pre_call = f'static_cast<{static_cast}>('
-      post_call = ')'
-    optional_error_return = return_type.to_cpp_default_value()
+    return_type = called_by_native.return_type.to_cpp()
+    optional_error_return = called_by_native.return_type.to_cpp_default_value()
     if optional_error_return:
       optional_error_return = ', ' + optional_error_return
     return_declaration = ''
     return_clause = ''
-    return_type_str = return_type.to_cpp()
-    if not return_type.is_void():
+    if return_type != 'void':
       pre_call = ' ' + pre_call
-      return_declaration = return_type_str + ' ret ='
-      if return_type.is_primitive():
+      return_declaration = return_type + ' ret ='
+      if called_by_native.return_type.is_primitive():
         return_clause = 'return ret;'
       else:
-        return_type_str = (
-            f'base::android::ScopedJavaLocalRef<{return_type_str}>')
-        return_clause = f'return {return_type_str}(env, ret);'
+        return_type = 'base::android::ScopedJavaLocalRef<' + return_type + '>'
+        return_clause = 'return ' + return_type + '(env, ret);'
     profiling_leaving_native = ''
     if self.options.enable_profiling:
       profiling_leaving_native = '  JNI_SAVE_FRAME_POINTER;\n'
-    sig = called_by_native.signature
-    jni_descriptor = sig.to_descriptor()
-
+    jni_name = called_by_native.name
+    if called_by_native.is_constructor:
+      jni_name = '<init>'
+    if called_by_native.descriptor:
+      jni_descriptor = called_by_native.descriptor
+    else:
+      sig = called_by_native.signature
+      if called_by_native.is_constructor:
+        sig = dataclasses.replace(sig, return_type=java_types.VOID)
+      jni_descriptor = sig.to_descriptor()
+    java_name_full = java_class.replace('/', '.') + '.' + jni_name
     return {
         'JAVA_CLASS_ONLY': java_class_only,
         'JAVA_CLASS': common.escape_class_name(java_class),
-        'RETURN_TYPE': return_type_str,
+        'RETURN_TYPE': return_type,
         'OPTIONAL_ERROR_RETURN': optional_error_return,
         'RETURN_DECLARATION': return_declaration,
         'RETURN_CLAUSE': return_clause,
@@ -804,16 +975,17 @@ ${PROFILING_ENTERED_NATIVE}\
         'PARAMS_IN_DECLARATION': params_in_declaration,
         'PRE_CALL': pre_call,
         'POST_CALL': post_call,
-        'ENV_CALL': _GetEnvCall(called_by_native),
+        'ENV_CALL': called_by_native.env_call,
         'FIRST_PARAM_IN_CALL': first_param_in_call,
         'PARAMS_IN_CALL': params_in_call,
         'CHECK_EXCEPTION': check_exception,
         'PROFILING_LEAVING_NATIVE': profiling_leaving_native,
-        'JNI_NAME': called_by_native.name,
+        'JNI_NAME': jni_name,
         'JNI_DESCRIPTOR': jni_descriptor,
         'METHOD_ID_MEMBER_NAME': method_id_member_name,
         'METHOD_ID_VAR_NAME': called_by_native.method_id_var_name,
         'METHOD_ID_TYPE': 'STATIC' if called_by_native.static else 'INSTANCE',
+        'JAVA_NAME_FULL': java_name_full,
     }
 
   def GetLazyCalledByNativeMethodStub(self, called_by_native):
@@ -851,7 +1023,7 @@ ${PROFILING_LEAVING_NATIVE}\
     values = self.GetCalledByNativeValues(called_by_native)
     values['FUNCTION_SIGNATURE'] = (
         function_signature_template.substitute(values))
-    if called_by_native.is_system_class:
+    if called_by_native.system_class:
       values['FUNCTION_HEADER'] = (
           function_header_with_unused_template.substitute(values))
     else:
@@ -929,25 +1101,15 @@ def _CheckNotEmpty(jni_objs):
     sys.exit(1)
 
 
-def _RunJavap(javap_path, class_file):
-  p = subprocess.run([javap_path, '-s', '-constants', class_file],
-                     text=True,
-                     capture_output=True,
-                     check=True)
-  return p.stdout
-
-
-def _ParseClassFiles(jar_file, class_files, args):
+def _ParseClassFiles(jar_file, class_files, options):
   # Parse javap output.
   ret = []
   with tempfile.TemporaryDirectory() as temp_dir:
     with zipfile.ZipFile(jar_file) as z:
       z.extractall(temp_dir, class_files)
-      for class_file in class_files:
-        class_file = os.path.join(temp_dir, class_file)
-        contents = _RunJavap(args.javap, class_file)
-        parsed_file = parse.parse_javap(class_file, contents)
-        ret.append(JNIFromJavaP(parsed_file, args))
+    for class_file in class_files:
+      class_file = os.path.join(temp_dir, class_file)
+      ret.append(JNIFromJavaP.CreateFromClass(class_file, options))
   return ret
 
 
@@ -996,7 +1158,7 @@ def GenerateFromSource(parser, args):
     jni_objs = _ParseSourceFiles(args)
     _CheckNotEmpty(jni_objs)
     _CheckSameModule(jni_objs)
-  except parse.ParseError as e:
+  except SyntaxError as e:
     sys.stderr.write(f'{e}\n')
     sys.exit(1)
 
@@ -1034,7 +1196,7 @@ def GenerateFromJar(parser, args):
 
   try:
     jni_objs = _ParseClassFiles(args.jar_file, args.input_files, args)
-  except parse.ParseError as e:
+  except SyntaxError as e:
     sys.stderr.write(f'{e}\n')
     sys.exit(1)
 

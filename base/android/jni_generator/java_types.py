@@ -36,11 +36,6 @@ _DESCRIPTOR_CHAR_BY_PRIMITIVE_TYPE = {
     'void': 'V',
 }
 
-_PRIMITIVE_TYPE_BY_DESCRIPTOR_CHAR = {
-    v: k
-    for k, v in _DESCRIPTOR_CHAR_BY_PRIMITIVE_TYPE.items()
-}
-
 _DEFAULT_VALUE_BY_PRIMITIVE_TYPE = {
     'boolean': 'false',
     'byte': '0',
@@ -100,9 +95,6 @@ class JavaClass:
     type_resolver = type_resolver or _EMPTY_TYPE_RESOLVER
     return type_resolver.contextualize(self)
 
-  def as_type(self):
-    return JavaType(java_class=self)
-
   def make_prefixed(self, prefix=None):
     if not prefix:
       return self
@@ -121,21 +113,6 @@ class JavaType:
   java_class: Optional[JavaClass] = None
   annotations: Dict[str, Optional[str]] = \
       dataclasses.field(default_factory=dict, compare=False)
-
-  @staticmethod
-  def from_descriptor(descriptor):
-    # E.g.: [Ljava/lang/Class;
-    without_arrays = descriptor.lstrip('[')
-    array_dimensions = len(descriptor) - len(without_arrays)
-    descriptor = without_arrays
-
-    if descriptor[0] == 'L':
-      assert descriptor[-1] == ';', 'invalid descriptor: ' + descriptor
-      return JavaType(array_dimensions=array_dimensions,
-                      java_class=JavaClass(descriptor[1:-1]))
-    primitive_name = _PRIMITIVE_TYPE_BY_DESCRIPTOR_CHAR[descriptor[0]]
-    return JavaType(array_dimensions=array_dimensions,
-                    primitive_name=primitive_name)
 
   @property
   def non_array_full_name_with_slashes(self):
@@ -180,9 +157,12 @@ class JavaType:
       # There is no jstringArray.
       return 'jobjectArray'
 
-    base = _CPP_TYPE_BY_JAVA_TYPE.get(self.non_array_full_name_with_slashes,
-                                      'jobject')
-    return base + ('Array' * self.array_dimensions)
+    ret = _CPP_TYPE_BY_JAVA_TYPE.get(self.non_array_full_name_with_slashes,
+                                     'jobject')
+    if self.array_dimensions:
+      ret += 'Array'
+
+    return ret
 
   def to_cpp_default_value(self):
     """Returns a valid C return value for the given java type."""
@@ -241,32 +221,6 @@ class JavaSignature:
                          param_types=tuple(p.java_type for p in param_list),
                          param_list=param_list)
 
-  @staticmethod
-  def from_descriptor(descriptor):
-    # E.g.: (Ljava/lang/Object;Ljava/lang/Runnable;)Ljava/lang/Class;
-    assert descriptor[0] == '('
-    i = 1
-    start_idx = i
-    params = []
-    while True:
-      char = descriptor[i]
-      if char == ')':
-        break
-      elif char == '[':
-        i += 1
-        continue
-      elif char == 'L':
-        end_idx = descriptor.index(';', i) + 1
-      else:
-        end_idx = i + 1
-      param_type = JavaType.from_descriptor(descriptor[start_idx:end_idx])
-      params.append(JavaParam(param_type, f'p{len(params)}'))
-      i = end_idx
-      start_idx = end_idx
-
-    return_type = JavaType.from_descriptor(descriptor[i + 1:])
-    return JavaSignature.from_params(return_type, JavaParamList(params))
-
   def to_descriptor(self):
     """Returns the JNI signature."""
     sb = ['(']
@@ -285,7 +239,7 @@ class JavaSignature:
 class TypeResolver:
   """Converts type names to fully qualified names."""
   def __init__(self, java_class):
-    self.java_class = java_class
+    self._java_class = java_class
     self.imports = []
     self.nested_classes = []
 
@@ -298,7 +252,7 @@ class TypeResolver:
   def contextualize(self, java_class):
     """Return the shortest string that resolves to the given class."""
     type_package = java_class.package_with_slashes
-    if type_package in ('java/lang', self.java_class.package_with_slashes):
+    if type_package in ('java/lang', self._java_class.package_with_slashes):
       return java_class.name_with_dots
     if java_class in self.imports:
       return java_class.name_with_dots
@@ -313,8 +267,8 @@ class TypeResolver:
       # Coming from javap, use the fully qualified name directly.
       return JavaClass(name)
 
-    if self.java_class.name == name:
-      return self.java_class
+    if self._java_class.name == name:
+      return self._java_class
 
     for clazz in self.nested_classes:
       if name in (clazz.name, clazz.nested_name):
@@ -349,7 +303,7 @@ class TypeResolver:
       return JavaClass(f'java/lang/{name}')
 
     # Type not found, falling back to same package as this class.
-    return JavaClass(f'{self.java_class.package_with_slashes}/{name}')
+    return JavaClass(f'{self._java_class.package_with_slashes}/{name}')
 
 
 _OBJECT_CLASS = JavaClass('java/lang/Object')
