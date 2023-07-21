@@ -1723,6 +1723,9 @@ bool InspectorDOMAgent::ContainerQueriedByElement(Element* container,
   StyleResolver& style_resolver = element->GetDocument().GetStyleResolver();
   RuleIndexList* matched_rules =
       style_resolver.CssRulesForElement(element, StyleResolver::kAllCSSRules);
+  if (!matched_rules) {
+    return false;
+  }
   for (auto it = matched_rules->rbegin(); it != matched_rules->rend(); ++it) {
     CSSRule* parent_rule = it->first;
     while (parent_rule) {
