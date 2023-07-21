@@ -178,7 +178,7 @@ class GaiaAuthFetcherIOSNSURLSessionBridgeTest : public PlatformTest {
   DataTaskWithRequestCompletionHandler completion_handler_;
 
  private:
-  __block base::OnceClosure quit_closure_;
+  base::OnceClosure quit_closure_;
 };
 
 #pragma mark - TestGaiaAuthFetcherIOSNSURLSessionBridge
@@ -376,7 +376,7 @@ GaiaAuthFetcherIOSNSURLSessionBridgeTest::GetHeaderFieldsWithCookies(
 
 bool GaiaAuthFetcherIOSNSURLSessionBridgeTest::FetchURL(const GURL& url) {
   DCHECK(url_session_data_task_);
-  __block base::RunLoop run_loop;
+  base::RunLoop run_loop;
   quit_closure_ = run_loop.QuitClosure();
   ns_url_session_bridge_->Fetch(url, "", "", false);
   run_loop.Run();
