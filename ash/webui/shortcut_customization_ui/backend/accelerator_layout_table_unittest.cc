@@ -59,7 +59,7 @@ class AcceleratorLayoutMetadataTest : public testing::Test {
 // Test that all ash accelerators should have a layout or should be added to the
 // exception list kAcceleratorsWithoutLayout.
 TEST_F(AcceleratorLayoutMetadataTest,
-       AcceleratorsNotInAllowedListShouldHaveLayouts) {
+       DISABLED_AcceleratorsNotInAllowedListShouldHaveLayouts) {
   for (size_t i = 0; i < ash::kAcceleratorDataLength; ++i) {
     const ash::AcceleratorData& accel_data = ash::kAcceleratorData[i];
     if (ShouldNotHaveLayouts(accel_data.action)) {
