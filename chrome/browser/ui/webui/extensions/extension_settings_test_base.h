@@ -9,7 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "chrome/browser/extensions/install_verifier.h"
-#include "chrome/test/base/web_ui_browser_test.h"
+#include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "extensions/browser/scoped_ignore_content_verifier_for_test.h"
 
 namespace extensions {
@@ -19,7 +19,7 @@ class ScopedTestDialogAutoConfirm;
 
 // C++ base class used by Extensions tests in chrome/test/data/webui/extensions/
 // and chrome/browser/ui/webui/extensions/.
-class ExtensionSettingsTestBase : public WebUIBrowserTest {
+class ExtensionSettingsTestBase : public WebUIMochaBrowserTest {
  public:
   ExtensionSettingsTestBase();
 

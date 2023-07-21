@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/ui/webui/extensions/extension_settings_test_base.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
@@ -340,6 +341,110 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsKioskModeManagerUnitTest, KioskMode) {
 }
 #endif
 
+class CrExtensionsManagerTestWithMultipleExtensionTypesInstalled
+    : public ExtensionSettingsTestBase {
+ protected:
+  CrExtensionsManagerTestWithMultipleExtensionTypesInstalled() {
+    set_test_loader_host(chrome::kChromeUIExtensionsHost);
+  }
+
+  void RunTestCase(const std::string& testCase) {
+    ExtensionSettingsTestBase::RunTest(
+        "extensions/manager_test.js",
+        base::StringPrintf("runMochaTest('ExtensionManagerTest', '%s');",
+                           testCase.c_str()));
+  }
+
+  void InstallPrerequisites() {
+    InstallGoodExtension();
+    InstallPackagedApp();
+    InstallHostedApp();
+    InstallPlatformApp();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    CrExtensionsManagerTestWithMultipleExtensionTypesInstalled,
+    ItemListVisibility) {
+  InstallPrerequisites();
+  RunTestCase("ItemListVisibility");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CrExtensionsManagerTestWithMultipleExtensionTypesInstalled,
+    SplitItems) {
+  InstallPrerequisites();
+  RunTestCase("SplitItems");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CrExtensionsManagerTestWithMultipleExtensionTypesInstalled,
+    ChangePages) {
+  InstallPrerequisites();
+  RunTestCase("ChangePages");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CrExtensionsManagerTestWithMultipleExtensionTypesInstalled,
+    CloseDrawerOnNarrowModeExit) {
+  InstallPrerequisites();
+  RunTestCase("CloseDrawerOnNarrowModeExit");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CrExtensionsManagerTestWithMultipleExtensionTypesInstalled,
+    PageTitleUpdate) {
+  InstallPrerequisites();
+  RunTestCase("PageTitleUpdate");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CrExtensionsManagerTestWithMultipleExtensionTypesInstalled,
+    NavigateToSitePermissionsFail) {
+  InstallPrerequisites();
+  RunTestCase("NavigateToSitePermissionsFail");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CrExtensionsManagerTestWithMultipleExtensionTypesInstalled,
+    NavigateToSitePermissionsSuccess) {
+  InstallPrerequisites();
+  RunTestCase("NavigateToSitePermissionsSuccess");
+}
+
+class CrExtensionsManagerTestWithIdQueryParam
+    : public ExtensionSettingsTestBase {
+ protected:
+  CrExtensionsManagerTestWithIdQueryParam() {
+    set_test_loader_host(chrome::kChromeUIExtensionsHost);
+  }
+
+  void RunTestCase(const std::string& testCase) {
+    ExtensionSettingsTestBase::RunTest(
+        "extensions/manager_test_with_id_query_param.js",
+        base::StringPrintf("runMochaTest('ExtensionManagerTest', '%s');",
+                           testCase.c_str()));
+  }
+
+  void InstallPrerequisites() {
+    InstallGoodExtension();
+    SetAutoConfirmUninstall();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsManagerTestWithIdQueryParam,
+                       UrlNavigationToDetails) {
+  InstallPrerequisites();
+  RunTestCase("UrlNavigationToDetails");
+}
+
+// Disabled as flaky. TODO(crbug.com/1127741): Enable this test.
+IN_PROC_BROWSER_TEST_F(CrExtensionsManagerTestWithIdQueryParam,
+                       DISABLED_UrlNavigationToActivityLogFail) {
+  InstallPrerequisites();
+  RunTestCase("UrlNavigationToActivityLogFail");
+}
+
 class CrExtensionsManagerUnitTestWithActivityLogFlag
     : public ExtensionsBrowserTest {
  protected:
@@ -352,6 +457,59 @@ class CrExtensionsManagerUnitTestWithActivityLogFlag
 IN_PROC_BROWSER_TEST_F(CrExtensionsManagerUnitTestWithActivityLogFlag, All) {
   RunTest("extensions/manager_unit_test_with_activity_log_flag.js",
           "mocha.run()");
+}
+
+class CrExtensionsManagerTestWithActivityLogFlag
+    : public ExtensionsBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kEnableExtensionActivityLogging);
+    WebUIMochaBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsManagerTestWithActivityLogFlag, All) {
+  RunTest("extensions/manager_test_with_activity_log_flag.js", "mocha.run()");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Extension Options Dialog Tests
+
+class CrExtensionsOptionsDialogTest : public ExtensionSettingsTestBase {
+ protected:
+  CrExtensionsOptionsDialogTest() {
+    set_test_loader_host(chrome::kChromeUIExtensionsHost);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsOptionsDialogTest, Layout) {
+  InstallExtensionWithInPageOptions();
+  RunTest("extensions/options_dialog_test.js",
+          "runMochaTest('ExtensionOptionsDialogTests', 'Layout')");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Error Console tests
+
+class CrExtensionsErrorConsoleTest : public ExtensionSettingsTestBase {
+ protected:
+  CrExtensionsErrorConsoleTest() {
+    set_test_loader_host(chrome::kChromeUIExtensionsHost);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsErrorConsoleTest, TestUpDownErrors) {
+  SetDevModeEnabled(true);
+  // TODO(https://crbug.com/1269161): Update the associated extensions to
+  // Manifest V3 and stop ignoring deprecated manifest version warnings.
+  SetSilenceDeprecatedManifestVersionWarnings(true);
+  InstallErrorsExtension();
+
+  RunTest("extensions/error_console_test.js", "mocha.run()");
+
+  // Return settings to default.
+  SetDevModeEnabled(false);
+  SetSilenceDeprecatedManifestVersionWarnings(false);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

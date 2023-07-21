@@ -100,6 +100,10 @@ source_set("interactive_ui_tests") {
     sources += [ "tab_strip/tab_strip_focus_test.cc" ]
   }
 
+  if (enable_extensions) {
+    sources += [ "extensions/extensions_focus_test.cc" ]
+  }
+
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
@@ -114,7 +118,6 @@ if (include_js_tests) {
     test_type = "webui"
 
     sources = [
-      "extensions/cr_extensions_interactive_ui_tests.js",
       "settings/cr_settings_interactive_ui_tests.js",
       "support_tool/support_tool_interactive_ui_test.js",
     ]
@@ -229,9 +232,6 @@ if (include_js_tests) {
 
     if (enable_webui_certificate_viewer) {
       sources += [ "certificate_viewer_dialog_browsertest.js" ]
-    }
-    if (enable_extensions) {
-      sources += [ "extensions/cr_extensions_browsertest.js" ]
     }
     if (enable_print_preview) {
       sources += [ "print_preview/print_preview_ui_browsertest.js" ]

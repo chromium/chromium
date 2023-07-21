@@ -262,6 +262,8 @@ static_library("test_support") {
       "../browser/extensions/extension_service_test_with_install.h",
       "../browser/extensions/extension_service_user_test_base.cc",
       "../browser/extensions/extension_service_user_test_base.h",
+      "../browser/ui/webui/extensions/extension_settings_test_base.cc",
+      "../browser/ui/webui/extensions/extension_settings_test_base.h",
     ]
 
     deps += [
@@ -2494,8 +2496,6 @@ if (!is_android) {
       "../browser/ui/webui/commerce/shopping_ui_handler_delegate_browsertest.cc",
       "../browser/ui/webui/constrained_web_dialog_ui_browsertest.cc",
       "../browser/ui/webui/extensions/extension_settings_browsertest.cc",
-      "../browser/ui/webui/extensions/extension_settings_test_base.cc",
-      "../browser/ui/webui/extensions/extension_settings_test_base.h",
       "../browser/ui/webui/extensions/extensions_internals_browsertest.cc",
       "../browser/ui/webui/history_clusters/history_clusters_handler_browsertest.cc",
       "../browser/ui/webui/identity_internals_ui_browsertest.cc",
@@ -10667,8 +10667,6 @@ if (!is_android) {
 
       if (include_js_tests) {
         sources += [
-          "../browser/ui/webui/extensions/extension_settings_test_base.cc",
-          "../browser/ui/webui/extensions/extension_settings_test_base.h",
           "../browser/ui/webui/management/management_a11y_browsertest.cc",
           "../browser/ui/webui/management/management_a11y_browsertest.h",
         ]

@@ -18,16 +18,7 @@ import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://
 import {TestService} from './test_service.js';
 import {createExtensionInfo} from './test_util.js';
 
-const extension_shortcut_input_tests = {
-  suiteName: 'ExtensionShortcutInputTest',
-  TestNames: {
-    Basic: 'basic',
-  },
-};
-
-Object.assign(window, {extension_shortcut_input_tests});
-
-suite(extension_shortcut_input_tests.suiteName, function() {
+suite('ExtensionShortcutInputTest', function() {
   let input: ExtensionsShortcutInputElement;
   let testService: TestService;
 
@@ -49,7 +40,7 @@ suite(extension_shortcut_input_tests.suiteName, function() {
     flush();
   });
 
-  test(extension_shortcut_input_tests.TestNames.Basic, async function() {
+  test('Basic', async function() {
     const field = input.$.input;
     assertEquals('', field.value);
 
