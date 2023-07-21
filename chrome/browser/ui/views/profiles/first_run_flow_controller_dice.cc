@@ -7,9 +7,12 @@
 #include <memory>
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller_impl.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
@@ -18,6 +21,7 @@
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "url/gurl.h"
@@ -96,6 +100,66 @@ class IntroStepController : public ProfileManagementStepController {
   base::WeakPtrFactory<IntroStepController> weak_ptr_factory_{this};
 };
 
+class DefaultBrowserStepController : public ProfileManagementStepController {
+ public:
+  explicit DefaultBrowserStepController(
+      ProfilePickerWebContentsHost* host,
+      base::OnceClosure step_completed_callback)
+      : ProfileManagementStepController(host),
+        step_completed_callback_(std::move(step_completed_callback)) {}
+
+  ~DefaultBrowserStepController() override = default;
+
+  void Show(base::OnceCallback<void(bool success)> step_shown_callback,
+            bool reset_state) override {
+    CHECK(reset_state);
+
+    base::OnceClosure navigation_finished_closure = base::BindOnce(
+        &DefaultBrowserStepController::OnLoadFinished, base::Unretained(this));
+    if (step_shown_callback) {
+      // Notify the caller first.
+      navigation_finished_closure =
+          base::BindOnce(std::move(step_shown_callback), true)
+              .Then(std::move(navigation_finished_closure));
+    }
+
+    host()->ShowScreenInPickerContents(
+        // TODO(crbug.com/1465822): Implement the WebUI page.
+        GURL(chrome::kChromeUIVersionURL),
+        std::move(navigation_finished_closure));
+  }
+
+  void OnNavigateBackRequested() override {
+    // Do nothing, navigating back is not allowed.
+  }
+
+ private:
+  void OnLoadFinished() {
+    // TODO(crbug.com/1465822): Configure WebUI controller and wait for a user
+    // choice to advance. For now we auto-advance as a placeholder.
+    content::GetUIThreadTaskRunner({})->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&DefaultBrowserStepController::OnStepCompleted,
+                       // WeakPtr: Because of the delayed task.
+                       weak_ptr_factory_.GetWeakPtr()),
+        base::Seconds(2));
+  }
+
+  void OnStepCompleted() {
+    CHECK(step_completed_callback_);
+    std::move(step_completed_callback_).Run();
+  }
+
+  // Callback to be executed when the step is completed.
+  base::OnceClosure step_completed_callback_;
+
+  base::WeakPtrFactory<DefaultBrowserStepController> weak_ptr_factory_{this};
+};
+
+using IdentityStepsCompletedCallback =
+    base::OnceCallback<void(PostHostClearedCallback post_host_cleared_callback,
+                            bool is_continue_callback)>;
+
 // Instance allowing `TurnSyncOnHelper` to drive the interface in the
 // `kPostSignIn` step.
 //
@@ -108,7 +172,7 @@ class FirstRunPostSignInAdapter : public ProfilePickerSignedInFlowController {
       ProfilePickerWebContentsHost* host,
       Profile* profile,
       std::unique_ptr<content::WebContents> contents,
-      base::OnceCallback<void(PostHostClearedCallback)> step_completed_callback)
+      IdentityStepsCompletedCallback step_completed_callback)
       : ProfilePickerSignedInFlowController(host,
                                             profile,
                                             std::move(contents),
@@ -128,7 +192,8 @@ class FirstRunPostSignInAdapter : public ProfilePickerSignedInFlowController {
     ProfilePickerSignedInFlowController::Init();
   }
 
-  void FinishAndOpenBrowser(PostHostClearedCallback callback) override {
+  void FinishAndOpenBrowser(
+      PostHostClearedCallback post_host_cleared_callback) override {
     // Do nothing if this has already been called. Note that this can get called
     // first time from a special case handling (such as the Settings link) and
     // than second time when the TurnSyncOnHelper finishes.
@@ -136,11 +201,16 @@ class FirstRunPostSignInAdapter : public ProfilePickerSignedInFlowController {
       return;
     }
 
-    std::move(step_completed_callback_).Run(std::move(callback));
+    // The only callback we can receive in this flow is the one to
+    // finish configuring Sync. In this case we always want to
+    // immediately continue with that.
+    bool is_continue_callback = !post_host_cleared_callback->is_null();
+    std::move(step_completed_callback_)
+        .Run(std::move(post_host_cleared_callback), is_continue_callback);
   }
 
  private:
-  base::OnceCallback<void(PostHostClearedCallback)> step_completed_callback_;
+  IdentityStepsCompletedCallback step_completed_callback_;
 };
 
 }  // namespace
@@ -166,7 +236,21 @@ FirstRunFlowControllerDice::FirstRunFlowControllerDice(
 }
 
 FirstRunFlowControllerDice::~FirstRunFlowControllerDice() {
-  if (first_run_exited_callback_) {
+  if (!first_run_exited_callback_) {
+    // As the callback gets executed by `PreFinishWithBrowser()`,
+    // this indicates that `FinishFlowAndRunInBrowser()` has already run.
+    return;
+  }
+
+  // The core of the flow stops at the sync opt in step. Considering the flow
+  // completed means among other things that we would always proceed to the
+  // browser when closing the host view.
+  bool is_core_flow_completed = current_step() == Step::kDefaultBrowser;
+
+  if (is_core_flow_completed) {
+    FinishFlowAndRunInBrowser(profile_, std::move(post_host_cleared_callback_));
+  } else {
+    // TODO(crbug.com/1466803): Revisit the enum value name for kQuitAtEnd.
     std::move(first_run_exited_callback_)
         .Run(ProfilePicker::FirstRunExitStatus::kQuitAtEnd);
   }
@@ -221,10 +305,34 @@ void FirstRunFlowControllerDice::HandleIntroSigninChoice(IntroChoice choice) {
 }
 
 void FirstRunFlowControllerDice::HandleIdentityStepsCompleted(
-    PostHostClearedCallback post_host_cleared_callback) {
-  // TODO(crbug.com/1465822): Show the default browser promo.
+    PostHostClearedCallback post_host_cleared_callback,
+    bool is_continue_callback) {
+  CHECK(post_host_cleared_callback_->is_null());
 
-  FinishFlowAndRunInBrowser(profile_, std::move(post_host_cleared_callback));
+  post_host_cleared_callback_ = std::move(post_host_cleared_callback);
+
+  // TODO(crbug.com/1465822): Also check policy and the current default state.
+  bool should_show_default_browser_step =
+      // Proceed with the callback  directly instead of showing the default
+      // browser prompt.
+      !is_continue_callback &&
+      // The feature configuration ultimately gates the step.
+      kForYouFreWithDefaultBrowserStep.Get() != WithDefaultBrowserStep::kNo;
+
+  if (!should_show_default_browser_step) {
+    FinishFlowAndRunInBrowser(profile_, std::move(post_host_cleared_callback_));
+    return;
+  }
+
+  auto step_finished_callback =
+      base::BindOnce(&FirstRunFlowControllerDice::FinishFlowAndRunInBrowser,
+                     // Unretained ok: the step is owned by `this`.
+                     base::Unretained(this), base::Unretained(profile_),
+                     std::move(post_host_cleared_callback_));
+  RegisterStep(Step::kDefaultBrowser,
+               std::make_unique<DefaultBrowserStepController>(
+                   host(), std::move(step_finished_callback)));
+  SwitchToStep(Step::kDefaultBrowser, /*reset_state=*/true);
 }
 
 std::unique_ptr<ProfilePickerDiceSignInProvider>

@@ -20,6 +20,18 @@ enum class SigninPromoVariant { kSignIn, kMakeYourOwn, kDoMore };
 extern const base::FeatureParam<SigninPromoVariant>
     kForYouFreSignInPromoVariant;
 
+enum class WithDefaultBrowserStep {
+  // The default browser step should be shown as appropriate.
+  kYes,
+  // The default browser step should be skipped.
+  kNo,
+  // The default browser step should be shown even if we normally should skip
+  // it, example because of policies or the current default state.
+  kForced,
+};
+extern const base::FeatureParam<WithDefaultBrowserStep>
+    kForYouFreWithDefaultBrowserStep;
+
 BASE_DECLARE_FEATURE(kForYouFreSyntheticTrialRegistration);
 
 extern const base::FeatureParam<std::string> kForYouFreStudyGroup;

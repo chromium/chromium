@@ -38,6 +38,19 @@ const base::FeatureParam<SigninPromoVariant> kForYouFreSignInPromoVariant{
     /*default_value=*/SigninPromoVariant::kSignIn,
     /*options=*/&kSignInPromoVariantOptions};
 
+constexpr base::FeatureParam<WithDefaultBrowserStep>::Option
+    kWithDefaultBrowserStepOptions[] = {
+        {WithDefaultBrowserStep::kYes, "yes"},
+        {WithDefaultBrowserStep::kNo, "no"},
+        {WithDefaultBrowserStep::kForced, "forced"},
+};
+
+const base::FeatureParam<WithDefaultBrowserStep>
+    kForYouFreWithDefaultBrowserStep{
+        &kForYouFre, /*name=*/"with_default_browser_step",
+        /*default_value=*/WithDefaultBrowserStep::kNo,
+        /*options=*/&kWithDefaultBrowserStepOptions};
+
 // Feature that indicates that we should put the client in a study group
 // (provided through `kForYouFreStudyGroup`) to be able to look at metrics in
 // the long term. Does not affect the client's behavior by itself, instead this
