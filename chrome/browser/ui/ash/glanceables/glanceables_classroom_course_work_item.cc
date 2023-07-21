@@ -14,6 +14,12 @@
 namespace ash {
 namespace {
 
+bool TimesWithinDelta(const base::Time& lhs,
+                      const base::Time& rhs,
+                      const base::TimeDelta& max_distance) {
+  return (lhs - rhs).magnitude() <= max_distance;
+}
+
 absl::optional<base::Time> ConvertCourseWorkItemDue(
     const absl::optional<google_apis::classroom::CourseWorkItem::DueDateTime>&
         raw_due) {
@@ -101,9 +107,15 @@ void GlanceablesClassroomCourseWorkItem::AddStudentSubmission(
 }
 
 void GlanceablesClassroomCourseWorkItem::InvalidateStudentSubmissions() {
+  last_submissions_fetch_ = base::Time();
+
   total_submissions_ = 0;
   turned_in_submissions_ = 0;
   graded_submissions_ = 0;
+}
+
+void GlanceablesClassroomCourseWorkItem::InvalidateCourseWorkItem() {
+  course_work_item_set_ = false;
 }
 
 std::unique_ptr<GlanceablesClassroomAssignment>
@@ -147,6 +159,62 @@ GlanceablesClassroomCourseWorkItem::CreateClassroomAssignment(
 
 bool GlanceablesClassroomCourseWorkItem::IsValid() const {
   return course_work_item_set_ && total_submissions_ > 0;
+}
+
+bool GlanceablesClassroomCourseWorkItem::StudentSubmissionsNeedRefetch(
+    const base::Time& now) const {
+  if (last_submissions_fetch_.is_null()) {
+    return true;
+  }
+
+  if (last_update_ > last_submissions_fetch_) {
+    return true;
+  }
+
+  const base::TimeDelta time_from_last_refresh = now - last_submissions_fetch_;
+
+  if (TimesWithinDelta(last_update_, now, base::Days(2))) {
+    return true;
+  }
+
+  if (TimesWithinDelta(last_update_, now, base::Days(7)) &&
+      time_from_last_refresh > base::Days(1)) {
+    return true;
+  }
+
+  if (graded_submissions_ < total_submissions_ &&
+      time_from_last_refresh > base::Days(7)) {
+    return true;
+  }
+
+  if (due_) {
+    // Course work with due date within a day to now is likely to be shown in
+    // the UI - refresh it.
+    if (TimesWithinDelta(*due_, now, base::Days(2))) {
+      return true;
+    }
+
+    // If due date is within few days, refresh it if the student submissions
+    // have not been updated recently.
+    if (TimesWithinDelta(*due_, now, base::Days(5))) {
+      return time_from_last_refresh > base::Hours(12);
+    }
+
+    if (TimesWithinDelta(*due_, now, base::Days(14))) {
+      return time_from_last_refresh > base::Days(1);
+    }
+  }
+
+  return false;
+}
+
+void GlanceablesClassroomCourseWorkItem::SetHasFreshSubmissionsState(
+    bool value,
+    const base::Time& now) {
+  has_fresh_submissions_state_ = value;
+  if (has_fresh_submissions_state_) {
+    last_submissions_fetch_ = now;
+  }
 }
 
 }  // namespace ash

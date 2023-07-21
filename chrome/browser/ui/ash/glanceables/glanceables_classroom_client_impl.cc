@@ -19,6 +19,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chrome/browser/profiles/profile.h"
@@ -123,9 +124,11 @@ bool GlanceablesClassroomClientImpl::CourseWorkRequest::RespondIfComplete() {
 
 GlanceablesClassroomClientImpl::GlanceablesClassroomClientImpl(
     Profile* profile,
+    base::Clock* clock,
     const GlanceablesClassroomClientImpl::CreateRequestSenderCallback&
         create_request_sender_callback)
     : profile_(profile),
+      clock_(clock),
       create_request_sender_callback_(create_request_sender_callback) {}
 
 GlanceablesClassroomClientImpl::~GlanceablesClassroomClientImpl() = default;
@@ -172,7 +175,7 @@ void GlanceablesClassroomClientImpl::
       [](const base::Time& now, const absl::optional<base::Time>& due) {
         return due.has_value() && now < due.value();
       },
-      base::Time::Now());
+      clock_->Now());
   auto submission_state_predicate =
       base::BindRepeating([](GlanceablesClassroomStudentSubmissionState state) {
         return state == GlanceablesClassroomStudentSubmissionState::kAssigned;
@@ -191,7 +194,7 @@ void GlanceablesClassroomClientImpl::GetStudentAssignmentsWithMissedDueDate(
       [](const base::Time& now, const absl::optional<base::Time>& due) {
         return due.has_value() && now > due.value();
       },
-      base::Time::Now());
+      clock_->Now());
   auto submission_state_predicate =
       base::BindRepeating([](GlanceablesClassroomStudentSubmissionState state) {
         return state == GlanceablesClassroomStudentSubmissionState::kAssigned;
@@ -244,7 +247,7 @@ void GlanceablesClassroomClientImpl::
         // Only include items which an approaching due date.
         return due.has_value() && now < due.value();
       },
-      base::Time::Now());
+      clock_->Now());
 
   auto submissions_state_predicate =
       base::BindRepeating([](GlanceablesClassroomStudentSubmissionState state) {
@@ -274,7 +277,7 @@ void GlanceablesClassroomClientImpl::GetTeacherAssignmentsRecentlyDue(
         //  Only include items with a due date in the past.
         return due.has_value() && now > due.value();
       },
-      base::Time::Now());
+      clock_->Now());
 
   auto submissions_state_predicate =
       base::BindRepeating([](GlanceablesClassroomStudentSubmissionState state) {
@@ -411,6 +414,10 @@ void GlanceablesClassroomClientImpl::FetchCourseWork(
       request_id, std::make_unique<CourseWorkRequest>(std::move(callback)));
   CHECK(request_inserted);
 
+  for (auto& course_work_info : course_work[course_id]) {
+    course_work_info.second.InvalidateCourseWorkItem();
+  }
+
   FetchCourseWorkPage(request_id, course_id, /*page_token=*/"",
                       fetch_submissions, course_work);
 }
@@ -507,7 +514,7 @@ void GlanceablesClassroomClientImpl::FetchCoursesPage(
           request_sender, student_id, teacher_id, page_token,
           base::BindOnce(&GlanceablesClassroomClientImpl::OnCoursesPageFetched,
                          weak_factory_.GetWeakPtr(), student_id, teacher_id,
-                         std::ref(courses_container), base::Time::Now(),
+                         std::ref(courses_container), clock_->Now(),
                          std::move(callback))));
 }
 
@@ -522,7 +529,7 @@ void GlanceablesClassroomClientImpl::OnCoursesPageFetched(
   CHECK(callback);
 
   UMA_HISTOGRAM_TIMES("Ash.Glanceables.Api.Classroom.GetCourses.Latency",
-                      base::Time::Now() - request_start_time);
+                      clock_->Now() - request_start_time);
   UMA_HISTOGRAM_SPARSE("Ash.Glanceables.Api.Classroom.GetCourses.Status",
                        result.error_or(ApiErrorCode::HTTP_SUCCESS));
 
@@ -564,8 +571,6 @@ void GlanceablesClassroomClientImpl::OnCoursesFetched(
       std::move(on_course_work_and_student_submissions_fetched));
 
   for (const auto& course : courses) {
-    course_work[course->id].clear();
-
     FetchCourseWork(course->id, fetch_submissions_per_course_work, course_work,
                     barrier_closure);
 
@@ -597,7 +602,7 @@ void GlanceablesClassroomClientImpl::FetchCourseWorkPage(
           base::BindOnce(
               &GlanceablesClassroomClientImpl::OnCourseWorkPageFetched,
               weak_factory_.GetWeakPtr(), request_id, course_id,
-              fetch_submissions, std::ref(course_work), base::Time::Now())));
+              fetch_submissions, std::ref(course_work), clock_->Now())));
 }
 
 void GlanceablesClassroomClientImpl::OnCourseWorkPageFetched(
@@ -610,7 +615,7 @@ void GlanceablesClassroomClientImpl::OnCourseWorkPageFetched(
   CHECK(!course_id.empty());
 
   UMA_HISTOGRAM_TIMES("Ash.Glanceables.Api.Classroom.GetCourseWork.Latency",
-                      base::Time::Now() - request_start_time);
+                      clock_->Now() - request_start_time);
   UMA_HISTOGRAM_SPARSE("Ash.Glanceables.Api.Classroom.GetCourseWork.Status",
                        result.error_or(ApiErrorCode::HTTP_SUCCESS));
 
@@ -622,10 +627,6 @@ void GlanceablesClassroomClientImpl::OnCourseWorkPageFetched(
   CourseWorkInfo& course_work_for_course = course_work[course_id];
 
   if (!result.has_value()) {
-    // TODO(b/282013130): handle failures of a single page fetch request more
-    // gracefully (retry and/or reflect errors on UI).
-    course_work_for_course.clear();
-
     request_it->second->DecrementPendingPageCount();
     if (request_it->second->RespondIfComplete()) {
       course_work_requests_.erase(request_it);
@@ -640,9 +641,14 @@ void GlanceablesClassroomClientImpl::OnCourseWorkPageFetched(
       continue;
     }
 
-    course_work_for_course[item->id()].SetCourseWorkItem(item.get());
+    auto& course_work_item = course_work_for_course[item->id()];
+    course_work_item.SetCourseWorkItem(item.get());
     if (fetch_submissions) {
-      submissions_to_fetch.insert(item->id());
+      if (course_work_item.StudentSubmissionsNeedRefetch(clock_->Now())) {
+        submissions_to_fetch.insert(item->id());
+      } else {
+        course_work_item.SetHasFreshSubmissionsState(false, clock_->Now());
+      }
     }
   }
 
@@ -696,7 +702,7 @@ void GlanceablesClassroomClientImpl::FetchStudentSubmissionsPage(
           base::BindOnce(
               &GlanceablesClassroomClientImpl::OnStudentSubmissionsPageFetched,
               weak_factory_.GetWeakPtr(), course_id, course_work_id,
-              std::ref(course_work), base::Time::Now(), std::move(callback))));
+              std::ref(course_work), clock_->Now(), std::move(callback))));
 }
 
 void GlanceablesClassroomClientImpl::OnStudentSubmissionsPageFetched(
@@ -711,7 +717,7 @@ void GlanceablesClassroomClientImpl::OnStudentSubmissionsPageFetched(
 
   UMA_HISTOGRAM_TIMES(
       "Ash.Glanceables.Api.Classroom.GetStudentSubmissions.Latency",
-      base::Time::Now() - request_start_time);
+      clock_->Now() - request_start_time);
   UMA_HISTOGRAM_SPARSE(
       "Ash.Glanceables.Api.Classroom.GetStudentSubmissions.Status",
       result.error_or(ApiErrorCode::HTTP_SUCCESS));
@@ -749,6 +755,9 @@ void GlanceablesClassroomClientImpl::OnStudentSubmissionsPageFetched(
   }
 
   if (result.value()->next_page_token().empty()) {
+    if (shared_course_work_info) {
+      shared_course_work_info->SetHasFreshSubmissionsState(true, clock_->Now());
+    }
     std::move(callback).Run();
   } else {
     FetchStudentSubmissionsPage(course_id, course_work_id,

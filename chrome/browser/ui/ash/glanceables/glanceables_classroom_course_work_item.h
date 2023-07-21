@@ -62,6 +62,13 @@ class GlanceablesClassroomCourseWorkItem {
   // Resets the aggregated student submissions data.
   void InvalidateStudentSubmissions();
 
+  // Marks existing course work data as invalid - `IsValid()` will return false
+  // until `SetCourseWorkItem()` gets set again. This does not clear the cached
+  // data, but it allows the course work item information to be overwritten, and
+  // it can be used to detect whether the course work item data was set since
+  // invalidation.
+  void InvalidateCourseWorkItem();
+
   // Converts the course work item data to `GlanceablesClassroomAssignment`
   // type, which is used as a course work item representation in UI layer.
   // `course_name` - the associated course name.
@@ -88,6 +95,17 @@ class GlanceablesClassroomCourseWorkItem {
   // Whether the course work item has been set, and at least one student
   // submission has been added.
   bool IsValid() const;
+
+  // Depending on the current time `now`, and the course work state, returns
+  // whether the student submissions for the course work item should be
+  // refetched when updating the user's course work data.
+  bool StudentSubmissionsNeedRefetch(const base::Time& now) const;
+
+  // Set whether the student submissions have been fetched during the latest
+  // user course work data update.
+  // `now` is the timestamp of the fetch, if the submission state has been
+  // refreshed.
+  void SetHasFreshSubmissionsState(bool value, const base::Time& now);
 
   const std::string& title() const { return title_; }
   const GURL& link() const { return link_; }
@@ -121,6 +139,14 @@ class GlanceablesClassroomCourseWorkItem {
 
   // The number of student submissions that have already been graded.
   int graded_submissions_ = 0;
+
+  // Whether the student submissions have been fetched during the latest course
+  // work data update.
+  bool has_fresh_submissions_state_ = false;
+
+  // If the student submissions state is valid, the time when the submissions
+  // state has been last refreshed.
+  base::Time last_submissions_fetch_;
 };
 
 }  // namespace ash

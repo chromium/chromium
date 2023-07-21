@@ -26,6 +26,7 @@ class GURL;
 class Profile;
 
 namespace base {
+class Clock;
 class Time;
 }  // namespace base
 
@@ -57,6 +58,7 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
 
   GlanceablesClassroomClientImpl(
       Profile* profile,
+      base::Clock* clock,
       const CreateRequestSenderCallback& create_request_sender_callback);
   GlanceablesClassroomClientImpl(const GlanceablesClassroomClientImpl&) =
       delete;
@@ -365,6 +367,10 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
 
   // The profile for which this client was created.
   const raw_ptr<Profile, ExperimentalAsh> profile_;
+
+  // Clock to be used to retrieve current time - expected to be default clock in
+  // production.
+  const raw_ptr<base::Clock, ExperimentalAsh> clock_;
 
   // Callback passed from `GlanceablesKeyedService` that creates
   // `request_sender_`.

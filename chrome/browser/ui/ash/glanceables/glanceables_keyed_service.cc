@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/default_clock.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -88,7 +89,8 @@ void GlanceablesKeyedService::CreateClients() {
       &GlanceablesKeyedService::CreateRequestSenderForClient,
       base::Unretained(this));
   classroom_client_ = std::make_unique<GlanceablesClassroomClientImpl>(
-      profile_, create_request_sender_callback);
+      profile_, base::DefaultClock::GetInstance(),
+      create_request_sender_callback);
   tasks_client_ = std::make_unique<GlanceablesTasksClientImpl>(
       create_request_sender_callback);
 
