@@ -23,6 +23,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
+constexpr char kRotationChallengeResponseHeader[] =
+    "Sec-Session-Google-Response";
 
 bool IsExpectedCookie(const GURL& url,
                       const std::string& cookie_name,
@@ -99,6 +101,12 @@ void BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest() {
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = GaiaUrls::GetInstance()->rotate_bound_cookies_url();
   request->method = "GET";
+
+  // TODO(b/284956553): Properly sign the challenge and attach it to the
+  // request. This temporary to unblock local testing as the rotation endpoint
+  // requires the presence of this header to issue required cookies.
+  request->headers.SetHeader(kRotationChallengeResponseHeader,
+                             "fakeChallengeResponse");
 
   url::Origin origin = GaiaUrls::GetInstance()->gaia_origin();
   request->site_for_cookies = net::SiteForCookies::FromOrigin(origin);
