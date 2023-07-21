@@ -32,6 +32,7 @@ export class PolicyTestTableElement extends CustomElement {
     while (table.childElementCount > 1) {
       table.removeChild(table.lastChild!);
     }
+    this.addEmptyRow();
   }
 
   // Event listener function that adds a new PolicyTestRowElement to the table
@@ -53,14 +54,20 @@ export class PolicyTestTableElement extends CustomElement {
   getTestPoliciesAsJsonString(): string {
     const policyRowArray: PolicyTestRowElement[] =
         Array.from(this.shadowRoot!.querySelectorAll('policy-test-row'));
-    const policyInfoArray: PolicyInfo[] =
-        policyRowArray.map((row: PolicyTestRowElement) => ({
-                             name: row.getValue('.name'),
-                             source: Number.parseInt(row.getValue('.source')),
-                             scope: Number.parseInt(row.getValue('.scope')),
-                             level: Number.parseInt(row.getValue('.level')),
-                             value: row.getValue('.value'),
-                           }));
+    const policyInfoArray: PolicyInfo[] = policyRowArray.map(
+        (row: PolicyTestRowElement) => ({
+          name: row.getPolicyAttribute('name'),
+          source: Number.parseInt(row.getPolicyAttribute('source')),
+          scope: Number.parseInt(row.getPolicyAttribute('scope')),
+          level: Number.parseInt(row.getPolicyAttribute('level')),
+          value: row.getPolicyValue(),
+        }));
+    // If there is an error anywhere in the table, no policies should be
+    // applied.
+    const rowHasError = (row: PolicyTestRowElement) => row.getErrorState();
+    if (policyRowArray.some(rowHasError)) {
+      return '';
+    }
     return JSON.stringify(policyInfoArray);
   }
 }

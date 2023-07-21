@@ -15,6 +15,7 @@ function initialize() {
   getRequiredElement('apply-policies').addEventListener('click', applyPolicies);
   getRequiredElement('revert-applied-policies')
       .addEventListener('click', resetPolicies);
+  getRequiredElement('clear-policies').addEventListener('click', clearPolicies);
 }
 
 function uploadPoliciesFile() {
@@ -58,15 +59,26 @@ function applyPoliciesFromFile(jsonFile: File) {
 }
 
 function applyPolicies() {
-  sendWithPromise(
-      'setLocalTestPolicies',
-      (getRequiredElement<PolicyTestTableElement>('policy-test-table'))
-          .getTestPoliciesAsJsonString());
-  getRequiredElement<HTMLButtonElement>('revert-applied-policies').disabled =
-      false;
+  const jsonString =
+      getRequiredElement<PolicyTestTableElement>('policy-test-table')
+          .getTestPoliciesAsJsonString();
+  if (jsonString) {
+    // Disable the Apply policies button and re-enable after sending, to ensure
+    // that the JSON string is not accidentally sent twice.
+    getRequiredElement<HTMLButtonElement>('apply-policies').disabled = true;
+    sendWithPromise('setLocalTestPolicies', jsonString);
+    getRequiredElement<HTMLButtonElement>('revert-applied-policies').disabled =
+        false;
+    getRequiredElement<HTMLButtonElement>('apply-policies').disabled = false;
+  }
+}
+
+function clearPolicies() {
+  getRequiredElement<PolicyTestTableElement>('policy-test-table').clearRows();
 }
 
 function resetPolicies(event: Event) {
+  sendWithPromise('revertLocalTestPolicies');
   (event.target as HTMLButtonElement).disabled = true;
 }
 
