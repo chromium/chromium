@@ -41,7 +41,7 @@ import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {App as AppWithNotifications, AppNotificationsHandlerInterface, AppNotificationsObserverReceiver, Readiness} from '../mojom-webui/app_notification_handler.mojom-webui.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
+import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {AndroidAppsBrowserProxyImpl, AndroidAppsInfo} from './android_apps_browser_proxy.js';
@@ -65,7 +65,7 @@ export function isAppInstalled(app: AppWithNotifications): boolean {
   }
 }
 
-const OsSettingsAppsPageElementBase = DeepLinkingMixin(RouteObserverMixin(
+const OsSettingsAppsPageElementBase = DeepLinkingMixin(RouteOriginMixin(
     PrefsMixin(AppManagementStoreMixin(I18nMixin(PolymerElement)))));
 
 class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
@@ -142,22 +142,6 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
         readOnly: true,
       },
 
-      focusConfig_: {
-        type: Object,
-        value() {
-          const map = new Map();
-          if (routes.APP_MANAGEMENT) {
-            map.set(routes.APP_MANAGEMENT.path, '#appManagement');
-          }
-          if (routes.ANDROID_APPS_DETAILS) {
-            map.set(
-                routes.ANDROID_APPS_DETAILS.path,
-                '#android-apps .subpage-arrow');
-          }
-          return map;
-        },
-      },
-
       app_: Object,
 
       appsWithNotifications_: {
@@ -204,7 +188,6 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   private app_: App;
   private appNotificationsObserverReceiver_: AppNotificationsObserverReceiver;
   private appsWithNotifications_: AppWithNotifications[];
-  private focusConfig_: Map<string, string>;
   private isArcVmManageUsbAvailable_: boolean;
   private isDndEnabled_: boolean;
   private isPlayStoreAvailable_: boolean;
@@ -215,6 +198,13 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   private showAndroidApps_: boolean;
   private showAppNotificationsRow_: boolean;
   private showStartup_: boolean;
+
+  constructor() {
+    super();
+
+    /** RouteOriginMixin override */
+    this.route = routes.APPS;
+  }
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -242,9 +232,20 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
     });
   }
 
-  override currentRouteChanged(route: Route): void {
+  override ready() {
+    super.ready();
+
+    this.addFocusConfig(routes.APP_MANAGEMENT, '#appManagementRow');
+    this.addFocusConfig(routes.APP_NOTIFICATIONS, '#appNotificationsRow');
+    this.addFocusConfig(
+        routes.ANDROID_APPS_DETAILS, '#androidApps .subpage-arrow');
+  }
+
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
+    super.currentRouteChanged(newRoute, oldRoute);
+
     // Does not apply to this page.
-    if (route !== routes.APPS) {
+    if (newRoute !== this.route) {
       return;
     }
 

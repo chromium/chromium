@@ -4,13 +4,14 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {AndroidAppsBrowserProxyImpl, appNotificationHandlerMojom, Router, routes, routesMojom, setAppNotificationProviderForTesting} from 'chrome://os-settings/os_settings.js';
+import {AndroidAppsBrowserProxyImpl, appNotificationHandlerMojom, createRouterForTesting, Router, routes, routesMojom, setAppNotificationProviderForTesting} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {createBoolPermission} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestAndroidAppsBrowserProxy} from './test_android_apps_browser_proxy.js';
 
@@ -225,9 +226,9 @@ suite('<os-apps-page> available settings rows', () => {
   });
 
   const queryAndroidAppsRow = () =>
-      appsPage.shadowRoot.querySelector('#android-apps');
+      appsPage.shadowRoot.querySelector('#androidApps');
   const queryAppManagementRow = () =>
-      appsPage.shadowRoot.querySelector('#appManagement');
+      appsPage.shadowRoot.querySelector('#appManagementRow');
   const queryAppsOnStartupRow = () =>
       appsPage.shadowRoot.querySelector('#onStartupDropdown');
 
@@ -266,6 +267,80 @@ suite('<os-apps-page> available settings rows', () => {
     assertTrue(!!queryAndroidAppsRow());
     assertTrue(!!queryAppsOnStartupRow());
     assertEquals(3, appsPage.onStartupOptions_.length);
+  });
+});
+
+suite('<os-apps-page> Subpage trigger focusing', () => {
+  /** @type {OsSettingsAppsPageElement} */
+  let appsPage;
+
+  function initPage() {
+    Router.getInstance().navigateTo(routes.APPS);
+    appsPage = document.createElement('os-settings-apps-page');
+    appsPage.prefs = getFakePrefs();
+    appsPage.androidAppsInfo = {
+      playStoreEnabled: true,
+    };
+    document.body.appendChild(appsPage);
+    flush();
+  }
+
+  setup(() => {
+    loadTimeData.overrideValues({
+      androidAppsVisible: true,
+      showOsSettingsAppNotificationsRow: true,
+    });
+
+    // Reinitialize Router and routes based on load time data
+    const testRouter = createRouterForTesting();
+    Router.resetInstanceForTesting(testRouter);
+
+    androidAppsBrowserProxy = new TestAndroidAppsBrowserProxy();
+    AndroidAppsBrowserProxyImpl.setInstanceForTesting(androidAppsBrowserProxy);
+    PolymerTest.clearBody();
+  });
+
+  teardown(() => {
+    appsPage.remove();
+    Router.getInstance().resetRouteForTesting();
+  });
+
+  [{
+    triggerSelector: '#appManagementRow',
+    routeName: 'APP_MANAGEMENT',
+  },
+   {
+     triggerSelector: '#appNotificationsRow',
+     routeName: 'APP_NOTIFICATIONS',
+   },
+   {
+     triggerSelector: '#androidApps .subpage-arrow',
+     routeName: 'ANDROID_APPS_DETAILS',
+   },
+  ].forEach(({triggerSelector, routeName}) => {
+    test(
+        `${routeName} subpage trigger is focused when returning from subpage`,
+        async () => {
+          initPage();
+
+          const subpageTrigger =
+              appsPage.shadowRoot.querySelector(triggerSelector);
+          assertTrue(!!subpageTrigger);
+
+          // Sub-page trigger navigates to Detailed build info subpage
+          subpageTrigger.click();
+          assertEquals(routes[routeName], Router.getInstance().currentRoute);
+
+          // Navigate back
+          const popStateEventPromise = eventToPromise('popstate', window);
+          Router.getInstance().navigateToPreviousRoute();
+          await popStateEventPromise;
+          await waitAfterNextRender(appsPage);
+
+          assertEquals(
+              subpageTrigger, appsPage.shadowRoot.activeElement,
+              `${triggerSelector} should be focused.`);
+        });
   });
 });
 
@@ -324,7 +399,7 @@ suite('AppsPageTests', function() {
     });
 
     test('App notification row', async () => {
-      const rowLink = appsPage.shadowRoot.querySelector('#appNotifications');
+      const rowLink = appsPage.shadowRoot.querySelector('#appNotificationsRow');
       assertTrue(!!rowLink);
       // Test default is to have 0 apps.
       assertEquals('0 apps', rowLink.subLabel);

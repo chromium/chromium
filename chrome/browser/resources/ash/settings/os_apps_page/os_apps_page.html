@@ -1,22 +1,20 @@
 <style include="settings-shared">
-  #appManagement,
-  #appNotifications {
-      border-bottom: var(--cr-separator-line);
+  #appManagementRow,
+  #appNotificationsRow {
+    border-bottom: var(--cr-separator-line);
   }
 </style>
 
-<os-settings-animated-pages id="pages"
-    section="[[section_]]"
-    focus-config="[[focusConfig_]]">
+<os-settings-animated-pages id="pages" section="[[section_]]">
   <div route-path="default">
     <settings-card header-text="$i18n{appsPageTitle}">
-      <cr-link-row id="appManagement"
+      <cr-link-row id="appManagementRow"
           label="$i18n{appManagementTitle}"
           on-click="onClickAppManagement_"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
       <template is="dom-if" if="[[showAppNotificationsRow_]]">
-        <cr-link-row id="appNotifications"
+        <cr-link-row id="appNotificationsRow"
             label="$i18n{appNotificationsTitle}"
             on-click="onClickAppNotifications_"
             role-description="$i18n{subpageArrowRoleDescription}"
@@ -26,7 +24,7 @@
       </template>
       <template is="dom-if" if="[[showAndroidApps_]]">
         <template is="dom-if" if="[[isPlayStoreAvailable_]]" restamp>
-          <div id="android-apps" class="settings-box first"
+          <div id="androidApps" class="settings-box first"
               actionable$="[[androidAppsInfo.playStoreEnabled]]"
               on-click="onAndroidAppsSubpageClick_">
             <div class="start settings-box-text">
