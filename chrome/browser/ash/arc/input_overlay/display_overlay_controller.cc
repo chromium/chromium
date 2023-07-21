@@ -517,8 +517,9 @@ DisplayOverlayController::GetOverlayMenuEntryBounds() {
 
 void DisplayOverlayController::AddEditMessage(const base::StringPiece& message,
                                               MessageType message_type) {
+  // No need to show edit message for Beta version.
   // There is no instance for unittest.
-  if (!ash::Shell::HasInstance()) {
+  if (IsBeta() || !ash::Shell::HasInstance()) {
     return;
   }
 
