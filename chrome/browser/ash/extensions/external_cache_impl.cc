@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -20,9 +21,13 @@
 #include "base/version.h"
 #include "chrome/browser/ash/extensions/external_cache_delegate.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
+#include "chrome/browser/extensions/install_observer.h"
+#include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/extensions/updater/chrome_extension_downloader_factory.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -50,6 +55,128 @@ void FlushFile(const base::FilePath& path) {
 
 }  // namespace
 
+// This class observes all profiles for failures to load a CRX extension. If
+// there is such a failure, it calls back into the provided
+// |ExternalCacheImpl|.
+//
+// To do that, AnyInstallFailureObserver observes the global ProfileManager
+// instance for any new profiles being created. When it observes a new
+// Profile, it observes that Profile's InstallTracker. InstallTracker in turn
+// notifies AnyInstallFailureObserver whenever a CRX install fails.
+class ExternalCacheImpl::AnyInstallFailureObserver
+    : public ProfileManagerObserver,
+      public ProfileObserver,
+      public extensions::InstallObserver {
+ public:
+  explicit AnyInstallFailureObserver(ExternalCacheImpl* owner);
+  ~AnyInstallFailureObserver() override;
+
+ private:
+  // ProfileObserver:
+  void OnProfileAdded(Profile* profile) override;
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+
+  // ProfileManagerObserver:
+  void OnProfileManagerDestroying() override;
+
+  // extensions::InstallObserver:
+  void OnFinishCrxInstall(content::BrowserContext* context,
+                          const extensions::CrxInstaller& installer,
+                          const std::string& extension_id,
+                          bool success) override;
+
+  bool IsAnyObservedProfileUsingTracker(
+      extensions::InstallTracker* tracker) const;
+
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      profile_manager_observation_{this};
+  base::ScopedMultiSourceObservation<Profile, ProfileObserver>
+      profile_observations_{this};
+  base::ScopedMultiSourceObservation<extensions::InstallTracker,
+                                     InstallObserver>
+      install_tracker_observations_{this};
+
+  base::flat_set<Profile*> observed_profiles_;
+
+  // Required to outlive |this|, which is guaranteed in practice by having
+  // |owner_| own |this|.
+  raw_ptr<ExternalCacheImpl> owner_;
+};
+
+ExternalCacheImpl::AnyInstallFailureObserver::AnyInstallFailureObserver(
+    ExternalCacheImpl* owner)
+    : owner_(owner) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  CHECK(profile_manager);
+  profile_manager_observation_.Observe(profile_manager);
+  for (auto* profile : profile_manager->GetLoadedProfiles()) {
+    OnProfileAdded(profile);
+  }
+}
+ExternalCacheImpl::AnyInstallFailureObserver::~AnyInstallFailureObserver() =
+    default;
+
+void ExternalCacheImpl::AnyInstallFailureObserver::OnProfileAdded(
+    Profile* profile) {
+  CHECK(profile);
+  if (!profile_observations_.IsObservingSource(profile)) {
+    profile_observations_.AddObservation(profile);
+    observed_profiles_.insert(profile);
+  }
+
+  auto* tracker = extensions::InstallTracker::Get(profile);
+  // Only observe the tracker if it's not already observed - it could be shared
+  // between profiles (for example regular & incognito). It's also legal for the
+  // tracker not to exist - some profiles (like the CrOS system profile) don't
+  // have one.
+  if (tracker && !install_tracker_observations_.IsObservingSource(tracker)) {
+    install_tracker_observations_.AddObservation(tracker);
+  }
+}
+
+void ExternalCacheImpl::AnyInstallFailureObserver::OnProfileWillBeDestroyed(
+    Profile* profile) {
+  auto* tracker = extensions::InstallTracker::Get(profile);
+
+  // If we received this notification for a given profile, we must have been
+  // observing it to receive the notification in the first place.
+  CHECK(profile_observations_.IsObservingSource(profile));
+  profile_observations_.RemoveObservation(profile);
+  CHECK_EQ(observed_profiles_.count(profile), 1u);
+  observed_profiles_.erase(profile);
+
+  bool is_observing = install_tracker_observations_.IsObservingSource(tracker);
+  bool still_needed = IsAnyObservedProfileUsingTracker(tracker);
+  if (tracker && is_observing && !still_needed) {
+    install_tracker_observations_.RemoveObservation(tracker);
+  }
+}
+
+void ExternalCacheImpl::AnyInstallFailureObserver::
+    OnProfileManagerDestroying() {
+  profile_manager_observation_.Reset();
+}
+
+void ExternalCacheImpl::AnyInstallFailureObserver::OnFinishCrxInstall(
+    content::BrowserContext* context,
+    const extensions::CrxInstaller& installer,
+    const std::string& extension_id,
+    bool success) {
+  if (!success) {
+    owner_->OnCrxInstallFailure(context, installer);
+  }
+}
+
+bool ExternalCacheImpl::AnyInstallFailureObserver::
+    IsAnyObservedProfileUsingTracker(
+        extensions::InstallTracker* tracker) const {
+  return std::find_if(observed_profiles_.begin(), observed_profiles_.end(),
+                      [=](Profile* profile) -> bool {
+                        return extensions::InstallTracker::Get(profile) ==
+                               tracker;
+                      }) != observed_profiles_.end();
+}
+
 ExternalCacheImpl::ExternalCacheImpl(
     const base::FilePath& cache_dir,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -65,14 +192,17 @@ ExternalCacheImpl::ExternalCacheImpl(
       always_check_updates_(always_check_updates),
       wait_for_cache_initialization_(wait_for_cache_initialization),
       allow_scheduled_updates_(allow_scheduled_updates) {
-  notification_registrar_.Add(
-      this, extensions::NOTIFICATION_EXTENSION_INSTALL_ERROR,
-      content::NotificationService::AllBrowserContextsAndSources());
   kiosk_crx_updates_from_policy_subscription_ =
       ash::CrosSettings::Get()->AddSettingsObserver(
           ash::kKioskCRXManifestUpdateURLIgnored,
           base::BindRepeating(&ExternalCacheImpl::MaybeScheduleNextCacheCheck,
                               weak_ptr_factory_.GetWeakPtr()));
+
+  // In unit tests, g_browser_process or the profile manager can be null.
+  if (g_browser_process && g_browser_process->profile_manager()) {
+    any_install_failure_observer_ =
+        std::make_unique<AnyInstallFailureObserver>(this);
+  }
 }
 
 ExternalCacheImpl::~ExternalCacheImpl() = default;
@@ -180,14 +310,10 @@ void ExternalCacheImpl::SetBackoffPolicy(
   }
 }
 
-void ExternalCacheImpl::Observe(int type,
-                                const content::NotificationSource& source,
-                                const content::NotificationDetails& details) {
-  DCHECK_EQ(extensions::NOTIFICATION_EXTENSION_INSTALL_ERROR, type);
-
-  extensions::CrxInstaller* installer =
-      content::Source<extensions::CrxInstaller>(source).ptr();
-  OnDamagedFileDetected(installer->source_file());
+void ExternalCacheImpl::OnCrxInstallFailure(
+    content::BrowserContext* context,
+    const extensions::CrxInstaller& installer) {
+  OnDamagedFileDetected(installer.source_file());
 }
 
 void ExternalCacheImpl::OnExtensionDownloadFailed(
