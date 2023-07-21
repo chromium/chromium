@@ -657,16 +657,16 @@ void ProfileMenuView::BuildFeatureButtons() {
                                          window_count),
         base::BindRepeating(&ProfileMenuView::OnExitProfileButtonClicked,
                             base::Unretained(this)),
-        vector_icons::kCloseIcon);
-  } else {
-    if (window_count > 1) {
-      AddFeatureButton(
-          l10n_util::GetPluralStringFUTF16(IDS_PROFILES_CLOSE_X_WINDOWS_BUTTON,
-                                           window_count),
-          base::BindRepeating(&ProfileMenuView::OnExitProfileButtonClicked,
-                              base::Unretained(this)),
-          vector_icons::kCloseIcon);
-    }
+        features::IsChromeRefresh2023() ? vector_icons::kCloseChromeRefreshIcon
+                                        : vector_icons::kCloseIcon);
+  } else if (window_count > 1) {
+    AddFeatureButton(
+        l10n_util::GetPluralStringFUTF16(IDS_PROFILES_CLOSE_X_WINDOWS_BUTTON,
+                                         window_count),
+        base::BindRepeating(&ProfileMenuView::OnExitProfileButtonClicked,
+                            base::Unretained(this)),
+        features::IsChromeRefresh2023() ? vector_icons::kCloseChromeRefreshIcon
+                                        : vector_icons::kCloseIcon);
   }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -761,7 +761,9 @@ void ProfileMenuView::BuildProfileManagementFeatureButtons() {
   }
   if (profiles::IsProfileCreationAllowed()) {
     AddProfileManagementFeatureButton(
-        kAddIcon, l10n_util::GetStringUTF16(IDS_ADD),
+        features::IsChromeRefresh2023() ? vector_icons::kAddChromeRefreshIcon
+                                        : kAddIcon,
+        l10n_util::GetStringUTF16(IDS_ADD),
         base::BindRepeating(&ProfileMenuView::OnAddNewProfileButtonClicked,
                             base::Unretained(this)));
   }
