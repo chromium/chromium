@@ -5349,10 +5349,19 @@ class ServiceWorkerRaceNetworkRequestBrowserTest
             return nullptr;
           }
 
+          if (base::Contains(request.GetURL().query(), "server_close_socket")) {
+            return std::make_unique<net::test_server::RawHttpResponse>("", "");
+          }
+
+          const bool is_slow =
+              base::Contains(request.GetURL().query(), "server_slow");
+          auto http_response =
+              is_slow ? std::make_unique<net::test_server::DelayedHttpResponse>(
+                            base::Seconds(2))
+                      : std::make_unique<net::test_server::BasicHttpResponse>();
+
           const char kQueryForRedirect[] = "server_redirect";
           if (base::Contains(request.GetURL().query(), kQueryForRedirect)) {
-            auto http_response =
-                std::make_unique<net::test_server::BasicHttpResponse>();
             http_response->set_code(net::HTTP_TEMPORARY_REDIRECT);
 
             const int pos = request.GetURL().query().find(kQueryForRedirect);
@@ -5365,17 +5374,6 @@ class ServiceWorkerRaceNetworkRequestBrowserTest
             return http_response;
           }
 
-          if (base::Contains(request.GetURL().query(), "server_close_socket")) {
-            return std::make_unique<net::test_server::RawHttpResponse>("", "");
-          }
-
-          const bool is_slow =
-              base::Contains(request.GetURL().query(), "server_slow");
-
-          auto http_response =
-              is_slow ? std::make_unique<net::test_server::DelayedHttpResponse>(
-                            base::Seconds(2))
-                      : std::make_unique<net::test_server::BasicHttpResponse>();
           http_response->set_content_type("text/plain");
 
           if (base::Contains(request.GetURL().query(), "server_notfound")) {
