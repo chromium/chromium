@@ -283,14 +283,21 @@ bool SyncUserSettingsImpl::IsTrustedVaultRecoverabilityDegraded() const {
 }
 
 bool SyncUserSettingsImpl::IsUsingExplicitPassphrase() const {
-  return IsExplicitPassphrase(GetPassphraseType());
+  // TODO(crbug.com/1466401): Either make this method return a Tribool, so the
+  // "unknown" case is properly communicated, or just remove it altogether
+  // (callers can always use the global IsExplicitPassphrase() helper).
+  absl::optional<PassphraseType> type = GetPassphraseType();
+  if (!type.has_value()) {
+    return false;
+  }
+  return IsExplicitPassphrase(*type);
 }
 
 base::Time SyncUserSettingsImpl::GetExplicitPassphraseTime() const {
   return crypto_->GetExplicitPassphraseTime();
 }
 
-PassphraseType SyncUserSettingsImpl::GetPassphraseType() const {
+absl::optional<PassphraseType> SyncUserSettingsImpl::GetPassphraseType() const {
   return crypto_->GetPassphraseType();
 }
 

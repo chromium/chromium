@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_member.h"
+#include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/user_selectable_type.h"
 
 class PrefRegistrySimple;
@@ -197,6 +198,12 @@ class SyncPrefs {
 
   // Gets the local sync backend enabled state.
   bool IsLocalSyncEnabled() const;
+
+  // The user's passphrase type, determined the first time the engine is
+  // successfully initialized.
+  absl::optional<PassphraseType> GetCachedPassphraseType() const;
+  void SetCachedPassphraseType(PassphraseType passphrase_type);
+  void ClearCachedPassphraseType();
 
   // The encryption bootstrap token is used for explicit passphrase users
   // (usually custom passphrase) and represents a user-entered passphrase.

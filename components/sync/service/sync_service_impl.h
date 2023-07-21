@@ -175,8 +175,10 @@ class SyncServiceImpl : public SyncService,
   void CryptoStateChanged() override;
   void CryptoRequiredUserActionChanged() override;
   void ReconfigureDataTypesDueToCrypto() override;
+  void SetPassphraseType(PassphraseType passphrase_type) override;
+  absl::optional<PassphraseType> GetPassphraseType() const override;
   void SetEncryptionBootstrapToken(const std::string& bootstrap_token) override;
-  std::string GetEncryptionBootstrapToken() override;
+  std::string GetEncryptionBootstrapToken() const override;
 
   // IdentityManager::Observer implementation.
   void OnAccountsInCookieUpdated(

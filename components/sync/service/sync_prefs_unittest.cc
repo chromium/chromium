@@ -53,6 +53,21 @@ TEST_F(SyncPrefsTest, EncryptionBootstrapToken) {
   EXPECT_TRUE(sync_prefs_->GetEncryptionBootstrapToken().empty());
 }
 
+TEST_F(SyncPrefsTest, CachedPassphraseType) {
+  EXPECT_FALSE(sync_prefs_->GetCachedPassphraseType().has_value());
+
+  sync_prefs_->SetCachedPassphraseType(PassphraseType::kKeystorePassphrase);
+  EXPECT_EQ(PassphraseType::kKeystorePassphrase,
+            sync_prefs_->GetCachedPassphraseType());
+
+  sync_prefs_->SetCachedPassphraseType(PassphraseType::kCustomPassphrase);
+  EXPECT_EQ(PassphraseType::kCustomPassphrase,
+            sync_prefs_->GetCachedPassphraseType());
+
+  sync_prefs_->ClearCachedPassphraseType();
+  EXPECT_FALSE(sync_prefs_->GetCachedPassphraseType().has_value());
+}
+
 class MockSyncPrefObserver : public SyncPrefObserver {
  public:
   MOCK_METHOD(void, OnSyncManagedPrefChange, (bool), (override));

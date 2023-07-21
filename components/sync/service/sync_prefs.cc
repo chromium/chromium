@@ -27,6 +27,8 @@
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
 
+namespace syncer {
+
 namespace {
 
 // Historic artifact for payment methods, migrated since 2023/07 to
@@ -47,8 +49,6 @@ constexpr int kMigratedPart1ButNot2 = 1;
 constexpr int kMigratedPart2AndFullyDone = 2;
 
 }  // namespace
-
-namespace syncer {
 
 SyncPrefObserver::~SyncPrefObserver() = default;
 
@@ -105,6 +105,10 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterIntegerPref(kSyncToSigninMigrationState, kNotMigrated);
 
+  // The passphrase type, determined upon the first engine initialization.
+  registry->RegisterIntegerPref(
+      prefs::internal::kSyncCachedPassphraseType,
+      sync_pb::NigoriSpecifics_PassphraseType_UNKNOWN);
   // The encryption bootstrap token represents a user-entered passphrase.
   registry->RegisterStringPref(prefs::internal::kSyncEncryptionBootstrapToken,
                                std::string());
@@ -470,6 +474,20 @@ void SyncPrefs::SetAppsSyncEnabledByOs(bool apps_sync_enabled) {
 bool SyncPrefs::IsSyncClientDisabledByPolicy() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return pref_service_->GetBoolean(prefs::internal::kSyncManaged);
+}
+
+absl::optional<PassphraseType> SyncPrefs::GetCachedPassphraseType() const {
+  return ProtoPassphraseInt32ToEnum(
+      pref_service_->GetInteger(prefs::internal::kSyncCachedPassphraseType));
+}
+
+void SyncPrefs::SetCachedPassphraseType(PassphraseType passphrase_type) {
+  pref_service_->SetInteger(prefs::internal::kSyncCachedPassphraseType,
+                            EnumPassphraseTypeToProto(passphrase_type));
+}
+
+void SyncPrefs::ClearCachedPassphraseType() {
+  pref_service_->ClearPref(prefs::internal::kSyncCachedPassphraseType);
 }
 
 std::string SyncPrefs::GetEncryptionBootstrapToken() const {

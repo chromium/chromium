@@ -239,8 +239,12 @@ jboolean SyncServiceAndroidBridge::IsUsingExplicitPassphrase(JNIEnv* env) {
 }
 
 jint SyncServiceAndroidBridge::GetPassphraseType(JNIEnv* env) {
+  // TODO(crbug.com/1466401): Mapping nullopt -> kImplicitPassphrase preserves
+  // the historic behavior, but ideally we should propagate the nullopt state to
+  // Java.
   return static_cast<unsigned>(
-      native_sync_service_->GetUserSettings()->GetPassphraseType());
+      native_sync_service_->GetUserSettings()->GetPassphraseType().value_or(
+          syncer::PassphraseType::kImplicitPassphrase));
 }
 
 void SyncServiceAndroidBridge::SetEncryptionPassphrase(

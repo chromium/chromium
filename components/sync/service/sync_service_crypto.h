@@ -36,9 +36,11 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
     virtual void CryptoStateChanged() = 0;
     virtual void CryptoRequiredUserActionChanged() = 0;
     virtual void ReconfigureDataTypesDueToCrypto() = 0;
+    virtual void SetPassphraseType(PassphraseType passphrase_type) = 0;
+    virtual absl::optional<PassphraseType> GetPassphraseType() const = 0;
     virtual void SetEncryptionBootstrapToken(
         const std::string& bootstrap_token) = 0;
-    virtual std::string GetEncryptionBootstrapToken() = 0;
+    virtual std::string GetEncryptionBootstrapToken() const = 0;
   };
 
   // |delegate| and |trusted_vault_client| must not be null and must outlive
@@ -71,7 +73,7 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   bool IsTrustedVaultKeyRequiredStateKnown() const;
 
   // Returns the actual passphrase type being used for encryption.
-  PassphraseType GetPassphraseType() const;
+  absl::optional<PassphraseType> GetPassphraseType() const;
 
   // Used to provide the engine when it is initialized.
   void SetSyncEngine(const CoreAccountInfo& account_info, SyncEngine* engine);
@@ -199,12 +201,6 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
     // the cached pending keys are successfully decrypted if the pending keys
     // have changed since the time they were cached.
     sync_pb::EncryptedData cached_pending_keys;
-
-    // The state of the passphrase required to decrypt the bag of encryption
-    // keys in the nigori node. Updated whenever a new nigori node arrives or
-    // the user manually changes their passphrase state. Cached so we can
-    // synchronously check it from the UI thread.
-    PassphraseType cached_passphrase_type = PassphraseType::kImplicitPassphrase;
 
     // The key derivation params for the passphrase. We save them when we
     // receive a passphrase required event, as they are a necessary piece of

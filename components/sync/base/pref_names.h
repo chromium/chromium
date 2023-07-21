@@ -96,6 +96,13 @@ inline constexpr char kSyncManaged[] = "sync.managed";
 // dashboard.
 inline constexpr char kSyncRequested[] = "sync.requested";
 
+// The type of encryption passphrase used. Determined and set the first time the
+// engine is successfully initialized.
+// Note that the actual values correspond to the proto version of
+// PassphraseType, see ProtoPassphraseInt32ToEnum() etc.
+inline constexpr char kSyncCachedPassphraseType[] =
+    "sync.cached_passphrase_type";
+
 // A string that can be used to restore sync encryption infrastructure on
 // startup so that the user doesn't need to provide credentials on each start.
 inline constexpr char kSyncEncryptionBootstrapToken[] =

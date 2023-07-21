@@ -103,7 +103,8 @@ bool ShouldOfferTrustedVaultOptIn(const SyncService* service) {
     return false;
   }
 
-  switch (service->GetUserSettings()->GetPassphraseType()) {
+  switch (service->GetUserSettings()->GetPassphraseType().value_or(
+      PassphraseType::kImplicitPassphrase)) {
     case PassphraseType::kImplicitPassphrase:
     case PassphraseType::kFrozenImplicitPassphrase:
     case PassphraseType::kCustomPassphrase:

@@ -37,6 +37,7 @@ using testing::Ne;
 using testing::Not;
 using testing::NotNull;
 using testing::Return;
+using testing::ReturnPointee;
 using testing::ReturnRef;
 using testing::SaveArg;
 
@@ -123,11 +124,16 @@ class MockDelegate : public SyncServiceCrypto::Delegate {
   MOCK_METHOD(void, CryptoStateChanged, (), (override));
   MOCK_METHOD(void, CryptoRequiredUserActionChanged, (), (override));
   MOCK_METHOD(void, ReconfigureDataTypesDueToCrypto, (), (override));
+  MOCK_METHOD(void, SetPassphraseType, (PassphraseType), (override));
+  MOCK_METHOD(absl::optional<PassphraseType>,
+              GetPassphraseType,
+              (),
+              (const override));
   MOCK_METHOD(void,
               SetEncryptionBootstrapToken,
               (const std::string&),
               (override));
-  MOCK_METHOD(std::string, GetEncryptionBootstrapToken, (), (override));
+  MOCK_METHOD(std::string, GetEncryptionBootstrapToken, (), (const override));
 };
 
 // Object representing a server that contains the authoritative trusted vault
@@ -350,6 +356,11 @@ class SyncServiceCryptoTest : public testing::Test {
         crypto_(&delegate_, &trusted_vault_client_) {
     trusted_vault_server_.StoreKeysOnServer(kSyncingAccount.gaia,
                                             kInitialTrustedVaultKeys);
+
+    ON_CALL(delegate_, GetPassphraseType())
+        .WillByDefault(ReturnPointee(&passphrase_type_));
+    ON_CALL(delegate_, SetPassphraseType(_))
+        .WillByDefault(SaveArg<0>(&passphrase_type_));
   }
 
   ~SyncServiceCryptoTest() override = default;
@@ -368,6 +379,8 @@ class SyncServiceCryptoTest : public testing::Test {
     trusted_vault_server_.MimicKeyRetrievalByUser(kSyncingAccount.gaia,
                                                   &trusted_vault_client_);
   }
+
+  absl::optional<PassphraseType> passphrase_type_;
 
   testing::NiceMock<MockDelegate> delegate_;
   TestTrustedVaultServer trusted_vault_server_;
