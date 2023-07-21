@@ -782,14 +782,7 @@ void WaitForLoadStopWithoutSuccessCheck(WebContents* web_contents) {
   }
 }
 
-bool WaitForLoadStop(WebContents* web_contents) {
-  TRACE_EVENT0("test", "content::WaitForLoadStop");
-  WebContentsDestroyedWatcher watcher(web_contents);
-  WaitForLoadStopWithoutSuccessCheck(web_contents);
-  if (watcher.IsDestroyed()) {
-    LOG(ERROR) << "WebContents was destroyed during waiting for load stop.";
-    return false;
-  }
+bool IsLastCommittedPageNormal(WebContents* web_contents) {
   bool is_page_normal =
       IsLastCommittedEntryOfPageType(web_contents, PAGE_TYPE_NORMAL);
   if (!is_page_normal) {
@@ -803,6 +796,30 @@ bool WaitForLoadStop(WebContents* web_contents) {
     }
   }
   return is_page_normal;
+}
+
+bool WaitForLoadStop(WebContents* web_contents) {
+  TRACE_EVENT0("test", "content::WaitForLoadStop");
+  WebContentsDestroyedWatcher watcher(web_contents);
+  WaitForLoadStopWithoutSuccessCheck(web_contents);
+  if (watcher.IsDestroyed()) {
+    LOG(ERROR) << "WebContents was destroyed during waiting for load stop.";
+    return false;
+  }
+  return IsLastCommittedPageNormal(web_contents);
+}
+
+bool WaitForNavigationFinished(WebContents* web_contents,
+                               TestNavigationObserver& observer) {
+  TRACE_EVENT0("test", "content::WaitForNavigationFinished");
+  WebContentsDestroyedWatcher watcher(web_contents);
+  observer.WaitForNavigationFinished();
+  if (watcher.IsDestroyed()) {
+    LOG(ERROR)
+        << "WebContents was destroyed during waiting for navigation finished.";
+    return false;
+  }
+  return IsLastCommittedPageNormal(web_contents);
 }
 
 void PrepContentsForBeforeUnloadTest(WebContents* web_contents,
@@ -4177,6 +4194,31 @@ bool HistoryGoBack(WebContents* wc) {
 bool HistoryGoForward(WebContents* wc) {
   wc->GetController().GoForward();
   return WaitForLoadStop(wc);
+}
+
+bool HistoryGoToIndexAndWaitForNavigationFinished(WebContents* wc, int index) {
+  TestNavigationObserver observer(wc);
+  wc->GetController().GoToIndex(index);
+  return WaitForNavigationFinished(wc, observer);
+}
+
+bool HistoryGoToOffsetAndWaitForNavigationFinished(WebContents* wc,
+                                                   int offset) {
+  TestNavigationObserver observer(wc);
+  wc->GetController().GoToOffset(offset);
+  return WaitForNavigationFinished(wc, observer);
+}
+
+bool HistoryGoBackAndWaitForNavigationFinished(WebContents* wc) {
+  TestNavigationObserver observer(wc);
+  wc->GetController().GoBack();
+  return WaitForNavigationFinished(wc, observer);
+}
+
+bool HistoryGoForwardAndWaitForNavigationFinished(WebContents* wc) {
+  TestNavigationObserver observer(wc);
+  wc->GetController().GoForward();
+  return WaitForNavigationFinished(wc, observer);
 }
 
 CreateAndLoadWebContentsObserver::CreateAndLoadWebContentsObserver(
