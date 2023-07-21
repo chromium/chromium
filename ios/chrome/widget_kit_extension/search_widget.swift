@@ -19,6 +19,8 @@ struct SearchWidget: Widget {
     )
     .description(Text("IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_DESCRIPTION"))
     .supportedFamilies([.systemSmall])
+    .crDisfavoredLocations()
+    .crContentMarginsDisabled()
   }
 }
 
@@ -31,8 +33,6 @@ struct SearchWidgetEntryView: View {
     // the widget as multiple tap targets.
     Link(destination: WidgetConstants.SearchWidget.url) {
       ZStack {
-        Color("widget_background_color")
-          .unredacted()
         VStack(alignment: .leading, spacing: 0) {
           ZStack {
             RoundedRectangle(cornerRadius: 26)
@@ -60,6 +60,10 @@ struct SearchWidgetEntryView: View {
     }
     .widgetURL(WidgetConstants.SearchWidget.url)
     .accessibility(
-      label: Text("IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_A11Y_LABEL"))
+      label: Text("IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_A11Y_LABEL")
+    )
+    .crContainerBackground(
+      Color("widget_background_color")
+        .unredacted())
   }
 }

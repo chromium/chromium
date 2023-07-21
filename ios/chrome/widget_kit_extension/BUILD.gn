@@ -34,6 +34,7 @@ source_set("crash_helper") {
 
 swift_source_set("widget_kit_extension_swift") {
   sources = [
+    "compat_util.swift",
     "dino_game_widget.swift",
     "lockscreen_launcher_widget.swift",
     "main.swift",
