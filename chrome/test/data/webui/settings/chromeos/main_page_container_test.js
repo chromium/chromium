@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {createPageAvailabilityForTesting, CrSettingsPrefs, Router, routes, routesMojom, setContactManagerForTesting, setNearbyShareSettingsForTesting} from 'chrome://os-settings/os_settings.js';
+import {createPageAvailabilityForTesting, createRouterForTesting, CrSettingsPrefs, Router, routes, routesMojom, setContactManagerForTesting, setNearbyShareSettingsForTesting} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -13,7 +13,7 @@ import {FakeNearbyShareSettings} from 'chrome://webui-test/nearby_share/shared/f
 
 const {Section} = routesMojom;
 
-suite('<main-page-container>', function() {
+suite('<main-page-container>', () => {
   /** @type {?MainPageContainerElement} */
   let mainPageContainer = null;
 
@@ -25,7 +25,13 @@ suite('<main-page-container>', function() {
   /** @type {!FakeNearbyShareSettings} */
   let fakeNearbyShareSettings = null;
 
-  suiteSetup(async function() {
+  suiteSetup(async () => {
+    // Reinitialize Router and routes based on load time data so Kerberos route
+    // exists.
+    loadTimeData.overrideValues({isKerberosEnabled: true});
+    const testRouter = createRouterForTesting();
+    Router.resetInstanceForTesting(testRouter);
+
     fakeContactManager = new FakeContactManager();
     setContactManagerForTesting(fakeContactManager);
     fakeContactManager.setupContactRecords();
@@ -184,7 +190,6 @@ suite('<main-page-container>', function() {
         CrSettingsPrefs.resetForTesting();
         Router.getInstance().resetRouteForTesting();
       });
-
 
       test('advanced toggle should not render', () => {
         const advancedToggle =

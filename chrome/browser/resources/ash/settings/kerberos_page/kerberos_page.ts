@@ -21,17 +21,18 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
+import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Router, routes} from '../router.js';
 
 import {getTemplate} from './kerberos_page.html.js';
 
 const SettingsKerberosPageElementBase =
-    WebUiListenerMixin(I18nMixin(PolymerElement));
+    RouteOriginMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
 
 export class SettingsKerberosPageElement extends
     SettingsKerberosPageElementBase {
   static get is() {
-    return 'settings-kerberos-page';
+    return 'settings-kerberos-page' as const;
   }
 
   static get template() {
@@ -45,24 +46,24 @@ export class SettingsKerberosPageElement extends
         value: Section.kKerberos,
         readOnly: true,
       },
-
-      focusConfig_: {
-        type: Object,
-        value() {
-          const map = new Map();
-          if (routes.KERBEROS_ACCOUNTS_V2) {
-            map.set(
-                routes.KERBEROS_ACCOUNTS_V2.path,
-                '#kerberosAccountsSubpageTrigger');
-          }
-          return map;
-        },
-      },
     };
   }
 
-  private focusConfig_: Map<string, string>;
   private section_: Section;
+
+  constructor() {
+    super();
+
+    /** RouteOriginMixin override */
+    this.route = routes.KERBEROS;
+  }
+
+  override ready() {
+    super.ready();
+
+    this.addFocusConfig(
+        routes.KERBEROS_ACCOUNTS_V2, '#kerberosAccountsSubpageTrigger');
+  }
 
   private onKerberosAccountsClick_(): void {
     Router.getInstance().navigateTo(routes.KERBEROS_ACCOUNTS_V2);
@@ -71,7 +72,7 @@ export class SettingsKerberosPageElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-kerberos-page': SettingsKerberosPageElement;
+    [SettingsKerberosPageElement.is]: SettingsKerberosPageElement;
   }
 }
 
