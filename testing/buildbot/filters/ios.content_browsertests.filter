@@ -199,6 +199,11 @@
 -ProprietaryCodec/WebRtcMediaRecorderTest.StartWithTimeSlice/0
 -ProprietaryCodec/WebRtcMediaRecorderTest.StartWithTimeSlice/1
 
+# TODO(https://crbug.com/1466906): unexpected `fallback_after_restore` ID.
+# Resize-while-hidden should give the `DelegatedFrameHost` a new primary ID
+# and fallback ID.
+-BFCachedRenderWidgetHostViewBrowserTest.BFCachedPageResizedWhileHiddenShouldNotHavePreservedFallback
+
 # These tests are flaky.
 -All/CoopRestrictPropertiesReportingBrowserTest.NavigationVirtualBrowsingContextGroup/RDCrashedFrame_BFCacheDisabled
 -All/DumpAccessibilityTreeTest.AccessibilityAriaTime/blink
