@@ -179,6 +179,7 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/metadata/v8/histograms.xml",
       "//tools/metrics/histograms/metadata/variations/histograms.xml",
       "//tools/metrics/histograms/metadata/views/histograms.xml",
+      "//tools/metrics/histograms/metadata/virtualization/histograms.xml",
       "//tools/metrics/histograms/metadata/web_apk/histograms.xml",
       "//tools/metrics/histograms/metadata/web_audio/histograms.xml",
       "//tools/metrics/histograms/metadata/web_core/histograms.xml",
