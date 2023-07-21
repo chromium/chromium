@@ -22,6 +22,29 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Input.PointerTypePrimary" enum="PrimaryPointerType"
+    expires_after="2024-07-19">
+  <owner>flackr@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Records the primary pointer type reported to the webpage. Recorded once per
+    tab creation and again for each tab anytime preferences are changed. This is
+    often used as the authoritative pointer type to style the page for.
+  </summary>
+</histogram>
+
+<histogram name="Input.PointerTypesAll" enum="AllPointerTypes"
+    expires_after="2024-07-19">
+  <owner>flackr@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Records all available pointer types reported to the webpage. Recorded once
+    per tab creation and again for each tab anytime preferences are changed.
+    These can be observed by a webpage by using the any-pointer media query to
+    style the page based on the expected input types.
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.ActiveCount" units="units"
     expires_after="2024-01-14">
   <owner>myy@chromium.org</owner>

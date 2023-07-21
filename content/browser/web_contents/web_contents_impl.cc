@@ -219,6 +219,25 @@ namespace content {
 
 namespace {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AllPointerTypes {
+  kNone = 0,
+  kCoarse = 1,
+  kFine = 2,
+  kBoth = 3,
+  kMaxValue = kBoth
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PrimaryPointerType {
+  kNone = 0,
+  kCoarse = 1,
+  kFine = 2,
+  kMaxValue = kFine
+};
+
 // The window which we dobounce load info updates in.
 constexpr auto kUpdateLoadStatesInterval = base::Milliseconds(250);
 
@@ -3062,6 +3081,26 @@ void WebContentsImpl::SetSlowWebPreferences(
     prefs->pointer_events_max_touch_points = ui::MaxTouchPoints();
 
     prefs->number_of_cpu_cores = base::SysInfo::NumberOfProcessors();
+
+    AllPointerTypes all_pointer_types = AllPointerTypes::kNone;
+    if (prefs->available_pointer_types & ui::POINTER_TYPE_COARSE &&
+        prefs->available_pointer_types & ui::POINTER_TYPE_FINE) {
+      all_pointer_types = AllPointerTypes::kBoth;
+    } else if (prefs->available_pointer_types & ui::POINTER_TYPE_COARSE) {
+      all_pointer_types = AllPointerTypes::kCoarse;
+    } else if (prefs->available_pointer_types & ui::POINTER_TYPE_FINE) {
+      all_pointer_types = AllPointerTypes::kFine;
+    }
+    PrimaryPointerType primary_pointer = PrimaryPointerType::kNone;
+    if (prefs->primary_pointer_type ==
+        blink::mojom::PointerType::kPointerCoarseType) {
+      primary_pointer = PrimaryPointerType::kCoarse;
+    } else if (prefs->primary_pointer_type ==
+               blink::mojom::PointerType::kPointerFineType) {
+      primary_pointer = PrimaryPointerType::kFine;
+    }
+    base::UmaHistogramEnumeration("Input.PointerTypesAll", all_pointer_types);
+    base::UmaHistogramEnumeration("Input.PointerTypePrimary", primary_pointer);
 
 #if BUILDFLAG(IS_ANDROID)
     const bool device_is_phone =

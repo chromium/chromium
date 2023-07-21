@@ -1746,6 +1746,13 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="Warning canceled"/>
 </enum>
 
+<enum name="AllPointerTypes">
+  <int value="0" label="No pointer"/>
+  <int value="1" label="Coarse pointer only"/>
+  <int value="2" label="Fine pointer only"/>
+  <int value="3" label="Coarse and fine pointers"/>
+</enum>
+
 <enum name="AlpsDecoderError">
   <int value="0" label="NoError"/>
   <int value="1" label="FramingError"/>
@@ -87756,6 +87763,12 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="0" label="neither"/>
   <int value="1" label="32-bit"/>
   <int value="2" label="64-bit"/>
+</enum>
+
+<enum name="PrimaryPointerType">
+  <int value="0" label="No pointer"/>
+  <int value="1" label="Coarse pointer"/>
+  <int value="2" label="Fine pointer"/>
 </enum>
 
 <enum name="PrintAttemptOutcome">
