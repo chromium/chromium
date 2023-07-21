@@ -42,6 +42,7 @@
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "ui/strings/grit/ui_strings.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -201,7 +202,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 
 - (void)willBeDismissed {
   [self.dataSource dataSinkWillBeDismissed];
-  self.markConfirmationSheet = nil;
+  [self dismissMarkConfirmationSheet];
 }
 
 + (NSString*)accessibilityIdentifier {
@@ -601,7 +602,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
                 action:^{
                   [weakSelf markItemsAtIndexPaths:selectedIndexPaths
                                    withReadStatus:YES];
-                  weakSelf.markConfirmationSheet = nil;
+                  [weakSelf dismissMarkConfirmationSheet];
                 }
                  style:UIAlertActionStyleDefault];
   NSString* markAsUnreadTitle =
@@ -611,9 +612,15 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
                 action:^{
                   [weakSelf markItemsAtIndexPaths:selectedIndexPaths
                                    withReadStatus:NO];
-                  weakSelf.markConfirmationSheet = nil;
+                  [weakSelf dismissMarkConfirmationSheet];
                 }
                  style:UIAlertActionStyleDefault];
+  [self.markConfirmationSheet
+      addItemWithTitle:l10n_util::GetNSString(IDS_APP_CANCEL)
+                action:^{
+                  [weakSelf dismissMarkConfirmationSheet];
+                }
+                 style:UIAlertActionStyleCancel];
   [self.markConfirmationSheet start];
 }
 
@@ -627,7 +634,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
                 action:^{
                   [weakSelf markItemsInSection:kSectionIdentifierUnread
                                 withReadStatus:YES];
-                  weakSelf.markConfirmationSheet = nil;
+                  [weakSelf dismissMarkConfirmationSheet];
                 }
                  style:UIAlertActionStyleDefault];
   NSString* markAsUnreadTitle = l10n_util::GetNSStringWithFixup(
@@ -637,9 +644,15 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
                 action:^{
                   [weakSelf markItemsInSection:kSectionIdentifierRead
                                 withReadStatus:NO];
-                  weakSelf.markConfirmationSheet = nil;
+                  [weakSelf dismissMarkConfirmationSheet];
                 }
                  style:UIAlertActionStyleDefault];
+  [self.markConfirmationSheet
+      addItemWithTitle:l10n_util::GetNSString(IDS_APP_CANCEL)
+                action:^{
+                  [weakSelf dismissMarkConfirmationSheet];
+                }
+                 style:UIAlertActionStyleCancel];
   [self.markConfirmationSheet start];
 }
 
@@ -666,9 +679,12 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
       markButtonConfirmationWithBaseViewController:self
                                            browser:_browser];
 
+  __weak ReadingListTableViewController* weakSelf = self;
   [self.markConfirmationSheet
       addItemWithTitle:l10n_util::GetNSStringWithFixup(IDS_CANCEL)
-                action:nil
+                action:^{
+                  [weakSelf dismissMarkConfirmationSheet];
+                }
                  style:UIAlertActionStyleCancel];
 }
 
@@ -1212,4 +1228,8 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   return 0;
 }
 
+- (void)dismissMarkConfirmationSheet {
+  [_markConfirmationSheet stop];
+  _markConfirmationSheet = nil;
+}
 @end
