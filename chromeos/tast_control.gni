@@ -331,6 +331,7 @@ tast_disabled_tests_from_chrome_all = [
   "inputs.VirtualKeyboardHandwriting.docked",
   "inputs.VirtualKeyboardHandwriting.floating",
   "inputs.VirtualKeyboardTypingApps",
+  "inputs.VirtualKeyboardTypingOmnibox.a11y_lacros",
   "inputs.VirtualKeyboardTypingUserMode.incognito",
 
   # b/287525851
