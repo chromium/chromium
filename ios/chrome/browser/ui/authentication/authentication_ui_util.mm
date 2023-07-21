@@ -48,7 +48,7 @@ AlertCoordinator* ErrorCoordinator(NSError* error,
                               action:dismissAction
                                style:UIAlertActionStyleDefault];
 
-  [alertCoordinator setCancelAction:dismissAction];
+  alertCoordinator.noInteractionAction = dismissAction;
 
   return alertCoordinator;
 }

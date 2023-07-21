@@ -92,7 +92,6 @@ NSString* const kAuthenticationSnackbarCategory =
 
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion {
-  [_alertCoordinator executeCancelHandler];
   [_alertCoordinator stop];
   _alertCoordinator = nil;
   if (_navigationController) {
@@ -351,7 +350,7 @@ NSString* const kAuthenticationSnackbarCategory =
   [_alertCoordinator addItemWithTitle:acceptLabel
                                action:acceptBlock
                                 style:UIAlertActionStyleDefault];
-  [_alertCoordinator setCancelAction:cancelBlock];
+  _alertCoordinator.noInteractionAction = cancelBlock;
   [_alertCoordinator start];
 }
 
@@ -413,8 +412,6 @@ NSString* const kAuthenticationSnackbarCategory =
   [_alertCoordinator addItemWithTitle:okButtonLabel
                                action:dismissAction
                                 style:UIAlertActionStyleDefault];
-
-  [_alertCoordinator setCancelAction:dismissAction];
 
   [_alertCoordinator start];
 }
@@ -686,7 +683,7 @@ NSString* const kAuthenticationSnackbarCategory =
   [_alertCoordinator addItemWithTitle:acceptLabel
                                action:acceptBlock
                                 style:UIAlertActionStyleDefault];
-  [_alertCoordinator setCancelAction:cancelBlock];
+  _alertCoordinator.noInteractionAction = cancelBlock;
   [_alertCoordinator start];
 }
 

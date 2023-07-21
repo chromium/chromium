@@ -20,26 +20,12 @@
 // Redefined to readwrite.
 @property(nonatomic, readwrite, getter=isVisible) BOOL visible;
 
-// Cancel action passed using the public API.
-// It will called from the overridden block stored in the `cancelAction`
-// property.
-@property(nonatomic, copy) ProceduralBlock rawCancelAction;
-
 // Called when the alert is dismissed to perform cleanup.
 - (void)alertDismissed;
 
 @end
 
 @implementation AlertCoordinator
-
-@synthesize visible = _visible;
-@synthesize cancelButtonAdded = _cancelButtonAdded;
-@synthesize cancelAction = _cancelAction;
-@synthesize startAction = _startAction;
-@synthesize noInteractionAction = _noInteractionAction;
-@synthesize rawCancelAction = _rawCancelAction;
-@synthesize message = _message;
-@synthesize title = _title;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
@@ -113,13 +99,6 @@
   }
 }
 
-- (void)executeCancelHandler {
-  self.noInteractionAction = nil;
-  if (self.cancelAction) {
-    self.cancelAction();
-  }
-}
-
 - (void)start {
   // Check that the view is still visible on screen, otherwise just return and
   // don't show the context menu.
@@ -175,27 +154,12 @@
   return _message;
 }
 
-- (void)setCancelAction:(ProceduralBlock)cancelAction {
-  __weak AlertCoordinator* weakSelf = self;
-
-  self.rawCancelAction = cancelAction;
-
-  _cancelAction = [^{
-    AlertCoordinator* strongSelf = weakSelf;
-    [strongSelf setNoInteractionAction:nil];
-    if ([strongSelf rawCancelAction]) {
-      [strongSelf rawCancelAction]();
-    }
-  } copy];
-}
-
 #pragma mark - Private Methods.
 
 - (void)alertDismissed {
   self.visible = NO;
   _cancelButtonAdded = NO;
   _alertController = nil;
-  _cancelAction = nil;
   _noInteractionAction = nil;
 }
 
