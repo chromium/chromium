@@ -14,6 +14,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {assertAsync} from '../utils.js';
 
@@ -113,14 +114,27 @@ suite('<os-settings-files-page>', () => {
     assertTrue(disconnectGoogleDrive.checked);
   });
 
-  test('Smb Shares, Navigates to SMB_SHARES route on click', async () => {
-    const smbShares =
-        filesPage.shadowRoot!.querySelector<HTMLElement>('#smbShares');
-    assert(smbShares);
+  test('Smb Shares row is focused after returning from subpage', async () => {
+    Router.getInstance().navigateTo(routes.FILES);
 
-    smbShares.click();
+    // Sub-page trigger navigates to Smb Shares subpage
+    const triggerSelector = '#smbSharesRow';
+    const subpageTrigger =
+        filesPage.shadowRoot!.querySelector<HTMLElement>(triggerSelector);
+    assert(subpageTrigger);
+    subpageTrigger.click();
     flush();
-    assertEquals(Router.getInstance().currentRoute, routes.SMB_SHARES);
+    assertEquals(routes.SMB_SHARES, Router.getInstance().currentRoute);
+
+    // Navigate back
+    const popStateEventPromise = eventToPromise('popstate', window);
+    Router.getInstance().navigateToPreviousRoute();
+    await popStateEventPromise;
+    await waitAfterNextRender(filesPage);
+
+    assertEquals(
+        subpageTrigger, filesPage.shadowRoot!.activeElement,
+        `${triggerSelector} should be focused.`);
   });
 
   test(

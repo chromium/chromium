@@ -24,7 +24,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
+import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {OneDriveBrowserProxy} from './one_drive_browser_proxy.js';
@@ -32,23 +32,11 @@ import {OneDriveConnectionState} from './one_drive_subpage.js';
 import {getTemplate} from './os_files_page.html.js';
 
 const OsSettingsFilesPageElementBase =
-    PrefsMixin(DeepLinkingMixin(RouteObserverMixin(I18nMixin(PolymerElement))));
+    PrefsMixin(DeepLinkingMixin(RouteOriginMixin(I18nMixin(PolymerElement))));
 
 export class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
-  /**
-   * Resolved once the async calls initiated by the constructor have resolved.
-   */
-  initPromise: Promise<void>;
-
-  constructor() {
-    super();
-    if (this.showOfficeSettings_) {
-      this.oneDriveProxy_ = OneDriveBrowserProxy.getInstance();
-      this.initPromise = this.updateOneDriveEmail_();
-    }
-  }
   static get is() {
-    return 'os-settings-files-page';
+    return 'os-settings-files-page' as const;
   }
 
   static get template() {
@@ -71,18 +59,6 @@ export class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
         value: () => new Set<Setting>([Setting.kGoogleDriveConnection]),
       },
 
-      focusConfig_: {
-        type: Object,
-        value() {
-          const map = new Map();
-          if (routes.SMB_SHARES) {
-            map.set(routes.SMB_SHARES.path, '#smbShares');
-          }
-          return map;
-        },
-      },
-
-      /** @private */
       showOfficeSettings_: {
         type: Boolean,
         value() {
@@ -90,7 +66,6 @@ export class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
         },
       },
 
-      /** @private */
       isBulkPinningEnabled_: {
         type: Boolean,
         value() {
@@ -99,7 +74,7 @@ export class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
       },
 
       /**
-         @private Indicates whether the user is connected to OneDrive or not.
+       * Indicates whether the user is connected to OneDrive or not.
        */
       oneDriveConnectionState_: {
         type: String,
@@ -121,19 +96,36 @@ export class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
     ];
   }
 
+  /**
+   * Resolved once the async calls initiated by the constructor have resolved.
+   */
+  initPromise: Promise<void>;
   private driveDisabled_: boolean;
   private bulkPinningPrefEnabled_: boolean;
   private isBulkPinningEnabled_: boolean;
   private showOfficeSettings_: boolean;
-  private focusConfig_: Map<string, string>;
   private oneDriveConnectionState_: string;
   private oneDriveEmailAddress_: string|null;
   private oneDriveProxy_: OneDriveBrowserProxy;
   private section_: Section;
 
-  override currentRouteChanged(route: Route, _oldRoute?: Route) {
+  constructor() {
+    super();
+
+    /** RouteOriginMixin override */
+    this.route = routes.FILES;
+
+    if (this.showOfficeSettings_) {
+      this.oneDriveProxy_ = OneDriveBrowserProxy.getInstance();
+      this.initPromise = this.updateOneDriveEmail_();
+    }
+  }
+
+  override currentRouteChanged(route: Route, oldRoute?: Route) {
+    super.currentRouteChanged(route, oldRoute);
+
     // Does not apply to this page.
-    if (route !== routes.FILES) {
+    if (route !== this.route) {
       return;
     }
 
@@ -161,6 +153,12 @@ export class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
       this.oneDriveCallbackRouter.onODFSMountOrUnmount.addListener(
           this.updateOneDriveEmail_.bind(this));
     }
+  }
+
+  override ready(): void {
+    super.ready();
+
+    this.addFocusConfig(routes.SMB_SHARES, '#smbSharesRow');
   }
 
   private onTapSmbShares_() {
@@ -223,7 +221,7 @@ export class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'os-settings-files-page': OsSettingsFilesPageElement;
+    [OsSettingsFilesPageElement.is]: OsSettingsFilesPageElement;
   }
 }
 

@@ -1,7 +1,5 @@
 <style include="settings-shared"></style>
-<os-settings-animated-pages id="pages"
-    section="[[section_]]"
-    focus-config="[[focusConfig_]]">
+<os-settings-animated-pages id="pages" section="[[section_]]">
   <div route-path="default">
     <settings-card header-text="$i18n{filesPageTitle}">
       <template is="dom-if" if="[[!isBulkPinningEnabled_]]">
@@ -37,7 +35,7 @@
             role-description="$i18n{subpageArrowRoleDescription}">
         </cr-link-row>
       </template>
-      <cr-link-row id="smbShares" class="hr" on-click="onTapSmbShares_"
+      <cr-link-row id="smbSharesRow" class="hr" on-click="onTapSmbShares_"
           label="$i18n{smbSharesTitle}"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
