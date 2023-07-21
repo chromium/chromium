@@ -28,6 +28,37 @@
 
 namespace gpu {
 
+namespace {
+
+// Representation of a GLTextureImageBacking as a GL Texture.
+class GLTextureImageRepresentationImpl : public GLTextureImageRepresentation {
+ public:
+  GLTextureImageRepresentationImpl(
+      SharedImageManager* manager,
+      SharedImageBacking* backing,
+      MemoryTypeTracker* tracker,
+      std::vector<raw_ptr<gles2::Texture>> textures)
+      : GLTextureImageRepresentation(manager, backing, tracker),
+        textures_(std::move(textures)) {
+    DCHECK_EQ(textures_.size(), NumPlanesExpected());
+  }
+
+  ~GLTextureImageRepresentationImpl() override = default;
+
+ private:
+  // GLTextureImageRepresentation:
+  gles2::Texture* GetTexture(int plane_index) override {
+    DCHECK(format().IsValidPlaneIndex(plane_index));
+    return textures_[plane_index];
+  }
+  bool BeginAccess(GLenum mode) override { return true; }
+  void EndAccess() override {}
+
+  std::vector<raw_ptr<gles2::Texture>> textures_;
+};
+
+}  // namespace
+
 ///////////////////////////////////////////////////////////////////////////////
 // GLTextureImageBacking
 
@@ -164,8 +195,8 @@ GLTextureImageBacking::ProduceGLTexture(SharedImageManager* manager,
     gl_textures.push_back(texture.texture());
   }
 
-  return std::make_unique<GLTextureGLCommonRepresentation>(
-      manager, this, nullptr, tracker, std::move(gl_textures));
+  return std::make_unique<GLTextureImageRepresentationImpl>(
+      manager, this, tracker, std::move(gl_textures));
 }
 
 std::unique_ptr<GLTexturePassthroughImageRepresentation>

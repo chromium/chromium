@@ -21,27 +21,6 @@ class GLTextureImageRepresentationClient {
   virtual void GLTextureImageRepresentationEndAccess(bool readonly) = 0;
 };
 
-// Representation of a GLTextureImageBacking as a GL Texture.
-class GLTextureGLCommonRepresentation : public GLTextureImageRepresentation {
- public:
-  GLTextureGLCommonRepresentation(SharedImageManager* manager,
-                                  SharedImageBacking* backing,
-                                  GLTextureImageRepresentationClient* client,
-                                  MemoryTypeTracker* tracker,
-                                  std::vector<raw_ptr<gles2::Texture>> texture);
-  ~GLTextureGLCommonRepresentation() override;
-
- private:
-  // GLTextureImageRepresentation:
-  gles2::Texture* GetTexture(int plane_index) override;
-  bool BeginAccess(GLenum mode) override;
-  void EndAccess() override;
-
-  const raw_ptr<GLTextureImageRepresentationClient> client_ = nullptr;
-  std::vector<raw_ptr<gles2::Texture>> textures_;
-  GLenum mode_ = 0;
-};
-
 // Representation of a GLTextureImageBacking or
 // GLTextureImageBackingPassthrough as a GL TexturePassthrough.
 class GLTexturePassthroughGLCommonRepresentation

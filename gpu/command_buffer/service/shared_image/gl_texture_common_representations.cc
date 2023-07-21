@@ -15,48 +15,6 @@
 namespace gpu {
 
 ///////////////////////////////////////////////////////////////////////////////
-// GLTextureGLCommonRepresentation
-
-// Representation of a GLTextureImageBacking as a GL Texture.
-GLTextureGLCommonRepresentation::GLTextureGLCommonRepresentation(
-    SharedImageManager* manager,
-    SharedImageBacking* backing,
-    GLTextureImageRepresentationClient* client,
-    MemoryTypeTracker* tracker,
-    std::vector<raw_ptr<gles2::Texture>> textures)
-    : GLTextureImageRepresentation(manager, backing, tracker),
-      client_(client),
-      textures_(std::move(textures)) {
-  DCHECK_EQ(textures_.size(), NumPlanesExpected());
-}
-
-GLTextureGLCommonRepresentation::~GLTextureGLCommonRepresentation() = default;
-
-gles2::Texture* GLTextureGLCommonRepresentation::GetTexture(int plane_index) {
-  DCHECK(format().IsValidPlaneIndex(plane_index));
-  return textures_[plane_index];
-}
-
-bool GLTextureGLCommonRepresentation::BeginAccess(GLenum mode) {
-  DCHECK_EQ(mode_, 0u);
-  mode_ = mode;
-  bool readonly = mode_ != GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM;
-  if (client_) {
-    return client_->GLTextureImageRepresentationBeginAccess(readonly);
-  }
-  return true;
-}
-
-void GLTextureGLCommonRepresentation::EndAccess() {
-  DCHECK_NE(mode_, 0u);
-  bool readonly = mode_ != GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM;
-  mode_ = 0;
-  if (client_) {
-    return client_->GLTextureImageRepresentationEndAccess(readonly);
-  }
-}
-
-///////////////////////////////////////////////////////////////////////////////
 // GLTexturePassthroughGLCommonRepresentation
 
 GLTexturePassthroughGLCommonRepresentation::
