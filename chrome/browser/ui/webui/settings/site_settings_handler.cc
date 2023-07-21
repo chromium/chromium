@@ -1497,6 +1497,35 @@ void SiteSettingsHandler::HandleGetExceptionList(
   ResolveJavascriptCallback(callback_id, exceptions);
 }
 
+void SiteSettingsHandler::HandleGetStorageAccessExceptionList(
+    const base::Value::List& args) {
+  AllowJavascript();
+
+  CHECK_EQ(2U, args.size());
+  const base::Value& callback_id = args[0];
+
+  ContentSetting setting;
+  CHECK(content_settings::ContentSettingFromString(args[1].GetString(),
+                                                   &setting));
+
+  Profile* incognito_ =
+      profile_->HasPrimaryOTRProfile()
+          ? profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+          : nullptr;
+
+  // On Chrome OS in Guest mode the incognito profile is the primary profile,
+  // so do not fetch an extra copy of the same exceptions.
+  if (incognito_ && incognito_ == profile_) {
+    incognito_ = nullptr;
+  }
+
+  base::Value::List exceptions;
+  site_settings::GetStorageAccessExceptions(setting, profile_, incognito_,
+                                            web_ui(), &exceptions);
+
+  ResolveJavascriptCallback(callback_id, exceptions);
+}
+
 void SiteSettingsHandler::HandleGetChooserExceptionList(
     const base::Value::List& args) {
   AllowJavascript();

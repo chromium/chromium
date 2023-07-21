@@ -38,12 +38,34 @@ class IsolatedWebAppUrlInfo;
 
 namespace site_settings {
 
-// Maps from a secondary pattern to a setting.
-typedef std::map<ContentSettingsPattern, ContentSetting> OnePatternSettings;
-// Maps from a primary pattern/source pair to a OnePatternSettings. All the
+struct SiteExceptionInfo {
+  ContentSetting content_setting;
+  bool is_embargoed;
+  // TODO(http://b/288405540): Add expiration for exception.
+};
+
+struct StorageAccessEmbeddingException {
+  ContentSettingsPattern secondary_pattern;
+  bool is_incognito;
+  bool is_embargoed;
+  // TODO(http://b/288405540): Add expiration for exception.
+};
+
+// Maps from a pair(secondary pattern, incognito)  to a setting and if it's
+// embargoed.
+typedef std::map<std::pair<ContentSettingsPattern, bool>, SiteExceptionInfo>
+    OnePatternSettings;
+
+// Maps from a pair (primary pattern, source) to a OnePatternSettings. All the
 // mappings in OnePatternSettings share the given primary pattern and source.
+//
+// The operator< in ContentSettingsPattern, determines that by default the
+// preferences are saved in lowest precedence pattern to the highest. However,
+// we want to show the patterns with the highest precedence (the more specific
+// ones) on the top, hence `std::greater<>`.
 typedef std::map<std::pair<ContentSettingsPattern, std::string>,
-                 OnePatternSettings>
+                 OnePatternSettings,
+                 std::greater<>>
     AllPatternsSettings;
 
 // A set of <origin, source, incognito> tuple for organizing granted permission
@@ -55,8 +77,11 @@ using ChooserExceptionDetails = std::set<std::tuple<GURL, std::string, bool>>;
 constexpr char kChooserType[] = "chooserType";
 constexpr char kDisabled[] = "disabled";
 constexpr char kDisplayName[] = "displayName";
+constexpr char kDescription[] = "description";
 constexpr char kEditGrants[] = "editGrants";
 constexpr char kEmbeddingOrigin[] = "embeddingOrigin";
+constexpr char kEmbeddingDisplayName[] = "embeddingDisplayName";
+constexpr char kExceptions[] = "exceptions";
 constexpr char kFilePath[] = "filePath";
 constexpr char kHostOrSpec[] = "hostOrSpec";
 constexpr char kIncognito[] = "incognito";
@@ -118,6 +143,15 @@ base::Value::Dict GetFileSystemExceptionForPage(
     bool incognito,
     bool is_embargoed = false);
 
+// Helper function to construct a dictionary for a storage access exceptions
+// grouped by origin.
+base::Value::Dict GetStorageAccessExceptionForPage(
+    Profile* profile,
+    const ContentSettingsPattern& pattern,
+    const std::string& display_name,
+    ContentSetting setting,
+    const std::vector<StorageAccessEmbeddingException>& exceptions);
+
 // Helper function to construct a dictionary for an exception.
 base::Value::Dict GetExceptionForPage(
     ContentSettingsType content_type,
@@ -141,6 +175,15 @@ void GetExceptionsForContentType(ContentSettingsType type,
                                  content::WebUI* web_ui,
                                  bool incognito,
                                  base::Value::List* exceptions);
+
+// Fills in |exceptions| with Values for the Storage Access exception for the
+// given content setting (such as enabled or blocked) from a |profile| and its
+// |incognito_profile|, if applicable.
+void GetStorageAccessExceptions(ContentSetting content_setting,
+                                Profile* profile,
+                                Profile* incognito_profile,
+                                content::WebUI* web_ui,
+                                base::Value::List* exceptions);
 
 // Fills in object saying what the current settings is for the category (such as
 // enabled or blocked) and the source of that setting (such preference, policy,

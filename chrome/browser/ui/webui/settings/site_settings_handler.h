@@ -168,6 +168,20 @@ class SiteSettingsHandler
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
                            ResetCategoryPermissionForInvalidOrigins);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, Origins);
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, StorageAccessExceptions);
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
+                           StorageAccessExceptions_DiffType);
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
+                           StorageAccessExceptions_SamePrimaryPattern);
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
+                           StorageAccessExceptions_DiffPatterns);
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
+                           StorageAccessExceptions_Incognito);
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
+                           StorageAccessExceptions_NormalAndIncognito);
+  FRIEND_TEST_ALL_PREFIXES(
+      SiteSettingsHandlerTest,
+      StorageAccessExceptions_NormalAndIncognito_SamePatterns);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, Patterns);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, PatternsAndContentType);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, SessionOnlyException);
@@ -280,6 +294,10 @@ class SiteSettingsHandler
   // Returns the list of site exceptions for a given content settings type.
   void HandleGetExceptionList(const base::Value::List& args);
 
+  // Returns the list of storage access site exceptions for a given content
+  // setting (such as enabled or blocked).
+  void HandleGetStorageAccessExceptionList(const base::Value::List& args);
+
   // Returns the list of chooser exceptions for a given chooser type.
   void HandleGetChooserExceptionList(const base::Value::List& args);
 
@@ -302,6 +320,7 @@ class SiteSettingsHandler
 
   // Handles setting and resetting an origin permission.
   void HandleResetCategoryPermissionForPattern(const base::Value::List& args);
+  // TODO(1466127): Add tests for HandleSetCategoryPermissionForPattern.
   void HandleSetCategoryPermissionForPattern(const base::Value::List& args);
 
   // TODO(andypaicu, crbug.com/880684): Update to only expect a list of three
