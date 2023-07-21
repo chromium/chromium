@@ -7,6 +7,7 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/message_formatter.h"
 #include "base/memory/scoped_refptr.h"
@@ -94,7 +95,7 @@ CloudUploadNotificationManager::CreateUploadProgressNotification() {
       l10n_util::GetStringUTF16(IDS_OFFICE_NOTIFICATION_FILES_WILL_OPEN),
       num_files_, target_app_name_);
 
-  return ash::CreateSystemNotificationPtr(
+  auto notification = ash::CreateSystemNotificationPtr(
       /*type=*/message_center::NOTIFICATION_TYPE_PROGRESS,
       /*id=*/notification_id_, title,
       // TODO(b/272601262) Display or delete this message.
@@ -104,10 +105,20 @@ CloudUploadNotificationManager::CreateUploadProgressNotification() {
       /*delegate=*/
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(
-              &CloudUploadNotificationManager::CloseNotification,
+              &CloudUploadNotificationManager::HandleProgressNotificationClick,
               weak_ptr_factory_.GetWeakPtr())),
       /*small_image=*/ash::kFolderIcon,
       /*warning_level=*/message_center::SystemNotificationWarningLevel::NORMAL);
+
+  // Add "Cancel" button if upload still cancellable.
+  if (CanCancel() && cancel_callback_) {
+    std::vector<message_center::ButtonInfo> notification_buttons = {
+        message_center::ButtonInfo(
+            l10n_util::GetStringUTF16(IDS_FILE_BROWSER_CANCEL_LABEL))};
+    notification->set_buttons(notification_buttons);
+  }
+
+  return notification;
 }
 
 std::unique_ptr<message_center::Notification>
@@ -188,9 +199,10 @@ CloudUploadNotificationManager::CreateUploadErrorNotification(
 }
 
 void CloudUploadNotificationManager::ShowUploadProgress(int progress) {
+  progress_ = progress;
   std::unique_ptr<message_center::Notification> notification =
       CreateUploadProgressNotification();
-  notification->set_progress(progress);
+  notification->set_progress(progress_);
   notification->set_never_timeout(true);
   GetNotificationDisplayService()->Display(NotificationHandler::Type::TRANSIENT,
                                            *notification,
@@ -228,6 +240,9 @@ void CloudUploadNotificationManager::MarkUploadComplete() {
   // Check if the "in progress" timeout has happened yet or not.
   if (state_ == State::kInProgress) {
     state_ = State::kWaitingForInProgressTimeout;
+    // Re-show progress notification without the "Cancel" button as the upload
+    // has now finished.
+    ShowUploadProgress(progress_);
   } else if (state_ == State::kUninitialized ||
              state_ == State::kInProgressTimedOut) {
     // If the complete notification is shown before any progress notifications,
@@ -266,12 +281,23 @@ void CloudUploadNotificationManager::CloseNotification() {
   }
 }
 
+void CloudUploadNotificationManager::HandleProgressNotificationClick(
+    absl::optional<int> button_index) {
+  // If the "Cancel" button was pressed, rather than a click to somewhere
+  // else in the notification.
+  if (button_index && cancel_callback_ && CanCancel()) {
+    // Cancel upload.
+    std::move(cancel_callback_).Run();
+  }
+
+  CloseNotification();
+}
+
 void CloudUploadNotificationManager::HandleErrorNotificationClick(
     absl::optional<int> button_index) {
   // If the "Sign in" button was pressed, rather than a click to somewhere
   // else in the notification.
   if (button_index) {
-    // TODO(b/282619291) decide what callback should be.
     // Request an ODFS mount which will trigger reauthentication.
     CloudUploadDialog::RequestODFSMount(profile_, base::DoNothing());
   }
@@ -290,6 +316,11 @@ void CloudUploadNotificationManager::HandleCompleteNotificationClick(
   }
 
   CloseNotification();
+}
+
+bool CloudUploadNotificationManager::CanCancel() {
+  return state_ == State::kUninitialized || state_ == State::kInProgress ||
+         state_ == State::kInProgressTimedOut;
 }
 
 void CloudUploadNotificationManager::CloseForTest() {

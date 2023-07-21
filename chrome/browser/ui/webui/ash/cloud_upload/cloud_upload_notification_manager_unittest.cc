@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_notification_manager.h"
 
 #include "base/files/file_path.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
@@ -61,6 +62,16 @@ class CloudUploadNotificationManagerTest : public testing::Test {
            notification()->display_source() ==
                l10n_util::GetStringUTF16(
                    IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME_FILES);
+  }
+
+  bool HaveMoveProgressNotificationWithCancelButton() {
+    return HaveMoveProgressNotification() &&
+           !notification()->buttons().empty() &&
+           (notification()->buttons().front().title == u"Cancel");
+  }
+
+  bool HaveMoveProgressNotificationWithoutCancelButton() {
+    return HaveMoveProgressNotification() && notification()->buttons().empty();
   }
 
   bool HaveCopyProgressNotification() {
@@ -230,6 +241,67 @@ TEST_F(CloudUploadNotificationManagerTest, CompleteWithoutProgress) {
   ASSERT_EQ(absl::nullopt, notification());
 }
 
+TEST_F(CloudUploadNotificationManagerTest, CancelClick) {
+  base::RunLoop run_loop;
+  base::OnceClosure cancel_callback = run_loop.QuitClosure();
+
+  scoped_refptr<CloudUploadNotificationManager> manager =
+      base::MakeRefCounted<CloudUploadNotificationManager>(
+          profile(), file_name_, "Google Drive", "Google Docs", 1,
+          UploadType::kMove);
+
+  manager->SetCancelCallback(std::move(cancel_callback));
+  manager->ShowUploadProgress(1);
+  ASSERT_TRUE(HaveMoveProgressNotificationWithCancelButton());
+
+  // Click "Cancel" button (0th button) which triggers |cancel_callback|.
+  display_service_->SimulateClick(NotificationHandler::Type::TRANSIENT,
+                                  notification()->id(), /*action_index=*/0,
+                                  absl::nullopt);
+
+  // Run loop until |cancel_callback| is called.
+  run_loop.Run();
+  manager->CloseForTest();
+}
+
+TEST_F(CloudUploadNotificationManagerTest,
+       CancelButtonDisappearsAfterProgressComplete) {
+  scoped_refptr<CloudUploadNotificationManager> manager =
+      base::MakeRefCounted<CloudUploadNotificationManager>(
+          profile(), file_name_, "Google Drive", "Google Docs", 1,
+          UploadType::kMove);
+
+  // TODO(b/244396230): remove CancelCallback once button always set for both
+  // Clouds.
+  manager->SetCancelCallback(base::DoNothing());
+  manager->ShowUploadProgress(1);
+  ASSERT_TRUE(HaveMoveProgressNotificationWithCancelButton());
+  manager->MarkUploadComplete();
+  ASSERT_TRUE(HaveMoveProgressNotificationWithoutCancelButton());
+  manager->CloseForTest();
+}
+
+TEST_F(CloudUploadNotificationManagerTest,
+       CancelButtonRemainsAfterMinimumTime) {
+  scoped_refptr<CloudUploadNotificationManager> manager =
+      base::MakeRefCounted<CloudUploadNotificationManager>(
+          profile(), file_name_, "Google Drive", "Google Docs", 1,
+          UploadType::kMove);
+
+  // TODO(b/244396230): remove CancelCallback once button always set for both
+  // Clouds.
+  manager->SetCancelCallback(base::DoNothing());
+  manager->ShowUploadProgress(1);
+  ASSERT_TRUE(HaveMoveProgressNotificationWithCancelButton());
+
+  // The Cancel button should still appear after the minimum progress
+  // notification time of 5s.
+  task_environment_.FastForwardBy(base::Milliseconds(6000));
+  ASSERT_TRUE(HaveMoveProgressNotificationWithCancelButton());
+
+  manager->CloseForTest();
+}
+
 TEST_F(CloudUploadNotificationManagerTest, ShowInFolderClick) {
   scoped_refptr<CloudUploadNotificationManager> manager =
       base::MakeRefCounted<CloudUploadNotificationManager>(
@@ -257,6 +329,7 @@ TEST_F(CloudUploadNotificationManagerTest, ShowInFolderClick) {
 
   // Run loop until |HandleNotificationClick| is called.
   run_loop.Run();
+  manager->CloseForTest();
 }
 
 TEST_F(CloudUploadNotificationManagerTest, ErrorStaysOpenForMove) {

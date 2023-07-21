@@ -64,6 +64,10 @@ class CloudUploadNotificationManager
     destination_path_ = destination_path;
   }
 
+  void SetCancelCallback(base::OnceClosure cancel_callback) {
+    cancel_callback_ = std::move(cancel_callback);
+  }
+
   // Used in tests to set a callback to check if
   // |HandleCompleteNotificationClick| is called with the expected
   // |destination_path_|.
@@ -102,6 +106,9 @@ class CloudUploadNotificationManager
   // closed, timers are interrupted and the completion callback has been called.
   void CloseNotification();
 
+  // "Cancel" click handler for upload progress notification.
+  void HandleProgressNotificationClick(absl::optional<int> button_index);
+
   // "Sign in" click handler for authentication error notification.
   void HandleErrorNotificationClick(absl::optional<int> button_index);
 
@@ -120,6 +127,9 @@ class CloudUploadNotificationManager
     kComplete
   };
 
+  // Returns true if upload is still in progress.
+  bool CanCancel();
+
   // Counts the total number of notification manager instances. This counter is
   // never decremented.
   static inline int notification_manager_counter_ = 0;
@@ -132,9 +142,11 @@ class CloudUploadNotificationManager
   std::string target_app_name_;
   std::u16string display_source_;
   int num_files_;
+  int progress_;
   UploadType upload_type_;
   base::FilePath destination_path_;
   base::OnceClosure callback_;
+  base::OnceClosure cancel_callback_;
   HandleCompleteNotificationClickCallback callback_for_testing_;
   base::OneShotTimer in_progress_timer_;
   base::OneShotTimer complete_notification_timer_;
