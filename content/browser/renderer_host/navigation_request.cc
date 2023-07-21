@@ -5789,6 +5789,25 @@ void NavigationRequest::CommitPageActivation() {
           return RenderFrameHost::FrameIterationAction::kContinue;
         });
 
+    // When activating from BackForwardCache, properly set the
+    // BrowsingContextGroupSwap information. This is required because we
+    // otherwise do it in the RenderFrameHost selection, in
+    // GetFrameHostForNavigation, which does not happen for BFCache restores.
+    // TODO(https://crbug.com/1464335): This code assumes that pages can only be
+    // stored in the BFCache if they live in a different BrowsingInstance in
+    // another CoopRelatedGroup, so we enforce that invariant via a CHECK. If
+    // this is not the case anymore, `browsing_context_group_swap_` should be
+    // set to BrowsingContextGroupSwap::CreateRelatedCoopSwap() if the two
+    // SiteInstances live in the same CoopRelatedGroup.
+    SiteInstanceImpl* current_site_instance =
+        frame_tree_node_->current_frame_host()->GetSiteInstance();
+    SiteInstanceImpl* target_site_instance =
+        activated_entry->render_frame_host()->GetSiteInstance();
+    CHECK(!target_site_instance->IsCoopRelatedSiteInstance(
+        current_site_instance));
+    browsing_context_group_swap_ =
+        BrowsingContextGroupSwap::CreateSecuritySwap();
+
     base::WeakPtr<NavigationRequest> weak_self(weak_factory_.GetWeakPtr());
     ReadyToCommitNavigation(false /* is_error */);
     // The call above might block on showing a user dialog. The interaction of

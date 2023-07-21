@@ -821,6 +821,10 @@ void BackForwardCacheImpl::PopulateReasonsForMainDocument(
   // GetCurrentBackForwardCacheEligibility because it's needed to determine
   // whether to do a proactive BrowsingInstance swap or not, which should not be
   // done if the page has related active contents.
+  // TODO(https://crbug.com/1464335): The check below prevents usage of the
+  // BackForwardCache for navigations that result in a browsing context group
+  // swap in the same CoopRelatedGroup. The check below should probably be
+  // adapted, to allow usage of the BackForwardCache in those cases.
   unsigned expected_related_active_contents_count = is_active_rfh ? 1 : 0;
   // We should never have fewer than expected.
   DCHECK_GE(rfh->GetSiteInstance()->GetRelatedActiveContentsCount(),
