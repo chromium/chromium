@@ -78,9 +78,10 @@ class SoftNavigationTest : public MetricIntegrationTest,
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/1466868): Investigate timeout issue on linux-lacros-rel
-// when retrieving web exposed soft nav lcp entries using the EvalJs method.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/1466868): Investigate timeout issue on linux-lacros-rel and
+// linux-wayland when retrieving web exposed soft nav lcp entries using the
+// EvalJs method.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_LargestContentfulPaint DISABLED_LargestContentfulPaint
 #else
 #define MAYBE_LargestContentfulPaint LargestContentfulPaint
