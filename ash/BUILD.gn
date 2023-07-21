@@ -2761,6 +2761,7 @@ component("ash") {
     "//chromeos/ash/components/dbus/typecd",
     "//chromeos/ash/components/dbus/update_engine",
     "//chromeos/ash/components/dbus/usb",
+    "//chromeos/ash/components/early_prefs",
     "//chromeos/ash/components/feature_usage",
     "//chromeos/ash/components/fwupd",
     "//chromeos/ash/components/geolocation",
