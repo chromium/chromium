@@ -173,16 +173,12 @@ void WebViewWebClient::PrepareErrorPage(
   } else if (info.has_value() &&
              [navigation_delegate respondsToSelector:@selector
                                   (webView:handleSSLErrorWithHandler:)]) {
-    __block base::OnceCallback<void(NSString*)> error_html_callback =
-        std::move(callback);
-    CWVSSLErrorHandler* handler =
-        [[CWVSSLErrorHandler alloc] initWithWebState:web_state
-                                                 URL:net::NSURLWithGURL(url)
-                                               error:error
-                                             SSLInfo:info.value()
-                               errorPageHTMLCallback:^(NSString* HTML) {
-                                 std::move(error_html_callback).Run(HTML);
-                               }];
+    CWVSSLErrorHandler* handler = [[CWVSSLErrorHandler alloc]
+             initWithWebState:web_state
+                          URL:net::NSURLWithGURL(url)
+                        error:error
+                      SSLInfo:info.value()
+        errorPageHTMLCallback:base::CallbackToBlock(std::move(callback))];
     [navigation_delegate webView:web_view handleSSLErrorWithHandler:handler];
   } else {
     std::move(callback).Run(error.localizedDescription);
