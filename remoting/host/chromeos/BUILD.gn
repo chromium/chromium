@@ -140,6 +140,7 @@ source_set("unit_tests") {
     "file_session_storage_unittest.cc",
     "frame_sink_desktop_capturer_unittest.cc",
     "remote_support_host_ash_unittest.cc",
+    "remoting_service_unittest.cc",
     "scoped_fake_ash_proxy.cc",
     "scoped_fake_ash_proxy.h",
   ]

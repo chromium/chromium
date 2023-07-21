@@ -35,8 +35,12 @@ class FileSessionStorage : public SessionStorage {
       override;
   void HasSession(base::OnceCallback<void(bool)> on_done) const override;
 
+  void SetStorageDirectoryForTesting(const base::FilePath& dir);
+
  private:
-  base::FilePath storage_path_;
+  base::FilePath session_file() const;
+
+  base::FilePath storage_directory_;
 };
 
 }  // namespace remoting

@@ -9,6 +9,10 @@
 #include "remoting/host/chromeos/session_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace base {
+class FilePath;
+}  // namespace base
+
 namespace remoting {
 
 class RemoteSupportHostAsh;
@@ -33,6 +37,8 @@ class RemotingService {
   // there is no reconnectable session).
   virtual void GetReconnectableEnterpriseSessionId(
       SessionIdCallback callback) = 0;
+
+  static void SetSessionStorageDirectoryForTesting(const base::FilePath& dir);
 };
 
 }  // namespace remoting

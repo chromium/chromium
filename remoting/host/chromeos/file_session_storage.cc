@@ -85,11 +85,11 @@ FileSessionStorage::FileSessionStorage()
           base::FilePath::FromASCII(kCrdSessionStorageDirectory)) {}
 
 FileSessionStorage::FileSessionStorage(const base::FilePath& storage_directory)
-    : storage_path_(storage_directory.Append(kStoredSessionFileName)) {}
+    : storage_directory_(storage_directory) {}
 
 void FileSessionStorage::StoreSession(const base::Value::Dict& information,
                                       base::OnceClosure on_done) {
-  WriteFileAsync(storage_path_, base::WriteJson(information).value(),
+  WriteFileAsync(session_file(), base::WriteJson(information).value(),
                  base::BindOnce([](bool success) {
                    LOG_IF(ERROR, !success)
                        << "Failed to create CRD session information file";
@@ -97,7 +97,7 @@ void FileSessionStorage::StoreSession(const base::Value::Dict& information,
 }
 
 void FileSessionStorage::DeleteSession(base::OnceClosure on_done) {
-  DeleteFileAsync(storage_path_,
+  DeleteFileAsync(session_file(),
                   base::BindOnce([](bool success) {
                     LOG_IF(ERROR, !success)
                         << "Failed to remove CRD session information file";
@@ -106,7 +106,7 @@ void FileSessionStorage::DeleteSession(base::OnceClosure on_done) {
 
 void FileSessionStorage::RetrieveSession(
     base::OnceCallback<void(absl::optional<base::Value::Dict>)> on_done) {
-  ReadFileAsync(storage_path_,
+  ReadFileAsync(session_file(),
                 base::BindOnce([](absl::optional<std::string> content) {
                   if (!content.has_value()) {
                     LOG(ERROR) << "Failed to read CRD session information file";
@@ -123,7 +123,16 @@ void FileSessionStorage::RetrieveSession(
 
 void FileSessionStorage::HasSession(
     base::OnceCallback<void(bool)> on_done) const {
-  FileExistsAsync(storage_path_, std::move(on_done));
+  FileExistsAsync(session_file(), std::move(on_done));
+}
+
+void FileSessionStorage::SetStorageDirectoryForTesting(
+    const base::FilePath& dir) {
+  storage_directory_ = dir;
+}
+
+base::FilePath FileSessionStorage::session_file() const {
+  return storage_directory_.AppendASCII(kStoredSessionFileName);
 }
 
 }  // namespace remoting
