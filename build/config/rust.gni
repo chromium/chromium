@@ -17,16 +17,14 @@ if (is_ios) {
 }
 
 declare_args() {
-  # Whether to allow Rust code to be part of the Chromium *build process*.
-  # This can be used to create Rust test binaries, even if the flag below
-  # is false.
-  # This only applies to Chromium itself, so the build_with_chromium check
-  # should not be removed.
-  enable_rust =
-      build_with_chromium &&
-      # TODO(crbug.com/1453618): Windows ARM64 is missing clang_rt libs, and
-      # clang_rt.profile is needed when coverage is enabled.
-      !(is_win && use_clang_coverage && target_cpu == "arm64")
+  # Rust is available in the Chromium build but 3p repos that use //build may
+  # not use Rust and thus won't want to depend on having the Rust toolchain
+  # present, so this defaults to off in those cases.
+  #
+  # Chromium-based projects that are built for for architectures Chrome does not
+  # support may need to disable this as well, though they may need to replace
+  # code with C/C++ to get a functional product.
+  enable_rust = build_with_chromium
 
   # As we incrementally enable Rust on mainstream builders, we want to enable
   # the toolchain (by switching 'enable_rust' to true) while still disabling
