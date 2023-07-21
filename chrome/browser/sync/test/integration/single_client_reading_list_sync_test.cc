@@ -177,6 +177,28 @@ IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
   EXPECT_FALSE(model()->NeedsExplicitUploadToSyncServer(kAccountUrl));
 }
 
+IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
+                       ShouldDeleteTheDeletedEntryFromTheServer) {
+  const GURL kUrl("http://url.com/");
+  fake_server_->InjectEntity(CreateTestReadingListEntity(kUrl, "entry_title"));
+
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+
+  ASSERT_THAT(model()->size(), Eq(0ul));
+
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+  ASSERT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::READING_LIST));
+
+  ASSERT_THAT(model()->size(), Eq(1ul));
+
+  model()->RemoveEntryByURL(kUrl);
+  ASSERT_THAT(model()->size(), Eq(0ul));
+  EXPECT_TRUE(ServerReadingListURLsEqualityChecker({}).Wait());
+}
+
 // ChromeOS doesn't have the concept of sign-out, so this only exists on other
 // platforms.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
