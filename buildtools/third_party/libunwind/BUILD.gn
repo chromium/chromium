@@ -20,11 +20,8 @@ config("libunwind_config") {
 }
 
 source_set("libunwind") {
-  visibility = []
-  if (is_fuchsia) {
-    visibility += [ "//buildtools/third_party/libc++abi" ]
-  } else if (is_android) {
-    visibility += [ "//buildtools/third_party/libc++abi" ]
+  visibility = [ "//buildtools/third_party/libc++abi" ]
+  if (is_android) {
     visibility += [ "//services/tracing/public/cpp" ]
   }
   if (!is_component_build) {

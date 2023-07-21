@@ -57,10 +57,6 @@ config("compiler") {
     }
   }
 
-  # Instead of using an unwind lib from the toolchain,
-  # buildtools/third_party/libunwind will be built and used directly.
-  ldflags += [ "--unwindlib=none" ]
-
   # $compile_api_level corresponds to the API level used for the sysroot path
   # calculation in //build/config/android/config.gni
   if (android_64bit_target_cpu) {

@@ -17,6 +17,7 @@ import("//build/config/host_byteorder.gni")
 import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
+import("//build/config/unwind.gni")
 import("//build/toolchain/cc_wrapper.gni")
 import("//build/toolchain/goma.gni")
 import("//build/toolchain/rbe.gni")
@@ -1601,6 +1602,12 @@ config("runtime_library") {
   # configuration.
   if (is_posix || is_fuchsia) {
     configs += [ "//build/config/posix:runtime_library" ]
+
+    if (use_custom_libunwind) {
+      # Instead of using an unwind lib from the toolchain,
+      # buildtools/third_party/libunwind will be built and used directly.
+      ldflags = [ "--unwindlib=none" ]
+    }
   }
 
   # System-specific flags. If your compiler flags apply to one of the
