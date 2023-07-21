@@ -10,6 +10,7 @@
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/constants/ash_features.h"
 #include "base/memory/singleton.h"
+#include "base/metrics/field_trial_params.h"
 #include "chromeos/constants/chromeos_features.h"
 
 namespace arc {
@@ -80,6 +81,15 @@ void ArcChromeFeatureFlagsBridge::NotifyFeatureFlags() {
       base::FeatureList::IsEnabled(kTouchscreenEmulation);
   flags->trackpad_scroll_touchscreen_emulation =
       base::FeatureList::IsEnabled(kTrackpadScrollTouchscreenEmulation);
+  flags->rounded_window_compat_strategy =
+      base::FeatureList::IsEnabled(arc::kRoundedWindowCompat)
+          ? static_cast<mojom::RoundedWindowCompatStrategy>(
+                base::GetFieldTrialParamByFeatureAsInt(
+                    kRoundedWindowCompat, kRoundedWindowCompatStrategy,
+                    static_cast<int>(mojom::RoundedWindowCompatStrategy::
+                                         kLeftRightBottomGesture)))
+          : mojom::RoundedWindowCompatStrategy::kDisabled;
+  flags->rounded_window_radius = chromeos::features::RoundedWindowsRadius();
 
   chrome_feature_flags_instance->NotifyFeatureFlags(std::move(flags));
 }

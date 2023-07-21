@@ -3015,6 +3015,9 @@ extern const char kArcNativeBridgeToggleDescription[];
 extern const char kArcNearbyShareFuseBoxName[];
 extern const char kArcNearbyShareFuseBoxDescription[];
 
+extern const char kArcRoundedWindowCompatName[];
+extern const char kArcRoundedWindowCompatDescription[];
+
 extern const char kArcRtVcpuDualCoreName[];
 extern const char kArcRtVcpuDualCoreDesc[];
 

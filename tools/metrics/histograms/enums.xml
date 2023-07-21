@@ -67192,6 +67192,7 @@ from previous Chrome versions.
   <int value="1460747747" label="GdiTextPrinting:enabled"/>
   <int value="1460958818" label="NTPForeignSessionsSuggestions:enabled"/>
   <int value="1461581256" label="MovablePartialScreenshot:enabled"/>
+  <int value="1462042881" label="ArcRoundedWindowCompat:enabled"/>
   <int value="1462900129"
       label="OptimizationGuideInstallWideModelStore:disabled"/>
   <int value="1463230871" label="ArcEnableUsap:enabled"/>
@@ -68176,6 +68177,7 @@ from previous Chrome versions.
   <int value="1949996482" label="CSSColorSchemeUARendering:disabled"/>
   <int value="1950191981" label="OverlayNewLayout:enabled"/>
   <int value="1950930453" label="NtpRealboxLensSearch:enabled"/>
+  <int value="1951020379" label="ArcRoundedWindowCompat:disabled"/>
   <int value="1951466218" label="enable-data-reduction-proxy-lite-page"/>
   <int value="1951645673" label="PasswordsKeyboardAccessory:disabled"/>
   <int value="1952339754"

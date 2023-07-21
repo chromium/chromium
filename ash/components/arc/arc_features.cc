@@ -216,6 +216,16 @@ BASE_FEATURE(kPictureInPictureFeature,
              "ArcPictureInPicture",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kRoundedWindowCompat,
+             "ArcRoundedWindowCompat",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kRoundedWindowCompatStrategy[] = "RoundedWindowCompatStrategy";
+// The following values must be matched with `RoundedWindowCompatStrategy` enum
+// defined in //ash/components/arc/mojom/chrome_feature_flags.mojom.
+const char kRoundedWindowCompatStrategy_BottomOnlyGesture[] = "1";
+const char kRoundedWindowCompatStrategy_LeftRightBottomGesture[] = "2";
+
 // Controls ARCVM real time vcpu feature on a device with 2 logical cores
 // online.
 // When you change the default, you also need to change the chromeExtraAgas

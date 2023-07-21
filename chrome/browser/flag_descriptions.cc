@@ -5222,6 +5222,10 @@ const char kArcNearbyShareFuseBoxDescription[] =
     "When enabled, files shared through ARC Nearby Sharing will be shared "
     "through the ChromeOS FuseBox Service.";
 
+const char kArcRoundedWindowCompatName[] = "ARC Rounded Window Compatibility";
+const char kArcRoundedWindowCompatDescription[] =
+    "Enable rounded window compatibility feature for ARC++ apps";
+
 const char kArcRtVcpuDualCoreName[] =
     "Enable ARC real time vcpu on a device with 2 logical cores online.";
 const char kArcRtVcpuDualCoreDesc[] =

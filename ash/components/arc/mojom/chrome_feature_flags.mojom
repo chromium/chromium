@@ -2,9 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 3
+// Next MinVersion: 4
 
 module arc.mojom;
+
+// The following values must be matched with `kRoundedWindowCompatStrategy_*`
+// constants defined in //ash/components/arc/arc_features.cc.
+[Extensible]
+enum RoundedWindowCompatStrategy {
+  [Default] kDisabled = 0,
+  kBottomOnlyGesture = 1,
+  kLeftRightBottomGesture = 2,
+};
 
 // State of feature flags that ARC++ needs to know from Chrome.
 struct FeatureFlags {
@@ -16,6 +25,10 @@ struct FeatureFlags {
   [MinVersion=2] bool trackpad_scroll_touchscreen_emulation = true;
   // chrome://flags#arc-touchscreen-emulation
   [MinVersion=2] bool touchscreen_emulation = true;
+  // chrome://flags#arc-rounded-window-compat
+  [MinVersion=3] RoundedWindowCompatStrategy rounded_window_compat_strategy;
+  // chrome://flags#rounded-windows
+  [MinVersion=3] int32 rounded_window_radius;
 };
 
 // This interface provides methods to propagate the feature flag status to

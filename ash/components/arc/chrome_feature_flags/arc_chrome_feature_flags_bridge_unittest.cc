@@ -119,5 +119,58 @@ TEST_F(ArcChromeFeatureFlagsBridgeTest,
       instance()->flags_called_value()->trackpad_scroll_touchscreen_emulation);
 }
 
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindowCompat_Enabled) {
+  scoped_feature_list()->InitAndEnableFeature(kRoundedWindowCompat);
+  Connect();
+  EXPECT_EQ(instance()->flags_called_value()->rounded_window_compat_strategy,
+            mojom::RoundedWindowCompatStrategy::kLeftRightBottomGesture);
+}
+
+TEST_F(ArcChromeFeatureFlagsBridgeTest,
+       NotifyRoundedWindowCompat_EnabledBottomOnly) {
+  scoped_feature_list()->InitAndEnableFeatureWithParameters(
+      kRoundedWindowCompat, {{kRoundedWindowCompatStrategy,
+                              kRoundedWindowCompatStrategy_BottomOnlyGesture}});
+  Connect();
+  EXPECT_EQ(instance()->flags_called_value()->rounded_window_compat_strategy,
+            mojom::RoundedWindowCompatStrategy::kBottomOnlyGesture);
+}
+
+TEST_F(ArcChromeFeatureFlagsBridgeTest,
+       NotifyRoundedWindowCompat_EnabledLeftRightBottom) {
+  scoped_feature_list()->InitAndEnableFeatureWithParameters(
+      kRoundedWindowCompat,
+      {{kRoundedWindowCompatStrategy,
+        kRoundedWindowCompatStrategy_LeftRightBottomGesture}});
+  Connect();
+  EXPECT_EQ(instance()->flags_called_value()->rounded_window_compat_strategy,
+            mojom::RoundedWindowCompatStrategy::kLeftRightBottomGesture);
+}
+
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindowCompat_Disabled) {
+  scoped_feature_list()->InitAndDisableFeature(kRoundedWindowCompat);
+  Connect();
+  EXPECT_EQ(instance()->flags_called_value()->rounded_window_compat_strategy,
+            mojom::RoundedWindowCompatStrategy::kDisabled);
+}
+
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindows_Enabled) {
+  // Currently we need to flip Jelly flag to enable the rounded windows flag.
+  scoped_feature_list()->InitWithFeaturesAndParameters(
+      {{chromeos::features::kJelly, {}},
+       {chromeos::features::kRoundedWindows,
+        {{chromeos::features::kRoundedWindowsRadius, "8"}}}},
+      {});
+  Connect();
+  EXPECT_EQ(instance()->flags_called_value()->rounded_window_radius, 8);
+}
+
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindows_Disabled) {
+  scoped_feature_list()->InitAndDisableFeature(
+      chromeos::features::kRoundedWindows);
+  Connect();
+  EXPECT_EQ(instance()->flags_called_value()->rounded_window_radius, 0);
+}
+
 }  // namespace
 }  // namespace arc

@@ -316,6 +316,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "arc-rounded-window-compat",
+    "owners": [ "toshikikikuchi" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "arc-rt-vcpu-dual-core",
     "owners": [ "kansho" ],
     "expiry_milestone": 100

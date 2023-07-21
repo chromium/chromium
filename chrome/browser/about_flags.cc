@@ -1012,6 +1012,23 @@ const FeatureEntry::FeatureVariation kRoundedWindowsRadiusVariation[] = {
     {"18", &kRoundedWindowRadius18, 1, nullptr},
 };
 
+const FeatureEntry::FeatureParam
+    kArcRoundedWindowCompatStrategyLeftRightBottomGesture = {
+        arc::kRoundedWindowCompatStrategy,
+        arc::kRoundedWindowCompatStrategy_LeftRightBottomGesture};
+
+const FeatureEntry::FeatureParam
+    kArcRoundedWindowCompatStrategyBottomOnlyGesture = {
+        arc::kRoundedWindowCompatStrategy,
+        arc::kRoundedWindowCompatStrategy_BottomOnlyGesture};
+
+const FeatureEntry::FeatureVariation kArcRoundedWindowCompatVariation[] = {
+    {"Left-Right-Bottom Gesture Exclusion",
+     &kArcRoundedWindowCompatStrategyLeftRightBottomGesture, 1, nullptr},
+    {"Bottom-only Gesture Exclusion",
+     &kArcRoundedWindowCompatStrategyBottomOnlyGesture, 1, nullptr},
+};
+
 const FeatureEntry::Choice kUXStudy1Choices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {memory::kUXStudy1A, memory::kUXStudy1Switch, memory::kUXStudy1A},
@@ -5570,6 +5587,12 @@ const FeatureEntry kFeatureEntries[] = {
     {"arc-native-bridge-toggle", flag_descriptions::kArcNativeBridgeToggleName,
      flag_descriptions::kArcNativeBridgeToggleDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(arc::kNativeBridgeToggleFeature)},
+    {"arc-rounded-window-compat",
+     flag_descriptions::kArcRoundedWindowCompatName,
+     flag_descriptions::kArcRoundedWindowCompatDescription, kOsCrOS,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(arc::kRoundedWindowCompat,
+                                    kArcRoundedWindowCompatVariation,
+                                    "ArcRoundedWindowCompat")},
     {"arc-rt-vcpu-dual-core", flag_descriptions::kArcRtVcpuDualCoreName,
      flag_descriptions::kArcRtVcpuDualCoreDesc, kOsCrOS,
      FEATURE_VALUE_TYPE(arc::kRtVcpuDualCore)},
