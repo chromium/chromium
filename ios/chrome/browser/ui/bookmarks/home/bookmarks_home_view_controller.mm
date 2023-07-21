@@ -282,6 +282,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   _profileBookmarkModelBridge.reset();
   _accountBookmarkModel = nullptr;
   _accountBookmarkModelBridge.reset();
+  [self.sharingCoordinator stop];
+  self.sharingCoordinator = nil;
 }
 
 - (void)setExternalBookmark:(const bookmarks::BookmarkNode*)node {
