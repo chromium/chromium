@@ -28,8 +28,7 @@ class AndroidMetricsProvider : public metrics::MetricsProvider {
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  void ProvideCurrentSessionData(
-      metrics::ChromeUserMetricsExtension* uma_proto) override;
+  void OnDidCreateMetricsLog() override;
   void ProvidePreviousSessionData(
       metrics::ChromeUserMetricsExtension* uma_proto) override;
 

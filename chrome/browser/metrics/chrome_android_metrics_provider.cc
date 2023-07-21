@@ -83,6 +83,12 @@ void ChromeAndroidMetricsProvider::OnDidCreateMetricsLog() {
   // before the new metrics log record can be uploaded, Chrome may be able to
   // recover it for upload on restart.
   chrome::android::SaveActivityTypeToLocalState(local_state_, type);
+
+  EmitMultipleUserProfilesHistogram();
+
+  metrics::AndroidMetricsHelper::GetInstance()->EmitHistograms(
+      local_state_,
+      /*current_session=*/true);
 }
 
 void ChromeAndroidMetricsProvider::ProvidePreviousSessionData(
@@ -122,10 +128,6 @@ void ChromeAndroidMetricsProvider::ProvideCurrentSessionData(
 
   UmaSessionStats::GetInstance()->ProvideCurrentSessionData();
   EmitAppNotificationStatusHistogram();
-  EmitMultipleUserProfilesHistogram();
-  metrics::AndroidMetricsHelper::GetInstance()->EmitHistograms(
-      local_state_,
-      /*current_session=*/true);
   LocaleManager::RecordUserTypeMetrics();
 }
 

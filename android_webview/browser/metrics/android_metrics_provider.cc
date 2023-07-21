@@ -44,8 +44,7 @@ void AndroidMetricsProvider::ProvidePreviousSessionData(
       /*current_session=*/false);
 }
 
-void AndroidMetricsProvider::ProvideCurrentSessionData(
-    metrics::ChromeUserMetricsExtension* uma_proto) {
+void AndroidMetricsProvider::OnDidCreateMetricsLog() {
   EmitMultipleUserProfilesHistogram();
 
   PrimaryCpuAbiBitness primary_cpu_abi_bitness = GetPrimaryCpuAbiBitness();

@@ -32,8 +32,8 @@ class AndroidMetricsProviderTest : public testing::Test {
 
 }  // namespace
 
-TEST_F(AndroidMetricsProviderTest, ProvideCurrentSessionData) {
-  metrics_provider_.ProvideCurrentSessionData(&uma_proto_);
+TEST_F(AndroidMetricsProviderTest, OnDidCreateMetricsLog) {
+  metrics_provider_.OnDidCreateMetricsLog();
   histogram_tester_.ExpectTotalCount("Android.VersionCode", 1);
   histogram_tester_.ExpectTotalCount("Android.CpuAbiBitnessSupport", 1);
   histogram_tester_.ExpectTotalCount("Android.MultipleUserProfilesState", 1);
