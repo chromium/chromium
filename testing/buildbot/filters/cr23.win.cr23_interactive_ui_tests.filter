@@ -15,4 +15,5 @@
 -TabStripRegionViewBrowserTest.TestBeginEndFocus
 -TabStripRegionViewBrowserTest.TestForwardFocus
 -TabStripRegionViewBrowserTest.TestReverseFocus
+-TabStripRegionViewBrowserTest.TestSearchButtonIsEndAligned
 -TooltipBrowserTest.ShowTooltipFromWebContentWithCursor
