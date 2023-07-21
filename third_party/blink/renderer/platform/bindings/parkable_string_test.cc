@@ -49,6 +49,14 @@ String MakeLargeString(char c = 'a') {
   return String(data.data(), data.size()).ReleaseImpl();
 }
 
+String MakeComplexString(size_t size) {
+  Vector<char> data(size, 'a');
+  // This string should not be compressed too much, but also should not
+  // be compressed failed. So make only some parts of this random.
+  base::RandBytes(data.data(), data.size() / 10);
+  return String(data.data(), data.size()).ReleaseImpl();
+}
+
 class LambdaThreadDelegate : public base::PlatformThread::Delegate {
  public:
   explicit LambdaThreadDelegate(base::OnceClosure f) : f_(std::move(f)) {}
@@ -1334,6 +1342,57 @@ TEST_P(ParkableStringTestWithQueuedThreadPool, AgingParkingInProgress) {
   RunPostedTasks();
 
   EXPECT_TRUE(parkable.Impl()->is_parked());
+}
+
+class ParkableStringTestWithLimitedDiskCapacity : public ParkableStringTest {
+ public:
+  ParkableStringTestWithLimitedDiskCapacity() {
+    const std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {features::kCompressParkableStrings, {{"max_disk_capacity_mb", "1"}}}};
+    features_.InitWithFeaturesAndParameters(enabled_features, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+INSTANTIATE_TEST_SUITE_P(WithOrWithoutSnappy,
+                         ParkableStringTestWithLimitedDiskCapacity,
+                         ::testing::Bool());
+
+TEST_P(ParkableStringTestWithLimitedDiskCapacity, ParkWithLimitedDiskCapacity) {
+  constexpr size_t kMB = 1024 * 1024;
+  {
+    // Since compression rate is different, we cannot make a string for
+    // same compressed data. So accumulate small compressed data until capacity
+    // exceeds.
+    Vector<ParkableString> strings;
+    size_t total_written_compressed_data = 0;
+    while (true) {
+      ParkableString str(MakeComplexString(kMB).ReleaseImpl());
+      WaitForDelayedParking();
+      EXPECT_TRUE(str.Impl()->is_parked());
+
+      if (total_written_compressed_data + str.Impl()->compressed_size() > kMB) {
+        strings.push_back(str);
+        break;
+      }
+
+      total_written_compressed_data += str.Impl()->compressed_size();
+      WaitForDiskWriting();
+      EXPECT_TRUE(str.Impl()->is_on_disk());
+      strings.push_back(str);
+    }
+    WaitForDiskWriting();
+    EXPECT_FALSE(strings.back().Impl()->is_on_disk());
+  }
+
+  // Since all the written data are discarded, we can write new string to disk.
+  ParkableString parkable(MakeComplexString(kMB).ReleaseImpl());
+  WaitForDelayedParking();
+  EXPECT_TRUE(parkable.Impl()->is_parked());
+  WaitForDiskWriting();
+  EXPECT_TRUE(parkable.Impl()->is_on_disk());
 }
 
 }  // namespace blink

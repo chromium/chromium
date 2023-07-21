@@ -163,11 +163,13 @@ struct BackgroundTaskParams final {
       scoped_refptr<ParkableStringImpl> string,
       const void* data,
       size_t size,
+      std::unique_ptr<ReservedChunk> reserved_chunk,
       scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner)
       : callback_task_runner(callback_task_runner),
         string(std::move(string)),
         data(data),
-        size(size) {}
+        size(size),
+        reserved_chunk(std::move(reserved_chunk)) {}
 
   BackgroundTaskParams(const BackgroundTaskParams&) = delete;
   BackgroundTaskParams& operator=(const BackgroundTaskParams&) = delete;
@@ -177,6 +179,7 @@ struct BackgroundTaskParams final {
   const scoped_refptr<ParkableStringImpl> string;
   const void* data;
   const size_t size;
+  std::unique_ptr<ReservedChunk> reserved_chunk;
 };
 
 // Valid transitions are:
@@ -480,7 +483,13 @@ bool ParkableStringImpl::ParkInternal(ParkingMode mode) {
         // writing to disk is not possible.
         if (!manager.data_allocator().may_write())
           return false;
-        PostBackgroundWritingTask();
+
+        auto reserved_chunk = manager.data_allocator().TryReserveChunk(
+            metadata_->compressed_->size());
+        if (!reserved_chunk) {
+          return false;
+        }
+        PostBackgroundWritingTask(std::move(reserved_chunk));
       }
       break;
   }
@@ -671,7 +680,7 @@ void ParkableStringImpl::PostBackgroundCompressionTask() {
   // |params| keeps |this| alive until |OnParkingCompleteOnMainThread()|.
   auto params = std::make_unique<BackgroundTaskParams>(
       this, string_.Bytes(), string_.CharactersSizeInBytes(),
-      manager.task_runner());
+      /* reserved_chunk */ nullptr, manager.task_runner());
   worker_pool::PostTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},
       CrossThreadBindOnce(&ParkableStringImpl::CompressInBackground,
@@ -815,7 +824,8 @@ void ParkableStringImpl::OnParkingCompleteOnMainThread(
       parking_thread_time);
 }
 
-void ParkableStringImpl::PostBackgroundWritingTask() {
+void ParkableStringImpl::PostBackgroundWritingTask(
+    std::unique_ptr<ReservedChunk> reserved_chunk) {
   DCHECK(!metadata_->background_task_in_progress_);
   DCHECK_EQ(State::kParked, metadata_->state_);
   auto& manager = ParkableStringManager::Instance();
@@ -825,7 +835,7 @@ void ParkableStringImpl::PostBackgroundWritingTask() {
     metadata_->background_task_in_progress_ = true;
     auto params = std::make_unique<BackgroundTaskParams>(
         this, metadata_->compressed_->data(), metadata_->compressed_->size(),
-        manager.task_runner());
+        std::move(reserved_chunk), manager.task_runner());
     worker_pool::PostTask(
         FROM_HERE, {base::MayBlock()},
         CrossThreadBindOnce(&ParkableStringImpl::WriteToDiskInBackground,
@@ -839,7 +849,8 @@ void ParkableStringImpl::WriteToDiskInBackground(
     std::unique_ptr<BackgroundTaskParams> params,
     DiskDataAllocator* data_allocator) {
   base::ElapsedTimer timer;
-  auto metadata = data_allocator->Write(params->data, params->size);
+  auto metadata =
+      data_allocator->Write(std::move(params->reserved_chunk), params->data);
   base::TimeDelta elapsed = timer.Elapsed();
   RecordStatistics(params->size, elapsed, ParkingAction::kWritten);
 

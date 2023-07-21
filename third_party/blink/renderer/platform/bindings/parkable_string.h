@@ -236,7 +236,8 @@ class PLATFORM_EXPORT ParkableStringImpl
       std::unique_ptr<Vector<uint8_t>> compressed,
       base::TimeDelta parking_thread_time);
 
-  void PostBackgroundWritingTask() EXCLUSIVE_LOCKS_REQUIRED(metadata_->lock_);
+  void PostBackgroundWritingTask(std::unique_ptr<ReservedChunk> reserved_chunk)
+      EXCLUSIVE_LOCKS_REQUIRED(metadata_->lock_);
   static void WriteToDiskInBackground(std::unique_ptr<BackgroundTaskParams>,
                                       DiskDataAllocator* data_allocator);
   // Called on the main thread after writing is done.

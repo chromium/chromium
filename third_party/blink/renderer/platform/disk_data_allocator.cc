@@ -10,13 +10,24 @@
 #include "base/logging.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_restrictions.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/disk_data_metadata.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
+namespace {
+constexpr size_t kMB = 1024 * 1024;
+}
+
 namespace blink {
 
-DiskDataAllocator::DiskDataAllocator() = default;
+DiskDataAllocator::DiskDataAllocator() {
+  if (features::kMaxDiskDataAllocatorCapacityMB.Get() > 0) {
+    has_capacity_limit_ = true;
+    max_capacity_ = features::kMaxDiskDataAllocatorCapacityMB.Get() * kMB;
+  }
+}
+
 DiskDataAllocator::~DiskDataAllocator() = default;
 
 bool DiskDataAllocator::may_write() {
@@ -29,7 +40,7 @@ void DiskDataAllocator::set_may_write_for_testing(bool may_write) {
   may_write_ = may_write;
 }
 
-DiskDataMetadata DiskDataAllocator::FindChunk(size_t size) {
+DiskDataMetadata DiskDataAllocator::FindFreeChunk(size_t size) {
   // Try to reuse some space. Policy:
   // 1. Exact fit
   // 2. Worst fit
@@ -57,9 +68,6 @@ DiskDataMetadata DiskDataAllocator::FindChunk(size_t size) {
       DCHECK(result.second);
       chosen_chunk.size_ = size;
     }
-  } else {
-    chosen_chunk = {file_tail_, size};
-    file_tail_ += size;
   }
 
   return chosen_chunk;
@@ -102,37 +110,52 @@ void DiskDataAllocator::ReleaseChunk(const DiskDataMetadata& metadata) {
   free_chunks_size_ += chunk.size();
 }
 
-std::unique_ptr<DiskDataMetadata> DiskDataAllocator::Write(const void* data,
-                                                           size_t size) {
-  DiskDataMetadata chosen_chunk = {0, 0};
-
-  {
-    base::AutoLock locker(lock_);
-    if (!may_write_)
-      return nullptr;
-
-    chosen_chunk = FindChunk(size);
-  }  // Don't hold the lock during the actual Write().
-
-  int size_int = static_cast<int>(size);
-  const char* data_char = reinterpret_cast<const char*>(data);
-  int written = DoWrite(chosen_chunk.start_offset(), data_char, size_int);
-
+std::unique_ptr<ReservedChunk> DiskDataAllocator::TryReserveChunk(size_t size) {
   base::AutoLock locker(lock_);
-  if (size_int != written) {
-    // Assume that the error is not transient. This can happen if the disk is
-    // full for instance, in which case it is likely better not to try writing
-    // later.
-    may_write_ = false;
+  if (!may_write_) {
     return nullptr;
+  }
+
+  DiskDataMetadata chosen_chunk = FindFreeChunk(size);
+  if (chosen_chunk.start_offset() < 0) {
+    if (has_capacity_limit_ && file_tail_ + size > max_capacity_) {
+      return nullptr;
+    }
+    chosen_chunk = {file_tail_, size};
+    file_tail_ += size;
   }
 
 #if DCHECK_IS_ON()
   allocated_chunks_.insert({chosen_chunk.start_offset(), chosen_chunk.size()});
 #endif
 
-  return std::unique_ptr<DiskDataMetadata>(
-      new DiskDataMetadata(chosen_chunk.start_offset(), chosen_chunk.size()));
+  return std::make_unique<ReservedChunk>(
+      this, std::unique_ptr<DiskDataMetadata>(new DiskDataMetadata(
+                chosen_chunk.start_offset(), chosen_chunk.size())));
+}
+
+std::unique_ptr<DiskDataMetadata> DiskDataAllocator::Write(
+    std::unique_ptr<ReservedChunk> chunk,
+    const void* data) {
+  std::unique_ptr<DiskDataMetadata> metadata = chunk->Take();
+  DCHECK(metadata);
+
+  int size_int = static_cast<int>(metadata->size());
+  const char* data_char = reinterpret_cast<const char*>(data);
+  int written = DoWrite(metadata->start_offset(), data_char, size_int);
+
+  if (size_int != written) {
+    Discard(std::move(metadata));
+
+    // Assume that the error is not transient. This can happen if the disk is
+    // full for instance, in which case it is likely better not to try writing
+    // later.
+    base::AutoLock locker(lock_);
+    may_write_ = false;
+    return nullptr;
+  }
+
+  return metadata;
 }
 
 void DiskDataAllocator::Read(const DiskDataMetadata& metadata, void* data) {

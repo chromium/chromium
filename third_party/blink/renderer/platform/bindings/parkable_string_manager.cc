@@ -229,6 +229,9 @@ void ParkableStringManager::RemoveOnMainThread(ParkableStringImpl* string) {
 
   if (string->has_on_disk_data()) {
     data_allocator().Discard(std::move(string->metadata_->on_disk_metadata_));
+    // Now data_allocator may have enough free space for pending compressed
+    // strings. Schedule for them.
+    ScheduleAgingTaskIfNeeded();
   }
 
   delete string;

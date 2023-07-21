@@ -237,6 +237,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kClientHintsViewportWidth_DEPRECATED);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kClipboardUnsanitizedContent);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCompressParkableStrings);
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kMaxDiskDataAllocatorCapacityMB;
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kConsumeCodeCacheOffThread);
 

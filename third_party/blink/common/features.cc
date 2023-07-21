@@ -514,6 +514,12 @@ BASE_FEATURE(kCompressParkableStrings,
              "CompressParkableStrings",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Limits maximum capacity of disk data allocator per renderer process.
+// DiskDataAllocator and its clients(ParkableString, ParkableImage) will try
+// to keep the limitation.
+const base::FeatureParam<int> kMaxDiskDataAllocatorCapacityMB{
+    &kCompressParkableStrings, "max_disk_capacity_mb", -1};
+
 // Controls off-thread code cache consumption.
 BASE_FEATURE(kConsumeCodeCacheOffThread,
              "ConsumeCodeCacheOffThread",

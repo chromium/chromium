@@ -135,6 +135,7 @@ class PLATFORM_EXPORT ParkableImageImpl final
 
   std::unique_ptr<RWBuffer> rw_buffer_ GUARDED_BY(lock_);
 
+  std::unique_ptr<ReservedChunk> reserved_chunk_ GUARDED_BY(lock_);
   // Non-null iff we have the data from |rw_buffer_| saved to disk.
   std::unique_ptr<DiskDataMetadata> on_disk_metadata_ GUARDED_BY(lock_);
   // |size_| is only modified on the main thread.

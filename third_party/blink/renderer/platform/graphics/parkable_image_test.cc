@@ -211,6 +211,19 @@ class ParkableImageNoParkingTest : public ParkableImageBaseTest {
   base::test::ScopedFeatureList fl_;
 };
 
+class ParkableImageWithLimitedDiskCapacityTest : public ParkableImageBaseTest {
+ public:
+  ParkableImageWithLimitedDiskCapacityTest() {
+    const std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {features::kParkableImagesToDisk, {}},
+        {features::kCompressParkableStrings, {{"max_disk_capacity_mb", "1"}}}};
+    fl_.InitWithFeaturesAndParameters(enabled_features, {kDelayParkingImages});
+  }
+
+ private:
+  base::test::ScopedFeatureList fl_;
+};
+
 // Tests that ParkableImages are constructed with the correct size.
 TEST_F(ParkableImageTest, Size) {
   auto pi = ParkableImage::Create();
@@ -1021,6 +1034,31 @@ TEST_F(ParkableImageDelayedTest, ParkAndUnpark) {
 
   // No need to wait 30 more seconds, we can park immediately.
   EXPECT_TRUE(is_on_disk(pi));
+}
+
+TEST_F(ParkableImageWithLimitedDiskCapacityTest, ParkWithLimitedDiskCapacity) {
+  constexpr size_t kMB = 1024 * 1024;
+  constexpr size_t kDataSize = kMB;
+  std::unique_ptr<char[]> data(new char[kDataSize]);
+  PrepareReferenceData(data.get(), kDataSize);
+
+  auto pi = MakeParkableImageForTesting(data.get(), kDataSize);
+  pi->Freeze();
+  EXPECT_TRUE(MaybePark(pi));
+  RunPostedTasks();
+  EXPECT_TRUE(is_on_disk(pi));
+
+  // Create another parkable image and attempt to write to disk.
+  auto pi2 = MakeParkableImageForTesting(data.get(), kDataSize);
+  pi2->Freeze();
+  // Should be false because there is no free space.
+  EXPECT_FALSE(MaybePark(pi2));
+
+  // Remove first parkable image. Now we can park second image.
+  pi = nullptr;
+  EXPECT_TRUE(MaybePark(pi2));
+  RunPostedTasks();
+  EXPECT_TRUE(is_on_disk(pi2));
 }
 
 }  // namespace blink

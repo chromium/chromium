@@ -514,6 +514,7 @@ component("platform") {
     "data_resource_helper.h",
     "disk_data_allocator.cc",
     "disk_data_allocator.h",
+    "disk_data_metadata.cc",
     "disk_data_metadata.h",
     "exported/file_path_conversion.cc",
     "exported/interface_registry.cc",
