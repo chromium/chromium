@@ -10,6 +10,12 @@
 
 namespace updater {
 
+// Magic strings used to identify the tag in the binary.
+extern const uint8_t kTagStartMagicUtf8[];
+extern const size_t kTagStartMagicUtf8Size;
+extern const uint8_t kTagStartMagicUtf16[];
+extern const uint8_t kTagEndMagicUtf16[];
+
 std::string ReadTagUtf8(std::vector<uint8_t>::const_iterator cert_begin,
                         std::vector<uint8_t>::const_iterator cert_end);
 

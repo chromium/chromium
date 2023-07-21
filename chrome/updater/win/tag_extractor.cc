@@ -20,20 +20,21 @@
 
 namespace updater {
 
+// Magic strings used to identify the tag in the binary.
+const uint8_t kTagStartMagicUtf8[] = {'G', 'a', 'c', 't', '2', '.',
+                                      '0', 'O', 'm', 'a', 'h', 'a'};
+const size_t kTagStartMagicUtf8Size = sizeof(kTagStartMagicUtf8);
+const uint8_t kTagStartMagicUtf16[] = {0, 'G', 0, 'a', 0, 'c', 0, 't',
+                                       0, '2', 0, '.', 0, '0', 0, 'O',
+                                       0, 'm', 0, 'a', 0, 'h', 0, 'a'};
+const uint8_t kTagEndMagicUtf16[] = {0, 'a', 0, 'h', 0, 'a', 0, 'm',
+                                     0, 'O', 0, '0', 0, '.', 0, '2',
+                                     0, 't', 0, 'c', 0, 'a', 0, 'G'};
+
 std::string ReadTagUtf8(std::vector<uint8_t>::const_iterator cert_begin,
                         std::vector<uint8_t>::const_iterator cert_end);
 
 namespace {
-
-// Magic strings used to identify the tag in the binary.
-constexpr uint8_t kTagStartMagicUtf8[] = {'G', 'a', 'c', 't', '2', '.',
-                                          '0', 'O', 'm', 'a', 'h', 'a'};
-constexpr uint8_t kTagStartMagicUtf16[] = {0, 'G', 0, 'a', 0, 'c', 0, 't',
-                                           0, '2', 0, '.', 0, '0', 0, 'O',
-                                           0, 'm', 0, 'a', 0, 'h', 0, 'a'};
-constexpr uint8_t kTagEndMagicUtf16[] = {0, 'a', 0, 'h', 0, 'a', 0, 'm',
-                                         0, 'O', 0, '0', 0, '.', 0, '2',
-                                         0, 't', 0, 'c', 0, 'a', 0, 'G'};
 
 // Converts a big-endian 2-byte value to little-endian and returns it
 // as a uint16_t.

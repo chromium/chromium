@@ -1,19 +1,10 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#ifndef CHROME_UPDATER_WIN_MSI_TAG_H_
-#define CHROME_UPDATER_WIN_MSI_TAG_H_
-
-#include "chrome/updater/tag.h"
-
-namespace base {
-class FilePath;
-}
-
-namespace updater {
-
-// Extracts a tag from the end of the MSI `filename`.
+//
+// +-----------------------------------------------------------------+
+// Utilities for reading and writing tags to MSI files.
+// +-----------------------------------------------------------------+
 //
 // The tag specification for MSI files is as follows:
 //   - The tag area begins with a magic signature 'Gact2.0Omaha'.
@@ -41,7 +32,29 @@ namespace updater {
 // |  a   n   d   =   C   D   C   D   &   k   e   y   2   =   T   e  |
 // |  s   t                                                          |
 // +-----------------------------------------------------------------+
-tagging::TagArgs ExtractTagArgs(const base::FilePath& filename);
+
+#ifndef CHROME_UPDATER_WIN_MSI_TAG_H_
+#define CHROME_UPDATER_WIN_MSI_TAG_H_
+
+#include <string>
+
+#include "chrome/updater/tag.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace base {
+class FilePath;
+}
+
+namespace updater {
+
+// Extracts a tag from the end of the MSI `filename`.
+absl::optional<tagging::TagArgs> ExtractTagArgs(const base::FilePath& filename);
+
+// Copies `in_file` to `out_file`, and then writes the `tag` to the end of
+// `out_file`.
+bool WriteTagString(const base::FilePath& in_file,
+                    const base::FilePath& out_file,
+                    const std::string& tag_string);
 
 }  // namespace updater
 
