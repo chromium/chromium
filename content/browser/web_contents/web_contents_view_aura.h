@@ -100,15 +100,19 @@ class CONTENT_EXPORT WebContentsViewAura
   // cleared out once PerformDropCallback() returns.
   struct CONTENT_EXPORT OnPerformDropContext {
     OnPerformDropContext(RenderWidgetHostImpl* target_rwh,
+                         std::unique_ptr<DropData> drop_data,
                          DropMetadata drop_metadata,
                          std::unique_ptr<ui::OSExchangeData> data,
                          base::ScopedClosureRunner end_drag_runner,
                          absl::optional<gfx::PointF> transformed_pt,
                          gfx::PointF screen_pt);
+    OnPerformDropContext(const OnPerformDropContext& other) = delete;
     OnPerformDropContext(OnPerformDropContext&& other);
+    OnPerformDropContext& operator=(const OnPerformDropContext& other) = delete;
     ~OnPerformDropContext();
 
     base::WeakPtr<RenderWidgetHostImpl> target_rwh;
+    std::unique_ptr<DropData> drop_data;
     DropMetadata drop_metadata;
     std::unique_ptr<ui::OSExchangeData> data;
     base::ScopedClosureRunner end_drag_runner;
@@ -284,11 +288,11 @@ class CONTENT_EXPORT WebContentsViewAura
   void CompleteDragExit();
 
   // Called from PerformDropCallback() to finish processing the drop.
-  // The override with `drop_data` updates `current_drop_data_` before
+  // The override with `drop_data` updates `current_drag_data_` before
   // completing the drop.
-  void FinishOnPerformDrop(OnPerformDropContext context);
-  void FinishOnPerformDropCallback(OnPerformDropContext context,
-                                   absl::optional<DropData> drop_data);
+  void FinishOnPerformDrop(OnPerformDropContext drop_context);
+  void GotModifiedDropDataFromDelegate(OnPerformDropContext drop_context,
+                                       absl::optional<DropData> drop_data);
 
   // Completes a drop operation by communicating the drop data to the renderer
   // process.
@@ -325,6 +329,7 @@ class CONTENT_EXPORT WebContentsViewAura
 #if BUILDFLAG(IS_WIN)
   // Callback for asynchronous retrieval of virtual files.
   void OnGotVirtualFilesAsTempFiles(
+      OnPerformDropContext drop_context,
       const std::vector<std::pair</*temp path*/ base::FilePath,
                                   /*display name*/ base::FilePath>>&
           filepaths_and_names);
@@ -336,6 +341,10 @@ class CONTENT_EXPORT WebContentsViewAura
   std::unique_ptr<AsyncDropTempFileDeleter> async_drop_temp_file_deleter_;
 #endif
   DropCallbackForTesting drop_callback_for_testing_;
+
+  // Calls the delegate's OnPerformDrop() if a delegate is present, otherwise
+  // finishes performing the drop by calling FinishOnPerformDrop().
+  void DelegateOnPerformDrop(OnPerformDropContext drop_context);
 
   // If this callback is initialized it must be run after the drop operation is
   // done to send dragend event in EndDrag function.
@@ -352,7 +361,11 @@ class CONTENT_EXPORT WebContentsViewAura
 
   ui::mojom::DragOperation current_drag_op_;
 
-  std::unique_ptr<DropData> current_drop_data_;
+  // This member holds the dropped data from the drag enter phase to the end
+  // of the drop.  A drop may end if the user releases the mouse button over
+  // the view, if the cursor moves off the view, or some other events occurs
+  // like a change in the RWH.  This member is null when no drop is happening.
+  std::unique_ptr<DropData> current_drag_data_;
 
   raw_ptr<WebDragDestDelegate> drag_dest_delegate_;
 

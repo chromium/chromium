@@ -374,12 +374,14 @@ WebContentsViewAura::DropMetadata::DropMetadata(
 
 WebContentsViewAura::OnPerformDropContext::OnPerformDropContext(
     RenderWidgetHostImpl* target_rwh,
+    std::unique_ptr<DropData> drop_data,
     DropMetadata drop_metadata,
     std::unique_ptr<ui::OSExchangeData> data,
     base::ScopedClosureRunner end_drag_runner,
     absl::optional<gfx::PointF> transformed_pt,
     gfx::PointF screen_pt)
     : target_rwh(target_rwh->GetWeakPtr()),
+      drop_data(std::move(drop_data)),
       drop_metadata(drop_metadata),
       data(std::move(data)),
       end_drag_runner(std::move(end_drag_runner)),
@@ -394,21 +396,11 @@ WebContentsViewAura::OnPerformDropContext::~OnPerformDropContext() = default;
 #if BUILDFLAG(IS_WIN)
 // A web contents observer that watches for navigations while an async drop
 // operation is in progress during virtual file data retrieval and temp file
-// creation. Navigations may cause completion of the drop to be disallowed. The
-// class also serves to cache the drop parameters as they were at the beginning
-// of the drop. This is needed for checking that the drop target is still valid
-// when the async operation completes, and if so, passing the parameters on to
-// the render widget host to complete the drop.
+// creation. Navigations may cause completion of the drop to be disallowed.
 class WebContentsViewAura::AsyncDropNavigationObserver
     : public WebContentsObserver {
  public:
-  AsyncDropNavigationObserver(WebContents* watched_contents,
-                              std::unique_ptr<DropData> drop_data,
-                              base::ScopedClosureRunner end_drag_runner,
-                              RenderWidgetHostImpl* target_rwh,
-                              const gfx::PointF& client_pt,
-                              const gfx::PointF& screen_pt,
-                              int key_modifiers);
+  explicit AsyncDropNavigationObserver(WebContents* watched_contents);
 
   AsyncDropNavigationObserver(const AsyncDropNavigationObserver&) = delete;
   AsyncDropNavigationObserver& operator=(const AsyncDropNavigationObserver&) =
@@ -421,41 +413,13 @@ class WebContentsViewAura::AsyncDropNavigationObserver
   // should disallow the drop?
   bool drop_allowed() const { return drop_allowed_; }
 
-  DropData* drop_data() const { return drop_data_.get(); }
-  RenderWidgetHostImpl* target_rwh() const { return target_rwh_.get(); }
-  const gfx::PointF& client_pt() const { return client_pt_; }
-  const gfx::PointF& screen_pt() const { return screen_pt_; }
-  int key_modifiers() const { return key_modifiers_; }
-
  private:
-  bool drop_allowed_;
-
-  // Data cached at the start of the drop operation and needed to complete the
-  // drop.
-  std::unique_ptr<DropData> drop_data_;
-  base::ScopedClosureRunner end_drag_runner_;
-  base::WeakPtr<RenderWidgetHostImpl> target_rwh_;
-  const gfx::PointF client_pt_;
-  const gfx::PointF screen_pt_;
-  const int key_modifiers_;
+  bool drop_allowed_ = true;
 };
 
 WebContentsViewAura::AsyncDropNavigationObserver::AsyncDropNavigationObserver(
-    WebContents* watched_contents,
-    std::unique_ptr<DropData> drop_data,
-    base::ScopedClosureRunner end_drag_runner,
-    RenderWidgetHostImpl* target_rwh,
-    const gfx::PointF& client_pt,
-    const gfx::PointF& screen_pt,
-    int key_modifiers)
-    : WebContentsObserver(watched_contents),
-      drop_allowed_(true),
-      drop_data_(std::move(drop_data)),
-      end_drag_runner_(std::move(end_drag_runner)),
-      target_rwh_(target_rwh->GetWeakPtr()),
-      client_pt_(client_pt),
-      screen_pt_(screen_pt),
-      key_modifiers_(key_modifiers) {}
+    WebContents* watched_contents)
+    : WebContentsObserver(watched_contents) {}
 
 void WebContentsViewAura::AsyncDropNavigationObserver::DidFinishNavigation(
     NavigationHandle* navigation_handle) {
@@ -792,8 +756,9 @@ void WebContentsViewAura::PrepareDropData(
   // Get a list of virtual files for later retrieval when a drop is performed
   // (will return empty vector if there are any non-virtual files in the data
   // store).
-  if (ShouldIncludeVirtualFiles(*drop_data))
+  if (ShouldIncludeVirtualFiles(*drop_data)) {
     data.GetVirtualFilenames(&drop_data->filenames);
+  }
 #endif
 
   base::Pickle pickle;
@@ -991,7 +956,7 @@ void WebContentsViewAura::FocusThroughTabTraversal(bool reverse) {
 }
 
 DropData* WebContentsViewAura::GetDropData() const {
-  return current_drop_data_.get();
+  return current_drag_data_.get();
 }
 
 gfx::Rect WebContentsViewAura::GetViewBounds() const {
@@ -1406,8 +1371,8 @@ void WebContentsViewAura::DragEnteredCallback(
   current_rwh_for_drag_ = target_rwh->GetWeakPtr();
   current_rvh_for_drag_ =
       GetRenderViewHostID(web_contents_->GetRenderViewHost());
-  current_drop_data_ = std::move(drop_data);
-  current_rwh_for_drag_->FilterDropData(current_drop_data_.get());
+  current_drag_data_ = std::move(drop_data);
+  current_rwh_for_drag_->FilterDropData(current_drag_data_.get());
 
   blink::DragOperationsMask op_mask =
       ConvertToDragOperationsMask(drop_metadata.source_operations);
@@ -1419,27 +1384,28 @@ void WebContentsViewAura::DragEnteredCallback(
     // another privileged WebContents.
     // Do not allow dragging privileged WebContents to
     // non-priviledged WebContents or vice versa.
-    if (current_drop_data_->is_from_privileged !=
+    if (current_drag_data_->is_from_privileged !=
         (delegate && delegate->IsPrivileged())) {
       return false;
     }
 
     // Give the delegate an opportunity to cancel the drag
-    if (delegate && !delegate->CanDragEnter(web_contents_,
-                                            *current_drop_data_.get(), op_mask))
+    if (delegate && !delegate->CanDragEnter(
+                        web_contents_, *current_drag_data_.get(), op_mask)) {
       return false;
+    }
     return true;
   };
 
   if (!allow_drag()) {
-    current_drop_data_ = nullptr;
+    current_drag_data_ = nullptr;
     return;
   }
 
   DCHECK(transformed_pt.has_value());
   gfx::PointF screen_pt(display::Screen::GetScreen()->GetCursorScreenPoint());
   current_rwh_for_drag_->DragTargetDragEnter(
-      *current_drop_data_, transformed_pt.value(), screen_pt, op_mask,
+      *current_drag_data_, transformed_pt.value(), screen_pt, op_mask,
       ui::EventFlagsToWebEventModifiers(drop_metadata.flags),
       base::DoNothing());
 
@@ -1518,7 +1484,7 @@ void WebContentsViewAura::DragUpdatedCallback(
                         transformed_pt);
   }
 
-  if (!current_drop_data_) {
+  if (!current_drag_data_) {
     return;
   }
 
@@ -1570,24 +1536,69 @@ void WebContentsViewAura::OnDragExited() {
 void WebContentsViewAura::CompleteDragExit() {
   drag_in_progress_ = false;
 
-  if (web_contents_->IsBeingDestroyed() ||
-      current_rvh_for_drag_ !=
-          GetRenderViewHostID(web_contents_->GetRenderViewHost()) ||
-      !current_drop_data_) {
-    return;
+  if (current_rwh_for_drag_ && !web_contents_->IsBeingDestroyed() &&
+      current_rvh_for_drag_ ==
+          GetRenderViewHostID(web_contents_->GetRenderViewHost())) {
+    current_rwh_for_drag_->DragTargetDragLeave(gfx::PointF(), gfx::PointF());
   }
 
   if (current_rwh_for_drag_) {
-    current_rwh_for_drag_->DragTargetDragLeave(gfx::PointF(), gfx::PointF());
     current_rwh_for_drag_.reset();
   }
 
-  if (drag_dest_delegate_)
+  if (drag_dest_delegate_) {
     drag_dest_delegate_->OnDragLeave();
+  }
 
-  current_drop_data_.reset();
+  current_drag_data_.reset();
 }
 
+// PerformDropCallback() is called once the user releases the mouse button
+// over this window.  This function completes the drop if possible.  A drop
+// may not be possible for example if the RWH has changed since the user's drag
+// entered this view.
+//
+// Performing the drop is an asynchronous operation that involves the RWH and
+// the web contents delegate.  A drop is not considered done by this view until
+// all the asynchronous operations complete.
+//
+// Assuming that a drop is allowed, an instance of OnPerformDropContext is
+// created to keep track of the drop state during the various async operations.
+// This context is saved in the `drop_context` argument passed around to the
+// various methods. The data being dropped, stored in `current_drag_data_`, is
+// moved into the context.
+//
+// On the Windows platform, if the drop includes virtuals files (for example,
+// dropping an email attachment dragged out of the native Outlook application)
+// these are first converted into temp real files using the async function
+// GetVirtualFilesAsTempFiles().  The callback OnGotVirtualFilesAsTempFiles()
+// uses AsyncDropTempFileDeleter to make sure the temp files are deleted once
+// the drop completes.  Other platform don't have handling of virtual files.
+//
+// Next, the delegate is given a chance to handle the dropped data in an async
+// manner.  The delegate may perform additional checks on the dropped data,
+// may filter that data according to specific criteria, and may even block the
+// drop altogether.  For example, some enterprise policies may block
+// sensitive data from being dropped on unsanctioned web pages.  This step is
+// kicked off by calling DelegateOnPerformDrop() and the async response is
+// handled by GotModifiedDropDataFromDelegate().  In tests it's possible that
+// no delegate exists, in which case FinishOnPerformDrop() is called directly.
+//
+// GotModifiedDropDataFromDelegate() is called only when a delegate exists and
+// processes the result of the delegate's handling of the dropped data.
+// Assuming the delegate allows the drop, the dropped data in `drop_context`
+// is updated and FinishOnPerformDrop() is called.
+//
+// FinishOnPerformDrop() calls CompleteDrop() to send the dropped data to
+// the RWH.  At this point the drop is considered completed from this view's
+// point of view.
+//
+// Note that many of the methods above are callback to async operations,
+// like this method itself, OnGotVirtualFilesAsTempFiles(),
+// GotModifiedDropDataFromDelegate().  Therefore these methods begin with
+// similar checks to make sure the drop is still allowed. For example, checks
+// to make sure the target RWH has not changed.  See IsValidDragTarget() for
+// details.
 void WebContentsViewAura::PerformDropCallback(
     DropMetadata drop_metadata,
     std::unique_ptr<ui::OSExchangeData> data,
@@ -1617,37 +1628,73 @@ void WebContentsViewAura::PerformDropCallback(
                         transformed_pt);
   }
 
-  if (!current_drop_data_)
+  // `current_drag_data_` is set in DragEnteredCallback() when the user begins
+  // to drag over this view and the drag is allowed.  It's possible after the
+  // call to DragEnteredCallback() above that this member becomes null
+  // indicating that the drop should not happen.
+  if (!current_drag_data_) {
     return;
+  }
 
-  OnPerformDropContext context(target_rwh, drop_metadata, std::move(data),
-                               std::move(end_drag_runner), transformed_pt,
-                               screen_pt);
+  OnPerformDropContext drop_context = OnPerformDropContext(
+      target_rwh, std::move(current_drag_data_), drop_metadata, std::move(data),
+      std::move(end_drag_runner), transformed_pt, screen_pt);
+
+#if BUILDFLAG(IS_WIN)
+  if (ShouldIncludeVirtualFiles(*drop_context.drop_data) &&
+      drop_context.data->HasVirtualFilenames()) {
+    // Asynchronously retrieve the actual content of any virtual files now (this
+    // step is not needed for "real" files already on the file system, e.g.
+    // those dropped on Chromium from the desktop). When all content has been
+    // written to temporary files, the OnGotVirtualFilesAsTempFiles
+    // callback will be invoked and the drop communicated to the renderer
+    // process.
+    async_drop_navigation_observer_ =
+        std::make_unique<AsyncDropNavigationObserver>(web_contents_);
+    ui::OSExchangeData* data_ptr = drop_context.data.get();
+    data_ptr->GetVirtualFilesAsTempFiles(base::BindOnce(
+        &WebContentsViewAura::OnGotVirtualFilesAsTempFiles,
+        weak_ptr_factory_.GetWeakPtr(), std::move(drop_context)));
+    return;
+  }
+#endif
+
+  DelegateOnPerformDrop(std::move(drop_context));
+}
+
+void WebContentsViewAura::DelegateOnPerformDrop(
+    OnPerformDropContext drop_context) {
   // |delegate_| may be null in unit tests.
+  // TODO(crbug.com/1459352): Tests should use a delegate.
   if (delegate_) {
+    auto* drop_data_ptr = drop_context.drop_data.get();
     delegate_->OnPerformDrop(
-        *current_drop_data_,
-        base::BindOnce(&WebContentsViewAura::FinishOnPerformDropCallback,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(context)));
+        *drop_data_ptr,
+        base::BindOnce(&WebContentsViewAura::GotModifiedDropDataFromDelegate,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(drop_context)));
   } else {
-    FinishOnPerformDrop(std::move(context));
+    FinishOnPerformDrop(std::move(drop_context));
   }
 }
 
-void WebContentsViewAura::FinishOnPerformDropCallback(
-    OnPerformDropContext context,
+void WebContentsViewAura::GotModifiedDropDataFromDelegate(
+    OnPerformDropContext drop_context,
     absl::optional<DropData> drop_data) {
   // This is possibly an async callback.  Make sure the RWH is still valid.
-  if (!context.target_rwh || !IsValidDragTarget(context.target_rwh.get()))
+  if (!drop_context.target_rwh ||
+      !IsValidDragTarget(drop_context.target_rwh.get())) {
     return;
+  }
 
   if (!drop_data.has_value()) {
     if (!drop_callback_for_testing_.is_null()) {
       const int key_modifiers =
-          ui::EventFlagsToWebEventModifiers(context.drop_metadata.flags);
+          ui::EventFlagsToWebEventModifiers(drop_context.drop_metadata.flags);
       std::move(drop_callback_for_testing_)
-          .Run(context.target_rwh.get(), *current_drop_data_,
-               context.transformed_pt.value(), context.screen_pt, key_modifiers,
+          .Run(drop_context.target_rwh.get(), *drop_context.drop_data,
+               drop_context.transformed_pt.value(), drop_context.screen_pt,
+               key_modifiers,
                /*drop_allowed=*/false);
     }
 
@@ -1657,51 +1704,17 @@ void WebContentsViewAura::FinishOnPerformDropCallback(
     return;
   }
 
-  *current_drop_data_ = std::move(drop_data.value());
-  FinishOnPerformDrop(std::move(context));
+  *drop_context.drop_data = std::move(drop_data.value());
+  FinishOnPerformDrop(std::move(drop_context));
 }
 
-void WebContentsViewAura::FinishOnPerformDrop(OnPerformDropContext context) {
+void WebContentsViewAura::FinishOnPerformDrop(
+    OnPerformDropContext drop_context) {
   const int key_modifiers =
-      ui::EventFlagsToWebEventModifiers(context.drop_metadata.flags);
-  // This is possibly an async callback.  Make sure the RWH is still valid.
-  if (!context.target_rwh || !IsValidDragTarget(context.target_rwh.get()))
-    return;
-
-#if BUILDFLAG(IS_WIN)
-  if (ShouldIncludeVirtualFiles(*current_drop_data_) &&
-      context.data->HasVirtualFilenames()) {
-    // Asynchronously retrieve the actual content of any virtual files now (this
-    // step is not needed for "real" files already on the file system, e.g.
-    // those dropped on Chromium from the desktop). When all content has been
-    // written to temporary files, the OnGotVirtualFilesAsTempFiles
-    // callback will be invoked and the drop communicated to the renderer
-    // process.
-    auto callback =
-        base::BindOnce(&WebContentsViewAura::OnGotVirtualFilesAsTempFiles,
-                       weak_ptr_factory_.GetWeakPtr());
-
-    // GetVirtualFilesAsTempFiles will immediately return false if there are no
-    // virtual files to retrieve (all items are folders e.g.) and no callback
-    // will be received.
-    if (context.data->GetVirtualFilesAsTempFiles(std::move(callback))) {
-      // Cache the parameters as they were at the time of the drop. This is
-      // needed for checking that the drop target is still valid when the async
-      // operation completes.
-      async_drop_navigation_observer_ =
-          std::make_unique<AsyncDropNavigationObserver>(
-              web_contents_, std::move(current_drop_data_),
-              std::move(context.end_drag_runner), context.target_rwh.get(),
-              context.transformed_pt.value(), context.screen_pt, key_modifiers);
-      return;
-    }
-  }
-
-#endif
-  CompleteDrop(context.target_rwh.get(), *current_drop_data_,
-               context.transformed_pt.value(), context.screen_pt,
+      ui::EventFlagsToWebEventModifiers(drop_context.drop_metadata.flags);
+  CompleteDrop(drop_context.target_rwh.get(), *drop_context.drop_data,
+               drop_context.transformed_pt.value(), drop_context.screen_pt,
                key_modifiers);
-  current_drop_data_.reset();
 }
 
 aura::client::DragDropDelegate::DropCallback
@@ -1725,8 +1738,9 @@ void WebContentsViewAura::CompleteDrop(RenderWidgetHostImpl* target_rwh,
 
   target_rwh->DragTargetDrop(drop_data, client_pt, screen_pt, key_modifiers,
                              base::DoNothing());
-  if (drag_dest_delegate_)
+  if (drag_dest_delegate_) {
     drag_dest_delegate_->OnDrop();
+  }
 
   if (!drop_callback_for_testing_.is_null()) {
     std::move(drop_callback_for_testing_)
@@ -1759,60 +1773,62 @@ void WebContentsViewAura::RegisterDropCallbackForTesting(
 
 #if BUILDFLAG(IS_WIN)
 void WebContentsViewAura::OnGotVirtualFilesAsTempFiles(
+    OnPerformDropContext drop_context,
     const std::vector<std::pair<base::FilePath, base::FilePath>>&
         filepaths_and_names) {
-  DCHECK(!filepaths_and_names.empty());
-
-  if (!async_drop_navigation_observer_)
+  if (!async_drop_navigation_observer_) {
     return;
+  }
 
-  std::unique_ptr<AsyncDropNavigationObserver> drop_observer(
-      std::move(async_drop_navigation_observer_));
+  if (!filepaths_and_names.empty()) {
+    std::unique_ptr<AsyncDropNavigationObserver> drop_observer(
+        std::move(async_drop_navigation_observer_));
 
-  RenderWidgetHostImpl* target_rwh = drop_observer->target_rwh();
-  DropData* drop_data = drop_observer->drop_data();
+    RenderWidgetHostImpl* target_rwh = drop_context.target_rwh.get();
 
-  // Security check--don't allow the drop if a navigation occurred since the
-  // drop was initiated or the render widget host has changed or it is not a
-  // valid target.
-  if (!drop_observer->drop_allowed() ||
-      !(target_rwh && target_rwh == current_rwh_for_drag_.get() &&
-        IsValidDragTarget(target_rwh))) {
-    // Signal test code that the drop is disallowed
-    if (!drop_callback_for_testing_.is_null()) {
-      std::move(drop_callback_for_testing_)
-          .Run(target_rwh, *drop_data, drop_observer->client_pt(),
-               drop_observer->screen_pt(), drop_observer->key_modifiers(),
-               drop_observer->drop_allowed());
+    // Security check--don't allow the drop if a navigation occurred since the
+    // drop was initiated or the render widget host has changed or it is not a
+    // valid target.
+    if (!drop_observer->drop_allowed() ||
+        !(target_rwh && target_rwh == current_rwh_for_drag_.get() &&
+          IsValidDragTarget(target_rwh))) {
+      // Signal test code that the drop is disallowed.
+      if (!drop_callback_for_testing_.is_null()) {
+        std::move(drop_callback_for_testing_)
+            .Run(target_rwh, *drop_context.drop_data,
+                 drop_context.transformed_pt.value(), drop_context.screen_pt,
+                 drop_context.drop_metadata.flags,
+                 drop_observer->drop_allowed());
+      }
+
+      CompleteDragExit();
+      return;
     }
 
-    return;
+    // The vector of filenames will still have items added during dragenter
+    // (script is allowed to enumerate the files in the data store but not
+    // retrieve the file contents in dragenter). But the temp file path in the
+    // FileInfo structs will just be a placeholder. Clear out the vector before
+    // replacing it with FileInfo structs that have the paths to the retrieved
+    // file contents.
+    drop_context.drop_data->filenames.clear();
+
+    // Ensure we have temp file deleter.
+    if (!async_drop_temp_file_deleter_) {
+      async_drop_temp_file_deleter_ =
+          std::make_unique<AsyncDropTempFileDeleter>();
+    }
+
+    for (const auto& filepath_and_name : filepaths_and_names) {
+      drop_context.drop_data->filenames.push_back(
+          ui::FileInfo(filepath_and_name.first, filepath_and_name.second));
+
+      // Make sure the temp file eventually gets cleaned up.
+      async_drop_temp_file_deleter_->RegisterFile(filepath_and_name.first);
+    }
   }
 
-  // The vector of filenames will still have items added during dragenter
-  // (script is allowed to enumerate the files in the data store but not
-  // retrieve the file contents in dragenter). But the temp file path in the
-  // FileInfo structs will just be a placeholder. Clear out the vector before
-  // replacing it with FileInfo structs that have the paths to the retrieved
-  // file contents.
-  drop_data->filenames.clear();
-
-  // Ensure we have temp file deleter.
-  if (!async_drop_temp_file_deleter_) {
-    async_drop_temp_file_deleter_ =
-        std::make_unique<AsyncDropTempFileDeleter>();
-  }
-
-  for (const auto& filepath_and_name : filepaths_and_names) {
-    drop_data->filenames.push_back(
-        ui::FileInfo(filepath_and_name.first, filepath_and_name.second));
-
-    // Make sure the temp file eventually gets cleaned up.
-    async_drop_temp_file_deleter_->RegisterFile(filepath_and_name.first);
-  }
-
-  CompleteDrop(target_rwh, *drop_data, drop_observer->client_pt(),
-               drop_observer->screen_pt(), drop_observer->key_modifiers());
+  DelegateOnPerformDrop(std::move(drop_context));
 }
 #endif
 

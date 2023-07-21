@@ -618,12 +618,12 @@ bool OSExchangeDataProviderWin::GetVirtualFilenames(
   return success;
 }
 
-bool OSExchangeDataProviderWin::GetVirtualFilesAsTempFiles(
+void OSExchangeDataProviderWin::GetVirtualFilesAsTempFiles(
     base::OnceCallback<
         void(const std::vector<std::pair<base::FilePath, base::FilePath>>&)>
         callback) const {
-  return clipboard_util::GetVirtualFilesAsTempFiles(source_object_.Get(),
-                                                    std::move(callback));
+  clipboard_util::GetVirtualFilesAsTempFiles(source_object_.Get(),
+                                             std::move(callback));
 }
 
 bool OSExchangeDataProviderWin::GetPickledData(
