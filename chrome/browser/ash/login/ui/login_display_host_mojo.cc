@@ -60,7 +60,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
-#include "components/startup_metric_utils/browser/startup_metric_utils.h"
+#include "components/startup_metric_utils/common/startup_metric_utils.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -524,7 +524,8 @@ void LoginDisplayHostMojo::OnStartAppLaunch() {
 }
 
 void LoginDisplayHostMojo::OnBrowserCreated() {
-  base::TimeTicks startup_time = startup_metric_utils::MainEntryPointTicks();
+  base::TimeTicks startup_time =
+      startup_metric_utils::GetCommon().MainEntryPointTicks();
   if (startup_time.is_null()) {
     return;
   }

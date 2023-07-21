@@ -74,7 +74,7 @@ include_rules = [
   "+components/sessions",
   "+components/signin/public",
   "+components/spellcheck",
-  "+components/startup_metric_utils",
+  "+components/startup_metric_utils/common",
   "+components/storage_monitor",
   "+components/subresource_filter/content/browser",
   "+components/federated_learning",

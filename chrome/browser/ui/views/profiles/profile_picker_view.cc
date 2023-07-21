@@ -556,9 +556,10 @@ ProfilePickerView::ProfilePickerView(ProfilePicker::Params&& params)
   if (params_.entry_point() == ProfilePicker::EntryPoint::kOnStartup) {
     DCHECK(creation_time_on_startup_.is_null());
     creation_time_on_startup_ = base::TimeTicks::Now();
-    base::UmaHistogramTimes("ProfilePicker.StartupTime.BeforeCreation",
-                            creation_time_on_startup_ -
-                                startup_metric_utils::MainEntryPointTicks());
+    base::UmaHistogramTimes(
+        "ProfilePicker.StartupTime.BeforeCreation",
+        creation_time_on_startup_ -
+            startup_metric_utils::GetCommon().MainEntryPointTicks());
   }
 }
 

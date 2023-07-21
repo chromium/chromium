@@ -40,7 +40,8 @@ void CreateSentinel() {
   base::File::Error file_error;
   startup_metric_utils::FirstRunSentinelCreationResult sentinel_created =
       FirstRun::CreateSentinel(&file_error);
-  startup_metric_utils::RecordFirstRunSentinelCreation(sentinel_created);
+  startup_metric_utils::GetBrowser().RecordFirstRunSentinelCreation(
+      sentinel_created);
   if (sentinel_created ==
       startup_metric_utils::FirstRunSentinelCreationResult::kFileSystemError) {
     base::UmaHistogramExactLinear("FirstRun.Sentinel.CreatedFileError",

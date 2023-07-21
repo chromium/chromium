@@ -324,6 +324,7 @@ include_rules = [
   "+components/sqlite_proto",
   "+components/ssl_errors",
   "+components/startup_metric_utils/browser",
+  "+components/startup_metric_utils/common",
   "+components/storage_monitor",
   "+components/strings/grit",
   "+components/subresource_filter/android",

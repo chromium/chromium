@@ -1562,7 +1562,8 @@ void Browser::OnWindowDidShow() {
     return;
   window_has_shown_ = true;
 
-  startup_metric_utils::RecordBrowserWindowDisplay(base::TimeTicks::Now());
+  startup_metric_utils::GetBrowser().RecordBrowserWindowDisplay(
+      base::TimeTicks::Now());
 
   // Nothing to do for non-tabbed windows.
   if (!is_type_normal())

@@ -21,6 +21,7 @@
 #include "components/performance_manager/embedder/performance_manager_lifetime.h"
 #include "components/prefs/pref_service.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
+#include "components/startup_metric_utils/common/startup_metric_utils.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -260,11 +261,12 @@ int BrowserMainPartsImpl::PreMainMessageLoopRun() {
   // On Android, retrieve the application start time from Java and record it. On
   // other platforms, the application start time was already recorded in the
   // constructor of ContentMainDelegateImpl.
-  startup_metric_utils::RecordApplicationStartTime(GetApplicationStartTime());
+  startup_metric_utils::GetCommon().RecordApplicationStartTime(
+      GetApplicationStartTime());
 #endif  // BUILDFLAG(IS_ANDROID)
   // Record the time at which the main message loop starts. Must be recorded
   // after application start time (see startup_metric_utils.h).
-  startup_metric_utils::RecordBrowserMainMessageLoopStart(
+  startup_metric_utils::GetBrowser().RecordBrowserMainMessageLoopStart(
       base::TimeTicks::Now(), /* is_first_run */ false);
 
 #if BUILDFLAG(IS_ANDROID)
@@ -296,7 +298,8 @@ void BrowserMainPartsImpl::WillRunMainMessageLoop(
 }
 
 void BrowserMainPartsImpl::OnFirstIdle() {
-  startup_metric_utils::RecordBrowserMainLoopFirstIdle(base::TimeTicks::Now());
+  startup_metric_utils::GetBrowser().RecordBrowserMainLoopFirstIdle(
+      base::TimeTicks::Now());
 }
 
 void BrowserMainPartsImpl::PostMainMessageLoopRun() {

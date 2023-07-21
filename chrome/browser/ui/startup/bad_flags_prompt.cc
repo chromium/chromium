@@ -245,7 +245,7 @@ void MaybeShowInvalidUserDataDirWarningDialog() {
   if (user_data_dir.empty())
     return;
 
-  startup_metric_utils::SetNonBrowserUIDisplayed();
+  startup_metric_utils::GetBrowser().SetNonBrowserUIDisplayed();
 
   // Ensure there is an instance of ResourceBundle that is initialized for
   // localized string resource accesses.

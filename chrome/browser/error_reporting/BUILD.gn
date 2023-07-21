@@ -28,7 +28,7 @@ static_library("error_reporting") {
     "//components/crash/content/browser/error_reporting",
     "//components/crash/core/app",
     "//components/feedback/redaction_tool",
-    "//components/startup_metric_utils/browser",
+    "//components/startup_metric_utils",
     "//components/upload_list",
     "//components/variations",
     "//content/public/browser",

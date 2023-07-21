@@ -368,7 +368,8 @@ void RecordUMAHistogramForOOBEStepCompletionTime(OobeScreenId screen,
 
 void RecordUMAHistogramForOOBECompletion(
     WizardController::CompletedOobeFlowType flow_type) {
-  base::TimeTicks startup_time = startup_metric_utils::MainEntryPointTicks();
+  base::TimeTicks startup_time =
+      startup_metric_utils::GetCommon().MainEntryPointTicks();
   if (startup_time.is_null()) {
     return;
   }

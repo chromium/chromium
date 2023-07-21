@@ -33,7 +33,7 @@ include_rules = [
   "+components/policy",
   "+components/safe_browsing/android",
   "+components/safe_browsing/buildflags.h",
-  "+components/startup_metric_utils/browser",
+  "+components/startup_metric_utils/common",
   "+components/services/screen_ai/buildflags",
   "+services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h",
   "+components/upload_list",

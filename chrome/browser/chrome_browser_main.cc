@@ -688,8 +688,9 @@ void ChromeBrowserMainParts::StartMetricsRecording() {
 void ChromeBrowserMainParts::RecordBrowserStartupTime() {
   // Don't record any metrics if UI was displayed before this point e.g.
   // warning dialogs or browser was started in background mode.
-  if (startup_metric_utils::WasMainWindowStartupInterrupted())
+  if (startup_metric_utils::GetBrowser().WasMainWindowStartupInterrupted()) {
     return;
+  }
 
   bool is_first_run = false;
 #if !BUILDFLAG(IS_ANDROID)
@@ -700,7 +701,7 @@ void ChromeBrowserMainParts::RecordBrowserStartupTime() {
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Record collected startup metrics.
-  startup_metric_utils::RecordBrowserMainMessageLoopStart(
+  startup_metric_utils::GetBrowser().RecordBrowserMainMessageLoopStart(
       base::TimeTicks::Now(), is_first_run);
 }
 
@@ -1898,7 +1899,8 @@ void ChromeBrowserMainParts::WillRunMainMessageLoop(
 }
 
 void ChromeBrowserMainParts::OnFirstIdle() {
-  startup_metric_utils::RecordBrowserMainLoopFirstIdle(base::TimeTicks::Now());
+  startup_metric_utils::GetBrowser().RecordBrowserMainLoopFirstIdle(
+      base::TimeTicks::Now());
 #if BUILDFLAG(IS_ANDROID)
   sharing::ShareHistory::CreateForProfile(
       ProfileManager::GetPrimaryUserProfile());

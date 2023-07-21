@@ -25,6 +25,7 @@ include_rules = [
   "+components/services/storage/public",
   "+components/services/storage/shared_storage",
   "+components/startup_metric_utils/browser",
+  "+components/startup_metric_utils/common",
   "+components/ukm/test_ukm_recorder.h",
   "+components/viz/client",
   "+components/viz/common",

@@ -1100,7 +1100,7 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
   // If we don't want to launch a new browser window or tab we are done here.
   if (silent_launch) {
     if (process_startup == chrome::startup::IsProcessStartup::kYes)
-      startup_metric_utils::SetNonBrowserUIDisplayed();
+      startup_metric_utils::GetBrowser().SetNonBrowserUIDisplayed();
     return true;
   }
 

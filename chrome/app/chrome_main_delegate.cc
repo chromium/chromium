@@ -75,7 +75,7 @@
 #include "components/memory_system/parameters.h"
 #include "components/metrics/persistent_histograms.h"
 #include "components/nacl/common/buildflags.h"
-#include "components/startup_metric_utils/browser/startup_metric_utils.h"
+#include "components/startup_metric_utils/common/startup_metric_utils.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
 #include "content/public/app/initialize_mojo_core.h"
@@ -618,7 +618,8 @@ void RecordMainStartupMetrics(base::TimeTicks application_start_time) {
 
 #if BUILDFLAG(IS_WIN)
   DCHECK(!application_start_time.is_null());
-  startup_metric_utils::RecordApplicationStartTime(application_start_time);
+  startup_metric_utils::GetCommon().RecordApplicationStartTime(
+      application_start_time);
 #elif BUILDFLAG(IS_ANDROID)
   // On Android the main entry point time is the time when the Java code starts.
   // This happens before the shared library containing this code is even loaded.
@@ -628,18 +629,18 @@ void RecordMainStartupMetrics(base::TimeTicks application_start_time) {
 #else
   // On other platforms, |application_start_time| == |now| since the application
   // starts with ChromeMain().
-  startup_metric_utils::RecordApplicationStartTime(now);
+  startup_metric_utils::GetCommon().RecordApplicationStartTime(now);
 #endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
   // Record the startup process creation time on supported platforms. On Android
   // this is recorded in ChromeMainDelegateAndroid.
-  startup_metric_utils::RecordStartupProcessCreationTime(
+  startup_metric_utils::GetCommon().RecordStartupProcessCreationTime(
       base::Process::Current().CreationTime());
 #endif
 
-  startup_metric_utils::RecordChromeMainEntryTime(now);
+  startup_metric_utils::GetCommon().RecordChromeMainEntryTime(now);
 }
 
 }  // namespace

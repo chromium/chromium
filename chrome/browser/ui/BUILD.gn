@@ -595,7 +595,7 @@ static_library("ui") {
     "//components/site_engagement/core/mojom:mojo_bindings",
     "//components/spellcheck/browser",
     "//components/ssl_errors",
-    "//components/startup_metric_utils/browser",
+    "//components/startup_metric_utils",
     "//components/strings",
     "//components/subresource_filter/content/browser",
     "//components/subresource_filter/core/browser",

@@ -1169,7 +1169,7 @@ void ProfilePickerHandler::DidFirstVisuallyNonEmptyPaint() {
   auto now = base::TimeTicks::Now();
   base::UmaHistogramTimes("ProfilePicker.StartupTime.FirstPaint",
                           now - creation_time_on_startup_);
-  startup_metric_utils::RecordExternalStartupMetric(
+  startup_metric_utils::GetBrowser().RecordExternalStartupMetric(
       "ProfilePicker.StartupTime.FirstPaint.FromApplicationStart", now,
       /*set_non_browser_ui_displayed=*/true);
   // Stop observing so that the histogram is only recorded once.

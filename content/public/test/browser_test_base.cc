@@ -599,7 +599,7 @@ void BrowserTestBase::SetUp() {
   // Unlike other platforms, android_browsertests can reuse the same process for
   // multiple tests. Need to reset startup metrics to allow recording them
   // again.
-  startup_metric_utils::ResetSessionForTesting();
+  startup_metric_utils::GetBrowser().ResetSessionForTesting();
 
   base::i18n::AllowMultipleInitializeCallsForTesting();
   base::i18n::InitializeICU();

@@ -25,7 +25,7 @@
 #include "components/crash/core/app/client_upload_info.h"
 #include "components/crash/core/app/crashpad.h"
 #include "components/feedback/redaction_tool/redaction_tool.h"
-#include "components/startup_metric_utils/browser/startup_metric_utils.h"
+#include "components/startup_metric_utils/common/startup_metric_utils.h"
 #include "components/variations/variations_crash_keys.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -353,7 +353,8 @@ void ChromeJsErrorReportProcessor::SendErrorReport(
 
   // Get browser uptime before swapping threads to reduce lag time between the
   // error report occurring and sending it off.
-  base::TimeTicks startup_time = startup_metric_utils::MainEntryPointTicks();
+  base::TimeTicks startup_time =
+      startup_metric_utils::GetCommon().MainEntryPointTicks();
   base::TimeDelta browser_process_uptime =
       (base::TimeTicks::Now() - startup_time);
 

@@ -106,7 +106,7 @@ chrome::MessageBoxResult MessageBoxDialog::Show(
     return ShowSync(parent, title, message, type, yes_text, no_text,
                     checkbox_text);
 
-  startup_metric_utils::SetNonBrowserUIDisplayed();
+  startup_metric_utils::GetBrowser().SetNonBrowserUIDisplayed();
   if (chrome::internal::g_should_skip_message_box_for_test) {
     std::move(callback).Run(chrome::MESSAGE_BOX_RESULT_YES);
     return chrome::MESSAGE_BOX_RESULT_DEFERRED;

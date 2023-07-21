@@ -1470,7 +1470,7 @@ group("dependencies") {
     "//components/about_ui",
     "//components/devtools/devtools_pipe",
     "//components/memory_system",
-    "//components/startup_metric_utils/browser",
+    "//components/startup_metric_utils",
     "//components/sync",
     "//components/upload_list:upload_list",
     "//content/public/child",

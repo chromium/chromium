@@ -4031,7 +4031,7 @@ source_set("ash") {
     "//components/signin/public/base",
     "//components/site_engagement/content",
     "//components/spellcheck/browser",
-    "//components/startup_metric_utils/browser",
+    "//components/startup_metric_utils",
     "//components/strings:components_strings",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",

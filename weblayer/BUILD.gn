@@ -492,7 +492,7 @@ source_set("weblayer_lib_base") {
     "//components/site_isolation",
     "//components/spellcheck:buildflags",
     "//components/ssl_errors",
-    "//components/startup_metric_utils/browser",
+    "//components/startup_metric_utils",
     "//components/strings",
     "//components/subresource_filter/content/browser",
     "//components/subresource_filter/content/renderer",

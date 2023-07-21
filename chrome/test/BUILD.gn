@@ -375,7 +375,7 @@ static_library("test_support") {
     "//components/services/storage:test_support",
     "//components/sessions:test_support",
     "//components/signin/public/base:test_support",
-    "//components/startup_metric_utils/browser",
+    "//components/startup_metric_utils",
     "//components/subresource_filter/content/browser",
     "//components/subresource_filter/content/browser:test_support",
     "//components/subresource_filter/core/common",

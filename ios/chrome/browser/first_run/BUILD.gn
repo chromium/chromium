@@ -12,7 +12,7 @@ source_set("first_run") {
   deps = [
     "//base",
     "//components/pref_registry",
-    "//components/startup_metric_utils/browser",
+    "//components/startup_metric_utils",
     "//ios/chrome/browser/shared/model/paths",
     "//third_party/abseil-cpp:absl",
   ]

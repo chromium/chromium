@@ -516,7 +516,7 @@ static_library("test_support") {
     "//components/browsing_topics/common:common",
     "//components/network_session_configurator/common:common",
     "//components/services/storage",
-    "//components/startup_metric_utils/browser",
+    "//components/startup_metric_utils",
     "//components/ukm:test_support",
     "//components/variations",
     "//components/viz/client",

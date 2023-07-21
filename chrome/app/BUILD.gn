@@ -196,7 +196,7 @@ static_library("test_support") {
     "//components/devtools/devtools_pipe",
     "//components/memory_system",
     "//components/nacl/common:buildflags",
-    "//components/startup_metric_utils/browser",
+    "//components/startup_metric_utils",
     "//content/public/app",
     "//content/public/common",
     "//extensions/buildflags",

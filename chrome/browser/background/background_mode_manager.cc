@@ -688,7 +688,7 @@ void BackgroundModeManager::StartBackgroundMode() {
   if (in_background_mode_)
     return;
 
-  startup_metric_utils::SetBackgroundModeEnabled();
+  startup_metric_utils::GetBrowser().SetBackgroundModeEnabled();
 
   // Mark ourselves as running in background mode.
   in_background_mode_ = true;

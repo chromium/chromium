@@ -22,7 +22,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/component_updater/component_updater_paths.h"
-#include "components/startup_metric_utils/browser/startup_metric_utils.h"
+#include "components/startup_metric_utils/common/startup_metric_utils.h"
 #include "components/update_client/update_query_params.h"
 #include "content/public/browser/webui_config_map.h"
 #include "content/public/common/content_paths.h"
@@ -167,7 +167,8 @@ void ChromeUnitTestSuite::Initialize() {
   // Since RecordApplicationStartTime() would DCHECK if it was invoked from
   // multiple tests in the same process, invoke it once in test suite
   // initialization.
-  startup_metric_utils::RecordApplicationStartTime(base::TimeTicks::Now());
+  startup_metric_utils::GetCommon().RecordApplicationStartTime(
+      base::TimeTicks::Now());
 }
 
 void ChromeUnitTestSuite::Shutdown() {

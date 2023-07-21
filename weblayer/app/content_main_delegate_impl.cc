@@ -20,7 +20,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/content_capture/common/content_capture_features.h"
-#include "components/startup_metric_utils/browser/startup_metric_utils.h"
+#include "components/startup_metric_utils/common/startup_metric_utils.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/variations/variations_ids_provider.h"
 #include "content/public/app/initialize_mojo_core.h"
@@ -150,7 +150,8 @@ ContentMainDelegateImpl::ContentMainDelegateImpl(MainParams params)
   // start time is sampled when the Java code is entered, and it is retrieved
   // from C++ after initializing the JNI (see
   // BrowserMainPartsImpl::PreMainMessageLoopRun()).
-  startup_metric_utils::RecordApplicationStartTime(base::TimeTicks::Now());
+  startup_metric_utils::GetCommon().RecordApplicationStartTime(
+      base::TimeTicks::Now());
 #endif
 }
 
