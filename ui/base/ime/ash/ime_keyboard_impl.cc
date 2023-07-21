@@ -23,9 +23,8 @@ bool ImeKeyboardImpl::SetCurrentKeyboardLayoutByName(
 }
 
 bool ImeKeyboardImpl::SetAutoRepeatRate(const AutoRepeatRate& rate) {
-  input_controller_->SetAutoRepeatRate(
-      base::Milliseconds(rate.initial_delay_in_ms),
-      base::Milliseconds(rate.repeat_interval_in_ms));
+  input_controller_->SetAutoRepeatRate(rate.initial_delay,
+                                       rate.repeat_interval);
   return true;
 }
 

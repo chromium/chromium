@@ -25,6 +25,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
@@ -1309,20 +1310,23 @@ void Preferences::SetInputMethodList() {
 }
 
 void Preferences::UpdateAutoRepeatRate() {
-  input_method::AutoRepeatRate rate;
-  rate.initial_delay_in_ms = xkb_auto_repeat_delay_pref_.GetValue();
-  rate.repeat_interval_in_ms = xkb_auto_repeat_interval_pref_.GetValue();
-  DCHECK(rate.initial_delay_in_ms > 0);
-  DCHECK(rate.repeat_interval_in_ms > 0);
+  input_method::AutoRepeatRate rate{
+      .initial_delay =
+          base::Milliseconds(xkb_auto_repeat_delay_pref_.GetValue()),
+      .repeat_interval =
+          base::Milliseconds(xkb_auto_repeat_interval_pref_.GetValue()),
+  };
+  DCHECK(rate.initial_delay.is_positive());
+  DCHECK(rate.repeat_interval.is_positive());
   input_method::InputMethodManager::Get()->GetImeKeyboard()->SetAutoRepeatRate(
       rate);
 
   user_manager::KnownUser known_user(g_browser_process->local_state());
   known_user.SetIntegerPref(user_->GetAccountId(), prefs::kXkbAutoRepeatDelay,
-                            rate.initial_delay_in_ms);
+                            rate.initial_delay.InMilliseconds());
   known_user.SetIntegerPref(user_->GetAccountId(),
                             prefs::kXkbAutoRepeatInterval,
-                            rate.repeat_interval_in_ms);
+                            rate.repeat_interval.InMilliseconds());
 }
 
 void Preferences::ActiveUserChanged(user_manager::User* active_user) {

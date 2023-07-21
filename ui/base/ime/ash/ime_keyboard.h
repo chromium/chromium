@@ -10,14 +10,14 @@
 
 #include "base/component_export.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 
 namespace ash {
 namespace input_method {
 
 struct AutoRepeatRate {
-  AutoRepeatRate() : initial_delay_in_ms(0), repeat_interval_in_ms(0) {}
-  unsigned int initial_delay_in_ms;
-  unsigned int repeat_interval_in_ms;
+  base::TimeDelta initial_delay;
+  base::TimeDelta repeat_interval;
 };
 
 class COMPONENT_EXPORT(UI_BASE_IME_ASH) ImeKeyboard {

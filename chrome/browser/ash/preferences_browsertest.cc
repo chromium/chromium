@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/input_method/input_method_manager_impl.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -149,9 +150,9 @@ class PreferencesTest : public LoginManagerTest {
               keyboard_->auto_repeat_is_enabled_);
     input_method::AutoRepeatRate rate = keyboard_->last_auto_repeat_rate_;
     EXPECT_EQ(prefs->GetInteger(prefs::kXkbAutoRepeatDelay),
-              (int)rate.initial_delay_in_ms);
+              rate.initial_delay.InMilliseconds());
     EXPECT_EQ(prefs->GetInteger(prefs::kXkbAutoRepeatInterval),
-              (int)rate.repeat_interval_in_ms);
+              rate.repeat_interval.InMilliseconds());
     EXPECT_EQ(prefs->GetString(::prefs::kLanguageCurrentInputMethod),
               input_method::InputMethodManager::Get()
                   ->GetActiveIMEState()
