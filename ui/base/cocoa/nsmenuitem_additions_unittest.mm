@@ -617,7 +617,8 @@ TEST(NSMenuItemAdditionsTest, TestMOnDifferentLayouts) {
     if ([layout_id isEqualToString:@"com.apple.keylayout.Belgian"] ||
         [layout_id isEqualToString:@"com.apple.keylayout.Italian"] ||
         [layout_id isEqualToString:@"com.apple.keylayout.ABC-AZERTY"] ||
-        [layout_id hasPrefix:@"com.apple.keylayout.French"]) {
+        [layout_id hasPrefix:@"com.apple.keylayout.French"] ||
+        [layout_id isEqualToString:@"com.apple.keylayout.Kabyle-AZERTY"]) {
       key_code = 0x29;
     } else if ([layout_id isEqualToString:@"com.apple.keylayout.Turkish"] ||
                [layout_id
@@ -638,6 +639,11 @@ TEST(NSMenuItemAdditionsTest, TestMOnDifferentLayouts) {
     } else if ([layout_id isEqualToString:@"com.apple.keylayout.Geez-QWERTY"]) {
       // There is no way to type an "m" using the Amharic keyboard. It's
       // designed for the Ge'ez language.
+      continue;
+    } else if ([layout_id
+                   isEqualToString:@"com.apple.keylayout.Tifinagh-AZERTY"]) {
+      // There is no way to type an "m" using the Tamazight keyboard. It's
+      // designed for Moroccan.
       continue;
     } else if (IsCommandlessCyrillicLayout(layout_id)) {
       // Commandless layouts have no way to trigger a menu key equivalent at
