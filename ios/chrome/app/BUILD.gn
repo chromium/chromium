@@ -11,6 +11,7 @@ import("//build/config/ios/rules.gni")
 import("//build/ios/extension_bundle_data.gni")
 import("//ios/build/chrome_build.gni")
 import("//ios/build/config.gni")
+import("//ios/chrome/app/chrome_app.gni")
 import("//ios/chrome/features.gni")
 import("//ios/public/provider/chrome/browser/build_config.gni")
 
@@ -35,6 +36,11 @@ buildflag_header("background_mode_buildflags") {
 buildflag_header("fast_app_terminate_buildflags") {
   header = "fast_app_terminate_buildflags.h"
   flags = [ "FAST_APP_TERMINATE_ENABLED=$fast_app_terminate_enabled" ]
+}
+
+buildflag_header("chrome_main_module_buildflags") {
+  header = "chrome_main_module_buildflags.h"
+  flags = [ "USE_CHROME_MAIN_MODULE=$ios_use_chrome_main_module" ]
 }
 
 source_set("app") {
@@ -600,6 +606,7 @@ source_set("main") {
 
   deps = [
     ":app_internal",
+    ":chrome_main_module_buildflags",
     "//base",
     "//components/component_updater",
     "//components/crash/core/common",
@@ -646,7 +653,7 @@ source_set("multitasking_test_app_delegate") {
   ]
 }
 
-ios_app_bundle("chrome") {
+chrome_app("chrome") {
   output_name = chromium_short_name
 
   entitlements_target = ":entitlements"
