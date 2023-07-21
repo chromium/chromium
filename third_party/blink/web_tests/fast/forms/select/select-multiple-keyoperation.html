@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<body></body>
+<script>
+
+function createSelectElement(writingMode) {
+    const select = document.createElement('select');
+    select.style.writingMode = writingMode;
+    select.multiple = true;
+    for (var i = 0; i < 3; i++){
+        var opt = document.createElement('option');
+        opt.value = i;
+        opt.innerHTML = `Option ${i+1}`;
+        select.appendChild(opt);
+    }
+    return select;
+}
+
+test(() => {
+    if (!window.eventSender)
+        return;
+    const select = createSelectElement('horizontal-tb');
+    document.body.appendChild(select);
+    select.focus();
+    // Left/Right arrow will not select
+    eventSender.keyDown('ArrowLeft');
+    assert_equals(select.selectedOptions.length, 0);
+    eventSender.keyDown('ArrowRight');
+    assert_equals(select.selectedOptions.length, 0);
+
+    eventSender.keyDown('ArrowDown');
+    assert_equals(select.selectedOptions.length, 1);
+    assert_equals(select.selectedOptions[0].value, "0");
+    eventSender.keyDown('ArrowDown');
+    assert_equals(select.selectedOptions.length, 1);
+    assert_equals(select.selectedOptions[0].value, "1");
+    eventSender.keyDown("ArrowDown",["shiftKey"]);
+    assert_equals(select.selectedOptions.length, 2);
+    assert_equals(select.selectedOptions[0].value, "1");
+    assert_equals(select.selectedOptions[1].value, "2");
+    eventSender.keyDown('ArrowUp');
+    assert_equals(select.selectedOptions.length, 1);
+    assert_equals(select.selectedOptions[0].value, "1");
+    document.body.removeChild(select);
+}, `select horizontal should change selection on up/down key operations`);
+
+test(() => {
+    if (!window.eventSender)
+        return;
+    const select = createSelectElement('vertical-rl');
+    document.body.appendChild(select);
+    select.focus();
+    // Up/Down arrow will not select
+    eventSender.keyDown('ArrowUp');
+    assert_equals(select.selectedOptions.length, 0);
+    eventSender.keyDown('ArrowDown');
+    assert_equals(select.selectedOptions.length, 0);
+
+    eventSender.keyDown('ArrowLeft');
+    assert_equals(select.selectedOptions.length, 1);
+    assert_equals(select.selectedOptions[0].value, "0");
+    eventSender.keyDown('ArrowLeft');
+    assert_equals(select.selectedOptions.length, 1);
+    assert_equals(select.selectedOptions[0].value, "1");
+    eventSender.keyDown("ArrowLeft",["shiftKey"]);
+    assert_equals(select.selectedOptions.length, 2);
+    assert_equals(select.selectedOptions[0].value, "1");
+    assert_equals(select.selectedOptions[1].value, "2");
+    eventSender.keyDown('ArrowRight');
+    assert_equals(select.selectedOptions.length, 1);
+    assert_equals(select.selectedOptions[0].value, "1");
+    document.body.removeChild(select);
+}, `select vertical-rl should change selection on right/left key operations`);
+
+test(() => {
+    if (!window.eventSender)
+        return;
+    const select = createSelectElement('vertical-lr');
+    document.body.appendChild(select);
+    select.focus();
+    // Up/Down arrow will not select
+    eventSender.keyDown('ArrowUp');
+    assert_equals(select.selectedOptions.length, 0);
+    eventSender.keyDown('ArrowDown');
+    assert_equals(select.selectedOptions.length, 0);
+
+    eventSender.keyDown('ArrowRight');
+    assert_equals(select.selectedOptions.length, 1);
+    assert_equals(select.selectedOptions[0].value, "0");
+    eventSender.keyDown('ArrowRight');
+    assert_equals(select.selectedOptions.length, 1);
+    assert_equals(select.selectedOptions[0].value, "1");
+    eventSender.keyDown("ArrowRight",["shiftKey"]);
+    assert_equals(select.selectedOptions.length, 2);
+    assert_equals(select.selectedOptions[0].value, "1");
+    assert_equals(select.selectedOptions[1].value, "2");
+    eventSender.keyDown('ArrowLeft');
+    assert_equals(select.selectedOptions.length, 1);
+    assert_equals(select.selectedOptions[0].value, "1");
+    document.body.removeChild(select);
+}, `select vertical-lr should change selection on right/left key operations`);
+</script>
+</body>
+</html>
+

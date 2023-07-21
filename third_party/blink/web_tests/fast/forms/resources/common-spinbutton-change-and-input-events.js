@@ -1,14 +1,17 @@
-var inputEventCounter = 0;
-var changeEventCounter = 0;
+var inputEventCounter;
+var changeEventCounter;
 var testInput;
 
-function testSpinButtonChangeAndInputEvents(inputType, initialValue, expectedValue, maximumValue)
+function testSpinButtonChangeAndInputEvents(inputType, writingMode, initialValue, expectedValue, maximumValue)
 {
-    description('Test for event dispatching by spin buttons in a type=' + inputType + ' input.');
+    description(`Test for event dispatching by spin buttons in a input[type=${inputType}] with writing-mode: ${writingMode}.`);
     if (!window.eventSender) {
         debug('No eventSender');
         return;
     }
+
+    inputEventCounter = 0;
+    changeEventCounter = 0;
 
     var parent = document.createElement('div');
     document.body.appendChild(parent);
@@ -17,6 +20,7 @@ function testSpinButtonChangeAndInputEvents(inputType, initialValue, expectedVal
     var anotherInput = document.getElementById('another');
 
     testInput.type = inputType;
+    testInput.style.writingMode = writingMode;
     if (maximumValue != undefined)
         testInput.setAttribute("max", maximumValue);
     testInput.setAttribute("value", initialValue);
@@ -33,7 +37,7 @@ function testSpinButtonChangeAndInputEvents(inputType, initialValue, expectedVal
     // Move the cursor on the upper button.
     var spinButton = getElementByPseudoId(internals.shadowRoot(testInput), "-webkit-inner-spin-button");
     var rect = spinButton.getBoundingClientRect();
-    eventSender.mouseMoveTo(rect.left, rect.top + rect.height / 4);
+    eventSender.mouseMoveTo(rect.left + rect.width / 4, rect.top + rect.height / 4);
     eventSender.mouseDown();
     debug('Triggers only input event on mouseDown');
     shouldBeEqualToString('testInput.value', expectedValue);

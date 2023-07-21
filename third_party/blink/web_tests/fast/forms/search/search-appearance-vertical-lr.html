@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<style>
+input {
+    writing-mode: vertical-lr;
+}
+</style>
+<body>
+<input id="in" type="search" value="foo" dir="ltr">
+
+<script>
+var input = document.getElementById('in');
+// A cancel button should be showing on the bottom (right)
+input.focus();
+</script>
+</body>
+</html>
+

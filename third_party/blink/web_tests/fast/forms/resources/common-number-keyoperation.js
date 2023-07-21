@@ -1,0 +1,41 @@
+var input;
+
+function testNumberKeyoperations(writingMode, initialValue) {
+    debug(`\nTest starts for &lt;input type=number style="writing-mode: ${writingMode}">`);
+    var parent = document.createElement('div');
+    document.body.appendChild(parent);
+    parent.innerHTML = '<input type=number id=number>';
+
+    input = document.getElementById('number');
+    input.style.writingMode = writingMode;
+    input.focus();
+    debug('Inserting "ab123cd":');
+    document.execCommand('InsertText', false, `ab${initialValue}cd`);
+    shouldBeEqualToString('input.value', `${initialValue}`);
+
+    debug('Press the up arrow key:');
+    input.valueAsNumber = initialValue;
+    eventSender.keyDown('ArrowUp');
+    shouldBeEqualToString('input.value', `${initialValue + 1}`);
+
+    debug('Press the down arrow key:');
+    eventSender.keyDown('ArrowDown');
+    shouldBeEqualToString('input.value', `${initialValue}`);
+
+    debug('Press the down and alt arrow key, should not decrement value:');
+    eventSender.keyDown('ArrowDown', ['altKey']);
+    shouldBeEqualToString('input.value', `${initialValue}`);
+
+    debug('Disable input element:');
+    input.disabled = true;
+    eventSender.keyDown('ArrowUp');
+    shouldBeEqualToString('input.value', `${initialValue}`);
+    input.removeAttribute('disabled');
+
+    debug('Read-only input element:');
+    input.readOnly = true;
+    eventSender.keyDown('ArrowUp');
+    shouldBeEqualToString('input.value', `${initialValue}`);
+
+    parent.innerHTML = '';
+}
