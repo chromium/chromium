@@ -50,9 +50,10 @@ const CGFloat kBottomAdaptiveLocationBarVerticalMarginFullscreen = 10.0f;
 const CGFloat kLocationBarVerticalMarginDynamicType = -1.0f;
 
 const CGFloat kTopToolbarUnsplitMargin = 6;
-const CGFloat kPrimaryToolbarHeight = 50;
+const CGFloat kToolbarOmniboxHeight = 50;
+// Remember to update ToolbarExpandedHeight if kPrimaryToolbarHeight is updated.
+const CGFloat kPrimaryToolbarHeight = kToolbarOmniboxHeight;
 const CGFloat kSecondaryToolbarHeight = 44;
-const CGFloat kSecondaryToolbarOmniboxHeight = 50;
 const CGFloat kNonDynamicToolbarHeight = 14;
 const CGFloat kToolbarHeightFullscreen = 20;
 const CGFloat kNonDynamicToolbarHeightFullscreen = 3;

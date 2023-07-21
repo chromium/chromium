@@ -51,7 +51,7 @@ CGFloat ToolbarCollapsedHeight(UIContentSizeCategory category) {
 
 CGFloat ToolbarExpandedHeight(UIContentSizeCategory category) {
   category = NormalizedCategory(category);
-  return Interpolate(category, kPrimaryToolbarHeight, kNonDynamicToolbarHeight);
+  return Interpolate(category, kToolbarOmniboxHeight, kNonDynamicToolbarHeight);
 }
 
 CGFloat LocationBarHeight(UIContentSizeCategory category) {

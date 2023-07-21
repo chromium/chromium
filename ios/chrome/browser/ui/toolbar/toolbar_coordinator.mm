@@ -321,7 +321,8 @@
       self.secondaryToolbarViewController.view.intrinsicContentSize.height;
   if (_omniboxPosition == ToolbarType::kSecondary) {
     CHECK(IsBottomOmniboxSteadyStateEnabled());
-    height += kSecondaryToolbarOmniboxHeight;
+    height += ToolbarExpandedHeight(
+        self.traitEnvironment.traitCollection.preferredContentSizeCategory);
   }
   return height;
 }
