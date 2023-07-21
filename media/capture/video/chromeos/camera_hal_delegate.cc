@@ -243,7 +243,7 @@ CameraHalDelegate::CameraHalDelegate(
                             base::WaitableEvent::InitialState::NOT_SIGNALED),
       num_builtin_cameras_(0),
       camera_buffer_factory_(new CameraBufferFactory()),
-      camera_hal_ipc_thread_("CamerHalIpcThread"),
+      camera_hal_ipc_thread_("CameraHalIpcThread"),
       camera_module_callbacks_(this),
       vcd_delegate_map_(new VideoCaptureDeviceDelegateMap()),
       power_manager_client_proxy_(new PowerManagerClientProxy()),
