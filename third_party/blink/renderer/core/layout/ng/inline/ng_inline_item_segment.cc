@@ -113,6 +113,15 @@ void NGInlineItemSegments::CheckOffset(
 }
 #endif
 
+void NGInlineItemSegments::ToRanges(RunSegmenterRanges& ranges) const {
+  ranges.ReserveInitialCapacity(segments_.size());
+  wtf_size_t start_offset = 0;
+  for (const NGInlineItemSegment& segment : segments_) {
+    ranges.push_back(segment.ToRunSegmenterRange(start_offset));
+    start_offset = segment.EndOffset();
+  }
+}
+
 NGInlineItemSegments::Iterator NGInlineItemSegments::Ranges(
     unsigned start_offset,
     unsigned end_offset,
