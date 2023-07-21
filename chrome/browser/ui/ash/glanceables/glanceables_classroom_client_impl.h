@@ -332,12 +332,15 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   //                                satisfies filtering requirements.
   // `submission_state_predicate` - returns `true` if passed submission state
   //                                satisfies filtering requirements.
+  // `sort_comparator`            - the function used when comparing two
+  //                                assignments for sorting.
   // `callback`                   - invoked with filtered results.
   void GetFilteredStudentAssignments(
       base::RepeatingCallback<bool(const absl::optional<base::Time>&)>
           due_predicate,
       base::RepeatingCallback<bool(GlanceablesClassroomStudentSubmissionState)>
           submission_state_predicate,
+      SortComparator sort_comparator,
       GetAssignmentsCallback callback);
 
   // Selects teacher assignments that satisfy the filtering below.
