@@ -36,6 +36,7 @@ void InSessionAuthAsh::BindReceiver(
 }
 
 void InSessionAuthAsh::RequestToken(mojom::Reason reason,
+                                    const absl::optional<std::string>& prompt,
                                     RequestTokenCallback callback) {
   ash::Shell::Get()->in_session_auth_dialog_controller()->ShowAuthDialog(
       ToAshReason(reason),

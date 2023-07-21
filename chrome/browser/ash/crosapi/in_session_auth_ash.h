@@ -9,6 +9,7 @@
 #include "chromeos/crosapi/mojom/in_session_auth.mojom-shared.h"
 #include "chromeos/crosapi/mojom/in_session_auth.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
 
@@ -26,6 +27,7 @@ class InSessionAuthAsh : public mojom::InSessionAuth {
 
   // crosapi::mojom::InSessionAuth
   void RequestToken(mojom::Reason reason,
+                    const absl::optional<std::string>& prompt,
                     RequestTokenCallback callback) override;
   void CheckToken(mojom::Reason reason,
                   const std::string& token,

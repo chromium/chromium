@@ -59,9 +59,17 @@ void AuthenticatorChromeOS::AuthenticateUser(
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   if (auto* lacros_service = chromeos::LacrosService::Get();
       lacros_service->IsAvailable<crosapi::mojom::InSessionAuth>()) {
-    lacros_service->GetRemote<crosapi::mojom::InSessionAuth>()->RequestToken(
-        crosapi::mojom::Reason::kAccessPasswordManager,
-        base::BindOnce(&OnRequestToken, std::move(result_callback)));
+    if (lacros_service->GetInterfaceVersion<crosapi::mojom::InSessionAuth>() <
+        static_cast<int>(crosapi::mojom::InSessionAuth::MethodMinVersions::
+                             kRequestTokenMinVersion)) {
+      lacros_service->GetRemote<crosapi::mojom::InSessionAuth>()->RequestToken(
+          crosapi::mojom::Reason::kAccessPasswordManager, absl::nullopt,
+          base::BindOnce(&OnRequestToken, std::move(result_callback)));
+    } else {
+      lacros_service->GetRemote<crosapi::mojom::InSessionAuth>()->RequestToken(
+          crosapi::mojom::Reason::kAccessPasswordManager, std::string(),
+          base::BindOnce(&OnRequestToken, std::move(result_callback)));
+    }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
