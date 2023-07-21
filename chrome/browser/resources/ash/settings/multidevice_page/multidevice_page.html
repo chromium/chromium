@@ -3,12 +3,10 @@
     padding: 0 var(--cr-controlled-by-spacing);
   }
 </style>
-<os-settings-animated-pages id="pages"
-    section="[[section_]]"
-    focus-config="[[focusConfig_]]">
+<os-settings-animated-pages id="pages" section="[[section_]]">
   <div route-path="default">
     <settings-card header-text="$i18n{multidevicePageTitle}">
-      <div id="multidevice-item"
+      <div id="multideviceItem"
           class="settings-box first two-line no-padding">
         <div class="link-wrapper" id="suiteLinkWrapper"
             actionable$="[[doesClickOpenSubpage_(pageContentData)]]"

@@ -29,7 +29,7 @@ import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
+import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
@@ -40,7 +40,7 @@ import {getTemplate} from './multidevice_page.html.js';
 import TokenInfo = chrome.quickUnlockPrivate.TokenInfo;
 
 const SettingsMultidevicePageElementBase =
-    NearbyShareSettingsMixin(MultiDeviceFeatureMixin(RouteObserverMixin(
+    NearbyShareSettingsMixin(MultiDeviceFeatureMixin(RouteOriginMixin(
         DeepLinkingMixin(PrefsMixin(WebUiListenerMixin(PolymerElement))))));
 
 class SettingsMultidevicePageElement extends
@@ -59,24 +59,6 @@ class SettingsMultidevicePageElement extends
         type: Number,
         value: Section.kMultiDevice,
         readOnly: true,
-      },
-
-      /**
-       * A Map specifying which element should be focused when exiting a
-       * subpage. The key of the map holds a Route path, and the value holds a
-       * query selector that identifies the desired element.
-       */
-      focusConfig_: {
-        type: Object,
-        value() {
-          const map = new Map<string, string>();
-          if (routes.MULTIDEVICE_FEATURES) {
-            map.set(
-                routes.MULTIDEVICE_FEATURES.path,
-                '#multidevice-item .subpage-arrow');
-          }
-          return map;
-        },
       },
 
       /**
@@ -192,6 +174,9 @@ class SettingsMultidevicePageElement extends
   constructor() {
     super();
 
+    /** RouteOriginMixin override */
+    this.route = routes.MULTIDEVICE;
+
     this.browserProxy_ = MultiDeviceBrowserProxyImpl.getInstance();
   }
 
@@ -217,6 +202,9 @@ class SettingsMultidevicePageElement extends
         'settings.OnScreenLockStatusChanged',
         this.onScreenLockStatusChanged_.bind(this));
 
+    this.addFocusConfig(
+        routes.MULTIDEVICE_FEATURES, '#multideviceItem .subpage-arrow');
+
     this.browserProxy_.getPageContentData().then(
         (data) => this.onInitialPageContentDataFetched_(data));
   }
@@ -231,11 +219,13 @@ class SettingsMultidevicePageElement extends
   /**
    * RouteObserverMixin override
    */
-  override currentRouteChanged(route: Route): void {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
+    super.currentRouteChanged(newRoute, oldRoute);
+
     this.leaveNestedPageIfNoHostIsSet_();
 
     // Does not apply to this page.
-    if (route !== routes.MULTIDEVICE) {
+    if (newRoute !== this.route) {
       return;
     }
 
