@@ -8,15 +8,15 @@
   #searchbox {
     margin: 16px auto 4px;
     flex-shrink: 0;
-    width: auto;
   }
 
-  :host-context(html:not([chrome-refresh-2023])) searchbox {
+  :host-context(html:not([chrome-refresh-2023])) #searchbox {
     --cr-toolbar-field-max-width: calc(100% - 32px);
   }
 
   :host-context([chrome-refresh-2023]) #searchbox {
     margin: var(--sp-body-padding);
+    width: auto;
   }
 
  #history-clusters {
