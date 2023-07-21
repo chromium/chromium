@@ -2431,21 +2431,6 @@ TEST_F(PdfAccessibilityTreeTest, TestPdfOcrService) {
   uint32_t pages_plus_status_node_count = doc_info_.page_count + 1u;
   ASSERT_EQ(pages_plus_status_node_count, root_node->children().size());
 
-  ui::AXNode* page_node = root_node->children()[1];
-  ASSERT_NE(nullptr, page_node);
-  ASSERT_EQ(ax::mojom::Role::kRegion, page_node->GetRole());
-  ASSERT_EQ(1u, page_node->children().size());
-
-  ui::AXNode* paragraph_node = page_node->children()[0];
-  ASSERT_NE(nullptr, paragraph_node);
-  ASSERT_EQ(ax::mojom::Role::kParagraph, paragraph_node->GetRole());
-  ASSERT_EQ(1u, paragraph_node->children().size());
-
-  ui::AXNode* image_node = paragraph_node->children()[0];
-  ASSERT_NE(nullptr, image_node);
-  ASSERT_EQ(ax::mojom::Role::kImage, image_node->GetRole());
-  ASSERT_EQ(0u, image_node->children().size());
-
   PdfAccessibilityTree::PdfOcrService* ocr_service =
       pdf_accessibility_tree.CreateOcrService();
   ASSERT_NE(nullptr, ocr_service);
@@ -2454,6 +2439,21 @@ TEST_F(PdfAccessibilityTreeTest, TestPdfOcrService) {
       fake_annotator.BindNewPipeAndPassRemote());
 
   for (uint32_t i = 0; i < doc_info_.page_count; ++i) {
+    ui::AXNode* page_node = root_node->children()[i + 1];
+    ASSERT_NE(nullptr, page_node);
+    ASSERT_EQ(ax::mojom::Role::kRegion, page_node->GetRole());
+    ASSERT_EQ(1u, page_node->children().size());
+
+    ui::AXNode* paragraph_node = page_node->children()[0];
+    ASSERT_NE(nullptr, paragraph_node);
+    ASSERT_EQ(ax::mojom::Role::kParagraph, paragraph_node->GetRole());
+    ASSERT_EQ(1u, paragraph_node->children().size());
+
+    ui::AXNode* image_node = paragraph_node->children()[0];
+    ASSERT_NE(nullptr, image_node);
+    ASSERT_EQ(ax::mojom::Role::kImage, image_node->GetRole());
+    ASSERT_EQ(0u, image_node->children().size());
+
     base::queue<PdfAccessibilityTree::PdfOcrRequest> requests;
     requests.emplace(image_node->id(), image, paragraph_node->id());
     ocr_service->ScheduleOcrRequests(requests);
