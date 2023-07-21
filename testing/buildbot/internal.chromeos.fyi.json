@@ -1283,28 +1283,6 @@
       }
     ]
   },
-  "chromeos-kevin-chrome-skylab-fyi": {
-    "additional_compile_targets": [
-      "chrome",
-      "linux_symbols",
-      "symupload"
-    ],
-    "skylab_tests": [
-      {
-        "autotest_name": "tast.chrome-from-gcs",
-        "cros_board": "kevin",
-        "cros_img": "kevin-release/R117-15538.0.0",
-        "name": "chrome_all_tast_tests CROS_KEVIN_RELEASE_CHROME_FROM_TLS_LKGM",
-        "shards": 10,
-        "tast_expr": "(\"group:mainline\" && \"dep:chrome\" && !informational)",
-        "test": "chrome_all_tast_tests",
-        "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
-        "test_level_retries": 2,
-        "timeout_sec": 21600,
-        "variant_id": "CROS_KEVIN_RELEASE_CHROME_FROM_TLS_LKGM"
-      }
-    ]
-  },
   "chromeos-octopus-chrome-skylab-fyi": {
     "additional_compile_targets": [
       "chrome",

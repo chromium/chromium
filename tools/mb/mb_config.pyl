@@ -898,7 +898,6 @@
       'chromeos-betty-pi-arc-finch-smoke-chrome': 'chromeos_betty-pi-arc_dchecks_reclient',
       'chromeos-brya-chrome-skylab-fyi': 'chromeos_brya_include_unwind_tables_official_dchecks_skylab_reclient',
       'chromeos-jacuzzi-chrome-skylab-fyi': 'chromeos_jacuzzi_include_unwind_tables_official_dchecks_skylab_reclient',
-      'chromeos-kevin-chrome-skylab-fyi': 'chromeos_kevin_include_unwind_tables_official_dchecks_skylab_reclient',
       'chromeos-octopus-chrome-skylab-fyi': 'chromeos_octopus_include_unwind_tables_official_dchecks_skylab_reclient',
       'chromeos-trogdor-chrome-skylab-fyi': 'chromeos_trogdor_include_unwind_tables_official_dchecks_skylab_reclient',
       'chromeos-volteer-chrome-skylab-fyi': 'chromeos_volteer_include_unwind_tables_official_dchecks_skylab_reclient',
@@ -2276,10 +2275,6 @@
 
     'chromeos_js_coverage_reclient': [
       'chromeos_with_codecs', 'release_bot_reclient', 'use_javascript_coverage', 'optimize_webui_off',
-    ],
-
-    'chromeos_kevin_include_unwind_tables_official_dchecks_skylab_reclient': [
-      'chromeos_device_reclient', 'kevin', 'include_unwind_tables', 'official', 'dcheck_always_on', 'is_skylab',
     ],
 
     'chromeos_kevin_include_unwind_tables_official_reclient': [
