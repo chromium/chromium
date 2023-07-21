@@ -117,7 +117,7 @@ TEST_F(AccessibilityTest, PauseUpdatesAfterMaxNumberQueued) {
   ax_object_cache->AssociateAXID(ax_obj);
   for (unsigned i = 0; i < max_updates + 1; i++) {
     ax_object_cache->DeferTreeUpdate(
-        AXObjectCacheImpl::TreeUpdateReason::kChildrenChanged, ax_obj);
+        &AXObjectCacheImpl::ChildrenChangedWithCleanLayout, ax_obj);
   }
   ax_object_cache->ProcessCleanLayoutCallbacks(document);
 

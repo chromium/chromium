@@ -51,7 +51,7 @@ class CORE_EXPORT ValidationMessageClientImpl final
   explicit ValidationMessageClientImpl(Page&);
   ~ValidationMessageClientImpl() override;
 
-  void ShowValidationMessage(Element& anchor,
+  void ShowValidationMessage(const Element& anchor,
                              const String& message,
                              TextDirection message_dir,
                              const String& sub_message,
@@ -68,7 +68,7 @@ class CORE_EXPORT ValidationMessageClientImpl final
   LocalFrameView* CurrentView();
   void HideValidationMessageImmediately(const Element& anchor);
   void Reset(TimerBase*);
-  void ValidationMessageVisibilityChanged(Element& anchor);
+  void ValidationMessageVisibilityChanged(const Element& anchor);
 
   void HideValidationMessage(const Element& anchor) override;
   bool IsValidationMessageVisible(const Element& anchor) override;
@@ -84,7 +84,7 @@ class CORE_EXPORT ValidationMessageClientImpl final
   void WillOpenPopup() override;
 
   Member<Page> page_;
-  Member<Element> current_anchor_;
+  Member<const Element> current_anchor_;
   String message_;
   base::TimeTicks finish_time_;
   Member<DisallowNewWrapper<HeapTaskRunnerTimer<ValidationMessageClientImpl>>>

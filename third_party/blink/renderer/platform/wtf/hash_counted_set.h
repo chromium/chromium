@@ -56,8 +56,8 @@ class HashCountedSet {
                   "HeapHashCountedSet<Member<T>> instead.");
   }
 
-  HashCountedSet(const HashCountedSet&) = default;
-  HashCountedSet& operator=(const HashCountedSet&) = default;
+  HashCountedSet(const HashCountedSet&) = delete;
+  HashCountedSet& operator=(const HashCountedSet&) = delete;
 
   void swap(HashCountedSet& other) { impl_.swap(other.impl_); }
 

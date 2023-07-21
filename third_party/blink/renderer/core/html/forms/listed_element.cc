@@ -439,7 +439,7 @@ void ListedElement::FindCustomValidationMessageTextDirection(
 }
 
 void ListedElement::UpdateVisibleValidationMessage() {
-  Element& element = ValidationAnchor();
+  const Element& element = ValidationAnchor();
   Page* page = element.GetDocument().GetPage();
   if (!page || !page->IsPageVisible() || element.GetDocument().UnloadStarted())
     return;
