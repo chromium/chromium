@@ -33,7 +33,6 @@
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/credential_cache.h"
-#include "components/password_manager/core/browser/field_info_manager.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_autofill_manager.h"
@@ -184,40 +183,6 @@ bool HasNewPasswordVote(const FormPredictions& form) {
 
   return base::ranges::any_of(form.fields, is_creation_password_or_new_password,
                               &PasswordFieldPrediction::type);
-}
-
-// Adds predictions to |predictions->fields| if |field_info_manager| has
-// predictions for corresponding fields. Predictions from |field_info_manager|
-// have priority over server predictions.
-void AddLocallySavedPredictions(const FieldInfoManager* field_info_manager,
-                                FormPredictions* predictions,
-                                BrowserSavePasswordProgressLogger* logger) {
-  DCHECK(predictions);
-  if (!field_info_manager)
-    return;
-
-  for (PasswordFieldPrediction& field : predictions->fields) {
-    auto local_prediction = field_info_manager->GetFieldType(
-        predictions->form_signature, field.signature);
-    if (local_prediction == SINGLE_USERNAME) {
-      field.type = SINGLE_USERNAME;
-    } else if (local_prediction == NOT_USERNAME) {
-      // Now local prediction NOT_USERNAME is based on the weak signal (the user
-      // ignored or rejected the prompt) so use it only if the server does not
-      // have data.
-      if (field.type != SINGLE_USERNAME && field.type != USERNAME)
-        field.type = NOT_USERNAME;
-    }
-    if (logger && local_prediction != UNKNOWN_TYPE) {
-      std::string message = base::StrCat(
-          {"form signature=",
-           NumberToString(predictions->form_signature.value()),
-           " , field signature=", NumberToString(field.signature.value()),
-           ", type=",
-           autofill::AutofillType::ServerFieldTypeToString(local_prediction)});
-      logger->LogString(Logger::STRING_LOCALLY_SAVED_PREDICTION, message);
-    }
-  }
 }
 
 bool IsMutedInsecureCredential(const PasswordForm* credential,
@@ -1247,9 +1212,6 @@ void PasswordManager::ProcessAutofillPredictions(
     int driver_id = driver ? driver->GetId() : 0;
     predictions_[form->form_signature()] =
         ConvertToFormPredictions(driver_id, *form);
-    AddLocallySavedPredictions(client_->GetFieldInfoManager(),
-                               &predictions_[form->form_signature()],
-                               logger.get());
   }
 
   // Create form managers for non-password forms if |predictions_| has evidence

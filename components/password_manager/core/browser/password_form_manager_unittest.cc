@@ -31,7 +31,6 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
-#include "components/password_manager/core/browser/field_info_manager.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/mock_password_change_success_tracker.h"
 #include "components/password_manager/core/browser/mock_webauthn_credentials_delegate.h"
@@ -178,7 +177,6 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (override));
   MOCK_METHOD(SyncState, GetPasswordSyncState, (), (const, override));
   MOCK_METHOD(bool, IsCommittedMainFrameSecure, (), (const, override));
-  MOCK_METHOD(FieldInfoManager*, GetFieldInfoManager, (), (const, override));
   MOCK_METHOD(signin::IdentityManager*, GetIdentityManager, (), (override));
   MOCK_METHOD(PrefService*, GetPrefs, (), (const, override));
   MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const, override));
@@ -319,20 +317,6 @@ class MockFormSaver : public StubFormSaver {
     return *static_cast<MockFormSaver*>(
         form_manager->profile_store_form_saver());
   }
-};
-
-class MockFieldInfoManager : public FieldInfoManager {
- public:
-  MOCK_METHOD(void,
-              AddFieldType,
-              (autofill::FormSignature,
-               autofill::FieldSignature,
-               ServerFieldType),
-              (override));
-  MOCK_METHOD(ServerFieldType,
-              GetFieldType,
-              (autofill::FormSignature, autofill::FieldSignature),
-              (const override));
 };
 
 class PasswordFormManagerTest : public testing::Test,
@@ -2372,12 +2356,6 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
         /*autocomplete_attribute_has_username=*/false);
     possible_username_data.form_predictions = MakeSingleUsernamePredictions();
 
-    MockFieldInfoManager mock_field_manager;
-    ON_CALL(mock_field_manager, GetFieldType(_, _))
-        .WillByDefault(Return(UNKNOWN_TYPE));
-    ON_CALL(client_, GetFieldInfoManager())
-        .WillByDefault(Return(&mock_field_manager));
-
     // Simulate submitting a form without a username. Data from
     // |possible_username_data| will be taken for setting username.
     FormData submitted_form = observed_form_only_password_fields_;
@@ -2474,11 +2452,6 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowWithPrefilledUsername) {
       /*autocomplete_attribute_has_username=*/false);
   possible_username_data.form_predictions = MakeSingleUsernamePredictions();
 
-  MockFieldInfoManager mock_field_manager;
-  ON_CALL(mock_field_manager, GetFieldType).WillByDefault(Return(UNKNOWN_TYPE));
-  ON_CALL(client_, GetFieldInfoManager)
-      .WillByDefault(Return(&mock_field_manager));
-
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form_, &driver_,
                                                &possible_username_data));
 
@@ -2549,11 +2522,6 @@ TEST_P(PasswordFormManagerTest, NegativeUsernameFirstFlowVotes) {
   constexpr char16_t kUsernameFieldName[] = u"username_field";
   constexpr autofill::FormSignature kUsernameFormSignature(1000);
   constexpr autofill::FieldSignature kUsernameFieldSignature(123);
-
-  MockFieldInfoManager mock_field_manager;
-  ON_CALL(mock_field_manager, GetFieldType).WillByDefault(Return(UNKNOWN_TYPE));
-  ON_CALL(client_, GetFieldInfoManager)
-      .WillByDefault(Return(&mock_field_manager));
 
   CreateFormManager(observed_form_only_password_fields_);
   fetcher_->NotifyFetchCompleted();
@@ -2658,12 +2626,6 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowVotesNamelessField) {
       possible_username, base::Time::Now(), /*driver_id=*/0,
       /*autocomplete_attribute_has_username=*/false);
   possible_username_data.form_predictions = MakeSingleUsernamePredictions();
-
-  MockFieldInfoManager mock_field_manager;
-  ON_CALL(mock_field_manager, GetFieldType(_, _))
-      .WillByDefault(Return(UNKNOWN_TYPE));
-  ON_CALL(client_, GetFieldInfoManager())
-      .WillByDefault(Return(&mock_field_manager));
 
   // Simulate submission a form without username. Data from
   // |possible_username_data| will be taken for setting username.

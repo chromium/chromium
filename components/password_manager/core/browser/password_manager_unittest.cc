@@ -33,7 +33,6 @@
 #include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
 #include "components/password_manager/core/browser/features/password_features.h"
-#include "components/password_manager/core/browser/field_info_manager.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory.h"
@@ -358,20 +357,6 @@ void CheckMetricHasValue(const ukm::TestUkmRecorder& test_ukm_recorder,
       GetMetricEntry(test_ukm_recorder, entry), metric,
       static_cast<int64_t>(value));
 }
-
-class MockFieldInfoManager : public FieldInfoManager {
- public:
-  MOCK_METHOD(void,
-              AddFieldType,
-              (autofill::FormSignature,
-               autofill::FieldSignature,
-               ServerFieldType),
-              (override));
-  MOCK_METHOD(ServerFieldType,
-              GetFieldType,
-              (autofill::FormSignature, autofill::FieldSignature),
-              (const override));
-};
 
 class FailingPasswordStoreBackend : public FakePasswordStoreBackend {
   void InitBackend(AffiliatedMatchHelper* affiliated_match_helper,
@@ -3862,56 +3847,6 @@ TEST_F(PasswordManagerTest, UsernameFirstFlowWithNavigationInTheMiddle) {
   EXPECT_TRUE(
       submitted_form_manager->GetPendingCredentials().username_value.empty());
 }
-
-// Filling on username first flow is not supported on iOS.
-#if !BUILDFLAG(IS_IOS)
-//  Checks that username is filled on username first flow based on the
-//  combination of server and local predictions.
-TEST_F(PasswordManagerTest, UsernameFirstFlowFillingWithLocalData) {
-  store_->AddLogin(MakeSavedForm());
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
-
-  FormData non_password_form;
-  non_password_form.url = MakeSavedForm().url;
-  FormFieldData field;
-  field.form_control_type = "text";
-  field.unique_renderer_id = FieldRendererId(1);
-  non_password_form.fields.push_back(field);
-
-  MockFieldInfoManager mock_field_manager;
-  ON_CALL(client_, GetFieldInfoManager())
-      .WillByDefault(Return(&mock_field_manager));
-
-  for (auto server_type : {NO_SERVER_DATA, SINGLE_USERNAME, NOT_USERNAME}) {
-    for (auto local_type : {NO_SERVER_DATA, SINGLE_USERNAME, NOT_USERNAME}) {
-      SCOPED_TRACE(testing::Message("server_type=")
-                   << server_type << " "
-                   << "local_type=" << local_type);
-      manager()->OnPasswordFormsParsed(&driver_, {} /* observed */);
-      task_environment_.RunUntilIdle();
-      EXPECT_CALL(mock_field_manager, GetFieldType)
-          .WillOnce(Return(local_type));
-
-      // Simulate filling of different forms on each iteration.
-      non_password_form.unique_renderer_id.value() += 1;
-
-      FormStructure form_structure(non_password_form);
-      form_structure.field(0)->set_server_predictions(
-          {CreateFieldPrediction(server_type)});
-
-      bool should_be_filled =
-          server_type == SINGLE_USERNAME || local_type == SINGLE_USERNAME;
-      EXPECT_CALL(driver_, SetPasswordFillData).Times(should_be_filled ? 1 : 0);
-      manager()->ProcessAutofillPredictions(&driver_, {&form_structure});
-      task_environment_.RunUntilIdle();
-
-      Mock::VerifyAndClearExpectations(&client_);
-      Mock::VerifyAndClearExpectations(&mock_field_manager);
-      Mock::VerifyAndClearExpectations(&driver_);
-    }
-  }
-}
-#endif
 
 TEST_F(PasswordManagerTest, FormSubmittedOnPrimaryMainFrame) {
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));

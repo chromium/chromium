@@ -429,8 +429,6 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "Possible username is used";
     case STRING_POSSIBLE_USERNAME_NOT_USED:
       return "Possible username is not used";
-    case STRING_LOCALLY_SAVED_PREDICTION:
-      return "Locally saved prediction";
     case SavePasswordProgressLogger::STRING_INVALID:
       return "INVALID";
       // Intentionally no default: clause here -- all IDs need to get covered.

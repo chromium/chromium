@@ -18,6 +18,8 @@ namespace password_manager {
 class PasswordStoreInterface;
 struct PasswordForm;
 
+// TODO(crbug/1466470): Adapt the interface for UFF with intermediate fields
+// and drop the stored FieldInfo table.
 class FieldInfoManager {
  public:
   virtual ~FieldInfoManager() = default;

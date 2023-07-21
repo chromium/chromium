@@ -22,10 +22,6 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/password_manager/core/browser/field_info_manager.h"
-#include "components/password_manager/core/browser/field_info_store.h"
-#include "components/password_manager/core/browser/field_info_table.h"
-#include "components/password_manager/core/browser/mock_field_info_store.h"
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/vote_uploads_test_matchers.h"
@@ -65,12 +61,6 @@ using testing::SaveArg;
 
 namespace password_manager {
 namespace {
-
-MATCHER_P3(FieldInfoHasData, form_signature, field_signature, field_type, "") {
-  return arg.form_signature == form_signature &&
-         arg.field_signature == field_signature &&
-         arg.field_type == field_type && arg.create_time != base::Time();
-}
 
 constexpr int kNumberOfPasswordAttributes =
     static_cast<int>(PasswordAttribute::kPasswordAttributesCount);
@@ -126,19 +116,6 @@ class MockAutofillDownloadManager : public AutofillDownloadManager {
 class MockPasswordManagerClient : public StubPasswordManagerClient {
  public:
   MOCK_METHOD0(GetAutofillDownloadManager, AutofillDownloadManager*());
-  MOCK_CONST_METHOD0(GetFieldInfoManager, FieldInfoManager*());
-};
-
-class MockFieldInfoManager : public FieldInfoManager {
- public:
-  MOCK_METHOD(void,
-              AddFieldType,
-              (FormSignature, FieldSignature, ServerFieldType),
-              (override));
-  MOCK_METHOD(ServerFieldType,
-              GetFieldType,
-              (FormSignature, autofill::FieldSignature),
-              (const override));
 };
 
 }  // namespace
@@ -590,12 +567,6 @@ TEST_F(VotesUploaderTest, NoSingleUsernameDataNoUpload) {
 TEST_F(VotesUploaderTest, UploadSingleUsernameMultipleFieldsInUsernameForm) {
   VotesUploader votes_uploader(&client_, false);
 
-  MockFieldInfoManager mock_field_manager;
-  ON_CALL(mock_field_manager, GetFieldType(_, _))
-      .WillByDefault(Return(UNKNOWN_TYPE));
-  ON_CALL(client_, GetFieldInfoManager())
-      .WillByDefault(Return(&mock_field_manager));
-
   // Make form predictions for a form with multiple fields.
   FormPredictions form_predictions;
   form_predictions.form_signature = kSingleUsernameFormSignature;
@@ -646,13 +617,6 @@ TEST_F(VotesUploaderTest, UploadNotSingleUsernameForWhitespaces) {
       features::kUsernameFirstFlowFallbackCrowdsourcing);
 
   VotesUploader votes_uploader(&client_, false);
-
-  MockFieldInfoManager mock_field_manager;
-  ON_CALL(mock_field_manager, GetFieldType(_, _))
-      .WillByDefault(Return(UNKNOWN_TYPE));
-  ON_CALL(client_, GetFieldInfoManager())
-      .WillByDefault(Return(&mock_field_manager));
-
   votes_uploader.set_single_username_vote_data(
       kSingleUsernameRendererId,
       /*username_candidate_value=*/u"some search query",
@@ -704,11 +668,6 @@ TEST_F(VotesUploaderTest, SingleUsernameValueSuggestedAndAccepted) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       features::kUsernameFirstFlowFallbackCrowdsourcing);
-
-  MockFieldInfoManager mock_field_manager;
-  ON_CALL(mock_field_manager, GetFieldType).WillByDefault(Return(UNKNOWN_TYPE));
-  ON_CALL(client_, GetFieldInfoManager)
-      .WillByDefault(Return(&mock_field_manager));
 
   VotesUploader votes_uploader(&client_, false);
   std::u16string single_username_candidate_value = u"username_candidate_value";
@@ -770,11 +729,6 @@ TEST_F(VotesUploaderTest, SingleUsernameOtherValueSuggestedAndAccepted) {
   feature_list.InitAndEnableFeature(
       features::kUsernameFirstFlowFallbackCrowdsourcing);
 
-  MockFieldInfoManager mock_field_manager;
-  ON_CALL(mock_field_manager, GetFieldType).WillByDefault(Return(UNKNOWN_TYPE));
-  ON_CALL(client_, GetFieldInfoManager)
-      .WillByDefault(Return(&mock_field_manager));
-
   VotesUploader votes_uploader(&client_, false);
   std::u16string single_username_candidate_value = u"username_candidate_value";
   votes_uploader.set_single_username_vote_data(
@@ -835,11 +789,6 @@ TEST_F(VotesUploaderTest, SingleUsernameValueSetInPrompt) {
   feature_list.InitAndEnableFeature(
       features::kUsernameFirstFlowFallbackCrowdsourcing);
 
-  MockFieldInfoManager mock_field_manager;
-  ON_CALL(mock_field_manager, GetFieldType).WillByDefault(Return(UNKNOWN_TYPE));
-  ON_CALL(client_, GetFieldInfoManager)
-      .WillByDefault(Return(&mock_field_manager));
-
   VotesUploader votes_uploader(&client_, false);
   std::u16string single_username_candidate_value = u"username_candidate_value";
   votes_uploader.set_single_username_vote_data(
@@ -899,11 +848,6 @@ TEST_F(VotesUploaderTest, SingleUsernameValueDeletedInPrompt) {
   feature_list.InitAndEnableFeature(
       features::kUsernameFirstFlowFallbackCrowdsourcing);
 
-  MockFieldInfoManager mock_field_manager;
-  ON_CALL(mock_field_manager, GetFieldType).WillByDefault(Return(UNKNOWN_TYPE));
-  ON_CALL(client_, GetFieldInfoManager)
-      .WillByDefault(Return(&mock_field_manager));
-
   VotesUploader votes_uploader(&client_, false);
   std::u16string single_username_candidate_value = u"username_candidate_value";
   votes_uploader.set_single_username_vote_data(
@@ -962,11 +906,6 @@ TEST_F(VotesUploaderTest, NotSingleUsernameValueDeletedInPrompt) {
   feature_list.InitAndEnableFeature(
       features::kUsernameFirstFlowFallbackCrowdsourcing);
 
-  MockFieldInfoManager mock_field_manager;
-  ON_CALL(mock_field_manager, GetFieldType).WillByDefault(Return(UNKNOWN_TYPE));
-  ON_CALL(client_, GetFieldInfoManager)
-      .WillByDefault(Return(&mock_field_manager));
-
   VotesUploader votes_uploader(&client_, false);
   std::u16string single_username_candidate_value = u"username_candidate_value";
   votes_uploader.set_single_username_vote_data(
@@ -1008,11 +947,6 @@ TEST_F(VotesUploaderTest, SingleUsernameNoUsernameCandidate) {
   feature_list.InitAndEnableFeature(
       features::kUsernameFirstFlowFallbackCrowdsourcing);
 
-  MockFieldInfoManager mock_field_manager;
-  ON_CALL(mock_field_manager, GetFieldType).WillByDefault(Return(UNKNOWN_TYPE));
-  ON_CALL(client_, GetFieldInfoManager)
-      .WillByDefault(Return(&mock_field_manager));
-
   VotesUploader votes_uploader(&client_, false);
   votes_uploader.set_single_username_vote_data(
       FieldRendererId(), std::u16string(), FormPredictions(),
@@ -1040,72 +974,6 @@ TEST_F(VotesUploaderTest, SingleUsernameNoUsernameCandidate) {
           _, _, _, _, _, /*observer=*/IsNull()));
   votes_uploader.UploadPasswordVote(submitted_form_, submitted_form_,
                                     autofill::PASSWORD, std::string());
-}
-
-TEST_F(VotesUploaderTest, SaveSingleUsernameVote) {
-  VotesUploader votes_uploader(&client_, false);
-
-  std::u16string single_username_candidate_value = u"username_candidate_value";
-  votes_uploader.set_single_username_vote_data(
-      kSingleUsernameRendererId, single_username_candidate_value,
-      MakeSimpleSingleUsernamePredictions(), /*stored_credentials=*/{},
-      /*password_form_had_username_field=*/false);
-#if !BUILDFLAG(IS_ANDROID)
-  votes_uploader.CalculateUsernamePromptEditState(
-      /*saved_username=*/single_username_candidate_value);
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-  // Init store and expect that adding field info is called.
-  scoped_refptr<MockPasswordStoreInterface> store =
-      new testing::StrictMock<MockPasswordStoreInterface>();
-
-#if BUILDFLAG(IS_ANDROID)
-  EXPECT_CALL(*store, GetFieldInfoStore)
-      .WillRepeatedly(testing::Return(nullptr));
-#else
-  MockFieldInfoStore mock_field_store_;
-  EXPECT_CALL(*store, GetFieldInfoStore)
-      .WillRepeatedly(testing::Return(&mock_field_store_));
-  EXPECT_CALL(mock_field_store_,
-              AddFieldInfo(FieldInfoHasData(kSingleUsernameFormSignature,
-                                            kSingleUsernameFieldSignature,
-                                            SINGLE_USERNAME)));
-#endif  // BUILDFLAG(IS_ANDROID)
-
-  // Init FieldInfoManager.
-  FieldInfoManagerImpl field_info_manager(store);
-  EXPECT_CALL(client_, GetFieldInfoManager())
-      .WillRepeatedly(Return(&field_info_manager));
-
-  votes_uploader.MaybeSendSingleUsernameVote();
-  task_environment_.RunUntilIdle();
-}
-
-TEST_F(VotesUploaderTest, DontUploadSingleUsernameWhenAlreadyUploaded) {
-  VotesUploader votes_uploader(&client_, false);
-
-  MockFieldInfoManager mock_field_manager;
-  ON_CALL(client_, GetFieldInfoManager())
-      .WillByDefault(Return(&mock_field_manager));
-
-  // Simulate that the vote has been already uploaded.
-  ON_CALL(mock_field_manager, GetFieldType(kSingleUsernameFormSignature,
-                                           kSingleUsernameFieldSignature))
-      .WillByDefault(Return(SINGLE_USERNAME));
-
-  votes_uploader.set_single_username_vote_data(
-      kSingleUsernameRendererId, u"username_candidate_value",
-      MakeSimpleSingleUsernamePredictions(), /*stored_credentials=*/{},
-      /*password_form_had_username_field=*/false);
-
-  // Expect no upload on the username form, since the vote has been already
-  // uploaded.
-  EXPECT_CALL(mock_autofill_download_manager_,
-              StartUploadRequest(SignatureIs(kSingleUsernameFormSignature), _,
-                                 _, _, _, _, /*observer=*/IsNull()))
-      .Times(0);
-
-  votes_uploader.MaybeSendSingleUsernameVote();
 }
 
 // Tests FieldNameCollisionInVotes metric doesn't report "true" when multiple
