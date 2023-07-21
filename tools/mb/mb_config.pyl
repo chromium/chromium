@@ -2950,7 +2950,7 @@
     ],
 
     'ios_simulator_blink_xctest': [
-        'debug_static_bot_reclient', 'ios', 'ios_simulator', 'ios_cpu_arm64', 'debug', 'use_blink', 'xctest'
+        'release_trybot_blink', 'ios', 'ios_simulator', 'ios_cpu_arm64', 'use_blink', 'xctest'
     ],
 
     'ios_simulator_code_coverage_partial_instrumentation_xctest_reclient': [
