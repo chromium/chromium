@@ -37,6 +37,29 @@ void ApplyGM3OmniboxTextColor(ui::ColorMixer& mixer,
 
   mixer[kColorOmniboxText] = {ui::kColorSysOnSurface};
   mixer[kColorOmniboxTextDimmed] = {ui::kColorSysOnSurfaceSubtle};
+
+  // In high-contrast mode, text colors have selected variants. This is because
+  // the selected suggestion has a high-contrast background, so when the
+  // unselected text needs to be near-white, the selected text needs to be
+  // near-black (or vice versa). Though there are bugs where some of the views
+  // apply the selected variants to the 1st suggestion instead of the selected
+  // suggestion. Regardless,for now, CR23 does not apply in high-contrast mode,
+  // so it's safe to use the unselected colors.
+  // TODO(manukh): Figure out correct colors when launching CR23 for
+  //   high-contrast.
+  mixer[kColorOmniboxResultsTextSelected] = {kColorOmniboxText};
+  mixer[kColorOmniboxResultsUrlSelected] = {kColorOmniboxResultsUrl};
+
+  // These affect finance answers; e.g. 'goog stock'.
+  // TODO(crbug.com/1465985): These don't seem to apply anymore, at least on
+  //   desktop. Check with UX if we still care to color finance answers, and
+  //   what those colors should in CR23.
+  mixer[kColorOmniboxResultsTextNegativeSelected] = {
+      kColorOmniboxResultsTextNegative};
+  mixer[kColorOmniboxResultsTextPositiveSelected] = {
+      kColorOmniboxResultsTextPositive};
+  mixer[kColorOmniboxResultsTextSecondarySelected] = {
+      kColorOmniboxResultsTextSecondary};
 }
 
 void ApplyCR2023OmniboxIconColors(ui::ColorMixer& mixer,
