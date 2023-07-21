@@ -37,11 +37,12 @@ void PinFactorEditor::SetPin(
     std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
     return;
   }
+  auto context = std::make_unique<UserContext>(*user_context_ptr);
 
-  pin_backend_->Set(
-      user->GetAccountId(), auth_token, pin,
-      base::BindOnce(&PinFactorEditor::OnPinConfigured,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+  pin_backend_->Set(user->GetAccountId(), auth_token, pin,
+                    base::BindOnce(&PinFactorEditor::OnPinConfigured,
+                                   weak_factory_.GetWeakPtr(),
+                                   std::move(context), std::move(callback)));
 }
 
 void PinFactorEditor::RemovePin(
@@ -56,6 +57,7 @@ void PinFactorEditor::RemovePin(
     std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
     return;
   }
+  auto context = std::make_unique<UserContext>(*user_context_ptr);
 
   const bool has_pin =
       user_context_ptr->GetAuthFactorsConfiguration().HasConfiguredFactor(
@@ -65,20 +67,26 @@ void PinFactorEditor::RemovePin(
     return;
   }
 
-  pin_backend_->Remove(
-      user->GetAccountId(), auth_token,
-      base::BindOnce(&PinFactorEditor::OnPinConfigured,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+  pin_backend_->Remove(user->GetAccountId(), auth_token,
+                       base::BindOnce(&PinFactorEditor::OnPinConfigured,
+                                      weak_factory_.GetWeakPtr(),
+                                      std::move(context), std::move(callback)));
 }
 
 void PinFactorEditor::OnPinConfigured(
+    std::unique_ptr<UserContext> context,
     base::OnceCallback<void(mojom::ConfigureResult)> callback,
     bool success) {
-  const mojom::ConfigureResult result =
-      success ? mojom::ConfigureResult::kSuccess
-              : mojom::ConfigureResult::kFatalError;
-  std::move(callback).Run(result);
-  auth_factor_config_->NotifyFactorObservers(mojom::AuthFactor::kPin);
+  if (!success) {
+    auth_factor_config_->NotifyFactorObserversAfterFailure(
+        std::move(context),
+        base::BindOnce(std::move(callback),
+                       mojom::ConfigureResult::kFatalError));
+    return;
+  }
+
+  auth_factor_config_->NotifyFactorObserversAfterSuccess(
+      {mojom::AuthFactor::kPin}, std::move(context), std::move(callback));
 }
 
 void PinFactorEditor::BindReceiver(

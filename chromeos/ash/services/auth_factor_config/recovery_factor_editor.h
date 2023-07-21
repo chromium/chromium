@@ -39,10 +39,6 @@ class RecoveryFactorEditor : public mojom::RecoveryFactorEditor {
       base::OnceCallback<void(mojom::ConfigureResult)> callback,
       std::unique_ptr<UserContext> context,
       absl::optional<AuthenticationError> error);
-  void OnGetAuthFactorsConfiguration(
-      base::OnceCallback<void(mojom::ConfigureResult)> callback,
-      std::unique_ptr<UserContext> context,
-      absl::optional<AuthenticationError> error);
 
   raw_ptr<AuthFactorConfig> auth_factor_config_;
   raw_ptr<QuickUnlockStorageDelegate> quick_unlock_storage_;

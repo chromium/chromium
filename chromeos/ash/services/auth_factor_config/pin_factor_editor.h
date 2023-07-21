@@ -41,6 +41,7 @@ class PinFactorEditor : public mojom::PinFactorEditor {
 
  private:
   void OnPinConfigured(
+      std::unique_ptr<UserContext> context,
       base::OnceCallback<void(mojom::ConfigureResult)> callback,
       bool success);
 

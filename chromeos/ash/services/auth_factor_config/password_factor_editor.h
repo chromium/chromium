@@ -36,13 +36,7 @@ class PasswordFactorEditor : public mojom::PasswordFactorEditor {
       mojo::PendingReceiver<mojom::PasswordFactorEditor> receiver);
 
  private:
-  // The method to be called after a mutating call into cryptohome. Refreshes
-  // the auth factor configuration in `user_context` and saves the context back
-  // to quick_unlock storage.
-  void OnConfigured(base::OnceCallback<void(mojom::ConfigureResult)> callback,
-                    std::unique_ptr<UserContext> context,
-                    absl::optional<AuthenticationError> error);
-  void OnGetAuthFactorsConfiguration(
+  void OnPasswordConfigured(
       base::OnceCallback<void(mojom::ConfigureResult)> callback,
       std::unique_ptr<UserContext> context,
       absl::optional<AuthenticationError> error);

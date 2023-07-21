@@ -38,17 +38,20 @@ void PasswordFactorEditor::SetLocalPassword(
     std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
     return;
   }
-  auto user_context = std::make_unique<UserContext>(*user_context_ptr);
+  auto context = std::make_unique<UserContext>(*user_context_ptr);
 
   const cryptohome::AuthFactor* password_factor =
-      user_context->GetAuthFactorsConfiguration().FindFactorByType(
+      context->GetAuthFactorsConfiguration().FindFactorByType(
           cryptohome::AuthFactorType::kPassword);
   if (!password_factor) {
     // The user doesn't have a password yet (neither Gaia nor local).
     // TODO(b/290916811): Add a new local password factor here and return
     // success.
     LOG(ERROR) << "No existing password, will not add local password";
-    std::move(callback).Run(mojom::ConfigureResult::kFatalError);
+    auth_factor_config_->NotifyFactorObserversAfterFailure(
+        std::move(context),
+        base::BindOnce(std::move(callback),
+                       mojom::ConfigureResult::kFatalError));
     return;
   }
 
@@ -57,13 +60,16 @@ void PasswordFactorEditor::SetLocalPassword(
     // a local password factor.
     LOG(ERROR) << "Current password is not local, will not replace with local "
                   "password";
-    std::move(callback).Run(mojom::ConfigureResult::kFatalError);
+    auth_factor_config_->NotifyFactorObserversAfterFailure(
+        std::move(context),
+        base::BindOnce(std::move(callback),
+                       mojom::ConfigureResult::kFatalError));
     return;
   }
 
   auth_factor_editor_.ReplaceLocalPasswordFactor(
-      std::move(user_context), cryptohome::RawPassword(new_password),
-      base::BindOnce(&PasswordFactorEditor::OnConfigured,
+      std::move(context), cryptohome::RawPassword(new_password),
+      base::BindOnce(&PasswordFactorEditor::OnPasswordConfigured,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
@@ -72,41 +78,23 @@ void PasswordFactorEditor::BindReceiver(
   receivers_.Add(this, std::move(receiver));
 }
 
-void PasswordFactorEditor::OnConfigured(
+void PasswordFactorEditor::OnPasswordConfigured(
     base::OnceCallback<void(mojom::ConfigureResult)> callback,
     std::unique_ptr<UserContext> context,
     absl::optional<AuthenticationError> error) {
   if (error) {
     LOG(ERROR) << "Failed to configure password, code "
                << error->get_cryptohome_code();
-    std::move(callback).Run(mojom::ConfigureResult::kFatalError);
+    auth_factor_config_->NotifyFactorObserversAfterFailure(
+        std::move(context),
+        base::BindOnce(std::move(callback),
+                       mojom::ConfigureResult::kFatalError));
     return;
   }
 
-  auth_factor_editor_.GetAuthFactorsConfiguration(
-      std::move(context),
-      base::BindOnce(&PasswordFactorEditor::OnGetAuthFactorsConfiguration,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void PasswordFactorEditor::OnGetAuthFactorsConfiguration(
-    base::OnceCallback<void(mojom::ConfigureResult)> callback,
-    std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
-  if (error.has_value()) {
-    LOG(ERROR) << "Refreshing list of configured auth factors failed, code "
-               << error->get_cryptohome_code();
-    std::move(callback).Run(mojom::ConfigureResult::kFatalError);
-    return;
-  }
-
-  const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
-  quick_unlock_storage_->SetUserContext(user, std::move(context));
-
-  std::move(callback).Run(mojom::ConfigureResult::kSuccess);
-
-  auth_factor_config_->NotifyFactorObservers(mojom::AuthFactor::kLocalPassword);
-  auth_factor_config_->NotifyFactorObservers(mojom::AuthFactor::kGaiaPassword);
+  auth_factor_config_->NotifyFactorObserversAfterSuccess(
+      {mojom::AuthFactor::kGaiaPassword, mojom::AuthFactor::kLocalPassword},
+      std::move(context), std::move(callback));
 }
 
 }  // namespace ash::auth

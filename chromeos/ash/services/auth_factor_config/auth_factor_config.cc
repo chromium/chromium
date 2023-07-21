@@ -34,9 +34,36 @@ void AuthFactorConfig::ObserveFactorChanges(
   observers_.Add(std::move(observer));
 }
 
-void AuthFactorConfig::NotifyFactorObservers(mojom::AuthFactor changed_factor) {
-  for (auto& observer : observers_)
-    observer->OnFactorChanged(changed_factor);
+void AuthFactorConfig::NotifyFactorObserversAfterSuccess(
+    AuthFactorSet changed_factors,
+    std::unique_ptr<UserContext> context,
+    base::OnceCallback<void(mojom::ConfigureResult)> callback) {
+  CHECK(context);
+
+  auth_factor_editor_.GetAuthFactorsConfiguration(
+      std::move(context),
+      base::BindOnce(&AuthFactorConfig::OnGetAuthFactorsConfiguration,
+                     weak_factory_.GetWeakPtr(), changed_factors,
+                     std::move(callback)));
+}
+
+void AuthFactorConfig::NotifyFactorObserversAfterFailure(
+    std::unique_ptr<UserContext> context,
+    base::OnceCallback<void()> callback) {
+  CHECK(context);
+
+  // The original callback, but with an additional ignored parameter so that we
+  // can pass it to `OnGetAuthFactorsConfiguration`.
+  base::OnceCallback<void(mojom::ConfigureResult)> ignore_param_callback =
+      base::BindOnce([](base::OnceCallback<void()> callback,
+                        mojom::ConfigureResult) { std::move(callback).Run(); },
+                     std::move(callback));
+
+  auth_factor_editor_.GetAuthFactorsConfiguration(
+      std::move(context),
+      base::BindOnce(&AuthFactorConfig::OnGetAuthFactorsConfiguration,
+                     weak_factory_.GetWeakPtr(), AuthFactorSet::All(),
+                     std::move(ignore_param_callback)));
 }
 
 void AuthFactorConfig::IsSupported(const std::string& auth_token,
@@ -267,6 +294,30 @@ void AuthFactorConfig::IsEditable(const std::string& auth_token,
   }
 
   NOTREACHED();
+}
+
+void AuthFactorConfig::OnGetAuthFactorsConfiguration(
+    AuthFactorSet changed_factors,
+    base::OnceCallback<void(mojom::ConfigureResult)> callback,
+    std::unique_ptr<UserContext> context,
+    absl::optional<AuthenticationError> error) {
+  if (error.has_value()) {
+    LOG(ERROR) << "Refreshing list of configured auth factors failed, code "
+               << error->get_cryptohome_code();
+    std::move(callback).Run(mojom::ConfigureResult::kFatalError);
+    return;
+  }
+
+  const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
+  quick_unlock_storage_->SetUserContext(user, std::move(context));
+
+  std::move(callback).Run(mojom::ConfigureResult::kSuccess);
+
+  for (auto& observer : observers_) {
+    for (const auto changed_factor : changed_factors) {
+      observer->OnFactorChanged(changed_factor);
+    }
+  }
 }
 
 }  // namespace ash::auth

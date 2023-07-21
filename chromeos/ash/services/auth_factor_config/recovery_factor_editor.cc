@@ -89,41 +89,24 @@ void RecoveryFactorEditor::OnRecoveryFactorConfigured(
     std::unique_ptr<UserContext> context,
     absl::optional<AuthenticationError> error) {
   if (error.has_value()) {
-    // Handle expired auth session gracefully.
     if (error->get_cryptohome_code() ==
         user_data_auth::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN) {
+      // Handle expired auth session gracefully.
       std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
       return;
     }
 
     LOG(ERROR) << "Configuring recovery factor failed, code "
                << error->get_cryptohome_code();
-    std::move(callback).Run(mojom::ConfigureResult::kFatalError);
+    auth_factor_config_->NotifyFactorObserversAfterFailure(
+        std::move(context),
+        base::BindOnce(std::move(callback),
+                       mojom::ConfigureResult::kFatalError));
     return;
   }
 
-  auth_factor_editor_.GetAuthFactorsConfiguration(
-      std::move(context),
-      base::BindOnce(&RecoveryFactorEditor::OnGetAuthFactorsConfiguration,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void RecoveryFactorEditor::OnGetAuthFactorsConfiguration(
-    base::OnceCallback<void(mojom::ConfigureResult)> callback,
-    std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
-  if (error.has_value()) {
-    LOG(ERROR) << "Refreshing list of configured auth factors failed, code "
-               << error->get_cryptohome_code();
-    std::move(callback).Run(mojom::ConfigureResult::kFatalError);
-    return;
-  }
-
-  const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
-  quick_unlock_storage_->SetUserContext(user, std::move(context));
-
-  std::move(callback).Run(mojom::ConfigureResult::kSuccess);
-  auth_factor_config_->NotifyFactorObservers(mojom::AuthFactor::kRecovery);
+  auth_factor_config_->NotifyFactorObserversAfterSuccess(
+      {mojom::AuthFactor::kRecovery}, std::move(context), std::move(callback));
 }
 
 }  // namespace ash::auth
