@@ -86,6 +86,7 @@
 - (void)stop {
   [self.clearBrowsingDataCoordinator stop];
   self.clearBrowsingDataCoordinator = nil;
+  [self stopLockdownModeCoordinator];
 
   self.viewController = nil;
 }
@@ -158,6 +159,12 @@
 
 - (void)lockdownModeCoordinatorDidRemove:(LockdownModeCoordinator*)coordinator {
   DCHECK_EQ(self.lockdownModeCoordinator, coordinator);
+  [self stopLockdownModeCoordinator];
+}
+
+#pragma mark - Private
+
+- (void)stopLockdownModeCoordinator {
   [self.lockdownModeCoordinator stop];
   self.lockdownModeCoordinator.delegate = nil;
   self.lockdownModeCoordinator = nil;
