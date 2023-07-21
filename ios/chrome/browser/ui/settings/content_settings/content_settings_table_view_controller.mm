@@ -502,6 +502,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _webInspectorEnabled.observer = nil;
   [self.webInspectorStateViewCoordinator stop];
   self.webInspectorStateViewCoordinator = nil;
+  [self.defaultModeViewCoordinator stop];
+  self.defaultModeViewCoordinator = nil;
   _browser = nullptr;
 }
 
