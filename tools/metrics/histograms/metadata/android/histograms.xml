@@ -4152,7 +4152,10 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-12-04">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
-  <summary>Records the invocation count of WebView callbacks.</summary>
+  <summary>
+    Records the invocation count of WebView callbacks. Starting with M117,
+    records shouldInterceptRequest counts.
+  </summary>
 </histogram>
 
 <histogram name="Android.WebView.ComponentUpdater.CPSDirectorySize" units="KB"

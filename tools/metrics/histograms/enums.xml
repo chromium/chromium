@@ -113849,6 +113849,7 @@ Called by update_scheduler_enums.py.-->
   <int value="6" label="onLoadResource"/>
   <int value="7" label="onPageCommitVisible"/>
   <int value="8" label="shouldOverrideUrlLoading"/>
+  <int value="9" label="shouldInterceptRequest"/>
 </enum>
 
 <enum name="WebViewClientErrorCode">
