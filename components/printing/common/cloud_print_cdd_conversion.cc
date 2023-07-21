@@ -67,6 +67,14 @@ printer::TypedValueVendorCapability::ValueType ToCloudValueType(
 
 printer::Media ConvertPaperToMedia(
     const printing::PrinterSemanticCapsAndDefaults::Paper& paper) {
+  if (paper.SupportsCustomSize()) {
+    return printer::MediaBuilder()
+        .WithCustomName(paper.display_name(), paper.vendor_id())
+        .WithSizeAndDefaultPrintableArea(paper.size_um())
+        .WithMaxHeight(paper.max_height_um())
+        .Build();
+  }
+
   gfx::Size paper_size = paper.size_um();
   gfx::Rect paper_printable_area = paper.printable_area_um();
   // When converting to Media, the size and printable area should have a larger

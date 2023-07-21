@@ -112,11 +112,9 @@ constexpr char kExpectedMediaSize[] = R"json({
       "width_microns": 6600
     }, {
       "custom_display_name": "Custom",
-      "height_microns": 5080,
-      "imageable_area_bottom_microns": 0,
-      "imageable_area_left_microns": 0,
-      "imageable_area_right_microns": 2540,
-      "imageable_area_top_microns": 5080,
+      "is_continuous_feed": true,
+      "max_height_microns": 20000,
+      "min_height_microns": 5080,
       "width_microns": 2540
     }
 ]})json";
@@ -190,11 +188,9 @@ constexpr char kExpectedMediaSizeWithWiderPaper[] = R"json({
       "width_microns": 6600
     }, {
       "custom_display_name": "Custom",
-      "height_microns": 5080,
-      "imageable_area_bottom_microns": 0,
-      "imageable_area_left_microns": 0,
-      "imageable_area_right_microns": 2540,
-      "imageable_area_top_microns": 5080,
+      "is_continuous_feed": true,
+      "max_height_microns": 20000,
+      "min_height_microns": 5080,
       "width_microns": 2540
     }
 ]})json";
