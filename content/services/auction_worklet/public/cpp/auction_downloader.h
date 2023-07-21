@@ -5,14 +5,19 @@
 #ifndef CONTENT_SERVICES_AUCTION_WORKLET_PUBLIC_CPP_AUCTION_DOWNLOADER_H_
 #define CONTENT_SERVICES_AUCTION_WORKLET_PUBLIC_CPP_AUCTION_DOWNLOADER_H_
 
+#include <cstddef>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/functional/callback.h"
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
+#include "net/base/network_interfaces.h"
 #include "net/http/http_response_headers.h"
 #include "net/url_request/redirect_info.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -53,13 +58,31 @@ class CONTENT_EXPORT AuctionDownloader {
                               scoped_refptr<net::HttpResponseHeaders> headers,
                               absl::optional<std::string> error)>;
 
+  // This handles how network requests get logged to devtools.
+  class CONTENT_EXPORT NetworkEventsDelegate {
+   public:
+    NetworkEventsDelegate() = default;
+    virtual ~NetworkEventsDelegate();
+
+    virtual void OnSendRequest(const network::ResourceRequest& request) = 0;
+    virtual void OnResponseReceived(
+        const GURL& final_url,
+        scoped_refptr<net::HttpResponseHeaders> headers) = 0;
+
+    virtual void OnRequestComplete(
+        const std::string& devtools_request_id,
+        const absl::optional<network::URLLoaderCompletionStatus>& status) = 0;
+  };
+
   // Starts loading `source_url` on construction. Callback will be invoked
   // asynchronously once the data has been fetched or an error has occurred.
-  AuctionDownloader(network::mojom::URLLoaderFactory* url_loader_factory,
-                    const GURL& source_url,
-                    DownloadMode download_mode,
-                    MimeType mime_type,
-                    AuctionDownloaderCallback auction_downloader_callback);
+  AuctionDownloader(
+      network::mojom::URLLoaderFactory* url_loader_factory,
+      const GURL& source_url,
+      DownloadMode download_mode,
+      MimeType mime_type,
+      AuctionDownloaderCallback auction_downloader_callback,
+      std::unique_ptr<NetworkEventsDelegate> network_events_delegate);
   explicit AuctionDownloader(const AuctionDownloader&) = delete;
   AuctionDownloader& operator=(const AuctionDownloader&) = delete;
   ~AuctionDownloader();
@@ -89,6 +112,7 @@ class CONTENT_EXPORT AuctionDownloader {
 
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
   AuctionDownloaderCallback auction_downloader_callback_;
+  std::unique_ptr<NetworkEventsDelegate> network_events_delegate_;
 };
 
 }  // namespace auction_worklet

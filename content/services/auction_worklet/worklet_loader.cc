@@ -86,7 +86,8 @@ WorkletLoaderBase::WorkletLoaderBase(
       url_loader_factory, source_url,
       AuctionDownloader::DownloadMode::kActualDownload, mime_type,
       base::BindOnce(&WorkletLoaderBase::OnDownloadComplete,
-                     base::Unretained(this)));
+                     base::Unretained(this)),
+      /*network_events_delegate=*/nullptr);
 }
 
 WorkletLoaderBase::~WorkletLoaderBase() = default;

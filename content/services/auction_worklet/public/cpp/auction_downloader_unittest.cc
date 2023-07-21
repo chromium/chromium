@@ -4,6 +4,8 @@
 
 #include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 
+#include <cstddef>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -12,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
@@ -39,8 +42,69 @@ class AuctionDownloaderTest
 
   AuctionDownloader::DownloadMode download_mode() { return GetParam(); }
 
+  class TestDelegate : public AuctionDownloader::NetworkEventsDelegate {
+   public:
+    TestDelegate(
+        absl::optional<network::URLLoaderCompletionStatus>& completetion_status,
+        absl::optional<GURL>& response_url,
+        absl::optional<std::string>& request_id,
+        absl::optional<std::string>& completed_request_id,
+        absl::optional<GURL>& request_url,
+        scoped_refptr<net::HttpResponseHeaders>& headers)
+        : request_url_ref_(request_url),
+          headers_ref_(headers),
+          completed_request_id_ref_(completed_request_id),
+          request_id_ref_(request_id),
+          response_url_ref_(response_url),
+          completetion_status_ref_(completetion_status) {}
+
+    ~TestDelegate() override = default;
+
+    void OnSendRequest(const network::ResourceRequest& request) override {
+      *request_url_ref_ = request.url;
+      *request_id_ref_ = request.devtools_request_id;
+    }
+
+    void OnResponseReceived(
+        const GURL& final_url,
+        scoped_refptr<net::HttpResponseHeaders> headers) override {
+      *response_url_ref_ = final_url;
+      *headers_ref_ = headers;
+    }
+
+    void OnRequestComplete(
+        const std::string& devtools_request_id,
+        const absl::optional<network::URLLoaderCompletionStatus>& status)
+        override {
+      *completed_request_id_ref_ = devtools_request_id;
+      *completetion_status_ref_ = status;
+    }
+
+   private:
+    raw_ref<absl::optional<GURL>> request_url_ref_;
+    raw_ref<scoped_refptr<net::HttpResponseHeaders>> headers_ref_;
+    raw_ref<absl::optional<std::string>> completed_request_id_ref_;
+    raw_ref<absl::optional<std::string>> request_id_ref_;
+    raw_ref<absl::optional<GURL>> response_url_ref_;
+    raw_ref<absl::optional<network::URLLoaderCompletionStatus>>
+        completetion_status_ref_;
+  };
+
   std::unique_ptr<std::string> RunRequest() {
     DCHECK(!run_loop_);
+
+    // reset values
+    observed_request_id_ = absl::nullopt;
+    observed_completed_request_id_ = absl::nullopt;
+    observed_request_url_ = absl::nullopt;
+    observed_response_url_ = absl::nullopt;
+    observed_completion_status_ = absl::nullopt;
+    observed_response_headers_ = nullptr;
+
+    auto test_network_events_delegate = std::make_unique<TestDelegate>(
+        observed_completion_status_, observed_response_url_,
+        observed_request_id_, observed_completed_request_id_,
+        observed_request_url_, observed_response_headers_);
 
     url_loader_factory_.SetInterceptor(
         base::BindRepeating([](const network::ResourceRequest& request) {
@@ -50,7 +114,8 @@ class AuctionDownloaderTest
     AuctionDownloader downloader(
         &url_loader_factory_, url_, download_mode(), mime_type_,
         base::BindOnce(&AuctionDownloaderTest::DownloadCompleteCallback,
-                       base::Unretained(this)));
+                       base::Unretained(this)),
+        std::move(test_network_events_delegate));
 
     // Populate `run_loop_` after starting the download, since API guarantees
     // callback will not be invoked synchronously.
@@ -98,6 +163,14 @@ class AuctionDownloaderTest
   absl::optional<std::string> error_;
 
   network::TestURLLoaderFactory url_loader_factory_;
+
+  absl::optional<GURL> observed_request_url_;
+  absl::optional<std::string> observed_request_id_;
+  absl::optional<std::string> observed_completed_request_id_;
+  absl::optional<GURL> observed_response_url_;
+  scoped_refptr<net::HttpResponseHeaders> observed_response_headers_;
+  absl::optional<network::URLLoaderCompletionStatus>
+      observed_completion_status_;
 };
 
 TEST_P(AuctionDownloaderTest, NetworkError) {
@@ -109,6 +182,7 @@ TEST_P(AuctionDownloaderTest, NetworkError) {
   EXPECT_EQ(
       "Failed to load https://url.test/script.js error = net::ERR_FAILED.",
       last_error_msg());
+  EXPECT_EQ(observed_completion_status_->error_code, net::ERR_FAILED);
 }
 
 // HTTP 404 responses are trested as failures.
@@ -121,6 +195,7 @@ TEST_P(AuctionDownloaderTest, HttpError) {
   EXPECT_EQ(
       "Failed to load https://url.test/script.js HTTP status = 404 Not Found.",
       last_error_msg());
+  EXPECT_EQ(observed_completion_status_, absl::nullopt);
 }
 
 TEST_P(AuctionDownloaderTest, Timeout) {
@@ -138,6 +213,10 @@ TEST_P(AuctionDownloaderTest, AllowFledge) {
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
               kAsciiResponseBody, "X-Allow-FLEDGE: true");
   EXPECT_TRUE(RunRequest());
+  EXPECT_EQ(observed_request_url_, observed_response_url_);
+  EXPECT_EQ(observed_response_headers_, headers_);
+  EXPECT_EQ(observed_request_id_, observed_completed_request_id_);
+  EXPECT_EQ(observed_completion_status_->error_code, net::OK);
 
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
               kAsciiResponseBody, "x-aLLow-fLeDgE: true");
