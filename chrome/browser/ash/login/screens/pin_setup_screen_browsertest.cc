@@ -29,11 +29,15 @@ namespace {
 
 using ::testing::ElementsAre;
 
-const test::UIPath kBackButton = {"pin-setup", "backButton"};
-const test::UIPath kNextButton = {"pin-setup", "nextButton"};
-const test::UIPath kSkipButton = {"pin-setup", "setupSkipButton"};
-const test::UIPath kDoneButton = {"pin-setup", "doneButton"};
-const test::UIPath kPinKeyboardInput = {"pin-setup", "pinKeyboard",
+constexpr char kPinSetupScreen[] = "pin-setup";
+
+const test::UIPath kPinSetupScreenDoneStep = {kPinSetupScreen, "doneDialog"};
+
+const test::UIPath kBackButton = {kPinSetupScreen, "backButton"};
+const test::UIPath kNextButton = {kPinSetupScreen, "nextButton"};
+const test::UIPath kSkipButton = {kPinSetupScreen, "setupSkipButton"};
+const test::UIPath kDoneButton = {kPinSetupScreen, "doneButton"};
+const test::UIPath kPinKeyboardInput = {kPinSetupScreen, "pinKeyboard",
                                         "pinKeyboard", "pinInput"};
 
 }  // namespace
@@ -294,7 +298,9 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestLoginSupport, FinishedFlow) {
 
   EnterPin();
   test::OobeJS().TapOnPath(kNextButton);
-  test::OobeJS().CreateVisibilityWaiter(true, {kDoneButton})->Wait();
+  test::OobeJS()
+      .CreateVisibilityWaiter(true, {kPinSetupScreenDoneStep})
+      ->Wait();
 
   test::OobeJS().TapOnPath(kDoneButton);
 
