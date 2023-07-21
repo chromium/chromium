@@ -189,6 +189,20 @@ may sacrifice a little bit of correctness in favor of simplicity.
     * Implements `AutofillClient` interface.
     * Has siblings `AwAutofillClient`, `ChromeAutofillClientIOS` and
       `WebViewAutofillClientIOS`.
+  * `PersonalDataManager`
+    * One instance per `BrowserContext` (Chrome profile). In incognito mode, the
+      original profile's instance is used. This enables filling even in
+      incognito mode. Imports are disabled in incognito mode by the
+      `BrowserAutofillManager`.
+    * Responsibilities:
+      * Reading/writing/updating AutofillProfiles and payment information from
+        `AutofillTable` - an SQLite database used to persist data across browser
+        shutdown.
+      * Keeps a copy of `AutofillTable`'s data in memory, making them available
+        to the rest of Autofill.
+      * Modifications triggered through the `PersonalDataManager` generally
+        happen asynchronously. For details, see
+        [go/pdm-autofill-table-interface](http://go/pdm-autofill-table-interface).
 
 ## What's the difference between Autofill and Autocomplete?
 
