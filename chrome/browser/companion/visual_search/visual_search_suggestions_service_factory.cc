@@ -50,8 +50,8 @@ KeyedService* VisualSearchSuggestionsServiceFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  // The optimization guide service must be available for the translate model
-  // service to be created.
+  // The optimization guide service must be available for the visual search
+  // suggestion service to be created.
   auto* opt_guide = OptimizationGuideKeyedServiceFactory::GetForProfile(
       Profile::FromBrowserContext(context));
   if (opt_guide) {

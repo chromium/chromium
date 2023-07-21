@@ -51,10 +51,21 @@ VisualSearchSuggestionsService::VisualSearchSuggestionsService(
     : model_provider_(model_provider),
       background_task_runner_(background_task_runner) {
   if (model_provider_) {
+    // Prepare metadata for requesting a specific version of the config proto.
+    optimization_guide::proto::Any any_metadata;
+    any_metadata.set_type_url(
+        "type.googleapis.com/lens.prime.csc.VisualSearchModelMetadata");
+    optimization_guide::proto::VisualSearchModelMetadata vs_model_metadata;
+    // Version 2 includes the new additions to the proto spec for
+    // sorting and for z score handling. There is no explicitly named
+    // version 1. The version before version 2 is only the base features.
+    vs_model_metadata.set_metadata_version(2);
+    vs_model_metadata.SerializeToString(any_metadata.mutable_value());
+
     model_provider_->AddObserverForOptimizationTargetModel(
         optimization_guide::proto::
             OPTIMIZATION_TARGET_VISUAL_SEARCH_CLASSIFICATION,
-        /*model_metadata=*/absl::nullopt, this);
+        any_metadata, this);
   }
 }
 
