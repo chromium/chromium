@@ -20,23 +20,22 @@
 #include "ash/system/unified/tasks_combobox_model.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 
 namespace {
 
 constexpr int kMaximumTasks = 5;
-constexpr int kGlanceablesTaskHeaderHeight = 32;
-constexpr int kGlanceablesTaskViewHeight = 48;
-constexpr int kGlanceablesTaskFooterHeight = 24;
-constexpr int kGlanceablesFooterMargin = 12;
-constexpr int kGlanceableTaskVerticalMargin = 2;
 constexpr int kTasksIconRightPadding = 4;
 constexpr int kTasksIconViewSize = 32;
+constexpr int kSpacingAboveListContainerView = 16;
+constexpr int kInteriorGlanceableBubbleMargin = 16;
 
 constexpr char kTasksManagementPage[] =
     "https://calendar.google.com/calendar/u/0/r/week?opentasks=1";
@@ -47,9 +46,6 @@ namespace ash {
 
 TasksBubbleView::TasksBubbleView(DetailedViewDelegate* delegate)
     : GlanceableTrayChildBubble(delegate) {
-  SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
-      kGlanceablesVerticalMargin / 2, kGlanceablesLeftRightMargin / 2)));
-
   if (ash::Shell::Get()->glanceables_v2_controller()->GetTasksClient()) {
     ash::Shell::Get()
         ->glanceables_v2_controller()
@@ -75,20 +71,19 @@ void TasksBubbleView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetName(u"Glanceables Bubble Task View Accessible Name");
 }
 
-gfx::Size TasksBubbleView::CalculatePreferredSize() const {
-  const int width = kRevampedTrayMenuWidth - 2 * kGlanceablesLeftRightMargin;
-  const int height =
-      kGlanceablesVerticalMargin * 3 + kGlanceablesTaskHeaderHeight +
-      kGlanceablesTaskFooterHeight + kGlanceablesFooterMargin * 2 +
-      kGlanceablesTaskViewHeight * std::max(num_tasks_shown_, 1);
-  return gfx::Size(width, height);
-}
-
 void TasksBubbleView::InitViews(ui::ListModel<GlanceablesTaskList>* task_list) {
   // TODO(b:277268122): Implement empty tasks glanceable state.
   if (task_list->item_count() == 0) {
     return;
   }
+
+  auto* layout_manager =
+      SetLayoutManager(std::make_unique<views::FlexLayout>());
+  layout_manager
+      ->SetInteriorMargin(gfx::Insets::TLBR(kInteriorGlanceableBubbleMargin,
+                                            kInteriorGlanceableBubbleMargin, 0,
+                                            kInteriorGlanceableBubbleMargin))
+      .SetOrientation(views::LayoutOrientation::kVertical);
 
   tasks_header_view_ = AddChildView(std::make_unique<views::FlexLayoutView>());
   tasks_header_view_->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
@@ -100,24 +95,18 @@ void TasksBubbleView::InitViews(ui::ListModel<GlanceablesTaskList>* task_list) {
                                views::MaximumFlexSizeRule::kPreferred)
           .WithOrder(1));
 
-  task_items_container_view_ =
-      AddChildView(std::make_unique<views::FlexLayoutView>());
-  task_items_container_view_->SetCrossAxisAlignment(
-      views::LayoutAlignment::kStart);
-  task_items_container_view_->SetMainAxisAlignment(
-      views::LayoutAlignment::kStart);
-  task_items_container_view_->SetOrientation(
-      views::LayoutOrientation::kVertical);
+  task_items_container_view_ = AddChildView(std::make_unique<views::View>());
   task_items_container_view_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
-                               views::MaximumFlexSizeRule::kPreferred)
-          .WithOrder(2));
-  task_items_container_view_->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets::TLBR(kGlanceablesVerticalMargin, 0,
-                                                 kGlanceablesFooterMargin, 0)));
-  task_items_container_view_->SetInteriorMargin(
-      gfx::Insets::TLBR(kGlanceableTaskVerticalMargin, 0, 0, 0));
+      views::kMarginsKey,
+      gfx::Insets::TLBR(kSpacingAboveListContainerView, 0, 0, 0));
+  task_items_container_view_->SetPaintToLayer();
+  task_items_container_view_->layer()->SetFillsBoundsOpaquely(false);
+  task_items_container_view_->layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(16));
+  auto* layout = task_items_container_view_->SetLayoutManager(
+      std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical));
+  layout->set_between_child_spacing(2);
 
   task_icon_view_ =
       tasks_header_view_->AddChildView(std::make_unique<views::ImageView>());

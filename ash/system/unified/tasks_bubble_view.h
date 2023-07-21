@@ -74,13 +74,12 @@ class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble {
     return task_list_combo_box_view_;
   }
 
-  views::FlexLayoutView* task_items_container_view() const {
+  views::View* task_items_container_view() const {
     return task_items_container_view_;
   }
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  gfx::Size CalculatePreferredSize() const override;
 
  private:
   friend class DateTrayTest;
@@ -107,8 +106,7 @@ class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble {
   raw_ptr<views::ImageView, ExperimentalAsh> task_icon_view_ = nullptr;
   raw_ptr<views::Combobox, ExperimentalAsh> task_list_combo_box_view_ = nullptr;
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> button_container_ = nullptr;
-  raw_ptr<views::FlexLayoutView, ExperimentalAsh> task_items_container_view_ =
-      nullptr;
+  raw_ptr<views::View, ExperimentalAsh> task_items_container_view_ = nullptr;
   raw_ptr<GlanceablesListFooterView, ExperimentalAsh> list_footer_view_ =
       nullptr;
 

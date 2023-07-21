@@ -46,9 +46,6 @@ class ASH_EXPORT GlanceablesTaskView : public views::FlexLayoutView {
   void ButtonPressed();
   void MarkedAsCompleted(bool success);
 
-  // views::View:
-  gfx::Size CalculatePreferredSize() const override;
-
   const views::ImageButton* GetButtonForTest() const { return button_; }
   bool GetCompletedForTest() const { return completed_; }
 

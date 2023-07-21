@@ -18,6 +18,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/image_view.h"
@@ -26,9 +27,11 @@
 namespace {
 
 constexpr int kIconSize = 20;
-constexpr int kTaskHeight = 48;
-constexpr int kTaskWidth = 332;
 constexpr char kFormatterPattern[] = "EEE, MMM d";  // "Wed, Feb 28"
+
+constexpr int kBackgroundRadius = 4;
+constexpr auto kInteriorMargin = gfx::Insets::VH(8, 0);
+constexpr auto kButtonMargin = gfx::Insets(18);
 
 views::Label* SetupLabel(views::FlexLayoutView* parent) {
   views::Label* label = parent->AddChildView(std::make_unique<views::Label>());
@@ -63,6 +66,12 @@ namespace ash {
 GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
                                          const GlanceablesTask* task)
     : task_list_id_(task_list_id), task_id_(task->id) {
+  SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+  SetInteriorMargin(kInteriorMargin);
+
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      cros_tokens::kCrosSysSystemOnBase, kBackgroundRadius));
+
   button_ =
       AddChildView(std::make_unique<views::ImageButton>(base::BindRepeating(
           &GlanceablesTaskView::ButtonPressed, base::Unretained(this))));
@@ -72,10 +81,16 @@ GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
                                      cros_tokens::kFocusRingColor, kIconSize));
   // TODO(b:277268122): set accessible name once spec is available.
   button_->SetAccessibleName(u"Glanceables Task View Button");
+  button_->SetProperty(views::kMarginsKey, kButtonMargin);
 
   contents_view_ = AddChildView(std::make_unique<views::FlexLayoutView>());
-  contents_view_->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
+  contents_view_->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+  contents_view_->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
   contents_view_->SetOrientation(views::LayoutOrientation::kVertical);
+  contents_view_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                               views::MaximumFlexSizeRule::kUnbounded));
 
   tasks_title_view_ =
       contents_view_->AddChildView(std::make_unique<views::FlexLayoutView>());
@@ -83,6 +98,8 @@ GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
   views::Label* tasks_label = SetupLabel(tasks_title_view_);
   tasks_label->SetText(base::UTF8ToUTF16(task->title));
   tasks_label->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
+      TypographyToken::kCrosButton2));
+  tasks_label->SetLineHeight(TypographyProvider::Get()->ResolveLineHeight(
       TypographyToken::kCrosButton2));
   if (chromeos::features::IsJellyEnabled()) {
     tasks_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
@@ -101,6 +118,8 @@ GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
     due_date_label->SetFontList(
         TypographyProvider::Get()->ResolveTypographyToken(
             TypographyToken::kCrosAnnotation1));
+    tasks_label->SetLineHeight(TypographyProvider::Get()->ResolveLineHeight(
+        TypographyToken::kCrosAnnotation1));
 
     if (chromeos::features::IsJellyEnabled()) {
       time_icon_view->SetImage(ui::ImageModel::FromVectorIcon(
@@ -141,10 +160,6 @@ void GlanceablesTaskView::MarkedAsCompleted(bool success) {
       views::Button::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(kHollowCheckCircleIcon,
                                      cros_tokens::kFocusRingColor, kIconSize));
-}
-
-gfx::Size GlanceablesTaskView::CalculatePreferredSize() const {
-  return gfx::Size(kTaskWidth, kTaskHeight);
 }
 
 BEGIN_METADATA(GlanceablesTaskView, views::View)
