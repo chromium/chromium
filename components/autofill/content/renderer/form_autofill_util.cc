@@ -2620,11 +2620,6 @@ void ClearPreviewedElements(
     // We do not add null elements to `previewed_elements_` in AutofillAgent.
     DCHECK(!control_element.IsNull());
 
-    // TODO(crbug/1336051): Support clear preview for selectmenu elements.
-    if (IsSelectMenuElement(control_element)) {
-      continue;
-    }
-
     // Clear the suggested value. For the initiating node, also restore the
     // original value.
     WebInputElement input_element =

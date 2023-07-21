@@ -233,7 +233,8 @@ void FormCache::ClearElement(WebFormControlElement& control_element,
     return;
 
   if (!form_util::IsAutofillableElement(control_element)) {
-    // TODO(crbug.com/1336051): Handle selectmenu case and make this NOTREACHED.
+    // TODO(crbug.com/1427153): Make NOTREACHED() once AutofillEnableSelectMenu
+    // feature flag is removed.
     CHECK(form_util::IsSelectMenuElement(control_element));
     return;
   }
