@@ -70,14 +70,17 @@ using GetMediaDeviceSaltAndOriginCallback =
 // The |device_id| field is hashed using |device_id_salt| and |security_origin|.
 // The |group_id| field is hashed using |group_id_salt| and |security_origin|.
 // The |label| field is removed if |has_permission| is false.
-blink::WebMediaDeviceInfo TranslateMediaDeviceInfo(
+CONTENT_EXPORT blink::WebMediaDeviceInfo TranslateMediaDeviceInfo(
     bool has_permission,
     const MediaDeviceSaltAndOrigin& salt_and_origin,
     const blink::WebMediaDeviceInfo& device_info);
 
 // Returns a translated version of |device_infos|, with each element translated
-// using TranslateMediaDeviceInfo().
-blink::WebMediaDeviceInfoArray TranslateMediaDeviceInfoArray(
+// using TranslateMediaDeviceInfo(). If `has_permission` is false, the output
+// will contain at most one element per device type with empty strings for
+// device_id, label and group_id, as per
+// https://w3c.github.io/mediacapture-main/#access-control-model
+CONTENT_EXPORT blink::WebMediaDeviceInfoArray TranslateMediaDeviceInfoArray(
     bool has_permission,
     const MediaDeviceSaltAndOrigin& salt_and_origin,
     const blink::WebMediaDeviceInfoArray& device_infos);

@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
@@ -126,6 +127,12 @@ class MODULES_EXPORT MediaDevices final
   void ScheduleDispatchEvent(Event*);
   void DispatchScheduledEvents();
   void StartObserving();
+  void FinalizeStartObserving(
+      const Vector<Vector<WebMediaDeviceInfo>>& enumeration,
+      Vector<mojom::blink::VideoInputDeviceCapabilitiesPtr>
+          video_input_capabilities,
+      Vector<mojom::blink::AudioInputDeviceCapabilitiesPtr>
+          audio_input_capabilities);
   void StopObserving();
   void DevicesEnumerated(
       ScriptPromiseResolverWithTracker<EnumerateDevicesResult>* result_tracker,
@@ -151,6 +158,7 @@ class MODULES_EXPORT MediaDevices final
                                    const WTF::String& crop_id);
 #endif
 
+  SEQUENCE_CHECKER(sequence_checker_);
   bool stopped_;
   // Async runner may be null when there is no valid execution context.
   // No async work may be posted in this scenario.
@@ -179,6 +187,9 @@ class MODULES_EXPORT MediaDevices final
   HeapHashMap<Member<Element>, Member<ScriptPromiseResolver>>
       crop_id_resolvers_;
 #endif
+
+  bool starting_observation_ = false;
+  Vector<Vector<WebMediaDeviceInfo>> current_device_infos_;
 };
 
 }  // namespace blink

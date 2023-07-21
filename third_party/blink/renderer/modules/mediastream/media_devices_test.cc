@@ -13,7 +13,10 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/mojom/media/capture_handle_config.mojom-blink.h"
+#include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
+#include "third_party/blink/public/mojom/mediastream/media_devices.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -24,6 +27,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_crop_target.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_device_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_user_media_stream_constraints.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/events/event_listener.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -240,6 +245,31 @@ class MockMediaDevicesDispatcherHost final
     return enumeration_;
   }
 
+  void NotifyDeviceChanges() {
+    listener()->OnDevicesChanged(MediaDeviceType::MEDIA_AUDIO_INPUT,
+                                 enumeration_[static_cast<wtf_size_t>(
+                                     MediaDeviceType::MEDIA_AUDIO_INPUT)]);
+    listener()->OnDevicesChanged(MediaDeviceType::MEDIA_VIDEO_INPUT,
+                                 enumeration_[static_cast<wtf_size_t>(
+                                     MediaDeviceType::MEDIA_VIDEO_INPUT)]);
+    listener()->OnDevicesChanged(MediaDeviceType::MEDIA_AUDIO_OUTPUT,
+                                 enumeration_[static_cast<wtf_size_t>(
+                                     MediaDeviceType::MEDIA_AUDIO_OUTPUT)]);
+  }
+
+  Vector<WebMediaDeviceInfo>& AudioInputDevices() {
+    return enumeration_[static_cast<wtf_size_t>(
+        MediaDeviceType::MEDIA_AUDIO_INPUT)];
+  }
+  Vector<WebMediaDeviceInfo>& VideoInputDevices() {
+    return enumeration_[static_cast<wtf_size_t>(
+        MediaDeviceType::MEDIA_VIDEO_INPUT)];
+  }
+  Vector<WebMediaDeviceInfo>& AudioOutputDevices() {
+    return enumeration_[static_cast<wtf_size_t>(
+        MediaDeviceType::MEDIA_AUDIO_OUTPUT)];
+  }
+
  private:
   mojo::Remote<mojom::blink::MediaDevicesListener> listener_;
   mojo::Receiver<mojom::blink::MediaDevicesDispatcherHost> receiver_{this};
@@ -304,17 +334,6 @@ class MediaDevicesTest : public PageTestBase {
 
   void CloseBinding() { dispatcher_host_->CloseBinding(); }
 
-  void SimulateDeviceChange() {
-    DCHECK(listener());
-    listener()->OnDevicesChanged(
-        blink::mojom::MediaDeviceType::MEDIA_AUDIO_INPUT,
-        Vector<WebMediaDeviceInfo>());
-  }
-
-  mojo::Remote<mojom::blink::MediaDevicesListener>& listener() {
-    return dispatcher_host_->listener();
-  }
-
   void OnListenerConnectionError() { listener_connection_error_ = true; }
   bool listener_connection_error() const { return listener_connection_error_; }
 
@@ -325,6 +344,24 @@ class MediaDevicesTest : public PageTestBase {
   MockMediaDevicesDispatcherHost& dispatcher_host() {
     DCHECK(dispatcher_host_);
     return *dispatcher_host_;
+  }
+
+  void AddDeviceChangeListener(EventListener* event_listener) {
+    GetMediaDevices(*GetDocument().domWindow())
+        ->addEventListener(event_type_names::kDevicechange, event_listener);
+    platform()->RunUntilIdle();
+  }
+
+  void RemoveDeviceChangeListener(EventListener* event_listener) {
+    GetMediaDevices(*GetDocument().domWindow())
+        ->removeEventListener(event_type_names::kDevicechange, event_listener,
+                              /*use_capture=*/false);
+    platform()->RunUntilIdle();
+  }
+
+  void NotifyDeviceChanges() {
+    dispatcher_host().NotifyDeviceChanges();
+    platform()->RunUntilIdle();
   }
 
   void ExpectEnumerateDevicesHistogramReport(
@@ -424,34 +461,69 @@ TEST_F(MediaDevicesTest, SetCaptureHandleConfigAfterConnectionError) {
 }
 
 TEST_F(MediaDevicesTest, ObserveDeviceChangeEvent) {
-  V8TestingScope scope;
-  auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
   EXPECT_FALSE(dispatcher_host().listener());
 
-  // Subscribe for device change event.
+  // Subscribe to the devicechange event.
   StrictMock<MockDeviceChangeEventListener>* event_listener =
       MakeGarbageCollected<StrictMock<MockDeviceChangeEventListener>>();
-  media_devices->addEventListener(event_type_names::kDevicechange,
-                                  event_listener);
-  platform()->RunUntilIdle();
-  EXPECT_TRUE(listener());
-  listener().set_disconnect_handler(WTF::BindOnce(
+  AddDeviceChangeListener(event_listener);
+  EXPECT_TRUE(dispatcher_host().listener());
+  dispatcher_host().listener().set_disconnect_handler(WTF::BindOnce(
       &MediaDevicesTest::OnListenerConnectionError, WTF::Unretained(this)));
 
-  // Simulate a device change.
+  // Send a device change notification from the dispatcher host. The event is
+  // not fired because devices did not actually change.
+  NotifyDeviceChanges();
+
+  // Adding a new device fires the event.
   EXPECT_CALL(*event_listener, Invoke(_, _));
-  SimulateDeviceChange();
-  platform()->RunUntilIdle();
+  dispatcher_host().AudioInputDevices().push_back(WebMediaDeviceInfo(
+      "new_fake_audio_input_device", "new_fake_label", "new_fake_group"));
+  NotifyDeviceChanges();
+
+  // Renaming a group ID does not fire the event.
+  dispatcher_host().AudioOutputDevices().begin()->group_id = "new_group_id";
+  NotifyDeviceChanges();
 
   // Unsubscribe.
-  media_devices->removeEventListener(event_type_names::kDevicechange,
-                                     event_listener, /*use_capture=*/false);
-  platform()->RunUntilIdle();
+  RemoveDeviceChangeListener(event_listener);
   EXPECT_TRUE(listener_connection_error());
 
-  // Simulate another device change.
-  SimulateDeviceChange();
-  platform()->RunUntilIdle();
+  // Sending a device change notification after unsubscribe does not fire the
+  // event.
+  dispatcher_host().AudioInputDevices().push_back(WebMediaDeviceInfo(
+      "yet_another_input_device", "yet_another_label", "yet_another_group"));
+  NotifyDeviceChanges();
+}
+
+TEST_F(MediaDevicesTest, RemoveDeviceFiresDeviceChange) {
+  StrictMock<MockDeviceChangeEventListener>* event_listener =
+      MakeGarbageCollected<StrictMock<MockDeviceChangeEventListener>>();
+  AddDeviceChangeListener(event_listener);
+
+  EXPECT_CALL(*event_listener, Invoke(_, _));
+  dispatcher_host().VideoInputDevices().EraseAt(0);
+  NotifyDeviceChanges();
+}
+
+TEST_F(MediaDevicesTest, RenameDeviceIDFiresDeviceChange) {
+  StrictMock<MockDeviceChangeEventListener>* event_listener =
+      MakeGarbageCollected<StrictMock<MockDeviceChangeEventListener>>();
+  AddDeviceChangeListener(event_listener);
+
+  EXPECT_CALL(*event_listener, Invoke(_, _));
+  dispatcher_host().AudioOutputDevices().begin()->device_id = "new_device_id";
+  NotifyDeviceChanges();
+}
+
+TEST_F(MediaDevicesTest, RenameLabelFiresDeviceChange) {
+  StrictMock<MockDeviceChangeEventListener>* event_listener =
+      MakeGarbageCollected<StrictMock<MockDeviceChangeEventListener>>();
+  AddDeviceChangeListener(event_listener);
+
+  EXPECT_CALL(*event_listener, Invoke(_, _));
+  dispatcher_host().AudioOutputDevices().begin()->label = "new_label";
+  NotifyDeviceChanges();
 }
 
 TEST_F(MediaDevicesTest, SetCaptureHandleConfigEmpty) {

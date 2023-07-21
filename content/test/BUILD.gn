@@ -1399,6 +1399,7 @@ test("content_browsertests") {
     "../browser/media/media_canplaytype_browsertest.cc",
     "../browser/media/media_capabilities_browsertest.cc",
     "../browser/media/media_color_browsertest.cc",
+    "../browser/media/media_devices_util_browsertest.cc",
     "../browser/media/media_redirect_browsertest.cc",
     "../browser/media/media_source_browsertest.cc",
     "../browser/media/media_suspend_browsertest.cc",
