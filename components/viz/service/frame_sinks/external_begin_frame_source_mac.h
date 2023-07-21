@@ -86,6 +86,7 @@ class VIZ_COMMON_EXPORT DelayBasedBeginFrameSourceMac
 
   // BeginFrameSource implementation.
   void SetVSyncDisplayID(int64_t display_id) override;
+  void OnTimerTick() override;
 
  private:
   // Request a callback from DisplayLinkMac, and the callback function.

@@ -135,4 +135,14 @@ void DelayBasedBeginFrameSourceMac::OnTimeSourceParamsUpdate(
   OnUpdateVSyncParameters(params.display_timebase, params.display_interval);
 }
 
+void DelayBasedBeginFrameSourceMac::OnTimerTick() {
+  // The VSync parameters skew over time (astonishingly quickly -- 0.1 msec per
+  // second). If too much time has elapsed since the last time the vsync
+  // parameters were calculated, re-calculate them.
+  if (base::TimeTicks::Now() >= time_source_next_update_time_) {
+    RequestTimeSourceParamsUpdate();
+  }
+  DelayBasedBeginFrameSource::OnTimerTick();
+}
+
 }  // namespace viz
