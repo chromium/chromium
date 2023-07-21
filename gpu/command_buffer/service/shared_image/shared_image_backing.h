@@ -74,7 +74,7 @@ enum class SharedImageBackingType {
   kEGLImage = 3,
   kAHardwareBuffer = 4,
   kAngleVulkan = 5,
-  kGLImage = 6,
+  // kGLImage = 6, // no longer used after GLImage removal
   kGLTexture = 7,
   kOzone = 8,
   kRawDraw = 9,

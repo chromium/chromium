@@ -35,8 +35,6 @@ const char* BackingTypeToString(SharedImageBackingType type) {
       return "AHardwareBufferImageBacking";
     case SharedImageBackingType::kAngleVulkan:
       return "AngleVulkanImageBacking";
-    case SharedImageBackingType::kGLImage:
-      return "GLImageBacking";
     case SharedImageBackingType::kGLTexture:
       return "GLTextureImageBacking";
     case SharedImageBackingType::kOzone:
