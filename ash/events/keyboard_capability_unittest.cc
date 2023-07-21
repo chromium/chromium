@@ -300,7 +300,11 @@ TEST_F(KeyboardCapabilityTest, TestTopRowKeysAreFKeys) {
 }
 
 TEST_F(KeyboardCapabilityTest, TestIsSixPackKey) {
-  for (const auto& [key_code, _] : ui::kSixPackKeyToSystemKeyMap) {
+  for (const auto& [key_code, _] : ui::kSixPackKeyToSearchSystemKeyMap) {
+    EXPECT_TRUE(keyboard_capability_->IsSixPackKey(key_code));
+  }
+
+  for (const auto& [key_code, _] : ui::kSixPackKeyToAltSystemKeyMap) {
     EXPECT_TRUE(keyboard_capability_->IsSixPackKey(key_code));
   }
 

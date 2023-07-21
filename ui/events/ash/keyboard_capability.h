@@ -141,8 +141,8 @@ inline constexpr auto kLayoutWilcoDrallionTopRowKeyToFKeyMap =
         {KeyboardCode::VKEY_VOLUME_UP, KeyboardCode::VKEY_F9},
     });
 
-// A map between six pack keys to system keys.
-inline constexpr auto kSixPackKeyToSystemKeyMap =
+// A map between six pack keys to search system keys.
+inline constexpr auto kSixPackKeyToSearchSystemKeyMap =
     base::MakeFixedFlatMap<KeyboardCode, KeyboardCode>({
         {KeyboardCode::VKEY_DELETE, KeyboardCode::VKEY_BACK},
         {KeyboardCode::VKEY_HOME, KeyboardCode::VKEY_LEFT},
@@ -150,6 +150,16 @@ inline constexpr auto kSixPackKeyToSystemKeyMap =
         {KeyboardCode::VKEY_END, KeyboardCode::VKEY_RIGHT},
         {KeyboardCode::VKEY_NEXT, KeyboardCode::VKEY_DOWN},
         {KeyboardCode::VKEY_INSERT, KeyboardCode::VKEY_BACK},
+    });
+
+// A map between six pack keys to alt system keys.
+inline constexpr auto kSixPackKeyToAltSystemKeyMap =
+    base::MakeFixedFlatMap<KeyboardCode, KeyboardCode>({
+        {KeyboardCode::VKEY_DELETE, KeyboardCode::VKEY_BACK},
+        {KeyboardCode::VKEY_HOME, KeyboardCode::VKEY_UP},
+        {KeyboardCode::VKEY_PRIOR, KeyboardCode::VKEY_UP},
+        {KeyboardCode::VKEY_END, KeyboardCode::VKEY_DOWN},
+        {KeyboardCode::VKEY_NEXT, KeyboardCode::VKEY_DOWN},
     });
 
 // A keyboard util API to provide various keyboard capability information, such

@@ -579,7 +579,7 @@ void KeyboardCapability::SetPrivacyScreenSupportedForTesting(
 
 // static
 bool KeyboardCapability::IsSixPackKey(const KeyboardCode& key_code) {
-  return base::Contains(kSixPackKeyToSystemKeyMap, key_code);
+  return base::Contains(kSixPackKeyToSearchSystemKeyMap, key_code);
 }
 
 absl::optional<KeyboardCode> KeyboardCapability::GetMappedFKeyIfExists(
