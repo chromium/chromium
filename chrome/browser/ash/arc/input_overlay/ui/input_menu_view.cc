@@ -188,7 +188,7 @@ void InputMenuView::OnThemeChanged() {
 
 void InputMenuView::CloseMenu() {
   if (display_overlay_controller_) {
-    display_overlay_controller_->SetDisplayMode(DisplayMode::kView);
+    display_overlay_controller_->SetDisplayModeAlpha(DisplayMode::kView);
   }
 }
 
@@ -423,7 +423,7 @@ void InputMenuView::OnEditButtonPressed() {
   // Change display mode, load edit UI per action and overall edit buttons; make
   // sure the following line is at the bottom because edit mode will kill this
   // view.
-  display_overlay_controller_->SetDisplayMode(DisplayMode::kEdit);
+  display_overlay_controller_->SetDisplayModeAlpha(DisplayMode::kEdit);
 }
 
 void InputMenuView::OnButtonSendFeedbackPressed() {

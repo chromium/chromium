@@ -47,7 +47,7 @@ class DisplayOverlayController : public ui::EventHandler,
   DisplayOverlayController& operator=(const DisplayOverlayController&) = delete;
   ~DisplayOverlayController() override;
 
-  void SetDisplayMode(DisplayMode mode);
+  void SetDisplayModeAlpha(DisplayMode mode);
   // Get the bounds of |menu_entry_| in screen coordinates.
   absl::optional<gfx::Rect> GetOverlayMenuEntryBounds();
 

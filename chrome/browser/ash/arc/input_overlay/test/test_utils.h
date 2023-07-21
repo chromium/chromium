@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/time/time.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -16,11 +17,18 @@ namespace aura {
 class Window;
 }  // namespace aura
 
+namespace base::test {
+class TaskEnvironment;
+}  // namespace base::test
+
 namespace views {
 class Widget;
 }  // namespace views
 
 namespace arc::input_overlay {
+
+// I/O time to wait.
+constexpr base::TimeDelta kIORead = base::Milliseconds(50);
 
 class TouchInjector;
 
@@ -29,6 +37,13 @@ std::unique_ptr<views::Widget> CreateArcWindow(
     aura::Window* root_window,
     const gfx::Rect& bounds = gfx::Rect(10, 10, 100, 100),
     const std::string& package_name = std::string("arc.packagename"));
+
+// Make sure the tasks run synchronously when creating the window.
+std::unique_ptr<views::Widget> CreateArcWindowSyncAndWait(
+    base::test::TaskEnvironment* task_environment,
+    aura::Window* root_window,
+    const gfx::Rect& bounds,
+    const std::string& package_name);
 
 // Check the actions size in `injector`, action types, and action IDs.
 void CheckActions(TouchInjector* injector,

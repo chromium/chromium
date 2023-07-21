@@ -106,7 +106,7 @@ void DisplayOverlayController::AddOverlay(DisplayMode display_mode) {
   params.focusable = true;
   shell_surface_base->AddOverlay(std::move(params));
 
-  SetDisplayMode(display_mode);
+  SetDisplayModeAlpha(display_mode);
 }
 
 void DisplayOverlayController::RemoveOverlayIfAny() {
@@ -258,7 +258,7 @@ void DisplayOverlayController::OnMenuEntryPressed() {
   auto* parent_view = overlay_widget->GetContentsView();
   DCHECK(parent_view);
 
-  SetDisplayMode(DisplayMode::kMenu);
+  SetDisplayModeAlpha(DisplayMode::kMenu);
 
   input_menu_view_ = parent_view->AddChildView(
       InputMenuView::BuildMenuView(this, menu_entry_, parent_view->size()));
@@ -270,7 +270,7 @@ void DisplayOverlayController::OnMenuEntryPositionChanged(
     bool leave_focus,
     absl::optional<gfx::Point> location) {
   if (leave_focus) {
-    SetDisplayMode(DisplayMode::kView);
+    SetDisplayModeAlpha(DisplayMode::kView);
   }
 
   if (location) {
@@ -369,7 +369,7 @@ void DisplayOverlayController::RemoveEducationalView() {
 }
 
 void DisplayOverlayController::OnEducationalViewDismissed() {
-  SetDisplayMode(DisplayMode::kView);
+  SetDisplayModeAlpha(DisplayMode::kView);
   DCHECK(touch_injector_);
   touch_injector_->set_first_launch(false);
 }
@@ -393,7 +393,7 @@ views::View* DisplayOverlayController::GetOverlayWidgetContentsView() {
   return overlay_widget->GetContentsView();
 }
 
-void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
+void DisplayOverlayController::SetDisplayModeAlpha(DisplayMode mode) {
   if (display_mode_ == mode) {
     return;
   }
@@ -717,7 +717,7 @@ void DisplayOverlayController::ProcessPressedEvent(
   if (input_menu_view_) {
     auto bounds = input_menu_view_->GetBoundsInScreen();
     if (!bounds.Contains(root_location)) {
-      SetDisplayMode(DisplayMode::kView);
+      SetDisplayModeAlpha(DisplayMode::kView);
     }
   }
 
@@ -770,14 +770,14 @@ void DisplayOverlayController::UpdateForBoundsChanged() {
   }
 
   auto mode = display_mode_;
-  SetDisplayMode(DisplayMode::kNone);
+  SetDisplayModeAlpha(DisplayMode::kNone);
   // Transition to |kView| mode except while on |kEducation| mode since the
   // educational banner needs to remain visible until dismissed by the user.
   if (mode != DisplayMode::kEducation) {
     mode = DisplayMode::kView;
   }
 
-  SetDisplayMode(mode);
+  SetDisplayModeAlpha(mode);
 }
 
 void DisplayOverlayController::DismissEducationalViewForTesting() {

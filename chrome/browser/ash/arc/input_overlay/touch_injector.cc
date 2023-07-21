@@ -359,7 +359,7 @@ void TouchInjector::OnBindingSave() {
     OnApplyPendingBinding();
   }
   if (display_overlay_controller_) {
-    display_overlay_controller_->SetDisplayMode(DisplayMode::kView);
+    display_overlay_controller_->SetDisplayModeAlpha(DisplayMode::kView);
   }
   OnSaveProtoFile();
 }
@@ -370,7 +370,7 @@ void TouchInjector::OnBindingCancel() {
   }
 
   if (display_overlay_controller_) {
-    display_overlay_controller_->SetDisplayMode(DisplayMode::kView);
+    display_overlay_controller_->SetDisplayModeAlpha(DisplayMode::kView);
   }
 }
 
@@ -643,7 +643,7 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
       views::FocusManager::IsTabTraversalKeyEvent(*(event.AsKeyEvent()))) {
     if (event.AsKeyEvent()->type() == ui::ET_KEY_PRESSED) {
       CleanupTouchEvents();
-      display_overlay_controller_->SetDisplayMode(DisplayMode::kPreMenu);
+      display_overlay_controller_->SetDisplayModeAlpha(DisplayMode::kPreMenu);
     }
     return SendEvent(continuation, &event);
   } else if (display_mode_ == DisplayMode::kPreMenu) {
@@ -651,12 +651,12 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
       if (ProcessKeyEventOnFocusedMenuEntry(*event.AsKeyEvent())) {
         return SendEvent(continuation, &event);
       }
-      display_overlay_controller_->SetDisplayMode(DisplayMode::kView);
+      display_overlay_controller_->SetDisplayModeAlpha(DisplayMode::kView);
     } else if (LocatedEventOnMenuEntry(event, content_bounds_f_,
                                        /*press_required=*/false)) {
       return SendEvent(continuation, &event);
     } else {
-      display_overlay_controller_->SetDisplayMode(DisplayMode::kView);
+      display_overlay_controller_->SetDisplayModeAlpha(DisplayMode::kView);
     }
   }
 
@@ -677,7 +677,7 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
     // Release all active touches when the display mode is changed from |kView|
     // to |kMenu|.
     CleanupTouchEvents();
-    display_overlay_controller_->SetDisplayMode(DisplayMode::kMenu);
+    display_overlay_controller_->SetDisplayModeAlpha(DisplayMode::kMenu);
     return SendEvent(continuation, &event);
   }
 

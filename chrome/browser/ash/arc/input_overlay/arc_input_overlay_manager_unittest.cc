@@ -30,9 +30,6 @@
 
 namespace arc::input_overlay {
 namespace {
-// I/O time to wait.
-constexpr base::TimeDelta kIORead = base::Milliseconds(50);
-
 // Package names for testing.
 constexpr char kEnabledPackageName[] = "org.chromium.arc.testapp.inputoverlay";
 constexpr char kRandomPackageName[] =
@@ -40,19 +37,6 @@ constexpr char kRandomPackageName[] =
 constexpr char kRandomGamePackageName[] =
     "org.chromium.arc.testapp.inputoverlay_game";
 constexpr const float kTolerance = 0.999f;
-
-// Make sure the tasks run synchronously when creating the window.
-std::unique_ptr<views::Widget> CreateArcWindowSyncAndWait(
-    base::test::TaskEnvironment* task_environment,
-    aura::Window* root_window,
-    const gfx::Rect& bounds,
-    const std::string& package_name) {
-  task_environment->RunUntilIdle();
-  auto window = CreateArcWindow(root_window, bounds, package_name);
-  // I/O takes time here.
-  task_environment->FastForwardBy(kIORead);
-  return window;
-}
 
 }  // namespace
 

@@ -103,7 +103,7 @@ class MenuEntryViewTest : public exo::test::ExoTestBase {
   }
 
   void CloseInputMenuView() {
-    display_overlay_controller_->SetDisplayMode(DisplayMode::kView);
+    display_overlay_controller_->SetDisplayModeAlpha(DisplayMode::kView);
   }
 
   void SimulateMinimizeAndRestoreApp() {
