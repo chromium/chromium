@@ -276,7 +276,7 @@
 <translation id="3291218047831493686">የሲም መቆለፊያ ቅንብርን ለመለወጥ ወደዚህ አውታረ መረብ ያገናኙ</translation>
 <translation id="3293023191599135697">የደብሊውኢፒ አውታረመረቦች አይደገፉም</translation>
 <translation id="3295006446256079333">ይህ መጠን</translation>
-<translation id="3295357220137379386">መሣሪያው ስራ ላይ ነው</translation>
+<translation id="3295357220137379386">መሣሪያው ሥራ ላይ ነው</translation>
 <translation id="3296763833017966289">ጆርጂያኛ</translation>
 <translation id="3307875152560779385">ዩክሬንኛ</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" />ን በማጨቅ ላይ...</translation>
@@ -299,7 +299,7 @@
 <translation id="3479552764303398839">አሁን አይደለም</translation>
 <translation id="3486821258960016770">ሞንጎሊያኛ</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> ስህተቶች።</translation>
-<translation id="3501954296166022751">የእርስዎ Google Drive ፋይሎች ከመስመር ውጪ ይገኛሉ</translation>
+<translation id="3501954296166022751">የእርስዎ Google Drive ፋይሎች ከመስመር ውጭ ይገኛሉ</translation>
 <translation id="3509680540198371098">አውታረመረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />፣ <ph name="SECURITY_STATUS" />፣ <ph name="CONNECTION_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ ዝርዝሮች</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> ንጥሎችን ለማስመር በማዘጋጀት ላይ...</translation>
 <translation id="3522708245912499433">ፖርቱጋሊኛ</translation>
@@ -392,7 +392,7 @@
 <translation id="4290535918735525311">1 አቃፊ ከLinux ጋር ተጋርቷል</translation>
 <translation id="4299729908419173967">የብራዚል</translation>
 <translation id="4302605047395093221">ይህን መሣሪያ የሚጠቀም ማንኛውም ሰው ከዚህ የተንቀሳቃሽ ስልክ አውታረ መረብ ጋር ለመገናኘት ፒኑን ማስገባት ይኖርበታል</translation>
-<translation id="4303531889494116116">ይህ አውታረ መረብ ስራ ላይ ነው ቆይተው እንደገና ይሞክሩ።</translation>
+<translation id="4303531889494116116">ይህ አውታረ መረብ ሥራ ላይ ነው ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="4309915981827077375">አጠቃላይ መረጃ</translation>
 <translation id="432252891123397018">ሮማኒያኛ በመደበኛ ቁልፍ ሰሌዳ</translation>
 <translation id="4325128273762811722">ስሎቬኒያኛ</translation>
@@ -409,7 +409,7 @@
 <translation id="4387004326333427325">የማረጋገጫ ምስክር ወረቀት በርቀት ተቀባይነት አላገኘም</translation>
 <translation id="4394214039309501350">ውጫዊ አገናኝ</translation>
 <translation id="4394980935660306080">በዚህ ሳምንት ቀደም ብሎ</translation>
-<translation id="4398096759193130964">ንጥሎቹን ወደነበሩበት ይመልሷቸው ወይም ከመጣያ ውጪ ወደ አዲስ አቃፊ ይጎትቷቸው</translation>
+<translation id="4398096759193130964">ንጥሎቹን ወደነበሩበት ይመልሷቸው ወይም ከመጣያ ውጭ ወደ አዲስ አቃፊ ይጎትቷቸው</translation>
 <translation id="4401287888955153199">ሁሉንም ያውጡ</translation>
 <translation id="4410695710508688828">የማውጣት ክወና አልተሳካም። <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4414834425328380570">«<ph name="FILE_NAME" />» ይሰረዛል እና ወደነበረት ሊመልሱት አይችሉም።</translation>
@@ -523,7 +523,7 @@
 <translation id="5158983316805876233">ተመሳሳዩን ተኪ ለሁሉም ፕሮቶኮሎች ይጠቀሙ</translation>
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />ቆዩ መሣሪያዎን አሁንም አያስወግዱት!<ph name="END_BOLD" />
        <ph name="LINE_BREAKS" />
-       መሣሪያዎ ስራ ላይ እያለ ማስወገድ የውሂብ መጥፋት ሊያስከትል ይችላል።  እባክዎ ክወናው እስኪጠናቀቅ ድረስ ይጠብቁ፣ ከዚያ የፋይሎች መተግበሪያውን በመጠቀም መሣሪያውን ያስወጡት።</translation>
+       መሣሪያዎ ሥራ ላይ እያለ ማስወገድ የውሂብ መጥፋት ሊያስከትል ይችላል።  እባክዎ ክወናው እስኪጠናቀቅ ድረስ ይጠብቁ፣ ከዚያ የፋይሎች መተግበሪያውን በመጠቀም መሣሪያውን ያስወጡት።</translation>
 <translation id="5163869187418756376">ማጋራት አልተሳካም። ግንኙነትዎን ይፈትሹ እና ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="516592729076796170">የአሜሪካ Dvorak ፕሮግራመር</translation>
 <translation id="5177526793333269655">ድንክዬ ትይታ</translation>
@@ -723,7 +723,7 @@
 <translation id="6751256176799620176">1 አቃፊ ተመርጧል</translation>
 <translation id="6755827872271341378">የChromeOS Flex መሣሪያ</translation>
 <translation id="6790428901817661496">አጫውት</translation>
-<translation id="6794539005637808366">ንጥሉን ወደነበረበት ይመልሱት ወይም ከመጣያ ውጪ ወደ አዲስ አቃፊ ይጎትቱት</translation>
+<translation id="6794539005637808366">ንጥሉን ወደነበረበት ይመልሱት ወይም ከመጣያ ውጭ ወደ አዲስ አቃፊ ይጎትቱት</translation>
 <translation id="6795884519221689054">ፓንዳ</translation>
 <translation id="6806699711453372963">የLinux ማጋራትን አቀናብር</translation>
 <translation id="6806796368146926706">ፊደልቁጥራዊ በጃፓንኛ የቁልፍ ሰሌዳ</translation>
@@ -781,7 +781,7 @@
 <translation id="7162080671816799010">የማረጋገጥ አገልጋይ ማንነትን ለማረጋገጥ የሚጎድል «የርዕሰ ጉዳይ አማራጭ ስም መመሳሰል» ወይም «የጎራ ተውሳክ መመሳሰል»</translation>
 <translation id="7165320105431587207">አውታረ መረቡን ማዋቀር አልተሳካም</translation>
 <translation id="7170041865419449892">ከክልል ውጭ</translation>
-<translation id="7179579940054351344">ከ<ph name="NON_RESTRICTED_DESTINATIONS" /> ውጪ በሁሉም የድር ጣቢያዎች እና ዩአርኤሎች የፋይል መዳረሻ</translation>
+<translation id="7179579940054351344">ከ<ph name="NON_RESTRICTED_DESTINATIONS" /> ውጭ በሁሉም የድር ጣቢያዎች እና ዩአርኤሎች የፋይል መዳረሻ</translation>
 <translation id="7180611975245234373">አድስ</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> ጊባ</translation>
 <translation id="7191454237977785534">ፋይል አስቀምጥ እንደ</translation>

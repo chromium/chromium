@@ -346,6 +346,7 @@
 <translation id="1275718070701477396">Ընտրված</translation>
 <translation id="1276994519141842946">Չհաջողվեց հեռացնել <ph name="APP_NAME" /> հավելվածը</translation>
 <translation id="1277020343994096713">Ստեղծեք ձեր ընթացիկ կոդից տարբերվող նոր PIN կոդ</translation>
+<translation id="1277597051786235230">&amp;Որոնել «<ph name="SEARCH_TERMS" />» <ph name="SEARCH_ENGINE" />-ում նոր ներդիրում</translation>
 <translation id="1278859221870828664">Ստուգեք Google Play հավելվածներն ու ծառայությունները</translation>
 <translation id="127946606521051357">Մոտակա սարքերից մեկը տվյալներ է ուղարկում</translation>
 <translation id="1280965841156951489">Փոփոխել ֆայլերը</translation>
@@ -2662,6 +2663,7 @@
 <translation id="32101887417650595">Չհաջողվեց միացնել տպիչը</translation>
 <translation id="3210736980143419785">Չհաջողվեց ավարտել ներբեռնումը</translation>
 <translation id="321084946921799184">Դեղին և սպիտակ</translation>
+<translation id="3211126692872351610">&amp;Որոնել «<ph name="SEARCH_TERMS" />» <ph name="SEARCH_ENGINE" />-ում նոր ներդիրում</translation>
 <translation id="321356136776075234">Սարքի ստորաբաժանում (օր.՝ OU=Chromebooks,DC=example,DC=com)</translation>
 <translation id="321367297115597343">Ավելացնել էջանիշ այս պանակում</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Նկատի ունեցեք<ph name="END_BOLD" />, որ <ph name="SUPERVISED_USER_NAME" />-ի ձայնին նման ձայն կամ նրա ձայնի ձայնագրությունն ունեցող օգտատերերը հնարավոր է՝ նույնպես կարողանան օգտվել նրա անհատականացված արդյունքներից։</translation>

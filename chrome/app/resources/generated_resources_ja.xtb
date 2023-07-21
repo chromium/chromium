@@ -344,6 +344,7 @@
 <translation id="1275718070701477396">選択中</translation>
 <translation id="1276994519141842946"><ph name="APP_NAME" /> をアンインストールできませんでした</translation>
 <translation id="1277020343994096713">現在の PIN とは異なる新しい PIN を作成してください</translation>
+<translation id="1277597051786235230">新しいタブで「<ph name="SEARCH_TERMS" />」を <ph name="SEARCH_ENGINE" /> 検索(&amp;S)</translation>
 <translation id="1278859221870828664">Google Play のアプリとサービスの確認</translation>
 <translation id="127946606521051357">付近のデバイスが共有中です</translation>
 <translation id="1280965841156951489">ファイルを編集</translation>
@@ -2654,6 +2655,7 @@
 <translation id="32101887417650595">プリンタに接続できません</translation>
 <translation id="3210736980143419785">ダウンロードを完了できませんでした</translation>
 <translation id="321084946921799184">黄色と白</translation>
+<translation id="3211126692872351610">新しいタブで「<ph name="SEARCH_TERMS" />」を <ph name="SEARCH_ENGINE" /> 検索(&amp;S)</translation>
 <translation id="321356136776075234">デバイスの組織部門（例: OU=Chromebooks,DC=example,DC=com）</translation>
 <translation id="321367297115597343">このフォルダにブックマークを追加する</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />注:<ph name="END_BOLD" /> よく似た音声や録音した音声でも、<ph name="SUPERVISED_USER_NAME" /> さんのアカウントに基づく情報にアクセスできることがあります。</translation>

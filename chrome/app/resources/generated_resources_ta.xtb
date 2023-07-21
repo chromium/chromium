@@ -346,6 +346,7 @@
 <translation id="1275718070701477396">தேர்ந்தெடுக்கப்பட்டது</translation>
 <translation id="1276994519141842946"><ph name="APP_NAME" /> ஆப்ஸை நிறுவல் நீக்க முடியவில்லை</translation>
 <translation id="1277020343994096713">உங்களின் தற்போதைய பின்னிலிருந்து (PIN) மாறுபட்ட புதிய பின்னை (PIN) உருவாக்கவும்</translation>
+<translation id="1277597051786235230"><ph name="SEARCH_ENGINE" /> இல் புதிய பக்கத்தில் “<ph name="SEARCH_TERMS" />” என்பதைத் &amp;தேடு</translation>
 <translation id="1278859221870828664">Google Play ஆப்ஸ் &amp; சேவைகள் குறித்து அறிந்துகொள்ளுங்கள்</translation>
 <translation id="127946606521051357">அருகிலுள்ள சாதனம் பகிர்கிறது</translation>
 <translation id="1280965841156951489">ஃபைல்களைத் திருத்து</translation>
@@ -2675,6 +2676,7 @@
 <translation id="32101887417650595">பிரிண்டருடன் இணைக்க இயலவில்லை</translation>
 <translation id="3210736980143419785">பதிவிறக்கத்தை நிறைவுசெய்ய முடியவில்லை</translation>
 <translation id="321084946921799184">மஞ்சள் &amp; வெள்ளை</translation>
+<translation id="3211126692872351610"><ph name="SEARCH_ENGINE" /> இல் புதிய பக்கத்தில் “<ph name="SEARCH_TERMS" />” என்பதைத் &amp;தேடு</translation>
 <translation id="321356136776075234">சாதன OU (எ.கா. OU=Chromebookகள்,DC=example,DC=com)</translation>
 <translation id="321367297115597343">இந்த ஃபோல்டரில் புக்மார்க்கைச் சேர்க்கவும்</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />கவனத்திற்கு:<ph name="END_BOLD" /> ஒரே மாதிரியான குரலையோ ரெக்கார்டிங்கையோ கொண்ட எவராலும் <ph name="SUPERVISED_USER_NAME" /> இன் தனிப்பட்ட முடிவுகளை அணுக முடியும்.</translation>

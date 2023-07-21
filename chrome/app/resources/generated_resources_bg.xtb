@@ -346,6 +346,7 @@
 <translation id="1275718070701477396">Избрано</translation>
 <translation id="1276994519141842946">Деинсталирането на <ph name="APP_NAME" /> не бе успешно</translation>
 <translation id="1277020343994096713">Създайте нов ПИН код, различен от текущия</translation>
+<translation id="1277597051786235230">&amp;Търсене на „<ph name="SEARCH_TERMS" />“ чрез <ph name="SEARCH_ENGINE" /> в нов раздел</translation>
 <translation id="1278859221870828664">Прегледайте приложенията и услугите в Google Play</translation>
 <translation id="127946606521051357">Устройство в близост споделя</translation>
 <translation id="1280965841156951489">Редактиране на файловете</translation>
@@ -2671,6 +2672,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="32101887417650595">Не може да се установи връзка с принтера</translation>
 <translation id="3210736980143419785">Изтеглянето не бе завършено</translation>
 <translation id="321084946921799184">Жълто и бяло</translation>
+<translation id="3211126692872351610">&amp;Търсене на „<ph name="SEARCH_TERMS" />“ чрез <ph name="SEARCH_ENGINE" /> в нов раздел</translation>
 <translation id="321356136776075234">Организационна единица за устройството (напр. OU=Chromebooks,DC=example,DC=com)</translation>
 <translation id="321367297115597343">Добавяне на отметка към тази папка</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Забележка<ph name="END_BOLD" />: Възможно е да бъде осъществен достъп до персоналните резултати на <ph name="SUPERVISED_USER_NAME" /> и от човек с подобен глас или чрез запис.</translation>

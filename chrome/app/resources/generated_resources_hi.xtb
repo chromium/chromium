@@ -347,6 +347,7 @@
 <translation id="1275718070701477396">चयनित</translation>
 <translation id="1276994519141842946"><ph name="APP_NAME" /> अनइंस्टॉल नहीं हो सका</translation>
 <translation id="1277020343994096713">ऐसा नया पिन बनाएं जो आपके मौजूदा पिन से अलग हो</translation>
+<translation id="1277597051786235230">नए टैब में जाकर <ph name="SEARCH_ENGINE" /> पर “<ph name="SEARCH_TERMS" />” खोजें</translation>
 <translation id="1278859221870828664">Google Play पर मिलने वाले ऐप्लिकेशन और सेवाओं की समीक्षा करें</translation>
 <translation id="127946606521051357">आस-पास मौजूद कोई डिवाइस, डेटा शेयर कर रहा है</translation>
 <translation id="1280965841156951489">फ़ाइलों में बदलाव करें</translation>
@@ -2676,6 +2677,7 @@
 <translation id="32101887417650595">प्रिंटर से कनेक्ट नहीं हो पा रहा है</translation>
 <translation id="3210736980143419785">डाउनलोड पूरा नहीं हो सका</translation>
 <translation id="321084946921799184">पीला और सफ़ेद</translation>
+<translation id="3211126692872351610">नए टैब में जाकर <ph name="SEARCH_ENGINE" /> पर “<ph name="SEARCH_TERMS" />” खोजें</translation>
 <translation id="321356136776075234">डिवाइस OU (उदाहरण OU=Chromebooks,DC=example,DC=com)</translation>
 <translation id="321367297115597343">इस फ़ोल्डर में कोई बुकमार्क जोड़ें</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />ध्यान दें:<ph name="END_BOLD" /> किसी मिलती-जुलती आवाज़ या रिकॉर्डिंग से भी <ph name="SUPERVISED_USER_NAME" /> के निजी खोज नतीजे ऐक्सेस किए जा सकते हैं.</translation>
