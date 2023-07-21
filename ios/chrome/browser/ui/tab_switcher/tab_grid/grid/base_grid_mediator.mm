@@ -623,8 +623,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
   __block bool allTabsClosed = true;
 
   base::UmaHistogramCounts100("IOS.TabGrid.Selection.CloseTabs", itemIDs.count);
-  base::UmaHistogramCounts100(kTabGridCloseMultipleTabsHistogram,
-                              itemIDs.count);
+  RecordTabGridCloseTabsCount(itemIDs.count);
 
   self.webStateList->PerformBatchOperation(
       base::BindOnce(^(WebStateList* list) {
@@ -654,8 +653,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
 }
 
 - (void)closeAllItems {
-  base::UmaHistogramCounts100(kTabGridCloseMultipleTabsHistogram,
-                              self.webStateList->count());
+  RecordTabGridCloseTabsCount(self.webStateList->count());
   if (!self.browserState->IsOffTheRecord()) {
     base::RecordAction(
         base::UserMetricsAction("MobileTabGridCloseAllRegularTabs"));
@@ -669,8 +667,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
 }
 
 - (void)saveAndCloseAllItems {
-  base::UmaHistogramCounts100(kTabGridCloseMultipleTabsHistogram,
-                              self.webStateList->count());
+  RecordTabGridCloseTabsCount(self.webStateList->count());
   base::RecordAction(
       base::UserMetricsAction("MobileTabGridCloseAllRegularTabs"));
 

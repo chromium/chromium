@@ -18,7 +18,7 @@ enum class TabSwitcherPageChangeInteraction {
   kMaxValue = kItemDrag,
 };
 
-// Key of the UMA IOS.TabGrid.CloseTabs histogram.
-extern const char kTabGridCloseMultipleTabsHistogram[];
+// Records the number of Tabs closed after a bulk or a "Close All" operation.
+void RecordTabGridCloseTabsCount(int count);
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TAB_GRID_METRICS_H_
