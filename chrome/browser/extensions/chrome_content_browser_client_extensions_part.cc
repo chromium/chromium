@@ -727,6 +727,9 @@ void ChromeContentBrowserClientExtensionsPart::RenderProcessWillLaunch(
     content::RenderProcessHost* host) {
   int id = host->GetID();
   Profile* profile = Profile::FromBrowserContext(host->GetBrowserContext());
+  if (AreExtensionsDisabledForProfile(profile)) {
+    return;
+  }
 
   host->AddFilter(new ChromeExtensionMessageFilter(profile));
   host->AddFilter(new ExtensionMessageFilter(id, profile));
@@ -849,10 +852,18 @@ void ChromeContentBrowserClientExtensionsPart::
     AppendExtraRendererCommandLineSwitches(base::CommandLine* command_line,
                                            content::RenderProcessHost* process,
                                            Profile* profile) {
-  if (!process)
+  if (!process) {
     return;
+  }
+
   DCHECK(profile);
-  if (ProcessMap::Get(profile)->Contains(process->GetID())) {
+  if (AreExtensionsDisabledForProfile(profile)) {
+    return;
+  }
+
+  auto* process_map = ProcessMap::Get(profile);
+  CHECK(process_map);
+  if (process_map->Contains(process->GetID())) {
     command_line->AppendSwitch(switches::kExtensionProcess);
   }
 }

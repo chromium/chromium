@@ -51,8 +51,8 @@ content::BrowserContext* SavedFilesServiceFactory::GetBrowserContextToUse(
   // is to make this service available in guest sessions, where it could be used
   // when apps white-listed in guest sessions attempt to use chrome.fileSystem
   // API.
-  return extensions::ExtensionsBrowserClient::Get()->GetOriginalContext(
-      context);
+  return extensions::ExtensionsBrowserClient::Get()
+      ->GetContextRedirectedToOriginal(context, /*force_guest_profile=*/true);
 }
 
 }  // namespace apps
