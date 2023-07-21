@@ -908,5 +908,9 @@ def main(parser, args):
   _Generate(args, native_sources, java_sources=java_sources)
 
   if args.depfile:
-    all_inputs = native_sources + java_sources
+    # GN does not declare a dep on the sources files to avoid circular
+    # dependencies, so they need to be listed here.
+    all_inputs = native_sources + java_sources + [args.java_sources_file]
+    if args.native_sources_file:
+      all_inputs.append(args.native_sources_file)
     action_helpers.write_depfile(args.depfile, args.srcjar_path, all_inputs)
