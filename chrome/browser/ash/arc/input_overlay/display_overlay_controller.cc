@@ -499,11 +499,11 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
 void DisplayOverlayController::TurnFlag(ash::ArcGameControlsFlag flag,
                                         bool turn_on) {
   auto* window = touch_injector_->window();
-  ash::ArcGameControlsFlag flags =
+  const ash::ArcGameControlsFlag flags =
       window->GetProperty(ash::kArcGameControlsFlagsKey);
-  window->SetProperty(ash::kArcGameControlsFlagsKey,
-                      static_cast<ash::ArcGameControlsFlag>(
-                          turn_on ? (flags | flag) : (flags & ~flag)));
+  window->SetProperty(
+      ash::kArcGameControlsFlagsKey,
+      ash::game_dashboard_utils::UpdateFlag(flags, flag, turn_on));
 }
 
 absl::optional<gfx::Rect>
@@ -829,7 +829,8 @@ void DisplayOverlayController::OnWindowPropertyChanged(aura::Window* window,
       bool is_showing_menu = ash::game_dashboard_utils::IsFlagSet(
           flags, ash::ArcGameControlsFlag::kMenu);
       // Save the menu states upon menu closing.
-      if (IsFlagChanged(flags, old_flags, ash::ArcGameControlsFlag::kMenu) &&
+      if (ash::game_dashboard_utils::IsFlagChanged(
+              flags, old_flags, ash::ArcGameControlsFlag::kMenu) &&
           !is_showing_menu) {
         touch_injector_->OnInputMenuViewRemoved();
       }

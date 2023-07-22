@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/public/cpp/arc_game_controls_flag.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -44,12 +43,6 @@ void ResetFocusTo(views::View* view);
 
 // Return true if |code| is not allowed to bind.
 bool IsReservedDomCode(ui::DomCode code);
-
-// Compares `new_flags` and `old_flags` and returns true if the `flag` bit has
-// changed. Otherwise, returns false.
-bool IsFlagChanged(ash::ArcGameControlsFlag new_flags,
-                   ash::ArcGameControlsFlag old_flags,
-                   ash::ArcGameControlsFlag flag);
 
 // TODO(b/253646354): This will be removed when removing the flag.
 bool IsBeta();

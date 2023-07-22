@@ -11,13 +11,13 @@
 namespace ash::game_dashboard_utils {
 
 bool IsFlagSet(ArcGameControlsFlag flags, ArcGameControlsFlag flag) {
-  return (flags & flag) != 0;
+  return (flags & flag) == flag;
 }
 
 bool IsFlagChanged(ash::ArcGameControlsFlag new_flags,
                    ash::ArcGameControlsFlag old_flags,
                    ash::ArcGameControlsFlag flag) {
-  return ((new_flags ^ old_flags) & flag) != 0;
+  return ((new_flags ^ old_flags) & flag) == flag;
 }
 
 ArcGameControlsFlag UpdateFlag(ArcGameControlsFlag flags,
