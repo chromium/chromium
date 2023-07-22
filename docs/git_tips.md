@@ -29,6 +29,16 @@ The following resources can provide background on how Git works:
     understand Git, here's a cheat sheet to quickly remind you of all the
     commands you need.
 
+## Optimizing (Speeding up) Git for a Large Repository
+
+Git has numerous options, among which some are intended to optimize for large
+repositories.
+[feature.manyFiles](https://git-scm.com/docs/git-config#Documentation/git-config.txt-featuremanyFiles)
+is a convenient option that turns on the group of options that optimize for
+large repositories. Run the following inside the Chromium git repository:
+
+    git config feature.manyFiles true
+
 ## Configuring the output of "git log"
 
 By default, the date that "git log" displays is the "author date." In Chromium,
