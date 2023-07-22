@@ -284,11 +284,11 @@ public interface ITab {
     public void exitFloatingTabInfo();
 
     default void remove() {
+        deleteTabInfo();
         for (IPage page : getPages()) {
             PageSnapshotManager.getInstance().removeSnapshot(page.getPageInfo().getId());
             page.deletePageInfo();
         }
-        deleteTabInfo();
         destroy();
     }
 

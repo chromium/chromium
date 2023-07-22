@@ -312,15 +312,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
         List<Pair<Integer, ModelList>> groupedItems = new ArrayList<>();
 
-        ModelList myGroup = new ModelList();
-        myGroup.add(createListItem(Item.FREE_COPY));
-        if (mItemDelegate.canMoveTab()) {
-            myGroup.add(createListItem(Item.MOVE_TO_NEW_TAB));
-        }
-        myGroup.add(createListItem(Item.MARK_ADS));
-        groupedItems.add(new Pair<>(null, myGroup));
-
-
         if (mParams.isAnchor()) {
             ModelList linkGroup = new ModelList();
             if (!isEmptyUrl(mParams.getUrl())
@@ -391,7 +382,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 //                    && !mItemDelegate.getPageUrl().equals(mParams.getSrcUrl())) {
 //                imageGroup.add(createListItem(Item.OPEN_IMAGE));
 //            }
-            imageGroup.add(createListItem(Item.OPEN_IMAGE));
+            if (!mItemDelegate.getPageUrl().equals(mParams.getSrcUrl())) {
+                imageGroup.add(createListItem(Item.OPEN_IMAGE));
+            }
 //            if ((mMode == ContextMenuMode.NORMAL || mMode == ContextMenuMode.CUSTOM_TAB)) {
 //                if (mShowEphemeralTabNewLabel == null) {
 //                    mShowEphemeralTabNewLabel = shouldTriggerEphemeralTabHelpUi();
@@ -472,6 +465,25 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 ContextMenuUma.recordSaveImageUma(ContextMenuUma.TypeSaveImage.SHOWN);
             }
         }
+
+        ModelList myGroup = new ModelList();
+        myGroup.add(createListItem(Item.FREE_COPY));
+        if (mItemDelegate.canMoveTab()) {
+            myGroup.add(createListItem(Item.MOVE_TO_NEW_TAB));
+        }
+
+        if (!TextUtils.isEmpty(mParams.getCssSelector())
+                || !TextUtils.isEmpty(mParams.getParentCssSelector())
+                || !TextUtils.isEmpty(mParams.getTagName())
+                || !TextUtils.isEmpty(mParams.getIdAttribute())
+                || !TextUtils.isEmpty(mParams.getClassAttribute())
+                || !TextUtils.isEmpty(mParams.getParentTagName())
+                || !TextUtils.isEmpty(mParams.getParentIdAttribute())
+                || !TextUtils.isEmpty(mParams.getParentClassAttribute())) {
+            myGroup.add(createListItem(Item.MARK_ADS));
+        }
+
+        groupedItems.add(new Pair<>(null, myGroup));
 
         return groupedItems;
     }
@@ -792,6 +804,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
      */
     private boolean checkSupportsGoogleSearchByImage(boolean isSrcDownloadableScheme) {
         final TemplateUrlService templateUrlServiceInstance = getTemplateUrlService();
+        if (!templateUrlServiceInstance.isLoaded()) {
+            templateUrlServiceInstance.load();
+        }
         return isSrcDownloadableScheme && templateUrlServiceInstance.isLoaded()
                 && templateUrlServiceInstance.isSearchByImageAvailable()
                 && templateUrlServiceInstance.getDefaultSearchEngineTemplateUrl() != null

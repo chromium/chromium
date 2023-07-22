@@ -17,7 +17,7 @@ public class ColorUtils {
     // Value used by ui::OptionalSkColorToJavaColor() to represent invalid color.
     public static final long INVALID_COLOR = ((long) Integer.MAX_VALUE) + 1;
 
-    private static final float CONTRAST_LIGHT_ITEM_THRESHOLD = 3f;
+    private static final float CONTRAST_LIGHT_ITEM_THRESHOLD = 2f;
     private static final float LIGHTNESS_OPAQUE_BOX_THRESHOLD = 0.82f;
     private static final float MAX_LUMINANCE_FOR_VALID_THEME_COLOR = 0.94f;
     private static final float THEMED_FOREGROUND_BLACK_FRACTION = 0.64f;
@@ -51,7 +51,7 @@ public class ColorUtils {
      * Calculates the contrast between the given color and white, using the algorithm provided by
      * the WCAG v2 in http://www.w3.org/TR/WCAG20/#contrast-ratiodef.
      */
-    private static float getContrastForColor(int color) {
+    public static float getContrastForColor(int color) {
         float bgR = Color.red(color) / 255f;
         float bgG = Color.green(color) / 255f;
         float bgB = Color.blue(color) / 255f;

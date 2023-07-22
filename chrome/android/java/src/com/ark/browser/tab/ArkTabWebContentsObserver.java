@@ -17,12 +17,14 @@ import com.ark.browser.core.UserAgentManager;
 import com.ark.browser.core.utils.PolicyAuditor;
 import com.ark.browser.core.utils.PolicyAuditor.AuditEvent;
 import com.ark.browser.utils.ArkLogger;
+import com.ark.browser.utils.ThreadPool;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ObserverList.RewindableIterator;
+import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.app.bluetooth.BluetoothNotificationService;
@@ -46,7 +48,7 @@ import org.chromium.url.GURL;
 /**
  * WebContentsObserver used by Tab.
  */
-public class ArkTabWebContentsObserver extends ArkTabWebContentsUserData {
+public class ArkTabWebContentsObserver implements UserData {
     // URL didFailLoad error code. Should match the value in net_error_list.h.
     public static final int BLOCKED_BY_ADMINISTRATOR = -22;
 
@@ -55,9 +57,11 @@ public class ArkTabWebContentsObserver extends ArkTabWebContentsUserData {
     /** Used for logging. */
     private static final String TAG = "TabWebContentsObs";
 
+    protected final ArkTabImpl mTab;
     private final ObserverList<Callback> mInitObservers = new ObserverList<>();
     private WebContentsObserver mObserver;
     private GURL mLastUrl;
+    private ArkWebContents mWebContents;
 
     public static ArkTabWebContentsObserver from(Tab tab) {
         ArkTabWebContentsObserver observer = get(tab);
@@ -74,7 +78,23 @@ public class ArkTabWebContentsObserver extends ArkTabWebContentsUserData {
     }
 
     private ArkTabWebContentsObserver(ArkTabImpl tab) {
-        super(tab);
+        mTab = tab;
+        if (mTab.getWindowAndroid() != null) {
+            onAttachToWindowAndroid(mTab.getWindowAndroid());
+        }
+    }
+
+    @Override
+    public void destroy() {
+        cleanupWebContents(mWebContents);
+        destroyInternal();
+    }
+
+    public void onContentChanged() {
+        if (mWebContents == mTab.getArkWeb()) return;
+        if (mWebContents != null) cleanupWebContents(mWebContents);
+        mWebContents = mTab.getArkWeb();
+        if (mWebContents != null) initWebContents(mWebContents);
     }
 
     /**
@@ -101,13 +121,11 @@ public class ArkTabWebContentsObserver extends ArkTabWebContentsUserData {
         void onResult(Tab tab, WebContents result);
     }
 
-    @Override
     public void destroyInternal() {
         mInitObservers.clear();
     }
 
-    @Override
-    public void initWebContents(ArkWebContents arkWeb) {
+    protected void initWebContents(ArkWebContents arkWeb) {
 
         if (mTab.getWindowAndroid() == null) {
             return;
@@ -129,7 +147,6 @@ public class ArkTabWebContentsObserver extends ArkTabWebContentsUserData {
         }
     }
 
-    @Override
     public void onAttachToWindowAndroid(@NonNull WindowAndroid windowAndroid) {
 
         ArkWebContents arkWeb = mTab.getArkWeb();
@@ -151,7 +168,6 @@ public class ArkTabWebContentsObserver extends ArkTabWebContentsUserData {
 //                .setAllowImageDescriptions(!mTab.isCustomTab());
     }
 
-    @Override
     public void onDetachToWindowAndroid() {
         ArkWebContents arkWeb = mTab.getArkWeb();
         if (arkWeb == null) {
@@ -160,8 +176,7 @@ public class ArkTabWebContentsObserver extends ArkTabWebContentsUserData {
         cleanupWebContents(arkWeb);
     }
 
-    @Override
-    public void cleanupWebContents(ArkWebContents arkWeb) {
+    protected void cleanupWebContents(ArkWebContents arkWeb) {
         if (mObserver != null) {
             mObserver.destroy();
             mObserver = null;
@@ -190,6 +205,8 @@ public class ArkTabWebContentsObserver extends ArkTabWebContentsUserData {
             // a new renderer for the shared RenderProcessHost and the new renderer crashes
             // again, all tabs sharing this renderer will be notified about the crash (including
             // potential background tabs that did not reload yet).
+            ArkLogger.e(TAG, "renderProcessGone isDestroyed=" + mTab.isDestroyed()
+                    + " isShowing=" + SadTab.isShowing(mTab));
             if (mTab.isDestroyed() || mTab.needsReload() || SadTab.isShowing(mTab)) return;
 
             int activityState = ApplicationStatus.getStateForActivity(mTab.getActivity2());
@@ -207,7 +224,7 @@ public class ArkTabWebContentsObserver extends ArkTabWebContentsUserData {
                 // observers in {@link WebContentsObserverProxy} receive callbacks for
                 // {@link WebContentsObserver#renderProcessGone} first.
                 SadTab sadTab = SadTab.from(mTab);
-                (new Handler()).post(() -> {
+                ThreadPool.postOnUIThread(() -> {
                     sadTab.show(ContextUtils.getApplicationContext(),
                             /* suggestionAction= */ () -> {
                                 Toast.makeText(mTab.getContext(), "TODO suggestionAction", Toast.LENGTH_SHORT).show();
@@ -229,10 +246,16 @@ public class ArkTabWebContentsObserver extends ArkTabWebContentsUserData {
         }
 
         @Override
+        public void didStartLoading(GURL url) {
+            super.didStartLoading(url);
+            mTab.onLoadStarted();
+        }
+
+        @Override
         public void didFinishLoad(GlobalRenderFrameHostId frameId, GURL url, boolean isKnownValid,
                 boolean isInPrimaryMainFrame, @LifecycleState int frameLifecycleState) {
             assert isKnownValid;
-            mTab.cacheThumbnail();
+            mTab.onLoadStopped();
             if (frameLifecycleState == LifecycleState.ACTIVE) {
                 if (mTab.getNativePage() != null) {
                     mTab.pushNativePageStateToNavigationEntry();

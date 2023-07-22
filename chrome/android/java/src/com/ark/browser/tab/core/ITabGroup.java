@@ -356,23 +356,22 @@ public interface ITabGroup {
         if (tab == null) {
             return false;
         }
-        ITab manager = getTabById(tab.getId());
-        if (manager == null) {
+        ITab iTab = getTabById(tab.getId());
+        if (iTab == null) {
             return false;
         }
 
         IPage nextPage;
-        nextPage = manager.getPreviousPage();
+        nextPage = iTab.getPreviousPage();
         if (nextPage == null) {
-            nextPage = manager.getNextPage();
+            nextPage = iTab.getNextPage();
         }
 
         boolean result;
 
-        ArkLogger.d(getClass().getSimpleName(), "closeTab manager.getPageSize()=" + manager.getPageSize());
+        ArkLogger.d(getClass().getSimpleName(), "closeTab manager.getPageSize()=" + iTab.getPageSize());
         if (nextPage == null) {
-            removeTab(manager);
-            result = getTabList().remove(manager);
+            result = getTabList().remove(iTab);
             int index = getIndex();
             if (getTabList().isEmpty()) {
                 index = ITab.INVALID_TAB_INDEX;
@@ -380,14 +379,17 @@ public interface ITabGroup {
                 index = getTabList().size() - 1;
             }
             onIndexChanged(index);
+            if (result) {
+                removeTab(iTab);
+            }
         } else {
-            selectTab(manager, nextPage);
+            selectTab(iTab, nextPage);
 
-            int i = manager.indexOfPage(tab.getId());
+            int i = iTab.indexOfPage(tab.getId());
 
             ArkLogger.d(getClass().getSimpleName(), "closeTabInStack i=" + i);
             if (i >= 0) {
-                IPage page = manager.getPages().remove(i);
+                IPage page = iTab.getPages().remove(i);
                 page.remove();
                 result = true;
             } else {
@@ -398,12 +400,11 @@ public interface ITabGroup {
         return result;
     }
 
-    default boolean closeTab(ITab manager) {
-        if (manager == null) {
+    default boolean closeTab(ITab tab) {
+        if (tab == null) {
             return false;
         }
-        removeTab(manager);
-        boolean result = getTabList().remove(manager);
+        boolean result = getTabList().remove(tab);
         int index = getIndex();
         if (getTabList().isEmpty()) {
             index = ITab.INVALID_TAB_INDEX;
@@ -411,6 +412,9 @@ public interface ITabGroup {
             index = getTabList().size() - 1;
         }
         onIndexChanged(index);
+        if (result) {
+            removeTab(tab);
+        }
         return result;
     }
 
@@ -419,10 +423,13 @@ public interface ITabGroup {
     }
 
     default void removeTab(ITab tab) {
-        tab.remove();
-        for (TabInfoObserver obs : getObservers()) {
-            obs.didCloseTab(tab.getCurrentPageId(), isIncognito());
-        }
+        int id = tab.getId();
+        ThreadPool.postOnUIThread(() -> {
+            tab.remove();
+            for (TabInfoObserver obs : getObservers()) {
+                obs.didCloseTab(id, isIncognito());
+            }
+        });
     }
 
 

@@ -133,11 +133,11 @@ public class BottomController {
                 return;
             }
             if (mTab.isLoading()) {
-                loadingCancel.setImageResource(R.drawable.ic_refresh);
                 mTab.stopLoading();
+                loadingCancel.setImageResource(R.drawable.ic_refresh);
             } else {
-                loadingCancel.setImageResource(R.drawable.ic_cancel);
                 mTab.reload();
+                loadingCancel.setImageResource(R.drawable.ic_cancel);
             }
         });
 
@@ -148,6 +148,7 @@ public class BottomController {
             public void onAttachToWindowAndroid(Tab tab, @NonNull WindowAndroid windowAndroid) {
                 ArkLogger.e(TAG, "onAttachToWindowAndroid");
                 updateStarButton(tab);
+                updateLoadingState(tab.isLoading());
             }
 
             @Override
@@ -161,7 +162,7 @@ public class BottomController {
 
             @Override
             public void onCrash(Tab tab) {
-                finishLoadProgress(false);
+                updateLoadingState(false);
             }
 
             @Override
@@ -180,10 +181,8 @@ public class BottomController {
                 ArkLogger.d(TAG, "onLoadStarted tab=" + tab.getId());
                 KeyboardUtils.hideSoftInputKeyboard(
                         tab.getWindowAndroid().getActivity().get().getWindow().getDecorView());
-//                mProgressBar.setVisibility(View.VISIBLE);
-                mProgressBar.start();
-                loadingCancel.setImageResource(R.drawable.ic_cancel);
                 loadingTitle.setText(tab.getUrl().toString());
+                updateLoadingState(tab.isLoading());
                 updateStarButton(tab);
             }
 
@@ -201,7 +200,6 @@ public class BottomController {
                 } else {
                     loadingTitle.setText(tab.getTitle());
                 }
-                loadingCancel.setImageResource(R.drawable.ic_refresh);
 //                faviconImg.setImageDrawable(new BitmapDrawable(faviconImg.getResources(), tab.getFavicon()));
 //                if (toDifferentDocument) {
 //                    if (tab.getProgress() > 5 && tab.getProgress() < 100) {
@@ -209,7 +207,7 @@ public class BottomController {
 //                    }
 //                    updateLoadProgress(100);
 //                }
-                finishLoadProgress(true);
+                updateLoadingState(tab.isLoading());
             }
 
             @Override
@@ -222,6 +220,7 @@ public class BottomController {
                 Log.e(TAG, "onContentChanged");
                 loadingTitle.setText(tab.getTitle());
                 updateStarButton(tab);
+                updateLoadingState(tab.isLoading());
             }
 
             @Override
@@ -271,9 +270,19 @@ public class BottomController {
         }
     }
 
+    private void updateLoadingState(boolean isLoading) {
+        int drawableId = isLoading ? R.drawable.ic_cancel : R.drawable.ic_refresh;
+        loadingCancel.setImageResource(drawableId);
+        if (isLoading) {
+            mProgressBar.start();
+        } else {
+            mProgressBar.complete();
+        }
+    }
+
     private void updateLoadProgress(int progress) {
         ArkLogger.d(TAG, "updateLoadProgress progress=" + progress);
-        mProgressBar.start();
+//        mProgressBar.start();
 //        if (progress >= 100) {
 //            mProgressBar.setVisibility(View.GONE);
 //        } else {
@@ -300,14 +309,7 @@ public class BottomController {
         }
         mIsIncognito = page.isIncognito();
         loadingTitle.setText(page.getTitle());
-        int drawableId = page.isLoading() ? R.drawable.ic_cancel : R.drawable.ic_refresh;
-        loadingCancel.setImageResource(drawableId);
-        if (page.isLoading()) {
-            mProgressBar.start();
-        } else {
-            mProgressBar.complete();
-        }
-
+        updateLoadingState(page.isLoading());
         updateStarButton(page);
     }
 
@@ -352,6 +354,8 @@ public class BottomController {
             bgColor = ColorUtils.getDarkenedColor(color, 0.97f);
         }
 
+        float contrast = ColorUtils.getContrastForColor(color);
+        ArkLogger.e(TAG, "updatePrimaryColor color=" + color + " contrast=" + contrast);
         boolean useLight = ColorUtils.shouldUseLightForegroundOnBackground(color);
 //        faviconImg.setBorderColor(useLight ? Color.WHITE : mContext.getResources().getColor(R.color.google_black_400));
         GradientDrawable gradientDrawable = new GradientDrawable();

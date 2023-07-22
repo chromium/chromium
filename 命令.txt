@@ -37,3 +37,5 @@ android_channel = "stable"
 enable_vr = false
 treat_warnings_as_errors=false
 update_android_aar_prebuilts=true
+# 去除代码混淆
+enable_proguard_obfuscation = false

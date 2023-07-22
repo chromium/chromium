@@ -1,5 +1,7 @@
 package com.ark.browser.tab;
 
+import android.text.TextUtils;
+
 import com.ark.browser.utils.ArkLogger;
 
 import org.chromium.chrome.browser.tab.Tab;
@@ -137,10 +139,10 @@ public class ArkInterceptNavigationDelegateImpl extends InterceptNavigationDeleg
                 + "\ngetLastCommittedEntryIndex=" + getLastCommittedEntryIndex()
                 + "\nisInitialNavigation=" + isInitialNavigation()
                 + "\nisSameDocument=" + navigationHandle.isSameDocument());
-        if (isInitialNavigation() || getLastCommittedEntryIndex() > 0) {
+        if (isInitialNavigation() || getLastCommittedEntryIndex() < 0) {
             return false;
         }
-        if (pageTransition == PageTransition.RELOAD
+        if ((pageTransition & PageTransition.RELOAD) != 0
                 || pageTransition == PageTransition.AUTO_SUBFRAME
                 || pageTransition == PageTransition.MANUAL_SUBFRAME
                 || pageTransition == PageTransition.FORM_SUBMIT
@@ -158,6 +160,10 @@ public class ArkInterceptNavigationDelegateImpl extends InterceptNavigationDeleg
                 + " isFragmentNavigation=" + navigationHandle.isFragmentNavigation());
         if (!navigationHandle.isRedirect() && !navigationHandle.isDownload()
                 && !navigationHandle.isFragmentNavigation()) {
+
+            if (TextUtils.equals(mTab.getUrl().getSpec(), escapedUrl.getSpec())) {
+                return false;
+            }
 
 //            GURL url = navigationHandle.getUrl();
 //            LoadUrlParams params = new LoadUrlParams(url);

@@ -11,7 +11,9 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.PointF;
 import android.graphics.PorterDuff;
+import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -113,6 +115,16 @@ public class ContextMenuDialogFragment extends RecyclerAttachDialogFragment<MVCL
         int dp18 = ScreenUtils.dp2pxInt(18);
         int textColor = DialogThemeUtils.getMajorTextColor(context);
 
+        RectF touchRect = new RectF();
+        if (this.touchPoint == null) {
+            int[] locations = new int[2];
+            this.attachView.getLocationOnScreen(locations);
+            touchRect.set((float)locations[0], (float)locations[1], (float)(locations[0] + this.attachView.getMeasuredWidth()), (float)(locations[1] + this.attachView.getMeasuredHeight()));
+            this.touchPoint = new PointF(touchRect.centerX(), touchRect.centerY());
+        }
+        touchRect.set(this.touchPoint.x, this.touchPoint.y, this.touchPoint.x, this.touchPoint.y);
+        boolean isFromBottom = this.touchPoint.y * 2 > ScreenUtils.getScreenHeight();
+
         mRecycler = new EasyRecycler<>(recyclerView, items);
         mRecycler.setLayoutManager(new LinearLayoutManager(context))
                 .onGetChildViewType((list, i) -> list.get(i).type)
@@ -132,13 +144,13 @@ public class ContextMenuDialogFragment extends RecyclerAttachDialogFragment<MVCL
                     if (mRecycler.getItemCount() == 1) {
                         holder.setPadding(dp10, dp18, dp10, dp18);
                     } else if (position == 0) {
-                        if (isShowUp) {
+                        if (isFromBottom) {
                             holder.setPadding(dp10, dp10, dp10, dp18);
                         } else {
                             holder.setPadding(dp10, dp18, dp10, dp10);
                         }
                     } else if (position == list.size() - 1) {
-                        if (isShowUp) {
+                        if (isFromBottom) {
                             holder.setPadding(dp10, dp18, dp10, dp10);
                         } else {
                             holder.setPadding(dp10, dp10, dp10, dp18);

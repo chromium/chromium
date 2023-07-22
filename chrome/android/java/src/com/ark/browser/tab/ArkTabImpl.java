@@ -7,7 +7,6 @@ package com.ark.browser.tab;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.text.TextUtils;
 import android.util.Pair;
@@ -59,7 +58,6 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabThemeColorHelper;
 import org.chromium.chrome.browser.tab.TabUtils;
-import org.chromium.chrome.browser.tab.TabViewAndroidDelegate;
 import org.chromium.chrome.browser.tab.TabViewManager;
 import org.chromium.chrome.browser.tab.TabWebContentsDelegateAndroidImpl;
 import org.chromium.chrome.browser.tab.WebContentsStateBridge;
@@ -130,12 +128,6 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     private boolean mIsClosing;
     private boolean mIsShowingErrorPage;
-
-    /**
-     * TODO move to ArkWebContents
-     * True while a page load is in progress.
-     */
-    private boolean mIsLoading;
 
     /**
      * True while a restore page load is in progress.
@@ -494,6 +486,11 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         boolean notify = (window != null && tabDelegateFactory != null)
                 || (window == null && tabDelegateFactory == null);
         if (notify) {
+            if (mWindowAndroid != null) {
+                ArkTabWebContentsObserver.from(this).onAttachToWindowAndroid(mWindowAndroid);
+            } else if (old != null) {
+                ArkTabWebContentsObserver.from(this).onDetachToWindowAndroid();
+            }
             for (TabObserver observer : mObservers) {
                 observer.onActivityAttachmentChanged(this, window);
                 if (mWindowAndroid != null) {
@@ -748,7 +745,10 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     @Override
     public boolean isLoading() {
-        return mIsLoading;
+        if (mArkWeb == null) {
+            return false;
+        }
+        return mArkWeb.isLoading();
     }
 
     @Override
@@ -874,7 +874,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
             // may use it for logging.
             mTabInfo.accessTime = System.currentTimeMillis();
 
-            notiFyThemeColorChanged();
+            notifyThemeColorChanged();
         } finally {
             TraceEvent.end("Tab.show");
         }
@@ -936,8 +936,8 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
             }
         }
 
-        mUserDataHost.destroy();
         mTabViewManager.destroy();
+        mUserDataHost.destroy();
         destroyWebContents(false);
 
         TabImportanceManager.tabDestroyed(this);
@@ -1060,8 +1060,8 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
      * @param toDifferentDocument Whether this navigation will transition between
      *                            documents (i.e., not a fragment navigation or JS History API call).
      */
-    void onLoadStarted(boolean toDifferentDocument) {
-        if (toDifferentDocument) mIsLoading = true;
+    void onLoadStarted() {
+        boolean toDifferentDocument = isLoading();
         for (TabObserver observer : mObservers) observer.onLoadStarted(this, toDifferentDocument);
     }
 
@@ -1071,8 +1071,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
     void onLoadStopped() {
         cacheThumbnail();
         // mIsLoading should only be false if this is a same-document navigation.
-        boolean toDifferentDocument = mIsLoading;
-        mIsLoading = false;
+        boolean toDifferentDocument = isLoading();
         for (TabObserver observer : mObservers) observer.onLoadStopped(this, toDifferentDocument);
     }
 
@@ -1198,16 +1197,20 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
      * Calls onContentChanged on all TabObservers and updates accessibility visibility.
      */
     void notifyContentChanged() {
+        if (mIsDestroyed) {
+            return;
+        }
+        ArkTabWebContentsObserver.from(this).onContentChanged();
         for (TabObserver observer : mObservers) observer.onContentChanged(this);
     }
 
     void updateThemeColor(int themeColor) {
         if (mThemeColor == themeColor) return;
         mThemeColor = themeColor;
-        notiFyThemeColorChanged();
+        notifyThemeColorChanged();
     }
 
-    void notiFyThemeColorChanged() {
+    void notifyThemeColorChanged() {
         RewindableIterator<TabObserver> observers = getTabObservers();
         while (observers.hasNext()) observers.next().onDidChangeThemeColor(this, mThemeColor);
     }
@@ -1233,8 +1236,6 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
      * Performs any subclass-specific tasks when the Tab crashes.
      */
     void handleTabCrash() {
-        mIsLoading = false;
-
         RewindableIterator<TabObserver> observers = getTabObservers();
         while (observers.hasNext()) observers.next().onCrash(this);
         mIsBeingRestored = false;
@@ -1559,12 +1560,12 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     @Override
     public void loadingStateChanged(boolean shouldShowLoadingUI) {
-        boolean isLoading = getWebContents() != null && getWebContents().isLoading();
-        if (isLoading) {
-            onLoadStarted(shouldShowLoadingUI);
-        } else {
-            onLoadStopped();
-        }
+//        boolean isLoading = getWebContents() != null && getWebContents().isLoading();
+//        if (isLoading) {
+//            onLoadStarted(shouldShowLoadingUI);
+//        } else {
+//            onLoadStopped();
+//        }
     }
 
     @Override

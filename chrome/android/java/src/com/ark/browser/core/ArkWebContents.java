@@ -1,10 +1,7 @@
 package com.ark.browser.core;
 
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.text.TextUtils;
-import android.util.SparseArray;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,7 +9,6 @@ import androidx.annotation.Nullable;
 import com.ark.browser.core.utils.ContentUtils;
 import com.ark.browser.settings.AppConfig;
 import com.ark.browser.tab.ArkTabImpl;
-import com.ark.browser.tab.ArkTabViewAndroidDelegate;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.PageSnapshotManager;
 import com.ark.browser.tab.core.IPage;
@@ -39,10 +35,8 @@ import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.JavaScriptCallback;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
-import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -71,6 +65,11 @@ public class ArkWebContents {
      */
     private LoadUrlParams mPendingLoadParams;
 
+    /**
+     * True while a page load is in progress.
+     */
+    private boolean mIsLoading;
+
     private boolean mStartLoad = false;
     private boolean mFinishLoad = false;
 
@@ -95,12 +94,14 @@ public class ArkWebContents {
                         public void didStartLoading(GURL url) {
                             mFinishLoad = false;
                             mStartLoad = true;
+                            mIsLoading = true;
                             super.didStartLoading(url);
                             updateThemeColor();
                         }
 
                         @Override
                         public void didFailLoad(boolean isInPrimaryMainFrame, int errorCode, GURL failingUrl, int frameLifecycleState) {
+                            mIsLoading = false;
                             super.didFailLoad(isInPrimaryMainFrame, errorCode, failingUrl, frameLifecycleState);
                             updateThemeColor();
                         }
@@ -109,14 +110,27 @@ public class ArkWebContents {
                         public void didFinishLoad(GlobalRenderFrameHostId rfhId, GURL url, boolean isKnownValid, boolean isInPrimaryMainFrame, int rfhLifecycleState) {
                             mStartLoad = true;
                             mFinishLoad = true;
+                            mIsLoading = false;
                             super.didFinishLoad(rfhId, url, isKnownValid, isInPrimaryMainFrame, rfhLifecycleState);
                             updateThemeColor();
+                        }
+
+                        @Override
+                        public void didStopLoading(GURL url, boolean isKnownValid) {
+                            mIsLoading = false;
+                            super.didStopLoading(url, isKnownValid);
                         }
 
                         @Override
                         public void didFirstVisuallyNonEmptyPaint() {
                             super.didFirstVisuallyNonEmptyPaint();
                             updateThemeColor();
+                        }
+
+                        @Override
+                        public void renderProcessGone() {
+                            mIsLoading = false;
+                            super.renderProcessGone();
                         }
                     };
                 }
@@ -205,6 +219,10 @@ public class ArkWebContents {
         mWebContents.getNavigationController().loadUrl(params);
     }
 
+    public boolean isLoading() {
+        return mIsLoading;
+    }
+
     public void evaluateJavaScript(String script, @Nullable JavaScriptCallback callback) {
         mWebContents.evaluateJavaScript(script, callback);
     }
@@ -270,6 +288,7 @@ public class ArkWebContents {
     }
 
     public void loadIfNecessary() {
+        ArkLogger.e(this, "loadIfNecessary id=" + mPageInfo.getId());
         mWebContents.getNavigationController().loadIfNecessary();
     }
 
