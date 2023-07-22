@@ -17,7 +17,6 @@
 #include "ash/wm/overview/overview_session.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -312,89 +311,64 @@ void AnimateDeskBarBounds(DeskBarViewBase* bar_view, bool to_zero_state) {
   desk_widget->SetBounds(target_widget_bounds);
 }
 
-// A self-deleting class that performs the scale up / down animation for the
-// desk icon button.
-class DeskIconButtonScaleAnimation {
- public:
-  DeskIconButtonScaleAnimation(CrOSNextDeskIconButton* button,
-                               const gfx::Transform& scale_transform)
-      : desk_icon_button_(button) {
-    // Please note that since `this` is constructed after `desk_icon_button_` is
-    // laid out in its final position, the target state is its current state.
-    const CrOSNextDeskIconButton::State target_state =
-        desk_icon_button_->state();
-    const bool is_scale_up_animation =
-        target_state == CrOSNextDeskIconButton::State::kActive;
-    const gfx::RoundedCornersF initial_radius =
-        gfx::RoundedCornersF(CrOSNextDeskIconButton::GetCornerRadiusOnState(
-            is_scale_up_animation ? CrOSNextDeskIconButton::State::kExpanded
-                                  : CrOSNextDeskIconButton::State::kActive));
+// Animates the scale up / down animation for the cros next desk icon button.
+void AnimateCrOSNextDeskIconButtonScale(CrOSNextDeskIconButton* button,
+                                        const gfx::Transform& scale_transform) {
+  // Please note that since this is called after `button` is laid out in its
+  // final position, the target state is its current state.
+  const CrOSNextDeskIconButton::State target_state = button->state();
+  const bool is_scale_up_animation =
+      target_state == CrOSNextDeskIconButton::State::kActive;
+  const gfx::RoundedCornersF initial_radius =
+      gfx::RoundedCornersF(CrOSNextDeskIconButton::GetCornerRadiusOnState(
+          is_scale_up_animation ? CrOSNextDeskIconButton::State::kExpanded
+                                : CrOSNextDeskIconButton::State::kActive));
 
-    // Since the corner radius of `desk_icon_button_` is updated on the state
-    // changes, to apply the animation for the corner radius change, set and
-    // apply the corner radius animation on the layer, and set the solid
-    // background (no corner radius) to the new desk button in the meanwhile. At
-    // the end of the animation, set the layer's corner radius back to 0, and
-    // apply the corner radius back to the background. The reason is that the
-    // focus ring is painted on a layer which is a child of
-    // `desk_icon_button_`'s layer. If `desk_icon_button_` has a clip rect, the
-    // clip rect will affect it's children and the focus ring won't be visible.
-    // Please refer to the `Layout` function of `FocusRing` for more
-    // implementation details.
-    auto* layer = desk_icon_button_->layer();
-    layer->SetRoundedCornerRadius(initial_radius);
-    desk_icon_button_->SetBackground(views::CreateSolidBackground(
-        desk_icon_button_->background()->get_color()));
+  // Since the corner radius of `button` is updated on the state changes, to
+  // apply the animation for the corner radius change, set and apply the corner
+  // radius animation on the layer, and set the solid background (no corner
+  // radius) to the new desk button in the meanwhile. At the end of the
+  // animation, set the layer's corner radius back to 0, and apply the corner
+  // radius back to the background. The reason is that the focus ring is painted
+  // on a layer which is a child of `button`'s layer. If `button` has a clip
+  // rect, the clip rect will affect it's children and the focus ring won't be
+  // visible. Please refer to the `Layout` function of `FocusRing` for more
+  // implementation details.
+  auto* layer = button->layer();
+  layer->SetRoundedCornerRadius(initial_radius);
+  button->SetBackground(
+      views::CreateSolidBackground(button->background()->get_color()));
 
-    layer->SetTransform(scale_transform);
+  layer->SetTransform(scale_transform);
 
-    const auto duration = is_scale_up_animation ? kScaleUpDeskIconButton
-                                                : kScaleDownDeskIconButton;
-    const gfx::RoundedCornersF end_radius = gfx::RoundedCornersF(
-        CrOSNextDeskIconButton::GetCornerRadiusOnState(target_state));
-    views::AnimationBuilder()
-        .OnEnded(base::BindOnce(
-            [](DeskIconButtonScaleAnimation* animation) { delete animation; },
-            base::Unretained(this)))
-        .OnAborted(base::BindOnce(
-            [](DeskIconButtonScaleAnimation* animation) { delete animation; },
-            base::Unretained(this)))
-        .SetPreemptionStrategy(
-            ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-        .Once()
-        .SetDuration(duration)
-        .SetRoundedCorners(layer, end_radius, gfx::Tween::ACCEL_20_DECEL_100)
-        .SetTransform(layer, kEndTransform, gfx::Tween::ACCEL_20_DECEL_100);
-  }
-
-  DeskIconButtonScaleAnimation(const DeskIconButtonScaleAnimation&) = delete;
-  DeskIconButtonScaleAnimation& operator=(const DeskIconButtonScaleAnimation&) =
-      delete;
-
-  ~DeskIconButtonScaleAnimation() {
-    const auto* overview_controller = Shell::Get()->overview_controller();
-    if (!overview_controller) {
-      // If the OverviewController is null, things are being torn down and
-      // there's nothing to finish.
-      return;
-    }
-
-    if (overview_controller->InOverviewSession()) {
-      desk_icon_button_->layer()->SetRoundedCornerRadius(
-          gfx::RoundedCornersF());
-      desk_icon_button_->SetBackground(views::CreateRoundedRectBackground(
-          desk_icon_button_->background()->get_color(),
-          CrOSNextDeskIconButton::GetCornerRadiusOnState(
-              desk_icon_button_->state())));
-    }
-  }
-
- private:
-  // `desk_icon_button_` is valid through the lifetime of `this `. Since when
-  // the `desk_icon_button_` is destroyed, `OnAborted` will be triggered and
-  // then the destructor of `this` will be triggered.
-  const raw_ptr<CrOSNextDeskIconButton, ExperimentalAsh> desk_icon_button_;
-};
+  const auto duration =
+      is_scale_up_animation ? kScaleUpDeskIconButton : kScaleDownDeskIconButton;
+  const gfx::RoundedCornersF end_radius = gfx::RoundedCornersF(
+      CrOSNextDeskIconButton::GetCornerRadiusOnState(target_state));
+  views::AnimationBuilder animation_builder;
+  button->set_animation_abort_handle(animation_builder.GetAbortHandle());
+  base::OnceClosure ondone = base::BindOnce(
+      [](CrOSNextDeskIconButton* button) {
+        const auto* overview_controller = Shell::Get()->overview_controller();
+        if (overview_controller->InOverviewSession()) {
+          button->layer()->SetRoundedCornerRadius(gfx::RoundedCornersF());
+          button->SetBackground(views::CreateRoundedRectBackground(
+              button->background()->get_color(),
+              CrOSNextDeskIconButton::GetCornerRadiusOnState(button->state())));
+        }
+      },
+      base::Unretained(button));
+  auto split = base::SplitOnceCallback(std::move(ondone));
+  animation_builder
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(std::move(split.first))
+      .OnAborted(std::move(split.second))
+      .Once()
+      .SetDuration(duration)
+      .SetRoundedCorners(layer, end_radius, gfx::Tween::ACCEL_20_DECEL_100)
+      .SetTransform(layer, kEndTransform, gfx::Tween::ACCEL_20_DECEL_100);
+}
 
 }  // namespace
 
@@ -647,7 +621,7 @@ void PerformDeskIconButtonScaleAnimationCrOSNext(
     DeskBarViewBase* bar_view,
     const gfx::Transform& new_desk_button_rects_transform,
     int shift_x) {
-  new DeskIconButtonScaleAnimation(button, new_desk_button_rects_transform);
+  AnimateCrOSNextDeskIconButtonScale(button, new_desk_button_rects_transform);
 
   gfx::Transform left_begin_transform;
   left_begin_transform.Translate(shift_x, 0);

@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/views/animation/animation_abort_handle.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -66,6 +67,13 @@ class ASH_EXPORT CrOSNextDeskIconButton : public CrOSNextDeskButtonBase {
     paint_as_active_ = paint_as_active;
   }
 
+  // Sets the animation abort handle. Please note, it will abort the existing
+  // animation first (if there is one) when a new one comes.
+  void set_animation_abort_handle(
+      std::unique_ptr<views::AnimationAbortHandle> animation_abort_handle) {
+    animation_abort_handle_ = std::move(animation_abort_handle);
+  }
+
   // Called when the button's state (kZero, kExpanded, kActive) gets updated. It
   // updates `state_` to store the most updated state, corner radius of the
   // background and the focus ring based on `state_`.
@@ -100,6 +108,8 @@ class ASH_EXPORT CrOSNextDeskIconButton : public CrOSNextDeskButtonBase {
   const ui::ColorId background_color_id_;
 
   absl::optional<ui::ColorId> focus_color_id_;
+
+  std::unique_ptr<views::AnimationAbortHandle> animation_abort_handle_;
 };
 
 }  // namespace ash
