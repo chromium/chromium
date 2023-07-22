@@ -119,7 +119,8 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
     gfx::Rect bounds = button_->GetWidget()->GetWorkAreaBoundsInScreen();
     int offset = GetLayoutConstant(TABSTRIP_REGION_VIEW_CONTROL_PADDING);
 
-    int x = base::i18n::IsRTL() ? bounds.x() + offset : bounds.right() - offset;
+    int x = ShouldTabSearchRenderBeforeTabStrip() ? bounds.x() + offset
+                                                  : bounds.right() - offset;
 
     anchor.emplace(gfx::Rect(x, bounds.y() + offset, 0, 0));
   }
