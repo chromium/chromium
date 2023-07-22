@@ -3133,16 +3133,20 @@
             ]
         }
     ],
-    "ChromeOSMaterialNextWaveOne": [
+    "ChromeOSMaterialNextWaveOneCbx": [
         {
             "platforms": [
                 "chromeos"
             ],
             "experiments": [
                 {
-                    "name": "JellyEnabled",
+                    "name": "TimeOfDayEnabled",
                     "enable_features": [
-                        "Jelly"
+                        "FeatureManagementTimeOfDayScreenSaver",
+                        "FeatureManagementTimeOfDayWallpaper",
+                        "Jelly",
+                        "TimeOfDayScreenSaver",
+                        "TimeOfDayWallpaper"
                     ]
                 }
             ]
@@ -13813,24 +13817,6 @@
                     "name": "ThreadedHtmlTokenizer",
                     "enable_features": [
                         "ThreadedHtmlTokenizer"
-                    ]
-                }
-            ]
-        }
-    ],
-    "TimeOfDay": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "TimeOfDayEnabled",
-                    "enable_features": [
-                        "FeatureManagementTimeOfDayScreenSaver",
-                        "FeatureManagementTimeOfDayWallpaper",
-                        "TimeOfDayScreenSaver",
-                        "TimeOfDayWallpaper"
                     ]
                 }
             ]
