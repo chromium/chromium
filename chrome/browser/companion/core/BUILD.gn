@@ -25,6 +25,7 @@ static_library("core") {
     "proto",
     "//base",
     "//chrome/browser/ui/side_panel:side_panel_enums",
+    "//chrome/common:constants",
     "//components/prefs",
     "//components/unified_consent",
     "//content/public/browser",
