@@ -18,6 +18,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desk_bar_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/screen_pinning_controller.h"
@@ -218,6 +219,12 @@ void WindowCycleController::StartCycling(bool same_app_only) {
   // End overview as the window cycle list takes over window switching.
   shell->overview_controller()->EndOverview(
       OverviewEndAction::kStartedWindowCycle);
+
+  // Close all desk bars as the window cycle list takes over window switching.
+  if (auto* desk_bar_controller =
+          shell->desks_controller()->desk_bar_controller()) {
+    desk_bar_controller->CloseAllDeskBars();
+  }
 
   WindowCycleController::WindowList window_list = CreateWindowList();
   SaveCurrentActiveDeskAndWindow(window_list);

@@ -119,6 +119,11 @@ void DeskBarController::OnKeyEvent(ui::KeyEvent* event) {
                                     ui::VKEY_UP);
         break;
       case ui::VKEY_TAB:
+        // For alt+tab/alt+shift+tab, like other UIs on the shelf, it should
+        // hide the desk bars then show the window cycle list.
+        if (event->IsAltDown()) {
+          return;
+        }
         focus_manager->AdvanceFocus(/*reverse=*/event->IsShiftDown());
         break;
       case ui::VKEY_LEFT:
