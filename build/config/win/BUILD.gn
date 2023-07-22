@@ -391,6 +391,13 @@ config("cfi_linker") {
 # user32, gdi32, comctl32, comdlg32, cryptui, d3d9, dwmapi, imm32, msi, ole32,
 # oleacc, rstrtmgr, shell32, shlwapi, and uxtheme.
 #
+# Advapi32.dll is unconditionally loaded at process startup on Windows 10, but
+# on Windows 11 it is not, which makes it worthwhile to delay load it.
+# Additionally, advapi32.dll exports several functions that are forwarded to
+# other DLLs such as cryptbase.dll. If those functions are being called then
+# delay loading of advapi32.dll avoids pulling in those DLLs unnecessarily, even
+# if advapi32.dll itself is loaded.
+#
 # This config applies to chrome.exe, chrome.dll, chrome_elf.dll (& others).
 #
 # This config should also be used for any test binary whose goal is to run
