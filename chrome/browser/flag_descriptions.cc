@@ -5899,6 +5899,12 @@ const char kEnableSuspendToDiskAllowS4Description[] =
     "with keylocker hibernate would otherwise be unavailable. WARNING: Only "
     "enable this if you know what you are doing.";
 
+const char kPanelSelfRefresh2Name[] = "Enable Panel Self Refresh 2";
+const char kPanelSelfRefresh2Description[] =
+    "Enable Panel Self Refresh 2/Selective-Update where supported. "
+    "Allows the display driver to only update regions of the screen that have "
+    "damage.";
+
 const char kEnableVariableRefreshRateName[] = "Enable Variable Refresh Rate";
 const char kEnableVariableRefreshRateDescription[] =
     "Enable the variable refresh rate (Adaptive Sync) setting for capable "

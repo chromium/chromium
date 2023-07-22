@@ -6336,6 +6336,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "panel-self-refresh-2",
+    "owners": [ "mrfemi", "chromeos-gfx-compositor@google.com" ],
+    "expiry_milestone": 124
+  },
+  {
     "name": "partitioned-cookies",
     "owners": [ "dylancutler@google.com" ],
     "expiry_milestone": 118

@@ -3434,6 +3434,9 @@ extern const char kEnableNotificationImageDragDescription[];
 extern const char kEnableOAuthIppName[];
 extern const char kEnableOAuthIppDescription[];
 
+extern const char kPanelSelfRefresh2Name[];
+extern const char kPanelSelfRefresh2Description[];
+
 extern const char kEnableVariableRefreshRateName[];
 extern const char kEnableVariableRefreshRateDescription[];
 

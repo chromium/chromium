@@ -66150,6 +66150,7 @@ from previous Chrome versions.
   <int value="1198604672" label="DiscardExceptionsImprovements:disabled"/>
   <int value="1198839129" label="OfflinePagesLivePageSharing:enabled"/>
   <int value="1199276782" label="HighEfficiencyMultistateMode:enabled"/>
+  <int value="1199500202" label="PanelSelfRefresh2:enabled"/>
   <int value="1200407724" label="WebUITabStripContextMenuAfterTap:disabled"/>
   <int value="1200946197" label="ConfirmationChip:disabled"/>
   <int value="1201008500"
@@ -67719,6 +67720,7 @@ from previous Chrome versions.
   <int value="1979536751" label="lacros-availability-policy"/>
   <int value="1980011075" label="debug-packed-apps"/>
   <int value="1980648371" label="PointerEventV1SpecCapturing:enabled"/>
+  <int value="1982576646" label="PanelSelfRefresh2:disabled"/>
   <int value="1985584246" label="PageInfoHistory:enabled"/>
   <int value="1985952454"
       label="GetDisplayMediaSetAutoSelectAllScreens:enabled"/>

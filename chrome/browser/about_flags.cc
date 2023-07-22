@@ -8034,6 +8034,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(paint_preview::kPaintPreviewDemo)},
 #endif  // BUILDFLAG(ENABLE_PAINT_PREVIEW) && BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"panel-self-refresh-2", flag_descriptions::kPanelSelfRefresh2Name,
+     flag_descriptions::kPanelSelfRefresh2Description, kOsCrOS,
+     FEATURE_VALUE_TYPE(display::features::kPanelSelfRefresh2)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     {"fullscreen-popup-windows", flag_descriptions::kFullscreenPopupWindowsName,
      flag_descriptions::kFullscreenPopupWindowsDescription,
      kOsDesktop | kOsAndroid,
