@@ -48,13 +48,12 @@ class FilePath;
 namespace updater {
 
 // Extracts a tag from the end of the MSI `filename`.
-absl::optional<tagging::TagArgs> ExtractTagArgs(const base::FilePath& filename);
+absl::optional<tagging::TagArgs> MsiReadTag(const base::FilePath& filename);
 
-// Copies `in_file` to `out_file`, and then writes the `tag` to the end of
-// `out_file`.
-bool WriteTagString(const base::FilePath& in_file,
-                    const base::FilePath& out_file,
-                    const std::string& tag_string);
+// Tags `in_file` with `tag_string` and writes the result to `out_file`.
+bool MsiWriteTag(const base::FilePath& in_file,
+                 const std::string& tag_string,
+                 const base::FilePath& out_file);
 
 }  // namespace updater
 

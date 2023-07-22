@@ -4,6 +4,7 @@
 
 #include "chrome/updater/win/msi_tag.h"
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -69,29 +70,21 @@ absl::optional<tagging::TagArgs> ParseTagBuffer(
   return tag_args;
 }
 
-// Converts a little-endian uint16_t value to big-endian and returns it as a
-// char vector.
-std::vector<char> U16IntToBigEndianVector(uint16_t value) {
-  return {static_cast<char>((value & 0xFF00) >> 8),
-          static_cast<char>(value & 0x00FF)};
-}
-
 }  // namespace
 
-absl::optional<tagging::TagArgs> ExtractTagArgs(
-    const base::FilePath& filename) {
+absl::optional<tagging::TagArgs> MsiReadTag(const base::FilePath& filename) {
   return ParseTagBuffer(ReadFileTail(filename));
 }
 
-bool WriteTagString(const base::FilePath& in_file,
-                    const base::FilePath& out_file,
-                    const std::string& tag_string) {
+bool MsiWriteTag(const base::FilePath& in_file,
+                 const std::string& tag_string,
+                 const base::FilePath& out_file) {
   if (tag_string.empty()) {
     return false;
   }
 
   // Check if the file is already tagged.
-  if (ExtractTagArgs(in_file)) {
+  if (MsiReadTag(in_file)) {
     return false;
   }
 
@@ -109,21 +102,10 @@ bool WriteTagString(const base::FilePath& in_file,
   if (!out.IsValid()) {
     return false;
   }
-  if (out.WriteAtCurrentPos(reinterpret_cast<const char*>(kTagStartMagicUtf8),
-                            kTagStartMagicUtf8Size) !=
-      static_cast<int>(kTagStartMagicUtf8Size)) {
-    return false;
-  }
 
-  const auto tag_length_big_endian =
-      U16IntToBigEndianVector(tag_string.length());
-  if (out.WriteAtCurrentPos(tag_length_big_endian.data(),
-                            tag_length_big_endian.size()) !=
-      static_cast<int>(tag_length_big_endian.size())) {
-    return false;
-  }
-  return out.WriteAtCurrentPos(&tag_string[0], tag_string.length()) ==
-         static_cast<int>(tag_string.length());
+  const std::vector<uint8_t> tag = GetTagFromTagString(tag_string);
+  return out.WriteAtCurrentPos(reinterpret_cast<const char*>(tag.data()),
+                               tag.size()) == static_cast<int>(tag.size());
 }
 
 }  // namespace updater

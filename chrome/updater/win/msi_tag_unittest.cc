@@ -32,7 +32,7 @@ class MsiTagTest : public testing::Test {
   base::FilePath tagged_msi_path_;
 };
 
-TEST_F(MsiTagTest, ExtractTagArgs) {
+TEST_F(MsiTagTest, MsiReadTag) {
   const struct {
     const wchar_t* msi_file_name;
     const absl::optional<tagging::TagArgs> expected_tag_args;
@@ -112,8 +112,7 @@ TEST_F(MsiTagTest, ExtractTagArgs) {
   };
 
   for (const auto& test_case : test_cases) {
-    const auto tag_args =
-        ExtractTagArgs(GetMsiFilePath(test_case.msi_file_name));
+    const auto tag_args = MsiReadTag(GetMsiFilePath(test_case.msi_file_name));
     EXPECT_EQ(tag_args.has_value(), test_case.expected_tag_args.has_value());
     if (test_case.expected_tag_args) {
       test::ExpectTagArgsEqual(*tag_args, *test_case.expected_tag_args);
@@ -121,7 +120,7 @@ TEST_F(MsiTagTest, ExtractTagArgs) {
   }
 }
 
-TEST_F(MsiTagTest, WriteTagString) {
+TEST_F(MsiTagTest, MsiWriteTag) {
   const struct {
     const wchar_t* msi_file_name;
     const char* tag_string;
@@ -159,14 +158,14 @@ TEST_F(MsiTagTest, WriteTagString) {
     base::FilePath out_file;
     ASSERT_TRUE(CreateTemporaryFileInDir(temp_dir.GetPath(), &out_file));
 
-    ASSERT_EQ(WriteTagString(GetMsiFilePath(test_case.msi_file_name), out_file,
-                             test_case.tag_string),
+    ASSERT_EQ(MsiWriteTag(GetMsiFilePath(test_case.msi_file_name),
+                          test_case.tag_string, out_file),
               test_case.expected_success);
     if (test_case.expected_success) {
       tagging::TagArgs tag_args;
       ASSERT_EQ(tagging::Parse(test_case.tag_string, {}, &tag_args),
                 tagging::ErrorCode::kSuccess);
-      test::ExpectTagArgsEqual(ExtractTagArgs(out_file).value(), tag_args);
+      test::ExpectTagArgsEqual(MsiReadTag(out_file).value(), tag_args);
     }
   }
 }
