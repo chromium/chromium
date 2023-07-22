@@ -89,6 +89,16 @@ base::Process ProcessFromHandle(base::ProcessHandle handle) {
   return base::Process(handle);
 }
 
+// Returns true if `process` is backgrounded.
+bool IsProcessBackgrounded(const base::Process& process) {
+#if BUILDFLAG(IS_MAC)
+  return process.IsProcessBackgrounded(
+      content::BrowserChildProcessHost::GetPortProvider());
+#else
+  return process.IsProcessBackgrounded();
+#endif
+}
+
 }  // namespace
 
 class ChromeRenderProcessHostTest : public extensions::ExtensionBrowserTest {
@@ -386,14 +396,7 @@ class ChromeRenderProcessHostBackgroundingTest
     if (base::Process::CanBackgroundProcesses()) {
       base::Process p = ProcessFromHandle(process->GetProcess().Handle());
       ASSERT_TRUE(p.IsValid());
-#if BUILDFLAG(IS_MAC)
-      base::PortProvider* port_provider =
-          content::BrowserChildProcessHost::GetPortProvider();
-      EXPECT_EQ(expected_is_backgrounded,
-                p.IsProcessBackgrounded(port_provider));
-#else
-      EXPECT_EQ(expected_is_backgrounded, p.IsProcessBackgrounded());
-#endif
+      EXPECT_EQ(expected_is_backgrounded, IsProcessBackgrounded(p));
     }
   }
 };
@@ -691,9 +694,6 @@ class ChromeRenderProcessHostBackgroundingTestWithAudio
     ASSERT_NE(audio_process_.Pid(), no_audio_process_.Pid());
     ASSERT_TRUE(no_audio_process_.IsValid());
     ASSERT_TRUE(audio_process_.IsValid());
-#if BUILDFLAG(IS_MAC)
-    port_provider_ = content::BrowserChildProcessHost::GetPortProvider();
-#endif  //  BUILDFLAG(IS_MAC)
   }
 
  protected:
@@ -718,19 +718,7 @@ class ChromeRenderProcessHostBackgroundingTestWithAudio
       audio_tab_web_contents_;
 
  private:
-  bool IsProcessBackgrounded(const base::Process& process) {
-#if BUILDFLAG(IS_MAC)
-    return process.IsProcessBackgrounded(port_provider_);
-#else
-    return process.IsProcessBackgrounded();
-#endif
-  }
-
   base::test::ScopedFeatureList feature_list_;
-
-#if BUILDFLAG(IS_MAC)
-  raw_ptr<base::PortProvider> port_provider_;
-#endif
 };
 
 // Test to make sure that a process is backgrounded when the audio stops playing

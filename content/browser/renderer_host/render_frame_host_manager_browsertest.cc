@@ -5902,14 +5902,14 @@ class AssertForegroundHelper {
   // Asserts that |renderer_process| isn't backgrounded and reposts self to
   // check again shortly. |renderer_process| must outlive this
   // AssertForegroundHelper instance.
-  void AssertForegroundAndRepost(const base::Process& renderer_process,
-                                 base::PortProvider* port_provider) {
-    ASSERT_FALSE(renderer_process.IsProcessBackgrounded(port_provider));
+  void AssertForegroundAndRepost(const base::Process& renderer_process) {
+    ASSERT_FALSE(renderer_process.IsProcessBackgrounded(
+        BrowserChildProcessHost::GetPortProvider()));
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&AssertForegroundHelper::AssertForegroundAndRepost,
                        weak_ptr_factory_.GetWeakPtr(),
-                       std::cref(renderer_process), port_provider),
+                       std::cref(renderer_process)),
         base::Milliseconds(1));
   }
 #else   // BUILDFLAG(IS_APPLE)
@@ -5951,11 +5951,6 @@ IN_PROC_BROWSER_TEST_P(
   StartEmbeddedServer();
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-
-#if BUILDFLAG(IS_APPLE)
-  base::PortProvider* port_provider =
-      BrowserChildProcessHost::GetPortProvider();
-#endif  //  BUILDFLAG(IS_APPLE)
 
   // Start off navigating to a.com and capture the process used to commit.
   EXPECT_TRUE(NavigateToURL(
@@ -6002,11 +5997,7 @@ IN_PROC_BROWSER_TEST_P(
   const base::Process& process = speculative_rph->GetProcess();
   EXPECT_TRUE(process.IsValid());
   AssertForegroundHelper assert_foreground_helper;
-#if BUILDFLAG(IS_APPLE)
-  assert_foreground_helper.AssertForegroundAndRepost(process, port_provider);
-#else
   assert_foreground_helper.AssertForegroundAndRepost(process);
-#endif
 
   // The process should be foreground priority before commit because it is
   // pending, and foreground after commit because it has a visible widget.
@@ -6027,11 +6018,6 @@ IN_PROC_BROWSER_TEST_P(
   StartEmbeddedServer();
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-
-#if BUILDFLAG(IS_APPLE)
-  base::PortProvider* port_provider =
-      BrowserChildProcessHost::GetPortProvider();
-#endif  //  BUILDFLAG(IS_APPLE)
 
   // Start off navigating to a.com and capture the process used to commit.
   EXPECT_TRUE(NavigateToURL(
@@ -6088,11 +6074,7 @@ IN_PROC_BROWSER_TEST_P(
   const base::Process& process = spare_rph->GetProcess();
   EXPECT_TRUE(process.IsValid());
   AssertForegroundHelper assert_foreground_helper;
-#if BUILDFLAG(IS_APPLE)
-  assert_foreground_helper.AssertForegroundAndRepost(process, port_provider);
-#else
   assert_foreground_helper.AssertForegroundAndRepost(process);
-#endif
 
   // The process should be foreground priority before commit because it is
   // pending, and foreground after commit because it has a visible widget.
