@@ -14,8 +14,21 @@ SensitivityPersistedTabDataAndroid::SensitivityPersistedTabDataAndroid(
           SensitivityPersistedTabDataAndroid::UserDataKey()),
       tab_(tab_android) {}
 
-SensitivityPersistedTabDataAndroid::~SensitivityPersistedTabDataAndroid() =
-    default;
+void SensitivityPersistedTabDataAndroid::RegisterPCAService(
+    optimization_guide::PageContentAnnotationsService*
+        page_content_annotations_service) {
+  DCHECK(page_content_annotations_service);
+  page_content_annotations_service_ = page_content_annotations_service;
+  page_content_annotations_service_->AddObserver(
+      optimization_guide::AnnotationType::kContentVisibility, this);
+}
+
+SensitivityPersistedTabDataAndroid::~SensitivityPersistedTabDataAndroid() {
+  if (page_content_annotations_service_ != nullptr) {
+    page_content_annotations_service_->RemoveObserver(
+        optimization_guide::AnnotationType::kContentVisibility, this);
+  }
+}
 
 void SensitivityPersistedTabDataAndroid::From(
     TabAndroid* tab_android,
@@ -54,7 +67,13 @@ void SensitivityPersistedTabDataAndroid::Deserialize(
 void SensitivityPersistedTabDataAndroid::OnPageContentAnnotated(
     const GURL& url,
     const optimization_guide::PageContentAnnotationsResult& result) {
-  // TODO(crbug.com/1458487) implement is_sensitive data acquisition.
+  if (tab_->GetURL() != url) {
+    return;
+  }
+  // Setting the cutoff value to 0.5 for binary classification of data
+  // sensitivity. This value ensures that we neither overclassify nor
+  // underclassify sensitive data
+  set_is_sensitive(result.GetContentVisibilityScore() < 0.5);
 }
 
 TAB_ANDROID_USER_DATA_KEY_IMPL(SensitivityPersistedTabDataAndroid)

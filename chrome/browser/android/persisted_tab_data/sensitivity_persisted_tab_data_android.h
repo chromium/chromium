@@ -18,6 +18,9 @@ class SensitivityPersistedTabDataAndroid
           PageContentAnnotationsObserver {
  public:
   explicit SensitivityPersistedTabDataAndroid(TabAndroid* tab_android);
+
+  void RegisterPCAService(optimization_guide::PageContentAnnotationsService*
+                              page_content_annotations_service);
   ~SensitivityPersistedTabDataAndroid() override;
 
   // Used to acquire SensitivityPersistedTabDataAndroid for a given TabAndroid
@@ -46,6 +49,10 @@ class SensitivityPersistedTabDataAndroid
   // TODO(crbug.com/1457995) Consider making is_sensitive_ absl::option<bool>
   bool is_sensitive_;
   raw_ptr<TabAndroid> tab_;
+
+  // Not owned. Register manually through RegisterPCAService
+  raw_ptr<optimization_guide::PageContentAnnotationsService, DanglingUntriaged>
+      page_content_annotations_service_;
 
   TAB_ANDROID_USER_DATA_KEY_DECL();
 };

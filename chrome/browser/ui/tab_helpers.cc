@@ -161,7 +161,10 @@
 #include "printing/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "chrome/browser/android/oom_intervention/oom_intervention_tab_helper.h"
+#include "chrome/browser/android/persisted_tab_data/sensitivity_persisted_tab_data_android.h"
 #include "chrome/browser/android/policy/policy_auditor_bridge.h"
 #include "chrome/browser/banners/android/chrome_app_banner_manager_android.h"
 #include "chrome/browser/content_settings/request_desktop_site_web_contents_observer_android.h"
@@ -392,6 +395,27 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
             TemplateURLServiceFactory::GetForProfile(profile),
             prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
                 profile));
+
+#if BUILDFLAG(IS_ANDROID)
+    // Do not create for Incognito mode.
+    if (!profile->IsOffTheRecord() &&
+        base::FeatureList::IsEnabled(
+            chrome::android::kAndroidAppIntegrationSafeSearch)) {
+      SensitivityPersistedTabDataAndroid::From(
+          TabAndroid::FromWebContents(web_contents),
+          base::BindOnce(
+              [](optimization_guide::PageContentAnnotationsService*
+                     page_content_annotations_service,
+                 PersistedTabDataAndroid* persisted_tab_data) {
+                auto* sensitivity_persisted_tab_data_android =
+                    static_cast<SensitivityPersistedTabDataAndroid*>(
+                        persisted_tab_data);
+                sensitivity_persisted_tab_data_android->RegisterPCAService(
+                    page_content_annotations_service);
+              },
+              page_content_annotations_service));
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
   }
   OutOfMemoryReporter::CreateForWebContents(web_contents);
   chrome::InitializePageLoadMetricsForWebContents(web_contents);
