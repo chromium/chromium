@@ -458,7 +458,7 @@
 <translation id="205212645995975601">燒烤</translation>
 <translation id="2053111141626950936">系統將不會翻譯<ph name="LANGUAGE" />網頁。</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{如果此功能已啟用且處於有效狀態，Chrome 就會判斷您最近的瀏覽活動與哪個大型使用者群組 (又稱「組別」) 最為相似。廣告客戶可以選擇要向該群組顯示的廣告，而您的瀏覽活動會保留在裝置上，絕不會外洩。系統會每日更新您所屬的群組。}=1{如果此功能已啟用且處於有效狀態，Chrome 就會判斷您最近的瀏覽活動與哪個大型使用者群組 (又稱「組別」) 最為相似。廣告客戶可以選擇要向該群組顯示的廣告，而您的瀏覽活動會保留在裝置上，絕不會外洩。系統會每日更新您所屬的群組。}other{如果此功能已啟用且處於有效狀態，Chrome 就會判斷您最近的瀏覽活動與哪個大型使用者群組 (又稱「組別」) 最為相似。廣告客戶可以選擇要向該群組顯示的廣告，而您的瀏覽活動會保留在裝置上，絕不會外洩。系統會每隔 {NUM_DAYS} 日更新您所屬的群組。}}</translation>
-<translation id="2056658168519009885">網站可要求 Chrome 提供資料，以便向您放送個人化廣告。</translation>
+<translation id="2056658168519009885">網站可要求 Chrome 提供資料以向你放送個人化廣告。</translation>
 <translation id="2059202684901022309">22 x 34 吋</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 個建議}other{# 個建議}}</translation>
 <translation id="2066915425250589881">要求刪除已儲存的資料</translation>
@@ -845,7 +845,7 @@
 <translation id="306573536155379004">啟動咗遊戲。</translation>
 <translation id="3068991664510324412">電腦遊戲和電視遊戲</translation>
 <translation id="3080254622891793721">圖片</translation>
-<translation id="3081538120861307764">為評估廣告成效，網站之間會分享特定類型的資料，例如系統向您顯示廣告的時段。</translation>
+<translation id="3081538120861307764">為評估廣告成效，網站之間會分享有限類型的資料，例如系統向您顯示廣告的時段。</translation>
 <translation id="3082007635241601060">允許 Google 使用您的購物車資訊，尋找可用的個人化折扣</translation>
 <translation id="3086579638707268289">您的網絡活動正受監控</translation>
 <translation id="3087734570205094154">下方</translation>
@@ -884,7 +884,7 @@
 <translation id="317878711435188021">知道您是否正在使用此裝置</translation>
 <translation id="3180358318770512945">育兒</translation>
 <translation id="3187306450550410410">彈性工作安排</translation>
-<translation id="3187472288455401631">廣告評估功能</translation>
+<translation id="3187472288455401631">廣告成效評估</translation>
 <translation id="3190736958609431397">取消追蹤</translation>
 <translation id="319282854780294203">社交網絡</translation>
 <translation id="3194737229810486521"><ph name="URL" /> 要求在您的裝置上永久儲存數據</translation>
@@ -2800,7 +2800,7 @@
 <translation id="7791543448312431591">新增</translation>
 <translation id="7798389633136518089">由於政策並非透過雲端來源設定，因此已忽略。</translation>
 <translation id="7800304661137206267">連線採用 <ph name="CIPHER" /> 加密，並設有 <ph name="MAC" /> 訊息驗證及 <ph name="KX" /> 金鑰交換機制。</translation>
-<translation id="7800977246388195491">Chrome 會根據您最近的瀏覽記錄，記住您感興趣的主題。此外，您瀏覽的網站可判斷您喜歡的內容，並稍後要求您提供這些資料，以便向您顯示個人化廣告。您可選擇系統根據哪些主題和網站顯示廣告。</translation>
+<translation id="7800977246388195491">Chrome 會根據您最近的瀏覽記錄，記住您感興趣的主題。此外，您瀏覽的網站可判斷您喜歡的內容，並稍後要求提供這些資料以向您顯示個人化廣告。您可選擇系統根據哪些主題和網站顯示廣告。</translation>
 <translation id="7802523362929240268">合法網站</translation>
 <translation id="7802989406998618639">輸入<ph name="SIDE_OF_CARD" />的 <ph name="NUMBER_OF_DIGITS" /> 位數安全碼，以便銀行驗證您的身份</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>

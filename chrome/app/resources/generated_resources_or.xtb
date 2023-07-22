@@ -5696,7 +5696,7 @@
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> ବ୍ୟସ୍ତ ସମୟ)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{ସମସ୍ତ URLକୁ &amp;ନୂଆ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ}=1{&amp;ନୂଆ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ}other{ସମସ୍ତ ({COUNT})ଟି &amp;ନୂଆ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ}}</translation>
 <translation id="5965661248935608907">ଆପଣ ହୋମ୍ ବଟନ୍‍କୁ କ୍ଲିକ୍ କରନ୍ତି କିମ୍ବା ଓମ୍ନିବକ୍ସରୁ ସନ୍ଧାନ କରନ୍ତି, ସେତେବେଳେ କେଉଁ ପୃଷ୍ଠାଗୁଡ଼ିକ ଦେଖାଯିବ, ତାହା ମଧ୍ୟ ଏହାଦ୍ୱାରା ନିୟନ୍ତ୍ରିତ ହୋଇଥାଏ।</translation>
-<translation id="5968022600320704045">କୌଣସି ସନ୍ଧାନ ଫଳାଫଳ ନାହିଁ</translation>
+<translation id="5968022600320704045">କୌଣସି ସର୍ଚ୍ଚ ଫଳାଫଳ ନାହିଁ</translation>
 <translation id="5969364029958154283">ରିସେଟିଂ ସେଟିଂସ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="5969419185858894314"><ph name="FOLDERNAME" />ରେ <ph name="ORIGIN" /> ଫାଇଲ୍‌ଗୁଡ଼ିକୁ ଦେଖିପାରିବ</translation>
 <translation id="5969728632630673489">କୀବୋର୍ଡ ସର୍ଟକଟ୍ ନୋଟିସକୁ ଖାରଜ କରାଯାଇଛି</translation>

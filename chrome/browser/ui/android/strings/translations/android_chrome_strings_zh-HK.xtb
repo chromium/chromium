@@ -180,7 +180,7 @@
 <translation id="1986685561493779662">此名稱已有人使用</translation>
 <translation id="1995884366040846621">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 將會與此網站分享您的姓名、電郵地址和個人檔案相片。查看此網站的《<ph name="BEGIN_LINK1" />私隱權政策<ph name="END_LINK1" />》。</translation>
 <translation id="200114059308480249">要加入上下文來執行 Google 搜尋嗎？</translation>
-<translation id="2009341475524975924">為評估廣告效益，網站之間可以分享特定類型的資料，例如系統向您顯示廣告的時段。</translation>
+<translation id="2009341475524975924">為評估廣告成效，網站之間可以分享有限類型的資料，例如一天中向您放送廣告的時段。</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# 個檔案}other{# 個檔案}}</translation>
 <translation id="2021896219286479412">全螢幕網站控制</translation>
 <translation id="2038563949887743358">開啟「切換為電腦版網站」</translation>
@@ -395,7 +395,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="316694332262407393">Chrome 已在此執行中。</translation>
 <translation id="3167258285411721858">您可向 <ph name="HOST_NAME" /> 要求取得流動網站</translation>
 <translation id="3169472444629675720">探索</translation>
-<translation id="3187472288455401631">廣告評估功能</translation>
+<translation id="3187472288455401631">廣告成效評估</translation>
 <translation id="3207960819495026254">已加入書籤</translation>
 <translation id="3208584281581115441">立即檢查</translation>
 <translation id="3211426585530211793">已刪除 <ph name="ITEM_TITLE" /></translation>
@@ -423,7 +423,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="3282568296779691940">登入 Chrome</translation>
 <translation id="3285080554353377245">關於如何使用 Chrome 的影片</translation>
 <translation id="3290249595466894471">同時傳送網頁、下載檔案、擴充程式活動及系統資料的少量抽樣資料，以協助發現新威脅</translation>
-<translation id="3293181007446299124">您的瀏覽記錄會保留在裝置上，絕不會外洩。系統亦會延遲傳送報告，從而保護您的身分</translation>
+<translation id="3293181007446299124">瀏覽記錄會保留在裝置上以保私隱。系統亦會延遲傳送報告以保護您的身分</translation>
 <translation id="3303414029551471755">繼續下載內容？</translation>
 <translation id="3305795716056605962">透過「更多選項」掣翻譯頁面</translation>
 <translation id="3319664549618064419">切換至桌面版網站，以取得更佳的預覽效果。</translation>
@@ -604,7 +604,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="433213510553688132">正在設定為追蹤…</translation>
 <translation id="4335835283689002019">「安全瀏覽」功能已關閉</translation>
 <translation id="4351244548802238354">關閉對話方塊</translation>
-<translation id="4369735607080757018">網站之間會分享有限種類的資料 (例如系統向您顯示廣告的時段)，以評估廣告的效益</translation>
+<translation id="4369735607080757018">網站之間會分享有限類型的資料 (例如系統向您顯示廣告的時段) 以評估廣告成效</translation>
 <translation id="4378154925671717803">電話號碼</translation>
 <translation id="438319986296050901">只分享資訊卡</translation>
 <translation id="4384468725000734951">使用「搜狗」搜尋內容</translation>
@@ -1165,7 +1165,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="7242755609445462077">風格化突顯內容 (日期：<ph name="CURRENT_DATE" />)</translation>
 <translation id="7248069434667874558">請確認 <ph name="TARGET_DEVICE_NAME" /> 已開啟 Chrome 的同步處理功能。</translation>
 <translation id="7252076891734325316">請將手機放在電腦附近</translation>
-<translation id="7260367682327802201">Android 裝置可能會有類似的設定。如果 Chrome 和 Android 裝置已開啟廣告評估設定，廣告商或者就能在您瀏覽的網站和使用的應用程式上評估廣告成效。</translation>
+<translation id="7260367682327802201">Android 裝置可能會有類似的設定。如果 Chrome 和 Android 裝置已開啟廣告成效評估，商家或能在你瀏覽的網站和使用的應用程式評估廣告成效。</translation>
 <translation id="727288900855680735">要將 <ph name="ONE_TIME_CODE" /> 提交至 <ph name="ORIGIN" /> 嗎？</translation>
 <translation id="7274013316676448362">已封鎖的網站</translation>
 <translation id="7286572596625053347">要將<ph name="LANGUAGE" />變更為其他語言嗎？</translation>
