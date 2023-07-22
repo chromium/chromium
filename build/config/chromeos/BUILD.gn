@@ -39,6 +39,9 @@ config("runtime_library") {
   # Passing them redundantly is harmless and prepares for using Chromium's
   # toolchain for Lacros.
   if (is_chromeos_device) {
-    ldflags = [ "--rtlib=compiler-rt" ]
+    ldflags = [
+      "--rtlib=compiler-rt",
+      "--unwindlib=libunwind",
+    ]
   }
 }
