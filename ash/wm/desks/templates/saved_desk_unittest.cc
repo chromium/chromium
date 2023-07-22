@@ -182,18 +182,39 @@ class SavedDeskTest : public OverviewTestBase {
     return nullptr;
   }
 
-  ZeroStateIconButton* GetZeroStateLibraryButtonForRoot(
+  const views::Button* GetZeroStateLibraryButtonForRoot(
       aura::Window* root_window) {
-    if (auto* desks_bar_view = GetDesksBarViewForRoot(root_window))
-      return desks_bar_view->zero_state_library_button();
+    if (auto* desks_bar_view = GetDesksBarViewForRoot(root_window)) {
+      return chromeos::features::IsJellyrollEnabled()
+                 ? desks_bar_view->library_button()
+                 : static_cast<views::Button*>(
+                       desks_bar_view->zero_state_library_button());
+    }
     return nullptr;
   }
 
-  ExpandedDesksBarButton* GetExpandedStateLibraryButtonForRoot(
+  const views::View* GetExpandedStateLibraryButtonForRoot(
       aura::Window* root_window) {
-    if (auto* desks_bar_view = GetDesksBarViewForRoot(root_window))
-      return desks_bar_view->expanded_state_library_button();
+    if (auto* desks_bar_view = GetDesksBarViewForRoot(root_window)) {
+      return chromeos::features::IsJellyrollEnabled()
+                 ? desks_bar_view->library_button()
+                 : static_cast<views::View*>(
+                       desks_bar_view->expanded_state_library_button());
+    }
     return nullptr;
+  }
+
+  bool GetNewDeskButtonEnabledState(aura::Window* root_window) {
+    if (chromeos::features::IsJellyrollEnabled()) {
+      auto* desks_bar_view = GetDesksBarViewForRoot(root_window);
+      CHECK(desks_bar_view);
+      return desks_bar_view->new_desk_button()->GetEnabled();
+    } else {
+      return GetPrimaryRootDesksBarView()
+          ->expanded_state_new_desk_button()
+          ->GetInnerButton()
+          ->GetEnabled();
+    }
   }
 
   SavedDeskSaveDeskButton* GetSaveDeskAsTemplateButtonForRoot(
@@ -288,10 +309,15 @@ class SavedDeskTest : public OverviewTestBase {
     // Click the delete button on the delete dialog. Show delete dialog and
     // select accept.
     auto* dialog_controller = saved_desk_util::GetSavedDeskDialogController();
-    auto* dialog_delegate = dialog_controller->dialog_widget()
-                                ->widget_delegate()
-                                ->AsDialogDelegate();
-    dialog_delegate->AcceptDialog();
+    if (!chromeos::features::IsJellyEnabled()) {
+      auto* dialog_delegate = dialog_controller->dialog_widget()
+                                  ->widget_delegate()
+                                  ->AsDialogDelegate();
+      dialog_delegate->AcceptDialog();
+    } else {
+      const auto* dialog_accept_button = ash::GetSavedDeskDialogAcceptButton();
+      LeftClickOn(dialog_accept_button);
+    }
     // Wait for the dialog to close.
     base::RunLoop().RunUntilIdle();
     SavedDeskGridViewTestApi(grid_view).WaitForItemMoveAnimationDone();
@@ -422,8 +448,9 @@ class SavedDeskTest : public OverviewTestBase {
 
   // OverviewTestBase:
   void SetUp() override {
-    // TOOD(b/289462121): Remove Jelly from disbled features when the library
-    // button code is updated to find the right element.
+    // TOOD(b/292156927): Remove Jelly from disabled features until system
+    // dialog exit issue is fixed. Test impacted:
+    // ExitOverviewDeskItemFocusCrash.
     scoped_feature_list_.InitWithFeatures({features::kDesksTemplates},
                                           {chromeos::features::kJelly});
     OverviewTestBase::SetUp();
@@ -2331,8 +2358,9 @@ TEST_F(SavedDeskTest, DesksTemplatesButtonFocusColor) {
 
   ToggleOverview();
 
+  auto* desks_bar_view = GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
   ExpandedDesksBarButton* button =
-      GetExpandedStateLibraryButtonForRoot(Shell::GetPrimaryRootWindow());
+      desks_bar_view->expanded_state_library_button();
   ASSERT_TRUE(button);
 
   // The library button starts of neither focused nor active.
@@ -4511,11 +4539,8 @@ TEST_F(DeskSaveAndRecallTest, NewDeskButtonDisabledWhenRecallingToMaxDesks) {
 
   // We should have the max number of desks at this point and therefore the new
   // desk button should be disabled.
-  auto* new_desk_button = GetPrimaryRootDesksBarView()
-                              ->expanded_state_new_desk_button()
-                              ->GetInnerButton();
   ASSERT_FALSE(controller->CanCreateDesks());
-  ASSERT_FALSE(new_desk_button->GetEnabled());
+  ASSERT_FALSE(GetNewDeskButtonEnabledState(Shell::GetPrimaryRootWindow()));
 
   // After saving the last desk for later, the new desk button should be enabled
   // again.
@@ -4525,7 +4550,7 @@ TEST_F(DeskSaveAndRecallTest, NewDeskButtonDisabledWhenRecallingToMaxDesks) {
   WaitForSavedDeskUI();
   WaitForSavedDeskUI();
   ASSERT_TRUE(controller->CanCreateDesks());
-  ASSERT_TRUE(new_desk_button->GetEnabled());
+  ASSERT_TRUE(GetNewDeskButtonEnabledState(Shell::GetPrimaryRootWindow()));
 
   // Press return so that we can open the saved desk next.
   SendKey(ui::VKEY_RETURN);
@@ -4536,7 +4561,7 @@ TEST_F(DeskSaveAndRecallTest, NewDeskButtonDisabledWhenRecallingToMaxDesks) {
   ASSERT_TRUE(template_item);
   LeftClickOn(template_item);
   ASSERT_FALSE(controller->CanCreateDesks());
-  EXPECT_FALSE(new_desk_button->GetEnabled());
+  EXPECT_FALSE(GetNewDeskButtonEnabledState(Shell::GetPrimaryRootWindow()));
 }
 
 // Tests that we can not save an empty desk as a template. Regression test for
