@@ -31,7 +31,6 @@ using media_session::mojom::MediaSessionAction;
 
 namespace {
 
-// Dimensions.
 constexpr auto kBorderInsets = gfx::Insets::TLBR(16, 8, 8, 8);
 constexpr auto kMainRowInsets = gfx::Insets::TLBR(0, 8, 12, 8);
 constexpr auto kInfoColumnInsets = gfx::Insets::TLBR(0, 8, 0, 0);
@@ -57,6 +56,12 @@ constexpr float kFocusRingHaloInset = -3.0f;
 constexpr auto kArtworkSize = gfx::Size(80, 80);
 constexpr auto kPlayPauseButtonSize = gfx::Size(48, 48);
 constexpr auto kControlsButtonSize = gfx::Size(32, 32);
+
+const views::Label::CustomFont kTextFont = {
+    .font_list = gfx::FontList(gfx::FontList({"Google Sans", "Roboto"},
+                                             gfx::Font::NORMAL,
+                                             /*font_size=*/12,
+                                             gfx::Font::Weight::NORMAL))};
 
 class MediaButton : public views::ImageButton {
  public:
@@ -167,10 +172,8 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
       kMediaInfoSeparator));
   main_row_layout->SetFlexForView(media_info_column, 1);
 
-  source_label_ =
-      media_info_column->AddChildView(std::make_unique<views::Label>(
-          base::EmptyString16(), views::style::CONTEXT_LABEL,
-          views::style::STYLE_SECONDARY));
+  source_label_ = media_info_column->AddChildView(
+      std::make_unique<views::Label>(base::EmptyString16(), kTextFont));
   source_label_->SetLineHeight(kSourceLineHeight);
   source_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   source_label_->SetEnabledColorId(theme_.secondary_foreground_color_id);
@@ -181,9 +184,8 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
   title_row_->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  title_label_ = title_row_->AddChildView(std::make_unique<views::Label>(
-      base::EmptyString16(), views::style::CONTEXT_LABEL,
-      views::style::STYLE_PRIMARY));
+  title_label_ = title_row_->AddChildView(
+      std::make_unique<views::Label>(base::EmptyString16(), kTextFont));
   title_label_->SetLineHeight(kTitleArtistLineHeight);
   title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_label_->SetEnabledColorId(theme_.primary_foreground_color_id);
@@ -199,10 +201,8 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
             theme_.secondary_foreground_color_id, kChevronIconSize)));
   }
 
-  artist_label_ =
-      media_info_column->AddChildView(std::make_unique<views::Label>(
-          base::EmptyString16(), views::style::CONTEXT_LABEL,
-          views::style::STYLE_SECONDARY));
+  artist_label_ = media_info_column->AddChildView(
+      std::make_unique<views::Label>(base::EmptyString16(), kTextFont));
   artist_label_->SetLineHeight(kTitleArtistLineHeight);
   artist_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   artist_label_->SetEnabledColorId(theme_.secondary_foreground_color_id);
