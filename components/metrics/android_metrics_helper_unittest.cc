@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace metrics {
@@ -43,11 +44,12 @@ TEST(AndroidMetricsHelperTest, VersionCode_BadData) {
 }
 
 TEST(AndroidMetricsHelperTest, EmitHistograms_CurrentSession) {
+  TestingPrefServiceSimple pref_service;
+  AndroidMetricsHelper::RegisterPrefs(pref_service.registry());
   base::HistogramTester histogram_tester;
   std::unique_ptr<AndroidMetricsHelper> helper(
       AndroidMetricsHelper::CreateInstanceForTest("588700002", true, true));
-  helper->EmitHistograms(/*current_session=*/true);
-
+  helper->EmitHistograms(&pref_service, /*current_session=*/true);
   histogram_tester.ExpectTotalCount("Android.VersionCode", 1);
   histogram_tester.ExpectUniqueSample("Android.VersionCode", 588700002, 1);
   histogram_tester.ExpectTotalCount("Android.AbiBitnessSupport", 1);
@@ -55,11 +57,13 @@ TEST(AndroidMetricsHelperTest, EmitHistograms_CurrentSession) {
                                       AbiBitnessSupport::k32And64bit, 1);
 }
 
-TEST(AndroidMetricsHelperTest, EmitHistograms_PreviousSession) {
+TEST(AndroidMetricsHelperTest, EmitHistograms_LogPreviousSession) {
+  TestingPrefServiceSimple pref_service;
+  AndroidMetricsHelper::RegisterPrefs(pref_service.registry());
   base::HistogramTester histogram_tester;
   std::unique_ptr<AndroidMetricsHelper> helper(
       AndroidMetricsHelper::CreateInstanceForTest("588700002", true, true));
-  helper->EmitHistograms(/*current_session=*/false);
+  helper->EmitHistograms(&pref_service, /*current_session=*/false);
 
   histogram_tester.ExpectTotalCount("Android.VersionCode", 0);
   histogram_tester.ExpectTotalCount("Android.AbiBitnessSupport", 1);
@@ -67,11 +71,33 @@ TEST(AndroidMetricsHelperTest, EmitHistograms_PreviousSession) {
                                       AbiBitnessSupport::k32And64bit, 1);
 }
 
+TEST(AndroidMetricsHelperTest,
+     EmitHistograms_LogPreviousSessionWithSavedLocalState) {
+  TestingPrefServiceSimple pref_service;
+  AndroidMetricsHelper::RegisterPrefs(pref_service.registry());
+  base::HistogramTester histogram_tester;
+  AndroidMetricsHelper::SaveLocalState(&pref_service, 588700002);
+  std::unique_ptr<AndroidMetricsHelper> helper(
+      AndroidMetricsHelper::CreateInstanceForTest("588700006", false, false));
+  helper->EmitHistograms(&pref_service, /*current_session=*/false);
+  // The previous value was used.
+  histogram_tester.ExpectTotalCount("Android.VersionCode", 1);
+  histogram_tester.ExpectUniqueSample("Android.VersionCode", 588700002, 1);
+  // We don't bother to save/restore AbiBitnessSupport, as we assume that the
+  // value doesn't change across sessions. The test uses a different value
+  // artificially, solely for the purpose of testing this behavior.
+  histogram_tester.ExpectTotalCount("Android.AbiBitnessSupport", 1);
+  histogram_tester.ExpectUniqueSample("Android.AbiBitnessSupport",
+                                      AbiBitnessSupport::kNeither, 1);
+}
+
 TEST(AndroidMetricsHelperTest, EmitHistograms_BadData) {
+  TestingPrefServiceSimple pref_service;
+  AndroidMetricsHelper::RegisterPrefs(pref_service.registry());
   base::HistogramTester histogram_tester;
   std::unique_ptr<AndroidMetricsHelper> helper(
       AndroidMetricsHelper::CreateInstanceForTest("5887_000_0_2", true, false));
-  helper->EmitHistograms(/*current_session=*/true);
+  helper->EmitHistograms(&pref_service, /*current_session=*/true);
 
   histogram_tester.ExpectTotalCount("Android.VersionCode", 0);
   histogram_tester.ExpectTotalCount("Android.AbiBitnessSupport", 1);
