@@ -8450,7 +8450,6 @@
 <translation id="8084510406207562688">還原所有分頁</translation>
 <translation id="8086015605808120405">正在設定 <ph name="PRINTER_NAME" />...</translation>
 <translation id="8086121155774250556">這個分頁正在共用你的畫面</translation>
-<translation id="8086442853986205778">設定 <ph name="PRINTER_NAME" /></translation>
 <translation id="8086610718778464681">無法備份 Linux 應用程式和檔案</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{這個檔案已加密。請要求檔案擁有者解密。}other{部分檔案已加密。請要求檔案擁有者解密。}}</translation>
 <translation id="808894953321890993">變更密碼</translation>
@@ -9111,7 +9110,6 @@
 <translation id="8662671328352114214">加入 <ph name="TYPE" /> 網路</translation>
 <translation id="8662733268723715832">作業時間過長。你可以選擇略過或繼續等待。</translation>
 <translation id="8662795692588422978">人員</translation>
-<translation id="8662811608048051533">大多數網站都會將你登出。</translation>
 <translation id="8662911384982557515">將你的首頁變更為：<ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome 無法設定桌布。</translation>
 <translation id="8663099077749055505">一律禁止在 <ph name="HOST" /> 自動下載多個檔案</translation>
@@ -9252,7 +9250,6 @@
 <translation id="8770406935328356739">擴充功能根目錄</translation>
 <translation id="8771300903067484968">起始網頁背景已重設為預設背景。</translation>
 <translation id="8773280816776735812">顯示 IBAN 值</translation>
-<translation id="8773302562181397928">儲存 <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">確認還原</translation>
 <translation id="8774934320277480003">上邊界</translation>
 <translation id="8775144690796719618">網址無效</translation>

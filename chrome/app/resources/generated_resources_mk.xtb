@@ -1295,6 +1295,7 @@
 <translation id="204497730941176055">Име на шаблон на сертификат на Microsoft</translation>
 <translation id="2045117674524495717">Помош за кратенка од тастатурата</translation>
 <translation id="2045211794962848221">Нема да ја гледате оваа конкретна порака повторно</translation>
+<translation id="2045838962742066664">Скратено пишување</translation>
 <translation id="2045969484888636535">Продолжи да блокираш колачиња</translation>
 <translation id="204622017488417136">Уредот ќе се врати на претходно инсталираната верзија на Chrome. Сите кориснички сметки и локални податоци ќе се отстранат. Ова не може да се врати назад.</translation>
 <translation id="2046702855113914483">Рамен</translation>
@@ -1854,6 +1855,7 @@
 <translation id="2471506181342525583">Пристапот до локацијата е дозволен</translation>
 <translation id="2473195200299095979">Преведи ја страницата</translation>
 <translation id="2475982808118771221">Настана грешка</translation>
+<translation id="2476901513051581836">Не може да се подзачисти просторот сѐ додека не се знае колку простор има офлајн.</translation>
 <translation id="2476974672882258506">Исклучете го Windows за да се деинсталира <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Автоматското скенирање е исклучено бидејќи доделивте повеќе прекинувачи.</translation>
 <translation id="2478176599153288112">Дозволи на медиумски датотеки за „<ph name="EXTENSION" />“</translation>
@@ -2238,6 +2240,7 @@
 <translation id="2794522004398861033">Поврзете се со Wi-Fi или етернет за да поставите eSIM</translation>
 <translation id="2794977172822818797">Додајте ги тековните сајтови</translation>
 <translation id="2795716239552913152">Сајтовите обично ја користат локацијата за важни функции или информации како што се локалните вести или продавниците во близина</translation>
+<translation id="2795950023277268902">Поврзете се на <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> за да пристапувате до вашите датотеки на Drive во апликацијата „Датотеки“</translation>
 <translation id="2796740370559399562">Продолжете со дозволување колачиња</translation>
 <translation id="2798347533012571708">Задржи ги ажурирањата</translation>
 <translation id="2799223571221894425">Рестартирај</translation>
@@ -3673,6 +3676,7 @@
 <translation id="3995138139523574647">USB-Ц уред (задна порта од десна страна)</translation>
 <translation id="3995963973192100066">Пушти анимација</translation>
 <translation id="399788104667917863">Закачи за алатникот</translation>
+<translation id="3998976413398910035">Управувајте со печатачите</translation>
 <translation id="4001540981461989979">Нагласувај го курсорот на глувчето при движење</translation>
 <translation id="4002440992267487163">Закачи го поставувањето</translation>
 <translation id="4005817994523282006">Метод за откривање на временската зона</translation>
@@ -3780,6 +3784,7 @@
 <translation id="4098667039111970300">Алатките со пенкало на алатникот</translation>
 <translation id="4099060993766194518">Да се врати стандардниот пребарувач?</translation>
 <translation id="4099874310852108874">Настана мрежна грешка.</translation>
+<translation id="4100020874626534113">Дозволете флексибилна дијакритичка задача. На пример, може да напишете „anhs“ или „asnh“ за да добиете „ánh“.</translation>
 <translation id="4100733287846229632">Просторот на уредот е критично низок</translation>
 <translation id="4100853287411968461">Ново ограничување за времето поминато на уредот</translation>
 <translation id="4101352914005291489">Скриен SSID</translation>
@@ -4777,6 +4782,7 @@
 <translation id="4953808748584563296">Стандарден портокалов аватар</translation>
 <translation id="4955710816792587366">Изберете PIN</translation>
 <translation id="4959262764292427323">Лозинките се зачувуваат во вашата сметка на Google за да може да ги користите на кој било уред</translation>
+<translation id="4960020053211143927">Не е поддржани од некои апликации</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Емитувај го екранот</translation>
 <translation id="4961361269522589229">идеи за рецепти</translation>
@@ -4976,6 +4982,7 @@
 <translation id="5139823398361067371">Внесете го PIN-кодот за вашиот безбедносен клуч. Ако не го знаете PIN-кодот, ќе треба да го ресетирате безбедносниот клуч.</translation>
 <translation id="5139955368427980650">&amp;Отвори</translation>
 <translation id="5141421572306659464">Примарна сметка</translation>
+<translation id="5141957579434225843">На пример, користете „oà“, „oè“, „uỳ“ наместо „òa“, „òe“, „ùy“</translation>
 <translation id="5142793792982256885">Брзина на лизгање на подлогата за допир</translation>
 <translation id="5143374789336132547">Екстензијата „<ph name="EXTENSION_NAME" />“ ја смени страницата што се прикажува кога ќе кликнете на копчето Почетна страница.</translation>
 <translation id="5143612243342258355">Датотекава е опасна</translation>
@@ -6315,6 +6322,7 @@
 <translation id="628352644014831790">4 секунди</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> обично не се презема и може да биде опасно.</translation>
 <translation id="6285770818046456882">Уредот што споделуваше со вас го откажа преносот</translation>
+<translation id="628726841779494414">Управувајте со печатачите во поставките за печатачи</translation>
 <translation id="6290613030083731160">Нема достапни уреди што споделуваат во близина. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Се потврдува кодот за активација. Може да потрае неколку минути.</translation>
 <translation id="6291741848715722067">Код за потврда</translation>
@@ -7028,6 +7036,7 @@
 <translation id="6897688156970667447">Корисно при слаба светлина и штеди батерија</translation>
 <translation id="6897972855231767338">Дознајте повеќе за прелистувањето како гостин</translation>
 <translation id="6898440773573063262">Апликациите на Киоск сега може да се конфигурираат за автоматски да се стартуваат на уредот.</translation>
+<translation id="6899427698619335650">Дозволете флексибилна дијакритичка задача. На пример, може да напишете „anh1“ или „a1nh“ за да добиете „ánh“.</translation>
 <translation id="6900284862687837908">Апликација во заднина: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">Подобрена заштита</translation>
 <translation id="6900651018461749106">Најавете се повторно за да ја ажурирате <ph name="USER_EMAIL" /></translation>
@@ -8463,7 +8472,6 @@
 <translation id="8084510406207562688">&amp;Врати ги сите картички</translation>
 <translation id="8086015605808120405">Се конфигурира <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086121155774250556">Картичкава го споделува вашиот екран</translation>
-<translation id="8086442853986205778">Постави <ph name="PRINTER_NAME" /></translation>
 <translation id="8086610718778464681">Не може да се направи бекап на апликациите и датотеките на Linux</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Датотекава е шифрирана. Побарајте од сопственикот да ја дешифрира.}one{Некои од датотекиве се шифрирани. Побарајте од сопственикот да ги дешифрира.}other{Некои од датотекиве се шифрирани. Побарајте од сопственикот да ги дешифрира.}}</translation>
 <translation id="808894953321890993">Промени лозинка</translation>
@@ -9127,7 +9135,6 @@
 <translation id="8662671328352114214">Придружување на мрежа <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Ова трае подолго од очекуваното, може да прескокнете или да почекате да заврши.</translation>
 <translation id="8662795692588422978">Луѓе</translation>
-<translation id="8662811608048051533">Ќе ве одјави од повеќето сајтови.</translation>
 <translation id="8662911384982557515">Промени Почетна страница на: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome не може да постави тапет.</translation>
 <translation id="8663099077749055505">Секогаш блокирај повеќекратно автоматско преземање на <ph name="HOST" /></translation>
@@ -9268,7 +9275,6 @@
 <translation id="8770406935328356739">Основен именик на екстензии</translation>
 <translation id="8771300903067484968">Заднината на почетната страница е ресетирана на стандардната заднина.</translation>
 <translation id="8773280816776735812">Прикажи ја вредноста за IBAN</translation>
-<translation id="8773302562181397928">Зачувај го <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Потврдете го враќањето</translation>
 <translation id="8774934320277480003">Маргина на врв</translation>
 <translation id="8775144690796719618">Неважечка URL-адреса</translation>

@@ -8470,7 +8470,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8084510406207562688">모든 탭 복원(&amp;E)</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> 구성 중...</translation>
 <translation id="8086121155774250556">이 탭에서 화면을 공유하는 중입니다</translation>
-<translation id="8086442853986205778"><ph name="PRINTER_NAME" /> 설정</translation>
 <translation id="8086610718778464681">Linux 앱 및 파일을 백업할 수 없음</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{암호화된 파일입니다. 소유자에게 복호화를 요청하세요.}other{일부 파일이 암호화되어 있습니다. 소유자에게 복호화를 요청하세요.}}</translation>
 <translation id="808894953321890993">비밀번호 변경</translation>
@@ -9131,7 +9130,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> 네트워크에 연결</translation>
 <translation id="8662733268723715832">예상보다 많은 시간이 걸리고 있습니다. 계속 기다리거나 건너뛸 수 있습니다.</translation>
 <translation id="8662795692588422978">사용자</translation>
-<translation id="8662811608048051533">대부분의 사이트에서 로그아웃됩니다.</translation>
 <translation id="8662911384982557515">다음으로 홈페이지 변경: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome에서 배경화면을 설정할 수 없습니다.</translation>
 <translation id="8663099077749055505"><ph name="HOST" />에서 여러 항목을 자동으로 다운로드하지 않도록 항상 차단</translation>
@@ -9272,7 +9270,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8770406935328356739">확장 프로그램 루트 디렉터리</translation>
 <translation id="8771300903067484968">시작 페이지 배경화면이 기본 배경화면으로 재설정되었습니다.</translation>
 <translation id="8773280816776735812">IBAN 값 표시</translation>
-<translation id="8773302562181397928"><ph name="PRINTER_NAME" /> 저장</translation>
 <translation id="8774379074441005279">복원 확인</translation>
 <translation id="8774934320277480003">상단 여백</translation>
 <translation id="8775144690796719618">URL이 올바르지 않습니다.</translation>

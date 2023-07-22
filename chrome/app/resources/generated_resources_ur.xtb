@@ -8457,7 +8457,6 @@
 <translation id="8084510406207562688">تمام ٹیبز کو بحال کریں</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> کو کنفیگر کیا جا رہا ہے…</translation>
 <translation id="8086121155774250556">یہ ٹیب آپ کی اسکرین کا اشتراک کر رہا ہے</translation>
-<translation id="8086442853986205778"><ph name="PRINTER_NAME" /> سیٹ اپ کریں</translation>
 <translation id="8086610718778464681">‏Linux ایپس اور فائلز کا بیک اپ نہیں لے سکتے</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{یہ فائل مرموز کردہ ہے۔ اس کے مالک سے غیر مرموز کرنے کو کہیں۔}other{ان فائلز میں سے کچھ مرموز کردہ ہیں۔ ان کے مالک سے غیر مرموز کرنے کو کہیں۔}}</translation>
 <translation id="808894953321890993">پاس ورڈ تبدیل کریں</translation>
@@ -9119,7 +9118,6 @@
 <translation id="8662671328352114214"><ph name="TYPE" /> نیٹ ورک میں شامل ہوں</translation>
 <translation id="8662733268723715832">اس میں توقع سے زیادہ وقت لگ رہا ہے، آپ اسے نظر انداز کر سکتے ہیں یا اس کے مکمل ہونے تک انتظار کر سکتے ہیں۔</translation>
 <translation id="8662795692588422978">لوگ</translation>
-<translation id="8662811608048051533">اکثر سائٹس سے آپ کو سائن آؤٹ کرتا ہے۔</translation>
 <translation id="8662911384982557515">اپنے ہوم صفحہ کو اس پر تبدیل کریں: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">‏Chrome وال پیپر کو سیٹ نہیں کر سکتا ہے۔</translation>
 <translation id="8663099077749055505"><ph name="HOST" /> پر متعدد خودکار ڈاؤن لوڈز کو ہمیشہ مسدود کریں</translation>
@@ -9260,7 +9258,6 @@
 <translation id="8770406935328356739">ایکسٹینشن روٹ ڈائرکٹری</translation>
 <translation id="8771300903067484968">ابتدائی صفحہ کے پس منظر کو ڈیفالٹ پس منظر پر دوبارہ ترتیب دے دیا گیا ہے۔</translation>
 <translation id="8773280816776735812">‏IBAN قدر کو دکھائیں</translation>
-<translation id="8773302562181397928"><ph name="PRINTER_NAME" /> محفوظ کریں</translation>
 <translation id="8774379074441005279">بحالی کی تصدیق کریں</translation>
 <translation id="8774934320277480003">اوپری مارجن</translation>
 <translation id="8775144690796719618">‏غلط URL</translation>

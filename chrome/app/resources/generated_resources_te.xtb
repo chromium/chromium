@@ -4249,6 +4249,7 @@
 <translation id="4508150454272293946">ఈ పరికరానికి కనెక్ట్ చేయబడిన కెమెరా(ల)ను ఉపయోగించడానికి యాప్‌లను, వెబ్‌పేజీలను అనుమతించండి. మీ కెమెరాతో మీకు ఇప్పటికీ సమస్య ఉంటే, యాప్‌ను రీస్టార్ట్ చేయడానికి లేదా వెబ్‌పేజీని రిఫ్రెష్ చేయడానికి ట్రై చేయండి.</translation>
 <translation id="450867954911715010">యాక్సెస్‌ సెట్టింగ్‌లు</translation>
 <translation id="4508765956121923607">&amp;మూలాన్ని చూడండి</translation>
+<translation id="4509277363725254222">మీ <ph name="BEGIN_BOLD_USERNAME" />యూజర్‌నేమ్<ph name="END_BOLD_USERNAME" />, <ph name="BEGIN_BOLD_PASSWORD" />పాస్‌వర్డ్<ph name="END_BOLD_PASSWORD" /> కాపీని మీరు షేర్ చేసినప్పుడు, మీ ఫ్యామిలీ మెంబర్ వాటిని Google Password Managerను ఉపయోగించి పూరించగలరు</translation>
 <translation id="4509421746503122514">అప్‌డేట్ చేయడానికి రీ-లాంచ్ చేయండి</translation>
 <translation id="4510195992002502722">ఫీడ్‌బ్యాక్‌ను పంపడం విఫలమైంది. మళ్లీ ట్రై చేస్తోంది...</translation>
 <translation id="4510479820467554003">తల్లి/తండ్రి ఖాతా లిస్ట్‌</translation>
@@ -4818,6 +4819,7 @@
 <translation id="4994426888044765950">మీరు ఒక కీని నొక్కి పట్టుకుంటే, ఆ కీ అక్షరం రిపీట్ అవుతుంది</translation>
 <translation id="4994754230098574403">సెటప్ చేస్తోంది</translation>
 <translation id="4995293419989417004">యాడ్ టాపిక్‌ల గురించి మరింత తెలుసుకోండి</translation>
+<translation id="4995676741161760215">ఆన్‌లో ఉంది, ఎక్స్‌టెన్షన్ ఎనేబుల్ చేయబడింది</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{<ph name="VM_TYPE" /> వర్చువల్ మెషీన్‌లు ఏవీ కనుగొనబడలేదు}=1{1 <ph name="VM_TYPE" /> వర్చువల్ మెషీన్‌ కనుగొనబడింది: <ph name="VM_NAME_LIST" />}other{{NUM_VMS} <ph name="VM_TYPE" /> వర్చువల్ మెషీన్‌లు కనుగొనబడ్డాయి: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">ఇంటర్నెట్ కనెక్షన్ లేదు.</translation>
 <translation id="4998430619171209993">ఆన్‌లో ఉంది</translation>
@@ -5370,6 +5372,7 @@
 <translation id="5474859849784484111">ఇప్పుడే మీరు Wi-Fiకి కనెక్ట్ అయ్యి, అప్‌డేట్‌ను డౌన్‌లోడ్ చేయాలని <ph name="MANAGER" /> తెలియజేస్తోంది. లేదా డేటా నియంత్రణ ఉన్న కనెక్షన్ నుండి డౌన్‌లోడ్ చేయండి (ఛార్జీలు వర్తించవచ్చు).</translation>
 <translation id="5481273127572794904">ఆటోమేటిక్‌గా అనేక ఫైళ్లను డౌన్‌లోడ్ చేయడానికి అనుమతించబడలేదు</translation>
 <translation id="5481941284378890518">సమీప ప్రింటర్‌లను జోడించండి</translation>
+<translation id="5484462543003267273">ఫ్యామిలీని మేనేజ్ చేయండి</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> కోసం మీరు మీ డేటాను బ్యాకప్ చేసి, ఈరోజే ఈ <ph name="DEVICE_TYPE" />ను రిటర్న్ చేయాల్సి ఉంటుంది. <ph name="LINK_BEGIN" />వివరాలను చూడండి<ph name="LINK_END" />}other{<ph name="MANAGER" /> కోసం మీరు మీ డేటాను బ్యాకప్ చేసి, ఈ <ph name="DEVICE_TYPE" />ను {NUM_DAYS} రోజులలోపు రిటర్న్ చేయాల్సి ఉంటుంది. <ph name="LINK_BEGIN" />వివరాలను చూడండి<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">యాప్‌ను జోడించండి</translation>
 <translation id="5485435764083510385">ప్రాధాన్యత గల క్యాప్షన్ భాష</translation>
@@ -8464,7 +8467,6 @@
 <translation id="8084510406207562688">అన్ని ట్యాబ్‌లను రీస్టోర్ చేయండి</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" />ని కాన్ఫిగర్ చేస్తోంది ...</translation>
 <translation id="8086121155774250556">ఈ ట్యాబ్ మీ స్క్రీన్‌ను షేర్ చేస్తోంది</translation>
-<translation id="8086442853986205778"><ph name="PRINTER_NAME" />ను సెటప్ చేయండి</translation>
 <translation id="8086610718778464681">Linux యాప్‌లు, ఫైల్స్‌ను బ్యాకప్ చేయడం సాధ్యం కాదు</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{ఈ ఫైల్ ఎన్‌క్రిప్ట్ చేయబడింది. డీక్రిప్ట్ చేయమని ఫైల్ యజమానిని అడగండి.}other{ఈ ఫైల్స్‌లో కొన్ని ఎన్‌క్రిప్ట్ చేయబడ్డాయి. డీక్రిప్ట్ చేయమని వాటి యజమానిని అడగండి.}}</translation>
 <translation id="808894953321890993">పాస్‌వర్డ్‌ను మార్చు</translation>
@@ -8968,6 +8970,7 @@
 <translation id="8514746246728959655">వేరొక సెక్యూరిటీ కీని ప్రయత్నించండి</translation>
 <translation id="8514955299594277296">మీ పరికరంలో డేటాను సేవ్ చేయడానికి సైట్‌లను అనుమతించవద్దు (సిఫార్సు చేయబడలేదు)</translation>
 <translation id="8517759303731677493">ఎడిట్ చేయండి…</translation>
+<translation id="8518942514525208851">అసభ్య పదజాలాన్ని దాచండి</translation>
 <translation id="8519895319663397036">పాస్‌వర్డ్‌లను దిగుమతి చేయడం సాధ్యపడలేదు. ఫైల్ సైజ్ 150 KB కన్నా తక్కువ ఉండాలి.</translation>
 <translation id="851991974800416566">ఒక శక్తివంతమైన పాస్‌వర్డ్‌ను వేగంగా ఉపయోగించండి</translation>
 <translation id="8523493869875972733">మార్పులను అలాగే ఉంచు</translation>
@@ -9125,7 +9128,6 @@
 <translation id="8662671328352114214"><ph name="TYPE" /> నెట్‌వర్క్‌లో చేరండి</translation>
 <translation id="8662733268723715832">దీనికి ఊహించిన దాని కంటే ఎక్కువ సమయం పడుతోంది, అందుచేత మీరు స్కిప్ చేయవచ్చు లేదా ఇది పూర్తి అయ్యేవరకు వేచి ఉండవచ్చు.</translation>
 <translation id="8662795692588422978">వ్యక్తులు</translation>
-<translation id="8662811608048051533">చాలా సైట్‌ల నుండి మిమ్మల్ని సైన్ అవుట్ చేస్తుంది.</translation>
 <translation id="8662911384982557515">మీ హోమ్ పేజీని దీనికి మార్చండి: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">వాల్‌పేపర్‌ను Chrome సెట్ చేయలేదు.</translation>
 <translation id="8663099077749055505"><ph name="HOST" />లో ఎల్లప్పుడూ బహుళ ఆటోమేటిక్‌ డౌన్‌లోడ్‌లను బ్లాక్ చేయండి</translation>
@@ -9266,7 +9268,6 @@
 <translation id="8770406935328356739">ఎక్స్‌టెన్ష‌న్‌ మూలం డైరెక్టరీ</translation>
 <translation id="8771300903067484968">ప్రారంభ పేజీ నేపథ్యం అన్నది డిఫాల్ట్ బ్యాక్‌గ్రౌండ్‌కు రీసెట్ చేయబడింది.</translation>
 <translation id="8773280816776735812">IBAN విలువను చూపండి</translation>
-<translation id="8773302562181397928"><ph name="PRINTER_NAME" /> సేవ్ చేయండి</translation>
 <translation id="8774379074441005279">పునరుద్ధరణను నిర్ధారించండి</translation>
 <translation id="8774934320277480003">ఎగువ అంచు</translation>
 <translation id="8775144690796719618">URL చెల్లదు</translation>

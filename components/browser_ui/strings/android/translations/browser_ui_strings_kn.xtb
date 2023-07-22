@@ -301,6 +301,7 @@
 <translation id="6439114592976064011">ನಿಮ್ಮ ವರ್ಚುವಲ್ ರಿಯಾಲಿಟಿ ಸಾಧನ ಮತ್ತು ಡೇಟಾವನ್ನು ಬಳಸದ ಹಾಗೆ ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="6447842834002726250">ಕುಕೀಸ್</translation>
 <translation id="6467852467360539617">ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಿ ಮತ್ತು ಅನುಮತಿಗಳನ್ನು ಮರುಹೊಂದಿಸಿ</translation>
+<translation id="6500423977866688905">ವಿಂಡೋ ಚಿಕ್ಕದಾಗಿದ್ದರೆ, ಮೊಬೈಲ್ ವೀಕ್ಷಣೆಯನ್ನು ವಿನಂತಿಸಿ</translation>
 <translation id="6527303717912515753">ಹಂಚಿಕೊಳ್ಳು</translation>
 <translation id="6545864417968258051">ಬ್ಲೂಟೂತ್ ಸ್ಕ್ಯಾನಿಂಗ್</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ಮತ್ತು ಇನ್ನೂ <ph name="NUM_MORE" /> ಅನುಮತಿಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ಮತ್ತು ಇನ್ನೂ <ph name="NUM_MORE" /> ಅನುಮತಿಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ಮತ್ತು ಇನ್ನೂ <ph name="NUM_MORE" /> ಅನುಮತಿಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}}</translation>

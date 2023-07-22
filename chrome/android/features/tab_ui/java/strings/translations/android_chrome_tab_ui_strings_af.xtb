@@ -37,6 +37,7 @@
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> oortjies lyk of hulle verwant is. Groepeer hulle?</translation>
 <translation id="4212246570487010370">Hou aan blaai</translation>
 <translation id="4648718555153979859">Jou oortjies word hier saamgegroepeer</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{Jy kan jou geslote oortjies in Onlangse Oortjies op die Chrome-hoofkieslys kry.}=1{Jy kan jou geslote oortjies in Onlangse Oortjies op die Chrome-hoofkieslys kry. Jou Incognito-oortjie sal nie beskikbaar wees nie.}other{Jy kan jou geslote oortjies in Onlangse Oortjies op die Chrome-hoofkieslys kry. Jou # Incognito-oortjies sal nie beskikbaar wees nie.}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> resensie)}other{(<ph name="REVIEWS_COUNT_MANY" /> resensies)}}</translation>
 <translation id="4850886885716139402">Bekyk</translation>
 <translation id="4870911314065352661">Maak alle oortjies toe?</translation>

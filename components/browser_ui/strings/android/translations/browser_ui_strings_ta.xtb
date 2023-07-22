@@ -301,6 +301,7 @@
 <translation id="6439114592976064011">விர்ச்சுவல் ரியாலிட்டி சாதனத்தையும் தரவையும் தளங்கள் பயன்படுத்துவதைத் தடு</translation>
 <translation id="6447842834002726250">குக்கீகள்</translation>
 <translation id="6467852467360539617">தரவை அழித்து அனுமதிகளை மீட்டமை</translation>
+<translation id="6500423977866688905">சாளரம் குறுகலாக இருந்தால் மொபைல் காட்சியைக் கோருங்கள்</translation>
 <translation id="6527303717912515753">பகிர்</translation>
 <translation id="6545864417968258051">புளூடூத் ஸ்கேனிங்</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> &amp; மேலும் <ph name="NUM_MORE" /> அனுமதிகள் தடுக்கப்பட்டுள்ளன}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> &amp; மேலும் <ph name="NUM_MORE" /> அனுமதிகள் தடுக்கப்பட்டுள்ளன}}</translation>

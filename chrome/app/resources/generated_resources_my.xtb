@@ -8474,7 +8474,6 @@
 <translation id="8084510406207562688">တဘ်အားလုံး ပြန်&amp;ယူရန်</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> ကို စီစဉ်သတ်မှတ်နေသည် …</translation>
 <translation id="8086121155774250556">ဤတဘ်သည် သင့်စခရင်ကို မျှဝေနေသည်</translation>
-<translation id="8086442853986205778"><ph name="PRINTER_NAME" /> ကို စနစ်ထည့်သွင်းရန်</translation>
 <translation id="8086610718778464681">Linux အက်ပ်နှင့် ဖိုင်များကို မိတ္တူကူး၍မရပါ</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{ဤဖိုင်ကို အသွင်ဝှက်ထားသည်။ ၎င်း၏ပိုင်ရှင်ကို ကုဒ်ဖော်ခိုင်းပါ။}other{ဤဖိုင်များအနက် အချို့ကို အသွင်ဝှက်ထားသည်။ ၎င်းတို့၏ပိုင်ရှင်ကို ကုဒ်ဖော်ခိုင်းပါ။}}</translation>
 <translation id="808894953321890993">စကားဝှက် ပြောင်းရန်</translation>
@@ -9135,7 +9134,6 @@
 <translation id="8662671328352114214"><ph name="TYPE" /> ကွန်ရက်သို့ ချိတ်ခြင်း</translation>
 <translation id="8662733268723715832">မျှော်မှန်းထားသည်ထက် ပိုကြာနေသည်။ ၎င်းကို ကျော်နိုင်သည် (သို့) ပြီးသည်အထိ စောင့်နိုင်သည်။</translation>
 <translation id="8662795692588422978">လူများ</translation>
-<translation id="8662811608048051533">သင့်ကို ဝက်ဆိုက်အများစုမှ ထွက်သွားစေပါမည်။</translation>
 <translation id="8662911384982557515">သင်၏ ပင်မ စာမျက်နှာကို <ph name="HOME_PAGE" />သို့ ပြောင်းလဲရန်</translation>
 <translation id="8662978096466608964">Chrome သည် နောက်ခံပုံကို မသတ်မှတ် နိုင်ခဲ့ပါ။</translation>
 <translation id="8663099077749055505"><ph name="HOST" />မှာ များပြားသည့် အလိုအလျောက် ဒေါင်းလုဒ်များကို အမြဲတမ်း ပိတ်ဆို့ရန်</translation>
@@ -9276,7 +9274,6 @@
 <translation id="8770406935328356739">နောက်ဆက်တွဲ ပင်မလမ်းကြောင်း</translation>
 <translation id="8771300903067484968">စတင်သည့် စာမျက်နှာနောက်ခံကို မူလနောက်ခံသို့ ပြင်ဆင်သတ်မှတ်ထားပါသည်။</translation>
 <translation id="8773280816776735812">IBAN တန်ဖိုးပြပါ</translation>
-<translation id="8773302562181397928"><ph name="PRINTER_NAME" /> ကို သိမ်းရန်</translation>
 <translation id="8774379074441005279">ပြန်ယူခြင်းကို အတည်ပြုခြင်း</translation>
 <translation id="8774934320277480003">ထိပ်ဆုံး မာဂျင်</translation>
 <translation id="8775144690796719618">URL မမှန်ပါ</translation>

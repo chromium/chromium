@@ -8457,7 +8457,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8084510406207562688">Vrati sve kartice</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> se konfiguriše…</translation>
 <translation id="8086121155774250556">Ova kartica deli ekran</translation>
-<translation id="8086442853986205778">Podesite <ph name="PRINTER_NAME" /></translation>
 <translation id="8086610718778464681">Pravljenje rezervnih kopija Linux aplikacija i fajlova nije uspelo.</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Ova datoteka je šifrovana. Zatražite od vlasnika da je dešifruje.}one{Neke od ovih datoteka su šifrovane. Zatražite od vlasnika da ih dešifruje.}few{Neke od ovih datoteka su šifrovane. Zatražite od vlasnika da ih dešifruje.}other{Neke od ovih datoteka su šifrovane. Zatražite od vlasnika da ih dešifruje.}}</translation>
 <translation id="808894953321890993">Promeni lozinku</translation>
@@ -9118,7 +9117,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8662671328352114214">Pridružite se <ph name="TYPE" /> mreži</translation>
 <translation id="8662733268723715832">Ovo traje duže od očekivanog, pa možete da preskočite ili da sačekate dok ne bude gotovo.</translation>
 <translation id="8662795692588422978">Osobe</translation>
-<translation id="8662811608048051533">Odjaviće vas sa većine sajtova.</translation>
 <translation id="8662911384982557515">Promenite početnu stranicu u: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome ne može da podesi pozadinu.</translation>
 <translation id="8663099077749055505">Uvek blokiraj više automatskih preuzimanja na hostu <ph name="HOST" /></translation>
@@ -9259,7 +9257,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8770406935328356739">Osnovni direktorijum dodatka</translation>
 <translation id="8771300903067484968">Pozadina početne stranice je resetovana na podrazumevanu pozadinu.</translation>
 <translation id="8773280816776735812">Prikaži IBAN vrednost</translation>
-<translation id="8773302562181397928">Sačuvajte <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Potvrdite vraćanje</translation>
 <translation id="8774934320277480003">Gornja margina</translation>
 <translation id="8775144690796719618">Nevažeći URL</translation>

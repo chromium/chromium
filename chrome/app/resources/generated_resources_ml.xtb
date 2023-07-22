@@ -8456,7 +8456,6 @@
 <translation id="8084510406207562688">എല്ലാ ടാബുകളും പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> കോൺഫിഗർ ചെയ്യുന്നു ...</translation>
 <translation id="8086121155774250556">ഈ ടാബ് നിങ്ങളുടെ സ്‌ക്രീൻ പങ്കിടുന്നു</translation>
-<translation id="8086442853986205778"><ph name="PRINTER_NAME" /> സജ്ജീകരിക്കുക</translation>
 <translation id="8086610718778464681">Linux ആപ്പുകളും ഫയലുകളും ബാക്കപ്പെടുക്കാനായില്ല</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{ഈ ഫയൽ എൻക്രിപ്റ്റ് ചെയ്‌തതാണ്. ഡീക്രിപ്റ്റ് ചെയ്യാൻ അതിന്റെ ഉടമയോട് ആവശ്യപ്പെടുക.}other{ഈ ഫയലുകളിൽ ചിലത് എൻക്രിപ്റ്റ് ചെയ്‌തതാണ്. ഡീക്രിപ്റ്റ് ചെയ്യാൻ അവയുടെ ഉടമയോട് ആവശ്യപ്പെടുക.}}</translation>
 <translation id="808894953321890993">പാസ്‌വേഡ് മാറ്റുക</translation>
@@ -9118,7 +9117,6 @@
 <translation id="8662671328352114214"><ph name="TYPE" /> നെറ്റ്‌വർക്കിൽ ചേരുക</translation>
 <translation id="8662733268723715832">ഇത് പ്രതീക്ഷിച്ചതിലും കൂടുതൽ സമയമെടുക്കുന്നു, ഇത് പൂർത്തിയാകുന്നത് വരെ നിങ്ങൾക്ക് ഒഴിവാക്കുകയോ കാത്തിരിക്കുകയോ ചെയ്യാം.</translation>
 <translation id="8662795692588422978">ആളുകള്‍‌</translation>
-<translation id="8662811608048051533">നിങ്ങൾ മിക്ക സൈറ്റുകളിൽ നിന്നും സൈൻ ഔട്ടാകും.</translation>
 <translation id="8662911384982557515">നിങ്ങളുടെ ഹോം പേജ് ഇതായി മാറ്റുക: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome-ന് വാൾപേപ്പർ സജ്ജമാക്കാൻ കഴിയില്ല.</translation>
 <translation id="8663099077749055505"><ph name="HOST" />-ൽ എല്ലായ്‌പ്പോഴും ഒന്നിലേറെ യാന്ത്രിക ഡൗൺലോഡുകൾ തടയുക</translation>
@@ -9258,7 +9256,6 @@
 <translation id="8770406935328356739">വിപുലീകരണ റൂട്ട് ഡയറക്റ്ററി</translation>
 <translation id="8771300903067484968">ആരംഭ പേജിൻ്റെ പശ്‌ചാത്തലം ഡിഫോൾട്ട് പശ്ചാത്തലമാക്കി പുനഃക്രമീകരിച്ചു.</translation>
 <translation id="8773280816776735812">IBAN മൂല്യം കാണിക്കുക</translation>
-<translation id="8773302562181397928"><ph name="PRINTER_NAME" /> സംരക്ഷിക്കുക</translation>
 <translation id="8774379074441005279">പുനഃസ്ഥാപിക്കൽ സ്ഥിരീകരിക്കുക</translation>
 <translation id="8774934320277480003">മുകൾഭാഗത്തെ മാർജിൻ</translation>
 <translation id="8775144690796719618">URL അസാധുവാണ്</translation>

@@ -8468,7 +8468,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8084510406207562688">Възстановяване на всички раздели</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> се конфигурира...</translation>
 <translation id="8086121155774250556">Чрез този раздел се споделя екранът ви</translation>
-<translation id="8086442853986205778">Настройване на <ph name="PRINTER_NAME" /></translation>
 <translation id="8086610718778464681">Създаването на резервно копие на файловете и приложенията за Linux не е възможно</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Този файл е шифрован. Помолете собственика му да го разшифрова.}other{Някои от тези файлове са шифровани. Помолете собственика им да ги разшифрова.}}</translation>
 <translation id="808894953321890993">Промяна на паролата</translation>
@@ -9129,7 +9128,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8662671328352114214">Присъединяване към <ph name="TYPE" /> мрежа</translation>
 <translation id="8662733268723715832">Процесът отнема по-дълго от очакваното. Можете да го пропуснете или да изчакате да завърши.</translation>
 <translation id="8662795692588422978">Хора</translation>
-<translation id="8662811608048051533">Ще излезете от повечето сайтове.</translation>
 <translation id="8662911384982557515">Промяна на началната ви страница на <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome не може да зададе тапета.</translation>
 <translation id="8663099077749055505">Автоматичното изтегляне на няколко файла да се блокира винаги за <ph name="HOST" /></translation>
@@ -9270,7 +9268,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8770406935328356739">Основна директория на разширението</translation>
 <translation id="8771300903067484968">Възстановен е стандартният фон на началната страница.</translation>
 <translation id="8773280816776735812">Показване на стойността на IBAN</translation>
-<translation id="8773302562181397928">Запазване на <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Потвърждаване на възстановяването</translation>
 <translation id="8774934320277480003">Горно поле</translation>
 <translation id="8775144690796719618">Невалиден URL адрес</translation>

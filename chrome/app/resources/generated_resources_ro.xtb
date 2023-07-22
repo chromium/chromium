@@ -8460,7 +8460,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8084510406207562688">R&amp;estabilește toate filele</translation>
 <translation id="8086015605808120405">Se configurează <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086121155774250556">Această filă permite accesul la ecranul tău</translation>
-<translation id="8086442853986205778">Configurează <ph name="PRINTER_NAME" /></translation>
 <translation id="8086610718778464681">Nu se poate face backup pentru aplicațiile și fișierele Linux</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Fișierul este criptat. Solicită-i proprietarului să îl decripteze.}few{Unele dintre aceste fișiere sunt criptate. Solicită-i proprietarului să le decripteze.}other{Unele dintre aceste fișiere sunt criptate. Solicită-i proprietarului să le decripteze.}}</translation>
 <translation id="808894953321890993">Schimbă parola</translation>
@@ -9122,7 +9121,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8662671328352114214">Conectează-te la rețeaua <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Acțiunea durează mai mult decât s-a estimat. Poți să o omiți sau să aștepți până când se finalizează.</translation>
 <translation id="8662795692588422978">Persoane</translation>
-<translation id="8662811608048051533">Te deconectează de pe majoritatea site-urilor.</translation>
 <translation id="8662911384982557515">Schimbă pagina de pornire la: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome nu poate seta imaginea de fundal.</translation>
 <translation id="8663099077749055505">Blocați întotdeauna descărcarea automată a mai multor fișiere pentru <ph name="HOST" /></translation>
@@ -9263,7 +9261,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8770406935328356739">Director rădăcină pentru extensie</translation>
 <translation id="8771300903067484968">Fundalul paginii de pornire a fost resetat la fundalul prestabilit.</translation>
 <translation id="8773280816776735812">Afișează valoarea IBAN</translation>
-<translation id="8773302562181397928">Salvați <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Confirmă restabilirea</translation>
 <translation id="8774934320277480003">Margine sus</translation>
 <translation id="8775144690796719618">Adresă URL nevalidă</translation>

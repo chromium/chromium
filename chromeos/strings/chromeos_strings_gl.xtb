@@ -372,6 +372,7 @@
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="39823212440917567">Quitaranse os traballos de impresión de máis de <ph name="NUMBER_OF_DAYS" /> días</translation>
 <translation id="3993704782688964914">O dispositivo (<ph name="DEVICE_NAME" />) xa está actualizado</translation>
+<translation id="3998976413398910035">Xestionar impresoras</translation>
 <translation id="4003384961948020559">Produciuse un erro: a saída da impresora está chea</translation>
 <translation id="4021031199988160623">Cambia ao modo de ordenador portátil para realizar a proba</translation>
 <translation id="4034824040120875894">Impresora</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">Só para uso interno</translation>
 <translation id="5649768706273821470">Escoitar</translation>
 <translation id="5655283760733841251">Aumentar brillo do teclado</translation>
+<translation id="5655776422854483175">Non hai ningún traballo de impresión</translation>
 <translation id="5659593005791499971">Correo electrónico</translation>
 <translation id="5662240986744577912">activar ou desactivar a pantalla de privacidade</translation>
 <translation id="5669267381087807207">Activando</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Poñer tema escuro</translation>
+<translation id="628726841779494414">Xestiona as túas impresoras na configuración de impresoras</translation>
 <translation id="629550705077076970">atenuación do teclado</translation>
 <translation id="6302401976930124515">Cancelouse a proba de <ph name="TEST_NAME" /></translation>
 <translation id="631063167932043783">Aplicación Explorar</translation>

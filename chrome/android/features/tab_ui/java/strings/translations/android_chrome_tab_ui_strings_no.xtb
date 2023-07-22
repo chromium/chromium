@@ -37,6 +37,7 @@
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> faner ser ut til å være relaterte. Vil du gruppere dem?</translation>
 <translation id="4212246570487010370">Fortsett å surfe</translation>
 <translation id="4648718555153979859">Fanene dine er gruppert sammen her</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{Du finner de lukkede fanene dine under Nylige faner på hovedmenyen i Chrome.}=1{Du finner de lukkede fanene dine under Nylige faner på hovedmenyen i Chrome. Inkognitofanen din kommer ikke til å være tilgjengelig.}other{Du finner de lukkede fanene dine under Nylige faner på hovedmenyen i Chrome. De # inkognitofanene dine kommer ikke til å være tilgjengelige.}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> anmeldelse)}other{(<ph name="REVIEWS_COUNT_MANY" /> anmeldelser)}}</translation>
 <translation id="4850886885716139402">Visning</translation>
 <translation id="4870911314065352661">Vil du lukke alle faner?</translation>

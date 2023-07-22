@@ -2311,7 +2311,7 @@
 <translation id="5967260682280773804">36 x 48 ίντσες</translation>
 <translation id="5967592137238574583">Επεξεργασία στοιχείων επικοινωνίας</translation>
 <translation id="5967867314010545767">Κατάργηση από το ιστορικό</translation>
-<translation id="5968022600320704045">Κανένα αποτέλεσμα αναζήτησης</translation>
+<translation id="5968022600320704045">Δεν υπάρχουν αποτελέσματα αναζήτησης</translation>
 <translation id="5969199813874624822">Αποθήκευση και παρακολούθηση τιμής</translation>
 <translation id="5974052231147553524">Έκτο ρολό</translation>
 <translation id="5975083100439434680">Σμίκρυνση</translation>
@@ -2659,6 +2659,7 @@
 <translation id="6691397311652656001">Απελευθερώστε περισσότερο από <ph name="REQUIRED_FREE_DISK_SPACE" /> χώρου</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και, στη συνέχεια, Enter για να βρείτε τη συσκευή σας στον Λογαριασμό Google.</translation>
 <translation id="6698381487523150993">Δημιουργήθηκε:</translation>
+<translation id="67007264085648978">Δείκτης χρόνου</translation>
 <translation id="6702919718839027939">Παρουσίαση</translation>
 <translation id="6704458454638854812">Η ιδιότητα custom_size έχει οριστεί. Το αναμενόμενο όνομα είναι custom.</translation>
 <translation id="6706005862292023715">Κουρτίνες και είδη σκίασης παραθύρων</translation>

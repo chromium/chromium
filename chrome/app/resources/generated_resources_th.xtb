@@ -1557,6 +1557,7 @@
 <translation id="2263189956353037928">ออกจากระบบและลงชื่อเข้าใช้ใหม่</translation>
 <translation id="2263371730707937087">อัตราการรีเฟรชหน้าจอ</translation>
 <translation id="2263679799334060788">ความคิดเห็นของคุณช่วยปรับปรุง Google Cast ซึ่งเป็นประโยชน์สำหรับเรา หากต้องการความช่วยเหลือในการแก้ปัญหาที่เกิดขึ้นกับการแคสต์ โปรดไปที่<ph name="BEGIN_LINK" />ศูนย์ช่วยเหลือ<ph name="END_LINK" /></translation>
+<translation id="22649924370461580">กลุ่มแท็บที่บันทึกไว้</translation>
 <translation id="2266957463645820432">IPP ผ่าน USB (IPPUSB)</translation>
 <translation id="2268130516524549846">ปิดใช้งานบลูทูธแล้ว</translation>
 <translation id="2268182915828370037">ปิดการซิงค์ไฟล์ใช่ไหม</translation>
@@ -1784,6 +1785,7 @@
 <translation id="2435248616906486374">เครือข่ายถูกตัดการเชื่อมต่อ</translation>
 <translation id="2435457462613246316">แสดงรหัสผ่าน</translation>
 <translation id="2436385001956947090">คัดลอกลิงก์</translation>
+<translation id="2438853563451647815">ไม่ได้เชื่อมต่อเครื่องพิมพ์</translation>
 <translation id="2439626940657133600">กำลังโหลด <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">ดูโ&amp;ค้ดต้นฉบับ</translation>
 <translation id="2440823041667407902">การเข้าถึงตำแหน่ง</translation>
@@ -4453,6 +4455,7 @@
 <translation id="4683629100208651599">Make Lowercase</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (ค่าเริ่มต้น)</translation>
 <translation id="4684427112815847243">ซิงค์ทุกอย่าง</translation>
+<translation id="4687238339694011189">ตรวจสอบว่าเครื่องพิมพ์เปิดอยู่และเชื่อมต่อเครือข่ายเดียวกันกับ Chromebook หรือใช้สาย USB</translation>
 <translation id="4687613760714619596">อุปกรณ์ที่ไม่รู้จัก (<ph name="DEVICE_ID" />)</translation>
 <translation id="4687718960473379118">โฆษณาที่เว็บไซต์แนะนำ</translation>
 <translation id="4688036121858134881">รหัสบันทึกในเครื่อง: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" /></translation>
@@ -6107,6 +6110,7 @@
 <translation id="6113434369102685411">ตั้งค่าเครื่องมือค้นหาเริ่มต้นสำหรับเบราว์เซอร์ Chrome และ Launcher ของ <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">โปรดเปลี่ยนเป็นโปรไฟล์ผู้ใช้หลักในโทรศัพท์เพื่อใช้ Smart Lock</translation>
 <translation id="6116921718742659598">เปลี่ยนการตั้งค่าภาษาและการป้อนข้อมูล</translation>
+<translation id="6119008366402292080">ไม่มีเครื่องพิมพ์</translation>
 <translation id="6119927814891883061">ตั้งชื่ออุปกรณ์ว่า <ph name="DEVICE_NAME" /></translation>
 <translation id="6119972796024789243">การแก้สี</translation>
 <translation id="6120707837086723438">สิ่งที่เห็นนี้คือสูตรอาหารที่แนะนำตามกิจกรรมการค้นหาสูตรอาหารครั้งล่าสุดของคุณ
@@ -6117,6 +6121,7 @@
 <translation id="6122081475643980456">กำลังมีการควบคุมการเชื่อมต่ออินเทอร์เน็ตของคุณ</translation>
 <translation id="6122093587541546701">อีเมล (ไม่บังคับ):</translation>
 <translation id="6122095009389448667">บล็อกเว็บไซต์ไม่ให้เห็นคลิปบอร์ดต่อไป</translation>
+<translation id="6122513630797178831">บันทึก CVC</translation>
 <translation id="6122600716821516697">แชร์กับอุปกรณ์นี้ใช่ไหม</translation>
 <translation id="6122831415929794347">ปิด Google Safe Browsing ใช่ไหม</translation>
 <translation id="6124650939968185064">ส่วนขยายต่อไปนี้ต้องพึ่งพาส่วนขยายนี้:</translation>
@@ -8453,7 +8458,6 @@
 <translation id="8084510406207562688">คืนค่าแท็บทั้งหมด</translation>
 <translation id="8086015605808120405">กำลังกำหนดค่า <ph name="PRINTER_NAME" /> ...</translation>
 <translation id="8086121155774250556">แท็บนี้กำลังแชร์หน้าจอของคุณ</translation>
-<translation id="8086442853986205778">ตั้งค่า <ph name="PRINTER_NAME" /></translation>
 <translation id="8086610718778464681">สำรองแอปและไฟล์ Linux ไม่ได้</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{ไฟล์นี้มีการเข้ารหัส ขอให้เจ้าของไฟล์ถอดรหัส}other{ไฟล์เหล่านี้บางไฟล์มีการเข้ารหัส ขอให้เจ้าของไฟล์ถอดรหัส}}</translation>
 <translation id="808894953321890993">เปลี่ยนรหัสผ่าน</translation>
@@ -9115,7 +9119,6 @@
 <translation id="8662671328352114214">เข้าร่วมเครือข่าย <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">การดำเนินการนี้ใช้เวลานานกว่าที่คาดไว้ คุณจะข้ามไปก่อนหรือรอให้ดำเนินการเสร็จก็ได้</translation>
 <translation id="8662795692588422978">บุคคล</translation>
-<translation id="8662811608048051533">นำคุณออกจากระบบของเว็บไซต์ส่วนใหญ่</translation>
 <translation id="8662911384982557515">เปลี่ยนหน้าแรกของคุณเป็น: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome ไม่สามารถตั้งวอลเปเปอร์</translation>
 <translation id="8663099077749055505">บล็อกการดาวน์โหลดโดยอัตโนมัติหลายรายการที่ <ph name="HOST" /> เสมอ</translation>
@@ -9256,7 +9259,6 @@
 <translation id="8770406935328356739">ไดเรกทอรีหลักของส่วนขยาย</translation>
 <translation id="8771300903067484968">มีการรีเซ็ตพื้นหลังของหน้าเริ่มต้นเป็นพื้นหลังเริ่มต้น</translation>
 <translation id="8773280816776735812">แสดงค่า IBAN</translation>
-<translation id="8773302562181397928">บันทึก <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">ยืนยันการคืนค่า</translation>
 <translation id="8774934320277480003">ขอบบน</translation>
 <translation id="8775144690796719618">URL ไม่ถูกต้อง</translation>

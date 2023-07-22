@@ -8456,7 +8456,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8084510406207562688">R&amp;estaurer tous les onglets</translation>
 <translation id="8086015605808120405">Configuration de <ph name="PRINTER_NAME" /> en cours</translation>
 <translation id="8086121155774250556">Cet onglet partage votre écran</translation>
-<translation id="8086442853986205778">Configurer <ph name="PRINTER_NAME" /></translation>
 <translation id="8086610718778464681">Impossible de sauvegarder les applications et les fichiers Linux</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Ce fichier est chiffré. Demandez à son propriétaire de le déchiffrer.}one{Ce fichier est chiffré. Demandez à son propriétaire de le déchiffrer.}other{Certains de ces fichiers sont chiffrés. Demandez à leur propriétaire de les déchiffrer.}}</translation>
 <translation id="808894953321890993">Changer le mot de passe</translation>
@@ -9117,7 +9116,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8662671328352114214">Se joindre au réseau <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Cette opération prend plus de temps que prévu. Vous pouvez l'ignorer ou attendre qu'elle soit terminée.</translation>
 <translation id="8662795692588422978">Personnes</translation>
-<translation id="8662811608048051533">Vous déconnecte de la plupart des sites.</translation>
 <translation id="8662911384982557515">Changer la page d'accueil pour la page suivante : <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome ne peut pas utiliser ce fichier comme fond d'écran.</translation>
 <translation id="8663099077749055505">Toujours bloquer les téléchargements automatiques multiples de <ph name="HOST" /></translation>
@@ -9257,7 +9255,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8770406935328356739">Répertoire racine de l'extension</translation>
 <translation id="8771300903067484968">L'arrière-plan de la page d'accueil a été réinitialisé à sa valeur par défaut.</translation>
 <translation id="8773280816776735812">Afficher la valeur IBAN</translation>
-<translation id="8773302562181397928">Enregistrer <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Confirmez la restauration</translation>
 <translation id="8774934320277480003">Marge supérieure</translation>
 <translation id="8775144690796719618">URL non valide</translation>

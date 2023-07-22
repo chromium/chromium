@@ -8445,7 +8445,6 @@
 <translation id="8084510406207562688">恢复所有标签页(&amp;E)</translation>
 <translation id="8086015605808120405">正在配置<ph name="PRINTER_NAME" />…</translation>
 <translation id="8086121155774250556">此标签页正在共享屏幕</translation>
-<translation id="8086442853986205778">设置<ph name="PRINTER_NAME" /></translation>
 <translation id="8086610718778464681">无法备份 Linux 应用和文件</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{这个文件已加密。请让它的所有者进行解密。}other{这些文件中的部分文件已加密。请让它们的所有者进行解密。}}</translation>
 <translation id="808894953321890993">更改密码</translation>
@@ -9106,7 +9105,6 @@
 <translation id="8662671328352114214">加入<ph name="TYPE" />网络</translation>
 <translation id="8662733268723715832">这项操作的用时超出了预期，您可以选择跳过或继续等待。</translation>
 <translation id="8662795692588422978">用户</translation>
-<translation id="8662811608048051533">会致使您从大多数网站退出。</translation>
 <translation id="8662911384982557515">将您的主页更改为：<ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome 无法设置壁纸。</translation>
 <translation id="8663099077749055505">始终禁止在 <ph name="HOST" /> 上自动下载多个文件</translation>
@@ -9247,7 +9245,6 @@
 <translation id="8770406935328356739">扩展程序根目录</translation>
 <translation id="8771300903067484968">已将初始页背景重置为默认背景。</translation>
 <translation id="8773280816776735812">显示 IBAN 值</translation>
-<translation id="8773302562181397928">保存<ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">确认恢复</translation>
 <translation id="8774934320277480003">上边距</translation>
 <translation id="8775144690796719618">网址无效</translation>

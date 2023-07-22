@@ -1174,6 +1174,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1929186283613845153">Este arquivo está sendo verificado.</translation>
 <translation id="1929343511231420085">Qualquer porta serial</translation>
 <translation id="1929546189971853037">Ler seu histórico de navegação em todos os dispositivos nos quais você fez login</translation>
+<translation id="1929774028758671973">Contatos poderão compartilhar dados com você quando estiverem por perto. Será necessário aprovar essas solicitações. O compartilhamento entre dispositivos que estejam conectados à conta <ph name="USER_EMAIL" /> não exige aprovação.</translation>
 <translation id="1930879306590754738">A senha foi excluída deste dispositivo e da sua Conta do Google</translation>
 <translation id="1931152874660185993">Nenhum componente instalado.</translation>
 <translation id="1931410639376954712">Instalando o <ph name="DEVICE_OS" /></translation>
@@ -1440,6 +1441,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2151576029659734873">Índice de guias inválido inserido.</translation>
 <translation id="2152281589789213846">Adicionar impressoras ao seu perfil</translation>
 <translation id="2154484045852737596">Editar cartão</translation>
+<translation id="2155473371917268529">A configuração de visibilidade atual é: seus dispositivos</translation>
 <translation id="2155772377859296191">Resolução: <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156877321344104010">Fazer a confirmação de segurança novamente</translation>
@@ -1774,6 +1776,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2418307627282545839">Deixe tudo iluminado e arejado</translation>
 <translation id="2419131370336513030">Ver apps instalados</translation>
 <translation id="2419706071571366386">Por segurança, saia da sua conta quando seu computador não estiver sendo usado.</translation>
+<translation id="2421705177906985956">Nenhum site para mostrar no momento</translation>
 <translation id="2422125132043002186">Restauração do Linux cancelada</translation>
 <translation id="2423578206845792524">&amp;Salvar imagem como...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Visitante}one{Visitante (#)}other{Visitantes (#)}}</translation>
@@ -2452,6 +2455,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2966705348606485669">Mais opções para a pasta <ph name="FOLDER_TITLE" /></translation>
 <translation id="2966937470348689686">Gerenciar preferências do Android</translation>
 <translation id="2967926928600500959">Os URLs que corresponderem a essas regras vão ser forçados a abrir em um navegador específico.</translation>
+<translation id="2970766364519518369">Contatos selecionados poderão compartilhar dados com você quando estiverem por perto. Será necessário aprovar essas solicitações. O compartilhamento entre dispositivos que estejam conectados à conta <ph name="USER_EMAIL" /> não exige aprovação.</translation>
 <translation id="2972581237482394796">&amp;Refazer</translation>
 <translation id="2973324205039581528">Desativar som do site</translation>
 <translation id="2975761176769946178">É obrigatório informar um URL</translation>
@@ -8130,6 +8134,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7797571222998226653">Desativado</translation>
 <translation id="7798504574384119986">Conferir permissões da Web</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> bloqueada automaticamente</translation>
+<translation id="7799650166313181433">Somente dispositivos conectados à conta <ph name="USER_EMAIL" /> poderão compartilhar com este dispositivo. Não será necessário aprovar o compartilhamento entre seus dispositivos.</translation>
 <translation id="7800485561443537737">Usa os dados móveis do seu <ph name="DEVICE_TYPE" /> e pode gerar taxas extras da operadora, além de aumentar o uso da bateria. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">Girar no s&amp;entido anti-horário</translation>
 <translation id="7801679634091975683">As mudanças que você fizer aqui serão aplicadas apenas ao navegador Chrome Lacros. Abra o navegador Chrome e acesse as configurações para fazer mudanças nelas.</translation>
@@ -8482,7 +8487,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8084510406207562688">Restaurar todas as guias</translation>
 <translation id="8086015605808120405">Configurando <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086121155774250556">Esta guia está compartilhando sua tela</translation>
-<translation id="8086442853986205778">Configurar <ph name="PRINTER_NAME" /></translation>
 <translation id="8086610718778464681">Não foi possível fazer backup dos apps e arquivos do Linux</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{O arquivo está criptografado. Peça para o proprietário descriptografar.}one{O arquivo está criptografado. Peça para o proprietário descriptografar.}other{Alguns dos arquivos estão criptografados. Peça para o proprietário descriptografar.}}</translation>
 <translation id="808894953321890993">Alterar senha</translation>
@@ -9144,7 +9148,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8662671328352114214">Entrar na rede <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Isso está demorando mais do que o esperado. Você pode pular ou esperar a conclusão.</translation>
 <translation id="8662795692588422978">Pessoas</translation>
-<translation id="8662811608048051533">Desconecta você da maioria dos sites.</translation>
 <translation id="8662911384982557515">Alterar sua página inicial para: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">O Google Chrome não pode definir o plano de fundo.</translation>
 <translation id="8663099077749055505">Sempre bloquear vários downloads automáticos em <ph name="HOST" /></translation>
@@ -9285,7 +9288,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8770406935328356739">Diretório raiz da extensão</translation>
 <translation id="8771300903067484968">O plano de fundo da página inicial foi redefinido para o plano de fundo padrão.</translation>
 <translation id="8773280816776735812">Mostrar valor do IBAN</translation>
-<translation id="8773302562181397928">Salvar <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Confirmar restauração</translation>
 <translation id="8774934320277480003">Margem superior</translation>
 <translation id="8775144690796719618">URL inválido</translation>

@@ -8480,7 +8480,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8084510406207562688">A&amp;dfer pob tab</translation>
 <translation id="8086015605808120405">Wrthi'n ffurfweddu <ph name="PRINTER_NAME" /> ...</translation>
 <translation id="8086121155774250556">Mae'r tab hwn yn rhannu'ch sgrîn</translation>
-<translation id="8086442853986205778">Gosod <ph name="PRINTER_NAME" /></translation>
 <translation id="8086610718778464681">Methu â gwneud copïau wrth gefn o apiau a ffeiliau Linux</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Mae'r ffeil hon wedi'i hamgryptio. Gofynnwch i'w pherchennog ddadgryptio.}zero{Mae rhai o'r ffeiliau hyn wedi'u hamgryptio. Gofynnwch i'w perchennog ddadgryptio.}two{Mae rhai o'r ffeiliau hyn wedi'u hamgryptio. Gofynnwch i'w perchennog ddadgryptio.}few{Mae rhai o'r ffeiliau hyn wedi'u hamgryptio. Gofynnwch i'w perchennog ddadgryptio.}many{Mae rhai o'r ffeiliau hyn wedi'u hamgryptio. Gofynnwch i'w perchennog ddadgryptio.}other{Mae rhai o'r ffeiliau hyn wedi'u hamgryptio. Gofynnwch i'w perchennog ddadgryptio.}}</translation>
 <translation id="808894953321890993">Newid cyfrinair</translation>
@@ -9141,7 +9140,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8662671328352114214">Ymuno â rhwydwaith <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Mae hyn yn cymryd mwy o amser na'r disgwyl, gallwch ei hepgor neu aros nes ei fod wedi gorffen.</translation>
 <translation id="8662795692588422978">Pobl</translation>
-<translation id="8662811608048051533">Yn eich allgofnodi o'r mwyafrif o wefannau.</translation>
 <translation id="8662911384982557515">Newid eich tudalen hafan i: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Ni all Chrome osod papur wal.</translation>
 <translation id="8663099077749055505">Rhwystro mwy nag un lawrlwythiad awtomatig bob tro ar <ph name="HOST" /></translation>
@@ -9282,7 +9280,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8770406935328356739">Cyfeiriadur gwraidd yr estyniad</translation>
 <translation id="8771300903067484968">Mae cefndir y dudalen gychwynnol wedi cael ei ailosod i'r cefndir diofyn.</translation>
 <translation id="8773280816776735812">Dangos gwerth IBAN</translation>
-<translation id="8773302562181397928">Cadw <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Cadarnhau Adfer</translation>
 <translation id="8774934320277480003">Ymyl uchaf</translation>
 <translation id="8775144690796719618">URL Annilys</translation>

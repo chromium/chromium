@@ -146,6 +146,7 @@
 <translation id="1576623706766186887">మ్యాగ్నిఫైయర్ ఆన్‌లో ఉన్నప్పుడు జూమ్ - అవుట్ చేయండి</translation>
 <translation id="1586324912145647027">1 నుండి 8 డెస్క్‌లకు వెళ్లండి</translation>
 <translation id="1589090746204042747">ఈ సెషన్‌లో మీ మొత్తం యాక్టివిటీని యాక్సెస్ చేయండి</translation>
+<translation id="1592682369233288537">తర్వాత డెస్క్: <ph name="NEXT_DESK_NAME" />, యాక్టివేట్ చేయడానికి Search+Spaceను ఉపయోగించండి.</translation>
 <translation id="1604857178818051494">మీడియాను పాజ్ చేయండి</translation>
 <translation id="1610778689852195798">"చర్య రద్దు చేయండి"</translation>
 <translation id="1611993646327628135">ఆన్</translation>
@@ -157,6 +158,7 @@
 <translation id="1647986356840967552">మునుపటి పేజీ</translation>
 <translation id="1651914502370159744">హిస్టరీ పేజీని తెరవండి</translation>
 <translation id="1654477262762802994">వాయిస్ ప్రశ్నను ప్రారంభించండి</translation>
+<translation id="1662667383227796099">లాంచర్‌లో మీ ఫైళ్లు, యాప్‌లు, అలాగే మరిన్నింటి కోసం సెర్చ్ చేయండి. మీరు మీ Chromebook గురించిన ప్రశ్నలకు సమాధానాలను కూడా పొందవచ్చు.</translation>
 <translation id="1668469839109562275">బిల్ట్-ఇన్ VPN</translation>
 <translation id="1675844249244994876">కుడి వైపు విండోను అప్‌డేట్ చేయండి</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> మిగిలి ఉంది</translation>
@@ -560,6 +562,7 @@
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">అర ఆటోమేటిక్‌గా దాచి పెట్టబడుతుంది</translation>
+<translation id="3503243067695520519">హాయ్. Chromebooks కొద్దిగా భిన్నంగా ఉంటాయి.</translation>
 <translation id="3505066820268455558">బ్యాటరీ ఛార్జ్ అవుతోంది</translation>
 <translation id="3509391053705095206">మీ ఫోన్‌ను కనుగొనడం సాధ్యపడలేదు. మీ ఫోన్‌లో బ్లూటూత్ ఆన్‌లో ఉందని నిర్ధారించుకోండి.</translation>
 <translation id="3510164367642747937">మౌస్ కర్సర్‌ను హైలైట్ చేయి</translation>
@@ -685,6 +688,7 @@
 <translation id="3977512764614765090">బ్యాటరీ <ph name="PERCENTAGE" />% ఉంది. ఛార్జ్ అవుతోంది.</translation>
 <translation id="3984536049089846927">తర్వాతి పేజీ</translation>
 <translation id="3986082989454912832">సమాధానం ఇవ్వండి</translation>
+<translation id="3990002060657467458">Wi-Fi, బ్లూటూత్ అలాగే వాల్యూమ్ వంటి తరచుగా ఉపయోగించే కంట్రోల్స్ క్విక్ సెట్టింగ్‌లలో ఉన్నాయి. ఇక్కడకు వెళ్లి స్క్రీన్‌షాట్ కూడా తీసుకోవచ్చు.</translation>
 <translation id="3995138139523574647">USB-C పరికరం (కుడివైపు వెనుక పోర్ట్)</translation>
 <translation id="40062176907008878">చేతిరాత</translation>
 <translation id="4017989525502048489">లేజర్ పాయింటర్</translation>
@@ -748,6 +752,7 @@
 <translation id="4269883910223712419">ఈ పరికర నిర్వాహకుడికి వీటిని చేయగల సామర్థ్యం ఉంది:</translation>
 <translation id="4274537685965975248">Ctrl + Alt + కింది వైపు బాణం కీబోర్డ్ షార్ట్‌కట్ మార్చబడింది. ముగింపు కీని ఉపయోగించడానికి, <ph name="LAUNCHER_KEY_NAME" /> కీ + కుడి వైపు బాణం కీను నొక్కండి.</translation>
 <translation id="4275283744500212192">విండో లేఅవుట్ ఆప్షన్‌లను తెరుస్తుంది</translation>
+<translation id="4278138729651139331">సెట్టింగ్‌లలో మీ Chromebookను అనుకూలంగా మార్చండి, వ్యక్తిగతీకరించండి. మీ వాల్‌పేపర్‌ను మార్చడానికి లేదా స్క్రీన్ సేవర్‌ను సెట్ చేయడానికి ట్రై చేయండి.</translation>
 <translation id="4279490309300973883">మిర్రరింగ్</translation>
 <translation id="4280601795273309128">సెక్యూరిటీ అప్‌డేట్‌లు ముగిశాయి. మీ పరికరాన్ని అప్‌గ్రేడ్ చేయండి.</translation>
 <translation id="4283888303416325161">మరింత సెక్యూరిటీ కోసం పాస్‌వర్డ్‌ను ఎంటర్ చేయండి</translation>
@@ -804,6 +809,7 @@
 <translation id="4505050298327493054">యాక్టివ్ డెస్క్.</translation>
 <translation id="450584155212756404">డెవలపర్ ఛానెల్</translation>
 <translation id="4513946894732546136">ఫీడ్‌బ్యాక్</translation>
+<translation id="4516212064498225455">ప్రస్తుత డెస్క్: <ph name="CURRENT_DESK_NAME" />, అన్ని డెస్క్‌ల మెనూను తెరవడానికి Search+Spaceని ఉపయోగించండి.</translation>
 <translation id="4518404433291145981">మీ Chromebookను అన్‌లాక్ చేయడానికి, ముందుగా మీ ఫోన్‌ను అన్‌లాక్ చేయండి</translation>
 <translation id="4527045527269911712">బ్లూటూత్ పరికరం "<ph name="DEVICE_NAME" />" జత కావడానికి అనుమతి కోరుతోంది.</translation>
 <translation id="4533343294786968049">మీ బ్యాటరీ జీవితకాలాన్ని పొడిగిస్తోంది. బ్యాటరీ <ph name="FULLY_CHARGE_TIME" /> కల్లా పూర్తిగా ఛార్జ్ అవుతుంది.</translation>
@@ -971,6 +977,7 @@
 <translation id="5207949376430453814">వచన కర్సర్ గుర్తును హైలైట్ చేయి</translation>
 <translation id="5208059991603368177">ఆన్ చేయి</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> వరకు ఆఫ్‌లో ఉంటుంది</translation>
+<translation id="5217646019792206018">తర్వాత డెస్క్: <ph name="NEXT_DESK_NAME" />, Search+Space లేదా కీబోర్డ్ షార్ట్‌కట్‌ను ఉపయోగించండి: యాక్టివేట్ చేయడానికి Shift+Search+<ph name="NEXT_DESK_INDEX" />ను ఉపయోగించండి.</translation>
 <translation id="5221423477036820198">ఫోన్ హబ్‌ను ఉపయోగించి మీ ఫోన్ మెసేజ్‌లను వేగంగా పంపండి లేదా వాటికి రిప్లయి ఇవ్వండి.</translation>
 <translation id="5222676887888702881">సైన్ ఔట్</translation>
 <translation id="5229343007215035173">గోప్యతా స్క్రీన్‌ను ఆన్/ఆఫ్ చేయండి</translation>
@@ -1036,6 +1043,7 @@
 <translation id="550391772491508736">ప్రసారాన్ని కొనసాగించండి</translation>
 <translation id="5506975627792768506">మ్యాగ్నిఫైయర్‌ను ఆన్ లేదా ఆఫ్ చేయండి</translation>
 <translation id="5512042095225963688">మునుపటి పదాన్ని తొలగించండి</translation>
+<translation id="5518068085000130971">అవే ప్రాథమిక అంశాలు! చిట్కాలు, సహాయం కోసం మా బిల్ట్-ఇన్ యాప్‌ను, అన్వేషించడం కొనసాగించండి. మీరు ప్రారంభించడానికి చిట్కాలు, సిఫార్సు చేసిన యాప్‌లు, ప్రత్యేక ఆఫర్‌లు, అలాగే సరికొత్త Chromebook ఫీచర్‌లను కనుగొంటారు.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">మీ అడ్మినిస్ట్రేటర్ అన్ని eSIM ప్రొఫైళ్లను తీసివేశారు. మరింత సమాచారం కోసం మీ అడ్మినిస్ట్రేటర్‌ను సంప్రదించండి.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> కనెక్ట్ అవుతోంది.</translation>
@@ -1361,6 +1369,7 @@
 <translation id="6896758677409633944">కాపీ చేయి</translation>
 <translation id="6901883536534621389">నావిగేట్ చేయడానికి సంజ్ఞలను ట్రై చేయండి</translation>
 <translation id="6912841030378044227">అడ్రస్ బార్ మీద ఫోకస్ చేయండి</translation>
+<translation id="6912901278692845878">క్విక్ టూర్</translation>
 <translation id="6919251195245069855">మీ స్మార్ట్ కార్డ్‌ను గుర్తించడం సాధ్యం కాలేదు. మళ్ళీ ప్రయత్నించండి.</translation>
 <translation id="6920245099716267363">హాట్‌స్పాట్‌ను టోగుల్ చేయండి. మీ హాట్‌స్పాట్ ఆన్‌లో ఉంది, 1 పరికరం కనెక్ట్ అయి ఉంది.</translation>
 <translation id="6931576957638141829">దీనిలో సేవ్ చేయండి</translation>
@@ -1667,6 +1676,7 @@
 <translation id="8297006494302853456">బలహీనం</translation>
 <translation id="8308637677604853869">మునుపటి మెనూ</translation>
 <translation id="830868413617744215">బీటా</translation>
+<translation id="8312557488404088015">సాఫీగా ప్రారంభించేందుకు ఒక క్విక్ టూర్ చేయండి. క్విక్ టూర్ 6 దశలలో పూర్తవుతుంది, దీనికి కేవలం కొన్ని నిమిషాలు పడుతుంది.</translation>
 <translation id="8314772463905284467">Caps Lock ఆన్‌లో ఉంది</translation>
 <translation id="8315514906653279104">ఆన్ అవుతోంది...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -1716,6 +1726,7 @@
 <translation id="8517041960877371778">మీ <ph name="DEVICE_TYPE" /> ఆన్‌లో ఉన్నప్పుడు ఛార్జ్ కాకపోవచ్చు.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{<ph name="APP_NAME" /> ద్వారా మైక్ ఇన్‌పుట్ కంట్రోల్ చేయబడుతుంది}other{# యాప్‌ల ద్వారా మైక్ ఇన్‌పుట్ కంట్రోల్ చేయబడుతుంది}}</translation>
 <translation id="8535393432370007982">రంగు ఆధారంగా క్రమపద్ధతిలో అమర్చిన దానిని రద్దు చేశారు</translation>
+<translation id="853768060447955562">మునుపటి డెస్క్: <ph name="PREVIOUS_DESK_NAME" />, Search+Space లేదా కీబోర్డ్ షార్ట్‌కట్‌ను ఉపయోగించండి: యాక్టివేట్ చేయడానికి Shift+Search+<ph name="PREVIOUS_DESK_INDEX" />ను ఉపయోగించండి.</translation>
 <translation id="8541078764854166027">కామ్ ఫ్రేమింగ్</translation>
 <translation id="8542053257095774575">సేవ్ చేసిన డెస్క్‌లు లేదా టెంప్లేట్‌లు లేవు</translation>
 <translation id="8546059259582788728">క్రమపద్ధతిలో అమర్చిన దానిని విజయవంతంగా రద్దు చేశారు</translation>
@@ -1867,11 +1878,13 @@
 <translation id="925832987464884575">ప్రివ్యూలను దాచండి</translation>
 <translation id="937214777182567951">వెంటనే మీ <ph name="DEVICE_TYPE" />ను అప్‌డేట్ చేయాలని <ph name="MANAGER" /> తెలియజేస్తోంది</translation>
 <translation id="938963181863597773">నా క్యాలెండర్‌లో ఏమి ఉన్నాయి?</translation>
+<translation id="943067377221312471">మునుపటి డెస్క్: <ph name="PREVIOUS_DESK_NAME" />, యాక్టివేట్ చేయడానికి Search+Spaceను ఉపయోగించండి.</translation>
 <translation id="945383118875625837">‌లింక్‌ను బుక్‌మార్క్‌ల బార్ వద్దకు లాగండి</translation>
 <translation id="945522503751344254">ఫీడ్‌బ్యాక్ పంపండి</translation>
 <translation id="951991426597076286">తిరస్కరించు</translation>
 <translation id="953431725143473984">పరికరాన్ని షట్ డౌన్ చేయాలా?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> కోసం తగినంత స్పేస్ లేదు. స్పేస్‌ను ఖాళీ చేయండి.</translation>
+<translation id="968627661524972577">మీ Chromebookలో మీకు అవసరమైన ప్రతిదాన్ని చేయడానికి యాప్‌లను ఉపయోగించండి. మీరు లాంచర్‌లో మీ యాప్‌లను కనుగొనవచ్చు. మీరు కీబోర్డ్‌లోని లాంచర్ కీని కూడా నొక్కవచ్చు.</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> కోసం <ph name="RESULT_COUNT" /> ఫలితాలను ప్రదర్శిస్తోంది</translation>
 <translation id="98120814841227350">డాక్యుమెంట్‌ చివరకు వెళ్లు</translation>
 <translation id="987589956647469042">మొబైల్ డేటా ఆన్ చేయబడింది</translation>

@@ -2693,7 +2693,7 @@
 <translation id="3183944777708523606">顯示器排列</translation>
 <translation id="3184536091884214176">設定或管理 CUPS 打印機。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{已封鎖這個應用程式}other{已封鎖部分應用程式}}</translation>
-<translation id="3187472288455401631">廣告評估功能</translation>
+<translation id="3187472288455401631">廣告成效評估</translation>
 <translation id="3188257591659621405">我的檔案</translation>
 <translation id="3188465121994729530">移動平均</translation>
 <translation id="3189187154924005138">大型游標</translation>
@@ -2803,7 +2803,7 @@
 <translation id="3289856944988573801">如要檢查更新，請使用以太網絡或 Wi-Fi。</translation>
 <translation id="3289886661311231677">您可封鎖不希望與網站分享的主題。Chrome 亦會自動刪除超過 4 星期的主題。</translation>
 <translation id="3290249595466894471">同時傳送網頁、下載檔案、擴充程式活動及系統資料的少量抽樣資料，以協助發現新威脅</translation>
-<translation id="3293181007446299124">您的瀏覽記錄會保留在裝置上，絕不會外洩。系統亦會延遲傳送報告，從而保護您的身分</translation>
+<translation id="3293181007446299124">瀏覽記錄會保留在裝置上以保私隱。系統亦會延遲傳送報告以保護您的身分</translation>
 <translation id="3293644607209440645">傳送此頁面</translation>
 <translation id="32939749466444286">Linux 容器無法啟動。請再試一次。</translation>
 <translation id="3294437725009624529">訪客</translation>
@@ -3382,6 +3382,7 @@
 <translation id="3776508619697147021">網站可要求自動下載多個檔案</translation>
 <translation id="3776796446459804932">這個擴充功能違反了 Chrome 網上應用程式商店政策。</translation>
 <translation id="3777483481409781352">無法啟用流動裝置</translation>
+<translation id="3777796259512476958">您會從大部分網站登出</translation>
 <translation id="3778208826288864398">由於您輸入太多次錯誤的 PIN，因此安全密鑰已被鎖定。您需要重設安全密鑰。</translation>
 <translation id="3778740492972734840">開發人員工具(&amp;D)</translation>
 <translation id="3778868487658107119">度身訂造的「Google 助理」隨時為您提供協助，不但可根據您的問題提供解答，還可以按指令執行各種操作。</translation>
@@ -4082,7 +4083,7 @@
 <translation id="4367971618859387374">顯示名稱</translation>
 <translation id="4369215744064167350">已核准網站要求</translation>
 <translation id="436926121798828366">您可隨時在「<ph name="SETTINGS_LINK" />」中變更此設定</translation>
-<translation id="4369735607080757018">網站之間會分享有限種類的資料 (例如系統向您顯示廣告的時段)，以評估廣告的效益</translation>
+<translation id="4369735607080757018">網站之間會分享有限類型的資料 (例如系統向您顯示廣告的時段) 以評估廣告成效</translation>
 <translation id="4370975561335139969">您所輸入的電郵與密碼不符</translation>
 <translation id="4373418556073552953">使用 Android 手機登入</translation>
 <translation id="4374805630006466253">使用其他手機或平板電腦</translation>
@@ -7454,7 +7455,7 @@
 <translation id="7258192266780953209">變形</translation>
 <translation id="7258225044283673131">應用程式沒有回應。選取「強制關閉」即可關閉應用程式。</translation>
 <translation id="7260186537988033909">Kiosk 和標牌裝置註冊完成</translation>
-<translation id="7260367682327802201">Android 裝置可能會有類似的設定。如果 Chrome 和 Android 裝置已開啟廣告評估設定，廣告商或者就能在您瀏覽的網站和使用的應用程式上評估廣告成效。</translation>
+<translation id="7260367682327802201">Android 裝置可能會有類似的設定。如果 Chrome 和 Android 裝置已開啟廣告成效評估，商家或能在你瀏覽的網站和使用的應用程式評估廣告成效。</translation>
 <translation id="7261612856573623172">「文字轉語音」系統聲音</translation>
 <translation id="7262004276116528033">此登入服務是由 <ph name="SAML_DOMAIN" /> 代管</translation>
 <translation id="7263162347647986485">{NUM_SITES,plural, =1{已移除 1 個網站的權限}other{已移除 {NUM_SITES} 個網站的權限}}</translation>
@@ -8472,7 +8473,6 @@
 <translation id="8084510406207562688">還原所有分頁</translation>
 <translation id="8086015605808120405">正在設定 <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086121155774250556">此分頁正在共用您的螢幕畫面</translation>
-<translation id="8086442853986205778">設定 <ph name="PRINTER_NAME" /></translation>
 <translation id="8086610718778464681">無法備份 Linux 應用程式和檔案</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{此檔案已加密。請要求擁有者解密。}other{這些檔案部分已加密。請要求擁有者解密。}}</translation>
 <translation id="808894953321890993">變更密碼</translation>
@@ -8580,6 +8580,7 @@
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{將分頁移至新視窗}other{將分頁移至新視窗}}</translation>
 <translation id="8179188928355984576">不使用此帳戶登入 Android 應用程式</translation>
 <translation id="8179976553408161302">Enter 鍵</translation>
+<translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />。<ph name="NUM_PRINTERS" /> 部打印機之中嘅第 <ph name="ITEM_POSITION" /> 部。</translation>
 <translation id="8180785270975217276">「慳電模式」已開啟</translation>
 <translation id="8180786512391440389">「<ph name="EXTENSION" />」可以讀取和刪除已勾選位置中的圖片、影片和音效檔案。</translation>
 <translation id="8180826593917851025">設定 <ph name="DEVICE_TYPE" /> 熱點</translation>
@@ -9133,7 +9134,6 @@
 <translation id="8662671328352114214">加入 <ph name="TYPE" /> 網絡</translation>
 <translation id="8662733268723715832">操作需時比預期長，您可以選擇略過或繼續等待。</translation>
 <translation id="8662795692588422978">使用者</translation>
-<translation id="8662811608048051533">您會從大部分網站登出。</translation>
 <translation id="8662911384982557515">將您的首頁變更為：<ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome 無法設定桌布。</translation>
 <translation id="8663099077749055505">永遠禁止在 <ph name="HOST" /> 自動下載多個檔案</translation>
@@ -9274,7 +9274,6 @@
 <translation id="8770406935328356739">擴充程式根目錄</translation>
 <translation id="8771300903067484968">起始網頁背景重設咗做預設背景。</translation>
 <translation id="8773280816776735812">顯示 IBAN 號碼</translation>
-<translation id="8773302562181397928">儲存 <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">確認還原</translation>
 <translation id="8774934320277480003">上邊界</translation>
 <translation id="8775144690796719618">網址無效</translation>

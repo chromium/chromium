@@ -1278,6 +1278,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="204497730941176055">Microsoft Sertifikat Şablon adı</translation>
 <translation id="2045117674524495717">Klaviatura Qısayol Yardımı</translation>
 <translation id="2045211794962848221">Bu xüsusi mesajı bir daha görməyəcəksiniz</translation>
+<translation id="2045838962742066664">Stenoqrafiya</translation>
 <translation id="2045969484888636535">Kukiləri blok etməyə davam edin</translation>
 <translation id="204622017488417136">Cihazınız əvvəlcə quraşdırılmış Chrome versiyasına qaytarılacaq. Bütün istifadəçi hesabları və lokal data silinəcək. Bu geri qaytarıla bilməz.</translation>
 <translation id="2046702855113914483">Ramen</translation>
@@ -1837,6 +1838,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2471506181342525583">Məkana girişə icazə verilib</translation>
 <translation id="2473195200299095979">Bu səhifəni tərcümə edin</translation>
 <translation id="2475982808118771221">Xəta baş verdi</translation>
+<translation id="2476901513051581836">Oflayn yaddaş ölçüsü məlum olmadıqda yaddaşı təmizləmək olmur.</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> tətbiqini quraşdırmaq üçün Windows'u söndürün.</translation>
 <translation id="2477065602824695373">Birdən çox keçirici ayarladığınıza görə avtomatik skanlama deaktiv edilib.</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" üçün Media-Fayl İcazələri</translation>
@@ -2221,6 +2223,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2794522004398861033">eSIM ayarlamaq üçün Wi-Fi və ya Ethernet'ə qoşulun</translation>
 <translation id="2794977172822818797">Cari saytları əlavə edin</translation>
 <translation id="2795716239552913152">Saytlar adətən yerli xəbərlər və ya yaxınlıqdakı mağazalar kimi müvafiq xüsusiyyətlər və məlumatlar üçün məkanınızdan istifadə edir</translation>
+<translation id="2795950023277268902">Fayllar tətbiqində Disk fayllarına giriş üçün <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> hesabını əlaqələndirin</translation>
 <translation id="2796740370559399562">Kukilərə icazə verməyə davam edin</translation>
 <translation id="2798347533012571708">Güncəlləmələri saxlayın</translation>
 <translation id="2799223571221894425">Yenidən başladın</translation>
@@ -3656,6 +3659,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3995138139523574647">USB-C cihazı (arxa sağ port)</translation>
 <translation id="3995963973192100066">Animasiyanı oxudun</translation>
 <translation id="399788104667917863">Alətlər panelinə bərkidin</translation>
+<translation id="3998976413398910035">Printerləri idarə edin</translation>
 <translation id="4001540981461989979">Hərəkət edərkən maus kursoru vurğulansın</translation>
 <translation id="4002440992267487163">Pin ayarlanması</translation>
 <translation id="4005817994523282006">Saat qurşağının aşkarlanması üsulu</translation>
@@ -3761,6 +3765,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4098667039111970300">Alət panelində stilus alətləri</translation>
 <translation id="4099060993766194518">Defolt axtarış sistemi bərpa edilsin?</translation>
 <translation id="4099874310852108874">Şəbəkə xətası baş verdi.</translation>
+<translation id="4100020874626534113">Çevik diakritik təyinata icazə verin. Məsələn, "ánh" üçün "anhs" və ya "asnh" yaza bilərsiniz.</translation>
 <translation id="4100733287846229632">Cihaz yaddaşı çox azdır</translation>
 <translation id="4100853287411968461">Yeni ekran vaxtı limiti</translation>
 <translation id="4101352914005291489">Gizli SSID</translation>
@@ -4757,6 +4762,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4953808748584563296">Defolt narıncı avatar</translation>
 <translation id="4955710816792587366">PIN seçin</translation>
 <translation id="4959262764292427323">Parollar Google Hesabınızda yadda saxlanılıb, beləliklə, onları istənilən cihazda istifadə edə bilərsiniz</translation>
+<translation id="4960020053211143927">Bəzi tətbiqlər dəstəkləmir</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Cast ekran</translation>
 <translation id="4961361269522589229">resept ideyaları</translation>
@@ -4956,6 +4962,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5139823398361067371">Təhlükəsizlik açarı üçün PIN daxil edin. PIN-i bilmirsinizsə, təhlükəsizlik açarını sıfırlamalısınız.</translation>
 <translation id="5139955368427980650">Açın</translation>
 <translation id="5141421572306659464">Əsas Hesab</translation>
+<translation id="5141957579434225843">Məsələn, òa, òe, ùy əvəzinə oà, oè, uỳ istifadə edin</translation>
 <translation id="5142793792982256885">Taçpedin sürüşdürmə sürəti</translation>
 <translation id="5143374789336132547">"<ph name="EXTENSION_NAME" />" artırması əsas səhifə düyməsinə kliklədiyiniz zaman hansı səhifənin göstərildiyini dəyişdi.</translation>
 <translation id="5143612243342258355">Bu fayl təhlükəlidir</translation>
@@ -6293,6 +6300,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="628352644014831790">4 saniyə</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> adətən endirilmir və təhlükəli ola bilər.</translation>
 <translation id="6285770818046456882">Sizinlə paylaşım edən cihaz köçürməni ləğv etdi</translation>
+<translation id="628726841779494414">Printer ayarlarında printerləri idarə edin</translation>
 <translation id="6290613030083731160">Yaxınlıqda paylaşım edən əlçatan cihaz yoxdur. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Aktivləşdirmə kodu doğrulanır. Bu, bir neçə dəqiqə çəkə bilər.</translation>
 <translation id="6291741848715722067">Təsdiq kodu</translation>
@@ -7004,6 +7012,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6897688156970667447">Aşağı işıqda faydalıdır və batareyaya qənaət edir</translation>
 <translation id="6897972855231767338">Qonaq kimi gözdən keçirmə haqqında ətraflı məlumat</translation>
 <translation id="6898440773573063262">Kiosk tətbiqləri indi bu cihazda avtomatik işə salına bilər.</translation>
+<translation id="6899427698619335650">Çevik diakritik təyinata icazə verin. Məsələn, "ánh" üçün "anh1" və ya "a1nh" yaza bilərsiniz.</translation>
 <translation id="6900284862687837908">Arxa Fon Tətbiqi: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">Təkmil qoruma</translation>
 <translation id="6900651018461749106"><ph name="USER_EMAIL" />hesabını yeniləmək üçün yenidən daxil olun</translation>
@@ -8439,7 +8448,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8084510406207562688">B&amp;ütün tabları bərpa edin</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> konfiqurasiya edilir...</translation>
 <translation id="8086121155774250556">Bu tab ekranı paylaşır</translation>
-<translation id="8086442853986205778"><ph name="PRINTER_NAME" /> cihazını ayarlayın</translation>
 <translation id="8086610718778464681">Linux tətbiqləri və fayllarını yedəkləmək mümkün deyil</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Bu fayl şifrələnib. Sahibindən onun şifrəsini açmasını istəyin.}other{Bu fayllardan bəziləri şifrələnib. Sahibindən onların şifrəni açmasını istəyin.}}</translation>
 <translation id="808894953321890993">Parolu dəyişin</translation>
@@ -9100,7 +9108,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> şəbəkəsinə qoşulun</translation>
 <translation id="8662733268723715832">Bu, gözləniləndən daha uzun çəkir, keçə və ya tamamlanana qədər gözləyə bilərsiniz.</translation>
 <translation id="8662795692588422978">Camaat</translation>
-<translation id="8662811608048051533">Bununla əksər saytlardan çıxacaqsınız.</translation>
 <translation id="8662911384982557515">Əsas səhifənizi buna dəyişin: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome divar kağızını ayarlaya bilmir.</translation>
 <translation id="8663099077749055505"><ph name="HOST" /> hostunda çoxsaylı avtomatik endirmələri bloklayın</translation>
@@ -9239,7 +9246,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8770406935328356739">Artırma kökü kataqolu</translation>
 <translation id="8771300903067484968">Başlanğıc səhifəsinin arxa fonu defolt arxa fona sıfırlanıb.</translation>
 <translation id="8773280816776735812">IBAN məlumatını göstərin</translation>
-<translation id="8773302562181397928"><ph name="PRINTER_NAME" /> cihazını yadda saxlayın</translation>
 <translation id="8774379074441005279">Bərpanı təsdiq edin</translation>
 <translation id="8774934320277480003">Yuxarı sahə</translation>
 <translation id="8775144690796719618">Yanlış URL</translation>

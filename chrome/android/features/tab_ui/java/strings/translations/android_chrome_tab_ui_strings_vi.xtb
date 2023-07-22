@@ -37,6 +37,7 @@
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> thẻ có vẻ liên quan đến nhau. Bạn có muốn nhóm các thẻ đó lại không?</translation>
 <translation id="4212246570487010370">Tiếp tục duyệt web</translation>
 <translation id="4648718555153979859">Các thẻ của bạn được nhóm với nhau tại đây</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{Bạn có thể tìm thấy các thẻ mình đã đóng trong mục Các thẻ gần đây trên trình đơn chính của Chrome.}=1{Bạn có thể tìm thấy các thẻ mình đã đóng trong mục Các thẻ gần đây trên trình đơn chính của Chrome. Thẻ ẩn danh sẽ bị mất.}other{Bạn có thể tìm thấy các thẻ mình đã đóng trong mục Các thẻ gần đây trên trình đơn chính của Chrome. # thẻ ẩn danh sẽ bị mất.}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> bài đánh giá)}other{(<ph name="REVIEWS_COUNT_MANY" /> bài đánh giá)}}</translation>
 <translation id="4850886885716139402">Xem</translation>
 <translation id="4870911314065352661">Đóng tất cả các thẻ?</translation>

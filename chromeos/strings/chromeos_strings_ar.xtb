@@ -372,6 +372,7 @@
 <translation id="397105322502079400">جارٍ الحساب...</translation>
 <translation id="39823212440917567">ستتم إزالة طلبات الطباعة التي مرَّ عليها أكثر من <ph name="NUMBER_OF_DAYS" /> يوم.</translation>
 <translation id="3993704782688964914">الجهاز <ph name="DEVICE_NAME" /> محدَّث الآن.</translation>
+<translation id="3998976413398910035">إدارة الطابعات</translation>
 <translation id="4003384961948020559">تعذّرت الطباعة - المخرجات ممتلئة</translation>
 <translation id="4021031199988160623">انتقِل إلى وضع "الكمبيوتر المحمول" لتتمكّن من اختبار لوحة المفاتيح.</translation>
 <translation id="4034824040120875894">الطابعة</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">داخلي فقط</translation>
 <translation id="5649768706273821470">استماع</translation>
 <translation id="5655283760733841251">زيادة سطوع لوحة المفاتيح</translation>
+<translation id="5655776422854483175">ما مِن مهام طباعة</translation>
 <translation id="5659593005791499971">البريد الإلكتروني</translation>
 <translation id="5662240986744577912">إيقاف/تفعيل ميزة "شاشة الخصوصية"</translation>
 <translation id="5669267381087807207">تفعيل</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">المظهر</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">تفعيل المظهر الداكن</translation>
+<translation id="628726841779494414">إدارة الطابعات في إعدادات الطابعة</translation>
 <translation id="629550705077076970">تعتيم لوحة المفاتيح</translation>
 <translation id="6302401976930124515">تم إلغاء اختبار <ph name="TEST_NAME" />.</translation>
 <translation id="631063167932043783">تطبيق "استكشاف"</translation>

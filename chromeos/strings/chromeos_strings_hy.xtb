@@ -372,6 +372,7 @@
 <translation id="397105322502079400">Հաշվարկում…</translation>
 <translation id="39823212440917567">Տպման առաջադրանքները, որոնք <ph name="NUMBER_OF_DAYS" /> օրից հին են, կհեռացվեն</translation>
 <translation id="3993704782688964914">Ձեր <ph name="DEVICE_NAME" /> սարքն այժմ թարմացված է</translation>
+<translation id="3998976413398910035">Կառավարել տպիչները</translation>
 <translation id="4003384961948020559">Չհաջողվեց տպել – Ելքը լցված է</translation>
 <translation id="4021031199988160623">Փորձարկելու համար անցեք նոթբուքի ռեժիմին</translation>
 <translation id="4034824040120875894">Տպիչ</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">Միայն ներքին օգտագործման համար</translation>
 <translation id="5649768706273821470">Լսել</translation>
 <translation id="5655283760733841251">Ստեղնաշարի պայծառության ավելացում</translation>
+<translation id="5655776422854483175">Տպման աշխատանքներ չկան</translation>
 <translation id="5659593005791499971">Էլփոստ</translation>
 <translation id="5662240986744577912">միացնել/անջատել գաղտնիության էկրանը</translation>
 <translation id="5669267381087807207">Ակտիվացում</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">Թեմա</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Միացնել մուգ թեման</translation>
+<translation id="628726841779494414">Կառավարեք տպիչները կարգավորումներում</translation>
 <translation id="629550705077076970">ստեղնաշարի լուսավորության խամրեցում</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> թեստը չեղարկվել է</translation>
 <translation id="631063167932043783">«Հնարավորություններ» հավելված</translation>

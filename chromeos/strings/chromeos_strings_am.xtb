@@ -372,6 +372,7 @@
 <translation id="397105322502079400">በማስላት ላይ...</translation>
 <translation id="39823212440917567">ከ<ph name="NUMBER_OF_DAYS" /> ቀኖች በላይ ዕድሜ ያላቸው የህትመት ሥራዎች ይወገዳሉ</translation>
 <translation id="3993704782688964914">የእርስዎ <ph name="DEVICE_NAME" /> አሁን የተዘመነ ነው</translation>
+<translation id="3998976413398910035">አታሚዎችን አስተዳድር</translation>
 <translation id="4003384961948020559">አልተሳካም - ውፅዓት ሞልቷል</translation>
 <translation id="4021031199988160623">ለመሞከር ወደ የጭን ኮምፒውተር ሁነታ ይቀይሩ</translation>
 <translation id="4034824040120875894">አታሚ</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">ውስጣዊ ብቻ</translation>
 <translation id="5649768706273821470">አዳምጥ</translation>
 <translation id="5655283760733841251">የቁልፍ ሰሌዳ ብሩህነት መጨመሪያ</translation>
+<translation id="5655776422854483175">ምንም የህትመት ሥራዎች የሉም</translation>
 <translation id="5659593005791499971">ኢሜይል</translation>
 <translation id="5662240986744577912">የግላዊነት ማያ ገጽን መቀያየሪያ</translation>
 <translation id="5669267381087807207">በማግበር ላይ</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">ገጽታ</translation>
 <translation id="6280912520669706465">ኤአርሲ</translation>
 <translation id="6284632978374966585">ጠቆር ያለ ገጽታን አብራ</translation>
+<translation id="628726841779494414">በአታሚ ቅንብሮች ውስጥ የእርስዎን አታሚዎች ያስተዳድሩ</translation>
 <translation id="629550705077076970">የቁልፍ ሰሌዛ መፍዘዝ</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> ሙከራ ተሰርዟል</translation>
 <translation id="631063167932043783">መተግበሪያን አስስ</translation>

@@ -37,6 +37,7 @@
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> tabs seem related. Group them?</translation>
 <translation id="4212246570487010370">Continue browsing</translation>
 <translation id="4648718555153979859">Your tabs are grouped together here</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{You can find your closed tabs in Recent tabs under the Chrome main menu.}=1{You can find your closed tabs in Recent tabs under the Chrome main menu. Your Incognito tab won't be available.}other{You can find your closed tabs in Recent tabs under the Chrome main menu. Your # Incognito tabs won't be available.}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> review)}other{(<ph name="REVIEWS_COUNT_MANY" /> reviews)}}</translation>
 <translation id="4850886885716139402">View</translation>
 <translation id="4870911314065352661">Close all tabs?</translation>

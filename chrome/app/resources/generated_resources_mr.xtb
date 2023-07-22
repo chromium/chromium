@@ -8466,7 +8466,6 @@
 <translation id="8084510406207562688">सर्व टॅब रिस्टोअर करा</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> कॉंफिगर करत आहे...</translation>
 <translation id="8086121155774250556">हा टॅब तुमची स्क्रीन शेअर करत आहे</translation>
-<translation id="8086442853986205778"><ph name="PRINTER_NAME" /> सेट करा</translation>
 <translation id="8086610718778464681">Linux अ‍ॅप्स आणि फाइलचा बॅकअप घेऊ शकत नाही</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{ही फाइल एंक्रिप्ट केलेली आहे. तिच्या मालकाला ती डिक्रिप्ट करण्यास सांगा.}other{यांपैकी काही फाइल एंक्रिप्ट केलेल्या आहेत. त्यांच्या मालकाला त्या डिक्रिप्ट करण्यास सांगा.}}</translation>
 <translation id="808894953321890993">पासवर्ड बदला</translation>
@@ -9127,7 +9126,6 @@
 <translation id="8662671328352114214"><ph name="TYPE" /> नेटवर्कमध्‍‍‍‍ये सामील व्‍हा</translation>
 <translation id="8662733268723715832">हे अपेक्षेपेक्षा जास्त वेळ घेत आहे. तुम्ही वगळू शकता किंवा पूर्ण होईपर्यंत प्रतीक्षा करू शकता.</translation>
 <translation id="8662795692588422978">लोक </translation>
-<translation id="8662811608048051533">तुम्हाला बहुतांश साइटवरून साइन आउट करते.</translation>
 <translation id="8662911384982557515">तुमचे होम पेज यावर बदला: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome वॉलपेपर सेट करू शकत नाही.</translation>
 <translation id="8663099077749055505"><ph name="HOST" /> वरील एकाधिक ऑटोमॅटिक डाउनलोड नेहमी ब्लॉक करा</translation>
@@ -9268,7 +9266,6 @@
 <translation id="8770406935328356739">एक्स्टेंशन मूळ डिरेक्टरी</translation>
 <translation id="8771300903067484968">पेज बॅकग्राउंड सुरू करा डीफॉल्ट बॅकग्राउंडवर रीसेट केले गेले आहे.</translation>
 <translation id="8773280816776735812">IBAN मूल्य दाखवा</translation>
-<translation id="8773302562181397928"><ph name="PRINTER_NAME" /> सेव्ह करा</translation>
 <translation id="8774379074441005279">रिस्टोअर करण्याची खात्री करा</translation>
 <translation id="8774934320277480003">शीर्ष समास</translation>
 <translation id="8775144690796719618">चुकीची URL</translation>

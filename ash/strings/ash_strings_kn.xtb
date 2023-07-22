@@ -146,6 +146,7 @@
 <translation id="1576623706766186887">ಮ್ಯಾಗ್ನಿಫೈಯರ್ ಆನ್ ಆಗಿರುವಾಗ ಝೂಮ್ ಔಟ್ ಮಾಡಿ</translation>
 <translation id="1586324912145647027">1 ರಿಂದ 8 ನೇ ಡೆಸ್ಕ್‌ವರೆಗೆ ಹೋಗಿ</translation>
 <translation id="1589090746204042747">ಈ ಸೆಶನ್‌ನಲ್ಲಿ ನೀವು ನಡೆಸುವ ಎಲ್ಲಾ ಚಟುವಟಿಕೆಯನ್ನು ಪ್ರವೇಶಿಸುವುದು</translation>
+<translation id="1592682369233288537">ಮುಂದಿನ ಡೆಸ್ಕ್: <ph name="NEXT_DESK_NAME" />, ಸಕ್ರಿಯಗೊಳಿಸಲು ಹುಡುಕಾಟ+ಸ್ಪೇಸ್ ಬಳಸಿ</translation>
 <translation id="1604857178818051494">ಮಾಧ್ಯಮವನ್ನು ವಿರಾಮಗೊಳಿಸಿ</translation>
 <translation id="1610778689852195798">"ರದ್ದುಗೊಳಿಸಿ"</translation>
 <translation id="1611993646327628135">ಆನ್ ಮಾಡಿ</translation>
@@ -157,6 +158,7 @@
 <translation id="1647986356840967552">ಹಿಂದಿನ ಪುಟ</translation>
 <translation id="1651914502370159744">ಇತಿಹಾಸ ಪುಟವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="1654477262762802994">ಧ್ವನಿ ಪ್ರಶ್ನೆಯನ್ನು ಕೇಳಲು ಪ್ರಾರಂಭಿಸಿ</translation>
+<translation id="1662667383227796099">ಲಾಂಚರ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಫೈಲ್‌ಗಳು, ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಹೆಚ್ಚಿನವುಗಳಿಗಾಗಿ ಹುಡುಕಿ. ನಿಮ್ಮ Chromebook ಕುರಿತ ಪ್ರಶ್ನೆಗಳಿಗೆ ನೀವು ಉತ್ತರಗಳನ್ನು ಸಹ ಪಡೆಯಬಹುದು.</translation>
 <translation id="1668469839109562275">ಬಿಲ್ಟ್-ಇನ್ VPN</translation>
 <translation id="1675844249244994876">ಬಲ ವಿಂಡೋವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ಬಾಕಿ ಉಳಿದಿದೆ</translation>
@@ -560,6 +562,7 @@
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">ಶೆಲ್ಫ್ ಸ್ವಯಂ ಮರೆಯಾಗಿದೆ</translation>
+<translation id="3503243067695520519">ಹಾಯ್. Chromebooks ಸ್ವಲ್ಪ ವಿಭಿನ್ನವಾಗಿವೆ.</translation>
 <translation id="3505066820268455558">ಬ್ಯಾಟರಿ ಚಾರ್ಜ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="3509391053705095206">ನಿಮ್ಮ ಫೋನ್ ಹುಡುಕಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ಫೋನ್‌ನ ಬ್ಲೂಟೂತ್ ಆನ್‌ ಆಗಿದೆಯೇ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="3510164367642747937">ಮೌಸ್ ಕರ್ಸರ್ ಎದ್ದುಗಾಣಿಸಿ</translation>
@@ -684,6 +687,7 @@
 <translation id="3977512764614765090">ಬ್ಯಾಟರಿ <ph name="PERCENTAGE" />% ಇದೆ ಮತ್ತು ಚಾರ್ಜ್ ಆಗುತ್ತಿದೆ.</translation>
 <translation id="3984536049089846927">ಮುಂದಿನ ಪುಟ</translation>
 <translation id="3986082989454912832">ಉತ್ತರ</translation>
+<translation id="3990002060657467458">ವೈ-ಫೈ, ಬ್ಲೂಟೂತ್ ಮತ್ತು ವಾಲ್ಯೂಮ್‌ನಂತಹ ಪದೇ ಪದೇ ಬಳಸುವ ನಿಯಂತ್ರಣಗಳು ತ್ವರಿತ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿವೆ. ನೀವು ಸ್ಕ್ರೀನ್‌ಶಾಟ್‌ಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಲು ಸಹ ಇಲ್ಲಿಗೆ ಹೋಗಬಹುದು.</translation>
 <translation id="3995138139523574647">USB-C ಸಾಧನ (ಬಲ ಭಾಗದ ಹಿಂದಿನ ಪೋರ್ಟ್‌)</translation>
 <translation id="40062176907008878">ಕೈಬರಹ</translation>
 <translation id="4017989525502048489">ಲೇಸರ್ ಪಾಯಿಂಟರ್</translation>
@@ -747,6 +751,7 @@
 <translation id="4269883910223712419">ಈ ಸಾಧನದ ನಿರ್ವಾಹಕರು ಈ ಕೆಳಗಿನ ಸಾಮರ್ಥ್ಯಗಳನ್ನು ಹೊಂದಿದ್ದಾರೆ:</translation>
 <translation id="4274537685965975248">Ctrl + Alt + ಡೌನ್ ಆ್ಯರೋ ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಬದಲಿಸಲಾಗಿದೆ. End ಕೀ ಬಳಸಲು, <ph name="LAUNCHER_KEY_NAME" /> ಕೀ + ರೈಟ್ ಆ್ಯರೋ ಒತ್ತಿ.</translation>
 <translation id="4275283744500212192">ವಿಂಡೋ ಲೇಔಟ್ ಆಯ್ಕೆಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="4278138729651139331">ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ Chromebook ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ ಮತ್ತು ವೈಯಕ್ತೀಕರಿಸಿ. ನಿಮ್ಮ ವಾಲ್‌ಪೇಪರ್ ಅನ್ನು ಬದಲಾಯಿಸಲು ಅಥವಾ ಸ್ಕ್ರೀನ್ ಸೇವರ್ ಅನ್ನು ಸೆಟ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="4279490309300973883">ಪ್ರತಿಬಿಂಬಿಸುವಿಕೆ</translation>
 <translation id="4280601795273309128">ಭದ್ರತಾ ಅಪ್‌ಡೇಟ್‌ಗಳು ಕೊನೆಗೊಂಡಿವೆ. ನಿಮ್ಮ ಸಾಧನವನ್ನು ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ.</translation>
 <translation id="4283888303416325161">ಇನ್ನಷ್ಟು ಸುರಕ್ಷತೆಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ</translation>
@@ -803,6 +808,7 @@
 <translation id="4505050298327493054">ಸಕ್ರಿಯೆ ಡೆಸ್ಕ್</translation>
 <translation id="450584155212756404">Dev ಚಾನಲ್</translation>
 <translation id="4513946894732546136">ಪ್ರತಿಕ್ರಿಯೆ</translation>
+<translation id="4516212064498225455">ಪ್ರಸ್ತುತ ಡೆಸ್ಕ್: <ph name="CURRENT_DESK_NAME" />, ಎಲ್ಲಾ ಡೆಸ್ಕ್‌ಗಳ ಮೆನು ತೆರೆಯಲು ಹುಡುಕಾಟ+ಸ್ಪೇಸ್ ಬಳಸಿ.</translation>
 <translation id="4518404433291145981">ನಿಮ್ಮ Chromebook ಅನ್‌ಲಾಕ್ ಮಾಡಲು, ಮೊದಲು ನಿಮ್ಮ ಫೋನ್ ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="4527045527269911712">ಬ್ಲೂಟೂತ್‌‌ ಸಾಧನವು "<ph name="DEVICE_NAME" />" ಜೋಡಣೆಗಾಗಿ ಅನುಮತಿಯನ್ನು ಬಯಸುತ್ತದೆ.</translation>
 <translation id="4533343294786968049">ನಿಮ್ಮ ಬ್ಯಾಟರಿ ಬಾಳಿಕೆಯನ್ನು ವಿಸ್ತರಿಸಲಾಗುತ್ತಿದೆ. ಬ್ಯಾಟರಿಯು <ph name="FULLY_CHARGE_TIME" /> ಒಳಗಾಗಿ ಸಂಪೂರ್ಣವಾಗಿ ಚಾರ್ಜ್ ಆಗುತ್ತದೆ.</translation>
@@ -970,6 +976,7 @@
 <translation id="5207949376430453814">ಪಠ್ಯದಲ್ಲಿ ಕೆರೆಟ್ ಅನ್ನು ಎದ್ದುಗಾಣಿಸಿ</translation>
 <translation id="5208059991603368177">ಆನ್ ಮಾಡಿ</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> ವರೆಗೆ ಆಫ್ ಆಗಿರುತ್ತದೆ</translation>
+<translation id="5217646019792206018">ಮುಂದಿನ ಡೆಸ್ಕ್: <ph name="NEXT_DESK_NAME" />, ಸಕ್ರಿಯಗೊಳಿಸಲು ಹುಡುಕಾಟ+ಸ್ಪೇಸ್ ಅಥವಾ ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಬಳಸಿ: ಶಿಫ್ಟ್+ಹುಡುಕಾಟ+<ph name="NEXT_DESK_INDEX" /> ಬಳಸಿ.</translation>
 <translation id="5221423477036820198">ಫೋನ್ ಹಬ್ ಬಳಸಿಕೊಂಡು ನಿಮ್ಮ ಫೋನ್‌ನ ಸಂದೇಶಗಳಿಗೆ ತ್ವರಿತವಾಗಿ ಕಳುಹಿಸಿ ಅಥವಾ ಪ್ರತ್ಯುತ್ತರಿಸಿ.</translation>
 <translation id="5222676887888702881">ಸೈನ್ ಔಟ್</translation>
 <translation id="5229343007215035173">ಗೌಪ್ಯತೆ ಸ್ಕ್ರೀನ್ ಆನ್/ಆಫ್ ಮಾಡಿ</translation>
@@ -1035,6 +1042,7 @@
 <translation id="550391772491508736">ಬಿತ್ತರಿಸುವಿಕೆಯನ್ನು ಪುನರಾರಂಭಿಸಿ</translation>
 <translation id="5506975627792768506">ಮ್ಯಾಗ್ನಿಫೈಯರ್ ಅನ್ನು ಆನ್ ಅಥವಾ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="5512042095225963688">ಹಿಂದಿನ ಪದವನ್ನು ಅಳಿಸಿ</translation>
+<translation id="5518068085000130971">ನೀವು ಮೂಲ ಮಾಹಿತಿಯನ್ನು ಓದಿದ್ದೀರಿ. ಸಲಹೆಗಳು ಮತ್ತು ಸಹಾಯಕ್ಕಾಗಿ ನಮ್ಮ ಬಿಲ್ಟ್-ಇನ್ ಆ್ಯಪ್, ಎಕ್ಸ್‌ಪ್ಲೋರ್‌ಗೆ ಮುಂದುವರಿಯಿರಿ. ಪ್ರಾರಂಭಿಸಲು ಸಲಹೆಗಳು, ಶಿಫಾರಸು ಮಾಡಿದ ಆ್ಯಪ್‌ಗಳು, ವಿಶೇಷ ಆಫರ್‌ಗಳು ಮತ್ತು ಇತ್ತೀಚಿನ Chromebook ಫೀಚರ್‌ಗಳನ್ನು ನೀವು ಕಾಣಬಹುದು.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಎಲ್ಲಾ eSIM ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿದ್ದಾರೆ. ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> ಅನ್ನು ಕನೆಕ್ಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ.</translation>
@@ -1360,6 +1368,7 @@
 <translation id="6896758677409633944">ನಕಲಿಸು</translation>
 <translation id="6901883536534621389">ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ಗೆಸ್ಚರ್‌ಗಳನ್ನು ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="6912841030378044227">ವಿಳಾಸ ಪಟ್ಟಿಯ ಮೇಲೆ ಫೋಕಸ್ ಮಾಡಿ</translation>
+<translation id="6912901278692845878">ತ್ವರಿತ ಪ್ರವಾಸ</translation>
 <translation id="6919251195245069855">ನಿಮ್ಮ ಸ್ಮಾರ್ಟ್ ಕಾರ್ಡ್ ಅನ್ನು ಗುರುತಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="6920245099716267363">ಹಾಟ್‌ಸ್ಪಾಟ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ. ಹಾಟ್‌ಸ್ಪಾಟ್ ಆನ್ ಆಗಿದೆ, 1 ಸಾಧನ ಕನೆಕ್ಟ್ ಆಗಿದೆ.</translation>
 <translation id="6931576957638141829">ಇಲ್ಲಿ ಉಳಿಸಿ</translation>
@@ -1666,6 +1675,7 @@
 <translation id="8297006494302853456">ದುರ್ಬಲ</translation>
 <translation id="8308637677604853869">ಹಿಂದಿನ ಮೆನು</translation>
 <translation id="830868413617744215">ಬೀಟಾ</translation>
+<translation id="8312557488404088015">ಸುಲಭವಾಗಿ ಪ್ರಾರಂಭಿಸಲು ತ್ವರಿತ ಪ್ರವಾಸವನ್ನು ಕೈಗೊಳ್ಳಿ. 6 ಹಂತಗಳೊಂದಿಗೆ, ಇದು ಸ್ವಲ್ಪ ಸಮಯ ತೆಗೆದುಕೊಳ್ಳುತ್ತದೆ.</translation>
 <translation id="8314772463905284467">CAPS LOCK ಆನ್ ಆಗಿದೆ</translation>
 <translation id="8315514906653279104">ಆನ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -1715,6 +1725,7 @@
 <translation id="8517041960877371778">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಆನ್ ಮಾಡಿರುವಾಗ ಅದನ್ನು ಚಾರ್ಜ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{ಮೈಕ್ ಇನ್‌ಪುಟ್ ಅನ್ನು <ph name="APP_NAME" /> ನಿಂದ ನಿಯಂತ್ರಿಸಲಾಗುತ್ತದೆ}one{ಮೈಕ್ ಇನ್‌ಪುಟ್ ಅನ್ನು # ಆ್ಯಪ್‌ಗಳಿಂದ ನಿಯಂತ್ರಿಸಲಾಗುತ್ತದೆ}other{ಮೈಕ್ ಇನ್‌ಪುಟ್ ಅನ್ನು # ಆ್ಯಪ್‌ಗಳಿಂದ ನಿಯಂತ್ರಿಸಲಾಗುತ್ತದೆ}}</translation>
 <translation id="8535393432370007982">ಬಣ್ಣದ ಪ್ರಕಾರ ಮಾಡಿರುವ ವಿಂಗಡಣೆಯನ್ನು ರದ್ದುಗೊಳಿಸಿ</translation>
+<translation id="853768060447955562">ಹಿಂದಿನ ಡೆಸ್ಕ್: <ph name="PREVIOUS_DESK_NAME" />, ಸಕ್ರಿಯಗೊಳಿಸಲು ಹುಡುಕಾಟ+ಸ್ಪೇಸ್ ಅಥವಾ ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಬಳಸಿ: ಶಿಫ್ಟ್+ಹುಡುಕಾಟ+<ph name="PREVIOUS_DESK_INDEX" /> ಬಳಸಿ.</translation>
 <translation id="8541078764854166027">ಕ್ಯಾಮರಾ ಫ್ರೇಮಿಂಗ್</translation>
 <translation id="8542053257095774575">ಯಾವುದೇ ಡೆಸ್ಕ್‌ಗಳು ಅಥವಾ ಟೆಂಪ್ಲೇಟ್‌ಗಳನ್ನು ಉಳಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="8546059259582788728">ವಿಂಗಡಣೆಯ ರದ್ದತಿ ಯಶಸ್ವಿಯಾಗಿದೆ</translation>
@@ -1866,11 +1877,13 @@
 <translation id="925832987464884575">ಪೂರ್ವವೀಕ್ಷಣೆಗಳನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="937214777182567951">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಕೂಡಲೇ ನೀವು ಅಪ್‌ಡೇಟ್ ಮಾಡಬೇಕೆಂದು <ph name="MANAGER" /> ಬಯಸುತ್ತದೆ</translation>
 <translation id="938963181863597773">ನನ್ನ ಕ್ಯಾಲೆಂಡರ್‌ನಲ್ಲಿ ಏನಿದೆ?</translation>
+<translation id="943067377221312471">ಹಿಂದಿನ ಡೆಸ್ಕ್: <ph name="PREVIOUS_DESK_NAME" />, ಸಕ್ರಿಯಗೊಳಿಸಲು ಹುಡುಕಾಟ+ಸ್ಪೇಸ್ ಬಳಸಿ</translation>
 <translation id="945383118875625837">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳ ಪಟ್ಟಿಗೆ ಲಿಂಕ್‌ ಅನ್ನು ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
 <translation id="945522503751344254">ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಕಳುಹಿಸಿ</translation>
 <translation id="951991426597076286">ನಿರಾಕರಿಸಿ</translation>
 <translation id="953431725143473984">ಸಾಧನವನ್ನು ಸ್ಥಗಿತಗೊಳಿಸಬೇಕೆ?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> ಗಾಗಿ ಸಾಕಷ್ಟು ಸ್ಥಳಾವಕಾಶವಿಲ್ಲ. ಸ್ಥಳಾವಕಾಶವನ್ನು ಮುಕ್ತಗೊಳಿಸಿ.</translation>
+<translation id="968627661524972577">ನಿಮ್ಮ Chromebook ನಲ್ಲಿ ನಿಮಗೆ ಅಗತ್ಯವಿರುವ ಎಲ್ಲವನ್ನೂ ಮಾಡಲು ಆ್ಯಪ್‌ಗಳನ್ನು ಬಳಸಿ. ಲಾಂಚರ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಆ್ಯಪ್‌ಗಳನ್ನು ನೀವು ಕಾಣಬಹುದು. ನೀವು ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ಲಾಂಚರ್ ಕೀ ಅನ್ನು ಸಹ ಒತ್ತಬಹುದು.</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> ಕುರಿತಾದ <ph name="RESULT_COUNT" /> ಫಲಿತಾಂಶಗಳನ್ನು ಪ್ರದರ್ಶಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="98120814841227350">ಡಾಕ್ಯುಮೆಂಟ್‌ನ ಅಂತ್ಯಕ್ಕೆ ಹೋಗಿ</translation>
 <translation id="987589956647469042">ಮೊಬೈಲ್ ಡೇಟಾ ಆನ್ ಆಗಿದೆ</translation>

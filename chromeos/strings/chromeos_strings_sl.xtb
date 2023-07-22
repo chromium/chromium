@@ -372,6 +372,7 @@
 <translation id="397105322502079400">Izračunavanje …</translation>
 <translation id="39823212440917567">Odstranjena bodo tiskalna opravila, starejša od toliko dni: <ph name="NUMBER_OF_DAYS" /></translation>
 <translation id="3993704782688964914">Naprava <ph name="DEVICE_NAME" /> je posodobljena.</translation>
+<translation id="3998976413398910035">Upravljanje tiskalnikov</translation>
 <translation id="4003384961948020559">Napaka – izhodni pladenj je poln</translation>
 <translation id="4021031199988160623">Če želite preizkusiti, preklopite v način prenosnika.</translation>
 <translation id="4034824040120875894">Tiskalnik</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">Samo za interno rabo</translation>
 <translation id="5649768706273821470">Poslušajte</translation>
 <translation id="5655283760733841251">Povečanje svetlosti osvetlitve tipkovnice</translation>
+<translation id="5655776422854483175">Ni tiskalnih opravil</translation>
 <translation id="5659593005791499971">E-pošta</translation>
 <translation id="5662240986744577912">preklop zaslona za zasebnost</translation>
 <translation id="5669267381087807207">Aktiviranje</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Vklop temne teme</translation>
+<translation id="628726841779494414">Upravljanje tiskalnikov v nastavitvah tiskalnika</translation>
 <translation id="629550705077076970">zatemnitev osvetlitve tipkovnice</translation>
 <translation id="6302401976930124515">Preizkus <ph name="TEST_NAME" /> je preklican.</translation>
 <translation id="631063167932043783">Raziščite aplikacijo</translation>

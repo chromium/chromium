@@ -8469,7 +8469,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8084510406207562688">Бардык өтмөктөрдү калыбына келтирүү</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> конфигурацияланууда ...</translation>
 <translation id="8086121155774250556">Бул өтмөк экраныңызды бөлүшүүдө</translation>
-<translation id="8086442853986205778"><ph name="PRINTER_NAME" /> түзмөгүн жөндөө</translation>
 <translation id="8086610718778464681">Linux колдонмолору менен файлдарынын камдык көчүрмөлөрү сакталбай калды</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Бул файл шифрленген. Файлдын шифрин чечмелөөнү анын ээсинен сураныңыз.}other{Бул файлдардын айрымдары шифрленген. Алардын ээсинен файлдардын шифрин чечмелөөнү сураныңыз.}}</translation>
 <translation id="808894953321890993">Сызсөздү өзгөртүү</translation>
@@ -9130,7 +9129,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8662671328352114214"><ph name="TYPE" /> тармагына кошулуу</translation>
 <translation id="8662733268723715832">Бул күтүлгөндөн көбүрөөк созулуп жатат. Өткөрүп жиберип же бүткөнгө чейин күтө турсаңыз болот.</translation>
 <translation id="8662795692588422978">Адамдар</translation>
-<translation id="8662811608048051533">Көпчүлүк сайттардагы каттоо эсептериңизден чыгарыласыз.</translation>
 <translation id="8662911384982557515">Башкы бетиңизди төмөнкүгө өзгөртүңүз: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome тушкагазды коё албайт.</translation>
 <translation id="8663099077749055505"><ph name="HOST" /> бетинде автоматтык түрдө бир нече жүктөп алуу аракеттери ар дайым бөгөттөлсүн</translation>
@@ -9271,7 +9269,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8770406935328356739">Кеңейтүүнүн өзөктүк каталогу</translation>
 <translation id="8771300903067484968">Башкы беттин фону демейки фонго коюлду.</translation>
 <translation id="8773280816776735812">IBAN кодун көрсөтүү</translation>
-<translation id="8773302562181397928"><ph name="PRINTER_NAME" /> сактоо</translation>
 <translation id="8774379074441005279">Калыбына келтирүүнү ырастоо</translation>
 <translation id="8774934320277480003">Жогорку чети</translation>
 <translation id="8775144690796719618">Жараксыз URL</translation>

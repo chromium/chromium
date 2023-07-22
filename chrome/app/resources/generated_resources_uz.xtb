@@ -1281,6 +1281,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="204497730941176055">Microsoft sertifikati andozasi nomi</translation>
 <translation id="2045117674524495717">Tezkor tugmalar yordamchisi</translation>
 <translation id="2045211794962848221">Bu maxsus xabar boshqa chiqmaydi</translation>
+<translation id="2045838962742066664">Qisqartirilgan matn terish</translation>
 <translation id="2045969484888636535">Cookie-fayllari saqlanishini doim bloklash</translation>
 <translation id="204622017488417136">Qurilmangiz Chrome’ning avvalgi versiyasiga qaytariladi. Barcha foydalanuvchilar hisoblari va mahalliy ma’lumotlar o‘chib ketadi. Buni ortga qaytarib bo‘lmaydi.</translation>
 <translation id="2046702855113914483">Ramyon</translation>
@@ -1840,6 +1841,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2471506181342525583">Joylashuv axborotiga ruxsat berilgan</translation>
 <translation id="2473195200299095979">Bu sahifani tarjima qilish</translation>
 <translation id="2475982808118771221">Xatolik yuz berdi</translation>
+<translation id="2476901513051581836">Oflayn xotira hajmi aniqlanmasa, xotirani tozalab boʻlmaydi.</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> oʻchirib tashlanishi uchun Windows ishini yakunlang.</translation>
 <translation id="2477065602824695373">Bir nechta kalit tugma sozlangani sababli avto-skanerlash faolsizlantirildi.</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" uchun media fayli ruxsatlari</translation>
@@ -2224,6 +2226,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2794522004398861033">eSIM kartani sozlash uchun Wi-Fi yoki Ethernet tarmoqqa ulaning</translation>
 <translation id="2794977172822818797">Joriy saytlarni kiritish</translation>
 <translation id="2795716239552913152">Saytlar odatda mahalliy yangiliklar yoki atrofdagi doʻkonlar kabi tegishli funksiya yoki axborotlar uchun joylashuvingizdan foydalanadi</translation>
+<translation id="2795950023277268902">Fayllar ilovasidagi Drive fayllariga kirish uchun <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> hisobiga ulaning</translation>
 <translation id="2796740370559399562">Cookie-fayllardan foydalanishga doim ruxsat berilsin</translation>
 <translation id="2798347533012571708">Yangilanib tursin</translation>
 <translation id="2799223571221894425">Qaytadan ishga tushirish</translation>
@@ -3659,6 +3662,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3995138139523574647">USB-C qurilma (o‘ng tomondagi orqa port)</translation>
 <translation id="3995963973192100066">Animatsiyani ijro qilish</translation>
 <translation id="399788104667917863">Asboblar paneliga mahkamlash</translation>
+<translation id="3998976413398910035">Printerlarni boshqarish</translation>
 <translation id="4001540981461989979">Sichqoncha kursori harakatlanganda ajratib koʻrsatilsin</translation>
 <translation id="4002440992267487163">PIN-kodni sozlash</translation>
 <translation id="4005817994523282006">Vaqt mintaqasi aniqlanish uslubi</translation>
@@ -3766,6 +3770,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4098667039111970300">Asboblar panelida stilus vositalari</translation>
 <translation id="4099060993766194518">Standart qidiruv tizimi tiklansinmi?</translation>
 <translation id="4099874310852108874">Tarmoqda xatolik yuz berdi.</translation>
+<translation id="4100020874626534113">Moslashuvchan diakritik tayinlovga ruxsat bering. Masalan, “ánh” natijasini olish uchun “anhs” yoki “asnh” yozing</translation>
 <translation id="4100733287846229632">Qurilmada bo‘sh joy deyarli qolmadi</translation>
 <translation id="4100853287411968461">Yangi ruxsat berilgan foydalanish vaqti</translation>
 <translation id="4101352914005291489">Yashirin SSID</translation>
@@ -4763,6 +4768,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4953808748584563296">Standart to‘q sariq avatar</translation>
 <translation id="4955710816792587366">PIN kod tanlang</translation>
 <translation id="4959262764292427323">Google hisobingizga saqlangan parollardan har qanday qurilmada foydalanishingiz mumkin.</translation>
+<translation id="4960020053211143927">Ayrim ilovalarda ishlamaydi</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Ekranni translatsiya qilish</translation>
 <translation id="4961361269522589229">retseptlar</translation>
@@ -4962,6 +4968,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5139823398361067371">Elektron kalit PIN kodini kiriting. PIN kodni bilmasangiz, elektron kalit sozlamalarini qayta tiklash kerak.</translation>
 <translation id="5139955368427980650">&amp;Ochish</translation>
 <translation id="5141421572306659464">Asosiy hisob</translation>
+<translation id="5141957579434225843">Masalan, òa, òe, ùy oʻrniga oà, oè, uỳ ishlating</translation>
 <translation id="5142793792982256885">Sensorli panelda varaqlash tezligi</translation>
 <translation id="5143374789336132547">“<ph name="EXTENSION_NAME" />” kengaytmasi “Boshi” tugmasi bosilganda ko‘rsatiladigan sahifani o‘zgartirdi.</translation>
 <translation id="5143612243342258355">Bu xavfli fayl</translation>
@@ -6301,6 +6308,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="628352644014831790">4 soniya</translation>
 <translation id="6285120108426285413">“<ph name="FILE_NAME" />” faylini yuklab olish tavsiya etilmaydi, chunki bu fayl kompyuteringiz uchun xavfli bo‘lishi mumkin.</translation>
 <translation id="6285770818046456882">Fayl yuborayotgan qurilma uzatmani bekor qildi</translation>
+<translation id="628726841779494414">Printerlarni sozlamalar orqali boshqaring</translation>
 <translation id="6290613030083731160">Atrofda hech qanday qurilma topilmadi. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Aktivatsiya kodi tekshirilmoqda. Bu bir necha daqiqa vaqt olishi mumkin.</translation>
 <translation id="6291741848715722067">Tasdiqlash kodi</translation>
@@ -7012,6 +7020,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6897688156970667447">Qorongʻilikda foydali va batareyani tejaydi</translation>
 <translation id="6897972855231767338">Mehmon rejimi haqida batafsil</translation>
 <translation id="6898440773573063262">Endi bu qurilmada kiosk-ilovalari avtomatik ishga tushirilishini sozlash mumkin.</translation>
+<translation id="6899427698619335650">Moslashuvchan diakritik tayinlovga ruxsat bering. Masalan, “ánh” natijasini olish uchun “anh1” yoki “a1nh” yozing.</translation>
 <translation id="6900284862687837908">Orqa fondagi ilova: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">Kuchaytirilgan himoya</translation>
 <translation id="6900651018461749106">Yangilash uchun hisobga kiring: <ph name="USER_EMAIL" /></translation>
@@ -8446,7 +8455,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8084510406207562688">Barcha varaqlarni tiklash</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> sozlanmoqda...</translation>
 <translation id="8086121155774250556">Bu varaq ekraningizni uzatmoqda</translation>
-<translation id="8086442853986205778"><ph name="PRINTER_NAME" /> printerini sozlash</translation>
 <translation id="8086610718778464681">Linux ilovalari va fayllari zaxiralanmadi</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Bu fayl shifrlangan. Egasidan uning shifrini yechishini soʻrang.}other{Bu fayllarning ayrimlari shifrlangan. Egasidan ularning shifrini yechishini soʻrang.}}</translation>
 <translation id="808894953321890993">Parolni almashtirish</translation>
@@ -9107,7 +9115,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8662671328352114214"><ph name="TYPE" /> tarmoqqa ulanish</translation>
 <translation id="8662733268723715832">Bu odatdagidan koʻproq vaqt oladi, keyinga qoldiring yoki tugashini kuting.</translation>
 <translation id="8662795692588422978">Foydalanuvchilar</translation>
-<translation id="8662811608048051533">Bir nechta saytlardagi hisobingizdan chiqasiz.</translation>
 <translation id="8662911384982557515">Bosh sahifani quyidagisiga almashtirish: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome bu rasmni orqa fonga o‘rnata olmadi.</translation>
 <translation id="8663099077749055505"><ph name="HOST" /> saytida bir nechta fayl avtomatik yuklab olinishi doim taqiqlansin</translation>
@@ -9248,7 +9255,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8770406935328356739">Kengaytma tub katalogi</translation>
 <translation id="8771300903067484968">Bosh sahifadagi fon rasmi standart fon rasm etib tayinlandi.</translation>
 <translation id="8773280816776735812">IBAN qiymatini chiqarish</translation>
-<translation id="8773302562181397928"><ph name="PRINTER_NAME" /> printerini saqlash</translation>
 <translation id="8774379074441005279">Tiklashni tasdiqlang</translation>
 <translation id="8774934320277480003">Yuqori hoshiya</translation>
 <translation id="8775144690796719618">URL manzil yaroqsiz</translation>

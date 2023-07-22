@@ -8475,7 +8475,6 @@
 <translation id="8084510406207562688">सभी टैब पहले जैसे करें</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> कॉन्फ़िगर किया जा रहा है ...</translation>
 <translation id="8086121155774250556">यह टैब आपकी स्क्रीन शेयर कर रहा है</translation>
-<translation id="8086442853986205778"><ph name="PRINTER_NAME" /> सेट अप करें</translation>
 <translation id="8086610718778464681">Linux के ऐप्लिकेशन और फ़ाइलों का बैक अप नहीं लिया जा सकता</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{यह फ़ाइल सुरक्षित की गई है. इसके मालिक से इसे सबकी पहुंच में लाने के लिए कहें.}one{इनमें से कुछ फ़ाइलें सुरक्षित की गई हैं. इनके मालिक से इन्हें सबकी पहुंच में लाने के लिए कहें.}other{इनमें से कुछ फ़ाइलें सुरक्षित की गई हैं. इनके मालिक से इन्हें सबकी पहुंच में लाने के लिए कहें.}}</translation>
 <translation id="808894953321890993">पासवर्ड बदलें</translation>
@@ -9136,7 +9135,6 @@
 <translation id="8662671328352114214"><ph name="TYPE" /> नेटवर्क में शामिल हों</translation>
 <translation id="8662733268723715832">इसमें उम्मीद से ज़्यादा समय लग रहा है. आप चाहें, तो इसे स्किप कर दें या फिर इसके पूरा होने का इंतज़ार करें.</translation>
 <translation id="8662795692588422978">लोग</translation>
-<translation id="8662811608048051533">आपको ज़्यादातर साइट से साइन आउट कर देता है.</translation>
 <translation id="8662911384982557515">अपना होम पेज: <ph name="HOME_PAGE" /> में बदलें</translation>
 <translation id="8662978096466608964">Chrome वॉलपेपर सेट नहीं कर सकता.</translation>
 <translation id="8663099077749055505"><ph name="HOST" /> पर एकाधिक स्वचालित डाउनलोड हमेशा ब्लॉक करें</translation>
@@ -9277,7 +9275,6 @@
 <translation id="8770406935328356739">एक्‍सटेंशन मूल निर्देशिका</translation>
 <translation id="8771300903067484968">स्टार्ट पेज के बैकग्राउंड को डिफ़ॉल्ट बैकग्राउंड पर रीसेट कर दिया गया है.</translation>
 <translation id="8773280816776735812">IBAN की वैल्यू दिखाएं</translation>
-<translation id="8773302562181397928"><ph name="PRINTER_NAME" /> को सेव करें</translation>
 <translation id="8774379074441005279">बहाल करने की पुष्टि करें</translation>
 <translation id="8774934320277480003">शीर्ष हाशिया</translation>
 <translation id="8775144690796719618">गलत यूआरएल</translation>

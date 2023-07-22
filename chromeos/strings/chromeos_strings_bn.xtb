@@ -372,6 +372,7 @@
 <translation id="397105322502079400">গণনা করা হচ্ছে...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> দিনের বেশি পুরনো প্রিন্ট জব সরিয়ে দেওয়া হবে</translation>
 <translation id="3993704782688964914">আপনার <ph name="DEVICE_NAME" /> ডিভাইস এখন আপ-টু-ডেট আছে</translation>
+<translation id="3998976413398910035">প্রিন্টার পরিচালনা করুন</translation>
 <translation id="4003384961948020559">প্রিন্ট করা যায়নি - আউটপুট বিন ভর্তি হয়ে গেছে</translation>
 <translation id="4021031199988160623">পরীক্ষার জন্য ল্যাপটপ মোড চালু করুন</translation>
 <translation id="4034824040120875894">প্রিন্টার</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">শুধুমাত্র ইন্টার্নাল</translation>
 <translation id="5649768706273821470">শুনুন</translation>
 <translation id="5655283760733841251">কীবোর্ডের উজ্জ্বলতা বাড়ান</translation>
+<translation id="5655776422854483175">কোনও প্রিন্টের কাজ নেই</translation>
 <translation id="5659593005791499971">ইমেল আইডি</translation>
 <translation id="5662240986744577912">'প্রাইভেসি স্ক্রিন' টগল করুন</translation>
 <translation id="5669267381087807207">সক্রিয় করা হচ্ছে</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">থীম</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">ডার্ক থিম চালু করুন</translation>
+<translation id="628726841779494414">প্রিন্টারের সেটিংস থেকে আপনার প্রিন্টার ম্যানেজ করুন</translation>
 <translation id="629550705077076970">কীবোর্ড অনুজ্জ্বল হচ্ছে</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> পরীক্ষা বাতিল করা হয়েছে</translation>
 <translation id="631063167932043783">এক্সপ্লোর সংক্রান্ত অ্যাপ</translation>

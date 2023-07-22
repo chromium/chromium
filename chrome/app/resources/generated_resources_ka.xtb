@@ -8457,7 +8457,6 @@
 <translation id="8084510406207562688">ყველა ჩანართის &amp;აღდგენა</translation>
 <translation id="8086015605808120405">მიმდინარეობს <ph name="PRINTER_NAME" />-ის კონფიგურაცია...</translation>
 <translation id="8086121155774250556">ეს ჩანართი აზიარებს თქვენს ეკრანს</translation>
-<translation id="8086442853986205778"><ph name="PRINTER_NAME" />-ის დაყენება</translation>
 <translation id="8086610718778464681">Linux-ის აპებისა და ფაილების სარეზერვო ასლების შექმნა ვერ მოხერხდა</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{ეს ფაილი დაშიფრულია. სთხოვეთ მის მფლობელს დეშიფრაცია.}other{ამ ფაილებიდან ზოგიერთი დაშიფრულია. სთხოვეთ მათ მფლობელებს დეშიფრაცია.}}</translation>
 <translation id="808894953321890993">პაროლის შეცვლა</translation>
@@ -9118,7 +9117,6 @@
 <translation id="8662671328352114214">„<ph name="TYPE" />“ ქსელში გაწევრიანება</translation>
 <translation id="8662733268723715832">ამ პროცესს მოსალოდნელზე მეტი დრო სჭირდება. სურვილისამებრ, შეგიძლიათ გამოტოვოთ ან დაელოდოთ მის დასრულებას.</translation>
 <translation id="8662795692588422978">ხალხი</translation>
-<translation id="8662811608048051533">თქვენ გამოხვალთ სისტემიდან საიტების უმეტესობაზე.</translation>
 <translation id="8662911384982557515">შეცვალეთ თქვენი მთავარი გვერდი: <ph name="HOME_PAGE" />-ით</translation>
 <translation id="8662978096466608964">Chrome ვერ აყენებს ფონს.</translation>
 <translation id="8663099077749055505">ყოველთვის დაბლოკე მრავლობითი ავტომატური ჩამოტვირთვები <ph name="HOST" />-ზე</translation>
@@ -9259,7 +9257,6 @@
 <translation id="8770406935328356739">გაფართოების ძირეული დირექტორია</translation>
 <translation id="8771300903067484968">საწყისი გვერდის ფონი გადაყენებულია ნაგულისხმევ ფონზე.</translation>
 <translation id="8773280816776735812">IBAN-ის მნიშვნელობის ჩვენება</translation>
-<translation id="8773302562181397928"><ph name="PRINTER_NAME" />-ის შენახვა</translation>
 <translation id="8774379074441005279">დაადასტურეთ აღდგენა</translation>
 <translation id="8774934320277480003">ზედა მინდორი</translation>
 <translation id="8775144690796719618">URL არასწორია</translation>

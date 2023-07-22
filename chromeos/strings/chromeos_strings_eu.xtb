@@ -372,6 +372,7 @@
 <translation id="397105322502079400">Kalkulatzen…</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> egun baino gehiagoko inprimatze-lanak kendu egingo dira</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> eguneratuta dago</translation>
+<translation id="3998976413398910035">Kudeatu inprimagailuak</translation>
 <translation id="4003384961948020559">Hutsegitea - Irteera-erretilua beteta dago</translation>
 <translation id="4021031199988160623">Probak egiteko, aldatu ordenagailu eramangarriaren modura</translation>
 <translation id="4034824040120875894">Inprimagailua</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">Barnekoa soilik</translation>
 <translation id="5649768706273821470">Entzun</translation>
 <translation id="5655283760733841251">Teklatuaren distira igotzeko tekla</translation>
+<translation id="5655776422854483175">Ez dago inprimatze-lanik</translation>
 <translation id="5659593005791499971">Helbide elektronikoa</translation>
 <translation id="5662240986744577912">aktibatu edo desaktibatu pribatutasun-pantaila</translation>
 <translation id="5669267381087807207">Aktibatzen</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">Gaia</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Aktibatu gai iluna</translation>
+<translation id="628726841779494414">Kudeatu inprimagailuak haien ezarpenetan</translation>
 <translation id="629550705077076970">teklatuaren argia gutxitzea</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> neurtzeko proba bertan behera utzi da</translation>
 <translation id="631063167932043783">"Arakatu" aplikazioa</translation>

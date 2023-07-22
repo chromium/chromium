@@ -372,6 +372,7 @@
 <translation id="397105322502079400">Reiknar...</translation>
 <translation id="39823212440917567">Prentverk sem eru eldri en <ph name="NUMBER_OF_DAYS" /> verða fjarlægð</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> er nú uppfært</translation>
+<translation id="3998976413398910035">Stjórna prenturum</translation>
 <translation id="4003384961948020559">Mistókst – úttakið er fullt</translation>
 <translation id="4021031199988160623">Skiptu yfir í fartölvustillingu til að prófa</translation>
 <translation id="4034824040120875894">Prentari</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">Aðeins innanhúss</translation>
 <translation id="5649768706273821470">Hlusta</translation>
 <translation id="5655283760733841251">Auka birtustig lyklaborðs</translation>
+<translation id="5655776422854483175">Engin prentverk</translation>
 <translation id="5659593005791499971">Netfang</translation>
 <translation id="5662240986744577912">kveikja/slökkva á persónuverndarskjá</translation>
 <translation id="5669267381087807207">Virkjar</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">Þema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Kveikja á dökku þema</translation>
+<translation id="628726841779494414">Stjórnaðu prenturunum í prentarastillingunum</translation>
 <translation id="629550705077076970">lyklaborð dekkt</translation>
 <translation id="6302401976930124515">Hætt var við prófunina: <ph name="TEST_NAME" /></translation>
 <translation id="631063167932043783">Skoða forrit</translation>

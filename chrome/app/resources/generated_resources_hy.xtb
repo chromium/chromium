@@ -1284,6 +1284,7 @@
 <translation id="204497730941176055">Microsoft-ի վկայագրի ձևանմուշի անունը</translation>
 <translation id="2045117674524495717">Ստեղնային դյուրանցումների օգնական</translation>
 <translation id="2045211794962848221">Դուք այլևս չեք տեսնի այս հատուկ հաղորդագրությունը</translation>
+<translation id="2045838962742066664">Կրճատումների օգտագործմամբ մուտքագրում</translation>
 <translation id="2045969484888636535">Շարունակել քուքիների արգելափակումը</translation>
 <translation id="204622017488417136">Սարքը կվերադարձվի Chrome-ի նախկինում տեղադրված տարբերակին: Բոլոր օգտատերերի հաշիվները և տեղային տվյալները կհեռացվեն: Գործողությունը հնարավոր չէ հետարկել:</translation>
 <translation id="2046702855113914483">Ռամեն</translation>
@@ -1840,6 +1841,7 @@
 <translation id="2471506181342525583">Տեղորոշման թույլտվությունը միացված է</translation>
 <translation id="2473195200299095979">Թարգմանել այս էջը</translation>
 <translation id="2475982808118771221">Սխալ առաջացավ</translation>
+<translation id="2476901513051581836">Տարածքը կարելի է ազատել, միայն եթե անցանց հիշողության չափը հայտնի է։</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" />-ն ապատեղադրելու համար ավարտեք Windows-ի հետ աշխատանքը։</translation>
 <translation id="2477065602824695373">Քանի որ դուք մի քանի փոխանջատիչ եք նշանակել, ավտոմատ սկանավորումն անջատվել է։</translation>
 <translation id="2478176599153288112">Մեդիա ֆայլերի օգտագործման թույլտվություններ «<ph name="EXTENSION" />»-ի համար</translation>
@@ -2224,6 +2226,7 @@
 <translation id="2794522004398861033">eSIM-ը կարգավորելու համար միացեք Wi-Fi կամ Ethernet ցանցի</translation>
 <translation id="2794977172822818797">Ավելացրեք ընթացիկ կայքերը</translation>
 <translation id="2795716239552913152">Կայքերը սովորաբար օգտագործում են ձեր տեղադրության տվյալները՝ համապատասխան գործառույթների կամ տեղեկությունների ցուցադրման համար (օրինակ՝ տեղական նորություններ կամ մոտակա խանութների մասին տեղեկություններ)</translation>
+<translation id="2795950023277268902">Կապեք <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> հաշիվը, որպեսզի Drive-ում պահված ձեր ֆայլերը բացեք «Ֆայլեր» հավելվածում</translation>
 <translation id="2796740370559399562">Շարունակել թույլատրել քուքիները</translation>
 <translation id="2798347533012571708">Չանջատել թարմացումները</translation>
 <translation id="2799223571221894425">Վերագործարկել</translation>
@@ -3659,6 +3662,7 @@
 <translation id="3995138139523574647">USB-C սարք (հետևի ձախակողմյան միացք)</translation>
 <translation id="3995963973192100066">Նվագարկել շարժանկարը</translation>
 <translation id="399788104667917863">Ամրացնել գործիքագոտում</translation>
+<translation id="3998976413398910035">Կառավարել տպիչները</translation>
 <translation id="4001540981461989979">Ընդգծել մկնիկի նշորդը, երբ այն շարժվում է</translation>
 <translation id="4002440992267487163">Կարգավորել PIN կոդ</translation>
 <translation id="4005817994523282006">Ժամային գոտու որոշման եղանակ</translation>
@@ -3766,6 +3770,7 @@
 <translation id="4098667039111970300">Ստիլուսի գործիքներ գործիքագոտում</translation>
 <translation id="4099060993766194518">Վերականգնե՞լ կանխադրված որոնիչը</translation>
 <translation id="4099874310852108874">Ցանցի սխալ</translation>
+<translation id="4100020874626534113">Թույլատրել դիակրիտիկ նշանների ճկուն նշանակումը։ Օրինակ՝ կարող եք մուտքագրել «anhs» կամ «asnh»՝ «ánh» ստանալու համար։</translation>
 <translation id="4100733287846229632">Սարքի սկավառակում տարածքը ծայրահեղ քիչ է</translation>
 <translation id="4100853287411968461">Սարքի օգտագործման ժամանակի նոր սահմանափակում</translation>
 <translation id="4101352914005291489">Թաքցված SSID</translation>
@@ -4763,6 +4768,7 @@
 <translation id="4953808748584563296">Կանխադրված նարնջագույն ավատար</translation>
 <translation id="4955710816792587366">Ընտրեք ձեր PIN-ը</translation>
 <translation id="4959262764292427323">Գաղտնաբառերը պահվում են ձեր Google հաշվում, որպեսզի կարողանաք օգտագործել դրանք ցանկացած սարքում</translation>
+<translation id="4960020053211143927">Չի աջակցվում որոշ հավելվածների կողմից</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Էկրանի հեռարձակում</translation>
 <translation id="4961361269522589229">բաղադրատոմսերի առաջարկներ</translation>
@@ -4962,6 +4968,7 @@
 <translation id="5139823398361067371">Մուտքագրեք անվտանգության բանալու PIN կոդը: Եթե չգիտեք PIN կոդը, զրոյացրեք անվտանգության բանալու կարգավորումները:</translation>
 <translation id="5139955368427980650">&amp;Բացել</translation>
 <translation id="5141421572306659464">Հիմնական հաշիվ</translation>
+<translation id="5141957579434225843">Օրինակ՝ òa, òe, ùy վանկերի փոխարեն օգտագործեք oà, oè, uỳ</translation>
 <translation id="5142793792982256885">Հպահարթակով ոլորման արագությունը</translation>
 <translation id="5143374789336132547">«<ph name="EXTENSION_NAME" />» ընդլայնումը փոխել է Սկիզբ կոճակի սեղմումով ցուցադրվող էջը:</translation>
 <translation id="5143612243342258355">Այս ֆայլը վտանգավոր է</translation>
@@ -6300,6 +6307,7 @@
 <translation id="628352644014831790">4 վայրկյան</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> ֆայլը խորհուրդ չի տրվում ներբեռնել, այն կարող է վտանգավոր լինել:</translation>
 <translation id="6285770818046456882">Ուղարկողը չեղարկել է տվյալների փոխանցումը</translation>
+<translation id="628726841779494414">Կառավարեք տպիչները կարգավորումներում</translation>
 <translation id="6290613030083731160">Մոտակայքում չկան սարքեր, որոնց հետ հնարավոր է տվյալներ փոխանակել։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Ակտիվացման կոդը ստուգվում է։ Դա կարող է մի քանի րոպե տևել։</translation>
 <translation id="6291741848715722067">Հաստատման կոդ</translation>
@@ -7013,6 +7021,7 @@
 <translation id="6897688156970667447">Հարմար է վատ լուսավորության դեպքում և տնտեսում է մարտկոցի լիցքը</translation>
 <translation id="6897972855231767338">Իմանալ ավելին հյուրի ռեժիմում դիտարկման մասին</translation>
 <translation id="6898440773573063262">Այժմ այս սարքի վրա Kiosk ծրագրերը կարելի է կազմաձևել այնպես, որ դրանք ավտոմատ գործարկվեն:</translation>
+<translation id="6899427698619335650">Թույլատրել դիակրիտիկ նշանների ճկուն նշանակումը։ Օրինակ՝ կարող եք մուտքագրել «anh1» կամ «a1nh»՝ «ánh» ստանալու համար։</translation>
 <translation id="6900284862687837908">Ետին պլանի հավելված՝ <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">Բարելավված պաշտպանություն</translation>
 <translation id="6900651018461749106">Նորից մուտք գործեք՝ <ph name="USER_EMAIL" /> հաշիվը թարմացնելու համար</translation>
@@ -8447,7 +8456,6 @@
 <translation id="8084510406207562688">Վերականգնել բոլոր ներդիրները</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> տպիչի կարգավորում…</translation>
 <translation id="8086121155774250556">Այս ներդիրը ցուցադրում է ձեր էկրանը</translation>
-<translation id="8086442853986205778">Կարգավորել «<ph name="PRINTER_NAME" />» տպիչը</translation>
 <translation id="8086610718778464681">Չհաջողվեց պահուստավորել Լինուքսի հավելվածներն ու ֆայլերը</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Այս ֆայլը գաղտնագրված է։ Խնդրեք սեփականատիրոջը վերծանել այն։}one{Այս ֆայլերից որոշները գաղտնագրված են։ Խնդրեք սեփականատիրոջը վերծանել դրանք։}other{Այս ֆայլերից որոշները գաղտնագրված են։ Խնդրեք սեփականատիրոջը վերծանել դրանք։}}</translation>
 <translation id="808894953321890993">Փոխել գաղտնաբառը</translation>
@@ -9108,7 +9116,6 @@
 <translation id="8662671328352114214">Նոր <ph name="TYPE" /> ցանց</translation>
 <translation id="8662733268723715832">Գործողությունը սովորականից երկար է տևում։ Դուք կարող եք սպասել կամ բաց թողնել այս քայլը։</translation>
 <translation id="8662795692588422978">Մարդիկ</translation>
-<translation id="8662811608048051533">Դուք դուրս կգրվեք կայքերի մեծ մասից։</translation>
 <translation id="8662911384982557515">Փոխել սկզբնական էջը՝ <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome-ը չի կարող օգտագործել պաստառը:</translation>
 <translation id="8663099077749055505">Միշտ արգելափակել բազմակի ավտոմատ ներբեռնումները <ph name="HOST" />-ում</translation>
@@ -9249,7 +9256,6 @@
 <translation id="8770406935328356739">Ընդլայնման արմատային գրացուցակ</translation>
 <translation id="8771300903067484968">Գլխավոր էջը վերակայվել է կանխադրված ֆոնով։</translation>
 <translation id="8773280816776735812">Ցույց տալ IBAN-ի արժեքը</translation>
-<translation id="8773302562181397928">Պահել «<ph name="PRINTER_NAME" />» տպիչը</translation>
 <translation id="8774379074441005279">Հաստատեք վերականգնումը</translation>
 <translation id="8774934320277480003">Վերին լուսանցք</translation>
 <translation id="8775144690796719618">URL-ն անվավեր է</translation>

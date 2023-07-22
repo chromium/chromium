@@ -301,6 +301,7 @@
 <translation id="6439114592976064011">మీ వర్చువల్ రియాలిటీ పరికరాన్ని, డేటాను ఉపయోగించనివ్వకుండా సైట్‌లను బ్లాక్ చేస్తుంది</translation>
 <translation id="6447842834002726250">కుక్కీలు</translation>
 <translation id="6467852467360539617">డేటాను క్లియర్ చేయండి &amp; అనుమతులను రీసెట్ చేయండి</translation>
+<translation id="6500423977866688905">విండో కుదించుకు పోయినప్పుడు, మొబైల్ వీక్షణను రిక్వెస్ట్ చేయండి</translation>
 <translation id="6527303717912515753">షేర్ చేయండి</translation>
 <translation id="6545864417968258051">బ్లూటూత్ స్కానింగ్</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" /> బ్లాక్ చేయబడ్డాయి}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" /> బ్లాక్ చేయబడ్డాయి}}</translation>

@@ -8473,7 +8473,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8084510406207562688">Åt&amp;erställ alla flikar</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> konfigureras …</translation>
 <translation id="8086121155774250556">Den här fliken delar din skärm</translation>
-<translation id="8086442853986205778">Konfigurera <ph name="PRINTER_NAME" /></translation>
 <translation id="8086610718778464681">Det gick inte att säkerhetskopiera Linux-appar och Linux-filer</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Den här filen är krypterad. Be ägaren att dekryptera den.}other{Några av de här filerna är krypterade. Be ägaren att dekryptera dem.}}</translation>
 <translation id="808894953321890993">Ändra lösenord</translation>
@@ -9135,7 +9134,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8662671328352114214">Anslut till <ph name="TYPE" />-nätverket</translation>
 <translation id="8662733268723715832">Det här tar längre tid än väntat. Du kan vänta tills det är klart eller hoppa över detta.</translation>
 <translation id="8662795692588422978">Personer</translation>
-<translation id="8662811608048051533">Du loggas ut från de flesta webbplatser.</translation>
 <translation id="8662911384982557515">Ändra startsida till: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Bakgrundsbilden kan inte anges i Chrome.</translation>
 <translation id="8663099077749055505">Blockera alltid flera automatiska nedladdningar på <ph name="HOST" /></translation>
@@ -9276,7 +9274,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8770406935328356739">Tilläggets rotkatalog</translation>
 <translation id="8771300903067484968">Startsidans bakgrund har återställts till standardbakgrunden.</translation>
 <translation id="8773280816776735812">Visa IBAN-värde</translation>
-<translation id="8773302562181397928">Spara <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Bekräfta återställning</translation>
 <translation id="8774934320277480003">Övre marginal</translation>
 <translation id="8775144690796719618">Ogiltig webbadress</translation>

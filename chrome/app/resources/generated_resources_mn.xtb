@@ -8462,7 +8462,6 @@
 <translation id="8084510406207562688">Бүх табыг сэргээх</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" />-г тохируулж байна ...</translation>
 <translation id="8086121155774250556">Энэ таб таны дэлгэцийг хуваалцаж байна</translation>
-<translation id="8086442853986205778"><ph name="PRINTER_NAME" />-г тохируулах</translation>
 <translation id="8086610718778464681">Linux-н аппууд болон файлуудыг хуулбарлах боломжгүй</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Энэ файлыг шифрлэсэн байна. Өмчлөгчөөс нь үүний кодыг тайлахыг хүснэ үү.}other{Эдгээр файлын заримыг нь шифрлэсэн байна. Өмчлөгчөөс нь эдгээрийн кодыг тайлахыг хүснэ үү.}}</translation>
 <translation id="808894953321890993">Нууц үгийг солих</translation>
@@ -9123,7 +9122,6 @@
 <translation id="8662671328352114214"><ph name="TYPE" /> сүлжээнд нэгдэх</translation>
 <translation id="8662733268723715832">Энэ нь ердийнхөөс удаж байгаа бөгөөд та алгасах эсвэл үүнийг дуусах хүртэл нь хүлээх боломжтой.</translation>
 <translation id="8662795692588422978">Хүмүүс</translation>
-<translation id="8662811608048051533">Ихэнх сайтаас гаргах болно.</translation>
 <translation id="8662911384982557515">Нүүр хуудсаа <ph name="HOME_PAGE" />-аар солих</translation>
 <translation id="8662978096466608964">Chrome нь дэлгэцийн зургийг тохируулж чадахгүй байна.</translation>
 <translation id="8663099077749055505"><ph name="HOST" />-д автоматиар олон файл татаж авах явцыг үргэлж блокло.</translation>
@@ -9262,7 +9260,6 @@
 <translation id="8770406935328356739">Өргөтгөлийн үндсэн лавлалт</translation>
 <translation id="8771300903067484968">Эхлэх хуудасны арын дэвсгэрийг өгөгдмөл арын дэвсгэрээр шинэчиллээ.</translation>
 <translation id="8773280816776735812">Олон улсын банк акаунтны дугаарын утгыг харуулах</translation>
-<translation id="8773302562181397928"><ph name="PRINTER_NAME" />-г хадгалах</translation>
 <translation id="8774379074441005279">Сэргээхийг баталгаажуулах</translation>
 <translation id="8774934320277480003">Дээд хүрээ</translation>
 <translation id="8775144690796719618">Хүчингүй URL</translation>

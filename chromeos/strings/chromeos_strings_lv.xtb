@@ -372,6 +372,7 @@
 <translation id="397105322502079400">Aprēķina...</translation>
 <translation id="39823212440917567">Drukas uzdevumi, kas ir vecāki par <ph name="NUMBER_OF_DAYS" /> dienām, tiks noņemti</translation>
 <translation id="3993704782688964914">Jūsu ierīce “<ph name="DEVICE_NAME" />” tagad ir atjaunināta</translation>
+<translation id="3998976413398910035">Pārvaldīt printerus</translation>
 <translation id="4003384961948020559">Neizdevās — izvades paliktnis pilns</translation>
 <translation id="4021031199988160623">Lai pārbaudītu, pārejiet klēpjdatora režīmā.</translation>
 <translation id="4034824040120875894">Printeris</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">Tikai iekšējai lietošanai</translation>
 <translation id="5649768706273821470">Klausīties</translation>
 <translation id="5655283760733841251">Palielināt tastatūras spilgtumu</translation>
+<translation id="5655776422854483175">Nav neviena drukas darba.</translation>
 <translation id="5659593005791499971">E-pasts</translation>
 <translation id="5662240986744577912">pārslēgt konfidencialitātes ekrānu</translation>
 <translation id="5669267381087807207">Notiek aktivizācija</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">Motīvs</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Ieslēgt tumšo motīvu</translation>
+<translation id="628726841779494414">Savus printerus varat pārvaldīt printera iestatījumos.</translation>
 <translation id="629550705077076970">tastatūras aptumšošana</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />: pārbaude ir atcelta.</translation>
 <translation id="631063167932043783">Lietotne Izpēte</translation>

@@ -1279,6 +1279,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="204497730941176055">Microsoft Certificate Template Name</translation>
 <translation id="2045117674524495717">Ndihmësi i shkurtoreve të tastierës</translation>
 <translation id="2045211794962848221">Nuk do ta shikosh më këtë mesazh specifik</translation>
+<translation id="2045838962742066664">Shkrimi me shkurtime</translation>
 <translation id="2045969484888636535">Vazhdo bllokimin e kukive</translation>
 <translation id="204622017488417136">Pajisja do të kthehet në versionin e instaluar më parë të Chrome. Të gjitha llogaritë e përdoruesit dhe të dhënat lokale do të hiqen. Kjo nuk mund të zhbëhet.</translation>
 <translation id="2046702855113914483">Ramen</translation>
@@ -1836,6 +1837,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2471506181342525583">Lejohet qasja te vendndodhja</translation>
 <translation id="2473195200299095979">Përktheje këtë faqe</translation>
 <translation id="2475982808118771221">Ndodhi një gabim</translation>
+<translation id="2476901513051581836">Hapësira ruajtëse nuk mund të pastrohet derisa të mësohet madhësia e hapësirës ruajtëse jashtë linje.</translation>
 <translation id="2476974672882258506">Fike sistemin Windows për ta çinstaluar <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Duke qenë se ke konfiguruar shumë çelësa, skanimi automatik është çaktivizuar.</translation>
 <translation id="2478176599153288112">Lejet e skedarëve të medias për "<ph name="EXTENSION" />"</translation>
@@ -2220,6 +2222,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2794522004398861033">Lidhu me Wi-Fi ose Ethernet-in për të konfiguruar kartën eSIM</translation>
 <translation id="2794977172822818797">Shto sajtet aktuale</translation>
 <translation id="2795716239552913152">Sajtet përdorin zakonisht vendndodhjen tënde për veçori ose informacione përkatëse, si p.sh. lajmet lokale ose dyqanet në afërsi</translation>
+<translation id="2795950023277268902">Lidh <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> për të pasur qasje te skedarët e "Diskut" në aplikacionin Files</translation>
 <translation id="2796740370559399562">Vazhdo t'i lejosh kukit</translation>
 <translation id="2798347533012571708">Mbaj përditësimet</translation>
 <translation id="2799223571221894425">Nis sërish</translation>
@@ -3655,6 +3658,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3995138139523574647">Pajisja USB-C (porta e pasme, djathtas)</translation>
 <translation id="3995963973192100066">Luaj animacionin</translation>
 <translation id="399788104667917863">Gozhdo te shiriti i veglave</translation>
+<translation id="3998976413398910035">Menaxho printerët</translation>
 <translation id="4001540981461989979">Thekso kursorin e miut gjatë lëvizjes</translation>
 <translation id="4002440992267487163">Konfigurimi i kodit PIN</translation>
 <translation id="4005817994523282006">Metoda e zbulimit të brezit orar</translation>
@@ -3762,6 +3766,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4098667039111970300">Veglat e stilolapsit në shiritin e veglave</translation>
 <translation id="4099060993766194518">Të restaurohet motori i parazgjedhur i kërkimit?</translation>
 <translation id="4099874310852108874">Ndodhi një gabim i rrjetit.</translation>
+<translation id="4100020874626534113">Lejo caktimin elastik të shenjës diakritike. Për shembull, mund të shkruash “anhs” ose “asnh” për të marrë “ánh”.</translation>
 <translation id="4100733287846229632">Hapësira në pajisje jashtëzakonisht e ulët</translation>
 <translation id="4100853287411968461">Kufiri i ri i kohës para ekranit</translation>
 <translation id="4101352914005291489">Identifikuesi SSID i fshehur</translation>
@@ -4758,6 +4763,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4953808748584563296">Avatari i parazgjedhur portokalli</translation>
 <translation id="4955710816792587366">Zgjidh kodin PIN</translation>
 <translation id="4959262764292427323">Fjalëkalimet ruhen në llogarinë tënde të Google që të mund t'i përdorësh në çdo pajisje</translation>
+<translation id="4960020053211143927">Nuk mbështetet nga disa aplikacione</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Ekrani i transmetimit</translation>
 <translation id="4961361269522589229">ide për receta</translation>
@@ -4957,6 +4963,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5139823398361067371">Fut kodin PIN për çelësin e sigurisë. Nëse nuk e di kodin PIN, do të duhet ta rivendosësh çelësin e sigurisë.</translation>
 <translation id="5139955368427980650">&amp;Hape</translation>
 <translation id="5141421572306659464">Llogaria parësore</translation>
+<translation id="5141957579434225843">Për shembull, përdor oà, oè, uỳ në vend të òa, òe, ùy</translation>
 <translation id="5142793792982256885">Shpejtësia e lëvizjes së bllokut me prekje</translation>
 <translation id="5143374789336132547">Shtesa <ph name="EXTENSION_NAME" /> ka ndryshuar se cila faqe shfaqet kur klikon te butoni Kreu.</translation>
 <translation id="5143612243342258355">Ky skedar është i rrezikshëm</translation>
@@ -6296,6 +6303,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="628352644014831790">4 sekonda</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> nuk shkarkohet zakonisht dhe mund të jetë i rrezikshëm.</translation>
 <translation id="6285770818046456882">Pajisja që po ndan me ty e anuloi transfertën</translation>
+<translation id="628726841779494414">Menaxho printerët e tu te cilësimet e printerëve</translation>
 <translation id="6290613030083731160">Asnjë pajisje e disponueshme nuk po ndan në afërsi. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Po verifikon kodin e aktivizimit. Kjo mund të zgjasë disa minuta.</translation>
 <translation id="6291741848715722067">Kodi i konfirmimit</translation>
@@ -7007,6 +7015,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6897688156970667447">E dobishme në kushtet e ndriçimit të dobët dhe kursen baterinë</translation>
 <translation id="6897972855231767338">Mëso më shumë rreth shfletimit si vizitor</translation>
 <translation id="6898440773573063262">Aplikacionet "kioskë" mund të konfigurohen tani për t'u hapur automatikisht në këtë pajisje.</translation>
+<translation id="6899427698619335650">Lejo caktimin elastik të shenjës diakritike. Për shembull, mund të shkruash “anh1” ose “a1nh” për të marrë “ánh”.</translation>
 <translation id="6900284862687837908">Aplikacioni i sfondit: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">Mbrojtja e përmirësuar</translation>
 <translation id="6900651018461749106">Identifikohu përsëri për të përditësuar <ph name="USER_EMAIL" /></translation>
@@ -8441,7 +8450,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8084510406207562688">R&amp;estauro të gjitha skedat</translation>
 <translation id="8086015605808120405">Po konfiguron <ph name="PRINTER_NAME" /> ...</translation>
 <translation id="8086121155774250556">Kjo skedë po ndan ekranin tënd</translation>
-<translation id="8086442853986205778">Konfiguro <ph name="PRINTER_NAME" /></translation>
 <translation id="8086610718778464681">Aplikacionet dhe skedarët e Linux nuk mund të rezervohen</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Ky skedar është i enkriptuar. Kërkoji zotëruesit ta deshifrojë.}other{Disa prej këtyre skedarëve janë të enkriptuar. Kërkoji zotëruesit të tyre t'i deshifrojë.}}</translation>
 <translation id="808894953321890993">Ndrysho fjalëkalimin</translation>
@@ -9102,7 +9110,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8662671328352114214">Bashkohu në rrjetin <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Kjo po zgjat më shumë nga sa pritej. Mund ta kapërcesh ose të presësh derisa të kryhet.</translation>
 <translation id="8662795692588422978">Kontaktet</translation>
-<translation id="8662811608048051533">Të nxjerr nga shumica e sajteve.</translation>
 <translation id="8662911384982557515">Ndrysho faqen tënde bazë te: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome nuk mund të vendosë imazhin e sfondit.</translation>
 <translation id="8663099077749055505">Blloko gjithmonë shkarkimet e shumta automatike në <ph name="HOST" /></translation>
@@ -9243,7 +9250,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8770406935328356739">Direktoria rrënjë e shtesës</translation>
 <translation id="8771300903067484968">Sfondi i faqes së nisjes është rivendosur në sfondin e parazgjedhur.</translation>
 <translation id="8773280816776735812">Shfaq vlerën e numrit IBAN</translation>
-<translation id="8773302562181397928">Ruaje <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Konfirmo restaurimin</translation>
 <translation id="8774934320277480003">Kufiri i sipërm</translation>
 <translation id="8775144690796719618">URL-ja është e pavlefshme</translation>

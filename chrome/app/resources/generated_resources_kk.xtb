@@ -1554,6 +1554,7 @@
 <translation id="2263189956353037928">Шығып, қайта кіру</translation>
 <translation id="2263371730707937087">Экранды жаңарту жиілігі</translation>
 <translation id="2263679799334060788">Пікіріңіз Google Cast мүмкіндігін жақсартуға көмектеседі әрі біз үшін өте маңызды. Google Cast ақауларын жою үшін <ph name="BEGIN_LINK" />Анықтамалық орталыққа<ph name="END_LINK" /> жүгініңіз.</translation>
+<translation id="22649924370461580">Сақталған қойындылар тобы</translation>
 <translation id="2266957463645820432">USB арқылы IPP (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth өшірілген</translation>
 <translation id="2268182915828370037">Файлды синхрондауды өшіру керек пе?</translation>
@@ -1781,6 +1782,7 @@
 <translation id="2435248616906486374">Желі ажыратылды</translation>
 <translation id="2435457462613246316">Құпия сөзді көрсету</translation>
 <translation id="2436385001956947090">&amp;Сілтемені көшіру</translation>
+<translation id="2438853563451647815">Принтерге қосылмаған</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> жүктелуде</translation>
 <translation id="2440604414813129000">Д&amp;ереккөзді көру</translation>
 <translation id="2440823041667407902">Орналасқан жерін көру</translation>
@@ -4449,6 +4451,7 @@
 <translation id="4683629100208651599">Кіші әріппен жазу</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (әдепкі)</translation>
 <translation id="4684427112815847243">Барлығын синхрондау</translation>
+<translation id="4687238339694011189">Принтер қосылғанына және Chromebook құрылғыңызбен бір желіге қосылғанына көз жеткізіңіз немесе USB кабелін пайдаланыңыз</translation>
 <translation id="4687613760714619596">Белгісіз құрылғы (<ph name="DEVICE_ID" />)</translation>
 <translation id="4687718960473379118">Сайт ұсынған жарнамалар</translation>
 <translation id="4688036121858134881">Жергілікті журнал идентификаторы: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
@@ -6101,6 +6104,7 @@
 <translation id="6113434369102685411">Chrome браузеріне және <ph name="DEVICE_TYPE" /> Launcher-ге әдепкі іздеу жүйесін орнатыңыз.</translation>
 <translation id="6113942107547980621">Smart Lock функциясын пайдалану үшін телефоныңыздағы негізгі пайдаланушы профиліне ауысыңыз.</translation>
 <translation id="6116921718742659598">Тіл және енгізу параметрлерін өзгерту</translation>
+<translation id="6119008366402292080">Қолжетімді принтер жоқ</translation>
 <translation id="6119927814891883061">Құрылғыны <ph name="DEVICE_NAME" /> деп атау</translation>
 <translation id="6119972796024789243">Түсті түзету</translation>
 <translation id="6120707837086723438">Соңғы іздеу сұрауларының мәліметі негізінде ұсынылған рецептілерді көріп тұрсыз.
@@ -6111,6 +6115,7 @@
 <translation id="6122081475643980456">Интернет байланысыңыз бақылануда</translation>
 <translation id="6122093587541546701">Электрондық пошта (міндетті емес):</translation>
 <translation id="6122095009389448667">Бұл сайттың буферді көру әрекеттеріне әрі қарай тыйым салу</translation>
+<translation id="6122513630797178831">CVC кодын сақтау</translation>
 <translation id="6122600716821516697">Осы құрылғымен бөлісілсін бе?</translation>
 <translation id="6122831415929794347">"Қауіпсіз шолу" функциясы өшірілсін бе?</translation>
 <translation id="6124650939968185064">Келесі кеңейтімдер осы кеңейтімге байланысты:</translation>
@@ -8446,7 +8451,6 @@
 <translation id="8084510406207562688">Барлық қойындыны қалпына келтіру</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> конфигурациялануда...</translation>
 <translation id="8086121155774250556">Бұл қойынды экраныңызды бөлісіп жатыр</translation>
-<translation id="8086442853986205778"><ph name="PRINTER_NAME" /> реттеу</translation>
 <translation id="8086610718778464681">Linux қолданбалары мен файлдарының сақтық көшірмесін жасау мүмкін емес</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Бұл файл шифрланған. Иесінен шифрдан шығаруын сұраңыз.}other{Бұл файлдардың кейбіреуі шифрланған. Иелерінен оларды шифрдан шығаруын сұраңыз.}}</translation>
 <translation id="808894953321890993">Кұпия сөзді өзгерту</translation>
@@ -9107,7 +9111,6 @@
 <translation id="8662671328352114214"><ph name="TYPE" /> желісіне қосылу</translation>
 <translation id="8662733268723715832">Бұл әдеттегіден ұзақ уақыт алады. Оны өткізіп жіберуге немесе соңына дейін күтуге болады.</translation>
 <translation id="8662795692588422978">Байланыстар</translation>
-<translation id="8662811608048051533">Көп сайттардан шығарады.</translation>
 <translation id="8662911384982557515">Негізгі бетті келесіге өзгерту: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome тұсқағазды орната алмайды.</translation>
 <translation id="8663099077749055505"><ph name="HOST" /> хостында бірнеше автоматтық жүктеуге әрқашан тыйым салу</translation>
@@ -9248,7 +9251,6 @@
 <translation id="8770406935328356739">Кеңейтімнің түбір каталогы:</translation>
 <translation id="8771300903067484968">Бастау бетінің фондық режимі әдепкі фонға қайтарылды.</translation>
 <translation id="8773280816776735812">IBAN мәнін көрсету</translation>
-<translation id="8773302562181397928"><ph name="PRINTER_NAME" /> сақтау</translation>
 <translation id="8774379074441005279">Қалпына келтіруді растау</translation>
 <translation id="8774934320277480003">Жоғарғы шек</translation>
 <translation id="8775144690796719618">Жарамсыз URL</translation>

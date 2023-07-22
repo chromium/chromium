@@ -372,6 +372,7 @@
 <translation id="397105322502079400">Beregner …</translation>
 <translation id="39823212440917567">Utskriftsjobber som er eldre enn <ph name="NUMBER_OF_DAYS" /> dager, blir fjernet</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> er nå oppdatert</translation>
+<translation id="3998976413398910035">Administrer skrivere</translation>
 <translation id="4003384961948020559">Mislykket – utskriftsmottaket er fullt</translation>
 <translation id="4021031199988160623">Bytt til laptopmodus for å teste</translation>
 <translation id="4034824040120875894">Skriver</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">Bare internt</translation>
 <translation id="5649768706273821470">Lytt</translation>
 <translation id="5655283760733841251">Tastaturlysstyrke opp</translation>
+<translation id="5655776422854483175">Ingen utskriftsjobber</translation>
 <translation id="5659593005791499971">E-post</translation>
 <translation id="5662240986744577912">slå av/på personvernskjermen</translation>
 <translation id="5669267381087807207">Aktiverer</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Slå på mørkt tema</translation>
+<translation id="628726841779494414">Administrer skriverne dine i skriverinnstillingene</translation>
 <translation id="629550705077076970">tastaturdimming</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />testen er avbrutt</translation>
 <translation id="631063167932043783">Utforsk-appen</translation>

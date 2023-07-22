@@ -748,7 +748,7 @@
 <translation id="2556876185419854533">&amp;ಎಡಿಟ್ ಮಾಡುವುದನ್ನು ರದ್ದುಗೊಳಿಸಿ</translation>
 <translation id="2557417190997681027">ವ್ಯಾಪಾರ ಪ್ರಯಾಣ</translation>
 <translation id="2559566667529177711">ಹಲವು-ಪದರ</translation>
-<translation id="2562087035394240049">ಹೇಗೆ ಮಾಡುವುದು, DIY ಮತ್ತು ತಜ್ಞ ವಿಷಯ</translation>
+<translation id="2562087035394240049">ಹೇಗೆ ಮಾಡುವುದು, DIY ಮತ್ತು ತಜ್ಞ ಕಂಟೆಂಟ್</translation>
 <translation id="2563042576090522782">ಮಧುಚಂದ್ರ ಮತ್ತು ರೊಮ್ಯಾಂಟಿಕ್ ವಿಹಾರತಾಣಗಳು</translation>
 <translation id="2570734079541893434">ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="2573170131138724450">ದೂರದರ್ಶನಗಳು</translation>
@@ -1000,6 +1000,7 @@
       <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">ನೀವು ಈ ಸಾಧನವನ್ನು ಸಕ್ರಿಯವಾಗಿ ಬಳಸುತ್ತಿರುವಾಗ ಸೈಟ್‌ಗಳು ನಿಮ್ಮ ಉಪಸ್ಥಿತಿಯ ಕುರಿತು ತಿಳಿದುಕೊಳ್ಳಲು ಬಯಸುತ್ತದೆ</translation>
 <translation id="3180358318770512945">ಪಾಲನೆ ಪೋಷಣೆ</translation>
+<translation id="3182185041786697613">ಭದ್ರತಾ ಕೋಡ್ ಸೇವ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="3185635157430775689">ಕಂಪ್ಯೂಟರ್ ಭಾಗಗಳು</translation>
 <translation id="3187306450550410410">ಅನುಕೂಲಕರ ಕೆಲಸದ ವ್ಯವಸ್ಥೆಗಳು</translation>
 <translation id="3187472288455401631">ಜಾಹೀರಾತು ಮಾಪನ</translation>
@@ -3440,6 +3441,7 @@
 <translation id="830498451218851433">ಅರ್ಧ ಮಡಿಸಿ</translation>
 <translation id="8308653357438598313">ಲೈವ್ ವೀಡಿಯೊ ಸ್ಟ್ರೀಮಿಂಗ್</translation>
 <translation id="8311895354659782580">ರಿಯಲ್ ಎಸ್ಟೇಟ್ ಪಟ್ಟಿಗಳು</translation>
+<translation id="8317570861267063617">ವೇಗವಾದ ಚೆಕ್‌ಔಟ್‌ಗಾಗಿ, ಈ ಕಾರ್ಡ್‌ಗಾಗಿ CVC ಅನ್ನು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="8319269383395457801">ವಸತಿ ಮಾರಾಟ</translation>
 <translation id="831997045666694187">ಸಂಜೆ</translation>
 <translation id="8321476692217554900">ಅಧಿಸೂಚನೆಗಳು</translation>

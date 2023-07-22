@@ -1282,6 +1282,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="204497730941176055">Microsoft ziurtagiriaren txantiloiaren izena</translation>
 <translation id="2045117674524495717">Lasterbideei buruzko laguntza</translation>
 <translation id="2045211794962848221">Mezu hau ez zaizu berriro erakutsiko</translation>
+<translation id="2045838962742066664">Idazkera takigrafikoa</translation>
 <translation id="2045969484888636535">Jarraitu cookieak blokeatzen</translation>
 <translation id="204622017488417136">Gailua aurrez instalatutako Chrome bertsiora itzuliko da. Erabiltzaile-kontu eta tokiko datu guztiak kendu egingo dira. Ekintza hau ezin da desegin.</translation>
 <translation id="2046702855113914483">Ramen-a</translation>
@@ -1838,6 +1839,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2471506181342525583">Eman da kokapena erabiltzeko baimena</translation>
 <translation id="2473195200299095979">Itzuli orria</translation>
 <translation id="2475982808118771221">Errore bat gertatu da</translation>
+<translation id="2476901513051581836">Konexiorik gabeko biltegiaren tamaina jakin arte, ezin da garbitu biltegia.</translation>
 <translation id="2476974672882258506">Itxi Windows <ph name="PARALLELS_DESKTOP" /> desinstalatzeko.</translation>
 <translation id="2477065602824695373">Erabilerraztasun-etengailu bat baino gehiago konfiguratu dituzunez, desaktibatu egin da pantailan automatikoki mugitzeko aukera.</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" luzapenaren baimenak multimedia-fitxategietarako</translation>
@@ -2222,6 +2224,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2794522004398861033">eSIM txartela konfiguratzeko, konektatu wifi- edo Ethernet-sare batera</translation>
 <translation id="2794977172822818797">Gehitu oraingo webguneak</translation>
 <translation id="2795716239552913152">Webguneek kokapena erabili ohi dute eginbide edo informazio egokia eskaintzeko, hala nola tokiko albisteak edo inguruan dauden dendak</translation>
+<translation id="2795950023277268902">Konektatu <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> Fitxategiak aplikazioan zure Drive-ko fitxategiak atzitzeko</translation>
 <translation id="2796740370559399562">Jarraitu cookieak baimentzen</translation>
 <translation id="2798347533012571708">Mantendu eguneratzeak</translation>
 <translation id="2799223571221894425">Abiarazi berriro</translation>
@@ -3657,6 +3660,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3995138139523574647">USB-C gailua (eskuinaldeko atzeko ataka)</translation>
 <translation id="3995963973192100066">Erreproduzitu animazioa</translation>
 <translation id="399788104667917863">Ainguratu tresna-barran</translation>
+<translation id="3998976413398910035">Kudeatu inprimagailuak</translation>
 <translation id="4001540981461989979">Nabarmendu sagu-kurtsorea hura mugitu bitartean</translation>
 <translation id="4002440992267487163">PIN kodearen konfigurazioa</translation>
 <translation id="4005817994523282006">Ordu-zona hautemateko metodoa</translation>
@@ -3764,6 +3768,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4098667039111970300">Tresna-barrako arkatzaren tresnak</translation>
 <translation id="4099060993766194518">Bilatzaile lehenetsia leheneratu nahi duzu?</translation>
 <translation id="4099874310852108874">Sareko errore bat gertatu da.</translation>
+<translation id="4100020874626534113">Eman zeinu diakritikoak modu malguan esleitzeko baimena. Adibidez, "ánh" lortzeko, "anhs" edo "asnh" idatz dezakezu.</translation>
 <translation id="4100733287846229632">Oso toki gutxi geratzen da gailuan</translation>
 <translation id="4100853287411968461">Erabilera-ordutegia aldatu da</translation>
 <translation id="4101352914005291489">SSID ezkutua</translation>
@@ -4760,6 +4765,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4953808748584563296">Abatar laranja lehenetsia</translation>
 <translation id="4955710816792587366">Aukeratu PIN bat</translation>
 <translation id="4959262764292427323">Pasahitzak Google-ko kontuan gordetzen dira, edozein gailutan eskura izan ditzazun</translation>
+<translation id="4960020053211143927">Aplikazio batzuek ez dute onartzen</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Igorri pantaila</translation>
 <translation id="4961361269522589229">errezeta-ideiak</translation>
@@ -4959,6 +4965,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5139823398361067371">Idatzi segurtasun-giltzaren PINa. PINa ez badakizu, segurtasun-giltza berrezarri egin beharko duzu.</translation>
 <translation id="5139955368427980650">Ir&amp;eki</translation>
 <translation id="5141421572306659464">Kontu nagusia</translation>
+<translation id="5141957579434225843">Adibidez: "oà, oè, uỳ" ordez, erabili "òa, òe, ùy".</translation>
 <translation id="5142793792982256885">Ukipen-panelarekin gora/behera egiteko abiadura</translation>
 <translation id="5143374789336132547"><ph name="EXTENSION_NAME" /> luzapenak aldatu egin du Hasiera botoia sakatzean agertzen den orria.</translation>
 <translation id="5143612243342258355">Fitxategia arriskutsua da</translation>
@@ -6295,6 +6302,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="628352644014831790">4 segundo</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> ez da deskargatzen sarriegi, eta arriskutsua izan liteke.</translation>
 <translation id="6285770818046456882">Zurekin partekatzen ari zen gailuak bertan behera utzi du transferentzia</translation>
+<translation id="628726841779494414">Kudeatu inprimagailuak haien ezarpenetan</translation>
 <translation id="6290613030083731160">Ez dago partekatzen ari den gailurik inguruan. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Aktibazio-kodea egiaztatzen. Agian minutu batzuk beharko dira.</translation>
 <translation id="6291741848715722067">Berrespen-kodea</translation>
@@ -7006,6 +7014,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="6897688156970667447">Argi gutxi dagoenerako eta bateria aurrezteko balio du</translation>
 <translation id="6897972855231767338">Lortu gonbidatu gisa arakatzeari buruzko informazio gehiago</translation>
 <translation id="6898440773573063262">Orain, aplikazio espezializatuak konfigura daitezke gailuan automatikoki abiaraz daitezen.</translation>
+<translation id="6899427698619335650">Eman zeinu diakritikoak modu malguan esleitzeko baimena. Adibidez, "ánh" lortzeko, "anh1" edo "a1nh" idatz dezakezu.</translation>
 <translation id="6900284862687837908">Atzeko planoko aplikazioa: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">Babes hobetua</translation>
 <translation id="6900651018461749106">Hasi saioa berriro <ph name="USER_EMAIL" /> eguneratzeko</translation>
@@ -8440,7 +8449,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8084510406207562688">&amp;Leheneratu fitxa guztiak</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> konfiguratzen…</translation>
 <translation id="8086121155774250556">Fitxa hau pantaila partekatzen ari da</translation>
-<translation id="8086442853986205778">Konfiguratu <ph name="PRINTER_NAME" /></translation>
 <translation id="8086610718778464681">Ezin izan dira egin Linux-eko aplikazio eta fitxategien babeskopiak</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Fitxategia enkriptatuta dago. Eskatu jabeari hura desenkriptatzeko.}other{Fitxategi hauetako batzuk enkriptatuta daude. Eskatu jabeari haiek desenkriptatzeko.}}</translation>
 <translation id="808894953321890993">Aldatu pasahitza</translation>
@@ -9101,7 +9109,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8662671328352114214">Sartu <ph name="TYPE" /> sarean</translation>
 <translation id="8662733268723715832">Ohi baino gehiago ari da luzatzen prozesua. Salta ezazu edo itxaron amaitu arte.</translation>
 <translation id="8662795692588422978">Jendea</translation>
-<translation id="8662811608048051533">Webgune gehienetako saioa amaitzen du.</translation>
 <translation id="8662911384982557515">Aldatu orri nagusia hau izan dadin: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome-k ezin du horma-papera ezarri.</translation>
 <translation id="8663099077749055505">Blokeatu beti <ph name="HOST" /> ostalariko deskarga automatiko anitzak</translation>
@@ -9242,7 +9249,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8770406935328356739">Luzapenaren erroko direktorioa</translation>
 <translation id="8771300903067484968">Atzeko plano lehenetsia berrezarri da orri nagusian.</translation>
 <translation id="8773280816776735812">Erakutsi IBANaren balioa</translation>
-<translation id="8773302562181397928">Gorde <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Berretsi leheneratu nahi duzula</translation>
 <translation id="8774934320277480003">Goiko marjina</translation>
 <translation id="8775144690796719618">URLak ez du balio</translation>

@@ -1572,6 +1572,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
     Vir hulp met die foutsporing van uitsaaikwessies, kan jy die
     <ph name="BEGIN_LINK" />
     hulpsentrum<ph name="END_LINK" /> raadpleeg.</translation>
+<translation id="22649924370461580">Gestoorde oortjiegroepe</translation>
 <translation id="2266957463645820432">IPP oor USB (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth gedeaktiveer</translation>
 <translation id="2268182915828370037">Skakel lêersinkronisering af?</translation>
@@ -1799,6 +1800,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2435248616906486374">Netwerk ontkoppel</translation>
 <translation id="2435457462613246316">Wys wagwoord</translation>
 <translation id="2436385001956947090">Kopieer &amp;skakel</translation>
+<translation id="2438853563451647815">Nie aan drukker gekoppel nie</translation>
 <translation id="2439626940657133600">Laai tans <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">Bekyk bron</translation>
 <translation id="2440823041667407902">Liggingtoegang</translation>
@@ -4469,6 +4471,7 @@ Toestelseine kan inligting oor jou blaaier, bedryfstelsel, toestel, geïnstallee
 <translation id="4683629100208651599">Maak dit kleinletters</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (verstek)</translation>
 <translation id="4684427112815847243">Sinkroniseer alles</translation>
+<translation id="4687238339694011189">Maak seker dat jou drukker aangeskakel is en aan dieselfde wi-fi-netwerk as jou Chromebook gekoppel is, of gebruik ’n USB-kabel</translation>
 <translation id="4687613760714619596">Onbekende toestel <ph name="DEVICE_ID" /></translation>
 <translation id="4687718960473379118">Werfvoorgestelde advertensies</translation>
 <translation id="4688036121858134881">Plaaslike loglêer-ID: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
@@ -6127,6 +6130,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6113434369102685411">Stel jou versteksoekenjin vir Chrome-blaaier en <ph name="DEVICE_TYPE" />-lanseerder</translation>
 <translation id="6113942107547980621">Skakel na die primêre gebruikerprofiel op jou foon toe oor om Smart Lock te gebruik</translation>
 <translation id="6116921718742659598">Verander taal- en invoerinstellings</translation>
+<translation id="6119008366402292080">Geen drukker beskikbaar nie</translation>
 <translation id="6119927814891883061">Gee toestel die naam <ph name="DEVICE_NAME" /></translation>
 <translation id="6119972796024789243">Kleurregstelling</translation>
 <translation id="6120707837086723438">Jy sien tans voorgestelde resepte op grond van jou onlangse soekaktiwiteit na resepte.
@@ -6137,6 +6141,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6122081475643980456">Jou internetverbinding word beheer</translation>
 <translation id="6122093587541546701">E-pos (opsioneel):</translation>
 <translation id="6122095009389448667">Hou aan om hierdie werf te blokkeer om die knipbord te sien</translation>
+<translation id="6122513630797178831">Stoor CVC</translation>
 <translation id="6122600716821516697">Deel met hierdie toestel?</translation>
 <translation id="6122831415929794347">Skakel Veiligblaai af?</translation>
 <translation id="6124650939968185064">Die volgende uitbreidings is afhanklik van hierdie uitbreiding:</translation>
@@ -8473,7 +8478,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8084510406207562688">Stel alle oortjies terug</translation>
 <translation id="8086015605808120405">Stel <ph name="PRINTER_NAME" /> tans op …</translation>
 <translation id="8086121155774250556">Hierdie oortjie deel tans jou skerm</translation>
-<translation id="8086442853986205778">Stel <ph name="PRINTER_NAME" /> op</translation>
 <translation id="8086610718778464681">Kan nie Linux-programme en -lêers opdateer nie</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Hierdie lêer is geënkripteer. Vra die eienaar om dit te dekripteer.}other{Sommige van hierdie lêers is geënkripteer. Vra hul eienaar om hulle te dekripteer.}}</translation>
 <translation id="808894953321890993">Verander wagwoord</translation>
@@ -9135,7 +9139,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8662671328352114214">Sluit by <ph name="TYPE" />-netwerk aan</translation>
 <translation id="8662733268723715832">Dit neem langer as verwag. Jy kan dit oorslaan of wag totdat dit klaar is.</translation>
 <translation id="8662795692588422978">Mense</translation>
-<translation id="8662811608048051533">Meld jou by die meeste werwe af.</translation>
 <translation id="8662911384982557515">Verander jou tuisblad na: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome kan nie muurpapier stel nie.</translation>
 <translation id="8663099077749055505">Blokkeer altyd veelvuldige outomatiese aflaaie op <ph name="HOST" /></translation>
@@ -9276,7 +9279,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8770406935328356739">Uitbreidingwortelgids</translation>
 <translation id="8771300903067484968">Beginbladsy se agtergrond is na die verstekagtergrond toe teruggestel.</translation>
 <translation id="8773280816776735812">Wys IBAN-waarde</translation>
-<translation id="8773302562181397928">Bespaar <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Bevestig terugstelling</translation>
 <translation id="8774934320277480003">Boonste kantlyn</translation>
 <translation id="8775144690796719618">Ongeldige URL</translation>

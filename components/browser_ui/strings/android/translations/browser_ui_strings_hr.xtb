@@ -301,6 +301,7 @@
 <translation id="6439114592976064011">Onemogući web-lokacijama da koriste uređaj i podatke virtualne stvarnosti</translation>
 <translation id="6447842834002726250">Kolačići</translation>
 <translation id="6467852467360539617">Izbriši podatke i poništi dopuštenja</translation>
+<translation id="6500423977866688905">Ako je prozor uzak, zatražite prikaz na mobilnom uređaju</translation>
 <translation id="6527303717912515753">Podijeli</translation>
 <translation id="6545864417968258051">Traženje Bluetootha</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Blokirana su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}one{Blokirana su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}few{Blokirana su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}other{Blokirana su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}}</translation>

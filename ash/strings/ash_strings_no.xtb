@@ -146,6 +146,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1576623706766186887">Zoom ut når forstørreren er på</translation>
 <translation id="1586324912145647027">Gå til skrivebord 1 til 8</translation>
 <translation id="1589090746204042747">se all aktiviteten din i denne økten</translation>
+<translation id="1592682369233288537">Neste skrivebord: <ph name="NEXT_DESK_NAME" />. Bruk Søk + mellomrom for å aktivere.</translation>
 <translation id="1604857178818051494">Sett medieinnhold på pause</translation>
 <translation id="1610778689852195798">«Angre»</translation>
 <translation id="1611993646327628135">På</translation>
@@ -157,6 +158,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1647986356840967552">Forrige side</translation>
 <translation id="1651914502370159744">Åpne loggsiden</translation>
 <translation id="1654477262762802994">Start et talesøk</translation>
+<translation id="1662667383227796099">Søk etter filer, apper med mer i appoversikten. Du kan også få svar på spørsmål om Chromebooken din.</translation>
 <translation id="1668469839109562275">Innebygd VPN</translation>
 <translation id="1675844249244994876">Oppdater vinduet til høyre</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> igjen</translation>
@@ -560,6 +562,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3477079411857374384">Ctrl+Shift+Mellomrom</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Hyllen skjules automatisk</translation>
+<translation id="3503243067695520519">Hei! Chromebook er litt annerledes.</translation>
 <translation id="3505066820268455558">Batteriet lades</translation>
 <translation id="3509391053705095206">Finner ikke telefonen. Kontroller at Bluetooth på telefonen er slått på.</translation>
 <translation id="3510164367642747937">Fremhev musemarkøren</translation>
@@ -684,6 +687,7 @@ Koble enheten til strøm.</translation>
 <translation id="3977512764614765090">Batteriet er <ph name="PERCENTAGE" /> % fullt og lades.</translation>
 <translation id="3984536049089846927">Neste side</translation>
 <translation id="3986082989454912832">Svar</translation>
+<translation id="3990002060657467458">Kontroller som ofte brukes, for eksempel wifi, Bluetooth og volum, er i hurtiginnstillingene. Du kan også gå hit for å ta skjermdumper.</translation>
 <translation id="3995138139523574647">USB-C-enhet (porten bak på høyre side)</translation>
 <translation id="40062176907008878">Håndskrift</translation>
 <translation id="4017989525502048489">Laserpeker</translation>
@@ -747,6 +751,7 @@ Koble enheten til strøm.</translation>
 <translation id="4269883910223712419">Administratoren av denne enheten kan</translation>
 <translation id="4274537685965975248">Hurtigtasten Ctrl + Alt + nedoverpil er endret. For å bruke End-tasten, trykk på <ph name="LAUNCHER_KEY_NAME" />-tasten + høyrepilen.</translation>
 <translation id="4275283744500212192">Åpne alternativene for vindusoppsett</translation>
+<translation id="4278138729651139331">Tilpass og gi Chromebooken din personlig preg i Innstillinger. Prøv å endre bakgrunnen eller angi en skjermsparer.</translation>
 <translation id="4279490309300973883">Speiling</translation>
 <translation id="4280601795273309128">Sikkerhetsoppdateringer er avsluttet. Oppgrader enheten.</translation>
 <translation id="4283888303416325161">Oppgi passordet for høyere sikkerhet</translation>
@@ -803,6 +808,7 @@ Koble enheten til strøm.</translation>
 <translation id="4505050298327493054">Aktivt skrivebord.</translation>
 <translation id="450584155212756404">Utviklerkanal</translation>
 <translation id="4513946894732546136">Google Feedback</translation>
+<translation id="4516212064498225455">Nåværende skrivebord: <ph name="CURRENT_DESK_NAME" />. Bruk Søk + mellomrom for å åpne menyen med alle skrivebordene.</translation>
 <translation id="4518404433291145981">For å låse opp Chromebooken, lås opp telefonen først</translation>
 <translation id="4527045527269911712">Bluetooth-enheten «<ph name="DEVICE_NAME" />» ber om tillatelse til å koble til.</translation>
 <translation id="4533343294786968049">Batterilevetiden forlenges. Batteriet kommer til å være helt oppladet innen <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -970,6 +976,7 @@ Koble enheten til strøm.</translation>
 <translation id="5207949376430453814">Fremhev tekstinnsettingspunktet</translation>
 <translation id="5208059991603368177">På</translation>
 <translation id="5216991270656129561">Avslått til <ph name="TIME" /></translation>
+<translation id="5217646019792206018">Neste skrivebord: <ph name="NEXT_DESK_NAME" />. Bruk Søk + mellomrom eller hurtigtasten Shift + Søk + <ph name="NEXT_DESK_INDEX" /> for å aktivere.</translation>
 <translation id="5221423477036820198">Send eller svar raskt på meldinger på telefonen din med telefonstyring.</translation>
 <translation id="5222676887888702881">Logg av</translation>
 <translation id="5229343007215035173">Slå personvernskjermen av eller på</translation>
@@ -1035,6 +1042,7 @@ Koble enheten til strøm.</translation>
 <translation id="550391772491508736">Gjenoppta castingen</translation>
 <translation id="5506975627792768506">Slå på forstørreren av eller på</translation>
 <translation id="5512042095225963688">Slett forrige ord</translation>
+<translation id="5518068085000130971">Det var det grunnleggende. Fortsett i utforsk – den innebygde appen vår for tips og hjelp. Her finner du tips for å komme i gang, anbefalte apper, spesialtilbud og de nyeste Chromebook-funksjonene.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Administratoren din har fjernet alle eSIM-kortprofiler. Kontakt administratoren for å få mer informasjon.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> kobler til.</translation>
@@ -1360,6 +1368,7 @@ Nylig installert</translation>
 <translation id="6896758677409633944">Kopiér</translation>
 <translation id="6901883536534621389">Prøv å navigere med bevegelser</translation>
 <translation id="6912841030378044227">Fokuser på adressefeltet</translation>
+<translation id="6912901278692845878">Hurtiginnføring</translation>
 <translation id="6919251195245069855">Smartkortet ditt ble ikke gjenkjent. Prøv på nytt.</translation>
 <translation id="6920245099716267363">Slå av/på wifi-sonen. Wifi-sonen er på. 1 enhet er tilkoblet.</translation>
 <translation id="6931576957638141829">Lagre i</translation>
@@ -1666,6 +1675,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8297006494302853456">Svakt</translation>
 <translation id="8308637677604853869">Forrige meny</translation>
 <translation id="830868413617744215">Beta</translation>
+<translation id="8312557488404088015">Ta hurtiginnføringen for å få en smidig start. Den består av seks trinn og tar bare noen minutter.</translation>
 <translation id="8314772463905284467">Caps Lock er på</translation>
 <translation id="8315514906653279104">Slår på …</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /><ph name="GET_STARTED" /></translation>
@@ -1715,6 +1725,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8517041960877371778">Det kan hende at din <ph name="DEVICE_TYPE" /> ikke lader når den er slått på.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Mikrofoninngangen styres av <ph name="APP_NAME" />}other{Mikrofoninngangen styres av # apper}}</translation>
 <translation id="8535393432370007982">Angre sortering etter farge</translation>
+<translation id="853768060447955562">Forrige skrivebord: <ph name="PREVIOUS_DESK_NAME" />. Bruk Søk + mellomrom eller hurtigtasten Shift + Søk + <ph name="PREVIOUS_DESK_INDEX" /> for å aktivere.</translation>
 <translation id="8541078764854166027">Kamerainnramming</translation>
 <translation id="8542053257095774575">Ingen lagrede skrivebord eller maler</translation>
 <translation id="8546059259582788728">Sorteringen ble angret</translation>
@@ -1866,11 +1877,13 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="925832987464884575">Skjul forhåndsvisninger</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> krever at du oppdaterer <ph name="DEVICE_TYPE" /> umiddelbart</translation>
 <translation id="938963181863597773">Hva er i kalenderen min?</translation>
+<translation id="943067377221312471">Forrige skrivebord: <ph name="PREVIOUS_DESK_NAME" />. Bruk Søk + mellomrom for å aktivere.</translation>
 <translation id="945383118875625837">Dra linken til bokmerkeraden</translation>
 <translation id="945522503751344254">Send tilbakemelding</translation>
 <translation id="951991426597076286">Avvis</translation>
 <translation id="953431725143473984">Vil du slå av enheten?</translation>
 <translation id="954052413789300507">Ikke nok plass til <ph name="FILENAME" />. Frigjør plass.</translation>
+<translation id="968627661524972577">Bruk apper til å gjøre alt du trenger på Chromebook. Du finner appene dine i appoversikten. Du kan også trykke på Appoversikt-tasten på tastaturet.</translation>
 <translation id="974545358917229949">Viser <ph name="RESULT_COUNT" /> resultater for <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Gå til slutten av dokumentet</translation>
 <translation id="987589956647469042">Mobildata er slått på</translation>

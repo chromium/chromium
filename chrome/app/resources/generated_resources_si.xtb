@@ -1283,6 +1283,7 @@
 <translation id="204497730941176055">Microsoft සහතික ආකෘති නාමය</translation>
 <translation id="2045117674524495717">යතුරුපුවරු කෙටිමං උපකාරකය</translation>
 <translation id="2045211794962848221">ඔබට මෙම නිශ්චිත පණිවිඩය නැවත නොපෙනේ</translation>
+<translation id="2045838962742066664">කෙටි අකුරින් ටයිප් කිරීම</translation>
 <translation id="2045969484888636535">කුකීස් අවහිර කිරීම දිගටම කරන්න</translation>
 <translation id="204622017488417136">ඔබේ උපාංගය පෙර ස්ථාපිත Chrome අනුවාදනය වෙත යළි පත්වේ. සියළු පරිශීලක ගිනුම් හා දේශීය දත්ත ඉවත් වේ. මෙය අවලංගු කළ නොහැක.</translation>
 <translation id="2046702855113914483">රාමෙන්</translation>
@@ -1842,6 +1843,7 @@
 <translation id="2471506181342525583">ස්ථාන ප්‍රවේශය ඉඩ දේ</translation>
 <translation id="2473195200299095979">මෙම පිටුව පරිවර්තනය කරන්න</translation>
 <translation id="2475982808118771221">දෝෂයක් සිදු විණි</translation>
+<translation id="2476901513051581836">නොබැඳි ආචයනය තරම දන්නා තෙක් ආචයනය පිරිසිදු කළ නොහැක.</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> අස්ථාපනය කිරීමට Windows වසන්න.</translation>
 <translation id="2477065602824695373">ඔබ ස්විච කිහිපයක් පිහිටවූ බැවින්, ස්වයංක්‍රිය ස්කෑන් කිරීම ක්‍රියාවිරහිත කර ඇත.</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" සඳහා මාධ්‍යය-ගොනු බලතල</translation>
@@ -2226,6 +2228,7 @@
 <translation id="2794522004398861033">eSIM පිහිටුවීමට Wi-Fi හෝ ඊතර්නෙට් වෙත සම්බන්ධ වන්න</translation>
 <translation id="2794977172822818797">වත්මන් අඩවි එක් කරන්න</translation>
 <translation id="2795716239552913152">අඩවි සාමාන්‍යයෙන් දේශීය පුවත් හෝ අවට වෙළඳසැල් වැනි, අදාළ විශේෂාංග හෝ තතු සඳහා ඔබගේ ස්ථානය භාවිත කරයි</translation>
+<translation id="2795950023277268902">Files යෙදුම තුළ ඔබේ Drive ගොනු වෙත ප්‍රවේශ වීමට <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> සම්බන්ධ කරන්න</translation>
 <translation id="2796740370559399562">කුකිවලට ඉඩ දීම දිගටම කරගෙන යන්න</translation>
 <translation id="2798347533012571708">යාවත්කාලීන තබා ගන්න</translation>
 <translation id="2799223571221894425">නැවත දියත් කරන්න</translation>
@@ -3662,6 +3665,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="3995138139523574647">USB-C උපාංගය (දකුණුපස පසු තොට)</translation>
 <translation id="3995963973192100066">සජීවිකරණය වාදනය කරන්න</translation>
 <translation id="399788104667917863">මෙවලම් තීරුවට අමුණන්න</translation>
+<translation id="3998976413398910035">මුද්‍රක කළමනාකරණය කරන්න</translation>
 <translation id="4001540981461989979">චලනය වන විට මූසික කර්සරය උද්දීපනය කරන්න</translation>
 <translation id="4002440992267487163">රහස් අංකය සැකසීම</translation>
 <translation id="4005817994523282006">වේලා කලාපය හඳුනාගැනීමේ ක්‍රමය</translation>
@@ -3769,6 +3773,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4098667039111970300">මෙවලම් තීරුව තුළ පන්හිඳ මෙවලම්</translation>
 <translation id="4099060993766194518">පෙරනිමි සෙවුම් එන්ජිම ප්‍රතිසාධනය කරනවා ද?</translation>
 <translation id="4099874310852108874">ජාල දෝෂය සිදු විය.</translation>
+<translation id="4100020874626534113">නම්‍යශීලී උච්චාරණ පැවරුමට ඉඩ දෙන්න. උදාහරණයක් ලෙස, ඔබට “ánh” ලබා ගැනීමට “anhs” හෝ “asnh” ටයිප් කළ හැක.</translation>
 <translation id="4100733287846229632">උපාංගයේ ඉඩ බරපතළ ලෙස අඩුය</translation>
 <translation id="4100853287411968461">නව තිර කාල සීමාව</translation>
 <translation id="4101352914005291489">සැඟවුණ SSID</translation>
@@ -4765,6 +4770,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4953808748584563296">පෙරනිමි තැඹිලි නියුරුව</translation>
 <translation id="4955710816792587366">ඔබගේ PIN තෝරන්න</translation>
 <translation id="4959262764292427323">මුරපද ඔබගේ Google ගිණුමේ සුරක්ෂිත කර ඇති අතර, එනිසා ඔබට ඒවා ඕනෑම උපාංගයක භාවිතා කළ හැකිය</translation>
+<translation id="4960020053211143927">සමහර යෙදුම් මගින් සහාය නොදක්වයි</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">තිරය විකාශය කරන්න</translation>
 <translation id="4961361269522589229">වට්ටෝරු අදහස්</translation>
@@ -4964,6 +4970,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5139823398361067371">ඔබේ ආරක්‍ෂක යතුර සඳහා රහස් අංකය ඇතුළත් කරන්න. ඔබ රහස් අංකය නොදනී නම්, ඔබට ආරක්‍ෂක යතුරු යළි සැකසීමට අවශ්‍ය වෙයි.</translation>
 <translation id="5139955368427980650">විවෘත කරන්න</translation>
 <translation id="5141421572306659464">ප්‍රාථමික ගිණුම</translation>
+<translation id="5141957579434225843">උදාහරණයක් ලෙස, òa, òe, ùy වෙනුවට oà, oè, uỳ භාවිතා කරන්න</translation>
 <translation id="5142793792982256885">ස්පර්ශ පුවරු අනුචලන වේගය</translation>
 <translation id="5143374789336132547">"<ph name="EXTENSION_NAME" />" දිගුව ඔබ මුල් පිටු බොත්තම ක්ලික් කළ විට විට කුමන පිටුව පෙන්වන්නේද යන්න වෙනස් කර තිබේ.</translation>
 <translation id="5143612243342258355">මෙම ගොනුව අනතුරුදාකයි</translation>
@@ -6304,6 +6311,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="628352644014831790">තත්පර 4ක</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> නිතර බාගැනීම සිදු නොවන අතර අනතුරුදායක විය හැකිය.</translation>
 <translation id="6285770818046456882">ඔබ සමඟ බෙදා ගන්නා උපාංගය මාරුව අවලංගු කරන ලදි</translation>
+<translation id="628726841779494414">මුද්‍රක සැකසීම් තුළ ඔබේ මුද්‍රක කළමනාකරණය කරන්න</translation>
 <translation id="6290613030083731160">අවට බෙදා ගන්නා ලබා ගත හැකි උපාංග නැත. <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">සක්‍රිය කිරීමේ කේතය සත්‍යාපනය කරමින් මෙයට මිනිත්තු කිහිපයක් ගත විය හැකිය.</translation>
 <translation id="6291741848715722067">තහවුරු කිරීමේ කේතය</translation>
@@ -7015,6 +7023,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6897688156970667447">අඩු ආලෝකයේ දී උපකාරී වන අතර බැටරිය ඉතිරි කරයි</translation>
 <translation id="6897972855231767338">ආගන්තුකයෙකු ලෙස බ්‍රවුස් කිරීම පිළිබඳව තව දැන ගන්න</translation>
 <translation id="6898440773573063262">කියෝස්ක් යෙදුම දැන් මෙම උපාංගය මත ස්වයං-දියත් කිරීමට වින්‍යාස කළ හැක.</translation>
+<translation id="6899427698619335650">නම්‍යශීලී උච්චාරණ පැවරුමට ඉඩ දෙන්න. උදාහරණයක් ලෙස, ඔබට “ánh” ලබා ගැනීමට “anh1” හෝ “a1nh” ටයිප් කළ හැක.</translation>
 <translation id="6900284862687837908">පසුබිම් යෙදුම: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">වැඩිදියුණු කළ ආරක්ෂාව</translation>
 <translation id="6900651018461749106"><ph name="USER_EMAIL" /> යාවත්කාලීන කිරීමට නැවත පුරන්න</translation>
@@ -8449,7 +8458,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8084510406207562688">සියලු ටැබ ප්‍රතිසාධනය කරන්න</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> වින්‍යාස කරමින් ...</translation>
 <translation id="8086121155774250556">මෙම පටිත්ත ඔබේ තිරය බෙදා ගනිමින් සිටියි</translation>
-<translation id="8086442853986205778"><ph name="PRINTER_NAME" /> සකසන්න</translation>
 <translation id="8086610718778464681">Linux යෙදුම් සහ ගොනු උපස්ථ කළ නොහැකිය</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{මෙම ගොනුව සංකේතිතයි. එහි හිමිකරුට විකේතන කිරිමට කියන්න.}one{මෙම ගොනුවලින් සමහරක් සංකේතිතයි. ඒවායේ හිමිකරුට විකේතන කිරිමට කියන්න.}other{මෙම ගොනුවලින් සමහරක් සංකේතිතයි. ඒවායේ හිමිකරුට විකේතන කිරිමට කියන්න.}}</translation>
 <translation id="808894953321890993">මුරපදය වෙනස් කරන්න</translation>
@@ -9110,7 +9118,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8662671328352114214"><ph name="TYPE" /> ජාලයට එකතු වන්න</translation>
 <translation id="8662733268723715832">මෙය බලාපොරොත්තු වූවාට වඩා වැඩි කාලයක් ගනී, ඔබට එය මඟ හැරීමට හෝ එය නිම කරන තෙක් රැඳී සිටීමට හැකිය.</translation>
 <translation id="8662795692588422978">පුද්ගලයන්</translation>
-<translation id="8662811608048051533">ඔබව බොහෝ අඩවිවලින් වරනු ඇත.</translation>
 <translation id="8662911384982557515">ඔබේ නිවෙස් පිටුව මෙය වෙත වෙනස් කරන්න: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome හට වෝල්පේපරය සැකසිය නොහැක.</translation>
 <translation id="8663099077749055505"><ph name="HOST" /> මත බහු ස්වයංක්‍රීය බාගැනීම් සැමවිටම බධා කරන්න</translation>
@@ -9251,7 +9258,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8770406935328356739">දිගු මූල නාමාවලිය</translation>
 <translation id="8771300903067484968">ආරම්භක පිටු පසුබිම පෙරනිමි පසුබිම ලෙස යළි සකසා ඇත.</translation>
 <translation id="8773280816776735812">IBAN අගය පෙන්වන්න</translation>
-<translation id="8773302562181397928"><ph name="PRINTER_NAME" /> සුරකින්න</translation>
 <translation id="8774379074441005279">ප්‍රතිසාධනය තහවුරු කරන්න</translation>
 <translation id="8774934320277480003">ඉහල මායිම</translation>
 <translation id="8775144690796719618">අවලංගු URL</translation>

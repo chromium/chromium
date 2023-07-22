@@ -8464,7 +8464,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8084510406207562688">O&amp;bnoviť všetky karty</translation>
 <translation id="8086015605808120405">Konfiguruje sa tlačiareň <ph name="PRINTER_NAME" />...</translation>
 <translation id="8086121155774250556">Na tejto karte sa zdieľa vaša obrazovka</translation>
-<translation id="8086442853986205778">Nastaviť <ph name="PRINTER_NAME" /></translation>
 <translation id="8086610718778464681">Aplikácie a súbory systému Linux sa nedajú zálohovať</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Tento súbor je šifrovaný. Požiadajte vlastníka, aby ho dešifroval.}few{Niektoré tieto súbory sú šifrované. Požiadajte vlastníka, aby ich dešifroval.}many{Niektoré tieto súbory sú šifrované. Požiadajte vlastníka, aby ich dešifroval.}other{Niektoré tieto súbory sú šifrované. Požiadajte vlastníka, aby ich dešifroval.}}</translation>
 <translation id="808894953321890993">Zmeniť heslo</translation>
@@ -9125,7 +9124,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8662671328352114214">Pripojenie k sieti <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Trvá to dlhšie, ako sa očakávalo. Môžete preskočiť alebo čakať na dokončenie.</translation>
 <translation id="8662795692588422978">Osoby</translation>
-<translation id="8662811608048051533">Odhlási vás z väčšiny webov.</translation>
 <translation id="8662911384982557515">Zmeniť domovskú stránku na: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Prehliadač Chrome nemôže nastaviť tapetu.</translation>
 <translation id="8663099077749055505">Vždy blokovať viaceré automatické stiahnutia na stránkach <ph name="HOST" /></translation>
@@ -9266,7 +9264,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8770406935328356739">Koreňový adresár rozšírenia</translation>
 <translation id="8771300903067484968">Pozadie úvodnej stránky bolo resetované na predvolené.</translation>
 <translation id="8773280816776735812">Zobraziť hodnotu IBAN</translation>
-<translation id="8773302562181397928">Uložiť <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Potvrdenie obnovy</translation>
 <translation id="8774934320277480003">Horný okraj</translation>
 <translation id="8775144690796719618">Neplatná webová adresa</translation>

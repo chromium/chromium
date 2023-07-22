@@ -8440,7 +8440,6 @@
 <translation id="8084510406207562688">すべてのタブを復元(&amp;E)</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> を設定しています...</translation>
 <translation id="8086121155774250556">このタブはデスクトップ画面を共有しています</translation>
-<translation id="8086442853986205778"><ph name="PRINTER_NAME" /> をセットアップ</translation>
 <translation id="8086610718778464681">Linux のアプリとファイルをバックアップできません</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{このファイルは暗号化されています。所有者に復号するよう依頼してください。}other{一部のファイルは暗号化されています。所有者に復号するよう依頼してください。}}</translation>
 <translation id="808894953321890993">パスワードの変更</translation>
@@ -9101,7 +9100,6 @@
 <translation id="8662671328352114214"><ph name="TYPE" /> ネットワークへの接続</translation>
 <translation id="8662733268723715832">予想以上に時間がかかっています。スキップするか、終わるまでお待ちください。</translation>
 <translation id="8662795692588422978">ユーザー</translation>
-<translation id="8662811608048051533">ほとんどのサイトからログアウトします。</translation>
 <translation id="8662911384982557515">ホームページを次に変更: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">壁紙は設定できません。</translation>
 <translation id="8663099077749055505"><ph name="HOST" /> 上での複数ファイルの自動ダウンロードを常にブロックする</translation>
@@ -9242,7 +9240,6 @@
 <translation id="8770406935328356739">拡張機能のルート ディレクトリ</translation>
 <translation id="8771300903067484968">スタートページの背景をデフォルトの背景にリセットしました。</translation>
 <translation id="8773280816776735812">IBAN 値を表示</translation>
-<translation id="8773302562181397928"><ph name="PRINTER_NAME" /> を保存</translation>
 <translation id="8774379074441005279">復元を実行</translation>
 <translation id="8774934320277480003">上余白</translation>
 <translation id="8775144690796719618">無効なURL</translation>

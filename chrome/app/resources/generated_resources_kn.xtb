@@ -1565,6 +1565,7 @@
     ಬಿತ್ತರಿಸುವಿಕೆಯಲ್ಲಿನ ಸಮಸ್ಯೆ ನಿವಾರಣೆ ಸಹಾಯಕ್ಕಾಗಿ
     <ph name="BEGIN_LINK" />
     ಸಹಾಯ ಕೇಂದ್ರವನ್ನು<ph name="END_LINK" /> ಉಲ್ಲೇಖಿಸಿ.</translation>
+<translation id="22649924370461580">ಸೇವ್ ಮಾಡಿದ ಟ್ಯಾಬ್ ಗುಂಪುಗಳು</translation>
 <translation id="2266957463645820432">USB ನಲ್ಲಿ IPP (IPPUSB)</translation>
 <translation id="2268130516524549846">ಬ್ಲೂಟೂತ್‌ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="2268182915828370037">ಫೈಲ್ ಸಿಂಕ್ ಅನ್ನು ಆಫ್ ಮಾಡಬೇಕೆ?</translation>
@@ -1792,6 +1793,7 @@
 <translation id="2435248616906486374">ನೆಟ್‌ವರ್ಕ್ ಸಂಪರ್ಕ ಕಡಿತಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="2435457462613246316">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ತೋರಿಸಿ</translation>
 <translation id="2436385001956947090">&amp;ಲಿಂಕ್ ನಕಲಿಸಿ</translation>
+<translation id="2438853563451647815">ಪ್ರಿಂಟರ್‌ಗೆ ಕನೆಕ್ಟ್ ಆಗಿಲ್ಲ</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> ಅನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2440604414813129000">ಮೂ&amp;ಲವನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="2440823041667407902">ಸ್ಥಳದ ಆ್ಯಕ್ಸೆಸ್</translation>
@@ -4244,6 +4246,7 @@
 <translation id="4508150454272293946">ಈ ಸಾಧನಕ್ಕೆ ಕನೆಕ್ಟ್ ಆಗಿರುವ ಕ್ಯಾಮರಾ(ಗಳನ್ನು) ಬಳಸಲು ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ವೆಬ್‌ಪುಟಗಳನ್ನು ಅನುಮತಿಸಿ. ನಿಮ್ಮ ಕ್ಯಾಮರಾದಲ್ಲಿ ನೀವು ಇನ್ನೂ ಸಮಸ್ಯೆಯನ್ನು ಎದುರಿಸುತ್ತಿದ್ದರೆ, ಆ್ಯಪ್ ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಲು ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ವೆಬ್‌ಪುಟವನ್ನು ರಿಫ್ರೆಶ್ ಮಾಡಿ.</translation>
 <translation id="450867954911715010">ಪ್ರವೇಶದ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="4508765956121923607">ಮೂ&amp;ಲವನ್ನು ವೀಕ್ಷಿಸಿ</translation>
+<translation id="4509277363725254222">ನಿಮ್ಮ <ph name="BEGIN_BOLD_USERNAME" />ಬಳಕೆದಾರರ ಹೆಸರು<ph name="END_BOLD_USERNAME" /> ಮತ್ತು <ph name="BEGIN_BOLD_PASSWORD" />ಪಾಸ್‌ವರ್ಡ್‌ನ<ph name="END_BOLD_PASSWORD" /> ನಕಲನ್ನು ನೀವು ಹಂಚಿಕೊಂಡಾಗ, ನಿಮ್ಮ ಕುಟುಂಬದ ಸದಸ್ಯರು Google Password Manager ಅನ್ನು ಬಳಸಿಕೊಂಡು ಅವುಗಳನ್ನು ಭರ್ತಿ ಮಾಡಬಹುದು.</translation>
 <translation id="4509421746503122514">ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲು, ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="4510195992002502722">ಪ್ರತಿಕ್ರಿಯೆ ಕಳುಹಿಸಲು ವಿಫಲವಾಗಿದೆ. ಮರುಪ್ರಯತ್ನಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="4510479820467554003">ಪೋಷಕರ ಖಾತೆಯ ಪಟ್ಟಿ</translation>
@@ -4461,6 +4464,7 @@
 <translation id="4683629100208651599">ಲೋವರ್‌ಕೇಸ್ ಮಾಡಿ</translation>
 <translation id="4683947955326903992">ಶೇಕಡಾ <ph name="PERCENTAGE" /> (ಡೀಫಾಲ್ಟ್)</translation>
 <translation id="4684427112815847243">ಪ್ರತಿಯೊಂದನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>
+<translation id="4687238339694011189">ನಿಮ್ಮ ಪ್ರಿಂಟರ್ ಆನ್ ಆಗಿದೆಯೇ ಮತ್ತು ನಿಮ್ಮ Chromebook ಕನೆಕ್ಟ್ ಆಗಿರುವ ಅದೇ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಕನೆಕ್ಟ್ ಆಗಿದೆಯೇ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ ಅಥವಾ USB ಕೇಬಲ್ ಬಳಸಿ.</translation>
 <translation id="4687613760714619596">ಅಪರಿಚಿತ ಸಾಧನ (<ph name="DEVICE_ID" />)</translation>
 <translation id="4687718960473379118">ಸೈಟ್ ಶಿಫಾರಸು ಮಾಡಿದ ಜಾಹೀರಾತುಗಳು</translation>
 <translation id="4688036121858134881">ಸ್ಥಳೀಯ ಲಾಗ್ ಐಡಿ: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
@@ -4814,6 +4818,7 @@
 <translation id="4994426888044765950">ನೀವು ಒಂದು ಕೀ ಅನ್ನು ಒತ್ತಿ ಹಿಡಿದುಕೊಂಡರೆ, ಕೀನ ಅಕ್ಷರ ಪುನರಾವರ್ತನೆಯಾಗುತ್ತದೆ</translation>
 <translation id="4994754230098574403">ಹೊಂದಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4995293419989417004">ಜಾಹೀರಾತು ವಿಷಯಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
+<translation id="4995676741161760215">ಆನ್, ಎಕ್ಸ್‌ಟೆನ್ಶನ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{ಯಾವುದೇ <ph name="VM_TYPE" /> VM ಗಳು ಕಂಡುಬಂದಿಲ್ಲ}=1{1 <ph name="VM_TYPE" /> VM ಕಂಡುಬಂದಿದೆ: <ph name="VM_NAME_LIST" />}one{{NUM_VMS} <ph name="VM_TYPE" /> VM ಗಳು ಕಂಡುಬಂದಿವೆ: <ph name="VM_NAME_LIST" />}other{{NUM_VMS} <ph name="VM_TYPE" /> VM ಗಳು ಕಂಡುಬಂದಿವೆ: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವಿಲ್ಲ.</translation>
 <translation id="4998430619171209993">ಆನ್‌</translation>
@@ -5366,6 +5371,7 @@
 <translation id="5474859849784484111"><ph name="MANAGER" />, ನೀವು ಇದೀಗ ವೈ-ಫೈಗೆ ಕನೆಕ್ಟ್ ಆಗುವ ಮೂಲಕ ಅಪ್‌ಡೇಟ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿಕೊಳ್ಳಬೇಕೆಂದು ಬಯಸುತ್ತದೆ. ಅಥವಾ ಮಾಪನ ಮಾಡಲಾದ ಕನೆಕ್ಷನ್‌ನಿಂದ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿಕೊಳ್ಳಿ (ಶುಲ್ಕಗಳು ಅನ್ವಯವಾಗಬಹುದು).</translation>
 <translation id="5481273127572794904">ಬಹು ಫೈಲ್‌ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="5481941284378890518">ಸಮೀಪದ ಪ್ರಿಂಟರ್‌ಗಳನ್ನು ಸೇರಿಸು</translation>
+<translation id="5484462543003267273">ಕುಟುಂಬವನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಬೇಕೆಂದು ಮತ್ತು ಇಂದೇ ಈ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಹಿಂತಿರುಗಿಸಬೇಕೆಂದು <ph name="MANAGER" /> ಬಯಸುತ್ತದೆ. <ph name="LINK_BEGIN" />ವಿವರಗಳನ್ನು ನೋಡಿ<ph name="LINK_END" />}one{ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಬೇಕೆಂದು ಮತ್ತು {NUM_DAYS} ದಿನಗಳ ಒಳಗಾಗಿ ಈ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಹಿಂತಿರುಗಿಸಬೇಕೆಂದು <ph name="MANAGER" /> ಬಯಸುತ್ತದೆ. <ph name="LINK_BEGIN" />ವಿವರಗಳನ್ನು ನೋಡಿ<ph name="LINK_END" />}other{ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಬೇಕೆಂದು ಮತ್ತು {NUM_DAYS} ದಿನಗಳ ಒಳಗಾಗಿ ಈ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಹಿಂತಿರುಗಿಸಬೇಕೆಂದು <ph name="MANAGER" /> ಬಯಸುತ್ತದೆ. <ph name="LINK_BEGIN" />ವಿವರಗಳನ್ನು ನೋಡಿ<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">ಅಪ್ಲಿಕೇಶನ್‌ ಸೇರಿಸು</translation>
 <translation id="5485435764083510385">ಆದ್ಯತೆಯ ಶೀರ್ಷಿಕೆ ಭಾಷೆ</translation>
@@ -6118,6 +6124,7 @@
 <translation id="6113434369102685411">Chrome ಬ್ರೌಸರ್ ಅನ್ನು ಮತ್ತು <ph name="DEVICE_TYPE" /> ಲಾಂಚರ್ ಅನ್ನು ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಸರ್ಚ್ ಎಂಜಿನ್ ಆಗಿ ಹೊಂದಿಸಿ</translation>
 <translation id="6113942107547980621">Smart Lock ಅನ್ನು ಬಳಸಲು, ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿರುವ ಪ್ರಾಥಮಿಕ ಬಳಕೆದಾರ ಪ್ರೋಫೈಲ್‌ಗೆ ಬದಲಿಸಿ</translation>
 <translation id="6116921718742659598">ಭಾಷೆ ಹಾಗೂ ಇನ್‌ಪುಟ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಿ</translation>
+<translation id="6119008366402292080">ಯಾವುದೇ ಪ್ರಿಂಟರ್ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="6119927814891883061">ಸಾಧನಕ್ಕೆ <ph name="DEVICE_NAME" /> ಎಂದು ಹೆಸರಿಸಿ</translation>
 <translation id="6119972796024789243">ಬಣ್ಣದ ತಿದ್ದುಪಡಿ</translation>
 <translation id="6120707837086723438">ರೆಸಿಪಿಗಳಿಗೆ ಸಂಬಂಧಿಸಿದ ನಿಮ್ಮ ಇತ್ತೀಚಿನ ಹುಡುಕಾಟ ಚಟುವಟಿಕೆಯನ್ನು ಆಧರಿಸಿ ನಿಮಗೆ ಸಲಹೆ ಮಾಡಿರುವ ರೆಸಿಪಿಗಳನ್ನು ತೋರಿಸಲಾಗುತ್ತಿದೆ.
@@ -6128,6 +6135,7 @@
 <translation id="6122081475643980456">ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವನ್ನು ನಿಯಂತ್ರಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="6122093587541546701">ಇಮೇಲ್ (ಐಚ್ಛಿಕ):</translation>
 <translation id="6122095009389448667">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್ ಅನ್ನು ನೋಡದಂತೆ ಈ ಸೈಟ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸುವುದನ್ನು ಮುಂದುವರಿಸಿ</translation>
+<translation id="6122513630797178831">CVC ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="6122600716821516697">ಈ ಸಾಧನದ ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಬೇಕೆ?</translation>
 <translation id="6122831415929794347">ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ ಅನ್ನು ಆಫ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="6124650939968185064">ಕೆಳಗಿನ ಎಕ್ಸ್‌ಟೆನ್ಷನ್‌‌ಗಳು ಈ ಎಕ್ಸ್‌ಟೆನ್ಷನ್‌‌ನ ಮೇಲೆ ಅವಲಂಬಿತವಾಗಿವೆ:</translation>
@@ -8463,7 +8471,6 @@
 <translation id="8084510406207562688">ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಿ</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> ಕಾನ್ಫಿಗರ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="8086121155774250556">ಈ ಟ್ಯಾಬ್ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತಿದೆ</translation>
-<translation id="8086442853986205778"><ph name="PRINTER_NAME" /> ಅನ್ನು ಸೆಟಪ್ ಮಾಡಿ</translation>
 <translation id="8086610718778464681">Linux ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಫೈಲ್‌ಗಳನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{ಈ ಫೈಲ್ ಅನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗಿದೆ. ಅದನ್ನು ಡಿಕ್ರಿಪ್ಟ್ ಮಾಡಲು ಅದರ ಮಾಲೀಕರಿಗೆ ಕೇಳಿ.}one{ಈ ಫೈಲ್‌ಗಳಲ್ಲಿನ ಕೆಲವನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್‌ ಮಾಡಲಾಗಿದೆ. ಡಿಕ್ರಿಪ್ಟ್ ಮಾಡಲು ಅವುಗಳ ಮಾಲೀಕರನ್ನು ಕೇಳಿ}other{ಈ ಫೈಲ್‌ಗಳಲ್ಲಿನ ಕೆಲವನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್‌ ಮಾಡಲಾಗಿದೆ. ಡಿಕ್ರಿಪ್ಟ್ ಮಾಡಲು ಅವುಗಳ ಮಾಲೀಕರನ್ನು ಕೇಳಿ}}</translation>
 <translation id="808894953321890993">ಪಾಸ್‌ವರ್ಡ್ ಬದಲಿಸಿ</translation>
@@ -8967,6 +8974,7 @@
 <translation id="8514746246728959655">ಬೇರೊಂದು ಭದ್ರತೆ ಕೀಯನ್ನು ಬಳಸಿ ನೋಡಿ</translation>
 <translation id="8514955299594277296">ಡೇಟಾವನ್ನು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಉಳಿಸಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿಲ್ಲ)</translation>
 <translation id="8517759303731677493">ಎಡಿಟ್ ಮಾಡಿ…</translation>
+<translation id="8518942514525208851">ಬೈಗುಳವನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="8519895319663397036">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಆಮದು ಮಾಡಿಕೊಳ್ಳಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ಫೈಲ್ ಗಾತ್ರವು 150 KB ಗಿಂತ ಕಡಿಮೆಯಿರಬೇಕು.</translation>
 <translation id="851991974800416566">ಸದೃಢ ಪಾಸ್‌ವರ್ಡ್ ಒಂದನ್ನು ತ್ವರಿತವಾಗಿ ಬಳಸಿ</translation>
 <translation id="8523493869875972733">ಬದಲಾವಣೆಗಳನ್ನು ಇರಿಸು</translation>
@@ -9124,7 +9132,6 @@
 <translation id="8662671328352114214"><ph name="TYPE" /> ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸೇರಿಕೊಳ್ಳಿ</translation>
 <translation id="8662733268723715832">ಇದು ನಿರೀಕ್ಷೆಗಿಂತ ಹೆಚ್ಚು ಸಮಯ ತೆಗೆದುಕೊಳ್ಳುತ್ತಿದೆ, ನೀವು ಸ್ಕಿಪ್ ಮಾಡಬಹುದು ಅಥವಾ ಅದು ಮುಗಿಯುವವರೆಗೆ ಕಾಯಬಹುದು.</translation>
 <translation id="8662795692588422978">ಜನರು</translation>
-<translation id="8662811608048051533">ಹೆಚ್ಚಿನ ವೆಬ್‌ಸೈಟ್‌ಗಳಿಂದ ಸೈನ್‌ ಔಟ್‌ ಮಾಡುತ್ತದೆ.</translation>
 <translation id="8662911384982557515">ನಿಮ್ಮ ಮುಖ ಪುಟವನ್ನು ಇದಕ್ಕೆ ಬದಲಾಯಿಸಿ: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome ಗೆ ವಾಲ್‌ಪೇಪರ್ ಅನ್ನು ಹೊಂದಿಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="8663099077749055505"><ph name="HOST" /> ರಲ್ಲಿ ಯಾವಾಗಲೂ ಬಹು ಸ್ವಯಂಚಾಲಿತ ಡೌನ್‌ಲೋಡ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸು</translation>
@@ -9265,7 +9272,6 @@
 <translation id="8770406935328356739">ವಿಸ್ತರಣೆ ಮೂಲ ಡೈರೆಕ್ಟರಿ</translation>
 <translation id="8771300903067484968">ಆರಂಭಿಕ ಪುಟದ ಹಿನ್ನೆಲೆಯನ್ನು ಡೀಫಾಲ್ಟ್ ಹಿನ್ನೆಲೆಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ.</translation>
 <translation id="8773280816776735812">IBAN ಮೌಲ್ಯವನ್ನು ತೋರಿಸಿ</translation>
-<translation id="8773302562181397928"><ph name="PRINTER_NAME" /> ಅನ್ನು ಉಳಿಸಿ</translation>
 <translation id="8774379074441005279">ಮರುಸ್ಥಾಪನೆಯನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="8774934320277480003">ಮೇಲಿನ ಅಂಚು</translation>
 <translation id="8775144690796719618">ಅಮಾನ್ಯ URL</translation>

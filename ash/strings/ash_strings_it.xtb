@@ -146,6 +146,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1576623706766186887">Diminuisci lo zoom quando la lente d'ingrandimento è attiva</translation>
 <translation id="1586324912145647027">Vai alla scrivania 1 di 8</translation>
 <translation id="1589090746204042747">Accedere a tutte le tue attività in questa sessione.</translation>
+<translation id="1592682369233288537">Scrivania successiva: <ph name="NEXT_DESK_NAME" />, usa Ricerca + Barra spaziatrice per procedere con l'attivazione.</translation>
 <translation id="1604857178818051494">Metti in pausa i contenuti multimediali</translation>
 <translation id="1610778689852195798">"Annulla"</translation>
 <translation id="1611993646327628135">On</translation>
@@ -157,6 +158,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1647986356840967552">Pagina precedente</translation>
 <translation id="1651914502370159744">Apri la pagina Cronologia</translation>
 <translation id="1654477262762802994">Avvia una query vocale</translation>
+<translation id="1662667383227796099">Cerca i file, le app e altro ancora in Avvio app. Inoltre puoi ricevere risposte alle domande relative a Chromebook.</translation>
 <translation id="1668469839109562275">VPN integrata</translation>
 <translation id="1675844249244994876">Aggiorna la finestra destra</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> rimanenti</translation>
@@ -561,6 +563,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3477079411857374384">CTRL + MAIUSC + barra spaziatrice</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Barra delle app nascosta in automatico</translation>
+<translation id="3503243067695520519">Un saluto da Google. I Chromebook sono un po' diversi.</translation>
 <translation id="3505066820268455558">Batteria in carica</translation>
 <translation id="3509391053705095206">Impossibile trovare il telefono. Assicurati che il Bluetooth del telefono sia attivo.</translation>
 <translation id="3510164367642747937">Evidenzia il puntatore del mouse</translation>
@@ -682,6 +685,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="3977512764614765090">Percentuale di carica della batteria: <ph name="PERCENTAGE" />%. La batteria è in carica.</translation>
 <translation id="3984536049089846927">Pagina successiva</translation>
 <translation id="3986082989454912832">Rispondi</translation>
+<translation id="3990002060657467458">I controlli usati di frequente, come Wi-Fi, Bluetooth e volume, sono disponibili nelle Impostazioni rapide. Qui puoi anche acquisire degli screenshot.</translation>
 <translation id="3995138139523574647">Dispositivo USB-C (porta posteriore destra)</translation>
 <translation id="40062176907008878">Scrittura a mano libera</translation>
 <translation id="4017989525502048489">Puntatore laser</translation>
@@ -745,6 +749,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4269883910223712419">L'amministratore di questo dispositivo ha la possibilità di:</translation>
 <translation id="4274537685965975248">La scorciatoia da tastiera Ctrl + Alt + Freccia giù è cambiata. Per usare il tasto Fine, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Freccia destra.</translation>
 <translation id="4275283744500212192">Apri le opzioni di layout delle finestre</translation>
+<translation id="4278138729651139331">Personalizza e adatta il tuo Chromebook nelle Impostazioni. Prova a cambiare lo sfondo o a impostare un salvaschermo.</translation>
 <translation id="4279490309300973883">Mirroring</translation>
 <translation id="4280601795273309128">Aggiornamenti della sicurezza terminati. Aggiorna il tuo dispositivo.</translation>
 <translation id="4283888303416325161">Inserisci la password per una maggior sicurezza</translation>
@@ -801,6 +806,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4505050298327493054">Scrivania attiva.</translation>
 <translation id="450584155212756404">Canale Dev</translation>
 <translation id="4513946894732546136">Feedback</translation>
+<translation id="4516212064498225455">Scrivania corrente: <ph name="CURRENT_DESK_NAME" />, usa Ricerca + Barra spaziatrice per aprire il menu di tutte le scrivanie.</translation>
 <translation id="4518404433291145981">Per sbloccare Chromebook, sblocca prima il telefono</translation>
 <translation id="4527045527269911712">Il dispositivo Bluetooth "<ph name="DEVICE_NAME" />" chiede l'autorizzazione per essere accoppiato.</translation>
 <translation id="4533343294786968049">Prolunga la durata della batteria. La batteria si ricaricherà completamente entro le ore <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -968,6 +974,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="5207949376430453814">Evidenzia il cursore di testo</translation>
 <translation id="5208059991603368177">On</translation>
 <translation id="5216991270656129561">Funzionalità disattivata fino alle ore <ph name="TIME" /></translation>
+<translation id="5217646019792206018">Scrivania successiva: <ph name="NEXT_DESK_NAME" />, usa Ricerca + Barra spaziatrice. In alternativa usa la scorciatoia da tastiera: Maiusc + Ricerca + <ph name="NEXT_DESK_INDEX" /> per procedere con l'attivazione.</translation>
 <translation id="5221423477036820198">Invia messaggi o rispondi rapidamente sul tuo smartphone usando Phone Hub.</translation>
 <translation id="5222676887888702881">Esci</translation>
 <translation id="5229343007215035173">Attiva/disattiva la Schermata privata</translation>
@@ -1033,6 +1040,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="550391772491508736">Riprendi la trasmissione</translation>
 <translation id="5506975627792768506">Attiva o disattiva la lente d'ingrandimento</translation>
 <translation id="5512042095225963688">Elimina parola precedente</translation>
+<translation id="5518068085000130971">Queste erano le informazioni di base. Continua in Esplora, la nostra app integrata di guida e suggerimenti. Troverai suggerimenti per iniziare, app consigliate, offerte speciali e le ultime funzionalità di Chromebook.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">L'amministratore ha rimosso tutti i profili eSIM. Per ulteriori informazioni al riguardo rivolgiti all’amministratore.</translation>
 <translation id="5523434445161341166">La funzionalità <ph name="FEATURE_NAME" /> sta cercando di connettersi.</translation>
@@ -1358,6 +1366,7 @@ Nuova installazione</translation>
 <translation id="6896758677409633944">Copia</translation>
 <translation id="6901883536534621389">Prova i gesti per la navigazione</translation>
 <translation id="6912841030378044227">Imposta lo stato attivo sulla barra degli indirizzi</translation>
+<translation id="6912901278692845878">Tour rapido</translation>
 <translation id="6919251195245069855">Impossibile riconoscere la smart card. Riprova.</translation>
 <translation id="6920245099716267363">Attiva/disattiva l'hotspot. L'hotspot è attivo, 1 dispositivo connesso.</translation>
 <translation id="6931576957638141829">Salva in</translation>
@@ -1664,6 +1673,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8297006494302853456">Debole</translation>
 <translation id="8308637677604853869">Menu precedente</translation>
 <translation id="830868413617744215">Beta</translation>
+<translation id="8312557488404088015">Fai un rapido tour per iniziare alla grande. Bastano pochi minuti per svolgere i 6 passaggi.</translation>
 <translation id="8314772463905284467">Bloc maiusc è attivo</translation>
 <translation id="8315514906653279104">Attivazione in corso…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -1713,6 +1723,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8517041960877371778">Il tuo dispositivo <ph name="DEVICE_TYPE" /> potrebbe non caricarsi mentre è acceso.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Ingresso del microfono controllato da <ph name="APP_NAME" />}other{Ingresso del microfono controllato da # app}}</translation>
 <translation id="8535393432370007982">Annulla l'ordinamento per colore</translation>
+<translation id="853768060447955562">Scrivania precedente: <ph name="PREVIOUS_DESK_NAME" />, usa Ricerca + Barra spaziatrice. In alternativa usa la scorciatoia da tastiera: Maiusc + Ricerca + <ph name="PREVIOUS_DESK_INDEX" /> per procedere con l'attivazione.</translation>
 <translation id="8541078764854166027">Zoom automat.</translation>
 <translation id="8542053257095774575">Nessuna scrivania o nessun modello salvati</translation>
 <translation id="8546059259582788728">Annullamento dell'ordinamento completato</translation>
@@ -1863,11 +1874,13 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="925832987464884575">Nascondi anteprime</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> richiede l'immediato aggiornamento di <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">Cosa è segnato sul mio calendario?</translation>
+<translation id="943067377221312471">Scrivania precedente: <ph name="PREVIOUS_DESK_NAME" />, usa Ricerca + Barra spaziatrice per procedere con l'attivazione.</translation>
 <translation id="945383118875625837">Trascina il link nella barra dei preferiti</translation>
 <translation id="945522503751344254">Invia feedback</translation>
 <translation id="951991426597076286">Rifiuta</translation>
 <translation id="953431725143473984">Vuoi arrestare il dispositivo?</translation>
 <translation id="954052413789300507">Spazio disponibile insufficiente per il file <ph name="FILENAME" />. Libera spazio.</translation>
+<translation id="968627661524972577">Usa le app per fare tutto ciò che ti serve su Chromebook. Puoi trovare le tue app in Avvio app. Inoltre puoi premere il tasto Avvio app sulla tastiera.</translation>
 <translation id="974545358917229949">Visualizzazione di <ph name="RESULT_COUNT" /> risultati per <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Passa alla fine del documento</translation>
 <translation id="987589956647469042">I dati mobili sono attivi</translation>

@@ -372,6 +372,7 @@
 <translation id="397105322502079400">Berekenen...</translation>
 <translation id="39823212440917567">Afdruktaken ouder dan <ph name="NUMBER_OF_DAYS" /> dagen worden verwijderd</translation>
 <translation id="3993704782688964914">Je <ph name="DEVICE_NAME" /> is nu up-to-date</translation>
+<translation id="3998976413398910035">Printers beheren</translation>
 <translation id="4003384961948020559">Mislukt - Uitvoer is vol</translation>
 <translation id="4021031199988160623">Schakel over naar de laptopmodus om te testen</translation>
 <translation id="4034824040120875894">Printer</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">Alleen voor intern gebruik</translation>
 <translation id="5649768706273821470">Luisteren</translation>
 <translation id="5655283760733841251">Helderheid van toetsenbord verhogen</translation>
+<translation id="5655776422854483175">Geen afdruktaken</translation>
 <translation id="5659593005791499971">E-mail</translation>
 <translation id="5662240986744577912">privacyscherm aan- of uitzetten</translation>
 <translation id="5669267381087807207">Activeren</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">Thema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Donker thema aanzetten</translation>
+<translation id="628726841779494414">Beheer je printers in de printerinstellingen</translation>
 <translation id="629550705077076970">toetsenbord dimmen</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> is geannuleerd</translation>
 <translation id="631063167932043783">App verkennen</translation>

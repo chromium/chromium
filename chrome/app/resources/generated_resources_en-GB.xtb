@@ -1572,6 +1572,7 @@ You can manage this account’s settings by installing the Family Link app on yo
     For help troubleshooting issues with cast, please refer to the
     <ph name="BEGIN_LINK" />
     Help Centre<ph name="END_LINK" />.</translation>
+<translation id="22649924370461580">Saved tab groups</translation>
 <translation id="2266957463645820432">IPP over USB (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth disabled</translation>
 <translation id="2268182915828370037">Turn off file sync?</translation>
@@ -1799,6 +1800,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2435248616906486374">Network disconnected</translation>
 <translation id="2435457462613246316">Show password</translation>
 <translation id="2436385001956947090">Copy &amp;link</translation>
+<translation id="2438853563451647815">Not connected to printer</translation>
 <translation id="2439626940657133600">Loading <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">View s&amp;ource</translation>
 <translation id="2440823041667407902">Location access</translation>
@@ -4468,6 +4470,7 @@ Device signals can include information about your browser, OS, device, installed
 <translation id="4683629100208651599">Make Lower Case</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (default)</translation>
 <translation id="4684427112815847243">Sync everything</translation>
+<translation id="4687238339694011189">Make sure that your printer is turned on and connected to the same network as your Chromebook or use a USB cable</translation>
 <translation id="4687613760714619596">Unknown device (<ph name="DEVICE_ID" />)</translation>
 <translation id="4687718960473379118">Site-suggested ads</translation>
 <translation id="4688036121858134881">Local log ID: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
@@ -6123,6 +6126,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6113434369102685411">Set your default search engine for Chrome browser and <ph name="DEVICE_TYPE" /> Launcher</translation>
 <translation id="6113942107547980621">To use Smart Lock, switch to the primary user profile on your phone</translation>
 <translation id="6116921718742659598">Change language and input settings</translation>
+<translation id="6119008366402292080">No printer available</translation>
 <translation id="6119927814891883061">Name device to <ph name="DEVICE_NAME" /></translation>
 <translation id="6119972796024789243">Colour correction</translation>
 <translation id="6120707837086723438">You’re seeing suggested recipes based on your recent search activity for recipes.
@@ -6133,6 +6137,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6122081475643980456">Your Internet connection is being controlled</translation>
 <translation id="6122093587541546701">Email (optional):</translation>
 <translation id="6122095009389448667">Continue blocking this site from seeing the clipboard</translation>
+<translation id="6122513630797178831">Save CVC</translation>
 <translation id="6122600716821516697">Share with this device?</translation>
 <translation id="6122831415929794347">Turn off Safe Browsing?</translation>
 <translation id="6124650939968185064">The following extensions depend on this extension:</translation>
@@ -8470,7 +8475,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8084510406207562688">Restore all tabs</translation>
 <translation id="8086015605808120405">Configuring <ph name="PRINTER_NAME" /> ...</translation>
 <translation id="8086121155774250556">This tab is sharing your screen</translation>
-<translation id="8086442853986205778">Set up <ph name="PRINTER_NAME" /></translation>
 <translation id="8086610718778464681">Can't back up Linux apps and files</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{This file is encrypted. Ask its owner to decrypt it.}other{Some of these files are encrypted. Ask their owner to decrypt them.}}</translation>
 <translation id="808894953321890993">Change password</translation>
@@ -9131,7 +9135,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8662671328352114214">Join <ph name="TYPE" /> network</translation>
 <translation id="8662733268723715832">This is taking longer than expected; you can skip or wait until it's done.</translation>
 <translation id="8662795692588422978">People</translation>
-<translation id="8662811608048051533">Signs you out of most sites.</translation>
 <translation id="8662911384982557515">Change your home page to: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome cannot set wallpaper.</translation>
 <translation id="8663099077749055505">Always block multiple automatic downloads on <ph name="HOST" /></translation>
@@ -9272,7 +9275,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8770406935328356739">Extension root directory</translation>
 <translation id="8771300903067484968">Start page background has been reset to the default background.</translation>
 <translation id="8773280816776735812">Show IBAN value</translation>
-<translation id="8773302562181397928">Save <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Confirm Restore</translation>
 <translation id="8774934320277480003">Top margin</translation>
 <translation id="8775144690796719618">Invalid URL</translation>

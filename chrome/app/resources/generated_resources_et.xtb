@@ -8460,7 +8460,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8084510406207562688">T&amp;aasta kõik vahelehed</translation>
 <translation id="8086015605808120405">Printeri <ph name="PRINTER_NAME" /> seadistamine …</translation>
 <translation id="8086121155774250556">See vaheleht jagab teie ekraani</translation>
-<translation id="8086442853986205778">Printeri <ph name="PRINTER_NAME" /> seadistamine</translation>
 <translation id="8086610718778464681">Linuxi rakendusi ja faile ei saa varundada</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{See fail on krüpteeritud. Paluge omanikul see dekrüpteerida.}other{Mõni neist failidest on krüpteeritud. Paluge nende omanikul need dekrüpteerida.}}</translation>
 <translation id="808894953321890993">Muuda parooli</translation>
@@ -9121,7 +9120,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8662671328352114214"><ph name="TYPE" />-võrguga liitumine</translation>
 <translation id="8662733268723715832">See võtab oodatust kauem aega. Võite selle vahele jätta või lõpuni oodata.</translation>
 <translation id="8662795692588422978">Inimesed</translation>
-<translation id="8662811608048051533">Logib teid enamikult saitidelt välja.</translation>
 <translation id="8662911384982557515">Määrake avaleheks <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome ei saa taustapilti määrata.</translation>
 <translation id="8663099077749055505">Blokeeri alati mitu automaatset allalaadimist hosti <ph name="HOST" /> korral</translation>
@@ -9262,7 +9260,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8770406935328356739">Laienduse juurkataloog</translation>
 <translation id="8771300903067484968">Avalehe taust lähtestati vaiketaustale.</translation>
 <translation id="8773280816776735812">Kuva IBAN-i väärtus</translation>
-<translation id="8773302562181397928">Salvesta <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Taastamise kinnitamine</translation>
 <translation id="8774934320277480003">Ülemine veeris</translation>
 <translation id="8775144690796719618">Sobimatu URL</translation>

@@ -372,6 +372,7 @@
 <translation id="397105322502079400">Inakokotoa...</translation>
 <translation id="39823212440917567">Kazi za kuchapisha zilizohifadhiwa kwa zaidi ya siku <ph name="NUMBER_OF_DAYS" /> zitaondolewa</translation>
 <translation id="3993704782688964914">Sasa <ph name="DEVICE_NAME" /> imesasishwa</translation>
+<translation id="3998976413398910035">Dhibiti printa</translation>
 <translation id="4003384961948020559">Haijakamilika - Sehemu ya kutoa karatasi imejaa</translation>
 <translation id="4021031199988160623">Badilisha utumie hali ya kompyuta ya kupakata ili ujaribu</translation>
 <translation id="4034824040120875894">Printa</translation>
@@ -588,6 +589,7 @@
 <translation id="5620281292257375798">Ndani ya kampuni pekee</translation>
 <translation id="5649768706273821470">Sikiliza</translation>
 <translation id="5655283760733841251">Ongeza mwangaza wa kibodi</translation>
+<translation id="5655776422854483175">Hakuna kazi za kuchapisha</translation>
 <translation id="5659593005791499971">Barua pepe</translation>
 <translation id="5662240986744577912">kuwasha au kuzima skrini ya faragha</translation>
 <translation id="5669267381087807207">Inawashwa</translation>
@@ -668,6 +670,7 @@
 <translation id="6278428485366576908">Mandhari</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Washa mandhari meusi</translation>
+<translation id="628726841779494414">Dhibiti printa zako kwenye mipangilio ya printa</translation>
 <translation id="629550705077076970">kupunguza mwangaza wa kibodi</translation>
 <translation id="6302401976930124515">Jaribio la <ph name="TEST_NAME" /> limeghairiwa</translation>
 <translation id="631063167932043783">Programu ya Gundua</translation>

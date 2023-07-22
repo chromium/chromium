@@ -1554,6 +1554,7 @@
 <translation id="2263189956353037928">साइन आउट गरेर फेरि साइन इन गर्नुहोस्‌</translation>
 <translation id="2263371730707937087">स्क्रिन रिफ्रेस हुने दर</translation>
 <translation id="2263679799334060788">हामी तपाईंको प्रतिक्रियाको सहायताले Google Cast को गुणस्तर सुधार्न सक्छौँ र तपाईंको प्रतिक्रियाको सह्राना गर्छौँ। Cast सम्बन्धी समस्याहरू निवारण गर्न मद्दत प्राप्त गर्नका लागि कृपया <ph name="BEGIN_LINK" />मद्दत केन्द्र<ph name="END_LINK" />मा जानुहोस्।</translation>
+<translation id="22649924370461580">सेभ गरिएका ट्याब समूहहरू</translation>
 <translation id="2266957463645820432">USB मार्फत IPP (IPPUSB)</translation>
 <translation id="2268130516524549846">ब्लुतुथ असक्षम गरियो</translation>
 <translation id="2268182915828370037">फाइल सिंक गर्ने सुविधा अफ गर्ने हो?</translation>
@@ -1781,6 +1782,7 @@
 <translation id="2435248616906486374">सञ्जाल विच्छेद गरियो</translation>
 <translation id="2435457462613246316">पासवर्ड देखाउनुहोस्</translation>
 <translation id="2436385001956947090">लिंक कपी गर्नुहोस्</translation>
+<translation id="2438853563451647815">प्रिन्टरमा कनेक्ट गरिएको छैन</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> लोड गरिँदै छ</translation>
 <translation id="2440604414813129000">स्रो&amp;त हेर्नुहोस्</translation>
 <translation id="2440823041667407902">स्थान पहुँच</translation>
@@ -4449,6 +4451,7 @@
 <translation id="4683629100208651599">ठुलो अक्षरमा बदल्नुहोस्</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (डिफल्ट)</translation>
 <translation id="4684427112815847243">सबै सिंक गर्नुहोस्</translation>
+<translation id="4687238339694011189">तपाईंका प्रिन्टर अन गरिएको छ अनि यो र Chromebook एउटै नेटवर्कमा कनेक्ट गरिएका छन् भन्ने कुरा सुनिश्चित गर्नुहोस् वा USB केबल प्रयोग गर्नुहोस्</translation>
 <translation id="4687613760714619596">अज्ञात यन्त्र (<ph name="DEVICE_ID" />)</translation>
 <translation id="4687718960473379118">साइटले सिफारिस गरेका विज्ञापनहरू</translation>
 <translation id="4688036121858134881">Local लग ID: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
@@ -6103,6 +6106,7 @@
 <translation id="6113434369102685411">Chrome ब्राउजर र <ph name="DEVICE_TYPE" /> लन्चरका हकमा डिफल्ट सर्च इन्जिन तोक्नुहोस्</translation>
 <translation id="6113942107547980621">Smart Lock प्रयोग गर्न, आफ्नो फोनको प्राथमिक प्रयोगकर्ता प्रोफाइल प्रयोग गर्नुहोस्</translation>
 <translation id="6116921718742659598">भाषा र इनपुट सेटिङहरू परिवर्तन गर्नुहोस्</translation>
+<translation id="6119008366402292080">कुनै पनि प्रिन्टर उपलब्ध छैन</translation>
 <translation id="6119927814891883061">यो डिभाइसको नाम <ph name="DEVICE_NAME" /> राख्नुहोस्</translation>
 <translation id="6119972796024789243">रङ सच्याउने सुविधा</translation>
 <translation id="6120707837086723438">तपाईं आफूले पाकविधिका बारेमा गरेका हालसालैका खोज गतिविधिका आधारमा सिफारिस गरिएका पाकविधिहरू देख्दै हुनुहुन्छ।
@@ -6113,6 +6117,7 @@
 <translation id="6122081475643980456">तपाईंको इन्टरनेट जडान नियन्त्रणमा रहेको छ</translation>
 <translation id="6122093587541546701">इमेल (वैकल्पिक):</translation>
 <translation id="6122095009389448667">यो साइटलाई क्लिपबोर्ड हेर्न लगाइएको रोक जारी राख्नुहोस्‌</translation>
+<translation id="6122513630797178831">CVC सेभ गर्नुहोस्</translation>
 <translation id="6122600716821516697">यो डिभाइससँग सेयर गर्ने हो?</translation>
 <translation id="6122831415929794347">सुरक्षित ब्राउजिङ निष्क्रिय पार्ने हो?</translation>
 <translation id="6124650939968185064">निम्न एक्सटेन्सनहरू यो एक्सटेन्सनमा निर्भर छ:</translation>
@@ -8449,7 +8454,6 @@
 <translation id="8084510406207562688">सबै ट्याबहरू रिस्टोर गर्नुहोस्</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> लाई कन्फिगर गर्दै ...</translation>
 <translation id="8086121155774250556">यो ट्याबले तपाईंको स्क्रिन सेयर गरिरहेको छ</translation>
-<translation id="8086442853986205778"><ph name="PRINTER_NAME" /> सेटअप गर्नुहोस्</translation>
 <translation id="8086610718778464681">Linux एप तथा फाइलहरू ब्याकअप गर्न सकिएन</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{यो फाइल इन्क्रिप्ट गरिएको छ। यसका मालिकलाई डिक्रिप्ट गर्न लगाउनुहोस्।}other{यीमध्ये केही फाइलहरू इन्क्रिप्ट गरिएका छन्। यिनका मालिकलाई डिक्रिप्ट गर्न लगाउनुहोस्।}}</translation>
 <translation id="808894953321890993">पासवर्ड परिवर्तन गर्नुहोस्‌</translation>
@@ -9110,7 +9114,6 @@
 <translation id="8662671328352114214"><ph name="TYPE" /> नेटवर्कमा सामेल हुनुहोस्</translation>
 <translation id="8662733268723715832">यो कार्य गर्न अपेक्षा गरेभन्दा बढी समय लागिरहेको छ। तपाईं यो कार्य स्किप गर्न वा यो कार्य पूरा नहुन्जेल पर्खन सक्नुहुन्छ।</translation>
 <translation id="8662795692588422978">मानिसहरू</translation>
-<translation id="8662811608048051533">तपाईंलाई प्रायः जसो साइटहरूबाट साइन आउट गर्दछ।</translation>
 <translation id="8662911384982557515">आफ्नो गृह पृष्ठलाई यसमा परिवर्तन गर्नुहोस्: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome ले वालपेपर सेट गर्न सक्दैन।</translation>
 <translation id="8663099077749055505"><ph name="HOST" /> मा सधै धेरै स्वचालित डाउनलोडहरू ब्लक गर्छ</translation>
@@ -9251,7 +9254,6 @@
 <translation id="8770406935328356739">विस्तारको मूल निर्देशिका</translation>
 <translation id="8771300903067484968">सुरुको पृष्ठको पृष्ठभूमिलाई डिफल्ट पृष्ठभूमिका रूपमा पुनः सेट गरिएको छ।</translation>
 <translation id="8773280816776735812">IBAN नम्बर देखाइयोस्</translation>
-<translation id="8773302562181397928"><ph name="PRINTER_NAME" /> सेभ गर्नुहोस्</translation>
 <translation id="8774379074441005279">पुनर्स्थापना गर्ने कार्य पुष्टि गर्नुहोस्</translation>
 <translation id="8774934320277480003">शीर्ष सीमान्त</translation>
 <translation id="8775144690796719618">अमान्य URL</translation>
