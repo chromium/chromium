@@ -6565,3 +6565,6 @@ crbug.com/1465723 [ Mac ] virtual/prefetch-no-vary-search/wpt_internal/speculati
 
 # Gardener 2023-07-21
 crbug.com/1180274 http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Crash Failure Pass Timeout ]
+
+# This test is unreliable because of delayed update of history.length during cross-document navigation.
+crbug.com/1466474 fast/history/history-back-twice-with-subframes-assert.html [ Pass Timeout ]
