@@ -16,6 +16,8 @@
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_cycle/window_cycle_list.h"
 #include "ash/wm/window_cycle/window_cycle_view.h"
+#include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -26,11 +28,16 @@ namespace ash {
 // dark/light mode, tablet mode, etc.
 class WmPixelDiffTest : public AshTestBase {
  public:
+  WmPixelDiffTest() : scoped_features_(chromeos::features::kJelly) {}
+
   // AshTestBase:
   absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_features_;
 };
 
 // A basic overview pixel test that shows three overview windows and the virtual
@@ -68,7 +75,7 @@ TEST_F(WmPixelDiffTest, OverviewAndDesksBarBasic) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "overview_and_desks_bar_basic",
-      /*revision_number=*/6, desk_widget, overview_widget1, overview_widget2,
+      /*revision_number=*/7, desk_widget, overview_widget1, overview_widget2,
       overview_widget3));
 }
 
@@ -109,7 +116,7 @@ TEST_F(WmPixelDiffTest, WindowCycleBasic) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "window_cycle_basic",
-      /*revision_number=*/3, widget));
+      /*revision_number=*/4, widget));
 }
 
 }  // namespace ash
