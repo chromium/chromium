@@ -2,6 +2,16 @@
 # Use of this source code is governed by a BSD - style license that can be
 # found in the LICENSE file.
 
+config("zstd_internal_config") {
+  if (!is_debug) {
+    # Build code using -O3.
+    configs = [
+      "//build/config/compiler:no_chromium_code",
+      "//build/config/compiler:optimize_speed",
+    ]
+  }
+}
+
 config("zstd_hide_symbols") {
   defines = [
     "ZSTDLIB_STATIC_API=ZSTDLIB_HIDDEN",
@@ -48,9 +58,12 @@ source_set("common") {
     "src/lib/common/zstd_internal.h",
     "src/lib/common/zstd_trace.h",
   ]
+  configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:default_optimization",
+  ]
   configs += [ ":zstd_hide_symbols" ]
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ ":zstd_internal_config" ]
   public_deps = [ ":headers" ]
 }
 
@@ -67,9 +80,12 @@ source_set("decompress") {
   if (current_cpu == "x64" && !is_win) {
     sources += [ "src/lib/decompress/huf_decompress_amd64.S" ]
   }
+  configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:default_optimization",
+  ]
   configs += [ ":zstd_hide_symbols" ]
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ ":zstd_internal_config" ]
   public_deps = [
     ":common",
     ":headers",
