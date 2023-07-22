@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// +-----------------------------------------------------------------+
+//
 // Utilities for reading and writing tags to MSI files.
-// +-----------------------------------------------------------------+
+//
 //
 // The tag specification for MSI files is as follows:
 //   - The tag area begins with a magic signature 'Gact2.0Omaha'.
@@ -18,7 +18,7 @@
 // |    ..............................   |
 // |    Other parts of the MSI file      |
 // +-------------------------------------+
-// | Start of the certificate             |
+// | Start of the certificate            |
 // ~    ..............................   ~
 // ~    ..............................   ~
 // | Magic signature 'Gact2.0Omaha'      | Tag starts
