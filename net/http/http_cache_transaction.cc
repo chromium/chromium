@@ -4,8 +4,6 @@
 
 #include "net/http/http_cache_transaction.h"
 
-#include "base/feature_list.h"
-#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"  // For IS_POSIX
 
 #if BUILDFLAG(IS_POSIX)
@@ -21,6 +19,7 @@
 #include "base/auto_reset.h"
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
