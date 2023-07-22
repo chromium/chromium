@@ -542,8 +542,6 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
         base::win::WellKnownCapability::kEnterpriseAuthentication);
     container->AddCapability(kLpacIdentityServices);
     container->AddCapability(kLpacCryptoServices);
-    container->SetEnableLowPrivilegeAppContainer(base::FeatureList::IsEnabled(
-        features::kWinSboxNetworkServiceSandboxIsLPAC));
   }
 
   if (sandbox_type == Sandbox::kWindowsSystemProxyResolver) {
@@ -557,6 +555,7 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
   if ((sandbox_type == Sandbox::kGpu &&
        base::FeatureList::IsEnabled(features::kGpuLPAC)) ||
       sandbox_type == Sandbox::kMediaFoundationCdm ||
+      sandbox_type == Sandbox::kNetwork ||
       sandbox_type == Sandbox::kWindowsSystemProxyResolver) {
     container->SetEnableLowPrivilegeAppContainer(true);
   }

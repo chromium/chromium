@@ -83,13 +83,6 @@ BASE_FEATURE(kWinSboxRendererCloseKsecDD,
 BASE_FEATURE(kWinSboxWarmupProcessPrng,
              "WinSboxWarmupProcessPrng",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, launch the network service within an LPAC sandbox. If disabled,
-// the network service will run inside an App Container.
-BASE_FEATURE(kWinSboxNetworkServiceSandboxIsLPAC,
-             "WinSboxNetworkServiceSandboxIsLPAC",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
