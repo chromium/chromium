@@ -113,10 +113,34 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
   // user login with a delay, should only be scheduled once on login.
   void DelayedInitOnAffiliatedLogin(Profile* profile);
 
+  // Initializes an info data collector. An info data collector is always
+  // one-shot, i.e., only collects once. The report queue is always
+  // `info_report_queue_`.
+  //
+  // `sampler` is the sampler that collects info.
+  //
+  // `enable_setting_path` is the name of the setting that enables or disables
+  // the collection.
+  //
+  // `enable_default_value` indicates whether the setting is enabled by default.
   void InitInfoCollector(std::unique_ptr<Sampler> sampler,
                          const std::string& enable_setting_path,
                          bool setting_enabled_default_value);
 
+  // Initializes a telemetry data collector that collects once.
+  //
+  // `collector_name` is the name of the collector.
+  //
+  // `sampler` is the sampler that collects telemetry.
+  //
+  // `metric_report_queue` is the report queue to use.
+  //
+  // `enable_setting_path` is the name of the setting that enables or disables
+  // the collection.
+  //
+  // `enable_default_value` indicates whether the setting is enabled by default.
+  //
+  // `init_delay` is the initial delay before the first collection occurs.
   void InitOneShotTelemetryCollector(const std::string& collector_name,
                                      Sampler* sampler,
                                      MetricReportQueue* metric_report_queue,
@@ -124,22 +148,83 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
                                      bool enable_default_value,
                                      base::TimeDelta init_delay);
 
+  // Initializes a telemetry data collector that is manually triggered. See
+  // `ManualCollector`.
+  //
+  // `collector_name` is the name of the collector.
+  //
+  // `sampler` is the sampler that collects telemetry.
+  //
+  // `metric_report_queue` is the report queue to use.
+  //
+  // `enable_setting_path` is the name of the setting that enables or disables
+  // the collection.
+  //
+  // `enable_default_value` indicates whether the setting is enabled by default.
   void InitManualTelemetryCollector(const std::string& collector_name,
                                     Sampler* sampler,
                                     MetricReportQueue* metric_report_queue,
                                     const std::string& enable_setting_path,
                                     bool enable_default_value);
 
-  void InitPeriodicCollector(const std::string& collector_name,
-                             Sampler* sampler,
-                             MetricReportQueue* metric_report_queue,
-                             const std::string& enable_setting_path,
-                             bool enable_default_value,
-                             const std::string& rate_setting_path,
-                             base::TimeDelta default_rate,
-                             int rate_unit_to_ms,
-                             base::TimeDelta init_delay);
+  // Initializes a telemetry data collector that collects periodically.
+  //
+  // `collector_name is the name of the collector.
+  //
+  // `sampler is the sampler that collects telemetry.
+  //
+  // `metric_report_queue is the report queue to use.
+  //
+  // `enable_setting_path` is the name of the setting that enables or disables
+  // the collection.
+  //
+  // `enable_default_value` indicates whether the setting is enabled by default.
+  //
+  // `rate_setting_path` is the name of the setting that controls the rate. Rate
+  // refers to the time between two consecutive periodic metric collections,
+  // i.e., the period of the repeated metric collections. See
+  // `MetricRateController`.
+  //
+  // `default_rate` is the default rate.
+  //
+  // `rate_unit_to_ms` multiplied with the rate in the rate setting results in
+  // the rate in milliseconds.
+  //
+  // `init_delay` is the initial delay before the first collection occurs.
+  void InitPeriodicTelemetryCollector(const std::string& collector_name,
+                                      Sampler* sampler,
+                                      MetricReportQueue* metric_report_queue,
+                                      const std::string& enable_setting_path,
+                                      bool enable_default_value,
+                                      const std::string& rate_setting_path,
+                                      base::TimeDelta default_rate,
+                                      int rate_unit_to_ms,
+                                      base::TimeDelta init_delay);
 
+  // Initializes an event data collector that collects periodically.
+  //
+  // `sampler` is the sampler that collects events.
+  //
+  // `event_detector` is the event detector.
+  //
+  // `metric_report_queue` is the report queue to use.
+  //
+  // `enable_setting_path` is the name of the setting that enables or disables
+  // the collection.
+  //
+  // `enable_default_value` indicates whether the setting is enabled by default.
+  //
+  // `rate_setting_path is the name of the setting that controls the rate. Rate
+  // refers to the time between two consecutive periodic metric collections,
+  // i.e., the period of the repeated metric collections. See
+  // `MetricRateController`.
+  //
+  // `default_rate` is the default rate.
+  //
+  // `rate_unit_to_ms` multiplied with the rate in the rate setting results in
+  // the rate in milliseconds.
+  //
+  // `init_delay` is the initial delay before the first collection occurs.
   void InitPeriodicEventCollector(
       Sampler* sampler,
       std::unique_ptr<PeriodicEventCollector::EventDetector> event_detector,

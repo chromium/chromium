@@ -408,7 +408,7 @@ void MetricReportingManager::InitManualTelemetryCollector(
   telemetry_collectors_.insert({collector_name, std::move(collector)});
 }
 
-void MetricReportingManager::InitPeriodicCollector(
+void MetricReportingManager::InitPeriodicTelemetryCollector(
     const std::string& collector_name,
     Sampler* sampler,
     MetricReportQueue* metric_report_queue,
@@ -531,7 +531,7 @@ void MetricReportingManager::InitNetworkPeriodicCollector(
     const std::string& collector_name,
     std::unique_ptr<Sampler> sampler) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  InitPeriodicCollector(
+  InitPeriodicTelemetryCollector(
       collector_name, sampler.get(), telemetry_report_queue_.get(),
       /*enable_setting_path=*/::ash::kReportDeviceNetworkStatus,
       metrics::kReportDeviceNetworkStatusDefaultValue,
@@ -581,14 +581,15 @@ void MetricReportingManager::InitAudioCollectors() {
   auto audio_telemetry_sampler = std::make_unique<CrosHealthdMetricSampler>(
       std::move(audio_telemetry_handler),
       ::ash::cros_healthd::mojom::ProbeCategoryEnum::kAudio);
-  InitPeriodicCollector(kAudioTelemetry, audio_telemetry_sampler.get(),
-                        user_telemetry_report_queue_.get(),
-                        /*enable_setting_path=*/::ash::kReportDeviceAudioStatus,
-                        metrics::kReportDeviceAudioStatusDefaultValue,
-                        ::ash::kReportDeviceAudioStatusCheckingRateMs,
-                        metrics::GetDefaultCollectionRate(
-                            metrics::kDefaultAudioTelemetryCollectionRate),
-                        /*rate_unit_to_ms=*/1, delegate_->GetInitDelay());
+  InitPeriodicTelemetryCollector(
+      kAudioTelemetry, audio_telemetry_sampler.get(),
+      user_telemetry_report_queue_.get(),
+      /*enable_setting_path=*/::ash::kReportDeviceAudioStatus,
+      metrics::kReportDeviceAudioStatusDefaultValue,
+      ::ash::kReportDeviceAudioStatusCheckingRateMs,
+      metrics::GetDefaultCollectionRate(
+          metrics::kDefaultAudioTelemetryCollectionRate),
+      /*rate_unit_to_ms=*/1, delegate_->GetInitDelay());
   samplers_.push_back(std::move(audio_telemetry_sampler));
 }
 
@@ -649,7 +650,7 @@ void MetricReportingManager::InitDisplayCollectors() {
   auto displays_telemetry_sampler = std::make_unique<CrosHealthdMetricSampler>(
       std::move(displays_telemetry_handler),
       ::ash::cros_healthd::mojom::ProbeCategoryEnum::kDisplay);
-  InitPeriodicCollector(
+  InitPeriodicTelemetryCollector(
       kDisplaysTelemetry, displays_telemetry_sampler.get(),
       telemetry_report_queue_.get(),
       /*enable_setting_path=*/::ash::kReportDeviceGraphicsStatus,
@@ -663,7 +664,7 @@ void MetricReportingManager::InitDisplayCollectors() {
 void MetricReportingManager::InitDeviceActivityCollector() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto device_activity_sampler = std::make_unique<DeviceActivitySampler>();
-  InitPeriodicCollector(
+  InitPeriodicTelemetryCollector(
       kDeviceActivityTelemetry, device_activity_sampler.get(),
       user_telemetry_report_queue_.get(),
       /*enable_setting_path=*/::ash::kDeviceActivityHeartbeatEnabled,
