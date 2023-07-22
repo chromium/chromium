@@ -35,7 +35,7 @@ class AndroidMetricsProviderTest : public testing::Test {
 TEST_F(AndroidMetricsProviderTest, ProvideCurrentSessionData) {
   metrics_provider_.ProvideCurrentSessionData(&uma_proto_);
   histogram_tester_.ExpectTotalCount("Android.VersionCode", 1);
-  histogram_tester_.ExpectTotalCount("Android.AbiBitnessSupport", 1);
+  histogram_tester_.ExpectTotalCount("Android.CpuAbiBitnessSupport", 1);
   histogram_tester_.ExpectTotalCount("Android.MultipleUserProfilesState", 1);
   histogram_tester_.ExpectTotalCount("Android.WebView.PrimaryCpuAbiBitness", 1);
 }
@@ -43,7 +43,7 @@ TEST_F(AndroidMetricsProviderTest, ProvideCurrentSessionData) {
 TEST_F(AndroidMetricsProviderTest, ProvidePreviousSessionData) {
   metrics_provider_.ProvidePreviousSessionData(&uma_proto_);
   histogram_tester_.ExpectTotalCount("Android.VersionCode", 0);
-  histogram_tester_.ExpectTotalCount("Android.AbiBitnessSupport", 1);
+  histogram_tester_.ExpectTotalCount("Android.CpuAbiBitnessSupport", 1);
   histogram_tester_.ExpectTotalCount("Android.MultipleUserProfilesState", 1);
   histogram_tester_.ExpectTotalCount("Android.WebView.PrimaryCpuAbiBitness", 0);
 }
@@ -54,7 +54,7 @@ TEST_F(AndroidMetricsProviderTest,
   pref_service_.SetInteger(prefs::kPrimaryCpuAbiBitnessPref, 1);
   metrics_provider_.ProvidePreviousSessionData(&uma_proto_);
   histogram_tester_.ExpectTotalCount("Android.VersionCode", 1);
-  histogram_tester_.ExpectTotalCount("Android.AbiBitnessSupport", 1);
+  histogram_tester_.ExpectTotalCount("Android.CpuAbiBitnessSupport", 1);
   histogram_tester_.ExpectTotalCount("Android.MultipleUserProfilesState", 1);
   histogram_tester_.ExpectTotalCount("Android.WebView.PrimaryCpuAbiBitness", 1);
 }

@@ -12,19 +12,22 @@
 
 namespace metrics {
 
-TEST(AndroidMetricsHelperTest, AbiBitnessSupport) {
+TEST(AndroidMetricsHelperTest, CpuAbiBitnessSupport) {
   std::unique_ptr<AndroidMetricsHelper> helper(
       AndroidMetricsHelper::CreateInstanceForTest("", false, false));
-  EXPECT_EQ(helper->abi_bitness_support(), AbiBitnessSupport::kNeither);
+  EXPECT_EQ(helper->cpu_abi_bitness_support(), CpuAbiBitnessSupport::kNeither);
 
   helper.reset(AndroidMetricsHelper::CreateInstanceForTest("", true, false));
-  EXPECT_EQ(helper->abi_bitness_support(), AbiBitnessSupport::k32bitOnly);
+  EXPECT_EQ(helper->cpu_abi_bitness_support(),
+            CpuAbiBitnessSupport::k32bitOnly);
 
   helper.reset(AndroidMetricsHelper::CreateInstanceForTest("", false, true));
-  EXPECT_EQ(helper->abi_bitness_support(), AbiBitnessSupport::k64bitOnly);
+  EXPECT_EQ(helper->cpu_abi_bitness_support(),
+            CpuAbiBitnessSupport::k64bitOnly);
 
   helper.reset(AndroidMetricsHelper::CreateInstanceForTest("", true, true));
-  EXPECT_EQ(helper->abi_bitness_support(), AbiBitnessSupport::k32And64bit);
+  EXPECT_EQ(helper->cpu_abi_bitness_support(),
+            CpuAbiBitnessSupport::k32And64bit);
 }
 
 TEST(AndroidMetricsHelperTest, VersionCode) {
@@ -52,9 +55,9 @@ TEST(AndroidMetricsHelperTest, EmitHistograms_CurrentSession) {
   helper->EmitHistograms(&pref_service, /*current_session=*/true);
   histogram_tester.ExpectTotalCount("Android.VersionCode", 1);
   histogram_tester.ExpectUniqueSample("Android.VersionCode", 588700002, 1);
-  histogram_tester.ExpectTotalCount("Android.AbiBitnessSupport", 1);
-  histogram_tester.ExpectUniqueSample("Android.AbiBitnessSupport",
-                                      AbiBitnessSupport::k32And64bit, 1);
+  histogram_tester.ExpectTotalCount("Android.CpuAbiBitnessSupport", 1);
+  histogram_tester.ExpectUniqueSample("Android.CpuAbiBitnessSupport",
+                                      CpuAbiBitnessSupport::k32And64bit, 1);
 }
 
 TEST(AndroidMetricsHelperTest, EmitHistograms_LogPreviousSession) {
@@ -66,9 +69,9 @@ TEST(AndroidMetricsHelperTest, EmitHistograms_LogPreviousSession) {
   helper->EmitHistograms(&pref_service, /*current_session=*/false);
 
   histogram_tester.ExpectTotalCount("Android.VersionCode", 0);
-  histogram_tester.ExpectTotalCount("Android.AbiBitnessSupport", 1);
-  histogram_tester.ExpectUniqueSample("Android.AbiBitnessSupport",
-                                      AbiBitnessSupport::k32And64bit, 1);
+  histogram_tester.ExpectTotalCount("Android.CpuAbiBitnessSupport", 1);
+  histogram_tester.ExpectUniqueSample("Android.CpuAbiBitnessSupport",
+                                      CpuAbiBitnessSupport::k32And64bit, 1);
 }
 
 TEST(AndroidMetricsHelperTest,
@@ -83,12 +86,12 @@ TEST(AndroidMetricsHelperTest,
   // The previous value was used.
   histogram_tester.ExpectTotalCount("Android.VersionCode", 1);
   histogram_tester.ExpectUniqueSample("Android.VersionCode", 588700002, 1);
-  // We don't bother to save/restore AbiBitnessSupport, as we assume that the
+  // We don't bother to save/restore CpuAbiBitnessSupport, as we assume that the
   // value doesn't change across sessions. The test uses a different value
   // artificially, solely for the purpose of testing this behavior.
-  histogram_tester.ExpectTotalCount("Android.AbiBitnessSupport", 1);
-  histogram_tester.ExpectUniqueSample("Android.AbiBitnessSupport",
-                                      AbiBitnessSupport::kNeither, 1);
+  histogram_tester.ExpectTotalCount("Android.CpuAbiBitnessSupport", 1);
+  histogram_tester.ExpectUniqueSample("Android.CpuAbiBitnessSupport",
+                                      CpuAbiBitnessSupport::kNeither, 1);
 }
 
 TEST(AndroidMetricsHelperTest, EmitHistograms_BadData) {
@@ -100,9 +103,9 @@ TEST(AndroidMetricsHelperTest, EmitHistograms_BadData) {
   helper->EmitHistograms(&pref_service, /*current_session=*/true);
 
   histogram_tester.ExpectTotalCount("Android.VersionCode", 0);
-  histogram_tester.ExpectTotalCount("Android.AbiBitnessSupport", 1);
-  histogram_tester.ExpectUniqueSample("Android.AbiBitnessSupport",
-                                      AbiBitnessSupport::k32bitOnly, 1);
+  histogram_tester.ExpectTotalCount("Android.CpuAbiBitnessSupport", 1);
+  histogram_tester.ExpectUniqueSample("Android.CpuAbiBitnessSupport",
+                                      CpuAbiBitnessSupport::k32bitOnly, 1);
 }
 
 }  // namespace metrics

@@ -138,17 +138,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".NTPSnippets" summary="NTP snippets"/>
 </variants>
 
-<histogram name="Android.AbiBitnessSupport" enum="AbiBitnessSupport"
-    expires_after="2024-01-31">
-  <owner>bartekn@chromium.org</owner>
-  <owner>lizeb@chromium.org</owner>
-  <summary>
-    Whether 64-bit and/or 32-bit apps can be installed on this device/OS.
-
-    Emitted with every log record.
-  </summary>
-</histogram>
-
 <histogram name="Android.ActivityStop.NumberOfTabsUsed" units="count"
     expires_after="2023-12-10">
   <owner>gauravjj@google.com</owner>
@@ -816,6 +805,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Measures the percentage of contacts selected in the contacts picker.
     Measured once when the Contacts Picker dialog is dismissed.
+  </summary>
+</histogram>
+
+<histogram name="Android.CpuAbiBitnessSupport" enum="CpuAbiBitnessSupport"
+    expires_after="2024-01-31">
+  <owner>bartekn@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
+  <summary>
+    Whether 64-bit and/or 32-bit apps can be installed on this device/OS.
+
+    Emitted with every log record.
   </summary>
 </histogram>
 
