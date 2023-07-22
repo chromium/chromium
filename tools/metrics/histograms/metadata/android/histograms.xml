@@ -4980,6 +4980,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Android.WebView.PrimaryCpuAbiBitness"
+    enum="PrimaryCpuAbiBitness" expires_after="2024-01-31">
+  <owner>bartekn@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
+  <summary>
+    Primary bitness of the bundle. This may be different from bitness of
+    Browser. On WebView, Browser always follows bitness of the app, whereas
+    Renderer follows bitness of the bundle (provided that such bitness is
+    supported, so look at it in combination with AbiBitnessSupport).
+
+    Emitted with every log record.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.RequestedWithHeader.CommittedHeaderMode"
     enum="CommittedRequestedWithHeaderMode" expires_after="2024-05-01">
   <owner>pbirk@chromium.org</owner>

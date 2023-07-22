@@ -16,4 +16,12 @@ MultipleUserProfilesState GetMultipleUserProfilesState() {
   return multiple_user_profiles_state;
 }
 
+PrimaryCpuAbiBitness GetPrimaryCpuAbiBitness() {
+  static PrimaryCpuAbiBitness primary_cpu_abi_bitness =
+      static_cast<PrimaryCpuAbiBitness>(
+          Java_SystemStateUtil_getPrimaryCpuAbiBitness(
+              base::android::AttachCurrentThread()));
+  return primary_cpu_abi_bitness;
+}
+
 }  // namespace android_webview

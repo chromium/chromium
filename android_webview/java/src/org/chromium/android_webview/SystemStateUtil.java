@@ -5,16 +5,24 @@
 package org.chromium.android_webview;
 
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Build;
 import android.os.UserHandle;
 import android.os.UserManager;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Set;
 
-/** Utility class to fetch information about system. */
+/**
+ * Utility class to fetch information about system, or system-level information about the bundle.
+ */
 @JNINamespace("android_webview")
 public class SystemStateUtil {
     /** Returns whether Android has multiple user profiles. */
@@ -27,5 +35,29 @@ public class SystemStateUtil {
         assert !userHandles.isEmpty();
         return userHandles.size() > 1 ? MultipleUserProfilesState.MULTIPLE_PROFILES
                                       : MultipleUserProfilesState.SINGLE_PROFILE;
+    }
+
+    @CalledByNative
+    @SuppressWarnings("DiscouragedPrivateApi")
+    public static @PrimaryCpuAbiBitness int getPrimaryCpuAbiBitness() {
+        ApplicationInfo applicationInfo = null;
+        String packageName = BuildInfo.getInstance().packageName;
+        try {
+            applicationInfo = ContextUtils.getApplicationContext()
+                                      .getPackageManager()
+                                      .getPackageInfo(packageName, 0)
+                                      .applicationInfo;
+            Field primaryCpuAbiField = ApplicationInfo.class.getDeclaredField("primaryCpuAbi");
+            String primaryCpuAbi = (String) primaryCpuAbiField.get(applicationInfo);
+            if (primaryCpuAbi != null) {
+                if (Set.of(Build.SUPPORTED_32_BIT_ABIS).contains(primaryCpuAbi)) {
+                    return PrimaryCpuAbiBitness.k32bit;
+                } else if (Set.of(Build.SUPPORTED_64_BIT_ABIS).contains(primaryCpuAbi)) {
+                    return PrimaryCpuAbiBitness.k64bit;
+                }
+            }
+        } catch (NameNotFoundException | NoSuchFieldException | IllegalAccessException e) {
+        }
+        return PrimaryCpuAbiBitness.UNKNOWN;
     }
 }
