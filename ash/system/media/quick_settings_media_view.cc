@@ -59,6 +59,15 @@ class MediaScrollView : public views::ScrollView,
     views::ScrollView::Layout();
   }
 
+  void ScrollRectToVisible(const gfx::Rect& rect) override {
+    // A tab key event can focus a UI element on the previous/next page so we
+    // need to scroll to that page automatically.
+    const int rect_page = rect.x() / kMediaViewWidth;
+    if (rect_page != model_->selected_page()) {
+      model_->SelectPage(rect_page, /*animate=*/true);
+    }
+  }
+
   // PaginationModelObserver:
   void SelectedPageChanged(int old_selected, int new_selected) override {
     if (model_->is_valid_page(new_selected)) {

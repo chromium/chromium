@@ -149,6 +149,14 @@ class ScrollView::Viewport : public View {
     if (children().empty() || !parent())
       return;
 
+    // If scrolling is disabled, it may have been handled by a parent View class
+    // so fall back to it.
+    if (!scroll_view_->IsHorizontalScrollEnabled() &&
+        !scroll_view_->IsVerticalScrollEnabled()) {
+      View::ScrollRectToVisible(rect);
+      return;
+    }
+
     View* contents = children().front();
     gfx::Rect scroll_rect(rect);
 
@@ -1021,8 +1029,7 @@ void ScrollView::SetHeaderOrContents(View* parent,
 }
 
 void ScrollView::ScrollContentsRegionToBeVisible(const gfx::Rect& rect) {
-  if (!contents_ ||
-      (!IsHorizontalScrollEnabled() && !IsVerticalScrollEnabled())) {
+  if (!contents_) {
     return;
   }
 
