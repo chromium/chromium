@@ -23,6 +23,20 @@ source_set("writer") {
   ]
 }
 
+source_set("reader") {
+  deps = [
+    ":common",
+    "//base",
+  ]
+  sources = [
+    "early_prefs_reader.cc",
+    "early_prefs_reader.h",
+  ]
+}
+
 source_set("early_prefs") {
-  deps = [ ":writer" ]
+  deps = [
+    ":reader",
+    ":writer",
+  ]
 }
