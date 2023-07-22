@@ -5,8 +5,6 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui_test.h"
 
 #include "base/run_loop.h"
-#include "base/task/thread_pool.h"
-#include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 
@@ -62,23 +60,4 @@ void OmniboxPopupViewWebUITest::UseDefaultTheme() {
 void OmniboxPopupViewWebUITest::SetUp() {
   feature_list_.InitAndEnableFeature(omnibox::kWebUIOmniboxPopup);
   InProcessBrowserTest::SetUp();
-}
-
-void OmniboxPopupViewWebUITest::WaitForHandler() {
-  base::RunLoop loop;
-  auto quit = loop.QuitClosure();
-  auto runner = base::ThreadPool::CreateTaskRunner(base::TaskTraits());
-  runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](OmniboxPopupViewWebUI* view, base::RepeatingClosure* closure) {
-            while (!view->presenter_->IsHandlerReady()) {
-              base::PlatformThread::Sleep(base::Milliseconds(1));
-            }
-            closure->Run();
-          },
-          popup_view(), &quit));
-  loop.Run();
-
-  EXPECT_TRUE(popup_view()->presenter_->IsHandlerReady());
 }

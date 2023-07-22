@@ -38,10 +38,6 @@ class OmniboxPopupPresenter : public views::WebView,
   // Tells whether the popup widget exists.
   bool IsShown() const;
 
-  // Tells whether the WebUI handler is loaded and ready to receive calls.
-  // This must return true before any calls to GetHandler are made.
-  bool IsHandlerReady();
-
   // Get the handler for communicating with the WebUI interface.
   RealboxHandler* GetHandler();
 
@@ -52,7 +48,14 @@ class OmniboxPopupPresenter : public views::WebView,
   // of |location_bar_view_|.
   gfx::Rect GetTargetBounds() const;
 
+  // Block until handler is ready.
+  void WaitForHandler();
+
  private:
+  // Tells whether the WebUI handler is loaded and ready to receive calls.
+  // This must return true before any calls to GetHandler are made.
+  bool IsHandlerReady();
+
   // Remove observation and reset widget, optionally requesting it to close.
   void ReleaseWidget(bool close);
 

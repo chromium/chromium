@@ -48,6 +48,11 @@ OmniboxPopupViewWebUI::OmniboxPopupViewWebUI(OmniboxViewViews* omnibox_view,
       presenter_(std::make_unique<OmniboxPopupPresenter>(location_bar_view,
                                                          controller)) {
   model()->set_popup_view(this);
+
+  // This must be the last thing to happen after full initialization because
+  // the LocationBarView accesses the popup view while waiting for handler.
+  // Such is why the method must be called from here instead of presenter ctor.
+  presenter_->WaitForHandler();
 }
 
 OmniboxPopupViewWebUI::~OmniboxPopupViewWebUI() {
@@ -63,9 +68,7 @@ void OmniboxPopupViewWebUI::InvalidateLine(size_t line) {}
 void OmniboxPopupViewWebUI::OnSelectionChanged(
     OmniboxPopupSelection old_selection,
     OmniboxPopupSelection new_selection) {
-  if (presenter_->IsHandlerReady()) {
-    handler()->UpdateSelection(new_selection);
-  }
+  handler()->UpdateSelection(new_selection);
 }
 
 void OmniboxPopupViewWebUI::UpdatePopupAppearance() {

@@ -245,8 +245,8 @@ void LocationBarView::Init() {
           /*location_bar=*/this, browser_, profile_),
       is_popup_mode_,
       /*location_bar_view=*/this, font_list);
-  omnibox_view->Init();
   omnibox_view_ = AddChildView(std::move(omnibox_view));
+  omnibox_view_->Init();
   // LocationBarView directs mouse button events from
   // |omnibox_additional_text_view_| to |omnibox_view_| so that e.g., clicking
   // the former will focus the latter. In order to receive |ShowContextMenu()|
@@ -1190,7 +1190,7 @@ OmniboxPopupView* LocationBarView::GetOmniboxPopupView() {
 }
 
 const OmniboxPopupView* LocationBarView::GetOmniboxPopupView() const {
-  DCHECK(IsInitialized());
+  DCHECK(omnibox_view_ && omnibox_view_->model());
   return omnibox_view_->model()->get_popup_view();
 }
 
