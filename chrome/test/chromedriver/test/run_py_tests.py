@@ -97,6 +97,11 @@ _NEGATIVE_FILTER = [
     # crbug.com/chromedriver/4362
     'BidiTest.testSwitchWindows',
     'BidiTest.testOpenMultipleTabsInJavaScript',
+    # crbug.com/chromedriver/4509
+    'ChromeDriverSiteIsolation.testScriptNavigateRemoteToLocal',
+    'ChromeDriverSiteIsolation.testClickNavigateRemoteToLocal',
+    # crbug.com/chromedriver/4513
+    'ChromeDriverSiteIsolation.testClickNavigateRemoteToSameRemote',
 ]
 
 
@@ -4484,6 +4489,12 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
   for fixable technical reasons related to subdomain matching.
   """
 
+  def ReplaceHostName(self, url, new_host_name):
+    url_components = urllib.parse.urlparse(url)
+    return urllib.parse.urlunparse(
+        url_components._replace(
+            netloc=('%s:%d' % (new_host_name, url_components.port))))
+
   def setUp(self):
     self._driver = self.CreateDriver(chrome_switches=['--site-per-process'])
 
@@ -4519,6 +4530,194 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
     a_inner.Click()
     frame_url = self._driver.ExecuteScript('return window.location.href')
     self.assertTrue(frame_url.endswith('#two'))
+
+  def testScriptNavigateLocalToLocal(self):
+    """Test that user can switch into a local frame
+    and perform a same domain navigation.
+    """
+    local2_url = self.GetHttpUrlForFile('/local2.html')
+    self._http_server.SetDataForPath('/local2.html',
+      bytes('<p>DONE!</p>', 'utf-8'))
+    self._http_server.SetDataForPath('/local1.html',
+      bytes('<p>Ready, Steady, Go!</p>', 'utf-8'))
+    self._http_server.SetDataForPath('/main.html',
+      bytes('<iframe src="/local1.html">', 'utf-8'))
+    self._driver.Load(self.GetHttpUrlForFile('/main.html'))
+    frame = self._driver.FindElement('tag name', 'iframe')
+    self._driver.SwitchToFrame(frame)
+    self._driver.ExecuteScript('location.href=arguments[0]', local2_url)
+    paragraph = self._driver.FindElement('tag name', 'p')
+    self.assertEqual('DONE!', paragraph.GetText())
+
+  def testScriptNavigateLocalToRemote(self):
+    """Test that user can switch into a local frame
+    and perform a cross domain navigation.
+    """
+    remote_url = self.ReplaceHostName(self.GetHttpUrlForFile('/remote.html'),
+                                      'localhost')
+    self._http_server.SetDataForPath('/remote.html',
+      bytes('<p>DONE!</p>', 'utf-8'))
+    self._http_server.SetDataForPath('/local.html',
+      bytes('<p>Ready, Steady, Go!</p>', 'utf-8'))
+    self._http_server.SetDataForPath('/main.html',
+      bytes('<iframe src="/local.html">', 'utf-8'))
+    self._driver.Load(self.GetHttpUrlForFile('/main.html'))
+    frame = self._driver.FindElement('tag name', 'iframe')
+    self._driver.SwitchToFrame(frame)
+    self._driver.ExecuteScript('location.href=arguments[0]', remote_url)
+    paragraph = self._driver.FindElement('tag name', 'p')
+    self.assertEqual('DONE!', paragraph.GetText())
+
+  def testScriptNavigateRemoteToSameRemote(self):
+    """Test that user can switch into a remote frame,
+    belonging to a different domain than the main frame,
+    and perform a same domain navigation.
+    """
+    remote1_url = self.ReplaceHostName(self.GetHttpUrlForFile('/remote1.html'),
+                                      'localhost')
+    remote2_url = self.ReplaceHostName(self.GetHttpUrlForFile('/remote2.html'),
+                                      'localhost')
+    self._http_server.SetDataForPath('/remote2.html',
+      bytes('<p>DONE!</p>', 'utf-8'))
+    self._http_server.SetDataForPath('/remote1.html',
+      bytes('<p>Ready, Steady, Go!</p>', 'utf-8'))
+    self._http_server.SetDataForPath('/main.html',
+      bytes('<iframe src="%s">' % remote1_url, 'utf-8'))
+    self._driver.Load(self.GetHttpUrlForFile('/main.html'))
+    frame = self._driver.FindElement('tag name', 'iframe')
+    self._driver.SwitchToFrame(frame)
+    self._driver.ExecuteScript('location.href=arguments[0]', remote2_url)
+    paragraph = self._driver.FindElement('tag name', 'p')
+    self.assertEqual('DONE!', paragraph.GetText())
+
+  def testScriptNavigateRemoteToLocal(self):
+    """Test that user can switch into a remote frame,
+    belonging to a different domain than the main frame,
+    and perform a cross domain navigation to the main frame domain.
+
+    The test reproduces a real bug that has some degree of flakiness.
+    Therefore it has several iterations to increase the flakiness
+    to the observable level.
+    """
+    local_url = self.GetHttpUrlForFile('/local.html')
+    remote_url = self.ReplaceHostName(self.GetHttpUrlForFile('/remote.html'),
+                                      'localhost')
+    self._http_server.SetDataForPath('/local.html',
+      bytes('<p>DONE!</p>', 'utf-8'))
+    self._http_server.SetDataForPath('/remote.html',
+      bytes('<p>Ready, Steady, Go!</p>', 'utf-8'))
+    self._http_server.SetDataForPath('/main.html',
+      bytes('<iframe src="%s">' % remote_url, 'utf-8'))
+    # The first iteration after session creation frequently succeeds.
+    # Therefore we make two iterations.
+    for _ in range(0, 2):
+      self._driver.SwitchToMainFrame()
+      self._driver.Load(self.GetHttpUrlForFile('/main.html'))
+      frame = self._driver.FindElement('tag name', 'iframe')
+      self._driver.SwitchToFrame(frame)
+      self._driver.ExecuteScript('location.href=arguments[0]', local_url)
+      paragraph = self._driver.FindElement('tag name', 'p')
+      self.assertEqual('DONE!', paragraph.GetText())
+
+  def testClickNavigateLocalToLocal(self):
+    """Test that user can switch into a local frame
+    and perform a same domain navigation by mouse click.
+    """
+    self._http_server.SetDataForPath('/local2.html',
+      bytes('<p>DONE!</p>', 'utf-8'))
+    self._http_server.SetDataForPath('/local1.html',
+      bytes('<a href="local2.html">To Another Local</a>', 'utf-8'))
+    self._http_server.SetDataForPath('/main.html',
+      bytes('<iframe src="/local1.html">', 'utf-8'))
+    self._driver.Load(self.GetHttpUrlForFile('/main.html'))
+    frame = self._driver.FindElement('tag name', 'iframe')
+    self._driver.SwitchToFrame(frame)
+    anchor = self._driver.FindElement('tag name', 'a')
+    anchor.Click()
+    paragraph = self._driver.FindElement('tag name', 'p')
+    self.assertEqual('DONE!', paragraph.GetText())
+
+  def testClickNavigateLocalToRemote(self):
+    """Test that user can switch into a local frame
+    and perform a cross domain navigation by mouse click.
+    """
+    remote_url = self.ReplaceHostName(self.GetHttpUrlForFile('/remote.html'),
+                                      'localhost')
+    self._http_server.SetDataForPath('/remote.html',
+      bytes('<p>DONE!</p>', 'utf-8'))
+    self._http_server.SetDataForPath('/local.html',
+      bytes('<a href="%s">To Remote</a>' % remote_url, 'utf-8'))
+    self._http_server.SetDataForPath('/main.html',
+      bytes('<iframe src="/local.html">', 'utf-8'))
+    self._driver.Load(self.GetHttpUrlForFile('/main.html'))
+    frame = self._driver.FindElement('tag name', 'iframe')
+    self._driver.SwitchToFrame(frame)
+    anchor = self._driver.FindElement('tag name', 'a')
+    anchor.Click()
+    paragraph = self._driver.FindElement('tag name', 'p')
+    self.assertEqual('DONE!', paragraph.GetText())
+
+  def testClickNavigateRemoteToSameRemote(self):
+    """Test that user can switch into a remote frame,
+    belonging to a different domain than the main frame,
+    and perform a same domain navigation by mouse click.
+
+    The test reproduces a real bug that has some degree of flakiness.
+    Therefore it has several iterations to increase the flakiness
+    to the observable level.
+    """
+    remote1_url = self.ReplaceHostName(self.GetHttpUrlForFile('/remote1.html'),
+                                      'localhost')
+    remote2_url = self.ReplaceHostName(self.GetHttpUrlForFile('/remote2.html'),
+                                      'localhost')
+    self._http_server.SetDataForPath('/remote2.html',
+      bytes('<p>DONE!</p>', 'utf-8'))
+    self._http_server.SetDataForPath('/remote1.html',
+      bytes('<a href="%s">To Another Remote</a>' % remote2_url, 'utf-8'))
+    self._http_server.SetDataForPath('/main.html',
+      bytes('<iframe src="%s">' % remote1_url, 'utf-8'))
+    # The bug manifests itself in 40% failure rate.
+    # Three iterations bring it above 75%.
+    # An extra iteration to heat up after the session creation.
+    for _ in range(0, 4):
+      self._driver.SwitchToMainFrame()
+      self._driver.Load(self.GetHttpUrlForFile('/main.html'))
+      frame = self._driver.FindElement('tag name', 'iframe')
+      self._driver.SwitchToFrame(frame)
+      anchor = self._driver.FindElement('tag name', 'a')
+      anchor.Click()
+      paragraph = self._driver.FindElement('tag name', 'p')
+      self.assertEqual('DONE!', paragraph.GetText())
+
+  def testClickNavigateRemoteToLocal(self):
+    """Test that user can switch into a remote frame, belonging to a different
+    domain than the main frame, and perform a cross domain navigation
+    to the main frame domain by mouse click.
+
+    The test reproduces a real bug that has some degree of flakiness.
+    Therefore it has several iterations to increase the flakiness
+    to the observable level.
+    """
+    local_url = self.GetHttpUrlForFile('/local.html')
+    remote_url = self.ReplaceHostName(self.GetHttpUrlForFile('/remote.html'),
+                                      'localhost')
+    self._http_server.SetDataForPath('/local.html',
+      bytes('<p>DONE!</p>', 'utf-8'))
+    self._http_server.SetDataForPath('/remote.html',
+      bytes('<a href="%s">To Local</a>' % local_url, 'utf-8'))
+    self._http_server.SetDataForPath('/main.html',
+      bytes('<iframe src="%s">' % remote_url, 'utf-8'))
+    # The first iteration after session creation frequently succeeds.
+    # Therefore we make two iterations.
+    for _ in range(0, 2):
+      self._driver.SwitchToMainFrame()
+      self._driver.Load(self.GetHttpUrlForFile('/main.html'))
+      frame = self._driver.FindElement('tag name', 'iframe')
+      self._driver.SwitchToFrame(frame)
+      anchor = self._driver.FindElement('tag name', 'a')
+      anchor.Click()
+      paragraph = self._driver.FindElement('tag name', 'p')
+      self.assertEqual('DONE!', paragraph.GetText())
 
 
 class ChromeDriverPageLoadTimeoutTest(ChromeDriverBaseTestWithWebServer):
