@@ -8,6 +8,8 @@
 #include "ash/shelf/test/shelf_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
+#include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
 
@@ -17,9 +19,13 @@ class ScrollableShelfViewPixelRTLTestBase : public ShelfTestBase {
  public:
   // ScrollableShelfTestBase:
   void SetUp() override {
+    scoped_features_.InitAndEnableFeature(chromeos::features::kJelly);
     ShelfTestBase::SetUp();
     AddAppShortcutsUntilOverflow(/*use_alternative_color=*/true);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_features_;
 };
 
 class ScrollableShelfViewPixelRTLTest
@@ -41,7 +47,7 @@ INSTANTIATE_TEST_SUITE_P(RTL, ScrollableShelfViewPixelRTLTest, testing::Bool());
 TEST_P(ScrollableShelfViewPixelRTLTest, Basics) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "overflow",
-      /*revision_number=*/2, GetPrimaryShelf()->GetWindow()));
+      /*revision_number=*/3, GetPrimaryShelf()->GetWindow()));
 
   ASSERT_TRUE(scrollable_shelf_view_->right_arrow());
   const gfx::Point right_arrow_center =
@@ -52,19 +58,19 @@ TEST_P(ScrollableShelfViewPixelRTLTest, Basics) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "overflow_end",
-      /*revision_number=*/2, GetPrimaryShelf()->GetWindow()));
+      /*revision_number=*/3, GetPrimaryShelf()->GetWindow()));
 }
 
 TEST_P(ScrollableShelfViewPixelRTLTest, LeftRightShelfAlignment) {
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kLeft);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "left_shelf_alignment",
-      /*revision_number=*/2, GetPrimaryShelf()->GetWindow()));
+      /*revision_number=*/3, GetPrimaryShelf()->GetWindow()));
 
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kRight);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "right_shelf_alignment",
-      /*revision_number=*/2, GetPrimaryShelf()->GetWindow()));
+      /*revision_number=*/3, GetPrimaryShelf()->GetWindow()));
 }
 
 class ScrollableShelfViewWithGuestModePixelTest
