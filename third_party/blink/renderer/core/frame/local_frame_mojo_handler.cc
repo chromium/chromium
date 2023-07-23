@@ -20,9 +20,11 @@
 #include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/web_frame_serializer.h"
+#include "third_party/blink/public/web/web_hit_test_result.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_plugin.h"
+#include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -1170,6 +1172,12 @@ void LocalFrameMojoHandler::AnimateDoubleTapZoom(const gfx::Point& point,
 
 void LocalFrameMojoHandler::SetScaleFactor(float scale_factor) {
   frame_->SetScaleFactor(scale_factor);
+}
+
+void LocalFrameMojoHandler::SelectAroundPoint(const gfx::PointF& touch_center) {
+  LOG(ERROR) << "LocalFrameMojoHandler::SelectAroundPoint centerX=" << touch_center.x() << " centerY=" << touch_center.y();
+  WebLocalFrameImpl* local_frame = WebLocalFrameImpl::FromFrame(frame_);
+  local_frame->selectAroundPoint(gfx::Point(touch_center.x(), touch_center.y()));
 }
 
 void LocalFrameMojoHandler::ClosePage(

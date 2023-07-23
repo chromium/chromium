@@ -309,6 +309,13 @@ public interface WebContents extends Parcelable {
             boolean shouldShowContextMenu);
 
     /**
+     * 根据坐标选择文字
+     * @param x x坐标
+     * @param y y坐标
+     */
+    void selectAroundPoint(float x, float y);
+
+    /**
      * Adjusts the selection starting and ending points by the given amount.
      * A negative amount moves the selection towards the beginning of the document, a positive
      * amount moves the selection towards the end of the document.

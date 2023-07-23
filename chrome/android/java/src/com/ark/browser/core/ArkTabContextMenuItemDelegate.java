@@ -321,6 +321,19 @@ public class ArkTabContextMenuItemDelegate implements ContextMenuItemDelegate {
         }
     }
 
+    @Override
+    public void freeCopy(ContextMenuParams params) {
+        if (mTab != null && mTab.getWebContents() != null) {
+            float density = ContextUtils.getApplicationContext().getResources().getDisplayMetrics().density;
+            final float touchPointXPx = params.getTriggeringTouchXDp() * density;
+            final float touchPointYPx = params.getTriggeringTouchYDp() * density;
+            ArkLogger.e(this, "freeCopy ox=" + params.getOriginalX()
+                    + " oy=" + params.getOriginalY()
+                    + " touchX=" + touchPointXPx + " touchY=" + touchPointYPx);
+            mTab.getWebContents().selectAroundPoint(touchPointXPx, touchPointYPx);
+        }
+    }
+
     private boolean markAd(String cssSelector) {
         if (!TextUtils.isEmpty(cssSelector)) {
             String js = AdblockPlusHelper.getAdblockJs(cssSelector);

@@ -1160,6 +1160,9 @@ interface LocalMainFrame {
   // Scales the view without affecting layout by using the visual viewport.
   SetScaleFactor(float scale);
 
+  // 根据坐标选择文字
+  SelectAroundPoint(gfx.mojom.PointF touch_center);
+
   // Instructs the renderer to close the current page, including running the
   // onunload event handler.
   ClosePage() => ();

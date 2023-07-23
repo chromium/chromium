@@ -258,6 +258,8 @@ class CORE_EXPORT FrameSelection final
   bool SelectAroundCaret(TextGranularity text_granularity,
                          HandleVisibility handle_visibility,
                          ContextMenuVisibility context_menu_visibility);
+  // 根据坐标选择文字
+  void SelectAroundPoint(const gfx::Point&);
 
   // Returns the range corresponding to a word selection around the caret.
   // Returns a null range if the selection failed, either because the current
@@ -346,6 +348,9 @@ class CORE_EXPORT FrameSelection final
   // could not be made.
   EphemeralRange GetSelectionRangeAroundCaret(
       TextGranularity text_granularity) const;
+
+  EphemeralRange GetSelectionRangeAroundPoint(
+      const gfx::Point& point, TextGranularity text_granularity) const;
 
   Member<LocalFrame> frame_;
   const Member<LayoutSelection> layout_selection_;

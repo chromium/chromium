@@ -514,6 +514,17 @@ void WebContentsAndroid::SelectAroundCaret(JNIEnv* env,
                      weak_factory_.GetWeakPtr()));
 }
 
+void WebContentsAndroid::SelectAroundPoint(JNIEnv* env,
+                                           jfloat x,
+                                           jfloat y) {
+  gfx::PointF touch_center(x, y);
+  content::RenderFrameHostImpl* main_frame = web_contents_->GetMainFrame();
+  LOG(ERROR) << "WebContentsAndroid::SelectAroundPoint main_frame=" << main_frame;
+  if (main_frame) {
+    main_frame->GetAssociatedLocalMainFrame()->SelectAroundPoint(touch_center);
+  }
+}
+
 void WebContentsAndroid::AdjustSelectionByCharacterOffset(
     JNIEnv* env,
     jint start_adjust,

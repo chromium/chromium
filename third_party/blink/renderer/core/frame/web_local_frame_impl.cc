@@ -1428,6 +1428,18 @@ bool WebLocalFrameImpl::SelectAroundCaret(
                                : ContextMenuVisibility ::kNotVisible);
 }
 
+void WebLocalFrameImpl::selectAroundPoint(const gfx::Point& point) {
+  gfx::Point root_frame_point(
+      GetFrame()->GetPage()->GetVisualViewport().ViewportToRootFrame(point));
+  const gfx::Point& convert_point = GetFrame()->View()->ConvertFromRootFrame(root_frame_point);
+  LOG(ERROR) << "WebLocalFrameImpl::selectAroundPoint point.x=" << point.x()
+    << " point.y" << point.y() << " convert_point.x=" << convert_point.x()
+    << " convert_point.y=" << convert_point.y();
+
+  GetFrame()->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kSelection);
+  return GetFrame()->Selection().SelectAroundPoint(convert_point);
+}
+
 EphemeralRange WebLocalFrameImpl::GetWordSelectionRangeAroundCaret() const {
   TRACE_EVENT0("blink", "WebLocalFrameImpl::getWordSelectionRangeAroundCaret");
   return GetFrame()->Selection().GetWordSelectionRangeAroundCaret();

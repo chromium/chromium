@@ -221,6 +221,10 @@ public interface ContextMenuItemDelegate {
 
     }
 
+    default void freeCopy(ContextMenuParams params) {
+
+    }
+
     default boolean canMoveTab() {
         return false;
     }

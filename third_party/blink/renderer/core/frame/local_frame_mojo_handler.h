@@ -199,6 +199,7 @@ class LocalFrameMojoHandler
   void AnimateDoubleTapZoom(const gfx::Point& point,
                             const gfx::Rect& rect) override;
   void SetScaleFactor(float scale) override;
+  void SelectAroundPoint(const gfx::PointF& touch_center) override;
   void ClosePage(
       mojom::blink::LocalMainFrame::ClosePageCallback callback) override;
   void PluginActionAt(const gfx::Point& location,

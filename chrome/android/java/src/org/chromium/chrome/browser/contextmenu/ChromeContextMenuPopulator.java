@@ -521,6 +521,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             mItemDelegate.onMarkAds(mParams);
         }  else if (itemId == R.id.contextmenu_free_copy) {
             Toast.makeText(mContext, "TODO free copy", Toast.LENGTH_SHORT).show();
+            mItemDelegate.freeCopy(mParams);
         } else if (itemId == R.id.contextmenu_open_in_new_tab) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_NEW_TAB);
             mItemDelegate.onOpenInNewTab(

@@ -37,6 +37,8 @@ public class ContextMenuParams {
 
     private final int mTriggeringTouchXDp;
     private final int mTriggeringTouchYDp;
+    private final int mOriginalX;
+    private final int mOriginalY;
 
     private final int mSourceType;
 
@@ -146,6 +148,14 @@ public class ContextMenuParams {
         return mTriggeringTouchYDp;
     }
 
+    public int getOriginalX() {
+        return mOriginalX;
+    }
+
+    public int getOriginalY() {
+        return mOriginalY;
+    }
+
     /**
      * @return The method used to cause the context menu to be shown. For example, right mouse click
      *         or long press.
@@ -218,7 +228,7 @@ public class ContextMenuParams {
     public ContextMenuParams(long nativePtr, @ContextMenuDataMediaType int mediaType, GURL pageUrl,
             GURL linkUrl, String linkText, GURL unfilteredLinkUrl, GURL srcUrl, String titleText,
             Referrer referrer, boolean canSaveMedia, int triggeringTouchXDp, int triggeringTouchYDp,
-            @MenuSourceType int sourceType, boolean openedFromHighlight,
+            int originalX, int originalY, @MenuSourceType int sourceType, boolean openedFromHighlight,
             String cssSelector, String parentCssSelector,
             String classAttribute, String idAttribute, String tagName,
             String parentClassAttribute, String parentIdAttribute, String parentTagName) {
@@ -237,6 +247,8 @@ public class ContextMenuParams {
         mCanSaveMedia = canSaveMedia;
         mTriggeringTouchXDp = triggeringTouchXDp;
         mTriggeringTouchYDp = triggeringTouchYDp;
+        mOriginalX = originalX;
+        mOriginalY = originalY;
         mSourceType = sourceType;
         mOpenedFromHighlight = openedFromHighlight;
 
@@ -285,8 +297,8 @@ public class ContextMenuParams {
     private static ContextMenuParams create(long nativePtr, @ContextMenuDataMediaType int mediaType,
             GURL pageUrl, GURL linkUrl, String linkText, GURL unfilteredLinkUrl, GURL srcUrl,
             String titleText, GURL sanitizedReferrer, int referrerPolicy, boolean canSaveMedia,
-            int triggeringTouchXDp, int triggeringTouchYDp, @MenuSourceType int sourceType,
-            boolean openedFromHighlight, String cssSelector, String parentCssSelector,
+            int triggeringTouchXDp, int triggeringTouchYDp, int originalX, int originalY,
+            @MenuSourceType int sourceType, boolean openedFromHighlight, String cssSelector, String parentCssSelector,
             String classAttribute, String idAttribute, String tagName,
             String parentClassAttribute, String parentIdAttribute, String parentTagName) {
         // TODO(https://crbug.com/783819): Convert Referrer to use GURL.
@@ -295,7 +307,7 @@ public class ContextMenuParams {
                 : new Referrer(sanitizedReferrer.getSpec(), referrerPolicy);
         return new ContextMenuParams(nativePtr, mediaType, pageUrl, linkUrl, linkText,
                 unfilteredLinkUrl, srcUrl, titleText, referrer, canSaveMedia, triggeringTouchXDp,
-                triggeringTouchYDp, sourceType, openedFromHighlight,
+                triggeringTouchYDp, originalX, originalY, sourceType, openedFromHighlight,
                 cssSelector, parentCssSelector, classAttribute, idAttribute, tagName,
                 parentClassAttribute, parentIdAttribute, parentTagName);
     }

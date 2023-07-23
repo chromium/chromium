@@ -1181,6 +1181,28 @@ bool FrameSelection::SelectAroundCaret(
   return true;
 }
 
+void FrameSelection::SelectAroundPoint(const gfx::Point& point) {
+  const VisiblePosition& position = CreateVisiblePosition(
+      PositionForContentsPointRespectingEditingBoundary(point, GetFrame()));
+  LOG(ERROR) << "FrameSelection::MoveSelectionAt IsNotNull=" << position.IsNotNull();
+  const EphemeralRange selection_range = GetSelectionRangeAroundPoint(point, TextGranularity::kWord);
+  LOG(ERROR) << "FrameSelection::MoveSelectionAt IsNull=" << selection_range.IsNull()
+    << " start=" << selection_range.StartPosition().OffsetInContainerNode()
+    << " end=" << selection_range.EndPosition().OffsetInContainerNode();
+
+  SetSelection(
+      SelectionInDOMTree::Builder()
+          .Collapse(selection_range.StartPosition())
+          .Extend(selection_range.EndPosition())
+          .Build(),
+      SetSelectionOptions::Builder()
+          .SetShouldCloseTyping(true)
+          .SetShouldClearTypingStyle(true)
+          .SetGranularity(TextGranularity::kWord)
+          .SetShouldShowHandle(true)
+          .Build());
+}
+
 EphemeralRange FrameSelection::GetWordSelectionRangeAroundCaret() const {
   return GetSelectionRangeAroundCaret(TextGranularity::kWord);
 }
@@ -1335,6 +1357,56 @@ EphemeralRange FrameSelection::GetSelectionRangeAroundCaret(
     return EphemeralRange();
   }
   const Position position = selection.Start();
+  static const WordSide kWordSideList[2] = {kNextWordIfOnBoundary,
+                                            kPreviousWordIfOnBoundary};
+  for (WordSide word_side : kWordSideList) {
+    Position start;
+    Position end;
+    // Use word granularity by default unless sentence granularity is explicitly
+    // requested.
+    if (text_granularity == TextGranularity::kSentence) {
+      start = StartOfSentencePosition(position);
+      end = EndOfSentence(position, SentenceTrailingSpaceBehavior::kOmitSpace)
+                .GetPosition();
+    } else {
+      start = StartOfWordPosition(position, word_side);
+      end = EndOfWordPosition(position, word_side);
+    }
+
+    // TODO(editing-dev): |StartOfWord()| and |EndOfWord()| should not make null
+    // for non-null parameter.
+    // See http://crbug.com/872443
+    if (start.IsNull() || end.IsNull()) {
+      continue;
+    }
+
+    if (start > end) {
+      // Since word boundaries are computed on flat tree, they can be reversed
+      // when mapped back to DOM.
+      std::swap(start, end);
+    }
+
+    String text = PlainText(EphemeralRange(start, end));
+    if (text.IsEmpty() || IsSeparator(text.CharacterStartingAt(0))) {
+      continue;
+    }
+
+    return EphemeralRange(start, end);
+  }
+
+  return EphemeralRange();
+}
+
+EphemeralRange FrameSelection::GetSelectionRangeAroundPoint(
+    const gfx::Point& point, TextGranularity text_granularity) const {
+  DCHECK(text_granularity == TextGranularity::kWord ||
+         text_granularity == TextGranularity::kSentence)
+      << "Only word and sentence granularities are supported for now";
+
+  const VisiblePosition& selection = CreateVisiblePosition(
+      PositionForContentsPointRespectingEditingBoundary(point, GetFrame()));
+  LOG(ERROR) << "FrameSelection::GetSelectionRangeAroundPoint DeepEquivalent=" << selection.DeepEquivalent();
+  const Position position = selection.DeepEquivalent();
   static const WordSide kWordSideList[2] = {kNextWordIfOnBoundary,
                                             kPreviousWordIfOnBoundary};
   for (WordSide word_side : kWordSideList) {

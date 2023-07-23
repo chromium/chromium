@@ -346,9 +346,9 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     public void selectPage(IPage page) {
         ArkLogger.e(TAG, "selectPage oldPage=" + getPageInfo() + " page=" + page.getPageInfo());
-        boolean createWeb = ArkWebManager.get(page.getId()) == null;
-
-        ArkLogger.e(TAG, "selectPage page=" + page.getPageInfo() + " createWeb=" + createWeb);
+        ArkWebContents cacheWeb = ArkWebManager.get(page.getId());
+        boolean createWeb = cacheWeb == null || cacheWeb.isDestroyed();
+        ArkLogger.e(TAG, "selectPage createWeb=" + createWeb);
         ArkWebContents arkWeb = new ArkWebContents.Builder(page)
                 .setInitiallyHidden(isHidden())
                 .build();

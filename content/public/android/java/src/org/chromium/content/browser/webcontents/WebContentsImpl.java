@@ -672,6 +672,12 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     }
 
     @Override
+    public void selectAroundPoint(float x, float y) {
+        checkNotDestroyed();
+        WebContentsImplJni.get().selectAroundPoint(mNativeWebContentsAndroid, x, y);
+    }
+
+    @Override
     public void adjustSelectionByCharacterOffset(
             int startAdjust, int endAdjust, boolean showSelectionMenu) {
         WebContentsImplJni.get().adjustSelectionByCharacterOffset(
@@ -1132,6 +1138,7 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         void scrollFocusedEditableNodeIntoView(long nativeWebContentsAndroid);
         void selectAroundCaret(long nativeWebContentsAndroid, int granularity,
                 boolean shouldShowHandle, boolean shouldShowContextMenu);
+        void selectAroundPoint(long nativeWebContentsAndroid, float x, float y);
         void adjustSelectionByCharacterOffset(long nativeWebContentsAndroid, int startAdjust,
                 int endAdjust, boolean showSelectionMenu);
         GURL getLastCommittedURL(long nativeWebContentsAndroid);

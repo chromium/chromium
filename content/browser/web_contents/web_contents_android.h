@@ -102,6 +102,9 @@ class CONTENT_EXPORT WebContentsAndroid {
                          jint granularity,
                          jboolean should_show_handle,
                          jboolean should_show_context_menu);
+  void SelectAroundPoint(JNIEnv* env,
+                         jfloat x,
+                         jfloat y);
   void AdjustSelectionByCharacterOffset(JNIEnv* env,
                                         jint start_adjust,
                                         jint end_adjust,

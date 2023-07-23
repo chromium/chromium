@@ -6535,6 +6535,8 @@ void RenderFrameHostImpl::ShowContextMenu(
           ->TransformPointToRootCoordSpace(original_point);
   validated_params.x = transformed_point.x();
   validated_params.y = transformed_point.y();
+  validated_params.original_x = validated_params.x;
+  validated_params.original_y = validated_params.y;
 
   if (validated_params.selection_start_offset < 0) {
     bad_message::ReceivedBadMessage(
