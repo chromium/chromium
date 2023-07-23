@@ -65,7 +65,6 @@ NGInlineNodeData* LayoutNGBlockFlowMixin<Base>::TakeNGInlineNodeData() {
 template <typename Base>
 NGInlineNodeData* LayoutNGBlockFlowMixin<Base>::GetNGInlineNodeData() const {
   Base::CheckIsNotDestroyed();
-  DCHECK(ng_inline_node_data_);
   return ng_inline_node_data_;
 }
 
@@ -93,12 +92,6 @@ void LayoutNGBlockFlowMixin<Base>::ClearNGInlineNodeData() {
     ng_inline_node_data_->items.clear();
     ng_inline_node_data_.Clear();
   }
-}
-
-template <typename Base>
-bool LayoutNGBlockFlowMixin<Base>::HasNGInlineNodeData() const {
-  Base::CheckIsNotDestroyed();
-  return ng_inline_node_data_;
 }
 
 template <typename Base>

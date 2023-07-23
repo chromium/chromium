@@ -457,12 +457,13 @@ bool HasRenderedNonAnonymousDescendantsWithHeight(
     // Note: tests[1][2] require this.
     // [1] editing/style/underline.html
     // [2] editing/inserting/return-with-object-element.html
-    if (block_flow->HasNGInlineNodeData() &&
-        block_flow->GetNGInlineNodeData()
-            ->ItemsData(false)
-            .text_content.empty() &&
-        block_flow->HasLineIfEmpty())
-      return false;
+    if (const NGInlineNodeData* inline_data =
+            block_flow->GetNGInlineNodeData()) {
+      if (inline_data->ItemsData(false).text_content.empty() &&
+          block_flow->HasLineIfEmpty()) {
+        return false;
+      }
+    }
   }
   const LayoutObject* stop = layout_object->NextInPreOrderAfterChildren();
   // TODO(editing-dev): Avoid single-character parameter names.

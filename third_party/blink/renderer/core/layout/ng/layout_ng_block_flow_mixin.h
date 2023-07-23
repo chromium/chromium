@@ -43,7 +43,6 @@ class LayoutNGBlockFlowMixin : public LayoutNGMixin<Base> {
   NGInlineNodeData* GetNGInlineNodeData() const final;
   void ResetNGInlineNodeData() final;
   void ClearNGInlineNodeData() final;
-  bool HasNGInlineNodeData() const final;
 
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,

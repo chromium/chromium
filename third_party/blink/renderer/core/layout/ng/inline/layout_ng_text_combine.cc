@@ -45,7 +45,7 @@ LayoutNGTextCombine* LayoutNGTextCombine::CreateAnonymous(
 }
 
 String LayoutNGTextCombine::GetTextContent() const {
-  DCHECK(!NeedsCollectInlines() && HasNGInlineNodeData()) << this;
+  DCHECK(!NeedsCollectInlines() && GetNGInlineNodeData()) << this;
   return GetNGInlineNodeData()->ItemsData(false).text_content;
 }
 

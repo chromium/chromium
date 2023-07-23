@@ -1149,35 +1149,35 @@ TEST_F(NGInlineNodeTest, SpaceRestoredByInsertingWord) {
 
 TEST_F(NGInlineNodeTest, RemoveInlineNodeDataIfBlockBecomesEmpty1) {
   SetupHtml("container", "<div id=container><b id=remove><i>foo</i></b></div>");
-  ASSERT_TRUE(layout_block_flow_->HasNGInlineNodeData());
+  ASSERT_TRUE(layout_block_flow_->GetNGInlineNodeData());
 
   Element* to_remove = GetElementById("remove");
   to_remove->remove();
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_FALSE(layout_block_flow_->HasNGInlineNodeData());
+  EXPECT_FALSE(layout_block_flow_->GetNGInlineNodeData());
 }
 
 TEST_F(NGInlineNodeTest, RemoveInlineNodeDataIfBlockBecomesEmpty2) {
   SetupHtml("container", "<div id=container><b><i>foo</i></b></div>");
-  ASSERT_TRUE(layout_block_flow_->HasNGInlineNodeData());
+  ASSERT_TRUE(layout_block_flow_->GetNGInlineNodeData());
 
   GetElementById("container")->setInnerHTML("");
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_FALSE(layout_block_flow_->HasNGInlineNodeData());
+  EXPECT_FALSE(layout_block_flow_->GetNGInlineNodeData());
 }
 
 TEST_F(NGInlineNodeTest, RemoveInlineNodeDataIfBlockObtainsBlockChild) {
   SetupHtml("container",
             "<div id=container><b id=blockify><i>foo</i></b></div>");
-  ASSERT_TRUE(layout_block_flow_->HasNGInlineNodeData());
+  ASSERT_TRUE(layout_block_flow_->GetNGInlineNodeData());
 
   GetElementById("blockify")
       ->SetInlineStyleProperty(CSSPropertyID::kDisplay, CSSValueID::kBlock);
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_FALSE(layout_block_flow_->HasNGInlineNodeData());
+  EXPECT_FALSE(layout_block_flow_->GetNGInlineNodeData());
 }
 
 // Test inline objects are initialized when |SplitFlow()| moves them.

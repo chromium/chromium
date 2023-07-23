@@ -137,20 +137,21 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   // we're still working on LayoutNG.
   void AddVisualOverflowFromFloats(const NGPhysicalFragment& fragment);
 
-  virtual NGInlineNodeData* TakeNGInlineNodeData() {
-    NOT_DESTROYED();
-    return nullptr;
-  }
+  // Returns the associated `NGInlineNodeData`, or `nullptr` if `this` doesn't
+  // have one (i.e., not an NG inline formatting context.)
   virtual NGInlineNodeData* GetNGInlineNodeData() const {
     NOT_DESTROYED();
     return nullptr;
   }
-  virtual void ResetNGInlineNodeData() { NOT_DESTROYED(); }
-  virtual void ClearNGInlineNodeData() { NOT_DESTROYED(); }
-  virtual bool HasNGInlineNodeData() const {
+  // Same as `GetNGInlineNodeData` and then `ClearNGInlineNodeData`.
+  virtual NGInlineNodeData* TakeNGInlineNodeData() {
     NOT_DESTROYED();
-    return false;
+    return nullptr;
   }
+  // Reset `NGInlineNodeData` to a new instance.
+  virtual void ResetNGInlineNodeData() { NOT_DESTROYED(); }
+  // Clear `NGInlineNodeData` to `nullptr`.
+  virtual void ClearNGInlineNodeData() { NOT_DESTROYED(); }
   virtual void WillCollectInlines() { NOT_DESTROYED(); }
 
  protected:

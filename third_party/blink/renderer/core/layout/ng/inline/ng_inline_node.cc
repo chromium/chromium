@@ -484,8 +484,9 @@ NGInlineNode::NGInlineNode(LayoutBlockFlow* block)
     : NGLayoutInputNode(block, kInline) {
   DCHECK(block);
   DCHECK(block->IsLayoutNGObject());
-  if (!block->HasNGInlineNodeData())
+  if (!block->GetNGInlineNodeData()) {
     block->ResetNGInlineNodeData();
+  }
 }
 
 bool NGInlineNode::IsPrepareLayoutFinished() const {
