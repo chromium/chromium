@@ -1471,8 +1471,8 @@
       },
       'chromeos-eve-chrome': {
         'swarming': {
-          # Increased timeout to 3 hours due to shard timeout.
-          'hard_timeout': 10800,
+          # Increased timeout to 4 hours due to shard timeout.
+          'hard_timeout': 14400,
         }
       },
       # TODO(crbug.com/1141234): Move out of experimental if/when the bots are
