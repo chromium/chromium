@@ -242,6 +242,11 @@ public class CoolIndicator extends ProgressBar {
     }
 
     public void start() {
+        if (mIsRunningCompleteAnimation) {
+            cancelAnimation();
+            mIsRunning = false;
+            mIsRunningCompleteAnimation = false;
+        }
         if (mIsRunning) {
             return;
         }
@@ -331,7 +336,10 @@ public class CoolIndicator extends ProgressBar {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        cancelAnimation();
+    }
 
+    private void cancelAnimation() {
         if (mPrimaryAnimator != null) {
             mPrimaryAnimator.cancel();
         }
@@ -344,7 +352,6 @@ public class CoolIndicator extends ProgressBar {
         if (mAlphaAnimator != null) {
             mAlphaAnimator.cancel();
         }
-
     }
 
     private Drawable buildWrapDrawable(Drawable original, boolean isWrap, int duration, int resID) {

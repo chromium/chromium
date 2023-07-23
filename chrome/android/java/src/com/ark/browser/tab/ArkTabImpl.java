@@ -1065,6 +1065,15 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         for (TabObserver observer : mObservers) observer.onLoadStarted(this, toDifferentDocument);
     }
 
+    void onLoadFinished() {
+        cacheThumbnail();
+        // mIsLoading should only be false if this is a same-document navigation.
+        boolean toDifferentDocument = isLoading();
+        for (TabObserver observer : mObservers) {
+            observer.onLoadFinished(this, toDifferentDocument);
+        }
+    }
+
     /**
      * Called when a navigation completes and no other navigation is in progress.
      */
@@ -1106,7 +1115,9 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         AdblockPlusHelper.markAds(this, getUrl().getSpec());
         updateTitle();
 
-        for (TabObserver observer : mObservers) observer.onPageLoadFinished(this, url);
+        for (TabObserver observer : mObservers) {
+            observer.onPageLoadFinished(this, url);
+        }
         mIsBeingRestored = false;
     }
 

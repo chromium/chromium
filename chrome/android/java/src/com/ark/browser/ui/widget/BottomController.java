@@ -30,6 +30,7 @@ import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
@@ -171,9 +172,16 @@ public class BottomController {
             }
 
             @Override
+            public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
+                updateStarButton(tab);
+                updateLoadingState(tab.isLoading());
+            }
+
+            @Override
             public void onPageLoadStarted(Tab tab, GURL url) {
                 ArkLogger.d(TAG, "onPageLoadStarted tab=" + tab.getId());
                 updateStarButton(tab);
+                updateLoadingState(tab.isLoading());
             }
 
             @Override
@@ -187,27 +195,18 @@ public class BottomController {
             }
 
             @Override
-            public void onFaviconUpdated(Tab tab, Bitmap icon) {
-                super.onFaviconUpdated(tab, icon);
-//                faviconImg.setImageDrawable(new BitmapDrawable(faviconImg.getResources(), icon));
+            public void onLoadFinished(Tab tab, boolean toDifferentDocument) {
+                updateLoadingState(false);
             }
 
             @Override
             public void onLoadStopped(Tab tab, boolean toDifferentDocument) {
-//                progressBar.setVisibility(View.GONE);
                 if (TextUtils.isEmpty(tab.getTitle())) {
                     loadingTitle.setText(tab.getUrl().toString());
                 } else {
                     loadingTitle.setText(tab.getTitle());
                 }
-//                faviconImg.setImageDrawable(new BitmapDrawable(faviconImg.getResources(), tab.getFavicon()));
-//                if (toDifferentDocument) {
-//                    if (tab.getProgress() > 5 && tab.getProgress() < 100) {
-//                        updateLoadProgress(100);
-//                    }
-//                    updateLoadProgress(100);
-//                }
-                updateLoadingState(tab.isLoading());
+                updateLoadingState(false);
             }
 
             @Override
@@ -226,12 +225,8 @@ public class BottomController {
             @Override
             public void onWebContentsSwapped(Tab tab, boolean didStartLoad, boolean didFinishLoad) {
                 Log.e(TAG, "onWebContentsSwapped didStartLoad=" + didStartLoad + "  didFinishLoad=" + didFinishLoad);
-                if (!didStartLoad) return;
-                if (didFinishLoad) {
-                    finishLoadProgress(true);
-                } else if (!mProgressBar.isRunning()) {
-                    updateLoadProgress((int) (tab.getProgress() * 100));
-                }
+                updateStarButton(tab);
+                updateLoadingState(tab.isLoading());
             }
 
             @Override
@@ -291,15 +286,10 @@ public class BottomController {
 //        }
     }
 
-    private void finishLoadProgress(boolean delayed) {
-        ArkLogger.e(TAG, "finishLoadProgress");
-//        mProgressBar.setVisibility(View.GONE);
-        mProgressBar.complete();
-    }
-
-
     public void onPageAttached(@NonNull Tab page) {
-        ArkLogger.e(TAG, "onPageAttached page=" + page.getId());
+        ArkLogger.e(TAG, "onPageAttached page=" + page.getId()
+                + " isLoading=" + page.isLoading()
+                + " web=" + page.getWebContents());
         if (mTab != page) {
             if (mTab != null) {
                 mTab.removeObserver(mTabObserver);
@@ -317,7 +307,7 @@ public class BottomController {
         ArkLogger.e(TAG, "onPageDetached page=" + page.getId());
         page.removeObserver(mTabObserver);
         if (mTab == page) {
-            finishLoadProgress(false);
+            mProgressBar.complete();
             mTab = null;
         }
     }

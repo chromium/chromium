@@ -136,27 +136,6 @@ public class ArkWebContents {
                 }
             });
         }
-//        mWebContents.addObserver(new WebContentsObserver() {
-//
-//            @Override
-//            public void titleWasSet(String title) {
-//                if (!TextUtils.equals(mPageInfo.getTitle(), title)) {
-//                    mPageInfo.setTitle(title);
-//                }
-//            }
-//
-//            @Override
-//            public void didStartLoading(GURL url) {
-//                mFinishLoad = false;
-//                mStartLoad = true;
-//            }
-//
-//            @Override
-//            public void didFinishLoad(GlobalRenderFrameHostId rfhId, GURL url, boolean isKnownValid, boolean isInPrimaryMainFrame, int rfhLifecycleState) {
-//                mStartLoad = true;
-//                mFinishLoad = true;
-//            }
-//        });
     }
 
     public PageInfo getPageInfo() {
@@ -215,6 +194,7 @@ public class ArkWebContents {
     }
 
     public void loadUrl(LoadUrlParams params) {
+        mIsLoading = true;
         mPageInfo.setUrl(params.getUrl());
         mWebContents.getNavigationController().loadUrl(params);
     }
@@ -344,6 +324,7 @@ public class ArkWebContents {
         if (!fixedUrl.isValid()) return Tab.TabLoadStatus.PAGE_LOAD_FAILED;
 
         if (TabJni.get().handleNonNavigationAboutURL(fixedUrl)) {
+            mIsLoading = true;
             return Tab.TabLoadStatus.DEFAULT_PAGE_LOAD;
         }
 

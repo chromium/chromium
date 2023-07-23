@@ -165,6 +165,7 @@ public class TabGroupImpl implements ITabGroup {
                 ArkLogger.e(this, "init failed!", e);
                 e.printStackTrace();
             }
+            mPrefetchTabGroupTask = null;
         }
         ArkLogger.d(TAG, "load deltaTime=" + (System.currentTimeMillis() - start));
     }
@@ -368,11 +369,19 @@ public class TabGroupImpl implements ITabGroup {
 
     @Override
     public void destroy() {
-        this.mObservers.clear();
-        for (ITab info : mTabList) {
-            info.destroy();
+        if (mPrefetchTabGroupTask != null) {
+            if (!mPrefetchTabGroupTask.isCancelled()) {
+                mPrefetchTabGroupTask.cancel(true);
+            }
+            mPrefetchTabGroupTask = null;
         }
-        this.mTabList.clear();
+        this.mObservers.clear();
+        if (!this.mTabList.isEmpty()) {
+            for (ITab info : mTabList) {
+                info.destroy();
+            }
+            this.mTabList.clear();
+        }
         this.mIndex = ITab.INVALID_TAB_INDEX;
     }
 
@@ -395,6 +404,9 @@ public class TabGroupImpl implements ITabGroup {
     private static final int MAX_CHANGE_COUNT = 10;
 
     private void saveTabPosition(int index, int position) {
+        if (mTabList.isEmpty()) {
+            return;
+        }
         long start = System.currentTimeMillis();
         int i = index;
         int pos = position;

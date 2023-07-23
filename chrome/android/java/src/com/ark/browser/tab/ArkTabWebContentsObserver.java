@@ -255,7 +255,7 @@ public class ArkTabWebContentsObserver implements UserData {
         public void didFinishLoad(GlobalRenderFrameHostId frameId, GURL url, boolean isKnownValid,
                 boolean isInPrimaryMainFrame, @LifecycleState int frameLifecycleState) {
             assert isKnownValid;
-            mTab.onLoadStopped();
+            mTab.onLoadFinished();
             if (frameLifecycleState == LifecycleState.ACTIVE) {
                 if (mTab.getNativePage() != null) {
                     mTab.pushNativePageStateToNavigationEntry();
@@ -265,6 +265,11 @@ public class ArkTabWebContentsObserver implements UserData {
             PolicyAuditor auditor = AppHooks.get().getPolicyAuditor();
             auditor.notifyAuditEvent(ContextUtils.getApplicationContext(),
                     AuditEvent.OPEN_URL_SUCCESS, url.getSpec(), "");
+        }
+
+        @Override
+        public void didStopLoading(GURL url, boolean isKnownValid) {
+            mTab.onLoadStopped();
         }
 
         @Override

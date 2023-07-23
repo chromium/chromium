@@ -35,7 +35,7 @@ public class TabGroupManager {
     }
 
     public static GlobalSelector global() {
-        return GlobalSelector.INSTANCE;
+        return GlobalSelector.getInstance();
     }
 
     public static List<ITabGroup> getTabGroups() {
@@ -262,16 +262,27 @@ public class TabGroupManager {
 
     public static class GlobalSelector extends BaseSelector {
 
-        private static final GlobalSelector INSTANCE = new GlobalSelector();
+        private static volatile GlobalSelector sInstance;
 
         public static final String GROUP_DEFAULT = "group_default";
         public static final String GROUP_INCOGNITO = "group_incognito";
 
         private int mCurrentIndex = 0;
 
-        public GlobalSelector() {
+        private GlobalSelector() {
             super(new TabGroupImpl(GROUP_DEFAULT, false),
                     new TabGroupImpl(GROUP_INCOGNITO, true));
+        }
+
+        public static GlobalSelector getInstance() {
+            if (sInstance == null) {
+                synchronized (GlobalSelector.class) {
+                    if (sInstance == null) {
+                        sInstance = new GlobalSelector();
+                    }
+                }
+            }
+            return sInstance;
         }
 
         public boolean isIncognitoSelected() {
@@ -295,6 +306,13 @@ public class TabGroupManager {
 
         @Override
         public void destroy() {
+            if (sInstance != null) {
+                synchronized (GlobalSelector.class) {
+                    if (sInstance != null) {
+                        sInstance = null;
+                    }
+                }
+            }
             mCurrentIndex = 0;
             super.destroy();
         }

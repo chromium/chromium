@@ -471,6 +471,9 @@ public interface ITabGroup {
     default void saveGroupFile() {
         ArkLogger.e(this, "saveGroupFile");
         try {
+            if (getTabList().isEmpty()) {
+                return;
+            }
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             DataOutputStream os = new DataOutputStream(stream);
             int version = 1;

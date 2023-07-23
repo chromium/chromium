@@ -190,6 +190,14 @@ public interface TabObserver {
      * Called when the contents loading stops.
      * @param tab The notifying {@link Tab}.
      */
+    default void onLoadFinished(Tab tab, boolean toDifferentDocument) {
+
+    }
+
+    /**
+     * Called when the contents loading stops.
+     * @param tab The notifying {@link Tab}.
+     */
     void onLoadStopped(Tab tab, boolean toDifferentDocument);
 
     /**
