@@ -58,6 +58,7 @@ export class VisitTileModuleElement extends I18nMixin
       imageUrl_: {
         type: Object,
         value: null,
+        reflectToAttribute: true,
       },
 
       format: {

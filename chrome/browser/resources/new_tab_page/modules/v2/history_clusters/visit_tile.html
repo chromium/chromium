@@ -36,8 +36,6 @@
   }
 
   :host([images-enabled_]) #label-container {
-    background: linear-gradient(0, rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, 0.4) 69.79%);
     border-radius: var(--ntp-module-item-border-radius);
     color: var(--color-new-tab-page-primary-foreground);
     display: flex;
@@ -47,6 +45,11 @@
     margin: 4px;
     width: calc(100% - 8px); /* Subtract parent margin */
     z-index: 1;
+  }
+
+  :host([images-enabled_][image-url_]) #label-container {
+    background: linear-gradient(0, rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.4) 69.79%);
   }
 
   /*TODO: mfacey@: Fix label size */
