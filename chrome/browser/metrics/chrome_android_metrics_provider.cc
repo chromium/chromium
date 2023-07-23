@@ -88,7 +88,7 @@ void ChromeAndroidMetricsProvider::OnDidCreateMetricsLog() {
 
   metrics::AndroidMetricsHelper::GetInstance()->EmitHistograms(
       local_state_,
-      /*current_session=*/true);
+      /*on_did_create_metrics_log=*/true);
 }
 
 void ChromeAndroidMetricsProvider::ProvidePreviousSessionData(
@@ -104,7 +104,7 @@ void ChromeAndroidMetricsProvider::ProvidePreviousSessionData(
 
   metrics::AndroidMetricsHelper::GetInstance()->EmitHistograms(
       local_state_,
-      /*current_session=*/false);
+      /*on_did_create_metrics_log=*/false);
 }
 
 void ChromeAndroidMetricsProvider::ProvideCurrentSessionData(

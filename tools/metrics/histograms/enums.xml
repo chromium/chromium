@@ -20473,10 +20473,10 @@ Called by update_net_error_codes.py.-->
 </enum>
 
 <enum name="CpuAbiBitnessSupport">
-  <int value="0" label="neither"/>
+  <int value="0" label="Neither"/>
   <int value="1" label="32-bit only"/>
   <int value="2" label="64-bit only"/>
-  <int value="3" label="both 32-bit and 64-bit"/>
+  <int value="3" label="Both 32-bit and 64-bit"/>
 </enum>
 
 <enum name="CpuAffinityMode">
@@ -87774,7 +87774,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
 </enum>
 
 <enum name="PrimaryCpuAbiBitness">
-  <int value="0" label="neither"/>
+  <int value="0" label="Unknown"/>
   <int value="1" label="32-bit"/>
   <int value="2" label="64-bit"/>
 </enum>

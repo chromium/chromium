@@ -49,9 +49,9 @@ class AndroidMetricsHelper {
     return cpu_abi_bitness_support_;
   }
 
-  // |current_session| denotes whether data is emitted for the current session,
-  // as opposed to the previous session.
-  void EmitHistograms(PrefService* local_state, bool current_session);
+  // |on_did_create_metrics_log| denotes whether data is emitted in
+  // OnDidCreateMetricsLog, as opposed to in ProvidePreviousSessionData.
+  void EmitHistograms(PrefService* local_state, bool on_did_create_metrics_log);
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 

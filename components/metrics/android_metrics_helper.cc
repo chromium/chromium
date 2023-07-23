@@ -49,8 +49,8 @@ AndroidMetricsHelper::AndroidMetricsHelper(const std::string& version_code,
 }
 
 void AndroidMetricsHelper::EmitHistograms(PrefService* local_state,
-                                          bool current_session) {
-  if (current_session) {
+                                          bool on_did_create_metrics_log) {
+  if (on_did_create_metrics_log) {
     if (version_code_int_) {
       // The values won't change within the session, so save only once.
       if (!local_state_saved_) {
@@ -64,8 +64,6 @@ void AndroidMetricsHelper::EmitHistograms(PrefService* local_state,
       }
 
       // This may change across sessions, so log it only for current session.
-      // Version code will sure change on every update. The other two are
-      // unlikely to change, but some factors like RAM targeting may do it.
       base::UmaHistogramSparse("Android.VersionCode", version_code_int_);
     }
   } else {
