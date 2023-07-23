@@ -4250,6 +4250,7 @@
 <translation id="4508150454272293946">ອະນຸຍາດໃຫ້ແອັບ ແລະ ໜ້າເວັບໃຊ້ກ້ອງທີ່ເຊື່ອມຕໍ່ກັບອຸປະກອນນີ້. ຫາກທ່ານຍັງພົບບັນຫາກ່ຽວກັບກ້ອງຂອງທ່ານ, ໃຫ້ລອງຣີສະຕາດແອັບ ຫຼື ໂຫຼດຂໍ້ມູນໜ້າເວັບຄືນໃໝ່.</translation>
 <translation id="450867954911715010">ການຕັ້ງຄ່າການຊ່ວຍເຂົ້າເຖິງ</translation>
 <translation id="4508765956121923607">ເບິ່ງແຫຼ່ງທີ່ມາ</translation>
+<translation id="4509277363725254222">ເມື່ອທ່ານແບ່ງປັນສຳເນົາ <ph name="BEGIN_BOLD_USERNAME" />ຊື່ຜູ້ໃຊ່້<ph name="END_BOLD_USERNAME" /> ແລະ <ph name="BEGIN_BOLD_PASSWORD" />ລະຫັດຜ່ານ<ph name="END_BOLD_PASSWORD" /> ຂອງທ່ານ, ຄອບຄົວທ່ານຈະສາມາດຕື່ມຂໍ້ມູນໃສ່ພວກມັນໄດ້ໂດຍການໃຊ້ຕົວຈັດການລະຫັດຜ່ານ Google</translation>
 <translation id="4509421746503122514">ເລີ່ມເປີດໃຊ້ໃໝ່ເພື່ອອັບເດດ</translation>
 <translation id="4510195992002502722">ສົ່ງຄຳຕິຊົມບໍ່ສຳເລັດ. ກຳລັງລອງໃໝ່...</translation>
 <translation id="4510479820467554003">ລາຍຊື່ບັນຊີພໍ່ແມ່</translation>
@@ -4819,6 +4820,7 @@
 <translation id="4994426888044765950">ຫາກທ່ານກົດປຸ່ມຄ້າງໄວ້, ຕົວອັກສອນຂອງປຸ່ມຈະພິມຊ້ຳ</translation>
 <translation id="4994754230098574403">ກໍາລັງຕັ້ງຄ່າ</translation>
 <translation id="4995293419989417004">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຫົວຂໍ້ໂຄສະນາ</translation>
+<translation id="4995676741161760215">ເປີດ, ເປີດນຳໃຊ້ສ່ວນຂະຫຍາຍແລ້ວ</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{ບໍ່ພົບ VM <ph name="VM_TYPE" />}=1{ພົບ 1 VM <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}other{ພົບ {NUM_VMS} VM <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">ບໍ່ມີການເຊື່ອມຕໍ່ອິນເຕີເນັດ.</translation>
 <translation id="4998430619171209993">ເປີດ</translation>
@@ -5370,6 +5372,7 @@
 <translation id="5474859849784484111"><ph name="MANAGER" /> ກຳນົດໃຫ້ທ່ານຕ້ອງເຊື່ອມຕໍ່ກັບ Wi-Fi ຕອນນີ້ ແລະ ດາວໂຫຼດການອັບເດດ. ຫຼື ດາວໂຫຼດຈາກການເຊື່ອມຕໍ່ແບບວັດແທກປະລິມານອິນເຕີເນັດ (ອາດເກັບຄ່າບໍລິການ).</translation>
 <translation id="5481273127572794904">ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ດາວໂຫຼດຫຼາຍໄຟລ໌ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="5481941284378890518">ເພີ່ມເຄື່ອງພິມທີ່ຢູ່ໃກ້ຄຽງ</translation>
+<translation id="5484462543003267273">ຈັດການຄອບຄົວ</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> ກຳນົດໃຫ້ທ່ານສຳຮອງຂໍ້ມູນຂອງທ່ານໄວ້ ແລະ ສົ່ງ <ph name="DEVICE_TYPE" /> ນີ້ຄືນໃນມື້ນີ້. <ph name="LINK_BEGIN" />ເບິ່ງລາຍລະອຽດ<ph name="LINK_END" />}other{<ph name="MANAGER" /> ກຳນົດໃຫ້ທ່ານສຳຮອງຂໍ້ມູນຂອງທ່ານໄວ້ ແລະ ສົ່ງ <ph name="DEVICE_TYPE" /> ນີ້ຄືນພາຍໃນ {NUM_DAYS} ມື້. <ph name="LINK_BEGIN" />ເບິ່ງລາຍລະອຽດ<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">ເພີ່ມ​ແອັບ</translation>
 <translation id="5485435764083510385">ພາສາທີ່ຕ້ອງການສຳລັບຄຳບັນຍາຍ</translation>
@@ -8968,6 +8971,7 @@
 <translation id="8514746246728959655">ລອງກະແຈຄວາມປອດໄພອື່ນ</translation>
 <translation id="8514955299594277296">ຢ່າອະນຸຍາດໃຫ້ເວັບໄຊບັນທຶກຂໍ້ມູນຢູ່ອຸປະກອນຂອງທ່ານ (ບໍ່ແນະນຳ)</translation>
 <translation id="8517759303731677493">ແກ້ໄຂ…</translation>
+<translation id="8518942514525208851">ເຊື່ອງຄຳຫຍາບຄາຍ</translation>
 <translation id="8519895319663397036">ບໍ່ສາມາດນຳເຂົ້າລະຫັດຜ່ານໄດ້. ຂະໜາດໄຟລ໌ຄວນໜ້ອຍກວ່າ 150 KB.</translation>
 <translation id="851991974800416566">ໃຊ້ລະຫັດຜ່ານຍາກໄດ້ຢ່າງວ່ອງໄວ</translation>
 <translation id="8523493869875972733">ຮັກສາການປ່ຽນແປງ</translation>

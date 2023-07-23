@@ -146,6 +146,7 @@
 <translation id="1576623706766186887">ຂະຫຍາຍອອກເມື່ອແວ່ນຂະຫຍາຍເປີດຢູ່</translation>
 <translation id="1586324912145647027">ໄປຫາໂຕະທີ 1 ຫາ 8</translation>
 <translation id="1589090746204042747">ເຂົ້າເຖິງທຸກການເຄື່ອນໄຫວຂອງທ່ານໃນເຊດຊັນນີ້</translation>
+<translation id="1592682369233288537">ໂຕະຕໍ່ໄປ: <ph name="NEXT_DESK_NAME" />, ໃຊ້ປຸ່ມຊອກຫາ+ຍະຫວ່າງ ເພື່ອເປີດໃຊ້.</translation>
 <translation id="1604857178818051494">ຢຸດມີເດຍໄວ້ຊົ່ວຄາວ</translation>
 <translation id="1610778689852195798">"ຍົກເລີກ"</translation>
 <translation id="1611993646327628135">ເປີດ</translation>
@@ -157,6 +158,7 @@
 <translation id="1647986356840967552">ໜ້າກ່ອນໜ້າ</translation>
 <translation id="1651914502370159744">ເປີດໜ້າປະຫວັດ</translation>
 <translation id="1654477262762802994">ເລີ່ມຄຳຊອກຫາດ້ວຍສຽງ</translation>
+<translation id="1662667383227796099">ຊອກຫາໄຟລ໌, ແອັບ ແລະ ອື່ນໆຂອງທ່ານໃນຕົວເປີດໃຊ້. ນອກຈາກນັ້ນ, ທ່ານຍັງສາມາດຮັບຄຳຕອບສຳລັບຄຳາມຕ່າງໆກ່ຽວກັບ Chromebook ຂອງທ່ານໄດ້ນຳ.</translation>
 <translation id="1668469839109562275">VPN ໃນຕົວ</translation>
 <translation id="1675844249244994876">ອັບເດດໜ້າຈໍເບື້ອງຂວາ</translation>
 <translation id="1677472565718498478">ຍັງເຫຼືອ <ph name="TIME" /></translation>
@@ -560,6 +562,7 @@
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">ເຊື່ອງຊັ້ນວາງໂດຍອັດຕະໂນມັດແລ້ວ</translation>
+<translation id="3503243067695520519">ສະບາຍດີ. Chromebooks ຈະຕ່າງໄປໜ້ອຍໜຶ່ງ.</translation>
 <translation id="3505066820268455558">ກຳລັງສາກແບັດເຕີຣີ</translation>
 <translation id="3509391053705095206">ບໍ່ສາມາດຊອກເຫັນໂທລະສັບຂອງທ່ານໄດ້. ກະລຸນາກວດສອບວ່າ Bluetooth ຂອງໂທລະສັບທ່ານເປີດຢູ່.</translation>
 <translation id="3510164367642747937">ໝາຍເຄີເຊີເມົ້າ</translation>
@@ -684,6 +687,7 @@
 <translation id="3977512764614765090">ແບັດເຕີຣີຢູ່ທີ່ <ph name="PERCENTAGE" />% ແລະ ກຳລັງສາກ.</translation>
 <translation id="3984536049089846927">ໜ້າຕໍ່ໄປ</translation>
 <translation id="3986082989454912832">ຮັບສາຍ</translation>
+<translation id="3990002060657467458">ການຄວບຄຸມທີ່ໃຊ້ເລື້ອຍໆ ເຊັ່ນ: Wi-Fi, Bluetooth ແລະ ລະດັບສຽງແມ່ນຢູ່ໃນການຕັ້ງຄ່າດ່ວນ. ທ່ານສາມາດມາບ່ອນນີ້ເພື່ອຖ່າຍຮູບໜ້າຈໍໄດ້ນຳ.</translation>
 <translation id="3995138139523574647">ອຸປະກອນ USB-C (ຊ່ອງທາງຫຼັງເບື້ອງຂວາ)</translation>
 <translation id="40062176907008878">ການຂຽນດ້ວຍມື</translation>
 <translation id="4017989525502048489">ເຄື່ອງພິມເລເຊີ</translation>
@@ -747,6 +751,7 @@
 <translation id="4269883910223712419">ຜູ້ເບິ່ງແແຍງລະບົບຂອງອຸປະກອນີ້ສາມາດ:</translation>
 <translation id="4274537685965975248">ຄີລັດ Ctrl + Alt + ລູກສອນລົງຖືກປ່ຽນແປງແລ້ວ. ເພື່ອໃຊ້ປຸ່ມ End, ໃຫ້ກົດປຸ່ມ <ph name="LAUNCHER_KEY_NAME" /> + ລູກສອນຂວາ.</translation>
 <translation id="4275283744500212192">ເປີດຕົວເລືອກໂຄງຮ່າງໜ້າຈໍ</translation>
+<translation id="4278138729651139331">ປັບແຕ່ງ ແລະ ປັບ Chromebook ຂອງທ່ານໃຫ້ເປັນສ່ວນຕົວໃນການຕັ້ງຄ່າ. ລອງປ່ຽນຮູບພື້ນຫຼັງຂອງທ່ານ ຫຼື ຕັ້ງຄ່າພາບພັກໜ້າຈໍ.</translation>
 <translation id="4279490309300973883">ການສ່ອງ</translation>
 <translation id="4280601795273309128">ອັບເດດຄວາມປອດໄພສິ້ນສຸດແລ້ວ. ອັບເກຣດອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="4283888303416325161">ໃສ່ລະຫັດຜ່ານເພື່ອຄວາມປອດໄພເພີ່ມເຕີມ</translation>
@@ -803,6 +808,7 @@
 <translation id="4505050298327493054">ໂຕະເຮັດວຽກທີ່ນຳໃຊ້ຢູ່.</translation>
 <translation id="450584155212756404">ຊ່ອງຜູ້ພັດທະນາ</translation>
 <translation id="4513946894732546136">ຄໍາຄິດເຫັນ</translation>
+<translation id="4516212064498225455">ໂຕະປັດຈຸບັນ: <ph name="CURRENT_DESK_NAME" />, ໃຊ້ປຸ່ມ ຊອກຫາ+ຍະຫວ່າງ ເພື່ອເປີດເມນູໂຕະທັງໝົດ.</translation>
 <translation id="4518404433291145981">ເພື່ອປົດລັອກ Chromebook ຂອງທ່ານ, ໃຫ້ປົດລັອກໂທລະສັບຂອງທ່ານ</translation>
 <translation id="4527045527269911712">ອຸປະກອນ Bluetooth "<ph name="DEVICE_NAME" />" ຢາກໄດ້ການອະນຸຍາດຈັບຄູ່.</translation>
 <translation id="4533343294786968049">ການຍືດອາຍຸແບັດເຕີຣີຂອງທ່ານ. ແບັດເຕີຣີຈະເຕັມຕອນ <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -970,6 +976,7 @@
 <translation id="5207949376430453814">ໝາຍເຄື່ອງໝາຍກຸບຂໍ້ຄວາມ</translation>
 <translation id="5208059991603368177">ເປີດ</translation>
 <translation id="5216991270656129561">ປິດຈົນຮອດ <ph name="TIME" /></translation>
+<translation id="5217646019792206018">ໂຕະຕໍ່ໄປ: <ph name="NEXT_DESK_NAME" />, ໃຊ້ປຸ່ມຊອກຫາ+ຍະຫວ່າງ ຫຼື ຄີລັດ: Shift+ຊອກຫາ+<ph name="NEXT_DESK_INDEX" /> ເພືຶ່ອເປີດໃຊ້.</translation>
 <translation id="5221423477036820198">ສົ່ງ ຫຼື ຕອບກັບຂໍ້ຄວາມໃນໂທລະສັບຂອງທ່ານຢ່າງວ່ອງໄວໂດຍໃຊ້ Phone Hub.</translation>
 <translation id="5222676887888702881">ອອກຈາກລະບົບ</translation>
 <translation id="5229343007215035173">ເປີດ/ປິດໜ້າຈໍຄວາມເປັນສ່ວນຕົວ</translation>
@@ -1035,6 +1042,7 @@
 <translation id="550391772491508736">ສືບຕໍ່ການສົ່ງສັນຍານ</translation>
 <translation id="5506975627792768506">ເປີດ ຫຼື ປິດແວ່ນຂະຫຍາຍ</translation>
 <translation id="5512042095225963688">ລຶບຄຳກ່ອນໜ້າ</translation>
+<translation id="5518068085000130971">ເຫຼົ່ານັ້ນແມ່ນພື້ນຖານ! ສືບຕໍ່ໃນ Explore, ເຊິ່ງເປັນແອັບແບບໃນຕົວຂອງພວກເຮົາສຳລັບເຄັດລັບ ແລະ ການຊ່ວຍເຫຼືອ. ທ່ານຈະພົບເຄັດລັບເພື່ອເລີ່ມຕົ້ນ, ​ແອັບທີ່ແນະນຳ, ຂໍ້ສະເໜີພິເສດ ແລະ ຄຸນສົມບັດ Chromebook ໃໝ່ຫຼ້າສຸດ.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ລຶບໂປຣໄຟລ໌ eSIM ທັງໝົດອອກແລ້ວ. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານສຳລັບຂໍ້ມູນເພີ່ມເຕີມ.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> ກຳລັງເຊື່ອມຕໍ່.</translation>
@@ -1360,6 +1368,7 @@
 <translation id="6896758677409633944">ກັອບປີ້</translation>
 <translation id="6901883536534621389">ລອງໃຊ້ທ່າທາງເພື່ອນຳທາງ</translation>
 <translation id="6912841030378044227">ເນັ້ນໃສ່ແຖບທີ່ຢູ່</translation>
+<translation id="6912901278692845878">ການທົວສັ້ນໆ</translation>
 <translation id="6919251195245069855">ບໍ່ສາມາດຮັບຮູ້ບັດອັດສະລິຍະຂອງທ່ານໄດ້. ລອງໃໝ່.</translation>
 <translation id="6920245099716267363">ເປີດ/ປິດຮັອດສະປອດ. ຮັອດສະປອດເປີດຢູ່, ເຊື່ອມຕໍ່ຢູ່ 1 ອຸປະກອນ.</translation>
 <translation id="6931576957638141829">ບັນ​ທຶກ​ໄປ​ໃສ່</translation>
@@ -1666,6 +1675,7 @@
 <translation id="8297006494302853456">ອ່ອນ</translation>
 <translation id="8308637677604853869">ເມ​ນູ​ຜ່ານ​ມາ</translation>
 <translation id="830868413617744215">Beta</translation>
+<translation id="8312557488404088015">ທົວສັ້ນໆເພື່ອເລີ່ມຕົ້ນໄດ້ຢ່າງນຸ້ມນວນ. ດ້ວຍ 6 ຂັ້ນຕອນ,​ ມັນຈະໃຊ້ເວລາພຽງສອງສາມນາທີ.</translation>
 <translation id="8314772463905284467">Caps Lock ເປີດຢູ່</translation>
 <translation id="8315514906653279104">ກຳລັງເປີດ...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -1715,6 +1725,7 @@
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> ຂອງ​ທ່ານ​ບໍ່ອາດ​ສາກ​ໄດ້ໃນ​ຂະ​ນະ​ທີ່​ມັນ​ເປີດ.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{ອິນພຸດໄມແມ່ນຄວບຄຸມໂດຍ <ph name="APP_NAME" />}other{ອິນພຸດໄມແມ່ນຄວບຄຸມໂດຍ # ແອັບ}}</translation>
 <translation id="8535393432370007982">ຍົກເລີກການຈັດຮຽງລຳດັບຕາມສີ</translation>
+<translation id="853768060447955562">ໂຕະກ່ອນໜ້າ: <ph name="PREVIOUS_DESK_NAME" />, ໃຊ້ປຸ່ມຊອກຫາ+ຍະຫວ່າງ ຫຼື ຄີລັດ: Shift+ຊອກຫາ+<ph name="PREVIOUS_DESK_INDEX" /> ເພືຶ່ອເປີດໃຊ້.</translation>
 <translation id="8541078764854166027">ການວາງເຟຣມກ້ອງຖ່າຍຮູບ</translation>
 <translation id="8542053257095774575">ບໍ່ມີໂຕະ ຫຼື ແມ່ແບບທີ່ບັນທຶກໄວ້</translation>
 <translation id="8546059259582788728">ຍົກເລີກການຈັດຮຽງສຳເລັດແລ້ວ</translation>
@@ -1866,11 +1877,13 @@
 <translation id="925832987464884575">ເຊື່ອງຕົວຢ່າງ</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> ຕ້ອງການໃຫ້ທ່ານອັບເດດ <ph name="DEVICE_TYPE" /> ຂອງທ່ານທັນທີ</translation>
 <translation id="938963181863597773">ມີຫຍັງໃນປະຕິທິນຂອງຂ້ອຍ?</translation>
+<translation id="943067377221312471">ໂຕະກ່ອນໜ້າ: <ph name="PREVIOUS_DESK_NAME" />, ໃຊ້ປຸ່ມຊອກຫາ+ຍະຫວ່າງ ເພື່ອເປີດໃຊ້.</translation>
 <translation id="945383118875625837">ລາກລິ້ງໄປໃສ່ແຖບບຸກມາກ</translation>
 <translation id="945522503751344254">ສົ່ງ​ຄໍາ​ຄິດ​​ເຫັນ</translation>
 <translation id="951991426597076286">ປະຕິເສດ</translation>
 <translation id="953431725143473984">ປິດເຄື່ອງບໍ?</translation>
 <translation id="954052413789300507">ພື້ນທີ່ບໍ່ພຽງພໍສຳລັບ <ph name="FILENAME" />. ກະລຸນາສ້າງພື້ນທີ່ຫວ່າງກ່ອນ.</translation>
+<translation id="968627661524972577">ໃຊ້ແອັບຂອງທ່ານເພື່ອເຮັດທຸກຢ່າງທີ່ທ່ານຕ້ອງການຢູ່ Chromebook ຂອງທ່ານ. ທ່ານສາມາດຊອກຫາແອັບຂອງທ່ານໄດ້ໃນຕົວເປີດໃຊ້. ນອກຈາກນັ້ນ, ທ່ານຍັງສາມາດກົດປຸ່ມຕົວເປີດໃຊ້ຢູ່ແປ້ນພິມນີ້ໄດ້ນຳ.</translation>
 <translation id="974545358917229949">ສະແດງຜົນການຊອກຫາ <ph name="RESULT_COUNT" /> ລາຍການສຳລັບ <ph name="QUERY" /></translation>
 <translation id="98120814841227350">ໄປຫາທ້າຍເອກະສານ</translation>
 <translation id="987589956647469042">ອິນເຕີເນັດມືຖືເປີດຢູ່</translation>

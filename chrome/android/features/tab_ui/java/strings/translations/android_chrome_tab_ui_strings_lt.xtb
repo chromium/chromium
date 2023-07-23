@@ -37,6 +37,7 @@
 <translation id="4133493477912226187">Skirtukai (iš viso: <ph name="NUMBER_OF_TABS" />) atrodo susiję. Grupuoti juos?</translation>
 <translation id="4212246570487010370">Tęsti naršymą</translation>
 <translation id="4648718555153979859">Čia skirtukai suskirstyti į grupes</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{Uždarytus skirtukus rasite prie naujausių skirtukų „Chrome“ pagrindiniame meniu.}=1{Uždarytus skirtukus rasite prie naujausių skirtukų „Chrome“ pagrindiniame meniu. Inkognito skirtukas nebus pasiekiamas.}one{Uždarytus skirtukus rasite prie naujausių skirtukų „Chrome“ pagrindiniame meniu. # inkognito skirtukas nebus pasiekiamas.}few{Uždarytus skirtukus rasite prie naujausių skirtukų „Chrome“ pagrindiniame meniu. # inkognito skirtukai nebus pasiekiami.}many{Uždarytus skirtukus rasite prie naujausių skirtukų „Chrome“ pagrindiniame meniu. # inkognito skirtuko nebus pasiekiama.}other{Uždarytus skirtukus rasite prie naujausių skirtukų „Chrome“ pagrindiniame meniu. # inkognito skirtukų nebus pasiekiama.}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> atsiliepimas)}one{(<ph name="REVIEWS_COUNT_MANY" /> atsiliepimas)}few{(<ph name="REVIEWS_COUNT_MANY" /> atsiliepimai)}many{(<ph name="REVIEWS_COUNT_MANY" /> atsiliepimo)}other{(<ph name="REVIEWS_COUNT_MANY" /> atsiliepimų)}}</translation>
 <translation id="4850886885716139402">Žiūrėti</translation>
 <translation id="4870911314065352661">Uždaryti visus skirtukus?</translation>

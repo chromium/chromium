@@ -1575,6 +1575,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
     Jei reikia pagalbos šalinant su perdavimu susijusias problemas, apsilankykite
     <ph name="BEGIN_LINK" />
     pagalbos centre<ph name="END_LINK" />.</translation>
+<translation id="22649924370461580">Išsaugotos skirtukų grupės</translation>
 <translation id="2266957463645820432">IPP per USB (IPPUSB)</translation>
 <translation id="2268130516524549846">„Bluetooth“ neleidžiama</translation>
 <translation id="2268182915828370037">Išjungti failų sinchronizavimą?</translation>
@@ -1802,6 +1803,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2435248616906486374">Tinklas atjungtas</translation>
 <translation id="2435457462613246316">Rodyti slaptažodį</translation>
 <translation id="2436385001956947090">Kopijuoti nuorodą</translation>
+<translation id="2438853563451647815">Neprijungta prie spausdintuvo</translation>
 <translation id="2439626940657133600">Įkeliama „<ph name="WINDOW_TITLE" />“</translation>
 <translation id="2440604414813129000">Rodyti š&amp;altinį</translation>
 <translation id="2440823041667407902">Prieiga prie vietovės</translation>
@@ -4471,6 +4473,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4683629100208651599">Rašyti mažosiomis raidėmis</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (numatyta)</translation>
 <translation id="4684427112815847243">Viską sinchronizuoti</translation>
+<translation id="4687238339694011189">Įsitikinkite, kad spausdintuvas įjungtas ir prijungtas prie to paties tinklo kaip „Chromebook“, arba naudokite USB laidą</translation>
 <translation id="4687613760714619596">Nežinomas įrenginys (<ph name="DEVICE_ID" />)</translation>
 <translation id="4687718960473379118">Svetainių siūlomi skelbimai</translation>
 <translation id="4688036121858134881">Vietinio žurnalo ID: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
@@ -6127,6 +6130,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6113434369102685411">Nustatykite numatytąjį „Chrome“ naršyklės ir „<ph name="DEVICE_TYPE" />“ paleidimo priemonės paieškos variklį</translation>
 <translation id="6113942107547980621">Norėdami naudoti „Smart Lock“ telefone pereikite į pagrindinio naudotojo profilį</translation>
 <translation id="6116921718742659598">Keisti kalbos ir įvesties nustatymus</translation>
+<translation id="6119008366402292080">Spausdintuvas nepasiekiamas</translation>
 <translation id="6119927814891883061">Įrenginį pavadinti „<ph name="DEVICE_NAME" />“</translation>
 <translation id="6119972796024789243">Spalvų taisymas</translation>
 <translation id="6120707837086723438">Matote siūlomus receptus, rodomus pagal jūsų naujausią su receptais susijusios paieškos veiklą.
@@ -6137,6 +6141,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6122081475643980456">Jūsų interneto ryšys yra kontroliuojamas</translation>
 <translation id="6122093587541546701">El. paštas (pasirenkama):</translation>
 <translation id="6122095009389448667">Toliau neleisti šiai svetainei peržiūrėti iškarpinės</translation>
+<translation id="6122513630797178831">Išsaugoti kortelės saugos kodą (CVC)</translation>
 <translation id="6122600716821516697">Bendrinti su šiuo įrenginiu?</translation>
 <translation id="6122831415929794347">Išjungti saugų naršymą?</translation>
 <translation id="6124650939968185064">Toliau pateikti plėtiniai priklauso nuo šio plėtinio:</translation>

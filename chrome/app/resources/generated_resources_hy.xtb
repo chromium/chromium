@@ -1559,6 +1559,7 @@
 <translation id="2263189956353037928">Դուրս գալ ու նորից մտնել</translation>
 <translation id="2263371730707937087">Էկրանի թարմացման հաճախականությունը</translation>
 <translation id="2263679799334060788">Ձեր կարծիքը բարձր է գնահատվում և օգնում է մեզ բարելավել Google Cast-ը։ Հեռարձակման հետ կապված անսարքությունները վերացնելու համար անցեք <ph name="BEGIN_LINK" />օգնության կենտրոն<ph name="END_LINK" />։</translation>
+<translation id="22649924370461580">Պահված ներդիրների խմբեր</translation>
 <translation id="2266957463645820432">IPP` USB-ի միջոցով (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth-ն անջատված է</translation>
 <translation id="2268182915828370037">Անջատե՞լ ֆայլերի համաժամացումը</translation>
@@ -1786,6 +1787,7 @@
 <translation id="2435248616906486374">Ցանցն անջատված է</translation>
 <translation id="2435457462613246316">Ցույց տալ գաղտնաբառը</translation>
 <translation id="2436385001956947090">Պատճենել &amp;հղումը</translation>
+<translation id="2438853563451647815">Տպիչի հետ կապ չի հաստատվել</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" />-ի բեռնում</translation>
 <translation id="2440604414813129000">Դիտել ա&amp;ղբյուրը</translation>
 <translation id="2440823041667407902">Իմ տեղակայումը</translation>
@@ -4454,6 +4456,7 @@
 <translation id="4683629100208651599">Դարձնել փոքրատառ</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (կանխադրված)</translation>
 <translation id="4684427112815847243">Համաժամացնել բոլորը</translation>
+<translation id="4687238339694011189">Համոզվեք, որ ձեր տպիչն անջատված չէ և միացած է նույն ցանցին, ինչ ձեր Chromebook-ը, կամ օգտագործեք USB մալուխ</translation>
 <translation id="4687613760714619596">Անհայտ սարք (<ph name="DEVICE_ID" />)</translation>
 <translation id="4687718960473379118">Կայքերի առաջարկած գովազդներ</translation>
 <translation id="4688036121858134881">Մատյանի տեղային ID՝ <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />:</translation>
@@ -6109,6 +6112,7 @@
 <translation id="6113434369102685411">Ընտրեք կանխադրված որոնողական համակարգ Chrome դիտարկիչի և <ph name="DEVICE_TYPE" />-ի գործարկիչի համար</translation>
 <translation id="6113942107547980621">Smart Lock-ն օգտագործելու համար ձեր հեռախոսում անցեք հիմնական օգտատիրոջ պրոֆիլ</translation>
 <translation id="6116921718742659598">Փոխել լեզուն և ներածման կարգավորումները</translation>
+<translation id="6119008366402292080">Հասանելի տպիչներ չկան</translation>
 <translation id="6119927814891883061"><ph name="DEVICE_NAME" /> սարքի անվան փոփոխություն</translation>
 <translation id="6119972796024789243">Գունաշտկում</translation>
 <translation id="6120707837086723438">Այս առաջարկվող բաղադրատոմսերն ընտրվել են որոնումների պատմությունից ձեր վերջին հարցումների հիման վրա։
@@ -6119,6 +6123,7 @@
 <translation id="6122081475643980456">Ձեր կապակցումը համացանցին վերահսկվում է</translation>
 <translation id="6122093587541546701">Էլփոստ պարտադիր չէ՝</translation>
 <translation id="6122095009389448667">Արգելափակել այս կայքի մուտքը սեղմատախտակ</translation>
+<translation id="6122513630797178831">Պահել CVC-ն</translation>
 <translation id="6122600716821516697">Կիսվե՞լ ֆայլերով այս սարքի հետ</translation>
 <translation id="6122831415929794347">Անջատե՞լ ապահով դիտարկումը</translation>
 <translation id="6124650939968185064">Հետևյալ ընդլայնումները կախված են այս ընդլայնումից՝</translation>

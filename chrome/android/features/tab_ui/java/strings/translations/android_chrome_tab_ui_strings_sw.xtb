@@ -37,6 +37,7 @@
 <translation id="4133493477912226187">Vichupo <ph name="NUMBER_OF_TABS" /> vinaonekana kuwa vinahusiana. Ungependa kuvipanga pamoja?</translation>
 <translation id="4212246570487010370">Endelea kuvinjari</translation>
 <translation id="4648718555153979859">Vichupo vyako vimewekwa katika kikundi kimoja hapa</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{Unaweza kupata vichupo ulivyofunga kwenye vichupo vya Hivi Karibuni kwenye menyu kuu ya Chrome.}=1{Unaweza kupata vichupo ulivyofunga kwenye vichupo vya Hivi Karibuni kwenye menyu kuu ya Chrome. Kichupo chako Fiche hakitapatikana.}other{Unaweza kupata vichupo ulivyofunga kwenye vichupo vya Hivi Karibuni kwenye menyu kuu ya Chrome. Vichupo vyako Fiche # havitapatikana.}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(Maoni <ph name="REVIEWS_COUNT_ONE" />)}other{(Maoni <ph name="REVIEWS_COUNT_MANY" />)}}</translation>
 <translation id="4850886885716139402">Mwonekano</translation>
 <translation id="4870911314065352661">Unataka kufunga vichupo vyote?</translation>

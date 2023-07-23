@@ -1568,6 +1568,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
     Ili upate usaidizi wa kutatua matatizo ya kutuma maudhui, tafadhali rejelea
     <ph name="BEGIN_LINK" />
     kituo cha usaidizi<ph name="END_LINK" />.</translation>
+<translation id="22649924370461580">Vikundi vya vichupo vilivyohifadhiwa</translation>
 <translation id="2266957463645820432">IPP kupitia USB (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth imelemazwa</translation>
 <translation id="2268182915828370037">Ungependa kuzima usawazishaji wa faili?</translation>
@@ -1796,6 +1797,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2435248616906486374">Mtandao Umekatizwa</translation>
 <translation id="2435457462613246316">Onyesha nenosiri</translation>
 <translation id="2436385001956947090">Nakili kiungo</translation>
+<translation id="2438853563451647815">Haijaunganishwa kwenye printa</translation>
 <translation id="2439626940657133600">Inapakia <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">Tazama &amp;asili</translation>
 <translation id="2440823041667407902">Ufikiaji wa eneo</translation>
@@ -4463,6 +4465,7 @@ Ishara za kifaa zinaweza kujumuisha maelezo kuhusu kivinjari, mfumo wa uendeshaj
 <translation id="4683629100208651599">Fanya Ziwe Herufi Ndogo</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (chaguomsingi)</translation>
 <translation id="4684427112815847243">Sawazisha kila kitu</translation>
+<translation id="4687238339694011189">Hakikisha kuwa printa yako imewashwa na imeunganishwa kwenye mtandao sawa na Chromebook yako au utumie kebo ya USB</translation>
 <translation id="4687613760714619596">Kifaa Kisichojulikana (<ph name="DEVICE_ID" />)</translation>
 <translation id="4687718960473379118">Matangazo yanayopendekezwa na tovuti</translation>
 <translation id="4688036121858134881">Kitambulisho cha kumbukumbu ya mfumo: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
@@ -6118,6 +6121,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="6113434369102685411">Weka mtambo wako chaguomsingi wa kutafuta kwenye kivinjari cha Chrome na Kifungua Programu cha <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Ili utumie Smart Lock, badilisha wasifu wa mtumiaji wa msingi kwenye simu yako</translation>
 <translation id="6116921718742659598">Badilisha mipangilio ya lugha na uingizaji</translation>
+<translation id="6119008366402292080">Hakuna printa iliyopatikana</translation>
 <translation id="6119927814891883061">Kipe kifaa jina la <ph name="DEVICE_NAME" /></translation>
 <translation id="6119972796024789243">Usahihishaji wa rangi</translation>
 <translation id="6120707837086723438">Unaona mapishi yaliyopendekezwa kulingana na shughuli zako za utafutaji za hivi karibuni za utafutaji wa mapishi.
@@ -6128,6 +6132,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="6122081475643980456">Muunganisho wako wa Intaneti unadhibitiwa</translation>
 <translation id="6122093587541546701">Barua pepe (hiari):</translation>
 <translation id="6122095009389448667">Endelea kuzuia tovuti hii ili isione ubao wa kunakili</translation>
+<translation id="6122513630797178831">Hifadhi CVC</translation>
 <translation id="6122600716821516697">Ungependa kushiriki na kifaa hiki?</translation>
 <translation id="6122831415929794347">Ungependa kuzima kipengele cha Kuvinjari Salama?</translation>
 <translation id="6124650939968185064">Viendelezi vinavyofuata vinategemea kiendelezi hiki:</translation>
