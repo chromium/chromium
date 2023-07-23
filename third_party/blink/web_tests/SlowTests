@@ -1474,7 +1474,9 @@ crbug.com/1410608 http/tests/inspector-protocol/storage/dom-storage-set-items-by
 crbug.com/1372747 [ Win ] http/tests/uri/css-href.php [ Slow ]
 
 crbug.com/1376679 [ Mac12 Release ] virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-dynamic.tentative.html [ Slow ]
-crbug.com/1450858 virtual/threaded/external/wpt/scroll-animations/css/animation-timeline-view-functional-notation.tentative.html [ Slow ]
+crbug.com/1450858 [ Debug Linux ] virtual/threaded/external/wpt/scroll-animations/css/animation-timeline-view-functional-notation.tentative.html [ Slow ]
+crbug.com/1450858 [ Debug Mac13 ] virtual/threaded/external/wpt/scroll-animations/css/animation-timeline-view-functional-notation.tentative.html [ Slow ]
+crbug.com/1450858 [ Release ] virtual/threaded/external/wpt/scroll-animations/css/animation-timeline-view-functional-notation.tentative.html [ Slow ]
 
 crbug.com/1366717 http/tests/inspector-protocol/storage/indexed-db-set-items-by-storage-key.js [ Slow ]
 
