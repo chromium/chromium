@@ -722,10 +722,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   std::unique_ptr<crosapi::BrowserLoader> browser_loader_;
 
-  // May be null in tests.
-  const raw_ptr<ComponentUpdateService, ExperimentalAsh>
-      component_update_service_;
-
   // Delegate handling various concerns regarding the version service.
   std::unique_ptr<BrowserVersionServiceAsh::Delegate> version_service_delegate_;
 

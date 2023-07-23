@@ -578,7 +578,6 @@ BrowserManager::BrowserManager(
     std::unique_ptr<BrowserLoader> browser_loader,
     component_updater::ComponentUpdateService* update_service)
     : browser_loader_(std::move(browser_loader)),
-      component_update_service_(update_service),
       environment_provider_(std::make_unique<EnvironmentProvider>()),
       launch_at_login_screen_(
           // NOTE: We only want to pre-launch Lacros if Ash is launched in login
