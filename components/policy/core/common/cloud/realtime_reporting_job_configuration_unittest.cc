@@ -319,6 +319,12 @@ TEST_F(RealtimeReportingJobConfigurationTest, ShouldRetry_PermanentFailure) {
   EXPECT_EQ(DeviceManagementService::Job::NO_RETRY, should_retry);
 }
 
+TEST_F(RealtimeReportingJobConfigurationTest, ShouldRetry_InvalidResponse) {
+  auto should_retry = configuration_->ShouldRetry(
+      DeviceManagementService::kSuccess, "some error");
+  EXPECT_EQ(DeviceManagementService::Job::NO_RETRY, should_retry);
+}
+
 TEST_F(RealtimeReportingJobConfigurationTest, OnBeforeRetry_HttpFailure) {
   // No change should be made to the payload in this case.
   auto original_payload = configuration_->GetPayload();
@@ -341,6 +347,13 @@ TEST_F(RealtimeReportingJobConfigurationTest, OnBeforeRetry_PartialBatch) {
   EXPECT_EQ(1u, events->size());
   auto& event = (*events)[0];
   EXPECT_EQ(kIds[1], *event.GetDict().FindString(kEventId));
+}
+
+TEST_F(RealtimeReportingJobConfigurationTest, OnBeforeRetry_InvalidResponse) {
+  // No change should be made to the payload in this case.
+  auto original_payload = configuration_->GetPayload();
+  configuration_->OnBeforeRetry(DeviceManagementService::kSuccess, "error");
+  EXPECT_EQ(original_payload, configuration_->GetPayload());
 }
 
 }  // namespace policy
