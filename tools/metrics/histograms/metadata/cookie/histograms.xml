@@ -22,6 +22,16 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Cookie.AvgCookieJarSizePerKey" units="kibibytes"
+    expires_after="2023-12-22">
+  <owner>dylancutler@google.com</owner>
+  <owner>src/net/cookies/OWNERS</owner>
+  <summary>
+    This histogram records the average sum of the sizes of the name and value of
+    all cookies per domain. This metric is recorded every 10 minutes.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.ClockSkew.ExpiredWithoutSkew" enum="Boolean"
     expires_after="2024-04-01">
   <owner>kyraseevers@chromium.org</owner>
@@ -77,6 +87,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded when a problem occurs trying to commit changes to the cookie store
     back to disk, in the SQLite store.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.CookieJarSize" units="kibibytes"
+    expires_after="2023-12-22">
+  <owner>dylancutler@google.com</owner>
+  <owner>src/net/cookies/OWNERS</owner>
+  <summary>
+    This histogram records the sum of the sizes of the name and value of all
+    cookies in the cookie jar. This metric is recorded every 10 minutes.
   </summary>
 </histogram>
 
@@ -611,6 +631,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.MaxCookieJarSizePerKey" units="kibibytes"
+    expires_after="2023-12-22">
+  <owner>dylancutler@google.com</owner>
+  <owner>src/net/cookies/OWNERS</owner>
+  <summary>
+    This histogram records the maximum sum of the sizes of the name and value of
+    all cookies that a single domain is using. This metric is recorded every 10
+    minutes.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.MaxSameSiteNoneCookiesPerKey" units="units"
     expires_after="2023-12-24">
   <owner>dylancutler@google.com</owner>
@@ -918,6 +949,16 @@ chromium-metrics-reviews@google.com.
   <owner>bingler@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>The amount of time (ms) to initialize the cookies database.</summary>
+</histogram>
+
+<histogram name="Cookie.TimeToRecordPeriodicStats" units="ms"
+    expires_after="2023-12-22">
+  <owner>bingler@chromium.org</owner>
+  <owner>src/net/cookies/OWNERS</owner>
+  <summary>
+    The amount of time (ms) to record periodic statistics for logging. This
+    metric is recorded every 10 minutes.
+  </summary>
 </histogram>
 
 <histogram name="Cookie.TruncatingCharacterInCookieString"

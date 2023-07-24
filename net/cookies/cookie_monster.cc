@@ -1432,6 +1432,7 @@ CookieMonster::CookieMap::iterator CookieMonster::InternalInsertCookie(
                     });
   if (ShouldUpdatePersistentStore(cc_ptr) && sync_to_store)
     store_->AddCookie(*cc_ptr);
+
   auto inserted = cookies_.insert(CookieMap::value_type(key, std::move(cc)));
 
   LogCookieTypeToUMA(cc_ptr, access_result);
@@ -2321,6 +2322,9 @@ void CookieMonster::RecordPeriodicStats(const base::Time& current_time) {
 
 bool CookieMonster::DoRecordPeriodicStats() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  SCOPED_UMA_HISTOGRAM_TIMER("Cookie.TimeToRecordPeriodicStats");
+
   // These values are all bogus if we have only partially loaded the cookies.
   if (started_fetching_all_cookies_ && !finished_fetching_all_cookies_)
     return false;
@@ -2352,18 +2356,37 @@ bool CookieMonster::DoRecordPeriodicStats() {
   UMA_HISTOGRAM_COUNTS_10000("Cookie.NumKeys", num_keys_);
 
   std::map<std::string, size_t> n_same_site_none_cookies;
+  size_t n_bytes = 0;
+  std::map<std::string, size_t> n_bytes_per_key;
+
   for (const auto& [host_key, host_cookie] : cookies_) {
+    size_t cookie_n_bytes = NameValueSizeBytes(*host_cookie);
+    n_bytes += cookie_n_bytes;
+    n_bytes_per_key[host_key] += cookie_n_bytes;
+
     if (!host_cookie || !host_cookie->IsEffectivelySameSiteNone())
       continue;
     n_same_site_none_cookies[host_key]++;
   }
+
   size_t max_n_cookies = 0;
   for (const auto& entry : n_same_site_none_cookies) {
     max_n_cookies = std::max(max_n_cookies, entry.second);
   }
+  size_t max_n_bytes = 0;
+  for (const auto& entry : n_bytes_per_key) {
+    max_n_bytes = std::max(max_n_bytes, entry.second);
+  }
+
   // Can be up to 180 cookies, the max per-domain.
   base::UmaHistogramCounts1000("Cookie.MaxSameSiteNoneCookiesPerKey",
                                max_n_cookies);
+  base::UmaHistogramCounts100000("Cookie.CookieJarSize", n_bytes >> 10);
+  base::UmaHistogramCounts100000(
+      "Cookie.AvgCookieJarSizePerKey",
+      (n_bytes >> 10) / std::max(num_keys_, static_cast<size_t>(1)));
+  base::UmaHistogramCounts100000("Cookie.MaxCookieJarSizePerKey",
+                                 max_n_bytes >> 10);
 
   // Collect stats for partitioned cookies if they are enabled.
   if (base::FeatureList::IsEnabled(features::kPartitionedCookies)) {

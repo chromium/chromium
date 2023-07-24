@@ -37,6 +37,7 @@
 #include "base/test/test_future.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "cookie_partition_key.h"
 #include "net/base/features.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/canonical_cookie_test_helpers.h"
@@ -3621,8 +3622,9 @@ TEST_F(CookieMonsterTest, CookieCount2Histogram) {
   {
     base::HistogramTester histogram_tester;
     ASSERT_TRUE(cm->DoRecordPeriodicStatsForTesting());
-    histogram_tester.ExpectUniqueSample("Cookie.Count2", /*sample=*/0,
-                                        /*count=*/1);
+    histogram_tester.ExpectUniqueSample("Cookie.Count2",
+                                        /*sample=*/0,
+                                        /*expected_bucket_count=*/1);
   }
 
   {
@@ -3641,7 +3643,92 @@ TEST_F(CookieMonsterTest, CookieCount2Histogram) {
     ASSERT_TRUE(cm->DoRecordPeriodicStatsForTesting());
 
     histogram_tester.ExpectUniqueSample("Cookie.Count2", /*sample=*/1,
-                                        /*count=*/1);
+                                        /*expected_bucket_count=*/1);
+  }
+}
+
+TEST_F(CookieMonsterTest, CookieJarSizeHistograms) {
+  auto cm = std::make_unique<CookieMonster>(nullptr, net::NetLog::Get());
+
+  {
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(cm->DoRecordPeriodicStatsForTesting());
+    histogram_tester.ExpectUniqueSample("Cookie.CookieJarSize",
+                                        /*sample=*/0,
+                                        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample("Cookie.AvgCookieJarSizePerKey",
+                                        /*sample=*/0,
+                                        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample("Cookie.MaxCookieJarSizePerKey",
+                                        /*sample=*/0,
+                                        /*expected_bucket_count=*/1);
+  }
+
+  auto set_cookie =
+      [&](const std::string& name, int cookie_value_size_kb,
+          const std::string& domain, CookieSameSite same_site,
+          const absl::optional<CookiePartitionKey>& partition_key) {
+        auto cc = CanonicalCookie::CreateUnsafeCookieForTesting(
+            name, std::string(cookie_value_size_kb * 1024, '0'), domain, "/",
+            base::Time(), base::Time::Now() + base::Minutes(59), base::Time(),
+            base::Time(),
+            /*secure=*/true,
+            /*httponly=*/false, same_site, COOKIE_PRIORITY_DEFAULT,
+            /*same_party=*/false, partition_key);
+        GURL source_url = cookie_util::SimulatedCookieSource(*cc, "https");
+        ASSERT_TRUE(SetCanonicalCookie(cm.get(), std::move(cc), source_url,
+                                       /*can_modify_httponly=*/true));
+      };
+
+  {  // Add unpartitioned cookie.
+    base::HistogramTester histogram_tester;
+    set_cookie("a", 2, "a.url", CookieSameSite::NO_RESTRICTION, absl::nullopt);
+    ASSERT_TRUE(cm->DoRecordPeriodicStatsForTesting());
+
+    histogram_tester.ExpectUniqueSample("Cookie.CookieJarSize",
+                                        /*sample=*/2,
+                                        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample("Cookie.AvgCookieJarSizePerKey",
+                                        /*sample=*/2,
+                                        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample("Cookie.MaxCookieJarSizePerKey",
+                                        /*sample=*/2,
+                                        /*expected_bucket_count=*/1);
+  }
+
+  {  // Add partitioned cookie, should not impact the counter.
+    base::HistogramTester histogram_tester;
+    set_cookie("b", 3, "a.url", CookieSameSite::NO_RESTRICTION,
+               CookiePartitionKey::FromURLForTesting(
+                   GURL("https://toplevelsite.com")));
+    ASSERT_TRUE(cm->DoRecordPeriodicStatsForTesting());
+
+    histogram_tester.ExpectUniqueSample("Cookie.CookieJarSize",
+                                        /*sample=*/2,
+                                        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample("Cookie.AvgCookieJarSizePerKey",
+                                        /*sample=*/2,
+                                        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample("Cookie.MaxCookieJarSizePerKey",
+                                        /*sample=*/2,
+                                        /*expected_bucket_count=*/1);
+  }
+
+  {  // Add unpartitioned cookie from another domain. Is also SameSite=Lax to
+     // ensure the counter includes SameSite cookies.
+    base::HistogramTester histogram_tester;
+    set_cookie("c", 4, "c.url", CookieSameSite::LAX_MODE, absl::nullopt);
+    ASSERT_TRUE(cm->DoRecordPeriodicStatsForTesting());
+
+    histogram_tester.ExpectUniqueSample("Cookie.CookieJarSize",
+                                        /*sample=*/6,
+                                        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample("Cookie.AvgCookieJarSizePerKey",
+                                        /*sample=*/3,
+                                        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample("Cookie.MaxCookieJarSizePerKey",
+                                        /*sample=*/4,
+                                        /*expected_bucket_count=*/1);
   }
 }
 
