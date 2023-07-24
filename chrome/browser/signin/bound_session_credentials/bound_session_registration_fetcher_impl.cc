@@ -97,16 +97,18 @@ void BoundSessionRegistrationFetcherImpl::OnURLLoaderComplete(
   if (net_success && network::IsSuccessfulStatus(*http_response_code)) {
     absl::optional<base::Value::Dict> maybe_root =
         base::JSONReader::ReadDict(*response_body);
+
+    // TODO(b/273920956): Require proper registration params once the server
+    // returns correctly formatted registration response.
+    std::string* session_id = nullptr;
     if (maybe_root) {
       // TODO(kristianm): Also parse credentials field
-      std::string* session_id = maybe_root->FindString(kSessionIdentifier);
-      if (session_id) {
-        return_value = CreateRegistrationParams(
-            net::SchemefulSite(registration_params_.RegistrationEndpoint())
-                .Serialize(),
-            *session_id, wrapped_key_str_);
-      }
+      session_id = maybe_root->FindString(kSessionIdentifier);
     }
+    return_value = CreateRegistrationParams(
+        net::SchemefulSite(registration_params_.RegistrationEndpoint())
+            .Serialize(),
+        session_id ? *session_id : "", wrapped_key_str_);
   }
 
   // Finish the request, object is invalid after this
