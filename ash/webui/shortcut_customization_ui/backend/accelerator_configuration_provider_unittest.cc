@@ -1772,6 +1772,19 @@ TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorConflictLocked) {
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_CROSH),
       result->shortcut_name);
+
+  // Now try a reserved accelerator.
+  const ui::Accelerator reserved_accelerator(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .AddAccelerator(mojom::AcceleratorSource::kAsh,
+                          AcceleratorAction::kToggleMirrorMode,
+                          reserved_accelerator, &result);
+
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kConflict, result->result);
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_AMBIENT_ACCELERATOR_DESCRIPTION_CYCLE_FORWARD_MRU),
+            result->shortcut_name);
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorConflictReset) {
@@ -2275,6 +2288,8 @@ TEST_F(AcceleratorConfigurationProviderTest, GetConflictAccelerator) {
        AcceleratorAction::kToggleMirrorMode},
       {/*trigger_on_press=*/true, ui::VKEY_M, ui::EF_COMMAND_DOWN,
        AcceleratorAction::kOpenCrosh},
+      {/*trigger_on_press=*/true, ui::VKEY_TAB, ui::EF_ALT_DOWN,
+       AcceleratorAction::kCycleForwardMru},
   };
 
   AshAcceleratorConfiguration* config =
@@ -2335,6 +2350,19 @@ TEST_F(AcceleratorConfigurationProviderTest, GetConflictAccelerator) {
                                   /*action_id=*/1111, invalid_accelerator,
                                   &invalid_result);
   EXPECT_EQ(mojom::AcceleratorConfigResult::kNotFound, invalid_result->result);
+
+  // Check conflict with a reserved accelerator.
+  const ui::Accelerator reserved_accelerator(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+  AcceleratorResultDataPtr reserved_result;
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .GetConflictAccelerator(mojom::AcceleratorSource::kAsh,
+                                  AcceleratorAction::kCycleForwardMru,
+                                  reserved_accelerator, &reserved_result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kConflict, reserved_result->result);
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_AMBIENT_ACCELERATOR_DESCRIPTION_CYCLE_FORWARD_MRU),
+            reserved_result->shortcut_name);
 }
 
 TEST_F(AcceleratorConfigurationProviderTest,
