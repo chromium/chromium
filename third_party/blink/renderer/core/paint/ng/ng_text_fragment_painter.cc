@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/selection_bounds_recorder.h"
-#include "third_party/blink/renderer/core/paint/text_painter.h"
 #include "third_party/blink/renderer/core/paint/text_painter_base.h"
 #include "third_party/blink/renderer/core/style/applied_text_decoration.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -220,7 +219,7 @@ void NGTextFragmentPainter::PaintSymbol(const LayoutObject* layout_object,
   Color color(layout_object->ResolveColor(GetCSSPropertyColor()));
   if (BoxModelObjectPainter::ShouldForceWhiteBackgroundForPrintEconomy(
           layout_object->GetDocument(), style)) {
-    color = TextPainter::TextColorForWhiteBackground(color);
+    color = TextPainterBase::TextColorForWhiteBackground(color);
   }
   // Apply the color to the list marker text.
   context.SetFillColor(color);
