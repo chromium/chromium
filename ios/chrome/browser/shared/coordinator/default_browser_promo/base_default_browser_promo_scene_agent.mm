@@ -269,10 +269,7 @@ constexpr base::TimeDelta kPromoTimeout = base::Seconds(45);
                        status:(const WebStateListStatus&)status {
   switch (change.type()) {
     case WebStateListChange::Type::kStatusOnly:
-      // TODO(crbug.com/1442546): Move the implementation from
-      // webStateList:didChangeActiveWebState:oldWebState:atIndex:reason to
-      // here. Note that here is reachable only when `reason` ==
-      // ActiveWebStateChangeReason::Activated.
+      // The activation is handled after this switch statement.
       break;
     case WebStateListChange::Type::kDetach:
       // Do nothing when a WebState is detached.
@@ -298,15 +295,11 @@ constexpr base::TimeDelta kPromoTimeout = base::Seconds(45);
       break;
     }
   }
-}
 
-- (void)webStateList:(WebStateList*)webStateList
-    didChangeActiveWebState:(web::WebState*)newWebState
-                oldWebState:(web::WebState*)oldWebState
-                    atIndex:(int)atIndex
-                     reason:(ActiveWebStateChangeReason)reason {
-  if (newWebState != self.webStateToListenTo) {
-    [self cancelShowPromoTimer];
+  if (status.active_web_state_change()) {
+    if (status.new_active_web_state != self.webStateToListenTo) {
+      [self cancelShowPromoTimer];
+    }
   }
 }
 
