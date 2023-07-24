@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_coordinator.h"
 
+#import "base/feature_list.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -73,6 +75,11 @@
                                 ACCESS_POINT_NTP_FEED_TOP_PROMO
                   presenter:self
          baseViewController:self.feedTopSectionViewController];
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    self.signinPromoMediator.signinPromoAction =
+        SigninPromoAction::kSigninSheet;
+  }
   self.signinPromoMediator.consumer = self.feedTopSectionMediator;
   self.feedTopSectionMediator.signinPromoMediator = self.signinPromoMediator;
   self.feedTopSectionMediator.ntpDelegate = self.ntpDelegate;

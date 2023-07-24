@@ -4,8 +4,10 @@
 
 #import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_mediator.h"
 
+#import "base/feature_list.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -103,7 +105,11 @@
 // Called when a user changes the syncing state.
 - (void)onPrimaryAccountChanged:
     (const signin::PrimaryAccountChangeEvent&)event {
-  switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
+  auto consent =
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+          ? signin::ConsentLevel::kSignin
+          : signin::ConsentLevel::kSync;
+  switch (event.GetEventTypeFor(consent)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:
       if (!self.signinPromoMediator.signinInProgress) {
         // User has signed in, stop showing the promo.
@@ -158,8 +164,12 @@
               signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO
                                 authenticationService:self.authenticationService
                                           prefService:self.prefService]) {
+    auto consent =
+        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+            ? signin::ConsentLevel::kSignin
+            : signin::ConsentLevel::kSync;
     self.shouldShowSigninPromo =
-        !self.identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync);
+        !self.identityManager->HasPrimaryAccount(consent);
   }
 }
 

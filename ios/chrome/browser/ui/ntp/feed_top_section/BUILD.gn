@@ -16,6 +16,7 @@ source_set("feed_top_section") {
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     "//components/signin/public/identity_manager/objc",
+    "//components/sync/base:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/discover_feed:constants",
     "//ios/chrome/browser/ntp:features",
