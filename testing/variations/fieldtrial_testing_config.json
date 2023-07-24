@@ -14726,9 +14726,6 @@
     "V8Maglev": [
         {
             "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
                 "chromeos",
                 "chromeos_lacros",
                 "fuchsia",
@@ -14741,6 +14738,40 @@
                     "name": "Enabled",
                     "enable_features": [
                         "V8Maglev"
+                    ]
+                }
+            ]
+        }
+    ],
+    "V8MaglevAndroid": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "MaglevAndTF",
+                    "enable_features": [
+                        "V8Maglev",
+                        "V8Turbofan"
+                    ]
+                },
+                {
+                    "name": "MaglevAndNoTF",
+                    "enable_features": [
+                        "V8Maglev"
+                    ],
+                    "disable_features": [
+                        "V8Turbofan"
+                    ]
+                },
+                {
+                    "name": "NoMaglevAndNoTF",
+                    "disable_features": [
+                        "V8Maglev",
+                        "V8Turbofan"
                     ]
                 }
             ]
@@ -14764,45 +14795,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "V8MemoryReducerSingleGC"
-                    ]
-                }
-            ]
-        }
-    ],
-    "V8NoTurbofan": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Control_20230227",
-                    "enable_features": [
-                        "V8Turbofan"
-                    ],
-                    "disable_features": [
-                        "V8SlowHistogramsNoTurbofan"
-                    ]
-                },
-                {
-                    "name": "Turbofan_20230227",
-                    "enable_features": [
-                        "V8SlowHistogramsNoTurbofan",
-                        "V8Turbofan"
-                    ]
-                },
-                {
-                    "name": "NoTurbofan_20230227",
-                    "enable_features": [
-                        "V8SlowHistogramsNoTurbofan"
-                    ],
-                    "disable_features": [
-                        "V8Turbofan"
                     ]
                 }
             ]
