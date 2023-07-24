@@ -283,21 +283,31 @@ export class ProgressCenterPanel {
         console.warn('Policy error must be supplied');
         return '';
       }
-      // TODO(b/279435843): Replace with translation strings.
       switch (item.policyError) {
         case PolicyErrorType.DLP:
         case PolicyErrorType.ENTERPRISE_CONNECTORS:
+          if (!item.policyFileCount) {
+            console.warn('Policy file count missing');
+            return '';
+          }
           switch (item.type) {
             case ProgressItemType.COPY:
-              return 'Blocked copy';
+              return item.policyFileCount === 1 ?
+                  str('DLP_FILES_COPY_BLOCKED_TITLE_SINGLE') :
+                  strf(
+                      'DLP_FILES_COPY_BLOCKED_TITLE_MULTIPLE',
+                      item.policyFileCount);
             case ProgressItemType.MOVE:
-              return 'Blocked move';
-            case ProgressItemType.TRANSFER:
-              return 'Blocked transfer';
+              return item.policyFileCount === 1 ?
+                  str('DLP_FILES_MOVE_BLOCKED_TITLE_SINGLE') :
+                  strf(
+                      'DLP_FILES_MOVE_BLOCKED_TITLE_MULTIPLE',
+                      item.policyFileCount);
             default:
               console.warn(`Unexpected task type: ${item.type}`);
               return '';
           }
+        // TODO(b/279435843): Replace with translation strings.
         case PolicyErrorType.DLP_WARNING_TIMEOUT:
           switch (item.type) {
             case ProgressItemType.COPY:
@@ -357,17 +367,40 @@ export class ProgressCenterPanel {
         // General error doesn't have secondary text.
         return '';
       }
-      if (!item.policyFileCount) {
-        console.warn('Policy file count missing');
-        return '';
-      }
-      // TODO(b/279435843): Replace with translation strings.
       switch (item.policyError) {
         case PolicyErrorType.DLP:
+          if (!item.policyFileCount) {
+            console.warn('Policy file count missing');
+            return '';
+          }
+          if (item.policyFileCount === 1) {
+            if (!item.policyFileName) {
+              console.warn('Policy file name missing');
+              return '';
+            }
+            return strf(
+                'DLP_FILES_BLOCKED_MESSAGE_POLICY_SINGLE', item.policyFileName);
+          } else {
+            return str('DLP_FILES_BLOCKED_MESSAGE_MULTIPLE');
+          }
         case PolicyErrorType.ENTERPRISE_CONNECTORS:
-          return (item.policyFileCount === 1) ? `File was blocked.` :
-                                                `Review for further details`;
+          if (!item.policyFileCount) {
+            console.warn('Policy file count missing');
+            return '';
+          }
+          if (item.policyFileCount === 1) {
+            if (!item.policyFileName) {
+              console.warn('Policy file name missing');
+              return '';
+            }
+            return strf(
+                'DLP_FILES_BLOCKED_MESSAGE_CONTENT_SINGLE',
+                item.policyFileName);
+          } else {
+            return str('DLP_FILES_BLOCKED_MESSAGE_MULTIPLE');
+          }
         case PolicyErrorType.DLP_WARNING_TIMEOUT:
+          // TODO(b/279435843): Replace with translation strings.
           switch (item.type) {
             case ProgressItemType.COPY:
               return 'Confirmation was required to continue copying' +
