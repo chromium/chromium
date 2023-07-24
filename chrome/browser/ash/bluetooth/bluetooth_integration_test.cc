@@ -11,9 +11,14 @@
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ref.h"
-#include "base/run_loop.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_switches.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "dbus/object_path.h"
@@ -22,7 +27,6 @@
 #include "device/bluetooth/floss/floss_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
-#include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/state_observer.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
@@ -63,6 +67,13 @@ class BluetoothPowerStateObserver : public ui::test::ObservationStateObserver<
 
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BluetoothPowerStateObserver,
                                     kBluetoothPowerState);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kButtonToggled);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExists);
+
+constexpr char kBluetoothDevicesSubpagePath[] = "bluetoothDevices";
+constexpr char kCheckJsElementIsChecked[] = "(el) => { return el.checked; }";
+constexpr char kCheckJsElementIsNotChecked[] =
+    "(el) => { return !el.checked; }";
 
 // Give all widgets on the same display (having the same root window) the same
 // Kombucha context. This is useful for ash system UI because it uses a variety
@@ -89,37 +100,94 @@ class BluetoothIntegrationTest : public InteractiveBrowserTest {
     views::ElementTrackerViews::SetContextOverrideCallback({});
   }
 
- private:
+  // InteractiveBrowserTest:
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTest::SetUpOnMainThread();
+
+    bluez_dbus_manager_ = BluezDBusManager::Get();
+    if (!bluez_dbus_manager_) {
+      // TODO(crbug.com/1464750): Come up with a better way to skip tests based
+      // on hardware support, similar to Tast hwdep.D(hwdep.Bluetooth()).
+      LOG(WARNING) << "Bluetooth (via bluez) not supported on this device.";
+      GTEST_SKIP();
+    }
+
+    // Get the D-Bus property tracker for the first bluetooth adapter.
+    adapter_client_ = bluez_dbus_manager_->GetBluetoothAdapterClient();
+    ASSERT_TRUE(adapter_client_);
+    std::vector<dbus::ObjectPath> adapters = adapter_client_->GetAdapters();
+    ASSERT_FALSE(adapters.empty());
+    properties_ = adapter_client_->GetProperties(adapters[0]);
+    ASSERT_TRUE(properties_);
+  }
+
+  void TearDownOnMainThread() override {
+    // Clean up any browsers we opened (including the SWA browser) otherwise
+    // the test may hang on shutdown.
+    // TODO(b/292067979): Find a better way to work around this issue.
+    for (Browser* browser : *BrowserList::GetInstance()) {
+      CloseBrowserSynchronously(browser);
+    }
+
+    // Avoid dangling pointers during shutdown.
+    properties_ = nullptr;
+    adapter_client_ = nullptr;
+    bluez_dbus_manager_ = nullptr;
+
+    InteractiveBrowserTest::TearDownOnMainThread();
+  }
+
+  // Sets up a context widget for Kombucha which is needed because we don't open
+  // a browser window by default in this test suite.
+  void SetUpContextWidget() {
+    views::Widget* status_area_widget =
+        Shell::GetPrimaryRootWindowController()->shelf()->GetStatusAreaWidget();
+    SetContextWidget(status_area_widget);
+  }
+
+  // Waits for an element to exist in the DOM.
+  auto WaitForElementExists(const ui::ElementIdentifier& element_id,
+                            const DeepQuery& query) {
+    StateChange element_exists;
+    element_exists.event = kElementExists;
+    element_exists.where = query;
+    return WaitForStateChange(element_id, element_exists);
+  }
+
+  // Waits for a toggle element to be toggled (which is represented as "checked"
+  // in the DOM).
+  auto WaitForToggleState(const ui::ElementIdentifier& element_id,
+                          DeepQuery element,
+                          bool is_checked) {
+    StateChange toggle_selection_change;
+    toggle_selection_change.event = kButtonToggled;
+    toggle_selection_change.where = element;
+    toggle_selection_change.type = StateChange::Type::kExistsAndConditionTrue;
+    toggle_selection_change.test_function =
+        is_checked ? kCheckJsElementIsChecked : kCheckJsElementIsNotChecked;
+
+    return WaitForStateChange(element_id, toggle_selection_change);
+  }
+
+  // Clicks on an element in the DOM.
+  auto ClickElement(const ui::ElementIdentifier& element_id,
+                    const DeepQuery& element) {
+    return Steps(MoveMouseTo(element_id, element), ClickMouse());
+  }
+
+ protected:
   base::test::ScopedFeatureList feature_list_;
+  raw_ptr<BluezDBusManager> bluez_dbus_manager_ = nullptr;
+  raw_ptr<BluetoothAdapterClient> adapter_client_ = nullptr;
+  raw_ptr<BluetoothAdapterClient::Properties> properties_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(BluetoothIntegrationTest,
                        ToggleBluetoothFromQuickSettings) {
-  // TODO(crbug.com/1464750): Come up with a better way to skip tests based on
-  // hardware support, similar to Tast hwdep.D(hwdep.Bluetooth()).
-  if (!BluezDBusManager::Get()) {
-    LOG(WARNING) << "Bluetooth (via bluez) not supported on this device.";
-    GTEST_SKIP();
-  }
-
-  // Get the D-Bus property tracker for the first bluetooth adapter.
-  auto* bluez_dbus_manager = BluezDBusManager::Get();
-  ASSERT_TRUE(bluez_dbus_manager);
-  auto* adapter_client = bluez_dbus_manager->GetBluetoothAdapterClient();
-  ASSERT_TRUE(adapter_client);
-  std::vector<dbus::ObjectPath> adapters = adapter_client->GetAdapters();
-  ASSERT_FALSE(adapters.empty());
-  auto* properties = adapter_client->GetProperties(adapters[0]);
-  ASSERT_TRUE(properties);
-
-  // Kombucha requires a context widget to synthesize clicks.
-  views::Widget* status_area_widget =
-      Shell::GetPrimaryRootWindowController()->shelf()->GetStatusAreaWidget();
-  SetContextWidget(status_area_widget);
-
+  SetUpContextWidget();
   RunTestSequence(ObserveState(kBluetoothPowerState,
                                std::make_unique<BluetoothPowerStateObserver>(
-                                   adapter_client, properties)),
+                                   adapter_client_, properties_)),
                   // Ensure bluetooth is on at test start. If this fails it
                   // means some previous test left bluetooth disabled.
                   WaitForState(kBluetoothPowerState, true),
@@ -148,6 +216,82 @@ IN_PROC_BROWSER_TEST_F(BluetoothIntegrationTest,
 
                   Log("Waiting for bluetooth adapter to power on"),
                   WaitForState(kBluetoothPowerState, true));
+}
+
+IN_PROC_BROWSER_TEST_F(BluetoothIntegrationTest,
+                       ToggleBluetoothFromOsSettings) {
+  SetUpContextWidget();
+
+  // Ensure the OS Settings system web app (SWA) is installed.
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  CHECK(profile);
+  SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsSettingsElementId);
+
+  // Query to pierce through Shadow DOM to find the bluetooth toggle.
+  const DeepQuery kBluetoothToggleQuery = {
+      "os-settings-ui",
+      "os-settings-main",
+      "main-page-container",
+      "os-settings-bluetooth-page",
+      "os-settings-bluetooth-devices-subpage",
+      "cr-toggle#enableBluetoothToggle",
+  };
+
+  RunTestSequence(
+      // Ensure bluetooth is on at test start. If this fails it
+      // means some previous test left bluetooth disabled.
+      Log("Verifying initial bluetooth power state"),
+      ObserveState(kBluetoothPowerState,
+                   std::make_unique<BluetoothPowerStateObserver>(
+                       adapter_client_, properties_)),
+      WaitForState(kBluetoothPowerState, true),
+
+      Log("Opening OS settings system web app"),
+      InstrumentNextTab(kOsSettingsElementId, AnyBrowser()), Do([&]() {
+        chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+            profile, kBluetoothDevicesSubpagePath);
+      }),
+      WaitForShow(kOsSettingsElementId),
+
+      Log("Waiting for OS settings bluetooth page to load"),
+      WaitForWebContentsReady(
+          kOsSettingsElementId,
+          chrome::GetOSSettingsUrl(kBluetoothDevicesSubpagePath)),
+
+      Log("Waiting for bluetooth toggle to exist"),
+      WaitForElementExists(kOsSettingsElementId, kBluetoothToggleQuery),
+
+      Log("Waiting for toggle to be checked"),
+      WaitForToggleState(kOsSettingsElementId, kBluetoothToggleQuery, true),
+
+      Log("Clicking bluetooth toggle"),
+      ClickElement(kOsSettingsElementId, kBluetoothToggleQuery),
+
+      Log("Waiting for bluetooth power off"),
+      WaitForState(kBluetoothPowerState, false),
+
+      Log("Waiting for toggle to be unchecked"),
+      WaitForToggleState(kOsSettingsElementId, kBluetoothToggleQuery, false),
+
+      Log("Clicking bluetooth toggle again"),
+      ClickElement(kOsSettingsElementId, kBluetoothToggleQuery),
+
+      Log("Waiting for bluetooth power on"),
+      WaitForState(kBluetoothPowerState, true),
+
+      Log("Waiting for toggle to be checked again"),
+      WaitForToggleState(kOsSettingsElementId, kBluetoothToggleQuery, true),
+
+      Log("Test complete"));
+
+  // Allow exploring the UI if --test-launcher-interactive is passed.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kTestLauncherInteractive)) {
+    base::RunLoop loop;
+    loop.Run();
+  }
 }
 
 }  // namespace
