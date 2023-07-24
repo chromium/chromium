@@ -906,8 +906,7 @@ class OsSettingsDriver implements OSSettingsDriverInterface {
     assertTrue(privacyPage.shadowRoot !== null);
 
     // Click on button to go to lock screen settings.
-    const trigger =
-        privacyPage.shadowRoot.getElementById('lockScreenSubpageTrigger');
+    const trigger = privacyPage.shadowRoot.getElementById('lockScreenRow');
     assertTrue(trigger !== null);
     trigger.click();
 

@@ -32,7 +32,7 @@ import {LockStateMixin} from '../lock_state_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
+import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './os_privacy_page.html.js';
@@ -47,7 +47,7 @@ export interface OsSettingsPrivacyPageElement {
 }
 
 const OsSettingsPrivacyPageElementBase = PrefsMixin(
-    LockStateMixin(RouteObserverMixin(DeepLinkingMixin(PolymerElement))));
+    LockStateMixin(RouteOriginMixin(DeepLinkingMixin(PolymerElement))));
 
 export class OsSettingsPrivacyPageElement extends
     OsSettingsPrivacyPageElementBase {
@@ -65,20 +65,6 @@ export class OsSettingsPrivacyPageElement extends
         type: Number,
         value: Section.kPrivacyAndSecurity,
         readOnly: true,
-      },
-
-      focusConfig_: {
-        type: Object,
-        value() {
-          const map = new Map();
-          if (routes.ACCOUNTS) {
-            map.set(routes.ACCOUNTS.path, '#manageOtherPeopleSubpageTrigger');
-          }
-          if (routes.LOCK_SCREEN) {
-            map.set(routes.LOCK_SCREEN.path, '#lockScreenSubpageTrigger');
-          }
-          return map;
-        },
       },
 
       /**
@@ -225,7 +211,6 @@ export class OsSettingsPrivacyPageElement extends
   private dataAccessProtectionPrefName_: string;
   private dataAccessShiftTabPressed_: boolean;
   private fingerprintUnlockEnabled_: boolean;
-  private focusConfig_: Map<string, string>;
   private isGuestMode_: boolean;
   private isHatsSurveyEnabled_: boolean;
   private isRevenBranding_: boolean;
@@ -240,6 +225,9 @@ export class OsSettingsPrivacyPageElement extends
 
   constructor() {
     super();
+
+    /** RouteOriginMixin override */
+    this.route = routes.OS_PRIVACY;
 
     this.browserProxy_ = PeripheralDataAccessBrowserProxyImpl.getInstance();
 
@@ -258,11 +246,16 @@ export class OsSettingsPrivacyPageElement extends
 
     this.addEventListener(
         AUTH_TOKEN_INVALID_EVENT_TYPE, this.onAuthTokenInvalid_);
+
+    this.addFocusConfig(routes.ACCOUNTS, '#manageOtherPeopleRow');
+    this.addFocusConfig(routes.LOCK_SCREEN, '#lockScreenRow');
   }
 
-  override currentRouteChanged(route: Route): void {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
+    super.currentRouteChanged(newRoute, oldRoute);
+
     // Does not apply to this page.
-    if (route !== routes.OS_PRIVACY) {
+    if (newRoute !== this.route) {
       if (this.isHatsSurveyEnabled_) {
         this.privacyHubBrowserProxy_.sendLeftOsPrivacyPage();
       }

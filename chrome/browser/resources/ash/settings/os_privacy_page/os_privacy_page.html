@@ -9,23 +9,19 @@
   #dataAccessProtectionWrapper:focus {
     outline: none;
   }
-
 </style>
-<os-settings-animated-pages id="pages"
-    section="[[section_]]"
-    focus-config="[[focusConfig_]]">
-
+<os-settings-animated-pages id="pages" section="[[section_]]">
   <div route-path="default">
     <settings-card header-text="$i18n{privacyPageTitle}">
       <template is="dom-if" if="[[!isGuestMode_]]" restamp>
-        <cr-link-row id="lockScreenSubpageTrigger"
+        <cr-link-row id="lockScreenRow"
             on-click="onConfigureLockClick_"
             label="[[selectLockScreenTitleString_(hasPinLogin)]]"
             sub-label="[[getPasswordState_(hasPin,
                 prefs.settings.enable_screen_lock.value)]]"
             role-description="$i18n{subpageArrowRoleDescription}">
         </cr-link-row>
-        <cr-link-row id="manageOtherPeopleSubpageTrigger" class="hr"
+        <cr-link-row id="manageOtherPeopleRow" class="hr"
             label="$i18n{manageOtherPeople}"
             on-click="onManageOtherPeople_"
             role-description="$i18n{subpageArrowRoleDescription}">
