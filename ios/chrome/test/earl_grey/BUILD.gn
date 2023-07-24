@@ -279,6 +279,7 @@ source_set("eg_test_support+eg2") {
     "//components/sync/base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/policy:eg_test_support+eg2",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/ui/table_view:constants",
     "//ios/chrome/browser/ui/browser_container:eg_test_support+eg2",
     "//ios/chrome/browser/ui/ntp:feature_flags",

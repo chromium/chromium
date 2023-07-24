@@ -1203,6 +1203,10 @@ NSString* SerializedValue(const base::Value* value) {
   return IsTabGridSortedByRecency();
 }
 
++ (BOOL)isBottomOmniboxSteadyStateEnabled {
+  return IsBottomOmniboxSteadyStateEnabled();
+}
+
 #pragma mark - ContentSettings
 
 + (ContentSetting)popupPrefValue {

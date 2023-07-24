@@ -184,8 +184,11 @@ void CheckOmniboxVisibility(BOOL omniboxFocused) {
     CheckVisibleInPrimaryToolbar(chrome_test_util::Omnibox(), YES);
   } else {
     // Check that location view is visible.
-      CheckVisibleInPrimaryToolbar(chrome_test_util::DefocusedLocationView(),
-                                   YES);
+    BOOL isBottomOmnibox = [ChromeEarlGrey isUnfocusedOmniboxAtBottom];
+    ButtonVisibility locationBarVisibility =
+        isBottomOmnibox ? ButtonVisibilitySecondary : ButtonVisibilityPrimary;
+    CheckVisibilityInToolbar(chrome_test_util::DefocusedLocationView(),
+                             locationBarVisibility);
   }
 }
 
@@ -385,7 +388,7 @@ UIViewController* TopPresentedViewController() {
   FocusOmnibox();
 
   // Check the visiblity when focusing the omnibox.
-  CheckToolbarButtonVisibility(secondTraitCollection, YES);
+  CheckToolbarButtonVisibility(secondTraitCollection, /*omniboxFocused=*/YES);
 
   // Revert the orientation/trait collection to the original.
   if ([ChromeEarlGrey isIPadIdiom]) {
@@ -400,7 +403,7 @@ UIViewController* TopPresentedViewController() {
   }
 
   // Check the visiblity after a rotation.
-  CheckToolbarButtonVisibility(originalTraitCollection, YES);
+  CheckToolbarButtonVisibility(originalTraitCollection, /*omniboxFocused=*/YES);
 }
 
 // Check the button visibility of the toolbar when the omnibox is focused from
@@ -417,14 +420,14 @@ UIViewController* TopPresentedViewController() {
       topViewController.traitCollection;
 
   // Check the button visibility.
-  CheckToolbarButtonVisibility(originalTraitCollection, YES);
+  CheckToolbarButtonVisibility(originalTraitCollection, /*omniboxFocused=*/YES);
 
   // Change the orientation or the trait collection.
   UITraitCollection* secondTraitCollection =
       RotateOrChangeTraitCollection(originalTraitCollection, topViewController);
 
   // Check the visiblity after a size class change.
-  CheckToolbarButtonVisibility(secondTraitCollection, YES);
+  CheckToolbarButtonVisibility(secondTraitCollection, /*omniboxFocused=*/YES);
 
   if ([ChromeEarlGrey isIPadIdiom]) {
     // Remove the override.
@@ -439,7 +442,7 @@ UIViewController* TopPresentedViewController() {
 
   // Check the visiblity after a size class change. This should let the trait
   // collection change come into effect.
-  CheckToolbarButtonVisibility(originalTraitCollection, YES);
+  CheckToolbarButtonVisibility(originalTraitCollection, /*omniboxFocused=*/YES);
 }
 
 // Verifies that the back/forward buttons are working and are correctly enabled
@@ -580,14 +583,14 @@ UIViewController* TopPresentedViewController() {
       topViewController.traitCollection;
 
   // Check the button visibility.
-  CheckToolbarButtonVisibility(originalTraitCollection, NO);
+  CheckToolbarButtonVisibility(originalTraitCollection, /*omniboxFocused=*/NO);
 
   // Change the orientation or the trait collection.
   UITraitCollection* secondTraitCollection =
       RotateOrChangeTraitCollection(originalTraitCollection, topViewController);
 
   // Check the visiblity after a size class change.
-  CheckToolbarButtonVisibility(secondTraitCollection, NO);
+  CheckToolbarButtonVisibility(secondTraitCollection, /*omniboxFocused=*/NO);
 
   if ([ChromeEarlGrey isIPadIdiom]) {
     // Remove the override.

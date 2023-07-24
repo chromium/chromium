@@ -551,6 +551,9 @@
 // Returns whether TabGrid is sorted by recency (#tab-grid-recency-sort).
 + (BOOL)isSortingTabsByRecency;
 
+// Returns whether the bottom omnibox steady state feature is enabled.
++ (BOOL)isBottomOmniboxSteadyStateEnabled;
+
 #pragma mark - ContentSettings
 
 // Gets the current value of the popup content setting preference for the

@@ -13,6 +13,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case_app_interface.h"
@@ -1392,6 +1393,12 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
 - (BOOL)isSortingTabsByRecency {
   return [ChromeEarlGreyAppInterface isSortingTabsByRecency];
+}
+
+- (BOOL)isUnfocusedOmniboxAtBottom {
+  return [ChromeEarlGreyAppInterface isBottomOmniboxSteadyStateEnabled] &&
+         !self.isIPadIdiom && self.isSplitToolbarMode &&
+         [self userBooleanPref:prefs::kBottomOmnibox];
 }
 
 #pragma mark - ContentSettings
