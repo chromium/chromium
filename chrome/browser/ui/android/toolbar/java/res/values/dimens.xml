@@ -16,6 +16,7 @@ found in the LICENSE file.
          to both the top and bottom bounds to bring the 48dp modern_toolbar_background_size to 56dp
          (matches toolbar_height_no_shadow). -->
     <dimen name="ntp_search_box_bounds_vertical_inset_modern">-4dp</dimen>
+    <dimen name="ntp_search_box_height_polish">64dp</dimen>
 
     <!-- Toolbar Tablet - padding of the optional button when menu button is present -->
     <dimen name="toolbar_tablet_optional_button_padding">12dp</dimen>

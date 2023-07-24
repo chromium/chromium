@@ -21,6 +21,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -43,6 +44,7 @@ import androidx.test.espresso.action.Swipe;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
@@ -83,6 +85,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -98,6 +101,7 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.UiRestriction;
@@ -107,6 +111,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 /**
  * Tests for {@link NewTabPage}. Other tests can be found in
@@ -468,6 +473,52 @@ public class FeedV2NewTabPageTest {
                 "feedContent_landscape"
                         + (mEnableScrollableMVT ? "_with_scrollable_mvt"
                                                 : "_with_non_scrollable_mvt"));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"NewTabPage"})
+    @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.SURFACE_POLISH + "<Study",
+            "force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:polish_omnibox_size/true"})
+    // clang-format off
+    public void testFakeOmniboxPolishOnNtp() throws IOException{
+        // clang-format on
+        openNewTabPage();
+
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        assertEquals(cta.getResources().getDimensionPixelSize(
+                             org.chromium.chrome.R.dimen.ntp_search_box_height_polish),
+                cta.findViewById(org.chromium.chrome.R.id.search_box).getLayoutParams().height);
+
+        // Drag the Feed header title to scroll the toolbar to the top.
+        int toY = -getFakeboxTop(mNtp)
+                + cta.getResources().getDimensionPixelSize(
+                        org.chromium.chrome.R.dimen.modern_toolbar_background_size);
+        TestTouchUtils.dragCompleteView(InstrumentationRegistry.getInstrumentation(),
+                cta.findViewById(R.id.header_title), 0, 0, 0, toY, /*stepCount*/ 10);
+
+        if (cta.findViewById(R.id.search_box).getAlpha() == 1) {
+            ToolbarPhone toolbar = cta.findViewById(R.id.toolbar);
+            assertEquals(toolbar.getLocationBarBackgroundHeightForTesting(),
+                    cta.getResources().getDimensionPixelSize(
+                            org.chromium.chrome.R.dimen.ntp_search_box_height_polish));
+        }
+    }
+
+    /**
+     * @return The position of the top of the fakebox relative to the window.
+     */
+    private int getFakeboxTop(final NewTabPage ntp) {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<Integer>() {
+            @Override
+            public Integer call() {
+                final View fakebox = ntp.getView().findViewById(R.id.search_box);
+                int[] location = new int[2];
+                fakebox.getLocationInWindow(location);
+                return location[1];
+            }
+        });
     }
 
     /**

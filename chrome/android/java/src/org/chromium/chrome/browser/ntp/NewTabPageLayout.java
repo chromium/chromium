@@ -194,13 +194,16 @@ public class NewTabPageLayout extends LinearLayout {
      * @param isNtpAsHomeSurfaceEnabled {@code true} if the NTP is showing as the home surface.
      * @param isMultiColumnFeedEnabled {@code true} if the number of feed columns is 2.
      * @param isSurfacePolishEnabled {@code true} if the NTP surface is polished.
+     * @param isSurfacePolishOmniboxSizeEnabled {@code true} if the NTP surface is polished
+     *          and the omnibox size is changed.
      */
     public void initialize(NewTabPageManager manager, Activity activity, Delegate tileGroupDelegate,
             boolean searchProviderHasLogo, boolean searchProviderIsGoogle,
             FeedSurfaceScrollDelegate scrollDelegate, TouchEnabledDelegate touchEnabledDelegate,
             UiConfig uiConfig, ActivityLifecycleDispatcher lifecycleDispatcher, NewTabPageUma uma,
             boolean isIncognito, WindowAndroid windowAndroid, boolean isNtpAsHomeSurfaceEnabled,
-            boolean isMultiColumnFeedEnabled, boolean isSurfacePolishEnabled) {
+            boolean isMultiColumnFeedEnabled, boolean isSurfacePolishEnabled,
+            boolean isSurfacePolishOmniboxSizeEnabled) {
         TraceEvent.begin(TAG + ".initialize()");
         mScrollDelegate = scrollDelegate;
         mManager = manager;
@@ -217,8 +220,18 @@ public class NewTabPageLayout extends LinearLayout {
         mSearchBoxCoordinator = new SearchBoxCoordinator(getContext(), this);
         mSearchBoxCoordinator.initialize(lifecycleDispatcher, mIsIncognito, mWindowAndroid);
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)) {
-            mSearchBoxBoundsVerticalInset = getResources().getDimensionPixelSize(
-                    R.dimen.ntp_search_box_bounds_vertical_inset_modern);
+            if (isSurfacePolishEnabled && isSurfacePolishOmniboxSizeEnabled) {
+                int searchBoxHeightPolish =
+                        getResources().getDimensionPixelSize(R.dimen.ntp_search_box_height_polish);
+                mSearchBoxCoordinator.getView().getLayoutParams().height = searchBoxHeightPolish;
+                mSearchBoxBoundsVerticalInset = (searchBoxHeightPolish
+                                                        - getResources().getDimensionPixelSize(
+                                                                R.dimen.toolbar_height_no_shadow))
+                        / 2;
+            } else {
+                mSearchBoxBoundsVerticalInset = getResources().getDimensionPixelSize(
+                        R.dimen.ntp_search_box_bounds_vertical_inset_modern);
+            }
         }
 
         if (mIsMultiColumnFeedEnabled && mIsNtpAsHomeSurfaceEnabled) {

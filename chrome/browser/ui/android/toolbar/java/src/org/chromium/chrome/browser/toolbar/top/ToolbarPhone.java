@@ -81,6 +81,7 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNTP;
+import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
@@ -1240,12 +1241,22 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             int leftBoundDifference = mNtpSearchBoxBounds.left - mLocationBarBackgroundBounds.left;
             int rightBoundDifference =
                     mNtpSearchBoxBounds.right - mLocationBarBackgroundBounds.right;
-            int verticalInset = (int) (getResources().getDimensionPixelSize(
-                                               R.dimen.ntp_search_box_bounds_vertical_inset_modern)
-                    * (1.f - mUrlExpansionFraction));
             mLocationBarBackgroundNtpOffset.set(Math.round(leftBoundDifference * shrinkage),
                     locationBarTranslationY, Math.round(rightBoundDifference * shrinkage),
                     locationBarTranslationY);
+            float urlExpansionFractionComplement = 1.f - mUrlExpansionFraction;
+            int verticalInset;
+            if (StartSurfaceConfiguration.SURFACE_POLISH_OMNIBOX_SIZE.getValue()) {
+                verticalInset = (int) ((getResources().getDimensionPixelSize(
+                                                R.dimen.modern_toolbar_background_size)
+                                               - getResources().getDimensionPixelSize(
+                                                       R.dimen.ntp_search_box_height_polish))
+                        / 2 * urlExpansionFractionComplement);
+            } else {
+                verticalInset = (int) (getResources().getDimensionPixelSize(
+                                               R.dimen.ntp_search_box_bounds_vertical_inset_modern)
+                        * urlExpansionFractionComplement);
+            }
             mLocationBarBackgroundNtpOffset.inset(0, verticalInset);
 
             mLocationBarNtpOffsetLeft = leftBoundDifference * shrinkage;
@@ -2794,5 +2805,13 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     public void onTransitionEnd() {
         mInLayoutTransition = false;
         updateToolbarBackgroundFromState(mVisualState);
+    }
+
+    /**
+     * @return The height of the background drawable for the location bar.
+     */
+    public int getLocationBarBackgroundHeightForTesting() {
+        return (mLocationBarBackgroundBounds.bottom + mLocationBarBackgroundNtpOffset.bottom)
+                - (mLocationBarBackgroundBounds.top + mLocationBarBackgroundNtpOffset.top);
     }
 }
