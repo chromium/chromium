@@ -1090,7 +1090,10 @@ TEST_F(CALayerTreeTest, HDRTrigger) {
 
   // Validate that the root layer has is triggering HDR.
   CALayer* content_layer = GetOnlyContentLayer();
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunguarded-availability-new"
   EXPECT_TRUE([content_layer wantsExtendedDynamicRangeContent]);
+#pragma clang diagnostic pop
 
   // Commit the SDR layer.
   properties.io_surface = sdr_image;
@@ -1105,7 +1108,10 @@ TEST_F(CALayerTreeTest, HDRTrigger) {
   // un-parented.
   EXPECT_EQ([content_layer superlayer], nil);
   content_layer = GetOnlyContentLayer();
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunguarded-availability-new"
   EXPECT_FALSE([content_layer wantsExtendedDynamicRangeContent]);
+#pragma clang diagnostic pop
 
   // Commit the tricky SDR layer.
   properties.io_surface = tricky_sdr_image;
@@ -1118,7 +1124,10 @@ TEST_F(CALayerTreeTest, HDRTrigger) {
 
   // Validate that HDR is still off, and that the content layer hasn't changed.
   EXPECT_EQ(content_layer, GetOnlyContentLayer());
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunguarded-availability-new"
   EXPECT_FALSE([content_layer wantsExtendedDynamicRangeContent]);
+#pragma clang diagnostic pop
 
   // Commit the HDR layer.
   properties.io_surface = hdr_image;
@@ -1133,7 +1142,10 @@ TEST_F(CALayerTreeTest, HDRTrigger) {
   // been un-parented.
   EXPECT_EQ([content_layer superlayer], nil);
   content_layer = GetOnlyContentLayer();
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunguarded-availability-new"
   EXPECT_TRUE([content_layer wantsExtendedDynamicRangeContent]);
+#pragma clang diagnostic pop
 }
 
 }  // namespace gpu
