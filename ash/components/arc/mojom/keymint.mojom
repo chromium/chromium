@@ -85,7 +85,7 @@ interface KeyMintServer {
   // be used.
   //
   // |timestamp_token| is used by StrongBox implementations of IKeyMintDevice.
-  DeviceLocked@10(bool password_only, TimeStampToken timestamp_token) =>
+  DeviceLocked@10(bool password_only, TimeStampToken? timestamp_token) =>
       (int32 error);
 
   // Called by client to notify the IKeyMintDevice that the device has left the
