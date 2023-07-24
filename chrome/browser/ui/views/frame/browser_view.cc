@@ -1774,11 +1774,25 @@ void BrowserView::UpdateExclusiveAccessExitBubbleContent(
   bool is_trusted_pinned =
       platform_util::IsBrowserLockedFullscreen(browser_.get());
 
+  // Immersive mode allows the toolbar to be shown, so do not show the bubble.
+  // However, do show the bubble in a public session (see crbug.com/741069).
+  bool immersive_not_public =
+      ShouldUseImmersiveFullscreenForUrl(url) && !profiles::IsPublicSession();
+
+  // Whether we should remove the bubble if it exists, or not show the bubble.
   // TODO(jamescook): Figure out what to do with mouse-lock.
-  if (is_trusted_pinned ||
-      (!notify_download && bubble_type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE) ||
-      (ShouldUseImmersiveFullscreenForUrl(url) &&
-       !profiles::IsPublicSession())) {
+  bool should_close_bubble = is_trusted_pinned;
+  if (!notify_download) {
+    should_close_bubble = should_close_bubble ||
+                          // ...TYPE_NONE indicates deleting the bubble, except
+                          // when used with notify_download.
+                          bubble_type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE ||
+                          // Immersive mode logic for downloads is handled by
+                          // the download controller.
+                          immersive_not_public;
+  }
+
+  if (should_close_bubble) {
     if (bubble_first_hide_callback) {
       std::move(bubble_first_hide_callback)
           .Run(ExclusiveAccessBubbleHideReason::kNotShown);
@@ -4471,6 +4485,8 @@ bool BrowserView::ShouldUseImmersiveFullscreenForUrl(const GURL& url) const {
   // Kiosk mode needs the whole screen.
   if (chrome::IsRunningInAppMode())
     return false;
+  // An empty URL signifies browser fullscreen. Immersive is used for browser
+  // fullscreen only.
   return url.is_empty();
 #else
   // No immersive except in Chrome OS.
