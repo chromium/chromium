@@ -1884,18 +1884,21 @@ static bool ColorChannelIsHue(Color::ColorSpace color_space, int channel) {
 
 // Parses the color inputs rgb(), rgba(), hsl(), hsla(), hwb(), lab(), oklab(),
 // lch(), oklch() and color(). https://www.w3.org/TR/css-color-4/
-static bool ParseFunctionalSyntaxColor(CSSParserTokenRange& range,
+static bool ParseFunctionalSyntaxColor(CSSParserTokenRange& input_range,
                                        const CSSParserContext& context,
                                        Color& result) {
+  // Copy the range so that it is not consumed if the parsing fails.
+  CSSParserTokenRange consumed_range = input_range;
+
   // Get the color space. This will either be the name of the function, or it
   // will be the first argument of the "color" function.
-  CSSValueID function_id = range.Peek().FunctionId();
+  CSSValueID function_id = input_range.Peek().FunctionId();
   Color::ColorSpace color_space = CSSValueIDToColorSpace(function_id);
   if (color_space == Color::ColorSpace::kNone &&
       function_id != CSSValueID::kColor) {
     return false;
   }
-  CSSParserTokenRange args = ConsumeFunction(range);
+  CSSParserTokenRange args = ConsumeFunction(consumed_range);
   if (function_id == CSSValueID::kColor) {
     color_space =
         CSSValueIDToColorSpace(args.ConsumeIncludingWhitespace().Id());
@@ -2080,9 +2083,15 @@ static bool ParseFunctionalSyntaxColor(CSSParserTokenRange& range,
     }
   }
 
+  if (!args.AtEnd()) {
+    return false;
+  }
+
   result = Color::FromColorSpace(color_space, params[0], params[1], params[2],
                                  alpha);
-  return args.AtEnd();
+  // The parsing was successful, so we need to consume the input.
+  input_range = consumed_range;
+  return true;
 }
 
 namespace {
