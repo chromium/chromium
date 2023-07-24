@@ -54,6 +54,11 @@
 #include "gpu/vulkan/fuchsia/vulkan_fuchsia_ext.h"
 #endif
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#include "ui/ozone/public/surface_factory_ozone.h"
+#endif
+
 #define GL_DEDICATED_MEMORY_OBJECT_EXT 0x9581
 #define GL_TEXTURE_TILING_EXT 0x9580
 #define GL_TILING_TYPES_EXT 0x9583
@@ -271,7 +276,7 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::CreateFromGMB(
 
   VkFormat vk_format = ToVkFormat(format);
   auto image = vulkan_implementation->CreateImageFromGpuMemoryHandle(
-      device_queue, std::move(handle), size, vk_format, color_space);
+      device_queue, handle.Clone(), size, vk_format, color_space);
   if (!image) {
     DLOG(ERROR) << "Failed to create VkImage from GpuMemoryHandle.";
     return nullptr;
@@ -289,9 +294,53 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::CreateFromGMB(
       base::PassKey<ExternalVkImageBacking>(), mailbox, format, size,
       color_space, surface_origin, alpha_type, usage, estimated_size,
       std::move(context_state), std::move(textures), command_pool,
-      use_separate_gl_texture);
+      use_separate_gl_texture, std::move(handle));
   backing->SetCleared();
   return backing;
+}
+
+std::unique_ptr<ExternalVkImageBacking>
+ExternalVkImageBacking::CreateWithPixmap(
+    scoped_refptr<SharedContextState> context_state,
+    VulkanCommandPool* command_pool,
+    const Mailbox& mailbox,
+    viz::SharedImageFormat format,
+    SurfaceHandle surface_handle,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    uint32_t usage,
+    gfx::BufferUsage buffer_usage) {
+#if BUILDFLAG(IS_OZONE)
+  // Create a pixmap.
+  gfx::BufferFormat buffer_format = ToBufferFormat(format);
+  VulkanDeviceQueue* device_queue = nullptr;
+  if (context_state->vk_context_provider()) {
+    device_queue = context_state->vk_context_provider()->GetDeviceQueue();
+  }
+  scoped_refptr<gfx::NativePixmap> pixmap =
+      ui::OzonePlatform::GetInstance()
+          ->GetSurfaceFactoryOzone()
+          ->CreateNativePixmap(surface_handle, device_queue, size,
+                               buffer_format, buffer_usage);
+  if (!pixmap) {
+    DLOG(ERROR) << "Failed to create native pixmap";
+    return nullptr;
+  }
+
+  // Create a handle from pixmap.
+  gfx::GpuMemoryBufferHandle handle;
+  handle.type = gfx::GpuMemoryBufferType::NATIVE_PIXMAP;
+  handle.native_pixmap_handle = pixmap->ExportHandle();
+
+  // Create backing from the handle.
+  return CreateFromGMB(std::move(context_state), command_pool, mailbox,
+                       std::move(handle), format, size, color_space,
+                       surface_origin, alpha_type, usage);
+#else
+  return nullptr;
+#endif  // BUILDFLAG(IS_OZONE)
 }
 
 ExternalVkImageBacking::ExternalVkImageBacking(
@@ -307,7 +356,8 @@ ExternalVkImageBacking::ExternalVkImageBacking(
     scoped_refptr<SharedContextState> context_state,
     std::vector<TextureHolderVk> vk_textures,
     VulkanCommandPool* command_pool,
-    bool use_separate_gl_texture)
+    bool use_separate_gl_texture,
+    gfx::GpuMemoryBufferHandle handle)
     : ClearTrackingSharedImageBacking(mailbox,
                                       format,
                                       size,
@@ -320,7 +370,18 @@ ExternalVkImageBacking::ExternalVkImageBacking(
       context_state_(std::move(context_state)),
       vk_textures_(std::move(vk_textures)),
       command_pool_(command_pool),
-      use_separate_gl_texture_(use_separate_gl_texture) {}
+      use_separate_gl_texture_(use_separate_gl_texture) {
+#if BUILDFLAG(IS_OZONE)
+  if (!handle.is_null()) {
+    // Create a pixmap is there is a valid handle.
+    pixmap_ = ui::OzonePlatform::GetInstance()
+                  ->GetSurfaceFactoryOzone()
+                  ->CreateNativePixmapFromHandle(
+                      kNullSurfaceHandle, size, ToBufferFormat(format),
+                      std::move(handle.native_pixmap_handle));
+  }
+#endif  // BUILDFLAG(IS_OZONE)
+}
 
 ExternalVkImageBacking::~ExternalVkImageBacking() {
   auto semaphores = std::move(read_semaphores_);
@@ -576,8 +637,8 @@ void ExternalVkImageBacking::AddSemaphoresToPendingListOrRelease(
 }
 
 scoped_refptr<gfx::NativePixmap> ExternalVkImageBacking::GetNativePixmap() {
-  DCHECK_EQ(vk_textures_.size(), 1u);
-  return vk_textures_[0].vulkan_image->native_pixmap();
+  CHECK_EQ(vk_textures_.size(), 1u);
+  return pixmap_;
 }
 
 void ExternalVkImageBacking::ReturnPendingSemaphoresWithFenceHelper(

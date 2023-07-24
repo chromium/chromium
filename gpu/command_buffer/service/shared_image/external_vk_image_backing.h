@@ -21,6 +21,7 @@
 #include "gpu/command_buffer/service/shared_image/texture_holder_vk.h"
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 #include "gpu/command_buffer/service/texture_manager.h"
+#include "gpu/ipc/common/surface_handle.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -58,19 +59,34 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
       SkAlphaType alpha_type,
       uint32_t usage);
 
-  ExternalVkImageBacking(base::PassKey<ExternalVkImageBacking>,
-                         const Mailbox& mailbox,
-                         viz::SharedImageFormat format,
-                         const gfx::Size& size,
-                         const gfx::ColorSpace& color_space,
-                         GrSurfaceOrigin surface_origin,
-                         SkAlphaType alpha_type,
-                         uint32_t usage,
-                         size_t estimated_size_bytes,
-                         scoped_refptr<SharedContextState> context_state,
-                         std::vector<TextureHolderVk> vk_textures,
-                         VulkanCommandPool* command_pool,
-                         bool use_separate_gl_texture);
+  static std::unique_ptr<ExternalVkImageBacking> CreateWithPixmap(
+      scoped_refptr<SharedContextState> context_state,
+      VulkanCommandPool* command_pool,
+      const Mailbox& mailbox,
+      viz::SharedImageFormat format,
+      SurfaceHandle surface_handle,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      gfx::BufferUsage buffer_usage);
+
+  ExternalVkImageBacking(
+      base::PassKey<ExternalVkImageBacking>,
+      const Mailbox& mailbox,
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      size_t estimated_size_bytes,
+      scoped_refptr<SharedContextState> context_state,
+      std::vector<TextureHolderVk> vk_textures,
+      VulkanCommandPool* command_pool,
+      bool use_separate_gl_texture,
+      gfx::GpuMemoryBufferHandle handle = gfx::GpuMemoryBufferHandle());
 
   ExternalVkImageBacking(const ExternalVkImageBacking&) = delete;
   ExternalVkImageBacking& operator=(const ExternalVkImageBacking&) = delete;
@@ -225,6 +241,10 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
   // When the backing is accessed by the vulkan device for GrContext, they can
   // be returned to ExternalSemaphorePool through VulkanFenceHelper.
   std::vector<ExternalSemaphore> pending_semaphores_;
+
+  // This is set when backing is created as CPU mappable or is created from
+  // GpuMemoryBufferHandle.
+  scoped_refptr<gfx::NativePixmap> pixmap_;
 };
 
 }  // namespace gpu

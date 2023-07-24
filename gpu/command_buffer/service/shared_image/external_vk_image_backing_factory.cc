@@ -191,6 +191,33 @@ ExternalVkImageBackingFactory::CreateSharedImage(
                            debug_label, std::move(handle));
 }
 
+std::unique_ptr<SharedImageBacking>
+ExternalVkImageBackingFactory::CreateSharedImage(
+    const Mailbox& mailbox,
+    viz::SharedImageFormat format,
+    SurfaceHandle surface_handle,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    uint32_t usage,
+    std::string debug_label,
+    bool is_thread_safe,
+    gfx::BufferUsage buffer_usage) {
+  DCHECK(!is_thread_safe);
+#if BUILDFLAG(IS_OZONE)
+  // Creating the backing with a native pixmap so that it can be CPU mappable.
+  return ExternalVkImageBacking::CreateWithPixmap(
+      context_state_, command_pool_.get(), mailbox, format, surface_handle,
+      size, color_space, surface_origin, alpha_type, usage, buffer_usage);
+#else
+  // A CPU mappable backing of this type can only be requested for OZONE
+  // platforms.
+  NOTREACHED();
+  return nullptr;
+#endif  // BUILDFLAG(IS_OZONE)
+}
+
 bool ExternalVkImageBackingFactory::CanImportGpuMemoryBuffer(
     gfx::GpuMemoryBufferType memory_buffer_type) {
   auto* device_queue = context_state_->vk_context_provider()->GetDeviceQueue();
