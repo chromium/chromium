@@ -3,6 +3,22 @@
     --cr-input-error-display: none;
   }
 
+  cr-tooltip-icon {
+    --cr-icon-size: 16px;
+    --cr-tooltip-icon-fill-color: var(--cros-sys-on_surface_variant);
+  }
+
+  iron-icon {
+   --iron-icon-fill-color: var(--cros-sys-on_surface_variant);
+   --iron-icon-height: 16px;
+   --iron-icon-width: 16px;
+  }
+
+  #savedFingerprints {
+    margin-inline-end: 4px;
+    color: var(--cros-sys-on_surface_variant);
+  }
+
   #fingerprintTooltip {
     --paper-tooltip-background: var(--cros-tooltip-background-color);
     --paper-tooltip-border-radius: 8px;
@@ -22,11 +38,16 @@
     line-height: 18px;
   }
 
-  #fingerprintWarning {
-    font-style: italic;
+  #lockScreenFingerprintWarning {
+    margin-inline-start: 4px;
+    color: var(--cros-sys-on_surface_variant);
   }
+
 </style>
-<h2 class="settings-box">$i18n{lockScreenRegisteredFingerprints}
+<h2 class="settings-box">
+  <div id="savedFingerprints">
+    $i18n{lockScreenRegisteredFingerprints}
+  </div>
   <cr-tooltip-icon id="fingerprintTooltip" tooltip-position="right"
       icon-class="cr:help-outline" icon-aria-label="$i18n{learnMore}">
     <localized-link id="fingerprintNotice"
@@ -63,7 +84,9 @@
 </div>
 <div id="fingerprintWarning" class="settings-box continuation">
   <iron-icon icon="cr:info-outline"></iron-icon>
-  $i18n{lockScreenFingerprintWarning}
+  <div id="lockScreenFingerprintWarning">
+    $i18n{lockScreenFingerprintWarning}
+  </div>
 </div>
 <template is="dom-if" if="[[showSetupFingerprintDialog_]]" restamp>
   <settings-setup-fingerprint-dialog
