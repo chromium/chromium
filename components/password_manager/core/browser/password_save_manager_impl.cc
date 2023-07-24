@@ -808,9 +808,6 @@ void PasswordSaveManagerImpl::UploadVotesAndMetrics(
 
   password_manager_util::UpdateMetadataForUsage(&pending_credentials_);
 
-  base::RecordAction(
-      base::UserMetricsAction("PasswordManager_LoginFollowingAutofill"));
-
   // Check to see if this form is a candidate for password generation.
   // Do not send votes if there was no observed form. Furthermore, don't send
   // votes on change password forms, since they were already sent in Update()

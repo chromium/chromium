@@ -27047,16 +27047,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="PasswordManager_Disabled">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
-</action>
-
-<action name="PasswordManager_Enabled">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
-</action>
-
 <action name="PasswordManager_LoggedInWithNewPassword">
   <obsolete>
     Introduction of Manual Fallbacks broke recording of this action.
@@ -27091,16 +27081,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="PasswordManager_LoginFollowingAutofill">
-  <owner>vabr@chromium.org</owner>
-  <owner>vasilii@chromium.org</owner>
-  <description>
-    The user logged in successfully with a credential originally filled by
-    Chrome, and either did not change the stored password at all, or authorized
-    Chrome to update it with the current password value.
-  </description>
-</action>
-
 <action name="PasswordManager_LoginPassed">
   <owner>vasilii@chromium.org</owner>
   <description>
@@ -27128,13 +27108,17 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="PasswordManager_RemovePasswordException">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>vasilii@chromium.org</owner>
+  <description>
+    The user deleted a blocklisted credential from within the Password Manager.
+  </description>
 </action>
 
 <action name="PasswordManager_RemoveSavedPassword">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>vasilii@chromium.org</owner>
+  <description>
+    The user deleted a stored credential from within the Password Manager.
+  </description>
 </action>
 
 <action name="PasswordManager_ShowedHttpNotSecureExplanation">
