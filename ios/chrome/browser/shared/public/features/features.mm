@@ -246,6 +246,16 @@ BASE_FEATURE(kBottomOmniboxSteadyState,
              "BottomOmniboxSteadyState",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kBottomOmniboxDefaultSettingParam[] =
+    "BottomOmniboxDefaultSettingParam";
+const char kBottomOmniboxDefaultSettingParamTop[] = "Top";
+const char kBottomOmniboxDefaultSettingParamBottom[] = "Bottom";
+const char kBottomOmniboxDefaultSettingParamSafariSwitcher[] =
+    "BottomSafariSwitcher";
+BASE_FEATURE(kBottomOmniboxDefaultSetting,
+             "BottomOmniboxDefaultSetting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsBottomOmniboxSteadyStateEnabled() {
   // Bottom omnibox is only available on phones.
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {

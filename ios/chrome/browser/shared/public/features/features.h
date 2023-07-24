@@ -199,6 +199,15 @@ BASE_DECLARE_FEATURE(kNewNTPOmniboxLayout);
 // Feature flag to move the steady-state (unfocused) omnibox to the bottom.
 BASE_DECLARE_FEATURE(kBottomOmniboxSteadyState);
 
+// Feature param under kBottomOmniboxDefaultSetting to select the default
+// setting.
+extern const char kBottomOmniboxDefaultSettingParam[];
+extern const char kBottomOmniboxDefaultSettingParamTop[];
+extern const char kBottomOmniboxDefaultSettingParamBottom[];
+extern const char kBottomOmniboxDefaultSettingParamSafariSwitcher[];
+// Feature flag to change the default position of the omnibox.
+BASE_DECLARE_FEATURE(kBottomOmniboxDefaultSetting);
+
 // Returns true if `kBottomOmniboxSteadyState` feature flag is enabled and the
 // current device is a phone. This checks that the flag is enabled, not that the
 // omnibox is currently at the bottom.

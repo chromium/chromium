@@ -679,6 +679,25 @@ const FeatureEntry::FeatureVariation
          std::size(kPostRestoreDefaultBrowserPromoFullscreen), nullptr},
 };
 
+const FeatureEntry::FeatureParam kBottomOmniboxDefaultSettingTop[] = {
+    {kBottomOmniboxDefaultSettingParam, kBottomOmniboxDefaultSettingParamTop}};
+const FeatureEntry::FeatureParam kBottomOmniboxDefaultSettingBottom[] = {
+    {kBottomOmniboxDefaultSettingParam,
+     kBottomOmniboxDefaultSettingParamBottom}};
+const FeatureEntry::FeatureParam kBottomOmniboxDefaultSettingSafariSwitcher[] =
+    {{kBottomOmniboxDefaultSettingParam,
+      kBottomOmniboxDefaultSettingParamSafariSwitcher}};
+const FeatureEntry::FeatureVariation kBottomOmniboxDefaultSettingVariations[] =
+    {
+        {"Top", kBottomOmniboxDefaultSettingTop,
+         std::size(kBottomOmniboxDefaultSettingTop), nullptr},
+        {"Bottom", kBottomOmniboxDefaultSettingBottom,
+         std::size(kBottomOmniboxDefaultSettingBottom), nullptr},
+        {"Bottom for Safari Switcher",
+         kBottomOmniboxDefaultSettingSafariSwitcher,
+         std::size(kBottomOmniboxDefaultSettingSafariSwitcher), nullptr},
+};
+
 const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
     {"Default", "", ""},
     {"Base only", "enable-features", "ReplaceSyncPromosWithSignInPromos"},
@@ -1597,6 +1616,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnablePaymentsMandatoryReauthOnBling)},
+    {"bottom-omnibox-default-setting",
+     flag_descriptions::kBottomOmniboxDefaultSettingName,
+     flag_descriptions::kBottomOmniboxDefaultSettingDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kBottomOmniboxDefaultSetting,
+                                    kBottomOmniboxDefaultSettingVariations,
+                                    "BottomOmniboxDefaultSetting")},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

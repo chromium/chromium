@@ -170,6 +170,11 @@ extern const char kAutofillUseRendererIDsDescription[];
 extern const char kAutofillUseTwoDotsForLastFourDigitsName[];
 extern const char kAutofillUseTwoDotsForLastFourDigitsDescription[];
 
+// Title and description for the flag that changes the default setting for the
+// omnibox position.
+extern const char kBottomOmniboxDefaultSettingName[];
+extern const char kBottomOmniboxDefaultSettingDescription[];
+
 // Title and description for the flag that moves the omnibox to the bottom in
 // the steady state.
 extern const char kBottomOmniboxSteadyStateName[];

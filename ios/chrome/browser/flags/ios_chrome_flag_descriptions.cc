@@ -203,6 +203,13 @@ const char kAutofillUseTwoDotsForLastFourDigitsDescription[] =
     "When enabled, Autofill surfaces will show two '•' characters instead of "
     "four when displaying the last four digits of a card number";
 
+const char kBottomOmniboxDefaultSettingName[] =
+    "Bottom Omnibox Default Setting";
+const char kBottomOmniboxDefaultSettingDescription[] =
+    "Changes the default setting of the omnibox position. If the user "
+    "hasn't already changed the setting, changes the omnibox position to top "
+    "or bottom of the screen on iPhone. The default is top omnibox.";
+
 const char kBottomOmniboxSteadyStateName[] = "Bottom Omnibox (Steady)";
 const char kBottomOmniboxSteadyStateDescription[] =
     "Move the omnibox to the bottom in steady state";
