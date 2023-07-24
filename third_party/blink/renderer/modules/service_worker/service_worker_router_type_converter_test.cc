@@ -209,6 +209,45 @@ TEST(ServiceWorkerRouterTypeConverterTest, RequestMethodNormalize) {
   validate_normalize("anythingElse", "anythingElse");
 }
 
+TEST(ServiceWorkerRouterTypeConverterTest, RunningStatus) {
+  auto verify =
+      [](blink::V8RunningStatusEnum::Enum idl_status,
+         blink::ServiceWorkerRouterRunningStatusCondition::RunningStatusEnum
+             blink_status) {
+        auto* idl_rule = blink::RouterRule::Create();
+        auto* idl_condition = blink::RouterCondition::Create();
+        idl_condition->setRunningStatus(idl_status);
+        idl_rule->setCondition(idl_condition);
+        idl_rule->setSource(blink::V8RouterSourceEnum::Enum::kNetwork);
+
+        blink::ServiceWorkerRouterRule expected_rule;
+        blink::ServiceWorkerRouterCondition expected_condition;
+        expected_condition.type =
+            blink::ServiceWorkerRouterCondition::ConditionType::kRunningStatus;
+        blink::ServiceWorkerRouterRunningStatusCondition expected_status;
+        expected_status.status = blink_status;
+        expected_condition.running_status = std::move(expected_status);
+        expected_rule.conditions.emplace_back(expected_condition);
+        blink::ServiceWorkerRouterSource expected_source;
+        expected_source.type =
+            blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+        expected_source.network_source.emplace();
+        expected_rule.sources.emplace_back(expected_source);
+
+        auto blink_rule =
+            mojo::ConvertTo<absl::optional<blink::ServiceWorkerRouterRule>>(
+                idl_rule);
+        EXPECT_TRUE(blink_rule.has_value());
+        EXPECT_EQ(expected_rule, *blink_rule);
+      };
+  verify(blink::V8RunningStatusEnum::Enum::kRunning,
+         blink::ServiceWorkerRouterRunningStatusCondition::RunningStatusEnum::
+             kRunning);
+  verify(blink::V8RunningStatusEnum::Enum::kNotRunning,
+         blink::ServiceWorkerRouterRunningStatusCondition::RunningStatusEnum::
+             kNotRunning);
+}
+
 }  // namespace
 
 }  // namespace blink

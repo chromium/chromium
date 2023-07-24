@@ -66,7 +66,7 @@ RouterUrlPatternConditionToBlink(blink::RouterCondition* v8_condition) {
 absl::optional<blink::ServiceWorkerRouterCondition>
 RouterRequestConditionToBlink(blink::RouterCondition* v8_condition) {
   if (!v8_condition) {
-    // No UrlCondition configured.
+    // No condition configured.
     return absl::nullopt;
   }
 
@@ -94,6 +94,34 @@ RouterRequestConditionToBlink(blink::RouterCondition* v8_condition) {
   blink::ServiceWorkerRouterCondition condition;
   condition.type = blink::ServiceWorkerRouterCondition::ConditionType::kRequest;
   condition.request = std::move(request);
+  return condition;
+}
+
+absl::optional<blink::ServiceWorkerRouterCondition>
+RouterRunningStatusConditionToBlink(blink::RouterCondition* v8_condition) {
+  if (!v8_condition) {
+    // No condition configured.
+    return absl::nullopt;
+  }
+  if (!v8_condition->hasRunningStatus()) {
+    return absl::nullopt;
+  }
+
+  blink::ServiceWorkerRouterRunningStatusCondition running_status;
+  switch (v8_condition->runningStatus().AsEnum()) {
+    case blink::V8RunningStatusEnum::Enum::kRunning:
+      running_status.status = blink::ServiceWorkerRouterRunningStatusCondition::
+          RunningStatusEnum::kRunning;
+      break;
+    case blink::V8RunningStatusEnum::Enum::kNotRunning:
+      running_status.status = blink::ServiceWorkerRouterRunningStatusCondition::
+          RunningStatusEnum::kNotRunning;
+      break;
+  }
+  blink::ServiceWorkerRouterCondition condition;
+  condition.type =
+      blink::ServiceWorkerRouterCondition::ConditionType::kRunningStatus;
+  condition.running_status = std::move(running_status);
   return condition;
 }
 
@@ -147,6 +175,14 @@ TypeConverter<absl::optional<blink::ServiceWorkerRouterRule>,
       input->condition()->hasRequestDestination()) {
     absl::optional<blink::ServiceWorkerRouterCondition> condition;
     condition = RouterRequestConditionToBlink(input->condition());
+    if (!condition) {
+      return absl::nullopt;
+    }
+    rule.conditions.emplace_back(*condition);
+  }
+  if (input->condition()->hasRunningStatus()) {
+    absl::optional<blink::ServiceWorkerRouterCondition> condition;
+    condition = RouterRunningStatusConditionToBlink(input->condition());
     if (!condition) {
       return absl::nullopt;
     }

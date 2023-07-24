@@ -6338,7 +6338,9 @@ class ServiceWorkerStaticRouterBrowserTest : public ServiceWorkerBrowserTest {
         [](const net::test_server::HttpRequest& request)
             -> std::unique_ptr<net::test_server::HttpResponse> {
           if (base::Contains(request.GetURL().path(),
-                             "/service_worker/direct")) {
+                             "/service_worker/direct") ||
+              base::Contains(request.GetURL().path(),
+                             "/service_worker/direct_if_not_running")) {
             auto http_response =
                 std::make_unique<net::test_server::BasicHttpResponse>();
             http_response->set_code(net::HTTP_OK);
@@ -6458,6 +6460,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
   while (GetRequestCount(relative_url) != 2) {
     base::RunLoop().RunUntilIdle();
   }
+  // two fetches for clone.
   EXPECT_EQ(2, GetRequestCount(relative_url));
 }
 
@@ -6480,10 +6483,72 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
   while (GetRequestCount(relative_url) != 2) {
     base::RunLoop().RunUntilIdle();
   }
+  // two fetches for clone.
   EXPECT_EQ(2, GetRequestCount(relative_url));
 }
 
-// two fetches for clone.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
+                       MainResourceRunningStatus) {
+  SetupAndRegisterServiceWorker(TestType::kNetwork);
+  WorkerRunningStatusObserver observer(public_context());
+  const std::string relative_url = "/service_worker/direct_if_not_running";
+
+  // Initial state is stopped, and should go to network.
+  ASSERT_EQ(EmbeddedWorkerStatus::STOPPED, version()->running_status());
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL(relative_url)));
+  EXPECT_EQ("[ServiceWorkerStaticRouter] Response from the network",
+            GetInnerText());
+  // The result should be got from the network.
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+
+  // Since the ServiceWorker will start after using static routing,
+  // wait for that.
+  observer.WaitUntilRunning();
+  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version()->running_status());
+
+  // Ensure that the fetch handler is used this time.
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL(relative_url)));
+  EXPECT_EQ("[ServiceWorkerStaticRouter] Response from the fetch handler",
+            GetInnerText());
+  // The result should not be got from the network, and access count
+  // should not change.
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
+                       SubresourceRunningStatus) {
+  const std::string relative_url = "/service_worker/direct_if_not_running";
+  SetupAndRegisterServiceWorker(TestType::kNetwork);
+  // Initial state is stopped, and should go to network.
+  ASSERT_EQ(EmbeddedWorkerStatus::STOPPED, version()->running_status());
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+  EXPECT_EQ("[ServiceWorkerStaticRouter] Response from the network",
+            EvalJs(GetPrimaryMainFrame(), "fetch('" + relative_url +
+                                              "').then(response => "
+                                              "response.text())"));
+  // The result should be got from the network.
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+
+  // Start service worker, and the result should eventually got from
+  // the fetch handler.
+  EXPECT_EQ(StartServiceWorker(version().get()),
+            blink::ServiceWorkerStatusCode::kOk);
+  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version()->running_status());
+  // We know there is a delay to make the renderer know the running
+  // status. Or, test will timeout.
+  for (;;) {
+    auto result = EvalJs(GetPrimaryMainFrame(), "fetch('" + relative_url +
+                                                    "').then(response => "
+                                                    "response.text())");
+    if (result != "[ServiceWorkerStaticRouter] Response from the network") {
+      EXPECT_EQ("[ServiceWorkerStaticRouter] Response from the fetch handler",
+                result);
+      break;
+    }
+  }
+}
 
 class ServiceWorkerStaticRouterOriginTrialBrowserTest
     : public ServiceWorkerStaticRouterBrowserTest {

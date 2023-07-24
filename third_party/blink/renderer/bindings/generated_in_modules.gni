@@ -1570,6 +1570,8 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_stats_type.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_video_codec_type.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_video_codec_type.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_running_status_enum.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_running_status_enum.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_scheduler_signal_inherit.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_scheduler_signal_inherit.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_scheduler_yield_priority.h",

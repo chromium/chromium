@@ -17,13 +17,19 @@ const composeCustomResponse = () => {
 };
 
 self.addEventListener('install', e => {
-  e.registerRouter({
+  e.registerRouter([{
     condition: {
       urlPattern: "/service_worker/direct",
       requestMethod: "GET",
     },
     source: "network"
-  });
+  }, {
+    condition: {
+      urlPattern: "/service_worker/direct_if_not_running",
+      runningStatus: "not-running",
+    },
+    source: "network"
+  }]);
   self.skipWaiting();
 });
 
