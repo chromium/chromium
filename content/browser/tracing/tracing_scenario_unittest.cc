@@ -57,6 +57,8 @@ class TestTracingSession : public perfetto::TracingSession {
     if (!config.data_sources().empty()) {
       start_should_fail_ =
           config.data_sources()[0].config().name() == "Invalid";
+      should_spuriously_stop =
+          config.data_sources()[0].config().name() == "Stop";
     }
   }
 
@@ -73,6 +75,10 @@ class TestTracingSession : public perfetto::TracingSession {
                     {perfetto::TracingError::kTracingFailed, "error"});
               },
               on_error_callback_));
+      return;
+    }
+    if (should_spuriously_stop) {
+      Stop();
       return;
     }
     // perfetto::TracingSession runs callbacks from its own background thread.
@@ -149,6 +155,7 @@ class TestTracingSession : public perfetto::TracingSession {
   std::function<void()> on_stop_callback_;                         // nocheck
   std::function<void(perfetto::TracingError)> on_error_callback_;  // nocheck
   bool start_should_fail_ = false;
+  bool should_spuriously_stop = false;
 };
 
 class TracingScenarioForTesting : public TracingScenario {
@@ -265,6 +272,37 @@ TEST_F(TracingScenarioTest, StartFail) {
         }
         stop_rules: { name: "stop_trigger" manual_trigger_name: "stop_trigger" }
         trace_config: { data_sources: { config: { name: "Invalid" } } }
+      )pb"),
+      &delegate);
+
+  tracing_scenario.Enable();
+  EXPECT_EQ(TracingScenario::State::kEnabled, tracing_scenario.current_state());
+  EXPECT_CALL(delegate, OnScenarioActive(&tracing_scenario)).Times(1);
+  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
+      "start_trigger"));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(delegate, OnScenarioIdle(&tracing_scenario))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+
+  run_loop.Run();
+  EXPECT_EQ(TracingScenario::State::kDisabled,
+            tracing_scenario.current_state());
+  EXPECT_FALSE(
+      content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
+          "stop_trigger"));
+}
+
+TEST_F(TracingScenarioTest, SpuriousStop) {
+  TracingScenarioForTesting tracing_scenario(
+      ParseScenarioConfigFromText(R"pb(
+        scenario_name: "test_scenario"
+        start_rules: {
+          name: "start_trigger"
+          manual_trigger_name: "start_trigger"
+        }
+        stop_rules: { name: "stop_trigger" manual_trigger_name: "stop_trigger" }
+        trace_config: { data_sources: { config: { name: "Stop" } } }
       )pb"),
       &delegate);
 
