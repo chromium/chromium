@@ -323,7 +323,7 @@ absl::optional<double> DemuxerManager::GetDemuxerDuration() {
   return static_cast<ChunkDemuxer*>(demuxer_.get())->GetDuration();
 }
 
-absl::optional<DemuxerType> DemuxerManager::GetDemuxerType() {
+absl::optional<DemuxerType> DemuxerManager::GetDemuxerType() const {
   if (!demuxer_) {
     return absl::nullopt;
   }
@@ -547,6 +547,16 @@ bool DemuxerManager::PassedDataSourceTimingAllowOriginCheck() const {
   // TODO(1266991): Ensure that this returns the correct value for HLS media,
   // based on the TAO checks performed on those resources.
   return data_source_ ? data_source_->PassedTimingAllowOriginCheck() : true;
+}
+
+bool DemuxerManager::IsLiveContent() const {
+  // Manifest demuxer reports true live content accurately, while all other
+  // demuxers do not. TODO(crbug/1266991): Consider making IsSeekable return
+  // an enum class with vod/semi-live/true-live states.
+  if (GetDemuxerType() == DemuxerType::kManifestDemuxer) {
+    return !demuxer_->IsSeekable();
+  }
+  return false;
 }
 
 std::unique_ptr<Demuxer> DemuxerManager::CreateChunkDemuxer() {

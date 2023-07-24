@@ -136,7 +136,7 @@ class MEDIA_EXPORT DemuxerManager {
 
   // Methods that help manage demuxers
   absl::optional<double> GetDemuxerDuration();
-  absl::optional<DemuxerType> GetDemuxerType();
+  absl::optional<DemuxerType> GetDemuxerType() const;
   absl::optional<container_names::MediaContainerName> GetContainerForMetrics();
   void RespondToDemuxerMemoryUsageReport(base::OnceCallback<void(int64_t)> cb);
   void DisableDemuxerCanChangeType();
@@ -170,6 +170,7 @@ class MEDIA_EXPORT DemuxerManager {
   bool DataSourceFullyBuffered() const;
   bool IsStreaming() const;
   bool PassedDataSourceTimingAllowOriginCheck() const;
+  bool IsLiveContent() const;
 
  private:
   // Demuxer creation and helper methods

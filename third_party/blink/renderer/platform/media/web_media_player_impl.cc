@@ -1346,8 +1346,13 @@ WebTimeRanges WebMediaPlayerImpl::Buffered() const {
 WebTimeRanges WebMediaPlayerImpl::Seekable() const {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
-  if (ready_state_ < WebMediaPlayer::kReadyStateHaveMetadata)
+  if (ready_state_ < WebMediaPlayer::kReadyStateHaveMetadata) {
     return WebTimeRanges();
+  }
+
+  if (demuxer_manager_->IsLiveContent()) {
+    return WebTimeRanges();
+  }
 
   const double seekable_end = Duration();
 

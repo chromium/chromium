@@ -317,6 +317,10 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
   // Returns true/false based on which set of controls to display.
   bool ShouldShowVideoControls() const;
 
+  // Returns true/false based on whether this player is showing live content,
+  // and should have no seek bar or timestamp.
+  bool IsLivePlayback() const;
+
   // Node
   bool IsMediaControls() const override { return true; }
   bool WillRespondToMouseMoveEvents() const override { return true; }
