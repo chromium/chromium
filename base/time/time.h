@@ -653,22 +653,22 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
 
   // Converts to/from time_t in UTC and a Time class.
   static constexpr Time FromTimeT(time_t tt);
-  time_t ToTimeT() const;
+  constexpr time_t ToTimeT() const;
 
   // Converts time to/from a double which is the number of seconds since epoch
   // (Jan 1, 1970).  Webkit uses this format to represent time.
   // Because WebKit initializes double time value to 0 to indicate "not
   // initialized", we map it to empty Time object that also means "not
   // initialized".
-  static Time FromDoubleT(double dt);
-  double ToDoubleT() const;
+  static constexpr Time FromDoubleT(double dt);
+  constexpr double ToDoubleT() const;
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // Converts the timespec structure to time. MacOS X 10.8.3 (and tentatively,
   // earlier versions) will have the |ts|'s tv_nsec component zeroed out,
   // having a 1 second resolution, which agrees with
   // https://developer.apple.com/legacy/library/#technotes/tn/tn1150.html#HFSPlusDates.
-  static Time FromTimeSpec(const timespec& ts);
+  static constexpr Time FromTimeSpec(const timespec& ts);
 #endif
 
   // Converts to/from the Javascript convention for times, a number of
@@ -679,15 +679,15 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   // exactly 1601-01-01 00:00 UTC is represented as 1970-01-01 00:00 UTC), and
   // that is not appropriate for general use. Try to use ToJsTimeIgnoringNull()
   // unless you have a very good reason to use ToJsTime().
-  static Time FromJsTime(double ms_since_epoch);
-  double ToJsTime() const;
-  double ToJsTimeIgnoringNull() const;
+  static constexpr Time FromJsTime(double ms_since_epoch);
+  constexpr double ToJsTime() const;
+  constexpr double ToJsTimeIgnoringNull() const;
 
   // Converts to/from Java convention for times, a number of milliseconds since
   // the epoch. Because the Java format has less resolution, converting to Java
   // time is a lossy operation.
-  static Time FromJavaTime(int64_t ms_since_epoch);
-  int64_t ToJavaTime() const;
+  static constexpr Time FromJavaTime(int64_t ms_since_epoch);
+  constexpr int64_t ToJavaTime() const;
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   static Time FromTimeVal(struct timeval t);
@@ -1070,6 +1070,79 @@ constexpr Time Time::FromTimeT(time_t tt) {
   return (tt == std::numeric_limits<time_t>::max())
              ? Max()
              : (UnixEpoch() + Seconds(tt));
+}
+
+constexpr time_t Time::ToTimeT() const {
+  if (is_null()) {
+    return 0;  // Preserve 0 so we can tell it doesn't exist.
+  }
+  if (!is_inf()) {
+    return saturated_cast<time_t>((*this - UnixEpoch()).InSecondsFloored());
+  }
+  return (us_ < 0) ? std::numeric_limits<time_t>::min()
+                   : std::numeric_limits<time_t>::max();
+}
+
+// static
+constexpr Time Time::FromDoubleT(double dt) {
+  // Preserve 0 so we can tell it doesn't exist.
+  return (dt == 0 || std::isnan(dt)) ? Time() : (UnixEpoch() + Seconds(dt));
+}
+
+constexpr double Time::ToDoubleT() const {
+  if (is_null()) {
+    return 0;  // Preserve 0 so we can tell it doesn't exist.
+  }
+  if (!is_inf()) {
+    return (*this - UnixEpoch()).InSecondsF();
+  }
+  return (us_ < 0) ? -std::numeric_limits<double>::infinity()
+                   : std::numeric_limits<double>::infinity();
+}
+
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+// static
+constexpr Time Time::FromTimeSpec(const timespec& ts) {
+  return FromDoubleT(ts.tv_sec +
+                     static_cast<double>(ts.tv_nsec) / kNanosecondsPerSecond);
+}
+#endif
+
+// static
+constexpr Time Time::FromJsTime(double ms_since_epoch) {
+  // The epoch is a valid time, so this constructor doesn't interpret 0 as the
+  // null time.
+  return UnixEpoch() + Milliseconds(ms_since_epoch);
+}
+
+constexpr double Time::ToJsTime() const {
+  // Preserve 0 so the invalid result doesn't depend on the platform.
+  return is_null() ? 0 : ToJsTimeIgnoringNull();
+}
+
+constexpr double Time::ToJsTimeIgnoringNull() const {
+  // Preserve max and min without offset to prevent over/underflow.
+  if (!is_inf()) {
+    return (*this - UnixEpoch()).InMillisecondsF();
+  }
+  return (us_ < 0) ? -std::numeric_limits<double>::infinity()
+                   : std::numeric_limits<double>::infinity();
+}
+
+constexpr Time Time::FromJavaTime(int64_t ms_since_epoch) {
+  return UnixEpoch() + Milliseconds(ms_since_epoch);
+}
+
+constexpr int64_t Time::ToJavaTime() const {
+  // Preserve 0 so the invalid result doesn't depend on the platform.
+  if (is_null()) {
+    return 0;
+  }
+  if (!is_inf()) {
+    return (*this - UnixEpoch()).InMilliseconds();
+  }
+  return (us_ < 0) ? std::numeric_limits<int64_t>::min()
+                   : std::numeric_limits<int64_t>::max();
 }
 
 // For logging use only.

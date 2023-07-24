@@ -50,7 +50,7 @@ using BudgetEntryValidityStatus =
 
 using RequestResult = PrivateAggregationBudgeter::RequestResult;
 
-const base::Time kExampleTime = base::Time::FromJavaTime(1652984901234);
+constexpr base::Time kExampleTime = base::Time::FromJavaTime(1652984901234);
 
 class PrivateAggregationBudgeterUnderTest : public PrivateAggregationBudgeter {
  public:
