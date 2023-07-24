@@ -188,9 +188,13 @@ class ScalableIphBrowserTestBubble : public ScalableIphBrowserTest {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestFlagOff, NoService) {
-  EXPECT_FALSE(ash::features::IsScalableIphEnabled());
-  EXPECT_FALSE(ScalableIphFactory::GetForBrowserContext(browser()->profile()));
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestFlagOff, HasServiceWhenFeatureEnabled) {
+  if (ash::features::IsScalableIphEnabled()) {
+    EXPECT_TRUE(ScalableIphFactory::GetForBrowserContext(browser()->profile()));
+  } else {
+    EXPECT_FALSE(
+        ScalableIphFactory::GetForBrowserContext(browser()->profile()));
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, RecordEvent) {

@@ -12460,6 +12460,37 @@
             ]
         }
     ],
+    "ScalableIphTeamFoodStudy": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "ScalableIphTimerBased_Teamfood",
+                    "params": {
+                        "IPH_ScalableIphTimerBasedOne_availability": "any",
+                        "IPH_ScalableIphTimerBasedOne_event_1": "name:ScalableIphFiveMinTick;comparator:>=1;window:365;storage:365",
+                        "IPH_ScalableIphTimerBasedOne_event_trigger": "name:ScalableIphTimerBasedOneTriggered;comparator:==0;window:365;storage:365",
+                        "IPH_ScalableIphTimerBasedOne_event_used": "name:ScalableIphTimerBasedOneEventUsed;comparator:any;window:365;storage:365",
+                        "IPH_ScalableIphTimerBasedOne_session_rate": "any",
+                        "IPH_ScalableIphTimerBasedOne_x_CustomButtonActionType": "OpenChrome",
+                        "IPH_ScalableIphTimerBasedOne_x_CustomConditionNetworkConnection": "Online",
+                        "IPH_ScalableIphTimerBasedOne_x_CustomNotificationBodyText": "See you in the next 5 mins",
+                        "IPH_ScalableIphTimerBasedOne_x_CustomNotificationButtonText": "Okay",
+                        "IPH_ScalableIphTimerBasedOne_x_CustomNotificationId": "scalable_iph_timer_based_one",
+                        "IPH_ScalableIphTimerBasedOne_x_CustomNotificationTitle": "First 5 mins",
+                        "IPH_ScalableIphTimerBasedOne_x_CustomUiType": "Notification"
+                    },
+                    "enable_features": [
+                        "IPH_ScalableIphTimerBasedOne",
+                        "ScalableIph"
+                    ],
+                    "disable_features": []
+                }
+            ]
+        }
+    ],
     "ScaleScrollbarAnimationTiming": [
         {
             "platforms": [
