@@ -6562,3 +6562,6 @@ crbug.com/1180274 http/tests/inspector-protocol/network/navigate-iframe-out2in.j
 
 # This test is unreliable because of delayed update of history.length during cross-document navigation.
 crbug.com/1466474 fast/history/history-back-twice-with-subframes-assert.html [ Pass Timeout ]
+
+# Gardener 2023-07-24
+crbug.com/1466702 [ Mac ] inspector-protocol/debugger/debugger-evaluate-in-worker-while-pause-in-page.js [ Pass Failure Timeout ]
