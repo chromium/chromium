@@ -136,6 +136,18 @@ chromium-metrics-reviews@google.com.
   <variant name=".NTPSnippets" summary="NTP snippets"/>
 </variants>
 
+<histogram name="Android.AbiBitnessSupport" enum="CpuAbiBitnessSupport"
+    expires_after="2023-08-31">
+<!-- TODO(bartekn): Remove soon -->
+
+  <owner>bartekn@chromium.org</owner>
+  <summary>
+    See CpuAbiBitnessSupport.
+
+    This a temporary name and will be removed soon.
+  </summary>
+</histogram>
+
 <histogram name="Android.ActivityStop.NumberOfTabsUsed" units="count"
     expires_after="2023-12-10">
   <owner>gauravjj@google.com</owner>
