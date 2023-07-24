@@ -196,6 +196,8 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_VISUAL_SEARCH_CLASSIFICATION = 34;
   // Target for classifying users to target bottom toolbar.
   OPTIMIZATION_TARGET_SEGMENTATION_BOTTOM_TOOLBAR = 35;
+  // Target for Autofill field type classification model.
+  OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION = 36;
 }
 
 // The model engine versions that can be used to do model inference.

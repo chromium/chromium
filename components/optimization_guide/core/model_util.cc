@@ -109,6 +109,8 @@ std::string GetStringNameForOptimizationTarget(
       return "VisualSearchClassification";
     case proto::OPTIMIZATION_TARGET_SEGMENTATION_BOTTOM_TOOLBAR:
       return "SegmentationBottomToolbar";
+    case proto::OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION:
+      return "AutofillFieldTypeClassification";
       // Whenever a new value is added, make sure to add it to the OptTarget
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.
