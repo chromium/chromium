@@ -14973,7 +14973,10 @@
     "VariationsGoogleGroupFiltering": [
         {
             "platforms": [
-                "android"
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios"
             ],
             "experiments": [
                 {
