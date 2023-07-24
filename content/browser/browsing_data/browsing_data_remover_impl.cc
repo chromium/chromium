@@ -121,7 +121,6 @@ BrowsingDataRemoverImpl::BrowsingDataRemoverImpl(
     : browser_context_(browser_context),
       remove_mask_(0xffffffffffffffffull),
       origin_type_mask_(0xffffffffffffffffull),
-      storage_partition_config_(absl::nullopt),
       is_removing_(false) {
   DCHECK(browser_context_);
 }
@@ -350,7 +349,6 @@ void BrowsingDataRemoverImpl::RemoveImpl(
   delete_end_ = delete_end;
   remove_mask_ = remove_mask;
   origin_type_mask_ = origin_type_mask;
-  storage_partition_config_ = filter_builder->GetStoragePartitionConfig();
   failed_data_types_ = 0;
 
   // Record the combined deletion of cookies and cache.
@@ -702,15 +700,6 @@ uint64_t BrowsingDataRemoverImpl::GetLastUsedRemovalMaskForTesting() {
 
 uint64_t BrowsingDataRemoverImpl::GetLastUsedOriginTypeMaskForTesting() {
   return origin_type_mask_;
-}
-
-absl::optional<StoragePartitionConfig>
-BrowsingDataRemoverImpl::GetLastUsedStoragePartitionConfigForTesting() {
-  return storage_partition_config_;
-}
-
-uint64_t BrowsingDataRemoverImpl::GetPendingTaskCountForTesting() {
-  return task_queue_.size();
 }
 
 BrowsingDataRemoverImpl::RemovalTask::RemovalTask(

@@ -92,9 +92,6 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
   const base::Time& GetLastUsedBeginTimeForTesting() override;
   uint64_t GetLastUsedRemovalMaskForTesting() override;
   uint64_t GetLastUsedOriginTypeMaskForTesting() override;
-  absl::optional<StoragePartitionConfig>
-  GetLastUsedStoragePartitionConfigForTesting() override;
-  uint64_t GetPendingTaskCountForTesting() override;
 
   void ClearClientHintCacheAndReply(const url::Origin& origin,
                                     base::OnceClosure callback);
@@ -253,11 +250,6 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
 
   // From which types of origins should we remove data?
   uint64_t origin_type_mask_ = 0;
-
-  // The StoragePartition from which data should be removed, or the default
-  // if absent.
-  absl::optional<StoragePartitionConfig> storage_partition_config_ =
-      absl::nullopt;
 
   std::vector<std::string> domains_for_deferred_cookie_deletion_;
 

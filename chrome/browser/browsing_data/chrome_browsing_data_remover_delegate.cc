@@ -158,13 +158,9 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "content/public/browser/isolated_web_apps_policy.h"
-#include "content/public/browser/storage_partition_config.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -1277,59 +1273,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       (constants::DATA_TYPE_SITE_DATA | constants::DATA_TYPE_HISTORY)) {
     login_detection::prefs::RemoveLoginDetectionData(prefs);
   }
-
-#if !BUILDFLAG(IS_ANDROID)
-  //////////////////////////////////////////////////////////////////////////////
-  // Isolated Web Apps.
-  // If no StoragePartition was specified in the filter, make additional
-  // BrowsingDataRemover::Remove* calls for each StoragePartition of Isolated
-  // Web Apps (IWA) that match the filter.
-  //
-  // The data types specified in `remove_mask` will be removed from the
-  // primary StoragePartition of an IWA, but all data will be removed from
-  // Controlled Frame StoragePartitions if DATA_TYPE_CONTROLLED_FRAME is
-  // specified in `remove_mask`.
-  if (!filter_builder->GetStoragePartitionConfig().has_value() &&
-      content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(profile_)) {
-    const web_app::WebAppRegistrar& web_app_registrar =
-        web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_)
-            ->registrar_unsafe();
-    for (const web_app::WebApp& web_app : web_app_registrar.GetApps()) {
-      if (!web_app_registrar.IsIsolated(web_app.app_id()) ||
-          !filter.Run(web_app.scope())) {
-        continue;
-      }
-      std::vector<content::StoragePartitionConfig> partitions =
-          web_app_registrar.GetIsolatedWebAppStoragePartitionConfigs(
-              web_app.app_id());
-      for (const content::StoragePartitionConfig& partition : partitions) {
-        // The filter specified a StoragePartition, so only delete data that
-        // lives in a StoragePartition.
-        uint64_t iwa_remove_mask =
-            content::BrowsingDataRemover::DATA_TYPE_ON_STORAGE_PARTITION;
-        bool is_primary_partition = partition.partition_name().empty();
-        if (is_primary_partition) {
-          iwa_remove_mask &= remove_mask;
-        } else {
-          if (!(remove_mask & constants::DATA_TYPE_CONTROLLED_FRAME)) {
-            continue;
-          }
-          // For Controlled Frame partitions, all data should be deleted, so
-          // |iwa_remove_mask| should stay DATA_TYPE_ON_STORAGE_PARTITION.
-        }
-
-        // We can't wait for the `RemoveWithFilter` call to finish because
-        // BrowsingDataRemover doesn't support nested Remove calls.
-        auto iwa_filter_builder = content::BrowsingDataFilterBuilder::Create(
-            content::BrowsingDataFilterBuilder::Mode::kPreserve);
-        iwa_filter_builder->SetStoragePartitionConfig(partition);
-        profile_->GetBrowsingDataRemover()->RemoveWithFilter(
-            delete_begin, delete_end, iwa_remove_mask, origin_type_mask,
-            std::move(iwa_filter_builder));
-      }
-    }
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void ChromeBrowsingDataRemoverDelegate::OnTaskStarted(

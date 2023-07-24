@@ -6,12 +6,9 @@
 #include <string>
 
 #include "base/check_deref.h"
-#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
-#include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
@@ -19,8 +16,6 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
-#include "content/public/browser/browsing_data_filter_builder.h"
-#include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -75,7 +70,7 @@ class IsolatedWebAppBrowsingDataTest : public IsolatedWebAppBrowserTestHarness {
                                               : 0;
   }
 
-  void AddLocalStorageIfMissing(const content::ToRenderFrameHost& target) {
+  void AddUsageIfMissing(const content::ToRenderFrameHost& target) {
     EXPECT_TRUE(
         ExecJs(target, "localStorage.setItem('test', '!'.repeat(1000))"));
 
@@ -121,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataTest,
   EXPECT_THAT(GetIwaUsage(url_info), Eq(0));
 
   // Add some usage to the IWA and make sure it's counted.
-  AddLocalStorageIfMissing(web_contents);
+  AddUsageIfMissing(web_contents);
   EXPECT_THAT(GetIwaUsage(url_info), IsApproximately(1000));
 
   // Create a persisted <controlledframe>, add some usage to it.
@@ -129,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataTest,
                                     dev_server()->GetURL("/empty_title.html"),
                                     "persist:partition_name"));
   ASSERT_EQ(1UL, web_contents->GetInnerWebContents().size());
-  AddLocalStorageIfMissing(web_contents->GetInnerWebContents()[0]);
+  AddUsageIfMissing(web_contents->GetInnerWebContents()[0]);
   EXPECT_THAT(GetIwaUsage(url_info), IsApproximately(2000));
 
   // Create another persisted <controlledframe> with a different partition name.
@@ -137,49 +132,23 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataTest,
                                     dev_server()->GetURL("/empty_title.html"),
                                     "persist:partition_name_2"));
   ASSERT_EQ(2UL, web_contents->GetInnerWebContents().size());
-  AddLocalStorageIfMissing(web_contents->GetInnerWebContents()[0]);
-  AddLocalStorageIfMissing(web_contents->GetInnerWebContents()[1]);
+  AddUsageIfMissing(web_contents->GetInnerWebContents()[0]);
+  AddUsageIfMissing(web_contents->GetInnerWebContents()[1]);
   EXPECT_THAT(GetIwaUsage(url_info), IsApproximately(3000));
 
   // Create an in-memory <controlledframe> that won't count towards IWA usage.
   ASSERT_TRUE(CreateControlledFrame(
       web_contents, dev_server()->GetURL("/empty_title.html"), "unpersisted"));
   ASSERT_EQ(3UL, web_contents->GetInnerWebContents().size());
-  AddLocalStorageIfMissing(web_contents->GetInnerWebContents()[0]);
-  AddLocalStorageIfMissing(web_contents->GetInnerWebContents()[1]);
-  AddLocalStorageIfMissing(web_contents->GetInnerWebContents()[2]);
+  AddUsageIfMissing(web_contents->GetInnerWebContents()[0]);
+  AddUsageIfMissing(web_contents->GetInnerWebContents()[1]);
+  AddUsageIfMissing(web_contents->GetInnerWebContents()[2]);
   EXPECT_THAT(GetIwaUsage(url_info), IsApproximately(3000));
 }
 
 class IsolatedWebAppBrowsingDataClearingTest
     : public IsolatedWebAppBrowsingDataTest {
  protected:
-  void ClearData(const IsolatedWebAppUrlInfo& url_info) {
-    base::RunLoop run_loop;
-    auto* browsing_data_remover = profile()->GetBrowsingDataRemover();
-    browsing_data_remover->SetWouldCompleteCallbackForTesting(
-        base::BindLambdaForTesting([&](base::OnceClosure callback) {
-          if (browsing_data_remover->GetPendingTaskCountForTesting() == 1) {
-            run_loop.Quit();
-          }
-          std::move(callback).Run();
-        }));
-
-    auto filter = content::BrowsingDataFilterBuilder::Create(
-        content::BrowsingDataFilterBuilder::Mode::kDelete);
-    filter->AddOrigin(url_info.origin());
-
-    browsing_data_remover->RemoveWithFilter(
-        /*delete_begin=*/base::Time(), /*delete_end=*/base::Time::Max(),
-        chrome_browsing_data_remover::DATA_TYPE_SITE_DATA &
-            ~content::BrowsingDataRemover::DATA_TYPE_COOKIES,
-        chrome_browsing_data_remover::ALL_ORIGIN_TYPES, std::move(filter));
-    run_loop.Run();
-
-    browsing_data_remover->SetWouldCompleteCallbackForTesting(
-        base::DoNothing());
-  }
-
   int64_t GetCacheSize(const IsolatedWebAppUrlInfo& url_info) {
     base::test::TestFuture<bool, int64_t> future;
 
@@ -238,40 +207,6 @@ class IsolatedWebAppBrowsingDataClearingTest
     return future.Take();
   }
 };
-
-IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
-                       LocalStorageCleared) {
-  // Install 2 IWAs and add data to each.
-  IsolatedWebAppUrlInfo url_info1 = InstallIsolatedWebApp();
-  Browser* browser1 = LaunchWebAppBrowserAndWait(url_info1.app_id());
-  content::WebContents* web_contents1 =
-      browser1->tab_strip_model()->GetActiveWebContents();
-
-  EXPECT_THAT(GetIwaUsage(url_info1), Eq(0));
-  AddLocalStorageIfMissing(web_contents1);
-  EXPECT_THAT(GetIwaUsage(url_info1), IsApproximately(1000));
-
-  IsolatedWebAppUrlInfo url_info2 = InstallIsolatedWebApp();
-  Browser* browser2 = LaunchWebAppBrowserAndWait(url_info2.app_id());
-  content::WebContents* web_contents2 =
-      browser2->tab_strip_model()->GetActiveWebContents();
-
-  EXPECT_THAT(GetIwaUsage(url_info2), Eq(0));
-  AddLocalStorageIfMissing(web_contents2);
-  EXPECT_THAT(GetIwaUsage(url_info2), IsApproximately(1000));
-
-  ASSERT_TRUE(CreateControlledFrame(web_contents2,
-                                    dev_server()->GetURL("/empty_title.html"),
-                                    "persist:partition_name"));
-  ASSERT_EQ(1UL, web_contents2->GetInnerWebContents().size());
-  AddLocalStorageIfMissing(web_contents2->GetInnerWebContents()[0]);
-  EXPECT_THAT(GetIwaUsage(url_info2), IsApproximately(2000));
-
-  ClearData(url_info2);
-
-  EXPECT_THAT(GetIwaUsage(url_info1), IsApproximately(1000));
-  EXPECT_THAT(GetIwaUsage(url_info2), Eq(0));
-}
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest, CacheCleared) {
   IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp();
