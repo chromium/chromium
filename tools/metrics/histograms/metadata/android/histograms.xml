@@ -629,33 +629,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Android.ChildProcessBinding.Percentage{ChildProcessConnectionMetricsBindingState}Connections_{TotalConnectionBucket}"
-    units="%" expires_after="2023-08-20">
-  <owner>ckitagawa@chromium.org</owner>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    Records the percentage of sandboxed ChildProcessConnections with a
-    {ChildProcessConnectionMetricsBindingState} out of the total number of
-    ChildProcessConnections where there are {TotalConnectionBucket}. This is not
-    emitted if there are no live connections. Emitted at a Poisson distributed
-    period with a mean of 5 minutes on Chrome on Android while in the
-    foreground.
-  </summary>
-  <token key="ChildProcessConnectionMetricsBindingState"
-      variants="ChildProcessConnectionMetricsBindingState"/>
-  <token key="TotalConnectionBucket">
-    <variant name="3To5Connections" summary="3 to 5 connections"/>
-    <variant name="6To10Connections" summary="6 to 10 connections"/>
-    <variant name="11To20Connections" summary="11 to 20 connections"/>
-    <variant name="21To50Connections" summary="21 to 50 connections"/>
-    <variant name="LessThan3Connections" summary="less than 3 connections"/>
-    <variant name="MoreThan51Connections" summary="more than 51 connections"/>
-  </token>
-</histogram>
-
 <histogram name="Android.ChildProcessBinding.TotalConnections"
-    units="connections" expires_after="2023-12-24">
+    units="connections" expires_after="2024-08-20">
   <owner>ckitagawa@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -668,7 +643,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.ChildProcessBinding.{ChildProcessConnectionMetricsBindingState}Connections"
-    units="connections" expires_after="2023-08-20">
+    units="connections" expires_after="2024-08-20">
   <owner>ckitagawa@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
