@@ -215,7 +215,7 @@ public abstract class BookmarkRow
             if (bookmarkItem != null) {
                 // Reading list items can sometimes be movable (for type swapping purposes), but for
                 // UI purposes they shouldn't be movable.
-                canMove = BookmarkUtils.isMovable(bookmarkItem);
+                canMove = BookmarkUtils.isMovable(mDelegate.getModel(), bookmarkItem);
                 canReorder = bookmarkItem.isReorderable() && !mFromFilterView;
             }
         }

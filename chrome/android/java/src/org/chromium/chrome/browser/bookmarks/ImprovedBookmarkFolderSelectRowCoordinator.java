@@ -16,52 +16,69 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 /** Business logic for the improved bookmark folder select view. */
 public class ImprovedBookmarkFolderSelectRowCoordinator {
     private final Context mContext;
-    private final View mView;
     private final PropertyModel mModel;
     private final BookmarkImageFetcher mBookmarkImageFetcher;
-    private final BookmarkId mBookmarkId;
-    private final BookmarkItem mBookmarkItem;
     private final BookmarkModel mBookmarkModel;
     private final ImprovedBookmarkFolderViewCoordinator mFolderViewCoordinator;
+
+    private View mView;
+    private BookmarkId mBookmarkId;
+    private BookmarkItem mBookmarkItem;
+    private PropertyModelChangeProcessor mChangeProcessor;
 
     /**
      * @param context The calling context.
      * @param view The view this coordinator controls.
      * @param bookmarkImageFetcher Fetches images for bookmarks.
-     * @param bookmarkId The folder to show the row for.
+     * @param bookmarkId The bookmark id to show the row for.
      * @param bookmarkModel The bookmark model used to query bookmark properties.
+     * @param clickListener The listener for a row click event.
      */
     public ImprovedBookmarkFolderSelectRowCoordinator(Context context,
-            ImprovedBookmarkFolderSelectRow view, BookmarkImageFetcher bookmarkImageFetcher,
-            BookmarkId bookmarkId, BookmarkModel bookmarkModel) {
+            BookmarkImageFetcher bookmarkImageFetcher, BookmarkModel bookmarkModel,
+            Runnable clickListener) {
         mContext = context;
-        mView = view;
         mModel = new PropertyModel(ImprovedBookmarkFolderSelectRowProperties.ALL_KEYS);
-        PropertyModelChangeProcessor.create(
-                mModel, mView, ImprovedBookmarkFolderSelectRowViewBinder::bind);
         mBookmarkImageFetcher = bookmarkImageFetcher;
-        mBookmarkId = bookmarkId;
         mBookmarkModel = bookmarkModel;
-        mBookmarkItem = mBookmarkModel.getBookmarkById(mBookmarkId);
         mFolderViewCoordinator = new ImprovedBookmarkFolderViewCoordinator(
-                mContext, mBookmarkImageFetcher, mBookmarkId, mBookmarkModel);
-        mFolderViewCoordinator.setView(mView.findViewById(R.id.folder_view));
+                mContext, mBookmarkImageFetcher, mBookmarkModel);
 
-        mModel.set(ImprovedBookmarkFolderSelectRowProperties.TITLE,
-                mBookmarkModel.getBookmarkTitle(mBookmarkId));
         mModel.set(ImprovedBookmarkFolderSelectRowProperties.END_ICON_VISIBLE, true);
         mModel.set(ImprovedBookmarkFolderSelectRowProperties.ROW_CLICK_LISTENER,
-                (v)
-                        -> {
-                                // TODO(crbug.com/1448933): Implement new move activity.
-                        });
+                (v) -> { clickListener.run(); });
     }
 
-    public PropertyModel getModel() {
-        return mModel;
+    /** Sets the given bookmark id. */
+    public void setBookmarkId(BookmarkId bookmarkId) {
+        mBookmarkId = bookmarkId;
+        mBookmarkItem = mBookmarkModel.getBookmarkById(mBookmarkId);
+
+        mModel.set(ImprovedBookmarkFolderSelectRowProperties.TITLE, mBookmarkItem.getTitle());
+        mFolderViewCoordinator.setBookmarkId(bookmarkId);
     }
 
+    /** Sets the view that this coordinator controls. */
+    public void setView(ImprovedBookmarkFolderSelectRow view) {
+        if (mChangeProcessor != null) {
+            mChangeProcessor.destroy();
+        }
+
+        mView = view;
+        if (view == null) return;
+
+        mChangeProcessor = PropertyModelChangeProcessor.create(
+                mModel, mView, ImprovedBookmarkFolderSelectRowViewBinder::bind);
+        mFolderViewCoordinator.setView(mView.findViewById(R.id.folder_view));
+    }
+
+    /** Returns the {@link View} this coordinator controls. */
     public View getView() {
         return mView;
+    }
+
+    /** Returns the {@link PropertyModel}. */
+    public PropertyModel getModel() {
+        return mModel;
     }
 }

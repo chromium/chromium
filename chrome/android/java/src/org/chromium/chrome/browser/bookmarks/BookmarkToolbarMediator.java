@@ -146,6 +146,7 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
         } else if (id == R.id.selection_mode_move_menu_id) {
             List<BookmarkId> list = mSelectionDelegate.getSelectedItemsAsList();
             if (list.size() >= 1) {
+                // TODO(crbug.com/): Support moving multiple bookmarks.
                 BookmarkFolderSelectActivity.startFolderSelectActivity(
                         mContext, list.toArray(new BookmarkId[0]));
                 RecordUserAction.record("MobileBookmarkManagerMoveToFolderBulk");

@@ -48,8 +48,6 @@ import java.util.Arrays;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ImprovedBookmarkFolderSelectRowCoordinatorTest {
-    private static final String TITLE = "Test title";
-    private static final String READING_LIST_TITLE = "Reading list";
     private static final int CHILD_COUNT = 5;
     private static final int READING_LIST_CHILD_COUNT = 1;
 
@@ -64,9 +62,14 @@ public class ImprovedBookmarkFolderSelectRowCoordinatorTest {
             new BookmarkId(/*id=*/2, BookmarkType.READING_LIST);
     private final BookmarkId mBookmarkId = new BookmarkId(/*id=*/3, BookmarkType.NORMAL);
     private final BookmarkId mReadingListId = new BookmarkId(/*id=*/4, BookmarkType.READING_LIST);
+
+    private final BookmarkItem mFolderItem =
+            new BookmarkItem(mFolderId, "User folder", null, true, null, true, false, 0, false);
     private final BookmarkItem mBookmarkItem = new BookmarkItem(mBookmarkId, "Bookmark",
             JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), false, mFolderId, true, false, 0,
             false);
+    private final BookmarkItem mReadingListFolderItem = new BookmarkItem(
+            mReadingListFolderId, "Reading List", null, true, null, true, false, 0, false);
     private final BookmarkItem mReadingListItem = new BookmarkItem(mReadingListId, "ReadingList",
             JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), false, mReadingListFolderId, true,
             false, 0, false);
@@ -77,6 +80,8 @@ public class ImprovedBookmarkFolderSelectRowCoordinatorTest {
     private BookmarkModel mBookmarkModel;
     @Mock
     private Drawable mDrawable;
+    @Mock
+    private Runnable mClickListener;
 
     private Activity mActivity;
     private ImprovedBookmarkFolderSelectRow mView;
@@ -91,9 +96,9 @@ public class ImprovedBookmarkFolderSelectRowCoordinatorTest {
 
         // Setup BookmarkModel.
         doReturn(mBookmarkItem).when(mBookmarkModel).getBookmarkById(mBookmarkId);
+        doReturn(mReadingListFolderItem).when(mBookmarkModel).getBookmarkById(mReadingListFolderId);
+        doReturn(mFolderItem).when(mBookmarkModel).getBookmarkById(mFolderId);
         doReturn(mReadingListItem).when(mBookmarkModel).getBookmarkById(mReadingListId);
-        doReturn(TITLE).when(mBookmarkModel).getBookmarkTitle(mFolderId);
-        doReturn(READING_LIST_TITLE).when(mBookmarkModel).getBookmarkTitle(mReadingListFolderId);
         doReturn(CHILD_COUNT).when(mBookmarkModel).getChildCount(mFolderId);
         doReturn(READING_LIST_CHILD_COUNT).when(mBookmarkModel).getChildCount(mReadingListFolderId);
 
@@ -109,13 +114,15 @@ public class ImprovedBookmarkFolderSelectRowCoordinatorTest {
     public void testConstructor_withImages() {
         ImprovedBookmarkFolderSelectRowCoordinator coordinator =
                 new ImprovedBookmarkFolderSelectRowCoordinator(
-                        mActivity, mView, mBookmarkImageFetcher, mFolderId, mBookmarkModel);
+                        mActivity, mBookmarkImageFetcher, mBookmarkModel, mClickListener);
+        coordinator.setBookmarkId(mFolderId);
+        coordinator.setView(mView);
         PropertyModel model = coordinator.getModel();
 
-        assertEquals(TITLE, model.get(ImprovedBookmarkFolderSelectRowProperties.TITLE));
+        assertEquals("User folder", model.get(ImprovedBookmarkFolderSelectRowProperties.TITLE));
         assertTrue(model.get(ImprovedBookmarkFolderSelectRowProperties.END_ICON_VISIBLE));
 
-        verify(mView).setTitle(TITLE);
+        verify(mView).setTitle("User folder");
         verify(mView).setEndIconVisible(true);
         verify(mView).setRowClickListener(any());
     }
@@ -126,11 +133,12 @@ public class ImprovedBookmarkFolderSelectRowCoordinatorTest {
                 .when(mBookmarkModel)
                 .getTopLevelFolderIds(anyBoolean(), anyBoolean());
         ImprovedBookmarkFolderSelectRowCoordinator coordinator =
-                new ImprovedBookmarkFolderSelectRowCoordinator(mActivity, mView,
-                        mBookmarkImageFetcher, mReadingListFolderId, mBookmarkModel);
+                new ImprovedBookmarkFolderSelectRowCoordinator(
+                        mActivity, mBookmarkImageFetcher, mBookmarkModel, mClickListener);
+        coordinator.setBookmarkId(mReadingListFolderId);
+        coordinator.setView(mView);
         PropertyModel model = coordinator.getModel();
 
-        assertEquals(
-                READING_LIST_TITLE, model.get(ImprovedBookmarkFolderSelectRowProperties.TITLE));
+        assertEquals("Reading List", model.get(ImprovedBookmarkFolderSelectRowProperties.TITLE));
     }
 }

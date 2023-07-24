@@ -162,6 +162,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkFolderPickerCoordinator.java",
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkFolderPickerMediator.java",
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkFolderPickerProperties.java",
+  "java/src/org/chromium/chrome/browser/bookmarks/BookmarkFolderPickerRowProperties.java",
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkFolderPickerViewBinder.java",
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkFolderRow.java",
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkImageFetcher.java",

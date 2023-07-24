@@ -857,13 +857,13 @@ class BookmarkManagerMediator
         }
     }
 
-    private static boolean isMovable(PropertyModel propertyModel) {
+    private static boolean isMovable(BookmarkModel bookmarkModel, PropertyModel propertyModel) {
         BookmarkListEntry bookmarkListEntry =
                 propertyModel.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY);
         if (bookmarkListEntry == null) return false;
         BookmarkItem bookmarkItem = bookmarkListEntry.getBookmarkItem();
         if (bookmarkItem == null) return false;
-        return BookmarkUtils.isMovable(bookmarkItem);
+        return BookmarkUtils.isMovable(bookmarkModel, bookmarkItem);
     }
 
     private int firstIndexWithLocation(int start, int stop, int delta) {
@@ -874,7 +874,7 @@ class BookmarkManagerMediator
                         || viewType == ViewType.SHOPPING_POWER_BOOKMARK
                         || viewType == ViewType.IMPROVED_BOOKMARK_COMPACT
                         || viewType == ViewType.IMPROVED_BOOKMARK_VISUAL)
-                    && isMovable(listItem.model)) {
+                    && isMovable(mBookmarkModel, listItem.model)) {
                 return i;
             }
         }
@@ -997,7 +997,7 @@ class BookmarkManagerMediator
     private int getBookmarkItemEndIndex() {
         int endIndex = mModelList.size() - 1;
         BookmarkItem bookmarkItem = getItemByPosition(endIndex).getBookmarkItem();
-        if (bookmarkItem == null || !BookmarkUtils.isMovable(bookmarkItem)) {
+        if (bookmarkItem == null || !BookmarkUtils.isMovable(mBookmarkModel, bookmarkItem)) {
             endIndex--;
         }
         return endIndex;
@@ -1159,7 +1159,9 @@ class BookmarkManagerMediator
             if (displayPref == BookmarkRowDisplayPref.VISUAL) {
                 model.set(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR,
                         new ImprovedBookmarkFolderViewCoordinator(
-                                mContext, mBookmarkImageFetcher, item.getId(), mBookmarkModel));
+                                mContext, mBookmarkImageFetcher, mBookmarkModel));
+                model.get(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR)
+                        .setBookmarkId(item.getId());
             }
             model.set(ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR,
                     BookmarkUtils.getIconBackground(mContext, mBookmarkModel, item));
@@ -1187,9 +1189,12 @@ class BookmarkManagerMediator
     ModelList createListMenuModelList(BookmarkListEntry entry, @Location int location) {
         BookmarkItem bookmarkItem = entry.getBookmarkItem();
         BookmarkId bookmarkId = bookmarkItem.getId();
+
         // Reading list items can sometimes be movable (for type swapping purposes), but for
         // UI purposes they shouldn't be movable.
-        boolean canMove = bookmarkItem != null && BookmarkUtils.isMovable(bookmarkItem);
+        boolean canMove =
+                bookmarkItem != null && BookmarkUtils.isMovable(mBookmarkModel, bookmarkItem);
+
         ModelList listItems = new ModelList();
         if (bookmarkId.getType() == BookmarkType.READING_LIST) {
             if (bookmarkItem != null) {
@@ -1249,7 +1254,11 @@ class BookmarkManagerMediator
                 mBookmarkModel.setReadStatusForReadingList(bookmarkItem.getUrl(), /*read=*/false);
                 RecordUserAction.record("Android.BookmarkPage.ReadingList.MarkAsUnread");
             } else if (textId == R.string.bookmark_item_move) {
-                BookmarkFolderSelectActivity.startFolderSelectActivity(mContext, bookmarkId);
+                if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+                    BookmarkUtils.startFolderPickerActivity(mContext, bookmarkId);
+                } else {
+                    BookmarkFolderSelectActivity.startFolderSelectActivity(mContext, bookmarkId);
+                }
                 RecordUserAction.record("MobileBookmarkManagerMoveToFolder");
             } else if (textId == R.string.bookmark_item_delete) {
                 if (mBookmarkModel != null) {

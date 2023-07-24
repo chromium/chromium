@@ -20,28 +20,29 @@ public class ImprovedBookmarkFolderViewCoordinator {
     private final Context mContext;
     private final PropertyModel mModel;
     private final BookmarkImageFetcher mBookmarkImageFetcher;
-    private final BookmarkId mBookmarkId;
-    private final BookmarkItem mBookmarkItem;
     private final BookmarkModel mBookmarkModel;
 
     private View mView;
+    private BookmarkId mBookmarkId;
+    private BookmarkItem mBookmarkItem;
     private PropertyModelChangeProcessor mChangeProcessor;
 
     /**
      * @param context The calling context.
-     * @param view The view this coordinator controls.
      * @param bookmarkImageFetcher Fetches images for bookmarks.
-     * @param bookmarkId The folder to show the row for.
      * @param bookmarkModel The bookmark model used to query bookmark properties.
      */
     public ImprovedBookmarkFolderViewCoordinator(Context context,
-            BookmarkImageFetcher bookmarkImageFetcher, BookmarkId bookmarkId,
-            BookmarkModel bookmarkModel) {
+            BookmarkImageFetcher bookmarkImageFetcher, BookmarkModel bookmarkModel) {
         mContext = context;
         mModel = new PropertyModel(ImprovedBookmarkFolderViewProperties.ALL_KEYS);
         mBookmarkImageFetcher = bookmarkImageFetcher;
-        mBookmarkId = bookmarkId;
         mBookmarkModel = bookmarkModel;
+    }
+
+    /** Sets the {@link BookmarkId} for the folder view. */
+    public void setBookmarkId(BookmarkId bookmarkId) {
+        mBookmarkId = bookmarkId;
         mBookmarkItem = mBookmarkModel.getBookmarkById(mBookmarkId);
 
         final @BookmarkType int type = mBookmarkId.getType();

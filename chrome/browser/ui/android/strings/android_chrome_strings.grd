@@ -3905,6 +3905,15 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_CREATE_NEW_FOLDER"  desc="Option in the bookmarks manager to show the create a new folder in the current context. [CHAR_LIMIT=24]">
         Create new folder
       </message>
+      <message name="IDS_FOLDER_PICKER_ROOT"  desc="Toolbar title for when the user is selecting a folder and the current selected folder is the root.">
+        Move to\u2026
+      </message>
+      <message name="IDS_FOLDER_PICKER_MOVE_HERE"  desc="Button the user clicks to move the given bookmark (or folder) to the selected folder.">
+        Move here
+      </message>
+      <message name="IDS_FOLDER_PICKER_CANCEL"  desc="Button the user clicks to cancel the move action.">
+        Cancel
+      </message>
 
       <!-- Read later strings -->
       <message name="IDS_READING_LIST_READ" desc="The header for the read section in the reading list UI.">

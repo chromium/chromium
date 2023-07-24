@@ -9,6 +9,7 @@ import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -37,6 +38,9 @@ public class ImprovedBookmarkFolderSelectRow extends FrameLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+
+        setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         mRowView = findViewById(R.id.improved_folder_row);
         mFolderView = (ImprovedBookmarkFolderView) findViewById(R.id.image);

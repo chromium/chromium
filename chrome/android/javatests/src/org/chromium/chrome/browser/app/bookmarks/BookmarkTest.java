@@ -727,7 +727,7 @@ public class BookmarkTest {
     @Test
     @MediumTest
     public void testEndIconVisibilityInSelectionMode() throws Exception {
-        BookmarkId testId = addFolder(TEST_FOLDER_TITLE);
+        addFolder(TEST_FOLDER_TITLE);
         addBookmark(TEST_TITLE_A, mTestUrlA);
 
         BookmarkPromoHeader.forcePromoStateForTesting(
@@ -1239,7 +1239,7 @@ public class BookmarkTest {
             assertEquals("Incorrect bookmark type for item 1", BookmarkType.PARTNER,
                     partnerBookmarkId1.getType());
             assertFalse("Partner item 1 should not be movable",
-                    BookmarkUtils.isMovable(partnerBookmarkItem1));
+                    BookmarkUtils.isMovable(mBookmarkModel, partnerBookmarkItem1));
             assertTrue("Partner item 1 should be editable", partnerBookmarkItem1.isEditable());
         });
 
@@ -1258,7 +1258,7 @@ public class BookmarkTest {
             assertEquals("Incorrect bookmark type for item 2", BookmarkType.PARTNER,
                     partnerBookmarkId2.getType());
             assertFalse("Partner item 2 should not be movable",
-                    BookmarkUtils.isMovable(partnerBookmarkItem2));
+                    BookmarkUtils.isMovable(mBookmarkModel, partnerBookmarkItem2));
             assertTrue("Partner item 2 should be editable", partnerBookmarkItem2.isEditable());
         });
 

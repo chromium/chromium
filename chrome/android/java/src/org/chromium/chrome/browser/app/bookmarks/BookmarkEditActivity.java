@@ -132,7 +132,6 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
         Resources res = this.getResources();
         Profile profile = Profile.getLastUsedRegularProfile();
         mFolderSelectCoordinator = new ImprovedBookmarkFolderSelectRowCoordinator(this,
-                (ImprovedBookmarkFolderSelectRow) findViewById(R.id.improved_folder_row),
                 new BookmarkImageFetcher(this, mModel,
                         ImageFetcherFactory.createImageFetcher(
                                 ImageFetcherConfig.DISK_CACHE_ONLY, profile.getProfileKey()),
@@ -140,7 +139,10 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
                         BookmarkUtils.getRoundedIconGenerator(this, BookmarkRowDisplayPref.VISUAL),
                         BookmarkUtils.getImageIconSize(res, BookmarkRowDisplayPref.VISUAL),
                         BookmarkUtils.getFaviconDisplaySize(res, BookmarkRowDisplayPref.VISUAL)),
-                item.getParentId(), mModel);
+                mModel, () -> { BookmarkUtils.startFolderPickerActivity(this, mBookmarkId); });
+        mFolderSelectCoordinator.setBookmarkId(item.getParentId());
+        mFolderSelectCoordinator.setView(
+                (ImprovedBookmarkFolderSelectRow) findViewById(R.id.improved_folder_row));
 
         updateViewContent(false);
     }
@@ -168,7 +170,8 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
         mFolderTextView.setText(mModel.getBookmarkTitle(bookmarkItem.getParentId()));
         mTitleEditText.setEnabled(bookmarkItem.isEditable());
         mUrlEditText.setEnabled(bookmarkItem.isUrlEditable());
-        mFolderTextView.setEnabled(BookmarkUtils.isMovable(bookmarkItem));
+        mFolderTextView.setEnabled(BookmarkUtils.isMovable(mModel, bookmarkItem));
+        mFolderSelectCoordinator.setBookmarkId(bookmarkItem.getParentId());
     }
 
     @Override

@@ -84,7 +84,8 @@ public class ImprovedBookmarkFolderViewCoordinatorTest {
 
     private void createCoordinator() {
         mCoordinator = new ImprovedBookmarkFolderViewCoordinator(
-                mActivity, mBookmarkImageFetcher, mFolderId, mBookmarkModel);
+                mActivity, mBookmarkImageFetcher, mBookmarkModel);
+        mCoordinator.setBookmarkId(mFolderId);
         mModel = mCoordinator.getModelForTesting();
     }
 
