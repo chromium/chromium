@@ -37,6 +37,7 @@
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> vahelehte näivad olevat seotud. Kas soovite need grupeerida?</translation>
 <translation id="4212246570487010370">Jätka sirvimist</translation>
 <translation id="4648718555153979859">Teie vahelehed on siin grupeeritud</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{Oma suletud vahelehed leiate Chrome'i peamenüüs olevast jaotisest Hiljutised vahelehed.}=1{Oma suletud vahelehed leiate Chrome'i peamenüüs olevast jaotisest Hiljutised vahelehed. Teie inkognito vaheleht pole saadaval.}other{Oma suletud vahelehed leiate Chrome'i peamenüüs olevast jaotisest Hiljutised vahelehed. Teie # inkognito vahelehte pole saadaval.}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> arvustus)}other{(<ph name="REVIEWS_COUNT_MANY" /> arvustust)}}</translation>
 <translation id="4850886885716139402">Kuva</translation>
 <translation id="4870911314065352661">Kas sulgeda kõik vahelehed?</translation>

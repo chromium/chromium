@@ -1570,6 +1570,7 @@
     ప్రసారంలో ఎదురయ్యే సమస్యలకు పరిష్కారాలను కనుగొనడంలో సహాయం కోసం, దయచేసి
     <ph name="BEGIN_LINK" />
     సహాయ కేంద్రం<ph name="END_LINK" />ను సందర్శించండి.</translation>
+<translation id="22649924370461580">సేవ్ చేయబడిన ట్యాబ్ గ్రూప్‌లు</translation>
 <translation id="2266957463645820432">USB ద్వారా IPP (IPPUSB)</translation>
 <translation id="2268130516524549846">బ్లూటూత్‌ నిలిపివేయబడింది</translation>
 <translation id="2268182915828370037">ఫైల్ సింక్‌ను ఆఫ్ చేయాలా?</translation>
@@ -1797,6 +1798,7 @@
 <translation id="2435248616906486374">నెట్‌వర్క్ డిస్‌కనెక్ట్ అయింది</translation>
 <translation id="2435457462613246316">పాస్‌వర్డ్‌ను చూపించు</translation>
 <translation id="2436385001956947090">లింక్‌ను కాపీ చేయండి</translation>
+<translation id="2438853563451647815">ప్రింటర్‌కు కనెక్ట్ చేయబడలేదు</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> లోడ్ అవుతోంది</translation>
 <translation id="2440604414813129000">&amp;సోర్స్‌ను చూడండి</translation>
 <translation id="2440823041667407902">స్థాన యాక్సెస్</translation>
@@ -4467,6 +4469,7 @@
 <translation id="4683629100208651599">లోయర్‌కేస్‌ను ఎంచుకోండి</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (డిఫాల్ట్)</translation>
 <translation id="4684427112815847243">అంతా సింక్ చేయండి</translation>
+<translation id="4687238339694011189">మీ ప్రింటర్ ఆన్ చేయబడిందని, మీ Chromebook కనెక్ట్ చేయబడిన ఉన్న అదే నెట్‌వర్క్‌కు కనెక్ట్ చేయబడిందని నిర్ధారించుకోండి లేదా USB కేబుల్‌ను ఉపయోగించండి</translation>
 <translation id="4687613760714619596">తెలియని పరికరం (<ph name="DEVICE_ID" />)</translation>
 <translation id="4687718960473379118">సైట్ సూచించిన యాడ్‌లు</translation>
 <translation id="4688036121858134881">స్థానిక లాగ్ ID: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
@@ -6124,6 +6127,7 @@
 <translation id="6113434369102685411">Chrome బ్రౌజర్, <ph name="DEVICE_TYPE" /> లాంచర్ కోసం మీ ఆటోమేటిక్ సెర్చ్ ఇంజిన్‌ను సెట్ చేయండి</translation>
 <translation id="6113942107547980621">Smart Lockను ఉపయోగించడానికి, మీ ఫోన్‌లో ప్రాథమిక వినియోగదారు ప్రొఫైల్‌కు మారండి</translation>
 <translation id="6116921718742659598">భాష మరియు ఇన్‌పుట్ సెట్టింగ్‌లను మార్చండి</translation>
+<translation id="6119008366402292080">ప్రింటర్ ఏదీ అందుబాటులో లేదు</translation>
 <translation id="6119927814891883061">పరికరానికి <ph name="DEVICE_NAME" /> అని పేరు పెట్టండి</translation>
 <translation id="6119972796024789243">కలర్ కరెక్షన్</translation>
 <translation id="6120707837086723438">వంటకాల కోసం మీరు చేసిన ఇటీవలి సెర్చ్ యాక్టివిటీ ఆధారంగా సూచించబడిన ఈ వంటకాలు మీకు కనిపిస్తున్నాయి.
@@ -6134,6 +6138,7 @@
 <translation id="6122081475643980456">మీ ఇంటర్నెట్ కనెక్షన్ నియంత్రించబడుతోంది</translation>
 <translation id="6122093587541546701">ఈమెయిల్‌ (ఐచ్ఛికం):</translation>
 <translation id="6122095009389448667">క్లిప్‌బోర్డ్‌ను చూడనీయకుండా ఈ సైట్‌ను బ్లాక్ చేయడం కొనసాగించండి</translation>
+<translation id="6122513630797178831">CVCని సేవ్ చేయండి</translation>
 <translation id="6122600716821516697">ఈ పరికరంతో షేర్ చేయాలా?</translation>
 <translation id="6122831415929794347">సురక్షిత బ్రౌజింగ్‌ను ఆఫ్ చేయాలా?</translation>
 <translation id="6124650939968185064">కింది ఎక్స్‌టెన్షన్‌లు ఈ ఎక్స్‌టెన్షన్‌పై ఆధారపడి ఉంటాయి:</translation>

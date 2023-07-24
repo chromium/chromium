@@ -37,6 +37,7 @@
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> file par similare. Vrei să le grupezi?</translation>
 <translation id="4212246570487010370">Continuă navigarea</translation>
 <translation id="4648718555153979859">Filele tale sunt grupate aici</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{Poți găsi filele închise în filele Recente din meniul principal Chrome.}=1{Poți găsi filele închise în filele Recente din meniul principal Chrome. Fila incognito nu va fi disponibilă.}few{Poți găsi filele închise în filele Recente din meniul principal Chrome. Cele # file incognito nu vor fi disponibile.}other{Poți găsi filele închise în filele Recente din meniul principal Chrome. Cele # de file incognito nu vor fi disponibile.}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> recenzie)}few{(<ph name="REVIEWS_COUNT_MANY" /> recenzii)}other{(<ph name="REVIEWS_COUNT_MANY" /> de recenzii)}}</translation>
 <translation id="4850886885716139402">Afișează</translation>
 <translation id="4870911314065352661">Închizi toate filele?</translation>

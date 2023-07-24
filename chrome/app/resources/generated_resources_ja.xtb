@@ -1554,6 +1554,7 @@
 <translation id="2263189956353037928">ログアウトして再度ログイン</translation>
 <translation id="2263371730707937087">画面のリフレッシュ レート</translation>
 <translation id="2263679799334060788">お送りいただいたフィードバックは、Google Cast の改善に役立てさせていただきます。Google Cast に関する問題のトラブルシューティングについては、<ph name="BEGIN_LINK" />ヘルプセンター<ph name="END_LINK" />をご覧ください。</translation>
+<translation id="22649924370461580">保存したタブグループ</translation>
 <translation id="2266957463645820432">IPP over USB（IPPUSB）</translation>
 <translation id="2268130516524549846">Bluetooth オフ</translation>
 <translation id="2268182915828370037">ファイルの同期をオフにしますか？</translation>
@@ -1779,6 +1780,7 @@
 <translation id="2435248616906486374">ネットワークが切断されました</translation>
 <translation id="2435457462613246316">パスワードを表示</translation>
 <translation id="2436385001956947090">リンクをコピー(&amp;L)</translation>
+<translation id="2438853563451647815">プリンタに接続されていません</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> を読み込んでいます</translation>
 <translation id="2440604414813129000">ソースを表示(&amp;O)</translation>
 <translation id="2440823041667407902">位置情報へのアクセス</translation>
@@ -4444,6 +4446,7 @@
 <translation id="4683629100208651599">小文字にする</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />%（デフォルト）</translation>
 <translation id="4684427112815847243">すべてを同期する</translation>
+<translation id="4687238339694011189">プリンタの電源が入っていて、Chromebook と同じネットワークに接続されていることを確認するか、USB ケーブルを使用します</translation>
 <translation id="4687613760714619596">不明なデバイス（<ph name="DEVICE_ID" />）</translation>
 <translation id="4687718960473379118">ウェブサイトによる広告の提案</translation>
 <translation id="4688036121858134881">ローカルログ ID は <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" /> です。</translation>
@@ -6097,6 +6100,7 @@
 <translation id="6113434369102685411">Chrome ブラウザと <ph name="DEVICE_TYPE" /> ランチャーに既定の検索エンジンを設定します</translation>
 <translation id="6113942107547980621">Smart Lock を使用するには、お使いのスマートフォンでメインユーザーのプロフィールに切り替えます</translation>
 <translation id="6116921718742659598">言語と入力の設定を変更</translation>
+<translation id="6119008366402292080">プリンタがありません</translation>
 <translation id="6119927814891883061">デバイス名を <ph name="DEVICE_NAME" /> に指定します</translation>
 <translation id="6119972796024789243">色補正</translation>
 <translation id="6120707837086723438">最近検索したレシピの候補が表示されています。
@@ -6107,6 +6111,7 @@
 <translation id="6122081475643980456">インターネット接続が制限されています</translation>
 <translation id="6122093587541546701">メール（省略可）:</translation>
 <translation id="6122095009389448667">このサイトによるクリップボードへのアクセスを引き続きブロックする</translation>
+<translation id="6122513630797178831">CVC を保存</translation>
 <translation id="6122600716821516697">このデバイスとファイルを共有しますか？</translation>
 <translation id="6122831415929794347">セーフ ブラウジングをオフにしますか？</translation>
 <translation id="6124650939968185064">次の拡張機能は、この拡張機能に依存しています:</translation>

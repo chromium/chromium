@@ -1571,6 +1571,7 @@
     Cast शी संबंधित समस्या ट्रबलशूट करण्यात मदत हवी असल्यास, कृपया
     <ph name="BEGIN_LINK" />
     मदत केंद्र<ph name="END_LINK" /> याचा संदर्भ घ्या.</translation>
+<translation id="22649924370461580">सेव्ह केलेले टॅब गट</translation>
 <translation id="2266957463645820432">USB (IPPUSB) वर IPP</translation>
 <translation id="2268130516524549846">ब्लूटूथ अक्षम</translation>
 <translation id="2268182915828370037">फाइल सिंक करणे बंद करायचे आहे का?</translation>
@@ -1798,6 +1799,7 @@
 <translation id="2435248616906486374">नेटवर्क डिस्कनेक्ट झाले</translation>
 <translation id="2435457462613246316">पासवर्ड दर्शवा</translation>
 <translation id="2436385001956947090">लिंक कॉपी करा</translation>
+<translation id="2438853563451647815">प्रिंटरशी कनेक्ट केले नाही</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> लोड करत आहे</translation>
 <translation id="2440604414813129000">स्त्रो&amp;त पहा</translation>
 <translation id="2440823041667407902">स्थान ॲक्सेस</translation>
@@ -4465,6 +4467,7 @@
 <translation id="4683629100208651599">लोअरकेस करा</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (डीफॉल्ट)</translation>
 <translation id="4684427112815847243">सर्व सिंक करा</translation>
+<translation id="4687238339694011189">तुमचा प्रिंटर सुरू असल्याची आणि तो तुमचे Chromebook कनेक्ट केले आहे त्याच नेटवर्कशी कनेक्ट केला असल्याची खात्री करा किंवा USB केबल वापरा</translation>
 <translation id="4687613760714619596">अज्ञात डिव्हाइस (<ph name="DEVICE_ID" />)</translation>
 <translation id="4687718960473379118">साइटने सुचवलेल्या जाहिराती</translation>
 <translation id="4688036121858134881">स्थानिक लॉग आयडी: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
@@ -6121,6 +6124,7 @@
 <translation id="6113434369102685411">Chrome ब्राउझर आणि <ph name="DEVICE_TYPE" /> लाँचरसाठी तुमचे डीफॉल्ट शोध इंजीन सेट करा</translation>
 <translation id="6113942107547980621">स्मार्ट लॉक वापरण्यासाठी, तुमच्या फोनवर प्राथमिक वापरकर्ता प्रोफाइलवर स्विच करा</translation>
 <translation id="6116921718742659598">भाषा आणि इनपुट सेटिंग्ज बदला</translation>
+<translation id="6119008366402292080">कोणताही प्रिंटर उपलब्ध नाही</translation>
 <translation id="6119927814891883061">डिव्हाइसला नाव <ph name="DEVICE_NAME" /> द्या</translation>
 <translation id="6119972796024789243">रंग सुधारणा</translation>
 <translation id="6120707837086723438">तुम्हाला तुमच्या अलीकडील पाककृतींच्या शोध अ‍ॅक्टिव्हिटीच्या आधारावर सुचवलेल्या पाककृती दिसत आहेत.
@@ -6131,6 +6135,7 @@
 <translation id="6122081475643980456">तुमचे इंटरनेट कनेक्शन नियंत्रित केले जात आहे</translation>
 <translation id="6122093587541546701">ईमेल (पर्यायी):</translation>
 <translation id="6122095009389448667">क्लिपबोर्ड पाहण्यापासून या साइटला ब्लॉक करणे सुरू ठेवा</translation>
+<translation id="6122513630797178831">CVC सेव्ह करा</translation>
 <translation id="6122600716821516697">या डिव्हाइससह शेअर करायचे आहे का?</translation>
 <translation id="6122831415929794347">सुरक्षित ब्राउझिंग बंद करायचे का?</translation>
 <translation id="6124650939968185064">या एक्स्टेंशनवर अवलंबून असलेले खालील एक्स्टेंशन:</translation>

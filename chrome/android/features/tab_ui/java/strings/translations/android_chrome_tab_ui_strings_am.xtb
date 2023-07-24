@@ -37,6 +37,7 @@
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ትሮች የሚዛመዱ ይመስላሉ ይቦደኑ?</translation>
 <translation id="4212246570487010370">ማሰሱን ይቀጥሉ</translation>
 <translation id="4648718555153979859">የእርስዎ ትሮች እዚህ አብረው ይቦደናሉ</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{የእርስዎን የተዘጉ ትሮች በChrome ዋና ምናሌ ስር የቅርብ ጊዜ ትሮች ውስጥ ማግኘት ይችላሉ።}=1{የእርስዎን የተዘጉ ትሮች በChrome ዋና ምናሌ ስር የቅርብ ጊዜ ትሮች ውስጥ ማግኘት ይችላሉ። የእርስዎ ማንነት የማያሳውቅ ትር አይገኝም።}one{የእርስዎን የተዘጉ ትሮች በChrome ዋና ምናሌ ስር የቅርብ ጊዜ ትሮች ውስጥ ማግኘት ይችላሉ። የእርስዎ # ማንነት የማያሳውቅ ትር አይገኝም።}other{የእርስዎን የተዘጉ ትሮች በChrome ዋና ምናሌ ስር የቅርብ ጊዜ ትሮች ውስጥ ማግኘት ይችላሉ። የእርስዎ # ማንነት የማያሳውቁ ትሮች አይገኙም።}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> ግምገማ)}one{(<ph name="REVIEWS_COUNT_MANY" /> ግምገማዎች)}other{(<ph name="REVIEWS_COUNT_MANY" /> ግምገማዎች)}}</translation>
 <translation id="4850886885716139402">አሳይ</translation>
 <translation id="4870911314065352661">ሁሉም ትሮች ይዘጉ?</translation>

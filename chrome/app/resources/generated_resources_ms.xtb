@@ -1572,6 +1572,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
     Untuk mendapatkan bantuan menyelesaikan masalah berkaitan Cast, sila rujuk
     <ph name="BEGIN_LINK" />
     pusat bantuan<ph name="END_LINK" />.</translation>
+<translation id="22649924370461580">Kumpulan tab disimpan</translation>
 <translation id="2266957463645820432">IPP melalui USB (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth dilumpuhkan</translation>
 <translation id="2268182915828370037">Matikan penyegerakan fail?</translation>
@@ -1799,6 +1800,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2435248616906486374">Rangkaian diputuskan</translation>
 <translation id="2435457462613246316">Paparkan kata laluan</translation>
 <translation id="2436385001956947090">Salin &amp;pautan</translation>
+<translation id="2438853563451647815">Tidak disambungkan kepada pencetak</translation>
 <translation id="2439626940657133600">Memuatkan <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">Lihat s&amp;umber</translation>
 <translation id="2440823041667407902">Akses lokasi</translation>
@@ -4469,6 +4471,7 @@ Isyarat peranti boleh menyertakan maklumat tentang penyemak imbas, OS, peranti, 
 <translation id="4683629100208651599">Jadikan Huruf Kecil</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (lalai)</translation>
 <translation id="4684427112815847243">Segerakkan semua</translation>
+<translation id="4687238339694011189">Pastikan pencetak anda dihidupkan dan disambungkan kepada rangkaian yang sama seperti Chromebook anda atau gunakan kabel USB</translation>
 <translation id="4687613760714619596">Peranti Tidak Diketahui (<ph name="DEVICE_ID" />)</translation>
 <translation id="4687718960473379118">Iklan yang dicadangkan laman</translation>
 <translation id="4688036121858134881">ID log setempat: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
@@ -6126,6 +6129,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6113434369102685411">Tetapkan enjin carian lalai anda untuk penyemak imbas Chrome dan Pelancar <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Untuk menggunakan Smart Lock, beralih kepada profil pengguna utama pada telefon anda</translation>
 <translation id="6116921718742659598">Tukar tetapan bahasa dan input</translation>
+<translation id="6119008366402292080">Tiada pencetak tersedia</translation>
 <translation id="6119927814891883061">Namakan peranti kepada <ph name="DEVICE_NAME" /></translation>
 <translation id="6119972796024789243">Pembetulan warna</translation>
 <translation id="6120707837086723438">Anda melihat resipi yang dicadangkan berdasarkan aktiviti Carian resipi anda baru-baru ini.
@@ -6136,6 +6140,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6122081475643980456">Sambungan Internet anda sedang dikawal</translation>
 <translation id="6122093587541546701">E-mel (pilihan):</translation>
 <translation id="6122095009389448667">Teruskan menyekat tapak ini daripada melihat papan keratan</translation>
+<translation id="6122513630797178831">Simpan CVC</translation>
 <translation id="6122600716821516697">Kongsi dengan peranti ini?</translation>
 <translation id="6122831415929794347">Matikan Penyemakan Imbas Selamat?</translation>
 <translation id="6124650939968185064">Sambungan berikut bergantung kepada sambungan ini:</translation>

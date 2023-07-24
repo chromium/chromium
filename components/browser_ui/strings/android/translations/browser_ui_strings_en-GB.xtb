@@ -301,6 +301,7 @@
 <translation id="6439114592976064011">Block sites from using your virtual reality device and data</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6467852467360539617">Clear data and reset permissions</translation>
+<translation id="6500423977866688905">When the window is narrow, request mobile view</translation>
 <translation id="6527303717912515753">Share</translation>
 <translation id="6545864417968258051">Bluetooth scanning</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="NUM_MORE" /> more blocked}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="NUM_MORE" /> more blocked}}</translation>

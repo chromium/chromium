@@ -37,6 +37,7 @@
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> Tabs scheinen zusammenzugehören. Sollen sie gruppiert werden?</translation>
 <translation id="4212246570487010370">Mehr ansehen</translation>
 <translation id="4648718555153979859">Deine Tabs werden hier in Gruppen zusammengefasst</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{Ihre geschlossenen Tabs finden Sie im Chrome-Hauptmenü unter „Zuletzt geöffnete Tabs“.}=1{Ihre geschlossenen Tabs finden Sie im Chrome-Hauptmenü unter „Zuletzt geöffnete Tabs“. Ihr Inkognitotab ist jedoch nicht dort aufgeführt.}other{Ihre geschlossenen Tabs finden Sie im Chrome-Hauptmenü unter „Zuletzt geöffnete Tabs“. Ihre # Inkognitotabs sind jedoch nicht dort aufgeführt.}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> Rezension)}other{(<ph name="REVIEWS_COUNT_MANY" /> Rezensionen)}}</translation>
 <translation id="4850886885716139402">Anzeigen</translation>
 <translation id="4870911314065352661">Alle Tabs schließen?</translation>

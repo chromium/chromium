@@ -37,6 +37,7 @@
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> 個のタブは関連しているようです。グループ化しますか？</translation>
 <translation id="4212246570487010370">引き続き閲覧</translation>
 <translation id="4648718555153979859">タブはここにグループ化されます</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{閉じたタブは Chrome メインメニューの [最近使ったタブ] で確認できます。}=1{閉じたタブは Chrome メインメニューの [最近使ったタブ] で確認できます。シークレット タブは使用できなくなります。}other{閉じたタブは Chrome メインメニューの [最近使ったタブ] で確認できます。# 個のシークレット タブは使用できなくなります。}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{（<ph name="REVIEWS_COUNT_ONE" /> 件のクチコミ）}other{（<ph name="REVIEWS_COUNT_MANY" /> 件のクチコミ）}}</translation>
 <translation id="4850886885716139402">表示</translation>
 <translation id="4870911314065352661">タブをすべて閉じますか？</translation>

@@ -146,6 +146,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1576623706766186887">Txikitu lupa aktibatuta dagoenean</translation>
 <translation id="1586324912145647027">Zortzi leihoetatik, joan lehenengora</translation>
 <translation id="1589090746204042747">Atzitu saio honetan egin dituzun jarduera guztiak</translation>
+<translation id="1592682369233288537">Hurrengo lan-eremua: <ph name="NEXT_DESK_NAME" />. Aktibatzeko, erabili Bilaketa + zuriunea.</translation>
 <translation id="1604857178818051494">Pausatu multimedia-edukia</translation>
 <translation id="1610778689852195798">"Desegin"</translation>
 <translation id="1611993646327628135">Aktibatuta</translation>
@@ -157,6 +158,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1647986356840967552">Aurreko orria</translation>
 <translation id="1651914502370159744">Ireki Historia orria</translation>
 <translation id="1654477262762802994">Sortu ahozko kontsulta bat</translation>
+<translation id="1662667383227796099">Bilatu fitxategiak, aplikazioak eta beste Exekutatzeko tresnan. Gainera, Chromebook-ari buruzko galderetarako erantzunak aurki ditzakezu.</translation>
 <translation id="1668469839109562275">VPN integratua</translation>
 <translation id="1675844249244994876">Eguneratu eskuineko leihoa</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> geratzen dira</translation>
@@ -560,6 +562,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3477079411857374384">Kontrol + Maius + zuriunea</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />. <ph name="CONNECTION_STATUS" />. Seinalearen indarra: <ph name="SIGNAL_STRENGTH" />.</translation>
 <translation id="348799646910989694">Apala automatikoki ezkutatuko da</translation>
+<translation id="3503243067695520519">Kaixo: Chromebook-ak pixka bat ezberdinak dira.</translation>
 <translation id="3505066820268455558">Bateria kargatzen</translation>
 <translation id="3509391053705095206">Ezin da aurkitu telefonoa. Ziurtatu telefonoaren Bluetootha aktibatuta dagoela.</translation>
 <translation id="3510164367642747937">Nabarmendu saguaren kurtsorea</translation>
@@ -685,6 +688,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="3977512764614765090">% <ph name="PERCENTAGE" /> geratzen zaio bateriari, eta kargatzen ari da.</translation>
 <translation id="3984536049089846927">Hurrengo orria</translation>
 <translation id="3986082989454912832">Erantzun</translation>
+<translation id="3990002060657467458">Maiz erabiltzen diren kontrolatzeko aukerak, hala nola wifia, Bluetooth-a eta bolumena, Ezarpen bizkorrak atalean daude. Pantaila-argazkiak ere atera ditzakezu hemen.</translation>
 <translation id="3995138139523574647">USB-C gailua (eskuinaldeko atzeko ataka)</translation>
 <translation id="40062176907008878">Eskuzko idazketa</translation>
 <translation id="4017989525502048489">Laser-erakuslea</translation>
@@ -748,6 +752,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4269883910223712419">Gailuaren administratzaileak honako hauek egin ditzake:</translation>
 <translation id="4274537685965975248">Ktrl + Alt + behera egiteko gezi-tekla lasterbidea aldatu egin da. Amaiera tekla erabiltzeko, sakatu <ph name="LAUNCHER_KEY_NAME" /> tekla + eskuinera egiteko gezi-tekla.</translation>
 <translation id="4275283744500212192">Ireki leihoaren diseinuaren aukerak</translation>
+<translation id="4278138729651139331">Pertsonalizatu Chromebook-a ezarpenetan. Adibidez, aldatu horma-papera edo pantaila-babeslea.</translation>
 <translation id="4279490309300973883">Islatzen</translation>
 <translation id="4280601795273309128">Amaitu dira segurtasun-eguneratzeak. Bertsio-berritu gailua.</translation>
 <translation id="4283888303416325161">Segurtasuna areagotzeko, idatzi pasahitza</translation>
@@ -804,6 +809,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4505050298327493054">Mahaigain aktiboa.</translation>
 <translation id="450584155212756404">Garatzaileentzako kanala</translation>
 <translation id="4513946894732546136">Iritzia</translation>
+<translation id="4516212064498225455">Oraingo lan-eremua: <ph name="CURRENT_DESK_NAME" />. Lan-eremu guztien menua irekitzeko, erabili Bilaketa + zuriunea.</translation>
 <translation id="4518404433291145981">Chromebook-a desblokeatzeko, desblokeatu telefonoa lehenik</translation>
 <translation id="4527045527269911712">Bluetooth bidezko "<ph name="DEVICE_NAME" />" gailuak parekatzeko baimena nahi du.</translation>
 <translation id="4533343294786968049">Bateriaren iraupena luzatzen. Ordu honetan egongo da guztiz kargatuta: <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -971,6 +977,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5207949376430453814">Nabarmendu testu-kurtsorea</translation>
 <translation id="5208059991603368177">Aktibatuta</translation>
 <translation id="5216991270656129561">Desaktibatuta <ph name="TIME" /> arte</translation>
+<translation id="5217646019792206018">Hurrengo lan-eremua: <ph name="NEXT_DESK_NAME" />. Aktibatzeko, erabili Bilaketa + zuriunea edo Maius + Bilaketa + <ph name="NEXT_DESK_INDEX" /> lasterbidea.</translation>
 <translation id="5221423477036820198">Bidali edo erantzun azkar mezuei telefonoan Phone Hub bidez.</translation>
 <translation id="5222676887888702881">Amaitu saioa</translation>
 <translation id="5229343007215035173">Aktibatu edo desaktibatu pribatutasun-pantaila</translation>
@@ -1036,6 +1043,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="550391772491508736">Berrekin igortzeari</translation>
 <translation id="5506975627792768506">Aktibatu edo desaktibatu lupa</translation>
 <translation id="5512042095225963688">Ezabatu aurreko hitza</translation>
+<translation id="5518068085000130971">Horiek ziren oinarriak! Aurrera egiteko, joan Arakatu aplikazio integratura, aholkuak eta laguntza jasotzeko. Erabiltzen hasteko aholkuak, aplikazio gomendatuak, eskaintza bereziak eta Chromebook-aren azken eginbideak aurkituko dituzu bertan.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Administratzaileak eSIMaren profil guztiak kendu ditu. Informazio gehiago lortzeko, jarri administratzailearekin harremanetan.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> konektatzen ari da.</translation>
@@ -1361,6 +1369,7 @@ Berriki instalatu da</translation>
 <translation id="6896758677409633944">Kopiatu</translation>
 <translation id="6901883536534621389">Probatu nabigatzeko keinuak</translation>
 <translation id="6912841030378044227">Fokuratu helbide-barra</translation>
+<translation id="6912901278692845878">Txango bizkorra</translation>
 <translation id="6919251195245069855">Ezin izan da hauteman txartel adimenduna. Saiatu berriro.</translation>
 <translation id="6920245099716267363">Aktibatu/Desaktibatu wifi-gunea. Wifi-gunea aktibatuta dago (gailu bat konektatuta).</translation>
 <translation id="6931576957638141829">Gorde hemen…</translation>
@@ -1666,6 +1675,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8297006494302853456">Ahula</translation>
 <translation id="8308637677604853869">Aurreko menua</translation>
 <translation id="830868413617744215">Beta</translation>
+<translation id="8312557488404088015">Egin txango bizkor bat erraz hasteko. 6 urrats ditu, eta minutu gutxi batzuk soilik beharko dituzu.</translation>
 <translation id="8314772463905284467">Blok Maius aktibatuta dago</translation>
 <translation id="8315514906653279104">Aktibatzen…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -1715,6 +1725,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8517041960877371778">Baliteke <ph name="DEVICE_TYPE" /> gailua ez kargatzea piztuta dagoen bitartean.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{<ph name="APP_NAME" /> aplikazioak kontrolatzen du sarrerako mikrofonoa}other{# aplikaziok kontrolatzen dute sarrerako mikrofonoa}}</translation>
 <translation id="8535393432370007982">Desegin kolorearen arabera ordenatzeko irizpidea ezartzeko aukera</translation>
+<translation id="853768060447955562">Aurreko lan-eremua: <ph name="PREVIOUS_DESK_NAME" />. Aktibatzeko, erabili Bilaketa + zuriunea edo Maius + Bilaketa + <ph name="PREVIOUS_DESK_INDEX" /> lasterbidea.</translation>
 <translation id="8541078764854166027">Kamerako markoa</translation>
 <translation id="8542053257095774575">Ez dago lan-eremu edo txantiloirik gordeta</translation>
 <translation id="8546059259582788728">Desegin da ordenatzeko irizpidea ezartzeko aukera</translation>
@@ -1866,11 +1877,13 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="925832987464884575">Ezkutatu aurrebistak</translation>
 <translation id="937214777182567951"><ph name="DEVICE_TYPE" /> gailua berehala eguneratzea eskatu dizu <ph name="MANAGER" /> kudeatzaileak</translation>
 <translation id="938963181863597773">Zer daukat egutegian?</translation>
+<translation id="943067377221312471">Aurreko lan-eremua: <ph name="PREVIOUS_DESK_NAME" />. Aktibatzeko, erabili Bilaketa + zuriunea.</translation>
 <translation id="945383118875625837">Arrastatu esteka laster-marken barrara</translation>
 <translation id="945522503751344254">Bidali oharrak</translation>
 <translation id="951991426597076286">Baztertu</translation>
 <translation id="953431725143473984">Gailua itzali nahi duzu?</translation>
 <translation id="954052413789300507">Ez dago behar adina toki <ph name="FILENAME" /> deskargatzeko. Egin tokia.</translation>
+<translation id="968627661524972577">Erabili aplikazioak behar duzun guztia Chromebook-ean egiteko. Exekutatzeko tresnan aurkituko dituzu aplikazioak. Era berean, teklatuko Exekutatzeko tresnaren tekla saka dezakezu.</translation>
 <translation id="974545358917229949">"<ph name="QUERY" />" bilaketaren <ph name="RESULT_COUNT" /> emaitza daude ikusgai</translation>
 <translation id="98120814841227350">Joan dokumentuaren amaierara</translation>
 <translation id="987589956647469042">Datu-konexioa aktibatuta dago</translation>

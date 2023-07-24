@@ -1573,6 +1573,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
     Du kan få hjælp til problemer med fejlfinding ved at gå til
     <ph name="BEGIN_LINK" />
     Hjælp<ph name="END_LINK" />.</translation>
+<translation id="22649924370461580">Gemte fanegrupper</translation>
 <translation id="2266957463645820432">IPP via USB (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth er deaktiveret</translation>
 <translation id="2268182915828370037">Vil du deaktivere filsynkronisering?</translation>
@@ -1800,6 +1801,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2435248616906486374">Forbindelsen til netværket blev afbrudt</translation>
 <translation id="2435457462613246316">Vis adgangskode</translation>
 <translation id="2436385001956947090">Kopiér &amp;link</translation>
+<translation id="2438853563451647815">Ingen forbindelse til printeren</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> indlæses</translation>
 <translation id="2440604414813129000">Vis &amp;kilde</translation>
 <translation id="2440823041667407902">Lokationsadgang</translation>
@@ -4469,6 +4471,7 @@ Enhedssignaler kan omfatte oplysninger om browseren, operativsystemet, enheden, 
 <translation id="4683629100208651599">Anvend små bogstaver</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (standard)</translation>
 <translation id="4684427112815847243">Synkroniser alt</translation>
+<translation id="4687238339694011189">Sørg for, at din printer er tændt og er tilsluttet det samme netværk som din Chromebook, eller brug et USB-kabel.</translation>
 <translation id="4687613760714619596">Ukendt enhed (<ph name="DEVICE_ID" />)</translation>
 <translation id="4687718960473379118">Foreslåede annoncer fra websites</translation>
 <translation id="4688036121858134881">Lokalt log-id: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
@@ -6124,6 +6127,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6113434369102685411">Angiv din standardsøgemaskine for Chrome-browseren og applisten på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Skift til den primære brugerprofil på din telefon for at bruge Smart Lock</translation>
 <translation id="6116921718742659598">Rediger indstillingerne for sprog og indtastning</translation>
+<translation id="6119008366402292080">Der er ingen tilgængelig printer</translation>
 <translation id="6119927814891883061">Navngiv enheden: <ph name="DEVICE_NAME" /></translation>
 <translation id="6119972796024789243">Farvekorrigering</translation>
 <translation id="6120707837086723438">Du får vist forslag til opskrifter baseret på dine seneste søgninger efter opskrifter.
@@ -6134,6 +6138,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6122081475643980456">Din internetforbindelse bliver overvåget</translation>
 <translation id="6122093587541546701">Mail (valgfri):</translation>
 <translation id="6122095009389448667">Fortsæt med at blokere dette website fra at se udklipsholderen</translation>
+<translation id="6122513630797178831">Gem CVC</translation>
 <translation id="6122600716821516697">Vil du dele med denne enhed?</translation>
 <translation id="6122831415929794347">Vil du deaktivere Beskyttet browsing?</translation>
 <translation id="6124650939968185064">Følgende udvidelser er afhængige af denne udvidelse:</translation>

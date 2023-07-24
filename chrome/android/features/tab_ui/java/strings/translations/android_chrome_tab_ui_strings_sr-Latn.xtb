@@ -37,6 +37,7 @@
 <translation id="4133493477912226187">Kartice (<ph name="NUMBER_OF_TABS" />) deluju povezano. Želite li da ih grupišete?</translation>
 <translation id="4212246570487010370">Nastavite sa pregledanjem</translation>
 <translation id="4648718555153979859">Kartice su grupisane zajedno ovde</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{Zatvorene kartice možete da pronađete u odeljku Nedavne kartice u glavnom meniju Chrome-a.}=1{Zatvorene kartice možete da pronađete u odeljku Nedavne kartice u glavnom meniju Chrome-a. Kartica bez arhiviranja neće biti dostupna.}one{Zatvorene kartice možete da pronađete u odeljku Nedavne kartice u glavnom meniju Chrome-a. # kartica bez arhiviranja neće biti dostupna.}few{Zatvorene kartice možete da pronađete u odeljku Nedavne kartice u glavnom meniju Chrome-a. # kartice bez arhiviranja neće biti dostupne.}other{Zatvorene kartice možete da pronađete u odeljku Nedavne kartice u glavnom meniju Chrome-a. # kartica bez arhiviranja neće biti dostupno.}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> recenzija)}one{(<ph name="REVIEWS_COUNT_MANY" /> recenzija)}few{(<ph name="REVIEWS_COUNT_MANY" /> recenzije)}other{(<ph name="REVIEWS_COUNT_MANY" /> recenzija)}}</translation>
 <translation id="4850886885716139402">Prikaz</translation>
 <translation id="4870911314065352661">Želite da zatvorite sve kartice?</translation>

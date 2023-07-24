@@ -1556,6 +1556,7 @@
 <translation id="2263189956353037928">Одјави ме и поново ме пријави</translation>
 <translation id="2263371730707937087">Учесталост освежавања екрана</translation>
 <translation id="2263679799334060788">Повратне информације нам помажу да побољшамо Google Cast и захвални смо вам на њима. Да бисте решили проблеме са пребацивањем, посетите <ph name="BEGIN_LINK" />центар за помоћ<ph name="END_LINK" />.</translation>
+<translation id="22649924370461580">Сачуване групе картица</translation>
 <translation id="2266957463645820432">IPP преко USB-а (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth је онемогућен</translation>
 <translation id="2268182915828370037">Желите да искључите синхронизацију фајлова?</translation>
@@ -1783,6 +1784,7 @@
 <translation id="2435248616906486374">Веза са мрежом је прекинута</translation>
 <translation id="2435457462613246316">Прикажи лозинку</translation>
 <translation id="2436385001956947090">Копирај линк</translation>
+<translation id="2438853563451647815">Није повезано са штампачем</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> се учитава</translation>
 <translation id="2440604414813129000">Прикажи и&amp;звор</translation>
 <translation id="2440823041667407902">Приступ локацији</translation>
@@ -4451,6 +4453,7 @@
 <translation id="4683629100208651599">Пребаци на мала слова</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (подразумевано)</translation>
 <translation id="4684427112815847243">Синхронизуј све</translation>
+<translation id="4687238339694011189">Уверите се да је штампач укључен и повезан на исту мрежу као и Chromebook или користите USB кабл</translation>
 <translation id="4687613760714619596">Непознат уређај (<ph name="DEVICE_ID" />)</translation>
 <translation id="4687718960473379118">Огласи које предлажу сајтови</translation>
 <translation id="4688036121858134881">ИД локалне евиденције: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
@@ -6106,6 +6109,7 @@
 <translation id="6113434369102685411">Подесите подразумевани претраживач за Chrome прегледач и покретач за <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Да бисте користили Smart Lock, пређите на примарни кориснички профил на телефону</translation>
 <translation id="6116921718742659598">Промени подешавања језика и уноса</translation>
+<translation id="6119008366402292080">Није доступан ниједан штампач</translation>
 <translation id="6119927814891883061">Промените назив уређаја у <ph name="DEVICE_NAME" /></translation>
 <translation id="6119972796024789243">Корекција боја</translation>
 <translation id="6120707837086723438">Приказују вам се предложени рецепти на основу недавне активности претраге за рецепте.
@@ -6116,6 +6120,7 @@
 <translation id="6122081475643980456">Интернет веза се контролише</translation>
 <translation id="6122093587541546701">Имејл (опционално):</translation>
 <translation id="6122095009389448667">Настави да блокираш увид у привремену меморију овом сајту</translation>
+<translation id="6122513630797178831">Сачувајте CVC</translation>
 <translation id="6122600716821516697">Желите да делите садржај са овим уређајем?</translation>
 <translation id="6122831415929794347">Желите да искључите Безбедносно прегледање?</translation>
 <translation id="6124650939968185064">Следећи додаци зависе од овог додатка:</translation>

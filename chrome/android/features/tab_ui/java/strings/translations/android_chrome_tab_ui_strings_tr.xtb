@@ -37,6 +37,7 @@
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> sekme birbiriyle ilgili görünüyor. Bunlar gruplandırılsın mı?</translation>
 <translation id="4212246570487010370">Göz atmaya devam edin</translation>
 <translation id="4648718555153979859">Sekmeleriniz burada gruplandırılır</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{Kapatılan sekmelerinizi, Chrome ana menüsündeki son sekmelerde bulabilirsiniz.}=1{Kapatılan sekmelerinizi, Chrome ana menüsündeki son sekmelerde bulabilirsiniz. Gizli sekmeniz kullanılamaz.}other{Kapatılan sekmelerinizi, Chrome ana menüsündeki son sekmelerde bulabilirsiniz. # gizli sekmeniz kullanılamaz.}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> yorum)}other{(<ph name="REVIEWS_COUNT_MANY" /> yorum)}}</translation>
 <translation id="4850886885716139402">Görüntüle</translation>
 <translation id="4870911314065352661">Tüm sekmeler kapatılsın mı?</translation>

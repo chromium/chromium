@@ -1558,6 +1558,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2263189956353037928">Deconectează-te și reconectează-te</translation>
 <translation id="2263371730707937087">Rata de actualizare a ecranului</translation>
 <translation id="2263679799334060788">Feedbackul tău ne ajută să îmbunătățim Google Cast și este apreciat. Pentru ajutor la remedierea problemelor privind proiectarea, accesează <ph name="BEGIN_LINK" />centrul de ajutor<ph name="END_LINK" />.</translation>
+<translation id="22649924370461580">Grupuri de file salvate</translation>
 <translation id="2266957463645820432">IPP prin USB (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth dezactivat</translation>
 <translation id="2268182915828370037">Dezactivezi sincronizarea fișierelor?</translation>
@@ -1785,6 +1786,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2435248616906486374">Rețea deconectată</translation>
 <translation id="2435457462613246316">Afișați parola</translation>
 <translation id="2436385001956947090">Copiază &amp;linkul</translation>
+<translation id="2438853563451647815">Neconectat la imprimantă</translation>
 <translation id="2439626940657133600">Se încarcă <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">Afișează s&amp;ursa</translation>
 <translation id="2440823041667407902">Accesul la locație</translation>
@@ -4454,6 +4456,7 @@ Semnalele de pe dispozitiv pot include informații despre browser, sistemul de o
 <translation id="4683629100208651599">Schimbă în minuscule</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (prestabilit)</translation>
 <translation id="4684427112815847243">Sincronizează tot</translation>
+<translation id="4687238339694011189">Verifică dacă imprimanta este pornită și conectată la rețeaua folosită de Chromebook sau folosește un cablu USB</translation>
 <translation id="4687613760714619596">Dispozitiv necunoscut (<ph name="DEVICE_ID" />)</translation>
 <translation id="4687718960473379118">Anunțurile sugerate de site-uri</translation>
 <translation id="4688036121858134881">ID jurnal local: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
@@ -6111,6 +6114,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6113434369102685411">Setează motorul de căutare prestabilit pentru browserul Chrome și lansatorul pentru <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Pentru a folosi Smart Lock, comută la profilul de utilizator principal de pe telefon</translation>
 <translation id="6116921718742659598">Schimbați setările pentru limbă și introducere de text</translation>
+<translation id="6119008366402292080">Nicio imprimantă disponibilă</translation>
 <translation id="6119927814891883061">Denumește dispozitivul <ph name="DEVICE_NAME" /></translation>
 <translation id="6119972796024789243">Corecția culorilor</translation>
 <translation id="6120707837086723438">Vezi rețete sugerate în funcție de rețetele pe care le-ai căutat recent.
@@ -6121,6 +6125,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6122081475643980456">Conexiunea la internet este controlată</translation>
 <translation id="6122093587541546701">Adresă de e-mail (opțională):</translation>
 <translation id="6122095009389448667">Blochează în continuare accesul la clipboard pentru acest site</translation>
+<translation id="6122513630797178831">Salvează codul CVC</translation>
 <translation id="6122600716821516697">Trimiți fișiere acestui dispozitiv?</translation>
 <translation id="6122831415929794347">Dezactivezi Navigarea sigură?</translation>
 <translation id="6124650939968185064">De această extensie depind următoarele extensii:</translation>

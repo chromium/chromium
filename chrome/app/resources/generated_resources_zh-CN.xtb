@@ -1154,6 +1154,7 @@
 <translation id="1929186283613845153">正在扫描此文件。</translation>
 <translation id="1929343511231420085">任意串行端口</translation>
 <translation id="1929546189971853037">读取您在所有登录过的设备上的浏览记录</translation>
+<translation id="1929774028758671973">附近的联系人可与您分享内容。系统会提示您批准相关请求。您无需批准已登录帐号 <ph name="USER_EMAIL" /> 的设备之间的内容分享。</translation>
 <translation id="1930879306590754738">密码已从此设备上和您的 Google 帐号中删除</translation>
 <translation id="1931152874660185993">没有安装任何组件。</translation>
 <translation id="1931410639376954712">正在安装 <ph name="DEVICE_OS" /></translation>
@@ -1420,6 +1421,7 @@
 <translation id="2151576029659734873">输入的标签页索引无效。</translation>
 <translation id="2152281589789213846">将打印机添加到您的个人资料中</translation>
 <translation id="2154484045852737596">修改支付卡</translation>
+<translation id="2155473371917268529">当前的公开范围设置是“您的设备”</translation>
 <translation id="2155772377859296191">有效分辨率：<ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker：<ph name="SCRIPT_URL" /></translation>
 <translation id="2156877321344104010">再次运行安全检查</translation>
@@ -1751,6 +1753,7 @@
 <translation id="2418307627282545839">让屏幕保持明快轻盈的色调</translation>
 <translation id="2419131370336513030">查看已安装的应用</translation>
 <translation id="2419706071571366386">为了安全起见，当您未使用计算机时，请退出帐号。</translation>
+<translation id="2421705177906985956">目前没有可显示的网站</translation>
 <translation id="2422125132043002186">已取消 Linux 恢复</translation>
 <translation id="2423578206845792524">图片另存为(&amp;V)...</translation>
 <translation id="2424424966051154874">{0,plural, =1{访客}other{访客 (#)}}</translation>
@@ -2429,6 +2432,7 @@
 <translation id="2966705348606485669">“<ph name="FOLDER_TITLE" />”书签文件夹的更多相关选项</translation>
 <translation id="2966937470348689686">管理 Android 偏好设置</translation>
 <translation id="2967926928600500959">与这些规则匹配的网址将被强制在一款特定浏览器中打开。</translation>
+<translation id="2970766364519518369">附近的所选联系人可与您分享内容。系统会提示您批准相关请求。您无需批准已登录帐号 <ph name="USER_EMAIL" /> 的设备之间的内容分享。</translation>
 <translation id="2972581237482394796">重做(&amp;R)</translation>
 <translation id="2973324205039581528">将网站静音</translation>
 <translation id="2975761176769946178">必须提供网址</translation>
@@ -3359,6 +3363,7 @@
 <translation id="3776508619697147021">网站可以请求自动下载多个文件</translation>
 <translation id="3776796446459804932">此扩展程序违反了 Chrome 应用商店政策。</translation>
 <translation id="3777483481409781352">无法激活移动网络设备</translation>
+<translation id="3777796259512476958">会致使您从大多数网站退出帐号</translation>
 <translation id="3778208826288864398">此安全密钥已被锁定，因为您输错 PIN 码的次数过多。您需要重置此安全密钥。</translation>
 <translation id="3778740492972734840">开发者工具(&amp;D)</translation>
 <translation id="3778868487658107119">您可以向它询问各种问题，指示它处理各种事务。它是专门为您配置的 Google 助手，随时为您提供帮助。</translation>
@@ -8093,6 +8098,7 @@
 <translation id="7797571222998226653">已关闭</translation>
 <translation id="7798504574384119986">查看网站权限</translation>
 <translation id="7798844538707273832">已自动禁用<ph name="PERMISSION" /></translation>
+<translation id="7799650166313181433">只有已登录帐号 <ph name="USER_EMAIL" /> 的设备可与此设备分享内容。您无需批准您的设备之间的内容分享。</translation>
 <translation id="7800485561443537737">热点会使用 <ph name="DEVICE_TYPE" /> 的移动流量，所以您的运营商可能会收取额外费用。另外，热点可能会增加耗电量。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">逆时针旋转(&amp;O)</translation>
 <translation id="7801679634091975683">您在此处所做的更改仅会应用到 Lacros Chrome 浏览器。若要更改您的 Chrome 浏览器设置，请打开 Chrome 浏览器，然后转到“设置”。</translation>
@@ -8552,6 +8558,7 @@
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{将标签页移至新窗口}other{将标签页移至新窗口}}</translation>
 <translation id="8179188928355984576">不使用此帐号登录 Android 应用</translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />。这是第 <ph name="ITEM_POSITION" /> 台打印机，共 <ph name="NUM_PRINTERS" /> 台。</translation>
 <translation id="8180785270975217276">节能模式已开启</translation>
 <translation id="8180786512391440389">“<ph name="EXTENSION" />”可以读取及删除选中位置的图片、视频及音频文件。</translation>
 <translation id="8180826593917851025">配置 <ph name="DEVICE_TYPE" /> 热点</translation>

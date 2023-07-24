@@ -1575,6 +1575,7 @@
     Щоб дізнатися, як вирішити проблеми з трансляцією, відвідайте
     <ph name="BEGIN_LINK" />
     довідковий центр<ph name="END_LINK" />.</translation>
+<translation id="22649924370461580">Збережені групи вкладок</translation>
 <translation id="2266957463645820432">IPP через USB (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth вимкнено</translation>
 <translation id="2268182915828370037">Вимкнути синхронізацію файлів?</translation>
@@ -1802,6 +1803,7 @@
 <translation id="2435248616906486374">Немає з’єднання з мережею</translation>
 <translation id="2435457462613246316">Показати пароль</translation>
 <translation id="2436385001956947090">Копіювати &amp;посилання</translation>
+<translation id="2438853563451647815">Принтер не підключений</translation>
 <translation id="2439626940657133600">Завантажується сервіс <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">Див. д&amp;жерело</translation>
 <translation id="2440823041667407902">Доступ до геоданих</translation>
@@ -4471,6 +4473,7 @@
 <translation id="4683629100208651599">Застосувати нижній регістр</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (за умовчанням)</translation>
 <translation id="4684427112815847243">Синхронізувати все</translation>
+<translation id="4687238339694011189">Переконайтеся, що принтер увімкнено й підключено до тієї самої мережі, що й Chromebook, або скористайтеся кабелем USB</translation>
 <translation id="4687613760714619596">Невідомий пристрій (<ph name="DEVICE_ID" />)</translation>
 <translation id="4687718960473379118">Реклама, пропонована сайтами</translation>
 <translation id="4688036121858134881">Ідентифікатор локального журналу: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
@@ -6123,6 +6126,7 @@
 <translation id="6113434369102685411">Налаштуйте пошукову систему за умовчанням для веб-переглядача Chrome і Панелі запуску <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Щоб користуватися Smart Lock, перейдіть у профіль основного користувача на телефоні</translation>
 <translation id="6116921718742659598">Змінити налаштування мови та введення</translation>
+<translation id="6119008366402292080">Немає доступних принтерів</translation>
 <translation id="6119927814891883061">Зберегти назву "<ph name="DEVICE_NAME" />"</translation>
 <translation id="6119972796024789243">Корекція кольору</translation>
 <translation id="6120707837086723438">Ви бачите пропозиції рецептів на основі останньої історії пошуку, пов’язаної з ними.
@@ -6133,6 +6137,7 @@
 <translation id="6122081475643980456">Ваше з’єднання з Інтернетом контролюється</translation>
 <translation id="6122093587541546701">Електронна адреса (необов’язково):</translation>
 <translation id="6122095009389448667">Забороняти цьому сайту переглядати буфер обміну</translation>
+<translation id="6122513630797178831">Зберегти код CVC</translation>
 <translation id="6122600716821516697">Надіслати дані на цей пристрій?</translation>
 <translation id="6122831415929794347">Вимкнути Безпечний перегляд?</translation>
 <translation id="6124650939968185064">Від цього розширення залежать такі розширення:</translation>

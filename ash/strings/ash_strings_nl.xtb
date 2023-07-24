@@ -146,6 +146,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1576623706766186887">Uitzoomen als vergrootglas aanstaat</translation>
 <translation id="1586324912145647027">Naar bureau 1 tot en met 8 gaan</translation>
 <translation id="1589090746204042747">Al je activiteit in deze sessie bekijken</translation>
+<translation id="1592682369233288537">Volgend bureau: <ph name="NEXT_DESK_NAME" />, gebruik Zoeken + spatiebalk om te activeren.</translation>
 <translation id="1604857178818051494">Media pauzeren</translation>
 <translation id="1610778689852195798">'Ongedaan maken'</translation>
 <translation id="1611993646327628135">Aan</translation>
@@ -157,6 +158,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1647986356840967552">Vorige pagina</translation>
 <translation id="1651914502370159744">Pagina Geschiedenis openen</translation>
 <translation id="1654477262762802994">Een gesproken zoekopdracht starten</translation>
+<translation id="1662667383227796099">Zoek naar je bestanden, apps en meer in de Launcher. Je kunt ook antwoord krijgen op vragen over je Chromebook.</translation>
 <translation id="1668469839109562275">Ingebouwde VPN</translation>
 <translation id="1675844249244994876">Het rechtervenster updaten</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> resterend</translation>
@@ -560,6 +562,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3477079411857374384">Ctrl-Shift-spatiebalk</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Plank automatisch verborgen</translation>
+<translation id="3503243067695520519">Hallo. Chromebooks zijn anders dan andere computers.</translation>
 <translation id="3505066820268455558">Batterij wordt opgeladen</translation>
 <translation id="3509391053705095206">Kan je telefoon niet vinden. Zorg dat bluetooth aanstaat op je telefoon.</translation>
 <translation id="3510164367642747937">Muisaanwijzer markeren</translation>
@@ -684,6 +687,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3977512764614765090">Batterij op <ph name="PERCENTAGE" />% en wordt opgeladen.</translation>
 <translation id="3984536049089846927">Volgende pagina</translation>
 <translation id="3986082989454912832">Beantwoorden</translation>
+<translation id="3990002060657467458">Veelgebruikte bedieningsopties, zoals wifi, bluetooth en volume, staan in Snelle instellingen. Je kunt hier ook naartoe gaan om screenshots te maken.</translation>
 <translation id="3995138139523574647">USB-C-apparaat (poort rechts aan de achterkant)</translation>
 <translation id="40062176907008878">Handschrift</translation>
 <translation id="4017989525502048489">Laserpen</translation>
@@ -747,6 +751,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4269883910223712419">De beheerder van dit apparaat kan het volgende doen:</translation>
 <translation id="4274537685965975248">De sneltoets Ctrl + Alt + pijl-omlaag is veranderd. Als je de toets End wilt gebruiken, druk je op de <ph name="LAUNCHER_KEY_NAME" />-toets + pijl-rechts.</translation>
 <translation id="4275283744500212192">Indelingsopties voor vensters openen</translation>
+<translation id="4278138729651139331">Pas je Chromebook aan en personaliseer deze in Instellingen. Verander je achtergrond of stel een screensaver in.</translation>
 <translation id="4279490309300973883">Mirroring</translation>
 <translation id="4280601795273309128">Beveiligingsupdates gestopt. Upgrade je apparaat.</translation>
 <translation id="4283888303416325161">Geef het wachtwoord op voor extra beveiliging</translation>
@@ -803,6 +808,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4505050298327493054">Actief bureaublad.</translation>
 <translation id="450584155212756404">Dev-kanaal</translation>
 <translation id="4513946894732546136">Feedback</translation>
+<translation id="4516212064498225455">Huidig bureau: <ph name="CURRENT_DESK_NAME" />, gebruik Zoeken + spatiebalk om het menu met alle bureaus te openen.</translation>
 <translation id="4518404433291145981">Ontgrendel eerst je telefoon om je Chromebook te ontgrendelen</translation>
 <translation id="4527045527269911712">Bluetooth-apparaat '<ph name="DEVICE_NAME" />' wil rechten om te koppelen.</translation>
 <translation id="4533343294786968049">De batterijduur wordt verlengd. De batterij is om <ph name="FULLY_CHARGE_TIME" /> volledig opgeladen.</translation>
@@ -970,6 +976,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5207949376430453814">Tekstcursor markeren</translation>
 <translation id="5208059991603368177">Aan</translation>
 <translation id="5216991270656129561">Uit tot <ph name="TIME" /></translation>
+<translation id="5217646019792206018">Volgend bureau: <ph name="NEXT_DESK_NAME" />, gebruik Zoeken + spatiebalk of de sneltoets Shift + Zoeken + <ph name="NEXT_DESK_INDEX" /> om te activeren.</translation>
 <translation id="5221423477036820198">Stuur of beantwoord snel berichten van je telefoon met Telefoonhub.</translation>
 <translation id="5222676887888702881">Uitloggen</translation>
 <translation id="5229343007215035173">Privacyscherm aan-/uitzetten</translation>
@@ -1035,6 +1042,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="550391772491508736">Casten hervatten</translation>
 <translation id="5506975627792768506">Vergrootglas aan- of uitzetten</translation>
 <translation id="5512042095225963688">Vorig woord verwijderen</translation>
+<translation id="5518068085000130971">Dat waren de basisprincipes. Ga verder in Ontdekken, onze ingebouwde app voor tips en hulp. Hier vind je tips om aan de slag te gaan, aanbevolen apps, speciale aanbiedingen en de nieuwste Chromebook-functies.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Je beheerder heeft alle e-simkaartprofielen verwijderd. Neem contact op met je beheerder voor meer informatie.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> maakt verbinding.</translation>
@@ -1360,6 +1368,7 @@ Nieuwe installatie</translation>
 <translation id="6896758677409633944">Kopiëren</translation>
 <translation id="6901883536534621389">Gebaren gebruiken om te navigeren</translation>
 <translation id="6912841030378044227">Focus op adresbalk</translation>
+<translation id="6912901278692845878">Korte rondleiding</translation>
 <translation id="6919251195245069855">Je smartkaart wordt niet herkend. Probeer het opnieuw.</translation>
 <translation id="6920245099716267363">Zet de hotspot aan/uit. Hotspot staat aan: 1 apparaat verbonden.</translation>
 <translation id="6931576957638141829">Opslaan in</translation>
@@ -1663,6 +1672,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8297006494302853456">Zwak</translation>
 <translation id="8308637677604853869">Vorig menu</translation>
 <translation id="830868413617744215">Bèta</translation>
+<translation id="8312557488404088015">Volg een korte rondleiding om een snelle start te maken. Er zijn maar 6 stappen en je bent in een paar minuten klaar.</translation>
 <translation id="8314772463905284467">Caps Lock staat aan</translation>
 <translation id="8315514906653279104">Aanzetten…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -1712,6 +1722,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8517041960877371778">Je <ph name="DEVICE_TYPE" /> wordt mogelijk niet opgeladen als deze aanstaat.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Microfooninvoer beheerd door <ph name="APP_NAME" />}other{Microfooninvoer beheerd door # apps}}</translation>
 <translation id="8535393432370007982">Sorteren op kleur ongedaan maken</translation>
+<translation id="853768060447955562">Vorig bureau: <ph name="PREVIOUS_DESK_NAME" />, gebruik Zoeken + spatiebalk of de sneltoets Shift + Zoeken + <ph name="PREVIOUS_DESK_INDEX" /> om te activeren.</translation>
 <translation id="8541078764854166027">Cameraframing</translation>
 <translation id="8542053257095774575">Geen opgeslagen bureaus of templates</translation>
 <translation id="8546059259582788728">Sorteren is ongedaan gemaakt</translation>
@@ -1863,11 +1874,13 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="925832987464884575">Voorbeelden verbergen</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> vereist dat je je <ph name="DEVICE_TYPE" /> onmiddellijk updatet</translation>
 <translation id="938963181863597773">Wat staat er in mijn agenda?</translation>
+<translation id="943067377221312471">Vorig bureau: <ph name="PREVIOUS_DESK_NAME" />, gebruik Zoeken + spatiebalk om te activeren.</translation>
 <translation id="945383118875625837">Link naar bookmarkbalk slepen</translation>
 <translation id="945522503751344254">Feedback sturen</translation>
 <translation id="951991426597076286">Afwijzen</translation>
 <translation id="953431725143473984">Het apparaat uitzetten?</translation>
 <translation id="954052413789300507">Onvoldoende ruimte voor <ph name="FILENAME" />. Maak ruimte vrij.</translation>
+<translation id="968627661524972577">Gebruik apps waarmee je van alles kunt doen op je Chromebook: Je vindt je apps in de Launcher. Je kunt ook op de Launcher-toets op het toetsenbord drukken.</translation>
 <translation id="974545358917229949"><ph name="RESULT_COUNT" /> resultaten bekijken voor <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Naar het einde van het document gaan</translation>
 <translation id="987589956647469042">Mobiele data staan aan</translation>

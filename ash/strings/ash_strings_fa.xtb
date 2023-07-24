@@ -146,6 +146,7 @@
 <translation id="1576623706766186887">زوم‌پس کردن هنگام روشن بودن ذره‌بین</translation>
 <translation id="1586324912145647027">رفتن به میزکار ۱ تا ۸</translation>
 <translation id="1589090746204042747">به همه فعالیت‌هایتان در این جلسه دسترسی پیدا کنید</translation>
+<translation id="1592682369233288537">میزکار بعدی: <ph name="NEXT_DESK_NAME" />، برای فعال‌سازی از «جستجو+فاصله» استفاده کنید.</translation>
 <translation id="1604857178818051494">مکث رسانه</translation>
 <translation id="1610778689852195798">«واگرد»</translation>
 <translation id="1611993646327628135">روشن</translation>
@@ -157,6 +158,7 @@
 <translation id="1647986356840967552">صفحه قبلی</translation>
 <translation id="1651914502370159744">باز کردن صفحه سابقه</translation>
 <translation id="1654477262762802994">شروع پُرسمان صوتی</translation>
+<translation id="1662667383227796099">‏فایل‌ها، برنامه‌ها، و موارد دیگر را در «راه‌انداز» جستجو کنید. همچنین می‌توانید پاسخ سؤالات مربوط به Chromebook را دریافت کنید.</translation>
 <translation id="1668469839109562275">‏VPN داخلی</translation>
 <translation id="1675844249244994876">به‌روزرسانی پنجره راست</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> باقی‌مانده</translation>
@@ -439,6 +441,7 @@
 <translation id="2965227184985674128">دسترسی به میکروفون روشن شود؟</translation>
 <translation id="296762781903199866">فایل‌های گفتار <ph name="LANGUAGE" /> بارگیری نشد</translation>
 <translation id="2970920913501714344">نصب برنامه‌ها، افزونه‌ها و طرح‌های زمینه</translation>
+<translation id="2977098646659697261">برنامه‌های سنجاق‌شده و باز در «قفسه» قرار دارد. برای سنجاق کردن برنامه به «قفسه»، روی برنامه کلیک راست کنید یا با دو انگشت روی صفحه لمسی ضربه بزنید.</translation>
 <translation id="2977598380246111477">عدد بعدی</translation>
 <translation id="2985148236010982088">دیدن همه برنامه‌ها</translation>
 <translation id="2992327365391326550">دکمه میکروفون دستگاه خاموش است.</translation>
@@ -560,6 +563,7 @@
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />، <ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">پنهان شدن خودکار قفسه</translation>
+<translation id="3503243067695520519">‏سلام. دستگاه‌های Chromebook کمی تفاوت دارند.</translation>
 <translation id="3505066820268455558">درحال شارژ باتری</translation>
 <translation id="3509391053705095206">تلفنتان پیدا نشد. مطمئن شوید بلوتوث تلفن روشن باشد.</translation>
 <translation id="3510164367642747937">برجسته کردن نشانگر موشواره</translation>
@@ -683,6 +687,7 @@
 <translation id="3977512764614765090">شارژ باتری <ph name="PERCENTAGE" />٪ است و باتری درحال شارژ است.</translation>
 <translation id="3984536049089846927">صفحه بعدی</translation>
 <translation id="3986082989454912832">پاسخ</translation>
+<translation id="3990002060657467458">‏کنترل‌های پرکاربرد مثل Wi-Fi، بلوتوث، ومیزان صدا در «تنظیمات فوری» قرار دارند. برای ثبت نماگرفت هم می‌توانید به اینجا بروید.</translation>
 <translation id="3995138139523574647">‏دستگاه USB-C (درگاه عقب سمت راست)</translation>
 <translation id="40062176907008878">دست‌نویسی</translation>
 <translation id="4017989525502048489">اشاره‌گر لیزری</translation>
@@ -746,6 +751,7 @@
 <translation id="4269883910223712419">سرپرست این دستگاه می‌تواند:</translation>
 <translation id="4274537685965975248">میان‌بر صفحه‌کلید «مهار + دگرساز + جهت‌نمای پایین» تغییر کرده است. برای استفاده از کلید «پایان»، کلید «<ph name="LAUNCHER_KEY_NAME" /> + جهت‌نمای راست» را فشار دهید.</translation>
 <translation id="4275283744500212192">باز کردن گزینه‌های طرح‌بندی پنجره</translation>
+<translation id="4278138729651139331">‏Chromebook را در «تنظیمات» سفارشی‌سازی و شخصی‌سازی کنید. کاغذدیواری را عوض کنید یا محافظ صفحه تنظیم کنید.</translation>
 <translation id="4279490309300973883">بازتاب می‌شود</translation>
 <translation id="4280601795273309128">به‌روزرسانی‌های امنیتی به‌پایان رسیده است. دستگاهتان را ارتقا دهید.</translation>
 <translation id="4283888303416325161">برای ایمنی بیشتر، گذرواژه را وارد کنید</translation>
@@ -802,6 +808,7 @@
 <translation id="4505050298327493054">میز فعال.</translation>
 <translation id="450584155212756404">کانال برنامه‌نویس‌ها</translation>
 <translation id="4513946894732546136">بازخورد</translation>
+<translation id="4516212064498225455">میزکار فعلی: <ph name="CURRENT_DESK_NAME" />، برای باز کردن منوِ همه میزکارها از «جستجو+فاصله» استفاده کنید.</translation>
 <translation id="4518404433291145981">‏برای باز کردن قفل Chromebook، ابتدا قفل تلفنتان را باز کنید</translation>
 <translation id="4527045527269911712">دستگاه بلوتوث «<ph name="DEVICE_NAME" />» برای مرتبط‌سازی به مجوز نیاز دارد.</translation>
 <translation id="4533343294786968049">عمر باتری شما افزایش می‌یابد. باتری تا <ph name="FULLY_CHARGE_TIME" /> کاملاً شارژ خواهد شد.</translation>
@@ -969,6 +976,7 @@
 <translation id="5207949376430453814">برجسته کردن هشتک نوشتار</translation>
 <translation id="5208059991603368177">روشن</translation>
 <translation id="5216991270656129561">خاموش تا <ph name="TIME" /></translation>
+<translation id="5217646019792206018">میزکار بعدی: <ph name="NEXT_DESK_NAME" />، برای فعال‌سازی از «جستجو+فاصله» یا میان‌بر صفحه‌کلید: «تبدیل+جستجو+<ph name="NEXT_DESK_INDEX" />» استفاده کنید.</translation>
 <translation id="5221423477036820198">بااستفاده از «مرکز کنترل تلفن»، به‌سرعت از تلفنتان پیام ارسال کنید یا به پیام‌ها پاسخ دهید.</translation>
 <translation id="5222676887888702881">خروج از سیستم</translation>
 <translation id="5229343007215035173">روشن/ خاموش کردن صفحه حریم خصوصی</translation>
@@ -1034,6 +1042,7 @@
 <translation id="550391772491508736">ازسرگیری پخش محتوا</translation>
 <translation id="5506975627792768506">روشن یا خاموش کردن ذره‌بین</translation>
 <translation id="5512042095225963688">حذف واژه قبلی</translation>
+<translation id="5518068085000130971">‏این اصول اولیه بود! کارتان را در «کاوش»، برنامه داخلی ما برای نکته‌ها و راهنمایی، ادامه دهید. نکته‌هایی برای شروع، برنامه‌های توصیه‌شده، پیشنهادهای ویژه، و جدیدترین ویژگی‌های Chromebook را خواهید دید.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">سرپرستتان همه نمایه‌های سیم‌کارت داخلی را برداشته است. برای اطلاعات بیشتر، با سرپرست تماس بگیرید.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> درحال اتصال است.</translation>
@@ -1359,6 +1368,7 @@
 <translation id="6896758677409633944">کپی</translation>
 <translation id="6901883536534621389">استفاده از اشاره‌ها برای پیمایش</translation>
 <translation id="6912841030378044227">تمرکز در نوار نشانی</translation>
+<translation id="6912901278692845878">گشت سریع</translation>
 <translation id="6919251195245069855">کارت هوشمندتان تشخیص داده نشد. دوباره امتحان کنید.</translation>
 <translation id="6920245099716267363">روشن/خاموش کردن «نقطه اتصال». نقطه اتصال روشن است، یک دستگاه متصل است.</translation>
 <translation id="6931576957638141829">ذخیره در</translation>
@@ -1665,6 +1675,7 @@
 <translation id="8297006494302853456">ضعیف</translation>
 <translation id="8308637677604853869">منوی قبلی</translation>
 <translation id="830868413617744215">بتا</translation>
+<translation id="8312557488404088015">برای داشتن شروعی بدون دردسر، گشتی سریع بزنید. با داشتن ۶ مرحله، فقط چند دقیقه طول می‌کشد.</translation>
 <translation id="8314772463905284467">‏Caps Lock روشن است</translation>
 <translation id="8315514906653279104">درحال روشن کردن…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -1714,6 +1725,7 @@
 <translation id="8517041960877371778">ممکن است وقتی <ph name="DEVICE_TYPE" /> شما خاموش است، شارژ نشود.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{ورودی میکروفون را <ph name="APP_NAME" /> کنترل می‌کند}one{ورودی میکروفون را # برنامه کنترل می‌کند}other{ورودی میکروفون را # برنامه کنترل می‌کند}}</translation>
 <translation id="8535393432370007982">واگرد کردن مرتب‌سازی براساس رنگ</translation>
+<translation id="853768060447955562">میزکار قبلی: <ph name="PREVIOUS_DESK_NAME" />، برای فعال‌سازی از «جستجو+فاصله» یا میان‌بر صفحه‌کلید: «تبدیل+جستجو+<ph name="PREVIOUS_DESK_INDEX" />» استفاده کنید.</translation>
 <translation id="8541078764854166027">قاب‌بندی دوربین</translation>
 <translation id="8542053257095774575">میزکار یا الگوی ذخیره‌شده‌ای ندارید</translation>
 <translation id="8546059259582788728">مرتب‌سازی واگرد شد</translation>
@@ -1864,11 +1876,13 @@
 <translation id="925832987464884575">پنهان کردن پیش‌نمایش‌ها</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> از شما می‌خواهد <ph name="DEVICE_TYPE" /> را فوراً به‌روزرسانی کنید</translation>
 <translation id="938963181863597773">‏?What's on my calendar (در تقویم من چه رویدادی هست؟)</translation>
+<translation id="943067377221312471">میزکار قبلی: <ph name="PREVIOUS_DESK_NAME" />، برای فعال‌سازی از «جستجو+فاصله» استفاده کنید.</translation>
 <translation id="945383118875625837">پیوندها را به نوار نشانک‌ها بکشید</translation>
 <translation id="945522503751344254">ارسال بازخورد</translation>
 <translation id="951991426597076286">رد کردن</translation>
 <translation id="953431725143473984">دستگاه خاموش شود؟</translation>
 <translation id="954052413789300507">فضای کافی برای <ph name="FILENAME" /> وجود ندارد فضا آزاد کنید.</translation>
+<translation id="968627661524972577">‏بااستفاده از برنامه‌ها هر کاری را که لازم دارید در Chromebook انجام دهید. می‌توانید برنامه‌ها را در «راه‌انداز» پیدا کنید. همچنین می‌توانید کلید «راه‌انداز» را در صفحه‌کلید فشار دهید.</translation>
 <translation id="974545358917229949">نمایش <ph name="RESULT_COUNT" /> نتیجه برای <ph name="QUERY" /></translation>
 <translation id="98120814841227350">رفتن به انتهای سند</translation>
 <translation id="987589956647469042">داده تلفن همراه روشن است</translation>

@@ -1559,6 +1559,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2263189956353037928">Esci e accedi nuovamente</translation>
 <translation id="2263371730707937087">Frequenza di aggiornamento dello schermo</translation>
 <translation id="2263679799334060788">Il tuo feedback è molto importante perché ci consente di migliorare Google Cast. Se serve aiuto per la risoluzione di problemi relativi a Google Cast, visita il <ph name="BEGIN_LINK" />Centro assistenza<ph name="END_LINK" />.</translation>
+<translation id="22649924370461580">Gruppi di schede salvati</translation>
 <translation id="2266957463645820432">IPP over USB (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth disattivato</translation>
 <translation id="2268182915828370037">Vuoi disattivare la sincronizzazione dei file?</translation>
@@ -1787,6 +1788,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2435248616906486374">Rete scollegata</translation>
 <translation id="2435457462613246316">Mostra password</translation>
 <translation id="2436385001956947090">Copia &amp;link</translation>
+<translation id="2438853563451647815">Nessun collegamento alla stampante</translation>
 <translation id="2439626940657133600">Caricamento di <ph name="WINDOW_TITLE" /> in corso…</translation>
 <translation id="2440604414813129000">Visualizza &amp;sorgente</translation>
 <translation id="2440823041667407902">Accesso alla posizione</translation>
@@ -4457,6 +4459,7 @@ Gli indicatori dei dispositivi possono includere informazioni su browser, sistem
 <translation id="4683629100208651599">Usa lettere minuscole</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (valore predefinito)</translation>
 <translation id="4684427112815847243">Sincronizza tutto</translation>
+<translation id="4687238339694011189">Assicurati che la stampante sia accesa e collegata alla stessa rete di Chromebook oppure utilizza un cavo USB</translation>
 <translation id="4687613760714619596">Dispositivo sconosciuto (<ph name="DEVICE_ID" />)</translation>
 <translation id="4687718960473379118">Annunci suggeriti dai siti</translation>
 <translation id="4688036121858134881">ID log locale: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
@@ -6111,6 +6114,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6113434369102685411">Imposta il tuo motore di ricerca predefinito per il browser Chrome e Avvio app di <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Per usare Smart Lock, passa al profilo utente principale del telefono</translation>
 <translation id="6116921718742659598">Modifica impostazioni della lingua e di immissione</translation>
+<translation id="6119008366402292080">Nessuna stampante disponibile</translation>
 <translation id="6119927814891883061">Cambia il nome del dispositivo in <ph name="DEVICE_NAME" /></translation>
 <translation id="6119972796024789243">Correzione del colore</translation>
 <translation id="6120707837086723438">Visualizzi ricette suggerite in base alla tua attività di ricerca recente per le ricette.
@@ -6121,6 +6125,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6122081475643980456">La tua connessione Internet è controllata</translation>
 <translation id="6122093587541546701">Email (facoltativo):</translation>
 <translation id="6122095009389448667">Continua a impedire a questo sito di leggere gli appunti</translation>
+<translation id="6122513630797178831">Salva CVC</translation>
 <translation id="6122600716821516697">Vuoi attivare la condivisione con questo dispositivo?</translation>
 <translation id="6122831415929794347">Disattivare la Navigazione sicura?</translation>
 <translation id="6124650939968185064">Le seguenti estensioni dipendono da questa estensione:</translation>

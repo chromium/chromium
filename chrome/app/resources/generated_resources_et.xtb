@@ -1563,6 +1563,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
     Kui vajate ülekandeprobleemide veaotsingul abi, külastage
     <ph name="BEGIN_LINK" />
     abikeskust<ph name="END_LINK" />.</translation>
+<translation id="22649924370461580">Salvestatud vahelehegrupid</translation>
 <translation id="2266957463645820432">IPP USB kaudu (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth on keelatud</translation>
 <translation id="2268182915828370037">Kas lülitada failide sünkroonimine välja?</translation>
@@ -1790,6 +1791,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2435248616906486374">Võrguühendus puudub</translation>
 <translation id="2435457462613246316">Kuva parool</translation>
 <translation id="2436385001956947090">Lingi &amp;kopeerimine</translation>
+<translation id="2438853563451647815">Ei ole printeriga ühendatud</translation>
 <translation id="2439626940657133600">Akna <ph name="WINDOW_TITLE" /> laadimine</translation>
 <translation id="2440604414813129000">Vaata a&amp;llikat</translation>
 <translation id="2440823041667407902">Juurdepääs asukohale</translation>
@@ -4458,6 +4460,7 @@ Seadme signaalid võivad sisaldada teavet teie brauseri, OS-i, seadme, installit
 <translation id="4683629100208651599">Muuda väiketäheliseks</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (vaikeseade)</translation>
 <translation id="4684427112815847243">Sünkrooni kõik</translation>
+<translation id="4687238339694011189">Veenduge, et teie printer oleks sisse lülitatud ja ühendatud Chromebookiga samasse võrku, või kasutage USB-kaablit</translation>
 <translation id="4687613760714619596">Tundmatu seade (<ph name="DEVICE_ID" />)</translation>
 <translation id="4687718960473379118">Saitide soovitatud reklaamid</translation>
 <translation id="4688036121858134881">Kohaliku logi ID: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
@@ -6113,6 +6116,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6113434369102685411">Määrake Chrome’i brauseri ja seadme <ph name="DEVICE_TYPE" /> rakenduse Käivitaja jaoks vaikeotsingumootor</translation>
 <translation id="6113942107547980621">Funktsiooni Smart Lock kasutamiseks lülitage telefonis peamisele kasutajaprofiilile</translation>
 <translation id="6116921718742659598">Keele ja sisestusseadete muutmine</translation>
+<translation id="6119008366402292080">Ühtegi printerit pole saadaval</translation>
 <translation id="6119927814891883061">Määra seadme nimeks <ph name="DEVICE_NAME" /></translation>
 <translation id="6119972796024789243">Värvide korrigeerimine</translation>
 <translation id="6120707837086723438">Näete soovitatud retsepte, mis põhinevad teie hiljutistel retseptide otsingutel.
@@ -6123,6 +6127,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6122081475643980456">Teie Interneti-ühendust juhitakse</translation>
 <translation id="6122093587541546701">E-post (valikuline):</translation>
 <translation id="6122095009389448667">Blokeeri jätkuvalt selle saidi jaoks lõikelaua nägemine</translation>
+<translation id="6122513630797178831">Salvesta CVC</translation>
 <translation id="6122600716821516697">Kas jagada selle seadmega?</translation>
 <translation id="6122831415929794347">Kas lülitada Google'i ohutu sirvimine välja?</translation>
 <translation id="6124650939968185064">Sellest laiendusest sõltuvad järgmised laiendused:</translation>

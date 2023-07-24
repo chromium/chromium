@@ -37,6 +37,7 @@
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ٹیبز متعلقہ معلوم ہوتے ہیں۔ ان کی گروپ بندی کریں؟</translation>
 <translation id="4212246570487010370">براؤز کرنا جاری رکھیں</translation>
 <translation id="4648718555153979859">آپ کے ٹیبز کو ایک ساتھ یہاں گروپ بند کیا گیا ہے</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{‏آپ اپنے بند ٹیبز Chrome کے مرکزی مینو کے تحت حالیہ ٹیبز میں تلاش کر سکتے ہیں۔}=1{‏آپ اپنے بند ٹیبز Chrome کے مرکزی مینو کے تحت حالیہ ٹیبز میں تلاش کر سکتے ہیں۔ آپ کا پوشیدگی ٹیب دستیاب نہیں ہوگا۔}other{‏آپ اپنے بند ٹیبز Chrome کے مرکزی مینو کے تحت حالیہ ٹیبز میں تلاش کر سکتے ہیں۔ آپ کے # پوشیدگی ٹیبز دستیاب نہیں ہوں گے۔}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> جائزہ)}other{(<ph name="REVIEWS_COUNT_MANY" /> جائزے)}}</translation>
 <translation id="4850886885716139402">دیکھیں</translation>
 <translation id="4870911314065352661">سبھی ٹیبز بند کریں؟</translation>

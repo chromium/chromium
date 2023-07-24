@@ -37,6 +37,7 @@
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> tab əlaqəli görünür. Onlar qruplaşdırılsın?</translation>
 <translation id="4212246570487010370">Axtarmağa davam edin</translation>
 <translation id="4648718555153979859">Tablar burada qruplaşdırılır</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{Bağlı tablar Chrome əsas menyusunda Son tablarda olur.}=1{Bağlı tablar Chrome əsas menyusunda Son tablarda olur. Anonim tab əlçatan olmayacaq.}other{Bağlı tablar Chrome əsas menyusunda Son tablarda olur. # anonim tab əlçatan olmayacaq.}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> rəy)}other{(<ph name="REVIEWS_COUNT_MANY" /> rəy)}}</translation>
 <translation id="4850886885716139402">Görünüş</translation>
 <translation id="4870911314065352661">Bütün tablar bağlansın?</translation>

@@ -1160,6 +1160,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1929186283613845153">Bu fayl tekshirilmoqda.</translation>
 <translation id="1929343511231420085">Har qanday seriyali port</translation>
 <translation id="1929546189971853037">Brauzer tarixini joriy hisobingiz yordamida barcha qurilmalaringizda ko‘rishga ruxsat</translation>
+<translation id="1929774028758671973">Kontaktlar sizga yaqinligida qurilmangizga fayl yubora oladi. Sizdan bu soʻrovlarni qabul qilish soʻraladi. <ph name="USER_EMAIL" /> hisobiga kirgan qurilmalar orasida ulashishni tasdiqlashingiz shart emas.</translation>
 <translation id="1930879306590754738">Parol bu qurilma va hisobingizdan oʻchirib tashlandi</translation>
 <translation id="1931152874660185993">Hech qanday komponent o‘rnatilmagan.</translation>
 <translation id="1931410639376954712"><ph name="DEVICE_OS" /> oʻrnatilmoqda</translation>
@@ -1426,6 +1427,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2151576029659734873">Ichki oyna indeksi noto‘g‘ri kiritildi.</translation>
 <translation id="2152281589789213846">Profilingizga printerlarni kiritish</translation>
 <translation id="2154484045852737596">Karta ma’lumotlarini tahrirlash</translation>
+<translation id="2155473371917268529">Joriy ochiqlik sozlamasi qurilmalaringiz qilib belgilangan</translation>
 <translation id="2155772377859296191"><ph name="WIDTH" /> x <ph name="HEIGHT" /> kabi</translation>
 <translation id="2156294658807918600">Service Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156877321344104010">Yana xavfsizlik tekshiruvini ishga tushirish</translation>
@@ -1759,6 +1761,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2418307627282545839">Yorugʻ va yengil muhitda ishlang</translation>
 <translation id="2419131370336513030">Oʻrnatilgan ilovalarni koʻrsatish</translation>
 <translation id="2419706071571366386">Kompyuterni ishlatmagan paytingizda xavfsizlik yuzasidan hisobingizdan chiqing.</translation>
+<translation id="2421705177906985956">Hozircha hech qanday sayt chiqmaydi</translation>
 <translation id="2422125132043002186">Linux tasvirini tiklash bekor qilindi</translation>
 <translation id="2423578206845792524">&amp;Rasmni saqlab olish</translation>
 <translation id="2424424966051154874">{0,plural, =1{Mehmon}other{Mehmon (#)}}</translation>
@@ -2437,6 +2440,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2966705348606485669"><ph name="FOLDER_TITLE" /> bukmark jildi uchun boshqa parametrlar</translation>
 <translation id="2966937470348689686">Android sozlamalarini boshqarish</translation>
 <translation id="2967926928600500959">Bu qoidalarga mos keluvchi URL manzillar maxsus brauzerda majburan ochiladi.</translation>
+<translation id="2970766364519518369">Tanlangan kontaktlar sizga yaqinligida qurilmangizga fayl yubora oladi. Sizdan bu soʻrovlarni qabul qilish soʻraladi. <ph name="USER_EMAIL" /> hisobiga kirgan qurilmalar orasida ulashishni tasdiqlashingiz shart emas.</translation>
 <translation id="2972581237482394796">&amp;Qaytarish</translation>
 <translation id="2973324205039581528">Saytni ovozsiz qilish</translation>
 <translation id="2975761176769946178">URL manzilini kiriting</translation>
@@ -8104,6 +8108,7 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7797571222998226653">Oʻchiq</translation>
 <translation id="7798504574384119986">Veb ruxsatlarini koʻrish</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> ruxsati avtomatik bloklandi.</translation>
+<translation id="7799650166313181433">Faqat <ph name="USER_EMAIL" /> hisobiga kirilgan qurilmalardan bu qurilmaga fayl yuborish mumkin. Qurilmalaringiz orasida ulashishni tasdiqlashingiz shart emas.</translation>
 <translation id="7800485561443537737"><ph name="DEVICE_TYPE" /> mobil internetidan foydalanadi va mobil trafik uchun qoʻshimcha haq olinishi mumkin. Batareya sarfini oshirishi mumkin. <ph name="BEGIN_LINK_LEARN_MORE" />Batafsil<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">Soat miliga teskari yo‘nalishda burish</translation>
 <translation id="7801679634091975683">Siz kiritgan oʻzgarishlar faqat Lacros Chrome brauzeriga tatbiq etiladi. Chrome brauzeri sozlamalariga oʻzgartirish kiritish uchun uning sozlamalarini oching</translation>

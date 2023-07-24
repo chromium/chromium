@@ -142,6 +142,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1576623706766186887">Herauszoomen, wenn die Lupe aktiviert ist</translation>
 <translation id="1586324912145647027">Zu Desktop 1–8 wechseln</translation>
 <translation id="1589090746204042747">Auf alle deine Aktivitäten in dieser Sitzung zugreifen</translation>
+<translation id="1592682369233288537">Nächster Desktop: <ph name="NEXT_DESK_NAME" />, drücke Suchtaste + Leertaste, um den Desktop zu aktivieren.</translation>
 <translation id="1604857178818051494">Medienwiedergabe pausieren</translation>
 <translation id="1610778689852195798">„Rückgängig machen“</translation>
 <translation id="1611993646327628135">An</translation>
@@ -153,6 +154,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1647986356840967552">Vorherige Seite</translation>
 <translation id="1651914502370159744">Verlaufsseite öffnen</translation>
 <translation id="1654477262762802994">Gesprochene Anfrage starten</translation>
+<translation id="1662667383227796099">Suche im Launcher nach deinen Dateien, Apps und mehr. Du kannst auch Antworten auf Fragen zu deinem Chromebook erhalten.</translation>
 <translation id="1668469839109562275">Integriertes VPN</translation>
 <translation id="1675844249244994876">Rechtes Fenster aktualisieren</translation>
 <translation id="1677472565718498478">Noch <ph name="TIME" /> h</translation>
@@ -555,6 +557,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3477079411857374384">Strg + Umschalttaste + Leertaste</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Ablage automatisch ausgeblendet</translation>
+<translation id="3503243067695520519">Hallo! Chromebooks sind etwas anders.</translation>
 <translation id="3505066820268455558">Akku wird geladen</translation>
 <translation id="3509391053705095206">Dein Smartphone wurde nicht gefunden. Ist auf dem Smartphone wirklich Bluetooth aktiviert?</translation>
 <translation id="3510164367642747937">Cursor hervorheben</translation>
@@ -677,6 +680,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="3977512764614765090">Der Akkustand ist <ph name="PERCENTAGE" /> %. Der Akku wird aufgeladen.</translation>
 <translation id="3984536049089846927">Nächste Seite</translation>
 <translation id="3986082989454912832">Annehmen</translation>
+<translation id="3990002060657467458">Häufig verwendete Einstellungen wie WLAN, Bluetooth und Lautstärke sind in den Schnelleinstellungen verfügbar. Du kannst hier auch Screenshots aufnehmen.</translation>
 <translation id="3995138139523574647">USB-C-Gerät (Port hinten rechts)</translation>
 <translation id="40062176907008878">Handschrift</translation>
 <translation id="4017989525502048489">Laserpointer</translation>
@@ -739,6 +743,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="4269883910223712419">Der Administrator dieses Geräts kann Folgendes tun:</translation>
 <translation id="4274537685965975248">Die Tastenkombination Strg + Alt + Abwärtspfeil hat sich geändert. Wenn du jetzt die Ende-Taste benötigst, drücke die <ph name="LAUNCHER_KEY_NAME" />-Taste + Rechtspfeil.</translation>
 <translation id="4275283744500212192">Layoutoptionen für Fenster öffnen</translation>
+<translation id="4278138729651139331">In den Einstellungen kannst du dein Chromebook anpassen und personalisieren. Ändere beispielsweise deinen Hintergrund oder lege einen Bildschirmschoner fest.</translation>
 <translation id="4279490309300973883">Spiegelung</translation>
 <translation id="4280601795273309128">Sicherheitsupdates wurden beendet. Aktualisiere dein Gerät.</translation>
 <translation id="4283888303416325161">Für mehr Sicherheit musst du dein Passwort eingeben</translation>
@@ -795,6 +800,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="4505050298327493054">Aktiver Desktop.</translation>
 <translation id="450584155212756404">Entwicklerversion</translation>
 <translation id="4513946894732546136">Feedback</translation>
+<translation id="4516212064498225455">Aktueller Desktop: <ph name="CURRENT_DESK_NAME" />, drücke Suchtaste + Leertaste, um das Menü „Alle Desktops“ zu öffnen.</translation>
 <translation id="4518404433291145981">Zum Entsperren des Chromebooks zuerst Smartphone entsperren</translation>
 <translation id="4527045527269911712">Das Bluetooth-Gerät "<ph name="DEVICE_NAME" />" bittet um Erlaubnis für Kopplung.</translation>
 <translation id="4533343294786968049">Verlängert die Akkulaufzeit. Akku wird bis <ph name="FULLY_CHARGE_TIME" /> vollständig aufgeladen.</translation>
@@ -960,6 +966,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="5207949376430453814">Textcursor hervorheben</translation>
 <translation id="5208059991603368177">An</translation>
 <translation id="5216991270656129561">Deaktiviert bis <ph name="TIME" /></translation>
+<translation id="5217646019792206018">Nächster Desktop: <ph name="NEXT_DESK_NAME" />, drücke Suchtaste + Leertaste oder verwende die Tastenkombination Umschalttaste + Suchtaste + <ph name="NEXT_DESK_INDEX" />, um den Desktop zu aktivieren.</translation>
 <translation id="5221423477036820198">Mit Phone Hub kannst du auf deinem Smartphone schnell Nachrichten senden und beantworten.</translation>
 <translation id="5222676887888702881">Abmelden</translation>
 <translation id="5229343007215035173">Privatsphärefunktion aktivieren/deaktivieren</translation>
@@ -1025,6 +1032,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="550391772491508736">Stream fortsetzen</translation>
 <translation id="5506975627792768506">Lupe aktivieren oder deaktivieren</translation>
 <translation id="5512042095225963688">Vorheriges Wort löschen</translation>
+<translation id="5518068085000130971">Das waren die Grundlagen. Jetzt kannst du in „Entdecken“ fortfahren, unserer integrierten App für Tipps und Hilfe. Dort findest du Tipps für die ersten Schritte, empfohlene Apps, Angebote und die neuesten Chromebook-Funktionen.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Dein Administrator hat alle eSIM-Profile entfernt. Weitere Informationen erhältst du von deinem Administrator.</translation>
 <translation id="5523434445161341166">"<ph name="FEATURE_NAME" />" wird verbunden.</translation>
@@ -1348,6 +1356,7 @@ Neuinstallation</translation>
 <translation id="6896758677409633944">Kopieren</translation>
 <translation id="6901883536534621389">Touch-Gesten zum Navigieren ausprobieren</translation>
 <translation id="6912841030378044227">Fokus auf Adressleiste</translation>
+<translation id="6912901278692845878">Kurze Einführung</translation>
 <translation id="6919251195245069855">Deine Smartcard wurde nicht erkannt. Bitte versuche es noch einmal.</translation>
 <translation id="6920245099716267363">Hotspot ein-/ausschalten. Hotspot ist aktiviert, 1 Gerät ist verbunden.</translation>
 <translation id="6931576957638141829">Speichern unter</translation>
@@ -1653,6 +1662,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8297006494302853456">Schwach</translation>
 <translation id="8308637677604853869">Vorheriges Menü</translation>
 <translation id="830868413617744215">Beta</translation>
+<translation id="8312557488404088015">Sieh dir eine kurze Einführung an, damit gleich von Anfang an alles reibungslos läuft. Sie umfasst sechs Schritte und dauert nur wenige Minuten.</translation>
 <translation id="8314772463905284467">Die Feststelltaste ist aktiviert.</translation>
 <translation id="8315514906653279104">Wird aktiviert…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
@@ -1702,6 +1712,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8517041960877371778">Dein <ph name="DEVICE_TYPE" /> wird möglicherweise nicht aufgeladen, wenn es eingeschaltet ist.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Mikrofoneingabe wird von <ph name="APP_NAME" /> gesteuert}other{Mikrofoneingabe wird von # Apps gesteuert}}</translation>
 <translation id="8535393432370007982">Sortierung nach Farbe rückgängig machen</translation>
+<translation id="853768060447955562">Vorheriger Desktop: <ph name="PREVIOUS_DESK_NAME" />, drücke Suchtaste + Leertaste oder verwende die Tastenkombination Umschalttaste + Suchtaste + <ph name="PREVIOUS_DESK_INDEX" />, um den Desktop zu aktivieren.</translation>
 <translation id="8541078764854166027">Automatischer Bildausschnitt</translation>
 <translation id="8542053257095774575">Keine gespeicherten Desktops oder Vorlagen</translation>
 <translation id="8546059259582788728">Sortierung rückgängig gemacht</translation>
@@ -1852,11 +1863,13 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="925832987464884575">Vorschauen ausblenden</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> erfordert, dass dein Gerät (<ph name="DEVICE_TYPE" />) sofort aktualisiert wird</translation>
 <translation id="938963181863597773">Welche Termine stehen an?</translation>
+<translation id="943067377221312471">Vorheriger Desktop: <ph name="PREVIOUS_DESK_NAME" />, drücke Suchtaste + Leertaste, um den Desktop zu aktivieren.</translation>
 <translation id="945383118875625837">Link auf die Lesezeichenleiste ziehen</translation>
 <translation id="945522503751344254">Feedback geben</translation>
 <translation id="951991426597076286">Ablehnen</translation>
 <translation id="953431725143473984">Gerät herunterfahren?</translation>
 <translation id="954052413789300507">Nicht genug Speicherplatz für „<ph name="FILENAME" />“. Gib Speicherplatz frei.</translation>
+<translation id="968627661524972577">Auf deinem Chromebook kannst du mit Apps alle deine Aufgaben erledigen. Du findest deine Apps im Launcher. Du kannst auch die Launcher-Taste auf der Tastatur drücken.</translation>
 <translation id="974545358917229949"><ph name="RESULT_COUNT" /> Suchergebnisse für "<ph name="QUERY" />"</translation>
 <translation id="98120814841227350">Zum Ende des Dokuments springen</translation>
 <translation id="987589956647469042">Mobile Daten sind aktiviert</translation>

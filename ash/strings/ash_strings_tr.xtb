@@ -146,6 +146,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1576623706766186887">Büyüteç açıkken uzaklaştırın</translation>
 <translation id="1586324912145647027">1 ile 8 arasındaki masalara git</translation>
 <translation id="1589090746204042747">Bu oturumdaki tüm etkinliğinize erişme</translation>
+<translation id="1592682369233288537">Sonraki Masa: <ph name="NEXT_DESK_NAME" />, etkinleştirmek için Arama+Boşluk tuşlarını kullanın.</translation>
 <translation id="1604857178818051494">Medyayı duraklatın</translation>
 <translation id="1610778689852195798">"Geri al"</translation>
 <translation id="1611993646327628135">Açık</translation>
@@ -157,6 +158,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1647986356840967552">Önceki sayfa</translation>
 <translation id="1651914502370159744">Geçmiş sayfasını aç</translation>
 <translation id="1654477262762802994">Sesli sorgu başlat</translation>
+<translation id="1662667383227796099">Başlatıcı'da dosyalarınızı, uygulamalarınızı ve diğer öğelerinizi arayın. Chromebook'unuzla ilgili sorularınıza da yanıt alabilirsiniz.</translation>
 <translation id="1668469839109562275">Yerleşik VPN</translation>
 <translation id="1675844249244994876">Sağdaki pencereyi güncelleyin</translation>
 <translation id="1677472565718498478">Kalan süre: <ph name="TIME" /></translation>
@@ -560,6 +562,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3477079411857374384">Control-Üst Karakter-Boşluk</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> Sinyal Gücü</translation>
 <translation id="348799646910989694">Raf otomatik olarak gizlenecek</translation>
+<translation id="3503243067695520519">Merhaba, Chromebook'lar biraz farklıdır.</translation>
 <translation id="3505066820268455558">Pil Şarj Oluyor</translation>
 <translation id="3509391053705095206">Telefonunuz bulunamıyor. Telefonunuzun Bluetooth'unun açık olduğundan emin olun.</translation>
 <translation id="3510164367642747937">Fare imlecini vurgula</translation>
@@ -684,6 +687,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="3977512764614765090">Pil %<ph name="PERCENTAGE" /> dolu ve şarj oluyor.</translation>
 <translation id="3984536049089846927">Sonraki sayfa</translation>
 <translation id="3986082989454912832">Cevapla</translation>
+<translation id="3990002060657467458">Kablosuz, Bluetooth ve ses seviyesi gibi sık kullanılan denetimler Hızlı Ayarlar'da yer alır. Ekran görüntüsü almak için de bu menüyü kullanabilirsiniz.</translation>
 <translation id="3995138139523574647">USB-C cihaz (sağ arka bağlantı noktası)</translation>
 <translation id="40062176907008878">El Yazısı</translation>
 <translation id="4017989525502048489">Lazer işaretçi</translation>
@@ -747,6 +751,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="4269883910223712419">Bu cihazın yöneticisi şunları yapabilir:</translation>
 <translation id="4274537685965975248">Ctrl + Alt + Aşağı Ok klavye kısayolu değişti. End tuşunu kullanmak için <ph name="LAUNCHER_KEY_NAME" /> + Sağ Ok tuşlarına basın.</translation>
 <translation id="4275283744500212192">Pencere düzeni seçeneklerini açın</translation>
+<translation id="4278138729651139331">Ayarlar'a giderek Chromebook'unuzu özelleştirin ve kişiselleştirin. Duvar kağıdınızı değiştirmeyi veya ekran koruyucu ayarlamayı deneyin.</translation>
 <translation id="4279490309300973883">Yansıtılıyor</translation>
 <translation id="4280601795273309128">Artık güvenlik güncellemeleri alınmayacak. Cihazınızı yeni sürüme geçirin.</translation>
 <translation id="4283888303416325161">Daha fazla güvenlik için şifre girin</translation>
@@ -803,6 +808,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="4505050298327493054">Etkin masa.</translation>
 <translation id="450584155212756404">Yeni Geliştirilenler Kanalı</translation>
 <translation id="4513946894732546136">Geri Bildirim</translation>
+<translation id="4516212064498225455">Geçerli Masa: <ph name="CURRENT_DESK_NAME" />, tüm masaların yer aldığı menüyü açmak için Arama+Boşluk tuşlarını kullanın.</translation>
 <translation id="4518404433291145981">Chromebook'unuzun kilidini açmak için önce telefonunuzun kilidini açın</translation>
 <translation id="4527045527269911712">"<ph name="DEVICE_NAME" />" adlı Bluetooth cihaz eşleme izni istiyor.</translation>
 <translation id="4533343294786968049">Pil ömrünüz uzatılıyor. Pilinizin tamamen şarj olacağı saat: <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -970,6 +976,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="5207949376430453814">Metin imlecini vurgula</translation>
 <translation id="5208059991603368177">Açık</translation>
 <translation id="5216991270656129561">Saat <ph name="TIME" /> olana kadar kapalı</translation>
+<translation id="5217646019792206018">Sonraki Masa: <ph name="NEXT_DESK_NAME" />, etkinleştirmek için Arama+Boşluk tuşlarını veya klavye kısayolunu (Üst Karakter+Arama+<ph name="NEXT_DESK_INDEX" />) kullanın.</translation>
 <translation id="5221423477036820198">Telefon Merkezi'ni kullanarak telefonunuzdaki mesajları hızlıca gönderin veya yanıtlayın.</translation>
 <translation id="5222676887888702881">Çıkış</translation>
 <translation id="5229343007215035173">Gizlilik ekranını açın/kapatın</translation>
@@ -1035,6 +1042,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="550391772491508736">Yayını devam ettir</translation>
 <translation id="5506975627792768506">Büyüteci açın veya kapatın</translation>
 <translation id="5512042095225963688">Önceki kelimeyi sil</translation>
+<translation id="5518068085000130971">Temel bilgileri verdik. İpuçları ve yardım için yerleşik uygulamamız olan Keşfet'e giderek daha fazlasını öğrenebilirsiniz. Bu uygulamada, başlamanıza yardımcı olacak ipuçları, önerilen uygulamalar, özel teklifler ve en yeni Chromebook özelliklerine göz atabilirsiniz.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Yöneticiniz tüm eSIM profillerini kaldırdı. Daha fazla bilgi için yöneticinizle iletişime geçin.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> bağlanıyor.</translation>
@@ -1360,6 +1368,7 @@ Yeni yüklenmiş</translation>
 <translation id="6896758677409633944">Kopyala</translation>
 <translation id="6901883536534621389">Gezinmek için hareketleri kullanmayı deneyin</translation>
 <translation id="6912841030378044227">Adres çubuğuna odaklanın</translation>
+<translation id="6912901278692845878">Hızlı genel bakış</translation>
 <translation id="6919251195245069855">Akıllı kartınız tanınamadı. Tekrar deneyin.</translation>
 <translation id="6920245099716267363">Hotspot'u aç/kapat. Hotspot açık, 1 cihaz bağlı.</translation>
 <translation id="6931576957638141829">Kaydetme yeri</translation>
@@ -1666,6 +1675,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8297006494302853456">Zayıf</translation>
 <translation id="8308637677604853869">Önceki menü</translation>
 <translation id="830868413617744215">Beta</translation>
+<translation id="8312557488404088015">Sorunsuz bir başlangıç yapmak için kısa turumuza katılın. 6 adımdan oluşan bu turu yalnızca birkaç dakikada tamamlayabilirsiniz.</translation>
 <translation id="8314772463905284467">Caps Lock açık</translation>
 <translation id="8315514906653279104">Açılıyor...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -1715,6 +1725,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> cihazınız açıkken şarj olmayabilir.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Mikrofon girişi <ph name="APP_NAME" /> tarafından kontrol ediliyor}other{Mikrofon girişi # uygulama tarafından kontrol ediliyor}}</translation>
 <translation id="8535393432370007982">Renge göre sıralama ölçütünü geri al</translation>
+<translation id="853768060447955562">Önceki Masa: <ph name="PREVIOUS_DESK_NAME" />, etkinleştirmek için Arama+Boşluk tuşlarını veya klavye kısayolunu (Üst Karakter+Arama+<ph name="PREVIOUS_DESK_INDEX" />) kullanın.</translation>
 <translation id="8541078764854166027">Kamera çerçevelemesi</translation>
 <translation id="8542053257095774575">Kayıtlı masa veya şablon yok</translation>
 <translation id="8546059259582788728">Sıralama işlemi başarıyla geri alındı</translation>
@@ -1866,11 +1877,13 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="925832987464884575">Önizlemeleri gizle</translation>
 <translation id="937214777182567951"><ph name="MANAGER" />, hemen <ph name="DEVICE_TYPE" /> cihazınızı güncellemenizi gerektiriyor</translation>
 <translation id="938963181863597773">Takvimimde ne var?</translation>
+<translation id="943067377221312471">Önceki Masa: <ph name="PREVIOUS_DESK_NAME" />, etkinleştirmek için Arama+Boşluk tuşlarını kullanın.</translation>
 <translation id="945383118875625837">Bağlantıyı yer işaretleri çubuğuna sürükleyin</translation>
 <translation id="945522503751344254">Geri bildirim gönder</translation>
 <translation id="951991426597076286">Reddet</translation>
 <translation id="953431725143473984">Cihaz kapatılsın mı?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> için yeterli alan yok. Yer açın.</translation>
+<translation id="968627661524972577">Uygulamaları kullanarak Chromebook'unuzda ihtiyacınız olan her şeyi yapın. Uygulamalarınızı Başlatıcı'da bulabilirsiniz. Klavyedeki Başlatıcı tuşuna da basabilirsiniz.</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> için <ph name="RESULT_COUNT" /> sonuç gösteriliyor</translation>
 <translation id="98120814841227350">Dokümanın sonuna gider</translation>
 <translation id="987589956647469042">Mobil veri açık</translation>

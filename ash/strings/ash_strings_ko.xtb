@@ -146,6 +146,7 @@
 <translation id="1576623706766186887">돋보기 사용 설정 시 축소</translation>
 <translation id="1586324912145647027">데스크 1에서 8로 이동</translation>
 <translation id="1589090746204042747">이 세션의 모든 활동에 액세스</translation>
+<translation id="1592682369233288537">다음 데스크: <ph name="NEXT_DESK_NAME" />, 검색 키 + 스페이스바를 사용하여 활성화합니다.</translation>
 <translation id="1604857178818051494">미디어 일시중지</translation>
 <translation id="1610778689852195798">"실행취소"</translation>
 <translation id="1611993646327628135">켜짐</translation>
@@ -157,6 +158,7 @@
 <translation id="1647986356840967552">이전 페이지</translation>
 <translation id="1651914502370159744">방문 기록 페이지 열기</translation>
 <translation id="1654477262762802994">음성 검색 시작</translation>
+<translation id="1662667383227796099">런처에서 파일, 앱 등을 검색해 보세요. Chromebook에 대한 질문의 답변을 얻을 수도 있습니다.</translation>
 <translation id="1668469839109562275">기본 제공 VPN</translation>
 <translation id="1675844249244994876">오른쪽 창 업데이트</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> 남음</translation>
@@ -560,6 +562,7 @@
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">앱 표시줄 자동 숨김</translation>
+<translation id="3503243067695520519">안녕하세요. Chromebook은 조금 다릅니다.</translation>
 <translation id="3505066820268455558">배터리 충전 중</translation>
 <translation id="3509391053705095206">휴대전화를 찾을 수 없습니다. 휴대전화에서 블루투스가 켜져 있는지 확인하세요.</translation>
 <translation id="3510164367642747937">마우스 커서 강조표시</translation>
@@ -684,6 +687,7 @@
 <translation id="3977512764614765090">배터리가 <ph name="PERCENTAGE" />%이며 현재 충전 중입니다.</translation>
 <translation id="3984536049089846927">다음 페이지</translation>
 <translation id="3986082989454912832">답변</translation>
+<translation id="3990002060657467458">Wi-Fi, 블루투스, 볼륨 등 자주 사용하는 제어 기능은 빠른 설정에 있습니다. 여기에서 스크린샷을 찍을 수도 있습니다.</translation>
 <translation id="3995138139523574647">USB-C 기기(우측 후면 포트)</translation>
 <translation id="40062176907008878">필기 입력</translation>
 <translation id="4017989525502048489">레이저 포인터</translation>
@@ -747,6 +751,7 @@
 <translation id="4269883910223712419">이 기기의 관리자는 다음과 같은 작업을 할 수 있습니다.</translation>
 <translation id="4274537685965975248">Ctrl + Alt + 아래쪽 화살표 단축키가 변경되었습니다. End 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + 오른쪽 화살표 키를 누르세요.</translation>
 <translation id="4275283744500212192">창 레이아웃 옵션 열기</translation>
+<translation id="4278138729651139331">설정에서 Chromebook을 맞춤설정할 수 있습니다. 배경화면을 변경하거나 화면 보호기를 설정해 보세요.</translation>
 <translation id="4279490309300973883">미러링</translation>
 <translation id="4280601795273309128">보안 업데이트가 종료되었습니다. 기기를 업그레이드하세요.</translation>
 <translation id="4283888303416325161">보안 강화를 위해 비밀번호 입력</translation>
@@ -803,6 +808,7 @@
 <translation id="4505050298327493054">활성 데스크입니다.</translation>
 <translation id="450584155212756404">개발자 채널</translation>
 <translation id="4513946894732546136">문제 신고</translation>
+<translation id="4516212064498225455">현재 데스크: <ph name="CURRENT_DESK_NAME" />, 검색 키 + 스페이스바를 사용하여 모든 데스크 메뉴를 엽니다</translation>
 <translation id="4518404433291145981">Chromebook을 잠금 해제하려면 먼저 휴대전화를 잠금 해제하세요.</translation>
 <translation id="4527045527269911712">블루투스 기기 '<ph name="DEVICE_NAME" />'에서 페어링 허가를 요청합니다.</translation>
 <translation id="4533343294786968049">배터리 수명을 늘립니다. <ph name="FULLY_CHARGE_TIME" />까지 배터리가 완전히 충전됩니다.</translation>
@@ -970,6 +976,7 @@
 <translation id="5207949376430453814">텍스트 캐럿 강조표시</translation>
 <translation id="5208059991603368177">켜짐</translation>
 <translation id="5216991270656129561"><ph name="TIME" />까지 끄기</translation>
+<translation id="5217646019792206018">다음 데스크: <ph name="NEXT_DESK_NAME" />, 검색 키 + 스페이스바 또는 단축키: Shift 키 + 검색 키 + <ph name="NEXT_DESK_INDEX" />을(를) 사용하여 활성화합니다</translation>
 <translation id="5221423477036820198">휴대전화 허브를 사용하여 휴대전화의 메시지를 빠르게 전송하거나 답장할 수 있습니다.</translation>
 <translation id="5222676887888702881">로그아웃</translation>
 <translation id="5229343007215035173">개인 정보 보호 화면 사용 설정/중지</translation>
@@ -1035,6 +1042,7 @@
 <translation id="550391772491508736">전송 재개</translation>
 <translation id="5506975627792768506">돋보기 사용 설정 또는 사용 중지</translation>
 <translation id="5512042095225963688">이전 단어 삭제</translation>
+<translation id="5518068085000130971">기본 앱입니다. 팁과 도움말은 기본 제공되는 앱인 살펴보기를 참고하세요. 시작 도움말, 추천 앱, 특별 이벤트, 최신 Chromebook 기능을 확인할 수 있습니다.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">관리자가 모든 eSIM 프로필을 삭제했습니다. 자세한 내용은 관리자에게 문의하세요.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" />이 연결을 시도하는 중입니다.</translation>
@@ -1360,6 +1368,7 @@
 <translation id="6896758677409633944">복사</translation>
 <translation id="6901883536534621389">동작으로 이동해 보기</translation>
 <translation id="6912841030378044227">주소 표시줄로 포커스 이동</translation>
+<translation id="6912901278692845878">빠르게 둘러보기</translation>
 <translation id="6919251195245069855">스마트 카드를 인식할 수 없습니다. 다시 시도해 보세요.</translation>
 <translation id="6920245099716267363">핫스팟을 전환합니다. 핫스팟이 켜져 있으며 기기 1대가 연결되어 있습니다.</translation>
 <translation id="6931576957638141829">저장 위치</translation>
@@ -1666,6 +1675,7 @@
 <translation id="8297006494302853456">약함</translation>
 <translation id="8308637677604853869">이전 메뉴</translation>
 <translation id="830868413617744215">베타</translation>
+<translation id="8312557488404088015">둘러보기를 통해 순조롭게 시작하세요. 6단계로 구성되어 있으며 몇 분 안에 완료할 수 있습니다.</translation>
 <translation id="8314772463905284467">Caps Lock이 켜져 있습니다.</translation>
 <translation id="8315514906653279104">켜는 중...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -1715,6 +1725,7 @@
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" />이(가) 켜져 있는 동안에는 충전되지 않을 수 있습니다.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{마이크 입력은 <ph name="APP_NAME" />에 의해 제어됨}other{마이크 입력은 앱 #개에 의해 제어됨}}</translation>
 <translation id="8535393432370007982">색상별 정렬 순서 실행취소</translation>
+<translation id="853768060447955562">이전 데스크: <ph name="PREVIOUS_DESK_NAME" />, 검색 키 + 스페이스바 또는 단축키: Shift 키 + 검색 키 + <ph name="PREVIOUS_DESK_INDEX" />을(를) 사용하여 활성화합니다.</translation>
 <translation id="8541078764854166027">카메라 프레이밍</translation>
 <translation id="8542053257095774575">저장된 데스크 또는 템플릿 없음</translation>
 <translation id="8546059259582788728">정렬이 실행취소됨</translation>
@@ -1866,11 +1877,13 @@
 <translation id="925832987464884575">미리보기 숨기기</translation>
 <translation id="937214777182567951"><ph name="MANAGER" />에서 <ph name="DEVICE_TYPE" /> 기기를 즉시 업데이트할 것을 요구합니다.</translation>
 <translation id="938963181863597773">오늘 내 일정이 어떻게 돼?</translation>
+<translation id="943067377221312471">이전 데스크: <ph name="PREVIOUS_DESK_NAME" />, 검색 키 + 스페이스바를 사용하여 활성화합니다.</translation>
 <translation id="945383118875625837">링크를 북마크바로 드래그</translation>
 <translation id="945522503751344254">의견 보내기</translation>
 <translation id="951991426597076286">거부</translation>
 <translation id="953431725143473984">기기를 종료하시겠습니까?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> 파일을 저장할 공간이 부족합니다. 기기 여유 공간을 확보하세요.</translation>
+<translation id="968627661524972577">앱을 사용하여 Chromebook에서 필요한 모든 작업을 수행해 보세요. 런처에서 앱을 찾을 수 있습니다. 키보드의 런처 키를 눌러도 됩니다.</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> 검색결과 <ph name="RESULT_COUNT" />개 표시 중</translation>
 <translation id="98120814841227350">문서 하단으로 이동</translation>
 <translation id="987589956647469042">모바일 데이터가 사용 설정되었습니다.</translation>

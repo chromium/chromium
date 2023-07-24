@@ -1568,6 +1568,7 @@
     Cast-тай холбоотой асуудал шийдэх бол
     <ph name="BEGIN_LINK" />
     тусламжийн төв<ph name="END_LINK" />-өөс лавлана уу.</translation>
+<translation id="22649924370461580">Хадгалсан табын бүлгүүд</translation>
 <translation id="2266957463645820432">USB дээрх IPP (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth-г идэвхгүй болгосон байна</translation>
 <translation id="2268182915828370037">Файлын синкийг унтраах уу?</translation>
@@ -1795,6 +1796,7 @@
 <translation id="2435248616906486374">Сүлжээ тасарсан байна</translation>
 <translation id="2435457462613246316">Нууц үг харуулах</translation>
 <translation id="2436385001956947090">&amp;Холбоосыг хуулах</translation>
+<translation id="2438853563451647815">Хэвлэгчид холбогдоогүй</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" />-г ачаалж байна</translation>
 <translation id="2440604414813129000">Эх үүсвэрийг харуул</translation>
 <translation id="2440823041667407902">Байршилд нэвтрэх</translation>
@@ -4246,6 +4248,7 @@
 <translation id="4508150454272293946">Апп болон веб хуудаснуудад энэ төхөөрөмжид холбогдсон камеруудыг ашиглахыг зөвшөөрнө үү. Хэрэв таны камертай холбоотой асуудал хэвээр байвал аппыг дахин эхлүүлэх эсвэл веб хуудсыг сэргээж үзнэ үү.</translation>
 <translation id="450867954911715010">Хандалтын тохиргоо</translation>
 <translation id="4508765956121923607">Эх үүсвэрийг харах</translation>
+<translation id="4509277363725254222">Таныг <ph name="BEGIN_BOLD_USERNAME" />хэрэглэгчийн нэр<ph name="END_BOLD_USERNAME" /> болон <ph name="BEGIN_BOLD_PASSWORD" />нууц үгнийхээ<ph name="END_BOLD_PASSWORD" /> хуулбарыг хуваалцах үед танай гэр бүлийн гишүүн Google Password Manager-г ашиглан тэдгээрийг бөглөх боломжтой</translation>
 <translation id="4509421746503122514">Шинэчлэхийн тулд дахин эхлүүлнэ үү</translation>
 <translation id="4510195992002502722">Санал хүсэлтийг илгээж чадсангүй. Дахин оролдож байна...</translation>
 <translation id="4510479820467554003">Эцэг эхийн бүртгэлийн жагсаалт</translation>
@@ -4463,6 +4466,7 @@
 <translation id="4683629100208651599">Жижиг үсэг болгох</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (өгөгдмөл)</translation>
 <translation id="4684427112815847243">Бүгдийг sync хийх</translation>
+<translation id="4687238339694011189">Таны хэвлэгч асаалттай бөгөөд Chromebook-тэй тань ижил сүлжээнд холбогдсон эсэхийг шалгах эсвэл USB кабель ашиглана уу</translation>
 <translation id="4687613760714619596">Үл мэдэгдэх төхөөрөмж (<ph name="DEVICE_ID" />)</translation>
 <translation id="4687718960473379118">Сайтын санал болгосон зар</translation>
 <translation id="4688036121858134881">Дотоод логийн ID: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
@@ -4815,6 +4819,7 @@
 <translation id="4994426888044765950">Хэрэв та товчийг удаан дарвал товчийн тэмдэгт давтагдана</translation>
 <translation id="4994754230098574403">Тохируулж байна</translation>
 <translation id="4995293419989417004">Зарын сэдвүүдийн талаар нэмэлт мэдээлэл авах</translation>
+<translation id="4995676741161760215">Асаалттай, өргөтгөлийг идэвхжүүлсэн</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Ямар ч <ph name="VM_TYPE" /> VM олдсонгүй}=1{1 <ph name="VM_TYPE" /> VM олдсон: <ph name="VM_NAME_LIST" />}other{{NUM_VMS} <ph name="VM_TYPE" /> VM олдсон: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Интернет холболт алга.</translation>
 <translation id="4998430619171209993">Асаалттай</translation>
@@ -5367,6 +5372,7 @@
 <translation id="5474859849784484111"><ph name="MANAGER" /> таныг одоо Wi-Fi-д холбогдож, шинэчлэлт татахыг шаардаж байна. Эсвэл хязгаартай холболтоос татаж авна уу (төлбөр гарч болзошгүй).</translation>
 <translation id="5481273127572794904">Автоматаар олон файл татахыг зөвшөөрөөгүй</translation>
 <translation id="5481941284378890518">Ойролцоох хэвлэгчийг нэмэх</translation>
+<translation id="5484462543003267273">Гэр бүлийг удирдах</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> танаас өнөөдөр өгөгдлөө хуулбарлаж, энэ <ph name="DEVICE_TYPE" />-г буцаахыг шаардаж байна. <ph name="LINK_BEGIN" />Дэлгэрэнгүй мэдээллийг харах<ph name="LINK_END" />}other{<ph name="MANAGER" /> танаас {NUM_DAYS} хоногийн дотор өгөгдлөө хуулбарлаж, энэ <ph name="DEVICE_TYPE" />-г буцаахыг шаардаж байна. <ph name="LINK_BEGIN" />Дэлгэрэнгүй мэдээллийг харах<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Апп нэмэх</translation>
 <translation id="5485435764083510385">Тайлбарын илүүд үзсэн хэл</translation>
@@ -6118,6 +6124,7 @@
 <translation id="6113434369102685411">Chrome хөтөч болон <ph name="DEVICE_TYPE" />-н эхлүүлэгчид өгөгдмөл хайлтын системээ тохируулна уу</translation>
 <translation id="6113942107547980621">Smart Lock-г ашиглахын тулд утсан дээрээ үндсэн хэрэглэгчийн профайл руу сэлгэнэ үү</translation>
 <translation id="6116921718742659598">Хэл болон оролтын тохиргоог өөрчлөх</translation>
+<translation id="6119008366402292080">Боломжтой ямар ч хэвлэгч байхгүй</translation>
 <translation id="6119927814891883061">Төхөөрөмжийг <ph name="DEVICE_NAME" /> гэж нэрлэх</translation>
 <translation id="6119972796024789243">Өнгөний засвар</translation>
 <translation id="6120707837086723438">Та жорд зориулсан Хайлтын саяхны үйл ажиллагаандaa тулгуурласан санал болгосон жоруудыг харж байна.
@@ -6128,6 +6135,7 @@
 <translation id="6122081475643980456">Таны интернет холболт хяналтанд байна</translation>
 <translation id="6122093587541546701">И-мэйл (заавал биш):</translation>
 <translation id="6122095009389448667">Энэ сайтыг түр санах ой харахыг нь үргэлжлүүлэн хориглох</translation>
+<translation id="6122513630797178831">Карт баталгаажуулалтын кодыг хадгална уу</translation>
 <translation id="6122600716821516697">Энэ төхөөрөмжтэй хуваалцах уу?</translation>
 <translation id="6122831415929794347">Аюулгүй үзэх онцлогийг унтраах уу?</translation>
 <translation id="6124650939968185064">Дараах өргөтгөлүүд нь энэ өргөтгөлөөс хамаардаг:</translation>
@@ -8965,6 +8973,7 @@
 <translation id="8514746246728959655">Аюулгүй байдлын өөр түлхүүр туршиж үзнэ үү</translation>
 <translation id="8514955299594277296">Сайтуудад таны төхөөрөмж дээр өгөгдөл хадгалахыг бүү зөвшөөр (санал болгодоггүй)</translation>
 <translation id="8517759303731677493">Засах…</translation>
+<translation id="8518942514525208851">Бүдүүлэг, доромж үг хэллэгийг нуух</translation>
 <translation id="8519895319663397036">Нууц үгнүүдийг импорт хийх боломжгүй. Файлын хэмжээ 150 КБ-аас бага байх ёстой.</translation>
 <translation id="851991974800416566">Сайн нууц үгийг хурдан ашиглана уу</translation>
 <translation id="8523493869875972733">Өөрчлөлтийг хадгалах</translation>

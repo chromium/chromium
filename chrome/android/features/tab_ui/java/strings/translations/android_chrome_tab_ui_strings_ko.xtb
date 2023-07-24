@@ -37,6 +37,7 @@
 <translation id="4133493477912226187">탭 <ph name="NUMBER_OF_TABS" />개가 서로 관련된 것으로 보입니다. 그룹화할까요?</translation>
 <translation id="4212246570487010370">계속 탐색</translation>
 <translation id="4648718555153979859">탭이 여기에서 그룹화됩니다.</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{Chrome 기본 메뉴의 최근 탭에서 종료된 탭을 확인할 수 있습니다.}=1{Chrome 기본 메뉴의 최근 탭에서 종료된 탭을 확인할 수 있습니다. 시크릿 탭은 확인할 수 없습니다.}other{Chrome 기본 메뉴의 최근 탭에서 종료된 탭을 확인할 수 있습니다. 시크릿 탭 #개는 확인할 수 없습니다.}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(리뷰 <ph name="REVIEWS_COUNT_ONE" />개)}other{(리뷰 <ph name="REVIEWS_COUNT_MANY" />개)}}</translation>
 <translation id="4850886885716139402">보기</translation>
 <translation id="4870911314065352661">모든 탭을 닫을까요?</translation>

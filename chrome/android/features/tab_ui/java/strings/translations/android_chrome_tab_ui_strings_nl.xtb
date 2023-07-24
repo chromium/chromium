@@ -37,6 +37,7 @@
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> tabbladen lijken gerelateerd. Wil je deze groeperen?</translation>
 <translation id="4212246570487010370">Verder browsen</translation>
 <translation id="4648718555153979859">Je tabbladen zijn hier gegroepeerd</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{Je kunt je gesloten tabbladen vinden bij Recente tabbladen in het hoofdmenu van Chrome.}=1{Je kunt je gesloten tabbladen vinden bij Recente tabbladen in het hoofdmenu van Chrome. Je incognitotabblad is niet beschikbaar.}other{Je kunt je gesloten tabbladen vinden bij Recente tabbladen in het hoofdmenu van Chrome. Je # incognitotabbladen zijn niet beschikbaar.}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> review)}other{(<ph name="REVIEWS_COUNT_MANY" /> reviews)}}</translation>
 <translation id="4850886885716139402">Weergave</translation>
 <translation id="4870911314065352661">Alle tabbladen sluiten?</translation>

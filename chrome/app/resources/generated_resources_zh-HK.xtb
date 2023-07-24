@@ -1173,6 +1173,7 @@
 <translation id="1929186283613845153">系統正在掃瞄此檔案。</translation>
 <translation id="1929343511231420085">任何序列連接埠</translation>
 <translation id="1929546189971853037">讀取您已登入的所有裝置上的瀏覽記錄</translation>
+<translation id="1929774028758671973">附近的聯絡人可與你分享內容，系統會詢問你是否同意接收。不過，如果分享及接收內容的裝置都登入 <ph name="USER_EMAIL" />，系統就不會詢問。</translation>
 <translation id="1930879306590754738">密碼已從此裝置及您的 Google 帳戶中刪除</translation>
 <translation id="1931152874660185993">未安裝任何組件。</translation>
 <translation id="1931410639376954712">正在安裝 <ph name="DEVICE_OS" /></translation>
@@ -1439,6 +1440,7 @@
 <translation id="2151576029659734873">輸入的分頁索引無效。</translation>
 <translation id="2152281589789213846">在您的設定檔中新增打印機</translation>
 <translation id="2154484045852737596">編輯付款信用卡</translation>
+<translation id="2155473371917268529">目前的瀏覽權限設定為「你的裝置」</translation>
 <translation id="2155772377859296191">解像度：<ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker：<ph name="SCRIPT_URL" /></translation>
 <translation id="2156877321344104010">再次執行安全檢查</translation>
@@ -1773,6 +1775,7 @@
 <translation id="2418307627282545839">讓畫面保持鮮明光亮</translation>
 <translation id="2419131370336513030">查看已安裝的應用程式</translation>
 <translation id="2419706071571366386">為安全起見，當您未使用電腦時，請登出帳戶。</translation>
+<translation id="2421705177906985956">目前沒有可顯示的網站</translation>
 <translation id="2422125132043002186">已取消 Linux 還原</translation>
 <translation id="2423578206845792524">另存圖片為(&amp;V)…</translation>
 <translation id="2424424966051154874">{0,plural, =1{訪客}other{訪客 (#)}}</translation>
@@ -2452,6 +2455,7 @@
 <translation id="2966705348606485669">「<ph name="FOLDER_TITLE" />」書籤資料夾嘅其他選項</translation>
 <translation id="2966937470348689686">管理 Android 偏好設定</translation>
 <translation id="2967926928600500959">符合這些規則的網址會在強制以特定瀏覽器開啟。</translation>
+<translation id="2970766364519518369">附近的指定聯絡人可與你分享內容，系統會詢問你是否同意接收。不過，如果分享及接收內容的裝置都登入 <ph name="USER_EMAIL" />，系統就不會詢問。</translation>
 <translation id="2972581237482394796">重做(&amp;R)</translation>
 <translation id="2973324205039581528">將單一網站靜音</translation>
 <translation id="2975761176769946178">必須輸入網址</translation>
@@ -4254,6 +4258,7 @@
 <translation id="4508150454272293946">允許應用程式和網頁使用連接此裝置的相機。如果相機仍無法正常使用，建議你重新啟動應用程式或重新整理網頁。</translation>
 <translation id="450867954911715010">無障礙功能設定</translation>
 <translation id="4508765956121923607">檢視原始碼(&amp;O)</translation>
+<translation id="4509277363725254222">當你分享<ph name="BEGIN_BOLD_USERNAME" />使用者名稱<ph name="END_BOLD_USERNAME" />和<ph name="BEGIN_BOLD_PASSWORD" />密碼<ph name="END_BOLD_PASSWORD" />副本後，家庭成員就能使用 Google 密碼管理工具填寫這類資訊</translation>
 <translation id="4509421746503122514">重新啟動即可更新</translation>
 <translation id="4510195992002502722">無法傳送意見，正在重試…</translation>
 <translation id="4510479820467554003">家長帳戶清單</translation>
@@ -4824,6 +4829,7 @@
 <translation id="4994426888044765950">按住按鍵即可重複輸入按鍵對應的字元</translation>
 <translation id="4994754230098574403">正在設定</translation>
 <translation id="4995293419989417004">進一步了解廣告主題</translation>
+<translation id="4995676741161760215">開啟，擴充功能已啟用</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{找不到 <ph name="VM_TYPE" /> 虛擬機器}=1{已找到 <ph name="VM_TYPE" /> 個 <ph name="VM_NAME_LIST" /> 虛擬機器：}other{已找到 {NUM_VMS} 個 <ph name="VM_TYPE" /> 虛擬機器：<ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">沒有互聯網連線。</translation>
 <translation id="4998430619171209993">開啟</translation>
@@ -5376,6 +5382,7 @@
 <translation id="5474859849784484111"><ph name="MANAGER" /> 要求您立即連接 Wi-Fi 並下載更新，或使用按用量收費連線的下載更新 (可能需支付費用)。</translation>
 <translation id="5481273127572794904">不允許自動下載多個檔案</translation>
 <translation id="5481941284378890518">新增附近的打印機</translation>
+<translation id="5484462543003267273">管理家庭群組</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求您備份資料，並在今天內歸還此 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />查看詳情<ph name="LINK_END" />}other{<ph name="MANAGER" /> 要求您備份資料，並在 {NUM_DAYS} 天內歸還此 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />查看詳情<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">新增應用程式</translation>
 <translation id="5485435764083510385">偏好的字幕語言</translation>
@@ -8121,6 +8128,7 @@
 <translation id="7797571222998226653">關閉</translation>
 <translation id="7798504574384119986">查看網絡權限</translation>
 <translation id="7798844538707273832">已自動封鎖<ph name="PERMISSION" /></translation>
+<translation id="7799650166313181433">只有已登入 <ph name="USER_EMAIL" /> 的裝置能與這部裝置分享內容。不過，如果你使用自己的裝置分享及接收內容，系統就不會詢問是否同意接收。</translation>
 <translation id="7800485561443537737">使用 <ph name="DEVICE_TYPE" /> 的流動數據，且流動網絡供應商可能會收取額外費用。這樣做可能會增加電池用量。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">逆時針旋轉(&amp;O)</translation>
 <translation id="7801679634091975683">您在這裡作出的變更只會套用到 Lacros Chrome 瀏覽器。如要變更 Chrome 瀏覽器設定，請開啟 Chrome 瀏覽器並前往設定。</translation>
@@ -8977,6 +8985,7 @@
 <translation id="8514746246728959655">請改用其他安全密鑰</translation>
 <translation id="8514955299594277296">不允許網站在裝置上儲存資料 (不建議)</translation>
 <translation id="8517759303731677493">編輯…</translation>
+<translation id="8518942514525208851">隱藏不雅用語</translation>
 <translation id="8519895319663397036">無法匯入密碼，檔案大小不得超過 150 KB。</translation>
 <translation id="851991974800416566">快速使用安全度高的密碼</translation>
 <translation id="8523493869875972733">保留變更</translation>

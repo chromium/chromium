@@ -301,6 +301,7 @@
 <translation id="6439114592976064011">သင်၏ပကတိအသွင်စက်နှင့် ဒေတာများကို ဝဘ်ဆိုက်များက အသုံးမပြုနိုင်အောင် ပိတ်ထားရန်</translation>
 <translation id="6447842834002726250">ကူကီးများ</translation>
 <translation id="6467852467360539617">ဒေတာကိုရှင်းပြီး ခွင့်ပြုချက်များ ပြင်ဆင်သတ်မှတ်ရန်</translation>
+<translation id="6500423977866688905">ဝင်းဒိုးသည် ကျဉ်းပါက မိုဘိုင်းမြင်ကွင်းကို တောင်းဆိုပါ</translation>
 <translation id="6527303717912515753">မျှဝေရန်</translation>
 <translation id="6545864417968258051">ဘလူးတုသ် ရှာဖွေရန်</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခုကို ပိတ်ထားသည်}other{<ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခုကို ပိတ်ထားသည်}}</translation>

@@ -37,6 +37,7 @@
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> tab sepertinya berkaitan. Masukkan ke grup?</translation>
 <translation id="4212246570487010370">Lanjutkan menjelajah</translation>
 <translation id="4648718555153979859">Tab Anda dikelompokkan menjadi satu di sini</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{Anda dapat menemukan tab yang ditutup di Tab terbaru di bagian menu utama Chrome.}=1{Anda dapat menemukan tab yang ditutup di Tab terbaru di bagian menu utama Chrome. Tab Samaran Anda tidak akan tersedia.}other{Anda dapat menemukan tab yang ditutup di Tab terbaru di bagian menu utama Chrome. # tab Samaran Anda tidak akan tersedia.}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> ulasan)}other{(<ph name="REVIEWS_COUNT_MANY" /> ulasan)}}</translation>
 <translation id="4850886885716139402">Lihat</translation>
 <translation id="4870911314065352661">Tutup semua tab?</translation>
