@@ -3773,7 +3773,7 @@ void CrostiniManager::ActiveNetworksChanged(
   }
   if (CrostiniFeatures::Get()->IsPortForwardingAllowed(profile_)) {
     crostini::CrostiniPortForwarder::GetForProfile(profile_)
-        ->ActiveNetworksChanged(device->interface());
+        ->ActiveNetworksChanged(device->interface(), network->GetIpAddress());
   }
 }
 

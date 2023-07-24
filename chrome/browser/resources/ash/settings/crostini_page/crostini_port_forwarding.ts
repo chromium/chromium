@@ -86,6 +86,22 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
           return [];
         },
       },
+
+      /**
+       * Current active network interface to be displayed.
+       */
+      activeInterface_: {
+        type: String,
+        value: '',
+      },
+
+      /**
+       * Current active network IP to be displayed.
+       */
+      activeIpAddress_: {
+        type: String,
+        value: '',
+      },
     };
   }
 
@@ -98,6 +114,8 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
   private activePorts_: CrostiniPortActiveSetting[];
   private allContainers_: ContainerInfo[];
   private allPorts_: CrostiniPortSetting[];
+  private activeInterface_: string;
+  private activeIpAddress_: string;
   private browserProxy_: CrostiniBrowserProxy;
   private lastMenuOpenedPort_: CrostiniPortActiveSetting|null;
   private showAddPortDialog_: boolean;
@@ -126,9 +144,21 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
     this.addWebUiListener(
         'crostini-container-info',
         (infos: ContainerInfo[]) => this.onContainerInfo_(infos));
+    this.addWebUiListener(
+        'crostini-active-network-info',
+        (iface: string, ipAddress: string) =>
+            this.onCrostiniActiveNetworkInfo_([iface, ipAddress]));
     this.browserProxy_.getCrostiniActivePorts().then(
         (ports) => this.onCrostiniPortsActiveStateChanged_(ports));
+    this.browserProxy_.getCrostiniActiveNetworkInfo().then(
+        (networkInfo: string[]) =>
+            this.onCrostiniActiveNetworkInfo_(networkInfo));
     this.browserProxy_.requestContainerInfo();
+  }
+
+  private onCrostiniActiveNetworkInfo_(networkInfo: string[]) {
+    this.set('activeInterface_', networkInfo[0]);
+    this.set('activeIpAddress_', networkInfo[1]);
   }
 
   private onContainerInfo_(containerInfos: ContainerInfo[]) {

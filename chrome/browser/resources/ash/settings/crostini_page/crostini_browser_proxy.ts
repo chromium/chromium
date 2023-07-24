@@ -214,6 +214,8 @@ export interface CrostiniBrowserProxy {
 
   getCrostiniActivePorts(): Promise<CrostiniPortActiveSetting[]>;
 
+  getCrostiniActiveNetworkInfo(): Promise<string[]>;
+
   checkCrostiniIsRunning(): Promise<boolean>;
 
   /**
@@ -413,6 +415,10 @@ export class CrostiniBrowserProxyImpl implements CrostiniBrowserProxy {
 
   getCrostiniActivePorts(): Promise<CrostiniPortActiveSetting[]> {
     return sendWithPromise('getCrostiniActivePorts');
+  }
+
+  getCrostiniActiveNetworkInfo(): Promise<string[]> {
+    return sendWithPromise('getCrostiniActiveNetworkInfo');
   }
 
   checkCrostiniIsRunning(): Promise<boolean> {

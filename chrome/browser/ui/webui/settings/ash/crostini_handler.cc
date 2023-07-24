@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/views/crostini/crostini_uninstaller_view.h"
 #include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_dialog.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/network/network_handler.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -150,6 +151,10 @@ void CrostiniHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "getCrostiniActivePorts",
       base::BindRepeating(&CrostiniHandler::HandleGetCrostiniActivePorts,
+                          handler_weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      "getCrostiniActiveNetworkInfo",
+      base::BindRepeating(&CrostiniHandler::HandleGetCrostiniActiveNetworkInfo,
                           handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "checkCrostiniIsRunning",
@@ -515,6 +520,11 @@ void CrostiniHandler::OnActivePortsChanged(
                     activePorts);
 }
 
+void CrostiniHandler::OnActiveNetworkChanged(const base::Value& interface,
+                                             const base::Value& ipAddress) {
+  FireWebUIListener("crostini-active-network-info", interface, ipAddress);
+}
+
 void CrostiniHandler::HandleAddCrostiniPortForward(
     const base::Value::List& args) {
   CHECK_EQ(5U, args.size());
@@ -675,6 +685,18 @@ void CrostiniHandler::HandleGetCrostiniActivePorts(
       base::Value(callback_id),
       crostini::CrostiniPortForwarder::GetForProfile(profile_)
           ->GetActivePorts());
+}
+
+void CrostiniHandler::HandleGetCrostiniActiveNetworkInfo(
+    const base::Value::List& args) {
+  AllowJavascript();
+  CHECK_EQ(1U, args.size());
+
+  std::string callback_id = args[0].GetString();
+  ResolveJavascriptCallback(
+      base::Value(callback_id),
+      crostini::CrostiniPortForwarder::GetForProfile(profile_)
+          ->GetActiveNetworkInfo());
 }
 
 void CrostiniHandler::HandleCheckCrostiniIsRunning(

@@ -31,6 +31,10 @@
     formal UI spec is received. */
   }
 
+  .interface-ip {
+    padding-inline-start: 24px;
+  }
+
   #addPort {
     padding-top: 10px;
   }
@@ -73,6 +77,11 @@
     </cr-icon-button>
   </template>
 </div>
+<template is="dom-if" if="[[activeInterface_]]" restamp>
+    <div id="interface-ip" class="settings-box continuation">
+        [[activeInterface_]]: [[activeIpAddress_]]
+    </div>
+</template>
 <template is="dom-if" if="[[!allPorts_.length]]" restamp>
   <div id="no-ports-text"
       class="settings-box continuation">

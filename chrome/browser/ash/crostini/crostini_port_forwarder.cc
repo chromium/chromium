@@ -17,6 +17,9 @@
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "chromeos/ash/components/network/device_state.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
@@ -71,6 +74,17 @@ CrostiniPortForwarder* CrostiniPortForwarder::GetForProfile(Profile* profile) {
 CrostiniPortForwarder::CrostiniPortForwarder(Profile* profile)
     : profile_(profile) {
   current_interface_ = kDefaultInterfaceToForward;
+  const ash::DeviceState* device =
+      ash::NetworkHandler::Get()->network_state_handler()->GetDeviceState(
+          current_interface_);
+  if (device) {
+    ip_address_ = device->GetIpAddressByType(shill::kTypeIPv4);
+    if (ip_address_.empty()) {
+      ip_address_ = device->GetIpAddressByType(shill::kTypeIPv6);
+    }
+  } else {
+    ip_address_ = "";
+  }
 }
 
 CrostiniPortForwarder::~CrostiniPortForwarder() = default;
@@ -387,6 +401,13 @@ base::Value::List CrostiniPortForwarder::GetActivePorts() {
   return forwarded_ports_list;
 }
 
+base::Value::List CrostiniPortForwarder::GetActiveNetworkInfo() {
+  base::Value::List network_info;
+  network_info.Append(base::Value(current_interface_));
+  network_info.Append(base::Value(ip_address_));
+  return network_info;
+}
+
 size_t CrostiniPortForwarder::GetNumberOfForwardedPortsForTesting() {
   return forwarded_ports_.size();
 }
@@ -405,7 +426,8 @@ void CrostiniPortForwarder::UpdateActivePortInterfaces() {
 }
 
 void CrostiniPortForwarder::ActiveNetworksChanged(
-    const std::string& interface) {
+    const std::string& interface,
+    const std::string& ip_address) {
   if (interface.empty()) {
     return;
   }
@@ -413,7 +435,13 @@ void CrostiniPortForwarder::ActiveNetworksChanged(
     return;
   }
   current_interface_ = interface;
+  ip_address_ = ip_address;
   UpdateActivePortInterfaces();
+
+  for (auto& observer : observers_) {
+    observer.OnActiveNetworkChanged(base::Value(interface),
+                                    base::Value(ip_address));
+  }
 }
 
 // static
