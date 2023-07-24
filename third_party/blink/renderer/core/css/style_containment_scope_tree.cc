@@ -15,7 +15,6 @@ namespace blink {
 void StyleContainmentScopeTree::Trace(Visitor* visitor) const {
   visitor->Trace(root_scope_);
   visitor->Trace(outermost_quotes_dirty_scope_);
-  visitor->Trace(outermost_counters_dirty_scope_);
   visitor->Trace(scopes_);
 }
 
@@ -56,7 +55,6 @@ void StyleContainmentScopeTree::DestroyScopeForElement(const Element& element) {
   StyleContainmentScope* parent = scope->Parent();
   scope->ReattachToParent();
   scopes_.erase(&element);
-  UpdateOutermostCountersDirtyScope(parent);
   UpdateOutermostQuotesDirtyScope(parent);
 }
 
@@ -79,15 +77,6 @@ void StyleContainmentScopeTree::CreateScopeForElement(const Element& element) {
       scope->AppendChild(child);
     }
   }
-  auto counters = parent->Counters();
-  for (const auto& [identifier, counters_vec] : counters) {
-    for (CounterNode* counter : *counters_vec) {
-      if (scope->IsAncestorOf(&counter->OwnerElement(), parent->GetElement())) {
-        parent->DetachCounter(*counter);
-        scope->AttachCounter(*counter);
-      }
-    }
-  }
   auto quotes = parent->Quotes();
   for (LayoutQuote* quote : quotes) {
     if (scope->IsAncestorOf(quote->GetOwningPseudo(), parent->GetElement())) {
@@ -95,7 +84,6 @@ void StyleContainmentScopeTree::CreateScopeForElement(const Element& element) {
       scope->AttachQuote(*quote);
     }
   }
-  UpdateOutermostCountersDirtyScope(parent);
   UpdateOutermostQuotesDirtyScope(parent);
 }
 
@@ -106,10 +94,8 @@ void StyleContainmentScopeTree::ElementWillBeRemoved(const Element& element) {
     // to its parent, and mark its parent dirty.
     StyleContainmentScope* scope = it->value;
     UpdateOutermostQuotesDirtyScope(scope->Parent());
-    UpdateOutermostCountersDirtyScope(scope->Parent());
     scope->ReattachToParent();
     scopes_.erase(it);
-    return;
   }
 }
 
@@ -154,12 +140,6 @@ void StyleContainmentScopeTree::UpdateOutermostQuotesDirtyScope(
       FindCommonAncestor(scope, outermost_quotes_dirty_scope_);
 }
 
-void StyleContainmentScopeTree::UpdateOutermostCountersDirtyScope(
-    StyleContainmentScope* scope) {
-  outermost_counters_dirty_scope_ =
-      FindCommonAncestor(scope, outermost_counters_dirty_scope_);
-}
-
 void StyleContainmentScopeTree::UpdateQuotes() {
   if (!outermost_quotes_dirty_scope_) {
     return;
@@ -167,71 +147,5 @@ void StyleContainmentScopeTree::UpdateQuotes() {
   outermost_quotes_dirty_scope_->UpdateQuotes();
   outermost_quotes_dirty_scope_ = nullptr;
 }
-
-void StyleContainmentScopeTree::UpdateCounters() {
-  if (!outermost_counters_dirty_scope_) {
-    return;
-  }
-  HashSet<AtomicString> no_update_identifiers;
-  outermost_counters_dirty_scope_->UpdateAllCounters(no_update_identifiers);
-  outermost_counters_dirty_scope_ = nullptr;
-}
-
-#if DCHECK_IS_ON()
-
-void StyleContainmentScopeTree::PrintScopesTree(StyleContainmentScope* scope,
-                                                wtf_size_t depth) const {
-  if (!scope) {
-    scope = root_scope_;
-  }
-  for (wtf_size_t i = 0; i < depth; ++i) {
-    fprintf(stdout, " ");
-  }
-  if (scope->GetElement()) {
-    fprintf(stdout, "SCOPE: %s; ",
-            scope->GetElement()->DebugName().Ascii().c_str());
-    fprintf(stdout, "PARENT: %s",
-            scope->Parent()->GetElement()
-                ? scope->Parent()->GetElement()->DebugName().Ascii().c_str()
-                : "root");
-  } else {
-    fprintf(stdout, "SCOPE: root");
-  }
-  fprintf(stdout, "\n");
-  for (auto& [identifier, counters] : scope->Counters()) {
-    for (wtf_size_t i = 0; i < depth; ++i) {
-      fprintf(stdout, " ");
-    }
-    fprintf(stdout, "ID: %s < ", identifier.Ascii().c_str());
-    for (CounterNode* counter : *counters) {
-      fprintf(stdout, "COUNTER %s AT %s value %d; ", identifier.Ascii().c_str(),
-              counter->OwnerElement().DebugName().Ascii().c_str(),
-              counter->ValueAfter());
-    }
-    fprintf(stdout, " >\n");
-  }
-  fprintf(stdout, "\n");
-  for (wtf_size_t i = 0; i < depth; ++i) {
-    fprintf(stdout, " ");
-  }
-  for (LayoutQuote* quote : scope->Quotes()) {
-    fprintf(stdout, "QUOTE %p depth %d; ", quote, quote->GetDepth());
-  }
-  fprintf(stdout, "\n");
-  for (wtf_size_t i = 0; i < depth; ++i) {
-    fprintf(stdout, " ");
-  }
-  for (StyleContainmentScope* child : scope->Children()) {
-    fprintf(stdout, "CHILD %s; ",
-            child->GetElement()->DebugName().Ascii().c_str());
-  }
-  fprintf(stdout, "\n");
-  for (StyleContainmentScope* child : scope->Children()) {
-    PrintScopesTree(child, depth + 1);
-    fprintf(stdout, "\n");
-  }
-}
-
-#endif  // DCHECK_IS_ON()
 
 }  // namespace blink

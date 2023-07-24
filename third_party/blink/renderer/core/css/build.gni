@@ -830,7 +830,6 @@ blink_core_tests_css = [
   "selector_checker_test.cc",
   "selector_filter_test.cc",
   "selector_query_test.cc",
-  "style_containment_scope_tree_test.cc",
   "style_element_test.cc",
   "style_engine_test.cc",
   "style_environment_variables_test.cc",

@@ -956,7 +956,7 @@ class ComputedStyle : public ComputedStyleBase,
   void CopyChildDependentFlagsFrom(const ComputedStyle&) const;
 
   // Counters.
-  CORE_EXPORT const CounterDirectiveMap* GetCounterDirectives() const;
+  const CounterDirectiveMap* GetCounterDirectives() const;
   const CounterDirectives GetCounterDirectives(
       const AtomicString& identifier) const;
   bool CounterDirectivesEqual(const ComputedStyle& other) const {
