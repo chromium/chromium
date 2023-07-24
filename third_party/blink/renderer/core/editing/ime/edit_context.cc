@@ -10,9 +10,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_range.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_edit_context_enter_key_hint.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_edit_context_init.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_edit_context_input_mode.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/ime/character_bounds_update_event.h"
@@ -49,15 +47,6 @@ EditContext::EditContext(ScriptState* script_state, const EditContextInit* dict)
 
   if (dict->hasSelectionEnd())
     selection_end_ = std::min(dict->selectionEnd(), text_.length());
-
-  if (dict->hasInputMode())
-    setInputMode(dict->inputMode());
-
-  if (dict->hasEnterKeyHint())
-    setEnterKeyHint(dict->enterKeyHint());
-
-  if (dict->hasInputPanelPolicy())
-    setInputPanelPolicy(dict->inputPanelPolicy());
 }
 
 EditContext* EditContext::Create(ScriptState* script_state,
@@ -96,12 +85,6 @@ void EditContext::SetVirtualKeyboardVisibilityRequest(
     ui::mojom::VirtualKeyboardVisibilityRequest vk_visibility_request) {
   GetInputMethodController().SetVirtualKeyboardVisibilityRequest(
       vk_visibility_request);
-}
-
-bool EditContext::IsVirtualKeyboardPolicyManual() const {
-  return GetInputMethodController()
-             .GetActiveEditContext()
-             ->inputPanelPolicy() == "manual";
 }
 
 void EditContext::DispatchCompositionEndEvent(const String& text) {
@@ -344,10 +327,6 @@ void EditContext::setSelectionEnd(uint32_t selection_end,
   selection_end_ = std::min(selection_end, text_.length());
 }
 
-V8EditContextInputPanelPolicy EditContext::inputPanelPolicy() const {
-  return V8EditContextInputPanelPolicy(input_panel_policy_);
-}
-
 const HeapVector<Member<Element>>& EditContext::attachedElements() {
   return attached_elements_;
 }
@@ -360,115 +339,6 @@ const HeapVector<Member<DOMRect>> EditContext::characterBounds() {
                                bound.height());
       });
   return dom_rects;
-}
-
-void EditContext::setInputPanelPolicy(
-    const V8EditContextInputPanelPolicy& input_policy) {
-  input_panel_policy_ = input_policy.AsEnum();
-}
-
-void EditContext::setInputMode(const V8EditContextInputMode& input_mode) {
-  // inputMode password is not supported by browsers yet:
-  // https://github.com/whatwg/html/issues/4875
-
-  switch (input_mode.AsEnum()) {
-    case V8EditContextInputMode::Enum::kText:
-      input_mode_ = WebTextInputMode::kWebTextInputModeText;
-      break;
-    case V8EditContextInputMode::Enum::kTel:
-      input_mode_ = WebTextInputMode::kWebTextInputModeTel;
-      break;
-    case V8EditContextInputMode::Enum::kEmail:
-      input_mode_ = WebTextInputMode::kWebTextInputModeEmail;
-      break;
-    case V8EditContextInputMode::Enum::kSearch:
-      input_mode_ = WebTextInputMode::kWebTextInputModeSearch;
-      break;
-    case V8EditContextInputMode::Enum::kDecimal:
-      input_mode_ = WebTextInputMode::kWebTextInputModeDecimal;
-      break;
-    case V8EditContextInputMode::Enum::kNumeric:
-      input_mode_ = WebTextInputMode::kWebTextInputModeNumeric;
-      break;
-    case V8EditContextInputMode::Enum::kUrl:
-      input_mode_ = WebTextInputMode::kWebTextInputModeUrl;
-      break;
-    case V8EditContextInputMode::Enum::kPassword:
-    case V8EditContextInputMode::Enum::kNone:
-      input_mode_ = WebTextInputMode::kWebTextInputModeNone;
-  }
-}
-
-V8EditContextInputMode EditContext::inputMode() const {
-  switch (input_mode_) {
-    case WebTextInputMode::kWebTextInputModeText:
-      return V8EditContextInputMode(V8EditContextInputMode::Enum::kText);
-    case WebTextInputMode::kWebTextInputModeSearch:
-      return V8EditContextInputMode(V8EditContextInputMode::Enum::kSearch);
-    case WebTextInputMode::kWebTextInputModeEmail:
-      return V8EditContextInputMode(V8EditContextInputMode::Enum::kEmail);
-    case WebTextInputMode::kWebTextInputModeDecimal:
-      return V8EditContextInputMode(V8EditContextInputMode::Enum::kDecimal);
-    case WebTextInputMode::kWebTextInputModeNumeric:
-      return V8EditContextInputMode(V8EditContextInputMode::Enum::kNumeric);
-    case WebTextInputMode::kWebTextInputModeTel:
-      return V8EditContextInputMode(V8EditContextInputMode::Enum::kTel);
-    case WebTextInputMode::kWebTextInputModeUrl:
-      return V8EditContextInputMode(V8EditContextInputMode::Enum::kUrl);
-    default:
-      return V8EditContextInputMode(V8EditContextInputMode::Enum::kNone);
-  }
-}
-
-void EditContext::setEnterKeyHint(
-    const V8EditContextEnterKeyHint& enter_key_hint) {
-  switch (enter_key_hint.AsEnum()) {
-    case V8EditContextEnterKeyHint::Enum::kEnter:
-      enter_key_hint_ = ui::TextInputAction::kEnter;
-      break;
-    case V8EditContextEnterKeyHint::Enum::kDone:
-      enter_key_hint_ = ui::TextInputAction::kDone;
-      break;
-    case V8EditContextEnterKeyHint::Enum::kGo:
-      enter_key_hint_ = ui::TextInputAction::kGo;
-      break;
-    case V8EditContextEnterKeyHint::Enum::kNext:
-      enter_key_hint_ = ui::TextInputAction::kNext;
-      break;
-    case V8EditContextEnterKeyHint::Enum::kPrevious:
-      enter_key_hint_ = ui::TextInputAction::kPrevious;
-      break;
-    case V8EditContextEnterKeyHint::Enum::kSearch:
-      enter_key_hint_ = ui::TextInputAction::kSearch;
-      break;
-    case V8EditContextEnterKeyHint::Enum::kSend:
-      enter_key_hint_ = ui::TextInputAction::kSend;
-      break;
-  }
-}
-
-V8EditContextEnterKeyHint EditContext::enterKeyHint() const {
-  switch (enter_key_hint_) {
-    case ui::TextInputAction::kEnter:
-      return V8EditContextEnterKeyHint(V8EditContextEnterKeyHint::Enum::kEnter);
-    case ui::TextInputAction::kDone:
-      return V8EditContextEnterKeyHint(V8EditContextEnterKeyHint::Enum::kDone);
-    case ui::TextInputAction::kGo:
-      return V8EditContextEnterKeyHint(V8EditContextEnterKeyHint::Enum::kGo);
-    case ui::TextInputAction::kNext:
-      return V8EditContextEnterKeyHint(V8EditContextEnterKeyHint::Enum::kNext);
-    case ui::TextInputAction::kPrevious:
-      return V8EditContextEnterKeyHint(
-          V8EditContextEnterKeyHint::Enum::kPrevious);
-    case ui::TextInputAction::kSearch:
-      return V8EditContextEnterKeyHint(
-          V8EditContextEnterKeyHint::Enum::kSearch);
-    case ui::TextInputAction::kSend:
-      return V8EditContextEnterKeyHint(V8EditContextEnterKeyHint::Enum::kSend);
-    default:
-      // Defaulting to enter.
-      return V8EditContextEnterKeyHint(V8EditContextEnterKeyHint::Enum::kEnter);
-  }
 }
 
 void EditContext::GetLayoutBounds(gfx::Rect* control_bounds,
@@ -776,47 +646,17 @@ void EditContext::DetachElement(Element* element_to_detach) {
     attached_elements_.erase(it);
 }
 
-WebTextInputType EditContext::TextInputType() {
-  switch (input_mode_) {
-    case WebTextInputMode::kWebTextInputModeText:
-      return WebTextInputType::kWebTextInputTypeText;
-    case WebTextInputMode::kWebTextInputModeTel:
-      return WebTextInputType::kWebTextInputTypeTelephone;
-    case WebTextInputMode::kWebTextInputModeEmail:
-      return WebTextInputType::kWebTextInputTypeEmail;
-    case WebTextInputMode::kWebTextInputModeSearch:
-      return WebTextInputType::kWebTextInputTypeSearch;
-    case WebTextInputMode::kWebTextInputModeNumeric:
-      return WebTextInputType::kWebTextInputTypeNumber;
-    case WebTextInputMode::kWebTextInputModeDecimal:
-      return WebTextInputType::kWebTextInputTypeNumber;
-    case WebTextInputMode::kWebTextInputModeUrl:
-      return WebTextInputType::kWebTextInputTypeURL;
-    default:
-      return WebTextInputType::kWebTextInputTypeText;
-  }
-}
-
-ui::TextInputAction EditContext::GetEditContextEnterKeyHint() const {
-  return enter_key_hint_;
-}
-
-WebTextInputMode EditContext::GetInputModeOfEditContext() const {
-  return input_mode_;
-}
-
 WebTextInputInfo EditContext::TextInputInfo() {
   WebTextInputInfo info;
   // Fetch all the text input info from edit context.
   // TODO(crbug.com/1197325): Change this to refer to the "view" part of the
   // EditContext once the EditContext spec adds this feature.
   info.node_id = GetInputMethodController().NodeIdOfFocusedElement();
-  info.action = GetEditContextEnterKeyHint();
-  info.input_mode = GetInputModeOfEditContext();
-  info.type = TextInputType();
-  info.virtual_keyboard_policy = IsVirtualKeyboardPolicyManual()
-                                     ? ui::mojom::VirtualKeyboardPolicy::MANUAL
-                                     : ui::mojom::VirtualKeyboardPolicy::AUTO;
+  info.action = GetInputMethodController().InputActionOfFocusedElement();
+  info.input_mode = GetInputMethodController().InputModeOfFocusedElement();
+  info.type = GetInputMethodController().TextInputType();
+  info.virtual_keyboard_policy =
+      GetInputMethodController().VirtualKeyboardPolicyOfFocusedElement();
   info.value = text();
   info.flags = TextInputFlags();
   info.selection_start = selection_start_;

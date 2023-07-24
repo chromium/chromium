@@ -432,48 +432,6 @@ test(function() {
 }, 'Testing EditContext blur');
 
 test(function() {
-  const editContext = new EditContext();
-  assert_not_equals(editContext, null);
-  assert_equals(editContext.inputMode, "text"); // default value
-  editContext.inputMode = "tel";
-  assert_equals(editContext.inputMode, "tel");
-  editContext.inputMode = "email";
-  assert_equals(editContext.inputMode, "email");
-  editContext.inputMode = "search";
-  assert_equals(editContext.inputMode, "search");
-  editContext.inputMode = "decimal";
-  assert_equals(editContext.inputMode, "decimal");
-  editContext.inputMode = "numeric";
-  assert_equals(editContext.inputMode, "numeric");
-  editContext.inputMode = "url";
-  assert_equals(editContext.inputMode, "url");
-  editContext.inputMode = "none";
-  assert_equals(editContext.inputMode, "none");
-  editContext.inputMode = "test";
-  assert_equals(editContext.inputMode, "none");
-}, 'Testing EditContext inputMode');
-
-test(function() {
-  const editContext = new EditContext();
-  assert_not_equals(editContext, null);
-  assert_equals(editContext.enterKeyHint, "enter"); // default value
-  editContext.enterKeyHint = "done";
-  assert_equals(editContext.enterKeyHint, "done");
-  editContext.enterKeyHint = "go";
-  assert_equals(editContext.enterKeyHint, "go");
-  editContext.enterKeyHint = "next";
-  assert_equals(editContext.enterKeyHint, "next");
-  editContext.enterKeyHint = "previous";
-  assert_equals(editContext.enterKeyHint, "previous");
-  editContext.enterKeyHint = "search";
-  assert_equals(editContext.enterKeyHint, "search");
-  editContext.enterKeyHint = "send";
-  assert_equals(editContext.enterKeyHint, "send");
-  editContext.enterKeyHint = "test";
-  assert_equals(editContext.enterKeyHint, "send");
-}, 'Testing EditContext enterKeyHint');
-
-test(function() {
   // SetComposition should not crash when event handler removes document
   const child = document.createElement("iframe");
   document.body.appendChild(child);

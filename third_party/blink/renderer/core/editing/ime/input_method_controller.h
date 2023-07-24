@@ -132,7 +132,6 @@ class CORE_EXPORT InputMethodController final
   // operation, so making it specific whenever needed by splitting from
   // TextInputFlags()
   int ComputeWebTextInputNextPreviousFlags() const;
-  WebTextInputType TextInputType() const;
 
   // Call this when we will change focus.
   void WillChangeFocus();
@@ -162,6 +161,12 @@ class CORE_EXPORT InputMethodController final
   }
 
   DOMNodeId NodeIdOfFocusedElement() const;
+
+  ui::TextInputAction InputActionOfFocusedElement() const;
+  WebTextInputMode InputModeOfFocusedElement() const;
+  ui::mojom::VirtualKeyboardPolicy VirtualKeyboardPolicyOfFocusedElement()
+      const;
+  WebTextInputType TextInputType() const;
 
  private:
   friend class InputMethodControllerTest;
@@ -227,10 +232,6 @@ class CORE_EXPORT InputMethodController final
       int selection_end,
       size_t text_length) const;
   int TextInputFlags() const;
-  ui::TextInputAction InputActionOfFocusedElement() const;
-  WebTextInputMode InputModeOfFocusedElement() const;
-  ui::mojom::VirtualKeyboardPolicy VirtualKeyboardPolicyOfFocusedElement()
-      const;
 
   // Implements |ExecutionContextLifecycleObserver|.
   void ContextDestroyed() final;

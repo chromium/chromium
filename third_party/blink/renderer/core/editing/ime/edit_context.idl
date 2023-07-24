@@ -25,9 +25,6 @@
     attribute DOMString text;
     [RaisesException=Setter] attribute unsigned long selectionStart;
     [RaisesException=Setter] attribute unsigned long selectionEnd;
-    attribute EditContextInputMode inputMode;
-    attribute EditContextInputPanelPolicy inputPanelPolicy;
-    attribute EditContextEnterKeyHint enterKeyHint;
     readonly attribute unsigned long characterBoundsRangeStart;
     sequence<DOMRect> characterBounds();
 

@@ -2241,9 +2241,6 @@ interface DynamicsCompressorNode : AudioNode
 interface EditContext : EventTarget
     attribute @@toStringTag
     getter characterBoundsRangeStart
-    getter enterKeyHint
-    getter inputMode
-    getter inputPanelPolicy
     getter oncharacterboundsupdate
     getter oncompositionend
     getter oncompositionstart
@@ -2260,9 +2257,6 @@ interface EditContext : EventTarget
     method updateSelection
     method updateSelectionBounds
     method updateText
-    setter enterKeyHint
-    setter inputMode
-    setter inputPanelPolicy
     setter oncharacterboundsupdate
     setter oncompositionend
     setter oncompositionstart
