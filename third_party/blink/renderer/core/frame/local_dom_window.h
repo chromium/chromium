@@ -532,9 +532,9 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // given window, it cannot be taken away.
   void SetHasStorageAccess();
 
-  void maximize();
-  void minimize();
-  void restore();
+  void maximize(ExceptionState&);
+  void minimize(ExceptionState&);
+  void restore(ExceptionState&);
 
  protected:
   // EventTarget overrides.

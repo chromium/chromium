@@ -54,9 +54,9 @@
     void stop();
     [CrossOrigin, CallWith=Isolate] void focus();
     [CrossOrigin] void blur();
-    [RuntimeEnabled=DesktopPWAsAdditionalWindowingControls] void maximize();
-    [RuntimeEnabled=DesktopPWAsAdditionalWindowingControls] void minimize();
-    [RuntimeEnabled=DesktopPWAsAdditionalWindowingControls] void restore();
+    [RuntimeEnabled=DesktopPWAsAdditionalWindowingControls, RaisesException] void maximize();
+    [RuntimeEnabled=DesktopPWAsAdditionalWindowingControls, RaisesException] void minimize();
+    [RuntimeEnabled=DesktopPWAsAdditionalWindowingControls, RaisesException] void restore();
 
     // other browsing contexts
     [Replaceable, CrossOrigin, CachedAccessor=kWindowProxy] readonly attribute Window frames;
