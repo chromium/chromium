@@ -138,15 +138,31 @@ bool FindExe(
 void GetApplicationDirs(std::vector<base::FilePath>* locations);
 #endif
 
+/**
+ * Finds a chrome executable based on the following flavour priority:
+ *   - `PRODUCT_STRING`
+ *   - google chrome for testing
+ *   - google chrome
+ *   - chromium
+ */
 bool FindChrome(base::FilePath* browser_exe) {
   base::FilePath browser_exes_array[] = {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN)
     base::FilePath(chrome::kBrowserProcessExecutablePath),
+    base::FilePath(FILE_PATH_LITERAL(
+        "chrome.exe")),  // Chrome for Testing or Google Chrome
+    base::FilePath(FILE_PATH_LITERAL("chromium.exe")),
+#elif BUILDFLAG(IS_MAC)
+    base::FilePath(chrome::kBrowserProcessExecutablePath),
+    base::FilePath(chrome::kGoogleChromeForTestingBrowserProcessExecutablePath),
+    base::FilePath(chrome::kGoogleChromeBrowserProcessExecutablePath),
+    base::FilePath(chrome::kChromiumBrowserProcessExecutablePath),
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-    base::FilePath("google-chrome"),
     base::FilePath(chrome::kBrowserProcessExecutablePath),
+    base::FilePath("chrome"),  // Chrome for Testing or Google Chrome
+    base::FilePath("google-chrome"),
     base::FilePath("chromium"),
-    base::FilePath("chromium-browser")
+    base::FilePath("chromium-browser"),
 #else
     // it will compile but won't work on other OSes
     base::FilePath()
