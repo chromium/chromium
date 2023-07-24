@@ -208,6 +208,8 @@ void SystemInfoCardProvider::OnMemoryUsageUpdated(bool create_result,
 
   if (create_result) {
     AnswerCardInfo answer_card_info(memory_usage_percentage);
+    // The bar chart will turn red if there is less than 10% of memory free.
+    answer_card_info.SetUpperLimitForBarChart(90);
     SearchProvider::Results new_results;
     DCHECK(memory_timer_);
     new_results.emplace_back(std::make_unique<MemoryAnswerResult>(
@@ -363,6 +365,9 @@ void SystemInfoCardProvider::OnBatteryInfoUpdated(
       base::NumberToString16(new_battery_health->GetCycleCount()));
 
   AnswerCardInfo answer_card_info(new_battery_health->GetBatteryPercentage());
+  // The bar chart will turn red if there is less than 20 of battery
+  // charge left.
+  answer_card_info.SetLowerLimitForBarChart(20);
   answer_card_info.SetDescriptionOnRight(battery_health_info);
   SearchProvider::Results new_results;
   new_results.emplace_back(std::make_unique<BatteryAnswerResult>(

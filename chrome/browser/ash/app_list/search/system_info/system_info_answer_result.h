@@ -40,6 +40,7 @@ class SystemInfoAnswerResult : public ChromeSearchResult {
 
  private:
   SystemInfoCategory const system_info_category_;
+  ash::SystemInfoAnswerCardData answer_card_info_;
   const raw_ptr<Profile, ExperimentalAsh> profile_;
   const std::u16string query_;
 

@@ -305,8 +305,11 @@ views::Label* SetupChildLabelView(
   return label;
 }
 
-views::ProgressBar* SetupChildProgressBarView(views::FlexLayoutView* parent,
-                                              double value) {
+views::ProgressBar* SetupChildProgressBarView(
+    views::FlexLayoutView* parent,
+    double value,
+    absl::optional<double> upper_warning_limit,
+    absl::optional<double> lower_warning_limit) {
   views::ProgressBar* progress_bar_view =
       parent->AddChildView(std::make_unique<views::ProgressBar>());
   progress_bar_view->GetViewAccessibility().OverrideIsIgnored(true);
@@ -320,8 +323,15 @@ views::ProgressBar* SetupChildProgressBarView(views::FlexLayoutView* parent,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kUnbounded,
                                /*adjust_height_for_width=*/false));
-  progress_bar_view->SetForegroundColorId(
-      kColorAshSystemInfoBarChartColorForeground);
+
+  auto foreground_color =
+      ((upper_warning_limit.has_value() &&
+        value * 100 >= upper_warning_limit.value()) ||
+       (lower_warning_limit.has_value() &&
+        value * 100 <= lower_warning_limit.value()))
+          ? kColorAshSystemInfoBarChartWarningColorForeground
+          : kColorAshSystemInfoBarChartColorForeground;
+  progress_bar_view->SetForegroundColorId(foreground_color);
   progress_bar_view->SetBackgroundColorId(
       kColorAshSystemInfoBarChartColorBackground);
   return progress_bar_view;
@@ -1020,7 +1030,9 @@ void SearchResultView::UpdateProgressBarContainer() {
   if (result() && result()->is_system_info_card_bar_chart()) {
     is_progress_bar_answer_card_ = true;
     progress_bar_ = SetupChildProgressBarView(
-        progress_bar_container_, result()->bar_chart_value().value() / 100);
+        progress_bar_container_, result()->bar_chart_value().value() / 100.0,
+        result()->upper_limit_for_bar_chart(),
+        result()->lower_limit_for_bar_chart());
     text_container_->SetVisible(true);
     title_container_->SetVisible(false);
     title_and_details_container_->SetVisible(true);

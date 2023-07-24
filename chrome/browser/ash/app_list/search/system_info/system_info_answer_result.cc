@@ -33,8 +33,9 @@ SystemInfoAnswerResult::SystemInfoAnswerResult(
     const std::u16string& title,
     const std::u16string& description,
     SystemInfoCategory system_info_category,
-    const AnswerCardInfo& answer_card_info)
+    const ash::SystemInfoAnswerCardData& answer_card_info)
     : system_info_category_(system_info_category),
+      answer_card_info_(answer_card_info),
       profile_(profile),
       query_(query),
       url_path_(url_path) {
@@ -91,8 +92,8 @@ void SystemInfoAnswerResult::Open(int event_flags) {
 
 void SystemInfoAnswerResult::UpdateBarChartPercentage(
     const double bar_chart_percentage) {
-  AnswerCardInfo answer_card_info(bar_chart_percentage);
-  SetSystemInfoAnswerCardData(answer_card_info);
+  answer_card_info_.UpdateBarChartPercentage(bar_chart_percentage);
+  SetSystemInfoAnswerCardData(answer_card_info_);
 }
 
 }  // namespace app_list

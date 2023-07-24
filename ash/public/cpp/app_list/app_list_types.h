@@ -485,6 +485,9 @@ struct ASH_PUBLIC_EXPORT SystemInfoAnswerCardData {
   explicit SystemInfoAnswerCardData(double bar_chart_percentage);
 
   void SetDescriptionOnRight(const std::u16string& description_on_right);
+  void SetUpperLimitForBarChart(double upper_warning_limit_bar_chart);
+  void SetLowerLimitForBarChart(double lower_warning_limit_bar_chart);
+  void UpdateBarChartPercentage(double new_bar_chart_percentage);
 
   SystemInfoAnswerCardData(const SystemInfoAnswerCardData&);
   ~SystemInfoAnswerCardData();
@@ -496,6 +499,12 @@ struct ASH_PUBLIC_EXPORT SystemInfoAnswerCardData {
   // between 0 and 100. This is only set if the answer card is of type bar
   // chart.
   absl::optional<double> bar_chart_percentage;
+
+  // For System Info Answer Cards of bar chart type and upper or lower limit can
+  // be set. If the value of the bar chart goes above/ below this value then the
+  // bar chart turns from blue to red.
+  absl::optional<double> lower_warning_limit_bar_chart;
+  absl::optional<double> upper_warning_limit_bar_chart;
 
   // This is only set if the description has 2 components to it. This
   // description will be places on the right hand side of the details container.

@@ -54,8 +54,8 @@ void BatteryAnswerResult::PowerChanged(
   std::u16string power_time = CalculatePowerTime(power_supply_properties);
   int percent = ash::power_utils::GetRoundedBatteryPercent(
       power_supply_properties.battery_percent());
-  AnswerCardInfo answer_card_info(percent);
+  DCHECK(percent <= 100 && percent >= 0);
   UpdateTitleAndDetails(/*title=*/base::EmptyString16(), power_time);
-  SetSystemInfoAnswerCardData(answer_card_info);
+  UpdateBarChartPercentage(percent);
 }
 }  // namespace app_list

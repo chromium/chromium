@@ -54,6 +54,7 @@ namespace ash {
   E_CPONLY(kColorAshIconColorSecondaryBackground) \
   /* Colors for Bar Chart within System Info Answer Cards in the Launcher. */ \
   E_CPONLY(kColorAshSystemInfoBarChartColorForeground) \
+  E_CPONLY(kColorAshSystemInfoBarChartWarningColorForeground) \
   E_CPONLY(kColorAshSystemInfoBarChartColorBackground) \
   /* The default color for button labels. */ \
   E_CPONLY(kColorAshButtonLabelColor) \

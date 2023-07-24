@@ -559,6 +559,10 @@ TEST_F(SystemInfoCardProviderTest, Memory) {
   EXPECT_EQ(details2.GetText(), u"Memory 1.9 GB | 7.6 GB total");
   EXPECT_EQ(results()[0]->system_info_answer_card_data()->bar_chart_percentage,
             75);
+  EXPECT_EQ(results()[0]
+                ->system_info_answer_card_data()
+                ->upper_warning_limit_bar_chart.value(),
+            90);
 }
 
 TEST_F(SystemInfoCardProviderTest, MemoryProbeError) {

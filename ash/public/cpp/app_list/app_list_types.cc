@@ -245,6 +245,21 @@ void SystemInfoAnswerCardData::SetDescriptionOnRight(
   right_hand_description = description_on_right;
 }
 
+void SystemInfoAnswerCardData::SetUpperLimitForBarChart(double upper_limit) {
+  DCHECK(upper_limit <= 100 && upper_limit >= 0);
+  upper_warning_limit_bar_chart = upper_limit;
+}
+void SystemInfoAnswerCardData::SetLowerLimitForBarChart(double lower_limit) {
+  DCHECK(lower_limit <= 100 && lower_limit >= 0);
+  lower_warning_limit_bar_chart = lower_limit;
+}
+
+void SystemInfoAnswerCardData::UpdateBarChartPercentage(
+    double new_bar_chart_percentage) {
+  DCHECK(new_bar_chart_percentage <= 100 && new_bar_chart_percentage >= 0);
+  bar_chart_percentage = new_bar_chart_percentage;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // SearchResultTag:
 

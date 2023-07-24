@@ -5,11 +5,7 @@
 #include "chrome/browser/ash/app_list/search/system_info/memory_answer_result.h"
 
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "ash/public/cpp/power_utils.h"
-#include "base/functional/callback.h"
-#include "chrome/browser/ash/app_list/search/system_info/cpu_data.h"
 #include "chrome/browser/ash/app_list/search/system_info/system_info_answer_result.h"
-#include "chrome/browser/ash/app_list/search/system_info/system_info_util.h"
 
 namespace app_list {
 namespace {

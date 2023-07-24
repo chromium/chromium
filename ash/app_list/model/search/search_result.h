@@ -175,6 +175,20 @@ class APP_LIST_MODEL_EXPORT SearchResult {
                : absl::nullopt;
   }
 
+  absl::optional<double> upper_limit_for_bar_chart() const {
+    return is_system_info_card_bar_chart()
+               ? metadata_->system_info_answer_card_data
+                     ->upper_warning_limit_bar_chart
+               : absl::nullopt;
+  }
+
+  absl::optional<double> lower_limit_for_bar_chart() const {
+    return is_system_info_card_bar_chart()
+               ? metadata_->system_info_answer_card_data
+                     ->lower_warning_limit_bar_chart
+               : absl::nullopt;
+  }
+
   bool skip_update_animation() const {
     return metadata_->skip_update_animation;
   }

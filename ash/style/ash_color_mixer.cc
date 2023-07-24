@@ -701,6 +701,9 @@ void AddAshColorMixer(ui::ColorProvider* provider,
 
   mixer[kColorAshSystemInfoBarChartColorForeground] = {gfx::kGoogleBlue300};
 
+  mixer[kColorAshSystemInfoBarChartWarningColorForeground] = {
+      gfx::kGoogleRed300};
+
   mixer[kColorAshMultiSelectTextColor] =
       use_dark_color ? ui::ColorTransform(gfx::kGoogleBlue100)
                      : ui::ColorTransform(gfx::kGoogleBlue800);
