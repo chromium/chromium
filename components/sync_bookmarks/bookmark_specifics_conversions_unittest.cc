@@ -16,6 +16,7 @@
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/sync/base/client_tag_hash.h"
@@ -103,8 +104,7 @@ TEST(BookmarkSpecificsConversionsTest, ShouldCreateSpecificsFromBookmarkNode) {
       /*force_favicon_load=*/false);
   const sync_pb::BookmarkSpecifics& bm_specifics = specifics.bookmark();
   EXPECT_THAT(bm_specifics.guid(), Eq(node->uuid().AsLowercaseString()));
-  EXPECT_THAT(bm_specifics.parent_guid(),
-              Eq(bookmarks::BookmarkNode::kBookmarkBarNodeUuid));
+  EXPECT_THAT(bm_specifics.parent_guid(), Eq(bookmarks::kBookmarkBarNodeUuid));
   EXPECT_THAT(bm_specifics.type(), Eq(sync_pb::BookmarkSpecifics::URL));
   EXPECT_THAT(bm_specifics.legacy_canonicalized_title(), Eq(kTitle));
   EXPECT_THAT(GURL(bm_specifics.url()), Eq(kUrl));
@@ -144,8 +144,7 @@ TEST(BookmarkSpecificsConversionsTest,
       /*force_favicon_load=*/false);
   const sync_pb::BookmarkSpecifics& bm_specifics = specifics.bookmark();
   EXPECT_THAT(bm_specifics.guid(), Eq(node->uuid().AsLowercaseString()));
-  EXPECT_THAT(bm_specifics.parent_guid(),
-              Eq(bookmarks::BookmarkNode::kBookmarkBarNodeUuid));
+  EXPECT_THAT(bm_specifics.parent_guid(), Eq(bookmarks::kBookmarkBarNodeUuid));
   EXPECT_FALSE(bm_specifics.has_last_used_time_us());
 }
 
@@ -344,7 +343,7 @@ TEST(BookmarkSpecificsConversionsTest,
 
   // Parent UUID and unique position are ignored by
   // CreateBookmarkNodeFromSpecifics(), but are required here to pass DCHECKs.
-  bm_specifics.set_parent_guid(bookmarks::BookmarkNode::kBookmarkBarNodeUuid);
+  bm_specifics.set_parent_guid(bookmarks::kBookmarkBarNodeUuid);
   *bm_specifics.mutable_unique_position() = RandomUniquePosition();
 
   sync_pb::MetaInfo* meta_info1 = bm_specifics.add_meta_info();
@@ -404,7 +403,7 @@ TEST(BookmarkSpecificsConversionsTest, ShouldCreateFolderFromSpecifics) {
 
   // Parent UUID and unique position are ignored by
   // CreateBookmarkNodeFromSpecifics(), but are required here to pass DCHECKs.
-  bm_specifics.set_parent_guid(bookmarks::BookmarkNode::kBookmarkBarNodeUuid);
+  bm_specifics.set_parent_guid(bookmarks::kBookmarkBarNodeUuid);
   *bm_specifics.mutable_unique_position() = RandomUniquePosition();
 
   sync_pb::MetaInfo* meta_info1 = bm_specifics.add_meta_info();
@@ -471,7 +470,7 @@ TEST(BookmarkSpecificsConversionsTest,
 
   // Parent UUID and unique position are ignored by
   // CreateBookmarkNodeFromSpecifics(), but are required here to pass DCHECKs.
-  bm_specifics.set_parent_guid(bookmarks::BookmarkNode::kBookmarkBarNodeUuid);
+  bm_specifics.set_parent_guid(bookmarks::kBookmarkBarNodeUuid);
   *bm_specifics.mutable_unique_position() = RandomUniquePosition();
 
   sync_pb::MetaInfo* meta_info1 = bm_specifics.add_meta_info();
@@ -524,7 +523,7 @@ TEST(BookmarkSpecificsConversionsTest,
 
     // Parent UUID and unique position are ignored by
     // CreateBookmarkNodeFromSpecifics(), but are required here to pass DCHECKs.
-    bm_specifics.set_parent_guid(bookmarks::BookmarkNode::kBookmarkBarNodeUuid);
+    bm_specifics.set_parent_guid(bookmarks::kBookmarkBarNodeUuid);
     *bm_specifics.mutable_unique_position() = RandomUniquePosition();
 
     const bookmarks::BookmarkNode* node =
@@ -553,7 +552,7 @@ TEST(BookmarkSpecificsConversionsTest,
 
   // Parent UUID and unique position are ignored by
   // CreateBookmarkNodeFromSpecifics(), but are required here to pass DCHECKs.
-  bm_specifics.set_parent_guid(bookmarks::BookmarkNode::kBookmarkBarNodeUuid);
+  bm_specifics.set_parent_guid(bookmarks::kBookmarkBarNodeUuid);
   *bm_specifics.mutable_unique_position() = RandomUniquePosition();
 
   std::unique_ptr<bookmarks::BookmarkModel> model =
@@ -851,7 +850,7 @@ TEST(BookmarkSpecificsConversionsTest,
 
 TEST(BookmarkSpecificsConversionsTest,
      ShouldBeInvalidBookmarkSpecificsWithBannedUuid) {
-  ASSERT_THAT(bookmarks::BookmarkNode::kBannedUuidDueToPastSyncBug,
+  ASSERT_THAT(bookmarks::kBannedUuidDueToPastSyncBug,
               Eq(InferGuidFromLegacyOriginatorId(
                      /*originator_cache_guid=*/"",
                      /*originator_client_item_id=*/"")
@@ -862,7 +861,7 @@ TEST(BookmarkSpecificsConversionsTest,
   sync_pb::BookmarkSpecifics* bm_specifics = specifics.mutable_bookmark();
   bm_specifics->set_type(sync_pb::BookmarkSpecifics::FOLDER);
   *bm_specifics->mutable_unique_position() = RandomUniquePosition();
-  bm_specifics->set_guid(bookmarks::BookmarkNode::kBannedUuidDueToPastSyncBug);
+  bm_specifics->set_guid(bookmarks::kBannedUuidDueToPastSyncBug);
   EXPECT_FALSE(IsValidBookmarkSpecifics(*bm_specifics));
   histogram_tester.ExpectBucketCount(
       "Sync.InvalidBookmarkSpecifics",

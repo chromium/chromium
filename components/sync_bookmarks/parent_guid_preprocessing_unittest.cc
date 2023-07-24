@@ -9,6 +9,7 @@
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
@@ -80,11 +81,11 @@ TEST(ParentGuidPreprocessingTest, ShouldReturnGuidForPermanentFolders) {
   updates.back().entity.server_defined_unique_tag = "other_bookmarks";
 
   EXPECT_THAT(GetGuidForSyncIdInUpdatesForTesting(updates, kBookmarkBarId),
-              Eq(bookmarks::BookmarkNode::kBookmarkBarNodeUuid));
+              Eq(bookmarks::kBookmarkBarNodeUuid));
   EXPECT_THAT(GetGuidForSyncIdInUpdatesForTesting(updates, kMobileBookmarksId),
-              Eq(bookmarks::BookmarkNode::kMobileBookmarksNodeUuid));
+              Eq(bookmarks::kMobileBookmarksNodeUuid));
   EXPECT_THAT(GetGuidForSyncIdInUpdatesForTesting(updates, kOtherBookmarksId),
-              Eq(bookmarks::BookmarkNode::kOtherBookmarksNodeUuid));
+              Eq(bookmarks::kOtherBookmarksNodeUuid));
 }
 
 TEST(ParentGuidPreprocessingTest, ShouldPopulateParentGuidInInitialUpdates) {
@@ -114,7 +115,7 @@ TEST(ParentGuidPreprocessingTest, ShouldPopulateParentGuidInInitialUpdates) {
 
   EXPECT_THAT(updates[0].entity.specifics.bookmark().parent_guid(), Eq(""));
   EXPECT_THAT(updates[1].entity.specifics.bookmark().parent_guid(),
-              Eq(bookmarks::BookmarkNode::kBookmarkBarNodeUuid));
+              Eq(bookmarks::kBookmarkBarNodeUuid));
   EXPECT_THAT(updates[2].entity.specifics.bookmark().parent_guid(),
               Eq(kParentFolderUuid));
 }
@@ -147,7 +148,7 @@ TEST(ParentGuidPreprocessingTest,
   // Although |parent_id| points to bookmarks bar, the |parent_guid| field
   // should prevail.
   ASSERT_THAT(GetGuidForSyncIdInUpdatesForTesting(updates, kBookmarkBarId),
-              Eq(bookmarks::BookmarkNode::kBookmarkBarNodeUuid));
+              Eq(bookmarks::kBookmarkBarNodeUuid));
 
   PopulateParentGuidInSpecifics(/*tracker=*/nullptr, &updates);
 
@@ -201,7 +202,7 @@ TEST(ParentGuidPreprocessingTest,
   EXPECT_THAT(updates[0].entity.specifics.bookmark().parent_guid(),
               Eq(tracked_node.uuid().AsLowercaseString()));
   EXPECT_THAT(updates[1].entity.specifics.bookmark().parent_guid(),
-              Eq(bookmarks::BookmarkNode::kBookmarkBarNodeUuid));
+              Eq(bookmarks::kBookmarkBarNodeUuid));
 }
 
 TEST(ParentGuidPreprocessingTest,

@@ -12,6 +12,7 @@
 #include "base/strings/string_piece.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
@@ -73,13 +74,13 @@ base::Uuid TryGetParentGuidFromTracker(
 base::StringPiece GetGuidForEntity(const syncer::EntityData& entity) {
   // Special-case permanent folders, which may not include a GUID in specifics.
   if (entity.server_defined_unique_tag == kBookmarkBarTag) {
-    return bookmarks::BookmarkNode::kBookmarkBarNodeUuid;
+    return bookmarks::kBookmarkBarNodeUuid;
   }
   if (entity.server_defined_unique_tag == kOtherBookmarksTag) {
-    return bookmarks::BookmarkNode::kOtherBookmarksNodeUuid;
+    return bookmarks::kOtherBookmarksNodeUuid;
   }
   if (entity.server_defined_unique_tag == kMobileBookmarksTag) {
-    return bookmarks::BookmarkNode::kMobileBookmarksNodeUuid;
+    return bookmarks::kMobileBookmarksNodeUuid;
   }
   // Fall back to the regular case, i.e. GUID in specifics, or an empty value
   // if not present (including tombstones).
@@ -214,12 +215,12 @@ void PopulateParentGuidInSpecifics(const SyncedBookmarkTracker* tracker,
     // SyncedBookmarkTracker. Since this is prone to change in the future, the
     // DCHECK below is added to avoid subtle bugs, without relying exclusively
     // on integration tests that exercise legacy data..
-    DCHECK(tracker->GetEntityForUuid(base::Uuid::ParseLowercase(
-        bookmarks::BookmarkNode::kBookmarkBarNodeUuid)));
-    DCHECK(tracker->GetEntityForUuid(base::Uuid::ParseLowercase(
-        bookmarks::BookmarkNode::kOtherBookmarksNodeUuid)));
-    DCHECK(tracker->GetEntityForUuid(base::Uuid::ParseLowercase(
-        bookmarks::BookmarkNode::kMobileBookmarksNodeUuid)));
+    DCHECK(tracker->GetEntityForUuid(
+        base::Uuid::ParseLowercase(bookmarks::kBookmarkBarNodeUuid)));
+    DCHECK(tracker->GetEntityForUuid(
+        base::Uuid::ParseLowercase(bookmarks::kOtherBookmarksNodeUuid)));
+    DCHECK(tracker->GetEntityForUuid(
+        base::Uuid::ParseLowercase(bookmarks::kMobileBookmarksNodeUuid)));
 
     PopulateParentGuidInSpecificsWithTracker(tracker, updates);
     return;

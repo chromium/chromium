@@ -22,6 +22,7 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -127,11 +128,11 @@ bool BookmarkCodec::Decode(const base::Value::Dict& value,
                            int64_t* max_id,
                            std::string* sync_metadata_str) {
   ids_.clear();
-  uuids_ = {base::Uuid::ParseLowercase(BookmarkNode::kRootNodeUuid),
-            base::Uuid::ParseLowercase(BookmarkNode::kBookmarkBarNodeUuid),
-            base::Uuid::ParseLowercase(BookmarkNode::kOtherBookmarksNodeUuid),
-            base::Uuid::ParseLowercase(BookmarkNode::kMobileBookmarksNodeUuid),
-            base::Uuid::ParseLowercase(BookmarkNode::kManagedNodeUuid)};
+  uuids_ = {base::Uuid::ParseLowercase(kRootNodeUuid),
+            base::Uuid::ParseLowercase(kBookmarkBarNodeUuid),
+            base::Uuid::ParseLowercase(kOtherBookmarksNodeUuid),
+            base::Uuid::ParseLowercase(kMobileBookmarksNodeUuid),
+            base::Uuid::ParseLowercase(kManagedNodeUuid)};
   ids_reassigned_ = false;
   uuids_reassigned_ = false;
   ids_valid_ = true;
@@ -318,7 +319,7 @@ bool BookmarkCodec::DecodeNode(const base::Value::Dict& value,
       uuids_reassigned_ = true;
     }
 
-    if (uuid.AsLowercaseString() == BookmarkNode::kBannedUuidDueToPastSyncBug) {
+    if (uuid.AsLowercaseString() == kBannedUuidDueToPastSyncBug) {
       uuid = base::Uuid::GenerateRandomV4();
       uuids_reassigned_ = true;
     }
