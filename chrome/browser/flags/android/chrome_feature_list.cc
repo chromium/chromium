@@ -735,7 +735,7 @@ BASE_FEATURE(kDrawEdgeToEdge,
              "DrawEdgeToEdge",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEmptyStates, "EmptyStates", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEmptyStates, "EmptyStates", base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExperimentsForAgsa,
              "ExperimentsForAgsa",

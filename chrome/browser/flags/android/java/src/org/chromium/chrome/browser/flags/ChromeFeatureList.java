@@ -544,7 +544,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sDragDropIntoOmnibox =
             new CachedFlag(DRAG_DROP_INTO_OMNIBOX, false);
     public static final CachedFlag sEarlyLibraryLoad = new CachedFlag(EARLY_LIBRARY_LOAD, true);
-    public static final CachedFlag sEmptyStates = new CachedFlag(EMPTY_STATES, false);
+    public static final CachedFlag sEmptyStates = new CachedFlag(EMPTY_STATES, true);
     public static final CachedFlag sExperimentsForAgsa = new CachedFlag(EXPERIMENTS_FOR_AGSA, true);
     public static final CachedFlag sFeedLoadingPlaceholder =
             new CachedFlag(FEED_LOADING_PLACEHOLDER, false);
