@@ -136,9 +136,13 @@ class UrlBarProperties {
     public static final WritableObjectPropertyKey<WindowDelegate> WINDOW_DELEGATE =
             new WritableObjectPropertyKey<>();
 
+    /** Specifies whether suggestions are showing below the URL bar. */
+    public static final WritableBooleanPropertyKey HAS_URL_SUGGESTIONS =
+            new WritableBooleanPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {ACTION_MODE_CALLBACK, ALLOW_FOCUS, AUTOCOMPLETE_TEXT, DELEGATE,
                     FOCUS_CHANGE_CALLBACK, SHOW_CURSOR, TEXT_CONTEXT_MENU_DELEGATE, TEXT_STATE,
                     URL_DIRECTION_LISTENER, URL_TEXT_CHANGE_LISTENER, BRANDED_COLOR_SCHEME,
-                    INCOGNITO_COLORS_ENABLED, WINDOW_DELEGATE};
+                    INCOGNITO_COLORS_ENABLED, WINDOW_DELEGATE, HAS_URL_SUGGESTIONS};
 }

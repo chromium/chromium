@@ -317,6 +317,11 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
         return stringToPaste;
     }
 
+    /** @param hasSuggestions Whether suggestions are showing in the URL bar. */
+    public void onUrlBarSuggestionsChanged(boolean hasSuggestions) {
+        mModel.set(UrlBarProperties.HAS_URL_SUGGESTIONS, hasSuggestions);
+    }
+
     @VisibleForTesting
     protected String sanitizeTextForPaste(String text) {
         return OmniboxViewUtil.sanitizeTextForPaste(text);

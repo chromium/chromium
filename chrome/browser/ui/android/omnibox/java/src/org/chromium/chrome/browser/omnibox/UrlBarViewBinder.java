@@ -97,6 +97,15 @@ class UrlBarViewBinder {
             view.setUrlTextChangeListener(model.get(UrlBarProperties.URL_TEXT_CHANGE_LISTENER));
         } else if (UrlBarProperties.WINDOW_DELEGATE.equals(propertyKey)) {
             view.setWindowDelegate(model.get(UrlBarProperties.WINDOW_DELEGATE));
+        } else if (UrlBarProperties.HAS_URL_SUGGESTIONS.equals(propertyKey)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                view.setHandwritingBoundsOffsets(view.getHandwritingBoundsOffsetLeft(),
+                        view.getHandwritingBoundsOffsetTop(),
+                        view.getHandwritingBoundsOffsetRight(),
+                        model.get(UrlBarProperties.HAS_URL_SUGGESTIONS)
+                                ? view.getHandwritingBoundsOffsetTop()
+                                : 0);
+            }
         }
     }
 

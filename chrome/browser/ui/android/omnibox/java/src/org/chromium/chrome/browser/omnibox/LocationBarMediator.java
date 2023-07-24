@@ -445,6 +445,9 @@ class LocationBarMediator
                     mAutocompleteCoordinator.getCurrentNativeAutocompleteResult(),
                     mProfileSupplier.get(), mLocationBarDataProvider.getTab());
         }
+
+        mUrlCoordinator.onUrlBarSuggestionsChanged(
+                mAutocompleteCoordinator.getSuggestionCount() != 0);
     }
 
     /* package */ void loadUrl(String url, int transition, long inputStart) {

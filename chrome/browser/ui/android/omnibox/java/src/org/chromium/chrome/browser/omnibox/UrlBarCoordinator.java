@@ -253,6 +253,11 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
         }
     }
 
+    /** @param hasSuggestions Whether suggestions are showing in the URL bar. */
+    public void onUrlBarSuggestionsChanged(boolean hasSuggestions) {
+        mMediator.onUrlBarSuggestionsChanged(hasSuggestions);
+    }
+
     /**
      * @param softInputMode The software input resize mode.
      * @param delay Delay the change in input mode.
