@@ -191,13 +191,6 @@ void OnLacrosActiveTabUrlFetched(
                            description_placeholder_text, category_tag,
                            extra_diagnostics, std::move(autofill_metadata));
 }
-
-void LaunchFeedbackSWA(Profile* profile, const GURL& url) {
-  ash::SystemAppLaunchParams params;
-  params.url = url;
-  ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::OS_FEEDBACK,
-                               std::move(params));
-}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -237,21 +230,12 @@ void RequestFeedbackFlow(const GURL& page_url,
       base::FeatureList::IsEnabled(ash::features::kOsFeedback)) {
     // TODO(crbug.com/1407646): Include autofill metadata into CrOS new feedback
     // tool.
-    GURL url = BuildFeedbackUrl(extra_diagnostics, description_template,
-                                description_placeholder_text, category_tag,
-                                page_url, source, std::move(autofill_metadata));
-
-    // Wait for all SWAs to be registered before continuing.
-    // TODO(b/286291927): Figure out how to get the SWA manager for the guest
-    // mode profile and perhaps other exotic ones.
-    ash::SystemWebAppManager* swa_manager =
-        ash::SystemWebAppManager::Get(profile);
-    if (swa_manager) {
-      swa_manager->on_apps_synchronized().Post(
-          FROM_HERE, base::BindOnce(&LaunchFeedbackSWA, profile, url));
-    } else {
-      LaunchFeedbackSWA(profile, url);
-    }
+    ash::SystemAppLaunchParams params;
+    params.url = BuildFeedbackUrl(
+        extra_diagnostics, description_template, description_placeholder_text,
+        category_tag, page_url, source, std::move(autofill_metadata));
+    ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::OS_FEEDBACK,
+                                 std::move(params));
     return;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

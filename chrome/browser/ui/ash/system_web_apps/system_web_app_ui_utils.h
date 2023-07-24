@@ -38,6 +38,7 @@ absl::optional<apps::AppLaunchParams> CreateSystemWebAppLaunchParams(
 // Additional parameters to control LaunchSystemAppAsync behaviors.
 struct SystemAppLaunchParams {
   SystemAppLaunchParams();
+  SystemAppLaunchParams(const SystemAppLaunchParams& params);
   ~SystemAppLaunchParams();
 
   // If provided launches System Apps into |url|, instead of its start_url (as
@@ -73,9 +74,9 @@ struct SystemAppLaunchParams {
 // In tests, remember to use content::TestNavigationObserver to wait for the
 // navigation.
 //
-// NOTE: LaunchSystemWebAppAsync may have no effect if called before the initial
-// registration of system web apps has completed. To avoid this, first await the
-// ash::SystemWebAppManager::on_apps_synchronized event.
+// NOTE: LaunchSystemWebAppAsync waits for the initial registration of system
+// web apps to complete (the ash::SystemWebAppManager::on_apps_synchronized
+// event).
 void LaunchSystemWebAppAsync(
     Profile* profile,
     SystemWebAppType type,

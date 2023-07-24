@@ -55,8 +55,12 @@ IN_PROC_BROWSER_TEST_P(ShortcutCustomizationAppIntegrationTest,
                        LaunchMetricsTest) {
   WaitForTestSystemAppInstall();
 
+  const GURL url(ash::kChromeUIShortcutCustomizationAppURL);
+  content::TestNavigationObserver observer(url);
+  observer.StartWatchingNewWebContents();
   ash::LaunchSystemWebAppAsync(profile(),
                                ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION);
+  observer.Wait();
 
   histogram_tester_.ExpectUniqueSample(
       "Apps.DefaultAppLaunch.FromChromeInternal", 44, 1);
