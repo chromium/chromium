@@ -6566,6 +6566,49 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Commerce.PriceTracking.PushNotification.NotificationTapped">
+  <owner>ayman@chromium.org</owner>
+  <owner>davidjm@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when the user taps on a notification indicating that a price drop
+    has occurred on a shopping website they are tracking.
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.PushNotification.Received"
+    not_user_triggered="true">
+  <owner>ayman@chromium.org</owner>
+  <owner>davidjm@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when a notification that a price drop has occurred for a shopping
+    website the user is tracking is received.
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.PushNotification.UnTrackProductTapped">
+  <owner>ayman@chromium.org</owner>
+  <owner>davidjm@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when the user taps 'Untrack product' upon receiving a notification
+    that the price has dropped for a shopping URL the user is tracking. The user
+    can access 'Untrack product' by long pressing on the notififcation.
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.PushNotification.VisitSiteTapped">
+  <owner>ayman@chromium.org</owner>
+  <owner>davidjm@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when the user taps 'Visit site' upon receiving a notification that
+    the price has dropped for a shopping URL the user is tracking. The user can
+    access 'Visit site' by long pressing on the notififcation.
+  </description>
+</action>
+
 <action name="Commerce.PriceTracking.SidePanel.ClickedTrackedProduct">
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
