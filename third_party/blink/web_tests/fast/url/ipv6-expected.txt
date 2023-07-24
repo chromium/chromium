@@ -23,7 +23,7 @@ PASS canonicalize('http://[1::2:0:0:3:0]/') is 'http://[1::2:0:0:3:0]/'
 FAIL canonicalize('http://[::eeee:192.168.0.1]/') should be http://[::eeee:192.168.0.1]/. Was http://[::eeee:c0a8:1]/.
 FAIL canonicalize('http://[2001::192.168.0.1]/') should be http://[2001::192.168.0.1]/. Was http://[2001::c0a8:1]/.
 PASS canonicalize('http://[1:2:192.168.0.1:5:6]/') is 'http://[1:2:192.168.0.1:5:6]/'
-PASS canonicalize('http://[::ffff:192.1.2]/') is 'http://[::ffff:c001:2]/'
+PASS canonicalize('http://[::ffff:192.1.2]/') is 'http://[::ffff:192.1.2]/'
 PASS canonicalize('http://[::ffff:0xC0.0Xa8.0x0.0x1]/') is 'http://[::ffff:c0a8:1]/'
 PASS canonicalize('http://[0:0::0:0:8]/') is 'http://[::8]/'
 PASS canonicalize('http://[2001:db8::1]/') is 'http://[2001:db8::1]/'

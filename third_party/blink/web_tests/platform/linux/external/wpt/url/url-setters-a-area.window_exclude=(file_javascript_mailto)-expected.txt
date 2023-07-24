@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 443 tests; 287 PASS, 156 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 443 tests; 299 PASS, 144 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS <a>: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged.
 PASS <area>: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged.
@@ -181,12 +181,12 @@ PASS <a>: Setting <http://example.net/>.host = '[google.com]' Broken IPv6
 PASS <area>: Setting <http://example.net/>.host = '[google.com]' Broken IPv6
 PASS <a>: Setting <http://example.net/>.host = '[::1.2.3.4x]'
 PASS <area>: Setting <http://example.net/>.host = '[::1.2.3.4x]'
-FAIL <a>: Setting <http://example.net/>.host = '[::1.2.3.]' assert_equals: expected "http://example.net/" but got "http://[::102:3]/"
-FAIL <area>: Setting <http://example.net/>.host = '[::1.2.3.]' assert_equals: expected "http://example.net/" but got "http://[::102:3]/"
-FAIL <a>: Setting <http://example.net/>.host = '[::1.2.]' assert_equals: expected "http://example.net/" but got "http://[::100:2]/"
-FAIL <area>: Setting <http://example.net/>.host = '[::1.2.]' assert_equals: expected "http://example.net/" but got "http://[::100:2]/"
-FAIL <a>: Setting <http://example.net/>.host = '[::1.]' assert_equals: expected "http://example.net/" but got "http://[::1]/"
-FAIL <area>: Setting <http://example.net/>.host = '[::1.]' assert_equals: expected "http://example.net/" but got "http://[::1]/"
+PASS <a>: Setting <http://example.net/>.host = '[::1.2.3.]'
+PASS <area>: Setting <http://example.net/>.host = '[::1.2.3.]'
+PASS <a>: Setting <http://example.net/>.host = '[::1.2.]'
+PASS <area>: Setting <http://example.net/>.host = '[::1.2.]'
+PASS <a>: Setting <http://example.net/>.host = '[::1.]'
+PASS <area>: Setting <http://example.net/>.host = '[::1.]'
 FAIL <a>: Setting <sc://test@test/>.host = '' assert_equals: expected "test" but got ""
 FAIL <area>: Setting <sc://test@test/>.host = '' assert_equals: expected "test" but got ""
 FAIL <a>: Setting <sc://test:12/>.host = '' assert_equals: expected "test:12" but got ""
@@ -255,12 +255,12 @@ PASS <a>: Setting <http://example.net/>.hostname = '[google.com]' Broken IPv6
 PASS <area>: Setting <http://example.net/>.hostname = '[google.com]' Broken IPv6
 PASS <a>: Setting <http://example.net/>.hostname = '[::1.2.3.4x]'
 PASS <area>: Setting <http://example.net/>.hostname = '[::1.2.3.4x]'
-FAIL <a>: Setting <http://example.net/>.hostname = '[::1.2.3.]' assert_equals: expected "http://example.net/" but got "http://[::102:3]/"
-FAIL <area>: Setting <http://example.net/>.hostname = '[::1.2.3.]' assert_equals: expected "http://example.net/" but got "http://[::102:3]/"
-FAIL <a>: Setting <http://example.net/>.hostname = '[::1.2.]' assert_equals: expected "http://example.net/" but got "http://[::100:2]/"
-FAIL <area>: Setting <http://example.net/>.hostname = '[::1.2.]' assert_equals: expected "http://example.net/" but got "http://[::100:2]/"
-FAIL <a>: Setting <http://example.net/>.hostname = '[::1.]' assert_equals: expected "http://example.net/" but got "http://[::1]/"
-FAIL <area>: Setting <http://example.net/>.hostname = '[::1.]' assert_equals: expected "http://example.net/" but got "http://[::1]/"
+PASS <a>: Setting <http://example.net/>.hostname = '[::1.2.3.]'
+PASS <area>: Setting <http://example.net/>.hostname = '[::1.2.3.]'
+PASS <a>: Setting <http://example.net/>.hostname = '[::1.2.]'
+PASS <area>: Setting <http://example.net/>.hostname = '[::1.2.]'
+PASS <a>: Setting <http://example.net/>.hostname = '[::1.]'
+PASS <area>: Setting <http://example.net/>.hostname = '[::1.]'
 FAIL <a>: Setting <sc://test@test/>.hostname = '' assert_equals: expected "test" but got ""
 FAIL <area>: Setting <sc://test@test/>.hostname = '' assert_equals: expected "test" but got ""
 FAIL <a>: Setting <sc://test:12/>.hostname = '' assert_equals: expected "test:12" but got ""

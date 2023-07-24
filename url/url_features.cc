@@ -18,7 +18,7 @@ BASE_FEATURE(kRecordIDNA2008Metrics,
 
 BASE_FEATURE(kStrictIPv4EmbeddedIPv6AddressParsing,
              "StrictIPv4EmbeddedIPv6AddressParsing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Kill switch for crbug.com/1220361.
 BASE_FEATURE(kResolveBareFragmentWithColonOnNonHierarchical,

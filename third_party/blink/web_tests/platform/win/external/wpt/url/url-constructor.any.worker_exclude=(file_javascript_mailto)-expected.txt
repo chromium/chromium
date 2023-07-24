@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 674 tests; 492 PASS, 182 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 674 tests; 496 PASS, 178 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -77,9 +77,7 @@ PASS Parsing: <http://2001::1]> against <http://example.org/foo/bar>
 PASS Parsing: <http://2001::1]:80> against <http://example.org/foo/bar>
 PASS Parsing: <http://[2001::1]> against <http://example.org/foo/bar>
 PASS Parsing: <http://[::127.0.0.1]> against <http://example.org/foo/bar>
-FAIL Parsing: <http://[::127.0.0.1.]> against <http://example.org/foo/bar> assert_throws_js: function "function() {
-          new URL(expected.input, base);
-        }" did not throw
+PASS Parsing: <http://[::127.0.0.1.]> against <http://example.org/foo/bar>
 PASS Parsing: <http://[0:0:0:0:0:0:13.1.68.3]> against <http://example.org/foo/bar>
 PASS Parsing: <http://[2001::1]:80> against <http://example.org/foo/bar>
 PASS Parsing: <http:/example.com/> against <http://example.org/foo/bar>
@@ -300,16 +298,10 @@ FAIL Parsing: <h://.> without base assert_equals: href expected "h://." but got 
 PASS Parsing: <http://[www.google.com]/> without base
 PASS Parsing: <http://[google.com]> against <http://other.com/>
 PASS Parsing: <http://[::1.2.3.4x]> against <http://other.com/>
-FAIL Parsing: <http://[::1.2.3.]> against <http://other.com/> assert_throws_js: function "function() {
-          new URL(expected.input, base);
-        }" did not throw
-FAIL Parsing: <http://[::1.2.]> against <http://other.com/> assert_throws_js: function "function() {
-          new URL(expected.input, base);
-        }" did not throw
+PASS Parsing: <http://[::1.2.3.]> against <http://other.com/>
+PASS Parsing: <http://[::1.2.]> against <http://other.com/>
 PASS Parsing: <http://[::.1.2]> against <http://other.com/>
-FAIL Parsing: <http://[::1.]> against <http://other.com/> assert_throws_js: function "function() {
-          new URL(expected.input, base);
-        }" did not throw
+PASS Parsing: <http://[::1.]> against <http://other.com/>
 PASS Parsing: <http://[::.1]> against <http://other.com/>
 FAIL Parsing: <http://[::%31]> against <http://other.com/> assert_throws_js: function "function() {
           new URL(expected.input, base);
