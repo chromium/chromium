@@ -235,6 +235,7 @@ enum class ToolbarKind {
 }  // anonymous namespace
 
 @interface BrowserCoordinator () <BrowserCoordinatorCommands,
+                                  BubblePresenterDelegate,
                                   DefaultBrowserPromoCommands,
                                   DefaultPromoNonModalPresentationDelegate,
                                   EnterprisePromptCoordinatorDelegate,
@@ -242,9 +243,11 @@ enum class ToolbarKind {
                                   NetExportTabHelperDelegate,
                                   NewTabPageCommands,
                                   NewTabPageTabHelperDelegate,
+                                  OverscrollActionsControllerDelegate,
                                   PageInfoCommands,
                                   PageInfoPresentation,
                                   PasswordBreachCommands,
+                                  PasswordControllerDelegate,
                                   PasswordProtectionCommands,
                                   PasswordSettingsCoordinatorDelegate,
                                   PasswordSuggestionCommands,
@@ -261,10 +264,7 @@ enum class ToolbarKind {
                                   ToolbarAccessoryCoordinatorDelegate,
                                   URLLoadingDelegate,
                                   WebContentCommands,
-                                  WebNavigationNTPDelegate,
-                                  BubblePresenterDelegate,
-                                  OverscrollActionsControllerDelegate,
-                                  PasswordControllerDelegate>
+                                  WebNavigationNTPDelegate>
 
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
