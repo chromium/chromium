@@ -668,6 +668,34 @@ base::Value::Dict GetExceptionForPage(
   return exception;
 }
 
+int GetDaysToExpiration(base::Time expiration_timestamp) {
+  // All storage exceptions should have an expiration date. But in case they
+  // don't, let's return a valid number.
+  if (expiration_timestamp.is_null()) {
+    return 0;
+  }
+
+  const base::TimeDelta time_diff =
+      expiration_timestamp.LocalMidnight() - base::Time::Now().LocalMidnight();
+
+  // Only exceptions that haven't expired should reach this function.
+  // However, there is an edge case where an exception could expire between
+  // being fetched and this calculation. So let's always return a valid number,
+  // zero.
+  return std::max(time_diff.InDays(), 0);
+}
+
+std::u16string GetStorageAccessEmbeddingDescription(
+    StorageAccessEmbeddingException embedding_sa_exception) {
+  if (embedding_sa_exception.is_embargoed) {
+    return l10n_util::GetStringUTF16(
+        IDS_PAGE_INFO_PERMISSION_AUTOMATICALLY_BLOCKED);
+  }
+  return l10n_util::GetPluralStringFUTF16(
+      IDS_SETTINGS_EXPIRES_AFTER_TIME_LABEL,
+      GetDaysToExpiration(embedding_sa_exception.expiration));
+}
+
 base::Value::Dict GetStorageAccessExceptionForPage(
     Profile* profile,
     const ContentSettingsPattern& pattern,
@@ -702,9 +730,8 @@ base::Value::Dict GetStorageAccessExceptionForPage(
     // TODO(http://b/289788055): Remove wildcards.
     embedding_exception.Set(kEmbeddingDisplayName, embedding_exception_origin);
 
-    // TODO(http://b/288405540): Add correct description according to expiration
-    // and embargoed status.
-    embedding_exception.Set(kDescription, "");
+    embedding_exception.Set(kDescription, GetStorageAccessEmbeddingDescription(
+                                              embedding_sa_exception));
     embedding_exception.Set(kIncognito, embedding_sa_exception.is_incognito);
     embedding_origins.Append(std::move(embedding_exception));
   }
@@ -783,9 +810,9 @@ void GetRawExceptionsForContentSettingsType(
       }
     }
 
-    all_patterns_settings[{setting.primary_pattern, setting.source}]
-                         [{setting.secondary_pattern, setting.incognito}] = {
-                             content_setting, /*is_embargoed=*/false};
+    all_patterns_settings[{setting.primary_pattern, setting.source}][{
+        setting.secondary_pattern, setting.incognito}] = {
+        content_setting, /*is_embargoed=*/false, setting.metadata.expiration()};
   }
 
   permissions::PermissionDecisionAutoBlocker* auto_blocker =
@@ -809,7 +836,8 @@ void GetRawExceptionsForContentSettingsType(
                                   type)) {
       all_patterns_settings[{setting.primary_pattern, setting.source}]
                            [{setting.secondary_pattern, setting.incognito}] = {
-                               CONTENT_SETTING_BLOCK, /*is_embargoed=*/true};
+                               CONTENT_SETTING_BLOCK, /*is_embargoed=*/true,
+                               setting.metadata.expiration()};
       ;
     }
   }
@@ -911,8 +939,9 @@ void GetStorageAccessExceptions(ContentSetting content_setting,
         continue;
       }
 
-      sa_exceptions.push_back(
-          {secondary_pattern, is_incognito, site_exception_info.is_embargoed});
+      sa_exceptions.push_back({secondary_pattern, is_incognito,
+                               site_exception_info.is_embargoed,
+                               site_exception_info.expiration});
     }
 
     if (sa_exceptions.empty()) {

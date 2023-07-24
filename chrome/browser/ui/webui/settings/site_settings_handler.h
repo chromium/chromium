@@ -213,6 +213,24 @@ class SiteSettingsHandler
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, HandleGetExtensionName);
 #endif
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, IsolatedWebAppUsageInfo);
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, StorageAccessExceptions);
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
+                           StorageAccessExceptions_DiffType);
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
+                           StorageAccessExceptions_SamePrimaryPattern);
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
+                           StorageAccessExceptions_DiffPatterns);
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
+                           StorageAccessExceptions_Incognito);
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
+                           StorageAccessExceptions_NormalAndIncognito);
+  FRIEND_TEST_ALL_PREFIXES(
+      SiteSettingsHandlerTest,
+      StorageAccessExceptions_NormalAndIncognito_SamePatterns);
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
+                           StorageAccessExceptions_Description_IsEmbargoed);
+  FRIEND_TEST_ALL_PREFIXES(StorageAccessSiteSettingsHandlerTest,
+                           StorageAccessExceptions_Description);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerIsolatedWebAppTest, ZoomLevel);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerIsolatedWebAppTest,
                            ZoomLevelsSortedByAppName);

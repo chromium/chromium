@@ -105,9 +105,9 @@ class SiteSettingsHelperTest : public testing::Test {
     service->RecordNotificationDisplayed(url, total_count);
   }
 
-  base::Time GetReferenceTime() {
+  static base::Time GetReferenceTime() {
     base::Time time;
-    EXPECT_TRUE(base::Time::FromString("Sat, 1 Sep 2018 11:00:00 GMT", &time));
+    EXPECT_TRUE(base::Time::FromString("Sat, 1 Sep 2018 11:00:00", &time));
     return time;
   }
 
@@ -599,6 +599,60 @@ TEST_F(SiteSettingsHelperTest, CookieExceptions) {
         << "Privacy Sandbox Settings 4 "
         << (feature_state ? "enabled" : "disabled");
   }
+}
+
+TEST_F(SiteSettingsHelperTest, GetDaysToExpiration) {
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &SiteSettingsHelperTest::GetReferenceTime,
+      /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr);
+
+  int days_to_expiration = 0;
+  int expiration =
+      GetDaysToExpiration(GetReferenceTime() + base::Days(days_to_expiration));
+
+  EXPECT_EQ(days_to_expiration, expiration);
+}
+
+TEST_F(SiteSettingsHelperTest, GetDaysToExpiration_Tomorrow) {
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &SiteSettingsHelperTest::GetReferenceTime,
+      /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr);
+
+  int days_to_expiration = 1;
+  int expiration =
+      GetDaysToExpiration(GetReferenceTime() + base::Days(days_to_expiration));
+
+  EXPECT_EQ(1, expiration);
+}
+
+TEST_F(SiteSettingsHelperTest,
+       GetDaysToExpiration_Tomorrow_LessThan24_AfterMidnight) {
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &SiteSettingsHelperTest::GetReferenceTime,
+      /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr);
+
+  int expiration = GetDaysToExpiration(GetReferenceTime() + base::Hours(14));
+
+  EXPECT_EQ(1, expiration);
+}
+
+TEST_F(SiteSettingsHelperTest,
+       GetDaysToExpiration_Tomorrow_LessThan24_BeforeMidnight) {
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &SiteSettingsHelperTest::GetReferenceTime,
+      /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr);
+
+  int expiration = GetDaysToExpiration(GetReferenceTime() + base::Hours(12));
+  EXPECT_EQ(0, expiration);
+}
+
+TEST_F(SiteSettingsHelperTest, GetDaysToExpiration_Expired) {
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &SiteSettingsHelperTest::GetReferenceTime,
+      /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr);
+
+  int expiration = GetDaysToExpiration(GetReferenceTime() - base::Days(4));
+  EXPECT_EQ(0, expiration);
 }
 
 namespace {
