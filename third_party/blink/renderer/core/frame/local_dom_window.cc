@@ -2502,6 +2502,13 @@ void LocalDOMWindow::maximize(ExceptionState& exception_state) {
     return;
   }
 
+  // Require user activation.
+  if (!LocalFrame::ConsumeTransientUserActivation(GetFrame())) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
+                                      "API requires user activation.");
+    return;
+  }
+
 #if defined(USE_AURA)
   GetFrame()->GetLocalFrameHostRemote().Maximize();
 #else
@@ -2519,6 +2526,13 @@ void LocalDOMWindow::minimize(ExceptionState& exception_state) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "API is only supported in primary top-level browsing contexts.");
+    return;
+  }
+
+  // Require user activation.
+  if (!LocalFrame::ConsumeTransientUserActivation(GetFrame())) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
+                                      "API requires user activation.");
     return;
   }
 
@@ -2541,6 +2555,10 @@ void LocalDOMWindow::restore(ExceptionState& exception_state) {
         "API is only supported in primary top-level browsing contexts.");
     return;
   }
+
+  // TODO(crbug.com/1466853): Add transient user activation for window.restore.
+  // This one is a bit more involved compared to minimize/maximize since it
+  // requires capability delegation.
 
 #if defined(USE_AURA)
   GetFrame()->GetLocalFrameHostRemote().Restore();
