@@ -137,7 +137,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     await Promise.all(
       this.#browsingContextStorage
         .getTopLevelContexts()
-        .map((c) => c.awaitLoaded())
+        .map((c) => c.lifecycleLoaded())
     );
   }
 }

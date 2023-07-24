@@ -255,7 +255,7 @@ export class BrowsingContextProcessor {
     // Details: https://github.com/web-platform-tests/wpt/issues/35846
     const contextId = result.targetId;
     const context = this.#browsingContextStorage.getContext(contextId);
-    await context.awaitLoaded();
+    await context.lifecycleLoaded();
 
     return {context: context.id};
   }

@@ -242,11 +242,11 @@ export class BrowsingContextImpl {
     return this.#url;
   }
 
-  async awaitLoaded() {
+  async lifecycleLoaded() {
     await this.#deferreds.Page.lifecycleEvent.load;
   }
 
-  awaitUnblocked(): Promise<void> {
+  targetUnblocked(): Promise<void> {
     return this.#cdpTarget.targetUnblocked;
   }
 
@@ -592,7 +592,7 @@ export class BrowsingContextImpl {
       throw new InvalidArgumentException(`Invalid URL: ${url}`);
     }
 
-    await this.awaitUnblocked();
+    await this.targetUnblocked();
 
     // TODO: handle loading errors.
     const cdpNavigateResult: Protocol.Page.NavigateResponse =
@@ -623,7 +623,7 @@ export class BrowsingContextImpl {
         if (cdpNavigateResult.loaderId === undefined) {
           await this.#deferreds.Page.navigatedWithinDocument;
         } else {
-          await this.awaitLoaded();
+          await this.lifecycleLoaded();
         }
         break;
     }
@@ -638,7 +638,7 @@ export class BrowsingContextImpl {
     ignoreCache: boolean,
     wait: BrowsingContext.ReadinessState
   ): Promise<EmptyResult> {
-    await this.awaitUnblocked();
+    await this.targetUnblocked();
 
     await this.#cdpTarget.cdpClient.sendCommand('Page.reload', {
       ignoreCache,
@@ -653,7 +653,7 @@ export class BrowsingContextImpl {
         await this.#deferreds.Page.lifecycleEvent.DOMContentLoaded;
         break;
       case BrowsingContext.ReadinessState.Complete:
-        await this.awaitLoaded();
+        await this.lifecycleLoaded();
         break;
     }
 
