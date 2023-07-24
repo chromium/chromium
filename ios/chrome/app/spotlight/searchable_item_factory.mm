@@ -268,6 +268,9 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
               multiValued:NO];
   [attributeSet setValue:itemID forCustomKey:key];
   attributeSet.keywords = [self keywordsForSpotlightItems];
+  attributeSet.containerDisplayName =
+      spotlight::SpotlightItemSourceLabelFromDomain(_spotlightDomain);
+
   NSString* domainID = spotlight::StringFromSpotlightDomain(_spotlightDomain);
 
   return [[CSSearchableItem alloc] initWithUniqueIdentifier:itemID

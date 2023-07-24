@@ -4911,6 +4911,12 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_VERIFY_BUTTON_LABEL" desc="The label of the verify your account action button in the identity error info bar. [iOS only]">
         Verify
       </message>
+      <message name="IDS_IOS_SPOTLIGHT_CHROME_ACTIONS_LABEL" desc="Tag label title displayed for chrome actions spotlight items. [iOS only]">
+        Chrome Actions
+      </message>
+      <message name="IDS_IOS_SPOTLIGHT_OPEN_TAB_LABEL" desc="Tag label title displayed for opent tabs spotlight items. [iOS only]">
+        Open Tab
+      </message>
     </messages>
   </release>
 </grit>

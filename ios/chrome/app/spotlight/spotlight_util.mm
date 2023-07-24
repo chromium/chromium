@@ -11,6 +11,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
 #import "ios/chrome/app/spotlight/spotlight_logger.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -89,7 +91,7 @@ const char kSpotlightLastIndexingVersionKey[] = "SpotlightLastIndexingVersion";
 // Change this value if there are change int the information indexed in
 // Spotlight. This will force reindexation on next startup.
 // Value is stored in `kSpotlightLastIndexingVersionKey`.
-const int kCurrentSpotlightIndexVersion = 3;
+const int kCurrentSpotlightIndexVersion = 4;
 
 Domain SpotlightDomainFromString(NSString* domain) {
   if ([domain hasPrefix:kSpotlightBookmarkPrefix]) {
@@ -121,6 +123,28 @@ NSString* StringFromSpotlightDomain(Domain domain) {
       return kSpotlightReadingListDomain;
     case DOMAIN_OPEN_TABS:
       return kSpotlightOpenTabsDomain;
+
+    default:
+      // On normal flow, it is not possible to reach this point. When testing
+      // the app, it may be possible though if the app is downgraded.
+      NOTREACHED();
+      return nil;
+  }
+}
+
+NSString* SpotlightItemSourceLabelFromDomain(Domain domain) {
+  switch (domain) {
+    case DOMAIN_BOOKMARKS:
+      return l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_BOOKMARKS);
+    case DOMAIN_TOPSITES:
+      return l10n_util::GetNSString(
+          IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_TITLE);
+    case DOMAIN_ACTIONS:
+      return l10n_util::GetNSString(IDS_IOS_SPOTLIGHT_CHROME_ACTIONS_LABEL);
+    case DOMAIN_READING_LIST:
+      return l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_READING_LIST);
+    case DOMAIN_OPEN_TABS:
+      return l10n_util::GetNSString(IDS_IOS_SPOTLIGHT_OPEN_TAB_LABEL);
 
     default:
       // On normal flow, it is not possible to reach this point. When testing
