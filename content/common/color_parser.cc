@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -129,7 +130,7 @@ bool ParseRgbColorString(const std::string& color_string, SkColor* result) {
   double alpha = 1.0;
 
   // Percentage rgb values are not supported.
-  if (color_string.find('%') != std::string::npos) {
+  if (base::Contains(color_string, '%')) {
     NOTIMPLEMENTED();
     return false;
   }
