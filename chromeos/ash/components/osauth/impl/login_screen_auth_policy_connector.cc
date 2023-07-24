@@ -38,6 +38,12 @@ absl::optional<bool> LoginScreenAuthPolicyConnector::GetRecoveryDefaultState(
   return absl::nullopt;
 }
 
+absl::optional<bool> LoginScreenAuthPolicyConnector::GetRecoveryMandatoryState(
+    const AccountId& account) {
+  NOTIMPLEMENTED();
+  return absl::nullopt;
+}
+
 bool LoginScreenAuthPolicyConnector::IsAuthFactorManaged(
     const AccountId& account,
     AshAuthFactor auth_factor) {

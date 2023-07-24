@@ -25,6 +25,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH)
       const AccountId& account) override;
   absl::optional<bool> GetRecoveryDefaultState(
       const AccountId& account) override;
+  absl::optional<bool> GetRecoveryMandatoryState(
+      const AccountId& account) override;
 
   bool IsAuthFactorManaged(const AccountId& account,
                            AshAuthFactor auth_factor) override;

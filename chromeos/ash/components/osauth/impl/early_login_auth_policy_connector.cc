@@ -28,6 +28,12 @@ absl::optional<bool> EarlyLoginAuthPolicyConnector::GetRecoveryDefaultState(
   return false;
 }
 
+absl::optional<bool> EarlyLoginAuthPolicyConnector::GetRecoveryMandatoryState(
+    const AccountId& account) {
+  NOTIMPLEMENTED();
+  return absl::nullopt;
+}
+
 bool EarlyLoginAuthPolicyConnector::IsAuthFactorManaged(
     const AccountId& account,
     AshAuthFactor auth_factor) {

@@ -1672,6 +1672,8 @@ source_set("ash") {
     "login/oobe_configuration.h",
     "login/oobe_screen.cc",
     "login/oobe_screen.h",
+    "login/osauth/auth_policy_enforcer.cc",
+    "login/osauth/auth_policy_enforcer.h",
     "login/osauth/chrome_auth_parts.cc",
     "login/osauth/chrome_auth_parts.h",
     "login/osauth/profile_prefs_auth_policy_connector.cc",

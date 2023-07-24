@@ -346,6 +346,10 @@ const AuthFactorsConfiguration& UserContext::GetAuthFactorsConfiguration() {
   return *auth_factors_configuration_;
 }
 
+bool UserContext::HasAuthFactorsConfiguration() const {
+  return auth_factors_configuration_.has_value();
+}
+
 const std::string& UserContext::GetAuthSessionId() const {
   return authsession_id_;
 }

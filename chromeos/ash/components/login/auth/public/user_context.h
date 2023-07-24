@@ -83,6 +83,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
   const SessionAuthFactors& GetAuthFactorsData() const;
   // May only be called if AuthFactorsConfiguration has been set.
   const AuthFactorsConfiguration& GetAuthFactorsConfiguration();
+  bool HasAuthFactorsConfiguration() const;
 
   const std::string& GetAuthCode() const;
   const std::string& GetRefreshToken() const;

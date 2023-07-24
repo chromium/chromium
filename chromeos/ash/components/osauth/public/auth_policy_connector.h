@@ -41,6 +41,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthPolicyConnector {
   virtual absl::optional<bool> GetRecoveryDefaultState(
       const AccountId& account) = 0;
 
+  // Returns non-empty value if the recovery factor is enforced by the policy.
+  virtual absl::optional<bool> GetRecoveryMandatoryState(
+      const AccountId& account) = 0;
+
   virtual bool IsAuthFactorManaged(const AccountId& account,
                                    AshAuthFactor auth_factor) = 0;
   virtual bool IsAuthFactorUserModifiable(const AccountId& account,

@@ -65,6 +65,22 @@ absl::optional<bool> ProfilePrefsAuthPolicyConnector::GetRecoveryDefaultState(
   return false;
 }
 
+absl::optional<bool> ProfilePrefsAuthPolicyConnector::GetRecoveryMandatoryState(
+    const AccountId& account) {
+  if (features::IsCryptohomeRecoveryEnabled()) {
+    return absl::nullopt;
+  }
+  if (!IsUserManaged(account)) {
+    return absl::nullopt;
+  }
+  auto* prefs = GetPrefsForUser(account);
+  auto* pref = prefs->FindPreference(prefs::kRecoveryFactorBehavior);
+  if (!pref || !pref->IsManaged() || pref->IsRecommended()) {
+    return absl::nullopt;
+  }
+  return pref->GetValue()->GetBool();
+}
+
 bool ProfilePrefsAuthPolicyConnector::IsAuthFactorManaged(
     const AccountId& account,
     AshAuthFactor auth_factor) {
