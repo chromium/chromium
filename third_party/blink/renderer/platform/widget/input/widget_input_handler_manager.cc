@@ -655,7 +655,9 @@ void WidgetInputHandlerManager::DispatchEvent(
           gesture_event.GetTypeAsUiEventType(),
           gesture_event.GetScrollInputType(), is_inertial,
           event->Event().TimeStamp(), arrived_in_browser_main_timestamp,
-          blocking_touch_dispatched_to_renderer_timestamp);
+          blocking_touch_dispatched_to_renderer_timestamp,
+          base::IdType64<class ui::LatencyInfo>(
+              event->latency_info().trace_id()));
       has_seen_first_gesture_scroll_update_after_begin_ = false;
     }
   } else if (WebInputEvent::IsPinchGestureEventType(event_type)) {
@@ -663,11 +665,15 @@ void WidgetInputHandlerManager::DispatchEvent(
         static_cast<const WebGestureEvent&>(event->Event());
     metrics = cc::PinchEventMetrics::Create(
         gesture_event.GetTypeAsUiEventType(),
-        gesture_event.GetScrollInputType(), event->Event().TimeStamp());
+        gesture_event.GetScrollInputType(), event->Event().TimeStamp(),
+        base::IdType64<class ui::LatencyInfo>(
+            event->latency_info().trace_id()));
   } else {
     metrics = cc::EventMetrics::Create(event->Event().GetTypeAsUiEventType(),
                                        event->Event().TimeStamp(),
-                                       arrived_in_browser_main_timestamp);
+                                       arrived_in_browser_main_timestamp,
+                                       base::IdType64<class ui::LatencyInfo>(
+                                           event->latency_info().trace_id()));
   }
 
   if (uses_input_handler_) {

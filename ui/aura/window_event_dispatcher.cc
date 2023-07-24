@@ -1111,16 +1111,20 @@ WindowEventDispatcher::CreateScropedMetricsMonitorForEvent(
     } else if (gesture->IsScrollGestureEvent()) {
       metrics = cc::ScrollEventMetrics::CreateForBrowser(
           gesture->type(), input_type,
-          /*is_inertial=*/false, gesture->time_stamp());
+          /*is_inertial=*/false, gesture->time_stamp(),
+          base::IdType64<class ui::LatencyInfo>(event.latency()->trace_id()));
       if (gesture->type() == ui::ET_GESTURE_SCROLL_BEGIN)
         has_seen_gesture_scroll_update_after_begin_ = false;
     } else {
       DCHECK(gesture->IsPinchEvent());
-      metrics = cc::PinchEventMetrics::Create(gesture->type(), input_type,
-                                              gesture->time_stamp());
+      metrics = cc::PinchEventMetrics::Create(
+          gesture->type(), input_type, gesture->time_stamp(),
+          base::IdType64<class ui::LatencyInfo>(event.latency()->trace_id()));
     }
   } else {
-    metrics = cc::EventMetrics::Create(event.type(), event.time_stamp());
+    metrics = cc::EventMetrics::Create(
+        event.type(), event.time_stamp(),
+        base::IdType64<class ui::LatencyInfo>(event.latency()->trace_id()));
   }
   cc::EventsMetricsManager::ScopedMonitor::DoneCallback done_callback;
   if (metrics) {

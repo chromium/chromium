@@ -230,11 +230,9 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
           // similar to event_type.
           event_latency->add_high_latency_stage(stage);
         }
-        ScrollUpdateEventMetrics* scroll_update =
-            event_metrics->AsScrollUpdate();
-        if (scroll_update && scroll_update->trace_id().has_value()) {
+        if (event_metrics->trace_id().has_value()) {
           event_latency->set_event_latency_id(
-              scroll_update->trace_id()->value());
+              event_metrics->trace_id()->value());
         }
       });
 

@@ -34,7 +34,7 @@ TEST_F(EventMetricsTest, ScrollBeginCreateWithNullBeginRwhTime) {
       ScrollEventMetrics::Create(
           ui::ET_GESTURE_SCROLL_BEGIN, ui::ScrollInputType::kTouchscreen,
           /*is_inertial=*/false, event_time, arrived_in_browser_main_timestamp,
-          blocking_touch_dispatched_to_renderer_timestamp);
+          blocking_touch_dispatched_to_renderer_timestamp, absl::nullopt);
 
   // Assert
   EXPECT_EQ(event_time, scroll_event_metric->GetDispatchStageTimestamp(
@@ -84,7 +84,7 @@ TEST_F(EventMetricsTest, ScrollBeginCreate) {
       ScrollEventMetrics::Create(
           ui::ET_GESTURE_SCROLL_BEGIN, ui::ScrollInputType::kTouchscreen,
           /*is_inertial=*/false, event_time, arrived_in_browser_main_timestamp,
-          blocking_touch_dispatched_to_renderer_timestamp);
+          blocking_touch_dispatched_to_renderer_timestamp, absl::nullopt);
 
   // Assert
   EXPECT_EQ(event_time, scroll_event_metric->GetDispatchStageTimestamp(
@@ -129,7 +129,7 @@ TEST_F(EventMetricsTest, ScrollBeginCreateFromExisting) {
       ScrollEventMetrics::Create(
           ui::ET_GESTURE_SCROLL_BEGIN, ui::ScrollInputType::kTouchscreen,
           /*is_inertial=*/false, event_time, arrived_in_browser_main_timestamp,
-          blocking_touch_dispatched_to_renderer_timestamp);
+          blocking_touch_dispatched_to_renderer_timestamp, absl::nullopt);
 
   // Act
   std::unique_ptr<ScrollEventMetrics> copy_scroll_metric =
@@ -361,8 +361,9 @@ TEST_F(EventMetricsTest, Create) {
   base::TimeTicks now = base::TimeTicks::Now();
 
   // Act
-  std::unique_ptr<EventMetrics> event_metric = EventMetrics::Create(
-      ui::ET_TOUCH_MOVED, event_time, arrived_in_browser_main_timestamp);
+  std::unique_ptr<EventMetrics> event_metric =
+      EventMetrics::Create(ui::ET_TOUCH_MOVED, event_time,
+                           arrived_in_browser_main_timestamp, absl::nullopt);
 
   // Assert
   EXPECT_EQ(event_time, event_metric->GetDispatchStageTimestamp(
@@ -397,8 +398,9 @@ TEST_F(EventMetricsTest, CreateFromExisting) {
   base::TimeTicks event_time = base::TimeTicks::Now() - base::Microseconds(100);
   base::TimeTicks arrived_in_browser_main_timestamp =
       base::TimeTicks::Now() - base::Microseconds(50);
-  std::unique_ptr<EventMetrics> event_metric = EventMetrics::Create(
-      ui::ET_TOUCH_MOVED, event_time, arrived_in_browser_main_timestamp);
+  std::unique_ptr<EventMetrics> event_metric =
+      EventMetrics::Create(ui::ET_TOUCH_MOVED, event_time,
+                           arrived_in_browser_main_timestamp, absl::nullopt);
 
   // Act
   std::unique_ptr<EventMetrics> copy_event_metric =
