@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.readaloud;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Log;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
@@ -60,6 +61,10 @@ public class ReadAloudController {
             return isReadable == null ? false : isReadable;
         }
         return false;
+    }
+
+    public void playTab(Tab tab) {
+        Log.e(TAG, "playTab() not implemented.");
     }
 
     /**

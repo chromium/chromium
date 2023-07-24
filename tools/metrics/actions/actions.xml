@@ -20374,6 +20374,12 @@ should be able to be added at any place in this file.
   <description>User pressed 'Quit' in the app menu.</description>
 </action>
 
+<action name="MobileMenuReadAloud">
+  <owner>basiaz@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <description>User pressed 'Listen to this page' in the app menu.</description>
+</action>
+
 <action name="MobileMenuReadingList">
   <owner>gambard@chromium.org</owner>
   <description>User pressed 'Reading List' in the app menu.</description>

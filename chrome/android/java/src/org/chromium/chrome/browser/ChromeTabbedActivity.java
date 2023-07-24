@@ -1996,7 +1996,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                                       NewTabPageLaunchOrigin.WEB_FEED),
                                            TabLaunchType.FROM_CHROME_UI),
                 getModalDialogManager(), getSnackbarManager(),
-                mRootUiCoordinator.getIncognitoReauthControllerSupplier());
+                mRootUiCoordinator.getIncognitoReauthControllerSupplier(),
+                mRootUiCoordinator.getReadAloudControllerSupplier());
     }
 
     private TabDelegateFactory getTabDelegateFactory() {

@@ -144,6 +144,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.printing.TabPrinter;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.selection.SelectionPopupBackPressHandler;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -916,7 +917,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         return new AppMenuPropertiesDelegateImpl(this, getActivityTabProvider(),
                 getMultiWindowModeStateDispatcher(), getTabModelSelector(), getToolbarManager(),
                 getWindow().getDecorView(), null, null, mBookmarkModelSupplier,
-                /*incognitoReauthControllerOneshotSupplier=*/null);
+                /*incognitoReauthControllerOneshotSupplier=*/null,
+                mRootUiCoordinator.getReadAloudControllerSupplier());
     }
 
     /**
@@ -2497,6 +2499,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             return true;
         }
 
+        if (id == R.id.readaloud_menu_id) {
+            RecordUserAction.record("MobileMenuReadAloud");
+            doReadCurrentTabAloud(currentTab);
+            return true;
+        }
+
         if (id == R.id.print_id) {
             RecordUserAction.record("MobileMenuPrint");
             return doPrintShare(this, mActivityTabProvider);
@@ -2889,6 +2897,14 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             Toast.makeText(context, R.string.open_webapk_failed, Toast.LENGTH_SHORT).show();
         }
         return true;
+    }
+
+    private void doReadCurrentTabAloud(Tab currentTab) {
+        ReadAloudController readAloudController =
+                mRootUiCoordinator.getReadAloudControllerSupplier().get();
+        if (readAloudController != null) {
+            readAloudController.playTab(currentTab);
+        }
     }
 
     /**

@@ -2439,6 +2439,16 @@ public class CustomTabActivityTest {
         });
     }
 
+    @Test
+    @SmallTest
+    public void testAppMenuDoesNotShowReadAloud() {
+        // TODO(b/292134067): Update when Read Aloud supports Custom Tabs.
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
+        openAppMenuAndAssertMenuShown();
+        Assert.assertNull(
+                mCustomTabActivityTestRule.getActivity().findViewById(R.id.readaloud_menu_id));
+    }
+
     private void rotateCustomTabActivity(CustomTabActivity activity, int orientation) {
         ActivityTestUtils.rotateActivityToOrientation(activity, orientation);
         CriteriaHelper.pollUiThread(() -> {

@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
+import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -172,12 +173,16 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     private ShoppingService mShoppingService;
     @Mock
     private AppBannerManager.Natives mAppBannerManagerJniMock;
+    @Mock
+    private ReadAloudController mReadAloudController;
 
     private OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
     private OneshotSupplierImpl<IncognitoReauthController> mIncognitoReauthControllerSupplier =
             new OneshotSupplierImpl<>();
     private ObservableSupplierImpl<BookmarkModel> mBookmarkModelSupplier =
+            new ObservableSupplierImpl<>();
+    private ObservableSupplierImpl<ReadAloudController> mReadAloudControllerSupplier =
             new ObservableSupplierImpl<>();
 
     private TabbedAppMenuPropertiesDelegate mTabbedAppMenuPropertiesDelegate;
@@ -199,6 +204,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         mLayoutStateProviderSupplier.set(mLayoutStateProvider);
         mIncognitoReauthControllerSupplier.set(mIncognitoReauthControllerMock);
+        mReadAloudControllerSupplier.set(mReadAloudController);
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
         when(mNavigationController.getUseDesktopUserAgent()).thenReturn(false);
@@ -231,7 +237,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 mActivityTabProvider, mMultiWindowModeStateDispatcher, mTabModelSelector,
                 mToolbarManager, mDecorView, mAppMenuDelegate, mLayoutStateProviderSupplier, null,
                 mBookmarkModelSupplier, mFeedLauncher, mDialogManager, mSnackbarManager,
-                mIncognitoReauthControllerSupplier));
+                mIncognitoReauthControllerSupplier, mReadAloudControllerSupplier));
         SharedPreferencesManager.getInstance().removeKeysWithPrefix(
                 ChromePreferenceKeys.MULTI_INSTANCE_URL);
         SharedPreferencesManager.getInstance().removeKeysWithPrefix(
