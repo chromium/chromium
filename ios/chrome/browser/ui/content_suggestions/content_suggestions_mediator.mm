@@ -303,6 +303,9 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   if (!self.consumer) {
     return;
   }
+  if (IsMagicStackEnabled()) {
+    [self.consumer setMagicStackOrder:[self magicStackOrder]];
+  }
   if (self.returnToRecentTabItem) {
     [self.consumer
         showReturnToRecentTabTileWithConfig:self.returnToRecentTabItem];
@@ -334,9 +337,6 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   if (![self shouldHideShortcuts] &&
       (IsMagicStackEnabled() || ![self shouldShowSetUpList])) {
     [self.consumer setShortcutTilesWithConfigs:self.actionButtonItems];
-  }
-  if (IsMagicStackEnabled()) {
-    [self.consumer setMagicStackOrder:[self magicStackOrder]];
   }
 }
 

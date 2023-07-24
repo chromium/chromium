@@ -353,6 +353,10 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   }
   [self populateMostVisitedModule];
   [self.contentSuggestionsMetricsRecorder recordMostVisitedTilesShown];
+  if (IsMagicStackEnabled()) {
+    [self logTopModuleImpressionForType:ContentSuggestionsModuleType::
+                                            kMostVisited];
+  }
   // Trigger a relayout so that the MVTs will be counted in the Content
   // Suggestions height. Upon app startup when this is often added
   // asynchronously as the NTP is constructing the entire surface, so accurate
@@ -378,6 +382,10 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     ContentSuggestionsShortcutTileView* view =
         [[ContentSuggestionsShortcutTileView alloc] initWithConfiguration:item];
     [self.shortcutsViews addObject:view];
+  }
+  if (IsMagicStackEnabled()) {
+    [self
+        logTopModuleImpressionForType:ContentSuggestionsModuleType::kShortcuts];
   }
 }
 
@@ -447,6 +455,12 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     if (shouldShowCompactedSetUpListModule) {
       _compactedSetUpListViews = [NSMutableArray array];
     }
+    ContentSuggestionsModuleType firstItemType =
+        SetUpListModuleTypeForSetUpListType([items firstObject].type);
+    [self logTopModuleImpressionForType:shouldShowCompactedSetUpListModule
+                                            ? ContentSuggestionsModuleType::
+                                                  kCompactedSetUpList
+                                            : firstItemType];
     for (SetUpListItemViewData* data in items) {
       data.compactLayout = shouldShowCompactedSetUpListModule;
       data.heroCellMagicStackLayout = !shouldShowCompactedSetUpListModule;
@@ -502,7 +516,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
         }
       }
     }
-
   } else {
     SetUpListView* setUpListView =
         [[SetUpListView alloc] initWithItems:items rootView:self.view];
@@ -887,6 +900,17 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     index++;
   }
   return shortcutsStackView;
+}
+
+// Logs `type` as the top module shown if it is first in
+// `_magicStackModuleOrder`
+- (void)logTopModuleImpressionForType:(ContentSuggestionsModuleType)type {
+  ContentSuggestionsModuleType firstModuleType = (ContentSuggestionsModuleType)[
+      [_magicStackModuleOrder objectAtIndex:0] intValue];
+  if (firstModuleType == type) {
+    [self.contentSuggestionsMetricsRecorder
+        recordMagicStackTopModuleImpressionForType:type];
+  }
 }
 
 - (void)createMagicStack {
