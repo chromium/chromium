@@ -826,6 +826,10 @@ class MetadataUpdater:
         Returns:
             Whether the test file's metadata was modified.
         """
+        if not test_file.data:
+            # Without test results, skip the general update case, which is slow
+            # and unnecessary. See crbug.com/1466002.
+            return False
         if self._overwrite_conditions == 'fill':
             self._fill_missing(test_file)
         # Set `requires_update` to check for orphaned test sections.
