@@ -71,6 +71,10 @@ PixelTest::PixelTest(GraphicsBackend backend)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     init_vulkan = true;
 #endif
+  } else {
+    // Ensure that we don't accidentally have vulkan or graphite enabled.
+    scoped_feature_list_.InitWithFeatures(
+        {}, {features::kVulkan, features::kSkiaGraphite});
   }
 
   if (init_vulkan) {
