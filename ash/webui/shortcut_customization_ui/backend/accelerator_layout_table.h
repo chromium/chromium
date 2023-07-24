@@ -237,8 +237,34 @@ std::u16string GetKeyDisplay(ui::KeyboardCode key_code);
 // A fixed set of accelerators that should not have a layout. This is used for
 // integrity check to make sure when a new accelerator is added, either it has
 // been added to `kAcceleratorLayouts` or here.
-constexpr auto kAcceleratorsWithoutLayout =
+constexpr auto kAshAcceleratorsWithoutLayout =
     base::MakeFixedFlatSet<AcceleratorAction>({
+        AcceleratorAction::kCycleBackwardMru,
+        AcceleratorAction::kCycleForwardMru,
+        AcceleratorAction::kDisableCapsLock,
+        AcceleratorAction::kFocusCameraPreview,
+        AcceleratorAction::kFocusNextPane,
+        AcceleratorAction::kLaunchApp0,
+        AcceleratorAction::kLaunchApp1,
+        AcceleratorAction::kLaunchApp2,
+        AcceleratorAction::kLaunchApp3,
+        AcceleratorAction::kLaunchApp4,
+        AcceleratorAction::kLaunchApp5,
+        AcceleratorAction::kLaunchApp6,
+        AcceleratorAction::kLaunchApp7,
+        AcceleratorAction::kLockPressed,
+        AcceleratorAction::kLockReleased,
+        AcceleratorAction::kMediaRewind,
+        AcceleratorAction::kMediaStop,
+        AcceleratorAction::kNewIncognitoWindow,
+        AcceleratorAction::kNewTab,
+        AcceleratorAction::kNewWindow,
+        AcceleratorAction::kPasteClipboardHistoryPlainText,
+        AcceleratorAction::kPowerPressed,
+        AcceleratorAction::kPowerReleased,
+        AcceleratorAction::kPrintUiHierarchies,
+        AcceleratorAction::kRestoreTab,
+        AcceleratorAction::kRotateWindow,
         AcceleratorAction::kToggleProjectorMarker,
         AcceleratorAction::kToggleWifi,
         AcceleratorAction::kTouchHudClear,
