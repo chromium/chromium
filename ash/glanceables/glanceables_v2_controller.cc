@@ -36,6 +36,11 @@ void GlanceablesV2Controller::OnActiveUserSessionChanged(
   active_account_id_ = account_id;
 }
 
+bool GlanceablesV2Controller::AreGlanceablesAvailable() const {
+  return features::AreGlanceablesV2Enabled() &&
+         (GetClassroomClient() != nullptr || GetTasksClient() != nullptr);
+}
+
 void GlanceablesV2Controller::UpdateClientsRegistration(
     const AccountId& account_id,
     const ClientsRegistration& registration) {

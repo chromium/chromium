@@ -41,6 +41,11 @@ class ASH_EXPORT GlanceablesV2Controller : public SessionObserver {
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
 
+  // Whether glanceanbles are available to the `active_account_id_`.
+  // Glanceables are available if the feature is enabled for the user and it has
+  // at least one registered client.
+  bool AreGlanceablesAvailable() const;
+
   // Updates `clients_registry_` for a specific `account_id`.
   void UpdateClientsRegistration(const AccountId& account_id,
                                  const ClientsRegistration& registration);

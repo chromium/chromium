@@ -276,6 +276,12 @@ class DateTrayTest
 
   MockNewWindowDelegate* new_window_delegate() { return new_window_delegate_; }
 
+  void RemoveGlanceablesClients() {
+    Shell::Get()->glanceables_v2_controller()->UpdateClientsRegistration(
+        account_id_, GlanceablesV2Controller::ClientsRegistration{
+                         .classroom_client = nullptr, .tasks_client = nullptr});
+  }
+
  private:
   std::unique_ptr<views::Widget> widget_;
   AccountId account_id_ =
@@ -629,6 +635,33 @@ TEST_P(DateTrayTest, RendersClassroomBubblesForActiveRoles) {
   glanceables_classroom_client()->RespondToPendingIsTeacherRoleEnabledCallbacks(
       true);
   EXPECT_EQ(scroll_view->contents()->children().size(), 4u);
+}
+
+TEST_P(DateTrayTest, EmptyClientsFallbackToLegacyDateBubble) {
+  LeftClickOn(GetDateTray());
+  EXPECT_TRUE(IsBubbleShown());
+  EXPECT_TRUE(AreContentsViewShown());
+
+  if (!AreGlanceablesV2Enabled()) {
+    EXPECT_FALSE(GetGlanceableTrayBubble());
+    return;
+  }
+
+  // Remove glanceables clients and click on the date tray to close the bubble
+  // again.
+  RemoveGlanceablesClients();
+  LeftClickOn(GetDateTray());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(IsBubbleShown());
+  EXPECT_FALSE(AreContentsViewShown());
+  EXPECT_FALSE(GetGlanceableTrayBubble());
+
+  // Click on the date tray again, now, the unified system tray calendar view
+  // should show instead of the glanceables tray bubble.
+  LeftClickOn(GetDateTray());
+  EXPECT_TRUE(GetUnifiedSystemTray()->IsBubbleShown());
+  EXPECT_TRUE(GetUnifiedSystemTray()->IsShowingCalendarView());
+  EXPECT_FALSE(GetGlanceableTrayBubble());
 }
 
 }  // namespace ash
