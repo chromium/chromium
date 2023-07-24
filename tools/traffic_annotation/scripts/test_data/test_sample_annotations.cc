@@ -4,7 +4,7 @@
 
 // An OK annotation
 net::NetworkTrafficAnnotationTag traffic_annotation =
-  net::DefineNetworkTrafficAnnotation("ok_annotation", R"(
+    net::DefineNetworkTrafficAnnotation("ok_annotation", R"(
   semantics {
     sender: "Cloud Policy"
     description:
@@ -12,6 +12,14 @@ net::NetworkTrafficAnnotationTag traffic_annotation =
     "and custom terms of service."
     trigger:
     "Periodically loaded when a managed user is signed in to Chrome."
+    internal  {
+      contacts {
+        email: "crmullins@google.com"
+      }
+      contacts {
+        owners: "//tools/traffic_annotation/OWNERS"
+      }
+    }
     data:
     "This request does not send any data. It loads external resources "
     "by a unique URL provided by the admin."
@@ -26,7 +34,6 @@ net::NetworkTrafficAnnotationTag traffic_annotation =
     "Not implemented, considered not useful. This request is part of "
     "the policy fetcher itself."
   })");
-
 
 // An annotation with a syntax error: semantics is missing '{'.
 net::NetworkTrafficAnnotationTag traffic_annotation =

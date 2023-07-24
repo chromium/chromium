@@ -131,6 +131,8 @@ message NetworkTrafficAnnotation {
         oneof contact_type {
           // Email of a team or individual owner
           string email = 1;
+          // OWNERS file within the chromium codebase
+          string owners = 2;
         }
       }
       repeated Contact contacts = 1;
