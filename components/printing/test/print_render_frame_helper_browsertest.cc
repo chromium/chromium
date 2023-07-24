@@ -1181,41 +1181,41 @@ class PrintRenderFrameHelperPreviewTest
 
  private:
   void CreatePrintSettingsDictionary() {
-    print_settings_ = base::Value::Dict();
-    print_settings_.Set(kSettingLandscape, false);
-    print_settings_.Set(kSettingCollate, false);
-    print_settings_.Set(kSettingColor,
-                        static_cast<int>(mojom::ColorModel::kGray));
-    print_settings_.Set(kSettingPrinterType,
-                        static_cast<int>(mojom::PrinterType::kPdf));
-    print_settings_.Set(kSettingDuplexMode,
-                        static_cast<int>(mojom::DuplexMode::kSimplex));
-    print_settings_.Set(kSettingCopies, 1);
-    print_settings_.Set(kSettingDeviceName, "dummy");
-    print_settings_.Set(kSettingDpiHorizontal, 72);
-    print_settings_.Set(kSettingDpiVertical, 72);
-    print_settings_.Set(kPreviewUIID, 4);
-    print_settings_.Set(kSettingRasterizePdf, false);
-    print_settings_.Set(kPreviewRequestID, 12345);
-    print_settings_.Set(kSettingScaleFactor, 100);
-    print_settings_.Set(kIsFirstRequest, true);
-    print_settings_.Set(kSettingMarginsType,
-                        static_cast<int>(mojom::MarginType::kDefaultMargins));
-    print_settings_.Set(kSettingPagesPerSheet, 1);
-    print_settings_.Set(kSettingPreviewModifiable, true);
-    print_settings_.Set(kSettingPreviewIsFromArc, false);
-    print_settings_.Set(kSettingHeaderFooterEnabled, false);
-    print_settings_.Set(kSettingShouldPrintBackgrounds, false);
-    print_settings_.Set(kSettingShouldPrintSelectionOnly, false);
+    print_settings_ =
+        base::Value::Dict()
+            .Set(kSettingLandscape, false)
+            .Set(kSettingCollate, false)
+            .Set(kSettingColor, static_cast<int>(mojom::ColorModel::kGray))
+            .Set(kSettingPrinterType,
+                 static_cast<int>(mojom::PrinterType::kPdf))
+            .Set(kSettingDuplexMode,
+                 static_cast<int>(mojom::DuplexMode::kSimplex))
+            .Set(kSettingCopies, 1)
+            .Set(kSettingDeviceName, "dummy")
+            .Set(kSettingDpiHorizontal, 72)
+            .Set(kSettingDpiVertical, 72)
+            .Set(kPreviewUIID, 4)
+            .Set(kSettingRasterizePdf, false)
+            .Set(kPreviewRequestID, 12345)
+            .Set(kSettingScaleFactor, 100)
+            .Set(kIsFirstRequest, true)
+            .Set(kSettingMarginsType,
+                 static_cast<int>(mojom::MarginType::kDefaultMargins))
+            .Set(kSettingPagesPerSheet, 1)
+            .Set(kSettingPreviewModifiable, true)
+            .Set(kSettingPreviewIsFromArc, false)
+            .Set(kSettingHeaderFooterEnabled, false)
+            .Set(kSettingShouldPrintBackgrounds, false)
+            .Set(kSettingShouldPrintSelectionOnly, false);
 
     // Using a media size with realistic dimensions for a Letter paper.
-    base::Value::Dict media_size;
-    media_size.Set(kSettingMediaSizeWidthMicrons, 215900);
-    media_size.Set(kSettingMediaSizeHeightMicrons, 279400);
-    media_size.Set(kSettingsImageableAreaLeftMicrons, 12700);
-    media_size.Set(kSettingsImageableAreaBottomMicrons, 0);
-    media_size.Set(kSettingsImageableAreaRightMicrons, 209550);
-    media_size.Set(kSettingsImageableAreaTopMicrons, 254000);
+    auto media_size = base::Value::Dict()
+                          .Set(kSettingMediaSizeWidthMicrons, 215900)
+                          .Set(kSettingMediaSizeHeightMicrons, 279400)
+                          .Set(kSettingsImageableAreaLeftMicrons, 12700)
+                          .Set(kSettingsImageableAreaBottomMicrons, 0)
+                          .Set(kSettingsImageableAreaRightMicrons, 209550)
+                          .Set(kSettingsImageableAreaTopMicrons, 254000);
     print_settings_.Set(kSettingMediaSize, std::move(media_size));
   }
 

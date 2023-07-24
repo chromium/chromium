@@ -462,11 +462,9 @@ TEST_F(PermissionUmaUtilTest, RecordPermissionRegrantForUnusedSites) {
   histograms.ExpectTotalCount(prefix + "Prompt.All", 0);
 
   // Create a revoked permission.
-  base::Value::Dict dict = base::Value::Dict();
-  base::Value::List permission_type_list = base::Value::List();
-  permission_type_list.Append(static_cast<int32_t>(content_type));
-  dict.Set(permissions::kRevokedKey,
-           base::Value::List(std::move(permission_type_list)));
+  auto dict = base::Value::Dict().Set(
+      permissions::kRevokedKey,
+      base::Value::List().Append(static_cast<int32_t>(content_type)));
   // Set expiration to five days before the clean-up threshold to mimic that the
   // permission was revoked five days ago.
   base::Time past(now - base::Days(5));
@@ -539,10 +537,9 @@ TEST_F(PermissionUmaUtilTest, GetDaysSinceUnusedSitePermissionRevocation) {
   content_settings::ContentSettingConstraints expiration_constraint(
       clock.Now());
   expiration_constraint.set_lifetime(base::Days(30));
-  base::Value::Dict dict = base::Value::Dict();
-  base::Value::List permissions = base::Value::List();
-  permissions.Append(static_cast<int32_t>(ContentSettingsType::GEOLOCATION));
-  dict.Set(permissions::kRevokedKey, std::move(permissions));
+  auto dict = base::Value::Dict().Set(
+      permissions::kRevokedKey, base::Value::List().Append(static_cast<int32_t>(
+                                    ContentSettingsType::GEOLOCATION)));
   hcsm->SetWebsiteSettingCustomScope(
       ContentSettingsPattern::FromURLNoWildcard(url),
       ContentSettingsPattern::Wildcard(),
