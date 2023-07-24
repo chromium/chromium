@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/containers/span.h"
-#include "base/containers/stack_container.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/rand_util.h"
 #include "mojo/core/ipcz_driver/object.h"

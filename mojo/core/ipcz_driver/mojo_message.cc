@@ -9,12 +9,12 @@
 #include <utility>
 
 #include "base/containers/span.h"
-#include "base/containers/stack_container.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "mojo/core/ipcz_api.h"
 #include "mojo/core/ipcz_driver/data_pipe.h"
 #include "mojo/core/scoped_ipcz_handle.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
 namespace mojo::core::ipcz_driver {
@@ -44,22 +44,22 @@ namespace {
 // DataPipe can be migrated out of the driver and we can avoid this whole
 // serialization hack.
 bool FixUpDataPipeHandles(std::vector<IpczHandle>& handles) {
-  base::StackVector<DataPipe*, 2> data_pipes;
+  absl::InlinedVector<DataPipe*, 2> data_pipes;
   for (IpczHandle handle : handles) {
     if (auto* data_pipe = DataPipe::FromBox(handle)) {
-      data_pipes->push_back(data_pipe);
+      data_pipes.push_back(data_pipe);
     }
   }
 
-  if (handles.size() < data_pipes->size() * 2) {
+  if (handles.size() < data_pipes.size() * 2) {
     // Not enough handles.
     return false;
   }
 
   // The last N handles must be portals for the pipes in `data_pipes`, in order.
   // Remove them from the message's handles and give them to their data pipes.
-  const size_t first_data_pipe_portal = handles.size() - data_pipes->size();
-  for (size_t i = 0; i < data_pipes->size(); ++i) {
+  const size_t first_data_pipe_portal = handles.size() - data_pipes.size();
+  for (size_t i = 0; i < data_pipes.size(); ++i) {
     const IpczHandle handle = handles[first_data_pipe_portal + i];
     if (!data_pipes[i]->AdoptPortal(ScopedIpczHandle(handle))) {
       // Not a portal, so not a valid MojoMessage parcel.
