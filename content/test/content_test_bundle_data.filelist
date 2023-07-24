@@ -6204,8 +6204,6 @@ data/long_response_body.html
 data/mac/mac_system_hotkeys.plist
 data/mac/mac_system_hotkeys_sparse.plist
 data/manifest/404-manifest.html
-data/manifest/sample-manifest.html
-data/manifest/sample-manifest.json
 data/manifest/dynamic-manifest.html
 data/manifest/empty-manifest.html
 data/manifest/empty-manifest.json
@@ -6219,6 +6217,8 @@ data/manifest/parse-error-manifest.html
 data/manifest/parse-error-manifest.json
 data/manifest/parsing-errors-manifest.json
 data/manifest/parsing-errors.html
+data/manifest/sample-manifest.html
+data/manifest/sample-manifest.json
 data/manifest/sandboxed.html
 data/manifest/sandboxed.html.mock-http-headers
 data/manifest/script.js
@@ -6722,6 +6722,8 @@ data/shared_dictionary/test_dict.html
 data/shared_dictionary/test_dict.html.mock-http-headers
 data/shared_dictionary/test_no_acao.dict
 data/shared_dictionary/test_no_acao.dict.mock-http-headers
+data/shared_dictionary/with_dict_header.html
+data/shared_dictionary/with_dict_header.html.mock-http-headers
 data/shared_storage/customizable_module.js
 data/shared_storage/customizable_script.js
 data/shared_storage/erroneous_function_module.js

@@ -162,6 +162,8 @@ enum class FeatureState { kDisabled, kBackendOnly, kFullyEnabled };
 enum class BrowserType { kNormal, kOffTheRecord };
 enum class FetchType {
   kLinkRelDictionary,
+  kLinkRelDictionaryDocumentHeader,
+  kLinkRelDictionarySubresourceHeader,
   kFetchApi,
   kFetchApiWithSameOriginMode,
   kFetchApiWithNoCorsMode,
@@ -178,6 +180,27 @@ std::string LinkRelDictionaryScript(const GURL& dictionary_url) {
                 link.rel = 'dictionary';
                 link.href = $1;
                 document.body.appendChild(link);
+              })();
+            )",
+                   dictionary_url);
+}
+
+std::string LinkRelDictionaryDocumentHeaderScript(const GURL& dictionary_url) {
+  return JsReplace(R"(
+              (()=>{
+                const iframe = document.createElement('iframe');
+                iframe.src = new URL('with_dict_header.html', $1);
+                document.body.appendChild(iframe);
+              })();
+            )",
+                   dictionary_url);
+}
+
+std::string LinkRelDictionarySubresourceHeaderScript(
+    const GURL& dictionary_url) {
+  return JsReplace(R"(
+              (()=>{
+                fetch(new URL('with_dict_header.html', $1));
               })();
             )",
                    dictionary_url);
@@ -497,6 +520,12 @@ class SharedDictionaryBrowserTestBase : public ContentBrowserTest {
     switch (fetch_type) {
       case FetchType::kLinkRelDictionary:
         script = LinkRelDictionaryScript(dictionary_url);
+        break;
+      case FetchType::kLinkRelDictionaryDocumentHeader:
+        script = LinkRelDictionaryDocumentHeaderScript(dictionary_url);
+        break;
+      case FetchType::kLinkRelDictionarySubresourceHeader:
+        script = LinkRelDictionarySubresourceHeaderScript(dictionary_url);
         break;
       case FetchType::kFetchApi:
         script = FetchDictionaryScript(dictionary_url);
@@ -1232,6 +1261,20 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
   // http://127.0.0.1:PORT/ is secure context, so the dictionary should be
   // written.
   RunWriteDictionaryTest(FetchType::kFetchApi,
+                         GetURL("/shared_dictionary/blank.html"),
+                         GetURL("/shared_dictionary/test.dict"));
+}
+
+IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
+                       LinkRelDictionaryDocumentHeader) {
+  RunWriteDictionaryTest(FetchType::kLinkRelDictionaryDocumentHeader,
+                         GetURL("/shared_dictionary/blank.html"),
+                         GetURL("/shared_dictionary/test.dict"));
+}
+
+IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
+                       LinkRelDictionarySubresourceHeader) {
+  RunWriteDictionaryTest(FetchType::kLinkRelDictionarySubresourceHeader,
                          GetURL("/shared_dictionary/blank.html"),
                          GetURL("/shared_dictionary/test.dict"));
 }
