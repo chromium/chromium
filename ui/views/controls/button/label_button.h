@@ -60,6 +60,9 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
   const std::u16string& GetText() const;
   virtual void SetText(const std::u16string& text);
 
+  // Set the text style of the label.
+  void SetLabelStyle(views::style::TextStyle text_style);
+
   // Makes the button report its preferred size without the label. This lets
   // AnimatingLayoutManager gradually shrink the button until the text is
   // invisible, at which point the text gets cleared. Think of this as

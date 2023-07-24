@@ -110,6 +110,10 @@ void LabelButton::SetText(const std::u16string& text) {
   SetTextInternal(text);
 }
 
+void LabelButton::SetLabelStyle(views::style::TextStyle text_style) {
+  label_->SetTextStyle(text_style);
+}
+
 void LabelButton::ShrinkDownThenClearText() {
   if (GetText().empty())
     return;
