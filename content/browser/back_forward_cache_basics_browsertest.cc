@@ -1685,9 +1685,18 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Test pagehide's persisted value and whether the page can be BFCached when a
 // sticky/non-sticky feature is used on the mainframe/subframe.
+//
+// Flaky on Mac: https://crbug.com/1446474
+
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TestPagehidePersistedValue DISABLED_TestPagehidePersistedValue
+#else
+#define MAYBE_TestPagehidePersistedValue TestPagehidePersistedValue
+#endif
+
 IN_PROC_BROWSER_TEST_P(
     BackForwardCacheBrowserTestWithVaryingFrameAndFeatureStickinessType,
-    TestPagehidePersistedValue) {
+    MAYBE_TestPagehidePersistedValue) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
