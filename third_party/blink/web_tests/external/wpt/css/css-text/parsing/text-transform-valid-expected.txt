@@ -5,6 +5,7 @@ PASS e.style['text-transform'] = "uppercase" should set the property value
 PASS e.style['text-transform'] = "lowercase" should set the property value
 FAIL e.style['text-transform'] = "full-width" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['text-transform'] = "full-size-kana" should set the property value assert_not_equals: property should be set got disallowed value ""
+PASS e.style['text-transform'] = "math-auto" should set the property value
 FAIL e.style['text-transform'] = "capitalize full-width" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['text-transform'] = "uppercase full-size-kana" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['text-transform'] = "full-width full-size-kana" should set the property value assert_not_equals: property should be set got disallowed value ""

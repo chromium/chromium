@@ -1496,29 +1496,6 @@ crbug.com/6606 external/wpt/mathml/relations/html5-tree/href-click-1.html [ Fail
 crbug.com/6606 external/wpt/mathml/relations/html5-tree/href-click-2.html [ Failure ]
 crbug.com/6606 external/wpt/mathml/relations/html5-tree/href-click-3.html [ Failure ]
 
-# These tests should be removed from WPT.
-# See https://github.com/w3c/mathml-core/issues/182
-crbug.com/1076420 external/wpt/mathml/relations/css-styling/mathvariant-bold-fraktur.html [ Failure ]
-crbug.com/1076420 external/wpt/mathml/relations/css-styling/mathvariant-bold-italic.html [ Failure ]
-crbug.com/1076420 external/wpt/mathml/relations/css-styling/mathvariant-bold-sans-serif.html [ Failure ]
-crbug.com/1076420 external/wpt/mathml/relations/css-styling/mathvariant-bold-script.html [ Failure ]
-crbug.com/1076420 external/wpt/mathml/relations/css-styling/mathvariant-bold.html [ Failure ]
-crbug.com/1076420 external/wpt/mathml/relations/css-styling/mathvariant-case-sensitivity.html [ Failure ]
-crbug.com/1076420 external/wpt/mathml/relations/css-styling/mathvariant-double-struck.html [ Failure ]
-crbug.com/1076420 external/wpt/mathml/relations/css-styling/mathvariant-fraktur.html [ Failure ]
-crbug.com/1076420 external/wpt/mathml/relations/css-styling/mathvariant-initial.html [ Failure ]
-crbug.com/1076420 external/wpt/mathml/relations/css-styling/mathvariant-italic.html [ Failure ]
-crbug.com/1076420 external/wpt/mathml/relations/css-styling/mathvariant-looped.html [ Failure ]
-crbug.com/1076420 external/wpt/mathml/relations/css-styling/mathvariant-monospace.html [ Failure ]
-crbug.com/1076420 external/wpt/mathml/relations/css-styling/mathvariant-sans-serif-bold-italic.html [ Failure ]
-crbug.com/1076420 external/wpt/mathml/relations/css-styling/mathvariant-sans-serif-italic.html [ Failure ]
-crbug.com/1076420 external/wpt/mathml/relations/css-styling/mathvariant-sans-serif.html [ Failure ]
-crbug.com/1076420 external/wpt/mathml/relations/css-styling/mathvariant-script.html [ Failure ]
-crbug.com/1076420 external/wpt/mathml/relations/css-styling/mathvariant-stretched.html [ Failure ]
-crbug.com/1076420 external/wpt/mathml/relations/css-styling/mathvariant-tailed.html [ Failure ]
-crbug.com/1076420 external/wpt/mathml/relations/css-styling/mathvariant-basic-transforms-with-default-font.html [ Failure ]
-crbug.com/1076420 external/wpt/mathml/relations/css-styling/mathvariant-double-struck-font-style-font-weight.html [ Failure ]
-
 # ====== Style team owned tests from here ======
 
 crbug.com/1353560 [ Mac ] external/wpt/css/css-content/quotes-006.html [ Failure ]
@@ -6563,4 +6540,4 @@ crbug.com/1180274 http/tests/inspector-protocol/network/navigate-iframe-out2in.j
 crbug.com/1466474 fast/history/history-back-twice-with-subframes-assert.html [ Pass Timeout ]
 
 # Gardener 2023-07-24
-crbug.com/1466702 [ Mac ] inspector-protocol/debugger/debugger-evaluate-in-worker-while-pause-in-page.js [ Pass Failure Timeout ]
+crbug.com/1466702 [ Mac ] inspector-protocol/debugger/debugger-evaluate-in-worker-while-pause-in-page.js [ Failure Pass Timeout ]

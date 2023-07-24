@@ -267419,123 +267419,6 @@
         {}
        ]
       ],
-      "mathvariant-basic-transforms-with-default-font.html": [
-       "24c868c49512a4805bcde64df8f59325cd741f59",
-       [
-        null,
-        [
-         [
-          "/mathml/relations/css-styling/mathvariant-basic-transforms-with-default-font-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "mathvariant-bold-fraktur.html": [
-       "32d037603bcda2a4ef84aa367c50089ae05b337a",
-       [
-        null,
-        [
-         [
-          "/mathml/relations/css-styling/mathvariant-bold-fraktur-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "mathvariant-bold-italic.html": [
-       "725559a571f471f3c6384e87a29069f28d4a88c1",
-       [
-        null,
-        [
-         [
-          "/mathml/relations/css-styling/mathvariant-bold-italic-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "mathvariant-bold-sans-serif.html": [
-       "0e0662dff660445f6f8f90deac545e9a08492ea6",
-       [
-        null,
-        [
-         [
-          "/mathml/relations/css-styling/mathvariant-bold-sans-serif-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "mathvariant-bold-script.html": [
-       "0e775949f9b8034ad87d3bf42d8c97f48e9498ce",
-       [
-        null,
-        [
-         [
-          "/mathml/relations/css-styling/mathvariant-bold-script-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "mathvariant-bold.html": [
-       "db5f4755bec1d07c41324a7f14086679fef20700",
-       [
-        null,
-        [
-         [
-          "/mathml/relations/css-styling/mathvariant-bold-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "mathvariant-case-sensitivity.html": [
-       "21c8300a7a7a584b36083fbb430b193237bf97b6",
-       [
-        null,
-        [
-         [
-          "/mathml/relations/css-styling/mathvariant-case-sensitivity-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "mathvariant-double-struck-font-style-font-weight.html": [
-       "2e283e1d7022d69eeee89d85ad562586a5aacd4b",
-       [
-        null,
-        [
-         [
-          "/mathml/relations/css-styling/mathvariant-double-struck-font-style-font-weight-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "mathvariant-double-struck.html": [
-       "335234ac3858cbf08c54525defbeea08a0d040c6",
-       [
-        null,
-        [
-         [
-          "/mathml/relations/css-styling/mathvariant-double-struck-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
       "mathvariant-font-style-font-weight.html": [
        "793c687b097e1076b80d22b15be764c8f7db392d",
        [
@@ -267543,149 +267426,6 @@
         [
          [
           "/mathml/relations/css-styling/mathvariant-font-style-font-weight-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "mathvariant-fraktur.html": [
-       "9c95cd06e710d8e275ef600156594ca4d9e2d288",
-       [
-        null,
-        [
-         [
-          "/mathml/relations/css-styling/mathvariant-fraktur-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "mathvariant-initial.html": [
-       "3b0263a1977fbe14c287ef122caa2748c0ef7ed4",
-       [
-        null,
-        [
-         [
-          "/mathml/relations/css-styling/mathvariant-initial-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "mathvariant-italic.html": [
-       "1e6aa6512d326109525044379eaab4a064c4ab13",
-       [
-        null,
-        [
-         [
-          "/mathml/relations/css-styling/mathvariant-italic-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "mathvariant-looped.html": [
-       "b208849368b382caa9f44ca9d21be7db5f2fd508",
-       [
-        null,
-        [
-         [
-          "/mathml/relations/css-styling/mathvariant-looped-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "mathvariant-monospace.html": [
-       "ad5541fe0ecf22ea6ac5d3f8325d96681c47738d",
-       [
-        null,
-        [
-         [
-          "/mathml/relations/css-styling/mathvariant-monospace-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "mathvariant-sans-serif-bold-italic.html": [
-       "d51afe434546357fc8b2ecce9aeef5d2ac680a1a",
-       [
-        null,
-        [
-         [
-          "/mathml/relations/css-styling/mathvariant-sans-serif-bold-italic-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "mathvariant-sans-serif-italic.html": [
-       "e847ca9bb8d583a4413d589fa47e5bd4c4df54f5",
-       [
-        null,
-        [
-         [
-          "/mathml/relations/css-styling/mathvariant-sans-serif-italic-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "mathvariant-sans-serif.html": [
-       "43a1fa821f3a32e36b9b85e6702a1279b475b8c3",
-       [
-        null,
-        [
-         [
-          "/mathml/relations/css-styling/mathvariant-sans-serif-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "mathvariant-script.html": [
-       "afbdfd9f946d51f4d37f1a4b9087cf801bc7ee32",
-       [
-        null,
-        [
-         [
-          "/mathml/relations/css-styling/mathvariant-script-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "mathvariant-stretched.html": [
-       "99b06fb41be76e6f1adafff6cde98631f2a1e0e6",
-       [
-        null,
-        [
-         [
-          "/mathml/relations/css-styling/mathvariant-stretched-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "mathvariant-tailed.html": [
-       "43fbca5e80d6f2e462d25e532ad526b7019fff7d",
-       [
-        null,
-        [
-         [
-          "/mathml/relations/css-styling/mathvariant-tailed-ref.html",
           "=="
          ]
         ],
@@ -267775,7 +267515,7 @@
        ]
       },
       "presentational-hints-001.html": [
-       "842d04b40af759533fe79eddd7cfb262049a196c",
+       "96ee69541bc7d6008d51574123ac5476592d7d99",
        [
         null,
         [
@@ -267788,7 +267528,7 @@
        ]
       ],
       "presentational-hints-002.html": [
-       "fc89b07a37bd5c0b93b2385f237b4cb79a3ab478",
+       "8bb9153b863e91da7f239d7aad8bc623d34696b3",
        [
         null,
         [
@@ -276059,11 +275799,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "a4506190cdc216b9e2ff9b936ea8bac241403660",
+     "e939a2d8298c09af08810736b7c6fd2a93ae33f4",
      []
     ],
     "mtime.json": [
-     "cea3f4fae8ffe690882ebb024730c5ce846c34a3",
+     "3c0a9abf8555bd34145791e11498dc596504f880",
      []
     ]
    },
@@ -298380,10 +298120,6 @@
        "1947b0c73257046a8e456e156e54003df3b5ecc8",
        []
       ],
-      "css3-counter-styles-202.html.ini": [
-       "701b06d1e98c82ff12a3af046d34ba71e55a1d62",
-       []
-      ],
       "css3-counter-styles-203-ref.html": [
        "d3d4cc4caf8d9b1d218d9b7c06a6f75c6f38d36e",
        []
@@ -298396,10 +298132,6 @@
       ],
       "css3-counter-styles-205-ref.html": [
        "b05f06c42b640574cf63ca6480cf5743a91115d2",
-       []
-      ],
-      "css3-counter-styles-205.html.ini": [
-       "7f7b6e5e4d7385ee0bd09f599a2a004325698fd0",
        []
       ],
       "css3-counter-styles-206-ref.html": [
@@ -319399,7 +319131,7 @@
        []
       ],
       "position-sticky-margins.html.ini": [
-       "9d3a0d4511c3aba45db398949b15e94f2b5171c9",
+       "3e4a5e1de9d7a87978735e148a5c2f5eb41a09d5",
        []
       ],
       "position-sticky-nested-inline-ref.html": [
@@ -326803,7 +326535,7 @@
        []
       ],
       "text-transform-computed-expected.txt": [
-       "313b58867e18992b43bcf2f5f82d9a2edb7169b5",
+       "088244f8c0104ea56d3fd7791069460264cd212e",
        []
       ],
       "text-transform-computed.html.ini": [
@@ -326811,7 +326543,7 @@
        []
       ],
       "text-transform-valid-expected.txt": [
-       "4c2fa6440de79beb9200c4fb9382468097dd7266",
+       "6a133e482f7d91b24750745f6759c33c5d8b0d37",
        []
       ],
       "text-transform-valid.html.ini": [
@@ -340805,6 +340537,10 @@
      ],
      "text-orientation-mixed-vrl-100-ref.html": [
       "77de6727813b8bc62bfd8040dd78694e82b147c3",
+      []
+     ],
+     "text-orientation-mixed-vrl-100.html.ini": [
+      "3f7befe09158f680d5fec14639e3b839bd4ebbb7",
       []
      ],
      "text-orientation-sideways-vlr-100-ref.html": [
@@ -356905,6 +356641,10 @@
       "overlapping-navigations-and-traversals": {
        "README.md": [
         "cc313a155a167fa9f8182346c96764fe949da455",
+        []
+       ],
+       "cross-document-traversal-cross-document-traversal-expected.txt": [
+        "bc974a74ff1fc48aa94303d9a8d43bfe48f233a5",
         []
        ],
        "cross-document-traversal-cross-document-traversal.html.ini": [
@@ -379990,168 +379730,8 @@
        "105ba412e6e5734e7dbaa48f655fd57419cc108c",
        []
       ],
-      "mathvariant-basic-transforms-with-default-font-ref.html": [
-       "6ebfd75c2fa6cb16b20eae3dd3c3305fc1e37139",
-       []
-      ],
-      "mathvariant-basic-transforms-with-default-font.html.ini": [
-       "ffc0f3e4fa85ac1b62d3885bc4154d55ac4079a5",
-       []
-      ],
-      "mathvariant-bold-fraktur-ref.html": [
-       "44588948e7b85bae66a93de09bdff83be4acf4ce",
-       []
-      ],
-      "mathvariant-bold-fraktur.html.ini": [
-       "3925d9abdf3d643e5e5c5c789fcd8e4b2c5091e7",
-       []
-      ],
-      "mathvariant-bold-italic-ref.html": [
-       "9a93a37e35b2314e66d576280f36bc6a385de728",
-       []
-      ],
-      "mathvariant-bold-italic.html.ini": [
-       "db8ed69b17884201af4551424288b4710ee4741b",
-       []
-      ],
-      "mathvariant-bold-ref.html": [
-       "ac24ab5b003301a3b46c21c0eee985ddf137f384",
-       []
-      ],
-      "mathvariant-bold-sans-serif-ref.html": [
-       "78c0cc5ea624f56be0d5f127ad5bc77f3e665985",
-       []
-      ],
-      "mathvariant-bold-sans-serif.html.ini": [
-       "4ed8f4cebe12dcbacb914f7151863c12d60b876a",
-       []
-      ],
-      "mathvariant-bold-script-ref.html": [
-       "ef11f7fb8fabd25dd94cdb84ae8791083a8a66fc",
-       []
-      ],
-      "mathvariant-bold-script.html.ini": [
-       "762322b1135ab1ec5c433ca3dc4f8fbf08d3f7a5",
-       []
-      ],
-      "mathvariant-bold.html.ini": [
-       "7e9b5f996465bb36042eecbcb087f8ab67a5c901",
-       []
-      ],
-      "mathvariant-case-sensitivity-ref.html": [
-       "28d9acc1f4c2466c0d13c6bacc4e454b3bf365f3",
-       []
-      ],
-      "mathvariant-case-sensitivity.html.ini": [
-       "a292587cd79d3a0aad89b6b0d0bd60389fe17a1f",
-       []
-      ],
-      "mathvariant-double-struck-font-style-font-weight-ref.html": [
-       "817723a62d3eec1e4f00f0229338f4b34e786e9d",
-       []
-      ],
-      "mathvariant-double-struck-font-style-font-weight.html.ini": [
-       "e33f9f5e583661fdea8f37f77112d9bf2c78be5b",
-       []
-      ],
-      "mathvariant-double-struck-ref.html": [
-       "ebdb7a15b0d23c3dacfb4baf6cd2c25808b93cc5",
-       []
-      ],
-      "mathvariant-double-struck.html.ini": [
-       "917f388ee72df204b84b8631c1909bb786221ea3",
-       []
-      ],
       "mathvariant-font-style-font-weight-ref.html": [
        "c3e586f4dd57b1f0c448f481e751a5a64c2ba127",
-       []
-      ],
-      "mathvariant-fraktur-ref.html": [
-       "3d1dd50a7d4a3145bbc9d5b3b8507a06c7e21373",
-       []
-      ],
-      "mathvariant-fraktur.html.ini": [
-       "c45ec4955c5266da7972b154ace749517c894b18",
-       []
-      ],
-      "mathvariant-initial-ref.html": [
-       "5d5b72a1c5c3622413d8b4ee02ed8da7fde3d6f2",
-       []
-      ],
-      "mathvariant-initial.html.ini": [
-       "fae0b85485fc78917187703fd25604743f4cebcc",
-       []
-      ],
-      "mathvariant-italic-ref.html": [
-       "e2078c2948aa4f60c9c90492dd12bf413616690a",
-       []
-      ],
-      "mathvariant-italic.html.ini": [
-       "c39ac01e87473155590368ecd2837bc8ff92fc90",
-       []
-      ],
-      "mathvariant-looped-ref.html": [
-       "f00e5d87bb5a254581d84a74896b7c5ae027aedb",
-       []
-      ],
-      "mathvariant-looped.html.ini": [
-       "b2c2a81fdad542d5e0dbbb96a04ee0a7163a1755",
-       []
-      ],
-      "mathvariant-monospace-ref.html": [
-       "1d4a0c0a52091313407dab41310196333c4b78e4",
-       []
-      ],
-      "mathvariant-monospace.html.ini": [
-       "6cb42fa2a03c968c36c24e5e5a86837f3859a8c6",
-       []
-      ],
-      "mathvariant-sans-serif-bold-italic-ref.html": [
-       "f918db9b48ba579bc6342166737de0cdc1766c50",
-       []
-      ],
-      "mathvariant-sans-serif-bold-italic.html.ini": [
-       "0df110c5e82e1386c0a85fe50ba15c62194af2e6",
-       []
-      ],
-      "mathvariant-sans-serif-italic-ref.html": [
-       "d7e23248c69bb203f47bd491e96a52865f4c63fc",
-       []
-      ],
-      "mathvariant-sans-serif-italic.html.ini": [
-       "54360e6d11e07333b530e6428a5b7313cd0f284d",
-       []
-      ],
-      "mathvariant-sans-serif-ref.html": [
-       "ced5272ecb5447aeb7b5089eafd711db7e5e0926",
-       []
-      ],
-      "mathvariant-sans-serif.html.ini": [
-       "abc6cab0a103526051c63a6cb7552b972c083d96",
-       []
-      ],
-      "mathvariant-script-ref.html": [
-       "60ced85bc3a64735d4ce78fd6027ffd04451346c",
-       []
-      ],
-      "mathvariant-script.html.ini": [
-       "fe5258cc7ba93c646d5f53e940efd86bc0da04b2",
-       []
-      ],
-      "mathvariant-stretched-ref.html": [
-       "454f2004ac1f626930dffc021e7de62baa90bf7d",
-       []
-      ],
-      "mathvariant-stretched.html.ini": [
-       "cf84d8255c152a32371717cfa27cac20843c690f",
-       []
-      ],
-      "mathvariant-tailed-ref.html": [
-       "5e1461cd33efb474661ae6bf5d6e7cb66fa262b1",
-       []
-      ],
-      "mathvariant-tailed.html.ini": [
-       "2de4ee6d44c977aa0343ef536ff2e7137aa50dd9",
        []
       ],
       "mi-fontstyle-fontweight-ref.html": [
@@ -380183,11 +379763,11 @@
        ]
       },
       "presentational-hints-001-ref.html": [
-       "3d71d72fb34f35074962afc50fc7909bc55d3975",
+       "ca539440f8a5ccd9673c912cb9ac53d443b0097f",
        []
       ],
       "presentational-hints-002-ref.html": [
-       "b8f5458b9bbd169104535f66528a26356cf1ef45",
+       "fa22741efe5a8f9424aa7bbac6e6ad507f687fc9",
        []
       ],
       "transform-ref.html": [
@@ -380410,7 +379990,7 @@
       []
      ],
      "mathvariant-transforms.py": [
-      "a7a48eb941238621019dfd817d14b62c5e75202c",
+      "e4857d2a3e326fe981aa3ed2a5c3d0370ea0073b",
       []
      ],
      "operator-dictionary.py": [
@@ -381774,7 +381354,7 @@
       []
      ],
      "parsing.any.js.ini": [
-      "64c0dd8a2b81251a0c9dc5e3701ff40dec41c34e",
+      "448aa2883be44e5ba7c4d99ab446b8e322f9ee5a",
       []
      ],
      "parsing.any.worker-expected.txt": [
@@ -387525,7 +387105,7 @@
      []
     ],
     "content-type-parsing.html.ini": [
-     "834d281fdcfe65ec2e39d40364a67761aebe666f",
+     "28834c1d425f5b00bbfe8386286c2f6b3176f492",
      []
     ],
     "frameset-timing.html": [
@@ -392322,7 +391902,7 @@
       }
      },
      "unregister-immediately-during-extendable-events.https.html.ini": [
-      "0f2204cc829bab1ce95e8ac9ee827d992dc061ea",
+      "7fc91284e69d6290ebed935347ddb49863198de0",
       []
      ],
      "unregister-then-register-new-script.https-expected.txt": [
@@ -397849,7 +397429,7 @@
      []
     ],
     "url-setters-a-area.window.js.ini": [
-     "00474465d1f9adb667778ee882920c00368e9a0b",
+     "ad56c40f26f7fd9a9a369c0a980fbc90090a44d6",
      []
     ],
     "url-setters-a-area.window_include=javascript-expected.txt": [
@@ -397873,7 +397453,7 @@
      []
     ],
     "url-setters.any.js.ini": [
-     "0574ff5761ef28ae10cf7815ce67dac4453b4e65",
+     "649f334506fad0e23808a696d02b501813c66f06",
      []
     ],
     "url-setters.any.worker_include=javascript-expected.txt": [
@@ -400232,6 +399812,10 @@
      "5f8621ef83660c66f0d037ea28fafefb558140f1",
      []
     ],
+    "encodedVideoChunk-serialization.crossAgentCluster.helper.html": [
+     "424ce927f9a14acdb96d801cdf7fe6c7a7d5349a",
+     []
+    ],
     "four-colors-flip.avif": [
      "eb081061609efee6e02994f5956d5d3c2c913403",
      []
@@ -400289,7 +399873,7 @@
      []
     ],
     "full-cycle-test.https.any.js.ini": [
-     "0fdc9176efebfbcae528eebbb8a6bb938da2dab6",
+     "2edfc027147ca047ab1a7f0550d5ca07bfab0a06",
      []
     ],
     "h264.annexb": [
@@ -400333,7 +399917,11 @@
      []
     ],
     "reconfiguring-encoder.https.any.js.ini": [
-     "ee500cc1c43158188e6cdc6b876ce2f0ac7fa424",
+     "6d674ce5e4c819287f6ab07144147c8d67b213e8",
+     []
+    ],
+    "serialization.crossAgentCluster.serviceworker.js": [
+     "bb3ec0df5b7db20dd70b8c58d19d93e38e731f96",
      []
     ],
     "sfx-aac.mp4": [
@@ -400470,10 +400058,6 @@
     ],
     "videoFrame-serialization.crossAgentCluster.helper.html": [
      "8e751632a1f285b6c0dd50d4fb14cdb10d451816",
-     []
-    ],
-    "videoFrame-serialization.crossAgentCluster.serviceworker.js": [
-     "9b963610befab36124cfb2e61239253ad343a219",
      []
     ],
     "videoFrame-texImage.any.js.ini": [
@@ -469005,21 +468589,21 @@
        ]
       ],
       "text-transform-computed.html": [
-       "391ee019d30bf6a319d6c6afea8519d5241d17db",
+       "1808e6fdca2e37d9d85362450dc3a7259774f2c7",
        [
         null,
         {}
        ]
       ],
       "text-transform-invalid.html": [
-       "41482ab5f2c53da2c45bc1bc732ab143a67c05fd",
+       "3981480d38c8cd29b2078f0b92ce203ac83886be",
        [
         null,
         {}
        ]
       ],
       "text-transform-valid.html": [
-       "fead45c8b8e45da70d4c14d12e4eba38348aed41",
+       "522eb791b0c9c9047d5c5599a969f628a14f6436",
        [
         null,
         {}
@@ -581349,7 +580933,7 @@
     "presentation-markup": {
      "direction": {
       "direction.html": [
-       "657d048211132f98c97a8ecffa7da8460cc6168d",
+       "dfb1671e4cc0b10393b5a2baef0900466d464a93",
        [
         null,
         {}
@@ -645791,6 +645375,13 @@
       }
      ]
     ],
+    "encodedVideoChunk-serialization.crossAgentCluster.https.html": [
+     "fb104a3a1b1aacbf8772371dafce3c2b35084126",
+     [
+      null,
+      {}
+     ]
+    ],
     "full-cycle-test.https.any.js": [
      "56671e683610ff412d08ba7999843246554ac7f4",
      [
@@ -648629,7 +648220,7 @@
      ]
     ],
     "videoFrame-serialization.crossAgentCluster.https.html": [
-     "27f624a8449ce4debdd77477f37a0ba18b65ba36",
+     "11b5e23124ecc4cb146570803a6c5d208bdcb36e",
      [
       null,
       {}
