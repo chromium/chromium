@@ -271,12 +271,12 @@ void LayoutShiftTracker::ObjectShifted(
                                    new_starting_point, threshold_physical_px))
     return;
 
-  if (RuntimeEnabledFeatures::CLSScrollAnchoringEnabled() &&
-      !scroll_anchor_adjustment.IsZero() &&
+  if (!scroll_anchor_adjustment.IsZero() &&
       EqualWithinMovementThreshold(
           old_starting_point + scroll_delta + scroll_anchor_adjustment,
-          new_starting_point, threshold_physical_px))
+          new_starting_point, threshold_physical_px)) {
     return;
+  }
 
   // Check shift of 2d-translation-and-scroll-indifferent starting point.
   gfx::Vector2dF translation_and_scroll_delta =

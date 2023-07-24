@@ -635,10 +635,6 @@
       name: "CloseWatcher",
     },
     {
-      name: "CLSScrollAnchoring",
-      status: "stable",
-    },
-    {
       name: "CoepReflection",
       status: "test",
       base_feature: "none",
