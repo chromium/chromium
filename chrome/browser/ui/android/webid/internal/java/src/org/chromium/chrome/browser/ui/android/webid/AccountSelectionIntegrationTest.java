@@ -8,6 +8,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -32,6 +33,7 @@ import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.filters.MediumTest;
 import androidx.test.runner.lifecycle.Stage;
 
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -41,17 +43,14 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.ScalableTimeout;
+import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabCreationState;
-import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tabmodel.TabModelObserver;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
@@ -81,6 +80,7 @@ public class AccountSelectionIntegrationTest {
     private static final String TEST_ETLD_PLUS_ONE_2 = "two.com";
     private static final GURL TEST_PROFILE_PIC =
             JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1_WITH_PATH);
+    private static final GURL TEST_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
 
     private static final Account ANA = new Account("Ana", "ana@one.test", "Ana Doe", "Ana",
             TEST_PROFILE_PIC, /*loginHints=*/new String[0], true);
@@ -264,28 +264,24 @@ public class AccountSelectionIntegrationTest {
 
     @Test
     @MediumTest
-    public void testShowModalDialog() throws Exception {
-        final TabModelSelector tabSelector = mActivityTestRule.getActivity().getTabModelSelector();
-
-        final CallbackHelper openTabHelper = new CallbackHelper();
-        final CallbackHelper closeTabHelper = new CallbackHelper();
-        runOnUiThreadBlocking(() -> {
-            tabSelector.getModel(false).addObserver(new TabModelObserver() {
-                @Override
-                public void didAddTab(Tab tab, @TabLaunchType int type,
-                        @TabCreationState int creationState, boolean markedForSelection) {
-                    openTabHelper.notifyCalled();
-                    mAccountSelection.closeModalDialog();
-                }
-                @Override
-                public void onFinishingTabClosure(Tab tab) {
-                    closeTabHelper.notifyCalled();
-                }
-            });
-            mAccountSelection.showModalDialog(new GURL(EXAMPLE_ETLD_PLUS_ONE));
+    public void testShowModalDialog() {
+        CustomTabActivity activity =
+                ApplicationTestUtils.waitForActivityWithClass(CustomTabActivity.class,
+                        Stage.RESUMED, () -> mAccountSelection.showModalDialog(TEST_URL));
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(activity.getActivityTab(), Matchers.notNullValue());
+            Criteria.checkThat(activity.getActivityTab().getUrl(), is(TEST_URL));
+            Criteria.checkThat(activity.getIntent(), Matchers.notNullValue());
+            Criteria.checkThat(activity.getIntent().getIntExtra(IntentHandler.EXTRA_FEDCM_ID, -1),
+                    Matchers.not(-1));
         });
-        openTabHelper.waitForCallback(0, 1);
-        closeTabHelper.waitForCallback(0, 1);
+    }
+
+    @Test
+    @MediumTest
+    public void testCloseModalDialog() {
+        ApplicationTestUtils.waitForActivityWithClass(
+                ChromeActivity.class, Stage.DESTROYED, () -> mAccountSelection.closeModalDialog());
     }
 
     public static <T> T waitForEvent(T mock) {

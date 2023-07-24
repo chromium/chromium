@@ -257,6 +257,13 @@ public class IntentHandler {
     public static final String EXTRA_STARTED_TABBED_CHROME_TASK =
             "org.chromium.chrome.browser.started_chrome_task";
 
+    /**
+     * An ID of the FedCM invocation associated with this intent. It is used to keep a mapping from
+     * IDs to openers, so that a CCT opened as a result of the FedCM API may send notifications to
+     * the opener.
+     */
+    public static final String EXTRA_FEDCM_ID = "org.chromium.chrome.browser.fedcm_id";
+
     private static Pair<Integer, String> sPendingReferrer;
     private static int sReferrerId;
     private static String sPendingIncognitoUrl;

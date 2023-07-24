@@ -4,8 +4,14 @@
 
 package org.chromium.chrome.browser.ui.android.webid;
 
+import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_DARK;
+import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT;
+
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.provider.Browser;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,15 +19,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Px;
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.base.IntentUtils;
+import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.LaunchIntentDispatcher;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
@@ -31,16 +38,19 @@ import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
-import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
+import java.lang.ref.WeakReference;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Creates the AccountSelection component. AccountSelection uses a bottom sheet to let the
@@ -49,9 +59,17 @@ import java.util.List;
 public class AccountSelectionCoordinator implements AccountSelectionComponent {
     private static final int MAX_IMAGE_CACHE_SIZE = 500 * ConversionUtils.BYTES_PER_KILOBYTE;
 
+    private static Map<Integer, WeakReference<AccountSelectionComponent.Delegate>>
+            sFedCMDelegateMap = new HashMap<>();
+
+    // A counter used to generate a unique ID every time a new showModalDialog()
+    // call occurs.
+    private static int sCurrentFedcmId;
+
     private WindowAndroid mWindowAndroid;
     private BottomSheetController mBottomSheetController;
     private AccountSelectionBottomSheetContent mBottomSheetContent;
+    private AccountSelectionComponent.Delegate mDelegate;
     private AccountSelectionMediator mMediator;
     private RecyclerView mSheetItemListView;
 
@@ -59,6 +77,7 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
             BottomSheetController sheetController, AccountSelectionComponent.Delegate delegate) {
         mBottomSheetController = sheetController;
         mWindowAndroid = windowAndroid;
+        mDelegate = delegate;
         Context context = mWindowAndroid.getContext().get();
 
         PropertyModel model =
@@ -125,6 +144,11 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
                 .inflate(R.layout.account_selection_continue_button, parent, false);
     }
 
+    static int generatedFedCMId() {
+        // Get a non-negative number so that we can use -1 as an error.
+        return ++sCurrentFedcmId;
+    }
+
     @Override
     public void showAccounts(String topFrameEtldPlusOne, String iframeEtldPlusOne,
             String idpEtldPlusOne, List<Account> accounts, IdentityProviderMetadata idpMetadata,
@@ -160,24 +184,46 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
 
     @Override
     public WebContents showModalDialog(GURL url) {
-        Activity activity = mWindowAndroid.getActivity().get();
-        if (!(activity instanceof ChromeTabbedActivity)) {
-            return null;
-        }
-        ChromeTabbedActivity chromeTabbedActivity = (ChromeTabbedActivity) activity;
-        ChromeTabCreator chromeTabCreator = chromeTabbedActivity.getCurrentTabCreator();
-        Tab newTab = chromeTabCreator.createNewTab(
-                new LoadUrlParams(url), TabLaunchType.FROM_LINK, null);
-        return newTab.getWebContents();
+        Context context = mWindowAndroid.getContext().get();
+        CustomTabsIntent customTabIntent =
+                new CustomTabsIntent.Builder()
+                        .setShowTitle(true)
+                        .setColorScheme(ColorUtils.inNightMode(context) ? COLOR_SCHEME_DARK
+                                                                        : COLOR_SCHEME_LIGHT)
+                        .build();
+        customTabIntent.intent.setData(Uri.parse(url.getSpec()));
+
+        Intent intent = LaunchIntentDispatcher.createCustomTabActivityIntent(
+                context, customTabIntent.intent);
+        intent.setPackage(context.getPackageName());
+        intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
+        assert context instanceof Activity;
+        // Set a new FedCM ID, and store it.
+        int fedcmId = generatedFedCMId();
+        sFedCMDelegateMap.put(
+                fedcmId, new WeakReference<AccountSelectionComponent.Delegate>(mDelegate));
+        intent.putExtra(IntentHandler.EXTRA_FEDCM_ID, fedcmId);
+        IntentUtils.addTrustedIntentExtras(intent);
+
+        context.startActivity(intent);
+        // CCT is opened asynchronously, and we do not have the WebContents for it yet.
+        return null;
     }
 
     @Override
     public void closeModalDialog() {
         Activity activity = mWindowAndroid.getActivity().get();
-        if (!(activity instanceof ChromeTabbedActivity)) {
+        if (!(activity instanceof ChromeActivity)) {
             return;
         }
-        ChromeTabbedActivity chromeTabbedActivity = (ChromeTabbedActivity) activity;
-        TabModelUtils.closeCurrentTab(chromeTabbedActivity.getCurrentTabModel());
+        ChromeActivity chromeActivity = (ChromeActivity) activity;
+        int fedcmId = IntentUtils.safeGetIntExtra(
+                chromeActivity.getIntent(), IntentHandler.EXTRA_FEDCM_ID, -1);
+        // Close the current tab by finishing the activity.
+        activity.finish();
+        WeakReference<AccountSelectionComponent.Delegate> delegate = sFedCMDelegateMap.get(fedcmId);
+        if (delegate != null && delegate.get() != null) {
+            // TODO(crbug.com/1456368): notify the opener using the fedcmId.
+        }
     }
 }
