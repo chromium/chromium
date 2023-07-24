@@ -6693,3 +6693,6 @@ crbug.com/1455325 external/wpt/html/semantics/forms/form-submission-0/form-doubl
 crbug.com/1442863 http/tests/devtools/bindings/shadowdom-navigator.js [ Failure Pass ]
 
 crbug.com/1455984 external/wpt/longtask-timing/longtask-attributes.html [ Failure Pass ]
+
+# This test is unreliable because of delayed update of history.length during cross-document navigation.
+crbug.com/1466474 fast/history/history-back-twice-with-subframes-assert.html [ Pass Timeout ]
