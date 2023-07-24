@@ -634,40 +634,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) Time
 #if BUILDFLAG(IS_WIN)
   static Time FromFileTime(FILETIME ft);
   FILETIME ToFileTime() const;
-
-  // The minimum time of a low resolution timer.  This is basically a windows
-  // constant of ~15.6ms.  While it does vary on some older OS versions, we'll
-  // treat it as static across all windows versions.
-  static const int kMinLowResolutionThresholdMs = 16;
-
-  // Enable or disable Windows high resolution timer.
-  static void EnableHighResolutionTimer(bool enable);
-
-  // Activates or deactivates the high resolution timer based on the |activate|
-  // flag.  If the HighResolutionTimer is not Enabled (see
-  // EnableHighResolutionTimer), this function will return false.  Otherwise
-  // returns true.  Each successful activate call must be paired with a
-  // subsequent deactivate call.
-  // All callers to activate the high resolution timer must eventually call
-  // this function to deactivate the high resolution timer.
-  static bool ActivateHighResolutionTimer(bool activate);
-
-  // Returns true if the high resolution timer is both enabled and activated.
-  // This is provided for testing only, and is not tracked in a thread-safe
-  // way.
-  static bool IsHighResolutionTimerInUse();
-
-  // The following two functions are used to report the fraction of elapsed time
-  // that the high resolution timer is activated.
-  // ResetHighResolutionTimerUsage() resets the cumulative usage and starts the
-  // measurement interval and GetHighResolutionTimerUsage() returns the
-  // percentage of time since the reset that the high resolution timer was
-  // activated.
-  // ResetHighResolutionTimerUsage() must be called at least once before calling
-  // GetHighResolutionTimerUsage(); otherwise the usage result would be
-  // undefined.
-  static void ResetHighResolutionTimerUsage();
-  static double GetHighResolutionTimerUsage();
 #endif  // BUILDFLAG(IS_WIN)
 
   // For legacy deserialization only. Converts an integer value representing
