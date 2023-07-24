@@ -100,43 +100,43 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
       // Browsing Context domain
       // keep-sorted start block=yes
       case 'browsingContext.activate':
-        return this.#browsingContextProcessor.process_browsingContext_activate(
+        return this.#browsingContextProcessor.activate(
           this.#parser.parseActivateParams(command.params)
         );
       case 'browsingContext.captureScreenshot':
-        return this.#browsingContextProcessor.process_browsingContext_captureScreenshot(
+        return this.#browsingContextProcessor.captureScreenshot(
           this.#parser.parseCaptureScreenshotParams(command.params)
         );
       case 'browsingContext.close':
-        return this.#browsingContextProcessor.process_browsingContext_close(
+        return this.#browsingContextProcessor.close(
           this.#parser.parseCloseParams(command.params)
         );
       case 'browsingContext.create':
-        return this.#browsingContextProcessor.process_browsingContext_create(
+        return this.#browsingContextProcessor.create(
           this.#parser.parseCreateParams(command.params)
         );
       case 'browsingContext.getTree':
-        return this.#browsingContextProcessor.process_browsingContext_getTree(
+        return this.#browsingContextProcessor.getTree(
           this.#parser.parseGetTreeParams(command.params)
         );
       case 'browsingContext.handleUserPrompt':
-        return this.#browsingContextProcessor.process_browsingContext_handleUserPrompt(
+        return this.#browsingContextProcessor.handleUserPrompt(
           this.#parser.parseHandleUserPromptParams(command.params)
         );
       case 'browsingContext.navigate':
-        return this.#browsingContextProcessor.process_browsingContext_navigate(
+        return this.#browsingContextProcessor.navigate(
           this.#parser.parseNavigateParams(command.params)
         );
       case 'browsingContext.print':
-        return this.#browsingContextProcessor.process_browsingContext_print(
+        return this.#browsingContextProcessor.print(
           this.#parser.parsePrintParams(command.params)
         );
       case 'browsingContext.reload':
-        return this.#browsingContextProcessor.process_browsingContext_reload(
+        return this.#browsingContextProcessor.reload(
           this.#parser.parseReloadParams(command.params)
         );
       case 'browsingContext.setViewport':
-        return this.#browsingContextProcessor.process_browsingContext_setViewport(
+        return this.#browsingContextProcessor.setViewport(
           this.#parser.parseSetViewportParams(command.params)
         );
       // keep-sorted end

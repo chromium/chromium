@@ -63,6 +63,187 @@ export class BrowsingContextProcessor {
     this.#setEventListeners(this.#cdpConnection.browserClient());
   }
 
+  getTree(
+    params: BrowsingContext.GetTreeParameters
+  ): BrowsingContext.GetTreeResult {
+    const resultContexts =
+      params.root === undefined
+        ? this.#browsingContextStorage.getTopLevelContexts()
+        : [this.#browsingContextStorage.getContext(params.root)];
+
+    return {
+      contexts: resultContexts.map((c) =>
+        c.serializeToBidiValue(params.maxDepth ?? Number.MAX_VALUE)
+      ),
+    };
+  }
+
+  async create(
+    params: BrowsingContext.CreateParameters
+  ): Promise<BrowsingContext.CreateResult> {
+    const browserCdpClient = this.#cdpConnection.browserClient();
+
+    let referenceContext: BrowsingContextImpl | undefined;
+    if (params.referenceContext !== undefined) {
+      referenceContext = this.#browsingContextStorage.getContext(
+        params.referenceContext
+      );
+      if (!referenceContext.isTopLevelContext()) {
+        throw new InvalidArgumentException(
+          `referenceContext should be a top-level context`
+        );
+      }
+    }
+
+    let result: Protocol.Target.CreateTargetResponse;
+
+    switch (params.type) {
+      case BrowsingContext.CreateType.Tab:
+        result = await browserCdpClient.sendCommand('Target.createTarget', {
+          url: 'about:blank',
+          newWindow: false,
+        });
+        break;
+      case BrowsingContext.CreateType.Window:
+        result = await browserCdpClient.sendCommand('Target.createTarget', {
+          url: 'about:blank',
+          newWindow: true,
+        });
+        break;
+    }
+
+    // Wait for the new tab to be loaded to avoid race conditions in the
+    // `browsingContext` events, when the `browsingContext.domContentLoaded` and
+    // `browsingContext.load` events from the initial `about:blank` navigation
+    // are emitted after the next navigation is started.
+    // Details: https://github.com/web-platform-tests/wpt/issues/35846
+    const contextId = result.targetId;
+    const context = this.#browsingContextStorage.getContext(contextId);
+    await context.lifecycleLoaded();
+
+    return {context: context.id};
+  }
+
+  navigate(
+    params: BrowsingContext.NavigateParameters
+  ): Promise<BrowsingContext.NavigateResult> {
+    const context = this.#browsingContextStorage.getContext(params.context);
+
+    return context.navigate(
+      params.url,
+      params.wait ?? BrowsingContext.ReadinessState.None
+    );
+  }
+
+  reload(params: BrowsingContext.ReloadParameters): Promise<EmptyResult> {
+    const context = this.#browsingContextStorage.getContext(params.context);
+
+    return context.reload(
+      params.ignoreCache ?? false,
+      params.wait ?? BrowsingContext.ReadinessState.None
+    );
+  }
+
+  async activate(
+    params: BrowsingContext.ActivateParameters
+  ): Promise<EmptyResult> {
+    const context = this.#browsingContextStorage.getContext(params.context);
+    if (!context.isTopLevelContext()) {
+      throw new InvalidArgumentException(
+        'Activation is only supported on the top-level context'
+      );
+    }
+    await context.activate();
+    return {};
+  }
+
+  async captureScreenshot(
+    params: BrowsingContext.CaptureScreenshotParameters
+  ): Promise<BrowsingContext.CaptureScreenshotResult> {
+    const context = this.#browsingContextStorage.getContext(params.context);
+    return context.captureScreenshot();
+  }
+
+  async print(
+    params: BrowsingContext.PrintParameters
+  ): Promise<BrowsingContext.PrintResult> {
+    const context = this.#browsingContextStorage.getContext(params.context);
+    return context.print(params);
+  }
+
+  async setViewport(
+    params: BrowsingContext.SetViewportParameters
+  ): Promise<EmptyResult> {
+    const context = this.#browsingContextStorage.getContext(params.context);
+    if (!context.isTopLevelContext()) {
+      throw new InvalidArgumentException(
+        'Emulating viewport is only supported on the top-level context'
+      );
+    }
+    await context.setViewport(params.viewport);
+    return {};
+  }
+
+  async handleUserPrompt(
+    params: BrowsingContext.HandleUserPromptParameters
+  ): Promise<EmptyResult> {
+    const context = this.#browsingContextStorage.getContext(params.context);
+    await context.handleUserPrompt(params);
+    return {};
+  }
+
+  async close(
+    commandParams: BrowsingContext.CloseParameters
+  ): Promise<EmptyResult> {
+    const context = this.#browsingContextStorage.getContext(
+      commandParams.context
+    );
+
+    if (!context.isTopLevelContext()) {
+      throw new InvalidArgumentException(
+        `Non top-level browsing context ${context.id} cannot be closed.`
+      );
+    }
+
+    try {
+      const browserCdpClient = this.#cdpConnection.browserClient();
+      const detachedFromTargetPromise = new Promise<void>((resolve) => {
+        const onContextDestroyed = (
+          event: Protocol.Target.DetachedFromTargetEvent
+        ) => {
+          if (event.targetId === commandParams.context) {
+            browserCdpClient.off(
+              'Target.detachedFromTarget',
+              onContextDestroyed
+            );
+            resolve();
+          }
+        };
+        browserCdpClient.on('Target.detachedFromTarget', onContextDestroyed);
+      });
+
+      await context.close();
+
+      // Sometimes CDP command finishes before `detachedFromTarget` event,
+      // sometimes after. Wait for the CDP command to be finished, and then wait
+      // for `detachedFromTarget` if it hasn't emitted.
+      await detachedFromTargetPromise;
+    } catch (error: any) {
+      // Swallow error that arise from the page being destroyed
+      // Example is navigating to faulty SSL certificate
+      if (
+        !(
+          error.code === -32000 &&
+          error.message === 'Not attached to an active page'
+        )
+      ) {
+        throw error;
+      }
+    }
+
+    return {};
+  }
+
   /**
    * This method is called for each CDP session, since this class is responsible
    * for creating and destroying all targets and browsing contexts.
@@ -196,189 +377,6 @@ export class BrowsingContextProcessor {
     this.#browsingContextStorage
       .findContext(contextId)
       ?.onTargetInfoChanged(params);
-  }
-
-  process_browsingContext_getTree(
-    params: BrowsingContext.GetTreeParameters
-  ): BrowsingContext.GetTreeResult {
-    const resultContexts =
-      params.root === undefined
-        ? this.#browsingContextStorage.getTopLevelContexts()
-        : [this.#browsingContextStorage.getContext(params.root)];
-
-    return {
-      contexts: resultContexts.map((c) =>
-        c.serializeToBidiValue(params.maxDepth ?? Number.MAX_VALUE)
-      ),
-    };
-  }
-
-  async process_browsingContext_create(
-    params: BrowsingContext.CreateParameters
-  ): Promise<BrowsingContext.CreateResult> {
-    const browserCdpClient = this.#cdpConnection.browserClient();
-
-    let referenceContext: BrowsingContextImpl | undefined;
-    if (params.referenceContext !== undefined) {
-      referenceContext = this.#browsingContextStorage.getContext(
-        params.referenceContext
-      );
-      if (!referenceContext.isTopLevelContext()) {
-        throw new InvalidArgumentException(
-          `referenceContext should be a top-level context`
-        );
-      }
-    }
-
-    let result: Protocol.Target.CreateTargetResponse;
-
-    switch (params.type) {
-      case BrowsingContext.CreateType.Tab:
-        result = await browserCdpClient.sendCommand('Target.createTarget', {
-          url: 'about:blank',
-          newWindow: false,
-        });
-        break;
-      case BrowsingContext.CreateType.Window:
-        result = await browserCdpClient.sendCommand('Target.createTarget', {
-          url: 'about:blank',
-          newWindow: true,
-        });
-        break;
-    }
-
-    // Wait for the new tab to be loaded to avoid race conditions in the
-    // `browsingContext` events, when the `browsingContext.domContentLoaded` and
-    // `browsingContext.load` events from the initial `about:blank` navigation
-    // are emitted after the next navigation is started.
-    // Details: https://github.com/web-platform-tests/wpt/issues/35846
-    const contextId = result.targetId;
-    const context = this.#browsingContextStorage.getContext(contextId);
-    await context.lifecycleLoaded();
-
-    return {context: context.id};
-  }
-
-  process_browsingContext_navigate(
-    params: BrowsingContext.NavigateParameters
-  ): Promise<BrowsingContext.NavigateResult> {
-    const context = this.#browsingContextStorage.getContext(params.context);
-
-    return context.navigate(
-      params.url,
-      params.wait ?? BrowsingContext.ReadinessState.None
-    );
-  }
-
-  process_browsingContext_reload(
-    params: BrowsingContext.ReloadParameters
-  ): Promise<EmptyResult> {
-    const context = this.#browsingContextStorage.getContext(params.context);
-
-    return context.reload(
-      params.ignoreCache ?? false,
-      params.wait ?? BrowsingContext.ReadinessState.None
-    );
-  }
-
-  async process_browsingContext_activate(
-    params: BrowsingContext.ActivateParameters
-  ): Promise<EmptyResult> {
-    const context = this.#browsingContextStorage.getContext(params.context);
-    if (!context.isTopLevelContext()) {
-      throw new InvalidArgumentException(
-        'Activation is only supported on the top-level context'
-      );
-    }
-    await context.activate();
-    return {};
-  }
-
-  async process_browsingContext_captureScreenshot(
-    params: BrowsingContext.CaptureScreenshotParameters
-  ): Promise<BrowsingContext.CaptureScreenshotResult> {
-    const context = this.#browsingContextStorage.getContext(params.context);
-    return context.captureScreenshot();
-  }
-
-  async process_browsingContext_print(
-    params: BrowsingContext.PrintParameters
-  ): Promise<BrowsingContext.PrintResult> {
-    const context = this.#browsingContextStorage.getContext(params.context);
-    return context.print(params);
-  }
-
-  async process_browsingContext_setViewport(
-    params: BrowsingContext.SetViewportParameters
-  ): Promise<EmptyResult> {
-    const context = this.#browsingContextStorage.getContext(params.context);
-    if (!context.isTopLevelContext()) {
-      throw new InvalidArgumentException(
-        'Emulating viewport is only supported on the top-level context'
-      );
-    }
-    await context.setViewport(params.viewport);
-    return {};
-  }
-
-  async process_browsingContext_handleUserPrompt(
-    params: BrowsingContext.HandleUserPromptParameters
-  ): Promise<EmptyResult> {
-    const context = this.#browsingContextStorage.getContext(params.context);
-    await context.handleUserPrompt(params);
-    return {};
-  }
-
-  async process_browsingContext_close(
-    commandParams: BrowsingContext.CloseParameters
-  ): Promise<EmptyResult> {
-    const context = this.#browsingContextStorage.getContext(
-      commandParams.context
-    );
-
-    if (!context.isTopLevelContext()) {
-      throw new InvalidArgumentException(
-        `Non top-level browsing context ${context.id} cannot be closed.`
-      );
-    }
-
-    try {
-      const browserCdpClient = this.#cdpConnection.browserClient();
-      const detachedFromTargetPromise = new Promise<void>((resolve) => {
-        const onContextDestroyed = (
-          event: Protocol.Target.DetachedFromTargetEvent
-        ) => {
-          if (event.targetId === commandParams.context) {
-            browserCdpClient.off(
-              'Target.detachedFromTarget',
-              onContextDestroyed
-            );
-            resolve();
-          }
-        };
-        browserCdpClient.on('Target.detachedFromTarget', onContextDestroyed);
-      });
-
-      await context.close();
-
-      // Sometimes CDP command finishes before `detachedFromTarget` event,
-      // sometimes after. Wait for the CDP command to be finished, and then wait
-      // for `detachedFromTarget` if it hasn't emitted.
-      await detachedFromTargetPromise;
-    } catch (error: any) {
-      // Swallow error that arise from the page being destroyed
-      // Example is navigating to faulty SSL certificate
-      if (
-        !(
-          error.code === -32000 &&
-          error.message === 'Not attached to an active page'
-        )
-      ) {
-        throw error;
-      }
-    }
-
-    return {};
   }
 
   #isValidTarget(target: Protocol.Target.TargetInfo) {
