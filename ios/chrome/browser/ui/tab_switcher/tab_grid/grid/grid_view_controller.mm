@@ -407,13 +407,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
     // After transition from other modes to the normal mode, the selection
     // border doesn't show around the selected item, because reloading
-    // operations like `reloadSections` loose the selected items. The
-    // collection view needs to be updated with the selected item again for it
-    // to appear correctly.
-    [self deselectAllCollectionViewItemsAnimated:NO];
-    [self selectCollectionViewItemWithID:self.selectedItemID
-                                animated:NO
-                          scrollPosition:UICollectionViewScrollPositionNone];
+    // operations like `reloadSections` lose the selected items. The collection
+    // view needs to be updated with the selected item again for it to appear
+    // correctly.
+    [self updateSelectedCollectionViewItemRingAndBringIntoView:NO];
 
     self.searchText = nil;
   }
@@ -495,8 +492,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     return;
   }
 
-  [self deselectAllCollectionViewItemsAnimated:NO];
-  [self selectCollectionViewItemWithID:self.selectedItemID animated:NO];
+  [self updateSelectedCollectionViewItemRingAndBringIntoView:YES];
 
   // Update the delegate, in case it wasn't set when `items` was populated.
   [self.delegate gridViewController:self didChangeItemCount:self.items.count];
@@ -1245,8 +1241,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   [self reloadTabs];
 
-  [self deselectAllCollectionViewItemsAnimated:NO];
-  [self selectCollectionViewItemWithID:self.selectedItemID animated:NO];
+  [self updateSelectedCollectionViewItemRingAndBringIntoView:YES];
 
   if ([self shouldShowEmptyState]) {
     [self animateEmptyStateIn];
@@ -1293,9 +1288,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     if (!strongSelf) {
       return;
     }
-    [strongSelf deselectAllCollectionViewItemsAnimated:NO];
-    [strongSelf selectCollectionViewItemWithID:strongSelf.selectedItemID
-                                      animated:YES];
+    [strongSelf updateSelectedCollectionViewItemRingAndBringIntoView:YES];
 
     [strongSelf.delegate gridViewController:strongSelf
                          didChangeItemCount:strongSelf.items.count];
@@ -1349,11 +1342,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       return;
     }
     if (strongSelf.items.count > 0) {
-      [strongSelf deselectAllCollectionViewItemsAnimated:NO];
-      [strongSelf
-          selectCollectionViewItemWithID:strongSelf.selectedItemID
-                                animated:NO
-                          scrollPosition:UICollectionViewScrollPositionNone];
+      [strongSelf updateSelectedCollectionViewItemRingAndBringIntoView:NO];
     }
     [strongSelf.delegate gridViewController:strongSelf
                          didChangeItemCount:strongSelf.items.count];
@@ -1376,12 +1365,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   if ([self.selectedItemID isEqualToString:selectedItemID])
     return;
 
-  [self deselectAllCollectionViewItemsAnimated:NO];
-
   self.selectedItemID = selectedItemID;
-  [self selectCollectionViewItemWithID:self.selectedItemID
-                              animated:NO
-                        scrollPosition:UICollectionViewScrollPositionNone];
+  [self updateSelectedCollectionViewItemRingAndBringIntoView:NO];
 }
 
 - (void)replaceItemID:(NSString*)itemID withItem:(TabSwitcherItem*)item {
@@ -1596,43 +1581,32 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 #pragma mark - Private
 
-// Selects the collection view's item with `itemID`.
-- (void)selectCollectionViewItemWithID:(NSString*)itemID
-                              animated:(BOOL)animated
-                        scrollPosition:
-                            (UICollectionViewScrollPosition)scrollPosition {
-  NSUInteger itemIndex = [self indexOfItemWithID:itemID];
-
-  // Check `itemIndex` boundaries in order to filter out possible race
-  // conditions while mutating the collection.
-  if (itemIndex == NSNotFound || itemIndex >= self.items.count) {
-    return;
-  }
-
-  NSIndexPath* itemIndexPath = CreateIndexPath(itemIndex);
-
-  [self.collectionView selectItemAtIndexPath:itemIndexPath
-                                    animated:animated
-                              scrollPosition:scrollPosition];
-}
-
-// Selects the collection view's item with `itemID` and scrolls to have it at
-// the top.
-- (void)selectCollectionViewItemWithID:(NSString*)itemID
-                              animated:(BOOL)animated {
-  [self selectCollectionViewItemWithID:itemID
-                              animated:animated
-                        scrollPosition:UICollectionViewScrollPositionTop];
-}
-
-// Deselects all the collection view items.
-- (void)deselectAllCollectionViewItemsAnimated:(BOOL)animated {
+// Updates the ring to be around the currently selected item. If
+// `shouldBringItemIntoView` is true, the collection view scrolls to present the
+// selected item at the top.
+- (void)updateSelectedCollectionViewItemRingAndBringIntoView:
+    (BOOL)shouldBringItemIntoView {
+  // Deselects all the collection view items.
   NSArray<NSIndexPath*>* indexPathsForSelectedItems =
       [self.collectionView indexPathsForSelectedItems];
   for (NSIndexPath* itemIndexPath in indexPathsForSelectedItems) {
-    [self.collectionView deselectItemAtIndexPath:itemIndexPath
-                                        animated:animated];
+    [self.collectionView deselectItemAtIndexPath:itemIndexPath animated:NO];
   }
+
+  // Select the collection view item for the selected index.
+  NSUInteger selectedIndex = self.selectedIndex;
+  // Check `selectedIndex` boundaries in order to filter out possible race
+  // conditions while mutating the collection.
+  if (selectedIndex == NSNotFound || selectedIndex >= self.items.count) {
+    return;
+  }
+  NSIndexPath* selectedIndexPath = CreateIndexPath(selectedIndex);
+  UICollectionViewScrollPosition scrollPosition =
+      shouldBringItemIntoView ? UICollectionViewScrollPositionTop
+                              : UICollectionViewScrollPositionNone;
+  [self.collectionView selectItemAtIndexPath:selectedIndexPath
+                                    animated:NO
+                              scrollPosition:scrollPosition];
 }
 
 - (void)voiceOverStatusDidChange {
@@ -1997,9 +1971,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   }];
   // Make sure to restore the selection. `reloadSections` cleared it.
   // https://developer.apple.com/forums/thread/656529
-  [self selectCollectionViewItemWithID:self.selectedItemID
-                              animated:NO
-                        scrollPosition:UICollectionViewScrollPositionNone];
+  [self updateSelectedCollectionViewItemRingAndBringIntoView:NO];
 }
 
 // Reconfigures the Inactive Tabs button header.
