@@ -1478,12 +1478,6 @@ BASE_FEATURE(kLacrosProfileMigrationForceOff,
              "LacrosProfileMigrationForceOff",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, use `MoveMigrator` instead of `CopyMigrator` to migrate data.
-// `MoveMigrator` moves data from ash to lacros instead of copying them.
-BASE_FEATURE(kLacrosMoveProfileMigration,
-             "LacrosMoveProfileMigration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, it is allowed to migrate data from lacros back to ash, provided
 // that other conditions are also met (e.g. the policy is enabled, or the
 // command line flag is passed).

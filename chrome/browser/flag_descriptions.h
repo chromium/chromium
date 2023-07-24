@@ -3585,9 +3585,6 @@ extern const char kImeFstDecoderParamsUpdateDescription[];
 extern const char kImeTrayHideVoiceButtonName[];
 extern const char kImeTrayHideVoiceButtonDescription[];
 
-extern const char kLacrosMoveProfileMigrationName[];
-extern const char kLacrosMoveProfileMigrationDescription[];
-
 extern const char kLacrosProfileMigrationForceOffName[];
 extern const char kLacrosProfileMigrationForceOffDescription[];
 

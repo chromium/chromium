@@ -6320,13 +6320,6 @@ const char kLacrosWaylandLoggingDescription[] =
     "Enables wayland logging for Lacros. This generates a significant amount "
     "of logs on disk. Logs are cleared after two restarts.";
 
-const char kLacrosMoveProfileMigrationName[] = "Enforce profile move migration";
-const char kLacrosMoveProfileMigrationDescription[] =
-    "Enforce Lacros profile move migration which moves files from Ash profile "
-    "directory to Lacros profile directory instead of copying. Please note "
-    "that disabling Lacros and falling back to Ash after move migration is not "
-    "supported.";
-
 const char kLacrosProfileMigrationForceOffName[] = "Disable profile migration";
 const char kLacrosProfileMigrationForceOffDescription[] =
     "Disables lacros profile migration. Lacros profile migration is being "

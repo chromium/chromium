@@ -185,9 +185,6 @@ TEST_F(BrowserDataMigratorImplTest, MigrateCancelled) {
 }
 
 TEST_F(BrowserDataMigratorImplTest, MigrateOutOfDisk) {
-  base::test::ScopedFeatureList feature_list(
-      ash::features::kLacrosMoveProfileMigration);
-
   // Emulate the situation of out-of-disk.
   browser_data_migrator_util::ScopedExtraBytesRequiredToBeFreedForTesting
       scoped_extra_bytes(100);
