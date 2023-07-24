@@ -2366,24 +2366,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Desks.DeskButton.BarAction.{BarAction}" units="BooleanHit"
-    expires_after="2024-07-05">
-  <owner>benbecker@google.com</owner>
-  <owner>nupurjain@google.com</owner>
-  <summary>
-    Emitted when a user {BarAction} using the desk button desk bar to specify
-    how often users are using the desk button desk bar to perform these actions.
-  </summary>
-  <token key="BarAction">
-    <variant name="CloseDesk" summary="closes a desk with its windows"/>
-    <variant name="CombineDesks" summary="combines a desk with another desk"/>
-    <variant name="NewDesk" summary="creates a new desk"/>
-    <variant name="OpenLibrary" summary="opens the saved desks library"/>
-    <variant name="RenameDesk" summary="renames a desk"/>
-    <variant name="ReorderDesk" summary="reorders a desk"/>
-  </token>
-</histogram>
-
 <histogram name="Ash.Desks.DeskButton.HiddenByUser" units="BooleanHit"
     expires_after="2024-07-07">
   <owner>benbecker@google.com</owner>
@@ -2791,6 +2773,32 @@ chromium-metrics-reviews@google.com.
     since counting has begun, the restored data will be emitted as an entry and
     this metric will be reset.
   </summary>
+</histogram>
+
+<histogram name="Ash.Desks.{EntryPoint}.BarAction.{BarAction}"
+    units="BooleanHit" expires_after="2024-07-05">
+  <owner>benbecker@google.com</owner>
+  <owner>yongshun@google.com</owner>
+  <owner>nupurjain@google.com</owner>
+  <summary>
+    Emitted when a user {BarAction} using the {EntryPoint} desk bar to specify
+    how often users are using the {EntryPoint} desk bar to perform these
+    actions.
+  </summary>
+  <token key="EntryPoint">
+    <variant name="DeskButton" summary="desk button"/>
+    <variant name="Overview" summary="overview"/>
+  </token>
+  <token key="BarAction">
+    <variant name="ActivateDesk"
+        summary="activates a desk (via the desk preview button)"/>
+    <variant name="CloseDesk" summary="closes a desk with its windows"/>
+    <variant name="CombineDesks" summary="combines a desk with another desk"/>
+    <variant name="NewDesk" summary="creates a new desk"/>
+    <variant name="OpenLibrary" summary="opens the saved desks library"/>
+    <variant name="RenameDesk" summary="renames a desk"/>
+    <variant name="ReorderDesk" summary="reorders a desk"/>
+  </token>
 </histogram>
 
 <histogram name="Ash.DeskTamplate.LaunchAdminTemplate" enum="BooleanHit"

@@ -410,17 +410,23 @@ void DeskMiniView::OnRemovingDesk(DeskCloseType close_type) {
   if (!controller->CanRemoveDesks())
     return;
 
-  if (owner_bar_->type() == DeskBarViewBase::Type::kDeskButton) {
-    switch (close_type) {
-      case DeskCloseType::kCloseAllWindowsAndWait:
-        base::UmaHistogramBoolean(kDeskBarCloseDeskHistogramName, true);
-        break;
-      case DeskCloseType::kCombineDesks:
-        base::UmaHistogramBoolean(kDeskBarCombineDesksHistogramName, true);
-        break;
-      default:
-        break;
-    }
+  switch (close_type) {
+    case DeskCloseType::kCloseAllWindowsAndWait:
+      base::UmaHistogramBoolean(
+          owner_bar_->type() == DeskBarViewBase::Type::kDeskButton
+              ? kDeskButtonDeskBarCloseDeskHistogramName
+              : kOverviewDeskBarCloseDeskHistogramName,
+          true);
+      break;
+    case DeskCloseType::kCombineDesks:
+      base::UmaHistogramBoolean(
+          owner_bar_->type() == DeskBarViewBase::Type::kDeskButton
+              ? kDeskButtonDeskBarCombineDesksHistogramName
+              : kOverviewDeskBarCombineDesksHistogramName,
+          true);
+      break;
+    default:
+      break;
   }
 
   // We want to avoid the possibility of getting triggered multiple times. We
@@ -673,9 +679,11 @@ void DeskMiniView::OnViewBlurred(views::View* observed_view) {
                                  /*trim_sequences_with_line_breaks=*/false),
         /*set_by_user=*/true);
 
-    if (owner_bar_->type() == DeskBarViewBase::Type::kDeskButton) {
-      base::UmaHistogramBoolean(kDeskBarRenameDeskHistogramName, true);
-    }
+    base::UmaHistogramBoolean(
+        owner_bar_->type() == DeskBarViewBase::Type::kDeskButton
+            ? kDeskButtonDeskBarRenameDeskHistogramName
+            : kOverviewDeskBarRenameDeskHistogramName,
+        true);
   }
 
   // When committing the name, do not allow an empty desk name. Revert back to
@@ -715,6 +723,11 @@ void DeskMiniView::OnDeskPreviewPressed() {
   // If there is an ongoing desk activation, do nothing.
   DesksController* desks_controller = DesksController::Get();
   if (!desks_controller->AreDesksBeingModified()) {
+    base::UmaHistogramBoolean(
+        owner_bar_->type() == DeskBarViewBase::Type::kDeskButton
+            ? kDeskButtonDeskBarActivateDeskHistogramName
+            : kOverviewDeskBarActivateDeskHistogramName,
+        true);
     desk_preview_->RequestFocus();
     owner_bar_->HandleClickEvent(this);
   }

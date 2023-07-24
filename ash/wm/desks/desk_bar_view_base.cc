@@ -897,9 +897,10 @@ void DeskBarViewBase::OnNewDeskButtonPressed(
     return;
   }
 
-  if (type_ == Type::kDeskButton) {
-    base::UmaHistogramBoolean(kDeskBarNewDeskHistogramName, true);
-  }
+  base::UmaHistogramBoolean(type_ == Type::kDeskButton
+                                ? kDeskButtonDeskBarNewDeskHistogramName
+                                : kOverviewDeskBarNewDeskHistogramName,
+                            true);
 
   controller->NewDesk(desks_creation_removal_source);
   NudgeDeskName(mini_views_.size() - 1);
@@ -1351,9 +1352,10 @@ void DeskBarViewBase::EndDragDesk(DeskMiniView* mini_view, bool end_by_user) {
   CHECK_EQ(mini_view, drag_view_);
   CHECK(!mini_view->is_animating_to_remove());
 
-  if (type_ == Type::kDeskButton) {
-    base::UmaHistogramBoolean(kDeskBarReorderDeskHistogramName, true);
-  }
+  base::UmaHistogramBoolean(type_ == Type::kDeskButton
+                                ? kDeskButtonDeskBarReorderDeskHistogramName
+                                : kOverviewDeskBarReorderDeskHistogramName,
+                            true);
 
   // Update default desk names after dropping.
   Shell::Get()->desks_controller()->UpdateDesksDefaultNames();
@@ -1800,9 +1802,10 @@ void DeskBarViewBase::OnLibraryButtonPressed() {
   }
   RecordLoadSavedDeskLibraryHistogram();
 
-  if (type_ == Type::kDeskButton) {
-    base::UmaHistogramBoolean(kDeskBarOpenLibraryHistogramName, true);
-  }
+  base::UmaHistogramBoolean(type_ == Type::kDeskButton
+                                ? kDeskButtonDeskBarOpenLibraryHistogramName
+                                : kOverviewDeskBarOpenLibraryHistogramName,
+                            true);
 
   if (IsDeskNameBeingModified()) {
     DeskNameView::CommitChanges(GetWidget());

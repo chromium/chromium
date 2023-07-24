@@ -77,18 +77,35 @@ constexpr char kCustomNameCreatedHistogramName[] =
 constexpr char kDeskButtonPressesHistogramName[] =
     "Ash.Desks.DeskButton.Presses";
 
-constexpr char kDeskBarCloseDeskHistogramName[] =
+constexpr char kDeskButtonDeskBarActivateDeskHistogramName[] =
+    "Ash.Desks.DeskButton.BarAction.ActivateDesk";
+constexpr char kDeskButtonDeskBarCloseDeskHistogramName[] =
     "Ash.Desks.DeskButton.BarAction.CloseDesk";
-constexpr char kDeskBarCombineDesksHistogramName[] =
+constexpr char kDeskButtonDeskBarCombineDesksHistogramName[] =
     "Ash.Desks.DeskButton.BarAction.CombineDesks";
-constexpr char kDeskBarNewDeskHistogramName[] =
+constexpr char kDeskButtonDeskBarNewDeskHistogramName[] =
     "Ash.Desks.DeskButton.BarAction.NewDesk";
-constexpr char kDeskBarOpenLibraryHistogramName[] =
+constexpr char kDeskButtonDeskBarOpenLibraryHistogramName[] =
     "Ash.Desks.DeskButton.BarAction.OpenLibrary";
-constexpr char kDeskBarRenameDeskHistogramName[] =
+constexpr char kDeskButtonDeskBarRenameDeskHistogramName[] =
     "Ash.Desks.DeskButton.BarAction.RenameDesk";
-constexpr char kDeskBarReorderDeskHistogramName[] =
+constexpr char kDeskButtonDeskBarReorderDeskHistogramName[] =
     "Ash.Desks.DeskButton.BarAction.ReorderDesk";
+
+constexpr char kOverviewDeskBarActivateDeskHistogramName[] =
+    "Ash.Desks.Overview.BarAction.ActivateDesk";
+constexpr char kOverviewDeskBarCloseDeskHistogramName[] =
+    "Ash.Desks.Overview.BarAction.CloseDesk";
+constexpr char kOverviewDeskBarCombineDesksHistogramName[] =
+    "Ash.Desks.Overview.BarAction.CombineDesks";
+constexpr char kOverviewDeskBarNewDeskHistogramName[] =
+    "Ash.Desks.Overview.BarAction.NewDesk";
+constexpr char kOverviewDeskBarOpenLibraryHistogramName[] =
+    "Ash.Desks.Overview.BarAction.OpenLibrary";
+constexpr char kOverviewDeskBarRenameDeskHistogramName[] =
+    "Ash.Desks.Overview.BarAction.RenameDesk";
+constexpr char kOverviewDeskBarReorderDeskHistogramName[] =
+    "Ash.Desks.Overview.BarAction.ReorderDesk";
 
 }  // namespace ash
 

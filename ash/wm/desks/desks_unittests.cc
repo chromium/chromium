@@ -10471,11 +10471,9 @@ TEST_P(DeskBarTest, MergeNonActiveDesk) {
   CloseDeskBar();
 }
 
-// Tests that the actions in the desk button desk bar are being correctly
-// recorded in their histograms.
+// Tests that the actions in the desk button and overview desk bars are being
+// correctly recorded in their histograms.
 TEST_P(DeskBarTest, DeskBarActionMetrics) {
-  NewDesk();
-  NewDesk();
   NewDesk();
 
   // Add a saved desk so that the library button can show up.
@@ -10489,59 +10487,85 @@ TEST_P(DeskBarTest, DeskBarActionMetrics) {
   // the combine desks button will not show.
   WindowHolder window(CreateAppWindow());
   auto* desks_controller = DesksController::Get();
-  desks_controller->SendToDeskAtIndex(window.window(), 3);
+  desks_controller->SendToDeskAtIndex(window.window(), 1);
+
+  OpenDeskBar();
+  auto* desk_bar_view = GetDeskBarView();
+
+  // Add new desk.
+  ClickOrPressOnView(GetExpandedStateInnerNewDeskButton(desk_bar_view));
+  histogram_tester.ExpectTotalCount(
+      bar_type_ == DeskBarViewBase::Type::kDeskButton
+          ? kDeskButtonDeskBarNewDeskHistogramName
+          : kOverviewDeskBarNewDeskHistogramName,
+      1);
+
+  // Set desk name.
+  PressAndReleaseKey(ui::VKEY_A, ui::EF_NONE);
+  PressAndReleaseKey(ui::VKEY_B, ui::EF_NONE);
+  PressAndReleaseKey(ui::VKEY_C, ui::EF_NONE);
+  PressAndReleaseKey(ui::VKEY_RETURN, ui::EF_NONE);
+  histogram_tester.ExpectTotalCount(
+      bar_type_ == DeskBarViewBase::Type::kDeskButton
+          ? kDeskButtonDeskBarRenameDeskHistogramName
+          : kOverviewDeskBarRenameDeskHistogramName,
+      1);
+
+  // Activate the third desk.
+  DeskSwitchAnimationWaiter waiter;
+  ClickOrPressOnView(desk_bar_view->mini_views()[2]->desk_preview());
+  waiter.Wait();
+  histogram_tester.ExpectTotalCount(
+      bar_type_ == DeskBarViewBase::Type::kDeskButton
+          ? kDeskButtonDeskBarActivateDeskHistogramName
+          : kOverviewDeskBarActivateDeskHistogramName,
+      1);
+
+  // Activating the desk should take us out of our desk bar, so we need a new
+  // one.
+  OpenDeskBar();
+  desk_bar_view = GetDeskBarView();
+
+  // Drag desk to reorder.
+  const auto& mini_views = desk_bar_view->mini_views();
+  auto* event_generator = GetEventGenerator();
+  StartDragDeskPreview(mini_views[0], event_generator);
+  EXPECT_TRUE(desk_bar_view->IsDraggingDesk());
+  event_generator->MoveMouseTo(
+      mini_views[2]->GetPreviewBoundsInScreen().CenterPoint());
+  event_generator->ReleaseLeftButton();
+  EXPECT_FALSE(desk_bar_view->IsDraggingDesk());
+  histogram_tester.ExpectTotalCount(
+      bar_type_ == DeskBarViewBase::Type::kDeskButton
+          ? kDeskButtonDeskBarReorderDeskHistogramName
+          : kOverviewDeskBarReorderDeskHistogramName,
+      1);
 
   auto* root_window = Shell::Get()->GetPrimaryRootWindow();
-  OpenDeskBar(root_window, DeskBarViewBase::Type::kDeskButton);
 
-  auto validate_actions = [&](DeskBarViewBase::Type bar_type) {
-    auto* desk_bar_view = GetDeskBarView(root_window, bar_type);
+  // Combine desks.
+  CloseDeskWithButton(/*index=*/0, /*close_all=*/false, root_window, bar_type_);
+  histogram_tester.ExpectTotalCount(
+      bar_type_ == DeskBarViewBase::Type::kDeskButton
+          ? kDeskButtonDeskBarCombineDesksHistogramName
+          : kOverviewDeskBarCombineDesksHistogramName,
+      1);
 
-    // Add new desk.
-    ClickOrPressOnView(GetExpandedStateInnerNewDeskButton(desk_bar_view));
-    histogram_tester.ExpectTotalCount(kDeskBarNewDeskHistogramName, 1);
+  // Close desk with windows.
+  CloseDeskWithButton(/*index=*/1, /*close_all=*/true, root_window, bar_type_);
+  histogram_tester.ExpectTotalCount(
+      bar_type_ == DeskBarViewBase::Type::kDeskButton
+          ? kDeskButtonDeskBarCloseDeskHistogramName
+          : kOverviewDeskBarCloseDeskHistogramName,
+      1);
 
-    // Set desk name.
-    PressAndReleaseKey(ui::VKEY_A, ui::EF_NONE);
-    PressAndReleaseKey(ui::VKEY_B, ui::EF_NONE);
-    PressAndReleaseKey(ui::VKEY_C, ui::EF_NONE);
-    PressAndReleaseKey(ui::VKEY_RETURN, ui::EF_NONE);
-    histogram_tester.ExpectTotalCount(kDeskBarRenameDeskHistogramName, 1);
-
-    // Drag desk to reorder.
-    const auto& mini_views = desk_bar_view->mini_views();
-    auto* event_generator = GetEventGenerator();
-    StartDragDeskPreview(mini_views[1], event_generator);
-    EXPECT_TRUE(desk_bar_view->IsDraggingDesk());
-    event_generator->MoveMouseTo(
-        mini_views[3]->GetPreviewBoundsInScreen().CenterPoint());
-    event_generator->ReleaseLeftButton();
-    EXPECT_FALSE(desk_bar_view->IsDraggingDesk());
-    histogram_tester.ExpectTotalCount(kDeskBarReorderDeskHistogramName, 1);
-
-    // Close desk with windows.
-    CloseDeskWithButton(/*index=*/1, /*close_all=*/true, root_window, bar_type);
-    histogram_tester.ExpectTotalCount(kDeskBarCloseDeskHistogramName, 1);
-
-    // Combine desks.
-    CloseDeskWithButton(/*index=*/1, /*close_all=*/false, root_window,
-                        bar_type);
-    histogram_tester.ExpectTotalCount(kDeskBarCombineDesksHistogramName, 1);
-
-    // Open library.
-    EnterLibrary(root_window, bar_type);
-    histogram_tester.ExpectTotalCount(kDeskBarOpenLibraryHistogramName, 1);
-  };
-
-  validate_actions(DeskBarViewBase::Type::kDeskButton);
-
-  // Make sure that histogram entries are not generated from the overview desk
-  // bar.
-  ExitOverview();
-  NewDesk();
-  desks_controller->SendToDeskAtIndex(window.window(), 3);
-  EnterOverview();
-  validate_actions(DeskBarViewBase::Type::kOverview);
+  // Open library.
+  EnterLibrary();
+  histogram_tester.ExpectTotalCount(
+      bar_type_ == DeskBarViewBase::Type::kDeskButton
+          ? kDeskButtonDeskBarOpenLibraryHistogramName
+          : kOverviewDeskBarOpenLibraryHistogramName,
+      1);
 }
 
 // Tests that metrics are correctly separated for desk switches between the
