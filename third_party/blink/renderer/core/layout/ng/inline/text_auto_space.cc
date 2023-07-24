@@ -31,6 +31,11 @@ inline bool IsIdeograph(UScriptCode script) {
 // static
 void TextAutoSpace::ApplyIfNeeded(NGInlineItemsData& data,
                                   Vector<wtf_size_t>* offsets_out) {
+  const String& text = data.text_content;
+  if (text.Is8Bit()) {
+    return;  // 8-bits never be `kIdeograph`. See `TextAutoSpaceTest`.
+  }
+
   HeapVector<NGInlineItem>& items = data.items;
   if (UNLIKELY(items.empty())) {
     return;
@@ -39,7 +44,6 @@ void TextAutoSpace::ApplyIfNeeded(NGInlineItemsData& data,
   // Compute `RunSegmenterRange` for the whole text content. It's pre-computed,
   // but packed in `NGInlineItemSegments` to save memory.
   NGInlineItemSegments::RunSegmenterRanges ranges;
-  const String& text = data.text_content;
   if (!data.segments) {
     const NGInlineItem& item0 = items.front();
     RunSegmenter::RunSegmenterRange range = item0.CreateRunSegmenterRange();
@@ -57,7 +61,6 @@ void TextAutoSpace::ApplyIfNeeded(NGInlineItemsData& data,
       return;
     }
   }
-  DCHECK(!text.Is8Bit());
   DCHECK_EQ(text.length(), ranges.back().end);
 
   Vector<wtf_size_t, 16> offsets;
@@ -145,9 +148,7 @@ void TextAutoSpace::ApplyIfNeeded(NGInlineItemsData& data,
 // static
 TextAutoSpace::CharType TextAutoSpace::GetTypeAndNext(const String& text,
                                                       wtf_size_t& offset) {
-  if (text.Is8Bit()) {
-    return GetType(text[offset++]);
-  }
+  CHECK(!text.Is8Bit());
   UChar ch;
   U16_NEXT(text.Characters16(), offset, text.length(), ch);
   return GetType(ch);
@@ -157,9 +158,7 @@ TextAutoSpace::CharType TextAutoSpace::GetTypeAndNext(const String& text,
 TextAutoSpace::CharType TextAutoSpace::GetPrevType(const String& text,
                                                    wtf_size_t offset) {
   DCHECK_GT(offset, 0u);
-  if (text.Is8Bit()) {
-    return GetType(text[offset - 1]);
-  }
+  CHECK(!text.Is8Bit());
   UChar last_ch;
   U16_PREV(text.Characters16(), 0, offset, last_ch);
   return GetType(last_ch);

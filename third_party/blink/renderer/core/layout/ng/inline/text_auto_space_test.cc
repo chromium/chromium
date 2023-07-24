@@ -15,6 +15,17 @@ namespace {
 
 using testing::ElementsAreArray;
 
+class TextAutoSpaceTest : public RenderingTest, ScopedCSSTextAutoSpaceForTest {
+public:
+  explicit TextAutoSpaceTest() : ScopedCSSTextAutoSpaceForTest(true) {}
+};
+
+TEST_F(TextAutoSpaceTest, Check8Bit) {
+  for (UChar32 ch = 0; ch <= std::numeric_limits<uint8_t>::max(); ++ch) {
+    EXPECT_NE(TextAutoSpace::GetType(ch), TextAutoSpace::kIdeograph);
+  }
+}
+
 struct TypeData {
   UChar32 ch;
   TextAutoSpace::CharType type;
