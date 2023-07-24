@@ -14,6 +14,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_transform.h"
 #include "ui/gfx/color_palette.h"
@@ -80,6 +81,14 @@ void ApplyCR2023OmniboxIconColors(ui::ColorMixer& mixer,
   mixer[kColorPageInfoIconHover] = {ui::kColorSysStateHoverDimBlendProtection};
   mixer[kColorPageInfoIconPressed] = {ui::kColorSysStateRippleNeutralOnSubtle};
   mixer[kColorPageActionIcon] = {ui::kColorSysOnSurfaceSubtle};
+
+  // Security chip.
+  mixer[kColorOmniboxSecurityChipDangerousBackground] = {ui::kColorSysError};
+  mixer[kColorOmniboxSecurityChipText] = {ui::kColorSysOnError};
+  mixer[kColorOmniboxSecurityChipInkDropHover] = {
+      ui::kColorSysStateHoverOnProminent};
+  mixer[kColorOmniboxSecurityChipInkDropRipple] = {
+      ui::kColorSysStateRippleNeutralOnProminent};
 }
 
 // Apply updates to the Omnibox "expanded state" color tokens per CR2023 spec.
@@ -341,6 +350,18 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
     mixer[kColorOmniboxSecurityChipSecure] =
         security_chip_color(gfx::kGoogleGrey500, gfx::kGoogleGrey700);
     mixer[kColorOmniboxSecurityChipDefault] = {kColorOmniboxSecurityChipSecure};
+    mixer[kColorOmniboxSecurityChipDangerousBackground] =
+        ui::SelectBasedOnDarkInput(kColorOmniboxResultsBackground,
+                                   gfx::kGoogleRed300, gfx::kGoogleRed800);
+    mixer[kColorOmniboxSecurityChipText] = ui::SelectBasedOnDarkInput(
+        kColorOmniboxSecurityChipDangerousBackground,
+        ui::GetColorWithMaxContrast(
+            kColorOmniboxSecurityChipDangerousBackground),
+        gfx::kGoogleRed800);
+    mixer[kColorOmniboxSecurityChipInkDropHover] = {
+        ui::SetAlpha(kColorOmniboxSecurityChipText, std::ceil(0.10f * 255.0f))};
+    mixer[kColorOmniboxSecurityChipInkDropRipple] = {
+        ui::SetAlpha(kColorOmniboxSecurityChipText, std::ceil(0.16f * 255.0f))};
   }
 
   // TODO(manukh): `kColorOmniboxResultsIconGM3Background` is unused currently,

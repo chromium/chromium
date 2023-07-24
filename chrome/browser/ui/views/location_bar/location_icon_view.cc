@@ -276,8 +276,9 @@ void LocationIconView::UpdateBackground() {
     const bool is_text_dangerous =
         display_text == l10n_util::GetStringUTF16(IDS_DANGEROUS_VERBOSE_STATE);
 
-    ui::ColorId id = is_text_dangerous ? kColorOmniboxSecurityChipDangerous
-                                       : kColorPageInfoBackground;
+    ui::ColorId id = is_text_dangerous
+                         ? kColorOmniboxSecurityChipDangerousBackground
+                         : kColorPageInfoBackground;
     SetBackground(views::CreateRoundedRectBackground(
         GetColorProvider()->GetColor(id), height() / 2));
 
@@ -366,9 +367,20 @@ void LocationIconView::UpdateBorder() {
   if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
     gfx::Insets insets = GetLayoutInsets(LOCATION_BAR_PAGE_INFO_ICON_PADDING);
     if (ShouldShowLabel()) {
-      // An extra space between chip's label and right edge.
-      const int kExtraRightPadding = 4;
-      insets.set_right(insets.right() + kExtraRightPadding);
+      SecurityLevel level =
+          delegate_->GetLocationBarModel()->GetSecurityLevel();
+      if (level == security_state::DANGEROUS) {
+        // Extra space between the left edge and label.
+        const int kLeftHorizontalPadding = 6;
+        // Extra space between the label and right edge.
+        const int kRightHorizontalPadding = 10;
+        insets.set_left(kLeftHorizontalPadding);
+        insets.set_right(kRightHorizontalPadding);
+      } else {
+        // An extra space between chip's label and right edge.
+        const int kExtraRightPadding = 4;
+        insets.set_right(insets.right() + kExtraRightPadding);
+      }
     }
     SetBorder(views::CreateEmptyBorder(insets));
   } else {

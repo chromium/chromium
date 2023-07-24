@@ -186,12 +186,6 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
       ui::kColorSysStateHoverDimBlendProtection};
   mixer[kColorOmniboxChipInkDropRipple] = {
       ui::kColorSysStateRippleNeutralOnSubtle};
-  mixer[kColorOmniboxSecurityChipDangerous] = {ui::kColorSysError};
-  mixer[kColorOmniboxSecurityChipInkDropHover] = {
-      ui::kColorSysStateHoverOnProminent};
-  mixer[kColorOmniboxSecurityChipInkDropRipple] = {
-      ui::kColorSysStateRippleNeutralOnProminent};
-  mixer[kColorOmniboxSecurityChipText] = {ui::kColorSysOnError};
 
   // Tab alert colors.
   mixer[kColorTabAlertMediaRecordingIcon] = {ui::kColorSysError};
