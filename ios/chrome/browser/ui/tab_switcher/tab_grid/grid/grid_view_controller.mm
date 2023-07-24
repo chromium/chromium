@@ -1417,6 +1417,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (void)selectAllItemsForEditing {
   if (_mode != TabGridModeSelection) {
+    base::debug::DumpWithoutCrashing();
     return;
   }
 
@@ -1428,6 +1429,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (void)deselectAllItemsForEditing {
   if (_mode != TabGridModeSelection) {
+    base::debug::DumpWithoutCrashing();
     return;
   }
 
