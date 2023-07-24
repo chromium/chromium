@@ -3442,6 +3442,7 @@ static_library("ui") {
       "//chromeos/ash/components/drivefs",
       "//chromeos/ash/components/drivefs/mojom:mojom",
       "//chromeos/ash/components/fwupd",
+      "//chromeos/ash/components/heatmap",
       "//chromeos/ash/components/human_presence",
       "//chromeos/ash/components/install_attributes",
       "//chromeos/ash/components/local_search_service/public/cpp",
