@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/sharing/password_sender_service_impl.h"
 
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/sharing/outgoing_password_sharing_invitation_sync_bridge.h"
 #include "components/sync/model/model_type_controller_delegate.h"
 
@@ -20,7 +21,9 @@ PasswordSenderServiceImpl::~PasswordSenderServiceImpl() = default;
 void PasswordSenderServiceImpl::SendPasswords(
     const std::vector<PasswordForm>& passwords,
     const PasswordRecipient& recipient) {
-  // TODO(crbug.com/1455407): Implement.
+  for (const PasswordForm& password : passwords) {
+    sync_bridge_->SendPassword(password, recipient);
+  }
 }
 
 base::WeakPtr<syncer::ModelTypeControllerDelegate>

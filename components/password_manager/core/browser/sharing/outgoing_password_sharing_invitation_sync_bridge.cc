@@ -4,9 +4,10 @@
 
 #include "components/password_manager/core/browser/sharing/outgoing_password_sharing_invitation_sync_bridge.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service.h"
-#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/sync/model/dummy_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
@@ -30,14 +31,31 @@ std::string GetStorageKeyFromSpecifics(
 
 sync_pb::OutgoingPasswordSharingInvitationSpecifics
 CreateOutgoingPasswordSharingInvitationSpecifics(
-    const CredentialUIEntry& credential_ui_entry,
+    const PasswordForm& password_form,
     const PasswordRecipient& recipient) {
   sync_pb::OutgoingPasswordSharingInvitationSpecifics specifics;
   specifics.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   specifics.set_recipient_user_id(recipient.user_id);
 
-  // TODO(crbug.com/1445868): fill in password data.
-  NOTIMPLEMENTED();
+  sync_pb::PasswordSharingInvitationData::PasswordData* password_data =
+      specifics.mutable_client_only_unencrypted_data()->mutable_password_data();
+  password_data->set_password_value(
+      base::UTF16ToUTF8(password_form.password_value));
+  password_data->set_scheme(static_cast<int>(password_form.scheme));
+  password_data->set_signon_realm(password_form.signon_realm);
+  password_data->set_origin(
+      password_form.url.is_valid() ? password_form.url.spec() : "");
+  password_data->set_username_element(
+      base::UTF16ToUTF8(password_form.username_element));
+  password_data->set_password_element(
+      base::UTF16ToUTF8(password_form.password_element));
+  password_data->set_username_value(
+      base::UTF16ToUTF8(password_form.username_value));
+  password_data->set_display_name(
+      base::UTF16ToUTF8(password_form.display_name));
+  password_data->set_avatar_url(
+      password_form.icon_url.is_valid() ? password_form.icon_url.spec() : "");
+
   return specifics;
 }
 
@@ -78,7 +96,7 @@ OutgoingPasswordSharingInvitationSyncBridge::CreateMetadataChangeList() {
 }
 
 void OutgoingPasswordSharingInvitationSyncBridge::SendPassword(
-    const CredentialUIEntry& credential_ui_entry,
+    const PasswordForm& password,
     const PasswordRecipient& recipient) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!change_processor()->IsTrackingMetadata()) {
@@ -86,8 +104,7 @@ void OutgoingPasswordSharingInvitationSyncBridge::SendPassword(
   }
 
   sync_pb::OutgoingPasswordSharingInvitationSpecifics specifics =
-      CreateOutgoingPasswordSharingInvitationSpecifics(credential_ui_entry,
-                                                       recipient);
+      CreateOutgoingPasswordSharingInvitationSpecifics(password, recipient);
   std::string storage_key = GetStorageKeyFromSpecifics(specifics);
 
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =

@@ -103,6 +103,9 @@ void CommitContributionImpl::AddToCommitMessage(
     // sending password in plain text.
     CHECK(
         !sync_entity->specifics().password().has_client_only_encrypted_data());
+    CHECK(!sync_entity->specifics()
+               .outgoing_password_sharing_invitation()
+               .has_client_only_unencrypted_data());
 
     // Purposefully crash since no metadata should be uploaded if a custom
     // passphrase is set.

@@ -22,6 +22,7 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browser_sync/browser_sync_switches.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/features.h"
@@ -182,8 +183,15 @@ class SyncServiceFactoryTest : public testing::Test {
     if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)) {
       datatypes.Put(syncer::WEBAUTHN_CREDENTIAL);
     }
-    // TODO(crbug.com/1445868): Add *_PASSWORD_SHARING_INVITATION types once
-    // implemented.
+    if (base::FeatureList::IsEnabled(
+            password_manager::features::
+                kPasswordManagerEnableReceiverService)) {
+      datatypes.Put(syncer::INCOMING_PASSWORD_SHARING_INVITATION);
+    }
+    if (base::FeatureList::IsEnabled(
+            password_manager::features::kPasswordManagerEnableSenderService)) {
+      datatypes.Put(syncer::OUTGOING_PASSWORD_SHARING_INVITATION);
+    }
     return datatypes;
   }
 

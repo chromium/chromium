@@ -20,7 +20,7 @@ class ModelTypeChangeProcessor;
 
 namespace password_manager {
 
-struct CredentialUIEntry;
+struct PasswordForm;
 struct PasswordRecipient;
 
 // Sync bridge implementation for OUTGOING_PASSWORD_SHARING_INVITATION model
@@ -36,7 +36,8 @@ class OutgoingPasswordSharingInvitationSyncBridge
       const OutgoingPasswordSharingInvitationSyncBridge&) = delete;
   ~OutgoingPasswordSharingInvitationSyncBridge() override;
 
-  void SendPassword(const CredentialUIEntry& credential_ui_entry,
+  // Sends `password` to the corresponding `recipient`.
+  void SendPassword(const PasswordForm& password,
                     const PasswordRecipient& recipient);
 
   // ModelTypeSyncBridge implementation.

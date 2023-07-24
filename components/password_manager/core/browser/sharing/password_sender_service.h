@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SHARING_PASSWORD_SENDER_SERVICE_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SHARING_PASSWORD_SENDER_SERVICE_H_
 
+#include <vector>
+
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
