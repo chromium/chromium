@@ -744,6 +744,7 @@ crbug.com/angleproject/5038 [ chromeos chromeos-board-amd64-generic mesa_ge_21.0
 # Lacros failures #
 #####################
 
+crbug.com/angleproject/7904 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] WebglExtension_WEBGL_clip_cull_distance [ Failure ]
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] conformance2/textures/misc/immutable-tex-render-feedback.html [ Failure ]
 
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
