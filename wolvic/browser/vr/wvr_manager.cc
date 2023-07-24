@@ -57,6 +57,43 @@ device::mojom::VRPosePtr PoseToVRPosePtr(const mozilla::gfx::VRPose* p) {
   return pose;
 }
 
+device::GamepadHand ToGamepadHand(mozilla::gfx::ControllerHand hand) {
+  using mozilla::gfx::ControllerHand;
+
+  switch (hand) {
+    case ControllerHand::Left:
+      return device::GamepadHand::kLeft;
+    case ControllerHand::Right:
+      return device::GamepadHand::kRight;
+    case ControllerHand::_empty:
+    case ControllerHand::EndGuard_:
+      DCHECK(false) << "Unexpected ControllerHand value: "
+                    << static_cast<uint8_t>(hand);
+      return device::GamepadHand::kNone;
+  }
+}
+
+device::Gamepad ToGamepad(const mozilla::gfx::VRControllerState& controller) {
+  device::Gamepad gamepad;
+  gamepad.hand = ToGamepadHand(controller.hand);
+
+  size_t num_buttons = controller.numButtons;
+  if (num_buttons > device::Gamepad::kButtonsLengthCap) {
+    num_buttons = device::Gamepad::kButtonsLengthCap;
+    DLOG(WARNING) << "Controller has too many buttons, truncating to "
+                  << num_buttons;
+  }
+
+  gamepad.buttons_length = num_buttons;
+  for (uint32_t i = 0; i < controller.numButtons; ++i) {
+    gamepad.buttons[i].pressed = controller.buttonPressed & (1 << i);
+    gamepad.buttons[i].touched = controller.buttonTouched & (1 << i);
+    gamepad.buttons[i].value = controller.triggerValue[i];
+  }
+
+  return gamepad;
+}
+
 device::mojom::XRViewPtr CreateView(
     mozilla::gfx::VRDisplayState::Eye eye,
     const mozilla::gfx::VRDisplayState& display_state,
@@ -373,14 +410,16 @@ WvrManager::GetInputSourceState() {
 
   for (uint32_t i = 0; i < mozilla::gfx::kVRControllerMaxCount; ++i) {
     const auto& controller = system_state_.controllerState[i];
-    // TODO : Update the structure
-    // if (!controller.connected)
-    //     continue;
+    if (controller.type == mozilla::gfx::VRControllerType::_empty)
+      continue;
 
     device::mojom::XRInputSourceStatePtr input_source =
         device::mojom::XRInputSourceState::New();
 
-    input_source->source_id = i;
+    // ID 0 will cause a DCHECK in the hash table used on the blink side.
+    // To ensure that we don't have any collisions with other ids, increment
+    // all of the ids by one.
+    input_source->source_id = i + 1;
     input_source->primary_input_pressed = controller.buttonPressed;
     input_source->primary_input_clicked = controller.buttonTouched;
 
@@ -409,9 +448,7 @@ WvrManager::GetInputSourceState() {
         "oculus-touch-v3", "oculus-touch-v2", "oculus-touch",
         "generic-trigger-squeeze-thumbstick"};
 
-    gfx::Transform input_from_pointer;
-    WvrMatToTransform(controller.axisValue, &input_from_pointer);
-    input_source->description->input_from_pointer = input_from_pointer;
+    input_source->gamepad = ToGamepad(controller);
 
     auto supportsControllerFlag =
         [&controller](mozilla::gfx::ControllerCapabilityFlags flag) {
@@ -424,7 +461,20 @@ WvrManager::GetInputSourceState() {
         supportsControllerFlag(
             mozilla::gfx::ControllerCapabilityFlags::Cap_PositionEmulated);
 
-    input_source->mojo_from_input = WvrPoseToTransform(&controller.pose);
+    if (supportsControllerFlag(
+            mozilla::gfx::ControllerCapabilityFlags::Cap_Orientation)) {
+      input_source->description->input_from_pointer =
+          WvrPoseToTransform(&controller.targetRayPose);
+    }
+
+    if (supportsControllerFlag(
+            mozilla::gfx::ControllerCapabilityFlags::Cap_Position) ||
+        supportsControllerFlag(
+            mozilla::gfx::ControllerCapabilityFlags::Cap_PositionEmulated) ||
+        supportsControllerFlag(
+            mozilla::gfx::ControllerCapabilityFlags::Cap_GripSpacePosition)) {
+      input_source->mojo_from_input = WvrPoseToTransform(&controller.pose);
+    }
 
     input_sources.push_back(std::move(input_source));
   }
@@ -478,8 +528,7 @@ void WvrManager::TryStartAnimatingFrame() {
 
   frame_data->mojo_space_reset = true;
 
-  // TODO : Fix the crash issue
-  // frame_data->input_state = GetInputSourceState();
+  frame_data->input_state = GetInputSourceState();
 
   frame_data->mojo_from_viewer =
       PoseToVRPosePtr(&system_state_.sensorState.pose);  // std::move(pose);
