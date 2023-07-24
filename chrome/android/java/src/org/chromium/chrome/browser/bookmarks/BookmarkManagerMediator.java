@@ -1036,9 +1036,19 @@ class BookmarkManagerMediator
     }
 
     private ListItem buildSearchBoxRow() {
+        // TODO(https://crbug.com/1444122): Check if there are any bookmarks with shopping meta.
+        boolean hasAnyShopping = false;
         PropertyModel propertyModel =
                 new PropertyModel.Builder(BookmarkSearchBoxRowProperties.ALL_KEYS)
                         .with(BookmarkSearchBoxRowProperties.QUERY_CALLBACK, this::onQueryCallback)
+                        .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY,
+                                hasAnyShopping)
+                        .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_START_ICON_RES,
+                                R.drawable.notifications_active)
+                        .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TEXT_RES,
+                                R.string.price_tracking_bookmarks_filter_title)
+                        .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TOGGLE_CALLBACK,
+                                this::onShoppingFilterToggle)
                         .build();
         return new ListItem(ViewType.SEARCH_BOX, propertyModel);
     }
@@ -1302,6 +1312,10 @@ class BookmarkManagerMediator
         } else if (currentUiMode == BookmarkUiMode.SEARCHING) {
             onEndSearch();
         }
+    }
+
+    private void onShoppingFilterToggle(boolean isFiltering) {
+        // TODO(https://crbug.com/1444122): Adjust filter with query handler.
     }
 
     // Testing methods.

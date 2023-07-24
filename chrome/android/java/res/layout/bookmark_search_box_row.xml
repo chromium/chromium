@@ -8,24 +8,39 @@ found in the LICENSE file.
 <org.chromium.chrome.browser.bookmarks.BookmarkSearchBoxRow
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/search_row_modern_bg"
     android:id="@+id/bookmark_toolbar"
-    android:layout_height="40dp"
+    android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:layout_marginBottom="18dp">
+    android:layout_marginBottom="16dp"
+    android:paddingHorizontal="14dp"
+    android:orientation="vertical" >
 
   <EditText
       tools:ignore="Autofill,LabelFor"
-      android:background="@null"
-      android:hint="@string/bookmark_toolbar_search"
       android:id="@+id/search_text"
+      android:background="@drawable/search_row_modern_bg"
+      android:hint="@string/bookmark_toolbar_search"
       android:imeOptions="flagNoExtractUi|actionSearch"
       android:inputType="text"
-      android:layout_height="match_parent"
+      android:layout_height="40dp"
       android:layout_width="match_parent"
-      android:paddingHorizontal="@dimen/bookmark_search_hint_horizontal_padding"
+      android:paddingHorizontal="16dp"
+      android:layout_marginBottom="2dp"
       android:singleLine="true"
       android:textColorHint="@macro/search_box_hint"
       android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
+    <LinearLayout
+        android:layout_height="48dp"
+        android:layout_width="match_parent"
+        android:layout_marginTop="6dp"
+        android:orientation="horizontal" >
+
+    <org.chromium.components.browser_ui.widget.chips.ChipView
+        android:id="@+id/shopping_filter_chip"
+        android:layout_height="match_parent"
+        android:layout_width="wrap_content" />
+
+    </LinearLayout>
 
 </org.chromium.chrome.browser.bookmarks.BookmarkSearchBoxRow>

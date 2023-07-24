@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.bookmarks;
 import android.app.Activity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -15,12 +16,18 @@ import android.widget.LinearLayout;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
@@ -32,6 +39,8 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.test.util.KeyUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
@@ -46,6 +55,13 @@ public class BookmarkSearchBoxRowTest {
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock
+    private Callback<String> mQueryCallback;
+    @Mock
+    private Callback<Boolean> mToggleCallback;
 
     private BookmarkSearchBoxRow mBookmarkSearchBoxRow;
 
@@ -87,5 +103,58 @@ public class BookmarkSearchBoxRowTest {
                                 editText, KeyEvent.KEYCODE_ENTER));
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(editText.hasFocus(), Matchers.is(false)));
+    }
+
+    @Test
+    @MediumTest
+    public void testQueryCallback() {
+        PropertyModel propertyModel =
+                new PropertyModel.Builder(BookmarkSearchBoxRowProperties.ALL_KEYS)
+                        .with(BookmarkSearchBoxRowProperties.QUERY_CALLBACK, mQueryCallback)
+                        .build();
+        PropertyModelChangeProcessor.create(
+                propertyModel, mBookmarkSearchBoxRow, BookmarkSearchBoxRowViewBinder::bind);
+        EditText editText = mBookmarkSearchBoxRow.findViewById(R.id.search_text);
+        String query = "foo";
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> editText.setText(query));
+
+        Mockito.verify(mQueryCallback).onResult(Mockito.eq(query));
+    }
+
+    @Test
+    @MediumTest
+    public void testShoppingChipVisibility() {
+        PropertyModel propertyModel =
+                new PropertyModel.Builder(BookmarkSearchBoxRowProperties.ALL_KEYS)
+                        .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY, false)
+                        .build();
+        PropertyModelChangeProcessor.create(
+                propertyModel, mBookmarkSearchBoxRow, BookmarkSearchBoxRowViewBinder::bind);
+
+        View shoppingFilterChip = mBookmarkSearchBoxRow.findViewById(R.id.shopping_filter_chip);
+        Assert.assertFalse(shoppingFilterChip.isShown());
+
+        propertyModel.set(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY, true);
+        Assert.assertTrue(shoppingFilterChip.isShown());
+    }
+
+    @Test
+    @MediumTest
+    public void testShoppingChipToggle() {
+        PropertyModel propertyModel =
+                new PropertyModel.Builder(BookmarkSearchBoxRowProperties.ALL_KEYS)
+                        .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TOGGLE_CALLBACK,
+                                mToggleCallback)
+                        .build();
+        PropertyModelChangeProcessor.create(
+                propertyModel, mBookmarkSearchBoxRow, BookmarkSearchBoxRowViewBinder::bind);
+        View shoppingFilterChip = mBookmarkSearchBoxRow.findViewById(R.id.shopping_filter_chip);
+
+        TestThreadUtils.runOnUiThreadBlockingNoException(shoppingFilterChip::performClick);
+        Mockito.verify(mToggleCallback).onResult(true);
+
+        TestThreadUtils.runOnUiThreadBlockingNoException(shoppingFilterChip::performClick);
+        Mockito.verify(mToggleCallback).onResult(false);
     }
 }

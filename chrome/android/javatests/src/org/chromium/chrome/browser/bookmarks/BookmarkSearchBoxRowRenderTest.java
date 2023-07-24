@@ -30,6 +30,8 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.NightModeTestUtils;
@@ -60,6 +62,7 @@ public class BookmarkSearchBoxRowRenderTest {
     public TestRule mProcessor = new Features.JUnitProcessor();
 
     private LinearLayout mContentView;
+    private PropertyModel mPropertyModel;
 
     public BookmarkSearchBoxRowRenderTest(boolean nightModeEnabled) {
         NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
@@ -81,6 +84,20 @@ public class BookmarkSearchBoxRowRenderTest {
 
             LayoutInflater.from(mActivityTestRule.getActivity())
                     .inflate(org.chromium.chrome.R.layout.bookmark_search_box_row, mContentView);
+
+            BookmarkSearchBoxRow bookmarkSearchBoxRow =
+                    mContentView.findViewById(R.id.bookmark_toolbar);
+            mPropertyModel =
+                    new PropertyModel.Builder(BookmarkSearchBoxRowProperties.ALL_KEYS)
+                            .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TEXT_RES,
+                                    R.string.price_tracking_bookmarks_filter_title)
+                            .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_START_ICON_RES,
+                                    R.drawable.notifications_active)
+                            .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY, false)
+                            .build();
+
+            PropertyModelChangeProcessor.create(
+                    mPropertyModel, bookmarkSearchBoxRow, BookmarkSearchBoxRowViewBinder::bind);
         });
     }
 
@@ -89,5 +106,16 @@ public class BookmarkSearchBoxRowRenderTest {
     @Feature({"RenderTest"})
     public void testNormal() throws IOException {
         mRenderTestRule.render(mContentView, "normal");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testWithChip() throws IOException {
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> mPropertyModel.set(
+                                BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY, true));
+        mRenderTestRule.render(mContentView, "withShoppingChip");
     }
 }

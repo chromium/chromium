@@ -427,6 +427,7 @@ chrome_java_resources = [
   "java/res/drawable/lens_camera_icon.xml",
   "java/res/drawable/long_screenshot.xml",
   "java/res/drawable/material_tooltip_background.xml",
+  "java/res/drawable/notifications_active.xml",
   "java/res/drawable/outline_chevron_right_24dp.xml",
   "java/res/drawable/price_tracking_disabled.xml",
   "java/res/drawable/price_tracking_enabled_filled.xml",
