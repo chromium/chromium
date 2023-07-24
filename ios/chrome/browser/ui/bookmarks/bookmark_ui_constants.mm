@@ -56,8 +56,8 @@ const CGFloat kBookmarkCellHorizontalLeadingInset = 16.0f;
 const CGFloat kBookmarkCellHorizontalTrailingInset = 24.0f;
 const CGFloat kBookmarkCellHorizontalAccessoryViewSpacing = 11.0f;
 
-NSString* const kBookmarkCreateNewProfileFolderCellIdentifier =
-    @"kBookmarkCreateNewProfileFolderCellIdentifier";
+NSString* const kBookmarkCreateNewLocalOrSyncableFolderCellIdentifier =
+    @"kBookmarkCreateNewLocalOrSyncableFolderCellIdentifier";
 
 NSString* const kBookmarkCreateNewAccountFolderCellIdentifier =
     @"kBookmarkCreateNewAccountFolderCellIdentifier";

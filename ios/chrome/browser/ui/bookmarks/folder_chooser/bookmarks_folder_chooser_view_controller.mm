@@ -39,7 +39,7 @@ namespace {
 const CGFloat kEstimatedFolderCellHeight = 48.0;
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
-  SectionIdentifierProfileBookmarks = kSectionIdentifierEnumZero,
+  SectionIdentifierLocalOrSyncableBookmarks = kSectionIdentifierEnumZero,
   SectionIdentifierAccountBookmarks,
 };
 
@@ -68,7 +68,7 @@ using bookmarks::BookmarkNode;
   std::vector<const BookmarkNode*> _accountFolderNodes;
   // A linear list of folders. This will be populated in `reloadView` when the
   // UI is updated.
-  std::vector<const BookmarkNode*> _profileFolderNodes;
+  std::vector<const BookmarkNode*> _localOrSyncableFolderNodes;
 }
 
 - (instancetype)initWithAllowsCancel:(BOOL)allowsCancel
@@ -155,9 +155,10 @@ using bookmarks::BookmarkNode;
       if (!parentNode) {
         // If `parent` (selected folder) is `nullptr`, set the root folder of
         // the corresponding section to be the parent folder.
-        parentNode = (sectionID == SectionIdentifierAccountBookmarks)
-                         ? [_dataSource.accountDataSource mobileFolderNode]
-                         : [_dataSource.profileDataSource mobileFolderNode];
+        parentNode =
+            (sectionID == SectionIdentifierAccountBookmarks)
+                ? [_dataSource.accountDataSource mobileFolderNode]
+                : [_dataSource.localOrSyncableDataSource mobileFolderNode];
       }
       [self.delegate showBookmarksFolderEditorWithParentFolderNode:parentNode];
       return;
@@ -173,8 +174,8 @@ using bookmarks::BookmarkNode;
     DCHECK(folderIndex < _accountFolderNodes.size());
     folder = _accountFolderNodes[folderIndex];
   } else {
-    DCHECK(folderIndex < _profileFolderNodes.size());
-    folder = _profileFolderNodes[folderIndex];
+    DCHECK(folderIndex < _localOrSyncableFolderNodes.size());
+    folder = _localOrSyncableFolderNodes[folderIndex];
   }
   [_mutator setSelectedFolderNode:folder];
   [self delayedNotifyDelegateOfSelection];
@@ -211,26 +212,29 @@ using bookmarks::BookmarkNode;
     [self.tableViewModel
         removeSectionWithIdentifier:SectionIdentifierAccountBookmarks];
   }
-  if ([self.tableViewModel
-          hasSectionForSectionIdentifier:SectionIdentifierProfileBookmarks]) {
+  if ([self.tableViewModel hasSectionForSectionIdentifier:
+                               SectionIdentifierLocalOrSyncableBookmarks]) {
     [self.tableViewModel
-        removeSectionWithIdentifier:SectionIdentifierProfileBookmarks];
+        removeSectionWithIdentifier:SectionIdentifierLocalOrSyncableBookmarks];
   }
 
   if ([_dataSource shouldShowAccountBookmarks]) {
     _accountFolderNodes = [_dataSource.accountDataSource visibleFolderNodes];
     [self reloadSectionWithIdentifier:SectionIdentifierAccountBookmarks];
   }
-  _profileFolderNodes = [_dataSource.profileDataSource visibleFolderNodes];
-  [self reloadSectionWithIdentifier:SectionIdentifierProfileBookmarks];
+  _localOrSyncableFolderNodes =
+      [_dataSource.localOrSyncableDataSource visibleFolderNodes];
+  [self reloadSectionWithIdentifier:SectionIdentifierLocalOrSyncableBookmarks];
   if ([_dataSource shouldShowAccountBookmarks]) {
     // The headers are only shown if both sections are visible.
     [self.tableViewModel setHeader:[self headerForSectionWithIdentifier:
                                              SectionIdentifierAccountBookmarks]
           forSectionWithIdentifier:SectionIdentifierAccountBookmarks];
-    [self.tableViewModel setHeader:[self headerForSectionWithIdentifier:
-                                             SectionIdentifierProfileBookmarks]
-          forSectionWithIdentifier:SectionIdentifierProfileBookmarks];
+    [self.tableViewModel
+                       setHeader:
+                           [self headerForSectionWithIdentifier:
+                                     SectionIdentifierLocalOrSyncableBookmarks]
+        forSectionWithIdentifier:SectionIdentifierLocalOrSyncableBookmarks];
   }
   [self.tableView reloadData];
 }
@@ -246,12 +250,12 @@ using bookmarks::BookmarkNode;
             initWithType:ItemTypeCreateNewFolder
                    style:BookmarksFolderStyleNewFolder];
     createFolderItem.accessibilityIdentifier =
-        (sectionID == SectionIdentifierProfileBookmarks)
-            ? kBookmarkCreateNewProfileFolderCellIdentifier
+        (sectionID == SectionIdentifierLocalOrSyncableBookmarks)
+            ? kBookmarkCreateNewLocalOrSyncableFolderCellIdentifier
             : kBookmarkCreateNewAccountFolderCellIdentifier;
     createFolderItem.shouldDisplayCloudSlashIcon =
-        (sectionID == SectionIdentifierProfileBookmarks) &&
-        [_dataSource shouldDisplayCloudIconForProfileBookmarks];
+        (sectionID == SectionIdentifierLocalOrSyncableBookmarks) &&
+        [_dataSource shouldDisplayCloudIconForLocalOrSyncableBookmarks];
     // Add the "New Folder" Item to the same section as the rest of the folder
     // entries.
     [self.tableViewModel addItem:createFolderItem
@@ -260,12 +264,13 @@ using bookmarks::BookmarkNode;
 
   // Add Folders entries.
   const std::vector<const BookmarkNode*>& folders =
-      (sectionID == SectionIdentifierAccountBookmarks) ? _accountFolderNodes
-                                                       : _profileFolderNodes;
+      (sectionID == SectionIdentifierAccountBookmarks)
+          ? _accountFolderNodes
+          : _localOrSyncableFolderNodes;
   const BookmarkNode* rootFolderNode =
       (sectionID == SectionIdentifierAccountBookmarks)
           ? [_dataSource.accountDataSource rootFolderNode]
-          : [_dataSource.profileDataSource rootFolderNode];
+          : [_dataSource.localOrSyncableDataSource rootFolderNode];
   for (const BookmarkNode* folderNode : folders) {
     TableViewBookmarksFolderItem* folderItem =
         [[TableViewBookmarksFolderItem alloc]
@@ -275,8 +280,8 @@ using bookmarks::BookmarkNode;
     folderItem.currentFolder = ([_dataSource selectedFolderNode] == folderNode);
     folderItem.accessibilityIdentifier = folderItem.title;
     folderItem.shouldDisplayCloudSlashIcon =
-        (sectionID == SectionIdentifierProfileBookmarks) &&
-        [_dataSource shouldDisplayCloudIconForProfileBookmarks];
+        (sectionID == SectionIdentifierLocalOrSyncableBookmarks) &&
+        [_dataSource shouldDisplayCloudIconForLocalOrSyncableBookmarks];
 
     // Indentation level.
     NSInteger level = 0;
@@ -298,7 +303,7 @@ using bookmarks::BookmarkNode;
       [[TableViewTextHeaderFooterItem alloc] initWithType:ItemTypeHeader];
 
   switch (sectionID) {
-    case SectionIdentifierProfileBookmarks:
+    case SectionIdentifierLocalOrSyncableBookmarks:
       header.text =
           l10n_util::GetNSString(IDS_IOS_BOOKMARKS_PROFILE_SECTION_TITLE);
       break;

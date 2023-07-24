@@ -33,7 +33,7 @@ using bookmarks::BookmarkNode;
 namespace {
 
 enum class TestParam {
-  kProfileModel,
+  kLocalOrSyncableModel,
   kAccountModel,
 };
 
@@ -302,4 +302,4 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderMoved) {
 INSTANTIATE_TEST_SUITE_P(/* No InstantionName*/,
                          BookmarksFolderChooserSubDataSourceImplTest,
                          testing::Values(TestParam::kAccountModel,
-                                         TestParam::kProfileModel));
+                                         TestParam::kLocalOrSyncableModel));

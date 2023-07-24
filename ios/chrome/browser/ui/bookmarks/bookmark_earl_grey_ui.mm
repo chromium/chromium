@@ -166,9 +166,9 @@ id<GREYMatcher> SearchIconButton() {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap on "Create New Folder."
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kBookmarkCreateNewProfileFolderCellIdentifier)]
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kBookmarkCreateNewLocalOrSyncableFolderCellIdentifier)]
       performAction:grey_tap()];
 
   // Verify the folder creator is displayed.

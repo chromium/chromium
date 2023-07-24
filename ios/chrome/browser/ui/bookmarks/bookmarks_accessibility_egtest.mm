@@ -167,9 +167,9 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [[EarlGrey selectElementWithMatcher:MoveButton()] performAction:grey_tap()];
 
   // Tap on "Create New Folder."
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kBookmarkCreateNewProfileFolderCellIdentifier)]
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kBookmarkCreateNewLocalOrSyncableFolderCellIdentifier)]
       performAction:grey_tap()];
 
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];

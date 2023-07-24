@@ -119,7 +119,7 @@
   [super start];
   ChromeBrowserState* browserState =
       self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
-  bookmarks::BookmarkModel* profileModel =
+  bookmarks::BookmarkModel* localOrSyncableModel =
       ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
           browserState);
   bookmarks::BookmarkModel* accountModel =
@@ -129,11 +129,11 @@
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(browserState);
   _mediator = [[BookmarksFolderChooserMediator alloc]
-      initWithProfileBookmarkModel:profileModel
-              accountBookmarkModel:accountModel
-                       editedNodes:std::move(_hiddenNodes)
-             authenticationService:authenticationService
-                       syncService:syncService];
+      initWithLocalOrSyncableBookmarkModel:localOrSyncableModel
+                      accountBookmarkModel:accountModel
+                               editedNodes:std::move(_hiddenNodes)
+                     authenticationService:authenticationService
+                               syncService:syncService];
   _hiddenNodes.clear();
   _mediator.delegate = self;
   _mediator.selectedFolderNode = _selectedFolder;

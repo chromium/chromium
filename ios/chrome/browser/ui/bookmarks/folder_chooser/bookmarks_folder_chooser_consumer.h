@@ -43,14 +43,14 @@ class BookmarkNode;
 // that method returns `NO` then account data source may not be available.
 @property(nonatomic, readonly) id<BookmarksFolderChooserSubDataSource>
     accountDataSource;
-// Data source from profile bookmark model.
+// Data source from localOrSyncable bookmark model.
 @property(nonatomic, readonly) id<BookmarksFolderChooserSubDataSource>
-    profileDataSource;
+    localOrSyncableDataSource;
 
 // The folder that should have a blue check mark beside it in the UI.
 - (const bookmarks::BookmarkNode*)selectedFolderNode;
 // Whether to display the cloud slashed icon beside the folders.
-- (BOOL)shouldDisplayCloudIconForProfileBookmarks;
+- (BOOL)shouldDisplayCloudIconForLocalOrSyncableBookmarks;
 // Whether to show the account bookmarks section.
 - (BOOL)shouldShowAccountBookmarks;
 

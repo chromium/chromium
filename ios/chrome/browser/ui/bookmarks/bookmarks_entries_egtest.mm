@@ -708,9 +708,9 @@ id<GREYMatcher> AddBookmarkButton() {
   [BookmarkEarlGrey removeBookmarkWithTitle:@"First URL"];
 
   // Choose to move into a new folder.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kBookmarkCreateNewProfileFolderCellIdentifier)]
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kBookmarkCreateNewLocalOrSyncableFolderCellIdentifier)]
       performAction:grey_tap()];
 
   // Enter custom new folder name.
