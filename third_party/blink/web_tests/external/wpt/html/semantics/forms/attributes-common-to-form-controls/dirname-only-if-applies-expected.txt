@@ -1,7 +1,7 @@
 This is a testharness.js-based test.
-FAIL Submit input element directionality to FormData, if dirname applies. assert_false: Do not submit dir for input type=tel expected false got true
+FAIL Submit input element directionality to FormData, if dirname applies. assert_equals: Submit ltr for input type=hidden expected (string) "ltr" but got (object) null
 PASS Submit textarea element directionality to FormData.
-FAIL Submit input element directionality, if dirname applies. assert_false: Do not submit dir for input type=tel expected false got true
+FAIL Submit input element directionality, if dirname applies. assert_equals: Submit ltr for input type=hidden expected (string) "ltr" but got (object) null
 PASS Submit textarea element directionality.
 Harness: the test ran to completion.
 
