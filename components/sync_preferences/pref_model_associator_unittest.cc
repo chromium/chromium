@@ -257,11 +257,11 @@ TEST_F(ListPreferenceMergeTest, Merge) {
       helper::MergePreference(&client_, pref->name(), *pref->GetValue(),
                               base::Value(server_url_list_.Clone())));
 
-  base::Value::List expected;
-  expected.Append(server_url0_);
-  expected.Append(server_url1_);
-  expected.Append(local_url0_);
-  expected.Append(local_url1_);
+  auto expected = base::Value::List()
+                      .Append(server_url0_)
+                      .Append(server_url1_)
+                      .Append(local_url0_)
+                      .Append(local_url1_);
   EXPECT_EQ(merged_value, expected);
 }
 
@@ -279,10 +279,10 @@ TEST_F(ListPreferenceMergeTest, Duplicates) {
       helper::MergePreference(&client_, pref->name(), *pref->GetValue(),
                               base::Value(server_url_list_.Clone())));
 
-  base::Value::List expected;
-  expected.Append(server_url0_);
-  expected.Append(server_url1_);
-  expected.Append(local_url0_);
+  auto expected = base::Value::List()
+                      .Append(server_url0_)
+                      .Append(server_url1_)
+                      .Append(local_url0_);
   EXPECT_EQ(merged_value, expected);
 }
 
@@ -486,9 +486,7 @@ class IndividualPreferenceMergeTest : public AbstractPreferenceMergeTest {
         &client_, pref, *pref_service_->GetUserPrefValue(pref),
         base::Value(server_url_list_.Clone())));
 
-    base::Value::List expected;
-    expected.Append(url0_);
-    expected.Append(url1_);
+    auto expected = base::Value::List().Append(url0_).Append(url1_);
     return merged_value == expected;
   }
 

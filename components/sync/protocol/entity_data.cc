@@ -28,22 +28,22 @@ base::Value::Dict EntityData::ToDictionaryValue() const {
   // This is used when debugging at sync-internals page. The code in
   // sync_node_browser.js is expecting certain fields names. e.g. CTIME, MTIME,
   // and IS_DIR.
-  base::Value::Dict dict;
-  dict.Set("SPECIFICS", EntitySpecificsToValue(specifics));
-  dict.Set("ID", id);
-  dict.Set("CLIENT_TAG_HASH", client_tag_hash.value());
-  dict.Set("ORIGINATOR_CACHE_GUID", originator_cache_guid);
-  dict.Set("ORIGINATOR_CLIENT_ITEM_ID", originator_client_item_id);
-  dict.Set("SERVER_DEFINED_UNIQUE_TAG", server_defined_unique_tag);
-  // The string "NON_UNIQUE_NAME" is used in sync-internals to identify the node
-  // title.
-  dict.Set("NON_UNIQUE_NAME", name);
-  dict.Set("NAME", name);
-  // The string "PARENT_ID" is used in sync-internals to build the node tree.
-  dict.Set("PARENT_ID", legacy_parent_id);
-  dict.Set("CTIME", GetTimeDebugString(creation_time));
-  dict.Set("MTIME", GetTimeDebugString(modification_time));
-  return dict;
+  return base::Value::Dict()
+      .Set("SPECIFICS", EntitySpecificsToValue(specifics))
+      .Set("ID", id)
+      .Set("CLIENT_TAG_HASH", client_tag_hash.value())
+      .Set("ORIGINATOR_CACHE_GUID", originator_cache_guid)
+      .Set("ORIGINATOR_CLIENT_ITEM_ID", originator_client_item_id)
+      .Set("SERVER_DEFINED_UNIQUE_TAG", server_defined_unique_tag)
+      // The string "NON_UNIQUE_NAME" is used in sync-internals to identify the
+      // node title.
+      .Set("NON_UNIQUE_NAME", name)
+      .Set("NAME", name)
+      // The string "PARENT_ID" is used in sync-internals to build the node
+      // tree.
+      .Set("PARENT_ID", legacy_parent_id)
+      .Set("CTIME", GetTimeDebugString(creation_time))
+      .Set("MTIME", GetTimeDebugString(modification_time));
 }
 
 size_t EntityData::EstimateMemoryUsage() const {

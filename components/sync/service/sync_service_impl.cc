@@ -1657,14 +1657,14 @@ base::Value::List SyncServiceImpl::GetTypeStatusMapForDebugging() const {
   const ModelTypeSet& throttled_types(detailed_status.throttled_types);
   const ModelTypeSet& backed_off_types(detailed_status.backed_off_types);
 
-  base::Value::Dict type_status_header;
-  type_status_header.Set("status", "header");
-  type_status_header.Set("name", "Model Type");
-  type_status_header.Set("num_entries", "Total Entries");
-  type_status_header.Set("num_live", "Live Entries");
-  type_status_header.Set("message", "Message");
-  type_status_header.Set("state", "State");
-  result.Append(base::Value(std::move(type_status_header)));
+  auto type_status_header = base::Value::Dict()
+                                .Set("status", "header")
+                                .Set("name", "Model Type")
+                                .Set("num_entries", "Total Entries")
+                                .Set("num_live", "Live Entries")
+                                .Set("message", "Message")
+                                .Set("state", "State");
+  result.Append(std::move(type_status_header));
 
   for (const auto& [type, controller] : data_type_controllers_) {
     base::Value::Dict type_status;
@@ -1723,7 +1723,7 @@ base::Value::List SyncServiceImpl::GetTypeStatusMapForDebugging() const {
     type_status.Set("state",
                     DataTypeController::StateToString(controller->state()));
 
-    result.Append(base::Value(std::move(type_status)));
+    result.Append(std::move(type_status));
   }
   return result;
 }
@@ -1892,9 +1892,9 @@ void GetAllNodesRequestHelper::OnReceivedNodesForType(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Add these results to our list.
-  base::Value::Dict type_dict;
-  type_dict.Set("type", ModelTypeToDebugString(type));
-  type_dict.Set("nodes", std::move(node_list));
+  auto type_dict = base::Value::Dict()
+                       .Set("type", ModelTypeToDebugString(type))
+                       .Set("nodes", std::move(node_list));
   result_accumulator_.Append(std::move(type_dict));
 
   // Remember that this part of the request is satisfied.
