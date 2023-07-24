@@ -224,6 +224,41 @@ IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
   EXPECT_THAT(model()->size(), Eq(0ul));
 }
 
+IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
+                       ShouldUploadAllEntriesToTheSyncServer) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_THAT(model()->size(), Eq(0ul));
+
+  const GURL kUrlA("http://url_a.com/");
+  model()->AddOrReplaceEntry(kUrlA, "title_a",
+                             reading_list::ADDED_VIA_CURRENT_APP,
+                             /*estimated_read_time=*/base::TimeDelta());
+
+  const GURL kUrlB("http://url_b.com/");
+  model()->AddOrReplaceEntry(kUrlB, "title_b",
+                             reading_list::ADDED_VIA_CURRENT_APP,
+                             /*estimated_read_time=*/base::TimeDelta());
+
+  ASSERT_THAT(model()->size(), Eq(2ul));
+
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+  ASSERT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::READING_LIST));
+
+  ASSERT_THAT(model()->size(), Eq(2ul));
+  ASSERT_TRUE(ServerReadingListURLsEqualityChecker({}).Wait());
+
+  model()->MarkAllForUploadToSyncServerIfNeeded();
+
+  EXPECT_TRUE(ServerReadingListURLsEqualityChecker({{kUrlA, kUrlB}}).Wait());
+  EXPECT_THAT(model()->size(), Eq(2ul));
+
+  GetClient(0)->SignOutPrimaryAccount();
+  EXPECT_THAT(model()->size(), Eq(0ul));
+}
+
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #endif  // !BUILDFLAG(IS_ANDROID)
