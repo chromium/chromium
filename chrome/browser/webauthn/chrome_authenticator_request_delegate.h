@@ -241,7 +241,6 @@ class ChromeAuthenticatorRequestDelegate
 
   // Adds GPM passkeys matching |rp_id| to |passkeys|.
   void GetPhoneContactableGpmPasskeysForRpId(
-      const std::string& rp_id,
       std::vector<device::DiscoverableCredentialMetadata>* passkeys);
 
 #if !BUILDFLAG(IS_CHROMEOS)

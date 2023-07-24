@@ -124,6 +124,34 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
           .Wait());
 }
 
+// Getting passkeys by RP ID.
+IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+                       GetPasskeysByRpId) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  constexpr char kRpId2[] = "rpid2.com";
+  sync_pb::WebauthnCredentialSpecifics passkey1 = NewPasskey();
+  sync_pb::WebauthnCredentialSpecifics passkey1_shadow = NewPasskey();
+  passkey1.add_newly_shadowed_credential_ids(passkey1_shadow.credential_id());
+  sync_pb::WebauthnCredentialSpecifics passkey2 = NewPasskey();
+  passkey2.set_rp_id(kRpId2);
+  const std::string sync_id1 = InjectPasskeyToFakeServer(passkey1);
+  const std::string sync_id1_shadow =
+      InjectPasskeyToFakeServer(passkey1_shadow);
+  const std::string sync_id2 = InjectPasskeyToFakeServer(passkey2);
+  EXPECT_TRUE(LocalPasskeysMatchChecker(
+                  kSingleProfile,
+                  UnorderedElementsAre(PasskeyHasSyncId(sync_id1),
+                                       PasskeyHasSyncId(sync_id1_shadow),
+                                       PasskeyHasSyncId(sync_id2)))
+                  .Wait());
+
+  EXPECT_THAT(GetModel().GetPasskeysForRelyingPartyId(passkey1.rp_id()),
+              UnorderedElementsAre(PasskeyHasSyncId(sync_id1)));
+  EXPECT_THAT(GetModel().GetPasskeysForRelyingPartyId(passkey2.rp_id()),
+              UnorderedElementsAre(PasskeyHasSyncId(sync_id2)));
+}
+
 // Deleting a local passkey should remove from the server.
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                        UploadLocalPasskeyDeletion) {

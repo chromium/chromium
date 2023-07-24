@@ -60,8 +60,15 @@ class PasskeyModel : public KeyedService {
   GetModelTypeControllerDelegate() = 0;
 
   virtual base::flat_set<std::string> GetAllSyncIds() const = 0;
+
+  // Returns the list of all passkeys, including those that are shadowed.
   virtual std::vector<sync_pb::WebauthnCredentialSpecifics> GetAllPasskeys()
       const = 0;
+
+  // Returns the list of passkeys for |rp_id| that are not shadowed, and so are
+  // suitable to fulfill authentication requests.
+  virtual std::vector<sync_pb::WebauthnCredentialSpecifics>
+  GetPasskeysForRelyingPartyId(const std::string& rp_id) const = 0;
 
   // Deletes the passkey with the given |credential_id|. If the passkey is the
   // head of the shadow chain, then all passkeys for the same (user id, rp id)

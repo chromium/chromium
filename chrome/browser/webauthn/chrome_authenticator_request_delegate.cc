@@ -52,7 +52,6 @@
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/webauthn/core/browser/passkey_model.h"
-#include "components/webauthn/core/browser/passkey_model_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
@@ -797,8 +796,7 @@ void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
   if (base::FeatureList::IsEnabled(device::kWebAuthnListSyncedPasskeys) &&
       base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials) &&
       !IsVirtualEnvironmentEnabled() && can_use_synced_phone_passkeys_) {
-    GetPhoneContactableGpmPasskeysForRpId(dialog_model_->relying_party_id(),
-                                          &data.recognized_credentials);
+    GetPhoneContactableGpmPasskeysForRpId(&data.recognized_credentials);
   }
   if (!credential_filter_.empty()) {
     std::vector<device::DiscoverableCredentialMetadata> filtered_list;
@@ -1008,7 +1006,6 @@ void ChromeAuthenticatorRequestDelegate::OnCableEvent(
 }
 
 void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
-    const std::string& rp_id,
     std::vector<device::DiscoverableCredentialMetadata>* passkeys) {
   // TODO(crbug.com/1456847): Introduce
   // PasskeyModel::GetPasskeysForRelyingPartyId() and move this logic there.
@@ -1017,11 +1014,8 @@ void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
           Profile::FromBrowserContext(GetBrowserContext()));
   CHECK(passkey_model);
   for (const sync_pb::WebauthnCredentialSpecifics& passkey :
-       webauthn::passkey_model_utils::FilterShadowedCredentials(
-           passkey_model->GetAllPasskeys())) {
-    if (passkey.rp_id() != dialog_model_->relying_party_id()) {
-      continue;
-    }
+       passkey_model->GetPasskeysForRelyingPartyId(
+           dialog_model_->relying_party_id())) {
     passkeys->emplace_back(
         device::AuthenticatorType::kPhone, passkey.rp_id(),
         std::vector<uint8_t>(passkey.credential_id().begin(),

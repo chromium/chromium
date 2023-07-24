@@ -4,10 +4,11 @@
 
 #include "components/webauthn/core/browser/test_passkey_model.h"
 
-#include "base/containers/cxx20_erase_unordered_set.h"
+#include <iterator>
+
 #include "base/notreached.h"
-#include "base/rand_util.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#include "components/webauthn/core/browser/passkey_model_utils.h"
 
 namespace webauthn {
 
@@ -39,6 +40,15 @@ base::flat_set<std::string> TestPasskeyModel::GetAllSyncIds() const {
 std::vector<sync_pb::WebauthnCredentialSpecifics>
 TestPasskeyModel::GetAllPasskeys() const {
   return credentials_;
+}
+
+std::vector<sync_pb::WebauthnCredentialSpecifics>
+TestPasskeyModel::GetPasskeysForRelyingPartyId(const std::string& rp_id) const {
+  std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys;
+  base::ranges::copy_if(
+      credentials_, std::back_inserter(passkeys),
+      [&rp_id](const auto& passkey) { return passkey.rp_id() == rp_id; });
+  return passkey_model_utils::FilterShadowedCredentials(passkeys);
 }
 
 std::string TestPasskeyModel::AddNewPasskeyForTesting(

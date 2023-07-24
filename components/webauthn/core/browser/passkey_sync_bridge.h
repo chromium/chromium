@@ -58,6 +58,8 @@ class PasskeySyncBridge : public syncer::ModelTypeSyncBridge,
   base::flat_set<std::string> GetAllSyncIds() const override;
   std::vector<sync_pb::WebauthnCredentialSpecifics> GetAllPasskeys()
       const override;
+  std::vector<sync_pb::WebauthnCredentialSpecifics>
+  GetPasskeysForRelyingPartyId(const std::string& rp_id) const override;
   bool DeletePasskey(const std::string& credential_id) override;
   bool UpdatePasskey(const std::string& credential_id,
                      PasskeyChange change) override;
