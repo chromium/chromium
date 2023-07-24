@@ -62,11 +62,11 @@ TEST_F(ChromeAndroidMetricsProviderTest,
 }
 
 TEST_F(ChromeAndroidMetricsProviderTest,
-       ProvideCurrentSessionData_HasMultipleUserProfiles) {
-  metrics_provider_.ProvideCurrentSessionData(&uma_proto_);
+       OnDidCreateMetricsLog_HasMultipleUserProfiles) {
+  metrics_provider_.OnDidCreateMetricsLog();
   histogram_tester_.ExpectTotalCount("Android.MultipleUserProfilesState", 1);
   // Caches value, test a second time.
-  metrics_provider_.ProvideCurrentSessionData(&uma_proto_);
+  metrics_provider_.OnDidCreateMetricsLog();
   histogram_tester_.ExpectTotalCount("Android.MultipleUserProfilesState", 2);
 }
 
@@ -80,8 +80,8 @@ TEST_F(ChromeAndroidMetricsProviderTest,
 }
 
 TEST_F(ChromeAndroidMetricsProviderTest,
-       ProvideCurrentSessionData_AndroidMetricsHelper) {
-  metrics_provider_.ProvideCurrentSessionData(&uma_proto_);
+       OnDidCreateMetricsLog_AndroidMetricsHelper) {
+  metrics_provider_.OnDidCreateMetricsLog();
   histogram_tester_.ExpectTotalCount("Android.VersionCode", 1);
   histogram_tester_.ExpectTotalCount("Android.CpuAbiBitnessSupport", 1);
 }

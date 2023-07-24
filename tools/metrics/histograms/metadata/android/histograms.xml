@@ -815,7 +815,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Whether 64-bit and/or 32-bit apps can be installed on this device/OS.
 
-    Emitted with every log record.
+    This is recorded every time a metrics log is created.
   </summary>
 </histogram>
 
@@ -2141,8 +2141,9 @@ chromium-metrics-reviews@google.com.
   <owner>yfriedman@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <summary>
-    Records whether multiple user profiles are present in Android. This is
-    recorded every time a metrics log is closed.
+    Records whether multiple user profiles are present in Android.
+
+    This is recorded every time a metrics log is created.
   </summary>
 </histogram>
 
@@ -4106,7 +4107,7 @@ chromium-metrics-reviews@google.com.
     from the Play Store point of view. There can be multiple version codes for a
     given Chrome version. See go/chrome-android-version-codes.
 
-    Emitted with every log record.
+    This is recorded every time a metrics log is created.
   </summary>
 </histogram>
 
@@ -4990,7 +4991,7 @@ chromium-metrics-reviews@google.com.
     Renderer follows bitness of the bundle (provided that such bitness is
     supported, so look at it in combination with AbiBitnessSupport).
 
-    Emitted with every log record.
+    This is recorded every time a metrics log is created.
   </summary>
 </histogram>
 
