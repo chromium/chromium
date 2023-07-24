@@ -3094,6 +3094,7 @@ if (!is_android) {
         "../browser/ui/signin_intercept_first_run_experience_dialog_browsertest.cc",
         "../browser/ui/views/sync/inline_login_ui_browsertest.cc",
         "../browser/unified_consent/unified_consent_browsertest.cc",
+        "../browser/unified_consent/unified_consent_sync_to_signin_browsertest.cc",
       ]
       if (is_win) {
         sources += [ "../browser/signin/signin_util_win_browsertest.cc" ]

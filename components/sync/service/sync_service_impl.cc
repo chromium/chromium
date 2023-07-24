@@ -2117,20 +2117,19 @@ void SyncServiceImpl::ReconfigureDatatypeManager(
     } else {
       DVLOG(0) << "ConfigureDataTypeManager not invoked because datatypes "
                << "cannot be configured now";
-      // If we can't configure the data type manager yet, we should still notify
-      // observers. This is to support multiple setup UIs being open at once.
-      NotifyObservers();
     }
   } else if (HasDisableReason(DISABLE_REASON_UNRECOVERABLE_ERROR)) {
-    // There is nothing more to configure. So inform the listeners,
-    NotifyObservers();
-
+    // There is nothing more to configure.
     DVLOG(1) << "ConfigureDataTypeManager not invoked because of an "
              << "Unrecoverable error.";
   } else {
     DVLOG(0) << "ConfigureDataTypeManager not invoked because engine is not "
              << "initialized";
   }
+
+  // In any case, notify the observers. Whatever triggered the reconfigure
+  // (attempt) might be interesting to them.
+  NotifyObservers();
 }
 
 bool SyncServiceImpl::IsRetryingAccessTokenFetchForTest() const {

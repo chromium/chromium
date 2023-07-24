@@ -15,7 +15,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "components/sync_preferences/pref_service_syncable_observer.h"
 
@@ -86,6 +85,37 @@ class UnifiedConsentService
  private:
   friend class UnifiedConsentServiceTest;
 
+  enum class SyncState {
+    // The user is not signed in.
+    kSignedOut,
+    // The user is signed in, but has not opted in to history.
+    kSignedInWithoutHistory,
+    // The user is signed in and has opted in to history. The passphrase state
+    // (explicit passphrase or not) is not known yet - it will be determined
+    // once the Sync engine successfully initializes for the first time. This
+    // typically happens very soon (< 1s) after sign-in, but in some cases (e.g.
+    // no connection to the Sync server possible) can be delayed indefinitely.
+    // When entering this state, data collection will get enabled - if it's
+    // later determined that there is an explicit passphrase, it'll get disabled
+    // again.
+    kSignedInWithHistoryWaitingForPassphrase,
+    // The user is signed in and has opted in to history, but has an explicit
+    // passphrase.
+    kSignedInWithHistoryAndExplicitPassphrase,
+    // The user is signed in and has opted in to history, and does not have an
+    // explicit passphrase.
+    kSignedInWithHistoryAndNoPassphrase,
+  };
+
+  static SyncState GetSyncState(const syncer::SyncService* sync_service);
+
+  static bool ShouldEnableUrlKeyedAnonymizedDataCollection(
+      SyncState old_sync_state,
+      SyncState new_sync_state);
+  static bool ShouldDisableUrlKeyedAnonymizedDataCollection(
+      SyncState old_sync_state,
+      SyncState new_sync_state);
+
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
 
@@ -113,8 +143,10 @@ class UnifiedConsentService
   raw_ptr<signin::IdentityManager> identity_manager_;
   raw_ptr<syncer::SyncService> sync_service_;
 
-  // Used to monitor changes to history sync opt-in
-  signin::Tribool last_history_sync_enabled_ = signin::Tribool::kUnknown;
+  // Used to monitor changes to the history opt-in and the explicit-passphrase
+  // state. Only populated and used if `kReplaceSyncPromosWithSignInPromos` is
+  // enabled.
+  SyncState last_sync_state_ = SyncState::kSignedOut;
 
   // Used for tracking the service pref states during the advanced sync opt-in.
   const std::vector<std::string> service_pref_names_;

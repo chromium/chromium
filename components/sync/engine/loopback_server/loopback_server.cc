@@ -835,6 +835,9 @@ bool LoopbackServer::ModifyEntitySpecifics(
   LoopbackServerEntity* entity = iter->second.get();
   entity->SetSpecifics(updated_specifics);
   UpdateEntityVersion(entity);
+
+  ScheduleSaveStateToFile();
+
   return true;
 }
 
@@ -858,6 +861,9 @@ bool LoopbackServer::ModifyBookmarkEntity(
     entity->SetName(updated_specifics.bookmark().legacy_canonicalized_title());
   }
   UpdateEntityVersion(entity);
+
+  ScheduleSaveStateToFile();
+
   return true;
 }
 

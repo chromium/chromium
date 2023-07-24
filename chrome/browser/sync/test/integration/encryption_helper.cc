@@ -54,7 +54,8 @@ PassphraseRequiredChecker::PassphraseRequiredChecker(
 
 bool PassphraseRequiredChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Checking whether passhrase is required";
-  return service()->GetUserSettings()->IsPassphraseRequired();
+  return service()->IsEngineInitialized() &&
+         service()->GetUserSettings()->IsPassphraseRequired();
 }
 
 PassphraseAcceptedChecker::PassphraseAcceptedChecker(
@@ -75,7 +76,8 @@ bool PassphraseAcceptedChecker::IsExitConditionSatisfied(std::ostream* os) {
     case syncer::PassphraseType::kCustomPassphrase:
       break;
   }
-  return !service()->GetUserSettings()->IsPassphraseRequired();
+  return service()->IsEngineInitialized() &&
+         !service()->GetUserSettings()->IsPassphraseRequired();
 }
 
 PassphraseTypeChecker::PassphraseTypeChecker(

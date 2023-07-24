@@ -7,7 +7,6 @@
 #include "base/check_op.h"
 #include "build/build_config.h"
 #include "components/pref_registry/pref_registry_syncable.h"
-#include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
@@ -16,17 +15,141 @@
 #include "components/unified_consent/pref_names.h"
 
 namespace unified_consent {
-namespace {
 
-// Returns whether history sync is enabled.
-bool IsHistorySyncEnabled(syncer::SyncService* sync_service) {
+// static
+UnifiedConsentService::SyncState UnifiedConsentService::GetSyncState(
+    const syncer::SyncService* sync_service) {
   CHECK(
       base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
-  return sync_service->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kHistory);
+
+  if (sync_service->HasDisableReason(
+          syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN)) {
+    return SyncState::kSignedOut;
+  }
+
+  if (!sync_service->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kHistory)) {
+    return SyncState::kSignedInWithoutHistory;
+  }
+
+  absl::optional<syncer::PassphraseType> passphrase_type =
+      sync_service->GetUserSettings()->GetPassphraseType();
+
+  if (!passphrase_type.has_value()) {
+    return SyncState::kSignedInWithHistoryWaitingForPassphrase;
+  }
+
+  if (syncer::IsExplicitPassphrase(*passphrase_type)) {
+    return SyncState::kSignedInWithHistoryAndExplicitPassphrase;
+  }
+
+  return SyncState::kSignedInWithHistoryAndNoPassphrase;
 }
 
-}  // namespace
+// static
+bool UnifiedConsentService::ShouldEnableUrlKeyedAnonymizedDataCollection(
+    SyncState old_sync_state,
+    SyncState new_sync_state) {
+  CHECK(
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+
+  // If nothing changed, leave UrlKeyedAnonymizedDataCollection alone.
+  if (old_sync_state == new_sync_state) {
+    return false;
+  }
+
+  // UrlKeyedAnonymizedDataCollection is only ever automatically enabled when
+  // entering the history-on-without-passphrase or -waiting-for-passphrase
+  // state.
+  switch (new_sync_state) {
+    case SyncState::kSignedOut:
+    case SyncState::kSignedInWithoutHistory:
+    case SyncState::kSignedInWithHistoryAndExplicitPassphrase:
+      return false;
+    case SyncState::kSignedInWithHistoryWaitingForPassphrase:
+    case SyncState::kSignedInWithHistoryAndNoPassphrase:
+      // UrlKeyedAnonymizedDataCollection can maybe be enabled, depending on
+      // `old_sync_state`.
+      // Note that `kSignedInWithHistoryWaitingForPassphrase` will *usually*
+      // be entered from `kSignedOut`, but it's not the only possibility: It's
+      // also possible to get there from any of the "signed-in" state, e.g. if
+      // the user reset their sync data via the dashboard.
+      break;
+  }
+
+  switch (old_sync_state) {
+    case SyncState::kSignedOut:
+    case SyncState::kSignedInWithoutHistory:
+      // History got turned on, and there's no explicit passphrase, so
+      // UrlKeyedAnonymizedDataCollection can be enabled.
+      return true;
+    case SyncState::kSignedInWithHistoryWaitingForPassphrase:
+    case SyncState::kSignedInWithHistoryAndNoPassphrase:
+      // UrlKeyedAnonymizedDataCollection would've been turned on based on the
+      // old state already, so nothing to do here.
+      return false;
+    case SyncState::kSignedInWithHistoryAndExplicitPassphrase:
+      // Explicit-passphrase was turned off, and history is on,
+      // UrlKeyedAnonymizedDataCollection can be enabled.
+      // Note that while turning off an explicit passphrase involves resetting
+      // all the server-side data and starting over fresh, this process is not
+      // expressed in the SyncState.
+      return true;
+  }
+}
+
+// static
+bool UnifiedConsentService::ShouldDisableUrlKeyedAnonymizedDataCollection(
+    SyncState old_sync_state,
+    SyncState new_sync_state) {
+  CHECK(
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+
+  // If nothing changed, leave UrlKeyedAnonymizedDataCollection alone.
+  if (old_sync_state == new_sync_state) {
+    return false;
+  }
+
+  // UrlKeyedAnonymizedDataCollection only ever needs to be automatically
+  // disabled if it was previously automatically enabled, which means the old
+  // state was history-on-without-passphrase (or -waiting-for-passphrase) state.
+  switch (old_sync_state) {
+    case SyncState::kSignedOut:
+    case SyncState::kSignedInWithoutHistory:
+    case SyncState::kSignedInWithHistoryAndExplicitPassphrase:
+      return false;
+    case SyncState::kSignedInWithHistoryWaitingForPassphrase:
+    case SyncState::kSignedInWithHistoryAndNoPassphrase:
+      // UrlKeyedAnonymizedDataCollection might have to be disabled, depending
+      // on `new_sync_state`.
+      break;
+  }
+
+  switch (new_sync_state) {
+    case SyncState::kSignedOut:
+      // User signed out; UrlKeyedAnonymizedDataCollection should be disabled.
+      return true;
+    case SyncState::kSignedInWithoutHistory:
+      // History was turned off, UrlKeyedAnonymizedDataCollection should be
+      // disabled.
+      return true;
+    case SyncState::kSignedInWithHistoryAndNoPassphrase:
+      // Passphrase state became known, and there's no explicit passphrase.
+      // Nothing to be done.
+      return false;
+    case SyncState::kSignedInWithHistoryWaitingForPassphrase:
+      // Nothing to do - wait until the passphrase state becomes known.
+      // Note that this transition (from `kSignedInWithHistoryAndNoPassphrase`
+      // to `kSignedInWithHistoryWaitingForPassphrase`) is not typically
+      // possible, but it can happen if the local sync (meta)data gets reset and
+      // sync starts over.
+      return false;
+    case SyncState::kSignedInWithHistoryAndExplicitPassphrase:
+      // If explicit-passphrase was turned on, UrlKeyedAnonymizedDataCollection
+      // should be disabled.
+      return true;
+  }
+}
 
 UnifiedConsentService::UnifiedConsentService(
     sync_preferences::PrefServiceSyncable* pref_service,
@@ -48,8 +171,7 @@ UnifiedConsentService::UnifiedConsentService(
 
   if (base::FeatureList::IsEnabled(
           syncer::kReplaceSyncPromosWithSignInPromos)) {
-    last_history_sync_enabled_ =
-        signin::TriboolFromBool(IsHistorySyncEnabled(sync_service_));
+    last_sync_state_ = GetSyncState(sync_service_);
   }
 
   pref_service_->AddObserver(this);
@@ -103,19 +225,25 @@ void UnifiedConsentService::OnPrimaryAccountChanged(
 
 void UnifiedConsentService::OnStateChanged(syncer::SyncService* sync) {
   // Update the UrlKeyedAnonymizedDataCollectionEnabled if user changed the
-  // history opt-in state.
+  // history opt-in state or the explicit-passphrase state.
   if (base::FeatureList::IsEnabled(
           syncer::kReplaceSyncPromosWithSignInPromos)) {
-    bool new_history_sync_enabled = IsHistorySyncEnabled(sync_service_);
-    if (new_history_sync_enabled !=
-        signin::TriboolToBoolOrDie(last_history_sync_enabled_)) {
-      last_history_sync_enabled_ =
-          signin::TriboolFromBool(new_history_sync_enabled);
+    const SyncState new_sync_state = GetSyncState(sync_service_);
 
-      // Ignore syncing users - UrlKeyedAnonymizedDataCollectionEnabled is
-      // updated based on their sync opt-in state.
-      if (!sync_service_->HasSyncConsent()) {
-        SetUrlKeyedAnonymizedDataCollectionEnabled(new_history_sync_enabled);
+    // Before updating the cached state, remember the old value, to detect
+    // if anything changed.
+    const SyncState old_sync_state = last_sync_state_;
+    last_sync_state_ = new_sync_state;
+
+    // Ignore syncing users - UrlKeyedAnonymizedDataCollectionEnabled is
+    // updated based on their sync opt-in state.
+    if (!sync_service_->HasSyncConsent()) {
+      if (ShouldDisableUrlKeyedAnonymizedDataCollection(old_sync_state,
+                                                        new_sync_state)) {
+        SetUrlKeyedAnonymizedDataCollectionEnabled(false);
+      } else if (ShouldEnableUrlKeyedAnonymizedDataCollection(old_sync_state,
+                                                              new_sync_state)) {
+        SetUrlKeyedAnonymizedDataCollectionEnabled(true);
       }
     }
   }
