@@ -3816,7 +3816,7 @@ bool MediaStreamManager::DoesMediaDeviceIDMatchHMAC(
 }
 
 // static
-void MediaStreamManager::GetMediaDeviceIDForHMAC(
+void MediaStreamManager::GetRawDeviceIDForMediaStreamHMAC(
     MediaStreamType stream_type,
     std::string salt,
     url::Origin security_origin,
@@ -3827,12 +3827,12 @@ void MediaStreamManager::GetMediaDeviceIDForHMAC(
   DCHECK(stream_type == MediaStreamType::DEVICE_AUDIO_CAPTURE ||
          stream_type == MediaStreamType::DEVICE_VIDEO_CAPTURE);
   MediaDeviceType device_type = ConvertToMediaDeviceType(stream_type);
-  MediaStreamManager::GetMediaDeviceIDForHMAC(
+  MediaStreamManager::GetRawDeviceIDForMediaDeviceHMAC(
       device_type, std::move(salt), std::move(security_origin),
       std::move(hmac_device_id), std::move(task_runner), std::move(callback));
 }
 
-void MediaStreamManager::GetMediaDeviceIDForHMAC(
+void MediaStreamManager::GetRawDeviceIDForMediaDeviceHMAC(
     MediaDeviceType device_type,
     std::string salt,
     url::Origin security_origin,

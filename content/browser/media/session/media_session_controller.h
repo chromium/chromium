@@ -113,9 +113,7 @@ class CONTENT_EXPORT MediaSessionController
   // accordingly.
   bool AddOrRemovePlayer();
 
-  void OnMediaDeviceSaltReceived(
-      const std::string& raw_device_id,
-      const MediaDeviceSaltAndOrigin& salt_and_origin);
+  void OnHashedSinkIdReceived(const std::string& hashed_sink_id);
 
   const MediaPlayerId id_;
 

@@ -20,13 +20,13 @@ using blink::mojom::MediaDeviceType;
 
 namespace content {
 
-// Returns the ID of the user-default device ID via |callback|.
-// If no such device ID can be found, |callback| receives an empty string.
-CONTENT_EXPORT void GetDefaultMediaDeviceID(
-    MediaDeviceType device_type,
-    int render_process_id,
-    int render_frame_id,
-    base::OnceCallback<void(const std::string&)> callback);
+using DeviceIdCallback = base::OnceCallback<void(const std::string&)>;
+// Returns the ID of the user-default device ID via `callback`.
+// If no such device ID can be found, `callback` receives an empty string.
+CONTENT_EXPORT void GetDefaultMediaDeviceID(MediaDeviceType device_type,
+                                            int render_process_id,
+                                            int render_frame_id,
+                                            DeviceIdCallback callback);
 
 struct CONTENT_EXPORT MediaDeviceSaltAndOrigin {
   MediaDeviceSaltAndOrigin();
@@ -49,9 +49,9 @@ struct CONTENT_EXPORT MediaDeviceSaltAndOrigin {
 };
 
 // Returns the current media device ID salt and security origin for the given
-// |render_process_id| and |render_frame_id|. These values are used to produce
-// unique media-device IDs for each origin and renderer process. These values
-// should not be cached since the user can explicitly change them at any time.
+// `render_frame_host_id`. The returned value can be used to produce unique
+// media-device IDs for the origin associated with `render_frame_host_id` and
+// it should not be cached since the user can explicitly change it at any time.
 // This function must run on the UI thread.
 using MediaDeviceSaltAndOriginCallback =
     base::OnceCallback<void(const MediaDeviceSaltAndOrigin&)>;
@@ -65,27 +65,55 @@ using GetMediaDeviceSaltAndOriginCallback =
     base::RepeatingCallback<void(GlobalRenderFrameHostId,
                                  MediaDeviceSaltAndOriginCallback)>;
 
-// Returns a translated version of |device_info| suitable for use in a renderer
-// process.
-// The |device_id| field is hashed using |device_id_salt| and |security_origin|.
-// The |group_id| field is hashed using |group_id_salt| and |security_origin|.
-// The |label| field is removed if |has_permission| is false.
+// Returns a translated (HMAC) version of (raw) `device_info` suitable for use
+// in a renderer process.
+// The `device_id` field is hashed using the `device_id_salt` and `origin` in
+// `salt_and_origin`.
+// The `group_id` field is hashed using the `group_id_salt` and `origin` in
+// `salt_and_origin`.
+// If `has_permission` is false:
+//   If `features::kEnumerateDevicesHideDeviceIDs` is enabled, all fields in the
+//   returned value are empty.
+//   Otherwise, only the label field is empty.
 CONTENT_EXPORT blink::WebMediaDeviceInfo TranslateMediaDeviceInfo(
     bool has_permission,
     const MediaDeviceSaltAndOrigin& salt_and_origin,
     const blink::WebMediaDeviceInfo& device_info);
 
-// Returns a translated version of |device_infos|, with each element translated
-// using TranslateMediaDeviceInfo(). If `has_permission` is false, the output
-// will contain at most one element per device type with empty strings for
-// device_id, label and group_id, as per
-// https://w3c.github.io/mediacapture-main/#access-control-model
+// Returns a translated (HMAC) version of raw `device_infos`, with each element
+// translated using TranslateMediaDeviceInfo(). If `has_permission` is false and
+// `features::kEnumerateDevicesHideDeviceIDs` is enabled, the output will
+// contain at most one element per device type with empty values for all fields,
+// as per https://w3c.github.io/mediacapture-main/#access-control-model
 CONTENT_EXPORT blink::WebMediaDeviceInfoArray TranslateMediaDeviceInfoArray(
     bool has_permission,
     const MediaDeviceSaltAndOrigin& salt_and_origin,
     const blink::WebMediaDeviceInfoArray& device_infos);
 
+// Creates a random salt that can be used to generate media device IDs that can
+// be sent to the renderer process.
 CONTENT_EXPORT std::string CreateRandomMediaDeviceIDSalt();
+
+// Returns via `hmac_device_id_callback` an HMAC-translated version of
+//`raw_device_id` suitable for use by the given `render_frame_host_id`.
+CONTENT_EXPORT void GetHMACFromRawDeviceId(
+    GlobalRenderFrameHostId render_frame_host_id,
+    const std::string& raw_device_id,
+    DeviceIdCallback hmac_device_id_callback);
+
+using OptionalDeviceIdCallback =
+    base::OnceCallback<void(const absl::optional<std::string>&)>;
+// Returns via `raw_device_id_callback` the raw version of `hmac_device_id`.
+// The salt for the given `render_frame_host_id` is used to translate
+// `hmac_device_id`. If no device of type `media_device_type` which corresponds
+// to the given `hmac_device_id` is found in the system, this function returns
+// `absl::nullopt`.
+CONTENT_EXPORT void GetRawDeviceIdFromHMAC(
+    GlobalRenderFrameHostId render_frame_host_id,
+    const std::string& hmac_device_id,
+    blink::mojom::MediaDeviceType media_device_type,
+    base::OnceCallback<void(const absl::optional<std::string>&)>
+        raw_device_id_callback);
 
 }  // namespace content
 

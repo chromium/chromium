@@ -355,7 +355,8 @@ class CONTENT_EXPORT MediaStreamManager
   // blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE or
   // blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE. The result will
   // be returned via |callback| on the given |task_runner|.
-  static void GetMediaDeviceIDForHMAC(
+  // Must be called on the IO thread.
+  static void GetRawDeviceIDForMediaStreamHMAC(
       blink::mojom::MediaStreamType stream_type,
       std::string salt,
       url::Origin security_origin,
@@ -365,7 +366,8 @@ class CONTENT_EXPORT MediaStreamManager
   // Overload that allows for a blink::mojom::MediaDeviceType to be specified
   // instead of a blink::mojom::MediaStreamType. This allows for getting the raw
   // device ID from the HMAC of an audio output device.
-  static void GetMediaDeviceIDForHMAC(
+  // Must be called on the IO thread.
+  static void GetRawDeviceIDForMediaDeviceHMAC(
       blink::mojom::MediaDeviceType device_type,
       std::string salt,
       url::Origin security_origin,

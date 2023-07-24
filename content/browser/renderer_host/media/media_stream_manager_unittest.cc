@@ -1189,7 +1189,7 @@ TEST_F(MediaStreamManagerTest, GetMediaDeviceIDForHMAC) {
       MediaStreamManager::GetHMACForMediaDeviceID(kSalt, kOrigin,
                                                   kExistingRawDeviceId);
 
-  MediaStreamManager::GetMediaDeviceIDForHMAC(
+  MediaStreamManager::GetRawDeviceIDForMediaStreamHMAC(
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, kSalt, kOrigin,
       kExistingHmacDeviceId, base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(
@@ -1202,7 +1202,7 @@ TEST_F(MediaStreamManagerTest, GetMediaDeviceIDForHMAC) {
   base::RunLoop().RunUntilIdle();
 
   const std::string kNonexistingHmacDeviceId = "does not exist";
-  MediaStreamManager::GetMediaDeviceIDForHMAC(
+  MediaStreamManager::GetRawDeviceIDForMediaStreamHMAC(
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, kSalt, kOrigin,
       kNonexistingHmacDeviceId, base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce([](const absl::optional<std::string>& raw_device_id) {

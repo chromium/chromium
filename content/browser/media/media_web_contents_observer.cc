@@ -404,33 +404,11 @@ void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
       RenderFrameHost::FromID(media_player_id_.frame_routing_id);
   DCHECK(render_frame_host);
 
-  content::GetMediaDeviceSaltAndOrigin(
-      render_frame_host->GetGlobalId(),
-      base::BindOnce(&MediaPlayerObserverHostImpl::OnReceivedMediaDeviceSalt,
-                     weak_factory_.GetWeakPtr(), hashed_device_id));
-}
-
-void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
-    OnReceivedMediaDeviceSalt(
-        const std::string& hashed_device_id,
-        const content::MediaDeviceSaltAndOrigin& salt_and_origin) {
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          // TODO(dcheng): GetMediaDeviceIDForHMAC should not be overloaded,
-          // which would avoid the need for static_casts / wrapper lambdas
-          // (which are not zero cost).
-          static_cast<void (*)(
-              blink::mojom::MediaDeviceType, std::string, url::Origin,
-              std::string, scoped_refptr<base::SequencedTaskRunner>,
-              base::OnceCallback<void(const absl::optional<std::string>&)>)>(
-              &MediaStreamManager::GetMediaDeviceIDForHMAC),
-          blink::mojom::MediaDeviceType::MEDIA_AUDIO_OUTPUT,
-          salt_and_origin.device_id_salt, std::move(salt_and_origin.origin),
-          hashed_device_id, content::GetUIThreadTaskRunner({}),
-          base::BindOnce(
-              &MediaPlayerObserverHostImpl::OnReceivedTranslatedDeviceId,
-              weak_factory_.GetWeakPtr())));
+  content::GetRawDeviceIdFromHMAC(
+      render_frame_host->GetGlobalId(), hashed_device_id,
+      blink::mojom::MediaDeviceType::MEDIA_AUDIO_OUTPUT,
+      base::BindOnce(&MediaPlayerObserverHostImpl::OnReceivedTranslatedDeviceId,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void MediaWebContentsObserver::MediaPlayerObserverHostImpl::

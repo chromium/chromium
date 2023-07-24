@@ -14,6 +14,7 @@
 #include "base/strings/string_tokenizer.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -144,11 +145,10 @@ MediaDeviceSaltAndOrigin::MediaDeviceSaltAndOrigin(
 
 MediaDeviceSaltAndOrigin::~MediaDeviceSaltAndOrigin() = default;
 
-void GetDefaultMediaDeviceID(
-    MediaDeviceType device_type,
-    int render_process_id,
-    int render_frame_id,
-    base::OnceCallback<void(const std::string&)> callback) {
+void GetDefaultMediaDeviceID(MediaDeviceType device_type,
+                             int render_process_id,
+                             int render_frame_id,
+                             DeviceIdCallback callback) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseFakeDeviceForMediaStream)) {
     std::string command_line_default_device_id =
@@ -246,6 +246,47 @@ blink::WebMediaDeviceInfoArray TranslateMediaDeviceInfoArray(
 
 std::string CreateRandomMediaDeviceIDSalt() {
   return base::UnguessableToken::Create().ToString();
+}
+
+void GetHMACFromRawDeviceId(GlobalRenderFrameHostId render_frame_host_id,
+                            const std::string& raw_device_id,
+                            DeviceIdCallback hmac_device_id_callback) {
+  auto got_salt = base::BindOnce(
+      [](const std::string& raw_device_id,
+         DeviceIdCallback hmac_device_id_callback,
+         const MediaDeviceSaltAndOrigin& salt_and_origin) {
+        std::move(hmac_device_id_callback)
+            .Run(GetHMACForMediaDeviceID(salt_and_origin.device_id_salt,
+                                         salt_and_origin.origin,
+                                         raw_device_id));
+      },
+      raw_device_id, std::move(hmac_device_id_callback));
+  GetMediaDeviceSaltAndOrigin(render_frame_host_id, std::move(got_salt));
+}
+
+void GetRawDeviceIdFromHMAC(GlobalRenderFrameHostId render_frame_host_id,
+                            const std::string& hmac_device_id,
+                            blink::mojom::MediaDeviceType media_device_type,
+                            OptionalDeviceIdCallback raw_device_id_callback) {
+  auto got_salt = base::BindOnce(
+      [](const std::string& hmac_device_id,
+         OptionalDeviceIdCallback raw_device_id_callback,
+         blink::mojom::MediaDeviceType media_device_type,
+         const MediaDeviceSaltAndOrigin& salt_and_origin) {
+        // `GetRawDeviceIDForMediaDeviceHMAC()` needs to be called on the IO
+        // thread since it performs a device enumeration.
+        content::GetIOThreadTaskRunner({})->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                &MediaStreamManager::GetRawDeviceIDForMediaDeviceHMAC,
+                media_device_type, salt_and_origin.device_id_salt,
+                salt_and_origin.origin, hmac_device_id,
+                base::SequencedTaskRunner::GetCurrentDefault(),
+                std::move(raw_device_id_callback)));
+      },
+      hmac_device_id, std::move(raw_device_id_callback), media_device_type);
+
+  GetMediaDeviceSaltAndOrigin(render_frame_host_id, std::move(got_salt));
 }
 
 }  // namespace content

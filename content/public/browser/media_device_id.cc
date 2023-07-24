@@ -34,7 +34,7 @@ void GetMediaDeviceIDForHMAC(
     std::string hmac_device_id,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     base::OnceCallback<void(const absl::optional<std::string>&)> callback) {
-  MediaStreamManager::GetMediaDeviceIDForHMAC(
+  MediaStreamManager::GetRawDeviceIDForMediaStreamHMAC(
       stream_type, std::move(salt), std::move(security_origin),
       std::move(hmac_device_id), task_runner, std::move(callback));
 }

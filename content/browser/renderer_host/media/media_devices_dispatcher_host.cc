@@ -428,7 +428,7 @@ void MediaDevicesDispatcherHost::GetVideoInputDeviceFormats(
       "MDDH::GetVideoInputDeviceFormats({hashed_device_id=%s}, "
       "{try_in_use_first=%s})",
       hashed_device_id.c_str(), try_in_use_first ? "true" : "false"));
-  MediaStreamManager::GetMediaDeviceIDForHMAC(
+  MediaStreamManager::GetRawDeviceIDForMediaStreamHMAC(
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
       salt_and_origin.device_id_salt, salt_and_origin.origin, hashed_device_id,
       base::SequencedTaskRunner::GetCurrentDefault(),

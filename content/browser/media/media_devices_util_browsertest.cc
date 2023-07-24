@@ -259,4 +259,25 @@ IN_PROC_BROWSER_TEST_F(MediaDevicesUtilTest,
   EXPECT_TRUE(web_media_device_infos.empty());
 }
 
+IN_PROC_BROWSER_TEST_F(MediaDevicesUtilTest, TranslationWithoutSalt) {
+  for (int i = 0; i < static_cast<int>(MediaDeviceType::NUM_MEDIA_DEVICE_TYPES);
+       ++i) {
+    SCOPED_TRACE(base::StringPrintf("device_type %d", i));
+    MediaDeviceType device_type = static_cast<MediaDeviceType>(i);
+    for (const auto& device_info : device_enumeration_[i]) {
+      base::test::TestFuture<const std::string&> future_hmac;
+      GetHMACFromRawDeviceId(frame_id_, device_info.device_id,
+                             future_hmac.GetCallback());
+      std::string hmac_device_id = future_hmac.Get();
+      VerifyHMACDeviceID(device_type, hmac_device_id, device_info.device_id);
+
+      base::test::TestFuture<const absl::optional<std::string>&> future_raw;
+      GetRawDeviceIdFromHMAC(frame_id_, hmac_device_id, device_type,
+                             future_raw.GetCallback());
+      absl::optional<std::string> raw_device_id = future_raw.Get();
+      EXPECT_THAT(raw_device_id, Optional(device_info.device_id));
+    }
+  }
+}
+
 }  // namespace content
