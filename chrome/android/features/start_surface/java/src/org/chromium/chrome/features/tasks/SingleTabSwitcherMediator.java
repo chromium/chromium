@@ -87,13 +87,9 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
         mTabListFaviconProvider = tabListFaviconProvider;
         mContext = context;
         mIsSurfacePolishEnabled = isSurfacePolishEnabled;
-        mThumbnailProvider = initThumbnailProvider(tabContentManager);
+        mThumbnailProvider = getThumbnailProvider(tabContentManager);
         if (mThumbnailProvider != null) {
-            int width = mContext.getResources().getDimensionPixelSize(
-                    R.dimen.single_tab_module_tab_thumbnail_width);
-            int height = (int) (width
-                    / TabUtils.getTabThumbnailAspectRatio(mContext, browserControlsStateProvider));
-            mThumbnailSize = new Size(width, height);
+            mThumbnailSize = getThumbnailSize(mContext, browserControlsStateProvider);
         }
 
         mPropertyModel.set(FAVICON, mTabListFaviconProvider.getDefaultFaviconDrawable(false));
@@ -363,12 +359,21 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
                 LayoutManagerImpl.time(), mTabModelSelector.getCurrentTabId());
     }
 
-    private ThumbnailProvider initThumbnailProvider(TabContentManager tabContentManager) {
+    static ThumbnailProvider getThumbnailProvider(TabContentManager tabContentManager) {
         if (tabContentManager == null) return null;
 
         return (tabId, thumbnailSize, callback, forceUpdate, writeBack, isSelected) -> {
             tabContentManager.getTabThumbnailWithCallback(
                     tabId, thumbnailSize, callback, forceUpdate, writeBack);
         };
+    }
+
+    static Size getThumbnailSize(
+            Context context, BrowserControlsStateProvider browserControlsStateProvider) {
+        int width = context.getResources().getDimensionPixelSize(
+                R.dimen.single_tab_module_tab_thumbnail_width);
+        int height = (int) (width
+                / TabUtils.getTabThumbnailAspectRatio(context, browserControlsStateProvider));
+        return new Size(width, height);
     }
 }

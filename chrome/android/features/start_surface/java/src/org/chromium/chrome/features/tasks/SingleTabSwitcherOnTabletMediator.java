@@ -8,16 +8,24 @@ import static org.chromium.chrome.features.tasks.SingleTabViewProperties.CLICK_L
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.FAVICON;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.IS_VISIBLE;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.LATERAL_MARGIN;
+import static org.chromium.chrome.features.tasks.SingleTabViewProperties.TAB_THUMBNAIL;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.TITLE;
+import static org.chromium.chrome.features.tasks.SingleTabViewProperties.URL;
 
+import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.util.Size;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -27,12 +35,14 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider;
+import org.chromium.chrome.browser.tasks.tab_management.ThumbnailProvider;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 /** Mediator of the single tab switcher in the new tab page on tablet. */
 public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedObserver {
+    private final Context mContext;
     private final PropertyModel mPropertyModel;
     private final TabListFaviconProvider mTabListFaviconProvider;
     private final int mMarginDefaut;
@@ -45,19 +55,25 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
     private boolean mIsMultiFeedEnabled;
 
     private Runnable mSingleTabCardClickedCallback;
+    private boolean mIsSurfacePolishEnabled;
+    private ThumbnailProvider mThumbnailProvider;
+    private Size mThumbnailSize;
 
-    SingleTabSwitcherOnTabletMediator(PropertyModel propertyModel, Resources resources,
+    SingleTabSwitcherOnTabletMediator(Context context,
+            BrowserControlsStateProvider browserControlsStateProvider, PropertyModel propertyModel,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             TabModelSelector tabModelSelector, TabListFaviconProvider tabListFaviconProvider,
             Tab mostRecentTab, boolean isMultiColumnFeedEnabled, boolean isScrollableMvtEnabled,
-            Runnable singleTabCardClickedCallback) {
+            Runnable singleTabCardClickedCallback, @Nullable TabContentManager tabContentManager) {
+        mContext = context;
         mPropertyModel = propertyModel;
-        mResources = resources;
+        mResources = mContext.getResources();
         mTabListFaviconProvider = tabListFaviconProvider;
         mMostRecentTab = mostRecentTab;
         mIsMultiFeedEnabled = isMultiColumnFeedEnabled;
         mIsScrollableMvtEnabled = isScrollableMvtEnabled;
         mSingleTabCardClickedCallback = singleTabCardClickedCallback;
+        mIsSurfacePolishEnabled = tabContentManager != null;
 
         if (mIsMultiFeedEnabled) {
             mActivityLifecycleDispatcher = activityLifecycleDispatcher;
@@ -74,6 +90,12 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
         } else {
             mMarginDefaut = 0;
             mMarginSmallPortrait = 0;
+        }
+
+        mThumbnailProvider = SingleTabSwitcherMediator.getThumbnailProvider(tabContentManager);
+        if (mThumbnailProvider != null) {
+            mThumbnailSize = SingleTabSwitcherMediator.getThumbnailSize(
+                    mContext, browserControlsStateProvider);
         }
 
         mPropertyModel.set(CLICK_LISTENER, v -> {
@@ -122,6 +144,7 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
             mInitialized = true;
             updateTitle();
             updateFavicon();
+            mayUpdateTabThumbnail();
         }
 
         mPropertyModel.set(IS_VISIBLE, true);
@@ -153,6 +176,7 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
             mMostRecentTab = tabToTrack;
             updateTitle();
             updateFavicon();
+            mayUpdateTabThumbnail();
             return true;
         }
     }
@@ -184,6 +208,15 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
                 (Drawable favicon) -> { mPropertyModel.set(FAVICON, favicon); });
     }
 
+    private void mayUpdateTabThumbnail() {
+        if (mThumbnailProvider == null) return;
+
+        mThumbnailProvider.getTabThumbnailWithCallback(
+                mMostRecentTab.getId(), mThumbnailSize, (Bitmap tabThumbnail) -> {
+                    mPropertyModel.set(TAB_THUMBNAIL, tabThumbnail);
+                }, true /* forceUpdate */, true /* writeToCache */, false /* isSelected */);
+    }
+
     /**
      * Update the title of the single tab switcher.
      */
@@ -195,12 +228,18 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
                 public void onPageLoadFinished(Tab tab, GURL url) {
                     super.onPageLoadFinished(tab, url);
                     mPropertyModel.set(TITLE, tab.getTitle());
+                    if (mIsSurfacePolishEnabled) {
+                        mPropertyModel.set(URL, tab.getUrl().getHost());
+                    }
                     tab.removeObserver(this);
                 }
             };
             mMostRecentTab.addObserver(tabObserver);
         } else {
             mPropertyModel.set(TITLE, mMostRecentTab.getTitle());
+            if (mIsSurfacePolishEnabled) {
+                mPropertyModel.set(URL, mMostRecentTab.getUrl().getHost());
+            }
         }
     }
 
@@ -218,6 +257,10 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
         mMostRecentTab = null;
         mPropertyModel.set(TITLE, null);
         mPropertyModel.set(FAVICON, null);
+        if (mIsSurfacePolishEnabled) {
+            mPropertyModel.set(URL, null);
+            mPropertyModel.set(TAB_THUMBNAIL, null);
+        }
     }
 
     int getMarginDefaultForTesting() {

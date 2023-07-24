@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.features.start_surface;
 
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
+import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -11,6 +15,7 @@ import static org.junit.Assert.fail;
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.HOME_SURFACE_SHOWN_AT_STARTUP_UMA;
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.HOME_SURFACE_SHOWN_UMA;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.START_SURFACE_ON_TABLET_TEST_PARAMS;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
@@ -210,6 +215,7 @@ public class StartSurfaceOnTabletTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
+    @DisableFeatures({ChromeFeatureList.SURFACE_POLISH})
     @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
     public void testSingleTabCardGoneAfterTabClosed() throws IOException {
         StartSurfaceTestUtils.prepareTabStateMetadataFile(
@@ -225,6 +231,8 @@ public class StartSurfaceOnTabletTest {
 
         NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
         Assert.assertTrue(ntp.isSingleTabCardVisibleForTesting());
+        View singleTabModule = cta.findViewById(R.id.single_tab_view);
+        Assert.assertNull(singleTabModule.findViewById(R.id.tab_thumbnail));
 
         // Verifies that closing the tracking Tab will remove the "continue browsing" card from
         // the NTP.
@@ -243,6 +251,31 @@ public class StartSurfaceOnTabletTest {
                 () -> { cta.getCurrentTabModel().closeTab(newTrackingTab); });
         Assert.assertEquals(1, cta.getCurrentTabModel().getCount());
         Assert.assertFalse(ntp.isSingleTabCardVisibleForTesting());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH + "<Study"})
+    @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS + "/polish_single_tab_card/true"})
+    public void testSingleTabModule() throws IOException {
+        StartSurfaceTestUtils.prepareTabStateMetadataFile(
+                new int[] {0, 1}, new String[] {TAB_URL, TAB_URL_1}, 0);
+        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForTabModel(cta);
+
+        // Verifies that a new NTP is created and set as the active Tab.
+        verifyTabCountAndActiveTabUrl(
+                cta, 3, UrlConstants.NTP_URL, true /* expectHomeSurfaceUiShown */);
+        waitForNtpLoaded(cta.getActivityTab());
+
+        NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
+        Assert.assertTrue(ntp.isSingleTabCardVisibleForTesting());
+        onViewWaiting(allOf(withId(R.id.single_tab_view), isDisplayed()));
+        View singleTabModule = cta.findViewById(R.id.single_tab_view);
+        Assert.assertEquals(
+                View.VISIBLE, singleTabModule.findViewById(R.id.tab_thumbnail).getVisibility());
     }
 
     @Test
@@ -593,7 +626,6 @@ public class StartSurfaceOnTabletTest {
                 cta, 2, UrlConstants.NTP_URL, true /* expectHomeSurfaceUiShown */);
         waitForNtpLoaded(cta.getActivityTab());
 
-        NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
         try {
             TestThreadUtils.runOnUiThreadBlocking(
                     () -> cta.findViewById(R.id.single_tab_view).performClick());

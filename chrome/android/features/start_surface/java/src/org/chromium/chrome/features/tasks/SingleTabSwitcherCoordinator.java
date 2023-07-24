@@ -82,11 +82,12 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
                     isSurfacePolishEnabled ? tabContentManager : null, isSurfacePolishEnabled);
             mMediatorOnTablet = null;
         } else {
-            mMediatorOnTablet =
-                    new SingleTabSwitcherOnTabletMediator(propertyModel, activity.getResources(),
-                            activityLifecycleDispatcher, tabModelSelector, mTabListFaviconProvider,
-                            mostRecentTab, FeedFeatures.isMultiColumnFeedEnabled(activity),
-                            isScrollableMvtEnabled, singleTabCardClickedCallback);
+            mMediatorOnTablet = new SingleTabSwitcherOnTabletMediator(activity,
+                    browserControlsStateProvider, propertyModel, activityLifecycleDispatcher,
+                    tabModelSelector, mTabListFaviconProvider, mostRecentTab,
+                    FeedFeatures.isMultiColumnFeedEnabled(activity), isScrollableMvtEnabled,
+                    singleTabCardClickedCallback,
+                    isSurfacePolishEnabled ? tabContentManager : null);
             mMediator = null;
         }
         if (ChromeFeatureList.sInstantStart.isEnabled()) {
@@ -229,13 +230,56 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
     }
 
     /** @see SingleTabSwitcherOnTabletMediator#setVisibility. */
-    public void setVisibility(boolean isVisible) {
+    void setVisibility(boolean isVisible) {
         if (!mIsTablet) return;
 
         mMediatorOnTablet.setVisibility(isVisible);
         mContainer.setVisibility(isVisible ? View.VISIBLE : View.GONE);
     }
 
+    /**
+     * Shows the single tab module and updates the Tab to track. It is possible to hide the single
+     * Tab module if the new tracking Tab is invalid: e.g., a NTP.
+     * @param mostRecentTab The most recent Tab to track.
+     */
+    public void showModule(Tab mostRecentTab) {
+        if (!mIsTablet) return;
+
+        showModule(true, mostRecentTab);
+    }
+
+    /**
+     * Shows the single tab module.
+     */
+    public void showModule() {
+        if (!mIsTablet) return;
+
+        showModule(false, null);
+    }
+
+    /**
+     * Hides the single tab module.
+     */
+    public void hide() {
+        if (!mIsTablet) return;
+
+        setVisibility(false);
+    }
+
+    /**
+     * Shows the single tab module.
+     * @param shouldUpdateTab Whether to update the tracking Tab of the single Tab module.
+     * @param mostRecentTab The most recent Tab to track.
+     */
+    private void showModule(boolean shouldUpdateTab, Tab mostRecentTab) {
+        if (!mIsTablet) return;
+
+        boolean hasTabToTrack = true;
+        if (shouldUpdateTab) {
+            hasTabToTrack = updateTrackingTab(mostRecentTab);
+        }
+        setVisibility(hasTabToTrack);
+    }
     /**
      * Update the most recent tab to track in the single tab card.
      * @param tabToTrack The tab to track as the most recent tab.
@@ -270,7 +314,7 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
     }
 
     private boolean isSurfacePolishEnabled() {
-        return !mIsTablet && ChromeFeatureList.sSurfacePolish.isEnabled()
+        return ChromeFeatureList.sSurfacePolish.isEnabled()
                 && StartSurfaceConfiguration.SURFACE_POLISH_SINGLE_TAB_CARD.getValue();
     }
 }
