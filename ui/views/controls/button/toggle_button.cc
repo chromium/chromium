@@ -512,9 +512,7 @@ void ToggleButton::StateChanged(ButtonState old_state) {
 SkPath ToggleButton::GetFocusRingPath() const {
   SkPath path;
   if (features::IsChromeRefresh2023()) {
-    gfx::RectF bounds(GetLocalBounds());
-    constexpr float kFocusRingInset = 3.f;
-    bounds.Inset(kFocusRingInset);
+    gfx::RectF bounds(GetTrackBounds());
     const SkRect sk_rect = gfx::RectFToSkRect(bounds);
     const float corner_radius = sk_rect.height() / 2;
     path.addRoundRect(sk_rect, corner_radius, corner_radius);
