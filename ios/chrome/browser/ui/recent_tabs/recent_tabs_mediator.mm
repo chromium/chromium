@@ -251,6 +251,9 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 
 // Returns whether this profile has any foreign sessions to sync.
 - (SessionsSyncUserState)userSignedInState {
+  // TODO(crbug.com/1466884): Delete the usage of ConsentLevel::kSync after
+  // Phase 2 on iOS is launched. See ConsentLevel::kSync documentation for
+  // details.
   if (!_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     return SessionsSyncUserState::USER_SIGNED_OUT;
   }

@@ -39,6 +39,10 @@ SyncedSessionsObserverBridge::~SyncedSessionsObserverBridge() {}
 
 void SyncedSessionsObserverBridge::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
+  // TODO(crbug.com/1466884): Migrate away from ConsentLevel::kSync once
+  // SessionsSyncUserState is modernized. Note also that, meanwhile, this
+  // particular codepath is likely unnecessary, as these events should also be
+  // reported via SyncedSessionsObserverBridge::OnForeignSessionChanged().
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       // Ignored.

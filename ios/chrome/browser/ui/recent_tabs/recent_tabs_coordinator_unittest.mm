@@ -146,6 +146,9 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
                       BOOL syncEnabled,
                       BOOL syncCompleted,
                       BOOL hasForeignSessions) {
+    // TODO(crbug.com/1466884): Delete the usage of ConsentLevel::kSync after
+    // Phase 2 on iOS is launched. See ConsentLevel::kSync documentation for
+    // details.
     if (signedIn) {
       identity_test_env_.MakePrimaryAccountAvailable(
           "test@test.com", signin::ConsentLevel::kSync);

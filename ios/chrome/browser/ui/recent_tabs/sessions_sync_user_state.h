@@ -6,6 +6,8 @@
 #define IOS_CHROME_BROWSER_UI_RECENT_TABS_SESSIONS_SYNC_USER_STATE_H_
 
 // States listing the user's signed-in and sync status.
+// TODO(crbug.com/1466884): Update this enum to reflect the more modern product
+// state machine.
 enum class SessionsSyncUserState {
   USER_SIGNED_OUT,
   USER_SIGNED_IN_SYNC_OFF,
