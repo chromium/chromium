@@ -11,10 +11,7 @@
 #include "chromeos/ash/services/recording/audio_capture_util.h"
 #include "chromeos/ash/services/recording/audio_stream.h"
 #include "chromeos/ash/services/recording/audio_stream_mixer.h"
-#include "chromeos/ash/services/recording/recording_service_constants.h"
-#include "media/audio/simple_sources.h"
 #include "media/base/audio_bus.h"
-#include "media/base/vector_math.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace recording {
@@ -113,6 +110,12 @@ class AudioStreamMixerTest : public AudioCaptureTestBase {
     stream_bus->CopyTo(copy_bus.get());
     stream_mixer.OnAudioCaptured(stream, std::move(stream_bus), timestamp);
     return copy_bus;
+  }
+
+  // Flushes the given `stream_mixer` by mixing all the available frames and
+  // providing the output to the client.
+  void FlushMixer(AudioStreamMixer& stream_mixer) {
+    stream_mixer.MaybeMixAndOutput(/*flush=*/true);
   }
 };
 
@@ -276,6 +279,65 @@ TEST_F(AudioStreamMixerTest, OneStreamReachedMaxDuration) {
   EXPECT_EQ(mixer_client.last_mixer_bus()->frames(),
             audio_capture_util::NumberOfAudioFramesInDuration(
                 audio_capture_util::kMaxAudioStreamFifoDuration));
+}
+
+TEST_F(AudioStreamMixerTest, FlushingTheMixer) {
+  // Build a mixer that has 3 streams, one of them is always empty.
+  MixedOutputReceiver mixer_client;
+  AudioStreamMixer mixer(PassKey(), mixer_client.GetCallback());
+  AudioStream* stream1 = AddStreamToMixer(mixer);
+  AudioStream* stream2 = AddStreamToMixer(mixer);
+  AddStreamToMixer(mixer);
+
+  auto stream1_bus = ProduceAudioForStream(
+      mixer, stream1, GetTimestamp(base::Milliseconds(10)));
+  // Nothing gets mixed yet since stream 2 and 3 are still empty.
+  EXPECT_FALSE(mixer_client.last_mixer_bus());
+  EXPECT_TRUE(mixer_client.last_bus_timestamp().is_null());
+
+  auto stream2_bus = ProduceAudioForStream(
+      mixer, stream2, GetTimestamp(base::Milliseconds(40)));
+  // Nothing gets mixed yet since stream 3 is still empty.
+  EXPECT_FALSE(mixer_client.last_mixer_bus());
+  EXPECT_TRUE(mixer_client.last_bus_timestamp().is_null());
+
+  //
+  // Stream 1              +-------+
+  //                  10ms |       |
+  //                       +-------+
+  //
+  // Stream 2                                  +-------+
+  //                                      40ms |       |
+  //                                           +-------+
+  //
+  // Stream 3
+  //                       EMPTY
+  //
+
+  // When we request to flush the stream, all available buffers from start to
+  // end will be mixed regardless of the empty stream.
+  auto expected_bus =
+      audio_capture_util::CreateStereoZeroInitializedAudioBusForDuration(
+          base::Milliseconds(50 - 10));
+  stream1_bus->CopyPartialFramesTo(
+      /*source_start_frame=*/0,
+      /*frame_count=*/stream1_bus->frames(),
+      /*dest_start_frame=*/0, expected_bus.get());
+  audio_capture_util::AccumulateBusTo(
+      /*source=*/*stream2_bus,
+      /*destination=*/expected_bus.get(),
+      /*source_start_frame=*/0,
+      /*destination_start_frame=*/
+      audio_capture_util::NumberOfAudioFramesInDuration(
+          base::Milliseconds(40 - 10)),
+      /*length=*/stream2_bus->frames());
+
+  FlushMixer(mixer);
+  ASSERT_TRUE(mixer_client.last_mixer_bus());
+  EXPECT_EQ(expected_bus->frames(), mixer_client.last_mixer_bus()->frames());
+  EXPECT_TRUE(AreBusesEqual(*expected_bus, *mixer_client.last_mixer_bus()));
+  EXPECT_EQ(GetTimestamp(base::Milliseconds(10)),
+            mixer_client.last_bus_timestamp());
 }
 
 }  // namespace recording

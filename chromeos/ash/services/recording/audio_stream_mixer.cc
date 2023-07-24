@@ -96,6 +96,10 @@ void AudioStreamMixer::Stop() {
   for (auto& capturer : audio_capturers_) {
     capturer->Stop();
   }
+
+  // Mix and flush all the available frames in all streams so the output can be
+  // provided directly to the client.
+  MaybeMixAndOutput(/*flush=*/true);
 }
 
 // static
@@ -118,14 +122,14 @@ void AudioStreamMixer::OnAudioCaptured(
   // smallest timestamp among all the streams managed by this mixer.
   audio_stream->AppendAudioBus(std::move(audio_bus), audio_capture_time);
 
-  MaybeMixAndOutput();
+  MaybeMixAndOutput(/*flush=*/false);
 }
 
-void AudioStreamMixer::MaybeMixAndOutput() {
+void AudioStreamMixer::MaybeMixAndOutput(bool flush) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::TimeTicks bus_timestamp;
-  auto mixer_bus = CreateMixerBus(bus_timestamp);
+  auto mixer_bus = CreateMixerBus(flush, bus_timestamp);
   if (!mixer_bus) {
     return;
   }
@@ -138,9 +142,10 @@ void AudioStreamMixer::MaybeMixAndOutput() {
     }
 
     CHECK_GE(stream->begin_timestamp(), bus_timestamp);
-    const auto gap_frames = audio_capture_util::NumberOfAudioFramesInDuration(
+    const int gap_frames = audio_capture_util::NumberOfAudioFramesInDuration(
         stream->begin_timestamp() - bus_timestamp);
-    const auto frames_to_consume = mixer_bus->frames() - gap_frames;
+    const int frames_to_consume =
+        std::min(mixer_bus->frames() - gap_frames, stream->total_frames());
     if (frames_to_consume <= 0) {
       // This happens when there is no overlap between this stream and the mixer
       // output bus. For example:
@@ -170,44 +175,72 @@ void AudioStreamMixer::MaybeMixAndOutput() {
 }
 
 std::unique_ptr<media::AudioBus> AudioStreamMixer::CreateMixerBus(
+    bool flush,
     base::TimeTicks& out_bus_timestamp) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::TimeTicks min_end_timestamp = base::TimeTicks::Max();
+  base::TimeTicks max_end_timestamp = base::TimeTicks::Min();
   base::TimeTicks min_begin_timestamp = base::TimeTicks::Max();
   out_bus_timestamp = base::TimeTicks();
 
   // If any of the streams is almost full, we must consume regardless of the
   // situation, even if some of the streams are empty.
   bool any_stream_reached_max_duration = false;
-  // If any of the streams didn't receive any frames yet.
+  // If any or all of the streams didn't receive any frames yet.
   bool any_stream_empty = false;
+  bool all_streams_empty = true;
 
   for (const auto& stream : streams_) {
     any_stream_reached_max_duration |= DidStreamReachMaxDuration(*stream);
     const bool is_stream_empty = stream->empty();
     any_stream_empty |= is_stream_empty;
+    all_streams_empty &= is_stream_empty;
 
     // Do not consider empty streams in the overlap range calculation, since an
     // empty stream means that either it had never received any frames ever yet,
     // or it had, but they all had been consumed previously.
-    if (!is_stream_empty && stream->begin_timestamp() < min_begin_timestamp) {
+    if (is_stream_empty) {
+      continue;
+    }
+
+    if (stream->begin_timestamp() < min_begin_timestamp) {
       min_begin_timestamp = stream->begin_timestamp();
     }
 
-    if (!is_stream_empty && stream->end_timestamp() < min_end_timestamp) {
+    if (stream->end_timestamp() < min_end_timestamp) {
       min_end_timestamp = stream->end_timestamp();
+    }
+
+    if (stream->end_timestamp() > max_end_timestamp) {
+      max_end_timestamp = stream->end_timestamp();
     }
   }
 
-  if (any_stream_empty && !any_stream_reached_max_duration) {
+  if (all_streams_empty) {
     return nullptr;
   }
 
   out_bus_timestamp = min_begin_timestamp;
-  CHECK_GT(min_end_timestamp, out_bus_timestamp);
+
+  // When we're flushing, we mix all the frames in all the streams starting at
+  // the earliest one until the latest one (`max_end_timestamp`), rather than up
+  // to the maximum overlap between the streams.
+  if (flush) {
+    CHECK_GT(max_end_timestamp, min_begin_timestamp);
+    return audio_capture_util::CreateStereoZeroInitializedAudioBusForDuration(
+        max_end_timestamp - min_begin_timestamp);
+  }
+
+  // If any of the streams is empty, we should wait and not mix now, unless one
+  // of the streams reached the maximum duration.
+  if (any_stream_empty && !any_stream_reached_max_duration) {
+    return nullptr;
+  }
+
+  CHECK_GT(min_end_timestamp, min_begin_timestamp);
   return audio_capture_util::CreateStereoZeroInitializedAudioBusForDuration(
-      min_end_timestamp - out_bus_timestamp);
+      min_end_timestamp - min_begin_timestamp);
 }
 
 }  // namespace recording
