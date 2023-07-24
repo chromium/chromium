@@ -503,7 +503,8 @@
               "os": "Ubuntu-22.04|Ubuntu-20.04"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test": "headless_browsertests",
         "test_id_prefix": "ninja://headless:headless_browsertests/"
@@ -2664,7 +2665,8 @@
               "os": "Ubuntu-22.04"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
         },
         "test": "headless_browsertests",
         "test_id_prefix": "ninja://headless:headless_browsertests/"

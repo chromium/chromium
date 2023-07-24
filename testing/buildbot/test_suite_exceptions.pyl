@@ -3010,6 +3010,20 @@
           'shards': 6,
         },
       },
+      # Recent fuchsia changes started making this suite flaky on debug builds.
+      # E.g. https://ci.chromium.org/ui/b/8777398431016883505
+      # A guess is that ffx log may stuck if the output flow is heavy. So try to
+      # shard it and see if it can fix the flakiness.
+      'fuchsia-fyi-arm64-dbg': {
+        'swarming': {
+          'shards': 4,
+        },
+      },
+      'fuchsia-fyi-x64-dbg': {
+        'swarming': {
+          'shards': 4,
+        },
+      },
     },
   },
   'info_collection_tests': {
