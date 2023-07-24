@@ -8,12 +8,12 @@
 #include "ash/shell.h"
 #include "ash/system/power/power_status.h"
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/audio/sounds.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
 #include "ui/message_center/message_center.h"
 
 namespace ash {
@@ -75,9 +75,14 @@ PowerSoundsController::PowerSoundsController() {
   battery_level_ = power_status->GetRoundedBatteryPercent();
   is_ac_charger_connected_ = power_status->IsMainsChargerConnected();
 
-  PrefService* local_state = Shell::Get()->local_state();
-  low_battery_sound_enabled_.Init(prefs::kLowBatterySoundEnabled, local_state);
-  charging_sounds_enabled_.Init(prefs::kChargingSoundsEnabled, local_state);
+  local_state_ = Shell::Get()->local_state();
+
+  // `local_state_` could be null in tests.
+  if (local_state_) {
+    low_battery_sound_enabled_.Init(prefs::kLowBatterySoundEnabled,
+                                    local_state_);
+    charging_sounds_enabled_.Init(prefs::kChargingSoundsEnabled, local_state_);
+  }
 }
 
 PowerSoundsController::~PowerSoundsController() {
@@ -94,6 +99,11 @@ void PowerSoundsController::RegisterLocalStatePrefs(
 }
 
 void PowerSoundsController::OnPowerStatusChanged() {
+  if (!local_state_) {
+    CHECK_IS_TEST();
+    return;
+  }
+
   const PowerStatus& status = *PowerStatus::Get();
   SetPowerStatus(status.GetRoundedBatteryPercent(),
                  status.IsBatteryTimeBeingCalculated(), status.external_power(),
