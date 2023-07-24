@@ -10,13 +10,14 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './accelerator_edit_view.html.js';
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
-import {ViewState} from './accelerator_view.js';
+import {AcceleratorViewElement, ViewState} from './accelerator_view.js';
 import {FakeShortcutProvider} from './fake_shortcut_provider.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {mojoString16ToString} from './mojo_utils.js';
@@ -198,8 +199,12 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
   }
 
   protected onCancelButtonClicked(): void {
-    this.statusMessage = '';
-    this.viewState = ViewState.VIEW;
+    // Click the cancel button will lose focus of input then will trigger
+    // endCapture().
+    const viewElement = this.shadowRoot!.querySelector('accelerator-view') as
+        AcceleratorViewElement;
+    assert(viewElement);
+    viewElement.blur();
   }
 
   protected showEditView(): boolean {

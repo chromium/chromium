@@ -176,7 +176,8 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     this.addEventListener('keyup', (e) => this.onKeyUp(e));
     this.addEventListener('focus', () => this.startCapture());
     this.addEventListener('mouseup', () => this.startCapture());
-    this.addEventListener('blur', () => this.endCapture());
+    this.addEventListener(
+        'blur', () => this.endCapture(/*should_delay=*/ false));
     this.$.container.focus();
   }
 
@@ -185,7 +186,8 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     this.removeEventListener('keyup', (e) => this.onKeyUp(e));
     this.removeEventListener('focus', () => this.startCapture());
     this.removeEventListener('mouseup', () => this.startCapture());
-    this.removeEventListener('blur', () => this.endCapture());
+    this.removeEventListener(
+        'blur', () => this.endCapture(/*should_delay=*/ false));
   }
 
 
@@ -206,10 +208,11 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     await this.shortcutProvider.preventProcessingAccelerators(true);
   }
 
-  private async endCapture(): Promise<void> {
+  private async endCapture(shouldDelay: boolean): Promise<void> {
     if (!this.isCapturing) {
       return;
     }
+    await this.shortcutProvider.preventProcessingAccelerators(false);
 
     this.isCapturing = false;
     this.dispatchEvent(new CustomEvent('accelerator-capturing-ended', {
@@ -217,14 +220,15 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
       composed: true,
     }));
 
-    await this.shortcutProvider.preventProcessingAccelerators(false);
+    // Delay if an update event is fired.
+    if (shouldDelay) {
+      await new Promise(resolve => setTimeout(resolve, kAnimationTimeoutMs));
+    }
 
-    setTimeout(() => {
-      this.viewState = ViewState.VIEW;
-      this.statusMessage = '';
-      this.hasError = false;
-      this.pendingAcceleratorInfo = createEmptyAcceleratorInfo();
-    }, kAnimationTimeoutMs);
+    this.viewState = ViewState.VIEW;
+    this.statusMessage = '';
+    this.hasError = false;
+    this.pendingAcceleratorInfo = createEmptyAcceleratorInfo();
   }
 
   private onKeyDown(e: KeyboardEvent): void {
@@ -553,7 +557,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     }
 
     // Always end input capturing if an update event was fired.
-    this.endCapture();
+    this.endCapture(/*should_delay=*/ true);
 
     setTimeout(() => {
       this.dispatchEvent(new CustomEvent('request-update-accelerator', {

@@ -76,6 +76,8 @@ suite('acceleratorEditViewTest', function() {
 
     // Click on the Cancel button and expect the edit buttons to be available.
     getElementById('cancelButton')!.click();
+
+    await flushTasks();
     assertTrue(isVisible(getElementById('editButtonsContainer')));
     assertFalse(isVisible(getElementById('cancelButtonContainer')));
   });
