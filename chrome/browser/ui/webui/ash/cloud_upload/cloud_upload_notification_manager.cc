@@ -229,6 +229,10 @@ void CloudUploadNotificationManager::ShowCompleteNotification() {
   std::unique_ptr<message_center::Notification> notification =
       CreateUploadCompleteNotification();
   notification->set_never_timeout(true);
+  // Close the progress notification before displaying the completed
+  // notification.
+  GetNotificationDisplayService()->Close(NotificationHandler::Type::TRANSIENT,
+                                         notification_id_);
   GetNotificationDisplayService()->Display(NotificationHandler::Type::TRANSIENT,
                                            *notification,
                                            /*metadata=*/nullptr);
