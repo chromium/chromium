@@ -8,9 +8,9 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/containers/stack_container.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/waitable_event.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
 namespace mojo {
 
@@ -41,12 +41,12 @@ bool SyncEventWatcher::SyncWatch(const bool** stop_flags,
   auto destroyed = destroyed_;
 
   constexpr size_t kFlagStackCapacity = 4;
-  base::StackVector<const bool*, kFlagStackCapacity> should_stop_array;
-  should_stop_array.container().push_back(&destroyed->data);
+  absl::InlinedVector<const bool*, kFlagStackCapacity> should_stop_array;
+  should_stop_array.push_back(&destroyed->data);
   std::copy(stop_flags, stop_flags + num_stop_flags,
-            std::back_inserter(should_stop_array.container()));
-  bool result = registry_->Wait(should_stop_array.container().data(),
-                                should_stop_array.container().size());
+            std::back_inserter(should_stop_array));
+  bool result =
+      registry_->Wait(should_stop_array.data(), should_stop_array.size());
 
   // This object has been destroyed.
   if (destroyed->data)
