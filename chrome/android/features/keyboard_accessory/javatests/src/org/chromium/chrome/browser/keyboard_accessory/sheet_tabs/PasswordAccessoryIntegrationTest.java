@@ -109,6 +109,7 @@ public class PasswordAccessoryIntegrationTest {
     @Test
     @SmallTest
     @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/1111770
+    @DisabledTest(message = "https://crbug.com/1467320")
     public void testFillsPasswordOnTap() throws TimeoutException {
         mHelper.loadTestPage(false);
         mHelper.cacheCredentials("mpark@abc.com", "ShorterPassword");
