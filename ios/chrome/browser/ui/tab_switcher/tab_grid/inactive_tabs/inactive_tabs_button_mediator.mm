@@ -46,7 +46,10 @@ using ScopedWebStateListObservation =
                     webStateList:(WebStateList*)webStateList
                      prefService:(PrefService*)prefService {
   CHECK(IsInactiveTabsAvailable());
-  CHECK(consumer);
+  // TODO(crbug.com/1466411): Reinstate this CHECK once
+  // InactiveTabsButtonMediator is not created when not needed (for example when
+  // a policy disables the regular tab grid).
+  //CHECK(consumer);
   CHECK(webStateList);
   CHECK(prefService);
   self = [super init];
