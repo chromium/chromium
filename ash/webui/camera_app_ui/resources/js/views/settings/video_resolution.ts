@@ -102,20 +102,19 @@ export class VideoResolutionSettings extends BaseSettings {
     const constFpsOptions = option.fpsOptions.filter(
         (fpsOption) =>
             SUPPORTED_CONSTANT_FPS.some((fps) => fps === fpsOption.constFps));
-    const showFpsButton =
-        constFpsOptions.length > 1 && facing === Facing.EXTERNAL;
-    const isFPSEnabled =
-        expert.isEnabled(expert.ExpertOption.ENABLE_FPS_PICKER_FOR_BUILTIN);
     let resolution: Resolution|null = null;
     for (const fps of SUPPORTED_CONSTANT_FPS) {
       const fpsButton =
           dom.getFrom(optionElement, `.fps-${fps}`, HTMLButtonElement);
-      if (!isFPSEnabled) {
-        fpsButton.hidden = true;
-      } else if (!showFpsButton) {
+      if (constFpsOptions.length <= 1) {
         fpsButton.classList.add('invisible');
+        fpsButton.hidden = true;
+      } else if (facing === Facing.EXTERNAL) {
+        fpsButton.hidden = false;
+      } else {
+        fpsButton.hidden = !expert.isEnabled(
+            expert.ExpertOption.ENABLE_FPS_PICKER_FOR_BUILTIN);
       }
-
       const fpsOption =
           option.fpsOptions.find((fpsOption) => fpsOption.constFps === fps);
       const checked = fpsOption?.checked ?? false;
@@ -164,8 +163,6 @@ export class VideoResolutionSettings extends BaseSettings {
         event.preventDefault();
       });
     }
-
-    // TODO(b/215484798): Moves FPS toggle into video resolution settings.
     this.menu.appendChild(optionElement);
 
     if (input.checked && this.focusedDeviceId === deviceId) {

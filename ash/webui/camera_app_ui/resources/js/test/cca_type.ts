@@ -47,6 +47,7 @@ export const SELECTOR_MAP = {
   expertSaveMetadataOption: '#expert-save-metadata',
   expertShowMetadataOption: '#expert-show-metadata',
   feedbackButton: '#settings-feedback',
+  fps60Buttons: `.fps-60:not(.invisible)`,
   frontAspectRatioOptions:
       '#view-photo-aspect-ratio-settings .menu-item>input[data-facing="user"]',
   frontPhotoResolutionOptions:
