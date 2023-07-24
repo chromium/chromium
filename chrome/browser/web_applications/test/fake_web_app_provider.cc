@@ -50,7 +50,7 @@
 #include "components/sync/test/mock_model_type_change_processor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-#if (BUILDFLAG(IS_CHROMEOS))
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
 #endif
 
@@ -346,7 +346,7 @@ void FakeWebAppProvider::Shutdown() {
     externally_managed_app_manager_->Shutdown();
   if (manifest_update_manager_)
     manifest_update_manager_->Shutdown();
-#if (BUILDFLAG(IS_CHROMEOS))
+#if BUILDFLAG(IS_CHROMEOS)
   if (iwa_update_manager_) {
     iwa_update_manager_->Shutdown();
   }
