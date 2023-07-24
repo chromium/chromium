@@ -136,7 +136,7 @@ interface KeyMintServer {
   // begun with begin(), provided in the input argument.  This method only
   // applies to AEAD modes.  This method may be called multiple times, supplying
   // the AAD in chunks, but may not be called after update() is called.
-  UpdateAad@17(UpdateAadRequest request) => (int32 error);
+  UpdateAad@17(UpdateRequest request) => (int32 error);
 
   // Provides data to, and possibly receives output from, an ongoing
   // cryptographic operation begun with begin().
@@ -330,19 +330,6 @@ struct GetKeyCharacteristicsRequest {
   // An opaque byte string provided by the application.  This value must match
   // the Tag::APPLICATION_DATA data provided during key generation/import.
   array<uint8> app_data;
-};
-
-struct UpdateAadRequest {
-  // Operation handle.
-  uint64 op_handle;
-  // Additional Authentication Data to be processed.
-  array<uint8> input;
-  // Authentication token, if provided.
-  HardwareAuthToken? auto_token;
-  // |timestamp_token| certifies the freshness of an auth token in case the
-  // security domain of this KeyMint instance has a different clock than the
-  // authenticator issuing the auth token.
-  TimeStampToken? timestamp_token;
 };
 
 struct UpdateRequest {
