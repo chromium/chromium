@@ -107,14 +107,6 @@ struct NET_EXPORT HttpRequestInfo {
   // that the request is idempotent.
   net::Idempotency idempotency = net::DEFAULT_IDEMPOTENCY;
 
-  // Index of the requested URL in Cache Transparency's pervasive payload list.
-  // Only used for logging purposes.
-  int pervasive_payloads_index_for_logging = -1;
-
-  // Checksum of the request body and selected headers, in upper-case
-  // hexadecimal. Only non-empty if the USE_SINGLE_KEYED_CACHE load flag is set.
-  std::string checksum;
-
   // If not null, the value is used to evaluate whether the cache entry should
   // be bypassed; if is null, that means the request site does not match the
   // filter.

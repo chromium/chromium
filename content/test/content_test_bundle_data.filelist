@@ -5296,11 +5296,9 @@ data/cache_storage/storage_key/0430f1a484a0ea6d8de562488c5fbeec0111d16f/ba31f73b
 data/cache_storage/storage_key/0430f1a484a0ea6d8de562488c5fbeec0111d16f/ba31f73b-95e8-44fb-a273-265e7e76f5ab/index
 data/cache_storage/storage_key/0430f1a484a0ea6d8de562488c5fbeec0111d16f/ba31f73b-95e8-44fb-a273-265e7e76f5ab/index-dir/the-real-index
 data/cache_storage/storage_key/0430f1a484a0ea6d8de562488c5fbeec0111d16f/index.txt
-data/cache_transparency/cacheable.html
 data/cache_transparency/cacheable.js
 data/cache_transparency/cacheable.js.mock-http-headers
 data/cache_transparency/cacheable2.html
-data/cache_transparency/pervasive.html
 data/cache_transparency/pervasive.js
 data/cache_transparency/pervasive.js.mock-http-headers
 data/cache_transparency/pervasive2.html

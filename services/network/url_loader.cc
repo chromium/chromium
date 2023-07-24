@@ -687,6 +687,7 @@ URLLoader::URLLoader(
 
   int request_load_flags = request.load_flags;
 
+  // TODO(ricea): Remove Cache Transparency implementation.
   if (cache_transparency_settings_ &&
       cache_transparency_settings_->pervasive_payloads_enabled()) {
     auto index = cache_transparency_settings_->GetIndexForURL(request.url);
@@ -694,7 +695,6 @@ URLLoader::URLLoader(
       // Remember that a pervasive payload was found so we can annotate the
       // URLLoaderCompletionStatus with it later.
       pervasive_payload_requested_ = true;
-      url_request_->set_pervasive_payloads_index_for_logging(index.value());
       base::UmaHistogramCustomCounts("Network.CacheTransparency2.URLMatched",
                                      index.value(), 1, 323, 323);
       DVLOG(2) << "Found pervasive payload: " << request.url.spec();
@@ -720,8 +720,6 @@ URLLoader::URLLoader(
       } else if (HasHeadersIncompatibleWithSingleKeyedCache(request.headers)) {
         cache_not_used_reason =
             CacheTransparencyCacheNotUsedReason::kIncompatibleRequestHeaders;
-      } else {
-        url_request_->set_expected_response_checksum(checksum.value());
       }
       base::UmaHistogramEnumeration("Network.CacheTransparency.CacheNotUsed",
                                     cache_not_used_reason);
@@ -1481,9 +1479,6 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
 
   DCHECK_EQ(emitted_devtools_raw_request_, emitted_devtools_raw_response_);
   response->emitted_extra_info = emitted_devtools_raw_request_;
-
-  // Ensure that the redirect target is not treated as a pervasive payload.
-  url_request_->set_expected_response_checksum(std::string());
 
   ProcessInboundAttributionInterceptorOnReceivedRedirect(redirect_info,
                                                          std::move(response));

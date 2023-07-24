@@ -265,12 +265,9 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
       int load_flags,
       const NetworkIsolationKey& network_isolation_key,
       int64_t upload_data_identifier,
-      bool is_subframe_document_resource,
-      bool use_single_keyed_cache,
-      const std::string& single_key_checksum);
+      bool is_subframe_document_resource);
   static absl::optional<std::string> GenerateCacheKeyForRequest(
-      const HttpRequestInfo* request,
-      bool use_single_keyed_cache = false);
+      const HttpRequestInfo* request);
 
   // Enable split cache feature if not already overridden in the feature list.
   // Should only be invoked during process initialization before the HTTP

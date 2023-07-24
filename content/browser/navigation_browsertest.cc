@@ -6995,64 +6995,6 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   EXPECT_FALSE(site_instance->GetProcess()->IsUnused());
 }
 
-class CacheTransparencyNavigationBrowserTest : public ContentBrowserTest {
- public:
-  CacheTransparencyNavigationBrowserTest() {
-    EXPECT_TRUE(embedded_test_server()->Start());
-
-    pervasive_payload_url_ = embedded_test_server()->GetURL(kPervasivePayload);
-    std::string pervasive_payloads_params = base::StrCat(
-        {"1,", pervasive_payload_url_.spec(),
-         ",2478392C652868C0AAF0316A28284610DBDACF02D66A00B39F3BA75D887F4829"});
-
-    feature_list_.InitWithFeaturesAndParameters(
-        {{network::features::kPervasivePayloadsList,
-          {{"pervasive-payloads", pervasive_payloads_params}}},
-         {network::features::kCacheTransparency, {}},
-         {net::features::kSplitCacheByNetworkIsolationKey, {}}},
-        {/* disabled_features */});
-    ForceInProcessNetworkService();
-  }
-
-  void ExpectCacheUsed() const {
-    histogram_tester_.ExpectUniqueSample(kCacheUsedHistogram, 0, 1);
-  }
-
-  void ExpectCacheNotUsed() const {
-    histogram_tester_.ExpectTotalCount(kCacheUsedHistogram, 0);
-  }
-
- private:
-  static constexpr char kPervasivePayload[] =
-      "/cache_transparency/pervasive.js";
-  static constexpr char kCacheUsedHistogram[] =
-      "Network.CacheTransparency2.SingleKeyedCacheIsUsed";
-
-  base::test::ScopedFeatureList feature_list_;
-  GURL pervasive_payload_url_;
-  base::HistogramTester histogram_tester_;
-};
-
-IN_PROC_BROWSER_TEST_F(CacheTransparencyNavigationBrowserTest,
-                       SuccessfulPervasivePayload) {
-  GURL url_main_document =
-      embedded_test_server()->GetURL("/cache_transparency/pervasive.html");
-
-  EXPECT_TRUE(NavigateToURL(shell(), url_main_document));
-
-  ExpectCacheUsed();
-}
-
-IN_PROC_BROWSER_TEST_F(CacheTransparencyNavigationBrowserTest,
-                       NotAPervasivePayload) {
-  GURL url_main_document =
-      embedded_test_server()->GetURL("/cache_transparency/cacheable.html");
-
-  EXPECT_TRUE(NavigateToURL(shell(), url_main_document));
-
-  ExpectCacheNotUsed();
-}
-
 class NavigationBrowserTestWarnSandboxIneffective
     : public NavigationBrowserTest {
  public:

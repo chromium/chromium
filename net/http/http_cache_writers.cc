@@ -15,8 +15,6 @@
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
-#include "crypto/secure_hash.h"
-#include "crypto/sha2.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_cache_transaction.h"
@@ -170,15 +168,12 @@ void HttpCache::Writers::AddTransaction(
 
 void HttpCache::Writers::SetNetworkTransaction(
     Transaction* transaction,
-    std::unique_ptr<HttpTransaction> network_transaction,
-    std::unique_ptr<crypto::SecureHash> checksum) {
+    std::unique_ptr<HttpTransaction> network_transaction) {
   DCHECK_EQ(1u, all_writers_.count(transaction));
   DCHECK(network_transaction);
   DCHECK(!network_transaction_);
   network_transaction_ = std::move(network_transaction);
   network_transaction_->SetPriority(priority_);
-  DCHECK(!checksum_);
-  checksum_ = std::move(checksum);
 }
 
 void HttpCache::Writers::ResetNetworkTransaction() {
@@ -371,14 +366,6 @@ int HttpCache::Writers::DoLoop(int result) {
       case State::CACHE_WRITE_DATA_COMPLETE:
         rv = DoCacheWriteDataComplete(rv);
         break;
-      case State::MARK_SINGLE_KEYED_CACHE_ENTRY_UNUSABLE:
-        // `rv` is bytes here.
-        DCHECK_EQ(0, rv);
-        rv = DoMarkSingleKeyedCacheEntryUnusable();
-        break;
-      case State::MARK_SINGLE_KEYED_CACHE_ENTRY_UNUSABLE_COMPLETE:
-        rv = DoMarkSingleKeyedCacheEntryUnusableComplete(rv);
-        break;
       case State::UNSET:
         NOTREACHED() << "bad state";
         rv = ERR_FAILED;
@@ -520,18 +507,6 @@ int HttpCache::Writers::DoCacheWriteDataComplete(int result) {
     return write_len_;
   }
 
-  if (checksum_) {
-    if (write_len_ > 0) {
-      checksum_->Update(read_buf_->data(), write_len_);
-    } else {
-      DCHECK(active_transaction_);
-      if (!active_transaction_->ResponseChecksumMatches(std::move(checksum_))) {
-        next_state_ = State::MARK_SINGLE_KEYED_CACHE_ENTRY_UNUSABLE;
-        return result;
-      }
-    }
-  }
-
   if (!last_disk_cache_access_start_time_.is_null() && active_transaction_ &&
       !all_writers_.find(active_transaction_)->second.partial) {
     active_transaction_->AddDiskCacheWriteTime(
@@ -542,40 +517,7 @@ int HttpCache::Writers::DoCacheWriteDataComplete(int result) {
   next_state_ = State::NONE;
   OnDataReceived(write_len_);
 
-  // If we came from DoMarkSingleKeyedCacheUnusableComplete() then  result  will
-  // be the size of the metadata that was written. But DoLoop() needs to know
-  // the number of bytes of data that were written. So return that instead.
   return write_len_;
-}
-
-int HttpCache::Writers::DoMarkSingleKeyedCacheEntryUnusable() {
-  // `response_info_truncation_` is not actually truncated.
-  // TODO(ricea): Maybe change the name of the member?
-  response_info_truncation_.single_keyed_cache_entry_unusable = true;
-  next_state_ = State::MARK_SINGLE_KEYED_CACHE_ENTRY_UNUSABLE_COMPLETE;
-
-  // Update cache metadata. This is a subset of what
-  // HttpCache::Transaction::WriteResponseInfoToEntry does.
-  auto data = base::MakeRefCounted<PickledIOBuffer>();
-  response_info_truncation_.Persist(data->pickle(),
-                                    /*skip_transient_headers=*/true,
-                                    /*response_truncated=*/false);
-  data->Done();
-  io_buf_len_ = data->pickle()->size();
-  CompletionOnceCallback io_callback = base::BindOnce(
-      &HttpCache::Writers::OnIOComplete, weak_factory_.GetWeakPtr());
-  return entry_->disk_entry->WriteData(kResponseInfoIndex, 0, data.get(),
-                                       io_buf_len_, std::move(io_callback),
-                                       true);
-}
-
-int HttpCache::Writers::DoMarkSingleKeyedCacheEntryUnusableComplete(
-    int result) {
-  DCHECK(!checksum_);
-  // We run DoCacheWriteDataComplete again, but this time `checksum_` is null so
-  // we won't come back here.
-  next_state_ = State::CACHE_WRITE_DATA_COMPLETE;
-  return result < 0 ? result : write_len_;
 }
 
 void HttpCache::Writers::OnDataReceived(int result) {

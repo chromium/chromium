@@ -7552,41 +7552,6 @@ TEST_F(URLLoaderCacheTransparencyTest, IncompatibleHeaders) {
       CacheTransparencyCacheNotUsedReason::kIncompatibleRequestHeaders);
 }
 
-// Do an end-to-end test of redirects, since their behaviour spans multiple
-// layers.
-TEST_F(URLLoaderCacheTransparencyTest, Redirect) {
-  // This use of this histogram is a layering violation. It is not strictly
-  // necessary to the test, but helps ensure it is passing for the right reason.
-  // TODO(ricea): Stop checking this histogram if it is removed.
-  static constexpr char kMarkedUnusableHistogram[] =
-      "Network.CacheTransparency2.MarkedUnusable";
-
-  set_expect_redirect(true);
-
-  SetOrigin("https://a.com/");
-  auto client1 = SendRequest(kRedirect301);
-  EXPECT_EQ(client1->redirect_info().status_code, 301);
-  histogram_tester().ExpectTotalCount(kMarkedUnusableHistogram, 0);
-
-  SetOrigin("https://b.com/");
-  auto client2 = SendRequest(kRedirect301);
-  EXPECT_EQ(client2->redirect_info().status_code, 301);
-  histogram_tester().ExpectUniqueSample(
-      kMarkedUnusableHistogram,
-      1,  // index of the URL in the pervasive payloads list
-      1   // number of samples
-  );
-
-  // TODO(ricea): Stop checking this histogram if it is removed.
-  histogram_tester().ExpectTotalCount(
-      "Network.CacheTransparency2.SingleKeyedCacheIsUsed", 0);
-
-  // The count includes the target of the redirects.
-  EXPECT_EQ(4, network_request_count());
-  ExpectNotUsedReason(
-      CacheTransparencyCacheNotUsedReason::kTryingSingleKeyedCache);
-}
-
 class SharedStorageRequestHelperURLLoaderTest : public URLLoaderTest {
  public:
   void RegisterAdditionalHandlers() override {

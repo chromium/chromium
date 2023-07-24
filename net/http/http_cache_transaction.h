@@ -38,10 +38,6 @@
 #include "net/socket/connection_attempts.h"
 #include "net/websockets/websocket_handshake_stream_base.h"
 
-namespace crypto {
-class SecureHash;
-}  // namespace crypto
-
 namespace net {
 
 class PartialData;
@@ -199,11 +195,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // entry has finished writing.
   void WriteModeTransactionAboutToBecomeReader();
 
-  // True if the passed checksum calculated from the response matches the
-  // expected value from the HttpRequestInfo. Consumes `checksum`.
-  bool ResponseChecksumMatches(
-      std::unique_ptr<crypto::SecureHash> checksum) const;
-
   // Add time spent writing data in the disk cache. Used for histograms.
   void AddDiskCacheWriteTime(base::TimeDelta elapsed);
 
@@ -300,11 +291,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
     // by the network layer (skipping the cache entirely).
     STATE_NETWORK_READ,
     STATE_NETWORK_READ_COMPLETE,
-
-    // These states are only entered a single-keyed cache entry needs to be
-    // marked unusable.
-    STATE_MARK_SINGLE_KEYED_CACHE_ENTRY_UNUSABLE,
-    STATE_MARK_SINGLE_KEYED_CACHE_ENTRY_UNUSABLE_COMPLETE,
   };
 
   // Used for categorizing validation triggers in histograms.
@@ -383,8 +369,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   int DoCacheReadDataComplete(int result);
   int DoNetworkRead();
   int DoNetworkReadComplete(int result);
-  int DoMarkSingleKeyedCacheEntryUnusable();
-  int DoMarkSingleKeyedCacheEntryUnusableComplete(int result);
 
   // Adds time out handling while waiting to be added to entry or after headers
   // phase is complete.
@@ -503,10 +487,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // resumed or not.
   void DoneWithEntry(bool entry_is_complete);
 
-  // Informs the HttpCache that this transaction is done with the entry and
-  // resets related fields.
-  void DoneWithEntryForRestartWithCache();
-
   // Dooms the given entry so that it will not be re-used for other requests,
   // then calls `DoneWithEntry()`.
   //
@@ -609,15 +589,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // headers.
   bool ShouldDisableCaching(const HttpResponseHeaders& headers) const;
 
-  // Checksum headers in `request_` for matching against the single-keyed cache
-  // checksum. Initializes `checksum_`.
-  void ChecksumHeaders();
-
-  // Finishes the checksum and validates that it matches the expected value.
-  // Returns true if the checksum matches. Returns false if it does not
-  // match. If no checksumming is taking place then returns true.
-  bool FinishAndCheckChecksum();
-
   // 304 revalidations of resources that set security headers and that get
   // forwarded might need to set these headers again to avoid being blocked.
   void UpdateSecurityHeadersBeforeForwarding();
@@ -704,10 +675,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
                                                      // cache lock.
   bool fail_conditionalization_for_test_ =
       false;  // Fail ConditionalizeRequest.
-  bool mark_single_keyed_cache_entry_unusable_ =
-      false;  // Set single_keyed_cache_entry_unusable.
-  // This is initialised in Start().
-  bool use_single_keyed_cache_ = false;
 
   scoped_refptr<IOBuffer> read_buf_;
 
@@ -763,11 +730,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // case the transaction does not exist yet.
   raw_ptr<WebSocketHandshakeStreamBase::CreateHelper>
       websocket_handshake_stream_base_create_helper_ = nullptr;
-
-  // Set if we are currently calculating a checksum of the resource to validate
-  // it against the expected checksum for the single-keyed cache. Accumulates a
-  // hash of selected headers and the body of the response.
-  std::unique_ptr<crypto::SecureHash> checksum_;
 
   BeforeNetworkStartCallback before_network_start_callback_;
   ConnectedCallback connected_callback_;

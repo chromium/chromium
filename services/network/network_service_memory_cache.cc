@@ -102,8 +102,7 @@ absl::optional<std::string> GenerateCacheKeyForResourceRequest(
       resource_request.destination == mojom::RequestDestination::kIframe;
   return net::HttpCache::GenerateCacheKey(
       resource_request.url, resource_request.load_flags, network_isolation_key,
-      /*upload_data_identifier=*/0, is_subframe_document_resource,
-      /*use_single_keyed_cache=*/false, /*single_key_checksum=*/"");
+      /*upload_data_identifier=*/0, is_subframe_document_resource);
 }
 
 absl::optional<std::string> GenerateCacheKeyForURLRequest(
@@ -114,9 +113,7 @@ absl::optional<std::string> GenerateCacheKeyForURLRequest(
   return net::HttpCache::GenerateCacheKey(
       url_request.url(), url_request.load_flags(),
       url_request.isolation_info().network_isolation_key(),
-      /*upload_data_identifier=*/0, is_subframe_document_resource,
-      /*use_single_keyed_cache=*/false,
-      /*single_key_checksum=*/"");
+      /*upload_data_identifier=*/0, is_subframe_document_resource);
 }
 
 bool CheckCrossOriginReadBlocking(const ResourceRequest& resource_request,

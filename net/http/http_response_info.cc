@@ -118,9 +118,10 @@ enum {
   // This bit is set if the response has a nonempty `dns_aliases` entry.
   RESPONSE_INFO_HAS_DNS_ALIASES = 1 << 27,
 
-  // This bit is set for an entry in the single-keyed cache that has been marked
-  // unusable due to the checksum not matching.
-  RESPONSE_INFO_SINGLE_KEYED_CACHE_ENTRY_UNUSABLE = 1 << 28,
+  // This bit is now unused. It may be set on existing entries. Previously it
+  // was set for an entry in the single-keyed cache that had been marked
+  // unusable due to the cache transparency checksum not matching.
+  RESPONSE_INFO_UNUSED_WAS_SINGLE_KEYED_CACHE_ENTRY_UNUSABLE = 1 << 28,
 
   // This bit is set if the response has `encrypted_client_hello` set.
   RESPONSE_INFO_ENCRYPTED_CLIENT_HELLO = 1 << 29,
@@ -372,8 +373,7 @@ bool HttpResponseInfo::InitFromPickle(const base::Pickle& pickle,
 
   restricted_prefetch = (flags & RESPONSE_INFO_RESTRICTED_PREFETCH) != 0;
 
-  single_keyed_cache_entry_unusable =
-      (flags & RESPONSE_INFO_SINGLE_KEYED_CACHE_ENTRY_UNUSABLE) != 0;
+  // RESPONSE_INFO_UNUSED_WAS_SINGLE_KEYED_CACHE_ENTRY_UNUSABLE is unused.
 
   ssl_info.pkp_bypassed = (flags & RESPONSE_INFO_PKP_BYPASSED) != 0;
 
@@ -454,8 +454,7 @@ void HttpResponseInfo::Persist(base::Pickle* pickle,
     flags |= RESPONSE_INFO_UNUSED_SINCE_PREFETCH;
   if (restricted_prefetch)
     flags |= RESPONSE_INFO_RESTRICTED_PREFETCH;
-  if (single_keyed_cache_entry_unusable)
-    flags |= RESPONSE_INFO_SINGLE_KEYED_CACHE_ENTRY_UNUSABLE;
+  // RESPONSE_INFO_UNUSED_WAS_SINGLE_KEYED_CACHE_ENTRY_UNUSABLE is not used.
   if (ssl_info.pkp_bypassed)
     flags |= RESPONSE_INFO_PKP_BYPASSED;
   if (!stale_revalidate_timeout.is_null())
