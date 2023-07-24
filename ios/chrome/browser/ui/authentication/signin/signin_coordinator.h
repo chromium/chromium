@@ -48,6 +48,19 @@ class PrefRegistrySyncable;
                                     promoAction:(signin_metrics::PromoAction)
                                                     promoAction;
 
+// Returns a coordinator to sign-in the user without taps if the identity has
+// been selected with `identity`. Otherwise, it will ask the user to select
+// an identity, and starts the sign-in flow. If there is no identity on the
+// device, the add account dialog will be displayed, and then the sign-in flow
+// is started with the newly added identity.
++ (instancetype)
+    instantSigninCoordinatorWithBaseViewController:
+        (UIViewController*)viewController
+                                           browser:(Browser*)browser
+                                          identity:(id<SystemIdentity>)identity
+                                       accessPoint:(signin_metrics::AccessPoint)
+                                                       accessPoint;
+
 // Returns a coordinator for forced sign-in workflow.
 // `viewController` presents the sign-in.
 + (instancetype)forcedSigninCoordinatorWithBaseViewController:

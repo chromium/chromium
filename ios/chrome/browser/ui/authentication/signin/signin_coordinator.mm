@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/advanced_settings_signin/advanced_settings_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_promo_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/forced_signin/forced_signin_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/signin/instant_signin/instant_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_screen_provider.h"
 #import "ios/chrome/browser/ui/authentication/signin/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/two_screens_signin/two_screens_signin_coordinator.h"
@@ -60,6 +61,20 @@ using signin_metrics::PromoAction;
                         identity:identity
                     signinIntent:UserSigninIntentSignin
                           logger:logger];
+}
+
++ (instancetype)
+    instantSigninCoordinatorWithBaseViewController:
+        (UIViewController*)viewController
+                                           browser:(Browser*)browser
+                                          identity:(id<SystemIdentity>)identity
+                                       accessPoint:(signin_metrics::AccessPoint)
+                                                       accessPoint {
+  return [[InstantSigninCoordinator alloc]
+      initWithBaseViewController:viewController
+                         browser:browser
+                        identity:identity
+                     accessPoint:accessPoint];
 }
 
 + (instancetype)forcedSigninCoordinatorWithBaseViewController:
