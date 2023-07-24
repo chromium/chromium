@@ -225,6 +225,8 @@ CoreAccountInfo GCMAccountTrackerTest::SetPrimaryAccount(
   // setting of the primary account is done afterward to check that the flow
   // that ensues from the GoogleSigninSucceeded callback firing works as
   // expected.
+  // TODO(crbug.com/1466865): Delete account-tracking code, latest when
+  // ConsentLevel::kSync is cleaned up from the codebase.
   return identity_test_env_.MakePrimaryAccountAvailable(
       email, signin::ConsentLevel::kSync);
 }

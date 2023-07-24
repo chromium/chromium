@@ -274,6 +274,8 @@ void GCMAccountTracker::GetAllNeededTokens() {
     return;
 
   // Only start fetching access tokens if the user consented for sync.
+  // TODO(crbug.com/1466865): Delete account-tracking code, latest when
+  // ConsentLevel::kSync is cleaned up from the codebase.
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync))
     return;
 

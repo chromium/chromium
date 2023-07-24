@@ -77,6 +77,8 @@ GCMProfileService::IdentityObserver::IdentityObserver(
     : driver_(driver), identity_manager_(identity_manager) {
   identity_manager_->AddObserver(this);
 
+  // TODO(crbug.com/1466865): Delete account-tracking code, latest when
+  // ConsentLevel::kSync is cleaned up from the codebase.
   OnSyncPrimaryAccountSet(
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
   StartAccountTracker(std::move(url_loader_factory));
@@ -90,6 +92,8 @@ GCMProfileService::IdentityObserver::~IdentityObserver() {
 
 void GCMProfileService::IdentityObserver::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
+  // TODO(crbug.com/1466865): Delete account-tracking code, latest when
+  // ConsentLevel::kSync is cleaned up from the codebase.
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:
       OnSyncPrimaryAccountSet(event.GetCurrentState().primary_account);
