@@ -5669,8 +5669,8 @@ TEST_F(BrowserAutofillManagerTest, FormChangesVisibilityOfFields) {
                     later_response_data.fields[4]);
 }
 
-// Test that we are able to save form data when forms are submitted.
-TEST_F(BrowserAutofillManagerTest, FormSubmitted) {
+// Test that the importing logic is called on form submit.
+TEST_F(BrowserAutofillManagerTest, FormSubmitted_FormDataImporter) {
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
@@ -5681,29 +5681,19 @@ TEST_F(BrowserAutofillManagerTest, FormSubmitted) {
   FillAutofillFormDataAndSaveResults(form, form.fields[0], MakeGuid(1),
                                      &response_data);
   ExpectFilledAddressFormElvis(response_data, false);
+  AutofillProfile filled_profile =
+      *personal_data().GetProfileByGUID(MakeGuid(1));
 
-  // Simulate form submission. We should call into the PDM to try to save the
-  // filled data.
+  // Remove the filled profile and simulate form submission. Since the
+  // `personal_data()`'s auto accept imports for testing is enabled, expect
+  // that the profile is imported again.
+  personal_data().ClearAllLocalData();
+  ASSERT_TRUE(personal_data().GetProfiles().empty());
   FormSubmitted(response_data);
-  EXPECT_EQ(1, personal_data().num_times_save_imported_profile_called());
-}
-
-// Test that we are saving form data when the FormSubmitted event is sent.
-TEST_F(BrowserAutofillManagerTest, FormSubmittedSaveData) {
-  // Set up our form data.
-  FormData form;
-  test::CreateTestAddressFormData(&form);
-  FormsSeen({form});
-
-  // Fill the form.
-  FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, form.fields[0], MakeGuid(1),
-                                     &response_data);
-  ExpectFilledAddressFormElvis(response_data, false);
-
-  browser_autofill_manager_->OnFormSubmitted(response_data, false,
-                                             SubmissionSource::FORM_SUBMISSION);
-  EXPECT_EQ(1, personal_data().num_times_save_imported_profile_called());
+  // Since the imported profile has a random GUID, AutofillProfile::operator==
+  // cannot be used.
+  ASSERT_EQ(personal_data().GetProfiles().size(), 1u);
+  EXPECT_TRUE(personal_data().GetProfiles()[0]->Compare(filled_profile));
 }
 
 // Test the field log events at the form submission.
@@ -5816,7 +5806,6 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtFormSubmitted) {
 
   // Simulate form submission.
   FormSubmitted(response_data);
-  EXPECT_EQ(1, personal_data().num_times_save_imported_profile_called());
 
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
@@ -6106,7 +6095,6 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtUserTypingInField) {
 
   // Simulate form submission.
   FormSubmitted(response_data);
-  EXPECT_EQ(1, personal_data().num_times_save_imported_profile_called());
 
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
@@ -7021,40 +7009,6 @@ TEST_F(BrowserAutofillManagerTest, DetermineHeuristicsWithOverallPrediction) {
   EXPECT_EQ(section, form_structure->field(4)->section);
 }
 
-// Test that we are able to save form data when forms are submitted and we only
-// have server data for the field types.
-TEST_F(BrowserAutofillManagerTest, FormSubmittedServerTypes) {
-  // Set up our form data.
-  FormData form;
-  test::CreateTestAddressFormData(&form);
-  FormsSeen({form});
-
-  // Simulate having seen this form on page load.
-  // |form_structure| will be owned by |browser_autofill_manager_|.
-  auto form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
-
-  // Clear the heuristic types, and instead set the appropriate server types.
-  std::vector<ServerFieldType> heuristic_types, server_types;
-  for (size_t i = 0; i < form.fields.size(); ++i) {
-    heuristic_types.push_back(UNKNOWN_TYPE);
-    server_types.push_back(form_structure->field(i)->heuristic_type());
-  }
-  test_api(*form_structure).SetFieldTypes(heuristic_types, server_types);
-  browser_autofill_manager_->AddSeenFormStructure(std::move(form_structure));
-
-  // Fill the form.
-  FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, form.fields[0], MakeGuid(1),
-                                     &response_data);
-  ExpectFilledAddressFormElvis(response_data, false);
-
-  // Simulate form submission. We should call into the PDM to try to save the
-  // filled data.
-  FormSubmitted(response_data);
-  EXPECT_EQ(1, personal_data().num_times_save_imported_profile_called());
-}
-
 // Test that the form signature for an uploaded form always matches the form
 // signature from the query.
 TEST_F(BrowserAutofillManagerTest, FormSubmittedWithDifferentFields) {
@@ -7098,10 +7052,15 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedWithDefaultValues) {
   // Set the address field's value back to the default value.
   response_data.fields[3].value = u"Enter your address";
 
-  // Simulate form submission.  We should not call into the PDM to try to save
-  // the filled data, since the filled form is effectively missing an address.
+  // Simulate form submission. The profile should not be updated with the
+  // meaningless default value of the street address field.
+  personal_data()
+      .GetProfileByGUID(kElvisProfileGuid)
+      ->ClearFields({ADDRESS_HOME_STREET_ADDRESS});
   FormSubmitted(response_data);
-  EXPECT_EQ(0, personal_data().num_times_save_imported_profile_called());
+  EXPECT_FALSE(personal_data()
+                   .GetProfileByGUID(kElvisProfileGuid)
+                   ->HasInfo(ADDRESS_HOME_STREET_ADDRESS));
 }
 
 void DoTestFormSubmittedControlWithDefaultValue(
@@ -7125,12 +7084,14 @@ void DoTestFormSubmittedControlWithDefaultValue(
   test->FillAutofillFormDataAndSaveResults(form, form.fields[3],
                                            kElvisProfileGuid, &response_data);
 
+  test->personal_data()
+      .GetProfileByGUID(kElvisProfileGuid)
+      ->ClearFields({ADDRESS_HOME_STATE});
   test->FormSubmitted(response_data);
-  const TestPersonalDataManager& personal_data = test->personal_data();
-  ASSERT_EQ(1, personal_data.num_times_save_imported_profile_called());
-  EXPECT_EQ(u"Tennessee",
-            personal_data.last_save_imported_profile()->GetRawInfo(
-                ADDRESS_HOME_STATE));
+  // Expect that the profile was updated with the value of the state select.
+  EXPECT_EQ(state_field->value, test->personal_data()
+                                    .GetProfileByGUID(kElvisProfileGuid)
+                                    ->GetRawInfo(ADDRESS_HOME_STATE));
 }
 
 // Test that we save form data when a <select> in the form contains the
@@ -7177,14 +7138,15 @@ void DoTestFormSubmittedNonAddressControlWithDefaultValue(
   test->FillAutofillFormDataAndSaveResults(form, form.fields[3],
                                            kElvisProfileGuid, &response_data);
 
-  test->FormSubmitted(response_data);
-
   // Value of country code field should have been saved.
-  const TestPersonalDataManager& personal_data = test->personal_data();
-  ASSERT_EQ(1, personal_data.num_times_save_imported_profile_called());
+  test->personal_data()
+      .GetProfileByGUID(kElvisProfileGuid)
+      ->ClearFields({PHONE_HOME_WHOLE_NUMBER});
+  test->FormSubmitted(response_data);
   std::u16string formatted_phone_number =
-      personal_data.last_save_imported_profile()->GetRawInfo(
-          PHONE_HOME_WHOLE_NUMBER);
+      test->personal_data()
+          .GetProfileByGUID(kElvisProfileGuid)
+          ->GetRawInfo(PHONE_HOME_WHOLE_NUMBER);
   std::u16string phone_number_numbers_only;
   base::RemoveChars(formatted_phone_number, u"+- ", &phone_number_numbers_only);
   EXPECT_TRUE(base::StartsWith(phone_number_numbers_only, u"1"));

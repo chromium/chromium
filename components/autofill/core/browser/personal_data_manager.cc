@@ -2256,23 +2256,6 @@ void PersonalDataManager::LoadPaymentsCustomerData() {
       database_helper_->GetServerDatabase()->GetPaymentsCustomerData(this);
 }
 
-std::string PersonalDataManager::SaveImportedProfile(
-    const AutofillProfile& imported_profile) {
-  std::vector<AutofillProfile> profiles;
-  std::string guid = AutofillProfileComparator::MergeProfile(
-      imported_profile, GetProfileStorage(imported_profile.source()),
-      app_locale_, &profiles);
-  // Keep profiles from other sources. `SetProfilesForSource()` cannot be used,
-  // since it doesn't notify observers.
-  for (AutofillProfile* profile : GetProfiles()) {
-    if (profile->source() != imported_profile.source()) {
-      profiles.push_back(*profile);
-    }
-  }
-  SetProfilesForAllSources(&profiles);
-  return guid;
-}
-
 std::string PersonalDataManager::OnAcceptedLocalCreditCardSave(
     const CreditCard& imported_card) {
   DCHECK(!imported_card.number().empty());

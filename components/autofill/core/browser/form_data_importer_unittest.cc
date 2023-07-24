@@ -81,7 +81,6 @@ constexpr char kDefaultCity[] = "Los Angeles";
 constexpr char kDefaultState[] = "California";
 constexpr char kDefaultCountry[] = "US";
 constexpr char kDefaultPhone[] = "+1 650-555-0000";
-constexpr char kDefaultPhoneAlternativeFormatting[] = "650-555-0000";
 constexpr char kDefaultPhoneDomesticFormatting[] = "(650) 555-0000";
 constexpr char kDefaultPhoneAreaCode[] = "650";
 constexpr char kDefaultPhonePrefix[] = "555";
@@ -1495,63 +1494,6 @@ TEST_P(FormDataImporterTest,
   ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(*form_structure);
 }
 
-TEST_P(FormDataImporterTest, ImportAddressProfiles_SameProfileWithConflict) {
-  TypeValuePairs initial_type_value_pairs{
-      {NAME_FULL, kDefaultFullName},
-      {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
-      {ADDRESS_HOME_CITY, kDefaultCity},
-      {ADDRESS_HOME_STATE, kDefaultState},
-      {ADDRESS_HOME_ZIP, kDefaultZip},
-      {ADDRESS_HOME_COUNTRY, kDefaultCountry},
-      {PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneDomesticFormatting},
-  };
-  AutofillProfile initial_profile =
-      ConstructProfileFromTypeValuePairs(initial_type_value_pairs);
-
-  std::unique_ptr<FormStructure> initial_form_structure =
-      ConstructFormStructureFromTypeValuePairs(initial_type_value_pairs);
-  ExtractAddressProfilesAndVerifyExpectation(*initial_form_structure,
-                                             {initial_profile});
-
-  // Create a second form structure with an additional country and a differently
-  // formatted phone number
-  TypeValuePairs conflicting_type_value_pairs = {
-      {NAME_FULL, kDefaultFullName},
-      {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
-      {ADDRESS_HOME_CITY, kDefaultCity},
-      {ADDRESS_HOME_STATE, kDefaultState},
-      {ADDRESS_HOME_ZIP, kDefaultZip},
-      // The phone number is spelled differently.
-      {PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneAlternativeFormatting},
-      // Country information is added.
-      {ADDRESS_HOME_COUNTRY, "US"}};
-  AutofillProfile conflicting_profile =
-      ConstructProfileFromTypeValuePairs(conflicting_type_value_pairs);
-
-  // Verify that the initial profile and the conflicting profile are not the
-  // same.
-  ASSERT_FALSE(initial_profile.Compare(conflicting_profile) == 0);
-  std::unique_ptr<FormStructure> conflicting_form_structure =
-      ConstructFormStructureFromTypeValuePairs(conflicting_type_value_pairs);
-
-  TypeValuePairs resulting_type_value_pairs{
-      {NAME_FULL, kDefaultFullName},
-      {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
-      {ADDRESS_HOME_CITY, kDefaultCity},
-      {ADDRESS_HOME_STATE, kDefaultState},
-      {ADDRESS_HOME_ZIP, kDefaultZip},
-      // The phone number remains in domestic format.
-      {PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneDomesticFormatting},
-      // Country information is added.
-      {ADDRESS_HOME_COUNTRY, "US"}};
-
-  // Verify that extracting the conflicting profile will result in an update of
-  // the existing profile rather than creating a new one.
-  ExtractAddressProfilesAndVerifyExpectation(
-      *conflicting_form_structure,
-      {ConstructProfileFromTypeValuePairs(resulting_type_value_pairs)});
-}
-
 TEST_P(FormDataImporterTest, ImportAddressProfiles_MissingInfoInOld) {
   TypeValuePairs initial_type_value_pairs{
       {NAME_FULL, kDefaultFullName},
@@ -1622,8 +1564,10 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles_MissingInfoInNew) {
   // the superset.
   std::unique_ptr<FormStructure> subset_form_structure =
       ConstructFormStructureFromTypeValuePairs(subset_type_value_pairs);
-  ExtractAddressProfilesAndVerifyExpectation(*superset_form_structure,
-                                             {superset_profile});
+  ExtractAddressProfiles(/*extraction_successful=*/true,
+                         *superset_form_structure,
+                         /*skip_waiting_on_pdm=*/true);
+  VerifyExpectationForExtractedAddressProfiles({superset_profile});
 }
 
 TEST_P(FormDataImporterTest, ImportAddressProfiles_InsufficientAddress) {

@@ -89,7 +89,7 @@ class AutofillProfileTableViewControllerTest
     autofill_profile.SetRawInfo(autofill::NAME_FULL, base::ASCIIToUTF16(name));
     autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_LINE1,
                                 base::ASCIIToUTF16(address));
-    personal_data_manager->SaveImportedProfile(autofill_profile);
+    personal_data_manager->AddProfile(autofill_profile);
     waiter.Wait();  // Wait for completion of the asynchronous operation.
   }
 

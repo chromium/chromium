@@ -137,7 +137,7 @@ NSError* PrepareAutofillProfileWithValues(
       PersonalDataManagerFactory::GetForBrowserState(browser_state);
   personal_data_manager->ClearAllLocalData();
   personal_data_manager->AddCreditCard(credit_card);
-  personal_data_manager->SaveImportedProfile(profile);
+  personal_data_manager->AddProfile(profile);
 
   return nil;
 }

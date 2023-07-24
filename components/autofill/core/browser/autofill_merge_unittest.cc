@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -20,7 +21,6 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -111,58 +111,6 @@ std::string SerializeProfiles(const std::vector<AutofillProfile*>& profiles) {
   return result;
 }
 
-class PersonalDataManagerMock : public PersonalDataManager {
- public:
-  PersonalDataManagerMock();
-
-  PersonalDataManagerMock(const PersonalDataManagerMock&) = delete;
-  PersonalDataManagerMock& operator=(const PersonalDataManagerMock&) = delete;
-
-  ~PersonalDataManagerMock() override;
-
-  // Reset the saved profiles.
-  void Reset();
-
-  // PersonalDataManager:
-  std::string SaveImportedProfile(const AutofillProfile& profile) override;
-  std::vector<AutofillProfile*> GetProfiles(
-      PersonalDataManager::ProfileOrder order =
-          PersonalDataManager::ProfileOrder::kNone) const override;
-
- private:
-  std::vector<std::unique_ptr<AutofillProfile>> profiles_;
-};
-
-PersonalDataManagerMock::PersonalDataManagerMock()
-    : PersonalDataManager("en-US", "US") {}
-
-PersonalDataManagerMock::~PersonalDataManagerMock() = default;
-
-void PersonalDataManagerMock::Reset() {
-  profiles_.clear();
-}
-
-std::string PersonalDataManagerMock::SaveImportedProfile(
-    const AutofillProfile& profile) {
-  std::vector<AutofillProfile> new_profiles;
-  std::string merged_guid = AutofillProfileComparator::MergeProfile(
-      profile, profiles_, "en-US", &new_profiles);
-
-  profiles_.clear();
-  for (const AutofillProfile& it : new_profiles) {
-    profiles_.push_back(std::make_unique<AutofillProfile>(it));
-  }
-  return merged_guid;
-}
-
-std::vector<AutofillProfile*> PersonalDataManagerMock::GetProfiles(
-    PersonalDataManager::ProfileOrder) const {
-  std::vector<AutofillProfile*> result;
-  for (const auto& profile : profiles_)
-    result.push_back(profile.get());
-  return result;
-}
-
 }  // namespace
 
 // A data-driven test for verifying merging of Autofill profiles. Each input is
@@ -197,7 +145,7 @@ class AutofillMergeTest : public testing::DataDrivenTest,
 
   base::test::TaskEnvironment task_environment_;
   TestAutofillClient autofill_client_;
-  PersonalDataManagerMock personal_data_;
+  TestPersonalDataManager personal_data_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
 
  private:
@@ -237,7 +185,7 @@ void AutofillMergeTest::GenerateResults(const std::string& input,
 void AutofillMergeTest::MergeProfiles(const std::string& profiles,
                                       std::string* merged_profiles) {
   // Start with no saved profiles.
-  personal_data_.Reset();
+  personal_data_.ClearAllLocalData();
 
   // Create a test form.
   FormData form;
@@ -303,7 +251,16 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
     }
   }
 
-  *merged_profiles = SerializeProfiles(personal_data_.GetProfiles());
+  std::vector<AutofillProfile*> imported_profiles =
+      personal_data_.GetProfiles();
+  // To ensure a consistent order with the output files, sort the profiles by
+  // modification date. This corresponds to the order in which the profiles
+  // were imported (or updated).
+  base::ranges::sort(imported_profiles,
+                     [](AutofillProfile* a, AutofillProfile* b) {
+                       return a->modification_date() < b->modification_date();
+                     });
+  *merged_profiles = SerializeProfiles(imported_profiles);
 }
 
 ServerFieldType AutofillMergeTest::StringToFieldType(const std::string& str) {

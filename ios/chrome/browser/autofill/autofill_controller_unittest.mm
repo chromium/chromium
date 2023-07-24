@@ -514,7 +514,9 @@ void AutofillControllerTest::SetUpForSuggestions(
   profile.SetRawInfo(ADDRESS_HOME_STATE, u"IL");
   profile.SetRawInfo(ADDRESS_HOME_ZIP, u"55123");
   EXPECT_EQ(0U, personal_data_manager->GetProfiles().size());
-  personal_data_manager->SaveImportedProfile(profile);
+  PersonalDataManagerFinishedProfileTasksWaiter waiter(personal_data_manager);
+  personal_data_manager->AddProfile(profile);
+  waiter.Wait();
   EXPECT_EQ(1U, personal_data_manager->GetProfiles().size());
 
   ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(data, expected_number_of_forms));
@@ -596,7 +598,6 @@ TEST_F(AutofillControllerTest, MultipleProfileSuggestions) {
       PersonalDataManagerFactory::GetForBrowserState(
           ChromeBrowserState::FromBrowserState(browser_state_.get()));
   personal_data_manager->SetSyncServiceForTest(nullptr);
-  PersonalDataManagerFinishedProfileTasksWaiter waiter(personal_data_manager);
 
   AutofillProfile profile;
   profile.SetRawInfo(NAME_FULL, u"Homer Simpson");
@@ -604,20 +605,21 @@ TEST_F(AutofillControllerTest, MultipleProfileSuggestions) {
   profile.SetRawInfo(ADDRESS_HOME_CITY, u"Springfield");
   profile.SetRawInfo(ADDRESS_HOME_STATE, u"IL");
   profile.SetRawInfo(ADDRESS_HOME_ZIP, u"55123");
-  EXPECT_EQ(0U, personal_data_manager->GetProfiles().size());
 
-  personal_data_manager->SaveImportedProfile(profile);
-  waiter.Wait();
-
-  EXPECT_EQ(1U, personal_data_manager->GetProfiles().size());
   AutofillProfile profile2;
   profile2.SetRawInfo(NAME_FULL, u"Larry Page");
   profile2.SetRawInfo(ADDRESS_HOME_LINE1, u"1600 Amphitheatre Parkway");
   profile2.SetRawInfo(ADDRESS_HOME_CITY, u"Mountain View");
   profile2.SetRawInfo(ADDRESS_HOME_STATE, u"CA");
   profile2.SetRawInfo(ADDRESS_HOME_ZIP, u"94043");
-  personal_data_manager->SaveImportedProfile(profile2);
+
+  EXPECT_EQ(0U, personal_data_manager->GetProfiles().size());
+  PersonalDataManagerFinishedProfileTasksWaiter waiter(personal_data_manager);
+  personal_data_manager->AddProfile(profile);
+  personal_data_manager->AddProfile(profile2);
+  waiter.Wait();
   EXPECT_EQ(2U, personal_data_manager->GetProfiles().size());
+
   EXPECT_TRUE(LoadHtmlAndWaitForFormFetched(kProfileFormHtml, 1));
   ForceViewRendering(web_state()->GetView());
   ResetWaitForSuggestionRetrieval();

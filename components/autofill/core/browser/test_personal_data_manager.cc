@@ -43,14 +43,6 @@ void TestPersonalDataManager::RecordUseOf(
   }
 }
 
-std::string TestPersonalDataManager::SaveImportedProfile(
-    const AutofillProfile& imported_profile) {
-  num_times_save_imported_profile_called_++;
-  last_save_imported_profile_ =
-      std::make_unique<AutofillProfile>(imported_profile);
-  return PersonalDataManager::SaveImportedProfile(imported_profile);
-}
-
 std::string TestPersonalDataManager::SaveImportedCreditCard(
     const CreditCard& imported_credit_card) {
   num_times_save_imported_credit_card_called_++;

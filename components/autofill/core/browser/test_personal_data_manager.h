@@ -44,8 +44,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   AutofillSyncSigninState GetSyncSigninState() const override;
   void RecordUseOf(absl::variant<const AutofillProfile*, const CreditCard*>
                        profile_or_credit_card) override;
-  std::string SaveImportedProfile(
-      const AutofillProfile& imported_profile) override;
   std::string SaveImportedCreditCard(
       const CreditCard& imported_credit_card) override;
   void AddUpiId(const std::string& upi_id) override;
@@ -124,14 +122,6 @@ class TestPersonalDataManager : public PersonalDataManager {
     default_country_code_ = default_country_code;
   }
 
-  int num_times_save_imported_profile_called() const {
-    return num_times_save_imported_profile_called_;
-  }
-
-  const AutofillProfile* last_save_imported_profile() const {
-    return last_save_imported_profile_.get();
-  }
-
   int num_times_save_imported_credit_card_called() const {
     return num_times_save_imported_credit_card_called_;
   }
@@ -180,8 +170,6 @@ class TestPersonalDataManager : public PersonalDataManager {
  private:
   std::string timezone_country_code_;
   std::string default_country_code_;
-  int num_times_save_imported_profile_called_ = 0;
-  std::unique_ptr<AutofillProfile> last_save_imported_profile_;
   int num_times_save_imported_credit_card_called_ = 0;
   int num_times_save_upi_id_called_ = 0;
   absl::optional<bool> autofill_profile_enabled_;

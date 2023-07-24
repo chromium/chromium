@@ -188,13 +188,6 @@ class PersonalDataManager : public KeyedService,
       absl::variant<const AutofillProfile*, const CreditCard*>
           profile_or_credit_card);
 
-  // Saves `imported_profile` to the WebDB if it exists. Returns the guid of
-  // the new or updated profile, or the empty string if no profile was saved.
-  // This function is only used for tests and is a leftover from pre-explicit
-  // save prompt times.
-  virtual std::string SaveImportedProfile(
-      const AutofillProfile& imported_profile);
-
   // Called when the user accepts the prompt to save the credit card locally.
   // Records some metrics and attempts to save the imported card. Returns the
   // guid of the new or updated card, or the empty string if no card was saved.
@@ -710,7 +703,6 @@ class PersonalDataManager : public KeyedService,
   friend class PersonalDataManagerTestBase;
   friend class PersonalDataManagerHelper;
   friend class PersonalDataManagerMockTest;
-  friend class SaveImportedProfileTest;
   friend class VirtualCardEnrollmentManagerTest;
   friend class ::RemoveAutofillTester;
   friend std::default_delete<PersonalDataManager>;
