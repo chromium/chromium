@@ -183,27 +183,6 @@ views::Widget::InitParams CreateWidgetParams(const gfx::Rect& bounds) {
   return params;
 }
 
-// Called by `ContinueDraggingPreview` to make sure camera preview is not
-// dragged outside of the capture surface.
-void AdjustBoundsWithinConfinedBounds(const gfx::Rect& confined_bounds,
-                                      gfx::Rect& preview_bounds) {
-  const int x = preview_bounds.x();
-  if (int offset = x - confined_bounds.x(); offset < 0) {
-    preview_bounds.set_x(x - offset);
-  } else if (offset = confined_bounds.right() - preview_bounds.right();
-             offset < 0) {
-    preview_bounds.set_x(x + offset);
-  }
-
-  const int y = preview_bounds.y();
-  if (int offset = y - confined_bounds.y(); offset < 0) {
-    preview_bounds.set_y(y - offset);
-  } else if (offset = confined_bounds.bottom() - preview_bounds.bottom();
-             offset < 0) {
-    preview_bounds.set_y(y + offset);
-  }
-}
-
 // Returns the bounds that should be used in the bounds animation of the given
 // `camera_preview_window`. If this window is parented to a window that uses
 // screen coordinates, then the given `target_bounds` are in screen coordinates,
@@ -624,7 +603,7 @@ void CaptureModeCameraController::ContinueDraggingPreview(
 
   current_bounds.Offset(
       gfx::ToRoundedVector2d(screen_location - previous_location_in_screen_));
-  AdjustBoundsWithinConfinedBounds(
+  capture_mode_util::AdjustBoundsWithinConfinedBounds(
       CaptureModeController::Get()->GetCaptureSurfaceConfineBounds(),
       current_bounds);
   camera_preview_widget_->SetBounds(current_bounds);

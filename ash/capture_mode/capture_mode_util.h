@@ -51,6 +51,9 @@ namespace capture_mode_util {
 // CaptureModeController, which has many transitive includes.
 ASH_EXPORT bool IsCaptureModeActive();
 
+// Retrieves the screen location for the `event`.
+gfx::PointF GetEventScreenLocation(const ui::LocatedEvent& event);
+
 // Retrieves the point on the |rect| associated with |position|.
 ASH_EXPORT gfx::Point GetLocationForFineTunePosition(const gfx::Rect& rect,
                                                      FineTunePosition position);
@@ -76,6 +79,11 @@ void TriggerAccessibilityAlert(int message_id);
 // ChromeVox.
 void TriggerAccessibilityAlertSoon(const std::string& message);
 void TriggerAccessibilityAlertSoon(int message_id);
+
+// Adjusts the bounds if needed so that the `out_bounds` is always within the
+// `confined_bounds`.
+void AdjustBoundsWithinConfinedBounds(const gfx::Rect& confined_bounds,
+                                      gfx::Rect& out_bounds);
 
 // Returns the next horizontal or vertical snap position based on the current
 // camera preview snap position `current` and the movement. Returns `current` if

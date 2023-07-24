@@ -154,6 +154,10 @@ bool IsCaptureModeActive() {
   return CaptureModeController::Get()->IsActive();
 }
 
+gfx::PointF GetEventScreenLocation(const ui::LocatedEvent& event) {
+  return event.target()->GetScreenLocationF(event);
+}
+
 gfx::Point GetLocationForFineTunePosition(const gfx::Rect& rect,
                                           FineTunePosition position) {
   switch (position) {
@@ -239,6 +243,23 @@ void TriggerAccessibilityAlertSoon(const std::string& message) {
 
 void TriggerAccessibilityAlertSoon(int message_id) {
   TriggerAccessibilityAlertSoon(l10n_util::GetStringUTF8(message_id));
+}
+
+void AdjustBoundsWithinConfinedBounds(const gfx::Rect& confined_bounds,
+                                      gfx::Rect& out_bounds) {
+  if (int confined_x = confined_bounds.x(); confined_x > out_bounds.x()) {
+    out_bounds.set_x(confined_x);
+  } else if (int confined_right = confined_bounds.right();
+             confined_right < out_bounds.right()) {
+    out_bounds.set_x(confined_right - out_bounds.width());
+  }
+
+  if (int confined_y = confined_bounds.y(); confined_y > out_bounds.y()) {
+    out_bounds.set_y(confined_y);
+  } else if (int confined_bottom = confined_bounds.bottom();
+             confined_bottom < out_bounds.bottom()) {
+    out_bounds.set_y(confined_bottom - out_bounds.height());
+  }
 }
 
 CameraPreviewSnapPosition GetCameraNextHorizontalSnapPosition(

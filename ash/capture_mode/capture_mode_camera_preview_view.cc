@@ -39,10 +39,6 @@ constexpr base::TimeDelta kResizeButtonFadeInDuration = base::Milliseconds(150);
 // The duration for the reize button fading out process.
 constexpr base::TimeDelta kResizeButtonFadeOutDuration = base::Milliseconds(50);
 
-gfx::PointF GetEventScreenLocation(const ui::LocatedEvent& event) {
-  return event.target()->GetScreenLocationF(event);
-}
-
 const gfx::VectorIcon& GetIconOfResizeButton(
     const bool is_camera_preview_collapsed) {
   return is_camera_preview_collapsed ? kCaptureModeCameraPreviewExpandIcon
@@ -257,22 +253,26 @@ void CameraPreviewView::AddedToWidget() {
 }
 
 bool CameraPreviewView::OnMousePressed(const ui::MouseEvent& event) {
-  camera_controller_->StartDraggingPreview(GetEventScreenLocation(event));
+  camera_controller_->StartDraggingPreview(
+      capture_mode_util::GetEventScreenLocation(event));
   return true;
 }
 
 bool CameraPreviewView::OnMouseDragged(const ui::MouseEvent& event) {
-  camera_controller_->ContinueDraggingPreview(GetEventScreenLocation(event));
+  camera_controller_->ContinueDraggingPreview(
+      capture_mode_util::GetEventScreenLocation(event));
   return true;
 }
 
 void CameraPreviewView::OnMouseReleased(const ui::MouseEvent& event) {
-  camera_controller_->EndDraggingPreview(GetEventScreenLocation(event),
-                                         /*is_touch=*/false);
+  camera_controller_->EndDraggingPreview(
+      capture_mode_util::GetEventScreenLocation(event),
+      /*is_touch=*/false);
 }
 
 void CameraPreviewView::OnGestureEvent(ui::GestureEvent* event) {
-  const gfx::PointF screen_location = GetEventScreenLocation(*event);
+  const gfx::PointF screen_location =
+      capture_mode_util::GetEventScreenLocation(*event);
 
   switch (event->type()) {
     case ui::ET_GESTURE_SCROLL_BEGIN:
