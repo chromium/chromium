@@ -43,6 +43,7 @@
 #include "ui/base/models/menu_model.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -92,6 +93,9 @@ AvatarToolbarButton::AvatarToolbarButton(BrowserView* browser_view)
 
   if (features::IsChromeRefresh2023()) {
     SetImageLabelSpacing(kChromeRefreshImageLabelPadding);
+    label()->SetPaintToLayer();
+    label()->SetSkipSubpixelRenderingOpacityCheck(true);
+    label()->layer()->SetFillsBoundsOpaquely(false);
   }
 }
 
