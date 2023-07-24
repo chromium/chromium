@@ -1099,6 +1099,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kTargetBlankImpliesNoOpener);
 // If the flag is disabled TextCodecICU would be used instead.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kTextCodecCJKEnabled);
 
+// Use Gb18030-2022 for encoding/decoding GB18030.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kGb18030_2022Enabled);
+
 // If enabled, reads and decodes navigation body data off the main thread.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kThreadedBodyLoader);
 
