@@ -21,7 +21,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/posix/eintr_wrapper.h"
-#include "third_party/libsync/src/include/sync/sync.h"
+#include "third_party/libsync/src/include/sync/sync.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_WIN)

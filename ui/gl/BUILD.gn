@@ -222,7 +222,7 @@ component("gl") {
       ]
     }
 
-    if (is_posix && !is_fuchsia && !is_mac && !is_ios) {
+    if (is_android || is_chromeos || is_linux) {
       # Windows has USE_EGL but doesn't support base::FileDescriptor.
       # libsync isn't supported or needed on MacOSX.
       # Fuchsia is excluded due to a libsync dependency and because it's
