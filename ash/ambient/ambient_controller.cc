@@ -717,6 +717,11 @@ void AmbientController::SetUiVisibilityHidden() {
 
 void AmbientController::SetUiVisibilityClosed(bool immediately) {
   DVLOG(1) << __func__;
+  // Early return if the UI is already closed to make sure we do not change the
+  // cursor visibility when it is not required.
+  if (ambient_ui_model_.ui_visibility() == AmbientUiVisibility::kClosed) {
+    return;
+  }
 
   close_widgets_immediately_ = immediately;
   ambient_ui_model_.SetUiVisibility(AmbientUiVisibility::kClosed);

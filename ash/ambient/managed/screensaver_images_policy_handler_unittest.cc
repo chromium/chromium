@@ -90,6 +90,10 @@ class ScreensaverImagesPolicyHandlerTest : public AshTestBase {
 
   void TearDown() override {
     policy_handler_.reset();
+    // Remove the custom overrides to test directory behavior before the tear
+    // down so that original override can be restored.
+    home_dir_override_.reset();
+    managed_screensaver_dir_override_.reset();
     AshTestBase::TearDown();
   }
 
