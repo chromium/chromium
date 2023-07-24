@@ -128,6 +128,10 @@ const CGFloat kSymbolSize = 20;
   SettingsImageDetailTextItem* detailItem =
       [[SettingsImageDetailTextItem alloc] initWithType:type];
   detailItem.detailText = l10n_util::GetNSString(detailText);
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kFriendlierSafeBrowsingSettings)) {
+    detailItem.alignImageWithFirstLineOfText = YES;
+  }
   detailItem.image = image;
   detailItem.imageViewTintColor = [UIColor colorNamed:kGrey600Color];
   detailItem.accessibilityIdentifier = accessibilityIdentifier;
@@ -138,7 +142,7 @@ const CGFloat kSymbolSize = 20;
 // Decides on the string ouput based off of if kFriendlierSafeBrowsingSettings
 // is enabled.
 - (NSInteger)chooseLegacyString:(NSInteger)legacyString
-                OrUpdatedString:(NSInteger)updatedString {
+                orUpdatedString:(NSInteger)updatedString {
   if (base::FeatureList::IsEnabled(
           safe_browsing::kFriendlierSafeBrowsingSettings)) {
     return updatedString;
@@ -263,7 +267,7 @@ const CGFloat kSymbolSize = 20;
 
     NSInteger gIconDetailText = [self
         chooseLegacyString:IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_TWO
-           OrUpdatedString:
+           orUpdatedString:
                IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_G_ICON_DESCRIPTION];
     SettingsImageDetailTextItem* gIconItem =
         [self detailItemWithType:ItemTypeGIcon
@@ -282,7 +286,7 @@ const CGFloat kSymbolSize = 20;
 
     NSInteger keyIconDetailText = [self
         chooseLegacyString:IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_FOUR
-           OrUpdatedString:
+           orUpdatedString:
                IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_KEY_ICON_DESCRIPTION];
     UIImage* keyIcon = CustomSymbolWithPointSize(kPasswordSymbol, kSymbolSize);
     SettingsImageDetailTextItem* keyIconItem =
@@ -314,9 +318,10 @@ const CGFloat kSymbolSize = 20;
 
       [items addObject:dataIconItem];
       [items addObject:downloadIconItem];
-      [items addObject:keyIconItem];
       [items addObject:gIconItem];
       [items addObject:globeIconItem];
+      [items addObject:keyIconItem];
+
     } else {
       UIImage* shieldIcon =
           CustomSymbolWithPointSize(kPrivacySymbol, kSymbolSize);

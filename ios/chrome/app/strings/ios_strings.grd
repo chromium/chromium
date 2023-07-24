@@ -2140,17 +2140,26 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_SUMMARY" desc="Summary for Privacy Safe Browsing enhanced protection mode.">
         Faster, proactive protection against dangerous websites, downloads, and extensions. Warns you about password breaches. Requires browsing data to be sent to Google.
       </message>
+      <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_FRIENDLIER_SUMMARY" desc="Friendlier summary for Privacy Safe Browsing enhanced protection mode.">
+        Real-time, proactive protection against dangerous sites, downloads, and extensions that’s based on your browsing data getting sent to Google
+      </message>
       <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_TITLE" desc="Title for Privacy Safe Browsing enhanced protection mode.">
         Enhanced Protection
       </message>
       <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_SUMMARY" desc="Summary for Privacy Safe Browsing standard protection mode.">
         Standard protection against websites, downloads, and extensions that are known to be dangerous.
       </message>
+      <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_FRIENDLIER_SUMMARY" desc="Friendlier summary for Privacy Safe Browsing standard protection mode.">
+        Protects against sites, downloads, and extensions that are known to be dangerous. If a page does something suspicious, URLs and bits of page content are sent to Google Safe Browsing.
+      </message>
       <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_TITLE" desc="Title for Privacy Safe Browsing standard protection mode.">
         Standard Protection
       </message>
       <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_SUMMARY" desc="Summary for Privacy Safe Browsing no protection mode.">
         Does not protect you against dangerous websites, downloads, and extensions. You’ll still get Safe Browsing protection, where available, in other Google services, like Gmail and Search.
+      </message>
+      <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_FRIENDLIER_SUMMARY" desc="Friendlier summary for Privacy Safe Browsing no protection mode.">
+        Does not protect you against dangerous websites, downloads, and extensions. Your Safe Browsing settings in other Google products won't be affected.
       </message>
       <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_TITLE" desc="Title for Privacy Safe Browsing no protection mode.">
         No Protection (not recommended)
@@ -2302,7 +2311,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         When you're signed in, this data is linked to your Google Account to protect you across Google services, for example increasing protection in Gmail after a security incident.
       </message>
       <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_DOWNLOAD_ICON_DESCRIPTION" desc="Description for Safe Browsing enhanced protection download icon.">
-        Offers in-depth scans for suspicious downloads.
+        In-depth scans for suspicious downloads.
       </message>
       <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_G_ICON_DESCRIPTION" desc="Description for Safe Browsing enhanced protection G icon.">
         When you're signed in, protects you across Google services.
@@ -2317,10 +2326,10 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Things To Consider
       </message>
       <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_KEY_ICON_DESCRIPTION" desc="Description for Safe Browsing enhanced protection key icon.">
-        Warns you if you use a password that has been compromised by a data breach.
+        Warns you if you use a password that has been compromised in a data breach.
       </message>
       <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_LINK_ICON_DESCRIPTION" desc="Description for Safe Browsing enhanced protection link icon.">
-        Sends the URLs you visit and a small sample of page content, downloads, extension activity, and system information to Google Safe Browsing to check if they're harmful. If safe, this data is deleted after 30 days.
+        Sends the URLs you visit and a small sample of page content, downloads, extension activity, and system information to Google Safe Browsing to check if they're harmful.
       </message>
       <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_PERFORMANCE_ICON_DESCRIPTION" desc="Description for Safe Browsing enhanced protection performance icon.">
         Doesn't noticeably slow down your browser or device.

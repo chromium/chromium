@@ -8,6 +8,7 @@
 #import "base/notreached.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
@@ -348,8 +349,14 @@ const CGFloat kSymbolSize = 20;
       base::mac::ObjCCastStrict<TableViewSwitchItem>(item);
   leakCheckItem.enabled = self.inSafeBrowsingStandardProtection;
   leakCheckItem.on = [self passwordLeakCheckItemOnState];
-  leakCheckItem.detailText = l10n_util::GetNSString(
-      IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_LEAK_CHECK_SUMMARY);
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kFriendlierSafeBrowsingSettings)) {
+    leakCheckItem.detailText = l10n_util::GetNSString(
+        IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_LEAK_CHECK_FRIENDLIER_SUMMARY);
+  } else {
+    leakCheckItem.detailText = l10n_util::GetNSString(
+        IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_LEAK_CHECK_SUMMARY);
+  }
 }
 
 #pragma mark - SafeBrowsingStandardProtectionViewControllerDelegate

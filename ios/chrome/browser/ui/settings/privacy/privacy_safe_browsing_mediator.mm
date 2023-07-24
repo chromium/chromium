@@ -10,6 +10,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
 #import "components/prefs/pref_service.h"
+#import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/settings/sync/utils/sync_util.h"
@@ -133,12 +134,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (ItemArray)safeBrowsingItems {
   if (!_safeBrowsingItems) {
     NSMutableArray* items = [NSMutableArray array];
+    NSInteger enhancedProtectionSummary = [self
+        chooseLegacyString:
+            IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_SUMMARY
+           orUpdatedString:
+               IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_FRIENDLIER_SUMMARY];
+    NSInteger standardProtectionSummary = [self
+        chooseLegacyString:
+            IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_SUMMARY
+           orUpdatedString:
+               IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_FRIENDLIER_SUMMARY];
     TableViewInfoButtonItem* safeBrowsingEnhancedProtectionItem = [self
              infoButtonItemType:ItemTypeSafeBrowsingEnhancedProtection
                         titleId:
                             IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_TITLE
-                     detailText:
-                         IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_SUMMARY
+                     detailText:enhancedProtectionSummary
         accessibilityIdentifier:kSettingsSafeBrowsingEnhancedProtectionCellId];
     [items addObject:safeBrowsingEnhancedProtectionItem];
 
@@ -146,18 +156,20 @@ typedef NS_ENUM(NSInteger, ItemType) {
              infoButtonItemType:ItemTypeSafeBrowsingStandardProtection
                         titleId:
                             IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_TITLE
-                     detailText:
-                         IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_SUMMARY
+                     detailText:standardProtectionSummary
         accessibilityIdentifier:kSettingsSafeBrowsingStandardProtectionCellId];
     [items addObject:safeBrowsingStandardProtectionItem];
 
+    NSInteger noProtectionSummary = [self
+        chooseLegacyString:IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_SUMMARY
+           orUpdatedString:
+               IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_FRIENDLIER_SUMMARY];
     if (self.enterpriseEnabled) {
       TableViewInfoButtonItem* safeBrowsingNoProtectionItem = [self
                infoButtonItemType:ItemTypeSafeBrowsingNoProtection
                           titleId:
                               IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_TITLE
-                       detailText:
-                           IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_SUMMARY
+                       detailText:noProtectionSummary
           accessibilityIdentifier:kSettingsSafeBrowsingNoProtectionCellId];
       [items addObject:safeBrowsingNoProtectionItem];
     } else {
@@ -165,8 +177,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                infoButtonItemType:ItemTypeSafeBrowsingNoProtection
                           titleId:
                               IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_TITLE
-                       detailText:
-                           IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_SUMMARY
+                       detailText:noProtectionSummary
           accessibilityIdentifier:kSettingsSafeBrowsingNoProtectionCellId];
       safeBrowsingNoProtectionItem.infoButtonIsHidden = YES;
       [items addObject:safeBrowsingNoProtectionItem];
@@ -274,6 +285,18 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemType type = static_cast<ItemType>(item.type);
   return self.enterpriseEnabled && (![self shouldItemTypeHaveCheckmark:type] ||
                                     type == ItemTypeSafeBrowsingNoProtection);
+}
+
+// Decides on the string ouput based off of if kFriendlierSafeBrowsingSettings
+// is enabled.
+- (NSInteger)chooseLegacyString:(NSInteger)legacyString
+                orUpdatedString:(NSInteger)updatedString {
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kFriendlierSafeBrowsingSettings)) {
+    return updatedString;
+  }
+
+  return legacyString;
 }
 
 #pragma mark - SafeBrowsingViewControllerDelegate
