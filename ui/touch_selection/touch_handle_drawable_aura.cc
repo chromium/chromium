@@ -39,6 +39,9 @@ constexpr int kSelectionHandleVerticalOffset = 2;
 // applied when touch text editing redesign is enabled.
 constexpr int kSelectionHandlePadding = 6;
 
+// Max opacity of the selection handle image.
+constexpr float kSelectionHandleMaxOpacity = 0.8f;
+
 // Epsilon value used to compare float values to zero.
 constexpr float kEpsilon = 1e-8f;
 
@@ -161,7 +164,12 @@ void TouchHandleDrawableAura::SetAlpha(float alpha) {
     return;
 
   alpha_ = alpha;
-  window_->layer()->SetOpacity(alpha_);
+  if (::features::IsTouchTextEditingRedesignEnabled()) {
+    window_->layer()->SetOpacity(alpha_ * kSelectionHandleMaxOpacity);
+  } else {
+    window_->layer()->SetOpacity(alpha_);
+  }
+
   if (IsVisible())
     window_->Show();
   else

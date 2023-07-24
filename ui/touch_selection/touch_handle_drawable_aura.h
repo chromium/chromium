@@ -61,6 +61,10 @@ class UI_TOUCH_SELECTION_EXPORT TouchHandleDrawableAura
   std::unique_ptr<aura::Window> window_;
 
   bool enabled_;
+
+  // Used to set the opacity of the handle drawable. The actual handle opacity
+  // is further scaled by a max opacity value (since the handle can be slightly
+  // transparent by default).
   float alpha_;
   ui::TouchHandleOrientation orientation_;
 

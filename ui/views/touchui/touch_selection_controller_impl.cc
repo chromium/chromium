@@ -72,6 +72,9 @@ constexpr int kSelectionHandleBarMinHeight = 5;
 // boundaries.
 constexpr int kSelectionHandleBarBottomAllowance = 3;
 
+// Opacity of the selection handle image.
+constexpr float kSelectionHandleOpacity = 0.8f;
+
 // Delay before showing the quick menu after it is requested, in milliseconds.
 constexpr int kQuickMenuDelayInMs = 200;
 
@@ -257,6 +260,12 @@ views::UniqueWidgetPtr CreateHandleWidget(gfx::NativeView parent) {
       std::make_unique<views::Widget>(std::move(params));
   widget->GetNativeWindow()->SetEventTargeter(
       std::make_unique<aura::WindowTargeter>());
+  if (::features::IsTouchTextEditingRedesignEnabled()) {
+    // Disable visibility change animations so that the handle's opacity is not
+    // overridden by fade effects.
+    widget->SetVisibilityChangedAnimationsEnabled(false);
+    widget->SetOpacity(kSelectionHandleOpacity);
+  }
 
   return widget;
 }
