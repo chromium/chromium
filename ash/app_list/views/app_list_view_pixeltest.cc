@@ -432,8 +432,9 @@ class AppListViewAssistantZeroStateTest
   }
 
   void SetUp() override {
-    base::test::ScopedFeatureList scoped_feature_list(
-        assistant::features::kEnableAssistantLearnMore);
+    scoped_features_.InitWithFeatureStates(
+        {{assistant::features::kEnableAssistantLearnMore, true},
+         {chromeos::features::kJelly, JellyEnabled(GetParam())}});
 
     AssistantAshTestBase::SetUp();
     SetNumberOfSessionsWhereOnboardingShown(
@@ -444,6 +445,9 @@ class AppListViewAssistantZeroStateTest
         IsTabletMode(GetParam()));
     ShowAssistantUi();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_features_;
 };
 
 INSTANTIATE_TEST_SUITE_P(RTL,
@@ -460,7 +464,7 @@ TEST_P(AppListViewAssistantZeroStateTest, Basic) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "app_list_view_assistant_zero_state",
-      /*revision_number=*/JellyEnabled(GetParam()) ? 0 : 1,
+      /*revision_number=*/JellyEnabled(GetParam()) ? 2 : 1,
       page_view()->GetViewByID(AssistantViewID::kZeroStateView)));
 }
 
