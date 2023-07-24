@@ -1276,7 +1276,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_common_gtests_passthrough',
-          'gpu_telemetry_tests': 'gpu_angle_mac_passthrough_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_angle_mac_telemetry_tests',
         },
       },
       'mac-angle-chromium-builder': {},
