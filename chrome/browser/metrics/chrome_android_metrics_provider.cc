@@ -133,5 +133,5 @@ void ChromeAndroidMetricsProvider::ProvideCurrentSessionData(
 
 // static
 void ChromeAndroidMetricsProvider::ResetGlobalStateForTesting() {
-  metrics::AndroidMetricsHelper::GetInstance()->ResetForTesting();  // IN-TEST
+  metrics::AndroidMetricsHelper::ResetGlobalStateForTesting();
 }

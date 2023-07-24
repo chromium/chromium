@@ -58,7 +58,7 @@ class AndroidMetricsHelper {
   // Made public for testing.
   static void SaveLocalState(PrefService* local_state, int version_code_int);
 
-  void ResetForTesting() { local_state_saved_ = false; }
+  static void ResetGlobalStateForTesting() { local_state_saved_ = false; }
 
  private:
   friend struct AndroidMetricsHelperSingletonTraits;
@@ -71,7 +71,7 @@ class AndroidMetricsHelper {
   CpuAbiBitnessSupport cpu_abi_bitness_support_ =
       CpuAbiBitnessSupport::kNeither;
 
-  bool local_state_saved_ = false;
+  static inline bool local_state_saved_ = false;
 };
 
 }  // namespace metrics

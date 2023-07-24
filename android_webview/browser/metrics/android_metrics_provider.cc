@@ -71,7 +71,8 @@ void AndroidMetricsProvider::RegisterPrefs(PrefRegistrySimple* registry) {
 
 // static
 void AndroidMetricsProvider::ResetGlobalStateForTesting() {
-  metrics::AndroidMetricsHelper::GetInstance()->ResetForTesting();  // IN-TEST
+  metrics::AndroidMetricsHelper::ResetGlobalStateForTesting();
+  local_state_saved_ = false;
 }
 
 }  // namespace android_webview

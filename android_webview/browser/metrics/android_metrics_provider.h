@@ -39,7 +39,8 @@ class AndroidMetricsProvider : public metrics::MetricsProvider {
 
  private:
   raw_ptr<PrefService> local_state_;
-  bool local_state_saved_ = false;
+
+  static inline bool local_state_saved_ = false;
 };
 
 }  // namespace android_webview

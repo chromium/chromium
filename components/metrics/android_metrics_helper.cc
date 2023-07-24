@@ -88,6 +88,7 @@ void AndroidMetricsHelper::EmitHistograms(PrefService* local_state,
 // static
 void AndroidMetricsHelper::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kVersionCodePref, 0);
+  local_state_saved_ = false;
 }
 
 // static
