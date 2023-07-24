@@ -303,8 +303,6 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
 
     // Wallet credential data sync depends on Wallet data sync.
     if (base::FeatureList::IsEnabled(
-            autofill::features::kAutofillEnableCvcStorageAndFilling) &&
-        base::FeatureList::IsEnabled(
             syncer::kSyncAutofillWalletCredentialData) &&
         !disabled_types.Has(syncer::AUTOFILL_WALLET_DATA) &&
         !disabled_types.Has(syncer::AUTOFILL_WALLET_CREDENTIAL)) {

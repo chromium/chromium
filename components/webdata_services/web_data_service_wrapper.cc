@@ -169,9 +169,7 @@ WebDataServiceWrapper::WebDataServiceWrapper(
         base::BindOnce(&InitWalletUsageDataSyncBridgeOnDBSequence,
                        db_task_runner, profile_autofill_web_data_));
   }
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableCvcStorageAndFilling) &&
-      base::FeatureList::IsEnabled(syncer::kSyncAutofillWalletCredentialData)) {
+  if (base::FeatureList::IsEnabled(syncer::kSyncAutofillWalletCredentialData)) {
     profile_autofill_web_data_->GetAutofillBackend(
         base::BindOnce(&InitWalletCredentialSyncBridgeOnDBSequence,
                        db_task_runner, profile_autofill_web_data_));
@@ -206,9 +204,7 @@ WebDataServiceWrapper::WebDataServiceWrapper(
         base::BindOnce(&InitWalletUsageDataSyncBridgeOnDBSequence,
                        db_task_runner, account_autofill_web_data_));
   }
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableCvcStorageAndFilling) &&
-      base::FeatureList::IsEnabled(syncer::kSyncAutofillWalletCredentialData)) {
+  if (base::FeatureList::IsEnabled(syncer::kSyncAutofillWalletCredentialData)) {
     account_autofill_web_data_->GetAutofillBackend(
         base::BindOnce(&InitWalletCredentialSyncBridgeOnDBSequence,
                        db_task_runner, account_autofill_web_data_));
