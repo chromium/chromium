@@ -326,10 +326,8 @@ TEST_F(ShellSurfaceTest, MaximizeExitsFullscreen) {
 
 TEST_F(ShellSurfaceTest, Minimize) {
   constexpr gfx::Size kBufferSize(256, 256);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(kBufferSize)));
-  std::unique_ptr<Surface> surface(new Surface);
-  std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
+  auto shell_surface =
+      test::ShellSurfaceBuilder(kBufferSize).SetNoCommit().BuildShellSurface();
 
   EXPECT_TRUE(shell_surface->CanMinimize());
 
@@ -339,20 +337,18 @@ TEST_F(ShellSurfaceTest, Minimize) {
   EXPECT_FALSE(shell_surface->GetWidget());
 
   // Attaching the buffer will create a widget with minimized state.
-  surface->Attach(buffer.get());
-  surface->Commit();
+  shell_surface->root_surface()->Commit();
   EXPECT_TRUE(shell_surface->GetWidget()->IsMinimized());
 
   shell_surface->Restore();
   EXPECT_FALSE(shell_surface->GetWidget()->IsMinimized());
 
-  std::unique_ptr<Surface> child_surface(new Surface);
-  std::unique_ptr<ShellSurface> child_shell_surface(
-      new ShellSurface(child_surface.get()));
+  auto child_shell_surface =
+      test::ShellSurfaceBuilder(kBufferSize).SetNoCommit().BuildShellSurface();
+  auto* child_surface = child_shell_surface->root_surface();
 
   // Transient shell surfaces cannot be minimized.
-  child_surface->SetParent(surface.get(), gfx::Point());
-  child_surface->Attach(buffer.get());
+  child_surface->SetParent(shell_surface->root_surface(), gfx::Point());
   child_surface->Commit();
   EXPECT_FALSE(child_shell_surface->CanMinimize());
 }
@@ -3553,6 +3549,32 @@ TEST_F(ShellSurfaceTest, MaximizedOrFullscreenInitialState) {
       }
     }
   }
+}
+
+TEST_F(ShellSurfaceTest, MinimizedInitialState) {
+  constexpr gfx::Rect kInitialBounds(100, 50, 400, 300);
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder()
+          .SetBounds(kInitialBounds)
+          .SetGeometry(gfx::Rect(kInitialBounds.size()))
+          .SetWindowState(chromeos::WindowStateType::kMinimized)
+          .BuildShellSurface();
+  EXPECT_TRUE(shell_surface->GetWidget()->IsMinimized());
+  EXPECT_EQ(kInitialBounds, shell_surface->GetWidget()->GetRestoredBounds());
+  // The buffer hasn't been attached yet.
+  ASSERT_FALSE(shell_surface->root_surface()->GetBuffer());
+
+  // Initial buffer arrives and the window should stay in minimized.
+  auto new_buffer = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(kInitialBounds.size()));
+  shell_surface->root_surface()->Attach(new_buffer.get());
+  shell_surface->root_surface()->Commit();
+  EXPECT_TRUE(shell_surface->GetWidget()->IsMinimized());
+
+  shell_surface->GetWidget()->Activate();
+  EXPECT_FALSE(shell_surface->GetWidget()->IsMinimized());
+  EXPECT_EQ(kInitialBounds,
+            shell_surface->GetWidget()->GetWindowBoundsInScreen());
 }
 
 }  // namespace exo
