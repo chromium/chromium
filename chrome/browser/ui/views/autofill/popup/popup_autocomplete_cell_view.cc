@@ -96,6 +96,10 @@ void PopupAutocompleteCellView::HandleKeyPressEventFocusOnButton() {
   CHECK(button_);
 
   button_focused_ = true;
+  button_->SetAccessibleName(l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_A11Y_HINT,
+      popup_cell_utils::GetVoiceOverStringFromSuggestion(
+          controller_->GetSuggestionAt(line_number_))));
   button_->GetViewAccessibility().SetPopupFocusOverride();
   button_->NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
   views::InkDrop::Get(button_->ink_drop_view())->GetInkDrop()->SetHovered(true);
@@ -104,12 +108,20 @@ void PopupAutocompleteCellView::HandleKeyPressEventFocusOnButton() {
 
 void PopupAutocompleteCellView::HandleKeyPressEventFocusOnContent() {
   button_focused_ = false;
+
+  // TODO(crbug.com/1417187): Find out the root cause for the necessity of this
+  // workaround. Without explicitly removing the accessible name for the button,
+  // the screen reader is announcing both the content and the delete button (on
+  // MAC). For example, if the content is "jondoe@gmail.com", the screen reader
+  // announces "delete jon". This does not happen if the button has no
+  // accessible name.
+  button_->SetAccessibleName(u"");
+  UpdateSelectedAndRunCallback(true);
   GetViewAccessibility().SetPopupFocusOverride();
   NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
   views::InkDrop::Get(button_->ink_drop_view())
       ->GetInkDrop()
       ->SetHovered(false);
-  UpdateSelectedAndRunCallback(true);
 }
 
 bool PopupAutocompleteCellView::HandleKeyPressEvent(
@@ -154,7 +166,15 @@ bool PopupAutocompleteCellView::HandleKeyPressEvent(
 void PopupAutocompleteCellView::SetSelected(bool selected) {
   CHECK(button_);
 
+  // TODO(crbug.com/1417187): Find out the root cause for the necessity of this
+  // workaround. Without explicitly removing the accessible name for the button
+  // the screen reader is announcing both the content and the delete button (on
+  // MAC). For example, if the content is "jondoe@gmail.com", the screen reader
+  // announces "delete jon". This does not happen if the button has no
+  // accessible name.
   button_->SetVisible(selected);
+  button_->SetAccessibleName(u"");
+
   autofill::PopupCellView::SetSelected(selected);
 
   // There are cases where SetSelect is called with the same value as before
@@ -205,10 +225,6 @@ void PopupAutocompleteCellView::CreateDeleteButton() {
   button->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_TOOLTIP));
   button->SetAccessibleRole(ax::mojom::Role::kMenuItem);
-  button->SetAccessibleName(l10n_util::GetStringFUTF16(
-      IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_A11Y_HINT,
-      popup_cell_utils::GetVoiceOverStringFromSuggestion(
-          controller_->GetSuggestionAt(line_number_))));
   button->SetVisible(false);
 
   // Make child view grow to fill the space and align the button to the right.

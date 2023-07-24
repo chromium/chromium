@@ -253,7 +253,11 @@ TEST_F(PopupAutocompleteCellViewTest, AutocompleteDeleteButtonHasTooltip) {
 TEST_F(PopupAutocompleteCellViewTest,
        AutocompleteDeleteButtonSetsAccessibility) {
   views::ImageButton* button = CreateRowAndGetDeleteButton();
-
+  // We only set the accessible name once user navigates to the button.
+  // TODO(crbug.com/1417187): Delete this once we find out why calling
+  // NotifyAccessibilityEvent in the content is including the button's
+  // accessible name attribute value.
+  SimulateKeyPress(ui::VKEY_RIGHT);
   ui::AXNodeData node_data;
   button->GetAccessibleNodeData(&node_data);
 
