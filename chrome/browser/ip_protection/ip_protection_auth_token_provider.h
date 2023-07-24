@@ -62,10 +62,6 @@ class IpProtectionAuthTokenProvider
     : public KeyedService,
       public network::mojom::IpProtectionAuthTokenGetter {
  public:
-  using TryGetAuthTokensCallback = base::OnceCallback<void(
-      absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>
-          bsa_tokens)>;
-
   IpProtectionAuthTokenProvider(
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
@@ -98,7 +94,16 @@ class IpProtectionAuthTokenProvider
     return receiver_;
   }
 
+  // Base time deltas for calculating `try_again_after`.
+  static constexpr base::TimeDelta kNoAccountBackoff = base::Minutes(5);
+  static constexpr base::TimeDelta kNotEligibleBackoff = base::Days(1);
+  static constexpr base::TimeDelta kTransientBackoff = base::Seconds(5);
+  static constexpr base::TimeDelta kBugBackoff = base::Minutes(10);
+
  private:
+  friend class IpProtectionAuthTokenProviderTest;
+  FRIEND_TEST_ALL_PREFIXES(IpProtectionAuthTokenProviderTest, CalculateBackoff);
+
   // Calls the IdentityManager asynchronously to request the OAuth token for the
   // logged in user.
   void RequestOAuthToken();
@@ -122,6 +127,11 @@ class IpProtectionAuthTokenProvider
           bsa_tokens,
       IpProtectionTryGetAuthTokensResult result);
 
+  // Calculates the backoff time for the given result, based on
+  // `last_try_get_auth_tokens_..` fields, and updates those fields.
+  absl::optional<base::TimeDelta> CalculateBackoff(
+      IpProtectionTryGetAuthTokensResult result);
+
   // The BlindSignAuth implementation used to fetch blind-signed auth tokens. A
   // raw pointer to `url_loader_factory_` gets passed to
   // `blind_sign_http_impl_`, so we ensure it stays alive by storing its
@@ -141,8 +151,14 @@ class IpProtectionAuthTokenProvider
   // The batch size of the current request.
   uint32_t batch_size_ = 0;
 
+  // The result of the last call to `TryGetAuthTokens()`, and the
+  // backoff applied to `try_again_after`.
+  IpProtectionTryGetAuthTokensResult last_try_get_auth_tokens_result_ =
+      IpProtectionTryGetAuthTokensResult::kSuccess;
+  absl::optional<base::TimeDelta> last_try_get_auth_tokens_backoff_;
+
   // The callback for the executing `TryGetAuthTokens()` call.
-  TryGetAuthTokensCallback try_get_auth_token_callback_;
+  TryGetAuthTokensCallback try_get_auth_tokens_callback_;
 
   // Time that the current operation began, for measurement.
   base::TimeTicks start_time_;

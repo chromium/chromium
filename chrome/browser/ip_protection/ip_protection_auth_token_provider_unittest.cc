@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/browser_thread.h"
@@ -90,9 +91,6 @@ enum class PrimaryAccountBehavior {
 
 class IpProtectionAuthTokenProviderTest : public testing::Test {
  protected:
-  using TokensResult =
-      absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>;
-
   IpProtectionAuthTokenProviderTest()
       : absl_expiration_time_(absl::Now() + absl::Hours(1)),
         base_expiration_time_(
@@ -103,8 +101,7 @@ class IpProtectionAuthTokenProviderTest : public testing::Test {
     return identity_test_env_.identity_manager();
   }
 
-  // Call `TryGetAuthTokens()` with `TokensCallback()` and run until it
-  // completes.
+  // Call `TryGetAuthTokens()` and run until it completes.
   void TryGetAuthTokens(int num_tokens, IpProtectionAuthTokenProvider* getter) {
     if (primary_account_behavior_ != PrimaryAccountBehavior::kNone) {
       identity_test_env_.MakePrimaryAccountAvailable(
@@ -153,13 +150,33 @@ class IpProtectionAuthTokenProviderTest : public testing::Test {
                                         account_info);
   }
 
+  // Expect that the TryGetAuthTokens call returned the given tokens.
+  void ExpectTryGetAuthTokensResult(
+      std::vector<network::mojom::BlindSignedAuthTokenPtr> bsa_tokens) {
+    EXPECT_EQ(std::get<0>(tokens_future_.Get()), bsa_tokens);
+  }
+
+  // Expect that the TryGetAuthTokens call returned nullopt, with
+  // `try_again_after` at the given delta from the current time.
+  void ExpectTryGetAuthTokensResultFailed(base::TimeDelta try_again_delta) {
+    auto& [bsa_tokens, try_again_after] = tokens_future_.Get();
+    EXPECT_EQ(bsa_tokens, absl::nullopt);
+    if (!bsa_tokens) {
+      EXPECT_EQ(*try_again_after, base::Time::Now() + try_again_delta);
+    }
+  }
+
   // The behavior of the identity manager.
   PrimaryAccountBehavior primary_account_behavior_ =
       PrimaryAccountBehavior::kReturnsToken;
 
   // Run on the UI thread.
-  content::BrowserTaskEnvironment task_environment_;
-  base::test::TestFuture<TokensResult> tokens_future_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::TestFuture<
+      absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>,
+      absl::optional<base::Time>>
+      tokens_future_;
 
   // Test environment for IdentityManager. This must come after the
   // TaskEnvironment.
@@ -195,7 +212,7 @@ TEST_F(IpProtectionAuthTokenProviderTest, Success) {
       "single-use-1", base_expiration_time_));
   expected.push_back(network::mojom::BlindSignedAuthToken::New(
       "single-use-2", base_expiration_time_));
-  EXPECT_EQ(*tokens_future_.Get(), expected);
+  ExpectTryGetAuthTokensResult(std::move(expected));
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       IpProtectionTryGetAuthTokensResult::kSuccess, 1);
@@ -217,7 +234,8 @@ TEST_F(IpProtectionAuthTokenProviderTest, NoTokens) {
   EXPECT_TRUE(bsa.get_tokens_called_);
   EXPECT_EQ(bsa.num_tokens_, 1);
   EXPECT_EQ(bsa.oauth_token_, "access_token");
-  EXPECT_EQ(tokens_future_.Get(), absl::nullopt);
+  ExpectTryGetAuthTokensResultFailed(
+      IpProtectionAuthTokenProvider::kTransientBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       IpProtectionTryGetAuthTokensResult::kFailedBSAOther, 1);
@@ -240,7 +258,8 @@ TEST_F(IpProtectionAuthTokenProviderTest, BlindSignedTokenError400) {
   EXPECT_TRUE(bsa.get_tokens_called_);
   EXPECT_EQ(bsa.num_tokens_, 1);
   EXPECT_EQ(bsa.oauth_token_, "access_token");
-  EXPECT_EQ(tokens_future_.Get(), absl::nullopt);
+  ExpectTryGetAuthTokensResultFailed(
+      IpProtectionAuthTokenProvider::kBugBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       IpProtectionTryGetAuthTokensResult::kFailedBSA400, 1);
@@ -263,7 +282,8 @@ TEST_F(IpProtectionAuthTokenProviderTest, BlindSignedTokenError401) {
   EXPECT_TRUE(bsa.get_tokens_called_);
   EXPECT_EQ(bsa.num_tokens_, 1);
   EXPECT_EQ(bsa.oauth_token_, "access_token");
-  EXPECT_EQ(tokens_future_.Get(), absl::nullopt);
+  ExpectTryGetAuthTokensResultFailed(
+      IpProtectionAuthTokenProvider::kBugBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       IpProtectionTryGetAuthTokensResult::kFailedBSA401, 1);
@@ -286,7 +306,8 @@ TEST_F(IpProtectionAuthTokenProviderTest, BlindSignedTokenError403) {
   EXPECT_TRUE(bsa.get_tokens_called_);
   EXPECT_EQ(bsa.num_tokens_, 1);
   EXPECT_EQ(bsa.oauth_token_, "access_token");
-  EXPECT_EQ(tokens_future_.Get(), absl::nullopt);
+  ExpectTryGetAuthTokensResultFailed(
+      IpProtectionAuthTokenProvider::kNotEligibleBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       IpProtectionTryGetAuthTokensResult::kFailedBSA403, 1);
@@ -309,7 +330,8 @@ TEST_F(IpProtectionAuthTokenProviderTest, BlindSignedTokenErrorOther) {
   EXPECT_TRUE(bsa.get_tokens_called_);
   EXPECT_EQ(bsa.num_tokens_, 1);
   EXPECT_EQ(bsa.oauth_token_, "access_token");
-  EXPECT_EQ(tokens_future_.Get(), absl::nullopt);
+  ExpectTryGetAuthTokensResultFailed(
+      IpProtectionAuthTokenProvider::kTransientBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       IpProtectionTryGetAuthTokensResult::kFailedBSAOther, 1);
@@ -338,7 +360,7 @@ TEST_F(IpProtectionAuthTokenProviderTest, AccountCapabilityUnknown) {
       "single-use-1", base_expiration_time_));
   expected.push_back(network::mojom::BlindSignedAuthToken::New(
       "single-use-2", base_expiration_time_));
-  EXPECT_EQ(*tokens_future_.Get(), expected);
+  ExpectTryGetAuthTokensResult(std::move(expected));
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       IpProtectionTryGetAuthTokensResult::kSuccess, 1);
@@ -358,7 +380,8 @@ TEST_F(IpProtectionAuthTokenProviderTest, AuthTokenError) {
   TryGetAuthTokens(1, &getter);
 
   EXPECT_FALSE(bsa.get_tokens_called_);
-  EXPECT_EQ(tokens_future_.Get(), absl::nullopt);
+  ExpectTryGetAuthTokensResultFailed(
+      IpProtectionAuthTokenProvider::kTransientBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       IpProtectionTryGetAuthTokensResult::kFailedOAuthToken, 1);
@@ -376,7 +399,8 @@ TEST_F(IpProtectionAuthTokenProviderTest, IneligiblePrimary) {
   TryGetAuthTokens(1, &getter);
 
   EXPECT_FALSE(bsa.get_tokens_called_);
-  EXPECT_EQ(tokens_future_.Get(), absl::nullopt);
+  ExpectTryGetAuthTokensResultFailed(
+      IpProtectionAuthTokenProvider::kNotEligibleBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       IpProtectionTryGetAuthTokensResult::kFailedNotEligible, 1);
@@ -396,10 +420,39 @@ TEST_F(IpProtectionAuthTokenProviderTest, NoPrimary) {
   TryGetAuthTokens(1, &getter);
 
   EXPECT_FALSE(bsa.get_tokens_called_);
-  EXPECT_EQ(tokens_future_.Get(), absl::nullopt);
+  ExpectTryGetAuthTokensResultFailed(
+      IpProtectionAuthTokenProvider::kNoAccountBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       IpProtectionTryGetAuthTokensResult::kFailedNoAccount, 1);
   histogram_tester_.ExpectTotalCount(kOAuthTokenFetchHistogram, 0);
   histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 0);
+}
+
+// Backoff calculations.
+TEST_F(IpProtectionAuthTokenProviderTest, CalculateBackoff) {
+  using enum IpProtectionTryGetAuthTokensResult;
+  IpProtectionAuthTokenProvider getter(
+      IdentityManager(),
+      base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
+
+  auto check = [&](IpProtectionTryGetAuthTokensResult result,
+                   absl::optional<base::TimeDelta> backoff, bool exponential) {
+    EXPECT_EQ(getter.CalculateBackoff(result), backoff);
+    if (backoff && exponential) {
+      EXPECT_EQ(getter.CalculateBackoff(result), (*backoff) * 2);
+      EXPECT_EQ(getter.CalculateBackoff(result), (*backoff) * 4);
+    } else {
+      EXPECT_EQ(getter.CalculateBackoff(result), backoff);
+    }
+  };
+
+  check(kSuccess, absl::nullopt, false);
+  check(kFailedNoAccount, getter.kNoAccountBackoff, false);
+  check(kFailedNotEligible, getter.kNotEligibleBackoff, false);
+  check(kFailedOAuthToken, getter.kTransientBackoff, true);
+  check(kFailedBSA400, getter.kBugBackoff, true);
+  check(kFailedBSA401, getter.kBugBackoff, true);
+  check(kFailedBSA403, getter.kNotEligibleBackoff, false);
+  check(kFailedBSAOther, getter.kTransientBackoff, true);
 }

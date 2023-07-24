@@ -36,7 +36,7 @@ class ScopedIpProtectionFeatureList {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Helper class to intercept `IpProtectionAuthTokenGetter::TryGetAuthToken()`
+// Helper class to intercept `IpProtectionAuthTokenGetter::TryGetAuthTokens()`
 // requests and return a fake token value and a fake expiration value for
 // testing.
 class IpProtectionAuthTokenGetterInterceptor
@@ -63,7 +63,7 @@ class IpProtectionAuthTokenGetterInterceptor
     std::vector<network::mojom::BlindSignedAuthTokenPtr> tokens;
     auto token = network::mojom::BlindSignedAuthToken::New(token_, expiration_);
     tokens.push_back(std::move(token));
-    std::move(callback).Run(std::move(tokens));
+    std::move(callback).Run(std::move(tokens), base::Time());
   }
 
  private:

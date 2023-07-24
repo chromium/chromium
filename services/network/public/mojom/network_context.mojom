@@ -902,10 +902,15 @@ interface IpProtectionAuthTokenGetter {
   // Try to get a batch of new tokens.
   //
   // This may take some time, if external network requests are required. If no
-  // tokens are available, it will return NULL. It is forbidden for two calls
-  // to this method to be outstanding at the same time.
+  // tokens are available, it will return nullopt for `bsa_tokens` and
+  // `try_again_after` will contain the time after which the getter suggests
+  // trying again, as a form of backoff.
+  //
+  // It is forbidden for two calls to this method to be outstanding at the same
+  // time.
   TryGetAuthTokens(uint32 batch_size) =>
-    (array<BlindSignedAuthToken>? bsa_token);
+    (array<BlindSignedAuthToken>? bsa_tokens,
+     mojo_base.mojom.Time? try_again_after);
 };
 
 // Represents a distinct context for making network requests, with its own

@@ -50,12 +50,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionAuthTokenCacheImpl
  private:
   void OnGotAuthTokens(
       absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>
-          tokens);
+          tokens,
+      absl::optional<base::Time> try_again_after);
   void RemoveExpiredTokens();
   void OnFilledCacheForTesting(
       base::OnceCallback<void()> on_cache_refilled,
       absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>
-          tokens);
+          tokens,
+      absl::optional<base::Time> try_again_after);
   void MeasureTokenRates();
 
   // The last time token rates were measured and the counts since then.
@@ -72,6 +74,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionAuthTokenCacheImpl
   // True if an invocation of `auth_token_getter_.TryGetAuthTokens()` is
   // outstanding.
   bool currently_getting_ = false;
+
+  // If not null, this is the `try_again_after` time from the last call to
+  // `TryGetAuthTokens()`, and no calls should be made until this time.
+  base::Time try_get_auth_tokens_after_;
 
   // A callback triggered when the asynchronous cache refill is complete, for
   // use in testing `MayNeedAuthTokenSoon()`. Note that this won't be called

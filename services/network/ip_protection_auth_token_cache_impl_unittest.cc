@@ -26,23 +26,46 @@ constexpr char kTokenExpirationRateHistogram[] =
     "NetworkService.IpProtection.TokenExpirationRate";
 const base::TimeDelta kTokenRateMeasurementInterval = base::Minutes(5);
 
+struct ExpectedTryGetAuthTokensCall {
+  // The expected batch_size argument for the call.
+  uint32_t batch_size;
+  // The response to the call.
+  absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>
+      bsa_tokens;
+  absl::optional<base::Time> try_again_after;
+};
+
 class MockIpProtectionAuthTokenGetter
     : public network::mojom::IpProtectionAuthTokenGetter {
-  using TryGetAuthTokensResult =
-      absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>;
-
  public:
   MockIpProtectionAuthTokenGetter() : num_try_get_auth_token_calls_(0) {}
 
-  // Register an expectation of a call to `TryGetAuthToken()` returning the
+  // Register an expectation of a call to `TryGetAuthTokens()` returning the
   // given tokens.
-  void ExpectTryGetAuthTokensCall(uint32_t batch_size,
-                                  TryGetAuthTokensResult result) {
-    expected_try_get_auth_token_calls_.emplace_back(batch_size,
-                                                    std::move(result));
+  void ExpectTryGetAuthTokensCall(
+      uint32_t batch_size,
+      std::vector<network::mojom::BlindSignedAuthTokenPtr> bsa_tokens) {
+    expected_try_get_auth_token_calls_.emplace_back(
+        ExpectedTryGetAuthTokensCall{
+            .batch_size = batch_size,
+            .bsa_tokens = std::move(bsa_tokens),
+            .try_again_after = absl::nullopt,
+        });
   }
 
-  // True if all expected `TryGetAuthToken` calls have occurred.
+  // Register an expectation of a call to `TryGetAuthTokens()` returning no
+  // tokens and the given `try_again_after`.
+  void ExpectTryGetAuthTokensCall(uint32_t batch_size,
+                                  base::Time try_again_after) {
+    expected_try_get_auth_token_calls_.emplace_back(
+        ExpectedTryGetAuthTokensCall{
+            .batch_size = batch_size,
+            .bsa_tokens = absl::nullopt,
+            .try_again_after = try_again_after,
+        });
+  }
+
+  // True if all expected `TryGetAuthTokens` calls have occurred.
   bool GotAllExpectedTryGetAuthTokensCalls() {
     return num_try_get_auth_token_calls_ ==
            expected_try_get_auth_token_calls_.size();
@@ -58,18 +81,16 @@ class MockIpProtectionAuthTokenGetter
                         TryGetAuthTokensCallback callback) override {
     ASSERT_LT(num_try_get_auth_token_calls_,
               expected_try_get_auth_token_calls_.size())
-        << "Unexpected call to TryGetAuthToken";
-    auto pair = std::move(
+        << "Unexpected call to TryGetAuthTokens";
+    auto exp = std::move(
         expected_try_get_auth_token_calls_[num_try_get_auth_token_calls_++]);
-    EXPECT_EQ(batch_size, pair.first);
+    EXPECT_EQ(batch_size, exp.batch_size);
 
-    std::move(callback).Run(std::move(pair.second));
+    std::move(callback).Run(std::move(exp.bsa_tokens), exp.try_again_after);
   }
 
  protected:
-  // The expected responses to TryGetAuthToken calls.
-  std::vector<std::pair<uint32_t, TryGetAuthTokensResult>>
-      expected_try_get_auth_token_calls_;
+  std::vector<ExpectedTryGetAuthTokensCall> expected_try_get_auth_token_calls_;
   size_t num_try_get_auth_token_calls_;
 };
 
@@ -97,7 +118,8 @@ class IpProtectionAuthTokenCacheImplTest : public testing::Test {
                                         state.failure);
   }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   MockIpProtectionAuthTokenGetter mock_;
   mojo::Receiver<network::mojom::IpProtectionAuthTokenGetter> receiver_;
@@ -185,9 +207,11 @@ TEST_F(IpProtectionAuthTokenCacheImplTest, MayNeedAuthTokenSoon_Repeatedly) {
   EXPECT_TRUE(mock_.GotAllExpectedTryGetAuthTokensCalls());
 }
 
-// If `TryGetAuthTokens()` returns `nullopt`, the cache size does not change.
-TEST_F(IpProtectionAuthTokenCacheImplTest, MayNeedAuthTokenSoon_Nullopt) {
-  mock_.ExpectTryGetAuthTokensCall(kExpectedBatchSize, absl::nullopt);
+// If `TryGetAuthTokens()` returns an empty batch but not `nullopt`, the cache
+// size does not change.
+TEST_F(IpProtectionAuthTokenCacheImplTest, MayNeedAuthTokenSoon_EmptyBatch) {
+  std::vector<network::mojom::BlindSignedAuthTokenPtr> tokens;
+  mock_.ExpectTryGetAuthTokensCall(kExpectedBatchSize, std::move(tokens));
 
   auth_token_cache_->SetOnCacheRefilledForTesting(
       task_environment_.QuitClosure());
@@ -199,19 +223,46 @@ TEST_F(IpProtectionAuthTokenCacheImplTest, MayNeedAuthTokenSoon_Nullopt) {
   ASSERT_FALSE(token);
 }
 
-// If `TryGetAuthTokens()` returns an empty batch but not `nullopt`, the cache
-// size does not change.
-TEST_F(IpProtectionAuthTokenCacheImplTest, MayNeedAuthTokenSoon_EmptyBatch) {
-  mock_.ExpectTryGetAuthTokensCall(kExpectedBatchSize, {});
+// If `TryGetAuthTokens()` returns nullopt, `MayNeedAuthTokenSoon()` will not
+// try again until `try_again_after`.
+TEST_F(IpProtectionAuthTokenCacheImplTest, MayNeedAuthTokenSoon_TryAgainAfter) {
+  const base::TimeDelta kBackoff = base::Seconds(10);
+  mock_.ExpectTryGetAuthTokensCall(kExpectedBatchSize,
+                                   base::Time::Now() + kBackoff);
 
   auth_token_cache_->SetOnCacheRefilledForTesting(
       task_environment_.QuitClosure());
   auth_token_cache_->MayNeedAuthTokenSoon();
   task_environment_.RunUntilQuit();
-
   EXPECT_TRUE(mock_.GotAllExpectedTryGetAuthTokensCalls());
+
+  // There are no tokens in the cache.
   auto token = auth_token_cache_->GetAuthToken();
   ASSERT_FALSE(token);
+
+  // Additional calls do nothing and specifically do not trigger an "Unexpected
+  // call to TryGetAuthTokens()" failure.
+  auth_token_cache_->MayNeedAuthTokenSoon();
+  auth_token_cache_->MayNeedAuthTokenSoon();
+
+  // After the backoff has elapsed, `MayNeedAuthTokenSoon()` triggers another
+  // call to `TryGetAuthTokens()`.
+  task_environment_.FastForwardBy(kBackoff);
+  std::vector<network::mojom::BlindSignedAuthTokenPtr> tokens;
+  tokens.emplace_back(
+      network::mojom::BlindSignedAuthToken::New("token1", kFutureExpiration));
+  mock_.ExpectTryGetAuthTokensCall(kExpectedBatchSize, std::move(tokens));
+
+  auth_token_cache_->SetOnCacheRefilledForTesting(
+      task_environment_.QuitClosure());
+  auth_token_cache_->MayNeedAuthTokenSoon();
+  task_environment_.RunUntilQuit();
+  EXPECT_TRUE(mock_.GotAllExpectedTryGetAuthTokensCalls());
+
+  auto got_token = auth_token_cache_->GetAuthToken();
+  EXPECT_EQ(got_token.value()->token, "token1");
+  EXPECT_EQ(got_token.value()->expiration, kFutureExpiration);
+  ExpectHistogramState(HistogramState{.success = 1, .failure = 1});
 }
 
 // `GetAuthToken()` skips expired tokens and returns a non-expired token,

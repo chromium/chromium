@@ -54,6 +54,13 @@ void IpProtectionAuthTokenCacheImpl::MayNeedAuthTokenSoon() {
     return;
   }
 
+  if (!try_get_auth_tokens_after_.is_null() &&
+      base::Time::Now() < try_get_auth_tokens_after_) {
+    // We must continue to wait before calling `TryGetAuthTokens()` again,
+    // so there is nothing we can do to refill the cache at this time.
+    return;
+  }
+
   RemoveExpiredTokens();
   if (cache_.size() < kCacheLowWaterMark) {
     currently_getting_ = true;
@@ -65,13 +72,16 @@ void IpProtectionAuthTokenCacheImpl::MayNeedAuthTokenSoon() {
 }
 
 void IpProtectionAuthTokenCacheImpl::OnGotAuthTokens(
-    absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>
-        tokens) {
+    absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>> tokens,
+    absl::optional<base::Time> try_again_after) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   currently_getting_ = false;
-  if (tokens) {
+  if (tokens.has_value()) {
+    try_get_auth_tokens_after_ = base::Time();
     cache_.insert(cache_.end(), std::make_move_iterator(tokens->begin()),
                   std::make_move_iterator(tokens->end()));
+  } else {
+    try_get_auth_tokens_after_ = *try_again_after;
   }
 
   if (on_cache_refilled_) {
@@ -152,13 +162,13 @@ void IpProtectionAuthTokenCacheImpl::FillCacheForTesting(
 
 void IpProtectionAuthTokenCacheImpl::OnFilledCacheForTesting(
     base::OnceCallback<void()> on_cache_refilled,
-    absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>
-        tokens) {
+    absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>> tokens,
+    absl::optional<base::Time> try_again_after) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (tokens) {
-    cache_.insert(cache_.end(), std::make_move_iterator(tokens->begin()),
-                  std::make_move_iterator(tokens->end()));
-  }
+  // For testing purposes, tokens should always be supplied.
+  CHECK(tokens);
+  cache_.insert(cache_.end(), std::make_move_iterator(tokens->begin()),
+                std::make_move_iterator(tokens->end()));
   std::move(on_cache_refilled).Run();
 }
 
