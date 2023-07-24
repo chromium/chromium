@@ -13,6 +13,8 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_param_associator.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
@@ -28,8 +30,11 @@ void LogInvalidValue(const Feature& feature,
                      const std::string& param_name,
                      const std::string& value_as_string,
                      const std::string& default_value_as_string) {
+  UmaHistogramSparse("Variations.FieldTriamParamsLogInvalidValue",
+                     static_cast<int>(base::HashName(
+                         FeatureList::GetFieldTrial(feature)->trial_name())));
   // To anyone noticing these crash dumps in the wild, these parameters come
-  // from server-side experiment confiuration. If you're seeing an increase it
+  // from server-side experiment configuration. If you're seeing an increase it
   // is likely due to a bad experiment rollout rather than changes in the client
   // code.
   SCOPED_CRASH_KEY_STRING32("FieldTrialParams", "feature_name", feature.name);

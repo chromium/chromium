@@ -20,6 +20,10 @@ BASE_EXPORT uint64_t HashMetricName(base::StringPiece name);
 // can be more suitable for contexts where memory use is a concern.
 BASE_EXPORT uint32_t HashMetricNameAs32Bits(base::StringPiece name);
 
+// Computes a uint32_t hash of a given string based on its SHA1 hash. Suitable
+// for uniquely identifying field trial names and group names.
+BASE_EXPORT uint32_t HashName(base::StringPiece name);
+
 }  // namespace base
 
 #endif  // BASE_METRICS_METRICS_HASHES_H_
