@@ -3359,6 +3359,7 @@ group("fuzzers") {
 # test_buildbucket_api_gpu_cases.py on bots. This also tells the build system
 # when the tests should be re-run - when one of the dependent files changes.
 #
+# TODO(crbug.com/1080749): Remove once power testing is migrated to perf waterfall.
 group("test_buildbucket_api_gpu_use_cases") {
   data = [
     # The test runner and its dependencies.

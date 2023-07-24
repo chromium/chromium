@@ -2065,13 +2065,6 @@ targets.console_test_launcher(
     label = "//build/rust/tests/test_serde_json_lenient:test_serde_json_lenient",
 )
 
-# TODO(crbug.com/1080749): Re-add this once the test is fixed and re-enabled.
-# targets.script(
-#     name = "test_buildbucket_api_gpu_use_cases",
-#     label = "//content/test:test_buildbucket_api_gpu_use_cases",
-#     script = "//testing/scripts/test_buildbucket_api_gpu_use_cases.py",
-# )
-
 targets.script(
     name = "testing_pytype",
     label = "//testing:testing_pytype",
