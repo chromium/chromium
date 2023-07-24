@@ -3665,9 +3665,6 @@ extern const char kEnableHardwareMirrorModeDescription[];
 extern const char kLockScreenNotificationName[];
 extern const char kLockScreenNotificationDescription[];
 
-extern const char kMediaAppPdfSignatureName[];
-extern const char kMediaAppPdfSignatureDescription[];
-
 extern const char kMeteredShowToggleName[];
 extern const char kMeteredShowToggleDescription[];
 

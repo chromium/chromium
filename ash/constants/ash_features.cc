@@ -1573,11 +1573,6 @@ BASE_FEATURE(kMacAddressRandomization,
              "MacAddressRandomization",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables PDF signature saving and a selection tool in the media app.
-BASE_FEATURE(kMediaAppPdfSignature,
-             "MediaAppPdfSignature",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables notification of when a microphone-using app is launched while the
 // microphone is muted.
 BASE_FEATURE(kMicMuteNotifications,

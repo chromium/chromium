@@ -5225,11 +5225,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "media-app-pdf-signature",
-    "owners": [ "//ash/webui/media_app_ui/OWNERS" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "media-picker-adoption",
     "owners": [ "finnur@google.com", "beverloo@google.com" ],
     "expiry_milestone": 140

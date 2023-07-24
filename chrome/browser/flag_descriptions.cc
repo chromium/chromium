@@ -6371,10 +6371,6 @@ const char kLockScreenNotificationName[] = "Lock screen notification";
 const char kLockScreenNotificationDescription[] =
     "Enable notifications on the lock screen.";
 
-const char kMediaAppPdfSignatureName[] = "Media App PDF Signature";
-const char kMediaAppPdfSignatureDescription[] =
-    "Enable signature and element selection feature for PDFs in Gallery app.";
-
 const char kMeteredShowToggleName[] = "Show Metered Toggle";
 const char kMeteredShowToggleDescription[] =
     "Shows a Metered toggle in the Network settings UI for WiFI and Cellular. "
