@@ -1856,8 +1856,7 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'LinesFilterWhitespace', async function() {
 AX_TEST_F(
     'ChromeVoxBackgroundTest', 'TabSwitchAndRefreshRecovery', async function() {
       const mockFeedback = this.createMockFeedback();
-      const root1 = await this.runWithLoadedTree('<p>tab1</p>');
-      const root2 = await this.runWithLoadedTree('<p>tab2</p>');
+      await this.runWithLoadedTabs(['<p>tab1</p>', '<p>tab2</p>']);
       mockFeedback.expectSpeech('tab2')
           .clearPendingOutput()
           .call(press(KeyCode.TAB, {shift: true, ctrl: true}))

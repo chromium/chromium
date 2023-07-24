@@ -324,6 +324,31 @@ E2ETestBase = class extends AccessibilityTestBase {
   }
 
   /**
+   * Gets the desktop from the automation API and launches new tabs with
+   * the given url, returns when load complete has fired on each document.
+   * @param {Array<string>} urls HTML snippets to open in the URLs.
+   * @return {!Promise}
+   */
+  async runWithLoadedTabs(urls) {
+    console.assert(urls.length !== 0);
+    const hasLacrosChromePath = await new Promise(
+        r => chrome.commandLinePrivate.hasSwitch('lacros-chrome-path', r));
+    if (!hasLacrosChromePath) {
+      for (const url of urls) {
+        await this.runWithLoadedTree(url);
+      }
+      return;
+    }
+    await this.runWithLoadedTree(urls[0]);
+    for (let i = 1; i < urls.length; i++) {
+      // Open a new tab with ctrl+t.
+      EventGenerator.sendKeyPress(KeyCode.T, {ctrl: true});
+      // Open the URL in the new tab.
+      await this.runWithLoadedTree(urls[i]);
+    }
+  }
+
+  /**
    * Opens the options page for the running extension and calls |callback| with
    * the options page root once ready.
    * @param {function(chrome.automation.AutomationNode)} callback
