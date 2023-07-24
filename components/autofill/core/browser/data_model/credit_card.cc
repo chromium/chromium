@@ -653,11 +653,7 @@ void CreditCard::SetRawInfoWithVerificationStatus(ServerFieldType type,
     }
 
     case CREDIT_CARD_VERIFICATION_CODE:
-      // network_ is default as kGenericCard, network_ will be set when setting
-      // card number.
-      if (IsValidCreditCardSecurityCode(value, network_)) {
-        cvc_ = value;
-      }
+      cvc_ = value;
       break;
 
     default:
