@@ -390,7 +390,7 @@
 <translation id="3484946776651937681">Жүктөлүп алынгандарда ачуу</translation>
 <translation id="3485558910355485767">Жаңы жашыруун терезе</translation>
 <translation id="3493531032208478708">Сунушталган мазмун жөнүндө <ph name="BEGIN_LINK" />көбүрөөк билүү<ph name="END_LINK" /></translation>
-<translation id="3494788280727468875">Серептөө дайындарын тазалоону ырастоо</translation>
+<translation id="3494788280727468875">Серепчиден көрүлгөн нерселерди тазалоону ырастоо</translation>
 <translation id="35083190962747987">${url} ачуу</translation>
 <translation id="3519193562722059437">Интернетте серептөө үчүн өтмөк ачыңыз.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Өтмөктү ачуу}other{{count} өтмөктү ачуу}}</translation>
@@ -401,7 +401,7 @@
 <translation id="3533436815740441613">Жаңы өтмөк</translation>
 <translation id="3540141921715814660">Кыстармаларга кошуу</translation>
 <translation id="3551320343578183772">Өтмөктү жабуу</translation>
-<translation id="3565207542107370586">Серептөө дайындарын өчүрүү…</translation>
+<translation id="3565207542107370586">Серепчиден көрүлгөн нерселерди өчүрүү…</translation>
 <translation id="3575234738189584619">Lens менен издөө</translation>
 <translation id="3577555362230509265">Chrome'ду башка колдонмолордо пайдаланыңыз.</translation>
 <translation id="3581564640715911333">Башка тилдердеги барактарды которуу сунушталсын</translation>
@@ -768,7 +768,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6012140227487808125">Шифрленүүдө…</translation>
 <translation id="6021332621416007159">Төмнкүдө ачуу…</translation>
 <translation id="6027945736510816438"><ph name="WEBSITE" /> эмес беле?</translation>
-<translation id="6036215966221662377">Серептөө дайындарын өчүрүү</translation>
+<translation id="6036215966221662377">Серепчиден көрүлгөн нерселерди өчүрүү</translation>
 <translation id="6036514205982097558">Бардык өтмөктөр бир серепчиде</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Жабуу</translation>
@@ -1041,7 +1041,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7701040980221191251">Эч бир</translation>
 <translation id="7711440461521638739">Сырсөздөрүңүздү кайталап колдонгон жоксуз</translation>
 <translation id="7720410380936703141">КАЙТАЛОО</translation>
-<translation id="7726702057919861819">Меню → Таржымал → Серептөө дайындарын өчүрүү</translation>
+<translation id="7726702057919861819">Меню → Таржымал → Серепчиден көрүлгөн нерселерди өчүрүү</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Ушул түзмөктө гана.</translation>
 <translation id="7738120385185846461">Маселе тууралуу кабарлоо…</translation>
 <translation id="7741325291586284254">Жаңы жашыруун өтмөк барагы</translation>

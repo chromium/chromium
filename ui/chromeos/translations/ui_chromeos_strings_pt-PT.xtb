@@ -148,7 +148,7 @@
 <translation id="2198315389084035571">Chinês Simplificado</translation>
 <translation id="22085916256174561">Coreano</translation>
 <translation id="2208919847696382164">Instalar com o Linux</translation>
-<translation id="2225536596944493418">Tem a certeza de que pretende eliminar <ph name="NUMBER_OF_ITEMS" /> itens?</translation>
+<translation id="2225536596944493418">Tem a certeza de que quer eliminar <ph name="NUMBER_OF_ITEMS" /> itens?</translation>
 <translation id="2230062665678605299">Não é possível criar a pasta "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Pessoa com um café</translation>
 <translation id="2251368349685848079">Restaurar do lixo</translation>
@@ -291,7 +291,7 @@
 <translation id="338691029516748599">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, gerida pelo administrador, ligar</translation>
 <translation id="3408072735282270043">Ativar, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">Alemão (Alemanha) com teclado Neo 2</translation>
-<translation id="3414856743105198592">A formatação do suporte de dados amovível apagará todos os dados. Pretende continuar?</translation>
+<translation id="3414856743105198592">A formatação do suporte de dados amovível apagará todos os dados. Quer continuar?</translation>
 <translation id="3435143625481187092">Dê autorização à Bruschetta para aceder aos ficheiros na pasta <ph name="FOLDER_NAME" /></translation>
 <translation id="3437801641691368414">Hora de criação</translation>
 <translation id="343907260260897561">Máquina fotográfica instantânea</translation>
@@ -498,12 +498,12 @@
 <translation id="4973970068702235170">Falha ao comprimir; erro inesperado: <ph name="ERROR_MESSAGE" />.</translation>
 <translation id="4984616446166309645">Japonês</translation>
 <translation id="4987699874727873250">Inglês (Índia)</translation>
-<translation id="4988205478593450158">Tem a certeza de que pretende eliminar "<ph name="FILE_NAME" />"?</translation>
+<translation id="4988205478593450158">Tem a certeza de que quer eliminar "<ph name="FILE_NAME" />"?</translation>
 <translation id="498902553138568924">Borboleta vermelha</translation>
 <translation id="4992066212339426712">Reativar o som</translation>
 <translation id="5010406651457630570">Computadores</translation>
 <translation id="5011233892417813670">Chromebook</translation>
-<translation id="5024856940085636730">Uma operação está a demorar mais do que o previsto. Pretende interrompê-la?</translation>
+<translation id="5024856940085636730">Uma operação está a demorar mais do que o previsto. Quer interrompê-la?</translation>
 <translation id="5036159836254554629">Gerir a partilha do Parallels Desktop</translation>
 <translation id="5038625366300922036">Veja mais…</translation>
 <translation id="5044852990838351217">Arménio</translation>
@@ -663,7 +663,7 @@
 <translation id="6187719147498869044">Húngaro</translation>
 <translation id="6198252989419008588">Alterar PIN</translation>
 <translation id="6199801702437275229">A aguardar informações de espaço...</translation>
-<translation id="6205710420833115353">Algumas operações estão a demorar mais tempo do que o previsto. Pretende interrompê-las?</translation>
+<translation id="6205710420833115353">Algumas operações estão a demorar mais tempo do que o previsto. Quer interrompê-las?</translation>
 <translation id="6220423280121890987">Punjabi</translation>
 <translation id="6224240818060029162">Dinamarquês</translation>
 <translation id="6224253798271602650">Formate <ph name="DRIVE_NAME" /></translation>
@@ -1030,7 +1030,7 @@
 <translation id="9086302186042011942">A sincronizar</translation>
 <translation id="9099674669267916096">Contagem de páginas</translation>
 <translation id="9100610230175265781">Frase de acesso obrigatória</translation>
-<translation id="9110990317705400362">Estamos constantemente a procurar formas de tornar a navegação mais segura. Anteriormente, qualquer Website poderia pedir-lhe para adicionar uma extensão ao navegador. Nas versões mais recentes do Google Chrome, tem de definir explicitamente no Chrome que pretende instalar estas extensões adicionando-as através da página Extensões. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="9110990317705400362">Estamos constantemente a procurar formas de tornar a navegação mais segura. Anteriormente, qualquer Website poderia pedir-lhe para adicionar uma extensão ao navegador. Nas versões mais recentes do Google Chrome, tem de definir explicitamente no Chrome que quer instalar estas extensões adicionando-as através da página Extensões. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>
 <translation id="9116909380156770361">A transferência do ficheiro para <ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">Codec</translation>
@@ -1059,7 +1059,7 @@
 <translation id="965477715979482472">Inglês (África do Sul)</translation>
 <translation id="976666271385981812">A mover <ph name="NUMBER_OF_ITEMS" /> itens para o lixo</translation>
 <translation id="981121421437150478">Offline</translation>
-<translation id="988685240266037636">Já existe um ficheiro com o nome "<ph name="FILE_NAME" />". Pretende substituí-lo?</translation>
+<translation id="988685240266037636">Já existe um ficheiro com o nome "<ph name="FILE_NAME" />". Quer substituí-lo?</translation>
 <translation id="992401651319295351">Tem mais <ph name="RETRIES" /> tentativas. Não poderá utilizar esta rede até que configure um novo PIN.</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>
 </translationbundle>

@@ -257,7 +257,7 @@
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">O dispositivo está ligado.</translation>
-<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Pretende remover a página?}=1{Pretende remover a página {PAGE_NUMBER}?}other{Pretende remover a página {PAGE_NUMBER}?}}</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Quer remover a página?}=1{Quer remover a página {PAGE_NUMBER}?}other{Quer remover a página {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">Dados móveis</translation>
 <translation id="3156846309055100599">A digitalizar a página <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Portal cativo detetado</translation>
@@ -288,7 +288,7 @@
 <translation id="3359218928534347896">ativar/desativar o som do microfone</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Ligado</translation>
-<translation id="3369013195428705271">Tem a certeza de que pretende limpar todo o histórico de impressões? As suas tarefas de impressão em curso não serão limpas.</translation>
+<translation id="3369013195428705271">Tem a certeza de que quer limpar todo o histórico de impressões? As suas tarefas de impressão em curso não serão limpas.</translation>
 <translation id="3404249063913988450">Ativar proteção de ecrã</translation>
 <translation id="3413935475507503304">Para prosseguir com a atualização, clique em Seguinte.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -680,7 +680,7 @@
 <translation id="6439505561246192797">Fraca (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Aceda às definições da conta</translation>
 <translation id="6456394469623773452">Boa</translation>
-<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Pretende digitalizar novamente a página?}=1{Pretende digitalizar novamente a página {PAGE_NUMBER}?}other{Pretende digitalizar novamente a página {PAGE_NUMBER}?}}</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Quer digitalizar novamente a página?}=1{Quer digitalizar novamente a página {PAGE_NUMBER}?}other{Quer digitalizar novamente a página {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">PUU</translation>
 <translation id="6480327114083866287">Gerido por <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Parada – Encravamento de papel</translation>

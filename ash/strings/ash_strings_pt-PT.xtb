@@ -50,7 +50,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1190678134285018527">O dispositivo tem de voltar à versão anterior</translation>
 <translation id="1195412055398077112">overscan</translation>
 <translation id="119944043368869598">Limpar tudo</translation>
-<translation id="1199716647557067911">Tem a certeza de que pretende desativar o acesso por comutador?</translation>
+<translation id="1199716647557067911">Tem a certeza de que quer desativar o acesso por comutador?</translation>
 <translation id="1201402288615127009">Seguinte</translation>
 <translation id="1210557957257435379">gravação de ecrã</translation>
 <translation id="121097972571826261">Avançar por palavra</translation>
@@ -629,7 +629,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="3796198851576711985">estado da bateria</translation>
 <translation id="3796746699333205839">Uma aplicação está a utilizar a sua câmara e microfone.</translation>
 <translation id="3798670284305777884">Altifalante (interno)</translation>
-<translation id="3799080171973636491">Premiu o atalho de teclado da lupa de ecrã inteiro. Pretende ativá-la?</translation>
+<translation id="3799080171973636491">Premiu o atalho de teclado da lupa de ecrã inteiro. Quer ativá-la?</translation>
 <translation id="380165613292957338">Olá, como posso ajudar?</translation>
 <translation id="3804737937830804242">Reduza a câmara</translation>
 <translation id="3826099427150913765">Mudar para palavra-passe</translation>
@@ -754,7 +754,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="4379531060876907730">Estas são as suas ferramentas da caneta stylus</translation>
 <translation id="4381031910344220229">Isto permite o acesso ao microfone para a app <ph name="APP_NAME" /> e todas as apps e Websites com a autorização do microfone</translation>
 <translation id="4382340674111381977">Voltar à página anterior</translation>
-<translation id="4389184120735010762">Premiu o atalho de teclado da lupa ancorada. Pretende ativá-la?</translation>
+<translation id="4389184120735010762">Premiu o atalho de teclado da lupa ancorada. Quer ativá-la?</translation>
 <translation id="439598569299422042">Em pausa, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Não é possível guardar a gravação de ecrã</translation>
 <translation id="4405151984121254935">Este tipo de periférico ligado não é suportado</translation>
@@ -853,7 +853,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="4804818685124855865">Desligar</translation>
 <translation id="4814539958450445987">Ecrã de início de sessão</translation>
 <translation id="481455355267255546">A seguir</translation>
-<translation id="4831034276697007977">Tem a certeza de que pretende desativar os cliques automáticos?</translation>
+<translation id="4831034276697007977">Tem a certeza de que quer desativar os cliques automáticos?</translation>
 <translation id="4849058404725798627">Realçar objeto com foco do teclado</translation>
 <translation id="485592688953820832">Nenhuma ação (pausar)</translation>
 <translation id="485634149294284819">Aceder ao menu do teclado</translation>
@@ -1132,7 +1132,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="6043994281159824495">Terminar sessão agora</translation>
 <translation id="6045629311476491587">Usado por <ph name="APP_COUNT" /> apps</translation>
 <translation id="6045998054441862242">Ativar o modo de alto contraste</translation>
-<translation id="6047696787498798094">A partilha do ecrã será interrompida quando mudar para outro utilizador. Pretende continuar?</translation>
+<translation id="6047696787498798094">A partilha do ecrã será interrompida quando mudar para outro utilizador. Quer continuar?</translation>
 <translation id="6052614013050385269">Clicar com o botão direito num link</translation>
 <translation id="6054305421211936131">Iniciar sessão com cartão inteligente</translation>
 <translation id="6059276912018042191">Separadores do Chrome recentes</translation>
@@ -1256,7 +1256,7 @@ Nova instalação</translation>
 <translation id="6641720045729354415">Ative/desative as Legendas instantâneas. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Anular ordenação por nome</translation>
 <translation id="6649641931981131786">Ajuste a câmara para ficar no centro do ecrã.</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> pretende confirmar a sua identidade</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> quer confirmar a sua identidade</translation>
 <translation id="6650933572246256093">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" necessita de autorização para sincronizar. Introduza esta chave nesse dispositivo: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Palavra-passe</translation>
 <translation id="666343722268997814">Abrir o menu de de contexto referente ao item realçado</translation>
@@ -1348,7 +1348,7 @@ Nova instalação</translation>
 <translation id="7034025838182392395">A app <ph name="APP_NAME" /> quer usar o(a) <ph name="DEVICE_NAME" />. Ative o interruptor físico do(a) <ph name="DEVICE_NAME" /> do seu dispositivo.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Assistente Google</translation>
 <translation id="7042322267639375032">Reduzir área de estado</translation>
-<translation id="7045033600005038336">Pretende substituir o modelo?</translation>
+<translation id="7045033600005038336">Quer substituir o modelo?</translation>
 <translation id="7051244143160304048">A ligação de <ph name="DEVICE_NAME" /> foi terminada</translation>
 <translation id="7055910611768509537">A caneta stylus não é utilizada há mais de uma semana</translation>
 <translation id="7061457967428964661">Para pré-visualizar a câmara, prima Control + as teclas de seta para mover a pré-visualização para um canto diferente</translation>
@@ -1526,7 +1526,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="788781083998633524">Enviar um email</translation>
 <translation id="7893503627044934815">Não quero que este ficheiro seja mostrado</translation>
 <translation id="7895348134893321514">Tote</translation>
-<translation id="7897375687985782769">Premiu o atalho de teclado da rotação do ecrã. Pretende rodar o ecrã?</translation>
+<translation id="7897375687985782769">Premiu o atalho de teclado da rotação do ecrã. Quer rodar o ecrã?</translation>
 <translation id="7901190436359881020">Trocar as janelas</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Toque no sensor de impressões digitais.</translation>
@@ -1710,7 +1710,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8735678380411481005">Cor da retroiluminação do teclado</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8755498163081687682">Valide a sua identidade: <ph name="ORIGIN_NAME" /> pretende confirmar a sua identidade.</translation>
+<translation id="8755498163081687682">Valide a sua identidade: <ph name="ORIGIN_NAME" /> quer confirmar a sua identidade.</translation>
 <translation id="875593634123171288">Mostrar definições da VPN</translation>
 <translation id="8759408218731716181">Não é possível configurar o início de sessão integrado</translation>
 <translation id="8763883995157866248">Ativar o modo de suspensão do dispositivo</translation>
