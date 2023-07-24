@@ -592,6 +592,10 @@ void FrameTreeNode::TakeNavigationRequest(
     ResetNavigationRequestButKeepState();
   }
 
+  // Cancel any task that will restart BackForwardCache navigation that was
+  // initiated previously.
+  CancelRestartingBackForwardCacheNavigation();
+
   navigation_request_ = std::move(navigation_request);
   if (was_discarded_) {
     navigation_request_->set_was_discarded();
@@ -617,6 +621,10 @@ void FrameTreeNode::ResetNavigationRequestButKeepState() {
   if (!navigation_request_)
     return;
 
+  // When resetting the NavigationRequest, any BFCache navigation restarting
+  // task should be cancelled. This is to ensure that the FrameTreeNode won't
+  // accidentally complete a navigation that should be reset.
+  CancelRestartingBackForwardCacheNavigation();
   devtools_instrumentation::OnResetNavigationRequest(navigation_request_.get());
   navigation_request_.reset();
 }
@@ -1184,5 +1192,40 @@ void FrameTreeNode::GetVirtualAuthenticatorManager(
                                                          std::move(receiver));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+void FrameTreeNode::RestartBackForwardCachedNavigationAsync(int nav_entry_id) {
+  TRACE_EVENT0("navigation",
+               "FrameTreeNode::RestartBackForwardCachedNavigationAsync");
+  // The `navigation_request_` must be the BFCache navigation to the same entry
+  // as the restarted navigation.
+  CHECK(navigation_request_->IsServedFromBackForwardCache());
+  CHECK_EQ(navigation_request_->nav_entry_id(), nav_entry_id);
+  // Reset the `NavigationRequest` since the BFCache navigation will be
+  // restarted.
+  ResetNavigationRequest(NavigationDiscardReason::kNewNavigation);
+
+  // Post a task to restart the navigation asynchronously.
+  restart_back_forward_cached_navigation_tracker_.PostTask(
+      GetUIThreadTaskRunner({}).get(), FROM_HERE,
+      base::BindOnce(&FrameTreeNode::RestartBackForwardCachedNavigationImpl,
+                     weak_factory_.GetWeakPtr(), nav_entry_id));
+}
+
+void FrameTreeNode::RestartBackForwardCachedNavigationImpl(int nav_entry_id) {
+  TRACE_EVENT0("navigation",
+               "FrameTreeNode::RestartBackForwardCachedNavigationImpl");
+  NavigationControllerImpl& controller = frame_tree_->controller();
+  int nav_index = controller.GetEntryIndexWithUniqueID(nav_entry_id);
+  // If the NavigationEntry was deleted, do not do anything.
+  if (nav_index != -1) {
+    controller.GoToIndex(nav_index);
+  }
+}
+
+void FrameTreeNode::CancelRestartingBackForwardCacheNavigation() {
+  TRACE_EVENT0("navigation",
+               "FrameTreeNode::CancelRestartingBackForwardCacheNavigation");
+  restart_back_forward_cached_navigation_tracker_.TryCancelAll();
+}
 
 }  // namespace content

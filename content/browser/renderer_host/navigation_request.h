@@ -742,15 +742,6 @@ class CONTENT_EXPORT NavigationRequest
   // CreateForCommit().
   bool IsNavigationStarted() const;
 
-  // Restart the navigation restoring the page from the back-forward cache
-  // as a regular non-bfcached history navigation.
-  //
-  // The restart itself is asychronous as it's dangerous to restart navigation
-  // with arbitrary state on the stack (another navigation might be starting,
-  // so this function only posts the actual task to do all the work (see
-  // RestartBackForwardCachedNavigationImpl);
-  void RestartBackForwardCachedNavigation();
-
   std::unique_ptr<PeakGpuMemoryTracker> TakePeakGpuMemoryTracker();
 
   std::unique_ptr<NavigationEarlyHintsManager> TakeEarlyHintsManager();
@@ -1695,9 +1686,6 @@ class CONTENT_EXPORT NavigationRequest
   // true.
   void SetSourceSiteInstanceToInitiatorIfNeeded();
 
-  // See RestartBackForwardCachedNavigation.
-  void RestartBackForwardCachedNavigationImpl();
-
   void ForceEnableOriginTrials(const std::vector<std::string>& trials) override;
 
   void CreateCoepReporter(StoragePartition* storage_partition);
@@ -2253,14 +2241,11 @@ class CONTENT_EXPORT NavigationRequest
 
   // A WeakPtr for the RenderFrameHost that is being restored from the
   // back/forward cache. This can be null if this navigation is not restoring a
-  // page from the back/forward cache, or if the RenderFrameHost to restore was
-  // evicted and destroyed after the NavigationRequest was created.
+  // page from the back/forward cache.
   base::WeakPtr<RenderFrameHostImpl> rfh_restored_from_back_forward_cache_;
 
   // Whether the navigation is for restoring a page from the back/forward cache
-  // or not. Note that this can be true even when
-  // `rfh_restored_from_back_forward_cache_` is null, if the RenderFrameHost to
-  // restore was evicted and destroyed after the NavigationRequest was created.
+  // or not.
   const bool is_back_forward_cache_restore_;
 
   // These are set to the values from the FrameNavigationEntry this
@@ -2302,10 +2287,6 @@ class CONTENT_EXPORT NavigationRequest
   // True if the NavigationThrottles are running an event, the request then can
   // be cancelled for deferring.
   bool processing_navigation_throttle_ = false;
-
-  // True if we are restarting this navigation request as the RenderFrameHost
-  // was evicted.
-  bool restarting_back_forward_cached_navigation_ = false;
 
   // Holds the required CSP for this navigation. This will be moved into
   // the RenderFrameHost at DidCommitNavigation time.

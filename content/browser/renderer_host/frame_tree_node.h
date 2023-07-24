@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "content/browser/renderer_host/navigation_discard_reason.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -702,6 +703,24 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
           receiver) override;
 #endif
 
+  // Restart the navigation restoring the page from the back-forward cache
+  // as a regular non-BFCached history navigation.
+  //
+  // The restart itself is asynchronous as it's dangerous to restart navigation
+  // with arbitrary state on the stack (another navigation might be starting),
+  // so this function only posts the actual task to do all the work (See
+  // `RestartBackForwardCachedNavigationImpl()`).
+  void RestartBackForwardCachedNavigationAsync(int nav_entry_id);
+
+  // Cancel the asynchronous task that would restart the BFCache navigation.
+  // This should be called whenever a FrameTreeNode's NavigationRequest would
+  // normally get cancelled, including when another NavigationRequest starts.
+  // This preserves the previous behavior where a restarting BFCache
+  // NavigationRequest is kept around until the task to create the new
+  // navigation is run, or until that NavigationRequest gets deleted (which
+  // cancels the task).
+  void CancelRestartingBackForwardCacheNavigation();
+
  private:
   friend class CSPEmbeddedEnforcementUnitTest;
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessPermissionsPolicyBrowserTest,
@@ -741,6 +760,9 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // See comments for `GetFencedFrameProperties()`.
   absl::optional<FencedFrameProperties>& GetFencedFramePropertiesForEditing(
       bool force_tree_traversal = false);
+
+  // See `RestartBackForwardCachedNavigationAsync()`.
+  void RestartBackForwardCachedNavigationImpl(int nav_entry_id);
 
   // The next available browser-global FrameTreeNode ID.
   static int next_frame_tree_node_id_;
@@ -862,6 +884,11 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // and urn iframes are gone.
   absl::optional<FencedFrameProperties> fenced_frame_properties_;
 
+  // The tracker of the task that restarts the BFCache navigation. It might be
+  // used to cancel the task.
+  // See `CancelRestartingBackForwardCacheNavigation()`.
+  base::CancelableTaskTracker restart_back_forward_cached_navigation_tracker_;
+
   // Manages creation and swapping of RenderFrameHosts for this frame.
   //
   // This field needs to be declared last, because destruction of
@@ -873,6 +900,8 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // before the RenderFrameHostManager's destructor runs.  See also
   // https://crbug.com/1157988.
   RenderFrameHostManager render_manager_;
+
+  base::WeakPtrFactory<FrameTreeNode> weak_factory_{this};
 };
 
 }  // namespace content

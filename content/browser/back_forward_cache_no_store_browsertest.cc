@@ -1452,24 +1452,25 @@ IN_PROC_BROWSER_TEST_F(
 
   GURL url_a(https_server()->GetURL("a.com", "/title1.html"));
   GURL url_a_2(https_server()->GetURL("a.com", "/title2.html"));
-  GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
 
   // 1) Load the document and specify no-store for the main resource.
-  TestNavigationObserver observer(web_contents());
-  shell()->LoadURL(url_a);
-  RenderFrameHostImplWrapper rfh_a(current_frame_host());
-  response.WaitForRequest();
-  response.Send(kResponseWithNoCache);
-  response.Done();
-  observer.Wait();
-  rfh_a->GetBackForwardCacheMetrics()->SetObserverForTesting(this);
+  {
+    TestNavigationObserver observer(web_contents());
+    shell()->LoadURL(url_a);
+    RenderFrameHostImplWrapper rfh_a(current_frame_host());
+    response.WaitForRequest();
+    response.Send(kResponseWithNoCache);
+    response.Done();
+    observer.Wait();
+    rfh_a->GetBackForwardCacheMetrics()->SetObserverForTesting(this);
+  }
 
   // 2) Navigate away, and set a cookie from the new page.
   EXPECT_TRUE(NavigateToURL(shell(), url_a_2));
   EXPECT_TRUE(ExecJs(shell(), "document.cookie='foo=bar'"));
 
   // 3) Go back. |rfh_a| should be evicted upon restoration.
-  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ASSERT_TRUE(HistoryGoBackAndWaitForNavigationFinished(web_contents()));
   ExpectNotRestored({NotRestoredReason::kCacheControlNoStoreCookieModified}, {},
                     {}, {}, {}, FROM_HERE);
   EXPECT_THAT(GetTreeResult()->GetDocumentResult(),

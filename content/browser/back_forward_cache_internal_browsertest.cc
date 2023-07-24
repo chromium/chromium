@@ -926,18 +926,86 @@ IN_PROC_BROWSER_TEST_F(
 
   // 3) Start navigation to page A, and cause the document to be evicted during
   // the navigation immediately before navigation makes any meaningful progress.
+  // The BFCache entry will be evicted before the back navigation completes, so
+  // the old navigation will be reset and a new navigation will be restarted.
+  // This observer is waiting for the two navigation requests to complete.
+  TestNavigationObserver observer(web_contents(),
+                                  /* expected_number_of_navigations= */ 2,
+                                  MessageLoopRunner::QuitMode::IMMEDIATE,
+                                  /* ignore_uncommitted_navigations= */ false);
   web_contents()->GetController().GoBack();
+  EXPECT_TRUE(web_contents()->IsLoading());
   EvictByJavaScript(rfh_a);
+  EXPECT_FALSE(web_contents()->IsLoading());
 
   // rfh_a should have been deleted, and page A navigated to normally.
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   delete_observer_rfh_a.WaitUntilDeleted();
+  observer.Wait();
   RenderFrameHostImpl* rfh_a2 = current_frame_host();
   EXPECT_NE(rfh_a2, rfh_b);
   EXPECT_EQ(rfh_a2->GetLastCommittedURL(), url_a);
 
-  ExpectNotRestored({NotRestoredReason::kJavaScriptExecution}, {}, {}, {}, {},
-                    FROM_HERE);
+  ExpectNotRestored({NotRestoredReason::kJavaScriptExecution,
+                     NotRestoredReason::kNavigationCancelledWhileRestoring},
+                    {}, {}, {}, {}, FROM_HERE);
+}
+
+// Test that the reissued BFCache navigation (see
+// `ReissuesNavigationIfEvictedDuringNavigation_BeforeResponse` above) is
+// cancelled when there is another navigation request initiated to the same
+// `FrameTreeNode` before the restarting task is executed.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheBrowserTest,
+    ReissuedBackForwardCacheNavigationIsCancelledWhenNewNavigationIsCreated) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
+  GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
+
+  // 1) Navigate to page A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+
+  // 2) Navigate to page B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  RenderFrameHostImpl* rfh_b = current_frame_host();
+  RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
+  EXPECT_FALSE(delete_observer_rfh_a.deleted());
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  EXPECT_NE(rfh_a, rfh_b);
+
+  // 3) Start a back navigation to page A, and cause the document to be evicted
+  // during the navigation immediately before the navigation makes any
+  // meaningful progress.
+
+  // The BFCache entry will be evicted before the original back navigation to
+  // page A completes, so the navigation will be reset and a new non-BFCache
+  // navigation to page A will be restarted. Before the restarted navigation
+  // task is executed, a new navigation to page C will be manually initiated,
+  // which cancels the restarting task.
+
+  // Uses `TestActivationManager` to ensure that the BFCache entry is evicted
+  // during the back navigation.
+  TestActivationManager activation_manager(web_contents(), url_a);
+  web_contents()->GetController().GoBack();
+  ASSERT_TRUE(activation_manager.WaitForBeforeChecks());
+  EvictByJavaScript(rfh_a);
+  activation_manager.WaitForNavigationFinished();
+  ASSERT_FALSE(activation_manager.was_committed());
+  ASSERT_FALSE(activation_manager.was_activated());
+  // `rfh_a` should have been deleted.
+  delete_observer_rfh_a.WaitUntilDeleted();
+
+  // 4) Initiate another navigation, so the restarting task will be cancelled.
+  // This `observer` is for navigation to page C.
+  TestNavigationObserver observer(web_contents());
+  web_contents()->GetController().LoadURLWithParams(
+      NavigationController::LoadURLParams(url_c));
+  observer.WaitForNavigationFinished();
+  // Now the destination of the navigation is `url_c` after two navigation
+  // requests complete.
+  EXPECT_EQ(current_frame_host()->GetLastCommittedURL(), url_c);
 }
 
 // Similar to ReissuesNavigationIfEvictedDuringNavigation, except that
@@ -963,6 +1031,14 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 3) Start navigation to page A, and flush the cache before activation
   // checks finish (i.e. before disabling JS eviction in the renderer).
+  // The BFCache entry will be evicted before the back navigation completes,
+  // so the old navigation will be reset and a new navigation will be
+  // restarted. This observer is waiting for the two navigation requests to
+  // complete.
+  TestNavigationObserver observer(web_contents(),
+                                  /* expected_number_of_navigations= */ 2,
+                                  MessageLoopRunner::QuitMode::IMMEDIATE,
+                                  /* ignore_uncommitted_navigations= */ false);
   {
     // In a scope to make sure the activation_manager is deleted before the
     // reissued navigation begins.
@@ -984,8 +1060,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   }
 
   // rfh_a should have been deleted, and page A navigated to normally.
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   delete_observer_rfh_a1.WaitUntilDeleted();
+  observer.Wait();
   EXPECT_TRUE(rfh_b2->IsInBackForwardCache());
   RenderFrameHostImpl* rfh_a3 = current_frame_host();
   EXPECT_EQ(rfh_a3->GetLastCommittedURL(), url_a);
@@ -3055,8 +3131,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
     EXPECT_TRUE(params_capturer.is_overriding_user_agent());
     EXPECT_EQ(user_agent_override,
               EvalJs(shell()->web_contents(), "navigator.userAgent"));
-    ExpectNotRestored({NotRestoredReason::kUserAgentOverrideDiffers}, {}, {},
-                      {}, {}, FROM_HERE);
+    ExpectNotRestored({NotRestoredReason::kNavigationCancelledWhileRestoring,
+                       NotRestoredReason::kUserAgentOverrideDiffers},
+                      {}, {}, {}, {}, FROM_HERE);
   }
 
   // B should be stored in the back-forward cache.
@@ -3104,8 +3181,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
     EXPECT_FALSE(params_capturer.is_overriding_user_agent());
     EXPECT_NE(user_agent_override,
               EvalJs(shell()->web_contents(), "navigator.userAgent"));
-    ExpectNotRestored({NotRestoredReason::kUserAgentOverrideDiffers}, {}, {},
-                      {}, {}, FROM_HERE);
+    ExpectNotRestored({NotRestoredReason::kNavigationCancelledWhileRestoring,
+                       NotRestoredReason::kUserAgentOverrideDiffers},
+                      {}, {}, {}, {}, FROM_HERE);
   }
 }
 

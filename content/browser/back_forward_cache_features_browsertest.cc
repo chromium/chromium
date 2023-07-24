@@ -24,6 +24,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/media_start_stop_observer.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_transport_simple_test_server.h"
 #include "content/shell/browser/shell.h"
@@ -1879,7 +1880,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       web_contents()->GetPrimaryMainFrame()->GetSiteInstance()));
 
   // 4) Go back.
-  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ASSERT_TRUE(HistoryGoBackAndWaitForNavigationFinished(web_contents()));
 
   // Both sticky and non-sticky reasons are recorded here.
   ExpectNotRestored(
@@ -1935,7 +1936,7 @@ IN_PROC_BROWSER_TEST_F(
       web_contents()->GetPrimaryMainFrame()->GetSiteInstance()));
 
   // 4) Go back.
-  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ASSERT_TRUE(HistoryGoBackAndWaitForNavigationFinished(web_contents()));
 
   // Because the RenderFrameHostManager changed, the blocklisted features will
   // be tracked in RenderFrameHostManager::UnloadOldFrame.
@@ -1976,7 +1977,7 @@ IN_PROC_BROWSER_TEST_F(
       web_contents()->GetPrimaryMainFrame()->GetSiteInstance()));
 
   // 4) Go back.
-  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ASSERT_TRUE(HistoryGoBackAndWaitForNavigationFinished(web_contents()));
 
   // Because the RenderFrameHostManager changed, the blocklisted features will
   // be tracked in RenderFrameHostManager::UnloadOldFrame.
@@ -2016,7 +2017,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       web_contents()->GetPrimaryMainFrame()->GetSiteInstance()));
 
   // 4) Go back.
-  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ASSERT_TRUE(HistoryGoBackAndWaitForNavigationFinished(web_contents()));
 
   // Because the RenderFrameHostManager changed, the blocklisted features will
   // be tracked in RenderFrameHostManager::UnloadOldFrame.

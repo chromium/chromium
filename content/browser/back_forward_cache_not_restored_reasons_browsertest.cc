@@ -421,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNotRestoredReasons,
   ASSERT_TRUE(NavigateToURL(shell(), url_b));
 
   // 3) Navigate back.
-  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ASSERT_TRUE(HistoryGoBackAndWaitForNavigationFinished(web_contents()));
 
   // Blocking reasons should be recorded.
   ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},

@@ -1100,10 +1100,6 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
                               .controller()
                               .GetBackForwardCache()
                               .GetOrEvictEntry(entry->GetUniqueID());
-    // TODO(crbug.com/1430653): Check the
-    // `BackForwardCacheImpl::GetEntryFailureCase` in the return value and
-    // cancel the NavigationRequest to avoid use-after-free if we know that it
-    // will be restarted.
     if (restored_entry.has_value()) {
       if (frame_tree_node->IsMainFrame()) {
         rfh_restored_from_back_forward_cache =
@@ -1963,11 +1959,8 @@ NavigationRequest::~NavigationRequest() {
   // that lives in the associated FrameTreeNode that satisfies these conditions:
   // - Is currently queued to wait for a pending commit navigation to finish
   // - Is not the NavigationRequest that is currently being destructed itself
-  // - Is not a failed Back/Forward Cache restore that is waiting to be
-  // restarted as a new navigation (as that navigation is basically inactive).
   if (NavigationRequest* request = frame_tree_node_->navigation_request()) {
-    if (request->IsQueued() && request != this &&
-        !request->restarting_back_forward_cached_navigation_) {
+    if (request->IsQueued() && request != this) {
       // It might be possible for the pending commit RFH to still exist, e.g. if
       // the navigation being destructed is an unrelated navigation
       // (same-document navigation etc). In that case, don't continue the queued
@@ -2051,10 +2044,13 @@ NavigationRequest::~NavigationRequest() {
       auto bfcache_entry =
           GetNavigationController()->GetBackForwardCache().GetOrEvictEntry(
               nav_entry_id());
-      // TODO(crbug.com/1430653): Check the
-      // `BackForwardCacheImpl::GetEntryFailureCase` in the return value and
-      // cancel the NavigationRequest to avoid use-after-free if we know that it
-      // will be restarted.
+      if (!bfcache_entry.has_value() &&
+          bfcache_entry.error() ==
+              BackForwardCacheImpl::kEntryIneligibleAndEvicted) {
+        // DO NOT ADD CODE after this. When BFCache entry is evicted, the
+        // current NavigationRequest has been destroyed.
+        return;
+      }
       if (bfcache_entry.has_value()) {
         RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(
             bfcache_entry.value()->render_frame_host()->GetGlobalId());
@@ -2431,6 +2427,25 @@ void NavigationRequest::BeginNavigationImpl() {
 
   StartNavigation();
 
+  // The previous call to `StartNavigation()` could have changed the
+  // is_overriding_user_agent value in CommitNavigationParams. If we're trying
+  // to restore an entry from the back-forward cache, we need to ensure that
+  // the is_overriding_user_agent used in the RenderFrameHost to restore matches
+  // the value set in CommitNavigationParams.
+  if (rfh_restored_from_back_forward_cache_ &&
+      rfh_restored_from_back_forward_cache_->is_overriding_user_agent() !=
+          commit_params_->is_overriding_user_agent) {
+    // Trigger an eviction, which will cancel this navigation and trigger a new
+    // one to the same entry (but won't try to restore the entry from the
+    // back-forward cache) asynchronously.
+    rfh_restored_from_back_forward_cache_->EvictFromBackForwardCacheWithReason(
+        BackForwardCacheMetrics::NotRestoredReason::kUserAgentOverrideDiffers);
+    // DO NOT ADD CODE after this. The previous call to
+    // `EvictFromBackForwardCacheWithReason()`
+    // has destroyed the NavigationRequest.
+    return;
+  }
+
   if (CheckAboutSrcDoc() == AboutSrcDocCheckResult::BLOCK_REQUEST) {
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(net::ERR_INVALID_URL),
@@ -2766,21 +2781,6 @@ void NavigationRequest::StartNavigation() {
 #endif
     base::AutoReset<bool> resetter2(&ua_change_requires_reload_, false);
     GetDelegate()->DidStartNavigation(this);
-  }
-
-  // The previous call to DidStartNavigation could have changed the
-  // is_overriding_user_agent value in CommitNavigationParams. If we're trying
-  // to restore an entry from the back-forward cache, we need to ensure that
-  // the is_overriding_user_agent used in the RenderFrameHost to restore matches
-  // the value set in CommitNavigationParams.
-  if (rfh_restored_from_back_forward_cache_ &&
-      rfh_restored_from_back_forward_cache_->is_overriding_user_agent() !=
-          commit_params_->is_overriding_user_agent) {
-    // Trigger an eviction, which will cancel this navigation and trigger a new
-    // one to the same entry (but won't try to restore the entry from the
-    // back-forward cache) asynchrnously.
-    rfh_restored_from_back_forward_cache_->EvictFromBackForwardCacheWithReason(
-        BackForwardCacheMetrics::NotRestoredReason::kUserAgentOverrideDiffers);
   }
 }
 
@@ -4096,23 +4096,21 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
 
   // Select an appropriate renderer to commit the navigation.
   if (IsServedFromBackForwardCache()) {
-    // If the current navigation is being restarted, it should not try to make
-    // any further progress.
-    CHECK(!restarting_back_forward_cached_navigation_);
+    // If the RFH for the BFCache navigation is destroyed, the NavigationRequest
+    // should be reset synchronously.
+    CHECK(rfh_restored_from_back_forward_cache_);
     NavigationControllerImpl* controller = GetNavigationController();
     auto entry =
         controller->GetBackForwardCache().GetOrEvictEntry(nav_entry_id_);
-    if (!rfh_restored_from_back_forward_cache_ ||
-        (!entry.has_value() &&
-         entry.error() == BackForwardCacheImpl::kEntryIneligibleAndEvicted)) {
+    if (!entry.has_value() &&
+        entry.error() == BackForwardCacheImpl::kEntryIneligibleAndEvicted) {
       // If the RenderFrameHost to restore has been evicted and deleted, or the
       // current navigation is being restarted due to the `GetOrEvictEntry`
       // call, we should stop processing this back/forward cache restore
       // navigation, as the navigation will soon be restarted as a normal
-      // history navigation.
-
-      // TODO(crbug.com/1430653): Cancel the NavigationRequest to avoid
-      // use-after-free if we know that it will be restarted.
+      // history navigation and the current NavigationRequest will be reset.
+      // DO NOT ADD CODE after this. The previous call to
+      // `GetOrEvictEntry()` has destroyed the NavigationRequest.
       return;
     }
     CHECK(entry.has_value() && entry.value());
@@ -4838,36 +4836,7 @@ void NavigationRequest::OnStartChecksComplete(
   auto loader_type = NavigationURLLoader::LoaderType::kRegular;
   network::mojom::URLResponseHeadPtr cached_response_head = nullptr;
   if (IsServedFromBackForwardCache()) {
-    if (restarting_back_forward_cached_navigation_) {
-      // Do not continue the back/forward cache restore navigation, as it will
-      // soon be restarted as a normal history navigation.
-      return;
-    }
-    if (!rfh_restored_from_back_forward_cache_ ||
-        rfh_restored_from_back_forward_cache_
-            ->is_evicted_from_back_forward_cache()) {
-      // We might also get here when the navigation is not marked as being
-      // restarted yet, but the RFH being restored is gone or is already marked
-      // as evicted. Do not continue the navigation, and trigger uploading of
-      // debug information to understand what led to this case, since it's still
-      // unknown.
-      // See https://crbug.com/1258523.
-      SCOPED_CRASH_KEY_BOOL("NoRestoredRFH", "rfh_exists",
-                            !!rfh_restored_from_back_forward_cache_);
-      SCOPED_CRASH_KEY_BOOL("NoRestoredRFH", "is_main_frame",
-                            frame_tree_node_->IsMainFrame());
-      SCOPED_CRASH_KEY_BOOL("NoRestoredRFH", "is_outermost_main_frame",
-                            frame_tree_node_->IsOutermostMainFrame());
-      SCOPED_CRASH_KEY_BOOL("NoRestoredRFH", "is_ftn_nav_req",
-                            (frame_tree_node_->navigation_request() == this));
-      BackForwardCacheImpl& back_forward_cache =
-          frame_tree_node_->frame_tree().controller().GetBackForwardCache();
-      SCOPED_CRASH_KEY_NUMBER("NoRestoredRFH", "bfcache_entries_size",
-                              back_forward_cache.GetEntries().size());
-      CaptureTraceForNavigationDebugScenario(
-          DebugScenario::kDebugNoRestoredRFHOnNonRestartedNavigation);
-      return;
-    }
+    CHECK(rfh_restored_from_back_forward_cache_);
     loader_type = NavigationURLLoader::LoaderType::kNoopForBackForwardCache;
     cached_response_head =
         rfh_restored_from_back_forward_cache_->last_response_head()->Clone();
@@ -5757,15 +5726,7 @@ void NavigationRequest::CommitPageActivation() {
         commit_params_->current_history_list_length;
     activated_entry = controller->GetBackForwardCache().RestoreEntry(
         nav_entry_id_, std::move(page_restore_params));
-    // The only time activated_entry can be nullptr here, is if the
-    // document was evicted from the BackForwardCache since this navigation
-    // started.
-    //
-    // If the document was evicted, it should have posted a task to re-issue
-    // the navigation - ensure that this happened.
-    DCHECK(activated_entry || restarting_back_forward_cached_navigation_);
-    if (!activated_entry)
-      return;
+    CHECK(activated_entry);
 
     // Restore navigation API entries, since they will probably have changed
     // since the page entered bfcache. We must update all frames, not just the
@@ -8219,38 +8180,6 @@ void NavigationRequest::SetSourceSiteInstanceToInitiatorIfNeeded() {
           ->GetSiteInstance()
           ->GetRelatedSiteInstance(tuple.GetURL())
           .get());
-}
-
-void NavigationRequest::RestartBackForwardCachedNavigation() {
-  TRACE_EVENT0("navigation",
-               "NavigationRequest::RestartBackForwardCachedNavigation");
-  CHECK(IsServedFromBackForwardCache());
-  restarting_back_forward_cached_navigation_ = true;
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&NavigationRequest::RestartBackForwardCachedNavigationImpl,
-                     weak_factory_.GetWeakPtr()));
-  // Delete the loader to ensure that it does not try to commit current
-  // navigation before the task above deletes it.
-  loader_.reset();
-}
-
-void NavigationRequest::RestartBackForwardCachedNavigationImpl() {
-  TRACE_EVENT0("navigation",
-               "NavigationRequest::RestartBackForwardCachedNavigationImpl");
-  CHECK(IsServedFromBackForwardCache());
-  if (RenderFrameHostImpl* rfh = rfh_restored_from_back_forward_cache()) {
-    CHECK_EQ(rfh->frame_tree_node()->navigation_request(), this);
-  }
-
-  NavigationControllerImpl* controller = GetNavigationController();
-  int nav_index = controller->GetEntryIndexWithUniqueID(nav_entry_id());
-
-  // If the NavigationEntry was deleted, do not do anything.
-  if (nav_index == -1)
-    return;
-
-  controller->GoToIndex(nav_index);
 }
 
 void NavigationRequest::ForceEnableOriginTrials(

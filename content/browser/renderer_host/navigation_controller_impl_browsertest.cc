@@ -21941,8 +21941,9 @@ IN_PROC_BROWSER_TEST_P(
 
   // The BFCache restore got queued as there is a pending commit RFH.
   bfcache_nav_manager.ResumeActivation();
-  NavigationRequest* bfcache_nav = static_cast<NavigationRequest*>(
-      bfcache_nav_manager.GetNavigationHandle());
+  base::WeakPtr<NavigationRequest> bfcache_nav =
+      static_cast<NavigationRequest*>(bfcache_nav_manager.GetNavigationHandle())
+          ->GetWeakPtr();
   EXPECT_TRUE(bfcache_nav->IsQueued());
 
   // Evict the BFCache entry for `url_1_rfh`. This will cause the BFCache
@@ -21968,9 +21969,9 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(pending_commit_nav_manager.WaitForNavigationFinished());
   EXPECT_FALSE(pending_commit_nav_manager.was_committed());
 
-  // Ensure that the BFCache restore is still deferred, and eventually gets
-  // cancelled, because the corresponding BFCache entry no longer exists.
-  EXPECT_TRUE(bfcache_nav->IsQueued());
+  // The BFCache restore should be cancelled and the navigation is reset because
+  // the corresponding BFCache entry no longer exists.
+  EXPECT_FALSE(bfcache_nav);
   bfcache_nav_manager.WaitForNavigationFinished();
   EXPECT_FALSE(bfcache_nav_manager.was_committed());
 

@@ -796,6 +796,13 @@ IN_PROC_BROWSER_TEST_F(HighCacheSizeBackForwardCacheBrowserTest,
   // 5) Trigger a back navigation to B. This will create a BFCache restore
   // navigation to B, but will wait for C's beforeunload handler to finish
   // running before continuing.
+  // The BFCache entry will be evicted before the back navigation completes, so
+  // the old navigation will be reset and a new navigation will be restarted.
+  // This observer is waiting for the two navigation requests to complete.
+  TestNavigationObserver observer(web_contents(),
+                                  /* expected_number_of_navigations= */ 2,
+                                  MessageLoopRunner::QuitMode::IMMEDIATE,
+                                  /* ignore_uncommitted_navigations= */ false);
   web_contents()->GetController().GoBack();
 
   // 6) Post a task to run BeforeUnloadCompleted (task #2). This will continue
@@ -825,7 +832,7 @@ IN_PROC_BROWSER_TEST_F(HighCacheSizeBackForwardCacheBrowserTest,
   // NavigationRequest to replace the previous NavigationRequest to B.
   // - Task #4 from step 7 to destroy evicted entries runs and won't destroy
   // any entry since there's no longer any entry in the back/forward cache.
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  observer.Wait();
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), url_b);
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                          kDisableForRenderFrameHostCalled},

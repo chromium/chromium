@@ -7098,26 +7098,23 @@ void RenderFrameHostImpl::EvictFromBackForwardCacheWithFlattenedAndTreeReasons(
     return;
   }
 
-  // Check if there is an in-flight navigation restoring the frame that
-  // is being evicted.
+  // Check if there is an in-flight navigation restoring the document that is
+  // being evicted.
   NavigationRequest* in_flight_navigation_request =
       top_document->frame_tree_node()->navigation_request();
-  bool is_navigation_to_evicted_frame_in_flight =
-      (in_flight_navigation_request &&
-       in_flight_navigation_request->rfh_restored_from_back_forward_cache() ==
-           top_document);
 
-  if (is_navigation_to_evicted_frame_in_flight) {
-    // If we are currently navigating to the frame that was just evicted, we
+  if (in_flight_navigation_request &&
+      in_flight_navigation_request->rfh_restored_from_back_forward_cache() ==
+          top_document) {
+    // If we are currently navigating to the document that was just evicted, we
     // must restart the navigation. This is important because restarting the
-    // navigation deletes the NavigationRequest associated with the evicted
-    // frame (preventing use-after-free).
-    // This should also happen asynchronously as eviction might happen in the
-    // middle of another navigation — we should not try to restart the
-    // navigation in that case.
-    // NOTE: Here we rely on the PostTask inside this function running before
-    // the task posted to destroy the evicted frames below.
-    in_flight_navigation_request->RestartBackForwardCachedNavigation();
+    // navigation deletes the `NavigationRequest` associated with the evicted
+    // document (preventing use-after-free).
+    // Restarting the navigation should also happen asynchronously as eviction
+    // might happen in the middle of another navigation - we should not try to
+    // restart the navigation in that case.
+    top_document->frame_tree_node()->RestartBackForwardCachedNavigationAsync(
+        in_flight_navigation_request->nav_entry_id());
   }
 
   // Evict the frame and schedule it to be destroyed. Eviction happens
