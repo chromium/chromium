@@ -6273,7 +6273,6 @@ crbug.com/1430986 http/tests/inspector-protocol/tracing/page-load-metrics.js [ F
 # Sheriff 2023-04-06
 crbug.com/1362106 [ Linux ] media/video-source-error-no-candidate.html [ Failure Pass ]
 crbug.com/1362106 [ Linux ] media/video-source.html [ Failure Pass ]
-crbug.com/1430215 external/wpt/dom/events/scrolling/overscroll-deltas.html [ Failure Pass ]
 crbug.com/1431085 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-source-media.html [ Failure Pass ]
 
 # Sheriff 2023-04-07
