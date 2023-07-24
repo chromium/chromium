@@ -21,8 +21,6 @@ import {
   UnknownCommandException,
   UnknownErrorException,
   type ChromiumBidi,
-  type EmptyResult,
-  type Session,
 } from '../protocol/protocol.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
 import {LogType, type LoggerFn} from '../utils/log.js';
@@ -30,6 +28,7 @@ import {LogType, type LoggerFn} from '../utils/log.js';
 import {BidiNoOpParser} from './BidiNoOpParser.js';
 import type {IBidiParser} from './BidiParser.js';
 import {OutgoingBidiMessage} from './OutgoingBidiMessage.js';
+import {CdpProcessor} from './domains/cdp/CdpProcessor.js';
 import {BrowsingContextProcessor} from './domains/context/browsingContextProcessor.js';
 import type {BrowsingContextStorage} from './domains/context/browsingContextStorage.js';
 import type {IEventManager} from './domains/events/EventManager.js';
@@ -37,6 +36,7 @@ import {InputProcessor} from './domains/input/InputProcessor.js';
 import {PreloadScriptStorage} from './domains/script/PreloadScriptStorage.js';
 import {ScriptProcessor} from './domains/script/ScriptProcessor.js';
 import type {RealmStorage} from './domains/script/realmStorage.js';
+import {SessionProcessor} from './domains/session/SessionProcessor.js';
 
 type CommandProcessorEvents = {
   response: Promise<OutgoingBidiMessage>;
@@ -46,8 +46,9 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
   #browsingContextProcessor: BrowsingContextProcessor;
   #inputProcessor: InputProcessor;
   #scriptProcessor: ScriptProcessor;
+  #sessionProcessor: SessionProcessor;
+  #cdpProcessor: CdpProcessor;
 
-  #eventManager: IEventManager;
   #parser: IBidiParser;
   #logger?: LoggerFn;
 
@@ -55,13 +56,12 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
     cdpConnection: ICdpConnection,
     eventManager: IEventManager,
     selfTargetId: string,
-    parser: IBidiParser = new BidiNoOpParser(),
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
+    parser: IBidiParser = new BidiNoOpParser(),
     logger?: LoggerFn
   ) {
     super();
-    this.#eventManager = eventManager;
     this.#parser = parser;
     this.#logger = logger;
     const preloadScriptStorage = new PreloadScriptStorage();
@@ -80,34 +80,11 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
       realmStorage,
       preloadScriptStorage
     );
-  }
-
-  static #process_session_status(): Session.StatusResult {
-    return {ready: false, message: 'already connected'};
-  }
-
-  async #process_session_subscribe(
-    params: Session.SubscriptionRequest,
-    channel: string | null
-  ): Promise<EmptyResult> {
-    await this.#eventManager.subscribe(
-      params.events as ChromiumBidi.EventNames[],
-      params.contexts ?? [null],
-      channel
+    this.#sessionProcessor = new SessionProcessor(eventManager);
+    this.#cdpProcessor = new CdpProcessor(
+      browsingContextStorage,
+      cdpConnection
     );
-    return {};
-  }
-
-  async #process_session_unsubscribe(
-    params: Session.SubscriptionRequest,
-    channel: string | null
-  ): Promise<EmptyResult> {
-    await this.#eventManager.unsubscribe(
-      params.events as ChromiumBidi.EventNames[],
-      params.contexts ?? [null],
-      channel
-    );
-    return {};
   }
 
   async #processCommand(
@@ -167,11 +144,11 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
       // CDP domain
       // keep-sorted start block=yes
       case 'cdp.getSession':
-        return this.#browsingContextProcessor.process_cdp_getSession(
+        return this.#cdpProcessor.getSession(
           this.#parser.parseGetSessionParams(command.params)
         );
       case 'cdp.sendCommand':
-        return this.#browsingContextProcessor.process_cdp_sendCommand(
+        return this.#cdpProcessor.sendCommand(
           this.#parser.parseSendCommandParams(command.params)
         );
       // keep-sorted end
@@ -219,16 +196,16 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
       // Session domain
       // keep-sorted start block=yes
       case 'session.status':
-        return CommandProcessor.#process_session_status();
+        return this.#sessionProcessor.status();
       case 'session.subscribe':
-        return this.#process_session_subscribe(
+        return this.#sessionProcessor.subscribe(
           this.#parser.parseSubscribeParams(command.params),
-          command.channel ?? null
+          command.channel
         );
       case 'session.unsubscribe':
-        return this.#process_session_unsubscribe(
+        return this.#sessionProcessor.unsubscribe(
           this.#parser.parseSubscribeParams(command.params),
-          command.channel ?? null
+          command.channel
         );
       // keep-sorted end
     }

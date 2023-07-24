@@ -70,7 +70,7 @@ export interface IEventManager {
     events: ChromiumBidi.EventNames[],
     contextIds: (BrowsingContext.BrowsingContext | null)[],
     channel: string | null
-  ): Promise<void>;
+  ): Promise<void> | void;
 
   unsubscribe(
     events: ChromiumBidi.EventNames[],
@@ -161,11 +161,11 @@ export class EventManager implements IEventManager {
     }
   }
 
-  async subscribe(
+  subscribe(
     eventNames: ChromiumBidi.EventNames[],
     contextIds: (BrowsingContext.BrowsingContext | null)[],
     channel: string | null
-  ): Promise<void> {
+  ): void {
     for (const name of eventNames) {
       checkEventName(name);
     }

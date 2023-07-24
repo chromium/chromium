@@ -21,7 +21,6 @@ import type {ICdpConnection} from '../../../cdp/cdpConnection.js';
 import {
   BrowsingContext,
   InvalidArgumentException,
-  type Cdp,
   type EmptyResult,
 } from '../../../protocol/protocol.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
@@ -387,30 +386,5 @@ export class BrowsingContextProcessor {
       return false;
     }
     return ['page', 'iframe'].includes(target.type);
-  }
-
-  process_cdp_getSession(
-    params: Cdp.GetSessionParameters
-  ): Cdp.GetSessionResult {
-    const context = params.context;
-    const sessionId =
-      this.#browsingContextStorage.getContext(context).cdpTarget.cdpSessionId;
-    if (sessionId === undefined) {
-      return {};
-    }
-    return {session: sessionId};
-  }
-
-  async process_cdp_sendCommand(
-    params: Cdp.SendCommandParameters
-  ): Promise<Cdp.SendCommandResult> {
-    const client = params.session
-      ? this.#cdpConnection.getCdpClient(params.session)
-      : this.#cdpConnection.browserClient();
-    const result = await client.sendCommand(params.method, params.params);
-    return {
-      result,
-      session: params.session,
-    };
   }
 }

@@ -75,9 +75,9 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       cdpConnection,
       new EventManager(this),
       selfTargetId,
-      parser,
       this.#browsingContextStorage,
       new RealmStorage(),
+      parser,
       this.#logger
     );
     this.#commandProcessor.on(
