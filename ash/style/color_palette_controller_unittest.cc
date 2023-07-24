@@ -798,8 +798,8 @@ TEST_F(ColorPaletteControllerLocalPrefTest, OnUserLogin_UpdatesLocalPrefs) {
   SetUpLocalPrefs();
   const auto wallpaper_color = SK_ColorGRAY;
   UpdateWallpaperColor(wallpaper_color);
+  SetUseKMeansLocalPref(false);
   EXPECT_EQ(kLocalColorScheme, GetLocalColorScheme());
-  EXPECT_FALSE(GetLocalUseKMeans().has_value());
 
   SimulateUserLogin(kAccountId);
 
