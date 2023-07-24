@@ -587,7 +587,7 @@ void PasswordControllerTest::FillFormAndValidate(TestPasswordFormData test_data,
 
   [passwordController_.sharedPasswordController
       processPasswordFormFillData:form_data
-                          inFrame:frame
+                       forFrameId:frame->GetFrameId()
                       isMainFrame:frame->IsMainFrame()
                 forSecurityOrigin:frame->GetSecurityOrigin()];
 
@@ -1126,7 +1126,7 @@ TEST_F(PasswordControllerTest, SuggestionUpdateTests) {
   web::WebFrame* expected_frame = GetWebFrame(/*is_main_frame=*/true);
   [passwordController_.sharedPasswordController
       processPasswordFormFillData:form_data
-                          inFrame:expected_frame
+                       forFrameId:expected_frame->GetFrameId()
                       isMainFrame:expected_frame->IsMainFrame()
                 forSecurityOrigin:expected_frame->GetSecurityOrigin()];
 
@@ -1642,7 +1642,7 @@ TEST_F(PasswordControllerTest, CheckPasswordGenerationSuggestion) {
   web::WebFrame* expected_frame = GetWebFrame(/*is_main_frame=*/true);
   [passwordController_.sharedPasswordController
       processPasswordFormFillData:form_data
-                          inFrame:expected_frame
+                       forFrameId:expected_frame->GetFrameId()
                       isMainFrame:expected_frame->IsMainFrame()
                 forSecurityOrigin:expected_frame->GetSecurityOrigin()];
 

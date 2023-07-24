@@ -480,7 +480,7 @@ void ChromeAutofillClientIOS::HandleParsedForms(
   AutofillBottomSheetTabHelper* helper =
       AutofillBottomSheetTabHelper::FromWebState(web_state_);
   if (helper && !personal_data_manager_->GetCreditCardsToSuggest().empty()) {
-    helper->AttachPaymentsListeners(forms, frame);
+    helper->AttachPaymentsListeners(forms, frame->GetFrameId());
   }
 }
 

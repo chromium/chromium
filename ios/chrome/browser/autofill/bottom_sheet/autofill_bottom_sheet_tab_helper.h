@@ -17,7 +17,6 @@ class FormStructure;
 
 namespace web {
 class ScriptMessage;
-class WebFrame;
 }  // namespace web
 
 @protocol AutofillBottomSheetCommands;
@@ -48,16 +47,16 @@ class AutofillBottomSheetTabHelper
   // Prepare bottom sheet using data from the password form prediction.
   void AttachPasswordListeners(
       const std::vector<autofill::FieldRendererId>& renderer_ids,
-      web::WebFrame* frame);
+      const std::string& frame_id);
 
   // Prepare bottom sheet using data from the credit card form prediction.
   void AttachPaymentsListeners(
       const std::vector<autofill::FormStructure*>& forms,
-      web::WebFrame* frame);
+      const std::string& frame_id);
 
   // Detach the password listeners, which will deactivate the password bottom
   // sheet on the provided frame.
-  void DetachPasswordListeners(web::WebFrame* frame, bool refocus);
+  void DetachPasswordListeners(const std::string& frame_id, bool refocus);
 
   // Detach the password listeners, which will deactivate the password bottom
   // sheet on all frames.
@@ -65,7 +64,7 @@ class AutofillBottomSheetTabHelper
 
   // Detach the payments listeners, which will deactivate the payments bottom
   // sheet on the provided frame.
-  void DetachPaymentsListeners(web::WebFrame* frame, bool refocus);
+  void DetachPaymentsListeners(const std::string& frame_id, bool refocus);
 
   // Detach the payments listeners, which will deactivate the payments bottom
   // sheet on all frames.
@@ -92,7 +91,7 @@ class AutofillBottomSheetTabHelper
   void AttachListeners(
       const std::vector<autofill::FieldRendererId>& renderer_ids,
       std::set<autofill::FieldRendererId>& registered_renderer_ids,
-      web::WebFrame* frame,
+      const std::string& frame_id,
       bool must_be_empty);
 
   // Detach listeners, which will deactivate the associated bottom sheet.
