@@ -41,7 +41,21 @@ if __name__ == "__main__":
                       help='The path to a test file or a test directory. '
                       'Defaults to the current directory.')
 
+  parser.add_argument('--magic-vm-cache',
+                      dest='magic_vm_cache',
+                      help='Path to the magic CrOS VM cache dir. See the '
+                      'comment "magic_cros_vm_cache" in mixins.star for '
+                      'more info.')
+
   args, unknown_args = parser.parse_known_args()
+
+  # Copied from chromeos/test_runner.py, the same logic to activate vm cache.
+  # https://crsrc.org/c/build/chromeos/test_runner.py;l=989;drc=32666e4204efdc594c7e3cbaa22f18dbc0966b81
+  if args.magic_vm_cache:
+    full_vm_cache_path = os.path.join(SRC_DIR, args.magic_vm_cache)
+    if os.path.exists(full_vm_cache_path):
+      with open(os.path.join(full_vm_cache_path, 'swarming.txt'), 'w') as f:
+        f.write('non-empty file to make swarming persist this cache')
 
   retcode = pytest.main(["-qq", "-s", args.pytest_path, *unknown_args])
   if args.json_results_file:
