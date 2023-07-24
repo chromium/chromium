@@ -9984,6 +9984,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHoldingSpaceSuggestionsName,
      flag_descriptions::kHoldingSpaceSuggestionsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kHoldingSpaceSuggestions)},
+    {"enable-welcome-tour", flag_descriptions::kWelcomeTourName,
+     flag_descriptions::kWelcomeTourDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kWelcomeTour)},
+    {"enable-welcome-tour-force-user-eligibility",
+     flag_descriptions::kWelcomeTourForceUserEligibilityName,
+     flag_descriptions::kWelcomeTourForceUserEligibilityDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kWelcomeTourForceUserEligibility)},
 #endif
 
     {"use-nat64-for-ipv4-literal",

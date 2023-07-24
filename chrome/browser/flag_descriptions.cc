@@ -6771,6 +6771,17 @@ const char kWelcomeScreenDescription[] =
     "When a user is about to start a new task, provide them with relevant "
     "information and tools to help them orient and get started.";
 
+const char kWelcomeTourName[] = "Welcome Tour";
+const char kWelcomeTourDescription[] =
+    "Enables the Welcome Tour that walks new users through ChromeOS System UI.";
+
+const char kWelcomeTourForceUserEligibilityName[] =
+    "Force Welcome Tour user eligibility";
+const char kWelcomeTourForceUserEligibilityDescription[] =
+    "Forces user eligibility for the Welcome Tour that walks new users through "
+    "ChromeOS System UI. Enabling this flag has no effect unless the Welcome "
+    "Tour is also enabled.";
+
 const char kWifiConnectMacAddressRandomizationName[] =
     "MAC address randomization";
 const char kWifiConnectMacAddressRandomizationDescription[] =

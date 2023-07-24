@@ -3873,6 +3873,16 @@
     "expiry_milestone": 122
   },
   {
+    "name": "enable-welcome-tour",
+    "owners": [ "//ash/user_education/OWNERS" ],
+    "expiry_milestone": 119
+  },
+  {
+    "name": "enable-welcome-tour-force-user-eligibility",
+    "owners": [ "//ash/user_education/OWNERS" ],
+    "expiry_milestone": 119
+  },
+  {
     "name": "enable-windows-gaming-input-data-fetcher",
     "owners": ["gabrielbrito@microsoft.com", "qiaye@microsoft.com" ],
     "expiry_milestone": 121

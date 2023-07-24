@@ -60588,6 +60588,7 @@ from previous Chrome versions.
       label="OmniboxUIExperimentShowPlaceholderWhenCaretShowing:enabled"/>
   <int value="-1650769314" label="enable-webgl2-compute-context"/>
   <int value="-1649778035" label="disable-clear-browsing-data-counters"/>
+  <int value="-1649640812" label="WelcomeTourForceUserEligibility:disabled"/>
   <int value="-1648476870" label="SpeculationRulesPrefetchProxy:enabled"/>
   <int value="-1648216169" label="NewOmniboxAnswerTypes:disabled"/>
   <int value="-1647433421" label="use-passthrough-command-decoder"/>
@@ -64487,6 +64488,7 @@ from previous Chrome versions.
   <int value="333014953" label="NonBlockingCommit:enabled"/>
   <int value="334330083" label="WebAuthenticationConditionalUI:disabled"/>
   <int value="334802038" label="OfflinePreviews:disabled"/>
+  <int value="335088926" label="WelcomeTourForceUserEligibility:enabled"/>
   <int value="335976368" label="LoadCryptoTokenExtension:disabled"/>
   <int value="335976733" label="NotificationStackingBarRedesign:enabled"/>
   <int value="336105835" label="CameraAppTimeLapse:disabled"/>
@@ -65624,6 +65626,7 @@ from previous Chrome versions.
       label="QuickAnswersAlwaysTriggerForSingleWord:disabled"/>
   <int value="921536672" label="OfflinePagesDescriptiveFailStatus:enabled"/>
   <int value="921561616" label="WebAssemblyTiering:disabled"/>
+  <int value="923752712" label="WelcomeTour:enabled"/>
   <int value="923923308" label="WifiSyncAllowDeletes:enabled"/>
   <int value="923947923" label="ReadPrinterCapabilitiesWithXps:disabled"/>
   <int value="924769517" label="AppServiceAdaptiveIcon:disabled"/>
@@ -66868,6 +66871,7 @@ from previous Chrome versions.
   <int value="1573323485" label="ViewportHeightClientHintHeader:enabled"/>
   <int value="1573754862" label="AutofillEnableFIDOProgressDialog:disabled"/>
   <int value="1573860827" label="EnableImeSandbox:enabled"/>
+  <int value="1575011129" label="WelcomeTour:disabled"/>
   <int value="1575978252" label="PasswordLeakDetection:enabled"/>
   <int value="1577205328"
       label="DataReductionProxyEnabledWithNetworkService:enabled"/>

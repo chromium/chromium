@@ -3893,6 +3893,12 @@ extern const char kWakeOnWifiAllowedDescription[];
 extern const char kWelcomeScreenName[];
 extern const char kWelcomeScreenDescription[];
 
+extern const char kWelcomeTourName[];
+extern const char kWelcomeTourDescription[];
+
+extern const char kWelcomeTourForceUserEligibilityName[];
+extern const char kWelcomeTourForceUserEligibilityDescription[];
+
 extern const char kWifiConnectMacAddressRandomizationName[];
 extern const char kWifiConnectMacAddressRandomizationDescription[];
 

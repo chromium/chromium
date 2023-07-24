@@ -6,6 +6,7 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/ash_element_identifiers.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/session/session_controller_impl.h"
@@ -285,6 +286,12 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
   // We can stop observations since we only observe sessions in order to start
   // the tour when the primary user session is activated for the first time.
   session_observation_.Reset();
+
+  // Welcome Tour is not supported for "existing" users.
+  if (!features::IsWelcomeTourForceUserEligibilityEnabled()) {
+    // TODO(http://b/291970413): Enforce user eligibility requirements.
+    NOTIMPLEMENTED();
+  }
 
   // Welcome Tour is not supported in tablet mode.
   if (TabletMode::IsInTabletMode()) {
