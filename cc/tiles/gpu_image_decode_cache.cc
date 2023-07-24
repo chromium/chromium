@@ -1594,17 +1594,7 @@ void GpuImageDecodeCache::ReduceCacheUsage() {
 void GpuImageDecodeCache::ReduceCacheUsageLocked() NO_THREAD_SAFETY_ANALYSIS {
   EnsureCapacity(0);
 
-  // This is typically called when no tasks are running (between scheduling
-  // tasks). Try to lock and run pending operations if possible, but don't
-  // block on it.
-  //
-  // NO_THREAD_SAFETY_ANALYSIS: runtime-dependent locking.
-  if (context_->GetLock() && !context_->GetLock()->Try())
-    return;
-
-  RunPendingContextThreadOperations();
-  if (context_->GetLock())
-    context_->GetLock()->Release();
+  TryFlushPendingWork();
 }
 
 void GpuImageDecodeCache::SetShouldAggressivelyFreeResources(
@@ -1644,6 +1634,8 @@ void GpuImageDecodeCache::ClearCache() {
     it = RemoveFromPersistentCache(it);
   DCHECK(persistent_cache_.empty());
   paint_image_entries_.clear();
+
+  TryFlushPendingWork();
 }
 
 void GpuImageDecodeCache::RecordStats() {
@@ -1711,7 +1703,38 @@ Iterator GpuImageDecodeCache::RemoveFromPersistentCache(Iterator it) {
   return persistent_cache_.Erase(it);
 }
 
-void GpuImageDecodeCache::DoPurgeOldCacheEntries(base::TimeDelta max_age) {
+bool GpuImageDecodeCache::TryFlushPendingWork() {
+  // This is typically called when no tasks are running (between scheduling
+  // tasks). Try to lock and run pending operations if possible, but don't
+  // block on it.
+  //
+  // However, there are cases where the lock acquisition will fail. Indeed,
+  // when a task runs on a worker thread, it may acquire both the compositor
+  // lock then the GpuImageDecodeCache lock, whereas here we are trying to
+  // acquire the compositor lock after. So the early exit is required to avoid
+  // deadlocks.
+  //
+  // NO_THREAD_SAFETY_ANALYSIS: runtime-dependent locking.
+  if (context_->GetLock() && !context_->GetLock()->Try()) {
+    return false;
+  }
+
+  // The calls below will empty the cache on the GPU side. These calls will
+  // also happen on the next frame, but we want to call them ourselves here to
+  // avoid having to wait for the next frame (which might be a long wait/never
+  // happen).
+  RunPendingContextThreadOperations();
+  context_->ContextSupport()->FlushPendingWork();
+
+  if (context_->GetLock()) {
+    CheckContextLockAcquiredIfNecessary();
+    context_->GetLock()->Release();
+  }
+
+  return true;
+}
+
+bool GpuImageDecodeCache::DoPurgeOldCacheEntries(base::TimeDelta max_age) {
   const base::TimeTicks min_last_use = base::TimeTicks::Now() - max_age;
   for (auto it = persistent_cache_.rbegin();
        it != persistent_cache_.rend() &&
@@ -1724,6 +1747,8 @@ void GpuImageDecodeCache::DoPurgeOldCacheEntries(base::TimeDelta max_age) {
 
     it = RemoveFromPersistentCache(it);
   }
+
+  return TryFlushPendingWork();
 }
 
 void GpuImageDecodeCache::MaybePurgeOldCacheEntries() {
@@ -1736,12 +1761,13 @@ void GpuImageDecodeCache::MaybePurgeOldCacheEntries() {
 
 void GpuImageDecodeCache::PurgeOldCacheEntriesCallback() {
   base::AutoLock locker(lock_);
-  DoPurgeOldCacheEntries(get_max_purge_age());
+  bool flushed_gpu_work = DoPurgeOldCacheEntries(get_max_purge_age());
 
   has_pending_purge_task_ = false;
 
-  // If the cache is empty, we stop posting the task, to avoid endless wakeups.
-  if (persistent_cache_.empty()) {
+  // If the cache is empty and we have flushed the pending work on the GPU side,
+  // we stop posting the task, to avoid endless wakeups.
+  if (persistent_cache_.empty() && flushed_gpu_work) {
     return;
   }
 
@@ -3476,6 +3502,21 @@ void GpuImageDecodeCache::OnMemoryPressure(
   base::AutoLock lock(lock_);
   base::AutoReset<bool> reset(&aggressively_freeing_resources_, true);
   ReduceCacheUsageLocked();
+}
+
+bool GpuImageDecodeCache::AcquireContextLockForTesting() {
+  if (!context_->GetLock()) {
+    return false;
+  }
+  return context_->GetLock()->Try();
+}
+
+void GpuImageDecodeCache::ReleaseContextLockForTesting()
+    NO_THREAD_SAFETY_ANALYSIS {
+  if (!context_->GetLock()) {
+    return;
+  }
+  context_->GetLock()->Release();
 }
 
 bool GpuImageDecodeCache::SupportsColorSpaceConversion() const {

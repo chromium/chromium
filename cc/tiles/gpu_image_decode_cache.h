@@ -246,9 +246,16 @@ class CC_EXPORT GpuImageDecodeCache
     return has_pending_purge_task();
   }
 
+  size_t ids_pending_deletion_count_for_testing() const {
+    return ids_pending_deletion_.size();
+  }
+
   // Updating the |last_use| field of the associated |ImageData|.
   void TouchCacheEntryForTesting(const DrawImage& draw_image)
       LOCKS_EXCLUDED(lock_);
+
+  bool AcquireContextLockForTesting();
+  void ReleaseContextLockForTesting();
 
  private:
   enum class DecodedDataMode { kGpu, kCpu, kTransferCache };
@@ -887,8 +894,11 @@ class CC_EXPORT GpuImageDecodeCache
   // this behavior is turned on.
   void MaybePurgeOldCacheEntries() EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void PostPurgeOldCacheEntriesTask() EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  void DoPurgeOldCacheEntries(base::TimeDelta max_age)
+  // Returns true iff we were able to flush the pending work on the GPU side.
+  bool DoPurgeOldCacheEntries(base::TimeDelta max_age)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  // Tries to flush pending work on GPU side. Returns true iff we succeeded.
+  bool TryFlushPendingWork() NO_THREAD_SAFETY_ANALYSIS;
   void PurgeOldCacheEntriesCallback() LOCKS_EXCLUDED(lock_);
 
   // Adds mips to an image if required.
