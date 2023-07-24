@@ -1059,7 +1059,7 @@ void ShellSurfaceBase::OnSetFrame(SurfaceFrameType frame_type) {
   // window is animating.
   set_bounds_is_dirty(true);
   UpdateWidgetBounds();
-  UpdateSurfaceBounds();
+  UpdateHostWindowOrigin();
 }
 
 void ShellSurfaceBase::OnSetFrameColors(SkColor active_color,
@@ -1752,7 +1752,7 @@ void ShellSurfaceBase::UpdateWidgetBounds() {
   SetWidgetBounds(adjusted_bounds, adjusted_bounds != *bounds);
 }
 
-void ShellSurfaceBase::UpdateSurfaceBounds() {
+void ShellSurfaceBase::UpdateHostWindowOrigin() {
   gfx::Point origin = GetClientViewBounds().origin();
 
   origin += GetSurfaceOrigin().OffsetFromOrigin();
@@ -2009,7 +2009,7 @@ void ShellSurfaceBase::CommitWidget() {
   // type (e.g. caption height).
   UpdateFrameType();
   UpdateWidgetBounds();
-  UpdateHostWindowBounds();
+  UpdateHostWindowSizeAndRootSurfaceOrigin();
   gfx::Rect bounds = geometry_;
   if (!bounds.IsEmpty() && !widget_->GetNativeWindow()->GetProperty(
                                aura::client::kUseWindowBoundsForShadow)) {
@@ -2041,7 +2041,7 @@ void ShellSurfaceBase::CommitWidget() {
     }
   }
 
-  UpdateSurfaceBounds();
+  UpdateHostWindowOrigin();
   UpdateShape();
 
   // Don't show yet if the shell surface doesn't have content or is minimized

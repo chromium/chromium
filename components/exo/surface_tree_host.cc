@@ -174,7 +174,7 @@ void SurfaceTreeHost::SetRootSurface(Surface* root_surface) {
     root_surface_->window()->SetProperty(
         ui::kAXConsiderInvisibleAndIgnoreChildren, true);
     host_window_->AddChild(root_surface_->window());
-    UpdateHostWindowBounds();
+    UpdateHostWindowSizeAndRootSurfaceOrigin();
   }
   set_bounds_is_dirty(true);
 }
@@ -239,7 +239,7 @@ void SurfaceTreeHost::SetLayerTreeFrameSinkHolderFactoryForTesting(
 
 void SurfaceTreeHost::OnSurfaceCommit() {
   root_surface_->CommitSurfaceHierarchy(false);
-  UpdateHostWindowBounds();
+  UpdateHostWindowSizeAndRootSurfaceOrigin();
 }
 
 bool SurfaceTreeHost::IsSurfaceSynchronized() const {
@@ -406,7 +406,7 @@ void SurfaceTreeHost::SubmitEmptyCompositorFrame() {
   layer_tree_frame_sink_holder_->SubmitCompositorFrame(std::move(frame));
 }
 
-void SurfaceTreeHost::UpdateHostWindowBounds() {
+void SurfaceTreeHost::UpdateHostWindowSizeAndRootSurfaceOrigin() {
   // This method applies multiple changes to the window tree. Use ScopedPause
   // to ensure that occlusion isn't recomputed before all changes have been
   // applied.

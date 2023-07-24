@@ -155,7 +155,7 @@ class SurfaceTreeHost : public SurfaceDelegate,
   void SetLayerTreeFrameSinkHolderFactoryForTesting(
       LayerTreeFrameSinkHolderFactory frame_sink_holder_factory);
 
-  // Create a LayerTreeFrameSink for the |host_window_|.
+  // Creates a LayerTreeFrameSink for the |host_window_|.
   std::unique_ptr<cc::mojo_embedder::AsyncLayerTreeFrameSink>
   CreateLayerTreeFrameSink();
 
@@ -177,9 +177,10 @@ class SurfaceTreeHost : public SurfaceDelegate,
   // need to be released back to the client.
   void SubmitEmptyCompositorFrame();
 
-  // Update the host window's size to cover sufaces that must be visible and
+  // Updates the host window's size to cover surfaces that must be visible and
   // not clipped.
-  void UpdateHostWindowBounds();
+  // It also updates root surface origin accordingly to the origin.
+  void UpdateHostWindowSizeAndRootSurfaceOrigin();
 
   bool client_submits_surfaces_in_pixel_coordinates() const {
     return client_submits_surfaces_in_pixel_coordinates_;
@@ -195,7 +196,7 @@ class SurfaceTreeHost : public SurfaceDelegate,
   // the host window's layer's scale factor.
   virtual float GetScaleFactor() const;
 
-  // Set the appropriate transform for the given scale factor.
+  // Sets the appropriate transform for the given scale factor.
   // NOTE: This should only be done if the client submits in pixel coordinates.
   void SetScaleFactorTransform(float scale_factor);
 
@@ -204,7 +205,7 @@ class SurfaceTreeHost : public SurfaceDelegate,
   void UpdateLocalSurfaceIdFromParent(
       const viz::LocalSurfaceId& parent_local_surface_id);
 
-  // Change the local_surface_id as the viz::Surface property will change.
+  // Changes the local_surface_id as the viz::Surface property will change.
   void AllocateLocalSurfaceId();
 
   // If local_surface_id is newer than |host_window_|'s ui layer, push the

@@ -376,8 +376,8 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   virtual void SetWidgetBounds(const gfx::Rect& bounds,
                                bool adjusted_by_server) = 0;
 
-  // Updates the bounds of surface to match the current widget bounds.
-  void UpdateSurfaceBounds();
+  // Updates the bounds of host window to match the current widget bounds.
+  void UpdateHostWindowOrigin();
 
   // Creates, deletes and update the shadow bounds based on
   // |shadow_bounds_|.

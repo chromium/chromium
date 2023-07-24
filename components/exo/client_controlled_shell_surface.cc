@@ -1055,7 +1055,7 @@ void ClientControlledShellSurface::SetWidgetBounds(const gfx::Rect& bounds,
       ScopedSetBoundsLocally scoped_set_bounds(this);
       window->SetBounds(gfx::Rect(origin, adjusted_bounds.size()));
     }
-    UpdateSurfaceBounds();
+    UpdateHostWindowOrigin();
     return;
   }
 
@@ -1076,7 +1076,7 @@ void ClientControlledShellSurface::SetWidgetBounds(const gfx::Rect& bounds,
                         adjusted_bounds_in_display, 0);
   }
 
-  UpdateSurfaceBounds();
+  UpdateHostWindowOrigin();
 }
 
 gfx::Rect ClientControlledShellSurface::GetShadowBounds() const {
@@ -1440,7 +1440,7 @@ void ClientControlledShellSurface::UpdateFrameType() {
   UpdateAutoHideFrame();
 
   if (suppress_mouse_event)
-    UpdateSurfaceBounds();
+    UpdateHostWindowOrigin();
 }
 
 bool ClientControlledShellSurface::GetCanResizeFromSizeConstraints() const {

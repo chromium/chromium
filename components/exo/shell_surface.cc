@@ -372,7 +372,7 @@ void ShellSurface::OnSetParent(Surface* parent, const gfx::Point& position) {
       base::AutoReset<bool> notify_bounds_changes(&notify_bounds_changes_,
                                                   false);
       widget_->SetBounds(new_widget_bounds);
-      UpdateSurfaceBounds();
+      UpdateHostWindowOrigin();
     }
   } else {
     SetParentWindow(nullptr);
@@ -477,7 +477,7 @@ void ShellSurface::OnWindowBoundsChanged(aura::Window* window,
     if (new_bounds.size() == old_bounds.size()) {
       if (!origin_change_callback_.is_null())
         origin_change_callback_.Run(GetClientBoundsInScreen(widget_).origin());
-      UpdateSurfaceBounds();
+      UpdateHostWindowOrigin();
       return;
     }
 
@@ -488,7 +488,7 @@ void ShellSurface::OnWindowBoundsChanged(aura::Window* window,
     origin_offset_ -= delta;
     pending_origin_offset_accumulator_ += delta;
 
-    UpdateSurfaceBounds();
+    UpdateHostWindowOrigin();
 
     // The shadow size may be updated to match the widget. Change it back
     // to the shadow content size. Note that this relies on wm::ShadowController
@@ -518,7 +518,7 @@ void ShellSurface::OnWindowAddedToRootWindow(aura::Window* window) {
     old_screen_bounds_for_pending_move_ = gfx::Rect();
     origin_offset_ -= delta;
     pending_origin_offset_accumulator_ += delta;
-    UpdateSurfaceBounds();
+    UpdateHostWindowOrigin();
     UpdateShadow();
 
     if (!window_state_is_changing_)
@@ -690,7 +690,7 @@ void ShellSurface::SetWidgetBounds(const gfx::Rect& bounds,
   } else {
     widget_->SetBounds(bounds);
   }
-  UpdateSurfaceBounds();
+  UpdateHostWindowOrigin();
 
   notify_bounds_changes_ = true;
 }
