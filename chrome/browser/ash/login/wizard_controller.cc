@@ -263,6 +263,7 @@ const StaticOobeScreenId kResumableOobeScreens[] = {
     AutoEnrollmentCheckScreenView::kScreenId,
     UserCreationView::kScreenId,
     AddChildScreenView::kScreenId,
+    ConsumerUpdateScreenView::kScreenId,
 };
 
 const StaticOobeScreenId kResumablePostLoginScreens[] = {
@@ -1270,15 +1271,32 @@ void WizardController::OnUserCreationScreenExit(
                UserCreationScreen::GetResultString(result));
   switch (result) {
     case UserCreationScreen::Result::SIGNIN_TRIAGE:
-      AdvanceToSigninScreen();
+      GetLocalState()->SetBoolean(prefs::kOobeIsConsumerSegment, true);
+      StartupUtils::SaveScreenAfterConsumerUpdate(GaiaView::kScreenId.name);
+      ShowConsumerUpdateScreen();
       break;
     case UserCreationScreen::Result::SIGNIN:
-    case UserCreationScreen::Result::SKIPPED:
-      if (features::IsOobeGaiaInfoScreenEnabled()) {
-        ShowGaiaInfoScreen();
+      if (features::IsOobeSoftwareUpdateEnabled()) {
+        if (features::IsOobeGaiaInfoScreenEnabled()) {
+          GetLocalState()->SetBoolean(prefs::kOobeIsConsumerSegment, true);
+          StartupUtils::SaveScreenAfterConsumerUpdate(
+              GaiaInfoScreenView::kScreenId.name);
+          ShowConsumerUpdateScreen();
+        } else {
+          GetLocalState()->SetBoolean(prefs::kOobeIsConsumerSegment, true);
+          StartupUtils::SaveScreenAfterConsumerUpdate(GaiaView::kScreenId.name);
+          ShowConsumerUpdateScreen();
+        }
       } else {
-        AdvanceToSigninScreen();
+        if (features::IsOobeGaiaInfoScreenEnabled()) {
+          ShowGaiaInfoScreen();
+        } else {
+          AdvanceToSigninScreen();
+        }
       }
+      break;
+    case UserCreationScreen::Result::SKIPPED:
+      AdvanceToSigninScreen();
       break;
     case UserCreationScreen::Result::CONTINUE_QUICK_START_FLOW:
       CHECK(wizard_context_->quick_start_enabled &&
@@ -1288,7 +1306,13 @@ void WizardController::OnUserCreationScreenExit(
       AdvanceToScreen(QuickStartView::kScreenId);
       break;
     case UserCreationScreen::Result::ADD_CHILD:
-      ShowAddChildScreen();
+      if (features::IsOobeSoftwareUpdateEnabled()) {
+        StartupUtils::SaveScreenAfterConsumerUpdate(
+            AddChildScreenView::kScreenId.name);
+        ShowConsumerUpdateScreen();
+      } else {
+        ShowAddChildScreen();
+      }
       break;
     case UserCreationScreen::Result::ENTERPRISE_ENROLL:
       ShowEnrollmentScreenIfEligible();
@@ -1308,8 +1332,13 @@ void WizardController::OnConsumerUpdateScreenExit(
     ConsumerUpdateScreen::Result result) {
   OnScreenExit(ConsumerUpdateScreenView::kScreenId,
                ConsumerUpdateScreen::GetResultString(result));
-  // ToDo(b/278855932) Implement the consumerUpdateScreenExit
-  NOTIMPLEMENTED();
+  const std::string screen_name =
+      GetLocalState()->GetString(prefs::kOobeScreenAfterConsumerUpdate);
+  if (screen_name == GaiaView::kScreenId.name) {
+    AdvanceToSigninScreen();
+  } else {
+    AdvanceToScreen(PrefToScreenId(screen_name));
+  }
 }
 
 void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
@@ -2654,6 +2683,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     ShowChoobeScreen();
   } else if (screen_id == AddChildScreenView::kScreenId) {
     ShowAddChildScreen();
+  } else if (screen_id == ConsumerUpdateScreenView::kScreenId) {
+    ShowConsumerUpdateScreen();
   } else if (screen_id == TpmErrorView::kScreenId ||
              screen_id == GaiaPasswordChangedView::kScreenId ||
              screen_id == FamilyLinkNoticeView::kScreenId ||

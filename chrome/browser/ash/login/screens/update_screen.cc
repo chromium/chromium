@@ -359,9 +359,9 @@ void UpdateScreen::UpdateInfoChanged(
     case update_engine::Operation::FINALIZING:
       if (view_)
         view_->SetUpdateState(UpdateView::UIState::kUpdateInProgress);
-      // set that critcial update applied in OOBE.
-      g_browser_process->local_state()->SetBoolean(prefs::kOobeCriticalUpdate,
-                                                   true);
+      // set that critical update applied in OOBE.
+      g_browser_process->local_state()->SetBoolean(
+          prefs::kOobeCriticalUpdateCompleted, true);
       SetUpdateStatusMessage(update_info.better_update_progress,
                              update_info.total_time_left);
       // Make sure that VERIFYING and FINALIZING stages are recorded correctly.

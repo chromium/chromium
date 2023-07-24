@@ -20,8 +20,10 @@
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/chromium_strings.h"
@@ -85,17 +87,27 @@ ConsumerUpdateScreen::ConsumerUpdateScreen(
 ConsumerUpdateScreen::~ConsumerUpdateScreen() = default;
 
 bool ConsumerUpdateScreen::MaybeSkip(WizardContext& context) {
-  if (context.skip_post_login_screens_for_tests) {
+  CHECK(!g_browser_process->platform_part()
+             ->browser_policy_connector_ash()
+             ->IsDeviceEnterpriseManaged());
+  if (context.skip_to_login_for_tests || context.is_add_person_flow) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }
 
-  // get if critical update applied in OOBE.
+  // skip if consumer update applied in OOBE before restarting.
   if (g_browser_process->local_state()->GetBoolean(
-          prefs::kOobeCriticalUpdate)) {
+          prefs::kOobeConsumerUpdateCompleted)) {
+    exit_callback_.Run(Result::NOT_APPLICABLE);
+    return true;
+  }
+
+  // skip if critical update applied in OOBE.
+  if (g_browser_process->local_state()->GetBoolean(
+          prefs::kOobeCriticalUpdateCompleted)) {
     LOG(WARNING) << "Skip OOBE Consumer Update because a critical update was "
                     "applied during OOBE.";
-    exit_callback_.Run(Result::NOT_APPLICABLE);
+    exit_callback_.Run(Result::UPDATED);
     return true;
   }
 
@@ -360,6 +372,9 @@ void ConsumerUpdateScreen::UpdateInfoChanged(
     case update_engine::Operation::NEED_PERMISSION_TO_UPDATE:
       break;
     case update_engine::Operation::UPDATED_NEED_REBOOT:
+      g_browser_process->local_state()->SetBoolean(
+          prefs::kOobeConsumerUpdateCompleted, true);
+      ShowRebootInProgress();
       wait_reboot_timer_.Start(FROM_HERE, wait_before_reboot_time_,
                                version_updater_.get(),
                                &VersionUpdater::RebootAfterUpdate);

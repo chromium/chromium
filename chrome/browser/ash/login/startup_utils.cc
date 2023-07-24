@@ -104,7 +104,10 @@ void StartupUtils::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kDisableHIDDetectionScreenForTests, false);
   registry->RegisterBooleanPref(prefs::kOobeGuestMetricsEnabled, false);
   registry->RegisterBooleanPref(prefs::kOobeGuestAcceptedTos, false);
-  registry->RegisterBooleanPref(prefs::kOobeCriticalUpdate, false);
+  registry->RegisterBooleanPref(prefs::kOobeCriticalUpdateCompleted, false);
+  registry->RegisterBooleanPref(prefs::kOobeIsConsumerSegment, false);
+  registry->RegisterBooleanPref(prefs::kOobeConsumerUpdateCompleted, false);
+  registry->RegisterStringPref(prefs::kOobeScreenAfterConsumerUpdate, "");
   if (switches::IsRevenBranding()) {
     registry->RegisterBooleanPref(prefs::kOobeRevenUpdatedToFlex, false);
   }
@@ -176,7 +179,6 @@ void StartupUtils::MarkOobeCompleted() {
   // Forcing the second pref will force this one as well. Even if this one
   // doesn't end up synced it is only going to eat up a couple of bytes with no
   // side-effects.
-  g_browser_process->local_state()->ClearPref(prefs::kOobeScreenPending);
   SaveBoolPreferenceForced(prefs::kOobeComplete, true);
 
   // Successful enrollment implies that recovery is not required.
@@ -186,6 +188,11 @@ void StartupUtils::MarkOobeCompleted() {
 // static
 void StartupUtils::SaveOobePendingScreen(const std::string& screen) {
   SaveStringPreferenceForced(prefs::kOobeScreenPending, screen);
+}
+
+// static
+void StartupUtils::SaveScreenAfterConsumerUpdate(const std::string& screen) {
+  SaveStringPreferenceForced(prefs::kOobeScreenAfterConsumerUpdate, screen);
 }
 
 // static
@@ -221,9 +228,21 @@ bool StartupUtils::IsDeviceRegistered() {
   }
 }
 
+void StartupUtils::ClearSpecificOobePrefs() {
+  g_browser_process->local_state()->ClearPref(prefs::kOobeScreenPending);
+  g_browser_process->local_state()->ClearPref(prefs::kOobeIsConsumerSegment);
+  g_browser_process->local_state()->ClearPref(
+      prefs::kOobeConsumerUpdateCompleted);
+  g_browser_process->local_state()->ClearPref(
+      prefs::kOobeScreenAfterConsumerUpdate);
+  g_browser_process->local_state()->ClearPref(
+      prefs::kOobeCriticalUpdateCompleted);
+}
+
 // static
 void StartupUtils::MarkDeviceRegistered(base::OnceClosure done_callback) {
   SaveIntegerPreferenceForced(::prefs::kDeviceRegistered, 1);
+  ClearSpecificOobePrefs();
   if (done_callback.is_null()) {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},

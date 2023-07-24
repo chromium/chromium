@@ -133,7 +133,21 @@ inline constexpr char kOobeLocaleChangedOnWelcomeScreen[] =
     "OobeLocaleChangedOnWelcomeScreen";
 
 // A boolean pref indicate if the critical update in OOBE applied.
-inline constexpr char kOobeCriticalUpdate[] = "OobeCriticalUpdate";
+inline constexpr char kOobeCriticalUpdateCompleted[] =
+    "OobeCriticalUpdateCompleted";
+
+// A boolean pref indicate if the user is a consumer in OOBE.
+// this is used by the update_engine to allow non-critical update during OOBE.
+inline constexpr char kOobeIsConsumerSegment[] = "IsConsumerSegment";
+
+// A boolean pref indicate if the consumer update in OOBE applied.
+inline constexpr char kOobeConsumerUpdateCompleted[] =
+    "OobeConsumerUpdateCompleted";
+
+// The name of the screen that has to be shown after resume from
+// consumerUpdateScreen in OOBE.
+inline constexpr char kOobeScreenAfterConsumerUpdate[] =
+    "OobeScreenAfterConsumerUpdate";
 
 // A string pref containing url parameter name which can be used on SAML IdP web
 // page to autofill the username field.
