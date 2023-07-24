@@ -116658,7 +116658,7 @@ Called by update_scheduler_enums.py.-->
 
 <enum name="ZstdFilterDecodingStatus">
   <int value="0" label="In progress"/>
-  <int value="1" label="Done"/>
+  <int value="1" label="End of Frame"/>
   <int value="2" label="Error"/>
 </enum>
 

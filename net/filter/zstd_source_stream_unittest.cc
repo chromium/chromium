@@ -22,6 +22,17 @@ namespace net {
 namespace {
 
 const size_t kDefaultBufferSize = 4096;
+const size_t kLargeBufferSize = 7168;
+
+// Get the path of data directory.
+base::FilePath GetTestDataDir() {
+  base::FilePath data_dir;
+  base::PathService::Get(base::DIR_SOURCE_ROOT, &data_dir);
+  data_dir = data_dir.AppendASCII("net");
+  data_dir = data_dir.AppendASCII("data");
+  data_dir = data_dir.AppendASCII("filter_unittests");
+  return data_dir;
+}
 
 }  // namespace
 
@@ -31,11 +42,7 @@ class ZstdSourceStreamTest : public PlatformTest {
     PlatformTest::SetUp();
 
     // Get the path of data directory.
-    base::FilePath data_dir;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &data_dir);
-    data_dir = data_dir.AppendASCII("net");
-    data_dir = data_dir.AppendASCII("data");
-    data_dir = data_dir.AppendASCII("filter_unittests");
+    base::FilePath data_dir = GetTestDataDir();
 
     // Read data from the original file into buffer.
     base::FilePath file_path;
@@ -50,6 +57,7 @@ class ZstdSourceStreamTest : public PlatformTest {
     ASSERT_GE(kDefaultBufferSize, encoded_buffer_.size());
 
     auto source = std::make_unique<MockSourceStream>();
+    source->set_expect_all_input_consumed(false);
     source_ = source.get();
     zstd_stream_ = CreateZstdSourceStream(std::move(source));
 
@@ -174,10 +182,63 @@ TEST_F(ZstdSourceStreamTest, DecodeZstdOneBlockAsync) {
       bytes_read = callback.WaitForResult();
     }
     EXPECT_GE(static_cast<int>(kDefaultBufferSize), bytes_read);
-    actual_output.append(out_data(), bytes_read);
+    EXPECT_GE(bytes_read, 0);
+    if (bytes_read > 0) {
+      actual_output.append(out_data(), bytes_read);
+    }
   } while (bytes_read > 0);
   EXPECT_EQ(source_data_len(), actual_output.size());
   EXPECT_EQ(source_data(), actual_output);
+}
+
+TEST_F(ZstdSourceStreamTest, DecodeTwoConcatenatedFrames) {
+  std::string encoded_buffer;
+  std::string source_data;
+
+  base::FilePath data_dir = GetTestDataDir();
+
+  // Read data from the original file into buffer.
+  base::FilePath file_path;
+  file_path = data_dir.AppendASCII("google.txt");
+  ASSERT_TRUE(base::ReadFileToString(file_path, &source_data));
+  source_data.append(source_data);
+  ASSERT_GE(kLargeBufferSize, source_data.size());
+
+  // Read data from the encoded file into buffer.
+  base::FilePath encoded_file_path;
+  encoded_file_path = data_dir.AppendASCII("google.zst");
+  ASSERT_TRUE(base::ReadFileToString(encoded_file_path, &encoded_buffer));
+
+  // Concatenate two encoded buffers.
+  encoded_buffer.append(encoded_buffer);
+  ASSERT_GE(kLargeBufferSize, encoded_buffer.size());
+
+  scoped_refptr<IOBufferWithSize> out_buffer =
+      base::MakeRefCounted<IOBufferWithSize>(kLargeBufferSize);
+
+  // Decompress content.
+  auto source = std::make_unique<MockSourceStream>();
+  source->AddReadResult(encoded_buffer.c_str(), encoded_buffer.size(), OK,
+                        MockSourceStream::SYNC);
+  source->AddReadResult(nullptr, 0, OK, MockSourceStream::SYNC);
+  source->set_expect_all_input_consumed(false);
+
+  std::unique_ptr<SourceStream> zstd_stream =
+      CreateZstdSourceStream(std::move(source));
+
+  std::string actual_output;
+  while (true) {
+    TestCompletionCallback callback;
+    int bytes_read = zstd_stream->Read(out_buffer.get(), kLargeBufferSize,
+                                       callback.callback());
+    if (bytes_read <= OK) {
+      break;
+    }
+    actual_output.append(out_buffer->data(), bytes_read);
+  }
+
+  EXPECT_EQ(source_data.length(), actual_output.size());
+  EXPECT_EQ(source_data, actual_output);
 }
 
 }  // namespace net

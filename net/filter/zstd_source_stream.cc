@@ -49,7 +49,7 @@ class ZstdSourceStream : public FilterSourceStream {
 
     UMA_HISTOGRAM_ENUMERATION("Net.ZstdFilter.Status", decoding_status_);
 
-    if (decoding_status_ == DecodingStatus::kDecodingDone) {
+    if (decoding_status_ == DecodingStatus::kEndOfFrame) {
       // CompressionRatio is undefined when there is no output produced.
       if (produced_bytes_ != 0) {
         UMA_HISTOGRAM_PERCENTAGE(
@@ -64,7 +64,7 @@ class ZstdSourceStream : public FilterSourceStream {
   // numeric values should never be reused.
   enum class DecodingStatus {
     kDecodingInProgress = 0,
-    kDecodingDone = 1,
+    kEndOfFrame = 1,
     kDecodingError = 2,
     kMaxValue = kDecodingError,
   };
@@ -78,15 +78,6 @@ class ZstdSourceStream : public FilterSourceStream {
                                            size_t input_buffer_size,
                                            size_t* consumed_bytes,
                                            bool upstream_end_reached) override {
-    if (decoding_status_ == DecodingStatus::kDecodingDone) {
-      *consumed_bytes = input_buffer_size;
-      return 0;
-    }
-
-    if (decoding_status_ != DecodingStatus::kDecodingInProgress) {
-      return base::unexpected(ERR_CONTENT_DECODING_FAILED);
-    }
-
     CHECK(dctx_);
     ZSTD_inBuffer input = {input_buffer->data(), input_buffer_size, 0};
     ZSTD_outBuffer output = {output_buffer->data(), output_buffer_size, 0};
@@ -100,23 +91,31 @@ class ZstdSourceStream : public FilterSourceStream {
 
     *consumed_bytes = input.pos;
 
-    if (result > 0u) {
-      if (upstream_end_reached) {
-        decoding_status_ = DecodingStatus::kDecodingError;
-      }
-      // There is some input remaining and caller should provide remaining input
-      // on next call OR there is potentially unflushed data present in the
-      // internal buffers.
-      return output.pos;
-    } else if (result == 0u) {
-      CHECK_LE(output.pos, output.size);
-      // Decoder finished and flushed all remaining buffers.
-      decoding_status_ = DecodingStatus::kDecodingDone;
-      return output.pos;
-    } else {
-      DCHECK(ZSTD_isError(result));
+    if (ZSTD_isError(result)) {
       decoding_status_ = DecodingStatus::kDecodingError;
       return base::unexpected(ERR_CONTENT_DECODING_FAILED);
+    } else if (input.pos < input.size) {
+      // Given a valid frame, zstd won't consume the last byte of the frame
+      // until it has flushed all of the decompressed data of the frame.
+      // Therefore, instead of checking if the return code is 0, we can
+      // just check if input.pos < input.size.
+      return output.pos;
+    } else {
+      CHECK_EQ(input.pos, input.size);
+      if (result != 0u) {
+        // The return value from ZSTD_decompressStream did not end on a frame,
+        // but we reached the end of the file. We assume this is an error, and
+        // the input was truncated.
+        if (upstream_end_reached) {
+          decoding_status_ = DecodingStatus::kDecodingError;
+        }
+      } else {
+        CHECK_EQ(result, 0u);
+        CHECK_LE(output.pos, output.size);
+        // Finished decoding a frame.
+        decoding_status_ = DecodingStatus::kEndOfFrame;
+      }
+      return output.pos;
     }
   }
 
