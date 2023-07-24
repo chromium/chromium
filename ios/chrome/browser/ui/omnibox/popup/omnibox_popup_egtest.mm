@@ -472,7 +472,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // vertically. This is necessary if the center of the list's accessibility
   // frame is not visible, as it is the default start point.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxPopupList()]
-      performAction:grey_swipeFastInDirectionWithStartPoint(kGREYDirectionUp,
+      performAction:grey_swipeFastInDirectionWithStartPoint(kGREYDirectionDown,
                                                             0.5, 0.1)];
   [[EarlGrey selectElementWithMatcher:row]
       assertWithMatcher:grey_interactable()];
