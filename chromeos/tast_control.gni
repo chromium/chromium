@@ -380,15 +380,6 @@ tast_disabled_tests_from_lacros_all = [
   # https://crbug.com/1376638
   "lacros.AudioRecord",
 
-  # b/274158730
-  "tast.inputs.PhysicalKeyboardAutocorrect.*@jacuzzi",
-  "tast.inputs.PhysicalKeyboardShapeBasedChineseTyping.*@jacuzzi",
-  "tast.inputs.VirtualKeyboardTypingOmnibox.*@jacuzzi",
-  "tast.inputs.PhysicalKeyboardZhuyinTyping.*@jacuzzi",
-  "tast.inputs.VirtualKeyboardDeadKeys.*@jacuzzi",
-  "tast.inputs.PhysicalKeyboardShapeBasedChineseTyping.array_lacros",
-  "tast.inputs.VirtualKeyboardSpeech.lacros",
-
   # https://crbug.com/1440735
   "mlservice.WebHandwritingRecognition.lacros",
 
