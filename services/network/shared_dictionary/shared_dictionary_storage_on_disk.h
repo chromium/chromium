@@ -51,6 +51,10 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
       base::Time response_time,
       base::TimeDelta expiration,
       const std::string& match) override;
+  bool IsAlreadyRegistered(const GURL& url,
+                           base::Time response_time,
+                           base::TimeDelta expiration,
+                           const std::string& match) override;
 
   // Called from `SharedDictionaryManagerOnDisk` when dictionary has been
   // deleted.

@@ -56,6 +56,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
       const GURL& url,
       base::Time response_time,
       const net::HttpResponseHeaders& headers,
+      bool was_fetched_via_cache,
       base::OnceCallback<bool()> access_allowed_check_callback);
 
  protected:
@@ -70,6 +71,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
       base::Time response_time,
       base::TimeDelta expiration,
       const std::string& match) = 0;
+
+  // Called to avoid registering the same dictionary from the disk cache.
+  virtual bool IsAlreadyRegistered(const GURL& url,
+                                   base::Time response_time,
+                                   base::TimeDelta expiration,
+                                   const std::string& match) = 0;
 };
 
 // Returns a matching dictionary for `url` from `dictionary_info_map`.
@@ -102,6 +109,33 @@ DictionaryInfoType* GetMatchingDictionaryFromDictionaryInfoMap(
     }
   }
   return info;
+}
+
+// Returns true if the same dictionary is already registered in
+// `dictionary_info_map`. This is used to avoid registering the same dictionary
+// from the disk cache.
+// This is a template method because SharedDictionaryStorageInMemory and
+// SharedDictionaryStorageOnDisk are using different class for
+// DictionaryInfoType.
+template <class DictionaryInfoType>
+bool IsAlreadyRegisteredInDictionaryInfoMap(
+    std::map<url::SchemeHostPort, std::map<std::string, DictionaryInfoType>>&
+        dictionary_info_map,
+    const GURL& url,
+    base::Time response_time,
+    base::TimeDelta expiration,
+    const std::string& match) {
+  auto it1 = dictionary_info_map.find(url::SchemeHostPort(url));
+  if (it1 == dictionary_info_map.end()) {
+    return false;
+  }
+  auto it2 = it1->second.find(match);
+  if (it2 == it1->second.end()) {
+    return false;
+  }
+  return it2->second.url() == url &&
+         it2->second.response_time() == response_time &&
+         it2->second.expiration() == expiration;
 }
 
 }  // namespace network

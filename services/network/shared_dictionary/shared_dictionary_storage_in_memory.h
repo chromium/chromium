@@ -99,6 +99,10 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
       base::Time response_time,
       base::TimeDelta expiration,
       const std::string& match) override;
+  bool IsAlreadyRegistered(const GURL& url,
+                           base::Time response_time,
+                           base::TimeDelta expiration,
+                           const std::string& match) override;
 
   const std::map<url::SchemeHostPort, std::map<std::string, DictionaryInfo>>&
   GetDictionaryMap() {

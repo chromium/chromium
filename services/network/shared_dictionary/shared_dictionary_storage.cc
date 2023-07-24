@@ -99,6 +99,7 @@ SharedDictionaryStorage::MaybeCreateWriter(
     const GURL& url,
     base::Time response_time,
     const net::HttpResponseHeaders& headers,
+    bool was_fetched_via_cache,
     base::OnceCallback<bool()> access_allowed_check_callback) {
   absl::optional<UseAsDictionaryHeaderInfo> info =
       ParseUseAsDictionaryHeaderInfo(headers);
@@ -126,6 +127,11 @@ SharedDictionaryStorage::MaybeCreateWriter(
       return nullptr;
     }
   }
+  if (was_fetched_via_cache &&
+      IsAlreadyRegistered(url, response_time, expiration, info->match)) {
+    return nullptr;
+  }
+
   if (!std::move(access_allowed_check_callback).Run()) {
     return nullptr;
   }

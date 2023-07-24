@@ -109,6 +109,15 @@ SharedDictionaryStorageInMemory::CreateWriter(const GURL& url,
       weak_factory_.GetWeakPtr(), url, response_time, expiration, match));
 }
 
+bool SharedDictionaryStorageInMemory::IsAlreadyRegistered(
+    const GURL& url,
+    base::Time response_time,
+    base::TimeDelta expiration,
+    const std::string& match) {
+  return IsAlreadyRegisteredInDictionaryInfoMap(
+      dictionary_info_map_, url, response_time, expiration, match);
+}
+
 void SharedDictionaryStorageInMemory::OnDictionaryWritten(
     const GURL& url,
     base::Time response_time,

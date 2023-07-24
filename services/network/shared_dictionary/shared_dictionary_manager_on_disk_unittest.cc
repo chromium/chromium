@@ -65,9 +65,9 @@ void WriteDictionary(SharedDictionaryStorage* storage,
           {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
            ": match=\"/", match, "\"\n\n"}));
   ASSERT_TRUE(headers);
-  scoped_refptr<SharedDictionaryWriter> writer =
-      storage->MaybeCreateWriter(dictionary_url, base::Time::Now(), *headers,
-                                 DummyAccessAllowedCheckCallback());
+  scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
+      dictionary_url, base::Time::Now(), *headers,
+      /*was_fetched_via_cache=*/false, DummyAccessAllowedCheckCallback());
   ASSERT_TRUE(writer);
   writer->Append(data.c_str(), data.size());
   writer->Finish();
@@ -83,9 +83,9 @@ void WriteDictionaryWithExpiry(SharedDictionaryStorage* storage,
            ": match=\"/", match,
            "\", expires=", base::NumberToString(expires.InSeconds()), "\n\n"}));
   ASSERT_TRUE(headers);
-  scoped_refptr<SharedDictionaryWriter> writer =
-      storage->MaybeCreateWriter(dictionary_url, base::Time::Now(), *headers,
-                                 DummyAccessAllowedCheckCallback());
+  scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
+      dictionary_url, base::Time::Now(), *headers,
+      /*was_fetched_via_cache=*/false, DummyAccessAllowedCheckCallback());
   ASSERT_TRUE(writer);
   writer->Append(data.c_str(), data.size());
   writer->Finish();
@@ -290,7 +290,7 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
   // MaybeCreateWriter() must return nullptr, after `manager` was deleted.
   scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
       GURL("https://origin.test/dict"), base::Time::Now(), *headers,
-      DummyAccessAllowedCheckCallback());
+      /*was_fetched_via_cache=*/false, DummyAccessAllowedCheckCallback());
   EXPECT_FALSE(writer);
 }
 
@@ -1825,7 +1825,7 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
   ASSERT_TRUE(headers);
   scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
       GURL("https://target1.test/d"), base::Time::Now(), *headers,
-      DummyAccessAllowedCheckCallback());
+      /*was_fetched_via_cache=*/false, DummyAccessAllowedCheckCallback());
   ASSERT_TRUE(writer);
   writer->Append(kTestData1.c_str(), kTestData1.size());
 
