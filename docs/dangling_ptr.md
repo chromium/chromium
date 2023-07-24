@@ -93,7 +93,7 @@ Example usage:
 The logs can be filtered and transformed into a tab separated table:
 ```bash
 cat output \
- | grep "[DanglingRawPtrSignature]" \
+ | grep "[DanglingSignature]" \
  | cut -f2,3,4,5 \
  | sort \
  | uniq -c \
