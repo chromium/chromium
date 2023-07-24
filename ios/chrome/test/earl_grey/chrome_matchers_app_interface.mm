@@ -331,9 +331,9 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)pageSecurityInfoIndicator {
-  return grey_allOf(grey_accessibilityLabel(@"Page Security Info"),
-                    grey_ancestor(grey_kindOfClass([PrimaryToolbarView class])),
-                    nil);
+  return grey_allOf(
+      grey_accessibilityLabel(@"Page Security Info"),
+      grey_ancestor(grey_kindOfClass([LocationBarSteadyView class])), nil);
 }
 
 + (id<GREYMatcher>)omniboxText:(NSString*)text {

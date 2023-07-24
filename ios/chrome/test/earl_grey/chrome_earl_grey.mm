@@ -1395,9 +1395,13 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface isSortingTabsByRecency];
 }
 
+- (BOOL)isBottomOmniboxSteadyStateEnabled {
+  return [ChromeEarlGreyAppInterface isBottomOmniboxSteadyStateEnabled];
+}
+
 - (BOOL)isUnfocusedOmniboxAtBottom {
-  return [ChromeEarlGreyAppInterface isBottomOmniboxSteadyStateEnabled] &&
-         !self.isIPadIdiom && self.isSplitToolbarMode &&
+  return self.isBottomOmniboxSteadyStateEnabled && !self.isIPadIdiom &&
+         self.isSplitToolbarMode &&
          [self userBooleanPref:prefs::kBottomOmnibox];
 }
 

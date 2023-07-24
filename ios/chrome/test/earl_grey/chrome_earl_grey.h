@@ -732,6 +732,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns whether TabGrid is sorted by recency (#tab-grid-recency-sort).
 - (BOOL)isSortingTabsByRecency;
 
+// Returns whether the bottom omnibox steady state feature is enabled.
+- (BOOL)isBottomOmniboxSteadyStateEnabled;
+
 // Returns whether the unfocused omnibox is at the bottom.
 - (BOOL)isUnfocusedOmniboxAtBottom;
 

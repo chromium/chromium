@@ -162,18 +162,60 @@ id<GREYMatcher> PasteToSearchButton() {
   return grey_accessibilityHint(a11yHintPasteButton);
 }
 
-// Returns Copy button from the context menu.
+#pragma mark LocationBar context menu buttons
+
+// LocationBar context menu buttons can be showed in different orders depending
+// on the omnibox position (top or bottom toolbar). The context menu is
+// configured with UIContextMenuConfigurationElementOrderPriority that will
+// create the buttons two times (one for earch ordering) with one of them
+// hidden. The added `grey_hidden(NO)` prevents conflict when matching with
+// GREYMatcher.
+
+// Returns Copy button from the location bar context menu.
 id<GREYMatcher> CopyContextMenuButton() {
+  int copyButtonId = IDS_IOS_SHARE_MENU_COPY;
+  if ([ChromeEarlGrey isBottomOmniboxSteadyStateEnabled]) {
+    copyButtonId = IDS_IOS_COPY_LINK_ACTION_TITLE;
+  }
   return grey_allOf(
-      grey_accessibilityLabel(l10n_util::GetNSString(IDS_IOS_SHARE_MENU_COPY)),
-      grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
+      grey_accessibilityLabel(l10n_util::GetNSString(copyButtonId)),
+      grey_accessibilityTrait(UIAccessibilityTraitButton), grey_hidden(NO),
+      nil);
 }
 
-// Returns Visit Copied Link button from the context menu.
+// Returns Visit Copied Link button from the location bar context menu.
 id<GREYMatcher> VisitCopiedLinkContextMenuButton() {
   return grey_allOf(grey_accessibilityLabel(
                         l10n_util::GetNSString(IDS_IOS_VISIT_COPIED_LINK)),
-                    grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
+                    grey_accessibilityTrait(UIAccessibilityTraitButton),
+                    grey_hidden(NO), nil);
+}
+
+// Returns Search Copied Text button from the location bar context menu.
+id<GREYMatcher> SearchCopiedTextContextMenuButton() {
+  NSString* a11yLabelCopiedText =
+      l10n_util::GetNSString(IDS_IOS_SEARCH_COPIED_TEXT);
+  return grey_allOf(grey_accessibilityLabel(a11yLabelCopiedText),
+                    grey_accessibilityTrait(UIAccessibilityTraitButton),
+                    grey_hidden(NO), nil);
+}
+
+// Returns Search Copied Image button from the location bar context menu.
+id<GREYMatcher> SearchCopiedImageContextMenuButton() {
+  NSString* a11yLabelCopiedImage =
+      l10n_util::GetNSString(IDS_IOS_SEARCH_COPIED_IMAGE);
+  return grey_allOf(grey_accessibilityLabel(a11yLabelCopiedImage),
+                    grey_accessibilityTrait(UIAccessibilityTraitButton),
+                    grey_hidden(NO), nil);
+}
+
+// Returns Search Copied Image button from the location bar context menu.
+id<GREYMatcher> SearchCopiedImageWithLensContextMenuButton() {
+  NSString* a11yLabelCopiedImageWithLens =
+      l10n_util::GetNSString(IDS_IOS_SEARCH_COPIED_IMAGE_WITH_LENS);
+  return grey_allOf(grey_accessibilityLabel(a11yLabelCopiedImageWithLens),
+                    grey_accessibilityTrait(UIAccessibilityTraitButton),
+                    grey_hidden(NO), nil);
 }
 
 // Taps the fake omnibox and waits for the real omnibox to be visible.
@@ -557,9 +599,12 @@ void FocusFakebox() {
   // Verify that system text selection callout is not displayed.
   [[EarlGrey selectElementWithMatcher:VisitCopiedLinkContextMenuButton()]
       assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:SearchCopiedTextButton()]
+  [[EarlGrey selectElementWithMatcher:SearchCopiedTextContextMenuButton()]
       assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:PasteButton()]
+  [[EarlGrey selectElementWithMatcher:SearchCopiedImageContextMenuButton()]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey
+      selectElementWithMatcher:SearchCopiedImageWithLensContextMenuButton()]
       assertWithMatcher:grey_nil()];
 
   [self checkLocationBarSteadyState];
