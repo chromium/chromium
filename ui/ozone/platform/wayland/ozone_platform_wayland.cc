@@ -38,6 +38,7 @@
 #include "ui/ozone/platform/wayland/gpu/wayland_gl_egl_utility.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_overlay_manager.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_surface_factory.h"
+#include "ui/ozone/platform/wayland/host/surface_augmenter.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_connector.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -368,6 +369,12 @@ class OzonePlatformWayland : public OzonePlatform,
         DCHECK(has_initialized_gpu());
         properties.supports_native_pixmaps =
             surface_factory_->SupportsNativePixmaps();
+      }
+
+      if (connection_->surface_augmenter()) {
+        properties.supports_out_of_window_clip_rect =
+            connection_->surface_augmenter()
+                ->SupportsClipRectOnAugmentedSurface();
       }
     } else if (buffer_manager_) {
       DCHECK(has_initialized_gpu());

@@ -96,13 +96,18 @@ OverlayProcessorDelegated::OverlayProcessorDelegated(
                             shared_image_interface) {
   // TODO(msisov, petermcneeley): remove this once Wayland uses only delegated
   // context. May be null in tests.
-  if (ui::OzonePlatform::GetInstance()->GetOverlayManager())
+  if (ui::OzonePlatform::GetInstance()->GetOverlayManager()) {
     ui::OzonePlatform::GetInstance()
         ->GetOverlayManager()
         ->SetContextDelegated();
+  }
+
   supports_clip_rect_ = ui::OzonePlatform::GetInstance()
                             ->GetPlatformRuntimeProperties()
                             .supports_clip_rect;
+  supports_out_of_window_clip_rect_ = ui::OzonePlatform::GetInstance()
+                                          ->GetPlatformRuntimeProperties()
+                                          .supports_out_of_window_clip_rect;
   needs_background_image_ = ui::OzonePlatform::GetInstance()
                                 ->GetPlatformRuntimeProperties()
                                 .needs_background_image;
@@ -166,6 +171,7 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
   const OverlayCandidateFactory::OverlayContext context = {
       .is_delegated_context = true,
       .supports_clip_rect = supports_clip_rect_,
+      .supports_out_of_window_clip_rect = supports_out_of_window_clip_rect_,
       .supports_mask_filter = true};
 
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(

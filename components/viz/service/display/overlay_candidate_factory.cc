@@ -391,17 +391,19 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
   }
 
   if (context_.is_delegated_context) {
-    // Lacros cannot currently delegate clip rects on quads that extend outside
-    // the primary rect. This is because there are bugs that cause the Lacros
-    // window and drop shadow to move incorrectly in that case.
     const bool quad_within_window =
         primary_rect_.Contains(candidate.display_rect);
     const bool transform_supports_clipping =
         context_.supports_arbitrary_transform ||
         absl::holds_alternative<gfx::OverlayTransform>(candidate.transform);
     const bool has_content_clipping = quad->visible_rect != quad->rect;
+
+    // Out of window clipping is enabled on Lacros only when it is supported.
+    // TODO(crbug.com/1385509): Remove the condition on `quad_within_window`
+    // when M117 becomes widely supported.
     const bool can_delegate_clipping =
-        context_.supports_clip_rect && quad_within_window &&
+        context_.supports_clip_rect &&
+        (quad_within_window || context_.supports_out_of_window_clip_rect) &&
         transform_supports_clipping && !has_content_clipping;
     if (can_delegate_clipping) {
       if (candidate.clip_rect.has_value() && candidate.clip_rect->IsEmpty()) {

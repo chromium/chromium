@@ -49,6 +49,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
   struct VIZ_SERVICE_EXPORT OverlayContext {
     bool is_delegated_context = false;
     bool supports_clip_rect = false;
+    bool supports_out_of_window_clip_rect = false;
     bool supports_arbitrary_transform = false;
     bool supports_rounded_display_masks = false;
     bool supports_mask_filter = false;

@@ -120,6 +120,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorDelegated
 
   DelegationStatus delegated_status_ = DelegationStatus::kCompositedOther;
   bool supports_clip_rect_ = false;
+  bool supports_out_of_window_clip_rect_ = false;
   bool needs_background_image_ = false;
   gfx::RectF unassigned_damage_;
   // Used to count the number of frames we should wait until allowing delegation

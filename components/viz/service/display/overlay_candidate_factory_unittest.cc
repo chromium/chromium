@@ -41,6 +41,7 @@ using RoundedDisplayMasksInfo = TextureDrawQuad::RoundedDisplayMasksInfo;
 constexpr OverlayCandidateFactory::OverlayContext kOverlayContextForTesting{
     .is_delegated_context = true,
     .supports_clip_rect = true,
+    .supports_out_of_window_clip_rect = true,
     .supports_arbitrary_transform = true,
     .supports_rounded_display_masks = false};
 
@@ -364,6 +365,7 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest, DeathOnNoClipSupport) {
   const OverlayCandidateFactory::OverlayContext context = {
       .is_delegated_context = true,
       .supports_clip_rect = false,
+      .supports_out_of_window_clip_rect = false,
       .supports_arbitrary_transform = true};
 
   EXPECT_DEATH(CreateCandidateFactory(
@@ -744,20 +746,22 @@ TEST_F(OverlayCandidateFactoryTest, ClipDelegation_OutOfWindow) {
   AggregatedRenderPass render_pass;
   render_pass.SetNew(AggregatedRenderPassId::FromUnsafeValue(1),
                      gfx::Rect(0, 0, 100, 100), gfx::Rect(), gfx::Transform());
-  gfx::Rect rect(0, 0, 75, 75);
-  gfx::Rect clip(0, 0, 50, 50);
+  constexpr gfx::Rect kRect(0, 0, 75, 75);
+  constexpr gfx::Rect kClip(0, 0, 50, 50);
   // Transform up, outside the window.
   gfx::Transform transform;
   transform.Translate(gfx::Vector2dF(0, -30));
-  auto* quad = AddQuad(rect, transform, &render_pass, clip, rect);
+  auto* quad = AddQuad(kRect, transform, &render_pass, kClip, kRect);
 
   OverlayCandidateFactory noclip_factory = CreateCandidateFactory(
       render_pass, gfx::RectF(render_pass.output_rect),
       OverlayCandidateFactory::OverlayContext{.is_delegated_context = true});
-  OverlayCandidateFactory clip_factory = CreateCandidateFactory(
-      render_pass, gfx::RectF(render_pass.output_rect),
-      OverlayCandidateFactory::OverlayContext{.is_delegated_context = true,
-                                              .supports_clip_rect = true});
+  OverlayCandidateFactory clip_factory =
+      CreateCandidateFactory(render_pass, gfx::RectF(render_pass.output_rect),
+                             OverlayCandidateFactory::OverlayContext{
+                                 .is_delegated_context = true,
+                                 .supports_clip_rect = true,
+                                 .supports_out_of_window_clip_rect = true});
 
   OverlayCandidate no_clip_cand;
   OverlayCandidate clip_cand;
@@ -766,12 +770,13 @@ TEST_F(OverlayCandidateFactoryTest, ClipDelegation_OutOfWindow) {
   ASSERT_EQ(clip_factory.FromDrawQuad(quad, clip_cand),
             OverlayCandidate::CandidateStatus::kSuccess);
 
-  // Clip rect can't be delegated because it's no within the window.
-  gfx::RectF clipped(0, 0, 50, 45);
-  EXPECT_RECTF_EQ(no_clip_cand.display_rect, clipped);
+  // Clip rect can be delegated if supported.
+  constexpr gfx::RectF kTransformedClip(0, 0, 50, 45);
+  constexpr gfx::RectF kTransformedRect(0, -30, 75, 75);
+  EXPECT_RECTF_EQ(no_clip_cand.display_rect, kTransformedClip);
   EXPECT_FALSE(no_clip_cand.clip_rect.has_value());
-  EXPECT_RECTF_EQ(clip_cand.display_rect, clipped);
-  EXPECT_FALSE(clip_cand.clip_rect.has_value());
+  EXPECT_RECTF_EQ(clip_cand.display_rect, kTransformedRect);
+  EXPECT_EQ(clip_cand.clip_rect.value(), kClip);
 }
 
 TEST_F(OverlayCandidateFactoryTest, ClipDelegation_VisibleRect) {

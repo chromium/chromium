@@ -198,7 +198,7 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     bool needs_background_image = false;
 
     // Wayland only: determines whether clip rects can be delegated via the
-    // wayland protocol.
+    // wayland protocol when no quad is out of window.
     bool supports_clip_rect = false;
 
     // Wayland only: determine whether toplevel surfaces can be activated and
@@ -208,6 +208,10 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // Wayland only: determines whether non axis-aligned 2d transforms can be
     // delegated via the wayland protocol.
     bool supports_affine_transform = false;
+
+    // Wayland only: determines whether clip rects can be delegated via the
+    // wayland protocol when some quads are out of window.
+    bool supports_out_of_window_clip_rect = false;
   };
 
   // Corresponds to chrome_browser_main_extra_parts.h.
