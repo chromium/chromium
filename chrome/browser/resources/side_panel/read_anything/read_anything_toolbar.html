@@ -1,3 +1,51 @@
+<style include="cr-icons">
+  iron-icon {
+    --icon-size: 20px;
+    height: var(--icon-size);
+    width: var(--icon-size);
+    padding: 0 8px 0 0;
+  }
+  #display-section {
+    font-weight: bold;
+  }
+  cr-icon-button {
+    margin: 10px 8px;
+  }
+</style>
 <div>
-  <cr-icon-button iron-icon="cr:settings_icon"></cr-icon-button>
+  <cr-icon-button
+      id="settings"
+      iron-icon="cr:settings_icon"
+      on-click="onShowSettingsMenuClick_">
+  </cr-icon-button>
+  <cr-action-menu id="menu">
+    <span class="dropdown-item" id="display-section">
+      $i18n{displaySectionTitle}
+    </span>
+    <button class="dropdown-item">
+      <iron-icon class="button-image" icon="read-anything:font-size">
+      </iron-icon>
+      $i18n{fontSizeTitle}
+    </button>
+    <button class="dropdown-item">
+      <iron-icon class="button-image" icon="read-anything:font">
+      </iron-icon>
+      $i18n{fontNameTitle}
+    </button>
+    <button class="dropdown-item">
+      <iron-icon class="button-image" icon="read-anything:color">
+      </iron-icon>
+      $i18n{themeTitle}
+    </button>
+    <button class="dropdown-item">
+      <iron-icon class="button-image" icon="read-anything:line-spacing">
+      </iron-icon>
+      $i18n{lineSpacingTitle}
+    </button>
+    <button class="dropdown-item">
+      <iron-icon class="button-image" icon="read-anything:letter-spacing">
+      </iron-icon>
+      $i18n{letterSpacingTitle}
+    </button>
+  </cr-action-menu>
 </div>

@@ -8192,6 +8192,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_TOOLBAR_LABEL" desc="Accessibility label for the text formatting toolbar of the reading mode feature. Spoken by screen readers.">
         Text formatting
       </message>
+      <message name="IDS_READING_MODE_DISPLAY_SETTINGS" desc="Title for the section of the settings dropdown that adjusts visual display settings." translateable="false">
+        Display
+      </message>
+      <message name="IDS_READING_MODE_FONT_SIZE" desc="Dropdown option for changing the font size for reading mode." translateable="false">
+        Font size
+      </message>
       <message name="IDS_READING_MODE_FONT_NAME_COMBOBOX_LABEL" desc="Accessibility label for the font name combobox of the reading mode feature.">
         Font
       </message>
@@ -8202,7 +8208,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Increase font-size
       </message>
       <message name="IDS_READING_MODE_COLORS_COMBOBOX_LABEL" desc="Accessibility label for the colors combobox of the reading mode feature.">
-        Theme
+        Color theme
       </message>
       <message name="IDS_READING_MODE_LINE_SPACING_COMBOBOX_LABEL" desc="Accessibility label for the line height combobox of the reading mode feature.">
         Line height

@@ -18,6 +18,7 @@ build_webui("build") {
     "app.ts",
     "read_anything_toolbar.ts",
   ]
+  icons_html_files = [ "icons.html" ]
 
   ts_composite = true
   ts_deps = [

@@ -52,6 +52,12 @@ ReadAnythingUI::ReadAnythingUI(content::WebUI* web_ui)
       {"emptyStateHeader", IDS_READING_MODE_EMPTY_STATE_HEADER},
       {"emptyStateSubheader", IDS_READING_MODE_EMPTY_STATE_SUBHEADER},
       {"readAnythingLoadingMessage", IDS_READ_ANYTHING_LOADING},
+      {"lineSpacingTitle", IDS_READING_MODE_LINE_SPACING_COMBOBOX_LABEL},
+      {"fontNameTitle", IDS_READING_MODE_FONT_NAME_COMBOBOX_LABEL},
+      {"themeTitle", IDS_READING_MODE_COLORS_COMBOBOX_LABEL},
+      {"letterSpacingTitle", IDS_READING_MODE_LETTER_SPACING_COMBOBOX_LABEL},
+      {"fontSizeTitle", IDS_READING_MODE_FONT_SIZE},
+      {"displaySectionTitle", IDS_READING_MODE_DISPLAY_SETTINGS},
   };
   for (const auto& str : kLocalizedStrings)
     webui::AddLocalizedString(source, str.name, str.id);
