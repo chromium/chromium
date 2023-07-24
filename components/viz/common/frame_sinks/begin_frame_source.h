@@ -243,6 +243,9 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
   // dispatched to clients again.
   bool RequestCallbackOnGpuAvailable();
   virtual void OnGpuNoLongerBusy() = 0;
+#if BUILDFLAG(IS_MAC)
+  void RecordBeginFrameSourceAccuracy(base::TimeDelta delta);
+#endif
 
  private:
   // The higher 32 bits are used for a process restart id that changes if a
@@ -269,6 +272,13 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
   };
   GpuBusyThrottlingState gpu_busy_response_state_ =
       GpuBusyThrottlingState::kIdle;
+
+#if BUILDFLAG(IS_MAC)
+  base::TimeDelta total_delta_;
+  // The frame count since this histogram was recorded last time. It is recorded
+  // every 3600 frames, which is equivalent to every minute on a 60Hz monitors .
+  int frames_since_last_recording_ = 0;
+#endif
 };
 
 // A BeginFrameSource that does nothing.
@@ -368,12 +378,17 @@ class VIZ_COMMON_EXPORT DelayBasedBeginFrameSource
   // DelayBasedTimeSourceClient implementation.
   void OnTimerTick() override;
 
+  const BeginFrameArgs& last_begin_frame_args() const {
+    return last_begin_frame_args_;
+  }
+  const DelayBasedTimeSource* time_source() const { return time_source_.get(); }
+
  private:
   // The created BeginFrameArgs' sequence_number is calculated based on what
   // interval |frame_time| is in. For example, if |last_frame_time_| is 100,
-  // |next_sequence_number_| is 5, |last_timebase_| is 110 and the interval is
-  // 20, then a |frame_time| of 175 would result in the sequence number being 8
-  // (3 intervals since 110).
+  // |next_sequence_number_| is 5, |last_timebase_| is 110 and the interval
+  // is 20, then a |frame_time| of 175 would result in the sequence number
+  // being 8 (3 intervals since 110).
   BeginFrameArgs CreateBeginFrameArgs(base::TimeTicks frame_time);
   void IssueBeginFrameToObserver(BeginFrameObserver* obs,
                                  const BeginFrameArgs& args);

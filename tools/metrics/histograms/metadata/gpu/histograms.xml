@@ -1770,6 +1770,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Viz.BeginFrameSource.Accuracy.AverageDelta"
+    units="microseconds" expires_after="2024-01-13">
+  <owner>magchen@chromium.org</owner>
+  <owner>ccameron@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    The average time delta between the expected BeginFrame time and the actual
+    time of BeginFrame on Mac. Each recorded number is an average result of 3600
+    frames. It's recorded every 3600 frames when OnBeginFrame or OnTimerTick is
+    called.
+
+    This metric is only for Mac clients with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Viz.DelegatedCompositing.Status" enum="DelegatedStatus"
     expires_after="2023-10-01">
   <owner>petermcneeley@chromium.org</owner>

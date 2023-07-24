@@ -216,6 +216,27 @@ void BeginFrameSource::SetDynamicBeginFrameDeadlineOffsetSource(
     DynamicBeginFrameDeadlineOffsetSource*
         dynamic_begin_frame_deadline_offset_source) {}
 
+#if BUILDFLAG(IS_MAC)
+void BeginFrameSource::RecordBeginFrameSourceAccuracy(base::TimeDelta delta) {
+  total_delta_ += delta.magnitude();
+  frames_since_last_recording_++;
+
+  // Emit the histogram every 3600 frames.
+  constexpr int kFramesToEmitHistogram = 3600;
+  if (frames_since_last_recording_ < kFramesToEmitHistogram) {
+    return;
+  }
+
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "Viz.BeginFrameSource.Accuracy.AverageDelta",
+      total_delta_ / kFramesToEmitHistogram,
+      /*min=*/base::Microseconds(100),
+      /*max=*/base::Milliseconds(8), /*bucket_count=*/20);
+  frames_since_last_recording_ = 0;
+  total_delta_ = base::TimeDelta();
+}
+#endif
+
 // StubBeginFrameSource ---------------------------------------------------
 StubBeginFrameSource::StubBeginFrameSource()
     : BeginFrameSource(kNotRestartableId) {}

@@ -173,6 +173,7 @@ void ExternalBeginFrameSourceMac::OnNeedsBeginFrames(bool needs_begin_frames) {
     return;
   }
   needs_begin_frames_ = needs_begin_frames;
+  just_started_begin_frame_ = true;
 
   // TODO: Try to prevent constant switching between callback register and
   // unregister.
@@ -224,12 +225,18 @@ void ExternalBeginFrameSourceMac::OnDisplayLinkCallback(
   OnBeginFrame(begin_frame_args_generator_.GenerateBeginFrameArgs(
       source_id(), frame_time, frame_time + interval, interval));
 
-  last_frame_time_ = frame_time;
+  // Notify Display FrameRateDecider of the frame interval change.
   if (last_interval_ != interval) {
-    last_interval_ = interval;
     DCHECK(update_vsync_params_callback_);
     update_vsync_params_callback_.Run(frame_time, interval);
+  } else if (!just_started_begin_frame_) {
+    base::TimeDelta delta = frame_time - (last_frame_time_ + last_interval_);
+    RecordBeginFrameSourceAccuracy(delta);
   }
+  just_started_begin_frame_ = false;
+
+  last_frame_time_ = frame_time;
+  last_interval_ = interval;
 }
 
 BeginFrameArgs ExternalBeginFrameSourceMac::GetMissedBeginFrameArgs(
@@ -282,12 +289,13 @@ void ExternalBeginFrameSourceMac::OnTimerTick() {
   OnBeginFrame(begin_frame_args_generator_.GenerateBeginFrameArgs(
       source_id(), frame_time, time_source_->NextTickTime(), interval));
 
-  last_frame_time_ = frame_time;
   if (last_interval_ != interval) {
-    last_interval_ = interval;
     DCHECK(update_vsync_params_callback_);
     update_vsync_params_callback_.Run(frame_time, interval);
   }
+
+  last_frame_time_ = frame_time;
+  last_interval_ = interval;
 }
 
 void ExternalBeginFrameSourceMac::SetPreferredInterval(
@@ -375,7 +383,23 @@ void DelayBasedBeginFrameSourceMac::OnTimeSourceParamsUpdate(
   OnUpdateVSyncParameters(params.display_timebase, params.display_interval);
 }
 
+void DelayBasedBeginFrameSourceMac::AddObserver(BeginFrameObserver* obs) {
+  if (!time_source()->Active()) {
+    just_started_begin_frame_ = true;
+  }
+
+  DelayBasedBeginFrameSource::AddObserver(obs);
+}
+
 void DelayBasedBeginFrameSourceMac::OnTimerTick() {
+  if (last_begin_frame_args().interval == time_source()->Interval() &&
+      !just_started_begin_frame_) {
+    base::TimeDelta delta =
+        base::TimeTicks::Now() - last_begin_frame_args().deadline;
+    RecordBeginFrameSourceAccuracy(delta);
+  }
+  just_started_begin_frame_ = false;
+
   // The VSync parameters skew over time (astonishingly quickly -- 0.1 msec per
   // second). If too much time has elapsed since the last time the vsync
   // parameters were calculated, re-calculate them.

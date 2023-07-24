@@ -91,6 +91,8 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
   base::TimeTicks last_frame_time_;
   base::TimeDelta last_interval_;
 
+  bool just_started_begin_frame_ = false;
+
   UpdateVSyncParametersCallback update_vsync_params_callback_;
 
   base::WeakPtrFactory<ExternalBeginFrameSourceMac> weak_ptr_factory_{this};
@@ -115,6 +117,9 @@ class VIZ_COMMON_EXPORT DelayBasedBeginFrameSourceMac
 
   // BeginFrameSource implementation.
   void SetVSyncDisplayID(int64_t display_id) override;
+  void AddObserver(BeginFrameObserver* obs) override;
+
+  // DelayBasedTimeSourceClient implementation.
   void OnTimerTick() override;
 
  private:
@@ -129,6 +134,9 @@ class VIZ_COMMON_EXPORT DelayBasedBeginFrameSourceMac
   // The callback that is used to update `time_source_`.
   base::TimeTicks time_source_next_update_time_;
   std::unique_ptr<ui::VSyncCallbackMac> time_source_updater_;
+
+  // Used for recording histogram Viz.BeginFrameSource.Accuracy.AverageDelta.
+  bool just_started_begin_frame_ = false;
 
   base::WeakPtrFactory<DelayBasedBeginFrameSourceMac> weak_factory_{this};
 };
