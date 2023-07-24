@@ -3822,6 +3822,11 @@ TEST_F(TextfieldTest, TwoFingerScrollUpdate) {
 // TODO(crbug.com/1465767): Rewrite these long press tests when EventGenerator
 // can generate long press gestures.
 TEST_F(TextfieldTest, LongPressSelection) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kTouchTextEditingRedesign},
+      /*disabled_features=*/{});
+
   InitTextfield();
   textfield_->SetText(u"Hello string world");
 
@@ -3834,12 +3839,16 @@ TEST_F(TextfieldTest, LongPressSelection) {
       ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
   event_generator_->Dispatch(&long_press);
 
-  // Check that nearest word is selected and that touch selection has been
-  // activated.
+  // Check that the nearest word is selected, but that the touch selection
+  // controller is not activated yet.
   gfx::Range range;
   textfield_->GetEditableSelectionRange(&range);
   EXPECT_EQ(range, gfx::Range(0, 5));
   EXPECT_EQ(textfield_->GetSelectedText(), u"Hello");
+  EXPECT_FALSE(test_api_->touch_selection_controller());
+
+  // Check that touch selection is activated after the long press is released.
+  event_generator_->ReleaseTouch();
   EXPECT_TRUE(test_api_->touch_selection_controller());
 }
 
@@ -4146,61 +4155,36 @@ TEST_F(TextfieldTest, VirtualKeyboardFocusEnsureCaretNotInRect) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Touch selection and dragging currently only works for chromeos.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(TextfieldTest, TouchSelectionAndDraggingTest) {
+// No touch on desktop Mac. Tracked in http://crbug.com/445520.
+#if !BUILDFLAG(IS_MAC)
+TEST_F(TextfieldTest, TapActivatesTouchSelection) {
   InitTextfield();
   textfield_->SetText(u"hello world");
   EXPECT_FALSE(test_api_->touch_selection_controller());
-  const int x = GetCursorPositionX(2);
 
-  // Tapping on the textfield should turn on the TouchSelectionController.
-  ui::GestureEventDetails tap_details(ui::ET_GESTURE_TAP);
-  tap_details.set_tap_count(1);
-  ui::GestureEvent tap = CreateTestGestureEvent(x, 0, tap_details);
-  textfield_->OnGestureEvent(&tap);
+  // Tapping in the textfield should activate touch selection.
+  const gfx::Point kPointInTextfield = views::View::ConvertPointToScreen(
+      textfield_, {GetCursorPositionX(2), GetCursorYForTesting()});
+  event_generator_->GestureTapAt(kPointInTextfield);
+  EXPECT_TRUE(test_api_->touch_selection_controller());
+}
+
+TEST_F(TextfieldTest, ClearingFocusDeactivatesTouchSelection) {
+  InitTextfield();
+  textfield_->SetText(u"hello world");
+  EXPECT_FALSE(test_api_->touch_selection_controller());
+
+  // Tap textfield to activate touch selection.
+  const gfx::Point kPointInTextfield = views::View::ConvertPointToScreen(
+      textfield_, {GetCursorPositionX(2), GetCursorYForTesting()});
+  event_generator_->GestureTapAt(kPointInTextfield);
   EXPECT_TRUE(test_api_->touch_selection_controller());
 
-  // Un-focusing the textfield should reset the TouchSelectionController
+  // Clearing focus should deactivate touch selection.
   textfield_->GetFocusManager()->ClearFocus();
   EXPECT_FALSE(test_api_->touch_selection_controller());
-  textfield_->RequestFocus();
-
-  // With touch editing enabled, long press should not show context menu.
-  // Instead, select word and invoke TouchSelectionController.
-  ui::GestureEvent long_press_1 = CreateTestGestureEvent(
-      x, 0, ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
-  textfield_->OnGestureEvent(&long_press_1);
-  EXPECT_EQ(u"hello", textfield_->GetSelectedText());
-  EXPECT_TRUE(test_api_->touch_selection_controller());
-  EXPECT_TRUE(long_press_1.handled());
-
-  // With touch drag drop enabled, long pressing in the selected region should
-  // start a drag and remove TouchSelectionController.
-  ASSERT_TRUE(switches::IsTouchDragDropEnabled());
-  ui::GestureEvent long_press_2 = CreateTestGestureEvent(
-      x, 0, ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
-  textfield_->OnGestureEvent(&long_press_2);
-  EXPECT_EQ(u"hello", textfield_->GetSelectedText());
-  EXPECT_FALSE(test_api_->touch_selection_controller());
-  EXPECT_FALSE(long_press_2.handled());
-
-  // After disabling touch drag drop, long pressing again in the selection
-  // region should not do anything.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableTouchDragDrop);
-  ASSERT_FALSE(switches::IsTouchDragDropEnabled());
-  ui::GestureEvent long_press_3 = CreateTestGestureEvent(
-      x, 0, ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
-  textfield_->OnGestureEvent(&long_press_3);
-  EXPECT_EQ(u"hello", textfield_->GetSelectedText());
-  EXPECT_FALSE(test_api_->touch_selection_controller());
-  EXPECT_FALSE(long_press_3.handled());
 }
-#endif
 
-// No touch on desktop Mac. Tracked in http://crbug.com/445520.
-#if !BUILDFLAG(IS_MAC)
 TEST_F(TextfieldTest, TapOnSelection) {
   InitTextfield();
   textfield_->SetText(u"hello world");
@@ -4235,6 +4219,35 @@ TEST_F(TextfieldTest, TapOnSelection) {
   textfield_->GetEditableSelectionRange(&range);
   EXPECT_TRUE(test_api_->touch_selection_controller());
   EXPECT_EQ(range, kTapRange);
+}
+
+// When touch drag drop is enabled, long pressing on selected text initiates
+// drag-drop behaviour. So, long pressing on selected text should preserve the
+// selection rather than selecting the nearest word and activating touch
+// selection.
+TEST_F(TextfieldTest, LongPressOnSelection) {
+  InitTextfield();
+  textfield_->SetText(u"Hello string world");
+  constexpr gfx::Range kSelectionRange(2, 7);
+  textfield_->SetEditableSelectionRange(kSelectionRange);
+  EXPECT_EQ(textfield_->GetSelectedText(), u"llo s");
+
+  // Long press on the selected text.
+  const gfx::Point kLongPressPoint = views::View::ConvertPointToScreen(
+      textfield_, {GetCursorPositionX(3), GetCursorYForTesting()});
+  event_generator_->PressTouch(kLongPressPoint);
+  ui::GestureEvent long_press = CreateTestGestureEvent(
+      kLongPressPoint.x(), kLongPressPoint.y(),
+      ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+  event_generator_->Dispatch(&long_press);
+
+  // Check that the selection has not changed and that touch selection is not
+  // activated.
+  gfx::Range range;
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, kSelectionRange);
+  EXPECT_EQ(textfield_->GetSelectedText(), u"llo s");
+  EXPECT_FALSE(test_api_->touch_selection_controller());
 }
 
 TEST_F(TextfieldTest, TouchSelectionInUnfocusableTextfield) {
