@@ -131,8 +131,7 @@ void LacrosDataMigrationScreen::ShowImpl() {
     return;
   }
 
-  migrator_->Migrate(crosapi::browser_util::MigrationMode::kMove,
-                     base::BindOnce(&LacrosDataMigrationScreen::OnMigrated,
+  migrator_->Migrate(base::BindOnce(&LacrosDataMigrationScreen::OnMigrated,
                                     weak_factory_.GetWeakPtr()));
 
   if (LoginDisplayHost::default_host() &&

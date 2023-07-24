@@ -109,10 +109,8 @@ TEST_F(BrowserDataMigratorImplTest, Migrate) {
       std::make_unique<BrowserDataMigratorImpl>(
           from_dir_, user_id_hash, base::DoNothing(), &pref_service_);
   absl::optional<BrowserDataMigrator::Result> result;
-  migrator->Migrate(
-      crosapi::browser_util::MigrationMode::kMove,
-      base::BindLambdaForTesting([&out_result = result, &run_loop](
-                                     BrowserDataMigrator::Result result) {
+  migrator->Migrate(base::BindLambdaForTesting(
+      [&out_result = result, &run_loop](BrowserDataMigrator::Result result) {
         run_loop.Quit();
         out_result = result;
       }));
@@ -156,10 +154,8 @@ TEST_F(BrowserDataMigratorImplTest, MigrateCancelled) {
       std::make_unique<BrowserDataMigratorImpl>(
           from_dir_, user_id_hash, base::DoNothing(), &pref_service_);
   absl::optional<BrowserDataMigrator::Result> result;
-  migrator->Migrate(
-      crosapi::browser_util::MigrationMode::kMove,
-      base::BindLambdaForTesting([&out_result = result, &run_loop](
-                                     BrowserDataMigrator::Result result) {
+  migrator->Migrate(base::BindLambdaForTesting(
+      [&out_result = result, &run_loop](BrowserDataMigrator::Result result) {
         run_loop.Quit();
         out_result = result;
       }));
@@ -209,10 +205,8 @@ TEST_F(BrowserDataMigratorImplTest, MigrateOutOfDisk) {
       std::make_unique<BrowserDataMigratorImpl>(
           from_dir_, user_id_hash, base::DoNothing(), &pref_service_);
   absl::optional<BrowserDataMigrator::Result> result;
-  migrator->Migrate(
-      crosapi::browser_util::MigrationMode::kMove,
-      base::BindLambdaForTesting([&out_result = result, &run_loop](
-                                     BrowserDataMigrator::Result result) {
+  migrator->Migrate(base::BindLambdaForTesting(
+      [&out_result = result, &run_loop](BrowserDataMigrator::Result result) {
         run_loop.Quit();
         out_result = result;
       }));

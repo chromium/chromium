@@ -362,8 +362,7 @@ BrowserDataMigratorImpl::~BrowserDataMigratorImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void BrowserDataMigratorImpl::Migrate(crosapi::browser_util::MigrationMode mode,
-                                      MigrateCallback callback) {
+void BrowserDataMigratorImpl::Migrate(MigrateCallback callback) {
   DCHECK(local_state_);
   DCHECK(completion_callback_.is_null());
   completion_callback_ = std::move(callback);
@@ -375,14 +374,12 @@ void BrowserDataMigratorImpl::Migrate(crosapi::browser_util::MigrationMode mode,
   DCHECK(GetMigrationStep(local_state_) == MigrationStep::kRestartCalled);
   SetMigrationStep(local_state_, MigrationStep::kStarted);
 
-  DCHECK_EQ(mode, crosapi::browser_util::MigrationMode::kMove);
-
   LOG(WARNING) << "Initializing MoveMigrator.";
   migrator_delegate_ = std::make_unique<MoveMigrator>(
       original_profile_dir_, user_id_hash_, std::move(progress_tracker_),
       cancel_flag_, local_state_,
       base::BindOnce(&BrowserDataMigratorImpl::MigrateInternalFinishedUIThread,
-                     weak_factory_.GetWeakPtr(), mode));
+                     weak_factory_.GetWeakPtr()));
 
   migrator_delegate_->Migrate();
 }
@@ -393,7 +390,7 @@ void BrowserDataMigratorImpl::Cancel() {
 }
 
 void BrowserDataMigratorImpl::MigrateInternalFinishedUIThread(
-    crosapi::browser_util::MigrationMode mode,
+
     MigrationResult result) {
   DCHECK(local_state_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -416,7 +413,8 @@ void BrowserDataMigratorImpl::MigrateInternalFinishedUIThread(
 
   if (result.data_migration_result.kind == ResultKind::kSucceeded) {
     crosapi::browser_util::SetProfileMigrationCompletedForUser(
-        local_state_, user_id_hash_, mode);
+        local_state_, user_id_hash_,
+        crosapi::browser_util::MigrationMode::kMove);
 
     // Profile migration is marked as completed both when the migration is
     // performed (here) and for a new user without actually performing data
