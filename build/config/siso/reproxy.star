@@ -2,7 +2,7 @@
 # Copyright 2023 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Siso configuration for rewriting remote exec wrapper calls into reproxy config."""
+"""Siso configuration for rewriting remote calls into reproxy config."""
 
 load("@builtin//encoding.star", "json")
 load("@builtin//lib/gn.star", "gn")
@@ -14,11 +14,9 @@ load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
 
 __filegroups = {}
 
-def __rewrite_rewrapper(ctx, cmd):
-    # Not all clang actions will have rewrapper.
+def __parse_rewrapper_cmdline(ctx, cmd):
     if not "rewrapper" in cmd.args[0]:
-        return
-
+        return [], "", false
     # Example command:
     #   ../../buildtools/reclient/rewrapper
     #     -cfg=../../buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_linux.cfg
@@ -40,12 +38,24 @@ def __rewrite_rewrapper(ctx, cmd):
             break
     if wrapped_command_pos < 1:
         fail("couldn't find first non-arg passed to rewrapper for %s" % str(cmd.args))
+    return args, cfg_file, true
+
+def __rewrite_rewrapper(ctx, cmd):
+    args, cfg_file, wrapped = __parse_rewrapper_cmdline(ctx, cmd)
+    if not wrapped:
+        return
     if not cfg_file:
         fail("couldn't find rewrapper cfg file in %s" % str(cmd.args))
     ctx.actions.fix(
-        args = cmd.args[wrapped_command_pos:],
+        args = args,
         reproxy_config = json.encode(rewrapper_cfg.parse(ctx, cfg_file)),
     )
+
+def __strip_rewrapper(ctx, cmd):
+    args, _, wrapped = __parse_rewrapper_cmdline(ctx, cmd)
+    if not wrapped:
+        return
+    ctx.actions.fix(args = args)
 
 # TODO(b/278225415): change gn so this wrapper (and by extension this handler) becomes unnecessary.
 def __rewrite_clang_code_coverage_wrapper(ctx, cmd):
@@ -128,11 +138,12 @@ def __rewrite_action_remote_py(ctx, cmd):
 
 __handlers = {
     "rewrite_rewrapper": __rewrite_rewrapper,
+    "strip_rewrapper": __strip_rewrapper,
     "rewrite_clang_code_coverage_wrapper": __rewrite_clang_code_coverage_wrapper,
     "rewrite_action_remote_py": __rewrite_action_remote_py,
 }
 
-def __enabled(ctx):
+def __use_remoteexec(ctx):
     if "args.gn" in ctx.metadata:
         gn_args = gn.parse_args(ctx.metadata["args.gn"])
         if gn_args.get("use_remoteexec") == "true":
@@ -140,6 +151,33 @@ def __enabled(ctx):
     return False
 
 def __step_config(ctx, step_config):
+    # Modify existing rules to convert native remote config to reproxy config.
+    default_platform = step_config.get("platforms", {}).get("default")
+    if not default_platform:
+        fail("Need a default platform for converting remote config into reproxy config")
+    for rule in step_config["rules"]:
+        if not rule.get("remote"):
+            continue
+
+        platform = default_platform
+        platform_ref = rule.get("platform_ref")
+        if platform_ref:
+            platform = step_config["platforms"].get(platform_ref)
+            if not platform:
+                fail("Rule %s uses undefined platform '%s'" % (rule["name"], platform_ref))
+
+        rule["reproxy_config"] = {
+            "platform": platform,
+            "labels": {
+                "type": "tool",
+            },
+            "canonicalize_working_dir": rule.get("canonicalize_dir", False),
+            "exec_strategy": "remote",
+            "exec_timeout": rule.get("timeout", "10m"),
+            "download_outputs": True,
+        }
+
+    # Then add new rules to convert commands calling rewrapper to use reproxy instead.
     mojom_rules = mojo.step_rules()
     for rule in mojom_rules:
         if rule["name"] == "mojo/mojom_parser":
@@ -147,11 +185,8 @@ def __step_config(ctx, step_config):
             mojom_parser_rule.update({
                 "command_prefix": "python3 ../../build/util/action_remote.py ../../buildtools/reclient/rewrapper --custom_processor=mojom_parser",
                 "handler": "rewrite_action_remote_py",
-                # Disable native remote handling. Only reproxy should handle.
-                # TODO(b/285078792): Refactor with remote_to_rewrapper as this logic is confusing.
-                "remote": False,
             })
-
+            break
     step_config["rules"].extend([
         mojom_parser_rule,
         {
@@ -199,9 +234,9 @@ def __step_config(ctx, step_config):
     ])
     return step_config
 
-reproxy_from_rewrapper = module(
-    "reproxy_from_rewrapper",
-    enabled = __enabled,
+reproxy = module(
+    "reproxy",
+    enabled = __use_remoteexec,
     step_config = __step_config,
     filegroups = __filegroups,
     handlers = __handlers,
