@@ -43,6 +43,8 @@ void ClickSignInFatalScreenActionButton();
 bool IsScanningRequestedOnNetworkScreen();
 bool IsScanningRequestedOnErrorScreen();
 
+void SetFakeTouchpadDevice();
+
 class LanguageReloadObserver : public WelcomeScreen::Observer {
  public:
   explicit LanguageReloadObserver(WelcomeScreen* welcome_screen);

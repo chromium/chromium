@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/shell.h"
+#include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/sync_consent_screen.h"
 #include "chrome/browser/ash/login/screens/update_screen.h"
@@ -29,11 +31,21 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "ui/events/devices/touchpad_device.h"
 
 namespace ash {
 namespace test {
 
 namespace {
+
+const ui::TouchpadDevice kSampleTouchpadInternal(1,
+                                                 ui::INPUT_DEVICE_INTERNAL,
+                                                 "kSampleTouchpadInternal",
+                                                 "",
+                                                 base::FilePath(),
+                                                 0x1111,
+                                                 0x4444,
+                                                 0);
 
 void WaitFor(OobeScreenId screen_id) {
   OobeScreenWaiter(screen_id).Wait();
@@ -214,6 +226,12 @@ bool IsScanningRequestedOnErrorScreen() {
   return OobeJS().GetAttributeBool(
       "enableWifiScans",
       {"error-message", "offline-network-control", "networkSelect"});
+}
+
+// Set Fake Touchpad device.
+void SetFakeTouchpadDevice() {
+  Shell::Get()->input_device_settings_controller()->OnTouchpadListUpdated(
+      {kSampleTouchpadInternal}, {});
 }
 
 LanguageReloadObserver::LanguageReloadObserver(WelcomeScreen* welcome_screen)
