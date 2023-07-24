@@ -7,7 +7,6 @@
  * 'os-settings-sync-subpage' is the settings page containing sync settings.
  */
 
-import '//resources/js/util_ts.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
@@ -29,16 +28,14 @@ import '../settings_vars.css.js';
 import {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertNotReached} from '//resources/js/assert_ts.js';
-import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {IronCollapseElement} from '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PageStatus, StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {FocusConfig} from '../focus_config.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
-import {Router, routes} from '../router.js';
+import {RouteOriginMixin} from '../route_origin_mixin.js';
+import {Route, Router, routes} from '../router.js';
 
 import {OsSettingsPersonalizationOptionsElement} from './os_personalization_options.js';
 import {OsSettingsSyncEncryptionOptionsElement} from './os_sync_encryption_options.js';
@@ -51,7 +48,7 @@ export interface OsSettingsSyncSubpageElement {
 }
 
 const OsSettingsSyncSubpageElementBase =
-    RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
+    RouteOriginMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
 
 export class OsSettingsSyncSubpageElement extends
     OsSettingsSyncSubpageElementBase {
@@ -71,11 +68,6 @@ export class OsSettingsSyncSubpageElement extends
       prefs: {
         type: Object,
         notify: true,
-      },
-
-      focusConfig: {
-        type: Object,
-        observer: 'onFocusConfigChange_',
       },
 
       pageStatusEnum_: {
@@ -193,7 +185,6 @@ export class OsSettingsSyncSubpageElement extends
   }
 
   prefs: {[key: string]: any};
-  focusConfig: FocusConfig;
   private pageStatus_: PageStatus;
   syncPrefs?: SyncPrefs;
   syncStatus: SyncStatus;
@@ -218,6 +209,9 @@ export class OsSettingsSyncSubpageElement extends
 
   constructor() {
     super();
+
+    /** RouteOriginMixin override */
+    this.route = routes.SYNC;
 
     /**
      * The beforeunload callback is used to show the 'Leave site' dialog. This
@@ -264,7 +258,7 @@ export class OsSettingsSyncSubpageElement extends
         'sync-prefs-changed', this.handleSyncPrefsChanged_.bind(this));
 
     const router = Router.getInstance();
-    if (router.currentRoute === routes.SYNC) {
+    if (router.currentRoute === this.route) {
       this.onNavigateToPage_();
     }
   }
@@ -285,6 +279,12 @@ export class OsSettingsSyncSubpageElement extends
       window.removeEventListener('unload', this.unloadCallback_);
       this.unloadCallback_ = null;
     }
+  }
+
+  override ready(): void {
+    super.ready();
+
+    this.addFocusConfig(routes.OS_SYNC, '#syncAdvancedRow');
   }
 
   getEncryptionOptions(): OsSettingsSyncEncryptionOptionsElement|null {
@@ -328,24 +328,15 @@ export class OsSettingsSyncSubpageElement extends
     return this.syncStatus !== undefined && !!this.syncStatus.managed;
   }
 
-  private onFocusConfigChange_() {
-    this.focusConfig.set(routes.OS_SYNC.path, () => {
-      const toFocus =
-          this.shadowRoot!.querySelector<HTMLElement>('#sync-advanced-row');
-      assert(toFocus);
-      focusWithoutInk(toFocus);
-      return null;
-    });
-  }
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
+    super.currentRouteChanged(newRoute, oldRoute);
 
-  override currentRouteChanged() {
-    const router = Router.getInstance();
-    if (router.currentRoute === routes.SYNC) {
+    if (newRoute === this.route) {
       this.onNavigateToPage_();
       return;
     }
 
-    if (routes.SYNC.contains(router.currentRoute)) {
+    if (routes.SYNC.contains(newRoute)) {
       return;
     }
 
@@ -366,8 +357,7 @@ export class OsSettingsSyncSubpageElement extends
   }
 
   private onNavigateToPage_() {
-    const router = Router.getInstance();
-    assert(router.currentRoute === routes.SYNC);
+    assert(Router.getInstance().currentRoute === this.route);
     if (this.beforeunloadCallback_) {
       return;
     }

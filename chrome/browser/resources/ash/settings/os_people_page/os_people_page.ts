@@ -33,14 +33,14 @@ import {LockStateMixin} from '../lock_state_mixin.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {OsPageAvailability} from '../os_page_availability.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
+import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {Account, AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js';
 import {getTemplate} from './os_people_page.html.js';
 
 const OsSettingsPeoplePageElementBase =
-    LockStateMixin(RouteObserverMixin(DeepLinkingMixin(PolymerElement)));
+    LockStateMixin(RouteOriginMixin(DeepLinkingMixin(PolymerElement)));
 
 export class OsSettingsPeoplePageElement extends
     OsSettingsPeoplePageElementBase {
@@ -114,29 +114,6 @@ export class OsSettingsPeoplePageElement extends
         },
       },
 
-      focusConfig_: {
-        type: Object,
-        value() {
-          const map = new Map();
-          if (routes.SYNC) {
-            map.set(routes.SYNC.path, '#sync-setup');
-          }
-          if (routes.LOCK_SCREEN) {
-            map.set(routes.LOCK_SCREEN.path, '#lock-screen-subpage-trigger');
-          }
-          if (routes.ACCOUNTS) {
-            map.set(
-                routes.ACCOUNTS.path, '#manage-other-people-subpage-trigger');
-          }
-          if (routes.ACCOUNT_MANAGER) {
-            map.set(
-                routes.ACCOUNT_MANAGER.path,
-                '#account-manager-subpage-trigger');
-          }
-          return map;
-        },
-      },
-
       showPasswordPromptDialog_: {
         type: Boolean,
         value: false,
@@ -182,7 +159,6 @@ export class OsSettingsPeoplePageElement extends
   private fingerprintUnlockEnabled_: boolean;
   private isAccountManagerEnabled_: boolean;
   private showParentalControls_: boolean;
-  private focusConfig_: Map<string, string>;
   private section_: Section;
   private showPasswordPromptDialog_: boolean;
   private showSyncSettingsRevamp_: boolean;
@@ -192,6 +168,9 @@ export class OsSettingsPeoplePageElement extends
 
   constructor() {
     super();
+
+    /** RouteOriginMixin override */
+    this.route = routes.OS_PEOPLE;
 
     this.syncBrowserProxy_ = SyncBrowserProxyImpl.getInstance();
 
@@ -222,6 +201,14 @@ export class OsSettingsPeoplePageElement extends
         this.handleSyncStatus_.bind(this));
     this.addWebUiListener(
         'sync-status-changed', this.handleSyncStatus_.bind(this));
+  }
+
+  override ready(): void {
+    super.ready();
+
+    this.addFocusConfig(routes.SYNC, '#syncSetupRow');
+    this.addFocusConfig(
+        routes.ACCOUNT_MANAGER, '#accountManagerSubpageTrigger');
   }
 
   private onPasswordRequested_(): void {
@@ -321,10 +308,12 @@ export class OsSettingsPeoplePageElement extends
     }
   }
 
-  override currentRouteChanged(route: Route): void {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
+    super.currentRouteChanged(newRoute, oldRoute);
+
     // The old sync page is a shared subpage, so we handle deep links for
     // both this page and the sync page. Not ideal.
-    if (route === routes.SYNC || route === routes.OS_PEOPLE) {
+    if (newRoute === routes.SYNC || newRoute === this.route) {
       this.attemptDeepLink();
     }
   }

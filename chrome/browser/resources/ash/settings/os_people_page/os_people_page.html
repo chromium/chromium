@@ -16,11 +16,11 @@
     width: 40px;
   }
 
-  #sync-setup {
+  #syncSetupRow {
     --cr-secondary-text-color: var(--cros-text-color-alert);
   }
 
-  :host-context(body.jelly-enabled) #sync-setup {
+  :host-context(body.jelly-enabled) #syncSetupRow {
     --cr-secondary-text-color: var(--cros-sys-error);
   }
 
@@ -40,9 +40,7 @@
     width: 40px;
   }
 </style>
-<os-settings-animated-pages id="pages"
-    section="[[section_]]"
-    focus-config="[[focusConfig_]]">
+<os-settings-animated-pages id="pages" section="[[section_]]">
   <div route-path="default">
     <settings-card header-text="$i18n{osPeoplePageTitle}">
       <div class="settings-box first two-line">
@@ -68,7 +66,7 @@
             </div>
             <cr-icon-button class="subpage-arrow"
                 hidden="[[!isAccountManagerEnabled_]]"
-                id="account-manager-subpage-trigger"
+                id="accountManagerSubpageTrigger"
                 aria-label="$i18n{accountManagerSubMenuLabel}"
                 aria-describedby="profile-name profile-label"
                 aria-roledescription="$i18n{subpageArrowRoleDescription}">
@@ -76,7 +74,7 @@
           </div>
         </template>
       </div>
-      <cr-link-row id="sync-setup"
+      <cr-link-row id="syncSetupRow"
           start-icon="cr:sync"
           label="$i18n{syncAndNonPersonalizedServices}"
           sub-label="[[getSyncAndGoogleServicesSubtext_(syncStatus)]]"
@@ -96,8 +94,7 @@
         learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}">
       <os-settings-sync-subpage
           sync-status="[[syncStatus]]" prefs="{{prefs}}"
-          page-availability="[[pageAvailability.privacy]]"
-          focus-config="[[focusConfig_]]">
+          page-availability="[[pageAvailability.privacy]]">
       </os-settings-sync-subpage>
     </os-settings-subpage>
   </template>
