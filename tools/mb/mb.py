@@ -2133,13 +2133,16 @@ class MetaBuildWrapper:
   def _CipdPlatform(self):
     """Returns current CIPD platform, e.g. linux-amd64.
 
-    Assumes AMD64.
+    Unless the platform is arm64, assumes amd64.
     """
+    arch = 'amd64'
+    if platform.machine() == 'arm64':
+      arch = arm64
     if self.platform == 'win32':
-      return 'windows-amd64'
+      return 'windows-' + arch
     if self.platform == 'darwin':
-      return 'mac-amd64'
-    return 'linux-amd64'
+      return 'mac-' + arch
+    return 'linux-' + arch
 
   def ExpandUser(self, path):
     # This function largely exists so it can be overridden for testing.
