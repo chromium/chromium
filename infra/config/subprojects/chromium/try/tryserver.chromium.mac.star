@@ -27,7 +27,7 @@ def ios_builder(*, name, **kwargs):
     kwargs.setdefault("builderless", False)
     kwargs.setdefault("os", os.MAC_DEFAULT)
     kwargs.setdefault("ssd", None)
-    kwargs.setdefault("xcode", xcode.x14main)
+    kwargs.setdefault("xcode", xcode.x15main)
     return try_.builder(name = name, **kwargs)
 
 consoles.list_view(
@@ -376,6 +376,10 @@ ios_builder(
     ],
     cpu = cpu.ARM64,
     execution_timeout = 4 * time.hour,
+
+    # TODO(crbug/1466746): Xcode 15 is broken due a bug in the SDK.
+    # Remove below once the issue is fixed.
+    xcode = xcode.x14main,
 )
 
 ios_builder(
@@ -384,6 +388,10 @@ ios_builder(
         "ci/ios-catalyst",
     ],
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+
+    # TODO(crbug/1466746): Xcode 15 is broken due a bug in the SDK.
+    # Remove below once the issue is fixed.
+    xcode = xcode.x14main,
 )
 
 ios_builder(
@@ -448,7 +456,7 @@ try_.compilator_builder(
     ssd = None,
     check_for_flakiness = True,
     main_list_view = "try",
-    xcode = xcode.x14main,
+    xcode = xcode.x15main,
 )
 
 ios_builder(
@@ -536,7 +544,7 @@ ios_builder(
     ],
     os = os.MAC_13,
     cpu = cpu.ARM64,
-    xcode = xcode.x14betabots,
+    xcode = xcode.x15betabots,
 )
 
 ios_builder(

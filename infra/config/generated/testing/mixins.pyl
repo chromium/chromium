@@ -696,6 +696,22 @@
       },
     },
   },
+  'mac_13.4_arm64': {
+    'swarming': {
+      'dimensions': {
+        'cpu': 'arm64',
+        'os': 'Mac-13.4',
+      },
+    },
+  },
+  'mac_13.4_x64': {
+    'swarming': {
+      'dimensions': {
+        'cpu': 'x86-64',
+        'os': 'Mac-13.4',
+      },
+    },
+  },
   'mac_13_arm64': {
     'swarming': {
       'dimensions': {
@@ -1266,41 +1282,21 @@
       },
     },
   },
-  'xcode_14_beta': {
-    'args': [
-      '--xcode-build-version',
-      '14e222b',
-    ],
-    'swarming': {
-      'named_caches': [
-        {
-          'name': 'xcode_ios_14e222b',
-          'path': 'Xcode.app',
-        },
-      ],
-    },
-  },
-  'xcode_14_main': {
-    'args': [
-      '--xcode-build-version',
-      '14c18',
-    ],
-    'swarming': {
-      'named_caches': [
-        {
-          'name': 'xcode_ios_14c18',
-          'path': 'Xcode.app',
-        },
-      ],
-    },
-  },
-  'xcode_14_readline_timeout': {
-    'args': [
-      '--readline-timeout',
-      '600',
-    ],
-  },
   'xcode_15_beta': {
+    'args': [
+      '--xcode-build-version',
+      '15a5195m',
+    ],
+    'swarming': {
+      'named_caches': [
+        {
+          'name': 'xcode_ios_15a5195m',
+          'path': 'Xcode.app',
+        },
+      ],
+    },
+  },
+  'xcode_15_main': {
     'args': [
       '--xcode-build-version',
       '15a5195m',
