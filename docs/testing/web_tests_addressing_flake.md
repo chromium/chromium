@@ -24,7 +24,7 @@ On the builder page, find the appropriate step:
 
 While you can examine the individual shard logs to find your test output, it is
 easier to view the consolidated information, so scroll down to the **archive
-results for blink\_web\_tests** step and click the `layout_test_results` link:
+results for blink\_web\_tests** step and click the `web_test_results` link:
 
 ![web_tests_archive_blink_web_tests_step]
 

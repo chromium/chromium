@@ -19,6 +19,11 @@ web tests and are located at
 Tests that should work across browsers go there. Other directories are for
 Chrome-specific tests only.
 
+*** promo
+Consider running WPTs with [`wptrunner`](web_platform_tests_wptrunner.md), the
+harness developed by the WPT project that Chromium now supports.
+***
+
 Note: if you are looking for a guide for the Web Platform Test, you should read
 ["Web platform tests"](./web_platform_tests.md) (WPT). This document does not
 cover WPT specific features/behaviors.

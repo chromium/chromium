@@ -148,6 +148,11 @@ notified of breakages.
 Same as Blink web tests, you can use
 [`run_web_tests.py`](web_tests.md#running-the-tests) to run any WPT test.
 
+*** promo
+Consider running WPTs with [`wptrunner`](web_platform_tests_wptrunner.md), the
+harness developed by the WPT project that Chromium now supports.
+***
+
 One thing to note is that glob patterns for WPT tests are not yet supported.
 
 See [Running WPT tests in Content Shell](web_tests_in_content_shell.md#Running-WPT-Tests-in-Content-Shell)

@@ -1,109 +1,149 @@
 # Using wptrunner in Chromium (experimental)
 
 [`wptrunner`](https://github.com/web-platform-tests/wpt/tree/master/tools/wptrunner)
-is the harness shipped with the WPT project for running the test suite. This
-user guide documents *experimental* support in Chromium for `wptrunner`, which
-will replace [`run_web_tests.py`](web_platform_tests.md#Running-tests) for
-running WPTs in CQ/CI.
+is the harness shipped with the [web platform tests](web_platform_tests.md)
+project for running the test suite. This user guide documents *experimental*
+support in Chromium for `wptrunner` as a replacement for
+[`run_web_tests.py`](web_platform_tests.md#Running-tests) for running WPTs.
 
 For general information on web platform tests, see
 [web-platform-tests.org](https://web-platform-tests.org/test-suite-design.html).
 
-For technical details on the migration to `wptrunner` in Chromium, see the
-[project plan](https://docs.google.com/document/d/1VMt0CB8LO_oXHh7OIKsG-61j4nusxPnTuw1v6JqsixY/edit?usp=sharing&resourcekey=0-XbRB7-vjKAg5-s2hWhOPkA).
-
-*** note
-**Warning**: The project is under active development, so expect some rough
-edges. This document may be stale.
-***
-
 [TOC]
 
-## Differences from `run_web_tests.py`
+## Differences from run_web_tests.py
 
 The main differences between `run_web_tests.py` and `wptrunner` are that:
 
-1. `wptrunner` can run both the full `chrome` binary and the stripped-down
-   `content_shell`. `run_web_tests.py` can only run `content_shell`.
-1. `wptrunner` can communicate with the binary via WebDriver (`chromedriver`),
-   instead of talking directly to the browser binary.
+1. `wptrunner` can communicate with a browser using the standard [WebDriver]
+   protocol, whereas `run_web_tests.py` relies on `content_shell`'s [protocol
+   mode] and [internal APIs].
+1. Due to (1), `run_web_tests.py` can only test the stripped-down
+   `content_shell`, but `wptrunner` can also test the full Chrome binary through
+   `chromedriver`.
+1. `wptrunner` should automatically support new upstream WPT features (e.g.,
+   new `testdriver.js` APIs).
 
-These differences mean that any feature that works on upstream WPT today (e.g.
-print-reftests) should work in `wptrunner`, but conversely, features available to
-`run_web_tests.py` (e.g. the `internals` API) are not yet available to
-`wptrunner`.
+[WebDriver]: https://www.w3.org/TR/webdriver/
+[protocol mode]: /content/web_test/browser/test_info_extractor.h
+[internal APIs]: writing_web_tests.md#Relying-on-Blink-Specific-Testing-APIs
 
-## Running tests locally
+## Running Tests Locally
 
-The `wptrunner` wrapper script is
-[`//third_party/blink/tools/run_wpt_tests.py`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/tools/run_wpt_tests.py).
 First, build the [ninja target][1] for the product you wish to test:
 
 ``` sh
 autoninja -C out/Release chrome_wpt
 autoninja -C out/Release content_shell_wpt
 autoninja -C out/Release system_webview_wpt   # `android_webview`
-autoninja -C out/Release chrome_public_wpt    # `chrome_android`
+autoninja -C out/Release chrome_public_wpt    # `chrome_android` (Clank)
 ```
 
-To run the script, run the command below from `//third_party/blink/tools`:
+Then, from `//third_party/blink/tools/`, run the `wptrunner` wrapper script
+[`run_wpt_tests.py`][0] with one of the following commands:
 
 ``` sh
-./run_wpt_tests.py [test list]
+run_wpt_tests.py [options] [test list]   # *nix
+run_wpt_tests.bat [options] [test list]  # Windows
 ```
 
-Test paths should be given relative to `blink/web_tests/` (*e.g.*,
-[`wpt_internal/badging/badge-success.https.html`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/wpt_internal/badging/badge-success.https.html)).
-For convenience, the `external/wpt/` prefix can be omitted for the [external test
-suite](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/external/wpt/)
-(*e.g.*,
-[`webauthn/createcredential-timeout.https.html`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/external/wpt/webauthn/createcredential-excludecredentials.https.html)).
+Like for `run_web_tests.py`:
 
-`run_wpt_tests.py` also accepts directories, which will run all tests under
-those directories.
-Omitting the test list will run all WPT tests (both internal and external).
-Results from the run are placed under `//out/<target>/layout-test-results/`.
+* The test list may contain directories, files, or URLs (e.g.,
+  `path/to/test.html?variant`).
+* Providing a directory or file runs all contained tests.
+* Prefixing a path with `virtual/<suite>/` runs that path's tests as virtual tests.
+* Omitting the test list will run all tests and virtual suites, including
+  [`wpt_internal/`][8]
 
-Useful flags:
+Useful options:
 
-* `-t/--target`: Select which `//out/` subdirectory to use, e.g. `-t Debug`.
-  Defaults to `Release`.
-* `-p/--product`: Select which browser (or browser component) to test. Defaults
-  to `content_shell`, but choices also include [`chrome`, `chrome_android`, and
-  `android_webview`](https://source.chromium.org/search?q=run_wpt_tests.py%20lang:gn).
-* `-v`: Increase verbosity (may provide multiple times).
-* `--help`: Show the help text.
+* `-t <target>`: Select which `//out/` subdirectory to use. Defaults to `Release`.
+* `-p <product>`: Select which browser (or browser component) to test.
+  Defaults to `content_shell`.
+* `-v`: Increase verbosity (may provide multiple times). `-v` will dump browser
+  logs.
+* `--help`: Show detailed usage and all available options.
 
-## Experimental Builders
+## Builders
 
-As of Q4 2022, `wptrunner` runs on a handful of experimental FYI CI builders
-(mostly Linux):
+A set of FYI builders continuously run all WPTs (including `wpt_internal/`)
+on different platforms:
 
-* [`linux-wpt-content-shell-fyi-rel`](https://ci.chromium.org/p/chromium/builders/ci/linux-wpt-content-shell-fyi-rel),
-  which runs content shell against `external/wpt/` and `wpt_internal/`
-* [`win10-wpt-content-shell-fyi-rel`](https://ci.chromium.org/p/chromium/builders/ci/win10-wpt-content-shell-fyi-rel),
-  which runs content shell against `external/wpt/` and `wpt_internal/`
-* [`win11-wpt-content-shell-fyi-rel`](https://ci.chromium.org/p/chromium/builders/ci/win11-wpt-content-shell-fyi-rel),
-  which runs content shell against `external/wpt/` and `wpt_internal/`
-* [`linux-wpt-fyi-rel`](https://ci.chromium.org/p/chromium/builders/ci/linux-wpt-fyi-rel),
-  which runs Chrome against `external/wpt/`
-* [`linux-wpt-identity-fyi-rel`](https://ci.chromium.org/p/chromium/builders/ci/linux-wpt-identity-fyi-rel),
-  which runs tests under `external/wpt/webauthn/`
-* [`linux-wpt-input-fyi-rel`](https://ci.chromium.org/p/chromium/builders/ci/linux-wpt-input-fyi-rel),
-  which runs tests under `external/wpt/{input-events,pointerevents,uievents}/`,
-  as well as `external/wpt/infrastructure/testdriver/actions/`
-* Various
-  [Android](https://ci.chromium.org/p/chromium/g/chromium.android.fyi/console)
-  builders
+* [`linux-wpt-content-shell-fyi-rel`](https://ci.chromium.org/p/chromium/builders/ci/linux-wpt-content-shell-fyi-rel)
+  (also includes flag-specific suites run by `linux-rel`)
+* [`win10-wpt-content-shell-fyi-rel`](https://ci.chromium.org/p/chromium/builders/ci/win10-wpt-content-shell-fyi-rel)
+* [`win11-wpt-content-shell-fyi-rel`](https://ci.chromium.org/p/chromium/builders/ci/win11-wpt-content-shell-fyi-rel)
+* [`mac10.15-wpt-content-shell-fyi-rel`](https://ci.chromium.org/p/chromium/builders/ci/mac10.15-wpt-content-shell-fyi-rel)
+* [`mac11-wpt-content-shell-fyi-rel`](https://ci.chromium.org/p/chromium/builders/ci/mac11-wpt-content-shell-fyi-rel)
+* [`mac12-wpt-content-shell-fyi-rel`](https://ci.chromium.org/p/chromium/builders/ci/mac12-wpt-content-shell-fyi-rel)
+* [`mac13-wpt-content-shell-fyi-rel`](https://ci.chromium.org/p/chromium/builders/ci/mac13-wpt-content-shell-fyi-rel)
+* [`mac12-arm64-wpt-content-shell-fyi-rel`](https://ci.chromium.org/p/chromium/builders/ci/mac12-arm64-wpt-content-shell-fyi-rel)
+* [`mac13-arm64-wpt-content-shell-fyi-rel`](https://ci.chromium.org/p/chromium/builders/ci/mac13-arm64-wpt-content-shell-fyi-rel)
+* [`linux-wpt-fyi-rel`](https://ci.chromium.org/p/chromium/builders/ci/linux-wpt-fyi-rel)
+  (runs against Chrome; all others run against content shell)
 
-Each of these builders has an opt-in trybot mirror with the same name.
+Each builder has an opt-in try mirror with the same name.
 To run one of these builders against a CL, click "Choose Tryjobs" in Gerrit,
 then search for the builder name.
-A [`Cq-Include-Trybots:`](https://chromium.googlesource.com/chromium/src/+/main/docs/contributing.md#cl-footer-reference)
-footer in the CL description can add a `wptrunner` builder to the default CQ
-builder set.
-Results for the bots use the existing layout test
-[results viewer](https://test-results.appspot.com/data/layout_results/linux-wpt-identity-fyi-rel/201/wpt_tests_suite/layout-test-results/results.html).
+Alternatively, add a [CL description footer] of the form:
+
+```
+Cq-Include-Trybots: luci.chromium.try:<builder name>
+```
+
+to opt into select builders when submitting to CQ.
+
+[CL description footer]: ../contributing.md#cl-footer-reference
+
+## Test Results
+
+Results from the most recent run are placed under
+`//out/<target>/layout-test-results/`. The next test run will rename this
+directory with a timestamp appended to preserve the results.
+
+To view the test results locally, open `layout-test-results/results.html` in a
+browser. This [`results.html`][9] is the same [results viewer] that
+`run_web_tests.py` supports. On [builders](#Builders), `results.html` can be
+accessed from the "archive results for ..." &rightarrow; `web_test_results`
+link as an alternative to the built-in test results UI:
+
+|||---|||
+###### `results.html` build page link
+
+![results.html build page link](images/web_tests_archive_blink_web_tests_step.png)
+
+###### `results.html`
+
+![results.html query filter](images/web_tests_results_viewer_query_filter.png)
+|||---|||
+
+The artifacts that `results.html` serves are stored under `layout-test-results/`
+with the same directory structure as their tests.
+`run_wpt_tests.py` produces similar kinds of artifacts as `run_web_tests.py`
+does:
+
+* `*-{expected,actual,diff}.txt, *-pretty-diff.html`: (Sub)test results in the
+  text-based [WPT metadata](#Expectations) format and their diffs.
+* `*-{expected,actual,diff}.png` (reftest only): Screenshots of the reference
+  and test pages, and the diff produced by [`image_diff`](/tools/imagediff).
+* `*-crash-log.txt`: Contains all logs from driver processes (e.g.,
+  `chromedriver`, `logcat`). For `content_shell`, this also includes the
+  protocol mode stdout.
+* `*-stderr.txt`: (Sub)test results in unstructured form.
+
+[results viewer]: web_tests_addressing_flake.md#Understanding-builder-results
+
+## Testing Different Configurations
+
+`run_wpt_tests.py` consumes the same [`VirtualTestSuites`][2],
+[`FlagSpecificConfig`][3], and [`SmokeTests/*.txt`][4] files that
+`run_web_tests.py` does. Other than the omission of non-WPT tests from test
+lists, `run_wpt_tests.py` honors the format and behavior of these files exactly
+as described for [web tests](web_tests.md#testing-runtime-flags).
+
+`run_wpt_tests.py` also accepts the `--flag-specific` option to add a
+flag-specific configuration's arguments to the binary invocation.
 
 ## Expectations
 
@@ -362,7 +402,7 @@ Passing the `--no-headless` flag to `run_wpt_tests.py` will pause execution
 after running each test headfully.
 You can interact with the paused test page afterwards, including with DevTools:
 
-![wptrunner paused](images/web-tests/wptrunner-paused.png)
+![wptrunner paused](images/web-tests/wptrunner-paused.jpg)
 
 Closing the tab or window will unpause `wptrunner` and run the next test.
 
@@ -377,12 +417,16 @@ Please [file bugs and feature requests](https://crbug.com/new) against
 [`Blink>Infra` with the `wptrunner`
 label](https://bugs.chromium.org/p/chromium/issues/list?q=component%3ABlink%3EInfra%20label%3Awptrunner&can=2).
 
+[0]: /third_party/blink/tools/run_wpt_tests.py
 [1]: https://source.chromium.org/search?q=run_wpt_tests.py%20lang:gn
 [2]: /third_party/blink/web_tests/VirtualTestSuites
 [3]: /third_party/blink/web_tests/FlagSpecificConfig
+[4]: /third_party/blink/web_tests/SmokeTests
 [5]: /third_party/blink/tools/blink_tool.py
 [6]: /third_party/blink/tools/blinkpy/tool/commands/update_metadata.py
 [7]: /third_party/blink/tools/blinkpy/tool/commands/rebaseline_cl.py
+[8]: /third_party/blink/web_tests/wpt_internal
+[9]: /third_party/blink/tools/blinkpy/web_tests/results.html
 [10]: /third_party/blink/web_tests/FlagExpectations
 [11]: https://web-platform-tests.org/writing-tests/testharness.html#tests-for-other-or-multiple-globals-any-js
 [12]: https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/tools/blinkpy/web_tests/port/base.py;l=152-163;drc=b35e75299a6fda0eb51e9ba3139cce216f7f8db0;bpv=0;bpt=0
