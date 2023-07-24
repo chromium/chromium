@@ -595,6 +595,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['OsFilesPageOfficePage', 'os_files_page/office_page_test.js'],
  ['OsFilesPageSmbSharesPage', 'os_files_page/smb_shares_page_test.js'],
  [
+   'OsLanguagesPage',
+   'os_languages_page/os_languages_page_test.js',
+ ],
+ [
    'OsLanguagesPageInputMethodOptionsPage',
    'os_languages_page/input_method_options_page_test.js'
  ],

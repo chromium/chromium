@@ -10,6 +10,7 @@
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
@@ -24,7 +25,6 @@ import '../os_settings_page/os_settings_animated_pages.js';
 import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
@@ -33,10 +33,9 @@ import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 
 import {castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
-import {FocusConfig} from '../focus_config.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
+import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {hasOptionsPageInSettings} from './input_method_util.js';
@@ -45,12 +44,11 @@ import {InputsShortcutReminderState, LanguagesMetricsProxyImpl, LanguagesPageInt
 import {LanguageHelper, LanguagesModel, LanguageState, SpellCheckLanguageState} from './languages_types.js';
 
 const OsSettingsInputPageElementBase =
-    RouteObserverMixin(PrefsMixin(I18nMixin(DeepLinkingMixin(PolymerElement))));
+    RouteOriginMixin(PrefsMixin(I18nMixin(DeepLinkingMixin(PolymerElement))));
 
 export interface OsSettingsInputPageElement {
   $: {
     addInputMethod: CrButtonElement,
-    editDictionarySubpageTrigger: CrLinkRowElement,
   };
 }
 
@@ -71,11 +69,6 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
       prefs: {
         type: Object,
         notify: true,
-      },
-
-      focusConfig: {
-        type: Object,
-        observer: 'focusConfigChanged_',
       },
 
       /**
@@ -178,11 +171,6 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   // Public API: Downwards data flow.
   languages: LanguagesModel|undefined;
   languageHelper: LanguageHelper;
-  // Note that even though this passed in using downwards data flow, we mutate
-  // this variable in focusConfigChanged_. This is OK, as the place where we use
-  // focusConfig (<os-settings-animated-pages>) lazily reads focusConfig and
-  // does not need to be notified of mutations.
-  focusConfig: FocusConfig;
 
   // API proxies.
   private languagesMetricsProxy_ = LanguagesMetricsProxyImpl.getInstance();
@@ -215,23 +203,29 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   // `string[]`.
   private shortcutReminderBody_: TrustedHTML[];
 
-  override currentRouteChanged(route: Route): void {
+  constructor() {
+    super();
+
+    /** RouteOriginMixin override */
+    this.route = routes.OS_LANGUAGES_INPUT;
+  }
+
+  override ready(): void {
+    super.ready();
+
+    this.addFocusConfig(
+        routes.OS_LANGUAGES_EDIT_DICTIONARY, '#editDictionarySubpageTrigger');
+  }
+
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
+    super.currentRouteChanged(newRoute, oldRoute);
+
     // Does not apply to this page.
-    if (route !== routes.OS_LANGUAGES_INPUT) {
+    if (newRoute !== this.route) {
       return;
     }
 
     this.attemptDeepLink();
-  }
-
-  private focusConfigChanged_(
-      _newConfig: FocusConfig, oldConfig: FocusConfig|null): void {
-    // Safety: focusConfig is set only once on the parent, so this observer
-    // should only fire once.
-    assert(!oldConfig);
-    this.focusConfig.set(
-        routes.OS_LANGUAGES_EDIT_DICTIONARY.path,
-        '#editDictionarySubpageTrigger');
   }
 
   private onShowImeMenuChange_(e: Event): void {

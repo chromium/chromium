@@ -13,7 +13,7 @@ import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertGT, assertNotEquals, assertNull, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {FakeLanguageSettingsPrivate, getFakeLanguagePrefs} from '../fake_language_settings_private.js';
 import {FakeSettingsPrivate} from '../fake_settings_private.js';
@@ -266,6 +266,31 @@ suite('<os-settings-input-page>', () => {
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
           'Spell check toggle should be focused for settingId=1207.');
+    });
+
+    test('Spellcheck row is focused after returning from subpage', async () => {
+      Router.getInstance().navigateTo(routes.OS_LANGUAGES_INPUT);
+
+      const triggerSelector = '#editDictionarySubpageTrigger';
+      const subpageTrigger =
+          inputPage.shadowRoot!.querySelector<HTMLElement>(triggerSelector);
+      assertTrue(!!subpageTrigger);
+
+      // Sub-page trigger navigates to spellcheck subpage
+      subpageTrigger.click();
+      assertEquals(
+          routes.OS_LANGUAGES_EDIT_DICTIONARY,
+          Router.getInstance().currentRoute);
+
+      // Navigate back
+      const popStateEventPromise = eventToPromise('popstate', window);
+      Router.getInstance().navigateToPreviousRoute();
+      await popStateEventPromise;
+      await waitAfterNextRender(inputPage);
+
+      assertEquals(
+          subpageTrigger, inputPage.shadowRoot!.activeElement,
+          `${triggerSelector} should be focused.`);
     });
   });
 

@@ -26,8 +26,8 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {FocusConfig} from '../focus_config.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
+import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Router, routes} from '../router.js';
 
 import {LanguageHelper, LanguagesModel} from './languages_types.js';
@@ -37,9 +37,10 @@ import {getTemplate} from './os_languages_section.html.js';
 const ACCESSIBILITY_COMMON_IME_ID =
     '_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation';
 
-const OsSettingsLanguagesSectionElementBase = I18nMixin(PolymerElement);
+const OsSettingsLanguagesSectionElementBase =
+    RouteOriginMixin(I18nMixin(PolymerElement));
 
-class OsSettingsLanguagesSectionElement extends
+export class OsSettingsLanguagesSectionElement extends
     OsSettingsLanguagesSectionElementBase {
   static get is() {
     return 'os-settings-languages-section' as const;
@@ -65,19 +66,6 @@ class OsSettingsLanguagesSectionElement extends
       },
 
       languageHelper: Object,
-
-      focusConfig_: {
-        type: Object,
-        value() {
-          const map = new Map();
-          if (routes.OS_LANGUAGES_SMART_INPUTS) {
-            map.set(
-                routes.OS_LANGUAGES_SMART_INPUTS.path,
-                '#smartInputsSubpageTrigger');
-          }
-          return map;
-        },
-      },
 
       inputPageTitle_: {
         type: String,
@@ -109,12 +97,26 @@ class OsSettingsLanguagesSectionElement extends
   private languages: LanguagesModel|undefined;
   // Only defined after a render.
   private languageHelper: LanguageHelper;
-  private focusConfig_: FocusConfig;
   private section_: Section;
 
   // loadTimeData flags and strings.
   private inputPageTitle_: string;
   private smartInputsEnabled_: boolean;
+
+  constructor() {
+    super();
+
+    /** RouteOriginMixin override */
+    this.route = routes.OS_LANGUAGES;
+  }
+
+  override ready(): void {
+    super.ready();
+
+    this.addFocusConfig(routes.OS_LANGUAGES_LANGUAGES, '#languagesRow');
+    this.addFocusConfig(routes.OS_LANGUAGES_INPUT, '#inputRow');
+    this.addFocusConfig(routes.OS_LANGUAGES_SMART_INPUTS, '#smartInputsRow');
+  }
 
   private onLanguagesV2Click_(): void {
     Router.getInstance().navigateTo(routes.OS_LANGUAGES_LANGUAGES);

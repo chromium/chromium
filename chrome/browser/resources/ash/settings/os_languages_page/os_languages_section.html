@@ -6,13 +6,11 @@
 </settings-languages>
 
 <!-- Top-level settings section. -->
-<os-settings-animated-pages id="pages"
-    section="[[section_]]"
-    focus-config="[[focusConfig_]]">
+<os-settings-animated-pages id="pages" section="[[section_]]">
   <div route-path="default">
     <settings-card header-text="$i18n{osLanguagesPageTitle}">
       <cr-link-row
-          id="languagesPageTrigger"
+          id="languagesRow"
           label="$i18n{languagesPageTitle}"
           sub-label="[[getLanguageDisplayName_(
               languages.prospectiveUILanguage, languageHelper)]]"
@@ -20,8 +18,8 @@
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
       <cr-link-row
+          id="inputRow"
           class="hr"
-          id="inputPageTrigger"
           label="[[inputPageTitle_]]"
           sub-label="[[getInputMethodDisplayName_(
             languages.inputMethods.currentId, languageHelper)]]"
@@ -30,8 +28,8 @@
       </cr-link-row>
       <template is="dom-if" if="[[smartInputsEnabled_]]">
         <cr-link-row
+            id="smartInputsRow"
             class="hr"
-            id="smartInputsSubpageTrigger"
             label="$i18n{smartInputsTitle}"
             on-click="onSmartInputsClick_"
             role-description="$i18n{subpageArrowRoleDescription}">
@@ -55,8 +53,7 @@
   <template is="dom-if" route-path="/osLanguages/input">
     <os-settings-subpage page-title="[[inputPageTitle_]]">
       <os-settings-input-page language-helper="[[languageHelper]]"
-          languages="[[languages]]" prefs="{{prefs}}"
-          focus-config="[[focusConfig_]]">
+          languages="[[languages]]" prefs="{{prefs}}">
       </os-settings-input-page>
     </os-settings-subpage>
   </template>
