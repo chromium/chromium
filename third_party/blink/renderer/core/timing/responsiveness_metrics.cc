@@ -10,6 +10,7 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
@@ -61,16 +62,13 @@ constexpr char kSlowInteractionToNextPaintTraceEventName[] =
 
 void EmitSlowInteractionToNextPaintTraceEvent(
     const ResponsivenessMetrics::EventTimestamps& event) {
+  uint64_t trace_id = base::trace_event::GetNextGlobalTraceId();
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
       kSlowInteractionToNextPaintTraceEventCategory,
-      kSlowInteractionToNextPaintTraceEventName,
-      TRACE_ID_LOCAL(kSlowInteractionToNextPaintTraceEventName),
-      event.start_time);
+      kSlowInteractionToNextPaintTraceEventName, trace_id, event.start_time);
   TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
       kSlowInteractionToNextPaintTraceEventCategory,
-      kSlowInteractionToNextPaintTraceEventName,
-      TRACE_ID_LOCAL(kSlowInteractionToNextPaintTraceEventName),
-      event.end_time);
+      kSlowInteractionToNextPaintTraceEventName, trace_id, event.end_time);
 }
 
 // Returns the longest event in `timestamps`.

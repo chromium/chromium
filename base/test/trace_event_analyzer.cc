@@ -70,7 +70,9 @@ bool TraceEvent::SetFromJSON(const base::Value* event_value) {
                      phase == TRACE_EVENT_PHASE_CREATE_OBJECT ||
                      phase == TRACE_EVENT_PHASE_DELETE_OBJECT ||
                      phase == TRACE_EVENT_PHASE_SNAPSHOT_OBJECT ||
-                     phase == TRACE_EVENT_PHASE_ASYNC_END);
+                     phase == TRACE_EVENT_PHASE_ASYNC_END ||
+                     phase == TRACE_EVENT_PHASE_NESTABLE_ASYNC_BEGIN ||
+                     phase == TRACE_EVENT_PHASE_NESTABLE_ASYNC_END);
 
   if (require_origin) {
     absl::optional<int> maybe_process_id = event_dict.FindInt("pid");
@@ -839,13 +841,14 @@ void TraceAnalyzer::AssociateBeginEndEvents() {
 void TraceAnalyzer::AssociateAsyncBeginEndEvents(bool match_pid) {
   using trace_analyzer::Query;
 
-  Query begin(
-      Query::EventPhaseIs(TRACE_EVENT_PHASE_ASYNC_BEGIN) ||
-      Query::EventPhaseIs(TRACE_EVENT_PHASE_ASYNC_STEP_INTO) ||
-      Query::EventPhaseIs(TRACE_EVENT_PHASE_ASYNC_STEP_PAST));
+  Query begin(Query::EventPhaseIs(TRACE_EVENT_PHASE_ASYNC_BEGIN) ||
+              Query::EventPhaseIs(TRACE_EVENT_PHASE_ASYNC_STEP_INTO) ||
+              Query::EventPhaseIs(TRACE_EVENT_PHASE_ASYNC_STEP_PAST) ||
+              Query::EventPhaseIs(TRACE_EVENT_PHASE_NESTABLE_ASYNC_BEGIN));
   Query end(Query::EventPhaseIs(TRACE_EVENT_PHASE_ASYNC_END) ||
             Query::EventPhaseIs(TRACE_EVENT_PHASE_ASYNC_STEP_INTO) ||
-            Query::EventPhaseIs(TRACE_EVENT_PHASE_ASYNC_STEP_PAST));
+            Query::EventPhaseIs(TRACE_EVENT_PHASE_ASYNC_STEP_PAST) ||
+            Query::EventPhaseIs(TRACE_EVENT_PHASE_NESTABLE_ASYNC_END));
   Query match(Query::EventCategory() == Query::OtherCategory() &&
               Query::EventId() == Query::OtherId());
 
