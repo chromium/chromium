@@ -293,13 +293,13 @@ Baseline Requirements (i.e., 398 days or less).
 The Chrome Certificate Verifier was designed to follow path-building
 guidance established in [RFC 4158](https://datatracker.ietf.org/doc/html/rfc4158).
 
-## Where is the Chrome Root Store source code located?
+### Where is the Chrome Root Store source code located?
 Source locations include
 [//net/data/ssl/chrome_root_store](/net/data/ssl/chrome_root_store),
 [//net/cert](/net/cert), [//services/cert_verifier](/services/cert_verifier),
 and [//chrome/browser/component_updater/](/chrome/browser/component_updater/).
 
-## Where is the Chrome Certificate Verifier source code located?
+### Where is the Chrome Certificate Verifier source code located?
 Source locations include
 [//net/cert](/net/cert), [//net/cert/internal](/net/cert/internal), and
 [//net/cert/pki](/net/cert/pki).
