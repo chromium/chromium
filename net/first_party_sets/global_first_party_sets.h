@@ -83,7 +83,6 @@ class NET_EXPORT GlobalFirstPartySets {
   FirstPartySetMetadata ComputeMetadata(
       const SchemefulSite& site,
       const SchemefulSite* top_frame_site,
-      const std::set<SchemefulSite>& party_context,
       const FirstPartySetsContextConfig& fps_context_config) const;
 
   // Modifies this instance such that it will respect the given

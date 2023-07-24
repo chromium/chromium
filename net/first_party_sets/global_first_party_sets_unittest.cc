@@ -727,44 +727,26 @@ TEST_F(PopulatedGlobalFirstPartySetsTest, ComputeMetadata) {
   FirstPartySetEntry associated_entry(kPrimary, SiteType::kAssociated, 0);
 
   // Works as usual for sites that are in First-Party sets.
-  EXPECT_EQ(
-      global_sets().ComputeMetadata(kAssociated1, &kAssociated1, {kAssociated1},
-                                    FirstPartySetsContextConfig()),
-      FirstPartySetMetadata(&associated_entry, &associated_entry));
-  EXPECT_EQ(
-      global_sets().ComputeMetadata(kPrimary, &kAssociated1, {kAssociated1},
-                                    FirstPartySetsContextConfig()),
-      FirstPartySetMetadata(&primary_entry, &associated_entry));
-  EXPECT_EQ(
-      global_sets().ComputeMetadata(kAssociated1, &kPrimary, {kAssociated1},
-                                    FirstPartySetsContextConfig()),
-      FirstPartySetMetadata(&associated_entry, &primary_entry));
-  EXPECT_EQ(
-      global_sets().ComputeMetadata(kAssociated1, &kAssociated1, {kPrimary},
-                                    FirstPartySetsContextConfig()),
-      FirstPartySetMetadata(&associated_entry, &associated_entry));
   EXPECT_EQ(global_sets().ComputeMetadata(kAssociated1, &kAssociated1,
-                                          {kAssociated1, kPrimary},
                                           FirstPartySetsContextConfig()),
             FirstPartySetMetadata(&associated_entry, &associated_entry));
+  EXPECT_EQ(global_sets().ComputeMetadata(kPrimary, &kAssociated1,
+                                          FirstPartySetsContextConfig()),
+            FirstPartySetMetadata(&primary_entry, &associated_entry));
+  EXPECT_EQ(global_sets().ComputeMetadata(kAssociated1, &kPrimary,
+                                          FirstPartySetsContextConfig()),
+            FirstPartySetMetadata(&associated_entry, &primary_entry));
 
-  EXPECT_EQ(
-      global_sets().ComputeMetadata(nonmember, &kAssociated1, {kAssociated1},
-                                    FirstPartySetsContextConfig()),
-      FirstPartySetMetadata(nullptr, &associated_entry));
-  EXPECT_EQ(
-      global_sets().ComputeMetadata(kAssociated1, &nonmember, {kAssociated1},
-                                    FirstPartySetsContextConfig()),
-      FirstPartySetMetadata(&associated_entry, nullptr));
+  EXPECT_EQ(global_sets().ComputeMetadata(nonmember, &kAssociated1,
+                                          FirstPartySetsContextConfig()),
+            FirstPartySetMetadata(nullptr, &associated_entry));
+  EXPECT_EQ(global_sets().ComputeMetadata(kAssociated1, &nonmember,
+                                          FirstPartySetsContextConfig()),
+            FirstPartySetMetadata(&associated_entry, nullptr));
 
-  EXPECT_EQ(global_sets().ComputeMetadata(nonmember, &nonmember, {nonmember},
+  EXPECT_EQ(global_sets().ComputeMetadata(nonmember, &nonmember,
                                           FirstPartySetsContextConfig()),
             FirstPartySetMetadata(nullptr, nullptr));
-
-  EXPECT_EQ(global_sets().ComputeMetadata(kAssociated1, &kAssociated1,
-                                          {kAssociated1, nonmember},
-                                          FirstPartySetsContextConfig()),
-            FirstPartySetMetadata(&associated_entry, &associated_entry));
 }
 
 TEST_F(GlobalFirstPartySetsTest, ComputeConfig_Empty) {
@@ -1349,16 +1331,14 @@ TEST_F(GlobalFirstPartySetsWithConfigTest, ComputeMetadata) {
   FirstPartySetEntry foo_associated_entry(kPrimary3, SiteType::kAssociated, 0);
 
   // kAssociated1 has been removed from its set.
-  EXPECT_EQ(
-      global_sets().ComputeMetadata(kAssociated1, &kPrimary, {}, config()),
-      FirstPartySetMetadata(nullptr, &example_primary_entry));
+  EXPECT_EQ(global_sets().ComputeMetadata(kAssociated1, &kPrimary, config()),
+            FirstPartySetMetadata(nullptr, &example_primary_entry));
 
   // kAssociated3 and kPrimary3 are sites in a new set.
-  EXPECT_EQ(
-      global_sets().ComputeMetadata(kAssociated3, &kPrimary3, {}, config()),
-      FirstPartySetMetadata(
+  EXPECT_EQ(global_sets().ComputeMetadata(kAssociated3, &kPrimary3, config()),
+            FirstPartySetMetadata(
 
-          &foo_associated_entry, &foo_primary_entry));
+                &foo_associated_entry, &foo_primary_entry));
 }
 
 }  // namespace net

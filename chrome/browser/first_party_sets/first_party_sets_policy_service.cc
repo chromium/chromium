@@ -116,7 +116,6 @@ void FirstPartySetsPolicyService::Init() {
 void FirstPartySetsPolicyService::ComputeFirstPartySetMetadata(
     const net::SchemefulSite& site,
     const net::SchemefulSite* top_frame_site,
-    const std::set<net::SchemefulSite>& party_context,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!is_enabled()) {
@@ -128,18 +127,17 @@ void FirstPartySetsPolicyService::ComputeFirstPartySetMetadata(
     on_ready_callbacks_.push_back(base::BindOnce(
         &FirstPartySetsPolicyService::ComputeFirstPartySetMetadataInternal,
         weak_factory_.GetWeakPtr(), site, base::OptionalFromPtr(top_frame_site),
-        party_context, std::move(callback)));
+        std::move(callback)));
     return;
   }
 
   content::FirstPartySetsHandler::GetInstance()->ComputeFirstPartySetMetadata(
-      site, top_frame_site, party_context, *config_, std::move(callback));
+      site, top_frame_site, *config_, std::move(callback));
 }
 
 void FirstPartySetsPolicyService::ComputeFirstPartySetMetadataInternal(
     const net::SchemefulSite& site,
     const absl::optional<net::SchemefulSite>& top_frame_site,
-    const std::set<net::SchemefulSite>& party_context,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(config_.has_value());
@@ -150,8 +148,7 @@ void FirstPartySetsPolicyService::ComputeFirstPartySetMetadataInternal(
   }
 
   content::FirstPartySetsHandler::GetInstance()->ComputeFirstPartySetMetadata(
-      site, base::OptionalToPtr(top_frame_site), party_context, *config_,
-      std::move(callback));
+      site, base::OptionalToPtr(top_frame_site), *config_, std::move(callback));
 }
 
 void FirstPartySetsPolicyService::AddRemoteAccessDelegate(

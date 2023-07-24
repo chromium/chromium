@@ -172,7 +172,6 @@ GlobalFirstPartySets::FindEntries(
 FirstPartySetMetadata GlobalFirstPartySets::ComputeMetadata(
     const SchemefulSite& site,
     const SchemefulSite* top_frame_site,
-    const std::set<SchemefulSite>& party_context,
     const FirstPartySetsContextConfig& fps_context_config) const {
   absl::optional<FirstPartySetEntry> top_frame_entry =
       top_frame_site ? FindEntry(*top_frame_site, fps_context_config)

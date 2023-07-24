@@ -49,7 +49,6 @@ class FirstPartySetsPolicyService : public KeyedService {
   void ComputeFirstPartySetMetadata(
       const net::SchemefulSite& site,
       const net::SchemefulSite* top_frame_site,
-      const std::set<net::SchemefulSite>& party_context,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback);
 
   // Stores `access_delegate` in a RemoteSet for later IPC calls on it when this
@@ -153,7 +152,6 @@ class FirstPartySetsPolicyService : public KeyedService {
   void ComputeFirstPartySetMetadataInternal(
       const net::SchemefulSite& site,
       const absl::optional<net::SchemefulSite>& top_frame_site,
-      const std::set<net::SchemefulSite>& party_context,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const;
 
   // Clears the content settings associated with `profile` that were

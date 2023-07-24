@@ -432,7 +432,6 @@ void FirstPartySetsHandlerImpl::DidClearSiteDataOnChangedSetsForContext(
 void FirstPartySetsHandlerImpl::ComputeFirstPartySetMetadata(
     const net::SchemefulSite& site,
     const net::SchemefulSite* top_frame_site,
-    const std::set<net::SchemefulSite>& party_context,
     const net::FirstPartySetsContextConfig& config,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -440,19 +439,17 @@ void FirstPartySetsHandlerImpl::ComputeFirstPartySetMetadata(
     EnqueuePendingTask(base::BindOnce(
         &FirstPartySetsHandlerImpl::ComputeFirstPartySetMetadataInternal,
         base::Unretained(this), site, base::OptionalFromPtr(top_frame_site),
-        party_context, config.Clone(), base::ElapsedTimer(),
-        std::move(callback)));
+        config.Clone(), base::ElapsedTimer(), std::move(callback)));
     return;
   }
 
-  std::move(callback).Run(global_sets_->ComputeMetadata(site, top_frame_site,
-                                                        party_context, config));
+  std::move(callback).Run(
+      global_sets_->ComputeMetadata(site, top_frame_site, config));
 }
 
 void FirstPartySetsHandlerImpl::ComputeFirstPartySetMetadataInternal(
     const net::SchemefulSite& site,
     const absl::optional<net::SchemefulSite>& top_frame_site,
-    const std::set<net::SchemefulSite>& party_context,
     const net::FirstPartySetsContextConfig& config,
     const base::ElapsedTimer& timer,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const {
@@ -464,7 +461,7 @@ void FirstPartySetsHandlerImpl::ComputeFirstPartySetMetadataInternal(
       timer.Elapsed());
 
   std::move(callback).Run(global_sets_->ComputeMetadata(
-      site, base::OptionalToPtr(top_frame_site), party_context, config));
+      site, base::OptionalToPtr(top_frame_site), config));
 }
 
 net::FirstPartySetsContextConfig

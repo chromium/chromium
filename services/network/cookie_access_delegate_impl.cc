@@ -64,12 +64,11 @@ absl::optional<net::FirstPartySetMetadata>
 CookieAccessDelegateImpl::ComputeFirstPartySetMetadataMaybeAsync(
     const net::SchemefulSite& site,
     const net::SchemefulSite* top_frame_site,
-    const std::set<net::SchemefulSite>& party_context,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const {
   if (!first_party_sets_access_delegate_)
     return {net::FirstPartySetMetadata()};
   return first_party_sets_access_delegate_->ComputeMetadata(
-      site, top_frame_site, party_context, std::move(callback));
+      site, top_frame_site, std::move(callback));
 }
 
 absl::optional<FirstPartySetsAccessDelegate::EntriesResult>

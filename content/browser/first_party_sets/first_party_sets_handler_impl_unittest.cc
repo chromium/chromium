@@ -669,7 +669,6 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
 
   base::test::TestFuture<net::FirstPartySetMetadata> future;
   handler().ComputeFirstPartySetMetadata(example, &associated,
-                                         /*party_context=*/{},
                                          net::FirstPartySetsContextConfig(),
                                          future.GetCallback());
   EXPECT_TRUE(future.IsReady());
@@ -682,9 +681,9 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   base::test::TestFuture<net::FirstPartySetMetadata> future;
   net::SchemefulSite example(GURL("https://example.test"));
   net::SchemefulSite associated(GURL("https://associatedsite.test"));
-  handler().ComputeFirstPartySetMetadata(
-      example, &associated, /*party_context=*/{},
-      net::FirstPartySetsContextConfig(), future.GetCallback());
+  handler().ComputeFirstPartySetMetadata(example, &associated,
+                                         net::FirstPartySetsContextConfig(),
+                                         future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 
   handler().Init(scoped_dir_.GetPath(), LocalSetDeclaration());

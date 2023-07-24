@@ -9,7 +9,6 @@
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/types/optional_util.h"
 #include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/common/content_features.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
@@ -76,11 +75,10 @@ void ScopedMockFirstPartySetsHandler::ClearSiteDataOnChangedSetsForContext(
 void ScopedMockFirstPartySetsHandler::ComputeFirstPartySetMetadata(
     const net::SchemefulSite& site,
     const net::SchemefulSite* top_frame_site,
-    const std::set<net::SchemefulSite>& party_context,
     const net::FirstPartySetsContextConfig& config,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) {
   net::FirstPartySetMetadata metadata =
-      global_sets_.ComputeMetadata(site, top_frame_site, party_context, config);
+      global_sets_.ComputeMetadata(site, top_frame_site, config);
   if (invoke_callbacks_asynchronously_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(metadata)));

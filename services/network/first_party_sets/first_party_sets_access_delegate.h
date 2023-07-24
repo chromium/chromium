@@ -62,7 +62,6 @@ class FirstPartySetsAccessDelegate
   [[nodiscard]] absl::optional<net::FirstPartySetMetadata> ComputeMetadata(
       const net::SchemefulSite& site,
       const net::SchemefulSite* top_frame_site,
-      const std::set<net::SchemefulSite>& party_context,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback);
 
   // Calls FirstPartySetsManager::FindEntries either asynchronously or
@@ -92,7 +91,6 @@ class FirstPartySetsAccessDelegate
   void ComputeMetadataAndInvoke(
       const net::SchemefulSite& site,
       const absl::optional<net::SchemefulSite> top_frame_site,
-      const std::set<net::SchemefulSite>& party_context,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const;
 
   // Same as `FindEntries`, but plumbs the result into the callback. Must only

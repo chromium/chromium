@@ -47,7 +47,7 @@ TEST_F(CookieAccessDelegateImplTest, NullFirstPartySetsManager) {
       /*frame_entry=*/nullptr,
       /*top_frame_entry=*/nullptr);
   EXPECT_THAT(delegate().ComputeFirstPartySetMetadataMaybeAsync(
-                  site, &site, {},
+                  site, &site,
                   base::BindOnce([](net::FirstPartySetMetadata) { FAIL(); })),
               Optional(std::ref(expected_metadata)));
 

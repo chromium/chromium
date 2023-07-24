@@ -250,7 +250,6 @@ void StorageAccessGrantPermissionContext::DecidePermission(
       browser_context())
       ->ComputeFirstPartySetMetadata(
           net::SchemefulSite(requesting_origin), &embedding_site,
-          /*party_context=*/{},
           base::BindOnce(&StorageAccessGrantPermissionContext::
                              CheckForAutoGrantOrAutoDenial,
                          weak_factory_.GetWeakPtr(), id, requesting_origin,

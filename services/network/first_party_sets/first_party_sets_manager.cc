@@ -48,7 +48,6 @@ absl::optional<net::FirstPartySetMetadata>
 FirstPartySetsManager::ComputeMetadata(
     const net::SchemefulSite& site,
     const net::SchemefulSite* top_frame_site,
-    const std::set<net::SchemefulSite>& party_context,
     const net::FirstPartySetsContextConfig& fps_context_config,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -60,19 +59,16 @@ FirstPartySetsManager::ComputeMetadata(
     EnqueuePendingQuery(base::BindOnce(
         &FirstPartySetsManager::ComputeMetadataAndInvoke,
         weak_factory_.GetWeakPtr(), site, base::OptionalFromPtr(top_frame_site),
-        party_context, fps_context_config.Clone(), std::move(callback),
-        base::ElapsedTimer()));
+        fps_context_config.Clone(), std::move(callback), base::ElapsedTimer()));
     return absl::nullopt;
   }
 
-  return ComputeMetadataInternal(site, top_frame_site, party_context,
-                                 fps_context_config);
+  return ComputeMetadataInternal(site, top_frame_site, fps_context_config);
 }
 
 void FirstPartySetsManager::ComputeMetadataAndInvoke(
     const net::SchemefulSite& site,
     const absl::optional<net::SchemefulSite> top_frame_site,
-    const std::set<net::SchemefulSite>& party_context,
     const net::FirstPartySetsContextConfig& fps_context_config,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback,
     base::ElapsedTimer timer) const {
@@ -82,21 +78,18 @@ void FirstPartySetsManager::ComputeMetadataAndInvoke(
   UMA_HISTOGRAM_TIMES("Cookie.FirstPartySets.EnqueueingDelay.ComputeMetadata2",
                       timer.Elapsed());
 
-  std::move(callback).Run(
-      ComputeMetadataInternal(site, base::OptionalToPtr(top_frame_site),
-                              party_context, fps_context_config));
+  std::move(callback).Run(ComputeMetadataInternal(
+      site, base::OptionalToPtr(top_frame_site), fps_context_config));
 }
 
 net::FirstPartySetMetadata FirstPartySetsManager::ComputeMetadataInternal(
     const net::SchemefulSite& site,
     const net::SchemefulSite* top_frame_site,
-    const std::set<net::SchemefulSite>& party_context,
     const net::FirstPartySetsContextConfig& fps_context_config) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(sets_.has_value());
 
-  return sets_->ComputeMetadata(site, top_frame_site, party_context,
-                                fps_context_config);
+  return sets_->ComputeMetadata(site, top_frame_site, fps_context_config);
 }
 
 absl::optional<net::FirstPartySetEntry> FirstPartySetsManager::FindEntry(

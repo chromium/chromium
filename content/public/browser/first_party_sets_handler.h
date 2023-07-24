@@ -195,7 +195,6 @@ class CONTENT_EXPORT FirstPartySetsHandler {
   virtual void ComputeFirstPartySetMetadata(
       const net::SchemefulSite& site,
       const net::SchemefulSite* top_frame_site,
-      const std::set<net::SchemefulSite>& party_context,
       const net::FirstPartySetsContextConfig& config,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback) = 0;
 };

@@ -246,9 +246,9 @@ TEST_F(AsyncWaitingFirstPartySetsManagerTest,
     // Force deallocation to provoke a UAF if the impl just copies the pointer.
     net::SchemefulSite associatedSite(GURL("https://associatedSite1.test"));
 
-    EXPECT_FALSE(manager().ComputeMetadata(
-        associatedSite, &associatedSite, {associatedSite},
-        net::FirstPartySetsContextConfig(), future.GetCallback()));
+    EXPECT_FALSE(manager().ComputeMetadata(associatedSite, &associatedSite,
+                                           net::FirstPartySetsContextConfig(),
+                                           future.GetCallback()));
   }
 
   Populate();
@@ -303,9 +303,9 @@ TEST_F(AsyncNonwaitingFirstPartySetsManagerTest,
   net::SchemefulSite associatedSite(GURL("https://associatedSite1.test"));
 
   EXPECT_EQ(net::FirstPartySetMetadata(),
-            manager().ComputeMetadata(
-                associatedSite, &associatedSite, {associatedSite},
-                net::FirstPartySetsContextConfig(), base::NullCallback()));
+            manager().ComputeMetadata(associatedSite, &associatedSite,
+                                      net::FirstPartySetsContextConfig(),
+                                      base::NullCallback()));
 
   Populate();
 
@@ -314,9 +314,9 @@ TEST_F(AsyncNonwaitingFirstPartySetsManagerTest,
       net::SiteType::kAssociated, 0);
 
   EXPECT_EQ(net::FirstPartySetMetadata(&entry, &entry),
-            manager().ComputeMetadata(
-                associatedSite, &associatedSite, {associatedSite},
-                net::FirstPartySetsContextConfig(), base::NullCallback()));
+            manager().ComputeMetadata(associatedSite, &associatedSite,
+                                      net::FirstPartySetsContextConfig(),
+                                      base::NullCallback()));
 
   histogram_tester().ExpectUniqueSample(
       kDelayedQueriesCountHistogram, /*sample=*/0, /*expected_bucket_count=*/1);

@@ -62,7 +62,6 @@ absl::optional<FirstPartySetMetadata>
 TestCookieAccessDelegate::ComputeFirstPartySetMetadataMaybeAsync(
     const SchemefulSite& site,
     const SchemefulSite* top_frame_site,
-    const std::set<SchemefulSite>& party_context,
     base::OnceCallback<void(FirstPartySetMetadata)> callback) const {
   absl::optional<FirstPartySetEntry> top_frame_owner =
       top_frame_site ? FindFirstPartySetEntry(*top_frame_site) : absl::nullopt;

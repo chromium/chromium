@@ -907,7 +907,7 @@ absl::optional<FirstPartySetMetadata> ComputeFirstPartySetMetadataMaybeAsync(
             ? nullptr
             : base::OptionalToPtr(
                   isolation_info.network_isolation_key().GetTopFrameSite()),
-        isolation_info.party_context().value(), std::move(callback));
+        std::move(callback));
   }
 
   return FirstPartySetMetadata();

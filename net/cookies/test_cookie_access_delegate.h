@@ -43,7 +43,6 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
   absl::optional<FirstPartySetMetadata> ComputeFirstPartySetMetadataMaybeAsync(
       const SchemefulSite& site,
       const SchemefulSite* top_frame_site,
-      const std::set<SchemefulSite>& party_context,
       base::OnceCallback<void(FirstPartySetMetadata)> callback) const override;
   absl::optional<base::flat_map<SchemefulSite, FirstPartySetEntry>>
   FindFirstPartySetEntries(
