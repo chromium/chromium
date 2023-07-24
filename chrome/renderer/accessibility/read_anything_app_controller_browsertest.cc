@@ -203,7 +203,7 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   float LetterSpacing() { return controller_->LetterSpacing(); }
 
-  bool isSelectable() { return controller_->isSelectable(); }
+  bool isSelectable() { return controller_->IsSelectable(); }
 
   std::vector<ui::AXNodeID> GetChildren(ui::AXNodeID ax_node_id) {
     return controller_->GetChildren(ax_node_id);

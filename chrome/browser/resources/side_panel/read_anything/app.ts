@@ -256,7 +256,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   showEmpty() {
-    if (chrome.readingMode.isSelectable()) {
+    if (chrome.readingMode.isSelectable) {
       this.emptyStateHeading_ = loadTimeData.getString('emptyStateHeader');
     } else {
       this.emptyStateHeading_ = loadTimeData.getString('notSelectableHeader');

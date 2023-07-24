@@ -500,7 +500,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     // replace this function call with firing an event.
     std::string script = "chrome.readingMode.showEmpty();";
     render_frame_->ExecuteJavaScript(base::ASCIIToUTF16(script));
-    if (isSelectable()) {
+    if (IsSelectable()) {
       base::UmaHistogramEnumeration(string_constants::kEmptyStateHistogramName,
                                     ReadAnythingEmptyState::kEmptyStateShown);
     }
@@ -591,6 +591,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("lineSpacing", &ReadAnythingAppController::LineSpacing)
       .SetProperty("isWebUIToolbarVisible",
                    &ReadAnythingAppController::isWebUIToolbarEnabled)
+      .SetProperty("isSelectable", &ReadAnythingAppController::IsSelectable)
       .SetMethod("getChildren", &ReadAnythingAppController::GetChildren)
       .SetMethod("getTextDirection",
                  &ReadAnythingAppController::GetTextDirection)
@@ -604,7 +605,6 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("onCopy", &ReadAnythingAppController::OnCopy)
       .SetMethod("onScroll", &ReadAnythingAppController::OnScroll)
       .SetMethod("onLinkClicked", &ReadAnythingAppController::OnLinkClicked)
-      .SetMethod("isSelectable", &ReadAnythingAppController::isSelectable)
       .SetMethod("onSelectionChange",
                  &ReadAnythingAppController::OnSelectionChange)
       .SetMethod("setContentForTesting",
@@ -764,7 +764,7 @@ bool ReadAnythingAppController::IsOverline(ui::AXNodeID ax_node_id) const {
   return ax_node->HasTextStyle(ax::mojom::TextStyle::kOverline);
 }
 
-bool ReadAnythingAppController::isSelectable() const {
+bool ReadAnythingAppController::IsSelectable() const {
   return model_.active_tree_selectable();
 }
 

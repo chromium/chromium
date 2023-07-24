@@ -34,6 +34,10 @@ declare namespace chrome {
     // Whether the WebUI toolbar feature flag is enabled.
     let isWebUIToolbarVisible: boolean;
 
+    // Indicates if select-to-distill works on the web page. Used to
+    // determine which empty state to display.
+    let isSelectable: boolean;
+
     // Returns a list of AXNodeIDs corresponding to the unignored children of
     // the AXNode for the provided AXNodeID. If there is a selection contained
     // in this node, only returns children which are partially or entirely
@@ -77,10 +81,6 @@ declare namespace chrome {
     // Called when a user clicks a link. NodeID is an AXNodeID which identifies
     // the link's corresponding AXNode in the main pane.
     function onLinkClicked(nodeId: number): void;
-
-    // Returns true if select-to-distill works on the web page. Used to
-    // determine which empty state to display.
-    function isSelectable(): boolean;
 
     // Called when a user makes a selection change. AnchorNodeID and
     // focusAXNodeID are AXNodeIDs which identify the anchor and focus AXNodes
