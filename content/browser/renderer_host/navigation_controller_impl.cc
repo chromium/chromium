@@ -1203,14 +1203,9 @@ void NavigationControllerImpl::GoToOffsetFromRenderer(
     RenderFrameHostImpl* initiator_rfh,
     absl::optional<blink::scheduler::TaskAttributionId>
         soft_navigation_heuristics_task_id) {
-  // If the renderer sent an out-of-bounds offset, cancel and notify the
-  // renderer.
-  if (!CanGoToOffset(offset)) {
-    initiator_rfh->GetAssociatedLocalFrame()->TraverseCancelled(
-        /*navigation_api_key=*/std::string(),
-        blink::mojom::TraverseCancelledReason::kNotFound);
+  // Note: This is actually reached in unit tests.
+  if (!CanGoToOffset(offset))
     return;
-  }
 
   GoToIndex(GetIndexForOffset(offset), initiator_rfh,
             soft_navigation_heuristics_task_id,
