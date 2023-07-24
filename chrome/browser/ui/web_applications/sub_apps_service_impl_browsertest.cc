@@ -14,6 +14,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/sub_apps_install_dialog_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -82,6 +83,12 @@ using AddResults =
 
 class SubAppsServiceImplBrowserTest : public WebAppControllerBrowserTest {
  public:
+  SubAppsServiceImplBrowserTest()
+      : dialog_override_(
+            SubAppsInstallDialogController::SetAutomaticActionForTesting(
+                SubAppsInstallDialogController::DialogActionForTesting::
+                    kAccept)) {}
+
   content::RenderFrameHost* render_frame_host(
       content::WebContents* web_contents = nullptr) {
     if (!web_contents) {
@@ -209,6 +216,9 @@ class SubAppsServiceImplBrowserTest : public WebAppControllerBrowserTest {
   base::test::ScopedFeatureList features_{blink::features::kDesktopPWAsSubApps};
   AppId parent_app_id_;
   mojo::Remote<SubAppsService> remote_;
+  base::AutoReset<
+      absl::optional<SubAppsInstallDialogController::DialogActionForTesting>>
+      dialog_override_;
 };
 
 /********** End-to-end test (one is enough!). **********/
@@ -462,6 +472,31 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddZero) {
   BindRemote();
 
   ExpectCallAdd({}, {});
+  EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
+}
+
+/******** Tests for the Add API call - dialog behaviour ********/
+
+// Verify that all sub apps are returned with the failure result code when the
+// permissions dialog is declined.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
+                       DialogNotAcceptedReturnsAllSubApps) {
+  NavigateToParentApp();
+  InstallParentApp();
+  BindRemote();
+
+  auto dialog_override =
+      SubAppsInstallDialogController::SetAutomaticActionForTesting(
+          SubAppsInstallDialogController::DialogActionForTesting::kCancel);
+
+  ExpectCallAdd(
+      {{GetURLFromPath(kSubAppPath), SubAppsServiceResultCode::kFailure},
+       {GetURLFromPath(kSubAppPath2), SubAppsServiceResultCode::kFailure},
+       {GetURLFromPath(kSubAppPath3), SubAppsServiceResultCode::kFailure}},
+      {{kSubAppPath, kSubAppPath},
+       {kSubAppPath2, kSubAppPath2},
+       {kSubAppPath3, kSubAppPath3}});
+
   EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
 }
 

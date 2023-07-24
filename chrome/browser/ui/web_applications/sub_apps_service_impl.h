@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_SUB_APPS_SERVICE_IMPL_H_
 
 #include <map>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -21,6 +22,8 @@ class RenderFrameHost;
 }
 
 namespace web_app {
+
+class SubAppsInstallDialogController;
 
 class SubAppsServiceImpl
     : public content::DocumentService<blink::mojom::SubAppsService> {
@@ -52,6 +55,7 @@ class SubAppsServiceImpl
 
     AddCallback mojo_callback;
     std::vector<std::unique_ptr<WebAppInstallInfo>> install_infos;
+    std::unique_ptr<SubAppsInstallDialogController> install_dialog = nullptr;
     AddResultsMojo results;
   };
 
@@ -63,6 +67,8 @@ class SubAppsServiceImpl
       std::vector<std::pair<ManifestId, std::unique_ptr<WebAppInstallInfo>>>
           install_data);
   void ScheduleSubAppInstalls(int add_call_id);
+  void ProcessDialogResponse(int add_call_id, bool dialog_accepted);
+  void FinishAddCallOrShowInstallDialog(int add_call_id);
   void FinishAddCall(
       int add_call_id,
       std::vector<std::tuple<ManifestId, AppId, webapps::InstallResultCode>>

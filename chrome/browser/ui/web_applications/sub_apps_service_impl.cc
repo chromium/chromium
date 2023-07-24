@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/types/expected.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/web_applications/sub_apps_install_dialog_controller.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -216,8 +217,8 @@ void SubAppsServiceImpl::CollectInstallData(
     // Check if app is already installed as a sub app
     if (provider->registrar_unsafe().WasInstalledBySubApp(
             GenerateAppIdFromManifestId(manifest_id))) {
-      add_call_info_[add_call_id].results.emplace_back(
-          SubAppsServiceAddResult::New(
+      add_call_info_.at(add_call_id)
+          .results.emplace_back(SubAppsServiceAddResult::New(
               ConvertUrlToPath(manifest_id),
               blink::mojom::SubAppsServiceResultCode::kSuccess));
       install_info_collector.Run(std::pair(GURL(), nullptr));
@@ -240,7 +241,7 @@ void SubAppsServiceImpl::ProcessInstallData(
     int add_call_id,
     std::vector<std::pair<ManifestId, std::unique_ptr<WebAppInstallInfo>>>
         install_data) {
-  AddCallInfo& add_call_info = add_call_info_[add_call_id];
+  AddCallInfo& add_call_info = add_call_info_.at(add_call_id);
   const AppId* parent_app_id = GetAppId(render_frame_host());
 
   for (auto& [manifest_id, install_info] : install_data) {
@@ -263,16 +264,55 @@ void SubAppsServiceImpl::ProcessInstallData(
     }
   }
 
+  FinishAddCallOrShowInstallDialog(add_call_id);
+}
+
+void SubAppsServiceImpl::FinishAddCallOrShowInstallDialog(int add_call_id) {
+  AddCallInfo& add_call_info = add_call_info_.at(add_call_id);
+
   if (add_call_info.install_infos.empty()) {
     FinishAddCall(add_call_id, {});
     return;
   }
 
-  ScheduleSubAppInstalls(add_call_id);
+  WebAppRegistrar& registrar =
+      GetWebAppProvider(render_frame_host())->registrar_unsafe();
+  const AppId* parent_app_id = GetAppId(render_frame_host());
+
+  add_call_info.install_dialog =
+      std::make_unique<SubAppsInstallDialogController>();
+  add_call_info.install_dialog->Init(
+      base::BindOnce(&SubAppsServiceImpl::ProcessDialogResponse,
+                     weak_ptr_factory_.GetWeakPtr(), add_call_id),
+      add_call_info.install_infos,
+      /*parent_app_name=*/registrar.GetAppShortName(*parent_app_id),
+      /*parent_app_scope=*/registrar.GetAppScope(*parent_app_id).spec(),
+      /*window=*/
+      content::WebContents::FromRenderFrameHost(&render_frame_host())
+          ->GetTopLevelNativeWindow());
+}
+
+void SubAppsServiceImpl::ProcessDialogResponse(int add_call_id,
+                                               bool dialog_accepted) {
+  if (dialog_accepted) {
+    ScheduleSubAppInstalls(add_call_id);
+    return;
+  }
+
+  AddCallInfo& add_call_info = add_call_info_.at(add_call_id);
+
+  for (const std::unique_ptr<web_app::WebAppInstallInfo>& install_info :
+       add_call_info.install_infos) {
+    add_call_info.results.emplace_back(SubAppsServiceAddResult::New(
+        ConvertUrlToPath(install_info->manifest_id),
+        blink::mojom::SubAppsServiceResultCode::kFailure));
+  }
+
+  FinishAddCall(add_call_id, {});
 }
 
 void SubAppsServiceImpl::ScheduleSubAppInstalls(int add_call_id) {
-  AddCallInfo& add_call_info = add_call_info_[add_call_id];
+  AddCallInfo& add_call_info = add_call_info_.at(add_call_id);
 
   const auto install_results_collector = base::BarrierCallback<
       std::tuple<ManifestId, AppId, webapps::InstallResultCode>>(
@@ -301,7 +341,7 @@ void SubAppsServiceImpl::FinishAddCall(
     int add_call_id,
     std::vector<std::tuple<ManifestId, AppId, webapps::InstallResultCode>>
         install_results) {
-  AddCallInfo& add_call_info = add_call_info_[add_call_id];
+  AddCallInfo& add_call_info = add_call_info_.at(add_call_id);
 
   for (const auto& [manifest_id, app_id, result_code] : install_results) {
     add_call_info.results.emplace_back(SubAppsServiceAddResult::New(

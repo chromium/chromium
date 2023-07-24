@@ -6258,6 +6258,35 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </message>
       </if>
 
+      <message name="IDS_SUB_APPS_INSTALL_DIALOG_TITLE" desc="Title of a dialog that lets the user approve the install of one or more sub apps. [ICU Syntax]">
+        {NUM_SUB_APP_INSTALLS, plural,
+          =1 {Install app?}
+          other {Install apps?}
+        }
+      </message>
+
+      <message name="IDS_SUB_APPS_INSTALL_DIALOG_DESCRIPTION" desc="Description of a dialog that lets the user approve the install of one or more sub apps. [ICU Syntax]">
+        {NUM_SUB_APP_INSTALLS, plural,
+          =1 {"<ph name="APP_NAME">{APP_NAME}<ex>Citrix</ex></ph>" (<ph name="DOMAIN">{DOMAIN}<ex>citrix.com</ex></ph>) would like to install the following app on this device:}
+          other {"<ph name="APP_NAME">{APP_NAME}<ex>Citrix</ex></ph>" (<ph name="DOMAIN">{DOMAIN}<ex>citrix.com</ex></ph>) would like to install the following apps on this device:}
+        }
+      </message>
+
+      <message name="IDS_SUB_APPS_INSTALL_DIALOG_PERMISSIONS_DESCRIPTION" desc="Explanation of the permissions mechanisms resulting from the install of sub app(s). [ICU Syntax]">
+        {NUM_SUB_APP_INSTALLS, plural,
+          =1 {Permissions that you allow for "<ph name="APP_NAME">{APP_NAME}<ex>Citrix</ex></ph>" will also be allowed for this app.}
+          other {Permissions that you allow for "<ph name="APP_NAME">{APP_NAME}<ex>Citrix</ex></ph>" will also be allowed for these apps.}
+        }
+      </message>
+
+      <message name="IDS_SUB_APPS_INSTALL_DIALOG_PERMISSIONS_BUTTON" desc="Button label on a dialog that lets the user approve the install of one or more sub apps.">
+        Install
+      </message>
+
+      <message name="IDS_SUB_APPS_INSTALL_DIALOG_CANCEL_BUTTON" desc="Button label on a dialog that lets the user cancel the install of one or more sub apps.">
+        No thanks
+      </message>
+
       <message name="IDS_WEB_APP_MENU_BUTTON_TOOLTIP">
         Customize and control <ph name="APP_NAME">$1<ex>GMail</ex></ph>
       </message>

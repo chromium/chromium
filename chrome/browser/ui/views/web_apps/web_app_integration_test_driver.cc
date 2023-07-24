@@ -68,6 +68,7 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/window_controls_overlay_toggle_button.h"
 #include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/sub_apps_install_dialog_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
@@ -1287,6 +1288,14 @@ void WebAppIntegrationTestDriver::InstallSubApp(
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
+
+  auto dialog_action =
+      SubAppsInstallDialogController::SetAutomaticActionForTesting(
+          (option == SubAppInstallDialogOptions::kUserDeny)
+              ? SubAppsInstallDialogController::DialogActionForTesting::kCancel
+              : SubAppsInstallDialogController::DialogActionForTesting::
+                    kAccept);
+
   MaybeNavigateTabbedBrowserInScope(parentapp);
   content::WebContents* web_contents = GetCurrentTab(browser());
 
@@ -1308,7 +1317,6 @@ void WebAppIntegrationTestDriver::InstallSubApp(
   base::Value::Dict expected_output;
   expected_output.Set(sub_url, "success");
   EXPECT_EQ(expected_output, add_result);
-  // TODO: Use |option| after the dialog was implemented.
   AfterStateChangeAction();
 }
 

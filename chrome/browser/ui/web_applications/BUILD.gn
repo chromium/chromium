@@ -13,6 +13,10 @@ source_set("unit_tests") {
     "web_app_launch_utils_unittest.cc",
   ]
 
+  if (is_chromeos) {
+    sources += [ "sub_apps_install_dialog_controller_unittest.cc" ]
+  }
+
   deps = [
     "//chrome/browser",
     "//chrome/browser/apps/app_service",
@@ -20,6 +24,7 @@ source_set("unit_tests") {
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/browser/web_applications:web_applications_unit_tests",
+    "//chrome/test:test_support",
     "//components/services/app_service",
     "//content/test:test_support",
     "//storage/browser:test_support",

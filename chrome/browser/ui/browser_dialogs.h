@@ -83,6 +83,7 @@ struct Screenshot;
 }  // namespace webapps
 
 namespace web_app {
+struct SubAppDialogInfo;
 struct WebAppInstallInfo;
 }  // namespace web_app
 
@@ -172,6 +173,17 @@ void ShowWebAppInstallDialog(
     std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
     AppInstallationAcceptanceCallback callback);
+
+// Creates a dialog that requests the consent from the user to install the
+// requested apps as sub apps to the named parent app. This is triggered by
+// an app calling the Multi App API add() function. The dialog is modal to
+// the browser containing the app calling the API. |sub_apps| contains the
+// information to represent each app to the user.
+views::Widget* CreateSubAppsInstallDialogWidget(
+    const std::string_view parent_app_name,
+    const std::string_view parent_app_scope,
+    const std::vector<web_app::SubAppDialogInfo>& sub_apps,
+    gfx::NativeWindow window);
 
 // When an app changes its icon or name, that is considered an app identity
 // change which (for some types of apps) needs confirmation from the user.
