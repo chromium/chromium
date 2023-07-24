@@ -1269,48 +1269,16 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     return;
   }
 
-  // Consistency check: `item`'s ID is not in `items`.
-  // (using DCHECK rather than DCHECK_EQ to avoid a checked_cast on NSNotFound).
-  DCHECK([self indexOfItemWithID:item.identifier] == NSNotFound);
-  auto modelUpdates = ^{
-    [self.items insertObject:item atIndex:index];
-    self.selectedItemID = selectedItemID;
-    self.lastInsertedItemID = item.identifier;
-    [self.delegate gridViewController:self didChangeItemCount:self.items.count];
-  };
-  auto collectionViewUpdates = ^{
-    [self removeEmptyStateAnimated:YES];
-    [self.collectionView insertItemsAtIndexPaths:@[ CreateIndexPath(index) ]];
-  };
   __weak __typeof(self) weakSelf = self;
-  auto completion = ^{
-    __typeof(self) strongSelf = weakSelf;
-    if (!strongSelf) {
-      return;
-    }
-    [strongSelf updateSelectedCollectionViewItemRingAndBringIntoView:YES];
-
-    [strongSelf.delegate gridViewController:strongSelf
-                         didChangeItemCount:strongSelf.items.count];
-
-    // Check `index` boundaries in order to filter out possible race conditions
-    // while mutating the collection.
-    if (index == NSNotFound || index >= strongSelf.items.count) {
-      return;
-    }
-
-    [strongSelf.collectionView
-        scrollToItemAtIndexPath:CreateIndexPath(index)
-               atScrollPosition:UICollectionViewScrollPositionCenteredVertically
-                       animated:YES];
-  };
-
-  [self performModelUpdates:modelUpdates
-      collectionViewUpdates:collectionViewUpdates
-                 completion:completion];
-
-  [self updateVisibleCellZIndex];
-  [self updateVisibleCellIdentifiers];
+  [self
+      performModelAndViewUpdates:^{
+        [weakSelf applyModelAndViewUpdatesForInsertionOfItem:item
+                                                     atIndex:index
+                                              selectedItemID:selectedItemID];
+      }
+      completion:^{
+        [weakSelf modelAndViewUpdatesForInsertionDidCompleteAtIndex:index];
+      }];
 }
 
 - (void)removeItemWithID:(NSString*)removedItemID
@@ -1323,42 +1291,21 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     return;
   }
 
-  auto modelUpdates = ^{
-    [self.items removeObjectAtIndex:index];
-    self.selectedItemID = selectedItemID;
-    [self deselectItemWithIDForEditing:removedItemID];
-    [self.delegate gridViewController:self didChangeItemCount:self.items.count];
-  };
-  auto collectionViewUpdates = ^{
-    [self.collectionView deleteItemsAtIndexPaths:@[ CreateIndexPath(index) ]];
-    if ([self shouldShowEmptyState]) {
-      [self animateEmptyStateIn];
-    }
-  };
   __weak __typeof(self) weakSelf = self;
-  auto completion = ^{
-    __typeof(self) strongSelf = weakSelf;
-    if (!strongSelf) {
-      return;
-    }
-    if (strongSelf.items.count > 0) {
-      [strongSelf updateSelectedCollectionViewItemRingAndBringIntoView:NO];
-    }
-    [strongSelf.delegate gridViewController:strongSelf
-                         didChangeItemCount:strongSelf.items.count];
-    [strongSelf.delegate gridViewController:strongSelf
-                        didRemoveItemWIthID:removedItemID];
-  };
+  [self
+      performModelAndViewUpdates:^{
+        [weakSelf
+            applyModelAndViewUpdatesForRemovalOfItemWithID:removedItemID
+                                            selectedItemID:selectedItemID];
+      }
+      completion:^{
+        [weakSelf modelAndViewUpdatesForRemovalDidCompleteForItemWithID:
+                      removedItemID];
+      }];
 
-  [self performModelUpdates:modelUpdates
-      collectionViewUpdates:collectionViewUpdates
-                 completion:completion];
-
-  [self updateVisibleCellZIndex];
-  [self updateVisibleCellIdentifiers];
-
-  if (_searchText.length)
+  if (_searchText.length) {
     [self updateSearchResultsHeader];
+  }
 }
 
 - (void)selectItemWithID:(NSString*)selectedItemID {
@@ -1396,27 +1343,17 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       fromIndex == NSNotFound) {
     return;
   }
-  auto modelUpdates = ^{
-    TabSwitcherItem* item = self.items[fromIndex];
-    [self.items removeObjectAtIndex:fromIndex];
-    [self.items insertObject:item atIndex:toIndex];
-  };
-  auto collectionViewUpdates = ^{
-    [self.collectionView moveItemAtIndexPath:CreateIndexPath(fromIndex)
-                                 toIndexPath:CreateIndexPath(toIndex)];
-  };
-  __weak __typeof(self) weakSelf = self;
-  auto completion = ^{
-    [weakSelf.delegate gridViewController:weakSelf
-                        didMoveItemWithID:itemID
-                                  toIndex:toIndex];
-  };
-  [self performModelUpdates:modelUpdates
-      collectionViewUpdates:collectionViewUpdates
-                 completion:completion];
 
-  [self updateVisibleCellZIndex];
-  [self updateVisibleCellIdentifiers];
+  __weak __typeof(self) weakSelf = self;
+  [self
+      performModelAndViewUpdates:^{
+        [weakSelf applyModelAndViewUpdatesForMoveOfItemFromIndex:fromIndex
+                                                         toIndex:toIndex];
+      }
+      completion:^{
+        [weakSelf modelAndViewUpdatesForMoveDidCompleteForItemWithID:itemID
+                                                             toIndex:toIndex];
+      }];
 }
 
 - (void)dismissModals {
@@ -1560,6 +1497,110 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   }];
 }
 
+#pragma mark - Private helpers for joint model and view updates
+
+// Performs model and view updates together.
+- (void)performModelAndViewUpdates:(ProceduralBlock)modelAndViewUpdates
+                        completion:(ProceduralBlock)completion {
+  __weak __typeof(self) weakSelf = self;
+  [self.collectionView
+      performBatchUpdates:^{
+        weakSelf.updating = YES;
+        modelAndViewUpdates();
+      }
+      completion:^(BOOL completed) {
+        if (weakSelf) {
+          completion();
+          weakSelf.updating = NO;
+        }
+      }];
+
+  [self updateVisibleCellZIndex];
+  [self updateVisibleCellIdentifiers];
+}
+
+// Makes the required changes to `items` and `collectionView` when a new item is
+// inserted.
+- (void)applyModelAndViewUpdatesForInsertionOfItem:(TabSwitcherItem*)item
+                                           atIndex:(NSUInteger)index
+                                    selectedItemID:(NSString*)selectedItemID {
+  // Consistency check: `item`'s ID is not in `items`.
+  // (using DCHECK rather than DCHECK_EQ to avoid a checked_cast on NSNotFound).
+  DCHECK([self indexOfItemWithID:item.identifier] == NSNotFound);
+  [self.items insertObject:item atIndex:index];
+  self.selectedItemID = selectedItemID;
+  self.lastInsertedItemID = item.identifier;
+  [self.delegate gridViewController:self didChangeItemCount:self.items.count];
+
+  [self removeEmptyStateAnimated:YES];
+  [self.collectionView insertItemsAtIndexPaths:@[ CreateIndexPath(index) ]];
+}
+
+// Makes the required changes when a new item has been inserted.
+- (void)modelAndViewUpdatesForInsertionDidCompleteAtIndex:(NSUInteger)index {
+  [self updateSelectedCollectionViewItemRingAndBringIntoView:YES];
+
+  [self.delegate gridViewController:self didChangeItemCount:self.items.count];
+
+  // Check `index` boundaries in order to filter out possible race conditions
+  // while mutating the collection.
+  if (index == NSNotFound || index >= self.items.count) {
+    return;
+  }
+
+  [self.collectionView
+      scrollToItemAtIndexPath:CreateIndexPath(index)
+             atScrollPosition:UICollectionViewScrollPositionCenteredVertically
+                     animated:YES];
+}
+
+// Makes the required changes to `items` and `collectionView` when an existing
+// item is removed.
+- (void)applyModelAndViewUpdatesForRemovalOfItemWithID:(NSString*)removedItemID
+                                        selectedItemID:
+                                            (NSString*)selectedItemID {
+  NSUInteger index = [self indexOfItemWithID:removedItemID];
+  [self.items removeObjectAtIndex:index];
+  self.selectedItemID = selectedItemID;
+  [self deselectItemWithIDForEditing:removedItemID];
+  [self.delegate gridViewController:self didChangeItemCount:self.items.count];
+
+  [self.collectionView deleteItemsAtIndexPaths:@[ CreateIndexPath(index) ]];
+  if ([self shouldShowEmptyState]) {
+    [self animateEmptyStateIn];
+  }
+}
+
+// Makes the required changes when a new item has been removed.
+- (void)modelAndViewUpdatesForRemovalDidCompleteForItemWithID:
+    (NSString*)removedItemID {
+  if (self.items.count > 0) {
+    [self updateSelectedCollectionViewItemRingAndBringIntoView:NO];
+  }
+  [self.delegate gridViewController:self didChangeItemCount:self.items.count];
+  [self.delegate gridViewController:self didRemoveItemWIthID:removedItemID];
+}
+
+// Makes the required changes to `items` and `collectionView` when an existing
+// item is moved.
+- (void)applyModelAndViewUpdatesForMoveOfItemFromIndex:(NSUInteger)fromIndex
+                                               toIndex:(NSUInteger)toIndex {
+  TabSwitcherItem* item = self.items[fromIndex];
+  [self.items removeObjectAtIndex:fromIndex];
+  [self.items insertObject:item atIndex:toIndex];
+
+  [self.collectionView moveItemAtIndexPath:CreateIndexPath(fromIndex)
+                               toIndexPath:CreateIndexPath(toIndex)];
+}
+
+// Makes the required changes when a new item has been moved.
+- (void)modelAndViewUpdatesForMoveDidCompleteForItemWithID:(NSString*)itemID
+                                                   toIndex:(NSUInteger)toIndex {
+  [self.delegate gridViewController:self
+                  didMoveItemWithID:itemID
+                            toIndex:toIndex];
+}
+
 #pragma mark - Private properties
 
 - (NSUInteger)selectedIndex {
@@ -1621,23 +1662,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (BOOL)shouldEnableDrapAndDropInteraction {
   // Don't enable drag and drop when voice over is enabled.
   return !UIAccessibilityIsVoiceOverRunning();
-}
-
-// Performs model updates and view updates together.
-- (void)performModelUpdates:(ProceduralBlock)modelUpdates
-      collectionViewUpdates:(ProceduralBlock)collectionViewUpdates
-                 completion:(ProceduralBlock)completion {
-  [self.collectionView
-      performBatchUpdates:^{
-        self.updating = YES;
-        // Synchronize model and view updates.
-        modelUpdates();
-        collectionViewUpdates();
-      }
-      completion:^(BOOL completed) {
-        completion();
-        self.updating = NO;
-      }];
 }
 
 // Returns the index in `self.items` of the first item whose identifier is
