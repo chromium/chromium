@@ -90,6 +90,7 @@ PermissionPromptChipModel::PermissionPromptChipModel(
   if (delegate_->ShouldCurrentRequestUseQuietUI()) {
     prompt_style_ = PermissionPromptStyle::kQuietChip;
     should_bubble_start_open_ = false;
+    should_display_blocked_icon_ = true;
     should_expand_ =
         ShouldPermissionBubbleExpand(delegate_.get(), prompt_style_) &&
         (should_bubble_start_open_ ||
@@ -100,7 +101,7 @@ PermissionPromptChipModel::PermissionPromptChipModel(
   } else {
     prompt_style_ = PermissionPromptStyle::kChip;
     should_bubble_start_open_ = true;
-
+    should_display_blocked_icon_ = false;
     should_expand_ = true;
 
     chip_text_ = GetLoudPermissionMessage(delegate_.get());
