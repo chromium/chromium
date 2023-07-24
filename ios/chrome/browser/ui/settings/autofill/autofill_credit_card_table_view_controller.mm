@@ -274,6 +274,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   DCHECK(!_settingsAreDismissed);
 
   _personalDataManager->RemoveObserver(_observer.get());
+  [self.addCreditCardCoordinator stop];
+  self.addCreditCardCoordinator = nil;
 
   // Remove observer bridges.
   _observer.reset();
