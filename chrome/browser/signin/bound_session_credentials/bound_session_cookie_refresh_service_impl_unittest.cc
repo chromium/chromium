@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "base/base64.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -187,7 +188,9 @@ class BoundSessionCookieRefreshServiceImplTest
       } else {
         // Emulates an existing session that starts after
         // `cookie_refresh_service_` is created.
-        prefs()->SetString(kRegistrationParamsPref, params.SerializeAsString());
+        std::string registration_params;
+        base::Base64Encode(params.SerializeAsString(), &registration_params);
+        prefs()->SetString(kRegistrationParamsPref, registration_params);
       }
     } else {
       identity_test_env_.MakePrimaryAccountAvailable(kEmail,

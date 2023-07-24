@@ -6,13 +6,13 @@
 
 #include <memory>
 
+#include "base/base64.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "base/notreached.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller_impl.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_impl.h"
@@ -27,6 +27,7 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using signin::ConsentLevel;
 using signin::IdentityManager;
@@ -213,16 +214,15 @@ void BoundSessionCookieRefreshServiceImpl::Initialize() {
 void BoundSessionCookieRefreshServiceImpl::RegisterNewBoundSession(
     const bound_session_credentials::RegistrationParams& params) {
   CHECK(base::FeatureList::IsEnabled(kBoundSessionExplicitRegistration));
-  std::string serialized_params = params.SerializeAsString();
-  if (serialized_params.empty()) {
-    DVLOG(1) << "Failed to serialize bound session registration params.";
+  if (!IsValidRegistrationParams(params) ||
+      !PersistRegistrationParams(params)) {
+    DVLOG(1) << "Invalid session params or failed to serialize bound session "
+                "registration params.";
     return;
   }
-  // New session should override the existing one.
-  if (IsBoundSession()) {
-    StopManagingBoundSessionCookie();
-  }
-  client_->GetPrefs()->SetString(kRegistrationParamsPref, serialized_params);
+  // New session should override an existing one.
+  ResetBoundSession();
+
   OnBoundSessionUpdated();
 }
 
@@ -307,6 +307,49 @@ void BoundSessionCookieRefreshServiceImpl::OnRegistrationRequestComplete(
   active_registration_request_.reset();
 }
 
+bool BoundSessionCookieRefreshServiceImpl::IsValidRegistrationParams(
+    const bound_session_credentials::RegistrationParams& registration_params) {
+  // TODO(crbug.com/1441168): Check for validity of other fields once they are
+  // available.
+  return registration_params.has_wrapped_key();
+}
+
+bool BoundSessionCookieRefreshServiceImpl::PersistRegistrationParams(
+    const bound_session_credentials::RegistrationParams& registration_params) {
+  CHECK(base::FeatureList::IsEnabled(kBoundSessionExplicitRegistration));
+  std::string serialized_params = registration_params.SerializeAsString();
+  if (serialized_params.empty()) {
+    return false;
+  }
+
+  std::string encoded_serialized_params;
+  base::Base64Encode(serialized_params, &encoded_serialized_params);
+  client_->GetPrefs()->SetString(kRegistrationParamsPref,
+                                 encoded_serialized_params);
+  return true;
+}
+
+absl::optional<bound_session_credentials::RegistrationParams>
+BoundSessionCookieRefreshServiceImpl::GetRegistrationParams() {
+  CHECK(base::FeatureList::IsEnabled(kBoundSessionExplicitRegistration));
+  std::string encoded_params_str =
+      client_->GetPrefs()->GetString(kRegistrationParamsPref);
+  if (encoded_params_str.empty()) {
+    return absl::nullopt;
+  }
+
+  std::string params_str;
+  if (!base::Base64Decode(encoded_params_str, &params_str)) {
+    return absl::nullopt;
+  }
+
+  bound_session_credentials::RegistrationParams params;
+  if (params.ParseFromString(params_str) && IsValidRegistrationParams(params)) {
+    return params;
+  }
+  return absl::nullopt;
+}
+
 void BoundSessionCookieRefreshServiceImpl::OnCookieExpirationDateChanged() {
   UpdateAllRenderers();
 }
@@ -333,21 +376,20 @@ BoundSessionCookieRefreshServiceImpl::CreateBoundSessionCookieController(
                                                    wrapped_key, this);
 }
 
-void BoundSessionCookieRefreshServiceImpl::StartManagingBoundSessionCookie() {
+void BoundSessionCookieRefreshServiceImpl::InitializeBoundSession() {
   CHECK(!cookie_controller_);
   constexpr char kSIDTSCookieName[] = "__Secure-1PSIDTS";
 
   // TODO(http://b/286222327): pass registration params to controller.
   base::span<const uint8_t> wrapped_key;
-  bound_session_credentials::RegistrationParams params;
+  absl::optional<bound_session_credentials::RegistrationParams> params;
   if (base::FeatureList::IsEnabled(kBoundSessionExplicitRegistration)) {
-    if (!params.ParseFromString(
-            client_->GetPrefs()->GetString(kRegistrationParamsPref)) ||
-        !params.has_wrapped_key()) {
+    params = GetRegistrationParams();
+    if (!params) {
       TerminateSession();
       return;
     }
-    wrapped_key = base::as_bytes(base::make_span(params.wrapped_key()));
+    wrapped_key = base::as_bytes(base::make_span(params->wrapped_key()));
   }
 
   cookie_controller_ = CreateBoundSessionCookieController(
@@ -356,15 +398,15 @@ void BoundSessionCookieRefreshServiceImpl::StartManagingBoundSessionCookie() {
   cookie_controller_->Initialize();
 }
 
-void BoundSessionCookieRefreshServiceImpl::StopManagingBoundSessionCookie() {
+void BoundSessionCookieRefreshServiceImpl::ResetBoundSession() {
   cookie_controller_.reset();
 }
 
 void BoundSessionCookieRefreshServiceImpl::OnBoundSessionUpdated() {
   if (!IsBoundSession()) {
-    StopManagingBoundSessionCookie();
+    ResetBoundSession();
   } else {
-    StartManagingBoundSessionCookie();
+    InitializeBoundSession();
   }
   UpdateAllRenderers();
 }

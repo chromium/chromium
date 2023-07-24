@@ -17,9 +17,9 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_param.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_params.pb.h"
-#include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class SigninClient;
 
@@ -95,6 +95,12 @@ class BoundSessionCookieRefreshServiceImpl
   void OnRegistrationRequestComplete(
       absl::optional<bound_session_credentials::RegistrationParams>
           registration_params);
+  bool IsValidRegistrationParams(
+      const bound_session_credentials::RegistrationParams& registration_params);
+  bool PersistRegistrationParams(
+      const bound_session_credentials::RegistrationParams& registration_params);
+  absl::optional<bound_session_credentials::RegistrationParams>
+  GetRegistrationParams();
 
   // BoundSessionCookieController::Delegate
   void OnCookieExpirationDateChanged() override;
@@ -104,8 +110,8 @@ class BoundSessionCookieRefreshServiceImpl
   CreateBoundSessionCookieController(const GURL& url,
                                      const std::string& cookie_name,
                                      base::span<const uint8_t> wrapped_key);
-  void StartManagingBoundSessionCookie();
-  void StopManagingBoundSessionCookie();
+  void InitializeBoundSession();
+  void ResetBoundSession();
   void OnBoundSessionUpdated();
 
   void UpdateAllRenderers();
