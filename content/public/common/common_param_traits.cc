@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/containers/stack_container.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/referrer.h"
 #include "net/http/http_util.h"
