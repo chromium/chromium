@@ -158,9 +158,10 @@ PhysicalFragmentRareData::RareField::RareField(
 #undef MOVE_UNION_MEMBER
 
 #define DESTRUCT_UNION_MEMBER(id, name) \
-  case FieldId::id:                     \
-    name.~decltype(name)();             \
-    break
+  case FieldId::id: {                   \
+    using NameType = decltype(name);    \
+    name.~NameType();                   \
+  } break
 
 PhysicalFragmentRareData::RareField::~RareField() {
   DISPATCH_BY_MEMBER_TYPE(DESTRUCT_UNION_MEMBER);
