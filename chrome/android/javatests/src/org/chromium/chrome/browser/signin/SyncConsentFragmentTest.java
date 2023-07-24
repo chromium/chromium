@@ -526,6 +526,7 @@ public class SyncConsentFragmentTest {
     @Test
     @MediumTest
     @DisableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
+    @DisabledTest(message = "https://crbug.com/1449158")
     public void testFRESyncConsentFragmentWhenSelectedAccountIsRemoved() {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         final CoreAccountInfo defaultAccount =
