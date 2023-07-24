@@ -15,6 +15,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -966,9 +967,12 @@ public class PersonalDataManager {
         // Schedule the fetching of image and return null so that the UI thread does not have to
         // wait and can show the default network icon.
         fetchImage(urlToFetch, bitmap -> {
-            // TODO (crbug.com/1410418): Log image fetching failure metrics.
+            RecordHistogram.recordBooleanHistogram("Autofill.ImageFetcher.Result", bitmap != null);
+
             // If the image fetching was unsuccessful, silently return.
-            if (bitmap == null) return;
+            if (bitmap == null) {
+                return;
+            }
 
             // When adding new sizes for card icons, check if the corner radius needs to be added as
             // a suffix for caching (crbug.com/1431283).
