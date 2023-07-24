@@ -113,6 +113,10 @@ BASE_DECLARE_FEATURE(kWebAuthnEnclaveAuthenticator);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnJSONSerializeRequests);
 
+// Cache prelinking information on Android.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnCachePaaSK);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

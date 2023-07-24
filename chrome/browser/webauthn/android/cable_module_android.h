@@ -9,6 +9,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
+class PrefService;
 
 namespace webauthn {
 namespace authenticator {
@@ -36,6 +37,17 @@ namespace internal {
 // into the structure used by Sync.
 absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo> PaaskInfoFromCBOR(
     base::span<const uint8_t> cbor);
+
+// CBORFromPaaskInfo does the inverse of `PaaskInfoFromCBOR`.
+std::vector<uint8_t> CBORFromPaaskInfo(
+    const syncer::DeviceInfo::PhoneAsASecurityKeyInfo& paask_info);
+
+// CacheResult will save `result`, if it's not `NotReady`, into `state`. If it
+// is `NotReady`, it'll try to load a previously saved result and will return
+// that instead.
+syncer::DeviceInfo::PhoneAsASecurityKeyInfo::StatusOrInfo CacheResult(
+    syncer::DeviceInfo::PhoneAsASecurityKeyInfo::StatusOrInfo result,
+    PrefService* state);
 
 }  // namespace internal
 
