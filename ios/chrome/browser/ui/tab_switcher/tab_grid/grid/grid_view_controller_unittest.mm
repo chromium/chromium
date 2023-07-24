@@ -108,7 +108,10 @@ class GridViewControllerTest : public RootViewControllerTest {
  public:
   GridViewControllerTest() {
     view_controller_ = [[GridViewController alloc] init];
+    // Load the view and notify its content will appear. This sets the data
+    // source and loads the initial snapshot.
     [view_controller_ loadView];
+    [view_controller_ contentWillAppearAnimated:NO];
     NSArray* items = @[
       [[TabSwitcherItem alloc] initWithIdentifier:@"A"],
       [[TabSwitcherItem alloc] initWithIdentifier:@"B"]

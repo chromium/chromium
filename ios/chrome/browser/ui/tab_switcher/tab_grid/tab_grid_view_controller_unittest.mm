@@ -184,6 +184,9 @@ TEST_F(TabGridViewControllerTest, CanPerform_CloseAllAndUndo) {
   EXPECT_FALSE(CanPerform(@"keyCommand_closeAll"));
   EXPECT_FALSE(CanPerform(@"keyCommand_undo"));
 
+  // Load the view and notify its content will appear. This sets data sources
+  // for the different grids and loads their initial snapshots.
+  [view_controller_ view];
   [view_controller_ contentWillAppearAnimated:NO];
 
   EXPECT_FALSE(CanPerform(@"keyCommand_closeAll"));
