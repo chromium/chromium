@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.RectF;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
@@ -207,6 +208,21 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         @Override
         public void onPinch(float x0, float y0, float x1, float y1, boolean firstEvent) {
             // Not implemented.
+        }
+
+        @Override
+        public void onHoverEnter(float x, float y) {
+            getActiveStripLayoutHelper().onHoverEnter(x, y);
+        }
+
+        @Override
+        public void onHoverMove(float x, float y) {
+            getActiveStripLayoutHelper().onHoverMove(x, y);
+        }
+
+        @Override
+        public void onHoverExit(float x, float y) {
+            getActiveStripLayoutHelper().onHoverExit(x, y);
         }
 
         private long time() {
@@ -893,5 +909,15 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
 
     private StripLayoutHelper getInactiveStripLayoutHelper() {
         return mIsIncognito ? mNormalHelper : mIncognitoHelper;
+    }
+
+    void simulateHoverEventForTesting(int event, float x, float y) {
+        if (event == MotionEvent.ACTION_HOVER_ENTER) {
+            mTabStripEventHandler.onHoverEnter(x, y);
+        } else if (event == MotionEvent.ACTION_HOVER_MOVE) {
+            mTabStripEventHandler.onHoverMove(x, y);
+        } else if (event == MotionEvent.ACTION_HOVER_EXIT) {
+            mTabStripEventHandler.onHoverExit(x, y);
+        }
     }
 }

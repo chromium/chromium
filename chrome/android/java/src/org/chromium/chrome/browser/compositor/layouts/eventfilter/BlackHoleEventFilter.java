@@ -16,7 +16,6 @@ public class BlackHoleEventFilter extends EventFilter {
     /**
      * Creates a {@link BlackHoleEventFilter}.
      * @param context A {@link Context} instance.
-     * @param host    A {@link EventFilterHost} instance.
      */
     public BlackHoleEventFilter(Context context) {
         super(context);
@@ -29,6 +28,16 @@ public class BlackHoleEventFilter extends EventFilter {
 
     @Override
     public boolean onTouchEventInternal(MotionEvent e) {
+        return true;
+    }
+
+    @Override
+    public boolean onInterceptHoverEventInternal(MotionEvent e) {
+        return true;
+    }
+
+    @Override
+    public boolean onHoverEventInternal(MotionEvent e) {
         return true;
     }
 }

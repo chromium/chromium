@@ -185,6 +185,11 @@ public class GestureEventFilter extends EventFilter {
         return true;
     }
 
+    @Override
+    public boolean onInterceptHoverEventInternal(MotionEvent e) {
+        return true;
+    }
+
     private void cancelLongPress() {
         mLongPressHandler.removeCallbacks(mLongPressRunnable);
         mLongPressRunnable.cancel();
@@ -244,6 +249,20 @@ public class GestureEventFilter extends EventFilter {
         // Propagate the up event after any gesture events.
         if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
             mHandler.onUpOrCancel();
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onHoverEventInternal(MotionEvent e) {
+        final int action = e.getActionMasked();
+
+        if (action == MotionEvent.ACTION_HOVER_ENTER) {
+            mHandler.onHoverEnter(e.getX() * mPxToDp, e.getY() * mPxToDp);
+        } else if (action == MotionEvent.ACTION_HOVER_MOVE) {
+            mHandler.onHoverMove(e.getX() * mPxToDp, e.getY() * mPxToDp);
+        } else if (action == MotionEvent.ACTION_HOVER_EXIT) {
+            mHandler.onHoverExit(e.getX() * mPxToDp, e.getY() * mPxToDp);
         }
         return true;
     }

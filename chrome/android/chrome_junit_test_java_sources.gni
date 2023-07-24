@@ -98,6 +98,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/compositor/CompositorViewHolderUnitTest.java",
   "junit/src/org/chromium/chrome/browser/compositor/layouts/SceneOverlayTest.java",
   "junit/src/org/chromium/chrome/browser/compositor/layouts/StaticLayoutUnitTest.java",
+  "junit/src/org/chromium/chrome/browser/compositor/layouts/eventfilter/AreaGestureEventFilterUnitTest.java",
   "junit/src/org/chromium/chrome/browser/compositor/overlays/strip/ScrollingStripStackerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/compositor/overlays/strip/StripLayoutHelperManagerTest.java",
   "junit/src/org/chromium/chrome/browser/compositor/overlays/strip/StripLayoutHelperTest.java",

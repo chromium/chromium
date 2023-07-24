@@ -1363,6 +1363,41 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         }
     }
 
+    /**
+     * Called on hover enter event.
+     * @param x The x coordinate of the position of the hover enter event.
+     * @param y The y coordinate of the position of the hover enter event.
+     */
+    public void onHoverEnter(float x, float y) {
+        if (!isPeripheralsSupportForTabStripEnabled()) return;
+        // TODO (crbug.com/1451925): Handle tab strip hover enter event.
+    }
+
+    /**
+     * Called on hover move event.
+     * @param x The x coordinate of the position of the hover move event.
+     * @param y The y coordinate of the position of the hover move event.
+     */
+    public void onHoverMove(float x, float y) {
+        if (!isPeripheralsSupportForTabStripEnabled()) return;
+        // TODO (crbug.com/1451925): Handle tab strip hover move event.
+    }
+
+    /**
+     * Called on hover exit event.
+     * @param x The x coordinate of the position of the hover exit event.
+     * @param y The y coordinate of the position of the hover exit event.
+     */
+    public void onHoverExit(float x, float y) {
+        if (!isPeripheralsSupportForTabStripEnabled()) return;
+        // TODO (crbug.com/1451925): Handle tab strip hover exit event.
+    }
+
+    private boolean isPeripheralsSupportForTabStripEnabled() {
+        return ChromeFeatureList.isEnabled(
+                ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP);
+    }
+
     private void handleNewTabClick() {
         if (mModel == null) return;
 

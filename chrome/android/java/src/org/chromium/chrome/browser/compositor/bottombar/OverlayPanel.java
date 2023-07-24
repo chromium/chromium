@@ -854,6 +854,15 @@ public class OverlayPanel extends OverlayPanelAnimation
     @Override
     public void onPinch(float x0, float y0, float x1, float y1, boolean firstEvent) {}
 
+    @Override
+    public void onHoverEnter(float x, float y) {}
+
+    @Override
+    public void onHoverMove(float x, float y) {}
+
+    @Override
+    public void onHoverExit(float x, float y) {}
+
     // SwipeHandler implementation.
 
     @Override

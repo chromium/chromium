@@ -693,7 +693,7 @@ public abstract class Layout {
 
     /**
      * @param e                 The {@link MotionEvent} to consider.
-     * @param offsets           The current touch offsets that should be applied to the
+     * @param offsets           The current motion offsets that should be applied to the
      *                          {@link EventFilter}s.
      * @param isKeyboardShowing Whether or not the keyboard is showing.
      * @return The {@link EventFilter} the {@link Layout} is listening to.
@@ -706,6 +706,9 @@ public abstract class Layout {
                 layoutEventFilter.setCurrentMotionEventOffsets(offsets.x, offsets.y);
             }
             if (layoutEventFilter.onInterceptTouchEvent(e, isKeyboardShowing)) {
+                return layoutEventFilter;
+            }
+            if (layoutEventFilter.onInterceptHoverEvent(e)) {
                 return layoutEventFilter;
             }
         }

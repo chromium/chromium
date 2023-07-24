@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import android.content.pm.ActivityInfo;
+import android.view.MotionEvent;
 
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -23,8 +24,10 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -852,6 +855,48 @@ public class TabStripTest {
                 2);
 
         assertWaitForKeyboardStatus(false);
+    }
+
+    /**
+     * Tests hover events associated with a strip tab.
+     */
+    @Test
+    @LargeTest
+    @EnableFeatures({ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP})
+    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    public void testHoverOnTab() throws Exception {
+        // Open a few regular tabs.
+        ChromeTabUtils.newTabsFromMenu(
+                InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity(), 4);
+
+        // Select a tab to hover on.
+        TabModel model = sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+        StripLayoutTab tab = TabStripUtils.findStripLayoutTab(
+                sActivityTestRule.getActivity(), false, model.getTabAt(2).getId());
+        assertTabVisibility(true, tab);
+
+        // Simulate a hover into this tab.
+        StripLayoutHelperManager stripLayoutHelperManager =
+                TabStripUtils.getStripLayoutHelperManager(sActivityTestRule.getActivity());
+        float xEnter = tab.getDrawX() + tab.getWidth() / 2;
+        float yEnter = tab.getDrawY() + tab.getHeight() / 2;
+        stripLayoutHelperManager.simulateHoverEventForTesting(
+                MotionEvent.ACTION_HOVER_ENTER, xEnter, yEnter);
+
+        // Simulate a subsequent hover within the tab.
+        float xMove = tab.getDrawX() + tab.getWidth() / 3;
+        float yMove = tab.getDrawY() + tab.getHeight() / 3;
+        stripLayoutHelperManager.simulateHoverEventForTesting(
+                MotionEvent.ACTION_HOVER_MOVE, xMove, yMove);
+
+        // Simulate a subsequent hover outside the tab.
+        float xExit = tab.getDrawX() + 2 * tab.getWidth();
+        float yExit = tab.getDrawY() + 2 * tab.getHeight();
+        stripLayoutHelperManager.simulateHoverEventForTesting(
+                MotionEvent.ACTION_HOVER_EXIT, xExit, yExit);
+
+        // TODO (crbug.com/1451925): Update verification in test(s) after hover handling is added in
+        // StripLayoutHelper.
     }
 
     /**

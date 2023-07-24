@@ -74,4 +74,28 @@ public interface GestureHandler {
      * @param firstEvent Whether the onPinch call is the first of multiple.
      */
     void onPinch(float x0, float y0, float x1, float y1, boolean firstEvent);
+
+    /**
+     * Called on hover enter event.
+     *
+     * @param x The X position at the end of the event in the host view space in dp.
+     * @param y The Y position at the end of the event in the host view space in dp.
+     */
+    void onHoverEnter(float x, float y);
+
+    /**
+     * Called on hover move event.
+     *
+     * @param x The X position at the end of the event in the host view space in dp.
+     * @param y The Y position at the end of the event in the host view space in dp.
+     */
+    void onHoverMove(float x, float y);
+
+    /**
+     * Called on hover exit event.
+     *
+     * @param x The X position at the end of the event in the host view space in dp.
+     * @param y The Y position at the end of the event in the host view space in dp.
+     */
+    void onHoverExit(float x, float y);
 }
