@@ -12685,14 +12685,15 @@
             ],
             "experiments": [
                 {
-                    "name": "ServiceWorkerBypassFetchHandlerForMainResource_20230323",
+                    "name": "Enabled_ServiceWorkerBypassFetchHandlerForRace_20230724",
                     "params": {
-                        "bypass_for": "main_resource",
+                        "bypass_for": "all_with_race_network_request",
                         "script_checksum_to_bypass": "144B3D5485B621F5896FD51D6A6FE66A07B6DBC3ACF6404748A833C2D592F900",
                         "strategy": "allowlist"
                     },
                     "enable_features": [
-                        "ServiceWorkerBypassFetchHandler"
+                        "ServiceWorkerBypassFetchHandler",
+                        "ServiceWorkerBypassFetchHandlerHashStrings"
                     ]
                 }
             ]
