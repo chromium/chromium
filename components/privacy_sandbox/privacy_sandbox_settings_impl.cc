@@ -112,23 +112,22 @@ void PrivacySandboxSettingsImpl::JoinHistogram(const char* name,
 
 // static
 void PrivacySandboxSettingsImpl::JoinFledgeHistogram(
-    content::ContentBrowserClient::InterestGroupApiOperation
-        interest_group_api_operation,
+    content::InterestGroupApiOperation interest_group_api_operation,
     Status status) {
   switch (interest_group_api_operation) {
-    case content::ContentBrowserClient::InterestGroupApiOperation::kJoin:
+    case content::InterestGroupApiOperation::kJoin:
       JoinHistogram(kIsFledgeJoinAllowedHistogram, status);
       break;
-    case content::ContentBrowserClient::InterestGroupApiOperation::kLeave:
+    case content::InterestGroupApiOperation::kLeave:
       JoinHistogram(kIsFledgeLeaveAllowedHistogram, status);
       break;
-    case content::ContentBrowserClient::InterestGroupApiOperation::kUpdate:
+    case content::InterestGroupApiOperation::kUpdate:
       JoinHistogram(kIsFledgeUpdateAllowedHistogram, status);
       break;
-    case content::ContentBrowserClient::InterestGroupApiOperation::kSell:
+    case content::InterestGroupApiOperation::kSell:
       JoinHistogram(kIsFledgeSellAllowedHistogram, status);
       break;
-    case content::ContentBrowserClient::InterestGroupApiOperation::kBuy:
+    case content::InterestGroupApiOperation::kBuy:
       JoinHistogram(kIsFledgeBuyAllowedHistogram, status);
       break;
   }
@@ -541,8 +540,7 @@ bool PrivacySandboxSettingsImpl::IsEventReportingDestinationAttested(
 bool PrivacySandboxSettingsImpl::IsFledgeAllowed(
     const url::Origin& top_frame_origin,
     const url::Origin& auction_party,
-    content::ContentBrowserClient::InterestGroupApiOperation
-        interest_group_api_operation) const {
+    content::InterestGroupApiOperation interest_group_api_operation) const {
   // Check for attestation on the auction party's site. The auction party is a
   // variety of entities during the auction, all of which need to be attested.
   Status attestation_status =
@@ -555,7 +553,7 @@ bool PrivacySandboxSettingsImpl::IsFledgeAllowed(
   }
 
   if (interest_group_api_operation ==
-          content::ContentBrowserClient::InterestGroupApiOperation::kJoin &&
+          content::InterestGroupApiOperation::kJoin &&
       !IsFledgeJoiningAllowed(top_frame_origin)) {
     JoinFledgeHistogram(interest_group_api_operation,
                         Status::kJoiningTopFrameBlocked);

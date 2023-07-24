@@ -11,7 +11,7 @@ include_rules = [
   "+net/base",
   "+net/cookies/site_for_cookies.h",
   "+content/public/test",
-  "+content/public/browser/content_browser_client.h",
+  "+content/public/browser/interest_group_api_operation.h",
   "+ui/base",
   "+third_party/blink/public/common/features.h",
 ]

@@ -6,7 +6,7 @@
 #define COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_H_
 
 #include "components/keyed_service/core/keyed_service.h"
-#include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/interest_group_api_operation.h"
 
 #include "base/time/time.h"
 
@@ -154,11 +154,10 @@ class PrivacySandboxSettings : public KeyedService {
 
   // Determine whether |auction_party| can register an interest group, or sell
   // buy in an auction, on |top_frame_origin|.
-  virtual bool IsFledgeAllowed(
-      const url::Origin& top_frame_origin,
-      const url::Origin& auction_party,
-      content::ContentBrowserClient::InterestGroupApiOperation
-          interest_group_api_operation) const = 0;
+  virtual bool IsFledgeAllowed(const url::Origin& top_frame_origin,
+                               const url::Origin& auction_party,
+                               content::InterestGroupApiOperation
+                                   interest_group_api_operation) const = 0;
 
   // Determine whether |destination_origin| is allowed to receive events
   // (reportEvent(), automatic beacons) reported by an API like Protected

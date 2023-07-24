@@ -54,7 +54,7 @@ class MockPrivacySandboxSettings
               IsFledgeAllowed,
               (const url::Origin&,
                const url::Origin&,
-               content::ContentBrowserClient::InterestGroupApiOperation),
+               content::InterestGroupApiOperation),
               (override, const));
   MOCK_METHOD(
       bool,

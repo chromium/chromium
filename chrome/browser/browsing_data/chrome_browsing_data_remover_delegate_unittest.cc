@@ -2995,13 +2995,13 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveFledgeJoinSettings) {
 
   EXPECT_FALSE(privacy_sandbox_settings->IsFledgeAllowed(
       url::Origin::Create(GURL("https://www.example.com")), auction_party,
-      content::ContentBrowserClient::InterestGroupApiOperation::kJoin));
+      content::InterestGroupApiOperation::kJoin));
   EXPECT_FALSE(privacy_sandbox_settings->IsFledgeAllowed(
       url::Origin::Create(GURL("https://another-example.com")), auction_party,
-      content::ContentBrowserClient::InterestGroupApiOperation::kJoin));
+      content::InterestGroupApiOperation::kJoin));
   EXPECT_FALSE(privacy_sandbox_settings->IsFledgeAllowed(
       url::Origin::Create(GURL("http://different-example.com")), auction_party,
-      content::ContentBrowserClient::InterestGroupApiOperation::kJoin));
+      content::InterestGroupApiOperation::kJoin));
 
   // Apply a deletion targeting the second setting.
   BlockUntilBrowsingDataRemoved(setting_time_two - base::Seconds(1),
@@ -3010,13 +3010,13 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveFledgeJoinSettings) {
 
   EXPECT_FALSE(privacy_sandbox_settings->IsFledgeAllowed(
       url::Origin::Create(GURL("https://www.example.com")), auction_party,
-      content::ContentBrowserClient::InterestGroupApiOperation::kJoin));
+      content::InterestGroupApiOperation::kJoin));
   EXPECT_TRUE(privacy_sandbox_settings->IsFledgeAllowed(
       url::Origin::Create(GURL("https://another-example.com")), auction_party,
-      content::ContentBrowserClient::InterestGroupApiOperation::kJoin));
+      content::InterestGroupApiOperation::kJoin));
   EXPECT_FALSE(privacy_sandbox_settings->IsFledgeAllowed(
       url::Origin::Create(GURL("http://different-example.com")), auction_party,
-      content::ContentBrowserClient::InterestGroupApiOperation::kJoin));
+      content::InterestGroupApiOperation::kJoin));
 
   // Apply a deletion targeting the remaining settings.
   BlockUntilBrowsingDataRemoved(setting_time_one, setting_time_three,
@@ -3024,13 +3024,13 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveFledgeJoinSettings) {
 
   EXPECT_TRUE(privacy_sandbox_settings->IsFledgeAllowed(
       url::Origin::Create(GURL("https://www.example.com")), auction_party,
-      content::ContentBrowserClient::InterestGroupApiOperation::kJoin));
+      content::InterestGroupApiOperation::kJoin));
   EXPECT_TRUE(privacy_sandbox_settings->IsFledgeAllowed(
       url::Origin::Create(GURL("https://another-example.com")), auction_party,
-      content::ContentBrowserClient::InterestGroupApiOperation::kJoin));
+      content::InterestGroupApiOperation::kJoin));
   EXPECT_TRUE(privacy_sandbox_settings->IsFledgeAllowed(
       url::Origin::Create(GURL("http://different-example.com")), auction_party,
-      content::ContentBrowserClient::InterestGroupApiOperation::kJoin));
+      content::InterestGroupApiOperation::kJoin));
 }
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveTopicSettings) {

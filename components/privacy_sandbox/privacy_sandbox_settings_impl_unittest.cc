@@ -281,7 +281,7 @@ TEST_F(PrivacySandboxSettingsTest, DefaultContentSettingBlockOverridePref) {
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://embedded.com")),
-      content::ContentBrowserClient::InterestGroupApiOperation::kJoin));
+      content::InterestGroupApiOperation::kJoin));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsSharedStorageAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -330,7 +330,7 @@ TEST_F(PrivacySandboxSettingsTest, DefaultContentSettingBlockOverridePref) {
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://embedded.com")),
-      content::ContentBrowserClient::InterestGroupApiOperation::kJoin));
+      content::InterestGroupApiOperation::kJoin));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsSharedStorageAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -373,7 +373,7 @@ TEST_F(PrivacySandboxSettingsTest, CookieExceptionsApply) {
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://embedded.com")),
-      content::ContentBrowserClient::InterestGroupApiOperation::kJoin));
+      content::InterestGroupApiOperation::kJoin));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsSharedStorageAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -415,7 +415,7 @@ TEST_F(PrivacySandboxSettingsTest, CookieExceptionsApply) {
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://embedded.com")),
-      content::ContentBrowserClient::InterestGroupApiOperation::kJoin));
+      content::InterestGroupApiOperation::kJoin));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsSharedStorageAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -472,7 +472,7 @@ TEST_F(PrivacySandboxSettingsTest, CookieExceptionsApply) {
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://embedded.com")),
-      content::ContentBrowserClient::InterestGroupApiOperation::kJoin));
+      content::InterestGroupApiOperation::kJoin));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsSharedStorageAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -505,7 +505,7 @@ TEST_F(PrivacySandboxSettingsTest, CookieExceptionsApply) {
   EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://embedded.com")),
-      content::ContentBrowserClient::InterestGroupApiOperation::kJoin));
+      content::InterestGroupApiOperation::kJoin));
 
   // Exceptions which specify a top frame origin should not match against other
   // top frame origins, or an empty origin.
@@ -542,7 +542,7 @@ TEST_F(PrivacySandboxSettingsTest, CookieExceptionsApply) {
   EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://another-test.com")),
       url::Origin::Create(GURL("https://embedded.com")),
-      content::ContentBrowserClient::InterestGroupApiOperation::kJoin));
+      content::InterestGroupApiOperation::kJoin));
 
   EXPECT_TRUE(privacy_sandbox_settings()->IsSharedStorageAllowed(
       url::Origin::Create(GURL("https://another-test.com")),
@@ -583,7 +583,7 @@ TEST_F(PrivacySandboxSettingsTest, CookieExceptionsApply) {
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://embedded.com")),
-      content::ContentBrowserClient::InterestGroupApiOperation::kJoin));
+      content::InterestGroupApiOperation::kJoin));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsSharedStorageAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -621,7 +621,7 @@ TEST_F(PrivacySandboxSettingsTest, ThirdPartyCookies) {
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://embedded.com")),
-      content::ContentBrowserClient::InterestGroupApiOperation::kJoin));
+      content::InterestGroupApiOperation::kJoin));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsSharedStorageAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -657,7 +657,7 @@ TEST_F(PrivacySandboxSettingsTest, ThirdPartyCookies) {
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://embedded.com")),
-      content::ContentBrowserClient::InterestGroupApiOperation::kJoin));
+      content::InterestGroupApiOperation::kJoin));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsSharedStorageAllowed(
       url::Origin::Create(GURL("https://test.com")),
@@ -698,7 +698,7 @@ TEST_F(PrivacySandboxSettingsTest, ThirdPartyCookies) {
   EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeAllowed(
       url::Origin::Create(GURL("https://test.com")),
       url::Origin::Create(GURL("https://embedded.com")),
-      content::ContentBrowserClient::InterestGroupApiOperation::kJoin));
+      content::InterestGroupApiOperation::kJoin));
 
   EXPECT_FALSE(privacy_sandbox_settings()->IsSharedStorageAllowed(
       url::Origin::Create(GURL("https://test.com")),

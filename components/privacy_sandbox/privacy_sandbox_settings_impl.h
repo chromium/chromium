@@ -8,6 +8,7 @@
 #include "components/browsing_topics/common/common_types.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -59,7 +60,7 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
                                          base::Time end_time) override;
   bool IsFledgeAllowed(const url::Origin& top_frame_origin,
                        const url::Origin& auction_party,
-                       content::ContentBrowserClient::InterestGroupApiOperation
+                       content::InterestGroupApiOperation
                            interest_group_api_operation) const override;
   bool IsEventReportingDestinationAttested(
       const url::Origin& destination_origin,
@@ -130,8 +131,7 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
 
   static void JoinHistogram(const char* name, Status status);
   static void JoinFledgeHistogram(
-      content::ContentBrowserClient::InterestGroupApiOperation
-          interest_group_api_operation,
+      content::InterestGroupApiOperation interest_group_api_operation,
       Status status);
 
   // Get the Topics that are disabled by Finch.

@@ -357,11 +357,9 @@ void CheckOutput(
       auto fledge_auction_party_origin = GetItemValueForKey<url::Origin>(
           InputKey::kFledgeAuctionPartyOrigin, input);
       auto return_value = GetItemValue<bool>(output_value);
-      ASSERT_EQ(
-          return_value,
-          privacy_sandbox_settings->IsFledgeAllowed(
-              top_frame_origin, fledge_auction_party_origin,
-              content::ContentBrowserClient::InterestGroupApiOperation::kJoin));
+      ASSERT_EQ(return_value, privacy_sandbox_settings->IsFledgeAllowed(
+                                  top_frame_origin, fledge_auction_party_origin,
+                                  content::InterestGroupApiOperation::kJoin));
       return;
     }
     case (OutputKey::kIsFledgeLeaveAllowed): {
@@ -373,8 +371,7 @@ void CheckOutput(
       auto return_value = GetItemValue<bool>(output_value);
       ASSERT_EQ(return_value, privacy_sandbox_settings->IsFledgeAllowed(
                                   top_frame_origin, fledge_auction_party_origin,
-                                  content::ContentBrowserClient::
-                                      InterestGroupApiOperation::kLeave));
+                                  content::InterestGroupApiOperation::kLeave));
       return;
     }
     case (OutputKey::kIsFledgeUpdateAllowed): {
@@ -386,8 +383,7 @@ void CheckOutput(
       auto return_value = GetItemValue<bool>(output_value);
       ASSERT_EQ(return_value, privacy_sandbox_settings->IsFledgeAllowed(
                                   top_frame_origin, fledge_auction_party_origin,
-                                  content::ContentBrowserClient::
-                                      InterestGroupApiOperation::kUpdate));
+                                  content::InterestGroupApiOperation::kUpdate));
       return;
     }
     case (OutputKey::kIsFledgeSellAllowed): {
@@ -397,11 +393,9 @@ void CheckOutput(
       auto fledge_auction_party_origin = GetItemValueForKey<url::Origin>(
           InputKey::kFledgeAuctionPartyOrigin, input);
       auto return_value = GetItemValue<bool>(output_value);
-      ASSERT_EQ(
-          return_value,
-          privacy_sandbox_settings->IsFledgeAllowed(
-              top_frame_origin, fledge_auction_party_origin,
-              content::ContentBrowserClient::InterestGroupApiOperation::kSell));
+      ASSERT_EQ(return_value, privacy_sandbox_settings->IsFledgeAllowed(
+                                  top_frame_origin, fledge_auction_party_origin,
+                                  content::InterestGroupApiOperation::kSell));
       return;
     }
     case (OutputKey::kIsFledgeBuyAllowed): {
@@ -411,11 +405,9 @@ void CheckOutput(
       auto fledge_auction_party_origin = GetItemValueForKey<url::Origin>(
           InputKey::kFledgeAuctionPartyOrigin, input);
       auto return_value = GetItemValue<bool>(output_value);
-      ASSERT_EQ(
-          return_value,
-          privacy_sandbox_settings->IsFledgeAllowed(
-              top_frame_origin, fledge_auction_party_origin,
-              content::ContentBrowserClient::InterestGroupApiOperation::kBuy));
+      ASSERT_EQ(return_value, privacy_sandbox_settings->IsFledgeAllowed(
+                                  top_frame_origin, fledge_auction_party_origin,
+                                  content::InterestGroupApiOperation::kBuy));
       return;
     }
     case (OutputKey::kIsEventReportingDestinationAttestedForFledge): {
@@ -580,7 +572,7 @@ void CheckOutput(
           InputKey::kFledgeAuctionPartyOrigin, input);
       std::ignore = privacy_sandbox_settings->IsFledgeAllowed(
           top_frame_origin, fledge_auction_party_origin,
-          content::ContentBrowserClient::InterestGroupApiOperation::kJoin);
+          content::InterestGroupApiOperation::kJoin);
       auto histogram_value = GetItemValue<int>(output_value);
       histogram_tester.ExpectUniqueSample("PrivacySandbox.IsFledgeJoinAllowed",
                                           histogram_value, 1);
@@ -595,7 +587,7 @@ void CheckOutput(
           InputKey::kFledgeAuctionPartyOrigin, input);
       std::ignore = privacy_sandbox_settings->IsFledgeAllowed(
           top_frame_origin, fledge_auction_party_origin,
-          content::ContentBrowserClient::InterestGroupApiOperation::kLeave);
+          content::InterestGroupApiOperation::kLeave);
       auto histogram_value = GetItemValue<int>(output_value);
       histogram_tester.ExpectUniqueSample("PrivacySandbox.IsFledgeLeaveAllowed",
                                           histogram_value, 1);
@@ -610,7 +602,7 @@ void CheckOutput(
           InputKey::kFledgeAuctionPartyOrigin, input);
       std::ignore = privacy_sandbox_settings->IsFledgeAllowed(
           top_frame_origin, fledge_auction_party_origin,
-          content::ContentBrowserClient::InterestGroupApiOperation::kUpdate);
+          content::InterestGroupApiOperation::kUpdate);
       auto histogram_value = GetItemValue<int>(output_value);
       histogram_tester.ExpectUniqueSample(
           "PrivacySandbox.IsFledgeUpdateAllowed", histogram_value, 1);
@@ -625,7 +617,7 @@ void CheckOutput(
           InputKey::kFledgeAuctionPartyOrigin, input);
       std::ignore = privacy_sandbox_settings->IsFledgeAllowed(
           top_frame_origin, fledge_auction_party_origin,
-          content::ContentBrowserClient::InterestGroupApiOperation::kSell);
+          content::InterestGroupApiOperation::kSell);
       auto histogram_value = GetItemValue<int>(output_value);
       histogram_tester.ExpectUniqueSample("PrivacySandbox.IsFledgeSellAllowed",
                                           histogram_value, 1);
@@ -640,7 +632,7 @@ void CheckOutput(
           InputKey::kFledgeAuctionPartyOrigin, input);
       std::ignore = privacy_sandbox_settings->IsFledgeAllowed(
           top_frame_origin, fledge_auction_party_origin,
-          content::ContentBrowserClient::InterestGroupApiOperation::kBuy);
+          content::InterestGroupApiOperation::kBuy);
       auto histogram_value = GetItemValue<int>(output_value);
       histogram_tester.ExpectUniqueSample("PrivacySandbox.IsFledgeBuyAllowed",
                                           histogram_value, 1);

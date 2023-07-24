@@ -335,11 +335,9 @@ TEST_F(PrivacySandboxTestUtilTest, OutputKey_IsFledgeAllowed) {
       url::Origin::Create(GURL("https://fledge.com"));
   url::Origin kTopFrameOrigin =
       url::Origin::Create(GURL("https://top-frame.com"));
-  EXPECT_CALL(
-      *mock_privacy_sandbox_settings(),
-      IsFledgeAllowed(
-          kTopFrameOrigin, kFledgeAuctionPartyOrigin,
-          content::ContentBrowserClient::InterestGroupApiOperation::kJoin))
+  EXPECT_CALL(*mock_privacy_sandbox_settings(),
+              IsFledgeAllowed(kTopFrameOrigin, kFledgeAuctionPartyOrigin,
+                              content::InterestGroupApiOperation::kJoin))
       .WillOnce(testing::Return(true));
 
   CheckOutput({{InputKey::kFledgeAuctionPartyOrigin, kFledgeAuctionPartyOrigin},

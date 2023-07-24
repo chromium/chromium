@@ -1948,11 +1948,10 @@ class InterestGroupContentBrowserClient : public ChromeContentBrowserClient {
   // ChromeContentBrowserClient overrides:
   // This is needed so that the interest group related APIs can run without
   // failing with the result AuctionResult::kSellerRejected.
-  bool IsInterestGroupAPIAllowed(
-      content::RenderFrameHost* render_frame_host,
-      content::ContentBrowserClient::InterestGroupApiOperation operation,
-      const url::Origin& top_frame_origin,
-      const url::Origin& api_origin) override {
+  bool IsInterestGroupAPIAllowed(content::RenderFrameHost* render_frame_host,
+                                 content::InterestGroupApiOperation operation,
+                                 const url::Origin& top_frame_origin,
+                                 const url::Origin& api_origin) override {
     return true;
   }
 };
