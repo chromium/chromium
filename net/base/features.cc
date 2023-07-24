@@ -417,6 +417,6 @@ BASE_FEATURE(kZstdContentEncoding,
 
 BASE_FEATURE(kClearSiteDataWildcardSupport,
              "ClearSiteDataWildcardSupport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace net::features

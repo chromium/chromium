@@ -646,15 +646,22 @@ TEST_F(ClearSiteDataHandlerTest, FormattedConsoleOutput) {
     // |NetworkServiceClient| creates a new |ClearSiteDataHandler| for each
     // navigation, redirect, or subresource header responses.
     for (const auto& test : kTestCases) {
-      std::vector<base::test::FeatureRef> features;
+      std::vector<base::test::FeatureRef> enabled_features;
+      std::vector<base::test::FeatureRef> disabled_features;
       if (test.wildcard) {
-        features.push_back(net::features::kClearSiteDataWildcardSupport);
+        enabled_features.push_back(
+            net::features::kClearSiteDataWildcardSupport);
+      } else {
+        disabled_features.push_back(
+            net::features::kClearSiteDataWildcardSupport);
       }
       if (test.client_hints) {
-        features.push_back(features::kClearSiteDataClientHintsSupport);
+        enabled_features.push_back(features::kClearSiteDataClientHintsSupport);
+      } else {
+        disabled_features.push_back(features::kClearSiteDataClientHintsSupport);
       }
       base::test::ScopedFeatureList scoped_feature_list;
-      scoped_feature_list.InitWithFeatures(features, {});
+      scoped_feature_list.InitWithFeatures(enabled_features, disabled_features);
       TestHandler handler(
           base::BindRepeating(&FakeBrowserContextGetter),
           base::BindRepeating(&FakeWebContentsGetter), GURL(test.url),

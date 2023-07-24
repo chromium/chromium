@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Setting a cookie before Clear-Site-Data for all shouldn't allow the cookie to take. assert_equals: expected "" but got "testSetWithClear=true"
-Harness: the test ran to completion.
-
