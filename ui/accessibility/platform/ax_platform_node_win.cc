@@ -1386,11 +1386,11 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
               L"button"};
 
     case ax::mojom::Role::kTextField:
-      return {UIALocalizationStrategy::kSupply, UIA_EditControlTypeId,
+      return {UIALocalizationStrategy::kDeferToControlType, UIA_EditControlTypeId,
               L"textbox"};
 
     case ax::mojom::Role::kSearchBox:
-      return {UIALocalizationStrategy::kSupply, UIA_EditControlTypeId,
+      return {UIALocalizationStrategy::kDeferToControlType, UIA_EditControlTypeId,
               L"searchbox"};
 
     case ax::mojom::Role::kTextFieldWithComboBox:
