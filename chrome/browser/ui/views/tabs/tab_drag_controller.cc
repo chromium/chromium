@@ -377,7 +377,7 @@ void TabDragController::Init(TabDragContext* source_context,
   presentation_time_recorder_ = ui::CreatePresentationTimeHistogramRecorder(
       source_context->GetWidget()->GetCompositor(),
       kTabDraggingPresentationTimeHistogram,
-      kTabDraggingPresentationTimeMaxHistogram);
+      kTabDraggingPresentationTimeMaxHistogram, base::Seconds(10));
   // Do not release capture when transferring capture between widgets on:
   // - Desktop Linux
   //     Mouse capture is not synchronous on desktop Linux. Chrome makes
