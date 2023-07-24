@@ -82,7 +82,8 @@ int MemoryFileStreamWriter::Cancel(net::CompletionOnceCallback callback) {
   return net::ERR_IO_PENDING;
 }
 
-int MemoryFileStreamWriter::Flush(net::CompletionOnceCallback /*callback*/) {
+int MemoryFileStreamWriter::Flush(FlushMode /*flush_mode*/,
+                                  net::CompletionOnceCallback /*callback*/) {
   DCHECK(!has_pending_operation_);
   DCHECK(cancel_callback_.is_null());
 

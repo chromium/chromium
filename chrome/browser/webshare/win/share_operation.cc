@@ -140,7 +140,8 @@ class DataWriterFileStreamWriter final : public storage::FileStreamWriter {
     return net::OK;
   }
 
-  int Flush(net::CompletionOnceCallback callback) final {
+  int Flush(storage::FlushMode /*flush_mode*/,
+            net::CompletionOnceCallback callback) final {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
     DCHECK(flush_callback_.is_null());
     DCHECK_EQ(flush_operation_, nullptr);

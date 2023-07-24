@@ -73,18 +73,19 @@ int ArcDocumentsProviderFileStreamWriter::Cancel(
 }
 
 int ArcDocumentsProviderFileStreamWriter::Flush(
+    storage::FlushMode flush_mode,
     net::CompletionOnceCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   if (!content_url_resolved_) {
-    pending_operations_.emplace_back(
-        base::BindOnce(&ArcDocumentsProviderFileStreamWriter::RunPendingFlush,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    pending_operations_.emplace_back(base::BindOnce(
+        &ArcDocumentsProviderFileStreamWriter::RunPendingFlush,
+        weak_ptr_factory_.GetWeakPtr(), flush_mode, std::move(callback)));
     return net::ERR_IO_PENDING;
   }
   if (!underlying_writer_)
     return net::ERR_FILE_NOT_FOUND;
-  return underlying_writer_->Flush(std::move(callback));
+  return underlying_writer_->Flush(flush_mode, std::move(callback));
 }
 
 void ArcDocumentsProviderFileStreamWriter::OnResolveToContentUrl(
@@ -138,6 +139,7 @@ void ArcDocumentsProviderFileStreamWriter::RunPendingCancel(
 }
 
 void ArcDocumentsProviderFileStreamWriter::RunPendingFlush(
+    storage::FlushMode flush_mode,
     net::CompletionOnceCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(content_url_resolved_);
@@ -146,7 +148,8 @@ void ArcDocumentsProviderFileStreamWriter::RunPendingFlush(
   // it returns synchronously.
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   int result = underlying_writer_
-                   ? underlying_writer_->Flush(std::move(split_callback.first))
+                   ? underlying_writer_->Flush(flush_mode,
+                                               std::move(split_callback.first))
                    : net::ERR_FILE_NOT_FOUND;
   if (result != net::ERR_IO_PENDING)
     std::move(split_callback.second).Run(result);

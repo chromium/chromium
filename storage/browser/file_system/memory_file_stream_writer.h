@@ -34,7 +34,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) MemoryFileStreamWriter
             int buf_len,
             net::CompletionOnceCallback callback) override;
   int Cancel(net::CompletionOnceCallback callback) override;
-  int Flush(net::CompletionOnceCallback callback) override;
+  int Flush(FlushMode flush_mode,
+            net::CompletionOnceCallback callback) override;
 
  private:
   void OnWriteCompleted(net::CompletionOnceCallback callback, int result);

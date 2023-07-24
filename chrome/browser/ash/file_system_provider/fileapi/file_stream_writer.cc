@@ -258,7 +258,8 @@ int FileStreamWriter::Cancel(net::CompletionOnceCallback callback) {
   return net::ERR_IO_PENDING;
 }
 
-int FileStreamWriter::Flush(net::CompletionOnceCallback callback) {
+int FileStreamWriter::Flush(storage::FlushMode /*flush_mode*/,
+                            net::CompletionOnceCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK_NE(CANCELLING, state_);
 

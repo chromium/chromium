@@ -77,12 +77,13 @@ int BufferingFileStreamWriter::Cancel(net::CompletionOnceCallback callback) {
   return file_stream_writer_->Cancel(std::move(callback));
 }
 
-int BufferingFileStreamWriter::Flush(net::CompletionOnceCallback callback) {
+int BufferingFileStreamWriter::Flush(storage::FlushMode flush_mode,
+                                     net::CompletionOnceCallback callback) {
   // Flush all the buffered bytes first, then invoke Flush() on the inner file
   // stream writer.
   FlushIntermediateBuffer(base::BindOnce(
       &BufferingFileStreamWriter::OnFlushIntermediateBufferForFlushCompleted,
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback), flush_mode));
   return net::ERR_IO_PENDING;
 }
 
@@ -165,13 +166,15 @@ void BufferingFileStreamWriter::
 
 void BufferingFileStreamWriter::OnFlushIntermediateBufferForFlushCompleted(
     net::CompletionOnceCallback callback,
+    storage::FlushMode flush_mode,
     int result) {
   if (result < 0) {
     std::move(callback).Run(result);
     return;
   }
 
-  const int flush_result = file_stream_writer_->Flush(std::move(callback));
+  const int flush_result =
+      file_stream_writer_->Flush(flush_mode, std::move(callback));
   DCHECK_EQ(net::ERR_IO_PENDING, flush_result);
 }
 

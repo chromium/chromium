@@ -100,6 +100,7 @@ int ArcContentFileSystemFileStreamWriter::Cancel(
 }
 
 int ArcContentFileSystemFileStreamWriter::Flush(
+    storage::FlushMode /*flush_mode*/,
     net::CompletionOnceCallback callback) {
   DCHECK(!has_pending_operation_);
   DCHECK(cancel_callback_.is_null());

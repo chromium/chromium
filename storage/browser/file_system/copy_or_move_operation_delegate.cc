@@ -795,7 +795,7 @@ void CopyOrMoveOperationDelegate::StreamCopyHelper::DidRead(int result) {
   if (result == 0) {
     // Here is the EOF.
     if (flush_policy_ == FlushPolicy::FLUSH_ON_COMPLETION)
-      Flush(true /* is_eof */);
+      Flush(FlushMode::kEndOfFile);
     else
       std::move(completion_callback_).Run(base::File::FILE_OK);
     return;
@@ -850,31 +850,38 @@ void CopyOrMoveOperationDelegate::StreamCopyHelper::DidWrite(
 
   if (flush_policy_ == FlushPolicy::FLUSH_ON_COMPLETION &&
       (num_copied_bytes_ - previous_flush_offset_) > kFlushIntervalInBytes) {
-    Flush(false /* not is_eof */);
+    Flush(FlushMode::kDefault);
   } else {
     Read();
   }
 }
 
-void CopyOrMoveOperationDelegate::StreamCopyHelper::Flush(bool is_eof) {
-  int result = writer_->Flush(base::BindOnce(
-      &StreamCopyHelper::DidFlush, weak_factory_.GetWeakPtr(), is_eof));
+void CopyOrMoveOperationDelegate::StreamCopyHelper::Flush(
+    FlushMode flush_mode) {
+  int result = writer_->Flush(
+      flush_mode, base::BindOnce(&StreamCopyHelper::DidFlush,
+                                 weak_factory_.GetWeakPtr(), flush_mode));
   if (result != net::ERR_IO_PENDING)
-    DidFlush(is_eof, result);
+    DidFlush(flush_mode, result);
 }
 
-void CopyOrMoveOperationDelegate::StreamCopyHelper::DidFlush(bool is_eof,
-                                                             int result) {
+void CopyOrMoveOperationDelegate::StreamCopyHelper::DidFlush(
+    FlushMode flush_mode,
+    int result) {
   if (cancel_requested_) {
     std::move(completion_callback_).Run(base::File::FILE_ERROR_ABORT);
     return;
   }
 
   previous_flush_offset_ = num_copied_bytes_;
-  if (is_eof)
-    std::move(completion_callback_).Run(NetErrorToFileError(result));
-  else
-    Read();
+  switch (flush_mode) {
+    case FlushMode::kEndOfFile:
+      std::move(completion_callback_).Run(NetErrorToFileError(result));
+      break;
+    case FlushMode::kDefault:
+      Read();
+      break;
+  }
 }
 
 CopyOrMoveOperationDelegate::CopyOrMoveOperationDelegate(

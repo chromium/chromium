@@ -256,7 +256,8 @@ bool SandboxFileStreamWriter::CancelIfRequested() {
   return true;
 }
 
-int SandboxFileStreamWriter::Flush(net::CompletionOnceCallback callback) {
+int SandboxFileStreamWriter::Flush(FlushMode flush_mode,
+                                   net::CompletionOnceCallback callback) {
   DCHECK(!has_pending_operation_);
   DCHECK(cancel_callback_.is_null());
 
@@ -266,6 +267,7 @@ int SandboxFileStreamWriter::Flush(net::CompletionOnceCallback callback) {
 
   has_pending_operation_ = true;
   int result = file_writer_->Flush(
+      flush_mode,
       base::BindOnce(&SandboxFileStreamWriter::DidFlush,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
   if (result != net::ERR_IO_PENDING)

@@ -44,7 +44,8 @@ class BufferingFileStreamWriter : public storage::FileStreamWriter {
             int buf_len,
             net::CompletionOnceCallback callback) override;
   int Cancel(net::CompletionOnceCallback callback) override;
-  int Flush(net::CompletionOnceCallback callback) override;
+  int Flush(storage::FlushMode flush_mode,
+            net::CompletionOnceCallback callback) override;
 
  private:
   // Copies |buffer_length| bytes of data from the |buffer| starting at
@@ -85,6 +86,7 @@ class BufferingFileStreamWriter : public storage::FileStreamWriter {
   // with either a success or an error.
   void OnFlushIntermediateBufferForFlushCompleted(
       net::CompletionOnceCallback callback,
+      storage::FlushMode flush_mode,
       int result);
 
   std::unique_ptr<storage::FileStreamWriter> file_stream_writer_;

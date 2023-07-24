@@ -77,7 +77,8 @@ int LocalFileStreamWriter::Cancel(net::CompletionOnceCallback callback) {
   return net::ERR_IO_PENDING;
 }
 
-int LocalFileStreamWriter::Flush(net::CompletionOnceCallback callback) {
+int LocalFileStreamWriter::Flush(FlushMode /*flush_mode*/,
+                                 net::CompletionOnceCallback callback) {
   DCHECK(!has_pending_operation_);
   DCHECK(cancel_callback_.is_null());
 
