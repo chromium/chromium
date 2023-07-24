@@ -52,7 +52,7 @@ class WebStateList;
 @interface OverflowMenuMediator : NSObject <BrowserContainerConsumer>
 
 // The data model for the overflow menu.
-@property(nonatomic, readonly) OverflowMenuModel* overflowMenuModel;
+@property(nonatomic, weak) OverflowMenuModel* model;
 
 // The WebStateList that this mediator listens for any changes on the current
 // WebState.
@@ -110,10 +110,6 @@ class WebStateList;
 
 // The FollowBrowserAgent used to manage web channels subscriptions.
 @property(nonatomic, assign) FollowBrowserAgent* followBrowserAgent;
-
-// The number of destinations immediately visible to the user when opening the
-// new overflow menu (i.e. the number of "above-the-fold" destinations).
-@property(nonatomic, assign) int visibleDestinationsCount;
 
 // The Sync Service that provides the status of Sync.
 @property(nonatomic, assign) syncer::SyncService* syncService;

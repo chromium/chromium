@@ -32,6 +32,7 @@ class DestinationDragHandler: ObservableObject {
 
   /// Begin a new drag of the given `destination`.
   func startDrag(from item: OverflowMenuDestination) {
+    // End any existing drag in case it wasn't able to be ended before.
     endDrag()
     guard let index = destinationModel.shownDestinations.firstIndex(of: item) else {
       return

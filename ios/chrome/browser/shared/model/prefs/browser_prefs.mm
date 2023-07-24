@@ -203,6 +203,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kOverflowMenuNewDestinations,
                              PrefRegistry::LOSSY_PREF);
   registry->RegisterListPref(prefs::kOverflowMenuDestinationsOrder);
+  registry->RegisterListPref(prefs::kOverflowMenuHiddenDestinations);
   registry->RegisterDictionaryPref(prefs::kOverflowMenuActionsOrder);
 
   // Preferences related to Enterprise policies.

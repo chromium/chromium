@@ -133,6 +133,8 @@ enum class IOSOverflowMenuActionType {
 @end
 
 @implementation PopupMenuCoordinator {
+  OverflowMenuModel* _overflowMenuModel;
+
   OverflowMenuOrderer* _overflowMenuOrderer;
 
   ActionCustomizationCoordinator* _actionCustomizationCoordinator;
@@ -264,13 +266,16 @@ enum class IOSOverflowMenuActionType {
       self.overflowMenuMediator.isIncognito = isIncognito;
       _overflowMenuOrderer =
           [[OverflowMenuOrderer alloc] initWithIsIncognito:isIncognito];
-      self.overflowMenuMediator.menuOrderer = _overflowMenuOrderer;
-      self.overflowMenuMediator.visibleDestinationsCount =
+      _overflowMenuOrderer.visibleDestinationsCount =
           [OverflowMenuUIConfiguration
               numDestinationsVisibleWithoutHorizontalScrollingForScreenWidth:
                   screenWidth
                                                       forContentSizeCategory:
                                                           contentSizeCategory];
+      _overflowMenuOrderer.localStatePrefs =
+          GetApplicationContext()->GetLocalState();
+
+      self.overflowMenuMediator.menuOrderer = _overflowMenuOrderer;
       self.overflowMenuMediator.dispatcher =
           static_cast<id<ActivityServiceCommands, ApplicationCommands,
                          BrowserCoordinatorCommands, FindInPageCommands,
@@ -295,8 +300,6 @@ enum class IOSOverflowMenuActionType {
               self.browser->GetBrowserState());
       self.overflowMenuMediator.browserStatePrefs =
           self.browser->GetBrowserState()->GetPrefs();
-      self.overflowMenuMediator.localStatePrefs =
-          GetApplicationContext()->GetLocalState();
       self.overflowMenuMediator.engagementTracker =
           feature_engagement::TrackerFactory::GetForBrowserState(
               self.browser->GetBrowserState());
@@ -339,9 +342,14 @@ enum class IOSOverflowMenuActionType {
 
       self.popupMenuHelpCoordinator.uiConfiguration = uiConfiguration;
 
+      _overflowMenuModel = [[OverflowMenuModel alloc] initWithDestinations:@[]
+                                                              actionGroups:@[]];
+
+      _overflowMenuOrderer.model = _overflowMenuModel;
+      self.overflowMenuMediator.model = _overflowMenuModel;
+
       UIViewController* menu = [OverflowMenuViewProvider
-          makeViewControllerWithModel:self.overflowMenuMediator
-                                          .overflowMenuModel
+          makeViewControllerWithModel:_overflowMenuModel
                       uiConfiguration:uiConfiguration
                        metricsHandler:self];
 
@@ -516,6 +524,9 @@ enum class IOSOverflowMenuActionType {
                            completion:^{
                              [weakSelf.bubblePresenter presentTabPinnedBubble];
                            }];
+    _overflowMenuModel = nil;
+    [_overflowMenuOrderer disconnect];
+    _overflowMenuOrderer = nil;
     [self.overflowMenuMediator disconnect];
     self.overflowMenuMediator = nil;
   }

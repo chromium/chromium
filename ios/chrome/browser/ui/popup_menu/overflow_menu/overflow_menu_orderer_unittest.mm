@@ -85,8 +85,8 @@ OverflowMenuAction* CreateOverflowMenuAction(
 @property(nonatomic, assign) DestinationRanking baseDestinations;
 
 // By default, the provider will create a standard `OverflowMenuDestination`
-// and return that in `-destinationForDestinationType:`. This will override
-// that to return a custom destination.
+// and return that in `-destinationForDestinationType:showAll:`. This will
+// override that to return a custom destination.
 - (void)storeCustomDestination:(OverflowMenuDestination*)destination
             forDestinationType:(overflow_menu::Destination)destinationType;
 
@@ -108,6 +108,11 @@ OverflowMenuAction* CreateOverflowMenuAction(
     return _destinationMap[destinationType];
   }
   return CreateOverflowMenuDestination(destinationType);
+}
+
+- (OverflowMenuDestination*)customizationDestinationForDestinationType:
+    (overflow_menu::Destination)destinationType {
+  return [self destinationForDestinationType:destinationType];
 }
 
 @end
@@ -169,9 +174,13 @@ class OverflowMenuOrdererTest : public PlatformTest {
   void InitializeOverflowMenuOrderer(BOOL isIncognito) {
     CreatePrefs();
 
+    overflow_menu_model_ = [[OverflowMenuModel alloc] initWithDestinations:@[]
+                                                              actionGroups:@[]];
+
     overflow_menu_orderer_ =
         [[OverflowMenuOrderer alloc] initWithIsIncognito:isIncognito];
 
+    overflow_menu_orderer_.model = overflow_menu_model_;
     overflow_menu_orderer_.localStatePrefs = prefs_.get();
     overflow_menu_orderer_.visibleDestinationsCount = kVisibleDestinationsCount;
     overflow_menu_orderer_.destinationProvider = destination_provider_;
@@ -182,7 +191,7 @@ class OverflowMenuOrdererTest : public PlatformTest {
                                                 DestinationRanking ranking) {
     InitializeOverflowMenuOrderer(isIncognito);
     destination_provider_.baseDestinations = ranking;
-    [overflow_menu_orderer_ sortedDestinations];
+    [overflow_menu_orderer_ updateDestinations];
   }
 
   // Create pref registry for tests.
@@ -193,6 +202,8 @@ class OverflowMenuOrdererTest : public PlatformTest {
     prefs_->registry()->RegisterListPref(prefs::kOverflowMenuNewDestinations,
                                          PrefRegistry::LOSSY_PREF);
     prefs_->registry()->RegisterListPref(prefs::kOverflowMenuDestinationsOrder);
+    prefs_->registry()->RegisterListPref(
+        prefs::kOverflowMenuHiddenDestinations);
     prefs_->registry()->RegisterDictionaryPref(
         prefs::kOverflowMenuActionsOrder);
   }
@@ -225,6 +236,7 @@ class OverflowMenuOrdererTest : public PlatformTest {
 
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
   OverflowMenuOrderer* overflow_menu_orderer_;
+  OverflowMenuModel* overflow_menu_model_;
   FakeOverflowMenuDestinationProvider* destination_provider_;
   FakeOverflowMenuActionProvider* action_provider_;
 };
@@ -234,7 +246,7 @@ TEST_F(OverflowMenuOrdererTest, StoresInitialDestinationRanking) {
   InitializeOverflowMenuOrderer(NO);
   DestinationRanking sample_destinations = SampleDestinations();
   destination_provider_.baseDestinations = sample_destinations;
-  [overflow_menu_orderer_ sortedDestinations];
+  [overflow_menu_orderer_ updateDestinations];
 
   const base::Value::List& stored_ranking =
       prefs_->GetList(prefs::kOverflowMenuDestinationsOrder);
@@ -311,12 +323,11 @@ TEST_F(OverflowMenuOrdererTest, InsertsNewDestinationInMiddleOfRanking) {
 
   destination_provider_.baseDestinations = updated_destinations;
 
-  NSArray<OverflowMenuDestination*>* sorted_ranking =
-      [overflow_menu_orderer_ sortedDestinations];
+  [overflow_menu_orderer_ updateDestinations];
 
-  ASSERT_EQ(
-      static_cast<overflow_menu::Destination>(sorted_ranking[3].destination),
-      all_destinations[7]);
+  ASSERT_EQ(static_cast<overflow_menu::Destination>(
+                overflow_menu_model_.destinations[3].destination),
+            all_destinations[7]);
 }
 
 TEST_F(OverflowMenuOrdererTest, InsertsNewDestinationsInMiddleOfRanking) {
@@ -347,16 +358,19 @@ TEST_F(OverflowMenuOrdererTest, InsertsNewDestinationsInMiddleOfRanking) {
 
   destination_provider_.baseDestinations = updated_destinations;
 
-  NSArray<OverflowMenuDestination*>* sorted_ranking =
-      [overflow_menu_orderer_ sortedDestinations];
+  [overflow_menu_orderer_ updateDestinations];
 
-  ASSERT_EQ(static_cast<overflow_menu::Destination>(
-                sorted_ranking[kNewDestinationsInsertionIndex].destination),
-            all_destinations[7]);
+  ASSERT_EQ(
+      static_cast<overflow_menu::Destination>(
+          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex]
+              .destination),
+      all_destinations[7]);
 
-  ASSERT_EQ(static_cast<overflow_menu::Destination>(
-                sorted_ranking[kNewDestinationsInsertionIndex + 1].destination),
-            all_destinations[6]);
+  ASSERT_EQ(
+      static_cast<overflow_menu::Destination>(
+          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex + 1]
+              .destination),
+      all_destinations[6]);
 }
 
 TEST_F(OverflowMenuOrdererTest, InsertsAndRemovesNewDestinationsInRanking) {
@@ -384,20 +398,23 @@ TEST_F(OverflowMenuOrdererTest, InsertsAndRemovesNewDestinationsInRanking) {
 
   destination_provider_.baseDestinations = updated_destinations;
 
-  NSArray<OverflowMenuDestination*>* sorted_ranking =
-      [overflow_menu_orderer_ sortedDestinations];
+  [overflow_menu_orderer_ updateDestinations];
+
+  ASSERT_EQ(static_cast<overflow_menu::Destination>(
+                overflow_menu_model_.destinations[0].destination),
+            all_destinations[2]);
 
   ASSERT_EQ(
-      static_cast<overflow_menu::Destination>(sorted_ranking[0].destination),
-      all_destinations[2]);
+      static_cast<overflow_menu::Destination>(
+          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex]
+              .destination),
+      all_destinations[7]);
 
-  ASSERT_EQ(static_cast<overflow_menu::Destination>(
-                sorted_ranking[kNewDestinationsInsertionIndex].destination),
-            all_destinations[7]);
-
-  ASSERT_EQ(static_cast<overflow_menu::Destination>(
-                sorted_ranking[kNewDestinationsInsertionIndex + 1].destination),
-            all_destinations[6]);
+  ASSERT_EQ(
+      static_cast<overflow_menu::Destination>(
+          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex + 1]
+              .destination),
+      all_destinations[6]);
 }
 
 // Tests that the destinations that have a badge are moved in the middle of the
@@ -432,15 +449,18 @@ TEST_F(OverflowMenuOrdererTest, MoveBadgedDestinationsInRanking) {
 
   destination_provider_.baseDestinations = updated_destinations;
 
-  NSArray<OverflowMenuDestination*>* sorted_ranking =
-      [overflow_menu_orderer_ sortedDestinations];
+  [overflow_menu_orderer_ updateDestinations];
 
-  ASSERT_EQ(static_cast<overflow_menu::Destination>(
-                sorted_ranking[kNewDestinationsInsertionIndex].destination),
-            all_destinations[4]);
-  ASSERT_EQ(static_cast<overflow_menu::Destination>(
-                sorted_ranking[kNewDestinationsInsertionIndex + 1].destination),
-            all_destinations[6]);
+  ASSERT_EQ(
+      static_cast<overflow_menu::Destination>(
+          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex]
+              .destination),
+      all_destinations[4]);
+  ASSERT_EQ(
+      static_cast<overflow_menu::Destination>(
+          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex + 1]
+              .destination),
+      all_destinations[6]);
 }
 
 // Tests that the destinations that have an error badge have priority over the
@@ -470,15 +490,17 @@ TEST_F(OverflowMenuOrdererTest, PriorityToErrorBadgeOverOtherBadges) {
   InitializeOverflowMenuOrderer(NO);
 
   // Set the initial ranking to `current_destinations`.
-  NSArray<OverflowMenuDestination*>* initial_ranking =
-      [overflow_menu_orderer_ sortedDestinations];
+  [overflow_menu_orderer_ updateDestinations];
 
-  ASSERT_EQ(static_cast<overflow_menu::Destination>(
-                initial_ranking[kNewDestinationsInsertionIndex].destination),
-            all_destinations[5]);
   ASSERT_EQ(
       static_cast<overflow_menu::Destination>(
-          initial_ranking[kNewDestinationsInsertionIndex + 1].destination),
+          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex]
+              .destination),
+      all_destinations[5]);
+  ASSERT_EQ(
+      static_cast<overflow_menu::Destination>(
+          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex + 1]
+              .destination),
       all_destinations[3]);
 }
 
@@ -503,14 +525,13 @@ TEST_F(OverflowMenuOrdererTest, DontMoveBadgedDestinationWithGoodRanking) {
   InitializeOverflowMenuOrderer(NO);
 
   // Set the initial ranking to `current_destinations`.
-  NSArray<OverflowMenuDestination*>* initial_ranking =
-      [overflow_menu_orderer_ sortedDestinations];
+  [overflow_menu_orderer_ updateDestinations];
 
   // Verify that the destination with a badge and with a better ranking than
   // kNewDestinationsInsertionIndex wasn't moved.
-  ASSERT_EQ(
-      static_cast<overflow_menu::Destination>(initial_ranking[0].destination),
-      all_destinations[0]);
+  ASSERT_EQ(static_cast<overflow_menu::Destination>(
+                overflow_menu_model_.destinations[0].destination),
+            all_destinations[0]);
 }
 
 // Tests that if a destination is both new and has a badge, it will be inserted
@@ -546,18 +567,23 @@ TEST_F(OverflowMenuOrdererTest, PriorityToBadgeOverNewDestinationStatus) {
 
   destination_provider_.baseDestinations = updated_destinations;
 
-  NSArray<OverflowMenuDestination*>* sorted_ranking =
-      [overflow_menu_orderer_ sortedDestinations];
+  [overflow_menu_orderer_ updateDestinations];
 
-  ASSERT_EQ(static_cast<overflow_menu::Destination>(
-                sorted_ranking[kNewDestinationsInsertionIndex].destination),
-            all_destinations[6]);
-  ASSERT_EQ(static_cast<overflow_menu::Destination>(
-                sorted_ranking[kNewDestinationsInsertionIndex + 1].destination),
-            all_destinations[7]);
-  ASSERT_EQ(static_cast<overflow_menu::Destination>(
-                sorted_ranking[kNewDestinationsInsertionIndex + 2].destination),
-            all_destinations[5]);
+  ASSERT_EQ(
+      static_cast<overflow_menu::Destination>(
+          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex]
+              .destination),
+      all_destinations[6]);
+  ASSERT_EQ(
+      static_cast<overflow_menu::Destination>(
+          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex + 1]
+              .destination),
+      all_destinations[7]);
+  ASSERT_EQ(
+      static_cast<overflow_menu::Destination>(
+          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex + 2]
+              .destination),
+      all_destinations[5]);
 }
 
 // Tests that if a destination is both new and has a badge, it will be inserted
@@ -606,24 +632,33 @@ TEST_F(OverflowMenuOrdererTest, PriorityToNewDestinationWithBadge) {
 
   destination_provider_.baseDestinations = updated_destinations;
 
-  NSArray<OverflowMenuDestination*>* sorted_ranking =
-      [overflow_menu_orderer_ sortedDestinations];
+  [overflow_menu_orderer_ updateDestinations];
 
-  ASSERT_EQ(static_cast<overflow_menu::Destination>(
-                sorted_ranking[kNewDestinationsInsertionIndex].destination),
-            all_destinations[7]);
-  ASSERT_EQ(static_cast<overflow_menu::Destination>(
-                sorted_ranking[kNewDestinationsInsertionIndex + 1].destination),
-            all_destinations[4]);
-  ASSERT_EQ(static_cast<overflow_menu::Destination>(
-                sorted_ranking[kNewDestinationsInsertionIndex + 2].destination),
-            all_destinations[5]);
-  ASSERT_EQ(static_cast<overflow_menu::Destination>(
-                sorted_ranking[kNewDestinationsInsertionIndex + 3].destination),
-            all_destinations[6]);
-  ASSERT_EQ(static_cast<overflow_menu::Destination>(
-                sorted_ranking[kNewDestinationsInsertionIndex + 4].destination),
-            all_destinations[3]);
+  ASSERT_EQ(
+      static_cast<overflow_menu::Destination>(
+          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex]
+              .destination),
+      all_destinations[7]);
+  ASSERT_EQ(
+      static_cast<overflow_menu::Destination>(
+          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex + 1]
+              .destination),
+      all_destinations[4]);
+  ASSERT_EQ(
+      static_cast<overflow_menu::Destination>(
+          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex + 2]
+              .destination),
+      all_destinations[5]);
+  ASSERT_EQ(
+      static_cast<overflow_menu::Destination>(
+          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex + 3]
+              .destination),
+      all_destinations[6]);
+  ASSERT_EQ(
+      static_cast<overflow_menu::Destination>(
+          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex + 4]
+              .destination),
+      all_destinations[3]);
 }
 
 // Tests that the destinations are still promoted when there is no usage
@@ -658,12 +693,11 @@ TEST_F(OverflowMenuOrdererTest, TestNewDestinationsWhenNoHistoryUsageRanking) {
 
   destination_provider_.baseDestinations = updated_destinations;
 
-  NSArray<OverflowMenuDestination*>* sorted_ranking =
-      [overflow_menu_orderer_ sortedDestinations];
+  [overflow_menu_orderer_ updateDestinations];
 
-  ASSERT_EQ(
-      static_cast<overflow_menu::Destination>(sorted_ranking[3].destination),
-      all_destinations[7]);
+  ASSERT_EQ(static_cast<overflow_menu::Destination>(
+                overflow_menu_model_.destinations[3].destination),
+            all_destinations[7]);
 }
 
 TEST_F(OverflowMenuOrdererTest, MovesBadgedDestinationsWithNoUsageHistory) {
@@ -696,15 +730,18 @@ TEST_F(OverflowMenuOrdererTest, MovesBadgedDestinationsWithNoUsageHistory) {
 
   destination_provider_.baseDestinations = updated_destinations;
 
-  NSArray<OverflowMenuDestination*>* sorted_ranking =
-      [overflow_menu_orderer_ sortedDestinations];
+  [overflow_menu_orderer_ updateDestinations];
 
-  ASSERT_EQ(static_cast<overflow_menu::Destination>(
-                sorted_ranking[kNewDestinationsInsertionIndex].destination),
-            all_destinations[4]);
-  ASSERT_EQ(static_cast<overflow_menu::Destination>(
-                sorted_ranking[kNewDestinationsInsertionIndex + 1].destination),
-            all_destinations[6]);
+  ASSERT_EQ(
+      static_cast<overflow_menu::Destination>(
+          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex]
+              .destination),
+      all_destinations[4]);
+  ASSERT_EQ(
+      static_cast<overflow_menu::Destination>(
+          overflow_menu_model_.destinations[kNewDestinationsInsertionIndex + 1]
+              .destination),
+      all_destinations[6]);
 }
 
 // Tests that the action ranking pref gets populated after sorting once.
@@ -722,4 +759,55 @@ TEST_F(OverflowMenuOrdererTest, StoresInitialActionRanking) {
 
   EXPECT_EQ(stored_ranking.size(), 2u);
   EXPECT_EQ(stored_ranking.FindList("shown")->size(), sample_actions.size());
+}
+
+// Tests that no destinations are lost if the overflow menu flag is enabled
+// and then disabled
+TEST_F(OverflowMenuOrdererTest,
+       SavesHiddenDestinationsWhenOverflowCustomizationFlagDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(kOverflowMenuCustomization);
+
+  CreatePrefs();
+
+  // Set the pref state to what it would be with flag enabled and some
+  // destinations hidden.
+  base::Value::List shown_destinations =
+      base::Value::List()
+          .Append(overflow_menu::StringNameForDestination(
+              overflow_menu::Destination::ReadingList))
+          .Append(overflow_menu::StringNameForDestination(
+              overflow_menu::Destination::Downloads));
+  base::Value::List hidden_destinations =
+      base::Value::List()
+          .Append(overflow_menu::StringNameForDestination(
+              overflow_menu::Destination::Bookmarks))
+          .Append(overflow_menu::StringNameForDestination(
+              overflow_menu::Destination::History));
+
+  base::Value::List all_destinations =
+      base::Value::List()
+          .Append(overflow_menu::StringNameForDestination(
+              overflow_menu::Destination::ReadingList))
+          .Append(overflow_menu::StringNameForDestination(
+              overflow_menu::Destination::Downloads))
+          .Append(overflow_menu::StringNameForDestination(
+              overflow_menu::Destination::Bookmarks))
+          .Append(overflow_menu::StringNameForDestination(
+              overflow_menu::Destination::History));
+
+  prefs_->SetList(prefs::kOverflowMenuDestinationsOrder,
+                  std::move(shown_destinations));
+  prefs_->SetList(prefs::kOverflowMenuHiddenDestinations,
+                  std::move(hidden_destinations));
+
+  overflow_menu_orderer_ = [[OverflowMenuOrderer alloc] initWithIsIncognito:NO];
+
+  // Set prefs here to force orderer to load and migrate.
+  overflow_menu_orderer_.localStatePrefs = prefs_.get();
+
+  const base::Value::List& new_order =
+      prefs_->GetList(prefs::kOverflowMenuDestinationsOrder);
+
+  EXPECT_EQ(new_order, all_destinations);
 }

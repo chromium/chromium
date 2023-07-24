@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/popup_menu//overflow_menu/overflow_menu_orderer.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_orderer.h"
 
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
@@ -72,6 +72,16 @@ void InsertDestination(overflow_menu::Destination destination,
   destinationsToAdd.erase(destination);
 }
 
+// Simple data struct to bundle the two lists of destinations together.
+struct DestinationOrderData {
+  DestinationRanking shownDestinations;
+  DestinationRanking hiddenDestinations;
+
+  bool empty() const {
+    return shownDestinations.empty() && hiddenDestinations.empty();
+  }
+};
+
 // Simple data struct to bundle the two lists of actions together.
 struct ActionOrderData {
   ActionRanking shownActions;
@@ -96,18 +106,19 @@ using DestinationLookup =
   // Whether the current menu is for an incognito page.
   BOOL _isIncognito;
 
-  // The current ranking of the destinations.
-  DestinationRanking _ranking;
-
   // New destinations recently added to the overflow menu carousel that have not
   // yet been clicked by the user.
   std::set<overflow_menu::Destination> _untappedDestinations;
+
+  // The data for the current destinations ordering and show/hide state.
+  DestinationOrderData _destinationOrderData;
 
   // The data for the current actions ordering and show/hide state.
   ActionOrderData _actionOrderData;
 }
 
 @synthesize actionCustomizationModel = _actionCustomizationModel;
+@synthesize destinationCustomizationModel = _destinationCustomizationModel;
 
 - (instancetype)initWithIsIncognito:(BOOL)isIncognito {
   if (self = [super init]) {
@@ -132,9 +143,10 @@ using DestinationLookup =
     self.destinationUsageHistory.visibleDestinationsCount =
         self.visibleDestinationsCount;
     [self.destinationUsageHistory start];
-    [self loadDestinationsFromPrefs];
-    [self loadActionsFromPrefs];
   }
+
+  [self loadDestinationsFromPrefs];
+  [self loadActionsFromPrefs];
 }
 
 - (void)setVisibleDestinationsCount:(int)visibleDestinationsCount {
@@ -143,7 +155,7 @@ using DestinationLookup =
       self.visibleDestinationsCount;
 }
 
-// Lazily create customization model.
+// Lazily create action customization model.
 - (ActionCustomizationModel*)actionCustomizationModel {
   if (_actionCustomizationModel) {
     return _actionCustomizationModel;
@@ -171,6 +183,39 @@ using DestinationLookup =
   return _actionCustomizationModel;
 }
 
+// Lazily create destination customization model.
+- (DestinationCustomizationModel*)destinationCustomizationModel {
+  if (_destinationCustomizationModel) {
+    return _destinationCustomizationModel;
+  }
+
+  [self initializeDestinationOrderDataIfEmpty];
+
+  NSMutableArray<OverflowMenuDestination*>* destinations =
+      [[NSMutableArray alloc] init];
+  for (overflow_menu::Destination destination :
+       _destinationOrderData.shownDestinations) {
+    if (OverflowMenuDestination* overflowMenuDestination =
+            [self.destinationProvider
+                customizationDestinationForDestinationType:destination]) {
+      [destinations addObject:overflowMenuDestination];
+    }
+  }
+  for (overflow_menu::Destination destination :
+       _destinationOrderData.hiddenDestinations) {
+    if (OverflowMenuDestination* overflowMenuDestination =
+            [self.destinationProvider
+                customizationDestinationForDestinationType:destination]) {
+      overflowMenuDestination.shown = NO;
+      [destinations addObject:overflowMenuDestination];
+    }
+  }
+
+  _destinationCustomizationModel =
+      [[DestinationCustomizationModel alloc] initWithDestinations:destinations];
+  return _destinationCustomizationModel;
+}
+
 #pragma mark - Public
 
 - (void)recordClickForDestination:(overflow_menu::Destination)destination {
@@ -179,50 +224,8 @@ using DestinationLookup =
   [self.destinationUsageHistory recordClickForDestination:destination];
 }
 
-- (NSArray<OverflowMenuDestination*>*)sortedDestinations {
-  DestinationRanking availableDestinations =
-      [self.destinationProvider baseDestinations];
-  // If there's no `_ranking`, which only happens if the device
-  // hasn't used Smart Sorting before, use the default carousel order as the
-  // initial ranking.
-  if (_ranking.empty()) {
-    _ranking = availableDestinations;
-  }
-
-  if (self.destinationUsageHistory) {
-    _ranking = [self.destinationUsageHistory
-        sortedDestinationsFromCurrentRanking:_ranking
-                       availableDestinations:availableDestinations];
-
-    [self flushDestinationsToPrefs];
-  }
-
-  [self applyBadgeOrderingToRankingWithAvailableDestinations:
-            availableDestinations];
-
-  // Convert back to Objective-C array for returning. This step also filters out
-  // any destinations that are not supported on the current page.
-  NSMutableArray<OverflowMenuDestination*>* sortedDestinations =
-      [[NSMutableArray alloc] init];
-
-  // Manually inject spotlight destination if it's supported.
-  if (experimental_flags::IsSpotlightDebuggingEnabled()) {
-    if (OverflowMenuDestination* spotlightDestination =
-            [self.destinationProvider
-                destinationForDestinationType:overflow_menu::Destination::
-                                                  SpotlightDebugger]) {
-      [sortedDestinations addObject:spotlightDestination];
-    }
-  }
-  for (overflow_menu::Destination destination : _ranking) {
-    if (OverflowMenuDestination* overflowMenuDestination =
-            [self.destinationProvider
-                destinationForDestinationType:destination]) {
-      [sortedDestinations addObject:overflowMenuDestination];
-    }
-  }
-
-  return sortedDestinations;
+- (void)updateDestinations {
+  self.model.destinations = [self sortedDestinations];
 }
 
 - (void)updatePageActions {
@@ -247,11 +250,37 @@ using DestinationLookup =
   [self flushActionsToPrefs];
 
   [self updatePageActions];
+
+  // Reset customization model so next customization can start fresh.
+  _actionCustomizationModel = nil;
+}
+
+- (void)commitDestinationsUpdate {
+  DestinationOrderData orderData;
+  for (OverflowMenuDestination* destination in self
+           .destinationCustomizationModel.shownDestinations) {
+    orderData.shownDestinations.push_back(
+        static_cast<overflow_menu::Destination>(destination.destination));
+  }
+
+  for (OverflowMenuDestination* destination in self
+           .destinationCustomizationModel.hiddenDestinations) {
+    orderData.hiddenDestinations.push_back(
+        static_cast<overflow_menu::Destination>(destination.destination));
+  }
+
+  _destinationOrderData = orderData;
+  [self flushDestinationsToPrefs];
+
+  self.model.destinations = [self destinationsFromCurrentRanking];
+
+  // Reset customization model so next customization can start fresh.
+  _destinationCustomizationModel = nil;
 }
 
 #pragma mark - Private
 
-// Load the stored destinations data from local prefs/disk.
+// Loads the stored destinations data from local prefs/disk.
 - (void)loadDestinationsFromPrefs {
   // Fetch the stored list of newly-added, unclicked destinations, then update
   // `_untappedDestinations` with its data.
@@ -259,11 +288,36 @@ using DestinationLookup =
       _localStatePrefs->GetList(prefs::kOverflowMenuNewDestinations),
       _untappedDestinations);
 
+  if (IsOverflowMenuCustomizationEnabled()) {
+    const base::Value::List& storedHiddenDestinations =
+        _localStatePrefs->GetList(prefs::kOverflowMenuHiddenDestinations);
+    AppendDestinationsToVector(storedHiddenDestinations,
+                               _destinationOrderData.hiddenDestinations);
+  }
+
+  [self loadShownDestinationsPref];
+
+  // If the customization flag was enabled in the past and users hid
+  // destinations make sure to add those back to the shown list, if the flag
+  // becomes disabled.
+  if (!IsOverflowMenuCustomizationEnabled()) {
+    const base::Value::List& storedHiddenDestinations =
+        _localStatePrefs->GetList(prefs::kOverflowMenuHiddenDestinations);
+    AppendDestinationsToVector(storedHiddenDestinations,
+                               _destinationOrderData.shownDestinations);
+    _localStatePrefs->ClearPref(prefs::kOverflowMenuHiddenDestinations);
+    [self flushDestinationsToPrefs];
+  }
+}
+
+// Loads and migrates the shown destinations pref from disk.
+- (void)loadShownDestinationsPref {
   // First try to load new pref.
   const base::Value::List& storedRanking =
       _localStatePrefs->GetList(prefs::kOverflowMenuDestinationsOrder);
   if (storedRanking.size() > 0) {
-    AppendDestinationsToVector(storedRanking, _ranking);
+    AppendDestinationsToVector(storedRanking,
+                               _destinationOrderData.shownDestinations);
     return;
   }
   // Fall back to old key.
@@ -278,7 +332,8 @@ using DestinationLookup =
   _localStatePrefs->SetList(prefs::kOverflowMenuDestinationsOrder,
                             oldRankingRef.Clone());
 
-  AppendDestinationsToVector(oldRankingRef, _ranking);
+  AppendDestinationsToVector(oldRankingRef,
+                             _destinationOrderData.shownDestinations);
   storedUsageHistoryUpdate->Remove(kRankingKey);
 }
 
@@ -325,12 +380,27 @@ using DestinationLookup =
   // Flush the new destinations ranking to Prefs.
   base::Value::List ranking;
 
-  for (overflow_menu::Destination destination : _ranking) {
+  for (overflow_menu::Destination destination :
+       _destinationOrderData.shownDestinations) {
     ranking.Append(overflow_menu::StringNameForDestination(destination));
   }
 
   _localStatePrefs->SetList(prefs::kOverflowMenuDestinationsOrder,
                             std::move(ranking));
+
+  // Flush list of hidden destinations to Prefs.
+  if (IsOverflowMenuCustomizationEnabled()) {
+    base::Value::List hiddenDestinations;
+
+    for (overflow_menu::Destination destination :
+         _destinationOrderData.hiddenDestinations) {
+      hiddenDestinations.Append(
+          overflow_menu::StringNameForDestination(destination));
+    }
+
+    _localStatePrefs->SetList(prefs::kOverflowMenuHiddenDestinations,
+                              std::move(hiddenDestinations));
+  }
 
   // Flush the new untapped destinations to Prefs.
   ScopedListPrefUpdate untappedDestinationsUpdate(
@@ -389,12 +459,16 @@ using DestinationLookup =
   // Detect new destinations added to the carousel by feature teams. New
   // destinations (`newDestinations`) are those now found in the carousel
   // (`availableDestinations`), but not found in the ranking
-  // (`existingDestinations`).
+  // (`_destinationOrderData`).
   std::set<overflow_menu::Destination> currentDestinations(
       availableDestinations.begin(), availableDestinations.end());
 
-  std::set<overflow_menu::Destination> existingDestinations(_ranking.begin(),
-                                                            _ranking.end());
+  std::set<overflow_menu::Destination> existingDestinations(
+      _destinationOrderData.shownDestinations.begin(),
+      _destinationOrderData.shownDestinations.end());
+
+  existingDestinations.insert(_destinationOrderData.hiddenDestinations.begin(),
+                              _destinationOrderData.hiddenDestinations.end());
 
   std::vector<overflow_menu::Destination> newDestinations;
 
@@ -410,6 +484,11 @@ using DestinationLookup =
   std::set<overflow_menu::Destination> remainingDestinations =
       currentDestinations;
 
+  for (overflow_menu::Destination hiddenDestination :
+       _destinationOrderData.hiddenDestinations) {
+    remainingDestinations.erase(hiddenDestination);
+  }
+
   DestinationRanking sortedDestinations;
 
   // Reconstruct carousel based on current ranking.
@@ -420,7 +499,8 @@ using DestinationLookup =
   // Destinations that need to be re-sorted for highlight are not added here
   // where they are re-inserted later. These destinations have a badge and a
   // position of kNewDestinationsInsertionIndex or worst.
-  for (overflow_menu::Destination rankedDestination : _ranking) {
+  for (overflow_menu::Destination rankedDestination :
+       _destinationOrderData.shownDestinations) {
     if (remainingDestinations.contains(rankedDestination) &&
         !_untappedDestinations.contains(rankedDestination)) {
       OverflowMenuDestination* overflowMenuDestination =
@@ -467,8 +547,10 @@ using DestinationLookup =
 
   // Merge all destinations by prioritizing untapped destinations over ranked
   // destinations in their order of insertion.
-  std::merge(_ranking.begin(), _ranking.end(), _untappedDestinations.begin(),
-             _untappedDestinations.end(), std::back_inserter(allDestinations));
+  std::merge(_destinationOrderData.shownDestinations.begin(),
+             _destinationOrderData.shownDestinations.end(),
+             _untappedDestinations.begin(), _untappedDestinations.end(),
+             std::back_inserter(allDestinations));
 
   // Insert the destinations with a badge that is not for an error at
   // kNewDestinationsInsertionIndex before the untapped destinations.
@@ -497,7 +579,7 @@ using DestinationLookup =
   DCHECK(remainingDestinations.empty());
 
   // Set the new ranking.
-  _ranking = sortedDestinations;
+  _destinationOrderData.shownDestinations = sortedDestinations;
 
   [self flushDestinationsToPrefs];
 }
@@ -514,6 +596,37 @@ using DestinationLookup =
 
     [self flushActionsToPrefs];
   }
+}
+
+// Uses the current `destinationProvider` to get the initial order of
+// destinations for new users without an ordering.
+- (void)initializeDestinationOrderDataIfEmpty {
+  if (_destinationOrderData.empty()) {
+    _destinationOrderData.shownDestinations =
+        [self.destinationProvider baseDestinations];
+  }
+}
+
+// Returns the current destinations in order.
+- (NSArray<OverflowMenuDestination*>*)sortedDestinations {
+  [self initializeDestinationOrderDataIfEmpty];
+
+  DestinationRanking availableDestinations =
+      [self.destinationProvider baseDestinations];
+
+  if (self.destinationUsageHistory) {
+    _destinationOrderData.shownDestinations = [self.destinationUsageHistory
+        sortedDestinationsFromCurrentRanking:_destinationOrderData
+                                                 .shownDestinations
+                       availableDestinations:availableDestinations];
+
+    [self flushDestinationsToPrefs];
+  }
+
+  [self applyBadgeOrderingToRankingWithAvailableDestinations:
+            availableDestinations];
+
+  return [self destinationsFromCurrentRanking];
 }
 
 // Returns the current pageActions in order.
@@ -548,6 +661,35 @@ using DestinationLookup =
   }
 
   return sortedActions;
+}
+
+// Converts the current `_destinationOrderData` into an array of actual
+// `OverflowMenuDestination` objects.
+- (NSArray<OverflowMenuDestination*>*)destinationsFromCurrentRanking {
+  // Convert back to Objective-C array for returning. This step also filters out
+  // any destinations that are not supported on the current page.
+  NSMutableArray<OverflowMenuDestination*>* sortedDestinations =
+      [[NSMutableArray alloc] init];
+
+  // Manually inject spotlight destination if it's supported.
+  if (experimental_flags::IsSpotlightDebuggingEnabled()) {
+    if (OverflowMenuDestination* spotlightDestination =
+            [self.destinationProvider
+                destinationForDestinationType:overflow_menu::Destination::
+                                                  SpotlightDebugger]) {
+      [sortedDestinations addObject:spotlightDestination];
+    }
+  }
+  for (overflow_menu::Destination destination :
+       _destinationOrderData.shownDestinations) {
+    if (OverflowMenuDestination* overflowMenuDestination =
+            [self.destinationProvider
+                destinationForDestinationType:destination]) {
+      [sortedDestinations addObject:overflowMenuDestination];
+    }
+  }
+
+  return sortedDestinations;
 }
 
 @end

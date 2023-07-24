@@ -66,11 +66,11 @@
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
-#import "ios/chrome/browser/ui/popup_menu//overflow_menu/overflow_menu_orderer.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/constants.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/destination_usage_history.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_constants.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_orderer.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_utils.h"
@@ -250,8 +250,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
 @implementation OverflowMenuMediator
 
-@synthesize overflowMenuModel = _overflowMenuModel;
-
 + (void)setTabPinned:(BOOL)pinned
             webState:(web::WebState*)webState
         webStateList:(WebStateList*)webStateList {
@@ -275,7 +273,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 - (void)disconnect {
   // Remove the model link so the other deallocations don't update the model
   // and thus the UI as the UI is dismissing.
-  _overflowMenuModel = nil;
+  self.model = nil;
+  self.menuOrderer = nil;
 
   self.webContentAreaOverlayPresenter = nullptr;
 
@@ -288,18 +287,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     _engagementTracker = nullptr;
   }
 
-  if (self.webState && self.followAction) {
-    FollowTabHelper* followTabHelper =
-        FollowTabHelper::FromWebState(self.webState);
-    if (followTabHelper) {
-      followTabHelper->RemoveFollowMenuUpdater();
-    }
-  }
-
   self.followBrowserAgent = nullptr;
-
-  [self.menuOrderer disconnect];
-  self.menuOrderer = nil;
 
   self.webState = nullptr;
   self.webStateList = nullptr;
@@ -314,12 +302,26 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
 #pragma mark - Property getters/setters
 
-- (OverflowMenuModel*)overflowMenuModel {
-  if (!_overflowMenuModel) {
-    _overflowMenuModel = [self createModel];
+- (void)setModel:(OverflowMenuModel*)model {
+  _model = model;
+  if (_model) {
+    [self initializeModel];
     [self updateModel];
   }
-  return _overflowMenuModel;
+}
+
+- (void)setMenuOrderer:(OverflowMenuOrderer*)menuOrderer {
+  if (self.menuOrderer.destinationProvider == self) {
+    self.menuOrderer.destinationProvider = nil;
+  }
+  if (self.menuOrderer.actionProvider == self) {
+    self.menuOrderer.actionProvider = nil;
+  }
+  _menuOrderer = menuOrderer;
+  self.menuOrderer.destinationProvider = self;
+  self.menuOrderer.actionProvider = self;
+
+  [self updateModel];
 }
 
 - (void)setIsIncognito:(BOOL)isIncognito {
@@ -327,20 +329,17 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   [self updateModel];
 }
 
-- (void)setMenuOrderer:(OverflowMenuOrderer*)menuOrderer {
-  _menuOrderer = menuOrderer;
-  self.menuOrderer.destinationProvider = self;
-  self.menuOrderer.actionProvider = self;
-}
-
-- (void)setVisibleDestinationsCount:(int)visibleDestinationsCount {
-  _visibleDestinationsCount = visibleDestinationsCount;
-  self.menuOrderer.visibleDestinationsCount = self.visibleDestinationsCount;
-}
-
 - (void)setWebState:(web::WebState*)webState {
   if (_webState) {
     _webState->RemoveObserver(_webStateObserver.get());
+
+    if (self.followAction) {
+      FollowTabHelper* followTabHelper =
+          FollowTabHelper::FromWebState(_webState);
+      if (followTabHelper) {
+        followTabHelper->RemoveFollowMenuUpdater();
+      }
+    }
   }
 
   _webState = webState;
@@ -354,6 +353,11 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
         std::make_unique<language::IOSLanguageDetectionTabHelperObserverBridge>(
             language::IOSLanguageDetectionTabHelper::FromWebState(_webState),
             self);
+
+    FollowTabHelper* followTabHelper = FollowTabHelper::FromWebState(_webState);
+    if (followTabHelper) {
+      followTabHelper->SetFollowMenuUpdater(self);
+    }
   }
 }
 
@@ -367,14 +371,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   _webStateList = webStateList;
 
   self.webState = (_webStateList) ? _webStateList->GetActiveWebState() : nil;
-
-  if (self.webState) {
-    FollowTabHelper* followTabHelper =
-        FollowTabHelper::FromWebState(self.webState);
-    if (followTabHelper) {
-      followTabHelper->SetFollowMenuUpdater(self);
-    }
-  }
 
   if (_webStateList) {
     _webStateList->AddObserver(_webStateListObserver.get());
@@ -422,12 +418,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     _prefObserverBridge->ObserveChangesForPreference(
         bookmarks::prefs::kEditBookmarksEnabled, _prefChangeRegistrar.get());
   }
-}
-
-- (void)setLocalStatePrefs:(PrefService*)localStatePrefs {
-  _localStatePrefs = localStatePrefs;
-
-  self.menuOrderer.localStatePrefs = self.localStatePrefs;
 }
 
 - (void)setEngagementTracker:(feature_engagement::Tracker*)engagementTracker {
@@ -488,7 +478,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
 #pragma mark - Model Creation
 
-- (OverflowMenuModel*)createModel {
+- (void)initializeModel {
   __weak __typeof(self) weakSelf = self;
 
   // Bookmarks destination.
@@ -767,10 +757,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     [actionGroups addObject:self.editActionsGroup];
   }
 
-  // Destinations and footer vary based on state, so they're set in
-  // -updateModel.
-  return [[OverflowMenuModel alloc] initWithDestinations:@[]
-                                            actionGroups:actionGroups];
+  self.model.actionGroups = actionGroups;
 }
 
 - (OverflowMenuAction*)newFollowAction {
@@ -963,11 +950,11 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 // Updates the model to match the current page state.
 - (void)updateModel {
   // If the model hasn't been created, there's no need to update.
-  if (!_overflowMenuModel) {
+  if (!self.model) {
     return;
   }
 
-  self.overflowMenuModel.destinations = [self.menuOrderer sortedDestinations];
+  [self.menuOrderer updateDestinations];
 
   NSMutableArray<OverflowMenuAction*>* appActions =
       [[NSMutableArray alloc] init];
@@ -1413,6 +1400,34 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
               self.webState->GetBrowserState()));
       return (priceNotificationsActive) ? self.priceNotificationsDestination
                                         : nil;
+  }
+}
+
+- (OverflowMenuDestination*)customizationDestinationForDestinationType:
+    (overflow_menu::Destination)destinationType {
+  switch (destinationType) {
+    case overflow_menu::Destination::Bookmarks:
+      return self.bookmarksDestination;
+    case overflow_menu::Destination::History:
+      return self.historyDestination;
+    case overflow_menu::Destination::ReadingList:
+      return self.readingListDestination;
+    case overflow_menu::Destination::Passwords:
+      return self.passwordsDestination;
+    case overflow_menu::Destination::Downloads:
+      return self.downloadsDestination;
+    case overflow_menu::Destination::RecentTabs:
+      return self.recentTabsDestination;
+    case overflow_menu::Destination::SiteInfo:
+      return self.siteInfoDestination;
+    case overflow_menu::Destination::Settings:
+      return self.settingsDestination;
+    case overflow_menu::Destination::WhatsNew:
+      return self.whatsNewDestination;
+    case overflow_menu::Destination::SpotlightDebugger:
+      return self.spotlightDebuggerDestination;
+    case overflow_menu::Destination::PriceNotifications:
+      return self.priceNotificationsDestination;
   }
 }
 

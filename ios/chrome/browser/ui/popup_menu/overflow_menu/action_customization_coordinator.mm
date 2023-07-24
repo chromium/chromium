@@ -20,12 +20,6 @@
 @end
 
 @implementation ActionCustomizationCoordinator {
-  // Model for this feature.
-  ActionCustomizationModel* _model;
-
-  // Destination model for this feature.
-  DestinationCustomizationModel* _destinationCustomizationModel;
-
   // UI configuration object to configure this view.
   OverflowMenuUIConfiguration* _UIConfiguration;
 
@@ -41,16 +35,12 @@
                     self.baseViewController.traitCollection.verticalSizeClass
                                      highlightDestination:-1];
 
-  _model = self.menuOrderer.actionCustomizationModel;
-
-  NSArray<OverflowMenuDestination*>* destinations =
-      [self.menuOrderer sortedDestinations];
-  _destinationCustomizationModel =
-      [[DestinationCustomizationModel alloc] initWithDestinations:destinations];
   _viewController = [OverflowMenuViewProvider
-      makeActionCustomizationViewControllerWithActionModel:_model
+      makeActionCustomizationViewControllerWithActionModel:
+          self.menuOrderer.actionCustomizationModel
                                           destinationModel:
-                                              _destinationCustomizationModel
+                                              self.menuOrderer
+                                                  .destinationCustomizationModel
                                            uiConfiguration:_UIConfiguration];
 
   UISheetPresentationController* sheetPresentationController =
@@ -88,6 +78,7 @@
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   [self.menuOrderer commitActionsUpdate];
+  [self.menuOrderer commitDestinationsUpdate];
 
   id<OverflowMenuCustomizationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), OverflowMenuCustomizationCommands);
