@@ -5,9 +5,6 @@
 import("//build/config/arm.gni")
 import("//testing/test.gni")
 
-# If fixed point implementation shall be used (otherwise float).
-use_opus_fixed_point = current_cpu == "arm" || current_cpu == "arm64"
-
 # If ARM optimizations shall be used to accelerate performance.
 use_opus_arm_optimization =
     current_cpu == "arm" ||
@@ -26,10 +23,6 @@ use_opus_arm_rtcd =
 
 config("opus_config") {
   include_dirs = [ "src/include" ]
-
-  if (use_opus_fixed_point) {
-    defines = [ "OPUS_FIXED_POINT" ]
-  }
 }
 
 config("opus_private_config") {
@@ -48,6 +41,8 @@ config("opus_private_config") {
     "src",
     "src/celt",
     "src/silk",
+    "src/silk/fixed",
+    "src/silk/float",
   ]
 
   cflags = []
@@ -97,13 +92,6 @@ config("opus_private_config") {
     ]
   }
 
-  if (use_opus_fixed_point) {
-    defines += [ "FIXED_POINT" ]
-    include_dirs += [ "src/silk/fixed" ]
-  } else {
-    include_dirs += [ "src/silk/float" ]
-  }
-
   if (use_opus_arm_optimization) {
     if (current_cpu == "arm") {
       defines += [
@@ -131,6 +119,7 @@ config("opus_private_config") {
     if (is_ios && current_cpu == "arm64") {
       # Runtime detection of CPU features not available on iOS.
       defines += [
+        "OPUS_ARM_MAY_HAVE_NEON_INTR",
         "OPUS_ARM_PRESUME_NEON_INTR",
         "OPUS_ARM_PRESUME_AARCH64_NEON_INTR",
       ]
@@ -379,6 +368,41 @@ static_library("opus") {
     "src/src/tansig_table.h",
   ]
 
+  # Silk floating-point
+  sources += [
+    "src/silk/float/LPC_analysis_filter_FLP.c",
+    "src/silk/float/LPC_inv_pred_gain_FLP.c",
+    "src/silk/float/LTP_analysis_filter_FLP.c",
+    "src/silk/float/LTP_scale_ctrl_FLP.c",
+    "src/silk/float/SigProc_FLP.h",
+    "src/silk/float/apply_sine_window_FLP.c",
+    "src/silk/float/autocorrelation_FLP.c",
+    "src/silk/float/burg_modified_FLP.c",
+    "src/silk/float/bwexpander_FLP.c",
+    "src/silk/float/corrMatrix_FLP.c",
+    "src/silk/float/encode_frame_FLP.c",
+    "src/silk/float/energy_FLP.c",
+    "src/silk/float/find_LPC_FLP.c",
+    "src/silk/float/find_LTP_FLP.c",
+    "src/silk/float/find_pitch_lags_FLP.c",
+    "src/silk/float/find_pred_coefs_FLP.c",
+    "src/silk/float/inner_product_FLP.c",
+    "src/silk/float/k2a_FLP.c",
+    "src/silk/float/main_FLP.h",
+    "src/silk/float/noise_shape_analysis_FLP.c",
+    "src/silk/float/pitch_analysis_core_FLP.c",
+    "src/silk/float/process_gains_FLP.c",
+    "src/silk/float/regularize_correlations_FLP.c",
+    "src/silk/float/residual_energy_FLP.c",
+    "src/silk/float/scale_copy_vector_FLP.c",
+    "src/silk/float/scale_vector_FLP.c",
+    "src/silk/float/schur_FLP.c",
+    "src/silk/float/sort_FLP.c",
+    "src/silk/float/structs_FLP.h",
+    "src/silk/float/warped_autocorrelation_FLP.c",
+    "src/silk/float/wrappers_FLP.c",
+  ]
+
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
     "//build/config/compiler:no_chromium_code",
@@ -415,70 +439,6 @@ static_library("opus") {
     deps += [ ":opus_sse41" ]
   }
 
-  if (use_opus_fixed_point) {
-    sources += [
-      "src/silk/fixed/LTP_analysis_filter_FIX.c",
-      "src/silk/fixed/LTP_scale_ctrl_FIX.c",
-      "src/silk/fixed/apply_sine_window_FIX.c",
-      "src/silk/fixed/autocorr_FIX.c",
-      "src/silk/fixed/burg_modified_FIX.c",
-      "src/silk/fixed/corrMatrix_FIX.c",
-      "src/silk/fixed/encode_frame_FIX.c",
-      "src/silk/fixed/find_LPC_FIX.c",
-      "src/silk/fixed/find_LTP_FIX.c",
-      "src/silk/fixed/find_pitch_lags_FIX.c",
-      "src/silk/fixed/find_pred_coefs_FIX.c",
-      "src/silk/fixed/k2a_FIX.c",
-      "src/silk/fixed/k2a_Q16_FIX.c",
-      "src/silk/fixed/main_FIX.h",
-      "src/silk/fixed/noise_shape_analysis_FIX.c",
-      "src/silk/fixed/pitch_analysis_core_FIX.c",
-      "src/silk/fixed/process_gains_FIX.c",
-      "src/silk/fixed/regularize_correlations_FIX.c",
-      "src/silk/fixed/residual_energy16_FIX.c",
-      "src/silk/fixed/residual_energy_FIX.c",
-      "src/silk/fixed/schur64_FIX.c",
-      "src/silk/fixed/schur_FIX.c",
-      "src/silk/fixed/structs_FIX.h",
-      "src/silk/fixed/vector_ops_FIX.c",
-      "src/silk/fixed/warped_autocorrelation_FIX.c",
-    ]
-  } else {
-    sources += [
-      "src/silk/float/LPC_analysis_filter_FLP.c",
-      "src/silk/float/LPC_inv_pred_gain_FLP.c",
-      "src/silk/float/LTP_analysis_filter_FLP.c",
-      "src/silk/float/LTP_scale_ctrl_FLP.c",
-      "src/silk/float/SigProc_FLP.h",
-      "src/silk/float/apply_sine_window_FLP.c",
-      "src/silk/float/autocorrelation_FLP.c",
-      "src/silk/float/burg_modified_FLP.c",
-      "src/silk/float/bwexpander_FLP.c",
-      "src/silk/float/corrMatrix_FLP.c",
-      "src/silk/float/encode_frame_FLP.c",
-      "src/silk/float/energy_FLP.c",
-      "src/silk/float/find_LPC_FLP.c",
-      "src/silk/float/find_LTP_FLP.c",
-      "src/silk/float/find_pitch_lags_FLP.c",
-      "src/silk/float/find_pred_coefs_FLP.c",
-      "src/silk/float/inner_product_FLP.c",
-      "src/silk/float/k2a_FLP.c",
-      "src/silk/float/main_FLP.h",
-      "src/silk/float/noise_shape_analysis_FLP.c",
-      "src/silk/float/pitch_analysis_core_FLP.c",
-      "src/silk/float/process_gains_FLP.c",
-      "src/silk/float/regularize_correlations_FLP.c",
-      "src/silk/float/residual_energy_FLP.c",
-      "src/silk/float/scale_copy_vector_FLP.c",
-      "src/silk/float/scale_vector_FLP.c",
-      "src/silk/float/schur_FLP.c",
-      "src/silk/float/sort_FLP.c",
-      "src/silk/float/structs_FLP.h",
-      "src/silk/float/warped_autocorrelation_FLP.c",
-      "src/silk/float/wrappers_FLP.c",
-    ]
-  }
-
   if (use_opus_arm_optimization) {
     sources += [
       "src/celt/arm/fixed_arm64.h",
@@ -504,6 +464,7 @@ static_library("opus") {
         "src/celt/arm/mdct_arm.h",
         "src/celt/arm/pitch_arm.h",
         "src/silk/arm/arm_silk_map.c",
+        "src/silk/fixed/main_FIX.h",
       ]
       deps += [ ":convert_rtcd_assembler" ]
     }
@@ -520,8 +481,6 @@ static_library("opus") {
         "src/silk/arm/NSQ_neon.h",
         "src/silk/arm/biquad_alt_arm.h",
         "src/silk/arm/biquad_alt_neon_intr.c",
-        "src/silk/fixed/arm/warped_autocorrelation_FIX_arm.h",
-        "src/silk/fixed/arm/warped_autocorrelation_FIX_neon_intr.c",
       ]
     }
   }
