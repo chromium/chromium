@@ -9,7 +9,6 @@
 #import "base/check.h"
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/ntp/features.h"
-#import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"

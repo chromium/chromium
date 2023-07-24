@@ -5,8 +5,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/tab_grid_transition_handler.h"
 
 #import "base/ios/block_types.h"
-#import "ios/chrome/browser/shared/ui/util/named_guide.h"
-#import "ios/chrome/common/ui/util/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
