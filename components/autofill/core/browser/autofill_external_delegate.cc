@@ -259,6 +259,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case PopupItemId::kAutocompleteEntry:
     case PopupItemId::kIbanEntry:
     case PopupItemId::kMerchantPromoCodeEntry:
+    case PopupItemId::kFieldByFieldFilling:
       driver_->RendererShouldPreviewFieldWithValue(query_field_.global_id(),
                                                    suggestion.main_text.value);
       break;
@@ -307,6 +308,10 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case PopupItemId::kDatalistEntry:
       driver_->RendererShouldAcceptDataListSuggestion(
           query_field_.global_id(), suggestion.main_text.value);
+      break;
+    case PopupItemId::kFieldByFieldFilling:
+      driver_->RendererShouldFillFieldWithValue(query_field_.global_id(),
+                                                suggestion.main_text.value);
       break;
     case PopupItemId::kIbanEntry:
       // User selected an IBAN suggestion, and we should fill the unmasked IBAN
