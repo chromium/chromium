@@ -13,14 +13,14 @@ namespace android {
 base::android::ScopedJavaLocalRef<jobject> CreateKeyEvent(JNIEnv* env,
                                                           int action,
                                                           int key_code) {
-  return JNI_KeyEvent::Java_KeyEvent_ConstructorAVKE_I_I(env, action, key_code);
+  return JNI_KeyEvent::Java_KeyEvent_Constructor(env, action, key_code);
 }
 
 int GetKeyEventUnicodeChar(JNIEnv* env,
                            const base::android::JavaRef<jobject>& event,
                            int meta_state) {
   return static_cast<int>(
-      JNI_KeyEvent::Java_KeyEvent_getUnicodeCharI_I(env, event, meta_state));
+      JNI_KeyEvent::Java_KeyEvent_getUnicodeChar(env, event, meta_state));
 }
 
 }  // namespace android

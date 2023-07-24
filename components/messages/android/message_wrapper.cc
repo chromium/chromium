@@ -125,8 +125,8 @@ void MessageWrapper::AddSecondaryMenuItem(int item_id,
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jstring> jitem_text =
       base::android::ConvertUTF16ToJavaString(env, item_text);
-  Java_MessageWrapper_addSecondaryMenuItemOCUMPM_I_I_JLS(
-      env, java_message_wrapper_, item_id, resource_id, jitem_text);
+  Java_MessageWrapper_addSecondaryMenuItem(env, java_message_wrapper_, item_id,
+                                           resource_id, jitem_text);
 }
 
 void MessageWrapper::AddSecondaryMenuItem(
@@ -140,8 +140,8 @@ void MessageWrapper::AddSecondaryMenuItem(
       base::android::ConvertUTF16ToJavaString(env, item_text);
   base::android::ScopedJavaLocalRef<jstring> jitem_desc =
       base::android::ConvertUTF16ToJavaString(env, item_description);
-  Java_MessageWrapper_addSecondaryMenuItemOCUMPM_I_I_JLS_JLS(
-      env, java_message_wrapper_, item_id, resource_id, jitem_text, jitem_desc);
+  Java_MessageWrapper_addSecondaryMenuItem(env, java_message_wrapper_, item_id,
+                                           resource_id, jitem_text, jitem_desc);
 }
 
 void MessageWrapper::ClearSecondaryMenuItems() {

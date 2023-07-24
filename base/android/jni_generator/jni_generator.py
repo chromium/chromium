@@ -118,7 +118,7 @@ class CalledByNative:
     self.is_system_class = is_system_class
 
     # Computed once we know if overloads exist.
-    self.method_id_var_name = None
+    self.method_id_function_name = None
 
   @property
   def is_constructor(self):
@@ -131,6 +131,10 @@ class CalledByNative:
   @property
   def params(self):
     return self.signature.param_list
+
+  @property
+  def method_id_var_name(self):
+    return f'{self.method_id_function_name}{len(self.params)}'
 
 
 def JavaTypeToCForDeclaration(java_type):
@@ -221,59 +225,38 @@ def _GetEnvCall(called_by_native):
   return 'Call' + call + 'Method'
 
 
-def MangledType(java_type):
-  """Returns a mangled identifier for the datatype."""
-  descriptor = java_type.to_descriptor()
-  if len(descriptor) <= 2:
-    return descriptor.replace('[', 'A')
-  ret = []
-  # TODO(agrieve): This is not adding an A for one-dimensional arrays.
-  for i in range(1, len(descriptor)):
-    c = descriptor[i]
-    if c == '[':
-      ret.append('A')
-    elif c.isupper() or descriptor[i - 1] in '/L':
-      ret.append(c.upper())
-  return ''.join(ret)
-
-
-def GetMangledMethodName(name, return_type, param_types):
-  """Returns a mangled method name for the given signature.
-
-     The returned name can be used as a C identifier and will be unique for all
-     valid overloads of the same method.
-
-  Returns:
-      A mangled name.
-  """
-  mangled_items = []
-  for java_type in (return_type, ) + param_types:
-    mangled_items.append(MangledType(java_type))
-  mangled_name = name + '_'.join(mangled_items)
-  assert re.match(r'[0-9a-zA-Z_]+', mangled_name)
-  return mangled_name
-
-
-def _AssignMethodIdVarNames(called_by_natives):
-  """Mangles all the overloads from the called_by_natives list."""
-  method_counts = collections.defaultdict(int)
-  for called_by_native in called_by_natives:
-    class_name = called_by_native.java_class.full_name_with_slashes
-    name = called_by_native.name
-    method_counts[(class_name, name)] += 1
-  for called_by_native in called_by_natives:
-    class_name = called_by_native.java_class.full_name_with_slashes
-    if called_by_native.is_constructor:
-      method_name = 'Constructor'
-      return_type = called_by_native.java_class.as_type()
+def _MangleMethodName(type_resolver, name, param_types):
+  mangled_types = []
+  for java_type in param_types:
+    if java_type.primitive_name:
+      part = java_type.primitive_name
     else:
-      method_name = called_by_native.name
-      return_type = called_by_native.return_type
-    method_id_var_name = method_name
-    if method_counts[(class_name, called_by_native.name)] > 1:
-      method_id_var_name = GetMangledMethodName(
-          method_name, return_type, called_by_native.signature.param_types)
-    called_by_native.method_id_var_name = method_id_var_name
+      part = type_resolver.contextualize(java_type.java_class).replace('.', '_')
+    mangled_types.append(part + ('Array' * java_type.array_dimensions))
+
+  return f'{name}__' + '__'.join(mangled_types)
+
+
+def _AssignMethodIdFunctionNames(type_resolver, called_by_natives):
+  # Mangle names for overloads with different number of parameters.
+  def key(called_by_native):
+    return (called_by_native.java_class.full_name_with_slashes,
+            called_by_native.name, len(called_by_native.params))
+
+  method_counts = collections.Counter(key(x) for x in called_by_natives)
+
+  for called_by_native in called_by_natives:
+    if called_by_native.is_constructor:
+      method_id_function_name = 'Constructor'
+    else:
+      method_id_function_name = called_by_native.name
+
+    if method_counts[key(called_by_native)] > 1:
+      method_id_function_name = _MangleMethodName(
+          type_resolver, method_id_function_name,
+          called_by_native.signature.param_types)
+
+    called_by_native.method_id_function_name = method_id_function_name
 
 
 # Removes empty lines that are indented (i.e. start with 2x spaces).
@@ -294,7 +277,7 @@ class JNIFromJavaP:
           CalledByNative(parsed_called_by_native,
                          unchecked=options.unchecked_exceptions,
                          is_system_class=True))
-    _AssignMethodIdVarNames(called_by_natives)
+    _AssignMethodIdFunctionNames(parsed_file.type_resolver, called_by_natives)
     self.called_by_natives = called_by_natives
 
     self.constant_fields = parsed_file.constant_fields
@@ -346,7 +329,7 @@ class JNIFromJavaSource:
       called_by_natives.append(
           CalledByNative(parsed_called_by_native, is_system_class=False))
 
-    _AssignMethodIdVarNames(called_by_natives)
+    _AssignMethodIdFunctionNames(parsed_file.type_resolver, called_by_natives)
     self.called_by_natives = called_by_natives
 
   @property
@@ -812,6 +795,7 @@ ${PROFILING_ENTERED_NATIVE}\
         'JNI_NAME': called_by_native.name,
         'JNI_DESCRIPTOR': jni_descriptor,
         'METHOD_ID_MEMBER_NAME': method_id_member_name,
+        'METHOD_ID_FUNCTION_NAME': called_by_native.method_id_function_name,
         'METHOD_ID_VAR_NAME': called_by_native.method_id_var_name,
         'METHOD_ID_TYPE': 'STATIC' if called_by_native.static else 'INSTANCE',
     }
@@ -819,7 +803,7 @@ ${PROFILING_ENTERED_NATIVE}\
   def GetLazyCalledByNativeMethodStub(self, called_by_native):
     """Returns a string."""
     function_signature_template = Template("""\
-static ${RETURN_TYPE} Java_${JAVA_CLASS_ONLY}_${METHOD_ID_VAR_NAME}(\
+static ${RETURN_TYPE} Java_${JAVA_CLASS_ONLY}_${METHOD_ID_FUNCTION_NAME}(\
 JNIEnv* env${FIRST_PARAM_IN_DECLARATION}${PARAMS_IN_DECLARATION})""")
     function_header_template = Template("""\
 ${FUNCTION_SIGNATURE} {""")

@@ -288,8 +288,8 @@ int main() {
       env, my_java_object, 42, 13, -1, 99);
 
   base::android::Java_SampleForTests_getInnerInterface(env);
-  base::android::Java_SampleForTests_getInnerEnumOCEJSFTIE(env);
-  base::android::Java_SampleForTests_getInnerEnumOCEJSFTIE_I(env, 0);
+  base::android::Java_SampleForTests_getInnerEnum(env);
+  base::android::Java_SampleForTests_getInnerEnum(env, 0);
 
   base::android::ScopedJavaLocalRef<jthrowable> throwable;
   throwable = base::android::Java_SampleForTests_getThrowable(

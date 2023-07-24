@@ -73,7 +73,7 @@ JNI_GENERATOR_EXPORT void
 
 
 static std::atomic<jmethodID>
-    g_org_chromium_example_jni_1generator_SampleUniqueAnnotations_useBar1(nullptr);
+    g_org_chromium_example_jni_1generator_SampleUniqueAnnotations_useBar11(nullptr);
 static void Java_SampleUniqueAnnotations_useBar1(JNIEnv* env, const base::android::JavaRef<jobject>&
     inner) {
   jclass clazz = org_chromium_example_jni_1generator_SampleUniqueAnnotations_clazz(env);
@@ -87,7 +87,7 @@ static void Java_SampleUniqueAnnotations_useBar1(JNIEnv* env, const base::androi
           clazz,
           "useBar1",
           "(Lorg/chromium/example/jni_generator/Bar1$Inner;)V",
-          &g_org_chromium_example_jni_1generator_SampleUniqueAnnotations_useBar1);
+          &g_org_chromium_example_jni_1generator_SampleUniqueAnnotations_useBar11);
 
      env->CallStaticVoidMethod(clazz,
           call_context.base.method_id, inner.obj());

@@ -268,7 +268,7 @@ def _parse_non_proxy_natives(type_resolver, contents):
                      signature=signature,
                      native_class_name=native_class_name,
                      static=static))
-  ret.sort(key=lambda x: (x.name, x.signature))
+  ret.sort()
   return ret
 
 
@@ -317,7 +317,7 @@ def _parse_called_by_natives(type_resolver, contents):
       raise ParserError('Could not parse @CalledByNative method signature:\n' +
                         context)
 
-  ret.sort(key=lambda x: (x.java_class, x.name, x.signature))
+  ret.sort()
   return ret
 
 
@@ -425,6 +425,7 @@ def parse_javap(filename, contents):
   for match in _JAVAP_FINAL_FIELD_REGEX.finditer(contents):
     name, value = match.groups()
     constant_fields.append(ParsedConstantField(name=name, value=value))
+  constant_fields.sort()
 
   called_by_natives = []
   for match in _JAVAP_METHOD_REGEX.finditer(contents):
@@ -438,6 +439,16 @@ def parse_javap(filename, contents):
                              name=name,
                              signature=signature,
                              static='static' in modifiers))
+  called_by_natives.sort()
+
+  # Although javac will not allow multiple methods with no args and different
+  # return types, Class.class has just that, and it breaks with our
+  # name-mangling logic which assumes this cannot happen.
+  if java_class.full_name_with_slashes == 'java/lang/Class':
+    called_by_natives = [
+        x for x in called_by_natives if 'TypeDescriptor' not in (
+            x.signature.return_type.non_array_full_name_with_slashes)
+    ]
 
   return ParsedFile(filename=filename,
                     type_resolver=type_resolver,

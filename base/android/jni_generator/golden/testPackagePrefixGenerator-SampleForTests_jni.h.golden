@@ -236,7 +236,7 @@ JNI_GENERATOR_EXPORT void
 
 
 static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_Constructor(nullptr);
+    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_Constructor2(nullptr);
 static base::android::ScopedJavaLocalRef<jobject> Java_SampleForTests_Constructor(JNIEnv* env,
     JniIntWrapper foo,
     JniIntWrapper bar) {
@@ -252,7 +252,7 @@ static base::android::ScopedJavaLocalRef<jobject> Java_SampleForTests_Constructo
           clazz,
           "<init>",
           "(II)V",
-&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_Constructor);
+&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_Constructor2);
 
   jobject ret =
       env->NewObject(clazz,
@@ -261,7 +261,7 @@ static base::android::ScopedJavaLocalRef<jobject> Java_SampleForTests_Constructo
 }
 
 static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_addStructA(nullptr);
+    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_addStructA1(nullptr);
 static void Java_SampleForTests_addStructA(JNIEnv* env, const base::android::JavaRef<jobject>& obj,
     const base::android::JavaRef<jobject>& a) {
   jclass clazz =
@@ -276,14 +276,14 @@ static void Java_SampleForTests_addStructA(JNIEnv* env, const base::android::Jav
           clazz,
           "addStructA",
 "(Lthis/is/a/package/prefix/org/chromium/example/jni_generator/SampleForTests$InnerStructA;)V",
-&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_addStructA);
+&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_addStructA1);
 
      env->CallVoidMethod(obj.obj(),
           call_context.base.method_id, a.obj());
 }
 
 static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_getClass(nullptr);
+    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_getClass1(nullptr);
 static base::android::ScopedJavaLocalRef<jclass> Java_SampleForTests_getClass(JNIEnv* env, const
     base::android::JavaRef<jobject>& obj, const base::android::JavaRef<jclass>& arg0) {
   jclass clazz =
@@ -298,7 +298,7 @@ static base::android::ScopedJavaLocalRef<jclass> Java_SampleForTests_getClass(JN
           clazz,
           "getClass",
           "(Ljava/lang/Class;)Ljava/lang/Class;",
-          &g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_getClass);
+          &g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_getClass1);
 
   jclass ret =
       static_cast<jclass>(env->CallObjectMethod(obj.obj(),
@@ -307,9 +307,8 @@ static base::android::ScopedJavaLocalRef<jclass> Java_SampleForTests_getClass(JN
 }
 
 static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_getInnerEnumTIAPPOCEJSFTIE(nullptr);
-static base::android::ScopedJavaLocalRef<jobject>
-    Java_SampleForTests_getInnerEnumTIAPPOCEJSFTIE(JNIEnv* env) {
+    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_getInnerEnum0(nullptr);
+static base::android::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerEnum(JNIEnv* env) {
   jclass clazz =
       this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, clazz,
@@ -322,7 +321,7 @@ static base::android::ScopedJavaLocalRef<jobject>
           clazz,
           "getInnerEnum",
 "()Lthis/is/a/package/prefix/org/chromium/example/jni_generator/SampleForTests$InnerEnum;",
-&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_getInnerEnumTIAPPOCEJSFTIE);
+&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_getInnerEnum0);
 
   jobject ret =
       env->CallStaticObjectMethod(clazz,
@@ -331,9 +330,9 @@ static base::android::ScopedJavaLocalRef<jobject>
 }
 
 static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_getInnerEnumTIAPPOCEJSFTIE_I(nullptr);
-static base::android::ScopedJavaLocalRef<jobject>
-    Java_SampleForTests_getInnerEnumTIAPPOCEJSFTIE_I(JNIEnv* env, JniIntWrapper a) {
+    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_getInnerEnum1(nullptr);
+static base::android::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerEnum(JNIEnv* env,
+    JniIntWrapper a) {
   jclass clazz =
       this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, clazz,
@@ -346,7 +345,7 @@ static base::android::ScopedJavaLocalRef<jobject>
           clazz,
           "getInnerEnum",
 "(I)Lthis/is/a/package/prefix/org/chromium/example/jni_generator/SampleForTests$InnerEnum;",
-&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_getInnerEnumTIAPPOCEJSFTIE_I);
+&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_getInnerEnum1);
 
   jobject ret =
       env->CallStaticObjectMethod(clazz,
@@ -355,7 +354,7 @@ static base::android::ScopedJavaLocalRef<jobject>
 }
 
 static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_getInnerInterface(nullptr);
+    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_getInnerInterface0(nullptr);
 static base::android::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerInterface(JNIEnv* env)
     {
   jclass clazz =
@@ -370,7 +369,7 @@ static base::android::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerIn
           clazz,
           "getInnerInterface",
 "()Lthis/is/a/package/prefix/org/chromium/example/jni_generator/SampleForTests$InnerInterface;",
-&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_getInnerInterface);
+&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_getInnerInterface0);
 
   jobject ret =
       env->CallStaticObjectMethod(clazz,
@@ -379,7 +378,7 @@ static base::android::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerIn
 }
 
 static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_getThrowable(nullptr);
+    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_getThrowable1(nullptr);
 static base::android::ScopedJavaLocalRef<jthrowable> Java_SampleForTests_getThrowable(JNIEnv* env,
     const base::android::JavaRef<jobject>& obj, const base::android::JavaRef<jthrowable>& arg0) {
   jclass clazz =
@@ -394,7 +393,7 @@ static base::android::ScopedJavaLocalRef<jthrowable> Java_SampleForTests_getThro
           clazz,
           "getThrowable",
           "(Ljava/lang/Throwable;)Ljava/lang/Throwable;",
-&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_getThrowable);
+&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_getThrowable1);
 
   jthrowable ret =
       static_cast<jthrowable>(env->CallObjectMethod(obj.obj(),
@@ -403,7 +402,7 @@ static base::android::ScopedJavaLocalRef<jthrowable> Java_SampleForTests_getThro
 }
 
 static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_iterateAndDoSomething(nullptr);
+    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_iterateAndDoSomething0(nullptr);
 static void Java_SampleForTests_iterateAndDoSomething(JNIEnv* env, const
     base::android::JavaRef<jobject>& obj) {
   jclass clazz =
@@ -418,14 +417,14 @@ static void Java_SampleForTests_iterateAndDoSomething(JNIEnv* env, const
           clazz,
           "iterateAndDoSomething",
           "()V",
-&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_iterateAndDoSomething);
+&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_iterateAndDoSomething0);
 
      env->CallVoidMethod(obj.obj(),
           call_context.base.method_id);
 }
 
 static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_javaMethod(nullptr);
+    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_javaMethod2(nullptr);
 static jint Java_SampleForTests_javaMethod(JNIEnv* env, const base::android::JavaRef<jobject>& obj,
     JniIntWrapper foo,
     JniIntWrapper bar) {
@@ -441,7 +440,7 @@ static jint Java_SampleForTests_javaMethod(JNIEnv* env, const base::android::Jav
           clazz,
           "javaMethod",
           "(II)I",
-&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_javaMethod);
+&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_javaMethod2);
 
   jint ret =
       env->CallIntMethod(obj.obj(),
@@ -450,7 +449,7 @@ static jint Java_SampleForTests_javaMethod(JNIEnv* env, const base::android::Jav
 }
 
 static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_javaMethodWithAnnotatedParam(nullptr);
+    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_javaMethodWithAnnotatedParam4(nullptr);
 static void Java_SampleForTests_javaMethodWithAnnotatedParam(JNIEnv* env, const
     base::android::JavaRef<jobject>& obj, JniIntWrapper foo,
     JniIntWrapper bar,
@@ -468,14 +467,14 @@ static void Java_SampleForTests_javaMethodWithAnnotatedParam(JNIEnv* env, const
           clazz,
           "javaMethodWithAnnotatedParam",
           "(IIII)V",
-&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_javaMethodWithAnnotatedParam);
+&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_javaMethodWithAnnotatedParam4);
 
      env->CallVoidMethod(obj.obj(),
           call_context.base.method_id, as_jint(foo), as_jint(bar), as_jint(baz), as_jint(bat));
 }
 
 static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_methodThatThrowsException(nullptr);
+    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_methodThatThrowsException0(nullptr);
 static void Java_SampleForTests_methodThatThrowsException(JNIEnv* env, const
     base::android::JavaRef<jobject>& obj) {
   jclass clazz =
@@ -490,14 +489,14 @@ static void Java_SampleForTests_methodThatThrowsException(JNIEnv* env, const
           clazz,
           "methodThatThrowsException",
           "()V",
-&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_methodThatThrowsException);
+&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_methodThatThrowsException0);
 
      env->CallVoidMethod(obj.obj(),
           call_context.method_id);
 }
 
 static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_methodWithGenericParams(nullptr);
+    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_methodWithGenericParams2(nullptr);
 static void Java_SampleForTests_methodWithGenericParams(JNIEnv* env, const
     base::android::JavaRef<jobject>& obj, const base::android::JavaRef<jobject>& foo,
     const base::android::JavaRef<jobject>& bar) {
@@ -513,14 +512,14 @@ static void Java_SampleForTests_methodWithGenericParams(JNIEnv* env, const
           clazz,
           "methodWithGenericParams",
           "(Ljava/util/Map;Ljava/util/LinkedList;)V",
-&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_methodWithGenericParams);
+&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_methodWithGenericParams2);
 
      env->CallVoidMethod(obj.obj(),
           call_context.base.method_id, foo.obj(), bar.obj());
 }
 
 static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_packagePrivateJavaMethod(nullptr);
+    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_packagePrivateJavaMethod0(nullptr);
 static void Java_SampleForTests_packagePrivateJavaMethod(JNIEnv* env, const
     base::android::JavaRef<jobject>& obj) {
   jclass clazz =
@@ -535,14 +534,14 @@ static void Java_SampleForTests_packagePrivateJavaMethod(JNIEnv* env, const
           clazz,
           "packagePrivateJavaMethod",
           "()V",
-&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_packagePrivateJavaMethod);
+&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_packagePrivateJavaMethod0);
 
      env->CallVoidMethod(obj.obj(),
           call_context.base.method_id);
 }
 
 static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_staticJavaMethod(nullptr);
+    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_staticJavaMethod0(nullptr);
 static jboolean Java_SampleForTests_staticJavaMethod(JNIEnv* env) {
   jclass clazz =
       this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_clazz(env);
@@ -557,7 +556,7 @@ static jboolean Java_SampleForTests_staticJavaMethod(JNIEnv* env) {
           clazz,
           "staticJavaMethod",
           "()Z",
-&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_staticJavaMethod);
+&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_staticJavaMethod0);
 
   jboolean ret =
       env->CallStaticBooleanMethod(clazz,
@@ -566,7 +565,7 @@ static jboolean Java_SampleForTests_staticJavaMethod(JNIEnv* env) {
 }
 
 static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_00024InnerStructA_create(nullptr);
+    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_00024InnerStructA_create3(nullptr);
 static base::android::ScopedJavaLocalRef<jobject> Java_InnerStructA_create(JNIEnv* env, jlong l,
     JniIntWrapper i,
     const base::android::JavaRef<jstring>& s) {
@@ -583,7 +582,7 @@ this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_0002
           clazz,
           "create",
 "(JILjava/lang/String;)Lthis/is/a/package/prefix/org/chromium/example/jni_generator/SampleForTests$InnerStructA;",
-&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_00024InnerStructA_create);
+&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_00024InnerStructA_create3);
 
   jobject ret =
       env->CallStaticObjectMethod(clazz,
@@ -592,7 +591,7 @@ this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_0002
 }
 
 static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_00024InnerStructB_getKey(nullptr);
+    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_00024InnerStructB_getKey0(nullptr);
 static jlong Java_InnerStructB_getKey(JNIEnv* env, const base::android::JavaRef<jobject>& obj) {
   jclass clazz =
       this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_00024InnerStructB_clazz(env);
@@ -607,7 +606,7 @@ this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_0002
           clazz,
           "getKey",
           "()J",
-&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_00024InnerStructB_getKey);
+&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_00024InnerStructB_getKey0);
 
   jlong ret =
       env->CallLongMethod(obj.obj(),
@@ -616,7 +615,7 @@ this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_0002
 }
 
 static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_00024InnerStructB_getValue(nullptr);
+    g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_00024InnerStructB_getValue0(nullptr);
 static base::android::ScopedJavaLocalRef<jstring> Java_InnerStructB_getValue(JNIEnv* env, const
     base::android::JavaRef<jobject>& obj) {
   jclass clazz =
@@ -632,7 +631,7 @@ this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_0002
           clazz,
           "getValue",
           "()Ljava/lang/String;",
-&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_00024InnerStructB_getValue);
+&g_this_is_a_package_prefix_org_chromium_example_jni_1generator_SampleForTests_00024InnerStructB_getValue0);
 
   jstring ret =
       static_cast<jstring>(env->CallObjectMethod(obj.obj(),
