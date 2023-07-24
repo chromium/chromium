@@ -201,7 +201,7 @@ std::pair<Browser*, int> GetIndexAndBrowserOfExistingTab(
     const NavigateParams& params) {
   for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
     // When tab switching, only look at same profile and anonymity level.
-    if (profile == browser->profile()) {
+    if (profile == browser->profile() && !browser->is_delete_scheduled()) {
       int index = GetIndexOfExistingTab(browser, params);
       if (index >= 0)
         return {browser, index};
