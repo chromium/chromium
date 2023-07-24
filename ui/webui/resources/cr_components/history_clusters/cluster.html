@@ -99,16 +99,15 @@
 
   :host-context(html:not([chrome-refresh-2023])) #related-searches {
     /* Top is a special 8px value. */
-    padding: 8px var(--cluster-padding-horizontal) var(--cluster-padding-vertical);
+    margin: 0 var(--cluster-padding-horizontal) 0;
   }
 
   :host-context(html:not([chrome-refresh-2023])):host([in-side-panel]) #related-searches {
-    margin-top: -8px;
-    padding: 0 16px var(--cluster-padding-vertical);
+    margin: -8px 16px var(--cluster-padding-vertical);
   }
 
   :host-context([chrome-refresh-2023]) #related-searches {
-    margin: 8px var(--cluster-padding-horizontal) 0;
+    margin: 16px var(--cluster-padding-horizontal);
   }
 
   :host-context([chrome-refresh-2023]):host([in-side-panel]) search-query {
@@ -118,6 +117,10 @@
 
   search-query:not(:last-of-type) {
     margin-inline-end: var(--search-query-margin);
+  }
+
+  :host-context(html:not([chrome-refresh-2023])) search-query {
+    margin-top: 8px;
   }
 </style>
 <div id="container" on-visit-clicked="onVisitClicked_"
