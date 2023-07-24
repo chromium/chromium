@@ -123,6 +123,9 @@ void ClassroomBubbleTeacherView::SelectedAssignmentListChanged() {
   CHECK(selected_index >= 0 ||
         selected_index < kTeacherAssignmentsListTypeOrdered.size());
 
+  // Cancel any old pending assignment callbacks.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
   auto callback = base::BindOnce(&ClassroomBubbleTeacherView::OnGetAssignments,
                                  weak_ptr_factory_.GetWeakPtr());
   switch (kTeacherAssignmentsListTypeOrdered[selected_index]) {

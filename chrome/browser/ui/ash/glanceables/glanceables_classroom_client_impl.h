@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ASH_GLANCEABLES_GLANCEABLES_CLASSROOM_CLIENT_IMPL_H_
 #define CHROME_BROWSER_UI_ASH_GLANCEABLES_GLANCEABLES_CLASSROOM_CLIENT_IMPL_H_
 
+#include <list>
 #include <memory>
 #include <string>
 #include <vector>
@@ -53,8 +54,8 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
           const net::NetworkTrafficAnnotationTag& traffic_annotation_tag)>;
 
   using SortComparator = base::RepeatingCallback<bool(
-      const std::unique_ptr<GlanceablesClassroomAssignment>& lhs,
-      const std::unique_ptr<GlanceablesClassroomAssignment>& rhs)>;
+      const GlanceablesClassroomCourseWorkItem* lhs,
+      const GlanceablesClassroomCourseWorkItem* rhs)>;
 
   GlanceablesClassroomClientImpl(
       Profile* profile,
@@ -85,6 +86,11 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   void GetGradedTeacherAssignments(GetAssignmentsCallback callback) override;
   void OpenUrl(const GURL& url) const override;
   void OnGlanceablesBubbleClosed() override;
+
+  void set_number_of_assignments_prioritized_for_display_for_testing(
+      size_t value) {
+    number_of_assignments_prioritized_for_display_ = value;
+  }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(GlanceablesClassroomClientImplTest, FetchCourses);
@@ -193,11 +199,17 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
                                CourseWorkPerCourse& course_work,
                                base::OnceClosure callback);
 
+  // Callback called when either student or teacher data fetch completes. The
+  // callback is expected to process the student/teacher data. Returns true if
+  // the data has been processed successfully, and false if additional data
+  // was requested.
+  using DataFetchCallback = base::OnceCallback<bool()>;
+
   // Delays executing `callback` until all student data are fetched.
-  void InvokeOnceStudentDataFetched(base::OnceClosure callback);
+  void InvokeOnceStudentDataFetched(DataFetchCallback callback);
 
   // Delays executing `callback` until all teacher data are fetched.
-  void InvokeOnceTeacherDataFetched(base::OnceClosure callback);
+  void InvokeOnceTeacherDataFetched(DataFetchCallback callback);
 
   // Fetches one page of courses.
   // `student_id`        - restricts returned courses to those having a student
@@ -335,7 +347,11 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   // `sort_comparator`            - the function used when comparing two
   //                                assignments for sorting.
   // `callback`                   - invoked with filtered results.
-  void GetFilteredStudentAssignments(
+  //
+  // Returns whether the `callback` has been run. The current implementation
+  // always returns true - the return value is bool for consistency with
+  // `GetFilteredTeacherAssignments()`.
+  bool GetFilteredStudentAssignments(
       base::RepeatingCallback<bool(const absl::optional<base::Time>&)>
           due_predicate,
       base::RepeatingCallback<bool(GlanceablesClassroomStudentSubmissionState)>
@@ -351,13 +367,22 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   //                                submission.
   // `sort_comparator`            - the function used when comparing two
   //                                assignments for sorting.
+  // `allow_submissions_refresh`  - whether student submissions for course work
+  //                                items whose submission state is not fresh
+  //                                can be refetched, and callback delayed until
+  //                                the submissions have been refreshed.
   // `callback`                   - invoked with filtered results.
-  void GetFilteredTeacherAssignments(
+  //
+  // Returns whether the `callback` has been run. It returns false if the
+  // callbask was delayed to refresh submissions state of a subset of filtered
+  // assignments.
+  bool GetFilteredTeacherAssignments(
       base::RepeatingCallback<bool(const absl::optional<base::Time>&)>
           due_predicate,
       base::RepeatingCallback<bool(GlanceablesClassroomStudentSubmissionState)>
           submission_state_predicate,
       SortComparator sort_comparator,
+      bool allow_submissions_refresh,
       GetAssignmentsCallback callback);
 
   // Removes all invalid course work items from `course_work` for courses in
@@ -382,6 +407,11 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   // Helper class that sends requests, handles retries and authentication.
   std::unique_ptr<google_apis::RequestSender> request_sender_;
 
+  // The number of top teacher assignments that are expected to be displayed in
+  // the glanceables bubble, and should thus be fresh when returned using the
+  // `GlanceablesClassroomClient` interface.
+  size_t number_of_assignments_prioritized_for_display_;
+
   // Available courses for student and teacher roles.
   CourseList student_courses_;
   CourseList teacher_courses_;
@@ -394,13 +424,13 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   FetchStatus student_data_fetch_status_ = FetchStatus::kNotFetched;
 
   // Pending callbacks awaiting all student data.
-  std::vector<base::OnceClosure> callbacks_waiting_for_student_data_;
+  std::list<DataFetchCallback> callbacks_waiting_for_student_data_;
 
   // Fetch status of all teacher data.
   FetchStatus teacher_data_fetch_status_ = FetchStatus::kNotFetched;
 
   // Pending callbacks awaiting all teacher data.
-  std::vector<base::OnceClosure> callbacks_waiting_for_teacher_data_;
+  std::list<DataFetchCallback> callbacks_waiting_for_teacher_data_;
 
   // The next available course work fetch request ID. The IDs will increase
   // monotonically with each new request.

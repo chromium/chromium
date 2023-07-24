@@ -118,20 +118,17 @@ void GlanceablesClassroomCourseWorkItem::InvalidateCourseWorkItem() {
   course_work_item_set_ = false;
 }
 
-std::unique_ptr<GlanceablesClassroomAssignment>
-GlanceablesClassroomCourseWorkItem::CreateClassroomAssignment(
-    const std::string& course_name,
-    bool include_aggregated_submissions_state,
+bool GlanceablesClassroomCourseWorkItem::SatisfiesPredicates(
     base::RepeatingCallback<bool(const absl::optional<base::Time>&)>
         due_predicate,
     base::RepeatingCallback<bool(GlanceablesClassroomStudentSubmissionState)>
         submission_state_predicate) const {
   if (!IsValid()) {
-    return nullptr;
+    return false;
   }
 
   if (!due_predicate.Run(due_)) {
-    return nullptr;
+    return false;
   }
 
   GlanceablesClassroomStudentSubmissionState effective_state =
@@ -142,9 +139,14 @@ GlanceablesClassroomCourseWorkItem::CreateClassroomAssignment(
     effective_state = GlanceablesClassroomStudentSubmissionState::kTurnedIn;
   }
 
-  if (!submission_state_predicate.Run(effective_state)) {
-    return nullptr;
-  }
+  return submission_state_predicate.Run(effective_state);
+}
+
+std::unique_ptr<GlanceablesClassroomAssignment>
+GlanceablesClassroomCourseWorkItem::CreateClassroomAssignment(
+    const std::string& course_name,
+    bool include_aggregated_submissions_state) const {
+  CHECK(IsValid());
 
   absl::optional<GlanceablesClassroomAggregatedSubmissionsState>
       aggregated_submissions_state;

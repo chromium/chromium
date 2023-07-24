@@ -125,6 +125,9 @@ void ClassroomBubbleStudentView::SelectedAssignmentListChanged() {
   CHECK(selected_index >= 0 ||
         selected_index < kStudentAssignmentsListTypeOrdered.size());
 
+  // Cancel any old pending assignment requests.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
   auto callback = base::BindOnce(&ClassroomBubbleStudentView::OnGetAssignments,
                                  weak_ptr_factory_.GetWeakPtr());
   switch (kStudentAssignmentsListTypeOrdered[selected_index]) {

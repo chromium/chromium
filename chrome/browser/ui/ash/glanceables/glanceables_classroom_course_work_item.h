@@ -69,13 +69,8 @@ class GlanceablesClassroomCourseWorkItem {
   // invalidation.
   void InvalidateCourseWorkItem();
 
-  // Converts the course work item data to `GlanceablesClassroomAssignment`
-  // type, which is used as a course work item representation in UI layer.
-  // `course_name` - the associated course name.
-  // `include_aggregated_submissions_state` - whether the created
-  //      `GlanceablesClassroomAssignment` should include aggregated submissions
-  //      data. This can be false for student glanceables, whose UI
-  //      representation does not include student submissions state.
+  // Whether the course work item satisfies conditions defined both by
+  // `due_predicate` and `submission_state_predicate`.
   // `due_predicate` - Predicate to filter course work items by their due date.
   //      If the course work item due date does not satisfy the predicate, this
   //      will return nullptr.
@@ -84,13 +79,22 @@ class GlanceablesClassroomCourseWorkItem {
   //      submissions do not satisfy the predicate, this will return nullptr.
   //      Note that course work item submissions state will be kGraded, or
   //      kTurned in if all submissions are in kGraded, or kTurned in state.
-  std::unique_ptr<GlanceablesClassroomAssignment> CreateClassroomAssignment(
-      const std::string& course_name,
-      bool include_aggregated_submissions_state,
+  bool SatisfiesPredicates(
       base::RepeatingCallback<bool(const absl::optional<base::Time>&)>
           due_predicate,
       base::RepeatingCallback<bool(GlanceablesClassroomStudentSubmissionState)>
           submission_state_predicate) const;
+
+  // Converts the course work item data to `GlanceablesClassroomAssignment`
+  // type, which is used as a course work item representation in UI layer.
+  // `course_name` - the associated course name.
+  // `include_aggregated_submissions_state` - whether the created
+  //      `GlanceablesClassroomAssignment` should include aggregated submissions
+  //      data. This can be false for student glanceables, whose UI
+  //      representation does not include student submissions state.
+  std::unique_ptr<GlanceablesClassroomAssignment> CreateClassroomAssignment(
+      const std::string& course_name,
+      bool include_aggregated_submissions_state) const;
 
   // Whether the course work item has been set, and at least one student
   // submission has been added.
@@ -110,10 +114,15 @@ class GlanceablesClassroomCourseWorkItem {
   const std::string& title() const { return title_; }
   const GURL& link() const { return link_; }
   const absl::optional<base::Time>& due() const { return due_; }
+  const base::Time& last_update() const { return last_update_; }
 
   int total_submissions() const { return total_submissions_; }
   int turned_in_submissions() const { return turned_in_submissions_; }
   int graded_submissions() const { return graded_submissions_; }
+
+  bool has_fresh_submissions_state() const {
+    return has_fresh_submissions_state_;
+  }
 
  private:
   // Whether `SetCourseWorkItem()` was called.
