@@ -51,7 +51,8 @@ class VIEWS_EXPORT FrameCaptionButton : public views::Button {
   // Sets the image to use to paint the button. If |animate| is Animate::kYes,
   // the button crossfades to the new visuals. If the image matches the one
   // currently used by the button and |animate| is Animate::kNo, the crossfade
-  // animation is progressed to the end.
+  // animation is progressed to the end. Note: if the button is not yet in a
+  // widget, this is a no-op.
   void SetImage(CaptionButtonIcon icon,
                 Animate animate,
                 const gfx::VectorIcon& icon_image);
@@ -67,8 +68,11 @@ class VIEWS_EXPORT FrameCaptionButton : public views::Button {
   void OnGestureEvent(ui::GestureEvent* event) override;
   views::PaintInfo::ScaleType GetPaintScaleType() const override;
 
+  // TODO(b/292154873): Replace them to set and get the foreground color.
   void SetBackgroundColor(SkColor background_color);
   SkColor GetBackgroundColor() const;
+
+  void SetIconColorId(ui::ColorId icon_color_id);
 
   void SetPaintAsActive(bool paint_as_active);
   bool GetPaintAsActive() const;
@@ -90,6 +94,7 @@ class VIEWS_EXPORT FrameCaptionButton : public views::Button {
  protected:
   // views::Button override:
   void PaintButtonContents(gfx::Canvas* canvas) override;
+  void OnThemeChanged() override;
 
   virtual void DrawHighlight(gfx::Canvas* canvas, cc::PaintFlags flags);
   virtual void DrawIconContents(gfx::Canvas* canvas,
@@ -105,6 +110,10 @@ class VIEWS_EXPORT FrameCaptionButton : public views::Button {
   // GetInkDropSize().
   gfx::Insets GetInkdropInsets(const gfx::Size& button_size) const;
 
+  // Called when the `background_color_` or `icon_color_id_` is updated to
+  // reflect the color change on icon and inkdrop.
+  void MaybeRefreshIconAndInkdropBaseColor();
+
  private:
   class HighlightPathGenerator;
 
@@ -117,8 +126,13 @@ class VIEWS_EXPORT FrameCaptionButton : public views::Button {
   // The button's current icon.
   CaptionButtonIcon icon_;
 
-  // The current background color.
-  SkColor background_color_ = gfx::kPlaceholderColor;
+  // The color used to compute the icon's color. If it's SkColor type, it's the
+  // background color of the container view, call `GetButtonColor` to get
+  // contrast color. If it's ColorId type, directly resolve the color from color
+  // id.
+  // TODO(b/292154873): Store the foreground color instead of the background
+  // color for the SkColor type.
+  absl::variant<ui::ColorId, SkColor> color_ = gfx::kPlaceholderColor;
 
   // Whether the button should be painted as active.
   bool paint_as_active_ = false;

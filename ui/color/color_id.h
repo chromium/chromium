@@ -292,6 +292,7 @@
   E_CPONLY(kColorFocusableBorderUnfocused) \
   E_CPONLY(kColorFrameActive) \
   E_CPONLY(kColorFrameActiveUnthemed) \
+  E_CPONLY(kColorFrameCaptionButtonUnfocused) \
   E_CPONLY(kColorFrameInactive) \
   E_CPONLY(kColorHelpIconActive) \
   E_CPONLY(kColorHelpIconInactive) \

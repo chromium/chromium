@@ -71,6 +71,8 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorFocusableBorderUnfocused] = {kColorSysOutline};
   mixer[kColorFrameActive] = {kColorSysHeader};
   mixer[kColorFrameActiveUnthemed] = {kColorSysHeader};
+  mixer[kColorFrameCaptionButtonUnfocused] = {dark_mode ? kColorRefSecondary100
+                                                        : kColorRefSecondary0};
   mixer[kColorFrameInactive] = {kColorSysHeaderInactive};
   mixer[kColorIcon] = {kColorSysOnSurfaceSubtle};
   mixer[kColorLinkForegroundDefault] = {kColorSysPrimary};

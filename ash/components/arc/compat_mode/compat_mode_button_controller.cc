@@ -107,8 +107,14 @@ void CompatModeButtonController::Update(
   const auto& icon = GetIcon(mode);
   const auto text = GetText(mode);
 
-  compat_mode_button->SetImage(views::CAPTION_BUTTON_ICON_CENTER,
-                               views::FrameCaptionButton::Animate::kNo, icon);
+  // `SetImage` works only if the button has been added to a widget, otherwise
+  // there's no effect. Please note, if it's a ghost window,
+  // `compat_mode_button` may haven't been added to a widget when this is being
+  // called.
+  if (compat_mode_button->GetWidget()) {
+    compat_mode_button->SetImage(views::CAPTION_BUTTON_ICON_CENTER,
+                                 views::FrameCaptionButton::Animate::kNo, icon);
+  }
   compat_mode_button->SetText(text);
   compat_mode_button->SetAccessibleName(text);
 

@@ -5,6 +5,9 @@
 #include "chrome/browser/ui/views/frame/browser_frame_header_chromeos.h"
 
 #include "base/check.h"
+#include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
@@ -13,6 +16,8 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "ui/base/ui_base_features.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -23,6 +28,10 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/caption_button_layout_constants.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -167,7 +176,31 @@ SkColor BrowserFrameHeaderChromeOS::GetCurrentFrameColor() const {
 
 void BrowserFrameHeaderChromeOS::UpdateFrameColors() {
   SetPaintAsActive(target_widget()->ShouldPaintAsActive());
-  UpdateCaptionButtonColors();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (features::IsChromeRefresh2023()) {
+    auto* browser_non_client_frame_view =
+        static_cast<BrowserNonClientFrameViewChromeOS*>(view());
+
+    web_app::AppBrowserController* app_browser_controller =
+        browser_non_client_frame_view->browser_view()
+            ->browser()
+            ->app_controller();
+
+    // Please note, `app_browser_controller` may be null for non-PWA windows.
+    if (!app_browser_controller ||
+        (app_browser_controller->system_app() &&
+         app_browser_controller->system_app()->UseSystemThemeColor())) {
+      UpdateCaptionButtonColors(mode() == MODE_ACTIVE
+                                    ? ui::kColorSysPrimary
+                                    : ui::kColorFrameCaptionButtonUnfocused);
+    } else {
+      UpdateCaptionButtonColors(absl::nullopt);
+    }
+  }
+#else
+  UpdateCaptionButtonColors(absl::nullopt);
+#endif
   view()->SchedulePaint();
 }
 

@@ -11,6 +11,7 @@
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
@@ -94,8 +95,16 @@ void DefaultFrameHeader::UpdateFrameColors() {
   }
 
   if (updated) {
-    UpdateCaptionButtonColors();
     StartTransitionAnimation(kDefaultFrameColorChangeAnimationDuration);
+  }
+
+  if (::features::IsChromeRefresh2023() &&
+      wm::ApplyDynamicColorToWindowFrameHeader(GetTargetWindow())) {
+    UpdateCaptionButtonColors(mode() == MODE_ACTIVE
+                                  ? ui::kColorSysPrimary
+                                  : ui::kColorFrameCaptionButtonUnfocused);
+  } else {
+    UpdateCaptionButtonColors(absl::nullopt);
   }
 }
 
