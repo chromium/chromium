@@ -1224,9 +1224,9 @@
       status: "stable",
     },
     {
-      // https://github.com/whatwg/html/pull/9195
+      // https://html.spec.whatwg.org/#dom-customelementregistry-getname
       name: "CustomElementsGetName",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "Database",
