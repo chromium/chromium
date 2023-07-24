@@ -85,6 +85,7 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -189,10 +190,15 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/test/test_future.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/get_controlled_frame_partition_command.h"
+#include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -228,6 +234,12 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
+#if BUILDFLAG(ENABLE_NACL)
+#include "chrome/browser/nacl_host/nacl_browser_delegate_impl.h"
+#include "components/nacl/browser/nacl_browser.h"
+#include "components/nacl/common/buildflags.h"
+#endif  // BUILDFLAG(ENABLE_NACL)
+
 using content::BrowsingDataFilterBuilder;
 using domain_reliability::DomainReliabilityClearMode;
 using domain_reliability::DomainReliabilityMonitor;
@@ -242,6 +254,7 @@ using testing::MatcherInterface;
 using testing::MatchResultListener;
 using testing::Return;
 using testing::SizeIs;
+using testing::UnorderedElementsAre;
 using testing::WithArgs;
 
 namespace constants = chrome_browsing_data_remover;
@@ -532,16 +545,7 @@ class RemoveUkmDataTester {
   RemoveUkmDataTester(const RemoveUkmDataTester&) = delete;
   RemoveUkmDataTester& operator=(const RemoveUkmDataTester&) = delete;
 
-  ~RemoveUkmDataTester() {
-    TestingBrowserProcess::GetGlobal()->SetProfileManager(nullptr);
-  }
-
   [[nodiscard]] bool Init(Profile* profile) {
-    // Setup required dependencies for segmentation platform:
-    EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
-    TestingBrowserProcess::GetGlobal()->SetProfileManager(
-        std::make_unique<FakeProfileManager>(temp_dir_.GetPath()));
-
     // Create the platform to kick off initialization.
     segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
         profile);
@@ -574,7 +578,6 @@ class RemoveUkmDataTester {
 
  private:
   ukm::TestUkmRecorder ukm_recorder_;
-  base::ScopedTempDir temp_dir_;
   raw_ptr<history::HistoryService> history_service_;
   segmentation_platform::UkmDataManagerTestUtils test_utils_;
 
@@ -1207,6 +1210,20 @@ class StrikeDatabaseTester {
 
 }  // namespace autofill
 
+#if BUILDFLAG(ENABLE_NACL)
+class ScopedNaClBrowserDelegate {
+ public:
+  ~ScopedNaClBrowserDelegate() {
+    nacl::NaClBrowser::ClearAndDeleteDelegateForTest();
+  }
+
+  void Init(ProfileManager* profile_manager) {
+    nacl::NaClBrowser::SetDelegate(
+        std::make_unique<NaClBrowserDelegateImpl>(profile_manager));
+  }
+};
+#endif  // BUILDFLAG(ENABLE_NACL)
+
 // Test Class -----------------------------------------------------------------
 
 class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
@@ -1227,39 +1244,42 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
     // that initialize a ScopedFeatureList in their constructors can do so
     // before the code below potentially kicks off tasks on other threads that
     // check if a feature is enabled, to avoid tsan data races.
-    profile_ =
-        TestingProfile::Builder()
-            .AddTestingFactory(
-                StatefulSSLHostStateDelegateFactory::GetInstance(),
-                StatefulSSLHostStateDelegateFactory::
-                    GetDefaultFactoryForTesting())
-            .AddTestingFactory(BookmarkModelFactory::GetInstance(),
-                               BookmarkModelFactory::GetDefaultFactory())
-            .AddTestingFactory(HistoryServiceFactory::GetInstance(),
-                               HistoryServiceFactory::GetDefaultFactory())
-            .AddTestingFactory(FaviconServiceFactory::GetInstance(),
-                               FaviconServiceFactory::GetDefaultFactory())
-            .AddTestingFactory(
-                SpellcheckServiceFactory::GetInstance(),
-                base::BindRepeating([](content::BrowserContext* profile)
-                                        -> std::unique_ptr<KeyedService> {
-                  return std::make_unique<SpellcheckService>(
-                      static_cast<Profile*>(profile));
-                }))
-            .AddTestingFactory(TrustedVaultServiceFactory::GetInstance(),
-                               TrustedVaultServiceFactory::GetDefaultFactory())
-            .AddTestingFactory(SyncServiceFactory::GetInstance(),
-                               SyncServiceFactory::GetDefaultFactory())
-            .AddTestingFactory(
-                ChromeSigninClientFactory::GetInstance(),
-                base::BindRepeating(&signin::BuildTestSigninClient))
-            .AddTestingFactory(WebDataServiceFactory::GetInstance(),
-                               WebDataServiceFactory::GetDefaultFactory())
-            .Build();
+    CHECK(temp_dir_.CreateUniqueTempDir());
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    CHECK(profile_manager_->SetUp(temp_dir_.GetPath()));
+    profile_ = profile_manager_->CreateTestingProfile(
+        "test_profile",
+        {{StatefulSSLHostStateDelegateFactory::GetInstance(),
+          StatefulSSLHostStateDelegateFactory::GetDefaultFactoryForTesting()},
+         {BookmarkModelFactory::GetInstance(),
+          BookmarkModelFactory::GetDefaultFactory()},
+         {HistoryServiceFactory::GetInstance(),
+          HistoryServiceFactory::GetDefaultFactory()},
+         {FaviconServiceFactory::GetInstance(),
+          FaviconServiceFactory::GetDefaultFactory()},
+         {SpellcheckServiceFactory::GetInstance(),
+          base::BindRepeating([](content::BrowserContext* profile)
+                                  -> std::unique_ptr<KeyedService> {
+            return std::make_unique<SpellcheckService>(
+                static_cast<Profile*>(profile));
+          })},
+         {TrustedVaultServiceFactory::GetInstance(),
+          TrustedVaultServiceFactory::GetDefaultFactory()},
+         {SyncServiceFactory::GetInstance(),
+          SyncServiceFactory::GetDefaultFactory()},
+         {ChromeSigninClientFactory::GetInstance(),
+          base::BindRepeating(&signin::BuildTestSigninClient)},
+         {WebDataServiceFactory::GetInstance(),
+          WebDataServiceFactory::GetDefaultFactory()}});
+
+#if BUILDFLAG(ENABLE_NACL)
+    // Clearing Cache will clear PNACL cache, which needs this delegate set.
+    nacl_browser_delegate_.Init(profile_manager_->profile_manager());
+#endif  // BUILDFLAG(ENABLE_NACL)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
-    web_app_provider_ = web_app::FakeWebAppProvider::Get(profile_.get());
-    web_app_provider_->StartWithSubsystems();
+    web_app::test::AwaitStartWebAppProviderAndSubsystems(profile_.get());
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
     remover_ = profile_->GetBrowsingDataRemover();
@@ -1283,9 +1303,6 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
     ProtocolHandlerRegistryFactory::GetInstance()->SetTestingFactory(
         profile_.get(), base::BindRepeating(&BuildProtocolHandlerRegistry));
 
-    local_state_ = std::make_unique<ScopedTestingLocalState>(
-        TestingBrowserProcess::GetGlobal());
-
 #if BUILDFLAG(IS_ANDROID)
     static_cast<ChromeBrowsingDataRemoverDelegate*>(
         profile_->GetBrowsingDataRemoverDelegate())
@@ -1306,21 +1323,18 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
     // the profile should fix the race.
     content::RunAllTasksUntilIdle();
 
-    // Drop unowned references before profile destroys owned references.
+    // Drop unowned references before ProfileManager destroys owned references.
     remover_ = nullptr;
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
-    web_app_provider_ = nullptr;
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+    profile_ = nullptr;
 
     // TestingProfile contains a DOMStorageContext.  BrowserContext's destructor
     // posts a message to the WEBKIT thread to delete some of its member
     // variables. We need to ensure that the profile is destroyed, and that
     // the message loop is cleared out, before destroying the threads and loop.
     // Otherwise we leak memory.
-    profile_.reset();
+    profile_manager_.reset();
     base::RunLoop().RunUntilIdle();
 
-    local_state_.reset();
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
   }
 
@@ -1403,6 +1417,8 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
 
   network::NetworkContext* network_context() { return network_context_.get(); }
 
+  TestingProfileManager* GetProfileManager() { return profile_manager_.get(); }
+
   TestingProfile* GetProfile() { return profile_.get(); }
 
   bool Match(const GURL& origin,
@@ -1416,10 +1432,6 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
     return &task_environment_;
   }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
-  web_app::FakeWebAppProvider* web_app_provider() { return web_app_provider_; }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
-
  protected:
   // |feature_list_| needs to be destroyed after |task_environment_|, to avoid
   // tsan flakes caused by other tasks running while |feature_list_| is
@@ -1430,14 +1442,15 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
   // Cached pointer to BrowsingDataRemover for access to testing methods.
   raw_ptr<content::BrowsingDataRemover> remover_;
 
+#if BUILDFLAG(ENABLE_NACL)
+  ScopedNaClBrowserDelegate nacl_browser_delegate_;
+#endif  // BUILDFLAG(ENABLE_NACL)
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::ScopedTempDir temp_dir_;
   std::unique_ptr<network::NetworkContext> network_context_;
-  std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<ScopedTestingLocalState> local_state_;
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
-  raw_ptr<web_app::FakeWebAppProvider> web_app_provider_;
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::unique_ptr<TestingProfileManager> profile_manager_;
+  raw_ptr<TestingProfile> profile_;  // Owned by `profile_manager_`.
 };
 
 #if BUILDFLAG(ENABLE_REPORTING)
@@ -1550,7 +1563,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearWebAppData) {
-  auto* provider = web_app_provider();
+  auto* provider = web_app::FakeWebAppProvider::Get(GetProfile());
   ASSERT_TRUE(provider);
 
   // Make sure WebAppProvider's subsystems are ready.
@@ -1591,6 +1604,222 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearWebAppData) {
       base::Time());
 
   EXPECT_EQ(constants::DATA_TYPE_HISTORY, GetRemovalMask());
+}
+
+class IsolatedWebAppChromeBrowsingDataRemoverDelegateTest
+    : public ChromeBrowsingDataRemoverDelegateTest {
+ public:
+  struct RemovalInfo {
+    uint64_t remove_mask;
+    absl::optional<content::StoragePartitionConfig> storage_partition_config =
+        absl::nullopt;
+  };
+
+  IsolatedWebAppChromeBrowsingDataRemoverDelegateTest() {
+    feature_list_.InitWithFeatures(
+        {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode}, {});
+  }
+
+ protected:
+  content::BrowsingDataRemover::DataType DATA_TYPE_INDEXED_DB =
+      content::BrowsingDataRemover::DATA_TYPE_INDEXED_DB;
+  content::BrowsingDataRemover::DataType DATA_TYPE_ON_STORAGE_PARTITION =
+      content::BrowsingDataRemover::DATA_TYPE_ON_STORAGE_PARTITION;
+  content::BrowsingDataRemover::DataType DATA_TYPE_SITE_DATA =
+      constants::DATA_TYPE_SITE_DATA;
+
+  web_app::IsolatedWebAppUrlInfo InstallIsolatedWebApp(const GURL& iwa_url) {
+    web_app::AddDummyIsolatedAppToRegistry(GetProfile(), iwa_url, "IWA Name");
+    return web_app::IsolatedWebAppUrlInfo::Create(iwa_url).value();
+  }
+
+  content::StoragePartitionConfig CreateControlledFrameStoragePartition(
+      const web_app::IsolatedWebAppUrlInfo& iwa_url_info,
+      const std::string& partition_name) {
+    auto* provider = web_app::FakeWebAppProvider::Get(GetProfile());
+    CHECK(provider);
+    base::test::TestFuture<absl::optional<content::StoragePartitionConfig>>
+        future;
+    provider->scheduler().ScheduleCallbackWithLock(
+        "GetControlledFramePartition",
+        std::make_unique<web_app::AppLockDescription>(iwa_url_info.app_id()),
+        base::BindOnce(&web_app::GetControlledFramePartitionWithLock,
+                       GetProfile(), iwa_url_info, partition_name,
+                       /*in_memory=*/false, future.GetCallback()),
+        FROM_HERE);
+    return future.Get().value();
+  }
+
+  std::vector<RemovalInfo> ClearDataAndWait(
+      const base::Time& delete_begin,
+      const base::Time& delete_end,
+      uint64_t remove_mask,
+      std::unique_ptr<BrowsingDataFilterBuilder> filter_builder) {
+    std::vector<RemovalInfo> removal_tasks;
+    base::RunLoop run_loop;
+    auto* browsing_data_remover = GetProfile()->GetBrowsingDataRemover();
+    browsing_data_remover->SetWouldCompleteCallbackForTesting(
+        base::BindLambdaForTesting([&](base::OnceClosure callback) {
+          removal_tasks.push_back(
+              {browsing_data_remover->GetLastUsedRemovalMaskForTesting(),
+               browsing_data_remover
+                   ->GetLastUsedStoragePartitionConfigForTesting()});
+          if (browsing_data_remover->GetPendingTaskCountForTesting() == 1) {
+            run_loop.Quit();
+          }
+          std::move(callback).Run();
+        }));
+
+    BlockUntilOriginDataRemoved(delete_begin, delete_end, remove_mask,
+                                std::move(filter_builder));
+    run_loop.Run();
+
+    browsing_data_remover->SetWouldCompleteCallbackForTesting(
+        base::DoNothing());
+    return removal_tasks;
+  }
+};
+bool operator==(
+    const IsolatedWebAppChromeBrowsingDataRemoverDelegateTest::RemovalInfo& a,
+    const IsolatedWebAppChromeBrowsingDataRemoverDelegateTest::RemovalInfo& b) {
+  return a.remove_mask == b.remove_mask &&
+         a.storage_partition_config == b.storage_partition_config;
+}
+
+TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest, ClearData) {
+  const GURL iwa_url1(
+      "isolated-app://"
+      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
+  web_app::IsolatedWebAppUrlInfo iwa_url_info1 =
+      InstallIsolatedWebApp(iwa_url1);
+  content::StoragePartitionConfig controlled_frame_partition1 =
+      CreateControlledFrameStoragePartition(iwa_url_info1, "controlled_frame");
+
+  const GURL iwa_url2(
+      "isolated-app://"
+      "abcdefztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
+  web_app::IsolatedWebAppUrlInfo iwa_url_info2 =
+      InstallIsolatedWebApp(iwa_url2);
+
+  std::vector<RemovalInfo> removal_tasks =
+      ClearDataAndWait(base::Time(), base::Time::Max(), DATA_TYPE_SITE_DATA,
+                       BrowsingDataFilterBuilder::Create(
+                           BrowsingDataFilterBuilder::Mode::kPreserve));
+
+  EXPECT_THAT(
+      removal_tasks,
+      UnorderedElementsAre(
+          RemovalInfo{DATA_TYPE_SITE_DATA},
+          RemovalInfo{DATA_TYPE_ON_STORAGE_PARTITION & DATA_TYPE_SITE_DATA,
+                      iwa_url_info1.storage_partition_config(GetProfile())},
+          RemovalInfo{DATA_TYPE_ON_STORAGE_PARTITION,
+                      controlled_frame_partition1},
+          RemovalInfo{DATA_TYPE_ON_STORAGE_PARTITION & DATA_TYPE_SITE_DATA,
+                      iwa_url_info2.storage_partition_config(GetProfile())}));
+}
+
+TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest,
+       ControlledFramesNotClearedIfNotInFilter) {
+  const GURL iwa_url(
+      "isolated-app://"
+      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
+  web_app::IsolatedWebAppUrlInfo iwa_url_info = InstallIsolatedWebApp(iwa_url);
+  content::StoragePartitionConfig controlled_frame_partition =
+      CreateControlledFrameStoragePartition(iwa_url_info, "controlled_frame");
+
+  std::vector<RemovalInfo> removal_tasks =
+      ClearDataAndWait(base::Time(), base::Time::Max(), DATA_TYPE_INDEXED_DB,
+                       BrowsingDataFilterBuilder::Create(
+                           BrowsingDataFilterBuilder::Mode::kPreserve));
+
+  EXPECT_THAT(
+      removal_tasks,
+      UnorderedElementsAre(
+          RemovalInfo{DATA_TYPE_INDEXED_DB},
+          RemovalInfo{DATA_TYPE_INDEXED_DB,
+                      iwa_url_info.storage_partition_config(GetProfile())}));
+}
+
+TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest,
+       FilterOriginRespected) {
+  const GURL iwa_url1(
+      "isolated-app://"
+      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
+  web_app::IsolatedWebAppUrlInfo iwa_url_info1 =
+      InstallIsolatedWebApp(iwa_url1);
+
+  const GURL iwa_url2(
+      "isolated-app://"
+      "abcdefztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
+  web_app::IsolatedWebAppUrlInfo iwa_url_info2 =
+      InstallIsolatedWebApp(iwa_url2);
+
+  auto filter_builder = BrowsingDataFilterBuilder::Create(
+      BrowsingDataFilterBuilder::Mode::kDelete);
+  filter_builder->AddOrigin(iwa_url_info1.origin());
+  std::vector<RemovalInfo> removal_tasks =
+      ClearDataAndWait(base::Time(), base::Time::Max(), DATA_TYPE_INDEXED_DB,
+                       std::move(filter_builder));
+
+  EXPECT_THAT(
+      removal_tasks,
+      UnorderedElementsAre(
+          RemovalInfo{DATA_TYPE_INDEXED_DB},
+          RemovalInfo{DATA_TYPE_INDEXED_DB,
+                      iwa_url_info1.storage_partition_config(GetProfile())}));
+}
+
+TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest,
+       ControlledFramesIgnoreFilter) {
+  const GURL iwa_url(
+      "isolated-app://"
+      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
+  web_app::IsolatedWebAppUrlInfo iwa_url_info = InstallIsolatedWebApp(iwa_url);
+  content::StoragePartitionConfig controlled_frame_partition =
+      CreateControlledFrameStoragePartition(iwa_url_info, "controlled_frame");
+
+  std::vector<RemovalInfo> removal_tasks =
+      ClearDataAndWait(base::Time(), base::Time::Max(),
+                       DATA_TYPE_INDEXED_DB | constants::DATA_TYPE_HISTORY |
+                           constants::DATA_TYPE_CONTROLLED_FRAME,
+                       BrowsingDataFilterBuilder::Create(
+                           BrowsingDataFilterBuilder::Mode::kPreserve));
+
+  EXPECT_THAT(
+      removal_tasks,
+      UnorderedElementsAre(
+          RemovalInfo{DATA_TYPE_INDEXED_DB | constants::DATA_TYPE_HISTORY |
+                      constants::DATA_TYPE_CONTROLLED_FRAME},
+          RemovalInfo{DATA_TYPE_INDEXED_DB,
+                      iwa_url_info.storage_partition_config(GetProfile())},
+          RemovalInfo{DATA_TYPE_ON_STORAGE_PARTITION,
+                      controlled_frame_partition}));
+}
+
+TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest,
+       TimeRangeSpecified) {
+  const GURL iwa_url(
+      "isolated-app://"
+      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
+  web_app::IsolatedWebAppUrlInfo iwa_url_info = InstallIsolatedWebApp(iwa_url);
+  content::StoragePartitionConfig controlled_frame_partition =
+      CreateControlledFrameStoragePartition(iwa_url_info, "controlled_frame");
+
+  std::vector<RemovalInfo> removal_tasks = ClearDataAndWait(
+      AnHourAgo(), base::Time::Max(),
+      DATA_TYPE_INDEXED_DB | constants::DATA_TYPE_CONTROLLED_FRAME,
+      BrowsingDataFilterBuilder::Create(
+          BrowsingDataFilterBuilder::Mode::kPreserve));
+
+  EXPECT_THAT(
+      removal_tasks,
+      UnorderedElementsAre(
+          RemovalInfo{DATA_TYPE_INDEXED_DB |
+                      constants::DATA_TYPE_CONTROLLED_FRAME},
+          RemovalInfo{DATA_TYPE_INDEXED_DB,
+                      iwa_url_info.storage_partition_config(GetProfile())},
+          RemovalInfo{DATA_TYPE_ON_STORAGE_PARTITION,
+                      controlled_frame_partition}));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -1932,14 +2161,22 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, DeleteBookmarkHistory) {
 // Regression test for: https://crbug.com/1207632.
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,
        DeleteBookmarksDoesNothingWhenModelNotLoaded) {
-  TestingProfile* profile = GetProfile();
+  TestingProfile* profile = GetProfileManager()->CreateTestingProfile(
+      "bookmark_profile", {{BookmarkModelFactory::GetInstance(),
+                            BookmarkModelFactory::GetDefaultFactory()}});
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(profile);
   // For this test to exercise the code path that lead to the crash the
   // model must not be loaded yet.
   EXPECT_FALSE(bookmark_model->loaded());
-  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
-                                constants::DATA_TYPE_BOOKMARKS, false);
+
+  content::BrowsingDataRemover* remover = profile->GetBrowsingDataRemover();
+  content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
+  remover->RemoveAndReply(
+      base::Time(), base::Time::Max(), constants::DATA_TYPE_BOOKMARKS,
+      content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
+      &completion_observer);
+  completion_observer.BlockUntilCompletion();
   // No crash means test passes.
 }
 
