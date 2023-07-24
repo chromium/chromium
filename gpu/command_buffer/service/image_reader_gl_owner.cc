@@ -14,6 +14,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -33,6 +34,11 @@
 namespace gpu {
 
 namespace {
+
+BASE_FEATURE(kAlwaysUsePrivateFormatForImageReader,
+             "AlwaysUsePrivateFormatForImageReader",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool IsSurfaceControl(TextureOwner::Mode mode) {
   switch (mode) {
     case TextureOwner::Mode::kAImageReaderInsecureSurfaceControl:
@@ -134,6 +140,11 @@ ImageReaderGLOwner::ImageReaderGLOwner(
   AIMAGE_FORMATS format = mode == Mode::kAImageReaderSecureSurfaceControl
                               ? AIMAGE_FORMAT_PRIVATE
                               : AIMAGE_FORMAT_YUV_420_888;
+
+  if (base::FeatureList::IsEnabled(kAlwaysUsePrivateFormatForImageReader)) {
+    format = AIMAGE_FORMAT_PRIVATE;
+  }
+
   AImageReader* reader = nullptr;
 
   // The usage flag below should be used when the buffer will be read from by
