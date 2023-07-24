@@ -7,6 +7,7 @@ import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
+import {PolicyInfo, PolicyLevel, PolicyScope, PolicySource} from './policy_test.js';
 import {getTemplate} from './policy_test_row.html.js';
 
 export class PolicyTestRowElement extends CustomElement {
@@ -26,25 +27,6 @@ export class PolicyTestRowElement extends CustomElement {
     return this.hasAnError_;
   }
 
-  setInitialValues(initialValues: {[key: string]: any}) {
-    const policyNameInput =
-        this.getRequiredElement('.name-select') as HTMLInputElement;
-    const policySourceInput =
-        this.getRequiredElement('.source-select') as HTMLInputElement;
-    const policyLevelInput =
-        this.getRequiredElement('.level-select') as HTMLInputElement;
-    const policyScopeInput =
-        this.getRequiredElement('.target-select') as HTMLInputElement;
-    const policyValueInput =
-        this.getRequiredElement('.value-input') as HTMLInputElement;
-
-    policyNameInput.value = initialValues['name'];
-    policySourceInput.value = initialValues['source'];
-    policyLevelInput.value = initialValues['level'];
-    policyScopeInput.value = initialValues['scope'];
-    policyValueInput.value = initialValues['value'];
-  }
-
   // Function that initializes the policy selection dropdowns and delete
   // button for the current row.
   private initialize() {
@@ -62,6 +44,56 @@ export class PolicyTestRowElement extends CustomElement {
     // Add an event listener for this row's delete button.
     this.getRequiredElement('.remove-btn')
         .addEventListener('click', this.remove.bind(this));
+
+    // Set the value attributes of the policy type dropdown options.
+    const idToValue = [
+      {id: 'scopeUser', value: PolicyScope.SCOPE_USER_VAL},
+      {id: 'scopeDevice', value: PolicyScope.SCOPE_DEVICE_VAL},
+      {id: 'levelRecommended', value: PolicyLevel.LEVEL_RECOMMENDED_VAL},
+      {id: 'levelMandatory', value: PolicyLevel.LEVEL_MANDATORY_VAL},
+      {
+        id: 'sourceEnterpriseDefault',
+        value: PolicySource.SOURCE_ENTERPRISE_DEFAULT,
+      },
+      {id: 'sourceCommandLine', value: PolicySource.SOURCE_COMMAND_LINE_VAL},
+      {id: 'sourceCloud', value: PolicySource.SOURCE_CLOUD_VAL},
+      {
+        id: 'sourceActiveDirectory',
+        value: PolicySource.SOURCE_ACTIVE_DIRECTORY_VAL,
+      },
+      {id: 'sourcePlatform', value: PolicySource.SOURCE_PLATFORM_VAL},
+      {id: 'sourceMerged', value: PolicySource.SOURCE_MERGED_VAL},
+      {id: 'sourceCloudFromAsh', value: PolicySource.SOURCE_CLOUD_FROM_ASH_VAL},
+      {
+        id: 'sourceRestrictedManagedGuestSessionOverride',
+        value:
+            PolicySource.SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE_VAL,
+      },
+    ];
+
+    for (const pair of idToValue) {
+      this.getRequiredElement(`#${pair.id}`)
+          .setAttribute('value', String(pair.value));
+    }
+  }
+
+  setInitialValues(initialValues: PolicyInfo) {
+    const policyNameInput =
+        this.getRequiredElement<HTMLInputElement>('.name-select');
+    const policySourceInput =
+        this.getRequiredElement<HTMLInputElement>('.source-select');
+    const policyLevelInput =
+        this.getRequiredElement<HTMLInputElement>('.level-select');
+    const policyScopeInput =
+        this.getRequiredElement<HTMLInputElement>('.target-select');
+    const policyValueInput =
+        this.getRequiredElement<HTMLInputElement>('.value-input');
+
+    policyNameInput.value = initialValues.name;
+    policySourceInput.value = String(initialValues.source);
+    policyLevelInput.value = String(initialValues.level);
+    policyScopeInput.value = String(initialValues.scope);
+    policyValueInput.value = initialValues.value;
   }
 
   // Event listener function for setting the select element background back to

@@ -12,6 +12,7 @@
   [role="cell"] > * {
     width: 100%;
     box-sizing: border-box;
+    padding: 3px;
   }
 
   .error {
@@ -26,58 +27,53 @@
 <div role="cell">
   <select class="source">
     <option selected disabled hidden>$i18n{testSourceSelect}</option>
-    <option title="POLICY_SOURCE_ENTERPRISE_DEFAULT" value="0">
+    <option title="POLICY_SOURCE_ENTERPRISE_DEFAULT"
+        id="sourceEnterpriseDefault">
       $i18n{sourceEnterpriseDefault}
     </option>
-    <option title="POLICY_SOURCE_DEFAULT" value="1">
-      $i18n{sourceDefault}
-    </option>
-    <option title="POLICY_SOURCE_COMMAND_LINE" value="2">
+    <option title="POLICY_SOURCE_COMMAND_LINE" id="sourceCommandLine">
       $i18n{sourceCommandLine}
     </option>
-    <option title="POLICY_SOURCE_CLOUD" value="3">
+    <option title="POLICY_SOURCE_CLOUD" id="sourceCloud">
       $i18n{sourceCloud}
     </option>
-    <option title="POLICY_SOURCE_MERGED" value="4">
+    <option title="POLICY_SOURCE_ACTIVE_DIRECTORY" id="sourceActiveDirectory">
+      $i18n{sourceActiveDirectory}
+    </option>
+    <option title="POLICY_SOURCE_PLATFORM" id="sourcePlatform">
+      $i18n{sourcePlatform}
+    </option>
+    <option title="POLICY_SOURCE_MERGED" id="sourceMerged">
       $i18n{sourceMerged}
     </option>
-    <option title="POLICY_SOURCE_CLOUD_FROM_ASH" value="5">
+    <option title="POLICY_SOURCE_CLOUD_FROM_ASH" id="sourceCloudFromAsh">
       $i18n{sourceCloudFromAsh}
     </option>
     <option
         title="POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE"
-        value="6">
+          id="sourceRestrictedManagedGuestSessionOverride">
       $i18n{sourceRestrictedManagedGuestSessionOverride}
-    </option>
-    <option title="POLICY_SOURCE_ACTIVE_DIRECTORY" value="7">
-      $i18n{sourceActiveDirectory}
-    </option>
-    <option title="POLICY_SOURCE_PLATFORM" value="8">
-      $i18n{sourcePlatform}
-    </option>
-    <option title="POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE"
-        value="9">
-      $i18n{sourceDeviceLocalAccountOverride}
     </option>
   </select>
 </div>
 <div role="cell">
   <select class="scope">
     <option selected disabled hidden>$i18n{testTargetSelect}</option>
-    <option title="POLICY_SCOPE_USER" value="0">$i18n{scopeUser}</option>
-    <option title="POLICY_SCOPE_ALL_USERS" value="1">
-      $i18n{scopeAllUsers}
+    <option title="POLICY_SCOPE_USER" id="scopeUser">
+      $i18n{scopeUser}
     </option>
-    <option title="POLICY_SCOPE_DEVICE" value="2">$i18n{scopeDevice}</option>
+    <option title="POLICY_SCOPE_DEVICE" id="scopeDevice">
+      $i18n{scopeDevice}
+    </option>
   </select>
 </div>
 <div role="cell">
   <select class="level">
     <option selected disabled hidden>$i18n{testLevelSelect}</option>
-    <option title="POLICY_LEVEL_RECOMMENDED" value="0">
+    <option title="POLICY_LEVEL_RECOMMENDED" id="levelRecommended">
       $i18n{levelRecommended}
     </option>
-    <option title="POLICY_LEVEL_MANDATORY" value="1">
+    <option title="POLICY_LEVEL_MANDATORY" id="levelMandatory">
       $i18n{levelMandatory}
     </option>
   </select>

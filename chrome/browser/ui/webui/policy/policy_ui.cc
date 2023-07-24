@@ -212,25 +212,21 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
     policy_name_str.pop_back();  // remove last divider
     source->AddString("policyNames", policy_name_str);
 
-    // Strings for policy levels, scopes and sources
+    // Strings for policy levels, scopes and sources.
     static constexpr webui::LocalizedString kPolicyTestTypes[] = {
         {"scopeUser", IDS_POLICY_SCOPE_USER},
-        {"scopeAllUsers", IDS_POLICY_SCOPE_ALL_USERS},
         {"scopeDevice", IDS_POLICY_SCOPE_DEVICE},
         {"levelRecommended", IDS_POLICY_LEVEL_RECOMMENDED},
         {"levelMandatory", IDS_POLICY_LEVEL_MANDATORY},
         {"sourceEnterpriseDefault", IDS_POLICY_SOURCE_ENTERPRISE_DEFAULT},
-        {"sourceDefault", IDS_POLICY_SOURCE_DEFAULT},
         {"sourceCommandLine", IDS_POLICY_SOURCE_COMMAND_LINE},
         {"sourceCloud", IDS_POLICY_SOURCE_CLOUD},
+        {"sourceActiveDirectory", IDS_POLICY_SOURCE_ACTIVE_DIRECTORY},
+        {"sourcePlatform", IDS_POLICY_SOURCE_PLATFORM},
         {"sourceMerged", IDS_POLICY_SOURCE_MERGED},
         {"sourceCloudFromAsh", IDS_POLICY_SOURCE_CLOUD_FROM_ASH},
         {"sourceRestrictedManagedGuestSessionOverride",
          IDS_POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE},
-        {"sourceActiveDirectory", IDS_POLICY_SOURCE_ACTIVE_DIRECTORY},
-        {"sourcePlatform", IDS_POLICY_SOURCE_PLATFORM},
-        {"sourceDeviceLocalAccountOverride",
-         IDS_POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE},
     };
 
     source->AddLocalizedStrings(kPolicyTestTypes);

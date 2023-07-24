@@ -5,16 +5,9 @@ import './policy_test_row.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
+import {PolicyInfo} from './policy_test.js';
 import {PolicyTestRowElement} from './policy_test_row.js';
 import {getTemplate} from './policy_test_table.html.js';
-
-interface PolicyInfo {
-  name: string;
-  source: number;
-  scope: number;
-  level: number;
-  value: string;
-}
 
 export class PolicyTestTableElement extends CustomElement {
   static override get template() {
@@ -43,7 +36,7 @@ export class PolicyTestTableElement extends CustomElement {
   }
 
   // Method for adding a row with the initial values in initialValues.
-  addRow(initialValues: {[key: string]: any}) {
+  addRow(initialValues: PolicyInfo) {
     const row = this.getRequiredElement<HTMLElement>('.table').appendChild(
         document.createElement('policy-test-row'));
     row.setInitialValues(initialValues);
