@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/layout/box_layout.h"
 
 PageInfoSecurityContentView::PageInfoSecurityContentView(
@@ -42,7 +43,9 @@ void PageInfoSecurityContentView::SetIdentityInfo(
   } else {
     security_view_->SetIcon(PageInfoViewFactory::GetConnectionSecureIcon());
     security_view_->SetSummary(security_description->summary,
-                               views::style::STYLE_PRIMARY);
+                               features::IsChromeRefresh2023()
+                                   ? views::style::STYLE_BODY_3_MEDIUM
+                                   : views::style::STYLE_PRIMARY);
   }
   security_view_->SetDetails(
       security_description->details,

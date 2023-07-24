@@ -168,7 +168,7 @@ void PermissionToggleRowView::InitForManagedSource(
       PageInfoUI::PermissionStateToUIString(delegate, permission_),
       views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY);
   if (features::IsChromeRefresh2023()) {
-    state_label->SetTextStyle(views::style::STYLE_BODY_1);
+    state_label->SetTextStyle(views::style::STYLE_BODY_5);
   }
   state_label->SetProperty(views::kMarginsKey,
                            gfx::Insets::VH(0, icon_label_spacing));
