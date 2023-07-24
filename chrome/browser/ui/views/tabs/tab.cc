@@ -347,12 +347,18 @@ void Tab::Layout() {
     // right of the contents rect unless the tab is so small that it would
     // overflow the left side of the contents_rect, in that case it will be
     // placed in the middle of the tab.
-    close_x =
-        std::max(close_x - (close_button_visible_size + after_title_padding),
-                 Center(width(), close_button_actual_size.width()));
+    const int visible_left =
+        std::max(close_x - close_button_visible_size,
+                 Center(width(), close_button_visible_size));
+
+    // Offset the new bounds rect by the extra padding in the close button.
+    const int non_visible_left_padding =
+        (close_button_actual_size.width() - close_button_visible_size) / 2;
 
     close_button_->SetBoundsRect(
-        {gfx::Point(close_x, top), close_button_actual_size});
+        {gfx::Point(visible_left - non_visible_left_padding, top),
+         close_button_actual_size});
+    close_x = visible_left - after_title_padding;
   }
   close_button_->SetVisible(showing_close_button_);
 
