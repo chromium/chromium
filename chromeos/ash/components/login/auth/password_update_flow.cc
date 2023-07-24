@@ -33,7 +33,8 @@
 namespace ash {
 
 PasswordUpdateFlow::PasswordUpdateFlow()
-    : auth_performer_(UserDataAuthClient::Get()) {}
+    : auth_performer_(UserDataAuthClient::Get()),
+      auth_factor_editor_(UserDataAuthClient::Get()) {}
 
 PasswordUpdateFlow::~PasswordUpdateFlow() = default;
 

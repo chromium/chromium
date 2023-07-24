@@ -52,7 +52,8 @@ AuthSessionAuthenticator::AuthSessionAuthenticator(
     : Authenticator(consumer),
       user_recorder_(std::move(user_recorder)),
       safe_mode_delegate_(std::move(safe_mode_delegate)),
-      auth_factor_editor_(std::make_unique<AuthFactorEditor>()),
+      auth_factor_editor_(
+          std::make_unique<AuthFactorEditor>(UserDataAuthClient::Get())),
       auth_performer_(
           std::make_unique<AuthPerformer>(UserDataAuthClient::Get())),
       hibernate_manager_(std::make_unique<HibernateManager>()),

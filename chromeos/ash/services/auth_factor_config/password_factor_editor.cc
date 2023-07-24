@@ -19,7 +19,9 @@ namespace ash::auth {
 
 PasswordFactorEditor::PasswordFactorEditor(AuthFactorConfig* auth_factor_config,
                                            QuickUnlockStorageDelegate* storage)
-    : auth_factor_config_(auth_factor_config), quick_unlock_storage_(storage) {
+    : auth_factor_config_(auth_factor_config),
+      quick_unlock_storage_(storage),
+      auth_factor_editor_(UserDataAuthClient::Get()) {
   CHECK(auth_factor_config_);
   CHECK(quick_unlock_storage_);
 }

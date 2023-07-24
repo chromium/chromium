@@ -93,7 +93,8 @@ QuickUnlockPrivateGetAuthTokenHelper::QuickUnlockPrivateGetAuthTokenHelper(
     std::string password)
     : profile_(profile),
       password_(std::move(password)),
-      auth_performer_(ash::UserDataAuthClient::Get()) {}
+      auth_performer_(ash::UserDataAuthClient::Get()),
+      auth_factor_editor_(ash::UserDataAuthClient::Get()) {}
 
 QuickUnlockPrivateGetAuthTokenHelper::~QuickUnlockPrivateGetAuthTokenHelper() =
     default;

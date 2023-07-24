@@ -98,6 +98,7 @@ std::string GaiaScreen::GetResultString(Result result) {
 GaiaScreen::GaiaScreen(base::WeakPtr<TView> view,
                        const ScreenExitCallback& exit_callback)
     : BaseScreen(GaiaView::kScreenId, OobeScreenPriority::DEFAULT),
+      auth_factor_editor_(UserDataAuthClient::Get()),
       view_(std::move(view)),
       exit_callback_(exit_callback) {}
 

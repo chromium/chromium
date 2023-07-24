@@ -16,7 +16,8 @@ PinFactorEditor::PinFactorEditor(AuthFactorConfig* auth_factor_config,
                                  QuickUnlockStorageDelegate* storage)
     : auth_factor_config_(auth_factor_config),
       pin_backend_(pin_backend),
-      quick_unlock_storage_(storage) {
+      quick_unlock_storage_(storage),
+      auth_factor_editor_(UserDataAuthClient::Get()) {
   CHECK(auth_factor_config_);
   CHECK(pin_backend_);
   CHECK(quick_unlock_storage_);

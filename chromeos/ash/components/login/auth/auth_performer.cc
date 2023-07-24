@@ -74,7 +74,7 @@ absl::optional<AuthSessionIntent> DeserializeIntent(
 }  // namespace
 
 AuthPerformer::AuthPerformer(UserDataAuthClient* client) : client_(client) {
-  DCHECK(client_);
+  CHECK(client_);
 }
 
 AuthPerformer::~AuthPerformer() = default;

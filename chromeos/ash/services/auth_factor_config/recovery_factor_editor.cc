@@ -16,7 +16,8 @@ RecoveryFactorEditor::RecoveryFactorEditor(
     AuthFactorConfig* auth_factor_config,
     QuickUnlockStorageDelegate* quick_unlock_storage)
     : auth_factor_config_(auth_factor_config),
-      quick_unlock_storage_(quick_unlock_storage) {
+      quick_unlock_storage_(quick_unlock_storage),
+      auth_factor_editor_(UserDataAuthClient::Get()) {
   DCHECK(auth_factor_config_);
   DCHECK(quick_unlock_storage_);
 }

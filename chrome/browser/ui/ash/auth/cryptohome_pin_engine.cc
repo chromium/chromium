@@ -64,7 +64,8 @@ std::string GetUserSalt(const AccountId& account_id) {
 }  // namespace
 
 CryptohomePinEngine::CryptohomePinEngine(ash::AuthPerformer* auth_performer)
-    : auth_performer_(auth_performer) {}
+    : auth_performer_(auth_performer),
+      auth_factor_editor_(ash::UserDataAuthClient::Get()) {}
 
 CryptohomePinEngine::~CryptohomePinEngine() = default;
 

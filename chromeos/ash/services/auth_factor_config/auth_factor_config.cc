@@ -14,7 +14,8 @@ namespace ash::auth {
 
 AuthFactorConfig::AuthFactorConfig(
     QuickUnlockStorageDelegate* quick_unlock_storage)
-    : quick_unlock_storage_(quick_unlock_storage) {
+    : quick_unlock_storage_(quick_unlock_storage),
+      auth_factor_editor_(UserDataAuthClient::Get()) {
   DCHECK(quick_unlock_storage_);
 }
 
