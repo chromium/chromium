@@ -337,7 +337,8 @@ class TabGridViewBinder {
     static void updateThumbnailMatrix(
             TabGridThumbnailView thumbnail, Bitmap source, Size destinationSize) {
         if (BuildInfo.getInstance().isAutomotive) {
-            source.setDensity((int) (source.getDensity() * DisplayUtil.UI_SCALING_FACTOR_FOR_AUTO));
+            source.setDensity(
+                    (int) (source.getDensity() * DisplayUtil.getUiScalingFactorForAutomotive()));
         }
         int newWidth = destinationSize == null ? 0 : destinationSize.getWidth();
         int newHeight = destinationSize == null ? 0 : destinationSize.getHeight();

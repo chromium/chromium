@@ -331,7 +331,8 @@ public final class TabGridViewBinderUnitTest {
 
         assertNotEquals("The bitmap image density should not be zero.", 0, bitmap.getDensity());
         assertEquals("The bitmap image's density should be scaled up on automotive.",
-                (int) (DisplayMetrics.DENSITY_DEFAULT * DisplayUtil.UI_SCALING_FACTOR_FOR_AUTO),
+                (int) (DisplayMetrics.DENSITY_DEFAULT
+                        * DisplayUtil.getUiScalingFactorForAutomotive()),
                 bitmap.getDensity());
     }
 

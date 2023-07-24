@@ -27,12 +27,12 @@ public class DisplayUtilTest {
         displayMetrics.widthPixels = 100;
         displayMetrics.heightPixels = 100;
 
-        int scaledUpDensity =
-                (int) (DisplayMetrics.DENSITY_DEFAULT * DisplayUtil.UI_SCALING_FACTOR_FOR_AUTO);
+        int scaledUpDensity = (int) (DisplayMetrics.DENSITY_DEFAULT
+                * DisplayUtil.getUiScalingFactorForAutomotive());
         DisplayUtil.scaleUpDisplayMetricsForAutomotive(displayMetrics);
         assertEquals("The DisplayMetrics density should be scaled up by the "
                         + "automotive scale-up factor.",
-                DisplayUtil.UI_SCALING_FACTOR_FOR_AUTO, displayMetrics.density, 0.1f);
+                DisplayUtil.getUiScalingFactorForAutomotive(), displayMetrics.density, 0.1f);
         assertEquals("The DisplayMetrics densityDpi should be scaled up by the "
                         + "automotive scale-up factor.",
                 scaledUpDensity, displayMetrics.densityDpi);
