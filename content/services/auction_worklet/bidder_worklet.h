@@ -40,6 +40,7 @@
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/interest_group/ad_display_size.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"
 #include "url/gurl.h"
@@ -135,6 +136,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       const base::TimeDelta browser_signal_recency,
       mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
       base::Time auction_start_time,
+      const absl::optional<blink::AdSize>& requested_ad_size,
       uint64_t trace_id,
       mojo::PendingAssociatedRemote<mojom::GenerateBidClient>
           generate_bid_client,
@@ -200,6 +202,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     absl::optional<url::Origin> browser_signal_top_level_seller_origin;
     base::TimeDelta browser_signal_recency;
     mojom::BiddingBrowserSignalsPtr bidding_browser_signals;
+    absl::optional<blink::AdSize> requested_ad_size;
     base::Time auction_start_time;
     uint64_t trace_id;
 
@@ -435,6 +438,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         const base::TimeDelta browser_signal_recency,
         mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
         base::Time auction_start_time,
+        const absl::optional<blink::AdSize>& requested_ad_size,
         scoped_refptr<TrustedSignals::Result> trusted_bidding_signals_result,
         uint64_t trace_id,
         base::ScopedClosureRunner cleanup_generate_bid_task,
@@ -467,6 +471,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         const base::TimeDelta browser_signal_recency,
         const mojom::BiddingBrowserSignalsPtr& bidding_browser_signals,
         base::Time auction_start_time,
+        const absl::optional<blink::AdSize>& requested_ad_size,
         const scoped_refptr<TrustedSignals::Result>&
             trusted_bidding_signals_result,
         uint64_t trace_id,

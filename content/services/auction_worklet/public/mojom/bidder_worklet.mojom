@@ -108,7 +108,7 @@ struct BidderWorkletBid {
   // 'adCost' returned by generateBid, if any.
   double? ad_cost;
 
-  // Render URL of the bid.
+  // Render URL of the bid, plus sizing information.
   blink.mojom.AdDescriptor ad_descriptor;
 
   // Ad components associated with bid, if any. These allow a single ad to be
@@ -404,6 +404,11 @@ interface BidderWorklet {
   // `auction_start_time` The time the auction started, used to ensure the
   //  last win times provided to all worklets are relative to the same time.
   //
+  //  `requested_ad_size` The size of the ad slot requested in the initial
+  //  auction configuration. Will be passed into the buyer-side JS. Optional
+  //  because requested size is optional in the originating auction
+  //  configuration, and therefore not required to generate bids.
+  //
   // `trace_id` ID of a nestable asynchronous trace event of category `fledge`
   //  to use with tracing calls.
   //
@@ -423,6 +428,7 @@ interface BidderWorklet {
       mojo_base.mojom.TimeDelta browser_signal_recency,
       BiddingBrowserSignals bidding_browser_signals,
       mojo_base.mojom.Time auction_start_time,
+      blink.mojom.AdSize? requested_ad_size,
       uint64 trace_id,
       pending_associated_remote<GenerateBidClient> generate_bid_client,
       pending_associated_receiver<GenerateBidFinalizer> bid_finalizer);

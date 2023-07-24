@@ -1201,8 +1201,8 @@ class InterestGroupAuction::BuyerHelper
         (base::Time::Now() - bid_state->bidder->join_time)
             .RoundToMultiple(base::Milliseconds(100)),
         bid_state->bidder->bidding_browser_signals.Clone(),
-        auction_->auction_start_time_, *bid_state->trace_id,
-        std::move(pending_remote),
+        auction_->auction_start_time_, auction_->RequestedAdSize(),
+        *bid_state->trace_id, std::move(pending_remote),
         bid_state->bid_finalizer.BindNewEndpointAndPassReceiver());
 
     // TODO(morlovich): This should arguably be merged into BeginGenerateBid

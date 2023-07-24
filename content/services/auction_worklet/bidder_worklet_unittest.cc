@@ -43,6 +43,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
+#include "third_party/blink/public/common/interest_group/ad_display_size.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
@@ -680,7 +681,7 @@ class BidderWorkletTest : public testing::Test {
             : direct_from_seller_auction_signals_,
         browser_signal_seller_origin_, browser_signal_top_level_seller_origin_,
         browser_signal_recency_generate_bid_, CreateBiddingBrowserSignals(),
-        auction_start_time_,
+        auction_start_time_, requested_ad_size_,
         /*trace_id=*/1, std::move(generate_bid_client), std::move(finalizer));
     bidder_worklet->SendPendingSignalsRequests();
   }
@@ -717,7 +718,7 @@ class BidderWorkletTest : public testing::Test {
         direct_from_seller_auction_signals_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_,
         browser_signal_recency_generate_bid_, CreateBiddingBrowserSignals(),
-        auction_start_time_,
+        auction_start_time_, requested_ad_size_,
         /*trace_id=*/1, GenerateBidClientWithCallbacks::CreateNeverCompletes(),
         bid_finalizer.BindNewEndpointAndPassReceiver());
     bidder_worklet->SendPendingSignalsRequests();
@@ -912,7 +913,12 @@ class BidderWorkletTest : public testing::Test {
   // relative to the time of the auction, so no need to vary the auction time.
   const base::Time auction_start_time_ = base::Time::Now();
 
-  // Reuseable run loop for loading the script. It's always populated after
+  // This is the requested ad size provided to BeginGenerateBid() by the auction
+  // logic. It's piped through to the browserSignals JS object in the
+  // buyer's generateBid() function if it is present.
+  absl::optional<blink::AdSize> requested_ad_size_;
+
+  // Reusable run loop for loading the script. It's always populated after
   // creating the worklet, to cause a crash if the callback is invoked
   // synchronously.
   std::unique_ptr<base::RunLoop> load_script_run_loop_;
@@ -2553,7 +2559,7 @@ TEST_F(BidderWorkletTest, GenerateBidParallel) {
           direct_from_seller_auction_signals_, browser_signal_seller_origin_,
           browser_signal_top_level_seller_origin_,
           browser_signal_recency_generate_bid_, CreateBiddingBrowserSignals(),
-          auction_start_time_,
+          auction_start_time_, requested_ad_size_,
           /*trace_id=*/1,
           GenerateBidClientWithCallbacks::Create(base::BindLambdaForTesting(
               [&run_loop, &num_generate_bid_calls, bid_value](
@@ -2670,7 +2676,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched1) {
         direct_from_seller_auction_signals_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_,
         browser_signal_recency_generate_bid_, CreateBiddingBrowserSignals(),
-        auction_start_time_,
+        auction_start_time_, requested_ad_size_,
         /*trace_id=*/1,
         GenerateBidClientWithCallbacks::Create(base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
@@ -2795,7 +2801,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched2) {
         direct_from_seller_auction_signals_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_,
         browser_signal_recency_generate_bid_, CreateBiddingBrowserSignals(),
-        auction_start_time_,
+        auction_start_time_, requested_ad_size_,
         /*trace_id=*/1,
         GenerateBidClientWithCallbacks::Create(base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
@@ -2926,7 +2932,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched3) {
         direct_from_seller_auction_signals_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_,
         browser_signal_recency_generate_bid_, CreateBiddingBrowserSignals(),
-        auction_start_time_,
+        auction_start_time_, requested_ad_size_,
         /*trace_id=*/1,
         GenerateBidClientWithCallbacks::Create(base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
@@ -3036,7 +3042,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelNotBatched) {
         direct_from_seller_auction_signals_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_,
         browser_signal_recency_generate_bid_, CreateBiddingBrowserSignals(),
-        auction_start_time_,
+        auction_start_time_, requested_ad_size_,
         /*trace_id=*/1,
         GenerateBidClientWithCallbacks::Create(base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
@@ -8684,6 +8690,29 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
       /*expected_data_version=*/absl::nullopt, /*expected_errors=*/
       {"https://url.test/ generateBid() bid adComponents have invalid size for "
        "ad component."});
+}
+
+// The requested_ad_size argument to BeginGeneratingBid, which originates from
+// the auction config, should be propagated into the bidding logic JS via the
+// browserSignals property.
+TEST_F(BidderWorkletTest, AuctionRequestedSizeIsPresentInBiddingLogic) {
+  requested_ad_size_ = blink::AdSize(
+      /*width=*/1920,
+      /*width_units=*/blink::mojom::AdSize_LengthUnit::kPixels,
+      /*height=*/100,
+      /*height_units*/ blink::mojom::AdSize_LengthUnit::kScreenHeight);
+
+  RunGenerateBidExpectingExpressionIsTrue(R"(
+   (browserSignals.requestedSize.width === "1920px" &&
+      browserSignals.requestedSize.height === "100sh");
+  )");
+}
+
+TEST_F(BidderWorkletTest,
+       AuctionRequestedSizeIsAbsentFromInBiddingLogicWhenNotProvided) {
+  RunGenerateBidExpectingExpressionIsTrue(R"(
+    !browserSignals.hasOwnProperty('requestedSize');
+  )");
 }
 
 }  // namespace
