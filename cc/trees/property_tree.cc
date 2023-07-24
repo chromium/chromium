@@ -1422,10 +1422,6 @@ void ScrollTree::CopyCompleteTreeState(const ScrollTree& other) {
 }
 #endif  // DCHECK_IS_ON()
 
-bool ScrollTree::IsComposited(const ScrollNode& node) const {
-  return node.is_composited;
-}
-
 bool ScrollTree::CanRealizeScrollsOnCompositor(const ScrollNode& node) const {
   return GetMainThreadRepaintReasons(node) ==
          MainThreadScrollingReason::kNotScrollingOnMain;

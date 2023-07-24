@@ -590,11 +590,6 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   void NotifyDidChangeScrollbarsHidden(ElementId scroll_element_id,
                                        bool hidden) const;
 
-  // A composited scroll node is a scroll node that has an associated composited
-  // layer, otherwise the scroll node corresponds to a scroller that requires
-  // repainting.
-  bool IsComposited(const ScrollNode& node) const;
-
   // Returns true iff the node is composited and does not have any non-transient
   // main-thread scrolling reasons (see main_thread_scrolling_reason.h).
   bool CanRealizeScrollsOnCompositor(const ScrollNode& node) const;
