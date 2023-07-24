@@ -36,7 +36,7 @@ self.addEventListener('activate', e => {
   e.waitUntil(clients.claim());
 });
 
-self.addEventListener("fetch", async e => {
+self.addEventListener("fetch", e => {
   const {request} = e;
   const url = new URL(request.url);
 
