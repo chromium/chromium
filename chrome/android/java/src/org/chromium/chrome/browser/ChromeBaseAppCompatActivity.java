@@ -35,6 +35,7 @@ import com.google.android.material.color.DynamicColors;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.BundleUtils;
+import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -48,6 +49,7 @@ import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
+import org.chromium.ui.display.DisplaySwitches;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
@@ -266,6 +268,10 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     static void applyOverridesForAutomotive(Context baseContext, Configuration overrideConfig) {
         if (BuildInfo.getInstance().isAutomotive) {
             DisplayUtil.scaleUpConfigurationForAutomotive(baseContext, overrideConfig);
+
+            // Enable web ui scaling for automotive devices.
+            CommandLine.getInstance().appendSwitch(
+                    DisplaySwitches.AUTOMOTIVE_WEB_UI_SCALE_UP_ENABLED);
         }
     }
 

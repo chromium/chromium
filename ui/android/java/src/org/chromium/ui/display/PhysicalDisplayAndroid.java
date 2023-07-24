@@ -272,7 +272,9 @@ import java.util.function.Consumer;
         size.set(rect.width(), rect.height());
         DisplayMetrics displayMetrics = mWindowContext.getResources().getDisplayMetrics();
 
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (BuildInfo.getInstance().isAutomotive
+                && CommandLine.getInstance().hasSwitch(
+                        DisplaySwitches.AUTOMOTIVE_WEB_UI_SCALE_UP_ENABLED)) {
             mDisplay.getRealMetrics(displayMetrics);
             DisplayUtil.scaleUpDisplayMetricsForAutomotive(displayMetrics);
         }
@@ -308,7 +310,9 @@ import java.util.function.Consumer;
             display.getMetrics(displayMetrics);
         }
 
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (BuildInfo.getInstance().isAutomotive
+                && CommandLine.getInstance().hasSwitch(
+                        DisplaySwitches.AUTOMOTIVE_WEB_UI_SCALE_UP_ENABLED)) {
             DisplayUtil.scaleUpDisplayMetricsForAutomotive(displayMetrics);
         }
         updateCommon(

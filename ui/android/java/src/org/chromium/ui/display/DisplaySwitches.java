@@ -10,6 +10,8 @@ package org.chromium.ui.display;
 public abstract class DisplaySwitches {
     // Native switch - display_switches::kForceDeviceScaleFactor
     public static final String FORCE_DEVICE_SCALE_FACTOR = "force-device-scale-factor";
+    public static final String AUTOMOTIVE_WEB_UI_SCALE_UP_ENABLED =
+            "automotive-web-ui-scale-up-enabled";
 
     // Prevent instantiation.
     private DisplaySwitches() {}
