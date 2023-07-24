@@ -1704,6 +1704,29 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   ResetOwnedNavigationRequests(
       NavigationDiscardReason::kRenderFrameHostDestruction);
 
+  // Cancel the navigations (including the ones that are not owned by this
+  // RenderFrameHost) that intends to commit in this RenderFrameHost, as they
+  // can no longer do so.
+  {
+    CHECK(frame_tree_node_);
+    NavigationRequest* navigation_request =
+        frame_tree_node_->navigation_request();
+    if (navigation_request &&
+        navigation_request->state() >=
+            NavigationRequest::WILL_PROCESS_RESPONSE &&
+        navigation_request->GetRenderFrameHost() == this) {
+      frame_tree_node_->ResetNavigationRequest(
+          NavigationDiscardReason::kRenderFrameHostDestruction);
+      // As we are unable to come up with a case that will lead to this path, we
+      // instead record the dumps for debugging the scenario.
+      // TODO(crbug.com/1430653): if we verify that this path is impossible,
+      // replace the `DumpWithoutCrashing` with a `CHECK`. Otherwise, add a new
+      // browser test for it.
+      base::debug::DumpWithoutCrashing();
+      NOTREACHED();
+    }
+  }
+
   // Release the WebUI instances before all else as the WebUI may accesses the
   // RenderFrameHost during cleanup.
   base::WeakPtr<RenderFrameHostImpl> self = GetWeakPtr();
