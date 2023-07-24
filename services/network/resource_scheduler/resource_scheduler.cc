@@ -253,7 +253,7 @@ class ResourceScheduler::ScheduledResourceRequestImpl
     const bool deprioritize =
         base::FeatureList::IsEnabled(
             features::kVisibilityAwareResourceScheduler) &&
-        !visible;
+        !(request->load_flags() & net::LOAD_IGNORE_LIMITS) && !visible;
     if (deprioritize) {
       // Deprioritize to IDLE if this is a background request.
       priority_.priority = net::RequestPriority::IDLE;

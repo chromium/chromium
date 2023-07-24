@@ -2357,6 +2357,23 @@ TEST_F(VisibilityAwareResourceSchedulerTest, DeprioritizeBackgroundRequest) {
   ASSERT_EQ(request->url_request()->priority(), net::IDLE);
 }
 
+TEST_F(VisibilityAwareResourceSchedulerTest, BackgroundRequestIgnoreLimit) {
+  InitializeScheduler();
+  std::unique_ptr<net::URLRequest> url_request =
+      NewURLRequest("https://a.test", net::MAXIMUM_PRIORITY);
+  url_request->SetLoadFlags(url_request->load_flags() |
+                            net::LOAD_IGNORE_LIMITS);
+  std::unique_ptr<ResourceScheduler::ScheduledResourceRequest>
+      scheduled_request =
+          scheduler()->ScheduleRequest(kBackgroundClientId,
+                                       /*is_async=*/true, url_request.get());
+  auto request = std::make_unique<TestRequest>(
+      std::move(url_request), std::move(scheduled_request), scheduler());
+  request->Start();
+  ASSERT_TRUE(request->started());
+  ASSERT_EQ(request->url_request()->priority(), net::MAXIMUM_PRIORITY);
+}
+
 TEST_F(VisibilityAwareResourceSchedulerTest, ChangePriorityBasedOnVisibility) {
   InitializeScheduler();
   SetMaxDelayableRequests(1);
