@@ -75,7 +75,8 @@ public class TabModelUtils {
 
         for (int i = 0; i < count; i++) {
             Tab tab = model.getTabAt(i);
-            if (tab.getId() == tabId) return i;
+            assert tab != null : "getTabAt() shouldn't return a null Tab from TabModel.";
+            if (tab != null && tab.getId() == tabId) return i;
         }
 
         return TabModel.INVALID_TAB_INDEX;
