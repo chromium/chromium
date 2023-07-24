@@ -325,14 +325,8 @@ tast_disabled_tests_from_chrome_all = [
   "a11y.LiveCaption.lacros",
 
   # b/291854686
-  "inputs.InputMethodShelfInputs",
-  "inputs.VirtualKeyboardAutocorrect.*",
-  "inputs.VirtualKeyboardGlideTyping.*",
+  "inputs.VirtualKeyboardGlideTyping.clamshell_a11y_floating_lacros",
   "inputs.VirtualKeyboardHandwriting.docked",
-  "inputs.VirtualKeyboardHandwriting.floating",
-  "inputs.VirtualKeyboardTypingApps",
-  "inputs.VirtualKeyboardTypingOmnibox.a11y_lacros",
-  "inputs.VirtualKeyboardTypingUserMode.incognito",
 
   # b/287525851
   "arc.AudioValidity.playback",
