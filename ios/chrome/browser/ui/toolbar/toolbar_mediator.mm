@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
@@ -20,7 +21,9 @@
 #error "This file requires ARC support."
 #endif
 
-@interface ToolbarMediator () <BooleanObserver, CRWWebStateObserver>
+@interface ToolbarMediator () <BooleanObserver,
+                               CRWWebStateObserver,
+                               WebStateListObserving>
 
 /// Type of toolbar containing the omnibox. Unlike
 /// `steadyStateOmniboxPosition`, this tracks the omnibox position at all
@@ -41,6 +44,9 @@
   /// this mediator.
   std::unique_ptr<ActiveWebStateObservationForwarder>
       _activeWebStateObservationForwarder;
+
+  /// Observes web state activation.
+  std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
 
   WebStateList* _webStateList;
 
@@ -69,6 +75,9 @@
     _activeWebStateObservationForwarder =
         std::make_unique<ActiveWebStateObservationForwarder>(
             webStateList, _webStateObserverBridge.get());
+    _webStateListObserverBridge =
+        std::make_unique<WebStateListObserverBridge>(self);
+    _webStateList->AddObserver(_webStateListObserverBridge.get());
   }
   return self;
 }
@@ -76,6 +85,8 @@
 - (void)disconnect {
   _activeWebStateObservationForwarder = nullptr;
   _webStateObserverBridge = nullptr;
+  _webStateList->RemoveObserver(_webStateListObserverBridge.get());
+  _webStateListObserverBridge = nullptr;
 
   _webStateList = nullptr;
 }
@@ -161,6 +172,18 @@
 - (void)webState:(web::WebState*)webState
     didStartNavigation:(web::NavigationContext*)navigation {
   [self updateForWebState:webState];
+}
+
+#pragma mark - WebStateListObserving
+
+- (void)webStateList:(WebStateList*)webStateList
+    didChangeActiveWebState:(web::WebState*)newWebState
+                oldWebState:(web::WebState*)oldWebState
+                    atIndex:(int)atIndex
+                     reason:(ActiveWebStateChangeReason)reason {
+  if (newWebState) {
+    [self updateForWebState:newWebState];
+  }
 }
 
 #pragma mark - Private
