@@ -308,7 +308,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.Preview.TimeToFirstUsableFrameAfterStartCapture"
-    units="ms" expires_after="2023-08-06">
+    units="ms" expires_after="2023-11-06">
   <owner>dfried@chromium.org</owner>
   <owner>collinbaker@chromium.org</owner>
   <summary>
@@ -352,7 +352,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.Preview.TimeToStoreAfterTabSwitch" units="ms"
-    expires_after="2023-08-20">
+    expires_after="2023-11-20">
   <owner>dfried@chromium.org</owner>
   <owner>collinbaker@chromium.org</owner>
   <summary>
