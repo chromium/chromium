@@ -83,6 +83,33 @@ suite(destination_dialog_cros_test.suiteName, function() {
         });
   }
 
+  /**
+   * Remove and recreate destination-dialog-cros then return `finishSetup`. If
+   * `removeDestinations` is set, also overrides destination-store to be empty.
+   */
+  function recreateElementAndFinishSetup(removeDestinations: boolean):
+      Promise<void> {
+    // Remove existing dialog.
+    dialog.remove();
+    flush();
+
+    if (removeDestinations) {
+      // Re-create data classes with no destinations.
+      destinationStore = createDestinationStore();
+      nativeLayer.setLocalDestinations([]);
+      destinationStore.init(
+          false /* pdfPrinterDisabled */, false /* saveToDriveDisabled */,
+          'FooDevice' /* printerName */,
+          '' /* serializedDefaultDestinationSelectionRulesStr */,
+          [] /* recentDestinations */);
+    }
+
+    // Set up dialog.
+    dialog = document.createElement('print-preview-destination-dialog-cros');
+    dialog.destinationStore = destinationStore;
+    return finishSetup();
+  }
+
   // Test that clicking a provisional destination shows the provisional
   // destinations dialog, and that the escape key closes only the provisional
   // dialog when it is open, not the destinations dialog.
@@ -204,17 +231,7 @@ suite(destination_dialog_cros_test.suiteName, function() {
         loadTimeData.overrideValues({
           isPrintPreviewSetupAssistanceEnabled: true,
         });
-
-        // Remove existing dialog to set `isPrintPreviewSetupAssistanceEnabled`
-        // flag for testing.
-        dialog.remove();
-        await flush();
-
-        // Set up dialog.
-        dialog =
-            document.createElement('print-preview-destination-dialog-cros');
-        dialog.destinationStore = destinationStore;
-        await finishSetup();
+        await recreateElementAndFinishSetup(/*removeDestinations=*/ false);
 
         // Manage printers button hidden when there are valid destinations.
         const managePrintersButton =
@@ -251,26 +268,7 @@ suite(destination_dialog_cros_test.suiteName, function() {
         loadTimeData.overrideValues({
           isPrintPreviewSetupAssistanceEnabled: true,
         });
-
-        // Remove existing dialog to set `isPrintPreviewSetupAssistanceEnabled`
-        // flag for testing.
-        dialog.remove();
-        await flush();
-
-        // Re-create data classes with no destinations.
-        destinationStore = createDestinationStore();
-        nativeLayer.setLocalDestinations([]);
-        destinationStore.init(
-            false /* pdfPrinterDisabled */, false /* saveToDriveDisabled */,
-            'FooDevice' /* printerName */,
-            '' /* serializedDefaultDestinationSelectionRulesStr */,
-            [] /* recentDestinations */);
-
-        // Set up dialog.
-        dialog =
-            document.createElement('print-preview-destination-dialog-cros');
-        dialog.destinationStore = destinationStore;
-        await finishSetup();
+        await recreateElementAndFinishSetup(/*removeDestinations=*/ true);
 
         // Manage printers button hidden when there are no destinations.
         const managePrintersButton =
