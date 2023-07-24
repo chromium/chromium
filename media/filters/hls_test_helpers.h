@@ -79,6 +79,10 @@ class MockManifestDemuxerEngineHost : public ManifestDemuxerEngineHost {
               (override));
   MOCK_METHOD(void, OnError, (PipelineStatus), (override));
   MOCK_METHOD(void, RequestSeek, (base::TimeDelta), (override));
+  MOCK_METHOD(void,
+              SetGroupStartTimestamp,
+              (base::StringPiece role, base::TimeDelta time),
+              (override));
 };
 
 class MockHlsRenditionHost : public HlsRenditionHost {

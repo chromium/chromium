@@ -431,6 +431,12 @@ void ManifestDemuxer::RequestSeek(base::TimeDelta time) {
   request_seek_.Run(time);
 }
 
+void ManifestDemuxer::SetGroupStartTimestamp(base::StringPiece role,
+                                             base::TimeDelta time) {
+  chunk_demuxer_->SetGroupStartTimestampIfInSequenceMode(std::string(role),
+                                                         time);
+}
+
 ChunkDemuxer* ManifestDemuxer::GetChunkDemuxerForTesting() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   return chunk_demuxer_.get();

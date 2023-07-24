@@ -92,6 +92,9 @@ class MEDIA_EXPORT ManifestDemuxerEngineHost {
 
   // Handle errors.
   virtual void OnError(PipelineStatus error) = 0;
+
+  virtual void SetGroupStartTimestamp(base::StringPiece role,
+                                      base::TimeDelta time) = 0;
 };
 
 // A Demuxer designed to allow implementation of media demuxers which don't
@@ -207,6 +210,9 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
                           size_t data_size) override;
   void OnError(PipelineStatus status) override;
   void RequestSeek(base::TimeDelta time) override;
+
+  void SetGroupStartTimestamp(base::StringPiece role,
+                              base::TimeDelta time) override;
 
   // Allow unit tests to grab the chunk demuxer.
   ChunkDemuxer* GetChunkDemuxerForTesting();
