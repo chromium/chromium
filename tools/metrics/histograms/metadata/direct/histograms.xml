@@ -22,20 +22,8 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="DirectWrite.Fonts.Gfx.InitializeLoopCount" units="units"
-    expires_after="2022-10-15">
-  <owner>drott@chromium.org</owner>
-  <owner>etienneb@chromium.org</owner>
-  <summary>
-    The number of iterations that was required to initialize Direct Write. This
-    metric is recorded by the browser process at startup. The value -1 is
-    reported when the initialization failed. The fallback path using GDI is used
-    instead of DWrite.
-  </summary>
-</histogram>
-
 <histogram name="DirectWrite.Fonts.Gfx.InitializeTime" units="ms"
-    expires_after="2022-10-15">
+    expires_after="2023-10-15">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
