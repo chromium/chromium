@@ -129,7 +129,7 @@ class BookmarkManagerMediator
                 // We cannot rely on removing the specific list item that corresponds to the
                 // removed node because the node might be a parent with children also shown
                 // in the list.
-                search(mSearchText);
+                refresh();
             }
         }
 
@@ -149,12 +149,9 @@ class BookmarkManagerMediator
         public void bookmarkModelChanged() {
             clearHighlight();
 
-            if (getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
-                if (!TextUtils.equals(mSearchText, EMPTY_QUERY)) {
-                    search(mSearchText);
-                } else {
-                    onEndSearch();
-                }
+            if (getCurrentUiMode() == BookmarkUiMode.SEARCHING
+                    && TextUtils.isEmpty(getCurrentQueryString())) {
+                onEndSearch();
             } else {
                 refresh();
             }
@@ -191,7 +188,6 @@ class BookmarkManagerMediator
         public void onFolderStateSet(BookmarkId folder) {
             clearHighlight();
 
-            mSearchText = EMPTY_QUERY;
             mDragReorderableRecyclerViewAdapter.enableDrag();
 
             setBookmarks(mBookmarkQueryHandler.buildBookmarkListForParent(getCurrentFolderId()));
@@ -269,14 +265,7 @@ class BookmarkManagerMediator
                     BookmarkUtils.getRoundedIconGenerator(mContext, displayPref),
                     BookmarkUtils.getImageIconSize(res, displayPref),
                     BookmarkUtils.getFaviconDisplaySize(res, displayPref));
-
-            mModelList.clear();
-            if (getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
-                search(mSearchText);
-            } else {
-                setBookmarks(
-                        mBookmarkQueryHandler.buildBookmarkListForParent(getCurrentFolderId()));
-            }
+            refresh();
         }
 
         @Override
@@ -319,7 +308,6 @@ class BookmarkManagerMediator
     private String mInitialUrl;
     private boolean mFaviconsNeedRefresh;
     private BasicNativePage mNativePage;
-    private String mSearchText;
     // Keep track of the currently highlighted bookmark - used for "show in folder" action.
     private BookmarkId mHighlightedBookmark;
 
@@ -484,8 +472,8 @@ class BookmarkManagerMediator
      * @param query The query text to search for.
      */
     void search(@Nullable String query) {
-        mSearchText = query == null ? "" : query.trim();
-        setBookmarks(mBookmarkQueryHandler.buildBookmarkListForSearch(mSearchText));
+        query = query == null ? "" : query.trim();
+        setState(BookmarkUiState.createSearchState(query));
     }
 
     public void setOrder() {
@@ -744,18 +732,28 @@ class BookmarkManagerMediator
         if (!mStateStack.isEmpty() && mStateStack.peek().mUiMode == BookmarkUiMode.LOADING) {
             mStateStack.pop();
         }
+
+        // TODO(https://crbug.com/1467352): Delete this empty search mechanism.
+        // In the old UI, when the search menu item is pressed, and the search box initially
+        // appears, there is no query string yet. And the old folder bookmarks should still show
+        // until text is typed into the search box. After this point, empty query strings should
+        // be searching for all bookmarks, not the old folder bookmarks.
+        boolean preserveFolderBookmarksOnEmptySearch = false;
         // Don't queue multiple consecutive search states. Instead replace the previous with the new
         // one.
         if (getCurrentUiMode() == BookmarkUiMode.SEARCHING
                 && state.mUiMode == BookmarkUiMode.SEARCHING) {
             mStateStack.pop();
+        } else if (getCurrentUiMode() == BookmarkUiMode.FOLDER
+                && !BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+            preserveFolderBookmarksOnEmptySearch = true;
         }
 
         mStateStack.push(state);
-        notifyUi(state);
+        notifyUi(state, preserveFolderBookmarksOnEmptySearch);
     }
 
-    private void notifyUi(BookmarkUiState state) {
+    private void notifyUi(BookmarkUiState state, boolean preserveFolderBookmarksOnEmptySearch) {
         if (state.mUiMode == BookmarkUiMode.FOLDER) {
             // Loading and searching states may be pushed to the stack but should never be stored in
             // preferences.
@@ -763,6 +761,11 @@ class BookmarkManagerMediator
             // If a loading state is replaced by another loading state, do not notify this change.
             if (mNativePage != null) {
                 mNativePage.onStateChange(state.mUrl, false);
+            }
+        } else if (state.mUiMode == BookmarkUiMode.SEARCHING) {
+            String queryString = getCurrentQueryString();
+            if (!preserveFolderBookmarksOnEmptySearch || !TextUtils.isEmpty(queryString)) {
+                setBookmarks(mBookmarkQueryHandler.buildBookmarkListForSearch(queryString));
             }
         }
 
@@ -904,7 +907,7 @@ class BookmarkManagerMediator
     /** Refresh the list of bookmarks within the currently visible folder. */
     private void refresh() {
         if (!mStateStack.isEmpty()) {
-            notifyUi(mStateStack.peek());
+            notifyUi(mStateStack.peek(), /*preserveFolderBookmarksOnEmptySearch*/ false);
         }
     }
 
@@ -1315,9 +1318,7 @@ class BookmarkManagerMediator
     private void onQueryCallback(String text) {
         final @BookmarkUiMode int currentUiMode = getCurrentUiMode();
         if (!TextUtils.isEmpty(text)) {
-            // #setState will no-op if we're already in a search state.
             setState(BookmarkUiState.createSearchState(text));
-            search(text);
         } else if (currentUiMode == BookmarkUiMode.SEARCHING) {
             onEndSearch();
         }
@@ -1325,6 +1326,10 @@ class BookmarkManagerMediator
 
     private void onShoppingFilterToggle(boolean isFiltering) {
         // TODO(https://crbug.com/1444122): Adjust filter with query handler.
+    }
+
+    private @Nullable String getCurrentQueryString() {
+        return mStateStack.isEmpty() ? null : mStateStack.peek().mQueryString;
     }
 
     // Testing methods.
