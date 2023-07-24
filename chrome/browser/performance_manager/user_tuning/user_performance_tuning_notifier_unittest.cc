@@ -55,11 +55,16 @@ class UserPerformanceTuningNotifierTest : public GraphTestHarness {
     std::vector<uint64_t> pages_pmf_kb_;
   };
 
-  class TestProcessMetricsDecorator
-      : public performance_manager::ProcessMetricsDecorator {
+  class TestProcessMetricsDecorator : public ProcessMetricsDecorator {
    public:
-    void OnRequestImmediateMetrics() override {
-      ++request_immediate_metrics_count_;
+    void RequestProcessesMemoryMetrics(
+        bool immediate_request,
+        ProcessMemoryDumpCallback callback) override {
+      if (immediate_request) {
+        ++request_immediate_metrics_count_;
+      }
+      ProcessMetricsDecorator::RequestProcessesMemoryMetrics(
+          immediate_request, std::move(callback));
     }
 
     int request_immediate_metrics_count_ = 0;

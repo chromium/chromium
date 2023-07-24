@@ -18,7 +18,6 @@
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_manager {
 
@@ -27,6 +26,7 @@ namespace {
 using ::testing::_;
 using ::testing::ByMove;
 using ::testing::Return;
+using GlobalMemoryDumpPtr = memory_instrumentation::mojom::GlobalMemoryDumpPtr;
 
 constexpr uint32_t kFakeResidentSetKb = 12345;
 constexpr uint32_t kFakePrivateFootprintKb = 67890;
@@ -42,30 +42,24 @@ class LenientTestProcessMetricsDecorator : public ProcessMetricsDecorator {
 
   // ProcessMetricsDecorator:
   void RequestProcessesMemoryMetrics(
-      memory_instrumentation::MemoryInstrumentation::RequestGlobalDumpCallback
-          callback) override;
+      bool immediate_request,
+      ProcessMemoryDumpCallback callback) override;
 
-  // Mock method used to set the test expectations.
-  MOCK_METHOD0(
-      GetMemoryDump,
-      absl::optional<memory_instrumentation::mojom::GlobalMemoryDumpPtr>());
+  // Mock method used to set the test expectations. Return `nullptr` to expect a
+  // failure.
+  MOCK_METHOD(GlobalMemoryDumpPtr, GetMemoryDump, ());
 };
 using TestProcessMetricsDecorator =
     ::testing::StrictMock<LenientTestProcessMetricsDecorator>;
 
 void LenientTestProcessMetricsDecorator::RequestProcessesMemoryMetrics(
-    memory_instrumentation::MemoryInstrumentation::RequestGlobalDumpCallback
-        callback) {
-  absl::optional<memory_instrumentation::mojom::GlobalMemoryDumpPtr>
-      global_dump = GetMemoryDump();
-
-  std::move(callback).Run(
-      global_dump.has_value(),
-      global_dump.has_value()
-          ? memory_instrumentation::GlobalMemoryDump::MoveFrom(
-                std::move(global_dump.value()))
-          : memory_instrumentation::GlobalMemoryDump::MoveFrom(
-                memory_instrumentation::mojom::GlobalMemoryDump::New()));
+    bool immediate_request,
+    ProcessMemoryDumpCallback callback) {
+  GlobalMemoryDumpPtr global_dump = GetMemoryDump();
+  bool success = !global_dump.is_null();
+  std::move(callback).Run(immediate_request, success,
+                          memory_instrumentation::GlobalMemoryDump::MoveFrom(
+                              std::move(global_dump)));
 }
 
 class LenientMockSystemNodeObserver
@@ -87,23 +81,17 @@ struct MemoryDumpProcInfo {
 
 // Generate a GlobalMemoryDumpPtr object based on the data contained in
 // |proc_info_vec|.
-memory_instrumentation::mojom::GlobalMemoryDumpPtr GenerateMemoryDump(
+GlobalMemoryDumpPtr GenerateMemoryDump(
     const std::vector<MemoryDumpProcInfo>& proc_info_vec) {
-  memory_instrumentation::mojom::GlobalMemoryDumpPtr global_dump(
-      memory_instrumentation::mojom::GlobalMemoryDump::New());
-
+  auto global_dump = memory_instrumentation::mojom::GlobalMemoryDump::New();
   for (const auto& proc_info : proc_info_vec) {
-    memory_instrumentation::mojom::ProcessMemoryDumpPtr pmd =
-        memory_instrumentation::mojom::ProcessMemoryDump::New();
+    auto pmd = memory_instrumentation::mojom::ProcessMemoryDump::New();
     pmd->pid = proc_info.pid;
-    memory_instrumentation::mojom::OSMemDumpPtr os_dump =
-        memory_instrumentation::mojom::OSMemDump::New();
-    os_dump->resident_set_kb = proc_info.resident_set_kb;
-    os_dump->private_footprint_kb = proc_info.private_footprint_kb;
-    pmd->os_dump = std::move(os_dump);
+    pmd->os_dump = memory_instrumentation::mojom::OSMemDump::New();
+    pmd->os_dump->resident_set_kb = proc_info.resident_set_kb;
+    pmd->os_dump->private_footprint_kb = proc_info.private_footprint_kb;
     global_dump->process_dumps.emplace_back(std::move(pmd));
   }
-
   return global_dump;
 }
 
@@ -143,6 +131,18 @@ class ProcessMetricsDecoratorTest : public GraphTestHarness {
 
   MockMultiplePagesAndWorkersWithMultipleProcessesGraph* mock_graph() {
     return mock_graph_.get();
+  }
+
+  // Returns a default GlobalMemoryDumpPtr suitable for most tests.
+  GlobalMemoryDumpPtr DefaultMemoryDump() {
+    return GenerateMemoryDump({
+        {mock_graph()->process->process_id(), kFakeResidentSetKb,
+         kFakePrivateFootprintKb},
+        {mock_graph()->other_process->process_id(), kFakeResidentSetKb,
+         kFakePrivateFootprintKb},
+        {mock_utility_process_->process_id(), kFakeResidentSetKb,
+         kFakePrivateFootprintKb},
+    });
   }
 
   void ExpectProcessResults(uint64_t resident_set_kb,
@@ -234,18 +234,8 @@ TEST_F(ProcessMetricsDecoratorTest, RefreshTimer) {
   ExpectAndResetAllProcessResults(0, 0);
 
   // The first measurement should be taken immediately.
-  auto default_memory_dump = [&] {
-    return GenerateMemoryDump({
-        {mock_graph()->process->process_id(), kFakeResidentSetKb,
-         kFakePrivateFootprintKb},
-        {mock_graph()->other_process->process_id(), kFakeResidentSetKb,
-         kFakePrivateFootprintKb},
-        {mock_utility_process_->process_id(), kFakeResidentSetKb,
-         kFakePrivateFootprintKb},
-    });
-  };
   EXPECT_CALL(*decorator(), GetMemoryDump())
-      .WillOnce(Return(ByMove(default_memory_dump())));
+      .WillOnce(Return(ByMove(DefaultMemoryDump())));
   EXPECT_CALL(sys_node_observer, OnProcessMemoryMetricsAvailable(_));
 
   auto interest_token =
@@ -254,7 +244,7 @@ TEST_F(ProcessMetricsDecoratorTest, RefreshTimer) {
 
   // Advance the timer, this should trigger a refresh of the metrics.
   EXPECT_CALL(*decorator(), GetMemoryDump())
-      .WillOnce(Return(ByMove(default_memory_dump())));
+      .WillOnce(Return(ByMove(DefaultMemoryDump())));
   EXPECT_CALL(sys_node_observer, OnProcessMemoryMetricsAvailable(_));
 
   task_env().FastForwardBy(decorator()->GetTimerDelayForTesting());
@@ -265,7 +255,7 @@ TEST_F(ProcessMetricsDecoratorTest, RefreshTimer) {
   base::TimeDelta delay = decorator()->GetTimerDelayForTesting();
 
   EXPECT_CALL(*decorator(), GetMemoryDump())
-      .WillOnce(Return(ByMove(default_memory_dump())));
+      .WillOnce(Return(ByMove(DefaultMemoryDump())));
   EXPECT_CALL(sys_node_observer, OnProcessMemoryMetricsAvailable(_));
 
   task_env().FastForwardBy(delay / 2);
@@ -277,21 +267,10 @@ TEST_F(ProcessMetricsDecoratorTest, RefreshTimer) {
   ExpectAndResetAllProcessResults(0, 0);
 
   EXPECT_CALL(*decorator(), GetMemoryDump())
-      .WillOnce(Return(ByMove(default_memory_dump())));
+      .WillOnce(Return(ByMove(DefaultMemoryDump())));
   EXPECT_CALL(sys_node_observer, OnProcessMemoryMetricsAvailable(_));
 
   task_env().FastForwardBy(delay / 2);
-  ExpectAndResetAllProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
-
-  // Requesting an immediate measurement while a measurement is already in
-  // progress should do nothing.
-  EXPECT_CALL(*decorator(), GetMemoryDump()).WillOnce([&] {
-    decorator()->RequestImmediateMetrics();
-    return default_memory_dump();
-  });
-  EXPECT_CALL(sys_node_observer, OnProcessMemoryMetricsAvailable(_));
-
-  task_env().FastForwardBy(decorator()->GetTimerDelayForTesting());
   ExpectAndResetAllProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
 
   // Refreshes should stop when there are no tokens left.
@@ -332,8 +311,7 @@ TEST_F(ProcessMetricsDecoratorTest, PartialRefresh) {
 }
 
 TEST_F(ProcessMetricsDecoratorTest, RefreshFailure) {
-  EXPECT_CALL(*decorator(), GetMemoryDump())
-      .WillOnce(Return(ByMove(absl::nullopt)));
+  EXPECT_CALL(*decorator(), GetMemoryDump()).WillOnce(Return(ByMove(nullptr)));
 
   auto interest_token =
       ProcessMetricsDecorator::RegisterInterestForProcessMetrics(graph());
@@ -356,12 +334,78 @@ TEST_F(ProcessMetricsDecoratorTest, RefreshFailure) {
   ExpectAndResetAllProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
 }
 
+TEST_F(ProcessMetricsDecoratorTest, ImmediateRequestThrottling) {
+  // There's no data available initially.
+  ExpectAndResetAllProcessResults(0, 0);
+
+  // The first measurement should be taken immediately.
+  EXPECT_CALL(*decorator(), GetMemoryDump())
+      .WillOnce(Return(ByMove(DefaultMemoryDump())));
+  auto interest_token =
+      ProcessMetricsDecorator::RegisterInterestForProcessMetrics(graph());
+  ExpectAndResetAllProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
+
+  // Immediate measurements should be available immediately after timed
+  // measurements.
+  EXPECT_CALL(*decorator(), GetMemoryDump())
+      .WillOnce(Return(ByMove(DefaultMemoryDump())));
+  decorator()->RequestImmediateMetrics();
+  ExpectAndResetAllProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
+
+  EXPECT_CALL(*decorator(), GetMemoryDump())
+      .WillOnce(Return(ByMove(DefaultMemoryDump())));
+  task_env().FastForwardBy(decorator()->GetTimerDelayForTesting());
+  ExpectAndResetAllProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
+
+  EXPECT_CALL(*decorator(), GetMemoryDump())
+      .WillOnce(Return(ByMove(DefaultMemoryDump())));
+  decorator()->RequestImmediateMetrics();
+  ExpectAndResetAllProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
+
+  // Calls to RequestImmediateMetrics should be throttled to
+  // kMinImmediateRefreshDelay.
+  constexpr base::TimeDelta kMinDelay =
+      ProcessMetricsDecorator::kMinImmediateRefreshDelay;
+  task_env().FastForwardBy(kMinDelay / 2);
+  decorator()->RequestImmediateMetrics();
+  ExpectAndResetAllProcessResults(0, 0);
+
+  // After the min delay, RequestImmediateMetrics() causes a refresh.
+  EXPECT_CALL(*decorator(), GetMemoryDump())
+      .WillOnce(Return(ByMove(DefaultMemoryDump())));
+  task_env().FastForwardBy(kMinDelay / 2);
+  decorator()->RequestImmediateMetrics();
+  ExpectAndResetAllProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
+
+  // Throttling should compare the request time to the last *successful*
+  // immediate refresh, to be sure it measures the freshness of valid data.
+  EXPECT_CALL(*decorator(), GetMemoryDump()).WillOnce(Return(ByMove(nullptr)));
+  task_env().FastForwardBy(kMinDelay);
+  decorator()->RequestImmediateMetrics();
+  ExpectAndResetAllProcessResults(0, 0);  // Failed to get results.
+
+  EXPECT_CALL(*decorator(), GetMemoryDump())
+      .WillOnce(Return(ByMove(DefaultMemoryDump())));
+  task_env().FastForwardBy(kMinDelay / 2);
+  decorator()->RequestImmediateMetrics();
+  ExpectAndResetAllProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
+
+  // Requesting an immediate measurement while a measurement is already in
+  // progress should do nothing. (If this fails, GetMemoryDump() will be invoked
+  // multiple times.)
+  EXPECT_CALL(*decorator(), GetMemoryDump()).WillOnce([&] {
+    decorator()->RequestImmediateMetrics();
+    return DefaultMemoryDump();
+  });
+  task_env().FastForwardBy(decorator()->GetTimerDelayForTesting());
+  ExpectAndResetAllProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
+}
+
 TEST_F(ProcessMetricsDecoratorTest, MetricsInterestTokens) {
   EXPECT_FALSE(decorator()->IsTimerRunningForTesting());
 
   // The first token created will take a measurement, then start the timer.
-  EXPECT_CALL(*decorator(), GetMemoryDump())
-      .WillOnce(Return(ByMove(absl::nullopt)));
+  EXPECT_CALL(*decorator(), GetMemoryDump()).WillOnce(Return(ByMove(nullptr)));
   auto metrics_interest_token1 =
       ProcessMetricsDecorator::RegisterInterestForProcessMetrics(graph());
   EXPECT_TRUE(decorator()->IsTimerRunningForTesting());
@@ -378,8 +422,7 @@ TEST_F(ProcessMetricsDecoratorTest, MetricsInterestTokens) {
 
   // Creating another token after all are deleted should take another
   // measurement.
-  EXPECT_CALL(*decorator(), GetMemoryDump())
-      .WillOnce(Return(ByMove(absl::nullopt)));
+  EXPECT_CALL(*decorator(), GetMemoryDump()).WillOnce(Return(ByMove(nullptr)));
   auto metrics_interest_token3 =
       ProcessMetricsDecorator::RegisterInterestForProcessMetrics(graph());
 }

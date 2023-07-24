@@ -150,11 +150,30 @@ void ProcessMetricsDecorator::OnMetricsInterestTokenReleased() {
 
 void ProcessMetricsDecorator::RequestImmediateMetrics() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Callers should have an interest token before calling
+  // RequestImmediateMetrics().
+  CHECK_GT(metrics_interest_token_count_, 0U);
   if (state_ == State::kWaitingForResponse) {
     // A measurement is already being taken and will be available immediately.
     return;
   }
-  OnRequestImmediateMetrics();
+  if (!last_memory_refresh_time_.is_null() &&
+      base::TimeTicks::Now() - last_memory_refresh_time_ <
+          kMinImmediateRefreshDelay) {
+    // The most recent measurement is fresh enough.
+    return;
+  }
+
+  // Stop the timer so the next metrics sample will be 2 minutes after this to
+  // avoid re-sampling shortly after updating the metrics.
+  StopTimer();
+
+  // Asynchronously update memory metrics.
+  state_ = State::kWaitingForResponse;
+  RequestProcessesMemoryMetrics(
+      /*immediate_request=*/true,
+      base::BindOnce(&ProcessMetricsDecorator::DidGetMemoryUsage,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void ProcessMetricsDecorator::StartTimer() {
@@ -187,23 +206,15 @@ void ProcessMetricsDecorator::RefreshMetrics() {
 
   // Asynchronously update memory metrics.
   state_ = State::kWaitingForResponse;
-  RequestProcessesMemoryMetrics(base::BindOnce(
-      &ProcessMetricsDecorator::DidGetMemoryUsage, weak_factory_.GetWeakPtr()));
-}
-
-void ProcessMetricsDecorator::OnRequestImmediateMetrics() {
-  // This function is replaced during testing, so all state checking should
-  // be done in the calling function, RequestImmediateMetrics().
-
-  // Stop the timer so the next metrics sample will be 2 minutes after this to
-  // avoid re-sampling shortly after updating the metrics.
-  StopTimer();
-  RefreshMetrics();
+  RequestProcessesMemoryMetrics(
+      /*immediate_request=*/false,
+      base::BindOnce(&ProcessMetricsDecorator::DidGetMemoryUsage,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void ProcessMetricsDecorator::RequestProcessesMemoryMetrics(
-    memory_instrumentation::MemoryInstrumentation::RequestGlobalDumpCallback
-        callback) {
+    bool immediate_request,
+    ProcessMemoryDumpCallback callback) {
   // This function is replaced during testing, so all state checking should
   // be done in the calling function, RefreshMetrics().
   auto* mem_instrumentation =
@@ -211,14 +222,16 @@ void ProcessMetricsDecorator::RequestProcessesMemoryMetrics(
   // The memory instrumentation service is not available in unit tests unless
   // explicitly created.
   if (mem_instrumentation) {
-    mem_instrumentation->RequestPrivateMemoryFootprint(base::kNullProcessId,
-                                                       std::move(callback));
+    mem_instrumentation->RequestPrivateMemoryFootprint(
+        base::kNullProcessId,
+        base::BindOnce(std::move(callback), immediate_request));
   } else {
-    std::move(callback).Run(false, nullptr);
+    std::move(callback).Run(immediate_request, false, nullptr);
   }
 }
 
 void ProcessMetricsDecorator::DidGetMemoryUsage(
+    bool immediate_request,
     bool success,
     std::unique_ptr<memory_instrumentation::GlobalMemoryDump> process_dumps) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -233,6 +246,10 @@ void ProcessMetricsDecorator::DidGetMemoryUsage(
 
   if (!success) {
     return;
+  }
+
+  if (immediate_request) {
+    last_memory_refresh_time_ = base::TimeTicks::Now();
   }
 
   CHECK(process_dumps);

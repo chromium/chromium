@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -69,8 +70,12 @@ class ProcessMetricsDecorator
   bool IsTimerRunningForTesting() const;
   base::TimeDelta GetTimerDelayForTesting() const;
 
-  // Immediately refreshes the metrics for all the process nodes.
+  // Immediately refreshes the metrics for all the process nodes. This will do
+  // nothing if the last metric refresh was more recent than
+  // `kMinImmediateRefreshDelay`, since a recent measurement already exists.
   void RequestImmediateMetrics();
+
+  static constexpr base::TimeDelta kMinImmediateRefreshDelay = base::Seconds(2);
 
  protected:
   class ScopedMetricsInterestTokenImpl;
@@ -82,24 +87,25 @@ class ProcessMetricsDecorator
   // Asynchronously refreshes the metrics for all the process nodes.
   void RefreshMetrics();
 
-  // Calls RefreshMetrics() and adjusts `refresh_timer_` to compensate for the
-  // extra refresh. Virtual to make a test seam.
-  virtual void OnRequestImmediateMetrics();
+  using ProcessMemoryDumpCallback = base::OnceCallback<void(
+      bool immediate_request,
+      bool success,
+      std::unique_ptr<memory_instrumentation::GlobalMemoryDump> dump)>;
 
   // Query the MemoryInstrumentation service to get the memory metrics for all
-  // processes and run |callback| with the result. Virtual to make a test seam.
+  // processes and run `callback` with the result. Virtual to make a test seam.
   virtual void RequestProcessesMemoryMetrics(
-      base::OnceCallback<
-          void(bool success,
-               std::unique_ptr<memory_instrumentation::GlobalMemoryDump> dump)>
-          callback) VALID_CONTEXT_REQUIRED(sequence_checker_);
+      bool immediate_request,
+      ProcessMemoryDumpCallback callback);
 
   // Function that should be used as a callback to
-  // MemoryInstrumentation::RequestPrivateMemoryFootprint. |success| will
-  // indicate if the data has been retrieved successfully and |process_dumps|
-  // will contain the data for all the Chrome processes for which this data was
-  // available.
+  // MemoryInstrumentation::RequestPrivateMemoryFootprint. `immediate_request`
+  // will be true iff the request was triggered by RequestImmediateMetrics().
+  // `success` will  indicate if the data has been retrieved successfully and
+  // `process_dumps` will contain the data for all the Chrome processes for
+  // which this data was available.
   void DidGetMemoryUsage(
+      bool immediate_request,
       bool success,
       std::unique_ptr<memory_instrumentation::GlobalMemoryDump> process_dumps);
 
@@ -132,6 +138,10 @@ class ProcessMetricsDecorator
   // class.
   size_t metrics_interest_token_count_ GUARDED_BY_CONTEXT(sequence_checker_) =
       0;
+
+  // The last time RequestProcessesMemoryMetrics was called.
+  base::TimeTicks last_memory_refresh_time_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
