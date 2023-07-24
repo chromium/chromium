@@ -87,6 +87,8 @@ void ClipboardHistoryUrlTitleFetcherImpl::QueryHistory(
 void ClipboardHistoryUrlTitleFetcherImpl::OnHistoryQueryComplete(
     OnHistoryQueryCompleteCallback callback,
     history::QueryURLResult result) const {
+  base::UmaHistogramBoolean("Ash.ClipboardHistory.UrlTitleFetcher.UrlFound",
+                            result.success);
   std::move(callback).Run(
       result.success ? absl::make_optional(result.row.title()) : absl::nullopt);
 }

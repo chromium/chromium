@@ -364,6 +364,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.ClipboardHistory.UrlTitleFetcher.UrlFound"
+    enum="BooleanHit" expires_after="2023-11-12">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    Whether the primary user has a browsing history entry for a piece of text
+    that they copied. Recorded on retrieval of a result from the history service
+    API, after already verifying that the current session has exactly one user.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

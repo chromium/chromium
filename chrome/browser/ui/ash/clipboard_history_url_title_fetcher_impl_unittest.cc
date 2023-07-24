@@ -33,6 +33,8 @@ constexpr char kIsPrimaryProfileActiveHistogramName[] =
     "Ash.ClipboardHistory.UrlTitleFetcher.IsPrimaryProfileActive";
 constexpr char kNumProfilesHistogramName[] =
     "Ash.ClipboardHistory.UrlTitleFetcher.NumProfiles";
+constexpr char kUrlFoundHistogramName[] =
+    "Ash.ClipboardHistory.UrlTitleFetcher.UrlFound";
 
 // MockHistoryService ----------------------------------------------------------
 
@@ -149,6 +151,7 @@ class ClipboardHistoryUrlTitleFetcherTest : public BrowserWithTestWindowTest {
 
 TEST_F(ClipboardHistoryUrlTitleFetcherTest,
        QueriedTitleReflectsBrowsingHistory) {
+  base::HistogramTester histogram_tester;
   const GURL kTestUrl("https://www.url.com");
   base::test::TestFuture<absl::optional<std::u16string>> title_future;
 
@@ -159,6 +162,10 @@ TEST_F(ClipboardHistoryUrlTitleFetcherTest,
 
     fetcher().QueryHistory(kTestUrl, title_future.GetRepeatingCallback());
     EXPECT_THAT(title_future.Take(), Optional(kUrlTitle));
+    histogram_tester.ExpectTotalCount(kUrlFoundHistogramName,
+                                      /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(kUrlFoundHistogramName, true,
+                                       /*expected_count=*/1);
   }
 
   {
@@ -168,6 +175,10 @@ TEST_F(ClipboardHistoryUrlTitleFetcherTest,
 
     fetcher().QueryHistory(kTestUrl, title_future.GetRepeatingCallback());
     EXPECT_FALSE(title_future.Take());
+    histogram_tester.ExpectTotalCount(kUrlFoundHistogramName,
+                                      /*expected_count=*/2);
+    histogram_tester.ExpectBucketCount(kUrlFoundHistogramName, false,
+                                       /*expected_count=*/1);
   }
 }
 
