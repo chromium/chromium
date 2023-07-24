@@ -12,6 +12,7 @@
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
+#include "ash/wm/overview/delayed_animation_observer_impl.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
@@ -27,6 +28,7 @@
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/view.h"
+#include "ui/wm/core/window_util.h"
 
 namespace ash {
 
@@ -58,6 +60,12 @@ constexpr float kEnterOrExitZeroStateScale = 0.6f;
 // Animation durations for fade in the label below the desk icon button.
 constexpr base::TimeDelta kLabelFadeInDelay = base::Milliseconds(100);
 constexpr base::TimeDelta kLabelFadeInDuration = base::Milliseconds(50);
+
+// The animiation duration of desk bar slide out animation when exiting
+// overview mode.
+constexpr base::TimeDelta kExpandedDeskBarSlideDuration =
+    base::Milliseconds(350);
+constexpr base::TimeDelta kZeroDeskBarSlideDuration = base::Milliseconds(250);
 
 // `settings` will be initialized with a fast-out-slow-in animation with the
 // given `duration`.
@@ -646,6 +654,42 @@ void PerformDeskIconButtonScaleAnimationCrOSNext(
                /*duration=*/kLabelFadeInDuration,
                /*delay=*/kLabelFadeInDelay);
   }
+}
+
+void PerformDeskBarSlideAnimation(DeskBarViewBase* bar_view) {
+  gfx::Transform transform;
+  transform.Translate(0, -bar_view->height());
+
+  // Create layer copies, get rid of the original desk bar widget, and add the
+  // layer copies to the parent layer.
+  ui::Layer* parent_layer = bar_view->GetWidget()->GetLayer()->parent();
+  std::unique_ptr<ui::LayerTreeOwner> layer_tree = wm::RecreateLayers(bar_view);
+  ui::Layer* layer_tree_root = layer_tree->root();
+  parent_layer->Add(layer_tree_root);
+
+  // Add slide out animation as part of the overview exit animation.
+  ui::ScopedLayerAnimationSettings settings{parent_layer->GetAnimator()};
+  auto exit_observer = std::make_unique<ExitAnimationObserver>();
+  settings.AddObserver(exit_observer.get());
+  Shell::Get()->overview_controller()->AddExitAnimationObserver(
+      std::move(exit_observer));
+
+  views::AnimationBuilder animation_builder;
+  base::OnceClosure ondone = base::BindOnce(
+      [](std::unique_ptr<ui::LayerTreeOwner> layer_tree) {
+        layer_tree.reset();
+      },
+      std::move(layer_tree));
+  auto split = base::SplitOnceCallback(std::move(ondone));
+  animation_builder
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(std::move(split.first))
+      .OnAborted(std::move(split.second))
+      .Once()
+      .SetDuration(bar_view->IsZeroState() ? kZeroDeskBarSlideDuration
+                                           : kExpandedDeskBarSlideDuration)
+      .SetTransform(layer_tree_root, transform, gfx::Tween::ACCEL_20_DECEL_100);
 }
 
 }  // namespace ash

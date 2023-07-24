@@ -27,6 +27,7 @@
 #include "ash/wm/desks/cros_next_desk_icon_button.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_mini_view.h"
+#include "ash/wm/desks/desk_mini_view_animations.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
@@ -41,7 +42,6 @@
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/mru_window_tracker.h"
-#include "ash/wm/overview/delayed_animation_observer_impl.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid_event_handler.h"
@@ -73,7 +73,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/presentation_time_recorder.h"
-#include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -130,12 +129,6 @@ constexpr base::TimeDelta kOcclusionUnpauseDurationForScroll =
 
 constexpr base::TimeDelta kOcclusionUnpauseDurationForRotation =
     base::Milliseconds(300);
-
-// The animiation duration of desks bar slide out animation when exiting
-// overview mode.
-constexpr base::TimeDelta kExpandedDesksBarSlideDuration =
-    base::Milliseconds(350);
-constexpr base::TimeDelta kZeroDesksBarSlideDuration = base::Milliseconds(250);
 
 // Toast id for the toast that is displayed when a user tries to move a window
 // that is visible on all desks to another desk.
@@ -413,58 +406,6 @@ bool ShouldExcludeItemFromGridLayout(
 
 }  // namespace
 
-// A self-deleting object that performs slide out animation for the desks
-// bar when exiting the overview mode. It owns the desks bar widget, thus when
-// the slide out animation is done, it will delete itself and destroy the desks
-// bar widget as well.
-class DesksBarSlideAnimation {
- public:
-  DesksBarSlideAnimation(std::unique_ptr<views::Widget> desk_bar_widget,
-                         bool is_zero_state) {
-    gfx::Transform transform;
-    transform.Translate(0,
-                        -desk_bar_widget->GetWindowBoundsInScreen().height());
-
-    // Create layer copies, get rid of the original desk bar widget, and add the
-    // layer copies to the parent layer.
-    ui::Layer* parent_layer = desk_bar_widget->GetLayer()->parent();
-    layer_tree_ = wm::RecreateLayers(desk_bar_widget->GetContentsView());
-    ui::Layer* layer_tree_root = layer_tree_->root();
-    parent_layer->Add(layer_tree_root);
-    desk_bar_widget.reset();
-
-    // Add slide out animation as part of the overview exit animation.
-    ui::ScopedLayerAnimationSettings settings{parent_layer->GetAnimator()};
-    auto exit_observer = std::make_unique<ExitAnimationObserver>();
-    settings.AddObserver(exit_observer.get());
-    Shell::Get()->overview_controller()->AddExitAnimationObserver(
-        std::move(exit_observer));
-
-    views::AnimationBuilder()
-        .OnEnded(base::BindOnce(
-            [](DesksBarSlideAnimation* animation) { delete animation; },
-            base::Unretained(this)))
-        .OnAborted(base::BindOnce(
-            [](DesksBarSlideAnimation* animation) { delete animation; },
-            base::Unretained(this)))
-        .SetPreemptionStrategy(
-            ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-        .Once()
-        .SetDuration(is_zero_state ? kZeroDesksBarSlideDuration
-                                   : kExpandedDesksBarSlideDuration)
-        .SetTransform(layer_tree_root, transform,
-                      gfx::Tween::ACCEL_20_DECEL_100);
-  }
-
-  DesksBarSlideAnimation(const DesksBarSlideAnimation&) = delete;
-  DesksBarSlideAnimation& operator=(const DesksBarSlideAnimation&) = delete;
-
-  ~DesksBarSlideAnimation() = default;
-
- private:
-  std::unique_ptr<ui::LayerTreeOwner> layer_tree_;
-};
-
 OverviewGrid::OverviewGrid(aura::Window* root_window,
                            const std::vector<aura::Window*>& windows,
                            OverviewSession* overview_session)
@@ -552,24 +493,14 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
   }
 
   // After this, the desk bar widget will not be owned by this overview grid
-  // anymore. It's either owned by the slide animation for a short period of
-  // time for the animation, or destroyed right away. When applying the slide
-  // out animation to the `desks_widget_` during overview grid shutdown phase,
-  // we need to make the lifetime of the `desks_widget_` longer than its owner
-  // (overview grid). Thus move the ownership of `desks_widget_` from the
-  // overview grid to `DesksBarSlideAnimation` which is a self-deleting object,
-  // when the animation is done, it will delete itself and destroy
-  // `desks_widget_` as well.
+  // anymore.
   if (desks_widget_) {
     if (chromeos::features::IsJellyrollEnabled() &&
         exit_type != OverviewEnterExitType::kImmediateExit) {
-      new DesksBarSlideAnimation(std::move(desks_widget_),
-                                 desks_bar_view_->IsZeroState());
-      desks_bar_view_ = nullptr;
-    } else {
-      desks_widget_.reset();
-      desks_bar_view_ = nullptr;
+      PerformDeskBarSlideAnimation(desks_bar_view_);
     }
+    desks_widget_.reset();
+    desks_bar_view_ = nullptr;
   }
 }
 

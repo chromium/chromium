@@ -129,6 +129,12 @@ void PerformDeskIconButtonScaleAnimationCrOSNext(
     const gfx::Transform& new_desk_button_rects_transform,
     int shift_x);
 
+// Performs the slide out animation for `bar_view` when exiting overview. Please
+// note, unlike other animations where we animate directly on the objects, here
+// we use layer copies and destroy the object immediately, thus we do not need
+// the abort handle here.
+void PerformDeskBarSlideAnimation(DeskBarViewBase* bar_view);
+
 }  // namespace ash
 
 #endif  // ASH_WM_DESKS_DESK_MINI_VIEW_ANIMATIONS_H_
