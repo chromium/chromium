@@ -712,6 +712,8 @@ component("quiche") {
     "src/quiche/spdy/core/spdy_simple_arena.cc",
     "src/quiche/spdy/core/spdy_simple_arena.h",
     "src/quiche/spdy/core/zero_copy_output_buffer.h",
+    "src/quiche/web_transport/complete_buffer_visitor.cc",
+    "src/quiche/web_transport/complete_buffer_visitor.h",
     "src/quiche/web_transport/web_transport.h",
   ]
 
@@ -837,6 +839,7 @@ if (build_epoll_based_tools) {
       "src/quiche/quic/tools/quic_name_lookup.h",
       "src/quiche/quic/tools/quic_server.cc",
       "src/quiche/quic/tools/quic_server.h",
+      "src/quiche/quic/tools/web_transport_test_server.cc",
     ]
 
     configs += [ ":quiche_internal_config" ]
@@ -1225,6 +1228,8 @@ static_library("quiche_tool_support") {
     "src/quiche/quic/core/tls_chlo_extractor.cc",
     "src/quiche/quic/core/tls_chlo_extractor.h",
     "src/quiche/quic/platform/api/quic_default_proof_providers.h",
+    "src/quiche/quic/tools/devious_baton.cc",
+    "src/quiche/quic/tools/devious_baton.h",
     "src/quiche/quic/tools/fake_proof_verifier.h",
     "src/quiche/quic/tools/quic_backend_response.cc",
     "src/quiche/quic/tools/quic_backend_response.h",
