@@ -10,14 +10,10 @@
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "chrome/browser/web_applications/test/test_file_utils.h"
+#include "build/build_config.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/sync/test/mock_model_type_change_processor.h"
 #include "testing/gmock/include/gmock/gmock.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/web_applications/web_app_run_on_os_login_manager.h"
-#endif
 
 class KeyedService;
 class Profile;
@@ -30,18 +26,27 @@ namespace web_app {
 
 class AbstractWebAppDatabaseFactory;
 class ExternallyManagedAppManager;
+class FileUtilsWrapper;
+class IsolatedWebAppCommandLineInstallManager;
+class IsolatedWebAppUpdateManager;
 class OsIntegrationManager;
 class PreinstalledWebAppManager;
 class WebAppCommandManager;
+class WebAppCommandScheduler;
 class WebAppIconManager;
 class WebAppInstallFinalizer;
 class WebAppInstallManager;
+class WebAppOriginAssociationManager;
 class WebAppPolicyManager;
 class WebAppRegistrarMutable;
 class WebAppSyncBridge;
 class WebAppTranslationManager;
 class WebAppUiManager;
 class WebContentsManager;
+
+#if BUILDFLAG(IS_CHROMEOS)
+class WebAppRunOnOsLoginManager;
+#endif
 
 // This is a tool that allows unit tests (enabled by default) and browser tests
 // (disabled by default) to use a 'fake' version of the WebAppProvider system.
@@ -183,7 +188,7 @@ class FakeWebAppProvider : public WebAppProvider {
   void StartWithSubsystems();
 
   // Create and set default fake subsystems.
-  void SetDefaultFakeSubsystems();
+  void CreateFakeSubsystems();
 
   // Used to verify shutting down of WebAppUiManager.
   void ShutDownUiManagerForTesting();

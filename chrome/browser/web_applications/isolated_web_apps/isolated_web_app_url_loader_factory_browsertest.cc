@@ -102,7 +102,7 @@ class IsolatedWebAppURLLoaderFactoryBrowserTest
 
   std::unique_ptr<KeyedService> CreateWebAppProvider(Profile* profile) {
     auto provider = std::make_unique<FakeWebAppProvider>(profile);
-    provider->SetDefaultFakeSubsystems();
+    provider->CreateFakeSubsystems();
     provider->Start();
 
     return provider;

@@ -11,13 +11,11 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/one_shot_event.h"
-#include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
+#include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_from_command_line.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -35,14 +33,13 @@
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_origin_association_manager.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_translation_manager.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
-#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -52,6 +49,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
+#include "chrome/browser/web_applications/web_app_run_on_os_login_manager.h"
 #endif
 
 namespace web_app {
@@ -65,9 +63,9 @@ std::unique_ptr<KeyedService> FakeWebAppProvider::BuildDefault(
   // Do not call default production StartImpl if in TestingProfile.
   provider->SetRunSubsystemStartupTasks(false);
 
-  // TODO(crbug.com/973324): Consider calling `SetDefaultFakeSubsystems` in the
+  // TODO(crbug.com/973324): Consider calling `CreateFakeSubsystems` in the
   // constructor instead.
-  provider->SetDefaultFakeSubsystems();
+  provider->CreateFakeSubsystems();
   provider->ConnectSubsystems();
 
   return provider;
@@ -286,13 +284,12 @@ void FakeWebAppProvider::StartWithSubsystems() {
   Start();
 }
 
-void FakeWebAppProvider::SetDefaultFakeSubsystems() {
+void FakeWebAppProvider::CreateFakeSubsystems() {
   // Disable preinstalled apps by default as they add noise and time to tests
   // that don't need them.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kDisableDefaultApps);
 
-  SetRegistrar(std::make_unique<WebAppRegistrarMutable>(profile_));
   SetDatabaseFactory(std::make_unique<FakeWebAppDatabaseFactory>());
 
   SetWebContentsManager(std::make_unique<FakeWebContentsManager>());
@@ -313,19 +310,8 @@ void FakeWebAppProvider::SetDefaultFakeSubsystems() {
   SetExternallyManagedAppManager(
       std::make_unique<FakeExternallyManagedAppManager>(profile_));
 
-  SetWebAppPolicyManager(std::make_unique<WebAppPolicyManager>(profile_));
-
-  SetCommandManager(std::make_unique<WebAppCommandManager>(profile_));
-
-  SetPreinstalledWebAppManager(
-      std::make_unique<PreinstalledWebAppManager>(profile_));
-
-#if BUILDFLAG(IS_CHROMEOS)
-  SetIsolatedWebAppUpdateManager(
-      std::make_unique<IsolatedWebAppUpdateManager>(*profile_));
-  SetWebAppRunOnOsLoginManager(
-      std::make_unique<WebAppRunOnOsLoginManager>(command_scheduler_.get()));
-#endif
+  // Do not create real subsystems here. That will be done already by
+  // WebAppProvider::CreateSubsystems in the WebAppProvider constructor.
 
   ON_CALL(processor(), IsTrackingMetadata())
       .WillByDefault(testing::Return(true));
