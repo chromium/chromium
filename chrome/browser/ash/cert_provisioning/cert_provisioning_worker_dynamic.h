@@ -170,6 +170,8 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   bool ProcessResponseErrors(
       const base::expected<ResultType, CertProvisioningClient::Error>&
           response);
+  // Helper method for the above overload of ProcessResponseErrors. All other
+  // callers should use the above overload.
   void ProcessResponseErrors(const CertProvisioningClient::Error& error);
 
   CertScope cert_scope_ = CertScope::kUser;
