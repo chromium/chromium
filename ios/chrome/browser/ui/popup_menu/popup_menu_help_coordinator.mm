@@ -204,6 +204,11 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 }
 
 - (void)prepareToShowPopupMenuBubble {
+  // There must be a feature engagment tracker to show a bubble.
+  if (!self.featureEngagementTracker) {
+    return;
+  }
+
   // If the Feature Engagement Tracker isn't ready, queue up and re-show when
   // it has finished initializing.
   if (!self.featureEngagementTracker->IsInitialized()) {
