@@ -159,6 +159,19 @@ class PrivacyIndicatorsTrayItemViewTest
                      ->privacy_indicators_view();
   }
 
+  PrivacyIndicatorsTrayItemView* GetSecondaryDisplayPrivacyIndicatorsView()
+      const {
+    auto* status_area_widget =
+        Shell::GetRootWindowControllerWithDisplayId(GetSecondaryDisplay().id())
+            ->GetStatusAreaWidget();
+
+    return features::IsQsRevampEnabled()
+               ? status_area_widget->notification_center_tray()
+                     ->privacy_indicators_view()
+               : status_area_widget->unified_system_tray()
+                     ->privacy_indicators_view();
+  }
+
   views::ImageView* camera_icon() {
     return privacy_indicators_view()->camera_icon_;
   }
@@ -861,6 +874,21 @@ TEST_P(PrivacyIndicatorsTrayItemViewTest, RecordVisibilityDuration) {
   // No new entries for previous bucket.
   histograms.ExpectTimeBucketCount(kVisibilityDurationHistogramName,
                                    expected_sample1, 1);
+}
+
+TEST_P(PrivacyIndicatorsTrayItemViewTest, IndicatorVisisbilityOnSecondDisplay) {
+  // Update usage when there's one display.
+  UpdateCameraAndMicrophoneUsage(
+      /*is_camera_used=*/true,
+      /*is_microphone_used=*/false);
+
+  ASSERT_TRUE(privacy_indicators_view()->GetVisible());
+
+  // Now set up 2 displays. The indicator should show on both displays.
+  UpdateDisplay("100x200,300x400");
+
+  EXPECT_TRUE(privacy_indicators_view()->GetVisible());
+  EXPECT_TRUE(GetSecondaryDisplayPrivacyIndicatorsView()->GetVisible());
 }
 
 }  // namespace ash

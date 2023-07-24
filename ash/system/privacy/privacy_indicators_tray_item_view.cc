@@ -191,6 +191,8 @@ PrivacyIndicatorsTrayItemView::PrivacyIndicatorsTrayItemView(Shelf* shelf)
   UpdateIcons();
   TooltipTextChanged();
 
+  UpdateVisibility();
+
   Shell::Get()->session_controller()->AddObserver(this);
 }
 
