@@ -14,7 +14,6 @@
 #include "build/chromeos_buildflags.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
-#include "remoting/base/mojo_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -37,9 +36,9 @@ int main(int argc, char** argv) {
   // processes are non-brokers, since by default, the process sending
   // invitations needs to be a broker, while the process accepting invitations
   // needs to be a non-broker.
-  bool is_broker_process = remoting::IsMojoIpczEnabled() &&
+  bool is_broker_process = mojo::core::IsMojoIpczEnabled() &&
                            !cmd->HasSwitch(switches::kTestChildProcess);
-  remoting::InitializeMojo({.is_broker_process = is_broker_process});
+  mojo::core::Init({.is_broker_process = is_broker_process});
   mojo::core::ScopedIPCSupport ipc_support(
       ipc_thread.task_runner(),
       mojo::core::ScopedIPCSupport::ShutdownPolicy::CLEAN);

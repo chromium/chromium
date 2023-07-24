@@ -15,11 +15,11 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"
+#include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/breakpad.h"
 #include "remoting/base/logging.h"
-#include "remoting/base/mojo_util.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/chromoting_host_services_client.h"
 #include "remoting/host/native_messaging/native_messaging_pipe.h"
@@ -58,7 +58,7 @@ int RemoteWebAuthnMain(int argc, char** argv) {
     return kInitializationFailed;
   }
 
-  InitializeMojo();
+  mojo::core::Init();
   mojo::core::ScopedIPCSupport ipc_support(
       task_runner, mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST);
 

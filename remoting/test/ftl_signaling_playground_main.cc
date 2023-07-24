@@ -8,7 +8,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "remoting/base/mojo_util.h"
+#include "mojo/core/embedder/embedder.h"
 #include "remoting/test/ftl_signaling_playground.h"
 
 int main(int argc, char const* argv[]) {
@@ -25,7 +25,7 @@ int main(int argc, char const* argv[]) {
 
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
       "FtlSignalingPlayground");
-  remoting::InitializeMojo();
+  mojo::core::Init();
 
   playground.StartLoop();
 

@@ -22,11 +22,11 @@
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "mojo/core/embedder/embedder.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/breakpad.h"
 #include "remoting/base/gaia_oauth_client.h"
 #include "remoting/base/logging.h"
-#include "remoting/base/mojo_util.h"
 #include "remoting/base/url_request_context_getter.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/base/switches.h"
@@ -102,7 +102,7 @@ int Me2MeNativeMessagingHostMain(int argc, char** argv) {
 
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams("Me2Me");
 
-  InitializeMojo();
+  mojo::core::Init();
 
   // An IO thread is needed for the pairing registry and URL context getter.
   base::Thread io_thread("io_thread");
