@@ -101,15 +101,21 @@ class KAnonymityTrustTokenGetterTest : public testing::Test {
   }
 
   void SimulateResponseForPendingRequest(std::string url, std::string content) {
+    constexpr network::TestURLLoaderFactory::ResponseMatchFlags flags =
+        static_cast<network::TestURLLoaderFactory::ResponseMatchFlags>(
+            network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix |
+            network::TestURLLoaderFactory::ResponseMatchFlags::kWaitForRequest);
     EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
-        url, content, net::HTTP_OK,
-        network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix));
+        url, content, net::HTTP_OK, flags));
   }
 
   void SimulateFailedResponseForPendingRequest(std::string url) {
+    constexpr network::TestURLLoaderFactory::ResponseMatchFlags flags =
+        static_cast<network::TestURLLoaderFactory::ResponseMatchFlags>(
+            network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix |
+            network::TestURLLoaderFactory::ResponseMatchFlags::kWaitForRequest);
     EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
-        url, "", net::HTTP_NOT_FOUND,
-        network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix));
+        url, "", net::HTTP_NOT_FOUND, flags));
   }
 
   void SimulateFailedResponseForAuthToken() {
