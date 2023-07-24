@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -2878,34 +2879,18 @@ TEST_F(SiteSettingsHandlerTest, IncludeWebUISchemesInGetOriginPermissions) {
   }
 }
 
-TEST_F(SiteSettingsHandlerTest, StorageAccessExceptions) {
-  const std::string kOrigin("https://[*.]google.com:443");
-  const std::string kEmbeddingOrigin("https://[*.]example.com:443");
-
-  SetContentSettingCustomScope(kOrigin, kEmbeddingOrigin,
-                               kPermissionStorageAccess, CONTENT_SETTING_BLOCK);
-
-  base::Value::List get_exception_list_args;
-  get_exception_list_args.Append(kCallbackId);
-  get_exception_list_args.Append(
-      content_settings::ContentSettingToString(CONTENT_SETTING_BLOCK));
-  handler()->HandleGetStorageAccessExceptionList(get_exception_list_args);
-
-  // Verify that the grouped exception is correct.
-  ValidateStorageAccessList(/*expected_total_calls=*/2U,
-                            /*expected_num_groups=*/
-                            1U);
-
-  ValidateStorageAccessException(
-      kOrigin, kOrigin, CONTENT_SETTING_BLOCK,
-      {{kEmbeddingOrigin, kEmbeddingOrigin, /*incognito=*/false}});
-}
-
 TEST_F(SiteSettingsHandlerTest, StorageAccessExceptions_DiffPatterns) {
   const std::string kOrigin("https://[*.]google.com:443");
+  const std::string kDisplayName("google.com");
+
   const std::string kOrigin2("https://[*.]google2.com:443");
+  const std::string kDisplayName2("google2.com");
+
   const std::string kEmbeddingOrigin("https://[*.]example.com:443");
+  const std::string kEmbeddingDisplayName("example.com");
+
   const std::string kEmbeddingOrigin2("https://[*.]example2.com:443");
+  const std::string kEmbeddingDisplayName2("example2.com");
 
   SetContentSettingCustomScope(kOrigin, kEmbeddingOrigin,
                                kPermissionStorageAccess, CONTENT_SETTING_BLOCK);
@@ -2925,21 +2910,26 @@ TEST_F(SiteSettingsHandlerTest, StorageAccessExceptions_DiffPatterns) {
 
   // Verify that the first group exception is correct.
   ValidateStorageAccessException(
-      kOrigin, kOrigin, CONTENT_SETTING_BLOCK,
-      {{kEmbeddingOrigin, kEmbeddingOrigin, /*incognito=*/false}},
+      kOrigin, kDisplayName, CONTENT_SETTING_BLOCK,
+      {{kEmbeddingOrigin, kEmbeddingDisplayName, /*incognito=*/false}},
       /*index=*/0U);
 
   // Verify that the second group exception is correct.
   ValidateStorageAccessException(
-      kOrigin2, kOrigin2, CONTENT_SETTING_BLOCK,
-      {{kEmbeddingOrigin2, kEmbeddingOrigin2, /*incognito=*/false}},
+      kOrigin2, kDisplayName2, CONTENT_SETTING_BLOCK,
+      {{kEmbeddingOrigin2, kEmbeddingDisplayName2, /*incognito=*/false}},
       /*index=*/1U);
 }
 
 TEST_F(SiteSettingsHandlerTest, StorageAccessExceptions_SamePrimaryPattern) {
   const std::string kOrigin("https://[*.]google.com:443");
+  const std::string kDisplayName("google.com");
+
   const std::string kEmbeddingOrigin("https://[*.]example.com:443");
+  const std::string kEmbeddingDisplayName("example.com");
+
   const std::string kEmbeddingOrigin2("https://[*.]example2.com:443");
+  const std::string kEmbeddingDisplayName2("example2.com");
 
   SetContentSettingCustomScope(kOrigin, kEmbeddingOrigin,
                                kPermissionStorageAccess, CONTENT_SETTING_BLOCK);
@@ -2958,9 +2948,9 @@ TEST_F(SiteSettingsHandlerTest, StorageAccessExceptions_SamePrimaryPattern) {
                             /*expected_num_groups=*/1U);
 
   ValidateStorageAccessException(
-      kOrigin, kOrigin, CONTENT_SETTING_BLOCK,
-      {{kEmbeddingOrigin2, kEmbeddingOrigin2, /*incognito=*/false},
-       {kEmbeddingOrigin, kEmbeddingOrigin, /*incognito=*/false}},
+      kOrigin, kDisplayName, CONTENT_SETTING_BLOCK,
+      {{kEmbeddingOrigin2, kEmbeddingDisplayName2, /*incognito=*/false},
+       {kEmbeddingOrigin, kEmbeddingDisplayName, /*incognito=*/false}},
       /*index=*/0U);
 }
 
@@ -2983,7 +2973,10 @@ TEST_F(SiteSettingsHandlerTest, StorageAccessExceptions_DiffType) {
 
 TEST_F(SiteSettingsHandlerTest, StorageAccessExceptions_Incognito) {
   const std::string kOrigin("https://[*.]google.com:443");
+  const std::string kDisplayName("google.com");
+
   const std::string kEmbeddingOrigin("https://[*.]example.com:443");
+  const std::string kEmbeddingDisplayName("example.com");
 
   CreateIncognitoProfile();
   ValidateIncognitoExists(true, 1U);
@@ -3003,15 +2996,22 @@ TEST_F(SiteSettingsHandlerTest, StorageAccessExceptions_Incognito) {
   ValidateStorageAccessList(/*expected_total_calls=*/3U,
                             /*expected_num_groups=*/1U);
   ValidateStorageAccessException(
-      kOrigin, kOrigin, CONTENT_SETTING_BLOCK,
-      {{kEmbeddingOrigin, kEmbeddingOrigin, /*incognito=*/true}});
+      kOrigin, kDisplayName, CONTENT_SETTING_BLOCK,
+      {{kEmbeddingOrigin, kEmbeddingDisplayName, /*incognito=*/true}});
 }
 
 TEST_F(SiteSettingsHandlerTest, StorageAccessExceptions_NormalAndIncognito) {
   const std::string kOrigin("https://[*.]google.com:443");
+  const std::string kDisplayName("google.com");
+
   const std::string kOrigin2("https://[*.]google2.com:443");
+  const std::string kDisplayName2("google2.com");
+
   const std::string kEmbeddingOrigin("https://[*.]example.com:443");
+  const std::string kEmbeddingDisplayName("example.com");
+
   const std::string kEmbeddingOrigin2("https://[*.]example2.com:443");
+  const std::string kEmbeddingDisplayName2("example2.com");
 
   SetContentSettingCustomScope(kOrigin, kEmbeddingOrigin,
                                kPermissionStorageAccess, CONTENT_SETTING_BLOCK);
@@ -3035,14 +3035,14 @@ TEST_F(SiteSettingsHandlerTest, StorageAccessExceptions_NormalAndIncognito) {
 
   // Verify that group exception for non-incognito is correct.
   ValidateStorageAccessException(
-      kOrigin, kOrigin, CONTENT_SETTING_BLOCK,
-      {{kEmbeddingOrigin, kEmbeddingOrigin, /*incognito=*/false}},
+      kOrigin, kDisplayName, CONTENT_SETTING_BLOCK,
+      {{kEmbeddingOrigin, kEmbeddingDisplayName, /*incognito=*/false}},
       /*index=*/0U);
 
   // Verify that group exception for incognito is correct.
   ValidateStorageAccessException(
-      kOrigin2, kOrigin2, CONTENT_SETTING_BLOCK,
-      {{kEmbeddingOrigin2, kEmbeddingOrigin2, /*incognito=*/true}},
+      kOrigin2, kDisplayName2, CONTENT_SETTING_BLOCK,
+      {{kEmbeddingOrigin2, kEmbeddingDisplayName2, /*incognito=*/true}},
       /*index=*/1U);
 
   DestroyIncognitoProfile();
@@ -3053,15 +3053,18 @@ TEST_F(SiteSettingsHandlerTest, StorageAccessExceptions_NormalAndIncognito) {
   ValidateStorageAccessList(/*expected_total_calls=*/6U,
                             /*expected_num_groups=*/1U);
   ValidateStorageAccessException(
-      kOrigin, kOrigin, CONTENT_SETTING_BLOCK,
-      {{kEmbeddingOrigin, kEmbeddingOrigin, /*incognito=*/false}},
+      kOrigin, kDisplayName, CONTENT_SETTING_BLOCK,
+      {{kEmbeddingOrigin, kEmbeddingDisplayName, /*incognito=*/false}},
       /*index=*/0U);
 }
 
 TEST_F(SiteSettingsHandlerTest,
        StorageAccessExceptions_NormalAndIncognito_SamePatterns) {
   const std::string kOrigin("https://[*.]google.com:443");
+  const std::string kDisplayName("google.com");
+
   const std::string kEmbeddingOrigin("https://[*.]example.com:443");
+  const std::string kEmbeddingDisplayName("example.com");
 
   SetContentSettingCustomScope(kOrigin, kEmbeddingOrigin,
                                kPermissionStorageAccess, CONTENT_SETTING_BLOCK);
@@ -3084,14 +3087,53 @@ TEST_F(SiteSettingsHandlerTest,
   ValidateStorageAccessList(/*expected_total_calls=*/4U,
                             /*expected_num_groups=*/1U);
   ValidateStorageAccessException(
-      kOrigin, kOrigin, CONTENT_SETTING_BLOCK,
-      {{kEmbeddingOrigin, kEmbeddingOrigin, /*incognito=*/false},
-       {kEmbeddingOrigin, kEmbeddingOrigin, /*incognito=*/true}});
+      kOrigin, kDisplayName, CONTENT_SETTING_BLOCK,
+      {{kEmbeddingOrigin, kEmbeddingDisplayName, /*incognito=*/false},
+       {kEmbeddingOrigin, kEmbeddingDisplayName, /*incognito=*/true}});
+}
+
+TEST_F(SiteSettingsHandlerTest, StorageAccessExceptions_Extension) {
+  auto extension = LoadExtension(kExtensionName);
+  auto extension_url = extension->url().spec();
+
+  const std::string kEmbeddingOrigin("https://[*.]example.com:443");
+  const std::string kEmbeddingDisplayName("example.com");
+
+  SetContentSettingCustomScope(extension_url, kEmbeddingOrigin,
+                               kPermissionStorageAccess, CONTENT_SETTING_BLOCK);
+
+  base::Value::List get_exception_list_args;
+  get_exception_list_args.Append(kCallbackId);
+  get_exception_list_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_BLOCK));
+  handler()->HandleGetStorageAccessExceptionList(get_exception_list_args);
+
+  // Verify that the grouped exception is correct.
+  ValidateStorageAccessList(/*expected_total_calls=*/2U,
+                            /*expected_num_groups=*/1U);
+  ValidateStorageAccessException(
+      extension_url, kExtensionName, CONTENT_SETTING_BLOCK,
+      {{kEmbeddingOrigin, kEmbeddingDisplayName, /*incognito=*/false}});
+
+  // When the extension is unloaded, the display name should be the plain url.
+  UnloadExtension(extension->id());
+  // Display name does not have a trailing '/'.
+  const auto extensionDisplayName =
+      extension_url.substr(0, extension_url.length() - 1);
+
+  handler()->HandleGetStorageAccessExceptionList(get_exception_list_args);
+  ValidateStorageAccessList(/*expected_total_calls=*/3U,
+                            /*expected_num_groups=*/1U);
+
+  ValidateStorageAccessException(
+      extension_url, extensionDisplayName, CONTENT_SETTING_BLOCK,
+      {{kEmbeddingOrigin, kEmbeddingDisplayName, /*incognito=*/false}});
 }
 
 TEST_F(SiteSettingsHandlerTest,
        StorageAccessExceptions_Description_IsEmbargoed) {
   const std::string kOrigin("https://google.com:443");
+  const std::string kDisplayName("google.com");
 
   // Set an embargoed setting.
   permissions::PermissionDecisionAutoBlocker* auto_blocker =
@@ -3117,25 +3159,79 @@ TEST_F(SiteSettingsHandlerTest,
   // Verify that group exception with an embargoed is correct.
   ValidateStorageAccessList(/*expected_total_calls=*/1U,
                             /*expected_num_groups=*/1U);
-  ValidateStorageAccessException(
-      kOrigin, kOrigin, CONTENT_SETTING_BLOCK,
-      {{std::string(), std::string(), /*incognito=*/false,
-        /*embargoed=*/true, 0}});
+  ValidateStorageAccessException(kOrigin, kDisplayName, CONTENT_SETTING_BLOCK,
+                                 {{std::string(), "*", /*incognito=*/false,
+                                   /*embargoed=*/true, 0}});
 }
 
+typedef std::pair<std::string_view, std::string_view> OriginStringParams;
 class StorageAccessSiteSettingsHandlerTest
+    : public SiteSettingsHandlerBaseTest,
+      public testing::WithParamInterface<
+          std::tuple<OriginStringParams, OriginStringParams>> {};
+
+// Several pairs <origin, displayName> to test on both the embedded and
+// embedding.
+constexpr OriginStringParams kOrigins[] = {
+    {"192.168.0.1", "192.168.0.1"},
+    {"google.com", "google.com"},
+    {"google.com:443", "google.com"},
+    {"docs.google.com:443", "docs.google.com"},
+    {"https://[*.]google.com", "google.com"},
+    {"https://[*.]docs.example.com:443", "docs.example.com"},
+    {"chrome-extension://peoadpeiejnhkmpaakpnompolbglelel/",
+     "chrome-extension://peoadpeiejnhkmpaakpnompolbglelel"}};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         StorageAccessSiteSettingsHandlerTest,
+                         testing::Combine(testing::ValuesIn(kOrigins),
+                                          testing::ValuesIn(kOrigins)));
+
+TEST_P(StorageAccessSiteSettingsHandlerTest, StorageAccessExceptions_Origins) {
+  OriginStringParams embedded = std::get<0>(GetParam());
+  const std::string kOrigin(std::get<0>(embedded));
+  const std::string kDisplayName(std::get<1>(embedded));
+
+  OriginStringParams embedding = std::get<1>(GetParam());
+  const std::string kEmbeddingOrigin(std::get<0>(embedding));
+  const std::string kEmbeddingDisplayName(std::get<1>(embedding));
+
+  SetContentSettingCustomScope(kOrigin, kEmbeddingOrigin,
+                               kPermissionStorageAccess, CONTENT_SETTING_BLOCK);
+
+  base::Value::List get_exception_list_args;
+  get_exception_list_args.Append(kCallbackId);
+  get_exception_list_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_BLOCK));
+  handler()->HandleGetStorageAccessExceptionList(get_exception_list_args);
+
+  // Verify that the grouped exception is correct.
+  ValidateStorageAccessList(/*expected_total_calls=*/2U,
+                            /*expected_num_groups=*/
+                            1U);
+
+  ValidateStorageAccessException(
+      kOrigin, kDisplayName, CONTENT_SETTING_BLOCK,
+      {{kEmbeddingOrigin, kEmbeddingDisplayName, /*incognito=*/false}});
+}
+
+class StorageAccessSiteSettingsHandlerLifetimeTest
     : public SiteSettingsHandlerBaseTest,
       public testing::WithParamInterface<int> {};
 
 // Range for the lifetime in days of a Storage Access permission.
 INSTANTIATE_TEST_SUITE_P(All,
-                         StorageAccessSiteSettingsHandlerTest,
+                         StorageAccessSiteSettingsHandlerLifetimeTest,
                          testing::Range(0, 3));
 
-TEST_P(StorageAccessSiteSettingsHandlerTest,
+TEST_P(StorageAccessSiteSettingsHandlerLifetimeTest,
        StorageAccessExceptions_Description) {
   const std::string kOrigin("https://[*.]google.com:443");
+  const std::string kDisplayName("google.com");
+
   const std::string kEmbeddingOrigin("https://[*.]example.com:443");
+  const std::string kEmbeddingDisplayName("example.com");
+
   const int kLifetimeInDays = GetParam();
 
   SetContentSettingCustomScope(kOrigin, kEmbeddingOrigin,
@@ -3154,8 +3250,8 @@ TEST_P(StorageAccessSiteSettingsHandlerTest,
   ValidateStorageAccessList(/*expected_total_calls=*/2U,
                             /*expected_num_groups=*/1U);
   ValidateStorageAccessException(
-      kOrigin, kOrigin, CONTENT_SETTING_BLOCK,
-      {{kEmbeddingOrigin, kEmbeddingOrigin, /*incognito=*/false,
+      kOrigin, kDisplayName, CONTENT_SETTING_BLOCK,
+      {{kEmbeddingOrigin, kEmbeddingDisplayName, /*incognito=*/false,
         /*embargoed=*/false, kLifetimeInDays}});
 }
 

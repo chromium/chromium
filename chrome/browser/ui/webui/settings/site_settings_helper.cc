@@ -60,6 +60,7 @@
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
+#include "components/url_formatter/elide_url.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_result.h"
@@ -315,8 +316,8 @@ bool PatternAppliesToWebUISchemes(const ContentSettingPatternSource& pattern) {
 std::string GetDisplayNameForPattern(Profile* profile,
                                      const ContentSettingsPattern& pattern) {
   GURL url(pattern.ToString());
-  if (url.SchemeIs(extensions::kExtensionScheme) ||
-      url.SchemeIs(chrome::kIsolatedAppScheme)) {
+  if (url.is_valid() && (url.SchemeIs(extensions::kExtensionScheme) ||
+                         url.SchemeIs(chrome::kIsolatedAppScheme))) {
     return GetDisplayNameForGURL(profile, url, /*hostname_only=*/false);
   }
   return pattern.ToString();
@@ -696,6 +697,27 @@ std::u16string GetStorageAccessEmbeddingDescription(
       GetDaysToExpiration(embedding_sa_exception.expiration));
 }
 
+// If the given |pattern| represents an individual origin, Isolated Web App, or
+// extension, retrieve a string to display it as such. If not, return the
+// pattern without wildcards as a string.
+std::string GetStorageAccessDisplayNameForPattern(
+    Profile* profile,
+    ContentSettingsPattern pattern) {
+  GURL url(pattern.ToString());
+  if (url.is_valid() && (url.SchemeIs(extensions::kExtensionScheme) ||
+                         url.SchemeIs(chrome::kIsolatedAppScheme))) {
+    return GetDisplayNameForGURL(profile, url, /*hostname_only=*/false);
+  }
+
+  GURL url2 = pattern.ToRepresentativeUrl();
+  if (url2.is_valid()) {
+    return base::UTF16ToUTF8(FormatUrlForSecurityDisplay(
+        url2, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+  }
+
+  return pattern.ToString();
+}
+
 base::Value::Dict GetStorageAccessExceptionForPage(
     Profile* profile,
     const ContentSettingsPattern& pattern,
@@ -721,14 +743,14 @@ base::Value::Dict GetStorageAccessExceptionForPage(
     ContentSettingsPattern secondary_pattern =
         embedding_sa_exception.secondary_pattern;
     base::Value::Dict embedding_exception;
-    std::string embedding_exception_origin =
+    embedding_exception.Set(
+        kEmbeddingOrigin,
         secondary_pattern == ContentSettingsPattern::Wildcard()
             ? std::string()
-            : secondary_pattern.ToString();
-
-    embedding_exception.Set(kEmbeddingOrigin, embedding_exception_origin);
-    // TODO(http://b/289788055): Remove wildcards.
-    embedding_exception.Set(kEmbeddingDisplayName, embedding_exception_origin);
+            : secondary_pattern.ToString());
+    embedding_exception.Set(
+        kEmbeddingDisplayName,
+        GetStorageAccessDisplayNameForPattern(profile, secondary_pattern));
 
     embedding_exception.Set(kDescription, GetStorageAccessEmbeddingDescription(
                                               embedding_sa_exception));
@@ -950,7 +972,7 @@ void GetStorageAccessExceptions(ContentSetting content_setting,
 
     // TODO(http://b/289788055): Remove wildcards.
     const std::string display_name =
-        GetDisplayNameForPattern(profile, primary_pattern);
+        GetStorageAccessDisplayNameForPattern(profile, primary_pattern);
 
     exceptions->Append(GetStorageAccessExceptionForPage(
         profile, primary_pattern, std::move(display_name), content_setting,

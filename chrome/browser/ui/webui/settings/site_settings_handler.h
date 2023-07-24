@@ -168,7 +168,8 @@ class SiteSettingsHandler
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
                            ResetCategoryPermissionForInvalidOrigins);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, Origins);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, StorageAccessExceptions);
+  FRIEND_TEST_ALL_PREFIXES(StorageAccessSiteSettingsHandlerTest,
+                           StorageAccessExceptions_Origins);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
                            StorageAccessExceptions_DiffType);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
@@ -182,6 +183,8 @@ class SiteSettingsHandler
   FRIEND_TEST_ALL_PREFIXES(
       SiteSettingsHandlerTest,
       StorageAccessExceptions_NormalAndIncognito_SamePatterns);
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
+                           StorageAccessExceptions_Extension);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, Patterns);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, PatternsAndContentType);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, SessionOnlyException);
@@ -229,7 +232,7 @@ class SiteSettingsHandler
       StorageAccessExceptions_NormalAndIncognito_SamePatterns);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
                            StorageAccessExceptions_Description_IsEmbargoed);
-  FRIEND_TEST_ALL_PREFIXES(StorageAccessSiteSettingsHandlerTest,
+  FRIEND_TEST_ALL_PREFIXES(StorageAccessSiteSettingsHandlerLifetimeTest,
                            StorageAccessExceptions_Description);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerIsolatedWebAppTest, ZoomLevel);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerIsolatedWebAppTest,
