@@ -79,8 +79,8 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
         }
         bookmarkDelegateSupplier.onAvailable((bookmarkDelegate) -> {
             mBookmarkDelegate = bookmarkDelegate;
-            mModel.set(
-                    BookmarkToolbarProperties.OPEN_FOLDER_CALLBACK, mBookmarkDelegate::openFolder);
+            mModel.set(BookmarkToolbarProperties.NAVIGATE_BACK_RUNNABLE,
+                    this::openParentForCurrentFolder);
             mBookmarkDelegate.addUiObserver(this);
             mBookmarkDelegate.notifyStateChange(this);
         });
@@ -308,5 +308,12 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
                 return R.id.sort_by_reverse_alpha;
         }
         return ResourcesCompat.ID_NULL;
+    }
+
+    // Private methods.
+
+    private void openParentForCurrentFolder() {
+        mBookmarkDelegate.openFolder(
+                BookmarkUtils.getParentFolderForViewing(mBookmarkModel, mCurrentFolder));
     }
 }

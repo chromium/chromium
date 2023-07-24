@@ -746,6 +746,23 @@ public class BookmarkUtils {
     }
 
     /**
+     * Given a {@link BookmarkId}, returns the parent bookmark that should be used when going up.
+     * All bookmarks will skip over mobile bookmarks and other bookmarks.
+     * @param bookmarkModel The {@link BookmarkModel}.
+     * @param bookmarkId The {@link BookmarkId} to get the bparent for.
+     */
+    public static BookmarkId getParentFolderForViewing(
+            BookmarkModel bookmarkModel, BookmarkId bookmarkId) {
+        BookmarkItem item = bookmarkModel.getBookmarkById(bookmarkId);
+        BookmarkId parent = item.getParentId();
+        if (!BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) return parent;
+
+        boolean skipToRoot = Objects.equals(parent, bookmarkModel.getDesktopFolderId())
+                || Objects.equals(parent, bookmarkModel.getMobileFolderId());
+        return skipToRoot ? bookmarkModel.getRootFolderId() : parent;
+    }
+
+    /**
      * Moves the given {@link BookmarkId}s to the new parent if the parent is valid. Type-swaps
      * Reading List items as necessary. This method assumes that the bookmark ids that are passed
      * in are valid bookmarks that are moveable. See the {@link canAddFolderWhileViewingParent} and

@@ -35,7 +35,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
-import org.chromium.base.Callback;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
@@ -89,7 +88,7 @@ public class BookmarkToolbarMediatorTest {
     @Mock
     private SelectionDelegate mSelectionDelegate;
     @Mock
-    private Callback mOpenFolderCallback;
+    private Runnable mNavigateBackRunnable;
     @Mock
     private BookmarkId mBookmarkId;
     @Mock
@@ -130,7 +129,8 @@ public class BookmarkToolbarMediatorTest {
                          .with(BookmarkToolbarProperties.BOOKMARK_UI_MODE, BookmarkUiMode.LOADING)
                          .with(BookmarkToolbarProperties.IS_DIALOG_UI, false)
                          .with(BookmarkToolbarProperties.DRAG_ENABLED, false)
-                         .with(BookmarkToolbarProperties.OPEN_FOLDER_CALLBACK, mOpenFolderCallback)
+                         .with(BookmarkToolbarProperties.NAVIGATE_BACK_RUNNABLE,
+                                 mNavigateBackRunnable)
                          .build();
         mBookmarkDelegateSupplier = new OneshotSupplierImpl<>();
         mMediator =

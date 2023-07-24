@@ -35,7 +35,6 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.Callback;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -98,7 +97,7 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
     @Mock
     BookmarkOpener mBookmarkOpener;
     @Mock
-    Callback<BookmarkId> mOpenFolderCallback;
+    Runnable mNavigateBackRunnable;
 
     private Activity mActivity;
     private WindowAndroid mWindowAndroid;
@@ -170,7 +169,7 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
         mBookmarkToolbar.setSelectionDelegate(mSelectionDelegate);
         mBookmarkToolbar.setBookmarkUiMode(BookmarkUiMode.FOLDER);
         mBookmarkToolbar.setIsDialogUi(true);
-        mBookmarkToolbar.setOpenFolderCallback(mOpenFolderCallback);
+        mBookmarkToolbar.setNavigateBackRunnable(mNavigateBackRunnable);
     }
 
     private void mockBookmarkItem(BookmarkId bookmarkId, String title, String url, boolean isFolder,
@@ -213,7 +212,7 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
         initializeNormal();
         mBookmarkToolbar.setCurrentFolder(BOOKMARK_ID_FOLDER);
         mBookmarkToolbar.onNavigationBack();
-        Mockito.verify(mOpenFolderCallback).onResult(BOOKMARK_ID_ROOT);
+        Mockito.verify(mNavigateBackRunnable).run();
     }
 
     @Test

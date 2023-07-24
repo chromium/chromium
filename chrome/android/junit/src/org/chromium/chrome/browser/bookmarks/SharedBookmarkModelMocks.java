@@ -12,6 +12,7 @@ import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,11 +37,11 @@ public class SharedBookmarkModelMocks {
     static final BookmarkId URL_BOOKMARK_ID_D = new BookmarkId(sId++, BookmarkType.READING_LIST);
     static final BookmarkId URL_BOOKMARK_ID_E = new BookmarkId(sId++, BookmarkType.READING_LIST);
 
-    static final GURL URL_A = new GURL("https://www.a.com/");
-    static final GURL URL_B = new GURL("https://www.b.com/");
-    static final GURL URL_C = new GURL("https://www.c.com/");
-    static final GURL URL_D = new GURL("https://www.d.com/");
-    static final GURL URL_E = new GURL("https://www.e.com/");
+    static final GURL URL_A = new GURL(JUnitTestGURLs.RED_1);
+    static final GURL URL_B = new GURL(JUnitTestGURLs.RED_2);
+    static final GURL URL_C = new GURL(JUnitTestGURLs.RED_3);
+    static final GURL URL_D = new GURL(JUnitTestGURLs.BLUE_1);
+    static final GURL URL_E = new GURL(JUnitTestGURLs.BLUE_2);
 
     static final BookmarkItem DESKTOP_BOOKMARK_ITEM =
             makeFolderItem(DESKTOP_BOOKMARK_ID, "Bookmarks bar", ROOT_BOOKMARK_ID);

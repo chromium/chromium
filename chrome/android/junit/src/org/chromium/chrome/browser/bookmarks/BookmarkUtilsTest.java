@@ -186,4 +186,21 @@ public class BookmarkUtilsTest {
         assertEquals(URL_BOOKMARK_ID_A, bookmarksToMove.get(0));
         assertEquals(newBookmarkId, bookmarksToMove.get(1));
     }
+
+    @Test
+    public void testGetParentFolderForViewing() {
+        assertEquals(MOBILE_BOOKMARK_ID,
+                BookmarkUtils.getParentFolderForViewing(mBookmarkModel, FOLDER_BOOKMARK_ID_A));
+        assertEquals(ROOT_BOOKMARK_ID,
+                BookmarkUtils.getParentFolderForViewing(mBookmarkModel, DESKTOP_BOOKMARK_ID));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testGetParentFolderForViewing_improvedBookmarksEnabled() {
+        assertEquals(ROOT_BOOKMARK_ID,
+                BookmarkUtils.getParentFolderForViewing(mBookmarkModel, FOLDER_BOOKMARK_ID_A));
+        assertEquals(ROOT_BOOKMARK_ID,
+                BookmarkUtils.getParentFolderForViewing(mBookmarkModel, DESKTOP_BOOKMARK_ID));
+    }
 }

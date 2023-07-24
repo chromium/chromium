@@ -53,9 +53,9 @@ class BookmarkToolbarViewBinder {
                     model.get(BookmarkToolbarProperties.CHECKED_VIEW_MENU_ID));
         } else if (key == BookmarkToolbarProperties.CURRENT_FOLDER) {
             bookmarkToolbar.setCurrentFolder(model.get(BookmarkToolbarProperties.CURRENT_FOLDER));
-        } else if (key == BookmarkToolbarProperties.OPEN_FOLDER_CALLBACK) {
-            bookmarkToolbar.setOpenFolderCallback(
-                    model.get(BookmarkToolbarProperties.OPEN_FOLDER_CALLBACK));
+        } else if (key == BookmarkToolbarProperties.NAVIGATE_BACK_RUNNABLE) {
+            bookmarkToolbar.setNavigateBackRunnable(
+                    model.get(BookmarkToolbarProperties.NAVIGATE_BACK_RUNNABLE));
         } else if (key == BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION) {
             bookmarkToolbar.setMenuIdClickedFunction(
                     model.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION));
