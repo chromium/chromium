@@ -7,14 +7,19 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
-#include "base/containers/span.h"
+#include "build/build_config.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#include "base/containers/span.h"
+#include "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#include "components/webauthn/core/browser/passkey_model_utils.h"
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 namespace password_manager {
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 namespace {
 
@@ -22,41 +27,17 @@ std::vector<uint8_t> ProtobufBytesToVector(const std::string& bytes) {
   return std::vector<uint8_t>(bytes.begin(), bytes.end());
 }
 
-struct PasskeyComparator {
-  bool operator()(const sync_pb::WebauthnCredentialSpecifics& a,
-                  const sync_pb::WebauthnCredentialSpecifics& b) const {
-    return std::tie(a.rp_id(), a.user_id()) < std::tie(b.rp_id(), b.user_id());
-  }
-};
-
 }  // namespace
 
 // static
 std::vector<PasskeyCredential> PasskeyCredential::FromCredentialSpecifics(
     base::span<const sync_pb::WebauthnCredentialSpecifics> passkeys) {
-  // Collect all explicitly shadowed credentials.
-  base::flat_set<std::string> shadowed_credential_ids;
-  for (const sync_pb::WebauthnCredentialSpecifics& passkey : passkeys) {
-    for (const std::string& id : passkey.newly_shadowed_credential_ids()) {
-      shadowed_credential_ids.emplace(id);
-    }
-  }
-  // For each (user id, rp id) group, keep the newest credential.
-  base::flat_set<sync_pb::WebauthnCredentialSpecifics, PasskeyComparator>
-      grouped;
-  for (const sync_pb::WebauthnCredentialSpecifics& passkey : passkeys) {
-    if (shadowed_credential_ids.contains(passkey.credential_id())) {
-      continue;
-    }
-    const auto passkey_it = grouped.insert(passkey).first;
-    if (passkey_it->creation_time() < passkey.creation_time()) {
-      *passkey_it = passkey;
-    }
-  }
-  // Convert the proto type to PasskeyCredentials.
-  std::vector<password_manager::PasskeyCredential> credentials;
-  for (const sync_pb::WebauthnCredentialSpecifics& passkey : grouped) {
-    credentials.emplace_back(
+  std::vector<sync_pb::WebauthnCredentialSpecifics> filtered =
+      webauthn::passkey_model_utils::FilterShadowedCredentials(passkeys);
+  std::vector<password_manager::PasskeyCredential> ret;
+  ret.reserve(filtered.size());
+  for (const sync_pb::WebauthnCredentialSpecifics& passkey : filtered) {
+    ret.emplace_back(
         password_manager::PasskeyCredential::Source::kAndroidPhone,
         RpId(passkey.rp_id()),
         CredentialId(ProtobufBytesToVector(passkey.credential_id())),
@@ -66,8 +47,10 @@ std::vector<PasskeyCredential> PasskeyCredential::FromCredentialSpecifics(
                         ? passkey.user_display_name()
                         : ""));
   }
-  return credentials;
+  return ret;
 }
+
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 PasskeyCredential::PasskeyCredential(Source source,
                                      RpId rp_id,

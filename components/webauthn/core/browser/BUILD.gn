@@ -18,6 +18,8 @@ source_set("browser") {
   if (!is_ios && !is_android) {
     sources += [
       "passkey_model.h",
+      "passkey_model_utils.cc",
+      "passkey_model_utils.h",
       "passkey_sync_bridge.cc",
       "passkey_sync_bridge.h",
     ]

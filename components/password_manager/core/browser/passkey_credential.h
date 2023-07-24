@@ -11,12 +11,12 @@
 
 #include "base/containers/span.h"
 #include "base/types/strong_alias.h"
-#include "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace sync_pb {
-class WebauthnCredentialSpecifics;
-}
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#include "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 namespace password_manager {
 
@@ -38,8 +38,10 @@ class PasskeyCredential {
   using Username = base::StrongAlias<class UsernameTag, std::string>;
   using DisplayName = base::StrongAlias<class DisplayNameTag, std::string>;
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   static std::vector<PasskeyCredential> FromCredentialSpecifics(
       base::span<const sync_pb::WebauthnCredentialSpecifics> passkeys);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   PasskeyCredential(Source source,
                     RpId rp_id,

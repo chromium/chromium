@@ -12,7 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/sync/model/model_type_store.h"
 
 namespace sync_pb {
 class WebauthnCredentialSpecifics;

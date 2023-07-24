@@ -16,10 +16,7 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
-#include "base/notreached.h"
-#include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
@@ -30,6 +27,7 @@
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_model.h"
+#include "components/webauthn/core/browser/passkey_model_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace webauthn {
@@ -67,40 +65,19 @@ absl::optional<std::string> FindHeadOfShadowChain(
     const std::string& rp_id,
     const std::string& user_id) {
   // Collect all credentials for the user.id, rpid pair.
-  base::flat_map<std::string, const sync_pb::WebauthnCredentialSpecifics*>
-      associated_passkeys;
+  std::vector<sync_pb::WebauthnCredentialSpecifics> rpid_passkeys;
   for (const auto& passkey : passkeys) {
     if (passkey.second.user_id() == user_id &&
         passkey.second.rp_id() == rp_id) {
-      associated_passkeys[passkey.second.credential_id()] = &passkey.second;
+      rpid_passkeys.emplace_back(passkey.second);
     }
   }
-
-  // Remove all credentials that appear on another credential's
-  // |newly_shadowed_credential_ids| field.
-  base::flat_map<std::string, const sync_pb::WebauthnCredentialSpecifics*>
-      shadow_head_candidates = associated_passkeys;
-  for (const auto& it : associated_passkeys) {
-    for (const std::string& shadowed_credential_id :
-         it.second->newly_shadowed_credential_ids()) {
-      shadow_head_candidates.erase(shadowed_credential_id);
-    }
-  }
-
-  if (shadow_head_candidates.empty()) {
-    return absl::nullopt;
-  }
-
-  // Then, pick the credential with the latest creation time.
-  return std::reduce(
-             shadow_head_candidates.begin(), shadow_head_candidates.end(),
-             *shadow_head_candidates.begin(),
-             [](const auto& left, const auto& right) {
-               const auto& creation_time_left = left.second->creation_time();
-               const auto& creation_time_right = right.second->creation_time();
-               return creation_time_left > creation_time_right ? left : right;
-             })
-      .second->sync_id();
+  // Filter the shadowed credentials.
+  std::vector<sync_pb::WebauthnCredentialSpecifics> filtered =
+      passkey_model_utils::FilterShadowedCredentials(rpid_passkeys);
+  CHECK_LE(filtered.size(), 1u);
+  return filtered.empty() ? absl::nullopt
+                          : absl::make_optional(filtered.at(0).sync_id());
 }
 
 }  // namespace
