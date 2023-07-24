@@ -89,7 +89,7 @@ async function getPromiseArguments(
       'recordPrivacyGuideStepsEligibleAndReachedHistogram'));
 }
 
-suite('PrivacyGuideEligibleReachedMetricsTests', function() {
+suite('PrivacyGuideEligibleReachedMetrics', function() {
   let page: SettingsPrivacyGuidePageElement;
   let settingsPrefs: SettingsPrefsElement;
   let syncBrowserProxy: TestSyncBrowserProxy;

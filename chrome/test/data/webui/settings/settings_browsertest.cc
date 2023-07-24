@@ -359,3 +359,103 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, ToggleButton) {
 IN_PROC_BROWSER_TEST_F(SettingsTest, ZoomLevels) {
   RunTest("settings/zoom_levels_test.js", "mocha.run()");
 }
+
+using SettingsSecurityPageTest = SettingsBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, Main) {
+  RunTest("settings/security_page_test.js", "runMochaSuite('Main')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, FlagsDisabled) {
+  RunTest("settings/security_page_test.js", "runMochaSuite('FlagsDisabled')");
+}
+
+using SettingsAllSitesTest = SettingsBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(SettingsAllSitesTest, EnableFirstPartySets) {
+  RunTest("settings/all_sites_test.js",
+          "runMochaSuite('EnableFirstPartySets')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsAllSitesTest, DisableFirstPartySets) {
+  RunTest("settings/all_sites_test.js",
+          "runMochaSuite('DisableFirstPartySets')");
+}
+
+using SettingsPrivacyGuideTest = SettingsBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, PrivacyGuidePage) {
+  RunTest("settings/privacy_guide_page_test.js",
+          "runMochaSuite('PrivacyGuidePage')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, MsbbCardNavigations) {
+  RunTest("settings/privacy_guide_page_test.js",
+          "runMochaSuite('MsbbCardNavigations')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, HistorySyncCardNavigations) {
+  RunTest("settings/privacy_guide_page_test.js",
+          "runMochaSuite('HistorySyncCardNavigations')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, SafeBrowsingCardNavigations) {
+  RunTest("settings/privacy_guide_page_test.js",
+          "runMochaSuite('SafeBrowsingCardNavigations')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, CookiesCardNavigations) {
+  RunTest("settings/privacy_guide_page_test.js",
+          "runMochaSuite('CookiesCardNavigations')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, PrivacyGuideDialog) {
+  RunTest("settings/privacy_guide_page_test.js",
+          "runMochaSuite('PrivacyGuideDialog')");
+}
+
+// TODO(https://crbug.com/1426530): Re-enable when no longer flaky.
+#if !BUILDFLAG(IS_LINUX) || defined(NDEBUG)
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, Integration) {
+  RunTest("settings/privacy_guide_integration_test.js", "mocha.run()");
+}
+#endif
+
+using SettingsPrivacyGuideFragmentsTest = SettingsBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideFragmentsTest, WelcomeFragment) {
+  RunTest("settings/privacy_guide_fragments_test.js",
+          "runMochaSuite('WelcomeFragment')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideFragmentsTest, MsbbFragment) {
+  RunTest("settings/privacy_guide_fragments_test.js",
+          "runMochaSuite('MsbbFragment')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideFragmentsTest, HistorySyncFragment) {
+  RunTest("settings/privacy_guide_fragments_test.js",
+          "runMochaSuite('HistorySyncFragment')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideFragmentsTest,
+                       SafeBrowsingFragment) {
+  RunTest("settings/privacy_guide_fragments_test.js",
+          "runMochaSuite('SafeBrowsingFragment')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideFragmentsTest, CookiesFragment) {
+  RunTest("settings/privacy_guide_fragments_test.js",
+          "runMochaSuite('CookiesFragment')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideFragmentsTest, CompletionFragment) {
+  RunTest("settings/privacy_guide_fragments_test.js",
+          "runMochaSuite('CompletionFragment')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideFragmentsTest,
+                       CompletionFragmentPrivacySandboxRestricted) {
+  RunTest("settings/privacy_guide_fragments_test.js",
+          "runMochaSuite('CompletionFragmentPrivacySandboxRestricted')");
+}

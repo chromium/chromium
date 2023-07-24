@@ -44,7 +44,7 @@ function pagePrefs() {
   };
 }
 
-suite('SecurityPage', function() {
+suite('Main', function() {
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
   let testPrivacyBrowserProxy: TestPrivacyPageBrowserProxy;
   let page: SettingsSecurityPageElement;
@@ -171,10 +171,9 @@ suite('SecurityPage', function() {
         'passwordsLeakDetectionGeneralDescriptionUpdated');
     assertEquals(updatedPasswordLeakSubLabel, passwordsLeakToggle.subLabel);
   });
-
 });
 
-suite('SecurityPage_FlagsDisabled', function() {
+suite('FlagsDisabled', function() {
   let page: SettingsSecurityPageElement;
 
   suiteSetup(function() {
@@ -239,7 +238,7 @@ suite('SecurityPage_FlagsDisabled', function() {
 });
 
 // Separate test suite for tests specifically related to Safe Browsing controls.
-suite('SecurityPage_SafeBrowsing', function() {
+suite('SafeBrowsing', function() {
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
   let testPrivacyBrowserProxy: TestPrivacyPageBrowserProxy;
   let page: SettingsSecurityPageElement;
@@ -755,5 +754,4 @@ suite('SecurityPage_SafeBrowsing', function() {
     assertFalse(page.$.safeBrowsingEnhanced.expanded);
     assertFalse(page.$.safeBrowsingStandard.expanded);
   });
-
 });

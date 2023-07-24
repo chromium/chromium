@@ -867,63 +867,10 @@ TEST_F('CrSettingsSiteSettingsPageTest', 'SafetyHubDisabled', function() {
   runMochaSuite('SafetyHubDisabled');
 });
 
-// Some tests files are too large to run as a single "All" test (e.g. as above),
-// and flake on some bots. Each test suite can instead be run as an individual
-// test fixture, allowing more time to complete.
-[[
-  'SecurityPage', 'security_page_test.js',
-  [
-    'SecurityPage',
-    'SecurityPage_FlagsDisabled',
-  ]
-],
- [
-   'AllSites',
-   'all_sites_test.js',
-   [
-     'AllSites_EnableFirstPartySets',
-     'AllSites_DisableFirstPartySets',
-   ],
- ],
- [
-   'PrivacyGuidePage',
-   'privacy_guide_page_test.js',
-   [
-     'PrivacyGuidePageTests',
-     'MsbbCardNavigations',
-     'HistorySyncCardNavigations',
-     'SafeBrowsingCardNavigations',
-     'CookiesCardNavigations',
-     'PrivacyGuideDialogTests',
-   ],
- ],
- [
-   'PrivacyGuideFragments',
-   'privacy_guide_fragments_test.js',
-   [
-     'WelcomeFragmentTests',
-     'MsbbFragmentTests',
-     'HistorySyncFragmentTests',
-     'SafeBrowsingFragmentTests',
-     'CookiesFragmentTests',
-     'CompletionFragmentTests',
-     'CompletionFragmentPrivacySandboxRestricted',
-   ],
- ],
-].forEach(test => registerTestSuites(...test));
-
-// TODO(https://crbug.com/1426530): Re-enable when no longer flaky.
-GEN('#if !BUILDFLAG(IS_LINUX) || defined(NDEBUG)');
-registerTestSuites(
-    'PrivacyGuideIntegration', 'privacy_guide_integration_test.js',
-    ['PrivacyGuideEligibleReachedMetricsTests']);
-GEN('#endif');
-
 // TODO(crbug.com/1403969): SecurityPage_SafeBrowsing suite is flaky on Mac.
 // TODO(crbug.com/1404109): SecurityPage_SafeBrowsing suite is flaky on Linux.
 GEN('#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_LINUX)');
-registerTestSuites(
-    'SecurityPage', 'security_page_test.js', ['SecurityPage_SafeBrowsing']);
+registerTestSuites('SecurityPage', 'security_page_test.js', ['SafeBrowsing']);
 GEN('#endif');
 
 function registerTestSuites(testName, module, suites) {

@@ -26,7 +26,7 @@ function setSignInState(signedIn: boolean) {
   flush();
 }
 
-suite('WelcomeFragmentTests', function() {
+suite('WelcomeFragment', function() {
   let fragment: PrivacyGuideWelcomeFragmentElement;
 
   setup(function() {
@@ -50,7 +50,7 @@ suite('WelcomeFragmentTests', function() {
   });
 });
 
-suite('MsbbFragmentTests', function() {
+suite('MsbbFragment', function() {
   let fragment: PrivacyGuideMsbbFragmentElement;
   let settingsPrefs: SettingsPrefsElement;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
@@ -145,7 +145,7 @@ suite('MsbbFragmentTests', function() {
   });
 });
 
-suite('HistorySyncFragmentTests', function() {
+suite('HistorySyncFragment', function() {
   let fragment: PrivacyGuideHistorySyncFragmentElement;
   let syncBrowserProxy: TestSyncBrowserProxy;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
@@ -383,7 +383,7 @@ suite('HistorySyncFragmentTests', function() {
   });
 });
 
-suite('SafeBrowsingFragmentTests', function() {
+suite('SafeBrowsingFragment', function() {
   let fragment: PrivacyGuideSafeBrowsingFragmentElement;
   let settingsPrefs: SettingsPrefsElement;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
@@ -504,7 +504,7 @@ suite('SafeBrowsingFragmentTests', function() {
   });
 });
 
-suite('CookiesFragmentTests', function() {
+suite('CookiesFragment', function() {
   let fragment: PrivacyGuideCookiesFragmentElement;
   let settingsPrefs: SettingsPrefsElement;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
@@ -625,7 +625,7 @@ suite('CookiesFragmentTests', function() {
   });
 });
 
-suite('CompletionFragmentTests', function() {
+suite('CompletionFragment', function() {
   let fragment: PrivacyGuideCompletionFragmentElement;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
 

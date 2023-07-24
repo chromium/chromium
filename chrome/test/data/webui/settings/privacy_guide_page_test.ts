@@ -187,7 +187,7 @@ function assertCookiesCardVisible(
   assertStepIndicatorModel(page, syncBrowserProxy, activeIndex);
 }
 
-suite('PrivacyGuidePageTests', function() {
+suite('PrivacyGuidePage', function() {
   let page: SettingsPrivacyGuidePageElement;
   let settingsPrefs: SettingsPrefsElement;
   let syncBrowserProxy: TestSyncBrowserProxy;
@@ -848,7 +848,7 @@ suite('CookiesCardNavigations', function() {
   });
 });
 
-suite('PrivacyGuideDialogTests', function() {
+suite('PrivacyGuideDialog', function() {
   let page: SettingsPrivacyGuideDialogElement;
 
   setup(function() {

@@ -18,7 +18,7 @@ import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 // clang-format on
 
-suite('AllSites_DisableFirstPartySets', function() {
+suite('DisableFirstPartySets', function() {
   /**
    * An example eTLD+1 Object with multiple origins grouped under it.
    */
@@ -994,7 +994,7 @@ suite('AllSites_DisableFirstPartySets', function() {
   });
 });
 
-suite('AllSites_EnableFirstPartySets', function() {
+suite('EnableFirstPartySets', function() {
   /**
    * An example eTLD+1 Object with multiple origins grouped under it.
    */
