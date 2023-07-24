@@ -117,7 +117,12 @@ void DestroyWindowsOnThread(HWND child_window, HWND hidden_popup_window) {
   HiddenPopupWindow::Destroy(hidden_popup_window);
 }
 
-THREAD_CHECKER(thread_checker_);
+#if DCHECK_IS_ON()
+base::ThreadChecker& GetThreadChecker() {
+  static base::ThreadChecker thread_checker;
+  return thread_checker;
+}
+#endif
 
 }  // namespace
 
@@ -126,7 +131,7 @@ class ChildWindowWin::ChildWindowThread
  public:
   // Returns the singleton instance of the thread.
   static scoped_refptr<ChildWindowThread> GetInstance() {
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    DCHECK_CALLED_ON_VALID_THREAD(GetThreadChecker());
     static base::WeakPtr<ChildWindowThread> weak_instance;
 
     auto instance = base::WrapRefCounted(weak_instance.get());
@@ -139,7 +144,7 @@ class ChildWindowWin::ChildWindowThread
   }
 
   scoped_refptr<base::TaskRunner> task_runner() {
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    DCHECK_CALLED_ON_VALID_THREAD(GetThreadChecker());
     return thread_.task_runner();
   }
 
@@ -147,13 +152,13 @@ class ChildWindowWin::ChildWindowThread
   friend class base::RefCounted<ChildWindowThread>;
 
   ChildWindowThread() : thread_("Window owner thread") {
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    DCHECK_CALLED_ON_VALID_THREAD(GetThreadChecker());
     base::Thread::Options options(base::MessagePumpType::UI, 0);
     thread_.StartWithOptions(std::move(options));
   }
 
   ~ChildWindowThread() {
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    DCHECK_CALLED_ON_VALID_THREAD(GetThreadChecker());
     thread_.Stop();
   }
 
