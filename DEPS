@@ -5066,6 +5066,7 @@ hooks = [
   # Download test data for Perfetto diff tests
   {
     'name': 'perfetto_testdata',
+    'condition': 'host_os == "linux"',
     'pattern': '\\.sha256',
     'action': [ 'python3',
                 'src/third_party/perfetto/tools/test_data',
