@@ -15,18 +15,23 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.FadingShadow;
 import org.chromium.components.browser_ui.widget.FadingShadowView;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** Coordinates the views/mediators that make up the bookmark folder picker. */
-public class BookmarkFolderPickerCoordinator {
+public class BookmarkFolderPickerCoordinator implements BackPressHandler {
+    private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
+            new ObservableSupplierImpl<>();
     private final ModelList mModelList = new ModelList();
     private final Context mContext;
     private final View mView;
@@ -80,6 +85,9 @@ public class BookmarkFolderPickerCoordinator {
                         mRecyclerView.canScrollVertically(-1) ? View.VISIBLE : View.GONE);
             }
         });
+
+        // Back presses are always handled.
+        mBackPressStateSupplier.set(true);
     }
 
     /** Destroys the coordinator. */
@@ -118,6 +126,18 @@ public class BookmarkFolderPickerCoordinator {
     View buildFolderRow(ViewGroup parent) {
         return LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.improved_bookmark_folder_select_layout, null);
+    }
+
+    // BackPressHandler implementation.
+
+    @Override
+    public @BackPressResult int handleBackPress() {
+        return onBackPressed() ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
+    }
+
+    @Override
+    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return mBackPressStateSupplier;
     }
 
     // Testing methods.

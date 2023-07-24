@@ -13,6 +13,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import org.chromium.chrome.browser.SynchronousInitializationActivity;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkAddNewFolderCoordinator;
 import org.chromium.chrome.browser.bookmarks.BookmarkFolderPickerCoordinator;
@@ -65,8 +66,13 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
         mCoordinator = new BookmarkFolderPickerCoordinator(this, mBookmarkModel,
                 mBookmarkImageFetcher, mBookmarkId, this::finish, addNewFolderCoordinator);
 
-        BackPressHelper.create(this, getOnBackPressedDispatcher(), mCoordinator::onBackPressed,
-                SecondaryActivity.BOOKMARK_FOLDER_PICKER);
+        if (BackPressManager.isSecondaryActivityEnabled()) {
+            BackPressHelper.create(this, getOnBackPressedDispatcher(), mCoordinator,
+                    SecondaryActivity.BOOKMARK_FOLDER_PICKER);
+        } else {
+            BackPressHelper.create(this, getOnBackPressedDispatcher(), mCoordinator::onBackPressed,
+                    SecondaryActivity.BOOKMARK_FOLDER_PICKER);
+        }
 
         Toolbar toolbar = mCoordinator.getToolbar();
         setSupportActionBar(toolbar);
