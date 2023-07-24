@@ -68,7 +68,7 @@ TEST_F(PowerButtonPixelTest, DISABLED_NoSession) {
   SimulatePowerButtonPress();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_menu",
-      /*revision_number=*/1, GetMenuView()));
+      /*revision_number=*/2, GetMenuView()));
 }
 
 // TODO(crbug.com/1451244): Re-enable this test
@@ -82,7 +82,7 @@ TEST_F(PowerButtonPixelTest, DISABLED_LoginSession) {
   SimulatePowerButtonPress();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_menu",
-      /*revision_number=*/1, GetMenuView()));
+      /*revision_number=*/2, GetMenuView()));
 }
 
 // TODO(crbug.com/1451244): Re-enable this test
@@ -97,7 +97,7 @@ TEST_F(PowerButtonPixelTest, DISABLED_LockScreenSession) {
   SimulatePowerButtonPress();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_menu",
-      /*revision_number=*/1, GetMenuView()));
+      /*revision_number=*/2, GetMenuView()));
 }
 
 TEST_F(PowerButtonPixelTest, GuestMode) {
@@ -110,6 +110,6 @@ TEST_F(PowerButtonPixelTest, GuestMode) {
   SimulatePowerButtonPress();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_menu",
-      /*revision_number=*/1, GetMenuView()));
+      /*revision_number=*/2, GetMenuView()));
 }
 }  // namespace ash
