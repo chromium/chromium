@@ -11932,6 +11932,41 @@
             ]
         }
     ],
+    "RedWarningSurvey": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "RedInterstitialDontProceed_20230706",
+                    "params": {
+                        "RedWarningSurveyDidProceedFilter": "FALSE",
+                        "probability": "0.5",
+                        "trigger_id": "tk2kQP2nR0ugnJ3q1cK0RSntPR9W"
+                    },
+                    "enable_features": [
+                        "RedWarningSurvey"
+                    ]
+                },
+                {
+                    "name": "RedInterstitialProceed_20230706",
+                    "params": {
+                        "RedWarningSurveyDidProceedFilter": "TRUE",
+                        "probability": "0.5",
+                        "trigger_id": "tFp5yLM9T0ugnJ3q1cK0QsMCryMd"
+                    },
+                    "enable_features": [
+                        "RedWarningSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
     "ReduceSubresourceResponseStartedIPC": [
         {
             "platforms": [
