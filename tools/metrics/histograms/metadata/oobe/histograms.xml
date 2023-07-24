@@ -243,6 +243,7 @@ chromium-metrics-reviews@google.com.
       replacing this one.
     </obsolete>
   </variant>
+  <variant name="User-creation.SignInSchool"/>
   <variant name="User-creation.SignInTriage"/>
   <variant name="Wrong-hwid.Next"/>
 </variants>

@@ -279,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(UserCreationScreenSoftwareUpdateTest,
   test::OobeJS().TapOnPath(kSchoolAccountButton);
   test::OobeJS().TapOnPath(kChildSetupNextButton);
   WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(), UserCreationScreen::Result::SIGNIN);
+  EXPECT_EQ(screen_result_.value(), UserCreationScreen::Result::SIGNIN_SCHOOL);
 }
 
 // Verify that don't-enroll-the-device in the enorll triage step in user

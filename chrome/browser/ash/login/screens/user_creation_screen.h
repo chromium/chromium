@@ -32,6 +32,7 @@ class UserCreationScreen
     SKIPPED,
     KIOSK_ENTERPRISE_ENROLL,
     CONTINUE_QUICK_START_FLOW,
+    SIGNIN_SCHOOL,
   };
 
   using TView = UserCreationView;

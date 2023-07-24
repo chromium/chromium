@@ -1270,6 +1270,7 @@ void WizardController::OnUserCreationScreenExit(
   OnScreenExit(UserCreationView::kScreenId,
                UserCreationScreen::GetResultString(result));
   switch (result) {
+    case UserCreationScreen::Result::SIGNIN_SCHOOL:
     case UserCreationScreen::Result::SIGNIN_TRIAGE:
       GetLocalState()->SetBoolean(prefs::kOobeIsConsumerSegment, true);
       StartupUtils::SaveScreenAfterConsumerUpdate(GaiaView::kScreenId.name);

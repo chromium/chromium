@@ -21,12 +21,13 @@ namespace ash {
 namespace {
 
 constexpr char kUserActionSignIn[] = "signin";
-constexpr char kUserActionSignInTriage[] = "signin-triage";
 constexpr char kUserActionAddChild[] = "add-child";
 constexpr char kUserActionCancel[] = "cancel";
 
 // The following user actions are only possible when `OobeSoftwareUpdate` flag
 // is enabled.
+constexpr char kUserActionSignInTriage[] = "signin-triage";
+constexpr char kUserActionSignInSchool[] = "signin-school";
 constexpr char kUserActionEnroll[] = "enroll";
 constexpr char kUserActionTriage[] = "triage";
 constexpr char kUserActionChildSetup[] = "child-setup";
@@ -53,6 +54,8 @@ std::string UserCreationScreen::GetResultString(Result result) {
       return "ContinueQuickStartFlow";
     case Result::CANCEL:
       return "Cancel";
+    case Result::SIGNIN_SCHOOL:
+      return "SignInSchool";
     case Result::SKIPPED:
       return BaseScreen::kNotApplicable;
   }
@@ -159,6 +162,8 @@ void UserCreationScreen::OnUserAction(const base::Value::List& args) {
     RunExitCallback(Result::SIGNIN_TRIAGE);
   } else if (action_id == kUserActionChildSetup) {
     view_->SetChildSetupStep();
+  } else if (action_id == kUserActionSignInSchool) {
+    RunExitCallback(Result::SIGNIN_SCHOOL);
   } else {
     BaseScreen::OnUserAction(args);
   }

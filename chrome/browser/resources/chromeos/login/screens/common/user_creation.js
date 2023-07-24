@@ -71,6 +71,7 @@ const EnrollTriageMethod = {
 const UserAction = {
   SIGNIN: 'signin',
   SIGNIN_TRIAGE: 'signin-triage',
+  SIGNIN_SCHOOL: 'signin-school',
   ADD_CHILD: 'add-child',
   ENROLL: 'enroll',
   TRIAGE: 'triage',
@@ -286,7 +287,7 @@ class UserCreation extends UserCreationScreenElementBase {
       this.userActed(UserAction.ADD_CHILD);
     } else if (
         this.selectedChildSetupMethod === ChildSetupMethod.SCHOOL_ACCOUNT) {
-      this.userActed(UserAction.SIGNIN);
+      this.userActed(UserAction.SIGNIN_SCHOOL);
     }
   }
 
