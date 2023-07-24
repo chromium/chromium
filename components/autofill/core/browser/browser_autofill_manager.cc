@@ -1068,12 +1068,6 @@ void BrowserAutofillManager::DidSuppressPopup(const FormData& form,
     logger->OnPopupSuppressed(*form_structure, *autofill_field);
 }
 
-void BrowserAutofillManager::DidHidePopup() {
-  if (test_delegate_) {
-    test_delegate_->DidHideSuggestions();
-  }
-}
-
 void BrowserAutofillManager::OnTextFieldDidChangeImpl(
     const FormData& form,
     const FormFieldData& field,

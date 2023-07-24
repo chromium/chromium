@@ -227,7 +227,6 @@ void AutofillExternalDelegate::OnPopupShown() {
 
 void AutofillExternalDelegate::OnPopupHidden() {
   driver_->PopupHidden();
-  manager_->DidHidePopup();
 }
 
 void AutofillExternalDelegate::OnPopupSuppressed() {

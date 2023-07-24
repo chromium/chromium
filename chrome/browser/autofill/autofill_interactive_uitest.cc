@@ -176,6 +176,23 @@ content::RenderFrameHost* RenderFrameHostForName(
       base::BindRepeating(&content::FrameMatchesName, name));
 }
 
+void WaitForHistogram(const std::string& histogram_name) {
+  // Continue if histogram was already recorded.
+  if (base::StatisticsRecorder::FindHistogram(histogram_name)) {
+    return;
+  }
+
+  // Else, wait until the histogram is recorded.
+  base::RunLoop run_loop;
+  auto histogram_observer =
+      std::make_unique<base::StatisticsRecorder::ScopedHistogramSampleObserver>(
+          histogram_name,
+          base::BindLambdaForTesting(
+              [&](const char* histogram_name, uint64_t name_hash,
+                  base::HistogramBase::Sample sample) { run_loop.Quit(); }));
+  run_loop.Run();
+}
+
 // Represents a JavaScript expression that evaluates to a HTMLElement.
 using ElementExpr = base::StrongAlias<struct ElementExprTag, std::string>;
 
@@ -383,7 +400,7 @@ struct ShowAutofillPopupParams {
 [[nodiscard]] AssertionResult ShowAutofillPopup(const ElementExpr& e,
                                                 AutofillUiTest* test,
                                                 ShowAutofillPopupParams p) {
-  constexpr auto kSuggest = ObservedUiEvents::kSuggestionsShown;
+  constexpr auto kSuggest = ObservedUiEvents::kSuggestionShown;
   constexpr auto kPreview = ObservedUiEvents::kPreviewFormData;
 
   content::ToRenderFrameHost execution_target =
@@ -394,7 +411,7 @@ struct ShowAutofillPopupParams {
 
   auto ArrowDown = [&](std::list<ObservedUiEvents> exp) {
     constexpr auto kDown = ui::DomKey::ARROW_DOWN;
-    if (base::Contains(exp, ObservedUiEvents::kSuggestionsShown)) {
+    if (base::Contains(exp, ObservedUiEvents::kSuggestionShown)) {
       return test->SendKeyToPageAndWait(kDown, std::move(exp), p.timeout);
     } else {
       return test->SendKeyToPopupAndWait(kDown, std::move(exp), widget,
@@ -415,8 +432,8 @@ struct ShowAutofillPopupParams {
   };
   auto Click = [&](std::list<ObservedUiEvents> exp) {
     gfx::Point point = view->TransformPointToRootCoordSpace(GetCenter(e, rfh));
-    test->test_delegate()->SetExpectations(
-        {ObservedUiEvents::kSuggestionsShown}, p.timeout);
+    test->test_delegate()->SetExpectations({ObservedUiEvents::kSuggestionShown},
+                                           p.timeout);
     content::SimulateMouseClickAt(test->GetWebContents(), 0,
                                   blink::WebMouseEvent::Button::kLeft, point);
     return test->test_delegate()->Wait();
@@ -565,7 +582,6 @@ struct AutofillSuggestionParams {
     controller->DisableThresholdForTesting(true);
   }
 
-  constexpr auto kSuggestionsHidden = ObservedUiEvents::kSuggestionsHidden;
   constexpr auto kFill = ObservedUiEvents::kFormDataFilled;
 
   auto Enter = [&](std::list<ObservedUiEvents> exp) {
@@ -576,8 +592,7 @@ struct AutofillSuggestionParams {
   bool has_fill = p.target_index < p.num_profile_suggestions;
   if (AssertionResult a = SelectAutofillSuggestion(e, test, p); !a)
     return a;
-  if (!(has_fill ? Enter({kSuggestionsHidden, kFill})
-                 : Enter({kSuggestionsHidden}))) {
+  if (!(has_fill ? Enter({kFill}) : Enter({}))) {
     return AssertionFailure()
            << __func__ << "(): Couldn't accept to " << p.target_index
            << "th suggestion with" << (has_fill ? "" : "out") << " fill";
@@ -1641,9 +1656,9 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   // Change the last name.
   ASSERT_TRUE(FocusField(GetElementById("lastname"), GetWebContents()));
   ASSERT_TRUE(SendKeyToPageAndWait(ui::DomKey::BACKSPACE,
-                                   {ObservedUiEvents::kSuggestionsShown}));
+                                   {ObservedUiEvents::kSuggestionShown}));
   ASSERT_TRUE(SendKeyToPageAndWait(ui::DomKey::BACKSPACE,
-                                   {ObservedUiEvents::kSuggestionsShown}));
+                                   {ObservedUiEvents::kSuggestionShown}));
   EXPECT_THAT(GetFormValues(),
               ValuesAre(MergeValue(kDefaultAddress, {"lastname", "Wadda"})));
 
@@ -1675,9 +1690,9 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   // Change the last name.
   ASSERT_TRUE(FocusField(GetElementById("lastname"), GetWebContents()));
   ASSERT_TRUE(SendKeyToPageAndWait(ui::DomKey::BACKSPACE,
-                                   {ObservedUiEvents::kSuggestionsShown}));
+                                   {ObservedUiEvents::kSuggestionShown}));
   ASSERT_TRUE(SendKeyToPageAndWait(ui::DomKey::BACKSPACE,
-                                   {ObservedUiEvents::kSuggestionsShown}));
+                                   {ObservedUiEvents::kSuggestionShown}));
   EXPECT_THAT(GetFormValues(),
               ValuesAre(MergeValue(kDefaultAddress, {"lastname", "Wadda"})));
 
@@ -1708,9 +1723,9 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   // Change the last name.
   ASSERT_TRUE(FocusField(GetElementById("lastname"), GetWebContents()));
   ASSERT_TRUE(SendKeyToPageAndWait(ui::DomKey::BACKSPACE,
-                                   {ObservedUiEvents::kSuggestionsShown}));
+                                   {ObservedUiEvents::kSuggestionShown}));
   ASSERT_TRUE(SendKeyToPageAndWait(ui::DomKey::BACKSPACE,
-                                   {ObservedUiEvents::kSuggestionsShown}));
+                                   {ObservedUiEvents::kSuggestionShown}));
   EXPECT_THAT(GetFormValues(),
               ValuesAre(MergeValue(kDefaultAddress, {"lastname", "Wadda"})));
 
@@ -3014,11 +3029,8 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
       AutofillFlow(GetElementById("firstname"), this, {.do_accept = false}));
 
   // Hide autofill preview.
-  content::RenderWidgetHost* render_widget_host =
-      GetWebContents()->GetRenderWidgetHostView()->GetRenderWidgetHost();
-  SendKeyToPopupAndWait(ui::DomKey::ESCAPE,
-                        {ObservedUiEvents::kSuggestionsHidden},
-                        render_widget_host);
+  SendKeyToPopup(GetWebContents()->GetPrimaryMainFrame(), ui::DomKey::ESCAPE);
+  WaitForHistogram("Autofill.PopupHidingReason");
   ASSERT_FALSE(IsPopupShown());
 
   // Select element on `other` and wait for `onchange` event.
@@ -4037,7 +4049,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestChromeVox,
     content::WaitForAccessibilityTreeToContainNodeWithName(web_contents(),
                                                            "First name:");
     web_contents()->Focus();
-    test_delegate()->SetExpectations({ObservedUiEvents::kSuggestionsShown});
+    test_delegate()->SetExpectations({ObservedUiEvents::kSuggestionShown});
     ASSERT_TRUE(FocusField(GetElementById("firstname"), GetWebContents()));
   });
   sm_.ExpectSpeechPattern("First name:");

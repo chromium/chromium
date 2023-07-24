@@ -32,8 +32,7 @@ namespace autofill {
 enum class ObservedUiEvents {
   kPreviewFormData,
   kFormDataFilled,
-  kSuggestionsShown,
-  kSuggestionsHidden,
+  kSuggestionShown,
   kNoEvent,
   kMaxValue = kNoEvent
 };
@@ -67,7 +66,6 @@ class BrowserAutofillManagerTestDelegateImpl
   void DidPreviewFormData() override;
   void DidFillFormData() override;
   void DidShowSuggestions() override;
-  void DidHideSuggestions() override;
   void OnTextFieldChanged() override;
 
   void SetExpectations(std::list<ObservedUiEvents> expected_events,

@@ -360,7 +360,7 @@ class AutofillCapturedSitesInteractiveTest
     // First, automation should focus on the frame containing the autofill form.
     // Doing so ensures that Chrome scrolls the element into view if the
     // element is off the page.
-    test_delegate()->SetExpectations({ObservedUiEvents::kSuggestionsShown},
+    test_delegate()->SetExpectations({ObservedUiEvents::kSuggestionShown},
                                      kAutofillWaitForActionInterval);
     if (!captured_sites_test_utils::TestRecipeReplayer::PlaceFocusOnElement(
             target_element_xpath, iframe_path, frame)) {
@@ -380,7 +380,7 @@ class AutofillCapturedSitesInteractiveTest
              << FROM_HERE.ToString();
     }
 
-    test_delegate()->SetExpectations({ObservedUiEvents::kSuggestionsShown},
+    test_delegate()->SetExpectations({ObservedUiEvents::kSuggestionShown},
                                      kAutofillWaitForActionInterval);
     if (!captured_sites_test_utils::TestRecipeReplayer::
             SimulateLeftMouseClickAt(rect.CenterPoint(), frame))

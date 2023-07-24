@@ -252,9 +252,6 @@ class BrowserAutofillManager : public AutofillManager,
   // metrics.
   void DidSuppressPopup(const FormData& form, const FormFieldData& field);
 
-  // Invoked when the "suggestions" popup is hidden.
-  void DidHidePopup();
-
   // Handle the parsed forms for the given web frame.
   void HandleParsedForms(const std::vector<autofill::FormStructure*>& forms);
 
