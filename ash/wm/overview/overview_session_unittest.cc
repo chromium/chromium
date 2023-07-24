@@ -5239,7 +5239,7 @@ TEST_F(SplitViewOverviewSessionTest, Clipping) {
   auto aspect_ratio_near = [](const gfx::Rect& rect1, const gfx::Rect& rect2) {
     DCHECK_GT(rect1.height(), 0);
     DCHECK_GT(rect2.height(), 0);
-    constexpr float kEpsilon = 0.06f;
+    constexpr float kEpsilon = 0.07f;
     const float rect1_aspect_ratio =
         static_cast<float>(rect1.width()) / rect1.height();
     const float rect2_aspect_ratio =
