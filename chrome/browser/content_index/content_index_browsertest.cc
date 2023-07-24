@@ -77,14 +77,6 @@ class ContentIndexTest : public InProcessBrowserTest,
         switches::kEnableExperimentalWebPlatformFeatures);
   }
 
-  // Runs |script| and expects it to complete successfully. |script| must
-  // result in a Promise. Returns the resolved contents of the Promise.
-  std::string RunScript(const std::string& script) {
-    std::string result;
-    RunScript(script, &result);
-    return result.substr(5);  // Ignore the trailing `ok - `.
-  }
-
   // OfflineContentProvider::Observer implementation:
   void OnItemsAdded(const std::vector<OfflineItem>& items) override {
     ASSERT_EQ(items.size(), 1u);
@@ -145,19 +137,21 @@ class ContentIndexTest : public InProcessBrowserTest,
   std::map<std::string, OfflineItem>& offline_items() { return offline_items_; }
   ContentIndexProviderImpl* provider() { return provider_; }
 
- private:
-  void RunScript(const std::string& script, std::string* result) {
-    *result = content::EvalJs(browser()
-                                  ->tab_strip_model()
-                                  ->GetActiveWebContents()
-                                  ->GetPrimaryMainFrame(),
-                              "WrapFunction(async () => " + script + ")")
-                  .ExtractString();
-    ASSERT_TRUE(
-        base::StartsWith(*result, "ok - ", base::CompareCase::SENSITIVE))
-        << "Unexpected result: " << *result;
+  std::string RunScript(const std::string& script) {
+    std::string result =
+        content::EvalJs(browser()
+                            ->tab_strip_model()
+                            ->GetActiveWebContents()
+                            ->GetPrimaryMainFrame(),
+                        "WrapFunction(async () => " + script + ")")
+            .ExtractString();
+    EXPECT_TRUE(base::StartsWith(result, "ok - ", base::CompareCase::SENSITIVE))
+        << "Unexpected result: " << result;
+
+    return result.substr(5);  // Ignore the leading "ok - ".
   }
 
+ private:
   std::map<std::string, OfflineItem> offline_items_;
   raw_ptr<ContentIndexProviderImpl, DanglingUntriaged> provider_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
