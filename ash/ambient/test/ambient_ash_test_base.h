@@ -74,6 +74,7 @@ class AmbientAshTestBase : public AshTestBase {
   // case, the ambient screen must be closed, and the new settings will take
   // effect with the next call to ShowAmbientScreen().
   void SetAmbientUiSettings(const AmbientUiSettings& settings);
+  AmbientUiSettings GetCurrentUiSettings();
 
   // Convenient form of the above that only sets |AmbientUiSettings::theme| and
   // leaves the rest of the settings unset.

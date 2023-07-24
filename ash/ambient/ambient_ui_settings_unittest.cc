@@ -40,6 +40,14 @@ TEST_F(AmbientUiSettingsTest, DefaultConstructor) {
 }
 
 TEST_F(AmbientUiSettingsTest, DefaultAmbientUiSettings) {
+  std::vector<base::test::FeatureRef> time_of_day_features = {
+      features::kTimeOfDayScreenSaver, features::kTimeOfDayWallpaper,
+      features::kFeatureManagementTimeOfDayScreenSaver,
+      features::kFeatureManagementTimeOfDayWallpaper};
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({}, time_of_day_features);
+  ASSERT_FALSE(features::IsTimeOfDayScreenSaverEnabled());
+
   // No prior set up for kAmbientUiSettings prefs. Without TOD features,
   // kDefaultAmbientTheme (kSlideShow) is set as default.
   test_pref_service_.SetDict(ambient::prefs::kAmbientUiSettings,
@@ -47,12 +55,10 @@ TEST_F(AmbientUiSettingsTest, DefaultAmbientUiSettings) {
   EXPECT_THAT(
       AmbientUiSettings::ReadFromPrefService(test_pref_service_).theme(),
       Eq(kDefaultAmbientTheme));
-}
 
-TEST_F(AmbientUiSettingsTest, DefaultAmbientUiSettingsWithTODFeature) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kTimeOfDayScreenSaver, features::kTimeOfDayWallpaper}, {});
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(time_of_day_features, {});
+  ASSERT_TRUE(features::IsTimeOfDayScreenSaverEnabled());
   // No prior set up for kAmbientUiSettings prefs. With TOD features, kVideo is
   // set as default.
   test_pref_service_.SetDict(ambient::prefs::kAmbientUiSettings,

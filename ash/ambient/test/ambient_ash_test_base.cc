@@ -229,6 +229,13 @@ void AmbientAshTestBase::SetAmbientUiSettings(
   DisableBackupCacheDownloads();
 }
 
+AmbientUiSettings AmbientAshTestBase::GetCurrentUiSettings() {
+  PrefService* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  CHECK(pref_service);
+  return AmbientUiSettings::ReadFromPrefService(*pref_service);
+}
+
 void AmbientAshTestBase::DisableBackupCacheDownloads() {
   // Some |AmbientUiSettings| legitimately don't use a photo controller, in
   // which case backup photos are not downloaded anyways.

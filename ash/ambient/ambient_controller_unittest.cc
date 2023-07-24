@@ -164,6 +164,17 @@ class AmbientControllerTest : public AmbientAshTestBase {
     return pref_change_registrar->IsObserved(pref_name);
   }
 
+  bool CurrentThemeUsesPhotos() {
+    switch (GetCurrentUiSettings().theme()) {
+      case AmbientTheme::kSlideshow:
+      case AmbientTheme::kFeelTheBreeze:
+      case AmbientTheme::kFloatOnBy:
+        return true;
+      case AmbientTheme::kVideo:
+        return false;
+    }
+  }
+
   bool AreSessionSpecificObserversBound() {
     auto* ctrl = ambient_controller();
 
@@ -173,8 +184,11 @@ class AmbientControllerTest : public AmbientAshTestBase {
     bool power_manager_bound =
         ctrl->power_manager_client_observer_.IsObserving();
     bool fingerprint_bound = ctrl->fingerprint_observer_receiver_.is_bound();
-    EXPECT_EQ(ui_model_bound, backend_model_bound)
-        << "observers should all have the same state";
+    // The backend model is only necessary for themes that use photos from it.
+    if (CurrentThemeUsesPhotos()) {
+      EXPECT_EQ(ui_model_bound, backend_model_bound)
+          << "observers should all have the same state";
+    }
     EXPECT_EQ(ui_model_bound, power_manager_bound)
         << "observers should all have the same state";
     EXPECT_EQ(ui_model_bound, fingerprint_bound)
@@ -808,6 +822,7 @@ TEST_F(AmbientControllerTest, ShouldResetLockScreenInactivityTimerOnEvent) {
   // `AmbientUiVisibility::kShouldShow` but widget does not exist to receive
   // events yet.
   SetPhotoDownloadDelay(base::Seconds(1));
+  SetAmbientTheme(AmbientTheme::kSlideshow);
   LockScreen();
   FastForwardByLockScreenInactivityTimeout();
   FastForwardTiny();
@@ -988,6 +1003,7 @@ TEST_F(AmbientControllerTest, ShouldShowAmbientScreenWhenScreenIsDimmed) {
 }
 
 TEST_F(AmbientControllerTest, HandlesPreviousImageFailuresWithLockScreen) {
+  SetAmbientTheme(AmbientTheme::kSlideshow);
   // Simulate failures to download FIFE urls. Ambient mode should close and
   // remember the old failure.
   SetDownloadPhotoData("");
@@ -1011,6 +1027,7 @@ TEST_F(AmbientControllerTest, HandlesPreviousImageFailuresWithLockScreen) {
 }
 
 TEST_F(AmbientControllerTest, HandlesPreviousImageFailuresWithDimmedScreen) {
+  SetAmbientTheme(AmbientTheme::kSlideshow);
   GetSessionControllerClient()->SetShouldLockScreenAutomatically(false);
   SetPowerStateCharging();
 
@@ -1146,6 +1163,7 @@ TEST_F(AmbientControllerTest,
 }
 
 TEST_F(AmbientControllerTest, HandlesPhotoDownloadOutage) {
+  SetAmbientTheme(AmbientTheme::kSlideshow);
   SetDownloadPhotoData("");
 
   LockScreen();
@@ -1719,6 +1737,7 @@ TEST_F(AmbientControllerForManagedScreensaverTest,
 
 TEST_F(AmbientControllerForManagedScreensaverTest,
        DisablingManagedAmbientModeFallsbackToUserAmbientModeIfEnabled) {
+  SetAmbientTheme(AmbientTheme::kSlideshow);
   SetAmbientModeEnabled(true);
   SetAmbientModeManagedScreensaverEnabled(true);
   managed_policy_handler()->SetImagesForTesting(image_file_paths_);
@@ -1744,9 +1763,7 @@ TEST_F(AmbientControllerForManagedScreensaverTest,
 TEST_F(AmbientControllerForManagedScreensaverTest,
        LaunchingManagedAmbientModeAfterAmbientModeWorksAsExpected) {
   SetAmbientModeEnabled(/*enabled=*/true);
-  ASSERT_FALSE(ambient_controller()->ambient_ui_launcher());
   SetAmbientModeManagedScreensaverEnabled(/*enabled=*/true);
-  ASSERT_TRUE(ambient_controller()->ambient_ui_launcher());
 
   managed_policy_handler()->SetImagesForTesting(image_file_paths_);
 
