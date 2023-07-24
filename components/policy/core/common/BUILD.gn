@@ -170,6 +170,8 @@ source_set("internal") {
     "policy_details.h",
     "policy_loader_command_line.cc",
     "policy_loader_command_line.h",
+    "policy_loader_common.cc",
+    "policy_loader_common.h",
     "policy_loader_local_test.cc",
     "policy_loader_local_test.h",
     "policy_logger.cc",
@@ -286,13 +288,6 @@ source_set("internal") {
       "secur32.lib",
       "shlwapi.lib",
       "userenv.lib",
-    ]
-  }
-
-  if (is_win || is_mac) {
-    sources += [
-      "policy_loader_common.cc",
-      "policy_loader_common.h",
     ]
   }
 

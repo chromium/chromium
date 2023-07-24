@@ -8,7 +8,9 @@
 
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "build/build_config.h"
 #include "components/policy/core/common/policy_bundle.h"
+#include "components/policy/core/common/policy_loader_common.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_types.h"
@@ -56,6 +58,8 @@ void PolicyLoaderLocalTest::SetPolicyListJson(
     PolicyMap::Entry entry(level, scope, source, std::move(value), nullptr);
     policy_map.Set(name, std::move(entry));
   }
+
+  FilterSensitivePolicies(&policy_map);
 
   bundle_ = std::move(bundle);
 }

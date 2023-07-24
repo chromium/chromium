@@ -22,6 +22,7 @@
 #include "components/grit/policy_resources.h"
 #include "components/grit/policy_resources_map.h"
 #include "components/policy/core/common/features.h"
+#include "components/policy/core/common/policy_loader_common.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_utils.h"
@@ -205,6 +206,11 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
         (*value_provider.GetNames().FindDict("chrome"))
             .FindList("policyNames")
             ->Clone();
+
+    policy_names.EraseIf([&](auto& policy) {
+      return policy::IsPolicyNameSensitive(policy.GetString());
+    });
+
     std::string policy_name_str = "";
     for (auto& policy_name : policy_names) {
       policy_name_str += policy_name.GetString() + ",";

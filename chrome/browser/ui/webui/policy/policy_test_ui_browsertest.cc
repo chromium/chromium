@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -277,6 +278,41 @@ IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest,
         policy_map->Get(policy::key::kCloudReportingEnabled);
     EXPECT_FALSE(entry);
   }
+
+  handler.reset();
+}
+
+IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest, FilterSensitivePolicies) {
+  std::unique_ptr<PolicyUIHandler> handler = SetUpHandler();
+  const std::string jsonString =
+      R"([
+      {"level": 0,"scope": 0,"source": 0,
+      "name": "DefaultSearchProviderEnabled","value": false}
+      ])";
+
+  base::Value::List list_args;
+
+  list_args.Append("setLocalTestPolicies");
+  list_args.Append(jsonString);
+
+  web_ui()->HandleReceivedMessage("setLocalTestPolicies", list_args);
+
+  base::RunLoop().RunUntilIdle();
+
+  const policy::PolicyNamespace chrome_namespace(policy::POLICY_DOMAIN_CHROME,
+                                                 std::string());
+  Profile* profile = chrome_test_utils::GetProfile(this);
+  policy::PolicyService* policy_service =
+      profile->GetProfilePolicyConnector()->policy_service();
+
+  const policy::PolicyMap* policy_map =
+      &policy_service->GetPolicies(chrome_namespace);
+  ASSERT_TRUE(policy_map);
+
+  // Check sensitive policies not applied
+  const policy::PolicyMap::Entry* entry =
+      policy_map->Get(policy::key::kDefaultSearchProviderEnabled);
+  EXPECT_FALSE(entry);
 
   handler.reset();
 }
