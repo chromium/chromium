@@ -293,6 +293,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)settingsWillBeDismissed {
   DCHECK(!_settingsAreDismissed);
 
+  [self stopAutofillProfileEditCoordinator];
   _personalDataManager->RemoveObserver(_observer.get());
 
   // Remove observer bridges.
@@ -575,11 +576,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)autofillProfileEditCoordinatorTableViewControllerDidFinish:
     (AutofillProfileEditCoordinator*)coordinator {
   DCHECK_EQ(self.autofillProfileEditCoordinator, coordinator);
-  self.autofillProfileEditCoordinator.delegate = nil;
-  self.autofillProfileEditCoordinator = nil;
+  [self stopAutofillProfileEditCoordinator];
 }
 
 #pragma mark - Private
+
+- (void)stopAutofillProfileEditCoordinator {
+  self.autofillProfileEditCoordinator.delegate = nil;
+  [self.autofillProfileEditCoordinator stop];
+  self.autofillProfileEditCoordinator = nil;
+}
 
 // Removes the item from the personal data manager model.
 - (void)willDeleteItemsAtIndexPaths:(NSArray*)indexPaths {
