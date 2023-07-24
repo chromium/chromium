@@ -49,48 +49,27 @@ void WebStateUpdateBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateListStatus& status) {
-  switch (change.type()) {
-    case WebStateListChange::Type::kStatusOnly:
-      // TODO(crbug.com/1442546): Move the implementation from
-      // WebStateActivatedAt() to here. Note that here is reachable only when
-      // `reason` == ActiveWebStateChangeReason::Activated.
-      break;
-    case WebStateListChange::Type::kDetach: {
-      // Inform the detached web state that it is no longer visible.
-      const WebStateListChangeDetach& detach_change =
-          change.As<WebStateListChangeDetach>();
-      web::WebState* detached_web_state = detach_change.detached_web_state();
-      if (detached_web_state->IsRealized()) {
-        detached_web_state->WasHidden();
-        detached_web_state->SetKeepRenderProcessAlive(false);
-      }
-      break;
+  if (change.type() == WebStateListChange::Type::kDetach) {
+    // Inform the detached web state that it is no longer visible.
+    const WebStateListChangeDetach& detach_change =
+        change.As<WebStateListChangeDetach>();
+    web::WebState* detached_web_state = detach_change.detached_web_state();
+    if (detached_web_state->IsRealized()) {
+      detached_web_state->WasHidden();
+      detached_web_state->SetKeepRenderProcessAlive(false);
     }
-    case WebStateListChange::Type::kMove:
-      // Do nothing when a WebState is moved.
-      break;
-    case WebStateListChange::Type::kReplace:
-      // Do nothing when a WebState is replaced.
-      break;
-    case WebStateListChange::Type::kInsert:
-      // Do nothing when a WebState is inserted.
-      break;
   }
-}
 
-void WebStateUpdateBrowserAgent::WebStateActivatedAt(
-    WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int active_index,
-    ActiveWebStateChangeReason reason) {
-  // Inform the old web state that it is no longer visible.
-  if (old_web_state) {
-    old_web_state->WasHidden();
-    old_web_state->SetKeepRenderProcessAlive(false);
-  }
-  if (new_web_state) {
-    new_web_state->GetWebViewProxy().scrollViewProxy.clipsToBounds = NO;
+  if (status.active_web_state_change()) {
+    // Inform the old web state that it is no longer visible.
+    if (status.old_active_web_state) {
+      status.old_active_web_state->WasHidden();
+      status.old_active_web_state->SetKeepRenderProcessAlive(false);
+    }
+    if (status.new_active_web_state) {
+      status.new_active_web_state->GetWebViewProxy()
+          .scrollViewProxy.clipsToBounds = NO;
+    }
   }
 }
 
