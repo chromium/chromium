@@ -307,6 +307,9 @@ void PowerStatus::CalculateBatteryImageInfo(BatteryImageInfo* info) const {
   } else if (IsLinePowerConnected()) {
     info->icon_badge = &kUnifiedMenuBatteryBoltIcon;
     info->badge_outline = &kUnifiedMenuBatteryBoltOutlineMaskIcon;
+  } else if (IsBatterySaverActive()) {
+    info->icon_badge = &kBatterySaverPlusIcon;
+    info->badge_outline = &kBatterySaverPlusOutlineIcon;
   } else {
     info->icon_badge = nullptr;
     info->badge_outline = nullptr;

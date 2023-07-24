@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/accessibility/accessibility_delegate.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -27,6 +28,8 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/chromeos/styles/cros_styles.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_skia_source.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -45,6 +48,7 @@ namespace ash {
 PowerTrayView::PowerTrayView(Shelf* shelf) : TrayItemView(shelf) {
   CreateImageView();
 
+  previous_battery_saver_state_ = PowerStatus::Get()->IsBatterySaverActive();
   PowerStatus::Get()->AddObserver(this);
 }
 
@@ -83,12 +87,12 @@ const char* PowerTrayView::GetClassName() const {
 
 void PowerTrayView::OnThemeChanged() {
   TrayItemView::OnThemeChanged();
-  UpdateStatus();
+  UpdateStatus(false);
   UpdateImage(/*icon_color_changed=*/true);
 }
 
 void PowerTrayView::HandleLocaleChange() {
-  UpdateStatus();
+  UpdateStatus(false);
 }
 
 void PowerTrayView::UpdateLabelOrImageViewColor(bool active) {
@@ -108,11 +112,13 @@ void PowerTrayView::UpdateLabelOrImageViewColor(bool active) {
 }
 
 void PowerTrayView::OnPowerStatusChanged() {
-  UpdateStatus();
+  const bool bsm_active = PowerStatus::Get()->IsBatterySaverActive();
+  UpdateStatus(bsm_active != previous_battery_saver_state_);
+  previous_battery_saver_state_ = bsm_active;
 }
 
-void PowerTrayView::UpdateStatus() {
-  UpdateImage(/*icon_color_changed=*/false);
+void PowerTrayView::UpdateStatus(bool icon_color_changed) {
+  UpdateImage(icon_color_changed);
   SetVisible(PowerStatus::Get()->IsBatteryPresent());
   SetAccessibleName(PowerStatus::Get()->GetAccessibleNameString(true));
   tooltip_ = PowerStatus::Get()->GetInlinedStatusString();
@@ -144,7 +150,16 @@ void PowerTrayView::UpdateImage(bool icon_color_changed) {
     // Note: The icon color changes when the UI is in OOBE mode.
     const SkColor icon_fg_color =
         GetColorProvider()->GetColor(kColorAshIconColorPrimary);
-    info = PowerStatus::Get()->GenerateBatteryImageInfo(icon_fg_color);
+    absl::optional<SkColor> badge_color;
+
+    if (features::IsBatterySaverAvailable() &&
+        PowerStatus::Get()->IsBatterySaverActive()) {
+      badge_color = cros_styles::DarkModeEnabled() ? gfx::kGoogleYellow700
+                                                   : gfx::kGoogleYellow800;
+    }
+
+    info = PowerStatus::Get()->GenerateBatteryImageInfo(icon_fg_color,
+                                                        badge_color);
     info_ = info;
     image_view()->SetImage(PowerStatus::GetBatteryImage(
         info, kUnifiedTrayBatteryIconSize, GetColorProvider()));

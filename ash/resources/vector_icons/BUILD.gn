@@ -36,6 +36,8 @@ aggregate_vector_icons("ash_vector_icons") {
     "autoclick_scroll_right.icon",
     "autoclick_scroll_up.icon",
     "battery.icon",
+    "battery_saver_plus.icon",
+    "battery_saver_plus_outline.icon",
     "calendar_background.icon",
     "calendar_up_next_todays_events_button.icon",
     "cancel.icon",
