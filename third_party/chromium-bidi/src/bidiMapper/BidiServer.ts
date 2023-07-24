@@ -38,7 +38,6 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
   #transport: IBidiTransport;
   #commandProcessor: CommandProcessor;
   #browsingContextStorage = new BrowsingContextStorage();
-  #realmStorage = new RealmStorage();
   #logger?: LoggerFn;
 
   #handleIncomingMessage = (message: ChromiumBidi.Command) => {
@@ -78,7 +77,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       selfTargetId,
       parser,
       this.#browsingContextStorage,
-      this.#realmStorage,
+      new RealmStorage(),
       this.#logger
     );
     this.#commandProcessor.on(
@@ -115,16 +114,8 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       flatten: true,
     });
 
-    await server.topLevelContextsLoaded();
+    await server.#topLevelContextsLoaded();
     return server;
-  }
-
-  async topLevelContextsLoaded() {
-    await Promise.all(
-      this.#browsingContextStorage
-        .getTopLevelContexts()
-        .map((c) => c.awaitLoaded())
-    );
   }
 
   /**
@@ -140,5 +131,13 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
 
   getBrowsingContextStorage(): BrowsingContextStorage {
     return this.#browsingContextStorage;
+  }
+
+  async #topLevelContextsLoaded() {
+    await Promise.all(
+      this.#browsingContextStorage
+        .getTopLevelContexts()
+        .map((c) => c.awaitLoaded())
+    );
   }
 }

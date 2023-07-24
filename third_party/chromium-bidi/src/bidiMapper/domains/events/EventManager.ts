@@ -116,6 +116,7 @@ export class EventManager implements IEventManager {
 
   constructor(bidiServer: BidiServer) {
     this.#bidiServer = bidiServer;
+
     this.#subscriptionManager = new SubscriptionManager(
       bidiServer.getBrowsingContextStorage()
     );

@@ -40,6 +40,7 @@ export class NetworkProcessor {
 
   private constructor(eventManager: IEventManager) {
     this.#eventManager = eventManager;
+
     this.#requestMap = new DefaultMap(
       (requestId) => new NetworkRequest(requestId, this.#eventManager)
     );
@@ -129,6 +130,14 @@ export class NetworkProcessor {
     return networkProcessor;
   }
 
+  dispose() {
+    for (const request of this.#requestMap.values()) {
+      request.dispose();
+    }
+
+    this.#requestMap.clear();
+  }
+
   #getOrCreateNetworkRequest(requestId: Network.Request): NetworkRequest {
     return this.#requestMap.get(requestId);
   }
@@ -139,13 +148,5 @@ export class NetworkProcessor {
       request.dispose();
       this.#requestMap.delete(requestId);
     }
-  }
-
-  dispose() {
-    for (const request of this.#requestMap.values()) {
-      request.dispose();
-    }
-
-    this.#requestMap.clear();
   }
 }

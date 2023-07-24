@@ -32,6 +32,7 @@ export class ScriptProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #realmStorage: RealmStorage;
   readonly #preloadScriptStorage;
+
   constructor(
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
@@ -85,32 +86,6 @@ export class ScriptProcessor {
     return {};
   }
 
-  async evaluate(
-    params: Script.EvaluateParameters
-  ): Promise<Script.EvaluateResult> {
-    const realm = await this.#getRealm(params.target);
-    return realm.evaluate(
-      params.expression,
-      params.awaitPromise,
-      params.resultOwnership ?? Script.ResultOwnership.None,
-      params.serializationOptions ?? {}
-    );
-  }
-
-  getRealms(params: Script.GetRealmsParameters): Script.GetRealmsResult {
-    if (params.context !== undefined) {
-      // Make sure the context is known.
-      this.#browsingContextStorage.getContext(params.context);
-    }
-    const realms = this.#realmStorage
-      .findRealms({
-        browsingContextId: params.context,
-        type: params.type,
-      })
-      .map((realm: Realm) => realm.realmInfo);
-    return {realms};
-  }
-
   async callFunction(
     params: Script.CallFunctionParameters
   ): Promise<Script.EvaluateResult> {
@@ -127,12 +102,38 @@ export class ScriptProcessor {
     );
   }
 
+  async evaluate(
+    params: Script.EvaluateParameters
+  ): Promise<Script.EvaluateResult> {
+    const realm = await this.#getRealm(params.target);
+    return realm.evaluate(
+      params.expression,
+      params.awaitPromise,
+      params.resultOwnership ?? Script.ResultOwnership.None,
+      params.serializationOptions ?? {}
+    );
+  }
+
   async disown(params: Script.DisownParameters): Promise<EmptyResult> {
     const realm = await this.#getRealm(params.target);
     await Promise.all(
       params.handles.map(async (handle) => realm.disown(handle))
     );
     return {};
+  }
+
+  getRealms(params: Script.GetRealmsParameters): Script.GetRealmsResult {
+    if (params.context !== undefined) {
+      // Make sure the context is known.
+      this.#browsingContextStorage.getContext(params.context);
+    }
+    const realms = this.#realmStorage
+      .findRealms({
+        browsingContextId: params.context,
+        type: params.type,
+      })
+      .map((realm: Realm) => realm.realmInfo);
+    return {realms};
   }
 
   async #getRealm(target: Script.Target): Promise<Realm> {
