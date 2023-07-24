@@ -2331,6 +2331,8 @@ void AddPrivacyGuideStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PRIVACY_GUIDE_MSBB_FEATURE_DESCRIPTION1},
       {"privacyGuideMsbbFeatureDescription2",
        IDS_SETTINGS_PRIVACY_GUIDE_MSBB_FEATURE_DESCRIPTION2},
+      {"privacyGuideMsbbFeatureDescription3",
+       IDS_SETTINGS_PRIVACY_GUIDE_MSBB_FEATURE_DESCRIPTION3},
       {"privacyGuideMsbbPrivacyDescription1",
        IDS_SETTINGS_PRIVACY_GUIDE_MSBB_PRIVACY_DESCRIPTION1},
       {"privacyGuideMsbbPrivacyDescription2",

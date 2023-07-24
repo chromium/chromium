@@ -158,6 +158,9 @@
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_WAA_SUB_LABEL" desc="Text of the Web and App Activity sublabel in the completion card of the 'Privacy Guide'.">
     Choose whether to include Chrome history for more personalized experiences in Google services
   </message>
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_MSBB_FEATURE_DESCRIPTION3" desc="A part of the feature description of 'make searches and browsing better' in the 'Privacy Guide'.">
+    If you also save your bookmarks in your Google Account, you can track product prices in Chrome and get notified when the price drops
+  </message>
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_MSBB_PRIVACY_DESCRIPTION2" desc="A part of the privacy description of 'make searches and browsing better' in the 'Privacy Guide'.">
     If you also share Chrome usage reports, those reports include the URLs you visit
   </message>

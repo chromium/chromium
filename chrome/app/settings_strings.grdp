@@ -2222,10 +2222,10 @@
     You'll browse faster because content is proactively loaded based on your current webpage visit
   </message>
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_MSBB_FEATURE_DESCRIPTION2" desc="A part of the feature description of 'make searches and browsing better' in the 'Privacy Guide'.">
-    You'll get improved suggestions in the address bar
+    From the address bar, you can open page info to see additional info about the page you're visiting
   </message>
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_MSBB_PRIVACY_DESCRIPTION1" desc="A part of the privacy description of 'make searches and browsing better' in the 'Privacy Guide'.">
-    URLs you visit are sent to Google to predict what sites you might visit next
+    URLs you visit are sent to Google to predict what sites you might visit next and to show you additional info about the page you're visiting
   </message>
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_HISTORY_SYNC_CARD_HEADER" desc="Header of the history sync card in the 'Privacy Guide'.">
     Choose whether to sync history
