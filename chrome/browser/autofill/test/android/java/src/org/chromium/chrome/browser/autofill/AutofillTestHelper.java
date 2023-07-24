@@ -272,6 +272,7 @@ public class AutofillTestHelper {
      */
     public void clearAllDataForTesting() throws TimeoutException {
         runOnUiThreadBlocking(() -> PersonalDataManager.getInstance().clearServerDataForTesting());
+        runOnUiThreadBlocking(() -> PersonalDataManager.getInstance().clearImageDataForTesting());
         // Clear remaining local profiles and cards.
         for (AutofillProfile profile : getProfilesForSettings()) {
             if (profile.getIsLocal()) {

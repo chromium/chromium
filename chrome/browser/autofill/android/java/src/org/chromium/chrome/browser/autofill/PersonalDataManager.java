@@ -707,6 +707,11 @@ public class PersonalDataManager {
                 mPersonalDataManagerAndroid, PersonalDataManager.this);
     }
 
+    protected void clearImageDataForTesting() {
+        ThreadUtils.assertOnUiThread();
+        mCreditCardArtImages.clear();
+    }
+
     public static void setInstanceForTesting(PersonalDataManager manager) {
         var oldValue = sManager;
         sManager = manager;
