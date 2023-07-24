@@ -19114,6 +19114,14 @@ be describing additional metrics about the same event.
       The estimated resident set size of the page, in kilobytes.
     </summary>
   </metric>
+  <metric name="TotalRecentCPUUsageAllPages">
+    <summary>
+      The sum of the estimated CPU usage of all pages over the last 5 minutes,
+      with 100,000 as 100% usage of 1 full core. (The same scale as the
+      PerformanceMonitor.AverageCPU8.* histograms.) RecentCPUUsage can be
+      compared to this to find how the page compares to other open tabs.
+    </summary>
+  </metric>
 </event>
 
 <event name="PerformanceManager.PageTimelineState">

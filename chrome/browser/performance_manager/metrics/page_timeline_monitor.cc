@@ -7,6 +7,8 @@
 #include <stdint.h>
 #include <map>
 #include <memory>
+#include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -77,18 +79,26 @@ void PageTimelineMonitor::CollectPageResourceUsage() {
   const PageTimelineCPUMonitor::CPUUsageMap cpu_usage_map =
       cpu_monitor_.UpdateCPUMeasurements();
 
-  for (auto const& pair : page_node_info_map_) {
-    const PageNode* page_node = pair.first;
+  // Calculate the overall CPU usage.
+  double total_cpu_usage = 0;
+  std::vector<std::pair<const PageNode*, double>> page_cpu_usage;
+  page_cpu_usage.reserve(page_node_info_map_.size());
+  for (const auto& [page_node, _] : page_node_info_map_) {
+    double cpu_usage =
+        PageTimelineCPUMonitor::EstimatePageCPUUsage(page_node, cpu_usage_map);
+    page_cpu_usage.emplace_back(page_node, cpu_usage);
+    total_cpu_usage += cpu_usage;
+  }
 
-    DCHECK_EQ(page_node->GetType(), performance_manager::PageType::kTab);
+  for (const auto& [page_node, cpu_usage] : page_cpu_usage) {
+    CHECK_EQ(page_node->GetType(), performance_manager::PageType::kTab);
     const ukm::SourceId source_id = page_node->GetUkmSourceID();
 
     ukm::builders::PerformanceManager_PageResourceUsage(source_id)
         .SetResidentSetSizeEstimate(page_node->EstimateResidentSetSize())
         .SetPrivateFootprintEstimate(page_node->EstimatePrivateFootprintSize())
-        .SetRecentCPUUsage(kCPUUsageFactor *
-                           PageTimelineCPUMonitor::EstimatePageCPUUsage(
-                               page_node, cpu_usage_map))
+        .SetRecentCPUUsage(kCPUUsageFactor * cpu_usage)
+        .SetTotalRecentCPUUsageAllPages(kCPUUsageFactor * total_cpu_usage)
         .Record(ukm::UkmRecorder::Get());
   }
 }

@@ -518,6 +518,7 @@ TEST_F(PageTimelineMonitorUnitTest, TestResourceUsage) {
           // `other_page` gets the sum of `other_frame` and `child_frame`
           {mock_source_id2, 7500},
       });
+  const auto kExpectedAllCPUUsage = 2500 + 7500;
   for (const ukm::mojom::UkmEntry* entry : entries) {
     test_ukm_recorder()->ExpectEntryMetric(
         entry, "ResidentSetSizeEstimate",
@@ -527,6 +528,8 @@ TEST_F(PageTimelineMonitorUnitTest, TestResourceUsage) {
         kExpectedPrivateFootprint.at(entry->source_id));
     test_ukm_recorder()->ExpectEntryMetric(
         entry, "RecentCPUUsage", kExpectedCPUUsage.at(entry->source_id));
+    test_ukm_recorder()->ExpectEntryMetric(entry, "TotalRecentCPUUsageAllPages",
+                                           kExpectedAllCPUUsage);
   }
 }
 
