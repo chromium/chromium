@@ -14,18 +14,6 @@
 
 namespace chromeos {
 
-namespace {
-
-ino_t GetInodeValue(const base::FilePath& path) {
-  struct stat file_stats;
-  if (stat(path.value().c_str(), &file_stats) != 0) {
-    return 0;
-  }
-  return file_stats.st_ino;
-}
-
-}  // namespace
-
 FakeDlpClient::FakeDlpClient() = default;
 
 FakeDlpClient::~FakeDlpClient() = default;
@@ -56,9 +44,8 @@ void FakeDlpClient::AddFiles(const dlp::AddFilesRequest request,
   }
   for (const dlp::AddFileRequest& file_request : request.add_file_requests()) {
     if (file_request.has_file_path() && file_request.has_source_url()) {
-      files_database_[GetInodeValue(base::FilePath(file_request.file_path()))] =
-          std::make_pair(file_request.source_url(),
-                         file_request.referrer_url());
+      files_database_[file_request.file_path()] = std::make_pair(
+          file_request.source_url(), file_request.referrer_url());
     }
   }
 
@@ -73,14 +60,14 @@ void FakeDlpClient::GetFilesSources(const dlp::GetFilesSourcesRequest request,
     return;
   }
   dlp::GetFilesSourcesResponse response;
-  for (const auto& file_inode : request.files_inodes()) {
-    auto file_itr = files_database_.find(file_inode);
+  for (const auto& file_path : request.files_paths()) {
+    auto file_itr = files_database_.find(file_path);
     if (file_itr == files_database_.end() && !fake_source_.has_value()) {
       continue;
     }
 
     dlp::FileMetadata* file_metadata = response.add_files_metadata();
-    file_metadata->set_inode(file_inode);
+    file_metadata->set_path(file_path);
     file_metadata->set_source_url(
         fake_source_.value_or(file_itr->second.first));
     file_metadata->set_referrer_url(file_itr->second.second);

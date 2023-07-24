@@ -32,15 +32,6 @@
 namespace policy {
 
 namespace {
-
-absl::optional<ino64_t> GetInodeValue(const base::FilePath& path) {
-  struct stat file_stats;
-  if (stat(path.value().c_str(), &file_stats) != 0) {
-    return absl::nullopt;
-  }
-  return file_stats.st_ino;
-}
-
 using FileDaemonInfo = policy::DlpFilesController::FileDaemonInfo;
 }  // namespace
 
@@ -170,16 +161,13 @@ TEST_F(DlpFilesControllerTest, LocalFileCopyTest) {
       chromeos::DlpClient::GetFilesSourcesCallback)>
       get_files_source_call;
 
-  absl::optional<ino64_t> inode = GetInodeValue(src_file);
-  EXPECT_TRUE(inode.has_value());
-
   ::dlp::GetFilesSourcesResponse response;
   auto* metadata = response.add_files_metadata();
   metadata->set_source_url("http://some.url/path");
-  metadata->set_inode(inode.value());
+  metadata->set_path(src_file.value());
 
   ::dlp::GetFilesSourcesRequest request;
-  request.add_files_inodes(inode.value());
+  request.add_files_paths(src_file.value());
 
   EXPECT_CALL(get_files_source_call,
               Run(EqualsProto(request), base::test::IsNotNullCallback()))
@@ -258,15 +246,13 @@ TEST_F(DlpFilesControllerTest, CopyEmptyMetadataTest) {
       chromeos::DlpClient::GetFilesSourcesCallback)>
       get_files_source_call;
 
-  absl::optional<ino64_t> inode = GetInodeValue(src_file);
-  EXPECT_TRUE(inode.has_value());
   ::dlp::GetFilesSourcesResponse response;
   auto* metadata = response.add_files_metadata();
   metadata->set_source_url("");
-  metadata->set_inode(inode.value());
+  metadata->set_path(src_file.value());
 
   ::dlp::GetFilesSourcesRequest request;
-  request.add_files_inodes(inode.value());
+  request.add_files_paths(src_file.value());
 
   EXPECT_CALL(get_files_source_call,
               Run(EqualsProto(request), base::test::IsNotNullCallback()))

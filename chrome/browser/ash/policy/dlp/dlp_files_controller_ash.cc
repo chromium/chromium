@@ -90,19 +90,6 @@ bool IsInLocalFileSystem(const base::FilePath& file_path) {
   return false;
 }
 
-// Returns inode value for local files.
-absl::optional<ino64_t> GetInodeValue(const base::FilePath& path) {
-  if (!IsInLocalFileSystem(path)) {
-    return absl::nullopt;
-  }
-
-  struct stat file_stats;
-  if (stat(path.value().c_str(), &file_stats) != 0) {
-    return absl::nullopt;
-  }
-  return file_stats.st_ino;
-}
-
 // Returns a `DlpFileDestination` with a source URL or component, based on
 // |app_update|. If neither URL nor component can be found, returns nullopt.
 absl::optional<DlpFileDestination> GetFileDestinationForApp(
@@ -133,15 +120,6 @@ absl::optional<DlpFileDestination> GetFileDestinationForApp(
       return absl::nullopt;
   }
   return absl::nullopt;
-}
-
-std::vector<absl::optional<ino64_t>> GetFilesInodes(
-    const std::vector<storage::FileSystemURL>& files) {
-  std::vector<absl::optional<ino64_t>> inodes;
-  for (const auto& file : files) {
-    inodes.push_back(GetInodeValue(file.path()));
-  }
-  return inodes;
 }
 
 // Returns |g_file_system_context_for_testing| if set, otherwise
@@ -486,16 +464,15 @@ void DlpFilesControllerAsh::GetDlpMetadata(
     return;
   }
 
-  std::vector<absl::optional<ino64_t>> inodes = GetFilesInodes(files);
   ::dlp::GetFilesSourcesRequest request;
-  for (const auto& inode : inodes) {
-    if (inode.has_value()) {
-      request.add_files_inodes(inode.value());
+  for (const auto& file : files) {
+    if (IsInLocalFileSystem(file.path())) {
+      request.add_files_paths(file.path().value());
     }
   }
   chromeos::DlpClient::Get()->GetFilesSources(
       request, base::BindOnce(&DlpFilesControllerAsh::ReturnDlpMetadata,
-                              weak_ptr_factory_.GetWeakPtr(), std::move(inodes),
+                              weak_ptr_factory_.GetWeakPtr(), std::move(files),
                               destination, std::move(result_callback)));
 }
 
@@ -1071,7 +1048,7 @@ void DlpFilesControllerAsh::ReturnAllowedUploads(
 }
 
 void DlpFilesControllerAsh::ReturnDlpMetadata(
-    std::vector<absl::optional<ino64_t>> inodes,
+    const std::vector<storage::FileSystemURL>& files,
     absl::optional<DlpFileDestination> destination,
     GetDlpMetadataCallback result_callback,
     const ::dlp::GetFilesSourcesResponse response) {
@@ -1080,7 +1057,7 @@ void DlpFilesControllerAsh::ReturnDlpMetadata(
                << response.error_message();
   }
 
-  base::flat_map<ino64_t, DlpFileMetadata> metadata_map;
+  base::flat_map<std::string, DlpFileMetadata> metadata_map;
   for (const auto& metadata : response.files_metadata()) {
     DlpRulesManager::Level level = rules_manager_->IsRestrictedByAnyRule(
         GURL(metadata.source_url()), DlpRulesManager::Restriction::kFiles,
@@ -1116,18 +1093,14 @@ void DlpFilesControllerAsh::ReturnDlpMetadata(
     }
 
     metadata_map.emplace(
-        metadata.inode(),
+        metadata.path(),
         DlpFileMetadata(metadata.source_url(), metadata.referrer_url(),
                         is_dlp_restricted, is_restricted_for_destination));
   }
 
   std::vector<DlpFileMetadata> result;
-  for (const auto& inode : inodes) {
-    if (!inode.has_value()) {
-      result.emplace_back("", "", false, false);
-      continue;
-    }
-    auto metadata_itr = metadata_map.find(inode.value());
+  for (const auto& file : files) {
+    auto metadata_itr = metadata_map.find(file.path().value());
     if (metadata_itr == metadata_map.end()) {
       result.emplace_back("", "", false, false);
     } else {

@@ -231,7 +231,7 @@ class DlpFilesControllerAsh : public DlpFilesController {
                             FilterDisallowedUploadsCallback result_callback,
                             ::dlp::CheckFilesTransferResponse response);
 
-  void ReturnDlpMetadata(std::vector<absl::optional<ino64_t>> inodes,
+  void ReturnDlpMetadata(const std::vector<storage::FileSystemURL>& files,
                          absl::optional<DlpFileDestination> destination,
                          GetDlpMetadataCallback result_callback,
                          const ::dlp::GetFilesSourcesResponse response);

@@ -103,18 +103,6 @@ bool IsInLocalFileSystem(const base::FilePath& file_path) {
   return false;
 }
 
-absl::optional<ino64_t> GetInodeValue(const base::FilePath& path) {
-  if (!IsInLocalFileSystem(path)) {
-    return absl::nullopt;
-  }
-
-  struct stat file_stats;
-  if (stat(path.value().c_str(), &file_stats) != 0) {
-    return absl::nullopt;
-  }
-  return file_stats.st_ino;
-}
-
 }  // namespace
 
 DlpFilesController::FileDaemonInfo::FileDaemonInfo(
@@ -178,10 +166,9 @@ void DlpFilesController::RequestCopyAccess(
   if (!dst_component.has_value()) {
     // We allow internal copy, we still have to get the scopedFS
     // and we might need to copy the source URL information.
-    auto inode = GetInodeValue(source_file.path());
-    if (inode) {
+    if (IsInLocalFileSystem(source_file.path())) {
       ::dlp::GetFilesSourcesRequest request;
-      request.add_files_inodes(inode.value());
+      request.add_files_paths(source_file.path().value());
       chromeos::DlpClient::Get()->GetFilesSources(
           request,
           base::BindOnce(&GotFilesSourcesOfCopy, destination,

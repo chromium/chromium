@@ -572,9 +572,7 @@ class DlpFilesAppBrowserTest : public FilesAppBrowserTest {
       ::dlp::GetFilesSourcesResponse response;
       for (unsigned long i = 0; i < file_names->size(); i++) {
         auto* metadata = response.add_files_metadata();
-        auto inode = GetInodeValue(result.Append((*file_names)[i].GetString()));
-        EXPECT_TRUE(inode.has_value());
-        metadata->set_inode(inode.value());
+        metadata->set_path(result.Append((*file_names)[i].GetString()).value());
         metadata->set_source_url((*source_urls)[i].GetString());
       }
 
@@ -754,15 +752,6 @@ class DlpFilesAppBrowserTest : public FilesAppBrowserTest {
       return data_controls::Component::kDrive;
     }
     return data_controls::Component::kUnknownComponent;
-  }
-
-  // Returns the inode value for |path|, if found.
-  absl::optional<ino64_t> GetInodeValue(const base::FilePath& path) {
-    struct stat file_stats;
-    if (stat(path.value().c_str(), &file_stats) != 0) {
-      return absl::nullopt;
-    }
-    return file_stats.st_ino;
   }
 
   // Invokes `callback` with the previously constructed `response`. Note that
