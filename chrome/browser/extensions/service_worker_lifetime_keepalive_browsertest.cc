@@ -144,6 +144,16 @@ class ServiceWorkerLifetimeKeepaliveBrowsertest : public ExtensionApiTest {
 
   ~ServiceWorkerLifetimeKeepaliveBrowsertest() override = default;
 
+  void TearDownOnMainThread() override {
+    ExtensionApiTest::TearDownOnMainThread();
+    // Some tests use SetTickClockForTesting() with `tick_clock_opener_` or
+    // `tick_clock_receiver_`. Restore the TickClock to the default now.
+    // This is required because the TickClock must outlive ServiceWorkerVersion,
+    // otherwise ServiceWorkerVersion will hold a dangling pointer.
+    content::ResetTickClockToDefaultForAllLiveServiceWorkerVersions(
+        GetServiceWorkerContext(browser()->profile()));
+  }
+
   void TriggerTimeoutAndCheckActive(content::ServiceWorkerContext* context,
                                     int64_t version_id) {
     EXPECT_TRUE(

@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/time/default_tick_clock.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/fake_embedded_worker_instance_client.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
@@ -386,6 +387,11 @@ TEST_F(ServiceWorkerObjectHostTest,
 
   // Clean up.
   StopServiceWorker(version_.get());
+
+  // Restore the TickClock to the default. This is required because the
+  // TickClock must outlive ServiceWorkerVersion, otherwise ServiceWorkerVersion
+  // will hold a dangling pointer.
+  version_->SetTickClockForTesting(base::DefaultTickClock::GetInstance());
 }
 
 // Tests postMessage() from a page to a service worker.

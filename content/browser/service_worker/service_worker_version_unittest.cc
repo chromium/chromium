@@ -175,9 +175,7 @@ class ServiceWorkerVersionTest : public testing::Test {
     EXPECT_TRUE(version_->FinishRequest(request_id, /*was_handled=*/true));
   }
 
-  void SetTickClockForTesting(base::SimpleTestTickClock* tick_clock) {
-    version_->SetTickClockForTesting(tick_clock);
-  }
+  void SetupTestTickClock() { version_->SetTickClockForTesting(&tick_clock_); }
 
   virtual absl::optional<ServiceWorkerVersion::FetchHandlerType>
   GetFetchHandlerType() const {
@@ -228,6 +226,9 @@ class ServiceWorkerVersionTest : public testing::Test {
   std::vector<std::unique_ptr<MockRenderProcessHost>>
       client_render_process_hosts_;
   GURL scope_;
+  // Some tests sets a custom tick clock, store it here to ensure that it
+  // outlives `version_`.
+  base::SimpleTestTickClock tick_clock_;
 };
 
 // An instance client that breaks the Mojo connection upon receiving the
@@ -556,8 +557,7 @@ TEST_F(ServiceWorkerVersionTest, SetDevToolsAttached) {
 //
 // Regression test for crbug.com/1152255#c144
 TEST_F(ServiceWorkerVersionTest, DevToolsAttachThenDetach) {
-  base::SimpleTestTickClock tick_clock;
-  SetTickClockForTesting(&tick_clock);
+  SetupTestTickClock();
   absl::optional<blink::ServiceWorkerStatusCode> status;
 
   auto start_external_request_test =
@@ -599,7 +599,7 @@ TEST_F(ServiceWorkerVersionTest, DevToolsAttachThenDetach) {
         }
 
         // Now advance time to check worker's running state.
-        tick_clock.Advance(kTestTimeoutBeyondRequestTimeout);
+        tick_clock_.Advance(kTestTimeoutBeyondRequestTimeout);
         version_->timeout_timer_.user_task().Run();
         base::RunLoop().RunUntilIdle();
 
@@ -1024,8 +1024,7 @@ TEST_F(ServiceWorkerVersionTest, RequestCustomizedTimeout) {
   ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk,
             StartServiceWorker(version_.get()));
 
-  base::SimpleTestTickClock tick_clock;
-  SetTickClockForTesting(&tick_clock);
+  SetupTestTickClock();
 
   // Create two requests. One which times out in 10 seconds, one in 20 seconds.
   int timeout_seconds = 10;
@@ -1050,7 +1049,7 @@ TEST_F(ServiceWorkerVersionTest, RequestCustomizedTimeout) {
   EXPECT_FALSE(second_status);
 
   // Now advance time until the second task timeout should expire.
-  tick_clock.Advance(base::Seconds(timeout_seconds + 1));
+  tick_clock_.Advance(base::Seconds(timeout_seconds + 1));
   version_->timeout_timer_.user_task().Run();
   second_run_loop.Run();
   EXPECT_FALSE(first_status);
@@ -1061,7 +1060,7 @@ TEST_F(ServiceWorkerVersionTest, RequestCustomizedTimeout) {
   EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version_->running_status());
 
   // Now advance time until both tasks should be expired.
-  tick_clock.Advance(base::Seconds(timeout_seconds + 1));
+  tick_clock_.Advance(base::Seconds(timeout_seconds + 1));
   version_->timeout_timer_.user_task().Run();
   first_run_loop.Run();
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorTimeout,
@@ -1806,8 +1805,7 @@ TEST_F(ServiceWorkerVersionTest, PendingExternalRequest) {
 
 // Tests worker lifetime with ServiceWorkerVersion::StartExternalRequest.
 TEST_F(ServiceWorkerVersionTest, WorkerLifetimeWithExternalRequest) {
-  base::SimpleTestTickClock tick_clock;
-  SetTickClockForTesting(&tick_clock);
+  SetupTestTickClock();
   absl::optional<blink::ServiceWorkerStatusCode> status;
 
   auto start_external_request_test =
@@ -1833,7 +1831,7 @@ TEST_F(ServiceWorkerVersionTest, WorkerLifetimeWithExternalRequest) {
         }
 
         // Now advance time to check worker's running state.
-        tick_clock.Advance(kTestTimeoutBeyondRequestTimeout);
+        tick_clock_.Advance(kTestTimeoutBeyondRequestTimeout);
         version_->timeout_timer_.user_task().Run();
         base::RunLoop().RunUntilIdle();
 
@@ -1877,8 +1875,7 @@ TEST_F(ServiceWorkerVersionTest, WorkerLifetimeWithExternalRequest) {
 // Regression test for https://crbug.com/1189678
 TEST_F(ServiceWorkerVersionTest,
        DefaultTimeoutRequestDoesNotAffectMaxTimeoutRequest) {
-  base::SimpleTestTickClock tick_clock;
-  SetTickClockForTesting(&tick_clock);
+  SetupTestTickClock();
   absl::optional<blink::ServiceWorkerStatusCode> status;
 
   using ReqTimeoutType = ServiceWorkerExternalRequestTimeoutType;
@@ -1905,7 +1902,7 @@ TEST_F(ServiceWorkerVersionTest,
   }
 
   // Now advance time to check worker's running state.
-  tick_clock.Advance(kTestTimeoutBeyondRequestTimeout);
+  tick_clock_.Advance(kTestTimeoutBeyondRequestTimeout);
   version_->timeout_timer_.user_task().Run();
   version_->OnPongFromWorker();  // Avoids ping timeout.
   base::RunLoop().RunUntilIdle();

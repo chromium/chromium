@@ -1209,7 +1209,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
       blink::ServiceWorkerStatusCode::kOk;
 
   // The clock used to vend tick time.
-  raw_ptr<const base::TickClock, LeakedDanglingUntriaged> tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // The clock used for actual (wall clock) time
   const raw_ptr<base::Clock> clock_;
