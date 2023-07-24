@@ -137,8 +137,8 @@ export class NetworkProcessor {
     const request = this.#requestMap.get(requestId);
     if (request) {
       request.dispose();
+      this.#requestMap.delete(requestId);
     }
-    this.#requestMap.delete(requestId);
   }
 
   dispose() {
