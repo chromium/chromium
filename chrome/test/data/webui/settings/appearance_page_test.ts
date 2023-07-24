@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {AppearanceBrowserProxy, AppearanceBrowserProxyImpl, HomeUrlInputElement, SettingsAppearancePageElement, SettingsToggleButtonElement, SystemTheme} from 'chrome://settings/settings.js';
-import {assertEquals,assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-// clang-format on
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {AppearanceBrowserProxy, AppearanceBrowserProxyImpl, ColorSchemeMode, CustomizeColorSchemeModeBrowserProxy, CustomizeColorSchemeModeClientCallbackRouter, CustomizeColorSchemeModeClientRemote, CustomizeColorSchemeModeHandlerRemote, HomeUrlInputElement, SettingsAppearancePageElement, SettingsToggleButtonElement, SystemTheme} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 class TestAppearanceBrowserProxy extends TestBrowserProxy implements
     AppearanceBrowserProxy {
@@ -97,10 +97,20 @@ class TestAppearanceBrowserProxy extends TestBrowserProxy implements
 
 let appearancePage: SettingsAppearancePageElement;
 let appearanceBrowserProxy: TestAppearanceBrowserProxy;
+let colorSchemeHandler: TestMock<CustomizeColorSchemeModeHandlerRemote>&
+    CustomizeColorSchemeModeHandlerRemote;
+let colorSchemeCallbackRouter: CustomizeColorSchemeModeClientRemote;
 
 function createAppearancePage() {
   appearanceBrowserProxy.reset();
   document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+  colorSchemeHandler =
+      TestMock.fromClass(CustomizeColorSchemeModeHandlerRemote);
+  CustomizeColorSchemeModeBrowserProxy.setInstance(
+      colorSchemeHandler, new CustomizeColorSchemeModeClientCallbackRouter());
+  colorSchemeCallbackRouter = CustomizeColorSchemeModeBrowserProxy.getInstance()
+                                  .callbackRouter.$.bindNewPipeAndPassRemote();
 
   appearancePage = document.createElement('settings-appearance-page');
   appearancePage.set('prefs', {
@@ -137,6 +147,7 @@ suite('AppearanceHandler', function() {
   setup(function() {
     appearanceBrowserProxy = new TestAppearanceBrowserProxy();
     AppearanceBrowserProxyImpl.setInstance(appearanceBrowserProxy);
+
     createAppearancePage();
   });
 
@@ -264,6 +275,32 @@ suite('AppearanceHandler', function() {
   });
   // </if>
 
+  test('ColorSchemeMode', async () => {
+    assertFalse(isVisible(appearancePage.$.colorSchemeModeRow));
+
+    colorSchemeHandler.reset();
+    document.documentElement.toggleAttribute('chrome-refresh-2023', true);
+    createAppearancePage();
+    await colorSchemeHandler.whenCalled('initializeColorSchemeMode');
+
+    assertTrue(isVisible(appearancePage.$.colorSchemeModeRow));
+    assertEquals(
+        1, colorSchemeHandler.getCallCount('initializeColorSchemeMode'));
+
+    // Assert that changes to the color scheme mode updates the select menu.
+    colorSchemeCallbackRouter.setColorSchemeMode(ColorSchemeMode.kLight);
+    assertEquals(
+        `${ColorSchemeMode.kLight}`,
+        appearancePage.$.colorSchemeModeSelect.value);
+
+    // Assert that changing the select menu updates the color scheme.
+    appearancePage.$.colorSchemeModeSelect.value = `${ColorSchemeMode.kDark}`;
+    appearancePage.$.colorSchemeModeSelect.dispatchEvent(new Event('change'));
+    const handlerArg =
+        await colorSchemeHandler.whenCalled('setColorSchemeMode');
+    assertEquals(ColorSchemeMode.kDark, handlerArg);
+  });
+
   test('default zoom handling', async function() {
     function getDefaultZoomText() {
       const zoomLevel = appearancePage.$.zoomLevel;
@@ -320,7 +357,6 @@ suite('AppearanceHandler', function() {
     createAppearancePage();
     assertFalse(!!appearancePage.shadowRoot!.querySelector('#side-panel'));
   });
-
 });
 
 suite('HomeUrlInput', function() {

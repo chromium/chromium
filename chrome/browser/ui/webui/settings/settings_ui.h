@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+#include "ui/webui/resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.mojom.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -32,11 +33,14 @@ class PrefRegistrySyncable;
 class ChromeCustomizeThemesHandler;
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
+class CustomizeColorSchemeModeHandler;
 namespace settings {
 
 // The WebUI handler for chrome://settings.
 class SettingsUI : public ui::MojoWebUIController,
-                   public help_bubble::mojom::HelpBubbleHandlerFactory
+                   public help_bubble::mojom::HelpBubbleHandlerFactory,
+                   public customize_color_scheme_mode::mojom::
+                       CustomizeColorSchemeModeHandlerFactory
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     // chrome://settings/manageProfile which only exists on !OS_CHROMEOS
     // requires mojo bindings.
@@ -75,6 +79,11 @@ class SettingsUI : public ui::MojoWebUIController,
       mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
           pending_receiver);
 
+  void BindInterface(
+      mojo::PendingReceiver<customize_color_scheme_mode::mojom::
+                                CustomizeColorSchemeModeHandlerFactory>
+          pending_receiver);
+
  private:
   void AddSettingsPageUIHandler(
       std::unique_ptr<content::WebUIMessageHandler> handler);
@@ -104,6 +113,20 @@ class SettingsUI : public ui::MojoWebUIController,
   std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>
       help_bubble_handler_factory_receiver_{this};
+
+  void CreateCustomizeColorSchemeModeHandler(
+      mojo::PendingRemote<
+          customize_color_scheme_mode::mojom::CustomizeColorSchemeModeClient>
+          client,
+      mojo::PendingReceiver<
+          customize_color_scheme_mode::mojom::CustomizeColorSchemeModeHandler>
+          handler) override;
+
+  std::unique_ptr<CustomizeColorSchemeModeHandler>
+      customize_color_scheme_mode_handler_;
+  mojo::Receiver<customize_color_scheme_mode::mojom::
+                     CustomizeColorSchemeModeHandlerFactory>
+      customize_color_scheme_mode_handler_factory_receiver_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

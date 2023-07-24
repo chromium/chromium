@@ -372,6 +372,7 @@ build_webui("build") {
   ts_deps = [
     "//chrome/browser/resources/settings_shared:build_ts",
     "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_components/customize_color_scheme_mode:build_ts",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
     "//ui/webui/resources/cr_components/localized_link:build_ts",
     "//ui/webui/resources/cr_components/managed_dialog:build_ts",

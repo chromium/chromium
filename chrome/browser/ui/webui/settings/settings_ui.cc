@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/cr_components/customize_color_scheme_mode/customize_color_scheme_mode_handler.h"
 #include "chrome/browser/ui/webui/extension_control_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
@@ -608,6 +609,29 @@ void SettingsUI::CreateHelpBubbleHandler(
   help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
       std::move(handler), std::move(client), this,
       std::vector<ui::ElementIdentifier>{kEnhancedProtectionSettingElementId});
+}
+
+void SettingsUI::CreateCustomizeColorSchemeModeHandler(
+    mojo::PendingRemote<
+        customize_color_scheme_mode::mojom::CustomizeColorSchemeModeClient>
+        client,
+    mojo::PendingReceiver<
+        customize_color_scheme_mode::mojom::CustomizeColorSchemeModeHandler>
+        handler) {
+  customize_color_scheme_mode_handler_ =
+      std::make_unique<CustomizeColorSchemeModeHandler>(
+          std::move(client), std::move(handler), Profile::FromWebUI(web_ui()));
+}
+
+void SettingsUI::BindInterface(
+    mojo::PendingReceiver<customize_color_scheme_mode::mojom::
+                              CustomizeColorSchemeModeHandlerFactory>
+        pending_receiver) {
+  if (customize_color_scheme_mode_handler_factory_receiver_.is_bound()) {
+    customize_color_scheme_mode_handler_factory_receiver_.reset();
+  }
+  customize_color_scheme_mode_handler_factory_receiver_.Bind(
+      std::move(pending_receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(SettingsUI)
