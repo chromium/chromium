@@ -34,7 +34,7 @@ FilesPolicyErrorDialog::FilesPolicyErrorDialog(
     : FilesPolicyDialog(files.size(), action, modal_parent) {
   SetAcceptCallback(base::BindOnce(&FilesPolicyErrorDialog::Dismiss,
                                    weak_factory_.GetWeakPtr()));
-  SetCancelCallback(base::BindOnce(&FilesPolicyErrorDialog::OpenHelpPage,
+  SetCancelCallback(base::BindOnce(&FilesPolicyErrorDialog::OpenLearnMore,
                                    weak_factory_.GetWeakPtr()));
   SetButtonLabel(ui::DIALOG_BUTTON_OK, GetOkButton());
   SetButtonLabel(ui::DialogButton::DIALOG_BUTTON_CANCEL, GetCancelButton());
@@ -110,8 +110,8 @@ void FilesPolicyErrorDialog::AddPolicyRow(Policy policy) {
           ash::TypographyToken::kCrosBody1));
 }
 
-void FilesPolicyErrorDialog::OpenHelpPage() {
-  // TODO(b/283786134): Implementation.
+void FilesPolicyErrorDialog::OpenLearnMore() {
+  dlp::OpenLearnMore();
 }
 
 void FilesPolicyErrorDialog::Dismiss() {

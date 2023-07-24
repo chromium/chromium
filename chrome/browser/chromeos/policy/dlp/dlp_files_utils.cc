@@ -4,11 +4,15 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 
+#include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 
-namespace policy {
-namespace dlp {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/new_window_delegate.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+namespace policy::dlp {
 
 ::dlp::DlpComponent MapPolicyComponentToProto(
     data_controls::Component component) {
@@ -58,5 +62,14 @@ bool IsFilesTransferBlocked(const std::vector<std::string>& sources,
   return false;
 }
 
-}  // namespace dlp
-}  // namespace policy
+void OpenLearnMore() {
+  // TODO(b/291896216): Open page based on policy.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(dlp::kDlpLearnMoreUrl),
+      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+}  // namespace policy::dlp

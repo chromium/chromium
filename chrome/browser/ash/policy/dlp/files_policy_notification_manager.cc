@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/public/cpp/new_window_delegate.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
@@ -30,7 +29,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -512,10 +510,7 @@ void FilesPolicyNotificationManager::HandleDlpErrorNotificationClick(
 
       if (files.size() == 1) {
         // Learn more.
-        ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-            GURL(dlp::kDlpLearnMoreUrl),
-            ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-            ash::NewWindowDelegate::Disposition::kNewForegroundTab);
+        dlp::OpenLearnMore();
       } else {
         // Review.
         FileTaskInfo info(action);
@@ -656,11 +651,7 @@ void FilesPolicyNotificationManager::HandleFilesPolicyErrorNotificationClick(
     case NotificationButton::OK:
       if (io_tasks_.at(task_id).blocked_files.size() == 1) {
         // Single file - open help page.
-        // TODO(b/283786134): Open page based on policy.
-        ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-            GURL(dlp::kDlpLearnMoreUrl),
-            ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-            ash::NewWindowDelegate::Disposition::kNewForegroundTab);
+        dlp::OpenLearnMore();
         // Only delete if we don't need to show the dialog.
         io_tasks_.erase(task_id);
       } else {
@@ -879,10 +870,7 @@ void FilesPolicyNotificationManager::OnLearnMoreButtonClicked(
     return;
   }
 
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-      GURL(dlp::kDlpLearnMoreUrl),
-      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
+  dlp::OpenLearnMore();
 
   Dismiss(context_, notification_id);
 }

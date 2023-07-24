@@ -28,6 +28,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
@@ -1071,8 +1072,14 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
                                    : u"File blocked from moving";
   EXPECT_EQ(notification->title(), title);
 
+  EXPECT_NE(
+      browser()->tab_strip_model()->GetActiveWebContents()->GetURL().spec(),
+      dlp::kDlpLearnMoreUrl);
   // Click Learn more.
   bridge_->Click(kNotificationId1, NotificationButton::OK);
+  EXPECT_EQ(
+      browser()->tab_strip_model()->GetActiveWebContents()->GetURL().spec(),
+      dlp::kDlpLearnMoreUrl);
   // Task info is removed after the notification is clicked.
   EXPECT_FALSE(fpnm_->HasIOTask(kTaskId1));
 

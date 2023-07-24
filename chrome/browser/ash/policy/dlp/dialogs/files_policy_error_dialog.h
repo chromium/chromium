@@ -46,7 +46,7 @@ class FilesPolicyErrorDialog : public FilesPolicyDialog {
 
   // Called from the dialog's "Cancel" button.
   // Opens the help page for policy/-ies that blocked the file action.
-  void OpenHelpPage();
+  void OpenLearnMore();
 
   // Called from the dialog's "OK" button.
   // Dismisses the dialog.
