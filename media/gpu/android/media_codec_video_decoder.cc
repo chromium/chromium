@@ -134,7 +134,7 @@ std::string SelectMediaCodec(const VideoDecoderConfig& config,
     if (config.coded_size().width() < info.coded_size_min.width() ||
         config.coded_size().height() < info.coded_size_min.height() ||
         config.coded_size().width() > info.coded_size_max.width() ||
-        config.coded_size().height() > info.coded_size_max.height()) {
+        config.coded_size().height() > info.coded_size_max.width()) {
       continue;
     }
 
