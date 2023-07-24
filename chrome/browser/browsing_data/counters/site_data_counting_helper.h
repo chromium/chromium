@@ -16,6 +16,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "net/cookies/canonical_cookie.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-forward.h"
+#include "url/origin.h"
 
 class Profile;
 class HostContentSettingsMap;
@@ -51,6 +52,8 @@ class SiteDataCountingHelper {
           special_storage_policy,
       const std::vector<content::StorageUsageInfo>& infos);
   void GetQuotaBucketsCallback(const std::set<storage::BucketLocator>& buckets);
+  void GetSharedDictionaryOriginsCallback(
+      const std::vector<url::Origin>& origins);
 
   void Done(const std::vector<GURL>& origins);
 

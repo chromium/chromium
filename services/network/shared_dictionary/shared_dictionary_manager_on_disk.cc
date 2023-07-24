@@ -525,6 +525,22 @@ void SharedDictionaryManagerOnDisk::GetSharedDictionaryInfo(
           std::move(callback)));
 }
 
+void SharedDictionaryManagerOnDisk::GetOriginsBetween(
+    base::Time start_time,
+    base::Time end_time,
+    base::OnceCallback<void(const std::vector<url::Origin>&)> callback) {
+  metadata_store_.GetOriginsBetween(
+      start_time, end_time,
+      base::BindOnce(
+          [](base::OnceCallback<void(const std::vector<url::Origin>&)> callback,
+             net::SQLitePersistentSharedDictionaryStore::OriginListOrError
+                 result) {
+            std::move(callback).Run(
+                result.value_or(std::vector<url::Origin>()));
+          },
+          std::move(callback)));
+}
+
 scoped_refptr<SharedDictionaryWriter>
 SharedDictionaryManagerOnDisk::CreateWriter(
     const net::SharedDictionaryIsolationKey& isolation_key,

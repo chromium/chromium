@@ -84,6 +84,7 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
     uint64_t total_dictionary_count_;
   };
 
+  using SizeOrError = base::expected<uint64_t, Error>;
   using RegisterDictionaryResultOrError =
       base::expected<RegisterDictionaryResult, Error>;
   using DictionaryListOrError =
@@ -95,6 +96,7 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
       base::expected<std::set<base::UnguessableToken>, Error>;
   using UsageInfoOrError =
       base::expected<std::vector<SharedDictionaryUsageInfo>, Error>;
+  using OriginListOrError = base::expected<std::vector<url::Origin>, Error>;
 
   SQLitePersistentSharedDictionaryStore(
       const base::FilePath& path,
@@ -108,8 +110,7 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
 
   ~SQLitePersistentSharedDictionaryStore();
 
-  void GetTotalDictionarySize(
-      base::OnceCallback<void(base::expected<uint64_t, Error>)> callback);
+  void GetTotalDictionarySize(base::OnceCallback<void(SizeOrError)> callback);
   void RegisterDictionary(
       const SharedDictionaryIsolationKey& isolation_key,
       SharedDictionaryInfo dictionary_info,
@@ -122,6 +123,9 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
   void GetAllDictionaries(
       base::OnceCallback<void(DictionaryMapOrError)> callback);
   void GetUsageInfo(base::OnceCallback<void(UsageInfoOrError)> callback);
+  void GetOriginsBetween(const base::Time start_time,
+                         const base::Time end_time,
+                         base::OnceCallback<void(OriginListOrError)> callback);
   void ClearAllDictionaries(base::OnceCallback<void(Error)> callback);
   void ClearDictionaries(
       const base::Time start_time,

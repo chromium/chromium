@@ -154,6 +154,11 @@ class DummySharedDictionaryManager : public SharedDictionaryManager {
       base::OnceCallback<
           void(std::vector<network::mojom::SharedDictionaryInfoPtr>)> callback)
       override {}
+  void GetOriginsBetween(
+      base::Time start_time,
+      base::Time end_time,
+      base::OnceCallback<void(const std::vector<url::Origin>&)> callback)
+      override {}
 
   bool create_storage_called() const { return create_storage_called_; }
 

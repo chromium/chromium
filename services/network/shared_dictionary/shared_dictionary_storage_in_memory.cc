@@ -83,6 +83,22 @@ void SharedDictionaryStorageInMemory::ClearAllDictionaries() {
   dictionary_info_map_.clear();
 }
 
+bool SharedDictionaryStorageInMemory::HasDictionaryBetween(
+    base::Time start_time,
+    base::Time end_time) {
+  for (const auto& [scheme_host_port, info_map] : dictionary_info_map_) {
+    std::ignore = scheme_host_port;
+    for (const auto& [match, dict] : info_map) {
+      std::ignore = match;
+      if ((dict.response_time() >= start_time) &&
+          (dict.response_time() < end_time)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 scoped_refptr<SharedDictionaryWriter>
 SharedDictionaryStorageInMemory::CreateWriter(const GURL& url,
                                               base::Time response_time,

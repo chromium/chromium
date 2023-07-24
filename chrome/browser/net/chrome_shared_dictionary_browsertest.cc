@@ -6,13 +6,17 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/browsing_data/counters/site_data_counting_helper.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/browsing_data/core/counters/browsing_data_counter.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -43,6 +47,8 @@ constexpr uint8_t kCompressedData[] = {
     0x18, 0x9d, 0xc1, 0xc3, 0x44, 0x0e, 0x5c, 0x6a, 0x09, 0x9d, 0xf0,
     0xb0, 0x01, 0x47, 0x14, 0x87, 0x14, 0x6d, 0xfb, 0x60, 0x96, 0xdb,
     0xae, 0x9e, 0x79, 0x54, 0xe3, 0x69, 0x03, 0x29};
+
+// NOLINTNEXTLINE(runtime/string)
 const std::string kCompressedDataString =
     std::string(reinterpret_cast<const char*>(kCompressedData),
                 sizeof(kCompressedData));
@@ -257,6 +263,15 @@ class ChromeSharedDictionaryBrowserTest : public InProcessBrowserTest {
     while (!CheckDictionaryHeader(server, /*expect_blocked=*/false)) {
       base::PlatformThread::Sleep(base::Milliseconds(5));
     }
+  }
+
+  int GetSiteDataCount(base::Time begin_time, base::Time end_time) {
+    base::test::TestFuture<int> result;
+    auto* helper = new SiteDataCountingHelper(browser()->profile(), begin_time,
+                                              end_time, result.GetCallback());
+    helper->CountAndDestroySelfWhenFinished();
+    return result.Get();
+    ;
   }
 
  private:
@@ -511,4 +526,17 @@ IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
       /*expected_used_for_main_frame_navigation_count=*/0,
       /*expected_used_for_sub_frame_navigation_count=*/0,
       /*expected_used_for_subresource_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest, SiteDataCount) {
+  base::Time time1 = base::Time::Now();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+  base::Time time2 = base::Time::Now();
+  EXPECT_TRUE(TryRegisterDictionary(*embedded_test_server()));
+  WaitForDictionaryReady(*embedded_test_server());
+  base::Time time3 = base::Time::Now();
+
+  EXPECT_EQ(0, GetSiteDataCount(time1, time2));
+  EXPECT_EQ(1, GetSiteDataCount(time2, time3));
 }

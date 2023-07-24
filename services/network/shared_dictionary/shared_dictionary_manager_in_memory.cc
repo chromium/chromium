@@ -248,4 +248,20 @@ void SharedDictionaryManagerInMemory::GetSharedDictionaryInfo(
   std::move(callback).Run(std::move(dictionaries));
 }
 
+void SharedDictionaryManagerInMemory::GetOriginsBetween(
+    base::Time start_time,
+    base::Time end_time,
+    base::OnceCallback<void(const std::vector<url::Origin>&)> callback) {
+  std::set<url::Origin> origins;
+  for (const auto& it : storages()) {
+    SharedDictionaryStorageInMemory* storage =
+        reinterpret_cast<SharedDictionaryStorageInMemory*>(it.second.get());
+    if (storage->HasDictionaryBetween(start_time, end_time)) {
+      origins.insert(it.first.frame_origin());
+    }
+  }
+  std::move(callback).Run(
+      std::vector<url::Origin>(origins.begin(), origins.end()));
+}
+
 }  // namespace network

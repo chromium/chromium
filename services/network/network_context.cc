@@ -3021,6 +3021,18 @@ void NetworkContext::GetSharedDictionaryInfo(
                                                       std::move(callback));
 }
 
+void NetworkContext::GetSharedDictionaryOriginsBetween(
+    base::Time start_time,
+    base::Time end_time,
+    GetSharedDictionaryOriginsBetweenCallback callback) {
+  if (!shared_dictionary_manager_) {
+    std::move(callback).Run({});
+    return;
+  }
+  shared_dictionary_manager_->GetOriginsBetween(start_time, end_time,
+                                                std::move(callback));
+}
+
 void NetworkContext::ResourceSchedulerClientVisibilityChanged(
     const base::UnguessableToken& client_token,
     bool visible) {

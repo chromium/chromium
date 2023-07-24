@@ -47,6 +47,11 @@ class SharedDictionaryManagerInMemory : public SharedDictionaryManager {
       base::OnceCallback<
           void(std::vector<network::mojom::SharedDictionaryInfoPtr>)> callback)
       override;
+  void GetOriginsBetween(
+      base::Time start_time,
+      base::Time end_time,
+      base::OnceCallback<void(const std::vector<url::Origin>&)> callback)
+      override;
 
   void MaybeRunCacheEvictionPerSite(const net::SchemefulSite& top_frame_site);
   void MaybeRunCacheEviction();

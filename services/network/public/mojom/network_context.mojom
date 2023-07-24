@@ -1017,7 +1017,7 @@ interface NetworkContext {
                                 mojo_base.mojom.Time end_time) => ();
 
   // Clears content from the HTTP cache. A specific range of time can be
-  // specified with |start_time| and |end_time|. This supports unbounded deletes
+  // specified with `start_time` and `end_time`. This supports unbounded deletes
   // in either direction by using null Time values for either argument.
   // If a non-null |filter| is specified, will clear only entries matching the
   // filter.
@@ -1104,7 +1104,7 @@ interface NetworkContext {
                          DomainReliabilityClearMode mode) => ();
 
   // Clears dictionaries from the shared dictionary cache. A specific range of
-  // time can be specified with |start_time| and |end_time|. This supports
+  // time can be specified with `start_time` and `end_time`. This supports
   // unbounded deletes in either direction by using null Time values for either
   // argument. If a non-null |filter| is specified, will clear only entries
   // matching the filter.
@@ -1612,6 +1612,12 @@ interface NetworkContext {
   // Get shared dictionaries information for `isolation_key`.
   GetSharedDictionaryInfo(SharedDictionaryIsolationKey isolation_key)
       => (array<SharedDictionaryInfo> dictionaries);
+
+  // Get a list of origins where shared dictionaries are registered. A specific
+  // range of time can be specified with `start_time` and `end_time`.
+  GetSharedDictionaryOriginsBetween(mojo_base.mojom.Time start_time,
+                                    mojo_base.mojom.Time end_time)
+      => (array<url.mojom.Origin> origins);
 
   // Sets maximum size of the shared dictionary cache.
   SetSharedDictionaryCacheMaxSize(uint64 cache_max_size);

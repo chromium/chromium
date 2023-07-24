@@ -89,6 +89,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
       const net::SharedDictionaryIsolationKey& isolation_key,
       base::OnceCallback<void(
           std::vector<network::mojom::SharedDictionaryInfoPtr>)> callback) = 0;
+  virtual void GetOriginsBetween(
+      base::Time start_time,
+      base::Time end_time,
+      base::OnceCallback<void(const std::vector<url::Origin>&)> callback) = 0;
 
  protected:
   SharedDictionaryManager();

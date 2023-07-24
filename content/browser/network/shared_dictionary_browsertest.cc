@@ -13,6 +13,7 @@
 #include "base/task/task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -574,19 +575,28 @@ class SharedDictionaryBrowserTestBase : public ContentBrowserTest {
 
   std::vector<net::SharedDictionaryUsageInfo> GetSharedDictionaryUsageInfo(
       Shell* shell) {
-    std::vector<net::SharedDictionaryUsageInfo> result;
+    base::test::TestFuture<const std::vector<net::SharedDictionaryUsageInfo>&>
+        result;
     base::RunLoop loop;
     shell->web_contents()
         ->GetBrowserContext()
         ->GetDefaultStoragePartition()
         ->GetNetworkContext()
-        ->GetSharedDictionaryUsageInfo(base::BindLambdaForTesting(
-            [&](const std::vector<net::SharedDictionaryUsageInfo>& usage_info) {
-              result = usage_info;
-              loop.Quit();
-            }));
-    loop.Run();
-    return result;
+        ->GetSharedDictionaryUsageInfo(result.GetCallback());
+    return result.Get();
+  }
+
+  std::vector<url::Origin> GetOriginsBetween(Shell* shell,
+                                             base::Time start_time,
+                                             base::Time end_time) {
+    base::test::TestFuture<const std::vector<url::Origin>&> result;
+    shell->web_contents()
+        ->GetBrowserContext()
+        ->GetDefaultStoragePartition()
+        ->GetNetworkContext()
+        ->GetSharedDictionaryOriginsBetween(start_time, end_time,
+                                            result.GetCallback());
+    return result.Get();
   }
 
   network::mojom::NetworkContext* GetNetworkContext() {
@@ -893,6 +903,13 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest, GetUsageInfo) {
   EXPECT_TRUE(GetSharedDictionaryUsageInfo(shell()).empty());
+}
+
+IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
+                       GetOriginsBetween) {
+  EXPECT_TRUE(GetOriginsBetween(shell(), base::Time::Now() - base::Seconds(1),
+                                base::Time::Now())
+                  .empty());
 }
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
@@ -1698,6 +1715,20 @@ IN_PROC_BROWSER_TEST_P(
     loop.Run();
   }
   EXPECT_TRUE(GetSharedDictionaryUsageInfo(GetTargetShell()).empty());
+}
+
+IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, GetTotalSizeAndOrigins) {
+  base::Time time1 = base::Time::Now();
+  RunWriteDictionaryTest(FetchType::kLinkRelDictionary,
+                         GetURL("/shared_dictionary/blank.html"),
+                         GetURL("/shared_dictionary/test.dict"));
+  base::Time time2 = base::Time::Now();
+
+  EXPECT_TRUE(
+      GetOriginsBetween(GetTargetShell(), time1 - base::Seconds(1), time1)
+          .empty());
+  EXPECT_THAT(GetOriginsBetween(GetTargetShell(), time1, time2),
+              testing::ElementsAreArray({url::Origin::Create(GetURL("/"))}));
 }
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, GetSharedDictionaryInfo) {

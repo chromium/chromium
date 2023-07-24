@@ -261,6 +261,23 @@ class SQLitePersistentSharedDictionaryStoreTest : public ::testing::Test,
     return result_usage_info;
   }
 
+  std::vector<url::Origin> GetOriginsBetween(const base::Time start_time,
+                                             const base::Time end_time) {
+    std::vector<url::Origin> origins;
+    base::RunLoop run_loop;
+    store_->GetOriginsBetween(
+        start_time, end_time,
+        base::BindLambdaForTesting(
+            [&](SQLitePersistentSharedDictionaryStore::OriginListOrError
+                    result) {
+              ASSERT_TRUE(result.has_value());
+              origins = std::move(result.value());
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+    return origins;
+  }
+
   void ClearAllDictionaries() {
     base::RunLoop run_loop;
     store_->ClearAllDictionaries(base::BindLambdaForTesting(
@@ -430,6 +447,8 @@ class SQLitePersistentSharedDictionaryStoreTest : public ::testing::Test,
       SQLitePersistentSharedDictionaryStore::Error expected_error);
   void RunGetUsageInfoFailureTest(
       SQLitePersistentSharedDictionaryStore::Error expected_error);
+  void RunGetOriginsBetweenFailureTest(
+      SQLitePersistentSharedDictionaryStore::Error expected_error);
   void RunClearAllDictionariesFailureTest(
       SQLitePersistentSharedDictionaryStore::Error expected_error);
   void RunClearDictionariesFailureTest(
@@ -483,6 +502,14 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, SingleDictionary) {
               ElementsAre(SharedDictionaryUsageInfo{
                   .isolation_key = isolation_key_,
                   .total_size_bytes = dictionary_info_.size()}));
+  EXPECT_TRUE(
+      GetOriginsBetween(dictionary_info_.response_time() - base::Seconds(1),
+                        dictionary_info_.response_time())
+          .empty());
+  EXPECT_THAT(
+      GetOriginsBetween(dictionary_info_.response_time(),
+                        dictionary_info_.response_time() + base::Seconds(1)),
+      ElementsAreArray({isolation_key_.frame_origin()}));
 
   ClearAllDictionaries();
 
@@ -519,6 +546,10 @@ void SQLitePersistentSharedDictionaryStoreTest::RunMultipleDictionariesTest(
       register_dictionary_result1.primary_key_in_database());
   expected_info2.set_primary_key_in_database(
       register_dictionary_result2.primary_key_in_database());
+  base::Time oldest_response_time = std::min(dictionary_info1.response_time(),
+                                             dictionary_info2.response_time());
+  base::Time latest_response_time = std::max(dictionary_info1.response_time(),
+                                             dictionary_info2.response_time());
 
   if (isolation_key1 == isolation_key2) {
     if (expect_merged) {
@@ -536,6 +567,9 @@ void SQLitePersistentSharedDictionaryStoreTest::RunMultipleDictionariesTest(
                   ElementsAre(SharedDictionaryUsageInfo{
                       .isolation_key = isolation_key1,
                       .total_size_bytes = dictionary_info2.size()}));
+      EXPECT_THAT(GetOriginsBetween(oldest_response_time,
+                                    latest_response_time + base::Seconds(1)),
+                  ElementsAreArray({isolation_key2.frame_origin()}));
     } else {
       EXPECT_EQ(dictionary_info1.size() + dictionary_info2.size(),
                 register_dictionary_result2.total_dictionary_size());
@@ -550,6 +584,9 @@ void SQLitePersistentSharedDictionaryStoreTest::RunMultipleDictionariesTest(
                       .isolation_key = isolation_key1,
                       .total_size_bytes =
                           dictionary_info1.size() + dictionary_info2.size()}));
+      EXPECT_THAT(GetOriginsBetween(oldest_response_time,
+                                    latest_response_time + base::Seconds(1)),
+                  UnorderedElementsAreArray({isolation_key1.frame_origin()}));
     }
   } else {
     EXPECT_EQ(dictionary_info1.size() + dictionary_info2.size(),
@@ -570,12 +607,19 @@ void SQLitePersistentSharedDictionaryStoreTest::RunMultipleDictionariesTest(
                      SharedDictionaryUsageInfo{
                          .isolation_key = isolation_key2,
                          .total_size_bytes = dictionary_info2.size()}}));
+    EXPECT_THAT(GetOriginsBetween(oldest_response_time,
+                                  latest_response_time + base::Seconds(1)),
+                UnorderedElementsAreArray({isolation_key1.frame_origin(),
+                                           isolation_key2.frame_origin()}));
   }
 
   ClearAllDictionaries();
   EXPECT_TRUE(GetDictionaries(isolation_key_).empty());
   EXPECT_TRUE(GetAllDictionaries().empty());
   EXPECT_TRUE(GetUsageInfo().empty());
+  EXPECT_TRUE(GetOriginsBetween(oldest_response_time,
+                                latest_response_time + base::Seconds(1))
+                  .empty());
 }
 
 TEST_F(SQLitePersistentSharedDictionaryStoreTest,
@@ -1298,6 +1342,37 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
        RunGetUsageInfoErrorInvalidSql) {
   ManipulateDatabase({"CREATE TABLE dictionaries (dummy TEST NOT NULL)"});
   RunGetUsageInfoFailureTest(
+      SQLitePersistentSharedDictionaryStore::Error::kInvalidSql);
+}
+
+void SQLitePersistentSharedDictionaryStoreTest::RunGetOriginsBetweenFailureTest(
+    SQLitePersistentSharedDictionaryStore::Error expected_error) {
+  CreateStore();
+  base::RunLoop run_loop;
+  store_->GetOriginsBetween(
+      base::Time::Now(), base::Time::Now() + base::Seconds(1),
+      base::BindLambdaForTesting(
+          [&](SQLitePersistentSharedDictionaryStore::OriginListOrError result) {
+            ASSERT_FALSE(result.has_value());
+            EXPECT_EQ(expected_error, result.error());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+  DestroyStore();
+}
+
+TEST_F(SQLitePersistentSharedDictionaryStoreTest,
+       RunGetOriginsBetweenErrorDatabaseInitializationFailure) {
+  CorruptDatabaseFile();
+  RunGetOriginsBetweenFailureTest(SQLitePersistentSharedDictionaryStore::Error::
+                                      kFailedToInitializeDatabase);
+  CheckStoreRecovered();
+}
+
+TEST_F(SQLitePersistentSharedDictionaryStoreTest,
+       RunGetOriginsBetweenErrorInvalidSql) {
+  ManipulateDatabase({"CREATE TABLE dictionaries (dummy TEST NOT NULL)"});
+  RunGetOriginsBetweenFailureTest(
       SQLitePersistentSharedDictionaryStore::Error::kInvalidSql);
 }
 

@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "crypto/secure_hash.h"
 #include "net/base/hash_value.h"
@@ -194,17 +195,18 @@ class SharedDictionaryManagerTest
   std::vector<network::mojom::SharedDictionaryInfoPtr> GetSharedDictionaryInfo(
       SharedDictionaryManager* manager,
       const net::SharedDictionaryIsolationKey& isolation_key) {
-    std::vector<network::mojom::SharedDictionaryInfoPtr> result;
-    base::RunLoop run_loop;
-    manager->GetSharedDictionaryInfo(
-        isolation_key,
-        base::BindLambdaForTesting(
-            [&](std::vector<network::mojom::SharedDictionaryInfoPtr> info) {
-              result = std::move(info);
-              run_loop.Quit();
-            }));
-    run_loop.Run();
-    return result;
+    base::test::TestFuture<std::vector<network::mojom::SharedDictionaryInfoPtr>>
+        result;
+    manager->GetSharedDictionaryInfo(isolation_key, result.GetCallback());
+    return result.Take();
+  }
+
+  std::vector<url::Origin> GetOriginsBetween(SharedDictionaryManager* manager,
+                                             base::Time start_time,
+                                             base::Time end_time) {
+    base::test::TestFuture<const std::vector<url::Origin>&> result;
+    manager->GetOriginsBetween(start_time, end_time, result.GetCallback());
+    return result.Get();
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -1521,6 +1523,54 @@ TEST_P(SharedDictionaryManagerTest, GetSharedDictionaryInfoEmptyResult) {
                       url::Origin::Create(GURL("https://frame.test/")),
                       net::SchemefulSite(GURL("https://top-frame.test"))))
                   .empty());
+}
+
+TEST_P(SharedDictionaryManagerTest, GetTotalSizeAndOrigins) {
+  net::SharedDictionaryIsolationKey isolation_key1(
+      url::Origin::Create(GURL("https://frame1.test/")),
+      net::SchemefulSite(GURL("https://target1.test")));
+  net::SharedDictionaryIsolationKey isolation_key2(
+      url::Origin::Create(GURL("https://frame2.test/")),
+      net::SchemefulSite(GURL("https://target2.test")));
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+
+  const base::Time start_time = base::Time::Now();
+
+  scoped_refptr<SharedDictionaryStorage> storage1 =
+      manager->GetStorage(isolation_key1);
+  WriteDictionary(storage1.get(), GURL("https://origin1.test/1"), "p1*",
+                  {kTestData1});
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+  WriteDictionary(storage1.get(), GURL("https://origin1.test/2"), "p2*",
+                  {kTestData2});
+
+  scoped_refptr<SharedDictionaryStorage> storage2 =
+      manager->GetStorage(isolation_key2);
+  task_environment_.FastForwardBy(base::Seconds(1));
+  WriteDictionary(storage2.get(), GURL("https://origin2.test/d"), "p*",
+                  {kTestData2});
+
+  if (GetParam() == TestManagerType::kOnDisk) {
+    FlushCacheTasks();
+  }
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  EXPECT_TRUE(GetOriginsBetween(manager.get(), start_time - base::Seconds(1),
+                                start_time)
+                  .empty());
+
+  EXPECT_THAT(GetOriginsBetween(manager.get(), start_time,
+                                start_time + base::Seconds(1)),
+              testing::ElementsAreArray({isolation_key1.frame_origin()}));
+
+  EXPECT_THAT(
+      GetOriginsBetween(manager.get(), start_time,
+                        start_time + base::Seconds(3)),
+      testing::UnorderedElementsAreArray(
+          {isolation_key1.frame_origin(), isolation_key2.frame_origin()}));
 }
 
 TEST_P(SharedDictionaryManagerTest, DeleteExpiredDictionariesOnGetDictionary) {

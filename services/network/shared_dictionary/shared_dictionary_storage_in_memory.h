@@ -111,6 +111,7 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
                  base::Time end_time,
                  base::RepeatingCallback<bool(const GURL&)> url_matcher);
   void ClearAllDictionaries();
+  bool HasDictionaryBetween(base::Time start_time, base::Time end_time);
 
  private:
   friend class SharedDictionaryManagerTest;
