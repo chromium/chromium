@@ -12,7 +12,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "media/capture/video/chromeos/gpu_memory_buffer_tracker_cros.h"
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
 #include "media/capture/video/mac/gpu_memory_buffer_tracker_mac.h"
 #elif BUILDFLAG(IS_LINUX)
 #include "media/capture/video/linux/v4l2_gpu_memory_buffer_tracker.h"
@@ -41,7 +41,7 @@ VideoCaptureBufferTrackerFactoryImpl::CreateTracker(
     case VideoCaptureBufferType::kGpuMemoryBuffer:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       return std::make_unique<GpuMemoryBufferTrackerCros>();
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
       return std::make_unique<GpuMemoryBufferTrackerMac>();
 #elif BUILDFLAG(IS_LINUX)
       return std::make_unique<V4L2GpuMemoryBufferTracker>();
@@ -70,7 +70,7 @@ VideoCaptureBufferTrackerFactoryImpl::CreateTracker(
 std::unique_ptr<VideoCaptureBufferTracker>
 VideoCaptureBufferTrackerFactoryImpl::CreateTrackerForExternalGpuMemoryBuffer(
     gfx::GpuMemoryBufferHandle handle) {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   return std::make_unique<GpuMemoryBufferTrackerMac>(handle.io_surface);
 #elif BUILDFLAG(IS_WIN)
   if (handle.type != gfx::DXGI_SHARED_HANDLE) {

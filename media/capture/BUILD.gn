@@ -182,6 +182,8 @@ component("capture_lib") {
       "video/apple/video_capture_device_factory_apple.h",
       "video/apple/video_capture_device_factory_apple.mm",
       "video/apple/video_capture_device_frame_receiver.h",
+      "video/mac/gpu_memory_buffer_tracker_mac.cc",
+      "video/mac/gpu_memory_buffer_tracker_mac.h",
     ]
     deps += [ "//components/crash/core/common:crash_key" ]
     configs += [ "//build/config/compiler:enable_arc" ]
@@ -199,8 +201,6 @@ component("capture_lib") {
 
   if (is_mac) {
     sources += [
-      "video/mac/gpu_memory_buffer_tracker_mac.cc",
-      "video/mac/gpu_memory_buffer_tracker_mac.h",
       "video/mac/uvc_control_mac.h",
       "video/mac/uvc_control_mac.mm",
       "video/mac/video_capture_device_decklink_mac.h",
