@@ -77094,6 +77094,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="17"
       label="Video Conference Tray Speak On Mute Opt In Confirmation"/>
   <int value="18" label="Scalable IPH Bubble"/>
+  <int value="19"
+      label="Video Conference Tray Camera And Microphone Use While Disabled"/>
 </enum>
 
 <enum name="NukeProfileResult">

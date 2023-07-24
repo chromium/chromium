@@ -201,6 +201,14 @@ class ASH_EXPORT VideoConferenceTrayController
   bool initialized() const { return initialized_; }
 
  private:
+  // All the types of the use while disabled nudge.
+  enum class UsedWhileDisabledNudgeType {
+    kCamera = 0,
+    kMicrophone = 1,
+    kBoth = 2,
+    kMaxValue = kBoth
+  };
+
   // Updates the state of the camera icons across all `VideoConferenceTray`.
   void UpdateCameraIcons();
 
@@ -213,6 +221,13 @@ class ASH_EXPORT VideoConferenceTrayController
 
   // Returns true if any of the VC nudges are visible on screen.
   bool IsAnyVcNudgeShown();
+
+  // Displays the use while disabled nudge according to the given `type`.
+  void DisplayUsedWhileDisabledNudge(UsedWhileDisabledNudgeType type,
+                                     const std::u16string& app_name);
+
+  UsedWhileDisabledNudgeType GetUsedWhileDisabledNudgeType(
+      crosapi::mojom::VideoConferenceMediaDevice device);
 
   // The number of capturing apps, fetched from `VideoConferenceManagerAsh`.
   int capturing_apps_ = 0;
@@ -267,6 +282,14 @@ class ASH_EXPORT VideoConferenceTrayController
   // Used to record metrics of repeated shows per 100 ms.
   int count_repeated_shows_ = 0;
   base::DelayTimer repeated_shows_timer_;
+
+  // Due to some constraint in `VideoConferenceManagerAsh`, when both microphone
+  // and camera is being accessed when disabled,`HandleDeviceUsedWhileDisabled`
+  // will be called twice for each device. Thus, we need to wait for both 2
+  // calls and display one nudge for both. These are the timer and the cache
+  // type to make that happen.
+  base::OneShotTimer use_while_disabled_signal_waiter_;
+  UsedWhileDisabledNudgeType use_while_disabled_nudge_on_wait_;
 
   // The contents of a nudge data object that is cached so it can be shown once
   // the tray has fully animated in.

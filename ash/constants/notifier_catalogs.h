@@ -216,7 +216,8 @@ enum class NudgeCatalogName {
   kVideoConferenceTraySpeakOnMuteOptIn = 16,
   kVideoConferenceTraySpeakOnMuteOptInConfirmation = 17,
   kScalableIphBubble = 18,
-  kMaxValue = kScalableIphBubble
+  kVideoConferenceTrayCameraMicrophoneUseWhileDisabled = 19,
+  kMaxValue = kVideoConferenceTrayCameraMicrophoneUseWhileDisabled
 };
 
 // A living catalog that registers toasts.

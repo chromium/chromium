@@ -681,7 +681,7 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest, UseWhileDisabled) {
   EXPECT_EQ(
       GetNudgeText(microphone_nudge_id),
       l10n_util::GetStringFUTF16(
-          IDS_ASH_VIDEO_CONFERENCE_TOAST_USE_WHILE_SOFTWARE_DISABLED, kTitle1,
+          IDS_ASH_VIDEO_CONFERENCE_TOAST_USE_WHILE_DISABLED, kTitle1,
           l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_MICROPHONE_NAME)));
   EXPECT_EQ(GetNudgeAnchorView(microphone_nudge_id), GetVcTray()->audio_icon());
 
@@ -703,7 +703,7 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest, UseWhileDisabled) {
   EXPECT_EQ(
       GetNudgeText(camera_nudge_id),
       l10n_util::GetStringFUTF16(
-          IDS_ASH_VIDEO_CONFERENCE_TOAST_USE_WHILE_SOFTWARE_DISABLED, kTitle1,
+          IDS_ASH_VIDEO_CONFERENCE_TOAST_USE_WHILE_DISABLED, kTitle1,
           l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_CAMERA_NAME)));
   EXPECT_EQ(GetNudgeAnchorView(camera_nudge_id), GetVcTray()->camera_icon());
 }
