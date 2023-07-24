@@ -388,6 +388,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.attribution_reporting_runtime_features;
   }
+  static const absl::optional<base::UnguessableToken>&
+  attribution_reporting_src_token(const network::ResourceRequest& request) {
+    return request.attribution_reporting_src_token;
+  }
   static bool shared_dictionary_writer_enabled(
       const network::ResourceRequest& request) {
     return request.shared_dictionary_writer_enabled;

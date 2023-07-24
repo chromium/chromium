@@ -212,6 +212,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   network::AttributionReportingRuntimeFeatures
       attribution_reporting_runtime_features;
   bool shared_dictionary_writer_enabled = false;
+  absl::optional<base::UnguessableToken> attribution_reporting_src_token;
 #if BUILDFLAG(IS_ANDROID)
   // TODO(https://crbug.com/1456586): Remove this once the issue is fixed.
   std::string created_location;

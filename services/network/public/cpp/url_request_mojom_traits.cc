@@ -176,7 +176,9 @@ bool StructTraits<
       !data.ReadNetLogReferenceInfo(&out->net_log_reference_info) ||
       !data.ReadNavigationRedirectChain(&out->navigation_redirect_chain) ||
       !data.ReadAttributionReportingRuntimeFeatures(
-          &out->attribution_reporting_runtime_features)) {
+          &out->attribution_reporting_runtime_features) ||
+      !data.ReadAttributionReportingSrcToken(
+          &out->attribution_reporting_src_token)) {
     // Note that data.ReadTrustTokenParams is temporarily handled below.
     return false;
   }

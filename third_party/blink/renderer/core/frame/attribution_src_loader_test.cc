@@ -511,6 +511,8 @@ TEST_F(AttributionSrcLoaderTest, EligibleHeader_Register) {
   EXPECT_EQ(client_->request_head().GetAttributionReportingEligibility(),
             AttributionReportingEligibility::kEventSourceOrTrigger);
 
+  EXPECT_FALSE(client_->request_head().GetAttributionSrcToken());
+
   EXPECT_TRUE(client_->request_head()
                   .HttpHeaderField(AtomicString(kAttributionReportingSupport))
                   .IsNull());
@@ -529,6 +531,8 @@ TEST_F(AttributionSrcLoaderTest, EligibleHeader_RegisterNavigation) {
 
   EXPECT_EQ(client_->request_head().GetAttributionReportingEligibility(),
             AttributionReportingEligibility::kNavigationSource);
+
+  EXPECT_TRUE(client_->request_head().GetAttributionSrcToken());
 
   EXPECT_TRUE(client_->request_head()
                   .HttpHeaderField(AtomicString(kAttributionReportingSupport))

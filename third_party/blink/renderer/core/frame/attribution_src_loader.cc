@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/types/expected.h"
+#include "base/unguessable_token.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-shared.h"
 #include "components/attribution_reporting/source_registration.h"
@@ -440,6 +441,10 @@ bool AttributionSrcLoader::DoRegistration(
         attribution_src_token.has_value()
             ? AttributionReportingEligibility::kNavigationSource
             : AttributionReportingEligibility::kEventSourceOrTrigger);
+    if (attribution_src_token.has_value()) {
+      base::UnguessableToken token = attribution_src_token->value();
+      request.SetAttributionReportingSrcToken(std::move(token));
+    }
 
     FetchParameters params(
         std::move(request),

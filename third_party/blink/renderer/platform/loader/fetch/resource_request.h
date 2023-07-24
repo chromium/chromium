@@ -600,6 +600,15 @@ class PLATFORM_EXPORT ResourceRequestHead {
     attribution_reporting_runtime_features_ = runtime_features;
   }
 
+  const absl::optional<base::UnguessableToken>& GetAttributionSrcToken() const {
+    return attribution_reporting_src_token_;
+  }
+
+  void SetAttributionReportingSrcToken(
+      absl::optional<base::UnguessableToken> src_token) {
+    attribution_reporting_src_token_ = src_token;
+  }
+
   bool SharedDictionaryWriterEnabled() const {
     return shared_dictionary_writer_enabled_;
   }
@@ -748,6 +757,8 @@ class PLATFORM_EXPORT ResourceRequestHead {
 
   network::AttributionReportingRuntimeFeatures
       attribution_reporting_runtime_features_;
+
+  absl::optional<base::UnguessableToken> attribution_reporting_src_token_;
 
   // Indicate the state of CompressionDictionaryTransport feature. When it is
   // true, `use-as-dictionary` response HTTP header may be processed.
