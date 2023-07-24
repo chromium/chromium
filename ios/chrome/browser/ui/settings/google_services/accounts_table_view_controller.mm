@@ -325,6 +325,9 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   [model addItem:[self signOutItem]
       toSectionWithIdentifier:SectionIdentifierSignOut];
 
+  // TODO(crbug.com/1462552): Simplify once kSync becomes unreachable or is
+  // deleted from the codebase. See ConsentLevel::kSync documentation for
+  // details.
   BOOL hasSyncConsent =
       authService->HasPrimaryIdentity(signin::ConsentLevel::kSync);
   TableViewLinkHeaderFooterItem* footerItem = nil;
@@ -993,6 +996,9 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 
 // Returns YES if the account is signed in not syncing, NO otherwise.
 - (BOOL)isAccountSignedInNotSyncing {
+  // TODO(crbug.com/1462552): Simplify once kSync becomes unreachable or is
+  // deleted from the codebase. See ConsentLevel::kSync documentation for
+  // details.
   return base::FeatureList::IsEnabled(
              syncer::kReplaceSyncPromosWithSignInPromos) &&
          !SyncServiceFactory::GetForBrowserState(_browser->GetBrowserState())
