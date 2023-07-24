@@ -4,7 +4,6 @@
 
 #include "net/cert/pki/general_names.h"
 
-#include "base/strings/string_util.h"
 #include "net/cert/pki/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -27,6 +26,15 @@ namespace {
     const std::string& basename,
     std::string* result) {
   return LoadTestData("SUBJECT ALTERNATIVE NAME", basename, result);
+}
+
+void ReplaceFirstSubstring(std::string* str,
+                           std::string_view substr,
+                           std::string_view replacement) {
+  size_t idx = str->find(substr);
+  if (idx != std::string::npos) {
+    str->replace(idx, substr.size(), replacement);
+  }
 }
 
 }  // namespace
@@ -70,8 +78,7 @@ TEST(GeneralNames, RFC822Name) {
 TEST(GeneralNames, CreateFailsOnNonAsciiRFC822Name) {
   std::string san_der;
   ASSERT_TRUE(LoadTestSubjectAltNameData("san-rfc822name.pem", &san_der));
-  base::ReplaceFirstSubstringAfterOffset(&san_der, 0, "foo@example.com",
-                                         "f\xF6\xF6@example.com");
+  ReplaceFirstSubstring(&san_der, "foo@example.com", "f\xF6\xF6@example.com");
   CertErrors errors;
   EXPECT_FALSE(GeneralNames::Create(der::Input(&san_der), &errors));
 }
@@ -92,8 +99,7 @@ TEST(GeneralNames, DnsName) {
 TEST(GeneralNames, CreateFailsOnNonAsciiDnsName) {
   std::string san_der;
   ASSERT_TRUE(LoadTestSubjectAltNameData("san-dnsname.pem", &san_der));
-  base::ReplaceFirstSubstringAfterOffset(&san_der, 0, "foo.example.com",
-                                         "f\xF6\xF6.example.com");
+  ReplaceFirstSubstring(&san_der, "foo.example.com", "f\xF6\xF6.example.com");
   CertErrors errors;
   EXPECT_FALSE(GeneralNames::Create(der::Input(&san_der), &errors));
 }
@@ -160,8 +166,8 @@ TEST(GeneralNames, URI) {
 TEST(GeneralNames, CreateFailsOnNonAsciiURI) {
   std::string san_der;
   ASSERT_TRUE(LoadTestSubjectAltNameData("san-uri.pem", &san_der));
-  base::ReplaceFirstSubstringAfterOffset(&san_der, 0, "http://example.com",
-                                         "http://ex\xE4mple.com");
+  ReplaceFirstSubstring(&san_der, "http://example.com",
+                        "http://ex\xE4mple.com");
   CertErrors errors;
   EXPECT_FALSE(GeneralNames::Create(der::Input(&san_der), &errors));
 }

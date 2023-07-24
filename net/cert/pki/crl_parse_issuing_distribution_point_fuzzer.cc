@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 #include "net/cert/pki/crl.h"
 #include "net/der/input.h"
@@ -16,10 +17,13 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   if (net::ParseIssuingDistributionPoint(idp_der, &distribution_point_names,
                                          &only_contains_cert_type)) {
-    CHECK((distribution_point_names &&
-           distribution_point_names->present_name_types !=
-               net::GENERAL_NAME_NONE) ||
-          only_contains_cert_type != net::ContainedCertsType::ANY_CERTS);
+    bool has_distribution_point_names =
+        distribution_point_names &&
+        distribution_point_names->present_name_types != net::GENERAL_NAME_NONE;
+    if (!has_distribution_point_names &&
+        only_contains_cert_type == net::ContainedCertsType::ANY_CERTS) {
+      abort();
+    }
   }
   return 0;
 }

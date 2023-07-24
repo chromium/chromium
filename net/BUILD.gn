@@ -2583,8 +2583,6 @@ test("net_unittests") {
     "cert/ev_root_ca_metadata_unittest.cc",
     "cert/internal/cert_issuer_source_aia_unittest.cc",
     "cert/internal/cert_issuer_source_sync_unittest.cc",
-    "cert/internal/crl_unittest.cc",
-    "cert/internal/general_names_unittest.cc",
     "cert/internal/revocation_checker_unittest.cc",
     "cert/internal/system_trust_store_unittest.cc",
     "cert/known_roots_unittest.cc",
@@ -2596,7 +2594,9 @@ test("net_unittests") {
     "cert/pki/cert_issuer_source_static_unittest.cc",
     "cert/pki/cert_issuer_source_sync_unittest.h",
     "cert/pki/certificate_policies_unittest.cc",
+    "cert/pki/crl_unittest.cc",
     "cert/pki/extended_key_usage_unittest.cc",
+    "cert/pki/general_names_unittest.cc",
     "cert/pki/name_constraints_unittest.cc",
     "cert/pki/nist_pkits_unittest.cc",
     "cert/pki/nist_pkits_unittest.h",
@@ -3547,7 +3547,7 @@ fuzzer_test("net_cert_verify_name_in_subtree_fuzzer") {
 }
 
 fuzzer_test("net_cert_crl_parse_crl_certificatelist_fuzzer") {
-  sources = [ "cert/internal/crl_parse_crl_certificatelist_fuzzer.cc" ]
+  sources = [ "cert/pki/crl_parse_crl_certificatelist_fuzzer.cc" ]
   seed_corpus = "data/fuzzer_data/crl_parse_crl_certificatelist_fuzzer"
   deps = [
     "//base",
@@ -3556,7 +3556,7 @@ fuzzer_test("net_cert_crl_parse_crl_certificatelist_fuzzer") {
 }
 
 fuzzer_test("net_cert_crl_parse_crl_tbscertlist_fuzzer") {
-  sources = [ "cert/internal/crl_parse_crl_tbscertlist_fuzzer.cc" ]
+  sources = [ "cert/pki/crl_parse_crl_tbscertlist_fuzzer.cc" ]
   seed_corpus = "data/fuzzer_data/crl_parse_crl_tbscertlist_fuzzer"
   deps = [
     "//base",
@@ -3565,7 +3565,7 @@ fuzzer_test("net_cert_crl_parse_crl_tbscertlist_fuzzer") {
 }
 
 fuzzer_test("net_cert_crl_parse_issuing_distribution_point_fuzzer") {
-  sources = [ "cert/internal/crl_parse_issuing_distribution_point_fuzzer.cc" ]
+  sources = [ "cert/pki/crl_parse_issuing_distribution_point_fuzzer.cc" ]
   seed_corpus = "data/fuzzer_data/crl_parse_issuing_distribution_point_fuzzer"
   deps = [
     "//base",
@@ -3574,7 +3574,7 @@ fuzzer_test("net_cert_crl_parse_issuing_distribution_point_fuzzer") {
 }
 
 fuzzer_test("net_cert_crl_getcrlstatusforcert_fuzzer") {
-  sources = [ "cert/internal/crl_getcrlstatusforcert_fuzzer.cc" ]
+  sources = [ "cert/pki/crl_getcrlstatusforcert_fuzzer.cc" ]
   seed_corpus = "data/fuzzer_data/crl_getcrlstatusforcert_fuzzer"
   deps = [
     "//base",
@@ -3619,7 +3619,7 @@ fuzzer_test("net_cert_ocsp_parse_ocsp_response_fuzzer") {
 }
 
 fuzzer_test("net_cert_parse_authority_key_identifier_fuzzer") {
-  sources = [ "cert/internal/parse_authority_key_identifier_fuzzer.cc" ]
+  sources = [ "cert/pki/parse_authority_key_identifier_fuzzer.cc" ]
   seed_corpus = "data/fuzzer_data/parse_authority_key_identifier_fuzzer"
   deps = [
     "//base",

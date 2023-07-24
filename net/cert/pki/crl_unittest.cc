@@ -4,10 +4,11 @@
 
 #include "net/cert/pki/crl.h"
 
-#include "base/strings/string_piece.h"
-#include "base/strings/string_util.h"
+#include <string_view>
+
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/parsed_certificate.h"
+#include "net/cert/pki/string_util.h"
 #include "net/cert/pki/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
@@ -18,12 +19,12 @@ namespace {
 
 constexpr int64_t kAgeOneWeek = 7 * 24 * 60 * 60;
 
-std::string GetFilePath(base::StringPiece file_name) {
+std::string GetFilePath(std::string_view file_name) {
   return std::string("net/data/crl_unittest/") + std::string(file_name);
 }
 
 std::shared_ptr<const ParsedCertificate> ParseCertificate(
-    base::StringPiece data) {
+    std::string_view data) {
   CertErrors errors;
   return ParsedCertificate::Create(
       bssl::UniquePtr<CRYPTO_BUFFER>(CRYPTO_BUFFER_new(
@@ -111,7 +112,7 @@ constexpr char const* kTestParams[] = {
 struct PrintTestName {
   std::string operator()(
       const testing::TestParamInfo<const char*>& info) const {
-    base::StringPiece name(info.param);
+    std::string_view name(info.param);
     // Strip ".pem" from the end as GTest names cannot contain period.
     name.remove_suffix(4);
     return std::string(name);
@@ -124,7 +125,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          PrintTestName());
 
 TEST_P(CheckCRLTest, FromFile) {
-  base::StringPiece file_name(GetParam());
+  std::string_view file_name(GetParam());
 
   std::string crl_data;
   std::string ca_data_2;
@@ -169,8 +170,9 @@ TEST_P(CheckCRLTest, FromFile) {
     ASSERT_TRUE(ParseCrlDistributionPoints(crl_dp_extension.value,
                                            &distribution_points));
     ASSERT_LE(distribution_points.size(), 1U);
-    if (!distribution_points.empty())
+    if (!distribution_points.empty()) {
       cert_dp = &distribution_points[0];
+    }
   }
   ASSERT_TRUE(cert_dp);
 
@@ -178,10 +180,11 @@ TEST_P(CheckCRLTest, FromFile) {
   int64_t kVerifyTime = 1489017600;
 
   CRLRevocationStatus expected_revocation_status = CRLRevocationStatus::UNKNOWN;
-  if (base::StartsWith(file_name, "good"))
+  if (string_util::StartsWith(file_name, "good")) {
     expected_revocation_status = CRLRevocationStatus::GOOD;
-  else if (base::StartsWith(file_name, "revoked"))
+  } else if (string_util::StartsWith(file_name, "revoked")) {
     expected_revocation_status = CRLRevocationStatus::REVOKED;
+  }
 
   CRLRevocationStatus revocation_status =
       CheckCRL(crl_data, certs, /*target_cert_index=*/0, *cert_dp, kVerifyTime,
@@ -192,8 +195,8 @@ TEST_P(CheckCRLTest, FromFile) {
   // |target_cert_index=1|. This is a hacky way to verify that
   // target_cert_index is actually being honored.
   ParsedCertificateList other_certs;
-  ASSERT_TRUE(ReadCertChainFromFile("net/data/ssl/certificates/ok_cert.pem",
-                                    &other_certs));
+  ASSERT_TRUE(ReadCertChainFromFile(
+      "net/data/parse_certificate_unittest/cert_version3.pem", &other_certs));
   ASSERT_FALSE(other_certs.empty());
   certs.insert(certs.begin(), other_certs[0]);
   revocation_status = CheckCRL(crl_data, certs, /*target_cert_index=*/1,
