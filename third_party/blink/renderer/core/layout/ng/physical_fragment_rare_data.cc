@@ -15,6 +15,9 @@ PhysicalFragmentRareData::PhysicalFragmentRareData(wtf_size_t num_fields) {
 }
 
 PhysicalFragmentRareData::PhysicalFragmentRareData(
+    const NGPhysicalBoxStrut* borders,
+    const NGPhysicalBoxStrut* padding,
+    absl::optional<PhysicalRect> inflow_bounds,
     NGBoxFragmentBuilder& builder,
     wtf_size_t num_fields) {
   field_list_.ReserveInitialCapacity(num_fields);
@@ -22,6 +25,15 @@ PhysicalFragmentRareData::PhysicalFragmentRareData(
   // Each field should be processed in order of FieldId to avoid vector
   // element insertions.
 
+  if (borders) {
+    SetField(FieldId::kBorders).borders = *borders;
+  }
+  if (padding) {
+    SetField(FieldId::kPadding).padding = *padding;
+  }
+  if (inflow_bounds) {
+    SetField(FieldId::kInflowBounds).inflow_bounds = *inflow_bounds;
+  }
   if (builder.frame_set_layout_data_) {
     SetField(FieldId::kFrameSetLayoutData).frame_set_layout_data =
         std::move(builder.frame_set_layout_data_);
@@ -86,6 +98,9 @@ PhysicalFragmentRareData::PhysicalFragmentRareData(
   // Each field should be processed in order of FieldId to avoid vector
   // element insertions.
 
+  SET_IF_EXISTS(kBorders, borders, other);
+  SET_IF_EXISTS(kPadding, padding, other);
+  SET_IF_EXISTS(kInflowBounds, inflow_bounds, other);
   CLONE_IF_EXISTS(kFrameSetLayoutData, frame_set_layout_data, other);
   CLONE_IF_EXISTS(kMathMLPaintInfo, mathml_paint_info, other);
   SET_IF_EXISTS(kTableGridRect, table_grid_rect, other);
@@ -111,6 +126,9 @@ PhysicalFragmentRareData::~PhysicalFragmentRareData() = default;
 
 #define DISPATCH_BY_MEMBER_TYPE(FUNC)                                       \
   switch (type) {                                                           \
+    FUNC(kBorders, borders);                                                \
+    FUNC(kPadding, padding);                                                \
+    FUNC(kInflowBounds, inflow_bounds);                                     \
     FUNC(kFrameSetLayoutData, frame_set_layout_data);                       \
     FUNC(kMathMLPaintInfo, mathml_paint_info);                              \
     FUNC(kTableGridRect, table_grid_rect);                                  \

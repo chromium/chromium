@@ -230,12 +230,24 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   }
 
   const NGPhysicalBoxStrut Borders() const {
+    if (RuntimeEnabledFeatures::RareBorderPaddingInflowEnabled()) {
+      if (const auto* field = GetRareField(FieldId::kBorders)) {
+        return field->borders;
+      }
+      return NGPhysicalBoxStrut();
+    }
     if (!HasBorders())
       return NGPhysicalBoxStrut();
     return *ComputeBordersAddress();
   }
 
   const NGPhysicalBoxStrut Padding() const {
+    if (RuntimeEnabledFeatures::RareBorderPaddingInflowEnabled()) {
+      if (const auto* field = GetRareField(FieldId::kPadding)) {
+        return field->padding;
+      }
+      return NGPhysicalBoxStrut();
+    }
     if (!HasPadding())
       return NGPhysicalBoxStrut();
     return *ComputePaddingAddress();
@@ -268,6 +280,12 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   // size and position of the grid instead.
   // This is used for scrollable overflow calculations.
   const absl::optional<PhysicalRect> InflowBounds() const {
+    if (RuntimeEnabledFeatures::RareBorderPaddingInflowEnabled()) {
+      if (const auto* field = GetRareField(FieldId::kInflowBounds)) {
+        return field->inflow_bounds;
+      }
+      return absl::nullopt;
+    }
     if (!HasInflowBounds())
       return absl::nullopt;
     return *ComputeInflowBoundsAddress();
@@ -560,9 +578,21 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   bool IncludeBorderLeft() const {
     return bit_field_.get<IncludeBorderLeftFlag>();
   }
-  bool HasBorders() const { return bit_field_.get<HasBordersFlag>(); }
-  bool HasPadding() const { return bit_field_.get<HasPaddingFlag>(); }
-  bool HasInflowBounds() const { return bit_field_.get<HasInflowBoundsFlag>(); }
+  bool HasBorders() const {
+    return RuntimeEnabledFeatures::RareBorderPaddingInflowEnabled()
+               ? !!GetRareField(FieldId::kBorders)
+               : bit_field_.get<HasBordersFlag>();
+  }
+  bool HasPadding() const {
+    return RuntimeEnabledFeatures::RareBorderPaddingInflowEnabled()
+               ? !!GetRareField(FieldId::kPadding)
+               : bit_field_.get<HasPaddingFlag>();
+  }
+  bool HasInflowBounds() const {
+    return RuntimeEnabledFeatures::RareBorderPaddingInflowEnabled()
+               ? !!GetRareField(FieldId::kInflowBounds)
+               : bit_field_.get<HasInflowBoundsFlag>();
+  }
 
   static size_t AdditionalByteSize(bool has_fragment_items,
                                    bool has_layout_overflow,
@@ -598,6 +628,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   }
 
   const NGPhysicalBoxStrut* ComputeBordersAddress() const {
+    DCHECK(!RuntimeEnabledFeatures::RareBorderPaddingInflowEnabled());
     DCHECK(HasBorders() || HasPadding() || HasInflowBounds());
     const PhysicalRect* address = ComputeLayoutOverflowAddress();
     const uint8_t* unaligned_border_address =
@@ -608,6 +639,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   }
 
   const NGPhysicalBoxStrut* ComputePaddingAddress() const {
+    DCHECK(!RuntimeEnabledFeatures::RareBorderPaddingInflowEnabled());
     DCHECK(HasPadding() || HasInflowBounds());
     const NGPhysicalBoxStrut* address = ComputeBordersAddress();
     const uint8_t* unaligned_address =
@@ -618,6 +650,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   }
 
   const PhysicalRect* ComputeInflowBoundsAddress() const {
+    DCHECK(!RuntimeEnabledFeatures::RareBorderPaddingInflowEnabled());
     DCHECK(HasInflowBounds());
     NGPhysicalBoxStrut* address =
         const_cast<NGPhysicalBoxStrut*>(ComputePaddingAddress());
@@ -668,8 +701,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   Member<PhysicalFragmentRareData> rare_data_;
   NGInkOverflow ink_overflow_;
   HeapVector<NGLink> children_;
-  // fragment_items, borders, and padding are after |children_| if they are not
-  // empty/initial.
+  // fragment_items is after |children_| if they are not empty/initial.
 };
 
 template <>

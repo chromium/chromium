@@ -2864,6 +2864,10 @@
       base_feature: "none",
     },
     {
+      name: "RareBorderPaddingInflow",
+      status: "stable",
+    },
+    {
       name: "ReadableStreamTeeCloneForBranch2",
       status: "stable",
     },

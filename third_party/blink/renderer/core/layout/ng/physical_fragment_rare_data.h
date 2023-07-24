@@ -34,7 +34,10 @@ class PhysicalFragmentRareData
     : public GarbageCollected<PhysicalFragmentRareData> {
  public:
   explicit PhysicalFragmentRareData(wtf_size_t num_fields);
-  PhysicalFragmentRareData(NGBoxFragmentBuilder& builder,
+  PhysicalFragmentRareData(const NGPhysicalBoxStrut* borders,
+                           const NGPhysicalBoxStrut* padding,
+                           absl::optional<PhysicalRect> inflow_bounds,
+                           NGBoxFragmentBuilder& builder,
                            wtf_size_t num_fields);
   PhysicalFragmentRareData(const PhysicalFragmentRareData& other);
   ~PhysicalFragmentRareData();
@@ -51,7 +54,10 @@ class PhysicalFragmentRareData
   // In ARM, the size of a shift amount operand of shift instructions is same
   // as the size of shifted data. So FieldId should be RareBitFieldType.
   enum class FieldId : RareBitFieldType {
-    kFrameSetLayoutData = 0,
+    kBorders = 0,
+    kPadding,
+    kInflowBounds,
+    kFrameSetLayoutData,
     kMathMLPaintInfo,
     kTableGridRect,
     kTableCollapsedBorders,
@@ -70,6 +76,9 @@ class PhysicalFragmentRareData
 
   struct RareField {
     union {
+      NGPhysicalBoxStrut borders;
+      NGPhysicalBoxStrut padding;
+      PhysicalRect inflow_bounds;
       std::unique_ptr<const FrameSetLayoutData> frame_set_layout_data;
       std::unique_ptr<const NGMathMLPaintInfo> mathml_paint_info;
       LogicalRect table_grid_rect;
