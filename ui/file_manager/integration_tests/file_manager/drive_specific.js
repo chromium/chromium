@@ -1932,3 +1932,34 @@ testcase.openDriveDocWhenOffline = async () => {
   await remoteCall.waitForElement(
       appId, '.files-alert-dialog[aria-label="You are offline"]');
 };
+
+/*
+ * Verifies that once a file completes syncing, its syncing status
+ * indicator displays as "completed" and is dismissed about 300ms
+ * later.
+ */
+testcase.completedSyncStatusDismissesAfter300Ms = async () => {
+  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [], [
+    ENTRIES.hello,
+  ]);
+
+  const timeBeforeCompletion = Date.now();
+
+  // Fake the file finishing syncing.
+  await sendTestMessage({
+    name: 'setDriveSyncProgress',
+    path: `/root/${ENTRIES.hello.targetPath}`,
+    progress: 100,
+  });
+
+  const completedQuery = '#file-list xf-inline-status[sync-status=completed]';
+
+  // Verify the "sync completed" icon is displayed.
+  await remoteCall.waitForElement(appId, completedQuery);
+
+  // Verify the completed state is eventually dismissed.
+  await remoteCall.waitForElementLost(appId, completedQuery);
+
+  // Verify that at least 300ms have passed since the syncing completed.
+  chrome.test.assertTrue(Date.now() - timeBeforeCompletion >= 300);
+};

@@ -836,7 +836,9 @@ export class FileTable extends Table {
     label.appendChild(
         filelist.renderFileNameLabel(this.ownerDocument, entry, locationInfo));
     if (locationInfo && locationInfo.isDriveBased) {
-      label.appendChild(this.ownerDocument.createElement('xf-inline-status'));
+      const inlineStatus = this.ownerDocument.createElement('xf-inline-status');
+      inlineStatus.classList.add('tast-inline-status');
+      label.appendChild(inlineStatus);
     }
     if (!util.isJellyEnabled() && !util.isInlineSyncStatusEnabled()) {
       const isEncrypted = FileType.isEncrypted(entry, metadata.contentMimeType);

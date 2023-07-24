@@ -372,6 +372,7 @@ filelist.decorateListItem = (li, entry, metadataModel, volumeManager) => {
     'shortcut',
     'canPin',
     'isDlpRestricted',
+    'syncCompletedTime',
   ])[0];
   filelist.updateListItemExternalProps(
       li, entry, externalProps, util.isTeamDriveRoot(entry));
@@ -972,6 +973,7 @@ filelist.updateCacheItemInlineStatus =
         'canPin',
         'syncStatus',
         'progress',
+        'syncCompletedTime',
       ])[0];
 
       filelist.updateInlineStatus(restoredItem, metadata);
@@ -989,7 +991,14 @@ filelist.updateInlineStatus = (li, metadata) => {
     return;
   }
 
-  const {pinned, availableOffline, canPin, progress, syncStatus} = metadata;
+  const {
+    pinned,
+    availableOffline,
+    canPin,
+    progress,
+    syncStatus,
+    syncCompletedTime,
+  } = metadata;
 
   if (util.isDriveFsBulkPinningEnabled()) {
     const cantPin = canPin === false;
@@ -1005,8 +1014,16 @@ filelist.updateInlineStatus = (li, metadata) => {
   inlineStatus.toggleAttribute('available-offline', pinned && !dimOffline);
 
   if (util.isInlineSyncStatusEnabled()) {
-    inlineStatus.setAttribute('sync-status', String(syncStatus));
-    inlineStatus.setAttribute('progress', String(progress));
+    let actualSyncStatus = syncStatus;
+    let actualProgress = progress;
+    // Force sync status as completed if it has been less than 300ms since the
+    // file has completed syncing.
+    if (Date.now() - syncCompletedTime < 300) {
+      actualSyncStatus = chrome.fileManagerPrivate.SyncStatus.COMPLETED;
+      actualProgress = 1;
+    }
+    inlineStatus.setAttribute('sync-status', String(actualSyncStatus));
+    inlineStatus.setAttribute('progress', String(actualProgress));
   }
 };
 

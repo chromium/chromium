@@ -179,10 +179,6 @@ void DriveFsEventRouter::OnItemProgress(
     if (was_tracked) {
       // Stop tracking completed events but push it to subscribers.
       path_to_sync_state_.erase(previous_state_iter);
-    } else {
-      // If path wasn't tracked in the first place, don't report its completed
-      // event to subscribers.
-      return;
     }
   } else {
     path_to_sync_state_[path] = filtered_states.back();

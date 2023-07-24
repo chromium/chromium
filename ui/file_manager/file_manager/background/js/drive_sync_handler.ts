@@ -23,17 +23,21 @@ import {getStore} from '../../state/store.js';
 import {Speedometer} from './file_operation_util.js';
 
 /**
- * Keys in the metadata store related to individual sync status.
+ * Shorthand for metadata keys.
  */
-const METADATA_KEYS = [
-  chrome.fileManagerPrivate.EntryPropertyName.SYNC_STATUS,
-  chrome.fileManagerPrivate.EntryPropertyName.PROGRESS,
-];
+const {
+  SYNC_STATUS,
+  PROGRESS,
+  SYNC_COMPLETED_TIME,
+  AVAILABLE_OFFLINE,
+  PINNED,
+  CAN_PIN,
+} = chrome.fileManagerPrivate.EntryPropertyName;
 
 /**
- * Shorthand for the `COMPLETED` sync status.
+ * Shorthand for sync statuses.
  */
-const COMPLETED = chrome.fileManagerPrivate.SyncStatus.COMPLETED;
+const {COMPLETED} = chrome.fileManagerPrivate.SyncStatus;
 
 /**
  * Prefix for Out of Quota sync messages to ensure they reuse existing
@@ -114,6 +118,11 @@ export class DriveSyncHandlerImpl extends EventTarget {
   private statusMessages_: {[key: string]: {single: string, plural: string}};
 
   /**
+   * Recently completed URLs whose metadata should be updated after 300ms.
+   */
+  private completedUrls_: string[] = [];
+
+  /**
    * Rate limiter which is used to avoid sending update request for progress
    * bar too frequently.
    */
@@ -121,6 +130,46 @@ export class DriveSyncHandlerImpl extends EventTarget {
     this.progressCenter_.updateItem(this.syncItem_);
     this.progressCenter_.updateItem(this.pinItem_);
   }, 2000);
+
+  /**
+   * With a rate limit of 200ms, update entries that have completed 300ms ago or
+   * longer.
+   */
+  private updateCompletedRateLimiter_ = new RateLimiter(async () => {
+    if (this.completedUrls_.length === 0) {
+      return;
+    }
+
+    const entriesToUpdate: Entry[] = [];
+    this.completedUrls_ = this.completedUrls_.filter(url => {
+      const [entry, syncCompletedTime] =
+          this.getEntryAndSyncCompletedTimeForUrl_(url);
+      // Stop tracking URLs that are no longer in the store.
+      if (!entry) {
+        return false;
+      }
+      // Update URLs that have completed over 300ms and stop tracking them.
+      if (Date.now() - syncCompletedTime > 300) {
+        entriesToUpdate.push(entry);
+        return false;
+      }
+      // Keep tracking URLs that are in the store and have completed <300ms ago.
+      return true;
+    });
+
+    if (entriesToUpdate.length) {
+      this.metadataModel_?.notifyEntriesChanged(entriesToUpdate);
+      this.metadataModel_?.get(entriesToUpdate, [
+        SYNC_STATUS,
+        PROGRESS,
+        AVAILABLE_OFFLINE,
+        PINNED,
+        CAN_PIN,
+      ]);
+    }
+
+    this.updateCompletedRateLimiter_.run();
+  }, 200);
 
   /**
    * Saved dialog event to be sent to the next launched Files App UI window.
@@ -264,72 +313,52 @@ export class DriveSyncHandlerImpl extends EventTarget {
     }
   }
 
+  private getEntryAndSyncCompletedTimeForUrl_(url: string):
+      [Entry|null, number] {
+    const entry = getStore().getState().allEntries[url]?.entry;
+
+    if (!entry) {
+      return [null, 0];
+    }
+
+    const metadata =
+        this.metadataModel_?.getCache([entry], [SYNC_COMPLETED_TIME])[0];
+
+    return [
+      util.unwrapEntry(entry) as Entry,
+      metadata?.syncCompletedTime || 0,
+    ];
+  }
+
   /**
    * Handles file transfer status updates for individual files, updating their
    * sync status metadata.
    */
   private async updateSyncStateMetadata_(
       syncStates: chrome.fileManagerPrivate.SyncState[]) {
-    if (!this.metadataModel_) {
-      // Files app is still loading. This should have no user visible impact
-      // since sync status update events are constantly emitted.
-      return;
-    }
-
-    const completedUrls = [];
-    const completedValues = [];
-
     const urlsToUpdate = [];
     const valuesToUpdate = [];
 
     for (const {fileUrl, syncStatus, progress} of syncStates) {
-      if (syncStatus === COMPLETED) {
-        completedUrls.push(fileUrl);
-        completedValues.push([syncStatus, progress, Date.now()]);
-      } else {
+      if (syncStatus !== COMPLETED) {
         urlsToUpdate.push(fileUrl);
-        valuesToUpdate.push([syncStatus, progress]);
-      }
-    }
-
-    this.metadataModel_.update(urlsToUpdate, METADATA_KEYS, valuesToUpdate);
-
-    if (!completedUrls.length) {
-      return;
-    }
-
-    this.metadataModel_.update(
-        completedUrls,
-        [
-          ...METADATA_KEYS,
-          chrome.fileManagerPrivate.EntryPropertyName.SYNC_COMPLETED_TIME,
-        ],
-        completedValues);
-
-    // Hold "completed" state for 300ms to give users a chance to see it.
-    await new Promise(r => setTimeout(r, 300));
-
-    const {allEntries} = getStore().getState();
-    const completedEntries = [];
-    for (const url of completedUrls) {
-      const entry = allEntries[url]?.entry;
-      if (!entry) {
+        valuesToUpdate.push([syncStatus, progress, 0]);
         continue;
       }
-      completedEntries.push(util.unwrapEntry(entry));
+
+      // Only update status to completed if the previous status was different.
+      // Note: syncCompletedTime is 0 if the last event wasn't completed.
+      if (!this.getEntryAndSyncCompletedTimeForUrl_(fileUrl)[1]) {
+        urlsToUpdate.push(fileUrl);
+        valuesToUpdate.push([syncStatus, progress, Date.now()]);
+        this.completedUrls_.push(fileUrl);
+      }
     }
 
-    if (!completedEntries.length) {
-      return;
-    }
-
-    this.metadataModel_.notifyEntriesChanged(completedEntries);
-    this.metadataModel_.get(completedEntries, [
-      ...METADATA_KEYS,
-      chrome.fileManagerPrivate.EntryPropertyName.AVAILABLE_OFFLINE,
-      chrome.fileManagerPrivate.EntryPropertyName.PINNED,
-      chrome.fileManagerPrivate.EntryPropertyName.CAN_PIN,
-    ]);
+    this.metadataModel_?.update(
+        urlsToUpdate, [SYNC_STATUS, PROGRESS, SYNC_COMPLETED_TIME],
+        valuesToUpdate);
+    this.updateCompletedRateLimiter_.run();
   }
 
   /**

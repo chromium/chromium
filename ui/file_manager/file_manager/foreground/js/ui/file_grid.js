@@ -758,6 +758,7 @@ export class FileGrid extends Grid {
                              'canPin',
                              'syncStatus',
                              'progress',
+                             'syncCompletedTime',
                            ])[0] ||
           {};
       filelist.updateInlineStatus(listItem, metadata);
@@ -822,6 +823,7 @@ export class FileGrid extends Grid {
                            'canPin',
                            'syncStatus',
                            'progress',
+                           'syncCompletedTime',
                          ])[0] ||
         {};
 
@@ -843,7 +845,9 @@ export class FileGrid extends Grid {
     li.setAttribute('file-name', util.getEntryLabel(locationInfo, entry));
 
     if (locationInfo && locationInfo.isDriveBased) {
-      frame.appendChild(li.ownerDocument.createElement('xf-inline-status'));
+      const inlineStatus = li.ownerDocument.createElement('xf-inline-status');
+      inlineStatus.classList.add('tast-inline-status');
+      frame.appendChild(inlineStatus);
     }
 
     if (entry) {

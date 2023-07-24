@@ -1676,6 +1676,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .EnableInlineSyncStatusProgressEvents(),
         TestCase("openDriveDocWhenOffline")
             .EnableBulkPinning()
+            .EnableInlineSyncStatusProgressEvents(),
+        TestCase("completedSyncStatusDismissesAfter300Ms")
             .EnableInlineSyncStatusProgressEvents()
         // TODO(b/189173190): Enable
         // TestCase("driveEnableDocsOfflineDialog"),
