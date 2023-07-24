@@ -35,6 +35,7 @@ __filegroups = {
             "*.h",
             "bin/clang",
             "bin/clang++",
+            "bin/clang-cl.exe",
         ],
     },
 }
