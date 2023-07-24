@@ -11,8 +11,8 @@ Refer to README.md for content description and update process.
  <item id="accounts_image_fetcher" added_in_milestone="66" content_hash_code="02b53da6" os_list="linux,windows,chromeos,android" file_path="components/signin/internal/identity_manager/account_fetcher_service.cc" />
  <item id="adb_client_socket" added_in_milestone="65" content_hash_code="03607bec" os_list="linux,windows,chromeos" file_path="chrome/browser/devtools/device/adb/adb_client_socket.cc" />
  <item id="affiliation_lookup_by_hash" added_in_milestone="87" content_hash_code="04e2a551" os_list="windows,chromeos,android,linux" file_path="components/password_manager/core/browser/affiliation/hash_affiliation_fetcher.cc" />
- <item id="aggregation_service_helper_keys" added_in_milestone="96" content_hash_code="006e2ea0" os_list="linux,windows,chromeos,android" file_path="content/browser/aggregation_service/aggregation_service_network_fetcher_impl.cc" />
- <item id="aggregation_service_report" added_in_milestone="95" content_hash_code="037768da" os_list="linux,windows,chromeos,android" file_path="content/browser/aggregation_service/aggregatable_report_sender.cc" />
+ <item id="aggregation_service_helper_keys" added_in_milestone="96" content_hash_code="05a1f344" os_list="linux,windows,chromeos,android" file_path="content/browser/aggregation_service/aggregation_service_network_fetcher_impl.cc" />
+ <item id="aggregation_service_report" added_in_milestone="95" content_hash_code="08063b85" os_list="linux,windows,chromeos,android" file_path="content/browser/aggregation_service/aggregatable_report_sender.cc" />
  <item id="android_device_manager_socket" added_in_milestone="65" content_hash_code="00623801" os_list="linux,windows,chromeos" file_path="chrome/browser/devtools/device/android_device_manager.cc" />
  <item id="android_web_socket" added_in_milestone="65" content_hash_code="00bbd661" os_list="linux,windows,chromeos" file_path="chrome/browser/devtools/device/android_web_socket.cc" />
  <item id="auction_downloader" added_in_milestone="92" content_hash_code="01f53427" os_list="linux,windows,chromeos,android" file_path="content/services/auction_worklet/public/cpp/auction_downloader.cc" />
@@ -46,7 +46,7 @@ Refer to README.md for content description and update process.
  <item id="chrome_variations_service" added_in_milestone="62" content_hash_code="00f59481" os_list="linux,windows,chromeos,android" file_path="components/variations/service/variations_service.cc" />
  <item id="client_download_request" added_in_milestone="62" content_hash_code="01da15dc" os_list="linux,windows,chromeos" file_path="chrome/browser/safe_browsing/download_protection/check_client_download_request_base.cc" />
  <item id="content_hash_verification_job" added_in_milestone="62" content_hash_code="079fc9db" os_list="linux,windows,chromeos" file_path="extensions/browser/content_hash_fetcher.cc" />
- <item id="conversion_measurement_report" added_in_milestone="84" content_hash_code="06a4170c" os_list="linux,windows,android,chromeos" file_path="content/browser/attribution_reporting/attribution_report_network_sender.cc" />
+ <item id="conversion_measurement_report" added_in_milestone="84" content_hash_code="048435e4" os_list="linux,windows,android,chromeos" file_path="content/browser/attribution_reporting/attribution_report_network_sender.cc" />
  <item id="credenential_avatar" added_in_milestone="62" content_hash_code="06bcc86b" os_list="linux,windows,chromeos,android" file_path="chrome/browser/ui/passwords/account_avatar_fetcher.cc" />
  <item id="cros_recovery_image_download" added_in_milestone="62" content_hash_code="00a7d792" os_list="linux,windows,chromeos" file_path="chrome/browser/extensions/api/image_writer_private/write_from_url_operation.cc" />
  <item id="desktop_screenshot_save" added_in_milestone="94" content_hash_code="0431b7d2" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/views/sharing_hub/screenshot/screenshot_captured_bubble.cc" />

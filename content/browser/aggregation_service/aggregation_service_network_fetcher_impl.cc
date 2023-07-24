@@ -83,19 +83,18 @@ void AggregationServiceNetworkFetcherImpl::FetchPublicKeys(
   resource_request->load_flags =
       net::LOAD_DISABLE_CACHE | net::LOAD_BYPASS_CACHE;
 
-  // TODO(crbug.com/1238343): Update the "policy" field in the traffic
-  // annotation when a setting to disable the API is properly
-  // surfaced/implemented.
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("aggregation_service_helper_keys", R"(
         semantics {
           sender: "Aggregation Service"
           description:
             "Downloads public keys for helper servers requested by APIs that "
-            "rely on private, secure aggregation (e.g. Attribution Reporting "
-            "API, see https://github.com/WICG/attribution-reporting-api). "
-            "Keys are requested prior to aggregate reports being sent and are "
-            "used to encrypt payloads for the helper servers."
+            "rely on private, secure aggregation (i.e. the Attribution "
+            "Reporting and Private Aggregation APIs, see "
+            "https://github.com/WICG/attribution-reporting-api and "
+            "https://github.com/patcg-individual-drafts/private-aggregation-api"
+            "). Keys are requested prior to aggregate reports being sent and "
+            "are used to encrypt payloads for the helper servers."
           trigger:
             "When an aggregatable report is about to be assembled and sent."
           data:
@@ -103,10 +102,15 @@ void AggregationServiceNetworkFetcherImpl::FetchPublicKeys(
           destination: OTHER
         }
         policy {
-            cookies_allowed: NO
-            setting:
-              "This feature cannot be disabled by settings."
-            policy_exception_justification: "Not implemented yet."
+          cookies_allowed: NO
+          setting:
+            "This feature can be controlled via the 'Ad measurement' setting "
+            "in the 'Ad privacy' section of 'Privacy and Security'."
+          chrome_policy {
+            PrivacySandboxAdMeasurementEnabled {
+              PrivacySandboxAdMeasurementEnabled: false
+            }
+          }
         })");
 
   auto simple_url_loader = network::SimpleURLLoader::Create(
