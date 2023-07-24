@@ -138,7 +138,10 @@ void WaylandToplevelWindow::DispatchHostWindowDragMovement(
     shell_toplevel_->SurfaceResize(connection(), hittest);
 
   connection()->Flush();
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(crbug.com/1454893): Revisit to resolve the correct impl.
   connection()->event_source()->ResetPointerFlags();
+#endif
 }
 
 void WaylandToplevelWindow::Show(bool inactive) {
