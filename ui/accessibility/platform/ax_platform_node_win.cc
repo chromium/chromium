@@ -7538,6 +7538,7 @@ bool AXPlatformNodeWin::IsUIAControl() const {
       case ax::mojom::Role::kRow:
       case ax::mojom::Role::kSection:
       case ax::mojom::Role::kSplitter:
+      case ax::mojom::Role::kStatus:
       case ax::mojom::Role::kTime:
         return true;
       default:

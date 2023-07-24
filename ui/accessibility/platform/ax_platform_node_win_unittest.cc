@@ -5786,6 +5786,24 @@ TEST_F(AXPlatformNodeWinTest, ComputeUIAControlType) {
       UIA_ControlTypePropertyId, int{UIA_GroupControlTypeId});
 }
 
+TEST_F(AXPlatformNodeWinTest, IsUIAControlForStatusRole) {
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kStatus
+  )HTML"));
+
+  Init(update);
+
+  // Turn on web content mode for the AXTree.
+  TestAXNodeWrapper::SetGlobalIsWebContent(true);
+
+  AXNode* status_node = GetRoot()->children()[0];
+
+  ComPtr<IRawElementProviderSimple> status_node_provider =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(status_node);
+  EXPECT_UIA_BOOL_EQ(status_node_provider, UIA_IsControlElementPropertyId, true);
+}
+
 TEST_F(AXPlatformNodeWinTest, UIALandmarkType) {
   auto TestLandmarkType = [this](ax::mojom::Role node_role,
                                  absl::optional<LONG> expected_landmark_type,
