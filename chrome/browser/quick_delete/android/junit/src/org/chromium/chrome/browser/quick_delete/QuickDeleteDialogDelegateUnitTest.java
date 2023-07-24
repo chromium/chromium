@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -46,6 +45,7 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
+import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 /**
@@ -114,8 +114,8 @@ public class QuickDeleteDialogDelegateUnitTest {
                 mTimePeriodChangeObserverMock)
                 .showDialog();
 
-        ChipView moreOptionsView = mQuickDeleteView.findViewById(R.id.quick_delete_more_options);
-        moreOptionsView.setVisibility(View.VISIBLE);
+        ButtonCompat moreOptionsView =
+                mQuickDeleteView.findViewById(R.id.quick_delete_more_options);
         moreOptionsView.performClick();
 
         verify(mSettingsLauncherMock)

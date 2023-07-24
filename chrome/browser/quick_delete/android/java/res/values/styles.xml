@@ -5,13 +5,21 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="MoreOptionsChip" parent="Chip">
-        <item name="cornerRadius">@dimen/chip_default_height</item>
-        <!-- TODO(crbug.com/1152592): Figure out why setting TextAppearance isn't working for
-             ChipView. -->
-        <item name="primaryTextAppearance">@style/TextAppearance.TextMedium.Primary</item>
-        <item name="chipColor">?attr/chipStateLayerColor</item>
-        <item name="defaultChipRippleColor">?attr/defaultBgColorElev2Baseline</item>
-        <item name="solidColorChip">true</item>
+    <style name="MoreOptionsButton" parent="FilledButton.Flat" >
+        <item name="android:textAppearance">@style/TextAppearance.TextLarge.Primary</item>
+        <item name="android:textAlignment">viewStart</item>
+        <item name="buttonColor">?attr/defaultBgColorElev2Baseline</item>
+        <item name="buttonTextColor">@macro/default_text_color</item>
+        <item name="verticalInset">0dp</item>
+        <item name="drawableHeight">24dp</item>
+        <item name="drawableWidth">24dp</item>
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:paddingTop">16dp</item>
+        <item name="android:paddingBottom">16dp</item>
+        <item name="rippleCornerRadiusTopStart">16dp</item>
+        <item name="rippleCornerRadiusBottomEnd">16dp</item>
+        <item name="rippleCornerRadiusBottomStart">16dp</item>
+        <item name="rippleCornerRadiusTopEnd">16dp</item>
     </style>
 </resources>

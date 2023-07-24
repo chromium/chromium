@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.browsing_data.TimePeriodUtils.TimePeriodSpinn
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -31,6 +30,7 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 /**
@@ -125,8 +125,9 @@ class QuickDeleteDialogDelegate {
         Spinner quickDeleteSpinner = mQuickDeleteView.findViewById(R.id.quick_delete_spinner);
         updateSpinner(quickDeleteSpinner);
 
-        // Update the "More options" chip.
-        ChipView moreOptionsView = mQuickDeleteView.findViewById(R.id.quick_delete_more_options);
+        // Update the "More options" button.
+        ButtonCompat moreOptionsView =
+                mQuickDeleteView.findViewById(R.id.quick_delete_more_options);
         updateMoreOptions(moreOptionsView);
 
         // Update search history text
@@ -195,12 +196,7 @@ class QuickDeleteDialogDelegate {
         text.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
-    // TODO(crbug.com/1412087): Add logic here to update the primary text to "More options" and
-    //  open the CBD Advanced tab on click.
-    private void updateMoreOptions(@NonNull ChipView moreOptionsView) {
-        // TODO(crbug.com/1412087): Update the UX of the button to reflect the proposal before
-        //  updating the visibility to visible.
-        moreOptionsView.setVisibility(View.GONE);
+    private void updateMoreOptions(@NonNull ButtonCompat moreOptionsView) {
         // TODO(crbug.com/1412087): Update this to pass arguments to hide the basic tab and only
         // show the advanced tab.
         moreOptionsView.setOnClickListener(view
