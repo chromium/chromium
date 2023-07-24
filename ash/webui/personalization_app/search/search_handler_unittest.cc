@@ -163,7 +163,13 @@ class TestEnterprisePolicyDelegate : public EnterprisePolicyDelegate {
 
 class PersonalizationAppSearchHandlerTest : public AshTestBase {
  protected:
-  PersonalizationAppSearchHandlerTest() = default;
+  PersonalizationAppSearchHandlerTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {}, {::ash::features::kTimeOfDayWallpaper,
+             ::ash::features::kFeatureManagementTimeOfDayWallpaper,
+             ::ash::features::kTimeOfDayScreenSaver,
+             ::ash::features::kFeatureManagementTimeOfDayScreenSaver});
+  }
 
   ~PersonalizationAppSearchHandlerTest() override = default;
 
@@ -250,6 +256,7 @@ class PersonalizationAppSearchHandlerTest : public AshTestBase {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<local_search_service::LocalSearchServiceProxy>
       local_search_service_proxy_;
   std::unique_ptr<TestingPrefServiceSimple> test_pref_service_;
@@ -523,7 +530,9 @@ class PersonalizationAppSearchHandlerTimeOfDayTest
   PersonalizationAppSearchHandlerTimeOfDayTest() {
     scoped_feature_list_.InitWithFeatures(
         {::ash::features::kTimeOfDayWallpaper,
-         ::ash::features::kTimeOfDayScreenSaver},
+         ::ash::features::kFeatureManagementTimeOfDayWallpaper,
+         ::ash::features::kTimeOfDayScreenSaver,
+         ::ash::features::kFeatureManagementTimeOfDayScreenSaver},
         {});
   }
 
