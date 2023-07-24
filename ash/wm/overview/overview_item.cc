@@ -720,22 +720,35 @@ void OverviewItem::Restack() {
   }
 }
 
-void OverviewItem::UpdatePhantomsForDragging(bool is_touch_dragging) {
+void OverviewItem::UpdateMirrorsForDragging(bool is_touch_dragging) {
   DCHECK_GT(Shell::GetAllRootWindows().size(), 1u);
-  if (!phantoms_for_dragging_) {
-    phantoms_for_dragging_ =
-        transform_window_.IsMinimized()
-            ? std::make_unique<DragWindowController>(
-                  item_widget_->GetNativeWindow(), is_touch_dragging,
-                  absl::make_optional(shadow_->GetContentBounds()))
-            : std::make_unique<DragWindowController>(GetWindow(),
-                                                     is_touch_dragging);
+  const bool is_minimized = transform_window_.IsMinimized();
+
+  // With Jellyroll, header is visible while dragging.
+  if (is_minimized || chromeos::features::IsJellyrollEnabled()) {
+    if (!item_mirror_for_dragging_) {
+      item_mirror_for_dragging_ = std::make_unique<DragWindowController>(
+          item_widget_->GetNativeWindow(), is_touch_dragging);
+    }
+    item_mirror_for_dragging_->Update();
   }
-  phantoms_for_dragging_->Update();
+
+  // Minimized windows don't need to mirror the source as its already in
+  // `item_widget_`.
+  if (is_minimized) {
+    return;
+  }
+
+  if (!window_mirror_for_dragging_) {
+    window_mirror_for_dragging_ =
+        std::make_unique<DragWindowController>(GetWindow(), is_touch_dragging);
+  }
+  window_mirror_for_dragging_->Update();
 }
 
-void OverviewItem::DestroyPhantomsForDragging() {
-  phantoms_for_dragging_.reset();
+void OverviewItem::DestroyMirrorsForDragging() {
+  item_mirror_for_dragging_.reset();
+  window_mirror_for_dragging_.reset();
 }
 
 void OverviewItem::SetShadowBounds(

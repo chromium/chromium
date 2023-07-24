@@ -472,7 +472,7 @@ void OverviewWindowDragController::ResetGesture() {
     DCHECK(item_->overview_grid()->drop_target_widget());
 
     Shell::Get()->mouse_cursor_filter()->HideSharedEdgeIndicator();
-    item_->DestroyPhantomsForDragging();
+    item_->DestroyMirrorsForDragging();
     overview_session_->RemoveDropTargets();
     if (should_allow_split_view_) {
       SplitViewController::Get(Shell::GetPrimaryRootWindow())
@@ -713,7 +713,7 @@ void OverviewWindowDragController::ContinueNormalDrag(
   }
 
   if (display_count_ > 1u)
-    item_->UpdatePhantomsForDragging(is_touch_dragging_);
+    item_->UpdateMirrorsForDragging(is_touch_dragging_);
 }
 
 OverviewWindowDragController::DragResult
@@ -723,7 +723,7 @@ OverviewWindowDragController::CompleteNormalDrag(
   auto* item_overview_grid = item_->overview_grid();
   DCHECK(item_overview_grid->drop_target_widget());
   Shell::Get()->mouse_cursor_filter()->HideSharedEdgeIndicator();
-  item_->DestroyPhantomsForDragging();
+  item_->DestroyMirrorsForDragging();
   overview_session_->RemoveDropTargets();
 
   item_->UpdateShadowTypeForDrag(/*is_dragging=*/false);
