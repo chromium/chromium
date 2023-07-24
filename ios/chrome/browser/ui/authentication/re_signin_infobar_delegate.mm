@@ -136,7 +136,7 @@ bool ReSignInInfoBarDelegate::Accept() {
   signin_metrics::RecordSigninUserActionForAccessPoint(
       signin_metrics::AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR);
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:AuthenticationOperationSigninAndSyncReauth
+      initWithOperation:AuthenticationOperation::SigninAndSyncReauth
             accessPoint:signin_metrics::AccessPoint::
                             ACCESS_POINT_RESIGNIN_INFOBAR];
   [presenter_ showSignin:command];

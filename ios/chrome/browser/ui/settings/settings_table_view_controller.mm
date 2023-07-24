@@ -1973,8 +1973,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   // device-level accounts.
   AuthenticationOperation operation =
       base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-          ? AuthenticationOperationSigninOnly
-          : AuthenticationOperationSigninAndSync;
+          ? AuthenticationOperation::SigninOnly
+          : AuthenticationOperation::SigninAndSync;
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:operation
                identity:identity

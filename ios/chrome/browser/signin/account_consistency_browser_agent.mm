@@ -95,7 +95,7 @@ void AccountConsistencyBrowserAgent::OnAddAccount() {
     return;
   }
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:AuthenticationOperationAddAccount
+      initWithOperation:AuthenticationOperation::AddAccount
             accessPoint:signin_metrics::AccessPoint::
                             ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE];
   [handler_ showSignin:command baseViewController:base_view_controller_];

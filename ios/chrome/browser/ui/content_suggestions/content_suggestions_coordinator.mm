@@ -484,8 +484,8 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
   };
   AuthenticationOperation operation =
       base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-          ? AuthenticationOperationSigninOnly
-          : AuthenticationOperationSigninAndSyncWithTwoScreens;
+          ? AuthenticationOperation::SigninOnly
+          : AuthenticationOperation::SigninAndSyncWithTwoScreens;
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:operation
                identity:nil

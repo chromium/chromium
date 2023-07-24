@@ -13,34 +13,39 @@
 
 typedef void (^ShowSigninCommandCompletionCallback)(BOOL succeeded);
 
-typedef NS_ENUM(NSInteger, AuthenticationOperation) {
+enum class AuthenticationOperation {
   // Operation to start a re-authenticate operation. The user is presented with
   // the SSOAuth re-authenticate dialog. This command can only be used if there
   // is a primary account. Please note that the primary account can disappear
   // (for external reasons) when the reauth is in progress.
-  AuthenticationOperationPrimaryAccountReauth,
+  PrimaryAccountReauth,
   // Operation to start a re-authenticate operation. The user is presented with
   // the SSOAuth re-authenticate dialog. This command can only be used if there
   // is no primary account.
-  AuthenticationOperationSigninAndSyncReauth,
+  SigninAndSyncReauth,
   // Operation to start a sign-in and sync operation. The user is presented with
   // the sign-in page with the user consent.
-  AuthenticationOperationSigninAndSync,
+  SigninAndSync,
   // Operation to start a sign-in only operation. The user is presented with
   // the consistency web sign-in dialog.
-  AuthenticationOperationSigninOnly,
+  SigninOnly,
   // Operation to add a secondary account. The user is presented with the
   // SSOAUth sign-in page. This command can only be used if there is a primary
   // account.
-  AuthenticationOperationAddAccount,
+  AddAccount,
   // Operation to start a forced sign-in operation. The user is presented with
   // the sign-in page with information about the policy and cannot dimiss it.
-  AuthenticationOperationForcedSigninAndSync,
+  ForcedSigninAndSync,
   // Operation to start a sign-in and sync operation. The user is presented with
   // the sign-in page with the user consent. The views are the newer FRE style
   // views with the first being a screen that asks the user if they want to
   // sign in and the second being the "tangible sync" screen.
-  AuthenticationOperationSigninAndSyncWithTwoScreens,
+  SigninAndSyncWithTwoScreens,
+  // Operation to trigger sign-in only operation, without presenting UI if an
+  // identity is selected in `-ShowSigninCommand.identity`. Otherwise,
+  // a dialog to choose an identity is presented and the user is signed in as
+  // soon as the identity is selected.
+  InstantSignin,
 };
 
 // A command to perform a sign in operation.

@@ -25,7 +25,10 @@
                          callback:
                              (ShowSigninCommandCompletionCallback)callback {
   if ((self = [super init])) {
-    DCHECK(operation == AuthenticationOperationSigninAndSync || !identity);
+    // Only `SigninAndSync` and `InstantSignin` can be opened with an identity
+    // selected.
+    DCHECK(operation == AuthenticationOperation::SigninAndSync ||
+           operation == AuthenticationOperation::InstantSignin || !identity);
     _operation = operation;
     _identity = identity;
     _accessPoint = accessPoint;

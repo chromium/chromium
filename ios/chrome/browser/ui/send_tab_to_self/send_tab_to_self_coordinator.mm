@@ -344,7 +344,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
         [weakSelf onSigninComplete:succeeded];
       };
       ShowSigninCommand* command = [[ShowSigninCommand alloc]
-          initWithOperation:AuthenticationOperationSigninOnly
+          initWithOperation:AuthenticationOperation::SigninOnly
                    identity:nil
                 accessPoint:signin_metrics::AccessPoint::
                                 ACCESS_POINT_SEND_TAB_TO_SELF_PROMO

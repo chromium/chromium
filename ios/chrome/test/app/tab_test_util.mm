@@ -95,7 +95,7 @@ void SimulateAddAccountFromWeb() {
   id<ApplicationCommands, BrowserCommands> handler =
       chrome_test_util::HandlerForActiveBrowser();
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:AuthenticationOperationAddAccount
+      initWithOperation:AuthenticationOperation::AddAccount
             accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN];
   UIViewController* baseViewController =
       GetForegroundActiveScene()

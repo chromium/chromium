@@ -1753,8 +1753,8 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
 - (void)showPrimaryAccountReauth {
   [self.handler showSignin:[[ShowSigninCommand alloc]
-                               initWithOperation:
-                                   AuthenticationOperationPrimaryAccountReauth
+                               initWithOperation:AuthenticationOperation::
+                                                     PrimaryAccountReauth
                                      accessPoint:signin_metrics::AccessPoint::
                                                      ACCESS_POINT_RECENT_TABS]
         baseViewController:self];

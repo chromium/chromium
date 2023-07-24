@@ -383,7 +383,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
       static_cast<id<ApplicationCommands>>(
           self.browser->GetCommandDispatcher());
   ShowSigninCommand* signinCommand = [[ShowSigninCommand alloc]
-      initWithOperation:AuthenticationOperationPrimaryAccountReauth
+      initWithOperation:AuthenticationOperation::PrimaryAccountReauth
             accessPoint:AccessPoint::ACCESS_POINT_SETTINGS];
   [applicationCommands showSignin:signinCommand
                baseViewController:self.viewController];

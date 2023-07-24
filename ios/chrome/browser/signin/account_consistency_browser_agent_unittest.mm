@@ -120,7 +120,7 @@ TEST_F(AccountConsistencyBrowserAgentTest, OnAddAccountWithoutPresentedView) {
       baseViewController:base_view_controller_mock_]);
   agent_->OnAddAccount();
   EXPECT_NE(received_command, nil);
-  EXPECT_EQ(received_command.operation, AuthenticationOperationAddAccount);
+  EXPECT_EQ(received_command.operation, AuthenticationOperation::AddAccount);
   EXPECT_EQ(received_command.identity, nil);
   EXPECT_EQ(
       received_command.accessPoint,

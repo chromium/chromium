@@ -1171,12 +1171,12 @@ const char* AlreadySeenSigninViewPreferenceKey(
       return;
     case SigninPromoAction::kSync:
       [self showSigninWithIdentity:nil
-                         operation:AuthenticationOperationSigninAndSync
+                         operation:AuthenticationOperation::SigninAndSync
                        promoAction:promoAction];
       return;
     case SigninPromoAction::kSigninSheet:
       [self showSigninWithIdentity:nil
-                         operation:AuthenticationOperationSigninOnly
+                         operation:AuthenticationOperation::SigninOnly
                        promoAction:promoAction];
       return;
   }
@@ -1196,13 +1196,13 @@ const char* AlreadySeenSigninViewPreferenceKey(
       return;
     case SigninPromoAction::kSync:
       [self showSigninWithIdentity:self.identity
-                         operation:AuthenticationOperationSigninAndSync
+                         operation:AuthenticationOperation::SigninAndSync
                        promoAction:signin_metrics::PromoAction::
                                        PROMO_ACTION_WITH_DEFAULT];
       return;
     case SigninPromoAction::kSigninSheet:
       [self showSigninWithIdentity:nil
-                         operation:AuthenticationOperationSigninOnly
+                         operation:AuthenticationOperation::SigninOnly
                        promoAction:signin_metrics::PromoAction::
                                        PROMO_ACTION_WITH_DEFAULT];
       return;
@@ -1225,13 +1225,13 @@ const char* AlreadySeenSigninViewPreferenceKey(
       return;
     case SigninPromoAction::kSync:
       [self showSigninWithIdentity:nil
-                         operation:AuthenticationOperationSigninAndSync
+                         operation:AuthenticationOperation::SigninAndSync
                        promoAction:signin_metrics::PromoAction::
                                        PROMO_ACTION_NOT_DEFAULT];
       return;
     case SigninPromoAction::kSigninSheet:
       [self showSigninWithIdentity:nil
-                         operation:AuthenticationOperationSigninOnly
+                         operation:AuthenticationOperation::SigninOnly
                        promoAction:signin_metrics::PromoAction::
                                        PROMO_ACTION_NOT_DEFAULT];
       return;

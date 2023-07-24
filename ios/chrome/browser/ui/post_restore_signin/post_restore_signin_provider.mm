@@ -144,7 +144,7 @@
   ClearPreRestoreIdentity(_localState);
 
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:AuthenticationOperationSigninAndSyncReauth
+      initWithOperation:AuthenticationOperation::SigninAndSyncReauth
                identity:nil
             accessPoint:signin_metrics::AccessPoint::
                             ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO
