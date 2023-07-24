@@ -1120,17 +1120,9 @@ TEST_P(PaintArtifactCompositorTest, OneScrollNodeNonComposited) {
       .RectDrawing(gfx::Rect(-110, 12, 170, 19), Color::kWhite);
 
   Update(artifact.Build());
-  // Blink scroll nodes not referenced by composited transforms don't create
-  // cc scroll nodes.
-  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
-    // ScrollUnification also creates transform and scroll nodes for
-    // non-composited scrollers.
-    EXPECT_EQ(3u, GetPropertyTrees().scroll_tree().size());
-    EXPECT_EQ(3u, GetPropertyTrees().transform_tree().size());
-  } else {
-    EXPECT_EQ(2u, GetPropertyTrees().scroll_tree().size());
-    EXPECT_EQ(2u, GetPropertyTrees().transform_tree().size());
-  }
+  // Non-composited scrollers still create cc transform and scroll nodes.
+  EXPECT_EQ(3u, GetPropertyTrees().scroll_tree().size());
+  EXPECT_EQ(3u, GetPropertyTrees().transform_tree().size());
   EXPECT_EQ(1u, LayerCount());
 }
 
@@ -1322,17 +1314,10 @@ TEST_P(PaintArtifactCompositorTest, AncestorScrollNodes) {
   const cc::ScrollTree& scroll_tree = GetPropertyTrees().scroll_tree();
   const cc::TransformTree& transform_tree = GetPropertyTrees().transform_tree();
   // Node #0 reserved for null; #1 for root render surface. #2 is for scroll_a.
-  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
-    // ScrollUnification also creates transform and scroll nodes for
-    // non-composited scrollers.
-    ASSERT_EQ(4u, scroll_tree.size());
-    ASSERT_EQ(4u, transform_tree.size());
-  } else {
-    // We don't need to create cc scroll node for scroll_b which doesn't use
-    // composited scrolling.
-    ASSERT_EQ(3u, scroll_tree.size());
-    ASSERT_EQ(3u, transform_tree.size());
-  }
+
+  // Non-composited scrollers still create transform and scroll nodes.
+  ASSERT_EQ(4u, scroll_tree.size());
+  ASSERT_EQ(4u, transform_tree.size());
 
   const cc::ScrollNode& scroll_node_a = *scroll_tree.Node(2);
   EXPECT_EQ(1, scroll_node_a.parent_id);
@@ -1350,21 +1335,19 @@ TEST_P(PaintArtifactCompositorTest, AncestorScrollNodes) {
   EXPECT_EQ(gfx::PointF(-7, -9),
             scroll_tree.current_scroll_offset(scroll_node_a.element_id));
 
-  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
-    const cc::ScrollNode& scroll_node_b = *scroll_tree.Node(3);
-    EXPECT_EQ(scroll_node_a.id, scroll_node_b.parent_id);
-    EXPECT_EQ(scroll_b.GetCompositorElementId(), scroll_node_b.element_id);
-    EXPECT_EQ(scroll_node_b.id,
-              ElementIdToScrollNodeIndex(scroll_node_b.element_id));
-    EXPECT_FALSE(scroll_node_b.is_composited);
+  const cc::ScrollNode& scroll_node_b = *scroll_tree.Node(3);
+  EXPECT_EQ(scroll_node_a.id, scroll_node_b.parent_id);
+  EXPECT_EQ(scroll_b.GetCompositorElementId(), scroll_node_b.element_id);
+  EXPECT_EQ(scroll_node_b.id,
+            ElementIdToScrollNodeIndex(scroll_node_b.element_id));
+  EXPECT_FALSE(scroll_node_b.is_composited);
 
-    const cc::TransformNode& transform_node_b =
-        *transform_tree.Node(scroll_node_b.transform_id);
-    EXPECT_TRUE(transform_node_b.local.IsIdentity());
-    EXPECT_EQ(gfx::PointF(-39, -31), transform_node_b.scroll_offset);
-    EXPECT_EQ(gfx::PointF(-39, -31),
-              scroll_tree.current_scroll_offset(scroll_node_b.element_id));
-  }
+  const cc::TransformNode& transform_node_b =
+      *transform_tree.Node(scroll_node_b.transform_id);
+  EXPECT_TRUE(transform_node_b.local.IsIdentity());
+  EXPECT_EQ(gfx::PointF(-39, -31), transform_node_b.scroll_offset);
+  EXPECT_EQ(gfx::PointF(-39, -31),
+            scroll_tree.current_scroll_offset(scroll_node_b.element_id));
 }
 
 TEST_P(PaintArtifactCompositorTest, AncestorNonCompositedScrollNode) {
@@ -4914,10 +4897,6 @@ TEST_P(PaintArtifactCompositorTest, DirectlySetScrollOffset) {
 }
 
 TEST_P(PaintArtifactCompositorTest, AddNonCompositedScrollNodes) {
-  // This test requires scroll unification.
-  if (!base::FeatureList::IsEnabled(::features::kScrollUnification))
-    return;
-
   uint32_t main_thread_scrolling_reason =
       cc::MainThreadScrollingReason::kNotScrollingOnMain;
   if (!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
@@ -4953,11 +4932,6 @@ TEST_P(PaintArtifactCompositorTest, AddNonCompositedScrollNodes) {
 }
 
 TEST_P(PaintArtifactCompositorTest, AddUnpaintedNonCompositedScrollNodes) {
-  // This test requires scroll unification.
-  if (!base::FeatureList::IsEnabled(::features::kScrollUnification)) {
-    return;
-  }
-
   const uint32_t main_thread_scrolling_reason =
       cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText;
   ASSERT_TRUE(cc::MainThreadScrollingReason::HasNonCompositedScrollReasons(
