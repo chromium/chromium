@@ -1,14 +1,19 @@
 <html>
+
 <head>
   <title>getAllScreensMedia tests</title>
   <script type="text/javascript" src="test_functions.js"></script>
 </head>
+
 <body>
   <script>
     'use strict';
 
     let gasm_streams;
     let gdm_streams;
+
+    let gasm_ended_promise;
+    let gdm_ended_promise;
 
     function verifyMethod(method) {
       return (method == "getAllScreensMedia" || method == "getDisplayMedia");
@@ -19,17 +24,13 @@
         throw new Error("Unknown method");
       }
 
-      try {
-        if (method == "getAllScreensMedia") {
-          gasm_streams = await navigator.mediaDevices.getAllScreensMedia();
-        } else {  // "getDisplayMedia"
-          gdm_streams = await navigator.mediaDevices.getDisplayMedia();
-        }
-      } catch (error) {
-        return false;
+      if (method == "getAllScreensMedia") {
+        gasm_streams = await navigator.mediaDevices.getAllScreensMedia();
+        gasm_ended_promise = createStopPromisesForStreams(gasm_streams);
+      } else {  // "getDisplayMedia"
+        gdm_streams = await navigator.mediaDevices.getDisplayMedia();
+        gdm_ended_promise = createStopPromisesForStreams([gdm_streams]);
       }
-
-      return true;
     }
 
     async function stop(method) {
@@ -44,8 +45,6 @@
           track.stop();
         });
       });
-
-      return true;
     }
 
     async function runGetAllScreensMediaAndGetIds() {
@@ -53,7 +52,7 @@
         gasm_streams = await navigator.mediaDevices.getAllScreensMedia();
         const stream_ids = gasm_streams.map(stream => stream.id).toString();
         const track_ids =
-            gasm_streams.map(stream => stream.getTracks()[0].id).toString();
+          gasm_streams.map(stream => stream.getTracks()[0].id).toString();
         return logAndReturn(stream_ids + ":" + track_ids);
       } catch (error) {
         return logAndReturn("capture-failure," + error.name);
@@ -89,35 +88,28 @@
       }
     }
 
-    async function waitUntilAllTracksStoppedByUser(tracks) {
+    function createStopPromisesForStreams(streams) {
       const promises = [];
-      tracks.forEach(async (track) => {
-        promises.push(
-          new Promise(resolve => {
-            track.onended = () => { resolve(); };
-          })
-        );
+      streams.forEach(stream => {
+        stream.getTracks().forEach((track) => {
+          promises.push(
+            new Promise(resolve => {
+              track.onended = () => { resolve(); };
+            })
+          );
+        });
       });
-      await Promise.all(promises);
+
+      return Promise.all(promises);
     }
+
 
     async function waitUntilStoppedByUser(method) {
       if (!verifyMethod(method)) {
         throw new Error("Unknown method");
       }
 
-      const streams =
-          (method == "getAllScreensMedia") ? gasm_streams : [gdm_streams];
-      const tracks = [];
-      streams.forEach(stream => {
-        stream.getTracks().forEach(track => {
-          tracks.push(track);
-        });
-      });
-
-      waitUntilAllTracksStoppedByUser(tracks);
-
-      return true;
+      await (method == "getAllScreensMedia") ? gasm_ended_promise : gdm_ended_promise;
     }
 
     function areAllTracksLive(method) {
@@ -125,10 +117,12 @@
         throw new Error("Unknown method");
       }
       const streams =
-          (method == "getAllScreensMedia") ? gasm_streams : [gdm_streams];
+        (method == "getAllScreensMedia") ? gasm_streams : [gdm_streams];
       return streams.every(stream =>
         stream.getTracks().every(track => track.readyState == "live"));
     }
+
   </script>
 </body>
+
 </html>

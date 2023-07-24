@@ -287,9 +287,9 @@ IN_PROC_BROWSER_TEST_P(
     ProgrammaticallyStoppingOneDoesNotStopTheOther) {
   SetScreens(/*screen_count=*/1u);
 
-  ASSERT_EQ(true, Run(method1_));
-  ASSERT_EQ(true, Run(method2_));
-  ASSERT_EQ(true, ProgrammaticallyStop(method1_));
+  ASSERT_EQ(nullptr, Run(method1_));
+  ASSERT_EQ(nullptr, Run(method2_));
+  ASSERT_EQ(nullptr, ProgrammaticallyStop(method1_));
 
   EXPECT_EQ(false, AreAllTracksLive(method1_));
   EXPECT_EQ(true, AreAllTracksLive(method2_));
@@ -302,9 +302,9 @@ IN_PROC_BROWSER_TEST_P(
     ProgrammaticallyStoppingOneDoesNotStopTheOtherInverseOrder) {
   SetScreens(/*screen_count=*/1u);
 
-  ASSERT_EQ(true, Run(method1_));
-  ASSERT_EQ(true, Run(method2_));
-  ASSERT_EQ(true, ProgrammaticallyStop(method2_));
+  ASSERT_EQ(nullptr, Run(method1_));
+  ASSERT_EQ(nullptr, Run(method2_));
+  ASSERT_EQ(nullptr, ProgrammaticallyStop(method2_));
 
   EXPECT_EQ(true, AreAllTracksLive(method1_));
   EXPECT_EQ(false, AreAllTracksLive(method2_));
@@ -315,8 +315,8 @@ IN_PROC_BROWSER_TEST_P(
     UserStoppingGetDisplayMediaDoesNotStopGetAllScreensMedia) {
   SetScreens(/*screen_count=*/1u);
 
-  ASSERT_EQ(true, Run(method1_));
-  ASSERT_EQ(true, Run(method2_));
+  ASSERT_EQ(nullptr, Run(method1_));
+  ASSERT_EQ(nullptr, Run(method2_));
 
   // The capture which was started via getDisplayMedia() caused the
   // browser to show the user UX for stopping that capture. Simlate a user
@@ -325,7 +325,7 @@ IN_PROC_BROWSER_TEST_P(
       ->GetMediaStreamCaptureIndicator()
       ->StopMediaCapturing(
           contents_, MediaStreamCaptureIndicator::MediaType::kDisplayMedia);
-  EXPECT_EQ(true,
+  EXPECT_EQ(nullptr,
             content::EvalJs(contents_,
                             "waitUntilStoppedByUser(\"getDisplayMedia\");"));
 
