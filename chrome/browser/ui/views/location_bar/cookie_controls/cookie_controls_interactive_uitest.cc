@@ -18,6 +18,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -183,6 +184,12 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, RemoveException) {
   cookie_settings()->SetCookieSettingForUserBypass(
       third_party_cookie_page_url());
 
+  // Force high site engagement to exercise the animation flow.
+  auto* site_engagement =
+      site_engagement::SiteEngagementService::Get(browser()->profile());
+  site_engagement->ResetBaseScoreForURL(third_party_cookie_page_url(),
+                                        /*score=*/100);
+
   RunTestSequenceInContext(
       context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
@@ -190,7 +197,29 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, RemoveException) {
       InAnyContext(WaitForShow(CookieControlsContentView::kToggleButton)),
       CheckStateForTemporaryException(),
       PressButton(CookieControlsContentView::kToggleButton),
+      CheckViewProperty(CookieControlsIconView::kCookieControlsIcon,
+                        &CookieControlsIconView::is_animating_label, false),
       CheckStateForNoException());
+}
+
+IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest,
+                       NavigateHighConfidence) {
+  // Navigate to a page while 3PC are blocked.  Verify the cookie control icon
+  // animates.
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
+
+  // Force high site engagement to exercise the animation flow.
+  auto* site_engagement =
+      site_engagement::SiteEngagementService::Get(browser()->profile());
+  site_engagement->ResetBaseScoreForURL(third_party_cookie_page_url(),
+                                        /*score=*/100);
+  RunTestSequenceInContext(
+      context(), InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
+      CheckViewProperty(CookieControlsIconView::kCookieControlsIcon,
+                        &CookieControlsIconView::is_animating_label, true));
 }
 
 // Opening the feedback dialog on CrOS & LaCrOS open a system level dialog,

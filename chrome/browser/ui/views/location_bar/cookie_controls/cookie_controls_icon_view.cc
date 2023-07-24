@@ -72,7 +72,8 @@ void CookieControlsIconView::UpdateVisibilityAndAnimate(
   UpdateIconImage();
   bool should_show = ShouldBeVisible();
   if (should_show) {
-    if (!GetVisible() || confidence_changed) {
+    // TODO(crbug.com/1446230): Don't animate when the LHS toggle is used.
+    if (!GetAssociatedBubble() && (!GetVisible() || confidence_changed)) {
       if (confidence_ == CookieControlsBreakageConfidenceLevel::kHigh) {
         AnimateIn(GetLabelForStatus());
       }
@@ -82,6 +83,8 @@ void CookieControlsIconView::UpdateVisibilityAndAnimate(
     ResetSlideAnimation(false);
   }
   SetVisible(should_show);
+  SetLabel(l10n_util::GetStringUTF16(
+      GetLabelForStatus().value_or(IDS_COOKIE_CONTROLS_TOOLTIP)));
   SetTooltipText(l10n_util::GetStringUTF16(
       GetLabelForStatus().value_or(IDS_COOKIE_CONTROLS_TOOLTIP)));
 }

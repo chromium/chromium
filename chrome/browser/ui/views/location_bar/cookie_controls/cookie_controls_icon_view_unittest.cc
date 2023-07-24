@@ -46,6 +46,8 @@ class CookieControlsIconViewUnitTest : public TestWithBrowserView {
 
   bool Visible() { return view_->ShouldBeVisible(); }
 
+  const std::u16string& LabelText() { return view_->label()->GetText(); }
+
   std::u16string TooltipText() {
     return view_->IconLabelBubbleView::GetTooltipText();
   }
@@ -74,6 +76,7 @@ TEST_F(CookieControlsIconViewUnitTest, HighConfidenceEnabled) {
   EXPECT_TRUE(Visible());
   EXPECT_TRUE(LabelShown());  // Animation for high confidence
   EXPECT_EQ(TooltipText(), BlockedLabel());
+  EXPECT_EQ(LabelText(), BlockedLabel());
 }
 
 TEST_F(CookieControlsIconViewUnitTest, MediumConfidenceEnabled) {
@@ -85,6 +88,7 @@ TEST_F(CookieControlsIconViewUnitTest, MediumConfidenceEnabled) {
   EXPECT_TRUE(Visible());
   EXPECT_FALSE(LabelShown());
   EXPECT_EQ(TooltipText(), BlockedLabel());
+  EXPECT_EQ(LabelText(), BlockedLabel());
 }
 
 TEST_F(CookieControlsIconViewUnitTest, LowConfidenceEnabled) {
@@ -96,6 +100,7 @@ TEST_F(CookieControlsIconViewUnitTest, LowConfidenceEnabled) {
   EXPECT_FALSE(Visible());
   EXPECT_FALSE(LabelShown());
   EXPECT_EQ(TooltipText(), BlockedLabel());
+  EXPECT_EQ(LabelText(), BlockedLabel());
 }
 
 //// Default third-party cookie blocking disabled.
@@ -109,6 +114,7 @@ TEST_F(CookieControlsIconViewUnitTest, HighConfidenceDisabled) {
   EXPECT_FALSE(Visible());
   EXPECT_FALSE(LabelShown());
   EXPECT_EQ(TooltipText(), AllowedLabel());
+  EXPECT_EQ(LabelText(), AllowedLabel());
 }
 
 TEST_F(CookieControlsIconViewUnitTest, MediumConfidenceDisabled) {
@@ -120,6 +126,7 @@ TEST_F(CookieControlsIconViewUnitTest, MediumConfidenceDisabled) {
   EXPECT_FALSE(Visible());
   EXPECT_FALSE(LabelShown());
   EXPECT_EQ(TooltipText(), AllowedLabel());
+  EXPECT_EQ(LabelText(), AllowedLabel());
 }
 
 TEST_F(CookieControlsIconViewUnitTest, LowConfidenceDisabled) {
@@ -131,6 +138,7 @@ TEST_F(CookieControlsIconViewUnitTest, LowConfidenceDisabled) {
   EXPECT_FALSE(Visible());
   EXPECT_FALSE(LabelShown());
   EXPECT_EQ(TooltipText(), AllowedLabel());
+  EXPECT_EQ(LabelText(), AllowedLabel());
 }
 
 /// Disabled third-party cookie blocking for site.
@@ -144,6 +152,7 @@ TEST_F(CookieControlsIconViewUnitTest, HighConfidenceDisabledForSite) {
   EXPECT_TRUE(Visible());
   EXPECT_TRUE(LabelShown());
   EXPECT_EQ(TooltipText(), AllowedLabel());
+  EXPECT_EQ(LabelText(), AllowedLabel());
 }
 
 TEST_F(CookieControlsIconViewUnitTest, MediumConfidenceDisabledForSite) {
@@ -155,6 +164,7 @@ TEST_F(CookieControlsIconViewUnitTest, MediumConfidenceDisabledForSite) {
   EXPECT_TRUE(Visible());
   EXPECT_FALSE(LabelShown());
   EXPECT_EQ(TooltipText(), AllowedLabel());
+  EXPECT_EQ(LabelText(), AllowedLabel());
 }
 
 TEST_F(CookieControlsIconViewUnitTest, LowConfidenceDisabledForSite) {
@@ -166,4 +176,5 @@ TEST_F(CookieControlsIconViewUnitTest, LowConfidenceDisabledForSite) {
   EXPECT_FALSE(Visible());
   EXPECT_FALSE(LabelShown());
   EXPECT_EQ(TooltipText(), AllowedLabel());
+  EXPECT_EQ(LabelText(), AllowedLabel());
 }
