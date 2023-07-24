@@ -1552,6 +1552,8 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
   else
     params.bounds = gfx::Rect(origin_, gfx::Size());
 
+  params.name = base::StringPrintf("ExoShellSurface-%d", shell_id++);
+
   WMHelper::AppPropertyResolver::Params property_resolver_params;
   if (application_id_)
     property_resolver_params.app_id = *application_id_;
@@ -1619,7 +1621,6 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
   UpdateTopInset();
 
   aura::Window* window = widget_->GetNativeWindow();
-  window->SetName(base::StringPrintf("ExoShellSurface-%d", shell_id++));
   window->AddChild(host_window());
   window->SetEventTargetingPolicy(
       aura::EventTargetingPolicy::kTargetAndDescendants);
