@@ -55,7 +55,7 @@ class SubAppsServiceImpl
 
     AddCallback mojo_callback;
     std::vector<std::unique_ptr<WebAppInstallInfo>> install_infos;
-    std::unique_ptr<SubAppsInstallDialogController> install_dialog = nullptr;
+    std::unique_ptr<SubAppsInstallDialogController> install_dialog;
     AddResultsMojo results;
   };
 
