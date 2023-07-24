@@ -76,6 +76,9 @@
       <message name="IDS_TRANSLATE_DONT_OFFER_LANG" desc="Option in the overflow menu. User can click the 'Don't offer Translate' option to indicate that they don't want the app to offer translations for pages in this language. The variable SOURCE_LANGUAGE could be any of 50+ languages supported by Google Translate, like French, Spanish, German, Italian, Japanese, Korean, etc. Imperative." formatter_data="android_java">
         Don‘t offer to translate pages in <ph name="SOURCE_LANGUAGE">%1$s<ex>French</ex></ph>
       </message>
+      <message name="IDS_TRANSLATE_MENU_ITEM_ENABLED" desc="Spoken signal from screen reader that the current menu item is enabled and shows a check mark." formatter_data="android_java">
+        Enabled
+      </message>
       <message name="IDS_TRANSLATE_OPTION_MORE_LANGUAGE" desc="Option in the overflow menu. Lets the user open a dialog to choose other target languages for translation, from a list of available languages. [CHAR_LIMIT=64]" formatter_data="android_java">
         More languages
       </message>
