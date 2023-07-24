@@ -14,6 +14,7 @@
 #include "chrome/browser/signin/reauth_result.h"
 #include "chrome/browser/ui/signin_view_controller.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -39,10 +40,12 @@ class MockSigninViewController : public SigninViewController {
                base::OnceCallback<void(signin::ReauthResult)>),
               (override));
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   MOCK_METHOD(void,
               ShowDiceAddAccountTab,
               (signin_metrics::AccessPoint, const std::string&),
               (override));
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 };
 
 }  // namespace
@@ -109,6 +112,7 @@ TEST_F(AccountStorageAuthHelperTest, ShouldNotSetOptInOnFailedReauth) {
   auth_helper_.TriggerOptInReauth(kReauthAccessPoint, base::DoNothing());
 }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TEST_F(AccountStorageAuthHelperTest, ShouldTriggerSigninIfDiceEnabled) {
   const signin_metrics::AccessPoint kAccessPoint =
       signin_metrics::AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN;
@@ -117,3 +121,4 @@ TEST_F(AccountStorageAuthHelperTest, ShouldTriggerSigninIfDiceEnabled) {
 
   auth_helper_.TriggerSignIn(kAccessPoint);
 }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

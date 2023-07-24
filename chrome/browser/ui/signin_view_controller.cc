@@ -176,6 +176,45 @@ void SigninViewController::ShowSignin(profiles::BubbleViewMode mode,
                     redirect_url);
 }
 
+void SigninViewController::ShowModalInterceptFirstRunExperienceDialog(
+    const CoreAccountId& account_id,
+    bool is_forced_intercept) {
+  CloseModalSignin();
+  auto fre_dialog = std::make_unique<SigninInterceptFirstRunExperienceDialog>(
+      browser_, account_id, is_forced_intercept,
+      GetOnModalDialogClosedCallback());
+  SigninInterceptFirstRunExperienceDialog* raw_dialog = fre_dialog.get();
+  // Casts pointer to a base class.
+  dialog_ = std::move(fre_dialog);
+  raw_dialog->Show();
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+void SigninViewController::ShowModalProfileCustomizationDialog(
+    bool is_local_profile_creation) {
+  CloseModalSignin();
+  dialog_ = std::make_unique<SigninModalDialogImpl>(
+      SigninViewControllerDelegate::CreateProfileCustomizationDelegate(
+          browser_, is_local_profile_creation,
+          /*show_profile_switch_iph=*/true),
+      GetOnModalDialogClosedCallback());
+}
+
+void SigninViewController::ShowModalSigninEmailConfirmationDialog(
+    const std::string& last_email,
+    const std::string& email,
+    SigninEmailConfirmationDialog::Callback callback) {
+  CloseModalSignin();
+  content::WebContents* active_contents =
+      browser_->tab_strip_model()->GetActiveWebContents();
+  dialog_ = std::make_unique<SigninModalDialogImpl>(
+      SigninEmailConfirmationDialog::AskForConfirmation(
+          active_contents, browser_->profile(), last_email, email,
+          std::move(callback)),
+      GetOnModalDialogClosedCallback());
+}
+
 std::unique_ptr<SigninViewController::ReauthAbortHandle>
 SigninViewController::ShowReauthPrompt(
     const CoreAccountId& account_id,
@@ -218,45 +257,6 @@ SigninViewController::ShowReauthPrompt(
       browser_, account_id, access_point, GetOnModalDialogClosedCallback(),
       std::move(wrapped_reauth_callback));
   return abort_handle;
-}
-
-void SigninViewController::ShowModalInterceptFirstRunExperienceDialog(
-    const CoreAccountId& account_id,
-    bool is_forced_intercept) {
-  CloseModalSignin();
-  auto fre_dialog = std::make_unique<SigninInterceptFirstRunExperienceDialog>(
-      browser_, account_id, is_forced_intercept,
-      GetOnModalDialogClosedCallback());
-  SigninInterceptFirstRunExperienceDialog* raw_dialog = fre_dialog.get();
-  // Casts pointer to a base class.
-  dialog_ = std::move(fre_dialog);
-  raw_dialog->Show();
-}
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
-void SigninViewController::ShowModalProfileCustomizationDialog(
-    bool is_local_profile_creation) {
-  CloseModalSignin();
-  dialog_ = std::make_unique<SigninModalDialogImpl>(
-      SigninViewControllerDelegate::CreateProfileCustomizationDelegate(
-          browser_, is_local_profile_creation,
-          /*show_profile_switch_iph=*/true),
-      GetOnModalDialogClosedCallback());
-}
-
-void SigninViewController::ShowModalSigninEmailConfirmationDialog(
-    const std::string& last_email,
-    const std::string& email,
-    SigninEmailConfirmationDialog::Callback callback) {
-  CloseModalSignin();
-  content::WebContents* active_contents =
-      browser_->tab_strip_model()->GetActiveWebContents();
-  dialog_ = std::make_unique<SigninModalDialogImpl>(
-      SigninEmailConfirmationDialog::AskForConfirmation(
-          active_contents, browser_->profile(), last_email, email,
-          std::move(callback)),
-      GetOnModalDialogClosedCallback());
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 

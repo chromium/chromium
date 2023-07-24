@@ -147,6 +147,9 @@
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
+#endif
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/ui/browser.h"
 #endif
 
@@ -639,12 +642,12 @@ void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
 void ChromePasswordManagerClient::TriggerReauthForPrimaryAccount(
     signin_metrics::ReauthAccessPoint access_point,
     base::OnceCallback<void(ReauthSucceeded)> reauth_callback) {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
   account_storage_auth_helper_.TriggerOptInReauth(access_point,
                                                   std::move(reauth_callback));
 #else
   std::move(reauth_callback).Run(ReauthSucceeded(false));
-#endif
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 void ChromePasswordManagerClient::TriggerSignIn(
@@ -1315,6 +1318,12 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
           this,
           base::BindRepeating(&GetSyncServiceForProfile, profile_),
           DiceWebSigninInterceptorFactory::GetForProfile(profile_)),
+#else
+      credentials_filter_(
+          this,
+          base::BindRepeating(&GetSyncServiceForProfile, profile_)),
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
       account_storage_auth_helper_(
           IdentityManagerFactory::GetForProfile(profile_),
           &password_feature_manager_,
@@ -1325,11 +1334,7 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
                 return browser ? browser->signin_view_controller() : nullptr;
               },
               web_contents)),
-#else
-      credentials_filter_(
-          this,
-          base::BindRepeating(&GetSyncServiceForProfile, profile_)),
-#endif
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
       helper_(this) {
   ContentPasswordManagerDriverFactory::CreateForWebContents(web_contents, this,
                                                             autofill_client);

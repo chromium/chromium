@@ -3092,7 +3092,6 @@ if (!is_android) {
         "../browser/signin/dice_web_signin_interceptor_browsertest.cc",
         "../browser/signin/signin_ui_util_browsertest.cc",
         "../browser/ui/signin_intercept_first_run_experience_dialog_browsertest.cc",
-        "../browser/ui/signin_reauth_view_controller_browsertest.cc",
         "../browser/ui/views/sync/inline_login_ui_browsertest.cc",
         "../browser/unified_consent/unified_consent_browsertest.cc",
       ]
@@ -4833,6 +4832,7 @@ if (!is_android) {
         # Tests for non mobile and non CrOS (includes Linux, Win, Mac).
         "../browser/extensions/api/image_writer_private/image_writer_utility_client_browsertest.cc",
         "../browser/profiles/profile_statistics_browsertest.cc",
+        "../browser/ui/signin_reauth_view_controller_browsertest.cc",
         "../browser/ui/webui/signin/turn_sync_on_helper_browsertest.cc",
       ]
 
@@ -6877,7 +6877,6 @@ test("unit_tests") {
       "../browser/signin/dice_web_signin_interceptor_unittest.cc",
       "../browser/signin/logout_tab_helper_unittest.cc",
       "../browser/signin/process_dice_header_delegate_impl_unittest.cc",
-      "../browser/ui/passwords/account_storage_auth_helper_unittest.cc",
       "../browser/ui/startup/first_run_service_unittest.cc",
       "../browser/ui/startup/startup_browser_policy_unittest.cc",
       "../browser/ui/views/profiles/dice_web_signin_interception_bubble_view_unittest.cc",
@@ -9564,6 +9563,7 @@ test("unit_tests") {
 
   if (is_win || is_mac || is_linux || is_chromeos_lacros) {
     sources += [
+      "../browser/ui/passwords/account_storage_auth_helper_unittest.cc",
       "../browser/ui/profile_picker_unittest.cc",
       "../browser/ui/signin/profile_customization_util_unittest.cc",
       "../browser/ui/webui/signin/enterprise_profile_welcome_handler_unittest.cc",

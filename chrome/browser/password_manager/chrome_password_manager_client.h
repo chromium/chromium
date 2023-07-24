@@ -52,10 +52,13 @@ class TouchToFillController;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/password_manager/multi_profile_credentials_filter.h"
-#include "chrome/browser/ui/passwords/account_storage_auth_helper.h"
 #else
 #include "components/password_manager/core/browser/sync_credentials_filter.h"
 #endif
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/ui/passwords/account_storage_auth_helper.h"
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class PasswordGenerationPopupObserver;
 class PasswordGenerationPopupControllerImpl;
@@ -440,10 +443,13 @@ class ChromePasswordManagerClient
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // MultiProfileCredentialsFilter requires DICE support.
   const MultiProfileCredentialsFilter credentials_filter_;
-  AccountStorageAuthHelper account_storage_auth_helper_;
 #else
   const password_manager::SyncCredentialsFilter credentials_filter_;
 #endif
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  AccountStorageAuthHelper account_storage_auth_helper_;
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
   std::unique_ptr<autofill::RoutingLogManager> log_manager_;
 

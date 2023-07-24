@@ -86,7 +86,7 @@ TEST_F('SyncConfirmationWindowTest', 'Window', function() {
   mocha.run();
 });
 
-GEN('#if BUILDFLAG(ENABLE_DICE_SUPPORT)');
+GEN('#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)');
 /**
  * Test fixture for
  * chrome/browser/resources/signin/signin_reauth/signin_reauth.html.
@@ -103,7 +103,9 @@ var SigninReauthTest = class extends SigninBrowserTest {
 TEST_F('SigninReauthTest', 'Dialog', function() {
   mocha.run();
 });
+GEN('#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)');
 
+GEN('#if BUILDFLAG(ENABLE_DICE_SUPPORT)');
 /**
  * Test fixture for
  * chrome/browser/resources/signin/dice_web_signin_intercept/dice_web_signin_intercept.html.

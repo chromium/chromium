@@ -3799,6 +3799,8 @@ static_library("ui") {
 
   if (is_win || is_mac || is_fuchsia || is_linux || is_chromeos_lacros) {
     sources += [
+      "passwords/account_storage_auth_helper.cc",
+      "passwords/account_storage_auth_helper.h",
       "profile_picker.cc",
       "profile_picker.h",
       "signin/profile_customization_bubble_sync_controller.h",
@@ -3806,6 +3808,8 @@ static_library("ui") {
       "signin/profile_customization_synced_theme_waiter.h",
       "signin/profile_customization_util.cc",
       "signin/profile_customization_util.h",
+      "signin_reauth_view_controller.cc",
+      "signin_reauth_view_controller.h",
       "startup/default_browser_infobar_delegate.cc",
       "startup/default_browser_infobar_delegate.h",
       "startup/default_browser_prompt.cc",
@@ -3872,6 +3876,10 @@ static_library("ui") {
       "webui/signin/signin_error_handler.h",
       "webui/signin/signin_error_ui.cc",
       "webui/signin/signin_error_ui.h",
+      "webui/signin/signin_reauth_handler.cc",
+      "webui/signin/signin_reauth_handler.h",
+      "webui/signin/signin_reauth_ui.cc",
+      "webui/signin/signin_reauth_ui.h",
       "webui/signin/signin_ui_error.cc",
       "webui/signin/signin_ui_error.h",
       "webui/signin/signin_utils_desktop.cc",
@@ -3891,14 +3899,10 @@ static_library("ui") {
 
     if (enable_dice_support) {
       sources += [
-        "passwords/account_storage_auth_helper.cc",
-        "passwords/account_storage_auth_helper.h",
         "signin/dice_web_signin_interceptor_delegate.cc",
         "signin/dice_web_signin_interceptor_delegate.h",
         "signin_intercept_first_run_experience_dialog.cc",
         "signin_intercept_first_run_experience_dialog.h",
-        "signin_reauth_view_controller.cc",
-        "signin_reauth_view_controller.h",
         "startup/first_run_service_dice_statics.cc",
         "views/profiles/dice_web_signin_interception_bubble_view.cc",
         "views/profiles/dice_web_signin_interception_bubble_view.h",
@@ -3914,10 +3918,6 @@ static_library("ui") {
         "webui/signin/dice_web_signin_intercept_ui.h",
         "webui/signin/inline_login_handler_impl.cc",
         "webui/signin/inline_login_handler_impl.h",
-        "webui/signin/signin_reauth_handler.cc",
-        "webui/signin/signin_reauth_handler.h",
-        "webui/signin/signin_reauth_ui.cc",
-        "webui/signin/signin_reauth_ui.h",
         "webui/welcome/bookmark_handler.cc",
         "webui/welcome/bookmark_handler.h",
         "webui/welcome/bookmark_item.cc",

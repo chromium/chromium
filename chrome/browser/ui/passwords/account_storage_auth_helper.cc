@@ -11,6 +11,7 @@
 #include "chrome/browser/signin/reauth_result.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/core_account_id.h"
 
@@ -68,12 +69,16 @@ void AccountStorageAuthHelper::TriggerOptInReauth(
                      std::move(reauth_callback)));
 }
 
+// TODO(https://crbug.com/1446066): make this work on Lacros as well by using
+// utilities from chrome/browser/signin/signin_ui_util.h
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void AccountStorageAuthHelper::TriggerSignIn(
     signin_metrics::AccessPoint access_point) {
   if (SigninViewController* controller = signin_view_controller_getter_.Run()) {
     controller->ShowDiceAddAccountTab(access_point, std::string());
   }
 }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 void AccountStorageAuthHelper::OnOptInReauthCompleted(
     base::OnceCallback<void(ReauthSucceeded)> reauth_callback,

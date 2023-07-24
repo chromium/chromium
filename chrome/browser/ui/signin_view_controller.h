@@ -101,21 +101,6 @@ class SigninViewController {
   // out SAML accounts completely (see https://crbug.com/1069421).
   void ShowGaiaLogoutTab(signin_metrics::SourceForRefreshTokenOperation source);
 
-  // Shows the reauth prompt for |account_id| as either:
-  // - a tab-modal dialog on top of the currently active tab, or
-  // - a new tab
-  // |account_id| should be signed into the content area. Otherwise, the method
-  // fails with |kAccountNotSignedIn| error.
-  // |access_point| indicates a call site of this method.
-  // Calls |reauth_callback| on completion of the reauth flow, or on error. The
-  // callback may be called synchronously. The user may also ignore the reauth
-  // indefinitely.
-  // Returns a handle that aborts the ongoing reauth on destruction.
-  virtual std::unique_ptr<ReauthAbortHandle> ShowReauthPrompt(
-      const CoreAccountId& account_id,
-      signin_metrics::ReauthAccessPoint access_point,
-      base::OnceCallback<void(signin::ReauthResult)> reauth_callback);
-
   // Shows the modal signin intercept first run experience dialog as a
   // browser-modal dialog on top of the `browser_`'s window. `account_id`
   // corresponds to the intercepted account.
@@ -136,6 +121,21 @@ class SigninViewController {
       const std::string& last_email,
       const std::string& email,
       SigninEmailConfirmationDialog::Callback callback);
+
+  // Shows the reauth prompt for |account_id| as either:
+  // - a tab-modal dialog on top of the currently active tab, or
+  // - a new tab
+  // |account_id| should be signed into the content area. Otherwise, the method
+  // fails with |kAccountNotSignedIn| error.
+  // |access_point| indicates a call site of this method.
+  // Calls |reauth_callback| on completion of the reauth flow, or on error. The
+  // callback may be called synchronously. The user may also ignore the reauth
+  // indefinitely.
+  // Returns a handle that aborts the ongoing reauth on destruction.
+  virtual std::unique_ptr<ReauthAbortHandle> ShowReauthPrompt(
+      const CoreAccountId& account_id,
+      signin_metrics::ReauthAccessPoint access_point,
+      base::OnceCallback<void(signin::ReauthResult)> reauth_callback);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Shows the modal sync confirmation dialog as a browser-modal dialog on top

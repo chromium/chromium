@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/signin_view_controller.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/signin/public/base/signin_buildflags.h"
 
 namespace password_manager {
 class PasswordFeatureManager;
@@ -55,9 +56,11 @@ class AccountStorageAuthHelper {
           void(password_manager::PasswordManagerClient::ReauthSucceeded)>
           reauth_callback);
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Redirects the user to a sign-in in a new tab. |access_point| is used for
   // metrics recording and represents where the sign-in was triggered.
   void TriggerSignIn(signin_metrics::AccessPoint access_point);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
  private:
   void OnOptInReauthCompleted(

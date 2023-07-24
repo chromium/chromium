@@ -279,13 +279,16 @@
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/ui/webui/signin/dice_web_signin_intercept_ui.h"
-#include "chrome/browser/ui/webui/signin/signin_reauth_ui.h"
 #include "chrome/browser/ui/webui/welcome/helpers.h"
 #include "chrome/browser/ui/webui/welcome/welcome_ui.h"
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/webui/signin/inline_login_ui.h"
+#endif
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/ui/webui/signin/signin_reauth_ui.h"
 #endif
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -857,16 +860,19 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   }
   if (url.host_piece() == chrome::kChromeUIDiceWebSigninInterceptHost)
     return &NewWebUI<DiceWebSigninInterceptUI>;
-  if (url.host_piece() == chrome::kChromeUISigninReauthHost &&
-      !profile->IsOffTheRecord()) {
-    return &NewWebUI<SigninReauthUI>;
-  }
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_ASH)
   // Inline login UI is available on all platforms except Android and Lacros.
   if (url.host_piece() == chrome::kChromeUIChromeSigninHost)
     return &NewWebUI<InlineLoginUI>;
+#endif
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (url.host_piece() == chrome::kChromeUISigninReauthHost &&
+      !profile->IsOffTheRecord()) {
+    return &NewWebUI<SigninReauthUI>;
+  }
 #endif
 
 #if BUILDFLAG(PLATFORM_CFM)
