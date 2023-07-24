@@ -289,7 +289,7 @@ class Tests(BaseTest):
     self._TestEndToEndRegistration(['SampleForTests.java'])
 
   def testFromClassFile(self):
-    self._TestEndToEndGeneration('SampleNonProxy.class')
+    self._TestEndToEndGeneration('JavapClass.class')
 
   def testUniqueAnnotations(self):
     self._TestEndToEndGeneration('SampleUniqueAnnotations.java', srcjar=True)

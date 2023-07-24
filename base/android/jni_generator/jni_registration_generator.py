@@ -17,6 +17,7 @@ import zipfile
 import common
 import java_types
 import jni_generator
+import parse
 import proxy
 
 from util import build_utils
@@ -197,7 +198,9 @@ def _DictForPath(options, path, stub_only=False, cached_results_for_stubs=None):
   assert (cached_results_for_stubs is not None) == stub_only
   jni_obj = stub_only and cached_results_for_stubs.get(path)
   if not jni_obj:
-    jni_obj = jni_generator.JNIFromJavaSource.CreateFromFile(path, options)
+    parsed_file = parse.parse_java_file(path,
+                                        package_prefix=options.package_prefix)
+    jni_obj = jni_generator.JNIFromJavaSource(parsed_file, options)
     if not options.include_test_only:
       jni_obj.RemoveTestOnlyNatives()
 
@@ -487,11 +490,10 @@ class DictionaryGenerator(object):
     self.type_resolver = jni_obj.type_resolver
     self.class_name = jni_obj.java_class.name
     self.helper = jni_generator.HeaderFileGeneratorHelper(
-        self.class_name,
-        jni_obj.module_name,
-        self.fully_qualified_class,
-        options.use_proxy_hash,
-        options.package_prefix,
+        jni_obj.java_class,
+        module_name=jni_obj.module_name,
+        use_proxy_hash=options.use_proxy_hash,
+        package_prefix=options.package_prefix,
         enable_jni_multiplexing=options.enable_jni_multiplexing)
     self.registration_dict = None
     self.gen_jni_class = proxy.get_gen_jni_class(

@@ -10,22 +10,54 @@ from typing import Optional
 import java_types
 
 
+_MODIFIER_KEYWORDS = (r'(?:(?:' + '|'.join([
+    'abstract',
+    'default',
+    'final',
+    'native',
+    'private',
+    'protected',
+    'public',
+    'static',
+    'synchronized',
+]) + r')\s+)*')
+
+
+class ParseError(Exception):
+  pass
+
+
 @dataclasses.dataclass(order=True)
-class ParsedMethod:
+class ParsedNative:
   name: str
-  return_type: java_types.JavaType
-  params: java_types.JavaParamList
+  signature: java_types.JavaSignature
   native_class_name: str
+  static: bool = False
+
+
+@dataclasses.dataclass(order=True)
+class ParsedCalledByNative:
+  java_class: java_types.JavaClass
+  name: str
+  signature: java_types.JavaSignature
+  static: bool
+  unchecked: bool = False
+
+
+@dataclasses.dataclass(order=True)
+class ParsedConstantField(object):
+  name: str
+  value: str
 
 
 @dataclasses.dataclass
 class ParsedFile:
   filename: str
-  java_class: java_types.JavaClass
   type_resolver: java_types.TypeResolver
-  proxy_methods: List[ParsedMethod]
-  non_proxy_natives: list  # [jni_generator.NativeMethod]
-  called_by_natives: list  # [jni_generator.CalledByNative]
+  proxy_methods: List[ParsedNative]
+  non_proxy_methods: List[ParsedNative]
+  called_by_natives: List[ParsedCalledByNative]
+  constant_fields: List[ParsedConstantField]
   proxy_interface: Optional[java_types.JavaClass] = None
   proxy_visibility: Optional[str] = None
   module_name: Optional[str] = None  # E.g. @NativeMethods("module_name")
@@ -37,7 +69,7 @@ class _ParsedProxyNatives:
   interface_name: str
   visibility: str
   module_name: str
-  methods: List[ParsedMethod]
+  methods: List[ParsedNative]
 
 
 # Match single line comments, multiline comments, character literals, and
@@ -66,7 +98,7 @@ def _remove_comments(contents):
 _GENERICS_REGEX = re.compile(r'<[^<>\n]*>')
 
 
-def remove_generics(value):
+def _remove_generics(value):
   """Strips Java generics from a string."""
   while True:
     ret = _GENERICS_REGEX.sub('', value)
@@ -81,7 +113,7 @@ _PACKAGE_REGEX = re.compile('^package\s+(\S+?);', flags=re.MULTILINE)
 def _parse_package(contents):
   match = _PACKAGE_REGEX.search(contents)
   if not match:
-    raise SyntaxError('Unable to find "package" line')
+    raise ParserError('Unable to find "package" line')
   return match.group(1)
 
 
@@ -108,7 +140,7 @@ def _parse_java_classes(contents):
       nested_classes.append(outer_class.make_nested(class_name))
 
   if outer_class is None:
-    raise SyntaxError('No classes found.')
+    raise ParserError('No classes found.')
 
   return outer_class, nested_classes
 
@@ -127,7 +159,7 @@ def _parse_annotations(value):
   return annotations, value[last_idx:]
 
 
-def parse_type(type_resolver, value):
+def _parse_type(type_resolver, value):
   """Parses a string into a JavaType."""
   annotations, value = _parse_annotations(value)
   array_dimensions = 0
@@ -151,51 +183,42 @@ def parse_type(type_resolver, value):
 _FINAL_REGEX = re.compile(r'\bfinal\s')
 
 
-def parse_param_list(type_resolver,
-                     value,
-                     has_names=True) -> java_types.JavaParamList:
+def _parse_param_list(type_resolver, value) -> java_types.JavaParamList:
   if not value or value.isspace():
     return java_types.EMPTY_PARAM_LIST
   params = []
   value = _FINAL_REGEX.sub('', value)
   for param_str in value.split(','):
     param_str = param_str.strip()
-    if has_names:
-      param_str, _, param_name = param_str.rpartition(' ')
-      param_str = param_str.rstrip()
-    else:
-      param_name = f'p{len(params)}'
+    param_str, _, param_name = param_str.rpartition(' ')
+    param_str = param_str.rstrip()
 
     # Handle varargs.
     if param_str.endswith('...'):
       param_str = param_str[:-3] + '[]'
 
-    param_type = parse_type(type_resolver, param_str)
+    param_type = _parse_type(type_resolver, param_str)
     params.append(java_types.JavaParam(param_type, param_name))
 
   return java_types.JavaParamList(params)
 
 
-_NATIVE_PROXY_EXTRACTION_REGEX = re.compile(
+_NATIVE_METHODS_INTERFACE_REGEX = re.compile(
     r'@NativeMethods(?:\(\s*"(?P<module_name>\w+)"\s*\))?[\S\s]+?'
     r'(?P<visibility>public)?\s*\binterface\s*'
     r'(?P<interface_name>\w*)\s*{(?P<interface_body>(\s*.*)+?\s*)}')
 
-# Matches on method declarations unlike _EXTRACT_NATIVES_REGEX
-# doesn't require name to be prefixed with native, and does not
-# require a native qualifier.
-_EXTRACT_METHODS_REGEX = re.compile(r'\s*(.*?)\s+(\w+)\((.*?)\);',
-                                    flags=re.DOTALL)
+_PROXY_NATIVE_REGEX = re.compile(r'\s*(.*?)\s+(\w+)\((.*?)\);', flags=re.DOTALL)
 
 _PUBLIC_REGEX = re.compile(r'\bpublic\s')
 
 
 def _parse_proxy_natives(type_resolver, contents):
-  matches = list(_NATIVE_PROXY_EXTRACTION_REGEX.finditer(contents))
+  matches = list(_NATIVE_METHODS_INTERFACE_REGEX.finditer(contents))
   if not matches:
     return None
   if len(matches) > 1:
-    raise SyntaxError(
+    raise ParserError(
         'Multiple @NativeMethod interfaces in one class is not supported.')
 
   match = matches[0]
@@ -205,21 +228,96 @@ def _parse_proxy_natives(type_resolver, contents):
                             methods=[])
   interface_body = match.group('interface_body')
 
-  for m in _EXTRACT_METHODS_REGEX.finditer(interface_body):
+  for m in _PROXY_NATIVE_REGEX.finditer(interface_body):
     preamble, name, params_part = m.groups()
     preamble = _PUBLIC_REGEX.sub('', preamble)
     annotations, return_type_part = _parse_annotations(preamble)
-    params = parse_param_list(type_resolver, params_part)
-    return_type = parse_type(type_resolver, return_type_part)
+    params = _parse_param_list(type_resolver, params_part)
+    return_type = _parse_type(type_resolver, return_type_part)
+    signature = java_types.JavaSignature.from_params(return_type, params)
     ret.methods.append(
-        ParsedMethod(
+        ParsedNative(
             name=name,
-            return_type=return_type,
-            params=params,
+            signature=signature,
             native_class_name=annotations.get('NativeClassQualifiedName')))
   if not ret.methods:
-    raise SyntaxError('Found no methods within @NativeMethod interface.')
+    raise ParserError('Found no methods within @NativeMethod interface.')
   ret.methods.sort()
+  return ret
+
+
+_NON_PROXY_NATIVES_REGEX = re.compile(
+    r'(@NativeClassQualifiedName'
+    r'\(\"(?P<native_class_name>\S*?)\"\)\s+)?'
+    r'(?P<qualifiers>\w+\s\w+|\w+|\s+)\s*native\s+'
+    r'(?P<return_type>\S*)\s+'
+    r'(?P<name>native\w+)\((?P<params>.*?)\);', re.DOTALL)
+
+
+def _parse_non_proxy_natives(type_resolver, contents):
+  ret = []
+  for match in _NON_PROXY_NATIVES_REGEX.finditer(contents):
+    name = match.group('name').replace('native', '')
+    return_type = _parse_type(type_resolver, match.group('return_type'))
+    params = _parse_param_list(type_resolver, match.group('params'))
+    signature = java_types.JavaSignature.from_params(return_type, params)
+    native_class_name = match.group('native_class_name')
+    static = 'static' in match.group('qualifiers')
+    ret.append(
+        ParsedNative(name=name,
+                     signature=signature,
+                     native_class_name=native_class_name,
+                     static=static))
+  ret.sort(key=lambda x: (x.name, x.signature))
+  return ret
+
+
+# Regex to match a string like "@CalledByNative public void foo(int bar)".
+_CALLED_BY_NATIVE_REGEX = re.compile(
+    r'@CalledByNative((?P<Unchecked>(?:Unchecked)?|ForTesting))'
+    r'(?:\("(?P<annotation>.*)"\))?'
+    r'(?:\s+@\w+(?:\(.*\))?)*'  # Ignore any other annotations.
+    r'\s+(?P<modifiers>' + _MODIFIER_KEYWORDS + r')' +
+    r'(?:\s*@\w+)?'  # Ignore annotations in return types.
+    r'\s*(?P<return_type>\S*?)'
+    r'\s*(?P<name>\w+)'
+    r'\s*\((?P<params>[^\)]*)\)')
+
+
+def _parse_called_by_natives(type_resolver, contents):
+  ret = []
+  for match in _CALLED_BY_NATIVE_REGEX.finditer(contents):
+    return_type_str = match.group('return_type')
+    name = match.group('name')
+    if return_type_str:
+      return_type = _parse_type(type_resolver, return_type_str)
+    else:
+      return_type = java_types.VOID
+      name = '<init>'
+
+    params = _parse_param_list(type_resolver, match.group('params'))
+    signature = java_types.JavaSignature.from_params(return_type, params)
+    inner_class_name = match.group('annotation')
+    java_class = type_resolver.java_class
+    if inner_class_name:
+      java_class = java_class.make_nested(inner_class_name)
+
+    ret.append(
+        ParsedCalledByNative(java_class=java_class,
+                             name=name,
+                             signature=signature,
+                             static='static' in match.group('modifiers'),
+                             unchecked='Unchecked' in match.group('Unchecked')))
+
+  # Check for any @CalledByNative occurrences that were not matched.
+  unmatched_lines = _CALLED_BY_NATIVE_REGEX.sub('', contents).splitlines()
+  for i, line in enumerate(unmatched_lines):
+    if '@CalledByNative' in line:
+      context = '\n'.join(unmatched_lines[i:i + 5])
+      raise ParserError('Could not parse @CalledByNative method signature:\n' +
+                        context)
+
+  ret.sort(key=lambda x: (x.java_class, x.name, x.signature))
   return ret
 
 
@@ -246,7 +344,7 @@ def _parse_jni_namespace(contents):
   if not m:
     return ''
   if len(m) > 1:
-    raise SyntaxError('Found multiple @JNINamespace attributes.')
+    raise ParserError('Found multiple @JNINamespace attributes.')
   return m[0]
 
 
@@ -256,13 +354,13 @@ def _do_parse(filename, *, package_prefix):
   with open(filename) as f:
     contents = f.read()
   contents = _remove_comments(contents)
-  contents = remove_generics(contents)
+  contents = _remove_generics(contents)
 
   outer_class, nested_classes = _parse_java_classes(contents)
 
   expected_name = os.path.splitext(os.path.basename(filename))[0]
   if outer_class.name != expected_name:
-    raise SyntaxError(
+    raise ParserError(
         f'Found class "{outer_class.name}" but expected "{expected_name}".')
 
   if package_prefix:
@@ -278,19 +376,16 @@ def _do_parse(filename, *, package_prefix):
   parsed_proxy_natives = _parse_proxy_natives(type_resolver, contents)
   jni_namespace = _parse_jni_namespace(contents)
 
-  # TODO(crbug.com/1406605): Remove circular dep.
-  import jni_generator
-  non_proxy_natives = jni_generator.ExtractNatives(type_resolver, contents)
-  called_by_natives = jni_generator.ExtractCalledByNatives(
-      type_resolver, contents)
+  non_proxy_methods = _parse_non_proxy_natives(type_resolver, contents)
+  called_by_natives = _parse_called_by_natives(type_resolver, contents)
 
   ret = ParsedFile(filename=filename,
                    jni_namespace=jni_namespace,
-                   java_class=outer_class,
                    type_resolver=type_resolver,
                    proxy_methods=[],
-                   non_proxy_natives=non_proxy_natives,
-                   called_by_natives=called_by_natives)
+                   non_proxy_methods=non_proxy_methods,
+                   called_by_natives=called_by_natives,
+                   constant_fields=[])
 
   if parsed_proxy_natives:
     ret.module_name = parsed_proxy_natives.module_name
@@ -305,6 +400,48 @@ def _do_parse(filename, *, package_prefix):
 def parse_java_file(filename, *, package_prefix=None):
   try:
     return _do_parse(filename, package_prefix=package_prefix)
-  except SyntaxError as e:
+  except ParserError as e:
     e.msg = (e.msg or '') + f' (when parsing {filename})'
     raise
+
+
+_JAVAP_CLASS_REGEX = re.compile(r'\b(?:class|interface) (\S+)')
+_JAVAP_FINAL_FIELD_REGEX = re.compile(
+    r'^\s+public static final \S+ (.*?) = (\d+);', flags=re.MULTILINE)
+_JAVAP_METHOD_REGEX = re.compile(
+    rf'^\s*({_MODIFIER_KEYWORDS}).*?(\S+?)\(.*\n\s+descriptor: (.*)',
+    flags=re.MULTILINE)
+
+
+def parse_javap(filename, contents):
+  contents = _remove_generics(contents)
+  match = _JAVAP_CLASS_REGEX.search(contents)
+  if not match:
+    raise ParserError('Could not find java class in javap output')
+  java_class = java_types.JavaClass(match.group(1).replace('.', '/'))
+  type_resolver = java_types.TypeResolver(java_class)
+
+  constant_fields = []
+  for match in _JAVAP_FINAL_FIELD_REGEX.finditer(contents):
+    name, value = match.groups()
+    constant_fields.append(ParsedConstantField(name=name, value=value))
+
+  called_by_natives = []
+  for match in _JAVAP_METHOD_REGEX.finditer(contents):
+    modifiers, name, descriptor = match.groups()
+    if name == java_class.full_name_with_dots:
+      name = '<init>'
+    signature = java_types.JavaSignature.from_descriptor(descriptor)
+
+    called_by_natives.append(
+        ParsedCalledByNative(java_class=java_class,
+                             name=name,
+                             signature=signature,
+                             static='static' in modifiers))
+
+  return ParsedFile(filename=filename,
+                    type_resolver=type_resolver,
+                    proxy_methods=[],
+                    non_proxy_methods=[],
+                    called_by_natives=called_by_natives,
+                    constant_fields=constant_fields)
