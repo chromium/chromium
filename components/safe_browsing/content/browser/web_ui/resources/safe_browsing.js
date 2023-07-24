@@ -150,6 +150,24 @@ function initialize() {
     addRTLookupResponse(result);
   });
 
+  sendWithPromise('getHPRTLookupPings', []).then((hprtLookupPings) => {
+    hprtLookupPings.forEach(function(hprtLookupPing) {
+      addHPRTLookupPing(hprtLookupPing);
+    });
+  });
+  addWebUiListener('hprt-lookup-pings-update', function(result) {
+    addHPRTLookupPing(result);
+  });
+
+  sendWithPromise('getHPRTLookupResponses', []).then((hprtLookupResponses) => {
+    hprtLookupResponses.forEach(function(hprtLookupResponse) {
+      addHPRTLookupResponse(hprtLookupResponse);
+    });
+  });
+  addWebUiListener('hprt-lookup-responses-update', function(result) {
+    addHPRTLookupResponse(result);
+  });
+
   sendWithPromise('getLogMessages', []).then((logMessages) => {
     logMessages.forEach(function(message) {
       addLogMessage(message);
@@ -368,6 +386,14 @@ function addRTLookupPing(result) {
 
 function addRTLookupResponse(result) {
   addResultToTable('rt-lookup-ping-list', result[0], result[1], 1);
+}
+
+function addHPRTLookupPing(result) {
+  addResultToTable('hprt-lookup-ping-list', result[0], result[1], 0);
+}
+
+function addHPRTLookupResponse(result) {
+  addResultToTable('hprt-lookup-ping-list', result[0], result[1], 1);
 }
 
 function addDeepScan(result) {

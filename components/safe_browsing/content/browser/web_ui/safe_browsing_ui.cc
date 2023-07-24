@@ -35,6 +35,7 @@
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/safebrowsingv5_alpha1.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/global_routing_id.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -297,6 +298,43 @@ void WebUIInfoSingleton::ClearRTLookupPings() {
   std::map<int, RTLookupResponse>().swap(rt_lookup_responses_);
 }
 
+absl::optional<int> WebUIInfoSingleton::AddToHPRTLookupPings(
+    V5::SearchHashesRequest* inner_request,
+    std::string relay_url_spec,
+    std::string ohttp_key) {
+  if (!HasListener()) {
+    return absl::nullopt;
+  }
+  HPRTLookupRequest request = {.inner_request = *inner_request,
+                               .relay_url_spec = relay_url_spec,
+                               .ohttp_key = ohttp_key};
+  for (auto* webui_listener : webui_instances_) {
+    webui_listener->NotifyHPRTLookupPingJsListener(hprt_lookup_pings_.size(),
+                                                   request);
+  }
+  hprt_lookup_pings_.push_back(request);
+  return hprt_lookup_pings_.size() - 1;
+}
+
+void WebUIInfoSingleton::AddToHPRTLookupResponses(
+    int token,
+    V5::SearchHashesResponse* response) {
+  if (!HasListener()) {
+    return;
+  }
+
+  for (auto* webui_listener : webui_instances_) {
+    webui_listener->NotifyHPRTLookupResponseJsListener(token, *response);
+  }
+
+  hprt_lookup_responses_[token] = *response;
+}
+
+void WebUIInfoSingleton::ClearHPRTLookupPings() {
+  std::vector<HPRTLookupRequest>().swap(hprt_lookup_pings_);
+  std::map<int, V5::SearchHashesResponse>().swap(hprt_lookup_responses_);
+}
+
 void WebUIInfoSingleton::LogMessage(const std::string& message) {
   if (!HasListener())
     return;
@@ -434,6 +472,7 @@ void WebUIInfoSingleton::MaybeClearData() {
     ClearPGEvents();
     ClearPGPings();
     ClearRTLookupPings();
+    ClearHPRTLookupPings();
     ClearLogMessages();
     ClearReportingEvents();
 
@@ -2298,6 +2337,135 @@ std::string SerializeRTLookupResponse(const RTLookupResponse& response) {
   return response_serialized;
 }
 
+std::string SerializeHPRTLookupPing(const HPRTLookupRequest& ping) {
+  base::Value::Dict request_dict;
+
+  base::Value::Dict inner_request_dict;
+  base::Value::List encoded_hash_prefixes;
+  for (const auto& hash_prefix : ping.inner_request.hash_prefixes()) {
+    std::string encoded_hash_prefix;
+    base::Base64UrlEncode(hash_prefix,
+                          base::Base64UrlEncodePolicy::INCLUDE_PADDING,
+                          &encoded_hash_prefix);
+    encoded_hash_prefixes.Append(encoded_hash_prefix);
+  }
+  inner_request_dict.Set("hash_prefixes (base64)",
+                         std::move(encoded_hash_prefixes));
+  inner_request_dict.Set("filter", ping.inner_request.filter());
+
+  request_dict.Set("inner_request", std::move(inner_request_dict));
+  request_dict.Set("relay_url", ping.relay_url_spec);
+  std::string encoded_ohttp_key;
+  base::Base64UrlEncode(ping.ohttp_key,
+                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
+                        &encoded_ohttp_key);
+  request_dict.Set("ohttp_public_key (base64)", encoded_ohttp_key);
+
+  std::string request_serialized;
+  JSONStringValueSerializer serializer(&request_serialized);
+  serializer.set_pretty_print(true);
+  serializer.Serialize(request_dict);
+  return request_serialized;
+}
+
+std::string SerializeV5ThreatType(V5::ThreatType threat_type) {
+  switch (threat_type) {
+    case V5::THREAT_TYPE_UNSPECIFIED:
+      return "THREAT_TYPE_UNSPECIFIED";
+    case V5::MALWARE:
+      return "MALWARE";
+    case V5::SOCIAL_ENGINEERING:
+      return "SOCIAL_ENGINEERING";
+    case V5::UNWANTED_SOFTWARE:
+      return "UNWANTED_SOFTWARE";
+    case V5::POTENTIALLY_HARMFUL_APPLICATION:
+      return "POTENTIALLY_HARMFUL_APPLICATION";
+    case V5::API_ABUSE:
+      return "API_ABUSE";
+    case V5::SUSPICIOUS:
+      return "SUSPICIOUS";
+    case V5::TRICK_TO_BILL:
+      return "TRICK_TO_BILL";
+    case V5::SOCIAL_ENGINEERING_ADS:
+      return "SOCIAL_ENGINEERING_ADS";
+    case V5::ABUSIVE_EXPERIENCE_VIOLATION:
+      return "ABUSIVE_EXPERIENCE_VIOLATION";
+    case V5::BETTER_ADS_VIOLATION:
+      return "BETTER_ADS_VIOLATION";
+    default:
+      // Using "default" because exhaustive switch statements are not
+      // recommended for proto3 enums.
+      return "OTHER";
+  }
+}
+
+std::string SerializeThreatAttribute(V5::ThreatAttribute attribute) {
+  switch (attribute) {
+    case V5::THREAT_ATTRIBUTE_UNSPECIFIED:
+      return "THREAT_ATTRIBUTE_UNSPECIFIED";
+    case V5::CANARY:
+      return "CANARY";
+    case V5::FRAME_ONLY:
+      return "FRAME_ONLY";
+    default:
+      // Using "default" because exhaustive switch statements are not
+      // recommended for proto3 enums.
+      return "OTHER";
+  }
+}
+
+std::string SerializeHPRTLookupResponse(
+    const V5::SearchHashesResponse& response) {
+  base::Value::Dict response_dict;
+
+  // full_hashes
+  base::Value::List full_hashes_list;
+  for (const auto& full_hash : response.full_hashes()) {
+    base::Value::Dict full_hash_dict;
+    // full_hash
+    std::string encoded_full_hash;
+    base::Base64UrlEncode(full_hash.full_hash(),
+                          base::Base64UrlEncodePolicy::INCLUDE_PADDING,
+                          &encoded_full_hash);
+    full_hash_dict.Set("full_hash (base64)", encoded_full_hash);
+    // full_hash_details
+    base::Value::List full_hash_details_list;
+    for (const auto& full_hash_detail : full_hash.full_hash_details()) {
+      base::Value::Dict full_hash_detail_dict;
+      // threat_type
+      full_hash_detail_dict.Set(
+          "threat_type", SerializeV5ThreatType(full_hash_detail.threat_type()));
+      // attributes
+      base::Value::List attributes_list;
+      for (auto i = 0; i < full_hash_detail.attributes_size(); ++i) {
+        attributes_list.Append(
+            SerializeThreatAttribute(full_hash_detail.attributes(i)));
+      }
+      full_hash_detail_dict.Set("attributes", std::move(attributes_list));
+
+      full_hash_details_list.Append(std::move(full_hash_detail_dict));
+    }
+    full_hash_dict.Set("full_hash_details", std::move(full_hash_details_list));
+
+    full_hashes_list.Append(std::move(full_hash_dict));
+  }
+  response_dict.Set("full_hashes", std::move(full_hashes_list));
+
+  // cache_duration
+  base::Value::Dict cache_duration_dict;
+  cache_duration_dict.Set(
+      "seconds", static_cast<double>(response.cache_duration().seconds()));
+  cache_duration_dict.Set(
+      "nanos", static_cast<double>(response.cache_duration().nanos()));
+  response_dict.Set("cache_duration", std::move(cache_duration_dict));
+
+  std::string response_serialized;
+  JSONStringValueSerializer serializer(&response_serialized);
+  serializer.set_pretty_print(true);
+  serializer.Serialize(response_dict);
+  return response_serialized;
+}
+
 base::Value::Dict SerializeLogMessage(const base::Time& timestamp,
                                       const std::string& message) {
   base::Value::Dict result;
@@ -2954,6 +3122,45 @@ void SafeBrowsingUIHandler::GetRTLookupResponses(
   ResolveJavascriptCallback(base::Value(callback_id), responses_sent);
 }
 
+void SafeBrowsingUIHandler::GetHPRTLookupPings(const base::Value::List& args) {
+  const std::vector<HPRTLookupRequest> requests =
+      WebUIInfoSingleton::GetInstance()->hprt_lookup_pings();
+
+  base::Value::List pings_sent;
+  for (size_t request_index = 0; request_index < requests.size();
+       request_index++) {
+    base::Value::List ping_entry;
+    ping_entry.Append(static_cast<int>(request_index));
+    ping_entry.Append(SerializeHPRTLookupPing(requests[request_index]));
+    pings_sent.Append(std::move(ping_entry));
+  }
+
+  AllowJavascript();
+  DCHECK(!args.empty());
+  std::string callback_id = args[0].GetString();
+  ResolveJavascriptCallback(base::Value(callback_id), pings_sent);
+}
+
+void SafeBrowsingUIHandler::GetHPRTLookupResponses(
+    const base::Value::List& args) {
+  const std::map<int, V5::SearchHashesResponse> responses =
+      WebUIInfoSingleton::GetInstance()->hprt_lookup_responses();
+
+  base::Value::List responses_sent;
+  for (const auto& token_and_response : responses) {
+    base::Value::List response_entry;
+    response_entry.Append(token_and_response.first);
+    response_entry.Append(
+        SerializeHPRTLookupResponse(token_and_response.second));
+    responses_sent.Append(std::move(response_entry));
+  }
+
+  AllowJavascript();
+  DCHECK(!args.empty());
+  std::string callback_id = args[0].GetString();
+  ResolveJavascriptCallback(base::Value(callback_id), responses_sent);
+}
+
 void SafeBrowsingUIHandler::GetReferrerChain(const base::Value::List& args) {
   DCHECK_GE(args.size(), 2U);
   std::string url_string = args[1].GetString();
@@ -3164,6 +3371,28 @@ void SafeBrowsingUIHandler::NotifyRTLookupResponseJsListener(
   FireWebUIListener("rt-lookup-responses-update", response_list);
 }
 
+void SafeBrowsingUIHandler::NotifyHPRTLookupPingJsListener(
+    int token,
+    const HPRTLookupRequest& request) {
+  base::Value::List request_list;
+  request_list.Append(token);
+  request_list.Append(SerializeHPRTLookupPing(request));
+
+  AllowJavascript();
+  FireWebUIListener("hprt-lookup-pings-update", request_list);
+}
+
+void SafeBrowsingUIHandler::NotifyHPRTLookupResponseJsListener(
+    int token,
+    const V5::SearchHashesResponse& response) {
+  base::Value::List response_list;
+  response_list.Append(token);
+  response_list.Append(SerializeHPRTLookupResponse(response));
+
+  AllowJavascript();
+  FireWebUIListener("hprt-lookup-responses-update", response_list);
+}
+
 void SafeBrowsingUIHandler::NotifyLogMessageJsListener(
     const base::Time& timestamp,
     const std::string& message) {
@@ -3261,6 +3490,14 @@ void SafeBrowsingUIHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "getRTLookupResponses",
       base::BindRepeating(&SafeBrowsingUIHandler::GetRTLookupResponses,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getHPRTLookupPings",
+      base::BindRepeating(&SafeBrowsingUIHandler::GetHPRTLookupPings,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getHPRTLookupResponses",
+      base::BindRepeating(&SafeBrowsingUIHandler::GetHPRTLookupResponses,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "getLogMessages",
