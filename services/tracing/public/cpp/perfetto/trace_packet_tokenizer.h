@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/containers/stack_container.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/perfetto/include/perfetto/protozero/proto_utils.h"
 
 namespace perfetto {
@@ -43,8 +43,8 @@ class COMPONENT_EXPORT(TRACING_CPP) TracePacketTokenizer {
 
   // Returns |true| if there is more data left to be consumed in the tokenizer.
   bool has_more() const {
-    return !next_packet_.header->empty() || next_packet_.parsed_size ||
-           !next_packet_.partial_data->empty();
+    return !next_packet_.header.empty() || next_packet_.parsed_size ||
+           !next_packet_.partial_data.empty();
   }
 
  private:
@@ -58,10 +58,10 @@ class COMPONENT_EXPORT(TRACING_CPP) TracePacketTokenizer {
 
     // Most trace packets are very small, so avoid heap allocations in the
     // common case where one packet straddles the boundary between chunks.
-    base::StackVector<uint8_t, 64> partial_data;
+    absl::InlinedVector<uint8_t, 64> partial_data;
 
     uint64_t parsed_size = 0;
-    base::StackVector<uint8_t, kMaxHeaderSize> header;
+    absl::InlinedVector<uint8_t, kMaxHeaderSize> header;
   };
 
   // Packet currently being parsed.
