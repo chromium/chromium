@@ -729,10 +729,12 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
   }
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator) &&
       request_type == device::FidoRequestType::kGetAssertion) {
     ConfigureEnclaveDiscovery(rp_id, discovery_factory);
   }
+#endif
 }
 
 void ChromeAuthenticatorRequestDelegate::SelectAccount(
@@ -1027,6 +1029,7 @@ void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
   }
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
 void ChromeAuthenticatorRequestDelegate::ConfigureEnclaveDiscovery(
     const std::string& rp_id,
     device::FidoDiscoveryFactory* discovery_factory) {
@@ -1045,3 +1048,4 @@ void ChromeAuthenticatorRequestDelegate::ConfigureEnclaveDiscovery(
   }
   discovery_factory->SetEnclavePasskeys(std::move(filtered_passkeys));
 }
+#endif

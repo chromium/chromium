@@ -244,11 +244,13 @@ class ChromeAuthenticatorRequestDelegate
       const std::string& rp_id,
       std::vector<device::DiscoverableCredentialMetadata>* passkeys);
 
+#if !BUILDFLAG(IS_CHROMEOS)
   // Configures an WebAuthn enclave authenticator discovery and provides it with
   // synced passkeys.
   void ConfigureEnclaveDiscovery(
       const std::string& rp_id,
       device::FidoDiscoveryFactory* discovery_factory);
+#endif
 
   const content::GlobalRenderFrameHostId render_frame_host_id_;
   const std::unique_ptr<AuthenticatorRequestDialogModel> dialog_model_;

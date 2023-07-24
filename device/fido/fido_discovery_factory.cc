@@ -13,15 +13,10 @@
 #include "device/fido/aoa/android_accessory_discovery.h"
 #include "device/fido/cable/fido_cable_discovery.h"
 #include "device/fido/cable/v2_discovery.h"
-#include "device/fido/enclave/enclave_discovery.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_discovery_base.h"
-#include "device/fido/mac/icloud_keychain.h"
-
-// HID is not supported on Android.
-#if !BUILDFLAG(IS_ANDROID)
 #include "device/fido/hid/fido_hid_discovery.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
+#include "device/fido/mac/icloud_keychain.h"
 
 #if BUILDFLAG(IS_WIN)
 // rpc.h needs to be included before winuser.h.
@@ -41,6 +36,10 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "device/fido/cros/discovery.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "device/fido/enclave/enclave_discovery.h"
+#endif
 
 namespace device {
 
@@ -109,7 +108,9 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
       discoveries = MaybeCreatePlatformDiscovery();
 #endif
+#if !BUILDFLAG(IS_CHROMEOS)
       MaybeCreateEnclaveDiscovery(discoveries);
+#endif
       return discoveries;
     }
     case FidoTransportProtocol::kAndroidAccessory:
@@ -184,10 +185,12 @@ void FidoDiscoveryFactory::set_hid_ignore_list(
   hid_ignore_list_ = std::move(hid_ignore_list);
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
 void FidoDiscoveryFactory::SetEnclavePasskeys(
     std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys) {
   enclave_passkeys_ = std::move(passkeys);
 }
+#endif
 
 // static
 std::vector<std::unique_ptr<FidoDiscoveryBase>>
@@ -264,6 +267,7 @@ void FidoDiscoveryFactory::
 }
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS)
 void FidoDiscoveryFactory::MaybeCreateEnclaveDiscovery(
     std::vector<std::unique_ptr<FidoDiscoveryBase>>& discoveries) {
   if (!base::FeatureList::IsEnabled(kWebAuthnEnclaveAuthenticator)) {
@@ -273,5 +277,6 @@ void FidoDiscoveryFactory::MaybeCreateEnclaveDiscovery(
       std::make_unique<enclave::EnclaveAuthenticatorDiscovery>(
           std::move(enclave_passkeys_)));
 }
+#endif
 
 }  // namespace device
