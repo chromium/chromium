@@ -262,7 +262,8 @@ void FakeLocalFrameHost::SetFencedFrameAutomaticBeaconReportEventData(
     const WTF::String& event_data,
     const WTF::Vector<blink::FencedFrame::ReportingDestination>& destinations,
     network::AttributionReportingRuntimeFeatures
-        attribution_reporting_runtime_features) {}
+        attribution_reporting_runtime_features,
+    bool once) {}
 
 void FakeLocalFrameHost::SendPrivateAggregationRequestsForFencedFrameEvent(
     const WTF::String& event_type) {}

@@ -138,28 +138,6 @@ base::StringPiece InvokingAPIAsString(
 
 }  // namespace
 
-AutomaticBeaconInfo::AutomaticBeaconInfo(
-    const std::string& data,
-    const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
-    network::AttributionReportingRuntimeFeatures
-        attribution_reporting_runtime_features)
-    : data(data),
-      destinations(destinations),
-      attribution_reporting_runtime_features(
-          attribution_reporting_runtime_features) {}
-
-AutomaticBeaconInfo::AutomaticBeaconInfo(const AutomaticBeaconInfo&) = default;
-
-AutomaticBeaconInfo::AutomaticBeaconInfo(AutomaticBeaconInfo&&) = default;
-
-AutomaticBeaconInfo& AutomaticBeaconInfo::operator=(
-    const AutomaticBeaconInfo&) = default;
-
-AutomaticBeaconInfo& AutomaticBeaconInfo::operator=(AutomaticBeaconInfo&&) =
-    default;
-
-AutomaticBeaconInfo::~AutomaticBeaconInfo() = default;
-
 FencedFrameReporter::PendingEvent::PendingEvent(
     const std::string& type,
     const std::string& data,
