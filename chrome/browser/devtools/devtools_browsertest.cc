@@ -3142,31 +3142,6 @@ class DevToolsExtensionHostsPolicyTest : public DevToolsExtensionTest {
     provider_.UpdateChromePolicy(policies);
   }
 
-  void Run(const std::string& test_page, bool expect_success) {
-    extensions::TestExtensionDir dir;
-
-    dir.WriteManifest(
-        BuildExtensionManifest("Runtime Hosts Policy", "devtools.html"));
-    dir.WriteFile(
-        FILE_PATH_LITERAL("devtools.html"),
-        "<html><head><script src='devtools.js'></script></head></html>");
-    dir.WriteFile(FILE_PATH_LITERAL("devtools.js"),
-                  base::StringPrintf(R"(
-        chrome.devtools.network.getHAR((result) => {
-          setInterval(() => {
-            top.postMessage(
-              {testOutput: ('isError' in result !== %d) ? 'PASS' : 'FAIL'},
-              '*'
-            );
-          }, 10);
-        });)",
-                                     expect_success));
-
-    const Extension* extension = LoadExtensionFromPath(dir.UnpackedPath());
-    ASSERT_TRUE(extension);
-    RunTest("waitForTestResultsAsMessage", test_page);
-  }
-
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -3174,18 +3149,44 @@ class DevToolsExtensionHostsPolicyTest : public DevToolsExtensionTest {
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionHostsPolicyTest,
                        CantInspectBlockedHost) {
   GURL url(embedded_test_server()->GetURL("example.com", kArbitraryPage));
-  Run(url.spec(), /*expect_success*/ false);
+  LoadExtension("can_inspect_url");
+  RunTest("waitForTestResultsAsMessage",
+          base::StrCat({kArbitraryPage, "#", url.spec()}));
 }
+
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionHostsPolicyTest,
                        CantInspectBlockedSubdomainHost) {
   GURL url(embedded_test_server()->GetURL("foo.example.com", kArbitraryPage));
-  Run(url.spec(), /*expect_success*/ false);
+  LoadExtension("can_inspect_url");
+  RunTest("waitForTestResultsAsMessage",
+          base::StrCat({kArbitraryPage, "#", url.spec()}));
 }
+
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionHostsPolicyTest,
                        CanInspectAllowedHttpHost) {
   GURL url(
       embedded_test_server()->GetURL("public.example.com", kArbitraryPage));
-  Run(url.spec(), /*expect_success*/ true);
+  extensions::TestExtensionDir dir;
+
+  dir.WriteManifest(
+      BuildExtensionManifest("Runtime Hosts Policy", "devtools.html"));
+  dir.WriteFile(
+      FILE_PATH_LITERAL("devtools.html"),
+      "<html><head><script src='devtools.js'></script></head></html>");
+  dir.WriteFile(FILE_PATH_LITERAL("devtools.js"),
+                R"(
+        chrome.devtools.network.getHAR((result) => {
+          setInterval(() => {
+            top.postMessage(
+              {testOutput: ('entries' in result) ? 'PASS' : 'FAIL'},
+              '*'
+            );
+          }, 10);
+        });)");
+
+  const Extension* extension = LoadExtensionFromPath(dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  RunTest("waitForTestResultsAsMessage", url.spec());
 }
 
 // Times out. See https://crbug.com/819285.
