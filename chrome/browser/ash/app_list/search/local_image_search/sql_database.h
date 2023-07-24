@@ -11,12 +11,12 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
+#include "sql/database.h"
+#include "sql/meta_table.h"
 
 namespace sql {
-class Database;
 class Statement;
 class StatementID;
-class MetaTable;
 }  // namespace sql
 
 namespace app_list {
@@ -37,16 +37,17 @@ class SqlDatabase {
   SqlDatabase(const SqlDatabase&) = delete;
   SqlDatabase& operator=(const SqlDatabase&) = delete;
 
-  // Opens and initializes the database.
-  bool Initialize();
+  // Opens or initializes the database.
+  [[nodiscard]] bool Initialize();
 
   // Must be called in the same sequence with `Initialize()`.
   void Close();
 
-  // Allows us to interact with the database. Returns a statement that can Bind*
-  // and Run().
-  sql::Statement GetStatementForQuery(const sql::StatementID& sql_from_here,
-                                      const char* query);
+  // Allows us to interact with the database. If the database is open, returns
+  // a statement that can Bind* and Run(), otherwise nullptr.
+  std::unique_ptr<sql::Statement> GetStatementForQuery(
+      const sql::StatementID& sql_from_here,
+      const char* query);
 
  private:
   void OnErrorCallback(int error, sql::Statement* stmt);
@@ -70,8 +71,8 @@ class SqlDatabase {
   // The identifying prefix for metrics.
   const std::string histogram_tag_;
 
-  std::unique_ptr<sql::Database> db_;
-  std::unique_ptr<sql::MetaTable> meta_table_;
+  sql::Database db_;
+  sql::MetaTable meta_table_;
 
   // The current schema version number of the database. It must be greater than
   // 1. Due to the implementation constraint of `sql::MetaTable` the version

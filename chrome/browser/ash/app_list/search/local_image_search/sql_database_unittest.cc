@@ -36,7 +36,7 @@ int CreateTestSchema(SqlDatabase* db) {
               "key TEXT NOT NULL,"
               "value TEXT NOT NULL)";
   // clang-format on
-  db->GetStatementForQuery(SQL_FROM_HERE, query).Run();
+  db->GetStatementForQuery(SQL_FROM_HERE, query)->Run();
   // Returns current version number
   return 3;
 }
@@ -47,7 +47,7 @@ int CreateOldTestSchema(SqlDatabase* db) {
             "CREATE TABLE test("
               "key TEXT NOT NULL)";
   // clang-format on
-  db->GetStatementForQuery(SQL_FROM_HERE, query).Run();
+  db->GetStatementForQuery(SQL_FROM_HERE, query)->Run();
   return 2;
 }
 
@@ -58,7 +58,7 @@ int MigrateTestSchema(SqlDatabase* db, int current_version_number) {
             "ALTER TABLE test "
               "ADD value TEXT";
   // clang-format on
-  db->GetStatementForQuery(SQL_FROM_HERE, query).Run();
+  db->GetStatementForQuery(SQL_FROM_HERE, query)->Run();
   return 3;
 }
 
@@ -91,74 +91,84 @@ class SqlDatabaseTest : public testing::Test {
 };
 
 TEST_F(SqlDatabaseTest, EmptyStorage) {
-  sql_database_->Initialize();
+  EXPECT_TRUE(sql_database_->Initialize());
 
   auto statement =
       sql_database_->GetStatementForQuery(SQL_FROM_HERE, SELECT_ALL_QUERY);
+  ASSERT_TRUE(statement);
 
-  while (statement.Step()) {
+  while (statement->Step()) {
     steps_ += 1;
   }
   EXPECT_EQ(steps_, 0);
-  EXPECT_TRUE(statement.Succeeded());
+  EXPECT_TRUE(statement->Succeeded());
 }
 
 TEST_F(SqlDatabaseTest, Insert) {
-  sql_database_->Initialize();
+  EXPECT_TRUE(sql_database_->Initialize());
 
   auto insert_statement =
       sql_database_->GetStatementForQuery(SQL_FROM_HERE, INSERT_QUERY);
-  insert_statement.BindString(0, "test");
-  insert_statement.BindString(1, "123");
-  EXPECT_TRUE(insert_statement.Run());
+  ASSERT_TRUE(insert_statement);
+
+  insert_statement->BindString(0, "test");
+  insert_statement->BindString(1, "123");
+  EXPECT_TRUE(insert_statement->Run());
 
   auto select_statement =
       sql_database_->GetStatementForQuery(SQL_FROM_HERE, SELECT_ALL_QUERY);
-  while (select_statement.Step()) {
-    EXPECT_EQ(select_statement.ColumnString(0), "test");
-    EXPECT_EQ(select_statement.ColumnString(1), "123");
+  ASSERT_TRUE(select_statement);
+
+  while (select_statement->Step()) {
+    EXPECT_EQ(select_statement->ColumnString(0), "test");
+    EXPECT_EQ(select_statement->ColumnString(1), "123");
     steps_ += 1;
   }
   // To make sure, it goes inside the loop.
   EXPECT_EQ(steps_, 1);
-  EXPECT_TRUE(select_statement.Succeeded());
+  EXPECT_TRUE(select_statement->Succeeded());
 }
 
 TEST_F(SqlDatabaseTest, Persistence) {
-  sql_database_->Initialize();
+  EXPECT_TRUE(sql_database_->Initialize());
 
   auto insert_statement =
       sql_database_->GetStatementForQuery(SQL_FROM_HERE, INSERT_QUERY);
-  insert_statement.BindString(0, "test");
-  insert_statement.BindString(1, "123");
-  EXPECT_TRUE(insert_statement.Run());
+  ASSERT_TRUE(insert_statement);
 
-  insert_statement.Clear();
+  insert_statement->BindString(0, "test");
+  insert_statement->BindString(1, "123");
+  EXPECT_TRUE(insert_statement->Run());
+
+  insert_statement->Clear();
   sql_database_->Close();
-  sql_database_->Initialize();
+  EXPECT_TRUE(sql_database_->Initialize());
 
   auto select_statement =
       sql_database_->GetStatementForQuery(SQL_FROM_HERE, SELECT_ALL_QUERY);
+  ASSERT_TRUE(select_statement);
 
-  while (select_statement.Step()) {
-    EXPECT_EQ(select_statement.ColumnString(0), "test");
-    EXPECT_EQ(select_statement.ColumnString(1), "123");
+  while (select_statement->Step()) {
+    EXPECT_EQ(select_statement->ColumnString(0), "test");
+    EXPECT_EQ(select_statement->ColumnString(1), "123");
     steps_ += 1;
   }
   EXPECT_EQ(steps_, 1);
-  EXPECT_TRUE(select_statement.Succeeded());
+  EXPECT_TRUE(select_statement->Succeeded());
 }
 
 TEST_F(SqlDatabaseTest, Downgrade) {
-  sql_database_->Initialize();
+  EXPECT_TRUE(sql_database_->Initialize());
 
   auto insert_statement =
       sql_database_->GetStatementForQuery(SQL_FROM_HERE, INSERT_QUERY);
-  insert_statement.BindString(0, "test");
-  insert_statement.BindString(1, "123");
-  EXPECT_TRUE(insert_statement.Run());
+  ASSERT_TRUE(insert_statement);
 
-  insert_statement.Clear();
+  insert_statement->BindString(0, "test");
+  insert_statement->BindString(1, "123");
+  EXPECT_TRUE(insert_statement->Run());
+
+  insert_statement->Clear();
   sql_database_->Close();
 
   sql_database_ = std::make_unique<SqlDatabase>(
@@ -167,30 +177,36 @@ TEST_F(SqlDatabaseTest, Downgrade) {
       base::BindRepeating(MigrateOldTestSchema));
 
   // Should raze the current db and make an older version.
-  sql_database_->Initialize();
+  EXPECT_TRUE(sql_database_->Initialize());
 
   auto select_statement = sql_database_->GetStatementForQuery(
       SQL_FROM_HERE, "SELECT key FROM test");
-  while (select_statement.Step()) {
-    EXPECT_EQ(select_statement.ColumnString(0), "test");
+  ASSERT_TRUE(select_statement);
+
+  while (select_statement->Step()) {
+    EXPECT_EQ(select_statement->ColumnString(0), "test");
     steps_ += 0;
   }
   EXPECT_EQ(steps_, 0);
-  EXPECT_TRUE(select_statement.Succeeded());
+  EXPECT_TRUE(select_statement->Succeeded());
 
   auto insert_statement1 = sql_database_->GetStatementForQuery(
       SQL_FROM_HERE, "INSERT INTO test(key) VALUES(?)");
-  insert_statement1.BindString(0, "test");
-  EXPECT_TRUE(insert_statement1.Run());
+  ASSERT_TRUE(insert_statement1);
+
+  insert_statement1->BindString(0, "test");
+  EXPECT_TRUE(insert_statement1->Run());
 
   auto select_statement1 = sql_database_->GetStatementForQuery(
       SQL_FROM_HERE, "SELECT key FROM test");
-  while (select_statement1.Step()) {
-    EXPECT_EQ(select_statement1.ColumnString(0), "test");
+  ASSERT_TRUE(select_statement1);
+
+  while (select_statement1->Step()) {
+    EXPECT_EQ(select_statement1->ColumnString(0), "test");
     steps_ += 1;
   }
   EXPECT_EQ(steps_, 1);
-  EXPECT_TRUE(select_statement1.Succeeded());
+  EXPECT_TRUE(select_statement1->Succeeded());
 }
 
 TEST_F(SqlDatabaseTest, Upgrade) {
@@ -198,40 +214,57 @@ TEST_F(SqlDatabaseTest, Upgrade) {
       test_directory_.AppendASCII("test.db"), /*histogram_tag=*/"test",
       /*current_version_number=*/2, base::BindRepeating(CreateOldTestSchema),
       base::BindRepeating(MigrateOldTestSchema));
-  sql_database_->Initialize();
+  EXPECT_TRUE(sql_database_->Initialize());
 
   auto insert_statement = sql_database_->GetStatementForQuery(
       SQL_FROM_HERE, "INSERT INTO test(key) VALUES(?)");
-  insert_statement.BindString(0, "test");
-  EXPECT_TRUE(insert_statement.Run());
+  ASSERT_TRUE(insert_statement);
 
-  insert_statement.Clear();
+  insert_statement->BindString(0, "test");
+  EXPECT_TRUE(insert_statement->Run());
+
+  insert_statement->Clear();
   sql_database_->Close();
 
   sql_database_ = std::make_unique<SqlDatabase>(
       test_directory_.AppendASCII("test.db"), /*histogram_tag=*/"test",
       /*current_version_number=*/3, base::BindRepeating(CreateTestSchema),
       base::BindRepeating(MigrateTestSchema));
-  sql_database_->Initialize();
+  EXPECT_TRUE(sql_database_->Initialize());
 
   auto insert_statement1 =
       sql_database_->GetStatementForQuery(SQL_FROM_HERE, INSERT_QUERY);
-  insert_statement1.BindString(0, "foo");
-  insert_statement1.BindString(1, "456");
-  EXPECT_TRUE(insert_statement1.Run());
+  ASSERT_TRUE(insert_statement1);
+
+  insert_statement1->BindString(0, "foo");
+  insert_statement1->BindString(1, "456");
+  EXPECT_TRUE(insert_statement1->Run());
 
   auto select_statement1 =
       sql_database_->GetStatementForQuery(SQL_FROM_HERE, SELECT_ALL_QUERY);
+  ASSERT_TRUE(select_statement1);
 
-  while (select_statement1.Step()) {
-    auto row = std::make_tuple(select_statement1.ColumnString(0),
-                               select_statement1.ColumnString(1));
+  while (select_statement1->Step()) {
+    auto row = std::make_tuple(select_statement1->ColumnString(0),
+                               select_statement1->ColumnString(1));
     EXPECT_THAT(row, testing::AnyOfArray({std::make_tuple("test", ""),
                                           std::make_tuple("foo", "456")}));
     steps_ += 1;
   }
   EXPECT_EQ(steps_, 2);
-  EXPECT_TRUE(select_statement1.Succeeded());
+  EXPECT_TRUE(select_statement1->Succeeded());
+}
+
+TEST_F(SqlDatabaseTest, InitializationFail) {
+  sql_database_ = std::make_unique<SqlDatabase>(
+      base::FilePath("/wrong_dir.db"), /*histogram_tag=*/"test",
+      /*current_version_number=*/3, base::BindRepeating(CreateTestSchema),
+      base::BindRepeating(MigrateTestSchema));
+  EXPECT_FALSE(sql_database_->Initialize());
+
+  auto statement =
+      sql_database_->GetStatementForQuery(SQL_FROM_HERE, SELECT_ALL_QUERY);
+  ASSERT_FALSE(statement);
 }
 
 }  // namespace

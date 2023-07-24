@@ -26,7 +26,7 @@ int CreateOldTestSchema(SqlDatabase* db) {
             "CREATE TABLE test("
               "key TEXT NOT NULL)";
   // clang-format on
-  db->GetStatementForQuery(SQL_FROM_HERE, kQuery).Run();
+  db->GetStatementForQuery(SQL_FROM_HERE, kQuery)->Run();
   return 2;
 }
 
