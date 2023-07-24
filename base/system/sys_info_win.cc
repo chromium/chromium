@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/stack_container.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -27,6 +26,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/registry.h"
 #include "base/win/windows_version.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
 namespace {
 
@@ -37,34 +37,34 @@ namespace {
 std::vector<BYTE> GetCoreEfficiencyClasses() {
   const DWORD kReservedSize =
       sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX) * 64;
-  base::StackVector<BYTE, kReservedSize> buffer;
-  buffer->resize(kReservedSize);
+  absl::InlinedVector<BYTE, kReservedSize> buffer;
+  buffer.resize(kReservedSize);
   DWORD byte_length = kReservedSize;
   if (!GetLogicalProcessorInformationEx(
           RelationProcessorCore,
           reinterpret_cast<SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX*>(
-              buffer->data()),
+              buffer.data()),
           &byte_length)) {
     DPCHECK(GetLastError() == ERROR_INSUFFICIENT_BUFFER);
-    buffer->resize(byte_length);
+    buffer.resize(byte_length);
     if (!GetLogicalProcessorInformationEx(
             RelationProcessorCore,
             reinterpret_cast<SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX*>(
-                buffer->data()),
+                buffer.data()),
             &byte_length)) {
       return {};
     }
   }
 
   std::vector<BYTE> efficiency_classes;
-  BYTE* byte_ptr = buffer->data();
-  while (byte_ptr < buffer->data() + byte_length) {
+  BYTE* byte_ptr = buffer.data();
+  while (byte_ptr < buffer.data() + byte_length) {
     const auto* structure_ptr =
         reinterpret_cast<SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX*>(byte_ptr);
     DCHECK_EQ(structure_ptr->Relationship, RelationProcessorCore);
     DCHECK_LE(&structure_ptr->Processor.EfficiencyClass +
                   sizeof(structure_ptr->Processor.EfficiencyClass),
-              buffer->data() + byte_length);
+              buffer.data() + byte_length);
     efficiency_classes.push_back(structure_ptr->Processor.EfficiencyClass);
     DCHECK_GE(
         structure_ptr->Size,
@@ -83,18 +83,20 @@ std::vector<BYTE> GetCoreEfficiencyClasses() {
 // physical core has.
 std::vector<uint64_t> GetCoreProcessorMasks() {
   const DWORD kReservedSize = 64;
-  base::StackVector<SYSTEM_LOGICAL_PROCESSOR_INFORMATION, kReservedSize> buffer;
-  buffer->resize(kReservedSize);
+  absl::InlinedVector<SYSTEM_LOGICAL_PROCESSOR_INFORMATION, kReservedSize>
+      buffer;
+  buffer.resize(kReservedSize);
   DWORD byte_length = sizeof(buffer[0]) * kReservedSize;
   const BOOL result =
-      GetLogicalProcessorInformation(buffer->data(), &byte_length);
+      GetLogicalProcessorInformation(buffer.data(), &byte_length);
   DWORD element_count = byte_length / sizeof(buffer[0]);
   DCHECK_EQ(byte_length % sizeof(buffer[0]), 0u);
   if (!result) {
     DPCHECK(GetLastError() == ERROR_INSUFFICIENT_BUFFER);
-    buffer->resize(element_count);
-    if (!GetLogicalProcessorInformation(buffer->data(), &byte_length))
+    buffer.resize(element_count);
+    if (!GetLogicalProcessorInformation(buffer.data(), &byte_length)) {
       return {};
+    }
   }
 
   std::vector<uint64_t> processor_masks;

@@ -11,7 +11,6 @@
 #include <map>
 
 #include "base/base_export.h"
-#include "base/containers/stack_container.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -22,6 +21,7 @@
 #include "base/message_loop/watchable_io_message_pump_posix.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
 namespace base {
 
@@ -95,7 +95,7 @@ class BASE_EXPORT MessagePumpEpoll : public MessagePump,
     // all real scenarios, since there's little practical value in having more
     // than two controllers (e.g. one reader and one writer) watch the same
     // descriptor on the same thread.
-    StackVector<scoped_refptr<Interest>, 2> interests;
+    absl::InlinedVector<scoped_refptr<Interest>, 2> interests;
 
     // Temporary pointer to an active epoll_event structure which refers to
     // this entry. This is set immediately upon returning from epoll_wait() and

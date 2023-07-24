@@ -66,7 +66,7 @@ bool MessagePumpEpoll::WatchFileDescriptor(int fd,
     // non-persistent) Interest.
     existing_interest->set_active(true);
   } else {
-    entry.interests->push_back(controller->AssignEpollInterest(params));
+    entry.interests.push_back(controller->AssignEpollInterest(params));
     if (existing_interest) {
       UnregisterInterest(existing_interest);
     }
@@ -181,8 +181,8 @@ void MessagePumpEpoll::UnregisterInterest(
   DCHECK(entry_it != entries_.end());
 
   EpollEventEntry& entry = entry_it->second;
-  auto& interests = entry.interests.container();
-  auto it = ranges::find(interests, interest);
+  auto& interests = entry.interests;
+  auto* it = ranges::find(interests, interest);
   DCHECK(it != interests.end());
   interests.erase(it);
 
@@ -267,11 +267,11 @@ void MessagePumpEpoll::OnEpollEvent(EpollEventEntry& entry, uint32_t events) {
   // Any of these interests' event handlers may destroy any of the others'
   // controllers. Start all of them watching for destruction before we actually
   // dispatch any events.
-  for (const auto& interest : interests.container()) {
+  for (const auto& interest : interests) {
     interest->WatchForControllerDestruction();
   }
 
-  for (const auto& interest : interests.container()) {
+  for (const auto& interest : interests) {
     if (!interest->active()) {
       continue;
     }
@@ -299,7 +299,7 @@ void MessagePumpEpoll::OnEpollEvent(EpollEventEntry& entry, uint32_t events) {
     }
   }
 
-  for (const auto& interest : interests.container()) {
+  for (const auto& interest : interests) {
     interest->StopWatchingForControllerDestruction();
   }
 }
@@ -364,7 +364,7 @@ MessagePumpEpoll::EpollEventEntry::~EpollEventEntry() {
 uint32_t MessagePumpEpoll::EpollEventEntry::ComputeActiveEvents() {
   uint32_t events = 0;
   bool one_shot = true;
-  for (const auto& interest : interests.container()) {
+  for (const auto& interest : interests) {
     if (!interest->active()) {
       continue;
     }
