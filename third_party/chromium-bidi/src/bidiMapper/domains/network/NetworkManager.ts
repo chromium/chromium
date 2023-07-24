@@ -29,7 +29,7 @@ import type {Network} from '../../../protocol/protocol.js';
 
 import {NetworkRequest} from './networkRequest.js';
 
-export class NetworkProcessor {
+export class NetworkManager {
   readonly #eventManager: IEventManager;
 
   /**
@@ -46,11 +46,11 @@ export class NetworkProcessor {
     );
   }
 
-  static async create(
+  static create(
     cdpClient: ICdpClient,
     eventManager: IEventManager
-  ): Promise<NetworkProcessor> {
-    const networkProcessor = new NetworkProcessor(eventManager);
+  ): NetworkManager {
+    const networkProcessor = new NetworkManager(eventManager);
 
     cdpClient
       .browserClient()
@@ -124,8 +124,6 @@ export class NetworkProcessor {
         networkProcessor.#forgetRequest(params.requestId);
       }
     );
-
-    await cdpClient.sendCommand('Network.enable');
 
     return networkProcessor;
   }

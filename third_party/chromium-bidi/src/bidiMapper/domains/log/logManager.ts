@@ -75,12 +75,9 @@ export class LogManager {
   ) {
     const logManager = new LogManager(cdpTarget, realmStorage, eventManager);
 
-    logManager.#initialize();
-    return logManager;
-  }
+    logManager.#initializeEntryAddedEventListener();
 
-  #initialize() {
-    this.#initializeEntryAddedEventListener();
+    return logManager;
   }
 
   #initializeEntryAddedEventListener() {

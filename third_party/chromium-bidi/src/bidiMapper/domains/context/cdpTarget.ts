@@ -21,7 +21,7 @@ import type {ICdpClient} from '../../../cdp/cdpClient.js';
 import {Deferred} from '../../../utils/deferred.js';
 import type {IEventManager} from '../events/EventManager.js';
 import {LogManager} from '../log/logManager.js';
-import {NetworkProcessor} from '../network/networkProcessor.js';
+import {NetworkManager} from '../network/NetworkManager.js';
 import type {ChannelProxy} from '../script/channelProxy.js';
 import type {RealmStorage} from '../script/realmStorage.js';
 import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
@@ -34,7 +34,6 @@ export class CdpTarget {
   readonly #preloadScriptStorage: PreloadScriptStorage;
 
   readonly #targetUnblocked = new Deferred<void>();
-  #networkDomainEnabled = false;
 
   static create(
     targetId: string,
@@ -53,6 +52,7 @@ export class CdpTarget {
     );
 
     LogManager.create(cdpTarget, realmStorage, eventManager);
+    NetworkManager.create(cdpClient, eventManager);
 
     cdpTarget.#setEventListeners();
 
@@ -106,18 +106,15 @@ export class CdpTarget {
       // `Runtime.runIfWaitingForDebugger`.
       const promises: Promise<unknown>[] = [];
 
-      // Enable Network domain if enabled globally.
-      // TODO: enable Network domain for OOPiF targets.
-      if (this.#eventManager.isNetworkDomainEnabled) {
-        promises.push(this.enableNetworkDomain());
-      }
-
       promises.push(
         this.#cdpClient.sendCommand('Runtime.enable'),
         this.#cdpClient.sendCommand('Page.enable'),
         this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
           enabled: true,
         }),
+        // XXX: #1080: Do not always enable the network domain globally.
+        // TODO: enable Network domain for OOPiF targets.
+        this.#cdpClient.sendCommand('Network.enable'),
         this.#cdpClient.sendCommand('Target.setAutoAttach', {
           autoAttach: true,
           waitForDebuggerOnStart: true,
@@ -137,17 +134,6 @@ export class CdpTarget {
     }
 
     this.#targetUnblocked.resolve();
-  }
-
-  /**
-   * Enables the Network domain by creating a network processor on the target's
-   * cdp client if it is not enabled yet.
-   */
-  async enableNetworkDomain() {
-    if (!this.#networkDomainEnabled) {
-      this.#networkDomainEnabled = true;
-      await NetworkProcessor.create(this.cdpClient, this.#eventManager);
-    }
   }
 
   #setEventListeners() {

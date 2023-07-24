@@ -77,8 +77,6 @@ export interface IEventManager {
     contextIds: (BrowsingContext.BrowsingContext | null)[],
     channel: string | null
   ): Promise<void> | void;
-
-  get isNetworkDomainEnabled(): boolean;
 }
 
 /**
@@ -89,7 +87,6 @@ const eventBufferLength: ReadonlyMap<ChromiumBidi.EventNames, number> = new Map(
 );
 
 export class EventManager implements IEventManager {
-  static readonly #NETWORK_DOMAIN_PREFIX = 'network';
   /**
    * Maps event name to a set of contexts where this event already happened.
    * Needed for getting buffered events from all the contexts in case of
@@ -112,7 +109,6 @@ export class EventManager implements IEventManager {
   #lastMessageSent = new Map<string, number>();
   #subscriptionManager: SubscriptionManager;
   #bidiServer: BidiServer;
-  #isNetworkDomainEnabled: boolean;
 
   constructor(bidiServer: BidiServer) {
     this.#bidiServer = bidiServer;
@@ -120,11 +116,6 @@ export class EventManager implements IEventManager {
     this.#subscriptionManager = new SubscriptionManager(
       bidiServer.getBrowsingContextStorage()
     );
-    this.#isNetworkDomainEnabled = false;
-  }
-
-  get isNetworkDomainEnabled(): boolean {
-    return this.#isNetworkDomainEnabled;
   }
 
   /**
@@ -189,7 +180,6 @@ export class EventManager implements IEventManager {
 
     for (const eventName of eventNames) {
       for (const contextId of contextIds) {
-        await this.#handleDomains(eventName, contextId);
         this.#subscriptionManager.subscribe(eventName, contextId, channel);
         for (const eventWrapper of this.#getBufferedEvents(
           eventName,
@@ -202,34 +192,6 @@ export class EventManager implements IEventManager {
           );
           this.#markEventSent(eventWrapper, channel, eventName);
         }
-      }
-    }
-  }
-
-  /**
-   * Enables domains for the subscribed event in the required contexts or
-   * globally.
-   */
-  async #handleDomains(
-    eventName: ChromiumBidi.EventNames,
-    contextId: BrowsingContext.BrowsingContext | null
-  ) {
-    // Enable network domain if user subscribed to any of network events.
-    if (eventName.startsWith(EventManager.#NETWORK_DOMAIN_PREFIX)) {
-      // Enable for all the contexts.
-      if (contextId === null) {
-        this.#isNetworkDomainEnabled = true;
-        await Promise.all(
-          this.#bidiServer
-            .getBrowsingContextStorage()
-            .getAllContexts()
-            .map((context) => context.cdpTarget.enableNetworkDomain())
-        );
-      } else {
-        await this.#bidiServer
-          .getBrowsingContextStorage()
-          .getContext(contextId)
-          .cdpTarget.enableNetworkDomain();
       }
     }
   }
