@@ -9,7 +9,6 @@
 #include "net/base/ip_address.h"
 #include "net/cert/pki/common_cert_errors.h"
 #include "net/cert/pki/test_helpers.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -475,7 +474,7 @@ TEST_P(ParseNameConstraints, DirectoryNamesExcludeAll) {
       SequenceValueFromString(&name_jp)));
 }
 
-TEST_P(ParseNameConstraints, IPAdresses) {
+TEST_P(ParseNameConstraints, IPAddresses) {
   std::string a;
   ASSERT_TRUE(LoadTestNameConstraint("ipaddress.pem", &a));
 
@@ -597,7 +596,7 @@ TEST_P(ParseNameConstraints, IPAdresses) {
       IsPermittedCert(name_constraints.get(), der::Input(), san.get()));
 }
 
-TEST_P(ParseNameConstraints, IPAdressesExcludeOnly) {
+TEST_P(ParseNameConstraints, IPAddressesExcludeOnly) {
   std::string a;
   ASSERT_TRUE(LoadTestNameConstraint("ipaddress-excluded.pem", &a));
 
@@ -614,7 +613,7 @@ TEST_P(ParseNameConstraints, IPAdressesExcludeOnly) {
       IPAddress(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 0, 0, 0, 1)));
 }
 
-TEST_P(ParseNameConstraints, IPAdressesExcludeAll) {
+TEST_P(ParseNameConstraints, IPAddressesExcludeAll) {
   std::string a;
   ASSERT_TRUE(LoadTestNameConstraint("ipaddress-excludeall.pem", &a));
 
@@ -634,7 +633,7 @@ TEST_P(ParseNameConstraints, IPAdressesExcludeAll) {
       IPAddress(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 0, 0, 0, 1)));
 }
 
-TEST_P(ParseNameConstraints, IPAdressesNetmaskPermitSingleHost) {
+TEST_P(ParseNameConstraints, IPAddressesNetmaskPermitSingleHost) {
   std::string a;
   ASSERT_TRUE(LoadTestNameConstraint("ipaddress-permit_singlehost.pem", &a));
 
@@ -651,7 +650,7 @@ TEST_P(ParseNameConstraints, IPAdressesNetmaskPermitSingleHost) {
   EXPECT_FALSE(name_constraints->IsPermittedIP(IPAddress(255, 255, 255, 255)));
 }
 
-TEST_P(ParseNameConstraints, IPAdressesNetmaskPermitPrefixLen31) {
+TEST_P(ParseNameConstraints, IPAddressesNetmaskPermitPrefixLen31) {
   std::string a;
   ASSERT_TRUE(LoadTestNameConstraint("ipaddress-permit_prefix31.pem", &a));
 
@@ -669,7 +668,7 @@ TEST_P(ParseNameConstraints, IPAdressesNetmaskPermitPrefixLen31) {
   EXPECT_FALSE(name_constraints->IsPermittedIP(IPAddress(255, 255, 255, 255)));
 }
 
-TEST_P(ParseNameConstraints, IPAdressesNetmaskPermitPrefixLen1) {
+TEST_P(ParseNameConstraints, IPAddressesNetmaskPermitPrefixLen1) {
   std::string a;
   ASSERT_TRUE(LoadTestNameConstraint("ipaddress-permit_prefix1.pem", &a));
 
@@ -686,7 +685,7 @@ TEST_P(ParseNameConstraints, IPAdressesNetmaskPermitPrefixLen1) {
       name_constraints->IsPermittedIP(IPAddress(0xFF, 0xFF, 0xFF, 0xFF)));
 }
 
-TEST_P(ParseNameConstraints, IPAdressesNetmaskPermitAll) {
+TEST_P(ParseNameConstraints, IPAddressesNetmaskPermitAll) {
   std::string a;
   ASSERT_TRUE(LoadTestNameConstraint("ipaddress-permit_all.pem", &a));
 
@@ -700,7 +699,7 @@ TEST_P(ParseNameConstraints, IPAdressesNetmaskPermitAll) {
   EXPECT_TRUE(name_constraints->IsPermittedIP(IPAddress(255, 255, 255, 255)));
 }
 
-TEST_P(ParseNameConstraints, IPAdressesFailOnInvalidAddr) {
+TEST_P(ParseNameConstraints, IPAddressesFailOnInvalidAddr) {
   std::string a;
   ASSERT_TRUE(LoadTestNameConstraint("ipaddress-invalid_addr.pem", &a));
 
@@ -708,7 +707,7 @@ TEST_P(ParseNameConstraints, IPAdressesFailOnInvalidAddr) {
   EXPECT_FALSE(NameConstraints::Create(der::Input(&a), is_critical(), &errors));
 }
 
-TEST_P(ParseNameConstraints, IPAdressesFailOnInvalidMaskNotContiguous) {
+TEST_P(ParseNameConstraints, IPAddressesFailOnInvalidMaskNotContiguous) {
   std::string a;
   ASSERT_TRUE(LoadTestNameConstraint(
       "ipaddress-invalid_mask_not_contiguous_1.pem", &a));
@@ -726,6 +725,39 @@ TEST_P(ParseNameConstraints, IPAdressesFailOnInvalidMaskNotContiguous) {
   ASSERT_TRUE(LoadTestNameConstraint(
       "ipaddress-invalid_mask_not_contiguous_4.pem", &a));
   EXPECT_FALSE(NameConstraints::Create(der::Input(&a), is_critical(), &errors));
+}
+
+// Test that v4/v6 mapping is not applied when evaluating name constraints.
+TEST_P(ParseNameConstraints, IPAddressesMapped) {
+  std::string a;
+  ASSERT_TRUE(LoadTestNameConstraint("ipaddress-mapped_addrs.pem", &a));
+
+  CertErrors errors;
+  std::unique_ptr<NameConstraints> name_constraints(
+      NameConstraints::Create(der::Input(&a), is_critical(), &errors));
+  ASSERT_TRUE(name_constraints);
+
+  // 192.168.1.0/24 is a permitted subtree.
+  EXPECT_TRUE(name_constraints->IsPermittedIP(IPAddress(192, 168, 1, 0)));
+  // This does not cover ::ffff:192.168.1.0.
+  EXPECT_FALSE(name_constraints->IsPermittedIP(
+      IPAddress(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 192, 168, 1, 0)));
+  // 192.168.1.1 is excluded.
+  EXPECT_FALSE(name_constraints->IsPermittedIP(IPAddress(192, 168, 1, 1)));
+  // ::ffff:192.168.1.2 is excluded, but that does not exclude 192.168.1.2.
+  EXPECT_TRUE(name_constraints->IsPermittedIP(IPAddress(192, 168, 1, 2)));
+
+  // ::ffff:192.168.2.0/120 is a permitted subtree.
+  EXPECT_TRUE(name_constraints->IsPermittedIP(
+      IPAddress(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 192, 168, 2, 0)));
+  // This does not cover 192.168.2.0.
+  EXPECT_FALSE(name_constraints->IsPermittedIP(IPAddress(192, 168, 2, 0)));
+  // ::ffff:192.168.2.1 is excluded.
+  EXPECT_FALSE(name_constraints->IsPermittedIP(
+      IPAddress(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 192, 168, 2, 1)));
+  // 192.168.2.2 is excluded, but that does not exclude ::ffff:192.168.2.2.
+  EXPECT_TRUE(name_constraints->IsPermittedIP(
+      IPAddress(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 192, 168, 2, 2)));
 }
 
 TEST_P(ParseNameConstraints, OtherNamesInPermitted) {

@@ -653,19 +653,26 @@ bool NameConstraints::IsPermittedDirectoryName(
 }
 
 bool NameConstraints::IsPermittedIP(const IPAddress& ip) const {
+  // IPAddressMatchesPrefix internally maps v4 addresses to/from v6 on type
+  // mismatch. We don't wish to do this, so check the sizes match first.
   for (const auto& excluded_ip : excluded_subtrees_.ip_address_ranges) {
-    if (IPAddressMatchesPrefix(ip, excluded_ip.first, excluded_ip.second))
+    if (ip.size() == excluded_ip.first.size() &&
+        IPAddressMatchesPrefix(ip, excluded_ip.first, excluded_ip.second)) {
       return false;
+    }
   }
 
   // If permitted subtrees are not constrained, any name that is not excluded is
   // allowed.
-  if (!(permitted_subtrees_.present_name_types & GENERAL_NAME_IP_ADDRESS))
+  if (!(permitted_subtrees_.present_name_types & GENERAL_NAME_IP_ADDRESS)) {
     return true;
+  }
 
   for (const auto& permitted_ip : permitted_subtrees_.ip_address_ranges) {
-    if (IPAddressMatchesPrefix(ip, permitted_ip.first, permitted_ip.second))
+    if (ip.size() == permitted_ip.first.size() &&
+        IPAddressMatchesPrefix(ip, permitted_ip.first, permitted_ip.second)) {
       return true;
+    }
   }
 
   return false;
