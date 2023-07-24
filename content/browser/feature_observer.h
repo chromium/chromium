@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_FEATURE_OBSERVER_H_
 #define CONTENT_BROWSER_FEATURE_OBSERVER_H_
 
-#include "base/containers/stack_container.h"
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
