@@ -56,9 +56,10 @@ RootDeleteHelper::~RootDeleteHelper() {
 }
 
 void RootDeleteHelper::Run() {
-  util::Log(logging::LOG_VERBOSE, FROM_HERE,
+  util::Log(logging::LOGGING_VERBOSE, FROM_HERE,
             "Deleting the entire local filesystem for remote root deletion: "
-            "%s", url_.DebugString().c_str());
+            "%s",
+            url_.DebugString().c_str());
 
   file_system_context_->DeleteFileSystem(
       url_.storage_key(), url_.type(),

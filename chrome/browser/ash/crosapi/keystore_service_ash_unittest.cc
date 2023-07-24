@@ -63,10 +63,10 @@ using ::testing::WithArg;
 constexpr char kData[] = "\1\2\3\4\5\6\7";
 const char kDeprecatedMethodErr[] = "Deprecated method was called.";
 
-#define EXPECT_ERROR_LOG(matcher)                                \
-  if (DLOG_IS_ON(ERROR)) {                                       \
-    EXPECT_CALL(log_, Log(logging::LOG_ERROR, _, _, _, matcher)) \
-        .WillOnce(testing::Return(true)); /* suppress logging */ \
+#define EXPECT_ERROR_LOG(matcher)                                    \
+  if (DLOG_IS_ON(ERROR)) {                                           \
+    EXPECT_CALL(log_, Log(logging::LOGGING_ERROR, _, _, _, matcher)) \
+        .WillOnce(testing::Return(true)); /* suppress logging */     \
   }
 
 std::string GetSubjectPublicKeyInfo(

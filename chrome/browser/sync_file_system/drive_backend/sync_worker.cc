@@ -661,9 +661,9 @@ void SyncWorker::UpdateServiceState(RemoteServiceState state,
   if (old_state == GetCurrentState())
     return;
 
-  util::Log(logging::LOG_VERBOSE, FROM_HERE,
-            "Service state changed: %d->%d: %s",
-            old_state, GetCurrentState(), description.c_str());
+  util::Log(logging::LOGGING_VERBOSE, FROM_HERE,
+            "Service state changed: %d->%d: %s", old_state, GetCurrentState(),
+            description.c_str());
 
   for (auto& observer : observers_)
     observer.UpdateServiceState(GetCurrentState(), description);

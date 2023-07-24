@@ -240,7 +240,7 @@ void LocalFileSyncService::PrepareForProcessRemoteChange(
             .GetAppByURL(url.origin().GetURL());
     if (!extension) {
       util::Log(
-          logging::LOG_WARNING, FROM_HERE,
+          logging::LOGGING_WARNING, FROM_HERE,
           "PrepareForProcessRemoteChange called for non-existing origin: %s",
           url.origin().GetURL().spec().c_str());
 
@@ -275,10 +275,9 @@ void LocalFileSyncService::ApplyRemoteChange(const FileChange& change,
                                              const FileSystemURL& url,
                                              SyncStatusCallback callback) {
   DCHECK(base::Contains(origin_to_contexts_, url.origin().GetURL()));
-  util::Log(logging::LOG_VERBOSE, FROM_HERE,
+  util::Log(logging::LOGGING_VERBOSE, FROM_HERE,
             "[Remote -> Local] ApplyRemoteChange: %s on %s",
-            change.DebugString().c_str(),
-            url.DebugString().c_str());
+            change.DebugString().c_str(), url.DebugString().c_str());
 
   sync_context_->ApplyRemoteChange(
       origin_to_contexts_[url.origin().GetURL()], change, local_path, url,
@@ -400,7 +399,7 @@ void LocalFileSyncService::DidInitializeForRemoteSync(
 
 void LocalFileSyncService::DidApplyRemoteChange(SyncStatusCallback callback,
                                                 SyncStatusCode status) {
-  util::Log(logging::LOG_VERBOSE, FROM_HERE,
+  util::Log(logging::LOGGING_VERBOSE, FROM_HERE,
             "[Remote -> Local] ApplyRemoteChange finished --> %s",
             SyncStatusCodeToString(status));
   std::move(callback).Run(status);

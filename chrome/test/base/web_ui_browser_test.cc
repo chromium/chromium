@@ -75,7 +75,7 @@ bool LogHandler(int severity,
                 int line,
                 size_t message_start,
                 const std::string& str) {
-  if (severity == logging::LOG_ERROR && file &&
+  if (severity == logging::LOGGING_ERROR && file &&
       std::string("CONSOLE") == file) {
     g_error_messages.Get().push_back(str);
   }

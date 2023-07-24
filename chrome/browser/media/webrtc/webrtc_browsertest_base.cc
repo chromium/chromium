@@ -90,8 +90,8 @@ bool JavascriptErrorDetectingLogHandler(int severity,
     return false;
 
   bool contains_uncaught = str.find("\"Uncaught ") != std::string::npos;
-  if (severity == logging::LOG_ERROR ||
-      (severity == logging::LOG_INFO && contains_uncaught)) {
+  if (severity == logging::LOGGING_ERROR ||
+      (severity == logging::LOGGING_INFO && contains_uncaught)) {
     hit_javascript_errors_.Get() = true;
   }
 

@@ -45,7 +45,7 @@ namespace policy {
 
 namespace {
 
-constexpr logging::LogSeverity kLogSeverity = logging::LOG_FATAL;
+constexpr logging::LogSeverity kLogSeverity = logging::LOGGING_FATAL;
 
 // A log handler that discards messages whose severity is lower than the
 // threshold. It's needed in order to suppress unneeded syslog logging (which by

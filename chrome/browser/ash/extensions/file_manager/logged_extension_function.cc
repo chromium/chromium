@@ -40,9 +40,10 @@ void LoggedExtensionFunction::OnResponded() {
   if (logger && log_on_completion_) {
     DCHECK(response_type());
     bool success = *response_type() == SUCCEEDED;
-    logger->Log(logging::LOG_INFO, "%s[%s] %s. (elapsed time: %" PRId64 "ms)",
-                name(), request_id_str.c_str(),
-                success ? "succeeded" : "failed", elapsed.InMilliseconds());
+    logger->Log(logging::LOGGING_INFO,
+                "%s[%s] %s. (elapsed time: %" PRId64 "ms)", name(),
+                request_id_str.c_str(), success ? "succeeded" : "failed",
+                elapsed.InMilliseconds());
   }
 
   // Log performance issues separately from completion.
@@ -52,11 +53,11 @@ void LoggedExtensionFunction::OnResponded() {
         request_id_str.c_str(), elapsed.InMilliseconds());
     LOG(WARNING) << log_message;
     if (logger) {
-      logger->LogRawString(logging::LOG_ERROR,
+      logger->LogRawString(logging::LOGGING_ERROR,
                            "PERFORMANCE WARNING: " + log_message);
     }
   } else if (logger && elapsed >= slow_threshold_) {
-    logger->Log(logging::LOG_WARNING,
+    logger->Log(logging::LOGGING_WARNING,
                 "PERFORMANCE WARNING: %s[%s] was slow. (elapsed time: %" PRId64
                 "ms)",
                 name(), request_id_str.c_str(), elapsed.InMilliseconds());

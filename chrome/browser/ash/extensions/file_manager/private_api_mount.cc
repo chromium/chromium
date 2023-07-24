@@ -62,7 +62,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateAddMountFunction::Run() {
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
   if (drive::EventLogger* logger = file_manager::util::GetLogger(profile)) {
-    logger->Log(logging::LOG_INFO, "%s[%s] called. (source: '%s')", name(),
+    logger->Log(logging::LOGGING_INFO, "%s[%s] called. (source: '%s')", name(),
                 request_uuid().AsLowercaseString().c_str(),
                 params->file_url.empty() ? "(none)" : params->file_url.c_str());
   }
@@ -147,7 +147,7 @@ FileManagerPrivateCancelMountingFunction::Run() {
   Profile* const profile = Profile::FromBrowserContext(browser_context());
 
   if (drive::EventLogger* logger = file_manager::util::GetLogger(profile)) {
-    logger->Log(logging::LOG_INFO, "%s[%s] called. (source: '%s')", name(),
+    logger->Log(logging::LOGGING_INFO, "%s[%s] called. (source: '%s')", name(),
                 request_uuid().AsLowercaseString().c_str(),
                 params->file_url.empty() ? "(none)" : params->file_url.c_str());
   }
@@ -185,8 +185,8 @@ ExtensionFunction::ResponseAction FileManagerPrivateRemoveMountFunction::Run() {
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
   if (drive::EventLogger* logger = file_manager::util::GetLogger(profile)) {
-    logger->Log(logging::LOG_INFO, "%s[%s] called. (volume_id: '%s')", name(),
-                request_uuid().AsLowercaseString().c_str(),
+    logger->Log(logging::LOGGING_INFO, "%s[%s] called. (volume_id: '%s')",
+                name(), request_uuid().AsLowercaseString().c_str(),
                 params->volume_id.c_str());
   }
   set_log_on_completion(true);
@@ -303,7 +303,7 @@ FileManagerPrivateGetVolumeMetadataListFunction::Run() {
   }
 
   if (drive::EventLogger* logger = file_manager::util::GetLogger(profile)) {
-    logger->Log(logging::LOG_INFO,
+    logger->Log(logging::LOGGING_INFO,
                 "%s[%s] succeeded. (results: '[%s]', %" PRIuS " mount points)",
                 name(), request_uuid().AsLowercaseString().c_str(),
                 log_string.c_str(), result.size());

@@ -11,7 +11,7 @@
 
 // This turns off service error logging.
 struct Environment {
-  Environment() { logging::SetMinLogLevel(logging::LOG_FATAL); }
+  Environment() { logging::SetMinLogLevel(logging::LOGGING_FATAL); }
 };
 
 // Entry point for LibFuzzer.

@@ -1077,7 +1077,7 @@ bool DriveIntegrationService::AddDriveMountPointAfterMounted() {
       storage::FileSystemMountOption(), drive_mount_point);
 
   if (success) {
-    logger_->Log(logging::LOG_INFO, "Drive mount point is added");
+    logger_->Log(logging::LOGGING_INFO, "Drive mount point is added");
     for (auto& observer : observers_) {
       observer.OnFileSystemMounted();
     }
@@ -1106,7 +1106,7 @@ void DriveIntegrationService::RemoveDriveMountPoint() {
       for (auto& observer : observers_) {
         observer.OnFileSystemBeingUnmounted();
       }
-      logger_->Log(logging::LOG_INFO, "Drive mount point is removed");
+      logger_->Log(logging::LOGGING_INFO, "Drive mount point is removed");
     }
   }
   GetDriveFsHost()->Unmount();
@@ -1133,7 +1133,7 @@ void DriveIntegrationService::MaybeRemountFileSystem(
   if (!remount_delay) {
     if (failed_to_mount && preference_watcher_ &&
         !preference_watcher_->IsOnline()) {
-      logger_->Log(logging::LOG_WARNING,
+      logger_->Log(logging::LOGGING_WARNING,
                    "DriveFs failed to start; will retry when online");
       remount_when_online_ = true;
       return;
@@ -1144,7 +1144,7 @@ void DriveIntegrationService::MaybeRemountFileSystem(
     ++drivefs_total_failures_count_;
     if (drivefs_total_failures_count_ > 10) {
       mount_failed_ = true;
-      logger_->Log(logging::LOG_ERROR,
+      logger_->Log(logging::LOGGING_ERROR,
                    "DriveFs is too crashy. Leaving it alone.");
       for (auto& observer : observers_) {
         observer.OnFileSystemMountFailed();
@@ -1153,7 +1153,7 @@ void DriveIntegrationService::MaybeRemountFileSystem(
     }
     if (drivefs_consecutive_failures_count_ > 3) {
       mount_failed_ = true;
-      logger_->Log(logging::LOG_ERROR,
+      logger_->Log(logging::LOGGING_ERROR,
                    "DriveFs keeps failing at start. Giving up.");
       for (auto& observer : observers_) {
         observer.OnFileSystemMountFailed();
@@ -1162,7 +1162,7 @@ void DriveIntegrationService::MaybeRemountFileSystem(
     }
     remount_delay =
         Seconds(5 * (1 << (drivefs_consecutive_failures_count_ - 1)));
-    logger_->Log(logging::LOG_WARNING, "DriveFs died, retry in %d seconds",
+    logger_->Log(logging::LOGGING_WARNING, "DriveFs died, retry in %d seconds",
                  static_cast<int>(remount_delay.value().InSeconds()));
   }
 

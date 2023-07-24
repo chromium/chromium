@@ -4357,7 +4357,7 @@ class StartupBrowserCreatorIwaCommandLineInstallProfilePickerErrorTest
           .Times(testing::AnyNumber());
       EXPECT_CALL(
           mock_log_,
-          Log(::logging::LOG_ERROR, testing::_, testing::_, testing::_,
+          Log(::logging::LOGGING_ERROR, testing::_, testing::_, testing::_,
               testing::HasSubstr("Command line switches to install IWAs are "
                                  "incompatible with the Profile Picker")));
       mock_log_.StartCapturingLogs();

@@ -82,10 +82,10 @@ constexpr char kClass[] = "class";
 constexpr const char* const kLogLevelName[] = {"info", "warning", "error"};
 
 size_t SeverityToLogLevelNameIndex(logging::LogSeverity severity) {
-  if (severity <= logging::LOG_INFO) {
+  if (severity <= logging::LOGGING_INFO) {
     return 0;
   }
-  if (severity == logging::LOG_WARNING) {
+  if (severity == logging::LOGGING_WARNING) {
     return 1;
   }
   return 2;

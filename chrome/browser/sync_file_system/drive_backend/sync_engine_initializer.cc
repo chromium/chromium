@@ -69,13 +69,13 @@ SyncEngineInitializer::~SyncEngineInitializer() {
 }
 
 void SyncEngineInitializer::RunPreflight(std::unique_ptr<SyncTaskToken> token) {
-  util::Log(logging::LOG_VERBOSE, FROM_HERE, "[Initialize] Start.");
+  util::Log(logging::LOGGING_VERBOSE, FROM_HERE, "[Initialize] Start.");
   DCHECK(sync_context_);
   DCHECK(sync_context_->GetDriveService());
 
   // The metadata seems to have been already initialized. Just return with OK.
   if (sync_context_->GetMetadataDatabase()) {
-    util::Log(logging::LOG_VERBOSE, FROM_HERE,
+    util::Log(logging::LOGGING_VERBOSE, FROM_HERE,
               "[Initialize] Already initialized.");
     SyncTaskManager::NotifyTaskDone(std::move(token), SYNC_STATUS_OK);
     return;
@@ -86,7 +86,7 @@ void SyncEngineInitializer::RunPreflight(std::unique_ptr<SyncTaskToken> token) {
       MetadataDatabase::Create(database_path_, env_override_, &status);
 
   if (status != SYNC_STATUS_OK) {
-    util::Log(logging::LOG_VERBOSE, FROM_HERE,
+    util::Log(logging::LOGGING_VERBOSE, FROM_HERE,
               "[Initialize] Failed to initialize MetadataDatabase.");
     SyncTaskManager::NotifyTaskDone(std::move(token), status);
     return;
@@ -96,7 +96,7 @@ void SyncEngineInitializer::RunPreflight(std::unique_ptr<SyncTaskToken> token) {
   metadata_database_ = std::move(metadata_database);
   if (metadata_database_->HasSyncRoot() &&
       !metadata_database_->NeedsSyncRootRevalidation()) {
-    util::Log(logging::LOG_VERBOSE, FROM_HERE,
+    util::Log(logging::LOGGING_VERBOSE, FROM_HERE,
               "[Initialize] Found local cache of sync-root.");
     SyncTaskManager::NotifyTaskDone(std::move(token), SYNC_STATUS_OK);
     return;
@@ -126,7 +126,7 @@ void SyncEngineInitializer::DidGetAboutResource(
 
   SyncStatusCode status = ApiErrorCodeToSyncStatusCode(error);
   if (status != SYNC_STATUS_OK) {
-    util::Log(logging::LOG_VERBOSE, FROM_HERE,
+    util::Log(logging::LOGGING_VERBOSE, FROM_HERE,
               "[Initialize] Failed to get AboutResource.");
     SyncTaskManager::NotifyTaskDone(std::move(token), status);
     return;
@@ -142,7 +142,7 @@ void SyncEngineInitializer::DidGetAboutResource(
 
 void SyncEngineInitializer::FindSyncRoot(std::unique_ptr<SyncTaskToken> token) {
   if (find_sync_root_retry_count_++ >= kMaxRetry) {
-    util::Log(logging::LOG_VERBOSE, FROM_HERE,
+    util::Log(logging::LOGGING_VERBOSE, FROM_HERE,
               "[Initialize] Reached max retry count.");
     SyncTaskManager::NotifyTaskDone(std::move(token), SYNC_STATUS_FAILED);
     return;
@@ -164,7 +164,7 @@ void SyncEngineInitializer::DidFindSyncRoot(
 
   SyncStatusCode status = ApiErrorCodeToSyncStatusCode(error);
   if (status != SYNC_STATUS_OK) {
-    util::Log(logging::LOG_VERBOSE, FROM_HERE,
+    util::Log(logging::LOGGING_VERBOSE, FROM_HERE,
               "[Initialize] Failed to find sync root.");
     SyncTaskManager::NotifyTaskDone(std::move(token), status);
     return;
@@ -172,7 +172,7 @@ void SyncEngineInitializer::DidFindSyncRoot(
 
   if (!file_list) {
     NOTREACHED();
-    util::Log(logging::LOG_VERBOSE, FROM_HERE,
+    util::Log(logging::LOGGING_VERBOSE, FROM_HERE,
               "[Initialize] Got invalid resource list.");
     SyncTaskManager::NotifyTaskDone(std::move(token), SYNC_STATUS_FAILED);
     return;
@@ -243,7 +243,7 @@ void SyncEngineInitializer::DidCreateSyncRoot(
 
   SyncStatusCode status = ApiErrorCodeToSyncStatusCode(error);
   if (status != SYNC_STATUS_OK) {
-    util::Log(logging::LOG_VERBOSE, FROM_HERE,
+    util::Log(logging::LOGGING_VERBOSE, FROM_HERE,
               "[Initialize] Failed to create sync root.");
     SyncTaskManager::NotifyTaskDone(std::move(token), status);
     return;
@@ -270,7 +270,7 @@ void SyncEngineInitializer::DidDetachSyncRoot(
 
   SyncStatusCode status = ApiErrorCodeToSyncStatusCode(error);
   if (status != SYNC_STATUS_OK) {
-    util::Log(logging::LOG_VERBOSE, FROM_HERE,
+    util::Log(logging::LOGGING_VERBOSE, FROM_HERE,
               "[Initialize] Failed to detach sync root.");
     SyncTaskManager::NotifyTaskDone(std::move(token), status);
     return;
@@ -297,7 +297,7 @@ void SyncEngineInitializer::DidListAppRootFolders(
 
   SyncStatusCode status = ApiErrorCodeToSyncStatusCode(error);
   if (status != SYNC_STATUS_OK) {
-    util::Log(logging::LOG_VERBOSE, FROM_HERE,
+    util::Log(logging::LOGGING_VERBOSE, FROM_HERE,
               "[Initialize] Failed to get initial app-root folders.");
     SyncTaskManager::NotifyTaskDone(std::move(token), status);
     return;
@@ -305,7 +305,7 @@ void SyncEngineInitializer::DidListAppRootFolders(
 
   if (!file_list) {
     NOTREACHED();
-    util::Log(logging::LOG_VERBOSE, FROM_HERE,
+    util::Log(logging::LOGGING_VERBOSE, FROM_HERE,
               "[Initialize] Got invalid initial app-root list.");
     SyncTaskManager::NotifyTaskDone(std::move(token), SYNC_STATUS_FAILED);
     return;
@@ -336,14 +336,14 @@ void SyncEngineInitializer::PopulateDatabase(
   SyncStatusCode status = metadata_database_->PopulateInitialData(
       largest_change_id_, *sync_root_folder_, app_root_folders_);
   if (status != SYNC_STATUS_OK) {
-    util::Log(logging::LOG_VERBOSE, FROM_HERE,
+    util::Log(logging::LOGGING_VERBOSE, FROM_HERE,
               "[Initialize] Failed to populate initial data"
               " to MetadataDatabase.");
     SyncTaskManager::NotifyTaskDone(std::move(token), status);
     return;
   }
 
-  util::Log(logging::LOG_VERBOSE, FROM_HERE,
+  util::Log(logging::LOGGING_VERBOSE, FROM_HERE,
             "[Initialize] Completed successfully.");
   SyncTaskManager::NotifyTaskDone(std::move(token), SYNC_STATUS_OK);
 }

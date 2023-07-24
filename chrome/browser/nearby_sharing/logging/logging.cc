@@ -21,7 +21,7 @@ ScopedLogMessage::~ScopedLogMessage() {
   // verbose logging is enabled for the source file or by a command line switch.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(switches::kNearbyShareVerboseLogging) &&
-      severity_ <= logging::LOG_VERBOSE &&
+      severity_ <= logging::LOGGING_VERBOSE &&
       logging::GetVlogLevelHelper(file_, strlen(file_) + 1) <= 0) {
     return;
   }

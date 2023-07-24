@@ -1325,7 +1325,7 @@ FileManagerPrivateSearchFilesByHashesFunction::Run() {
   Profile* const profile = Profile::FromBrowserContext(browser_context());
   drive::EventLogger* const logger = file_manager::util::GetLogger(profile);
   if (logger) {
-    logger->Log(logging::LOG_INFO,
+    logger->Log(logging::LOGGING_INFO,
                 "%s[%s] called. (volume id: %s, number of hashes: %zd)", name(),
                 request_uuid().AsLowercaseString().c_str(),
                 params->volume_id.c_str(), params->hash_list.size());
