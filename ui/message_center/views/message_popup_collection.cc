@@ -286,12 +286,6 @@ size_t MessagePopupCollection::GetPopupItemsCount() {
   return popup_items_.size();
 }
 
-bool MessagePopupCollection::AdjustAndEvaluateShouldDisplayPopupItem(
-    const PopupItem& item) {
-  // We will not display the popup if its y-edge is outside of the work area.
-  return !IsNextEdgeOutsideWorkArea(item);
-}
-
 MessagePopupView* MessagePopupCollection::CreatePopup(
     const Notification& notification) {
   bool a11_feedback_on_init =
@@ -563,7 +557,7 @@ bool MessagePopupCollection::AddPopup() {
     item.is_animating = true;
     item.popup = CreatePopup(*new_notification);
 
-    if (!AdjustAndEvaluateShouldDisplayPopupItem(item)) {
+    if (IsNextEdgeOutsideWorkArea(item)) {
       item.popup->Close();
       return false;
     }

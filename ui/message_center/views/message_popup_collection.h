@@ -167,10 +167,6 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   // Called when the entire popup collection change its height.
   virtual void NotifyPopupCollectionHeightChanged() {}
 
-  // Evaluates if we should display `item` and make any adjustment necessary to
-  // display it. Returns true if `item` can be displayed, and false otherwise.
-  virtual bool AdjustAndEvaluateShouldDisplayPopupItem(const PopupItem& item);
-
   // Called when popup animation is started/finished.
   virtual void AnimationStarted() {}
   virtual void AnimationFinished() {}

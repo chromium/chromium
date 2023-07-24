@@ -85,7 +85,6 @@ class ASH_EXPORT AshMessagePopupCollection
   void NotifyPopupAdded(message_center::MessagePopupView* popup) override;
   void NotifyPopupClosed(message_center::MessagePopupView* popup) override;
   void NotifyPopupCollectionHeightChanged() override;
-  bool AdjustAndEvaluateShouldDisplayPopupItem(const PopupItem& item) override;
   void AnimationStarted() override;
   void AnimationFinished() override;
   message_center::MessagePopupView* CreatePopup(

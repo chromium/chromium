@@ -931,22 +931,23 @@ TEST_P(AshMessagePopupCollectionTest, MoveDownPopupWhenNotificationAdded) {
 
   AnimateUntilIdle();
 
-  EXPECT_EQ(0, popup_collection->baseline_offset_for_test());
+  // The baseline should still be the same when there's notification added.
+  EXPECT_EQ(popup1->GetBoundsInScreen().bottom() +
+                message_center::kMarginBetweenPopups,
+            unified_system_tray->GetBubbleBoundsInScreen().y());
+  EXPECT_EQ(bubble_view->height() + message_center::kMarginBetweenPopups,
+            popup_collection->baseline_offset_for_test());
 
-  // The first popup is moved down to be at the baseline without the offset.
-  EXPECT_EQ(popup1->GetBoundsInScreen().bottom(),
-            popup_collection->GetBaseline());
-
-  // The other 2 popups should be right above the first one.
+  // Popup 2 should be right above the first one.
   auto* popup2 = popup_collection->GetPopupViewForNotificationID(id2);
+  ASSERT_TRUE(popup2);
   EXPECT_EQ(popup2->GetBoundsInScreen().bottom() +
                 message_center::kMarginBetweenPopups,
             popup1->GetBoundsInScreen().y());
 
-  auto* popup3 = popup_collection->GetPopupViewForNotificationID(id3);
-  EXPECT_EQ(popup3->GetBoundsInScreen().bottom() +
-                message_center::kMarginBetweenPopups,
-            popup2->GetBoundsInScreen().y());
+  // Popup for the third notification should not be displayed since there's not
+  // enough space.
+  ASSERT_FALSE(popup_collection->GetPopupViewForNotificationID(id3));
 }
 
 TEST_P(AshMessagePopupCollectionTest, MoveDownPopupWhenNotificationUpdated) {

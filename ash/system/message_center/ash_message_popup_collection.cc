@@ -204,33 +204,6 @@ void AshMessagePopupCollection::NotifyPopupCollectionHeightChanged() {
   AdjustBaselineBasedOnShelfPodBubble(/*triggered_by_bubble_change=*/false);
 }
 
-bool AshMessagePopupCollection::AdjustAndEvaluateShouldDisplayPopupItem(
-    const PopupItem& item) {
-  if (!features::IsQsRevampEnabled()) {
-    return message_center::MessagePopupCollection::
-        AdjustAndEvaluateShouldDisplayPopupItem(item);
-  }
-
-  // To evaluate if we should display the new popup item, we:
-  // 1. Evaluate if we have enough space. If yes, return.
-  // 2. Make room by adjusting the baseline and moving down the popups
-  // 3. After the effort, evaluate again if we have enough space.
-
-  if (!IsNextEdgeOutsideWorkArea(item)) {
-    return true;
-  }
-
-  // Reset `baseline_offset_` to zero if can to make room for displaying the new
-  // popup item. We also need to move down other popups so that the new item can
-  // be displayed on top of them.
-  if (baseline_offset_ != 0) {
-    SetBaselineOffset(0);
-    MoveDownPopups();
-  }
-
-  return !IsNextEdgeOutsideWorkArea(item);
-}
-
 void AshMessagePopupCollection::AnimationStarted() {
   if (popups_animating_ == 0 && last_pop_up_added_) {
     // Since all the popup widgets use the same compositor, we only need to set
