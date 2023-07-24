@@ -4,6 +4,7 @@
 
 #include "chromeos/ui/frame/default_frame_header.h"
 
+#include "ash/constants/app_types.h"
 #include "base/check.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
@@ -11,6 +12,7 @@
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
@@ -49,6 +51,18 @@ void TileRoundRect(gfx::Canvas* canvas,
   SkPath path;
   path.addRoundRect(rect, radii, SkPathDirection::kCW);
   canvas->DrawPath(path, flags);
+}
+
+// For now, we should only apply dynamic color to the default frame header if
+// the window is a system web app.
+bool ShouldApplyDynamicColor(aura::Window* window) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (window->GetProperty(aura::client::kAppType) !=
+      static_cast<int>(ash::AppType::SYSTEM_APP)) {
+    return false;
+  }
+#endif
+  return true;
 }
 
 }  // namespace
@@ -99,7 +113,7 @@ void DefaultFrameHeader::UpdateFrameColors() {
   }
 
   if (::features::IsChromeRefresh2023() &&
-      wm::ApplyDynamicColorToWindowFrameHeader(GetTargetWindow())) {
+      ShouldApplyDynamicColor(GetTargetWindow())) {
     UpdateCaptionButtonColors(mode() == MODE_ACTIVE
                                   ? ui::kColorSysPrimary
                                   : ui::kColorFrameCaptionButtonUnfocused);
@@ -115,7 +129,7 @@ void DefaultFrameHeader::DoPaintHeader(gfx::Canvas* canvas) {
   cc::PaintFlags flags;
 
   if (features::IsJellyrollEnabled() &&
-      wm::ApplyDynamicColorToWindowFrameHeader(GetTargetWindow())) {
+      ShouldApplyDynamicColor(GetTargetWindow())) {
     flags.setColor(target_widget()->GetColorProvider()->GetColor(
         GetColorIdForCurrentMode()));
   } else {
