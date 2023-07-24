@@ -5485,6 +5485,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.QuickSettings.PageCountOnClose" units="pages"
+    expires_after="2023-10-24">
+  <owner>etuck@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    The number of quick settings pagination pages in the new quick settings UI.
+    This metric is recorded each time the quick settings are closed. Note that
+    this will also get recorded when the user opens and then closes the status
+    area calendar (even if they never viewed the quick settings), until
+    b/285280977 is fixed.
+  </summary>
+</histogram>
+
 <histogram name="Ash.QuickSettings.Slider.{SliderBehavior}"
     enum="QsSliderCatalogName" expires_after="2023-09-21">
   <owner>jiamingc@google.com</owner>

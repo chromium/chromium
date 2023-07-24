@@ -27,6 +27,8 @@ constexpr char kQuickSettingsFeaturePodCount[] =
     "Ash.QuickSettings.Clamshell.FeaturePodCountOnOpen";
 constexpr char kQuickSettingsTabletFeaturePodCount[] =
     "Ash.QuickSettings.Tablet.FeaturePodCountOnOpen";
+constexpr char kQuickSettingsPageCountOnClose[] =
+    "Ash.QuickSettings.PageCountOnClose";
 constexpr char kQuickSettingsSliderUp[] = "Ash.QuickSettings.Slider.Up";
 constexpr char kQuickSettingsSliderDown[] = "Ash.QuickSettings.Slider.Down";
 constexpr char kQuickSettingsSliderEnable[] =
@@ -141,6 +143,11 @@ void RecordQsSliderToggle(QsSliderCatalogName slider_catalog_name,
                                     ? kQuickSettingsSliderDisable
                                     : kUnifiedSystemViewSliderDisable,
                                 slider_catalog_name);
+}
+
+void RecordQsPageCountOnClose(int page_count) {
+  CHECK(features::IsQsRevampEnabled());
+  base::UmaHistogramCounts100(kQuickSettingsPageCountOnClose, page_count);
 }
 
 }  // namespace quick_settings_metrics_util
