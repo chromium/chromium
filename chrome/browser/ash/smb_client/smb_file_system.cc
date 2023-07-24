@@ -139,6 +139,13 @@ AbortCallback SmbFileSystem::WriteFile(
   return base::DoNothing();
 }
 
+AbortCallback SmbFileSystem::FlushFile(
+    int file_handle,
+    storage::AsyncFileUtil::StatusCallback callback) {
+  NOTREACHED();
+  return base::DoNothing();
+}
+
 AbortCallback SmbFileSystem::AddWatcher(
     const GURL& origin,
     const base::FilePath& entry_path,

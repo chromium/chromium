@@ -12,16 +12,19 @@
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "net/base/io_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::file_system_provider {
+
+const char kFakeFileText[] =
+    "This is a testing file. Lorem ipsum dolor sit amet est.";
+
 namespace {
 
 const char kFakeFileName[] = "hello.txt";
-const char kFakeFileText[] =
-    "This is a testing file. Lorem ipsum dolor sit amet est.";
 const size_t kFakeFileSize = sizeof(kFakeFileText) - 1u;
 const char kFakeFileModificationTime[] = "Fri, 25 Apr 2014 01:47:53";
 const char kFakeFileMimeType[] = "text/plain";
@@ -225,6 +228,12 @@ AbortCallback FakeProvidedFileSystem::OpenFile(const base::FilePath& entry_path,
     return PostAbortableTask(base::BindOnce(std::move(callback),
                                             0 /* file_handle */,
                                             base::File::FILE_ERROR_NOT_FOUND));
+  }
+
+  FakeEntry& entry = *entry_it->second;
+  if (mode == OPEN_FILE_MODE_WRITE && flush_required_) {
+    DCHECK(!entry.write_buffer);
+    entry.write_buffer = entry.contents;
   }
 
   const int file_handle = ++last_file_handle_;
@@ -431,19 +440,51 @@ AbortCallback FakeProvidedFileSystem::WriteFile(
     return PostAbortableTask(
         base::BindOnce(std::move(callback), base::File::FILE_ERROR_NOT_FOUND));
   }
-  if (offset > *entry->metadata->size) {
+  std::string& write_buffer =
+      entry->write_buffer ? *entry->write_buffer : entry->contents;
+  int64_t buffer_size = static_cast<int64_t>(write_buffer.size());
+  if (offset > buffer_size) {
     return PostAbortableTask(base::BindOnce(
         std::move(callback), base::File::FILE_ERROR_INVALID_OPERATION));
   }
 
   // Allocate the string size in advance.
-  if (offset + length > *entry->metadata->size) {
-    *entry->metadata->size = offset + length;
-    entry->contents.resize(*entry->metadata->size);
+  if (offset + length > buffer_size) {
+    if (!entry->write_buffer) {
+      // Only update metadata if we are writing contents directly.
+      *entry->metadata->size = offset + length;
+    }
+    write_buffer.resize(*entry->metadata->size);
   }
 
-  entry->contents.replace(offset, length, buffer->data(), length);
+  write_buffer.replace(offset, length, buffer->data(), length);
 
+  return PostAbortableTask(
+      base::BindOnce(std::move(callback), base::File::FILE_OK));
+}
+
+AbortCallback FakeProvidedFileSystem::FlushFile(
+    int file_handle,
+    storage::AsyncFileUtil::StatusCallback callback) {
+  const auto opened_file_it = opened_files_.find(file_handle);
+
+  if (opened_file_it == opened_files_.end() ||
+      !GetEntry(opened_file_it->second.file_path)) {
+    return PostAbortableTask(base::BindOnce(
+        std::move(callback), base::File::FILE_ERROR_INVALID_OPERATION));
+  }
+
+  FakeEntry* const entry = GetEntry(opened_file_it->second.file_path);
+  if (!entry) {
+    return PostAbortableTask(
+        base::BindOnce(std::move(callback), base::File::FILE_ERROR_NOT_FOUND));
+  }
+
+  if (entry->write_buffer) {
+    *entry->metadata->size = entry->write_buffer->size();
+    entry->contents = std::move(*entry->write_buffer);
+    entry->write_buffer = absl::nullopt;
+  }
   return PostAbortableTask(
       base::BindOnce(std::move(callback), base::File::FILE_OK));
 }

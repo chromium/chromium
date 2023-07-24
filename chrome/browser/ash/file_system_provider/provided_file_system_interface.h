@@ -222,6 +222,13 @@ class ProvidedFileSystemInterface {
       int length,
       storage::AsyncFileUtil::StatusCallback callback) = 0;
 
+  // Requests flushing data written to a file previously opened with
+  // `file_handle`. This is currently only called after the last write
+  // operation.
+  virtual AbortCallback FlushFile(
+      int file_handle,
+      storage::AsyncFileUtil::StatusCallback callback) = 0;
+
   // Requests adding a watcher on an entry. |recursive| must not be true for
   // files. |callback| is optional, but it can't be used for persistent
   // watchers.
