@@ -17,6 +17,7 @@
 #include "base/test/test_future.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/constants.h"
+#include "content/browser/media/cdm_storage_common.h"
 #include "content/browser/media/media_license_quota_client.h"
 #include "content/public/browser/storage_partition.h"
 #include "media/cdm/cdm_type.h"
@@ -156,7 +157,7 @@ TEST_F(MediaLicenseManagerTest, DeleteBucketData) {
       blink::StorageKey::CreateFromStringForTesting(kExampleOrigin);
   auto bucket = GetOrCreateBucket(storage_key);
   ASSERT_TRUE(bucket.has_value());
-  MediaLicenseManager::BindingContext binding_context(storage_key, kCdmType);
+  CdmStorageBindingContext binding_context(storage_key, kCdmType);
 
   // Open CDM storage for a storage key.
   manager_->OpenCdmStorage(binding_context,
@@ -191,7 +192,7 @@ TEST_F(MediaLicenseManagerTest, DeleteBucketDataClosedStorage) {
       blink::StorageKey::CreateFromStringForTesting(kExampleOrigin);
   auto bucket = GetOrCreateBucket(storage_key);
   ASSERT_TRUE(bucket.has_value());
-  MediaLicenseManager::BindingContext binding_context(storage_key, kCdmType);
+  CdmStorageBindingContext binding_context(storage_key, kCdmType);
 
   // Open CDM storage for a storage key.
   manager_->OpenCdmStorage(binding_context,
@@ -227,7 +228,7 @@ TEST_F(MediaLicenseManagerTest, DeleteBucketDataOpenConnection) {
       blink::StorageKey::CreateFromStringForTesting(kExampleOrigin);
   auto bucket = GetOrCreateBucket(storage_key);
   ASSERT_TRUE(bucket.has_value());
-  MediaLicenseManager::BindingContext binding_context(storage_key, kCdmType);
+  CdmStorageBindingContext binding_context(storage_key, kCdmType);
 
   // Open CDM storage for a storage key.
   manager_->OpenCdmStorage(binding_context,
@@ -265,7 +266,7 @@ TEST_F(MediaLicenseManagerTest, BucketCreationFailed) {
   blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting(kExampleOrigin);
   ASSERT_TRUE(GetOrCreateBucket(storage_key).has_value());
-  MediaLicenseManager::BindingContext binding_context(storage_key, kCdmType);
+  CdmStorageBindingContext binding_context(storage_key, kCdmType);
 
   // Disable the quota database, causing GetOrCreateBucket() to fail.
   quota_manager_->SetDisableDatabase(/*disable=*/true);
@@ -297,7 +298,7 @@ TEST_F(MediaLicenseManagerIncognitoTest, DeleteBucketData) {
       blink::StorageKey::CreateFromStringForTesting(kExampleOrigin);
   auto bucket = GetOrCreateBucket(storage_key);
   ASSERT_TRUE(bucket.has_value());
-  MediaLicenseManager::BindingContext binding_context(storage_key, kCdmType);
+  CdmStorageBindingContext binding_context(storage_key, kCdmType);
 
   // Open CDM storage for a storage key.
   manager_->OpenCdmStorage(binding_context,
@@ -326,7 +327,7 @@ TEST_F(MediaLicenseManagerIncognitoTest, DeleteBucketDataClosedStorage) {
       blink::StorageKey::CreateFromStringForTesting(kExampleOrigin);
   auto bucket = GetOrCreateBucket(storage_key);
   ASSERT_TRUE(bucket.has_value());
-  MediaLicenseManager::BindingContext binding_context(storage_key, kCdmType);
+  CdmStorageBindingContext binding_context(storage_key, kCdmType);
 
   // Open CDM storage for a storage key.
   manager_->OpenCdmStorage(binding_context,
@@ -355,7 +356,7 @@ TEST_F(MediaLicenseManagerIncognitoTest, DeleteBucketDataOpenConnection) {
       blink::StorageKey::CreateFromStringForTesting(kExampleOrigin);
   auto bucket = GetOrCreateBucket(storage_key);
   ASSERT_TRUE(bucket.has_value());
-  MediaLicenseManager::BindingContext binding_context(storage_key, kCdmType);
+  CdmStorageBindingContext binding_context(storage_key, kCdmType);
 
   // Open CDM storage for a storage key.
   manager_->OpenCdmStorage(binding_context,
@@ -390,7 +391,7 @@ TEST_F(MediaLicenseManagerIncognitoTest, BucketCreationFailed) {
   blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting(kExampleOrigin);
   ASSERT_TRUE(GetOrCreateBucket(storage_key).has_value());
-  MediaLicenseManager::BindingContext binding_context(storage_key, kCdmType);
+  CdmStorageBindingContext binding_context(storage_key, kCdmType);
 
   // Disable the quota database, causing GetOrCreateBucket() to fail.
   quota_manager_->SetDisableDatabase(/*disable=*/true);

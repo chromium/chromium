@@ -60,20 +60,6 @@ scoped_refptr<base::SequencedTaskRunner> CreateDatabaseTaskRunner() {
 
 }  // namespace
 
-MediaLicenseManager::CdmFileId::CdmFileId(const std::string& name,
-                                          const media::CdmType& cdm_type)
-    : name(name), cdm_type(cdm_type) {}
-MediaLicenseManager::CdmFileId::CdmFileId(const CdmFileId&) = default;
-MediaLicenseManager::CdmFileId::~CdmFileId() = default;
-
-MediaLicenseManager::CdmFileIdAndContents::CdmFileIdAndContents(
-    const CdmFileId& file,
-    std::vector<uint8_t> data)
-    : file(file), data(std::move(data)) {}
-MediaLicenseManager::CdmFileIdAndContents::CdmFileIdAndContents(
-    const CdmFileIdAndContents&) = default;
-MediaLicenseManager::CdmFileIdAndContents::~CdmFileIdAndContents() = default;
-
 MediaLicenseManager::MediaLicenseManager(
     bool in_memory,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
@@ -98,7 +84,7 @@ MediaLicenseManager::MediaLicenseManager(
 MediaLicenseManager::~MediaLicenseManager() = default;
 
 void MediaLicenseManager::OpenCdmStorage(
-    const BindingContext& binding_context,
+    const CdmStorageBindingContext& binding_context,
     mojo::PendingReceiver<media::mojom::CdmStorage> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
