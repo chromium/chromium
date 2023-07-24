@@ -632,7 +632,7 @@ void RenderFrameProxyHost::RouteMessageEvent(
         // prerendering state.
         source_page_ukm_source_id = source_rfh->GetPageUkmSourceId();
       }
-      source_storage_key = source_rfh->storage_key();
+      source_storage_key = source_rfh->GetStorageKey();
     }
   }
 
@@ -647,7 +647,7 @@ void RenderFrameProxyHost::RouteMessageEvent(
   }
   if (!post_message_counter_.RecordMessageAndCheckIfShouldSend(
           source_page_ukm_source_id, source_storage_key,
-          target_page_ukm_source_id, target_rfh->storage_key(),
+          target_page_ukm_source_id, target_rfh->GetStorageKey(),
           ukm::UkmRecorder::Get())) {
     return;
   };

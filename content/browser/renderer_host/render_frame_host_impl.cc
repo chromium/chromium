@@ -1882,7 +1882,7 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this));
 }
 
-const blink::StorageKey& RenderFrameHostImpl::storage_key() const {
+const blink::StorageKey& RenderFrameHostImpl::GetStorageKey() const {
   return storage_key_;
 }
 
@@ -10428,7 +10428,7 @@ void RenderFrameHostImpl::CreateBroadcastChannelProvider(
       storage_partition_impl->GetBroadcastChannelService();
   broadcast_channel_service->AddAssociatedReceiver(
       std::make_unique<BroadcastChannelProvider>(broadcast_channel_service,
-                                                 storage_key()),
+                                                 GetStorageKey()),
       std::move(receiver));
 }
 
@@ -10439,7 +10439,7 @@ void RenderFrameHostImpl::BindBlobUrlStoreAssociatedReceiver(
       static_cast<StoragePartitionImpl*>(GetStoragePartition());
 
   storage_partition_impl->GetBlobUrlRegistry()->AddReceiver(
-      storage_key(), std::move(receiver));
+      GetStorageKey(), std::move(receiver));
 }
 
 void RenderFrameHostImpl::BindBlobUrlStoreReceiver(
@@ -10449,7 +10449,7 @@ void RenderFrameHostImpl::BindBlobUrlStoreReceiver(
       static_cast<StoragePartitionImpl*>(GetStoragePartition());
 
   storage_partition_impl->GetBlobUrlRegistry()->AddReceiver(
-      storage_key(), std::move(receiver));
+      GetStorageKey(), std::move(receiver));
 }
 
 bool RenderFrameHostImpl::IsFocused() {
@@ -11553,7 +11553,7 @@ void RenderFrameHostImpl::CreateNotificationService(
   GetProcess()->CreateNotificationService(
       GetGlobalId(),
       RenderProcessHost::NotificationServiceCreatorType::kDocument,
-      storage_key(), std::move(receiver));
+      GetStorageKey(), std::move(receiver));
 }
 
 void RenderFrameHostImpl::CreateInstalledAppProvider(
@@ -11574,7 +11574,7 @@ void RenderFrameHostImpl::CreateCodeCacheHostWithKeys(
 void RenderFrameHostImpl::CreateCodeCacheHost(
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver) {
   CreateCodeCacheHostWithKeys(std::move(receiver), GetNetworkIsolationKey(),
-                              storage_key());
+                              GetStorageKey());
 }
 
 void RenderFrameHostImpl::CreateDedicatedWorkerHostFactory(
@@ -11594,7 +11594,7 @@ void RenderFrameHostImpl::CreateDedicatedWorkerHostFactory(
           worker_process_id,
           /*creator_render_frame_host_id=*/GetGlobalId(),
           /*creator_worker_token=*/absl::nullopt,
-          /*ancestor_render_frame_host_id=*/GetGlobalId(), storage_key(),
+          /*ancestor_render_frame_host_id=*/GetGlobalId(), GetStorageKey(),
           isolation_info_, BuildClientSecurityState(),
           /*creator_coep_reporter=*/coep_reporter,
           /*ancestor_coep_reporter=*/coep_reporter),
@@ -11707,7 +11707,7 @@ void RenderFrameHostImpl::BindCacheStorage(
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
   BindCacheStorageInternal(
       std::move(receiver),
-      storage::BucketLocator::ForDefaultBucket(storage_key()));
+      storage::BucketLocator::ForDefaultBucket(GetStorageKey()));
 }
 
 void RenderFrameHostImpl::BindCacheStorageInternal(
@@ -11811,7 +11811,7 @@ void RenderFrameHostImpl::GetFileSystemManager(
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&FileSystemManagerImpl::BindReceiver,
                                 base::Unretained(file_system_manager_.get()),
-                                storage_key(), std::move(receiver)));
+                                GetStorageKey(), std::move(receiver)));
 }
 
 void RenderFrameHostImpl::GetGeolocationService(
@@ -11859,18 +11859,18 @@ void RenderFrameHostImpl::GetFileSystemAccessManager(
   auto* manager = GetStoragePartition()->GetFileSystemAccessManager();
   manager->BindReceiver(
       FileSystemAccessManagerImpl::BindingContext(
-          storage_key(), GetLastCommittedURL(), GetGlobalId()),
+          GetStorageKey(), GetLastCommittedURL(), GetGlobalId()),
       std::move(receiver));
 }
 
 void RenderFrameHostImpl::CreateLockManager(
     mojo::PendingReceiver<blink::mojom::LockManager> receiver) {
-  GetProcess()->CreateLockManager(storage_key(), std::move(receiver));
+  GetProcess()->CreateLockManager(GetStorageKey(), std::move(receiver));
 }
 
 void RenderFrameHostImpl::CreateIDBFactory(
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
-  GetProcess()->BindIndexedDB(storage_key(), GetGlobalId(),
+  GetProcess()->BindIndexedDB(GetStorageKey(), GetGlobalId(),
                               std::move(receiver));
 }
 
@@ -15498,7 +15498,7 @@ void RenderFrameHostImpl::GetSandboxedFileSystemForBucket(
     blink::mojom::BucketHost::GetDirectoryCallback callback) {
   GetStoragePartition()->GetFileSystemAccessManager()->GetSandboxedFileSystem(
       FileSystemAccessManagerImpl::BindingContext(
-          storage_key(), GetLastCommittedURL(), GetGlobalId()),
+          GetStorageKey(), GetLastCommittedURL(), GetGlobalId()),
       bucket.ToBucketLocator(), std::move(callback));
 }
 

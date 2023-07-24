@@ -2977,9 +2977,10 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
 
   // There should be a nonce in the StorageKey.
   EXPECT_TRUE(
-      fenced_frame->current_frame_host()->storage_key().nonce().has_value());
-  EXPECT_EQ(fenced_frame_nonce.value(),
-            fenced_frame->current_frame_host()->storage_key().nonce().value());
+      fenced_frame->current_frame_host()->GetStorageKey().nonce().has_value());
+  EXPECT_EQ(
+      fenced_frame_nonce.value(),
+      fenced_frame->current_frame_host()->GetStorageKey().nonce().value());
 
   // Add an iframe. It should not have a nonce.
   EXPECT_TRUE(ExecJs(root,
@@ -2992,7 +2993,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   const net::IsolationInfo& iframe_isolation_info =
       iframe->current_frame_host()->GetIsolationInfoForSubresources();
   EXPECT_FALSE(iframe_isolation_info.nonce().has_value());
-  EXPECT_FALSE(iframe->current_frame_host()->storage_key().nonce().has_value());
+  EXPECT_FALSE(
+      iframe->current_frame_host()->GetStorageKey().nonce().has_value());
 
   // Navigate the iframe. It should still not have a nonce.
   EXPECT_TRUE(NavigateToURLFromRenderer(
@@ -3001,7 +3003,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
       iframe->current_frame_host()->GetIsolationInfoForSubresources();
 
   EXPECT_FALSE(iframe_new_isolation_info.nonce().has_value());
-  EXPECT_FALSE(iframe->current_frame_host()->storage_key().nonce().has_value());
+  EXPECT_FALSE(
+      iframe->current_frame_host()->GetStorageKey().nonce().has_value());
 
   // Add a nested iframe inside the fenced frame which needs to be a URL that
   // also opts in to be allowed to load inside of a fenced frame.
@@ -3022,7 +3025,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
             nested_iframe_nonce.value());
   EXPECT_EQ(fenced_frame_nonce.value(), fenced_frame->child_at(0)
                                             ->current_frame_host()
-                                            ->storage_key()
+                                            ->GetStorageKey()
                                             .nonce()
                                             .value());
 
@@ -3038,7 +3041,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
             nested_iframe_nonce.value());
   EXPECT_EQ(fenced_frame_nonce.value(), fenced_frame->child_at(0)
                                             ->current_frame_host()
-                                            ->storage_key()
+                                            ->GetStorageKey()
                                             .nonce()
                                             .value());
 
@@ -3100,13 +3103,14 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
 
   // There should be a nonce in the StorageKey.
   EXPECT_TRUE(
-      fenced_frame->current_frame_host()->storage_key().nonce().has_value());
+      fenced_frame->current_frame_host()->GetStorageKey().nonce().has_value());
 
   absl::optional<base::UnguessableToken> fenced_frame_nonce =
       fenced_frame->GetFencedFrameNonce();
   EXPECT_TRUE(fenced_frame_nonce.has_value());
-  EXPECT_EQ(fenced_frame_nonce.value(),
-            fenced_frame->current_frame_host()->storage_key().nonce().value());
+  EXPECT_EQ(
+      fenced_frame_nonce.value(),
+      fenced_frame->current_frame_host()->GetStorageKey().nonce().value());
 
   // Add an iframe.
   EXPECT_TRUE(ExecJs(root,
@@ -3116,13 +3120,15 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   auto* iframe = root->child_at(1);
   EXPECT_FALSE(iframe->IsFencedFrameRoot());
   EXPECT_FALSE(iframe->IsInFencedFrameTree());
-  EXPECT_FALSE(iframe->current_frame_host()->storage_key().nonce().has_value());
+  EXPECT_FALSE(
+      iframe->current_frame_host()->GetStorageKey().nonce().has_value());
 
   // Navigate the iframe. It should still not have a nonce.
   EXPECT_TRUE(NavigateToURLFromRenderer(
       iframe, https_server()->GetURL("a.test", "/title1.html")));
 
-  EXPECT_FALSE(iframe->current_frame_host()->storage_key().nonce().has_value());
+  EXPECT_FALSE(
+      iframe->current_frame_host()->GetStorageKey().nonce().has_value());
 
   // Set and read a value in the fenced frame's local storage.
   EXPECT_TRUE(ExecJs(fenced_frame, "localStorage[\"foo\"] = \"a\""));

@@ -658,7 +658,7 @@ void CookieStoreManager::BindReceiverForFrame(
   RenderFrameHostImpl* render_frame_host_impl =
       static_cast<RenderFrameHostImpl*>(render_frame_host);
   storage_partition->GetCookieStoreManager()->BindReceiver(
-      std::move(receiver), render_frame_host_impl->storage_key());
+      std::move(receiver), render_frame_host_impl->GetStorageKey());
 }
 
 // static

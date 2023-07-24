@@ -6772,11 +6772,11 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestCredentiallessIframe,
   EXPECT_TRUE(child->current_frame_host()->IsCredentialless());
   EXPECT_EQ(true, EvalJs(child->current_frame_host(), "window.credentialless"));
   // A credentialless document has a storage key with a nonce.
-  EXPECT_TRUE(child->current_frame_host()->storage_key().nonce().has_value());
+  EXPECT_TRUE(child->current_frame_host()->GetStorageKey().nonce().has_value());
   base::UnguessableToken credentialless_nonce =
       current_frame_host()->credentialless_iframes_nonce();
   EXPECT_EQ(credentialless_nonce,
-            child->current_frame_host()->storage_key().nonce().value());
+            child->current_frame_host()->GetStorageKey().nonce().value());
 
   // Create a grandchild iframe.
   EXPECT_TRUE(ExecJs(
@@ -6796,9 +6796,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestCredentiallessIframe,
 
   // The storage key's nonce is the same for all credentialless documents in the
   // same page.
-  EXPECT_TRUE(child->current_frame_host()->storage_key().nonce().has_value());
+  EXPECT_TRUE(child->current_frame_host()->GetStorageKey().nonce().has_value());
   EXPECT_EQ(credentialless_nonce,
-            child->current_frame_host()->storage_key().nonce().value());
+            child->current_frame_host()->GetStorageKey().nonce().value());
 
   // Now navigate the grandchild iframe.
   EXPECT_TRUE(ExecJs(
@@ -6810,9 +6810,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestCredentiallessIframe,
             EvalJs(grandchild->current_frame_host(), "window.credentialless"));
 
   // The storage key's nonce is still the same.
-  EXPECT_TRUE(child->current_frame_host()->storage_key().nonce().has_value());
+  EXPECT_TRUE(child->current_frame_host()->GetStorageKey().nonce().has_value());
   EXPECT_EQ(credentialless_nonce,
-            child->current_frame_host()->storage_key().nonce().value());
+            child->current_frame_host()->GetStorageKey().nonce().value());
 
   // Remove the 'credentialless' attribute from the iframe. This propagates to
   // the FrameTreeNode. The RenderFrameHost, however, is updated only on
@@ -6823,9 +6823,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestCredentiallessIframe,
   EXPECT_FALSE(child->Credentialless());
   EXPECT_TRUE(child->current_frame_host()->IsCredentialless());
   EXPECT_EQ(true, EvalJs(child->current_frame_host(), "window.credentialless"));
-  EXPECT_TRUE(child->current_frame_host()->storage_key().nonce().has_value());
+  EXPECT_TRUE(child->current_frame_host()->GetStorageKey().nonce().has_value());
   EXPECT_EQ(credentialless_nonce,
-            child->current_frame_host()->storage_key().nonce().value());
+            child->current_frame_host()->GetStorageKey().nonce().value());
 
   // Create another grandchild iframe. Even if the parent iframe element does
   // not have the 'credentialless' attribute anymore, the grandchild document is
@@ -6842,9 +6842,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestCredentiallessIframe,
   EXPECT_EQ(true,
             EvalJs(grandchild2->current_frame_host(), "window.credentialless"));
   EXPECT_TRUE(
-      grandchild2->current_frame_host()->storage_key().nonce().has_value());
+      grandchild2->current_frame_host()->GetStorageKey().nonce().has_value());
   EXPECT_EQ(credentialless_nonce,
-            grandchild2->current_frame_host()->storage_key().nonce().value());
+            grandchild2->current_frame_host()->GetStorageKey().nonce().value());
 
   // Navigate the child iframe. Since the iframe element does not set the
   // 'credentialless' attribute, the resulting RenderFrameHost will not be
@@ -6858,7 +6858,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestCredentiallessIframe,
   EXPECT_FALSE(child->current_frame_host()->IsCredentialless());
   EXPECT_EQ(false,
             EvalJs(child->current_frame_host(), "window.credentialless"));
-  EXPECT_FALSE(child->current_frame_host()->storage_key().nonce().has_value());
+  EXPECT_FALSE(
+      child->current_frame_host()->GetStorageKey().nonce().has_value());
 
   // Now navigate the whole page away.
   GURL main_url_b = embedded_test_server()->GetURL(
@@ -6875,12 +6876,13 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestCredentiallessIframe,
   EXPECT_EQ(true,
             EvalJs(child_b->current_frame_host(), "window.credentialless"));
 
-  EXPECT_TRUE(child_b->current_frame_host()->storage_key().nonce().has_value());
+  EXPECT_TRUE(
+      child_b->current_frame_host()->GetStorageKey().nonce().has_value());
   base::UnguessableToken credentialless_nonce_b =
       current_frame_host()->credentialless_iframes_nonce();
   EXPECT_NE(credentialless_nonce, credentialless_nonce_b);
   EXPECT_EQ(credentialless_nonce_b,
-            child_b->current_frame_host()->storage_key().nonce().value());
+            child_b->current_frame_host()->GetStorageKey().nonce().value());
 }
 
 // Ensures that OpenURLParams::FromNavigationHandle translates navigation params

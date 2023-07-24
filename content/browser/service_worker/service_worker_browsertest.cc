@@ -4145,7 +4145,7 @@ class ServiceWorkerBrowserTestWithStoragePartitioning
     // regardless of if `kThirdPartyStoragePartitioning` is enabled.
     auto root_storage_key =
         blink::StorageKey::CreateFirstParty(url::Origin::Create(main_url));
-    EXPECT_EQ(root_storage_key, root_rfh->storage_key());
+    EXPECT_EQ(root_storage_key, root_rfh->GetStorageKey());
 
     if (ThirdPartyStoragePartitioningEnabled()) {
       // With storage partitioning enabled, the three different frames should
@@ -4195,7 +4195,7 @@ class ServiceWorkerBrowserTestWithStoragePartitioning
     root_rfh = web_contents()->GetPrimaryMainFrame();
 
     // root_rfh's storage key should not have changed.
-    EXPECT_EQ(root_storage_key, root_rfh->storage_key());
+    EXPECT_EQ(root_storage_key, root_rfh->GetStorageKey());
 
     if (ThirdPartyStoragePartitioningEnabled()) {
       EXPECT_THAT(GetClientURLsForStorageKey(root_storage_key),

@@ -327,7 +327,7 @@ void BindQuotaManagerHost(
     RenderFrameHostImpl* host,
     mojo::PendingReceiver<blink::mojom::QuotaManagerHost> receiver) {
   host->GetStoragePartition()->GetQuotaContext()->BindQuotaManagerHost(
-      host->storage_key(), std::move(receiver));
+      host->GetStorageKey(), std::move(receiver));
 }
 
 void BindSharedWorkerConnector(
@@ -1036,7 +1036,7 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
          mojo::PendingReceiver<blink::mojom::OneShotBackgroundSyncService>
              receiver) {
         host->GetProcess()->CreateOneShotSyncService(
-            host->storage_key().origin(), std::move(receiver));
+            host->GetStorageKey().origin(), std::move(receiver));
       },
       base::Unretained(host)));
 
@@ -1045,7 +1045,7 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
          mojo::PendingReceiver<blink::mojom::PeriodicBackgroundSyncService>
              receiver) {
         host->GetProcess()->CreatePeriodicSyncService(
-            host->storage_key().origin(), std::move(receiver));
+            host->GetStorageKey().origin(), std::move(receiver));
       },
       base::Unretained(host)));
 

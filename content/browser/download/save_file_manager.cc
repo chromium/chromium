@@ -289,7 +289,7 @@ void SaveFileManager::SaveURL(
       factory_remote.Bind(CreateFileSystemURLLoaderFactory(
           rfh->GetProcess()->GetID(), rfh->GetFrameTreeNodeId(),
           storage_partition->GetFileSystemContext(), partition_domain,
-          static_cast<RenderFrameHostImpl*>(rfh)->storage_key()));
+          static_cast<RenderFrameHostImpl*>(rfh)->GetStorageKey()));
       factory = factory_remote.get();
     } else if (rfh && url.SchemeIs(content::kChromeUIScheme)) {
       factory_remote.Bind(CreateWebUIURLLoaderFactory(rfh, url.scheme(), {}));

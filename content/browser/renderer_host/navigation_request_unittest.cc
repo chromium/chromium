@@ -671,7 +671,7 @@ TEST_F(NavigationRequestTest, StorageKeyToCommit) {
   EXPECT_EQ(blink::StorageKey::CreateWithNonce(
                 url::Origin::Create(kUrl),
                 child_document->GetMainFrame()->credentialless_iframes_nonce()),
-            child_document->storage_key());
+            child_document->GetStorageKey());
 }
 
 // Test that the StorageKey's value is correctly affected by the

@@ -175,7 +175,7 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
     DCHECK(media_license_manager);
 
     auto storage_key =
-        static_cast<RenderFrameHostImpl*>(render_frame_host_)->storage_key();
+        static_cast<RenderFrameHostImpl*>(render_frame_host_)->GetStorageKey();
     media_license_manager->OpenCdmStorage(
         MediaLicenseManager::BindingContext(storage_key, cdm_type_),
         std::move(receiver));

@@ -3274,7 +3274,7 @@ void ChromeContentBrowserClient::FileSystemAccessed(
     content_settings::PageSpecificContentSettings::StorageAccessed(
         content_settings::mojom::ContentSettingsManager::StorageType::
             FILE_SYSTEM,
-        it.child_id, it.frame_routing_id, rfh->storage_key(), !allow);
+        it.child_id, it.frame_routing_id, rfh->GetStorageKey(), !allow);
   }
   std::move(callback).Run(allow);
 }
@@ -7268,7 +7268,7 @@ void ChromeContentBrowserClient::GetMediaDeviceIDSalt(
     return;
   }
 
-  salt_service->GetSalt(rfh->storage_key(),
+  salt_service->GetSalt(rfh->GetStorageKey(),
                         base::BindOnce(std::move(callback), allowed));
 }
 

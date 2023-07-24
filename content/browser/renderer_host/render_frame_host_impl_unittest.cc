@@ -126,7 +126,7 @@ TEST_F(RenderFrameHostImplTest, ExpectedMainWorldOrigin) {
             main_rfh()->GetLastCommittedOrigin());
   EXPECT_EQ(
       blink::StorageKey::CreateFirstParty(url::Origin::Create(initial_url)),
-      main_test_rfh()->storage_key());
+      main_test_rfh()->GetStorageKey());
 
   // Verify expected main world origin when a pending navigation was started but
   // hasn't yet reached the ready-to-commit state.
@@ -147,7 +147,7 @@ TEST_F(RenderFrameHostImplTest, ExpectedMainWorldOrigin) {
             main_rfh()->GetLastCommittedOrigin());
   EXPECT_EQ(
       blink::StorageKey::CreateFirstParty(url::Origin::Create(initial_url)),
-      main_test_rfh()->storage_key());
+      main_test_rfh()->GetStorageKey());
 
   // Verify expected main world origin once we are again in a steady state -
   // after a commit.
@@ -157,7 +157,7 @@ TEST_F(RenderFrameHostImplTest, ExpectedMainWorldOrigin) {
   EXPECT_EQ(url::Origin::Create(final_url),
             main_rfh()->GetLastCommittedOrigin());
   EXPECT_EQ(blink::StorageKey::CreateFirstParty(url::Origin::Create(final_url)),
-            main_test_rfh()->storage_key());
+            main_test_rfh()->GetStorageKey());
 
   // As a test correctness check, verify that there was no RFH swap (the bug
   // this test protects against would only happen if there is no swap).  In
@@ -212,7 +212,7 @@ TEST_F(RenderFrameHostImplTest, CrossSiteAncestorInFrameTree) {
       expected_final_origin, net::SiteForCookies(), party_context);
 
   EXPECT_EQ(expected_final_origin, child_rfh_2->GetLastCommittedOrigin());
-  EXPECT_EQ(expected_final_storage_key, child_rfh_2->storage_key());
+  EXPECT_EQ(expected_final_storage_key, child_rfh_2->GetStorageKey());
   EXPECT_TRUE(expected_final_isolation_info.IsEqualForTesting(
       child_rfh_2->GetIsolationInfoForSubresources()));
   EXPECT_EQ(expected_final_isolation_info.network_isolation_key(),
@@ -262,7 +262,7 @@ TEST_F(RenderFrameHostImplTest, IsolationInfoDuringCommit) {
 
   // Check values for the initial commit.
   EXPECT_EQ(expected_initial_origin, main_rfh()->GetLastCommittedOrigin());
-  EXPECT_EQ(expected_initial_storage_key, main_test_rfh()->storage_key());
+  EXPECT_EQ(expected_initial_storage_key, main_test_rfh()->GetStorageKey());
   EXPECT_TRUE(expected_initial_isolation_info.IsEqualForTesting(
       main_rfh()->GetIsolationInfoForSubresources()));
   EXPECT_EQ(expected_initial_isolation_info.network_isolation_key(),
@@ -278,7 +278,7 @@ TEST_F(RenderFrameHostImplTest, IsolationInfoDuringCommit) {
       NavigationSimulator::CreateRendererInitiated(final_url, main_rfh());
   simulator2->Start();
   EXPECT_EQ(expected_initial_origin, main_rfh()->GetLastCommittedOrigin());
-  EXPECT_EQ(expected_initial_storage_key, main_test_rfh()->storage_key());
+  EXPECT_EQ(expected_initial_storage_key, main_test_rfh()->GetStorageKey());
   EXPECT_TRUE(expected_initial_isolation_info.IsEqualForTesting(
       main_rfh()->GetIsolationInfoForSubresources()));
   EXPECT_EQ(expected_initial_isolation_info.network_isolation_key(),
@@ -293,7 +293,7 @@ TEST_F(RenderFrameHostImplTest, IsolationInfoDuringCommit) {
   simulator2->ReadyToCommit();
   simulator2->Wait();
   EXPECT_EQ(expected_initial_origin, main_rfh()->GetLastCommittedOrigin());
-  EXPECT_EQ(expected_initial_storage_key, main_test_rfh()->storage_key());
+  EXPECT_EQ(expected_initial_storage_key, main_test_rfh()->GetStorageKey());
   EXPECT_TRUE(expected_initial_isolation_info.IsEqualForTesting(
       main_rfh()->GetIsolationInfoForSubresources()));
   EXPECT_EQ(expected_initial_isolation_info.network_isolation_key(),
@@ -307,7 +307,7 @@ TEST_F(RenderFrameHostImplTest, IsolationInfoDuringCommit) {
   // after a commit.
   simulator2->Commit();
   EXPECT_EQ(expected_final_origin, main_rfh()->GetLastCommittedOrigin());
-  EXPECT_EQ(expected_final_storage_key, main_test_rfh()->storage_key());
+  EXPECT_EQ(expected_final_storage_key, main_test_rfh()->GetStorageKey());
   EXPECT_TRUE(expected_final_isolation_info.IsEqualForTesting(
       main_rfh()->GetIsolationInfoForSubresources()));
   EXPECT_EQ(expected_final_isolation_info.network_isolation_key(),
@@ -423,7 +423,7 @@ TEST_F(RenderFrameHostImplTest, ChildOfCredentiallessIsCredentialless) {
       content::RenderFrameHostTester::For(main_test_rfh())
           ->AppendChild("child"));
   EXPECT_FALSE(child_frame->IsCredentialless());
-  EXPECT_FALSE(child_frame->storage_key().nonce().has_value());
+  EXPECT_FALSE(child_frame->GetStorageKey().nonce().has_value());
 
   auto attributes = blink::mojom::IframeAttributes::New();
   attributes->parsed_csp_attribute = std::move(
@@ -435,7 +435,7 @@ TEST_F(RenderFrameHostImplTest, ChildOfCredentiallessIsCredentialless) {
   child_frame->frame_tree_node()->SetAttributes(std::move(attributes));
 
   EXPECT_FALSE(child_frame->IsCredentialless());
-  EXPECT_FALSE(child_frame->storage_key().nonce().has_value());
+  EXPECT_FALSE(child_frame->GetStorageKey().nonce().has_value());
 
   // A navigation in the credentialless iframe commits a credentialless RFH.
   std::unique_ptr<NavigationSimulator> navigation =
@@ -445,7 +445,7 @@ TEST_F(RenderFrameHostImplTest, ChildOfCredentiallessIsCredentialless) {
   child_frame =
       static_cast<TestRenderFrameHost*>(navigation->GetFinalRenderFrameHost());
   EXPECT_TRUE(child_frame->IsCredentialless());
-  EXPECT_TRUE(child_frame->storage_key().nonce().has_value());
+  EXPECT_TRUE(child_frame->GetStorageKey().nonce().has_value());
 
   // A credentialless document sets a nonce on its network isolation key.
   EXPECT_TRUE(child_frame->GetNetworkIsolationKey().GetNonce().has_value());
@@ -457,11 +457,11 @@ TEST_F(RenderFrameHostImplTest, ChildOfCredentiallessIsCredentialless) {
       content::RenderFrameHostTester::For(child_frame)
           ->AppendChild("grandchild"));
   EXPECT_TRUE(grandchild_frame->IsCredentialless());
-  EXPECT_TRUE(grandchild_frame->storage_key().nonce().has_value());
+  EXPECT_TRUE(grandchild_frame->GetStorageKey().nonce().has_value());
 
   // The two credentialless RFH's storage keys should have the same nonce.
-  EXPECT_EQ(child_frame->storage_key().nonce().value(),
-            grandchild_frame->storage_key().nonce().value());
+  EXPECT_EQ(child_frame->GetStorageKey().nonce().value(),
+            grandchild_frame->GetStorageKey().nonce().value());
 
   // Also the credentialless initial empty document sets a nonce on its network
   // isolation key.
@@ -869,7 +869,7 @@ TEST_F(RenderFrameHostImplTest,
 
   NavigateFrame(main_navigation.get());
 
-  EXPECT_EQ(main_frame_key, main_test_rfh()->storage_key());
+  EXPECT_EQ(main_frame_key, main_test_rfh()->GetStorageKey());
 
   TestRenderFrameHost* child_frame = static_cast<TestRenderFrameHost*>(
       RenderFrameHostTester::For(main_rfh())->AppendChild("child"));
@@ -884,7 +884,7 @@ TEST_F(RenderFrameHostImplTest,
 
   child_frame = NavigateFrame(child_navigation.get());
 
-  EXPECT_EQ(child_frame_key, child_frame->storage_key());
+  EXPECT_EQ(child_frame_key, child_frame->GetStorageKey());
 
   TestRenderFrameHost* grandchild_frame =
       child_frame->AppendChild("grandchild");
@@ -897,7 +897,7 @@ TEST_F(RenderFrameHostImplTest,
                                 blink::mojom::AncestorChainBit::kCrossSite);
   grandchild_frame = NavigateFrame(grandchild_navigation.get());
 
-  EXPECT_EQ(grandchild_frame_key, grandchild_frame->storage_key());
+  EXPECT_EQ(grandchild_frame_key, grandchild_frame->GetStorageKey());
 
   // Only the RuntimeFeatureStateContext in the main frame's matters. So
   // disabling Storage Partitioning in the child_frame shouldn't affect the
@@ -907,7 +907,7 @@ TEST_F(RenderFrameHostImplTest,
 
   child_frame = NavigateFrame(child_navigation.get(),
                               /*disable_sp=*/true);
-  EXPECT_EQ(child_frame_key, child_frame->storage_key());
+  EXPECT_EQ(child_frame_key, child_frame->GetStorageKey());
 
   grandchild_frame = child_frame->AppendChild("grandchild");
 
@@ -916,7 +916,7 @@ TEST_F(RenderFrameHostImplTest,
 
   grandchild_frame = NavigateFrame(grandchild_navigation.get());
 
-  EXPECT_EQ(grandchild_frame_key, grandchild_frame->storage_key());
+  EXPECT_EQ(grandchild_frame_key, grandchild_frame->GetStorageKey());
 
   // Disabling Storage Partitioning on the main frame should cause the child's
   // and grandchild's StorageKey to be first-party.
@@ -938,7 +938,7 @@ TEST_F(RenderFrameHostImplTest,
 
   child_frame = NavigateFrame(child_navigation.get());
 
-  EXPECT_EQ(child_frame_key_1p, child_frame->storage_key());
+  EXPECT_EQ(child_frame_key_1p, child_frame->GetStorageKey());
 
   grandchild_frame = child_frame->AppendChild("grandchild");
 
@@ -950,7 +950,7 @@ TEST_F(RenderFrameHostImplTest,
 
   grandchild_frame = NavigateFrame(grandchild_navigation.get());
 
-  EXPECT_EQ(grandchild_frame_key_1p, grandchild_frame->storage_key());
+  EXPECT_EQ(grandchild_frame_key_1p, grandchild_frame->GetStorageKey());
 }
 
 // Tests that the StorageKey calculated for a frame under an extension main
@@ -1097,7 +1097,7 @@ TEST_F(RenderFrameHostImplTest, CalculateStorageKeyOfUnnavigatedFrame) {
   // Since Storage Partitioning is disabled, the key should be first party.
   blink::StorageKey grandchild_frame_key_1p =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(child_url));
-  EXPECT_EQ(grandchild_frame_key_1p, grandchild_frame->storage_key());
+  EXPECT_EQ(grandchild_frame_key_1p, grandchild_frame->GetStorageKey());
 
   // Now perform the same test, except the main frame also gets a default
   // RuntimeFeatureStateReadContext. (I.e.: Storage Partitioning enabled).
@@ -1116,7 +1116,7 @@ TEST_F(RenderFrameHostImplTest, CalculateStorageKeyOfUnnavigatedFrame) {
       blink::StorageKey::Create(url::Origin::Create(child_url),
                                 net::SchemefulSite(url::Origin::Create(url)),
                                 blink::mojom::AncestorChainBit::kCrossSite);
-  EXPECT_EQ(grandchild_frame_key, grandchild_frame->storage_key());
+  EXPECT_EQ(grandchild_frame_key, grandchild_frame->GetStorageKey());
 }
 
 TEST_F(RenderFrameHostImplTest,
@@ -1520,7 +1520,7 @@ TEST_P(RenderFrameHostImplThirdPartyStorageTest,
   // or off
   EXPECT_EQ(
       blink::StorageKey::CreateFirstParty(url::Origin::Create(initial_url)),
-      main_test_rfh()->storage_key());
+      main_test_rfh()->GetStorageKey());
 
   if (ThirdPartyStoragePartitioningEnabled()) {
     // child frame storage key should contain child_origin + top_level_origin if
@@ -1529,13 +1529,13 @@ TEST_P(RenderFrameHostImplThirdPartyStorageTest,
                   url::Origin::Create(child_url),
                   net::SchemefulSite(url::Origin::Create(initial_url)),
                   blink::mojom::AncestorChainBit::kCrossSite),
-              child_frame->storage_key());
+              child_frame->GetStorageKey());
   } else {
     // child frame storage key should only be partitioned by child origin if
     // third party partitioning is off.
     EXPECT_EQ(
         blink::StorageKey::CreateFirstParty(url::Origin::Create(child_url)),
-        child_frame->storage_key());
+        child_frame->GetStorageKey());
   }
 }
 

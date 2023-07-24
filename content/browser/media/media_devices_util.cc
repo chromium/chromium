@@ -194,7 +194,7 @@ void GetMediaDeviceSaltAndOrigin(GlobalRenderFrameHostId render_frame_host_id,
   std::string frame_salt = frame_host->GetMediaDeviceIDSaltBase();
 
   GetContentClient()->browser()->GetMediaDeviceIDSalt(
-      frame_host, site_for_cookies, frame_host->storage_key(),
+      frame_host, site_for_cookies, frame_host->GetStorageKey(),
       base::BindOnce(&GotSalt, std::move(frame_salt), std::move(origin),
                      has_focus, is_background, std::move(source_id),
                      std::move(callback)));

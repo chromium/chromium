@@ -98,7 +98,7 @@ void NotifyStorageAccess(int render_process_id,
 
   if (should_notify_pscs) {
     PageSpecificContentSettings::StorageAccessed(
-        storage_type, render_process_id, render_frame_id, rfh->storage_key(),
+        storage_type, render_process_id, render_frame_id, rfh->GetStorageKey(),
         !allowed);
   }
 

@@ -256,7 +256,7 @@ TEST_F(PageSpecificContentSettingsTest, BlockedFileSystems) {
   auto* rfh = web_contents()->GetPrimaryMainFrame();
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(rfh);
-  auto google_storage_key = rfh->storage_key();
+  auto google_storage_key = rfh->GetStorageKey();
   // Access a file system.
   content_settings->OnStorageAccessed(StorageType::FILE_SYSTEM,
                                       google_storage_key, false);
@@ -441,7 +441,7 @@ TEST_F(PageSpecificContentSettingsTest, SiteDataObserver) {
       {content::CookieAccessDetails::Type::kRead, GURL("http://google.com"),
        GURL("http://google.com"), cookie_list, blocked_by_policy});
 
-  auto google_storage_key = rfh->storage_key();
+  auto google_storage_key = rfh->GetStorageKey();
   content_settings->OnStorageAccessed(StorageType::FILE_SYSTEM,
                                       google_storage_key, blocked_by_policy);
   content_settings->OnStorageAccessed(StorageType::INDEXED_DB,
@@ -1068,7 +1068,7 @@ TEST_F(PageSpecificContentSettingsWithPrerenderTest,
                            {*cookie},
                            /*blocked_by_policy=*/false});
   pscs->OnStorageAccessed(StorageType::INDEXED_DB,
-                          prerender_frame->storage_key(),
+                          prerender_frame->GetStorageKey(),
                           /*blocked_by_policy=*/true);
 
   EXPECT_CALL(*mock_delegate, OnContentAllowed(ContentSettingsType::COOKIES))
@@ -1242,7 +1242,7 @@ TEST_F(PageSpecificContentSettingsWithFencedFrameTest, DelegateUpdatesSent) {
                               {*cookie},
                               /*blocked_by_policy=*/false});
   ff_pscs->OnStorageAccessed(StorageType::INDEXED_DB,
-                             fenced_frame_root->storage_key(),
+                             fenced_frame_root->GetStorageKey(),
                              /*blocked_by_policy=*/true);
 }
 

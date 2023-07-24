@@ -133,7 +133,7 @@ void SharedWorkerServiceImpl::ConnectToWorker(
 
   // Enforce same-origin policy.
   // data: URLs are not considered a different origin.
-  const blink::StorageKey& storage_key = render_frame_host->storage_key();
+  const blink::StorageKey& storage_key = render_frame_host->GetStorageKey();
   bool is_cross_origin = !info->url.SchemeIs(url::kDataScheme) &&
                          url::Origin::Create(info->url) != storage_key.origin();
   if (is_cross_origin &&
