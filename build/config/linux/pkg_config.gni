@@ -101,7 +101,7 @@ template("pkg_config") {
       args += invoker.extra_args
     }
 
-    pkgresult = exec_script(pkg_config_script, args, "value")
+    pkgresult = exec_script(pkg_config_script, args, "json")
     cflags = pkgresult[1]
 
     foreach(include, pkgresult[0]) {
