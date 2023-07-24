@@ -638,7 +638,7 @@ class PathParser {
     cache = PathParser.resultDBArtifacts[this.path] =
         { artifacts: {}, expiration: 0 };
     let promise = PathParser.queryArtifacts({
-      testIdRegexp: `ninja://:[^/]*${this.path}`,
+      testIdRegexp: `ninja://:[^/]*${this.path.replace(/[.?+]/g, '\\$&')}`,
       expectancy: 'ALL',
     }).then(() => { return Promise.resolve(cache.artifacts); });
     // If the promise is not fulfilled immediately, save the promise in the
