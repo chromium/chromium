@@ -1930,9 +1930,6 @@ if (enable_java_templates) {
       if (invoker.include_android_sdk) {
         args += [ "--sdk-classpath-jars=@FileArg($_rebased_build_config:android:sdk_jars)" ]
       }
-      if (invoker.is_prebuilt) {
-        args += [ "--is-prebuilt" ]
-      }
       if (treat_warnings_as_errors) {
         args += [ "--warnings-as-errors" ]
       }
@@ -4035,7 +4032,8 @@ if (enable_java_templates) {
     if (_build_host_jar || _build_device_jar) {
       _enable_bytecode_checks =
           (!defined(invoker.enable_bytecode_checks) ||
-           invoker.enable_bytecode_checks) && android_static_analysis != "off"
+           invoker.enable_bytecode_checks) && !_is_prebuilt &&
+          android_static_analysis != "off"
       if (_enable_bytecode_checks) {
         _validate_target_name = "${target_name}__validate"
         bytecode_processor(_validate_target_name) {
@@ -4052,7 +4050,6 @@ if (enable_java_templates) {
               get_label_info(":${invoker.target_name}", "label_no_toolchain")
           input_jar = _unprocessed_jar_path
           build_config = _build_config
-          is_prebuilt = _is_prebuilt
         }
       } else {
         not_needed(invoker, [ "missing_classes_allowlist" ])

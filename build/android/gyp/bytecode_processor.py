@@ -11,7 +11,7 @@ import logging
 import os
 import pathlib
 import sys
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 from util import build_utils
 from util import dep_utils
@@ -110,7 +110,7 @@ def _EnsureDirectClasspathIsComplete(
 
   transitive_deps = full_classpath_deps - direct_classpath_deps
 
-  missing_targets: Dict[tuple, Dict[str, str]] = collections.defaultdict(dict)
+  missing_classes: Dict[str, str] = {}
   dep_graph = _ParseDepGraph(input_jar, output_dir)
   logging.info('Finding missing deps from %d classes', len(dep_graph))
   # dep_graph.keys() is a list of all the classes in the current input_jar. Skip
@@ -125,22 +125,30 @@ def _EnsureDirectClasspathIsComplete(
         continue
       seen_deps.add(dep_to)
       if dep_to in transitive_deps:
-        missing_target_names = tuple(sorted(dep_to_target[dep_to]))
-        missing_targets[missing_target_names][dep_to] = dep_from
+        # Allow clobbering since it doesn't matter which specific class depends
+        # on |dep_to|.
+        missing_classes[dep_to] = dep_from
 
-  if missing_targets:
+        # missing_target_names = tuple(sorted(dep_to_target[dep_to]))
+        # missing_targets[missing_target_names][dep_to] = dep_from
+  if missing_classes:
 
     def print_and_maybe_exit():
+      missing_targets: Dict[Tuple, List[str]] = collections.defaultdict(list)
+      for dep_to, dep_from in missing_classes.items():
+        missing_target_names = tuple(sorted(dep_to_target[dep_to]))
+        missing_targets[missing_target_names].append(dep_to)
       print('=' * 30 + ' Dependency Checks Failed ' + '=' * 30)
       print(f'Target: {gn_target}')
       print('Direct classpath is incomplete. To fix, add deps on:')
-      for missing_target_names, data in missing_targets.items():
+      for missing_target_names, deps_to in missing_targets.items():
         if len(missing_target_names) > 1:
           print(f' * One of {", ".join(missing_target_names)}')
         else:
           print(f' * {missing_target_names[0]}')
-        for missing_class, used_by in data.items():
-          print(f'     ** {missing_class} (needed by {used_by})')
+        for dep_to in deps_to:
+          dep_from = missing_classes[dep_to]
+          print(f'     ** {dep_to} (needed by {dep_from})')
       if warnings_as_errors:
         sys.exit(1)
 
@@ -154,9 +162,17 @@ def _EnsureDirectClasspathIsComplete(
           'tools/android/modularization/gn/dep_operations.py', 'add', '--quiet',
           '--file', build_file_path, '--target', gn_target, '--deps'
       ]
-      # For simplicity, always pick the first suggested target.
-      # TODO(https://crbug.com/1099522): Swap deps with preferred deps.
-      missing_deps = [names[0] for names in missing_targets.keys()]
+      class_lookup_index = dep_utils.ClassLookupIndex(pathlib.Path(output_dir),
+                                                      should_build=False)
+
+      missing_deps = set()
+      for dep_to in missing_classes:
+        # Using dep_utils.ClassLookupIndex ensures we respect the preferred dep
+        # if any exists for the missing deps.
+        suggested_deps = class_lookup_index.match(dep_to)
+        assert suggested_deps, f'Unable to find target for {dep_to}'
+        suggested_deps = dep_utils.DisambiguateDeps(suggested_deps)
+        missing_deps.add(suggested_deps[0].target)
       cmd += missing_deps
       try:
         build_utils.CheckOutput(cmd, cwd=build_utils.DIR_SOURCE_ROOT)
@@ -169,11 +185,6 @@ def _EnsureDirectClasspathIsComplete(
       else:
         print(f'Successfully updated {build_file_path} with missing direct '
               f'deps: {missing_deps}')
-
-
-def _AddSwitch(parser, val):
-  parser.add_argument(
-      val, action='store_const', default='--disabled', const=val)
 
 
 def main(argv):
@@ -199,7 +210,6 @@ def main(argv):
   parser.add_argument('--warnings-as-errors',
                       action='store_true',
                       help='Treat all warnings as errors.')
-  _AddSwitch(parser, '--is-prebuilt')
   args = parser.parse_args(argv)
 
   if server_utils.MaybeRunCommand(name=args.target_name,
@@ -223,7 +233,6 @@ def main(argv):
 
   verbose = '--verbose' if args.verbose else '--not-verbose'
 
-
   # TODO(https://crbug.com/1099522): Make jdeps the default.
   if os.environ.get('BYTECODE_PROCESSOR_USE_JDEPS'):
     logging.info('Processed args for %s, starting direct classpath check.',
@@ -241,7 +250,7 @@ def main(argv):
     logging.info('Check completed.')
   else:
     cmd = [
-        args.script, args.gn_target, args.input_jar, verbose, args.is_prebuilt
+        args.script, args.gn_target, args.input_jar, verbose, '--not-prebuilt'
     ]
     cmd += [str(len(args.missing_classes_allowlist))]
     cmd += args.missing_classes_allowlist
@@ -254,10 +263,11 @@ def main(argv):
     cmd += [str(len(args.full_classpath_gn_targets))]
     cmd += args.full_classpath_gn_targets
     try:
-      build_utils.CheckOutput(cmd,
-                              print_stdout=True,
-                              fail_func=None,
-                              fail_on_output=args.warnings_as_errors)
+      build_utils.CheckOutput(
+          cmd,
+          print_stdout=True,
+          fail_func=None,  # type: ignore
+          fail_on_output=args.warnings_as_errors)
     except build_utils.CalledProcessError as e:
       # Do not output command line because it is massive and makes the actual
       # error message hard to find.
