@@ -535,6 +535,23 @@ void AppListSyncableService::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
+void AppListSyncableService::OnFirstSync(
+    base::OnceCallback<void(bool was_first_sync_ever)> callback) {
+  // NOTE: Do not use `base::Unretained(this)` with `on_first_sync_.Post()`
+  // since `base::OneShotEvent` does not own the underlying task runner.
+  on_first_sync_.Post(
+      FROM_HERE,
+      base::BindOnce(
+          [](const base::WeakPtr<const AppListSyncableService>& self,
+             base::OnceCallback<void(bool was_first_sync_ever)> callback) {
+            if (self) {
+              CHECK(self->first_sync_was_first_sync_ever_.has_value());
+              std::move(callback).Run(*self->first_sync_was_first_sync_ever_);
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 void AppListSyncableService::NotifyObserversSyncUpdated() {
   for (auto& observer : observer_list_)
     observer.OnSyncModelUpdated();
@@ -1161,6 +1178,12 @@ AppListSyncableService::MergeDataAndStartSyncing(
   // Check if already signaled since unit tests make multiple calls.
   if (!on_initialized_.is_signaled()) {
     on_initialized_.Signal();
+  }
+
+  // Signal completion of the first sync in the session once and only once.
+  if (!on_first_sync_.is_signaled()) {
+    first_sync_was_first_sync_ever_ = first_app_list_sync_;
+    on_first_sync_.Signal();
   }
 
   return absl::nullopt;

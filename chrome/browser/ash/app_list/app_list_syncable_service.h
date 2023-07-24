@@ -250,6 +250,14 @@ class AppListSyncableService : public syncer::SyncableService,
   void AddObserverAndStart(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // Registers a `callback` to be run from a posted task on completion of the
+  // first sync in the session. The `callback` is notified of whether the first
+  // sync in the session was thought to be the first sync ever across all
+  // ChromeOS devices and sessions for the associated user. This method is safe
+  // to call even after completion of the first sync in the session, in which
+  // case the `callback` will be run from a task posted immediately.
+  void OnFirstSync(base::OnceCallback<void(bool was_first_sync_ever)> callback);
+
   const Profile* profile() const { return profile_; }
   Profile* profile() { return profile_; }
   size_t GetNumSyncItemsForTest();
@@ -452,9 +460,15 @@ class AppListSyncableService : public syncer::SyncableService,
   std::string oem_folder_name_;
   base::OnceClosure wait_until_ready_to_sync_cb_;
 
+  // Whether the first sync in the session was thought to be the first sync ever
+  // across all ChromeOS devices and sessions for the associated user. Note that
+  // this value is absent until completion of the first sync in the session.
+  absl::optional<bool> first_sync_was_first_sync_ever_;
+
   // List of observers.
   base::ObserverList<Observer> observer_list_;
   base::OneShotEvent on_initialized_;
+  base::OneShotEvent on_first_sync_;
 
   base::WeakPtrFactory<AppListSyncableService> weak_ptr_factory_{this};
 };

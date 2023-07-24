@@ -12,6 +12,7 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -3502,6 +3503,67 @@ TEST_F(AppListSyncableServiceTest, PageBreaksAfterSortWithTwoFullPagesInSync) {
                   "Item 31", "Item 32", "Item 33", "Item 34", "Item 35",
                   "Item 36", "Item 37", "Item 38", "Item 39", "Item 4",
                   "Item 5",  "Item 6",  "Item 7",  "Item 8",  "Item 9"}}));
+}
+
+// Base class for tests of `AppListSyncableService::OnFirstSync()` parameterized
+// by whether the first sync in the session is the first sync ever across all
+// ChromeOS devices and sessions for the associated user.
+class AppListSyncableServiceOnFirstSyncTest
+    : public AppListSyncableServiceTest,
+      public testing::WithParamInterface<
+          /*first_sync_was_first_sync_ever=*/bool> {
+ public:
+  // Returns whether the first sync in the session is the first sync ever across
+  // all ChromeOS devices and sessions for the associated user given test
+  // parameterization.
+  bool first_sync_was_first_sync_ever() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AppListSyncableServiceOnFirstSyncTest,
+                         ::testing::Bool());
+
+// Verifies that `AppListSyncableService::OnFirstSync()` runs callbacks at
+// the expected times and with the expected values.
+TEST_P(AppListSyncableServiceOnFirstSyncTest, OnFirstSync) {
+  syncer::SyncDataList sync_data_list;
+
+  // Populate `sync_data_list` when the first sync in the session should *not*
+  // be the first sync ever across all ChromeOS devices and sessions for the
+  // associated user.
+  if (!first_sync_was_first_sync_ever()) {
+    sync_data_list.push_back(
+        CreateAppRemoteData(GenerateId("item_id"), "item_name",
+                            GenerateId("parent_id"), "ordinal", "pin_ordinal"));
+  }
+
+  // Create a test future for a callback to register *before* the first sync
+  // in the session is completed, and another to register *after*.
+  base::test::TestFuture<bool> before_first_sync_future;
+  base::test::TestFuture<bool> after_first_sync_future;
+
+  // Register a callback *before* the first sync in the session is completed.
+  app_list_syncable_service()->OnFirstSync(
+      before_first_sync_future.GetCallback());
+
+  // Complete the first sync in the session.
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, sync_data_list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
+
+  // Register a callback *after* the first sync in the session is completed.
+  app_list_syncable_service()->OnFirstSync(
+      after_first_sync_future.GetCallback());
+
+  // Neither callback should have run since callbacks are posted.
+  EXPECT_FALSE(before_first_sync_future.IsReady());
+  EXPECT_FALSE(after_first_sync_future.IsReady());
+
+  // When run, callbacks should reflect whether the first sync in the session
+  // was the first sync ever across all ChromeOS devices and sessions for the
+  // associated user.
+  EXPECT_EQ(before_first_sync_future.Get(), first_sync_was_first_sync_ever());
+  EXPECT_EQ(after_first_sync_future.Get(), first_sync_was_first_sync_ever());
 }
 
 }  // namespace app_list
