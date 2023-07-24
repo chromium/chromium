@@ -819,5 +819,11 @@
   <message name="IDS_PAGE_INFO_COOKIES_PERMANENT_ALLOWED_DESCRIPTION" translateable="false" desc="">
     This means that most site features should work, but you have less protection
   </message>
+  <message name="IDS_PAGE_INFO_COOKIES_THIRD_PARTY_COOKIES_ALLOWED_TOGGLE_A11Y" translateable="false" desc="">
+    Third-party cookies, {NUM_COOKIES, plural, =0 {No sites allowed} =1 {1 site allowed} other {# sites allowed}}
+  </message>
+  <message name="IDS_PAGE_INFO_COOKIES_THIRD_PARTY_COOKIES_BLOCKED_TOGGLE_A11Y" translateable="false" desc="">
+    Third-party cookies, {NUM_COOKIES, plural, =0 {No sites blocked} =1 {1 site blocked} other {# sites blocked}}
+  </message>
 
 </grit-part>

@@ -35,7 +35,7 @@ std::u16string GetManageButtonSubtitle(views::View* content_view) {
   return managed_button_subtitle->GetText();
 }
 
-const char* GetVectorIconName(NonAccessibleImageView* image_view) {
+const char* GetVectorIconName(views::ImageView* image_view) {
   return image_view->GetImageModel().GetVectorIcon().vector_icon()->name;
 }
 
@@ -112,7 +112,7 @@ class PageInfoCookiesContentViewTest
     return content_view_->third_party_cookies_toggle_;
   }
 
-  NonAccessibleImageView* third_party_cookies_enforced_icon() {
+  views::ImageView* third_party_cookies_enforced_icon() {
     return content_view_->third_party_cookies_enforced_icon_;
   }
 
