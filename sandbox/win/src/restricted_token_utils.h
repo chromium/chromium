@@ -51,10 +51,6 @@ absl::optional<base::win::AccessToken> CreateRestrictedToken(
 // the error.
 DWORD HardenTokenIntegrityLevelPolicy(const base::win::AccessToken& token);
 
-// Returns true if a low IL token can access the current desktop, false
-// otherwise.
-bool CanLowIntegrityAccessDesktop();
-
 }  // namespace sandbox
 
 #endif  // SANDBOX_WIN_SRC_RESTRICTED_TOKEN_UTILS_H_
