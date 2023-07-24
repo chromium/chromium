@@ -6016,7 +6016,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Extensions
       </message>
       <message name="IDS_EXTENSIONS_MENU_CONTEXT_MENU_TOOLTIP" desc="Title of the context menu for individual extensions in the Extensions Menu">
-        More actions
+          more options
+      </message>
+      <message name="IDS_EXTENSIONS_MENU_CONTEXT_MENU_TOOLTIP_ACCESSIBLE_NAME" desc="Title of the context menu for individual extensions in the Extensions Menu">
+          <ph name="EXTENSION_NAME">Select to see more options for $1<ex>MyExtension</ex></ph>
       </message>
       <message name="IDS_EXTENSIONS_MENU_PIN_BUTTON_TOOLTIP" desc="The tooltip for the pinning button for individual extensions in the Extensions Menu">
         Pin extension

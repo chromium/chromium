@@ -155,7 +155,10 @@ ExtensionMenuItemView::ExtensionMenuItemView(
                       ChromeLayoutProvider::Get()->GetDistanceMetric(
                           DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN)))
                   .SetTooltipText(l10n_util::GetStringUTF16(
-                      IDS_EXTENSIONS_MENU_CONTEXT_MENU_TOOLTIP)));
+                      IDS_EXTENSIONS_MENU_CONTEXT_MENU_TOOLTIP))
+                  .SetAccessibleName(l10n_util::GetStringFUTF16(
+                      IDS_EXTENSIONS_MENU_CONTEXT_MENU_TOOLTIP_ACCESSIBLE_NAME,
+                      controller_->GetActionName())));
 
   if (allow_pinning) {
     // Pin button should be in between `primary_action_button_` and
