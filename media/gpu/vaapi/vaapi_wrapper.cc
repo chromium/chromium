@@ -120,7 +120,7 @@ enum class VaapiFunctions {
   kVAQueryConfigAttributes = 16,
   kVAQueryImageFormats = 17,
   kVAQuerySurfaceAttributes = 18,
-  kVAQueryVideoProcPipelineCaps = 19,
+  // kVAQueryVideoProcPipelineCaps = 19,  // UNUSED.
   kVARenderPicture_VABuffers = 20,
   kVARenderPicture_Vpp = 21,
   kVASyncSurface = 22,
@@ -145,38 +145,39 @@ void ReportVaapiErrorToUMA(const std::string& histogram_name,
 
 constexpr std::array<const char*,
                      static_cast<size_t>(VaapiFunctions::kMaxValue) + 1>
-    kVaapiFunctionNames = {"vaBeginPicture",
-                           "vaCreateBuffer",
-                           "vaCreateConfig",
-                           "vaCreateContext",
-                           "vaCreateImage",
-                           "vaCreateSurfaces (allocate mode)",
-                           "vaCreateSurfaces (import mode)",
-                           "vaDestroyBuffer",
-                           "vaDestroyConfig",
-                           "vaDestroyContext",
-                           "vaDestroySurfaces",
-                           "vaEndPicture",
-                           "vaExportSurfaceHandle",
-                           "vaGetConfigAttributes",
-                           "vaPutImage",
-                           "vaPutSurface",
-                           "vaQueryConfigAttributes",
-                           "vaQueryImageFormats",
-                           "vaQuerySurfaceAttributes",
-                           "vaQueryVideoProcPipelineCaps",
-                           "vaRenderPicture (|pending_va_buffers_|)",
-                           "vaRenderPicture using Vpp",
-                           "vaSyncSurface",
-                           "vaTerminate",
-                           "vaUnmapBuffer",
-                           "vaCreateProtectedSession",
-                           "vaDestroyProtectedSession",
-                           "vaAttachProtectedSession",
-                           "vaDetachProtectedSession",
-                           "vaProtectedSessionHwUpdate (Deprecated)",
-                           "vaProtectedSessionExecute",
-                           "Other VA function"};
+    kVaapiFunctionNames = {
+        "vaBeginPicture",
+        "vaCreateBuffer",
+        "vaCreateConfig",
+        "vaCreateContext",
+        "vaCreateImage",
+        "vaCreateSurfaces (allocate mode)",
+        "vaCreateSurfaces (import mode)",
+        "vaDestroyBuffer",
+        "vaDestroyConfig",
+        "vaDestroyContext",
+        "vaDestroySurfaces",
+        "vaEndPicture",
+        "vaExportSurfaceHandle",
+        "vaGetConfigAttributes",
+        "vaPutImage",
+        "",  // UNUSED (used to be vaPutSurface).
+        "vaQueryConfigAttributes",
+        "vaQueryImageFormats",
+        "vaQuerySurfaceAttributes",
+        "",  // UNUSED (used to be vaQueryVideoProcPipelineCaps).
+        "vaRenderPicture (|pending_va_buffers_|)",
+        "vaRenderPicture using Vpp",
+        "vaSyncSurface",
+        "vaTerminate",
+        "vaUnmapBuffer",
+        "vaCreateProtectedSession",
+        "vaDestroyProtectedSession",
+        "vaAttachProtectedSession",
+        "vaDetachProtectedSession",
+        "vaProtectedSessionHwUpdate (Deprecated)",
+        "vaProtectedSessionExecute",
+        "Other VA function"};
 
 // Translates |function| into a human readable string for logging.
 const char* VaapiFunctionName(VaapiFunctions function) {
@@ -3089,29 +3090,10 @@ bool VaapiWrapper::GetSupportedPackedHeaders(VideoCodecProfile profile,
   return true;
 }
 
-bool VaapiWrapper::IsRotationSupported() {
-  CHECK(!enforce_sequence_affinity_ ||
-        sequence_checker_.CalledOnValidSequence());
-  base::AutoLockMaybe auto_lock(va_lock_.get());
-  VAProcPipelineCaps pipeline_caps;
-  memset(&pipeline_caps, 0, sizeof(pipeline_caps));
-  VAStatus va_res = vaQueryVideoProcPipelineCaps(va_display_, va_context_id_,
-                                                 nullptr, 0, &pipeline_caps);
-  VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVAQueryVideoProcPipelineCaps,
-                       false);
-
-  if (!pipeline_caps.rotation_flags) {
-    DVLOG(2) << "VA-API driver doesn't support any rotation";
-    return false;
-  }
-  return true;
-}
-
 bool VaapiWrapper::BlitSurface(const VASurface& va_surface_src,
                                const VASurface& va_surface_dest,
                                absl::optional<gfx::Rect> src_rect,
-                               absl::optional<gfx::Rect> dest_rect,
-                               VideoRotation rotation
+                               absl::optional<gfx::Rect> dest_rect
 #if BUILDFLAG(IS_CHROMEOS_ASH)
                                ,
                                VAProtectedSessionID va_protected_session_id
@@ -3168,21 +3150,7 @@ bool VaapiWrapper::BlitSurface(const VASurface& va_surface_src,
     pipeline_param->output_background_color = 0xff000000;
     pipeline_param->output_color_standard = VAProcColorStandardNone;
     pipeline_param->filter_flags = VA_FILTER_SCALING_DEFAULT;
-
-    switch (rotation) {
-      case VIDEO_ROTATION_0:
-        pipeline_param->rotation_state = VA_ROTATION_NONE;
-        break;
-      case VIDEO_ROTATION_90:
-        pipeline_param->rotation_state = VA_ROTATION_90;
-        break;
-      case VIDEO_ROTATION_180:
-        pipeline_param->rotation_state = VA_ROTATION_180;
-        break;
-      case VIDEO_ROTATION_270:
-        pipeline_param->rotation_state = VA_ROTATION_270;
-        break;
-    }
+    pipeline_param->rotation_state = VA_ROTATION_NONE;
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

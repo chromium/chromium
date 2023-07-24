@@ -685,7 +685,7 @@ TEST_P(VaapiVppTest, BlitWithVAAllocatedSurfaces) {
 
   ASSERT_TRUE(wrapper->BlitSurface(*surface_in, *surface_out,
                                    gfx::Rect(kInputSize),
-                                   gfx::Rect(kOutputSize), VIDEO_ROTATION_0));
+                                   gfx::Rect(kOutputSize)));
   ASSERT_TRUE(wrapper->SyncSurface(scoped_surface_out->id()));
   wrapper->DestroyContext();
 }

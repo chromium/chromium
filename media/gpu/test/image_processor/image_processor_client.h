@@ -48,7 +48,6 @@ class ImageProcessorClient {
       const ImageProcessor::PortConfig& input_config,
       const ImageProcessor::PortConfig& output_config,
       size_t num_buffers,
-      VideoRotation relative_rotation,
       std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors);
 
   ImageProcessorClient(const ImageProcessorClient&) = delete;
@@ -87,14 +86,12 @@ class ImageProcessorClient {
   // |num_buffers|.
   bool CreateImageProcessor(const ImageProcessor::PortConfig& input_config,
                             const ImageProcessor::PortConfig& output_config,
-                            size_t num_buffers,
-                            VideoRotation relative_rotation);
+                            size_t num_buffers);
 
   // Create |image_processor_| on |my_thread_|.
   void CreateImageProcessorTask(const ImageProcessor::PortConfig& input_config,
                                 const ImageProcessor::PortConfig& output_config,
                                 size_t num_buffers,
-                                VideoRotation relative_rotation,
                                 base::WaitableEvent* done);
 
   // Call ImageProcessor::Process() on |my_thread_|.

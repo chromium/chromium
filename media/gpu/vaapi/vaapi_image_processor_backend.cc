@@ -65,7 +65,6 @@ std::unique_ptr<ImageProcessorBackend> VaapiImageProcessorBackend::Create(
     const PortConfig& input_config,
     const PortConfig& output_config,
     OutputMode output_mode,
-    VideoRotation relative_rotation,
     ErrorCB error_cb) {
   DCHECK_EQ(output_mode, OutputMode::IMPORT)
       << "Only OutputMode::IMPORT supported";
@@ -85,30 +84,6 @@ std::unique_ptr<ImageProcessorBackend> VaapiImageProcessorBackend::Create(
     return nullptr;
   }
 
-  if (relative_rotation != VIDEO_ROTATION_0) {
-    // Tests to see if the platform supports rotation.
-    auto vaapi_wrapper =
-        VaapiWrapper::Create(VaapiWrapper::kVideoProcess, VAProfileNone,
-                             EncryptionScheme::kUnencrypted, base::DoNothing());
-
-    if (!vaapi_wrapper) {
-      VLOGF(2) << "Failed to create VaapiWrapper";
-      return nullptr;
-    }
-
-    // Size is irrelevant for a VPP context.
-    if (!vaapi_wrapper->CreateContext(gfx::Size())) {
-      VLOGF(2) << "Failed to create context for VPP";
-      return nullptr;
-    }
-
-    if (!vaapi_wrapper->IsRotationSupported()) {
-      VLOGF(2) << "VaapiImageProcessorBackend does not support rotation on this"
-                  "platform";
-      return nullptr;
-    }
-  }
-
   // We should restrict the acceptable PortConfig for input and output both to
   // the one returned by GetPlatformVideoFrameLayout(). However,
   // ImageProcessorFactory interface doesn't provide information about what
@@ -118,20 +93,17 @@ std::unique_ptr<ImageProcessorBackend> VaapiImageProcessorBackend::Create(
   // TODO(crbug.com/898423): Adjust layout once ImageProcessor provide the use
   // scenario.
   return base::WrapUnique<ImageProcessorBackend>(new VaapiImageProcessorBackend(
-      input_config, output_config, OutputMode::IMPORT, relative_rotation,
-      std::move(error_cb)));
+      input_config, output_config, OutputMode::IMPORT, std::move(error_cb)));
 }
 
 VaapiImageProcessorBackend::VaapiImageProcessorBackend(
     const PortConfig& input_config,
     const PortConfig& output_config,
     OutputMode output_mode,
-    VideoRotation relative_rotation,
     ErrorCB error_cb)
     : ImageProcessorBackend(input_config,
                             output_config,
                             output_mode,
-                            relative_rotation,
                             std::move(error_cb),
                             base::ThreadPool::CreateSequencedTaskRunner(
                                 {base::TaskPriority::USER_VISIBLE})) {}
@@ -220,9 +192,6 @@ void VaapiImageProcessorBackend::Process(scoped_refptr<VideoFrame> input_frame,
       return;
     }
 
-    CHECK(relative_rotation_ == VIDEO_ROTATION_0 ||
-          vaapi_wrapper->IsRotationSupported());
-
     vaapi_wrapper_ = std::move(vaapi_wrapper);
   }
 
@@ -266,14 +235,14 @@ void VaapiImageProcessorBackend::Process(scoped_refptr<VideoFrame> input_frame,
   }
 
   // VA-API performs pixel format conversion and scaling without any filters.
-  if (!vaapi_wrapper_->BlitSurface(
-          *src_va_surface, *dst_va_surface, input_frame->visible_rect(),
-          output_frame->visible_rect(), relative_rotation_
+  if (!vaapi_wrapper_->BlitSurface(*src_va_surface, *dst_va_surface,
+                                   input_frame->visible_rect(),
+                                   output_frame->visible_rect()
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-          ,
-          va_protected_session_id
+                                       ,
+                                   va_protected_session_id
 #endif
-          )) {
+                                   )) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (use_protected &&
         vaapi_wrapper_->IsProtectedSessionDead(va_protected_session_id)) {

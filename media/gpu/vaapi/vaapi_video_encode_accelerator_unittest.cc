@@ -177,24 +177,21 @@ class MockVaapiWrapper : public VaapiWrapper {
   MOCK_METHOD0(DestroyContext, void());
   MOCK_METHOD1(DestroySurface, void(VASurfaceID));
 
-  MOCK_METHOD5(DoBlitSurface,
+  MOCK_METHOD4(DoBlitSurface,
                bool(const VASurface&,
                     const VASurface&,
                     absl::optional<gfx::Rect>,
-                    absl::optional<gfx::Rect>,
-                    VideoRotation));
+                    absl::optional<gfx::Rect>));
   bool BlitSurface(const VASurface& va_surface_src,
                    const VASurface& va_surface_dest,
                    absl::optional<gfx::Rect> src_rect = absl::nullopt,
-                   absl::optional<gfx::Rect> dest_rect = absl::nullopt,
-                   VideoRotation rotation = VIDEO_ROTATION_0
+                   absl::optional<gfx::Rect> dest_rect = absl::nullopt
 #if BUILDFLAG(IS_CHROMEOS_ASH)
                    ,
                    VAProtectedSessionID va_protected_session_id = VA_INVALID_ID
 #endif
                    ) override {
-    return DoBlitSurface(va_surface_src, va_surface_dest, src_rect, dest_rect,
-                         rotation);
+    return DoBlitSurface(va_surface_src, va_surface_dest, src_rect, dest_rect);
   }
 
  private:
@@ -587,8 +584,7 @@ class VaapiVideoEncodeAcceleratorTest
         absl::optional<gfx::Rect> src_rect = gfx::Rect(svc_resolutions[i + 1]);
         absl::optional<gfx::Rect> layer_rect = gfx::Rect(svc_resolutions[i]);
         EXPECT_CALL(*mock_vpp_vaapi_wrapper_,
-                    DoBlitSurface(_, _, src_rect, layer_rect,
-                                  VideoRotation::VIDEO_ROTATION_0))
+                    DoBlitSurface(_, _, src_rect, layer_rect))
             .WillOnce(Return(true));
       }
     }

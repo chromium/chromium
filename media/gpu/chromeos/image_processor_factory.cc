@@ -79,8 +79,8 @@ std::unique_ptr<ImageProcessor> CreateVaapiImageProcessorWithInputCandidates(
       {VideoFrame::STORAGE_GPU_MEMORY_BUFFER});
   return ImageProcessor::Create(
       base::BindRepeating(&VaapiImageProcessorBackend::Create), input_config,
-      output_config, ImageProcessor::OutputMode::IMPORT, VIDEO_ROTATION_0,
-      std::move(error_cb), std::move(client_task_runner));
+      output_config, ImageProcessor::OutputMode::IMPORT, std::move(error_cb),
+      std::move(client_task_runner));
 }
 
 #elif BUILDFLAG(USE_V4L2_CODEC)
@@ -195,8 +195,8 @@ std::unique_ptr<ImageProcessor> CreateLibYUVImageProcessorWithInputCandidates(
       {VideoFrame::STORAGE_GPU_MEMORY_BUFFER});
   return ImageProcessor::Create(
       base::BindRepeating(&LibYUVImageProcessorBackend::Create), input_config,
-      output_config, ImageProcessor::OutputMode::IMPORT, VIDEO_ROTATION_0,
-      std::move(error_cb), std::move(client_task_runner));
+      output_config, ImageProcessor::OutputMode::IMPORT, std::move(error_cb),
+      std::move(client_task_runner));
 }
 
 #if defined(ARCH_CPU_ARM_FAMILY)
@@ -220,15 +220,14 @@ std::unique_ptr<ImageProcessor> CreateGLImageProcessorWithInputCandidates(
       Fourcc(Fourcc::NV12), output_size, /*planes=*/{}, gfx::Rect(output_size),
       {VideoFrame::STORAGE_GPU_MEMORY_BUFFER});
 
-  if (!GLImageProcessorBackend::IsSupported(input_config, output_config,
-                                            VIDEO_ROTATION_0)) {
+  if (!GLImageProcessorBackend::IsSupported(input_config, output_config)) {
     return nullptr;
   }
 
   return ImageProcessor::Create(
       base::BindRepeating(&GLImageProcessorBackend::Create), input_config,
-      output_config, ImageProcessor::OutputMode::IMPORT, VIDEO_ROTATION_0,
-      std::move(error_cb), std::move(client_task_runner));
+      output_config, ImageProcessor::OutputMode::IMPORT, std::move(error_cb),
+      std::move(client_task_runner));
 }
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
 #endif
@@ -241,7 +240,6 @@ std::unique_ptr<ImageProcessor> ImageProcessorFactory::Create(
     const ImageProcessor::PortConfig& output_config,
     ImageProcessor::OutputMode output_mode,
     size_t num_buffers,
-    VideoRotation relative_rotation,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
     ImageProcessor::ErrorCB error_cb) {
   std::vector<ImageProcessor::CreateBackendCB> create_funcs;
@@ -260,7 +258,7 @@ std::unique_ptr<ImageProcessor> ImageProcessorFactory::Create(
   for (auto& create_func : create_funcs) {
     image_processor = ImageProcessor::Create(
         std::move(create_func), input_config, output_config, output_mode,
-        relative_rotation, error_cb, client_task_runner);
+        error_cb, client_task_runner);
     if (image_processor)
       return image_processor;
   }

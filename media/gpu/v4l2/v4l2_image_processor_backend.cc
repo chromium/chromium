@@ -120,13 +120,11 @@ V4L2ImageProcessorBackend::V4L2ImageProcessorBackend(
     v4l2_memory input_memory_type,
     v4l2_memory output_memory_type,
     OutputMode output_mode,
-    VideoRotation relative_rotation,
     size_t num_buffers,
     ErrorCB error_cb)
     : ImageProcessorBackend(input_config,
                             output_config,
                             output_mode,
-                            relative_rotation,
                             std::move(error_cb),
                             base::ThreadPool::CreateSequencedTaskRunner(
                                 {base::TaskPriority::USER_VISIBLE})),
@@ -233,7 +231,6 @@ std::unique_ptr<ImageProcessorBackend> V4L2ImageProcessorBackend::Create(
     const PortConfig& input_config,
     const PortConfig& output_config,
     OutputMode output_mode,
-    VideoRotation relative_rotation,
     ErrorCB error_cb) {
   VLOGF(2);
   DCHECK_GT(num_buffers, 0u);
@@ -293,12 +290,6 @@ std::unique_ptr<ImageProcessorBackend> V4L2ImageProcessorBackend::Create(
 
   if (!device->IsImageProcessingSupported()) {
     VLOGF(1) << "V4L2ImageProcessorBackend not supported in this platform";
-    return nullptr;
-  }
-
-  // V4L2IP now doesn't support rotation case, so return nullptr.
-  if (relative_rotation != VIDEO_ROTATION_0) {
-    VLOGF(1) << "Currently V4L2IP doesn't support rotation";
     return nullptr;
   }
 
@@ -423,8 +414,8 @@ std::unique_ptr<ImageProcessorBackend> V4L2ImageProcessorBackend::Create(
           PortConfig(output_config.fourcc, negotiated_output_size,
                      output_planes, output_config.visible_rect,
                      {output_storage_type}),
-          input_memory_type, output_memory_type, output_mode, relative_rotation,
-          num_buffers, std::move(error_cb)));
+          input_memory_type, output_memory_type, output_mode, num_buffers,
+          std::move(error_cb)));
 
   // Initialize at |backend_task_runner|.
   bool success = false;

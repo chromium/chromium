@@ -56,7 +56,6 @@ class MEDIA_GPU_EXPORT ImageProcessor {
           const PortConfig& input_config,
           const PortConfig& output_config,
           OutputMode output_mode,
-          VideoRotation relative_rotation,
           ErrorCB error_cb)>;
 
   static std::unique_ptr<ImageProcessor> Create(
@@ -64,7 +63,6 @@ class MEDIA_GPU_EXPORT ImageProcessor {
       const PortConfig& input_config,
       const PortConfig& output_config,
       OutputMode output_mode,
-      VideoRotation relative_rotation,
       ErrorCB error_cb,
       scoped_refptr<base::SequencedTaskRunner> client_task_runner);
 

@@ -39,7 +39,6 @@ VAStatus vaQueryConfigProfiles(VADisplay dpy, VAProfile *profile_list, int *num_
 VAStatus vaQueryImageFormats(VADisplay dpy, VAImageFormat *format_list, int *num_formats);
 VAStatus vaQuerySurfaceAttributes(VADisplay dpy, VAConfigID config, VASurfaceAttrib *attrib_list, unsigned int *num_attribs);
 const char* vaQueryVendorString(VADisplay dpy);
-VAStatus vaQueryVideoProcPipelineCaps(VADisplay dpy, VAContextID context, VABufferID *filters, unsigned int num_filters, VAProcPipelineCaps *pipeline_caps);
 VAStatus vaRenderPicture(VADisplay dpy, VAContextID context, VABufferID *buffers, int num_buffers);
 VAStatus vaSyncSurface(VADisplay dpy, VASurfaceID render_target);
 VAStatus vaTerminate(VADisplay dpy);

@@ -92,7 +92,7 @@ std::unique_ptr<ImageProcessor> CreateImageProcessor(
                                  visible_rect, {VideoFrame::STORAGE_DMABUFS}),
       ImageProcessor::PortConfig(ip_output_format, ip_output_coded_size, {},
                                  visible_rect, {output_storage_type}),
-      image_processor_output_mode, VIDEO_ROTATION_0, std::move(error_cb),
+      image_processor_output_mode, std::move(error_cb),
       std::move(client_task_runner));
   if (!image_processor)
     return nullptr;

@@ -380,7 +380,6 @@ void VaapiMjpegDecodeAccelerator::Decoder::CreateImageProcessor(
   // Therefore, base::Unretained(this) is safe.
   image_processor_ = LibYUVImageProcessorBackend::CreateWithTaskRunner(
       input_config, output_config, ImageProcessorBackend::OutputMode::IMPORT,
-      VIDEO_ROTATION_0,
       base::BindRepeating(
           &VaapiMjpegDecodeAccelerator::Decoder::OnImageProcessorError,
           base::Unretained(this)),
