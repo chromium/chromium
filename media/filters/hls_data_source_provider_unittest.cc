@@ -90,7 +90,7 @@ TEST(HlsDataSourceStreamUnittest, TestReadAllFromUnlimitedStream) {
         ASSERT_TRUE(result.has_value());
         auto stream = std::move(result).value();
         ASSERT_TRUE(stream.CanReadMore());
-        ASSERT_EQ(stream.BytesInBuffer(), (size_t)0xFFFF);
+        ASSERT_EQ(stream.BytesInBuffer(), 0x4000u);
         // make sure it's repeating.
         for (int i = 0; i < 4; i++) {
           ASSERT_EQ(stream.AsStringPiece()[i * 44 + 0], 'T');
@@ -125,7 +125,7 @@ TEST(HlsDataSourceStreamUnittest, TestReadDefaultChunkFromUnlimitedStream) {
         ASSERT_TRUE(result.has_value());
         auto stream = std::move(result).value();
         ASSERT_TRUE(stream.CanReadMore());
-        ASSERT_EQ(stream.BytesInBuffer(), (size_t)0xFFFF);
+        ASSERT_EQ(stream.BytesInBuffer(), 0x4000u);
         // make sure it's repeating.
         for (int i = 0; i < 4; i++) {
           ASSERT_EQ(stream.AsStringPiece()[i * 44 + 0], 'T');
@@ -234,7 +234,7 @@ TEST(HlsDataSourceStreamUnittest, ReadAllFromMultiChunkStreamUnknownLength) {
         ASSERT_TRUE(result.has_value());
         auto stream = std::move(result).value();
         ASSERT_TRUE(stream.CanReadMore());
-        ASSERT_EQ(stream.BytesInBuffer(), (size_t)0xFFFF);
+        ASSERT_EQ(stream.BytesInBuffer(), 0x4000u);
 
         // clear the buffer
         stream.Flush();
@@ -246,7 +246,7 @@ TEST(HlsDataSourceStreamUnittest, ReadAllFromMultiChunkStreamUnknownLength) {
               auto stream = std::move(res).value();
               // 0xFFFF * 2 is still less than stream size.
               ASSERT_TRUE(stream.CanReadMore());
-              ASSERT_EQ(stream.BytesInBuffer(), (size_t)0xFFFF);
+              ASSERT_EQ(stream.BytesInBuffer(), 0x4000u);
             }));
       }));
 }

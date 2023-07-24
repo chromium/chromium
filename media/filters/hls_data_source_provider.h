@@ -22,7 +22,7 @@ namespace {
 
 // A small-ish size that it should probably be able to get most manifests in
 // a single chunk. Chosen somewhat arbitrarily otherwise.
-constexpr size_t kDefaultReadSize = 0xFFFF;
+constexpr size_t kDefaultReadSize = 1024 * 16;
 
 }  // namespace
 
