@@ -315,7 +315,10 @@ void ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
   ScrollOffset previous_offset = GetScrollOffset();
 
   ScrollOffset clamped_offset = ClampScrollOffset(offset);
-  if (clamped_offset == previous_offset &&
+  if (previous_offset ==
+          (ShouldUseIntegerScrollOffset()
+               ? ScrollOffset(gfx::ToFlooredVector2d(clamped_offset))
+               : clamped_offset) &&
       scroll_type != mojom::blink::ScrollType::kProgrammatic) {
     std::move(run_scroll_complete_callbacks)
         .Run(ScrollCompletionMode::kZeroDelta);
@@ -482,7 +485,9 @@ void ScrollableArea::ProgrammaticScrollHelper(
     CancelScrollAnimation();
   }
 
-  if (offset == GetScrollOffset()) {
+  if (GetScrollOffset() == (ShouldUseIntegerScrollOffset()
+                                ? ScrollOffset(gfx::ToFlooredVector2d(offset))
+                                : offset)) {
     CancelProgrammaticScrollAnimation();
     if (on_finish)
       std::move(on_finish).Run(ScrollCompletionMode::kZeroDelta);
