@@ -17,6 +17,7 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/animation/tween.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_types.h"
 #include "ui/message_center/notification_view_controller.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
@@ -281,6 +282,10 @@ MessagePopupView* MessagePopupCollection::GetPopupViewForNotificationID(
   return nullptr;
 }
 
+size_t MessagePopupCollection::GetPopupItemsCount() {
+  return popup_items_.size();
+}
+
 bool MessagePopupCollection::AdjustAndEvaluateShouldDisplayPopupItem(
     const PopupItem& item) {
   // We will not display the popup if its y-edge is outside of the work area.
@@ -318,6 +323,21 @@ void MessagePopupCollection::RestartPopupTimers() {
 
 void MessagePopupCollection::PausePopupTimers() {
   MessageCenter::Get()->PausePopupTimers();
+}
+
+void MessagePopupCollection::CloseAllPopupsNow() {
+  for (auto& item : popup_items_) {
+    item.is_animating = true;
+
+    // Mark the popup as shown so that the popup item will not re-appear after
+    // any subsequent calls to `GetPopupNotifications()`.
+    MessageCenter::Get()->MarkSinglePopupAsShown(
+        item.id, /*mark_notification_as_read=*/true);
+  }
+  CloseAnimatingPopups();
+
+  state_ = State::IDLE;
+  animation_->End();
 }
 
 void MessagePopupCollection::TransitionFromAnimation() {
@@ -628,15 +648,6 @@ void MessagePopupCollection::ClosePopupsOutsideWorkArea() {
 
 void MessagePopupCollection::RemoveClosedPopupItems() {
   base::EraseIf(popup_items_, [](const auto& item) { return !item.popup; });
-}
-
-void MessagePopupCollection::CloseAllPopupsNow() {
-  for (auto& item : popup_items_)
-    item.is_animating = true;
-  CloseAnimatingPopups();
-
-  state_ = State::IDLE;
-  animation_->End();
 }
 
 bool MessagePopupCollection::CollapseAllPopups() {

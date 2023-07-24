@@ -1091,12 +1091,13 @@ TEST_P(AshMessagePopupCollectionTest, MoveDownPopupWhenBubbleHeightChanged) {
                                      bubble_bounds.width(),
                                      bubble_bounds.height() + 100));
 
-  // The popup should move down because there's not enough space.
-  EXPECT_EQ(0, popup_collection->baseline_offset_for_test());
+  // Since there's not enough space to display the popup. It should disappear
+  // and the notification will go to the notification center tray.
+  EXPECT_FALSE(GetLastPopUpAdded());
 
-  // The popup is adjusted to be at the baseline without the offset.
-  EXPECT_EQ(popup->GetBoundsInScreen().bottom(),
-            popup_collection->GetBaseline());
+  // Baseline offset should be set to be on top of the bubble again.
+  EXPECT_EQ(bubble_view->height() + message_center::kMarginBetweenPopups,
+            popup_collection->baseline_offset_for_test());
 }
 
 TEST_P(AshMessagePopupCollectionTest,
@@ -1132,12 +1133,14 @@ TEST_P(AshMessagePopupCollectionTest,
             gfx::Rect(bubble_bounds.x(), bubble_bounds.y() - 100,
                       bubble_bounds.width(), bubble_bounds.height() + 100));
 
-        // The popup should move down because there's not enough space.
-        EXPECT_EQ(0, popup_collection->baseline_offset_for_test());
+        // Since there's not enough space to display the popup. The popups
+        // should disappear and the notification will go to the notification
+        // center tray.
+        EXPECT_EQ(0u, popup_collection->GetPopupItemsCount());
 
-        // The popup is adjusted to be at the baseline without the offset.
-        EXPECT_EQ(popup->GetBoundsInScreen().bottom(),
-                  popup_collection->GetBaseline());
+        // Baseline offset should be set to be on top of the bubble again.
+        EXPECT_EQ(bubble_view->height() + message_center::kMarginBetweenPopups,
+                  popup_collection->baseline_offset_for_test());
       };
 
   UpdateDisplay("0+0-801x800,0+800-801x800");
@@ -1233,13 +1236,13 @@ TEST_P(AshMessagePopupCollectionTest, AdjustBaselineForTrayBubbleAndSlider) {
                                      bubble_bounds.width(),
                                      bubble_bounds.height() + 100));
 
-  // The popup should move down because there's not enough space (overlap with
-  // the phone hub tray).
-  EXPECT_EQ(0, popup_collection->baseline_offset_for_test());
+  // Since there's not enough space to display the popup. It should disappear
+  // and the notification will go to the notification center tray.
+  EXPECT_FALSE(GetLastPopUpAdded());
 
-  // The popup is adjusted to be at the baseline without the offset.
-  EXPECT_EQ(popup->GetBoundsInScreen().bottom(),
-            popup_collection->GetBaseline());
+  // Baseline offset should be set to be on top of the bubble again.
+  EXPECT_EQ(bubble_view->height() + message_center::kMarginBetweenPopups,
+            popup_collection->baseline_offset_for_test());
 }
 
 }  // namespace ash

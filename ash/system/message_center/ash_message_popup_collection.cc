@@ -201,7 +201,7 @@ void AshMessagePopupCollection::NotifyPopupCollectionHeightChanged() {
     return;
   }
 
-  AdjustBaselineBasedOnShelfPodBubble();
+  AdjustBaselineBasedOnShelfPodBubble(/*triggered_by_bubble_change=*/false);
 }
 
 bool AshMessagePopupCollection::AdjustAndEvaluateShouldDisplayPopupItem(
@@ -283,12 +283,12 @@ void AshMessagePopupCollection::OnTabletModeEnded() {
 void AshMessagePopupCollection::OnStatusAreaAnchoredBubbleVisibilityChanged(
     TrayBubbleView* tray_bubble,
     bool visible) {
-  AdjustBaselineBasedOnBubble(tray_bubble, visible);
+  AdjustBaselineBasedOnBubbleChange(tray_bubble, /*bubble_visible=*/visible);
 }
 
 void AshMessagePopupCollection::OnTrayBubbleBoundsChanged(
     TrayBubbleView* tray_bubble) {
-  AdjustBaselineBasedOnBubble(tray_bubble, /*visible=*/true);
+  AdjustBaselineBasedOnBubbleChange(tray_bubble, /*bubble_visible=*/true);
 }
 
 bool AshMessagePopupCollection::IsWidgetAPopupNotification(
@@ -351,23 +351,24 @@ void AshMessagePopupCollection::UpdateWorkArea() {
   ResetBounds();
 }
 
-void AshMessagePopupCollection::AdjustBaselineBasedOnBubble(
+void AshMessagePopupCollection::AdjustBaselineBasedOnBubbleChange(
     TrayBubbleView* tray_bubble,
-    bool visible) {
+    bool bubble_visible) {
   if (!features::IsQsRevampEnabled()) {
     return;
   }
 
   if (tray_bubble && tray_bubble->GetBubbleType() ==
                          TrayBubbleView::TrayBubbleType::kSecondaryBubble) {
-    AdjustBaselineBasedOnSecondaryBubble(tray_bubble, visible);
+    AdjustBaselineBasedOnSecondaryBubble(tray_bubble, bubble_visible);
     return;
   }
 
-  AdjustBaselineBasedOnShelfPodBubble();
+  AdjustBaselineBasedOnShelfPodBubble(/*triggered_by_bubble_change=*/true);
 }
 
-void AshMessagePopupCollection::AdjustBaselineBasedOnShelfPodBubble() {
+void AshMessagePopupCollection::AdjustBaselineBasedOnShelfPodBubble(
+    bool triggered_by_bubble_change) {
   CHECK(features::IsQsRevampEnabled());
 
   auto* status_area = StatusAreaWidget::ForWindow(shelf_->GetWindow());
@@ -383,13 +384,22 @@ void AshMessagePopupCollection::AdjustBaselineBasedOnShelfPodBubble() {
 
   // If there's not enough space above the tray bubble to display the entire
   // popup collection (the portion of the screen from 0 to the origin of the
-  // tray bubble), we will just display the popup on top of the tray bubble
-  // (adjust the baseline back to zero and move down the popups).
+  // tray bubble), we will close the popups if possible. Otherwise, we will just
+  // display the popup on top of the tray bubble (adjust the baseline back to
+  // zero and move down the popups).
   if (shelf_pod_bubble->GetBoundsInScreen().y() -
           message_center::kMarginBetweenPopups <
       popup_collection_bounds().height()) {
-    SetBaselineOffset(0);
-    MoveDownPopups();
+    // We want to avoid showing tray bubble and popups overlapping with each
+    // other. Thus, when this function is triggered by a change that happens in
+    // the bubble (bubble size or visibility changed), we will close the popup.
+    if (triggered_by_bubble_change) {
+      CloseAllPopupsNow();
+      ResetBounds();
+    } else {
+      SetBaselineOffset(0);
+      MoveDownPopups();
+    }
     return;
   }
 

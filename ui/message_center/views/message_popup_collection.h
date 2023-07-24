@@ -5,6 +5,7 @@
 #ifndef UI_MESSAGE_CENTER_VIEWS_MESSAGE_POPUP_COLLECTION_H_
 #define UI_MESSAGE_CENTER_VIEWS_MESSAGE_POPUP_COLLECTION_H_
 
+#include <cstddef>
 #include <memory>
 #include <vector>
 
@@ -100,6 +101,8 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
       views::Widget* widget,
       views::Widget::InitParams* init_params) = 0;
 
+  size_t GetPopupItemsCount();
+
   gfx::Rect popup_collection_bounds() { return popup_collection_bounds_; }
 
  protected:
@@ -186,6 +189,9 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   virtual void RestartPopupTimers();
   virtual void PausePopupTimers();
 
+  // Stops all the animation and closes all the popups immediately.
+  void CloseAllPopupsNow();
+
   gfx::LinearAnimation* animation() { return animation_.get(); }
 
  private:
@@ -247,9 +253,6 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   bool CloseTransparentPopups();
   void ClosePopupsOutsideWorkArea();
   void RemoveClosedPopupItems();
-
-  // Stops all the animation and closes all the popups immediately.
-  void CloseAllPopupsNow();
 
   // Collapse all existing popups. Return true if size of any popup is actually
   // changed.

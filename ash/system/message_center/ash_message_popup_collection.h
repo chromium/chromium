@@ -134,12 +134,16 @@ class ASH_EXPORT AshMessagePopupCollection
   void UpdateWorkArea();
 
   // Makes changes to the baseline based on the visibility/bounds change of
-  // the current open bubble.
-  void AdjustBaselineBasedOnBubble(TrayBubbleView* tray_bubble, bool visible);
+  // the current open bubble. Note that this function is only called by a change
+  // in the bubble (bubble size or visibility changed).
+  void AdjustBaselineBasedOnBubbleChange(TrayBubbleView* tray_bubble,
+                                         bool bubble_visible);
 
-  // Helper functions for `AdjustBaselineBaseOnBubble()`. Applied to shelf pod
-  // bubble.
-  void AdjustBaselineBasedOnShelfPodBubble();
+  // Makes changes to the baseline based on the visibility/bounds change of
+  // the current open shelf pod bubble. `triggered_by_bubble_change` is true if
+  // this function is triggered by a change in the bubble (bubble size or
+  // visibility changed).
+  void AdjustBaselineBasedOnShelfPodBubble(bool triggered_by_bubble_change);
 
   // Helper functions for `AdjustBaselineBaseOnBubble()`. Applied to secondary
   // bubble.
