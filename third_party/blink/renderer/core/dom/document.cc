@@ -6255,25 +6255,13 @@ ScriptPromise Document::hasStorageAccess(ScriptState* script_state) {
       return false;
     }
 
-    // #6: if doc's browsing context is a top-level browsing context, return
-    // true.
-    if (IsInOutermostMainFrame()) {
-      return true;
-    }
-
-    // #7: if the top-level origin of doc's relevant settings object is an
+    // #6: if the top-level origin of doc's relevant settings object is an
     // opaque origin, return false.
     if (TopFrameOrigin()->IsOpaque()) {
       return false;
     }
 
-    // #8: if doc's origin is in the first-party context with the top-level
-    // origin of doc's relevant settings object, return true.
-    if (!SiteForCookies().IsNull()) {
-      return true;
-    }
-
-    // #9 & #10: checks unpartitioned cookie availability with global's `has
+    // #7 - #10: checks unpartitioned cookie availability with global's `has
     // storage access`.
     return CookiesEnabled();
   }());

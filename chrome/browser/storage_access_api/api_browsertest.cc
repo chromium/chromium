@@ -869,6 +869,58 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(ReadCookies(GetNestedFrame(), kHostC), NoCookies());
 }
 
+// Validate that user settings take precedence for the leaf in a A(B(A)) frame
+// tree.
+IN_PROC_BROWSER_TEST_F(
+    StorageAccessAPIBrowserTest,
+    ThirdPartyCookiesIFrameThirdPartyExceptions_CrossSiteAncestorChain) {
+  EnsureUserInteractionOn(kHostA);
+  SetBlockThirdPartyCookies(true);
+  BlockAllCookiesOnHost(kHostA);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/iframe.html");
+  NavigateNestedFrameTo(EchoCookiesURL(kHostA));
+
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetPrimaryMainFrame()));
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
+
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+  // TODO(https://crbug.com/1441133): should EXPECT_FALSE here since 3p cookies
+  // are blocked by user explicitly.
+  EXPECT_TRUE(
+      content::ExecJs(GetNestedFrame(), "document.requestStorageAccess()"));
+
+  EXPECT_EQ(ReadCookiesAndContent(GetNestedFrame(), kHostA),
+            NoCookiesWithContent());
+}
+
+// Validate that user settings take precedence for the leaf in a A(A) frame
+// tree.
+IN_PROC_BROWSER_TEST_F(
+    StorageAccessAPIBrowserTest,
+    ThirdPartyCookiesIFrameThirdPartyExceptions_SameSiteAncestorChain) {
+  EnsureUserInteractionOn(kHostA);
+  SetBlockThirdPartyCookies(true);
+  BlockAllCookiesOnHost(kHostA);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostA));
+
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetPrimaryMainFrame()));
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+  // TODO(https://crbug.com/1441133): should EXPECT_FALSE here since user
+  // explicitly blocks cookies for hostA.
+  EXPECT_TRUE(content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
+
+  EXPECT_EQ(0, prompt_factory()->TotalRequestCount());
+
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostA), NoCookiesWithContent());
+}
+
 // Validates that once a grant is removed access is also removed.
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
                        ThirdPartyGrantsDeletedAccess) {
@@ -891,7 +943,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   // Verify cookie cannot be accessed.
   EXPECT_EQ(ReadCookies(GetFrame(), kHostB), NoCookies());
 
-  NavigateFrameTo(EchoCookiesURL(kHostB));
+  // Access change should be reflected immediately.
   EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 }
