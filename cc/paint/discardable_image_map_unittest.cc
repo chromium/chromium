@@ -57,7 +57,7 @@ using ::testing::Field;
 using ::testing::FloatNear;
 using ::testing::IsEmpty;
 using ::testing::SizeIs;
-using Rects = base::StackVector<gfx::Rect, 1>;
+using Rects = absl::InlinedVector<gfx::Rect, 1>;
 
 struct PositionScaleDrawImage {
   PositionScaleDrawImage(const PaintImage& image,
@@ -294,7 +294,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectNonZeroLayer) {
   // Image not present in the list.
   {
     PaintImage image = CreateDiscardablePaintImage(gfx::Size(500, 500));
-    EXPECT_EQ(image_map.GetRectsForImage(image.stable_id())->size(), 0u);
+    EXPECT_EQ(image_map.GetRectsForImage(image.stable_id()).size(), 0u);
   }
 }
 

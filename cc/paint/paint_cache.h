@@ -11,8 +11,8 @@
 #include <vector>
 
 #include "base/containers/lru_cache.h"
-#include "base/containers/stack_container.h"
 #include "cc/paint/paint_export.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 
@@ -99,7 +99,7 @@ class CC_PAINT_EXPORT ClientPaintCache {
   // List of entries added to the map but not committed since we might fail to
   // send them to the service-side cache. This is necessary to ensure we
   // maintain an accurate mirror of the service-side state.
-  base::StackVector<CacheKey, 1> pending_entries_;
+  absl::InlinedVector<CacheKey, 1> pending_entries_;
 };
 
 class CC_PAINT_EXPORT ServicePaintCache {

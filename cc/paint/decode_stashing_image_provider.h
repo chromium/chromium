@@ -5,10 +5,10 @@
 #ifndef CC_PAINT_DECODE_STASHING_IMAGE_PROVIDER_H_
 #define CC_PAINT_DECODE_STASHING_IMAGE_PROVIDER_H_
 
-#include "base/containers/stack_container.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/paint/image_provider.h"
 #include "cc/paint/paint_export.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
 namespace cc {
 // An ImageProvider that passes decode requests through to the
@@ -34,7 +34,7 @@ class CC_PAINT_EXPORT DecodeStashingImageProvider : public ImageProvider {
 
  private:
   raw_ptr<ImageProvider> source_provider_;
-  base::StackVector<ScopedResult, 1> decoded_images_;
+  absl::InlinedVector<ScopedResult, 1> decoded_images_;
 };
 
 }  // namespace cc

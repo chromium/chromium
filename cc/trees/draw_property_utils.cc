@@ -266,7 +266,7 @@ ConditionalClip ComputeAccumulatedClip(PropertyTrees* property_trees,
   while (target_node->clip_id < clip_node->id) {
     if (parent_chain.size() > 0) {
       // Search the cache.
-      for (size_t i = 0; i < clip_node->cached_clip_rects->size(); ++i) {
+      for (size_t i = 0; i < clip_node->cached_clip_rects.size(); ++i) {
         auto& data = clip_node->cached_clip_rects[i];
         if (data.target_id == target_id) {
           cache_hit = true;
@@ -832,7 +832,7 @@ void ComputeClips(PropertyTrees* property_trees) {
        ++i) {
     ClipNode* clip_node = clip_tree->Node(i);
     // Clear the clip rect cache
-    clip_node->cached_clip_rects->clear();
+    clip_node->cached_clip_rects.clear();
     if (clip_node->id == kViewportPropertyNodeId) {
       clip_node->cached_accumulated_rect_in_screen_space = clip_node->clip;
       continue;

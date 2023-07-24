@@ -1054,7 +1054,7 @@ bool PictureLayerImpl::ShouldAnimate(PaintImage::Id paint_image_id) const {
   const auto& rects = raster_source_->GetDisplayItemList()
                           ->discardable_image_map()
                           .GetRectsForImage(paint_image_id);
-  for (const auto& r : rects.container()) {
+  for (const auto& r : rects) {
     if (r.Intersects(visible_layer_rect()))
       return true;
   }
@@ -2041,8 +2041,9 @@ PictureLayerImpl::InvalidateRegionForImages(
     const auto& rects = raster_source_->GetDisplayItemList()
                             ->discardable_image_map()
                             .GetRectsForImage(image_id);
-    for (const auto& r : rects.container())
+    for (const auto& r : rects) {
       image_invalidation.Union(r);
+    }
   }
   Region invalidation;
   image_invalidation.Swap(&invalidation);

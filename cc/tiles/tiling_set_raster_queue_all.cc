@@ -79,25 +79,26 @@ TilingSetRasterQueueAll::TilingSetRasterQueueAll(
 
   // Set up the stages.
   if (use_low_res_tiling)
-    stages_->push_back(IterationStage(LOW_RES, TilePriority::NOW));
+    stages_.push_back(IterationStage(LOW_RES, TilePriority::NOW));
 
   if (use_high_res_tiling)
-    stages_->push_back(IterationStage(HIGH_RES, TilePriority::NOW));
+    stages_.push_back(IterationStage(HIGH_RES, TilePriority::NOW));
 
   if (use_active_non_ideal_pending_high_res_tiling) {
-    stages_->push_back(
+    stages_.push_back(
         IterationStage(ACTIVE_NON_IDEAL_PENDING_HIGH_RES, TilePriority::NOW));
-    stages_->push_back(
+    stages_.push_back(
         IterationStage(ACTIVE_NON_IDEAL_PENDING_HIGH_RES, TilePriority::SOON));
   }
 
   if (use_high_res_tiling) {
-    stages_->push_back(IterationStage(HIGH_RES, TilePriority::SOON));
-    stages_->push_back(IterationStage(HIGH_RES, TilePriority::EVENTUALLY));
+    stages_.push_back(IterationStage(HIGH_RES, TilePriority::SOON));
+    stages_.push_back(IterationStage(HIGH_RES, TilePriority::EVENTUALLY));
   }
 
-  if (stages_->empty())
+  if (stages_.empty()) {
     return;
+  }
 
   IteratorType index = stages_[current_stage_].iterator_type;
   TilePriority::PriorityBin tile_type = stages_[current_stage_].tile_type;
@@ -118,7 +119,7 @@ void TilingSetRasterQueueAll::MakeTilingIterator(IteratorType type,
 }
 
 bool TilingSetRasterQueueAll::IsEmpty() const {
-  return current_stage_ >= stages_->size();
+  return current_stage_ >= stages_.size();
 }
 
 void TilingSetRasterQueueAll::Pop() {
@@ -145,9 +146,9 @@ const PrioritizedTile& TilingSetRasterQueueAll::Top() const {
 }
 
 void TilingSetRasterQueueAll::AdvanceToNextStage() {
-  DCHECK_LT(current_stage_, stages_->size());
+  DCHECK_LT(current_stage_, stages_.size());
   ++current_stage_;
-  while (current_stage_ < stages_->size()) {
+  while (current_stage_ < stages_.size()) {
     IteratorType index = stages_[current_stage_].iterator_type;
     TilePriority::PriorityBin tile_type = stages_[current_stage_].tile_type;
 

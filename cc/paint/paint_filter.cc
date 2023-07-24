@@ -609,9 +609,9 @@ MatrixConvolutionPaintFilter::MatrixConvolutionPaintFilter(
   DCHECK(kernel_size_.width() >= 0 && kernel_size_.height() >= 0);
   auto len = static_cast<size_t>(kernel_size_.width()) *
              static_cast<size_t>(kernel_size_.height());
-  kernel_->reserve(len);
+  kernel_.reserve(len);
   for (size_t i = 0; i < len; ++i)
-    kernel_->push_back(kernel[i]);
+    kernel_.push_back(kernel[i]);
 
   cached_sk_filter_ = SkImageFilters::MatrixConvolution(
       kernel_size_, kernel, gain_, bias_, kernel_offset_, tile_mode_,
@@ -624,8 +624,7 @@ size_t MatrixConvolutionPaintFilter::SerializedSize() const {
   base::CheckedNumeric<size_t> total_size =
       BaseSerializedSize() + PaintOpWriter::SerializedSize(kernel_size_) +
       PaintOpWriter::SerializedSize<size_t>() +
-      PaintOpWriter::SerializedSizeOfElements(kernel_->data(),
-                                              kernel_->size()) +
+      PaintOpWriter::SerializedSizeOfElements(kernel_.data(), kernel_.size()) +
       PaintOpWriter::SerializedSize(gain_) +
       PaintOpWriter::SerializedSize(bias_) +
       PaintOpWriter::SerializedSize(kernel_offset_) +
@@ -645,9 +644,8 @@ sk_sp<PaintFilter> MatrixConvolutionPaintFilter::SnapshotWithImagesInternal(
 bool MatrixConvolutionPaintFilter::EqualsForTesting(
     const MatrixConvolutionPaintFilter& other) const {
   return kernel_size_ == other.kernel_size_ &&
-         base::ranges::equal(kernel_.container(), other.kernel_.container()) &&
-         gain_ == other.gain_ && bias_ == other.bias_ &&
-         kernel_offset_ == other.kernel_offset_ &&
+         base::ranges::equal(kernel_, other.kernel_) && gain_ == other.gain_ &&
+         bias_ == other.bias_ && kernel_offset_ == other.kernel_offset_ &&
          tile_mode_ == other.tile_mode_ &&
          convolve_alpha_ == other.convolve_alpha_ &&
          AreValuesEqualForTesting(input_, other.input_);  // IN-TEST
@@ -880,8 +878,8 @@ MergePaintFilter::MergePaintFilter(const sk_sp<PaintFilter>* const filters,
   for (int i = 0; i < count; ++i) {
     auto filter =
         image_provider ? Snapshot(filters[i], image_provider) : filters[i];
-    inputs_->push_back(std::move(filter));
-    sk_filters.push_back(GetSkFilter(inputs_->back().get()));
+    inputs_.push_back(std::move(filter));
+    sk_filters.push_back(GetSkFilter(inputs_.back().get()));
   }
 
   cached_sk_filter_ = SkImageFilters::Merge(
@@ -902,7 +900,7 @@ size_t MergePaintFilter::SerializedSize() const {
 sk_sp<PaintFilter> MergePaintFilter::SnapshotWithImagesInternal(
     ImageProvider* image_provider) const {
   return sk_sp<MergePaintFilter>(new MergePaintFilter(
-      &inputs_[0], inputs_->size(), GetCropRect(), image_provider));
+      &inputs_[0], inputs_.size(), GetCropRect(), image_provider));
 }
 
 bool MergePaintFilter::EqualsForTesting(const MergePaintFilter& other) const {
