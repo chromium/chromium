@@ -12,7 +12,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
-#include <limits>
 #elif BUILDFLAG(IS_FUCHSIA)
 #include <zircon/syscalls.h>
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
@@ -33,17 +32,28 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-// #define needed to properly link in RtlGenRandom(), a.k.a. SystemFunction036.
-// See the documentation here:
-// https://msdn.microsoft.com/en-us/library/windows/desktop/aa387694.aspx
-#define SystemFunction036 NTAPI SystemFunction036
-#include <NTSecAPI.h>
-#undef SystemFunction036
+// Prototype for ProcessPrng.
+// See: https://learn.microsoft.com/en-us/windows/win32/seccng/processprng
+extern "C" {
+BOOL WINAPI ProcessPrng(PBYTE pbData, SIZE_T cbData);
+}
 #endif
 
 namespace ipcz::reference_drivers {
 
 namespace {
+
+#if BUILDFLAG(IS_WIN)
+decltype(&ProcessPrng) GetProcessPrng() {
+  HMODULE hmod = LoadLibraryW(L"bcryptprimitives.dll");
+  ABSL_ASSERT(hmod);
+  decltype(&ProcessPrng) process_prng_fn =
+      reinterpret_cast<decltype(&ProcessPrng)>(
+          GetProcAddress(hmod, "ProcessPrng"));
+  ABSL_ASSERT(process_prng_fn);
+  return process_prng_fn;
+}
+#endif
 
 #if defined(OS_POSIX) && !BUILDFLAG(IS_MAC)
 void RandomBytesFromDevUrandom(absl::Span<uint8_t> destination) {
@@ -72,10 +82,8 @@ void RandomBytesFromDevUrandom(absl::Span<uint8_t> destination) {
 
 void RandomBytes(absl::Span<uint8_t> destination) {
 #if BUILDFLAG(IS_WIN)
-  ABSL_ASSERT(destination.size() <= std::numeric_limits<ULONG>::max());
-  const bool ok =
-      RtlGenRandom(destination.data(), static_cast<ULONG>(destination.size()));
-  ABSL_ASSERT(ok);
+  static decltype(&ProcessPrng) process_prng_fn = GetProcessPrng();
+  process_prng_fn(destination.data(), destination.size());
 #elif BUILDFLAG(IS_FUCHSIA)
   zx_cprng_draw(destination.data(), destination.size());
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
