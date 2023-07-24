@@ -243,7 +243,8 @@ void CopyOrMoveIOTaskImpl::VerifyTransfer() {
   // present amongst other logged in users. Ensures managed user's files can't
   // be leaked to a non-managed user's ODFS b/278644796.
   if (ash::cloud_upload::UrlIsOnODFS(profile_,
-                                     progress_->GetDestinationFolder())) {
+                                     progress_->GetDestinationFolder()) &&
+      user_manager::UserManager::Get()->GetLoggedInUsers().size() > 1) {
     // Check none of the logged in users are managed.
     for (auto* user : user_manager::UserManager::Get()->GetLoggedInUsers()) {
       Profile* user_profile = Profile::FromBrowserContext(
