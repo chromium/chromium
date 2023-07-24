@@ -298,15 +298,15 @@ HomeButton::HomeButton(Shelf* shelf)
   button_image_view_ =
       AddChildViewAt(std::make_unique<ButtonImageView>(&controller_), 0);
 
-  if (features::IsHomeButtonWithTextEnabled() &&
-      !features::IsHomeButtonQuickAppAccessEnabled()) {
+  if (features::IsHomeButtonWithTextEnabled()) {
     // Directly shows the nudge label if the text-in-shelf feature is enabled.
     CreateNudgeLabel();
     expandable_container_->SetVisible(true);
     shelf_->shelf_layout_manager()->LayoutShelf(false);
   }
 
-  if (features::IsHomeButtonQuickAppAccessEnabled()) {
+  if (features::IsHomeButtonQuickAppAccessEnabled() &&
+      !features::IsHomeButtonWithTextEnabled()) {
     shell_observation_.Observe(Shell::Get());
     app_list_model_observation_.Observe(AppListModelProvider::Get());
     quick_app_model_observation_.Observe(
