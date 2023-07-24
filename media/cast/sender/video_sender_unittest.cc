@@ -30,6 +30,7 @@
 #include "media/cast/test/fake_video_encode_accelerator_factory.h"
 #include "media/cast/test/utility/default_config.h"
 #include "media/cast/test/utility/video_utility.h"
+#include "media/mojo/clients/mock_mojo_video_encoder_metrics_provider.h"
 #include "media/video/fake_video_encode_accelerator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -110,20 +111,22 @@ void IgnorePlayoutDelayChanges(base::TimeDelta unused_playout_delay) {}
 
 class PeerVideoSender : public VideoSender {
  public:
-  PeerVideoSender(
-      scoped_refptr<CastEnvironment> cast_environment,
-      const FrameSenderConfig& video_config,
-      const StatusChangeCallback& status_change_cb,
-      const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
-      CastTransport* const transport_sender)
-      : VideoSender(cast_environment,
-                    video_config,
-                    status_change_cb,
-                    create_vea_cb,
-                    transport_sender,
-                    base::BindRepeating(&IgnorePlayoutDelayChanges),
-                    base::BindRepeating(&PeerVideoSender::ProcessFeedback,
-                                        base::Unretained(this))) {}
+  PeerVideoSender(scoped_refptr<CastEnvironment> cast_environment,
+                  const FrameSenderConfig& video_config,
+                  const StatusChangeCallback& status_change_cb,
+                  const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
+                  CastTransport* const transport_sender)
+      : VideoSender(
+            cast_environment,
+            video_config,
+            status_change_cb,
+            create_vea_cb,
+            transport_sender,
+            std::make_unique<media::MockMojoVideoEncoderMetricsProvider>(
+                media::mojom::VideoEncoderUseCase::kCastMirroring),
+            base::BindRepeating(&IgnorePlayoutDelayChanges),
+            base::BindRepeating(&PeerVideoSender::ProcessFeedback,
+                                base::Unretained(this))) {}
 
   void OnReceivedCastFeedback(const RtcpCastMessage& cast_feedback) {
     frame_sender_for_testing()->OnReceivedCastFeedback(cast_feedback);

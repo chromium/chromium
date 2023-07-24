@@ -28,6 +28,7 @@
 #include "media/cast/test/fake_video_encode_accelerator_factory.h"
 #include "media/cast/test/utility/default_config.h"
 #include "media/cast/test/utility/video_utility.h"
+#include "media/mojo/clients/mock_mojo_video_encoder_metrics_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
 
@@ -86,6 +87,8 @@ class VideoEncoderTest
     video_config_.video_codec_params.max_number_of_video_buffers_used = 1;
     video_encoder_ = VideoEncoder::Create(
         cast_environment_, video_config_,
+        std::make_unique<media::MockMojoVideoEncoderMetricsProvider>(
+            media::mojom::VideoEncoderUseCase::kCastMirroring),
         base::BindRepeating(&VideoEncoderTest::OnOperationalStatusChange,
                             base::Unretained(this)),
         base::BindRepeating(

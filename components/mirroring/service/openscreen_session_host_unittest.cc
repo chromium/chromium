@@ -227,6 +227,10 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
     OnGetVideoCaptureHost();
   }
 
+  void GetVideoEncoderMetricsProvider(
+      mojo::PendingReceiver<media::mojom::VideoEncoderMetricsProvider> receiver)
+      override {}
+
   void GetNetworkContext(
       mojo::PendingReceiver<network::mojom::NetworkContext> receiver) override {
     network_context_ =

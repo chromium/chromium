@@ -91,6 +91,7 @@
 #include "media/cast/test/utility/test_util.h"
 #include "media/cast/test/utility/udp_proxy.h"
 #include "media/cast/test/utility/video_utility.h"
+#include "media/mojo/clients/mock_mojo_video_encoder_metrics_provider.h"
 
 using media::cast::proto::IPPModel;
 using media::cast::proto::NetworkSimulationModel;
@@ -432,9 +433,11 @@ void RunSimulation(const base::FilePath& source_path,
   // Initializing audio and video senders.
   cast_sender->InitializeAudio(audio_sender_config,
                                base::BindOnce(&LogAudioOperationalStatus));
-  cast_sender->InitializeVideo(media_source.get_video_config(),
-                               base::BindRepeating(&LogVideoOperationalStatus),
-                               base::DoNothing());
+  cast_sender->InitializeVideo(
+      media_source.get_video_config(),
+      std::make_unique<media::MockMojoVideoEncoderMetricsProvider>(
+          media::mojom::VideoEncoderUseCase::kCastMirroring),
+      base::BindRepeating(&LogVideoOperationalStatus), base::DoNothing());
   task_runner->RunTasks();
 
   // Truncate YUV files to prepare for writing.

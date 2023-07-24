@@ -46,6 +46,7 @@
 #include "media/cast/sender/video_sender.h"
 #include "media/gpu/gpu_video_accelerator_util.h"
 #include "media/mojo/clients/mojo_video_encode_accelerator.h"
+#include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 #include "media/remoting/device_capability_checker.h"
 #include "media/video/video_encode_accelerator.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -779,6 +780,10 @@ void Session::OnAnswer(const std::vector<FrameSenderConfig>& audio_configs,
       base::UmaHistogramEnumeration(
           "CastStreaming.Sender.Video.NegotiatedCodec",
           ToVideoCodec(video_config->codec));
+      mojo::PendingRemote<media::mojom::VideoEncoderMetricsProvider>
+          metrics_provider_pending_remote;
+      resource_provider_->GetVideoEncoderMetricsProvider(
+          metrics_provider_pending_remote.InitWithNewPipeAndPassReceiver());
       auto video_sender = std::make_unique<media::cast::VideoSender>(
           cast_environment_, *video_config,
           base::BindRepeating(&Session::OnEncoderStatusChange,
@@ -786,6 +791,9 @@ void Session::OnAnswer(const std::vector<FrameSenderConfig>& audio_configs,
           base::BindRepeating(&Session::CreateVideoEncodeAccelerator,
                               weak_factory_.GetWeakPtr()),
           cast_transport_.get(),
+          std::make_unique<media::MojoVideoEncoderMetricsProvider>(
+              media::mojom::VideoEncoderUseCase::kCastMirroring,
+              std::move(metrics_provider_pending_remote)),
           base::BindRepeating(&Session::SetTargetPlayoutDelay,
                               weak_factory_.GetWeakPtr()),
           base::BindRepeating(&Session::ProcessFeedback,

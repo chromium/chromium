@@ -164,6 +164,7 @@ source_set("encoding") {
 
   deps = [
     ":common",
+    "//media/mojo/clients:clients",
     "//third_party/opus",
   ]
 
@@ -226,6 +227,7 @@ source_set("sender") {
     "//components/openscreen_platform",
     "//media",
     "//media/capture:capture_base",
+    "//media/mojo/clients:clients",
     "//third_party/openscreen/src/cast/streaming:sender",
     "//ui/gfx/geometry",
   ]
@@ -396,6 +398,7 @@ test("cast_unittests") {
     "//components/openscreen_platform",
     "//media:test_support",
     "//media/cast/openscreen:unit_tests",
+    "//media/mojo:test_support",
     "//media/test:run_all_unittests",
     "//mojo/public/cpp/bindings",
     "//net",
@@ -448,6 +451,7 @@ if (is_win || is_mac || is_linux || is_chromeos_lacros || is_fuchsia) {
       "//base",
       "//base/test:test_support",
       "//media:test_support",
+      "//media/mojo:test_support",
       "//net",
       "//testing/gtest",
       "//ui/gfx/geometry",
@@ -465,6 +469,8 @@ if (is_win || is_mac || is_linux || is_chromeos_lacros || is_fuchsia) {
       "//base",
       "//build/win:default_exe_manifest",
       "//media",
+      "//media/mojo:test_support",
+      "//testing/gmock",
     ]
   }
 
@@ -487,6 +493,7 @@ if (is_win || is_mac || is_linux || is_chromeos_lacros || is_fuchsia) {
       "//base/test:test_support",
       "//build/win:default_exe_manifest",
       "//media:test_support",
+      "//media/mojo:test_support",
     ]
   }
 

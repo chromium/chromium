@@ -34,6 +34,7 @@
 #include "media/filters/ffmpeg_glue.h"
 #include "media/filters/ffmpeg_video_decoder.h"
 #include "media/media_buildflags.h"
+#include "media/mojo/clients/mock_mojo_video_encoder_metrics_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using Dependency = openscreen::cast::EncodedFrame::Dependency;
@@ -232,6 +233,8 @@ class H264VideoToolboxEncoderTest : public ::testing::Test {
         task_environment_.GetMainThreadTaskRunner());
     encoder_ = std::make_unique<H264VideoToolboxEncoder>(
         cast_environment_, video_sender_config_,
+        std::make_unique<MockMojoVideoEncoderMetricsProvider>(
+            media::mojom::VideoEncoderUseCase::kCastMirroring),
         base::BindRepeating(&SaveOperationalStatus, &operational_status_));
     base::RunLoop().RunUntilIdle();
     EXPECT_EQ(STATUS_INITIALIZED, operational_status_);

@@ -23,6 +23,7 @@
 #include "media/cast/net/cast_transport_config.h"
 #include "media/cast/sender/openscreen_frame_sender.h"
 #include "media/cast/sender/performance_metrics_overlay.h"
+#include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 #include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
 #include "third_party/openscreen/src/cast/streaming/sender.h"
 
@@ -109,6 +110,8 @@ VideoSender::VideoSender(
     StatusChangeCallback status_change_cb,
     const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
     CastTransport* const transport_sender,
+    std::unique_ptr<media::MojoVideoEncoderMetricsProvider>
+        encoder_metrics_provider,
     PlayoutDelayChangeCB playout_delay_change_cb,
     media::VideoCaptureFeedbackCB feedback_cb)
     : VideoSender(cast_environment,
@@ -119,6 +122,7 @@ VideoSender::VideoSender(
                                       video_config,
                                       transport_sender,
                                       *this),
+                  std::move(encoder_metrics_provider),
                   std::move(playout_delay_change_cb),
                   std::move(feedback_cb)) {}
 
@@ -128,6 +132,8 @@ VideoSender::VideoSender(
     StatusChangeCallback status_change_cb,
     const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
     std::unique_ptr<openscreen::cast::Sender> sender,
+    std::unique_ptr<media::MojoVideoEncoderMetricsProvider>
+        encoder_metrics_provider,
     PlayoutDelayChangeCB playout_delay_change_cb,
     media::VideoCaptureFeedbackCB feedback_cb,
     FrameSender::GetSuggestedVideoBitrateCB get_bitrate_cb)
@@ -140,6 +146,7 @@ VideoSender::VideoSender(
                                       std::move(sender),
                                       *this,
                                       std::move(get_bitrate_cb)),
+                  std::move(encoder_metrics_provider),
                   std::move(playout_delay_change_cb),
                   std::move(feedback_cb)) {
   DCHECK(base::FeatureList::IsEnabled(kOpenscreenCastStreamingSession));
@@ -155,6 +162,8 @@ VideoSender::VideoSender(
     StatusChangeCallback status_change_cb,
     const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
     std::unique_ptr<FrameSender> sender,
+    std::unique_ptr<media::MojoVideoEncoderMetricsProvider>
+        encoder_metrics_provider,
     PlayoutDelayChangeCB playout_delay_change_cb,
     media::VideoCaptureFeedbackCB feedback_callback)
     : frame_sender_(std::move(sender)),
@@ -164,6 +173,7 @@ VideoSender::VideoSender(
       playout_delay_change_cb_(std::move(playout_delay_change_cb)),
       feedback_cb_(feedback_callback) {
   video_encoder_ = VideoEncoder::Create(cast_environment_, video_config,
+                                        std::move(encoder_metrics_provider),
                                         status_change_cb, create_vea_cb);
   if (!video_encoder_) {
     cast_environment_->PostTask(

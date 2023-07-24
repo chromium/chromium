@@ -127,6 +127,7 @@ source_set("unittests") {
     "//media/cast:sender",
     "//media/cast:test_support",
     "//media/cast/openscreen:remoting_utils",
+    "//media/mojo:test_support",
     "//media/mojo/common",
     "//media/mojo/mojom",
     "//media/mojo/mojom:remoting",

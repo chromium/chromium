@@ -21,6 +21,7 @@
 #include "media/cast/test/utility/default_config.h"
 #include "media/cast/test/utility/standalone_cast_environment.h"
 #include "media/cast/test/utility/video_utility.h"
+#include "media/mojo/clients/mock_mojo_video_encoder_metrics_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
 
@@ -45,7 +46,10 @@ class VideoDecoderTest : public ::testing::TestWithParam<Codec> {
  public:
   VideoDecoderTest()
       : cast_environment_(new StandaloneCastEnvironment()),
-        vp8_encoder_(GetVideoSenderConfigForTest()),
+        vp8_encoder_(
+            GetVideoSenderConfigForTest(),
+            std::make_unique<media::MockMojoVideoEncoderMetricsProvider>(
+                media::mojom::VideoEncoderUseCase::kCastMirroring)),
         cond_(&lock_) {
     vp8_encoder_.Initialize();
   }

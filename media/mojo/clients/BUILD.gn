@@ -11,6 +11,10 @@ source_set("clients") {
     "//components/mirroring/service:mirroring_service",
     "//content/renderer:*",
 
+    # MojoVideoEncoderMetricsProvider is used in encoders in mirroring service.
+    "//media/cast:encoding",
+    "//media/cast:sender",
+
     # TODO(xhwang): Only allow //media/mojo/services:unit_tests
     "//chrome/browser:*",
     "//chrome/browser/thumbnail/generator",

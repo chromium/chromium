@@ -21,6 +21,7 @@
 #include "media/cast/test/utility/audio_utility.h"
 #include "media/cast/test/utility/default_config.h"
 #include "media/cast/test/utility/video_utility.h"
+#include "media/mojo/clients/mock_mojo_video_encoder_metrics_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -149,8 +150,10 @@ class RtpStreamTest : public ::testing::Test {
 TEST_F(RtpStreamTest, VideoStreaming) {
   auto video_sender = std::make_unique<media::cast::VideoSender>(
       cast_environment_, media::cast::GetDefaultVideoSenderConfig(),
-      base::DoNothing(), base::DoNothing(), &transport_, base::DoNothing(),
-      base::DoNothing());
+      base::DoNothing(), base::DoNothing(), &transport_,
+      std::make_unique<media::MockMojoVideoEncoderMetricsProvider>(
+          media::mojom::VideoEncoderUseCase::kCastMirroring),
+      base::DoNothing(), base::DoNothing());
   VideoRtpStream video_stream(std::move(video_sender), client_.GetWeakPtr(),
                               base::Milliseconds(1));
   client_.SetVideoRtpStream(&video_stream);
@@ -162,8 +165,10 @@ TEST_F(RtpStreamTest, VideoStreaming) {
 TEST_F(RtpStreamTest, VideoStreamEmitsFramesWhenNoUpdates) {
   auto video_sender = std::make_unique<media::cast::VideoSender>(
       cast_environment_, media::cast::GetDefaultVideoSenderConfig(),
-      base::DoNothing(), base::DoNothing(), &transport_, base::DoNothing(),
-      base::DoNothing());
+      base::DoNothing(), base::DoNothing(), &transport_,
+      std::make_unique<media::MockMojoVideoEncoderMetricsProvider>(
+          media::mojom::VideoEncoderUseCase::kCastMirroring),
+      base::DoNothing(), base::DoNothing());
   VideoRtpStream video_stream(std::move(video_sender), client_.GetWeakPtr(),
                               base::Milliseconds(1));
   client_.SetVideoRtpStream(&video_stream);
@@ -175,8 +180,10 @@ TEST_F(RtpStreamTest, VideoStreamEmitsFramesWhenNoUpdates) {
 TEST_F(RtpStreamTest, VideoStreamDoesNotRefreshWithZeroInterval) {
   auto video_sender = std::make_unique<media::cast::VideoSender>(
       cast_environment_, media::cast::GetDefaultVideoSenderConfig(),
-      base::DoNothing(), base::DoNothing(), &transport_, base::DoNothing(),
-      base::DoNothing());
+      base::DoNothing(), base::DoNothing(), &transport_,
+      std::make_unique<media::MockMojoVideoEncoderMetricsProvider>(
+          media::mojom::VideoEncoderUseCase::kCastMirroring),
+      base::DoNothing(), base::DoNothing());
   VideoRtpStream video_stream(std::move(video_sender), client_.GetWeakPtr(),
                               base::TimeDelta());
   client_.SetVideoRtpStream(&video_stream);
@@ -188,8 +195,10 @@ TEST_F(RtpStreamTest, VideoStreamDoesNotRefreshWithZeroInterval) {
 TEST_F(RtpStreamTest, VideoStreamTimerNotRunningWhenNoFramesDelivered) {
   auto video_sender = std::make_unique<media::cast::VideoSender>(
       cast_environment_, media::cast::GetDefaultVideoSenderConfig(),
-      base::DoNothing(), base::DoNothing(), &transport_, base::DoNothing(),
-      base::DoNothing());
+      base::DoNothing(), base::DoNothing(), &transport_,
+      std::make_unique<media::MockMojoVideoEncoderMetricsProvider>(
+          media::mojom::VideoEncoderUseCase::kCastMirroring),
+      base::DoNothing(), base::DoNothing());
   VideoRtpStream video_stream(std::move(video_sender), client_.GetWeakPtr(),
                               base::Milliseconds(1));
   client_.SetVideoRtpStream(&video_stream);
@@ -205,8 +214,10 @@ TEST_F(RtpStreamTest, VideoStreamTimerNotRunningWhenNoFramesDelivered) {
 TEST_F(RtpStreamTest, VideoStreamTimerRestartsWhenFramesDeliveredAgain) {
   auto video_sender = std::make_unique<media::cast::VideoSender>(
       cast_environment_, media::cast::GetDefaultVideoSenderConfig(),
-      base::DoNothing(), base::DoNothing(), &transport_, base::DoNothing(),
-      base::DoNothing());
+      base::DoNothing(), base::DoNothing(), &transport_,
+      std::make_unique<media::MockMojoVideoEncoderMetricsProvider>(
+          media::mojom::VideoEncoderUseCase::kCastMirroring),
+      base::DoNothing(), base::DoNothing());
   VideoRtpStream video_stream(std::move(video_sender), client_.GetWeakPtr(),
                               base::Milliseconds(1));
   client_.SetVideoRtpStream(&video_stream);

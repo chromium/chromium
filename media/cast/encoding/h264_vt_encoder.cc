@@ -15,8 +15,10 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/mac/mac_logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/power_monitor/power_monitor.h"
+#include "base/strings/strcat.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -26,6 +28,7 @@
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/common/video_frame_factory.h"
 #include "media/cast/constants.h"
+#include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 #include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
 
 using Dependency = openscreen::cast::EncodedFrame::Dependency;
@@ -156,11 +159,13 @@ bool H264VideoToolboxEncoder::IsSupported(
 H264VideoToolboxEncoder::H264VideoToolboxEncoder(
     const scoped_refptr<CastEnvironment>& cast_environment,
     const FrameSenderConfig& video_config,
+    std::unique_ptr<MojoVideoEncoderMetricsProvider> metrics_provider,
     StatusChangeCallback status_change_cb)
     : cast_environment_(cast_environment),
       video_config_(video_config),
       average_bitrate_((video_config_.min_bitrate + video_config_.max_bitrate) /
                        2),
+      metrics_provider_(std::move(metrics_provider)),
       status_change_cb_(std::move(status_change_cb)),
       next_frame_id_(FrameId::first()),
       encode_next_frame_as_keyframe_(false),
@@ -247,6 +252,9 @@ void H264VideoToolboxEncoder::ResetCompressionSession() {
   for (auto* v : buffer_attributes_values)
     CFRelease(v);
 
+  metrics_provider_->Initialize(media::H264PROFILE_MAIN, frame_size_,
+                                /*is_hardware_encoder=*/true);
+
   // Create the compression session.
 
   // Note that the encoder object is given to the compression session as the
@@ -265,6 +273,10 @@ void H264VideoToolboxEncoder::ResetCompressionSession() {
       reinterpret_cast<void*>(this), compression_session_.InitializeInto());
   if (status != noErr) {
     DLOG(ERROR) << " VTCompressionSessionCreate failed: " << status;
+    metrics_provider_->SetError(
+        {media::EncoderStatus::Codes::kEncoderInitializationError,
+         base::StrCat({"VTCompressionSessionCreate failed: ",
+                       logging::DescriptionFromOSStatus(status)})});
     // Notify that reinitialization has failed.
     cast_environment_->PostTask(
         CastEnvironment::MAIN, FROM_HERE,
@@ -406,6 +418,11 @@ bool H264VideoToolboxEncoder::EncodeVideoFrame(
       frame_props, reinterpret_cast<void*>(request.release()), nullptr);
   if (status != noErr) {
     DLOG(ERROR) << " VTCompressionSessionEncodeFrame failed: " << status;
+    metrics_provider_->SetError(
+        {media::EncoderStatus::Codes::kEncoderInitializationError,
+         base::StrCat({"VTCompressionSessionEncodeFrame failed: ",
+                       logging::DescriptionFromOSStatus(status)})});
+
     return false;
   }
 
@@ -530,6 +547,10 @@ void H264VideoToolboxEncoder::CompressionCallbackTask(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (status != noErr) {
     DLOG(ERROR) << " encoding failed: " << status;
+    metrics_provider_->SetError(
+        {media::EncoderStatus::Codes::kEncoderInitializationError,
+         base::StrCat(
+             {"encoding failed: ", logging::DescriptionFromOSStatus(status)})});
     status_change_cb_.Run(STATUS_CODEC_RUNTIME_ERROR);
   }
 
@@ -560,6 +581,7 @@ void H264VideoToolboxEncoder::CompressionCallbackTask(
 
   if (!data.empty()) {
     encoded_frame->data = std::move(data);
+    metrics_provider_->IncrementEncodedFrameCount();
   }
 
   encoded_frame->encode_completion_time =

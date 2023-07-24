@@ -15,6 +15,7 @@
 #include "media/cast/test/receiver/video_decoder.h"
 #include "media/cast/test/utility/default_config.h"
 #include "media/cast/test/utility/video_utility.h"
+#include "media/mojo/clients/mock_mojo_video_encoder_metrics_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
 
@@ -75,7 +76,10 @@ class VpxQuantizerParserTest : public ::testing::Test {
   // Reconstruct a vp8 encoder with new config since the Vp8Encoder
   // class has no interface to update the config.
   void RecreateVp8Encoder() {
-    vp8_encoder_ = std::make_unique<VpxEncoder>(video_config_);
+    vp8_encoder_ = std::make_unique<VpxEncoder>(
+        video_config_,
+        std::make_unique<media::MockMojoVideoEncoderMetricsProvider>(
+            media::mojom::VideoEncoderUseCase::kCastMirroring));
     vp8_encoder_->Initialize();
   }
 

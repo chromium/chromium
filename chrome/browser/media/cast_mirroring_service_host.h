@@ -88,6 +88,9 @@ class CastMirroringServiceHost final : public MirroringServiceHost,
   void BindGpu(mojo::PendingReceiver<viz::mojom::Gpu> receiver) override;
   void GetVideoCaptureHost(
       mojo::PendingReceiver<media::mojom::VideoCaptureHost> receiver) override;
+  void GetVideoEncoderMetricsProvider(
+      mojo::PendingReceiver<media::mojom::VideoEncoderMetricsProvider> receiver)
+      override;
   void GetNetworkContext(
       mojo::PendingReceiver<network::mojom::NetworkContext> receiver) override;
   void CreateAudioStream(
