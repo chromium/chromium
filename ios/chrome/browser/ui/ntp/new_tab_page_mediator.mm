@@ -141,12 +141,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 }
 
 - (void)dealloc {
-  if (_webState && _webStateObserver) {
-    _webState->RemoveObserver(_webStateObserver.get());
-    _webStateObserver.reset();
-    _webState = nullptr;
-    _discoverFeedService = nullptr;
-  }
+  CHECK(!_webStateObserver);
 }
 
 - (void)setUp {
@@ -168,15 +163,17 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 }
 
 - (void)shutdown {
-  [self.suggestionsMediator disconnect];
+  self.suggestionsMediator = nil;
   _searchEngineObserver.reset();
   if (_webState && _webStateObserver) {
     _webState->RemoveObserver(_webStateObserver.get());
-    _webStateObserver.reset();
   }
+  _webStateObserver.reset();
+  _webState = nullptr;
   _identityObserverBridge.reset();
   _accountManagerServiceObserver.reset();
   self.accountManagerService = nil;
+  self.discoverFeedService = nullptr;
 }
 
 - (void)saveContentOffsetForWebState:(web::WebState*)webState {

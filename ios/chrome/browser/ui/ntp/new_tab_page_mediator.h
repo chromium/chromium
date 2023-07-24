@@ -54,7 +54,7 @@ class UrlLoadingBrowserAgent;
 @property(nonatomic, strong) FeedMetricsRecorder* feedMetricsRecorder;
 // Mediator for the ContentSuggestions.
 // TODO(crbug.com/1403298): Replace this dependency with a delegate.
-@property(nonatomic, strong) ContentSuggestionsMediator* suggestionsMediator;
+@property(nonatomic, weak) ContentSuggestionsMediator* suggestionsMediator;
 // Consumer for this mediator.
 @property(nonatomic, weak) id<NewTabPageConsumer> consumer;
 // Consumer for NTP header model updates.
