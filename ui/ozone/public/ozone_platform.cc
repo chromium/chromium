@@ -20,6 +20,10 @@
 #include "ui/ozone/public/platform_screen.h"
 #include "ui/ozone/public/platform_user_input_monitor.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ui/ozone/public/palm_detector.h"
+#endif
+
 namespace ui {
 
 namespace {
@@ -195,5 +199,16 @@ void OzonePlatform::SetFailInitializeUIForTest(bool fail) {
 }
 
 void OzonePlatform::PreEarlyInitialize() {}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void OzonePlatform::SetPalmDetector(
+    std::unique_ptr<PalmDetector> palm_detector) {
+  palm_detector_ = std::move(palm_detector);
+}
+
+PalmDetector* OzonePlatform::GetPalmDetector() {
+  return palm_detector_.get();
+}
+#endif
 
 }  // namespace ui

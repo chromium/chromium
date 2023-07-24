@@ -36,6 +36,9 @@ class InputMethod;
 class InputController;
 class KeyEvent;
 class OverlayManagerOzone;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class PalmDetector;
+#endif
 class PlatformClipboard;
 class PlatformGLEGLUtility;
 class PlatformGlobalShortcutListener;
@@ -351,6 +354,17 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
 
   virtual void DumpState(std::ostream& out) const {}
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Sets the proper PalmDetector implementation from outside Ozone. This is
+  // used for touch screen palm rejection on ChromeOS, so this interface should
+  // be only used from ChromeOS. We use this interface instead of directly
+  // creating the implementation because we don't want Ozone code to depend on
+  // ChromeOS code to avoid circular dependency.
+  void SetPalmDetector(std::unique_ptr<PalmDetector> params);
+
+  PalmDetector* GetPalmDetector();
+#endif
+
  protected:
   bool has_initialized_ui() const { return initialized_ui_; }
   bool has_initialized_gpu() const { return initialized_gpu_; }
@@ -387,6 +401,10 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
   // modifications to |single_process_| visible by other threads. Mutex is not
   // needed since it's set before other threads are started.
   volatile bool single_process_ = false;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<PalmDetector> palm_detector_;
+#endif
 };
 
 }  // namespace ui
