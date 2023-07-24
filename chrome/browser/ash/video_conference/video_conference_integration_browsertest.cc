@@ -219,8 +219,16 @@ class VideoConferenceIntegrationTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(
         ::ash::switches::kCameraEffectsSupportedByHardware);
-    // Used for bypassing tab capturing selection.
-    command_line->AppendSwitch(::switches::kThisTabCaptureAutoAccept);
+    // Flags use to automatically select the right desktop source and get
+    // around security restrictions.
+    // TODO(crbug.com/1459164): Use a less error-prone flag.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    command_line->AppendSwitchASCII(::switches::kAutoSelectDesktopCaptureSource,
+                                    "Display");
+#else
+    command_line->AppendSwitchASCII(::switches::kAutoSelectDesktopCaptureSource,
+                                    "Entire screen");
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     // If in guest mode.
     if (std::get<1>(GetParam())) {
@@ -880,6 +888,40 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
 
   EXPECT_TRUE(found_live_caption_button);
   EXPECT_TRUE(found_noise_cancellation_buttion);
+}
+
+IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest, StopAllScreenShare) {
+  // Open a tab.
+  content::WebContents* web_contents_1 =
+      NavigateTo("/video_conference_demo.html");
+
+  // Start the screen sharing.
+  StartScreenSharing(web_contents_1);
+  WAIT_FOR_CONDITION(GetVcTray()->GetVisible());
+
+  // Get the ReturnToApp Panel.
+  ClickButton(GetVcTray()->toggle_bubble_button());
+  WAIT_FOR_CONDITION(GetVcTray()->GetBubbleView()->GetVisible());
+
+  // Check that web_contents_1 is sharing screen.
+  auto buttons = GetReturnToAppButtons();
+  EXPECT_EQ(buttons.size(), 1u);
+  EXPECT_FALSE(buttons[0]->is_capturing_camera());
+  EXPECT_FALSE(buttons[0]->is_capturing_microphone());
+  EXPECT_TRUE(buttons[0]->is_capturing_screen());
+
+  // Hide the ReturnToApp Panel.
+  ClickButton(GetVcTray()->toggle_bubble_button());
+
+  // Click on the screen share button.
+  EXPECT_TRUE(share_bt_->is_capturing());
+  ClickButton(share_bt_);
+  WAIT_FOR_CONDITION(!share_bt_->is_capturing());
+
+  // Check that web_contents_1 has stopped sharing screen.
+  ClickButton(GetVcTray()->toggle_bubble_button());
+  WAIT_FOR_CONDITION(GetVcTray()->GetBubbleView()->GetVisible());
+  EXPECT_FALSE(GetReturnToAppButtons()[0]->is_capturing_screen());
 }
 
 }  // namespace ash::video_conference
