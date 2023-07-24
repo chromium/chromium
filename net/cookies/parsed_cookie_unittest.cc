@@ -1252,34 +1252,62 @@ TEST(ParsedCookieTest, TruncatingCharInCookieLine) {
       {'\x1B', TruncatingCharacterInCookieStringType::kTruncatingCharNone}};
 
   for (const auto& test : kTests) {
+    SCOPED_TRACE(testing::Message() << "Using test.ctlChar == "
+                                    << base::NumberToString(test.ctlChar));
+    const bool would_be_truncated =
+        test.expectedTruncatingCharInCookieStringType !=
+        TruncatingCharacterInCookieStringType::kTruncatingCharNone;
     std::string ctl_string(1, test.ctlChar);
     std::string ctl_at_start_cookie_string = ctl_string + "foo=bar"s;
     ParsedCookie ctl_at_start_cookie(ctl_at_start_cookie_string);
     EXPECT_EQ(ctl_at_start_cookie.GetTruncatingCharacterInCookieStringType(),
               test.expectedTruncatingCharInCookieStringType);
+    // Lots of factors determine whether IsValid() is true here:
+    //
+    //  - For the tab character ('\x9), leading whitespace is valid and the
+    //  spec indicates that it should just be removed and the cookie parsed
+    //  normally.
+    //
+    //  - For control characters that would truncate the cookie, they
+    //  cause cookie truncation which results in an empty cookie, which is
+    //  also treated as invalid.
+    //
+    //  - For the other control character case the cookie is always just
+    //  treated as invalid.
+    EXPECT_EQ(ctl_at_start_cookie.IsValid(), test.ctlChar == '\x9');
 
     std::string ctl_at_middle_cookie_string =
         "foo=bar;"s + ctl_string + "secure"s;
-    ParsedCookie ctl_at_middle_cookie(ctl_at_start_cookie_string);
+    ParsedCookie ctl_at_middle_cookie(ctl_at_middle_cookie_string);
     EXPECT_EQ(ctl_at_middle_cookie.GetTruncatingCharacterInCookieStringType(),
               test.expectedTruncatingCharInCookieStringType);
+    if (would_be_truncated) {
+      EXPECT_EQ(ctl_at_middle_cookie.IsValid(), true);
+    }
 
     std::string ctl_at_end_cookie_string =
         "foo=bar;"s + "secure;"s + ctl_string;
-    ParsedCookie ctl_at_end_cookie(ctl_at_start_cookie_string);
+    ParsedCookie ctl_at_end_cookie(ctl_at_end_cookie_string);
     EXPECT_EQ(ctl_at_end_cookie.GetTruncatingCharacterInCookieStringType(),
               test.expectedTruncatingCharInCookieStringType);
+    if (would_be_truncated) {
+      EXPECT_EQ(ctl_at_end_cookie.IsValid(), true);
+    }
   }
+
   // Test if there are multiple control characters that terminate.
   std::string ctls_cookie_string = "foo=bar;\xA\xD"s;
   ParsedCookie ctls_cookie(ctls_cookie_string);
   EXPECT_EQ(ctls_cookie.GetTruncatingCharacterInCookieStringType(),
             TruncatingCharacterInCookieStringType::kTruncatingCharLineFeed);
+  EXPECT_EQ(ctls_cookie.IsValid(), true);
+
   // Test with no control characters.
   std::string cookie_string = "foo=bar;"s;
   ParsedCookie cookie(cookie_string);
   EXPECT_EQ(cookie.GetTruncatingCharacterInCookieStringType(),
             TruncatingCharacterInCookieStringType::kTruncatingCharNone);
+  EXPECT_TRUE(cookie.IsValid());
 }
 
 TEST(ParsedCookieTest, HtabInNameOrValue) {
