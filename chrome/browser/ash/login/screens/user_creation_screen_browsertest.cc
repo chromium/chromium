@@ -243,8 +243,10 @@ class UserCreationScreenSoftwareUpdateTest : public UserCreationScreenTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/1467313): Disabled due to flakiness.
 // Verify flow for setting up the device for self.
-IN_PROC_BROWSER_TEST_F(UserCreationScreenSoftwareUpdateTest, SignInForSelf) {
+IN_PROC_BROWSER_TEST_F(UserCreationScreenSoftwareUpdateTest,
+                       DISABLED_SignInForSelf) {
   SelectUserTypeOnUserCreationScreen(kSelfButton);
   WaitForScreenExit();
   EXPECT_FALSE(LoginDisplayHost::default_host()
