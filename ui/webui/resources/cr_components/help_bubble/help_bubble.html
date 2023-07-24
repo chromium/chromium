@@ -248,6 +248,10 @@
     width: var(--cr-icon-button-size);
   }
 
+  cr-icon-button:focus-visible:focus {
+    box-shadow: inset 0 0 0 1px var(--cr-focus-outline-color);
+  }
+
   #bodyIcon {
     --help-bubble-body-icon-image-size: 18px;
     --help-bubble-body-icon-size: 24px;
@@ -278,14 +282,14 @@
 
   #buttons cr-button {
     --border-color: var(--help-bubble-foreground);
-    --focus-shadow-color: var(--help-bubble-foreground);
     --text-color: var(--help-bubble-button-foreground);
     background-color: var(--help-bubble-button-background);
   }
 
   #buttons cr-button:focus {
-    border: 2px solid var(--help-bubble-background);
-    padding: 7px 15px;
+    box-shadow: none;
+    outline: 2px solid var(--cr-focus-outline-color);
+    outline-offset: 1px;
   }
 
   #buttons cr-button:not(:first-child) {
