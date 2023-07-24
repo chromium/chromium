@@ -70,9 +70,7 @@ class AutofillContextMenuManagerFeedbackUIBrowserTest
     iph_feature_list_.InitAndEnableFeatures(
         {feature_engagement::kIPHAutofillFeedbackNewBadgeFeature});
     feature_.InitWithFeatures(
-        /*enabled_features=*/{features::
-                                  kAutofillShowManualFallbackInContextMenu,
-                              features::kAutofillFeedback},
+        /*enabled_features=*/{features::kAutofillFeedback},
         /*disabled_features=*/{});
   }
 

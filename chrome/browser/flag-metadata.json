@@ -713,11 +713,6 @@
     "expiry_milestone": 124
   },
   {
-    "name": "autofill-show-manual-fallbacks-in-context-menu",
-    "owners": [ "vidhanj", "koerber"],
-    "expiry_milestone": 120
-  },
-  {
     "name": "autofill-suggest-server-card-instead-of-local-card",
     "owners": [ "koulvipul@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 120

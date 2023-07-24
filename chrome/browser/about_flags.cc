@@ -8904,13 +8904,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillShowAutocompleteDeleteButton)},
 
-    {"autofill-show-manual-fallbacks-in-context-menu",
-     flag_descriptions::kAutofillShowManualFallbackInContextMenuName,
-     flag_descriptions::kAutofillShowManualFallbackInContextMenuDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillShowManualFallbackInContextMenu)},
-
     {flag_descriptions::kEnableLensStandaloneFlagId,
      flag_descriptions::kEnableLensStandaloneName,
      flag_descriptions::kEnableLensStandaloneDescription, kOsDesktop,

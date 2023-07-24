@@ -606,12 +606,6 @@ const char kAutofillShowAutocompleteDeleteButtonDescription[] =
     "When enabled, Autocomplete entries in filling popups will contain a "
     "delete button";
 
-const char kAutofillShowManualFallbackInContextMenuName[] =
-    "Show Autofill options in Context Menu";
-const char kAutofillShowManualFallbackInContextMenuDescription[] =
-    "When enabled, users would get address/credit cards/passwords autofilling "
-    "options in the context menu if the context menu is opened on a text field";
-
 const char kAutofillSuggestServerCardInsteadOfLocalCardName[] =
     "Suggest Server card instead of Local card for deduped cards";
 const char kAutofillSuggestServerCardInsteadOfLocalCardDescription[] =

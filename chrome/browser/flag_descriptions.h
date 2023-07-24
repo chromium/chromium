@@ -340,9 +340,6 @@ extern const char kAutofillSaveAndFillVPADescription[];
 extern const char kAutofillShowAutocompleteDeleteButtonName[];
 extern const char kAutofillShowAutocompleteDeleteButtonDescription[];
 
-extern const char kAutofillShowManualFallbackInContextMenuName[];
-extern const char kAutofillShowManualFallbackInContextMenuDescription[];
-
 extern const char kAutofillSuggestServerCardInsteadOfLocalCardName[];
 extern const char kAutofillSuggestServerCardInsteadOfLocalCardDescription[];
 

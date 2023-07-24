@@ -1139,61 +1139,6 @@ TEST_F(RenderViewContextMenuPrefsTest, FollowOrUnfollow) {
   }
 }
 
-class RenderViewContextMenuAutofillTest
-    : public RenderViewContextMenuPrefsTest,
-      public testing::WithParamInterface<bool> {
- public:
-  RenderViewContextMenuAutofillTest() = default;
-
-  void SetUp() override {
-    RenderViewContextMenuPrefsTest::SetUp();
-    if (IsIncognito()) {
-      SetContents(content::WebContentsTester::CreateTestWebContents(
-          profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true), nullptr));
-    }
-  }
-
- protected:
-  // Returns true if the test needs to run in incognito mode.
-  bool IsIncognito() const { return GetParam(); }
-
-  autofill::TestContentAutofillClient* autofill_client() {
-    return autofill_client_injector_[web_contents()];
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_{
-      autofill::features::kAutofillShowManualFallbackInContextMenu};
-  autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
-      autofill_client_injector_;
-};
-
-// Verify that Autofill context menu items are displayed on a plain text field.
-TEST_P(RenderViewContextMenuAutofillTest, ShowAutofillOptions) {
-  autofill::PersonalDataManager* pdm =
-      autofill::PersonalDataManagerFactory::GetForProfile(profile());
-  DCHECK(pdm);
-  pdm->AddServerCreditCardForTest(
-      std::make_unique<autofill::CreditCard>(autofill::test::GetCreditCard()));
-
-  NavigateAndCommit(GURL("http://www.foo.com/"));
-  content::ContextMenuParams params = CreateParams(MenuItem::EDITABLE);
-  params.input_field_type =
-      blink::mojom::ContextMenuDataInputFieldType::kPlainText;
-
-  auto menu = std::make_unique<TestRenderViewContextMenu>(
-      *web_contents()->GetPrimaryMainFrame(), params);
-  menu->Init();
-
-  EXPECT_TRUE(
-      menu->IsItemInRangePresent(IDC_CONTENT_CONTEXT_AUTOFILL_CUSTOM_FIRST,
-                                 IDC_CONTENT_CONTEXT_AUTOFILL_CUSTOM_LAST));
-}
-
-INSTANTIATE_TEST_SUITE_P(AutofillContextMenuTest,
-                         RenderViewContextMenuAutofillTest,
-                         testing::Bool());
-
 class RenderViewContextMenuHideAutofillPopupTest
     : public RenderViewContextMenuPrefsTest {
  public:

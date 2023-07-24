@@ -61103,8 +61103,6 @@ from previous Chrome versions.
   <int value="-1400745093" label="SystemEmojiPickerSearchExtension:enabled"/>
   <int value="-1400693146" label="LauncherImageSearchIca:enabled"/>
   <int value="-1399753480" label="disable-harfbuzz-rendertext"/>
-  <int value="-1399525696"
-      label="AutofillShowManualFallbackInContextMenu:enabled"/>
   <int value="-1399419572" label="enable-app-list"/>
   <int value="-1397387245" label="CompactBubbleLauncher:disabled"/>
   <int value="-1396974542" label="UserMediaScreenCapturing:enabled"/>
@@ -63821,8 +63819,6 @@ from previous Chrome versions.
   <int value="-11260186" label="enable-offline-pages-as-saved-pages"/>
   <int value="-10709540"
       label="OmniboxUIExperimentHideSuggestionUrlScheme:enabled"/>
-  <int value="-9881235"
-      label="AutofillShowManualFallbackInContextMenu:disabled"/>
   <int value="-9836751" label="SideSearchDSESupport:enabled"/>
   <int value="-9701088" label="ScanAppMediaLink:disabled"/>
   <int value="-9599490" label="KernelnextVMs:disabled"/>
@@ -92378,7 +92374,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="118" label="IDC_CONTENT_CONTEXT_OPEN_IN_READ_ANYTHING"/>
   <int value="119" label="IDC_FOLLOW"/>
   <int value="120" label="IDC_UNFOLLOW"/>
-  <int value="121" label="IDC_CONTENT_CONTEXT_AUTOFILL_CUSTOM_FIRST"/>
+  <int value="121"
+      label="(Obsolete) IDC_CONTENT_CONTEXT_AUTOFILL_CUSTOM_FIRST. Removed in
+             2023/07."/>
   <int value="123" label="IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE"/>
   <int value="125" label="IDC_LIVE_CAPTION"/>
   <int value="126" label="IDC_CONTENT_CONTEXT_PDF_OCR"/>
