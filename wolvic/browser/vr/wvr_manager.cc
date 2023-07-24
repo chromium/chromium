@@ -153,8 +153,9 @@ int32_t GetNextTextureHandleId() {
 
 }  // namespace
 
-WvrManager::WvrManager()
+WvrManager::WvrManager(WvrGraphicsDelegate* graphics)
     : texture_handle_id_(GetNextTextureHandleId()),
+      graphics_(graphics),
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       webxr_(std::make_unique<device::WebXrPresentationState>()) {
   JNIEnv* env = base::android::AttachCurrentThread();

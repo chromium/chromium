@@ -25,6 +25,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_helper.h"
 #include "wolvic/browser/vr/moz_external_vr.h"
+#include "wolvic/browser/vr/wvr_graphics_delegate.h"
 
 namespace gl {
 class GLSurface;
@@ -36,7 +37,7 @@ namespace wolvic {
 class WvrManager : public device::mojom::XRPresentationProvider,
                    public device::mojom::XRFrameDataProvider {
  public:
-  WvrManager();
+  WvrManager(WvrGraphicsDelegate* graphics);
 
   WvrManager(const WvrManager&) = delete;
   WvrManager& operator=(const WvrManager&) = delete;
@@ -136,6 +137,8 @@ class WvrManager : public device::mojom::XRPresentationProvider,
       this};
   mojo::Receiver<device::mojom::XRFrameDataProvider> frame_data_receiver_{this};
   mojo::Remote<device::mojom::XRPresentationClient> submit_client_;
+
+  raw_ptr<WvrGraphicsDelegate> graphics_;
 
   // Communicate via mozilla shared memory.
   mozilla::gfx::VRBrowserState browser_state_;

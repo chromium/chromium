@@ -16,7 +16,8 @@ WvrThread::~WvrThread() {
 
 void WvrThread::Init() {
   DCHECK(!wvr_manager_);
-  wvr_manager_ = std::make_unique<WvrManager>();
+  auto graphics_delegate = std::make_unique<WvrGraphicsDelegate>();
+  wvr_manager_ = std::make_unique<WvrManager>(graphics_delegate.get());
 
   std::move(initialized_callback_).Run();
 }
