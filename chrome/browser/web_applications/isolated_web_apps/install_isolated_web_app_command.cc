@@ -139,7 +139,7 @@ void InstallIsolatedWebAppCommand::StartWithLock(
 void InstallIsolatedWebAppCommand::CheckTrustAndSignatures(
     base::OnceClosure next_step_callback) {
   command_helper_->CheckTrustAndSignatures(
-      location_, *profile().GetPrefs(),
+      location_, &profile(),
       base::BindOnce(&InstallIsolatedWebAppCommand::RunNextStepOnSuccess<void>,
                      weak_factory_.GetWeakPtr(),
                      std::move(next_step_callback)));

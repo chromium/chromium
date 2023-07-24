@@ -80,7 +80,7 @@ IsolatedWebAppInstallCommandHelper::~IsolatedWebAppInstallCommandHelper() =
 
 void IsolatedWebAppInstallCommandHelper::CheckTrustAndSignatures(
     const IsolatedWebAppLocation& location,
-    const PrefService& prefs,
+    Profile* profile,
     base::OnceCallback<void(base::expected<void, std::string>)> callback) {
   absl::visit(
       base::Overloaded{
@@ -92,7 +92,7 @@ void IsolatedWebAppInstallCommandHelper::CheckTrustAndSignatures(
           [&](const DevModeBundle& location) {
             CHECK_EQ(url_info_.web_bundle_id().type(),
                      web_package::SignedWebBundleId::Type::kEd25519PublicKey);
-            if (!IsIwaDevModeEnabled(prefs)) {
+            if (!IsIwaDevModeEnabled(profile)) {
               std::move(callback).Run(
                   base::unexpected(std::string(kIwaDevModeNotEnabledMessage)));
               return;
@@ -102,7 +102,7 @@ void IsolatedWebAppInstallCommandHelper::CheckTrustAndSignatures(
           [&](const DevModeProxy& location) {
             CHECK_EQ(url_info_.web_bundle_id().type(),
                      web_package::SignedWebBundleId::Type::kDevelopment);
-            if (!IsIwaDevModeEnabled(prefs)) {
+            if (!IsIwaDevModeEnabled(profile)) {
               std::move(callback).Run(
                   base::unexpected(std::string(kIwaDevModeNotEnabledMessage)));
               return;

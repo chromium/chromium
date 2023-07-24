@@ -231,7 +231,7 @@ void IsolatedWebAppCommandLineInstallManager::
     return;
   }
 
-  if (!IsIwaDevModeEnabled(*profile_->GetPrefs())) {
+  if (!IsIwaDevModeEnabled(&*profile_)) {
     ReportInstallationResult(
         base::unexpected(std::string(kIwaDevModeNotEnabledMessage)));
     return;

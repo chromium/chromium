@@ -240,8 +240,8 @@ TEST_F(IsolatedWebAppInstallCommandHelperTrustAndSignaturesTest,
       /*response_reader_factory=*/nullptr);
 
   base::test::TestFuture<base::expected<void, std::string>> future;
-  command_helper->CheckTrustAndSignatures(
-      CreateDevProxyLocation(), *profile()->GetPrefs(), future.GetCallback());
+  command_helper->CheckTrustAndSignatures(CreateDevProxyLocation(), &*profile(),
+                                          future.GetCallback());
   EXPECT_THAT(future.Get().has_value(), IsTrue());
 }
 
@@ -256,8 +256,8 @@ TEST_F(IsolatedWebAppInstallCommandHelperTrustAndSignaturesTest,
       /*response_reader_factory=*/nullptr);
 
   base::test::TestFuture<base::expected<void, std::string>> future;
-  command_helper->CheckTrustAndSignatures(
-      CreateDevProxyLocation(), *profile()->GetPrefs(), future.GetCallback());
+  command_helper->CheckTrustAndSignatures(CreateDevProxyLocation(), &*profile(),
+                                          future.GetCallback());
   EXPECT_THAT(future.Take(),
               IsUnexpectedValue(
                   HasSubstr("Isolated Web App Developer Mode is not enabled")));
@@ -291,7 +291,7 @@ TEST_P(IsolatedWebAppInstallCommandHelperTrustAndSignaturesBundleTest,
       std::make_unique<FakeResponseReaderFactory>(base::ok()));
 
   base::test::TestFuture<base::expected<void, std::string>> future;
-  command_helper->CheckTrustAndSignatures(location_, *profile()->GetPrefs(),
+  command_helper->CheckTrustAndSignatures(location_, &*profile(),
                                           future.GetCallback());
   EXPECT_THAT(future.Get().has_value(), IsTrue());
 }
@@ -307,7 +307,7 @@ TEST_P(IsolatedWebAppInstallCommandHelperTrustAndSignaturesBundleTest,
               "test error"))));
 
   base::test::TestFuture<base::expected<void, std::string>> future;
-  command_helper->CheckTrustAndSignatures(location_, *profile()->GetPrefs(),
+  command_helper->CheckTrustAndSignatures(location_, &*profile(),
                                           future.GetCallback());
   EXPECT_THAT(future.Take(), IsUnexpectedValue(HasSubstr("test error")));
 }
@@ -322,7 +322,7 @@ TEST_P(IsolatedWebAppInstallCommandHelperTrustAndSignaturesBundleTest,
       url_info, CreateDefaultDataRetriever(url_info.origin().GetURL()),
       std::make_unique<FakeResponseReaderFactory>(base::ok()));
   base::test::TestFuture<base::expected<void, std::string>> future;
-  command_helper->CheckTrustAndSignatures(location_, *profile()->GetPrefs(),
+  command_helper->CheckTrustAndSignatures(location_, &*profile(),
                                           future.GetCallback());
   if (GetParam()) {
     EXPECT_THAT(future.Get().has_value(), IsTrue()) << future.Get().error();

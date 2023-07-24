@@ -60,7 +60,7 @@ class IsolatedWebAppInstallCommandHelper {
 
   void CheckTrustAndSignatures(
       const IsolatedWebAppLocation& location,
-      const PrefService& prefs,
+      Profile* profile,
       base::OnceCallback<void(base::expected<void, std::string>)> callback);
 
   void CreateStoragePartitionIfNotPresent(Profile& profile);

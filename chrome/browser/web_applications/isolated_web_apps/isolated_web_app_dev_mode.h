@@ -7,7 +7,7 @@
 
 #include "base/strings/string_piece.h"
 
-class PrefService;
+class Profile;
 
 namespace web_app {
 
@@ -15,7 +15,7 @@ constexpr inline base::StringPiece kIwaDevModeNotEnabledMessage =
     "Isolated Web Apps are not enabled, or Isolated Web App Developer Mode is "
     "not enabled or blocked by policy.";
 
-bool IsIwaDevModeEnabled(const PrefService& pref_service);
+bool IsIwaDevModeEnabled(Profile* profile);
 
 }  // namespace web_app
 

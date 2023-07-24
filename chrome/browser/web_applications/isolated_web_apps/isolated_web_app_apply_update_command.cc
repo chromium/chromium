@@ -171,7 +171,7 @@ void IsolatedWebAppApplyUpdateCommand::CheckTrustAndSignatures(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   command_helper_->CheckTrustAndSignatures(
-      update_info().location, *profile().GetPrefs(),
+      update_info().location, &profile(),
       base::BindOnce(
           &IsolatedWebAppApplyUpdateCommand::RunNextStepOnSuccess<void>,
           weak_factory_.GetWeakPtr(), std::move(next_step_callback)));

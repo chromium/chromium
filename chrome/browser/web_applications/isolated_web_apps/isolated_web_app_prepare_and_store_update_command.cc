@@ -173,7 +173,7 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::CheckTrustAndSignatures(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   command_helper_->CheckTrustAndSignatures(
-      update_info_.location, *profile().GetPrefs(),
+      update_info_.location, &profile(),
       base::BindOnce(
           &IsolatedWebAppUpdatePrepareAndStoreCommand::RunNextStepOnSuccess<
               void>,

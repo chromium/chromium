@@ -356,8 +356,7 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
   auto handle_request =
       [&](const IsolatedWebAppLocation& location, bool is_pending_install) {
         if (!absl::holds_alternative<InstalledBundle>(location)) {
-          const PrefService& prefs = *profile_->GetPrefs();
-          if (!IsIwaDevModeEnabled(prefs)) {
+          if (!IsIwaDevModeEnabled(&*profile_)) {
             LogErrorAndFail(
                 base::StrCat({"Unable to load Isolated Web App that was "
                               "installed in Developer Mode: ",

@@ -6,10 +6,12 @@
 #include <tuple>
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/policy/core/common/policy_pref_names.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/common/content_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,35 +22,36 @@ namespace {
 using testing::IsFalse;
 using testing::IsTrue;
 
-TEST(IsolatedWebAppDevModeTest, IsIwaDevModeEnabled) {
-  TestingPrefServiceSimple pref_service;
-  pref_service.registry()->RegisterBooleanPref(
-      policy::policy_prefs::kIsolatedAppsDeveloperModeAllowed, true);
+using IsolatedWebAppDevModeTest = WebAppTest;
 
-  EXPECT_THAT(IsIwaDevModeEnabled(pref_service), IsFalse());
+TEST_F(IsolatedWebAppDevModeTest, IsIwaDevModeEnabled) {
+  profile()->GetTestingPrefService()->SetManagedPref(
+      policy::policy_prefs::kIsolatedAppsDeveloperModeAllowed,
+      base::Value(true));
+  EXPECT_THAT(IsIwaDevModeEnabled(profile()), IsFalse());
 
   {
     base::test::ScopedFeatureList scoped_feature_list{
         features::kIsolatedWebAppDevMode};
     // `features::kIsolatedWebApps` is not enabled.
-    EXPECT_THAT(IsIwaDevModeEnabled(pref_service), IsFalse());
+    EXPECT_THAT(IsIwaDevModeEnabled(profile()), IsFalse());
   }
   {
     base::test::ScopedFeatureList scoped_feature_list{
         features::kIsolatedWebApps};
     // `features::kIsolatedWebAppDevMode` is not enabled.
-    EXPECT_THAT(IsIwaDevModeEnabled(pref_service), IsFalse());
+    EXPECT_THAT(IsIwaDevModeEnabled(profile()), IsFalse());
   }
   {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitWithFeatures(
         {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode}, {});
-    EXPECT_THAT(IsIwaDevModeEnabled(pref_service), IsTrue());
+    EXPECT_THAT(IsIwaDevModeEnabled(profile()), IsTrue());
 
-    pref_service.SetManagedPref(
+    profile()->GetTestingPrefService()->SetManagedPref(
         policy::policy_prefs::kIsolatedAppsDeveloperModeAllowed,
         base::Value(false));
-    EXPECT_THAT(IsIwaDevModeEnabled(pref_service), IsFalse());
+    EXPECT_THAT(IsIwaDevModeEnabled(profile()), IsFalse());
   }
 }
 
