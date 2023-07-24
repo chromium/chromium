@@ -129,7 +129,6 @@ static_library("content_native_lib") {
     "//components/web_cache/renderer",
     "//components/webxr:webxr",
     "//content:content_resources",
-    "//content:dev_ui_content_resources",
     "//content/common:main_frame_counter",
     "//content/public/common",
     "//content/test:content_test_mojo_bindings",
@@ -231,6 +230,7 @@ dist_aar("content_aar") {
     "//base",
     "//base:base_java",
     "//base:jni_java",
+    "//base/test:test_trace_processor",
     "//components/browser_ui/media/android:java",
     "//components/embedder_support/android:view_java",
     "//components/metrics:metrics_java",
@@ -247,6 +247,7 @@ dist_aar("content_aar") {
   ]
   native_libraries = [
     "$root_build_dir/libcontent_native.so",
+    "$root_build_dir/libtest_trace_processor.so",
     # TODO: Replace with shared library
     # "$root_build_dir/obj/device/vr/libdevice_vr.a",
   ]

@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/android/java_handler_thread.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "wolvic/browser/vr/wvr_manager.h"
 
 namespace wolvic {

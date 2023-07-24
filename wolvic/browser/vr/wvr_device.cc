@@ -4,7 +4,7 @@
 
 #include "wolvic/browser/vr/wvr_device.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "content/public/browser/render_frame_host.h"
