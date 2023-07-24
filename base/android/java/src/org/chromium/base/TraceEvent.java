@@ -392,6 +392,30 @@ public class TraceEvent implements AutoCloseable {
     }
 
     /**
+     * Records a 'WebView.Startup.CreationTime.Stage1.FactoryInit' event with the
+     * 'android_webview.timeline' category starting at `startTimeMs` with the duration of
+     * `durationMs`.
+     */
+    public static void webViewStartupStage1(long startTimeMs, long durationMs) {
+        if (sEnabled) {
+            TraceEventJni.get().webViewStartupStage1(startTimeMs, durationMs);
+        }
+    }
+
+    /**
+     * Records 'WebView.Startup.CreationTime.Stage2.ProviderInit.Warm' and
+     * 'WebView.Startup.CreationTime.Stage2.ProviderInit.Cold' events depending on the value of
+     * `isColdStartup` with the 'android_webview.timeline' category starting at `startTimeMs` with
+     * the duration of `durationMs`.
+     */
+    public static void webViewStartupStage2(
+            long startTimeMs, long durationMs, boolean isColdStartup) {
+        if (sEnabled) {
+            TraceEventJni.get().webViewStartupStage2(startTimeMs, durationMs, isColdStartup);
+        }
+    }
+
+    /**
      * Snapshots the view hierarchy state on the main thread and then finishes emitting a trace
      * event on the threadpool.
      */
@@ -527,6 +551,8 @@ public class TraceEvent implements AutoCloseable {
                 String resourceName, long activityProtoPtr);
         void instantAndroidIPC(String name, long durMs);
         void instantAndroidToolbar(int blockReason, int allowReason, int snapshotDiff);
+        void webViewStartupStage1(long startTimeMs, long durationMs);
+        void webViewStartupStage2(long startTimeMs, long durationMs, boolean isColdStartup);
     }
 
     /**

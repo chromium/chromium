@@ -578,16 +578,26 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
         }
 
-        // If initialization hasn't been deferred, record a startup time histogram entry.
+        // If initialization hasn't been deferred, record a startup time histogram entry
+        // and trace event(s).
         if (mFactory.hasStarted()) {
             if (isFirstWebViewInit) {
                 RecordHistogram.recordTimesHistogram(
                         "Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Cold",
                         SystemClock.uptimeMillis() - startTime);
+
+                TraceEvent.webViewStartupStage1(
+                        mFactory.getInitInfo().mStartTime, mFactory.getInitInfo().mDuration);
+
+                TraceEvent.webViewStartupStage2(
+                        startTime, SystemClock.uptimeMillis() - startTime, true);
             } else {
                 RecordHistogram.recordTimesHistogram(
                         "Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Warm",
                         SystemClock.uptimeMillis() - startTime);
+
+                TraceEvent.webViewStartupStage2(
+                        startTime, SystemClock.uptimeMillis() - startTime, false);
             }
         }
     }

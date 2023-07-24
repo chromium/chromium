@@ -21,6 +21,7 @@
 #include "base/trace_event/memory_dump_manager.h"         // nogncheck
 #include "base/trace_event/memory_dump_provider.h"        // nogncheck
 #include "base/trace_event/trace_event.h"                 // nogncheck
+#include "base/trace_event/trace_id_helper.h"             // nogncheck
 #include "base/trace_event/traced_value.h"                // nogncheck
 #include "base/trace_event/typed_macros.h"                // nogncheck
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"  // nogncheck

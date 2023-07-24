@@ -4,20 +4,39 @@
 
 package org.chromium.base;
 
+import static org.mockito.Mockito.verify;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.JniMocker;
 
 /**
  * Tests for {@link TraceEvent}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TraceEventTest {
+    @Rule
+    public JniMocker mocker = new JniMocker();
+
+    @Mock
+    TraceEvent.Natives mNativeMock;
+
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        mocker.mock(TraceEventJni.TEST_HOOKS, mNativeMock);
+    }
+
     @Test
     @SmallTest
     @Feature({"Android-AppBase"})
@@ -65,5 +84,30 @@ public class TraceEventTest {
                 + "org.chromium.myClass.myMethod(org.chromium.myOtherClass.instance)";
         Assert.assertEquals(TraceEvent.BasicLooperMonitor.getTraceEventName(realEventName),
                 TraceEvent.BasicLooperMonitor.FILTERED_EVENT_NAME);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Android-AppBase"})
+    public void testWebViewStartupStage1() {
+        TraceEvent.setEnabled(true);
+        long startTime = 10;
+        long duration = 50;
+        TraceEvent.webViewStartupStage1(startTime, duration);
+        verify(mNativeMock).webViewStartupStage1(startTime, duration);
+        TraceEvent.setEnabled(false);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Android-AppBase"})
+    public void testWebViewStartupStage2() {
+        TraceEvent.setEnabled(true);
+        long startTime = 10;
+        long duration = 50;
+        boolean isCold = true;
+        TraceEvent.webViewStartupStage2(startTime, duration, isCold);
+        verify(mNativeMock).webViewStartupStage2(startTime, duration, isCold);
+        TraceEvent.setEnabled(false);
     }
 }
