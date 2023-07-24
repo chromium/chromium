@@ -276,28 +276,24 @@ UIImage* DefaultFaviconImage() {
   _closeButton = [HighlightButton buttonWithType:UIButtonTypeCustom];
   [_closeButton setTranslatesAutoresizingMaskIntoConstraints:NO];
 
-  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-  // iOS 15.
-  if (base::ios::IsRunningOnIOS15OrLater() &&
-      IsUIButtonConfigurationEnabled()) {
-    if (@available(iOS 15, *)) {
-      UIButtonConfiguration* buttonConfiguration =
-          [UIButtonConfiguration plainButtonConfiguration];
-      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-          kTabCloseTopInset, kTabCloseLeftInset, kTabCloseBottomInset,
-          kTabCloseRightInset);
-      _closeButton.configuration = buttonConfiguration;
-    }
+  UIImage* closeButton =
+      DefaultSymbolTemplateWithPointSize(kXMarkSymbol, kXmarkSymbolPointSize);
+  if (IsUIButtonConfigurationEnabled()) {
+    UIButtonConfiguration* buttonConfiguration =
+        [UIButtonConfiguration plainButtonConfiguration];
+    buttonConfiguration.contentInsets =
+        NSDirectionalEdgeInsetsMake(kTabCloseTopInset, kTabCloseLeftInset,
+                                    kTabCloseBottomInset, kTabCloseRightInset);
+    buttonConfiguration.image = closeButton;
+    _closeButton.configuration = buttonConfiguration;
   } else {
+    [_closeButton setImage:closeButton forState:UIControlStateNormal];
     UIEdgeInsets contentInsets =
         UIEdgeInsetsMake(kTabCloseTopInset, kTabCloseLeftInset,
                          kTabCloseBottomInset, kTabCloseRightInset);
     SetContentEdgeInsets(_closeButton, contentInsets);
   }
 
-  UIImage* closeButton =
-      DefaultSymbolTemplateWithPointSize(kXMarkSymbol, kXmarkSymbolPointSize);
-  [_closeButton setImage:closeButton forState:UIControlStateNormal];
   [_closeButton setAccessibilityLabel:l10n_util::GetNSString(
                                           IDS_IOS_TOOLS_MENU_CLOSE_TAB)];
   [_closeButton addTarget:self
