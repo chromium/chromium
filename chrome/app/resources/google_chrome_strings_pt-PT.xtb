@@ -59,7 +59,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="207902854391093810">Quando as avaliações estão ativadas, a medição de anúncios permite que os sites que visita peçam informações ao Chrome que ajudam o site a medir o desempenho dos respetivos anúncios. A medição de anúncios restringe a monitorização entre sites ao transferir o mínimo de informações possível entre sites.</translation>
 <translation id="2091012649849228750">Para obter atualizações futuras do Google Chrome, precisa do Windows 10 ou posterior. Este computador está a usar o Windows 8.</translation>
 <translation id="2094648590148273905">Termos do ChromeOS Flex</translation>
-<translation id="2094919256425865063">Pretende fechar o Chrome mesmo assim?</translation>
+<translation id="2094919256425865063">Quer fechar o Chrome mesmo assim?</translation>
 <translation id="2106831557840787829">A criação do ChromeOS Flex foi possível devido a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional, como o <ph name="BEGIN_LINK_LINUX_OSS" />ambiente de programação Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2120620239521071941">Esta ação elimina <ph name="ITEMS_COUNT" /> itens deste dispositivo. Para recuperar os seus dados mais tarde, inicie sessão no Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Reiniciar para atualizar o &amp;Chrome</translation>
@@ -71,7 +71,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="223889379102603431">Informações sobre como o Chrome gere os certificados de raiz</translation>
 <translation id="2258103955319320201">Para aceder aos seus itens do navegador Chrome em todos os seus dispositivos, inicie sessão e, em seguida, ative a sincronização</translation>
 <translation id="2290014774651636340">As chaves da API do Google estão em falta. Algumas funcionalidades do Google Chrome serão desativadas.</translation>
-<translation id="2290095356545025170">Tem a certeza de que pretende desinstalar o Google Chrome?</translation>
+<translation id="2290095356545025170">Tem a certeza de que quer desinstalar o Google Chrome?</translation>
 <translation id="2309047409763057870">Esta é uma instalação secundária do Google Chrome, pelo que não pode tornar-se o navegador predefinido.</translation>
 <translation id="2345992953227471816">O Chrome encontrou software malicioso nestas extensões:</translation>
 <translation id="2348335408836342058">O Chrome necessita de autorização de acesso à câmara e ao microfone para este site.</translation>
@@ -80,7 +80,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2401189691232800402">Sistema ChromeOS</translation>
 <translation id="2424440923901031101">Esta extensão viola a Política da Web Store do Chrome e pode não ser segura. Remova-a do Chrome para que deixe de poder ver e alterar os seus dados nos sites que visita, incluindo as suas informações pessoais.</translation>
-<translation id="2467438592969358367">O Google Chrome pretende exportar as suas palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
+<translation id="2467438592969358367">O Google Chrome quer exportar as suas palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
 <translation id="2472092250898121027">Esta extensão contém software malicioso e não é segura. Remova-a do Chrome para que deixe de poder ver e alterar os seus dados nos sites que visita, incluindo as suas informações pessoais.</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
 <translation id="2534507159460261402">Google Pay (copiado para o Chrome)</translation>
@@ -181,7 +181,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="4205939740494406371">O Chrome não consegue verificar as suas palavras-passe. Tente novamente após 24 horas ou <ph name="BEGIN_LINK" />verifique as palavras-passe na sua Conta Google<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">A cancelar…</translation>
 <translation id="4242034826641750751">O Chrome necessita das autorizações da câmara e do microfone para este site</translation>
-<translation id="424864128008805179">Pretende terminar sessão no Chrome?</translation>
+<translation id="424864128008805179">Quer terminar sessão no Chrome?</translation>
 <translation id="4251615635259297716">Associar os seus dados do Chrome a esta conta?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Que dados são usados:<ph name="END_BOLD" /> o seu histórico de navegação, um registo dos sites que visitou através do Chrome neste dispositivo.</translation>
 <translation id="4281844954008187215">Termos de Utilização</translation>
@@ -297,9 +297,9 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="6696915334902295848">O Chrome necessita da autorização do microfone para este site</translation>
 <translation id="6718739135284199302">Torne o Chrome mais rápido</translation>
 <translation id="6735387454586646204">Sistema do ChromeOS Flex</translation>
-<translation id="6739177684496155661">Pretende continuar num novo perfil do Chrome?</translation>
+<translation id="6739177684496155661">Quer continuar num novo perfil do Chrome?</translation>
 <translation id="6750954913813541382">Para corrigir erros ortográficos, o Chrome envia o texto que escrever no navegador para a Google.</translation>
-<translation id="677276454032249905">Pretende sair do Chrome mesmo assim?</translation>
+<translation id="677276454032249905">Quer sair do Chrome mesmo assim?</translation>
 <translation id="683440813066116847">Regra de importação para o Google Chrome Canary permitir o tráfego mDNS.</translation>
 <translation id="6881299373831449287">A atualizar o Chrome</translation>
 <translation id="6885412569789873916">Apps do Chrome Beta</translation>
@@ -315,7 +315,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta conta. Pode gerir as suas Contas Google nas <ph name="SETTINGS_LINK_BEGIN" />Definições<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7062128746136194023">O teu pai/mãe desativou as "Autorizações para sites, apps e extensões" para o Chrome. Não é permitido adicionar esta <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="7071827361006050863">O Chrome vai eliminar os dados de navegação em breve</translation>
-<translation id="7085332316435785646">Escolha se pretende incluir o Histórico do Chrome para obter mais experiências personalizadas nos serviços Google</translation>
+<translation id="7085332316435785646">Escolha se quer incluir o Histórico do Chrome para obter mais experiências personalizadas nos serviços Google</translation>
 <translation id="7088681679121566888">O Chrome está atualizado.</translation>
 <translation id="7098166902387133879">O Google Chrome está a utilizar o microfone.</translation>
 <translation id="7099479769133613710">Reiniciar para atualizar o &amp;ChromeOS</translation>
