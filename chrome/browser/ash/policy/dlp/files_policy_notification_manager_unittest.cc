@@ -168,7 +168,8 @@ class FilesPolicyNotificationManagerTest : public testing::Test {
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   raw_ptr<file_manager::io_task::IOTaskController, DanglingUntriaged>
       io_task_controller_;
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile, DanglingUntriaged> profile_;
   base::ScopedTempDir temp_dir_;
@@ -289,6 +290,7 @@ TEST_F(FilesPolicyNotificationManagerTest, WarningPausesIOTask) {
   fpnm_->ShowDlpWarning(
       base::DoNothing(), task_id, std::vector<base::FilePath>{src_file_path},
       DlpFileDestination(dst_url.path().value()), dlp::FileAction::kCopy);
+  EXPECT_TRUE(fpnm_->HasWarningTimerForTesting(task_id));
 
   // Task is completed with error.
   EXPECT_CALL(
@@ -310,6 +312,7 @@ TEST_F(FilesPolicyNotificationManagerTest, WarningPausesIOTask) {
 
   base::RunLoop().RunUntilIdle();
   io_task_controller_->RemoveObserver(&observer);
+  EXPECT_FALSE(fpnm_->HasWarningTimerForTesting(task_id));
 }
 
 // ShowDlpBlockedFiles updates IO task info.
@@ -407,6 +410,8 @@ TEST_F(FilesPolicyNotificationManagerTest, WarningCancelled) {
       mock_cb.Get(), task_id, std::vector<base::FilePath>{src_file_path},
       DlpFileDestination(dst_url.path().value()), dlp::FileAction::kCopy);
 
+  EXPECT_TRUE(fpnm_->HasWarningTimerForTesting(task_id));
+
   // Task is cancelled.
   EXPECT_CALL(
       observer,
@@ -421,6 +426,7 @@ TEST_F(FilesPolicyNotificationManagerTest, WarningCancelled) {
 
   base::RunLoop().RunUntilIdle();
   io_task_controller_->RemoveObserver(&observer);
+  EXPECT_FALSE(fpnm_->HasWarningTimerForTesting(task_id));
 }
 
 // Tests that resuming a paused IO task will run the warning callback.
@@ -466,10 +472,13 @@ TEST_F(FilesPolicyNotificationManagerTest, WarningResumed) {
       mock_cb.Get(), task_id, std::vector<base::FilePath>{src_file_path},
       DlpFileDestination(dst_url.path().value()), dlp::FileAction::kCopy);
 
+  EXPECT_TRUE(fpnm_->HasWarningTimerForTesting(task_id));
+
   // Warning callback is run with should_proceed set to true when the task is
   // resumed.
   EXPECT_CALL(mock_cb, Run(/*should_proceed=*/true)).Times(1);
   fpnm_->OnIOTaskResumed(task_id);
+  EXPECT_FALSE(fpnm_->HasWarningTimerForTesting(task_id));
 }
 
 // Tests that blocking files from non-tracked IO task will add it to FPNM.
@@ -547,6 +556,7 @@ TEST_F(FilesPolicyNotificationManagerTest, TaskWarnedNotTracked) {
       DlpFileDestination(dst_url.path().value()), dlp::FileAction::kCopy);
 
   EXPECT_TRUE(fpnm_->HasIOTask(task_id));
+  EXPECT_TRUE(fpnm_->HasWarningTimerForTesting(task_id));
 }
 
 class FPNMPausedStatusNotification
@@ -570,6 +580,8 @@ TEST_P(FPNMPausedStatusNotification, PausedShowsWarningNotification_Single) {
       base::DoNothing(), task_id, {base::FilePath(kFile1)},
       DlpFileDestination("https://example.com"),
       is_copy ? dlp::FileAction::kCopy : dlp::FileAction::kMove);
+
+  EXPECT_TRUE(fpnm_->HasWarningTimerForTesting(task_id));
 
   file_manager::io_task::ProgressStatus status;
   status.task_id = task_id;
@@ -615,6 +627,8 @@ TEST_P(FPNMPausedStatusNotification, PausedShowsWarningNotification_Multi) {
       DlpFileDestination("https://example.com"),
       is_copy ? dlp::FileAction::kCopy : dlp::FileAction::kMove);
 
+  EXPECT_TRUE(fpnm_->HasWarningTimerForTesting(task_id));
+
   file_manager::io_task::ProgressStatus status;
   status.task_id = task_id;
   status.state = file_manager::io_task::State::kPaused;
@@ -647,6 +661,8 @@ TEST_P(FPNMPausedStatusNotification, PausedShowsWarningNotification_Multi) {
   EXPECT_EQ(notification->buttons()[1].title,
             l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_REVIEW_BUTTON));
   EXPECT_TRUE(notification->never_timeout());
+
+  EXPECT_TRUE(fpnm_->HasWarningTimerForTesting(task_id));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -932,9 +948,12 @@ TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Single) {
 
   EXPECT_FALSE(display_service_tester.GetNotification(kNotificationId));
   auto src_file_path = base::FilePath(kFile1);
-  fpnm_->ShowDlpWarning(base::DoNothing(), /*task_id=*/absl::nullopt,
+  testing::StrictMock<base::MockCallback<OnDlpRestrictionCheckedCallback>>
+      mock_cb;
+  fpnm_->ShowDlpWarning(mock_cb.Get(), /*task_id=*/absl::nullopt,
                         {src_file_path},
                         DlpFileDestination("https://example.com"), action);
+
   absl::optional<message_center::Notification> notification =
       display_service_tester.GetNotification(kNotificationId);
   EXPECT_TRUE(notification.has_value());
@@ -948,6 +967,11 @@ TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Single) {
   EXPECT_EQ(notification->buttons()[0].title,
             l10n_util::GetStringUTF16(IDS_POLICY_DLP_WARN_CANCEL_BUTTON));
   EXPECT_EQ(notification->buttons()[1].title, GetWarningOkButton(action));
+
+  // Warning callback is run with should_proceed set to false when the warning
+  // times out.
+  EXPECT_CALL(mock_cb, Run(/*should_proceed=*/false)).Times(1);
+  task_environment_.FastForwardBy(base::Minutes(5));
 }
 
 TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Multi) {
@@ -956,9 +980,12 @@ TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Multi) {
   NotificationDisplayServiceTester display_service_tester(profile_.get());
 
   EXPECT_FALSE(display_service_tester.GetNotification(kNotificationId));
-  fpnm_->ShowDlpWarning(base::DoNothing(), /*task_id=*/absl::nullopt,
+  testing::StrictMock<base::MockCallback<OnDlpRestrictionCheckedCallback>>
+      mock_cb;
+  fpnm_->ShowDlpWarning(mock_cb.Get(), /*task_id=*/absl::nullopt,
                         {base::FilePath(kFile1), base::FilePath(kFile2)},
                         DlpFileDestination("https://example.com"), action);
+
   absl::optional<message_center::Notification> notification =
       display_service_tester.GetNotification(kNotificationId);
   EXPECT_TRUE(notification.has_value());
@@ -973,6 +1000,11 @@ TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Multi) {
             l10n_util::GetStringUTF16(IDS_POLICY_DLP_WARN_CANCEL_BUTTON));
   EXPECT_EQ(notification->buttons()[1].title,
             l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_REVIEW_BUTTON));
+
+  // Warning callback is run with should_proceed set to false when the warning
+  // times out.
+  EXPECT_CALL(mock_cb, Run(/*should_proceed=*/false)).Times(1);
+  task_environment_.FastForwardBy(base::Minutes(5));
 }
 
 INSTANTIATE_TEST_SUITE_P(PolicyFilesNotify,

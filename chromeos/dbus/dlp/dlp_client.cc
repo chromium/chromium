@@ -140,7 +140,7 @@ class DlpClientImpl : public DlpClient {
     }
 
     proxy_->CallMethod(
-        &method_call, /*5 minutes*/ 300000,
+        &method_call, base::Minutes(6).InMilliseconds(),
         base::BindOnce(&DlpClientImpl::HandleCheckFilesTransferResponse,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   }
