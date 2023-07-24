@@ -89,6 +89,8 @@
 
 - (void)stop {
   [self stopSafeBrowsingEnhancedProtectionCoordinator];
+  [self stopSafeBrowsingStandardProtectionCoordinator];
+  [super stop];
 }
 
 #pragma mark - SafeBrowsingViewControllerPresentationDelegate
@@ -174,6 +176,12 @@
 - (void)safeBrowsingStandardProtectionCoordinatorDidRemove:
     (SafeBrowsingStandardProtectionCoordinator*)coordinator {
   DCHECK_EQ(self.safeBrowsingStandardProtectionCoordinator, coordinator);
+  [self stopSafeBrowsingStandardProtectionCoordinator];
+}
+
+#pragma mark - Private
+
+- (void)stopSafeBrowsingStandardProtectionCoordinator {
   [self.safeBrowsingStandardProtectionCoordinator stop];
   self.safeBrowsingStandardProtectionCoordinator.delegate = nil;
   self.safeBrowsingStandardProtectionCoordinator = nil;
