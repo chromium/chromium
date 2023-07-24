@@ -67,8 +67,10 @@ class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
   void SubmitCompositorFrame(viz::CompositorFrame frame);
   void SetLocalSurfaceId(const viz::LocalSurfaceId& local_surface_id);
 
-  float LastSubmittedDeviceScaleFactor() const;
-  const gfx::Size& LastSubmittedSizeInPixels() const;
+  // Properties of the `frame` from the last `SubmitCompositorFrame()` call,
+  // either from `cached_frame_`, or `frame_sink_`.
+  float LastDeviceScaleFactor() const;
+  const gfx::Size& LastSizeInPixels() const;
 
   // Returns true if owned LayerTreeFrameSink has been lost.
   bool is_lost() const { return is_lost_; }

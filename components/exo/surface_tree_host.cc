@@ -594,14 +594,10 @@ viz::CompositorFrame SurfaceTreeHost::PrepareToSubmitCompositorFrame() {
                       gfx::Rect(), gfx::Transform());
   frame.metadata.device_scale_factor = device_scale_factor;
 
-  // TODO(crbug.com/1464991): if the frame is throttled by
-  // ReactiveFrameSubmission, `LastSubmittedSizeInPixels()` and
-  // `LastSubmittedDeviceScaleFactor()` does not represent the properties of the
-  // last frame pushed to the queue.
   if (output_surface_size_in_pixels !=
-          layer_tree_frame_sink_holder_->LastSubmittedSizeInPixels() ||
+          layer_tree_frame_sink_holder_->LastSizeInPixels() ||
       device_scale_factor !=
-          layer_tree_frame_sink_holder_->LastSubmittedDeviceScaleFactor()) {
+          layer_tree_frame_sink_holder_->LastDeviceScaleFactor()) {
     AllocateLocalSurfaceId();
   }
   layer_tree_frame_sink_holder_->SetLocalSurfaceId(GetCurrentLocalSurfaceId());
