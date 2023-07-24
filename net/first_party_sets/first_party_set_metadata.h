@@ -31,8 +31,6 @@ class NET_EXPORT FirstPartySetMetadata {
   bool operator==(const FirstPartySetMetadata& other) const;
   bool operator!=(const FirstPartySetMetadata& other) const;
 
-  // Returns a optional<T>& instead of a T* so that operator== can be defined
-  // more easily.
   const absl::optional<FirstPartySetEntry>& frame_entry() const {
     return frame_entry_;
   }
@@ -41,9 +39,7 @@ class NET_EXPORT FirstPartySetMetadata {
   }
 
   // Returns true if `frame_entry` and `top_frame_entry` are both non-null and
-  // have the same primary. This is different from `context_.context_type()`
-  // because it only checks if the the frames' sites are in the same set
-  // regardless of their ancestor chain.
+  // have the same primary.
   bool AreSitesInSameFirstPartySet() const;
 
  private:
