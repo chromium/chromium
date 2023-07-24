@@ -7,6 +7,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/metrics/metrics_service.h"
 #import "components/signin/core/browser/cookie_settings_util.h"
+#import "components/signin/ios/browser/wait_for_network_callback_helper_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -25,7 +26,7 @@ IOSChromeSigninClient::IOSChromeSigninClient(
     scoped_refptr<content_settings::CookieSettings> cookie_settings,
     scoped_refptr<HostContentSettingsMap> host_content_settings_map)
     : network_callback_helper_(
-          std::make_unique<WaitForNetworkCallbackHelper>()),
+          std::make_unique<WaitForNetworkCallbackHelperIOS>()),
       browser_state_(browser_state),
       cookie_settings_(cookie_settings),
       host_content_settings_map_(host_content_settings_map) {}
@@ -75,7 +76,7 @@ bool IOSChromeSigninClient::AreNetworkCallsDelayed() {
 }
 
 void IOSChromeSigninClient::DelayNetworkCall(base::OnceClosure callback) {
-  network_callback_helper_->HandleCallback(std::move(callback));
+  network_callback_helper_->DelayNetworkCall(std::move(callback));
 }
 
 std::unique_ptr<GaiaAuthFetcher> IOSChromeSigninClient::CreateGaiaAuthFetcher(

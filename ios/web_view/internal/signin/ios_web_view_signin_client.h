@@ -7,9 +7,10 @@
 
 #include <memory>
 
-#include "components/signin/ios/browser/wait_for_network_callback_helper.h"
 #include "components/signin/public/base/signin_client.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+class WaitForNetworkCallbackHelperIOS;
 
 namespace ios_web_view {
 class WebViewBrowserState;
@@ -57,7 +58,7 @@ class IOSWebViewSigninClient : public SigninClient {
 
  private:
   // Helper to delay callbacks until connection becomes online again.
-  std::unique_ptr<WaitForNetworkCallbackHelper> network_callback_helper_;
+  std::unique_ptr<WaitForNetworkCallbackHelperIOS> network_callback_helper_;
   // The PrefService associated with this service.
   PrefService* pref_service_;
   // The browser_state_ associated with this service.

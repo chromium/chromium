@@ -5,6 +5,7 @@
 #import "ios/web_view/internal/signin/ios_web_view_signin_client.h"
 
 #import "components/signin/core/browser/cookie_settings_util.h"
+#import "components/signin/ios/browser/wait_for_network_callback_helper_ios.h"
 #import "components/version_info/channel.h"
 #import "ios/web_view/internal/signin/web_view_gaia_auth_fetcher.h"
 #import "ios/web_view/internal/web_view_browser_state.h"
@@ -18,7 +19,7 @@ IOSWebViewSigninClient::IOSWebViewSigninClient(
     PrefService* pref_service,
     ios_web_view::WebViewBrowserState* browser_state)
     : network_callback_helper_(
-          std::make_unique<WaitForNetworkCallbackHelper>()),
+          std::make_unique<WaitForNetworkCallbackHelperIOS>()),
       pref_service_(pref_service),
       browser_state_(browser_state) {}
 
@@ -74,7 +75,7 @@ bool IOSWebViewSigninClient::AreNetworkCallsDelayed() {
 }
 
 void IOSWebViewSigninClient::DelayNetworkCall(base::OnceClosure callback) {
-  network_callback_helper_->HandleCallback(std::move(callback));
+  network_callback_helper_->DelayNetworkCall(std::move(callback));
 }
 
 std::unique_ptr<GaiaAuthFetcher> IOSWebViewSigninClient::CreateGaiaAuthFetcher(

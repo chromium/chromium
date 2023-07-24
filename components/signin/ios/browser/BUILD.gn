@@ -10,8 +10,8 @@ source_set("browser") {
     "account_consistency_service.h",
     "account_consistency_service.mm",
     "manage_accounts_delegate.h",
-    "wait_for_network_callback_helper.cc",
-    "wait_for_network_callback_helper.h",
+    "wait_for_network_callback_helper_ios.cc",
+    "wait_for_network_callback_helper_ios.h",
   ]
 
   deps = [
@@ -68,7 +68,7 @@ source_set("unit_tests") {
   sources = [
     "account_consistency_service_unittest.mm",
     "active_state_manager_impl_unittest.mm",
-    "wait_for_network_callback_helper_unittest.cc",
+    "wait_for_network_callback_helper_ios_unittest.cc",
   ]
 
   deps = [

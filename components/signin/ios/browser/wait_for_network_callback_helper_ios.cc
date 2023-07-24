@@ -2,34 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/signin/ios/browser/wait_for_network_callback_helper.h"
+#include "components/signin/ios/browser/wait_for_network_callback_helper_ios.h"
 
 #include <utility>
 
-WaitForNetworkCallbackHelper::WaitForNetworkCallbackHelper() {
+WaitForNetworkCallbackHelperIOS::WaitForNetworkCallbackHelperIOS() {
   net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
 }
 
-WaitForNetworkCallbackHelper::~WaitForNetworkCallbackHelper() {
+WaitForNetworkCallbackHelperIOS::~WaitForNetworkCallbackHelperIOS() {
   net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
 }
 
-void WaitForNetworkCallbackHelper::OnNetworkChanged(
+void WaitForNetworkCallbackHelperIOS::OnNetworkChanged(
     net::NetworkChangeNotifier::ConnectionType type) {
-  if (net::NetworkChangeNotifier::IsOffline())
+  if (net::NetworkChangeNotifier::IsOffline()) {
     return;
+  }
 
-  for (base::OnceClosure& callback : delayed_callbacks_)
+  std::vector<base::OnceClosure> callbacks;
+  delayed_callbacks_.swap(callbacks);
+  for (base::OnceClosure& callback : callbacks) {
     std::move(callback).Run();
-
-  delayed_callbacks_.clear();
+  }
 }
 
-bool WaitForNetworkCallbackHelper::AreNetworkCallsDelayed() {
+bool WaitForNetworkCallbackHelperIOS::AreNetworkCallsDelayed() {
   return net::NetworkChangeNotifier::IsOffline();
 }
 
-void WaitForNetworkCallbackHelper::HandleCallback(base::OnceClosure callback) {
+void WaitForNetworkCallbackHelperIOS::DelayNetworkCall(
+    base::OnceClosure callback) {
   if (AreNetworkCallsDelayed()) {
     // Will be processed by `OnNetworkChanged()`.
     delayed_callbacks_.push_back(std::move(callback));

@@ -44,6 +44,8 @@ static_library("base") {
     "signin_pref_names.h",
     "signin_switches.cc",
     "signin_switches.h",
+    "wait_for_network_callback_helper.cc",
+    "wait_for_network_callback_helper.h",
   ]
   deps = [
     "//build:chromeos_buildflags",

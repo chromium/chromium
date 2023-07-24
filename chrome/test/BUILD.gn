@@ -6099,6 +6099,12 @@ test("unit_tests") {
     "../test/base/v8_unit_test.h",
   ]
 
+  if (!is_chromeos_ash) {
+    sources += [
+      "../browser/signin/wait_for_network_callback_helper_chrome_unittest.cc",
+    ]
+  }
+
   if (!is_android) {
     sources += [
       # The test is disabled for Android. The respective functionality is currently not being used on

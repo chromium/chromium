@@ -2569,6 +2569,13 @@ static_library("browser") {
     ]
   }
 
+  if (!is_chromeos_ash) {
+    sources += [
+      "signin/wait_for_network_callback_helper_chrome.cc",
+      "signin/wait_for_network_callback_helper_chrome.h",
+    ]
+  }
+
   if (is_android) {
     sources += [
       "accessibility/accessibility_prefs/android/accessibility_prefs_controller.cc",
@@ -5001,6 +5008,8 @@ static_library("browser") {
       "sharesheet/sharesheet_types.h",
       "sharesheet/sharesheet_ui_delegate.h",
       "shell_integration_chromeos.cc",
+      "signin/wait_for_network_callback_helper_ash.cc",
+      "signin/wait_for_network_callback_helper_ash.h",
       "speech/cros_speech_recognition_service.cc",
       "speech/cros_speech_recognition_service.h",
       "speech/cros_speech_recognition_service_factory.cc",
