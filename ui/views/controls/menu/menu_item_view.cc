@@ -728,7 +728,7 @@ void MenuItemView::Layout() {
     const MenuConfig& config = MenuConfig::instance();
     const int icon_x = GetContentStart();
     if (radio_check_image_view_) {
-      const int y = vertical_margin() + (height() - kMenuCheckSize) / 2;
+      const int y = (height() - kMenuCheckSize) / 2;
       radio_check_image_view_->SetBounds(icon_x, y, kMenuCheckSize,
                                          kMenuCheckSize);
     }
