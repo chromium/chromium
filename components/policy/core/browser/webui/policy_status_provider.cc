@@ -147,21 +147,28 @@ base::Value::Dict PolicyStatusProvider::GetStatusFromCore(
 // static
 base::Value::Dict PolicyStatusProvider::GetStatusFromPolicyData(
     const em::PolicyData* policy) {
-  std::string client_id = policy ? policy->device_id() : std::string();
-  std::string username = policy ? policy->username() : std::string();
-
   base::Value::Dict dict;
-  if (policy && policy->has_annotated_asset_id())
-    dict.Set(kAssetIdKey, policy->annotated_asset_id());
-  if (policy && policy->has_annotated_location())
-    dict.Set(kLocationKey, policy->annotated_location());
-  if (policy && policy->has_directory_api_id())
-    dict.Set(kDirectoryApiIdKey, policy->directory_api_id());
-  if (policy && policy->has_gaia_id())
-    dict.Set(kGaiaIdKey, policy->gaia_id());
+  if (!policy) {
+    dict.Set(kClientIdKey, std::string());
+    dict.Set(kUsernameKey, std::string());
+    return dict;
+  }
 
-  dict.Set(kClientIdKey, client_id);
-  dict.Set(kUsernameKey, username);
+  dict.Set(kClientIdKey, policy->device_id());
+  dict.Set(kUsernameKey, policy->username());
+
+  if (policy->has_annotated_asset_id()) {
+    dict.Set(kAssetIdKey, policy->annotated_asset_id());
+  }
+  if (policy->has_annotated_location()) {
+    dict.Set(kLocationKey, policy->annotated_location());
+  }
+  if (policy->has_directory_api_id()) {
+    dict.Set(kDirectoryApiIdKey, policy->directory_api_id());
+  }
+  if (policy->has_gaia_id()) {
+    dict.Set(kGaiaIdKey, policy->gaia_id());
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Include the "Managed by:" attribute for the user policy legend.
