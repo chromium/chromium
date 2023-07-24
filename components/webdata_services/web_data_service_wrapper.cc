@@ -178,11 +178,13 @@ WebDataServiceWrapper::WebDataServiceWrapper(
   }
 
   base::FilePath account_storage_path;
-#if BUILDFLAG(IS_ANDROID) || !BUILDFLAG(USE_BLINK)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // On Android and iOS, the account storage is persisted on disk.
   account_storage_path = context_path.Append(kAccountWebDataFilename);
 #else
+  // On other (desktop) platforms, the account storage is in-memory.
   account_storage_path = base::FilePath(WebDatabase::kInMemoryPath);
-#endif  // BUILDFLAG(IS_ANDROID) || !BUILDFLAG(USE_BLINK)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   account_database_ = base::MakeRefCounted<WebDatabaseService>(
       account_storage_path, ui_task_runner, db_task_runner);
   account_database_->AddTable(std::make_unique<autofill::AutofillTable>());
