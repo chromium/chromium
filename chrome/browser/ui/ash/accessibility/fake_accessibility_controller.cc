@@ -70,6 +70,9 @@ void FakeAccessibilityController::SetDictationActive(bool is_active) {}
 void FakeAccessibilityController::ToggleDictationFromSource(
     ash::DictationToggleSource source) {}
 
+void FakeAccessibilityController::EnableOrToggleDictationFromSource(
+    ash::DictationToggleSource source) {}
+
 void FakeAccessibilityController::ShowDictationLanguageUpgradedNudge(
     const std::string& dictation_locale,
     const std::string& application_locale) {}

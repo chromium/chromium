@@ -84,6 +84,7 @@
 #include "chromeos/ui/wm/desks/chromeos_desks_histogram_enums.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "components/prefs/pref_service.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -595,7 +596,11 @@ bool CanSwapPrimaryDisplay() {
   return display::Screen::GetScreen()->GetNumDisplays() > 1;
 }
 
-bool CanToggleDictation() {
+bool CanEnableOrToggleDictation() {
+  if (::features::IsAccessibilityDictationKeyboardImprovementsEnabled()) {
+    return true;
+  }
+
   return Shell::Get()->accessibility_controller()->dictation().enabled();
 }
 
@@ -1312,8 +1317,8 @@ void ToggleClipboardHistory(bool is_plain_text_paste) {
       is_plain_text_paste);
 }
 
-void ToggleDictation() {
-  Shell::Get()->accessibility_controller()->ToggleDictationFromSource(
+void EnableOrToggleDictation() {
+  Shell::Get()->accessibility_controller()->EnableOrToggleDictationFromSource(
       DictationToggleSource::kKeyboard);
 }
 

@@ -634,6 +634,9 @@ extern const char
 extern const char kAccessibilityChromeVoxPageMigrationName[];
 extern const char kAccessibilityChromeVoxPageMigrationDescription[];
 
+extern const char kAccessibilityDictationKeyboardImprovementsName[];
+extern const char kAccessibilityDictationKeyboardImprovementsDescription[];
+
 extern const char kAccessibilitySelectToSpeakPrefsMigrationName[];
 extern const char kAccessibilitySelectToSpeakPrefsMigrationDescription[];
 

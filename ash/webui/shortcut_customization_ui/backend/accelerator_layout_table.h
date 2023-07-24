@@ -334,7 +334,7 @@ constexpr AcceleratorLayoutDetails kAcceleratorLayouts[] = {
      mojom::AcceleratorSubcategory::kGeneralControls,
      /*locked=*/false, mojom::AcceleratorLayoutStyle::kDefault,
      mojom::AcceleratorSource::kAsh},
-    {AcceleratorAction::kToggleDictation,
+    {AcceleratorAction::kEnableOrToggleDictation,
      IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_DICTATION,
      mojom::AcceleratorCategory::kGeneral,
      mojom::AcceleratorSubcategory::kGeneralControls,

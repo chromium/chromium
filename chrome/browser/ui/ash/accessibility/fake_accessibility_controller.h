@@ -49,6 +49,8 @@ class FakeAccessibilityController : ash::AccessibilityController {
   void SetPointScanSpeedDipsPerSecond(
       int point_scan_speed_dips_per_second) override;
   void ToggleDictationFromSource(ash::DictationToggleSource source) override;
+  void EnableOrToggleDictationFromSource(
+      ash::DictationToggleSource source) override;
   void ShowDictationLanguageUpgradedNudge(
       const std::string& dictation_locale,
       const std::string& application_locale) override;

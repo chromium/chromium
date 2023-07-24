@@ -117,6 +117,13 @@ class ASH_PUBLIC_EXPORT AccessibilityController {
   // Starts or stops dictation. Records metrics for toggling via SwitchAccess.
   virtual void ToggleDictationFromSource(DictationToggleSource source) = 0;
 
+  // Enables Dictation if the feature is currently disabled. Toggles (starts or
+  // stops) Dictation if the feature is currently enabled. Note: this behavior
+  // is currently behind a feature flag - if the feature flag is off, then this
+  // method behaves like ToggleDictationFromSource.
+  virtual void EnableOrToggleDictationFromSource(
+      DictationToggleSource source) = 0;
+
   // Shows a nudge explaining that a user's dictation language was upgraded to
   // work offline.
   virtual void ShowDictationLanguageUpgradedNudge(

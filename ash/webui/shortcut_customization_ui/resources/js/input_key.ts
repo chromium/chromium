@@ -42,6 +42,7 @@ export const keyToIconNameMap: {[key: string]: string|undefined} = {
   'BrowserRefresh': 'refresh',
   'BrowserSearch': 'browser-search',
   'EmojiPicker': 'emoji-picker',
+  'EnableOrToggleDictation': 'dictation-toggle',
   'KeyboardBacklightToggle': 'keyboard-brightness-toggle',
   'KeyboardBrightnessUp': 'keyboard-brightness-up',
   'KeyboardBrightnessDown': 'keyboard-brightness-down',
@@ -61,7 +62,6 @@ export const keyToIconNameMap: {[key: string]: string|undefined} = {
   'PrintScreen': 'screenshot',
   'PrivacyScreenToggle': 'electronic-privacy-screen',
   'Settings': 'settings',
-  'ToggleDictation': 'dictation-toggle',
   'ZoomToggle': 'fullscreen',
 };
 

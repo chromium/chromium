@@ -46,7 +46,7 @@ const base::flat_map<ui::KeyboardCode, std::u16string>& GetKeyDisplayMap() {
           {ui::KeyboardCode::VKEY_PRIVACY_SCREEN_TOGGLE,
            u"PrivacyScreenToggle"},
           {ui::KeyboardCode::VKEY_ALL_APPLICATIONS, u"ViewAllApps"},
-          {ui::KeyboardCode::VKEY_DICTATE, u"ToggleDictation"},
+          {ui::KeyboardCode::VKEY_DICTATE, u"EnableOrToggleDictation"},
           {ui::KeyboardCode::VKEY_WLAN, u"ToggleWifi"},
           {ui::KeyboardCode::VKEY_EMOJI_PICKER, u"EmojiPicker"},
           {ui::KeyboardCode::VKEY_MENU, u"alt"},

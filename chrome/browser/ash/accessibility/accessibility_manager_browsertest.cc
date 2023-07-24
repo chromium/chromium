@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
+#include "chrome/browser/ash/accessibility/dictation_test_utils.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/test/guest_session_mixin.h"
@@ -29,10 +30,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/speech/speech_recognition_constants.h"
+#include "chrome/browser/speech/speech_recognition_test_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/live_caption/pref_names.h"
@@ -1959,6 +1964,141 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerWithAccessibilityServiceTest,
   SetAutoclickEnabled(false);
   SetDictationEnabled(false);
   SetMagnifierEnabled(false);
+}
+
+enum class DictationKeyboardShortcutType { kKey, kKeyboardCombo };
+
+class AccessibilityManagerDictationKeyboardImprovementsTest
+    : public AccessibilityManagerTest,
+      public ::testing::WithParamInterface<DictationKeyboardShortcutType> {
+ public:
+  AccessibilityManagerDictationKeyboardImprovementsTest() = default;
+  ~AccessibilityManagerDictationKeyboardImprovementsTest() override = default;
+  AccessibilityManagerDictationKeyboardImprovementsTest(
+      const AccessibilityManagerDictationKeyboardImprovementsTest&) = delete;
+  AccessibilityManagerDictationKeyboardImprovementsTest& operator=(
+      const AccessibilityManagerDictationKeyboardImprovementsTest&) = delete;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Set the device language to one that is not supported by SODA on ChromeOS.
+    // This will force Dictation to show the confirmation dialog when enabled.
+    command_line->AppendSwitchASCII(::switches::kLang, "it-IT");
+    AccessibilityManagerTest::SetUpCommandLine(command_line);
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kAccessibilityDictationKeyboardImprovements);
+  }
+
+  // Invokes Dictation via the keyboard. The keys that are pressed depend on the
+  // parameter that is passed at test construction.
+  void PressKeys() {
+    switch (GetParam()) {
+      case DictationKeyboardShortcutType::kKey:
+        ASSERT_NO_FATAL_FAILURE(
+            ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+                /*window=*/nullptr, /*key=*/ui::KeyboardCode::VKEY_DICTATE,
+                /*control=*/false, /*shift=*/false, /*alt=*/false,
+                /*command=*/false)));
+        return;
+      case DictationKeyboardShortcutType::kKeyboardCombo:
+        ASSERT_NO_FATAL_FAILURE(
+            ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+                /*window=*/nullptr, /*key=*/ui::KeyboardCode::VKEY_D,
+                /*control=*/false, /*shift=*/false, /*alt=*/false,
+                /*command=*/true)));
+        return;
+    }
+  }
+
+  void AcceptDialog() {
+    AccessibilityManager::Get()->OnNetworkDictationDialogAccepted();
+  }
+
+  void DismissDialog() {
+    AccessibilityManager::Get()->OnNetworkDictationDialogDismissed();
+  }
+
+  bool IsNetworkDictationDialogShowing() {
+    return AccessibilityManager::Get()->network_dictation_dialog_is_showing_;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    DictationKey,
+    AccessibilityManagerDictationKeyboardImprovementsTest,
+    ::testing::Values(DictationKeyboardShortcutType::kKey));
+
+INSTANTIATE_TEST_SUITE_P(
+    DictationKeyboardCombo,
+    AccessibilityManagerDictationKeyboardImprovementsTest,
+    ::testing::Values(DictationKeyboardShortcutType::kKeyboardCombo));
+
+IN_PROC_BROWSER_TEST_P(AccessibilityManagerDictationKeyboardImprovementsTest,
+                       DictationDisabledShowDialogDismiss) {
+  AccessibilityManager* manager = AccessibilityManager::Get();
+  PrefService* prefs = GetActiveUserPrefs();
+  prefs->SetBoolean(prefs::kDictationAcceleratorDialogHasBeenAccepted, false);
+  manager->SetDictationEnabled(false);
+
+  PressKeys();
+  // If the dialog hasn't been accepted yet, then pressing the Dictation key
+  // should enable Dictation and show the network dialog.
+  ASSERT_TRUE(manager->IsDictationEnabled());
+  ASSERT_TRUE(IsNetworkDictationDialogShowing());
+  // Dismissing the dialog should disable the Dictation feature.
+  DismissDialog();
+  ASSERT_FALSE(manager->IsDictationEnabled());
+  ASSERT_FALSE(IsNetworkDictationDialogShowing());
+}
+
+IN_PROC_BROWSER_TEST_P(AccessibilityManagerDictationKeyboardImprovementsTest,
+                       DictationDisabledShowDialogAccept) {
+  AccessibilityManager* manager = AccessibilityManager::Get();
+  PrefService* prefs = GetActiveUserPrefs();
+  prefs->SetBoolean(prefs::kDictationAcceleratorDialogHasBeenAccepted, false);
+  manager->SetDictationEnabled(false);
+
+  PressKeys();
+  ASSERT_TRUE(manager->IsDictationEnabled());
+  ASSERT_TRUE(IsNetworkDictationDialogShowing());
+  // Accepting the dialog should keep the Dictation feature enabled.
+  AcceptDialog();
+  ASSERT_TRUE(manager->IsDictationEnabled());
+  ASSERT_FALSE(IsNetworkDictationDialogShowing());
+}
+
+IN_PROC_BROWSER_TEST_P(AccessibilityManagerDictationKeyboardImprovementsTest,
+                       DictationDisabledNoShowDialog) {
+  AccessibilityManager* manager = AccessibilityManager::Get();
+  PrefService* prefs = GetActiveUserPrefs();
+  prefs->SetBoolean(prefs::kDictationAcceleratorDialogHasBeenAccepted, true);
+  manager->SetDictationEnabled(false);
+
+  PressKeys();
+  // If the dialog has already been accepted yet, then pressing the Dictation
+  // key should enable Dictation.
+  ASSERT_TRUE(manager->IsDictationEnabled());
+  ASSERT_FALSE(IsNetworkDictationDialogShowing());
+}
+
+IN_PROC_BROWSER_TEST_P(AccessibilityManagerDictationKeyboardImprovementsTest,
+                       DictationEnabled) {
+  // Setup and enable Dictation.
+  DictationTestUtils utils =
+      DictationTestUtils(speech::SpeechRecognitionType::kNetwork,
+                         DictationTestUtils::EditableType::kInput);
+  utils.EnableDictation(browser());
+
+  // If Dictation is already enabled, then pressing the Dictation key should
+  // toggle Dictation on/off normally.
+  PressKeys();
+  ASSERT_TRUE(AccessibilityManager::Get()->IsDictationEnabled());
+  utils.WaitForRecognitionStarted();
+  PressKeys();
+  ASSERT_TRUE(AccessibilityManager::Get()->IsDictationEnabled());
+  utils.WaitForRecognitionStopped();
 }
 
 }  // namespace ash
