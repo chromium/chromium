@@ -76,10 +76,14 @@ class SafeBrowsingQueryManager
   // Observer class for the query manager.
   class Observer : public base::CheckedObserver {
    public:
-    // Notifies observers that `query` has completed with `result`.
-    virtual void SafeBrowsingQueryFinished(SafeBrowsingQueryManager* manager,
-                                           const Query& query,
-                                           const Result& result) {}
+    // Notifies observers that `query` has completed with `result` after
+    // performing a check of type `performed_check`.
+    virtual void SafeBrowsingQueryFinished(
+        SafeBrowsingQueryManager* manager,
+        const Query& query,
+        const Result& result,
+        safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
+            performed_check) {}
 
     // Called when `manager` is about to be destroyed.
     virtual void SafeBrowsingQueryManagerDestroyed(

@@ -47,7 +47,8 @@ class FakeSafeBrowsingUrlCheckerImpl
           /*proceed=*/false,
           /*showed_interstitial=*/true,
           /*did_perform_url_real_time_check=*/
-          safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck::kUnknown,
+          safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck::
+              kHashDatabaseCheck,
           /*did_check_url_real_time_allowlist=*/true);
       return;
     }
@@ -55,7 +56,8 @@ class FakeSafeBrowsingUrlCheckerImpl
         /*slow_check_notifier=*/nullptr, /*proceed=*/true,
         /*showed_interstitial=*/false,
         /*did_perform_url_real_time_check=*/
-        safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck::kUnknown,
+        safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck::
+            kHashDatabaseCheck,
         /*did_check_url_real_time_allowlist=*/true);
   }
 };

@@ -1499,6 +1499,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.IOS.TotalDelay2{UserCategory}" units="ms"
+    expires_after="2024-07-21">
+  <owner>ajuma@chromium.org</owner>
+  <owner>joemerramos@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the latency between when a navigation response policy decision was
+    deferred by a Safe Browsing check and when the check is completed, for a
+    {UserCategory} URL check request. This metric is different from
+    SafeBrowsing.IOS.TotalDelay as it logs for each request, including those not
+    deferred and those that are blocked, recording zero delay when the request
+    is not deferred.
+  </summary>
+  <token key="UserCategory">
+    <variant name=".FullUrlLookup" summary="real time"/>
+    <variant name=".HashPrefixDatabaseCheck" summary="hash-prefix database"/>
+    <variant name=".HashPrefixRealTimeCheck" summary="hash-prefix real-time"/>
+    <variant name=".SkippedCheck" summary="skipped"/>
+  </token>
+</histogram>
+
 <histogram name="SafeBrowsing.LocalBinaryUploadRequest.DlpResult"
     enum="BooleanSuccess" expires_after="2023-10-20">
   <owner>rogerta@chromium.org</owner>

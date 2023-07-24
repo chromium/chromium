@@ -132,7 +132,7 @@ void SafeBrowsingQueryManager::UrlCheckFinished(
   // when an observer is notified.
   auto weak_this = weak_factory_.GetWeakPtr();
   for (auto& observer : observers_) {
-    observer.SafeBrowsingQueryFinished(this, query, result);
+    observer.SafeBrowsingQueryFinished(this, query, result, performed_check);
     if (!weak_this)
       return;
   }
