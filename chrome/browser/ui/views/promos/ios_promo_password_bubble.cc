@@ -70,8 +70,8 @@ class IOSPromoPasswordBubbleDelegate : public ui::DialogModelDelegate {
 
   // Handler for when the window closes.
   void OnWindowClosing() {
+    qr_code_service_.reset();
     ios_promo_password_delegate_ = nullptr;
-    qr_code_service_ = nullptr;
   }
 
   // Callback for when the bubble is dismissed.
@@ -214,22 +214,6 @@ std::unique_ptr<views::View> CreateFooter(
         .Build();
 
   } else if (variant == IOSPromoPasswordBubble::PromoVariant::QR_CODE_VARIANT) {
-    qrcode_generator::mojom::GenerateQRCodeRequestPtr request =
-        qrcode_generator::mojom::GenerateQRCodeRequest::New();
-    request->data = std::string(constants::kQRCodeURL);
-    request->center_image = qrcode_generator::mojom::CenterImage::CHROME_DINO;
-
-    request->render_module_style =
-        qrcode_generator::mojom::ModuleStyle::CIRCLES;
-    request->render_locator_style =
-        qrcode_generator::mojom::LocatorStyle::ROUNDED;
-
-    auto callback =
-        base::BindOnce(&IOSPromoPasswordBubbleDelegate::OnQrCodeGenerated,
-                       base::Unretained(bubble_delegate));
-    bubble_delegate->GetQRCodeGenerator().GenerateQRCode(std::move(request),
-                                                         std::move(callback));
-
     auto footer_content_container =
         views::Builder<views::FlexLayoutView>()
             .SetOrientation(views::LayoutOrientation::kHorizontal)
@@ -273,9 +257,30 @@ std::unique_ptr<views::View> CreateFooter(
                         2)))
             .SetFlexAllocationOrder(views::FlexAllocationOrder::kReverse);
 
-    return std::move(footer_view.AddChild(footer_title_container)
-                         .AddChild(footer_content_container))
-        .Build();
+    auto built_footer_view =
+        std::move(footer_view.AddChild(footer_title_container)
+                      .AddChild(footer_content_container))
+            .Build();
+
+    qrcode_generator::mojom::GenerateQRCodeRequestPtr request =
+        qrcode_generator::mojom::GenerateQRCodeRequest::New();
+    request->data = std::string(constants::kQRCodeURL);
+    request->center_image = qrcode_generator::mojom::CenterImage::CHROME_DINO;
+
+    request->render_module_style =
+        qrcode_generator::mojom::ModuleStyle::CIRCLES;
+    request->render_locator_style =
+        qrcode_generator::mojom::LocatorStyle::ROUNDED;
+
+    // Rationale for Unretained(): Closing the bubble destroys qr_code_service_
+    // so the callback will not run (see also the doc comment of
+    // QRImageGenerator::GenerateQRCode).
+    auto callback =
+        base::BindOnce(&IOSPromoPasswordBubbleDelegate::OnQrCodeGenerated,
+                       base::Unretained(bubble_delegate));
+    bubble_delegate->GetQRCodeGenerator().GenerateQRCode(std::move(request),
+                                                         std::move(callback));
+    return built_footer_view;
   } else {
     NOTREACHED_NORETURN();
   }
