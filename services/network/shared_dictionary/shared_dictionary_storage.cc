@@ -127,6 +127,11 @@ SharedDictionaryStorage::MaybeCreateWriter(
       return nullptr;
     }
   }
+  // Do not write an existing shared dictionary from the HTTP caches to the
+  // shared dictionary storage. Note that IsAlreadyRegistered() can return false
+  // even when `was_fetched_via_cache` is true. This is because the shared
+  // dictionary storage has its own cache eviction logic, which is different
+  // from the HTTP Caches's eviction logic.
   if (was_fetched_via_cache &&
       IsAlreadyRegistered(url, response_time, expiration, info->match)) {
     return nullptr;
