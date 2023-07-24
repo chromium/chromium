@@ -5,6 +5,7 @@
 #ifndef WOLVIC_WOLVIC_CONTENT_BROWSER_CLIENT_H_
 #define WOLVIC_WOLVIC_CONTENT_BROWSER_CLIENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/content_browser_client.h"
 #include "wolvic/browser/vr/wolvic_xr_integration_client.h"
 
@@ -41,7 +42,7 @@ class WolvicContentBrowserClient : public ContentBrowserClient {
 #endif
 
  private:
-  WolvicMainParts* browser_main_parts_;
+  raw_ptr<WolvicMainParts> browser_main_parts_;
 #if BUILDFLAG(ENABLE_VR)
   std::unique_ptr<wolvic::WolvicXrIntegrationClient> xr_integration_client_;
 #endif

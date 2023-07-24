@@ -6,6 +6,7 @@
 #define WOLVIC_BROWSER_VR_WVR_MANAGER_H_
 
 #include "base/cancelable_callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -137,7 +138,7 @@ class WvrManager : public device::mojom::XRPresentationProvider,
   // Communicate via mozilla shared memory.
   mozilla::gfx::VRBrowserState browser_state_;
   mozilla::gfx::VRSystemState system_state_;
-  mozilla::gfx::VRExternalShmem* shmem_;
+  raw_ptr<mozilla::gfx::VRExternalShmem> shmem_;
 
   // on WVR Thread
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

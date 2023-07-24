@@ -10,6 +10,7 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_utils.h"
+#include "ui/gl/gpu_preference.h"
 #include "ui/gl/init/gl_factory.h"
 #include "wolvic/jni_headers/WVRSurfaceTexture_jni.h"
 
@@ -48,7 +49,7 @@ void WvrGraphicsDelegate::InitializeGl(const gfx::Size& frame_size,
 
   gl::GLDisplay* display = nullptr;
   if (gl::GetGLImplementation() == gl::kGLImplementationNone) {
-    display = gl::init::InitializeGLOneOff(/*system_device_id=*/0);
+    display = gl::init::InitializeGLOneOff(gl::GpuPreference::kDefault);
     if (!display) {
       LOG(ERROR) << "gl::init::InitializeGLOneOff failed";
       return;
