@@ -241,8 +241,9 @@ class ReadbackHolder : public base::RefCountedThreadSafe<ReadbackHolder> {
 
 const cc::ExactPixelComparator pixel_comparator;
 
-// Flaky on Lacros: https://crbug.com/1289366
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug/1289366): Fix flaky test on Lacros.
+// TODO(crbug/1467250): Fix flaky test on Mac.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
 #define MAYBE_FocusAppearance DISABLED_FocusAppearance
 #else
 #define MAYBE_FocusAppearance FocusAppearance
