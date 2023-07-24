@@ -61,7 +61,7 @@ RawPtrAsanBoundArgTracker::~RawPtrAsanBoundArgTracker() {
 
 void RawPtrAsanBoundArgTracker::Add(uintptr_t ptr) {
   if (ptr) {
-    protected_args_->push_back(ptr);
+    protected_args_.push_back(ptr);
   }
 }
 
