@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/channel_info.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -61,7 +62,10 @@ static void JNI_EndpointFetcher_NativeFetchOAuth(
       net::NetworkTrafficAnnotationTag::FromJavaAnnotation(
           jannotation_hash_code),
       IdentityManagerFactory::GetForProfile(
-          ProfileAndroid::FromProfileAndroid(jprofile)));
+          ProfileAndroid::FromProfileAndroid(jprofile)),
+      // TODO(crbug.com/1466445): ConsentLevel::kSync is deprecated and should
+      //     be removed. See ConsentLevel::kSync documentation for details.
+      signin::ConsentLevel::kSync);
   auto* const endpoint_fetcher_ptr = endpoint_fetcher.get();
   endpoint_fetcher_ptr->Fetch(
       base::BindOnce(&OnEndpointFetcherComplete,

@@ -258,13 +258,15 @@ AccessCodeCastDiscoveryInterface::CreateEndpointFetcher(
   std::vector<std::string> discovery_scopes;
   discovery_scopes.push_back(kDiscoveryOAuth2Scope);
 
+  // TODO(crbug.com/1466447): ConsentLevel::kSync is deprecated and should be
+  //     removed. See ConsentLevel::kSync documentation for details.
   return std::make_unique<EndpointFetcher>(
       profile_->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
       kDiscoveryOAuthConsumerName,
       GURL(base::StrCat({GetDiscoveryUrl(), "/", access_code})), kGetMethod,
       kContentType, discovery_scopes, kTimeoutMs, kEmptyPostData,
-      kTrafficAnnotation, identity_manager_);
+      kTrafficAnnotation, identity_manager_, signin::ConsentLevel::kSync);
 }
 
 void AccessCodeCastDiscoveryInterface::ValidateDiscoveryAccessCode(

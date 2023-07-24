@@ -64,7 +64,7 @@ class EndpointFetcherTest : public testing::Test {
         kOAuthConsumerName, GURL(kEndpoint), kHttpPostMethod, kContentType,
         std::vector<std::string>{kScope}, kMockTimeoutMs, kMockPostData,
         TRAFFIC_ANNOTATION_FOR_TESTS, test_url_loader_factory,
-        identity_test_env_.identity_manager());
+        identity_test_env_.identity_manager(), signin::ConsentLevel::kSync);
     in_process_data_decoder_ =
         std::make_unique<data_decoder::test::InProcessDataDecoder>();
   }

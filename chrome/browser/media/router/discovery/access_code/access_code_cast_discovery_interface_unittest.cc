@@ -189,11 +189,13 @@ class AccessCodeCastDiscoveryInterfaceTest : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
 
+    // TODO(crbug.com/1466447): ConsentLevel::kSync is deprecated and should be
+    //     removed. See ConsentLevel::kSync documentation for details.
     endpoint_fetcher_ = std::make_unique<EndpointFetcher>(
         kMockOAuthConsumerName, GURL(kMockEndpoint), kHttpMethod,
         kMockContentType, std::vector<std::string>{kMockScope}, kMockTimeoutMs,
         kMockPostData, TRAFFIC_ANNOTATION_FOR_TESTS, test_url_loader_factory,
-        identity_test_env_.identity_manager());
+        identity_test_env_.identity_manager(), signin::ConsentLevel::kSync);
 
     logger_ = std::make_unique<LoggerImpl>();
 
