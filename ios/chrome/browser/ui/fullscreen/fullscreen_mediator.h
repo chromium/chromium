@@ -59,6 +59,8 @@ class FullscreenMediator : public FullscreenModelObserver {
   // Force enters fullscreen without animation. This enters fullscreen even when
   // the model is disabled.
   void ForceEnterFullscreen();
+  // Exits fullscreen without animation.
+  void ExitFullscreenWithoutAnimation();
 
   // Instructs the mediator to stop observing its model.
   void Disconnect();

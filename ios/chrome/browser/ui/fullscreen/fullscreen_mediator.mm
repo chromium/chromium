@@ -79,6 +79,10 @@ void FullscreenMediator::ForceEnterFullscreen() {
   model_->ForceEnterFullscreen();
 }
 
+void FullscreenMediator::ExitFullscreenWithoutAnimation() {
+  model_->ResetForNavigation();
+}
+
 void FullscreenMediator::Disconnect() {
   for (auto& observer : observers_) {
     observer.FullscreenControllerWillShutDown(controller_);

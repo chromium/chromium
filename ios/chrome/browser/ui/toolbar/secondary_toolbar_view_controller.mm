@@ -133,8 +133,8 @@ const NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
 /// Resets secondary toolbar when it's detached from the keyboard.
 - (void)removeFromKeyboard {
   if (_fullscreenController) {
+    _fullscreenController->ExitFullscreenWithoutAnimation();
     _fullscreenController->DecrementDisabledCounter();
-    _fullscreenController->ExitFullscreen();
   }
 }
 
