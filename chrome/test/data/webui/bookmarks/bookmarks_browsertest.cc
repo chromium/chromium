@@ -37,8 +37,7 @@ IN_PROC_BROWSER_TEST_F(BookmarksTest, App) {
   RunTest("bookmarks/app_test.js", "mocha.run()");
 }
 
-// https://crbug.com/1010381: Flaky.
-IN_PROC_BROWSER_TEST_F(BookmarksTest, DISABLED_CommandManager) {
+IN_PROC_BROWSER_TEST_F(BookmarksTest, CommandManager) {
   RunTest("bookmarks/command_manager_test.js", "mocha.run()");
 }
 
