@@ -818,9 +818,9 @@ def builder(
         reclient_scandeps_server,
     )
 
-    # Enable scandeps_server on Mac by default.
+    # Enable scandeps_server by default.
     if reclient_scandeps_server == args.COMPUTE:
-        reclient_scandeps_server = os and os.category == os_category.MAC
+        reclient_scandeps_server = True
 
     reclient = _reclient_property(
         instance = reclient_instance,

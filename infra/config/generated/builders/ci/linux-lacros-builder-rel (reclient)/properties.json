@@ -46,7 +46,8 @@
     "metrics_project": "chromium-reclient-metrics",
     "rewrapper_env": {
       "RBE_cache_silo": "linux-lacros-builder-rel (reclient)"
-    }
+    },
+    "scandeps_server": true
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
