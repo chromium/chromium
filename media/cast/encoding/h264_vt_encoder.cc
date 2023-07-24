@@ -32,11 +32,7 @@ using Dependency = openscreen::cast::EncodedFrame::Dependency;
 
 namespace media {
 namespace cast {
-
-namespace {
-
-// Container for the associated data of a video frame being processed.
-struct InProgressH264VTFrameEncode {
+struct H264VideoToolboxEncoder::InProgressH264VTFrameEncode {
   const RtpTimeTicks rtp_timestamp;
   const base::TimeTicks reference_time;
   VideoEncoder::FrameEncodedCallback frame_encoded_callback;
@@ -48,8 +44,6 @@ struct InProgressH264VTFrameEncode {
         reference_time(r_time),
         frame_encoded_callback(std::move(callback)) {}
 };
-
-}  // namespace
 
 class H264VideoToolboxEncoder::VideoFrameFactoryImpl final
     : public base::RefCountedThreadSafe<VideoFrameFactoryImpl>,
@@ -494,25 +488,18 @@ void H264VideoToolboxEncoder::OnResume() {
   }
 }
 
+// static
 void H264VideoToolboxEncoder::CompressionCallback(void* encoder_opaque,
                                                   void* request_opaque,
                                                   OSStatus status,
                                                   VTEncodeInfoFlags info,
                                                   CMSampleBufferRef sbuf) {
-  auto* encoder = reinterpret_cast<H264VideoToolboxEncoder*>(encoder_opaque);
-  std::unique_ptr<InProgressH264VTFrameEncode> request(
-      reinterpret_cast<InProgressH264VTFrameEncode*>(request_opaque));
+  // This function may be called asynchronously, on a different thread from the
+  // one that calls VTCompressionSessionEncodeFrame().
   bool is_keyframe = false;
-  bool has_frame_data = false;
-
-  if (status != noErr) {
-    DLOG(ERROR) << " encoding failed: " << status;
-    encoder->cast_environment_->PostTask(
-        CastEnvironment::MAIN, FROM_HERE,
-        base::BindOnce(encoder->status_change_cb_, STATUS_CODEC_RUNTIME_ERROR));
-  } else if ((info & kVTEncodeInfo_FrameDropped)) {
-    DVLOG(2) << " frame dropped";
-  } else {
+  std::string data;
+  DVLOG_IF(2, (info & kVTEncodeInfo_FrameDropped)) << " frame dropped";
+  if (status == noErr && !(info & kVTEncodeInfo_FrameDropped)) {
     auto* sample_attachments =
         static_cast<CFDictionaryRef>(CFArrayGetValueAtIndex(
             CMSampleBufferGetSampleAttachmentsArray(sbuf, true), 0));
@@ -522,12 +509,33 @@ void H264VideoToolboxEncoder::CompressionCallback(void* encoder_opaque,
     // alternatively use kCMSampleAttachmentKey_DependsOnOthers == false.
     is_keyframe = !CFDictionaryContainsKey(sample_attachments,
                                            kCMSampleAttachmentKey_NotSync);
-    has_frame_data = true;
+    video_toolbox::CopySampleBufferToAnnexBBuffer(VideoCodec::kH264, sbuf,
+                                                  is_keyframe, &data);
+  }
+  auto* encoder = reinterpret_cast<H264VideoToolboxEncoder*>(encoder_opaque);
+  encoder->cast_environment_->PostTask(
+      CastEnvironment::MAIN, FROM_HERE,
+      base::BindOnce(&H264VideoToolboxEncoder::CompressionCallbackTask,
+                     encoder->weak_factory_.GetWeakPtr(),
+                     base::WrapUnique(static_cast<InProgressH264VTFrameEncode*>(
+                         request_opaque)),
+                     status, is_keyframe, std::move(data)));
+}
+
+void H264VideoToolboxEncoder::CompressionCallbackTask(
+    std::unique_ptr<InProgressH264VTFrameEncode> request,
+    OSStatus status,
+    bool is_keyframe,
+    std::string data) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (status != noErr) {
+    DLOG(ERROR) << " encoding failed: " << status;
+    status_change_cb_.Run(STATUS_CODEC_RUNTIME_ERROR);
   }
 
   // Grab the next frame ID and increment |next_frame_id_| for next time.
   // VideoToolbox calls the output callback serially, so this is safe.
-  const FrameId frame_id = encoder->next_frame_id_++;
+  const FrameId frame_id = next_frame_id_++;
 
   std::unique_ptr<SenderEncodedFrame> encoded_frame(new SenderEncodedFrame());
   encoded_frame->frame_id = frame_id;
@@ -550,18 +558,14 @@ void H264VideoToolboxEncoder::CompressionCallback(void* encoder_opaque,
     encoded_frame->referenced_frame_id = frame_id - 1;
   }
 
-  if (has_frame_data) {
-    video_toolbox::CopySampleBufferToAnnexBBuffer(
-        VideoCodec::kH264, sbuf, is_keyframe, &encoded_frame->data);
+  if (!data.empty()) {
+    encoded_frame->data = std::move(data);
   }
 
   encoded_frame->encode_completion_time =
-      encoder->cast_environment_->Clock()->NowTicks();
-  encoded_frame->encoder_bitrate = encoder->average_bitrate_;
-  encoder->cast_environment_->GetTaskRunner(CastEnvironment::MAIN)
-      ->PostTask(FROM_HERE,
-                 base::BindOnce(std::move(request->frame_encoded_callback),
-                                std::move(encoded_frame)));
+      cast_environment_->Clock()->NowTicks();
+  encoded_frame->encoder_bitrate = average_bitrate_;
+  std::move(request->frame_encoded_callback).Run(std::move(encoded_frame));
 }
 
 }  // namespace cast
