@@ -9,6 +9,7 @@
 #include "base/base64.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
@@ -535,7 +536,9 @@ VariationsIdsProvider::GetAllVariationIds() {
   // The entropy source value is used for retrospective A/A tests to validate
   // that there's no existing bias between two randomized groups of clients for
   // a later A/B study.
-  if (low_entropy_source_value_) {
+  base::UmaHistogramBoolean("Variations.Headers.HasLowEntropySourceValue",
+                            low_entropy_source_value_.has_value());
+  if (low_entropy_source_value_.has_value()) {
     int source_value = low_entropy_source_value_.value() +
                        kLowEntropySourceVariationIdRangeMin;
     DCHECK_GE(source_value, kLowEntropySourceVariationIdRangeMin);
