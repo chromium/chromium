@@ -8,13 +8,10 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
-#include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
-#include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller_impl.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_impl.h"
 #include "chrome/browser/signin/bound_session_credentials/unexportable_key_service_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/public/base/signin_switches.h"
 
@@ -37,13 +34,11 @@ BoundSessionCookieRefreshServiceFactory::
     : ProfileKeyedServiceFactory(
           "BoundSessionCookieRefreshService",
           ProfileSelections::Builder()
+              // TODO(b/279719658): Enable on OTR profiles after removing
+              // dependency on `ChromeSigninClient`.
               .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/1418376): Check if this service is needed in
-              // Guest mode.
               .WithGuest(ProfileSelection::kOriginalOnly)
               .Build()) {
-  DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(AccountConsistencyModeManagerFactory::GetInstance());
   DependsOn(ChromeSigninClientFactory::GetInstance());
   DependsOn(UnexportableKeyServiceFactory::GetInstance());
 }
@@ -59,12 +54,6 @@ BoundSessionCookieRefreshServiceFactory::BuildServiceInstanceForBrowserContext(
   }
 
   Profile* profile = Profile::FromBrowserContext(context);
-  // The account consistency method should not change during the lifetime of a
-  // profile. This service is needed when Dice is enabled.
-  if (!AccountConsistencyModeManager::IsDiceEnabledForProfile(profile)) {
-    return nullptr;
-  }
-
   unexportable_keys::UnexportableKeyService* key_service =
       UnexportableKeyServiceFactory::GetForProfile(profile);
 
@@ -75,8 +64,7 @@ BoundSessionCookieRefreshServiceFactory::BuildServiceInstanceForBrowserContext(
   std::unique_ptr<BoundSessionCookieRefreshService>
       bound_session_cookie_refresh_service =
           std::make_unique<BoundSessionCookieRefreshServiceImpl>(
-              *key_service, ChromeSigninClientFactory::GetForProfile(profile),
-              IdentityManagerFactory::GetForProfile(profile));
+              *key_service, ChromeSigninClientFactory::GetForProfile(profile));
   bound_session_cookie_refresh_service->Initialize();
   return bound_session_cookie_refresh_service;
 }
