@@ -4,13 +4,21 @@
 
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
 
+#include <algorithm>
+#include <memory>
+#include <string>
+#include <tuple>
+#include <utility>
+#include <vector>
+
 #include "base/containers/cxx20_erase.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/validation.h"
+#include "components/autofill/core/common/signatures.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/form_saver.h"
 #include "components/password_manager/core/browser/form_saver_impl.h"
@@ -26,7 +34,6 @@
 using autofill::FieldRendererId;
 using autofill::FormData;
 using autofill::FormFieldData;
-using autofill::FormStructure;
 
 namespace password_manager {
 
@@ -820,7 +827,8 @@ void PasswordSaveManagerImpl::UploadVotesAndMetrics(
     votes_uploader_->MaybeSendSingleUsernameVote();
     votes_uploader_->UploadPasswordVote(
         parsed_submitted_form, parsed_submitted_form, autofill::NEW_PASSWORD,
-        FormStructure(pending_credentials_.form_data).FormSignatureAsStr());
+        base::NumberToString(
+            *autofill::CalculateFormSignature(pending_credentials_.form_data)));
   }
 
   if (pending_credentials_.times_used_in_html_form == 1) {

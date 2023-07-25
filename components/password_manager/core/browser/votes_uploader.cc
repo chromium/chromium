@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_download_manager.h"
@@ -341,9 +342,9 @@ void VotesUploader::SendVotesOnSave(
     UploadPasswordVote(*pending_credentials, submitted_form, autofill::PASSWORD,
                        std::string());
     if (username_correction_vote_) {
-      UploadPasswordVote(*username_correction_vote_, submitted_form,
-                         autofill::USERNAME,
-                         FormStructure(observed).FormSignatureAsStr());
+      UploadPasswordVote(
+          *username_correction_vote_, submitted_form, autofill::USERNAME,
+          base::NumberToString(*autofill::CalculateFormSignature(observed)));
       username_correction_vote_.reset();
     }
   } else {
