@@ -5966,6 +5966,11 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_CLIPBOARD_HISTORY_HEADER_TITLE" desc="The title of the ChromeOS clipboard history menu, which shows the user's most recently copied items.">
         Clipboard
       </message>
+      <message name="IDS_ASH_CLIPBOARD_HISTORY_FILE_COUNT" desc="The number of files copied in a single copy action, as presented in a menu item summarizing the copied data. [ICU Syntax]">
+        {NUM_FILES, plural,
+         =1 {1 file}
+         other {# files}}
+      </message>
       <message name="IDS_ASH_MULTIPASTE_CONTEXTUAL_NUDGE" desc="The label used for the multipaste nudge, to be seen once the user copies and pastes multiple times in a short time span.">
         Press <ph name="SHORTCUT_KEY_NAME">$1<ex>Launcher</ex></ph> + V to view your clipboard. The last 5 items you've copied are saved to your clipboard.
       </message>

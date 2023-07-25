@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/clipboard/clipboard_history_util.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/callback_list.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
@@ -97,6 +98,13 @@ std::u16string DetermineDisplayTextForFileSystemData(
   if (sources.empty()) {
     NOTREACHED();
     return std::u16string();
+  }
+
+  size_t file_count = source_list.size();
+  if (chromeos::features::IsClipboardHistoryRefreshEnabled() &&
+      file_count > 1u) {
+    return l10n_util::GetPluralStringFUTF16(
+        IDS_ASH_CLIPBOARD_HISTORY_FILE_COUNT, file_count);
   }
 
   // Strip path information, so all that's left are file names.

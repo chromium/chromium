@@ -989,8 +989,7 @@ class ClipboardHistoryRefreshDisplayFormatTest
         WriteFilePathsAndConfirm({u"dummy_child1.jpg", u"dummy_child2.png"});
 
         if (refresh_feature_enabled) {
-          return {{u"dummy_child1.jpg, dummy_child2.png",
-                   get_icon(vector_icons::kContentCopyIcon)},
+          return {{u"2 files", get_icon(vector_icons::kContentCopyIcon)},
                   {u"dummy_file.webm", get_icon(chromeos::kFiletypeVideoIcon)},
                   {show_clipboard_menu_label, gfx::Image()}};
         }
