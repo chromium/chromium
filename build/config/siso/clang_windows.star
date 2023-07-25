@@ -7,6 +7,7 @@
 load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
 load("./clang_all.star", "clang_all")
+load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
 load("./rewrapper_cfg.star", "rewrapper_cfg")
 
 __filegroups = {
@@ -28,7 +29,12 @@ __filegroups = {
 
 __filegroups.update(clang_all.filegroups)
 
+def __clang_compile_coverage(ctx, cmd):
+    clang_command = clang_code_coverage_wrapper.run(ctx, list(cmd.args))
+    ctx.actions.fix(args = clang_command)
+
 __handlers = {
+    "clang_compile_coverage": __clang_compile_coverage,
 }
 
 def __step_config(ctx, step_config):
@@ -202,6 +208,30 @@ def __step_config(ctx, step_config):
                 "name": "clang-cl/cc",
                 "action": "(.*_)?cc",
                 "command_prefix": "..\\..\\third_party\\llvm-build\\Release+Asserts\\bin\\clang-cl.exe",
+                "platform_ref": "clang-cl",
+                "remote": True,
+                "remote_wrapper": reproxy_config["remote_wrapper"],
+            },
+            {
+                "name": "clang-coverage/cxx",
+                "action": "(.*_)?cxx",
+                "command_prefix": "python3.exe ../../build/toolchain/clang_code_coverage_wrapper.py",
+                "inputs": [
+                    "third_party/llvm-build/Release+Asserts/bin/clang++",
+                ],
+                "handler": "clang_compile_coverage",
+                "platform_ref": "clang-cl",
+                "remote": True,
+                "remote_wrapper": reproxy_config["remote_wrapper"],
+            },
+            {
+                "name": "clang-coverage/cc",
+                "action": "(.*_)?cc",
+                "command_prefix": "python3.exe ../../build/toolchain/clang_code_coverage_wrapper.py",
+                "inputs": [
+                    "third_party/llvm-build/Release+Asserts/bin/clang",
+                ],
+                "handler": "clang_compile_coverage",
                 "platform_ref": "clang-cl",
                 "remote": True,
                 "remote_wrapper": reproxy_config["remote_wrapper"],
