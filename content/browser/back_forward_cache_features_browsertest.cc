@@ -4289,11 +4289,12 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // This test is not important for Chrome OS if TTS is called in content. For
 // more details refer (content/browser/speech/tts_platform_impl.cc).
-#if BUILDFLAG(IS_CHROMEOS)
+// TODO(https://crbug.com/1467661): Test is flaky on iOS and Android.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_CacheIfUsingSpeechSynthesis DISABLED_CacheIfUsingSpeechSynthesis
 #else
 #define MAYBE_CacheIfUsingSpeechSynthesis CacheIfUsingSpeechSynthesis
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithSpeechSynthesis,
                        MAYBE_CacheIfUsingSpeechSynthesis) {
   ASSERT_TRUE(embedded_test_server()->Start());
