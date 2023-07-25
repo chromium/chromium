@@ -14,6 +14,7 @@ import android.os.Handler;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -72,6 +73,11 @@ public class NewTabPageLoadTest {
         mSuggestionDeps.getFactory().largeIconBridge = new AsyncMockLargeIconBridge();
 
         mTab = sActivityTestRule.getActivity().getActivityTab();
+    }
+
+    @After
+    public void tearDown() {
+        mTestServer.stopAndDestroyServer();
     }
 
     @Test

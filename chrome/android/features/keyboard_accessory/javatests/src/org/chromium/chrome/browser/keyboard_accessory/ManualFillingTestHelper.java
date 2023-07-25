@@ -146,6 +146,7 @@ public class ManualFillingTestHelper {
     }
 
     public void clear() {
+        if (mEmbeddedTestServer != null) mEmbeddedTestServer.stopAndDestroyServer();
         ChromeWindow.resetKeyboardVisibilityDelegateFactory();
     }
 

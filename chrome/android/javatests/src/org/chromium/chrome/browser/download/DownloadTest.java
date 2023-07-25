@@ -184,6 +184,7 @@ public class DownloadTest implements CustomMainActivityStart {
 
     @After
     public void tearDown() {
+        mTestServer.stopAndDestroyServer();
         deleteTestFiles();
     }
 

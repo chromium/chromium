@@ -79,6 +79,7 @@ public class IncognitoCookieLeakageTest {
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> IncognitoDataTestUtils.closeTabs(mChromeActivityTestRule));
+        mTestServer.stopAndDestroyServer();
     }
 
     private void setCookies(Tab tab) throws TimeoutException {

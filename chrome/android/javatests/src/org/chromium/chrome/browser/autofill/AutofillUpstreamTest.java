@@ -9,6 +9,7 @@ import android.os.Build;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -60,6 +61,11 @@ public class AutofillUpstreamTest {
                 EmbeddedTestServer.ServerHTTPSSetting.USE_HTTP);
         mServer.addDefaultHandlers(TEST_SERVER_DIR);
         mServer.start();
+    }
+
+    @After
+    public void tearDown() {
+        mServer.stopAndDestroyServer();
     }
 
     private void assertInfoBarPrimaryButtonLabel(String buttonLabel) {

@@ -95,6 +95,7 @@ public class PortalsTest {
 
     @After
     public void tearDown() {
+        mTestServer.stopAndDestroyServer();
         LocationUtils.setFactory(null);
     }
 

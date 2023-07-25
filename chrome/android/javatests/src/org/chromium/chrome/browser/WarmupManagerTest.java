@@ -301,31 +301,37 @@ public class WarmupManagerTest {
         ProfileType profileType = ProfileType.valueOf(profileParameter);
         Profile profile = getProfile(profileType);
         EmbeddedTestServer server = new EmbeddedTestServer();
-        // The predictor prepares 2 connections when asked to preconnect. Initializes the
-        // semaphore to be unlocked after 2 connections.
-        final Semaphore connectionsSemaphore = new Semaphore(1 - 2);
-        // Cannot use EmbeddedTestServer#createAndStartServer(), as we need to add the
-        // connection listener.
-        server.initializeNative(mContext, EmbeddedTestServer.ServerHTTPSSetting.USE_HTTP);
-        server.addDefaultHandlers("");
-        server.setConnectionListener(new EmbeddedTestServer.ConnectionListener() {
-            @Override
-            public void acceptedSocket(long socketId) {
-                connectionsSemaphore.release();
+        try {
+            // The predictor prepares 2 connections when asked to preconnect. Initializes the
+            // semaphore to be unlocked after 2 connections.
+            final Semaphore connectionsSemaphore = new Semaphore(1 - 2);
+
+            // Cannot use EmbeddedTestServer#createAndStartServer(), as we need to add the
+            // connection listener.
+            server.initializeNative(mContext, EmbeddedTestServer.ServerHTTPSSetting.USE_HTTP);
+            server.addDefaultHandlers("");
+            server.setConnectionListener(new EmbeddedTestServer.ConnectionListener() {
+                @Override
+                public void acceptedSocket(long socketId) {
+                    connectionsSemaphore.release();
+                }
+            });
+            server.start();
+
+            final String url = server.getURL("/hello_world.html");
+            PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
+                    () -> { mWarmupManager.maybePreconnectUrlAndSubResources(profile, url); });
+            boolean isAcquired = connectionsSemaphore.tryAcquire(5, TimeUnit.SECONDS);
+            if (profileType == ProfileType.REGULAR_PROFILE && !isAcquired) {
+                // Starts at -1.
+                int actualConnections = connectionsSemaphore.availablePermits() + 1;
+                Assert.fail("Pre-connect failed for regular profile: Expected 2 connections, got "
+                        + actualConnections);
+            } else if (profileType != ProfileType.REGULAR_PROFILE && isAcquired) {
+                Assert.fail("Pre-connect should fail for incognito profiles.");
             }
-        });
-        server.start();
-        final String url = server.getURL("/hello_world.html");
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
-                () -> { mWarmupManager.maybePreconnectUrlAndSubResources(profile, url); });
-        boolean isAcquired = connectionsSemaphore.tryAcquire(5, TimeUnit.SECONDS);
-        if (profileType == ProfileType.REGULAR_PROFILE && !isAcquired) {
-            // Starts at -1.
-            int actualConnections = connectionsSemaphore.availablePermits() + 1;
-            Assert.fail("Pre-connect failed for regular profile: Expected 2 connections, got "
-                    + actualConnections);
-        } else if (profileType != ProfileType.REGULAR_PROFILE && isAcquired) {
-            Assert.fail("Pre-connect should fail for incognito profiles.");
+        } finally {
+            server.stopAndDestroyServer();
         }
     }
 

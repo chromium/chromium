@@ -45,6 +45,7 @@ import androidx.test.uiautomator.UiSelector;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -272,6 +273,13 @@ public class AppBannerManagerTest {
         mBottomSheetController = mTabbedActivityTestRule.getActivity()
                                          .getRootUiCoordinatorForTesting()
                                          .getBottomSheetController();
+    }
+
+    @After
+    public void tearDown() {
+        if (mTestServer != null) {
+            mTestServer.stopAndDestroyServer();
+        }
     }
 
     private void resetEngagementForUrl(final String url, final double engagement) {

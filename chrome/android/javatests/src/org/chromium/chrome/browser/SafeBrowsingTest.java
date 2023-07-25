@@ -84,6 +84,9 @@ public final class SafeBrowsingTest {
 
     @After
     public void tearDown() {
+        if (mTestServer != null) {
+            mTestServer.stopAndDestroyServer();
+        }
         MockSafetyNetApiHandler.clearMockResponses();
     }
 

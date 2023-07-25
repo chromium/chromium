@@ -99,6 +99,7 @@ public final class PeriodicBackgroundSyncTest {
 
     @After
     public void tearDown() throws TimeoutException {
+        if (mTestServer != null) mTestServer.stopAndDestroyServer();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             BackgroundSyncBackgroundTaskScheduler.getInstance().removeObserver(mSchedulerObserver);
         });

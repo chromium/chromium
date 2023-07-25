@@ -110,6 +110,11 @@ public class TabReparentingTest {
     @After
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
+
+        if (mTestServer != null) {
+            mTestServer.stopAndDestroyServer();
+            mTestServer = null;
+        }
     }
 
     private CustomTabActivity getActivity() {

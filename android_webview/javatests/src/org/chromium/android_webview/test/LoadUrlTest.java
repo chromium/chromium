@@ -16,6 +16,7 @@ import androidx.test.filters.SmallTest;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -69,6 +70,11 @@ public class LoadUrlTest {
     public void setUp() {
         mTestServer = AwEmbeddedTestServer.createAndStartServer(
                 InstrumentationRegistry.getInstrumentation().getTargetContext());
+    }
+
+    @After
+    public void tearDown() {
+        mTestServer.stopAndDestroyServer();
     }
 
     @Test

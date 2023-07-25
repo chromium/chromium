@@ -1942,13 +1942,17 @@ public class AwSettingsTest {
 
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
 
-        // Create url with echoheader echoing the User-Agent header in the the html body.
-        String url = testServer.getURL("/echoheader?User-Agent");
-        settings.setUserAgentString(customUserAgentString);
-        mActivityTestRule.loadUrlSync(awContents, contentClient.getOnPageFinishedHelper(), url);
-        String userAgent =
-                mActivityTestRule.getJavaScriptResultBodyTextContent(awContents, contentClient);
-        Assert.assertEquals(customUserAgentString, userAgent);
+        try {
+            // Create url with echoheader echoing the User-Agent header in the the html body.
+            String url = testServer.getURL("/echoheader?User-Agent");
+            settings.setUserAgentString(customUserAgentString);
+            mActivityTestRule.loadUrlSync(awContents, contentClient.getOnPageFinishedHelper(), url);
+            String userAgent =
+                    mActivityTestRule.getJavaScriptResultBodyTextContent(awContents, contentClient);
+            Assert.assertEquals(customUserAgentString, userAgent);
+        } finally {
+            testServer.stopAndDestroyServer();
+        }
     }
 
     @Test
@@ -1970,14 +1974,19 @@ public class AwSettingsTest {
 
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
 
-        String targetUrl = testServer.getURL("/android_webview/test/data/fetch-echo.html")
-                + "?url=" + URLEncoder.encode("/echoheader?Sec-CH-UA&Sec-CH-UA-Mobile&User-Agent");
-        mActivityTestRule.loadUrlSync(
-                awContents, contentClient.getOnPageFinishedHelper(), targetUrl);
-        AwActivityTestRule.pollInstrumentationThread(
-                () -> !"running".equals(mActivityTestRule.getTitleOnUiThread(awContents)));
-        Assert.assertEquals(
-                "?0 " + customUserAgentString, mActivityTestRule.getTitleOnUiThread(awContents));
+        try {
+            String targetUrl = testServer.getURL("/android_webview/test/data/fetch-echo.html")
+                    + "?url="
+                    + URLEncoder.encode("/echoheader?Sec-CH-UA&Sec-CH-UA-Mobile&User-Agent");
+            mActivityTestRule.loadUrlSync(
+                    awContents, contentClient.getOnPageFinishedHelper(), targetUrl);
+            AwActivityTestRule.pollInstrumentationThread(
+                    () -> !"running".equals(mActivityTestRule.getTitleOnUiThread(awContents)));
+            Assert.assertEquals("?0 " + customUserAgentString,
+                    mActivityTestRule.getTitleOnUiThread(awContents));
+        } finally {
+            testServer.stopAndDestroyServer();
+        }
     }
 
     @Test
@@ -2000,21 +2009,27 @@ public class AwSettingsTest {
 
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
 
-        String targetUrl = testServer.getURL("/android_webview/test/data/fetch-echo.html") + "?url="
-                + URLEncoder.encode("/echoheader?Sec-CH-UA-Mobile&Sec-CH-UA-Platform&User-Agent");
-        mActivityTestRule.loadUrlSync(
-                awContents, contentClient.getOnPageFinishedHelper(), targetUrl);
-        AwActivityTestRule.pollInstrumentationThread(
-                () -> !"running".equals(mActivityTestRule.getTitleOnUiThread(awContents)));
-        // Make sure the Sec-CH-UA-Mobile, Sec-CH-UA-Platform client hint returns the correct
-        // value. If use the mobile user agent, Sec-CH-UA-Mobile should return true, otherwise
-        // false.
-        if (customUserAgentString.indexOf(" Mobile") != -1) {
-            Assert.assertEquals("?1 \"Android\" " + customUserAgentString,
-                    mActivityTestRule.getTitleOnUiThread(awContents));
-        } else {
-            Assert.assertEquals("?0 \"Android\" " + customUserAgentString,
-                    mActivityTestRule.getTitleOnUiThread(awContents));
+        try {
+            String targetUrl = testServer.getURL("/android_webview/test/data/fetch-echo.html")
+                    + "?url="
+                    + URLEncoder.encode(
+                            "/echoheader?Sec-CH-UA-Mobile&Sec-CH-UA-Platform&User-Agent");
+            mActivityTestRule.loadUrlSync(
+                    awContents, contentClient.getOnPageFinishedHelper(), targetUrl);
+            AwActivityTestRule.pollInstrumentationThread(
+                    () -> !"running".equals(mActivityTestRule.getTitleOnUiThread(awContents)));
+            // Make sure the Sec-CH-UA-Mobile, Sec-CH-UA-Platform client hint returns the correct
+            // value. If use the mobile user agent, Sec-CH-UA-Mobile should return true, otherwise
+            // false.
+            if (customUserAgentString.indexOf(" Mobile") != -1) {
+                Assert.assertEquals("?1 \"Android\" " + customUserAgentString,
+                        mActivityTestRule.getTitleOnUiThread(awContents));
+            } else {
+                Assert.assertEquals("?0 \"Android\" " + customUserAgentString,
+                        mActivityTestRule.getTitleOnUiThread(awContents));
+            }
+        } finally {
+            testServer.stopAndDestroyServer();
         }
     }
 

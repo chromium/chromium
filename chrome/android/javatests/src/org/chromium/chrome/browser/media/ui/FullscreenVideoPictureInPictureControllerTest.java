@@ -12,6 +12,7 @@ import androidx.annotation.RequiresApi;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -70,6 +71,11 @@ public class FullscreenVideoPictureInPictureControllerTest {
                 InstrumentationRegistry.getInstrumentation().getContext());
         mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(TEST_PATH));
         mActivity = mActivityTestRule.getActivity();
+    }
+
+    @After
+    public void tearDown() {
+        mTestServer.stopAndDestroyServer();
     }
 
     /** Tests that we can detect when a video is playing fullscreen, a prerequisite for PiP. */

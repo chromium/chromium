@@ -268,12 +268,17 @@ public class AwMetricsIntegrationTest {
     public void testMetadata_stability_pageLoad() throws Throwable {
         EmbeddedTestServer embeddedTestServer = EmbeddedTestServer.createAndStartServer(
                 InstrumentationRegistry.getInstrumentation().getContext());
-        // Load a page to ensure the renderer process is created.
-        mRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
-                embeddedTestServer.getURL("/android_webview/test/data/hello_world.html"));
-        assertEquals("Should have correct stability histogram kPageLoad count", 1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "Stability.Counts2", StabilityEventType.PAGE_LOAD));
+        try {
+            // Load a page to ensure the renderer process is created.
+            mRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+                    embeddedTestServer.getURL("/android_webview/test/data/hello_world.html"));
+
+            assertEquals("Should have correct stability histogram kPageLoad count", 1,
+                    RecordHistogram.getHistogramValueCountForTesting(
+                            "Stability.Counts2", StabilityEventType.PAGE_LOAD));
+        } finally {
+            embeddedTestServer.stopAndDestroyServer();
+        }
     }
 
     @Test
@@ -282,12 +287,17 @@ public class AwMetricsIntegrationTest {
     public void testMetadata_stability_rendererLaunchCount() throws Throwable {
         EmbeddedTestServer embeddedTestServer = EmbeddedTestServer.createAndStartServer(
                 InstrumentationRegistry.getInstrumentation().getContext());
-        // Load a page to ensure the renderer process is created.
-        mRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
-                embeddedTestServer.getURL("/android_webview/test/data/hello_world.html"));
-        assertEquals("Should have correct stability histogram kRendererLaunch count", 1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "Stability.Counts2", StabilityEventType.RENDERER_LAUNCH));
+        try {
+            // Load a page to ensure the renderer process is created.
+            mRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+                    embeddedTestServer.getURL("/android_webview/test/data/hello_world.html"));
+
+            assertEquals("Should have correct stability histogram kRendererLaunch count", 1,
+                    RecordHistogram.getHistogramValueCountForTesting(
+                            "Stability.Counts2", StabilityEventType.RENDERER_LAUNCH));
+        } finally {
+            embeddedTestServer.stopAndDestroyServer();
+        }
     }
 
     @Test
@@ -498,39 +508,49 @@ public class AwMetricsIntegrationTest {
     public void testRendererHistograms() throws Throwable {
         EmbeddedTestServer embeddedTestServer = EmbeddedTestServer.createAndStartServer(
                 InstrumentationRegistry.getInstrumentation().getContext());
-        // Discard initial log since the renderer process hasn't been created yet.
-        mPlatformServiceBridge.waitForNextMetricsLog();
-        final CallbackHelper helper = new CallbackHelper();
-        int finalMetricsCollectedCount = helper.getCallCount();
-        // Load a page and wait for final metrics collection.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AwMetricsServiceClient.setOnFinalMetricsCollectedListenerForTesting(
-                    () -> { helper.notifyCalled(); });
-        });
-        // Load a page to ensure the renderer process is created.
-        mRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
-                embeddedTestServer.getURL("/android_webview/test/data/hello_world.html"));
-        helper.waitForCallback(finalMetricsCollectedCount, 1);
-        // At this point we know one of two things must be true:
-        //
-        // 1. The renderer process completed startup (logging the expected histogram) before
-        //    subprocess histograms were collected. In this case, we know the desired histogram
-        //    has been copied into the browser process.
-        // 2. Subprocess histograms were collected before the renderer process completed
-        //    startup. While we don't know if our histogram was copied over, we do know the
-        //    page load has finished and this woke up the metrics service, so MetricsService
-        //    will collect subprocess metrics again.
-        //
-        // Load a page and wait for another final log collection. We know this log collection
-        // must be triggered by either the second page load start (scenario 1) or the first page
-        // load finish (scenario 2), either of which ensures the renderer startup histogram must
-        // have been copied into the browser process.
-        mRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
-                embeddedTestServer.getURL("/android_webview/test/data/hello_world.html"));
-        helper.waitForCallback(finalMetricsCollectedCount, 2);
-        assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "Android.SeccompStatus.RendererSandbox"));
+        try {
+            // Discard initial log since the renderer process hasn't been created yet.
+            mPlatformServiceBridge.waitForNextMetricsLog();
+
+            final CallbackHelper helper = new CallbackHelper();
+            int finalMetricsCollectedCount = helper.getCallCount();
+
+            // Load a page and wait for final metrics collection.
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                AwMetricsServiceClient.setOnFinalMetricsCollectedListenerForTesting(
+                        () -> { helper.notifyCalled(); });
+            });
+
+            // Load a page to ensure the renderer process is created.
+            mRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+                    embeddedTestServer.getURL("/android_webview/test/data/hello_world.html"));
+            helper.waitForCallback(finalMetricsCollectedCount, 1);
+
+            // At this point we know one of two things must be true:
+            //
+            // 1. The renderer process completed startup (logging the expected histogram) before
+            //    subprocess histograms were collected. In this case, we know the desired histogram
+            //    has been copied into the browser process.
+            // 2. Subprocess histograms were collected before the renderer process completed
+            //    startup. While we don't know if our histogram was copied over, we do know the
+            //    page load has finished and this woke up the metrics service, so MetricsService
+            //    will collect subprocess metrics again.
+            //
+            // Load a page and wait for another final log collection. We know this log collection
+            // must be triggered by either the second page load start (scenario 1) or the first page
+            // load finish (scenario 2), either of which ensures the renderer startup histogram must
+            // have been copied into the browser process.
+
+            mRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+                    embeddedTestServer.getURL("/android_webview/test/data/hello_world.html"));
+            helper.waitForCallback(finalMetricsCollectedCount, 2);
+
+            assertEquals(1,
+                    RecordHistogram.getHistogramTotalCountForTesting(
+                            "Android.SeccompStatus.RendererSandbox"));
+        } finally {
+            embeddedTestServer.stopAndDestroyServer();
+        }
     }
 
     @Test
@@ -539,27 +559,38 @@ public class AwMetricsIntegrationTest {
     public void testScreenCoverageReporting() throws Throwable {
         EmbeddedTestServer embeddedTestServer = EmbeddedTestServer.createAndStartServer(
                 InstrumentationRegistry.getInstrumentation().getContext());
-        mRule.loadUrlAsync(mAwContents,
-                embeddedTestServer.getURL("/android_webview/test/data/hello_world.html"));
-        // We need to wait for log collection because the histogram is recorded during
-        // MetricsProvider::ProvideCurrentSessionData().
-        mPlatformServiceBridge.waitForNextMetricsLog();
-        final String histogramName = "Android.WebView.VisibleScreenCoverage.Global";
-        // The histogram records whole seconds that the WebView has been on screen, we need to
-        // leave enough time for something to be recorded.
-        CriteriaHelper.pollUiThread(() -> {
+        try {
+            mRule.loadUrlAsync(mAwContents,
+                    embeddedTestServer.getURL("/android_webview/test/data/hello_world.html"));
+
+            // We need to wait for log collection because the histogram is recorded during
+            // MetricsProvider::ProvideCurrentSessionData().
+            mPlatformServiceBridge.waitForNextMetricsLog();
+
+            final String histogramName = "Android.WebView.VisibleScreenCoverage.Global";
+
+            // The histogram records whole seconds that the WebView has been on screen, we need to
+            // leave enough time for something to be recorded.
+            CriteriaHelper.pollUiThread(() -> {
+                int totalSamples = RecordHistogram.getHistogramTotalCountForTesting(histogramName);
+                Criteria.checkThat("There were no samples recorded", totalSamples, Matchers.not(0));
+            });
+
             int totalSamples = RecordHistogram.getHistogramTotalCountForTesting(histogramName);
-            Criteria.checkThat("There were no samples recorded", totalSamples, Matchers.not(0));
-        });
-        int totalSamples = RecordHistogram.getHistogramTotalCountForTesting(histogramName);
-        int zeroBucketSamples = RecordHistogram.getHistogramValueCountForTesting(histogramName, 0);
-        assertNotEquals("There should be at least one sample in a non-zero bucket",
-                zeroBucketSamples, totalSamples);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertEquals(1, AwContents.AwWindowCoverageTracker.sWindowCoverageTrackers.size());
-            mAwContents.onDetachedFromWindow();
-            assertEquals(0, AwContents.AwWindowCoverageTracker.sWindowCoverageTrackers.size());
-        });
+
+            int zeroBucketSamples =
+                    RecordHistogram.getHistogramValueCountForTesting(histogramName, 0);
+            assertNotEquals("There should be at least one sample in a non-zero bucket",
+                    zeroBucketSamples, totalSamples);
+
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                assertEquals(1, AwContents.AwWindowCoverageTracker.sWindowCoverageTrackers.size());
+                mAwContents.onDetachedFromWindow();
+                assertEquals(0, AwContents.AwWindowCoverageTracker.sWindowCoverageTrackers.size());
+            });
+        } finally {
+            embeddedTestServer.stopAndDestroyServer();
+        }
     }
 
     @Test

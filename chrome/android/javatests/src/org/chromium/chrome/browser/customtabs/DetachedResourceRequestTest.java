@@ -88,6 +88,8 @@ public class DetachedResourceRequestTest {
     @After
     public void tearDown() {
         CustomTabsTestUtils.cleanupSessions(mConnection);
+        if (mServer != null) mServer.stopAndDestroyServer();
+        mServer = null;
     }
 
     @Test

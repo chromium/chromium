@@ -20,6 +20,7 @@ import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -98,6 +99,11 @@ public class NavigateTest {
         mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
                 ApplicationProvider.getApplicationContext(), ServerCertificate.CERT_OK);
         mOmnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
+    }
+
+    @After
+    public void tearDown() {
+        mTestServer.stopAndDestroyServer();
     }
 
     private void navigateAndObserve(final String url) throws Exception {

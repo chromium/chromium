@@ -81,6 +81,7 @@ public class NavigationHandlerTest {
     @After
     public void tearDown() {
         CompositorAnimationHandler.setTestingMode(false);
+        if (mTestServer != null) mTestServer.stopAndDestroyServer();
     }
 
     private Tab currentTab() {

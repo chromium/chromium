@@ -67,6 +67,7 @@ public class CustomTabActivitySecurityIndicatorTest {
     @After
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
+        mTestServer.stopAndDestroyServer();
     }
 
     private CustomTabActivity getActivity() {

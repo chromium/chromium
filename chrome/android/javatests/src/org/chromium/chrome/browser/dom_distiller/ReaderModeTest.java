@@ -40,6 +40,7 @@ import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -124,6 +125,11 @@ public class ReaderModeTest implements CustomMainActivityStart {
                 ApplicationProvider.getApplicationContext());
         mURL = mTestServer.getURL(TEST_PAGE);
         mDownloadTestRule.startMainActivityWithURL(mURL);
+    }
+
+    @After
+    public void tearDown() {
+        if (mTestServer != null) mTestServer.stopAndDestroyServer();
     }
 
     @Test

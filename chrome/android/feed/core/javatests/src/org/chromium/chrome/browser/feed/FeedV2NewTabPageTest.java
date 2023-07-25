@@ -245,6 +245,7 @@ public class FeedV2NewTabPageTest {
     @After
     public void tearDown() {
         if (mTestServer != null) {
+            mTestServer.stopAndDestroyServer();
             mFeedServer.shutdown();
         }
     }

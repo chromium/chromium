@@ -590,20 +590,29 @@ public class AwContentsTest {
         EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
                 InstrumentationRegistry.getInstrumentation().getContext());
 
-        String url = testServer.getURL("/echoheader?X-foo");
-        final Map<String, String> extraHeaders = new HashMap<String, String>();
-        extraHeaders.put("X-foo", "bar");
-        mActivityTestRule.loadUrlSync(
-                awContents, mContentsClient.getOnPageFinishedHelper(), url, extraHeaders);
-        String xfoo =
-                mActivityTestRule.getJavaScriptResultBodyTextContent(awContents, mContentsClient);
-        Assert.assertEquals("bar", xfoo);
-        url = testServer.getURL("/echoheader?Referer");
-        mActivityTestRule.loadUrlSync(awContents, mContentsClient.getOnPageFinishedHelper(), url,
-                ImmutableMap.of("Referer", "http://www.example.com/"));
-        String referer =
-                mActivityTestRule.getJavaScriptResultBodyTextContent(awContents, mContentsClient);
-        Assert.assertEquals("http://www.example.com/", referer);
+        try {
+            String url = testServer.getURL("/echoheader?X-foo");
+
+            final Map<String, String> extraHeaders = new HashMap<String, String>();
+            extraHeaders.put("X-foo", "bar");
+            mActivityTestRule.loadUrlSync(
+                    awContents, mContentsClient.getOnPageFinishedHelper(), url, extraHeaders);
+
+            String xfoo = mActivityTestRule.getJavaScriptResultBodyTextContent(
+                    awContents, mContentsClient);
+            Assert.assertEquals("bar", xfoo);
+
+            url = testServer.getURL("/echoheader?Referer");
+
+            mActivityTestRule.loadUrlSync(awContents, mContentsClient.getOnPageFinishedHelper(),
+                    url, ImmutableMap.of("Referer", "http://www.example.com/"));
+
+            String referer = mActivityTestRule.getJavaScriptResultBodyTextContent(
+                    awContents, mContentsClient);
+            Assert.assertEquals("http://www.example.com/", referer);
+        } finally {
+            testServer.stopAndDestroyServer();
+        }
     }
 
     // This is a meta test that we don't accidentally turn off hardware
@@ -1344,34 +1353,47 @@ public class AwContentsTest {
 
         EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
                 InstrumentationRegistry.getInstrumentation().getContext());
-        final String pageUrl = testServer.getURL(HELLO_WORLD_URL);
-        mActivityTestRule.loadUrlSync(
-                awContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
-        Assert.assertEquals(HELLO_WORLD_TITLE, mActivityTestRule.getTitleOnUiThread(awContents));
-        final AwRenderProcess rendererProcess1 = getRenderProcessOnUiThread(awContents);
-        Assert.assertNotNull(rendererProcess1);
-        // Until AW gets site isolation, ordinary web content should not be
-        // locked to origin.
-        boolean isLocked = TestThreadUtils.runOnUiThreadBlocking(
-                () -> rendererProcess1.isProcessLockedToSiteForTesting());
-        Assert.assertFalse("Initial renderer process should not be locked", isLocked);
-        mActivityTestRule.loadUrlSync(
-                awContents, mContentsClient.getOnPageFinishedHelper(), WEBUI_URL);
-        Assert.assertEquals(WEBUI_TITLE, mActivityTestRule.getTitleOnUiThread(awContents));
-        final AwRenderProcess webuiProcess = getRenderProcessOnUiThread(awContents);
-        Assert.assertNotEquals(rendererProcess1, webuiProcess);
-        // WebUI pages should be locked to origin even on AW.
-        isLocked = TestThreadUtils.runOnUiThreadBlocking(
-                () -> webuiProcess.isProcessLockedToSiteForTesting());
-        Assert.assertTrue("WebUI process should be locked", isLocked);
-        mActivityTestRule.loadUrlSync(
-                awContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
-        final AwRenderProcess rendererProcess2 = getRenderProcessOnUiThread(awContents);
-        Assert.assertEquals(HELLO_WORLD_TITLE, mActivityTestRule.getTitleOnUiThread(awContents));
-        Assert.assertNotEquals(rendererProcess2, webuiProcess);
-        isLocked = TestThreadUtils.runOnUiThreadBlocking(
-                () -> rendererProcess2.isProcessLockedToSiteForTesting());
-        Assert.assertFalse("Final renderer process should not be locked", isLocked);
+        try {
+            final String pageUrl = testServer.getURL(HELLO_WORLD_URL);
+
+            mActivityTestRule.loadUrlSync(
+                    awContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
+            Assert.assertEquals(
+                    HELLO_WORLD_TITLE, mActivityTestRule.getTitleOnUiThread(awContents));
+
+            final AwRenderProcess rendererProcess1 = getRenderProcessOnUiThread(awContents);
+            Assert.assertNotNull(rendererProcess1);
+
+            // Until AW gets site isolation, ordinary web content should not be
+            // locked to origin.
+            boolean isLocked = TestThreadUtils.runOnUiThreadBlocking(
+                    () -> rendererProcess1.isProcessLockedToSiteForTesting());
+            Assert.assertFalse("Initial renderer process should not be locked", isLocked);
+
+            mActivityTestRule.loadUrlSync(
+                    awContents, mContentsClient.getOnPageFinishedHelper(), WEBUI_URL);
+            Assert.assertEquals(WEBUI_TITLE, mActivityTestRule.getTitleOnUiThread(awContents));
+
+            final AwRenderProcess webuiProcess = getRenderProcessOnUiThread(awContents);
+            Assert.assertNotEquals(rendererProcess1, webuiProcess);
+            // WebUI pages should be locked to origin even on AW.
+            isLocked = TestThreadUtils.runOnUiThreadBlocking(
+                    () -> webuiProcess.isProcessLockedToSiteForTesting());
+            Assert.assertTrue("WebUI process should be locked", isLocked);
+
+            mActivityTestRule.loadUrlSync(
+                    awContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
+
+            final AwRenderProcess rendererProcess2 = getRenderProcessOnUiThread(awContents);
+            Assert.assertEquals(
+                    HELLO_WORLD_TITLE, mActivityTestRule.getTitleOnUiThread(awContents));
+            Assert.assertNotEquals(rendererProcess2, webuiProcess);
+            isLocked = TestThreadUtils.runOnUiThreadBlocking(
+                    () -> rendererProcess2.isProcessLockedToSiteForTesting());
+            Assert.assertFalse("Final renderer process should not be locked", isLocked);
+        } finally {
+            testServer.stopAndDestroyServer();
+        }
     }
 
     // In single-process mode, navigations to WebUI should work, but WebUI does
@@ -1390,17 +1412,26 @@ public class AwContentsTest {
 
         EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
                 InstrumentationRegistry.getInstrumentation().getContext());
-        final String pageUrl = testServer.getURL(HELLO_WORLD_URL);
-        mActivityTestRule.loadUrlSync(
-                awContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
-        Assert.assertEquals(HELLO_WORLD_TITLE, mActivityTestRule.getTitleOnUiThread(awContents));
-        final AwRenderProcess rendererProcess1 = getRenderProcessOnUiThread(awContents);
-        Assert.assertNull(rendererProcess1);
-        mActivityTestRule.loadUrlSync(
-                awContents, mContentsClient.getOnPageFinishedHelper(), WEBUI_URL);
-        Assert.assertEquals(WEBUI_TITLE, mActivityTestRule.getTitleOnUiThread(awContents));
-        final AwRenderProcess webuiProcess = getRenderProcessOnUiThread(awContents);
-        Assert.assertNull(webuiProcess);
+        try {
+            final String pageUrl = testServer.getURL(HELLO_WORLD_URL);
+
+            mActivityTestRule.loadUrlSync(
+                    awContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
+            Assert.assertEquals(
+                    HELLO_WORLD_TITLE, mActivityTestRule.getTitleOnUiThread(awContents));
+
+            final AwRenderProcess rendererProcess1 = getRenderProcessOnUiThread(awContents);
+            Assert.assertNull(rendererProcess1);
+
+            mActivityTestRule.loadUrlSync(
+                    awContents, mContentsClient.getOnPageFinishedHelper(), WEBUI_URL);
+            Assert.assertEquals(WEBUI_TITLE, mActivityTestRule.getTitleOnUiThread(awContents));
+
+            final AwRenderProcess webuiProcess = getRenderProcessOnUiThread(awContents);
+            Assert.assertNull(webuiProcess);
+        } finally {
+            testServer.stopAndDestroyServer();
+        }
     }
 
     @Test

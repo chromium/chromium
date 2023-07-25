@@ -108,6 +108,7 @@ public class WebShareTest {
         if (mTab != null) {
             TestThreadUtils.runOnUiThreadBlocking(() -> mTab.removeObserver(mUpdateWaiter));
         }
+        if (mTestServer != null) mTestServer.stopAndDestroyServer();
     }
 
     /**

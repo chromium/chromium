@@ -203,6 +203,7 @@ android_library("net_tests_java") {
     "javatests/src/org/chromium/net/AndroidNetworkLibraryTest.java",
     "javatests/src/org/chromium/net/AndroidProxyConfigServiceTestUtil.java",
     "javatests/src/org/chromium/net/AndroidProxySelectorTest.java",
+    "javatests/src/org/chromium/net/EmbeddedTestServerTest.java",
     "javatests/src/org/chromium/net/HttpUtilTest.java",
     "javatests/src/org/chromium/net/MimeTypeFilterTest.java",
     "javatests/src/org/chromium/net/NetErrorsTest.java",

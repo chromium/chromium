@@ -157,6 +157,7 @@ public class AutofillPopupTest {
         mActivityTestRule.getActivity().setRequestedOrientation(
                 ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        mServer.stopAndDestroyServer();
     }
 
     private void loadForm(final String formUrl, final String inputText,

@@ -45,13 +45,17 @@ public class MainActivityWithURLTest {
     public void testLaunchActivityWithURL() {
         EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
                 ApplicationProvider.getApplicationContext());
-        // Launch chrome
-        mActivityTestRule.startMainActivityWithURL(
-                testServer.getURL("/chrome/test/data/android/simple.html"));
-        String expectedTitle = "Activity test page";
-        TabModel model = mActivityTestRule.getActivity().getCurrentTabModel();
-        String title = ChromeTabUtils.getTitleOnUiThread(model.getTabAt(model.index()));
-        Assert.assertEquals(expectedTitle, title);
+        try {
+            // Launch chrome
+            mActivityTestRule.startMainActivityWithURL(
+                    testServer.getURL("/chrome/test/data/android/simple.html"));
+            String expectedTitle = "Activity test page";
+            TabModel model = mActivityTestRule.getActivity().getCurrentTabModel();
+            String title = ChromeTabUtils.getTitleOnUiThread(model.getTabAt(model.index()));
+            Assert.assertEquals(expectedTitle, title);
+        } finally {
+            testServer.stopAndDestroyServer();
+        }
     }
 
     /**

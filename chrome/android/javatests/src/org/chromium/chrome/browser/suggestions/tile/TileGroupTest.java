@@ -14,6 +14,7 @@ import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
@@ -126,6 +127,13 @@ public class TileGroupTest {
 
         ViewUtils.waitForView(
                 (ViewGroup) mNtp.getView(), ViewMatchers.withId(R.id.mv_tiles_layout));
+    }
+
+    @After
+    public void tearDown() {
+        if (mTestServer != null) {
+            mTestServer.stopAndDestroyServer();
+        }
     }
 
     @Test

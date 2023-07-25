@@ -62,5 +62,6 @@ public class ChromeActionModeHandlerTest {
         });
         // clang-format on
         assertActionModeIsReady();
+        testServer.stopAndDestroyServer();
     }
 }

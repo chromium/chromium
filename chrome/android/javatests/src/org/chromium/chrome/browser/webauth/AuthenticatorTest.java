@@ -90,6 +90,7 @@ public class AuthenticatorTest {
     @After
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> mTab.removeObserver(mUpdateWaiter));
+        mTestServer.stopAndDestroyServer();
     }
 
     /**

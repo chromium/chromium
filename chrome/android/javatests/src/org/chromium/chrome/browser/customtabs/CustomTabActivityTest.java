@@ -278,6 +278,8 @@ public class CustomTabActivityTest {
         SharedPreferencesManager.getInstance().removeKey(
                 ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TIMESTAMP);
 
+        stopAndShutdownEmbeddedTestServer();
+
         // finish() is called on a non-UI thread by the testing harness. Must hide the menu
         // first, otherwise the UI is manipulated on a non-UI thread.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -292,6 +294,18 @@ public class CustomTabActivityTest {
         if (mConnectionToCleanup != null) {
             CustomTabsTestUtils.cleanupSessions(mConnectionToCleanup);
         }
+    }
+
+    private void stopAndShutdownEmbeddedTestServer() {
+        if (mTestServer != null) {
+            mTestServer.stopAndDestroyServer();
+            mTestServer = null;
+        }
+    }
+
+    private TestWebServer createTestWebServer() throws Exception {
+        stopAndShutdownEmbeddedTestServer();
+        return TestWebServer.start();
     }
 
     private CustomTabActivity getActivity() {
@@ -999,7 +1013,7 @@ public class CustomTabActivityTest {
     @Test
     @SmallTest
     public void testToolbarTitleOnlyStateWithProperTitle() throws Exception {
-        TestWebServer webServer = TestWebServer.start();
+        TestWebServer webServer = createTestWebServer();
         final String url = webServer.setResponse("/test.html", ONLOAD_TITLE_CHANGE, null);
         hideDomainAndEnsureTitleIsSet(url, false, "nytimes.com");
         webServer.shutdown();
@@ -1011,7 +1025,7 @@ public class CustomTabActivityTest {
     @Test
     @SmallTest
     public void testToolbarTitleOnlyStateWithProperTitleHiddenTab() throws Exception {
-        TestWebServer webServer = TestWebServer.start();
+        TestWebServer webServer = createTestWebServer();
         final String url = webServer.setResponse("/test.html", ONLOAD_TITLE_CHANGE, null);
         hideDomainAndEnsureTitleIsSet(url, true, "nytimes.com");
         webServer.shutdown();
@@ -1023,7 +1037,7 @@ public class CustomTabActivityTest {
     @Test
     @SmallTest
     public void testToolbarTitleOnlyStateWithDelayedTitle() throws Exception {
-        TestWebServer webServer = TestWebServer.start();
+        TestWebServer webServer = createTestWebServer();
         final String url = webServer.setResponse("/test.html", DELAYED_TITLE_CHANGE, null);
         hideDomainAndEnsureTitleIsSet(url, false, "nytimes.com");
         webServer.shutdown();
@@ -1732,7 +1746,7 @@ public class CustomTabActivityTest {
     @DisabledTest(message = "https://crbug.com/1238931")
     public void
     testMayLaunchUrlAddsClientDataHeader() throws Exception {
-        TestWebServer webServer = TestWebServer.start();
+        TestWebServer webServer = createTestWebServer();
         webServer.setServerHost("www.google.com");
         final String expectedHeader = "test-header";
         String url = webServer.setResponse("/ok.html", "<html>ok</html>", null);
@@ -2037,7 +2051,7 @@ public class CustomTabActivityTest {
     }
 
     private void doOpaqueOriginTest(boolean enabled, boolean prefetch) throws Exception {
-        TestWebServer webServer = TestWebServer.start();
+        TestWebServer webServer = createTestWebServer();
         String url = webServer.setResponse("/ok.html", "<html>ok</html>", null);
         CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
         Context context = getInstrumentation().getTargetContext().getApplicationContext();
