@@ -95,7 +95,7 @@ function testClickButton(buttonSelector: string, element: HTMLElement|null) {
   actionButton.click();
 }
 
-suite('PrivacySandboxDialogConsent', function() {
+suite('Consent', function() {
   let page: PrivacySandboxDialogAppElement;
   let browserProxy: TestPrivacySandboxDialogBrowserProxy;
 
@@ -191,7 +191,7 @@ suite('PrivacySandboxDialogConsent', function() {
   });
 });
 
-suite('PrivacySandboxDialogNotice', function() {
+suite('Notice', function() {
   let page: PrivacySandboxDialogAppElement;
   let browserProxy: TestPrivacySandboxDialogBrowserProxy;
 
@@ -248,7 +248,7 @@ suite('PrivacySandboxDialogNotice', function() {
   });
 });
 
-suite('PrivacySandboxDialogCombined', function() {
+suite('Combined', function() {
   let page: PrivacySandboxCombinedDialogAppElement;
   let browserProxy: TestPrivacySandboxDialogBrowserProxy;
 
@@ -468,7 +468,7 @@ suite('PrivacySandboxDialogCombined', function() {
   });
 });
 
-suite('PrivacySandboxDialogNoticeEEA', function() {
+suite('NoticeEEA', function() {
   let page: PrivacySandboxCombinedDialogAppElement;
   let browserProxy: TestPrivacySandboxDialogBrowserProxy;
 
@@ -606,7 +606,7 @@ suite('PrivacySandboxDialogNoticeEEA', function() {
   });
 });
 
-suite('PrivacySandboxDialogNoticeROW', function() {
+suite('NoticeROW', function() {
   let page: PrivacySandboxNoticeDialogAppElement;
   let browserProxy: TestPrivacySandboxDialogBrowserProxy;
 
@@ -727,7 +727,7 @@ suite('PrivacySandboxDialogNoticeROW', function() {
   });
 });
 
-suite('PrivacySandboxDialogNoticeRestricted', function() {
+suite('NoticeRestricted', function() {
   let page: PrivacySandboxNoticeRestrictedDialogAppElement;
   let browserProxy: TestPrivacySandboxDialogBrowserProxy;
 
@@ -835,7 +835,7 @@ suite('PrivacySandboxDialogNoticeRestricted', function() {
   });
 });
 
-suite('PrivacySandboxDialogMixin', function() {
+suite('Mixin', function() {
   const TestElementBase = PrivacySandboxDialogMixin(PolymerElement);
 
   // Create a test element to have more control over size of the element and
