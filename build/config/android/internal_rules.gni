@@ -1075,6 +1075,7 @@ if (enable_java_templates) {
       script = "//build/android/gyp/lint.py"
       depfile = "$target_gen_dir/$target_name.d"
       inputs = [
+        java_path_for_inputs,
         _lint_jar_path,
         _custom_lint_jar_path,
         _backported_methods,
@@ -1192,6 +1193,7 @@ if (enable_java_templates) {
     _deps = invoker.deps
 
     _inputs = [
+      java_path_for_inputs,
       invoker.build_config,
       _r8_path,
     ]
@@ -1629,6 +1631,7 @@ if (enable_java_templates) {
         depfile = "$target_gen_dir/$target_name.d"
         outputs = [ invoker.output ]
         inputs = [
+          java_path_for_inputs,
           _d8_path,
           _custom_d8_path,
         ]
@@ -1784,6 +1787,7 @@ if (enable_java_templates) {
 
       script = "//build/android/gyp/jacoco_instr.py"
       inputs = invoker.source_files + [
+                 java_path_for_inputs,
                  _jacococli_jar,
                  invoker.input_jar_path,
                ]
@@ -1899,6 +1903,7 @@ if (enable_java_templates) {
       _bytecode_checker_script = "$root_build_dir/bin/helper/bytecode_processor"
       script = "//build/android/gyp/bytecode_processor.py"
       inputs = [
+        java_path_for_inputs,
         invoker.build_config,
         invoker.input_jar,
         _bytecode_checker_script,
@@ -1948,6 +1953,7 @@ if (enable_java_templates) {
       depfile = "$target_gen_dir/$target_name.d"
 
       inputs = [
+        java_path_for_inputs,
         invoker.build_config,
         invoker.input_manifest,
         _manifest_merger_jar_path,
@@ -2551,7 +2557,10 @@ if (enable_java_templates) {
       script = "//build/android/gyp/unused_resources.py"
       depfile = "$target_gen_dir/${target_name}.d"
       _unused_resources_script = "$root_build_dir/bin/helper/unused_resources"
-      inputs = [ _unused_resources_script ]
+      inputs = [
+        _unused_resources_script,
+        java_path_for_inputs,
+      ]
       outputs = [
         invoker.output_config,
         invoker.output_r_txt,
@@ -3030,7 +3039,10 @@ if (enable_java_templates) {
       if (!invoker.enable_errorprone && !invoker.use_turbine) {
         outputs += [ invoker.output_jar_path + ".info" ]
       }
-      inputs = invoker.source_files + _java_srcjars + [ _build_config ]
+      inputs = invoker.source_files + _java_srcjars + [
+                 _build_config,
+                 java_path_for_inputs,
+               ]
       if (invoker.source_files != []) {
         inputs += [ invoker.target_sources_file ]
       }
@@ -3986,6 +3998,7 @@ if (enable_java_templates) {
       action_with_pydeps(_rewritten_jar_target_name) {
         script = "//build/android/gyp/bytecode_rewriter.py"
         inputs = [
+          java_path_for_inputs,
           _rewriter_path,
           _build_config,
           _unprocessed_jar_path,
