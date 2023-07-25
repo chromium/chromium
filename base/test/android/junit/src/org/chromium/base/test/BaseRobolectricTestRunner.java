@@ -4,8 +4,6 @@
 
 package org.chromium.base.test;
 
-import androidx.test.core.app.ApplicationProvider;
-
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
@@ -16,19 +14,7 @@ import org.robolectric.internal.SandboxTestRunner;
 import org.robolectric.internal.bytecode.InstrumentationConfiguration;
 import org.robolectric.internal.bytecode.Sandbox;
 
-import org.chromium.base.ApplicationStatus;
-import org.chromium.base.BundleUtils;
-import org.chromium.base.ContextUtils;
-import org.chromium.base.Flag;
-import org.chromium.base.LifetimeAssert;
-import org.chromium.base.PathUtils;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.library_loader.LibraryProcessType;
-import org.chromium.base.metrics.UmaRecorderHolder;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.TimeoutTimer;
 
@@ -75,44 +61,14 @@ public class BaseRobolectricTestRunner extends RobolectricTestRunner {
     public static class BaseTestLifecycle extends DefaultTestLifecycle {
         @Override
         public void beforeTest(Method method) {
-            UmaRecorderHolder.setUpNativeUmaRecorder(false);
-            LibraryLoader.getInstance().setLibraryProcessType(LibraryProcessType.PROCESS_BROWSER);
-            ContextUtils.initApplicationContextForTests(
-                    ApplicationProvider.getApplicationContext());
-            ApplicationStatus.initialize(ApplicationProvider.getApplicationContext());
-            UmaRecorderHolder.resetForTesting();
-            CommandLineFlags.setUpClass(method.getDeclaringClass());
-            CommandLineFlags.setUpMethod(method);
-            BundleUtils.resetForTesting();
-            Flag.resetAllInMemoryCachedValuesForTesting();
+            BaseRobolectricTestRule.setUp(method);
             super.beforeTest(method);
         }
 
         @Override
         public void afterTest(Method method) {
-            try {
-                // https://crbug.com/1392817 for context as to why we do this.
-                PostTask.flushJobsAndResetForTesting();
-            } catch (InterruptedException e) {
-                HelperTestRunner.sTestFailed = true;
-                throw new RuntimeException(e);
-            } finally {
-                CommandLineFlags.tearDownMethod();
-                CommandLineFlags.tearDownClass();
-                ResettersForTesting.onAfterMethod();
-                ApplicationStatus.destroyForJUnitTests();
-                ContextUtils.clearApplicationContextForTests();
-                PathUtils.resetForTesting();
-                ThreadUtils.clearUiThreadForTesting();
-                super.afterTest(method);
-                // Run assertions only when the test has not already failed so as to not mask
-                // failures. https://crbug.com/1466313
-                if (HelperTestRunner.sTestFailed) {
-                    LifetimeAssert.resetForTesting();
-                } else {
-                    LifetimeAssert.assertAllInstancesDestroyedForTesting();
-                }
-            }
+            super.afterTest(method);
+            BaseRobolectricTestRule.tearDown(HelperTestRunner.sTestFailed);
         }
     }
 

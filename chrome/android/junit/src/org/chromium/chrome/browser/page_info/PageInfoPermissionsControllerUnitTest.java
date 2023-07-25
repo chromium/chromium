@@ -11,10 +11,12 @@ import android.content.Context;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.chrome.R;
 import org.chromium.components.page_info.PageInfoPermissionsController;
 import org.chromium.components.page_info.PageInfoPermissionsController.PermissionObject;
@@ -55,6 +57,9 @@ public class PageInfoPermissionsControllerUnitTest {
             createPermission("Augmented reality", "augmented reality", true, 0);
     private static final PermissionObject AR_BLOCKED =
             createPermission("Augmented reality", "augmented reality", false, 0);
+
+    @Rule(order = -2)
+    public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
     private Context mContext;
     private String mTestName;

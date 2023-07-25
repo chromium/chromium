@@ -12,11 +12,14 @@ import androidx.fragment.app.testing.FragmentScenario;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
+
+import org.chromium.base.test.BaseRobolectricTestRule;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,6 +37,8 @@ public class PrivacyGuidePagerAdapterTest {
                 {false, true, false}, {false, true, true}, {true, false, false},
                 {true, false, true}, {true, true, false}, {true, true, true}});
     }
+    @Rule(order = -2)
+    public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
     @Parameter(0)
     public boolean mShouldDisplayHistorySync;

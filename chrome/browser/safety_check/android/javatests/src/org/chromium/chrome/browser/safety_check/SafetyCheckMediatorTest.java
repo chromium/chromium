@@ -41,6 +41,7 @@ import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
@@ -92,6 +93,9 @@ public class SafetyCheckMediatorTest {
             "Settings.SafetyCheck.UpdatesResult";
 
     private static final String TEST_EMAIL_ADDRESS = "test@example.com";
+
+    @Rule(order = -2)
+    public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
     @Rule
     public TestRule mFeaturesProcessor = new Features.JUnitProcessor();

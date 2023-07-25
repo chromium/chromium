@@ -27,6 +27,7 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.Callback;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
@@ -49,6 +50,9 @@ public class PasswordEditDialogControllerTest {
     private static final String INITIAL_PASSWORD = "password";
     private static final String CHANGED_PASSWORD = "passwordChanged";
     private static final String ACCOUNT_NAME = "foo@bar.com";
+
+    @Rule(order = -2)
+    public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
