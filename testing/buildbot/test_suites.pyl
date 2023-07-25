@@ -1749,20 +1749,20 @@
     # `--enable-features=ChromeRefesh2023`. We do not have the capacity
     # to run all of browser_tests and interactive_ui_tests in the CQ,
     # so these suites define two variants of the two test suites.
-    # One set, in the `cr23_*tests` suites, are small subsets of the whole
-    # test suites that we hope will get us enough coverage of the feature
-    # to catch issues pre-submit. The others, in the `cr23_*tests_full` form,
+    # One set, in the `cr23_regressed_*tests` suites, are subsets of the whole
+    # test suites that previously failed. We hope will get us enough coverage of
+    # the feature to catch issues pre-submit. The others, in the `cr23_*tests` form,
     # run the whole test suites, but they only run them on the `*cr23*` optional
-    # try bots and fyi bots. When tests start to fail in the _full variety
+    # try bots and fyi bots. When tests start to fail in the `cr23_*tests` suites
     # (and aren't also failing in the non-cr23 variety), we can add them
-    # to the subsets.
+    # to the `cr23_regressed_*tests` suites.
     'cr23_fyi_linux_gtests': {
       'browser_tests': {
         'swarming': {
           'shards': 20,
         },
       },
-      'cr23_browser_tests_full': {
+      'cr23_browser_tests': {
         'args': [
           '--enable-features=ChromeRefresh2023',
           ('--test-launcher-filter-file='
@@ -1774,7 +1774,7 @@
         },
         'test': 'browser_tests',
       },
-      'cr23_interactive_ui_tests_full': {
+      'cr23_interactive_ui_tests': {
         'args': [
           '--enable-features=ChromeRefresh2023',
           ('--test-launcher-filter-file='
@@ -1800,7 +1800,7 @@
         },
         'ci_only': True,
       },
-      'cr23_browser_tests_full': {
+      'cr23_browser_tests': {
         'args': [
           '--enable-features=ChromeRefresh2023',
           ('--test-launcher-filter-file='
@@ -1813,7 +1813,7 @@
         'test': 'browser_tests',
         'ci_only': True,
       },
-      'cr23_interactive_ui_tests_full': {
+      'cr23_interactive_ui_tests': {
         'args': [
           '--enable-features=ChromeRefresh2023',
           ('--test-launcher-filter-file='
@@ -1838,7 +1838,7 @@
           'shards': 20,
         },
       },
-      'cr23_browser_tests_full': {
+      'cr23_browser_tests': {
         'args': [
           '--enable-features=ChromeRefresh2023',
           ('--test-launcher-filter-file='
@@ -1850,7 +1850,7 @@
         },
         'test': 'browser_tests',
       },
-      'cr23_interactive_ui_tests_full': {
+      'cr23_interactive_ui_tests': {
         'args': [
           '--enable-features=ChromeRefresh2023',
           ('--test-launcher-filter-file='
@@ -1867,7 +1867,7 @@
       'views_unittests': {},
     },
     'cr23_main_linux_gtests': {
-      'cr23_browser_tests': {
+      'cr23_regressed_browser_tests': {
         'args': [
           '--enable-features=ChromeRefresh2023',
           ('--test-launcher-filter-file='
@@ -1878,7 +1878,7 @@
         'experiment_percentage': 1,
         'test': 'browser_tests',
       },
-      'cr23_interactive_ui_tests': {
+      'cr23_regressed_interactive_ui_tests': {
         'args': [
           '--enable-features=ChromeRefresh2023',
           ('--test-launcher-filter-file='
@@ -1901,7 +1901,7 @@
       },
     },
     'cr23_main_mac_gtests': {
-      'cr23_browser_tests': {
+      'cr23_regressed_browser_tests': {
         'args': [
           '--enable-features=ChromeRefresh2023',
           ('--test-launcher-filter-file='
@@ -1912,7 +1912,7 @@
         'experiment_percentage': 1,
         'test': 'browser_tests',
       },
-      'cr23_interactive_ui_tests': {
+      'cr23_regressed_interactive_ui_tests': {
         'args': [
           '--enable-features=ChromeRefresh2023',
           ('--test-launcher-filter-file='
@@ -1935,7 +1935,7 @@
       },
     },
     'cr23_main_win_gtests': {
-      'cr23_browser_tests': {
+      'cr23_regressed_browser_tests': {
         'args': [
           '--enable-features=ChromeRefresh2023',
           ('--test-launcher-filter-file='
@@ -1946,7 +1946,7 @@
         'experiment_percentage': 1,
         'test': 'browser_tests',
       },
-      'cr23_interactive_ui_tests': {
+      'cr23_regressed_interactive_ui_tests': {
         'args': [
           '--enable-features=ChromeRefresh2023',
           ('--test-launcher-filter-file='

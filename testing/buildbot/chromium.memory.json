@@ -270,7 +270,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr23_browser_tests",
+        "name": "cr23_regressed_browser_tests",
         "swarming": {
           "dimension_sets": [
             {
@@ -899,7 +899,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr23_interactive_ui_tests",
+        "name": "cr23_regressed_interactive_ui_tests",
         "swarming": {
           "dimension_sets": [
             {
@@ -1982,7 +1982,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr23_browser_tests",
+        "name": "cr23_regressed_browser_tests",
         "swarming": {
           "dimension_sets": [
             {
@@ -2513,7 +2513,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr23_interactive_ui_tests",
+        "name": "cr23_regressed_interactive_ui_tests",
         "swarming": {
           "dimension_sets": [
             {
@@ -6953,7 +6953,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr23_browser_tests",
+        "name": "cr23_regressed_browser_tests",
         "swarming": {
           "dimension_sets": [
             {
@@ -7588,7 +7588,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr23_interactive_ui_tests",
+        "name": "cr23_regressed_interactive_ui_tests",
         "swarming": {
           "dimension_sets": [
             {
@@ -8639,7 +8639,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr23_browser_tests",
+        "name": "cr23_regressed_browser_tests",
         "swarming": {
           "dimension_sets": [
             {
@@ -9298,7 +9298,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr23_interactive_ui_tests",
+        "name": "cr23_regressed_interactive_ui_tests",
         "swarming": {
           "dimension_sets": [
             {
@@ -10306,7 +10306,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr23_browser_tests",
+        "name": "cr23_regressed_browser_tests",
         "swarming": {
           "dimension_sets": [
             {
@@ -10924,7 +10924,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr23_interactive_ui_tests",
+        "name": "cr23_regressed_interactive_ui_tests",
         "swarming": {
           "dimension_sets": [
             {
@@ -19118,7 +19118,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr23_browser_tests",
+        "name": "cr23_regressed_browser_tests",
         "swarming": {
           "dimension_sets": [
             {
@@ -19625,7 +19625,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr23_interactive_ui_tests",
+        "name": "cr23_regressed_interactive_ui_tests",
         "swarming": {
           "dimension_sets": [
             {
@@ -20509,7 +20509,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr23_browser_tests",
+        "name": "cr23_regressed_browser_tests",
         "swarming": {
           "dimension_sets": [
             {
@@ -21114,7 +21114,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr23_interactive_ui_tests",
+        "name": "cr23_regressed_interactive_ui_tests",
         "swarming": {
           "dimension_sets": [
             {

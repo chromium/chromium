@@ -2371,7 +2371,7 @@
       'Android FYI Release (Pixel 2)',
     ],
   },
-  'cr23_browser_tests': {
+  'cr23_regressed_browser_tests': {
     'modifications': {
       'linux-cr23-rel': {
         'experiment_percentage': None,
@@ -2384,7 +2384,7 @@
       },
     }
   },
-  'cr23_interactive_ui_tests': {
+  'cr23_regressed_interactive_ui_tests': {
     'modifications': {
       'linux-cr23-rel': {
         'experiment_percentage': None,
