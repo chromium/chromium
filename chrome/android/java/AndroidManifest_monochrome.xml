@@ -31,4 +31,8 @@ android:use32bitAbi="true"
 {% block base_application_definitions %}
 {{ super() }}
 {{ webview.common(manifest_package, webview_library) }}
+        <!-- Foldables should be running TriChrome rather than Monochrome.
+             Remove <uses-library> so as to not complicate WebView. -->
+        <uses-library android:name="androidx.window.extensions" android:required="false" tools:node="remove"/>
+        <uses-library android:name="androidx.window.sidecar" android:required="false" tools:node="remove"/>
 {% endblock %}
