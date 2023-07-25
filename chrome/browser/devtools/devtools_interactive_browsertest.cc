@@ -15,65 +15,13 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "ui/display/types/display_constants.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
 #endif
-
-// Encapsulates waiting for the browser window to change state. This is
-// needed for example on Chrome desktop linux, where window state change is done
-// asynchronously as an event received from a different process.
-class CheckWaiter {
- public:
-  CheckWaiter(base::RepeatingCallback<bool()> callback, bool expected)
-      : callback_(callback),
-        expected_(expected),
-        timeout_(base::TimeTicks::Now() + base::Seconds(1)) {}
-
-  CheckWaiter(const CheckWaiter&) = delete;
-  CheckWaiter& operator=(const CheckWaiter&) = delete;
-
-  ~CheckWaiter() = default;
-
-  // Blocks until the browser window becomes maximized.
-  void Wait() {
-    if (Check())
-      return;
-
-    base::RunLoop run_loop;
-    quit_ = run_loop.QuitClosure();
-    run_loop.Run();
-  }
-
- private:
-  bool Check() {
-    if (callback_.Run() != expected_ && base::TimeTicks::Now() < timeout_) {
-      // Check again after a short timeout. Important: Don't use an immediate
-      // task to check again, because the pump would be allowed to run it
-      // immediately without processing system events (system events are
-      // required for the state to change).
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(base::IgnoreResult(&CheckWaiter::Check),
-                         base::Unretained(this)),
-          TestTimeouts::tiny_timeout());
-      return false;
-    }
-
-    // Quit the run_loop to end the wait.
-    if (!quit_.is_null())
-      std::move(quit_).Run();
-    return true;
-  }
-
-  base::RepeatingCallback<bool()> callback_;
-  bool expected_;
-  const base::TimeTicks timeout_;
-  // The waiter's RunLoop quit closure.
-  base::RepeatingClosure quit_;
-};
 
 class DevToolsManagerDelegateTest : public InProcessBrowserTest {
  public:
@@ -97,25 +45,28 @@ class DevToolsManagerDelegateTest : public InProcessBrowserTest {
   }
 
   void CheckIsMaximized(bool maximized) {
-    CheckWaiter(base::BindRepeating(&BrowserWindow::IsMaximized,
-                                    base::Unretained(browser()->window())),
-                maximized)
+    ui_test_utils::CheckWaiter(
+        base::BindRepeating(&BrowserWindow::IsMaximized,
+                            base::Unretained(browser()->window())),
+        maximized, base::Seconds(1))
         .Wait();
     EXPECT_EQ(maximized, browser()->window()->IsMaximized());
   }
 
   void CheckIsMinimized(bool minimized) {
-    CheckWaiter(base::BindRepeating(&BrowserWindow::IsMinimized,
-                                    base::Unretained(browser()->window())),
-                minimized)
+    ui_test_utils::CheckWaiter(
+        base::BindRepeating(&BrowserWindow::IsMinimized,
+                            base::Unretained(browser()->window())),
+        minimized, base::Seconds(1))
         .Wait();
     EXPECT_EQ(minimized, browser()->window()->IsMinimized());
   }
 
   void CheckIsFullscreen(bool fullscreen) {
-    CheckWaiter(base::BindRepeating(&BrowserWindow::IsFullscreen,
-                                    base::Unretained(browser()->window())),
-                fullscreen)
+    ui_test_utils::CheckWaiter(
+        base::BindRepeating(&BrowserWindow::IsFullscreen,
+                            base::Unretained(browser()->window())),
+        fullscreen, base::Seconds(1))
         .Wait();
     EXPECT_EQ(fullscreen, browser()->window()->IsFullscreen());
   }
@@ -125,10 +76,10 @@ class DevToolsManagerDelegateTest : public InProcessBrowserTest {
   }
 
   void CheckWindowBounds(gfx::Rect expected) {
-    CheckWaiter(
+    ui_test_utils::CheckWaiter(
         base::BindRepeating(&DevToolsManagerDelegateTest::IsWindowBoundsEqual,
                             base::Unretained(this), expected),
-        true)
+        true, base::Seconds(1))
         .Wait();
     EXPECT_EQ(expected, browser()->window()->GetBounds());
   }
