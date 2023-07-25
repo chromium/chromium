@@ -22,6 +22,7 @@ import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 import {BackgroundCollection, CollectionImage, CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface, Theme} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import {getTemplate} from './themes.html.js';
+import {WindowProxy} from './window_proxy.js';
 
 export const CHROME_THEME_ELEMENT_ID =
     'CustomizeChromeUI::kChromeThemeElementId';
@@ -127,14 +128,16 @@ export class ThemesElement extends ThemesElementBase {
           max: 60000,  // 60 seconds.
           buckets: 100,
         },
-        Math.floor(Date.now() - this.previewImageLoadStartEpoch_));
+        Math.floor(
+            WindowProxy.getInstance().now() -
+            this.previewImageLoadStartEpoch_));
   }
 
   private onCollectionChange_() {
     this.header_ = '';
     this.themes_ = [];
-    this.previewImageLoadStartEpoch_ = Date.now();
     if (this.selectedCollection) {
+      this.previewImageLoadStartEpoch_ = WindowProxy.getInstance().now();
       this.pageHandler_.getBackgroundImages(this.selectedCollection!.id)
           .then(({images}) => {
             this.themes_ = images;

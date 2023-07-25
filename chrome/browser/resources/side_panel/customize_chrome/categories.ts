@@ -19,6 +19,7 @@ import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 import {getTemplate} from './categories.html.js';
 import {BackgroundCollection, CustomizeChromePageHandlerInterface, Theme} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
+import {WindowProxy} from './window_proxy.js';
 
 export enum CategoryType {
   NONE,
@@ -98,7 +99,7 @@ export class CategoriesElement extends CategoriesElementBase {
   constructor() {
     super();
     this.pageHandler_ = CustomizeChromeApiProxy.getInstance().handler;
-    this.previewImageLoadStartEpoch_ = Date.now();
+    this.previewImageLoadStartEpoch_ = WindowProxy.getInstance().now();
     this.pageHandler_.getBackgroundCollections().then(({collections}) => {
       this.collections_ = collections;
     });
@@ -148,7 +149,9 @@ export class CategoriesElement extends CategoriesElementBase {
           max: 60000,  // 60 seconds.
           buckets: 100,
         },
-        Math.floor(Date.now() - this.previewImageLoadStartEpoch_));
+        Math.floor(
+            WindowProxy.getInstance().now() -
+            this.previewImageLoadStartEpoch_));
   }
 
   private computeSelectedCategory_() {

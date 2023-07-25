@@ -7,6 +7,7 @@ import 'chrome://customize-chrome-side-panel.top-chrome/categories.js';
 import {CategoriesElement, CHANGE_CHROME_THEME_CLASSIC_ELEMENT_ID, CHROME_THEME_COLLECTION_ELEMENT_ID} from 'chrome://customize-chrome-side-panel.top-chrome/categories.js';
 import {BackgroundCollection, CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
+import {WindowProxy} from 'chrome://customize-chrome-side-panel.top-chrome/window_proxy.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -29,6 +30,7 @@ function createTestCollections(length: number): BackgroundCollection[] {
 
 suite('CategoriesTest', () => {
   let categoriesElement: CategoriesElement;
+  let windowProxy: TestMock<WindowProxy>;
   let handler: TestMock<CustomizeChromePageHandlerRemote>;
   let callbackRouterRemote: CustomizeChromePageRemote;
   let metrics: MetricsTracker;
@@ -44,6 +46,7 @@ suite('CategoriesTest', () => {
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    windowProxy = installMock(WindowProxy);
     handler = installMock(
         CustomizeChromePageHandlerRemote,
         (mock: CustomizeChromePageHandlerRemote) =>
@@ -75,14 +78,17 @@ suite('CategoriesTest', () => {
   });
 
   test('collection preview images create metrics when loaded', async () => {
-    const startTime = Date.now();
+    const startTime = 123.45;
+    windowProxy.setResultFor('now', startTime);
     await setInitialSettings(1);
-    const imageLoadTime = 123;
+    assertEquals(1, windowProxy.getCallCount('now'));
+    const imageLoadTime = 678.90;
+    windowProxy.setResultFor('now', imageLoadTime);
 
-    Date.now = () => imageLoadTime;
     categoriesElement.shadowRoot!.querySelectorAll('.collection')[0]!
         .querySelector('img')!.dispatchEvent(new Event('load'));
 
+    assertEquals(2, windowProxy.getCallCount('now'));
     assertEquals(
         1, metrics.count('NewTabPage.Images.ShownTime.CollectionPreviewImage'));
     assertEquals(

@@ -7,6 +7,7 @@ import 'chrome://customize-chrome-side-panel.top-chrome/themes.js';
 import {BackgroundCollection, CollectionImage, CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {CHROME_THEME_BACK_ELEMENT_ID, CHROME_THEME_ELEMENT_ID, ThemesElement} from 'chrome://customize-chrome-side-panel.top-chrome/themes.js';
+import {WindowProxy} from 'chrome://customize-chrome-side-panel.top-chrome/window_proxy.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -41,6 +42,7 @@ function createTestImages(length: number): CollectionImage[] {
 
 suite('ThemesTest', () => {
   let themesElement: ThemesElement;
+  let windowProxy: TestMock<WindowProxy>;
   let callbackRouterRemote: CustomizeChromePageRemote;
   let handler: TestMock<CustomizeChromePageHandlerRemote>;
   let metrics: MetricsTracker;
@@ -55,6 +57,7 @@ suite('ThemesTest', () => {
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    windowProxy = installMock(WindowProxy);
     handler = installMock(
         CustomizeChromePageHandlerRemote,
         (mock: CustomizeChromePageHandlerRemote) =>
@@ -126,14 +129,17 @@ suite('ThemesTest', () => {
   });
 
   test('theme preview images create metrics when loaded', async () => {
-    const startTime = Date.now();
+    const startTime = 123.45;
+    windowProxy.setResultFor('now', startTime);
     await setCollection('test1', 1);
-    const imageLoadTime = 123;
+    assertEquals(1, windowProxy.getCallCount('now'));
+    const imageLoadTime = 678.90;
+    windowProxy.setResultFor('now', imageLoadTime);
 
-    Date.now = () => imageLoadTime;
     themesElement.shadowRoot!.querySelectorAll('.theme')[0]!
         .querySelector('img')!.dispatchEvent(new Event('load'));
 
+    assertEquals(2, windowProxy.getCallCount('now'));
     assertEquals(
         1, metrics.count('NewTabPage.Images.ShownTime.ThemePreviewImage'));
     assertEquals(

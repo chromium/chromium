@@ -35,6 +35,7 @@ build_webui("build") {
     "chrome_cart_proxy.ts",
     "color_utils.ts",
     "customize_chrome_api_proxy.ts",
+    "window_proxy.ts",
   ]
 
   mojo_files_deps = [
