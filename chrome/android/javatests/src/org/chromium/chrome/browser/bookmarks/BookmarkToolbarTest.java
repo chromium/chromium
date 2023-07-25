@@ -132,7 +132,7 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
                     .thenReturn(Collections.singletonList(BOOKMARK_ID_ROOT));
 
             BookmarkItem rootBookmarkItem = new BookmarkItem(
-                    BOOKMARK_ID_ROOT, "root", null, false, null, false, false, 0, false);
+                    BOOKMARK_ID_ROOT, "root", null, false, null, false, false, 0, false, 0);
             when(mBookmarkModel.getBookmarkById(BOOKMARK_ID_ROOT)).thenReturn(rootBookmarkItem);
 
             mockBookmarkItem(BOOKMARK_ID_FOLDER, "folder", null, true, BOOKMARK_ID_ROOT, true);
@@ -175,7 +175,7 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
     private void mockBookmarkItem(BookmarkId bookmarkId, String title, String url, boolean isFolder,
             BookmarkId parent, boolean isEditable) {
         BookmarkItem bookmarkItem = new BookmarkItem(
-                bookmarkId, title, new GURL(url), isFolder, parent, isEditable, false, 0, false);
+                bookmarkId, title, new GURL(url), isFolder, parent, isEditable, false, 0, false, 0);
         when(mBookmarkModel.getBookmarkById(bookmarkId)).thenReturn(bookmarkItem);
     }
 

@@ -206,21 +206,21 @@ public class BookmarkManagerMediatorTest {
     private final BookmarkId mDesktopFolderId = new BookmarkId(/*id=*/7, BookmarkType.NORMAL);
 
     private final BookmarkItem mFolderItem1 = new BookmarkItem(
-            mFolderId1, "Folder1", null, true, mRootFolderId, true, false, 0, false);
-    private final BookmarkItem mFolderItem2 =
-            new BookmarkItem(mFolderId2, "Folder2", null, true, mFolderId1, true, false, 0, false);
-    private final BookmarkItem mFolderItem3 =
-            new BookmarkItem(mFolderId3, "Folder3", null, true, mFolderId1, true, false, 0, false);
+            mFolderId1, "Folder1", null, true, mRootFolderId, true, false, 0, false, 0);
+    private final BookmarkItem mFolderItem2 = new BookmarkItem(
+            mFolderId2, "Folder2", null, true, mFolderId1, true, false, 0, false, 0);
+    private final BookmarkItem mFolderItem3 = new BookmarkItem(
+            mFolderId3, "Folder3", null, true, mFolderId1, true, false, 0, false, 0);
     private final BookmarkItem mBookmarkItem21 = new BookmarkItem(mBookmarkId21, "Bookmark21",
             JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), false, mFolderId2, true, false, 0,
-            false);
+            false, 0);
     private final BookmarkItem mReadingListFolderItem = new BookmarkItem(mReadingListFolderId,
-            "Reading List", null, true, mRootFolderId, false, false, 0, false);
+            "Reading List", null, true, mRootFolderId, false, false, 0, false, 0);
     private final BookmarkItem mReadingListItem = new BookmarkItem(mReadingListId,
             JUnitTestGURLs.EXAMPLE_URL, JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), false,
-            mReadingListFolderId, true, false, 0, false);
+            mReadingListFolderId, true, false, 0, false, 0);
     private final BookmarkItem mDesktopFolderItem = new BookmarkItem(
-            mDesktopFolderId, "Desktop", null, true, mRootFolderId, false, false, 0, false);
+            mDesktopFolderId, "Desktop", null, true, mRootFolderId, false, false, 0, false, 0);
     private final ModelList mModelList = new ModelList();
     private final Bitmap mBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
     private BookmarkUiPrefs mBookmarkUiPrefs =

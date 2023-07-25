@@ -86,15 +86,15 @@ public class ImprovedBookmarkFolderSelectRowRenderTest {
     private final BookmarkId mReadingListId = new BookmarkId(/*id=*/4, BookmarkType.READING_LIST);
 
     private final BookmarkItem mFolderItem =
-            new BookmarkItem(mFolderId, "User folder", null, true, null, true, false, 0, false);
+            new BookmarkItem(mFolderId, "User folder", null, true, null, true, false, 0, false, 0);
     private final BookmarkItem mBookmarkItem = new BookmarkItem(mBookmarkId, "Bookmark",
             JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), false, mFolderId, true, false, 0,
-            false);
+            false, 0);
     private final BookmarkItem mReadingListFolderItem = new BookmarkItem(
-            mReadingListFolderId, "Reading List", null, true, null, true, false, 0, false);
+            mReadingListFolderId, "Reading List", null, true, null, true, false, 0, false, 0);
     private final BookmarkItem mReadingListItem = new BookmarkItem(mReadingListId, "ReadingList",
             JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), false, mReadingListFolderId, true,
-            false, 0, false);
+            false, 0, false, 0);
 
     @Mock
     private BookmarkImageFetcher mBookmarkImageFetcher;

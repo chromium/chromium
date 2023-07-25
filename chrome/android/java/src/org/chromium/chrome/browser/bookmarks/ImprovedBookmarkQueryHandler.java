@@ -19,7 +19,8 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
     private static class NoDragWrappedBookmarkItem extends BookmarkItem {
         NoDragWrappedBookmarkItem(BookmarkItem item) {
             super(item.getId(), item.getTitle(), item.getUrl(), item.isFolder(), item.getParentId(),
-                    item.isEditable(), item.isManaged(), item.getDateAdded(), item.isRead());
+                    item.isEditable(), item.isManaged(), item.getDateAdded(), item.isRead(),
+                    item.getDateLastOpened());
         }
 
         @Override
@@ -130,6 +131,8 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
                 return item1.getTitle().compareToIgnoreCase(item2.getTitle());
             case BookmarkRowSortOrder.REVERSE_ALPHABETICAL:
                 return item2.getTitle().compareToIgnoreCase(item1.getTitle());
+            case BookmarkRowSortOrder.RECENTLY_USED:
+                return Long.compare(item2.getDateLastOpened(), item1.getDateLastOpened());
         }
         return 0;
     }

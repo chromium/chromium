@@ -151,7 +151,8 @@ public class ReadingListUtilsUnitTest {
         BookmarkId existingBookmarkId = new BookmarkId(0, BookmarkType.NORMAL);
         BookmarkItem existingBookmark = new BookmarkItem(existingBookmarkId, "Test",
                 JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL), /*isFolder=*/false, /*parent=*/null,
-                /*isEditable=*/true, /*isManaged=*/false, /*dateAdded*/ 0, /*read=*/false);
+                /*isEditable=*/true, /*isManaged=*/false, /*dateAdded*/ 0, /*read=*/false,
+                /*dateLastOpened=*/0);
         BookmarkModel bookmarkModel = Mockito.mock(BookmarkModel.class);
         doReturn(existingBookmark).when(bookmarkModel).getBookmarkById(existingBookmarkId);
         BookmarkId newBookmarkId = new BookmarkId(0, BookmarkType.READING_LIST);
@@ -178,7 +179,8 @@ public class ReadingListUtilsUnitTest {
         BookmarkId existingBookmarkId = new BookmarkId(0, BookmarkType.READING_LIST);
         BookmarkItem existingBookmark = new BookmarkItem(existingBookmarkId, "Test",
                 JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL), /*isFolder=*/false, /*parent=*/null,
-                /*isEditable=*/true, /*isManaged=*/false, /*dateAdded*/ 0, /*read=*/false);
+                /*isEditable=*/true, /*isManaged=*/false, /*dateAdded*/ 0, /*read=*/false,
+                /*dateLastOpened=*/0);
         BookmarkModel bookmarkModel = Mockito.mock(BookmarkModel.class);
         doReturn(existingBookmark).when(bookmarkModel).getBookmarkById(existingBookmarkId);
         BookmarkId newBookmarkId = new BookmarkId(0, BookmarkType.NORMAL);
@@ -205,11 +207,13 @@ public class ReadingListUtilsUnitTest {
         BookmarkId existingBookmarkId1 = new BookmarkId(1, BookmarkType.READING_LIST);
         BookmarkItem existingBookmark1 = new BookmarkItem(existingBookmarkId1, "Test1",
                 JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL), /*isFolder=*/false, /*parent=*/null,
-                /*isEditable=*/true, /*isManaged=*/false, /*dateAdded*/ 0, /*read=*/false);
+                /*isEditable=*/true, /*isManaged=*/false, /*dateAdded*/ 0, /*read=*/false,
+                /*dateLastOpened=*/0);
         BookmarkId existingBookmarkId2 = new BookmarkId(2, BookmarkType.READING_LIST);
         BookmarkItem existingBookmark2 = new BookmarkItem(existingBookmarkId2, "Test2",
                 JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL), /*isFolder=*/false, /*parent=*/null,
-                /*isEditable=*/true, /*isManaged=*/false, /*dateAdded*/ 0, /*read=*/false);
+                /*isEditable=*/true, /*isManaged=*/false, /*dateAdded*/ 0, /*read=*/false,
+                /*dateLastOpened=*/0);
         BookmarkModel bookmarkModel = Mockito.mock(BookmarkModel.class);
         doReturn(existingBookmark1).when(bookmarkModel).getBookmarkById(existingBookmarkId1);
         doReturn(existingBookmark2).when(bookmarkModel).getBookmarkById(existingBookmarkId2);
@@ -247,7 +251,8 @@ public class ReadingListUtilsUnitTest {
         BookmarkId existingBookmarkId = new BookmarkId(0, BookmarkType.NORMAL);
         BookmarkItem existingBookmark = new BookmarkItem(existingBookmarkId, "Test",
                 JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL), /*isFolder=*/false, /*parent=*/null,
-                /*isEditable=*/true, /*isManaged=*/false, /*dateAdded*/ 0, /*read=*/false);
+                /*isEditable=*/true, /*isManaged=*/false, /*dateAdded*/ 0, /*read=*/false,
+                /*dateLastOpened=*/0);
         BookmarkModel bookmarkModel = Mockito.mock(BookmarkModel.class);
 
         ArrayList<BookmarkId> bookmarks = new ArrayList<>();

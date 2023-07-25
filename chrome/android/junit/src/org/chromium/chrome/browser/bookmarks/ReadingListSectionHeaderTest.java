@@ -42,7 +42,7 @@ public class ReadingListSectionHeaderTest {
     private BookmarkListEntry createReadingListEntry(long id, boolean read, int dateAdded) {
         BookmarkId bookmarkId = new BookmarkId(id, BookmarkType.READING_LIST);
         BookmarkItem bookmarkItem = new BookmarkItem(
-                bookmarkId, null, null, false, null, false, false, dateAdded, read);
+                bookmarkId, null, null, false, null, false, false, dateAdded, read, 0);
         return BookmarkListEntry.createBookmarkEntry(bookmarkItem, /*powerBookmarkMeta=*/null, 0);
     }
 

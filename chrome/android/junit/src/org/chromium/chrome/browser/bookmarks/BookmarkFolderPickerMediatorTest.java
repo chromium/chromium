@@ -75,23 +75,23 @@ public class BookmarkFolderPickerMediatorTest {
     private final BookmarkId mUserBookmarkId1 = new BookmarkId(/*id=*/8, BookmarkType.NORMAL);
 
     private final BookmarkItem mRootFolderItem =
-            new BookmarkItem(mRootFolderId, "Root", null, true, null, false, false, 0, false);
-    private final BookmarkItem mMobileFolderItem = new BookmarkItem(
-            mMobileFolderId, "Mobile Bookmarks", null, true, mRootFolderId, false, false, 0, false);
+            new BookmarkItem(mRootFolderId, "Root", null, true, null, false, false, 0, false, 0);
+    private final BookmarkItem mMobileFolderItem = new BookmarkItem(mMobileFolderId,
+            "Mobile Bookmarks", null, true, mRootFolderId, false, false, 0, false, 0);
     private final BookmarkItem mBookmarkBarFolderItem = new BookmarkItem(mBookmarkBarFolderId,
-            "Bookmarks Bar", null, true, mRootFolderId, false, false, 0, false);
+            "Bookmarks Bar", null, true, mRootFolderId, false, false, 0, false, 0);
     private final BookmarkItem mReadingListFolderItem = new BookmarkItem(mReadingListFolderId,
-            "Reading List", null, true, mRootFolderId, false, false, 0, false);
+            "Reading List", null, true, mRootFolderId, false, false, 0, false, 0);
     private final BookmarkItem mUserFolderItem = new BookmarkItem(
-            mUserFolderId, "UserFolder", null, true, mMobileFolderId, false, false, 0, false);
+            mUserFolderId, "UserFolder", null, true, mMobileFolderId, false, false, 0, false, 0);
     private final BookmarkItem mUserBookmarkItem = new BookmarkItem(mUserBookmarkId, "Bookmark",
             JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), false, mUserFolderId, true, false,
-            0, false);
+            0, false, 0);
     private final BookmarkItem mUserFolderItem2 = new BookmarkItem(
-            mUserFolderId2, "UserFolder2", null, true, mMobileFolderId, false, false, 0, false);
+            mUserFolderId2, "UserFolder2", null, true, mMobileFolderId, false, false, 0, false, 0);
     private final BookmarkItem mUserBookmarkItem1 = new BookmarkItem(mUserBookmarkId1, "Bookmark1",
             JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), false, mUserFolderId, true, false,
-            0, false);
+            0, false, 0);
 
     @Mock
     private BookmarkImageFetcher mBookmarkImageFetcher;

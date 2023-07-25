@@ -116,13 +116,15 @@ public class SharedBookmarkModelMocks {
     private static BookmarkItem makeUrlItemWithRead(
             BookmarkId id, String title, GURL url, BookmarkId parentId, boolean read) {
         long dateAdded = id.getId();
-        return new BookmarkItem(id, title, url, false, parentId, false, false, dateAdded, read);
+        long dateLastOpened = id.getId();
+        return new BookmarkItem(
+                id, title, url, false, parentId, false, false, dateAdded, read, dateLastOpened);
     }
 
     private static BookmarkItem makeFolderItem(BookmarkId id, String title, BookmarkId parentId) {
         boolean isEditable = ROOT_BOOKMARK_ID.equals(parentId);
         long dateAdded = id.getId();
         return new BookmarkItem(
-                id, title, null, true, parentId, isEditable, false, dateAdded, false);
+                id, title, null, true, parentId, isEditable, false, dateAdded, false, 0);
     }
 }

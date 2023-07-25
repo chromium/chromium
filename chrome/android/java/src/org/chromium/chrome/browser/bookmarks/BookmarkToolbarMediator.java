@@ -102,6 +102,10 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
             mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.CHRONOLOGICAL);
             mModel.set(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID, id);
             return true;
+        } else if (id == R.id.sort_by_last_opened) {
+            mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.RECENTLY_USED);
+            mModel.set(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID, id);
+            return true;
         } else if (id == R.id.sort_by_alpha) {
             mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.ALPHABETICAL);
             mModel.set(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID, id);
@@ -307,6 +311,8 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
                 return R.id.sort_by_alpha;
             case BookmarkRowSortOrder.REVERSE_ALPHABETICAL:
                 return R.id.sort_by_reverse_alpha;
+            case BookmarkRowSortOrder.RECENTLY_USED:
+                return R.id.sort_by_last_opened;
         }
         return ResourcesCompat.ID_NULL;
     }

@@ -20,6 +20,8 @@ found in the LICENSE file.
                         android:title="@string/sort_by_newest" />
                     <item android:id="@+id/sort_by_oldest"
                         android:title="@string/sort_by_oldest" />
+                    <item android:id="@+id/sort_by_last_opened"
+                        android:title="@string/sort_by_last_opened" />
                     <item android:id="@+id/sort_by_alpha"
                         android:title="@string/sort_by_alpha" />
                     <item android:id="@+id/sort_by_reverse_alpha"

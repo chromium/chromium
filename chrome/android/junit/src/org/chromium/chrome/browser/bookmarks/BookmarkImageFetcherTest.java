@@ -107,13 +107,13 @@ public class BookmarkImageFetcherTest {
             new BookmarkId(/*id=*/5, BookmarkType.READING_LIST);
 
     private final BookmarkItem mFolderItem =
-            new BookmarkItem(mFolderId, "Folder", null, true, null, true, false, 0, false);
+            new BookmarkItem(mFolderId, "Folder", null, true, null, true, false, 0, false, 0);
     private final BookmarkItem mBookmarkItem1 = new BookmarkItem(mBookmarkId1, "Bookmark1",
             JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), false, mFolderId, true, false, 0,
-            false);
+            false, 0);
     private final BookmarkItem mBookmarkItem2 = new BookmarkItem(mBookmarkId2, "Bookmark1",
             JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), false, mFolderId, true, false, 0,
-            false);
+            false, 0);
     private final Bitmap mBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
 
     private Activity mActivity;

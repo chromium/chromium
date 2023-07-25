@@ -48,7 +48,7 @@ public class ImprovedBookmarkFolderViewCoordinatorTest {
 
     private final BookmarkId mFolderId = new BookmarkId(/*id=*/1, BookmarkType.NORMAL);
     private final BookmarkItem mFolderItem =
-            new BookmarkItem(mFolderId, "test folder", null, true, null, true, false, 0, false);
+            new BookmarkItem(mFolderId, "test folder", null, true, null, true, false, 0, false, 0);
 
     @Mock
     private ImprovedBookmarkFolderView mView;

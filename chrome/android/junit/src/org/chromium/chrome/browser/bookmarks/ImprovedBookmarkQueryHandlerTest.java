@@ -120,6 +120,18 @@ public class ImprovedBookmarkQueryHandlerTest {
     }
 
     @Test
+    public void testBuildBookmarkListForParent_rootFolder_recentlyUsed() {
+        doReturn(BookmarkRowSortOrder.RECENTLY_USED)
+                .when(mBookmarkUiPrefs)
+                .getBookmarkRowSortOrder();
+
+        List<BookmarkListEntry> result = mHandler.buildBookmarkListForParent(ROOT_BOOKMARK_ID);
+        List<BookmarkId> expected = Arrays.asList(DESKTOP_BOOKMARK_ID, READING_LIST_BOOKMARK_ID,
+                FOLDER_BOOKMARK_ID_A, URL_BOOKMARK_ID_E, URL_BOOKMARK_ID_D, URL_BOOKMARK_ID_A);
+        verifyBookmarkIds(expected, result);
+    }
+
+    @Test
     public void testBuildBookmarkListForParent_readingList() {
         List<BookmarkListEntry> result =
                 mHandler.buildBookmarkListForParent(READING_LIST_BOOKMARK_ID);
