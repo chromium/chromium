@@ -28,6 +28,9 @@ class SharedPasswordsNotificationBubbleController
   // by the user.
   void OnManagePasswordsClicked();
 
+  // Called by the view code when the user clicks the close bubble button.
+  void OnCloseBubbleClicked();
+
   // PasswordBubbleControllerBase:
   std::u16string GetTitle() const override;
   void ReportInteractions() override;

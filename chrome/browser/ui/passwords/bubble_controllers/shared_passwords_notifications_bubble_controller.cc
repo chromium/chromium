@@ -41,6 +41,10 @@ void SharedPasswordsNotificationBubbleController::OnManagePasswordsClicked() {
           kSharedPasswordsNotificationBubble);
 }
 
+void SharedPasswordsNotificationBubbleController::OnCloseBubbleClicked() {
+  MarkSharedCredentialAsNotifiedInPasswordStore();
+}
+
 std::u16string SharedPasswordsNotificationBubbleController::GetTitle() const {
   return l10n_util::GetPluralStringFUTF16(
       IDS_SHARED_PASSWORDS_NOTIFICATION_TITLE,

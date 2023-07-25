@@ -34,6 +34,9 @@ SharedPasswordsNotificationView::SharedPasswordsNotificationView(
   SetCancelCallback(base::BindOnce(
       &SharedPasswordsNotificationBubbleController::OnManagePasswordsClicked,
       base::Unretained(&controller_)));
+  SetCloseCallback(base::BindOnce(
+      &SharedPasswordsNotificationBubbleController::OnCloseBubbleClicked,
+      base::Unretained(&controller_)));
 }
 
 SharedPasswordsNotificationView::~SharedPasswordsNotificationView() = default;

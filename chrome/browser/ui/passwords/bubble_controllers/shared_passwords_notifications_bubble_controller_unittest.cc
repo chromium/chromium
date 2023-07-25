@@ -131,3 +131,15 @@ TEST_F(SharedPasswordsNotificationBubbleControllerTest,
   EXPECT_THAT(store().stored_passwords().at(GURL(kUrl).spec()),
               Each(Field(&PasswordForm::sharing_notification_displayed, true)));
 }
+
+TEST_F(SharedPasswordsNotificationBubbleControllerTest,
+       ShouldMarkCredentialsAsNotifiedUponClickingCloseBubble) {
+  SetupSharedCredentialsInStore();
+
+  controller()->OnCloseBubbleClicked();
+
+  RunUntilIdle();
+
+  EXPECT_THAT(store().stored_passwords().at(GURL(kUrl).spec()),
+              Each(Field(&PasswordForm::sharing_notification_displayed, true)));
+}
