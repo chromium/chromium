@@ -6,7 +6,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Dawn Win10 x64 ASAN Release",
+              "builder": "Dawn Win10 x64 ASAN Builder",
               "project": "chromium"
             },
             "builder_spec": {
@@ -27,6 +27,38 @@
                   "dawn_top_of_tree"
                 ],
                 "config": "chromium"
+              }
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "Dawn Win10 x64 ASAN Release (NVIDIA)",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "build_gs_bucket": "chromium-dawn-archive",
+              "builder_group": "chromium.dawn",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "win"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "dawn_top_of_tree"
+                ],
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "Dawn Win10 x64 ASAN Builder",
+                "project": "chromium"
               },
               "run_tests_serially": true
             }
@@ -36,7 +68,14 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "Dawn Win10 x64 ASAN Release",
+          "builder": "Dawn Win10 x64 ASAN Builder",
+          "project": "chromium"
+        }
+      ],
+      "builder_ids_in_scope_for_testing": [
+        {
+          "bucket": "ci",
+          "builder": "Dawn Win10 x64 ASAN Release (NVIDIA)",
           "project": "chromium"
         }
       ]
