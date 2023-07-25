@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/borealis/borealis_installer.h"
+#include "base/test/bind.h"
 #include "chrome/browser/ash/borealis/borealis_installer_impl.h"
 
 #include <memory>
@@ -91,8 +92,7 @@ class BorealisInstallerTest : public testing::Test,
     observer_ = std::make_unique<NiceMock<MockObserver>>();
     installer_->AddObserver(observer_.get());
 
-    UpdateCurrentDlcs();
-    ASSERT_EQ(current_dlcs_.dlc_infos_size(), 0);
+    ASSERT_FALSE(BorealisDlcInstalled());
     ASSERT_FALSE(
         BorealisService::GetForProfile(&profile_)->Features().IsEnabled());
   }
@@ -125,17 +125,22 @@ class BorealisInstallerTest : public testing::Test,
             }));
   }
 
-  void UpdateCurrentDlcs() {
+  bool BorealisDlcInstalled() {
     base::RunLoop run_loop;
-    FakeDlcserviceClient()->GetExistingDlcs(base::BindOnce(
-        [](dlcservice::DlcsWithContent* out, base::OnceClosure quit,
-           const std::string& err,
-           const dlcservice::DlcsWithContent& dlcs_with_content) {
-          out->CopyFrom(dlcs_with_content);
-          std::move(quit).Run();
-        },
-        base::Unretained(&current_dlcs_), run_loop.QuitClosure()));
+    bool installed = false;
+    FakeDlcserviceClient()->GetExistingDlcs(base::BindLambdaForTesting(
+        [&](const std::string& err,
+            const dlcservice::DlcsWithContent& dlcs_with_content) {
+          for (const auto& dlc : dlcs_with_content.dlc_infos()) {
+            if (dlc.id() == kBorealisDlcName) {
+              installed = true;
+              break;
+            }
+          }
+          run_loop.Quit();
+        }));
     run_loop.Run();
+    return installed;
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -151,7 +156,6 @@ class BorealisInstallerTest : public testing::Test,
   std::unique_ptr<BorealisInstallerImpl> installer_impl_;
   raw_ptr<BorealisInstaller, ExperimentalAsh> installer_;
   std::unique_ptr<MockObserver> observer_;
-  dlcservice::DlcsWithContent current_dlcs_;
 };
 
 class BorealisInstallerTestDlc
@@ -167,8 +171,7 @@ TEST_F(BorealisInstallerTest, BorealisNotAllowed) {
                                   testing::Not("")));
 
   StartAndRunToCompletion();
-  UpdateCurrentDlcs();
-  ASSERT_EQ(current_dlcs_.dlc_infos_size(), 0);
+  EXPECT_FALSE(BorealisDlcInstalled());
   EXPECT_FALSE(
       BorealisService::GetForProfile(&profile_)->Features().IsEnabled());
 }
@@ -184,8 +187,7 @@ TEST_F(BorealisInstallerTest, DeviceOfflineInstallationFails) {
                                               testing::Not("")));
 
   StartAndRunToCompletion();
-  UpdateCurrentDlcs();
-  ASSERT_EQ(current_dlcs_.dlc_infos_size(), 0);
+  EXPECT_FALSE(BorealisDlcInstalled());
   EXPECT_FALSE(
       BorealisService::GetForProfile(&profile_)->Features().IsEnabled());
 }
@@ -197,9 +199,7 @@ TEST_F(BorealisInstallerTest, SucessfulInstallation) {
               OnInstallationEnded(BorealisInstallResult::kSuccess, ""));
   StartAndRunToCompletion();
 
-  UpdateCurrentDlcs();
-  ASSERT_EQ(current_dlcs_.dlc_infos_size(), 1);
-  EXPECT_EQ(current_dlcs_.dlc_infos(0).id(), borealis::kBorealisDlcName);
+  EXPECT_TRUE(BorealisDlcInstalled());
   EXPECT_TRUE(
       BorealisService::GetForProfile(&profile_)->Features().IsEnabled());
 }
@@ -240,9 +240,7 @@ TEST_F(BorealisInstallerTest, CancelledInstallation) {
   installer_->Cancel();
   task_environment_.RunUntilIdle();
 
-  UpdateCurrentDlcs();
-  ASSERT_EQ(current_dlcs_.dlc_infos_size(), 1);
-  EXPECT_EQ(current_dlcs_.dlc_infos(0).id(), borealis::kBorealisDlcName);
+  EXPECT_TRUE(BorealisDlcInstalled());
   EXPECT_FALSE(
       BorealisService::GetForProfile(&profile_)->Features().IsEnabled());
 }
@@ -260,9 +258,7 @@ TEST_F(BorealisInstallerTest, InstallationInProgess) {
   installer_->Start();
   task_environment_.RunUntilIdle();
 
-  UpdateCurrentDlcs();
-  ASSERT_EQ(current_dlcs_.dlc_infos_size(), 1);
-  EXPECT_EQ(current_dlcs_.dlc_infos(0).id(), borealis::kBorealisDlcName);
+  EXPECT_TRUE(BorealisDlcInstalled());
   EXPECT_TRUE(
       BorealisService::GetForProfile(&profile_)->Features().IsEnabled());
 }
@@ -275,8 +271,7 @@ TEST_F(BorealisInstallerTest, CancelledThenSuccessfulInstallation) {
   installer_->Cancel();
   task_environment_.RunUntilIdle();
 
-  UpdateCurrentDlcs();
-  ASSERT_EQ(current_dlcs_.dlc_infos_size(), 0);
+  EXPECT_FALSE(BorealisDlcInstalled());
   EXPECT_FALSE(
       BorealisService::GetForProfile(&profile_)->Features().IsEnabled());
 
@@ -286,9 +281,7 @@ TEST_F(BorealisInstallerTest, CancelledThenSuccessfulInstallation) {
   installer_->Start();
   task_environment_.RunUntilIdle();
 
-  UpdateCurrentDlcs();
-  ASSERT_EQ(current_dlcs_.dlc_infos_size(), 1);
-  EXPECT_EQ(current_dlcs_.dlc_infos(0).id(), borealis::kBorealisDlcName);
+  EXPECT_TRUE(BorealisDlcInstalled());
   EXPECT_TRUE(
       BorealisService::GetForProfile(&profile_)->Features().IsEnabled());
 }
@@ -479,8 +472,7 @@ TEST_F(BorealisUninstallerTest, ErrorIfDiskNotRemoved) {
   task_environment_.RunUntilIdle();
 
   // The DLC should remain because the disk was not removed.
-  UpdateCurrentDlcs();
-  EXPECT_EQ(current_dlcs_.dlc_infos_size(), 1);
+  EXPECT_TRUE(BorealisDlcInstalled());
 
   // Borealis is still "installed" according to the prefs.
   EXPECT_TRUE(
@@ -545,8 +537,7 @@ TEST_F(BorealisUninstallerTest, UninstallationRemovesAllNecessaryPieces) {
   EXPECT_GE(FakeConciergeClient()->destroy_disk_image_call_count(), 1);
 
   // Borealis's DLC is not installed
-  UpdateCurrentDlcs();
-  EXPECT_EQ(current_dlcs_.dlc_infos_size(), 0);
+  EXPECT_FALSE(BorealisDlcInstalled());
 }
 
 TEST_F(BorealisUninstallerTest, UninstallationIsIdempotent) {
