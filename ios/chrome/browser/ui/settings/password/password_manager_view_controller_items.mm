@@ -251,9 +251,9 @@
 
 @end
 
-#pragma mark - CredentialTableViewItem
+#pragma mark - BlockedSiteTableViewItem
 
-@implementation CredentialTableViewItem
+@implementation BlockedSiteTableViewItem
 
 - (instancetype)initWithType:(NSInteger)type {
   self = [super initWithType:type];
@@ -265,6 +265,7 @@
 
 - (void)configureCell:(TableViewCell*)tableCell
            withStyler:(ChromeTableViewStyler*)styler {
+  CHECK(self.credential.blocked_by_user);
   [super configureCell:tableCell withStyler:styler];
 
   PasswordFormContentCell* cell =
@@ -272,10 +273,9 @@
   cell.titleLabel.text = self.title;
   // Title is a URL, use "...oo.bar.com", not "fooooooooo..." if too big.
   cell.titleLabel.lineBreakMode = NSLineBreakByTruncatingHead;
-  cell.detailLabel.text = self.detailText;
   cell.detailLabel.hidden = !cell.detailLabel.text.length;
   cell.faviconPageURL = self.credential.GetURL();
-  cell.localOnlyIcon.hidden = !self.showLocalOnlyIcon;
+  cell.localOnlyIcon.hidden = YES;
   if (styler.cellTitleColor) {
     cell.titleLabel.textColor = styler.cellTitleColor;
   }
@@ -285,13 +285,6 @@
   return base::SysUTF8ToNSString(
       password_manager::GetShownOrigin(self.credential));
   ;
-}
-
-- (NSString*)detailText {
-  if (self.credential.blocked_by_user) {
-    return @"";
-  }
-  return base::SysUTF16ToNSString(self.credential.username);
 }
 
 @end

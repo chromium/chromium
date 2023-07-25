@@ -24,6 +24,10 @@ typedef NS_ENUM(NSInteger, FaviconType) {
 
 // Represents a group of credentials corresponding to the same overall
 // application (though possibly with different URLs, e.g. desktop vs mobile).
+//  ___________________________________________________
+// |  [favicon or]  Title            [Optional local]  |
+// |  [monogram  ]  Optional text    [password icon ]  |
+//  ___________________________________________________|
 @interface AffiliatedGroupTableViewItem : TableViewItem
 
 @property(nonatomic, assign) password_manager::AffiliatedGroup affiliatedGroup;
@@ -36,30 +40,20 @@ typedef NS_ENUM(NSInteger, FaviconType) {
 
 @end
 
-// TODO(crbug.com/1359392): Once kPasswordsGrouping launches, this will only
-// serve for blocked websites. Rename, DCHECK blocked_by_user, drop detailText
-// and showLocalOnlyIcon.
-//
-// Represents either:
-// - A single saved password (pre kPasswordsGrouping launch).
-// - A website where the user blocked saving passwords.
-@interface CredentialTableViewItem : TableViewItem
+// Represents a website where the user blocked saving passwords.
+//  ___________________________________________________
+// |  [favicon or]  Title                              |
+// |  [monogram  ]                                     |
+//  ___________________________________________________|
+@interface BlockedSiteTableViewItem : TableViewItem
 
 @property(nonatomic, assign) password_manager::CredentialUIEntry credential;
 
-@property(nonatomic, assign) BOOL showLocalOnlyIcon;
-
 @property(nonatomic, strong, readonly) NSString* title;
-
-@property(nonatomic, strong, readonly) NSString* detailText;
 
 @end
 
-// Common cell for AffiliatedGroupTableViewItem and CredentialTableViewItem.
-//  ___________________________________________________
-// |  [favicon or]  Title            [Optional local]  |
-// |  [monogram  ]  Optional text    [password icon ]  |
-//  ___________________________________________________|
+// Common cell for AffiliatedGroupTableViewItem and BlockedSiteTableViewItem.
 @interface PasswordFormContentCell : TableViewCell
 
 @property(nonatomic, assign, readonly) FaviconType faviconTypeForMetrics;

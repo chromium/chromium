@@ -163,6 +163,14 @@ void ChromeTableViewControllerTest::CheckURLCellTitleAndDetailText(
   EXPECT_NSEQ(expected_detail_text, [cell detailText]);
 }
 
+void ChromeTableViewControllerTest::CheckURLCellTitle(NSString* expected_title,
+                                                      int section,
+                                                      int item) {
+  id cell = GetTableViewItem(section, item);
+  ASSERT_TRUE([cell respondsToSelector:@selector(title)]);
+  EXPECT_NSEQ(expected_title, [cell title]);
+}
+
 void ChromeTableViewControllerTest::CheckDetailItemTextWithIds(
     int expected_text_id,
     int expected_detail_text_id,

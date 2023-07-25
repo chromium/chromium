@@ -696,26 +696,6 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   return addPasswordItem;
 }
 
-- (CredentialTableViewItem*)savedFormItemForCredential:
-    (const password_manager::CredentialUIEntry&)credential {
-  CredentialTableViewItem* passwordItem =
-      [[CredentialTableViewItem alloc] initWithType:ItemTypeSavedPassword];
-  passwordItem.credential = credential;
-  passwordItem.showLocalOnlyIcon =
-      [self.delegate shouldShowLocalOnlyIconForCredential:credential];
-  passwordItem.accessibilityTraits |= UIAccessibilityTraitButton;
-  passwordItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-  if (self.mostRecentlyUpdatedPassword) {
-    if (self.mostRecentlyUpdatedPassword->username == credential.username &&
-        self.mostRecentlyUpdatedPassword->GetFirstSignonRealm() ==
-            credential.GetFirstSignonRealm()) {
-      self.mostRecentlyUpdatedItem = passwordItem;
-      self.mostRecentlyUpdatedPassword = absl::nullopt;
-    }
-  }
-  return passwordItem;
-}
-
 - (AffiliatedGroupTableViewItem*)savedFormItemForAffiliatedGroup:
     (const password_manager::AffiliatedGroup&)affiliatedGroup {
   AffiliatedGroupTableViewItem* passwordItem =
@@ -736,13 +716,11 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   return passwordItem;
 }
 
-- (CredentialTableViewItem*)blockedSiteItem:
+- (BlockedSiteTableViewItem*)blockedSiteItem:
     (const password_manager::CredentialUIEntry&)credential {
-  CredentialTableViewItem* passwordItem =
-      [[CredentialTableViewItem alloc] initWithType:ItemTypeBlocked];
+  BlockedSiteTableViewItem* passwordItem =
+      [[BlockedSiteTableViewItem alloc] initWithType:ItemTypeBlocked];
   passwordItem.credential = credential;
-  passwordItem.showLocalOnlyIcon =
-      [self.delegate shouldShowLocalOnlyIconForCredential:credential];
   passwordItem.accessibilityTraits |= UIAccessibilityTraitButton;
   passwordItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   return passwordItem;
@@ -1229,7 +1207,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   if (!_blockedSites.empty()) {
     [model deleteAllItemsFromSectionWithIdentifier:SectionIdentifierBlocked];
     for (const auto& credential : _blockedSites) {
-      CredentialTableViewItem* item = [self blockedSiteItem:credential];
+      BlockedSiteTableViewItem* item = [self blockedSiteItem:credential];
       bool hidden =
           searchTerm.length > 0 &&
           ![item.title localizedCaseInsensitiveContainsString:searchTerm];
@@ -1546,7 +1524,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
                                  affiliatedGroup.GetCredentials().end());
     } else if (itemType == ItemTypeBlocked) {
       password_manager::CredentialUIEntry credential =
-          base::mac::ObjCCastStrict<CredentialTableViewItem>(item).credential;
+          base::mac::ObjCCastStrict<BlockedSiteTableViewItem>(item).credential;
 
       auto removeCredential =
           [](std::vector<password_manager::CredentialUIEntry>& credentials,
@@ -1980,7 +1958,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
       DCHECK_EQ(SectionIdentifierBlocked,
                 [model sectionIdentifierForSectionIndex:indexPath.section]);
       password_manager::CredentialUIEntry credential =
-          base::mac::ObjCCastStrict<CredentialTableViewItem>(
+          base::mac::ObjCCastStrict<BlockedSiteTableViewItem>(
               [model itemAtIndexPath:indexPath])
               .credential;
       [self.handler showDetailedViewForCredential:credential];
