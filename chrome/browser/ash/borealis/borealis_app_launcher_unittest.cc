@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
+#include "chrome/browser/ash/borealis/testing/apps.h"
 #include "chrome/browser/ash/borealis/testing/callback_factory.h"
 #include "chrome/browser/ash/guest_os/dbus_test_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
@@ -44,22 +45,12 @@ class BorealisAppLauncherTest : public testing::Test,
  protected:
   const BorealisContext& Context() { return *ctx_; }
 
+  Profile* profile() { return &profile_; }
+
   // Sets up the registry with a single app. Returns its app id.
   std::string SetDummyApp(const std::string& desktop_file_id) {
-    vm_tools::apps::ApplicationList list;
-    list.set_vm_name(Context().vm_name());
-    list.set_container_name(Context().container_name());
-    vm_tools::apps::App* app = list.add_apps();
-    app->set_desktop_file_id(desktop_file_id);
-    vm_tools::apps::App::LocaleString::Entry* entry =
-        app->mutable_name()->add_values();
-    entry->set_locale(std::string());
-    entry->set_value(desktop_file_id);
-    app->set_no_display(false);
-    guest_os::GuestOsRegistryServiceFactory::GetForProfile(&profile_)
-        ->UpdateApplicationList(list);
-    return guest_os::GuestOsRegistryService::GenerateAppId(
-        desktop_file_id, list.vm_name(), list.container_name());
+    CreateFakeApp(profile(), desktop_file_id, /*exec=*/{});
+    return FakeAppId(desktop_file_id);
   }
 
  private:
@@ -70,11 +61,7 @@ class BorealisAppLauncherTest : public testing::Test,
 
 TEST_F(BorealisAppLauncherTest, LauncherAppLaunchesMainApp) {
   CallbackFactory callback_check;
-
-  // We add the main app to the registry, so that it will be launched.
-  std::string desktop_file_id;
-  ASSERT_TRUE(base::Base64Decode("c3RlYW0=", &desktop_file_id));
-  ASSERT_EQ(SetDummyApp(desktop_file_id), kClientAppId);
+  CreateFakeMainApp(profile());
 
   EXPECT_CALL(callback_check,
               Call(BorealisAppLauncher::LaunchResult::kSuccess));
