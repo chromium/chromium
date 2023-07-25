@@ -185,6 +185,15 @@ class CONTENT_EXPORT FedCmMetrics {
       absl::optional<base::TimeDelta> time_from_embargo,
       bool requires_user_mediation);
 
+  // Records a sample when an accounts dialog is shown.
+  void RecordAccountsDialogShown();
+
+  // Records a sample when a mismatch dialog is shown.
+  void RecordMismatchDialogShown();
+
+  // Records a sample when an accounts request is sent.
+  void RecordAccountsRequestSent();
+
  private:
   // The page's SourceId. Used to log the UKM event Blink.FedCm.
   ukm::SourceId page_source_id_;

@@ -1007,13 +1007,13 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
         << "No Status.RequestIdToken entry was found in " << entry_name;
   }
 
-  void ExpectTimingUKM(const std::string& metric_name) {
-    ExpectTimingUKMInternal(metric_name, FedCmEntry::kEntryName);
-    ExpectTimingUKMInternal(metric_name, FedCmIdpEntry::kEntryName);
+  void ExpectUKMPresence(const std::string& metric_name) {
+    ExpectUKMPresenceInternal(metric_name, FedCmEntry::kEntryName);
+    ExpectUKMPresenceInternal(metric_name, FedCmIdpEntry::kEntryName);
   }
 
-  void ExpectTimingUKMInternal(const std::string& metric_name,
-                               const char* entry_name) {
+  void ExpectUKMPresenceInternal(const std::string& metric_name,
+                                 const char* entry_name) {
     auto entries = ukm_recorder()->GetEntriesByName(entry_name);
 
     ASSERT_FALSE(entries.empty())
@@ -1028,21 +1028,22 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     FAIL() << "Expected UKM was not recorded in " << entry_name;
   }
 
-  void ExpectNoTimingUKM(const std::string& metric_name) {
-    ExpectNoTimingUKMInternal(metric_name, FedCmEntry::kEntryName);
-    ExpectNoTimingUKMInternal(metric_name, FedCmIdpEntry::kEntryName);
+  void ExpectNoUKMPresence(const std::string& metric_name) {
+    ExpectNoUKMPresenceInternal(metric_name, FedCmEntry::kEntryName);
+    ExpectNoUKMPresenceInternal(metric_name, FedCmIdpEntry::kEntryName);
   }
 
-  void ExpectNoTimingUKMInternal(const std::string& metric_name,
-                                 const char* entry_name) {
+  void ExpectNoUKMPresenceInternal(const std::string& metric_name,
+                                   const char* entry_name) {
     auto entries = ukm_recorder()->GetEntriesByName(entry_name);
 
     ASSERT_FALSE(entries.empty())
         << "No " << entry_name << " entry was recorded";
 
     for (const auto* const entry : entries) {
-      if (ukm_recorder()->GetEntryMetric(entry, metric_name))
+      if (ukm_recorder()->GetEntryMetric(entry, metric_name)) {
         FAIL() << "Unexpected UKM was recorded in " << entry_name;
+      }
     }
     SUCCEED();
   }
@@ -2329,11 +2330,11 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
 
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.IsSignInUser", 1, 1);
 
-  ExpectTimingUKM("Timing.ShowAccountsDialog");
-  ExpectTimingUKM("Timing.ContinueOnDialog");
-  ExpectTimingUKM("Timing.IdTokenResponse");
-  ExpectTimingUKM("Timing.TurnaroundTime");
-  ExpectNoTimingUKM("Timing.CancelOnDialog");
+  ExpectUKMPresence("Timing.ShowAccountsDialog");
+  ExpectUKMPresence("Timing.ContinueOnDialog");
+  ExpectUKMPresence("Timing.IdTokenResponse");
+  ExpectUKMPresence("Timing.TurnaroundTime");
+  ExpectNoUKMPresence("Timing.CancelOnDialog");
 
   ExpectStatusMetrics(TokenStatus::kSuccess);
   CheckAllFedCmSessionIDs();
@@ -2370,11 +2371,11 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForUIExplicitlyDismissed) {
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.IdTokenResponse", 0);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.TurnaroundTime", 0);
 
-  ExpectTimingUKM("Timing.ShowAccountsDialog");
-  ExpectTimingUKM("Timing.CancelOnDialog");
-  ExpectNoTimingUKM("Timing.ContinueOnDialog");
-  ExpectNoTimingUKM("Timing.IdTokenResponse");
-  ExpectNoTimingUKM("Timing.TurnaroundTime");
+  ExpectUKMPresence("Timing.ShowAccountsDialog");
+  ExpectUKMPresence("Timing.CancelOnDialog");
+  ExpectNoUKMPresence("Timing.ContinueOnDialog");
+  ExpectNoUKMPresence("Timing.IdTokenResponse");
+  ExpectNoUKMPresence("Timing.TurnaroundTime");
 
   ExpectStatusMetrics(TokenStatus::kShouldEmbargo);
   CheckAllFedCmSessionIDs();
@@ -2839,10 +2840,10 @@ TEST_F(FederatedAuthRequestImplTest, ApiDisabledAfterAccountsDialogShown) {
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.IdTokenResponse", 0);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.TurnaroundTime", 0);
 
-  ExpectTimingUKM("Timing.ShowAccountsDialog");
-  ExpectNoTimingUKM("Timing.ContinueOnDialog");
-  ExpectNoTimingUKM("Timing.IdTokenResponse");
-  ExpectNoTimingUKM("Timing.TurnaroundTime");
+  ExpectUKMPresence("Timing.ShowAccountsDialog");
+  ExpectNoUKMPresence("Timing.ContinueOnDialog");
+  ExpectNoUKMPresence("Timing.IdTokenResponse");
+  ExpectNoUKMPresence("Timing.TurnaroundTime");
 
   ExpectStatusMetrics(TokenStatus::kDisabledInSettings);
   CheckAllFedCmSessionIDs();
@@ -3196,6 +3197,10 @@ TEST_F(FederatedAuthRequestImplTest, FailureUiThenSuccessfulSignin) {
   // fetched a 2nd time.
   EXPECT_EQ(NumFetched(FetchedEndpoint::WELL_KNOWN), 2u);
   EXPECT_EQ(NumFetched(FetchedEndpoint::ACCOUNTS), 2u);
+
+  ExpectUKMPresence("AccountsDialogShown");
+  ExpectUKMPresence("MismatchDialogShown");
+  CheckAllFedCmSessionIDs();
 }
 
 // Test behavior for the following sequence of events:
@@ -3238,6 +3243,10 @@ TEST_F(FederatedAuthRequestImplTest, FailureUiThenSuccessfulSigninButHidden) {
   // The FedCM dialog should switch to the account picker. The user should
   // see a new dialog when they switch back to the FedCM tab.
   EXPECT_TRUE(did_show_accounts_dialog());
+
+  ExpectUKMPresence("AccountsDialogShown");
+  ExpectUKMPresence("MismatchDialogShown");
+  CheckAllFedCmSessionIDs();
 }
 
 // Test behavior for the following sequence of events:
@@ -3275,6 +3284,10 @@ TEST_F(FederatedAuthRequestImplTest, FailureUiSigninFromDifferentIdp) {
 
   // No fetches should have been triggered.
   EXPECT_EQ(NumFetched(FetchedEndpoint::WELL_KNOWN), num_well_known_fetches);
+
+  ExpectNoUKMPresence("AccountsDialogShown");
+  ExpectUKMPresence("MismatchDialogShown");
+  CheckAllFedCmSessionIDs();
 }
 
 // Test that for the following sequence of events:
@@ -3315,6 +3328,10 @@ TEST_F(FederatedAuthRequestImplTest, FailureUiAccountEndpointKeepsFailing) {
   // fetched a 2nd time.
   EXPECT_EQ(NumFetched(FetchedEndpoint::WELL_KNOWN), 2u);
   EXPECT_EQ(NumFetched(FetchedEndpoint::ACCOUNTS), 2u);
+
+  ExpectNoUKMPresence("AccountsDialogShown");
+  ExpectUKMPresence("MismatchDialogShown");
+  CheckAllFedCmSessionIDs();
 }
 
 // Test that for the following sequence of events:
@@ -3374,6 +3391,10 @@ TEST_F(FederatedAuthRequestImplTest, FailureUiThenFailDifferentEndpoint) {
   // fetched a 2nd time.
   EXPECT_EQ(NumFetched(FetchedEndpoint::WELL_KNOWN), 2u);
   EXPECT_EQ(NumFetched(FetchedEndpoint::ACCOUNTS), 1u);
+
+  ExpectNoUKMPresence("AccountsDialogShown");
+  ExpectUKMPresence("MismatchDialogShown");
+  CheckAllFedCmSessionIDs();
 }
 
 // Test that the IdP-sign-in-failure-dialog is not shown if there is an error
@@ -3426,6 +3447,10 @@ TEST_F(FederatedAuthRequestImplTest,
 
   // Check that the IdP-sign-in-failure dialog is not shown.
   EXPECT_FALSE(dialog_controller_state_.did_show_idp_signin_failure_dialog);
+
+  ExpectUKMPresence("AccountsDialogShown");
+  ExpectUKMPresence("MismatchDialogShown");
+  CheckAllFedCmSessionIDs();
 }
 
 // Test that the IdP-sign-in-failure dialog is not shown in the
@@ -3465,6 +3490,10 @@ TEST_F(FederatedAuthRequestImplTest,
 
   // Abort should not trigger IdP-sign-in-failure dialog.
   EXPECT_FALSE(dialog_controller_state_.did_show_idp_signin_failure_dialog);
+
+  ExpectNoUKMPresence("AccountsDialogShown");
+  ExpectUKMPresence("MismatchDialogShown");
+  CheckAllFedCmSessionIDs();
 }
 
 // Test that when IdpSigninStatus API is in the metrics-only mode, that an IDP
@@ -4240,6 +4269,73 @@ TEST_F(FederatedAuthRequestImplTest, RequestUserInfoFailure) {
                                         base::Unretained(&callback_helper)));
   // This is a regression test and it passes if the test does not crash.
   callback_helper.WaitForCallback();
+}
+
+// Tests that when an accounts dialog is shown, the appropriate metrics are
+// recorded.
+TEST_F(FederatedAuthRequestImplTest, AccountsDialogShownMetric) {
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                        ukm_loop.QuitClosure());
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
+              kConfigurationValid);
+  ukm_loop.Run();
+
+  EXPECT_TRUE(did_show_accounts_dialog());
+  EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
+
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.AccountsDialogShown", 1, 1);
+  ExpectUKMPresence("AccountsDialogShown");
+  ExpectNoUKMPresence("MismatchDialogShown");
+  CheckAllFedCmSessionIDs();
+}
+
+// Tests that when a mismatch dialog is shown, the appropriate metrics are
+// recorded.
+TEST_F(FederatedAuthRequestImplTest, MismatchDialogShownMetric) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmIdpSigninStatusEnabled);
+
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
+  url::Origin kIdpOrigin = OriginFromString(kProviderUrlFull);
+  MockConfiguration configuration = kConfigurationValid;
+
+  // Setup IdP sign-in status mismatch.
+  test_permission_delegate_->idp_signin_statuses_[kIdpOrigin] = true;
+  configuration.idp_info[kProviderUrlFull].accounts_response.parse_status =
+      ParseStatus::kInvalidResponseError;
+
+  RunAuthDontWaitForCallback(kDefaultRequestParameters, configuration);
+
+  ukm_loop.Run();
+
+  EXPECT_FALSE(did_show_accounts_dialog());
+  EXPECT_TRUE(did_show_idp_signin_status_mismatch_dialog());
+
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.MismatchDialogShown", 1, 1);
+  ExpectUKMPresence("MismatchDialogShown");
+  ExpectNoUKMPresence("AccountsDialogShown");
+  CheckAllFedCmSessionIDs();
+}
+
+// Tests that when an accounts request is sent, the appropriate metrics are
+// recorded.
+TEST_F(FederatedAuthRequestImplTest, AccountsRequestSentMetric) {
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                        ukm_loop.QuitClosure());
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
+              kConfigurationValid);
+  ukm_loop.Run();
+
+  EXPECT_EQ(NumFetched(FetchedEndpoint::ACCOUNTS), 1u);
+
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.AccountsRequestSent", 1, 1);
+  ExpectUKMPresence("AccountsRequestSent");
+  CheckAllFedCmSessionIDs();
 }
 
 }  // namespace content

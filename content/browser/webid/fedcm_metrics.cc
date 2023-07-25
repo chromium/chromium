@@ -275,6 +275,60 @@ void FedCmMetrics::RecordAutoReauthnMetrics(
   ukm_builder.Record(ukm::UkmRecorder::Get());
 }
 
+void FedCmMetrics::RecordAccountsDialogShown() {
+  if (is_disabled_) {
+    return;
+  }
+  auto RecordUkm = [&](auto& ukm_builder) {
+    ukm_builder.SetAccountsDialogShown(true);
+    ukm_builder.SetFedCmSessionID(session_id_);
+    ukm_builder.Record(ukm::UkmRecorder::Get());
+  };
+  ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
+  RecordUkm(fedcm_builder);
+
+  ukm::builders::Blink_FedCmIdp fedcm_idp_builder(provider_source_id_);
+  RecordUkm(fedcm_idp_builder);
+
+  base::UmaHistogramBoolean("Blink.FedCm.AccountsDialogShown", true);
+}
+
+void FedCmMetrics::RecordMismatchDialogShown() {
+  if (is_disabled_) {
+    return;
+  }
+  auto RecordUkm = [&](auto& ukm_builder) {
+    ukm_builder.SetMismatchDialogShown(true);
+    ukm_builder.SetFedCmSessionID(session_id_);
+    ukm_builder.Record(ukm::UkmRecorder::Get());
+  };
+  ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
+  RecordUkm(fedcm_builder);
+
+  ukm::builders::Blink_FedCmIdp fedcm_idp_builder(provider_source_id_);
+  RecordUkm(fedcm_idp_builder);
+
+  base::UmaHistogramBoolean("Blink.FedCm.MismatchDialogShown", true);
+}
+
+void FedCmMetrics::RecordAccountsRequestSent() {
+  if (is_disabled_) {
+    return;
+  }
+  auto RecordUkm = [&](auto& ukm_builder) {
+    ukm_builder.SetAccountsRequestSent(true);
+    ukm_builder.SetFedCmSessionID(session_id_);
+    ukm_builder.Record(ukm::UkmRecorder::Get());
+  };
+  ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
+  RecordUkm(fedcm_builder);
+
+  ukm::builders::Blink_FedCmIdp fedcm_idp_builder(provider_source_id_);
+  RecordUkm(fedcm_idp_builder);
+
+  base::UmaHistogramBoolean("Blink.FedCm.AccountsRequestSent", true);
+}
+
 void RecordPreventSilentAccess(RenderFrameHost& rfh,
                                PreventSilentAccessFrameType frame_type) {
   base::UmaHistogramEnumeration("Blink.FedCm.PreventSilentAccessFrameType",

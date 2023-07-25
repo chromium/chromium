@@ -1003,6 +1003,7 @@ void FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched(
         accounts_endpoint, client_id,
         base::BindOnce(&FederatedAuthRequestImpl::OnAccountsResponseReceived,
                        weak_ptr_factory_.GetWeakPtr(), std::move(idp_info)));
+    fedcm_metrics_->RecordAccountsRequestSent();
   }
 }
 
@@ -1258,6 +1259,11 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
                      weak_ptr_factory_.GetWeakPtr()));
   devtools_instrumentation::OnFedCmAccountsDialogShown(&render_frame_host());
 
+  // Note that accounts dialog shown after mismatch dialog is also recorded.
+  // Although not useful for catching malicious IDPs, it should only be a very
+  // small percentage of the samples recorded.
+  fedcm_metrics_->RecordAccountsDialogShown();
+
   if (auto_reauthn_enabled) {
     fedcm_metrics_->RecordAutoReauthnMetrics(
         has_single_returning_account, auto_reauthn_account, auto_reauthn_,
@@ -1345,6 +1351,7 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
       base::BindOnce(&FederatedAuthRequestImpl::ShowModalDialog,
                      weak_ptr_factory_.GetWeakPtr(),
                      idp_info->metadata.idp_signin_url));
+  fedcm_metrics_->RecordMismatchDialogShown();
 }
 
 void FederatedAuthRequestImpl::CloseModalDialogView() {
