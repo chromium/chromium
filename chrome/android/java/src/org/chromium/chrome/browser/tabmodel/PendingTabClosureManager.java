@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tabmodel;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.ThreadUtils.ThreadChecker;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.ArrayList;
@@ -208,6 +209,11 @@ public class PendingTabClosureManager {
     }
 
     /**
+     * Thread checks to root cause crbug.com/1465745.
+     */
+    private final ThreadChecker mThreadChecker = new ThreadChecker();
+
+    /**
      * The {@link TabList} that this {@link PendingTabClosureManager} operates on.
      */
     private TabList mTabList;
@@ -241,11 +247,15 @@ public class PendingTabClosureManager {
     }
 
     public void destroy() {
+        mThreadChecker.assertOnValidThread();
+
         mRewoundList.destroy();
         mTabClosureEvents.clear();
     }
 
     public void destroyWhileReparentingInProgress() {
+        mThreadChecker.assertOnValidThread();
+
         mTabClosureEvents.clear();
     }
 
@@ -253,6 +263,8 @@ public class PendingTabClosureManager {
      * Resets the state of the rewound list based on {@code mTabList}.
      */
     public void resetState() {
+        mThreadChecker.assertOnValidThread();
+
         assert mTabClosureEvents.isEmpty();
         mRewoundList.resetRewoundState();
     }
@@ -262,6 +274,8 @@ public class PendingTabClosureManager {
      * @param tabs The list of {@link Tab} that are closing.
      */
     public void addTabClosureEvent(List<Tab> tabs) {
+        mThreadChecker.assertOnValidThread();
+
         mTabClosureEvents.add(new TabClosureEvent(tabs));
     }
 
@@ -286,6 +300,8 @@ public class PendingTabClosureManager {
      * @param tabId The ID of the {@link Tab} to mark as ready to commit.
      */
     public void commitTabClosure(int tabId) {
+        mThreadChecker.assertOnValidThread();
+
         Tab tab = mRewoundList.getPendingRewindTab(tabId);
         if (tab == null) return;
 
@@ -307,6 +323,8 @@ public class PendingTabClosureManager {
      * @param tabId The ID of the {@link Tab} to cancel the closure of.
      */
     public void cancelTabClosure(int tabId) {
+        mThreadChecker.assertOnValidThread();
+
         Tab tab = mRewoundList.getPendingRewindTab(tabId);
         if (tab == null) return;
 
@@ -338,6 +356,8 @@ public class PendingTabClosureManager {
      * called.
      */
     public void commitAllTabClosures() {
+        mThreadChecker.assertOnValidThread();
+
         ListIterator<TabClosureEvent> events = mTabClosureEvents.listIterator();
         while (events.hasNext()) {
             TabClosureEvent event = events.next();
@@ -361,6 +381,8 @@ public class PendingTabClosureManager {
      *   opened as the assumption is the most recent close event was desired to be undone.
      */
     boolean openMostRecentlyClosedEntry() {
+        mThreadChecker.assertOnValidThread();
+
         if (mTabClosureEvents.isEmpty()) return false;
 
         TabClosureEvent event = mTabClosureEvents.removeLast();
