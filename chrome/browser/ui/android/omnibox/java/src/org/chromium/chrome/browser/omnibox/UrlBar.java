@@ -32,6 +32,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.text.BidiFormatter;
+import androidx.core.text.TextDirectionHeuristicsCompat;
 import androidx.core.view.inputmethod.EditorInfoCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -853,15 +854,17 @@ public abstract class UrlBar extends AutocompleteEditText {
                         finalVisibleCharIndex = textLayout.getOffsetForHorizontal(0, measuredWidth);
                     }
 
-                    // getOffsetForHorizontal and getOffsetForAdvance could return an invalid index.
-                    boolean isFinalVisibleCharRtl = finalVisibleCharIndex >= urlTextLength
-                            ? false
-                            : BidiFormatter.getInstance().isRtl(url.subSequence(
-                                    finalVisibleCharIndex, finalVisibleCharIndex + 1));
-                    if (isFinalVisibleCharRtl) {
-                        // If the section of the url near the end of the viewport is not LTR, then
-                        // clear the visible text hint. If RTL or Bi-Di URLs become more prevalant,
-                        // update this to correctly calculate the hint.
+                    BidiFormatter bidi = new BidiFormatter.Builder()
+                                                 .setTextDirectionHeuristic(
+                                                         TextDirectionHeuristicsCompat.ANYRTL_LTR)
+                                                 .build();
+                    boolean visibleUrlContainsRtl = bidi.isRtl(
+                            url.subSequence(0, Math.min(finalVisibleCharIndex + 1, urlTextLength)));
+                    if (visibleUrlContainsRtl) {
+                        // getOffsetForAdvance does not calculate the correct index if there is RTL
+                        // text before finalVisibleCharIndex, so clear the visible text hint. If RTL
+                        // or Bi-Di URLs become more prevalant, update this to correctly calculate
+                        // the hint.
                         mVisibleTextPrefixHint = null;
                     } else {
                         int finalVisibleCharIndexSlow =
@@ -871,8 +874,8 @@ public abstract class UrlBar extends AutocompleteEditText {
                         // failed assert
                         String errorMessage = "scrollToTLD incorrect optimized "
                                 + "finalVisibleCharIndex. old index: "
-                                + String.valueOf(finalVisibleCharIndexSlow) + " optimized index: "
-                                + String.valueOf(finalVisibleCharIndex) + " url: " + url.toString()
+                                + String.valueOf(finalVisibleCharIndexSlow)
+                                + " optimized index: " + String.valueOf(finalVisibleCharIndex)
                                 + " viewport: " + String.valueOf(measuredWidth)
                                 + " url length: " + String.valueOf(urlTextLength);
                         assert finalVisibleCharIndex == finalVisibleCharIndexSlow : errorMessage;
