@@ -1428,7 +1428,7 @@
         "cros_img": "octopus-release/R117-15538.0.0",
         "name": "chrome_all_tast_tests OCTOPUS_RELEASE_CHROME_FROM_TLS_LKGM",
         "shards": 10,
-        "tast_expr": "(\"group:mainline\" && \"dep:chrome\" && !informational)",
+        "tast_expr": "(\"group:mainline\" && \"dep:chrome\" && !\"dep:no_chrome_dcheck\" && !informational)",
         "test": "chrome_all_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
         "test_level_retries": 2,

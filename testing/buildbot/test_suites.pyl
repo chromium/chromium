@@ -616,7 +616,9 @@
 
     'chromeos_chrome_all_tast_tests': {
       'chrome_all_tast_tests': {
-        'tast_expr': '("group:mainline" && "dep:chrome" && !informational)',
+        # Adding !no_chrome_dcheck since the builds (except for release builds) are with dcheck.
+        # TODO(b/284405976): Add a !no_chrome_dcheck condition automatically by reading the build configuration.
+        'tast_expr': '("group:mainline" && "dep:chrome" && !"dep:no_chrome_dcheck" && !informational)',
         'test_level_retries': 2,
         'timeout_sec': 21600,
       },
@@ -625,7 +627,9 @@
     # Test suite for running critical Tast tests.
     'chromeos_chrome_criticalstaging_tast_tests': {
       'chrome_criticalstaging_tast_tests': {
-        'tast_expr': '("group:mainline" && "dep:chrome" && informational && "group:criticalstaging")',
+        # Adding !no_chrome_dcheck since the builds (except for release builds) are with dcheck.
+        # TODO(b/284405976): Add a !no_chrome_dcheck condition automatically by reading the build configuration.
+        'tast_expr': '("group:mainline" && "dep:chrome" && !"dep:no_chrome_dcheck" && informational && "group:criticalstaging")',
         'test_level_retries': 2,
         'timeout_sec': 7200,
         'experiment_percentage': 100,
