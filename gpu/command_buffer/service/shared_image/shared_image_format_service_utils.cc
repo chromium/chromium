@@ -319,8 +319,7 @@ WGPUTextureFormat ToWGPUFormat(viz::SharedImageFormat format, int plane_index) {
 
 wgpu::TextureUsage GetSupportedDawnTextureUsage(viz::SharedImageFormat format,
                                                 bool is_yuv_plane) {
-  wgpu::TextureUsage usage =
-      wgpu::TextureUsage::TextureBinding | wgpu::TextureUsage::CopySrc;
+  wgpu::TextureUsage usage = wgpu::TextureUsage::TextureBinding;
   // The below usages are not supported for multiplanar formats in Dawn.
   // TODO(crbug.com/1451784): Use read/write intent instead of format to get
   // correct usages. This needs support in Skia to loosen TextureUsage
@@ -328,7 +327,8 @@ wgpu::TextureUsage GetSupportedDawnTextureUsage(viz::SharedImageFormat format,
   // be Renderable.
   if (format.is_single_plane() && !format.IsLegacyMultiplanar() &&
       !is_yuv_plane) {
-    usage |= wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::CopyDst;
+    usage |= wgpu::TextureUsage::RenderAttachment |
+             wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::CopyDst;
   }
   return usage;
 }
