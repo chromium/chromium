@@ -317,33 +317,6 @@ FYI_BUILDERS = {
             'pool': 'chrome.tests',
         },
     },
-    'fuchsia-perf-ast': {
-        'tests': [{
-            'isolate':
-            'performance_web_engine_test_suite',
-            'extra_args': [
-                '--output-format=histograms', '--experimental-tbmv3-metrics',
-                '--extra-path=/b/s/w/ir/bin/'
-            ] + bot_platforms.FUCHSIA_EXEC_ARGS['astro'],
-            'type':
-            TEST_TYPES.TELEMETRY,
-        }],
-        'platform':
-        'fuchsia-wes',
-        # TODO(crbug.com/1453742): Replace with long-term solution for ssh in Fuchsia img,
-        # or codify as long-term solution.
-        'cipd': {
-            "cipd_package": "fuchsia/third_party/openssh-portable/${platform}",
-            "location": ".",
-            "revision": "build_id:8787350426829126785"
-        },
-        'dimension': {
-            'cpu': None,
-            'device_type': 'Astro',
-            'os': 'Fuchsia',
-            'pool': 'chrome.tests',
-        },
-    },
     'fuchsia-perf-nsn': {
         'tests': [{
             'isolate':

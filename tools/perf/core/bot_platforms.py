@@ -519,15 +519,12 @@ _LACROS_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'blink_perf.display_locking',
     'v8.runtime_stats.top_25',
 ])
-# Used for astro/nelson.
-_FUCHSIA_PERF_ASTRO_BENCHMARK_CONFIGS = PerfSuite([
+_FUCHSIA_PERF_NELSON_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('speedometer2'),
     _GetBenchmarkConfig('media.mobile'),
 ])
-_FUCHSIA_PERF_SHERLOCK_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('speedometer2'),
-    _GetBenchmarkConfig('media.mobile'),
-])
+_FUCHSIA_PERF_SHERLOCK_BENCHMARK_CONFIGS = \
+    _FUCHSIA_PERF_NELSON_BENCHMARK_CONFIGS
 _LINUX_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('power.desktop'),
     _GetBenchmarkConfig('rendering.desktop'),
@@ -802,16 +799,9 @@ LACROS_EVE_PERF = PerfPlatform('lacros-eve-perf', '',
                                'chromeos')
 LACROS_X86_PERF = PerfPlatform('lacros-x86-perf', '', _LACROS_BENCHMARK_CONFIGS,
                                13, 'chromeos')
-# Fuchsia
-FUCHSIA_PERF_ASTRO = PerfPlatform('fuchsia-perf-ast',
-                                  '',
-                                  _FUCHSIA_PERF_ASTRO_BENCHMARK_CONFIGS,
-                                  2,
-                                  'fuchsia',
-                                  is_fyi=True)
 FUCHSIA_PERF_NELSON = PerfPlatform('fuchsia-perf-nsn',
                                    '',
-                                   _FUCHSIA_PERF_ASTRO_BENCHMARK_CONFIGS,
+                                   _FUCHSIA_PERF_NELSON_BENCHMARK_CONFIGS,
                                    2,
                                    'fuchsia',
                                    is_fyi=True)

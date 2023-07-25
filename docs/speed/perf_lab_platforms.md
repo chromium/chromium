@@ -87,7 +87,6 @@
 
 ### Fuchsia
 
- * [fuchsia-perf-ast](https://ci.chromium.org/p/chrome/builders/ci/fuchsia-perf-ast).
  * [fuchsia-perf-atlas-fyi](https://ci.chromium.org/p/chrome/builders/ci/fuchsia-perf-atlas-fyi).
  * [fuchsia-perf-fyi](https://ci.chromium.org/p/chrome/builders/ci/fuchsia-perf-fyi).
  * [fuchsia-perf-nsn](https://ci.chromium.org/p/chrome/builders/ci/fuchsia-perf-nsn).

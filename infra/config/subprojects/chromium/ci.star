@@ -165,7 +165,6 @@ consoles.console_view(
     ("fuchsia-smoke-astro", "gardener|hardware|smoke", "ast"),
     ("fuchsia-smoke-nelson", "gardener|hardware|smoke", "nsn"),
     ("fuchsia-smoke-sherlock", "gardener|hardware|smoke", "sher"),
-    ("fuchsia-perf-ast", "gardener|hardware|perf", "ast"),
     ("fuchsia-perf-nsn", "gardener|hardware|perf", "nsn"),
     ("fuchsia-perf-shk", "gardener|hardware|perf", "sher"),
     ("fuchsia-x64", "gardener|p/chrome|x64", "rel"),
