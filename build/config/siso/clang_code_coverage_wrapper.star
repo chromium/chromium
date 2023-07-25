@@ -3,6 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Siso config version of clang_code_coverage_wrapper.py"""
+# LINT.IfChange
 
 load("@builtin//struct.star", "module")
 
@@ -218,3 +219,5 @@ clang_code_coverage_wrapper = module(
     "clang_code_coverage_wrapper",
     run = __run,
 )
+
+# LINT.ThenChange(/build/toolchain/clang_code_coverage_wrapper.py)

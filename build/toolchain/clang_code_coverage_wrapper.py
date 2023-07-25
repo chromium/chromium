@@ -50,7 +50,7 @@ build/config/siso/clang_code_coverage_wrapper.star, which avoids the wrapper
 invocations for remote execution and performance improvement.
 Please update the Siso starlark file when updating this file.
 """
-
+# LINT.IfChange
 
 import argparse
 import os
@@ -220,3 +220,5 @@ def main():
 
 if __name__ == '__main__':
   sys.exit(main())
+
+# LINT.ThenChange(/build/config/siso/clang_code_coverage_wrapper.star)
