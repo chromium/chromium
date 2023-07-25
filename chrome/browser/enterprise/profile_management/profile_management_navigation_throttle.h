@@ -56,6 +56,10 @@ class ProfileManagementNavigationThrottle : public content::NavigationThrottle {
   void SetURLsForTesting(const std::string& token_url,
                          const std::string& unmanaged_url);
 
+  // The attribute map is not destructed for performance reasons. This allows
+  // the map to be cleared and re-populated on a per-test basis.
+  void ClearAttributeMapForTesting();
+
  private:
   void OnResponseBodyReady(const std::string& body);
 

@@ -278,6 +278,7 @@ extern const char kGuest[];
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 extern const char kListApps[];
 extern const char kProfileBaseName[];
+extern const char kProfileManagementAttributes[];
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
