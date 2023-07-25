@@ -468,6 +468,10 @@ public class OmniboxResourceProvider {
      * focused.
      */
     public static @Px int getFocusedStatusViewLeftSpacing(Context context) {
+        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
+            return 0;
+        }
+
         return context.getResources().getDimensionPixelSize(
                 selectMarginDimen(context, R.dimen.location_bar_status_view_left_space_width,
                         R.dimen.location_bar_status_view_left_space_width_bigger,

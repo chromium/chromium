@@ -82,6 +82,10 @@ public class OmniboxFeatures {
             new MutableFlagWithSafeDefault(
                     ChromeFeatureList.OMNIBOX_NOOP_EDIT_URL_SUGGESTION_CLICKS, false);
 
+    private static final MutableFlagWithSafeDefault sAvoidRelayoutDuringFocusAnimation =
+            new MutableFlagWithSafeDefault(
+                    ChromeFeatureList.AVOID_RELAYOUT_DURING_FOCUS_ANIMATION, false);
+
     /**
      * @param context The activity context.
      * @return Whether the new modernize visual UI update should be shown.
@@ -208,5 +212,9 @@ public class OmniboxFeatures {
      */
     public static boolean noopEditUrlSuggestionClicks() {
         return sNoopEditUrlSuggestionClicks.isEnabled();
+    }
+
+    public static boolean shouldAvoidRelayoutDuringFocusAnimation() {
+        return sAvoidRelayoutDuringFocusAnimation.isEnabled();
     }
 }

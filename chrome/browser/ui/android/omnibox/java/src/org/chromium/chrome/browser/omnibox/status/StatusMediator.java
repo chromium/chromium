@@ -713,4 +713,8 @@ public class StatusMediator implements PermissionDialogController.Observer,
     public void onTemplateURLServiceChanged() {
         updateLocationBarIcon(IconTransitionType.CROSSFADE);
     }
+
+    void setTranslationX(float translationX) {
+        mModel.set(StatusProperties.TRANSLATION_X, translationX);
+    }
 }

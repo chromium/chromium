@@ -161,6 +161,11 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         mMediator.setUrlFocusChangePercent(percent);
     }
 
+    /** Set the x translation of the status view. */
+    public void setTranslationX(float translationX) {
+        mMediator.setTranslationX(translationX);
+    }
+
     /**
      * @param brandedColorScheme The {@link BrandedColorScheme} to use for the status icon and text.
      */

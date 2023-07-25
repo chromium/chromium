@@ -243,6 +243,9 @@ public class StatusProperties {
     static final WritableObjectPropertyKey<StatusIconResource> STATUS_ICON_RESOURCE =
             new WritableObjectPropertyKey<>();
 
+    /** The x translation of the status view. */
+    static final WritableFloatPropertyKey TRANSLATION_X = new WritableFloatPropertyKey();
+
     /** Text color of the verbose status text field. */
     static final WritableIntPropertyKey VERBOSE_STATUS_TEXT_COLOR = new WritableIntPropertyKey();
 
@@ -271,6 +274,7 @@ public class StatusProperties {
             STATUS_ICON_ALPHA,
             STATUS_ICON_DESCRIPTION_RES,
             STATUS_ICON_RESOURCE,
+            TRANSLATION_X,
             VERBOSE_STATUS_TEXT_COLOR,
             VERBOSE_STATUS_TEXT_STRING_RES,
             VERBOSE_STATUS_TEXT_VISIBLE,
