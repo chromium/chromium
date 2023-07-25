@@ -243,7 +243,8 @@ class SegmentationPlatformUkmModelTest : public SegmentationPlatformTest {
 // incognito mode. This disables the segmentation platform data collection.
 // TODO(ssid): Fix this test for CrOS by waiting for signin profile to be
 // deleted at startup before adding metrics.
-#if BUILDFLAG(IS_CHROMEOS)
+// https://crbug.com/1467530 -- Flaky on Mac
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_PRE_RunUkmBasedModel DISABLED_PRE_RunUkmBasedModel
 #define MAYBE_RunUkmBasedModel DISABLED_RunUkmBasedModel
 #else
