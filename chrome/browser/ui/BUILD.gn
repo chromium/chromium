@@ -451,6 +451,7 @@ static_library("ui") {
     "//components/about_ui",
     "//components/access_code_cast/common:metrics",
     "//components/account_id",
+    "//components/autofill/content/browser",
     "//components/autofill/content/browser:risk_proto",
     "//components/autofill/core/browser",
     "//components/blocked_content",

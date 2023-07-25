@@ -36,6 +36,8 @@ BASE_DECLARE_FEATURE(kSharedPasswordNotificationUI);
 BASE_DECLARE_FEATURE(kPasswordManagerEnableReceiverService);
 BASE_DECLARE_FEATURE(kPasswordManagerEnableSenderService);
 
+BASE_DECLARE_FEATURE(kPasswordManagerLogToTerminal);
+
 }  // namespace password_manager::features
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FEATURES_PASSWORD_FEATURES_H_

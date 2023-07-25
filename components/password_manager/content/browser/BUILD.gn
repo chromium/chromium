@@ -32,13 +32,15 @@ static_library("browser") {
     ]
   }
 
-  public_deps = [
+  public_deps = [ "//components/autofill/content/common/mojom" ]
+
+  deps = [
     "//base",
     "//components/autofill/content/browser",
-    "//components/autofill/content/common/mojom",
     "//components/autofill/core/common",
     "//components/keyed_service/content",
     "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common",
     "//components/prefs",
     "//components/user_prefs",
@@ -51,6 +53,8 @@ static_library("browser") {
 
 source_set("test_support") {
   testonly = true
+  deps = [ "//base" ]
+  public_deps = [ ":browser" ]
   sources = [
     "content_password_manager_driver_factory_test_api.cc",
     "content_password_manager_driver_factory_test_api.h",
@@ -62,10 +66,8 @@ source_set("test_support") {
       "mock_keyboard_replacing_surface_visibility_controller.h",
     ]
 
-    deps = [ "//testing/gmock" ]
+    deps += [ "//testing/gmock" ]
   }
-
-  public_deps = [ ":browser" ]
 }
 
 source_set("unit_tests") {
@@ -91,6 +93,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/safe_browsing:buildflags",
     "//components/ukm:test_support",
+    "//components/user_prefs",
     "//content/test:test_support",
     "//services/metrics/public/cpp:metrics_cpp",
     "//testing/gmock",

@@ -15,7 +15,6 @@
 #include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_bridge.h"
 #include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_controller.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"

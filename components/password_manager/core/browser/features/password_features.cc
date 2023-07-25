@@ -81,4 +81,10 @@ BASE_FEATURE(kPasswordManagerEnableSenderService,
              "PasswordManagerEnableSenderService",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables logging the content of chrome://password-manager-internals to the
+// terminal.
+BASE_FEATURE(kPasswordManagerLogToTerminal,
+             "PasswordManagerLogToTerminal",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace password_manager::features

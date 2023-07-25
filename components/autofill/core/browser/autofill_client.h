@@ -40,10 +40,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if !BUILDFLAG(IS_IOS)
-#include "components/webauthn/core/browser/internal_authenticator.h"
-#endif
-
 class PrefService;
 
 namespace signin {
@@ -61,6 +57,12 @@ class UkmRecorder;
 namespace version_info {
 enum class Channel;
 }
+
+#if !BUILDFLAG(IS_IOS)
+namespace webauthn {
+class InternalAuthenticator;
+}
+#endif
 
 namespace autofill {
 

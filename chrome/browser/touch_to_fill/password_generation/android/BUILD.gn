@@ -9,6 +9,7 @@ source_set("public") {
     ":android",
     "//base",
     "//components/password_manager/content/browser:browser",
+    "//content/public/browser",
   ]
 
   sources = [
@@ -28,7 +29,7 @@ source_set("android") {
   deps = [
     "//chrome/browser/touch_to_fill/password_generation/android/internal:jni",
     "//components/password_manager/core/common:features",
-    "//content/public/browser:browser",
+    "//content/public/browser",
     "//ui/android:android",
     "//ui/gfx:native_widget_types",
   ]

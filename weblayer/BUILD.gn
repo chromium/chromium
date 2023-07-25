@@ -472,6 +472,7 @@ source_set("weblayer_lib_base") {
     "//components/prefs",
     "//components/profile_metrics",
     "//components/reduce_accept_language/browser",
+    "//components/safe_browsing:buildflags",
     "//components/safe_browsing/content/browser",
     "//components/safe_browsing/content/browser:client_side_detection",
     "//components/safe_browsing/content/browser/web_ui",
