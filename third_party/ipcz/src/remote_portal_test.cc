@@ -274,6 +274,87 @@ MULTINODE_TEST(RemotePortalTest, RoutingStressTest) {
   CloseAll({a, b});
 }
 
+// For adequate test coverage this number needs to be large enough to trigger
+// allocation of at least one new 64-byte BlockAllocator by the
+// ClosurePropagationClient1 test node, which will occur approximately once for
+// every 1024 routes created. We create a good bit more than that to be sure.
+constexpr size_t kNumPortalsForClosurePropagation = 3000;
+
+MULTINODE_TEST_NODE(RemotePortalTestNode, ClosurePropagationClient1) {
+  IpczHandle b = ConnectToBroker();
+  WaitForDirectRemoteLink(b);
+
+  IpczHandle wait_for_c2;
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(b, nullptr, {&wait_for_c2, 1}));
+  WaitForDirectRemoteLink(wait_for_c2);
+  Put(b, "ok");
+
+  IpczHandle qs[kNumPortalsForClosurePropagation];
+  for (IpczHandle& q : qs) {
+    EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(b, nullptr, {&q, 1}));
+  }
+
+  for (IpczHandle& q : qs) {
+    WaitForConditionFlags(q, IPCZ_TRAP_PEER_CLOSED);
+  }
+
+  Put(b, "done");
+  EXPECT_EQ("bye", WaitToGetString(b));
+  Close(b);
+}
+
+MULTINODE_TEST_NODE(RemotePortalTestNode, ClosurePropagationClient2) {
+  IpczHandle b = ConnectToBroker();
+  WaitForDirectRemoteLink(b);
+
+  IpczHandle wait_for_c1;
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(b, nullptr, {&wait_for_c1, 1}));
+  WaitForDirectRemoteLink(wait_for_c1);
+  Put(b, "ok");
+
+  IpczHandle ps[kNumPortalsForClosurePropagation];
+  for (IpczHandle& p : ps) {
+    EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(b, nullptr, {&p, 1}));
+  }
+
+  CloseAll(ps);
+
+  EXPECT_EQ("bye", WaitToGetString(b));
+  Close(b);
+}
+
+MULTINODE_TEST(RemotePortalTest, ClosurePropagation) {
+  // Regression test for https://crbug.com/1426471. The goal of this test is
+  // to trigger a large number of parallel proxy bypasses to put pressure on
+  // RouterLinkState allocation. Then we verify that we can still propagate
+  // closure from end-to-end on each route, implying that the route didn't get
+  // stuck halfway through a bypass.
+
+  IpczHandle c1 = SpawnTestNode<ClosurePropagationClient1>();
+  IpczHandle c2 = SpawnTestNode<ClosurePropagationClient2>();
+  WaitForDirectRemoteLink(c1);
+  WaitForDirectRemoteLink(c2);
+
+  // Wait for the clients to establish a direct link so we start the real test
+  // work in a consistent state.
+  auto [wait_for_c1, wait_for_c2] = OpenPortals();
+  Put(c1, "", {&wait_for_c2, 1});
+  Put(c2, "", {&wait_for_c1, 1});
+  EXPECT_EQ("ok", WaitToGetString(c1));
+  EXPECT_EQ("ok", WaitToGetString(c2));
+
+  for (size_t i = 0; i < kNumPortalsForClosurePropagation; ++i) {
+    auto [q, p] = OpenPortals();
+    Put(c1, "", {&q, 1});
+    Put(c2, "", {&p, 1});
+  }
+
+  EXPECT_EQ("done", WaitToGetString(c1));
+  Put(c1, "bye");
+  Put(c2, "bye");
+  CloseAll({c1, c2});
+}
+
 MULTINODE_TEST_NODE(RemotePortalTestNode, DisconnectThroughProxyClient1) {
   IpczHandle b = ConnectToBroker();
 

@@ -2033,7 +2033,7 @@ bool Router::BypassPeerWithNewRemoteLink(
         [router = WrapRefCounted(this), requestor = WrapRefCounted(&requestor),
          node_link = WrapRefCounted(&node_link), context,
          bypass_target_sublink](FragmentRef<RouterLinkState> new_link_state) {
-          if (!new_link_state.is_null()) {
+          if (new_link_state.is_null()) {
             // If this fails once, it's unlikely to succeed afterwards.
             return;
           }
