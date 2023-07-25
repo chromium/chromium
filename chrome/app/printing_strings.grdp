@@ -306,6 +306,10 @@
       <message name="IDS_PRINT_PREVIEW_EULA_URL" desc="Message shown to user when their printer has a EULA associated with its PPD. This message is hyperlinked to the EULA.">
         End User License Agreement
       </message>
+      <!-- TODO(b/278895546): Keep printer status messages in sync with
+           os-settings printer status messages in
+           `chrome/app/os_settings_strings.grdp` until a shared resource is
+          established. -->
       <message name="IDS_PRINT_PREVIEW_PRINTER_STATUS_DEVICE_ERROR" desc="Error label to show under the destination dropdown when there is a mechanical error inside the printer.">
          Mechanical issue. Check printer
       </message>
@@ -340,7 +344,7 @@
          Printer queue is full
       </message>
       <message name="IDS_PRINT_PREVIEW_PRINTER_STATUS_PRINTER_UNREACHABLE" desc="Error label to show under the destination dropdown when the device is attempting to schedule a print job on the printer but can't get a connection to the printer">
-         Can’t connect to printer
+         Not connected to printer
       </message>
       <message name="IDS_PRINT_PREVIEW_PRINTER_STATUS_STOPPED" desc="Error label to show under the destination dropdown when the printer is in the process of stopping or the printer is powered down.">
          Printer has stopped

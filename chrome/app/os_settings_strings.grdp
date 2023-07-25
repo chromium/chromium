@@ -3470,6 +3470,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_PRINTING_SCANNING_LAUNCH_APP_SUBLABEL" desc="Sub-label that describes the scanning app which lets users scan documents.">
     Scan documents and images
   </message>
+  <!-- TODO(b/278895546): Keep printer status messages in sync with print
+       preview printer status messages in `chrome/app/printing_strings.grdp`
+       until a shared resource is established. -->
   <message name="IDS_SETTINGS_PRINTING_PRINTER_STATUS_DEVICE_ERROR" desc="Error label to show under the destination dropdown when there is a mechanical error inside the printer.">
     Mechanical issue. Check printer
   </message>
@@ -3504,7 +3507,7 @@ Press an assigned switch or key to remove assignment.
     Printer queue is full
   </message>
   <message name="IDS_SETTINGS_PRINTING_PRINTER_STATUS_PRINTER_UNREACHABLE" desc="Error label to show under the destination dropdown when the device is attempting to schedule a print job on the printer but can't get a connection to the printer">
-    Can’t connect to printer
+    Not connected to printer
   </message>
   <message name="IDS_SETTINGS_PRINTING_PRINTER_STATUS_STOPPED" desc="Error label to show under the destination dropdown when the printer is in the process of stopping or the printer is powered down.">
     Printer has stopped
