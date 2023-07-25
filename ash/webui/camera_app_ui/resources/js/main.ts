@@ -64,12 +64,6 @@ import {WaitableEvent} from './waitable_event.js';
 import {windowController} from './window_controller.js';
 
 /**
- * The app window instance which is used for communication with Tast tests. For
- * non-test sessions, it should be null.
- */
-const appWindow = window.appWindow;
-
-/**
  * Creates the Camera App main object.
  */
 export class App {
@@ -384,9 +378,7 @@ export class App {
         PerfEvent.LAUNCHING_FROM_WINDOW_CREATION,
         {hasError: !cameraStartSuccessful});
 
-    if (appWindow !== null) {
-      appWindow.onAppLaunched();
-    }
+    window.appWindow?.onAppLaunched();
   }
 
   /**
@@ -587,13 +579,11 @@ let instance: App|null = null;
     // guarantee that asynchronous calls in unload listener can be executed
     // properly. Therefore, we moved the logic for canceling unhandled intent to
     // Chrome (CameraAppHelper).
-    if (appWindow !== null) {
-      appWindow.notifyClosed();
-    }
+    window.appWindow?.notifyClosed();
   });
 
   metrics.initMetrics();
-  if (appWindow !== null) {
+  if (window.appWindow !== null) {
     metrics.setEnabled(false);
   }
 
@@ -611,9 +601,7 @@ let instance: App|null = null;
     }
 
     // Setup for Tast tests logger.
-    if (appWindow !== null) {
-      appWindow.reportPerf({event, duration, perfInfo});
-    }
+    window.appWindow?.reportPerf({event, duration, perfInfo});
   });
 
   state.addObserver(state.State.TAKING, (val, extras) => {

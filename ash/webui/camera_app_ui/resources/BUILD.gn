@@ -103,6 +103,11 @@ ts_library("build_ts") {
     mojo_files_rebased += [ "mojom/$mojo" ]
   }
 
+  manifest_excludes = []
+  foreach(js, local_dev_js_files) {
+    manifest_excludes += [ "js/$js" ]
+  }
+
   in_files =
       mojo_files_rebased +
       rebase_path(get_target_outputs(":copy_sources"), root_dir, root_build_dir)

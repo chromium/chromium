@@ -100,6 +100,11 @@ class RequestHandler:
         html = _stub_chrome_url(html)
         return html
 
+    def _transform_init_js(self, js: str) -> str:
+        # Note that this breaks source map, but there's no frequent need to
+        # debug init.ts so the impact should be minimal.
+        return self._transform_js("import './local_dev_overrides.js';\n" + js)
+
     def _transform_js(self, js: str) -> str:
         return _stub_chrome_url(js)
 
@@ -238,6 +243,15 @@ class RequestHandler:
             ),
             # preload_images.js are dynamically generated from images.
             _Route("/js/preload_images.js", self._handle_preload_images_js),
+            # local dev overrides are injected in init.js.
+            _Route(
+                "/js/init.js",
+                functools.partial(
+                    self._handle_static_file,
+                    root=self._tsc_root,
+                    transform=self._transform_init_js,
+                ),
+            ),
             # These two files are not compiled and need to be served from
             # self.cca_root.
             _Route("/js/lib/analytics.js", self._handle_static_file),

@@ -43,6 +43,7 @@ compile_js_files = [
   "lib/comlink_protocol.ts",
   "lib/ffmpeg.js",
   "lit/svg_wrapper.ts",
+  "local_dev.ts",
   "main.ts",
   "menu.ts",
   "metrics.ts",
@@ -116,6 +117,9 @@ compile_js_files = [
   "waitable_event.ts",
   "window_controller.ts",
 ]
+
+local_dev_js_files = [ "local_dev_overrides.ts" ]
+compile_js_files += local_dev_js_files
 
 no_compile_js_files = [ "lib/analytics.js" ]
 

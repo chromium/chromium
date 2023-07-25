@@ -33,8 +33,6 @@ function parseTopFrameInfo(stackTrace: string): StackFrame {
   };
 }
 
-const appWindow = window.appWindow;
-
 /**
  * Initializes error collecting functions.
  */
@@ -81,8 +79,8 @@ export function reportError(
   }
   triggeredErrorSet.add(hash);
 
-  if (appWindow !== null) {
-    void appWindow.reportError({
+  if (window.appWindow !== null) {
+    void window.appWindow.reportError({
       type: errorType,
       level,
       stack: stackStr,

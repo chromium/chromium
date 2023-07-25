@@ -5,8 +5,7 @@
 import {assert, assertNotReached} from '../assert.js';
 import {reportError} from '../error.js';
 import {Point} from '../geometry.js';
-import {getCameraDirectory, getObjectURL} from '../models/file_system.js';
-import {isLocalDev} from '../models/load_time_data.js';
+import * as localDev from '../local_dev.js';
 import {
   ErrorLevel,
   ErrorType,
@@ -236,146 +235,14 @@ export abstract class ChromeHelper {
    */
   static getInstance(): ChromeHelper {
     if (instance === null) {
-      if (isLocalDev()) {
-        instance = new ChromeHelperFake();
-      } else {
-        instance = new ChromeHelperImpl();
-      }
+      instance = getInstanceImpl();
     }
     return instance;
   }
 }
 
-export class ChromeHelperFake extends ChromeHelper {
-  override async initTabletModeMonitor(_onChange: (isTablet: boolean) => void):
-      Promise<boolean> {
-    return false;
-  }
-
-  override async initScreenStateMonitor(
-      _onChange: (state: ScreenState) => void): Promise<ScreenState> {
-    return ScreenState.ON;
-  }
-
-  override async initExternalScreenMonitor(
-      _onChange: (hasExternalScreen: boolean) => void): Promise<boolean> {
-    return false;
-  }
-
-  override async isTabletMode(): Promise<boolean> {
-    return false;
-  }
-
-  override async initCameraWindowController(): Promise<void> {
-    /* Do nothing. */
-  }
-
-  override startTracing(_event: string): void {
-    /* Do nothing. */
-  }
-
-  override stopTracing(_event: string): void {
-    /* Do nothing. */
-  }
-
-  override async openFileInGallery(name: string): Promise<void> {
-    const cameraDir = getCameraDirectory();
-    const file = await cameraDir.getFile(name);
-    if (file === null) {
-      return;
-    }
-    const objectURL = await getObjectURL(file);
-    const newTabWindow = window.open(objectURL, '_blank');
-    newTabWindow?.addEventListener('load', () => {
-      // The unload handler is fired immediately since the window.open
-      // triggered unload event on the initial empty page. See
-      // https://stackoverflow.com/q/7476660
-      newTabWindow?.addEventListener('unload', () => {
-        URL.revokeObjectURL(objectURL);
-      });
-    });
-  }
-
-  override openFeedbackDialog(_placeholder: string): void {
-    alert('Feedback dialog.');
-  }
-
-  override openUrlInBrowser(url: string): void {
-    window.open(url, '_blank', 'noopener,noreferrer');
-  }
-
-  override async finish(_intentId: number): Promise<void> {
-    /* Do nothing. */
-  }
-
-  override async appendData(_intentId: number, _data: Uint8Array):
-      Promise<void> {
-    /* Do nothing. */
-  }
-
-  override async clearData(_intentId: number): Promise<void> {
-    /* Do nothing. */
-  }
-
-  override async isMetricsAndCrashReportingEnabled(): Promise<boolean> {
-    return false;
-  }
-
-  override sendNewCaptureBroadcast(_args: {isVideo: boolean, name: string}):
-      void {
-    /* Do nothing. */
-  }
-
-  override notifyTote(_format: ToteMetricFormat, _name: string): void {
-    /* Do nothing. */
-  }
-
-  override async monitorFileDeletion(_name: string, _callback: () => void):
-      Promise<void> {
-    /* Do nothing. */
-  }
-
-  override async getDocumentScannerReadyState():
-      Promise<{supported: boolean, ready: boolean}> {
-    return {supported: false, ready: false};
-  }
-
-  override async checkDocumentModeReadiness(): Promise<boolean> {
-    return false;
-  }
-
-  override async scanDocumentCorners(_blob: Blob): Promise<Point[]|null> {
-    return null;
-  }
-
-  override async convertToDocument(
-      _blob: Blob, _corners: Point[], _rotation: number,
-      _mimeType: MimeType): Promise<Blob> {
-    assertNotReached();
-  }
-
-  override async convertToPdf(_jpegBlobs: Blob[]): Promise<Blob> {
-    assertNotReached();
-  }
-
-  override maybeTriggerSurvey(): void {
-    /* Do nothing. */
-  }
-
-  override async startMonitorStorage(
-      _onChange: (status: StorageMonitorStatus) => void):
-      Promise<StorageMonitorStatus> {
-    return StorageMonitorStatus.NORMAL;
-  }
-
-  override stopMonitorStorage(): void {
-    /* Do nothing. */
-  }
-
-  override openStorageManagement(): void {
-    /* Do nothing. */
-  }
-}
+export const getInstanceImpl =
+    localDev.overridableFunction((): ChromeHelper => new ChromeHelperImpl());
 
 /**
  * Communicates with Chrome.
