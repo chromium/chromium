@@ -3327,6 +3327,33 @@ TEST_P(CaptureModeCameraPreviewTest,
             snap_position_before_drag);
 }
 
+// Tests that the bounds of the camera preview widget should always be
+// constrained by the capture mode confine bounds.
+TEST_P(CaptureModeCameraPreviewTest,
+       PreviewWidgetIsConstrainedByConfineBounds) {
+  StartCaptureSessionWithParam();
+  auto* camera_controller = GetCameraController();
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  auto* preview_widget = camera_controller->camera_preview_widget();
+  ASSERT_TRUE(preview_widget);
+
+  const auto confine_bounds = GetCaptureBoundsInScreen();
+
+  // Create an outsetted bounds to generate locations outside of the confine
+  // bounds.
+  gfx::Rect outer_rect = confine_bounds;
+  outer_rect.Inset(-20);
+
+  for (const auto& release_point :
+       {outer_rect.origin(), outer_rect.top_right(), outer_rect.bottom_left(),
+        outer_rect.bottom_right()}) {
+    DragPreviewToPoint(preview_widget, release_point);
+    EXPECT_TRUE(
+        confine_bounds.Contains(preview_widget->GetWindowBoundsInScreen()));
+  }
+}
+
 // Tests that dragging camera preview outside of the preview circle shouldn't
 // work even if the drag events are contained in the preview bounds.
 TEST_P(CaptureModeCameraPreviewTest, DragPreviewOutsidePreviewCircle) {
