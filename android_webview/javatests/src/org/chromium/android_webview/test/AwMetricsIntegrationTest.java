@@ -35,6 +35,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.metrics.AndroidMetricsLogUploader;
 import org.chromium.components.metrics.AndroidMetricsServiceClient;
@@ -478,6 +479,7 @@ public class AwMetricsIntegrationTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "https://crbug.com/1467656")
     public void testPageLoadsEnableMultipleUploads() throws Throwable {
         mPlatformServiceBridge.waitForNextMetricsLog();
 
