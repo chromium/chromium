@@ -156,9 +156,10 @@ void IconWithBadgeImageSource::SetBadge(std::unique_ptr<Badge> badge) {
   if (features::IsChromeRefresh2023()) {
     const int top_inset = (badge_height - base_font.GetHeight()) / 2;
     const int bottom_inset = (badge_height - base_font.GetHeight()) - top_inset;
-    badge_rect.Inset(gfx::Insets::TLBR(
-        top_inset, std::max(kPadding, (badge_rect.width() - text_width) / 2),
-        bottom_inset, kPadding));
+    const int left_inset = (badge_rect.width() - text_width) / 2;
+    const int right_inset = (badge_rect.width() - text_width) - left_inset;
+    badge_rect.Inset(
+        gfx::Insets::TLBR(top_inset, left_inset, bottom_inset, right_inset));
   } else {
     badge_rect.Inset(gfx::Insets::TLBR(
         badge_height - base_font.GetHeight(),
@@ -166,7 +167,8 @@ void IconWithBadgeImageSource::SetBadge(std::unique_ptr<Badge> badge) {
         kPadding));
   }
   badge_text_ = gfx::RenderText::CreateRenderText();
-  badge_text_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  badge_text_->SetHorizontalAlignment(
+      features::IsChromeRefresh2023() ? gfx::ALIGN_CENTER : gfx::ALIGN_LEFT);
   badge_text_->SetCursorEnabled(false);
   badge_text_->SetFontList(base_font);
   badge_text_->SetColor(text_color);
