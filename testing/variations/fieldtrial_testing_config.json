@@ -11777,30 +11777,6 @@
             ]
         }
     ],
-    "QueueNavigationsWhileWaitingForCommit": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "queueing_level": "full"
-                    },
-                    "enable_features": [
-                        "QueueNavigationsWhileWaitingForCommit"
-                    ]
-                }
-            ]
-        }
-    ],
     "QuickAnswersForMoreLocales": [
         {
             "platforms": [
@@ -12079,6 +12055,35 @@
                     },
                     "enable_features": [
                         "RenderBlockingFonts"
+                    ]
+                }
+            ]
+        }
+    ],
+    "RenderDocumentWithNavigationQueueing": [
+        {
+            "platforms": [
+                "android_weblayer",
+                "android_webview",
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledCrashedFrameWithQueueing_20230526",
+                    "params": {
+                        "level": "crashed-frame",
+                        "queueing_level": "full"
+                    },
+                    "enable_features": [
+                        "QueueNavigationsWhileWaitingForCommit",
+                        "RenderDocument"
                     ]
                 }
             ]
