@@ -490,16 +490,12 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   bool IsCurrentScrollMainRepainted() const override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(ScrollUnifiedLayerTreeHostImplTest,
+  FRIEND_TEST_ALL_PREFIXES(LayerTreeHostImplTest,
                            AbortAnimatedScrollBeforeStartingAutoscroll);
-  FRIEND_TEST_ALL_PREFIXES(ScrollUnifiedLayerTreeHostImplTest,
-                           AnimatedScrollYielding);
-  FRIEND_TEST_ALL_PREFIXES(ScrollUnifiedLayerTreeHostImplTest,
-                           AutoscrollOnDeletedScrollbar);
-  FRIEND_TEST_ALL_PREFIXES(ScrollUnifiedLayerTreeHostImplTest,
-                           ThumbDragAfterJumpClick);
-  FRIEND_TEST_ALL_PREFIXES(ScrollUnifiedLayerTreeHostImplTest,
-                           ScrollOnLargeThumb);
+  FRIEND_TEST_ALL_PREFIXES(LayerTreeHostImplTest, AnimatedScrollYielding);
+  FRIEND_TEST_ALL_PREFIXES(LayerTreeHostImplTest, AutoscrollOnDeletedScrollbar);
+  FRIEND_TEST_ALL_PREFIXES(LayerTreeHostImplTest, ThumbDragAfterJumpClick);
+  FRIEND_TEST_ALL_PREFIXES(LayerTreeHostImplTest, ScrollOnLargeThumb);
   FRIEND_TEST_ALL_PREFIXES(LayerTreeHostImplTest, AutoscrollTaskAbort);
 
   // This method gets the scroll offset for a regular scroller, or the combined
