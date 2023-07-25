@@ -1219,7 +1219,6 @@ const EffectPaintPropertyNode* ViewTransitionStyleTracker::GetEffect(
     if (element_data->target_element != &element) {
       continue;
     }
-    DCHECK(element_data->effect_node);
     return element_data->effect_node.get();
   }
   NOTREACHED();
@@ -1228,7 +1227,6 @@ const EffectPaintPropertyNode* ViewTransitionStyleTracker::GetEffect(
 
 const EffectPaintPropertyNode* ViewTransitionStyleTracker::GetRootEffect()
     const {
-  DCHECK(root_effect_node_);
   return root_effect_node_.get();
 }
 

@@ -37,7 +37,9 @@ PaintPropertyChangeType EffectPaintPropertyNode::State::ComputeChange(
       output_clip != other.output_clip || blend_mode != other.blend_mode ||
       view_transition_element_id != other.view_transition_element_id ||
       view_transition_element_resource_id !=
-          other.view_transition_element_resource_id) {
+          other.view_transition_element_resource_id ||
+      self_or_ancestor_participates_in_view_transition !=
+          other.self_or_ancestor_participates_in_view_transition) {
     return PaintPropertyChangeType::kChangedOnlyValues;
   }
   bool opacity_changed = opacity != other.opacity;

@@ -911,6 +911,7 @@ PaintPropertyChangeType ViewTransition::UpdateEffect(
     return style_tracker_->UpdateRootEffect(std::move(state), current_effect);
   }
 
+  state.self_or_ancestor_participates_in_view_transition = true;
   style_tracker_->UpdateElementIndicesAndSnapshotId(
       element, state.view_transition_element_id,
       state.view_transition_element_resource_id);

@@ -123,6 +123,14 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
     // elements.
     viz::ViewTransitionElementResourceId view_transition_element_resource_id;
 
+    // When set, the affected elements should avoid doing clipping for
+    // optimization purposes (like off-screen clipping). This is set by view
+    // transition code to ensure that the element is fully painted since it will
+    // likely be drawn by pseudo elements that themselves can reposition and
+    // resize the painted output of the element. Note that this bit is
+    // propagated to the subtree of the effect tree.
+    bool self_or_ancestor_participates_in_view_transition = false;
+
     PaintPropertyChangeType ComputeChange(
         const State& other,
         const AnimationState& animation_state) const;
@@ -313,6 +321,10 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
   const viz::ViewTransitionElementResourceId& ViewTransitionElementResourceId()
       const {
     return state_.view_transition_element_resource_id;
+  }
+
+  bool SelfOrAncestorParticipatesInViewTransition() const {
+    return state_.self_or_ancestor_participates_in_view_transition;
   }
 
   std::unique_ptr<JSONObject> ToJSON() const;

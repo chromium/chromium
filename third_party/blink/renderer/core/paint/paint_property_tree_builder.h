@@ -151,6 +151,10 @@ struct PaintPropertyTreeBuilderFragmentContext {
   const EffectPaintPropertyNodeOrAlias* current_effect;
   bool this_or_ancestor_opacity_is_zero = false;
 
+  // Set to true when we visit a view transition element and is propagated to
+  // all non-alias effects.
+  bool self_or_ancestor_participates_in_view_transition = false;
+
   // Whether newly created children should flatten their inherited transform
   // (equivalently, draw into the plane of their parent). Should generally
   // be updated whenever |transform| is; flattening only needs to happen

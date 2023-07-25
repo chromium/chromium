@@ -621,6 +621,10 @@ bool GeometryMapper::
 
 absl::optional<gfx::RectF> GeometryMapper::VisibilityLimit(
     const PropertyTreeState& state) {
+  if (state.Effect().SelfOrAncestorParticipatesInViewTransition()) {
+    return absl::nullopt;
+  }
+
   if (&state.Clip().LocalTransformSpace() == &state.Transform()) {
     return state.Clip().PaintClipRect().Rect();
   }

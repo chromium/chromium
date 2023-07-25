@@ -1601,6 +1601,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
             GetCompositorElementId(CompositorElementIdNamespace::kPrimary);
       }
 
+      state.self_or_ancestor_participates_in_view_transition =
+          context_.self_or_ancestor_participates_in_view_transition;
+
       EffectPaintPropertyNode::AnimationState animation_state;
       animation_state.is_running_opacity_animation_on_compositor =
           style.IsRunningOpacityAnimationOnCompositor();
@@ -1709,10 +1712,34 @@ void FragmentPaintPropertyTreeBuilder::UpdateViewTransitionEffect() {
           ViewTransitionUtils::GetActiveTransition(object_.GetDocument());
       DCHECK(transition);
 
+      auto* old_effect = transition->GetEffect(object_);
+      bool old_participation_flag =
+          old_effect &&
+          old_effect->SelfOrAncestorParticipatesInViewTransition();
+
       OnUpdateEffect(transition->UpdateEffect(object_, *context_.current_effect,
                                               context_.current.clip,
                                               context_.current.transform));
-      context_.current_effect = transition->GetEffect(object_);
+
+      auto* new_effect = transition->GetEffect(object_);
+      // The value isn't set on the root, since clipping rules are different for
+      // the root view transition element. So, if we don't set this on the
+      // effect, it implies that no other ancestor could have set it.
+      CHECK(new_effect->SelfOrAncestorParticipatesInViewTransition() ||
+            !context_.self_or_ancestor_participates_in_view_transition);
+
+      context_.self_or_ancestor_participates_in_view_transition |=
+          new_effect->SelfOrAncestorParticipatesInViewTransition();
+
+      // Whether self and ancestor participate in a view transition needs to be
+      // propagated to the subtree of the element that set the value.
+      if (old_participation_flag !=
+          new_effect->SelfOrAncestorParticipatesInViewTransition()) {
+        full_context_.force_subtree_update_reasons |=
+            PaintPropertyTreeBuilderContext::kSubtreeUpdateIsolationPiercing;
+      }
+
+      context_.current_effect = new_effect;
     }
   }
 }
@@ -1853,6 +1880,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateFilter() {
 
       state.compositor_element_id =
           GetCompositorElementId(CompositorElementIdNamespace::kEffectFilter);
+
+      state.self_or_ancestor_participates_in_view_transition =
+          context_.self_or_ancestor_participates_in_view_transition;
 
       // This must be computed before std::move(state) below.
       bool needs_pixel_moving_filter_clip_expander =
