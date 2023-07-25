@@ -171,7 +171,9 @@ void DismissDefaultBrowserPromo() {
   if ([self isRunningTest:@selector(testHistorySyncSkippedIfNoSignIn)] ||
       [self isRunningTest:@selector(testHistorySyncShownAfterSignIn)] ||
       [self isRunningTest:@selector
-            (testSignInSubtitleIfHistorySyncOptInEnabled)]) {
+            (testSignInSubtitleIfHistorySyncOptInEnabled)] ||
+      [self isRunningTest:@selector(testSignInSubtitleIfSyncDisabled)] ||
+      [self isRunningTest:@selector(testSignInSubtitleIfTabsSyncDisabled)]) {
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
@@ -945,6 +947,48 @@ void DismissDefaultBrowserPromo() {
   // Validate the subtitle text.
   NSString* subtitle =
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_BENEFITS_SUBTITLE_SHORT);
+  [[self elementInteractionWithGreyMatcher:grey_allOf(
+                                               grey_text(subtitle),
+                                               grey_sufficientlyVisible(), nil)
+                      scrollViewIdentifier:
+                          kPromoStyleScrollViewAccessibilityIdentifier]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Tests that the correct subtitle is shown in the FRE sign-in screen if the
+// sync is disabled by policy, and History Sync Opt-In feature is enabled.
+- (void)testSignInSubtitleIfSyncDisabled {
+  [self relaunchAppWithPolicyKey:policy::key::kSyncDisabled
+                  xmlPolicyValue:"<true/>"];
+  // Verify that the first run screen is present.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     first_run::kFirstRunSignInScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
+  // Validate the subtitle text is the standard one.
+  NSString* subtitle =
+      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT);
+  [[self elementInteractionWithGreyMatcher:grey_allOf(
+                                               grey_text(subtitle),
+                                               grey_sufficientlyVisible(), nil)
+                      scrollViewIdentifier:
+                          kPromoStyleScrollViewAccessibilityIdentifier]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Tests that the correct subtitle is shown in the FRE sign-in screen if the
+// tabs sync is disabled by policy, and History Sync Opt-In feature is enabled.
+- (void)testSignInSubtitleIfTabsSyncDisabled {
+  [self relaunchAppWithPolicyKey:policy::key::kSyncTypesListDisabled
+                  xmlPolicyValue:"<array><string>tabs</string></array>"];
+  // Verify that the first run screen is present.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     first_run::kFirstRunSignInScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
+  // Validate the subtitle text is the standard one.
+  NSString* subtitle =
+      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT);
   [[self elementInteractionWithGreyMatcher:grey_allOf(
                                                grey_text(subtitle),
                                                grey_sufficientlyVisible(), nil)

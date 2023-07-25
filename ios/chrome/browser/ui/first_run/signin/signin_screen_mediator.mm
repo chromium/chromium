@@ -244,6 +244,8 @@
       _consumer.signinStatus = SigninScreenConsumerSigninStatusDisabled;
       break;
   }
+  _consumer.syncEnabled = !IsSyncDisabledByPolicy(_syncService) &&
+                          !HasManagedSyncDataType(_syncService);
   self.consumer.isManaged = IsApplicationManagedByPlatform();
   if (!self.firstRun) {
     self.consumer.screenIntent = SigninScreenConsumerScreenIntentSigninOnly;

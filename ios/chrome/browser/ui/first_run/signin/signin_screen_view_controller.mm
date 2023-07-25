@@ -54,6 +54,7 @@ NSString* const kEnterpriseIconName = @"enterprise_icon";
 @synthesize isManaged = _isManaged;
 @synthesize screenIntent = _screenIntent;
 @synthesize signinStatus = _signinStatus;
+@synthesize syncEnabled = _syncEnabled;
 
 #pragma mark - UIViewController
 
@@ -74,7 +75,8 @@ NSString* const kEnterpriseIconName = @"enterprise_icon";
       self.titleText = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
       self.subtitleText =
           base::FeatureList::IsEnabled(
-              syncer::kReplaceSyncPromosWithSignInPromos)
+              syncer::kReplaceSyncPromosWithSignInPromos) &&
+                  self.syncEnabled
               ? l10n_util::GetNSString(
                     IDS_IOS_FIRST_RUN_SIGNIN_BENEFITS_SUBTITLE_SHORT)
               : l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT);
