@@ -398,6 +398,12 @@ class Browser : public TabStripModelObserver,
     force_skip_warning_user_on_close_ = force_skip_warning_user_on_close;
   }
 
+  // Sets whether the UI should be immediately updated when scheduled on a
+  // test.
+  void set_update_ui_immediately_for_testing() {
+    update_ui_immediately_for_testing_ = true;
+  }
+
   // Accessors ////////////////////////////////////////////////////////////////
 
   const CreateParams& create_params() const { return create_params_; }
@@ -1336,6 +1342,9 @@ class Browser : public TabStripModelObserver,
 
   // Tells if the browser should skip warning the user when closing the window.
   bool force_skip_warning_user_on_close_ = false;
+
+  // If true, immediately updates the UI when scheduled.
+  bool update_ui_immediately_for_testing_ = false;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   std::unique_ptr<extensions::ExtensionBrowserWindowHelper>

@@ -2665,12 +2665,15 @@ void Browser::ScheduleUIUpdate(WebContents* source, unsigned changed_flags) {
   scheduled_updates_[source] |= changed_flags;
 
   if (!chrome_updater_factory_.HasWeakPtrs()) {
+    base::TimeDelta delay = update_ui_immediately_for_testing_
+                                ? base::Milliseconds(0)
+                                : kUIUpdateCoalescingTime;
     // No task currently scheduled, start another.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&Browser::ProcessPendingUIUpdates,
                        chrome_updater_factory_.GetWeakPtr()),
-        kUIUpdateCoalescingTime);
+        delay);
   }
 }
 

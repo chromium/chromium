@@ -502,6 +502,20 @@ void ExtensionsMenuViewController::OnShowRequestsTogglePressed(
 void ExtensionsMenuViewController::TabChangedAt(content::WebContents* contents,
                                                 int index,
                                                 TabChangeType change_type) {
+  bool should_update_page = false;
+  switch (change_type) {
+    case TabChangeType::kAll:
+      should_update_page = true;
+      break;
+    case TabChangeType::kLoadingOnly:
+      should_update_page = false;
+      break;
+  }
+
+  if (!should_update_page || GetActiveWebContents() != contents) {
+    return;
+  }
+
   UpdatePage(contents);
 }
 
@@ -509,12 +523,14 @@ void ExtensionsMenuViewController::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  content::WebContents* web_contents = tab_strip_model->GetActiveWebContents();
+  CHECK_EQ(tab_strip_model, browser_->tab_strip_model());
+  content::WebContents* web_contents = GetActiveWebContents();
+
   if (!selection.active_tab_changed() || !web_contents) {
     return;
   }
 
-  UpdatePage(GetActiveWebContents());
+  UpdatePage(web_contents);
 }
 
 void ExtensionsMenuViewController::UpdatePage(

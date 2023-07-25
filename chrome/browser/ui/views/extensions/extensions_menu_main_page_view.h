@@ -100,6 +100,7 @@ class ExtensionsMenuMainPageView : public views::View {
 
   // Accessors used by tests:
   // Returns the currently-showing menu items.
+  const std::u16string& GetSubheaderSubtitleTextForTesting() const;
   views::ToggleButton* GetSiteSettingsToggleForTesting() {
     return site_settings_toggle_;
   }

@@ -680,6 +680,10 @@ std::vector<ExtensionMenuItemView*> ExtensionsMenuMainPageView::GetMenuItems()
   return menu_item_views;
 }
 
+const std::u16string&
+ExtensionsMenuMainPageView::GetSubheaderSubtitleTextForTesting() const {
+  return subheader_subtitle_->GetText();
+}
 views::Label* ExtensionsMenuMainPageView::GetTextContainerForTesting() {
   return message_section_->GetTextContainerForTesting();  // IN-TEST
 }
