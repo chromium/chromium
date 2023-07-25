@@ -1488,7 +1488,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.FirstRendererFillingResult"
-    enum="PasswordManagerFirstRendererFillingResult" expires_after="2023-11-19">
+    enum="PasswordManagerFirstRendererFillingResult" expires_after="2024-01-21">
   <owner>kazinova@google.com</owner>
   <owner>battre@chromium.org</owner>
   <summary>

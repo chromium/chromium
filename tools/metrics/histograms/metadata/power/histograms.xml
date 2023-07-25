@@ -2365,7 +2365,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PowerML.SmartDimModel.Result"
-    enum="PowerMLSmartDimModelResult" expires_after="2023-11-19">
+    enum="PowerMLSmartDimModelResult" expires_after="2024-01-21">
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -2378,7 +2378,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PowerML.SmartDimParameter.Result"
-    enum="PowerMLSmartDimParameterResult" expires_after="2023-11-19">
+    enum="PowerMLSmartDimParameterResult" expires_after="2024-01-21">
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
