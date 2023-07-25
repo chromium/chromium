@@ -241,8 +241,8 @@ GLTextureImageBacking::ProduceSkiaGanesh(
   }
 
   return std::make_unique<SkiaGLCommonRepresentation>(
-      manager, this, nullptr, std::move(context_state),
-      cached_promise_textures_, tracker);
+      manager, this, std::move(context_state), cached_promise_textures_,
+      tracker);
 }
 
 void GLTextureImageBacking::InitializeGLTexture(

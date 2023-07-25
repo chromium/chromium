@@ -53,15 +53,9 @@ class GLTexturePassthroughGLCommonRepresentation
 // Skia representation for both GLTextureImageBackingHelper.
 class SkiaGLCommonRepresentation : public SkiaGaneshImageRepresentation {
  public:
-  class Client {
-   public:
-    virtual bool OnSkiaBeginReadAccess() = 0;
-    virtual bool OnSkiaBeginWriteAccess() = 0;
-  };
   SkiaGLCommonRepresentation(
       SharedImageManager* manager,
       SharedImageBacking* backing,
-      GLTextureImageRepresentationClient* client,
       scoped_refptr<SharedContextState> context_state,
       std::vector<sk_sp<GrPromiseImageTexture>> promise_texture,
       MemoryTypeTracker* tracker);
@@ -93,7 +87,6 @@ class SkiaGLCommonRepresentation : public SkiaGaneshImageRepresentation {
 
   void CheckContext();
 
-  const raw_ptr<GLTextureImageRepresentationClient> client_ = nullptr;
   scoped_refptr<SharedContextState> context_state_;
   std::vector<sk_sp<GrPromiseImageTexture>> promise_textures_;
   std::vector<sk_sp<SkSurface>> write_surfaces_;

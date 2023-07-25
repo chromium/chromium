@@ -65,7 +65,6 @@ void GLTexturePassthroughGLCommonRepresentation::EndAccess() {
 SkiaGLCommonRepresentation::SkiaGLCommonRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,
-    GLTextureImageRepresentationClient* client,
     scoped_refptr<SharedContextState> context_state,
     std::vector<sk_sp<GrPromiseImageTexture>> promise_textures,
     MemoryTypeTracker* tracker)
@@ -73,7 +72,6 @@ SkiaGLCommonRepresentation::SkiaGLCommonRepresentation(
                                     manager,
                                     backing,
                                     tracker),
-      client_(client),
       context_state_(std::move(context_state)),
       promise_textures_(std::move(promise_textures)) {
   DCHECK_EQ(promise_textures_.size(), NumPlanesExpected());
@@ -95,13 +93,6 @@ std::vector<sk_sp<SkSurface>> SkiaGLCommonRepresentation::BeginWriteAccess(
     std::vector<GrBackendSemaphore>* end_semaphores,
     std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
   CheckContext();
-  if (client_) {
-    DCHECK(context_state_->GrContextIsGL());
-    if (!client_->GLTextureImageRepresentationBeginAccess(
-            /*readonly=*/false)) {
-      return {};
-    }
-  }
 
   if (!write_surfaces_.empty()) {
     // Write access is already in progress.
@@ -137,13 +128,6 @@ SkiaGLCommonRepresentation::BeginWriteAccess(
     std::vector<GrBackendSemaphore>* end_semaphores,
     std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
   CheckContext();
-  if (client_) {
-    DCHECK(context_state_->GrContextIsGL());
-    if (!client_->GLTextureImageRepresentationBeginAccess(
-            /*readonly=*/false)) {
-      return {};
-    }
-  }
 
   return promise_textures_;
 }
@@ -158,10 +142,6 @@ void SkiaGLCommonRepresentation::EndWriteAccess() {
 #endif
     write_surfaces_.clear();
   }
-
-  if (client_) {
-    client_->GLTextureImageRepresentationEndAccess(/*readonly=*/false);
-  }
 }
 
 std::vector<sk_sp<GrPromiseImageTexture>>
@@ -170,22 +150,10 @@ SkiaGLCommonRepresentation::BeginReadAccess(
     std::vector<GrBackendSemaphore>* end_semaphores,
     std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
   CheckContext();
-  if (client_) {
-    DCHECK(context_state_->GrContextIsGL());
-    if (!client_->GLTextureImageRepresentationBeginAccess(
-            /*readonly=*/true)) {
-      return {};
-    }
-  }
-
   return promise_textures_;
 }
 
-void SkiaGLCommonRepresentation::EndReadAccess() {
-  if (client_) {
-    client_->GLTextureImageRepresentationEndAccess(/*readonly=*/true);
-  }
-}
+void SkiaGLCommonRepresentation::EndReadAccess() {}
 
 bool SkiaGLCommonRepresentation::SupportsMultipleConcurrentReadAccess() {
   return true;
