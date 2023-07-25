@@ -12,5 +12,8 @@ const char kInvalidExternallyConnectableDeclaration[] =
     "chromeos_system_extension's 'externally_connectable' key must be present "
     "and its value must contain exactly one allowlisted origin in 'matches' "
     "array";
+const char kInvalidExternallyConnectableDeclarationWithIWA[] =
+    "chromeos_system_extension's 'externally_connectable' key must be present "
+    "and its value must contain only allowlisted origins in 'matches' array";
 
 }  // namespace chromeos

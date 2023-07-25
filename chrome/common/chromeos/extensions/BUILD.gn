@@ -32,6 +32,8 @@ static_library("extensions") {
     "api:api",
     "api:extensions_features",
     "//base",
+    "//chrome/common:url_constants",
+    "//chromeos/constants",
     "//extensions/common",
   ]
 }
