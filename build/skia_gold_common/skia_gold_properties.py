@@ -37,17 +37,17 @@ class SkiaGoldProperties():
     Args:
       args: The parsed arguments from an argparse.ArgumentParser.
     """
-    self._git_revision = None
-    self._issue = None
-    self._patchset = None
-    self._job_id = None
-    self._local_pixel_tests = None
-    self._no_luci_auth = None
-    self._service_account = None
-    self._bypass_skia_gold_functionality = None
-    self._code_review_system = None
-    self._continuous_integration_system = None
-    self._local_png_directory = None
+    self._git_revision: Optional[str] = None
+    self._issue: Optional[int] = None
+    self._patchset: Optional[int] = None
+    self._job_id: Optional[str] = None
+    self._local_pixel_tests: Optional[bool] = None
+    self._no_luci_auth: Optional[bool] = None
+    self._service_account: Optional[str] = None
+    self._bypass_skia_gold_functionality: Optional[bool] = None
+    self._code_review_system: Optional[str] = None
+    self._continuous_integration_system: Optional[str] = None
+    self._local_png_directory: Optional[str] = None
 
     self._InitializeProperties(args)
 
@@ -67,11 +67,11 @@ class SkiaGoldProperties():
     return self._GetGitRevision()
 
   @property
-  def issue(self) -> int:
+  def issue(self) -> Optional[int]:
     return self._issue
 
   @property
-  def job_id(self) -> str:
+  def job_id(self) -> Optional[str]:
     return self._job_id
 
   @property
@@ -79,23 +79,23 @@ class SkiaGoldProperties():
     return self._IsLocalRun()
 
   @property
-  def local_png_directory(self) -> str:
+  def local_png_directory(self) -> Optional[str]:
     return self._local_png_directory
 
   @property
-  def no_luci_auth(self) -> bool:
+  def no_luci_auth(self) -> Optional[bool]:
     return self._no_luci_auth
 
   @property
-  def service_account(self) -> str:
+  def service_account(self) -> Optional[str]:
     return self._service_account
 
   @property
-  def patchset(self) -> int:
+  def patchset(self) -> Optional[int]:
     return self._patchset
 
   @property
-  def bypass_skia_gold_functionality(self) -> bool:
+  def bypass_skia_gold_functionality(self) -> Optional[bool]:
     return self._bypass_skia_gold_functionality
 
   def _GetGitOriginMainHeadSha1(self) -> Optional[str]:

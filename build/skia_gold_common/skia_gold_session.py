@@ -93,8 +93,8 @@ class SkiaGoldSession():
                                      dir=working_dir,
                                      delete=False) as triage_link_file:
       self._triage_link_file = triage_link_file.name
-    # A map of image name (string) to ComparisonResults for that image.
-    self._comparison_results = {}
+    # A map of image name to ComparisonResults for that image.
+    self._comparison_results: Dict[str, SkiaGoldSession.ComparisonResults] = {}
     self._authenticated = False
     self._initialized = False
 
@@ -106,7 +106,7 @@ class SkiaGoldSession():
   def RunComparison(self,
                     name: str,
                     png_file: str,
-                    output_manager: Any,
+                    output_manager: Optional[Any] = None,
                     inexact_matching_args: Optional[List[str]] = None,
                     use_luci: bool = True,
                     service_account: Optional[str] = None,
@@ -166,7 +166,7 @@ class SkiaGoldSession():
     if not self._gold_properties.local_pixel_tests:
       return self.StatusCodes.COMPARISON_FAILURE_REMOTE, compare_stdout
 
-    if not output_manager:
+    if self._RequiresOutputManager() and not output_manager:
       return (self.StatusCodes.NO_OUTPUT_MANAGER,
               'No output manager for local diff images')
 
@@ -564,6 +564,10 @@ class SkiaGoldSession():
           output image files where saved.
     """
     raise NotImplementedError()
+
+  def _RequiresOutputManager(self) -> bool:
+    """Whether this session implementation requires an output manager."""
+    return True
 
   @staticmethod
   def _RunCmdForRcAndOutput(cmd: List[str]) -> Tuple[int, str]:
