@@ -94,6 +94,7 @@ WebAppProvider* WebAppProvider::GetForWebApps(Profile* profile) {
   // web apps (return nullptr here). Otherwise, Ash browser manages all web apps
   // (return WebAppProvider).
   // An exception is that Shimless RMA app always requires loading IWA on Ash.
+  // TODO(b/292227137): Migrate Shimless RMA app to LaCrOS.
   if (IsWebAppsCrosapiEnabled() &&
       (!::ash::features::IsShimlessRMA3pDiagnosticsEnabled() ||
        !::ash::IsShimlessRmaAppBrowserContext(profile))) {
