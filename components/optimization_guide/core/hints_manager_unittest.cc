@@ -206,6 +206,7 @@ class TestHintsFetcher : public HintsFetcher {
       const base::flat_set<proto::OptimizationType>& optimization_types,
       proto::RequestContext request_context,
       const std::string& locale,
+      absl::optional<std::string> access_token,
       bool skip_cache,
       HintsFetchedCallback hints_fetched_callback) override {
     HintsFetcherEndState fetch_state =

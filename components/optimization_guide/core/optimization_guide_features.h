@@ -49,6 +49,7 @@ BASE_DECLARE_FEATURE(kOptimizationGuideInstallWideModelStore);
 BASE_DECLARE_FEATURE(kExtractRelatedSearchesFromPrefetchedZPSResponse);
 BASE_DECLARE_FEATURE(kPageContentAnnotationsPersistSalientImageMetadata);
 BASE_DECLARE_FEATURE(kModelStoreUseRelativePath);
+BASE_DECLARE_FEATURE(kOptimizationGuidePersonalizedFetching);
 
 // Enables use of task runner with trait CONTINUE_ON_SHUTDOWN for page content
 // annotations on-device models.
@@ -193,6 +194,12 @@ bool ShouldPersistHintsToDisk();
 // statistics for the served model and not taint the resulting data.
 bool ShouldOverrideOptimizationTargetDecisionForMetricsPurposes(
     proto::OptimizationTarget optimization_target);
+
+// Returns which OAuth scopes to use for personalized metadata.
+base::flat_set<std::string> OAuthScopesForPersonalizedMetadata();
+
+// Returns whether personalized metadata is enabled for |request_context|.
+bool EnabledPersonalizedMetadata(proto::RequestContext request_context);
 
 // Returns the minimum number of seconds to randomly delay before starting to
 // fetch for prediction models and host model features.

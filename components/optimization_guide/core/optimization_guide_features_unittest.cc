@@ -17,6 +17,7 @@
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace optimization_guide {
@@ -148,6 +149,29 @@ TEST(OptimizationGuideFeaturesTest,
   EXPECT_FALSE(features::ShouldExecutePageVisibilityModelOnPageContent(""));
   EXPECT_FALSE(
       features::ShouldExecutePageVisibilityModelOnPageContent("zh-CN"));
+}
+
+TEST(OptimizationGuideFeaturesTest, OptimizationGuidePersonalizedFetching) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kOptimizationGuidePersonalizedFetching,
+      {
+          {"allowed_contexts", "CONTEXT_PAGE_NAVIGATION,CONTEXT_BOOKMARKS"},
+          {"oauth_scopes", "scope,scope2"},
+      });
+
+  // Check scopes.
+  EXPECT_THAT(features::OAuthScopesForPersonalizedMetadata(),
+              ::testing::UnorderedElementsAre("scope", "scope2"));
+
+  // Check contexts.
+  EXPECT_FALSE(features::EnabledPersonalizedMetadata(
+      optimization_guide::proto::CONTEXT_UNSPECIFIED));
+  EXPECT_TRUE(features::EnabledPersonalizedMetadata(
+      optimization_guide::proto::CONTEXT_PAGE_NAVIGATION));
+  EXPECT_TRUE(features::EnabledPersonalizedMetadata(
+      optimization_guide::proto::CONTEXT_BOOKMARKS));
 }
 
 TEST(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
