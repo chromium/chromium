@@ -1,4 +1,4 @@
-<style include="multidevice-setup-shared">
+<style include="multidevice-setup-shared cros-color-overrides">
   :host {
     display: flex;
     flex-direction: column;
@@ -23,20 +23,27 @@
 </style>
 <div id="shadow" hidden$="[[!shouldShowShadow]]"></div>
 <div id="button-container">
-  <div id="backward"
+  <cr-button id="backward"
+      name="backward-button"
+      class="cancel-button"
       on-click="onBackwardButtonClicked_"
-      hidden$="[[backwardButtonHidden]]">
-    <slot name="backward-button"></slot>
-  </div>
+      hidden$="[[!backwardButtonTextId]]">
+    [[getButtonTextFromId_(backwardButtonTextId)]]
+  </cr-button>
   <div class="flex"></div>
-  <div id="cancel"
+  <cr-button id="cancel"
+      name="cancel-button"
+      class="cancel-button"
       on-click="onCancelButtonClicked_"
-      hidden$="[[cancelButtonHidden]]">
-    <slot name="cancel-button"></slot>
-  </div>
-  <div id="forward"
+      hidden$="[[!cancelButtonTextId]]">
+      [[getButtonTextFromId_(cancelButtonTextId)]]
+  </cr-button>
+  <cr-button id="forward"
+      name="forward-button"
+      class="action-button"
       on-click="onForwardButtonClicked_"
-      hidden$="[[forwardButtonHidden]]">
-    <slot name="forward-button"></slot>
-  </div>
+      disabled="[[forwardButtonDisabled]]"
+      hidden$="[[!forwardButtonTextId]]">
+    [[getButtonTextFromId_(forwardButtonTextId)]]
+  </cr-button>
 </div>
