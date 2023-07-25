@@ -1773,7 +1773,7 @@
       'android', 'release_trybot_reclient', 'arm64', 'strip_debug_info',
       'android_fastbuild', 'webview_monochrome', 'fail_on_android_expectations',
       'no_secondary_abi', 'use_clang_coverage', 'partial_code_coverage_instrumentation',
-      'no_reclient',
+      'no_reclient', 'siso',
     ],
 
     'android_release_trybot_arm64_webview_monochrome_reclient': [
@@ -2352,7 +2352,7 @@
       'chromeos_with_codecs', 'release_trybot', 'no_symbols', 'also_build_lacros_chrome',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
       'enable_dangling_raw_ptr_feature_flag', 'enable_backup_ref_ptr_feature_flag',
-      'no_goma', 'no_reclient',
+      'no_goma', 'no_reclient', 'siso',
     ],
 
     'chromeos_with_codecs_release_trybot_invert_fieldtrials_reclient': [
@@ -2830,7 +2830,7 @@
       'use_clang_coverage', 'partial_code_coverage_instrumentation', 'devtools_do_typecheck',
       'enable_dangling_raw_ptr_feature_flag',
       "enable_backup_ref_ptr_feature_flag",
-      "no_goma", "no_reclient",
+      "no_goma", "no_reclient", "siso",
     ],
 
     'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_do_typecheck_chrome_for_testing_reclient': [
@@ -2879,7 +2879,7 @@
       'gpu_tests', 'release_trybot', 'no_resource_allowlisting',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
       'enable_dangling_raw_ptr_feature_flag',
-      'no_goma', 'no_reclient',
+      'no_goma', 'no_reclient', 'siso',
     ],
 
     'gpu_tests_release_trybot_resource_allowlisting_invert_fieldtrials': [
@@ -4596,6 +4596,10 @@
 
     'shared_release_trybot_reclient': {
       'mixins': ['shared_release_bot_reclient', 'no_symbols', 'dcheck_always_on'],
+    },
+
+    'siso': {
+      'gn_args': 'enable_precompiled_headers=false',
     },
 
     'skip_generate_fuzzer_owners': {
