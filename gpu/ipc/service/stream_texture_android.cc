@@ -147,7 +147,7 @@ bool StreamTexture::IsUsingGpuMemory() const {
   return true;
 }
 
-void StreamTexture::UpdateAndBindTexImage(GLuint service_id) {}
+void StreamTexture::UpdateAndBindTexImage() {}
 
 bool StreamTexture::HasTextureOwner() const {
   return !!texture_owner_;

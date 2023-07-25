@@ -287,7 +287,7 @@ VideoSurfaceTextureImageBacking::ProduceSkiaGanesh(
 
 void VideoSurfaceTextureImageBacking::BeginGLReadAccess(
     const GLuint service_id) {
-  stream_texture_sii_->UpdateAndBindTexImage(service_id);
+  stream_texture_sii_->UpdateAndBindTexImage();
 }
 
 // Representation of VideoSurfaceTextureImageBacking as an overlay plane.

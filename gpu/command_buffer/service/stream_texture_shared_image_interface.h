@@ -41,13 +41,8 @@ class GPU_GLES2_EXPORT StreamTextureSharedImageInterface
   // or not.
   virtual bool IsUsingGpuMemory() const = 0;
 
-  // Update texture image to the most recent frame and bind it to the provided
-  // texture |service_id| if TextureOwner does not implicitly binds texture
-  // during the update.
-  // If TextureOwner() always binds texture implicitly during the update, then
-  // it will always bind it to TextureOwner's texture id and not to the
-  // |service_id|.
-  virtual void UpdateAndBindTexImage(GLuint service_id) = 0;
+  // Update texture image to the most recent frame.
+  virtual void UpdateAndBindTexImage() = 0;
 
   virtual bool HasTextureOwner() const = 0;
   virtual TextureBase* GetTextureBase() const = 0;

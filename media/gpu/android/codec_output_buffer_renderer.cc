@@ -59,8 +59,7 @@ bool CodecOutputBufferRenderer::RenderToTextureOwnerBackBuffer() {
 }
 
 bool CodecOutputBufferRenderer::RenderToTextureOwnerFrontBuffer(
-    BindingsMode bindings_mode,
-    GLuint service_id) {
+    BindingsMode bindings_mode) {
   AssertAcquiredDrDcLock();
   // Normally, we should have a wait coordinator if we're called.  However, if
   // the renderer is torn down (either VideoFrameSubmitter or the whole process)
@@ -71,7 +70,7 @@ bool CodecOutputBufferRenderer::RenderToTextureOwnerFrontBuffer(
     return false;
 
   if (phase_ == Phase::kInFrontBuffer) {
-    EnsureBoundIfNeeded(bindings_mode, service_id);
+    MaybeMarkTexImageBound(bindings_mode);
     return true;
   }
   if (phase_ == Phase::kInvalidated)
@@ -108,7 +107,7 @@ bool CodecOutputBufferRenderer::RenderToTextureOwnerFrontBuffer(
     was_tex_image_bound_ = true;
   }
 
-  EnsureBoundIfNeeded(bindings_mode, service_id);
+  MaybeMarkTexImageBound(bindings_mode);
 
   if (frame_info_callback_) {
     gfx::Size coded_size;
@@ -124,13 +123,11 @@ bool CodecOutputBufferRenderer::RenderToTextureOwnerFrontBuffer(
   return true;
 }
 
-void CodecOutputBufferRenderer::EnsureBoundIfNeeded(BindingsMode mode,
-                                                    GLuint service_id) {
+void CodecOutputBufferRenderer::MaybeMarkTexImageBound(BindingsMode mode) {
   AssertAcquiredDrDcLock();
   DCHECK(codec_buffer_wait_coordinator_);
 
   if (mode == BindingsMode::kBindImage) {
-    DCHECK_GT(service_id, 0u);
     was_tex_image_bound_ = true;
   }
 }
@@ -154,11 +151,9 @@ bool CodecOutputBufferRenderer::RenderToFrontBuffer() {
   AssertAcquiredDrDcLock();
 
   // This code is used to trigger early rendering of the image before it is used
-  // for compositing, there is no need to bind the image. Hence pass texture
-  // service_id as 0.
+  // for compositing, there is no need to bind the image.
   return codec_buffer_wait_coordinator_
-             ? RenderToTextureOwnerFrontBuffer(BindingsMode::kDontBindImage,
-                                               0 /* service_id */)
+             ? RenderToTextureOwnerFrontBuffer(BindingsMode::kDontBindImage)
              : RenderToOverlay();
 }
 

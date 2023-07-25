@@ -68,7 +68,7 @@ class StreamTexture : public RefCountedLockHelperDrDc,
   // gpu::StreamTextureSharedImageInterface implementation.
   void ReleaseResources() override {}
   bool IsUsingGpuMemory() const override;
-  void UpdateAndBindTexImage(GLuint service_id) override;
+  void UpdateAndBindTexImage() override;
   bool HasTextureOwner() const override;
   TextureBase* GetTextureBase() const override;
   void NotifyOverlayPromotion(bool promotion, const gfx::Rect& bounds) override;

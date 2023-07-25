@@ -345,9 +345,8 @@ TEST_F(CodecImageTest, RenderAfterUnusedDoesntCrash) {
   EXPECT_CALL(*this, OnFrameInfoReady(Eq(absl::nullopt), Eq(absl::nullopt)));
   i->NotifyUnused();
   EXPECT_FALSE(i->RenderToTextureOwnerBackBuffer());
-  EXPECT_FALSE(i->RenderToTextureOwnerFrontBuffer(
-      CodecImage::BindingsMode::kBindImage,
-      codec_buffer_wait_coordinator_->texture_owner()->GetTextureId()));
+  EXPECT_FALSE(
+      i->RenderToTextureOwnerFrontBuffer(CodecImage::BindingsMode::kBindImage));
 }
 
 }  // namespace media

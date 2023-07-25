@@ -104,9 +104,9 @@ bool CodecImage::IsUsingGpuMemory() const {
   return output_buffer_renderer_->was_tex_image_bound();
 }
 
-void CodecImage::UpdateAndBindTexImage(GLuint service_id) {
+void CodecImage::UpdateAndBindTexImage() {
   AssertAcquiredDrDcLock();
-  RenderToTextureOwnerFrontBuffer(BindingsMode::kBindImage, service_id);
+  RenderToTextureOwnerFrontBuffer(BindingsMode::kBindImage);
 }
 
 bool CodecImage::HasTextureOwner() const {
@@ -134,13 +134,12 @@ bool CodecImage::RenderToTextureOwnerBackBuffer() {
   return output_buffer_renderer_->RenderToTextureOwnerBackBuffer();
 }
 
-bool CodecImage::RenderToTextureOwnerFrontBuffer(BindingsMode bindings_mode,
-                                                 GLuint service_id) {
+bool CodecImage::RenderToTextureOwnerFrontBuffer(BindingsMode bindings_mode) {
   AssertAcquiredDrDcLock();
   if (!output_buffer_renderer_)
     return false;
-  return output_buffer_renderer_->RenderToTextureOwnerFrontBuffer(bindings_mode,
-                                                                  service_id);
+  return output_buffer_renderer_->RenderToTextureOwnerFrontBuffer(
+      bindings_mode);
 }
 
 bool CodecImage::RenderToOverlay() {
@@ -176,9 +175,7 @@ CodecImage::GetAHardwareBuffer() {
 
   // Using BindingsMode::kDontBindImage here since we do not want to bind
   // the image. We just want to get the AHardwareBuffer from the latest image.
-  // Hence pass service_id as 0.
-  RenderToTextureOwnerFrontBuffer(BindingsMode::kDontBindImage,
-                                  0 /* service_id */);
+  RenderToTextureOwnerFrontBuffer(BindingsMode::kDontBindImage);
   return output_buffer_renderer_->texture_owner()->GetAHardwareBuffer();
 }
 

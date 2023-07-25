@@ -75,7 +75,7 @@ class MEDIA_GPU_EXPORT CodecImage
   // gpu::StreamTextureSharedImageInterface implementation.
   void ReleaseResources() override;
   bool IsUsingGpuMemory() const override;
-  void UpdateAndBindTexImage(GLuint service_id) override;
+  void UpdateAndBindTexImage() override;
   bool HasTextureOwner() const override;
   gpu::TextureBase* GetTextureBase() const override;
   void NotifyOverlayPromotion(bool promotion, const gfx::Rect& bounds) override;
@@ -135,12 +135,7 @@ class MEDIA_GPU_EXPORT CodecImage
   // Renders this image to the texture owner front buffer by first rendering
   // it to the back buffer if it's not already there, and then waiting for the
   // frame available event before calling UpdateTexImage().
-  // Also bind the latest image
-  // to the provided |service_id| if TextureOwner does not binds texture on
-  // update. If |bindings_mode| is other than kEnsureTexImageBound, then
-  // |service_id| is not required.
-  bool RenderToTextureOwnerFrontBuffer(BindingsMode bindings_mode,
-                                       GLuint service_id);
+  bool RenderToTextureOwnerFrontBuffer(BindingsMode bindings_mode);
 
   // Whether this image is texture_owner or overlay backed.
   bool is_texture_owner_backed_ = false;
