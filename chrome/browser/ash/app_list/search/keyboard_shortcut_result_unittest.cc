@@ -235,16 +235,12 @@ TEST_F(KeyboardShortcutResultTest, PopulateTextVector_ModifierKeysOrder) {
   TextVector text_vector;
   PopulateTextVector(&text_vector, accelerator);
 
-  ASSERT_EQ(text_vector.size(), 9u);
+  ASSERT_EQ(text_vector.size(), 5u);
   VerifyTextItem(text_vector[0], u"Ctrl", TextType::kIconifiedText);
-  VerifyTextItem(text_vector[1], u" + ", TextType::kString);
-  VerifyTextItem(text_vector[2], u"Alt", TextType::kIconifiedText);
-  VerifyTextItem(text_vector[3], u" + ", TextType::kString);
-  VerifyTextItem(text_vector[4], u"Shift", TextType::kIconifiedText);
-  VerifyTextItem(text_vector[5], u" + ", TextType::kString);
-  VerifyTextItem(text_vector[6], u"Search", TextType::kIconifiedText);
-  VerifyTextItem(text_vector[7], u" + ", TextType::kString);
-  VerifyTextItem(text_vector[8], u"f", TextType::kIconifiedText);
+  VerifyTextItem(text_vector[1], u"Alt", TextType::kIconifiedText);
+  VerifyTextItem(text_vector[2], u"Shift", TextType::kIconifiedText);
+  VerifyTextItem(text_vector[3], u"Search", TextType::kIconifiedText);
+  VerifyTextItem(text_vector[4], u"f", TextType::kIconifiedText);
 }
 
 TEST_F(KeyboardShortcutResultTest,
@@ -270,14 +266,12 @@ TEST_F(KeyboardShortcutResultTest,
   auto result = std::make_unique<KeyboardShortcutResult>(
       /* profile= */ nullptr, search_result_ptr);
   const auto& text_vector = result->keyboard_shortcut_text_vector();
-  ASSERT_EQ(text_vector.size(), 7u);
+  ASSERT_EQ(text_vector.size(), 5u);
   VerifyTextItem(text_vector[0], u"Alt", TextType::kIconifiedText);
-  VerifyTextItem(text_vector[1], u" + ", TextType::kString);
-  VerifyTextItem(text_vector[2], u"f", TextType::kIconifiedText);
-  VerifyTextItem(text_vector[3], u" or ", TextType::kString);
-  VerifyTextItem(text_vector[4], u"Ctrl", TextType::kIconifiedText);
-  VerifyTextItem(text_vector[5], u" + ", TextType::kString);
-  VerifyTextItem(text_vector[6], u"g", TextType::kIconifiedText);
+  VerifyTextItem(text_vector[1], u"f", TextType::kIconifiedText);
+  VerifyTextItem(text_vector[2], u" or ", TextType::kString);
+  VerifyTextItem(text_vector[3], u"Ctrl", TextType::kIconifiedText);
+  VerifyTextItem(text_vector[4], u"g", TextType::kIconifiedText);
 }
 
 }  // namespace app_list::test

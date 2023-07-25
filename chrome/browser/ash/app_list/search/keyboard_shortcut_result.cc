@@ -182,12 +182,7 @@ void KeyboardShortcutResult::PopulateTextVector(
   }
   key_codes.push_back(accelerator.key_code());
 
-  int counter = 0;
   for (auto key_code : key_codes) {
-    if (++counter > 1) {
-      // Add a + between two keys.
-      text_vector->push_back(CreateStringTextItem(u" + "));
-    }
     const absl::optional<IconCode> icon_code =
         GetIconCodeFromKeyboardCode(key_code);
     if (icon_code) {
