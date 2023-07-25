@@ -148,7 +148,7 @@ class WvrManager : public device::mojom::XRPresentationProvider,
   // on WVR Thread
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
-  std::unique_ptr<device::WebXrPresentationState> webxr_;
+  device::WebXrPresentationState webxr_;
   std::unique_ptr<device::MailboxToSurfaceBridge> mailbox_bridge_;
 
   base::CancelableOnceClosure webxr_frame_timeout_closure_;
