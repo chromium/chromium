@@ -3577,4 +3577,34 @@ TEST_F(ShellSurfaceTest, MinimizedInitialState) {
             shell_surface->GetWidget()->GetWindowBoundsInScreen());
 }
 
+TEST_F(ShellSurfaceTest, NoGeometryWidgetBoundsUpdate) {
+  constexpr gfx::Size kInitialSize(100, 100);
+  constexpr gfx::Size kLargerSize(256, 256);
+  constexpr gfx::Size kSmallerSize(50, 50);
+
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder(kInitialSize).BuildShellSurface();
+
+  EXPECT_EQ(kInitialSize,
+            shell_surface->GetWidget()->GetWindowBoundsInScreen().size());
+
+  auto larger_buffer = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(kLargerSize));
+
+  shell_surface->root_surface()->Attach(larger_buffer.get());
+  shell_surface->root_surface()->Commit();
+
+  EXPECT_EQ(kLargerSize,
+            shell_surface->GetWidget()->GetWindowBoundsInScreen().size());
+
+  auto smaller_buffer = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(kSmallerSize));
+
+  shell_surface->root_surface()->Attach(smaller_buffer.get());
+  shell_surface->root_surface()->Commit();
+
+  EXPECT_EQ(kSmallerSize,
+            shell_surface->GetWidget()->GetWindowBoundsInScreen().size());
+}
+
 }  // namespace exo

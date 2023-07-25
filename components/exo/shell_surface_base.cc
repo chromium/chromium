@@ -996,7 +996,14 @@ void ShellSurfaceBase::OnSurfaceCommit() {
     AllocateLocalSurfaceId();
   }
 
+  const gfx::Rect old_content_bounds =
+      root_surface()->surface_hierarchy_content_bounds();
+
   root_surface()->CommitSurfaceHierarchy(false);
+
+  set_bounds_is_dirty(bounds_is_dirty() ||
+                      old_content_bounds !=
+                          root_surface()->surface_hierarchy_content_bounds());
 
   if (!OnPreWidgetCommit())
     return;
