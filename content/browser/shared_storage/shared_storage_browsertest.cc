@@ -8293,8 +8293,8 @@ class SharedStorageHeaderObserverBrowserTest
   using OperationResult = storage::SharedStorageManager::OperationResult;
 
   SharedStorageHeaderObserverBrowserTest() {
-    shared_storage_m117_feature_.InitAndEnableFeature(
-        blink::features::kSharedStorageAPIM117);
+    shared_storage_m118_feature_.InitAndEnableFeature(
+        blink::features::kSharedStorageAPIM118);
   }
 
   void FinishSetup() override {
@@ -8362,7 +8362,7 @@ class SharedStorageHeaderObserverBrowserTest
   base::WeakPtr<TestSharedStorageHeaderObserver> observer_;
 
  private:
-  base::test::ScopedFeatureList shared_storage_m117_feature_;
+  base::test::ScopedFeatureList shared_storage_m118_feature_;
 };
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,

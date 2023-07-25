@@ -3004,8 +3004,8 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrivateAggregationChromeBrowserTest,
 class SharedStorageHeaderPrefBrowserTest : public SharedStoragePrefBrowserTest {
  public:
   SharedStorageHeaderPrefBrowserTest() {
-    shared_storage_m117_feature_.InitAndEnableFeature(
-        blink::features::kSharedStorageAPIM117);
+    shared_storage_m118_feature_.InitAndEnableFeature(
+        blink::features::kSharedStorageAPIM118);
   }
 
   void FinishSetUp() override {
@@ -3017,7 +3017,7 @@ class SharedStorageHeaderPrefBrowserTest : public SharedStoragePrefBrowserTest {
   base::WeakPtr<content::TestSharedStorageHeaderObserver> observer_;
 
  private:
-  base::test::ScopedFeatureList shared_storage_m117_feature_;
+  base::test::ScopedFeatureList shared_storage_m118_feature_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

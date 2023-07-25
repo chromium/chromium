@@ -1555,9 +1555,9 @@ const base::FeatureParam<int>
         &kSharedStorageSelectURLLimit,
         "SharedStorageSelectURLBitBudgetPerOriginPerPageLoad", 6};
 
-BASE_FEATURE(kSharedStorageAPIM117,
-             "SharedStorageAPIM117",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSharedStorageAPIM118,
+             "SharedStorageAPIM118",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSimulateClickOnAXFocus,
              "SimulateClickOnAXFocus",
