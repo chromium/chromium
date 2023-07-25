@@ -69,7 +69,6 @@ dictionary RTCReceivedRtpStreamStats : RTCRtpStreamStats {
 // https://w3c.github.io/webrtc-stats/#inboundrtpstats-dict*
 dictionary RTCInboundRtpStreamStats : RTCReceivedRtpStreamStats {
   required DOMString   trackIdentifier;
-  required DOMString   kind;
   DOMString            mid;
   DOMString            remoteId;
   unsigned long        framesDecoded;
