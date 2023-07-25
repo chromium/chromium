@@ -141,6 +141,7 @@ export class SettingsPerDeviceMouseSubsectionElement extends
         value() {
           return loadTimeData.getBoolean('allowScrollSettings');
         },
+        reflectToAttribute: true,
       },
 
       /**

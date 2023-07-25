@@ -1731,6 +1731,8 @@ void DeviceSection::AddDevicePointersStrings(
       {"mouseSpeed", IDS_SETTINGS_MOUSE_SPEED_LABEL},
       {"pointingStickSpeed", IDS_SETTINGS_POINTING_STICK_SPEED_LABEL},
       {"mouseSwapButtons", IDS_SETTINGS_MOUSE_SWAP_BUTTONS_LABEL},
+      {"mouseCursor", IDS_SETTINGS_MOUSE_CURSOR_LABEL},
+      {"mouseScrolling", IDS_SETTINGS_MOUSE_SCROLLING_LABEL},
       {"pointingStickPrimaryButton",
        IDS_SETTINGS_POINTING_STICK_PRIMARY_BUTTON_LABEL},
       {"primaryMouseButtonLeft", IDS_SETTINGS_PRIMARY_MOUSE_BUTTON_LEFT_LABEL},

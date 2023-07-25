@@ -2,10 +2,23 @@
   .settings-box:first-of-type {
     border-top: none;
   }
+
+  :host([allow-scroll-settings_]) .settings-box,
+  :host([allow-scroll-settings_]) #mouseAcceleration,
+  #mouseScrollAcceleration {
+    margin-left:  var(--cr-section-indent-width);
+  }
+
+  :host([allow-scroll-settings_]) #mouseReverseScrollRow {
+    border-top: none;
+  }
 </style>
 <div id="mouse">
   <h2 class="subsection-header" id="mouseName">[[mouse.name]]</h2>
   <div class="subsection">
+    <template is="dom-if" if="[[allowScrollSettings_]]">
+      <h2>$i18n{mouseCursor}</h2>
+    </template>
     <div class="settings-box">
       <div class="start settings-box-text" id="mouseSwapButtonLabel">
         $i18n{mouseSwapButtons}
@@ -39,27 +52,8 @@
           deep-link-focus-id$="[[Setting.kMouseSpeed]]">
       </settings-slider>
     </div>
-    <template is="dom-if" if="[[allowScrollSettings_]]" restamp>
-      <settings-toggle-button id="mouseScrollAcceleration"
-          aria-describedby="mouseName"
-          class="hr"
-          pref="{{scrollAccelerationPref}}"
-          label="$i18n{mouseScrollAccelerationLabel}"
-          deep-link-focus-id$="[[Setting.kMouseScrollAcceleration]]">
-      </settings-toggle-button>
-      <div class="settings-box">
-        <div class="start" id="mouseScrollSpeedLabel" aria-hidden="true">
-          $i18n{mouseScrollSpeed}
-        </div>
-        <settings-slider id="mouseScrollSpeedSlider"
-            pref="{{scrollSensitivityPref}}"
-            ticks="[[sensitivityValues_]]"
-            aria-describedby="mouseName"
-            label-aria="$i18n{mouseScrollSpeed}"
-            label-min="$i18n{pointerSlow}"
-            label-max="$i18n{pointerFast}">
-        </settings-slider>
-      </div>
+    <template is="dom-if" if="[[allowScrollSettings_]]">
+      <h2 class="hr">$i18n{mouseScrolling}</h2>
     </template>
     <div class="settings-box bottom-divider" id="mouseReverseScrollRow"
           on-click="onMouseReverseScrollRowClicked_">
@@ -80,6 +74,27 @@
           deep-link-focus-id$="[[Setting.kMouseReverseScrolling]]">
       </cr-toggle>
     </div>
+    <template is="dom-if" if="[[allowScrollSettings_]]" restamp>
+      <settings-toggle-button id="mouseScrollAcceleration"
+          aria-describedby="mouseName"
+          pref="{{scrollAccelerationPref}}"
+          label="$i18n{mouseScrollAccelerationLabel}"
+          deep-link-focus-id$="[[Setting.kMouseScrollAcceleration]]">
+      </settings-toggle-button>
+      <div class="settings-box">
+        <div class="start" id="mouseScrollSpeedLabel" aria-hidden="true">
+          $i18n{mouseScrollSpeed}
+        </div>
+        <settings-slider id="mouseScrollSpeedSlider"
+            pref="{{scrollSensitivityPref}}"
+            ticks="[[sensitivityValues_]]"
+            aria-describedby="mouseName"
+            label-aria="$i18n{mouseScrollSpeed}"
+            label-min="$i18n{pointerSlow}"
+            label-max="$i18n{pointerFast}">
+        </settings-slider>
+      </div>
+    </template>
     <template is="dom-if" if="[[isPeripheralCustomizationEnabled_]]">
       <cr-link-row id="customizeMouseButtons"
         class="hr bottom-divider" on-click="onCustomizeButtonsClick"

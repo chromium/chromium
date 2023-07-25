@@ -3032,6 +3032,13 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_MOUSE_SCROLL_SPEED_LABEL" desc="In Device Settings, the text next to the slider that sets the speed (sensitivity) of mouse scrolling.">
     Mouse scroll speed
   </message>
+  <!-- TODO(zhangwenyu): Remove translateable="false" once the string is finalized. -->
+  <message name="IDS_SETTINGS_MOUSE_CURSOR_LABEL" translateable="false" desc="In Device Settings, the text of mouse cursor subsection title.">
+    Mouse cursor
+  </message>
+  <message name="IDS_SETTINGS_MOUSE_SCROLLING_LABEL" translateable="false" desc="In Device Settings, the text of mouse scrolling subsection title.">
+    Mouse scrolling
+  </message>
   <message name="IDS_SETTINGS_MOUSE_SWAP_BUTTONS_LABEL" desc="In Device Settings, the text next to the checkbox to set the primary mouse button to the right button instead of the left button.">
     Swap primary mouse button
   </message>
