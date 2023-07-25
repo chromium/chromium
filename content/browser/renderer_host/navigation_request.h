@@ -717,9 +717,9 @@ class CONTENT_EXPORT NavigationRequest
   // default value if |timeout| is zero.
   static void SetCommitTimeoutForTesting(const base::TimeDelta& timeout);
 
-  RenderFrameHostImpl* rfh_restored_from_back_forward_cache() {
-    return rfh_restored_from_back_forward_cache_.get();
-  }
+  // Returns the `rfh_restored_from_back_forward_cache_` if the navigation is
+  // a BFCache restore, or nullptr otherwise.
+  RenderFrameHostImpl* GetRenderFrameHostRestoredFromBackForwardCache() const;
 
   // The NavigatorDelegate to notify/query for various navigation events. This
   // is always the WebContents.
@@ -1282,7 +1282,8 @@ class CONTENT_EXPORT NavigationRequest
       mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
       scoped_refptr<PrefetchedSignedExchangeCache>
           prefetched_signed_exchange_cache,
-      base::WeakPtr<RenderFrameHostImpl> rfh_restored_from_back_forward_cache,
+      absl::optional<base::SafeRef<RenderFrameHostImpl>>
+          rfh_restored_from_back_forward_cache,
       int initiator_process_id,
       bool was_opener_suppressed,
       bool is_pdf,
@@ -2254,10 +2255,11 @@ class CONTENT_EXPORT NavigationRequest
   // modified during the redirect phase.
   std::vector<std::string> removed_request_headers_;
 
-  // A WeakPtr for the RenderFrameHost that is being restored from the
-  // back/forward cache. This can be null if this navigation is not restoring a
-  // page from the back/forward cache.
-  base::WeakPtr<RenderFrameHostImpl> rfh_restored_from_back_forward_cache_;
+  // The RenderFrameHost that is being restored from the back/forward cache.
+  // This can be null if this navigation is not restoring a page from the
+  // back/forward cache.
+  absl::optional<base::SafeRef<RenderFrameHostImpl>>
+      rfh_restored_from_back_forward_cache_;
 
   // Whether the navigation is for restoring a page from the back/forward cache
   // or not.

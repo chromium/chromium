@@ -7127,7 +7127,8 @@ void RenderFrameHostImpl::EvictFromBackForwardCacheWithFlattenedAndTreeReasons(
       top_document->frame_tree_node()->navigation_request();
 
   if (in_flight_navigation_request &&
-      in_flight_navigation_request->rfh_restored_from_back_forward_cache() ==
+      in_flight_navigation_request
+              ->GetRenderFrameHostRestoredFromBackForwardCache() ==
           top_document) {
     // If we are currently navigating to the document that was just evicted, we
     // must restart the navigation. This is important because restarting the

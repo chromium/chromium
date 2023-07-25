@@ -3279,7 +3279,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
         // This call checks that |rfh_restored_from_back_forward_cache| is not
         // deleted and the virtual |GetRoutingID| does not crash.
         EXPECT_TRUE(NavigationRequest::From(handle)
-                        ->rfh_restored_from_back_forward_cache()
+                        ->GetRenderFrameHostRestoredFromBackForwardCache()
                         ->GetRoutingID());
       }));
 

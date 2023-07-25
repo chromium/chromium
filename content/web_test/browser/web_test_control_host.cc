@@ -1076,7 +1076,8 @@ void WebTestControlHost::DidStartNavigation(
 void WebTestControlHost::ReadyToCommitNavigation(
     NavigationHandle* navigation_handle) {
   NavigationRequest* request = NavigationRequest::From(navigation_handle);
-  RenderFrameHostImpl* rfh = request->rfh_restored_from_back_forward_cache();
+  RenderFrameHostImpl* rfh =
+      request->GetRenderFrameHostRestoredFromBackForwardCache();
   if (rfh)
     GetWebTestRenderFrameRemote(rfh)->OnReactivated();
 }

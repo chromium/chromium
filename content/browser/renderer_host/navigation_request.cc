@@ -20,6 +20,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/safe_ref.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -1093,8 +1094,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
     navigation_params->skip_service_worker = true;
   }
 
-  base::WeakPtr<RenderFrameHostImpl> rfh_restored_from_back_forward_cache =
-      nullptr;
+  absl::optional<base::SafeRef<RenderFrameHostImpl>>
+      rfh_restored_from_back_forward_cache = absl::nullopt;
   if (entry) {
     auto restored_entry = frame_tree_node->navigator()
                               .controller()
@@ -1103,7 +1104,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
     if (restored_entry.has_value()) {
       if (frame_tree_node->IsMainFrame()) {
         rfh_restored_from_back_forward_cache =
-            restored_entry.value()->render_frame_host()->GetWeakPtr();
+            restored_entry.value()->render_frame_host()->GetSafeRef();
       } else {
         // We have a matching BFCache entry for a subframe navigation. This
         // shouldn't happen as we should've triggered deletion of BFCache
@@ -1278,7 +1279,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
       nullptr,  // navigation_ui_data
       std::move(blob_url_loader_factory), std::move(navigation_client),
       std::move(prefetched_signed_exchange_cache),
-      nullptr,  // rfh_restored_from_back_forward_cache
+      absl::nullopt,  // rfh_restored_from_back_forward_cache
       initiator_process_id,
       /*was_opener_suppressed=*/false, /*is_pdf=*/false,
       /*is_embedder_initiated_fenced_frame_navigation=*/false,
@@ -1408,7 +1409,7 @@ NavigationRequest::CreateForSynchronousRendererCommit(
       nullptr /* navigation_ui_data */, nullptr /* blob_url_loader_factory */,
       mojo::NullAssociatedRemote(),
       nullptr /* prefetched_signed_exchange_cache */,
-      nullptr /* rfh_restored_from_back_forward_cache */,
+      absl::nullopt /* rfh_restored_from_back_forward_cache */,
       ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
       false /* was_opener_suppressed */, false /* is_pdf */));
 
@@ -1475,7 +1476,8 @@ NavigationRequest::NavigationRequest(
     mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
     scoped_refptr<PrefetchedSignedExchangeCache>
         prefetched_signed_exchange_cache,
-    base::WeakPtr<RenderFrameHostImpl> rfh_restored_from_back_forward_cache,
+    absl::optional<base::SafeRef<RenderFrameHostImpl>>
+        rfh_restored_from_back_forward_cache,
     int initiator_process_id,
     bool was_opener_suppressed,
     bool is_pdf,
@@ -1508,7 +1510,8 @@ NavigationRequest::NavigationRequest(
           std::move(prefetched_signed_exchange_cache)),
       rfh_restored_from_back_forward_cache_(
           rfh_restored_from_back_forward_cache),
-      is_back_forward_cache_restore_(!!rfh_restored_from_back_forward_cache),
+      is_back_forward_cache_restore_(
+          rfh_restored_from_back_forward_cache.has_value()),
       // Store the old RenderFrameHost id at request creation to be used later.
       previous_render_frame_host_id_(
           frame_tree_node->current_frame_host()->GetGlobalId()),
@@ -1551,9 +1554,6 @@ NavigationRequest::NavigationRequest(
   DCHECK(IsInOutermostMainFrame() ||
          commit_params_->data_url_as_string.empty());
 #endif
-  // If `rfh_restored_from_back_forward_cache` was set, it should not be
-  // invalidated yet at this point.
-  CHECK(!rfh_restored_from_back_forward_cache.WasInvalidated());
   CheckSoftNavigationHeuristicsInvariants();
 
   ScopedCrashKeys crash_keys(*this);
@@ -2432,14 +2432,17 @@ void NavigationRequest::BeginNavigationImpl() {
   // to restore an entry from the back-forward cache, we need to ensure that
   // the is_overriding_user_agent used in the RenderFrameHost to restore matches
   // the value set in CommitNavigationParams.
-  if (rfh_restored_from_back_forward_cache_ &&
-      rfh_restored_from_back_forward_cache_->is_overriding_user_agent() !=
+  if (IsServedFromBackForwardCache() &&
+      GetRenderFrameHostRestoredFromBackForwardCache()
+              ->is_overriding_user_agent() !=
           commit_params_->is_overriding_user_agent) {
     // Trigger an eviction, which will cancel this navigation and trigger a new
     // one to the same entry (but won't try to restore the entry from the
     // back-forward cache) asynchronously.
-    rfh_restored_from_back_forward_cache_->EvictFromBackForwardCacheWithReason(
-        BackForwardCacheMetrics::NotRestoredReason::kUserAgentOverrideDiffers);
+    GetRenderFrameHostRestoredFromBackForwardCache()
+        ->EvictFromBackForwardCacheWithReason(
+            BackForwardCacheMetrics::NotRestoredReason::
+                kUserAgentOverrideDiffers);
     // DO NOT ADD CODE after this. The previous call to
     // `EvictFromBackForwardCacheWithReason()`
     // has destroyed the NavigationRequest.
@@ -4096,9 +4099,6 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
 
   // Select an appropriate renderer to commit the navigation.
   if (IsServedFromBackForwardCache()) {
-    // If the RFH for the BFCache navigation is destroyed, the NavigationRequest
-    // should be reset synchronously.
-    CHECK(rfh_restored_from_back_forward_cache_);
     NavigationControllerImpl* controller = GetNavigationController();
     auto entry =
         controller->GetBackForwardCache().GetOrEvictEntry(nav_entry_id_);
@@ -4774,10 +4774,10 @@ void NavigationRequest::OnStartChecksComplete(
   auto loader_type = NavigationURLLoader::LoaderType::kRegular;
   network::mojom::URLResponseHeadPtr cached_response_head = nullptr;
   if (IsServedFromBackForwardCache()) {
-    CHECK(rfh_restored_from_back_forward_cache_);
     loader_type = NavigationURLLoader::LoaderType::kNoopForBackForwardCache;
-    cached_response_head =
-        rfh_restored_from_back_forward_cache_->last_response_head()->Clone();
+    cached_response_head = GetRenderFrameHostRestoredFromBackForwardCache()
+                               ->last_response_head()
+                               ->Clone();
   } else if (IsPrerenderedPageActivation()) {
     loader_type = NavigationURLLoader::LoaderType::kNoopForPrerender;
     DCHECK(prerender_frame_tree_node_id_.has_value());
@@ -6559,6 +6559,14 @@ void NavigationRequest::OnWillCommitWithoutUrlLoaderProcessed(
   // deleted by the previous calls.
 }
 
+RenderFrameHostImpl*
+NavigationRequest::GetRenderFrameHostRestoredFromBackForwardCache() const {
+  if (IsServedFromBackForwardCache()) {
+    return &*rfh_restored_from_back_forward_cache_.value();
+  }
+  return nullptr;
+}
+
 NavigatorDelegate* NavigationRequest::GetDelegate() const {
   return frame_tree_node()->navigator().GetDelegate();
 }
@@ -7404,7 +7412,7 @@ void NavigationRequest::WriteIntoTrace(
   if (IsServedFromBackForwardCache()) {
     dict.Add("served_from_bfcache", true);
     dict.Add("rfh_restored_from_bfcache",
-             rfh_restored_from_back_forward_cache_);
+             GetRenderFrameHostRestoredFromBackForwardCache());
   }
 
   if (prerender_frame_tree_node_id_.has_value()) {
@@ -7722,8 +7730,10 @@ int64_t NavigationRequest::GetNavigationId() {
 ukm::SourceId NavigationRequest::GetNextPageUkmSourceId() {
   // If the navigation is restoring from back-forward cache, the UKM id
   // will get restored, too.
-  if (rfh_restored_from_back_forward_cache_)
-    return rfh_restored_from_back_forward_cache_->GetPageUkmSourceId();
+  if (IsServedFromBackForwardCache()) {
+    return GetRenderFrameHostRestoredFromBackForwardCache()
+        ->GetPageUkmSourceId();
+  }
 
   // If this is the same document or a subframe navigation (i.e. iframe or
   // fenced frame), the UKM id will not change from it.
