@@ -285,7 +285,7 @@ TEST_P(PartitionAllocThreadCacheTest, NoCrossPartitionCache) {
   EXPECT_EQ(kFillCountForSmallBucket,
             tcache->bucket_count_for_testing(bucket_index));
 
-  PartitionRoot::Free(ptr);
+  allocator.root()->Free(ptr);
   EXPECT_EQ(kFillCountForSmallBucket,
             tcache->bucket_count_for_testing(bucket_index));
 }

@@ -1269,7 +1269,7 @@ void* PartitionRoot::ReallocWithFlags(unsigned int flags,
   }
 
   if (PA_UNLIKELY(!new_size)) {
-    Free(ptr);
+    FreeInUnknownRoot(ptr);
     return nullptr;
   }
 
@@ -1338,7 +1338,7 @@ void* PartitionRoot::ReallocWithFlags(unsigned int flags,
   }
 
   memcpy(ret, ptr, std::min(old_usable_size, new_size));
-  Free(ptr);  // Implicitly protects the old ptr on MTE systems.
+  FreeInUnknownRoot(ptr);  // Implicitly protects the old ptr on MTE systems.
   return ret;
 #endif
 }

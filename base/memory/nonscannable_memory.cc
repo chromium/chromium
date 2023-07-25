@@ -24,7 +24,7 @@ void* AllocNonScannable(size_t size) {
 
 void FreeNonScannable(void* ptr) {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  allocator_shim::NonScannableAllocator::Free(ptr);
+  allocator_shim::NonScannableAllocator::Instance().Free(ptr);
 #else
   return ::free(ptr);
 #endif
@@ -40,7 +40,7 @@ void* AllocNonQuarantinable(size_t size) {
 
 void FreeNonQuarantinable(void* ptr) {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  allocator_shim::NonQuarantinableAllocator::Free(ptr);
+  allocator_shim::NonQuarantinableAllocator::Instance().Free(ptr);
 #else
   return ::free(ptr);
 #endif

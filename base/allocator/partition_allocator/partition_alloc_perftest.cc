@@ -98,7 +98,11 @@ class PartitionAllocator : public Allocator {
   void* Alloc(size_t size) override {
     return alloc_.AllocWithFlagsNoHooks(0, size, PartitionPageSize());
   }
-  void Free(void* data) override { PartitionRoot::FreeNoHooks(data); }
+  void Free(void* data) override {
+    // Even though it's easy to invoke the fast path with alloc_.FreeNoHooks(),
+    // we chose to use the slower path, because it's more common with PA-E.
+    PartitionRoot::FreeNoHooksInUnknownRoot(data);
+  }
 
  private:
   PartitionRoot alloc_{PartitionOptions{}};
@@ -121,7 +125,11 @@ class PartitionAllocatorWithThreadCache : public Allocator {
     return allocator_.root()->AllocWithFlagsNoHooks(0, size,
                                                     PartitionPageSize());
   }
-  void Free(void* data) override { allocator_.root()->Free(data); }
+  void Free(void* data) override {
+    // Even though it's easy to invoke the fast path with alloc_.Free(),
+    // we chose to use the slower path, because it's more common with PA-E.
+    PartitionRoot::FreeInUnknownRoot(data);
+  }
 
  private:
   static constexpr partition_alloc::PartitionOptions kOpts = {
@@ -154,7 +162,11 @@ class PartitionAllocatorWithAllocationStackTraceRecorder : public Allocator {
     return alloc_.AllocWithFlags(0, size, nullptr);
   }
 
-  void Free(void* data) override { PartitionRoot::Free(data); }
+  void Free(void* data) override {
+    // Even though it's easy to invoke the fast path with alloc_.Free(),
+    // we chose to use the slower path, because it's more common with PA-E.
+    PartitionRoot::FreeInUnknownRoot(data);
+  }
 
  private:
   bool const register_hooks_;

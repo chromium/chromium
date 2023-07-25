@@ -50,7 +50,13 @@ void* NonScannableAllocatorImpl<quarantinable>::Alloc(size_t size) {
 
 template <bool quarantinable>
 void NonScannableAllocatorImpl<quarantinable>::Free(void* ptr) {
-  partition_alloc::PartitionRoot::FreeNoHooks(ptr);
+#if BUILDFLAG(USE_STARSCAN)
+  if (PA_UNLIKELY(pcscan_enabled_.load(std::memory_order_acquire))) {
+    allocator_->root()->FreeNoHooks(ptr);
+    return;
+  }
+#endif  // BUILDFLAG(USE_STARSCAN)
+  partition_alloc::PartitionRoot::FreeNoHooksInUnknownRoot(ptr);
 }
 
 template <bool quarantinable>

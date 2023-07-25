@@ -3730,7 +3730,7 @@ void VerifyAlignment(PartitionRoot* root, size_t size, size_t alignment) {
   }
 
   for (void* ptr : allocated_ptrs) {
-    PartitionRoot::Free(ptr);
+    root->Free(ptr);
   }
 }
 
