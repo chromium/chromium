@@ -40,8 +40,8 @@ crosapi::mojom::TelemetryLidEventInfoPtr UncheckedConvertPtr(
 crosapi::mojom::TelemetryUsbEventInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::UsbEventInfoPtr input);
 
-crosapi::mojom::TelemetryHdmiEventInfoPtr UncheckedConvertPtr(
-    cros_healthd::mojom::HdmiEventInfoPtr input);
+crosapi::mojom::TelemetryExternalDisplayEventInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::ExternalDisplayEventInfoPtr input);
 
 crosapi::mojom::TelemetrySdCardEventInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::SdCardEventInfoPtr input);
@@ -120,8 +120,8 @@ crosapi::mojom::TelemetryPowerEventInfo::State Convert(
 crosapi::mojom::TelemetryStylusGarageEventInfo::State Convert(
     cros_healthd::mojom::StylusGarageEventInfo::State input);
 
-crosapi::mojom::TelemetryHdmiEventInfo::State Convert(
-    cros_healthd::mojom::HdmiEventInfo::State input);
+crosapi::mojom::TelemetryExternalDisplayEventInfo::State Convert(
+    cros_healthd::mojom::ExternalDisplayEventInfo::State input);
 
 crosapi::mojom::TelemetryInputTouchButton Convert(
     cros_healthd::mojom::InputTouchButton input);

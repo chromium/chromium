@@ -34,8 +34,8 @@ api::os_events::LidEventInfo UncheckedConvertPtr(
 api::os_events::UsbEventInfo UncheckedConvertPtr(
     crosapi::mojom::TelemetryUsbEventInfoPtr ptr);
 
-api::os_events::HdmiEventInfo UncheckedConvertPtr(
-    crosapi::mojom::TelemetryHdmiEventInfoPtr ptr);
+api::os_events::ExternalDisplayEventInfo UncheckedConvertPtr(
+    crosapi::mojom::TelemetryExternalDisplayEventInfoPtr ptr);
 
 api::os_events::SdCardEventInfo UncheckedConvertPtr(
     crosapi::mojom::TelemetrySdCardEventInfoPtr ptr);
@@ -102,8 +102,8 @@ api::os_events::LidEvent Convert(
 api::os_events::UsbEvent Convert(
     crosapi::mojom::TelemetryUsbEventInfo::State state);
 
-api::os_events::HdmiEvent Convert(
-    crosapi::mojom::TelemetryHdmiEventInfo::State state);
+api::os_events::ExternalDisplayEvent Convert(
+    crosapi::mojom::TelemetryExternalDisplayEventInfo::State state);
 
 api::os_events::SdCardEvent Convert(
     crosapi::mojom::TelemetrySdCardEventInfo::State state);

@@ -35037,7 +35037,7 @@ Called by update_extension_histograms.py.-->
       label="SMART_CARD_PROVIDER_PRIVATE_ON_BEGIN_TRANSACTION_REQUESTED"/>
   <int value="530"
       label="SMART_CARD_PROVIDER_PRIVATE_ON_END_TRANSACTION_REQUESTED"/>
-  <int value="531" label="OS_EVENTS_ON_HDMI_EVENT"/>
+  <int value="531" label="OS_EVENTS_ON_EXTERNAL_DISPLAY_EVENT"/>
   <int value="532" label="OS_EVENTS_ON_STYLUS_TOUCH_EVENT"/>
   <int value="533" label="OS_EVENTS_ON_STYLUS_CONNECTED_EVENT"/>
   <int value="534"

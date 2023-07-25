@@ -97,9 +97,9 @@ cx_events::UsbEventInfo UncheckedConvertPtr(
   return result;
 }
 
-cx_events::HdmiEventInfo UncheckedConvertPtr(
-    crosapi::TelemetryHdmiEventInfoPtr ptr) {
-  cx_events::HdmiEventInfo result;
+cx_events::ExternalDisplayEventInfo UncheckedConvertPtr(
+    crosapi::TelemetryExternalDisplayEventInfoPtr ptr) {
+  cx_events::ExternalDisplayEventInfo result;
 
   result.event = Convert(ptr->state);
 
@@ -393,14 +393,15 @@ cx_events::UsbEvent Convert(crosapi::TelemetryUsbEventInfo::State state) {
   NOTREACHED();
 }
 
-cx_events::HdmiEvent Convert(crosapi::TelemetryHdmiEventInfo::State state) {
+cx_events::ExternalDisplayEvent Convert(
+    crosapi::TelemetryExternalDisplayEventInfo::State state) {
   switch (state) {
-    case crosapi::TelemetryHdmiEventInfo_State::kUnmappedEnumField:
-      return cx_events::HdmiEvent::kNone;
-    case crosapi::TelemetryHdmiEventInfo_State::kAdd:
-      return cx_events::HdmiEvent::kConnected;
-    case crosapi::TelemetryHdmiEventInfo_State::kRemove:
-      return cx_events::HdmiEvent::kDisconnected;
+    case crosapi::TelemetryExternalDisplayEventInfo_State::kUnmappedEnumField:
+      return cx_events::ExternalDisplayEvent::kNone;
+    case crosapi::TelemetryExternalDisplayEventInfo_State::kAdd:
+      return cx_events::ExternalDisplayEvent::kConnected;
+    case crosapi::TelemetryExternalDisplayEventInfo_State::kRemove:
+      return cx_events::ExternalDisplayEvent::kDisconnected;
   }
   NOTREACHED();
 }
@@ -470,8 +471,8 @@ crosapi::TelemetryEventCategoryEnum Convert(cx_events::EventCategory input) {
       return crosapi::TelemetryEventCategoryEnum::kLid;
     case cx_events::EventCategory::kUsb:
       return crosapi::TelemetryEventCategoryEnum::kUsb;
-    case cx_events::EventCategory::kHdmi:
-      return crosapi::TelemetryEventCategoryEnum::kHdmi;
+    case cx_events::EventCategory::kExternalDisplay:
+      return crosapi::TelemetryEventCategoryEnum::kExternalDisplay;
     case cx_events::EventCategory::kSdCard:
       return crosapi::TelemetryEventCategoryEnum::kSdCard;
     case cx_events::EventCategory::kPower:

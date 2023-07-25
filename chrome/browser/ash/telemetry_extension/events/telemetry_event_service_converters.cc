@@ -70,9 +70,10 @@ crosapi::mojom::TelemetryUsbEventInfoPtr UncheckedConvertPtr(
       Convert(input->state));
 }
 
-crosapi::mojom::TelemetryHdmiEventInfoPtr UncheckedConvertPtr(
-    cros_healthd::mojom::HdmiEventInfoPtr input) {
-  return crosapi::mojom::TelemetryHdmiEventInfo::New(Convert(input->state));
+crosapi::mojom::TelemetryExternalDisplayEventInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::ExternalDisplayEventInfoPtr input) {
+  return crosapi::mojom::TelemetryExternalDisplayEventInfo::New(
+      Convert(input->state));
 }
 
 crosapi::mojom::TelemetrySdCardEventInfoPtr UncheckedConvertPtr(
@@ -176,9 +177,10 @@ crosapi::mojom::TelemetryEventInfoPtr UncheckedConvertPtr(
       return crosapi::mojom::TelemetryEventInfo::NewUsbEventInfo(
           ConvertStructPtr(std::move(input->get_usb_event_info())));
     case cros_healthd::mojom::internal::EventInfo_Data::EventInfo_Tag::
-        kHdmiEventInfo:
-      return crosapi::mojom::TelemetryEventInfo::NewHdmiEventInfo(
-          ConvertStructPtr(std::move(input->get_hdmi_event_info())));
+        kExternalDisplayEventInfo:
+      return crosapi::mojom::TelemetryEventInfo::NewExternalDisplayEventInfo(
+          ConvertStructPtr(
+              std::move(input->get_external_display_event_info())));
     case cros_healthd::mojom::internal::EventInfo_Data::EventInfo_Tag::
         kSdCardEventInfo:
       return crosapi::mojom::TelemetryEventInfo::NewSdCardEventInfo(
@@ -438,15 +440,17 @@ crosapi::mojom::TelemetryUsbEventInfo::State Convert(
   NOTREACHED();
 }
 
-crosapi::mojom::TelemetryHdmiEventInfo::State Convert(
-    cros_healthd::mojom::HdmiEventInfo::State input) {
+crosapi::mojom::TelemetryExternalDisplayEventInfo::State Convert(
+    cros_healthd::mojom::ExternalDisplayEventInfo::State input) {
   switch (input) {
-    case cros_healthd::mojom::HdmiEventInfo_State::kUnmappedEnumField:
-      return crosapi::mojom::TelemetryHdmiEventInfo::State::kUnmappedEnumField;
-    case cros_healthd::mojom::HdmiEventInfo_State::kAdd:
-      return crosapi::mojom::TelemetryHdmiEventInfo::State::kAdd;
-    case cros_healthd::mojom::HdmiEventInfo_State::kRemove:
-      return crosapi::mojom::TelemetryHdmiEventInfo::State::kRemove;
+    case cros_healthd::mojom::ExternalDisplayEventInfo_State::
+        kUnmappedEnumField:
+      return crosapi::mojom::TelemetryExternalDisplayEventInfo::State::
+          kUnmappedEnumField;
+    case cros_healthd::mojom::ExternalDisplayEventInfo_State::kAdd:
+      return crosapi::mojom::TelemetryExternalDisplayEventInfo::State::kAdd;
+    case cros_healthd::mojom::ExternalDisplayEventInfo_State::kRemove:
+      return crosapi::mojom::TelemetryExternalDisplayEventInfo::State::kRemove;
   }
   NOTREACHED();
 }
@@ -536,8 +540,8 @@ cros_healthd::mojom::EventCategoryEnum Convert(
       return cros_healthd::mojom::EventCategoryEnum::kTouchpad;
     case crosapi::mojom::TelemetryEventCategoryEnum::kTouchpadConnected:
       return cros_healthd::mojom::EventCategoryEnum::kTouchpad;
-    case crosapi::mojom::TelemetryEventCategoryEnum::kHdmi:
-      return cros_healthd::mojom::EventCategoryEnum::kHdmi;
+    case crosapi::mojom::TelemetryEventCategoryEnum::kExternalDisplay:
+      return cros_healthd::mojom::EventCategoryEnum::kExternalDisplay;
     case crosapi::mojom::TelemetryEventCategoryEnum::kStylusTouch:
       return cros_healthd::mojom::EventCategoryEnum::kStylus;
     case crosapi::mojom::TelemetryEventCategoryEnum::kStylusConnected:

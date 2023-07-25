@@ -84,7 +84,7 @@ void CrosHealthdEventForwarder::OnEvent(
     case crosapi::mojom::TelemetryEventCategoryEnum::kPower:
     case crosapi::mojom::TelemetryEventCategoryEnum::kKeyboardDiagnostic:
     case crosapi::mojom::TelemetryEventCategoryEnum::kStylusGarage:
-    case crosapi::mojom::TelemetryEventCategoryEnum::kHdmi: {
+    case crosapi::mojom::TelemetryEventCategoryEnum::kExternalDisplay: {
       crosapi_observer_->OnEvent(std::move(event));
       return;
     }

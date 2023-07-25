@@ -20,7 +20,7 @@ namespace os.events {
         touchpad_button,
         touchpad_touch,
         touchpad_connected,
-        hdmi,
+        external_display,
         stylus_touch,
         stylus_connected
     };
@@ -173,10 +173,10 @@ namespace os.events {
         disconnected
     };
 
-    enum HdmiEvent {
-        // An HDMI device was connected.
+    enum ExternalDisplayEvent {
+        // An external display was connected.
         connected,
-        // An HDMI device was disconnected.
+        // An external display was disconnected.
         disconnected
     };
 
@@ -229,8 +229,8 @@ namespace os.events {
         UsbEvent? event;
     };
 
-    dictionary HdmiEventInfo {
-        HdmiEvent? event;
+    dictionary ExternalDisplayEventInfo {
+        ExternalDisplayEvent? event;
     };
 
     dictionary SdCardEventInfo {
@@ -369,8 +369,8 @@ namespace os.events {
         // Informs the extension that a `Usb` event occured.
         static void onUsbEvent(UsbEventInfo event_info);
 
-        // Informs the extension that an `Hdmi` event occured.
-        static void onHdmiEvent(HdmiEventInfo event_info);
+        // Informs the extension that an `ExternalDisplay` event occured.
+        static void onExternalDisplayEvent(ExternalDisplayEventInfo event_info);
 
         // Informs the extension that a `SD Card` event occured.
         static void onSdCardEvent(SdCardEventInfo event_info);

@@ -103,19 +103,19 @@ struct TelemetryUsbEventInfo {
   State state@5;
 };
 
-// HDMI event info. This is emitted when an HDMI device is plugged in or plugged
-// out.
+// External display event info. This is emitted when an external display is
+// plugged in or plugged out.
 //
 // NextMinVersion: 1, NextIndex: 1
-[Stable]
-struct TelemetryHdmiEventInfo {
+[Stable, RenamedFrom="crosapi.mojom.TelemetryHdmiEventInfo"]
+struct TelemetryExternalDisplayEventInfo {
   [Stable, Extensible]
   enum State {
     // This is required for backwards compatibility, should not be used.
     [Default] kUnmappedEnumField = 0,
-    // HDMI plugged in.
+    // External display plugged in.
     kAdd = 1,
-    // HDMI plugged out.
+    // External display plugged out.
     kRemove = 2,
   };
 
@@ -343,8 +343,9 @@ union TelemetryEventInfo {
   // Touchpad Connected event info.
   [MinVersion=7] TelemetryTouchpadConnectedEventInfo
       touchpad_connected_event_info@10;
-  // HDMI event info.
-  [MinVersion=8] TelemetryHdmiEventInfo hdmi_event_info@11;
+  // External display event info.
+  [MinVersion=8] TelemetryExternalDisplayEventInfo
+      external_display_event_info@11;
   // Stylus Touch event info.
   [MinVersion=9] TelemetryStylusTouchEventInfo stylus_touch_event_info@12;
   // Stylus connected event info.
@@ -369,7 +370,7 @@ enum TelemetryEventCategoryEnum {
   [MinVersion=7] kTouchpadButton = 8,
   [MinVersion=7] kTouchpadTouch = 9,
   [MinVersion=7] kTouchpadConnected = 10,
-  [MinVersion=8] kHdmi = 11,
+  [MinVersion=8] kExternalDisplay = 11,
   [MinVersion=9] kStylusTouch = 12,
   [MinVersion=9] kStylusConnected = 13,
 };

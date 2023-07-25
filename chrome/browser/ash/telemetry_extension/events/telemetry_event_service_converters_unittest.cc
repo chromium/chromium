@@ -265,16 +265,19 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryUsbEventInfo_State) {
             crosapi::mojom::TelemetryUsbEventInfo::State::kRemove);
 }
 
-TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryHdmiEventInfo_State) {
+TEST(TelemetryEventServiceConvertersTest,
+     ConvertTelemetryExternalDisplayEventInfo_State) {
+  EXPECT_EQ(Convert(cros_healthd::mojom::ExternalDisplayEventInfo::State::
+                        kUnmappedEnumField),
+            crosapi::mojom::TelemetryExternalDisplayEventInfo::State::
+                kUnmappedEnumField);
+
+  EXPECT_EQ(Convert(cros_healthd::mojom::ExternalDisplayEventInfo::State::kAdd),
+            crosapi::mojom::TelemetryExternalDisplayEventInfo::State::kAdd);
+
   EXPECT_EQ(
-      Convert(cros_healthd::mojom::HdmiEventInfo::State::kUnmappedEnumField),
-      crosapi::mojom::TelemetryHdmiEventInfo::State::kUnmappedEnumField);
-
-  EXPECT_EQ(Convert(cros_healthd::mojom::HdmiEventInfo::State::kAdd),
-            crosapi::mojom::TelemetryHdmiEventInfo::State::kAdd);
-
-  EXPECT_EQ(Convert(cros_healthd::mojom::HdmiEventInfo::State::kRemove),
-            crosapi::mojom::TelemetryHdmiEventInfo::State::kRemove);
+      Convert(cros_healthd::mojom::ExternalDisplayEventInfo::State::kRemove),
+      crosapi::mojom::TelemetryExternalDisplayEventInfo::State::kRemove);
 }
 
 TEST(TelemetryEventServiceConvertersTest,
@@ -382,8 +385,9 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryEventCategoryEnum) {
   EXPECT_EQ(Convert(crosapi::mojom::TelemetryEventCategoryEnum::kUsb),
             cros_healthd::mojom::EventCategoryEnum::kUsb);
 
-  EXPECT_EQ(Convert(crosapi::mojom::TelemetryEventCategoryEnum::kHdmi),
-            cros_healthd::mojom::EventCategoryEnum::kHdmi);
+  EXPECT_EQ(
+      Convert(crosapi::mojom::TelemetryEventCategoryEnum::kExternalDisplay),
+      cros_healthd::mojom::EventCategoryEnum::kExternalDisplay);
 
   EXPECT_EQ(Convert(crosapi::mojom::TelemetryEventCategoryEnum::kSdCard),
             cros_healthd::mojom::EventCategoryEnum::kSdCard);
@@ -582,13 +586,15 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryUsbEventInfoPtr) {
                 crosapi::mojom::TelemetryUsbEventInfo::State::kAdd));
 }
 
-TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryHdmiEventInfoPtr) {
-  auto input = cros_healthd::mojom::HdmiEventInfo::New();
-  input->state = cros_healthd::mojom::HdmiEventInfo::State::kAdd;
+TEST(TelemetryEventServiceConvertersTest,
+     ConvertTelemetryExternalDisplayEventInfoPtr) {
+  auto input = cros_healthd::mojom::ExternalDisplayEventInfo::New();
+  input->state = cros_healthd::mojom::ExternalDisplayEventInfo::State::kAdd;
 
-  EXPECT_EQ(ConvertStructPtr(std::move(input)),
-            crosapi::mojom::TelemetryHdmiEventInfo::New(
-                crosapi::mojom::TelemetryHdmiEventInfo::State::kAdd));
+  EXPECT_EQ(
+      ConvertStructPtr(std::move(input)),
+      crosapi::mojom::TelemetryExternalDisplayEventInfo::New(
+          crosapi::mojom::TelemetryExternalDisplayEventInfo::State::kAdd));
 }
 TEST(TelemetryEventServiceConvertersTest, ConvertTelemetrySdCardEventInfoPtr) {
   auto input = cros_healthd::mojom::SdCardEventInfo::New();

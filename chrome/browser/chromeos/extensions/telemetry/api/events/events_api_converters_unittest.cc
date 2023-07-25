@@ -227,15 +227,17 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertUsbState) {
             cx_events::UsbEvent::kDisconnected);
 }
 
-TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertHdmiState) {
-  EXPECT_EQ(Convert(crosapi::TelemetryHdmiEventInfo::State::kUnmappedEnumField),
-            cx_events::HdmiEvent::kNone);
+TEST(TelemetryExtensionEventsApiConvertersUnitTest,
+     ConvertExternalDisplayState) {
+  EXPECT_EQ(Convert(crosapi::TelemetryExternalDisplayEventInfo::State::
+                        kUnmappedEnumField),
+            cx_events::ExternalDisplayEvent::kNone);
 
-  EXPECT_EQ(Convert(crosapi::TelemetryHdmiEventInfo::State::kAdd),
-            cx_events::HdmiEvent::kConnected);
+  EXPECT_EQ(Convert(crosapi::TelemetryExternalDisplayEventInfo::State::kAdd),
+            cx_events::ExternalDisplayEvent::kConnected);
 
-  EXPECT_EQ(Convert(crosapi::TelemetryHdmiEventInfo::State::kRemove),
-            cx_events::HdmiEvent::kDisconnected);
+  EXPECT_EQ(Convert(crosapi::TelemetryExternalDisplayEventInfo::State::kRemove),
+            cx_events::ExternalDisplayEvent::kDisconnected);
 }
 
 TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertSdCardState) {
@@ -327,8 +329,8 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertEventCategoryEnum) {
   EXPECT_EQ(Convert(cx_events::EventCategory::kUsb),
             crosapi::TelemetryEventCategoryEnum::kUsb);
 
-  EXPECT_EQ(Convert(cx_events::EventCategory::kHdmi),
-            crosapi::TelemetryEventCategoryEnum::kHdmi);
+  EXPECT_EQ(Convert(cx_events::EventCategory::kExternalDisplay),
+            crosapi::TelemetryEventCategoryEnum::kExternalDisplay);
 
   EXPECT_EQ(Convert(cx_events::EventCategory::kSdCard),
             crosapi::TelemetryEventCategoryEnum::kSdCard);
@@ -523,13 +525,14 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertUsbEventInfo) {
   EXPECT_EQ(result.categories, categories);
 }
 
-TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertHdmiEventInfo) {
-  auto input = crosapi::TelemetryHdmiEventInfo::New();
-  input->state = crosapi::TelemetryHdmiEventInfo::State::kAdd;
+TEST(TelemetryExtensionEventsApiConvertersUnitTest,
+     ConvertExternalDisplayEventInfo) {
+  auto input = crosapi::TelemetryExternalDisplayEventInfo::New();
+  input->state = crosapi::TelemetryExternalDisplayEventInfo::State::kAdd;
 
   auto result = ConvertStructPtr(std::move(input));
 
-  EXPECT_EQ(result.event, cx_events::HdmiEvent::kConnected);
+  EXPECT_EQ(result.event, cx_events::ExternalDisplayEvent::kConnected);
 }
 
 TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertSdCardEventInfo) {

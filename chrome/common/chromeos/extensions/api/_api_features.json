@@ -103,7 +103,7 @@
     "channel": "stable",
     "feature_flag": "TelemetryExtensionPendingApprovalApi"
   },
-  "os.events.onHdmiEvent": {
+  "os.events.onExternalDisplayEvent": {
     "dependencies": [
       "permission:os.events"
     ],

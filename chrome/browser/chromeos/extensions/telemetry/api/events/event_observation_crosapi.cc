@@ -77,14 +77,14 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
         break;
       }
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
-          kHdmiEventInfo: {
+          kExternalDisplayEventInfo: {
         base::Value::List args;
-        args.Append(
-            converters::ConvertStructPtr(std::move(info->get_hdmi_event_info()))
-                .ToValue());
+        args.Append(converters::ConvertStructPtr(
+                        std::move(info->get_external_display_event_info()))
+                        .ToValue());
         event = std::make_unique<extensions::Event>(
-            extensions::events::OS_EVENTS_ON_HDMI_EVENT,
-            api::os_events::OnHdmiEvent::kEventName, std::move(args),
+            extensions::events::OS_EVENTS_ON_EXTERNAL_DISPLAY_EVENT,
+            api::os_events::OnExternalDisplayEvent::kEventName, std::move(args),
             browser_context_);
         break;
       }

@@ -517,15 +517,15 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
-                       CheckHdmiApiWithoutFeatureFlagFail) {
+                       CheckExternalDisplayApiWithoutFeatureFlagFail) {
   // Open the PWA.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
 
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
-      function hdmiNotWorking() {
+      function external_displayNotWorking() {
         chrome.test.assertThrows(() => {
-          chrome.os.events.onHdmiEvent.addListener((event) => {
+          chrome.os.events.onExternalDisplayEvent.addListener((event) => {
             // unreachable.
           });
         }, [],
@@ -854,25 +854,27 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
-                       CheckHdmiApiWithFeatureFlagWork) {
+                       CheckExternalDisplayApiWithFeatureFlagWork) {
   // Open the PWA.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
 
   GetFakeService()->SetOnSubscriptionChange(
       base::BindLambdaForTesting([this]() {
-        auto hdmi_info = crosapi::TelemetryHdmiEventInfo::New();
-        hdmi_info->state = crosapi::TelemetryHdmiEventInfo::State::kAdd;
+        auto external_display_info =
+            crosapi::TelemetryExternalDisplayEventInfo::New();
+        external_display_info->state =
+            crosapi::TelemetryExternalDisplayEventInfo::State::kAdd;
 
         GetFakeService()->EmitEventForCategory(
-            crosapi::TelemetryEventCategoryEnum::kHdmi,
-            crosapi::TelemetryEventInfo::NewHdmiEventInfo(
-                std::move(hdmi_info)));
+            crosapi::TelemetryEventCategoryEnum::kExternalDisplay,
+            crosapi::TelemetryEventInfo::NewExternalDisplayEventInfo(
+                std::move(external_display_info)));
       }));
 
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
       async function startCapturingEvents() {
-        chrome.os.events.onHdmiEvent.addListener((event) => {
+        chrome.os.events.onExternalDisplayEvent.addListener((event) => {
           chrome.test.assertEq(event, {
             event: 'connected'
           });
@@ -880,7 +882,7 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
           chrome.test.succeed();
         });
 
-        await chrome.os.events.startCapturingEvents("hdmi");
+        await chrome.os.events.startCapturingEvents("external_display");
       }
     ]);
   )");
