@@ -1796,16 +1796,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.ExpectCT.HeaderPresentOnResponse" enum="BooleanPresent"
-    expires_after="2023-06-04">
-  <owner>estark@chromium.org</owner>
-  <owner>trusty-transport@chromium.org</owner>
-  <summary>
-    Recorded whenever headers are received on an HTTP response. True if an
-    Expect-CT header was present on the response, and false otherwise.
-  </summary>
-</histogram>
-
 <histogram name="Net.Fetch.CheckPoint.BodyConsumerBase"
     enum="BodyConsumerBaseFetchCheckPoint" expires_after="2024-01-14">
   <owner>yyanagisawa@chromium.org</owner>
