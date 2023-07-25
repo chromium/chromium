@@ -130,10 +130,10 @@ void SharedDictionaryStorageInMemory::OnDictionaryWritten(
   if (result != SharedDictionaryWriterInMemory::Result::kSuccess) {
     return;
   }
-  dictionary_info_map_[url::SchemeHostPort(url)].insert(std::make_pair(
+  dictionary_info_map_[url::SchemeHostPort(url)].insert_or_assign(
       match,
       DictionaryInfo(url, response_time, expiration, match,
-                     /*last_used_time=*/base::Time::Now(), data, size, hash)));
+                     /*last_used_time=*/base::Time::Now(), data, size, hash));
   if (manager_) {
     manager_->MaybeRunCacheEvictionPerSite(isolation_key_.top_frame_site());
     manager_->MaybeRunCacheEviction();

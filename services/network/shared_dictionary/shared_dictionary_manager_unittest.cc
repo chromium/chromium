@@ -829,6 +829,43 @@ TEST_P(SharedDictionaryManagerTest, WriteAndReadDictionary) {
     }
   }
 }
+TEST_P(SharedDictionaryManagerTest, OverrideDictionary) {
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl1),
+                                                  kSite1);
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+
+  const GURL url1 = GURL("https://origin1.test/dict1");
+  const GURL url2 = GURL("https://origin1.test/dict2");
+  const std::string match = "path*";
+  const std::string data1 = "hello";
+  const std::string data2 = "world";
+  // Write a test dictionary.
+  WriteDictionary(storage.get(), url1, match, {data1});
+
+  if (GetParam() == TestManagerType::kOnDisk) {
+    FlushCacheTasks();
+  }
+
+  std::vector<network::mojom::SharedDictionaryInfoPtr> result1 =
+      GetSharedDictionaryInfo(manager.get(), isolation_key);
+  ASSERT_EQ(1u, result1.size());
+  EXPECT_EQ(url1, result1[0]->dictionary_url);
+
+  // Write another dictionary with same `match`.
+  WriteDictionary(storage.get(), url2, match, {data2});
+
+  if (GetParam() == TestManagerType::kOnDisk) {
+    FlushCacheTasks();
+  }
+
+  std::vector<network::mojom::SharedDictionaryInfoPtr> result2 =
+      GetSharedDictionaryInfo(manager.get(), isolation_key);
+  ASSERT_EQ(1u, result2.size());
+  EXPECT_EQ(url2, result2[0]->dictionary_url);
+}
 
 TEST_P(SharedDictionaryManagerTest, ZeroSizeDictionaryShouldNotBeStored) {
   std::unique_ptr<SharedDictionaryManager> manager =
