@@ -197,6 +197,9 @@ enum class PreloadingEligibility {
   // disabled.
   kPreloadingDisabledByDevTools = 17,
 
+  // Prerendering was ineligible because some triggers only allows https.
+  kHttpsOnly = 18,
+
   // Values between `kPreloadingEligibilityCommonEnd` (inclusive) and
   // `kPreloadingEligibilityContentEnd` (exclusive) are reserved for enums
   // defined under `//content`, namely `PrefetchStatus`.

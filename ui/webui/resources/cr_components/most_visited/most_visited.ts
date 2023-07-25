@@ -259,6 +259,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
   private mediaEventTracker_: EventTracker;
   private eventTracker_: EventTracker;
   private boundOnDocumentKeyDown_: (e: KeyboardEvent) => void;
+  private preloadingTimer_: undefined|ReturnType<typeof setTimeout>;
 
   private get tileElements_() {
     return Array.from(
@@ -759,7 +760,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
 
   private onTileClick_(e: DomRepeatEvent<MostVisitedTile, MouseEvent>) {
     if (e.defaultPrevented) {
-      // Ignore previousely handled events.
+      // Ignore previously handled events.
       return;
     }
 
@@ -791,6 +792,44 @@ export class MostVisitedElement extends MostVisitedElementBase {
     const advanceKey = this.isRtl_ ? 'ArrowLeft' : 'ArrowRight';
     const delta = (e.key === advanceKey || e.key === 'ArrowDown') ? 1 : -1;
     this.tileFocus_(Math.max(0, index + delta));
+  }
+
+  private onTileHover_(e: DomRepeatEvent<MostVisitedTile, MouseEvent>) {
+    if (e.defaultPrevented) {
+      // Ignore previously handled events.
+      return;
+    }
+
+    if (loadTimeData.getBoolean('prerenderEnabled') &&
+        loadTimeData.getInteger('prerenderStartTimeThreshold') >= 0) {
+      this.preloadingTimer_ = setTimeout(() => {
+        this.pageHandler_.prerenderMostVisitedTile(e.model.item, true);
+      }, loadTimeData.getInteger('prerenderStartTimeThreshold'));
+    }
+  }
+
+  private onTileMouseDown_(e: DomRepeatEvent<MostVisitedTile, MouseEvent>) {
+    if (e.defaultPrevented) {
+      // Ignore previously handled events.
+      return;
+    }
+
+    if (loadTimeData.getBoolean('prerenderEnabled')) {
+      this.pageHandler_.prerenderMostVisitedTile(e.model.item, false);
+    }
+  }
+
+  private onTileExit_(e: DomRepeatEvent<MostVisitedTile, MouseEvent>) {
+    if (e.defaultPrevented) {
+      // Ignore previously handled events.
+      return;
+    }
+
+    // TODO(https://crbug.com/1462832): add prerender cancellation timer upon
+    // TileExit.
+    if (this.preloadingTimer_) {
+      clearTimeout(this.preloadingTimer_);
+    }
   }
 
   private onUndoClick_() {

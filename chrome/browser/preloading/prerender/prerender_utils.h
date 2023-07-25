@@ -22,6 +22,7 @@ BASE_DECLARE_FEATURE(kHidePrefetchParameter);
 extern const char kDefaultSearchEngineMetricSuffix[];
 extern const char kDirectUrlInputMetricSuffix[];
 extern const char kBookmarkBarMetricSuffix[];
+extern const char kNewTabPageMetricSuffix[];
 
 bool IsDirectUrlInputPrerenderEnabled();
 

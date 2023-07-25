@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -43,7 +44,6 @@ using content::BrowserContext;
 using content::WebContents;
 
 namespace {
-
 void CreateAndAddNewTabPageThirdPartyUiHtmlSource(Profile* profile,
                                                   WebContents* web_contents) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
@@ -101,6 +101,13 @@ void CreateAndAddNewTabPageThirdPartyUiHtmlSource(Profile* profile,
       "handleMostVisitedNavigationExplicitly",
       base::FeatureList::IsEnabled(
           ntp_features::kNtpHandleMostVisitedNavigationExplicitly));
+
+  source->AddBoolean(
+      "prerenderEnabled",
+      base::FeatureList::IsEnabled(features::kNewTabPageTriggerForPrerender2));
+  source->AddInteger(
+      "prerenderStartTimeThreshold",
+      features::kNewTabPagePrerenderStartDelayOnMouseHoverByMiliSeconds.Get());
 
   // Needed by <cr-most-visited> but not used in
   // chrome://new-tab-page-third-party/.

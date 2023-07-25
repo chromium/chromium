@@ -17,6 +17,7 @@ BASE_FEATURE(kHidePrefetchParameter,
 const char kDefaultSearchEngineMetricSuffix[] = "DefaultSearchEngine";
 const char kDirectUrlInputMetricSuffix[] = "DirectURLInput";
 const char kBookmarkBarMetricSuffix[] = "BookmarkBar";
+const char kNewTabPageMetricSuffix[] = "NewTabPage";
 
 bool IsDirectUrlInputPrerenderEnabled() {
   return base::FeatureList::IsEnabled(features::kOmniboxTriggerForPrerender2);

@@ -66,6 +66,8 @@ interface MostVisitedPageHandler {
   UpdateMostVisitedTile(url.mojom.Url url,
                         url.mojom.Url new_url,
                         string new_title) => (bool success);
+  // Prerenders |tile|.
+  PrerenderMostVisitedTile(MostVisitedTile tile, bool is_hover_trigger);
   // ======= METRICS =======
   // Logs that |tiles| were displayed / updated at |time|. The first instance of
   // this event is used as a proxy for when the NTP has finished loading.

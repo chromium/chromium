@@ -92,6 +92,13 @@ BASE_DECLARE_FEATURE(kBookmarkTriggerForPrerender2);
 // This flag is used for enabling New Tab Page triggered prerendering. See
 // crbug.com/1462832 for more details of New Tab Page triggered prerendering.
 BASE_DECLARE_FEATURE(kNewTabPageTriggerForPrerender2);
+// This parameter is used to set a time threshold for triggering onMouseHover
+// prerender. For example, if the value is 300, the New Tab Page prerender
+// will start after 300ms after mouseHover duration is over 300ms.
+const base::FeatureParam<int>
+    kNewTabPagePrerenderStartDelayOnMouseHoverByMiliSeconds{
+        &features::kNewTabPageTriggerForPrerender2,
+        "prerender_start_delay_on_mouse_hover_ms", 300};
 
 // This flag controls whether to trigger prerendering when the default search
 // engine suggests to prerender a search result.

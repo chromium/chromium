@@ -367,6 +367,53 @@ PrerenderManager::StartPrerenderBookmark(
                                     : nullptr;
 }
 
+base::WeakPtr<content::PrerenderHandle>
+PrerenderManager::StartPrerenderNewTabPage(
+    const GURL& prerendering_url,
+    content::PreloadingPredictor predictor) {
+  // Helpers to create content::PreloadingAttempt.
+  auto* preloading_data =
+      content::PreloadingData::GetOrCreateForWebContents(web_contents());
+  content::PreloadingURLMatchCallback same_url_matcher =
+      content::PreloadingData::GetSameURLMatcher(prerendering_url);
+
+  content::PreloadingAttempt* preloading_attempt =
+      preloading_data->AddPreloadingAttempt(predictor,
+                                            content::PreloadingType::kPrerender,
+                                            std::move(same_url_matcher));
+
+  // New Tab Page only allow https protocol.
+  if (!prerendering_url.SchemeIs("https")) {
+    preloading_attempt->SetEligibility(
+        content::PreloadingEligibility::kHttpsOnly);
+    return nullptr;
+  }
+
+  if (new_tab_page_prerender_handle_) {
+    if (new_tab_page_prerender_handle_->GetInitialPrerenderingUrl() ==
+        prerendering_url) {
+      // In case a prerender is already present for the URL, prerendering is
+      // eligible but mark triggering outcome as a duplicate.
+      preloading_attempt->SetEligibility(
+          content::PreloadingEligibility::kEligible);
+
+      MarkPreloadingAttemptAsDuplicate(preloading_attempt);
+      return new_tab_page_prerender_handle_->GetWeakPtr();
+    }
+    new_tab_page_prerender_handle_.reset();
+  }
+
+  new_tab_page_prerender_handle_ = web_contents()->StartPrerendering(
+      prerendering_url, content::PrerenderTriggerType::kEmbedder,
+      prerender_utils::kNewTabPageMetricSuffix,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK),
+      content::PreloadingHoldbackStatus::kUnspecified, preloading_attempt);
+
+  return new_tab_page_prerender_handle_
+             ? new_tab_page_prerender_handle_->GetWeakPtr()
+             : nullptr;
+}
+
 void PrerenderManager::StopPrerenderBookmark(
     base::WeakPtr<content::PrerenderHandle> prerender_handle) {
   if (!prerender_handle) {
