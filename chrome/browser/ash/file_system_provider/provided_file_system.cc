@@ -73,6 +73,23 @@ GetServiceWorkerLifetimeManager(Profile* profile) {
       profile);
 }
 
+class ScopedUserInteractionImpl : public ScopedUserInteraction {
+ public:
+  explicit ScopedUserInteractionImpl(ProvidedFileSystem* file_system)
+      : file_system_(file_system->GetWeakPtr()) {
+    file_system_->GetRequestManager()->StartUserInteraction();
+  }
+
+  ~ScopedUserInteractionImpl() override {
+    if (file_system_) {
+      file_system_->GetRequestManager()->EndUserInteraction();
+    }
+  }
+
+ private:
+  base::WeakPtr<ProvidedFileSystemInterface> file_system_;
+};
+
 }  // namespace
 
 AutoUpdater::AutoUpdater(base::OnceClosure update_callback)
@@ -795,6 +812,11 @@ AbortCallback ProvidedFileSystem::NotifyInQueue(
 
 base::WeakPtr<ProvidedFileSystemInterface> ProvidedFileSystem::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+std::unique_ptr<ScopedUserInteraction>
+ProvidedFileSystem::StartUserInteraction() {
+  return std::make_unique<ScopedUserInteractionImpl>(this);
 }
 
 void ProvidedFileSystem::OnAddWatcherInQueueCompleted(

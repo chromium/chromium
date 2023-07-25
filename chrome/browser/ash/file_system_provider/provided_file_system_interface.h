@@ -80,6 +80,18 @@ struct OpenedFile {
 // Map from a file handle to an OpenedFile struct.
 typedef std::map<int, OpenedFile> OpenedFiles;
 
+class ScopedUserInteraction {
+ public:
+  virtual ~ScopedUserInteraction();
+  ScopedUserInteraction(const ScopedUserInteraction&) = delete;
+  ScopedUserInteraction& operator=(const ScopedUserInteraction&) = delete;
+  ScopedUserInteraction(ScopedUserInteraction&&);
+  ScopedUserInteraction& operator=(ScopedUserInteraction&&);
+
+ protected:
+  ScopedUserInteraction();
+};
+
 // Interface for a provided file system. Acts as a proxy between providers
 // and clients. All of the request methods return an abort callback in order to
 // terminate it while running. They must be called on the same thread as the
@@ -286,6 +298,10 @@ class ProvidedFileSystemInterface {
 
   // Returns a weak pointer to this object.
   virtual base::WeakPtr<ProvidedFileSystemInterface> GetWeakPtr() = 0;
+
+  // Starts a user interaction with the file system, during which "unresponsive
+  // operation" notifications won't be created.
+  virtual std::unique_ptr<ScopedUserInteraction> StartUserInteraction() = 0;
 };
 
 }  // namespace file_system_provider

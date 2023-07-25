@@ -219,6 +219,11 @@ base::WeakPtr<ProvidedFileSystemInterface> ThrottledFileSystem::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+std::unique_ptr<ScopedUserInteraction>
+ThrottledFileSystem::StartUserInteraction() {
+  return file_system_->StartUserInteraction();
+}
+
 void ThrottledFileSystem::Abort(int queue_token) {
   open_queue_->Abort(queue_token);
 }

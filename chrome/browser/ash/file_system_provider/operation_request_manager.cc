@@ -56,6 +56,10 @@ void OperationRequestManager::OnRequestTimeout(int request_id) {
 }
 
 bool OperationRequestManager::IsInteractingWithUser() const {
+  if (current_user_interactions_ > 0) {
+    return true;
+  }
+
   // First try for app windows. If not found, then fall back to browser windows
   // and tabs.
   const extensions::AppWindowRegistry* const registry =

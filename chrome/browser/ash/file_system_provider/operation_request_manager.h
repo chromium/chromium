@@ -43,6 +43,13 @@ class OperationRequestManager : public RequestManager {
   OperationRequestManager& operator=(const OperationRequestManager&) = delete;
   ~OperationRequestManager() override;
 
+  // Indicate start/end of an operation that involves user interaction. As long
+  // as least one interaction is active, "unresponsive operation" notifications
+  // won't be shown. Not intended to be called directly, but via
+  // `ProvidedFileSystem::StartUserInteraction` instead.
+  void StartUserInteraction() { current_user_interactions_++; }
+  void EndUserInteraction() { current_user_interactions_--; }
+
  private:
   // Called when a request with |request_id| times out.
   void OnRequestTimeout(int request_id) override;
@@ -52,6 +59,7 @@ class OperationRequestManager : public RequestManager {
   bool IsInteractingWithUser() const;
 
   std::string provider_id_;
+  int current_user_interactions_ = 0;
 };
 
 }  // namespace ash::file_system_provider

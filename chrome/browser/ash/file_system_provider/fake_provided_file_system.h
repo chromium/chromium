@@ -177,6 +177,7 @@ class FakeProvidedFileSystem : public ProvidedFileSystemInterface {
               storage::AsyncFileUtil::StatusCallback callback) override;
   void Configure(storage::AsyncFileUtil::StatusCallback callback) override;
   base::WeakPtr<ProvidedFileSystemInterface> GetWeakPtr() override;
+  std::unique_ptr<ScopedUserInteraction> StartUserInteraction() override;
 
  private:
   using Entries = std::map<base::FilePath, std::unique_ptr<FakeEntry>>;

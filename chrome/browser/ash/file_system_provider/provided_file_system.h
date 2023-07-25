@@ -182,6 +182,7 @@ class ProvidedFileSystem : public ProvidedFileSystemInterface {
               storage::AsyncFileUtil::StatusCallback callback) override;
   void Configure(storage::AsyncFileUtil::StatusCallback callback) override;
   base::WeakPtr<ProvidedFileSystemInterface> GetWeakPtr() override;
+  std::unique_ptr<ScopedUserInteraction> StartUserInteraction() override;
 
  private:
   // Wrapper for arguments for AddWatcherInQueue, as it's too many of them to

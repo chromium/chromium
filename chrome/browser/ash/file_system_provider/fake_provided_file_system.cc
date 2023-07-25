@@ -561,6 +561,11 @@ FakeProvidedFileSystem::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+std::unique_ptr<ScopedUserInteraction>
+FakeProvidedFileSystem::StartUserInteraction() {
+  return nullptr;
+}
+
 AbortCallback FakeProvidedFileSystem::PostAbortableTask(
     base::OnceClosure callback) {
   const int task_id =

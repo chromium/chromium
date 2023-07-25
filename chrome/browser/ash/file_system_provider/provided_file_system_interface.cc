@@ -21,5 +21,11 @@ OpenedFile::OpenedFile() : mode(OPEN_FILE_MODE_READ) {
 OpenedFile::~OpenedFile() {
 }
 
+ScopedUserInteraction::ScopedUserInteraction() = default;
+ScopedUserInteraction::~ScopedUserInteraction() = default;
+ScopedUserInteraction::ScopedUserInteraction(ScopedUserInteraction&&) = default;
+ScopedUserInteraction& ScopedUserInteraction::operator=(
+    ScopedUserInteraction&&) = default;
+
 }  // namespace file_system_provider
 }  // namespace ash
