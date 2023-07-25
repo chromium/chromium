@@ -522,8 +522,10 @@ class DIPSBounceDetectorBrowserTest : public PlatformBrowserTest {
       web_contents_observer_ = nullptr;
 };
 
-IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
-                       AttributeSameSiteIframesCookieClientAccessTo1P) {
+IN_PROC_BROWSER_TEST_F(
+    DIPSBounceDetectorBrowserTest,
+    // TODO(crbug.com/1467570): Re-enable this test
+    DISABLED_AttributeSameSiteIframesCookieClientAccessTo1P) {
   std::vector<std::string> redirects;
   StartAppendingRedirectsTo(&redirects);
 
