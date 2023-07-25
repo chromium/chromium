@@ -11,8 +11,16 @@ enum FenceReportingDestination {
 };
 
 dictionary FenceEvent {
-  required DOMString eventType;
+  // This dictionary has two mutually exclusive modes:
+
+  // When reporting to a preregistered destination (specified by enum), the
+  // following properties are used:
+  DOMString eventType;
   DOMString eventData;
-  required sequence<FenceReportingDestination> destination;
+  sequence<FenceReportingDestination> destination;
   boolean once = false;
+
+  // When reporting to a custom destination URL (with substitution of macros
+  // defined by the buyer), the following property is used:
+  USVString destinationURL;
 };
