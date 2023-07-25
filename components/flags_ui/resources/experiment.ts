@@ -273,7 +273,7 @@ export class FlagsExperimentElement extends CustomElement {
     /* This function is an onchange handler, which can be invoked during page
      * restore - see https://crbug.com/1038638. */
     assert(this.feature_);
-    assert(this.feature_.origin_list_value);
+    assert(this.feature_.origin_list_value !== undefined);
 
     FlagsBrowserProxyImpl.getInstance().setOriginListFlag(
         this.feature_.internal_name, value);
