@@ -1783,11 +1783,11 @@ WebGPUDecoderImpl::AssociateMailboxDawn(
     return nullptr;
   }
 
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_APPLE)
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_APPLE) && \
+    !BUILDFLAG(IS_ANDROID)
   if (usage & wgpu::TextureUsage::StorageBinding) {
-    DLOG(ERROR)
-        << "AssociateMailbox: wgpu::TextureUsage::StorageBinding is NOT "
-           "supported yet.";
+    LOG(ERROR) << "AssociateMailbox: wgpu::TextureUsage::StorageBinding is NOT "
+                  "supported yet on this platform.";
     return nullptr;
   }
 #endif
