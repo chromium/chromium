@@ -44,8 +44,9 @@ void DeskAnimationBase::Launch() {
 
   // The throughput tracker measures the animation when the user lifts their
   // fingers off the trackpad, which is done in EndSwipeAnimation.
-  if (!is_continuous_gesture_animation_)
+  if (!is_continuous_gesture_animation_) {
     throughput_tracker_.Start(GetSmoothnessReportCallback());
+  }
 
   // This step makes sure that the containers of the target desk are shown at
   // the beginning of the animation (but not actually visible to the user yet,
@@ -153,7 +154,9 @@ void DeskAnimationBase::OnDeskSwitchAnimationFinished() {
 
   desk_switch_animators_.clear();
 
-  throughput_tracker_.Stop();
+  if (!is_continuous_gesture_animation_) {
+    throughput_tracker_.Stop();
+  }
 
   if (skip_notify_controller_on_animation_finished_for_testing_)
     return;
