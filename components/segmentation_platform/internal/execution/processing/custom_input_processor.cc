@@ -239,8 +239,9 @@ bool CustomInputProcessor::AddFromInputContext(
   if (custom_input.tensor_length() != 1) {
     return false;
   }
-  const auto& input_context = feature_processor_state->input_context();
-  auto input_name = custom_input.name();
+  scoped_refptr<InputContext> input_context =
+      feature_processor_state->input_context();
+  std::string input_name = custom_input.name();
   auto custom_input_iter = custom_input.additional_args().find("name");
   if (custom_input_iter != custom_input.additional_args().end()) {
     input_name = custom_input_iter->second;

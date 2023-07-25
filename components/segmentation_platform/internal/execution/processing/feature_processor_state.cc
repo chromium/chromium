@@ -109,7 +109,7 @@ std::vector<float> FeatureProcessorState::MergeTensors(
     SetError(stats::FeatureProcessingError::kResultTensorError);
   } else {
     for (size_t i = 0; i < tensor.size(); ++i) {
-      for (auto& value : tensor.at(i)) {
+      for (const ProcessedValue& value : tensor.at(i)) {
         if (value.type == ProcessedValue::Type::FLOAT) {
           result.push_back(value.float_val);
         } else {
