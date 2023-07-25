@@ -73,7 +73,9 @@ void OverrideChildProcessPath() {
                                    .Append("MacOS")
                                    .Append("Content Shell Helper");
 
-  base::PathService::Override(content::CHILD_PROCESS_EXE, helper_path);
+  base::PathService::OverrideAndCreateIfNeeded(
+      content::CHILD_PROCESS_EXE, helper_path, /*is_absolute=*/true,
+      /*create=*/false);
 }
 
 void OverrideSourceRootPath() {

@@ -38,7 +38,9 @@ void SetUpBundleOverrides() {
 
     // On the Mac, the child executable lives at a predefined location within
     // the app bundle's versioned directory.
-    base::PathService::Override(content::CHILD_PROCESS_EXE, child_exe_path);
+    base::PathService::OverrideAndCreateIfNeeded(
+        content::CHILD_PROCESS_EXE, child_exe_path, /*is_absolute=*/true,
+        /*create=*/false);
   }
 }
 
