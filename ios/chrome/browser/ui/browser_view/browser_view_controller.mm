@@ -1685,11 +1685,6 @@ enum HeaderBehaviour {
   [self.helpHandler hideAllHelpBubbles];
 }
 
-// Returns the footer view if one exists (e.g. the voice search bar).
-- (UIView*)footerView {
-  return self.toolbarCoordinator.secondaryToolbarViewController.view;
-}
-
 // Returns the appropriate frame for the NTP.
 - (CGRect)ntpFrameForCurrentWebState {
   DCHECK(self.ntpCoordinator.isNTPActiveForCurrentWebState);
