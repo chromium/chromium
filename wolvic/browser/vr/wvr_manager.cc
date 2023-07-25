@@ -156,8 +156,7 @@ int32_t GetNextTextureHandleId() {
 WvrManager::WvrManager(WvrGraphicsDelegate* graphics)
     : texture_handle_id_(GetNextTextureHandleId()),
       graphics_(graphics),
-      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
-      webxr_(std::make_unique<device::WebXrPresentationState>()) {
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   JNIEnv* env = base::android::AttachCurrentThread();
   shmem_ = reinterpret_cast<mozilla::gfx::VRExternalShmem*>(
       content::Java_VRManager_getExternalContext(env));
@@ -168,7 +167,7 @@ WvrManager::WvrManager(WvrGraphicsDelegate* graphics)
 WvrManager::~WvrManager() {
   ClosePresentationBindings();
   ExitWebXRPresentation(base::NullCallback());
-  webxr_->EndPresentation();
+  webxr_.EndPresentation();
 
   if (j_surface_texture_) {
     JNIEnv* env = base::android::AttachCurrentThread();
@@ -286,8 +285,8 @@ void WvrManager::CreateOrResizeWebXrSurface(const gfx::Size& size) {
 void WvrManager::OnGpuProcessConnectionReady() {
   CHECK(mailbox_bridge_);
 
-  DCHECK(!webxr_->HaveAnimatingFrame());
-  webxr_->NotifyMailboxBridgeReady();
+  DCHECK(!webxr_.HaveAnimatingFrame());
+  webxr_.NotifyMailboxBridgeReady();
 }
 
 void WvrManager::CreateSurfaceBridge() {
@@ -364,17 +363,17 @@ void WvrManager::OnWebXrFrameAvailable() {
 
   // The processing frame would be empty when this method is called again from
   // Android system after OnWebXrTimedOut.
-  if (webxr_->HaveProcessingFrame()) {
+  if (webxr_.HaveProcessingFrame()) {
     // Frame should be locked. Unlock it.
-    DCHECK(webxr_->GetProcessingFrame()->state_locked);
-    webxr_->GetProcessingFrame()->state_locked = false;
+    DCHECK(webxr_.GetProcessingFrame()->state_locked);
+    webxr_.GetProcessingFrame()->state_locked = false;
 
-    if (!SubmitFrameInternal(webxr_->GetProcessingFrame()->index))
+    if (!SubmitFrameInternal(webxr_.GetProcessingFrame()->index))
       return;
 
-    if (webxr_->HaveRenderingFrame())
-      webxr_->EndFrameRendering();
-    webxr_->TransitionFrameProcessingToRendering();
+    if (webxr_.HaveRenderingFrame())
+      webxr_.EndFrameRendering();
+    webxr_.TransitionFrameProcessingToRendering();
   }
 
   // Renderer is waiting for the previous frame to render, unblock it now.
@@ -483,11 +482,11 @@ WvrManager::GetInputSourceState() {
 }
 
 bool WvrManager::CanStartNewAnimatingFrame() {
-  if (webxr_->HaveAnimatingFrame()) {
+  if (webxr_.HaveAnimatingFrame()) {
     return false;
   }
 
-  if (webxr_->HaveProcessingFrame()) {
+  if (webxr_.HaveProcessingFrame()) {
     return false;
   }
 
@@ -522,7 +521,7 @@ void WvrManager::TryStartAnimatingFrame() {
   }
 
   device::mojom::XRFrameDataPtr frame_data = device::mojom::XRFrameData::New();
-  frame_data->frame_id = webxr_->StartFrameAnimating();
+  frame_data->frame_id = webxr_.StartFrameAnimating();
   frame_data->views =
       CreateViews(system_state_.displayState, &system_state_.sensorState.pose,
                   surface_size_);
@@ -604,10 +603,10 @@ bool WvrManager::SubmitFrameInternal(int16_t frame_index) {
 }
 
 bool WvrManager::IsSubmitFrameExpected(int16_t frame_index) {
-  if (!submit_client_.get() || !webxr_->HaveAnimatingFrame())
+  if (!submit_client_.get() || !webxr_.HaveAnimatingFrame())
     return false;
 
-  device::WebXrFrame* animating_frame = webxr_->GetAnimatingFrame();
+  device::WebXrFrame* animating_frame = webxr_.GetAnimatingFrame();
   if (animating_frame->index != frame_index) {
     LOG(ERROR) << __func__ << ": wrong frame index, got " << frame_index
                << ", expected " << animating_frame->index;
@@ -626,11 +625,11 @@ void WvrManager::SubmitFrameMissing(int16_t frame_index,
   if (!IsSubmitFrameExpected(frame_index))
     return;
 
-  if (webxr_->mailbox_bridge_ready())
+  if (webxr_.mailbox_bridge_ready())
     mailbox_bridge_->WaitSyncToken(sync_token);
 
-  DCHECK(webxr_->HaveAnimatingFrame());
-  webxr_->RecycleUnusedAnimatingFrame();
+  DCHECK(webxr_.HaveAnimatingFrame());
+  webxr_.RecycleUnusedAnimatingFrame();
 }
 
 void WvrManager::SubmitFrame(int16_t frame_index,
@@ -639,16 +638,16 @@ void WvrManager::SubmitFrame(int16_t frame_index,
   if (!IsSubmitFrameExpected(frame_index))
     return;
 
-  webxr_->ProcessOrDefer(base::BindOnce(&WvrManager::ProcessFrameFromMailbox,
+  webxr_.ProcessOrDefer(base::BindOnce(&WvrManager::ProcessFrameFromMailbox,
                                         weak_ptr_factory_.GetWeakPtr(),
                                         frame_index, mailbox));
 }
 
 void WvrManager::ProcessFrameFromMailbox(int16_t frame_index,
                                          const gpu::MailboxHolder& mailbox) {
-  DCHECK(webxr_->HaveProcessingFrame());
+  DCHECK(webxr_.HaveProcessingFrame());
 
-  webxr_->GetProcessingFrame()->state_locked = true;
+  webxr_.GetProcessingFrame()->state_locked = true;
 
   bool swapped = mailbox_bridge_->CopyMailboxToSurfaceAndSwap(mailbox);
   DCHECK(swapped);
