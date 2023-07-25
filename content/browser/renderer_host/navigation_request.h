@@ -1544,8 +1544,8 @@ class CONTENT_EXPORT NavigationRequest
 
   // When called, this NavigationRequest will no longer interpret the interface
   // disconnection on the renderer side as an AbortNavigation.
-  // TODO(ahemery): remove this function when NavigationRequest properly handles
-  // interface disconnection in all cases.
+  // TODO(https://crbug.com/1467502): remove this function when
+  // NavigationRequest properly handles interface disconnection in all cases.
   void IgnoreInterfaceDisconnection();
 
   // Sets ID of the RenderProcessHost we expect the navigation to commit in.
@@ -2104,7 +2104,7 @@ class CONTENT_EXPORT NavigationRequest
 
   // The NavigationClient interface used to commit the navigation. For now, this
   // is only used for same-site renderer-initiated navigation.
-  // TODO(clamy, ahemery): Extend to all types of navigation.
+  // TODO(https://crbug.com/1467502): Extend to all types of navigation.
   mojo::AssociatedRemote<mojom::NavigationClient> commit_navigation_client_;
 
   // If set, any redirects to HTTP for this navigation will be upgraded to

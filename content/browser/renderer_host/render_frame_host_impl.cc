@@ -4902,8 +4902,8 @@ void RenderFrameHostImpl::DidCommitSameDocumentNavigation(
   // done with cross-document navigations, such navigation are ignored. The
   // browser already committed to destroying this RenderFrameHost.
   // See https://crbug.com/805705 and https://crbug.com/930132.
-  // TODO(ahemery): Investigate to see if this can be removed when the
-  // NavigationClient interface is implemented.
+  // TODO(https://crbug.com/1467502): Investigate to see if this can be removed
+  // when the NavigationClient interface is implemented.
   //
   // If this is called when the frame is in BackForwardCache, evict the frame
   // to avoid ignoring the renderer-initiated navigation, which the frame

@@ -1205,10 +1205,11 @@ void RenderFrameHostManager::RestorePage(
 
   // speculative_render_frame_host_ and stored_page_to_restore_ will be
   // consumed during CommitPendingIfNecessary.
-  // TODO(ahemery): This is awkward to leave the entry in a half consumed state
-  // and it would be clearer if we could not reuse speculative_render_frame_host
-  // in the long run. For now, and to avoid complex edge cases, we simply reuse
-  // it to preserve the understood logic in CommitPending.
+  // TODO(https://crbug.com/1467502): This is awkward to leave the entry in a
+  // half consumed state and it would be clearer if we could not reuse
+  // speculative_render_frame_host in the long run. For now, and to avoid
+  // complex edge cases, we simply reuse it to preserve the understood logic in
+  // CommitPending.
 
   // There should be no speculative RFH at this point. With BackForwardCache, it
   // should have never been created, and with prerender activation, it should
