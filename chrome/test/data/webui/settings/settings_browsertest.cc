@@ -374,15 +374,17 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, ZoomLevels) {
   RunTest("settings/zoom_levels_test.js", "mocha.run()");
 }
 
-using SettingsSecurityPageTest = SettingsBrowserTest;
+using SettingsAboutPageTest = SettingsBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, Main) {
-  RunTest("settings/security_page_test.js", "runMochaSuite('Main')");
+IN_PROC_BROWSER_TEST_F(SettingsAboutPageTest, AllBuilds) {
+  RunTest("settings/about_page_test.js", "runMochaSuite('AllBuilds')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, FlagsDisabled) {
-  RunTest("settings/security_page_test.js", "runMochaSuite('FlagsDisabled')");
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+IN_PROC_BROWSER_TEST_F(SettingsAboutPageTest, OfficialBuild) {
+  RunTest("settings/about_page_test.js", "runMochaSuite('OfficialBuild')");
 }
+#endif
 
 using SettingsAllSitesTest = SettingsBrowserTest;
 
@@ -395,6 +397,40 @@ IN_PROC_BROWSER_TEST_F(SettingsAllSitesTest, DisableFirstPartySets) {
   RunTest("settings/all_sites_test.js",
           "runMochaSuite('DisableFirstPartySets')");
 }
+
+using SettingsBasicPageTest = SettingsBrowserTest;
+
+// TODO(crbug.com/1298753): Flaky on all platforms.
+IN_PROC_BROWSER_TEST_F(SettingsBasicPageTest, DISABLED_BasicPage) {
+  RunTest("settings/basic_page_test.js", "runMochaSuite('BasicPage')");
+}
+
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_PrivacyGuidePromo DISABLED_PrivacyGuidePromo
+#else
+#define MAYBE_PrivacyGuidePromo PrivacyGuidePromo
+#endif
+IN_PROC_BROWSER_TEST_F(SettingsBasicPageTest, MAYBE_PrivacyGuidePromo) {
+  RunTest("settings/basic_page_test.js", "runMochaSuite('PrivacyGuidePromo')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsBasicPageTest, Performance) {
+  RunTest("settings/basic_page_test.js", "runMochaSuite('Performance')");
+}
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+using SettingsLanguagePageTest = SettingsBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(SettingsLanguagePageTest, AddLanguagesDialog) {
+  RunTest("settings/languages_page_test.js",
+          "runMochaSuite('LanguagesPage AddLanguagesDialog')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsLanguagePageTest, LanguageMenu) {
+  RunTest("settings/languages_page_test.js",
+          "runMochaSuite('LanguagesPage LanguageMenu')");
+}
+#endif
 
 using SettingsPrivacyGuideTest = SettingsBrowserTest;
 
@@ -473,3 +509,29 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideFragmentsTest,
   RunTest("settings/privacy_guide_fragments_test.js",
           "runMochaSuite('CompletionFragmentPrivacySandboxRestricted')");
 }
+
+using SettingsSecurityPageTest = SettingsBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, Main) {
+  RunTest("settings/security_page_test.js", "runMochaSuite('Main')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, FlagsDisabled) {
+  RunTest("settings/security_page_test.js", "runMochaSuite('FlagsDisabled')");
+}
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+using SettingsSpellCheckPageTest = SettingsBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(SettingsSpellCheckPageTest, AllBuilds) {
+  RunTest("settings/spell_check_page_test.js",
+          "runMochaSuite('SpellCheck AllBuilds')");
+}
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+IN_PROC_BROWSER_TEST_F(SettingsSpellCheckPageTest, OfficialBuild) {
+  RunTest("settings/spell_check_page_test.js",
+          "runMochaSuite('SpellCheck OfficialBuild')");
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

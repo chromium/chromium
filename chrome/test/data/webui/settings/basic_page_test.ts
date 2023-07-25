@@ -41,7 +41,7 @@ class TestPrivacyGuideBrowserProxy extends TestBrowserProxy implements
   }
 }
 
-suite('SettingsBasicPage', () => {
+suite('BasicPage', () => {
   let page: SettingsBasicPageElement;
   let settingsPrefs: SettingsPrefsElement;
 
@@ -440,7 +440,7 @@ suite('PrivacyGuidePromo', () => {
   });
 });
 
-suite('SettingsBasicPagePerformance', () => {
+suite('Performance', () => {
   let page: SettingsBasicPageElement;
   let performanceBrowserProxy: TestPerformanceBrowserProxy;
 

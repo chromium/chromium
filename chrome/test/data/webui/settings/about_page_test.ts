@@ -44,7 +44,7 @@ function fireStatusChanged(
 }
 // </if>
 
-suite('AboutPageTest_AllBuilds', function() {
+suite('AllBuilds', function() {
   let page: SettingsAboutPageElement;
   let aboutBrowserProxy: TestAboutPageBrowserProxy;
   let lifetimeBrowserProxy: TestLifetimeBrowserProxy;
@@ -319,7 +319,7 @@ suite('AboutPageTest_AllBuilds', function() {
 });
 
 // <if expr="_google_chrome">
-suite('AboutPageTest_OfficialBuilds', function() {
+suite('OfficialBuild', function() {
   let page: SettingsAboutPageElement;
   let browserProxy: TestAboutPageBrowserProxy;
 

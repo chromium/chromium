@@ -18,16 +18,7 @@ import {TestLanguagesBrowserProxy} from './test_languages_browser_proxy.js';
 
 // clang-format on
 
-const languages_page_tests = {
-  TestNames: {
-    AddLanguagesDialog: 'add languages dialog',
-    LanguageMenu: 'language menu',
-  },
-};
-
-Object.assign(window, {languages_page_tests});
-
-suite('languages page', function() {
+suite('LanguagesPage', function() {
   let languageHelper: LanguageHelper;
   let languagesPage: SettingsLanguagesPageElement;
   let actionMenu: CrActionMenuElement;
@@ -101,7 +92,7 @@ suite('languages page', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
-  suite(languages_page_tests.TestNames.AddLanguagesDialog, function() {
+  suite('AddLanguagesDialog', function() {
     let dialog: SettingsAddLanguagesDialogElement;
     let dialogItems: NodeListOf<CrCheckboxElement>;
     let cancelButton: CrButtonElement;
@@ -281,7 +272,7 @@ suite('languages page', function() {
     });
   });
 
-  suite(languages_page_tests.TestNames.LanguageMenu, function() {
+  suite('LanguageMenu', function() {
     /*
      * This suite tests that the translate target language is labelled
      */
