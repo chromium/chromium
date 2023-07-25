@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/indexed_db/mock_indexed_db_callbacks.h"
+#include "content/browser/indexed_db/mock_indexed_db_factory_client.h"
 
 #include <memory>
 #include <utility>
@@ -16,70 +16,75 @@ using blink::IndexedDBKey;
 
 namespace content {
 
-MockIndexedDBCallbacks::MockIndexedDBCallbacks()
-    : IndexedDBCallbacks(nullptr,
-                         absl::nullopt,
-                         mojo::NullAssociatedRemote(),
-                         base::SequencedTaskRunner::GetCurrentDefault()) {}
-MockIndexedDBCallbacks::MockIndexedDBCallbacks(bool expect_connection)
-    : IndexedDBCallbacks(nullptr,
-                         absl::nullopt,
-                         mojo::NullAssociatedRemote(),
-                         base::SequencedTaskRunner::GetCurrentDefault()),
+MockIndexedDBFactoryClient::MockIndexedDBFactoryClient()
+    : IndexedDBFactoryClient(nullptr,
+                             absl::nullopt,
+                             mojo::NullAssociatedRemote(),
+                             base::SequencedTaskRunner::GetCurrentDefault()) {}
+MockIndexedDBFactoryClient::MockIndexedDBFactoryClient(bool expect_connection)
+    : IndexedDBFactoryClient(nullptr,
+                             absl::nullopt,
+                             mojo::NullAssociatedRemote(),
+                             base::SequencedTaskRunner::GetCurrentDefault()),
       expect_connection_(expect_connection) {}
 
-MockIndexedDBCallbacks::~MockIndexedDBCallbacks() {
+MockIndexedDBFactoryClient::~MockIndexedDBFactoryClient() {
   EXPECT_EQ(expect_connection_, !!connection_);
 }
 
-void MockIndexedDBCallbacks::OnError(const IndexedDBDatabaseError& error) {
+void MockIndexedDBFactoryClient::OnError(const IndexedDBDatabaseError& error) {
   error_called_ = true;
 }
 
-void MockIndexedDBCallbacks::OnSuccess(int64_t result) {}
+void MockIndexedDBFactoryClient::OnSuccess(int64_t result) {}
 
-void MockIndexedDBCallbacks::OnSuccess(
+void MockIndexedDBFactoryClient::OnSuccess(
     std::unique_ptr<IndexedDBConnection> connection,
     const IndexedDBDatabaseMetadata& metadata) {
-  if (!upgrade_called_)
+  if (!upgrade_called_) {
     connection_ = std::move(connection);
-  if (call_on_db_success_)
+  }
+  if (call_on_db_success_) {
     std::move(call_on_db_success_).Run();
+  }
 }
 
-void MockIndexedDBCallbacks::OnUpgradeNeeded(
+void MockIndexedDBFactoryClient::OnUpgradeNeeded(
     int64_t old_version,
     std::unique_ptr<IndexedDBConnection> connection,
     const IndexedDBDatabaseMetadata& metadata,
     const IndexedDBDataLossInfo& data_loss_info) {
   connection_ = std::move(connection);
   upgrade_called_ = true;
-  if (call_on_upgrade_needed_)
+  if (call_on_upgrade_needed_) {
     std::move(call_on_upgrade_needed_).Run();
+  }
 }
 
-void MockIndexedDBCallbacks::CallOnUpgradeNeeded(base::OnceClosure closure) {
+void MockIndexedDBFactoryClient::CallOnUpgradeNeeded(
+    base::OnceClosure closure) {
   call_on_upgrade_needed_ = std::move(closure);
 }
-void MockIndexedDBCallbacks::CallOnDBSuccess(base::OnceClosure closure) {
+void MockIndexedDBFactoryClient::CallOnDBSuccess(base::OnceClosure closure) {
   call_on_db_success_ = std::move(closure);
 }
-void MockIndexedDBCallbacks::CallOnInfoSuccess(base::RepeatingClosure closure) {
+void MockIndexedDBFactoryClient::CallOnInfoSuccess(
+    base::RepeatingClosure closure) {
   call_on_info_success_ = std::move(closure);
 }
 
-ThunkCallbacks::ThunkCallbacks(IndexedDBCallbacks& wrapped)
-    : MockIndexedDBCallbacks(false), wrapped_(wrapped) {}
+ThunkFactoryClient::ThunkFactoryClient(IndexedDBFactoryClient& wrapped)
+    : MockIndexedDBFactoryClient(false), wrapped_(wrapped) {}
 
-void ThunkCallbacks::OnError(const IndexedDBDatabaseError& error) {
+void ThunkFactoryClient::OnError(const IndexedDBDatabaseError& error) {
   wrapped_->OnError(error);
 }
 
-void ThunkCallbacks::OnBlocked(int64_t existing_version) {
+void ThunkFactoryClient::OnBlocked(int64_t existing_version) {
   wrapped_->OnBlocked(existing_version);
 }
 
-void ThunkCallbacks::OnUpgradeNeeded(
+void ThunkFactoryClient::OnUpgradeNeeded(
     int64_t old_version,
     std::unique_ptr<IndexedDBConnection> connection,
     const blink::IndexedDBDatabaseMetadata& metadata,
@@ -88,13 +93,13 @@ void ThunkCallbacks::OnUpgradeNeeded(
                             data_loss_info);
 }
 
-void ThunkCallbacks::OnSuccess(
+void ThunkFactoryClient::OnSuccess(
     std::unique_ptr<IndexedDBConnection> connection,
     const blink::IndexedDBDatabaseMetadata& metadata) {
   wrapped_->OnSuccess(std::move(connection), metadata);
 }
 
-void ThunkCallbacks::OnSuccess(int64_t value) {
+void ThunkFactoryClient::OnSuccess(int64_t value) {
   wrapped_->OnSuccess(value);
 }
 

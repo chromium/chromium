@@ -132,8 +132,8 @@ class CONTENT_EXPORT IndexedDBDispatcherHost : public blink::mojom::IDBFactory {
 
   // blink::mojom::IDBFactory implementation:
   void GetDatabaseInfo(GetDatabaseInfoCallback callback) override;
-  void Open(mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks>
-                pending_callbacks,
+  void Open(mojo::PendingAssociatedRemote<blink::mojom::IDBFactoryClient>
+                factory_client,
             mojo::PendingAssociatedRemote<blink::mojom::IDBDatabaseCallbacks>
                 database_callbacks_remote,
             const std::u16string& name,
@@ -141,8 +141,8 @@ class CONTENT_EXPORT IndexedDBDispatcherHost : public blink::mojom::IDBFactory {
             mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction>
                 transaction_receiver,
             int64_t transaction_id) override;
-  void DeleteDatabase(mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks>
-                          pending_callbacks,
+  void DeleteDatabase(mojo::PendingAssociatedRemote<
+                          blink::mojom::IDBFactoryClient> factory_client,
                       const std::u16string& name,
                       bool force_close) override;
 

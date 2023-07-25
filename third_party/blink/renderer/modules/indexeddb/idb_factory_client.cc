@@ -26,7 +26,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_callbacks_impl.h"
+#include "third_party/blink/renderer/modules/indexeddb/idb_factory_client.h"
 
 #include <memory>
 #include <utility>
@@ -49,41 +49,41 @@
 
 namespace blink {
 
-WebIDBCallbacksImpl::WebIDBCallbacksImpl(IDBRequest* request)
-    : request_(request) {
+IDBFactoryClient::IDBFactoryClient(IDBRequest* request) : request_(request) {
   task_runner_ =
       request_->GetExecutionContext()->GetTaskRunner(TaskType::kDatabaseAccess);
   async_task_context_.Schedule(request_->GetExecutionContext(),
                                indexed_db_names::kIndexedDB);
 }
 
-WebIDBCallbacksImpl::~WebIDBCallbacksImpl() {
+IDBFactoryClient::~IDBFactoryClient() {
   Detach();
 }
 
-void WebIDBCallbacksImpl::Detach() {
-  DetachCallbackFromRequest();
-  DetachRequestFromCallback();
+void IDBFactoryClient::Detach() {
+  DetachFromRequest();
+  DetachRequest();
 }
 
-void WebIDBCallbacksImpl::DetachCallbackFromRequest() {
+void IDBFactoryClient::DetachFromRequest() {
   if (request_) {
     async_task_context_.Cancel();
 #if DCHECK_IS_ON()
-    DCHECK_EQ(this, request_->WebCallbacks());
+    DCHECK_EQ(this, request_->FactoryClient());
 #endif  // DCHECK_IS_ON()
-    request_->WebCallbacksDestroyed();
+    request_->FactoryClientDestroyed();
   }
 }
 
-void WebIDBCallbacksImpl::DetachRequestFromCallback() {
+void IDBFactoryClient::DetachRequest() {
   request_.Clear();
 }
 
-void WebIDBCallbacksImpl::Error(mojom::blink::IDBException code,
-                                const String& message) {
-  if (!request_)
+void IDBFactoryClient::Error(mojom::blink::IDBException code,
+                             const String& message) {
+  if (!request_) {
     return;
+  }
 
   // In some cases, the backend clears the pending transaction task queue which
   // destroys all pending tasks.  If our callback was queued with a task that
@@ -102,7 +102,7 @@ void WebIDBCallbacksImpl::Error(mojom::blink::IDBException code,
       static_cast<DOMExceptionCode>(code), message));
 }
 
-void WebIDBCallbacksImpl::SuccessDatabase(
+void IDBFactoryClient::SuccessDatabase(
     mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase> pending_database,
     const IDBDatabaseMetadata& metadata) {
   std::unique_ptr<WebIDBDatabase> db;
@@ -124,9 +124,10 @@ void WebIDBCallbacksImpl::SuccessDatabase(
   }
 }
 
-void WebIDBCallbacksImpl::SuccessInteger(int64_t value) {
-  if (!request_)
+void IDBFactoryClient::SuccessInteger(int64_t value) {
+  if (!request_) {
     return;
+  }
 
   probe::AsyncTask async_task(request_->GetExecutionContext(),
                               &async_task_context_, "success");
@@ -135,9 +136,10 @@ void WebIDBCallbacksImpl::SuccessInteger(int64_t value) {
   request->HandleResponse(value);
 }
 
-void WebIDBCallbacksImpl::Blocked(int64_t old_version) {
-  if (!request_)
+void IDBFactoryClient::Blocked(int64_t old_version) {
+  if (!request_) {
     return;
+  }
 
   probe::AsyncTask async_task(request_->GetExecutionContext(),
                               &async_task_context_, "blocked");
@@ -150,10 +152,10 @@ void WebIDBCallbacksImpl::Blocked(int64_t old_version) {
   // Error().
 }
 
-void WebIDBCallbacksImpl::UpgradeNeeded(
+void IDBFactoryClient::UpgradeNeeded(
     mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase> pending_database,
     int64_t old_version,
-    mojom::IDBDataLoss data_loss,
+    mojom::blink::IDBDataLoss data_loss,
     const String& data_loss_message,
     const IDBDatabaseMetadata& metadata) {
   std::unique_ptr<WebIDBDatabase> db;

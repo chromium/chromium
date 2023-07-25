@@ -232,22 +232,22 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
 
   const String& readyState() const;
 
-  // Returns a new WebIDBCallbacksImpl for this request.
+  // Returns a new IDBFactoryClient for this request.
   //
-  // Each call must be paired with a WebCallbacksDestroyed() call. Most requests
-  // have a single WebIDBCallbacksImpl instance created for them.
+  // Each call must be paired with a FactoryClientDestroyed() call. Most
+  // requests have a single IDBFactoryClient instance created for them.
   //
   // Requests used to open and iterate cursors are special, because they are
   // reused between openCursor() and continue() / advance() calls. These
-  // requests have a new WebIDBCallbacksImpl instance created for each of the
+  // requests have a new IDBFactoryClient instance created for each of the
   // above-mentioned calls that they are involved in.
-  std::unique_ptr<WebIDBCallbacksImpl> CreateWebCallbacks();
-  void WebCallbacksDestroyed() {
-    DCHECK(web_callbacks_);
-    web_callbacks_ = nullptr;
+  std::unique_ptr<IDBFactoryClient> CreateFactoryClient();
+  void FactoryClientDestroyed() {
+    DCHECK(factory_client_);
+    factory_client_ = nullptr;
   }
 #if DCHECK_IS_ON()
-  WebIDBCallbacksImpl* WebCallbacks() const { return web_callbacks_; }
+  IDBFactoryClient* FactoryClient() const { return factory_client_; }
 #endif  // DCHECK_IS_ON()
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(success, kSuccess)
@@ -286,7 +286,7 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
   //
   // Some types of requests, such as indexedDB.openDatabase(), cannot be issued
   // after a request that needs Blob processing, so their results are handled by
-  // having WebIDBCallbacksImplImpl call directly into EnqueueResponse(),
+  // having IDBFactoryClient call directly into EnqueueResponse(),
   // EnqueueBlocked(), or EnqueueUpgradeNeeded().
 
   void HandleResponse(DOMException*);
@@ -459,9 +459,9 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
   bool prevent_propagation_ = false;
   bool result_dirty_ = true;
 
-  // Pointer back to the WebIDBCallbacksImpl that holds a persistent reference
+  // Pointer back to the IDBFactoryClient that holds a persistent reference
   // to this object.
-  WebIDBCallbacksImpl* web_callbacks_ = nullptr;
+  IDBFactoryClient* factory_client_ = nullptr;
 
   // Non-null while this request is queued behind other requests that are still
   // getting post-processed.

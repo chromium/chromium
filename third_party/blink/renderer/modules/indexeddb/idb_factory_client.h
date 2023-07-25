@@ -26,8 +26,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_WEB_IDB_CALLBACKS_IMPL_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_WEB_IDB_CALLBACKS_IMPL_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_IDB_FACTORY_CLIENT_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_IDB_FACTORY_CLIENT_H_
 
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -43,20 +43,20 @@ namespace blink {
 class IDBRequest;
 struct IDBDatabaseMetadata;
 
-class MODULES_EXPORT WebIDBCallbacksImpl final
-    : public mojom::blink::IDBCallbacks {
-  USING_FAST_MALLOC(WebIDBCallbacksImpl);
+class MODULES_EXPORT IDBFactoryClient final
+    : public mojom::blink::IDBFactoryClient {
+  USING_FAST_MALLOC(IDBFactoryClient);
 
  public:
   // |kNoTransaction| is used as the default transaction ID when instantiating
-  // an WebIDBCallbacksImpl instance.  See web_idb_factory_impl.cc for those
+  // an IDBFactoryClient instance.  See web_idb_factory_impl.cc for those
   // cases.
   enum : int64_t { kNoTransaction = -1 };
 
-  explicit WebIDBCallbacksImpl(IDBRequest*);
-  ~WebIDBCallbacksImpl() override;
+  explicit IDBFactoryClient(IDBRequest*);
+  ~IDBFactoryClient() override;
 
-  void DetachRequestFromCallback();
+  void DetachRequest();
 
   void Error(mojom::blink::IDBException code, const String& message) override;
   void SuccessDatabase(
@@ -67,13 +67,13 @@ class MODULES_EXPORT WebIDBCallbacksImpl final
   void UpgradeNeeded(
       mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase> pending_database,
       int64_t old_version,
-      mojom::IDBDataLoss data_loss,
+      mojom::blink::IDBDataLoss data_loss,
       const String& data_loss_message,
       const IDBDatabaseMetadata&) override;
 
  private:
   void Detach();
-  void DetachCallbackFromRequest();
+  void DetachFromRequest();
 
   Persistent<IDBRequest> request_;
   probe::AsyncTaskContext async_task_context_;
@@ -82,4 +82,4 @@ class MODULES_EXPORT WebIDBCallbacksImpl final
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_WEB_IDB_CALLBACKS_IMPL_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_IDB_FACTORY_CLIENT_H_

@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_database.h"
+#include "third_party/blink/renderer/modules/indexeddb/idb_factory_client.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_path.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_metadata.h"
@@ -56,7 +57,6 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_value_wrapping.h"
 #include "third_party/blink/renderer/modules/indexeddb/mock_idb_database.h"
 #include "third_party/blink/renderer/modules/indexeddb/mock_idb_transaction.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_callbacks_impl.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_database.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_transaction.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -205,8 +205,8 @@ class IDBRequestTest : public testing::Test {
     store_ = MakeGarbageCollected<IDBObjectStore>(store_metadata, transaction_);
   }
 
-  void EnsureIDBCallbacksDontThrow(IDBRequest* request,
-                                   ExceptionState& exception_state) {
+  void EnsureRequestResponsesDontThrow(IDBRequest* request,
+                                       ExceptionState& exception_state) {
     ASSERT_TRUE(request->transaction());
     V8TestingScope scope;
 
@@ -257,7 +257,7 @@ TEST_F(IDBRequestTest, EventsAfterEarlyDeathStop) {
   ASSERT_TRUE(request->transaction());
   scope.GetExecutionContext()->NotifyContextDestroyed();
 
-  EnsureIDBCallbacksDontThrow(request, scope.GetExceptionState());
+  EnsureRequestResponsesDontThrow(request, scope.GetExceptionState());
   transaction_->transaction_backend()->FlushForTesting();
   database_backend.Flush();
 }
@@ -281,7 +281,7 @@ TEST_F(IDBRequestTest, EventsAfterDoneStop) {
   request->HandleResponse(CreateIDBValueForTesting(scope.GetIsolate(), false));
   scope.GetExecutionContext()->NotifyContextDestroyed();
 
-  EnsureIDBCallbacksDontThrow(request, scope.GetExceptionState());
+  EnsureRequestResponsesDontThrow(request, scope.GetExceptionState());
   transaction_->transaction_backend()->FlushForTesting();
   database_backend.Flush();
 }
@@ -306,9 +306,9 @@ TEST_F(IDBRequestTest, EventsAfterEarlyDeathStopWithQueuedResult) {
   request->HandleResponse(CreateIDBValueForTesting(scope.GetIsolate(), true));
   scope.GetExecutionContext()->NotifyContextDestroyed();
 
-  EnsureIDBCallbacksDontThrow(request, scope.GetExceptionState());
+  EnsureRequestResponsesDontThrow(request, scope.GetExceptionState());
   url_loader_mock_factory_->ServeAsynchronousRequests();
-  EnsureIDBCallbacksDontThrow(request, scope.GetExceptionState());
+  EnsureRequestResponsesDontThrow(request, scope.GetExceptionState());
   transaction_->transaction_backend()->FlushForTesting();
   database_backend.Flush();
 }
@@ -349,11 +349,11 @@ TEST_F(IDBRequestTest, MAYBE_EventsAfterEarlyDeathStopWithTwoQueuedResults) {
   request2->HandleResponse(CreateIDBValueForTesting(scope.GetIsolate(), true));
   scope.GetExecutionContext()->NotifyContextDestroyed();
 
-  EnsureIDBCallbacksDontThrow(request1, scope.GetExceptionState());
-  EnsureIDBCallbacksDontThrow(request2, scope.GetExceptionState());
+  EnsureRequestResponsesDontThrow(request1, scope.GetExceptionState());
+  EnsureRequestResponsesDontThrow(request2, scope.GetExceptionState());
   url_loader_mock_factory_->ServeAsynchronousRequests();
-  EnsureIDBCallbacksDontThrow(request1, scope.GetExceptionState());
-  EnsureIDBCallbacksDontThrow(request2, scope.GetExceptionState());
+  EnsureRequestResponsesDontThrow(request1, scope.GetExceptionState());
+  EnsureRequestResponsesDontThrow(request2, scope.GetExceptionState());
   transaction_->transaction_backend()->FlushForTesting();
   database_backend.Flush();
 }
@@ -381,7 +381,7 @@ TEST_F(IDBRequestTest, MAYBE_AbortErrorAfterAbort) {
   request->Abort();
 
   // Now simulate the back end having fired an abort error at the request to
-  // clear up any intermediaries.  Ensure an assertion is not raised.
+  // clear up any intermediaries. Ensure an assertion is not raised.
   request->HandleResponse(MakeGarbageCollected<DOMException>(
       DOMExceptionCode::kAbortError, "Description goes here."));
 
@@ -412,12 +412,12 @@ TEST_F(IDBRequestTest, ConnectionsAfterStopping) {
         std::move(transaction_backend), kTransactionId, kVersion,
         IDBRequest::AsyncTraceState(), mojo::NullRemote());
     EXPECT_EQ(request->readyState(), "pending");
-    std::unique_ptr<WebIDBCallbacksImpl> callbacks =
-        request->CreateWebCallbacks();
+    std::unique_ptr<IDBFactoryClient> factory_client =
+        request->CreateFactoryClient();
 
     scope.GetExecutionContext()->NotifyContextDestroyed();
-    callbacks->UpgradeNeeded(remote.Unbind(), kOldVersion,
-                             mojom::IDBDataLoss::None, String(), metadata);
+    factory_client->UpgradeNeeded(remote.Unbind(), kOldVersion,
+                                  mojom::IDBDataLoss::None, String(), metadata);
     platform_->RunUntilIdle();
   }
 
@@ -437,11 +437,11 @@ TEST_F(IDBRequestTest, ConnectionsAfterStopping) {
         std::move(transaction_backend), kTransactionId, kVersion,
         IDBRequest::AsyncTraceState(), mojo::NullRemote());
     EXPECT_EQ(request->readyState(), "pending");
-    std::unique_ptr<WebIDBCallbacksImpl> callbacks =
-        request->CreateWebCallbacks();
+    std::unique_ptr<IDBFactoryClient> factory_client =
+        request->CreateFactoryClient();
 
     scope.GetExecutionContext()->NotifyContextDestroyed();
-    callbacks->SuccessDatabase(remote.Unbind(), metadata);
+    factory_client->SuccessDatabase(remote.Unbind(), metadata);
     platform_->RunUntilIdle();
   }
 }

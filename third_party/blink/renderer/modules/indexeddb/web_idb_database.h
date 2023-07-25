@@ -20,7 +20,6 @@
 
 namespace blink {
 class IDBRequest;
-class WebIDBCallbacksImpl;
 
 class MODULES_EXPORT WebIDBDatabase final {
  public:
@@ -116,9 +115,6 @@ class MODULES_EXPORT WebIDBDatabase final {
   void DidBecomeInactive();
 
  private:
-  mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks> GetCallbacksProxy(
-      std::unique_ptr<WebIDBCallbacksImpl> callbacks);
-
   mojo::AssociatedRemote<mojom::blink::IDBDatabase> database_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };

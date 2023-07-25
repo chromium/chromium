@@ -49,7 +49,7 @@ namespace blink {
 
 class ExceptionState;
 class ScriptState;
-class WebIDBCallbacksImpl;
+class IDBFactoryClient;
 
 class MODULES_EXPORT IDBFactory final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -139,8 +139,8 @@ class MODULES_EXPORT IDBFactory final : public ScriptWrappable {
 
   absl::optional<bool> allowed_;
 
-  mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks> GetCallbacksProxy(
-      std::unique_ptr<WebIDBCallbacksImpl> callbacks);
+  mojo::PendingAssociatedRemote<mojom::blink::IDBFactoryClient>
+  AttachRemoteClient(std::unique_ptr<IDBFactoryClient> client);
   mojo::PendingRemote<mojom::blink::ObservedFeature> GetObservedFeature();
 
   HeapMojoRemote<mojom::blink::IDBFactory> factory_;

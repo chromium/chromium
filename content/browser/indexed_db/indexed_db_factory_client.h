@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_CALLBACKS_H_
-#define CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_CALLBACKS_H_
+#ifndef CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_FACTORY_CLIENT_H_
+#define CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_FACTORY_CLIENT_H_
 
 #include <stdint.h>
 
@@ -37,17 +37,20 @@ class IndexedDBConnection;
 class IndexedDBDatabase;
 struct IndexedDBDataLossInfo;
 
-class CONTENT_EXPORT IndexedDBCallbacks {
+// This class wraps the remote (renderer-side) object for handling database open
+// or delete operations.
+class CONTENT_EXPORT IndexedDBFactoryClient {
  public:
-  IndexedDBCallbacks(base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
-                     const absl::optional<storage::BucketInfo>& bucket,
-                     mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks>
-                         pending_callbacks,
-                     scoped_refptr<base::SequencedTaskRunner> idb_runner);
-  virtual ~IndexedDBCallbacks();
+  IndexedDBFactoryClient(
+      base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
+      const absl::optional<storage::BucketInfo>& bucket,
+      mojo::PendingAssociatedRemote<blink::mojom::IDBFactoryClient>
+          pending_client,
+      scoped_refptr<base::SequencedTaskRunner> idb_runner);
+  virtual ~IndexedDBFactoryClient();
 
-  IndexedDBCallbacks(const IndexedDBCallbacks&) = delete;
-  IndexedDBCallbacks& operator=(const IndexedDBCallbacks&) = delete;
+  IndexedDBFactoryClient(const IndexedDBFactoryClient&) = delete;
+  IndexedDBFactoryClient& operator=(const IndexedDBFactoryClient&) = delete;
 
   virtual void OnError(const IndexedDBDatabaseError& error);
 
@@ -90,11 +93,11 @@ class CONTENT_EXPORT IndexedDBCallbacks {
   base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host_;
   absl::optional<storage::BucketInfo> bucket_info_;
   scoped_refptr<base::SequencedTaskRunner> idb_runner_;
-  mojo::AssociatedRemote<blink::mojom::IDBCallbacks> callbacks_;
+  mojo::AssociatedRemote<blink::mojom::IDBFactoryClient> remote_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_CALLBACKS_H_
+#endif  // CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_FACTORY_CLIENT_H_

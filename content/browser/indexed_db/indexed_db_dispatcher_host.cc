@@ -22,12 +22,12 @@
 #include "components/services/storage/filesystem_proxy_factory.h"
 #include "content/browser/indexed_db/cursor_impl.h"
 #include "content/browser/indexed_db/file_stream_reader_to_data_pipe.h"
-#include "content/browser/indexed_db/indexed_db_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/browser/indexed_db/indexed_db_cursor.h"
 #include "content/browser/indexed_db/indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_factory.h"
+#include "content/browser/indexed_db/indexed_db_factory_client.h"
 #include "content/browser/indexed_db/indexed_db_pending_connection.h"
 #include "content/browser/indexed_db/transaction_impl.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -273,7 +273,8 @@ void IndexedDBDispatcherHost::GetDatabaseInfo(
 }
 
 void IndexedDBDispatcherHost::Open(
-    mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks> pending_callbacks,
+    mojo::PendingAssociatedRemote<blink::mojom::IDBFactoryClient>
+        pending_factory_client,
     mojo::PendingAssociatedRemote<blink::mojom::IDBDatabaseCallbacks>
         database_callbacks_remote,
     const std::u16string& name,
@@ -285,8 +286,8 @@ void IndexedDBDispatcherHost::Open(
 
   // Return error if failed to retrieve bucket from the QuotaManager.
   if (!receivers_.current_context().bucket.has_value()) {
-    auto callbacks = std::make_unique<IndexedDBCallbacks>(
-        this->AsWeakPtr(), absl::nullopt, std::move(pending_callbacks),
+    auto callbacks = std::make_unique<IndexedDBFactoryClient>(
+        this->AsWeakPtr(), absl::nullopt, std::move(pending_factory_client),
         IDBTaskRunner());
     IndexedDBDatabaseError error = IndexedDBDatabaseError(
         blink::mojom::IDBException::kUnknownError, u"Internal error.");
@@ -295,8 +296,9 @@ void IndexedDBDispatcherHost::Open(
   }
 
   const auto& bucket = *receivers_.current_context().bucket;
-  auto callbacks = std::make_unique<IndexedDBCallbacks>(
-      this->AsWeakPtr(), bucket, std::move(pending_callbacks), IDBTaskRunner());
+  auto callbacks = std::make_unique<IndexedDBFactoryClient>(
+      this->AsWeakPtr(), bucket, std::move(pending_factory_client),
+      IDBTaskRunner());
   auto database_callbacks = base::MakeRefCounted<IndexedDBDatabaseCallbacks>(
       indexed_db_context_, std::move(database_callbacks_remote),
       IDBTaskRunner());
@@ -320,30 +322,34 @@ void IndexedDBDispatcherHost::Open(
 }
 
 void IndexedDBDispatcherHost::DeleteDatabase(
-    mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks> pending_callbacks,
+    mojo::PendingAssociatedRemote<blink::mojom::IDBFactoryClient>
+        pending_factory_client,
     const std::u16string& name,
     bool force_close) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Return error if failed to retrieve bucket from the QuotaManager.
   if (!receivers_.current_context().bucket.has_value()) {
-    IndexedDBCallbacks callbacks(this->AsWeakPtr(), absl::nullopt,
-                                 std::move(pending_callbacks), IDBTaskRunner());
+    IndexedDBFactoryClient factory_client(this->AsWeakPtr(), absl::nullopt,
+                                          std::move(pending_factory_client),
+                                          IDBTaskRunner());
     IndexedDBDatabaseError error = IndexedDBDatabaseError(
         blink::mojom::IDBException::kUnknownError, u"Internal error.");
-    callbacks.OnError(error);
+    factory_client.OnError(error);
     return;
   }
 
   const auto& bucket = *receivers_.current_context().bucket;
-  auto callbacks = std::make_unique<IndexedDBCallbacks>(
-      this->AsWeakPtr(), bucket, std::move(pending_callbacks), IDBTaskRunner());
+  auto factory_client = std::make_unique<IndexedDBFactoryClient>(
+      this->AsWeakPtr(), bucket, std::move(pending_factory_client),
+      IDBTaskRunner());
 
   storage::BucketLocator bucket_locator = bucket.ToBucketLocator();
   base::FilePath indexed_db_path =
       indexed_db_context_->GetDataPath(bucket_locator);
   indexed_db_context_->GetIDBFactory()->DeleteDatabase(
-      name, std::move(callbacks), bucket_locator, indexed_db_path, force_close);
+      name, std::move(factory_client), bucket_locator, indexed_db_path,
+      force_close);
 }
 
 void IndexedDBDispatcherHost::CreateAndBindTransactionImpl(

@@ -25,14 +25,14 @@
 #include "build/build_config.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
-#include "content/browser/indexed_db/indexed_db_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/browser/indexed_db/indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_factory.h"
+#include "content/browser/indexed_db/indexed_db_factory_client.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_env.h"
 #include "content/browser/indexed_db/indexed_db_pending_connection.h"
-#include "content/browser/indexed_db/mock_mojo_indexed_db_callbacks.h"
 #include "content/browser/indexed_db/mock_mojo_indexed_db_database_callbacks.h"
+#include "content/browser/indexed_db/mock_mojo_indexed_db_factory_client.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -108,7 +108,7 @@ struct TestDatabaseConnection {
         version(version),
         upgrade_txn_id(upgrade_txn_id),
         open_callbacks(
-            std::make_unique<StrictMock<MockMojoIndexedDBCallbacks>>()),
+            std::make_unique<StrictMock<MockMojoIndexedDBFactoryClient>>()),
         connection_callbacks(
             std::make_unique<
                 StrictMock<MockMojoIndexedDBDatabaseCallbacks>>()) {}
@@ -144,7 +144,7 @@ struct TestDatabaseConnection {
   mojo::AssociatedRemote<blink::mojom::IDBTransaction>
       version_change_transaction;
 
-  std::unique_ptr<MockMojoIndexedDBCallbacks> open_callbacks;
+  std::unique_ptr<MockMojoIndexedDBFactoryClient> open_callbacks;
   std::unique_ptr<MockMojoIndexedDBDatabaseCallbacks> connection_callbacks;
 };
 

@@ -21,10 +21,10 @@
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_transaction.h"
 #include "content/browser/indexed_db/indexed_db_bucket_state.h"
 #include "content/browser/indexed_db/indexed_db_callback_helpers.h"
-#include "content/browser/indexed_db/indexed_db_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_database.h"
 #include "content/browser/indexed_db/indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
+#include "content/browser/indexed_db/indexed_db_factory_client.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
@@ -159,7 +159,7 @@ class IndexedDBConnectionCoordinator::OpenRequest
           message = u"Internal error opening database with version " +
                     NumberToString16(pending_->version);
         }
-        pending_->callbacks->OnError(IndexedDBDatabaseError(
+        pending_->factory_client->OnError(IndexedDBDatabaseError(
             blink::mojom::IDBException::kUnknownError, message));
         state_ = RequestState::kError;
         return;
@@ -177,7 +177,7 @@ class IndexedDBConnectionCoordinator::OpenRequest
       // For unit tests only - skip upgrade steps. (Calling from script with
       // DEFAULT_VERSION throws exception.)
       DCHECK(is_new_database);
-      pending_->callbacks->OnSuccess(
+      pending_->factory_client->OnSuccess(
           db_->CreateConnection(std::move(bucket_state_handle_),
                                 pending_->database_callbacks,
                                 std::move(client_state_checker_)),
@@ -189,7 +189,7 @@ class IndexedDBConnectionCoordinator::OpenRequest
     if (!is_new_database &&
         (new_version == old_version ||
          new_version == IndexedDBDatabaseMetadata::NO_VERSION)) {
-      pending_->callbacks->OnSuccess(
+      pending_->factory_client->OnSuccess(
           db_->CreateConnection(std::move(bucket_state_handle_),
                                 pending_->database_callbacks,
                                 std::move(client_state_checker_)),
@@ -206,7 +206,7 @@ class IndexedDBConnectionCoordinator::OpenRequest
     } else if (new_version < old_version) {
       // Requested version is lower than current version - fail the request.
       DCHECK(!is_new_database);
-      pending_->callbacks->OnError(IndexedDBDatabaseError(
+      pending_->factory_client->OnError(IndexedDBDatabaseError(
           blink::mojom::IDBException::kVersionError,
           u"The requested version (" + NumberToString16(pending_->version) +
               u") is less than the existing version (" +
@@ -246,15 +246,15 @@ class IndexedDBConnectionCoordinator::OpenRequest
 
   void OnVersionChangeIgnored() const override {
     DCHECK(state_ == RequestState::kPendingNoConnections);
-    pending_->callbacks->OnBlocked(db_->metadata_.version);
+    pending_->factory_client->OnBlocked(db_->metadata_.version);
   }
 
   void OnConnectionClosed(IndexedDBConnection* connection) override {
     // This connection closed prematurely; signal an error and complete.
     if (connection == connection_ptr_for_close_comparision_) {
       connection_ptr_for_close_comparision_ = nullptr;
-      if (!pending_->callbacks->is_complete()) {
-        pending_->callbacks->OnError(
+      if (!pending_->factory_client->is_complete()) {
+        pending_->factory_client->OnError(
             IndexedDBDatabaseError(blink::mojom::IDBException::kAbortError,
                                    "The connection was closed."));
       }
@@ -326,9 +326,9 @@ class IndexedDBConnectionCoordinator::OpenRequest
   void UpgradeTransactionStarted(int64_t old_version) override {
     DCHECK(state_ == RequestState::kPendingTransactionComplete);
     DCHECK(connection_);
-    pending_->callbacks->OnUpgradeNeeded(old_version, std::move(connection_),
-                                         db_->metadata_,
-                                         pending_->data_loss_info);
+    pending_->factory_client->OnUpgradeNeeded(
+        old_version, std::move(connection_), db_->metadata_,
+        pending_->data_loss_info);
   }
 
   void UpgradeTransactionFinished(bool committed) override {
@@ -336,10 +336,10 @@ class IndexedDBConnectionCoordinator::OpenRequest
     // Ownership of connection was already passed along in OnUpgradeNeeded.
     if (committed) {
       DCHECK_EQ(pending_->version, db_->metadata_.version);
-      pending_->callbacks->OnSuccess(nullptr, db_->metadata());
+      pending_->factory_client->OnSuccess(nullptr, db_->metadata());
     } else {
       DCHECK_NE(pending_->version, db_->metadata_.version);
-      pending_->callbacks->OnError(
+      pending_->factory_client->OnError(
           IndexedDBDatabaseError(blink::mojom::IDBException::kAbortError,
                                  "Version change transaction was aborted in "
                                  "upgradeneeded event handler."));
@@ -350,8 +350,8 @@ class IndexedDBConnectionCoordinator::OpenRequest
 
   std::tuple<bool, leveldb::Status> ShouldPruneForForceClose() override {
     DCHECK(pending_);
-    if (!pending_->callbacks->is_complete()) {
-      pending_->callbacks->OnError(
+    if (!pending_->factory_client->is_complete()) {
+      pending_->factory_client->OnError(
           IndexedDBDatabaseError(blink::mojom::IDBException::kAbortError,
                                  "The connection was closed."));
     }
@@ -398,7 +398,7 @@ class IndexedDBConnectionCoordinator::DeleteRequest
  public:
   DeleteRequest(IndexedDBBucketStateHandle bucket_state_handle,
                 IndexedDBDatabase* db,
-                std::unique_ptr<IndexedDBCallbacks> callbacks,
+                std::unique_ptr<IndexedDBFactoryClient> factory_client,
                 base::OnceClosure on_database_deleted,
                 IndexedDBConnectionCoordinator* connection_coordinator,
                 TasksAvailableCallback tasks_available_callback)
@@ -406,7 +406,7 @@ class IndexedDBConnectionCoordinator::DeleteRequest
                           db,
                           connection_coordinator,
                           std::move(tasks_available_callback)),
-        callbacks_(std::move(callbacks)),
+        factory_client_(std::move(factory_client)),
         on_database_deleted_(std::move(on_database_deleted)) {}
 
   DeleteRequest(const DeleteRequest&) = delete;
@@ -437,7 +437,7 @@ class IndexedDBConnectionCoordinator::DeleteRequest
 
   void OnVersionChangeIgnored() const override {
     DCHECK(state_ == RequestState::kPendingNoConnections);
-    callbacks_->OnBlocked(db_->metadata_.version);
+    factory_client_->OnBlocked(db_->metadata_.version);
   }
 
   void OnConnectionClosed(IndexedDBConnection* connection) override {}
@@ -488,7 +488,7 @@ class IndexedDBConnectionCoordinator::DeleteRequest
       // TODO(jsbell): Consider including sanitized leveldb status message.
       IndexedDBDatabaseError error(blink::mojom::IDBException::kUnknownError,
                                    "Internal error deleting database.");
-      callbacks_->OnError(error);
+      factory_client_->OnError(error);
       state_ = RequestState::kError;
       tasks_available_callback_.Run();
       return;
@@ -503,7 +503,7 @@ class IndexedDBConnectionCoordinator::DeleteRequest
     // backing store be a nullptr, so report deleted here.
     if (on_database_deleted_)
       std::move(on_database_deleted_).Run();
-    callbacks_->OnSuccess(old_version);
+    factory_client_->OnSuccess(old_version);
 
     state_ = RequestState::kDone;
     tasks_available_callback_.Run();
@@ -522,7 +522,7 @@ class IndexedDBConnectionCoordinator::DeleteRequest
 
  private:
   PartitionedLockHolder lock_receiver_;
-  std::unique_ptr<IndexedDBCallbacks> callbacks_;
+  std::unique_ptr<IndexedDBFactoryClient> factory_client_;
   base::OnceClosure on_database_deleted_;
 
   base::WeakPtrFactory<DeleteRequest> weak_factory_{this};
@@ -546,10 +546,10 @@ void IndexedDBConnectionCoordinator::ScheduleOpenConnection(
 
 void IndexedDBConnectionCoordinator::ScheduleDeleteDatabase(
     IndexedDBBucketStateHandle bucket_state_handle,
-    std::unique_ptr<IndexedDBCallbacks> callbacks,
+    std::unique_ptr<IndexedDBFactoryClient> factory_client,
     base::OnceClosure on_deletion_complete) {
   request_queue_.push(std::make_unique<DeleteRequest>(
-      std::move(bucket_state_handle), db_, std::move(callbacks),
+      std::move(bucket_state_handle), db_, std::move(factory_client),
       std::move(on_deletion_complete), this, tasks_available_callback_));
   tasks_available_callback_.Run();
 }

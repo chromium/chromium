@@ -47,10 +47,10 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_cursor_with_value.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_database.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_event_dispatcher.h"
+#include "third_party/blink/renderer/modules/indexeddb/idb_factory_client.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_request_queue_item.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value_wrapping.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_callbacks_impl.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -321,11 +321,11 @@ const String& IDBRequest::readyState() const {
   return indexed_db_names::kDone;
 }
 
-std::unique_ptr<WebIDBCallbacksImpl> IDBRequest::CreateWebCallbacks() {
-  DCHECK(!web_callbacks_);
-  auto callbacks = std::make_unique<WebIDBCallbacksImpl>(this);
-  web_callbacks_ = callbacks.get();
-  return callbacks;
+std::unique_ptr<IDBFactoryClient> IDBRequest::CreateFactoryClient() {
+  DCHECK(!factory_client_);
+  auto client = std::make_unique<IDBFactoryClient>(this);
+  factory_client_ = client.get();
+  return client;
 }
 
 void IDBRequest::Abort() {
@@ -953,9 +953,9 @@ void IDBRequest::ContextDestroyed() {
     result_->ContextWillBeDestroyed();
   if (pending_cursor_)
     pending_cursor_->ContextWillBeDestroyed();
-  if (web_callbacks_) {
-    web_callbacks_->DetachRequestFromCallback();
-    web_callbacks_ = nullptr;
+  if (factory_client_) {
+    factory_client_->DetachRequest();
+    factory_client_ = nullptr;
   }
 }
 

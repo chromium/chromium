@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/indexed_db/indexed_db_callbacks.h"
+#include "content/browser/indexed_db/indexed_db_factory_client.h"
 
 #include <stddef.h>
 
@@ -72,8 +72,9 @@ class SafeCursorWrapper {
   SafeCursorWrapper& operator=(const SafeCursorWrapper&) = delete;
 
   ~SafeCursorWrapper() {
-    if (cursor_)
+    if (cursor_) {
       idb_runner_->DeleteSoon(FROM_HERE, cursor_.release());
+    }
   }
   SafeCursorWrapper(SafeCursorWrapper&& other) = default;
 
@@ -83,10 +84,11 @@ class SafeCursorWrapper {
 
 }  // namespace
 
-IndexedDBCallbacks::IndexedDBCallbacks(
+IndexedDBFactoryClient::IndexedDBFactoryClient(
     base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
     const absl::optional<storage::BucketInfo>& bucket,
-    mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks> pending_callbacks,
+    mojo::PendingAssociatedRemote<blink::mojom::IDBFactoryClient>
+        pending_client,
     scoped_refptr<base::SequencedTaskRunner> idb_runner)
     : data_loss_(blink::mojom::IDBDataLoss::None),
       dispatcher_host_(std::move(dispatcher_host)),
@@ -94,40 +96,42 @@ IndexedDBCallbacks::IndexedDBCallbacks(
       idb_runner_(std::move(idb_runner)) {
   DCHECK(idb_runner_->RunsTasksInCurrentSequence());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (pending_callbacks.is_valid()) {
-    callbacks_.Bind(std::move(pending_callbacks));
-    // |callbacks_| is owned by |this|, so if |this| is destroyed, then
-    // |callbacks_| will also be destroyed.  While |callbacks_| is otherwise
-    // alive, |this| will always be valid.
-    callbacks_.set_disconnect_handler(base::BindOnce(
-        &IndexedDBCallbacks::OnConnectionError, base::Unretained(this)));
+  if (pending_client.is_valid()) {
+    remote_.Bind(std::move(pending_client));
+    // |remote_| is owned by |this|, so if |this| is destroyed, then
+    // |remote_| will also be destroyed.  While |remote_| is
+    // otherwise alive, |this| will always be valid.
+    remote_.set_disconnect_handler(base::BindOnce(
+        &IndexedDBFactoryClient::OnConnectionError, base::Unretained(this)));
   }
 }
 
-IndexedDBCallbacks::~IndexedDBCallbacks() {
+IndexedDBFactoryClient::~IndexedDBFactoryClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void IndexedDBCallbacks::OnError(const IndexedDBDatabaseError& error) {
+void IndexedDBFactoryClient::OnError(const IndexedDBDatabaseError& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!complete_);
 
-  if (!callbacks_)
+  if (!remote_) {
     return;
+  }
   if (!dispatcher_host_) {
     OnConnectionError();
     return;
   }
-  callbacks_->Error(error.code(), error.message());
+  remote_->Error(error.code(), error.message());
   complete_ = true;
 }
 
-void IndexedDBCallbacks::OnBlocked(int64_t existing_version) {
+void IndexedDBFactoryClient::OnBlocked(int64_t existing_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!complete_);
 
-  if (sent_blocked_)
+  if (sent_blocked_) {
     return;
+  }
 
   sent_blocked_ = true;
 
@@ -135,11 +139,12 @@ void IndexedDBCallbacks::OnBlocked(int64_t existing_version) {
     OnConnectionError();
     return;
   }
-  if (callbacks_)
-    callbacks_->Blocked(existing_version);
+  if (remote_) {
+    remote_->Blocked(existing_version);
+  }
 }
 
-void IndexedDBCallbacks::OnUpgradeNeeded(
+void IndexedDBFactoryClient::OnUpgradeNeeded(
     int64_t old_version,
     std::unique_ptr<IndexedDBConnection> connection,
     const IndexedDBDatabaseMetadata& metadata,
@@ -153,8 +158,9 @@ void IndexedDBCallbacks::OnUpgradeNeeded(
   connection_created_ = true;
 
   SafeConnectionWrapper wrapper(std::move(connection));
-  if (!callbacks_)
+  if (!remote_) {
     return;
+  }
   if (!dispatcher_host_) {
     OnConnectionError();
     return;
@@ -167,12 +173,12 @@ void IndexedDBCallbacks::OnUpgradeNeeded(
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_remote;
   dispatcher_host_->AddDatabaseBinding(
       std::move(database), pending_remote.InitWithNewEndpointAndPassReceiver());
-  callbacks_->UpgradeNeeded(std::move(pending_remote), old_version,
-                            data_loss_info.status, data_loss_info.message,
-                            metadata);
+  remote_->UpgradeNeeded(std::move(pending_remote), old_version,
+                         data_loss_info.status, data_loss_info.message,
+                         metadata);
 }
 
-void IndexedDBCallbacks::OnSuccess(
+void IndexedDBFactoryClient::OnSuccess(
     std::unique_ptr<IndexedDBConnection> connection,
     const IndexedDBDatabaseMetadata& metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -183,12 +189,14 @@ void IndexedDBCallbacks::OnSuccess(
   // Only create a new connection if one was not previously sent in
   // OnUpgradeNeeded.
   std::unique_ptr<IndexedDBConnection> database_connection;
-  if (!connection_created_)
+  if (!connection_created_) {
     database_connection = std::move(connection);
+  }
 
   SafeConnectionWrapper wrapper(std::move(database_connection));
-  if (!callbacks_)
+  if (!remote_) {
     return;
+  }
   if (!dispatcher_host_) {
     OnConnectionError();
     return;
@@ -203,27 +211,28 @@ void IndexedDBCallbacks::OnSuccess(
         std::move(database),
         pending_remote.InitWithNewEndpointAndPassReceiver());
   }
-  callbacks_->SuccessDatabase(std::move(pending_remote), metadata);
+  remote_->SuccessDatabase(std::move(pending_remote), metadata);
   complete_ = true;
 }
 
-void IndexedDBCallbacks::OnSuccess(int64_t value) {
+void IndexedDBFactoryClient::OnSuccess(int64_t value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!complete_);
 
-  if (!callbacks_)
+  if (!remote_) {
     return;
+  }
   if (!dispatcher_host_) {
     OnConnectionError();
     return;
   }
-  callbacks_->SuccessInteger(value);
+  remote_->SuccessInteger(value);
   complete_ = true;
 }
 
-void IndexedDBCallbacks::OnConnectionError() {
+void IndexedDBFactoryClient::OnConnectionError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  callbacks_.reset();
+  remote_.reset();
   dispatcher_host_ = nullptr;
 }
 

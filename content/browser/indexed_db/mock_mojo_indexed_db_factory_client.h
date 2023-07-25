@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_INDEXED_DB_MOCK_MOJO_INDEXED_DB_CALLBACKS_H_
-#define CONTENT_BROWSER_INDEXED_DB_MOCK_MOJO_INDEXED_DB_CALLBACKS_H_
+#ifndef CONTENT_BROWSER_INDEXED_DB_MOCK_MOJO_INDEXED_DB_FACTORY_CLIENT_H_
+#define CONTENT_BROWSER_INDEXED_DB_MOCK_MOJO_INDEXED_DB_FACTORY_CLIENT_H_
 
 #include <stddef.h>
 #include <string>
@@ -20,17 +20,18 @@ struct IndexedDBDatabaseMetadata;
 
 namespace content {
 
-class MockMojoIndexedDBCallbacks : public blink::mojom::IDBCallbacks {
+class MockMojoIndexedDBFactoryClient : public blink::mojom::IDBFactoryClient {
  public:
-  explicit MockMojoIndexedDBCallbacks();
+  explicit MockMojoIndexedDBFactoryClient();
 
-  MockMojoIndexedDBCallbacks(const MockMojoIndexedDBCallbacks&) = delete;
-  MockMojoIndexedDBCallbacks& operator=(const MockMojoIndexedDBCallbacks&) =
+  MockMojoIndexedDBFactoryClient(const MockMojoIndexedDBFactoryClient&) =
       delete;
+  MockMojoIndexedDBFactoryClient& operator=(
+      const MockMojoIndexedDBFactoryClient&) = delete;
 
-  ~MockMojoIndexedDBCallbacks() override;
+  ~MockMojoIndexedDBFactoryClient() override;
 
-  mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks>
+  mojo::PendingAssociatedRemote<blink::mojom::IDBFactoryClient>
   CreateInterfacePtrAndBind();
 
   MOCK_METHOD2(Error,
@@ -75,9 +76,9 @@ class MockMojoIndexedDBCallbacks : public blink::mojom::IDBCallbacks {
   MOCK_METHOD0(Success, void());
 
  private:
-  mojo::AssociatedReceiver<blink::mojom::IDBCallbacks> receiver_{this};
+  mojo::AssociatedReceiver<blink::mojom::IDBFactoryClient> receiver_{this};
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_INDEXED_DB_MOCK_MOJO_INDEXED_DB_CALLBACKS_H_
+#endif  // CONTENT_BROWSER_INDEXED_DB_MOCK_MOJO_INDEXED_DB_FACTORY_CLIENT_H_

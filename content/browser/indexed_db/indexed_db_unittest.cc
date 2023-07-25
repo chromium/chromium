@@ -28,8 +28,9 @@
 #include "content/browser/indexed_db/indexed_db_factory.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_env.h"
-#include "content/browser/indexed_db/mock_indexed_db_callbacks.h"
 #include "content/browser/indexed_db/mock_indexed_db_database_callbacks.h"
+#include "content/browser/indexed_db/mock_indexed_db_factory_client.h"
+#include "content/browser/indexed_db/mock_mojo_indexed_db_factory_client.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/features.h"
@@ -425,14 +426,14 @@ TEST_P(IndexedDBTest, SetForceKeepSessionState) {
   EXPECT_TRUE(base::DirectoryExists(session_only_path_third_party));
 }
 
-class ForceCloseDBCallbacks : public IndexedDBCallbacks {
+class ForceCloseDBCallbacks : public IndexedDBFactoryClient {
  public:
   ForceCloseDBCallbacks(scoped_refptr<IndexedDBContextImpl> idb_context,
                         const storage::BucketInfo& bucket_info)
-      : IndexedDBCallbacks(nullptr,
-                           bucket_info,
-                           mojo::NullAssociatedRemote(),
-                           idb_context->IDBTaskRunner()),
+      : IndexedDBFactoryClient(nullptr,
+                               bucket_info,
+                               mojo::NullAssociatedRemote(),
+                               idb_context->IDBTaskRunner()),
         idb_context_(idb_context),
         bucket_locator_(bucket_info.ToBucketLocator()) {}
   ~ForceCloseDBCallbacks() override = default;
@@ -479,7 +480,7 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDeleteFirstParty) {
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
   factory->Open(u"opendb",
                 std::make_unique<IndexedDBPendingConnection>(
-                    std::make_unique<ThunkCallbacks>(*open_callbacks),
+                    std::make_unique<ThunkFactoryClient>(*open_callbacks),
                     open_db_callbacks, host_transaction_id, version,
                     std::move(create_transaction_callback1)),
                 bucket_locator, context()->GetDataPath(bucket_locator),
@@ -490,7 +491,7 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDeleteFirstParty) {
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
   factory->Open(u"closeddb",
                 std::make_unique<IndexedDBPendingConnection>(
-                    std::make_unique<ThunkCallbacks>(*closed_callbacks),
+                    std::make_unique<ThunkFactoryClient>(*closed_callbacks),
                     closed_db_callbacks, host_transaction_id, version,
                     std::move(create_transaction_callback2)),
                 bucket_locator, context()->GetDataPath(bucket_locator),
@@ -545,7 +546,7 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDeleteThirdParty) {
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
   factory->Open(u"opendb",
                 std::make_unique<IndexedDBPendingConnection>(
-                    std::make_unique<ThunkCallbacks>(*open_callbacks),
+                    std::make_unique<ThunkFactoryClient>(*open_callbacks),
                     open_db_callbacks, host_transaction_id, version,
                     std::move(create_transaction_callback1)),
                 bucket_locator, context()->GetDataPath(bucket_locator),
@@ -556,7 +557,7 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDeleteThirdParty) {
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
   factory->Open(u"closeddb",
                 std::make_unique<IndexedDBPendingConnection>(
-                    std::make_unique<ThunkCallbacks>(*closed_callbacks),
+                    std::make_unique<ThunkFactoryClient>(*closed_callbacks),
                     closed_db_callbacks, host_transaction_id, version,
                     std::move(create_transaction_callback2)),
                 bucket_locator, context()->GetDataPath(bucket_locator),
@@ -649,12 +650,12 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnCommitFailureFirstParty) {
 
   const int64_t transaction_id = 1;
 
-  auto callbacks = std::make_unique<MockIndexedDBCallbacks>();
+  auto callbacks = std::make_unique<MockIndexedDBFactoryClient>();
   auto db_callbacks = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
   auto create_transaction_callback1 =
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
   auto connection = std::make_unique<IndexedDBPendingConnection>(
-      std::make_unique<ThunkCallbacks>(*callbacks), db_callbacks,
+      std::make_unique<ThunkFactoryClient>(*callbacks), db_callbacks,
       transaction_id, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
       std::move(create_transaction_callback1));
   factory->Open(u"db", std::move(connection), bucket_locator,
@@ -690,12 +691,12 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnCommitFailureThirdParty) {
 
   const int64_t transaction_id = 1;
 
-  auto callbacks = std::make_unique<MockIndexedDBCallbacks>();
+  auto callbacks = std::make_unique<MockIndexedDBFactoryClient>();
   auto db_callbacks = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
   auto create_transaction_callback1 =
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
   auto connection = std::make_unique<IndexedDBPendingConnection>(
-      std::make_unique<ThunkCallbacks>(*callbacks), db_callbacks,
+      std::make_unique<ThunkFactoryClient>(*callbacks), db_callbacks,
       transaction_id, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
       std::move(create_transaction_callback1));
   factory->Open(u"db", std::move(connection), bucket_locator,

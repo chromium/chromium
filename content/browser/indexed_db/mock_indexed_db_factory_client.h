@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_INDEXED_DB_MOCK_INDEXED_DB_CALLBACKS_H_
-#define CONTENT_BROWSER_INDEXED_DB_MOCK_INDEXED_DB_CALLBACKS_H_
+#ifndef CONTENT_BROWSER_INDEXED_DB_MOCK_INDEXED_DB_FACTORY_CLIENT_H_
+#define CONTENT_BROWSER_INDEXED_DB_MOCK_INDEXED_DB_FACTORY_CLIENT_H_
 
 #include <stdint.h>
 
@@ -11,8 +11,8 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
-#include "content/browser/indexed_db/indexed_db_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
+#include "content/browser/indexed_db/indexed_db_factory_client.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 
 namespace blink {
@@ -21,14 +21,15 @@ struct IndexedDBDatabaseMetadata;
 
 namespace content {
 
-class MockIndexedDBCallbacks : public IndexedDBCallbacks {
+class MockIndexedDBFactoryClient : public IndexedDBFactoryClient {
  public:
-  MockIndexedDBCallbacks();
-  explicit MockIndexedDBCallbacks(bool expect_connection);
-  ~MockIndexedDBCallbacks() override;
+  MockIndexedDBFactoryClient();
+  explicit MockIndexedDBFactoryClient(bool expect_connection);
+  ~MockIndexedDBFactoryClient() override;
 
-  MockIndexedDBCallbacks(const MockIndexedDBCallbacks&) = delete;
-  MockIndexedDBCallbacks& operator=(const MockIndexedDBCallbacks&) = delete;
+  MockIndexedDBFactoryClient(const MockIndexedDBFactoryClient&) = delete;
+  MockIndexedDBFactoryClient& operator=(const MockIndexedDBFactoryClient&) =
+      delete;
 
   void OnError(const IndexedDBDatabaseError& error) override;
 
@@ -68,17 +69,17 @@ class MockIndexedDBCallbacks : public IndexedDBCallbacks {
   base::RepeatingClosure call_on_info_success_;
 };
 
-// This class wraps a `MockIndexedDBCallbacks`, passing through all
-// `IndexedDBCallbacks` methods. This allows a test to create an underlying
-// `MockIndexedDBCallbacks` and pass ownership of a wrapper to the pending
+// This class wraps a `MockIndexedDBFactoryClient`, passing through all
+// `IndexedDBFactoryClient` methods. This allows a test to create an underlying
+// `MockIndexedDBFactoryClient` and pass ownership of a wrapper to the pending
 // connection.
-class ThunkCallbacks : public MockIndexedDBCallbacks {
+class ThunkFactoryClient : public MockIndexedDBFactoryClient {
  public:
   // `wrapped` must outlast this.
-  explicit ThunkCallbacks(IndexedDBCallbacks& wrapped);
-  ~ThunkCallbacks() override = default;
-  ThunkCallbacks(const ThunkCallbacks&) = delete;
-  ThunkCallbacks& operator=(const ThunkCallbacks&) = delete;
+  explicit ThunkFactoryClient(IndexedDBFactoryClient& wrapped);
+  ~ThunkFactoryClient() override = default;
+  ThunkFactoryClient(const ThunkFactoryClient&) = delete;
+  ThunkFactoryClient& operator=(const ThunkFactoryClient&) = delete;
 
   void OnError(const IndexedDBDatabaseError& error) override;
   void OnBlocked(int64_t existing_version) override;
@@ -91,9 +92,9 @@ class ThunkCallbacks : public MockIndexedDBCallbacks {
   void OnSuccess(int64_t value) override;
 
  private:
-  const raw_ref<IndexedDBCallbacks> wrapped_;
+  const raw_ref<IndexedDBFactoryClient> wrapped_;
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_INDEXED_DB_MOCK_INDEXED_DB_CALLBACKS_H_
+#endif  // CONTENT_BROWSER_INDEXED_DB_MOCK_INDEXED_DB_FACTORY_CLIENT_H_

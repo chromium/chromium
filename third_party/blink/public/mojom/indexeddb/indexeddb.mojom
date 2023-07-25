@@ -228,25 +228,21 @@ struct IDBReturnValue {
   IDBKeyPath key_path;
 };
 
-// The IDBCallbacks interface is used to return results for requests to open or
+// The IDBFactoryClient interface is used to return results for requests to open or
 // delete databases.
-// TODO(estade): this interface should be renamed.
-interface IDBCallbacks {
+interface IDBFactoryClient {
+  // These may be called during either Open or DeleteDatabase operations.
   Error(IDBException code, mojo_base.mojom.String16 message);
-
-  // Factory::Open / DeleteDatabase
   Blocked(int64 existing_version);
 
-  // Factory::Open
+  // Called during Open operations.
   UpgradeNeeded(pending_associated_remote<IDBDatabase> pending_database,
                 int64 old_version, IDBDataLoss data_loss,
                 string data_loss_message, IDBDatabaseMetadata db_metadata);
-
-  // Factory::Open
   SuccessDatabase(pending_associated_remote<IDBDatabase>? pending_database,
                   IDBDatabaseMetadata metadata);
 
-  // Factory::DeleteDatabase
+  // Called after a successful DeleteDatabase operation.
   SuccessInteger(int64 value);
 };
 
@@ -450,9 +446,9 @@ interface IDBFactory {
   // |version_change_transaction_receiver| will have version change
   // transaction operations posted to it. |transaction_id| corresponds
   // to the transaction number for this connection's context.
-  // Posts request events and results to |pending_callbacks| and database-level
+  // Posts request events and results to |client| and database-level
   // events and results to |database_callbacks|.
-  Open(pending_associated_remote<IDBCallbacks> pending_callbacks,
+  Open(pending_associated_remote<IDBFactoryClient> client,
        pending_associated_remote<IDBDatabaseCallbacks> database_callbacks,
        mojo_base.mojom.String16 name,
        int64 version,
@@ -462,6 +458,6 @@ interface IDBFactory {
   // Deletes a database |name| in the frame's origin. If |force_close|
   // is true, any existing connections to that database will be closed
   // immediately.
-  DeleteDatabase(pending_associated_remote<IDBCallbacks> pending_callbacks,
+  DeleteDatabase(pending_associated_remote<IDBFactoryClient> client,
                  mojo_base.mojom.String16 name, bool force_close);
 };

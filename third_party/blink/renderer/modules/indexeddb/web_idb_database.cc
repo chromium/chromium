@@ -226,14 +226,4 @@ void WebIDBDatabase::DidBecomeInactive() {
   database_->DidBecomeInactive();
 }
 
-mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks>
-WebIDBDatabase::GetCallbacksProxy(
-    std::unique_ptr<WebIDBCallbacksImpl> callbacks_impl) {
-  mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks> pending_callbacks;
-  mojo::MakeSelfOwnedAssociatedReceiver(
-      std::move(callbacks_impl),
-      pending_callbacks.InitWithNewEndpointAndPassReceiver(), task_runner_);
-  return pending_callbacks;
-}
-
 }  // namespace blink

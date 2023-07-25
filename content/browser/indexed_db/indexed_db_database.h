@@ -26,8 +26,8 @@
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/indexed_db/indexed_db.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
-#include "content/browser/indexed_db/indexed_db_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_connection_coordinator.h"
+#include "content/browser/indexed_db/indexed_db_factory_client.h"
 #include "content/browser/indexed_db/indexed_db_pending_connection.h"
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
@@ -117,9 +117,10 @@ class CONTENT_EXPORT IndexedDBDatabase {
       std::unique_ptr<IndexedDBPendingConnection> connection,
       scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker);
 
-  void ScheduleDeleteDatabase(IndexedDBBucketStateHandle bucket_state_handle,
-                              std::unique_ptr<IndexedDBCallbacks> callbacks,
-                              base::OnceClosure on_deletion_complete);
+  void ScheduleDeleteDatabase(
+      IndexedDBBucketStateHandle bucket_state_handle,
+      std::unique_ptr<IndexedDBFactoryClient> factory_client,
+      base::OnceClosure on_deletion_complete);
 
   void AddObjectStoreToMetadata(blink::IndexedDBObjectStoreMetadata metadata,
                                 int64_t new_max_object_store_id);

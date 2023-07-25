@@ -33,13 +33,13 @@
 #include "content/browser/indexed_db/cursor_impl.h"
 #include "content/browser/indexed_db/indexed_db_bucket_state_handle.h"
 #include "content/browser/indexed_db/indexed_db_callback_helpers.h"
-#include "content/browser/indexed_db/indexed_db_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/browser/indexed_db/indexed_db_cursor.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "content/browser/indexed_db/indexed_db_factory.h"
+#include "content/browser/indexed_db/indexed_db_factory_client.h"
 #include "content/browser/indexed_db/indexed_db_index_writer.h"
 #include "content/browser/indexed_db/indexed_db_metadata_coding.h"
 #include "content/browser/indexed_db/indexed_db_pending_connection.h"
@@ -404,10 +404,10 @@ void IndexedDBDatabase::ScheduleOpenConnection(
 
 void IndexedDBDatabase::ScheduleDeleteDatabase(
     IndexedDBBucketStateHandle bucket_state_handle,
-    std::unique_ptr<IndexedDBCallbacks> callbacks,
+    std::unique_ptr<IndexedDBFactoryClient> factory_client,
     base::OnceClosure on_deletion_complete) {
   connection_coordinator_.ScheduleDeleteDatabase(
-      std::move(bucket_state_handle), std::move(callbacks),
+      std::move(bucket_state_handle), std::move(factory_client),
       std::move(on_deletion_complete));
 }
 

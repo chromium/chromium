@@ -52,8 +52,8 @@
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/indexed_db_names.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_database.h"
+#include "third_party/blink/renderer/modules/indexeddb/idb_factory_client.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_callbacks_impl.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_transaction.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -325,8 +325,7 @@ void IDBFactory::OpenInternalImpl(
     return;
   }
 
-  auto callbacks = request->CreateWebCallbacks();
-  factory->Open(GetCallbacksProxy(std::move(callbacks)),
+  factory->Open(AttachRemoteClient(request->CreateFactoryClient()),
                 std::move(callbacks_remote), name, version,
                 std::move(transaction_receiver), transaction_id);
 }
@@ -407,9 +406,8 @@ void IDBFactory::DeleteDatabaseInternalImpl(
     return;
   }
 
-  auto callbacks = request->CreateWebCallbacks();
-  factory->DeleteDatabase(GetCallbacksProxy(std::move(callbacks)), name,
-                          force_close);
+  factory->DeleteDatabase(AttachRemoteClient(request->CreateFactoryClient()),
+                          name, force_close);
 }
 
 int16_t IDBFactory::cmp(ScriptState* script_state,
@@ -490,12 +488,13 @@ void IDBFactory::DidAllowIndexedDB(base::OnceCallback<void()> callback,
   return;
 }
 
-mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks>
-IDBFactory::GetCallbacksProxy(
-    std::unique_ptr<WebIDBCallbacksImpl> callbacks_impl) {
-  mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks> pending_callbacks;
+mojo::PendingAssociatedRemote<mojom::blink::IDBFactoryClient>
+IDBFactory::AttachRemoteClient(
+    std::unique_ptr<IDBFactoryClient> factory_client) {
+  mojo::PendingAssociatedRemote<mojom::blink::IDBFactoryClient>
+      pending_callbacks;
   mojo::MakeSelfOwnedAssociatedReceiver(
-      std::move(callbacks_impl),
+      std::move(factory_client),
       pending_callbacks.InitWithNewEndpointAndPassReceiver(), task_runner_);
   return pending_callbacks;
 }
