@@ -402,8 +402,8 @@ void RecordReloadWithCookieBlocking(const Browser* browser,
   ukm::builders::ThirdPartyCookies_BreakageIndicator(source_id)
       .SetBreakageIndicatorType(static_cast<int>(
           net::cookie_util::BreakageIndicatorType::USER_RELOAD))
-      .Set3PCBlocked(cookies_blocked)
-      .Set3PCBlockedInSettings(cookies_blocked_in_settings)
+      .SetTPCBlocked(cookies_blocked)
+      .SetTPCBlockedInSettings(cookies_blocked_in_settings)
       .Record(ukm::UkmRecorder::Get());
 }
 

@@ -75,13 +75,13 @@ class BrowserCommandsTest : public InProcessBrowserTest {
                                   bool settings_blocked) {
     auto entries = ukm_recorder.GetEntries(
         "ThirdPartyCookies.BreakageIndicator",
-        {"BreakageIndicatorType", "3PCBlocked", "3PCBlockedInSettings"});
+        {"BreakageIndicatorType", "TPCBlocked", "TPCBlockedInSettings"});
     EXPECT_EQ(entries.size(), size);
     EXPECT_EQ(
         entries.at(index).metrics.at("BreakageIndicatorType"),
         static_cast<int>(net::cookie_util::BreakageIndicatorType::USER_RELOAD));
-    EXPECT_EQ(entries.at(index).metrics.at("3PCBlocked"), blocked);
-    EXPECT_EQ(entries.at(index).metrics.at("3PCBlockedInSettings"),
+    EXPECT_EQ(entries.at(index).metrics.at("TPCBlocked"), blocked);
+    EXPECT_EQ(entries.at(index).metrics.at("TPCBlockedInSettings"),
               settings_blocked);
   }
 

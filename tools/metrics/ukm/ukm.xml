@@ -24253,7 +24253,20 @@ be describing additional metrics about the same event.
     Recorded when there is an event that could be associated with breakage from
     3PC blocking.
   </summary>
-  <metric name="3PCBlocked" enum="Boolean">
+  <metric name="BreakageIndicatorType" enum="BreakageIndicatorType">
+    <summary>
+      The type of event that occurred.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="TPCBlocked" enum="Boolean">
     <summary>
       Whether the site actually had any blocked 3P cookies.
     </summary>
@@ -24266,25 +24279,12 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
-  <metric name="3PCBlockedInSettings" enum="Boolean">
+  <metric name="TPCBlockedInSettings" enum="Boolean">
     <summary>
       Whether the user had third party cookies blocked when the event occurred.
       This metric considers the global third party cookie setting as well as
       per-top-level-site content settings for opting out of third party cookie
       blocking, but not e.g. the Storage Access state of individual iframes.
-    </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="BreakageIndicatorType" enum="BreakageIndicatorType">
-    <summary>
-      The type of event that occurred.
     </summary>
     <aggregation>
       <history>
