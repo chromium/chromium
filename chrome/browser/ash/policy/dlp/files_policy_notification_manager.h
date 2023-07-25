@@ -23,6 +23,7 @@
 #include "content/public/browser/browser_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace content {
 class BrowserContext;
@@ -81,7 +82,7 @@ class FilesPolicyNotificationManager
       dlp::FileAction action);
 
   // Shows a Files Policy warning or error desktop notification with
-  // `notification_id` based on `status`.
+  // `notification_id` based on `status`. Used for IO tasks.
   virtual void ShowFilesPolicyNotification(
       const std::string& notification_id,
       const file_manager::io_task::ProgressStatus& status);
@@ -107,6 +108,8 @@ class FilesPolicyNotificationManager
 
   std::map<DlpConfidentialFile, Policy> GetIOTaskBlockedFilesForTesting(
       file_manager::io_task::IOTaskId task_id) const;
+  // Returns whether IO task has a warning timeout timer.
+  bool HasWarningTimerForTesting(file_manager::io_task::IOTaskId task_id) const;
 
   // Used in tests to set the test task runner.
   void SetTaskRunnerForTesting(scoped_refptr<base::SequencedTaskRunner>);
@@ -148,21 +151,54 @@ class FilesPolicyNotificationManager
   };
 
   // Holds needed information for each tracked file task.
-  struct FileTaskInfo {
+  class FileTaskInfo : public views::WidgetObserver {
+   public:
     explicit FileTaskInfo(dlp::FileAction action);
     FileTaskInfo(FileTaskInfo&& other);
-    ~FileTaskInfo();
+    ~FileTaskInfo() override;
+
+    // Starts observing `widget`. Should be called when the warning/error dialog
+    // is created.
+    void AddWidget(views::Widget* widget);
+    // Closes `widget_` if it's not nullptr.
+    void CloseWidget();
+    views::Widget* widget() const { return widget_; }
+
+    // Sets `warning_info_`.
+    void SetWarningInfo(WarningInfo warning_info);
+    // Resets `warning_info_`.
+    void ResetWarningInfo();
+    // Returns a pointer to WarningInfo if it exists. Otherwise, it returns
+    // nullptr.
+    WarningInfo* GetWarningInfo();
+    // Returns true if `warning_info_` has value.
+    bool HasWarningInfo() const;
+
+    const std::map<DlpConfidentialFile, Policy>& blocked_files() const {
+      return blocked_files_;
+    }
+    // Add `file` to the blocked files map.
+    void AddBlockedFile(DlpConfidentialFile file, Policy policy);
+
+    dlp::FileAction action() const { return action_; }
+
+   private:
+    // views::WidgetObserver overrides:
+    void OnWidgetDestroying(views::Widget* widget) override;
 
     // Should have value only if there's warning.
-    absl::optional<WarningInfo> warning_info;
+    absl::optional<WarningInfo> warning_info_;
     // A map of all files blocked to be transferred and the block reason for
     // each.
-    std::map<DlpConfidentialFile, Policy> blocked_files;
+    std::map<DlpConfidentialFile, Policy> blocked_files_;
     // The action that's restricted.
-    dlp::FileAction action;
-    // The destination of the action. Optional.
-    // TODO(b/285568353): Remove this.
-    absl::optional<DlpFileDestination> destination;
+    dlp::FileAction action_;
+    // Warning/Error dialog widget. Each FileTask is expected to have only one
+    // open dialog at a time.
+    base::raw_ptr<views::Widget> widget_ = nullptr;
+    // Warning/Error dialog widget observation.
+    base::ScopedObservation<views::Widget, views::WidgetObserver>
+        widget_observation_{this};
   };
 
   // Callback to show the dialog. Invoked with a Files App window when
@@ -313,22 +349,28 @@ class FilesPolicyNotificationManager
                    dlp::FileAction action,
                    Policy warning_reason);
 
-  // Starts a timer when `info` is created.
-  void StartTimer(DialogInfo* info, base::OnceClosure on_timeout_callback);
-
   // Called after opening the Files App times out.
   // Stops waiting for the app and shows a dialog for `task_id` without a modal
   // parent (i.e. as a system modal).
-  void OnIOTaskTimedOut(file_manager::io_task::IOTaskId task_id);
+  void OnIOTaskAppLaunchTimedOut(file_manager::io_task::IOTaskId task_id);
 
   // Called after opening the Files App times out.
   // Stops waiting for the app and shows a dialog for `notification_id` without
   // a modal parent (i.e. as a system modal).
-  void OnNonIOTaskTimedOut(std::string notification_id);
+  void OnNonIOTaskAppLaunchTimedOut(std::string notification_id);
 
   // Helper method that pops the oldest entry from `pending_dialogs_` and
   // creates a dialog with with `modal_parent`. No-op if the list is empty.
   void ShowPendingDialog(gfx::NativeWindow modal_parent);
+
+  // Called when the warning times out. Stops waiting for the user input,
+  // cancels the task, and runs the warning callback with should_proceed set to
+  // false.
+  void OnIOTaskWarningTimedOut(const file_manager::io_task::IOTaskId& task_id);
+
+  // Called when the warning times out. Stops waiting for the user input, and
+  // runs the warning callback with should_proceed set to false.
+  void OnNonIOTaskWarningTimedOut(const std::string& notification_id);
 
   // Callback to show a policy dialog after waiting to open a Files App window.
   base::OnceCallback<void(gfx::NativeWindow)> pending_callback_;
@@ -347,6 +389,15 @@ class FilesPolicyNotificationManager
 
   // Used to fallack to system modal if opening the Files App times out.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  // Active timers for IOTasks warnings.
+  base::flat_map<file_manager::io_task::IOTaskId,
+                 std::unique_ptr<base::OneShotTimer>>
+      io_tasks_warning_timers_;
+
+  // Active timers for non-IOTasks warnings.
+  base::flat_map<std::string, std::unique_ptr<base::OneShotTimer>>
+      non_io_tasks_warning_timers_;
 
   base::WeakPtrFactory<FilesPolicyNotificationManager> weak_factory_{this};
 };
