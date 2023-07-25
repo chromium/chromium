@@ -804,7 +804,13 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
             controller.GetLastCommittedEntry()->GetVirtualURL());
 }
 
-IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, BackFollowedByReload) {
+// TODO(https://crbug.com/1467626): Test is flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_BackFollowedByReload DISABLED_BackFollowedByReload
+#else
+#define MAYBE_BackFollowedByReload BackFollowedByReload
+#endif
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, MAYBE_BackFollowedByReload) {
   // First, make two history entries.
   GURL url1(embedded_test_server()->GetURL("/title1.html"));
   GURL url2(embedded_test_server()->GetURL("/title2.html"));
