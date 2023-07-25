@@ -45,7 +45,6 @@ class WebStateListTestObserver : public WebStateListObserver {
     web_state_replaced_ = false;
     web_state_detached_ = false;
     web_state_activated_ = false;
-    active_web_state_changed_ = false;
     pinned_state_changed_ = false;
     batch_operation_started_ = false;
     batch_operation_ended_ = false;
@@ -64,11 +63,8 @@ class WebStateListTestObserver : public WebStateListObserver {
   // Returns whether a WebState was detached.
   bool web_state_detached() const { return web_state_detached_; }
 
-  // Returns whether WebStateActivatedAt was invoked.
+  // Returns whether a WebState was activated.
   bool web_state_activated() const { return web_state_activated_; }
-
-  // Returns whether the active WebState was updated.
-  bool active_web_state_changed() const { return active_web_state_changed_; }
 
   // Returns whether the pinned state was updated.
   bool pinned_state_changed() const { return pinned_state_changed_; }
@@ -90,9 +86,7 @@ class WebStateListTestObserver : public WebStateListObserver {
         if (status.pinned_state_change) {
           pinned_state_changed_ = true;
         }
-        // TODO(crbug.com/1442546): Move the implementation from
-        // WebStateActivatedAt() to here. Note that here is reachable only when
-        // `reason` == ActiveWebStateChangeReason::Activated.
+        // The activation is handled after this switch statement.
         break;
       }
       case WebStateListChange::Type::kDetach:
@@ -114,16 +108,8 @@ class WebStateListTestObserver : public WebStateListObserver {
     }
 
     if (status.active_web_state_change()) {
-      active_web_state_changed_ = true;
+      web_state_activated_ = true;
     }
-  }
-
-  void WebStateActivatedAt(WebStateList* web_state_list,
-                           web::WebState* old_web_state,
-                           web::WebState* new_web_state,
-                           int active_index,
-                           ActiveWebStateChangeReason reason) override {
-    web_state_activated_ = true;
   }
 
   void WillBeginBatchOperation(WebStateList* web_state_list) override {
@@ -145,7 +131,6 @@ class WebStateListTestObserver : public WebStateListObserver {
   bool web_state_replaced_ = false;
   bool web_state_detached_ = false;
   bool web_state_activated_ = false;
-  bool active_web_state_changed_ = false;
   bool pinned_state_changed_ = false;
   bool batch_operation_started_ = false;
   bool batch_operation_ended_ = false;
@@ -292,7 +277,6 @@ TEST_F(WebStateListTest, InsertActivate) {
 
   EXPECT_TRUE(observer_.web_state_inserted());
   EXPECT_TRUE(observer_.web_state_activated());
-  EXPECT_TRUE(observer_.active_web_state_changed());
   ASSERT_EQ(1, web_state_list_.count());
   EXPECT_EQ(web_state_list_.GetWebStateAt(0),
             web_state_list_.GetActiveWebState());
@@ -422,7 +406,7 @@ TEST_F(WebStateListTest, MoveWebStateAtRightByOne) {
   web_state_list_.MoveWebStateAt(0, 1);
 
   EXPECT_TRUE(observer_.web_state_moved());
-  EXPECT_FALSE(observer_.active_web_state_changed());
+  EXPECT_FALSE(observer_.web_state_activated());
   EXPECT_EQ(WebStateList::kInvalidIndex, web_state_list_.active_index());
   EXPECT_EQ(3, web_state_list_.count());
   EXPECT_EQ(kURL1, web_state_list_.GetWebStateAt(0)->GetVisibleURL().spec());
@@ -448,7 +432,7 @@ TEST_F(WebStateListTest, MoveWebStateAtRightByMoreThanOne) {
   web_state_list_.MoveWebStateAt(0, 2);
 
   EXPECT_TRUE(observer_.web_state_moved());
-  EXPECT_FALSE(observer_.active_web_state_changed());
+  EXPECT_FALSE(observer_.web_state_activated());
   EXPECT_EQ(WebStateList::kInvalidIndex, web_state_list_.active_index());
   EXPECT_EQ(3, web_state_list_.count());
   EXPECT_EQ(kURL1, web_state_list_.GetWebStateAt(0)->GetVisibleURL().spec());
@@ -473,7 +457,7 @@ TEST_F(WebStateListTest, MoveWebStateAtLeftByOne) {
   web_state_list_.MoveWebStateAt(2, 1);
 
   EXPECT_TRUE(observer_.web_state_moved());
-  EXPECT_FALSE(observer_.active_web_state_changed());
+  EXPECT_FALSE(observer_.web_state_activated());
   EXPECT_EQ(WebStateList::kInvalidIndex, web_state_list_.active_index());
   EXPECT_EQ(3, web_state_list_.count());
   EXPECT_EQ(kURL0, web_state_list_.GetWebStateAt(0)->GetVisibleURL().spec());
@@ -498,7 +482,7 @@ TEST_F(WebStateListTest, MoveWebStateAtLeftByMoreThanOne) {
   web_state_list_.MoveWebStateAt(2, 0);
 
   EXPECT_TRUE(observer_.web_state_moved());
-  EXPECT_FALSE(observer_.active_web_state_changed());
+  EXPECT_FALSE(observer_.web_state_activated());
   EXPECT_EQ(WebStateList::kInvalidIndex, web_state_list_.active_index());
   EXPECT_EQ(3, web_state_list_.count());
   EXPECT_EQ(kURL2, web_state_list_.GetWebStateAt(0)->GetVisibleURL().spec());
@@ -524,7 +508,7 @@ TEST_F(WebStateListTest, MoveWebStateAtSameIndex) {
   web_state_list_.MoveWebStateAt(2, 2);
 
   EXPECT_FALSE(observer_.web_state_moved());
-  EXPECT_FALSE(observer_.active_web_state_changed());
+  EXPECT_FALSE(observer_.web_state_activated());
   EXPECT_EQ(WebStateList::kInvalidIndex, web_state_list_.active_index());
   EXPECT_EQ(3, web_state_list_.count());
   EXPECT_EQ(kURL0, web_state_list_.GetWebStateAt(0)->GetVisibleURL().spec());
@@ -550,7 +534,7 @@ TEST_F(WebStateListTest, MoveActiveWebState) {
   web_state_list_.MoveWebStateAt(1, 2);
 
   EXPECT_TRUE(observer_.web_state_moved());
-  EXPECT_FALSE(observer_.active_web_state_changed());
+  EXPECT_FALSE(observer_.web_state_activated());
   EXPECT_EQ(2, web_state_list_.active_index());
   EXPECT_EQ(3, web_state_list_.count());
   EXPECT_EQ(kURL0, web_state_list_.GetWebStateAt(0)->GetVisibleURL().spec());
@@ -574,7 +558,7 @@ TEST_F(WebStateListTest, ReplaceWebStateAt) {
       web_state_list_.ReplaceWebStateAt(1, CreateWebState(kURL2)));
 
   EXPECT_TRUE(observer_.web_state_replaced());
-  EXPECT_FALSE(observer_.active_web_state_changed());
+  EXPECT_FALSE(observer_.web_state_activated());
   EXPECT_EQ(WebStateList::kInvalidIndex, web_state_list_.active_index());
   EXPECT_EQ(2, web_state_list_.count());
   EXPECT_EQ(kURL0, web_state_list_.GetWebStateAt(0)->GetVisibleURL().spec());
@@ -599,7 +583,7 @@ TEST_F(WebStateListTest, ReplaceActiveWebStateAt) {
       web_state_list_.ReplaceWebStateAt(1, CreateWebState(kURL2)));
 
   EXPECT_TRUE(observer_.web_state_replaced());
-  EXPECT_TRUE(observer_.active_web_state_changed());
+  EXPECT_TRUE(observer_.web_state_activated());
   EXPECT_EQ(1, web_state_list_.active_index());
   EXPECT_EQ(2, web_state_list_.count());
   EXPECT_EQ(kURL0, web_state_list_.GetWebStateAt(0)->GetVisibleURL().spec());
@@ -624,7 +608,7 @@ TEST_F(WebStateListTest, DetachWebStateAtIndexBegining) {
   web_state_list_.DetachWebStateAt(0);
 
   EXPECT_TRUE(observer_.web_state_detached());
-  EXPECT_FALSE(observer_.active_web_state_changed());
+  EXPECT_FALSE(observer_.web_state_activated());
   EXPECT_EQ(WebStateList::kInvalidIndex, web_state_list_.active_index());
   EXPECT_EQ(2, web_state_list_.count());
   EXPECT_EQ(kURL1, web_state_list_.GetWebStateAt(0)->GetVisibleURL().spec());
@@ -648,7 +632,7 @@ TEST_F(WebStateListTest, DetachWebStateAtIndexMiddle) {
   web_state_list_.DetachWebStateAt(1);
 
   EXPECT_TRUE(observer_.web_state_detached());
-  EXPECT_FALSE(observer_.active_web_state_changed());
+  EXPECT_FALSE(observer_.web_state_activated());
   EXPECT_EQ(WebStateList::kInvalidIndex, web_state_list_.active_index());
   EXPECT_EQ(2, web_state_list_.count());
   EXPECT_EQ(kURL0, web_state_list_.GetWebStateAt(0)->GetVisibleURL().spec());
@@ -672,7 +656,7 @@ TEST_F(WebStateListTest, DetachWebStateAtIndexLast) {
   web_state_list_.DetachWebStateAt(2);
 
   EXPECT_TRUE(observer_.web_state_detached());
-  EXPECT_FALSE(observer_.active_web_state_changed());
+  EXPECT_FALSE(observer_.web_state_activated());
   EXPECT_EQ(WebStateList::kInvalidIndex, web_state_list_.active_index());
   EXPECT_EQ(2, web_state_list_.count());
   EXPECT_EQ(kURL0, web_state_list_.GetWebStateAt(0)->GetVisibleURL().spec());
@@ -697,7 +681,7 @@ TEST_F(WebStateListTest, DetachActiveWebState) {
   web_state_list_.DetachWebStateAt(0);
 
   EXPECT_TRUE(observer_.web_state_detached());
-  EXPECT_TRUE(observer_.active_web_state_changed());
+  EXPECT_TRUE(observer_.web_state_activated());
   EXPECT_EQ(0, web_state_list_.active_index());
   EXPECT_EQ(2, web_state_list_.count());
   EXPECT_EQ(kURL1, web_state_list_.GetWebStateAt(0)->GetVisibleURL().spec());
