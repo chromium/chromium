@@ -17,7 +17,7 @@
 sha1_block_data_order:
 	// Armv8.3-A PAuth: even though x30 is pushed to stack it is not popped later.
 	AARCH64_VALID_CALL_TARGET
-#if __has_feature(hwaddress_sanitizer) && __clang_major__ >= 10
+#if defined(OPENSSL_HWASAN) && __clang_major__ >= 10
 	adrp	x16,:pg_hi21_nc:OPENSSL_armcap_P
 #else
 	adrp	x16,OPENSSL_armcap_P

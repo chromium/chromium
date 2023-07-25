@@ -59,7 +59,7 @@
 _sha512_block_data_order:
 	AARCH64_VALID_CALL_TARGET
 #ifndef	__KERNEL__
-#if __has_feature(hwaddress_sanitizer) && __clang_major__ >= 10
+#if defined(OPENSSL_HWASAN) && __clang_major__ >= 10
 	adrp	x16,:pg_hi21_nc:_OPENSSL_armcap_P
 #else
 	adrp	x16,_OPENSSL_armcap_P@PAGE
