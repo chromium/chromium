@@ -85,8 +85,7 @@ class Signer:
         out_file = os.path.join(tempfile.mkdtemp(dir=self._tmpdir),
                                 'tagged_file')
         subprocess.run([
-            self._tagging_exe, '--set-superfluous-cert-tag=Gact2.0Omaha',
-            '--padded-length=8206',
+            self._tagging_exe, '--set-superfluous-cert-tag',
             '--out=%s' % out_file, in_file
         ],
                        check=True)

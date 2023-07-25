@@ -13,7 +13,7 @@ The script requires the presence of `certificate_tag.exe` and a signed
 metainstaller. If the --out_file argument is not specified, then the output
 goes to a file named `tagged_<in_file>`.
 
-The tag is encoded as an ASCII string.
+The tag is expected to be an ASCII string.
 
 To run locally:
 1. find the certificate_tag.exe. This file is usually in the build out dir.
@@ -22,9 +22,7 @@ To run locally:
 """
 
 import argparse
-import binascii
 import os.path
-import struct
 import subprocess
 
 
@@ -39,26 +37,12 @@ class Tagger:
         """Inits a tagger with the certificate tag tool."""
         self._tagging_exe = tagging_exe
 
-    def _make_hex_tag(self, tag):
-        """ Builds the string which gets embedded in the metainstaller.
-
-        The tag contains a magic start, followed by a 2-byte big endian value
-        representing the length of the tag, followed by the tag bytes. The
-        entire tag is hex-encoded."""
-        if len(tag) > 0xFFFF:
-            raise TaggingError('Tag is too long.')
-        bin_tag = bytearray(binascii.hexlify('Gact2.0Omaha'.encode()))
-        bin_tag.extend(binascii.hexlify(struct.pack(">H", len(tag))))
-        bin_tag.extend(binascii.hexlify(tag.encode()))
-        return bin_tag.decode()
-
     def _insert_tag(self, tag, in_file, out_file):
         """Inserts the tag. This overrides any tag previously present in
         the metainstaller."""
         subprocess.run([
             self._tagging_exe,
-            '--set-superfluous-cert-tag=0x%s' % self._make_hex_tag(tag),
-            '--padded-length=8206',
+            '--set-superfluous-cert-tag=%s' % tag,
             '--out=%s' % out_file, in_file
         ],
                        check=True)

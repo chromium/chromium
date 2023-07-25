@@ -17,37 +17,44 @@
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "chrome/updater/tag.h"
 #include "chrome/updater/tools/certificate_tag.h"
 
 namespace updater {
 namespace tools {
 
-// If set, this flag contains a string and a superfluous certificate tag with
-// that value will be set and the binary rewritten. If the string begins
-// with '0x' then it will be interpreted as hex.
+// If set, a superfluous certificate will be written into the binary. A tag
+// string can be optionally passed as the value for this argument, in which case
+// the tag string will be validated and set with the appropriate magic signature
+// within the certificate.
 constexpr char kSetSuperfluousCertTagSwitch[] = "set-superfluous-cert-tag";
 
 // A superfluous certificate tag will be padded with zeros to at least this
-// number of bytes.
+// number of bytes. The default is 8206 bytes if this parameter is not set.
 constexpr char kPaddedLength[] = "padded-length";
 
-// If set, this flag causes the current tag, if any, to be written to stdout.
-constexpr char kGetSuperfluousCertTagSwitch[] = "get-superfluous-cert-tag";
+// If set, this flag causes the current tag string, if any, to be written to
+// stdout.
+constexpr char kGetTagStringSwitch[] = "get-tag-string";
 
 // If set, the updated binary is written to this file. Otherwise the binary is
 // updated in place.
 constexpr char kOutFilenameSwitch[] = "out";
 
 struct CommandLineArguments {
-  // Whether to print the current tag.
-  bool get_superfluous_cert_tag = false;
+  // Whether to print the current tag string.
+  bool get_tag_string = false;
 
-  // Sets the certificate from bytes.
-  std::string set_superfluous_cert_tag;
+  // Whether to set a superfluous certificate within the binary.
+  bool set_superfluous_cert = false;
+
+  // If set, the tag string will be validated and set with the appropriate magic
+  // signature within the superfluous certificate.
+  std::string tag_string;
 
   // Contains the minimum length of the padding sequence of zeros at the end
   // of the tag.
-  int padded_length = 0;
+  int padded_length = 8206;
 
   // Specifies the input file (which may be the same as the output file).
   base::FilePath in_filename;
@@ -81,12 +88,11 @@ CommandLineArguments ParseCommandLineArgs(int argc, char** argv) {
   cmdline->RemoveSwitch(kOutFilenameSwitch);
   args.out_filename = out_filename;
 
-  args.get_superfluous_cert_tag =
-      cmdline->HasSwitch(kGetSuperfluousCertTagSwitch);
-  cmdline->RemoveSwitch(kGetSuperfluousCertTagSwitch);
+  args.get_tag_string = cmdline->HasSwitch(kGetTagStringSwitch);
+  cmdline->RemoveSwitch(kGetTagStringSwitch);
 
-  args.set_superfluous_cert_tag =
-      cmdline->GetSwitchValueASCII(kSetSuperfluousCertTagSwitch);
+  args.set_superfluous_cert = cmdline->HasSwitch(kSetSuperfluousCertTagSwitch);
+  args.tag_string = cmdline->GetSwitchValueASCII(kSetSuperfluousCertTagSwitch);
   cmdline->RemoveSwitch(kSetSuperfluousCertTagSwitch);
 
   if (cmdline->HasSwitch(kPaddedLength)) {
@@ -133,33 +139,39 @@ int CertificateTagMain(int argc, char** argv) {
     std::exit(1);
   }
 
-  if (args.get_superfluous_cert_tag) {
+  if (args.get_tag_string) {
     absl::optional<base::span<const uint8_t>> tag = bin->tag();
     if (!tag) {
       std::cerr << "No tag in binary." << std::endl;
       std::exit(1);
     }
 
-    std::cout << base::HexEncode(*tag) << std::endl;
+    const std::vector<const uint8_t> tag_data = {tag->begin(), tag->end()};
+    const std::string tag_string =
+        tagging::ReadTagUtf8(tag_data.begin(), tag_data.end());
+    if (tag_string.empty()) {
+      std::cerr << "No tag string embedded in the binary." << std::endl;
+      std::exit(1);
+    }
+
+    std::cout << tag_string << std::endl;
   }
 
-  if (!args.set_superfluous_cert_tag.empty()) {
-    constexpr char kPrefix[] = "0x";
-    std::vector<uint8_t> tag_contents;
-    if (base::StartsWith(args.set_superfluous_cert_tag, kPrefix,
-                         base::CompareCase::INSENSITIVE_ASCII)) {
-      const auto hex_chars = base::MakeStringPiece(
-          std::begin(args.set_superfluous_cert_tag) + std::size(kPrefix) - 1,
-          std::end(args.set_superfluous_cert_tag));
-      if (!base::HexStringToBytes(hex_chars, &tag_contents)) {
-        std::cerr << "Failed to parse tag contents from command line."
-                  << std::endl;
+  if (args.set_superfluous_cert) {
+    // Validate the tag string, if any.
+    if (!args.tag_string.empty()) {
+      tagging::TagArgs tag_args;
+      const tagging::ErrorCode error =
+          tagging::Parse(args.tag_string, {}, &tag_args);
+      if (error != tagging::ErrorCode::kSuccess) {
+        std::cerr << "Tag string is invalid: " << args.tag_string << std::endl;
         std::exit(1);
       }
-    } else {
-      tag_contents.assign(args.set_superfluous_cert_tag.begin(),
-                          args.set_superfluous_cert_tag.end());
     }
+
+    std::vector<uint8_t> tag_contents =
+        tagging::GetTagFromTagString(args.tag_string);
+
     if (args.padded_length > 0) {
       size_t new_size = 0;
       if (base::CheckAdd(tag_contents.size(), args.padded_length)
