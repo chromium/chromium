@@ -91,7 +91,6 @@ static_library("cardboard") {
     "src/sdk/qrcode/ios/qr_scan_view_controller.h",
     "src/sdk/rendering/android/shaders/distortion_frag.spv.h",
     "src/sdk/rendering/android/shaders/distortion_vert.spv.h",
-    "src/sdk/rendering/opengl_es2_distortion_renderer.cc",
     "src/sdk/screen_params.h",
     "src/sdk/screen_params/android/screen_params.cc",
     "src/sdk/sensors/accelerometer_data.h",
@@ -133,15 +132,20 @@ static_library("cardboard") {
     "src/sdk/util/vectorutils.h",
     "src_overrides/sdk/cardboard.cc",
     "src_overrides/sdk/jni_utils/android/jni_utils.cc",
+    "src_overrides/sdk/rendering/opengl_es2_distortion_renderer.cc",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ui/gl",
+  ]
+
+  defines = [ "CARDBOARD_USE_CUSTOM_GL_BINDINGS" ]
 
   include_dirs = [ "src/sdk" ]
 
   libs = [
     "android",
     "log",
-    "GLESv2",
   ]
 }
