@@ -5,6 +5,7 @@
 #include "wolvic/browser/session_settings.h"
 
 #include "base/check.h"
+#include "components/embedder_support/user_agent_utils.h"
 
 namespace wolvic {
 
@@ -43,6 +44,10 @@ void SessionSettings::SetUserAgentOverride(
 
 absl::optional<std::string> SessionSettings::GetUserAgentOverride() const {
   return user_agent_override_;
+}
+
+std::string SessionSettings::GetDefaultUserAgent() const {
+  return embedder_support::GetUserAgent();
 }
 
 }  // namespace wolvic
