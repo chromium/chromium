@@ -95,7 +95,7 @@ chromium-metrics-reviews@google.com.
   <owner>gabrielgs@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
-    Counts of how many times onPreCreate and onStart were called (from the
+    Counts of how many times onPreCreate() and onResume() were called (from the
     ChromeActivity class) when a foreground session begins in the native C++
     code. The counters are reset when this histogram is emitted. This histogram
     is a diagnostic tool for understanding Clank short sessions, by capturing
