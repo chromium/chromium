@@ -216,9 +216,38 @@
                        change:(const WebStateListChange&)change
                        status:(const WebStateListStatus&)status {
   DCHECK_EQ(_webStateList, webStateList);
-  if (status.active_web_state_change()) {
-    [self onWebStateChange];
+  switch (change.type()) {
+    case WebStateListChange::Type::kStatusOnly:
+      // TODO(crbug.com/1442546): Move the implementation from
+      // webStateList:didChangeActiveWebState:oldWebState:atIndex:reason to
+      // here. Note that here is reachable only when `reason` ==
+      // ActiveWebStateChangeReason::Activated.
+      break;
+    case WebStateListChange::Type::kDetach:
+      // Do nothing when a WebState is detached.
+      break;
+    case WebStateListChange::Type::kMove:
+      // Do nothing when a WebState is moved.
+      break;
+    case WebStateListChange::Type::kReplace: {
+      if (status.index == webStateList->active_index()) {
+        [self onWebStateChange];
+      }
+      break;
+    }
+    case WebStateListChange::Type::kInsert:
+      // Do nothing when a new WebState is inserted.
+      break;
   }
+}
+
+- (void)webStateList:(WebStateList*)webStateList
+    didChangeActiveWebState:(web::WebState*)newWebState
+                oldWebState:(web::WebState*)oldWebState
+                    atIndex:(int)atIndex
+                     reason:(ActiveWebStateChangeReason)reason {
+  DCHECK_EQ(_webStateList, webStateList);
+  [self onWebStateChange];
 }
 
 - (void)webStateListDestroyed:(WebStateList*)webStateList {
