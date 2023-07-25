@@ -1164,96 +1164,99 @@ TEST(TelemetryApiConverters, DisplayInfo) {
     external_displays.push_back(std::move(external_display_1));
     external_displays.push_back(std::move(external_display_empty));
 
-    input->edp_info = std::move(embedded_display);
-    input->dp_infos = std::move(external_displays);
+    input->embedded_display = std::move(embedded_display);
+    input->external_displays = std::move(external_displays);
   }
 
   auto result = ConvertPtr(std::move(input));
 
-  const auto& edp_info = result.edp_info;
-  const auto& dp_infos = result.dp_infos;
-  EXPECT_EQ(dp_infos.size(), static_cast<size_t>(2));
+  const auto& embedded_display = result.embedded_display;
+  const auto& external_displays = result.external_displays;
+  EXPECT_EQ(external_displays.size(), static_cast<size_t>(2));
 
   // Check equality for embedded display
-  EXPECT_EQ(edp_info.privacy_screen_supported, kPrivacyScreenSupported);
-  EXPECT_EQ(edp_info.privacy_screen_enabled, kPrivacyScreenEnabled);
-  ASSERT_TRUE(edp_info.display_width);
-  EXPECT_EQ(static_cast<uint32_t>(*edp_info.display_width),
+  EXPECT_EQ(embedded_display.privacy_screen_supported, kPrivacyScreenSupported);
+  EXPECT_EQ(embedded_display.privacy_screen_enabled, kPrivacyScreenEnabled);
+  ASSERT_TRUE(embedded_display.display_width);
+  EXPECT_EQ(static_cast<uint32_t>(*embedded_display.display_width),
             kDisplayWidthEmbedded);
-  ASSERT_TRUE(edp_info.display_height);
-  EXPECT_EQ(static_cast<uint32_t>(*edp_info.display_height),
+  ASSERT_TRUE(embedded_display.display_height);
+  EXPECT_EQ(static_cast<uint32_t>(*embedded_display.display_height),
             kDisplayHeightEmbedded);
-  ASSERT_TRUE(edp_info.resolution_horizontal);
-  EXPECT_EQ(static_cast<uint32_t>(*edp_info.resolution_horizontal),
+  ASSERT_TRUE(embedded_display.resolution_horizontal);
+  EXPECT_EQ(static_cast<uint32_t>(*embedded_display.resolution_horizontal),
             kResolutionHorizontalEmbedded);
-  ASSERT_TRUE(edp_info.resolution_vertical);
-  EXPECT_EQ(static_cast<uint32_t>(*edp_info.resolution_vertical),
+  ASSERT_TRUE(embedded_display.resolution_vertical);
+  EXPECT_EQ(static_cast<uint32_t>(*embedded_display.resolution_vertical),
             kResolutionVerticalEmbedded);
-  ASSERT_TRUE(edp_info.refresh_rate);
-  EXPECT_EQ(static_cast<double>(*edp_info.refresh_rate), kRefreshRateEmbedded);
-  EXPECT_EQ(edp_info.manufacturer, kManufacturerEmbedded);
-  ASSERT_TRUE(edp_info.model_id);
-  EXPECT_EQ(static_cast<uint16_t>(*edp_info.model_id), kModelIdEmbedded);
-  ASSERT_TRUE(edp_info.serial_number);
-  EXPECT_EQ(static_cast<uint32_t>(*edp_info.serial_number),
+  ASSERT_TRUE(embedded_display.refresh_rate);
+  EXPECT_EQ(static_cast<double>(*embedded_display.refresh_rate),
+            kRefreshRateEmbedded);
+  EXPECT_EQ(embedded_display.manufacturer, kManufacturerEmbedded);
+  ASSERT_TRUE(embedded_display.model_id);
+  EXPECT_EQ(static_cast<uint16_t>(*embedded_display.model_id),
+            kModelIdEmbedded);
+  ASSERT_TRUE(embedded_display.serial_number);
+  EXPECT_EQ(static_cast<uint32_t>(*embedded_display.serial_number),
             kSerialNumberEmbedded);
-  ASSERT_TRUE(edp_info.manufacture_week);
-  EXPECT_EQ(static_cast<uint8_t>(*edp_info.manufacture_week),
+  ASSERT_TRUE(embedded_display.manufacture_week);
+  EXPECT_EQ(static_cast<uint8_t>(*embedded_display.manufacture_week),
             kManufactureWeekEmbedded);
-  ASSERT_TRUE(edp_info.manufacture_year);
-  EXPECT_EQ(static_cast<uint16_t>(*edp_info.manufacture_year),
+  ASSERT_TRUE(embedded_display.manufacture_year);
+  EXPECT_EQ(static_cast<uint16_t>(*embedded_display.manufacture_year),
             kManufactureYearEmbedded);
-  EXPECT_EQ(edp_info.edid_version, kEdidVersionEmbedded);
-  EXPECT_EQ(edp_info.input_type, Convert(kInputTypeEmbedded));
-  EXPECT_EQ(edp_info.display_name, kDisplayNameEmbedded);
+  EXPECT_EQ(embedded_display.edid_version, kEdidVersionEmbedded);
+  EXPECT_EQ(embedded_display.input_type, Convert(kInputTypeEmbedded));
+  EXPECT_EQ(embedded_display.display_name, kDisplayNameEmbedded);
 
   // Check equality for external display 1
-  ASSERT_TRUE(dp_infos[0].display_width);
-  EXPECT_EQ(static_cast<uint32_t>(*dp_infos[0].display_width),
+  ASSERT_TRUE(external_displays[0].display_width);
+  EXPECT_EQ(static_cast<uint32_t>(*external_displays[0].display_width),
             kDisplayWidthExternal);
-  ASSERT_TRUE(dp_infos[0].display_height);
-  EXPECT_EQ(static_cast<uint32_t>(*dp_infos[0].display_height),
+  ASSERT_TRUE(external_displays[0].display_height);
+  EXPECT_EQ(static_cast<uint32_t>(*external_displays[0].display_height),
             kDisplayHeightExternal);
-  ASSERT_TRUE(dp_infos[0].resolution_horizontal);
-  EXPECT_EQ(static_cast<uint32_t>(*dp_infos[0].resolution_horizontal),
+  ASSERT_TRUE(external_displays[0].resolution_horizontal);
+  EXPECT_EQ(static_cast<uint32_t>(*external_displays[0].resolution_horizontal),
             kResolutionHorizontalExternal);
-  ASSERT_TRUE(dp_infos[0].resolution_vertical);
-  EXPECT_EQ(static_cast<uint32_t>(*dp_infos[0].resolution_vertical),
+  ASSERT_TRUE(external_displays[0].resolution_vertical);
+  EXPECT_EQ(static_cast<uint32_t>(*external_displays[0].resolution_vertical),
             kResolutionVerticalExternal);
-  ASSERT_TRUE(dp_infos[0].refresh_rate);
-  EXPECT_EQ(static_cast<double>(*dp_infos[0].refresh_rate),
+  ASSERT_TRUE(external_displays[0].refresh_rate);
+  EXPECT_EQ(static_cast<double>(*external_displays[0].refresh_rate),
             kRefreshRateExternal);
-  EXPECT_EQ(dp_infos[0].manufacturer, kManufacturerExternal);
-  ASSERT_TRUE(dp_infos[0].model_id);
-  EXPECT_EQ(static_cast<uint16_t>(*dp_infos[0].model_id), kModelIdExternal);
-  ASSERT_TRUE(dp_infos[0].serial_number);
-  EXPECT_EQ(static_cast<uint32_t>(*dp_infos[0].serial_number),
+  EXPECT_EQ(external_displays[0].manufacturer, kManufacturerExternal);
+  ASSERT_TRUE(external_displays[0].model_id);
+  EXPECT_EQ(static_cast<uint16_t>(*external_displays[0].model_id),
+            kModelIdExternal);
+  ASSERT_TRUE(external_displays[0].serial_number);
+  EXPECT_EQ(static_cast<uint32_t>(*external_displays[0].serial_number),
             kSerialNumberExternal);
-  ASSERT_TRUE(dp_infos[0].manufacture_week);
-  EXPECT_EQ(static_cast<uint8_t>(*dp_infos[0].manufacture_week),
+  ASSERT_TRUE(external_displays[0].manufacture_week);
+  EXPECT_EQ(static_cast<uint8_t>(*external_displays[0].manufacture_week),
             kManufactureWeekExternal);
-  ASSERT_TRUE(dp_infos[0].manufacture_year);
-  EXPECT_EQ(static_cast<uint16_t>(*dp_infos[0].manufacture_year),
+  ASSERT_TRUE(external_displays[0].manufacture_year);
+  EXPECT_EQ(static_cast<uint16_t>(*external_displays[0].manufacture_year),
             kManufactureYearExternal);
-  EXPECT_EQ(dp_infos[0].edid_version, kEdidVersionExternal);
-  EXPECT_EQ(dp_infos[0].input_type, Convert(kInputTypeExternal));
-  EXPECT_EQ(dp_infos[0].display_name, kDisplayNameExternal);
+  EXPECT_EQ(external_displays[0].edid_version, kEdidVersionExternal);
+  EXPECT_EQ(external_displays[0].input_type, Convert(kInputTypeExternal));
+  EXPECT_EQ(external_displays[0].display_name, kDisplayNameExternal);
 
   // Check equality for empty external display
-  ASSERT_FALSE(dp_infos[1].display_width);
-  ASSERT_FALSE(dp_infos[1].display_height);
-  ASSERT_FALSE(dp_infos[1].resolution_horizontal);
-  ASSERT_FALSE(dp_infos[1].resolution_vertical);
-  ASSERT_FALSE(dp_infos[1].refresh_rate);
-  EXPECT_EQ(dp_infos[1].manufacturer, absl::nullopt);
-  ASSERT_FALSE(dp_infos[1].model_id);
-  ASSERT_FALSE(dp_infos[1].serial_number);
-  ASSERT_FALSE(dp_infos[1].manufacture_week);
-  ASSERT_FALSE(dp_infos[1].manufacture_year);
-  EXPECT_EQ(dp_infos[1].edid_version, absl::nullopt);
-  EXPECT_EQ(dp_infos[1].input_type,
+  ASSERT_FALSE(external_displays[1].display_width);
+  ASSERT_FALSE(external_displays[1].display_height);
+  ASSERT_FALSE(external_displays[1].resolution_horizontal);
+  ASSERT_FALSE(external_displays[1].resolution_vertical);
+  ASSERT_FALSE(external_displays[1].refresh_rate);
+  EXPECT_EQ(external_displays[1].manufacturer, absl::nullopt);
+  ASSERT_FALSE(external_displays[1].model_id);
+  ASSERT_FALSE(external_displays[1].serial_number);
+  ASSERT_FALSE(external_displays[1].manufacture_week);
+  ASSERT_FALSE(external_displays[1].manufacture_year);
+  EXPECT_EQ(external_displays[1].edid_version, absl::nullopt);
+  EXPECT_EQ(external_displays[1].input_type,
             Convert(crosapi::ProbeDisplayInputType::kUnmappedEnumField));
-  EXPECT_EQ(dp_infos[1].display_name, absl::nullopt);
+  EXPECT_EQ(external_displays[1].display_name, absl::nullopt);
 }
 
 }  // namespace chromeos::converters

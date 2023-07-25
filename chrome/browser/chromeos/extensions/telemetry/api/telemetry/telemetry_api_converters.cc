@@ -409,11 +409,12 @@ chromeos::api::os_telemetry::VpdInfo UncheckedConvertPtr(
 cx_telem::DisplayInfo UncheckedConvertPtr(crosapi::ProbeDisplayInfoPtr input) {
   cx_telem::DisplayInfo result;
 
-  result.edp_info = converters::ConvertPtr(std::move(input->edp_info));
-  if (input->dp_infos.has_value()) {
-    result.dp_infos =
+  result.embedded_display =
+      converters::ConvertPtr(std::move(input->embedded_display));
+  if (input->external_displays.has_value()) {
+    result.external_displays =
         converters::ConvertPtrVector<cx_telem::ExternalDisplayInfo>(
-            std::move(input->dp_infos.value()));
+            std::move(input->external_displays.value()));
   }
 
   return result;

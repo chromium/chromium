@@ -347,9 +347,9 @@ crosapi::mojom::ProbeDisplayResultPtr UncheckedConvertPtr(
 crosapi::mojom::ProbeDisplayInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::DisplayInfoPtr input) {
   return crosapi::mojom::ProbeDisplayInfo::New(
-      ConvertProbePtr(std::move(input->edp_info)),
+      ConvertProbePtr(std::move(input->embedded_display)),
       ConvertOptionalPtrVector<crosapi::mojom::ProbeExternalDisplayInfoPtr>(
-          std::move(input->dp_infos)));
+          std::move(input->external_displays)));
 }
 
 crosapi::mojom::ProbeEmbeddedDisplayInfoPtr UncheckedConvertPtr(

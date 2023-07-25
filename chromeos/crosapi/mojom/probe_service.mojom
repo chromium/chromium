@@ -907,9 +907,9 @@ struct ProbeExternalDisplayInfo {
 [Stable]
 struct ProbeDisplayInfo {
   // Embedded display info.
-  ProbeEmbeddedDisplayInfo? edp_info@0;
+  ProbeEmbeddedDisplayInfo? embedded_display@0;
   // External display info.
-  array<ProbeExternalDisplayInfo>? dp_infos@1;
+  array<ProbeExternalDisplayInfo>? external_displays@1;
 };
 
 // Can either be populated with the Display result or an error retrieving the

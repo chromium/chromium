@@ -1695,9 +1695,9 @@ union DisplayResult {
 [Stable]
 struct DisplayInfo {
   // Embedded display info.
-  EmbeddedDisplayInfo edp_info@0;
+  EmbeddedDisplayInfo embedded_display@0;
   // External display info.
-  [MinVersion=1] array<ExternalDisplayInfo>? dp_infos@1;
+  [MinVersion=1] array<ExternalDisplayInfo>? external_displays@1;
 };
 
 // NextMinVersion: 3, NextIndex: 15

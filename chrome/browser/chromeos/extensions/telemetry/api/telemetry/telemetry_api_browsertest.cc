@@ -1475,22 +1475,22 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionTelemetryApiBrowserTest,
   {
     auto telemetry_info = crosapi::ProbeTelemetryInfo::New();
     {
-      auto edp_info = crosapi::ProbeEmbeddedDisplayInfo::New();
-      edp_info->privacy_screen_supported = true;
-      edp_info->privacy_screen_enabled = false;
-      edp_info->display_width = 1;
-      edp_info->display_height = 2;
-      edp_info->resolution_horizontal = 3;
-      edp_info->resolution_vertical = 4;
-      edp_info->refresh_rate = 5;
-      edp_info->manufacturer = "manufacturer1";
-      edp_info->model_id = 6;
-      edp_info->serial_number = 7;
-      edp_info->manufacture_week = 8;
-      edp_info->manufacture_year = 9;
-      edp_info->edid_version = "1.4";
-      edp_info->input_type = crosapi::ProbeDisplayInputType::kDigital;
-      edp_info->display_name = "display1";
+      auto embedded_display = crosapi::ProbeEmbeddedDisplayInfo::New();
+      embedded_display->privacy_screen_supported = true;
+      embedded_display->privacy_screen_enabled = false;
+      embedded_display->display_width = 1;
+      embedded_display->display_height = 2;
+      embedded_display->resolution_horizontal = 3;
+      embedded_display->resolution_vertical = 4;
+      embedded_display->refresh_rate = 5;
+      embedded_display->manufacturer = "manufacturer1";
+      embedded_display->model_id = 6;
+      embedded_display->serial_number = 7;
+      embedded_display->manufacture_week = 8;
+      embedded_display->manufacture_year = 9;
+      embedded_display->edid_version = "1.4";
+      embedded_display->input_type = crosapi::ProbeDisplayInputType::kDigital;
+      embedded_display->display_name = "display1";
 
       auto dp_info_1 = crosapi::ProbeExternalDisplayInfo::New();
       dp_info_1->display_width = 11;
@@ -1509,12 +1509,12 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionTelemetryApiBrowserTest,
 
       auto dp_info_2 = crosapi::ProbeExternalDisplayInfo::New();
 
-      std::vector<crosapi::ProbeExternalDisplayInfoPtr> dp_infos;
-      dp_infos.push_back(std::move(dp_info_1));
-      dp_infos.push_back(std::move(dp_info_2));
+      std::vector<crosapi::ProbeExternalDisplayInfoPtr> external_displays;
+      external_displays.push_back(std::move(dp_info_1));
+      external_displays.push_back(std::move(dp_info_2));
 
-      auto display_info = crosapi::ProbeDisplayInfo::New(std::move(edp_info),
-                                                         std::move(dp_infos));
+      auto display_info = crosapi::ProbeDisplayInfo::New(
+          std::move(embedded_display), std::move(external_displays));
 
       telemetry_info->display_result =
           crosapi::ProbeDisplayResult::NewDisplayInfo(std::move(display_info));
@@ -1536,7 +1536,7 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionTelemetryApiBrowserTest,
           // The dictionary members are ordered lexicographically by the Unicode
           // codepoints that comprise their identifiers.
           {
-            "dpInfos": [
+            "external_displays": [
               {
                 "displayHeight": 12,
                 "displayName": "display2",
@@ -1556,7 +1556,7 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionTelemetryApiBrowserTest,
                 "inputType": "unknown"
               }
             ],
-            "edpInfo": {
+            "embedded_display": {
               "displayHeight": 2,
               "displayName": "display1",
               "displayWidth": 1,

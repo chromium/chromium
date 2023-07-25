@@ -1609,8 +1609,8 @@ TEST(ProbeServiceConverters, DisplayResultPtrInfo) {
     external_displays.push_back(std::move(external_display_empty));
 
     auto info = cros_healthd::mojom::DisplayInfo::New();
-    info->edp_info = std::move(embedded_display);
-    info->dp_infos = std::move(external_displays);
+    info->embedded_display = std::move(embedded_display);
+    info->external_displays = std::move(external_displays);
 
     input = cros_healthd::mojom::DisplayResult::NewDisplayInfo(std::move(info));
   }
@@ -1619,8 +1619,8 @@ TEST(ProbeServiceConverters, DisplayResultPtrInfo) {
   ASSERT_TRUE(output);
   ASSERT_TRUE(output->is_display_info());
 
-  const auto& edp_info = output->get_display_info()->edp_info;
-  EXPECT_EQ(edp_info,
+  const auto& embedded_display = output->get_display_info()->embedded_display;
+  EXPECT_EQ(embedded_display,
             crosapi::mojom::ProbeEmbeddedDisplayInfo::New(
                 kPrivacyScreenSupported, kPrivacyScreenEnabled,
                 kDisplayWidthEmbedded, kDisplayHeightEmbedded,
@@ -1630,11 +1630,12 @@ TEST(ProbeServiceConverters, DisplayResultPtrInfo) {
                 kManufactureYearEmbedded, kEdidVersionEmbedded,
                 Convert(kInputTypeEmbedded), kDisplayNameEmbedded));
 
-  ASSERT_TRUE(output->get_display_info()->dp_infos.has_value());
-  const auto& dp_infos = output->get_display_info()->dp_infos.value();
-  ASSERT_EQ(dp_infos.size(), 2UL);
+  ASSERT_TRUE(output->get_display_info()->external_displays.has_value());
+  const auto& external_displays =
+      output->get_display_info()->external_displays.value();
+  ASSERT_EQ(external_displays.size(), 2UL);
   // Check equality for external display 1
-  EXPECT_EQ(dp_infos[0],
+  EXPECT_EQ(external_displays[0],
             crosapi::mojom::ProbeExternalDisplayInfo::New(
                 kDisplayWidthExternal, kDisplayHeightExternal,
                 kResolutionHorizontalExternal, kResolutionVerticalExternal,
@@ -1644,7 +1645,8 @@ TEST(ProbeServiceConverters, DisplayResultPtrInfo) {
                 Convert(kInputTypeExternal), kDisplayNameExternal));
 
   // Check equality for external display 2
-  EXPECT_EQ(dp_infos[1], crosapi::mojom::ProbeExternalDisplayInfo::New());
+  EXPECT_EQ(external_displays[1],
+            crosapi::mojom::ProbeExternalDisplayInfo::New());
 }
 
 TEST(ProbeServiceConverters, TelemetryInfoPtrWithNotNullFields) {
