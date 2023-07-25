@@ -259,9 +259,8 @@ class AshProxyMonitorTest : public InProcessBrowserTest {
 
   void SetDhcpWpadUrl(const std::string& dhcp_url,
                       const std::string& service_path) {
-    base::Value::Dict wpad_config;
-    wpad_config.Set(shill::kWebProxyAutoDiscoveryUrlProperty,
-                    base::Value(dhcp_url));
+    auto wpad_config = base::Value::Dict().Set(
+        shill::kWebProxyAutoDiscoveryUrlProperty, base::Value(dhcp_url));
     const std::string kIPConfigPath = "test_ip_config";
     ash::ShillIPConfigClient::Get()->GetTestInterface()->AddIPConfig(
         kIPConfigPath, std::move(wpad_config));

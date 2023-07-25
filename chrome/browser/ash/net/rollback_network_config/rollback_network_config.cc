@@ -303,10 +303,9 @@ std::string RollbackNetworkConfig::Exporter::SerializeNetworkConfigs() const {
     network_config_list.Append(network_config.Clone());
   }
 
-  base::Value::Dict complete_network_configuration;
-  complete_network_configuration.Set(
-      onc::toplevel_config::kNetworkConfigurations,
-      std::move(network_config_list));
+  auto complete_network_configuration =
+      base::Value::Dict().Set(onc::toplevel_config::kNetworkConfigurations,
+                              std::move(network_config_list));
   std::string serialized_config;
   base::JSONWriter::Write(complete_network_configuration, &serialized_config);
   return serialized_config;
