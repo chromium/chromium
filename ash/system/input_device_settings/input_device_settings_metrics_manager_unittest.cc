@@ -4,10 +4,14 @@
 
 #include "ash/system/input_device_settings/input_device_settings_metrics_manager.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
+#include "ui/events/ash/mojom/six_pack_shortcut_modifier.mojom-shared.h"
 
 namespace ash {
 
@@ -47,10 +51,13 @@ class InputDeviceSettingsMetricsManagerTest : public AshTestBase {
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<InputDeviceSettingsMetricsManager> manager_;
 };
 
 TEST_F(InputDeviceSettingsMetricsManagerTest, RecordsKeyboardSettings) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAltClickAndSixPackCustomization);
   mojom::Keyboard keyboard_external;
   keyboard_external.device_key = kExternalKeyboardId;
   keyboard_external.is_external = true;
@@ -61,7 +68,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordsKeyboardSettings) {
   settings_external.modifier_remappings = {
       {ui::mojom::ModifierKey::kAlt, ui::mojom::ModifierKey::kControl},
       {ui::mojom::ModifierKey::kMeta, ui::mojom::ModifierKey::kCapsLock}};
-
+  settings_external.six_pack_key_remappings = mojom::SixPackKeyInfo::New();
   mojom::Keyboard keyboard_external_chromeos;
   keyboard_external_chromeos.device_key = kExternalChromeOSKeyboardId;
   keyboard_external_chromeos.is_external = true;
@@ -69,6 +76,8 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordsKeyboardSettings) {
   keyboard_external_chromeos.settings = mojom::KeyboardSettings::New();
   auto& settings_external_chromeos = *keyboard_external_chromeos.settings;
   settings_external_chromeos.top_row_are_fkeys = false;
+  settings_external_chromeos.six_pack_key_remappings =
+      mojom::SixPackKeyInfo::New();
 
   mojom::Keyboard keyboard_internal;
   keyboard_internal.device_key = kInternalKeyboardId;
@@ -76,6 +85,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordsKeyboardSettings) {
   keyboard_internal.settings = mojom::KeyboardSettings::New();
   auto& settings_internal = *keyboard_internal.settings;
   settings_internal.top_row_are_fkeys = true;
+  settings_internal.six_pack_key_remappings = mojom::SixPackKeyInfo::New();
 
   // Initially expect no user preferences recorded.
   base::HistogramTester histogram_tester;
@@ -95,6 +105,9 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordsKeyboardSettings) {
       "ChromeOS.Settings.Device.Keyboard.External.Modifiers."
       "NumberOfRemappedKeysOnStart",
       /*sample=*/3u, /*expected_bucket_count=*/1u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.External.SixPackKeys.Insert.Initial",
+      /*expected_count=*/1u);
 
   manager_.get()->RecordKeyboardInitialMetrics(keyboard_external_chromeos);
 
@@ -136,10 +149,15 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordsKeyboardSettings) {
   // be recoreded.
   keyboard_internal.settings->top_row_are_fkeys =
       !keyboard_internal.settings->top_row_are_fkeys;
+  keyboard_internal.settings->six_pack_key_remappings->del =
+      ui::mojom::SixPackShortcutModifier::kAlt;
   manager_.get()->RecordKeyboardChangedMetrics(keyboard_internal,
                                                *old_settings);
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Keyboard.Internal.TopRowAreFKeys.Changed",
+      /*expected_count=*/1u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.Internal.SixPackKeys.Delete.Changed",
       /*expected_count=*/1u);
 }
 
@@ -291,6 +309,8 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordPointingStickSettings) {
 }
 
 TEST_F(InputDeviceSettingsMetricsManagerTest, RecordTouchpadSettings) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAltClickAndSixPackCustomization);
   mojom::Touchpad touchpad_external;
   touchpad_external.device_key = kExternalTouchpadId;
   touchpad_external.is_external = true;
@@ -307,6 +327,9 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordTouchpadSettings) {
       /*expected_count=*/1u);
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Touchpad.External.HapticEnabled.Initial",
+      /*expected_count=*/1u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Touchpad.External.SimulateRightClick.Initial",
       /*expected_count=*/1u);
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Settings.Device.Touchpad.External.HapticSensitivity.Initial",
@@ -337,6 +360,8 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordTouchpadSettings) {
   touchpad_external.settings->tap_to_click_enabled =
       !touchpad_external.settings->tap_to_click_enabled;
   touchpad_external.settings->haptic_sensitivity = kSampleMinSensitivity;
+  touchpad_external.settings->simulate_right_click =
+      ui::mojom::SimulateRightClickModifier::kSearch;
 
   manager_.get()->RecordTouchpadChangedMetrics(touchpad_external, *old_setting);
   histogram_tester.ExpectTotalCount(
@@ -350,6 +375,9 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordTouchpadSettings) {
       /*expected_count=*/1u);
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Touchpad.External.Sensitivity.Changed",
+      /*expected_count=*/1u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Touchpad.External.SimulateRightClick.Changed",
       /*expected_count=*/1u);
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Settings.Device.Touchpad.External.Sensitivity.Increase",

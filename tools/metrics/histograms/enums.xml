@@ -98846,6 +98846,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Fresh index with cache updated since backend start"/>
 </enum>
 
+<enum name="SimulateRightClickModifier">
+  <int value="0" label="None"/>
+  <int value="1" label="Alt"/>
+  <int value="2" label="Search"/>
+</enum>
+
 <enum name="SimulcastApiVersion">
   <int value="0" label="Simulcast is not used"/>
   <int value="1" label="Legacy SDP munging"/>
@@ -98966,6 +98972,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <summary>See Android.RequestDesktopSite.Changed</summary>
   <int value="0" label="Mobile"/>
   <int value="1" label="Desktop"/>
+</enum>
+
+<enum name="SixPackKeyModifier">
+  <int value="0" label="None"/>
+  <int value="1" label="Alt"/>
+  <int value="2" label="Search"/>
 </enum>
 
 <enum name="SkiaFilterQuality">

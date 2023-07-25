@@ -6,12 +6,16 @@
 
 #include <cstdint>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/ash/mojom/six_pack_shortcut_modifier.mojom-shared.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ash {
 
@@ -145,6 +149,58 @@ int GetNumberOfNonDefaultRemappings(
   return num_keys_changed;
 }
 
+ui::mojom::SixPackShortcutModifier GetSixPackKeyModifier(
+    const mojom::Keyboard& keyboard,
+    ui::KeyboardCode key_code) {
+  CHECK(ui::KeyboardCapability::IsSixPackKey(key_code));
+  switch (key_code) {
+    case ui::VKEY_DELETE:
+      return keyboard.settings->six_pack_key_remappings->del;
+    case ui::VKEY_INSERT:
+      return keyboard.settings->six_pack_key_remappings->insert;
+    case ui::VKEY_HOME:
+      return keyboard.settings->six_pack_key_remappings->home;
+    case ui::VKEY_END:
+      return keyboard.settings->six_pack_key_remappings->end;
+    case ui::VKEY_PRIOR:
+      return keyboard.settings->six_pack_key_remappings->page_up;
+    case ui::VKEY_NEXT:
+      return keyboard.settings->six_pack_key_remappings->page_down;
+    default:
+      NOTREACHED_NORETURN();
+  }
+}
+std::string GetSixPackKeyMetricName(const std::string& prefix,
+                                    ui::KeyboardCode key_code,
+                                    bool is_initial_value) {
+  CHECK(ui::KeyboardCapability::IsSixPackKey(key_code));
+  std::string key_name;
+  switch (key_code) {
+    case ui::VKEY_DELETE:
+      key_name = "Delete";
+      break;
+    case ui::VKEY_INSERT:
+      key_name = "Insert";
+      break;
+    case ui::VKEY_HOME:
+      key_name = "Home";
+      break;
+    case ui::VKEY_END:
+      key_name = "End";
+      break;
+    case ui::VKEY_PRIOR:
+      key_name = "PageUp";
+      break;
+    case ui::VKEY_NEXT:
+      key_name = "PageDown";
+      break;
+    default:
+      NOTREACHED_NORETURN();
+  }
+  return base::StrCat({prefix, "SixPackKeys.", key_name,
+                       is_initial_value ? ".Initial" : ".Changed"});
+}
+
 }  // namespace
 
 InputDeviceSettingsMetricsManager::InputDeviceSettingsMetricsManager() =
@@ -193,6 +249,14 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardInitialMetrics(
   // Record remapping metrics when keyboard is initialized.
   RecordModifierRemappingHash(keyboard);
   RecordKeyboardNumberOfKeysRemapped(keyboard);
+  if (features::IsAltClickAndSixPackCustomizationEnabled()) {
+    RecordSixPackKeyInfo(keyboard, ui::VKEY_DELETE, /*is_initial_value=*/true);
+    RecordSixPackKeyInfo(keyboard, ui::VKEY_INSERT, /*is_initial_value=*/true);
+    RecordSixPackKeyInfo(keyboard, ui::VKEY_HOME, /*is_initial_value=*/true);
+    RecordSixPackKeyInfo(keyboard, ui::VKEY_END, /*is_initial_value=*/true);
+    RecordSixPackKeyInfo(keyboard, ui::VKEY_PRIOR, /*is_initial_value=*/true);
+    RecordSixPackKeyInfo(keyboard, ui::VKEY_NEXT, /*is_initial_value=*/true);
+  }
 }
 
 void InputDeviceSettingsMetricsManager::RecordKeyboardNumberOfKeysRemapped(
@@ -248,6 +312,36 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardChangedMetrics(
                         "RemappedTo.Changed"});
       base::UmaHistogramEnumeration(modifier_remapping_metrics,
                                     key_remapped_to);
+    }
+  }
+
+  if (features::IsAltClickAndSixPackCustomizationEnabled()) {
+    if (keyboard.settings->six_pack_key_remappings->del !=
+        old_settings.six_pack_key_remappings->del) {
+      RecordSixPackKeyInfo(keyboard, ui::VKEY_DELETE,
+                           /*is_initial_value=*/false);
+    }
+    if (keyboard.settings->six_pack_key_remappings->insert !=
+        old_settings.six_pack_key_remappings->insert) {
+      RecordSixPackKeyInfo(keyboard, ui::VKEY_INSERT,
+                           /*is_initial_value=*/false);
+    }
+    if (keyboard.settings->six_pack_key_remappings->home !=
+        old_settings.six_pack_key_remappings->home) {
+      RecordSixPackKeyInfo(keyboard, ui::VKEY_HOME, /*is_initial_value=*/false);
+    }
+    if (keyboard.settings->six_pack_key_remappings->end !=
+        old_settings.six_pack_key_remappings->end) {
+      RecordSixPackKeyInfo(keyboard, ui::VKEY_END, /*is_initial_value=*/false);
+    }
+    if (keyboard.settings->six_pack_key_remappings->page_up !=
+        old_settings.six_pack_key_remappings->page_up) {
+      RecordSixPackKeyInfo(keyboard, ui::VKEY_PRIOR,
+                           /*is_initial_value=*/false);
+    }
+    if (keyboard.settings->six_pack_key_remappings->page_down !=
+        old_settings.six_pack_key_remappings->page_down) {
+      RecordSixPackKeyInfo(keyboard, ui::VKEY_NEXT, /*is_initial_value=*/false);
     }
   }
 }
@@ -432,6 +526,12 @@ void InputDeviceSettingsMetricsManager::RecordTouchpadInitialMetrics(
         touchpad_metrics_prefix + "HapticSensitivity.Initial",
         haptic_sensitivity);
   }
+
+  if (features::IsAltClickAndSixPackCustomizationEnabled()) {
+    base::UmaHistogramEnumeration(
+        touchpad_metrics_prefix + "SimulateRightClick.Initial",
+        touchpad.settings->simulate_right_click);
+  }
 }
 
 void InputDeviceSettingsMetricsManager::RecordTouchpadChangedMetrics(
@@ -497,6 +597,13 @@ void InputDeviceSettingsMetricsManager::RecordTouchpadChangedMetrics(
           static_cast<PointerSensitivity>(abs(speed_difference)));
     }
   }
+  if (features::IsAltClickAndSixPackCustomizationEnabled() &&
+      touchpad.settings->simulate_right_click !=
+          old_settings.simulate_right_click) {
+    base::UmaHistogramEnumeration(
+        touchpad_metrics_prefix + "SimulateRightClick.Changed",
+        touchpad.settings->simulate_right_click);
+  }
 }
 
 void InputDeviceSettingsMetricsManager::RecordModifierRemappingHash(
@@ -527,6 +634,16 @@ void InputDeviceSettingsMetricsManager::RecordModifierRemappingHash(
         base::StrCat({GetKeyboardMetricsPrefix(keyboard), "Modifiers.Hash"});
     base::UmaHistogramSparse(metrics, static_cast<int>(hash));
   }
+}
+
+void InputDeviceSettingsMetricsManager::RecordSixPackKeyInfo(
+    const mojom::Keyboard& keyboard,
+    ui::KeyboardCode key_code,
+    bool is_initial_value) {
+  base::UmaHistogramEnumeration(
+      GetSixPackKeyMetricName(GetKeyboardMetricsPrefix(keyboard), key_code,
+                              is_initial_value),
+      GetSixPackKeyModifier(keyboard, key_code));
 }
 
 }  // namespace ash

@@ -2493,6 +2493,54 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 </histogram>
 
 <histogram
+    name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.SixPackKeys.{Key}.Changed"
+    enum="SixPackKeyModifier" expires_after="2024-03-22">
+  <owner>michaelcheco@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the configured modifier remapping for the {Key} key when the
+    {KeyboardType} keyboard is updated.
+  </summary>
+  <token key="KeyboardType">
+    <variant name="External"/>
+    <variant name="ExternalChromeOS"/>
+    <variant name="Internal"/>
+  </token>
+  <token key="Key">
+    <variant name="Delete"/>
+    <variant name="End"/>
+    <variant name="Home"/>
+    <variant name="Insert"/>
+    <variant name="PageDown"/>
+    <variant name="PageUp"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.SixPackKeys.{Key}.Initial"
+    enum="SixPackKeyModifier" expires_after="2024-03-22">
+  <owner>michaelcheco@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the configured modifier remapping for the {Key} key when the
+    {KeyboardType} keyboard is first initialized.
+  </summary>
+  <token key="KeyboardType">
+    <variant name="External"/>
+    <variant name="ExternalChromeOS"/>
+    <variant name="Internal"/>
+  </token>
+  <token key="Key">
+    <variant name="Delete"/>
+    <variant name="End"/>
+    <variant name="Home"/>
+    <variant name="Insert"/>
+    <variant name="PageDown"/>
+    <variant name="PageUp"/>
+  </token>
+</histogram>
+
+<histogram
     name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.{KeyboardSetting}.Changed"
     enum="Boolean" expires_after="2024-03-22">
   <owner>dpad@google.com</owner>
@@ -2529,6 +2577,36 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   <token key="KeyboardSetting">
     <variant name="BlockMetaFKeyRewrites"/>
     <variant name="TopRowAreFKeys"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ChromeOS.Settings.Device.Touchpad.{TouchpadType}.SimulateRightClick.Changed"
+    enum="SimulateRightClickModifier" expires_after="2024-07-10">
+  <owner>michaelcheco@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the value of the simulate right-click setting when the
+    {TouchpadType} touchpad is updated.
+  </summary>
+  <token key="TouchpadType">
+    <variant name="External" summary="external touchpad"/>
+    <variant name="Internal" summary="internal touchpad"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ChromeOS.Settings.Device.Touchpad.{TouchpadType}.SimulateRightClick.Initial"
+    enum="SimulateRightClickModifier" expires_after="2024-07-10">
+  <owner>michaelcheco@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the value of the simulate right-click setting when the
+    {TouchpadType} touchpad is first initialized.
+  </summary>
+  <token key="TouchpadType">
+    <variant name="External" summary="external touchpad"/>
+    <variant name="Internal" summary="internal touchpad"/>
   </token>
 </histogram>
 
