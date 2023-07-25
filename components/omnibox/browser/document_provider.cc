@@ -645,7 +645,11 @@ void DocumentProvider::OnURLLoadComplete(
   LogRequestTime(time_request_sent_, false);
   LogOmniboxDocumentRequest(DOCUMENT_REPLY_RECEIVED);
 
-  if (response_code == 400 || response_code == 499) {
+  // The following are codes that we believe indicate non-transient failures,
+  // based on experience working with the owners of the API. Since they are
+  // expected to be semi-persistent, it does not make sense to continue to issue
+  // requests during the current session after receiving one.
+  if (response_code == 400 || response_code == 403 || response_code == 499) {
     backoff_for_session_ = true;
   }
 
