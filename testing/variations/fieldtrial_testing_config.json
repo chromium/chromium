@@ -14637,6 +14637,9 @@
                     },
                     "enable_features": [
                         "V8FlushCodeBasedOnTime"
+                    ],
+                    "disable_features": [
+                        "V8FlushCodeBasedOnTabVisibility"
                     ]
                 },
                 {
@@ -14646,6 +14649,9 @@
                     },
                     "enable_features": [
                         "V8FlushCodeBasedOnTime"
+                    ],
+                    "disable_features": [
+                        "V8FlushCodeBasedOnTabVisibility"
                     ]
                 },
                 {
@@ -14655,6 +14661,9 @@
                     },
                     "enable_features": [
                         "V8FlushCodeBasedOnTime"
+                    ],
+                    "disable_features": [
+                        "V8FlushCodeBasedOnTabVisibility"
                     ]
                 },
                 {
@@ -14664,15 +14673,9 @@
                     },
                     "enable_features": [
                         "V8FlushCodeBasedOnTime"
-                    ]
-                },
-                {
-                    "name": "FlushCodeBasedOnTime60",
-                    "params": {
-                        "V8FlushCodeOldTime": "60"
-                    },
-                    "enable_features": [
-                        "V8FlushCodeBasedOnTime"
+                    ],
+                    "disable_features": [
+                        "V8FlushCodeBasedOnTabVisibility"
                     ]
                 },
                 {
@@ -14682,12 +14685,18 @@
                     },
                     "enable_features": [
                         "V8FlushCodeBasedOnTime"
+                    ],
+                    "disable_features": [
+                        "V8FlushCodeBasedOnTabVisibility"
                     ]
                 },
                 {
                     "name": "FlushCodeBasedOnTabVisibility",
                     "enable_features": [
                         "V8FlushCodeBasedOnTabVisibility"
+                    ],
+                    "disable_features": [
+                        "V8FlushCodeBasedOnTime"
                     ]
                 }
             ]
