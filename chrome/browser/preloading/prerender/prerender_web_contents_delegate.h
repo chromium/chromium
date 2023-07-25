@@ -18,6 +18,15 @@ class PrerenderWebContentsDelegateImpl
   // content::WebContentsDelegate overrides.
   content::PreloadingEligibility IsPrerender2Supported(
       content::WebContents& web_contents) override;
+  void AddNewContents(content::WebContents* source,
+                      std::unique_ptr<content::WebContents> new_contents,
+                      const GURL& target_url,
+                      WindowOpenDisposition disposition,
+                      const blink::mojom::WindowFeatures& window_features,
+                      bool user_gesture,
+                      bool* was_blocked) override;
+  void ActivateContents(content::WebContents* contents) override;
+
   // TODO(crbug.com/1350676): Investigate if we have to override other
   // functions on WebContentsDelegate.
 };
