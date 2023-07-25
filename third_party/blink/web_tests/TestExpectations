@@ -6558,3 +6558,10 @@ crbug.com/1462784 rootscroller/fixed-chaining-with-implicit.html [ Failure Pass 
 # Gardener 2023-07-25
 crbug.com/1409152 http/tests/forms/color-picker-keyboard-cross-domain.php [ Failure Pass ]
 crbug.com/1409152 http/tests/forms/date-picker-keyboard-cross-domain.php [ Failure Pass ]
+
+# Tests failing on windows11-arm64
+crbug.com/1464614 [ Win11-arm64 ] css3/blending/svg-blend-exclusion.html [ Failure ]  # Reftest image failure
+crbug.com/1464614 [ Win11-arm64 ] css3/blending/svg-blend-multiply.html [ Failure ]  # Reftest image failure
+crbug.com/1464614 [ Win11-arm64 ] http/tests/images/force-reload.html [ Failure Timeout ]
+crbug.com/1464614 [ Win11-arm64 ] fast/canvas-api/canvas-lowlatency-getContext.html [ Failure Pass ] # flaky
+crbug.com/1464614 [ Win11-arm64 ] printing/offscreencanvas-webgl-printing.html [ Failure Pass ] # flaky
