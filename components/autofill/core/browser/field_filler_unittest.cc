@@ -29,8 +29,10 @@
 #include "components/autofill/core/browser/data_model/credit_card_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/credit_card_field.h"
+#include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/null_storage.h"
@@ -46,6 +48,7 @@ using ::i18n::addressinput::NullStorage;
 using ::i18n::addressinput::Source;
 using ::i18n::addressinput::Storage;
 using ::i18n::addressinput::TestdataSource;
+using test::CreateTestSelectField;
 
 std::u16string kMidlineEllipsis2Dots = CreditCard::GetMidlineEllipsisDots(2);
 std::u16string kMidlineEllipsis3Dots = CreditCard::GetMidlineEllipsisDots(3);
@@ -75,6 +78,14 @@ const std::vector<const char*> NotNumericMonthsContentsWithPlaceholder() {
   return result;
 }
 
+AutofillField CreateTestSelectAutofillField(
+    const std::vector<const char*>& values,
+    ServerFieldType heuristic_type) {
+  AutofillField field{CreateTestSelectField(values)};
+  field.set_heuristic_type(GetActivePatternSource(), heuristic_type);
+  return field;
+}
+
 // Returns the index of |value| in |values|.
 size_t GetIndexOfValue(const std::vector<SelectOption>& values,
                        const std::u16string& value) {
@@ -89,8 +100,7 @@ size_t GetIndexOfValue(const std::vector<SelectOption>& values,
 void TestFillingExpirationMonth(const std::vector<const char*>& values,
                                 const std::vector<const char*>& contents) {
   // Create the select field.
-  AutofillField field;
-  test::CreateTestSelectField("", "", "", values, contents, &field);
+  AutofillField field{CreateTestSelectField("", "", "", values, contents)};
   field.set_heuristic_type(GetActivePatternSource(), CREDIT_CARD_EXP_MONTH);
 
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
@@ -942,9 +952,7 @@ TEST_F(AutofillFieldFillerTest, FillSelectControlByValue) {
       "Mo",
   };
 
-  AutofillField field;
-  test::CreateTestSelectField(kOptions, &field);
-  field.set_heuristic_type(GetActivePatternSource(), NAME_FIRST);
+  AutofillField field = CreateTestSelectAutofillField(kOptions, NAME_FIRST);
 
   // Set semantically empty contents for each option, so that only the values
   // can be used for matching.
@@ -966,9 +974,7 @@ TEST_F(AutofillFieldFillerTest, FillSelectControlByContents) {
       "Miney",
       "Mo",
   };
-  AutofillField field;
-  test::CreateTestSelectField(kOptions, &field);
-  field.set_heuristic_type(GetActivePatternSource(), NAME_FIRST);
+  AutofillField field = CreateTestSelectAutofillField(kOptions, NAME_FIRST);
 
   // Set semantically empty values for each option, so that only the contents
   // can be used for matching.
@@ -1037,10 +1043,8 @@ class AutofillSelectWithStatesTest
 
 TEST_P(AutofillSelectWithStatesTest, FillSelectWithStates) {
   auto test_case = GetParam();
-  AutofillField field;
-  test::CreateTestSelectField(test_case.select_values, &field);
-  field.set_heuristic_type(GetActivePatternSource(), ADDRESS_HOME_STATE);
-
+  AutofillField field = CreateTestSelectAutofillField(test_case.select_values,
+                                                      ADDRESS_HOME_STATE);
   // Without a normalizer.
   AutofillProfile address = test::GetFullProfile();
   address.SetRawInfo(ADDRESS_HOME_STATE, test_case.input_value);
@@ -1132,10 +1136,8 @@ INSTANTIATE_TEST_SUITE_P(
                            u"CA - California"}));
 
 TEST_F(AutofillFieldFillerTest, FillSelectWithCountries) {
-  AutofillField field;
-  test::CreateTestSelectField({"Albania", "Canada"}, &field);
-  field.set_heuristic_type(GetActivePatternSource(), ADDRESS_HOME_COUNTRY);
-
+  AutofillField field = CreateTestSelectAutofillField({"Albania", "Canada"},
+                                                      ADDRESS_HOME_COUNTRY);
   AutofillProfile address = test::GetFullProfile();
   address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"CA");
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
@@ -1252,13 +1254,10 @@ INSTANTIATE_TEST_SUITE_P(
             NotNumericMonthsContentsWithPlaceholder()}));
 
 TEST_F(AutofillFieldFillerTest, FillSelectControlWithAbbreviatedMonthName) {
-  std::vector<const char*> kMonthsAbbreviated = {
-      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-  };
-  AutofillField field;
-  test::CreateTestSelectField(kMonthsAbbreviated, &field);
-  field.set_heuristic_type(GetActivePatternSource(), CREDIT_CARD_EXP_MONTH);
+  AutofillField field =
+      CreateTestSelectAutofillField({"Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                                     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"},
+                                    CREDIT_CARD_EXP_MONTH);
 
   CreditCard card = test::GetCreditCard();
   card.SetExpirationMonth(4);
@@ -1270,14 +1269,10 @@ TEST_F(AutofillFieldFillerTest, FillSelectControlWithAbbreviatedMonthName) {
 }
 
 TEST_F(AutofillFieldFillerTest, FillSelectControlWithMonthName) {
-  std::vector<const char*> kMonthsFull = {
-      "January", "February", "March",     "April",   "May",      "June",
-      "July",    "August",   "September", "October", "November", "December",
-  };
-  AutofillField field;
-  test::CreateTestSelectField(kMonthsFull, &field);
-  field.set_heuristic_type(GetActivePatternSource(), CREDIT_CARD_EXP_MONTH);
-
+  AutofillField field = CreateTestSelectAutofillField(
+      {"January", "February", "March", "April", "May", "June", "July", "August",
+       "September", "October", "November", "December"},
+      CREDIT_CARD_EXP_MONTH);
   CreditCard card = test::GetCreditCard();
   card.SetExpirationMonth(4);
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
@@ -1288,15 +1283,11 @@ TEST_F(AutofillFieldFillerTest, FillSelectControlWithMonthName) {
 }
 
 TEST_F(AutofillFieldFillerTest, FillSelectControlWithMonthNameAndDigits) {
-  std::vector<const char*> kMonthsFullWithDigits = {
-      "January (01)",   "February (02)", "March (03)",    "April (04)",
-      "May (05)",       "June (06)",     "July (07)",     "August (08)",
-      "September (09)", "October (10)",  "November (11)", "December (12)",
-  };
-  AutofillField field;
-  test::CreateTestSelectField(kMonthsFullWithDigits, &field);
-  field.set_heuristic_type(GetActivePatternSource(), CREDIT_CARD_EXP_MONTH);
-
+  AutofillField field = CreateTestSelectAutofillField(
+      {"January (01)", "February (02)", "March (03)", "April (04)", "May (05)",
+       "June (06)", "July (07)", "August (08)", "September (09)",
+       "October (10)", "November (11)", "December (12)"},
+      CREDIT_CARD_EXP_MONTH);
   CreditCard card = test::GetCreditCard();
   card.SetExpirationMonth(4);
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
@@ -1308,24 +1299,14 @@ TEST_F(AutofillFieldFillerTest, FillSelectControlWithMonthNameAndDigits) {
 
 TEST_F(AutofillFieldFillerTest,
        FillSelectControlWithMonthNameAndDigits_French) {
-  std::vector<const char*> kMonthsFullWithDigits = {
-      "01 - JANVIER",
-      "02 - FÉVRIER",
-      "03 - MARS",
-      "04 - AVRIL",
-      "05 - MAI",
-      "06 - JUIN",
-      "07 - JUILLET",
-      "08 - AOÛT",
-      "09 - SEPTEMBRE",
-      "10 - OCTOBRE",
-      "11 - NOVEMBRE",
-      "12 - DECEMBRE" /* Intentionally not including accent in DÉCEMBRE */,
-  };
-  AutofillField field;
-  test::CreateTestSelectField(kMonthsFullWithDigits, &field);
-  field.set_heuristic_type(GetActivePatternSource(), CREDIT_CARD_EXP_MONTH);
-
+  AutofillField field = CreateTestSelectAutofillField(
+      {
+          "01 - JANVIER", "02 - FÉVRIER", "03 - MARS", "04 - AVRIL", "05 - MAI",
+          "06 - JUIN", "07 - JUILLET", "08 - AOÛT", "09 - SEPTEMBRE",
+          "10 - OCTOBRE", "11 - NOVEMBRE",
+          "12 - DECEMBRE" /* Intentionally not including accent in DÉCEMBRE */
+      },
+      CREDIT_CARD_EXP_MONTH);
   CreditCard card = test::GetCreditCard();
   card.SetExpirationMonth(8);
   FieldFiller filler(/*app_locale=*/"fr-FR", /*address_normalizer=*/nullptr);
@@ -1341,12 +1322,8 @@ TEST_F(AutofillFieldFillerTest,
 }
 
 TEST_F(AutofillFieldFillerTest, FillSelectControlWithMonthName_French) {
-  std::vector<const char*> kMonthsFrench = {"JANV", "FÉVR.", "MARS",
-                                            "décembre"};
-  AutofillField field;
-  test::CreateTestSelectField(kMonthsFrench, &field);
-  field.set_heuristic_type(GetActivePatternSource(), CREDIT_CARD_EXP_MONTH);
-
+  AutofillField field = CreateTestSelectAutofillField(
+      {"JANV", "FÉVR.", "MARS", "décembre"}, CREDIT_CARD_EXP_MONTH);
   CreditCard card = test::GetCreditCard();
   card.SetExpirationMonth(2);
   FieldFiller filler(/*app_locale=*/"fr-FR", /*address_normalizer=*/nullptr);
@@ -1373,9 +1350,8 @@ TEST_F(AutofillFieldFillerTest,
   std::vector<const char*> kMonthsNumeric = {
       "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12",
   };
-  AutofillField field;
-  test::CreateTestSelectField(kMonthsNumeric, &field);
-  field.set_heuristic_type(GetActivePatternSource(), CREDIT_CARD_EXP_MONTH);
+  AutofillField field =
+      CreateTestSelectAutofillField(kMonthsNumeric, CREDIT_CARD_EXP_MONTH);
 
   CreditCard card = test::GetCreditCard();
   card.SetExpirationMonth(4);
@@ -1387,12 +1363,9 @@ TEST_F(AutofillFieldFillerTest,
 }
 
 TEST_F(AutofillFieldFillerTest, FillSelectControlWithTwoDigitCreditCardYear) {
-  std::vector<const char*> kYears = {"12", "13", "14", "15",
-                                     "16", "17", "18", "19"};
-  AutofillField field;
-  test::CreateTestSelectField(kYears, &field);
-  field.set_heuristic_type(GetActivePatternSource(),
-                           CREDIT_CARD_EXP_2_DIGIT_YEAR);
+  AutofillField field = CreateTestSelectAutofillField(
+      {"12", "13", "14", "15", "16", "17", "18", "19"},
+      CREDIT_CARD_EXP_2_DIGIT_YEAR);
 
   CreditCard card = test::GetCreditCard();
   card.SetExpirationYear(2017);
@@ -1404,11 +1377,8 @@ TEST_F(AutofillFieldFillerTest, FillSelectControlWithTwoDigitCreditCardYear) {
 }
 
 TEST_F(AutofillFieldFillerTest, FillSelectControlWithCreditCardType) {
-  std::vector<const char*> kCreditCardTypes = {"Visa", "Mastercard", "AmEx",
-                                               "discover"};
-  AutofillField field;
-  test::CreateTestSelectField(kCreditCardTypes, &field);
-  field.set_heuristic_type(GetActivePatternSource(), CREDIT_CARD_TYPE);
+  AutofillField field = CreateTestSelectAutofillField(
+      {"Visa", "Mastercard", "AmEx", "discover"}, CREDIT_CARD_TYPE);
   CreditCard card = test::GetCreditCard();
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
 
@@ -1716,9 +1686,7 @@ TEST_F(AutofillFieldFillerTest, PreviewCreditCardNumberWithUnequalSizeSplits) {
 }
 
 TEST_F(AutofillFieldFillerTest, FindShortestSubstringMatchInSelect) {
-  std::vector<const char*> kCountries = {"États-Unis", "Canada"};
-  AutofillField field;
-  test::CreateTestSelectField(kCountries, &field);
+  AutofillField field{CreateTestSelectField({"États-Unis", "Canada"})};
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
 
   // Case 1: Exact match
@@ -1916,12 +1884,9 @@ TEST_F(AutofillFieldFillerTest, FillSelectAbbreviatedState) {
 
   test::ClearAlternativeStateNameMapForTesting();
   test::PopulateAlternativeStateNameMapForTesting();
-  std::vector<const char*> kState = {"BA", "BB", "BC", "BY"};
 
-  AutofillField field;
-  test::CreateTestSelectField(kState, &field);
-  field.set_heuristic_type(GetActivePatternSource(), ADDRESS_HOME_STATE);
-
+  AutofillField field = CreateTestSelectAutofillField({"BA", "BB", "BC", "BY"},
+                                                      ADDRESS_HOME_STATE);
   AutofillProfile address;
   address.SetRawInfo(ADDRESS_HOME_STATE, u"Bavaria");
   address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
@@ -1940,13 +1905,9 @@ TEST_F(AutofillFieldFillerTest, FillSelectLocalizedState) {
 
   test::ClearAlternativeStateNameMapForTesting();
   test::PopulateAlternativeStateNameMapForTesting();
-  std::vector<const char*> kState = {"Bayern", "Berlin", "Brandenburg",
-                                     "Bremen"};
 
-  AutofillField field;
-  test::CreateTestSelectField(kState, &field);
-  field.set_heuristic_type(GetActivePatternSource(), ADDRESS_HOME_STATE);
-
+  AutofillField field = CreateTestSelectAutofillField(
+      {"Bayern", "Berlin", "Brandenburg", "Bremen"}, ADDRESS_HOME_STATE);
   AutofillProfile address;
   address.SetRawInfo(ADDRESS_HOME_STATE, u"Bavaria");
   address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
@@ -1966,12 +1927,9 @@ TEST_F(AutofillFieldFillerTest, FillSelectLocalizedStateSubstring) {
 
   test::ClearAlternativeStateNameMapForTesting();
   test::PopulateAlternativeStateNameMapForTesting();
-  std::vector<const char*> kState = {"Bavaria Has Munich", "Berlin has Berlin"};
 
-  AutofillField field;
-  test::CreateTestSelectField(kState, &field);
-  field.set_heuristic_type(GetActivePatternSource(), ADDRESS_HOME_STATE);
-
+  AutofillField field = CreateTestSelectAutofillField(
+      {"Bavaria Has Munich", "Berlin has Berlin"}, ADDRESS_HOME_STATE);
   AutofillProfile address;
   address.SetRawInfo(ADDRESS_HOME_STATE, u"Bavaria");
   address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
@@ -2016,12 +1974,9 @@ TEST_F(AutofillFieldFillerTest, FillStateFieldWithSavedValueInProfile) {
 
   test::ClearAlternativeStateNameMapForTesting();
   test::PopulateAlternativeStateNameMapForTesting();
-  std::vector<const char*> kState = {"Bavari", "Berlin", "Lower Saxony"};
 
-  AutofillField field;
-  test::CreateTestSelectField(kState, &field);
-  field.set_heuristic_type(GetActivePatternSource(), ADDRESS_HOME_STATE);
-
+  AutofillField field = CreateTestSelectAutofillField(
+      {"Bavari", "Berlin", "Lower Saxony"}, ADDRESS_HOME_STATE);
   AutofillProfile address;
   address.SetRawInfo(ADDRESS_HOME_STATE, u"Bavari");
   address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
@@ -2046,12 +2001,9 @@ TEST_F(AutofillFieldFillerTest, FillStateFieldWhenStateIsNotInOptions) {
       {{.canonical_name = "Colorado",
         .abbreviations = {"CO"},
         .alternative_names = {}}});
-  std::vector<const char*> kState = {"Connecticut", "California"};
 
-  AutofillField field;
-  test::CreateTestSelectField(kState, &field);
-  field.set_heuristic_type(GetActivePatternSource(), ADDRESS_HOME_STATE);
-
+  AutofillField field = CreateTestSelectAutofillField(
+      {"Connecticut", "California"}, ADDRESS_HOME_STATE);
   AutofillProfile address;
   address.SetRawInfo(ADDRESS_HOME_STATE, u"CO");
   address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
@@ -2071,12 +2023,9 @@ TEST_F(AutofillFieldFillerTest,
   feature.InitAndEnableFeature(features::kAutofillUseAlternativeStateNameMap);
 
   test::ClearAlternativeStateNameMapForTesting();
-  std::vector<const char*> kState = {"Colorado", "Connecticut", "California"};
 
-  AutofillField field;
-  test::CreateTestSelectField(kState, &field);
-  field.set_heuristic_type(GetActivePatternSource(), ADDRESS_HOME_STATE);
-
+  AutofillField field = CreateTestSelectAutofillField(
+      {"Colorado", "Connecticut", "California"}, ADDRESS_HOME_STATE);
   AutofillProfile address;
   address.SetRawInfo(ADDRESS_HOME_STATE, u"CO");
   address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
@@ -2124,12 +2073,9 @@ TEST_F(AutofillFieldFillerTest,
   feature.InitAndEnableFeature(features::kAutofillUseAlternativeStateNameMap);
 
   test::ClearAlternativeStateNameMapForTesting();
-  std::vector<const char*> kState = {"Colombia", "Connecticut", "Colifornia"};
 
-  AutofillField field;
-  test::CreateTestSelectField(kState, &field);
-  field.set_heuristic_type(GetActivePatternSource(), ADDRESS_HOME_STATE);
-
+  AutofillField field = CreateTestSelectAutofillField(
+      {"Colombia", "Connecticut", "Colifornia"}, ADDRESS_HOME_STATE);
   AutofillProfile address;
   address.SetRawInfo(ADDRESS_HOME_STATE, u"CO");
   address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");

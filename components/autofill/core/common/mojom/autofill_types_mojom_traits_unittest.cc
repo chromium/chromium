@@ -288,9 +288,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(SectionTestCases()));
 
 TEST_F(AutofillTypeTraitsTestImpl, PassFormFieldData) {
-  FormFieldData input;
-  test::CreateTestSelectField("TestLabel", "TestName", "TestValue", kOptions,
-                              kOptions, &input);
+  FormFieldData input = test::CreateTestSelectField(
+      "TestLabel", "TestName", "TestValue", kOptions, kOptions);
   // Set other attributes to check if they are passed correctly.
   input.host_frame = test::MakeLocalFrameToken();
   input.unique_renderer_id = FieldRendererId(1234);

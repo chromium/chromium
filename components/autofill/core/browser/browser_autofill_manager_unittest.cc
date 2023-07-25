@@ -73,6 +73,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_switches.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_data.h"
@@ -121,6 +122,7 @@ namespace autofill {
 
 using mojom::SubmissionIndicatorEvent;
 using mojom::SubmissionSource;
+using test::CreateTestSelectField;
 
 namespace {
 
@@ -4175,32 +4177,28 @@ TEST_F(BrowserAutofillManagerTest,
 
   // Create a selection box for the state that hat the correct entry to be
   // filled with user data. Note, TN is the official abbreviation for Tennessee.
-  test::CreateTestSelectField("State", "state", "", {"AA", "BB", "TN"},
-                              {"AA", "BB", "TN"}, &field);
-  form.fields.push_back(field);
+  form.fields.push_back(CreateTestSelectField(
+      "State", "state", "", {"AA", "BB", "TN"}, {"AA", "BB", "TN"}));
 
   // Add 20 selection boxes that can not be filled since the correct entry
   // is missing.
   for (int i = 0; i < 20; i++) {
-    test::CreateTestSelectField("State", "state", "", {"AA", "BB", "CC"},
-                                {"AA", "BB", "CC"}, &field);
-    form.fields.push_back(field);
+    form.fields.push_back(CreateTestSelectField(
+        "State", "state", "", {"AA", "BB", "CC"}, {"AA", "BB", "CC"}));
   }
 
   // Add 20 other selection boxes that should be fillable since the correct
   // entry is present.
   for (int i = 0; i < 20; i++) {
-    test::CreateTestSelectField("State", "state", "", {"AA", "BB", "TN"},
-                                {"AA", "BB", "TN"}, &field);
-    form.fields.push_back(field);
+    form.fields.push_back(CreateTestSelectField(
+        "State", "state", "", {"AA", "BB", "TN"}, {"AA", "BB", "TN"}));
   }
 
   // Create a selection box for the state that hat the correct entry to be
   // filled with user data. Note, TN is the official abbreviation for Tennessee.
   for (int i = 0; i < 20; ++i) {
-    test::CreateTestSelectField("Country", "country", "", {"DE", "FR", "US"},
-                                {"DE", "FR", "US"}, &field);
-    form.fields.push_back(field);
+    form.fields.push_back(CreateTestSelectField(
+        "Country", "country", "", {"DE", "FR", "US"}, {"DE", "FR", "US"}));
   }
 
   FormsSeen({form});
@@ -4453,9 +4451,9 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_ExpiredCard) {
   form.fields.push_back(field);
   std::vector<const char*> kCreditCardTypes = {"Visa", "Mastercard", "AmEx",
                                                "discover"};
-  test::CreateTestSelectField("Card Type", "cardtype", "", "cc-type",
-                              kCreditCardTypes, kCreditCardTypes, &field);
-  form.fields.push_back(field);
+  form.fields.push_back(CreateTestSelectField("Card Type", "cardtype", "",
+                                              "cc-type", kCreditCardTypes,
+                                              kCreditCardTypes));
   test::CreateTestFormField("Card Number", "cardnumber", "", "text",
                             "cc-number", &field);
   form.fields.push_back(field);
@@ -5456,18 +5454,17 @@ TEST_F(BrowserAutofillManagerTest, FormWithHiddenOrPresentationalSelects) {
     const std::vector<const char*> values{"CA", "US", "BR"};
     const std::vector<const char*> contents{"Canada", "United States",
                                             "Banana Republic"};
-    test::CreateTestSelectField("Country", "country", "", values, contents,
-                                &field);
-    field.is_focusable = false;
-    form.fields.push_back(field);
+    form.fields.push_back(
+        CreateTestSelectField("Country", "country", "", values, contents));
+    form.fields.back().is_focusable = false;
   }
   {
     const std::vector<const char*> values{"NY", "CA", "TN"};
     const std::vector<const char*> contents{"New York", "California",
                                             "Tennessee"};
-    test::CreateTestSelectField("State", "state", "", values, contents, &field);
-    field.role = FormFieldData::RoleAttribute::kPresentation;
-    form.fields.push_back(field);
+    form.fields.push_back(
+        CreateTestSelectField("State", "state", "", values, contents));
+    form.fields.back().role = FormFieldData::RoleAttribute::kPresentation;
   }
 
   test::CreateTestFormField("City", "city", "", "text", &field);
@@ -10239,10 +10236,9 @@ TEST_F(BrowserAutofillManagerTest,
   form.fields.push_back(field);
   test::CreateTestFormField("City", "city", "Test City", "text", &field);
   form.fields.push_back(field);
-  test::CreateTestSelectField("State", "state", "California",
-                              {"Washington", "Tennessee", "California"},
-                              {"DC", "TN", "CA"}, &field);
-  form.fields.push_back(field);
+  form.fields.push_back(CreateTestSelectField(
+      "State", "state", "California", {"Washington", "Tennessee", "California"},
+      {"DC", "TN", "CA"}));
   test::CreateTestFormField("Country", "country", "Test Country", "text",
                             &field);
   form.fields.push_back(field);
@@ -10330,10 +10326,9 @@ TEST_F(BrowserAutofillManagerTest, DISABLED_AutofillOverridePrefilledValue) {
   form.fields.push_back(field);
   test::CreateTestFormField("City", "city", "Test City", "text", &field);
   form.fields.push_back(field);
-  test::CreateTestSelectField("State", "state", "California",
-                              {"Washington", "Tennessee", "California"},
-                              {"DC", "TN", "CA"}, &field);
-  form.fields.push_back(field);
+  form.fields.push_back(CreateTestSelectField(
+      "State", "state", "California", {"Washington", "Tennessee", "California"},
+      {"DC", "TN", "CA"}));
   test::CreateTestFormField("Country", "country", "Test Country", "text",
                             &field);
   form.fields.push_back(field);

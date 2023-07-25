@@ -182,19 +182,8 @@ FormFieldData CreateTestSelectField(std::string_view label,
                                     std::string_view value,
                                     const std::vector<const char*>& values,
                                     const std::vector<const char*>& contents) {
-  FormFieldData field;
-  CreateTestSelectField(label, name, value, values, contents, &field);
-  return field;
-}
-
-void CreateTestSelectField(std::string_view label,
-                           std::string_view name,
-                           std::string_view value,
-                           const std::vector<const char*>& values,
-                           const std::vector<const char*>& contents,
-                           FormFieldData* field) {
-  CreateTestSelectField(label, name, value, /*autocomplete=*/"", values,
-                        contents, field);
+  return CreateTestSelectField(label, name, value, /*autocomplete=*/"", values,
+                               contents);
 }
 
 FormFieldData CreateTestSelectField(std::string_view label,
@@ -203,32 +192,15 @@ FormFieldData CreateTestSelectField(std::string_view label,
                                     std::string_view autocomplete,
                                     const std::vector<const char*>& values,
                                     const std::vector<const char*>& contents) {
-  FormFieldData field;
-  CreateTestSelectField(label, name, value, autocomplete, values, contents,
-                        &field);
-  return field;
-}
-
-void CreateTestSelectField(std::string_view label,
-                           std::string_view name,
-                           std::string_view value,
-                           std::string_view autocomplete,
-                           const std::vector<const char*>& values,
-                           const std::vector<const char*>& contents,
-                           FormFieldData* field) {
-  CreateTestSelectOrSelectMenuField(label, name, value, autocomplete, values,
-                                    contents, "select-one", field);
+  return CreateTestSelectOrSelectMenuField(label, name, value, autocomplete,
+                                           values, contents,
+                                           /*field_type=*/"select-one");
 }
 
 FormFieldData CreateTestSelectField(const std::vector<const char*>& values) {
-  FormFieldData field;
-  CreateTestSelectField(values, &field);
-  return field;
-}
-
-void CreateTestSelectField(const std::vector<const char*>& values,
-                           FormFieldData* field) {
-  CreateTestSelectField("", "", "", values, values, field);
+  return CreateTestSelectField(/*label=*/"", /*name=*/"", /*value=*/"",
+                               /*autocomplete=*/"", values,
+                               /*contents=*/values);
 }
 
 FormFieldData CreateTestSelectOrSelectMenuField(

@@ -164,12 +164,6 @@ FormFieldData CreateTestSelectField(std::string_view label,
                                     std::string_view value,
                                     const std::vector<const char*>& values,
                                     const std::vector<const char*>& contents);
-void CreateTestSelectField(std::string_view label,
-                           std::string_view name,
-                           std::string_view value,
-                           const std::vector<const char*>& values,
-                           const std::vector<const char*>& contents,
-                           FormFieldData* field);
 
 FormFieldData CreateTestSelectField(std::string_view label,
                                     std::string_view name,
@@ -177,17 +171,8 @@ FormFieldData CreateTestSelectField(std::string_view label,
                                     std::string_view autocomplete,
                                     const std::vector<const char*>& values,
                                     const std::vector<const char*>& contents);
-void CreateTestSelectField(std::string_view label,
-                           std::string_view name,
-                           std::string_view value,
-                           std::string_view autocomplete,
-                           const std::vector<const char*>& values,
-                           const std::vector<const char*>& contents,
-                           FormFieldData* field);
 
 FormFieldData CreateTestSelectField(const std::vector<const char*>& values);
-void CreateTestSelectField(const std::vector<const char*>& values,
-                           FormFieldData* field);
 
 FormFieldData CreateTestSelectOrSelectMenuField(
     std::string_view label,
