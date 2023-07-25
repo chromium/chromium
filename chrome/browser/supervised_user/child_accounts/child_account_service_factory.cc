@@ -58,10 +58,7 @@ ChildAccountServiceFactory* ChildAccountServiceFactory::GetInstance() {
 ChildAccountServiceFactory::ChildAccountServiceFactory()
     : ProfileKeyedServiceFactory(
           "ChildAccountService",
-          base::FeatureList::IsEnabled(
-              supervised_user::kUpdateSupervisedUserFactoryCreation)
-              ? supervised_user::BuildProfileSelectionsForRegularAndGuest()
-              : supervised_user::BuildProfileSelectionsLegacy()) {
+          supervised_user::BuildProfileSelectionsForRegularAndGuest()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(SupervisedUserServiceFactory::GetInstance());

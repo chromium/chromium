@@ -90,15 +90,6 @@ ProfileSelections BuildProfileSelectionsForRegularAndGuest() {
       .Build();
 }
 
-ProfileSelections BuildProfileSelectionsLegacy() {
-  CHECK(!base::FeatureList::IsEnabled(
-      supervised_user::kUpdateSupervisedUserFactoryCreation));
-  return ProfileSelections::Builder()
-      .WithRegular(ProfileSelection::kOriginalOnly)
-      .WithGuest(ProfileSelection::kOriginalOnly)
-      .Build();
-}
-
 std::string GetAccountGivenName(Profile& profile) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(&profile);

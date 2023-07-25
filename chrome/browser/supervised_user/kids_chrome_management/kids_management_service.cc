@@ -288,12 +288,8 @@ bool KidsManagementService::IsPendingNextFetchFamilyMembers() const {
 }
 
 KidsManagementServiceFactory::KidsManagementServiceFactory()
-    : ProfileKeyedServiceFactory(
-          "KidsManagementService",
-          base::FeatureList::IsEnabled(
-              supervised_user::kUpdateSupervisedUserFactoryCreation)
-              ? ProfileSelections::BuildForRegularProfile()
-              : supervised_user::BuildProfileSelectionsLegacy()) {
+    : ProfileKeyedServiceFactory("KidsManagementService",
+                                 ProfileSelections::BuildForRegularProfile()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SupervisedUserServiceFactory::GetInstance());
 }

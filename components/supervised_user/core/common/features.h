@@ -35,8 +35,6 @@ BASE_DECLARE_FEATURE(kLocalExtensionApprovalsV2);
 // Enables invoking the ClassifyUrl service through a proto fetcher.
 BASE_DECLARE_FEATURE(kEnableProtoApiForClassifyUrl);
 
-BASE_DECLARE_FEATURE(kUpdateSupervisedUserFactoryCreation);
-
 // Returns whether local parent approvals on Family Link user's device are
 // enabled.
 // Local web approvals are only available when refreshed version of web

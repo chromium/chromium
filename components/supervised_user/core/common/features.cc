@@ -45,11 +45,6 @@ BASE_FEATURE(kLocalExtensionApprovalsV2,
              "LocalExtensionApprovalsV2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Stops creating Supervised User Service for Incognito profile.
-BASE_FEATURE(kUpdateSupervisedUserFactoryCreation,
-             "UpdateSupervisedUserFactoryCreation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsGoogleBrandedBuild() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return true;

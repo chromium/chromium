@@ -27,10 +27,6 @@ bool ShouldContentSkipParentAllowlistFiltering(content::WebContents* contents);
 // should be created.
 ProfileSelections BuildProfileSelectionsForRegularAndGuest();
 
-// Returns how several supervised_user factories are created before the
-// `supervised_user::kUpdateSupervisedUserFactoryCreation` feature is enabled.
-ProfileSelections BuildProfileSelectionsLegacy();
-
 // Returns given name of the primary account associated with the profile.
 std::string GetAccountGivenName(Profile& profile);
 
