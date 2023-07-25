@@ -252,38 +252,34 @@ if (build_with_chromium) {
   }
 
   foreach(fuzzer, fuzzers) {
-    # TODO(crbug.com/1322914): Enable the BoringSSL libpki build and associated
-    # fuzzers.
-    if (fuzzer != "parse_certificate_fuzzer") {
-      fuzzer_test("boringssl_${fuzzer}_fuzzer") {
-        sources = [
-          "src/fuzz/${fuzzer}.cc",
-          "src/ssl/test/fuzzer.h",
-          "src/ssl/test/fuzzer_tags.h",
-        ]
-        additional_configs = [ ":internal_config" ]
-        deps = [ ":boringssl_fuzzer" ]
-        seed_corpus = "src/fuzz/${fuzzer}_corpus"
+    fuzzer_test("boringssl_${fuzzer}_fuzzer") {
+      sources = [
+        "src/fuzz/${fuzzer}.cc",
+        "src/ssl/test/fuzzer.h",
+        "src/ssl/test/fuzzer_tags.h",
+      ]
+      additional_configs = [ ":internal_config" ]
+      deps = [ ":boringssl_fuzzer" ]
+      seed_corpus = "src/fuzz/${fuzzer}_corpus"
 
-        if ("cert" == fuzzer) {
-          libfuzzer_options = [ "max_len=3072" ]
-        } else if ("client" == fuzzer) {
-          libfuzzer_options = [ "max_len=20000" ]
-        } else if ("pkcs8" == fuzzer) {
-          libfuzzer_options = [ "max_len=2048" ]
-        } else if ("privkey" == fuzzer) {
-          libfuzzer_options = [ "max_len=2048" ]
-        } else if ("read_pem" == fuzzer) {
-          libfuzzer_options = [ "max_len=512" ]
-        } else if ("session" == fuzzer) {
-          libfuzzer_options = [ "max_len=8192" ]
-        } else if ("server" == fuzzer) {
-          libfuzzer_options = [ "max_len=4096" ]
-        } else if ("spki" == fuzzer) {
-          libfuzzer_options = [ "max_len=1024" ]
-        } else if ("ssl_ctx_api" == fuzzer) {
-          libfuzzer_options = [ "max_len=256" ]
-        }
+      if ("cert" == fuzzer) {
+        libfuzzer_options = [ "max_len=3072" ]
+      } else if ("client" == fuzzer) {
+        libfuzzer_options = [ "max_len=20000" ]
+      } else if ("pkcs8" == fuzzer) {
+        libfuzzer_options = [ "max_len=2048" ]
+      } else if ("privkey" == fuzzer) {
+        libfuzzer_options = [ "max_len=2048" ]
+      } else if ("read_pem" == fuzzer) {
+        libfuzzer_options = [ "max_len=512" ]
+      } else if ("session" == fuzzer) {
+        libfuzzer_options = [ "max_len=8192" ]
+      } else if ("server" == fuzzer) {
+        libfuzzer_options = [ "max_len=4096" ]
+      } else if ("spki" == fuzzer) {
+        libfuzzer_options = [ "max_len=1024" ]
+      } else if ("ssl_ctx_api" == fuzzer) {
+        libfuzzer_options = [ "max_len=256" ]
       }
     }
   }
