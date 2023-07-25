@@ -3562,7 +3562,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
-                       NavigationPrefecthDoesntReplaceComplete) {
+                       NavigationPrefetchDoesntReplaceComplete) {
   SetDSEWithURL(
       GetSearchServerQueryURL("{searchTerms}&{google:prefetchSource}"), true);
   auto* search_prefetch_service =
