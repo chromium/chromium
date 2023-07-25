@@ -1855,7 +1855,10 @@
   {
     "prefix": "cookie-reject-domain-non-ascii",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": [ "http/tests/inspector-protocol/issues/cookie-domain-non-ascii.js" ],
+    "bases": [
+      "http/tests/inspector-protocol/issues/cookie-domain-non-ascii.js",
+      "external/wpt/cookies/domain/domain-attribute-idn-host.sub.https.html"
+    ],
     "args": ["--enable-features=CookieDomainRejectNonASCII"],
     "owners": ["johannhof@chromium.org"],
     "expires": "Jul 1, 2024"
