@@ -11407,23 +11407,23 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <!-- Device Trust Consent dialog -->
       <if expr="is_win or is_macosx or is_linux or is_chromeos">
         <message name="IDS_DEVICE_SIGNALS_CONSENT_DIALOG_TITLE" desc="Title of the dialog shown when user consent is required to share device signals.">
-          Share device signals?
+          Share information about your device?
         </message>
         <message name="IDS_DEVICE_SIGNALS_CONSENT_DIALOG_PROCEED_BUTTON" desc="Button text on a dialog shown when user consent is required to share device signals. When clicked, the button will record user's consent, share device signals and continue navigation.">
-          Share signals
+          Share
         </message>
         <message name="IDS_DEVICE_SIGNALS_CONSENT_DIALOG_CANCEL_BUTTON" desc="Button text on a dialog shown when user consent is required to share device signals. When clicked, the button will close all windows associated with current profile and return to profile picker.">
-          Close profile
+          Decline and close profile
         </message>
         <message name="IDS_DEVICE_SIGNALS_CONSENT_DIALOG_BODY_TEXT" desc="Message shown when user consent is required to share device signals.">
-        This profile is managed by <ph name="DOMAIN">$1<ex>example.com</ex></ph>. To continue using this managed profile, your organization requires you to share your device signals.
+        To use your device with your <ph name="DOMAIN">$1<ex>example.com</ex></ph> profile, your organization needs information about the device.
 
-Device signals can include information about your browser, OS, device, installed software, and files.
+This can include information about installed software, files, your browser, and the device’s operating system.
         </message>
         <message name="IDS_DEVICE_SIGNALS_CONSENT_DIALOG_DEFAULT_BODY_TEXT" desc="Default message for device signals consent dialog when we are unable to retrieve the name of the managing organization.">
-        This profile is managed by your organization. To continue using this managed profile, your organization requires you to share your device signals.
+        To use your device with your organization profile, your organization needs information about the device.
 
-Device signals can include information about your browser, OS, device, installed software, and files.
+This can include information about installed software, files, your browser, and the device’s operating system.
         </message>
       </if>
 
