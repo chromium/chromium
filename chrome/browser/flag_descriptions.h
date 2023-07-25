@@ -1785,6 +1785,9 @@ extern const char kSupportToolCopyTokenButtonDescription[];
 extern const char kSupportToolScreenshot[];
 extern const char kSupportToolScreenshotDescription[];
 
+extern const char kSuppressTextMessagesName[];
+extern const char kSuppressTextMessagesDescription[];
+
 extern const char kSuppressToolbarCapturesName[];
 extern const char kSuppressToolbarCapturesDescription[];
 

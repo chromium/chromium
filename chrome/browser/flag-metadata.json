@@ -7446,6 +7446,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "suppress-text-messages",
+    "owners": [ "fahadmansoor", "gordonseto", "ghostbusters@google.com", "cros-connectivity@google.com" ],
+    "expiry_milestone": 124
+  },
+  {
     "name": "suppress-toolbar-captures",
     "owners": [ "pnoland@google.com", "skym" ],
     "expiry_milestone": 120

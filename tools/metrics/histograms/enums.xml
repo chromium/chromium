@@ -65496,6 +65496,7 @@ from previous Chrome versions.
   <int value="841276069" label="ChromeHomeDoodle:disabled"/>
   <int value="841343322" label="disable-new-korean-ime"/>
   <int value="841434560" label="DynamicSearchUpdateAnimation:disabled"/>
+  <int value="841578365" label="SuppressTextMessages:enabled"/>
   <int value="841779535" label="password-export:enabled"/>
   <int value="842158411" label="PdfViewerDocumentProperties:enabled"/>
   <int value="842432903" label="CaptureThumbnailOnNavigatingAway:enabled"/>
@@ -66485,6 +66486,7 @@ from previous Chrome versions.
   <int value="1349313561" label="RestrictedApiOrigins:enabled"/>
   <int value="1349414902" label="DeviceForceScheduledReboot:disabled"/>
   <int value="1350197823" label="DragToSnapInClamshellMode:enabled"/>
+  <int value="1351213243" label="SuppressTextMessages:disabled"/>
   <int value="1351344112" label="ContentIndexingDownloadHome:enabled"/>
   <int value="1351830811" label="do-not-ignore-autocomplete-off"/>
   <int value="1352447982" label="enable-lcd-text"/>
