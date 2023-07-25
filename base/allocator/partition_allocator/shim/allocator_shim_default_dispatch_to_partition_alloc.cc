@@ -552,7 +552,7 @@ void ConfigurePartitions(
     SplitMainPartition split_main_partition,
     UseDedicatedAlignedPartition use_dedicated_aligned_partition,
     size_t ref_count_size,
-    AlternateBucketDistribution use_alternate_bucket_distribution) {
+    BucketDistribution distribution) {
   // BRP cannot be enabled without splitting the main partition. Furthermore, in
   // the "before allocation" mode, it can't be enabled without further splitting
   // out the aligned partition.
@@ -571,11 +571,11 @@ void ConfigurePartitions(
   PA_DCHECK(current_root == current_aligned_root);
 
   if (!split_main_partition) {
-    switch (use_alternate_bucket_distribution) {
-      case AlternateBucketDistribution::kDefault:
+    switch (distribution) {
+      case BucketDistribution::kNeutral:
         // We start in the 'default' case.
         break;
-      case AlternateBucketDistribution::kDenser:
+      case BucketDistribution::kDenser:
         current_root->SwitchToDenserBucketDistribution();
         break;
     }
@@ -651,11 +651,11 @@ void ConfigurePartitions(
       partition_alloc::PurgeFlags::kDecommitEmptySlotSpans |
       partition_alloc::PurgeFlags::kDiscardUnusedSystemPages);
 
-  switch (use_alternate_bucket_distribution) {
-    case AlternateBucketDistribution::kDefault:
+  switch (distribution) {
+    case BucketDistribution::kNeutral:
       // We start in the 'default' case.
       break;
-    case AlternateBucketDistribution::kDenser:
+    case BucketDistribution::kDenser:
       new_root->SwitchToDenserBucketDistribution();
       if (new_aligned_root != new_root) {
         new_aligned_root->SwitchToDenserBucketDistribution();

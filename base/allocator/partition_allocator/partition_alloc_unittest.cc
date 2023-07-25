@@ -240,7 +240,7 @@ const char* type_name = nullptr;
 void SetDistributionForPartitionRoot(PartitionRoot* root,
                                      BucketDistribution distribution) {
   switch (distribution) {
-    case BucketDistribution::kDefault:
+    case BucketDistribution::kNeutral:
       root->ResetBucketDistributionForTesting();
       break;
     case BucketDistribution::kDenser:
@@ -270,13 +270,13 @@ const std::vector<PartitionAllocTestParam> GetPartitionAllocTestParams() {
 
   std::vector<PartitionAllocTestParam> params;
   for (size_t ref_count_size : ref_count_sizes) {
-    params.emplace_back(PartitionAllocTestParam{BucketDistribution::kDefault,
+    params.emplace_back(PartitionAllocTestParam{BucketDistribution::kNeutral,
                                                 false, ref_count_size});
     params.emplace_back(PartitionAllocTestParam{BucketDistribution::kDenser,
                                                 false, ref_count_size});
 #if BUILDFLAG(ENABLE_PKEYS)
     if (CPUHasPkeySupport()) {
-      params.emplace_back(PartitionAllocTestParam{BucketDistribution::kDefault,
+      params.emplace_back(PartitionAllocTestParam{BucketDistribution::kNeutral,
                                                   true, ref_count_size});
       params.emplace_back(PartitionAllocTestParam{BucketDistribution::kDenser,
                                                   true, ref_count_size});

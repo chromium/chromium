@@ -193,7 +193,7 @@ using SplitMainPartition =
                                                  bool>;
 using UseDedicatedAlignedPartition = partition_alloc::internal::base::
     StrongAlias<class UseDedicatedAlignedPartitionTag, bool>;
-enum class AlternateBucketDistribution : uint8_t { kDefault, kDenser };
+enum class BucketDistribution : uint8_t { kNeutral, kDenser };
 
 // If |thread_cache_on_non_quarantinable_partition| is specified, the
 // thread-cache will be enabled on the non-quarantinable partition. The
@@ -205,7 +205,7 @@ void ConfigurePartitions(
     SplitMainPartition split_main_partition,
     UseDedicatedAlignedPartition use_dedicated_aligned_partition,
     size_t ref_count_size,
-    AlternateBucketDistribution use_alternate_bucket_distribution);
+    BucketDistribution distribution);
 
 PA_COMPONENT_EXPORT(PARTITION_ALLOC) uint32_t GetMainPartitionRootExtrasSize();
 

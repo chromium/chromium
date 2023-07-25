@@ -94,7 +94,7 @@ class PartitionAllocThreadCacheTest
   void SetUp() override {
     PartitionRoot* root = allocator_->root();
     switch (GetParam()) {
-      case BucketDistribution::kDefault:
+      case BucketDistribution::kNeutral:
         root->ResetBucketDistributionForTesting();
         break;
       case BucketDistribution::kDenser:
@@ -135,7 +135,7 @@ class PartitionAllocThreadCacheTest
   // |sizeof(ThreadCache)| bytes.
   size_t GetBucketSizeForThreadCache() {
     size_t tc_bucket_index = root()->SizeToBucketIndex(
-        sizeof(ThreadCache), PartitionRoot::BucketDistribution::kDefault);
+        sizeof(ThreadCache), PartitionRoot::BucketDistribution::kNeutral);
     auto* tc_bucket = &root()->buckets[tc_bucket_index];
     return tc_bucket->slot_size;
   }
@@ -180,7 +180,7 @@ class PartitionAllocThreadCacheTest
 
 INSTANTIATE_TEST_SUITE_P(AlternateBucketDistribution,
                          PartitionAllocThreadCacheTest,
-                         ::testing::Values(BucketDistribution::kDefault,
+                         ::testing::Values(BucketDistribution::kNeutral,
                                            BucketDistribution::kDenser));
 
 TEST_P(PartitionAllocThreadCacheTest, Simple) {
@@ -1177,9 +1177,9 @@ TEST_P(PartitionAllocThreadCacheTest, MAYBE_Bookkeeping) {
   root()->ResetBookkeepingForTesting();
 
   // The ThreadCache is allocated before we change buckets, so its size is
-  // always based on the sparser distribution.
+  // always based on the neutral distribution.
   size_t tc_bucket_index = root()->SizeToBucketIndex(
-      sizeof(ThreadCache), PartitionRoot::BucketDistribution::kDefault);
+      sizeof(ThreadCache), PartitionRoot::BucketDistribution::kNeutral);
   auto* tc_bucket = &root()->buckets[tc_bucket_index];
   size_t expected_allocated_size =
       tc_bucket->slot_size;  // For the ThreadCache itself.
@@ -1268,7 +1268,7 @@ TEST(AlternateBucketDistributionTest, SizeToIndex) {
     for (size_t offset = 0; offset < 4; offset++) {
       size_t n = i * (4 + offset) / 4;
       EXPECT_EQ(BucketIndexLookup::GetIndex(n),
-                BucketIndexLookup::GetIndexForDefaultBuckets(n));
+                BucketIndexLookup::GetIndexForNeutralBuckets(n));
     }
   }
 
@@ -1288,7 +1288,7 @@ TEST(AlternateBucketDistributionTest, SizeToIndex) {
     for (size_t offset = 0; offset < 2; offset++) {
       size_t n = i * (4 + offset) / 4;
       EXPECT_EQ(BucketIndexLookup::GetIndex(n),
-                BucketIndexLookup::GetIndexForDefaultBuckets(n));
+                BucketIndexLookup::GetIndexForNeutralBuckets(n));
       EXPECT_EQ(BucketIndexLookup::GetIndex(n), expected_index);
       expected_index += 2;
     }
@@ -1301,7 +1301,7 @@ TEST(AlternateBucketDistributionTest, SizeToIndex) {
       // the bucket index to be larger than the bucket index for the same
       // allocation under the default distribution.
       EXPECT_GT(BucketIndexLookup::GetIndex(n),
-                BucketIndexLookup::GetIndexForDefaultBuckets(n));
+                BucketIndexLookup::GetIndexForNeutralBuckets(n));
       // We expect both allocations in this loop to be rounded up to the next
       // power of two bucket.
       EXPECT_EQ(BucketIndexLookup::GetIndex(n), expected_index);
@@ -1315,7 +1315,7 @@ TEST(AlternateBucketDistributionTest, SizeToIndex) {
     for (size_t offset = 0; offset < 4; offset++) {
       size_t n = i * (4 + offset) / 4;
       EXPECT_EQ(BucketIndexLookup::GetIndex(n),
-                BucketIndexLookup::GetIndexForDefaultBuckets(n));
+                BucketIndexLookup::GetIndexForNeutralBuckets(n));
     }
   }
 }
@@ -1477,7 +1477,7 @@ TEST(AlternateBucketDistributionTest, SwitchBeforeAlloc) {
   root->SwitchToDenserBucketDistribution();
   constexpr size_t n = (1 << 12) * 3 / 2;
   EXPECT_NE(internal::BucketIndexLookup::GetIndex(n),
-            internal::BucketIndexLookup::GetIndexForDefaultBuckets(n));
+            internal::BucketIndexLookup::GetIndexForNeutralBuckets(n));
 
   void* ptr = root->Alloc(n, "");
 
@@ -1493,7 +1493,7 @@ TEST(AlternateBucketDistributionTest, SwitchAfterAlloc) {
   std::unique_ptr<PartitionAllocatorForTesting> allocator(CreateAllocator());
   constexpr size_t n = (1 << 12) * 3 / 2;
   EXPECT_NE(internal::BucketIndexLookup::GetIndex(n),
-            internal::BucketIndexLookup::GetIndexForDefaultBuckets(n));
+            internal::BucketIndexLookup::GetIndexForNeutralBuckets(n));
 
   PartitionRoot* root = allocator->root();
   void* ptr = root->Alloc(n, "");

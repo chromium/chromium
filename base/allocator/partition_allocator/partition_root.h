@@ -223,7 +223,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     kEnabled,
   };
 
-  enum class BucketDistribution : uint8_t { kDefault, kDenser };
+  enum class BucketDistribution : uint8_t { kNeutral, kDenser };
 
   // Root settings accessed on fast paths.
   //
@@ -240,11 +240,11 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     // Defines whether the root should be scanned.
     ScanMode scan_mode = ScanMode::kDisabled;
 
-    // It's important to default to the 'default' distribution, otherwise a
-    // switch from 'dense' -> 'default' would leave some buckets with dirty
+    // It's important to default to the 'neutral' distribution, otherwise a
+    // switch from 'dense' -> 'neutral' would leave some buckets with dirty
     // memory forever, since no memory would be allocated from these, their
     // freelist would typically not be empty, making these unreclaimable.
-    BucketDistribution bucket_distribution = BucketDistribution::kDefault;
+    BucketDistribution bucket_distribution = BucketDistribution::kNeutral;
 
     bool with_thread_cache = false;
 
@@ -607,7 +607,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   // cannot allocate from, which will not cause problems besides wasting
   // memory.
   void ResetBucketDistributionForTesting() {
-    settings.bucket_distribution = BucketDistribution::kDefault;
+    settings.bucket_distribution = BucketDistribution::kNeutral;
   }
 
   ThreadCache* thread_cache_for_testing() const {
@@ -1755,8 +1755,8 @@ PA_ALWAYS_INLINE uint16_t
 PartitionRoot::SizeToBucketIndex(size_t size,
                                  BucketDistribution bucket_distribution) {
   switch (bucket_distribution) {
-    case BucketDistribution::kDefault:
-      return internal::BucketIndexLookup::GetIndexForDefaultBuckets(size);
+    case BucketDistribution::kNeutral:
+      return internal::BucketIndexLookup::GetIndexForNeutralBuckets(size);
     case BucketDistribution::kDenser:
       return internal::BucketIndexLookup::GetIndexForDenserBuckets(size);
   }

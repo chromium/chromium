@@ -106,7 +106,7 @@ inline constexpr size_t kOrderSubIndexMask[PA_BITS_PER_SIZE_T + 1] = {
 // The class used to generate the bucket lookup table at compile-time.
 class BucketIndexLookup final {
  public:
-  PA_ALWAYS_INLINE static constexpr uint16_t GetIndexForDefaultBuckets(
+  PA_ALWAYS_INLINE static constexpr uint16_t GetIndexForNeutralBuckets(
       size_t size);
   PA_ALWAYS_INLINE static constexpr uint16_t GetIndexForDenserBuckets(
       size_t size);
@@ -253,7 +253,7 @@ PA_ALWAYS_INLINE constexpr uint16_t BucketIndexLookup::GetIndexForDenserBuckets(
 
 // static
 PA_ALWAYS_INLINE constexpr uint16_t
-BucketIndexLookup::GetIndexForDefaultBuckets(size_t size) {
+BucketIndexLookup::GetIndexForNeutralBuckets(size_t size) {
   const auto index = GetIndexForDenserBuckets(size);
   // Below the minimum size, 4 and 8 bucket distributions are the same, since we
   // can't fit any more buckets per order; this is due to alignment
@@ -293,9 +293,9 @@ PA_ALWAYS_INLINE constexpr uint16_t BucketIndexLookup::GetIndex(size_t size) {
   // So, an allocation of size 1.4*2^10 would go into the 1.5*2^10 bucket under
   // Distribution A, but to the 2^11 bucket under Distribution B.
   if (1 << 8 < size && size < kHighThresholdForAlternateDistribution) {
-    return BucketIndexLookup::GetIndexForDefaultBuckets(RoundUpSize(size));
+    return BucketIndexLookup::GetIndexForNeutralBuckets(RoundUpSize(size));
   }
-  return BucketIndexLookup::GetIndexForDefaultBuckets(size);
+  return BucketIndexLookup::GetIndexForNeutralBuckets(size);
 }
 
 }  // namespace partition_alloc::internal

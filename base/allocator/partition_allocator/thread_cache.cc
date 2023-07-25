@@ -435,7 +435,7 @@ void ThreadCache::SetLargestCachedSize(size_t size) {
     size = ThreadCache::kLargeSizeThreshold;
   }
   largest_active_bucket_index_ = PartitionRoot::SizeToBucketIndex(
-      size, PartitionRoot::BucketDistribution::kDefault);
+      size, PartitionRoot::BucketDistribution::kNeutral);
   PA_CHECK(largest_active_bucket_index_ < kBucketCount);
   ThreadCacheRegistry::Instance().SetLargestActiveBucketIndex(
       largest_active_bucket_index_);
