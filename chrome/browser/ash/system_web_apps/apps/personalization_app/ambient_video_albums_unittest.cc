@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "ash/ambient/test/ambient_ash_test_base.h"
 #include "ash/constants/ambient_video.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -23,7 +24,9 @@ using ::testing::IsTrue;
 using ::testing::Pointee;
 using ::testing::UnorderedElementsAre;
 
-TEST(AmbientVideoAlbumsTest, AppendAmbientVideoAlbums) {
+using AmbientVideoAlbumsTest = AmbientAshTestBase;
+
+TEST_F(AmbientVideoAlbumsTest, AppendAmbientVideoAlbums) {
   std::vector<mojom::AmbientModeAlbumPtr> albums;
   AppendAmbientVideoAlbums(AmbientVideo::kNewMexico, albums);
   EXPECT_THAT(albums,
@@ -45,7 +48,7 @@ TEST(AmbientVideoAlbumsTest, AppendAmbientVideoAlbums) {
                     Field(&mojom::AmbientModeAlbum::checked, IsFalse())))));
 }
 
-TEST(AmbientVideoAlbumsTest, FindAmbientVideoByAlbumId) {
+TEST_F(AmbientVideoAlbumsTest, FindAmbientVideoByAlbumId) {
   EXPECT_EQ(FindAmbientVideoByAlbumId(kCloudsAlbumId), AmbientVideo::kClouds);
   EXPECT_EQ(FindAmbientVideoByAlbumId(kNewMexicoAlbumId),
             AmbientVideo::kNewMexico);
