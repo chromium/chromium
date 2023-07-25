@@ -110,7 +110,7 @@ public class TabStripSceneLayerTest {
         mNewTabButton = new TintedCompositorButton(
                 mContext, 32.f, 32.f, mCompositorOnClickHandler, R.drawable.ic_new_tab_button_tsr);
         mStripLayoutTab = new StripLayoutTab(mContext, 1, mStripLayoutTabDelegate,
-                mTabLoadTrackerCallback, mLayoutRenderHost, mLayoutUpdateHost, false);
+                mTabLoadTrackerCallback, mLayoutUpdateHost, false);
         mTabStripSceneLayer.initializeNativeForTesting();
         mStripLayoutTabs = new StripLayoutTab[] {mStripLayoutTab};
         when(mStripLayoutHelperManager.getNewTabButton()).thenReturn(mNewTabButton);
@@ -170,7 +170,6 @@ public class TabStripSceneLayerTest {
                         mStripLayoutTab.getClosePressed(), 0.f * mDpToPx,
                         mStripLayoutTab.getDrawX() * mDpToPx, mStripLayoutTab.getDrawY() * mDpToPx,
                         mStripLayoutTab.getWidth() * mDpToPx, mStripLayoutTab.getHeight() * mDpToPx,
-                        mStripLayoutTab.getContentOffsetX() * mDpToPx,
                         mStripLayoutTab.getContentOffsetY() * mDpToPx,
                         mStripLayoutTab.getDividerOffsetX() * mDpToPx,
                         mStripLayoutTab.getBottomMargin() * mDpToPx,

@@ -461,8 +461,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         return mStripTabsToRender;
     }
 
-    @VisibleForTesting
-    public int getTabCount() {
+    public int getTabCountForTesting() {
         return mStripTabs.length;
     }
 
@@ -1334,7 +1333,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         }
 
         if (fromMouse && !clickedClose && clickedTab != null
-                && clickedTab.getVisiblePercentage() >= 1.f
                 && (buttons & MotionEvent.BUTTON_TERTIARY) == 0) {
             startReorderMode(time, x, x);
         }
@@ -1588,8 +1586,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     /**
      * @return Whether or not the tabs are moving.
      */
-    @VisibleForTesting
-    public boolean isAnimating() {
+    public boolean isAnimatingForTesting() {
         return (mRunningAnimator != null && mRunningAnimator.isRunning())
                 || !mScroller.isFinished();
     }
@@ -1743,8 +1740,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     }
 
     private StripLayoutTab createPlaceholderStripTab() {
-        StripLayoutTab tab = new StripLayoutTab(mContext, Tab.INVALID_TAB_ID, this,
-                mTabLoadTrackerHost, mRenderHost, mUpdateHost, mIncognito);
+        StripLayoutTab tab = new StripLayoutTab(
+                mContext, Tab.INVALID_TAB_ID, this, mTabLoadTrackerHost, mUpdateHost, mIncognito);
         tab.setHeight(mHeight);
         tab.setIsPlaceholder(true);
         pushStackerPropertiesToTab(tab);
@@ -1756,7 +1753,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     StripLayoutTab createStripTab(int id) {
         // TODO: Cache these
         StripLayoutTab tab = new StripLayoutTab(
-                mContext, id, this, mTabLoadTrackerHost, mRenderHost, mUpdateHost, mIncognito);
+                mContext, id, this, mTabLoadTrackerHost, mUpdateHost, mIncognito);
         tab.setHeight(mHeight);
         pushStackerPropertiesToTab(tab);
 
@@ -2032,8 +2029,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      * @param tab The StripLayoutTab to look for.
      * @return The index of the tab in the visual ordering.
      */
-    @VisibleForTesting
-    public int visualIndexOfTab(StripLayoutTab tab) {
+    public int visualIndexOfTabForTesting(StripLayoutTab tab) {
         for (int i = 0; i < mStripTabsVisuallyOrdered.length; i++) {
             if (mStripTabsVisuallyOrdered[i] == tab) {
                 return i;
@@ -2046,8 +2042,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      * @param tab The StripLayoutTab you're looking at.
      * @return Whether or not this tab is the foreground tab.
      */
-    @VisibleForTesting
-    public boolean isForegroundTab(StripLayoutTab tab) {
+    public boolean isForegroundTabForTesting(StripLayoutTab tab) {
         return tab == mStripTabsVisuallyOrdered[mStripTabsVisuallyOrdered.length - 1];
     }
 
@@ -2844,20 +2839,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      * Sets the current scroll offset of the TabStrip.
      * @param offset The offset to set the TabStrip's scroll state to.
      */
-    @VisibleForTesting
-    public void testSetScrollOffset(float offset) {
+    public void setScrollOffsetForTesting(float offset) {
         mScrollOffset = offset;
         updateStrip();
-    }
-
-    /**
-     * Starts a fling with the specified velocity.
-     * @param velocity The velocity to trigger the fling with.  Negative to go left, positive to go
-     * right.
-     */
-    @VisibleForTesting
-    public void testFling(float velocity) {
-        fling(SystemClock.uptimeMillis(), 0, 0, velocity, 0);
     }
 
     /**
@@ -2954,16 +2938,14 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     /**
      * @return true if the tab menu is showing
      */
-    @VisibleForTesting
-    public boolean isTabMenuShowing() {
+    public boolean isTabMenuShowingForTesting() {
         return mTabMenu.isShowing();
     }
 
     /**
      * @param menuItemId The id of the menu item to click
      */
-    @VisibleForTesting
-    public void clickTabMenuItem(int menuItemId) {
+    public void clickTabMenuItemForTesting(int menuItemId) {
         mTabMenu.performItemClick(menuItemId);
     }
 
@@ -2974,63 +2956,56 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     /**
      * @return The with of the tab strip.
      */
-    @VisibleForTesting
-    float getWidth() {
+    float getWidthForTesting() {
         return mWidth;
     }
 
     /**
      * @return The strip's minimum scroll offset.
      */
-    @VisibleForTesting
-    float getMinimumScrollOffset() {
+    float getMinimumScrollOffsetForTesting() {
         return mMinScrollOffset;
     }
 
     /**
      * @return The strip's additional minimum scroll offset for reorder mode.
      */
-    @VisibleForTesting
-    float getReorderExtraMinScrollOffset() {
+    float getReorderExtraMinScrollOffsetForTesting() {
         return mReorderExtraMinScrollOffset;
     }
 
     /**
      * @return The scroller.
      */
-    @VisibleForTesting
-    StackScroller getScroller() {
+    StackScroller getScrollerForTesting() {
         return mScroller;
     }
 
     /**
      * @return An array containing the StripLayoutTabs.
      */
-    @VisibleForTesting
-    StripLayoutTab[] getStripLayoutTabs() {
+    StripLayoutTab[] getStripLayoutTabsForTesting() {
         return mStripTabs;
     }
 
     /**
      * Set the value of mStripTabs for testing
      */
-    void setStripLayoutTabsForTest(StripLayoutTab[] stripTabs) {
+    void setStripLayoutTabsForTesting(StripLayoutTab[] stripTabs) {
         this.mStripTabs = stripTabs;
     }
 
     /**
      * @return The amount tabs overlap.
      */
-    @VisibleForTesting
-    float getTabOverlapWidth() {
+    float getTabOverlapWidthForTesting() {
         return mTabOverlapWidth;
     }
 
     /**
      * @return The currently interacting tab.
      */
-    @VisibleForTesting
-    StripLayoutTab getInteractingTab() {
+    StripLayoutTab getInteractingTabForTesting() {
         return mInteractingTab;
     }
 
@@ -3045,8 +3020,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         return mRunningAnimator;
     }
 
-    @VisibleForTesting
-    protected boolean isMultiStepCloseAnimationsRunning() {
+    protected boolean isMultiStepCloseAnimationsRunningForTesting() {
         return mMultiStepTabCloseAnimRunning;
     }
 
@@ -3054,8 +3028,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         return mInReorderMode;
     }
 
-    @VisibleForTesting
-    protected float getLastReorderX() {
+    protected float getLastReorderXForTesting() {
         return mLastReorderX;
     }
 
@@ -3106,13 +3079,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         mActiveClickedTab = null;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    StripLayoutTab getActiveClickedTab() {
+    StripLayoutTab getActiveClickedTabForTesting() {
         return mActiveClickedTab;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    TabDropTarget getTabDropTarget() {
+    TabDropTarget getTabDropTargetForTesting() {
         return mTabDropTarget;
     }
 

@@ -169,9 +169,6 @@ public class StripLayoutTab implements VirtualView {
                 }
             };
 
-    // Behavior Constants
-    private static final float VISIBILITY_FADE_CLOSE_BUTTON_PERCENTAGE = 0.99f;
-
     // Animation/Timer Constants
     private static final int ANIM_TAB_CLOSE_BUTTON_FADE_MS = 150;
 
@@ -195,7 +192,6 @@ public class StripLayoutTab implements VirtualView {
     private final Context mContext;
     private final StripLayoutTabDelegate mDelegate;
     private final TabLoadTracker mLoadTracker;
-    private final LayoutRenderHost mRenderHost;
     private final LayoutUpdateHost mUpdateHost;
     private final TintedCompositorButton mCloseButton;
 
@@ -209,8 +205,6 @@ public class StripLayoutTab implements VirtualView {
     private final boolean mIncognito;
     private float mBottomMargin;
     private float mContainerOpacity;
-    private float mContentOffsetX;
-    private float mVisiblePercentage = 1.f;
     private String mAccessibilityDescription;
 
     // Ideal intermediate parameters
@@ -255,13 +249,12 @@ public class StripLayoutTab implements VirtualView {
      * @param incognito Whether or not this layout tab is incognito.
      */
     public StripLayoutTab(Context context, int id, StripLayoutTabDelegate delegate,
-            TabLoadTrackerCallback loadTrackerCallback, LayoutRenderHost renderHost,
-            LayoutUpdateHost updateHost, boolean incognito) {
+            TabLoadTrackerCallback loadTrackerCallback, LayoutUpdateHost updateHost,
+            boolean incognito) {
         mId = id;
         mContext = context;
         mDelegate = delegate;
         mLoadTracker = new TabLoadTracker(id, loadTrackerCallback);
-        mRenderHost = renderHost;
         mUpdateHost = updateHost;
         mIncognito = incognito;
         CompositorOnClickHandler closeClickAction = new CompositorOnClickHandler() {
@@ -636,20 +629,6 @@ public class StripLayoutTab implements VirtualView {
     }
 
     /**
-     * @param offsetX How far to offset the tab content (favicons and title).
-     */
-    public void setContentOffsetX(float offsetX) {
-        mContentOffsetX = MathUtils.clamp(offsetX, 0.f, mWidth);
-    }
-
-    /**
-     * @return How far to offset the tab content (favicons and title).
-     */
-    public float getContentOffsetX() {
-        return mContentOffsetX;
-    }
-
-    /**
      * @return The trailing offset for the tab divider.
      */
     public float getDividerOffsetX() {
@@ -675,22 +654,6 @@ public class StripLayoutTab implements VirtualView {
      */
     public float getTopMargin() {
         return ChromeFeatureList.sTabStripRedesign.isEnabled() ? TOP_MARGIN_DP : 0;
-    }
-
-    /**
-     * @param visiblePercentage How much of the tab is visible (not overlapped by other tabs).
-     */
-    public void setVisiblePercentage(float visiblePercentage) {
-        mVisiblePercentage = visiblePercentage;
-        checkCloseButtonVisibility(true);
-    }
-
-    /**
-     * @return How much of the tab is visible (not overlapped by other tabs).
-     */
-    @VisibleForTesting
-    public float getVisiblePercentage() {
-        return mVisiblePercentage;
     }
 
     /**
@@ -894,13 +857,6 @@ public class StripLayoutTab implements VirtualView {
         return mIsPlaceholder;
     }
 
-    /**
-     * Finishes any content animations currently owned and running on this StripLayoutTab.
-     */
-    public void finishAnimation() {
-        if (mButtonOpacityAnimation != null) mButtonOpacityAnimation.end();
-    }
-
     private void resetCloseRect() {
         RectF closeRect = getCloseRect();
         mCloseButton.setWidth(closeRect.width());
@@ -932,8 +888,7 @@ public class StripLayoutTab implements VirtualView {
 
     // TODO(dtrainor): Don't animate this if we're selecting or deselecting this tab.
     private void checkCloseButtonVisibility(boolean animate) {
-        boolean shouldShow =
-                mCanShowCloseButton && mVisiblePercentage > VISIBILITY_FADE_CLOSE_BUTTON_PERCENTAGE;
+        boolean shouldShow = mCanShowCloseButton;
 
         if (shouldShow != mShowingCloseButton) {
             float opacity = shouldShow ? 1.f : 0.f;

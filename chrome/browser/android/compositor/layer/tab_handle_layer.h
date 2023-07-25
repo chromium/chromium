@@ -43,7 +43,6 @@ class TabHandleLayer : public Layer {
                      float y,
                      float width,
                      float height,
-                     float content_offset_x,
                      float content_offset_y,
                      float divider_offset_x,
                      float bottom_margin,

@@ -62,8 +62,6 @@ public final class ScrollingStripStackerUnitTest {
             verify(tab).setDrawX(expected_x);
             verify(tab).setWidth(CACHED_TAB_WIDTH);
             verify(tab).setDrawY(TAB_OFFSET_Y);
-            verify(tab).setVisiblePercentage(1.f);
-            verify(tab).setContentOffsetX(0.f);
             expected_x += TAB_WIDTH;
         }
     }
@@ -74,8 +72,6 @@ public final class ScrollingStripStackerUnitTest {
 
         for (StripLayoutTab tab : mInput) {
             verify(tab).setDrawY(TAB_OFFSET_Y);
-            verify(tab).setVisiblePercentage(1.f);
-            verify(tab).setContentOffsetX(0.f);
             verify(tab).getOffsetY();
             verifyNoMoreInteractions(tab);
         }
@@ -91,8 +87,6 @@ public final class ScrollingStripStackerUnitTest {
             verify(tab).getOffsetX();
             verify(tab).setDrawX(expected_x);
             verify(tab).setDrawY(TAB_OFFSET_Y);
-            verify(tab).setVisiblePercentage(1.f);
-            verify(tab).setContentOffsetX(0.f);
             verify(tab).getOffsetY();
             verifyNoMoreInteractions(tab);
             expected_x += TAB_WIDTH;

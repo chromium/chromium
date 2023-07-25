@@ -164,13 +164,12 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                     st.getDividerTint(), st.getTint(isSelected), st.getOutlineTint(isSelected),
                     isSelected, st.getClosePressed(), layoutHelper.getWidth() * mDpToPx,
                     st.getDrawX() * mDpToPx, st.getDrawY() * mDpToPx, st.getWidth() * mDpToPx,
-                    st.getHeight() * mDpToPx, st.getContentOffsetX() * mDpToPx,
-                    st.getContentOffsetY() * mDpToPx, st.getDividerOffsetX() * mDpToPx,
-                    st.getBottomMargin() * mDpToPx, st.getTopMargin() * mDpToPx,
-                    st.getCloseButtonPadding() * mDpToPx, st.getCloseButton().getOpacity(),
-                    st.isStartDividerVisible(), st.isEndDividerVisible(), st.isLoading(),
-                    st.getLoadingSpinnerRotation(), st.getBrightness(), st.getContainerOpacity(),
-                    layerTitleCache, resourceManager);
+                    st.getHeight() * mDpToPx, st.getContentOffsetY() * mDpToPx,
+                    st.getDividerOffsetX() * mDpToPx, st.getBottomMargin() * mDpToPx,
+                    st.getTopMargin() * mDpToPx, st.getCloseButtonPadding() * mDpToPx,
+                    st.getCloseButton().getOpacity(), st.isStartDividerVisible(),
+                    st.isEndDividerVisible(), st.isLoading(), st.getLoadingSpinnerRotation(),
+                    st.getBrightness(), st.getContainerOpacity(), layerTitleCache, resourceManager);
         }
     }
 
@@ -210,12 +209,11 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 int closeResourceId, int dividerResourceId, int handleResourceId,
                 int handleOutlineResourceId, int closeTint, int dividerTint, int handleTint,
                 int handleOutlineTint, boolean foreground, boolean closePressed, float toolbarWidth,
-                float x, float y, float width, float height, float contentOffsetX,
-                float contentOffsetY, float dividerOffsetX, float bottomMargin, float topMargin,
-                float closeButtonPadding, float closeButtonAlpha, boolean isStartDividerVisible,
-                boolean isEndDividerVisible, boolean isLoading, float spinnerRotation,
-                float brightness, float opacity, LayerTitleCache layerTitleCache,
-                ResourceManager resourceManager);
+                float x, float y, float width, float height, float contentOffsetY,
+                float dividerOffsetX, float bottomMargin, float topMargin, float closeButtonPadding,
+                float closeButtonAlpha, boolean isStartDividerVisible, boolean isEndDividerVisible,
+                boolean isLoading, float spinnerRotation, float brightness, float opacity,
+                LayerTitleCache layerTitleCache, ResourceManager resourceManager);
         void setContentTree(
                 long nativeTabStripSceneLayer, TabStripSceneLayer caller, SceneLayer contentTree);
     }

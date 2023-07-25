@@ -347,7 +347,7 @@ public class TabStripTest {
         // 3. Invoke "close all tabs" menu action; block until action is completed
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             TabStripUtils.getActiveStripLayoutHelper(sActivityTestRule.getActivity())
-                    .clickTabMenuItem(StripLayoutHelper.ID_CLOSE_ALL_TABS);
+                    .clickTabMenuItemForTesting(StripLayoutHelper.ID_CLOSE_ALL_TABS);
         });
 
         // 4. Ensure all tabs were closed
@@ -380,7 +380,7 @@ public class TabStripTest {
                 ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertFalse(TabStripUtils.getActiveStripLayoutHelper(sActivityTestRule.getActivity())
-                                   .isTabMenuShowing());
+                                   .isTabMenuShowingForTesting());
         Assert.assertEquals("Expected 1 tab to be present", 1,
                 sActivityTestRule.getActivity().getCurrentTabModel().getCount());
 
@@ -483,7 +483,7 @@ public class TabStripTest {
         // 3. Invoke menu action; block until action is completed
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             TabStripUtils.getActiveStripLayoutHelper(sActivityTestRule.getActivity())
-                    .clickTabMenuItem(StripLayoutHelper.ID_CLOSE_ALL_TABS);
+                    .clickTabMenuItemForTesting(StripLayoutHelper.ID_CLOSE_ALL_TABS);
         });
 
         // 4. Ensure all incognito tabs were closed and TabStrip is switched to normal
@@ -627,7 +627,7 @@ public class TabStripTest {
         // the ScrollingStripStacker.
         assertSetTabStripScrollOffset(
                 (int) TabStripUtils.getActiveStripLayoutHelper(sActivityTestRule.getActivity())
-                        .getMinimumScrollOffset());
+                        .getMinimumScrollOffsetForTesting());
 
         // Tab should now be hidden.
         helper.waitForCallback(0);
@@ -673,7 +673,7 @@ public class TabStripTest {
         // Open enough regular tabs to cause the strip to scroll.
         StripLayoutHelper tabStrip =
                 TabStripUtils.getStripLayoutHelper(sActivityTestRule.getActivity(), false);
-        while (tabStrip.getMinimumScrollOffset() >= 0) {
+        while (tabStrip.getMinimumScrollOffsetForTesting() >= 0) {
             ChromeTabUtils.newTabFromMenu(
                     InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());
         }
@@ -689,7 +689,7 @@ public class TabStripTest {
         // at partial opacity.
         assertSetTabStripScrollOffset(
                 (int) (TabStripUtils.getActiveStripLayoutHelper(sActivityTestRule.getActivity())
-                                .getMinimumScrollOffset()
+                                .getMinimumScrollOffsetForTesting()
                         + StripLayoutHelper.FADE_FULL_OPACITY_THRESHOLD_DP / 2));
         assertTabStripFadePartiallyVisible(!isLeft);
         assertTabStripFadeFullyVisible(isLeft);
@@ -769,8 +769,8 @@ public class TabStripTest {
         // Set up some variables.
         StripLayoutHelper strip =
                 TabStripUtils.getActiveStripLayoutHelper(sActivityTestRule.getActivity());
-        StripLayoutTab[] tabs = strip.getStripLayoutTabs();
-        float tabDrawWidth = tabs[0].getWidth() - strip.getTabOverlapWidth();
+        StripLayoutTab[] tabs = strip.getStripLayoutTabsForTesting();
+        float tabDrawWidth = tabs[0].getWidth() - strip.getTabOverlapWidthForTesting();
 
         // Disable animations. The animation that normally runs when scrolling the tab strip makes
         // this test flaky.
@@ -1000,7 +1000,7 @@ public class TabStripTest {
                     }
                 });
         Assert.assertTrue(TabStripUtils.getActiveStripLayoutHelper(sActivityTestRule.getActivity())
-                                  .isTabMenuShowing());
+                                  .isTabMenuShowingForTesting());
     }
 
     /**
@@ -1028,16 +1028,16 @@ public class TabStripTest {
                 model.indexOf(tab));
 
         Assert.assertEquals("The tab is not in the proper position ", assumedTabViewIndex,
-                tabStrip.visualIndexOfTab(tabView));
+                tabStrip.visualIndexOfTabForTesting(tabView));
 
         if (TabModelUtils.getCurrentTab(model) == tab
                 && sActivityTestRule.getActivity().getTabModelSelector().isIncognitoSelected()
                         == incognito) {
             Assert.assertTrue("ChromeTab is not in the proper selection state",
-                    tabStrip.isForegroundTab(tabView));
+                    tabStrip.isForegroundTabForTesting(tabView));
         }
 
-        assertTabVisibilityForScrollingStripStacker(tabStrip, tabView);
+        assertTabVisibility(tabStrip, tabView);
 
         // TODO(dtrainor): Compare favicon bitmaps?  Only compare a few pixels.
     }
@@ -1060,7 +1060,7 @@ public class TabStripTest {
         if (activeModel.isIncognito() == incognito) {
             Assert.assertEquals("TabStrip is not in the right visible state", strip, activeStrip);
             Assert.assertEquals("TabStrip does not have the same number of views as the model",
-                    strip.getTabCount(), model.getCount());
+                    strip.getTabCountForTesting(), model.getCount());
         } else {
             Assert.assertTrue("TabStrip is not in the right visible state", model != activeModel);
         }
@@ -1128,7 +1128,8 @@ public class TabStripTest {
     private void assertSetTabStripScrollOffset(final int scrollOffset) throws ExecutionException {
         final StripLayoutHelper strip =
                 TabStripUtils.getActiveStripLayoutHelper(sActivityTestRule.getActivity());
-        TestThreadUtils.runOnUiThreadBlocking(() -> { strip.testSetScrollOffset(scrollOffset); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { strip.setScrollOffsetForTesting(scrollOffset); });
 
         Assert.assertEquals(
                 "Tab strip scroll incorrect.", scrollOffset, strip.getScrollOffset(), 0);
@@ -1194,19 +1195,14 @@ public class TabStripTest {
      * @param tabStrip The StripLayoutHelper that owns the tab.
      * @param tabView The StripLayoutTab associated with the tab to check.
      */
-    private void assertTabVisibilityForScrollingStripStacker(final StripLayoutHelper tabStrip,
-            final StripLayoutTab tabView) throws ExecutionException {
-        // The visible percent for all tabs is 1.0 in the ScrollingStripStacker.
-        Assert.assertEquals("ChromeTab is not completely visible. All tabs should be visible when "
-                        + "the ScrollingStripStacker is in use.",
-                tabView.getVisiblePercentage(), 1.0f, 0);
-
+    private void assertTabVisibility(final StripLayoutHelper tabStrip, final StripLayoutTab tabView)
+            throws ExecutionException {
         // Only tabs that can currently be seen on the screen should be visible.
         Boolean shouldBeVisible = TestThreadUtils.runOnUiThreadBlocking(new Callable<Boolean>() {
             @Override
             public Boolean call() {
                 return (tabView.getDrawX() + tabView.getWidth()) >= 0
-                        && tabView.getDrawX() <= tabStrip.getWidth();
+                        && tabView.getDrawX() <= tabStrip.getWidthForTesting();
             }
         });
         assertTabVisibility(shouldBeVisible, tabView);

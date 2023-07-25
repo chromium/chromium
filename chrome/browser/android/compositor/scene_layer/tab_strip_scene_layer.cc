@@ -373,7 +373,6 @@ void TabStripSceneLayer::PutStripTabLayer(
     jfloat y,
     jfloat width,
     jfloat height,
-    jfloat content_offset_x,
     jfloat content_offset_y,
     jfloat divider_offset_x,
     jfloat bottom_margin,
@@ -407,8 +406,8 @@ void TabStripSceneLayer::PutStripTabLayer(
   layer->SetProperties(
       id, close_button_resource, divider_resource, tab_handle_resource,
       tab_handle_outline_resource, foreground, close_pressed, toolbar_width, x,
-      y, width, height, content_offset_x, content_offset_y, divider_offset_x,
-      bottom_margin, top_margin, close_button_padding, close_button_alpha,
+      y, width, height, content_offset_y, divider_offset_x, bottom_margin,
+      top_margin, close_button_padding, close_button_alpha,
       is_start_divider_visible, is_end_divider_visible, is_loading,
       spinner_rotation, brightness, opacity, is_tab_strip_redesign_enabled_);
 }

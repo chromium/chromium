@@ -159,10 +159,10 @@ public class TabDragSourceTest {
         for (int i = 0; i < numTabs; i++) {
             tabs[i] = mockStripTab(i, TAB_WIDTH);
         }
-        mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
+        mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
         mClickedTab = tabs[tabIndex];
 
-        assertTrue(mStripLayoutHelper.getStripLayoutTabs().length == numTabs);
+        assertTrue(mStripLayoutHelper.getStripLayoutTabsForTesting().length == numTabs);
     }
 
     private StripLayoutHelper createStripLayoutHelper(boolean rtl, boolean incognito) {
