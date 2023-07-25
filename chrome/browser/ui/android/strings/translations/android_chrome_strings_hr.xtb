@@ -508,6 +508,7 @@ Privatne oznake poboljšavaju privatnost na webu i ne mogu se upotrebljavati da 
 <translation id="3771694256347217732">Googleovi uvjeti pružanja usluge</translation>
 <translation id="3773856050682458546">Osnovni podaci i podaci o web-lokacijama koje posjećujete i aplikacijama koje upotrebljavate</translation>
 <translation id="3775705724665058594">Pošaljite na svoje uređaje</translation>
+<translation id="3777796259512476958">Odjavit ćete se s većine web-lokacija</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 kartica}one{# kartica}few{# kartice}other{# kartica}}</translation>
 <translation id="3795154175078851242">Kopiranje slike s vezom</translation>
 <translation id="3810838688059735925">Video</translation>
@@ -845,6 +846,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5578795271662203820">Potraži sliku na usluzi <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Uvijek možete odabrati u <ph name="BEGIN_LINK1" />postavkama<ph name="END_LINK1" /> što će se sinkronizirati.</translation>
 <translation id="5590372121997663538">Zapamti ovo računalo</translation>
+<translation id="5596627076506792578">Više opcija</translation>
 <translation id="5599455543593328020">Anonimni način</translation>
 <translation id="5620163320393916465">Nema spremljenih zaporki</translation>
 <translation id="5620928963363755975">Pronađite svoje datoteke i stranice u Preuzimanjima pomoću gumba Više opcija</translation>

@@ -4393,6 +4393,7 @@ Laitesignaalit voivat sisältää tietoja selaimesta, käyttöjärjestelmästä,
 <translation id="4623167406982293031">Vahvista tili</translation>
 <translation id="4623189117674524348">Järjestelmä ei voinut sallia sovellusliittymän käyttöä tälle laitteelle.</translation>
 <translation id="4623341761454569602">Googlen Salasanoissa <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">Väriteema</translation>
 <translation id="4625078469366263107">Ota sovellus käyttöön</translation>
 <translation id="4625905218692741757">Harmaa oletusväri</translation>
 <translation id="4627427111733173920">Evästeet estetty</translation>
@@ -5491,7 +5492,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5571832155627049070">Muokkaa profiiliasi</translation>
 <translation id="5572166921642484567">Valitse väriteema ‑tila</translation>
 <translation id="5572252023412311448">Näytä sivuston tiedot: <ph name="SITE_GROUP" /></translation>
-<translation id="5572648434713976849">Näet parempia ehdotuksia osoitepalkissa</translation>
 <translation id="557506220935336383">Katso muiden sivustojen laajennusluvat</translation>
 <translation id="5575473780076478375">Incognito-laajennus: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Esittelyn rekisteröintipyynnön kanssa tapahtui ongelma.</translation>
@@ -5610,6 +5610,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="567740581294087470">Millaista palautetta haluat antaa?</translation>
 <translation id="5677503058916217575">Sivun kieli:</translation>
 <translation id="5677928146339483299">Estetty</translation>
+<translation id="5677946354068040947">lisäasetukset</translation>
 <translation id="5678550637669481956">Laajennukselle myönnettiin luku- ja kirjoitusoikeus tallennusvälineeseen <ph name="VOLUME_NAME" />.</translation>
 <translation id="5678821117681811450">Lähetetään: <ph name="WEB_DRIVE" /></translation>
 <translation id="5678955352098267522">Lukea tietojasi sivustossa <ph name="WEBSITE_1" /></translation>
@@ -6735,7 +6736,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6644846457769259194">Päivitetään laitetta (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Laita Pikapari pois päältä</translation>
 <translation id="6647228709620733774">Netscape-varmenteen myöntäjän kumoamis-URL</translation>
-<translation id="6647441008198474441">Avaamasi URL-osoitteet lähetetään Googlelle, jotta seuraavaksi mahdollisesti avaamasi sivustot voidaan ennakoida</translation>
 <translation id="6647690760956378579">Luonnollisen äänen esikuuntelu</translation>
 <translation id="6648911618876616409">Tärkeä päivitys on valmis asennettavaksi. Aloita kirjautumalla sisään.</translation>
 <translation id="6649018507441623493">Hetki vain…</translation>
@@ -7204,6 +7204,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7019546817926942979">Laite on liitettävä virtalähteeseen. Linuxin päivittäminen voi kuluttaa paljon akkuvirtaa. Laita laite lataukseen ja yritä uudelleen.</translation>
 <translation id="7019805045859631636">Nopea</translation>
 <translation id="7022562585984256452">Etusivusi on asetettu.</translation>
+<translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">Uusi tapa liikkua eleiden avulla</translation>
 <translation id="7025190659207909717">Mobiilitiedonsiirtopalvelun hallinta</translation>
 <translation id="7025895441903756761">Tietosuoja ja yksityisyys</translation>

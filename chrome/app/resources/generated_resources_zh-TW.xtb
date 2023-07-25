@@ -4379,6 +4379,7 @@
 <translation id="4623167406982293031">驗證帳戶</translation>
 <translation id="4623189117674524348">系統無法對這個裝置授予 API 存取權。</translation>
 <translation id="4623341761454569602">儲存到 Google 密碼管理工具 <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">色彩主題</translation>
 <translation id="4625078469366263107">啟用應用程式</translation>
 <translation id="4625905218692741757">使用灰色做為預設顏色</translation>
 <translation id="4627427111733173920">已封鎖 Cookie</translation>
@@ -5477,7 +5478,6 @@
 <translation id="5571832155627049070">自訂你的設定檔</translation>
 <translation id="5572166921642484567">選擇色彩配置模式</translation>
 <translation id="5572252023412311448">顯示 <ph name="SITE_GROUP" /> 的網站詳細資料</translation>
-<translation id="5572648434713976849">你會在網址列取得更貼近需求的建議</translation>
 <translation id="557506220935336383">查看其他網站的擴充功能權限</translation>
 <translation id="5575473780076478375">無痕模式擴充功能：<ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">示範註冊要求發生問題。</translation>
@@ -5594,6 +5594,7 @@
 <translation id="567740581294087470">你要提供哪一類意見？</translation>
 <translation id="5677503058916217575">網頁語言：</translation>
 <translation id="5677928146339483299">已封鎖</translation>
+<translation id="5677946354068040947">更多選項</translation>
 <translation id="5678550637669481956">已授予 <ph name="VOLUME_NAME" /> 的讀取及寫入權限。</translation>
 <translation id="5678821117681811450">正在傳送至「<ph name="WEB_DRIVE" />」</translation>
 <translation id="5678955352098267522">讀取你在 <ph name="WEBSITE_1" /> 上產生的資料</translation>
@@ -6717,7 +6718,6 @@
 <translation id="6644846457769259194">正在更新你的裝置 (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">關閉快速配對</translation>
 <translation id="6647228709620733774">Netscape 憑證授權撤銷網址</translation>
-<translation id="6647441008198474441">系統會將你造訪的網址傳送給 Google，預測你接下來可能會前往的網站</translation>
 <translation id="6647690760956378579">播放自然語音</translation>
 <translation id="6648911618876616409">已準備好安裝重大更新。登入即可開始更新。</translation>
 <translation id="6649018507441623493">請稍候...</translation>
@@ -7186,6 +7186,7 @@
 <translation id="7019546817926942979">裝置必須接上電源。Linux 升級程序可能會相當耗電。請將裝置連接充電器，然後再試一次。</translation>
 <translation id="7019805045859631636">快</translation>
 <translation id="7022562585984256452">首頁已設定完成。</translation>
+<translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">全新的手勢瀏覽功能正式登場</translation>
 <translation id="7025190659207909717">行動數據服務管理</translation>
 <translation id="7025895441903756761">安全性與隱私權</translation>

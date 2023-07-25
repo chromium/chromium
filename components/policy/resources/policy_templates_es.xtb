@@ -4241,6 +4241,9 @@ Si no se establece la política, los usuarios podrán cambiar la lista de aplica
 
       Si no se establece esta política, se usará el valor predeterminado global para todos los sitios (sin acceso automático).</translation>
 <translation id="471360812659157054">window.webkitStorageInfo no estará disponible.</translation>
+<translation id="4714143485020697862">Si se establece esta política, todos los tipos de datos especificados se excluirán de la sincronización de <ph name="CHROME_SYNC_NAME" /> y de la sincronización del perfil itinerante. Esto puede ser útil para reducir el tamaño del perfil itinerante o para limitar el tipo de datos que se suban a los servidores de <ph name="CHROME_SYNC_NAME" />.
+
+      Los tipos de datos actuales para esta política son los siguientes: "bookmarks", "readingList", "preferences", "passwords", "autofill", "themes", "typedUrls", "extensions", "apps", "tabs", "wifiConfigurations" y "savedTabGroups". Estos nombres distinguen entre mayúsculas y minúsculas.</translation>
 <translation id="4715773950737036924">Controlar la disponibilidad de las extensiones cuya publicación se ha anulado en Chrome Web Store</translation>
 <translation id="4722122254122249791">Habilitar el aislamiento de sitios web específicos</translation>
 <translation id="4722761845551711583">Configura el intervalo (en segundos) durante el que se mostrará una imagen si el salvapantallas de la pantalla de inicio de sesión dispone de varias imágenes para mostrar.

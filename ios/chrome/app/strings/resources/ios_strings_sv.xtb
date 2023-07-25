@@ -388,6 +388,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3311748811247479259">Av</translation>
 <translation id="3324193307694657476">Adressrad 2</translation>
 <translation id="3328801116991980348">Platsinformation</translation>
+<translation id="3340938510625667914">Chrome-åtgärder</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bokmärket har sparats i {title} i ditt konto, {email}}other{Bokmärkena har sparats i {title} i ditt konto, {email}}}</translation>
 <translation id="3371831930909698441">Översättning finns. Alternativ visas nära skärmens nedre kant.</translation>
 <translation id="3377063233124932127">Nu visas dina sparade bokmärken, lösenord och annat högst upp.</translation>
@@ -935,6 +936,7 @@ Sträva efter att använda ett unikt lösenord för varje webbplats.</translatio
 <translation id="6628106477656132239">Ogiltigt sista giltighetsdatum</translation>
 <translation id="6634432609054530164">Organisationen har inaktiverat inkognitoläge</translation>
 <translation id="6638511529934826365">Zooma text …</translation>
+<translation id="6640268266988685324">Öppna flik</translation>
 <translation id="6642362222295953972">Byt till befintlig flik</translation>
 <translation id="6643016212128521049">Rensa</translation>
 <translation id="6645899968535965230">QR-kod: <ph name="PAGE_TITLE" /></translation>

@@ -388,6 +388,7 @@
 <translation id="3311748811247479259">Искључено</translation>
 <translation id="3324193307694657476">2. ред за адресу</translation>
 <translation id="3328801116991980348">Информације о сајту</translation>
+<translation id="3340938510625667914">Chrome радње</translation>
 <translation id="3344485292736684439">{count,plural, =1{Обележивач је сачуван у фолдеру {title} на налогу, {email}}one{Обележивачи су сачувани у фолдеру {title} на налогу, {email}}few{Обележивачи су сачувани у фолдеру {title} на налогу, {email}}other{Обележивачи су сачувани у фолдеру {title} на налогу, {email}}}</translation>
 <translation id="3371831930909698441">Преводилац је доступан. Опције су доступне у дну екрана.</translation>
 <translation id="3377063233124932127">Сада су сачувани обележивачи, лозинке и друго у врху.</translation>
@@ -935,6 +936,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6628106477656132239">Неважећи датум истека</translation>
 <translation id="6634432609054530164">Организација је искључила режим без архивирања</translation>
 <translation id="6638511529934826365">Зумирај текст…</translation>
+<translation id="6640268266988685324">Отворена картица</translation>
 <translation id="6642362222295953972">Пређите на постојећу картицу</translation>
 <translation id="6643016212128521049">Обриши</translation>
 <translation id="6645899968535965230">QR кôд: <ph name="PAGE_TITLE" /></translation>

@@ -301,6 +301,7 @@
 <translation id="6439114592976064011">תיחסם האפשרות של אתרים להשתמש במכשיר המציאות המדומה ובנתוני המציאות המדומה</translation>
 <translation id="6447842834002726250">‏קובצי Cookie</translation>
 <translation id="6467852467360539617">ניקוי הנתונים ואיפוס ההרשאות</translation>
+<translation id="6500423977866688905">כשהחלון צר, אפשר לבקש תצוגת נייד.</translation>
 <translation id="6527303717912515753">שיתוף</translation>
 <translation id="6545864417968258051">‏סריקת Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{נחסמו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד אחת (<ph name="NUM_MORE" />)}one{נחסמו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}two{נחסמו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}other{נחסמו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}}</translation>

@@ -1558,6 +1558,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2263189956353037928">Se déconnecter et se reconnecter</translation>
 <translation id="2263371730707937087">Fréquence d'actualisation de l'écran</translation>
 <translation id="2263679799334060788">Nous vous remercions de vos commentaires, qui vont nous aider à améliorer la technologie Google Cast. Pour obtenir de l'aide avec la résolution de problèmes liés à la diffusion, veuillez vous reporter au <ph name="BEGIN_LINK" />centre d'aide<ph name="END_LINK" />.</translation>
+<translation id="22649924370461580">Groupes d'onglets enregistrés</translation>
 <translation id="2266957463645820432">IPP sur USB (IPPUSB)</translation>
 <translation id="2268130516524549846">La connectivité Bluetooth est désactivée</translation>
 <translation id="2268182915828370037">Désactiver la synchronisation des fichiers?</translation>
@@ -1785,6 +1786,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2435248616906486374">Réseau déconnecté</translation>
 <translation id="2435457462613246316">Affich. mot de passe</translation>
 <translation id="2436385001956947090">Copier le lien</translation>
+<translation id="2438853563451647815">Aucune imprimante connectée</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> en cours de chargement…</translation>
 <translation id="2440604414813129000">Afficher le code s&amp;ource</translation>
 <translation id="2440823041667407902">Accès à la position</translation>
@@ -3366,6 +3368,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3776508619697147021">Les sites peuvent demander à télécharger automatiquement plusieurs fichiers</translation>
 <translation id="3776796446459804932">Cette extension ne respecte pas les règles de la boutique Chrome Web Store.</translation>
 <translation id="3777483481409781352">Impossible d'activer l'appareil cellulaire</translation>
+<translation id="3777796259512476958">Vous déconnecte de la plupart des sites</translation>
 <translation id="3778208826288864398">La clé de sécurité est verrouillée, car un NIP incorrect a été entré trop de fois. Vous devez réinitialiser la clé de sécurité.</translation>
 <translation id="3778740492972734840">Outils de &amp;développement</translation>
 <translation id="3778868487658107119">Posez-lui des questions. Dites-lui ce qu'il doit faire. C'est votre Google personnel, toujours prêt à vous aider.</translation>
@@ -4236,6 +4239,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4508150454272293946">Autorisez les applications et les pages Web à utiliser le ou les appareils photo connectés à cet appareil. Si le problème avec votre appareil photo persiste, essayez de redémarrer l'application ou d'actualiser la page Web.</translation>
 <translation id="450867954911715010">Paramètres d'accessibilité</translation>
 <translation id="4508765956121923607">Voir le code s&amp;ource</translation>
+<translation id="4509277363725254222">Lorsque vous partagez une copie de votre <ph name="BEGIN_BOLD_USERNAME" />nom d'utilisateur<ph name="END_BOLD_USERNAME" /> et de votre <ph name="BEGIN_BOLD_PASSWORD" />mot de passe<ph name="END_BOLD_PASSWORD" />, le membre de la famille peut les remplir à l'aide du gestionnaire de mots de passe Google.</translation>
 <translation id="4509421746503122514">Relancer pour mettre à jour</translation>
 <translation id="4510195992002502722">Échec de l'envoi des commentaires. Nouvelle tentative en cours…</translation>
 <translation id="4510479820467554003">Liste des comptes parentaux</translation>
@@ -4375,6 +4379,7 @@ Les signaux de l'appareil peuvent inclure des informations sur votre navigateur,
 <translation id="4623167406982293031">Valider le compte</translation>
 <translation id="4623189117674524348">Échec de l'autorisation d'accès à l'API pour cet appareil.</translation>
 <translation id="4623341761454569602">Dans le gestionnaire de mots de passe Google <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">Thème de couleurs</translation>
 <translation id="4625078469366263107">Activer l'application</translation>
 <translation id="4625905218692741757">Version grise du thème par défaut</translation>
 <translation id="4627427111733173920">Témoins bloqués</translation>
@@ -4453,6 +4458,7 @@ Les signaux de l'appareil peuvent inclure des informations sur votre navigateur,
 <translation id="4683629100208651599">Mettre en minuscules</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (par défaut)</translation>
 <translation id="4684427112815847243">Tout synchroniser</translation>
+<translation id="4687238339694011189">Assurez-vous que votre imprimante est allumée et connectée au même réseau que votre Chromebook ou utilisez un câble USB</translation>
 <translation id="4687613760714619596">Appareil inconnu (<ph name="DEVICE_ID" />)</translation>
 <translation id="4687718960473379118">Annonces suggérées par les sites</translation>
 <translation id="4688036121858134881">Identifiant du journal local : <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
@@ -4805,6 +4811,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4994426888044765950">Si vous maintenez une touche enfoncée, le caractère associé à la touche se répétera</translation>
 <translation id="4994754230098574403">Configuration</translation>
 <translation id="4995293419989417004">En savoir plus sur les sujets des annonces</translation>
+<translation id="4995676741161760215">Activée, extension activée</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Aucune MV <ph name="VM_TYPE" /> trouvée}=1{1 MV <ph name="VM_TYPE" /> trouvée : <ph name="VM_NAME_LIST" />}one{{NUM_VMS} MV <ph name="VM_TYPE" /> trouvée : <ph name="VM_NAME_LIST" />}other{{NUM_VMS} MV <ph name="VM_TYPE" /> trouvées : <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Aucune connexion Internet.</translation>
 <translation id="4998430619171209993">Activé</translation>
@@ -5357,6 +5364,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5474859849784484111"><ph name="MANAGER" /> exige que vous vous connectiez au Wi-Fi maintenant et que vous téléchargiez une mise à jour. Autrement, téléchargez-la à l'aide d'une connexion mesurée (des frais pourraient s'appliquer).</translation>
 <translation id="5481273127572794904">Non autorisés à télécharger automatiquement plusieurs fichiers</translation>
 <translation id="5481941284378890518">Ajouter des imprimantes à proximité</translation>
+<translation id="5484462543003267273">Gérer la famille</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> exige que vous sauvegardiez vos données et que vous retourniez cet appareil <ph name="DEVICE_TYPE" /> aujourd'hui. <ph name="LINK_BEGIN" />Voir les précisions<ph name="LINK_END" />}one{<ph name="MANAGER" /> exige que vous sauvegardiez vos données et que vous retourniez cet appareil <ph name="DEVICE_TYPE" /> d'ici {NUM_DAYS} jour. <ph name="LINK_BEGIN" />Voir les précisions<ph name="LINK_END" />}other{<ph name="MANAGER" /> exige que vous sauvegardiez vos données et que vous retourniez cet appareil <ph name="DEVICE_TYPE" /> d'ici {NUM_DAYS} jours. <ph name="LINK_BEGIN" />Voir les précisions<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Ajouter une application</translation>
 <translation id="5485435764083510385">Langue préférée des légendes</translation>
@@ -5470,7 +5478,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5571832155627049070">Personnaliser votre profil</translation>
 <translation id="5572166921642484567">Choisir un mode de modèle de couleurs</translation>
 <translation id="5572252023412311448">Afficher les détails du site pour <ph name="SITE_GROUP" /></translation>
-<translation id="5572648434713976849">Vous recevrez de meilleures suggestions dans la barre d'adresse</translation>
 <translation id="557506220935336383">Voir les autorisations d'extension pour d'autres sites</translation>
 <translation id="5575473780076478375">Extension en mode de navigation privée : <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Un problème avec la demande d'enregistrement du mode démo s'est produit.</translation>
@@ -5589,6 +5596,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="567740581294087470">Quel type de commentaires soumettez-vous?</translation>
 <translation id="5677503058916217575">Langue de la page :</translation>
 <translation id="5677928146339483299">Bloqué</translation>
+<translation id="5677946354068040947">autres options</translation>
 <translation id="5678550637669481956">Accès à <ph name="VOLUME_NAME" /> en lecture et en écriture accordé.</translation>
 <translation id="5678821117681811450">Envoi à <ph name="WEB_DRIVE" /></translation>
 <translation id="5678955352098267522">Lire vos données sur <ph name="WEBSITE_1" /></translation>
@@ -6108,6 +6116,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6113434369102685411">Définir le moteur de recherche par défaut pour le navigateur Chrome et le lanceur d'applications de l'appareil <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Pour utiliser Smart Lock, passez au profil d'utilisateur principal sur votre téléphone</translation>
 <translation id="6116921718742659598">Modifier les paramètres de langue et d'entrée</translation>
+<translation id="6119008366402292080">Aucune imprimante accessible</translation>
 <translation id="6119927814891883061">Nom de l'appareil sur <ph name="DEVICE_NAME" /></translation>
 <translation id="6119972796024789243">Correction des couleurs</translation>
 <translation id="6120707837086723438">Des recettes suggérées sont affichées en fonction de votre activité de recherche récente sur ce sujet.
@@ -6118,6 +6127,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6122081475643980456">Une extension a pris le contrôle de votre connexion Internet</translation>
 <translation id="6122093587541546701">Adresse de courriel (optionnelle) :</translation>
 <translation id="6122095009389448667">Continuer à bloquer ce site pour qu'il ne puisse pas voir le presse-papiers</translation>
+<translation id="6122513630797178831">Enregistrer le code CVC</translation>
 <translation id="6122600716821516697">Partager du contenu avec cet appareil?</translation>
 <translation id="6122831415929794347">Désactiver la navigation sécurisée?</translation>
 <translation id="6124650939968185064">Les extensions suivantes dépendent de cette extension :</translation>
@@ -6714,7 +6724,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6644846457769259194">Mise à jour de votre appareil en cours (<ph name="PROGRESS_PERCENT" />)…</translation>
 <translation id="6646476869708241165">Désactiver le mode Association rapide</translation>
 <translation id="6647228709620733774">URL de révocation de l'autorité de certification Netscape</translation>
-<translation id="6647441008198474441">Les URL des pages que vous visitez sont envoyées à Google aux fins de prédiction des sites que vous êtes susceptible de visiter ultérieurement</translation>
 <translation id="6647690760956378579">Aperçu de la voix naturelle</translation>
 <translation id="6648911618876616409">Une mise à jour essentielle est prête pour l'installation. Connectez-vous pour commencer.</translation>
 <translation id="6649018507441623493">Un instant…</translation>
@@ -8563,6 +8572,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Déplacer l'onglet vers une nouvelle fenêtre}one{Déplacer l'onglet vers une nouvelle fenêtre}other{Déplacer les onglets vers une nouvelle fenêtre}}</translation>
 <translation id="8179188928355984576">Non utilisé avec les applications Android</translation>
 <translation id="8179976553408161302">Entrée</translation>
+<translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. Imprimante <ph name="ITEM_POSITION" /> sur <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Économiseur d'énergie activé</translation>
 <translation id="8180786512391440389">« <ph name="EXTENSION" /> » dispose d'un droit d'accès en lecture et en écriture aux images, aux vidéos et aux fichiers audio figurant dans les dossiers sélectionnés.</translation>
 <translation id="8180826593917851025">Configurer le point d'accès sans fil de l'appareil (<ph name="DEVICE_TYPE" />)</translation>
@@ -8959,6 +8969,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8514746246728959655">Essayez une clé de sécurité différente</translation>
 <translation id="8514955299594277296">Ne pas autoriser les sites à enregistrer des données sur votre appareil (non recommandé)</translation>
 <translation id="8517759303731677493">Modifier…</translation>
+<translation id="8518942514525208851">Masquer les grossièretés</translation>
 <translation id="8519895319663397036">Impossible d'importer les mots de passe. La taille du fichier devrait être inférieure à 150 ko.</translation>
 <translation id="851991974800416566">Utilisez rapidement un mot de passe fort</translation>
 <translation id="8523493869875972733">Conserver les modifications</translation>

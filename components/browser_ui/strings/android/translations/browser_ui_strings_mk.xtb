@@ -301,6 +301,7 @@
 <translation id="6439114592976064011">Не дозволувај сајтовите да ги користат уредот и податоците за виртуелна реалност</translation>
 <translation id="6447842834002726250">Колачиња</translation>
 <translation id="6467852467360539617">Избриши податоци и ресетирај дозволи</translation>
+<translation id="6500423977866688905">Кога е тесен прозорецот, побарајте приказ на мобилен</translation>
 <translation id="6527303717912515753">Сподели</translation>
 <translation id="6545864417968258051">Скенирање за Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" /> се блокирани}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" /> се блокирани}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" /> се блокирани}}</translation>

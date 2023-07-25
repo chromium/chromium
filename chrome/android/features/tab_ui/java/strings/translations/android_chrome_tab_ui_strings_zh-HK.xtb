@@ -37,7 +37,7 @@
 <translation id="4133493477912226187">似乎有 <ph name="NUMBER_OF_TABS" /> 個相關的分頁。要唔要將佢哋分組？</translation>
 <translation id="4212246570487010370">繼續瀏覽</translation>
 <translation id="4648718555153979859">您的分頁在這裡分組顯示</translation>
-<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{輕觸 Chrome 主選單的「最近開啟的分頁」，即可查看已關閉的分頁。}=1{輕觸 Chrome 主選單的「最近開啟的分頁」，即可查看已關閉的分頁。當你輕觸這個選項後，系統會關閉無痕分頁。}other{輕觸 Chrome 主選單的「最近開啟的分頁」，即可查看已關閉的分頁。當你輕觸這個選項後，系統會關閉 # 個無痕分頁。}}</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{在 Chrome 主選單下的「最近開啟的分頁」中，可以查看關閉的分頁。}=1{在 Chrome 主選單下的「最近開啟的分頁」中，可以查看關閉的分頁。當你輕按此選項後，系統會關閉無痕分頁。}other{在 Chrome 主選單下的「最近開啟的分頁」中，可以查看關閉的分頁。當你輕按此選項後，系統會關閉 # 個無痕分頁。}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> 則評論)}other{(<ph name="REVIEWS_COUNT_MANY" /> 則評論)}}</translation>
 <translation id="4850886885716139402">檢視</translation>
 <translation id="4870911314065352661">要關閉所有分頁嗎？</translation>

@@ -1161,6 +1161,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1929186283613845153">O ficheiro está a ser analisado.</translation>
 <translation id="1929343511231420085">Qualquer porta de série</translation>
 <translation id="1929546189971853037">Ler o seu histórico de navegação em todos os seus dispositivos com sessão iniciada</translation>
+<translation id="1929774028758671973">Os contactos podem partilhar consigo quando estiverem próximos. É-lhe pedido que aprove estes pedidos. Não precisa de aprovar a partilha entre dispositivos com sessão iniciada na conta <ph name="USER_EMAIL" />.</translation>
 <translation id="1930879306590754738">Palavra-passe eliminada deste dispositivo e da sua Conta Google</translation>
 <translation id="1931152874660185993">Não existem componentes instalados.</translation>
 <translation id="1931410639376954712">A instalar o <ph name="DEVICE_OS" /></translation>
@@ -1427,6 +1428,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2151576029659734873">Introduzido índice de separador inválido.</translation>
 <translation id="2152281589789213846">Adicione impressoras ao seu perfil</translation>
 <translation id="2154484045852737596">Editar cartão</translation>
+<translation id="2155473371917268529">A definição de visibilidade atual é Os seus dispositivos</translation>
 <translation id="2155772377859296191">Parece ter <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156877321344104010">Executar novamente a verificação de segurança</translation>
@@ -1758,6 +1760,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2418307627282545839">Mantenha o conteúdo claro e iluminado</translation>
 <translation id="2419131370336513030">Ver apps instaladas</translation>
 <translation id="2419706071571366386">Por motivos de segurança, termine a sessão quando não estiver a utilizar o computador.</translation>
+<translation id="2421705177906985956">Não existem sites para mostrar neste momento</translation>
 <translation id="2422125132043002186">Restauro do Linux cancelado</translation>
 <translation id="2423578206845792524">Guard&amp;ar imagem como...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Convidado}other{Convidado (#)}}</translation>
@@ -2438,6 +2441,7 @@ Quer pará-lo?</translation>
 <translation id="2966705348606485669">Mais opções para a pasta de marcadores <ph name="FOLDER_TITLE" /></translation>
 <translation id="2966937470348689686">Gerir as preferências do Android</translation>
 <translation id="2967926928600500959">Os URLs que correspondam a estas regras serão forçados a abrir num navegador específico.</translation>
+<translation id="2970766364519518369">Os contactos selecionados podem partilhar consigo quando estiverem próximos. É-lhe pedido que aprove estes pedidos. Não precisa de aprovar a partilha entre dispositivos com sessão iniciada na conta <ph name="USER_EMAIL" />.</translation>
 <translation id="2972581237482394796">&amp;Repetir</translation>
 <translation id="2973324205039581528">Desativar som do site</translation>
 <translation id="2975761176769946178">É necessário um URL</translation>
@@ -4379,6 +4383,7 @@ Os sinais do dispositivo podem incluir informações acerca do seu navegador, SO
 <translation id="4623167406982293031">Validar conta</translation>
 <translation id="4623189117674524348">O sistema não conseguiu autorizar o acesso da API para este dispositivo.</translation>
 <translation id="4623341761454569602">No Gestor de Palavras-passe da Google, <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">Tema de cores</translation>
 <translation id="4625078469366263107">Ativar aplicação</translation>
 <translation id="4625905218692741757">Cor predefinida cinzenta</translation>
 <translation id="4627427111733173920">Cookies bloqueados</translation>
@@ -5477,7 +5482,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="5571832155627049070">Personalize o seu perfil</translation>
 <translation id="5572166921642484567">Escolha um modo de esquema de cores</translation>
 <translation id="5572252023412311448">Mostrar detalhes do site para <ph name="SITE_GROUP" /></translation>
-<translation id="5572648434713976849">Receberá sugestões melhoradas na barra de endereço</translation>
 <translation id="557506220935336383">Ver autorizações de extensões para outros sites</translation>
 <translation id="5575473780076478375">Extensão da navegação anónima: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Ocorreu um problema com o pedido de registo de demonstração.</translation>
@@ -5597,6 +5601,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="567740581294087470">Que tipo de feedback está a enviar?</translation>
 <translation id="5677503058916217575">Idioma da página:</translation>
 <translation id="5677928146339483299">Bloqueado</translation>
+<translation id="5677946354068040947">mais opções</translation>
 <translation id="5678550637669481956">Autorização para ler e escrever em <ph name="VOLUME_NAME" /> concedidas.</translation>
 <translation id="5678821117681811450">A enviar para <ph name="WEB_DRIVE" /></translation>
 <translation id="5678955352098267522">Ler os seus dados em <ph name="WEBSITE_1" /></translation>
@@ -6722,7 +6727,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6644846457769259194">A atualizar o dispositivo (<ph name="PROGRESS_PERCENT" />)…</translation>
 <translation id="6646476869708241165">Desligue o Fast Pair</translation>
 <translation id="6647228709620733774">URL de revogação da autoridade de certificação Netscape</translation>
-<translation id="6647441008198474441">Os URLs que visitar são enviados para a Google para prever os sites que pode visitar a seguir</translation>
 <translation id="6647690760956378579">Pré-visualização da voz natural</translation>
 <translation id="6648911618876616409">Existe uma nova atualização crítica pronta para instalação. Inicie sessão para começar.</translation>
 <translation id="6649018507441623493">Aguarde um momento...</translation>
@@ -7191,6 +7195,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7019546817926942979">O seu dispositivo tem de estar ligado. A atualização do Linux pode consumir significativamente a bateria. Ligue o dispositivo a um carregador e tente novamente.</translation>
 <translation id="7019805045859631636">Rápido</translation>
 <translation id="7022562585984256452">A sua página inicial foi definida.</translation>
+<translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">Apresentamos uma nova forma de navegar com gestos</translation>
 <translation id="7025190659207909717">Gestão de serviços de dados móveis</translation>
 <translation id="7025895441903756761">Segurança e privacidade</translation>
@@ -8113,6 +8118,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7797571222998226653">Desativado</translation>
 <translation id="7798504574384119986">Ver autorizações da Web</translation>
 <translation id="7798844538707273832">Autorização <ph name="PERMISSION" /> bloqueada automaticamente</translation>
+<translation id="7799650166313181433">Apenas os dispositivos com sessão iniciada na conta <ph name="USER_EMAIL" /> podem partilhar com este dispositivo. Não precisa de aprovar a partilha entre os seus dispositivos.</translation>
 <translation id="7800485561443537737">Usa os dados móveis do seu <ph name="DEVICE_TYPE" />, sendo que o seu operador pode cobrar taxas adicionais. Pode aumentar a utilização da bateria. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">Rodar para a &amp;Esquerda</translation>
 <translation id="7801679634091975683">As alterações que efetuar aqui aplicam-se apenas ao navegador Chrome Lacros. Para efetuar alterações às definições do navegador Chrome, abra o navegador Chrome e aceda às definições.</translation>

@@ -37,6 +37,7 @@
 <translation id="4133493477912226187">Videti je, da je toliko zavihkov sorodnih: <ph name="NUMBER_OF_TABS" />. Jih želite uvrstiti v skupino?</translation>
 <translation id="4212246570487010370">Nadaljevanje brskanja</translation>
 <translation id="4648718555153979859">Zavihki so združeni tukaj</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{Zaprte zavihke najdete med nedavnimi zavihki v glavnem meniju Chroma.}=1{Zaprte zavihke najdete med nedavnimi zavihki v glavnem meniju Chroma. Anonimni zavihek ne bo na voljo.}one{Zaprte zavihke najdete med nedavnimi zavihki v glavnem meniju Chroma. # anonimni zavihek ne bo na voljo.}two{Zaprte zavihke najdete med nedavnimi zavihki v glavnem meniju Chroma. # anonimna zavihka ne bosta na voljo.}few{Zaprte zavihke najdete med nedavnimi zavihki v glavnem meniju Chroma. # anonimni zavihki ne bodo na voljo.}other{Zaprte zavihke najdete med nedavnimi zavihki v glavnem meniju Chroma. # anonimnih zavihkov ne bo na voljo.}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> mnenje)}one{(<ph name="REVIEWS_COUNT_MANY" /> mnenje)}two{(<ph name="REVIEWS_COUNT_MANY" /> mnenji)}few{(<ph name="REVIEWS_COUNT_MANY" /> mnenja)}other{(<ph name="REVIEWS_COUNT_MANY" /> mnenj)}}</translation>
 <translation id="4850886885716139402">Prikaži</translation>
 <translation id="4870911314065352661">Želite zapreti vse zavihke?</translation>

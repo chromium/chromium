@@ -301,6 +301,7 @@
 <translation id="6439114592976064011">Сайттардың виртуалдық шындық құрылғыңызды және деректеріңізді пайдалануына тыйым салу</translation>
 <translation id="6447842834002726250">Cookie файлдары</translation>
 <translation id="6467852467360539617">Деректерді өшіру және рұқсаттарды бастапқы күйіне қайтару</translation>
+<translation id="6500423977866688905">Терезе тар болғанда, мобильді нұсқаны сұраңыз</translation>
 <translation id="6527303717912515753">Бөлісу</translation>
 <translation id="6545864417968258051">Bluetooth құрылғыларын іздеу</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" /> қызметті пайдалануға тыйым салынған.}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" /> қызметті пайдалануға тыйым салынған.}}</translation>

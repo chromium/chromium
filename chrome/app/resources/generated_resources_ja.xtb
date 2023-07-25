@@ -4368,6 +4368,7 @@
 <translation id="4623167406982293031">アカウントを確認</translation>
 <translation id="4623189117674524348">このデバイスの API アクセスを承認できませんでした。</translation>
 <translation id="4623341761454569602">Google パスワード マネージャー <ph name="SEPARATOR" /> <ph name="ACCOUNT" /> に保存</translation>
+<translation id="4624054169152573743">色のテーマ</translation>
 <translation id="4625078469366263107">アプリを有効にする</translation>
 <translation id="4625905218692741757">グレーのデフォルト カラー</translation>
 <translation id="4627427111733173920">Cookie がブロックされました</translation>
@@ -5462,7 +5463,6 @@
 <translation id="5571832155627049070">プロファイルのカスタマイズ</translation>
 <translation id="5572166921642484567">カラーパターン モードを選択</translation>
 <translation id="5572252023412311448"><ph name="SITE_GROUP" /> のサイトの詳細を表示</translation>
-<translation id="5572648434713976849">より関連性の高い候補がアドレスバーに表示されます</translation>
 <translation id="557506220935336383">他のサイトに対する拡張機能の権限を確認する</translation>
 <translation id="5575473780076478375">シークレット モード拡張機能: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">デモ登録リクエストで問題が発生しました。</translation>
@@ -5581,6 +5581,7 @@
 <translation id="567740581294087470">お送りいただくフィードバックの種類を選択してください。</translation>
 <translation id="5677503058916217575">ページの言語:</translation>
 <translation id="5677928146339483299">ブロック</translation>
+<translation id="5677946354068040947">その他のオプション</translation>
 <translation id="5678550637669481956"><ph name="VOLUME_NAME" /> への読み書きのアクセス権が許可されました。</translation>
 <translation id="5678821117681811450"><ph name="WEB_DRIVE" /> に送信しています</translation>
 <translation id="5678955352098267522"><ph name="WEBSITE_1" /> でのユーザーデータの読み取り</translation>
@@ -6705,7 +6706,6 @@
 <translation id="6644846457769259194">デバイスを更新しています（<ph name="PROGRESS_PERCENT" />）</translation>
 <translation id="6646476869708241165">ファスト ペアリングをオフにする</translation>
 <translation id="6647228709620733774">Netscape 認証局取り消し URL</translation>
-<translation id="6647441008198474441">アクセスした URL が Google に送信され、次にアクセスするサイトの予測が行われます</translation>
 <translation id="6647690760956378579">自然な音声のプレビュー</translation>
 <translation id="6648911618876616409">重要なアップデートをインストールする準備ができました。適用するにはまずログインしてください。</translation>
 <translation id="6649018507441623493">お待ちください…</translation>
@@ -7173,6 +7173,7 @@
 <translation id="7019546817926942979">デバイスを電源に接続する必要があります。Linux のアップグレードを行うと、電池を大幅に消耗します。デバイスを電源に接続してから、もう一度お試しください。</translation>
 <translation id="7019805045859631636">速い</translation>
 <translation id="7022562585984256452">ホームページが設定されました。</translation>
+<translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">ジェスチャーによる新しい操作方法</translation>
 <translation id="7025190659207909717">モバイル データ サービスの管理</translation>
 <translation id="7025895441903756761">セキュリティとプライバシー</translation>

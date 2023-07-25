@@ -301,6 +301,7 @@
 <translation id="6439114592976064011">Spletnim mestom prepreči spremljanje naprave in podatkov za navidezno resničnost</translation>
 <translation id="6447842834002726250">Piškotki</translation>
 <translation id="6467852467360539617">Počisti podatke in ponastavi dovoljenja</translation>
+<translation id="6500423977866688905">Če je okno omejeno, zahtevajte pogled za mobilno napravo</translation>
 <translation id="6527303717912515753">Skupna raba</translation>
 <translation id="6545864417968258051">Iskanje naprav Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Blokirano: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}one{Blokirano: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}two{Blokirano: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}few{Blokirano: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}other{Blokirano: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}}</translation>

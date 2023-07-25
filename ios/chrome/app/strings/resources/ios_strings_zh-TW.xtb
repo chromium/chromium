@@ -386,6 +386,7 @@
 <translation id="3311748811247479259">關閉</translation>
 <translation id="3324193307694657476">地址 2</translation>
 <translation id="3328801116991980348">網站資訊</translation>
+<translation id="3340938510625667914">Chrome 快捷操作</translation>
 <translation id="3344485292736684439">{count,plural, =1{書籤已儲存到帳戶 ({email}) 中的「{title}」}other{書籤已儲存到帳戶 ({email}) 中的「{title}」}}</translation>
 <translation id="3371831930909698441">有可用的翻譯。翻譯選項的位置接近畫面底部。</translation>
 <translation id="3377063233124932127">你儲存的書籤、密碼等內容現在會顯示在頂端。</translation>
@@ -932,6 +933,7 @@
 <translation id="6628106477656132239">到期日無效</translation>
 <translation id="6634432609054530164">貴機構已關閉無痕模式</translation>
 <translation id="6638511529934826365">縮放文字…</translation>
+<translation id="6640268266988685324">開啟分頁</translation>
 <translation id="6642362222295953972">切換至現有分頁</translation>
 <translation id="6643016212128521049">清除</translation>
 <translation id="6645899968535965230">QR 圖碼：<ph name="PAGE_TITLE" /></translation>

@@ -388,6 +388,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3311748811247479259">Uit</translation>
 <translation id="3324193307694657476">Adres 2</translation>
 <translation id="3328801116991980348">Site-informatie</translation>
+<translation id="3340938510625667914">Chrome-acties</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bookmark opgeslagen in {title} in je account {email}}other{Bookmarks opgeslagen in {title} in je account {email}}}</translation>
 <translation id="3371831930909698441">Vertalen is beschikbaar. Opties beschikbaar onderaan het scherm.</translation>
 <translation id="3377063233124932127">Je opgeslagen bookmarks, wachtwoorden enz. staan nu bovenaan.</translation>
@@ -935,6 +936,7 @@ Probeer een uniek wachtwoord te gebruiken voor elke site.</translation>
 <translation id="6628106477656132239">Ongeldige vervaldatum</translation>
 <translation id="6634432609054530164">Je organisatie heeft de incognitomodus uitgezet</translation>
 <translation id="6638511529934826365">Tekst zoomen…</translation>
+<translation id="6640268266988685324">Geopend tabblad</translation>
 <translation id="6642362222295953972">Overschakelen naar bestaand tabblad</translation>
 <translation id="6643016212128521049">Wissen</translation>
 <translation id="6645899968535965230">QR-code: <ph name="PAGE_TITLE" /></translation>

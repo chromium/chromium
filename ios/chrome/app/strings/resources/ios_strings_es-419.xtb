@@ -388,6 +388,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3311748811247479259">No</translation>
 <translation id="3324193307694657476">Dirección 2</translation>
 <translation id="3328801116991980348">Información del sitio</translation>
+<translation id="3340938510625667914">Acciones de Chrome</translation>
 <translation id="3344485292736684439">{count,plural, =1{El favorito se guardó en "{title}" en tu cuenta ({email}).}other{Los favoritos se guardaron en "{title}" en tu cuenta ({email}).}}</translation>
 <translation id="3371831930909698441">Está disponible la traducción. Las opciones disponibles se encuentran cerca de la parte inferior de la pantalla.</translation>
 <translation id="3377063233124932127">Ahora tus favoritos, contraseñas y otros elementos que guardaste están en la parte superior.</translation>
@@ -935,6 +936,7 @@ Intenta usar una contraseña única para cada sitio.</translation>
 <translation id="6628106477656132239">La fecha de vencimiento no es válida</translation>
 <translation id="6634432609054530164">Tu organización desactivó el modo Incógnito</translation>
 <translation id="6638511529934826365">Hacer zoom en el texto…</translation>
+<translation id="6640268266988685324">Abrir pestaña</translation>
 <translation id="6642362222295953972">Cambiar a la pestaña existente</translation>
 <translation id="6643016212128521049">Borrar</translation>
 <translation id="6645899968535965230">Código QR: <ph name="PAGE_TITLE" /></translation>

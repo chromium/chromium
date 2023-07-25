@@ -146,6 +146,7 @@
 <translation id="1576623706766186887">Одзумирајте кога е вклучена лупата</translation>
 <translation id="1586324912145647027">Одете на работната површина 1 до 8</translation>
 <translation id="1589090746204042747">Пристапете до целата ваша активност во сесијава</translation>
+<translation id="1592682369233288537">Следна работна површина: <ph name="NEXT_DESK_NAME" />, користете Search+Space за активирање.</translation>
 <translation id="1604857178818051494">Паузирање аудиовизуелни содржини</translation>
 <translation id="1610778689852195798">„Врати“</translation>
 <translation id="1611993646327628135">Вклучено</translation>
@@ -157,6 +158,7 @@
 <translation id="1647986356840967552">Претходна страница</translation>
 <translation id="1651914502370159744">Ја отвора страницата со „Историја“</translation>
 <translation id="1654477262762802994">Започнете гласовно барање</translation>
+<translation id="1662667383227796099">Пребарајте ги вашите датотеки, апликации и друго во „Стартерот“. Може и да добиете одговори на прашањата за вашиот Chromebook.</translation>
 <translation id="1668469839109562275">Вградена VPN</translation>
 <translation id="1675844249244994876">Ажурирање на прозорецот оддесно</translation>
 <translation id="1677472565718498478">Уште <ph name="TIME" /></translation>
@@ -560,6 +562,7 @@
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Полицата е автоматски скриена</translation>
+<translation id="3503243067695520519">Здраво. Уредите Chromebook малку се разликуваат.</translation>
 <translation id="3505066820268455558">Батеријата се полни</translation>
 <translation id="3509391053705095206">Не може да се најде телефонот. Проверете дали ви е вклучен Bluetooth на телефонот.</translation>
 <translation id="3510164367642747937">Нагласи го покажувачот на глувчето</translation>
@@ -685,6 +688,7 @@
 <translation id="3977512764614765090">Батеријата е на <ph name="PERCENTAGE" /> % и се полни.</translation>
 <translation id="3984536049089846927">Следна страница</translation>
 <translation id="3986082989454912832">Одговори</translation>
+<translation id="3990002060657467458">Често користените контроли како Wi-Fi, Bluetooth и јачина на звук се во „Брзи поставки“. Тука може да дојдете и за да направите слики од екранот.</translation>
 <translation id="3995138139523574647">USB-Ц уред (задна порта од десна страна)</translation>
 <translation id="40062176907008878">Ракописно</translation>
 <translation id="4017989525502048489">Ласерски покажувач</translation>
@@ -748,6 +752,7 @@
 <translation id="4269883910223712419">Администраторот на уредов има способност да:</translation>
 <translation id="4274537685965975248">Кратенката од тастатура Ctrl + Alt + Стрелка надолу се промени. За да го користите копчето End, притиснете го копчето <ph name="LAUNCHER_KEY_NAME" /> + Стрелка надесно.</translation>
 <translation id="4275283744500212192">Отвори ги опциите за распоред на прозорецот</translation>
+<translation id="4278138729651139331">Приспособете и персонализирајте го вашиот Chromebook во „Поставки“. Обидете се со променување на тапетот или поставување штедач на екран.</translation>
 <translation id="4279490309300973883">Отсликување</translation>
 <translation id="4280601795273309128">Безбедносните ажурирања завршија. Надградете го уредот.</translation>
 <translation id="4283888303416325161">Внесете лозинка за поголема безбедност</translation>
@@ -804,6 +809,7 @@
 <translation id="4505050298327493054">Активен работен простор.</translation>
 <translation id="450584155212756404">Dev Channel</translation>
 <translation id="4513946894732546136">Повратни информации</translation>
+<translation id="4516212064498225455">Тековна работна површина: <ph name="CURRENT_DESK_NAME" />, користете Search+Space за отворање на менито со сите работни површини.</translation>
 <translation id="4518404433291145981">За да го отклучите вашиот Chromebook, прво отклучете го телефонот</translation>
 <translation id="4527045527269911712">Уредот Bluetooth „<ph name="DEVICE_NAME" />“ бара дозвола за спарување.</translation>
 <translation id="4533343294786968049">Се продолжува траењето на батеријата. Батеријата целосно ќе се наполни до <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -878,6 +884,7 @@
 <translation id="4813311884204119883">Повлечете го линкот до празен простор на лентата за картички</translation>
 <translation id="4814539958450445987">Екран за најавување</translation>
 <translation id="481455355267255546">Следни настани</translation>
+<translation id="4826588772550366629">камера и микрофон</translation>
 <translation id="4831034276697007977">Дали сигурно сакате да ги исклучите автоматските кликови?</translation>
 <translation id="4849058404725798627">Нагласи го предметот со фокус на тастатурата</translation>
 <translation id="485592688953820832">Нема дејство (пауза)</translation>
@@ -971,6 +978,7 @@
 <translation id="5207949376430453814">Нагласи го каретот за текст</translation>
 <translation id="5208059991603368177">Вклучено</translation>
 <translation id="5216991270656129561">Исклучено до <ph name="TIME" /></translation>
+<translation id="5217646019792206018">Следна работна површина: <ph name="NEXT_DESK_NAME" />, користете Search+Space или кратенката од тастатура: Shift+Search+<ph name="NEXT_DESK_INDEX" /> за активирање.</translation>
 <translation id="5221423477036820198">Брзо испратете порака или одговорете на пораките на вашиот телефон со Phone Hub.</translation>
 <translation id="5222676887888702881">Одјави се</translation>
 <translation id="5229343007215035173">Вклучување/Исклучување „Заштита на приватноста“</translation>
@@ -1036,6 +1044,7 @@
 <translation id="550391772491508736">Продолжи со емитување</translation>
 <translation id="5506975627792768506">Вклучете/исклучете ја лупата</translation>
 <translation id="5512042095225963688">Го брише претходниот збор</translation>
+<translation id="5518068085000130971">Тоа се основните работи! Продолжете во Explore, нашата вградена апликација за совети и помош. Ќе најдете совети за започнување, препорачани апликации, специјални понуди и најновите функции на Chromebook.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Администраторот ги отстрани сите профили на eSIM. Контактирајте со администраторот за повеќе информации.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> се поврзува.</translation>
@@ -1361,6 +1370,7 @@
 <translation id="6896758677409633944">Копирај</translation>
 <translation id="6901883536534621389">Обидете се со движења за навигација</translation>
 <translation id="6912841030378044227">Фокусирајте се на лентата за адреси</translation>
+<translation id="6912901278692845878">Кратка разгледница</translation>
 <translation id="6919251195245069855">Не можевме да ја препознаеме вашата паметна картичка. Обидете се повторно.</translation>
 <translation id="6920245099716267363">Вклучување/Исклучување на точката на пристап. Точката на пристап е вклучена, поврзан е 1 уред.</translation>
 <translation id="6931576957638141829">Зачувај во</translation>
@@ -1667,6 +1677,7 @@
 <translation id="8297006494302853456">Слаб</translation>
 <translation id="8308637677604853869">Претходно мени</translation>
 <translation id="830868413617744215">Бета</translation>
+<translation id="8312557488404088015">За лесен почеток, погледнете ја кратката разгледница. Со 6 чекори, ќе ви одземе само неколку минути.</translation>
 <translation id="8314772463905284467">Вклучено е Caps Lock</translation>
 <translation id="8315514906653279104">Се вклучува…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
@@ -1716,6 +1727,7 @@
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> може да не се полни додека е вклучен.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Влезот за микрофон го контролира <ph name="APP_NAME" />}one{Влезот за микрофон го контролираат # апликација}other{Влезот за микрофон го контролираат # апликации}}</translation>
 <translation id="8535393432370007982">Поништете го редоследот на подредувањето по боја</translation>
+<translation id="853768060447955562">Претходна работна површина: <ph name="PREVIOUS_DESK_NAME" />, користете Search+Space или кратенката од тастатура: Shift+Search+<ph name="PREVIOUS_DESK_INDEX" /> за активирање.</translation>
 <translation id="8541078764854166027">Врамување камера</translation>
 <translation id="8542053257095774575">Нема зачувани работни површини или шаблони</translation>
 <translation id="8546059259582788728">Успешно поништување на подредувањето</translation>
@@ -1867,11 +1879,13 @@
 <translation id="925832987464884575">Скриј ги прегледите</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> бара веднаш да го ажурирате вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">Што има во мојот календар?</translation>
+<translation id="943067377221312471">Претходна работна површина: <ph name="PREVIOUS_DESK_NAME" />, користете Search+Space за активирање.</translation>
 <translation id="945383118875625837">Повлечете го линкот до лентата со обележувачи</translation>
 <translation id="945522503751344254">Испратете повратни информации</translation>
 <translation id="951991426597076286">Одбиј</translation>
 <translation id="953431725143473984">Дали да се исклучи уредот?</translation>
 <translation id="954052413789300507">Нема доволно простор за <ph name="FILENAME" />. Ослободете простор.</translation>
+<translation id="968627661524972577">Користете апликации за да правите сѐ што треба на вашиот Chromebook. Вашите апликации може да ги најдете во „Стартерот“. Може и да го допрете копчето за „Стартер“ на тастатурата.</translation>
 <translation id="974545358917229949">Се прикажуваат <ph name="RESULT_COUNT" /> резултати за <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Одете на крајот од документот</translation>
 <translation id="987589956647469042">Мобилниот интернет е вклучен</translation>

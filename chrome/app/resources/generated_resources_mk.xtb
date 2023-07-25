@@ -1573,6 +1573,7 @@
     За помош околу решавањето проблеми со Google Cast, обратете се во
     <ph name="BEGIN_LINK" />
     Центарот за помош<ph name="END_LINK" />.</translation>
+<translation id="22649924370461580">Зачувани групи картички</translation>
 <translation id="2266957463645820432">IPP преку USB (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth е оневозможен</translation>
 <translation id="2268182915828370037">Да се исклучи синхронизацијата на датотеките?</translation>
@@ -1800,6 +1801,7 @@
 <translation id="2435248616906486374">Мрежата е исклучена</translation>
 <translation id="2435457462613246316">Прикажи ја лозинката</translation>
 <translation id="2436385001956947090">Копирај го линкот</translation>
+<translation id="2438853563451647815">Не е поврзано на печатач</translation>
 <translation id="2439626940657133600">Се вчитува <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">Прикажи и&amp;звор</translation>
 <translation id="2440823041667407902">Пристап до локација</translation>
@@ -4252,6 +4254,7 @@
 <translation id="4508150454272293946">Дозволете апликациите и веб-страниците да ги користат камерите поврзани со уредов. Ако и понатаму имате проблем со камерата, обидете се со рестартирање на апликацијата или освежување на веб-страницата.</translation>
 <translation id="450867954911715010">Поставки за пристапност</translation>
 <translation id="4508765956121923607">Прикажи и&amp;звор</translation>
+<translation id="4509277363725254222">Кога ќе споделите копија од вашите <ph name="BEGIN_BOLD_USERNAME" />корисничко име<ph name="END_BOLD_USERNAME" /> и <ph name="BEGIN_BOLD_PASSWORD" />лозинка<ph name="END_BOLD_PASSWORD" />, членот на вашето семејство може да ги пополни со Google Password Manager</translation>
 <translation id="4509421746503122514">Рестартирајте за да се ажурира</translation>
 <translation id="4510195992002502722">Не успејаа да се испратат повратните информации. Се обидуваме повторно…</translation>
 <translation id="4510479820467554003">Список со сметки на родители</translation>
@@ -4391,6 +4394,7 @@
 <translation id="4623167406982293031">Потврдете ја сметката</translation>
 <translation id="4623189117674524348">Системот не успеа да овласти пристап до API за овој уред.</translation>
 <translation id="4623341761454569602">Во Google Password Manager <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">Боја на тема</translation>
 <translation id="4625078469366263107">Овозможи апликација</translation>
 <translation id="4625905218692741757">Стандардна сива боја</translation>
 <translation id="4627427111733173920">Колачињата се блокирани</translation>
@@ -4469,6 +4473,7 @@
 <translation id="4683629100208651599">Сите мали букви</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (стандардно)</translation>
 <translation id="4684427112815847243">Синхронизирај сѐ</translation>
+<translation id="4687238339694011189">Уверете се дека печатачот е вклучен и поврзан на истата мрежа како и вашиот Chromebook или користете USB-кабел</translation>
 <translation id="4687613760714619596">Непознат уред (<ph name="DEVICE_ID" />)</translation>
 <translation id="4687718960473379118">Реклами предложени од сајтови</translation>
 <translation id="4688036121858134881">ID на локална евиденција: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
@@ -4821,6 +4826,7 @@
 <translation id="4994426888044765950">Ако задржите притиснато дадено копче, знакот на копчето ќе се повтори</translation>
 <translation id="4994754230098574403">Се поставува</translation>
 <translation id="4995293419989417004">Дознајте повеќе за темите за реклами</translation>
+<translation id="4995676741161760215">Вклучено, екстензијата е овозможена</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Не се најдени виртуелни машини од типот <ph name="VM_TYPE" />}=1{Најдена е една виртуелна машина од типот <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}one{Најдени се {NUM_VMS} виртуелна машина од типот <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}other{Најдени се {NUM_VMS} виртуелни машини од типот <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Нема интернет-врска.</translation>
 <translation id="4998430619171209993">Вклучено</translation>
@@ -5373,6 +5379,7 @@
 <translation id="5474859849784484111"><ph name="MANAGER" /> бара веднаш да се поврзете на Wi-Fi и да преземете ажурирање. Може да го преземете и преку врска со ограничен интернет (може да ви се наплати).</translation>
 <translation id="5481273127572794904">Не им е дозволено автоматски да преземаат повеќе датотеки</translation>
 <translation id="5481941284378890518">Додај печатачи во близина</translation>
+<translation id="5484462543003267273">Управувајте со семејната група</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> бара да направите бекап на вашите податоци и да го вратите овој <ph name="DEVICE_TYPE" /> денес. <ph name="LINK_BEGIN" />Погледнете ги деталите<ph name="LINK_END" />}one{<ph name="MANAGER" /> бара да направите бекап на вашите податоци и да го вратите овој <ph name="DEVICE_TYPE" /> во рок од {NUM_DAYS} ден.<ph name="LINK_BEGIN" />Погледнете ги деталите<ph name="LINK_END" />}other{<ph name="MANAGER" /> бара да направите бекап на вашите податоци и да го вратите овој <ph name="DEVICE_TYPE" /> во рок од {NUM_DAYS} дена.<ph name="LINK_BEGIN" />Погледнете ги деталите<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Додај апликација</translation>
 <translation id="5485435764083510385">Претпочитан јазик на титловите</translation>
@@ -5486,7 +5493,6 @@
 <translation id="5571832155627049070">Приспособете го вашиот профил</translation>
 <translation id="5572166921642484567">Изберете режим на шема на бои</translation>
 <translation id="5572252023412311448">Прикажете детали за сајт за <ph name="SITE_GROUP" /></translation>
-<translation id="5572648434713976849">Ќе добивате подобрени предлози во лентата за адреси</translation>
 <translation id="557506220935336383">Погледнете дозволи за екстензии за други сајтови</translation>
 <translation id="5575473780076478375">Наставка на таен идентитет: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Настана проблем со барањето за регистрација на демо.</translation>
@@ -5605,6 +5611,7 @@
 <translation id="567740581294087470">Какви повратни информации давате?</translation>
 <translation id="5677503058916217575">Јазик на страница:</translation>
 <translation id="5677928146339483299">Блокирано</translation>
+<translation id="5677946354068040947">повеќе опции</translation>
 <translation id="5678550637669481956">Доделен е пристап за читање и пишување на <ph name="VOLUME_NAME" />.</translation>
 <translation id="5678821117681811450">Се испраќа на <ph name="WEB_DRIVE" /></translation>
 <translation id="5678955352098267522">Читајте ги вашите податоци на <ph name="WEBSITE_1" /></translation>
@@ -6124,6 +6131,7 @@
 <translation id="6113434369102685411">Поставете го стандардниот пребарувач за прелистувачот Chrome и стартерот на <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">За да користите Smart Lock, префрлете се на примарниот кориснички профил на телефонот</translation>
 <translation id="6116921718742659598">Промени поставки за јазик и внесување...</translation>
+<translation id="6119008366402292080">Не е достапен печатач</translation>
 <translation id="6119927814891883061">Именувајте го уредот како <ph name="DEVICE_NAME" /></translation>
 <translation id="6119972796024789243">Корекција на боите</translation>
 <translation id="6120707837086723438">Прикажани се предложени рецепти според вашата неодамнешна активност на пребарување рецепти.
@@ -6134,6 +6142,7 @@
 <translation id="6122081475643980456">Вашето поврзување на интернет се контролира</translation>
 <translation id="6122093587541546701">Е-пошта (изборно):</translation>
 <translation id="6122095009389448667">Продолжи да го блокираш пристапот за гледање на привремената меморија на сајтов</translation>
+<translation id="6122513630797178831">Зачувај CVC</translation>
 <translation id="6122600716821516697">Да се сподели со уредов?</translation>
 <translation id="6122831415929794347">Да се исклучи „Безбедно прелистување“?</translation>
 <translation id="6124650939968185064">Следните наставки зависат од оваа наставка:</translation>
@@ -6730,7 +6739,6 @@
 <translation id="6644846457769259194">Уредот се ажурира (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Исклучи „Брзо спарување“</translation>
 <translation id="6647228709620733774">URL за отповикување орган за сертифицирање на Netscape</translation>
-<translation id="6647441008198474441">URL-адресите што ги посетувате се испраќаат во Google за да се предвидат сајтовите што можеби ќе ги посетите следно</translation>
 <translation id="6647690760956378579">Преглед на природен глас</translation>
 <translation id="6648911618876616409">Важно ажурирање е подготвено да се инсталира. Најавете се за да започнете.</translation>
 <translation id="6649018507441623493">Само момент…</translation>
@@ -7454,7 +7462,7 @@
 <translation id="7258192266780953209">Трансформации</translation>
 <translation id="7258225044283673131">Апликацијата не одговара. Изберете „Затвори присилно“ за да ја затворите.</translation>
 <translation id="7260186537988033909">Регистрацијата на киоск и уред за сигнализација е завршена</translation>
-<translation id="7260367682327802201">Вашиот уред со Android може да има слична поставка. Ако мерењето реклами е вклучено во Chrome и на вашиот уред со Android, дадена компанија можеби ќе може да ја мери ефикасноста на некоја реклама на веб-сајтовите што ги посетувате и апликациите што ги користите.</translation>
+<translation id="7260367682327802201">Вашиот уред со Android може да има слична поставка. Ако мерењето реклами е вклучено во Chrome и на вашиот уред со Android, одредена компанија можеби ќе може да ја мери ефективноста на некоја реклама на веб-сајтовите што ги посетувате и апликациите што ги користите.</translation>
 <translation id="7261612856573623172">Глас на системот за „Од текст во говор“</translation>
 <translation id="7262004276116528033">Хост на услугата за најавување е <ph name="SAML_DOMAIN" /></translation>
 <translation id="7263162347647986485">{NUM_SITES,plural, =1{Отстранети се дозволите за 1 сајт}one{Отстранети се дозволите за {NUM_SITES} сајт}other{Отстранети се дозволите за {NUM_SITES} сајта}}</translation>
@@ -8978,6 +8986,7 @@
 <translation id="8514746246728959655">Обидете се со друг безбедносен клуч</translation>
 <translation id="8514955299594277296">Не дозволувајте сајтовите да зачувуваат податоци на вашиот уред (не се препорачува)</translation>
 <translation id="8517759303731677493">Изменете…</translation>
+<translation id="8518942514525208851">Скриј ги вулгарностите</translation>
 <translation id="8519895319663397036">Не може да се увезат лозинките. Големината на датотеката треба да биде помала од 150 KB.</translation>
 <translation id="851991974800416566">Брзо искористете силна лозинка</translation>
 <translation id="8523493869875972733">Откажи</translation>

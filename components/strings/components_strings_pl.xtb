@@ -101,6 +101,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1201402288615127009">Dalej</translation>
 <translation id="1201895884277373915">Więcej z tej witryny</translation>
 <translation id="1202892408424955784">Obserwowane produkty</translation>
+<translation id="1204184165594298176">{0,plural, =1{Kopiowanie pliku zostało zablokowane}few{Kopiowanie <ph name="FILE_COUNT" /> plików zostało zablokowane}many{Kopiowanie <ph name="FILE_COUNT" /> plików zostało zablokowane}other{Kopiowanie <ph name="FILE_COUNT" /> pliku zostało zablokowane}}</translation>
 <translation id="1204602502194308272">Rybki i akwaria</translation>
 <translation id="1206967143813997005">Nieprawidłowy podpis wstępny</translation>
 <translation id="1209206284964581585">Na razie ukryj</translation>
@@ -889,6 +890,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2916038427272391327">Zamknij inne programy</translation>
 <translation id="2918922650248459053">Nurkowanie i atrakcje podwodne</translation>
 <translation id="2922350208395188000">Nie można sprawdzić certyfikatu serwera.</translation>
+<translation id="2922792708490674">{0,plural, =1{Pobieranie pliku zostało zablokowane}few{Pobieranie <ph name="FILE_COUNT" /> plików zostało zablokowane}many{Pobieranie <ph name="FILE_COUNT" /> plików zostało zablokowane}other{Pobieranie <ph name="FILE_COUNT" /> pliku zostało zablokowane}}</translation>
 <translation id="2923275635648511531">Produkty do opalania i ochrony przed słońcem</translation>
 <translation id="292371311537977079">Ustawienia Chrome</translation>
 <translation id="2925454999967523701">Przycisk Utwórz dokument; aktywuj, aby szybko utworzyć nowy dokument Google</translation>
@@ -1269,6 +1271,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3713662424819367124">Perfumy i zapachy</translation>
 <translation id="3714633008798122362">kalendarz sieciowy</translation>
 <translation id="3714780639079136834">Włącz komórkową transmisję danych lub Wi-Fi</translation>
+<translation id="3715016660240337709">{0,plural, =1{Przesyłanie pliku zostało zablokowane}few{Przesyłanie <ph name="FILE_COUNT" /> plików zostało zablokowane}many{Przesyłanie <ph name="FILE_COUNT" /> plików zostało zablokowane}other{Przesyłanie <ph name="FILE_COUNT" /> pliku zostało zablokowane}}</translation>
 <translation id="3715545959749027023">Gdy Chrome oznacza zdarzenia związane z bezpieczeństwem, odpowiednie dane o nich są wysyłane do administratora. Mogą one obejmować adresy URL stron odwiedzanych w Chrome, nazwy plików lub metadane, awarie przeglądarki lub kart oraz nazwę użytkownika, pod którą logujesz się w aplikacjach internetowych, na danym urządzeniu i w Chrome.</translation>
 <translation id="3715597595485130451">Połączenie z siecią Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Sprawdź serwer proxy, zaporę sieciową i konfigurację DNS<ph name="END_LINK" /></translation>
@@ -1349,6 +1352,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3890664840433101773">Dodaj adres e-mail</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">Karta straciła ważność</translation>
+<translation id="3905894480064208252">{0,plural, =1{Przesyłanie pliku zostało zablokowane}few{Przesyłanie <ph name="FILE_COUNT" /> plików zostało zablokowane}many{Przesyłanie <ph name="FILE_COUNT" /> plików zostało zablokowane}other{Przesyłanie <ph name="FILE_COUNT" /> pliku zostało zablokowane}}</translation>
 <translation id="3906095212874392000">Koniec przekonwertowanego tekstu</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
@@ -1757,6 +1761,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4757993714154412917">Przed chwilą wpisano hasło na stronie wprowadzającej w błąd. Dla bezpieczeństwa Twoich kont Chromium zaleca sprawdzenie zapisanych haseł.</translation>
 <translation id="4758311279753947758">Dodaj dane kontaktowe</translation>
 <translation id="4761104368405085019">Korzystanie z Twojego mikrofonu</translation>
+<translation id="4761326898079498987">Sprawdź, aby uzyskać więcej informacji</translation>
 <translation id="4761869838909035636">Uruchom kontrolę zabezpieczeń Chrome</translation>
 <translation id="4764680219299728632">Kuchenki, płyty grzewcze i piekarniki</translation>
 <translation id="4764776831041365478">Strona internetowa pod adresem <ph name="URL" /> może być tymczasowo niedostępna lub została na stałe przeniesiona pod nowy adres internetowy.</translation>
@@ -2441,6 +2446,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6240447795304464094">Logo Google Pay</translation>
 <translation id="6241121617266208201">Ukryj sugestie</translation>
 <translation id="624499991300733384">Usługa Print Compositor</translation>
+<translation id="6251906504834538140">{0,plural, =1{Przenoszenie pliku zostało zablokowane}few{Przenoszenie <ph name="FILE_COUNT" /> plików zostało zablokowane}many{Przenoszenie <ph name="FILE_COUNT" /> plików zostało zablokowane}other{Przenoszenie <ph name="FILE_COUNT" /> pliku zostało zablokowane}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby zarządzać pobranymi plikami w Chrome, naciśnij Tab, a potem Enter</translation>
 <translation id="6254436959401408446">Za mało pamięci, by otworzyć tę stronę</translation>
 <translation id="6259156558325130047">&amp;Ponów zmianę kolejności</translation>
@@ -3152,6 +3158,7 @@ Dodatkowe informacje:
 <translation id="7682287625158474539">Adres wysyłkowy</translation>
 <translation id="7682451652090915298">Rugby</translation>
 <translation id="7684683146428206649">Metal</translation>
+<translation id="7684928361160505327">{0,plural, =1{Plik <ph name="FILE_NAME" /> został zablokowany ze względu na zasady}few{<ph name="FILE_COUNT" /> pliki zostały zablokowane ze względu na zasady}many{<ph name="FILE_COUNT" /> plików zostało zablokowanych ze względu na zasady}other{<ph name="FILE_COUNT" /> pliku zostało zablokowane ze względu na zasady}}</translation>
 <translation id="7687186412095877299">Wypełniaj formularze płatności, używając zapisanych form płatności</translation>
 <translation id="7687305263118037187">Przekroczono limit czasu ponowienia próby</translation>
 <translation id="7690647519407127574">Oufuku Hagaki (pocztówka)</translation>
@@ -3367,6 +3374,7 @@ Dodatkowe informacje:
 <translation id="8175796834047840627">Jako zalogowany użytkownik możesz zapisać karty na Twoim koncie Google w Chrome. Możesz to zmienić w ustawieniach.</translation>
 <translation id="8176440868214972690">Administrator tego urządzenia wysłał do tych witryn pewne informacje, takie jak ustawienia lub zasady.</translation>
 <translation id="817820454357658398">Produkty do higieny kobiecej</translation>
+<translation id="818254048113802060">{0,plural, =1{Plik <ph name="FILE_NAME" /> został zablokowany z powodu zawartości}few{<ph name="FILE_COUNT" /> pliki zostały zablokowane z powodu zawartości}many{<ph name="FILE_COUNT" /> plików zostało zablokowanych z powodu zawartości}other{<ph name="FILE_COUNT" /> pliku zostało zablokowane z powodu zawartości}}</translation>
 <translation id="8183800802493617952">Gry i zabawy rodzinne</translation>
 <translation id="8184538546369750125">Użyj globalnej wartości domyślnej (Zezwalaj)</translation>
 <translation id="8186706823560132848">Oprogramowanie</translation>
@@ -3418,6 +3426,7 @@ Dodatkowe informacje:
 <translation id="8265992338205884890">Widoczne dane</translation>
 <translation id="8267698848189296333">Logujesz się jako <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Oddzielne dokumenty / Kopie sortowane</translation>
+<translation id="8269703227894255363">{0,plural, =1{Otwieranie pliku zostało zablokowane}few{Otwieranie <ph name="FILE_COUNT" /> plików zostało zablokowane}many{Otwieranie <ph name="FILE_COUNT" /> plików zostało zablokowane}other{Otwieranie <ph name="FILE_COUNT" /> pliku zostało zablokowane}}</translation>
 <translation id="826991611711124547">Rejsy i czartery</translation>
 <translation id="8270242299912238708">Dokumenty PDF</translation>
 <translation id="8275952078857499577">Nie proponuj tłumaczenia tej witryny</translation>

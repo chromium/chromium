@@ -301,6 +301,7 @@
 <translation id="6439114592976064011">Saytlarga virtual reallik qurilmalari yoki maʼlumotlaridan foydalanishni taqiqlash</translation>
 <translation id="6447842834002726250">Cookie fayllari</translation>
 <translation id="6467852467360539617">Maʼlumotlarni tozalash va ruxsatlarni tiklash</translation>
+<translation id="6500423977866688905">Oyna kichkina boʻlsa, mobil versiyani soʻrang</translation>
 <translation id="6527303717912515753">Ulashish</translation>
 <translation id="6545864417968258051">Bluetooth qurilmalarni qidirish</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Bloklandi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> va yana <ph name="NUM_MORE" /> ta}other{Bloklandi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> va yana <ph name="NUM_MORE" /> ta}}</translation>

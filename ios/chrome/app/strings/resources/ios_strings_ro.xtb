@@ -388,6 +388,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3311748811247479259">Dezactivat</translation>
 <translation id="3324193307694657476">Adresă 2</translation>
 <translation id="3328801116991980348">Informații despre site</translation>
+<translation id="3340938510625667914">Acțiuni Chrome</translation>
 <translation id="3344485292736684439">{count,plural, =1{Marcaj salvat în {title} în contul tău {email}}few{Marcaje salvate în {title} în contul tău {email}}other{Marcaje salvate în {title} în contul tău {email}}}</translation>
 <translation id="3371831930909698441">Traducerea este disponibilă. Sunt disponibile opțiuni în partea de jos a ecranului.</translation>
 <translation id="3377063233124932127">Marcajele, parolele și alte elemente salvate apar acum în partea de sus.</translation>
@@ -935,6 +936,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="6628106477656132239">Dată de expirare nevalidă</translation>
 <translation id="6634432609054530164">Organizația ta a dezactivat modul incognito</translation>
 <translation id="6638511529934826365">Fă zoom pe text…</translation>
+<translation id="6640268266988685324">Filă deschisă</translation>
 <translation id="6642362222295953972">Comută la o filă existentă</translation>
 <translation id="6643016212128521049">Șterge</translation>
 <translation id="6645899968535965230">Cod QR: <ph name="PAGE_TITLE" /></translation>

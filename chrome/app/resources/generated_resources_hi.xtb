@@ -4393,6 +4393,7 @@
 <translation id="4623167406982293031">खाते की पुष्टि करें</translation>
 <translation id="4623189117674524348">सिस्टम इस डिवाइस के लिए API (एपीआई) ऐक्सेस की मंजू़री नहीं दे सका.</translation>
 <translation id="4623341761454569602">Google Password Manager में<ph name="SEPARATOR" /><ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">रंग की थीम</translation>
 <translation id="4625078469366263107">ऐप्लिकेशन चालू करें</translation>
 <translation id="4625905218692741757">स्लेटी डिफ़ॉल्ट रंग</translation>
 <translation id="4627427111733173920">कुकी ब्लॉक की गईं</translation>
@@ -5489,7 +5490,6 @@
 <translation id="5571832155627049070">अपनी प्रोफ़ाइल को पसंद के मुताबिक बनाएं</translation>
 <translation id="5572166921642484567">कलर स्कीम मोड चुनें</translation>
 <translation id="5572252023412311448"><ph name="SITE_GROUP" /> के लिए साइट की जानकारी दिखाएं</translation>
-<translation id="5572648434713976849">आपको पता बार में बेहतर सुझाव मिलेंगे</translation>
 <translation id="557506220935336383">दूसरी साइटों के लिए, एक्सटेंशन से जुड़ी अनुमतियां देखें</translation>
 <translation id="5575473780076478375">गुप्‍त एक्सटेंशन: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">डेमो रजिस्ट्रेशन अनुरोध में कोई परेशानी हुई.</translation>
@@ -5608,6 +5608,7 @@
 <translation id="567740581294087470">आप किस तरह का फ़ीडबैक (सुझाव, शिकायत या राय) दे रहे हैं?</translation>
 <translation id="5677503058916217575">पेज की भाषा:</translation>
 <translation id="5677928146339483299">ब्लॉक किया गया है</translation>
+<translation id="5677946354068040947">ज़्यादा विकल्प</translation>
 <translation id="5678550637669481956"><ph name="VOLUME_NAME" /> पर पढ़ने और लिखने की ऐक्‍सेस दी गई है.</translation>
 <translation id="5678821117681811450"><ph name="WEB_DRIVE" /> में भेजा जा रहा है</translation>
 <translation id="5678955352098267522"><ph name="WEBSITE_1" /> पर अपना डेटा पढ़ें</translation>
@@ -6735,7 +6736,6 @@
 <translation id="6644846457769259194">आपका डिवाइस अपडेट हो रहा है (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">फ़ास्ट पेयर की सुविधा बंद करें</translation>
 <translation id="6647228709620733774">Netscape प्रमाणन प्राधिकरण खण्डन यूआरएल</translation>
-<translation id="6647441008198474441">इस बात का अंदाज़ा लगाने के लिए कि आपको कौन-कौनसी साइटें पसंद हैं, Google को आपके देखे गए पेजों के यूआरएल भेजे जाते हैं</translation>
 <translation id="6647690760956378579">नैचुरल वॉइस की झलक</translation>
 <translation id="6648911618876616409">एक ज़रूरी अपडेट इंस्टॉल होने के लिए तैयार है. शुरू करने के लिए साइन इन करें.</translation>
 <translation id="6649018507441623493">बस एक सेकंड...</translation>
@@ -7204,6 +7204,7 @@
 <translation id="7019546817926942979">आपको अपने डिवाइस को चार्जिंग पर लगाना होगा. Linux को अपग्रेड करते समय, बैटरी जल्दी खत्म हो सकती है. कृपया अपने डिवाइस को चार्जर से कनेक्ट करें और फिर से कोशिश करें.</translation>
 <translation id="7019805045859631636">तेज़</translation>
 <translation id="7022562585984256452">आपका होम पेज सेट कर दिया गया है.</translation>
+<translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">पेश है हाथ के जेस्चर (हाव-भाव) की मदद से नेविगेट करने का नया तरीका</translation>
 <translation id="7025190659207909717">मोबाइल डेटा सेवा प्रबंधन</translation>
 <translation id="7025895441903756761">सुरक्षा और निजता</translation>

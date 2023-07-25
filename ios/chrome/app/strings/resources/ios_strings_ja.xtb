@@ -388,6 +388,7 @@
 <translation id="3311748811247479259">オフ</translation>
 <translation id="3324193307694657476">住所2行目</translation>
 <translation id="3328801116991980348">サイト情報</translation>
+<translation id="3340938510625667914">Chrome アクション</translation>
 <translation id="3344485292736684439">{count,plural, =1{ブックマークをアカウント（{email}）の「{title}」に保存しました}other{ブックマークをアカウント（{email}）の「{title}」に保存しました}}</translation>
 <translation id="3371831930909698441">翻訳が利用可能です。画面の下の方にオプションがあります。</translation>
 <translation id="3377063233124932127">保存したブックマークやパスワードなどが上部に表示されます。</translation>
@@ -935,6 +936,7 @@
 <translation id="6628106477656132239">無効な有効期限</translation>
 <translation id="6634432609054530164">シークレット モードは組織によって無効にされています</translation>
 <translation id="6638511529934826365">テキストを拡大…</translation>
+<translation id="6640268266988685324">開いているタブ</translation>
 <translation id="6642362222295953972">既存のタブに切り替え</translation>
 <translation id="6643016212128521049">削除</translation>
 <translation id="6645899968535965230">QR コード: <ph name="PAGE_TITLE" /></translation>

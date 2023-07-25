@@ -1558,6 +1558,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2263371730707937087">Frecuencia de actualización de la pantalla</translation>
 <translation id="2263679799334060788">Tus comentarios nos ayudan a mejorar Google Cast. Gracias por enviarlos.
     Si quieres consultar cómo solucionar problemas relacionados con el envío de contenido, ve al <ph name="BEGIN_LINK" />Centro de Ayuda<ph name="END_LINK" />.</translation>
+<translation id="22649924370461580">Grupos de pestañas guardados</translation>
 <translation id="2266957463645820432">Protocolo IPP por USB (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth inhabilitado</translation>
 <translation id="2268182915828370037">¿Desactivar la sincronización de archivos?</translation>
@@ -1785,6 +1786,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2435248616906486374">Red desconectada</translation>
 <translation id="2435457462613246316">Mostrar contraseña</translation>
 <translation id="2436385001956947090">Copiar &amp;enlace</translation>
+<translation id="2438853563451647815">No conectado a la impresora</translation>
 <translation id="2439626940657133600">Cargando <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">Ver códig&amp;o fuente</translation>
 <translation id="2440823041667407902">Acceso a la ubicación</translation>
@@ -4235,6 +4237,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4508150454272293946">Permite que las aplicaciones y las páginas web usen las cámaras conectadas a este dispositivo. Si sigues teniendo problemas con la cámara, prueba a reiniciar la aplicación o a actualizar la página web.</translation>
 <translation id="450867954911715010">Ajustes de accesibilidad</translation>
 <translation id="4508765956121923607">Ver código f&amp;uente</translation>
+<translation id="4509277363725254222">Si compartes una copia de tu <ph name="BEGIN_BOLD_USERNAME" />nombre de usuario<ph name="END_BOLD_USERNAME" /> y de tu <ph name="BEGIN_BOLD_PASSWORD" />contraseña<ph name="END_BOLD_PASSWORD" />, el miembro de tu familia podrá introducirlos usando el Gestor de contraseñas de Google.</translation>
 <translation id="4509421746503122514">Reinicia para actualizar</translation>
 <translation id="4510195992002502722">No se han podido enviar los comentarios. Intentándolo otra vez...</translation>
 <translation id="4510479820467554003">Lista de cuentas parentales</translation>
@@ -4374,6 +4377,7 @@ Las señales del dispositivo pueden incluir información sobre el navegador, el 
 <translation id="4623167406982293031">Verificar cuenta</translation>
 <translation id="4623189117674524348">El sistema no ha podido autorizar el acceso de este dispositivo a la API.</translation>
 <translation id="4623341761454569602">En el Gestor de contraseñas de Google <ph name="SEPARATOR" /> (<ph name="ACCOUNT" />)</translation>
+<translation id="4624054169152573743">Tema de color</translation>
 <translation id="4625078469366263107">Habilitar aplicación</translation>
 <translation id="4625905218692741757">Color predeterminado gris</translation>
 <translation id="4627427111733173920">Cookies bloqueadas</translation>
@@ -4452,6 +4456,7 @@ Las señales del dispositivo pueden incluir información sobre el navegador, el 
 <translation id="4683629100208651599">Convertir en minúsculas</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (predeterminado)</translation>
 <translation id="4684427112815847243">Sincronizar todo</translation>
+<translation id="4687238339694011189">Asegúrate de que la impresora esté encendida y conectada a la misma red que tu Chromebook o usa un cable USB</translation>
 <translation id="4687613760714619596">Dispositivo desconocido (<ph name="DEVICE_ID" />)</translation>
 <translation id="4687718960473379118">Anuncios sugeridos por sitios</translation>
 <translation id="4688036121858134881">ID de registro local: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
@@ -4804,6 +4809,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4994426888044765950">Si mantienes pulsada una tecla, se repetirá el carácter de la tecla</translation>
 <translation id="4994754230098574403">Se está configurando</translation>
 <translation id="4995293419989417004">Más información sobre los temas de anuncios</translation>
+<translation id="4995676741161760215">Activado, extensión habilitada</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{No se ha encontrado ninguna máquina virtual <ph name="VM_TYPE" />}=1{Se ha encontrado 1 máquina virtual <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}other{Se han encontrado {NUM_VMS} máquinas virtuales <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Sin conexión a Internet.</translation>
 <translation id="4998430619171209993">Activado</translation>
@@ -5356,6 +5362,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5474859849784484111"><ph name="MANAGER" /> necesita que te conectes a una red Wi‑Fi para descargar una actualización. También puedes descargarla con una conexión de uso medido (sujeto a cargos).</translation>
 <translation id="5481273127572794904">No puede descargar varios archivos automáticamente</translation>
 <translation id="5481941284378890518">Añadir impresoras cercanas</translation>
+<translation id="5484462543003267273">Gestionar familia</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requiere que crees una copia de seguridad de tus datos y devuelvas este <ph name="DEVICE_TYPE" /> hoy. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" />}other{<ph name="MANAGER" /> requiere que crees una copia de seguridad de tus datos y devuelvas este <ph name="DEVICE_TYPE" /> en un plazo de {NUM_DAYS} días. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Añadir aplicación</translation>
 <translation id="5485435764083510385">Idioma de subtítulos preferido</translation>
@@ -5469,7 +5476,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5571832155627049070">Personaliza tu perfil</translation>
 <translation id="5572166921642484567">Elige un modo de esquema de colores</translation>
 <translation id="5572252023412311448">Mostrar los detalles del sitio <ph name="SITE_GROUP" /></translation>
-<translation id="5572648434713976849">Recibirás sugerencias mejoradas en la barra de direcciones</translation>
 <translation id="557506220935336383">Ver permisos de extensiones para otros sitios</translation>
 <translation id="5575473780076478375">Extensión de incógnito: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">No se ha podido solicitar el registro de la demostración.</translation>
@@ -5588,6 +5594,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="567740581294087470">¿Qué tipo de comentarios vas a proporcionar?</translation>
 <translation id="5677503058916217575">Idioma de la página:</translation>
 <translation id="5677928146339483299">Bloqueado</translation>
+<translation id="5677946354068040947">más opciones</translation>
 <translation id="5678550637669481956">Se ha concedido acceso de lectura y escritura a <ph name="VOLUME_NAME" />.</translation>
 <translation id="5678821117681811450">Enviando a <ph name="WEB_DRIVE" /></translation>
 <translation id="5678955352098267522">Leer tus datos en <ph name="WEBSITE_1" /></translation>
@@ -6107,6 +6114,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6113434369102685411">Establece el buscador predeterminado para el navegador Chrome y el menú de aplicaciones de <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Si quieres usar Smart Lock, cambia al perfil del usuario principal en tu teléfono.</translation>
 <translation id="6116921718742659598">Cambiar configuración de idioma y de introducción de texto</translation>
+<translation id="6119008366402292080">No hay impresoras disponibles</translation>
 <translation id="6119927814891883061">Elegir <ph name="DEVICE_NAME" /> como nombre del dispositivo</translation>
 <translation id="6119972796024789243">Corrección de color</translation>
 <translation id="6120707837086723438">Estás viendo sugerencias de recetas basadas en tu reciente actividad de búsqueda de recetas.
@@ -6117,6 +6125,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6122081475643980456">Tu conexión a Internet está siendo controlada</translation>
 <translation id="6122093587541546701">Correo electrónico (opcional):</translation>
 <translation id="6122095009389448667">Seguir impidiendo que este sitio web vea el portapapeles</translation>
+<translation id="6122513630797178831">Guardar CVC</translation>
 <translation id="6122600716821516697">¿Compartir con este dispositivo?</translation>
 <translation id="6122831415929794347">¿Desactivar Navegación segura?</translation>
 <translation id="6124650939968185064">Las siguientes extensiones dependen de esta extensión:</translation>
@@ -6711,7 +6720,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6644846457769259194">Actualizando el dispositivo (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Desactivar Emparejamiento rápido</translation>
 <translation id="6647228709620733774">URL de revocación de la entidad emisora de certificados de Netscape</translation>
-<translation id="6647441008198474441">Las URLs que visitas se envian a Google para predecir qué sitios podrías visitar después</translation>
 <translation id="6647690760956378579">Muestra de voz natural</translation>
 <translation id="6648911618876616409">Hay una actualización importante que puedes instalar. Inicia sesión para empezar.</translation>
 <translation id="6649018507441623493">Un segundo...</translation>
@@ -7180,6 +7188,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7019546817926942979">Tu dispositivo debe estar enchufado. Actualizar Linux puede consumir gran parte de la batería. Conecta el dispositivo a un cargador y vuelve a intentarlo.</translation>
 <translation id="7019805045859631636">Rápida</translation>
 <translation id="7022562585984256452">Se ha establecido tu página de inicio.</translation>
+<translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">Te presentamos una nueva forma de navegar con gestos</translation>
 <translation id="7025190659207909717">Administración de servicio de datos para móviles</translation>
 <translation id="7025895441903756761">Seguridad y privacidad</translation>
@@ -8957,6 +8966,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8514746246728959655">Prueba con una llave de seguridad diferente</translation>
 <translation id="8514955299594277296">No permitir que los sitios guarden datos en tu dispositivo (no recomendado)</translation>
 <translation id="8517759303731677493">Editar…</translation>
+<translation id="8518942514525208851">Ocultar palabras malsonantes</translation>
 <translation id="8519895319663397036">No se pueden importar las contraseñas. El tamaño del archivo debe ser inferior a 150 kB.</translation>
 <translation id="851991974800416566">Usa una contraseña segura rápidamente</translation>
 <translation id="8523493869875972733">Mantener cambios</translation>

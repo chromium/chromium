@@ -301,6 +301,7 @@
 <translation id="6439114592976064011">Сайттарга виртуалдык чындык түзмөктөрүңүздү жана маалыматты колдонууга тыюу салуу</translation>
 <translation id="6447842834002726250">Кукилер</translation>
 <translation id="6467852467360539617">Маалыматты тазалоо жана уруксаттарды баштапкы абалга келтирүү</translation>
+<translation id="6500423977866688905">Терезе тар болсо, мобилдик версияны сураңыз</translation>
 <translation id="6527303717912515753">Бөлүшүү</translation>
 <translation id="6545864417968258051">Bluetooth түзмөктөрүн издөө</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана дагы <ph name="NUM_MORE" /> бөгөттөлдү}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана дагы <ph name="NUM_MORE" /> бөгөттөлдү}}</translation>

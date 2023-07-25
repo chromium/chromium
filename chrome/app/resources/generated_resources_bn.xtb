@@ -1573,6 +1573,7 @@
     Cast-এর ব্যাপারে কোনও সমস্যার সমাধান করতে
     <ph name="BEGIN_LINK" />
     সহায়তা কেন্দ্র<ph name="END_LINK" /> দেখুন।</translation>
+<translation id="22649924370461580">সেভ করা ট্যাব গ্রুপ</translation>
 <translation id="2266957463645820432">USB এর মাধ্যমে IPP (IPPUSB)</translation>
 <translation id="2268130516524549846">ব্লুটুথ অক্ষমিত</translation>
 <translation id="2268182915828370037">ফাইল সিঙ্ক করার প্রসেস বন্ধ করবেন?</translation>
@@ -1800,6 +1801,7 @@
 <translation id="2435248616906486374">নেটওয়ার্ক সংযোগ বিচ্ছিন্ন হয়েছে</translation>
 <translation id="2435457462613246316">পাসওয়ার্ড দেখান</translation>
 <translation id="2436385001956947090">&amp;লিঙ্ক কপি করুন</translation>
+<translation id="2438853563451647815">প্রিন্টারের সাথে কানেক্ট করা নেই</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> লোড করা হচ্ছে</translation>
 <translation id="2440604414813129000">উ&amp;ত্স দেখুন</translation>
 <translation id="2440823041667407902">লোকেশন অ্যাক্সেস</translation>
@@ -4252,6 +4254,7 @@
 <translation id="4508150454272293946">এই ক্যামেরার সাথে কানেক্ট থাকা ক্যামেরা ব্যবহার করার জন্য অ্যাপ ও ওয়েবপেজকে অনুমতি দিন। আপনার এখনও নিজের ক্যামেরা সম্পর্কে সমস্যা থাকলে, অ্যাপটি রিস্টার্ট বা ওয়েবপেজটি রিফ্রেশ করে দেখুন।</translation>
 <translation id="450867954911715010">অ্যাক্সেসযোগ্যতার সেটিংস</translation>
 <translation id="4508765956121923607">উ&amp;ৎস দেখুন</translation>
+<translation id="4509277363725254222">আপনি নিজের <ph name="BEGIN_BOLD_USERNAME" />ইউজারনেম<ph name="END_BOLD_USERNAME" /> ও <ph name="BEGIN_BOLD_PASSWORD" />পাসওয়ার্ড<ph name="END_BOLD_PASSWORD" /> শেয়ার করলে, আপনার পরিবারের সদস্যরা, সেগুলি Google Password Manager ব্যবহার করে পূরণ করতে পারবেন</translation>
 <translation id="4509421746503122514">আপডেট করার জন্য আবার লঞ্চ করুন</translation>
 <translation id="4510195992002502722">মতামত পাঠানো যায়নি। আবার চেষ্টা করা হচ্ছে…</translation>
 <translation id="4510479820467554003">অভিভাবকীয় অ্যাকাউন্টের তালিকা</translation>
@@ -4391,6 +4394,7 @@
 <translation id="4623167406982293031">অ্যাকাউন্ট যাচাই করুন</translation>
 <translation id="4623189117674524348">সিস্টেমটি এই ডিভাইসের জন্য এপিআই অ্যাক্সেস অনুমোদন করতে পারেনি।</translation>
 <translation id="4623341761454569602">Google Password Manager-এ <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">রঙীন থিম</translation>
 <translation id="4625078469366263107">অ্যাপ্লিকেশান সক্ষম করুন</translation>
 <translation id="4625905218692741757">ডিফল্ট কালার ধূসর</translation>
 <translation id="4627427111733173920">কুকিজ ব্লক করা হয়েছে</translation>
@@ -4470,6 +4474,7 @@
 <translation id="4683629100208651599">ছোট হাতের অক্ষরে লিখুন</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (ডিফল্ট)</translation>
 <translation id="4684427112815847243">সবকিছু সিঙ্ক করুন</translation>
+<translation id="4687238339694011189">আপনার প্রিন্টার চালু করা আছে কিনা তা নিশ্চিত করুন ও Chromebook-এর সাথে কানেক্ট করা একই নেটওয়ার্কে কানেক্ট করা আছে কিনা তা ভালভাবে দেখে নিন। অথবা ইউএসবি কেবেল ব্যবহার করে কানেক্ট করুন</translation>
 <translation id="4687613760714619596">অজানা ডিভাইস (<ph name="DEVICE_ID" />)</translation>
 <translation id="4687718960473379118">সাইট-প্রস্তাবিত বিজ্ঞাপন</translation>
 <translation id="4688036121858134881">স্থানীয় লগ আইডি: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />।</translation>
@@ -4822,6 +4827,7 @@
 <translation id="4994426888044765950">কোনও 'কী' প্রেস করে ধরে রাখলে, 'কী'-এর অক্ষর রিপিট হবে</translation>
 <translation id="4994754230098574403">সেট-আপ করা হচ্ছে</translation>
 <translation id="4995293419989417004">বিজ্ঞাপনের বিষয় সম্পর্কে আরও জানুন</translation>
+<translation id="4995676741161760215">চালু, এক্সটেনশন চালু আছে</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{কোনও <ph name="VM_TYPE" /> VM খুঁজে পাওয়া যায়নি}=1{1 <ph name="VM_TYPE" /> VM খুঁজে পাওয়া গেছে: <ph name="VM_NAME_LIST" />}one{{NUM_VMS} <ph name="VM_TYPE" /> VM খুঁজে পাওয়া গেছে: <ph name="VM_NAME_LIST" />}other{{NUM_VMS} <ph name="VM_TYPE" /> VM খুঁজে পাওয়া গেছে: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">কোনও ইন্টারনেট সংযোগ নেই।</translation>
 <translation id="4998430619171209993">চালু করা আছে</translation>
@@ -5374,6 +5380,7 @@
 <translation id="5474859849784484111"><ph name="MANAGER" />-এর প্রয়োজন অনুযায়ী, আপনাকে এখনই ওয়াই-ফাই নেটওয়ার্কে কানেক্ট করতে হবে এবং একটি আপডেট ডাউনলোড করতে হবে। অথবা, মিটার্ড ইন্টারনেট কানেকশন ব্যবহার করেও ডাউনলোড করতে পারবেন (এর জন্য চার্জ দিতে হতে পারে)।</translation>
 <translation id="5481273127572794904">একাধিক ফাইল অটোমেটিক ডাউনলোড করার অনুমতি দেওয়া হয়নি</translation>
 <translation id="5481941284378890518">আশেপাশের প্রিন্টারগুলি যোগ করুন</translation>
+<translation id="5484462543003267273">ফ্যামিলি গ্রুপ ম্যানেজ করুন</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> আপনাকে ডেটার ব্যাকআপ নিয়ে এই <ph name="DEVICE_TYPE" /> আজই ফেরত দিতে বলছে। <ph name="LINK_BEGIN" />বিবরণ দেখুন<ph name="LINK_END" />}one{<ph name="MANAGER" /> আপনাকে {NUM_DAYS} দিনের মধ্যে ডেটার ব্যাকআপ নিতে ও এই <ph name="DEVICE_TYPE" /> ফেরত দিতে বলছে। <ph name="LINK_BEGIN" />বিস্তারিত দেখুন<ph name="LINK_END" />}other{<ph name="MANAGER" /> আপনাকে {NUM_DAYS} দিনের মধ্যে ডেটার ব্যাকআপ নিতে ও এই <ph name="DEVICE_TYPE" /> ফেরত দিতে বলছে। <ph name="LINK_BEGIN" />বিস্তারিত দেখুন<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">অ্যাপ্লিকেশান যোগ করুন</translation>
 <translation id="5485435764083510385">ক্যাপশনের জন্য পছন্দের ভাষা</translation>
@@ -5487,7 +5494,6 @@
 <translation id="5571832155627049070">আপনার প্রোফাইল কাস্টমাইজ করুন</translation>
 <translation id="5572166921642484567">রঙের স্কিম মোড বেছে নিন</translation>
 <translation id="5572252023412311448"><ph name="SITE_GROUP" />-এর জন্য সাইটের বিবরণ দেখান</translation>
-<translation id="5572648434713976849">অ্যাড্রেস বারে উন্নত সাজেশন পাবেন</translation>
 <translation id="557506220935336383">অন্যান্য সাইটের জন্য এক্সটেনশনের সাইট ব্যবহারের অনুমতি দেখুন</translation>
 <translation id="5575473780076478375">ছদ্মবেশী এক্সটেনশন: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">ডেমো রেজিস্টার করার অনুরোধ নিয়ে একটি সমস্যা হয়েছে।</translation>
@@ -5607,6 +5613,7 @@
 <translation id="567740581294087470">আপনি কী ধরনের মতামত জানাচ্ছেন?</translation>
 <translation id="5677503058916217575">পৃষ্ঠার ভাষা:</translation>
 <translation id="5677928146339483299">অবরুদ্ধ</translation>
+<translation id="5677946354068040947">আরও বিকল্প</translation>
 <translation id="5678550637669481956"><ph name="VOLUME_NAME" />-এর পড়া এবং লেখার অ্যাক্সেস মঞ্জুর করা হয়েছে৷</translation>
 <translation id="5678821117681811450"><ph name="WEB_DRIVE" />-এ পাঠানো হচ্ছে</translation>
 <translation id="5678955352098267522"><ph name="WEBSITE_1" />এ আপনার ডেটা পড়ে</translation>
@@ -6126,6 +6133,7 @@
 <translation id="6113434369102685411">Chrome ব্রাউজার এবং <ph name="DEVICE_TYPE" /> লঞ্চারের জন্য আপনার ডিফল্ট সার্চ ইঞ্জিন সেট করুন</translation>
 <translation id="6113942107547980621">Smart Lock ব্যবহার করতে, আপনার ফোনের প্রাথমিক ব্যবহারকারীর প্রোফাইলে পাল্টান</translation>
 <translation id="6116921718742659598">ভাষা এবং ইনপুট সেটিংস পরিবর্তন করুন</translation>
+<translation id="6119008366402292080">কোনও প্রিন্টার উপলভ্য নেই</translation>
 <translation id="6119927814891883061">ডিভাইসের নাম <ph name="DEVICE_NAME" /> দিন</translation>
 <translation id="6119972796024789243">রঙ সংশোধন করা</translation>
 <translation id="6120707837086723438">আপনি রেসিপিগুলির জন্য আপনার সাম্প্রতিক সার্চ অ্যাক্টিভিটির উপর ভিত্তি করে সাজেস্ট করা রেসিপিগুলি দেখছেন।
@@ -6137,6 +6145,7 @@
 <translation id="6122081475643980456">আপনার ইন্টারনেট সংযোগ নিয়ন্ত্রিত হচ্ছে</translation>
 <translation id="6122093587541546701">ইমেল (ঐচ্ছিক):</translation>
 <translation id="6122095009389448667">ক্লিপবোর্ড দেখা থেকে সাইটটিকে ব্লক করে রাখুন</translation>
+<translation id="6122513630797178831">CVC সেভ করুন</translation>
 <translation id="6122600716821516697">এই ডিভাইসের সাথে শেয়ার করতে চান?</translation>
 <translation id="6122831415929794347">Safe Browsing বন্ধ করতে চান?</translation>
 <translation id="6124650939968185064">নিম্নলিখিত এক্সটেনশনগুলি এই এক্সটেনশনটির উপর নির্ভর করে:</translation>
@@ -6733,7 +6742,6 @@
 <translation id="6644846457769259194">আপনার ডিভাইস আপডেট করা হচ্ছে (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">'দ্রুত পেয়ার' ফিচার বন্ধ করুন</translation>
 <translation id="6647228709620733774">Netscape শংসাপত্র কর্তৃপক্ষ নাকচের URL</translation>
-<translation id="6647441008198474441">আপনি পরে কোন কোন সাইট ভিজিট করতে পারেন তা অনুমান করার জন্য আপনি যেসব URL দেখেন তা Google-এ পাঠানো হয়</translation>
 <translation id="6647690760956378579">স্বাভাবিক ভয়েস প্রিভিউ</translation>
 <translation id="6648911618876616409">একটি গুরুত্বপূর্ণ আপডেট ইনস্টল করার জন্য তৈরি। শুরু করতে সাইন-ইন করুন।</translation>
 <translation id="6649018507441623493">একটু অপেক্ষা করুন…</translation>
@@ -7202,6 +7210,7 @@
 <translation id="7019546817926942979">আপনার ডিভাইস প্লাগ-ইন করতে হবে। Linux আপগ্রেড করলে ব্যাটারির চার্জ খুব তাড়াতাড়ি শেষ হয়ে যেতে পারে। আপনার ডিভাইস চার্জারের সাথে কানেক্ট করে আবার চেষ্টা করুন।</translation>
 <translation id="7019805045859631636">দ্রুত</translation>
 <translation id="7022562585984256452">আপনার হোম পৃষ্ঠা সেট করা হয়েছে৷</translation>
+<translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">জেসচার সহ নেভিগেট করতে নতুন পদ্ধতি শুরু করা হচ্ছে</translation>
 <translation id="7025190659207909717">মোবাইল ডেটা পরিষেবা পরিচালন</translation>
 <translation id="7025895441903756761">নিরাপত্তা ও গোপনীয়তা</translation>
@@ -8978,6 +8987,7 @@
 <translation id="8514746246728959655">অন্য একটি নিরাপত্তা কী ব্যবহার করে দেখুন</translation>
 <translation id="8514955299594277296">সাইটগুলিকে আপনার ডিভাইসে ডেটা সেভ করার অনুমতি দেবেন না (প্রস্তাবিত নয়)</translation>
 <translation id="8517759303731677493">এডিট করুন…</translation>
+<translation id="8518942514525208851">অশ্লীল শব্দ লুকান</translation>
 <translation id="8519895319663397036">পাসওয়ার্ড ইমপোর্ট করা যাচ্ছে না। ফাইলের সাইজ ১৫০ কেবি থেকে কম হতে হবে।</translation>
 <translation id="851991974800416566">চটপট একটি শক্তিশালী পাসওয়ার্ড ব্যবহার করুন</translation>
 <translation id="8523493869875972733">পরিবর্তনগুলি সেভ করুন</translation>

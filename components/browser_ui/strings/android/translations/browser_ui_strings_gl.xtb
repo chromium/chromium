@@ -301,6 +301,7 @@
 <translation id="6439114592976064011">Impide que os sitios utilicen os teus datos e dispositivos de realidade virtual</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6467852467360539617">Borrar datos e restablecer permisos</translation>
+<translation id="6500423977866688905">Solicitar vista para dispositivos móbiles cando a ventá sexa estreita</translation>
 <translation id="6527303717912515753">Compartir</translation>
 <translation id="6545864417968258051">Busca de dispositivos Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> máis (bloqueados)}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> máis (bloqueados)}}</translation>

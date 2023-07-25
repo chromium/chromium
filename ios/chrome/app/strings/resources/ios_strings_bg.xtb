@@ -388,6 +388,7 @@
 <translation id="3311748811247479259">Изключено</translation>
 <translation id="3324193307694657476">Адрес 2</translation>
 <translation id="3328801116991980348">Информация за сайта</translation>
+<translation id="3340938510625667914">Действия от Chrome</translation>
 <translation id="3344485292736684439">{count,plural, =1{Отметката бе запазена в(ъв) „{title}“ в профила ви {email}}other{Отметките бяха запазени в(ъв) „{title}“ в профила ви {email}}}</translation>
 <translation id="3371831930909698441">Налице е превод. Опциите са достъпни в долната част на екрана.</translation>
 <translation id="3377063233124932127">Запазените ви отметки, пароли и др. вече се показват най-горе.</translation>
@@ -803,6 +804,7 @@
 <translation id="6011308810877101166">Подобряване на предложенията за търсене</translation>
 <translation id="6012140227487808125">Шифрова се…</translation>
 <translation id="6021332621416007159">Отваряне във...</translation>
+<translation id="6027619584715411062">Влезте в профила си, за да имате достъп до своите отметки, пароли и др. на всичките си устройства.</translation>
 <translation id="6027945736510816438">Може би имахте предвид <ph name="WEBSITE" />?</translation>
 <translation id="6036215966221662377">Изчистване на данните за сърфирането</translation>
 <translation id="6036514205982097558">Един браузър за всичките ви раздели</translation>
@@ -935,6 +937,7 @@
 <translation id="6628106477656132239">Невалидна дата на валидност</translation>
 <translation id="6634432609054530164">Организацията ви е изключила режима „инкогнито“</translation>
 <translation id="6638511529934826365">Промяна на мащаба на текста…</translation>
+<translation id="6640268266988685324">Отворен раздел</translation>
 <translation id="6642362222295953972">Превключване към съществуващия раздел</translation>
 <translation id="6643016212128521049">Изчистване</translation>
 <translation id="6645899968535965230">QR код: <ph name="PAGE_TITLE" /></translation>

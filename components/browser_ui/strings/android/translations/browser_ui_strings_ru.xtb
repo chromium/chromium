@@ -301,6 +301,7 @@
 <translation id="6439114592976064011">Запретить сайтам использовать устройство и данные виртуальной реальности</translation>
 <translation id="6447842834002726250">Файлы сookie</translation>
 <translation id="6467852467360539617">Удалить данные и сбросить разрешения</translation>
+<translation id="6500423977866688905">Запросите мобильную версию, если окно вытянутое</translation>
 <translation id="6527303717912515753">Поделиться</translation>
 <translation id="6545864417968258051">Поиск Bluetooth-устройств</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Заблокировано: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}one{Заблокировано: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}few{Заблокировано: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}many{Заблокировано: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}other{Заблокировано: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}}</translation>

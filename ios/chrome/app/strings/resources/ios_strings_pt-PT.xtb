@@ -388,6 +388,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3311748811247479259">Desativado</translation>
 <translation id="3324193307694657476">Morada 2</translation>
 <translation id="3328801116991980348">Informações do site</translation>
+<translation id="3340938510625667914">Ações do Chrome</translation>
 <translation id="3344485292736684439">{count,plural, =1{Marcador guardado em "{title}" na sua conta, {email}}other{Marcadores guardados em "{title}" na sua conta, {email}}}</translation>
 <translation id="3371831930909698441">A tradução está disponível. Opções disponíveis junto à parte inferior do ecrã.</translation>
 <translation id="3377063233124932127">Agora, os seus marcadores, palavras-passe e outros itens guardados estão na parte superior.</translation>
@@ -936,6 +937,7 @@ Experimente utilizar uma palavra-passe exclusiva para cada site.</translation>
 <translation id="6628106477656132239">Data de validade inválida</translation>
 <translation id="6634432609054530164">A sua entidade desativou o Modo de navegação anónima.</translation>
 <translation id="6638511529934826365">Aplicar zoom no texto…</translation>
+<translation id="6640268266988685324">Separador aberto</translation>
 <translation id="6642362222295953972">Mudar para um separador existente</translation>
 <translation id="6643016212128521049">Limpar</translation>
 <translation id="6645899968535965230">Código QR: <ph name="PAGE_TITLE" /></translation>

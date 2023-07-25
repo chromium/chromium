@@ -4256,6 +4256,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4508150454272293946">Leiskite programoms ir tinklalapiams naudoti prie šio įrenginio prijungtą (-us) fotoaparatą (-us). Jei vis tiek kyla problemų dėl fotoaparato, pabandykite paleisti programą iš naujo arba atnaujinti tinklalapį.</translation>
 <translation id="450867954911715010">Pasiekiamumo nustatymai</translation>
 <translation id="4508765956121923607">Žiūrėti ša&amp;ltinį</translation>
+<translation id="4509277363725254222">Kai bendrinate <ph name="BEGIN_BOLD_USERNAME" />naudotojo vardo<ph name="END_BOLD_USERNAME" /> ir <ph name="BEGIN_BOLD_PASSWORD" />slaptažodžio<ph name="END_BOLD_PASSWORD" /> kopiją, šeimos grupės narys gali juos užpildyti naudodamas „Google“ slaptažodžių tvarkyklę</translation>
 <translation id="4509421746503122514">Paleisti iš naujo, kad būtų atnaujinta</translation>
 <translation id="4510195992002502722">Siunčiant atsiliepimą įvyko klaida. Bandoma dar kartą...</translation>
 <translation id="4510479820467554003">Vieno iš tėvų paskyrų sąrašas</translation>
@@ -4395,6 +4396,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4623167406982293031">Patvirtinti paskyrą</translation>
 <translation id="4623189117674524348">Sistemai nepavyko suteikti šio įrenginio prieigos prie API.</translation>
 <translation id="4623341761454569602">„Google“ slaptažodžių tvarkyklė <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">Spalvos tema</translation>
 <translation id="4625078469366263107">Įgalinti programą</translation>
 <translation id="4625905218692741757">Pilka numatytoji spalva</translation>
 <translation id="4627427111733173920">Slapukai užblokuoti</translation>
@@ -4826,6 +4828,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4994426888044765950">Jei palaikysite nuspaudę klavišą, bus kartojamas klavišo simbolis</translation>
 <translation id="4994754230098574403">Nustatoma</translation>
 <translation id="4995293419989417004">Sužinokite daugiau apie skelbimų temas</translation>
+<translation id="4995676741161760215">Įjungta, plėtinys įgalintas</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Nerasta jokių „<ph name="VM_TYPE" />“ virtualių įrenginių}=1{Rastas 1 „<ph name="VM_TYPE" />“ virtualus įrenginys: <ph name="VM_NAME_LIST" />}one{Rastas {NUM_VMS} „<ph name="VM_TYPE" />“ virtualus įrenginys: <ph name="VM_NAME_LIST" />}few{Rastas {NUM_VMS} „<ph name="VM_TYPE" />“ virtualūs įrenginiai: <ph name="VM_NAME_LIST" />}many{Rastas {NUM_VMS} „<ph name="VM_TYPE" />“ virtualaus įrenginio: <ph name="VM_NAME_LIST" />}other{Rastas {NUM_VMS} „<ph name="VM_TYPE" />“ virtualių įrenginių: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Nėra interneto ryšio.</translation>
 <translation id="4998430619171209993">Įjungta</translation>
@@ -5378,6 +5381,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5474859849784484111">Domenui <ph name="MANAGER" /> reikia, kad dabar prisijungtumėte prie „Wi-Fi“ ir atsisiųstumėte naujinį. Arba atsisiųskite naudodami matuojamą ryšį (gali būti taikomi mokesčiai).</translation>
 <translation id="5481273127572794904">Neleidžiama automatiškai atsisiųsti kelių failų</translation>
 <translation id="5481941284378890518">Pridėti netoliese esančius spausdintuvus</translation>
+<translation id="5484462543003267273">Tvarkyti šeimos grupės informaciją</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> reikalauja sukurti atsarginę duomenų kopiją ir grąžinti šį „<ph name="DEVICE_TYPE" />“ įrenginį šiandien. <ph name="LINK_BEGIN" />Žr. išsamią informaciją<ph name="LINK_END" />}one{<ph name="MANAGER" /> reikalauja sukurti atsarginę duomenų kopiją ir grąžinti šį „<ph name="DEVICE_TYPE" />“ įrenginį per {NUM_DAYS} dieną. <ph name="LINK_BEGIN" />Žr. išsamią informaciją<ph name="LINK_END" />}few{<ph name="MANAGER" /> reikalauja sukurti atsarginę duomenų kopiją ir grąžinti šį „<ph name="DEVICE_TYPE" />“ įrenginį per {NUM_DAYS} dienas. <ph name="LINK_BEGIN" />Žr. išsamią informaciją<ph name="LINK_END" />}many{<ph name="MANAGER" /> reikalauja sukurti atsarginę duomenų kopiją ir grąžinti šį „<ph name="DEVICE_TYPE" />“ įrenginį per {NUM_DAYS} dienos. <ph name="LINK_BEGIN" />Žr. išsamią informaciją<ph name="LINK_END" />}other{<ph name="MANAGER" /> reikalauja sukurti atsarginę duomenų kopiją ir grąžinti šį „<ph name="DEVICE_TYPE" />“ įrenginį per {NUM_DAYS} dienų. <ph name="LINK_BEGIN" />Žr. išsamią informaciją<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Pridėti programą</translation>
 <translation id="5485435764083510385">Pageidaujama subtitrų kalba</translation>
@@ -5491,7 +5495,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5571832155627049070">Tinkinkite savo profilį</translation>
 <translation id="5572166921642484567">Spalvų schemos režimo pasirinkimas</translation>
 <translation id="5572252023412311448">Rodyti išsamią <ph name="SITE_GROUP" /> svetainės informaciją</translation>
-<translation id="5572648434713976849">Gausite patobulintų pasiūlymų adreso juostoje</translation>
 <translation id="557506220935336383">Peržiūrėti kitų svetainių plėtinių leidimus</translation>
 <translation id="5575473780076478375">Inkognito plėtinys: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Iškilo su demonstracinio režimo registracijos užklausa susijusi problema.</translation>
@@ -5611,6 +5614,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="567740581294087470">Kokio tipo atsiliepimą teikiate?</translation>
 <translation id="5677503058916217575">Puslapio kalba:</translation>
 <translation id="5677928146339483299">Užblokuoti</translation>
+<translation id="5677946354068040947">daugiau parinkčių</translation>
 <translation id="5678550637669481956">„<ph name="VOLUME_NAME" />“ suteiktas leidimas skaityti ir rašyti.</translation>
 <translation id="5678821117681811450">Siunčiama į „<ph name="WEB_DRIVE" />“</translation>
 <translation id="5678955352098267522">Skaityti duomenis svetainėje <ph name="WEBSITE_1" /></translation>
@@ -6742,7 +6746,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6644846457769259194">Atnaujinamas įrenginys (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Išjungti spartųjį susiejimą</translation>
 <translation id="6647228709620733774">„Netscape“ sertifikavimo institucijos panaikinimo URL</translation>
-<translation id="6647441008198474441">URL, kuriais lankotės, siunčiami „Google“, kad numatytų, kokiose svetainėse galite vėliau apsilankyti</translation>
 <translation id="6647690760956378579">Natūralaus balso peržiūra</translation>
 <translation id="6648911618876616409">Svarbus naujinys paruoštas įdiegti. Prisijunkite ir pradėkite.</translation>
 <translation id="6649018507441623493">Šiek tiek palaukite...</translation>
@@ -7211,6 +7214,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7019546817926942979">Reikia įjungti įrenginį į lizdą. Naujovinant „Linux“ gali būti smarkiai eikvojama akumuliatoriaus energija. Prijunkite įrenginį prie kroviklio ir bandykite dar kartą.</translation>
 <translation id="7019805045859631636">Greitas</translation>
 <translation id="7022562585984256452">Pagrindinis puslapis nustatytas.</translation>
+<translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">Pristatome naują būdą naršyti gestais</translation>
 <translation id="7025190659207909717">Duomenų mobiliesiems paslaugos valdymas</translation>
 <translation id="7025895441903756761">Sauga ir privatumas</translation>
@@ -8988,6 +8992,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8514746246728959655">Pabandykite naudoti kitą saugos raktą</translation>
 <translation id="8514955299594277296">Neleisti svetainėms išsaugoti duomenų įrenginyje (nerekomenduojama)</translation>
 <translation id="8517759303731677493">Redaguoti…</translation>
+<translation id="8518942514525208851">Slėpti nešvankybes</translation>
 <translation id="8519895319663397036">Nepavyko importuoti slaptažodžių. Failas turi būti mažesnis nei 150 KB.</translation>
 <translation id="851991974800416566">Sparčiai naudokite sudėtingą slaptažodį</translation>
 <translation id="8523493869875972733">Palikti pakeitimus</translation>

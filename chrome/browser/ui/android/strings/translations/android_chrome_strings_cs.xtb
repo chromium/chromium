@@ -244,6 +244,7 @@ Když smažete historii prohlížení (celou nebo na určitém webu), smažou se
 <translation id="2394602618534698961">Zde se zobrazují stažené soubory</translation>
 <translation id="2410754283952462441">Vyberte účet</translation>
 <translation id="2414886740292270097">Tmavé</translation>
+<translation id="2421705177906985956">Momentálně nejsou k dispozici žádné weby k zobrazení</translation>
 <translation id="2426805022920575512">Vybrat jiný účet</translation>
 <translation id="2433507940547922241">Vzhled</translation>
 <translation id="2435457462613246316">Zobrazit heslo</translation>
@@ -507,6 +508,7 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="3771694256347217732">Smluvní podmínky společnosti Google</translation>
 <translation id="3773856050682458546">Základní data plus informace o navštívených webech a používaných aplikacích</translation>
 <translation id="3775705724665058594">Odeslat na vaše zařízení</translation>
+<translation id="3777796259512476958">Budete odhlášeni z většiny webů</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 karta}few{# karty}many{# karty}other{# karet}}</translation>
 <translation id="3795154175078851242">Kopírovat obrázek s odkazem</translation>
 <translation id="3810838688059735925">Video</translation>
@@ -844,6 +846,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5578795271662203820">Hledat obrázek pomocí <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Synchronizované položky můžete kdykoliv vybrat v <ph name="BEGIN_LINK1" />nastavení<ph name="END_LINK1" />.</translation>
 <translation id="5590372121997663538">Zapamatovat si tento počítač</translation>
+<translation id="5596627076506792578">Další možnosti</translation>
 <translation id="5599455543593328020">Anonymní režim</translation>
 <translation id="5620163320393916465">Nemáte žádná uložená hesla</translation>
 <translation id="5620928963363755975">Stažené soubory a stránky můžete najít pomocí tlačítka Další možnosti</translation>

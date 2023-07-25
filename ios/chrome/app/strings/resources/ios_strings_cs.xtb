@@ -388,6 +388,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="3311748811247479259">Vypnuto</translation>
 <translation id="3324193307694657476">Druhý řádek adresy</translation>
 <translation id="3328801116991980348">Informace o stránkách</translation>
+<translation id="3340938510625667914">Akce v Chromu</translation>
 <translation id="3344485292736684439">{count,plural, =1{Záložka byla uložena do složky „{title}“ ve vašem účtu {email}}few{Záložky byly uloženy do složky „{title}“ ve vašem účtu {email}}many{Záložky byly uloženy do složky „{title}“ ve vašem účtu {email}}other{Záložky byly uloženy do složky „{title}“ ve vašem účtu {email}}}</translation>
 <translation id="3371831930909698441">Je k dispozici Překladač. Možnosti jsou k dispozici ve spodní části obrazovky.</translation>
 <translation id="3377063233124932127">Uložené záložky, hesla a další položky teď najdete nahoře.</translation>
@@ -803,6 +804,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="6011308810877101166">Vylepšovat návrhy ve vyhledávání</translation>
 <translation id="6012140227487808125">Šifrování...</translation>
 <translation id="6021332621416007159">Otevřít v ...</translation>
+<translation id="6027619584715411062">Přihlaste se a používejte záložky, hesla a další obsah na všech svých zařízeních.</translation>
 <translation id="6027945736510816438">Měli jste na mysli <ph name="WEBSITE" />?</translation>
 <translation id="6036215966221662377">Vymazat údaje o prohlížení</translation>
 <translation id="6036514205982097558">Všechny vaše karty v jednom prohlížeči</translation>
@@ -935,6 +937,7 @@ Pro každý web se pokuste použít jedinečné heslo.</translation>
 <translation id="6628106477656132239">Neplatné datum konce platnosti</translation>
 <translation id="6634432609054530164">Vaše organizace vypnula anonymní režim</translation>
 <translation id="6638511529934826365">Přiblížit text…</translation>
+<translation id="6640268266988685324">Otevřená karta</translation>
 <translation id="6642362222295953972">Přepnout na existující kartu</translation>
 <translation id="6643016212128521049">Vymazat</translation>
 <translation id="6645899968535965230">QR kód: <ph name="PAGE_TITLE" /></translation>

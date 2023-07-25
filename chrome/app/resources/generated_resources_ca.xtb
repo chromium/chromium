@@ -4376,6 +4376,7 @@ Poden incloure informació sobre el navegador, l'SO, el dispositiu, el programar
 <translation id="4623167406982293031">Verifica el compte</translation>
 <translation id="4623189117674524348">El sistema no ha pogut autoritzar l'accés a l'API per a aquest dispositiu.</translation>
 <translation id="4623341761454569602">Al gestor de contrasenyes de Google <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">Tema de color</translation>
 <translation id="4625078469366263107">Activa l'aplicació</translation>
 <translation id="4625905218692741757">Color gris predeterminat</translation>
 <translation id="4627427111733173920">S'han bloquejat les galetes</translation>
@@ -5475,7 +5476,6 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5571832155627049070">Personalitza el perfil</translation>
 <translation id="5572166921642484567">Tria un mode de paleta de colors</translation>
 <translation id="5572252023412311448">Mostra els detalls del lloc web: <ph name="SITE_GROUP" /></translation>
-<translation id="5572648434713976849">Obtindràs suggeriments millorats a la barra d'adreces</translation>
 <translation id="557506220935336383">Consulta els permisos d'extensions per a altres llocs web</translation>
 <translation id="5575473780076478375">Extensió d'incògnit: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">S'ha produït un problema amb la sol·licitud per registrar la demostració.</translation>
@@ -5593,6 +5593,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="567740581294087470">Quin tipus de suggeriments vols proporcionar?</translation>
 <translation id="5677503058916217575">Idioma de la pàgina:</translation>
 <translation id="5677928146339483299">Bloquejat</translation>
+<translation id="5677946354068040947">més opcions</translation>
 <translation id="5678550637669481956">S'ha concedit accés de lectura i d'escriptura a <ph name="VOLUME_NAME" />.</translation>
 <translation id="5678821117681811450">S'està enviant a <ph name="WEB_DRIVE" /></translation>
 <translation id="5678955352098267522">Llegir les dades del lloc <ph name="WEBSITE_1" /></translation>
@@ -6717,7 +6718,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6644846457769259194">S'està actualitzant el dispositiu (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Desactiva Vinculació ràpida</translation>
 <translation id="6647228709620733774">URL de revocació de l'entitat emissora de certificats de Netscape</translation>
-<translation id="6647441008198474441">Els URL que visites s'envien a Google per preveure quins llocs web és possible que visitis a continuació</translation>
 <translation id="6647690760956378579">Escolta la veu natural</translation>
 <translation id="6648911618876616409">Hi ha una actualització molt important a punt per instal·lar-se. Inicia la sessió per començar.</translation>
 <translation id="6649018507441623493">Un moment…</translation>
@@ -7186,6 +7186,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7019546817926942979">El dispositiu s'ha d'endollar. L'actualització de Linux pot exhaurir considerablement la bateria. Connecta el dispositiu a un carregador i torna-ho a provar.</translation>
 <translation id="7019805045859631636">Ràpida</translation>
 <translation id="7022562585984256452">S'ha definit la pàgina d'inici.</translation>
+<translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">Presentem una nova manera de navegar amb gestos</translation>
 <translation id="7025190659207909717">Gestió de serveis de dades mòbils</translation>
 <translation id="7025895441903756761">Seguretat i privadesa</translation>

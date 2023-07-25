@@ -301,6 +301,7 @@
 <translation id="6439114592976064011">সাইটগুলিকে আপনার ভার্চুয়াল রিয়েলিটি ডিভাইস ও ডেটা ব্যবহার করতে দেবেন না</translation>
 <translation id="6447842834002726250">কুকিজ</translation>
 <translation id="6467852467360539617">ডেটা মুছুন এবং অনুমতি রিসেট করুন</translation>
+<translation id="6500423977866688905">উইন্ডো ছোট হলে, মোবাইল ভিউয়ের জন্য অনুরোধ করুন</translation>
 <translation id="6527303717912515753">শেয়ার করুন</translation>
 <translation id="6545864417968258051">ব্লুটুথ স্ক্যানিং</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আরও <ph name="NUM_MORE" />টি সুবিধা ব্লক করা হয়েছে}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আরও <ph name="NUM_MORE" />টি সুবিধা ব্লক করা হয়েছে}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আরও <ph name="NUM_MORE" />টি সুবিধা ব্লক করা হয়েছে}}</translation>

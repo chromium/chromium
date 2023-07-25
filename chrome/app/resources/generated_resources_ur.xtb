@@ -257,6 +257,7 @@
 <translation id="1197935538609051549">غیر فعال کریں</translation>
 <translation id="1198066799963193307">کم بصارت والے اسپیچ ٹولز</translation>
 <translation id="119944043368869598">سب کو صاف کریں</translation>
+<translation id="1199631150313925648">دستی طور پر درج کریں</translation>
 <translation id="1199814941632954229">ان سرٹیفکیٹ پروفائلز کے لیے سرٹیفکیٹس فراہم کیے جا رہے ہیں</translation>
 <translation id="120069043972472860">ناقابل دید</translation>
 <translation id="1201402288615127009">اگلا</translation>
@@ -1161,6 +1162,7 @@
 <translation id="1929186283613845153">یہ فائل اسکین ہو رہی ہے۔</translation>
 <translation id="1929343511231420085">کوئی بھی سیریل پورٹ</translation>
 <translation id="1929546189971853037">اپنے سبھی سائن ان کردہ آلات پر اپنی براؤزنگ کی سرگزشت پڑھیں</translation>
+<translation id="1929774028758671973">رابطے قریب ہونے پر آپ کے ساتھ اشتراک کر سکتے ہیں۔ آپ سے ان درخواستوں کو منظور کرنے کے لیے کہا جائے گا۔ آپ کو <ph name="USER_EMAIL" /> میں سائن ان ہونے والے آلات کے درمیان اشتراک کی منظوری دینے کی ضرورت نہیں ہوگی۔</translation>
 <translation id="1930879306590754738">‏پاس ورڈ کو اس آلے اور آپ کے Google اکاؤنٹ سے حذف کیا گیا</translation>
 <translation id="1931152874660185993">کوئی اجزاء انسٹال نہیں ہیں۔</translation>
 <translation id="1931410639376954712"><ph name="DEVICE_OS" /> انسٹال ہو رہا ہے</translation>
@@ -1428,6 +1430,7 @@
 <translation id="2151576029659734873">غلط ٹیب کا انڈیکس درج کیا گیا۔</translation>
 <translation id="2152281589789213846">اپنے پروفائل میں پرنٹرز شامل کریں</translation>
 <translation id="2154484045852737596">کارڈ میں ترمیم کریں</translation>
+<translation id="2155473371917268529">موجودہ مرئیت کی ترتیب آپ کے آلات ہیں</translation>
 <translation id="2155772377859296191">‏<ph name="WIDTH" /> x <ph name="HEIGHT" /> جیسا نظر آتا ہے</translation>
 <translation id="2156294658807918600">سروس ورکر: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156877321344104010">سیفٹی چیک دوبارہ چلائیں</translation>
@@ -1760,6 +1763,7 @@
 <translation id="2418307627282545839">چیزوں کو روشن اور ہوا دار رکھیں</translation>
 <translation id="2419131370336513030">انسٹال کردہ ایپس دیکھیں</translation>
 <translation id="2419706071571366386">سیکورٹی کے مد نظر جب آپ کا کمپیوٹر استعمال نہ ہو رہا ہو تو سائن آؤٹ کریں۔</translation>
+<translation id="2421705177906985956">ابھی دکھانے کے لیے کوئی سائٹ نہیں ہے</translation>
 <translation id="2422125132043002186">‏Linux کی بحالی منسوخ ہو گئی</translation>
 <translation id="2423578206845792524">تصویر مح&amp;فوظ کریں بطور…</translation>
 <translation id="2424424966051154874">{0,plural, =1{مہمان}other{مہمان (#)}}</translation>
@@ -2439,6 +2443,7 @@
 <translation id="2966705348606485669"><ph name="FOLDER_TITLE" /> بک مارک فولڈر کے لیے مزید اختیارات</translation>
 <translation id="2966937470348689686">‏Android کی ترجیحات کا نظم کریں</translation>
 <translation id="2967926928600500959">‏ان اصولوں سے مماثل URLs کو ایک مخصوص براؤزر میں زبردستی کھولا جائے گا۔</translation>
+<translation id="2970766364519518369">منتخب کردہ رابطے قریب ہونے پر آپ کے ساتھ اشتراک کر سکتے ہیں۔ آپ سے ان درخواستوں کو منظور کرنے کے لیے کہا جائے گا۔ آپ کو <ph name="USER_EMAIL" /> میں سائن ان ہونے والے آلات کے درمیان اشتراک کی منظوری دینے کی ضرورت نہیں ہوگی۔</translation>
 <translation id="2972581237482394796">&amp;واپس لائیں</translation>
 <translation id="2973324205039581528">سائٹ کی آواز بند کریں</translation>
 <translation id="2975761176769946178">‏ایک URL درکار ہے</translation>
@@ -4186,6 +4191,7 @@
 <translation id="4460014764210899310">گروپ ختم کریں</translation>
 <translation id="4461483878391246134">کبھی بھی ترجمہ کی پیشکش نہ کرنے کے لیے زبانیں شامل کریں</translation>
 <translation id="4462159676511157176">حسب  ضرورت نام سرورز</translation>
+<translation id="4463530025936541315">جاری رکھ کر، آپ فریقین ثالث کو نیٹ ورک پر اس آلے کی شناخت کرنے والی معلومات کی تصدیق کرنے کی اجازت دیتے ہیں</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> کیلئے <ph name="TIME" /> وقت کی حد سیٹ ہے</translation>
 <translation id="4466839823729730432">اپنی یادیں یہاں دیکھیں</translation>
 <translation id="4469324811108161144">نوٹس میں <ph name="CHARACTER_LIMIT" /> حروف تک محفوظ ہو سکتے ہیں۔</translation>
@@ -4379,6 +4385,7 @@
 <translation id="4623167406982293031">اکاؤنٹ کی توثیق کریں</translation>
 <translation id="4623189117674524348">‏سسٹم اس آلہ کیلئے API رسائی کی اجازت دینے میں ناکام ہوگیا۔</translation>
 <translation id="4623341761454569602">‏Google پاس ورڈ مینیجر میں <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">رنگ کی تھیم</translation>
 <translation id="4625078469366263107">ایپ فعال کریں</translation>
 <translation id="4625905218692741757">سرمئی ڈیفالٹ رنگ</translation>
 <translation id="4627427111733173920">کوکیز مسدود ہیں</translation>
@@ -5476,7 +5483,6 @@
 <translation id="5571832155627049070">اپنی پروفائل حسب ضرورت بنائیں</translation>
 <translation id="5572166921642484567">رنگ کی اسکیم منتخب کریں وضع</translation>
 <translation id="5572252023412311448"><ph name="SITE_GROUP" /> کے لیے سائٹ کی تفصیلات دکھائیں</translation>
-<translation id="5572648434713976849">آپ کو ایڈریس بار میں بہتر کردہ تجاویز حاصل ہوں گی</translation>
 <translation id="557506220935336383">دیگر سائٹس کے لیے ایکسٹینشن کی اجازتیں دیکھیں</translation>
 <translation id="5575473780076478375">پوشیدگی ایکسٹینشن: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">ڈیمو کی رجسٹریشن کی درخواست کے ساتھ ایک مسئلہ پیش آگیا۔</translation>
@@ -5595,6 +5601,7 @@
 <translation id="567740581294087470">آپ کس طرح کے تاثرات فراہم کر رہے ہیں؟</translation>
 <translation id="5677503058916217575">صفحہ کی زبان:</translation>
 <translation id="5677928146339483299">مسدود کردہ</translation>
+<translation id="5677946354068040947">مزید اختیارات</translation>
 <translation id="5678550637669481956"><ph name="VOLUME_NAME" /> کیلئے پڑھنے اور لکھنے کی رسائی دی گئی ہے۔</translation>
 <translation id="5678821117681811450"><ph name="WEB_DRIVE" /> پر بھیجا جا رہا ہے</translation>
 <translation id="5678955352098267522">اپنا ڈیٹا <ph name="WEBSITE_1" /> پر پڑھیں</translation>
@@ -6720,7 +6727,6 @@
 <translation id="6644846457769259194">آپ کے آلہ کو اپ ڈیٹ کیا جا رہا ہے (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">فاسٹ پئیر آف کریں</translation>
 <translation id="6647228709620733774">‏Netscape سرٹیفکیشن اتھارٹی کا منسوخی URL</translation>
-<translation id="6647441008198474441">‏آپ کے ملاحظہ کردہ URLs اس بات کی پیشنگوئی کرنے کے لیے Google کو بھیجے جاتے ہیں کہ آپ اگلی بار کون سی سائٹس ملاحظہ کر سکتے ہیں</translation>
 <translation id="6647690760956378579">قدرتی آواز کا پیش منظر</translation>
 <translation id="6648911618876616409">انسٹال کرنے کیلئے ایک اہم اپ ڈیٹ تیار ہے۔ شروع کرنے کیلئے سائن ان کریں۔</translation>
 <translation id="6649018507441623493">بس ایک سیکنڈ…</translation>
@@ -8111,6 +8117,7 @@
 <translation id="7797571222998226653">آف</translation>
 <translation id="7798504574384119986">ویب کی اجازتیں دیکھیں</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> خود کار طور پر مسدود کر دی گئی</translation>
+<translation id="7799650166313181433"><ph name="USER_EMAIL" /> میں سائن ان کردہ آلات ہی اس آلے کے ساتھ اشتراک کر سکتے ہیں۔ آپ کو اپنے آلات کے درمیان اشتراک کی منظوری کی ضرورت نہیں ہوگی۔</translation>
 <translation id="7800485561443537737">آپ کے <ph name="DEVICE_TYPE" /> آلے کا موبائل ڈیٹا استعمال کرتا ہے اور آپ کا کیریئر اضافی فیس وصول کر سکتا ہے۔ بیٹری کے استعمال کو بڑھا سکتا ہے۔ <ph name="BEGIN_LINK_LEARN_MORE" />مزید جانیں<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">گ&amp;ھڑی کی مخالف سمت میں گھمائیں</translation>
 <translation id="7801679634091975683">‏آپ یہاں جو تبدیلیاں کرتے ہیں وہ صرف Lacros Chrome براؤزر پر لاگو ہوتی ہیں۔ اپنے Chrome براؤزر کی ترتیبات میں تبدیلیاں کرنے کے لیے، Chrome براؤزر کھولیں اور ترتیبات پر جائیں۔</translation>
@@ -9534,6 +9541,7 @@
 <translation id="8999560016882908256">سیکشن کے سِنٹیکس کی خرابی: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">اپنے <ph name="DEVICE_TYPE" /> کے دائیں ہاتھ کی طرف موجود فنگر پرنٹ سینسر کو ٹچ کریں۔ آپ کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی آپ کے <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>
 <translation id="9003185744423389627">آلے کے مینیجمنٹ کے سرور سے کنکشن <ph name="FAILURE_TIME" /> پر '<ph name="STATUS_TEXT" />' اسٹیٹس کے ساتھ ناکام ہو گیا</translation>
+<translation id="90033698482696970">‏دستیاب eSIM پروفائلز کے لیے خودکار طور پر اسکین کریں؟</translation>
 <translation id="9003647077635673607">سبھی ویب سائٹس پر اجازت دیں</translation>
 <translation id="9003677638446136377">دوبارہ چیک کریں</translation>
 <translation id="9004754973617721124"><ph name="SITE_NAME" /> اور اس کے ماتحت سبھی سائٹس، اور انسٹال کردہ ایپ کے لیے سائٹ کا ڈیٹا اور اجازتیں صاف کریں؟</translation>

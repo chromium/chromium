@@ -388,6 +388,7 @@
 <translation id="3311748811247479259">Выключана</translation>
 <translation id="3324193307694657476">Радок адраса 2</translation>
 <translation id="3328801116991980348">Звесткі пра сайт</translation>
+<translation id="3340938510625667914">Дзеянні ў Chrome</translation>
 <translation id="3344485292736684439">{count,plural, =1{Закладка захавана ва ўліковым запісе ({email}) у папцы "{title}"}one{Закладкі захаваны ва ўліковым запісе ({email}) у папцы "{title}"}few{Закладкі захаваны ва ўліковым запісе ({email}) у папцы "{title}"}many{Закладкі захаваны ва ўліковым запісе ({email}) у папцы "{title}"}other{Закладкі захаваны ва ўліковым запісе ({email}) у папцы "{title}"}}</translation>
 <translation id="3371831930909698441">Пераклад гатовы. Параметры знаходзяцца ў ніжняй частцы экрана.</translation>
 <translation id="3377063233124932127">Цяпер вашы захаваныя закладкі, паролі і іншае змесціва будуць паказвацца ўверсе.</translation>
@@ -935,6 +936,7 @@
 <translation id="6628106477656132239">Несапраўдны тэрмін дзеяння</translation>
 <translation id="6634432609054530164">Ваша арганізацыя адключыла рэжым інкогніта</translation>
 <translation id="6638511529934826365">Змяніць памер тэксту…</translation>
+<translation id="6640268266988685324">Адкрытая ўкладка</translation>
 <translation id="6642362222295953972">Пераключыцца на існуючую ўкладку</translation>
 <translation id="6643016212128521049">Ачысціць</translation>
 <translation id="6645899968535965230">QR-код: <ph name="PAGE_TITLE" /></translation>

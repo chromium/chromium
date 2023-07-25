@@ -388,6 +388,7 @@
 <translation id="3311748811247479259">ปิด</translation>
 <translation id="3324193307694657476">ที่อยู่ 2</translation>
 <translation id="3328801116991980348">ข้อมูลไซต์</translation>
+<translation id="3340938510625667914">การดำเนินการใน Chrome</translation>
 <translation id="3344485292736684439">{count,plural, =1{บันทึกบุ๊กมาร์กไปยัง "{title}" ในบัญชีของคุณ {email} แล้ว}other{บันทึกบุ๊กมาร์กไปยัง "{title}" ในบัญชีของคุณ {email} แล้ว}}</translation>
 <translation id="3371831930909698441">มีบริการแปลภาษา ตัวเลือกจะอยู่ทางด้านล่างของหน้าจอ</translation>
 <translation id="3377063233124932127">ตอนนี้บุ๊กมาร์ก รหัสผ่าน และข้อมูลอื่นๆ ที่บันทึกไว้ย้ายไปอยู่ด้านบนแล้ว</translation>
@@ -935,6 +936,7 @@
 <translation id="6628106477656132239">วันที่หมดอายุไม่ถูกต้อง</translation>
 <translation id="6634432609054530164">องค์กรปิดโหมดไม่ระบุตัวตนไว้</translation>
 <translation id="6638511529934826365">ซูมข้อความ…</translation>
+<translation id="6640268266988685324">แท็บที่เปิดอยู่</translation>
 <translation id="6642362222295953972">เปลี่ยนไปใช้แท็บที่มีอยู่</translation>
 <translation id="6643016212128521049">ล้าง</translation>
 <translation id="6645899968535965230">คิวอาร์โค้ด: <ph name="PAGE_TITLE" /></translation>

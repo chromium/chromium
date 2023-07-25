@@ -37,6 +37,7 @@
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> flikar verkar höra ihop. Vill du gruppera dem?</translation>
 <translation id="4212246570487010370">Fortsätt surfa</translation>
 <translation id="4648718555153979859">Dina flikar samlas här</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{Du hittar flikar som du har stängt under Senaste flikarna i Chromes huvudmeny.}=1{Du hittar flikar som du har stängt under Senaste flikarna i Chromes huvudmeny. Inkognitofliken är inte tillgänglig.}other{Du hittar flikar som du har stängt under Senaste flikarna i Chromes huvudmeny. Dina # inkognitoflikar är inte tillgängliga.}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(Recension av <ph name="REVIEWS_COUNT_ONE" />)}other{(Recensioner av <ph name="REVIEWS_COUNT_MANY" />)}}</translation>
 <translation id="4850886885716139402">Visa</translation>
 <translation id="4870911314065352661">Vill du stänga alla flikar?</translation>

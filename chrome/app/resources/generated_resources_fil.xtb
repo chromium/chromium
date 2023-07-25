@@ -1174,6 +1174,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1929186283613845153">Sina-scan ang file na ito.</translation>
 <translation id="1929343511231420085">Anumang serial port</translation>
 <translation id="1929546189971853037">Basahin ang iyong history ng pag-browse sa lahat ng iyong naka-sign in na device</translation>
+<translation id="1929774028758671973">Makakapag-share sa iyo ang mga contact kapag malapit sila. Ipapaapruba sa iyo ang mga kahilingang ito. Hindi mo kakailanganing aprubahan ang pag-share sa pagitan ng mga device na naka-sign in sa <ph name="USER_EMAIL" />.</translation>
 <translation id="1930879306590754738">Na-delete ang password sa device na ito at sa iyong Google Account</translation>
 <translation id="1931152874660185993">Walang naka-install na mga bahagi.</translation>
 <translation id="1931410639376954712">Ini-install ang <ph name="DEVICE_OS" /></translation>
@@ -1440,6 +1441,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2151576029659734873">Di-wastong index ng tab ang ipinasok.</translation>
 <translation id="2152281589789213846">Magdagdag ng mga printer sa iyong profile</translation>
 <translation id="2154484045852737596">I-edit ang card</translation>
+<translation id="2155473371917268529">Ang kasalukuyang setting ng visibility ay iyong mga device</translation>
 <translation id="2155772377859296191">Mukhang <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156877321344104010">Magpatakbo ulit ng pag-check sa kaligtasan</translation>
@@ -1774,6 +1776,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2418307627282545839">Panatilihing maliwanag at maaliwalas ang mga bagay</translation>
 <translation id="2419131370336513030">Tingnan ang mga naka-install na app</translation>
 <translation id="2419706071571366386">Para sa seguridad, mag-sign out kapag hindi ginagamit ang iyong computer.</translation>
+<translation id="2421705177906985956">Walang site na maipapakita sa ngayon</translation>
 <translation id="2422125132043002186">Nakansela ang pag-restore ng Linux</translation>
 <translation id="2423578206845792524">I-sa&amp;ve ang larawan bilang...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Bisita}one{Bisita (#)}other{Bisita (#)}}</translation>
@@ -2453,6 +2456,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="2966705348606485669">Higit pang opsyon para sa folder ng bookmark na <ph name="FOLDER_TITLE" /></translation>
 <translation id="2966937470348689686">Pamahalaan ang mga kagustuhan sa Android</translation>
 <translation id="2967926928600500959">Mapipilitang magbukas sa partikular na browser ang mga URL na tumutugma sa mga panuntunang ito.</translation>
+<translation id="2970766364519518369">Makakapag-share sa iyo ang mga piniling contact kapag malapit sila. Ipapaapruba sa iyo ang mga kahilingang ito. Hindi mo kakailanganing aprubahan ang pag-share sa pagitan ng mga device na naka-sign in sa <ph name="USER_EMAIL" />.</translation>
 <translation id="2972581237482394796">&amp;I-redo</translation>
 <translation id="2973324205039581528">I-mute ang Site</translation>
 <translation id="2975761176769946178">Kinakailangan ng URL</translation>
@@ -4394,6 +4398,7 @@ Puwedeng kasama sa mga signal ng device ang impormasyon tungkol sa iyong browser
 <translation id="4623167406982293031">I-verify ang account</translation>
 <translation id="4623189117674524348">Hindi napahintulutan ng system ang pag-access sa API para sa device na ito.</translation>
 <translation id="4623341761454569602">Sa Google Password Manager <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">Tema ng kulay</translation>
 <translation id="4625078469366263107">I-enable ang App</translation>
 <translation id="4625905218692741757">Default na kulay na gray</translation>
 <translation id="4627427111733173920">Na-block ang cookies</translation>
@@ -5492,7 +5497,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5571832155627049070">I-customize ang iyong profile</translation>
 <translation id="5572166921642484567">Pumili ng color scheme mode</translation>
 <translation id="5572252023412311448">Ipakita ang mga detalye ng site para sa <ph name="SITE_GROUP" /></translation>
-<translation id="5572648434713976849">Makakakuha ka ng mas magagandang suhestyon sa address bar</translation>
 <translation id="557506220935336383">Tingnan ang mga pahintulot sa extension para sa iba pang site</translation>
 <translation id="5575473780076478375">Extension ng Incognito: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Nagkaproblema sa kahilingan sa pagpaparehistro ng demo.</translation>
@@ -5611,6 +5615,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="567740581294087470">Anong uri ng feedback ang ibinibigay mo?</translation>
 <translation id="5677503058916217575">Wika ng page:</translation>
 <translation id="5677928146339483299">Naka-block</translation>
+<translation id="5677946354068040947">higit pang opsyon</translation>
 <translation id="5678550637669481956">Ipinagkaloob na sa <ph name="VOLUME_NAME" /> ang access sa pagbasa at pagsulat.</translation>
 <translation id="5678821117681811450">Ipinapadala sa <ph name="WEB_DRIVE" /></translation>
 <translation id="5678955352098267522">Basahin ang iyong data sa <ph name="WEBSITE_1" /></translation>
@@ -6738,7 +6743,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6644846457769259194">Ina-update ang iyong device (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">I-off ang Mabilis na Pagpares</translation>
 <translation id="6647228709620733774">Netscape Certification Authority Revocation URL</translation>
-<translation id="6647441008198474441">Ipinapadala sa Google ang mga URL na binibisita mo para mahulaan kung anong mga site ang posibleng susunod mong bibisitahin</translation>
 <translation id="6647690760956378579">Preview ng natural na boses</translation>
 <translation id="6648911618876616409">Handa nang ma-install ang isang mahalagang update. Mag-sign in para makapagsimula.</translation>
 <translation id="6649018507441623493">Sandali lang...</translation>
@@ -7207,6 +7211,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7019546817926942979">Kailangang nakasaksak ang iyong device. Kapag ina-upgrade ang Linux, puwedeng mas mabilis na maubos ang iyong baterya. Ikonekta ang iyong device sa isang charger at subukan ulit.</translation>
 <translation id="7019805045859631636">Mabilis</translation>
 <translation id="7022562585984256452">Naitakda na ang iyong home page.</translation>
+<translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">Ipinapakilala ang isang bagong paraan para mag-navigate gamit ang mga galaw</translation>
 <translation id="7025190659207909717">Pamamahala sa serbisyo ng data ng mobile</translation>
 <translation id="7025895441903756761">Seguridad at Privacy</translation>
@@ -8129,6 +8134,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7797571222998226653">I-off</translation>
 <translation id="7798504574384119986">Tingnan ang Mga Pahintulot sa Web</translation>
 <translation id="7798844538707273832">Awtomatikong na-block ang <ph name="PERMISSION" /></translation>
+<translation id="7799650166313181433">Ang mga device lang na naka-sign in sa <ph name="USER_EMAIL" /> ang makakapag-share sa device na ito. Hindi mo kakailanganing aprubahan ang pag-share sa pagitan ng iyong mga device.</translation>
 <translation id="7800485561443537737">Ginagamit ang mobile data ng iyong <ph name="DEVICE_TYPE" /> at posibleng maningil ng mga karagdagang bayarin ang carrier mo. Posibleng madagdagan ang paggamit ng baterya. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">I-rotate P&amp;akaliwa</translation>
 <translation id="7801679634091975683">Malalapat lang sa Lacros na Chrome Browser ang mga pagbabagong gagawin mo rito. Para gumawa ng mga pagbabago sa mga setting ng iyong Chrome Browser, buksan ang Chrome Browser at pumunta sa mga setting.</translation>

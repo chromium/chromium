@@ -37,6 +37,7 @@
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> flipar virðast vera tengdir. Viltu setja þá í hóp?</translation>
 <translation id="4212246570487010370">Halda áfram að fletta</translation>
 <translation id="4648718555153979859">Fliparnir þínir eru flokkaðir saman hér</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{Þú finnur flipa sem þú hefur lokað í „Nýlegir flipar“ á aðalvalmynd Chrome.}=1{Þú finnur flipa sem þú hefur lokað í „Nýlegir flipar“ á aðalvalmynd Chrome. Huliðsflipinn verður ekki sýnilegur.}one{Þú finnur flipa sem þú hefur lokað í „Nýlegir flipar“ á aðalvalmynd Chrome. # huliðsflipi verður ekki sýnilegur.}other{Þú finnur flipa sem þú hefur lokað í „Nýlegir flipar“ á aðalvalmynd Chrome. # huliðsflipar verða ekki sýnilegir.}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> umsögn)}one{(<ph name="REVIEWS_COUNT_MANY" /> umsögn)}other{(<ph name="REVIEWS_COUNT_MANY" /> umsagnir)}}</translation>
 <translation id="4850886885716139402">Yfirlit</translation>
 <translation id="4870911314065352661">Loka öllum flipum?</translation>

@@ -386,6 +386,7 @@
 <translation id="3311748811247479259">已关闭</translation>
 <translation id="3324193307694657476">地址第2行</translation>
 <translation id="3328801116991980348">网站信息</translation>
+<translation id="3340938510625667914">Chrome 操作</translation>
 <translation id="3344485292736684439">{count,plural, =1{已将书签保存到帐号 {email} 中的“{title}”}other{已将书签保存到帐号 {email} 中的“{title}”}}</translation>
 <translation id="3371831930909698441">可以翻译。选项位于屏幕底部附近。</translation>
 <translation id="3377063233124932127">现在，您已保存的书签、密码等信息会显示在顶部。</translation>
@@ -930,6 +931,7 @@
 <translation id="6628106477656132239">失效日期无效</translation>
 <translation id="6634432609054530164">贵单位关闭了无痕模式</translation>
 <translation id="6638511529934826365">缩放文字…</translation>
+<translation id="6640268266988685324">已打开的标签页</translation>
 <translation id="6642362222295953972">切换到已打开的标签页</translation>
 <translation id="6643016212128521049">清除</translation>
 <translation id="6645899968535965230">二维码：<ph name="PAGE_TITLE" /></translation>

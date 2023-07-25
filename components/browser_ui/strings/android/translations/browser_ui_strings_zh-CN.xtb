@@ -301,6 +301,7 @@
 <translation id="6439114592976064011">禁止网站使用您的虚拟现实设备和数据</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6467852467360539617">清除数据并重置权限</translation>
+<translation id="6500423977866688905">当窗口狭窄时，请求使用移动版视图</translation>
 <translation id="6527303717912515753">分享</translation>
 <translation id="6545864417968258051">蓝牙扫描</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{已禁用“<ph name="PERMISSION_1" />”权限、“<ph name="PERMISSION_2" />”权限和另外 <ph name="NUM_MORE" /> 项权限}other{已禁用“<ph name="PERMISSION_1" />”权限、“<ph name="PERMISSION_2" />”权限和另外 <ph name="NUM_MORE" /> 项权限}}</translation>

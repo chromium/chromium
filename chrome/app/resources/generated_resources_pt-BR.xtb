@@ -260,6 +260,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1197935538609051549">Desativar</translation>
 <translation id="1198066799963193307">Ferramentas de fala para pessoas com baixa visão</translation>
 <translation id="119944043368869598">Remover tudo</translation>
+<translation id="1199631150313925648">Informar manualmente</translation>
 <translation id="1199814941632954229">Certificados estão sendo provisionados para esses perfis certificados</translation>
 <translation id="120069043972472860">Não é possível assistir</translation>
 <translation id="1201402288615127009">Próxima</translation>
@@ -3387,6 +3388,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3776508619697147021">Os sites podem pedir para fazer o download automático de vários arquivos</translation>
 <translation id="3776796446459804932">Esta extensão viola a política da Chrome Web Store.</translation>
 <translation id="3777483481409781352">Não foi possível ativar o celular</translation>
+<translation id="3777796259512476958">Desconecta você da maioria dos sites</translation>
 <translation id="3778208826288864398">A chave de segurança está bloqueada porque o PIN incorreto foi inserido muitas vezes. Redefina a chave de segurança.</translation>
 <translation id="3778740492972734840">Ferramentas do &amp;desenvolvedor</translation>
 <translation id="3778868487658107119">Faça perguntas ou diga a ele o que fazer. É o seu Google pessoal, sempre pronto para ajudar.</translation>
@@ -4204,6 +4206,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4460014764210899310">Desagrupar</translation>
 <translation id="4461483878391246134">Adicione idiomas para nunca oferecer tradução</translation>
 <translation id="4462159676511157176">Servidores de nome personalizados</translation>
+<translation id="4463530025936541315">Ao continuar, você permite que terceiros verifiquem informações que identificam este dispositivo na rede</translation>
 <translation id="4465236939126352372">Tempo limite de <ph name="TIME" /> definido para <ph name="APP_NAME" /></translation>
 <translation id="4466839823729730432">Veja suas recordações aqui</translation>
 <translation id="4469324811108161144">Observações podem ter até <ph name="CHARACTER_LIMIT" /> caracteres.</translation>
@@ -4398,6 +4401,7 @@ Isso pode incluir informações sobre seu navegador, SO, dispositivo, softwares 
 <translation id="4623167406982293031">Verificar conta</translation>
 <translation id="4623189117674524348">Falha do sistema ao autorizar o acesso à API para este dispositivo.</translation>
 <translation id="4623341761454569602">No Gerenciador de senhas do Google <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">Tema de cores</translation>
 <translation id="4625078469366263107">Ativar app</translation>
 <translation id="4625905218692741757">Cor padrão cinza</translation>
 <translation id="4627427111733173920">Cookies bloqueados</translation>
@@ -5496,7 +5500,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5571832155627049070">Personalize seu perfil</translation>
 <translation id="5572166921642484567">Escolha um modo de esquema de cores</translation>
 <translation id="5572252023412311448">Mostrar detalhes do site <ph name="SITE_GROUP" /></translation>
-<translation id="5572648434713976849">Você vai receber sugestões melhores na barra de endereço</translation>
 <translation id="557506220935336383">Ver permissões de extensões para outros sites</translation>
 <translation id="5575473780076478375">Extensão anônima: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Ocorreu um problema com a solicitação de registro de demonstração.</translation>
@@ -5616,6 +5619,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="567740581294087470">Que tipo de feedback você quer enviar?</translation>
 <translation id="5677503058916217575">Idioma da página:</translation>
 <translation id="5677928146339483299">Bloqueado</translation>
+<translation id="5677946354068040947">mais opções</translation>
 <translation id="5678550637669481956">Foi concedido acesso de leitura e gravação a <ph name="VOLUME_NAME" />.</translation>
 <translation id="5678821117681811450">Enviando para <ph name="WEB_DRIVE" /></translation>
 <translation id="5678955352098267522">Leia seus dados em <ph name="WEBSITE_1" /></translation>
@@ -6743,7 +6747,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6644846457769259194">Atualizando seu dispositivo (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Desligar "Pareamento rápido"</translation>
 <translation id="6647228709620733774">URL da revogação da Autoridade de certificação do Netscape</translation>
-<translation id="6647441008198474441">Os URLs que você acessa são enviados ao Google para prever quais sites podem ser do seu interesse</translation>
 <translation id="6647690760956378579">Prévia de voz natural</translation>
 <translation id="6648911618876616409">Uma atualização crítica está pronta para ser instalada. Faça login para começar.</translation>
 <translation id="6649018507441623493">Só um segundo…</translation>
@@ -7212,6 +7215,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7019546817926942979">O dispositivo precisa estar conectado à tomada. O upgrade do Linux pode consumir consideravelmente a carga da bateria. Conecte o dispositivo a um carregador e tente novamente.</translation>
 <translation id="7019805045859631636">Rápido</translation>
 <translation id="7022562585984256452">Sua página inicial foi definida.</translation>
+<translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">Conheça uma nova maneira de navegar com gestos</translation>
 <translation id="7025190659207909717">Gerenciamento dos serviços de dados móveis</translation>
 <translation id="7025895441903756761">Segurança e privacidade</translation>
@@ -8594,6 +8598,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Mover guia para uma nova janela}one{Mover guia para uma nova janela}other{Mover guias para uma nova janela}}</translation>
 <translation id="8179188928355984576">Não usada com apps Android</translation>
 <translation id="8179976553408161302">Entrar</translation>
+<translation id="8180295062887074137"><ph name="PRINTER_NAME" />: <ph name="PRINTER_STATUS" />. Impressora <ph name="ITEM_POSITION" /> de <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Economia de energia ativada</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" pode ​​ler e excluir imagens, vídeos e arquivos de som nos locais marcados.</translation>
 <translation id="8180826593917851025">Configurar o ponto de acesso do <ph name="DEVICE_TYPE" /></translation>
@@ -9560,6 +9565,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="8999560016882908256">Erro de sintaxe na seção: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">Toque no sensor de impressão digital no lado direito do <ph name="DEVICE_TYPE" />. Seus dados de impressão digital são armazenados de forma segura e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="9003185744423389627">A conexão com o Servidor de gerenciamento de dispositivos falhou, apresentando o status "<ph name="STATUS_TEXT" />" (<ph name="FAILURE_TIME" />)</translation>
+<translation id="90033698482696970">Procurar automaticamente perfis de eSIM disponíveis?</translation>
 <translation id="9003647077635673607">Permitir em todos os websites</translation>
 <translation id="9003677638446136377">Verificar novamente</translation>
 <translation id="9004754973617721124">Limpar permissões e dados do site <ph name="SITE_NAME" />, todos os sites relacionados e o app instalado?</translation>

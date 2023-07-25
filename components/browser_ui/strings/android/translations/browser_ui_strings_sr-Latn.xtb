@@ -301,6 +301,7 @@
 <translation id="6439114592976064011">Ne dozvoljava sajtovima da koriste uređaj i podatke virtuelne realnosti</translation>
 <translation id="6447842834002726250">Kolačići</translation>
 <translation id="6467852467360539617">Obriši podatke i resetuj dozvole</translation>
+<translation id="6500423977866688905">Kada je prozor uzak, zahtevaj prikaz za mobilne uređaje</translation>
 <translation id="6527303717912515753">Deli</translation>
 <translation id="6545864417968258051">Bluetooth skeniranje</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Blokirane su dozvole <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}one{Blokirane su dozvole <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}few{Blokirane su dozvole <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}other{Blokirane su dozvole <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}}</translation>

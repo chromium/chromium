@@ -388,6 +388,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3311748811247479259">Aus</translation>
 <translation id="3324193307694657476">Adresse 2</translation>
 <translation id="3328801116991980348">Websiteinformationen</translation>
+<translation id="3340938510625667914">Chrome-Aktionen</translation>
 <translation id="3344485292736684439">{count,plural, =1{Lesezeichen unter „{title}“ in deinem Konto {email} gespeichert}other{Lesezeichen unter „{title}“ in deinem Konto {email} gespeichert}}</translation>
 <translation id="3371831930909698441">Übersetzer ist verfügbar. Optionen sind unten auf dem Bildschirm verfügbar.</translation>
 <translation id="3377063233124932127">Deine gespeicherten Lesezeichen, Passwörter und mehr werden jetzt oben angezeigt.</translation>
@@ -935,6 +936,7 @@ Es empfiehlt sich aber, für jede Website ein eigenes Passwort zu verwenden.</tr
 <translation id="6628106477656132239">Ungültiges Ablaufdatum</translation>
 <translation id="6634432609054530164">Deine Organisation hat den Inkognitomodus deaktiviert</translation>
 <translation id="6638511529934826365">Text zoomen…</translation>
+<translation id="6640268266988685324">Geöffneter Tab</translation>
 <translation id="6642362222295953972">Zu vorhandenem Tab wechseln</translation>
 <translation id="6643016212128521049">Löschen</translation>
 <translation id="6645899968535965230">QR-Code: <ph name="PAGE_TITLE" /></translation>

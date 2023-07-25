@@ -388,6 +388,7 @@
 <translation id="3311748811247479259">ഓഫാണ്</translation>
 <translation id="3324193307694657476">വിലാസം 2</translation>
 <translation id="3328801116991980348">സൈറ്റ് വിവരങ്ങള്‍</translation>
+<translation id="3340938510625667914">Chrome-ലെ പ്രവർത്തനങ്ങൾ</translation>
 <translation id="3344485292736684439">{count,plural, =1{{email} എന്ന നിങ്ങളുടെ അക്കൗണ്ടിലെ "{title}" എന്നതിലേക്ക് ബുക്ക്‌മാർക്ക് സംരക്ഷിച്ചു}other{{email} എന്ന നിങ്ങളുടെ അക്കൗണ്ടിലെ "{title}" എന്നതിലേക്ക് ബുക്ക്‌മാർക്കുകൾ സംരക്ഷിച്ചു}}</translation>
 <translation id="3371831930909698441">വിവർത്തനം ലഭ്യമാണ്. സ്‌ക്രീനിൻ്റെ ചുവടെ ഓപ്‌ഷനുകൾ ലഭ്യമാണ്.</translation>
 <translation id="3377063233124932127">നിങ്ങളുടെ സംരക്ഷിച്ച ബുക്ക്‌മാർക്കുകളും പാസ്‌വേഡുകളും മറ്റും ഇപ്പോൾ മുകളിൽ കാണാം.</translation>
@@ -803,6 +804,7 @@
 <translation id="6011308810877101166">തിരയൽ നിർദ്ദേശങ്ങൾ മെച്ചപ്പെടുത്തുക</translation>
 <translation id="6012140227487808125">എൻക്രിപ്റ്റുചെയ്യുന്നു...</translation>
 <translation id="6021332621416007159">ഇതിൽ തുറക്കുക...</translation>
+<translation id="6027619584715411062">ബുക്ക്‌മാർക്കുകളും പാസ്‍വേഡുകളും മറ്റും നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും നേടുന്നതിന് സൈൻ ഇൻ ചെയ്യുക.</translation>
 <translation id="6027945736510816438"><ph name="WEBSITE" /> ആണോ നിങ്ങൾ ഉദ്ദേശിച്ചത്?</translation>
 <translation id="6036215966221662377">ബ്രൗസിംഗ് ഡാറ്റ മായ്ക്കുക</translation>
 <translation id="6036514205982097558">നിങ്ങളുടെ എല്ലാ ടാബുകളും ഒരു ബ്രൗസറിൽ</translation>
@@ -935,6 +937,7 @@
 <translation id="6628106477656132239">കാലഹരണപ്പെടുന്ന തീയതി അസാധുവാണ്</translation>
 <translation id="6634432609054530164">നിങ്ങളുടെ സ്ഥാപനം അദൃശ്യ മോഡ് ഓഫാക്കി</translation>
 <translation id="6638511529934826365">ടെക്‌സ്‌റ്റ് സൂം ചെയ്യുക…</translation>
+<translation id="6640268266988685324">തുറന്നിരിക്കുന്ന ടാബ്</translation>
 <translation id="6642362222295953972">നിലവിലുള്ള ടാബിലേക്ക് മാറുക</translation>
 <translation id="6643016212128521049">മായ്‌ക്കുക</translation>
 <translation id="6645899968535965230">QR കോഡ്: <ph name="PAGE_TITLE" /></translation>

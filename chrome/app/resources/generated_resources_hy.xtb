@@ -1163,6 +1163,7 @@
 <translation id="1929186283613845153">Ֆայլը սկանավորվում է։</translation>
 <translation id="1929343511231420085">Ցանկացած հերթական միացք</translation>
 <translation id="1929546189971853037">Կարդալ ձեր զննարկման պատմությունը ձեր բոլոր մուտք գործած սարքերի վրա</translation>
+<translation id="1929774028758671973">Կոնտակտները կարող են կիսվել ձեզ հետ տվյալներով, երբ մոտակայքում են։ Ձեզնից կպահանջվի հաստատել տվյալների փոխանցման հարցումները։ Ձեզնից չի պահանջվի հաստատել տվյալների փոխանցումը սարքերից, որտեղ մտել եք <ph name="USER_EMAIL" /> հաշիվ։</translation>
 <translation id="1930879306590754738">Գաղտնաբառը ջնջվեց այս սարքից և ձեր Google հաշվից</translation>
 <translation id="1931152874660185993">Բաղադրիչներ տեղադրված չեն:</translation>
 <translation id="1931410639376954712"><ph name="DEVICE_OS" />-ը տեղադրվում է</translation>
@@ -1429,6 +1430,7 @@
 <translation id="2151576029659734873">Ներդիրի սխալ ցուցիչ եք մուտքագրել:</translation>
 <translation id="2152281589789213846">Ավելացնել տպիչներ պրոֆիլում</translation>
 <translation id="2154484045852737596">Քարտի փոփոխություն</translation>
+<translation id="2155473371917268529">Ձեր սարքը տեսանելի է միայն ձեր մյուս սարքերին</translation>
 <translation id="2155772377859296191"><ph name="WIDTH" />x<ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker՝ <ph name="SCRIPT_URL" /></translation>
 <translation id="2156877321344104010">Նորից անցնել անվտանգություն ստուգում</translation>
@@ -1760,6 +1762,7 @@
 <translation id="2418307627282545839">Պահպանում է պայծառ և նուրբ գույները</translation>
 <translation id="2419131370336513030">Դիտել տեղադրված հավելվածները</translation>
 <translation id="2419706071571366386">Անվտանգության համար դուրս գրվեք հաշվից, երբ չեք օգտվում համակարգչից։</translation>
+<translation id="2421705177906985956">Այս պահին կայքեր չկան</translation>
 <translation id="2422125132043002186">Լինուքսի վերականգնումը չեղարկվել է</translation>
 <translation id="2423578206845792524">Պա&amp;հել պատկերը որպես…</translation>
 <translation id="2424424966051154874">{0,plural, =1{Հյուր}one{Հյուր (#)}other{Հյուր (#)}}</translation>
@@ -2439,6 +2442,7 @@
 <translation id="2966705348606485669">Այլ ընտրանքներ էջանիշներով <ph name="FOLDER_TITLE" /> պանակի համար</translation>
 <translation id="2966937470348689686">Android-ի կարգավորումների կառավարում</translation>
 <translation id="2967926928600500959">Այս կանոններին համապատասխանող URL-ները հարկադրաբար կբացվեն հատուկ դիտարկիչում։</translation>
+<translation id="2970766364519518369">Ընտրված կոնտակտները կարող են կիսվել ձեզ հետ տվյալներով, երբ մոտակայքում են։ Ձեզնից կպահանջվի հաստատել տվյալների փոխանցման հարցումները։ Ձեզնից չի պահանջվի հաստատել տվյալների փոխանցումը սարքերից, որտեղ մտել եք <ph name="USER_EMAIL" /> հաշիվ։</translation>
 <translation id="2972581237482394796">&amp;Վերարկել</translation>
 <translation id="2973324205039581528">Անջատել կայքի ձայնը</translation>
 <translation id="2975761176769946178">Պահանջվում է նշել URL</translation>
@@ -4239,6 +4243,7 @@
 <translation id="4508150454272293946">Թույլատրեք հավելվածներին ու վեբ էջերին օգտագործել այս սարքին միացված տեսախցիկ(ներ)ը։ Եթե տեսախցիկի հետ կապված խնդիրը չլուծվի, վերագործարկեք հավելվածը կամ թարմացրեք կայքէջը։</translation>
 <translation id="450867954911715010">Հատուկ գործառույթների կարգավորումներ</translation>
 <translation id="4508765956121923607">Դիտել աղ&amp;բյուրը</translation>
+<translation id="4509277363725254222">Եթե դուք տրամադրեք ձեր <ph name="BEGIN_BOLD_USERNAME" />օգտանվան<ph name="END_BOLD_USERNAME" /> և <ph name="BEGIN_BOLD_PASSWORD" />գաղտնաբառի<ph name="END_BOLD_PASSWORD" /> պատճենը, ձեր ընտանիքի անդամները կկարողանան դրանք օգտագործել Google գաղտնաբառերի կառավարչի միջոցով։</translation>
 <translation id="4509421746503122514">Թարմացնելու համար վերագործարկեք</translation>
 <translation id="4510195992002502722">Չհաջողվեց ուղարկել կարծիքը։ Նորից ենք փորձում…</translation>
 <translation id="4510479820467554003">Ծնողների հաշիվների ցանկ</translation>
@@ -4378,6 +4383,7 @@
 <translation id="4623167406982293031">Հաստատել հաշիվը</translation>
 <translation id="4623189117674524348">Չհաջողվեց API-ին մուտք տրամադրել այս սարքում:</translation>
 <translation id="4623341761454569602">Google գաղտնաբառերի կառավարիչում <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">Գունային թեմա</translation>
 <translation id="4625078469366263107">Միացնել հավելվածը</translation>
 <translation id="4625905218692741757">Մոխրագույն՝ ըստ կանխադրման</translation>
 <translation id="4627427111733173920">Քուքիներն արգելափակված են</translation>
@@ -4810,6 +4816,7 @@
 <translation id="4994426888044765950">Եթե սեղմած պահեք ստեղնը, համապատասխան նշանը կմուտքագրվի երկու անգամ</translation>
 <translation id="4994754230098574403">Կարգավորում</translation>
 <translation id="4995293419989417004">Իմանալ ավելին գովազդի թեմաների մասին</translation>
+<translation id="4995676741161760215">Ընդլայնումը միացված է</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{<ph name="VM_TYPE" /> վիրտուալ մեքենաներ չեն գտնվել}=1{Գտնվել է 1 <ph name="VM_TYPE" /> վիրտուալ մեքենա՝ <ph name="VM_NAME_LIST" />}one{Գտնվել է {NUM_VMS} <ph name="VM_TYPE" /> վիրտուալ մեքենա՝ <ph name="VM_NAME_LIST" />}other{Գտնվել է {NUM_VMS} <ph name="VM_TYPE" /> վիրտուալ մեքենա՝ <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Կապ չկա</translation>
 <translation id="4998430619171209993">Միացված է</translation>
@@ -5364,6 +5371,7 @@
 <translation id="5474859849784484111">Տիրույթի (<ph name="MANAGER" />) կանոնների համաձայն՝ այժմ անհրաժեշտ է միանալ Wi-Fi-ին և ներբեռնել թարմացումը։ Ինչպես նաև կարող եք օգտվել վճարովի կապից (կարող է գումար գանձվել)։</translation>
 <translation id="5481273127572794904">Չի թույլատրվում ավտոմատ ներբեռնել մի քանի ֆայլ</translation>
 <translation id="5481941284378890518">Ավելացնել մոտակա տպիչներ</translation>
+<translation id="5484462543003267273">Կառավարել ընտանեկան խումբը</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{Գործող կանոնի համաձայն (աղբյուրը՝ <ph name="MANAGER" />)՝ դուք պետք է պահուստավորեք ձեր տվյալները և այսօր վերադարձնեք այս <ph name="DEVICE_TYPE" /> սարքը։ <ph name="LINK_BEGIN" />Դիտել մանրամասները<ph name="LINK_END" />}one{Գործող կանոնի համաձայն (աղբյուրը՝ <ph name="MANAGER" />)՝ դուք պետք է պահուստավորեք ձեր տվյալները և {NUM_DAYS} օրվա ընթացքում վերադարձնեք այս <ph name="DEVICE_TYPE" /> սարքը։<ph name="LINK_BEGIN" />Դիտել մանրամասները<ph name="LINK_END" />}other{Գործող կանոնի համաձայն (աղբյուրը՝ <ph name="MANAGER" />)՝ դուք պետք է պահուստավորեք ձեր տվյալները և {NUM_DAYS} օրվա ընթացքում վերադարձնեք այս <ph name="DEVICE_TYPE" /> սարքը։<ph name="LINK_BEGIN" />Դիտել մանրամասները<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Ավելացնել հավելված</translation>
 <translation id="5485435764083510385">Ենթագրերի նախընտրած լեզու</translation>
@@ -5477,7 +5485,6 @@
 <translation id="5571832155627049070">Անհատականացրեք ձեր պրոֆիլը</translation>
 <translation id="5572166921642484567">Ընտրեք գունային սխեմայի ռեժիմը</translation>
 <translation id="5572252023412311448">Ցույց տալ <ph name="SITE_GROUP" /> կայքի մանրամասները</translation>
-<translation id="5572648434713976849">Հասցեագոտում կհայտնվեն բարելավված հուշումներ։</translation>
 <translation id="557506220935336383">Դիտել ընդլայնումների թույլտվություններն այլ կայքերի համար</translation>
 <translation id="5575473780076478375">Ինկոգնիտո ընդլայնում` <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Դեմո ռեժիմի գրանցման հարցումն անվավեր է։</translation>
@@ -5594,6 +5601,7 @@
 <translation id="567740581294087470">Ի՞նչ տեսակի կարծիք եք ուղարկում։</translation>
 <translation id="5677503058916217575">Էջի լեզուն՝</translation>
 <translation id="5677928146339483299">Արգելափակված է</translation>
+<translation id="5677946354068040947">լրացուցիչ ընտրանքներ</translation>
 <translation id="5678550637669481956">Կարդալու և գրելու թույլտվություն է տրվել <ph name="VOLUME_NAME" />-ին:</translation>
 <translation id="5678821117681811450">Ուղարկվում է <ph name="WEB_DRIVE" />-ին</translation>
 <translation id="5678955352098267522">Կարդալ ձեր տվյալները <ph name="WEBSITE_1" /> կայքում</translation>
@@ -6720,7 +6728,6 @@
 <translation id="6644846457769259194">Սարքի թարմացում (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Անջատել արագ զուգակցումը</translation>
 <translation id="6647228709620733774">Netscape-ի հավաստագրման ատյանի հետկանչման URL</translation>
-<translation id="6647441008198474441">Ձեր այցելած էջերի URL-ներն ուղարկվում են Google-ին՝ կանխատեսելու, թե հաջորդիվ ինչ կայքեր կարող եք այցելել։</translation>
 <translation id="6647690760956378579">Բնական ձայնի նախնական ունկնդրում</translation>
 <translation id="6648911618876616409">Առկա է կարևոր թարմացում։ Տեղադրելու համար մուտք գործեք:</translation>
 <translation id="6649018507441623493">Մի վայրկյան...</translation>
@@ -8110,6 +8117,7 @@
 <translation id="7797571222998226653">Անջատ</translation>
 <translation id="7798504574384119986">Դիտել վեբ թույլտվությունները</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" />՝ ավտոմատ արգելափակվել է</translation>
+<translation id="7799650166313181433">Միայն սարքերը, որոնցում մուտք եք գործել <ph name="USER_EMAIL" /> հաշիվ, կարող են այս սարքի հետ կիսվել տվյալներով։ Ձեզնից չի պահանջվի հաստատել տվյալների փոխանցումը ձեր սարքերից։</translation>
 <translation id="7800485561443537737">Օգտագործում է <ph name="DEVICE_TYPE" />-ի բջջային ինտերնետը, ինչի արդյունքում կապի օպերատորը կարող է լրացուցիչ վճարներ գանձել։ Բացի այդ՝ կարող է ավելացնել մարտկոցի օգտագործումը։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">Պտտել &amp;սլաքի հակառակ ուղղությամբ</translation>
 <translation id="7801679634091975683">Այստեղ արված փոփոխությունները կիրառվում են միայն Lacros Chrome դիտարկիչում։ Chrome դիտարկիչի կարգավորումները փոխելու համար բացեք Chrome-ը և անցեք կարգավորումներ։</translation>
@@ -8964,6 +8972,7 @@
 <translation id="8514746246728959655">Օգտագործեք անվտանգության մեկ այլ բանալի</translation>
 <translation id="8514955299594277296">Չթույլատրել կայքերին տվյալներ պահել ձեր սարքում (խորհուրդ չի տրվում)</translation>
 <translation id="8517759303731677493">Փոփոխել…</translation>
+<translation id="8518942514525208851">Թաքցնել անպարկեշտ արտահայտությունները</translation>
 <translation id="8519895319663397036">Չհաջողվեց ներմուծել գաղտնաբառերը։ Ֆայլի չափը չպետք է գերազանցի 150 ԿԲ-ը։</translation>
 <translation id="851991974800416566">Օգտագործեք հուսալի գաղտնաբառ</translation>
 <translation id="8523493869875972733">Պահել փոփոխությունները</translation>

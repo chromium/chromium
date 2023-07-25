@@ -4378,6 +4378,7 @@ Semnalele de pe dispozitiv pot include informații despre browser, sistemul de o
 <translation id="4623167406982293031">Confirmă contul</translation>
 <translation id="4623189117674524348">Sistemul nu a putut să autorizeze accesul la API pentru acest dispozitiv.</translation>
 <translation id="4623341761454569602">În Managerul de parole Google <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">Temă de culoare</translation>
 <translation id="4625078469366263107">Activează aplicația</translation>
 <translation id="4625905218692741757">Culoarea gri prestabilită</translation>
 <translation id="4627427111733173920">Cookie-uri blocate</translation>
@@ -5476,7 +5477,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5571832155627049070">Personalizează-ți profilul</translation>
 <translation id="5572166921642484567">Alege un mod de schemă de culori</translation>
 <translation id="5572252023412311448">Afișează detaliile site-ului pentru <ph name="SITE_GROUP" /></translation>
-<translation id="5572648434713976849">Vei primi sugestii îmbunătățite în bara de adrese</translation>
 <translation id="557506220935336383">Vezi permisiunile pentru extensii acordate altor site-uri</translation>
 <translation id="5575473780076478375">Extensie incognito: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">A apărut o problemă cu solicitarea de înregistrare demo.</translation>
@@ -5595,6 +5595,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="567740581294087470">Ce fel de feedback trimiți?</translation>
 <translation id="5677503058916217575">Limba paginii:</translation>
 <translation id="5677928146339483299">Blocat</translation>
+<translation id="5677946354068040947">mai multe opțiuni</translation>
 <translation id="5678550637669481956">A fost acordat accesul de citire și scriere la <ph name="VOLUME_NAME" />.</translation>
 <translation id="5678821117681811450">Se trimite la <ph name="WEB_DRIVE" /></translation>
 <translation id="5678955352098267522">Citește datele de pe <ph name="WEBSITE_1" /></translation>
@@ -6722,7 +6723,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6644846457769259194">Se actualizează dispozitivul (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Dezactivează Fast Pair</translation>
 <translation id="6647228709620733774">Adresă URL de revocare a autorității de certificare Netscape</translation>
-<translation id="6647441008198474441">Adresele URL pe care le accesezi sunt trimise la Google pentru a anticipa site-urile pe care le-ai putea accesa pe viitor</translation>
 <translation id="6647690760956378579">Previzualizare vocală naturală</translation>
 <translation id="6648911618876616409">O actualizare esențială este gata de instalare. Conectează-te pentru a începe.</translation>
 <translation id="6649018507441623493">O secundă…</translation>
@@ -7191,6 +7191,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7019546817926942979">Trebuie să conectezi dispozitivul. Upgrade-ul la Linux îți poate descărca rapid bateria. Conectează dispozitivul la încărcător și încearcă din nou.</translation>
 <translation id="7019805045859631636">Rapid</translation>
 <translation id="7022562585984256452">Pagina de pornire a fost setată.</translation>
+<translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">Îți prezentăm o nouă modalitate de a naviga prin gesturi</translation>
 <translation id="7025190659207909717">Gestionarea serviciului de date mobile</translation>
 <translation id="7025895441903756761">Securitate și confidențialitate</translation>

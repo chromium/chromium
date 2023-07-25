@@ -4380,6 +4380,7 @@
 <translation id="4623167406982293031">يجب إثبات ملكية الحساب</translation>
 <translation id="4623189117674524348">تعذَّر على النظام السماح بالوصول إلى واجهة برمجة التطبيقات لهذا الجهاز.</translation>
 <translation id="4623341761454569602">‏سيتم التعديل في "مدير كلمات المرور في Google" الخاص بالحساب <ph name="SEPARATOR" /> <ph name="ACCOUNT" />.</translation>
+<translation id="4624054169152573743">مظهر ملوَّن</translation>
 <translation id="4625078469366263107">تفعيل التطبيق</translation>
 <translation id="4625905218692741757">اللون التلقائي الرمادي</translation>
 <translation id="4627427111733173920">تم حظر ملفات تعريف الارتباط</translation>
@@ -5478,7 +5479,6 @@
 <translation id="5571832155627049070">تخصيص ملفك الشخصي</translation>
 <translation id="5572166921642484567">اختيار وضع الألوان</translation>
 <translation id="5572252023412311448">عرض تفاصيل الموقع الإلكتروني <ph name="SITE_GROUP" /></translation>
-<translation id="5572648434713976849">ستحصل على اقتراحات محسّنة في شريط العناوين.</translation>
 <translation id="557506220935336383">الاطّلاع على أذونات الإضافات للمواقع الإلكترونية الأخرى</translation>
 <translation id="5575473780076478375">إضافة وضع التصفح المتخفي: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">حدثت مشكلة في طلب التسجيل التجريبي.</translation>
@@ -5597,6 +5597,7 @@
 <translation id="567740581294087470">ما هو نوع الملاحظات التي تقدّمها؟</translation>
 <translation id="5677503058916217575">لغة الصفحة:</translation>
 <translation id="5677928146339483299">محظور</translation>
+<translation id="5677946354068040947">خيارات إضافية</translation>
 <translation id="5678550637669481956">تم منح إذن دخول للقراءة والكتابة إلى <ph name="VOLUME_NAME" />.</translation>
 <translation id="5678821117681811450">جارٍ الإرسال إلى <ph name="WEB_DRIVE" /></translation>
 <translation id="5678955352098267522">قراءة بياناتك على <ph name="WEBSITE_1" /></translation>
@@ -6730,7 +6731,6 @@
 <translation id="6644846457769259194">جارٍ تحديث جهازك (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">إيقاف ميزة "الإقران السريع"</translation>
 <translation id="6647228709620733774">‏عنوان URL لإبطال المرجع المصدق لـ Netscape</translation>
-<translation id="6647441008198474441">‏يتم إرسال عناوين URL التي تزورها إلى Google لتوقّع المواقع الإلكترونية التي ستزورها بعد ذلك.</translation>
 <translation id="6647690760956378579">الاستماع إلى معاينة الصوت الطبيعي</translation>
 <translation id="6648911618876616409">تحديث مهم جاهز للتثبيت. يُرجى تسجيل الدخول للبدء.</translation>
 <translation id="6649018507441623493">لحظة من فضلك...</translation>
@@ -7199,6 +7199,7 @@
 <translation id="7019546817926942979">‏يجب توصيل الجهاز بمصدر طاقة. قد تؤدي ترقية نظام التشغيل Linux إلى استهلاك البطارية بشكل كبير. يُرجى توصيل جهازك بالشاحن وإعادة المحاولة.</translation>
 <translation id="7019805045859631636">سريع</translation>
 <translation id="7022562585984256452">تم ضبط صفحتك الرئيسية.</translation>
+<translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">تقديم طريقة جديدة للتنقّل باستخدام الإيماءات</translation>
 <translation id="7025190659207909717">إدارة خدمة بيانات الجوال</translation>
 <translation id="7025895441903756761">الأمان والخصوصية</translation>

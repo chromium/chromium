@@ -4374,6 +4374,7 @@ Las señales del dispositivo pueden incluir información sobre tu navegador, SO,
 <translation id="4623167406982293031">Verificar cuenta</translation>
 <translation id="4623189117674524348">El sistema no pudo autorizar el acceso a la API para este dispositivo.</translation>
 <translation id="4623341761454569602">En el Administrador de contraseñas de Google <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">Tema de color</translation>
 <translation id="4625078469366263107">Habilitar app</translation>
 <translation id="4625905218692741757">Color predeterminado en gris</translation>
 <translation id="4627427111733173920">Se bloquearon cookies</translation>
@@ -5472,7 +5473,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5571832155627049070">Personaliza tu perfil</translation>
 <translation id="5572166921642484567">Elegir un modo de esquema de colores</translation>
 <translation id="5572252023412311448">Mostrar detalles del sitio para <ph name="SITE_GROUP" /></translation>
-<translation id="5572648434713976849">Recibirás mejores sugerencias en la barra de direcciones</translation>
 <translation id="557506220935336383">Ver los permisos de extensiones para otros sitios</translation>
 <translation id="5575473780076478375">Extensión de incógnito: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Hubo un problema con la solicitud de registro de demostración.</translation>
@@ -5591,6 +5591,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="567740581294087470">¿Qué tipo de comentarios envías?</translation>
 <translation id="5677503058916217575">Idioma de la página:</translation>
 <translation id="5677928146339483299">Bloqueado</translation>
+<translation id="5677946354068040947">más opciones</translation>
 <translation id="5678550637669481956">Se concedió acceso de lectura y escritura a <ph name="VOLUME_NAME" />.</translation>
 <translation id="5678821117681811450">Se está enviando a <ph name="WEB_DRIVE" />.</translation>
 <translation id="5678955352098267522">Leer los datos en <ph name="WEBSITE_1" /></translation>
@@ -6310,7 +6311,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="628352644014831790">4 segundos</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> no es un archivo que se descargue de forma habitual y es posible que sea peligroso.</translation>
 <translation id="6285770818046456882">El dispositivo que compartía contenido contigo canceló la transferencia</translation>
-<translation id="628726841779494414">Administra tus impresoras en Configuración de la impresora</translation>
+<translation id="628726841779494414">Administra tus impresoras en la configuración de impresoras</translation>
 <translation id="6290613030083731160">No hay dispositivos disponibles cerca que compartan contenido. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Se está verificando el código de activación. Es posible que este proceso demore unos minutos.</translation>
 <translation id="6291741848715722067">Código de confirmación</translation>
@@ -6716,7 +6717,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6644846457769259194">Actualizando tu dispositivo (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Desactivar Vinculación rápida</translation>
 <translation id="6647228709620733774">URL de revocación de entidad de certificación de Netscape</translation>
-<translation id="6647441008198474441">Se enviarán a Google las URL que visites para predecir los sitios que posiblemente vayas a visitar</translation>
 <translation id="6647690760956378579">Vista previa de la voz natural</translation>
 <translation id="6648911618876616409">Hay una actualización fundamental lista para instalarse. Accede a tu cuenta para comenzar.</translation>
 <translation id="6649018507441623493">Un segundo…</translation>
@@ -7185,6 +7185,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7019546817926942979">Debes enchufar el dispositivo. Actualizar Linux puede agotar la batería de forma significativa. Conecta tu dispositivo a un cargador y vuelve a intentarlo.</translation>
 <translation id="7019805045859631636">Rápida</translation>
 <translation id="7022562585984256452">Se configuró tu página principal.</translation>
+<translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">Presentamos una nueva forma de navegar con gestos</translation>
 <translation id="7025190659207909717">Administración del servicio de datos para celulares</translation>
 <translation id="7025895441903756761">Seguridad y privacidad</translation>

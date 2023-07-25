@@ -146,6 +146,7 @@
 <translation id="1576623706766186887">मॅग्निफायर सुरू असताना झूम आउट करा</translation>
 <translation id="1586324912145647027">एक ते आठ डेस्कवर जा</translation>
 <translation id="1589090746204042747">या सेशनमध्ये तुमची सर्व अ‍ॅक्टिव्हिटी अ‍ॅक्सेस करा</translation>
+<translation id="1592682369233288537">नवीन डेस्‍क: <ph name="NEXT_DESK_NAME" />, अ‍ॅक्टिव्हेट करण्यासाठी Search+Space वापरा.</translation>
 <translation id="1604857178818051494">मीडिया थांबवा</translation>
 <translation id="1610778689852195798">"पहिल्यासारखे करा"</translation>
 <translation id="1611993646327628135">सुरू करा</translation>
@@ -157,6 +158,7 @@
 <translation id="1647986356840967552">मागील पेज</translation>
 <translation id="1651914502370159744">इतिहास पेज उघडा</translation>
 <translation id="1654477262762802994">व्हॉइस क्वेरी सुरू करा</translation>
+<translation id="1662667383227796099">लाँचर मध्ये तुमच्या फाइल, अ‍ॅप्स आणि आणखी बरेच काही शोधा. तुम्ही तुमच्या Chromebook संबंधित प्रश्नांची उत्तरेदेखील मिळवू शकता.</translation>
 <translation id="1668469839109562275">बिल्ट-इन VPN</translation>
 <translation id="1675844249244994876">उजवी विंडो अपडेट करा</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> शिल्लक</translation>
@@ -560,6 +562,7 @@
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">शेल्फ आपोआप लपवले</translation>
+<translation id="3503243067695520519">हाय. Chromebooks थोडेसे वेगळे आहेत.</translation>
 <translation id="3505066820268455558">बॅटरी चार्ज होत आहे</translation>
 <translation id="3509391053705095206">तुमचा फोन शोधू शकत नाही. तुमच्या फोनचे ब्लूटूथ सुरू असल्याची खात्री करा.</translation>
 <translation id="3510164367642747937">माउसचा कर्सर हायलाइट करा</translation>
@@ -684,6 +687,7 @@
 <translation id="3977512764614765090">बॅटरी <ph name="PERCENTAGE" />% वर आहे आणि चार्ज होत आहे.</translation>
 <translation id="3984536049089846927">पुढील पेज</translation>
 <translation id="3986082989454912832">उत्तर</translation>
+<translation id="3990002060657467458">वाय-फाय, ब्लूटूथ आणि व्हॉल्यूम यांसारखी वारंवार वापरली जाणारी नियंत्रणे क्विक सेटिंग्जमध्ये आहेत. तुम्ही येथे जाऊन स्क्रीनशॉटदेखील घेऊ शकता.</translation>
 <translation id="3995138139523574647">USB-C डिव्‍हाइस (उजव्या बाजूचे मागील पोर्ट)</translation>
 <translation id="40062176907008878">हस्तलेखन</translation>
 <translation id="4017989525502048489">लेझर पॉइंट</translation>
@@ -747,6 +751,7 @@
 <translation id="4269883910223712419">या डिव्हाइसचे प्रशासन पुढील गोष्टी करू शकते:</translation>
 <translation id="4274537685965975248">Ctrl + Alt + Down Arrow कीबोर्ड शॉर्टकट बदलला आहे. एंड की वापरण्यासाठी, <ph name="LAUNCHER_KEY_NAME" /> की + राइट अ‍ॅरो प्रेस करा.</translation>
 <translation id="4275283744500212192">विंडो लेआउट पर्याय उघडा</translation>
+<translation id="4278138729651139331">Settings मध्ये तुमचे Chromebook कस्टमाइझ आणि पर्सनलाइझ करा. तुमचा वॉलपेपर बदलून पहा किंवा स्क्रीन सेव्हर सेट करा.</translation>
 <translation id="4279490309300973883">मिररिंग</translation>
 <translation id="4280601795273309128">सुरक्षा अपडेट पूर्ण झाली आहेत. तुमचे डिव्हाइस अपग्रेड करा.</translation>
 <translation id="4283888303416325161">आणखी सुरक्षिततेसाठी पासवर्ड एंटर करा</translation>
@@ -803,6 +808,7 @@
 <translation id="4505050298327493054">ॲक्टिव्ह डेस्क.</translation>
 <translation id="450584155212756404">Dev चॅनल</translation>
 <translation id="4513946894732546136">फीडबॅक</translation>
+<translation id="4516212064498225455">विद्यमान डेस्‍क: <ph name="CURRENT_DESK_NAME" />, सर्व डेस्‍क मेनू उघडण्यासाठी Search+Space उघडा.</translation>
 <translation id="4518404433291145981">तुमचे Chromebook अनलॉक करण्यासाठी, आधी तुमचा फोन अनलॉक करा</translation>
 <translation id="4527045527269911712">"<ph name="DEVICE_NAME" />" Bluetooth डिव्हाइस जोडण्यासाठी परवानगी घेऊ इच्छिते.</translation>
 <translation id="4533343294786968049">तुमची बॅटरी लाइफ वाढवत आहे. <ph name="FULLY_CHARGE_TIME" /> पर्यंत बॅटरी पूर्णपणे चार्ज होईल.</translation>
@@ -877,6 +883,7 @@
 <translation id="4813311884204119883">टॅब स्ट्रिपवरील रिक्त भागावर लिंक ड्रॅग करा</translation>
 <translation id="4814539958450445987">लॉगिन स्क्रीन</translation>
 <translation id="481455355267255546">पुढील</translation>
+<translation id="4826588772550366629">कॅमेरा आणि मायक्रोफोन</translation>
 <translation id="4831034276697007977">तुम्हाला ऑटोमेटिक क्लिक नक्की बंद करायचे आहे का?</translation>
 <translation id="4849058404725798627">कीबोर्ड फोकससह ऑब्जेक्ट हायलाइट करा</translation>
 <translation id="485592688953820832">कृती नाही (थांबवा)</translation>
@@ -970,6 +977,7 @@
 <translation id="5207949376430453814">मजकूर कॅरेट हायलाइट करा</translation>
 <translation id="5208059991603368177">सुरू करा</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> पर्यंत बंद</translation>
+<translation id="5217646019792206018">नवीन डेस्‍क: <ph name="NEXT_DESK_NAME" />, Search+Space किंवा कीबोर्ड शॉर्टकट वापरा: अ‍ॅक्टिव्हेट करण्यासाठी Shift+Search+<ph name="NEXT_DESK_INDEX" /> वापरा.</translation>
 <translation id="5221423477036820198">फोन हब वापरून तुमच्या फोनचे मेसेज झटपट पाठवा किंवा उत्तर द्या.</translation>
 <translation id="5222676887888702881">साइन आउट करा</translation>
 <translation id="5229343007215035173">गोपनीयता स्क्रीन सुरू/बंद करा</translation>
@@ -1035,6 +1043,7 @@
 <translation id="550391772491508736">कास्ट करणे पुन्हा सुरू करा</translation>
 <translation id="5506975627792768506">मॅग्निफायर सुरू किंवा बंद करा</translation>
 <translation id="5512042095225963688">मागील शब्द हटवा</translation>
+<translation id="5518068085000130971">हे मूलभूत आहेत! टिपा आणि मदतीसाठी Explore या आमच्या बिल्ट-इन अ‍ॅपमध्ये पुढे सुरू ठेवा. तुम्हाला सुरुवात करण्यासाठी टिपा, शिफारस केलेली अ‍ॅप्स, विशेष ऑफर आणि नवीनतम Chromebook वैशिष्ट्ये तुम्हाला आढळतील.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">तुमच्या अ‍ॅडमिनिस्ट्रेटरने सर्व eSIM प्रोफाइल काढून टाकल्या आहेत. अधिक माहितीसाठी तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> कनेक्ट करत आहे.</translation>
@@ -1360,6 +1369,7 @@
 <translation id="6896758677409633944">कॉपी करा</translation>
 <translation id="6901883536534621389">नेव्हिगेट करण्यासाठी जेश्चर वापरून पहा</translation>
 <translation id="6912841030378044227">ॲड्रेस बारवर फोकस करा</translation>
+<translation id="6912901278692845878">झटपट फेरफटका</translation>
 <translation id="6919251195245069855">तुमचे स्मार्ट कार्ड ओळखू शकलो नाही. पुन्हा प्रयत्न करा.</translation>
 <translation id="6920245099716267363">हॉटस्पॉट टॉगल करा. हॉटस्पॉट सुरू आहे, १ डिव्हाइस कनेक्ट केले आहे.</translation>
 <translation id="6931576957638141829">येथे सेव्ह करा</translation>
@@ -1666,6 +1676,7 @@
 <translation id="8297006494302853456">कमकुवत</translation>
 <translation id="8308637677604853869">मागील मेनू</translation>
 <translation id="830868413617744215">बीटा</translation>
+<translation id="8312557488404088015">सुरळीत सुरुवात करण्यासाठी झटपट झलक पहा. ६ पायऱ्या असून, त्यासाठी फक्त काही मिनिटांचा वेळ लागेल.</translation>
 <translation id="8314772463905284467">Caps Lock सूरू आहे</translation>
 <translation id="8315514906653279104">सुरू करत आहे...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -1715,6 +1726,7 @@
 <translation id="8517041960877371778">तुमचे <ph name="DEVICE_TYPE" /> सुरू केले असताना कदाचित चार्ज होणार नाही.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{माइकचे इनपुट <ph name="APP_NAME" /> द्वारे नियंत्रित केले जाते}other{माइकचे इनपुट # ॲप्सद्वारे नियंत्रित केले जाते}}</translation>
 <translation id="8535393432370007982">रंगानुसार क्रमवारीचा क्रम पहिल्यासारखा करा</translation>
+<translation id="853768060447955562">मागील डेस्‍क: <ph name="PREVIOUS_DESK_NAME" />, Search+Space किंवा कीबोर्ड शॉर्टकट वापरा: अ‍ॅक्टिव्हेट करण्यासाठी Shift+Search+<ph name="PREVIOUS_DESK_INDEX" /> वापरा.</translation>
 <translation id="8541078764854166027">कॅमेरा फ्रेमिंग</translation>
 <translation id="8542053257095774575">कोणतीही सेव्ह केलेली डेस्‍क किंवा टेंप्लेट नाहीत</translation>
 <translation id="8546059259582788728">क्रमाने लावणे पहिल्यासारखे करण्यात यश आले</translation>
@@ -1866,11 +1878,13 @@
 <translation id="925832987464884575">पूर्वावलोकने लपवा</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> नुसार तुम्ही तुमचे <ph name="DEVICE_TYPE" /> त्वरित अपडेट करणे आवश्यक आहे</translation>
 <translation id="938963181863597773">माझ्या कॅलेंडरमधील इव्हेंट काय आहेत?</translation>
+<translation id="943067377221312471">मागील डेस्‍क: <ph name="PREVIOUS_DESK_NAME" />, अ‍ॅक्टिव्हेट करण्यासाठी Search+Space वापरा.</translation>
 <translation id="945383118875625837">लिंक बुकमार्क बारवर ड्रॅग करा</translation>
 <translation id="945522503751344254">अभिप्राय पाठवा</translation>
 <translation id="951991426597076286">नकार द्या</translation>
 <translation id="953431725143473984">डिव्हाइस बंद करायचे आहे का?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> साठी पुरेशी जागा नाही. जागा मोकळी करा.</translation>
+<translation id="968627661524972577">तुम्हाला तुमच्या Chromebook वर आवश्यक असलेली प्रत्येक गोष्ट करण्यासाठी अ‍ॅप्स वापरा. तुम्ही तुमचे अ‍ॅप्स लाँचर मध्ये शोधू शकता. तुम्ही कीबोर्डवरील लाँचर कीदेखील दाबू शकता.</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> साठी <ph name="RESULT_COUNT" /> परिणाम दाखवत आहे</translation>
 <translation id="98120814841227350">दस्तऐवजाच्या शेवटी जा</translation>
 <translation id="987589956647469042">मोबाइल डेटा सुरू केलेला आहे</translation>

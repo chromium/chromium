@@ -244,6 +244,7 @@ Kapag na-delete mo ang iyong history ng pag-browse — lahat o para sa isang par
 <translation id="2394602618534698961">Lalabas dito ang mga file na dina-download mo</translation>
 <translation id="2410754283952462441">Pumili ng account</translation>
 <translation id="2414886740292270097">Madilim</translation>
+<translation id="2421705177906985956">Walang site na maipapakita sa ngayon</translation>
 <translation id="2426805022920575512">Pumili ng ibang account</translation>
 <translation id="2433507940547922241">Hitsura</translation>
 <translation id="2435457462613246316">Ipakita ang password</translation>
@@ -844,6 +845,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5578795271662203820">Hanapin sa <ph name="SEARCH_ENGINE" /> ang larawan</translation>
 <translation id="5581519193887989363">Mapipili mo kung ano ang isi-sync anumang oras sa <ph name="BEGIN_LINK1" />mga setting<ph name="END_LINK1" />.</translation>
 <translation id="5590372121997663538">Tandaan ang computer na ito</translation>
+<translation id="5596627076506792578">Higit pang opsyon</translation>
 <translation id="5599455543593328020">Incognito mode</translation>
 <translation id="5620163320393916465">Walang naka-save na password</translation>
 <translation id="5620928963363755975">Hanapin ang iyong mga file at page sa Mga Download mula sa button na Higit Pang Opsyon</translation>

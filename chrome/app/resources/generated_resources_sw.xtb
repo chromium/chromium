@@ -4248,6 +4248,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4508150454272293946">Ruhusu programu na kurasa za wavuti zitumie kamera zilizounganishwa kwenye kifaa hiki. Iwapo kamera yako bado ina tatizo, jaribu kufunga kisha ufungue programu au uonyeshe upya ukurasa wa wavuti.</translation>
 <translation id="450867954911715010">Mipangilio ya zana za walio na matatizo ya kuona au kusikia</translation>
 <translation id="4508765956121923607">Tazama &amp;Asili</translation>
+<translation id="4509277363725254222">Unaposhiriki nakala ya <ph name="BEGIN_BOLD_USERNAME" />jina lako la mtumiaji<ph name="END_BOLD_USERNAME" /> na <ph name="BEGIN_BOLD_PASSWORD" />nenosiri<ph name="END_BOLD_PASSWORD" />, mwanafamilia wako anaweza kulijaza kwa kutumia Kidhibiti cha Manenosiri cha Google</translation>
 <translation id="4509421746503122514">Fungua tena ili usasishe</translation>
 <translation id="4510195992002502722">Imeshindwa kutuma maoni. Inajaribu tena...</translation>
 <translation id="4510479820467554003">Orodha ya akaunti za mzazi</translation>
@@ -4387,6 +4388,7 @@ Ishara za kifaa zinaweza kujumuisha maelezo kuhusu kivinjari, mfumo wa uendeshaj
 <translation id="4623167406982293031">Thibitisha akaunti</translation>
 <translation id="4623189117674524348">Mfumo umeshindwa kuidhinisha ufikiaji wa API kwa kifaa hiki.</translation>
 <translation id="4623341761454569602">Kwenye Kidhibiti cha Manenosiri cha Google <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">Hali ya rangi</translation>
 <translation id="4625078469366263107">Washa Programu</translation>
 <translation id="4625905218692741757">Rangi ya kijivu ya chaguomsingi</translation>
 <translation id="4627427111733173920">Vidakuzi vimezuiwa</translation>
@@ -4818,6 +4820,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="4994426888044765950">Ukishikilia kitufe, herufi ya kitufe itajirudia</translation>
 <translation id="4994754230098574403">Inaweka mipangilio</translation>
 <translation id="4995293419989417004">Pata maelezo zaidi kuhusu mada za matangazo</translation>
+<translation id="4995676741161760215">Kimewaka, kiendelezi kimewashwa</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Hakuna mashine pepe za <ph name="VM_TYPE" /> zilizopatikana}=1{Mashine pepe moja ya <ph name="VM_TYPE" /> imepatikana: <ph name="VM_NAME_LIST" />}other{Mashine pepe {NUM_VMS} za <ph name="VM_TYPE" /> zimepatikana: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Hakuna muunganisho wa Intaneti.</translation>
 <translation id="4998430619171209993">Imewashwa</translation>
@@ -5370,6 +5373,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="5474859849784484111"><ph name="MANAGER" /> inahitaji uunganishe kwenye Wi-Fi sasa na upakue sasisho. Au, pakua kwa kutumia muunganisho wa mtandao unaopima data (huenda ukatozwa ada).</translation>
 <translation id="5481273127572794904">Zisizoruhusiwa kupakua faili nyingi kiotomatiki</translation>
 <translation id="5481941284378890518">Ongeza Printa za Uhamishaji wa Karibu</translation>
+<translation id="5484462543003267273">Dhibiti familia</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> inahitaji uhifadhi nakala ya data yako na urudishe <ph name="DEVICE_TYPE" /> hii leo. <ph name="LINK_BEGIN" />Angalia maelezo<ph name="LINK_END" />}other{<ph name="MANAGER" /> inahitaji uhifadhi nakala ya data yako na urudishe <ph name="DEVICE_TYPE" /> hii ndani ya siku {NUM_DAYS}.<ph name="LINK_BEGIN" />Angalia maelezo<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Ongeza programu</translation>
 <translation id="5485435764083510385">Lugha ya manukuu inayopendelewa</translation>
@@ -5483,7 +5487,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="5571832155627049070">Weka mapendeleo kwenye wasifu wako</translation>
 <translation id="5572166921642484567">Chagua hali ya chati ya rangi</translation>
 <translation id="5572252023412311448">Onyesha maelezo ya tovuti ya <ph name="SITE_GROUP" /></translation>
-<translation id="5572648434713976849">Utapata mapendekezo yaliyoboreshwa katika sehemu ya anwani</translation>
 <translation id="557506220935336383">Angalia ruhusa za viendelezi vya tovuti nyingine</translation>
 <translation id="5575473780076478375">Kiendelezi kilicho katika hali fiche: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Hitilafu imetokea kwenye onyesho la ombi la usajili.</translation>
@@ -5602,6 +5605,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="567740581294087470">Je, unatoa maoni ya aina gani?</translation>
 <translation id="5677503058916217575">Lugha ya ukurasa:</translation>
 <translation id="5677928146339483299">Kumezuiwa</translation>
+<translation id="5677946354068040947">chaguo zaidi</translation>
 <translation id="5678550637669481956">Idhini ya kufikia kusoma na kuandika kwenye <ph name="VOLUME_NAME" /> imeruhusiwa.</translation>
 <translation id="5678821117681811450">Inatumwa kwa <ph name="WEB_DRIVE" /></translation>
 <translation id="5678955352098267522">Soma data yako kwenye <ph name="WEBSITE_1" /></translation>
@@ -6727,7 +6731,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6644846457769259194">Inasasisha kifaa chako <ph name="PROGRESS_PERCENT" /></translation>
 <translation id="6646476869708241165">Zima kipengele cha Kuoanisha Haraka</translation>
 <translation id="6647228709620733774">URL ya Kupinga Mamlaka ya Uidhinishaji wa Netscape</translation>
-<translation id="6647441008198474441">URL unazotembelea hutumwa kwa Google ili kutabiri tovuti ambazo huenda ukazitembelea baadaye</translation>
 <translation id="6647690760956378579">Kagua kwanza sauti ya kawaida</translation>
 <translation id="6648911618876616409">Sasisho muhimu liko tayari kusakinishwa. Ingia katika akaunti ili usakinishe.</translation>
 <translation id="6649018507441623493">Subiri kidogo...</translation>
@@ -7196,6 +7199,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7019546817926942979">Kifaa chako kinahitaji kuchomekwa kwenye chaji. Hatua ya kupata toleo jipya la Linux inaweza kutumia kiasi kikubwa cha chaji ya betri yako. Unganisha kifaa chako kwenye chaja na ujaribu tena.</translation>
 <translation id="7019805045859631636">Haraka</translation>
 <translation id="7022562585984256452">Ukurasa wako wa mwanzo umewekwa.</translation>
+<translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">Utangulizi wa njia mpya ya kusogeza kwa kutumia ishara</translation>
 <translation id="7025190659207909717">Udhibiti wa huduma ya data ya simu ya mkononi</translation>
 <translation id="7025895441903756761">Usalama na Faragha</translation>
@@ -8974,6 +8978,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8514746246728959655">Jaribu ufunguo tofauti wa usalama</translation>
 <translation id="8514955299594277296">Usiruhusu tovuti zihifadhi data kwenye kifaa chako (haipendekezwi)</translation>
 <translation id="8517759303731677493">Badilisha…</translation>
+<translation id="8518942514525208851">Ficha lugha chafu</translation>
 <translation id="8519895319663397036">Imeshindwa kupakia manenosiri. Ukubwa wa faili unapaswa kuwa chini ya KB 150.</translation>
 <translation id="851991974800416566">Tumia Nenosiri Thabiti Kwa Haraka</translation>
 <translation id="8523493869875972733">Hifadhi Mabadiliko</translation>

@@ -388,6 +388,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3311748811247479259">Fra</translation>
 <translation id="3324193307694657476">Adresse 2</translation>
 <translation id="3328801116991980348">Webstedoplysninger</translation>
+<translation id="3340938510625667914">Chrome-handlinger</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bogmærket er gemt i "{title}" på din konto, {email}}one{Bogmærket er gemt i "{title}" på din konto, {email}}other{Bogmærkerne er gemt i "{title}" på din konto, {email}}}</translation>
 <translation id="3371831930909698441">Oversættelse er tilgængelig. Du finder indstillingerne nederst på skærmen.</translation>
 <translation id="3377063233124932127">Du finder nu dine gemte bogmærker, adgangskoder m.m. øverst.</translation>
@@ -935,6 +936,7 @@ Du bør bruge en unik adgangskode for hvert website.</translation>
 <translation id="6628106477656132239">Udløbsdatoen er ugyldig</translation>
 <translation id="6634432609054530164">Din organisation har deaktiveret inkognitotilstand</translation>
 <translation id="6638511529934826365">Zoom ind/ud på tekst…</translation>
+<translation id="6640268266988685324">Åben fane</translation>
 <translation id="6642362222295953972">Skift til den eksisterende fane</translation>
 <translation id="6643016212128521049">Ryd</translation>
 <translation id="6645899968535965230">QR-kode: <ph name="PAGE_TITLE" /></translation>

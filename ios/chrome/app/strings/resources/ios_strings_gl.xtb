@@ -388,6 +388,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3311748811247479259">Non</translation>
 <translation id="3324193307694657476">Enderezo 2</translation>
 <translation id="3328801116991980348">Información do sitio</translation>
+<translation id="3340938510625667914">Accións de Chrome</translation>
 <translation id="3344485292736684439">{count,plural, =1{O marcador gardouse no cartafol "{title}" da túa conta ({email})}other{Os marcadores gardáronse no cartafol "{title}" da túa conta ({email})}}</translation>
 <translation id="3371831930909698441">A tradución está dispoñible. Hai opcións dispoñibles na parte inferior da pantalla.</translation>
 <translation id="3377063233124932127">Agora os marcadores e os contrasinais que teñas gardados, ademais doutros elementos, aparecen na parte superior.</translation>
@@ -935,6 +936,7 @@ Tenta usar un contrasinal distinto para cada sitio.</translation>
 <translation id="6628106477656132239">A data de vencemento non é válida</translation>
 <translation id="6634432609054530164">A túa organización desactivou o modo de incógnito</translation>
 <translation id="6638511529934826365">Aplicar zoom ao texto…</translation>
+<translation id="6640268266988685324">Pestana aberta</translation>
 <translation id="6642362222295953972">Cambiar á pestana xa aberta</translation>
 <translation id="6643016212128521049">Borrar</translation>
 <translation id="6645899968535965230">Código QR: <ph name="PAGE_TITLE" /></translation>

@@ -146,6 +146,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1576623706766186887">Tolinti, kai įjungtas didintuvas</translation>
 <translation id="1586324912145647027">Eiti į 1–8 darbalaukį</translation>
 <translation id="1589090746204042747">Pasiekti visą šios sesijos veiklą</translation>
+<translation id="1592682369233288537">Kitas darbalaukis: „<ph name="NEXT_DESK_NAME" />“, suaktyvinkite naudodami paieškos ir tarpo klavišus.</translation>
 <translation id="1604857178818051494">Pristabdyti mediją</translation>
 <translation id="1610778689852195798">„Anuliuoti“</translation>
 <translation id="1611993646327628135">Įjungta</translation>
@@ -157,6 +158,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1647986356840967552">Ankstesnis puslapis</translation>
 <translation id="1651914502370159744">Atidaryti istorijos puslapį</translation>
 <translation id="1654477262762802994">Pradėti užklausą balsu</translation>
+<translation id="1662667383227796099">Failų, programų ir kitų elementų ieškokite paleidimo priemonėje. Taip pat galite gauti atsakymų į klausimus apie „Chromebook“.</translation>
 <translation id="1668469839109562275">Įtaisytasis VPN</translation>
 <translation id="1675844249244994876">Atnaujinti dešinįjį langą</translation>
 <translation id="1677472565718498478">Liko <ph name="TIME" /></translation>
@@ -560,6 +562,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3477079411857374384">„Control“ + „Shift“ + „Space“</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Lentyna automatiškai slepiama</translation>
+<translation id="3503243067695520519">Sveiki! „Chromebook“ įrenginiai šiek tiek skiriasi.</translation>
 <translation id="3505066820268455558">Akumuliatorius įkraunamas</translation>
 <translation id="3509391053705095206">Nepavyko rasti telefono. Patikrinkite, ar įjungtas telefono „Bluetooth“ ryšys.</translation>
 <translation id="3510164367642747937">Paryškinti pelės žymeklį</translation>
@@ -684,6 +687,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="3977512764614765090">Aumuliatoriaus įkrova <ph name="PERCENTAGE" /> % ir jis įkraunamas.</translation>
 <translation id="3984536049089846927">Kitas puslapis</translation>
 <translation id="3986082989454912832">Atsakyti</translation>
+<translation id="3990002060657467458">Dažnai naudojami valdikliai, pvz., „Wi-Fi“, „Bluetooth“ ir garsumo, pateikiami sparčiuosiuose nustatymuose. Čia taip pat galite kurti ekrano kopijas.</translation>
 <translation id="3995138139523574647">USB-C įrenginys (prievadas dešinėje, užpakalinėje dalyje)</translation>
 <translation id="40062176907008878">Rašymas ranka</translation>
 <translation id="4017989525502048489">Lazerinis žymeklis</translation>
@@ -747,6 +751,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="4269883910223712419">Šio įrenginio administratorius gali atlikti nurodytus veiksmus.</translation>
 <translation id="4274537685965975248">Pakeistas spartusis klavišas „Ctrl“ + „Alt“ + rodyklė žemyn. Jei norite naudoti klavišą „End“, paspauskite <ph name="LAUNCHER_KEY_NAME" /> klavišą + rodyklę dešinėn.</translation>
 <translation id="4275283744500212192">Atidaryti lango išdėstymo parinktis</translation>
+<translation id="4278138729651139331">Tinkinkite ir suasmeninkite „Chromebook“ įrenginį nustatymuose. Pabandykite pakeisti ekrano foną arba nustatyti ekrano užsklandą.</translation>
 <translation id="4279490309300973883">Dubliuojama</translation>
 <translation id="4280601795273309128">Saugos naujiniai baigėsi. Naujovinkite įrenginį.</translation>
 <translation id="4283888303416325161">Norėdami užtikrinti patikimesnę apsaugą įveskite slaptažodį</translation>
@@ -803,6 +808,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="4505050298327493054">Aktyvus darbalaukis.</translation>
 <translation id="450584155212756404">Kuriamas kanalas</translation>
 <translation id="4513946894732546136">Atsiliepimai</translation>
+<translation id="4516212064498225455">Dabartinis darbalaukis: „<ph name="CURRENT_DESK_NAME" />“, atidarykite visų darbalaukių meniu naudodami paieškos ir tarpo klavišus.</translation>
 <translation id="4518404433291145981">Kad atrakintumėte „Chromebook“, pirmiausia atrakinkite telefoną</translation>
 <translation id="4527045527269911712">„Bluetooth“ įrenginys „<ph name="DEVICE_NAME" />“ prašo leidimo susieti.</translation>
 <translation id="4533343294786968049">Pailginamas akumuliatoriaus veikimo laikas. Akumuliatorius bus visiškai įkrautas <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -877,6 +883,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="4813311884204119883">Nuvilkite nuorodą į tuščią sritį skirtuko juostelėje</translation>
 <translation id="4814539958450445987">Prisijungimo ekranas</translation>
 <translation id="481455355267255546">Toliau</translation>
+<translation id="4826588772550366629">fotoaparatas ir mikrofonas</translation>
 <translation id="4831034276697007977">Ar tikrai norite išjungti automatinius paspaudimus?</translation>
 <translation id="4849058404725798627">Paryškinti objektą jį suaktyvinus klaviatūra</translation>
 <translation id="485592688953820832">Nesiimti jokių veiksmų (pristabdyti)</translation>
@@ -970,6 +977,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="5207949376430453814">Paryškinti teksto žymeklį</translation>
 <translation id="5208059991603368177">Įjungti</translation>
 <translation id="5216991270656129561">Išjungta iki <ph name="TIME" /></translation>
+<translation id="5217646019792206018">Kitas darbalaukis: „<ph name="NEXT_DESK_NAME" />“, suaktyvinkite naudodami paieškos ir tarpo klavišus arba sparčiuosius klavišus – „Shift“, paieškos klavišą ir <ph name="NEXT_DESK_INDEX" />.</translation>
 <translation id="5221423477036820198">Sparčiai siųskite telefono pranešimus ar atsakykite į juos naudodami „Phone Hub“.</translation>
 <translation id="5222676887888702881">Atsijungti</translation>
 <translation id="5229343007215035173">Įjungti ir (arba) išjungti privatumo ekraną</translation>
@@ -1035,6 +1043,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="550391772491508736">Tęsti perdavimą</translation>
 <translation id="5506975627792768506">Įjungti arba išjungti didintuvą</translation>
 <translation id="5512042095225963688">Ištrinti ankstesnį žodį</translation>
+<translation id="5518068085000130971">Susipažinote su pagrindine informacija. Jei norite gauti daugiau patarimų ir pagalbos, toliau naudokite „Explore“ – mūsų integruotą programą. Rasite patarimų, kaip pradėti, rekomenduojamų programų, specialių pasiūlymų ir naujausių „Chromebook“ funkcijų.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Administratorius pašalino visus „eSIM“ kortelių profilius. Susisiekite su administratoriumi, jei reikia daugiau informacijos.</translation>
 <translation id="5523434445161341166">„<ph name="FEATURE_NAME" />“ prijungiama.</translation>
@@ -1360,6 +1369,7 @@ Naujas įdiegimas</translation>
 <translation id="6896758677409633944">Kopijuoti</translation>
 <translation id="6901883536534621389">Išbandykite naršymo gestus</translation>
 <translation id="6912841030378044227">Paryškinti adreso juostą</translation>
+<translation id="6912901278692845878">Greita apžvalga</translation>
 <translation id="6919251195245069855">Nepavyko atpažinti išmaniosios kortelės. Bandykite dar kartą.</translation>
 <translation id="6920245099716267363">Perjungti viešosios interneto prieigos tašką. Viešosios interneto prieigos taškas įjungtas, prijungtas vienas įrenginys.</translation>
 <translation id="6931576957638141829">Išsaugoti į</translation>
@@ -1666,6 +1676,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8297006494302853456">Silpnas</translation>
 <translation id="8308637677604853869">Ankstesnis meniu</translation>
 <translation id="830868413617744215">Beta versija</translation>
+<translation id="8312557488404088015">Peržiūrėkite trumpą apžvalgą, kuri padės pradėti dirbti sklandžiai. Tai užtruks vos kelias minutes.</translation>
 <translation id="8314772463905284467">Įjungtas didžiųjų raidžių klavišas</translation>
 <translation id="8315514906653279104">Įjungiama...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -1715,6 +1726,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8517041960877371778">„<ph name="DEVICE_TYPE" />“ gali nebūti kraunamas, kai yra įjungtas.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Mikrofono įvestį valdo „<ph name="APP_NAME" />“}one{Mikrofono įvestį valdo # programa}few{Mikrofono įvestį valdo # programos}many{Mikrofono įvestį valdo # programos}other{Mikrofono įvestį valdo # programų}}</translation>
 <translation id="8535393432370007982">Anuliuoti rūšiavimo tvarką pagal spalvą</translation>
+<translation id="853768060447955562">Ankstesnis darbalaukis: „<ph name="PREVIOUS_DESK_NAME" />“, suaktyvinkite naudodami paieškos ir tarpo klavišus arba sparčiuosius klavišus – „Shift“, paieškos klavišą ir <ph name="PREVIOUS_DESK_INDEX" />.</translation>
 <translation id="8541078764854166027">Fotoaparato kadravimas</translation>
 <translation id="8542053257095774575">Nėra jokių išsaugotų darbalaukių ar šablonų</translation>
 <translation id="8546059259582788728">Rūšiavimas sėkmingai anuliuotas</translation>
@@ -1866,11 +1878,13 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="925832987464884575">Peržiūrų slėpimas</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> reikalauja nedelsiant atnaujinti „<ph name="DEVICE_TYPE" />“</translation>
 <translation id="938963181863597773">„What's on my calendar?“ (Kas mano kalendoriuje?)</translation>
+<translation id="943067377221312471">Ankstesnis darbalaukis: „<ph name="PREVIOUS_DESK_NAME" />“, suaktyvinkite naudodami paieškos ir tarpo klavišus.</translation>
 <translation id="945383118875625837">Vilkite nuorodą į žymių juostą</translation>
 <translation id="945522503751344254">Siųsti atsiliepimą</translation>
 <translation id="951991426597076286">Atmesti</translation>
 <translation id="953431725143473984">Išjungti įrenginį?</translation>
 <translation id="954052413789300507">Nepakanka vietos failui „<ph name="FILENAME" />“. Atlaisvinkite vietos.</translation>
+<translation id="968627661524972577">Viską, ką reikia padaryti „Chromebook“ įrenginyje, galite atlikti naudodamiesi programomis. Programas rasite paleidimo priemonėje. Taip pat galite paspausti paleidimo priemonės klavišą klaviatūroje.</translation>
 <translation id="974545358917229949">Pagal užklausą „<ph name="QUERY" />“ pateikiama rezultatų: <ph name="RESULT_COUNT" /></translation>
 <translation id="98120814841227350">Eiti į dokumento pabaigą</translation>
 <translation id="987589956647469042">Mobiliojo ryšio duomenys įjungti</translation>

@@ -244,6 +244,7 @@ Quando elimina o seu histórico de navegação, todo ou de um site específico, 
 <translation id="2394602618534698961">Os ficheiros que transferir aparecem aqui.</translation>
 <translation id="2410754283952462441">Selecione uma conta</translation>
 <translation id="2414886740292270097">Escuro</translation>
+<translation id="2421705177906985956">Não existem sites para mostrar neste momento</translation>
 <translation id="2426805022920575512">Selecionar outra conta</translation>
 <translation id="2433507940547922241">Aspeto</translation>
 <translation id="2435457462613246316">Mostrar palavra-passe</translation>
@@ -845,6 +846,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5578795271662203820">Pesquisar a imagem no <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Pode escolher o que quer sincronizar nas <ph name="BEGIN_LINK1" />definições<ph name="END_LINK1" />.</translation>
 <translation id="5590372121997663538">Memorizar este computador</translation>
+<translation id="5596627076506792578">Mais opções</translation>
 <translation id="5599455543593328020">Modo de navegação anónima</translation>
 <translation id="5620163320393916465">Não existem palavras-passe guardadas.</translation>
 <translation id="5620928963363755975">Encontre os seus ficheiros e páginas nas Transferências através do botão Mais opções.</translation>

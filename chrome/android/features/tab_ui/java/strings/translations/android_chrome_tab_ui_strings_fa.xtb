@@ -37,6 +37,7 @@
 <translation id="4133493477912226187">به نظر می‌رسد <ph name="NUMBER_OF_TABS" /> برگه مرتبط باشند. گروه‌بندی شوند؟</translation>
 <translation id="4212246570487010370">ادامه مرور</translation>
 <translation id="4648718555153979859">برگه‌هایتان اینجا باهم گروه‌بندی می‌شوند</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{‏می‌توانید برگه‌های بسته‌شده را در «برگه‌های اخیر» در بخش منوِ اصلی Chrome پیدا کنید.}=1{‏می‌توانید برگه‌های بسته‌شده را در «برگه‌های اخیر» در بخش منوِ اصلی Chrome پیدا کنید. «برگه ناشناس» دردسترس نخواهد بود.}one{‏می‌توانید برگه‌های بسته‌شده را در «برگه‌های اخیر» در بخش منوِ اصلی Chrome پیدا کنید. # «برگه ناشناس» دردسترس نخواهد بود.}other{‏می‌توانید برگه‌های بسته‌شده را در «برگه‌های اخیر» در بخش منوِ اصلی Chrome پیدا کنید. # «برگه ناشناس» دردسترس نخواهد بود.}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> مرور)}one{(<ph name="REVIEWS_COUNT_MANY" /> مرور)}other{(<ph name="REVIEWS_COUNT_MANY" /> مرور)}}</translation>
 <translation id="4850886885716139402">نما</translation>
 <translation id="4870911314065352661">همه برگه‌ها بسته شود؟</translation>

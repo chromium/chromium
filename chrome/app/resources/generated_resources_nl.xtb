@@ -4376,6 +4376,7 @@ Apparaatsignalen kunnen informatie geven over je browser, OS, apparaat, geïnsta
 <translation id="4623167406982293031">Account verifiëren</translation>
 <translation id="4623189117674524348">Het systeem kan API-toegang voor dit apparaat niet verifiëren.</translation>
 <translation id="4623341761454569602">In Google Wachtwoordmanager <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">Kleurenthema</translation>
 <translation id="4625078469366263107">App aanzetten</translation>
 <translation id="4625905218692741757">Standaardkleur grijs</translation>
 <translation id="4627427111733173920">Cookies geblokkeerd</translation>
@@ -5473,7 +5474,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5571832155627049070">Je profiel aanpassen</translation>
 <translation id="5572166921642484567">Een kleurenschemamodus kiezen</translation>
 <translation id="5572252023412311448">Sitegegevens tonen voor <ph name="SITE_GROUP" /></translation>
-<translation id="5572648434713976849">Je krijgt verbeterde suggesties in de adresbalk</translation>
 <translation id="557506220935336383">Extensierechten voor andere sites bekijken</translation>
 <translation id="5575473780076478375">Incognito-extensie: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Er is een probleem opgetreden met een demoregistratieverzoek.</translation>
@@ -5590,6 +5590,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="567740581294087470">Wat voor feedback dien je in?</translation>
 <translation id="5677503058916217575">Brontaal:</translation>
 <translation id="5677928146339483299">Geblokkeerd</translation>
+<translation id="5677946354068040947">meer opties</translation>
 <translation id="5678550637669481956">Lees- en schrijftoegang tot <ph name="VOLUME_NAME" /> is toegekend.</translation>
 <translation id="5678821117681811450">Sturen naar <ph name="WEB_DRIVE" /></translation>
 <translation id="5678955352098267522">Je gegevens voor <ph name="WEBSITE_1" /> lezen</translation>
@@ -6713,7 +6714,6 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6644846457769259194">Je apparaat updaten (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Snel koppelen uitzetten</translation>
 <translation id="6647228709620733774">URL voor intrekken van certificeringsinstantie voor Netscape-certificaat</translation>
-<translation id="6647441008198474441">URL's die je bezoekt, worden naar Google gestuurd om te voorspellen naar welke sites je misschien daarna gaat</translation>
 <translation id="6647690760956378579">Voorbeeld van natuurlijke stem</translation>
 <translation id="6648911618876616409">Er is een nieuwe essentiële update beschikbaar. Log in om aan de slag te gaan.</translation>
 <translation id="6649018507441623493">Een ogenblik…</translation>
@@ -7181,6 +7181,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7019546817926942979">Je apparaat moet worden aangesloten. Als je Linux upgradet, kan je batterij aanzienlijk sneller leeglopen. Sluit je apparaat aan op een oplader en probeer het opnieuw.</translation>
 <translation id="7019805045859631636">Snel</translation>
 <translation id="7022562585984256452">Je homepage is ingesteld.</translation>
+<translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">Maak kennis met een nieuwe manier om te navigeren met gebaren</translation>
 <translation id="7025190659207909717">Beheer van mobiele netwerken</translation>
 <translation id="7025895441903756761">Beveiliging en privacy</translation>

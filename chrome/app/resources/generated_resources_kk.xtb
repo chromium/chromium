@@ -4234,6 +4234,7 @@
 <translation id="4508150454272293946">Қолданбалар мен веб-беттердің осы құрылғыға қосылған камераларды пайдалануына рұқсат беріңіз. Камерада әлі де мәселе болса, қолданбаны қайта өшіріп қосып көріңіз немесе веб-бетті жаңартыңыз.</translation>
 <translation id="450867954911715010">Арнайы мүмкіндіктер параметрлері</translation>
 <translation id="4508765956121923607">Д&amp;ереккөзді көру</translation>
+<translation id="4509277363725254222"><ph name="BEGIN_BOLD_USERNAME" />Пайдаланушы аты<ph name="END_BOLD_USERNAME" /> және <ph name="BEGIN_BOLD_PASSWORD" />құпия сөз<ph name="END_BOLD_PASSWORD" /> көшірмесін бөліскен кезде, отбасы мүшесі оларды Google Password Manager көмегімен толтыра алады.</translation>
 <translation id="4509421746503122514">Жаңарту үшін қайта іске қосу</translation>
 <translation id="4510195992002502722">Пікір жіберілмеді. Әрекет қайталануда…</translation>
 <translation id="4510479820467554003">Ата-ананың аккаунттары тізімі</translation>
@@ -4373,6 +4374,7 @@
 <translation id="4623167406982293031">Аккаунтты растау</translation>
 <translation id="4623189117674524348">Жүйе осы құрылғыда API интерфейсіне кіру рұқсатын бере алмады.</translation>
 <translation id="4623341761454569602">Google Құпия сөз менеджерінде <ph name="SEPARATOR" /> <ph name="ACCOUNT" />.</translation>
+<translation id="4624054169152573743">Түс тақырыбы</translation>
 <translation id="4625078469366263107">Қолданбаны қосу</translation>
 <translation id="4625905218692741757">Сұр әдепкі түс</translation>
 <translation id="4627427111733173920">Cookie файлдары бөгелді</translation>
@@ -4804,6 +4806,7 @@
 <translation id="4994426888044765950">Пернені басып тұрсаңыз, перненің таңбасы қайталанады</translation>
 <translation id="4994754230098574403">Реттелуде</translation>
 <translation id="4995293419989417004">Жарнама тақырыптары туралы толық ақпарат</translation>
+<translation id="4995676741161760215">Қосулы, кеңейтім қосулы</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{"<ph name="VM_TYPE" />" виртуалдық машиналары табылмады.}=1{1 "<ph name="VM_TYPE" />" виртуалдық машинасы табылды: <ph name="VM_NAME_LIST" />.}other{{NUM_VMS} "<ph name="VM_TYPE" />" виртуалдық машинасы табылды: <ph name="VM_NAME_LIST" />.}}</translation>
 <translation id="4997086284911172121">Интернет байланысы жоқ.</translation>
 <translation id="4998430619171209993">Қосулы</translation>
@@ -5356,6 +5359,7 @@
 <translation id="5474859849784484111"><ph name="MANAGER" /> дереккөзі Wi-Fi желісіне қосылып, жаңа нұсқаны жүктеп алуды талап етеді. Оны трафик саналатын байланыс арқылы жүктеп алуға да болады (ақы алынуы мүмкін).</translation>
 <translation id="5481273127572794904">Бірнеше файлды автоматты түрде жүктеп алуға рұқсаты жоқтар</translation>
 <translation id="5481941284378890518">Маңайдағы принтерлерді енгізу</translation>
+<translation id="5484462543003267273">Отбасын басқару</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> деректердің сақтық көшірмесін жасап, <ph name="DEVICE_TYPE" /> құрылғысын бүгін қайтаруыңызды талап етеді. <ph name="LINK_BEGIN" />Мәліметтерді көру<ph name="LINK_END" />}other{<ph name="MANAGER" /> деректердің сақтық көшірмесін жасап, <ph name="DEVICE_TYPE" /> құрылғысын {NUM_DAYS} күн ішінде қайтаруыңызды талап етеді. <ph name="LINK_BEGIN" />Мәліметтерді көру<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Қолданба қосу</translation>
 <translation id="5485435764083510385">Қажетті жазу тілі</translation>
@@ -5469,7 +5473,6 @@
 <translation id="5571832155627049070">Профильді реттеу</translation>
 <translation id="5572166921642484567">Түстер схемасы режимін таңдау</translation>
 <translation id="5572252023412311448"><ph name="SITE_GROUP" /> сайтының мәліметтерін көрсету</translation>
-<translation id="5572648434713976849">Мекенжай жолағында жақсартылған ұсыныстар аласыз.</translation>
 <translation id="557506220935336383">Басқа сайттарға арналған кеңейтім рұқсаттарын көру</translation>
 <translation id="5575473780076478375">Инкогнито кеңейтімі: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Демо тіркеу сұрауына қатысты ақау орын алды.</translation>
@@ -5586,6 +5589,7 @@
 <translation id="567740581294087470">Қандай пікір білдіресіз?</translation>
 <translation id="5677503058916217575">Бет тілі:</translation>
 <translation id="5677928146339483299">Тыйым салынған</translation>
+<translation id="5677946354068040947">басқа да опциялар</translation>
 <translation id="5678550637669481956"><ph name="VOLUME_NAME" /> оқу және жазу рұқсаты берілген.</translation>
 <translation id="5678821117681811450"><ph name="WEB_DRIVE" /> қоймасына жіберілуде</translation>
 <translation id="5678955352098267522">Деректеріңізді  <ph name="WEBSITE_1" /> торабынан оқу</translation>
@@ -6710,7 +6714,6 @@
 <translation id="6644846457769259194">Құрылғы жаңартылуда (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Fast Pair функциясын өшіру</translation>
 <translation id="6647228709620733774">Netscape сертификат беру ұйымының қайтарып алу URL мекенжайы</translation>
-<translation id="6647441008198474441">Сіз кірген URL мекенжайлары Google-ға жіберіледі. Осылайша Google келесіде қандай сайтқа кіруіңіз мүмкін екендігін болжай алады.</translation>
 <translation id="6647690760956378579">Табиғи дауыстың алғы нұсқасы</translation>
 <translation id="6648911618876616409">Маңызды жаңартылған нұсқа қолжетімді. Бастау үшін аккаунтқа кіріңіз.</translation>
 <translation id="6649018507441623493">Сәл күте тұрыңыз...</translation>
@@ -8954,6 +8957,7 @@
 <translation id="8514746246728959655">Басқа қауіпсіздік кілтін пайдаланып көріңіз</translation>
 <translation id="8514955299594277296">Сайттардың құрылғыңызда деректерді сақтауына рұқсат етпеу (ұсынылмайды)</translation>
 <translation id="8517759303731677493">Өзгерту…</translation>
+<translation id="8518942514525208851">Балағат сөздерді жасыру</translation>
 <translation id="8519895319663397036">Құпия сөздерді импорттау мүмкін емес. Файлдың көлемі 150 КБ-тан аз болуы керек.</translation>
 <translation id="851991974800416566">Күрделі құпия сөзді жылдам пайдалану</translation>
 <translation id="8523493869875972733">Өзгерістерді сақтау</translation>

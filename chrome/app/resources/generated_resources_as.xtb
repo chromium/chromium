@@ -4250,6 +4250,7 @@
 <translation id="4508150454272293946">এই ডিভাইচৰ সৈতে সংযোজিত কেমেৰা(বোৰ) ব্যৱহাৰ কৰিবলৈ এপ্ আৰু ৱেবপৃষ্ঠাসমূহক অনুমতি দিয়ক। যদি আপোনাৰ কেমেৰাত এতিয়াও সমস্যাটো পাই আছে, এপ্‌টো পুনৰাৰম্ভ কৰি বা ৱেবপৃষ্ঠাখন ৰিফ্ৰেশ্ব কৰি চাওক।</translation>
 <translation id="450867954911715010">সাধ্য সুবিধাৰ ছেটিং</translation>
 <translation id="4508765956121923607">উ&amp;ৎস চাওক</translation>
+<translation id="4509277363725254222">যেতিয়া আপুনি আপোনাৰ <ph name="BEGIN_BOLD_USERNAME" />ব্যৱহাৰকাৰীৰ নাম<ph name="END_BOLD_USERNAME" /> আৰু <ph name="BEGIN_BOLD_PASSWORD" />পাছৱৰ্ড<ph name="END_BOLD_PASSWORD" />ৰ এটা প্ৰতিলিপি শ্বেয়াৰ কৰে, আপোনাৰ পৰিয়ালৰ সদস্যই Google Password Manager ব্যৱহাৰ কৰি সেইবোৰ পূৰ কৰিব পাৰে</translation>
 <translation id="4509421746503122514">আপডে’ট কৰিবলৈ পুনৰ লঞ্চ কৰক</translation>
 <translation id="4510195992002502722">মতামত পঠিয়াব পৰা নগ'ল। আকৌ চেষ্টা কৰি থকা হৈছে…</translation>
 <translation id="4510479820467554003">অভিভাৱকৰ একাউণ্টৰ সূচী</translation>
@@ -4389,6 +4390,7 @@
 <translation id="4623167406982293031">একাউণ্টটোৰ সত্যাপন কৰক</translation>
 <translation id="4623189117674524348">ছিষ্টেমটোৱে এই ডিভাইচটোৰ বাবে API এক্সেছৰ কর্তৃত্ব প্ৰদান কৰিব নোৱাৰিলে।</translation>
 <translation id="4623341761454569602">Google Password Manager <ph name="SEPARATOR" /> <ph name="ACCOUNT" />ত</translation>
+<translation id="4624054169152573743">ৰঙৰ থীম</translation>
 <translation id="4625078469366263107">এপ্ সক্ষম কৰক</translation>
 <translation id="4625905218692741757">ধোঁৱাবৰণীয়া ডিফ’ল্ট ৰং</translation>
 <translation id="4627427111733173920">কুকি অৱৰোধ কৰা হ’ল</translation>
@@ -4820,6 +4822,7 @@
 <translation id="4994426888044765950">যদি আপুনি এটা কী টিপি ধৰি ৰাখে, কীটোৰ বৰ্ণটোৰ পুনৰাবৃত্তি হ’ব</translation>
 <translation id="4994754230098574403">ছেট আপ কৰি থকা হৈছে</translation>
 <translation id="4995293419989417004">বিজ্ঞাপনৰ বিষয়বস্তুৰ বিষয়ে অধিক জানক</translation>
+<translation id="4995676741161760215">অন আছে, এক্সটেনশ্বন সক্ষম কৰা হৈছে</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{কোনো <ph name="VM_TYPE" /> VM বিচাৰি পোৱা নগ’ল}=1{১ টা <ph name="VM_TYPE" /> VM পোৱা গৈছে: <ph name="VM_NAME_LIST" />}one{{NUM_VMS} <ph name="VM_TYPE" /> VM পোৱা গৈছে: <ph name="VM_NAME_LIST" />}other{{NUM_VMS} <ph name="VM_TYPE" /> VM পোৱা গৈছে: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">ইণ্টাৰনেট সংযোগ নাই।</translation>
 <translation id="4998430619171209993">অন আছে</translation>
@@ -5372,6 +5375,7 @@
 <translation id="5474859849784484111"><ph name="MANAGER" />ৰ বাবে আপুনি এতিয়াই এটা ৱাই-ফাই নেটৱৰ্কৰ সৈতে সংযোগ কৰিব লাগিব আৰু এটা আপডে’ট ডাউনল’ড কৰিব লাগিব। অথবা, এটা নিৰিখ-নিৰ্দিষ্ট সংযোগৰ পৰা ডাউনল’ড কৰক (মাচুল প্ৰযোজ্য হ’ব পাৰে)।</translation>
 <translation id="5481273127572794904">স্বয়ংক্ৰিয়ভাৱে একাধিক ফাইল ডাউনল’ড কৰাৰ অনুমতি নাই</translation>
 <translation id="5481941284378890518">নিকটৱৰ্তী প্ৰিণ্টাৰ যোগ কৰক</translation>
+<translation id="5484462543003267273">পৰিয়াল পৰিচালনা কৰক</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" />ৰ বাবে আপুনি নিজৰ ডেটাৰ বেক আপ লোৱাৰ আৰু এই <ph name="DEVICE_TYPE" />টো আজি উভতাই দিয়াৰ আৱশ্যক। <ph name="LINK_BEGIN" />সবিশেষ চাওক<ph name="LINK_END" />}one{<ph name="MANAGER" />ৰ বাবে আপুনি নিজৰ ডেটাৰ বেক আপ লোৱা আৰু {NUM_DAYS} দিনৰ ভিতৰত এই <ph name="DEVICE_TYPE" />টো ঘূৰাই দিয়াৰ আৱশ্যক। <ph name="LINK_BEGIN" />সবিশেষ চাওক<ph name="LINK_END" />}other{<ph name="MANAGER" />ৰ বাবে আপুনি নিজৰ ডেটাৰ বেক আপ লোৱা আৰু {NUM_DAYS} দিনৰ ভিতৰত এই <ph name="DEVICE_TYPE" />টো ঘূৰাই দিয়াৰ আৱশ্যক। <ph name="LINK_BEGIN" />সবিশেষ চাওক<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">এপ্ যোগ কৰক</translation>
 <translation id="5485435764083510385">অগ্ৰাধিকাৰপ্ৰাপ্ত কেপশ্বনৰ ভাষা</translation>
@@ -5485,7 +5489,6 @@
 <translation id="5571832155627049070">আপোনাৰ প্ৰ’ফাইলটো কাষ্টমাইজ কৰক</translation>
 <translation id="5572166921642484567">এটা ৰং বিন্যাসৰ ম’ড বাছনি কৰক</translation>
 <translation id="5572252023412311448"><ph name="SITE_GROUP" />ৰ বাবে ছাইটৰ সবিশেষ দেখুৱাওক</translation>
-<translation id="5572648434713976849">আপুনি ঠিকনাৰ বাৰত উন্নত পৰামৰ্শসমূহ পাব</translation>
 <translation id="557506220935336383">অন্য ছাইটসমূহৰ বাবে এক্সটেনশ্বনৰ অনুমতি চাওক</translation>
 <translation id="5575473780076478375">ইনক’গনিট’ এক্সটেনশ্বন: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">ডেম’ পঞ্জীয়নৰ অনুৰোধৰ ক্ষেত্ৰত এটা সমস্যা হৈছে।</translation>
@@ -5604,6 +5607,7 @@
 <translation id="567740581294087470">আপুনি কি ধৰণৰ মতামত দিছে?</translation>
 <translation id="5677503058916217575">পৃষ্ঠাৰ ভাষা:</translation>
 <translation id="5677928146339483299">অৱৰোধিত</translation>
+<translation id="5677946354068040947">অধিক বিকল্প</translation>
 <translation id="5678550637669481956"><ph name="VOLUME_NAME" />লৈ পঢ়া আৰু লিখাৰ এক্সেছ দিয়া হৈছে।</translation>
 <translation id="5678821117681811450"><ph name="WEB_DRIVE" />লৈ পঠিয়াই থকা হৈছে</translation>
 <translation id="5678955352098267522">আপোনাৰ ডেটা <ph name="WEBSITE_1" />ত পঢ়ক</translation>
@@ -6731,7 +6735,6 @@
 <translation id="6644846457769259194">আপোনাৰ ডিভাইচ আপডে'ট কৰি থকা হৈছে (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">দ্ৰুতভাৱে পেয়াৰ কৰাৰ সুবিধা অফ কৰক</translation>
 <translation id="6647228709620733774">Netscape প্ৰমাণপত্ৰ প্ৰদানকাৰী কৰ্তৃত্ব প্ৰত্যাহাৰ URL</translation>
-<translation id="6647441008198474441">আপুনি ইয়াৰ পাছত কি ছাইট চাব সেয়া অনুমান কৰিবলৈ আপুনি চোৱা URLসমূহ Googleলৈ পঠিওৱা হয়</translation>
 <translation id="6647690760956378579">প্ৰাকৃতিক কণ্ঠস্বৰৰ পূৰ্বদৰ্শন</translation>
 <translation id="6648911618876616409">এটা গুৰুত্বপূর্ণ আপডে’ট ইনষ্টল কৰিব পৰা হৈ আছে। ইনষ্টলেশ্বন আৰম্ভ কৰিবলৈ ছাইন ইন কৰক।</translation>
 <translation id="6649018507441623493">মাত্ৰ কেই ছেকেণ্ড মান অপেক্ষা কৰক...</translation>
@@ -8976,6 +8979,7 @@
 <translation id="8514746246728959655">বেলেগ এটা সুৰক্ষা চাবি ব্যৱহাৰ কৰি চাওক</translation>
 <translation id="8514955299594277296">ছাইটসমূহক আপোনাৰ ডিভাইচত ডেটা ছেভ কৰিবলৈ নিদিব (চুপাৰিছ কৰা নহয়)</translation>
 <translation id="8517759303731677493">সম্পাদনা কৰক…</translation>
+<translation id="8518942514525208851">অশালীনতা লুকুৱাওক</translation>
 <translation id="8519895319663397036">পাছৱৰ্ড আমদানি কৰিব নোৱাৰি। ফাইলটোৰ আকাৰ ১৫০ কেবিতকৈ কম হ’ব লাগিব।</translation>
 <translation id="851991974800416566">ক্ষিপ্ৰতাৰে এটা বিশ্বস্ত পাছৱৰ্ড ব্যৱহাৰ কৰক</translation>
 <translation id="8523493869875972733">সালসলনিসমূহ ৰাখক</translation>

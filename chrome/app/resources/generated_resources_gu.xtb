@@ -4379,6 +4379,7 @@
 <translation id="4623167406982293031">એકાઉન્ટ ચકાસો</translation>
 <translation id="4623189117674524348">સિસ્ટમ આ ડિવાઇસ માટે API ઍક્સેસ અધિકૃત કરવામાં નિષ્ફળ થઈ.</translation>
 <translation id="4623341761454569602">Google Password Managerમાં <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">રંગ થીમ</translation>
 <translation id="4625078469366263107">ઍપ ચાલુ કરો</translation>
 <translation id="4625905218692741757">ડિફૉલ્ટ રંગ ગ્રે</translation>
 <translation id="4627427111733173920">કુકી અવરોધિત</translation>
@@ -5477,7 +5478,6 @@
 <translation id="5571832155627049070">તમારી પ્રોફાઇલ કસ્ટમાઇઝ કરો</translation>
 <translation id="5572166921642484567">રંગની શૈલીનો મોડ પસંદ કરો</translation>
 <translation id="5572252023412311448"><ph name="SITE_GROUP" /> માટે સાઇટની વિગતો બતાવો</translation>
-<translation id="5572648434713976849">ઍડ્રેસ બારમાં તમે બહેતર સૂચનો મેળવશો</translation>
 <translation id="557506220935336383">અન્ય સાઇટ માટે એક્સ્ટેન્શનની પરવાનગીઓ જુઓ</translation>
 <translation id="5575473780076478375">છુપું એક્સ્ટેંશન: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">ડેમો નોંધણીની વિનંતીમાં સમસ્યા આવી.</translation>
@@ -5597,6 +5597,7 @@
 <translation id="567740581294087470">તમે કેવા પ્રકારનો પ્રતિસાદ પ્રદાન કરી રહ્યાં છો?</translation>
 <translation id="5677503058916217575">પેજની ભાષા:</translation>
 <translation id="5677928146339483299">બ્લૉક કરેલ</translation>
+<translation id="5677946354068040947">વધુ વિકલ્પો</translation>
 <translation id="5678550637669481956"><ph name="VOLUME_NAME" /> ને વાંચવા લખવાની ઍક્સેસ મંજૂર કરવામાં આવી છે.</translation>
 <translation id="5678821117681811450"><ph name="WEB_DRIVE" />ને મોકલી રહ્યાં છીએ</translation>
 <translation id="5678955352098267522"><ph name="WEBSITE_1" /> પર તમારો ડેટા વાંચી શકે છે</translation>
@@ -6725,7 +6726,6 @@ USB ડિવાઇસ</translation>
 <translation id="6644846457769259194">તમારું ઉપકરણ અપડેટ થઈ રહ્યું છે (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">ઝડપી જોડાણ બંધ કરો</translation>
 <translation id="6647228709620733774">નેટસ્કેપ પ્રમાણન અધિકારી રિવોકેશન URL</translation>
-<translation id="6647441008198474441">હવે તમે આના પછી કઈ સાઇટની મુલાકાત લેશો તેનું પૂર્વાનુમાન લગાવવા માટે, તમે જેની મુલાકાત લો છો તે URLs Googleને મોકલવામાં આવે છે</translation>
 <translation id="6647690760956378579">સાહજિક વૉઇસનો પ્રીવ્યૂ</translation>
 <translation id="6648911618876616409">મહત્ત્વપૂર્ણ અપડેટ ઇન્સ્ટૉલ થવા માટે તૈયાર છે. શરૂ કરવા માટે, સાઇન ઇન કરો.</translation>
 <translation id="6649018507441623493">માત્ર એક જ સેકંડ…</translation>
@@ -7194,6 +7194,7 @@ USB ડિવાઇસ</translation>
 <translation id="7019546817926942979">તમારા ડિવાઇસને પ્લગ-ઇન કરવાની જરૂર છે. Linux અપગ્રેડ કરવાથી તમારી બૅટરી નોંધપાત્ર રીતે વપરાઈ શકે છે. તમારા ડિવાઇસને ચાર્જર સાથે કનેક્ટ કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="7019805045859631636">ઝડપી</translation>
 <translation id="7022562585984256452">તમારું હોમ પેજ સેટ કરવામાં આવ્યું છે.</translation>
+<translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">સંકેતો વડે નૅવિગેટ કરવાની નવી રીતનો પરિચય</translation>
 <translation id="7025190659207909717">મોબાઇલ ડેટા સેવા મેનેજમેન્ટ</translation>
 <translation id="7025895441903756761">સુરક્ષા અને પ્રાઇવસી</translation>

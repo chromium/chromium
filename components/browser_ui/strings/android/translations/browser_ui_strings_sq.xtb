@@ -301,6 +301,7 @@
 <translation id="6439114592976064011">Blloko sajtet që të mos përdorin pajisjen e realitetit virtual dhe të dhënat e tua</translation>
 <translation id="6447842834002726250">Kukit</translation>
 <translation id="6467852467360539617">Pastro të dhënat dhe rivendos lejet</translation>
+<translation id="6500423977866688905">Kur dritarja është e ngushtë, kërko pamjen për celular</translation>
 <translation id="6527303717912515753">Ndaj</translation>
 <translation id="6545864417968258051">Skanimi për Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="NUM_MORE" /> tjetër e bllokuar}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="NUM_MORE" /> të tjera të bllokuara}}</translation>

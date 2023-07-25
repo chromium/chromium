@@ -4391,6 +4391,7 @@ Az eszközjelek közé tartozhatnak a böngészővel, az operációs rendszerrel
 <translation id="4623167406982293031">Fiók ellenőrzése</translation>
 <translation id="4623189117674524348">A rendszer nem tudta hitelesíteni az eszköz API-hozzáférését.</translation>
 <translation id="4623341761454569602">A Google Jelszókezelőben <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">Színösszeállítás</translation>
 <translation id="4625078469366263107">Alkalmazás engedélyezése</translation>
 <translation id="4625905218692741757">Alapértelmezett szürke szín</translation>
 <translation id="4627427111733173920">Cookie-k letiltva</translation>
@@ -5490,7 +5491,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="5571832155627049070">Profil személyre szabása</translation>
 <translation id="5572166921642484567">Színsémamód kiválasztása</translation>
 <translation id="5572252023412311448">Webhelyadatok megjelenítése a következőhöz: <ph name="SITE_GROUP" /></translation>
-<translation id="5572648434713976849">Jobb javaslatokat kaphat a címsávban</translation>
 <translation id="557506220935336383">Más webhelyek bővítményekhez tartozó engedélyeinek megtekintése</translation>
 <translation id="5575473780076478375">Inkognitó mód bővítmény: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Gond adódott a demó mód regisztrációs kérelmével.</translation>
@@ -5610,6 +5610,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="567740581294087470">Milyen visszajelzést kíván küldeni?</translation>
 <translation id="5677503058916217575">Az oldal nyelve:</translation>
 <translation id="5677928146339483299">Letiltva</translation>
+<translation id="5677946354068040947">további beállítások</translation>
 <translation id="5678550637669481956">Megkapta az írási és olvasási hozzáférést a következőhöz: <ph name="VOLUME_NAME" /></translation>
 <translation id="5678821117681811450">Küldés <ph name="WEB_DRIVE" /> részére</translation>
 <translation id="5678955352098267522">Adatok beolvasása a következő webhelyen: <ph name="WEBSITE_1" /></translation>
@@ -6735,7 +6736,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6644846457769259194">Eszköz frissítése (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">A Gyors párosítás kikapcsolása</translation>
 <translation id="6647228709620733774">Netscape tanúsítványkibocsátó -- visszavonási URL</translation>
-<translation id="6647441008198474441">Az Ön által felkeresett URL-ek el lesznek küldve a Google-nak, hogy előrejelezzük, mely webhelyeket fogja esetleg legközelebb felkeresni.</translation>
 <translation id="6647690760956378579">Természetes hangelőnézet</translation>
 <translation id="6648911618876616409">Egy kritikus frissítés készen áll a telepítésre. Jelentkezzen be az indításához.</translation>
 <translation id="6649018507441623493">Egy pillanat…</translation>
@@ -7204,6 +7204,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7019546817926942979">Eszközét áramforráshoz kell csatlakoztatni. A Linux frissítése jelentősen igénybe veheti az akkumulátort. Csatlakoztassa töltőre az eszközt, és próbálja újra.</translation>
 <translation id="7019805045859631636">Gyors</translation>
 <translation id="7022562585984256452">Beállítottuk kezdőoldalát.</translation>
+<translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">Bemutatunk egy új módszert, amellyel kézmozdulatok segítségével navigálhat</translation>
 <translation id="7025190659207909717">Mobil adatátviteli szolgáltatás kezelése</translation>
 <translation id="7025895441903756761">Biztonság és adatvédelem</translation>

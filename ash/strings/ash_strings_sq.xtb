@@ -146,6 +146,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1576623706766186887">Zvogëlo kur zmadhuesi është aktiv</translation>
 <translation id="1586324912145647027">Shko te tavolina e punës nga 1 deri në 8</translation>
 <translation id="1589090746204042747">Qasu te të gjitha aktivitetet e tua në këtë sesion</translation>
+<translation id="1592682369233288537">Tavolina tjetër e punës: <ph name="NEXT_DESK_NAME" />, përdor Kërko + Hapësirë për ta aktivizuar.</translation>
 <translation id="1604857178818051494">Vendose median në pauzë</translation>
 <translation id="1610778689852195798">"Zhbëj"</translation>
 <translation id="1611993646327628135">Aktive</translation>
@@ -157,6 +158,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1647986356840967552">Faqja e mëparshme</translation>
 <translation id="1651914502370159744">Hap faqen e "Historikut"</translation>
 <translation id="1654477262762802994">Nis një pyetje me zë</translation>
+<translation id="1662667383227796099">Kërko për skedarët, aplikacionet etj. te "Nisësi". Mund të marrësh po ashtu përgjigje për pyetjet në lidhje me pajisjen tënde Chromebook.</translation>
 <translation id="1668469839109562275">VPN e integruar</translation>
 <translation id="1675844249244994876">Përditëso dritaren në të djathtë</translation>
 <translation id="1677472565718498478">Koha e mbetur <ph name="TIME" /></translation>
@@ -439,6 +441,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2965227184985674128">Të aktivizohet qasja te mikrofoni?</translation>
 <translation id="296762781903199866">S'mund të shkarkoheshin skedarët ligjërimit në <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">Instalo aplikacione, shtesa dhe tema</translation>
+<translation id="2977098646659697261">Aplikacionet e tua të gozhduara dhe të hapura janë te "Rafti". Për të gozhduar një aplikacion te "Rafti", kliko me butonin djathtas te një aplikacion ose trokit me dy gishta te blloku me prekje.</translation>
 <translation id="2977598380246111477">Numri tjetër</translation>
 <translation id="2985148236010982088">Shiko të gjitha aplikacionet</translation>
 <translation id="2992327365391326550">Butoni i mikrofonit të pajisjes është i çaktivizuar.</translation>
@@ -560,6 +563,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3477079411857374384">Control-Shift-Hapësirë</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Rafti i fshehur automatikisht</translation>
+<translation id="3503243067695520519">Përshëndetje. Pajisjet Chromebook janë pak ndryshe.</translation>
 <translation id="3505066820268455558">Bateria po karikohet</translation>
 <translation id="3509391053705095206">Telefoni yt nuk mund të gjendet. Sigurohu që të jetë aktivizuar Bluetooth-i i telefonit tënd.</translation>
 <translation id="3510164367642747937">Thekso kursorin e miut</translation>
@@ -684,6 +688,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="3977512764614765090">Bateria është në <ph name="PERCENTAGE" />% dhe po karikohet.</translation>
 <translation id="3984536049089846927">Faqja tjetër</translation>
 <translation id="3986082989454912832">Përgjigju</translation>
+<translation id="3990002060657467458">Kontrollet e përdorura shpesh si Wi-Fi, Bluetooth dhe volumi janë te "Cilësimet e shpejta". Mund të shkosh po ashtu këtu për të nxjerrë pamjet e ekranit.</translation>
 <translation id="3995138139523574647">Pajisja USB-C (porta e pasme, djathtas)</translation>
 <translation id="40062176907008878">Shkrim dore</translation>
 <translation id="4017989525502048489">Treguesi me lazer</translation>
@@ -747,6 +752,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="4269883910223712419">Administratori i kësaj pajisjeje ka aftësinë që:</translation>
 <translation id="4274537685965975248">Shkurtorja e tastierës për Alt + Shigjeta poshtë është ndryshuar. Për të përdorur tastin End, shtyp tastin <ph name="LAUNCHER_KEY_NAME" /> + Shigjeta djathtas.</translation>
 <translation id="4275283744500212192">Hap opsionet e strukturës së dritareve</translation>
+<translation id="4278138729651139331">Personalizo pajisjen tënde Chromebook te "Cilësimet". Provo të ndryshosh imazhin e sfondit ose të caktosh një mbrojtës ekrani.</translation>
 <translation id="4279490309300973883">Pasqyrim</translation>
 <translation id="4280601795273309128">Përditësimet e sigurisë kanë ndaluar. Përmirëso pajisjen tënde.</translation>
 <translation id="4283888303416325161">Fut fjalëkalimin për më shumë siguri</translation>
@@ -803,6 +809,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="4505050298327493054">Hapësira e punës aktive.</translation>
 <translation id="450584155212756404">Kanali i zhvilluesve</translation>
 <translation id="4513946894732546136">Komente</translation>
+<translation id="4516212064498225455">Tavolina aktuale e punës: <ph name="CURRENT_DESK_NAME" />, përdor Kërko + Hapësirë për të hapur menynë e të gjitha tavolinave të punës.</translation>
 <translation id="4518404433291145981">Për të shkyçur Chromebook-un tënd, shkyç fillimisht telefonin</translation>
 <translation id="4527045527269911712">Pajisja me Bluetooth "<ph name="DEVICE_NAME" />" kërkon leje për çiftim.</translation>
 <translation id="4533343294786968049">Kohëzgjatja e baterisë po rritet. Bateria do të karikohet plotësisht në <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -877,6 +884,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="4813311884204119883">Zvarrit lidhjen në një zonë boshe në shiritin e skedave</translation>
 <translation id="4814539958450445987">Ekrani i identifikimit</translation>
 <translation id="481455355267255546">Në vijim</translation>
+<translation id="4826588772550366629">kamerën dhe mikrofonin</translation>
 <translation id="4831034276697007977">Je i sigurt që dëshiron të çaktivizosh klikimet automatike?</translation>
 <translation id="4849058404725798627">Thekso objektin me fokusin e tastierës</translation>
 <translation id="485592688953820832">Asnjë veprim (vendos në pauzë)</translation>
@@ -970,6 +978,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="5207949376430453814">Thekso kursorin e tekstit</translation>
 <translation id="5208059991603368177">Aktive</translation>
 <translation id="5216991270656129561">Joaktive deri në <ph name="TIME" /></translation>
+<translation id="5217646019792206018">Tavolina tjetër e punës: <ph name="NEXT_DESK_NAME" />, përdor Kërko + Hapësirë ose shkurtoren e tastierës: Shift + Kërko + <ph name="NEXT_DESK_INDEX" /> për ta aktivizuar.</translation>
 <translation id="5221423477036820198">Dërgo ose përgjigjju me shpejtësi mesazheve të telefonit duke përdorur "Qendrën e telefonit".</translation>
 <translation id="5222676887888702881">Dil</translation>
 <translation id="5229343007215035173">Aktivizo/çaktivizo ekranin e privatësisë</translation>
@@ -1035,6 +1044,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="550391772491508736">Vazhdo transmetimin</translation>
 <translation id="5506975627792768506">Aktivizo ose çaktivizo zmadhuesin</translation>
 <translation id="5512042095225963688">Fshi fjalën e mëparshme</translation>
+<translation id="5518068085000130971">Këto ishin bazat! Vazhdo tek "Eksploro", aplikacioni ynë i integruar për këshilla dhe ndihmë. Do të gjesh këshilla për fillimin, aplikacione të rekomanduara, oferta speciale dhe veçoritë më të reja të Chromebook.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Administratori yt ka hequr të gjitha profilet e kartës eSIM. Kontakto me administratorin për më shumë informacion.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> po lidhet.</translation>
@@ -1360,6 +1370,7 @@ Instalim i ri</translation>
 <translation id="6896758677409633944">Kopjo</translation>
 <translation id="6901883536534621389">Provo gjestet për të naviguar</translation>
 <translation id="6912841030378044227">Fokusohu te shiriti i adresave</translation>
+<translation id="6912901278692845878">Turneu i shpejtë</translation>
 <translation id="6919251195245069855">Karta smart nuk mund të njihej. Provo përsëri.</translation>
 <translation id="6920245099716267363">Aktivizo/çaktivizo zonën e qasjes për internet. Zona e qasjes për internet është aktive. 1 pajisje e lidhur.</translation>
 <translation id="6931576957638141829">Ruaj te</translation>
@@ -1666,6 +1677,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8297006494302853456">I dobët</translation>
 <translation id="8308637677604853869">Menyja e mëparshme</translation>
 <translation id="830868413617744215">Beta</translation>
+<translation id="8312557488404088015">Kryej një turne të shpejtë për ta nisur me lehtësi. Me 6 hapa, do të duhen vetëm disa minuta.</translation>
 <translation id="8314772463905284467">Kyçja e kapitaleve është aktive</translation>
 <translation id="8315514906653279104">Po aktivizohet...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -1715,6 +1727,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8517041960877371778">Pajisja jote <ph name="DEVICE_TYPE" /> mund të mos ngarkohet kur është e ndezur.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Hyrja e mikrofonit kontrollohet nga <ph name="APP_NAME" />}other{Hyrja e mikrofonit kontrollohet nga # aplikacione}}</translation>
 <translation id="8535393432370007982">Zhbëj mënyrën e renditjes sipas ngjyrës</translation>
+<translation id="853768060447955562">Tavolina e mëparshme e punës: <ph name="PREVIOUS_DESK_NAME" />, përdor Kërko + Hapësirë ose shkurtoren e tastierës: Shift + Kërko + <ph name="PREVIOUS_DESK_INDEX" /> për ta aktivizuar.</translation>
 <translation id="8541078764854166027">Inkuadrimi i kamerës</translation>
 <translation id="8542053257095774575">Nuk ka asnjë tavolinë pune apo shabllon të ruajtur</translation>
 <translation id="8546059259582788728">Mënyra e renditjes u zhbë me sukses</translation>
@@ -1866,11 +1879,13 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="925832987464884575">Fshih pamjet paraprake</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> kërkon që ta përditësosh menjëherë <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">Çfarë ka në kalendarin tim?</translation>
+<translation id="943067377221312471">Tavolina e mëparshme e punës: <ph name="PREVIOUS_DESK_NAME" />, përdor Kërko + Hapësirë për ta aktivizuar.</translation>
 <translation id="945383118875625837">Zvarrit lidhjen te shiriti i faqeshënuesve</translation>
 <translation id="945522503751344254">Dërgo komente</translation>
 <translation id="951991426597076286">Refuzo</translation>
 <translation id="953431725143473984">Të fiket pajisja?</translation>
 <translation id="954052413789300507">Nuk ka hapësirë të mjaftueshme për <ph name="FILENAME" />. Liro hapësirën.</translation>
+<translation id="968627661524972577">Përdor aplikacionet për të bërë gjithçka që të duhet në Chromebook. Aplikacionet e tua mund t'i gjesh te "Nisësi". Mund të shtypësh po ashtu tastin e "Nisësit" në tastierë.</translation>
 <translation id="974545358917229949">Po shfaq <ph name="RESULT_COUNT" /> rezultate për <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Shko në fund të dokumentit</translation>
 <translation id="987589956647469042">Të dhënat celulare janë aktivizuar</translation>

@@ -388,6 +388,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3311748811247479259">Isključeno</translation>
 <translation id="3324193307694657476">2. adresni redak</translation>
 <translation id="3328801116991980348">Informacije o web-lokaciji</translation>
+<translation id="3340938510625667914">Radnje u Chromeu</translation>
 <translation id="3344485292736684439">{count,plural, =1{Oznaka je spremljena u "{title}" na vašem računu, {email}}one{Oznake spremljene na "{title}" na vašem računu, {email}}few{Oznake spremljene na "{title}" na vašem računu, {email}}other{Oznake spremljene na "{title}" na vašem računu, {email}}}</translation>
 <translation id="3371831930909698441">Prevoditelj je dostupan. Opcije su dostupne pri dnu zaslona.</translation>
 <translation id="3377063233124932127">Sada se vaše spremljene oznake, zaporke i ostalo nalaze pri vrhu.</translation>
@@ -803,6 +804,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="6011308810877101166">Poboljšaj prijedloge za pretraživanje</translation>
 <translation id="6012140227487808125">Enkripcija…</translation>
 <translation id="6021332621416007159">Otvori u...</translation>
+<translation id="6027619584715411062">Prijavite se kako biste imali pristup svojim oznakama, zaporkama i ostalom na svim svojim uređajima.</translation>
 <translation id="6027945736510816438">Jeste li mislili <ph name="WEBSITE" />?</translation>
 <translation id="6036215966221662377">Izbrišite podatke o pregledavanju</translation>
 <translation id="6036514205982097558">Sve vaše kartice u jednom pregledniku</translation>
@@ -935,6 +937,7 @@ Pokušajte koristiti jedinstvenu zaporku za svaku web-lokaciju.</translation>
 <translation id="6628106477656132239">Datum isteka nije važeći</translation>
 <translation id="6634432609054530164">Vaša organizacija isključila je anonimni način</translation>
 <translation id="6638511529934826365">Zumiraj tekst…</translation>
+<translation id="6640268266988685324">Otvorite karticu</translation>
 <translation id="6642362222295953972">Prijeđite na postojeću karticu</translation>
 <translation id="6643016212128521049">Izbriši</translation>
 <translation id="6645899968535965230">QR kôd: <ph name="PAGE_TITLE" /></translation>

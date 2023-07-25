@@ -508,6 +508,7 @@ Os tokens de estado particular melhoram a privacidade na Web e não podem ser us
 <translation id="3771694256347217732">Termos de Serviço do Google</translation>
 <translation id="3773856050682458546">Dados básicos e informações sobre os sites que você visita e os apps que usa</translation>
 <translation id="3775705724665058594">Enviar para seus dispositivos</translation>
+<translation id="3777796259512476958">Desconecta você da maioria dos sites</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 guia}one{# guia}other{# guias}}</translation>
 <translation id="3795154175078851242">Copiar imagem com link</translation>
 <translation id="3810838688059735925">Vídeo</translation>
@@ -846,6 +847,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5578795271662203820">Pesquisar imagem no <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Nas <ph name="BEGIN_LINK1" />configurações<ph name="END_LINK1" />, é possível escolher a qualquer momento o que é sincronizado.</translation>
 <translation id="5590372121997663538">Lembrar deste computador</translation>
+<translation id="5596627076506792578">Mais opções</translation>
 <translation id="5599455543593328020">Modo de navegação anônima</translation>
 <translation id="5620163320393916465">Nenhuma senha salva</translation>
 <translation id="5620928963363755975">Procure seus arquivos e páginas em Downloads, usando o botão Mais opções</translation>

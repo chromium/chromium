@@ -37,6 +37,7 @@
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> skeda duken të lidhura. Dëshiron t'i gruposh?</translation>
 <translation id="4212246570487010370">Vazhdo shfletimin</translation>
 <translation id="4648718555153979859">Skedat e tua grupohen së bashku këtu</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{Skedat e mbyllura mund t'i gjesh në "Skedat e fundit" te menyja kryesore e Chrome.}=1{Skedat e mbyllura mund t'i gjesh në "Skedat e fundit" te menyja kryesore e Chrome. Skeda "e fshehtë" nuk do të ofrohet.}other{Skedat e mbyllura mund t'i gjesh në "Skedat e fundit" te menyja kryesore e Chrome. # skedat "e fshehta" nuk do të ofrohen.}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> koment)}other{(<ph name="REVIEWS_COUNT_MANY" /> komente)}}</translation>
 <translation id="4850886885716139402">Pamja</translation>
 <translation id="4870911314065352661">Të mbyllen të gjitha skedat?</translation>

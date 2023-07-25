@@ -1571,6 +1571,7 @@
     برای دریافت راهنمایی درباره عیب‌یابی مشکلات پخش محتوا، لطفاً به
     <ph name="BEGIN_LINK" />
     مرکز راهنمایی<ph name="END_LINK" /> مراجعه کنید.</translation>
+<translation id="22649924370461580">گروه‌های برگه ذخیره‌شده</translation>
 <translation id="2266957463645820432">‏IPP ازطریق USB ‏(IPPUSB)</translation>
 <translation id="2268130516524549846">بلوتوث غیرفعال است</translation>
 <translation id="2268182915828370037">همگام‌سازی فایل خاموش شود؟</translation>
@@ -1799,6 +1800,7 @@
 <translation id="2435248616906486374">شبکه قطع شد</translation>
 <translation id="2435457462613246316">نمایش گذرواژه</translation>
 <translation id="2436385001956947090">کپی کردن پیوند</translation>
+<translation id="2438853563451647815">به چاپگر متصل نیست</translation>
 <translation id="2439626940657133600">درحال بار کردن <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">مشاهده م&amp;نبع</translation>
 <translation id="2440823041667407902">دسترسی به موقعیت مکانی</translation>
@@ -4392,6 +4394,7 @@
 <translation id="4623167406982293031">به‌تأیید رساندن حساب</translation>
 <translation id="4623189117674524348">سیستم نتوانست مجوز دسترسی میانای برنامه‌سازی کاربردی را برای این دستگاه صادر کند.</translation>
 <translation id="4623341761454569602">‏در «مدیر گذرواژه Google» <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">طرح‌ زمینه‌ رنگی</translation>
 <translation id="4625078469366263107">فعال کردن برنامه</translation>
 <translation id="4625905218692741757">رنگ پیش‌فرض خاکستری</translation>
 <translation id="4627427111733173920">کوکی‌ها مسدود شدند</translation>
@@ -4470,6 +4473,7 @@
 <translation id="4683629100208651599">تبدیل به حروف کوچک</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (پیش‌فرض)</translation>
 <translation id="4684427112815847243">همگام‌سازی همه</translation>
+<translation id="4687238339694011189">‏مطمئن شوید چاپگر روشن باشد و به همان شبکه‌ای متصل باشد که Chromebook متصل است یا از سیم USB استفاده کنید</translation>
 <translation id="4687613760714619596">دستگاه نامشخص (<ph name="DEVICE_ID" />)</translation>
 <translation id="4687718960473379118">آگهی‌های پیشنهادی سایت</translation>
 <translation id="4688036121858134881">شناسه گزارش محلی: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
@@ -5489,7 +5493,6 @@
 <translation id="5571832155627049070">سفارشی کردن نمایه</translation>
 <translation id="5572166921642484567">حالت آرایش رنگ‌ها را انتخاب کنید</translation>
 <translation id="5572252023412311448">نمایش جزئیات سایت <ph name="SITE_GROUP" /></translation>
-<translation id="5572648434713976849">پیشنهادهای بهبودیافته‌ای در نوار نشانی دریافت خواهید کرد</translation>
 <translation id="557506220935336383">دیدن اجازه‌های افزونه برای سایت‌های دیگر</translation>
 <translation id="5575473780076478375">افزونه ناشناس: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">مشکلی در رابطه با درخواست ثبت حالت نمایشی پیش آمد.</translation>
@@ -5608,6 +5611,7 @@
 <translation id="567740581294087470">چه نوع بازخوردی ارائه می‌دهید؟</translation>
 <translation id="5677503058916217575">زبان صفحه:</translation>
 <translation id="5677928146339483299">مسدود است</translation>
+<translation id="5677946354068040947">گزینه‌های بیشتر</translation>
 <translation id="5678550637669481956">مجوز خواندن و نوشتن در <ph name="VOLUME_NAME" /> داده شد.</translation>
 <translation id="5678821117681811450">درحال ارسال به <ph name="WEB_DRIVE" /></translation>
 <translation id="5678955352098267522">خواندن داده‌های شما در <ph name="WEBSITE_1" /></translation>
@@ -6127,6 +6131,7 @@
 <translation id="6113434369102685411">‏تنظیم موتور جستجوی پیش‌فرض برای مرورگر Chrome و «راه‌انداز <ph name="DEVICE_TYPE" />»</translation>
 <translation id="6113942107547980621">‏برای استفاده از Smart Lock، به نمایه کاربر اصلی در تلفن جابه‌جا شوید</translation>
 <translation id="6116921718742659598">تغییر تنظیمات زبان و ورودی</translation>
+<translation id="6119008366402292080">چاپگری دردسترس نیست</translation>
 <translation id="6119927814891883061">تغییر نام دستگاه به <ph name="DEVICE_NAME" /></translation>
 <translation id="6119972796024789243">تصحیح رنگ</translation>
 <translation id="6120707837086723438">‏درحال دیدن دستورهای پخت پیشنهادی هستید که براساس فعالیت اخیر مرتبط با دستورهای پخت در «جستجو» گردآوری شده است.
@@ -6137,6 +6142,7 @@
 <translation id="6122081475643980456">اتصال اینترنت شما کنترل می‌شود</translation>
 <translation id="6122093587541546701">ایمیل (اختیاری):</translation>
 <translation id="6122095009389448667">دسترسی این سایت به بریده‌دان همچنان مسدود باشد</translation>
+<translation id="6122513630797178831">‏ذخیره کد تأیید (CVC)</translation>
 <translation id="6122600716821516697">با این دستگاه هم‌رسانی شود؟</translation>
 <translation id="6122831415929794347">«مرور ایمن» خاموش شود؟</translation>
 <translation id="6124650939968185064">افزودنه‌های زیر به این برنامه افزودنی وابسته هستند:</translation>
@@ -6733,7 +6739,6 @@
 <translation id="6644846457769259194">درحال به‌روزرسانی دستگاه شما (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">خاموش کردن «جفت‌سازی سریع»</translation>
 <translation id="6647228709620733774">‏نشانی وب ابطال ارائه دهنده مجوز Netscape</translation>
-<translation id="6647441008198474441">‏نشانی‌های وبی که بازدید می‌کنید به Google ارسال می‌شود تا پیش‌بینی شود ممکن است بعداً از چه سایت‌هایی بازدید کنید</translation>
 <translation id="6647690760956378579">پیش‌نمایش صدای طبیعی</translation>
 <translation id="6648911618876616409">به‌روزرسانی مهمی برای نصب آماده است. برای شروع به کار، به سیستم وارد شوید.</translation>
 <translation id="6649018507441623493">یک لحظه…</translation>
@@ -7202,6 +7207,7 @@
 <translation id="7019546817926942979">‏دستگاهتان باید به برق وصل شود. ارتقای Linux می‌تواند شارژ باتری را به‌طور قابل‌توجهی تخلیه کند. دستگاه را به شارژر متصل کنید و دوباره امتحان کنید.</translation>
 <translation id="7019805045859631636">سریع</translation>
 <translation id="7022562585984256452">صفحه اصلی شما تنظیم شد.</translation>
+<translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">معرفی روشی جدید برای پیمایش با اشاره‌ها</translation>
 <translation id="7025190659207909717">مدیریت خدمات داده‌های تلفن همراه</translation>
 <translation id="7025895441903756761">امنیت و حریم خصوصی</translation>

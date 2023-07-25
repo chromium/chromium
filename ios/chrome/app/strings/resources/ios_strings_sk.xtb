@@ -388,6 +388,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3311748811247479259">Vypnuté</translation>
 <translation id="3324193307694657476">Adresa 2</translation>
 <translation id="3328801116991980348">Informácie o stránkach</translation>
+<translation id="3340938510625667914">Akcie v Chrome</translation>
 <translation id="3344485292736684439">{count,plural, =1{Záložka bola uložená do priečinka {title} vo vašom účte {email}}few{Záložky boli uložené do priečinka {title} vo vašom účte {email}}many{Bookmarks saved to "{title}" in your account, {email}}other{Záložky boli uložené do priečinka {title} vo vašom účte {email}}}</translation>
 <translation id="3371831930909698441">Prekladač je k dispozícii. Možnosti nájdete v dolnej časti obrazovky.</translation>
 <translation id="3377063233124932127">Uložené záložky, heslá a ďalšie položky nájdete odteraz na začiatku.</translation>
@@ -935,6 +936,7 @@ Pre každý web skúste použiť jedinečné heslo.</translation>
 <translation id="6628106477656132239">Neplatný dátum vypršania platnosti</translation>
 <translation id="6634432609054530164">Vaša organizácia vypla režim inkognito</translation>
 <translation id="6638511529934826365">Textová lupa…</translation>
+<translation id="6640268266988685324">Otvoriť kartu</translation>
 <translation id="6642362222295953972">Prepnúť na existujúcu kartu</translation>
 <translation id="6643016212128521049">Vymazať</translation>
 <translation id="6645899968535965230">QR kód: <ph name="PAGE_TITLE" /></translation>

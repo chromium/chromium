@@ -388,6 +388,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3311748811247479259">Désactivé</translation>
 <translation id="3324193307694657476">Ligne adresse 2</translation>
 <translation id="3328801116991980348">Information sur le site</translation>
+<translation id="3340938510625667914">Actions de Chrome</translation>
 <translation id="3344485292736684439">{count,plural, =1{Favori enregistré dans « {title} » dans votre compte, {email}}one{Favoris enregistrés dans « {title} » dans votre compte, {email}}other{Favoris enregistrés dans « {title} » dans votre compte, {email}}}</translation>
 <translation id="3371831930909698441">La traduction est disponible. Vous trouverez les options vers le bas de l'écran.</translation>
 <translation id="3377063233124932127">Désormais, vos favoris, vos mots de passe et d'autres éléments que vous avez enregistrés s'affichent en haut.</translation>
@@ -803,6 +804,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="6011308810877101166">Améliorer les suggestions de recherche</translation>
 <translation id="6012140227487808125">Cryptage en cours…</translation>
 <translation id="6021332621416007159">Ouvrir dans...</translation>
+<translation id="6027619584715411062">Connectez-vous pour accéder à vos favoris, vos mots de passe et plus encore sur tous vos appareils.</translation>
 <translation id="6027945736510816438">Vouliez-vous dire <ph name="WEBSITE" />?</translation>
 <translation id="6036215966221662377">Effacer les données de navigation</translation>
 <translation id="6036514205982097558">Tous vos onglets dans un seul navigateur</translation>
@@ -935,6 +937,7 @@ Tâchez d'utiliser un mot de passe différent pour chaque site.</translation>
 <translation id="6628106477656132239">Date d'expiration incorrecte</translation>
 <translation id="6634432609054530164">Votre organisation a désactivé le mode de navigation privée</translation>
 <translation id="6638511529934826365">Zoomer sur le texte…</translation>
+<translation id="6640268266988685324">Onglet ouvert</translation>
 <translation id="6642362222295953972">Passer à l'onglet déjà ouvert</translation>
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="6645899968535965230">Code QR : <ph name="PAGE_TITLE" /></translation>

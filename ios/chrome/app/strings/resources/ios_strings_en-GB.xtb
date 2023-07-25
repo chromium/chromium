@@ -388,6 +388,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3311748811247479259">Off</translation>
 <translation id="3324193307694657476">Address 2</translation>
 <translation id="3328801116991980348">Site information</translation>
+<translation id="3340938510625667914">Chrome Actions</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bookmark saved to ‘{title}’ in your account, {email}}other{Bookmarks saved to ‘{title}’ in your account, {email}}}</translation>
 <translation id="3371831930909698441">Translate is available. Options available near bottom of the screen.</translation>
 <translation id="3377063233124932127">Now your saved bookmarks, passwords and more are at the top.</translation>
@@ -935,6 +936,7 @@ Try to use a unique password for every site.</translation>
 <translation id="6628106477656132239">Invalid Expiry Date</translation>
 <translation id="6634432609054530164">Your organisation turned off Incognito mode</translation>
 <translation id="6638511529934826365">Zoom text…</translation>
+<translation id="6640268266988685324">Open tab</translation>
 <translation id="6642362222295953972">Switch to existing tab</translation>
 <translation id="6643016212128521049">Clear</translation>
 <translation id="6645899968535965230">QR code: <ph name="PAGE_TITLE" /></translation>

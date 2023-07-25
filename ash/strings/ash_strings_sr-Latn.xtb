@@ -146,6 +146,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1576623706766186887">Umanjite prikaz kada je lupa uključena</translation>
 <translation id="1586324912145647027">Idite na radne površine od 1 do 8</translation>
 <translation id="1589090746204042747">Pristupite svim aktivnostima u ovoj sesiji</translation>
+<translation id="1592682369233288537">Sledeća radna površina: <ph name="NEXT_DESK_NAME" />, koristite Pretraga + taster za razmak da biste aktivirali.</translation>
 <translation id="1604857178818051494">Pauziraj medije</translation>
 <translation id="1610778689852195798">„Opozovi radnju“</translation>
 <translation id="1611993646327628135">Uključeno</translation>
@@ -157,6 +158,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1647986356840967552">Prethodna stranica</translation>
 <translation id="1651914502370159744">Otvori stranicu Istorija</translation>
 <translation id="1654477262762802994">Započnite glasovnu pretragu</translation>
+<translation id="1662667383227796099">Potražite fajlove, aplikacije i drugo u Pokretaču. Možete i da dobijete odgovore na pitanja o Chromebook-u.</translation>
 <translation id="1668469839109562275">Ugrađeni VPN</translation>
 <translation id="1675844249244994876">Ažuriraj desni prozor</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> je preostalo</translation>
@@ -560,6 +562,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Polica je automatski sakrivena</translation>
+<translation id="3503243067695520519">Zdravo, Chromebook-ovi su malo drugačiji.</translation>
 <translation id="3505066820268455558">Baterija se puni</translation>
 <translation id="3509391053705095206">Pronalaženje telefona nije uspelo. Proverite da li je Bluetooth na telefonu uključen.</translation>
 <translation id="3510164367642747937">Istakni kursor miša</translation>
@@ -684,6 +687,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="3977512764614765090">Baterija je na <ph name="PERCENTAGE" />% i puni se.</translation>
 <translation id="3984536049089846927">Sledeća stranica</translation>
 <translation id="3986082989454912832">Odgovori</translation>
+<translation id="3990002060657467458">U Brzim podešavanjima su često korišćene kontrole poput WiFi-ja, Bluetooth-a i jačine zvuka. Ovde možete da pravite i snimke ekrana.</translation>
 <translation id="3995138139523574647">Uređaj sa USB priključkom tipa C (desni zadnji port)</translation>
 <translation id="40062176907008878">Pisanje rukom</translation>
 <translation id="4017989525502048489">Laserski pokazivač</translation>
@@ -748,6 +752,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="4269883910223712419">Administrator ovog uređaja može:</translation>
 <translation id="4274537685965975248">Tasterska prečica Ctrl + Alt + strelica nadole je promenjena. Da biste koristili taster End, pritisnite taster <ph name="LAUNCHER_KEY_NAME" /> + strelica nadesno</translation>
 <translation id="4275283744500212192">Otvorite opcije izgleda prozora</translation>
+<translation id="4278138729651139331">Prilagodite i personalizujte Chromebook u Podešavanjima. Probajte da promenite pozadinu ili podesite čuvar ekrana.</translation>
 <translation id="4279490309300973883">Preslikavanje</translation>
 <translation id="4280601795273309128">Bezbednosna ažuriranja su završena. Nadogradite uređaj.</translation>
 <translation id="4283888303416325161">Unesite lozinku radi dodatne bezbednosti</translation>
@@ -804,6 +809,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="4505050298327493054">Aktivan radni prostor.</translation>
 <translation id="450584155212756404">Programerski kanal</translation>
 <translation id="4513946894732546136">Povratne informacije</translation>
+<translation id="4516212064498225455">Aktuelna radna površina: <ph name="CURRENT_DESK_NAME" />, koristite Pretraga + taster za razmak da biste otvorili meni svih radnih površina.</translation>
 <translation id="4518404433291145981">Da biste otključali Chromebook, prvo otključajte telefon</translation>
 <translation id="4527045527269911712">Bluetooth uređaj „<ph name="DEVICE_NAME" />“ želi dozvolu za uparivanje.</translation>
 <translation id="4533343294786968049">Produžava se trajanje baterije. Baterija će se napuniti do kraja do <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -878,6 +884,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="4813311884204119883">Prevucite link u praznu oblast na traci sa karticama</translation>
 <translation id="4814539958450445987">Ekran za prijavljivanje</translation>
 <translation id="481455355267255546">Sledeće</translation>
+<translation id="4826588772550366629">kamera i mikrofon</translation>
 <translation id="4831034276697007977">Želite li stvarno da isključite automatske klikove?</translation>
 <translation id="4849058404725798627">Istakni objekat pomoću fokusa tastature</translation>
 <translation id="485592688953820832">Ništa se ne preduzima (pauziranje)</translation>
@@ -971,6 +978,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="5207949376430453814">Istakni kursor za tekst</translation>
 <translation id="5208059991603368177">Uključeno</translation>
 <translation id="5216991270656129561">Isključeno do <ph name="TIME" /></translation>
+<translation id="5217646019792206018">Sledeća radna površina: <ph name="NEXT_DESK_NAME" />, koristite Pretraga + taster za razmak ili tastersku prečicu: Shift + Pretraga + <ph name="NEXT_DESK_INDEX" /> da biste aktivirali.</translation>
 <translation id="5221423477036820198">Brzo šaljite poruke ili odgovarajte na njih pomoću Phone Hub-a.</translation>
 <translation id="5222676887888702881">Odjavi me</translation>
 <translation id="5229343007215035173">Uključi/isključi ekran za privatnost</translation>
@@ -1036,6 +1044,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="550391772491508736">Nastavi prebacivanje</translation>
 <translation id="5506975627792768506">Uključite ili isključite lupu</translation>
 <translation id="5512042095225963688">Izbriši prethodnu reč</translation>
+<translation id="5518068085000130971">To su bile osnovne stvari! Nastavite u aplikaciji Istražite, ugrađenoj aplikaciji za savete i pomoć. Pronaći ćete savete za početne korake, preporučene aplikacije, specijalne ponude i najnovije funkcije Chromebook-a.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Administrator je uklonio sve eSIM profile. Dodatne informacije potražite od administratora.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> se povezuje.</translation>
@@ -1361,6 +1370,7 @@ Novo instaliranje</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
 <translation id="6901883536534621389">Isprobajte pokrete za kretanje</translation>
 <translation id="6912841030378044227">Fokusiranje na traku za adresu</translation>
+<translation id="6912901278692845878">Kratak obilazak</translation>
 <translation id="6919251195245069855">Nismo uspeli da prepoznamo pametnu karticu. Probajte ponovo.</translation>
 <translation id="6920245099716267363">Uključite/isključite hotspot. Hotspot je uključen, 1 uređaj je povezan.</translation>
 <translation id="6931576957638141829">Sačuvajte u</translation>
@@ -1667,6 +1677,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8297006494302853456">Slab</translation>
 <translation id="8308637677604853869">Prethodni meni</translation>
 <translation id="830868413617744215">Beta</translation>
+<translation id="8312557488404088015">Krenite u kratak obilazak da bi početak prošao bez problema. Za 6 koraka će biti potrebno samo nekoliko minuta.</translation>
 <translation id="8314772463905284467">Caps Lock je uključen</translation>
 <translation id="8315514906653279104">Uključuje se…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -1716,6 +1727,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> se možda neće puniti dok je uključen.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Unos preko mikrofona kontroliše <ph name="APP_NAME" />}one{Unos preko mikrofona kontroliše # aplikacija}few{Unos preko mikrofona kontrolišu # aplikacije}other{Unos preko mikrofona kontroliše # aplikacija}}</translation>
 <translation id="8535393432370007982">Opozovite redosled sortiranja prema boji</translation>
+<translation id="853768060447955562">Prethodna radna površina: <ph name="PREVIOUS_DESK_NAME" />, koristite Pretraga + taster za razmak ili tastersku prečicu: Shift + Pretraga + <ph name="PREVIOUS_DESK_INDEX" /> da biste aktivirali.</translation>
 <translation id="8541078764854166027">Uokvir. kamere</translation>
 <translation id="8542053257095774575">Nema sačuvanih radnih površina niti šablona</translation>
 <translation id="8546059259582788728">Opozvali ste sortiranje</translation>
@@ -1867,11 +1879,13 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="925832987464884575">Sakrijte preglede</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> zahteva da odmah ažurirate <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">Šta je u kalendaru?</translation>
+<translation id="943067377221312471">Prethodna radna površina: <ph name="PREVIOUS_DESK_NAME" />, koristite Pretraga + taster za razmak da biste aktivirali.</translation>
 <translation id="945383118875625837">Prevucite link na traku sa obeleživačima</translation>
 <translation id="945522503751344254">Pošalji povratne informacije</translation>
 <translation id="951991426597076286">Odbij</translation>
 <translation id="953431725143473984">Želite da isključite uređaj?</translation>
 <translation id="954052413789300507">Nema dovoljno prostora za <ph name="FILENAME" />. Oslobodite prostor.</translation>
+<translation id="968627661524972577">Koristite aplikacije da biste obavljali sve potrebne radnje na Chromebook-u. Aplikacije možete da pronađete u Pokretaču. Možete i da pritisnete taster Pokretač na tastaturi.</translation>
 <translation id="974545358917229949">Prikazuju se rezultati (<ph name="RESULT_COUNT" />) za: <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Idite na kraj dokumenta</translation>
 <translation id="987589956647469042">Mobilni podaci su uključeni</translation>

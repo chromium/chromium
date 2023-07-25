@@ -4250,6 +4250,7 @@
 <translation id="4508150454272293946">अ‍ॅप्स आणि वेबपेज यांना या डिव्हाइसला कनेक्ट केलेला(ले) कॅमेरा वापरण्याची अनुमती द्या. तरीही तुमच्या कॅमेरामध्ये समस्या असल्यास, अ‍ॅप रीस्टार्ट करून पहा किंवा वेबपेज रिफ्रेश करा.</translation>
 <translation id="450867954911715010">प्रवेशयोग्यता सेटिंग्ज</translation>
 <translation id="4508765956121923607">स्त्रो&amp;त पहा</translation>
+<translation id="4509277363725254222">तुम्ही तुमचे <ph name="BEGIN_BOLD_USERNAME" />वापरकर्ता नाव<ph name="END_BOLD_USERNAME" />आणि <ph name="BEGIN_BOLD_PASSWORD" />पासवर्ड<ph name="END_BOLD_PASSWORD" /> यांची प्रत शेअर करता, तेव्हा तुमचा कुटुंब सदस्य Google Password Manager वापरून ते भरू शकतो</translation>
 <translation id="4509421746503122514">अपडेट करण्यासाठी पुन्हा लाँच करा</translation>
 <translation id="4510195992002502722">फीडबॅक पाठवता आला नाही. पुन्हा प्रयत्न करत आहे...</translation>
 <translation id="4510479820467554003">पालक खाते सूची</translation>
@@ -4389,6 +4390,7 @@
 <translation id="4623167406982293031">खात्याची पडताळणी करा</translation>
 <translation id="4623189117674524348">सिस्टमला या डिव्हाइससाठी API ॲक्सेसला परवानगी देता आली नाही.</translation>
 <translation id="4623341761454569602">Google Password Manager <ph name="SEPARATOR" /> <ph name="ACCOUNT" /> यामध्ये</translation>
+<translation id="4624054169152573743">रंग थीम</translation>
 <translation id="4625078469366263107">अ‍ॅप सुरू करा</translation>
 <translation id="4625905218692741757">राखाडी डीफॉल्ट रंग</translation>
 <translation id="4627427111733173920">कुकीज ब्लॉक केल्या</translation>
@@ -4820,6 +4822,7 @@
 <translation id="4994426888044765950">तुम्ही की धरून ठेवल्यास, कीचा वर्ण रिपीट होईल</translation>
 <translation id="4994754230098574403">सेट अप करीत आहे</translation>
 <translation id="4995293419989417004">जाहिरातीच्या विषयांबद्दल अधिक जाणून घ्या</translation>
+<translation id="4995676741161760215">सुरू, एक्स्टेंशन सुरू केले</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{No <ph name="VM_TYPE" /> VMs found}=1{एक <ph name="VM_TYPE" /> VM आढळला: <ph name="VM_NAME_LIST" />}other{{NUM_VMS} <ph name="VM_TYPE" /> VM आढळले: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">इंटरनेट कनेक्‍शन नाही.</translation>
 <translation id="4998430619171209993">सुरू</translation>
@@ -5372,6 +5375,7 @@
 <translation id="5474859849784484111"><ph name="MANAGER" /> नुसार तुम्ही आता वाय-फायशी कनेक्ट करून अपडेट डाउनलोड करणे आवश्यक आहे. किंवा मर्यादित कनेक्शनमधून डाउनलोड करा (शुल्क लागू शकते).</translation>
 <translation id="5481273127572794904">एकाहून अधिक फाइल आपोआप डाउनलोड करण्याची अनुमती नाही</translation>
 <translation id="5481941284378890518">जवळपासचे प्रिंटर जोडा</translation>
+<translation id="5484462543003267273">कुटुंब व्यवस्थापित करा</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> नुसार, तुम्ही तुमच्या डेटाचा बॅकअप घेणे आणि हे <ph name="DEVICE_TYPE" /> आज परत करणे आवश्यक आहे. <ph name="LINK_BEGIN" />तपशील पहा<ph name="LINK_END" />}other{<ph name="MANAGER" /> नुसार, तुम्ही तुमच्या डेटाचा बॅकअप घेणे आणि हे <ph name="DEVICE_TYPE" /> {NUM_DAYS} दिवसांच्या आत परत करणे आवश्यक आहे. <ph name="LINK_BEGIN" />तपशील पहा<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">ॲप्लिकेशन जोडा</translation>
 <translation id="5485435764083510385">कॅप्शनची प्राधान्य दिलेली भाषा</translation>
@@ -5485,7 +5489,6 @@
 <translation id="5571832155627049070">तुमची प्रोफाइल कस्टमाइझ करा</translation>
 <translation id="5572166921642484567">कलर स्‍कीम मोड निवडा</translation>
 <translation id="5572252023412311448"><ph name="SITE_GROUP" /> साठी साइटचे तपशील दाखवा</translation>
-<translation id="5572648434713976849">तुम्हाला अ‍ॅड्रेस बारमध्ये सुधारित सूचना मिळतील</translation>
 <translation id="557506220935336383">इतर साइटसाठी एक्स्टेंशन परवानग्या पहा</translation>
 <translation id="5575473780076478375">गुप्त एक्स्टेंशन: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">डेमो नोंदणी विनंतीला समस्या आली.</translation>
@@ -5604,6 +5607,7 @@
 <translation id="567740581294087470">तुम्ही कोणत्या प्रकारचा फीडबॅक देत आहात?</translation>
 <translation id="5677503058916217575">पेज भाषा:</translation>
 <translation id="5677928146339483299">ब्लॉक केले</translation>
+<translation id="5677946354068040947">अधिक पर्याय</translation>
 <translation id="5678550637669481956"><ph name="VOLUME_NAME" /> ला रीड आणि राइट ॲक्सेस मंजूर केला आहे.</translation>
 <translation id="5678821117681811450"><ph name="WEB_DRIVE" /> ला पाठवत आहे</translation>
 <translation id="5678955352098267522"><ph name="WEBSITE_1" /> वर तुमचा डेटा वाचा</translation>
@@ -6730,7 +6734,6 @@
 <translation id="6644846457769259194">तुमचे डिव्हाइस अपडेट करीत आहे (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">जलद पेअरिंग बंद करा</translation>
 <translation id="6647228709620733774">Netscape प्रमाणन अधिकृतता निरस्तीकरण URL</translation>
-<translation id="6647441008198474441">तुम्ही भेट देता त्या URLs तुम्ही पुढे कोणत्या साइटला भेट देऊ शकता याचा अंदाज घेण्यासाठी Google ला पाठवल्या जातात</translation>
 <translation id="6647690760956378579">नैसर्गिक आवाज पूर्वावलोकन</translation>
 <translation id="6648911618876616409">महत्वाचे अपडेट इंस्टॉल करण्यासाठी तयार आहे. सुरुवात करण्यासाठी साइन इन करा.</translation>
 <translation id="6649018507441623493">फक्त एक सेकंद…</translation>
@@ -7199,6 +7202,7 @@
 <translation id="7019546817926942979">तुमचे डिव्हाइस प्लग-इन केलेले असणे आवश्यक आहे. Linux अपग्रेड करणे तुमची बॅटरी मोठ्या प्रमाणात संपवू शकते. कृपया तुमचे डिव्हाइस चार्जरशी कनेक्ट करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="7019805045859631636">जलद</translation>
 <translation id="7022562585984256452">तुमचे होम पेज सेट केले गेले आहे.</translation>
+<translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">जेश्चरसोबत नेव्हिगेट करण्याचा नवीन मार्ग सादर करत आहोत</translation>
 <translation id="7025190659207909717">मोबाइल डेटा सेवा व्यवस्थापन</translation>
 <translation id="7025895441903756761">सुरक्षा आणि गोपनीयता</translation>
@@ -8974,6 +8978,7 @@
 <translation id="8514746246728959655">वेगळी सिक्युरिटी की वापरून पहा</translation>
 <translation id="8514955299594277296">साइटना तुमच्या डिव्हाइसवर डेटा सेव्ह करण्याची अनुमती देऊ नका (शिफारस केली जात नाही)</translation>
 <translation id="8517759303731677493">संपादित करा…</translation>
+<translation id="8518942514525208851">असभ्य भाषा लपवा</translation>
 <translation id="8519895319663397036">पासवर्ड इंपोर्ट करू शकत नाही. फाइलचा आकार १५० KB पेक्षा कमी असला पाहिजे.</translation>
 <translation id="851991974800416566">झटपट क्लिष्ट पासवर्ड वापरा</translation>
 <translation id="8523493869875972733">बदल राहू द्या</translation>

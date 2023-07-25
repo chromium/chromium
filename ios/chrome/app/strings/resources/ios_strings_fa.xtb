@@ -388,6 +388,7 @@
 <translation id="3311748811247479259">خاموش</translation>
 <translation id="3324193307694657476">آدرس ۲</translation>
 <translation id="3328801116991980348">اطلاعات سایت</translation>
+<translation id="3340938510625667914">‏کنش‌های Chrome</translation>
 <translation id="3344485292736684439">{count,plural, =1{نشانک در «{title}» در حساب شما ({email}) ذخیره شد}one{نشانک در «{title}» در حساب شما ({email}) ذخیره شد}other{نشانک‌ها در «{title}» در حساب شما ({email}) ذخیره شد}}</translation>
 <translation id="3371831930909698441">‏«ترجمه Google» دردسترس است. گزینه‌ها در نزدیک پایین صفحه نمایش در دسترس هستند.</translation>
 <translation id="3377063233124932127">اکنون نشانک‌ها، گذرواژه‌ها، و دیگر موارد ذخیره‌شده در بالا نمایش داده می‌شوند.</translation>
@@ -935,6 +936,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6628106477656132239">تاریخ انقضا نامعتبر است</translation>
 <translation id="6634432609054530164">سازمانتان «حالت ناشناس» را خاموش کرده است</translation>
 <translation id="6638511529934826365">بزرگ‌نمایی نوشتار…</translation>
+<translation id="6640268266988685324">برگه باز</translation>
 <translation id="6642362222295953972">رفتن به برگه موجود</translation>
 <translation id="6643016212128521049">پاک کردن</translation>
 <translation id="6645899968535965230">رمزینه پاسخ‌سریع: <ph name="PAGE_TITLE" /></translation>

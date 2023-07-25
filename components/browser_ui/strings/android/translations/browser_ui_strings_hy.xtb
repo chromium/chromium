@@ -301,6 +301,7 @@
 <translation id="6439114592976064011">Արգելել կայքերին օգտագործել վիրտուալ իրականության ձեր սարքերն ու տվյալները</translation>
 <translation id="6447842834002726250">Cookie ֆայլեր</translation>
 <translation id="6467852467360539617">Ջնջել տվյալները և զրոյացնել թույլտվությունները</translation>
+<translation id="6500423977866688905">Երբ պատուհանը նեղլիկ է, պահանջեք բջջային տարբերակը</translation>
 <translation id="6527303717912515753">Կիսվել</translation>
 <translation id="6545864417968258051">Bluetooth սարքերի որոնում</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Արգելափակված են՝ «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}one{Արգելափակված են՝ «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}other{Արգելափակված են՝ «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}}</translation>

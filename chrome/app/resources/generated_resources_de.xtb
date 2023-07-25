@@ -4363,6 +4363,7 @@ Gerätesignale können Informationen zu deinem Browser, deinem Betriebssystem, d
 <translation id="4623167406982293031">Konto bestätigen</translation>
 <translation id="4623189117674524348">Das System konnte den API-Zugriff für dieses Gerät nicht autorisieren.</translation>
 <translation id="4623341761454569602">Im Google Passwortmanager <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">Farbdesign</translation>
 <translation id="4625078469366263107">App aktivieren</translation>
 <translation id="4625905218692741757">Grau (Standard)</translation>
 <translation id="4627427111733173920">Cookies blockiert</translation>
@@ -5461,7 +5462,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5571832155627049070">Profil anpassen</translation>
 <translation id="5572166921642484567">Farbschemamodus auswählen</translation>
 <translation id="5572252023412311448">Website-Details für <ph name="SITE_GROUP" /> anzeigen</translation>
-<translation id="5572648434713976849">Du erhältst bessere Vorschläge in der Adressleiste</translation>
 <translation id="557506220935336383">Erweiterungsberechtigungen für andere Websites ansehen</translation>
 <translation id="5575473780076478375">Anonyme Erweiterung: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Ein Problem mit der Demoregistrierungsanforderung ist aufgetreten.</translation>
@@ -5578,6 +5578,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="567740581294087470">Welche Art von Feedback möchtest du geben?</translation>
 <translation id="5677503058916217575">Sprache der Seite:</translation>
 <translation id="5677928146339483299">Blockiert</translation>
+<translation id="5677946354068040947">weitere Optionen</translation>
 <translation id="5678550637669481956">Lese- und Schreibzugriff auf <ph name="VOLUME_NAME" /> wurde zugelassen.</translation>
 <translation id="5678821117681811450">Wird an <ph name="WEB_DRIVE" /> gesendet</translation>
 <translation id="5678955352098267522">Deine Daten auf <ph name="WEBSITE_1" /> lesen</translation>
@@ -6702,7 +6703,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6644846457769259194">Gerät wird aktualisiert (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Schnelles Pairing ausschalten</translation>
 <translation id="6647228709620733774">URL zum Zurückrufen der Zertifizierungsstelle von Netscape-Zertifikaten</translation>
-<translation id="6647441008198474441">URLs von Websites, die du besuchst, werden an Google gesendet, um Prognosen zu erstellen, welche Websites du voraussichtlich als Nächstes besuchen wirst</translation>
 <translation id="6647690760956378579">Vorschau für natürliche Stimme</translation>
 <translation id="6648911618876616409">Ein wichtiges Update ist zur Installation bereit. Melde dich an, um die Installation zu starten.</translation>
 <translation id="6649018507441623493">Bitte warten...</translation>
@@ -7170,6 +7170,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7019546817926942979">Dein Gerät muss an ein Ladegerät angeschlossen werden. Wenn du Linux aktualisierst, kann dies den Akku stark beanspruchen. Verbinde das Gerät mit einem Ladegerät und versuche es noch einmal.</translation>
 <translation id="7019805045859631636">Schnell</translation>
 <translation id="7022562585984256452">Deine Startseite wurde eingerichtet.</translation>
+<translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">Eine neue Art der Bedienung mit Gesten</translation>
 <translation id="7025190659207909717">Verwaltung mobiler Datendienste</translation>
 <translation id="7025895441903756761">Sicherheit und Datenschutz</translation>

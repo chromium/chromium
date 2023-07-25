@@ -388,6 +388,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3311748811247479259">Pois päältä</translation>
 <translation id="3324193307694657476">Osoite 2</translation>
 <translation id="3328801116991980348">Tietoja sivustosta</translation>
+<translation id="3340938510625667914">Chrome-pikavalinnat</translation>
 <translation id="3344485292736684439">{count,plural, =1{Kirjanmerkki tallennettu tilillesi: {title}, {email}}other{Kirjanmerkit tallennettu tilillesi: {title}, {email}}}</translation>
 <translation id="3371831930909698441">Kääntäjä on käytössä. Asetukset löytyvät näytön alalaidasta.</translation>
 <translation id="3377063233124932127">Tallennetut kirjanmerkit, salasanat ja muut tiedot ovat nyt ylhäällä.</translation>
@@ -935,6 +936,7 @@ Yritä käyttää jokaisella sivustolla yksilöllistä salasanaa.</translation>
 <translation id="6628106477656132239">Virheellinen viimeinen voimassaolopäivä</translation>
 <translation id="6634432609054530164">Organisaatiosi on laittanut incognito-tilan pois päältä</translation>
 <translation id="6638511529934826365">Zoomaa tekstiä…</translation>
+<translation id="6640268266988685324">Avaa välilehti</translation>
 <translation id="6642362222295953972">Siirry aiemmalle välilehdelle</translation>
 <translation id="6643016212128521049">Tyhjennä</translation>
 <translation id="6645899968535965230">QR-koodi: <ph name="PAGE_TITLE" /></translation>

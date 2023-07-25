@@ -4388,6 +4388,7 @@
 <translation id="4623167406982293031">Бүртгэлийг бататгах</translation>
 <translation id="4623189117674524348">Систем энэ төхөөрөмжийн API хандалтыг зөвшөөрч чадсангүй.</translation>
 <translation id="4623341761454569602">Google Password Manager-т <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">Өнгөний загвар</translation>
 <translation id="4625078469366263107">Аппыг идэвхжүүлэх</translation>
 <translation id="4625905218692741757">Өгөгдмөл саарал өнгө</translation>
 <translation id="4627427111733173920">Күүкиг блоклосон</translation>
@@ -5486,7 +5487,6 @@
 <translation id="5571832155627049070">Профайлаа өөрчлөх</translation>
 <translation id="5572166921642484567">Өнгөний схемийн горимыг сонгох</translation>
 <translation id="5572252023412311448"><ph name="SITE_GROUP" />-д зориулсан сайтын дэлгэрэнгүйг харуулах</translation>
-<translation id="5572648434713976849">Та хаяг оруулах хэсэгт сайжруулсан зөвлөмжүүд авна</translation>
 <translation id="557506220935336383">Бусад сайтын өргөтгөлийн зөвшөөрлийг харах</translation>
 <translation id="5575473780076478375">Нууцлалтай өргөтгөл: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Демо бүртгэлийн хүсэлтэд алдаа гарлаа.</translation>
@@ -5606,6 +5606,7 @@
 <translation id="567740581294087470">Та ямар төрлийн санал хүсэлт өгч байна вэ?</translation>
 <translation id="5677503058916217575">Хуудасны хэл:</translation>
 <translation id="5677928146339483299">Хаагдсан</translation>
+<translation id="5677946354068040947">бусад сонголт</translation>
 <translation id="5678550637669481956"><ph name="VOLUME_NAME" /> руу унших болон бичих зөвшөөрлийг олгосон байна.</translation>
 <translation id="5678821117681811450"><ph name="WEB_DRIVE" />-д илгээж байна</translation>
 <translation id="5678955352098267522"><ph name="WEBSITE_1" /> дээрх өөрийнхөө мэдээллийг уншина уу</translation>
@@ -6730,7 +6731,6 @@
 <translation id="6644846457769259194">Таны төхөөрөмжийг шинэчилж байна (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Хурдан холбохыг унтраах</translation>
 <translation id="6647228709620733774">Netscape Certification Authority Revocation URL</translation>
-<translation id="6647441008198474441">Таны зочилсон URL-г Google рүү илгээж, дараа нь ямар сайтад зочилж болохыг таамаглах болно</translation>
 <translation id="6647690760956378579">Төрөлхийн дуу хоолойг урьдчилан сонсох</translation>
 <translation id="6648911618876616409">Шаардлагатай шинэчлэлтийг суулгахад бэлэн байна. Эхлүүлэхийн тулд нэвтэрнэ үү.</translation>
 <translation id="6649018507441623493">Түр хүлээнэ үү…</translation>

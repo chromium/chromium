@@ -37,6 +37,7 @@
 <translation id="4133493477912226187">Hay <ph name="NUMBER_OF_TABS" /> pestañas que parecen relacionadas. ¿Quieres agruparlas?</translation>
 <translation id="4212246570487010370">Continuar navegando</translation>
 <translation id="4648718555153979859">Tus pestañas se agrupan aquí</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{Puedes encontrar las pestañas cerradas en la sección Pestañas recientes del menú principal de Chrome.}=1{Puedes encontrar las pestañas cerradas en la sección Pestañas recientes del menú principal de Chrome. Tu pestaña de Incógnito no estará disponible.}other{Puedes encontrar las pestañas cerradas en la sección Pestañas recientes del menú principal de Chrome. Tus # pestañas de Incógnito no estarán disponibles.}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> reseña)}other{(<ph name="REVIEWS_COUNT_MANY" /> reseñas)}}</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="4870911314065352661">¿Cerrar todas las pestañas?</translation>

@@ -1573,6 +1573,7 @@
     ਕਾਸਟ ਵਿੱਚ ਆ ਰਹੀਆਂ ਸਮੱਸਿਆਵਾਂ ਦਾ ਨਿਪਟਾਰਾ ਕਰਨ ਵਿੱਚ ਮਦਦ ਲਈ, ਕਿਰਪਾ ਕਰਕੇ
     <ph name="BEGIN_LINK" />
     ਮਦਦ ਕੇਂਦਰ<ph name="END_LINK" /> 'ਤੇ ਜਾਓ।</translation>
+<translation id="22649924370461580">ਰੱਖਿਅਤ ਕੀਤੇ ਟੈਬ ਗਰੁੱਪ</translation>
 <translation id="2266957463645820432">USB 'ਤੇ IPP (IPPUSB)</translation>
 <translation id="2268130516524549846">ਬਲੂਟੁੱਥ ਬੰਦ ਹੈ</translation>
 <translation id="2268182915828370037">ਕੀ ਫ਼ਾਈਲ ਸਿੰਕ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
@@ -1800,6 +1801,7 @@
 <translation id="2435248616906486374">ਨੈੱਟਵਰਕ ਡਿਸਕਨੈਕਟ ਕੀਤਾ</translation>
 <translation id="2435457462613246316">ਪਾਸਵਰਡ ਵੇਖੋ</translation>
 <translation id="2436385001956947090">ਲਿੰਕ ਕਾਪੀ ਕਰੋ</translation>
+<translation id="2438853563451647815">ਪ੍ਰਿੰਟਰ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਹੈ</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> ਨੂੰ ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="2440604414813129000">ਸ&amp;ਰੋਤ ਦੇਖੋ</translation>
 <translation id="2440823041667407902">ਨਿਰਧਾਰਿਤ ਸਥਾਨ ਪਹੁੰਚ</translation>
@@ -4251,6 +4253,7 @@
 <translation id="4508150454272293946">ਐਪਾਂ ਅਤੇ ਵੈੱਬ-ਪੰਨਿਆਂ ਨੂੰ ਇਸ ਡੀਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਕੀਤੇ ਕੈਮਰੇ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਆਗਿਆ ਦਿਓ। ਜੇ ਹਾਲੇ ਵੀ ਤੁਹਾਡੇ ਕੈਮਰੇ ਵਿੱਚ ਕੋਈ ਸਮੱਸਿਆ ਹੈ, ਤਾਂ ਐਪ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਜਾਂ ਵੈੱਬ-ਪੰਨਾ ਰਿਫ੍ਰੈਸ਼ ਕਰ ਕੇ ਦੇਖੋ।</translation>
 <translation id="450867954911715010">ਪਹੁੰਚਯੋਗਤਾ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="4508765956121923607">ਸ&amp;ਰੋਤ ਦੇਖੋ</translation>
+<translation id="4509277363725254222">ਆਪਣੇ <ph name="BEGIN_BOLD_USERNAME" />ਵਰਤੋਂਕਾਰ ਨਾਮ<ph name="END_BOLD_USERNAME" /> ਅਤੇ <ph name="BEGIN_BOLD_PASSWORD" />ਪਾਸਵਰਡ<ph name="END_BOLD_PASSWORD" /> ਦੀ ਕਾਪੀ ਨੂੰ ਸਾਂਝਾ ਕਰਨ 'ਤੇ, ਤੁਹਾਡੇ ਪਰਿਵਾਰਕ ਮੈਂਬਰ Google Password Manager ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਉਨ੍ਹਾਂ ਨੂੰ ਭਰ ਸਕਦੇ ਹਨ</translation>
 <translation id="4509421746503122514">ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਮੁੜ-ਲਾਂਚ ਕਰੋ</translation>
 <translation id="4510195992002502722">ਵਿਚਾਰ ਭੇਜਣ ਵਿੱਚ ਅਸਫਲ। ਮੁੜ-ਕੋਸ਼ਿਸ਼ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="4510479820467554003">ਮਾਂ-ਪਿਓ ਦੇ ਖਾਤਿਆਂ ਦੀ ਸੂਚੀ</translation>
@@ -4390,6 +4393,7 @@
 <translation id="4623167406982293031">ਖਾਤੇ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="4623189117674524348">ਸਿਸਟਮ ਇਸ ਡੀਵਾਈਸ ਲਈ API ਪਹੁੰਚ ਦਾ ਅਧਿਕਾਰ ਦੇਣ ਵਿੱਚ ਅਸਫਲ ਰਿਹਾ।</translation>
 <translation id="4623341761454569602">Google Password Manager <ph name="SEPARATOR" /> <ph name="ACCOUNT" /> ਵਿੱਚ</translation>
+<translation id="4624054169152573743">ਰੰਗ ਥੀਮ</translation>
 <translation id="4625078469366263107">ਐਪ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="4625905218692741757">ਸਲੇਟੀ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਰੰਗ</translation>
 <translation id="4627427111733173920">ਕੁਕੀਜ਼ ਬਲਾਕ ਕੀਤੀਆਂ ਗਈਆਂ</translation>
@@ -4468,6 +4472,7 @@
 <translation id="4683629100208651599">ਛੋਟੇ ਅੱਖਰਾਂ ਵਿੱਚ ਬਦਲੋ</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (ਪੂਰਵ-ਨਿਰਧਾਰਤ)</translation>
 <translation id="4684427112815847243">ਸਭ ਕੁਝ ਸਿੰਕ ਕਰੋ</translation>
+<translation id="4687238339694011189">ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡਾ ਪ੍ਰਿੰਟਰ ਚਾਲੂ ਹੈ ਅਤੇ ਉਸੇ ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਹੈ ਜਿਸ ਨਾਲ ਤੁਹਾਡੀ Chromebook ਕਨੈਕਟ ਹੈ ਜਾਂ USB ਕੇਬਲ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="4687613760714619596">ਅਗਿਆਤ ਡੀਵਾਈਸ (<ph name="DEVICE_ID" />)</translation>
 <translation id="4687718960473379118">ਸਾਈਟ ਵੱਲੋਂ ਸੁਝਾਏ ਵਿਗਿਆਪਨ</translation>
 <translation id="4688036121858134881">ਸਥਾਨਕ ਲੌਗ ਆਈ.ਡੀ.: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
@@ -4820,6 +4825,7 @@
 <translation id="4994426888044765950">ਜੇ ਤੁਸੀਂ ਕਿਸੇ ਕੁੰਜੀ ਨੂੰ ਦਬਾ ਕੇ ਰੱਖਦੇ ਹੋ, ਤਾਂ ਉਸ ਕੁੰਜੀ ਦਾ ਅੱਖਰ-ਚਿੰਨ੍ਹ ਦੁਹਰਾਇਆ ਜਾਵੇਗਾ</translation>
 <translation id="4994754230098574403">ਸਥਾਪਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="4995293419989417004">ਵਿਗਿਆਪਨ ਵਿਸ਼ਿਆਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
+<translation id="4995676741161760215">ਚਾਲੂ, ਐਕਸਟੈਂਸ਼ਨ ਚਾਲੂ ਹੈ</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{ਕੋਈ <ph name="VM_TYPE" /> VM ਨਹੀਂ ਮਿਲਿਆ}=1{1 <ph name="VM_TYPE" /> VM ਮਿਲਿਆ: <ph name="VM_NAME_LIST" />}other{{NUM_VMS} <ph name="VM_TYPE" /> VM ਮਿਲੇ: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">ਕੋਈ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਨਹੀਂ ਹੈ।</translation>
 <translation id="4998430619171209993">ਚਾਲੂ</translation>
@@ -5372,6 +5378,7 @@
 <translation id="5474859849784484111"><ph name="MANAGER" /> ਲਈ ਤੁਹਾਨੂੰ ਹੁਣ ਵਾਈ-ਫਾਈ ਨਾਲ ਕਨੈਕਟ ਹੋ ਕੇ ਅੱਪਡੇਟ ਡਾਊਨਲੋਡ ਕਰਨ ਦੀ ਲੋੜ ਹੈ। ਜਾਂ, ਮੀਟਰਬੱਧ ਕਨੈਕਸ਼ਨ ਰਾਹੀਂ ਡਾਊਨਲੋਡ ਕਰੋ (ਖਰਚੇ ਲਾਗੂ ਹੋ ਸਕਦੇ ਹਨ)।</translation>
 <translation id="5481273127572794904">ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਕਈ ਫ਼ਾਈਲਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="5481941284378890518">ਨੇੜਲੇ ਪ੍ਰਿੰਟਰ ਸ਼ਾਮਲ ਕਰੋ</translation>
+<translation id="5484462543003267273">ਪਰਿਵਾਰ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> ਲਈ ਤੁਹਾਨੂੰ ਆਪਣੇ ਡਾਟੇ ਦਾ ਬੈਕਅੱਪ ਲੈਣ ਅਤੇ ਇਸ <ph name="DEVICE_TYPE" /> ਨੂੰ ਅੱਜ ਹੀ ਵਾਪਸ ਕਰਨ ਦੀ ਲੋੜ ਹੈ। <ph name="LINK_BEGIN" />ਵੇਰਵੇ ਦੇਖੋ<ph name="LINK_END" />}one{<ph name="MANAGER" /> ਲਈ ਤੁਹਾਨੂੰ ਆਪਣੇ ਡਾਟੇ ਦਾ ਬੈਕਅੱਪ ਲੈਣ ਅਤੇ {NUM_DAYS} ਦਿਨ ਦੇ ਅੰਦਰ ਇਸ <ph name="DEVICE_TYPE" /> ਨੂੰ ਵਾਪਸ ਕਰਨ ਦੀ ਲੋੜ ਹੈ। <ph name="LINK_BEGIN" />ਵੇਰਵੇ ਦੇਖੋ<ph name="LINK_END" />}other{<ph name="MANAGER" /> ਲਈ ਤੁਹਾਨੂੰ ਆਪਣੇ ਡਾਟੇ ਦਾ ਬੈਕਅੱਪ ਲੈਣ ਅਤੇ {NUM_DAYS} ਦਿਨਾਂ ਦੇ ਅੰਦਰ ਇਸ <ph name="DEVICE_TYPE" /> ਨੂੰ ਵਾਪਸ ਕਰਨ ਦੀ ਲੋੜ ਹੈ। <ph name="LINK_BEGIN" />ਵੇਰਵੇ ਦੇਖੋ<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">ਐਪ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="5485435764083510385">ਸੁਰਖੀ ਦੀ ਤਰਜੀਹੀ ਭਾਸ਼ਾ</translation>
@@ -5485,7 +5492,6 @@
 <translation id="5571832155627049070">ਆਪਣੇ ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="5572166921642484567">ਰੰਗ ਸਕੀਮ ਮੋਡ ਚੁਣੋ</translation>
 <translation id="5572252023412311448"><ph name="SITE_GROUP" /> ਲਈ ਸਾਈਟ ਵੇਰਵੇ ਦਿਖਾਓ</translation>
-<translation id="5572648434713976849">ਤੁਹਾਨੂੰ ਪਤਾ ਬਾਰ ਵਿੱਚ ਬਿਹਤਰ ਸੁਝਾਅ ਪ੍ਰਾਪਤ ਹੋਣਗੇ</translation>
 <translation id="557506220935336383">ਹੋਰ ਸਾਈਟਾਂ ਲਈ ਐਕਸਟੈਂਸ਼ਨ ਸੰਬੰਧੀ ਇਜਾਜ਼ਤਾਂ ਦੇਖੋ</translation>
 <translation id="5575473780076478375">ਇਨਕੋਗਨਿਟੋ ਐਕਸਟੈਂਸ਼ਨ: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">ਡੈਮੋ ਰਜਿਸਟਰੇਸ਼ਨ ਬੇਨਤੀ ਵਿੱਚ ਸਮੱਸਿਆ ਆਈ।</translation>
@@ -5604,6 +5610,7 @@
 <translation id="567740581294087470">ਤੁਸੀਂ ਕਿਸ ਕਿਸਮ ਦਾ ਵਿਚਾਰ ਮੁਹੱਈਆ ਕਰਵਾ ਰਹੇ ਹੋ?</translation>
 <translation id="5677503058916217575">ਸਫ਼ਾ ਭਾਸ਼ਾ:</translation>
 <translation id="5677928146339483299">ਬਲੌਕ ਕੀਤਾ</translation>
+<translation id="5677946354068040947">ਹੋਰ ਵਿਕਲਪ</translation>
 <translation id="5678550637669481956"><ph name="VOLUME_NAME" /> ਤੱਕ ਪੜ੍ਹਨ ਅਤੇ ਲਿਖਣ ਦੀ ਪਹੁੰਚ ਦੀ ਅਨੁਮਤੀ ਦਿੱਤੀ ਗਈ ਹੈ।</translation>
 <translation id="5678821117681811450"><ph name="WEB_DRIVE" /> ਨੂੰ ਭੇਜੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="5678955352098267522"><ph name="WEBSITE_1" /> ਤੇ ਆਪਣਾ ਡਾਟਾ ਪੜ੍ਹੋ</translation>
@@ -6016,7 +6023,7 @@
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB ਡੀਵਾਈਸ ਕਨੈਕਟ ਕੀਤੀ ਗਈ</translation>
 <translation id="6027945736510816438">ਕੀ ਤੁਹਾਡਾ ਮਤਲਬ <ph name="WEBSITE" /> ਸੀ?</translation>
 <translation id="6028117231645531007">ਫਿੰਗਰਪ੍ਰਿੰਟ ਸ਼ਾਮਲ ਕਰੋ</translation>
-<translation id="6030719887161080597">ਵਿਗਿਆਪਨ ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਮਾਪਣ ਲਈ ਸਾਈਟ ਵੱਲੋਂ ਵਰਤੀ ਗਈ ਜਾਣਕਾਰੀ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
+<translation id="6030719887161080597">ਵਿਗਿਆਪਨ ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਮਾਪਨ ਲਈ ਸਾਈਟ ਵੱਲੋਂ ਵਰਤੀ ਜਾਣ ਵਾਲੀ ਜਾਣਕਾਰੀ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="6031600495088157824">ਟੂਲਬਾਰ ਵਿੱਚ ਇਨਪੁੱਟ ਵਿਕਲਪ</translation>
 <translation id="6032715498678347852">ਇਸ ਸਾਈਟ ਨੂੰ ਐਕਸਟੈਂਸ਼ਨ ਪਹੁੰਚ ਦੇਣ ਲਈ, ਇਸ 'ਤੇ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="6032912588568283682">ਫਾਈਲ ਸਿਸਟਮ</translation>
@@ -6123,6 +6130,7 @@
 <translation id="6113434369102685411">Chrome ਬ੍ਰਾਊਜ਼ਰ ਅਤੇ <ph name="DEVICE_TYPE" /> ਲਾਂਚਰ ਲਈ ਆਪਣੀ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਖੋਜ ਇੰਜਣ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="6113942107547980621">ਸਮਾਰਟ ਲਾਕ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ, ਆਪਣੇ ਫ਼ੋਨ 'ਤੇ ਪ੍ਰਾਇਮਰੀ ਵਰਤੋਂਕਾਰ ਪ੍ਰੋਫਾਈਲ 'ਤੇ ਅਦਲਾ-ਬਦਲੀ ਕਰੋ</translation>
 <translation id="6116921718742659598">ਭਾਸ਼ਾ ਅਤੇ ਇਨਪੁੱਟ ਸੈਟਿੰਗਾਂ ਬਦਲੋ</translation>
+<translation id="6119008366402292080">ਕੋਈ ਪ੍ਰਿੰਟਰ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="6119927814891883061"><ph name="DEVICE_NAME" /> ਡੀਵਾਈਸ ਨੂੰ ਨਾਮ ਦਿਓ</translation>
 <translation id="6119972796024789243">ਰੰਗ ਸੁਧਾਈ</translation>
 <translation id="6120707837086723438">ਤੁਸੀਂ ਪਕਵਾਨ-ਵਿਧੀਆਂ ਲਈ ਆਪਣੀ ਹਾਲੀਆ ਖੋਜ ਸਰਗਰਮੀ ਦੇ ਆਧਾਰ 'ਤੇ ਸੁਝਾਈਆਂ ਗਈਆਂ ਪਕਵਾਨ-ਵਿਧੀਆਂ ਦੇਖ ਰਹੇ ਹੋ।
@@ -6133,6 +6141,7 @@
 <translation id="6122081475643980456">ਤੁਹਾਡੇ ਇੰਟਰਨੈਟ ਕਨੈਕਸ਼ਨ ਤੇ ਨਿਯੰਤਰਣ ਪਾਇਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="6122093587541546701">ਈਮੇਲ (ਚੋਣਵਾਂ):</translation>
 <translation id="6122095009389448667">ਇਸ ਸਾਈਟ ਨੂੰ ਕਲਿੱਪਬੋਰਡ ਦੇਖਣ ਤੋਂ ਬਲਾਕ ਕਰਦੇ ਰਹੋ</translation>
+<translation id="6122513630797178831">CVC ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="6122600716821516697">ਕੀ ਇਸ ਡੀਵਾਈਸ ਨਾਲ ਸਮੱਗਰੀ ਨੂੰ ਸਾਂਝਾ ਕਰਨਾ ਹੈ?</translation>
 <translation id="6122831415929794347">ਕੀ ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="6124650939968185064">ਅਨੁਸਰਣ ਐਕਸਟੈਂਸ਼ਨਾਂ ਇਸ ਐਕਸਟੈਂਸ਼ਨਾਂ 'ਤੇ ਨਿਰਭਰ ਹਨ:</translation>
@@ -6729,7 +6738,6 @@
 <translation id="6644846457769259194">ਤੁਹਾਡੀ ਡੀਵਾਈਸ ਨੂੰ ਅੱਪਡੇਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">ਤੇਜ਼ ਜੋੜਾਬੰਦੀ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="6647228709620733774">Netscape ਸਰਟੀਫਿਕੇਸ਼ਨ ਅਧਿਕਾਰ ਖੰਡਨ URL</translation>
-<translation id="6647441008198474441">ਤੁਹਾਡੇ ਵੱਲੋਂ ਖੋਲ੍ਹੇ ਜਾਣ ਵਾਲੇ URL Google ਨੂੰ ਇਹ ਪੂਰਵ-ਅਨੁਮਾਨ ਲਗਾਉਣ ਲਈ ਭੇਜੇ ਜਾਂਦੇ ਹਨ ਕਿ ਤੁਸੀਂ ਅਗਲੀਆਂ ਕਿਹੜੀਆਂ ਸਾਈਟਾਂ 'ਤੇ ਜਾਉਗੇ</translation>
 <translation id="6647690760956378579">ਕੁਦਰਤੀ ਅਵਾਜ਼ ਦੀ ਪੂਰਵ-ਝਲਕ</translation>
 <translation id="6648911618876616409">ਇੱਕ ਅਤਿ ਜ਼ਰੂਰੀ ਅੱਪਡੇਟ ਸਥਾਪਤ ਹੋਣ ਲਈ ਤਿਆਰ ਹੈ। ਸ਼ੁਰੂਆਤ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="6649018507441623493">ਬੱਸ ਇੱਕ ਸਕਿੰਟ…</translation>
@@ -8389,7 +8397,7 @@
 <translation id="8023801379949507775">ਹੁਣ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="8025151549289123443">ਲਾਕ ਸਕ੍ਰੀਨ ਅਤੇ ਸਾਈਨ-ਇਨ</translation>
 <translation id="8025291188699172126">ਅੱਪਡੇਟਾਂ ਬਾਰੇ</translation>
-<translation id="8026334261755873520">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਹਟਾਓ</translation>
+<translation id="8026334261755873520">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="8026471514777758216">ਤੁਹਾਡੇ ਸਾਰੇ ਡੀਵਾਈਸ</translation>
 <translation id="8027581147000338959">ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="8028060951694135607">Microsoft ਕੁੰਜੀ ਰਿਕਵਰੀ</translation>
@@ -8974,6 +8982,7 @@
 <translation id="8514746246728959655">ਕੋਈ ਵੱਖਰੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਵਰਤ ਕੇ ਦੇਖੋ</translation>
 <translation id="8514955299594277296">ਸਾਈਟਾਂ ਨੂੰ ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਡਾਟਾ ਰੱਖਿਅਤ ਕਰਨ ਦੀ ਆਗਿਆ ਨਾ ਦਿਓ (ਸਿਫ਼ਾਰਸ਼ੀ ਨਹੀਂ)</translation>
 <translation id="8517759303731677493">ਸੰਪਾਦਨ ਕਰੋ…</translation>
+<translation id="8518942514525208851">ਅਪਮਾਨਜਨਕ ਸ਼ਬਦ ਲੁਕਾਓ</translation>
 <translation id="8519895319663397036">ਪਾਸਵਰਡਾਂ ਨੂੰ ਆਯਾਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਫ਼ਾਈਲ ਦਾ ਆਕਾਰ 150 KB ਤੋਂ ਘੱਟ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ।</translation>
 <translation id="851991974800416566">ਤੁਰੰਤ ਮਜ਼ਬੂਤ ਪਾਸਵਰਡ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="8523493869875972733">ਤਬਦੀਲੀਆਂ ਰੱਖੋ</translation>

@@ -4384,6 +4384,7 @@
 <translation id="4623167406982293031">መለያን ያረጋግጡ</translation>
 <translation id="4623189117674524348">ሥርዓቱ ለዚህ መሣሪያ የኤፒአይ መዳረሻን መፍቀድ አልቻለም።</translation>
 <translation id="4623341761454569602">በGoogle የይለፍ ቃል አስተዳዳሪ <ph name="SEPARATOR" /> <ph name="ACCOUNT" /> ውስጥ</translation>
+<translation id="4624054169152573743">የቀለም ገጽታ</translation>
 <translation id="4625078469366263107">መተግበሪያን አንቃ</translation>
 <translation id="4625905218692741757">ግራጫ ነባሪ ቀለም</translation>
 <translation id="4627427111733173920">ኩኪዎች ታግደዋል</translation>
@@ -5482,7 +5483,6 @@
 <translation id="5571832155627049070">መገለጫዎን አብጅ</translation>
 <translation id="5572166921642484567">የቀለም ዘዴ ሁነታ ምረጥ</translation>
 <translation id="5572252023412311448">ለ<ph name="SITE_GROUP" /> የጣቢያ ዝርዝሮችን አሳይ</translation>
-<translation id="5572648434713976849">በአድራሻ አሞሌው ውስጥ የተሻሻሉ የአስተያየት ጥቆማዎችን ያገኛሉ</translation>
 <translation id="557506220935336383">ለሌሎች ጣቢያዎች የቅጥያ ፈቃዶችን ይመልከቱ</translation>
 <translation id="5575473780076478375">የማንነትን የማያሳውቅ ቅጥያ፦ <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">በቅንጭብ ማሳያ ሁነታ ምዝገባ ጥያቄ ላይ ችግር አጋጥሟል።</translation>
@@ -5601,6 +5601,7 @@
 <translation id="567740581294087470">ምን ዓይነት ግብረመልስ ነው እያቀረቡ ያሉት?</translation>
 <translation id="5677503058916217575">የገጽ ቋንቋ፦</translation>
 <translation id="5677928146339483299">ታግዷል</translation>
+<translation id="5677946354068040947">ተጨማሪ አማራጮች</translation>
 <translation id="5678550637669481956">ወደ <ph name="VOLUME_NAME" /> የማንበብ እና የመጻፍ መዳረሻ ተሰጥቷል።</translation>
 <translation id="5678821117681811450">ወደ <ph name="WEB_DRIVE" /> በመላክ ላይ</translation>
 <translation id="5678955352098267522">የእርስዎን ውሂብ በ<ph name="WEBSITE_1" /> ላይ ያንብቡ</translation>
@@ -6728,7 +6729,6 @@
 <translation id="6644846457769259194">የእርስዎን መሣሪያ በማዘመን ላይ (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">ፈጣን ጥምረትን ያጥፉ</translation>
 <translation id="6647228709620733774">የNetscape ዕውቅና ማረጋገጫ ስልጣን መሻሪያ ዩአርኤል</translation>
-<translation id="6647441008198474441">እርስዎ የሚጎበኟቸው ዩአርኤሎች ቀጥሎ የትኞቹን ጣቢያዎች ሊጎበኙ እንደሚችሉ ለመተንበይ ወደ Google ይላካሉ</translation>
 <translation id="6647690760956378579">የተፈጥሯዊ ድምፅ ቅድመ ዕይታ</translation>
 <translation id="6648911618876616409">አንድ ወሳኝ ዝማኔ ለመጫን ዝግጁ ነው። ለመጀመር በመለያ ይግቡ።</translation>
 <translation id="6649018507441623493">አንዴ ይጠብቁ...</translation>
@@ -7197,6 +7197,7 @@
 <translation id="7019546817926942979">መሣሪያዎ መሰካት አለበት። Linuxን ደረጃ ማሻሻል የእርስዎን ባትሪ በጉልህ በሚባል ደረጃ ያንጠፈጥፈዋል። የእርስዎን መሣሪያ ወደ ኃይል መሙያ ያገናኙ እና እንደገና ይሞክሩ።</translation>
 <translation id="7019805045859631636">ፈጣን</translation>
 <translation id="7022562585984256452">የእርስዎ መነሻ ገፅ ተዋቅሯል።</translation>
+<translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">በእጅ ምልክቶች የሚታሰስበት አዲስ መንገድ</translation>
 <translation id="7025190659207909717">የተንቀሳቃሽ ስልክ ውሂብ አገልግሎት ማቀናበር</translation>
 <translation id="7025895441903756761">ደህንነት እና ግላዊነት</translation>

@@ -1558,6 +1558,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2263189956353037928">Se déconnecter et se reconnecter</translation>
 <translation id="2263371730707937087">Fréquence d'actualisation de l'écran</translation>
 <translation id="2263679799334060788">Nous vous remercions de vos commentaires, qui vont nous aider à améliorer Google Cast. Pour obtenir de l'aide concernant les problèmes liés à Cast, veuillez consulter le <ph name="BEGIN_LINK" />Centre d'aide<ph name="END_LINK" />.</translation>
+<translation id="22649924370461580">Groupes d'onglets enregistrés</translation>
 <translation id="2266957463645820432">IPP sur USB (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth désactivé</translation>
 <translation id="2268182915828370037">Désactiver la synchronisation des fichiers ?</translation>
@@ -1785,6 +1786,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2435248616906486374">Réseau déconnecté.</translation>
 <translation id="2435457462613246316">Afficher le mot de passe</translation>
 <translation id="2436385001956947090">Copier le &amp;lien</translation>
+<translation id="2438853563451647815">Non connecté à l'imprimante</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> : chargement…</translation>
 <translation id="2440604414813129000">Afficher la s&amp;ource</translation>
 <translation id="2440823041667407902">Accès à la position</translation>
@@ -4236,6 +4238,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4508150454272293946">Autorisez les applis et pages Web à utiliser les appareils photo connectés à cet appareil. Si le problème persiste, essayez de redémarrer l'appli ou d'actualiser la page Web.</translation>
 <translation id="450867954911715010">Paramètres d'accessibilité</translation>
 <translation id="4508765956121923607">Afficher la s&amp;ource</translation>
+<translation id="4509277363725254222">Lorsque vous partagez une copie de votre <ph name="BEGIN_BOLD_USERNAME" />nom d'utilisateur<ph name="END_BOLD_USERNAME" /> et de votre <ph name="BEGIN_BOLD_PASSWORD" />mot de passe<ph name="END_BOLD_PASSWORD" />, le membre de votre famille peut les renseigner à l'aide du Gestionnaire de mots de passe de Google</translation>
 <translation id="4509421746503122514">Redémarrer pour mettre à jour</translation>
 <translation id="4510195992002502722">Échec de l'envoi des commentaires. Nouvelle tentative…</translation>
 <translation id="4510479820467554003">Liste de comptes parentaux</translation>
@@ -4375,6 +4378,7 @@ Ces signaux peuvent inclure des informations sur votre navigateur, votre OS, vot
 <translation id="4623167406982293031">Vérifiez le compte</translation>
 <translation id="4623189117674524348">Échec de l'autorisation d'accès à l'API pour cet appareil.</translation>
 <translation id="4623341761454569602">Dans le Gestionnaire de mots de passe de Google <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">Thème de couleur</translation>
 <translation id="4625078469366263107">Activer l'application</translation>
 <translation id="4625905218692741757">Couleur grise par défaut</translation>
 <translation id="4627427111733173920">Cookies bloqués</translation>
@@ -4453,6 +4457,7 @@ Ces signaux peuvent inclure des informations sur votre navigateur, votre OS, vot
 <translation id="4683629100208651599">Mettre en minuscules</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (par défaut)</translation>
 <translation id="4684427112815847243">Tout synchroniser</translation>
+<translation id="4687238339694011189">Assurez-vous que votre imprimante est allumée et connectée au même réseau que votre Chromebook, ou utilisez un câble USB</translation>
 <translation id="4687613760714619596">Appareil inconnu (<ph name="DEVICE_ID" />)</translation>
 <translation id="4687718960473379118">Annonces suggérées par les sites</translation>
 <translation id="4688036121858134881">Identifiant de journal local : <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
@@ -4805,6 +4810,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4994426888044765950">Si vous maintenez une touche enfoncée, le caractère correspondant se répète</translation>
 <translation id="4994754230098574403">Configuration</translation>
 <translation id="4995293419989417004">En savoir plus sur les thèmes des annonces</translation>
+<translation id="4995676741161760215">Extension activée</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Aucune VM <ph name="VM_TYPE" /> trouvée}=1{1 VM <ph name="VM_TYPE" /> trouvée : <ph name="VM_NAME_LIST" />}one{{NUM_VMS} VM <ph name="VM_TYPE" /> trouvée : <ph name="VM_NAME_LIST" />}other{{NUM_VMS} VM <ph name="VM_TYPE" /> trouvées : <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Aucune connexion Internet.</translation>
 <translation id="4998430619171209993">Activé</translation>
@@ -5357,6 +5363,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="5474859849784484111"><ph name="MANAGER" /> vous demande de vous connecter au Wi-Fi maintenant et de télécharger une mise à jour. Vous pouvez aussi la télécharger via une connexion facturée à l'usage (susceptible d'entraîner des frais).</translation>
 <translation id="5481273127572794904">Non autorisé à télécharger automatiquement plusieurs fichiers</translation>
 <translation id="5481941284378890518">Ajouter des imprimantes à proximité</translation>
+<translation id="5484462543003267273">Gérer la famille</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vous demande de sauvegarder vos données et de retourner ce <ph name="DEVICE_TYPE" /> aujourd'hui. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" />}one{<ph name="MANAGER" /> vous demande de sauvegarder vos données et de retourner ce <ph name="DEVICE_TYPE" /> sous {NUM_DAYS} jour. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" />}other{<ph name="MANAGER" /> vous demande de sauvegarder vos données et de retourner ce <ph name="DEVICE_TYPE" /> sous {NUM_DAYS} jours. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Ajouter l'application</translation>
 <translation id="5485435764083510385">Langue préférée pour les sous-titres</translation>
@@ -5470,7 +5477,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="5571832155627049070">Personnalisez votre profil</translation>
 <translation id="5572166921642484567">Sélectionner un mode de jeu de couleurs</translation>
 <translation id="5572252023412311448">Afficher les détails du site <ph name="SITE_GROUP" /></translation>
-<translation id="5572648434713976849">Vous obtiendrez des suggestions améliorées dans la barre d'adresse</translation>
 <translation id="557506220935336383">Afficher les autorisations d'extensions pour les autres sites</translation>
 <translation id="5575473780076478375">Extension en mode navigation privée :<ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Un problème est survenu avec la demande d'enregistrement en mode de démonstration.</translation>
@@ -5590,6 +5596,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="567740581294087470">Quel type de commentaires fournissez-vous ?</translation>
 <translation id="5677503058916217575">Langue de la page :</translation>
 <translation id="5677928146339483299">Bloqué</translation>
+<translation id="5677946354068040947">plus d'options</translation>
 <translation id="5678550637669481956">L'accès en lecture et en écriture à "<ph name="VOLUME_NAME" />" a été accordé.</translation>
 <translation id="5678821117681811450">Envoi à <ph name="WEB_DRIVE" />…</translation>
 <translation id="5678955352098267522">Lire vos données sur <ph name="WEBSITE_1" /></translation>
@@ -6109,6 +6116,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6113434369102685411">Définissez un moteur de recherche par défaut pour le navigateur Chrome et le Lanceur d'applications <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Pour utiliser Smart Lock, passez au profil de l'utilisateur principal sur votre téléphone</translation>
 <translation id="6116921718742659598">Modifier les paramètres de langue et de saisie</translation>
+<translation id="6119008366402292080">Aucune imprimante disponible</translation>
 <translation id="6119927814891883061">Nommer l'appareil <ph name="DEVICE_NAME" /></translation>
 <translation id="6119972796024789243">Correction des couleurs</translation>
 <translation id="6120707837086723438">Des recettes vous sont suggérées en fonction de vos recherches récentes de recettes.
@@ -6119,6 +6127,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6122081475643980456">Une extension a pris le contrôle de votre connexion Internet</translation>
 <translation id="6122093587541546701">E-mail (facultatif) :</translation>
 <translation id="6122095009389448667">Continuer à empêcher ce site de voir le contenu du presse-papiers</translation>
+<translation id="6122513630797178831">Enregistrer le code CVC</translation>
 <translation id="6122600716821516697">Partager des fichiers avec cet appareil ?</translation>
 <translation id="6122831415929794347">Désactiver la navigation sécurisée ?</translation>
 <translation id="6124650939968185064">Les extensions suivantes dépendent de cette extension :</translation>
@@ -6715,7 +6724,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6644846457769259194">Mise à jour de votre appareil (<ph name="PROGRESS_PERCENT" />)…</translation>
 <translation id="6646476869708241165">Désactiver l'Association express</translation>
 <translation id="6647228709620733774">URL de révocation de l'autorité de certification Netscape</translation>
-<translation id="6647441008198474441">Les URL que vous consultez sont envoyées à Google pour prédire les sites que vous êtes susceptible de visiter plus tard</translation>
 <translation id="6647690760956378579">Aperçu de la voix naturelle</translation>
 <translation id="6648911618876616409">Une mise à jour critique est disponible. Connectez-vous pour lancer l'installation.</translation>
 <translation id="6649018507441623493">Un instant…</translation>
@@ -7184,6 +7192,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7019546817926942979">Votre appareil doit être branché. La mise à niveau Linux peut décharger considérablement la batterie. Raccordez l'appareil à un chargeur, puis réessayez.</translation>
 <translation id="7019805045859631636">Rapide</translation>
 <translation id="7022562585984256452">Votre page d'accueil a été définie.</translation>
+<translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">Découvrez une nouvelle façon de naviguer avec des gestes</translation>
 <translation id="7025190659207909717">Gestion des services Internet mobiles</translation>
 <translation id="7025895441903756761">Sécurité et confidentialité</translation>
@@ -8961,6 +8970,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8514746246728959655">Essayer une autre clé de sécurité</translation>
 <translation id="8514955299594277296">Ne pas autoriser les sites à enregistrer des données sur votre appareil (déconseillé)</translation>
 <translation id="8517759303731677493">Modifier…</translation>
+<translation id="8518942514525208851">Masquer le langage vulgaire</translation>
 <translation id="8519895319663397036">Impossible d'importer les mots de passe. La taille du fichier doit être inférieure à 150 Ko.</translation>
 <translation id="851991974800416566">Utilisez rapidement un mot de passe sécurisé</translation>
 <translation id="8523493869875972733">Conserver les modifications</translation>

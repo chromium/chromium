@@ -146,6 +146,7 @@
 <translation id="1576623706766186887">Ұлғайтқыш қосылған кезде кішірейту</translation>
 <translation id="1586324912145647027">Жұмыс үстелдеріне (1–8) өту</translation>
 <translation id="1589090746204042747">Осы сеанстағы барлық әрекеттеріңізге кіріңіз</translation>
+<translation id="1592682369233288537">Келесі жұмыс үстелі: <ph name="NEXT_DESK_NAME" />, белсендіру үшін Іздеу+Бос орын тіркесімін пайдаланыңыз.</translation>
 <translation id="1604857178818051494">Мультимедианы кідірту</translation>
 <translation id="1610778689852195798">"Қайтару"</translation>
 <translation id="1611993646327628135">Қосулы</translation>
@@ -157,6 +158,7 @@
 <translation id="1647986356840967552">Алдыңғы бет</translation>
 <translation id="1651914502370159744">"Тарих" бетін ашу</translation>
 <translation id="1654477262762802994">Дауыстық сұрауды бастау</translation>
+<translation id="1662667383227796099">Іске қосу тақтасында файлдарды, қолданбаларды және т.б. іздеңіз. Сондай-ақ Chromebook туралы сұрақтарға жауаптар ала аласыз.</translation>
 <translation id="1668469839109562275">Ендірілген VPN</translation>
 <translation id="1675844249244994876">Оң жақ терезені жаңарту</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> қалды</translation>
@@ -560,6 +562,7 @@
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Сөре автоматты түрде жасырылған.</translation>
+<translation id="3503243067695520519">Сәлеметсіз бе! Chromebook құрылғылары сәл өзгеше болады.</translation>
 <translation id="3505066820268455558">Батарея зарядталуда</translation>
 <translation id="3509391053705095206">Телефон табылмады. Онда Bluetooth қосылып тұрғанына көз жеткізіңіз.</translation>
 <translation id="3510164367642747937">Тінтуір курсорын ерекшелеу</translation>
@@ -684,6 +687,7 @@
 <translation id="3977512764614765090">Батарея қуаты – <ph name="PERCENTAGE" />%. Зарядталып жатыр.</translation>
 <translation id="3984536049089846927">Келесі бет</translation>
 <translation id="3986082989454912832">Жауап беру</translation>
+<translation id="3990002060657467458">Wi-Fi, Bluetooth және дыбыс деңгейі сияқты жиі пайдаланылатын басқару элементтері Жылдам параметрлерде орналасқан. Сонымен қатар скриншоттар түсіру үшін осы жерге өтуге болады.</translation>
 <translation id="3995138139523574647">USB-C құрылғысы (оң жақ артқы порты)</translation>
 <translation id="40062176907008878">Қолжазба</translation>
 <translation id="4017989525502048489">Лазер меңзер</translation>
@@ -747,6 +751,7 @@
 <translation id="4269883910223712419">Құрылғының әкімшісі мына әрекеттерді орындай алады:</translation>
 <translation id="4274537685965975248">Ctrl + Alt + төменге бағыттауыш перне тіркесімінің функциясы өзгерді. End пернесінің әрекетін орындау үшін <ph name="LAUNCHER_KEY_NAME" /> пернесі + оң жаққа бағыттауыш перне тіркесімін басыңыз.</translation>
 <translation id="4275283744500212192">Терезе форматы опцияларын ашу</translation>
+<translation id="4278138729651139331">Параметрлерде Chromebook құрылғысын бейімдеңіз және жекелендіріңіз. Тұсқағазды өзгертіп көріңіз немесе скринсейверді орнатып көріңіз.</translation>
 <translation id="4279490309300973883">Экран көшірмесін көрсету</translation>
 <translation id="4280601795273309128">Қауіпсіздік жаңартулары аяқталды. Құрылғыңызды жаңартыңыз.</translation>
 <translation id="4283888303416325161">Қауіпсіздікті күшейту үшін құпия сөзді енгізіңіз.</translation>
@@ -803,6 +808,7 @@
 <translation id="4505050298327493054">Белсенді жұмыс үстелі.</translation>
 <translation id="450584155212756404">Әзірлеуші арнасы</translation>
 <translation id="4513946894732546136">Пікір жіберу</translation>
+<translation id="4516212064498225455">Қазіргі жұмыс үстелі: <ph name="CURRENT_DESK_NAME" />, барлық жұмыс үстелі мәзірін ашу үшін Іздеу+Бос орын тіркесімін пайдаланыңыз.</translation>
 <translation id="4518404433291145981">Chromebook құлпын ашу үшін алдымен телефонның құлпын ашыңыз.</translation>
 <translation id="4527045527269911712">"<ph name="DEVICE_NAME" />" Bluetooth құрылғысы жұптасуға рұқсат сұрайды.</translation>
 <translation id="4533343294786968049">Батарея зарядталуда. Толық зарядталу уақыты: <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -877,6 +883,7 @@
 <translation id="4813311884204119883">Сілтемені қойындылар жолағындағы бос жерге сүйреу</translation>
 <translation id="4814539958450445987">Аккаунтқа кіру экраны</translation>
 <translation id="481455355267255546">Алдағы іс-шаралар</translation>
+<translation id="4826588772550366629">камера және микрофон</translation>
 <translation id="4831034276697007977">Автоматты түрде басу функциясын шынымен де өшіргіңіз келе ме?</translation>
 <translation id="4849058404725798627">Нысанды пернетақта фокусымен ерекшелеу</translation>
 <translation id="485592688953820832">Ештеңе істемеу (кідірту)</translation>
@@ -970,6 +977,7 @@
 <translation id="5207949376430453814">Мәтін курсорын ерекшелеу</translation>
 <translation id="5208059991603368177">Қосулы</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> дейін өшірулі</translation>
+<translation id="5217646019792206018">Келесі жұмыс үстелі: <ph name="NEXT_DESK_NAME" />, белсендіру үшін Іздеу+Бос орын немесе Shift+Іздеу+<ph name="NEXT_DESK_INDEX" /> перне тіркесімін пайдаланыңыз.</translation>
 <translation id="5221423477036820198">Phone Hub арқылы телефон хабарларын жылдам жіберіңіз немесе жауап беріңіз.</translation>
 <translation id="5222676887888702881">Шығу</translation>
 <translation id="5229343007215035173">Құпиялық экранын қосу/өшіру</translation>
@@ -1035,6 +1043,7 @@
 <translation id="550391772491508736">Трансляциялауды жалғастыру</translation>
 <translation id="5506975627792768506">Ұлғайтқышты қосу немесе өшіру</translation>
 <translation id="5512042095225963688">Алдыңғы сөзді жою</translation>
+<translation id="5518068085000130971">Бұл негіздер болды! Кеңестер мен анықтама үшін ендірілген Explore қолданбамызда жалғастырыңыз. Бастау бойынша кеңестерді, ұсынылған қолданбаларды, арнайы ұсыныстарды және Chromebook-тың ең жаңа мүмкіндіктерін табасыз.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Әкімшіңіз барлық eSIM профилін өшірген. Толығырақ ақпарат алу үшін әкімшіге хабарласыңыз.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> қосылуда.</translation>
@@ -1360,6 +1369,7 @@
 <translation id="6896758677409633944">Көшіру</translation>
 <translation id="6901883536534621389">Навигация қимылдарын байқап көріңіз</translation>
 <translation id="6912841030378044227">Мекенжай жолағында ерекшелеу</translation>
+<translation id="6912901278692845878">Қысқаша шолу</translation>
 <translation id="6919251195245069855">Смарт карта анықталмады. Қайталап көріңіз.</translation>
 <translation id="6920245099716267363">Хотспотты қосу/өшіру. Хотспот қосулы, 1 құрылғы жалғанған.</translation>
 <translation id="6931576957638141829">Сақтау орны</translation>
@@ -1666,6 +1676,7 @@
 <translation id="8297006494302853456">Әлсіз</translation>
 <translation id="8308637677604853869">Алдыңғы мәзір</translation>
 <translation id="830868413617744215">Бета</translation>
+<translation id="8312557488404088015">Біркелкі бастау үшін қысқаша шолу жасаңыз. Ол 6 қадаммен бірнеше минут қана алады.</translation>
 <translation id="8314772463905284467">Caps Lock қосулы</translation>
 <translation id="8315514906653279104">Қосылып жатыр…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -1715,6 +1726,7 @@
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> іске қосылғанда зарядталмауы мүмкін.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Микрофон кірісін <ph name="APP_NAME" /> басқарады}other{Микрофон кірісін # қолданба басқарады}}</translation>
 <translation id="8535393432370007982">Түс бойынша сұрыптау ретін қайтару</translation>
+<translation id="853768060447955562">Алдыңғы жұмыс үстелі: <ph name="PREVIOUS_DESK_NAME" />, белсендіру үшін Іздеу+Бос орын немесе Shift+Іздеу+<ph name="PREVIOUS_DESK_INDEX" /> перне тіркесімін пайдаланыңыз.</translation>
 <translation id="8541078764854166027">Камерамен кадрлау</translation>
 <translation id="8542053257095774575">Сақталған жұмыс үстелі немесе үлгі жоқ.</translation>
 <translation id="8546059259582788728">Сұрыптау реті қайтарылды.</translation>
@@ -1866,11 +1878,13 @@
 <translation id="925832987464884575">Алдын ала көріністерді жасыру</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> сізден <ph name="DEVICE_TYPE" /> құрылғысын дереу жаңартуды талап етеді.</translation>
 <translation id="938963181863597773">Күнтізбемде не бар?</translation>
+<translation id="943067377221312471">Алдыңғы жұмыс үстелі: <ph name="PREVIOUS_DESK_NAME" />, белсендіру үшін Іздеу+Бос орын тіркесімін пайдаланыңыз.</translation>
 <translation id="945383118875625837">Сілтемені бетбелгілер жолағына сүйреңіз</translation>
 <translation id="945522503751344254">Пікір жіберу</translation>
 <translation id="951991426597076286">Қабылдамау</translation>
 <translation id="953431725143473984">Құрылғыны өшіру керек пе?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> файлын сақтауға орын жеткіліксіз. Орын босатыңыз.</translation>
+<translation id="968627661524972577">Chromebook құрылғысында қажет нәрсенің барлығын істеу үшін қолданбаларды пайдаланыңыз. Қолданбаларыңызды Іске қосу тақтасынан таба аласыз. Сондай-ақ пернетақтадағы Іске қосу пернесін басуға болады.</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> бойынша <ph name="RESULT_COUNT" /> нәтиже көрсетілуде</translation>
 <translation id="98120814841227350">Құжаттың соңына өту</translation>
 <translation id="987589956647469042">Мобильдік интернет қосулы</translation>

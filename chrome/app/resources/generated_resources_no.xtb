@@ -259,6 +259,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1197935538609051549">Deaktiver</translation>
 <translation id="1198066799963193307">Taleverktøy for brukere med nedsatt synsevne</translation>
 <translation id="119944043368869598">Fjern alle</translation>
+<translation id="1199631150313925648">Angi manuelt</translation>
 <translation id="1199814941632954229">Sertifikater blir levert for disse sertifikatprofilene</translation>
 <translation id="120069043972472860">Elendig</translation>
 <translation id="1201402288615127009">Neste</translation>
@@ -1167,6 +1168,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1929186283613845153">Denne filen skannes.</translation>
 <translation id="1929343511231420085">Alle serielle porter</translation>
 <translation id="1929546189971853037">lese nettleserloggen din på alle enheter du er logget på</translation>
+<translation id="1929774028758671973">Kontakter kan dele med deg når de er i nærheten. Du blir bedt om å godkjenne disse forespørslene. Du trenger ikke å godkjenne deling mellom enheter som er logget på <ph name="USER_EMAIL" />.</translation>
 <translation id="1930879306590754738">Passordet ble slettet fra denne enheten og Google-kontoen din</translation>
 <translation id="1931152874660185993">Ingen komponenter er installert.</translation>
 <translation id="1931410639376954712">Installerer <ph name="DEVICE_OS" /></translation>
@@ -1433,6 +1435,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2151576029659734873">Ugyldig faneindeks angitt.</translation>
 <translation id="2152281589789213846">Legg til skrivere i profilen din</translation>
 <translation id="2154484045852737596">Endre kortet</translation>
+<translation id="2155473371917268529">Den gjeldende synlighetsinnstillingen er enhetene dine</translation>
 <translation id="2155772377859296191">Ser ut som <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156877321344104010">Kjør sikkerhetssjekken på nytt</translation>
@@ -1768,6 +1771,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2418307627282545839">Hold det lett og luftig</translation>
 <translation id="2419131370336513030">Se installerte apper</translation>
 <translation id="2419706071571366386">Av sikkerhetsårsaker bør du logge av når datamaskinen ikke er i bruk.</translation>
+<translation id="2421705177906985956">Ingen nettsteder å vise akkurat nå</translation>
 <translation id="2422125132043002186">Gjenopprettingen av Linux er avbrutt</translation>
 <translation id="2423578206845792524">Lagre &amp;bildet som...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Gjest}other{Gjest (#)}}</translation>
@@ -2447,6 +2451,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2966705348606485669">Flere alternativer for bokmerkemappen <ph name="FOLDER_TITLE" /></translation>
 <translation id="2966937470348689686">Administrer Android-innstillinger</translation>
 <translation id="2967926928600500959">Nettadresser som gir treff på disse reglene, blir tvunget til å åpnes i en spesifikk nettleser.</translation>
+<translation id="2970766364519518369">Utvalgte kontakter kan dele med deg når de er i nærheten. Du blir bedt om å godkjenne disse forespørslene. Du trenger ikke å godkjenne deling mellom enheter som er logget på <ph name="USER_EMAIL" />.</translation>
 <translation id="2972581237482394796">Gjø&amp;r om</translation>
 <translation id="2973324205039581528">Demp lyden for nettstedet</translation>
 <translation id="2975761176769946178">En nettadresse kreves</translation>
@@ -4193,6 +4198,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4460014764210899310">Fjern gruppering</translation>
 <translation id="4461483878391246134">Legg til språk som Oversetter aldri skal tilby å oversette</translation>
 <translation id="4462159676511157176">Egendefinerte navnetjenere</translation>
+<translation id="4463530025936541315">Ved å fortsette gir du tredjeparter tillatelse til å bekrefte informasjon som identifiserer denne enheten på nettverket</translation>
 <translation id="4465236939126352372">En tidsgrense på <ph name="TIME" /> er angitt for <ph name="APP_NAME" /></translation>
 <translation id="4466839823729730432">Se minnene dine her</translation>
 <translation id="4469324811108161144">Notater kan lagre opptil <ph name="CHARACTER_LIMIT" /> tegn.</translation>
@@ -4386,6 +4392,7 @@ Enhetssignaler kan inkludere informasjon om nettleseren, OS-et, enheten, install
 <translation id="4623167406982293031">Bekreft kontoen</translation>
 <translation id="4623189117674524348">Systemet kunne ikke godkjenne API-tilgang for denne enheten.</translation>
 <translation id="4623341761454569602">I Google Passordlagring <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">Fargetema</translation>
 <translation id="4625078469366263107">Slå på appen</translation>
 <translation id="4625905218692741757">Grå standardfarge</translation>
 <translation id="4627427111733173920">Informasjonskapsler er blokkert</translation>
@@ -5483,7 +5490,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5571832155627049070">Tilpass profilen din</translation>
 <translation id="5572166921642484567">Velg en modus for fargevalg</translation>
 <translation id="5572252023412311448">Vis nettstedsdetaljer for <ph name="SITE_GROUP" /></translation>
-<translation id="5572648434713976849">Du får bedre forslag i adressefeltet</translation>
 <translation id="557506220935336383">Se utvidelsestillatelser for andre nettsteder</translation>
 <translation id="5575473780076478375">Inkognitoutvidelse: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Det oppsto et problem med en forespørsel om demoregistrering.</translation>
@@ -5602,6 +5608,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="567740581294087470">Hvilken type tilbakemelding vil du gi?</translation>
 <translation id="5677503058916217575">Sidespråk:</translation>
 <translation id="5677928146339483299">Blokkert</translation>
+<translation id="5677946354068040947">flere alternativer</translation>
 <translation id="5678550637669481956">Lese- og skrivetilgang til <ph name="VOLUME_NAME" /> er innvilget.</translation>
 <translation id="5678821117681811450">Sender til <ph name="WEB_DRIVE" /></translation>
 <translation id="5678955352098267522">Les dataene dine på <ph name="WEBSITE_1" /></translation>
@@ -6727,7 +6734,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6644846457769259194">Oppdaterer enheten din (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Slå av rask sammenkobling</translation>
 <translation id="6647228709620733774">Nettadresse for tilbakekalling av Netscape-autoritetssertifikat</translation>
-<translation id="6647441008198474441">Nettadresser du besøker, sendes til Google for å forutsi hvilke nettsteder du kanskje kommer til å besøke etterpå</translation>
 <translation id="6647690760956378579">Forhåndsvisning av naturlig stemme</translation>
 <translation id="6648911618876616409">En kritisk oppdatering er klar for installasjon. Logg på for å komme i gang.</translation>
 <translation id="6649018507441623493">Vent litt</translation>
@@ -7196,6 +7202,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7019546817926942979">Enheten må være koblet til strøm. Oppgradering av Linux kan tappe batteriet betydelig. Koble enheten til en lader, og prøv på nytt.</translation>
 <translation id="7019805045859631636">Høy</translation>
 <translation id="7022562585984256452">Startsiden din er angitt.</translation>
+<translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">Vi innfører en ny måte å navigere med bevegelser på</translation>
 <translation id="7025190659207909717">Administrering av tjenester for mobildata</translation>
 <translation id="7025895441903756761">Sikkerhet og personvern</translation>
@@ -8118,6 +8125,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7797571222998226653">Av</translation>
 <translation id="7798504574384119986">Se nettillatelser</translation>
 <translation id="7798844538707273832">Automatisk blokkert <ph name="PERMISSION" /></translation>
+<translation id="7799650166313181433">Bare enheter som er logget på <ph name="USER_EMAIL" />, kan dele med denne enheten. Du trenger ikke å godkjenne deling mellom enhetene dine.</translation>
 <translation id="7800485561443537737">Bruker mobildata på <ph name="DEVICE_TYPE" />. Det kan hende at operatøren din krever ekstragebyrer. Dette kan øke batteribruken. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">Rotér m&amp;ot klokken</translation>
 <translation id="7801679634091975683">Endringer du gjør her, gjelder kun i Lacros Chrome-nettleseren. For å gjøre endringer i Chrome-nettleserinnstillingene, åpne Chrome-nettleseren og gå til innstillingene.</translation>
@@ -9543,6 +9551,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="8999560016882908256">Syntaksfeil i seksjon: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">Trykk på fingeravtrykkssensoren på høyre side av <ph name="DEVICE_TYPE" />. Fingeravtrykksdataene lagres sikkert og sendes aldri fra <ph name="DEVICE_TYPE" />.</translation>
 <translation id="9003185744423389627">Tilkoblingen til tjeneren for enhetsadministrasjon mislyktes med statusen «<ph name="STATUS_TEXT" />» <ph name="FAILURE_TIME" /></translation>
+<translation id="90033698482696970">Vil du automatisk skanne etter tilgjengelige eSIM-kortprofiler?</translation>
 <translation id="9003647077635673607">Tillat på alle nettsteder</translation>
 <translation id="9003677638446136377">Sjekk på nytt</translation>
 <translation id="9004754973617721124">Vil du slette nettstedsdata og -tillatelser for <ph name="SITE_NAME" />, alle undernettsteder og den tilhørende installerte appen?</translation>

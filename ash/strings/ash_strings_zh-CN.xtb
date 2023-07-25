@@ -146,6 +146,7 @@
 <translation id="1576623706766186887">开启放大镜时缩小</translation>
 <translation id="1586324912145647027">转至桌面 1 到 8</translation>
 <translation id="1589090746204042747">访问您在此次会话中的所有活动</translation>
+<translation id="1592682369233288537">下一个桌面：<ph name="NEXT_DESK_NAME" />，使用搜索键 + 空格键即可启用。</translation>
 <translation id="1604857178818051494">暂停媒体</translation>
 <translation id="1610778689852195798">“撤消”</translation>
 <translation id="1611993646327628135">开启</translation>
@@ -157,6 +158,7 @@
 <translation id="1647986356840967552">上一页</translation>
 <translation id="1651914502370159744">打开“历史记录”页</translation>
 <translation id="1654477262762802994">启动语音查询</translation>
+<translation id="1662667383227796099">您可在启动器中搜索文件、应用和其他内容，也可查阅 Chromebook 相关问题的解答。</translation>
 <translation id="1668469839109562275">内置 VPN</translation>
 <translation id="1675844249244994876">更新右侧窗口</translation>
 <translation id="1677472565718498478">电量尚余 <ph name="TIME" /></translation>
@@ -561,6 +563,7 @@
 <translation id="3477079411857374384">Ctrl+Shift+空格键</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">任务栏已自动隐藏</translation>
+<translation id="3503243067695520519">您好！Chromebook 有点不一样哦。</translation>
 <translation id="3505066820268455558">电池正在充电</translation>
 <translation id="3509391053705095206">找不到您的手机。请确保手机已开启蓝牙功能。</translation>
 <translation id="3510164367642747937">突出显示鼠标光标</translation>
@@ -685,6 +688,7 @@
 <translation id="3977512764614765090">当前的电池电量为 <ph name="PERCENTAGE" />%，正在充电。</translation>
 <translation id="3984536049089846927">下一页</translation>
 <translation id="3986082989454912832">接听</translation>
+<translation id="3990002060657467458">您可在“快捷设置”中找到常用控件（例如 Wi-Fi、蓝牙和音量），也可在那里执行截屏操作。</translation>
 <translation id="3995138139523574647">USB-C 设备（右侧后端端口）</translation>
 <translation id="40062176907008878">手写</translation>
 <translation id="4017989525502048489">激光笔</translation>
@@ -748,6 +752,7 @@
 <translation id="4269883910223712419">此设备的管理员能够：</translation>
 <translation id="4274537685965975248">键盘快捷键“Ctrl + Alt + 向下键”已更改。若要使用 End 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 向右键。</translation>
 <translation id="4275283744500212192">打开窗口布局选项</translation>
+<translation id="4278138729651139331">您可在“设置”中对 Chromebook 进行自定义和个性化设置。不妨尝试更换壁纸或设置屏保。</translation>
 <translation id="4279490309300973883">正在镜像</translation>
 <translation id="4280601795273309128">安全更新已终止。请升级您的设备。</translation>
 <translation id="4283888303416325161">请输入密码以增强安全性</translation>
@@ -804,6 +809,7 @@
 <translation id="4505050298327493054">处于活动状态的桌面。</translation>
 <translation id="450584155212756404">开发渠道</translation>
 <translation id="4513946894732546136">反馈</translation>
+<translation id="4516212064498225455">当前桌面：<ph name="CURRENT_DESK_NAME" />，使用搜索键 + 空格键即可打开“所有桌面”菜单。</translation>
 <translation id="4518404433291145981">若要解锁 Chromebook，请先解锁您的手机</translation>
 <translation id="4527045527269911712">蓝牙设备“<ph name="DEVICE_NAME" />”需要配对许可。</translation>
 <translation id="4533343294786968049">正在减缓电池老化，延长电池寿命。电池电量将在<ph name="FULLY_CHARGE_TIME" /> 之前充满。</translation>
@@ -878,6 +884,7 @@
 <translation id="4813311884204119883">将链接拖到标签栏的空白区域</translation>
 <translation id="4814539958450445987">登录屏幕</translation>
 <translation id="481455355267255546">即将到来的活动</translation>
+<translation id="4826588772550366629">摄像头和麦克风</translation>
 <translation id="4831034276697007977">确定要关闭自动点击吗？</translation>
 <translation id="4849058404725798627">突出显示键盘焦点所在对象</translation>
 <translation id="485592688953820832">不执行任何操作（暂停）</translation>
@@ -971,6 +978,7 @@
 <translation id="5207949376430453814">突出显示文本插入符号</translation>
 <translation id="5208059991603368177">开启</translation>
 <translation id="5216991270656129561">保持关闭状态，直到<ph name="TIME" /></translation>
+<translation id="5217646019792206018">下一个桌面：<ph name="NEXT_DESK_NAME" />，使用搜索键 + 空格键或使用键盘快捷键“Shift + 搜索键 + <ph name="NEXT_DESK_INDEX" />”即可启用。</translation>
 <translation id="5221423477036820198">使用 Phone Hub 快速发送或回复手机消息。</translation>
 <translation id="5222676887888702881">退出</translation>
 <translation id="5229343007215035173">开启/关闭隐私保护屏幕</translation>
@@ -1036,6 +1044,7 @@
 <translation id="550391772491508736">继续投放</translation>
 <translation id="5506975627792768506">开启或关闭放大镜</translation>
 <translation id="5512042095225963688">删除上一个字词</translation>
+<translation id="5518068085000130971">您刚才看到的只是基本操作！您可继续使用内置的“探索”应用来获取各种提示和帮助：入门提示、推荐的应用、特别优惠以及最新的 Chromebook 功能，一应俱全。</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">您的管理员已移除所有 eSIM 卡配置文件。如需了解详情，请与您的管理员联系。</translation>
 <translation id="5523434445161341166">“<ph name="FEATURE_NAME" />”正在连接。</translation>
@@ -1361,6 +1370,7 @@
 <translation id="6896758677409633944">复制</translation>
 <translation id="6901883536534621389">尝试使用手势导航</translation>
 <translation id="6912841030378044227">聚焦于地址栏</translation>
+<translation id="6912901278692845878">快速导览</translation>
 <translation id="6919251195245069855">无法识别您的智能卡，请重试。</translation>
 <translation id="6920245099716267363">开启/关闭热点。热点已开启，且已连接 1 部设备。</translation>
 <translation id="6931576957638141829">保存到</translation>
@@ -1664,6 +1674,7 @@
 <translation id="8297006494302853456">弱</translation>
 <translation id="8308637677604853869">上一菜单</translation>
 <translation id="830868413617744215">测试版</translation>
+<translation id="8312557488404088015">不妨观看快速导览，以便顺利上手使用。一共 6 个步骤，只需几分钟即可看完。</translation>
 <translation id="8314772463905284467">Caps Lock 已打开</translation>
 <translation id="8315514906653279104">正在开启…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -1713,6 +1724,7 @@
 <translation id="8517041960877371778">您的 <ph name="DEVICE_TYPE" /> 在开启时可能无法充电。</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{麦克风输入由“<ph name="APP_NAME" />”控制}other{麦克风输入由 # 个应用控制}}</translation>
 <translation id="8535393432370007982">撤消按颜色排序</translation>
+<translation id="853768060447955562">上一个桌面：<ph name="PREVIOUS_DESK_NAME" />，使用搜索键 + 空格键或使用键盘快捷键“Shift + 搜索键 +<ph name="PREVIOUS_DESK_INDEX" />”即可启用。</translation>
 <translation id="8541078764854166027">相机取景</translation>
 <translation id="8542053257095774575">尚未保存任何桌面或模板</translation>
 <translation id="8546059259582788728">已成功撤消排序</translation>
@@ -1864,11 +1876,13 @@
 <translation id="925832987464884575">隐藏预览</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> 要求您立即更新 <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">我的日历中有哪些活动？</translation>
+<translation id="943067377221312471">上一个桌面：<ph name="PREVIOUS_DESK_NAME" />，使用搜索键 + 空格键即可启用。</translation>
 <translation id="945383118875625837">将链接拖动到书签栏中</translation>
 <translation id="945522503751344254">发送反馈</translation>
 <translation id="951991426597076286">拒绝</translation>
 <translation id="953431725143473984">要关闭设备吗？</translation>
 <translation id="954052413789300507">空间不足，无法下载“<ph name="FILENAME" />”。请先释放空间。</translation>
+<translation id="968627661524972577">您可在 Chromebook 上使用应用完成各种任务。若要使用应用，您可在启动器中查找，也可按一下键盘上的启动器键。</translation>
 <translation id="974545358917229949">显示了 <ph name="RESULT_COUNT" /> 条与“<ph name="QUERY" />”相符的结果</translation>
 <translation id="98120814841227350">转到文档末尾</translation>
 <translation id="987589956647469042">移动流量已开启</translation>

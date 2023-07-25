@@ -1572,6 +1572,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
     Besök
     <ph name="BEGIN_LINK" />
     hjälpcentret<ph name="END_LINK" /> om du vill felsöka problem med Cast.</translation>
+<translation id="22649924370461580">Sparade flikgrupper</translation>
 <translation id="2266957463645820432">IPP över USB (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth inaktiverat</translation>
 <translation id="2268182915828370037">Vill du inaktivera filsynkronisering?</translation>
@@ -1799,6 +1800,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2435248616906486374">Anslutningen till nätverket har avbrutits</translation>
 <translation id="2435457462613246316">Visa lösenord</translation>
 <translation id="2436385001956947090">Kopiera &amp;länk</translation>
+<translation id="2438853563451647815">Inte ansluten till skrivaren</translation>
 <translation id="2439626940657133600">Läser in <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">Visa &amp;källa</translation>
 <translation id="2440823041667407902">Platsåtkomst</translation>
@@ -4391,6 +4393,7 @@ Enhetssignaler kan innehålla information om webbläsaren, operativsystemet, enh
 <translation id="4623167406982293031">Verifiera konto</translation>
 <translation id="4623189117674524348">Det gick inte att auktorisera API-åtkomst för den här enheten.</translation>
 <translation id="4623341761454569602">I Google Lösenordshantering <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">Färgtema</translation>
 <translation id="4625078469366263107">Aktivera appen</translation>
 <translation id="4625905218692741757">Grått standardtema</translation>
 <translation id="4627427111733173920">Cookies har blockeras</translation>
@@ -4469,6 +4472,7 @@ Enhetssignaler kan innehålla information om webbläsaren, operativsystemet, enh
 <translation id="4683629100208651599">Ändra till gemener</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (standard)</translation>
 <translation id="4684427112815847243">Synkronisera allt</translation>
+<translation id="4687238339694011189">Kontrollera att skrivaren är påslagen och ansluten till samma wifi-nätverk som din Chromebook eller använd en USB-kabel.</translation>
 <translation id="4687613760714619596">Okänd enhet (<ph name="DEVICE_ID" />)</translation>
 <translation id="4687718960473379118">Föreslagna annonser på webbplatser</translation>
 <translation id="4688036121858134881">Lokalt logg-id: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
@@ -5488,7 +5492,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5571832155627049070">Anpassa din profil</translation>
 <translation id="5572166921642484567">Välj ett läge för färgschema</translation>
 <translation id="5572252023412311448">Visa webbplatsinformation för <ph name="SITE_GROUP" /></translation>
-<translation id="5572648434713976849">Du får bättre förslag i adressfältet</translation>
 <translation id="557506220935336383">Se vilka behörigheter som tillägg har på andra webbplatser</translation>
 <translation id="5575473780076478375">Inkognitotilläggsprogram: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Ett problem uppstod med registreringsbegäran.</translation>
@@ -5607,6 +5610,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="567740581294087470">Vilket slags feedback skickar du?</translation>
 <translation id="5677503058916217575">Sidans språk:</translation>
 <translation id="5677928146339483299">Blockerat</translation>
+<translation id="5677946354068040947">fler alternativ</translation>
 <translation id="5678550637669481956">Läs- och skrivåtkomst till <ph name="VOLUME_NAME" /> har beviljats.</translation>
 <translation id="5678821117681811450">Skickar till <ph name="WEB_DRIVE" /></translation>
 <translation id="5678955352098267522">Läsa din data på <ph name="WEBSITE_1" /></translation>
@@ -6126,6 +6130,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6113434369102685411">Ställ in standardsökmotor för webbläsaren Chrome och översikten på <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Du måste byta till den primära användarprofilen på telefonen om du vill använda Smart Lock</translation>
 <translation id="6116921718742659598">Ändra språk- och inmatningsinställningar</translation>
+<translation id="6119008366402292080">Inga tillgängliga skrivare</translation>
 <translation id="6119927814891883061">Namnge enheten <ph name="DEVICE_NAME" /></translation>
 <translation id="6119972796024789243">Färgkorrigering</translation>
 <translation id="6120707837086723438">Receptförslag visas utifrån dina senaste receptsökningar på Sök.
@@ -6136,6 +6141,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6122081475643980456">Din internetanslutning kontrolleras</translation>
 <translation id="6122093587541546701">E-postadress (valfritt):</translation>
 <translation id="6122095009389448667">Fortsätt blockera tillgången till Urklipp för den här webbplatsen</translation>
+<translation id="6122513630797178831">Spara CVC-koden</translation>
 <translation id="6122600716821516697">Vill du dela filer med den här enheten?</translation>
 <translation id="6122831415929794347">Vill du inaktivera Säker webbsökning?</translation>
 <translation id="6124650939968185064">Följande tillägg är beroende av detta tillägg:</translation>
@@ -6730,7 +6736,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6644846457769259194">Enheten uppdateras(<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Inaktivera Snabb parkoppling</translation>
 <translation id="6647228709620733774">Webbadress till Netscapes spärrlista för certifikatutfärdare</translation>
-<translation id="6647441008198474441">Webbadresser som du besöker skickas till Google för att förutse vilka webbplatser du kanske vill besöka härnäst</translation>
 <translation id="6647690760956378579">Förhandsgranska naturlig röst</translation>
 <translation id="6648911618876616409">En viktig uppdatering är klar för installation. Logga in för att komma igång.</translation>
 <translation id="6649018507441623493">Ett ögonblick …</translation>
@@ -7199,6 +7204,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7019546817926942979">Du måste sätta i kontakten till enheten. Att uppgradera Linux kan dra mycket batteri. Anslut enheten till en laddare och försök igen.</translation>
 <translation id="7019805045859631636">Snabb</translation>
 <translation id="7022562585984256452">Startsidan har ställts in.</translation>
+<translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">Vi presenterar ett nytt sätt att navigera med rörelser</translation>
 <translation id="7025190659207909717">Hantering av mobil datatjänst</translation>
 <translation id="7025895441903756761">Säkerhet och integritet</translation>

@@ -388,6 +388,7 @@
 <translation id="3311748811247479259">כבוי</translation>
 <translation id="3324193307694657476">כתובת, שורה 2</translation>
 <translation id="3328801116991980348">פרטי אתר</translation>
+<translation id="3340938510625667914">‏פעולות ב-Chrome</translation>
 <translation id="3344485292736684439">{count,plural, =1{הסימנייה נשמרה בתיקייה ’{title}‘ בחשבון שלך, {email}}one{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}two{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}other{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}}</translation>
 <translation id="3371831930909698441">‏Translate זמין. האפשרויות מוצגות בחלק התחתון של המסך.</translation>
 <translation id="3377063233124932127">עכשיו הסימניות, הסיסמאות ונתונים נוספים ששמרת מופיעים למעלה.</translation>
@@ -935,6 +936,7 @@
 <translation id="6628106477656132239">תאריך התפוגה אינו חוקי</translation>
 <translation id="6634432609054530164">הארגון שלך השבית את 'מצב אנונימי'.</translation>
 <translation id="6638511529934826365">הגדלת טקסט…</translation>
+<translation id="6640268266988685324">כרטיסייה פתוחה</translation>
 <translation id="6642362222295953972">מעבר אל כרטיסייה קיימת</translation>
 <translation id="6643016212128521049">ניקוי</translation>
 <translation id="6645899968535965230">‏קוד QR‏: <ph name="PAGE_TITLE" /></translation>

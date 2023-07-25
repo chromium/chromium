@@ -388,6 +388,7 @@
 <translation id="3311748811247479259">Անջատված է</translation>
 <translation id="3324193307694657476">Հասցե 2</translation>
 <translation id="3328801116991980348">Տեղեկություններ կայքի մասին</translation>
+<translation id="3340938510625667914">Գործողություններ Chrome-ում</translation>
 <translation id="3344485292736684439">{count,plural, =1{Էջանիշը պահվեց {email} հաշվի «{title}» պանակում}one{Էջանիշը պահվեց {email} հաշվի «{title}» պանակում}other{Էջանիշները պահվեցին {email} հաշվի «{title}» պանակում}}</translation>
 <translation id="3371831930909698441">Translate-ը հասանելի է: Կարգավորումները հասանելի են էկրանի ստորին հատվածում:</translation>
 <translation id="3377063233124932127">Այժմ ձեր պահած էջանիշները, գաղտնաբառերը և մյուս տարրերը վերևում են։</translation>
@@ -935,6 +936,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6628106477656132239">Վավերականության ժամկետը սխալ է</translation>
 <translation id="6634432609054530164">Ձեր կազմակերպությունն անջատել է ինկոգնիտո ռեժիմը</translation>
 <translation id="6638511529934826365">Մեծացնել տեքստը…</translation>
+<translation id="6640268266988685324">Բացել ներդիր</translation>
 <translation id="6642362222295953972">Անցնել մինչ այդ բացած ներդիր</translation>
 <translation id="6643016212128521049">Մաքրել</translation>
 <translation id="6645899968535965230">QR կոդ՝ <ph name="PAGE_TITLE" /></translation>

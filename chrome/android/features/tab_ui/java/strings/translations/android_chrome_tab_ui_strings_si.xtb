@@ -37,6 +37,7 @@
 <translation id="4133493477912226187">පටිති <ph name="NUMBER_OF_TABS" /> ක් අදාළ බව පෙනේ. ඒවා සමූහ කරන්නද?</translation>
 <translation id="4212246570487010370">දිගටම බ්‍රවුස් කරන්න</translation>
 <translation id="4648718555153979859">ඔබේ පටිති මෙහි එකට කණ්ඩායම් කෙරේ</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{Chrome ප්‍රධාන මෙනුව යටතේ ඇති මෑත පටිති තුළ ඔබට ඔබේ වසා ඇති පටිති සොයා ගත හැක.}=1{Chrome ප්‍රධාන මෙනුව යටතේ ඇති මෑත පටිති තුළ ඔබට ඔබේ වසා ඇති පටිති සොයා ගත හැක. ඔබේ අප්‍රකට පටිත්ත නොතිබෙනු ඇත.}one{Chrome ප්‍රධාන මෙනුව යටතේ ඇති මෑත පටිති තුළ ඔබට ඔබේ වසා ඇති පටිති සොයා ගත හැක. ඔබේ අප්‍රකට පටිති #ක් නොතිබෙනු ඇත.}other{Chrome ප්‍රධාන මෙනුව යටතේ ඇති මෑත පටිති තුළ ඔබට ඔබේ වසා ඇති පටිති සොයා ගත හැක. ඔබේ අප්‍රකට පටිති #ක් නොතිබෙනු ඇත.}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(සමාලෝචන <ph name="REVIEWS_COUNT_ONE" />)}one{(සමාලෝචන <ph name="REVIEWS_COUNT_MANY" />)}other{(සමාලෝචන <ph name="REVIEWS_COUNT_MANY" />)}}</translation>
 <translation id="4850886885716139402">දසුන</translation>
 <translation id="4870911314065352661">සියලු ටැබ වසන්නද?</translation>

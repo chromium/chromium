@@ -51,6 +51,7 @@
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> estava usando o Chromium e deixou favoritos, senhas e outras configurações neste dispositivo.</translation>
 <translation id="3661862315467204831">Abra as configurações do Chromium no iOS, toque em "App de navegação padrão" e selecione o Chromium.</translation>
 <translation id="372658070733623520">Confirme sua identidade para usar e salvar dados do Chromium na sua Conta do Google.</translation>
+<translation id="3780779443901618967">Avisa você sobre sites perigosos, mesmo aqueles que o Google não conhecia, analisando mais dados de sites do que a proteção padrão. Você pode ignorar os avisos do Chromium.</translation>
 <translation id="3805899903892079518">O Chromium não têm acesso às suas fotos ou seus vídeos. Permita o acesso em "Configurações do iOS" &gt; "Privacidade" &gt; "Fotos".</translation>
 <translation id="3827545470516145620">Você está usando a proteção padrão neste dispositivo</translation>
 <translation id="3955621079070267756">Abrir o Chromium por qualquer app</translation>
@@ -94,6 +95,7 @@
 <translation id="632825460376924298">Permitir login no Chromium</translation>
 <translation id="6337530241089703714">Você quer apagar ou manter os dados do Chromium neste dispositivo?</translation>
 <translation id="6424492062988593837">O Chromium ficou ainda melhor! Uma nova versão está disponível.</translation>
+<translation id="6563921047760808519">Saiba mais sobre <ph name="BEGIN_LINK" />como o Chromium mantém a privacidade dos seus dados<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">O Chromium agora tem suporte a políticas do usuário na sua conta gerenciada</translation>
 <translation id="6752854822223394465">Sua organização está configurando o Chromium…</translation>
 <translation id="6820823224820483452">Não foi possível verificar todas as senhas com o Chromium. Tente novamente amanhã.</translation>

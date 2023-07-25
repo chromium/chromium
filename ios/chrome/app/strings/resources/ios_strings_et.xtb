@@ -388,6 +388,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3311748811247479259">Väljas</translation>
 <translation id="3324193307694657476">Aadress 2</translation>
 <translation id="3328801116991980348">Saiditeave</translation>
+<translation id="3340938510625667914">Chrome’i toimingud</translation>
 <translation id="3344485292736684439">{count,plural, =1{Järjehoidja salvestati teie kontol {email} kausta „{title}“}other{Järjehoidjad salvestati teie kontol {email} kausta „{title}“}}</translation>
 <translation id="3371831930909698441">Tõlkimine on saadaval. Valikud on saadaval ekraanikuva allosas.</translation>
 <translation id="3377063233124932127">Nüüd on teie salvestatud järjehoidjad, paroolid ja muu ülaosas.</translation>
@@ -935,6 +936,7 @@ Teie andmed on krüpteeritud teie parooliga. Chrome’i andmete kasutamiseks ja 
 <translation id="6628106477656132239">Sobimatu aegumiskuupäev</translation>
 <translation id="6634432609054530164">Teie organisatsioon lülitas inkognito režiimi välja</translation>
 <translation id="6638511529934826365">Teksti suumimine …</translation>
+<translation id="6640268266988685324">Avatud vaheleht</translation>
 <translation id="6642362222295953972">Lülita olemasolevale vahelehele</translation>
 <translation id="6643016212128521049">Tühjenda</translation>
 <translation id="6645899968535965230">QR-kood: <ph name="PAGE_TITLE" /></translation>

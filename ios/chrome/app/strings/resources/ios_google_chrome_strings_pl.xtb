@@ -39,6 +39,7 @@
 <translation id="2767464022270041271">Brak zapisanych haseł. Menedżer haseł Google może sprawdzać Twoje hasła, gdy je zapiszesz.</translation>
 <translation id="2840432500933227975">Otwórz Ustawienia Chrome na iOS, kliknij „Domyślna przeglądarka” i wybierz Chrome.</translation>
 <translation id="2869959624320573933">Zaloguj się w Chrome</translation>
+<translation id="2876628302275096482">Dowiedz się więcej o tym, <ph name="BEGIN_LINK" />jak Chrome dba o prywatność Twoich danych<ph name="END_LINK" />.</translation>
 <translation id="2957447865124070833">Wybierz <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Wylogowujesz się z konta, którym zarządza <ph name="SIGNOUT_MANAGED_DOMAIN" />. Spowoduje to usunięcie danych Chrome z tego urządzenia, ale pozostaną one na koncie Google.</translation>
 <translation id="3167189358072330585">Twoje konto nie działa w Google Chrome. Skontaktuj się z administratorem domeny lub zaloguj się przy użyciu zwykłego konta Google.</translation>
@@ -79,6 +80,7 @@
 <translation id="5162467219239570114">Przeglądarka Chrome jest nieaktualna. Jeśli w <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> nie ma dostępnej aktualizacji, Twoje urządzenie może już nie obsługiwać nowych wersji Chrome.</translation>
 <translation id="5389212809648216794">Google Chrome nie może użyć aparatu, bo używa go już inna aplikacja</translation>
 <translation id="5395376160638294582">Upewnij się, że zawsze możesz używać danych Chrome na swoim koncie Google</translation>
+<translation id="5439191312780166229">Ostrzega o niebezpiecznych witrynach, nawet takich, które wcześniej nie były znane Google. Jest to możliwe dzięki analizowaniu większej ilości danych z witryn niż w trybie standardowej ochrony. Możesz wybrać pomijanie ostrzeżeń Chrome.</translation>
 <translation id="5460571915754665838">4. Wybierz Chrome.</translation>
 <translation id="5492504007368565877">Menedżer haseł Google nie może sprawdzić Twoich haseł.</translation>
 <translation id="5527026824954593399">Kliknij „Zobacz w Mapach Google w Chrome”.</translation>

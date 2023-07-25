@@ -101,6 +101,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1201402288615127009">Próxima</translation>
 <translation id="1201895884277373915">Mais deste site</translation>
 <translation id="1202892408424955784">Produtos monitorados</translation>
+<translation id="1204184165594298176">{0,plural, =1{A cópia do arquivo está bloqueada}one{A cópia de <ph name="FILE_COUNT" /> arquivo está bloqueada}other{A cópia de <ph name="FILE_COUNT" /> arquivos está bloqueada}}</translation>
 <translation id="1204602502194308272">Peixes e aquários</translation>
 <translation id="1206967143813997005">Assinatura inicial inválida</translation>
 <translation id="1209206284964581585">Ocultar por enquanto</translation>
@@ -889,6 +890,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2916038427272391327">Fechar outros programas</translation>
 <translation id="2918922650248459053">Mergulho e atividades aquáticas</translation>
 <translation id="2922350208395188000">O certificado do servidor não pode ser verificado.</translation>
+<translation id="2922792708490674">{0,plural, =1{O download do arquivo está bloqueado}one{O download de <ph name="FILE_COUNT" /> arquivo está bloqueado}other{O download de <ph name="FILE_COUNT" /> arquivos está bloqueado}}</translation>
 <translation id="2923275635648511531">Produtos para bronzeamento e proteção solar</translation>
 <translation id="292371311537977079">Configurações do Chrome</translation>
 <translation id="2925454999967523701">Botão "Criar documento". Ative para criar rapidamente um novo arquivo do Documentos Google</translation>
@@ -1269,6 +1271,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3713662424819367124">Perfumes e fragrâncias</translation>
 <translation id="3714633008798122362">agenda na web</translation>
 <translation id="3714780639079136834">Ativar os dados da rede celular ou o Wi-Fi</translation>
+<translation id="3715016660240337709">{0,plural, =1{O upload do arquivo está bloqueado}one{O upload de <ph name="FILE_COUNT" /> arquivo está bloqueado}other{O upload de <ph name="FILE_COUNT" /> arquivos está bloqueado}}</translation>
 <translation id="3715545959749027023">Quando ocorrências de segurança são sinalizadas pelo Chrome, dados relevantes sobre elas são enviados ao administrador. Isso pode incluir URLs de páginas visitadas no Chrome, metadados ou nomes de arquivos, falhas do navegador ou da guia e o nome de usuário usado para fazer login no dispositivo, no Chrome e em apps baseados na Web.</translation>
 <translation id="3715597595485130451">Conectar ao Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Verificar a configuração de DNS, proxy e firewall<ph name="END_LINK" /></translation>
@@ -1349,6 +1352,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3890664840433101773">Adicionar e-mail</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">O cartão expirou</translation>
+<translation id="3905894480064208252">{0,plural, =1{A transferência do arquivo está bloqueada}one{A transferência de <ph name="FILE_COUNT" /> arquivo está bloqueada}other{A transferência de <ph name="FILE_COUNT" /> arquivos está bloqueada}}</translation>
 <translation id="3906095212874392000">Fim do texto convertido</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
@@ -1757,6 +1761,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4757993714154412917">Você acabou de digitar sua senha em um site suspeito. Para proteger suas contas, o Chromium recomenda conferir as senhas salvas.</translation>
 <translation id="4758311279753947758">Adicionar dados de contato</translation>
 <translation id="4761104368405085019">Usar microfone</translation>
+<translation id="4761326898079498987">Revise para conferir mais detalhes</translation>
 <translation id="4761869838909035636">Executar a confirmação de segurança do Chrome</translation>
 <translation id="4764680219299728632">Fogões, cooktops e fornos</translation>
 <translation id="4764776831041365478">A página <ph name="URL" /> pode estar temporariamente indisponível ou pode ter sido movida permanentemente para um novo endereço da Web.</translation>
@@ -2441,6 +2446,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6240447795304464094">Logotipo do Google Pay</translation>
 <translation id="6241121617266208201">Ocultar sugestões</translation>
 <translation id="624499991300733384">Serviço de criação de impressão</translation>
+<translation id="6251906504834538140">{0,plural, =1{A transferência do arquivo está bloqueada}one{A transferência de <ph name="FILE_COUNT" /> arquivo está bloqueada}other{A transferência de <ph name="FILE_COUNT" /> arquivos está bloqueada}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para gerenciar arquivos transferidos por download no Chrome</translation>
 <translation id="6254436959401408446">Não há memória suficiente para abrir essa página</translation>
 <translation id="6259156558325130047">&amp;Refazer reordenar</translation>
@@ -3152,6 +3158,7 @@ Mais detalhes:
 <translation id="7682287625158474539">Entrega</translation>
 <translation id="7682451652090915298">Rúgbi</translation>
 <translation id="7684683146428206649">Metal</translation>
+<translation id="7684928361160505327">{0,plural, =1{<ph name="FILE_NAME" /> foi bloqueado devido a uma política}one{<ph name="FILE_COUNT" /> arquivo foi bloqueado devido a uma política}other{<ph name="FILE_COUNT" /> arquivos foram bloqueados devido a uma política}}</translation>
 <translation id="7687186412095877299">Preencher formulários com suas formas de pagamento salvas</translation>
 <translation id="7687305263118037187">Novas tentativas esgotadas</translation>
 <translation id="7690647519407127574">Cartão postal Oufuku Hagaki</translation>
@@ -3367,6 +3374,7 @@ Mais detalhes:
 <translation id="8175796834047840627">A opção de salvar seus cartões na Conta do Google está disponível no Chrome porque você fez login. É possível alterar esse comportamento nas configurações.</translation>
 <translation id="8176440868214972690">O administrador do dispositivo enviou algumas informações, como configurações ou políticas, aos sites a seguir.</translation>
 <translation id="817820454357658398">Produtos para higiene feminina</translation>
+<translation id="818254048113802060">{0,plural, =1{O arquivo <ph name="FILE_NAME" /> foi bloqueado devido ao conteúdo}one{<ph name="FILE_COUNT" /> arquivo foi bloqueado devido ao conteúdo}other{<ph name="FILE_COUNT" /> arquivos foram bloqueados devido ao conteúdo}}</translation>
 <translation id="8183800802493617952">Jogos e atividades para toda a família</translation>
 <translation id="8184538546369750125">Usar padrão global (Permitir)</translation>
 <translation id="8186706823560132848">Software</translation>
@@ -3418,6 +3426,7 @@ Mais detalhes:
 <translation id="8265992338205884890">Dados visíveis</translation>
 <translation id="8267698848189296333">Fazendo login como <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Documentos separados/Cópias reunidas</translation>
+<translation id="8269703227894255363">{0,plural, =1{A abertura do arquivo está bloqueada}one{A abertura de <ph name="FILE_COUNT" /> arquivo está bloqueada}other{A abertura de <ph name="FILE_COUNT" /> arquivos está bloqueada}}</translation>
 <translation id="826991611711124547">Cruzeiros e fretamento</translation>
 <translation id="8270242299912238708">Documentos em PDF</translation>
 <translation id="8275952078857499577">Não oferecer a opção de traduzir este site</translation>

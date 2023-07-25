@@ -1560,6 +1560,7 @@
 <translation id="2263189956353037928">Выйсці і зноў увайсці</translation>
 <translation id="2263371730707937087">Частата абнаўлення экрана</translation>
 <translation id="2263679799334060788">Ваш водгук дапаможа палепшыць Google Cast, і мы цэнім гэта. Каб атрымаць дапамогу па пошуку і выпраўленні непаладак з Cast, наведайце<ph name="BEGIN_LINK" />даведачны цэнтр<ph name="END_LINK" />.</translation>
+<translation id="22649924370461580">Захаваныя групы ўкладак</translation>
 <translation id="2266957463645820432">IPP-over-USB (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth выключаны</translation>
 <translation id="2268182915828370037">Выключыць сінхранізацыю?</translation>
@@ -1787,6 +1788,7 @@
 <translation id="2435248616906486374">Сетка адключана</translation>
 <translation id="2435457462613246316">Паказаць пароль</translation>
 <translation id="2436385001956947090">Капіраваць &amp;спасылку</translation>
+<translation id="2438853563451647815">Прынтар не падключаны</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" />: ідзе загрузка</translation>
 <translation id="2440604414813129000">Паказаць зы&amp;ходны тэкст</translation>
 <translation id="2440823041667407902">Доступ да даных геалакацыі</translation>
@@ -4375,6 +4377,7 @@
 <translation id="4623167406982293031">Пацвердзіць уліковы запіс</translation>
 <translation id="4623189117674524348">Сістэме не ўдалося аўтарызаваць доступ API для гэтай прылады.</translation>
 <translation id="4623341761454569602">У Менеджары пароляў Google <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">Колеравая тэма</translation>
 <translation id="4625078469366263107">Уключыць праграму</translation>
 <translation id="4625905218692741757">Стандартны шэры колер</translation>
 <translation id="4627427111733173920">Файлы cookie заблакіраваны</translation>
@@ -4453,6 +4456,7 @@
 <translation id="4683629100208651599">Зрабіць усе літары малымі</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (стандартна)</translation>
 <translation id="4684427112815847243">Сінхранізаваць усё</translation>
+<translation id="4687238339694011189">Пераканайцеся, што прынтар уключаны і падключаны да той жа сеткі, што і Chromebook, або скарыстайце кабель USB</translation>
 <translation id="4687613760714619596">Невядомая прылада (<ph name="DEVICE_ID" />)</translation>
 <translation id="4687718960473379118">Рэклама, якая прапануецца сайтамі</translation>
 <translation id="4688036121858134881">Ідэнтыфікатар лакальнага журнала: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
@@ -5470,7 +5474,6 @@
 <translation id="5571832155627049070">Наладзьце свой профіль</translation>
 <translation id="5572166921642484567">Выбраць рэжым колеравай схемы</translation>
 <translation id="5572252023412311448">Паказаць звесткі пра сайт <ph name="SITE_GROUP" /></translation>
-<translation id="5572648434713976849">Вы будзеце атрымліваць лепшыя прапановы ў адрасным радку</translation>
 <translation id="557506220935336383">Паказаць дазволы пашырэнняў для іншых сайтаў</translation>
 <translation id="5575473780076478375">Пашырэнне інкогніта: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Узнікла праблема з запытам рэгістрацыі ў дэманстрацыйным рэжыме.</translation>
@@ -5589,6 +5592,7 @@
 <translation id="567740581294087470">Укажыце, пра што вы даяце водгук</translation>
 <translation id="5677503058916217575">Мова старонкі:</translation>
 <translation id="5677928146339483299">Заблакіравана</translation>
+<translation id="5677946354068040947">дадатковыя параметры</translation>
 <translation id="5678550637669481956">Для <ph name="VOLUME_NAME" /> выдадзены дазвол на чытанне і запіс.</translation>
 <translation id="5678821117681811450">Ідзе адпраўка ў сэрвіс "<ph name="WEB_DRIVE" />"</translation>
 <translation id="5678955352098267522">Прагляд вашых даных на <ph name="WEBSITE_1" /></translation>
@@ -6108,6 +6112,7 @@
 <translation id="6113434369102685411">Задайце стандартную пошукавую сістэму для браўзера Chrome і Панэлі запуску на прыладзе <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Каб выкарыстоўваць Smart Lock, пераключыцеся на асноўны карыстальніцкі профіль на тэлефоне</translation>
 <translation id="6116921718742659598">Змяніць налады мовы і ўводу</translation>
+<translation id="6119008366402292080">Няма даступных прынтараў</translation>
 <translation id="6119927814891883061">Даць прыладзе назву "<ph name="DEVICE_NAME" />"</translation>
 <translation id="6119972796024789243">Карэкцыя колераў</translation>
 <translation id="6120707837086723438">Вы бачыце прапанаваныя рэцэпты, падабраныя на аснове вашай нядаўняй гісторыі пошуку рэцэптаў.
@@ -6118,6 +6123,7 @@
 <translation id="6122081475643980456">Ваша падключэнне да інтэрнэту кантралюецца</translation>
 <translation id="6122093587541546701">Электронная пошта (неабавязкова):</translation>
 <translation id="6122095009389448667">Працягваць блакіраваць гэтаму сайту доступ да буфера абмену</translation>
+<translation id="6122513630797178831">Захаваць код CVC</translation>
 <translation id="6122600716821516697">Абагуліць з гэтай прыладай?</translation>
 <translation id="6122831415929794347">Выключыць Бяспечны прагляд?</translation>
 <translation id="6124650939968185064">Наступныя пашырэнні залежаць ад гэтага пашырэння:</translation>
@@ -6718,7 +6724,6 @@
 <translation id="6644846457769259194">Ідзе абнаўленне прылады (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Выключыць хуткае спалучэнне</translation>
 <translation id="6647228709620733774">URL-адрас адклікання для цэнтра сертыфікацыі Netscape</translation>
-<translation id="6647441008198474441">URL-адрасы старонак, якія вы наведваеце, адпраўляюцца ў Google, каб прадказваць, якія сайты вы можаце наведаць далей</translation>
 <translation id="6647690760956378579">Узор натуральнага голасу</translation>
 <translation id="6648911618876616409">Крытычнае абнаўленне гатовае да ўсталявання. Каб усталяваць яго, увайдзіце ва ўліковы запіс.</translation>
 <translation id="6649018507441623493">Секунду…</translation>

@@ -4256,6 +4256,7 @@
 <translation id="4508150454272293946">Дозволити додаткам і веб-сторінкам використовувати камери, підключені до цього пристрою. Якщо проблема з камерою не зникла, перезапустіть додаток або оновіть веб-сторінку.</translation>
 <translation id="450867954911715010">Налаштування функцій доступності</translation>
 <translation id="4508765956121923607">Переглянути д&amp;жерело</translation>
+<translation id="4509277363725254222">Якщо ви поділитеся <ph name="BEGIN_BOLD_USERNAME" />іменем користувача<ph name="END_BOLD_USERNAME" /> й <ph name="BEGIN_BOLD_PASSWORD" />паролем<ph name="END_BOLD_PASSWORD" />, учасник вашої сімейної групи зможе заповнювати їх за допомогою Google Менеджера паролів</translation>
 <translation id="4509421746503122514">Перезапустити, щоб оновити дані</translation>
 <translation id="4510195992002502722">Не вдалося надіслати відгук. Повторна спроба…</translation>
 <translation id="4510479820467554003">Список батьківських облікових записів</translation>
@@ -4395,6 +4396,7 @@
 <translation id="4623167406982293031">Підтвердьте обліковий запис</translation>
 <translation id="4623189117674524348">Системі на вдалося надати API доступ до цього пристрою.</translation>
 <translation id="4623341761454569602">У Google Менеджері паролів <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">Колірна тема</translation>
 <translation id="4625078469366263107">Увімкнути додаток</translation>
 <translation id="4625905218692741757">Сірий колір за умовчанням</translation>
 <translation id="4627427111733173920">Файли cookie заблоковано</translation>
@@ -4826,6 +4828,7 @@
 <translation id="4994426888044765950">Вводити символ повторно, якщо утримується призначена йому клавіша</translation>
 <translation id="4994754230098574403">Налаштування</translation>
 <translation id="4995293419989417004">Докладніше про теми оголошень</translation>
+<translation id="4995676741161760215">Розширення ввімкнено</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Віртуальну машину <ph name="VM_TYPE" /> не знайдено}=1{Знайдено 1 віртуальну машину <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}one{Знайдено {NUM_VMS} віртуальну машину <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}few{Знайдено {NUM_VMS} віртуальні машини <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}many{Знайдено {NUM_VMS} віртуальних машин <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}other{Знайдено {NUM_VMS} віртуальної машини <ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Немає з’єднання з Інтернетом.</translation>
 <translation id="4998430619171209993">Увімкнено</translation>
@@ -5378,6 +5381,7 @@
 <translation id="5474859849784484111">Домен <ph name="MANAGER" /> вимагає, щоб ви підключилися до мережі Wi-Fi та завантажили оновлення. Ви також можете використовувати підключення з тарифікацією трафіку (може стягуватися плата).</translation>
 <translation id="5481273127572794904">Заборонено автоматично завантажувати кілька файлів</translation>
 <translation id="5481941284378890518">Додати принтери поруч</translation>
+<translation id="5484462543003267273">Керувати сімейною групою</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{Адміністратор домену <ph name="MANAGER" /> вимагає, щоб ви створили резервну копію своїх даних і повернули цей пристрій <ph name="DEVICE_TYPE" /> сьогодні. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" />}one{Адміністратор домену <ph name="MANAGER" /> вимагає, щоб ви створили резервну копію своїх даних і повернули цей пристрій <ph name="DEVICE_TYPE" /> упродовж {NUM_DAYS} дня. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" />}few{Адміністратор домену <ph name="MANAGER" /> вимагає, щоб ви створили резервну копію своїх даних і повернули цей пристрій <ph name="DEVICE_TYPE" /> упродовж {NUM_DAYS} днів. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" />}many{Адміністратор домену <ph name="MANAGER" /> вимагає, щоб ви створили резервну копію своїх даних і повернули цей пристрій <ph name="DEVICE_TYPE" /> упродовж {NUM_DAYS} днів. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" />}other{Адміністратор домену <ph name="MANAGER" /> вимагає, щоб ви створили резервну копію своїх даних і повернули цей пристрій <ph name="DEVICE_TYPE" /> упродовж {NUM_DAYS} дня. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Установити додаток</translation>
 <translation id="5485435764083510385">Бажана мова субтитрів</translation>
@@ -5491,7 +5495,6 @@
 <translation id="5571832155627049070">Налаштуйте свій профіль</translation>
 <translation id="5572166921642484567">Вибрати режим колірної схеми</translation>
 <translation id="5572252023412311448">Показати відомості про групу сайтів <ph name="SITE_GROUP" /></translation>
-<translation id="5572648434713976849">В адресному рядку з’являтимуться покращені підказки</translation>
 <translation id="557506220935336383">Переглянути дозволи розширень для інших сайтів</translation>
 <translation id="5575473780076478375">Розширення в режимі анонімного перегляду: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Виникла проблема з демо-запитом на реєстрацію.</translation>
@@ -5608,6 +5611,7 @@
 <translation id="567740581294087470">Виберіть категорію відгуку.</translation>
 <translation id="5677503058916217575">Мова сторінки:</translation>
 <translation id="5677928146339483299">Заблоковано</translation>
+<translation id="5677946354068040947">більше опцій</translation>
 <translation id="5678550637669481956"><ph name="VOLUME_NAME" />: надано доступ для перегляду й редагування.</translation>
 <translation id="5678821117681811450">Надсилається в сервіс <ph name="WEB_DRIVE" /></translation>
 <translation id="5678955352098267522">Переглядати ваші дані на веб-сайті <ph name="WEBSITE_1" /></translation>
@@ -6738,7 +6742,6 @@
 <translation id="6644846457769259194">Пристрій оновлюється (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Вимкнути функцію "Швидка пара"</translation>
 <translation id="6647228709620733774">URL-адреса відкликання Центру сертифікації Netscape</translation>
-<translation id="6647441008198474441">URL-адреси сторінок, які ви відвідуєте, надсилаються в Google, щоб ми могли передбачити, які сайти ви можете відвідати наступними</translation>
 <translation id="6647690760956378579">Попереднє прослуховування природного голосу</translation>
 <translation id="6648911618876616409">Доступне важливе оновлення. Увійдіть, щоб установити його.</translation>
 <translation id="6649018507441623493">Зачекайте…</translation>
@@ -7207,6 +7210,7 @@
 <translation id="7019546817926942979">Пристрій потрібно підключити до живлення. Оновлення Linux може значно виснажити акумулятор. Підключіть зарядний пристрій і повторіть спробу.</translation>
 <translation id="7019805045859631636">Швидка</translation>
 <translation id="7022562585984256452">Вашу домашню сторінку налаштовано.</translation>
+<translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">Новий спосіб навігації жестами</translation>
 <translation id="7025190659207909717">Керування службою пересилання мобільних даних</translation>
 <translation id="7025895441903756761">Безпека та конфіденційність</translation>
@@ -8983,6 +8987,7 @@
 <translation id="8514746246728959655">Спробуйте інший ключ безпеки</translation>
 <translation id="8514955299594277296">Заборонити сайтам зберігати дані на вашому пристрої (не рекомендовано)</translation>
 <translation id="8517759303731677493">Редагувати…</translation>
+<translation id="8518942514525208851">Сховати нецензурну лексику</translation>
 <translation id="8519895319663397036">Не вдалось імпортувати паролі. Розмір файлу не має перевищувати 150 КБ.</translation>
 <translation id="851991974800416566">Використовуйте надійний пароль</translation>
 <translation id="8523493869875972733">Залишити зміни</translation>

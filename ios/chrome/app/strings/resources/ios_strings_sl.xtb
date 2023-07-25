@@ -388,6 +388,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3311748811247479259">Izklopljeno</translation>
 <translation id="3324193307694657476">Naslov 2</translation>
 <translation id="3328801116991980348">Podatki o mestu</translation>
+<translation id="3340938510625667914">Dejanja v Chromu</translation>
 <translation id="3344485292736684439">{count,plural, =1{Zaznamek je shranjen v »{title}« v vašem računu, {email}}one{Zaznamki so shranjeni v »{title}« v vašem računu, {email}}two{Zaznamki so shranjeni v »{title}« v vašem računu, {email}}few{Zaznamki so shranjeni v »{title}« v vašem računu, {email}}other{Zaznamki so shranjeni v »{title}« v vašem računu, {email}}}</translation>
 <translation id="3371831930909698441">Prevod je na voljo. Možnosti so na voljo pri dnu zaslona.</translation>
 <translation id="3377063233124932127">Zdaj so shranjeni zaznamki, gesla in drugo na vrhu.</translation>
@@ -935,6 +936,7 @@ Poskusite uporabljati enolično geslo za vsako spletno mesto.</translation>
 <translation id="6628106477656132239">Datum poteka ni veljaven</translation>
 <translation id="6634432609054530164">Vaša organizacija je izklopila anonimni način.</translation>
 <translation id="6638511529934826365">Povečaj/pomanjšaj besedilo …</translation>
+<translation id="6640268266988685324">Odprti zavihek</translation>
 <translation id="6642362222295953972">Preklop na obstoječi zavihek</translation>
 <translation id="6643016212128521049">Izbriši</translation>
 <translation id="6645899968535965230">Koda QR: <ph name="PAGE_TITLE" /></translation>

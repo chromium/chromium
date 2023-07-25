@@ -146,6 +146,7 @@
 <translation id="1576623706766186887">Віддалити, коли лупу ввімкнено</translation>
 <translation id="1586324912145647027">Перейти до 1 з 8 робочих столів</translation>
 <translation id="1589090746204042747">мати доступ до всіх ваших дій у цьому сеансі</translation>
+<translation id="1592682369233288537">Наступний робочий стіл: <ph name="NEXT_DESK_NAME" />. Щоб активувати його, натисніть клавішу пошуку й пробіл.</translation>
 <translation id="1604857178818051494">Призупинити відтворення медіаконтенту</translation>
 <translation id="1610778689852195798">"Відмінити"</translation>
 <translation id="1611993646327628135">Увімкнено</translation>
@@ -157,6 +158,7 @@
 <translation id="1647986356840967552">Попередня сторінка</translation>
 <translation id="1651914502370159744">Відкрити сторінку "Історія"</translation>
 <translation id="1654477262762802994">Ввести голосовий запит</translation>
+<translation id="1662667383227796099">На Панелі запуску можна шукати файли, додатки тощо, а також отримати відповіді на запитання про Chromebook.</translation>
 <translation id="1668469839109562275">Вбудована мережа VPN</translation>
 <translation id="1675844249244994876">Оновити вікно праворуч</translation>
 <translation id="1677472565718498478">Залишилося <ph name="TIME" /></translation>
@@ -560,6 +562,7 @@
 <translation id="3477079411857374384">Комбінація клавіш "Control-Shift-Space"</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Автоматичне ховання полиці</translation>
+<translation id="3503243067695520519">Вітаємо! Пристрої Chromebook дещо відрізняються.</translation>
 <translation id="3505066820268455558">Заряджання акумулятора</translation>
 <translation id="3509391053705095206">Не вдається знайти телефон. Переконайтеся, що на ньому ввімкнено Bluetooth.</translation>
 <translation id="3510164367642747937">Підсвічувати курсор миші</translation>
@@ -684,6 +687,7 @@
 <translation id="3977512764614765090">Акумулятор заряджений на <ph name="PERCENTAGE" />% і продовжує заряджатися.</translation>
 <translation id="3984536049089846927">Наступна сторінка</translation>
 <translation id="3986082989454912832">Відповісти</translation>
+<translation id="3990002060657467458">Елементи керування, якими ви часто користуєтесь, як-от Wi-Fi, Bluetooth і гучність, можна знайти у швидких налаштуваннях. Тут також можна робити знімки екрана.</translation>
 <translation id="3995138139523574647">пристрій, під’єднаний до порту USB-C (праворуч на задній панелі)</translation>
 <translation id="40062176907008878">Рукописне введення</translation>
 <translation id="4017989525502048489">Лазерний вказівник</translation>
@@ -747,6 +751,7 @@
 <translation id="4269883910223712419">Адміністратор цього пристрою може:</translation>
 <translation id="4274537685965975248">Комбінацію клавіш Ctrl + Alt + стрілка вниз змінено. Щоб скористатися клавішею End, натисніть клавішу <ph name="LAUNCHER_KEY_NAME" /> + стрілку вправо.</translation>
 <translation id="4275283744500212192">Відкрити варіанти макета вікна</translation>
+<translation id="4278138729651139331">Chromebook можна персоналізувати в налаштуваннях, наприклад змінити фоновий малюнок або встановити заставку.</translation>
 <translation id="4279490309300973883">Дзеркальне відображення</translation>
 <translation id="4280601795273309128">Система безпеки більше не оновлюватиметься. Використовуйте новіший пристрій.</translation>
 <translation id="4283888303416325161">Для додаткового захисту введіть пароль</translation>
@@ -803,6 +808,7 @@
 <translation id="4505050298327493054">Активний робочий стіл.</translation>
 <translation id="450584155212756404">Версія для розробників</translation>
 <translation id="4513946894732546136">Відгуки</translation>
+<translation id="4516212064498225455">Поточний робочий стіл: <ph name="CURRENT_DESK_NAME" />. Щоб відкрити меню всіх робочих столів, натисніть клавішу пошуку й пробіл.</translation>
 <translation id="4518404433291145981">Щоб розблокувати Chromebook, спершу розблокуйте телефон.</translation>
 <translation id="4527045527269911712">Пристрою Bluetooth "<ph name="DEVICE_NAME" />" потрібен дозвіл на підключення.</translation>
 <translation id="4533343294786968049">Щоб подовжити час роботи акумулятора, пристрій тимчасово утримує заряд на рівні 80%. Акумулятор зарядиться повністю до <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -877,6 +883,7 @@
 <translation id="4813311884204119883">Перетягніть посилання на порожнє місце на панелі вкладок</translation>
 <translation id="4814539958450445987">Екран входу</translation>
 <translation id="481455355267255546">Найближчі події</translation>
+<translation id="4826588772550366629">камеру та мікрофон</translation>
 <translation id="4831034276697007977">Вимкнути автоматичні кліки?</translation>
 <translation id="4849058404725798627">Підсвічувати об’єкт, вибраний на клавіатурі</translation>
 <translation id="485592688953820832">Нічого не робити (призупинити)</translation>
@@ -970,6 +977,7 @@
 <translation id="5207949376430453814">Підсвічувати місце введення тексту</translation>
 <translation id="5208059991603368177">Увімкнено</translation>
 <translation id="5216991270656129561">Вимкнено до <ph name="TIME" /></translation>
+<translation id="5217646019792206018">Наступний робочий стіл: <ph name="NEXT_DESK_NAME" />. Щоб активувати його, натисніть клавішу пошуку й пробіл або комбінацію клавіш Shift + клавіша пошуку + <ph name="NEXT_DESK_INDEX" />.</translation>
 <translation id="5221423477036820198">Швидко надсилайте повідомлення й відповідайте на них із телефона за допомогою функції "Керування телефоном".</translation>
 <translation id="5222676887888702881">Вийти</translation>
 <translation id="5229343007215035173">Увімкнути або вимкнути екран конфіденційності</translation>
@@ -1035,6 +1043,7 @@
 <translation id="550391772491508736">Відновити трансляцію</translation>
 <translation id="5506975627792768506">Увімкнути або вимкнути лупу</translation>
 <translation id="5512042095225963688">Видалити попереднє слово</translation>
+<translation id="5518068085000130971">Ви ознайомилися з основною інформацією. У вбудованому додатку Можливості можна знайти поради щодо початку роботи, рекомендовані додатки, спеціальні пропозиції, а також дізнатися більше про найновіші функції Chromebook.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Ваш адміністратор вилучив усі профілі eSIM. Щоб дізнатися більше, зверніться до нього.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> підключається.</translation>
@@ -1360,6 +1369,7 @@
 <translation id="6896758677409633944">Копіювати</translation>
 <translation id="6901883536534621389">Спробуйте навігацію за допомогою жестів</translation>
 <translation id="6912841030378044227">Виділити адресний рядок</translation>
+<translation id="6912901278692845878">Короткий огляд</translation>
 <translation id="6919251195245069855">Не вдається розпізнати розумну картку. Повторіть спробу.</translation>
 <translation id="6920245099716267363">Увімкнути/вимкнути точку доступу. Точку доступу ввімкнено. До неї підключено 1 пристрій.</translation>
 <translation id="6931576957638141829">Зберегти в</translation>
@@ -1666,6 +1676,7 @@
 <translation id="8297006494302853456">Слабкий</translation>
 <translation id="8308637677604853869">Попереднє меню</translation>
 <translation id="830868413617744215">Бета-версія</translation>
+<translation id="8312557488404088015">Ознайомтеся з інтерфейсом системи, щоб легко почати роботу. Огляд складається із 6 етапів і триває лише кілька хвилин.</translation>
 <translation id="8314772463905284467">Режим Caps Lock увімкнено</translation>
 <translation id="8315514906653279104">Увімкнення…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
@@ -1715,6 +1726,7 @@
 <translation id="8517041960877371778">Пристрій <ph name="DEVICE_TYPE" /> може не заряджатися, коли він увімкнений.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Входом мікрофона керує додаток <ph name="APP_NAME" />}one{Входом мікрофона керує # додаток}few{Входом мікрофона керують # додатки}many{Входом мікрофона керують # додатків}other{Входом мікрофона керують # додатка}}</translation>
 <translation id="8535393432370007982">Скасувати сортування за кольором</translation>
+<translation id="853768060447955562">Попередній робочий стіл: <ph name="PREVIOUS_DESK_NAME" />. Щоб активувати його, натисніть клавішу пошуку й пробіл або комбінацію клавіш Shift + клавіша пошуку + <ph name="PREVIOUS_DESK_INDEX" />.</translation>
 <translation id="8541078764854166027">Слідкування</translation>
 <translation id="8542053257095774575">Немає збережених робочих столів або шаблонів</translation>
 <translation id="8546059259582788728">Сортування скасовано</translation>
@@ -1866,11 +1878,13 @@
 <translation id="925832987464884575">Вимкнути попередній перегляд</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> вимагає, щоб ви оновили пристрій <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">Які події заплановано?</translation>
+<translation id="943067377221312471">Попередній робочий стіл: <ph name="PREVIOUS_DESK_NAME" />. Щоб активувати його, натисніть клавішу пошуку й пробіл.</translation>
 <translation id="945383118875625837">Перетягнути посилання на панель закладок</translation>
 <translation id="945522503751344254">Надіслати відгук</translation>
 <translation id="951991426597076286">Відхилити</translation>
 <translation id="953431725143473984">Завершити роботу пристрою?</translation>
 <translation id="954052413789300507">Недостатньо місця для файлу "<ph name="FILENAME" />". Очистьте пам’ять.</translation>
+<translation id="968627661524972577">Виконуйте різні завдання за допомогою додатків на Chromebook. Додатки можна знайти на Панелі запуску. Також можна натиснути клавішу Панелі запуску на клавіатурі.</translation>
 <translation id="974545358917229949">Показано результати (<ph name="RESULT_COUNT" />) для запиту "<ph name="QUERY" />"</translation>
 <translation id="98120814841227350">Перейти в кінець документа</translation>
 <translation id="987589956647469042">Мобільний Інтернет увімкнено</translation>

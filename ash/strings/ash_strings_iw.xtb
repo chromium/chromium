@@ -146,6 +146,7 @@
 <translation id="1576623706766186887">הקטנת התצוגה כשמפעילים את הזכוכית המגדלת</translation>
 <translation id="1586324912145647027">מעבר לשולחנות העבודה הווירטואליים 1 עד 8</translation>
 <translation id="1589090746204042747">גישה לכל הפעילות שלך בסשן הזה</translation>
+<translation id="1592682369233288537">שולחן העבודה הווירטואלי הבא: <ph name="NEXT_DESK_NAME" />, אפשר להפעיל אותו בעזרת המקשים 'חיפוש'+'רווח'.</translation>
 <translation id="1604857178818051494">השהיית המדיה</translation>
 <translation id="1610778689852195798">‏"Undo" (ביטול הפעולה)</translation>
 <translation id="1611993646327628135">פועל</translation>
@@ -157,6 +158,7 @@
 <translation id="1647986356840967552">לדף הקודם</translation>
 <translation id="1651914502370159744">פתיחת דף ההיסטוריה</translation>
 <translation id="1654477262762802994">הפעלה של שאילתה קולית</translation>
+<translation id="1662667383227796099">‏מחפשים קבצים, אפליקציות ופריטים נוספים במרכז האפליקציות. אפשר גם לקבל תשובות לשאלות לגבי Chromebook.</translation>
 <translation id="1668469839109562275">‏רשתות VPN מובנות</translation>
 <translation id="1675844249244994876">עדכון החלון הימני</translation>
 <translation id="1677472565718498478">זמן נותר - <ph name="TIME" /></translation>
@@ -560,6 +562,7 @@
 <translation id="3477079411857374384">‏Control+‏Shift+מקש הרווח</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">המדף יוסתר באופן אוטומטי</translation>
+<translation id="3503243067695520519">‏שלום, מכשירי Chromebook הם טיפה שונים.</translation>
 <translation id="3505066820268455558">הסוללה בתהליך טעינה</translation>
 <translation id="3509391053705095206">‏לא הצלחנו למצוא את הטלפון. צריך לוודא שה-Bluetooth שלו מופעל.</translation>
 <translation id="3510164367642747937">הדגשה של סמן העכבר</translation>
@@ -684,6 +687,7 @@
 <translation id="3977512764614765090">‏שיעור הטעינה של הסוללה הוא ‎<ph name="PERCENTAGE" />%‎ והטעינה נמשכת.</translation>
 <translation id="3984536049089846927">לדף הבא</translation>
 <translation id="3986082989454912832">מענה</translation>
+<translation id="3990002060657467458">‏בתפריט 'הגדרות מהירות' מופיעים אמצעי הבקרה שנמצאים בשימוש לעיתים קרובות, כמו Wi-Fi,‏ Bluetooth ועוצמת הקול. אפשר גם לעבור לכאן כדי לצלם את המסך.</translation>
 <translation id="3995138139523574647">‏מכשיר עם יציאת USB-C (יציאה ימנית-אחורית)</translation>
 <translation id="40062176907008878">כתב יד</translation>
 <translation id="4017989525502048489">סמן לייזר</translation>
@@ -747,6 +751,7 @@
 <translation id="4269883910223712419">מנהל המכשיר הזה יכול:</translation>
 <translation id="4274537685965975248">‏מקשי הקיצור Ctrl ‏+ ‏Alt + חץ למטה הוחלפו. כדי לדמות את הפעולה של המקש End, יש להקיש על <ph name="LAUNCHER_KEY_NAME" /> + החץ ימינה.</translation>
 <translation id="4275283744500212192">פתיחת האפשרויות לפריסת החלון</translation>
+<translation id="4278138729651139331">‏מתאימים אישית את מכשיר Chromebook בהגדרות. כדאי לנסות לשנות את הטפט או להגדיר שומר מסך.</translation>
 <translation id="4279490309300973883">שיקוף</translation>
 <translation id="4280601795273309128">אין יותר עדכוני האבטחה. צריך לשדרג את המכשיר.</translation>
 <translation id="4283888303416325161">כדי לשפר את רמת ההגנה, צריך להזין סיסמה</translation>
@@ -803,6 +808,7 @@
 <translation id="4505050298327493054">שולחן עבודה וירטואלי פעיל.</translation>
 <translation id="450584155212756404">Dev Channel</translation>
 <translation id="4513946894732546136">משוב</translation>
+<translation id="4516212064498225455">שולחן העבודה הווירטואלי הנוכחי: <ph name="CURRENT_DESK_NAME" />, אפשר לפתוח את התפריט של כל שולחנות העבודה הווירטואליים בעזרת המקשים 'חיפוש'+'רווח'.</translation>
 <translation id="4518404433291145981">‏כדי לבטל את נעילת ה-Chromebook, קודם צריך לבטל את הנעילה של הטלפון</translation>
 <translation id="4527045527269911712">‏מכשיר ה-Bluetooth ‏"<ph name="DEVICE_NAME" />" מבקש הרשאה לבצע התאמה.</translation>
 <translation id="4533343294786968049">אנחנו מאריכים את חיי הסוללה. הסוללה תיטען באופן מלא עד <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -877,6 +883,7 @@
 <translation id="4813311884204119883">גרירת הקישור לאזור ריק בשורת הכרטיסיות</translation>
 <translation id="4814539958450445987">מסך הכניסה</translation>
 <translation id="481455355267255546">האירועים הבאים</translation>
+<translation id="4826588772550366629">מצלמה ומיקרופון</translation>
 <translation id="4831034276697007977">הקליקים האוטומטיים יושבתו. האם להמשיך?</translation>
 <translation id="4849058404725798627">הדגשה של האובייקט במיקוד המקלדת</translation>
 <translation id="485592688953820832">ללא פעולה (השהיה)</translation>
@@ -970,6 +977,7 @@
 <translation id="5207949376430453814">הדגשה של סמן הטקסט</translation>
 <translation id="5208059991603368177">פועל</translation>
 <translation id="5216991270656129561">התכונה כבויה עד <ph name="TIME" /></translation>
+<translation id="5217646019792206018">‏שולחן העבודה הווירטואלי הבא: <ph name="NEXT_DESK_NAME" />, אפשר להפעיל אותו בעזרת המקשים 'חיפוש'+'רווח' או מקשי הקיצור Shift+'חיפוש'+<ph name="NEXT_DESK_INDEX" />.</translation>
 <translation id="5221423477036820198">‏בעזרת Phone Hub, אפשר לשלוח הודעות בטלפון או להשיב להן במהירות.</translation>
 <translation id="5222676887888702881">יציאה</translation>
 <translation id="5229343007215035173">‏הפעלה או השבתה של Privacy Screen</translation>
@@ -1035,6 +1043,7 @@
 <translation id="550391772491508736">‏המשך ההעברה (cast)</translation>
 <translation id="5506975627792768506">הפעלה או השבתה של הזכוכית המגדלת</translation>
 <translation id="5512042095225963688">מחיקת המילה הקודמת</translation>
+<translation id="5518068085000130971">‏אלה היו האפשרויות הבסיסיות! כדאי להמשיך לעיין ב'מה חדש ב-Chromebook' – האפליקציה המובנית שלנו לקבלת טיפים ועזרה. ריכזנו שם טיפים לתחילת העבודה, אפליקציות מומלצות, הטבות מיוחדות וגם את התכונות החדשות של Chromebook.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">‏מנהל המערכת שלך הסיר את כל פרופילי ה-eSIM. עליך לפנות למנהל המערכת לקבלת מידע נוסף.</translation>
 <translation id="5523434445161341166">התכונה <ph name="FEATURE_NAME" /> מתחברת.</translation>
@@ -1360,6 +1369,7 @@
 <translation id="6896758677409633944">העתקה</translation>
 <translation id="6901883536534621389">רוצה לנסות לנווט באמצעות תנועות?</translation>
 <translation id="6912841030378044227">התמקדות בסרגל הכתובות</translation>
+<translation id="6912901278692845878">סיור קצר</translation>
 <translation id="6919251195245069855">לא ניתן היה לזהות את הכרטיס החכם שלך. יש לנסות שוב.</translation>
 <translation id="6920245099716267363">החלפת המצב של הנקודה לשיתוף אינטרנט. נקודת האינטרנט פועלת. יש מכשיר אחד מחובר.</translation>
 <translation id="6931576957638141829">שמירה ב-</translation>
@@ -1668,6 +1678,7 @@
 <translation id="8297006494302853456">חלש</translation>
 <translation id="8308637677604853869">התפריט הקודם</translation>
 <translation id="830868413617744215">ביטא</translation>
+<translation id="8312557488404088015">שנצא לסיור קצר שיעזור לך להתחיל בצורה חלקה? הסיור מורכב מ-6 שלבים, ונמשך רק כמה דקות.</translation>
 <translation id="8314772463905284467">‏Caps Lock מופעל</translation>
 <translation id="8315514906653279104">מתבצעת הפעלה…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -1717,6 +1728,7 @@
 <translation id="8517041960877371778">ייתכן שה-<ph name="DEVICE_TYPE" /> לא ייטען כשהוא פועל.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{הקלט מהמיקרופון נשלט על ידי <ph name="APP_NAME" />}one{הקלט מהמיקרופון נשלט על ידי # אפליקציות}two{הקלט מהמיקרופון נשלט על ידי # אפליקציות}other{הקלט מהמיקרופון נשלט על ידי # אפליקציות}}</translation>
 <translation id="8535393432370007982">ביטול של סדר המיון לפי צבע</translation>
+<translation id="853768060447955562">‏שולחן העבודה הווירטואלי הקודם: <ph name="PREVIOUS_DESK_NAME" />, אפשר להפעיל אותו בעזרת המקשים 'חיפוש'+'רווח' או מקשי הקיצור Shift+'חיפוש'+<ph name="PREVIOUS_DESK_INDEX" />.</translation>
 <translation id="8541078764854166027">הפריים במצלמה</translation>
 <translation id="8542053257095774575">אין תבניות או שולחנות עבודה וירטואליים שמורים</translation>
 <translation id="8546059259582788728">הביטול של המיון הצליח</translation>
@@ -1870,11 +1882,13 @@
 <translation id="925832987464884575">הסתרה של תצוגות מקדימות</translation>
 <translation id="937214777182567951">בהתאם לדרישה של <ph name="MANAGER" />, עליך לעדכן את ה-<ph name="DEVICE_TYPE" /> באופן מיידי</translation>
 <translation id="938963181863597773">אירועים קרובים ביומן שלי</translation>
+<translation id="943067377221312471">שולחן העבודה הקודם: <ph name="PREVIOUS_DESK_NAME" />, אפשר להפעיל אותו בעזרת המקשים 'חיפוש'+'רווח'.</translation>
 <translation id="945383118875625837">גרירת הקישור לסרגל הסימניות</translation>
 <translation id="945522503751344254"> שליחת משוב</translation>
 <translation id="951991426597076286">דחייה</translation>
 <translation id="953431725143473984">לכבות את המכשיר?</translation>
 <translation id="954052413789300507">אין מספיק נפח אחסון פנוי בשביל <ph name="FILENAME" />. עליך לפנות מקום.</translation>
+<translation id="968627661524972577">‏בעזרת האפליקציות אפשר לבצע כל מה שצריך ב-Chromebook. האפליקציות נמצאות במרכז האפליקציות. אפשר גם להקיש על המקש 'מרכז האפליקציות' במקלדת.</translation>
 <translation id="974545358917229949">מוצגות <ph name="RESULT_COUNT" /> תוצאות עבור השאילתה: <ph name="QUERY" /></translation>
 <translation id="98120814841227350">מעבר אל סוף המסמך</translation>
 <translation id="987589956647469042">חבילת הגלישה פועלת</translation>

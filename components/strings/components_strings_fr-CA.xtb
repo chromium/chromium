@@ -1002,6 +1002,7 @@
       <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">Savoir lorsque vous êtes en train d'utiliser cet appareil</translation>
 <translation id="3180358318770512945">Éducation parentale</translation>
+<translation id="3182185041786697613">Enregistrer le code de sécurité?</translation>
 <translation id="3185635157430775689">Composants informatiques</translation>
 <translation id="3187306450550410410">Régime de travail flexible</translation>
 <translation id="3187472288455401631">Mesure des annonces</translation>
@@ -1540,7 +1541,7 @@
 <translation id="4287495839370498922">Confidentialité améliorée des annonces dans Chrome</translation>
 <translation id="4287885627794386150">Admissible à une version d'essai, mais pas actif</translation>
 <translation id="4290920330097335010">Ne jamais autoriser</translation>
-<translation id="4296207570293932800">Nouvelle fonctionnalité de confidentialité des annonces est maintenant offerte.</translation>
+<translation id="4296207570293932800">Nouvelle fonctionnalité de confidentialité des annonces maintenant offerte</translation>
 <translation id="4297502707443874121">Miniature pour la page <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4298000214066716287">Investissement</translation>
 <translation id="42981349822642051">Développer</translation>
@@ -3444,6 +3445,7 @@ Détails supplémentaires :
 <translation id="830498451218851433">Plier en deux</translation>
 <translation id="8308653357438598313">Diffusion en direct de vidéos</translation>
 <translation id="8311895354659782580">Annonces immobilières</translation>
+<translation id="8317570861267063617">Pour un paiement plus rapide, enregistrez le code CVC de cette carte sur votre appareil</translation>
 <translation id="8319269383395457801">Ventes résidentielles</translation>
 <translation id="831997045666694187">Soirée</translation>
 <translation id="8321476692217554900">Notifications</translation>

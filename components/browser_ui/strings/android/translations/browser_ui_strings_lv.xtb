@@ -301,6 +301,7 @@
 <translation id="6439114592976064011">Neļaut vietnēm izmantot jūsu virtuālās realitātes ierīci un datus</translation>
 <translation id="6447842834002726250">Sīkfaili</translation>
 <translation id="6467852467360539617">Dzēst datus un atiestatīt atļaujas</translation>
+<translation id="6500423977866688905">Ja logs ir šaurs, pieprasīt skatu mobilajā ierīcē</translation>
 <translation id="6527303717912515753">Kopīgot</translation>
 <translation id="6545864417968258051">Bluetooth meklēšana</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Bloķētas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}zero{Bloķētas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}one{Bloķētas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}other{Bloķētas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}}</translation>

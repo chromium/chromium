@@ -301,6 +301,7 @@
 <translation id="6439114592976064011">Empêcher les sites d'utiliser vos appareils et vos données de réalité virtuelle</translation>
 <translation id="6447842834002726250">Témoins</translation>
 <translation id="6467852467360539617">Effacer les données et réinitialiser les autorisations</translation>
+<translation id="6500423977866688905">Lorsque la fenêtre est étroite, demander l'affichage sur appareil mobile</translation>
 <translation id="6527303717912515753">Partager</translation>
 <translation id="6545864417968258051">Recherche d'appareils Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> autre autorisation bloquée}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> autre autorisation bloquée}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> autres autorisations bloquées}}</translation>

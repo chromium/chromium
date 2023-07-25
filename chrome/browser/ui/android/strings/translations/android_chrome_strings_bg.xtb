@@ -507,6 +507,7 @@
 <translation id="3771694256347217732">Общи условия на Google</translation>
 <translation id="3773856050682458546">Основните данни плюс информация за посещаваните от вас уебсайтове и за приложенията, които използвате</translation>
 <translation id="3775705724665058594">Изпращане до устройствата ви</translation>
+<translation id="3777796259512476958">Ще излезете от повечето сайтове</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 раздел}other{# раздела}}</translation>
 <translation id="3795154175078851242">Копиране на изображението с връзка</translation>
 <translation id="3810838688059735925">Видео</translation>
@@ -844,6 +845,7 @@
 <translation id="5578795271662203820">Търсене на изображението със: <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Винаги можете да изберете какво да се синхронизира от <ph name="BEGIN_LINK1" />настройките<ph name="END_LINK1" />.</translation>
 <translation id="5590372121997663538">Запомняне на този компютър</translation>
+<translation id="5596627076506792578">Още опции</translation>
 <translation id="5599455543593328020">Режим „инкогнито“</translation>
 <translation id="5620163320393916465">Няма запазени пароли</translation>
 <translation id="5620928963363755975">Използвайте бутона „Още опции“, за да намерите файловете и страниците си в „Изтегляния“</translation>

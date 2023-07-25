@@ -259,6 +259,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1197935538609051549">Wyłącz</translation>
 <translation id="1198066799963193307">Narzędzia dla niedowidzących konwertujące tekst na mowę</translation>
 <translation id="119944043368869598">Wyczyść wszystko</translation>
+<translation id="1199631150313925648">Wpisz ręcznie</translation>
 <translation id="1199814941632954229">Certyfikaty są udostępnianie dla tych certyfikowanych profili</translation>
 <translation id="120069043972472860">Nie da się oglądać</translation>
 <translation id="1201402288615127009">Dalej</translation>
@@ -3358,6 +3359,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3776508619697147021">Strony mogą prosić o zgodę na automatyczne pobieranie wielu plików</translation>
 <translation id="3776796446459804932">To rozszerzenie narusza zasady Chrome Web Store.</translation>
 <translation id="3777483481409781352">Nie udało się aktywować urządzenia komórkowego</translation>
+<translation id="3777796259512476958">Wylogowuje z większości stron internetowych</translation>
 <translation id="3778208826288864398">Klucz bezpieczeństwa jest zablokowany z powodu wprowadzenia nieprawidłowego kodu PIN zbyt wiele razy. Musisz zresetować klucz bezpieczeństwa.</translation>
 <translation id="3778740492972734840">&amp;Narzędzia dla deweloperów</translation>
 <translation id="3778868487658107119">Zadawaj mu pytania i wydawaj polecenia. To Twój osobisty asystent, zawsze gotowy do pomocy.</translation>
@@ -4175,6 +4177,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4460014764210899310">Rozgrupuj</translation>
 <translation id="4461483878391246134">Dodaj języki, których tłumaczenie nie ma być proponowane</translation>
 <translation id="4462159676511157176">Własne serwery nazw</translation>
+<translation id="4463530025936541315">Przechodząc dalej, zezwalasz innym firmom na weryfikowanie informacji identyfikujących to urządzenie w sieci</translation>
 <translation id="4465236939126352372">Ustawiono limit czasu <ph name="TIME" /> dla aplikacji <ph name="APP_NAME" /></translation>
 <translation id="4466839823729730432">Tu zobaczysz swoje wspomnienia</translation>
 <translation id="4469324811108161144">Limit znaków w notatce wynosi <ph name="CHARACTER_LIMIT" />.</translation>
@@ -4368,6 +4371,7 @@ Mogą one obejmować informacje o przeglądarce, systemie operacyjnym, urządze
 <translation id="4623167406982293031">Zweryfikuj konto</translation>
 <translation id="4623189117674524348">System nie mógł autoryzować dostępu do interfejsu API dla tego urządzenia.</translation>
 <translation id="4623341761454569602">W Menedżerze haseł Google <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">Motyw kolorystyczny</translation>
 <translation id="4625078469366263107">Włącz aplikację</translation>
 <translation id="4625905218692741757">Domyślny kolor szary</translation>
 <translation id="4627427111733173920">Pliki cookie zablokowane</translation>
@@ -5465,7 +5469,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5571832155627049070">Dostosuj profil</translation>
 <translation id="5572166921642484567">Wybierz tryb schematu kolorów</translation>
 <translation id="5572252023412311448">Pokaż szczegółowe dane witryny <ph name="SITE_GROUP" /></translation>
-<translation id="5572648434713976849">Będziesz otrzymywać ulepszone sugestie na pasku adresu</translation>
 <translation id="557506220935336383">Zobacz uprawnienia rozszerzeń dotyczące innych witryn</translation>
 <translation id="5575473780076478375">Rozszerzenie w trybie incognito: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Wystąpił problem z żądaniem zarejestrowania w trybie demonstracyjnym.</translation>
@@ -5584,6 +5587,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="567740581294087470">Jakiego rodzaju opinię przesyłasz?</translation>
 <translation id="5677503058916217575">Język strony:</translation>
 <translation id="5677928146339483299">Zablokowane</translation>
+<translation id="5677946354068040947">więcej opcji</translation>
 <translation id="5678550637669481956">Uprawnienia do zapisu i odczytu nośnika <ph name="VOLUME_NAME" /> zostały przyznane.</translation>
 <translation id="5678821117681811450">Przesyłam do: <ph name="WEB_DRIVE" /></translation>
 <translation id="5678955352098267522">Odczyt Twoich danych na stronie <ph name="WEBSITE_1" /></translation>
@@ -6713,7 +6717,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6644846457769259194">Aktualizuję Twoje urządzenie (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Wyłącz Szybkie parowanie</translation>
 <translation id="6647228709620733774">Adres URL odwołania urzędu certyfikacji firmy Netscape</translation>
-<translation id="6647441008198474441">Odwiedzane adresy URL są wysyłane do Google w celu prognozowania, jakie kolejne witryny możesz odwiedzić</translation>
 <translation id="6647690760956378579">Próbka naturalnego głosu</translation>
 <translation id="6648911618876616409">Masz gotową do zainstalowania aktualizację krytyczną. Zaloguj się, by zacząć.</translation>
 <translation id="6649018507441623493">Chwileczkę…</translation>
@@ -7180,6 +7183,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7019546817926942979">Podłącz urządzenie do zasilania. Uaktualnianie Linuksa może szybko rozładować baterię. Podłącz ładowarkę i spróbuj ponownie.</translation>
 <translation id="7019805045859631636">Szybko</translation>
 <translation id="7022562585984256452">Strona główna została ustawiona.</translation>
+<translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">Przedstawiamy nowy sposób nawigowania gestami</translation>
 <translation id="7025190659207909717">Zarządzanie komórkową usługą transmisji danych</translation>
 <translation id="7025895441903756761">Prywatność i bezpieczeństwo</translation>
@@ -8561,6 +8565,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{Przenieś kartę do nowego okna}few{Przenieś karty do nowego okna}many{Przenieś karty do nowego okna}other{Przenieś karty do nowego okna}}</translation>
 <translation id="8179188928355984576">Nieużywane z aplikacjami na Androida</translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="8180295062887074137"><ph name="PRINTER_NAME" />, <ph name="PRINTER_STATUS" />. Drukarka <ph name="ITEM_POSITION" /> z <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Oszczędzanie energii włączone</translation>
 <translation id="8180786512391440389">„<ph name="EXTENSION" />” może odczytywać oraz usuwać pliki graficzne, wideo i dźwiękowe ze sprawdzonych lokalizacji.</translation>
 <translation id="8180826593917851025">Konfigurowanie hotspota na urządzeniu <ph name="DEVICE_TYPE" /></translation>
@@ -9526,6 +9531,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="8999560016882908256">Błąd składni sekcji: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">Dotknij czytnika linii papilarnych po prawej stronie urządzenia <ph name="DEVICE_TYPE" />. Odcisk palca jest przechowywany w bezpieczny sposób i jest dostępny tylko na Twoim urządzeniu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="9003185744423389627">Nie udało się połączyć z serwerem zarządzania urządzeniami (stan „<ph name="STATUS_TEXT" />” o godzinie „<ph name="FAILURE_TIME" />”)</translation>
+<translation id="90033698482696970">Automatycznie skanować pod kątem dostępnych profili eSIM?</translation>
 <translation id="9003647077635673607">Zezwól we wszystkich witrynach</translation>
 <translation id="9003677638446136377">Sprawdź ponownie</translation>
 <translation id="9004754973617721124">Czy chcesz wyczyścić dane i uprawnienia witryny <ph name="SITE_NAME" /> i jej witryn podrzędnych oraz zainstalowanych z niej aplikacji?</translation>

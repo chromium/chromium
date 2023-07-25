@@ -146,6 +146,7 @@
 <translation id="1576623706766186887">ম্যাগনিফায়ার চালু থাকাকালীন ছোট করুন</translation>
 <translation id="1586324912145647027">১ থেকে ৮ নম্বর ডেস্কে যান</translation>
 <translation id="1589090746204042747">এই সেশনে আপনার সব অ্যাক্টিভিটি অ্যাক্সেস করুন</translation>
+<translation id="1592682369233288537">পরের ডেস্ক: <ph name="NEXT_DESK_NAME" />, চালু করতে Search+Space ব্যবহার করুন।</translation>
 <translation id="1604857178818051494">মিডিয়া পজ করুন</translation>
 <translation id="1610778689852195798">"আগের অবস্থায় ফিরুন"</translation>
 <translation id="1611993646327628135">চালু আছে</translation>
@@ -157,6 +158,7 @@
 <translation id="1647986356840967552">আগের পৃষ্ঠা</translation>
 <translation id="1651914502370159744">ইতিহাসের পৃষ্ঠা খুলুন</translation>
 <translation id="1654477262762802994">ভয়েস কোয়েরি শুরু করুন</translation>
+<translation id="1662667383227796099">'লঞ্চার'-এ নিজের ফাইল, অ্যাপ ও আরও অনেক কিছু সার্চ করুন। এছাড়াও আপনার Chromebook সম্পর্কে প্রশ্নের উত্তর পেতে পারবেন।</translation>
 <translation id="1668469839109562275">বিল্ট-ইন ভিপিএন</translation>
 <translation id="1675844249244994876">ডানদিকের উইন্ডো আপডেট করুন</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> বাকি আছে</translation>
@@ -560,6 +562,7 @@
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">শেল্ফ অটোমেটিক লুকানো হবে</translation>
+<translation id="3503243067695520519">নমস্কার। Chromebooks একটু আলাদা।</translation>
 <translation id="3505066820268455558">ব্যাটারি চার্জ হচ্ছে</translation>
 <translation id="3509391053705095206">আপনার ফোন খুঁজে পাওয়া যায়নি। আপনার ফোনের ব্লুটুথ চালু আছে কিনা তা ভালভাবে দেখে নিন।</translation>
 <translation id="3510164367642747937">মাউস কার্সার হাইলাইট করুন</translation>
@@ -684,6 +687,7 @@
 <translation id="3977512764614765090">ব্যাটারি <ph name="PERCENTAGE" /> শতাংশ চার্জ করা হয়েছে এবং এখনও চার্জ করা চলছে।</translation>
 <translation id="3984536049089846927">পরের পৃষ্ঠা</translation>
 <translation id="3986082989454912832">উত্তর</translation>
+<translation id="3990002060657467458">ওয়াই-ফাই, ব্লুটুথ এবং ভলিউমের মতো প্রায়শই ব্যবহার করা কন্ট্রোল 'দ্রুত সেটিংস'-এ আছে। এছাড়াও স্ক্রিনশট নিতে এখানে যেতে পারবেন।</translation>
 <translation id="3995138139523574647">USB-C ডিভাইস (ডান দিকের পিছনের পোর্ট)</translation>
 <translation id="40062176907008878">'হ্যান্ডরাইটিং' ফিচার</translation>
 <translation id="4017989525502048489">লেজার পয়েন্টার</translation>
@@ -747,6 +751,7 @@
 <translation id="4269883910223712419">এই ডিভাইসের প্রশাসক এগুলি করতে পারেন:</translation>
 <translation id="4274537685965975248">Ctrl + Alt + Down Arrow কীবোর্ড শর্ককার্ট পরিবর্তন করা হয়েছে। End কী ব্যবহার করতে <ph name="LAUNCHER_KEY_NAME" /> + Right Arrow কী প্রেস করুন।</translation>
 <translation id="4275283744500212192">উইন্ডো লেআউট বিকল্প খুলুন</translation>
+<translation id="4278138729651139331">'সেটিংস'-এ আপনার Chromebook কাস্টমাইজ ও পছন্দমতো সাজিয়ে নিন। আপনার ওয়ালপেপার পরিবর্তন বা স্ক্রিন সেভার সেট করে দেখুন।</translation>
 <translation id="4279490309300973883">অনুকরণ করা হচ্ছে</translation>
 <translation id="4280601795273309128">নিরাপত্তা আপডেট শেষ হয়েছে। আপনার ডিভাইস আপগ্রেড করুন।</translation>
 <translation id="4283888303416325161">আরও নিরাপত্তার জন্য পাসওয়ার্ড লিখুন</translation>
@@ -803,6 +808,7 @@
 <translation id="4505050298327493054">অ্যাক্টিভ ডেস্কটপ।</translation>
 <translation id="450584155212756404">ডেভ চ্যানেল</translation>
 <translation id="4513946894732546136">প্রতিক্রিয়া</translation>
+<translation id="4516212064498225455">বর্তমান ডেস্ক: <ph name="CURRENT_DESK_NAME" />, সব ডেস্কের মেনু খুলতে Search+Space ব্যবহার করুন।</translation>
 <translation id="4518404433291145981">Chromebook আনলক করতে, প্রথমে আপনার ফোন আনলক করুন</translation>
 <translation id="4527045527269911712">ব্লুটুথ ডিভাইস "<ph name="DEVICE_NAME" />" যুক্ত করার অনুমতি চাইছে।</translation>
 <translation id="4533343294786968049">আপনার ব্যাটারি চার্জ হচ্ছে। <ph name="FULLY_CHARGE_TIME" />-এ ব্যাটারি পুরোপুরি চার্জ হয়ে যাবে।</translation>
@@ -877,6 +883,7 @@
 <translation id="4813311884204119883">ট্যাব বারের ফাঁকা অঞ্চলে লিঙ্ক টেনে আনুন</translation>
 <translation id="4814539958450445987">লগ-ইন স্ক্রিন</translation>
 <translation id="481455355267255546">এর পরে</translation>
+<translation id="4826588772550366629">ক্যামেরা এবং মাইক্রোফোন</translation>
 <translation id="4831034276697007977">অটোমেটিক ক্লিক বন্ধ করতে চান কিনা সেই বিষয়টি ভাল করে দেখে নিন?</translation>
 <translation id="4849058404725798627">কিবোর্ড ফোকাসের মাধ্যমে হাইলাইট করুন</translation>
 <translation id="485592688953820832">কোনও অ্যাকশন নেবেন না (পজ)</translation>
@@ -970,6 +977,7 @@
 <translation id="5207949376430453814">পাঠ্যের কার্সার হাইলাইট করুন</translation>
 <translation id="5208059991603368177">চালু আছে</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> পর্যন্ত বন্ধ আছে</translation>
+<translation id="5217646019792206018">পরের ডেস্ক: <ph name="NEXT_DESK_NAME" />, Search+Space বা কীবোর্ডের শর্টকার্ট ব্যবহার করুন: চালু করতে Shift+Search+<ph name="NEXT_DESK_INDEX" />।</translation>
 <translation id="5221423477036820198">ফোন হাব ব্যবহার করে আপনার ফোনের মেসেজ দ্রুত পাঠান বা উত্তর দিন।</translation>
 <translation id="5222676887888702881">সাইন-আউট করুন</translation>
 <translation id="5229343007215035173">প্রাইভেসি স্ক্রিন চালু/বন্ধ করুন</translation>
@@ -1035,6 +1043,7 @@
 <translation id="550391772491508736">কাস্ট করা আবার চালু করুন</translation>
 <translation id="5506975627792768506">ম্যাগনিফায়ার চালু বা বন্ধ করুন</translation>
 <translation id="5512042095225963688">আগের শব্দ মুছে দিন</translation>
+<translation id="5518068085000130971">এগুলি ছিল প্রাথমিক! 'ঘুরে দেখুন'-এ চালিয়ে যান, পরামর্শ ও সহায়তার জন্য আমাদের বিল্ট-ইন অ্যাপ। আপনি চালু করার জন্য পরামর্শ, সাজেশন দেওয়া অ্যাপ, বিশেষ অফার ও সবচেয়ে নতুন Chromebook ফিচার পাবেন।</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">আপনার অ্যাডমিনিস্ট্রেটর সকল ই-সিম প্রোফাইল সরিয়ে দিয়েছেন। আরও তথ্যের জন্য আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> কানেক্ট করা হচ্ছে।</translation>
@@ -1360,6 +1369,7 @@
 <translation id="6896758677409633944">কপি</translation>
 <translation id="6901883536534621389">নেভিগেট করতে জেসচার ব্যবহার করে দেখুন</translation>
 <translation id="6912841030378044227">অ্যাড্রেস বারে ফোকাস করুন</translation>
+<translation id="6912901278692845878">দ্রুত ট্যুর</translation>
 <translation id="6919251195245069855">আপনার স্মার্ট কার্ড শনাক্ত করা যায়নি। আবার চেষ্টা করুন।</translation>
 <translation id="6920245099716267363">হটস্পট টগল করুন। হটস্পট চালু করা আছে, ১টি ডিভাইস কানেক্ট করা আছে।</translation>
 <translation id="6931576957638141829">এখানে সেভ করুন</translation>
@@ -1666,6 +1676,7 @@
 <translation id="8297006494302853456">দুর্বল</translation>
 <translation id="8308637677604853869">পূর্ববর্তী মেনু</translation>
 <translation id="830868413617744215">বিটা</translation>
+<translation id="8312557488404088015">সহজেই চালু করতে দ্রুত একটি ট্যুর নিন। ৬টি ধাপের মাধ্যমে, এর জন্য মাত্র কয়েক মিনিট সময় লাগবে।</translation>
 <translation id="8314772463905284467">Caps Lock চালু</translation>
 <translation id="8315514906653279104">চালু করা হচ্ছে…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -1715,6 +1726,7 @@
 <translation id="8517041960877371778">আপনার <ph name="DEVICE_TYPE" /> চালু থাকা অবস্থায় চার্জ নাও হতে পারে।</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{MIC ইনপুট <ph name="APP_NAME" /> দ্বারা কন্ট্রোল করা হয়}one{MIC ইনপুট #টি অ্যাপ দ্বারা কন্ট্রোল করা হয়}other{MIC ইনপুট #টি অ্যাপ দ্বারা কন্ট্রোল করা হয়}}</translation>
 <translation id="8535393432370007982">রঙ অনুযায়ী বেছে নেওয়ার সেটিং থেকে বেরিয়ে আগের অবস্থায় ফেরানো হয়েছে</translation>
+<translation id="853768060447955562">আগের ডেস্ক: <ph name="PREVIOUS_DESK_NAME" />, Search+Space বা কীবোর্ডের শর্টকার্ট ব্যবহার করুন: চালু করতে Shift+Search+<ph name="PREVIOUS_DESK_INDEX" />।</translation>
 <translation id="8541078764854166027">ক্যামেরা ফ্রেমিং</translation>
 <translation id="8542053257095774575">সেভ করা কোনও ডেস্ক বা টেমপ্লেট নেই</translation>
 <translation id="8546059259582788728">বেছে নেওয়ার সেটিং থেকে বেরিয়ে আগের অবস্থায় ফেরানো হয়েছে</translation>
@@ -1866,11 +1878,13 @@
 <translation id="925832987464884575">প্রিভিউ লুকান</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> আপনাকে এখনই <ph name="DEVICE_TYPE" /> আপডেট করতে বলছে</translation>
 <translation id="938963181863597773">আমার ক্যালেন্ডারে কী কী আছে?</translation>
+<translation id="943067377221312471">আগের ডেস্ক: <ph name="PREVIOUS_DESK_NAME" />, চালু করতে Search+Space ব্যবহার করুন।</translation>
 <translation id="945383118875625837">বুকমার্ক বারে লিঙ্কটি টেনে আনুন</translation>
 <translation id="945522503751344254">মতামত জানান</translation>
 <translation id="951991426597076286">প্রত্যাখ্যান</translation>
 <translation id="953431725143473984">ডিভাইস বন্ধ করবেন?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" />-এর জন্য পর্যাপ্ত স্টোরেজ নেই। স্টোরেজ খালি করুন।</translation>
+<translation id="968627661524972577">আপনার Chromebook-এ প্রয়োজনীয় সবকিছু করতে অ্যাপ ব্যবহার করুন। আপনি 'লঞ্চার'-এ নিজের অ্যাপ খুঁজে পেতে পারবেন। এছাড়াও কীবোর্ডে 'লঞ্চার' কী প্রেস করতে পারবেন।</translation>
 <translation id="974545358917229949"><ph name="QUERY" />-এর জন্য <ph name="RESULT_COUNT" />টি ফলাফল দেখানো হচ্ছে</translation>
 <translation id="98120814841227350">ডকুমেন্টের শেষে যান</translation>
 <translation id="987589956647469042">মোবাইল ডেটা চালু রয়েছে</translation>

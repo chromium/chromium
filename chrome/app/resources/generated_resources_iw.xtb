@@ -4253,6 +4253,7 @@
 <translation id="4508150454272293946">צריך לתת לאפליקציות ולדפי אינטרנט הרשאה להשתמש במצלמות שמחוברות למכשיר הזה. אם הבעיות במצלמה נמשכות, אפשר לנסות להפעיל מחדש את האפליקציה או לרענן את דף האינטרנט.</translation>
 <translation id="450867954911715010">הגדרות נגישות</translation>
 <translation id="4508765956121923607">הצגת מ&amp;קור</translation>
+<translation id="4509277363725254222">‏כשמשתפים עותק של <ph name="BEGIN_BOLD_USERNAME" />שם המשתמש<ph name="END_BOLD_USERNAME" /> ו<ph name="BEGIN_BOLD_PASSWORD" />הסיסמה<ph name="END_BOLD_PASSWORD" />, החברים בקבוצה המשפחתית יכולים למלא את הפרטים האלה באמצעות מנהל הסיסמאות של Google.</translation>
 <translation id="4509421746503122514">הפעלה מחדש לצורך עדכון</translation>
 <translation id="4510195992002502722">שליחת המשוב נכשלה. מתבצע ניסיון נוסף…</translation>
 <translation id="4510479820467554003">רשימת חשבונות הורים</translation>
@@ -4392,6 +4393,7 @@
 <translation id="4623167406982293031">יש לאמת את החשבון</translation>
 <translation id="4623189117674524348">‏המערכת לא הצליחה לאמת את הגישה של המכשיר הזה לממשק ה-API.</translation>
 <translation id="4623341761454569602">‏במנהל הסיסמאות של Google‏ <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">עיצוב צבעים</translation>
 <translation id="4625078469366263107">הפעלת האפליקציה</translation>
 <translation id="4625905218692741757">הצבע האפור בברירת המחדל</translation>
 <translation id="4627427111733173920">‏קובצי Cookie נחסמו</translation>
@@ -4823,6 +4825,7 @@
 <translation id="4994426888044765950">בלחיצה ארוכה על מקש מתבצעת חזרה על תו המקש הזה</translation>
 <translation id="4994754230098574403">בתהליך הגדרה</translation>
 <translation id="4995293419989417004">מידע נוסף על נושאים של מודעות</translation>
+<translation id="4995676741161760215">התוסף מופעל</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{‏לא נמצאו מכונות VM מסוג <ph name="VM_TYPE" />}=1{‏נמצאה מכונת VM אחת מסוג <ph name="VM_TYPE" />: ‏<ph name="VM_NAME_LIST" />}one{‏נמצאו {NUM_VMS} מכונות VM מסוג <ph name="VM_TYPE" />: ‏<ph name="VM_NAME_LIST" />}two{‏נמצאו {NUM_VMS} מכונות VM מסוג <ph name="VM_TYPE" />: ‏<ph name="VM_NAME_LIST" />}other{‏נמצאו {NUM_VMS} מכונות VM מסוג <ph name="VM_TYPE" />: ‏<ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">אין חיבור לאינטרנט.</translation>
 <translation id="4998430619171209993">מופעל</translation>
@@ -5375,6 +5378,7 @@
 <translation id="5474859849784484111">‏כדי להיכנס אל <ph name="MANAGER" />, מתחברים עכשיו לרשת Wi-Fi ומורידים עדכון. ניתן גם לבצע את ההורדה דרך חיבור עם חיוב לפי שימוש בנתונים (עשויים לחול חיובים).</translation>
 <translation id="5481273127572794904">לא מורשים להוריד מספר קבצים באופן אוטומטי</translation>
 <translation id="5481941284378890518">הוספת מדפסות קרובות</translation>
+<translation id="5484462543003267273">לניהול הקבוצה המשפחתית</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{לפי הדרישה של <ph name="MANAGER" />, עליך לגבות את הנתונים שלך ולהחזיר את מכשיר ה-<ph name="DEVICE_TYPE" /> היום. <ph name="LINK_BEGIN" />לפרטים<ph name="LINK_END" />}one{לפי הדרישה של <ph name="MANAGER" />, עליך לגבות את הנתונים שלך ולהחזיר את מכשיר ה-<ph name="DEVICE_TYPE" /> בתוך {NUM_DAYS} ימים. <ph name="LINK_BEGIN" />לפרטים<ph name="LINK_END" />}two{לפי הדרישה של <ph name="MANAGER" />, עליך לגבות את הנתונים שלך ולהחזיר את מכשיר ה-<ph name="DEVICE_TYPE" /> בתוך יומיים ({NUM_DAYS}). <ph name="LINK_BEGIN" />לפרטים<ph name="LINK_END" />}other{לפי הדרישה של <ph name="MANAGER" />, עליך לגבות את הנתונים שלך ולהחזיר את מכשיר ה-<ph name="DEVICE_TYPE" /> בתוך {NUM_DAYS} ימים. <ph name="LINK_BEGIN" />לפרטים<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">התקנת האפליקציה</translation>
 <translation id="5485435764083510385">שפת הכתוביות המועדפת</translation>
@@ -5488,7 +5492,6 @@
 <translation id="5571832155627049070">התאמה אישית של הפרופיל</translation>
 <translation id="5572166921642484567">בחירת מצב של ערכת צבעים</translation>
 <translation id="5572252023412311448">הצגת פרטי האתרים של <ph name="SITE_GROUP" /></translation>
-<translation id="5572648434713976849">בסרגל הכתובות יוצגו הצעות משופרות</translation>
 <translation id="557506220935336383">הצגה של הרשאות התוספים לאתרים אחרים</translation>
 <translation id="5575473780076478375">תוסף של גלישה פרטית: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">התרחשה בעיה הקשורה לבקשת הרשמה של הדגמה.</translation>
@@ -5607,6 +5610,7 @@
 <translation id="567740581294087470">מהו סוג המשוב שברצונך לשלוח?</translation>
 <translation id="5677503058916217575">שפת הדף:</translation>
 <translation id="5677928146339483299">חסום</translation>
+<translation id="5677946354068040947">אפשרויות נוספות</translation>
 <translation id="5678550637669481956">ניתנה הרשאה לקריאה וכתיבה ב-<ph name="VOLUME_NAME" />.</translation>
 <translation id="5678821117681811450">מתבצעת שליחה אל <ph name="WEB_DRIVE" /></translation>
 <translation id="5678955352098267522">קריאת הנתונים שלך באתר <ph name="WEBSITE_1" /></translation>
@@ -6736,7 +6740,6 @@
 <translation id="6644846457769259194">עדכון המכשיר שלך מתבצע (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">כיבוי ההתאמה המהירה</translation>
 <translation id="6647228709620733774">‏כתובת אתר לביטול של רשות אישורי Netscape</translation>
-<translation id="6647441008198474441">‏כתובות URL שבהן ביקרת יישלחו אל Google כדי לחזות את האתרים הבאים שאליהם תתבצע כניסה על ידך</translation>
 <translation id="6647690760956378579">תצוגה מקדימה של הקול הטבעי</translation>
 <translation id="6648911618876616409">יש עדכון קריטי המוכן להתקנה. צריך להיכנס לחשבון כדי להתחיל.</translation>
 <translation id="6649018507441623493">רק רגע...</translation>
@@ -7205,6 +7208,7 @@
 <translation id="7019546817926942979">‏המכשיר צריך להיות מחובר. השדרוג של Linux עשוי לרוקן את הסוללה בצורה משמעותית. יש לחבר את המכשיר למטען ולנסות שוב.</translation>
 <translation id="7019805045859631636">מהיר</translation>
 <translation id="7022562585984256452">דף הבית שלך הוגדר.</translation>
+<translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">דרכים חדשות לנווט באמצעות תנועות</translation>
 <translation id="7025190659207909717">ניהול שירות של נתונים סלולריים</translation>
 <translation id="7025895441903756761">אבטחה ופרטיות</translation>
@@ -8983,6 +8987,7 @@
 <translation id="8514746246728959655">יש לנסות מפתח אבטחה שונה</translation>
 <translation id="8514955299594277296">אין הרשאה לאתרים לשמור נתונים במכשיר (לא מומלץ)</translation>
 <translation id="8517759303731677493">עריכה…</translation>
+<translation id="8518942514525208851">הסתרה של שפה גסה</translation>
 <translation id="8519895319663397036">‏לא ניתן לייבא את הסיסמאות. גודל הקובץ צריך להיות פחות מ-150KB.</translation>
 <translation id="851991974800416566">אפשר להשתמש במהירות בסיסמה חזקה</translation>
 <translation id="8523493869875972733">שמירת השינויים</translation>

@@ -37,6 +37,7 @@
 <translation id="4133493477912226187">Některé karty (<ph name="NUMBER_OF_TABS" />) spolu pravděpodobně souvisejí. Chcete je seskupit?</translation>
 <translation id="4212246570487010370">Pokračovat v prohlížení</translation>
 <translation id="4648718555153979859">Zde jsou seskupeny vaše karty</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{Své zavřené karty najdete v sekci Nedávno použité karty v hlavní nabídce prohlížeče Chrome.}=1{Své zavřené karty najdete v sekci Nedávno použité karty v hlavní nabídce prohlížeče Chrome. Vaše anonymní karta nebude k dispozici.}few{Své zavřené karty najdete v sekci Nedávno použité karty v hlavní nabídce prohlížeče Chrome. # vaše anonymní karty nebudou k dispozici.}many{Své zavřené karty najdete v sekci Nedávno použité karty v hlavní nabídce prohlížeče Chrome. # vaší anonymní karty nebude k dispozici.}other{Své zavřené karty najdete v sekci Nedávno použité karty v hlavní nabídce prohlížeče Chrome. # vašich anonymních karet nebude k dispozici.}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> recenze)}few{(<ph name="REVIEWS_COUNT_MANY" /> recenze)}many{(<ph name="REVIEWS_COUNT_MANY" /> recenze)}other{(<ph name="REVIEWS_COUNT_MANY" /> recenzí)}}</translation>
 <translation id="4850886885716139402">Zobrazit</translation>
 <translation id="4870911314065352661">Zavřít všechny karty?</translation>

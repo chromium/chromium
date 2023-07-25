@@ -388,6 +388,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3311748811247479259">Đang tắt</translation>
 <translation id="3324193307694657476">Địa chỉ 2</translation>
 <translation id="3328801116991980348">Thông tin về trang web</translation>
+<translation id="3340938510625667914">Thao tác trên Chrome</translation>
 <translation id="3344485292736684439">{count,plural, =1{Đã lưu dấu trang vào "{title}" trong tài khoản {email} của bạn}other{Đã lưu dấu trang vào "{title}" trong tài khoản {email} của bạn}}</translation>
 <translation id="3371831930909698441">Có tính năng dịch. Các tùy chọn nằm ở gần cuối màn hình.</translation>
 <translation id="3377063233124932127">Dấu trang, mật khẩu, v.v. mà bạn đã lưu hiện sẽ xuất hiện ở trên cùng.</translation>
@@ -935,6 +936,7 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <translation id="6628106477656132239">Ngày hết hạn không hợp lệ</translation>
 <translation id="6634432609054530164">Tổ chức của bạn đã tắt Chế độ ẩn danh</translation>
 <translation id="6638511529934826365">Thu phóng văn bản…</translation>
+<translation id="6640268266988685324">Thẻ đang mở</translation>
 <translation id="6642362222295953972">Chuyển sang thẻ đang mở</translation>
 <translation id="6643016212128521049">Xóa</translation>
 <translation id="6645899968535965230">Mã QR: <ph name="PAGE_TITLE" /></translation>

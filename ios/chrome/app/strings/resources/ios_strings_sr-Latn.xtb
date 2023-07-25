@@ -388,6 +388,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="3311748811247479259">Isključeno</translation>
 <translation id="3324193307694657476">2. red za adresu</translation>
 <translation id="3328801116991980348">Informacije o sajtu</translation>
+<translation id="3340938510625667914">Chrome radnje</translation>
 <translation id="3344485292736684439">{count,plural, =1{Obeleživač je sačuvan u folderu {title} na nalogu, {email}}one{Obeleživači su sačuvani u folderu {title} na nalogu, {email}}few{Obeleživači su sačuvani u folderu {title} na nalogu, {email}}other{Obeleživači su sačuvani u folderu {title} na nalogu, {email}}}</translation>
 <translation id="3371831930909698441">Prevodilac je dostupan. Opcije su dostupne u dnu ekrana.</translation>
 <translation id="3377063233124932127">Sada su sačuvani obeleživači, lozinke i drugo u vrhu.</translation>
@@ -935,6 +936,7 @@ Potrudite se da koristite jedinstvenu lozinku za svaki sajt.</translation>
 <translation id="6628106477656132239">Nevažeći datum isteka</translation>
 <translation id="6634432609054530164">Organizacija je isključila režim bez arhiviranja</translation>
 <translation id="6638511529934826365">Zumiraj tekst…</translation>
+<translation id="6640268266988685324">Otvorena kartica</translation>
 <translation id="6642362222295953972">Pređite na postojeću karticu</translation>
 <translation id="6643016212128521049">Obriši</translation>
 <translation id="6645899968535965230">QR kôd: <ph name="PAGE_TITLE" /></translation>

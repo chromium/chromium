@@ -301,6 +301,7 @@
 <translation id="6439114592976064011">Neleisti svetainėms naudoti virtualiosios realybės įrenginio ir duomenų</translation>
 <translation id="6447842834002726250">Slapukai</translation>
 <translation id="6467852467360539617">Išvalyti duomenis ir iš naujo nustatyti leidimus</translation>
+<translation id="6500423977866688905">Kai langas bus siauras, pateikite užklausą dėl rodinio versijos mobiliesiems</translation>
 <translation id="6527303717912515753">Bendrinti</translation>
 <translation id="6545864417968258051">„Bluetooth“ nuskaitymas</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Užblokuota: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}one{Užblokuota: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}few{Užblokuota: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}many{Užblokuota: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}other{Užblokuota: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}}</translation>

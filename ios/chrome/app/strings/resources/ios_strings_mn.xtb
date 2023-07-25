@@ -388,6 +388,7 @@
 <translation id="3311748811247479259">Унтраалттай байна</translation>
 <translation id="3324193307694657476">Хаяг 2</translation>
 <translation id="3328801116991980348">Сайтын мэдээлэл</translation>
+<translation id="3340938510625667914">Chrome-н үйлдлүүд</translation>
 <translation id="3344485292736684439">{count,plural, =1{Хавчуургыг таны {email} бүртгэлийн "{title}"-д хадгалсан}other{Хавчуургуудыг таны {email} бүртгэлийн "{title}"-д хадгалсан}}</translation>
 <translation id="3371831930909698441">Орчуулах боломжтой байна. Дэлгэцийн доод хэсгийн ойролцоо сонголт хийх боломжтой.</translation>
 <translation id="3377063233124932127">Одоо таны хадгалсан хавчуурга, нууц үг болон бусад зүйл дээд талд байна.</translation>
@@ -935,6 +936,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6628106477656132239">Дуусах огноо буруу байна</translation>
 <translation id="6634432609054530164">Танай байгууллага Нууцлалын горимыг унтраасан</translation>
 <translation id="6638511529934826365">Текстийг томруулах…</translation>
+<translation id="6640268266988685324">Нээлттэй таб</translation>
 <translation id="6642362222295953972">Аль хэдийн нээсэн таб руу сэлгэх</translation>
 <translation id="6643016212128521049">Цэвэрлэх</translation>
 <translation id="6645899968535965230">QR код: <ph name="PAGE_TITLE" /></translation>

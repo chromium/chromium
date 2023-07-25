@@ -388,6 +388,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3311748811247479259">Išjungta</translation>
 <translation id="3324193307694657476">2 adreso eil.</translation>
 <translation id="3328801116991980348">Svetainės informacija</translation>
+<translation id="3340938510625667914">Veiksmai „Chrome“ naršyklėje</translation>
 <translation id="3344485292736684439">{count,plural, =1{Žymė išsaugota skiltyje „{title}“ jūsų paskyroje, {email}}one{Žymės išsaugotos skiltyje „{title}“ jūsų paskyroje, {email}}few{Žymės išsaugotos skiltyje „{title}“ jūsų paskyroje, {email}}many{Žymės išsaugotos skiltyje „{title}“ jūsų paskyroje, {email}}other{Žymės išsaugotos skiltyje „{title}“ jūsų paskyroje, {email}}}</translation>
 <translation id="3371831930909698441">Pasiekiamas vertimas. Parinktys pasiekiamos netoli ekrano apačios.</translation>
 <translation id="3377063233124932127">Dabar išsaugotos žymės, slaptažodžiai ir kt. yra viršuje.</translation>
@@ -935,6 +936,7 @@ Kiekvienoje svetainėje stenkitės naudoti unikalius slaptažodžius.</translati
 <translation id="6628106477656132239">Netinkama galiojimo laiko pabaigos data</translation>
 <translation id="6634432609054530164">Jūsų organizacija išjungė inkognito režimą</translation>
 <translation id="6638511529934826365">Keisti teksto mastelį…</translation>
+<translation id="6640268266988685324">Atidarytas skirtukas</translation>
 <translation id="6642362222295953972">Perjungti į esamą skirtuką</translation>
 <translation id="6643016212128521049">Išvalyti</translation>
 <translation id="6645899968535965230">QR kodas: <ph name="PAGE_TITLE" /></translation>

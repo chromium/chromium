@@ -4378,6 +4378,7 @@
 <translation id="4623167406982293031">खाता पुष्टि गर्नुहोस्</translation>
 <translation id="4623189117674524348">प्रणालीले यो यन्त्रलाई API माथि पहुँच राख्ने अधिकार दिन सकेन।</translation>
 <translation id="4623341761454569602">Google पासवर्ड म्यानेजरमा <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">कलर थिम</translation>
 <translation id="4625078469366263107">एप सक्षम पार्नुहोस्</translation>
 <translation id="4625905218692741757">डिफल्ट खरानी रङ</translation>
 <translation id="4627427111733173920">कूकीहरूमाथि रोक लगाइएको छ</translation>
@@ -5476,7 +5477,6 @@
 <translation id="5571832155627049070">आफ्नो प्रोफाइल आफ्नो रोजाइ अनुकूल पार्नुहोस्</translation>
 <translation id="5572166921642484567">रङ योजनाको मोड रोज्नुहोस्</translation>
 <translation id="5572252023412311448"><ph name="SITE_GROUP" /> का साइटसम्बन्धी विवरणहरू देखाउनुहोस्</translation>
-<translation id="5572648434713976849">तपाईं एड्रेस बारमा अझ राम्रा सुझावहरू प्राप्त गर्नु हुने छ</translation>
 <translation id="557506220935336383">अन्य साइटहरूलाई दिइएको एक्स्टेन्सनसम्बन्धी अनुमति हेर्नुहोस्</translation>
 <translation id="5575473780076478375">इंकोग्निटो एक्स्टेन्शन: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">डेमो दर्ताको अनुरोधसम्बन्धी कुनै समस्या भयो।</translation>
@@ -5595,6 +5595,7 @@
 <translation id="567740581294087470">तपाईं कस्तो खालको प्रतिक्रिया दिँदै हुनुहुन्छ?</translation>
 <translation id="5677503058916217575">पृष्ठ भाषा:</translation>
 <translation id="5677928146339483299">ब्लक गरिएको छ</translation>
+<translation id="5677946354068040947">थप विकल्पहरू</translation>
 <translation id="5678550637669481956"><ph name="VOLUME_NAME" /> मा पढ्न र लेख्न अनुमति दिइएको छ।</translation>
 <translation id="5678821117681811450"><ph name="WEB_DRIVE" /> मा पठाइँदै छ</translation>
 <translation id="5678955352098267522"><ph name="WEBSITE_1" />मा तपाईंको डेटा पढ्नुहोस्</translation>
@@ -6719,7 +6720,6 @@
 <translation id="6644846457769259194">तपाईँको यन्त्रलाई अद्यावधिक गर्दै (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">फास्ट पेयर अफ गर्नुहोस्</translation>
 <translation id="6647228709620733774">नेटस्केप प्रमाणपत्र अनुमति रिभोकेशन URL</translation>
-<translation id="6647441008198474441">तपाईंले यसपछि खोल्न सक्ने साइट पूर्वानुमान गर्ने प्रयोजनका लागि तपाईंले खोल्ने URL हरू Google मा पठाइन्छन्</translation>
 <translation id="6647690760956378579">उच्च गुणस्तरको आवाजको प्रिभ्यू</translation>
 <translation id="6648911618876616409">एउटा महत्त्वपूर्ण अद्यावधिक स्थापनाका लागि तयार छ। सुरु गर्न साइन इन गर्नुहोस्‌।</translation>
 <translation id="6649018507441623493">एकै सेकेन्ड...</translation>

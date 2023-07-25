@@ -4236,6 +4236,7 @@
 <translation id="4508150454272293946">Дозволите апликацијама и веб-страницама да користе камере повезане са овим уређајем. Ако и даље имате проблем са камером, пробајте да поново покренете апликацију или освежите веб-страницу.</translation>
 <translation id="450867954911715010">Подешавања приступачности</translation>
 <translation id="4508765956121923607">Прикажи и&amp;звор</translation>
+<translation id="4509277363725254222">Када делите копију <ph name="BEGIN_BOLD_USERNAME" />корисничког имена<ph name="END_BOLD_USERNAME" /> и <ph name="BEGIN_BOLD_PASSWORD" />лозинке<ph name="END_BOLD_PASSWORD" />, члан породице може да их попуни помоћу Google менаџера лозинки</translation>
 <translation id="4509421746503122514">Поново покрените ради ажурирања</translation>
 <translation id="4510195992002502722">Слање повратних информација није успело. Поново се шаљу…</translation>
 <translation id="4510479820467554003">Листа налога родитеља</translation>
@@ -4375,6 +4376,7 @@
 <translation id="4623167406982293031">Верификујте налог</translation>
 <translation id="4623189117674524348">Систем није успео да одобри приступ API-ју за овај уређај.</translation>
 <translation id="4623341761454569602">У Google менаџеру лозинки <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">Тема са бојом</translation>
 <translation id="4625078469366263107">Омогући апликацију</translation>
 <translation id="4625905218692741757">Подразумевана сива боја</translation>
 <translation id="4627427111733173920">Колачићи су блокирани</translation>
@@ -4806,6 +4808,7 @@
 <translation id="4994426888044765950">Ако притиснете и задржите тастер, знак тастера ће се поновити</translation>
 <translation id="4994754230098574403">Подешава се</translation>
 <translation id="4995293419989417004">Сазнајте више о темама огласа</translation>
+<translation id="4995676741161760215">Укључено, додатак је омогућен</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Није пронађена ниједна виртуелна машина <ph name="VM_TYPE" />}=1{Пронађена је 1 виртуелна машина<ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}one{Пронађена је{NUM_VMS} виртуелна машина<ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}few{Пронађене су{NUM_VMS} виртуелне машине<ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}other{Пронађено је{NUM_VMS} виртуелних машина<ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Нема интернет везе.</translation>
 <translation id="4998430619171209993">Укључено</translation>
@@ -5357,6 +5360,7 @@
 <translation id="5474859849784484111"><ph name="MANAGER" /> захтева да се одмах повежете на WiFi и да преузмете ажурирање. Или преузмите помоћу везе са ограничењем (можда се наплаћују трошкови).</translation>
 <translation id="5481273127572794904">Није им дозвољено да аутоматски преузимају више фајлова</translation>
 <translation id="5481941284378890518">Додај оближње штампаче</translation>
+<translation id="5484462543003267273">Управљај породицом</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> захтева да направите резервну копију података и да вратите овај <ph name="DEVICE_TYPE" /> данас. <ph name="LINK_BEGIN" />Погледајте детаље<ph name="LINK_END" />}one{<ph name="MANAGER" /> захтева да направите резервну копију података и да вратите овај <ph name="DEVICE_TYPE" /> у року од {NUM_DAYS} данa.<ph name="LINK_BEGIN" />Погледајте детаље<ph name="LINK_END" />}few{<ph name="MANAGER" /> захтева да направите резервну копију података и да вратите овај <ph name="DEVICE_TYPE" /> у року од {NUM_DAYS} данa.<ph name="LINK_BEGIN" />Погледајте детаље<ph name="LINK_END" />}other{<ph name="MANAGER" /> захтева да направите резервну копију података и да вратите овај <ph name="DEVICE_TYPE" /> у року од {NUM_DAYS} данa.<ph name="LINK_BEGIN" />Погледајте детаље<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Додај апликацију</translation>
 <translation id="5485435764083510385">Жељени језик титла</translation>
@@ -5470,7 +5474,6 @@
 <translation id="5571832155627049070">Прилагодите профил</translation>
 <translation id="5572166921642484567">Изаберите режим комбинације боја</translation>
 <translation id="5572252023412311448">Прегледајте детаље сајта за <ph name="SITE_GROUP" /></translation>
-<translation id="5572648434713976849">Добијаћете побољшане предлоге на траци за адресу</translation>
 <translation id="557506220935336383">Погледајте дозволе за додатке за друге сајтове</translation>
 <translation id="5575473780076478375">Додатак у режиму без архивирања: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Дошло је до проблема са захтевом за регистрацију за режим демонстрације.</translation>
@@ -5590,6 +5593,7 @@
 <translation id="567740581294087470">Какву врсту повратних информација шаљете?</translation>
 <translation id="5677503058916217575">Језик странице:</translation>
 <translation id="5677928146339483299">Блокирано</translation>
+<translation id="5677946354068040947">још опција</translation>
 <translation id="5678550637669481956">Одобрен је приступ за <ph name="VOLUME_NAME" /> ради читања и писања.</translation>
 <translation id="5678821117681811450">Шаље се на: <ph name="WEB_DRIVE" /></translation>
 <translation id="5678955352098267522">Читање ваших података на <ph name="WEBSITE_1" /></translation>
@@ -6719,7 +6723,6 @@
 <translation id="6644846457769259194">Ажурирање уређаја (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Искључи Брзо упаривање</translation>
 <translation id="6647228709620733774">URL адреса за опозив ауторитета за издавање Netscape сертификата</translation>
-<translation id="6647441008198474441">URL-ови које посећујете се шаљу Google-у да би се предвидели сајтови које ћете можда следеће посетити</translation>
 <translation id="6647690760956378579">Преглед природног гласа</translation>
 <translation id="6648911618876616409">Важно ажурирање је спремно за инсталацију. Пријавите се да бисте започели.</translation>
 <translation id="6649018507441623493">Само тренутак…</translation>
@@ -7188,6 +7191,7 @@
 <translation id="7019546817926942979">Уређај треба да буде прикључен. Надоградњом Linux-а можете значајно да испразните батерију. Повежите уређај са пуњачем и пробајте поново.</translation>
 <translation id="7019805045859631636">Брзо</translation>
 <translation id="7022562585984256452">Почетна страница је подешена.</translation>
+<translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">Представљамо нови начин за виртуелно кретање помоћу покрета</translation>
 <translation id="7025190659207909717">Управљање услугом мобилних података</translation>
 <translation id="7025895441903756761">Безбедност и приватност</translation>
@@ -8965,6 +8969,7 @@
 <translation id="8514746246728959655">Пробајте са неким другим безбедносним кључем</translation>
 <translation id="8514955299594277296">Не дозвољавајте сајтовима да чувају податке на уређају (не препоручује се)</translation>
 <translation id="8517759303731677493">Измени…</translation>
+<translation id="8518942514525208851">Сакриј вулгарности</translation>
 <translation id="8519895319663397036">Увоз лозинки није успео. Величина фајла мора да буде мања од 150 kB.</translation>
 <translation id="851991974800416566">Брзо употребите јаку лозинку</translation>
 <translation id="8523493869875972733">Задржи промене</translation>

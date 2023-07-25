@@ -39,6 +39,7 @@
 <translation id="2767464022270041271">Nenhuma senha salva. O Gerenciador de senhas do Google pode verificar suas senhas quando você as salva.</translation>
 <translation id="2840432500933227975">Abra as configurações do Chrome no iOS, toque em "App de navegação padrão" e selecione o Chrome.</translation>
 <translation id="2869959624320573933">Faça login no Chrome</translation>
+<translation id="2876628302275096482">Saiba mais sobre <ph name="BEGIN_LINK" />como o Chrome mantém a privacidade dos seus dados<ph name="END_LINK" /></translation>
 <translation id="2957447865124070833">Selecione o <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="3030414234702425231">Como você está saindo de uma conta gerenciada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, os dados do Chrome serão excluídos deste dispositivo, mas permanecerão na sua Conta do Google.</translation>
 <translation id="3167189358072330585">Sua conta não funciona no Google Chrome. Entre em contato com o administrador do domínio ou use uma Conta do Google normal para fazer login.</translation>
@@ -79,6 +80,7 @@
 <translation id="5162467219239570114">O Chrome está desatualizado. Se nenhuma atualização está disponível na <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, é possível que seu dispositivo não seja mais compatível com novas versões do Chrome.</translation>
 <translation id="5389212809648216794">O Google Chrome não pode usar a câmera porque ela está sendo usada por outro app</translation>
 <translation id="5395376160638294582">Garanta que você sempre possa usar os dados do Chrome na sua Conta do Google</translation>
+<translation id="5439191312780166229">Avisa você sobre sites perigosos, mesmo aqueles que o Google não conhecia, analisando mais dados de sites do que a proteção padrão. Você pode ignorar os avisos do Chrome.</translation>
 <translation id="5460571915754665838">4. Selecione o Chrome</translation>
 <translation id="5492504007368565877">O Gerenciador de senhas do Google não pode verificar suas senhas.</translation>
 <translation id="5527026824954593399">Toque em "Abrir com o Google Maps no Chrome".</translation>

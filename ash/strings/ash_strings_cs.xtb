@@ -146,6 +146,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1576623706766186887">Oddálit, když je zapnutá lupa</translation>
 <translation id="1586324912145647027">Přejděte na plochu 1 až 8</translation>
 <translation id="1589090746204042747">Získat přístup k veškeré vaší aktivitě v této relaci</translation>
+<translation id="1592682369233288537">Další plocha: <ph name="NEXT_DESK_NAME" />, k aktivaci použijte Hledat+Mezerník.</translation>
 <translation id="1604857178818051494">Pozastavit médium</translation>
 <translation id="1610778689852195798">„Vrátit zpět“</translation>
 <translation id="1611993646327628135">Zap</translation>
@@ -157,6 +158,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1647986356840967552">Předchozí stránka</translation>
 <translation id="1651914502370159744">Otevřít stránku Historie</translation>
 <translation id="1654477262762802994">Zahájit hlasový dotaz</translation>
+<translation id="1662667383227796099">Ve Spouštěči můžete vyhledávat soubory, aplikace a další položky. Můžete také získat odpovědi na otázky týkající se Chromebooku.</translation>
 <translation id="1668469839109562275">Vestavěná VPN</translation>
 <translation id="1675844249244994876">Aktualizovat pravé okno</translation>
 <translation id="1677472565718498478">zbývající čas: <ph name="TIME" /></translation>
@@ -439,6 +441,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2965227184985674128">Zapnout přístup k mikrofonu?</translation>
 <translation id="296762781903199866">Řečové soubory pro jazyk <ph name="LANGUAGE" /> se nepodařilo stáhnout</translation>
 <translation id="2970920913501714344">Instalovat aplikace, rozšíření a motivy</translation>
+<translation id="2977098646659697261">Vaše připnuté a otevřené aplikace jsou na poličce. Aplikaci na poličku připnete tak, že na ni klepnete pravým tlačítkem nebo že klepnete dvěma prsty na touchpad.</translation>
 <translation id="2977598380246111477">Další číslo</translation>
 <translation id="2985148236010982088">Zobrazit všechny aplikace</translation>
 <translation id="2992327365391326550">Mikrofon zařízení je vypnutý.</translation>
@@ -560,6 +563,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3477079411857374384">Control + Shift + mezerník</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Polička byla automaticky skryta</translation>
+<translation id="3503243067695520519">Dobrý den, Chromebooky jsou trochu jiné.</translation>
 <translation id="3505066820268455558">Baterie se nabíjí</translation>
 <translation id="3509391053705095206">Telefon se nepodařilo najít. Zkontrolujte, jestli je na něm zapnutý Bluetooth.</translation>
 <translation id="3510164367642747937">Zvýraznit ukazatel myši</translation>
@@ -684,6 +688,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="3977512764614765090">Baterie je nabitá na <ph name="PERCENTAGE" /> % a nabíjí se.</translation>
 <translation id="3984536049089846927">Další stránka</translation>
 <translation id="3986082989454912832">Přijmout</translation>
+<translation id="3990002060657467458">Často používané ovládací prvky, jako jsou Wi-Fi, Bluetooth a hlasitost, jsou v Rychlém nastavení. Můžete pomocí něj také pořídit snímky obrazovky.</translation>
 <translation id="3995138139523574647">Zařízení USB Type-C (pravý zadní port)</translation>
 <translation id="40062176907008878">Psaní rukou</translation>
 <translation id="4017989525502048489">Laserové ukazovátko</translation>
@@ -747,6 +752,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="4269883910223712419">Administrátor zařízení má následující možnosti:</translation>
 <translation id="4274537685965975248">Klávesová zkratka Ctrl + Alt + šipka dolů se změnila. Pokud chcete použít klávesu End, stiskněte <ph name="LAUNCHER_KEY_NAME" /> + šipku vpravo.</translation>
 <translation id="4275283744500212192">Otevřít možnosti rozvržení okna</translation>
+<translation id="4278138729651139331">V Nastavení si Chromebook můžete přizpůsobit. Zkuste změnit tapetu nebo nastavit spořič obrazovky.</translation>
 <translation id="4279490309300973883">Zrcadlení</translation>
 <translation id="4280601795273309128">Aktualizace zabezpečení skončily. Upgradujte své zařízení.</translation>
 <translation id="4283888303416325161">Pro lepší zabezpečení zadejte heslo</translation>
@@ -803,6 +809,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="4505050298327493054">Aktivní plocha.</translation>
 <translation id="450584155212756404">Verze pro vývojáře</translation>
 <translation id="4513946894732546136">Zpětná vazba</translation>
+<translation id="4516212064498225455">Aktuální plocha: <ph name="CURRENT_DESK_NAME" />, k otevření nabídky všech ploch použijte Hledat+Mezerník.</translation>
 <translation id="4518404433291145981">Pokud chcete Chromebook odemknout, nejdřív odemkněte telefon.</translation>
 <translation id="4527045527269911712">Zařízení Bluetooth „<ph name="DEVICE_NAME" />“ žádá o povolení ke spárování.</translation>
 <translation id="4533343294786968049">Prodlužování výdrže baterie. Baterie se plně nabije do <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -877,6 +884,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="4813311884204119883">Přetáhněte odkaz do prázdné oblasti na liště karet</translation>
 <translation id="4814539958450445987">Přihlašovací obrazovka</translation>
 <translation id="481455355267255546">Další v pořadí</translation>
+<translation id="4826588772550366629">fotoaparát a mikrofon</translation>
 <translation id="4831034276697007977">Opravdu chcete automatická kliknutí vypnout?</translation>
 <translation id="4849058404725798627">Zvýraznit objekt se zaměřením pro zadávání</translation>
 <translation id="485592688953820832">Žádná akce (pozastavit)</translation>
@@ -970,6 +978,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="5207949376430453814">Zvýraznit textový kurzor</translation>
 <translation id="5208059991603368177">Zap</translation>
 <translation id="5216991270656129561">Vypnuto do <ph name="TIME" /></translation>
+<translation id="5217646019792206018">Další plocha: <ph name="NEXT_DESK_NAME" />, k aktivaci použijte Hledat+Mezerník nebo klávesovou zkratku Shift+Hledat+<ph name="NEXT_DESK_INDEX" />.</translation>
 <translation id="5221423477036820198">Pomocí Telefonního centra můžete rychle odesílat zprávy z telefonu nebo na ně odpovídat.</translation>
 <translation id="5222676887888702881">Odhlásit se</translation>
 <translation id="5229343007215035173">Zapnout/vypnout obrazovku ochrany soukromí</translation>
@@ -1035,6 +1044,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="550391772491508736">Pokračovat v odesílání</translation>
 <translation id="5506975627792768506">Zapnout nebo vypnout lupu</translation>
 <translation id="5512042095225963688">Vymazat předchozí slovo</translation>
+<translation id="5518068085000130971">Toto byly jen základy. Pokračujte ve zkoumání pomocí Explore, naší integrované aplikace s tipy a nápovědou. Najdete v ní tipy pro začátek, doporučené aplikace, speciální nabídky a nejnovější funkce Chromebooků.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Váš administrátor odstranil všechny profily eSIM. O další informace požádejte administrátora.</translation>
 <translation id="5523434445161341166">Probíhá připojování funkce <ph name="FEATURE_NAME" />.</translation>
@@ -1360,6 +1370,7 @@ Nová instalace</translation>
 <translation id="6896758677409633944">Kopírovat</translation>
 <translation id="6901883536534621389">Zkuste k procházení použít gesta</translation>
 <translation id="6912841030378044227">Přejít do adresního řádku</translation>
+<translation id="6912901278692845878">Rychlá prohlídka</translation>
 <translation id="6919251195245069855">Chytrou kartu se nepodařilo rozpoznat. Zkuste to znovu.</translation>
 <translation id="6920245099716267363">Přepnout hotspot. Hotspot je zapnutý, je připojeno 1 zařízení.</translation>
 <translation id="6931576957638141829">Uložit do</translation>
@@ -1666,6 +1677,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8297006494302853456">Slabý</translation>
 <translation id="8308637677604853869">Předchozí nabídka</translation>
 <translation id="830868413617744215">Beta</translation>
+<translation id="8312557488404088015">Vydejte se na rychlou prohlídku pro hladký začátek. Zahrnuje jen šest kroků a zabere vám jen pár minut.</translation>
 <translation id="8314772463905284467">Caps Lock je zapnutý</translation>
 <translation id="8315514906653279104">Zapínání…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -1715,6 +1727,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8517041960877371778">Je možné, že když bude zařízení <ph name="DEVICE_TYPE" /> zapnuté, nebude se nabíjet.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Vstup mikrofonu ovládá aplikace <ph name="APP_NAME" />}few{Vstup mikrofonu ovládají # aplikace}many{Vstup mikrofonu ovládá # aplikace}other{Vstup mikrofonu ovládá # aplikací}}</translation>
 <translation id="8535393432370007982">Zrušit řazení podle barvy</translation>
+<translation id="853768060447955562">Předchozí plocha: <ph name="PREVIOUS_DESK_NAME" />, k aktivaci použijte Hledat+Mezerník nebo klávesovou zkratku Shift+Hledat+<ph name="PREVIOUS_DESK_INDEX" />.</translation>
 <translation id="8541078764854166027">Automatické zabírání</translation>
 <translation id="8542053257095774575">Žádné uložené plochy ani šablony</translation>
 <translation id="8546059259582788728">Vrácení řazení zpět bylo úspěšné</translation>
@@ -1865,11 +1878,13 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="925832987464884575">Skrýt náhledy</translation>
 <translation id="937214777182567951">Organizace <ph name="MANAGER" /> vyžaduje, abyste toto zařízení <ph name="DEVICE_TYPE" /> okamžitě aktualizovali.</translation>
 <translation id="938963181863597773">Co mám v kalendáři?</translation>
+<translation id="943067377221312471">Předchozí plocha: <ph name="PREVIOUS_DESK_NAME" />, k aktivaci použijte Hledat+Mezerník.</translation>
 <translation id="945383118875625837">Přetáhněte odkaz na lištu záložek</translation>
 <translation id="945522503751344254">Odeslat zpětnou vazbu</translation>
 <translation id="951991426597076286">Odmítnout</translation>
 <translation id="953431725143473984">Vypnout zařízení?</translation>
 <translation id="954052413789300507">Pro soubor <ph name="FILENAME" /> není k dispozici dostatek volného místa. Uvolněte místo.</translation>
+<translation id="968627661524972577">Pomocí aplikací můžete na Chromebooku dělat vše, co potřebujete. Své aplikace najdete ve Spouštěči. Můžete také stisknout klávesu Spouštěče na klávesnici.</translation>
 <translation id="974545358917229949">Zobrazuje se tento počet výsledků pro dotaz <ph name="QUERY" />: <ph name="RESULT_COUNT" /></translation>
 <translation id="98120814841227350">Přejít na konec dokumentu</translation>
 <translation id="987589956647469042">Mobilní data jsou zapnutá</translation>

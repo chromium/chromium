@@ -388,6 +388,7 @@
 <translation id="3311748811247479259">ጠፍቷል</translation>
 <translation id="3324193307694657476">አድራሻ 2</translation>
 <translation id="3328801116991980348">የጣቢያ መረጃ</translation>
+<translation id="3340938510625667914">Chrome እርምጃዎች</translation>
 <translation id="3344485292736684439">{count,plural, =1{በመለያዎ፣ {email} ውስጥ ዕልባት ወደ «{title}» ተቀምጧል}one{በመለያዎ፣ {email} ውስጥ ዕልባት ወደ «{title}» ተቀምጧል}other{በመለያዎ፣ {email} ውስጥ ዕልባቶች ወደ «{title}» ተቀምጠዋል}}</translation>
 <translation id="3371831930909698441">ትርጉም ይገኛል። አማራጮች ከማያው ግርጌ አጠገብ ይገኛሉ።</translation>
 <translation id="3377063233124932127">አሁን የእርስዎ የተቀመጡ እልባቶች፣ የይለፍ ቃላት እና ሌሎችም ከላይ ናቸው።</translation>
@@ -935,6 +936,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6628106477656132239">ልክ ያልሆነ የአገልግሎት ማብቂያ ቀን</translation>
 <translation id="6634432609054530164">የእርስዎ ድርጅት ማንነት የማያሳውቅ ሁነታን አጥፍቷል</translation>
 <translation id="6638511529934826365">ጽሑፍን አጉላ…</translation>
+<translation id="6640268266988685324">ትር ክፈት</translation>
 <translation id="6642362222295953972">አሁን ወዳለ ትር ይቀይሩ</translation>
 <translation id="6643016212128521049">አጽዳ</translation>
 <translation id="6645899968535965230">የQR ኮድ፦ <ph name="PAGE_TITLE" /></translation>

@@ -388,6 +388,7 @@
 <translation id="3311748811247479259">Өчүк</translation>
 <translation id="3324193307694657476">2-дарек</translation>
 <translation id="3328801116991980348">Сайт жөнүндө маалымат</translation>
+<translation id="3340938510625667914">Chrome'догу аракеттер</translation>
 <translation id="3344485292736684439">{count,plural, =1{Кыстарма {email} аккаунтуңуздагы "{title}" папкасына сакталды}other{Кыстармалар {email} аккаунтуңуздагы "{title}" папкасына сакталды}}</translation>
 <translation id="3371831930909698441">Котормочу жеткиликтүү. Параметрлер экрандын төмөн жагында берилген.</translation>
 <translation id="3377063233124932127">Эми сакталган кыстармаларыңыз, сырсөздөрүңүз жана башка нерселер жогору жакта.</translation>
@@ -935,6 +936,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6628106477656132239">Мөөнөтү аяктай турган күн жараксыз</translation>
 <translation id="6634432609054530164">Уюмуңуз жашыруун режимди өчүрүп койду</translation>
 <translation id="6638511529934826365">Текстти чоңойтуп/кичирейтүү…</translation>
+<translation id="6640268266988685324">Ачык өтмөк</translation>
 <translation id="6642362222295953972">Учурдагы өтмөккө которулуу</translation>
 <translation id="6643016212128521049">Тазалоо</translation>
 <translation id="6645899968535965230">QR код: <ph name="PAGE_TITLE" /></translation>

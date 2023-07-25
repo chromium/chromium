@@ -146,6 +146,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1576623706766186887">Afasta o zoom cando a lupa está activada</translation>
 <translation id="1586324912145647027">Vai do escritorio 1 ao 8</translation>
 <translation id="1589090746204042747">Acceder a toda a túa actividade nesta sesión</translation>
+<translation id="1592682369233288537">Seguinte escritorio: <ph name="NEXT_DESK_NAME" />. Usa Buscar + Espazo para activalo.</translation>
 <translation id="1604857178818051494">Pór en pausa o contido multimedia</translation>
 <translation id="1610778689852195798">"Desfai"</translation>
 <translation id="1611993646327628135">Activado</translation>
@@ -157,6 +158,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1647986356840967552">Páxina anterior</translation>
 <translation id="1651914502370159744">Abrir páxina do historial</translation>
 <translation id="1654477262762802994">Iniciar unha consulta de voz</translation>
+<translation id="1662667383227796099">Busca ficheiros, aplicacións e moito máis no menú de aplicacións. Tamén podes obter respostas a preguntas sobre o teu Chromebook.</translation>
 <translation id="1668469839109562275">VPN integrada</translation>
 <translation id="1675844249244994876">Actualizar a ventá da dereita</translation>
 <translation id="1677472565718498478">Tempo restante: <ph name="TIME" /></translation>
@@ -560,6 +562,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3477079411857374384">Control-Maúsculas-Espazo</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">O estante ocúltase automaticamente</translation>
+<translation id="3503243067695520519">Ola! Os Chromebook son un pouco diferentes.</translation>
 <translation id="3505066820268455558">Cargando batería</translation>
 <translation id="3509391053705095206">Non puidemos atopar o teu teléfono. Asegúrate de que teña o Bluetooth activado.</translation>
 <translation id="3510164367642747937">Destacar o cursor do rato</translation>
@@ -685,6 +688,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="3977512764614765090">Nivel de batería: <ph name="PERCENTAGE" /> % (cargando).</translation>
 <translation id="3984536049089846927">Páxina seguinte</translation>
 <translation id="3986082989454912832">Responder</translation>
+<translation id="3990002060657467458">Os controis que se usan con frecuencia, como a wifi, o Bluetooth e o volume, están en Configuración rápida. Tamén podes facer capturas de pantalla desde aquí.</translation>
 <translation id="3995138139523574647">Dispositivo USB‑C (porto dereito posterior)</translation>
 <translation id="40062176907008878">Escritura manual</translation>
 <translation id="4017989525502048489">Punteiro láser</translation>
@@ -748,6 +752,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4269883910223712419">O administrador deste dispositivo pode facer o seguinte:</translation>
 <translation id="4274537685965975248">O atallo Control + Alt + Frecha abaixo cambiou. Para usar a tecla Fin, preme <ph name="LAUNCHER_KEY_NAME" /> + Frecha dereita.</translation>
 <translation id="4275283744500212192">Abre as opcións de deseño de ventá</translation>
+<translation id="4278138729651139331">Personaliza o Chromebook en Configuración. Proba a cambiar o fondo de pantalla ou configurar un protector de pantalla.</translation>
 <translation id="4279490309300973883">Proxección</translation>
 <translation id="4280601795273309128">Deixaron de recibirse as actualizacións de seguranza. Actualiza o dispositivo.</translation>
 <translation id="4283888303416325161">Escribe o contrasinal como medida de seguranza adicional</translation>
@@ -804,6 +809,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4505050298327493054">Escritorio activo.</translation>
 <translation id="450584155212756404">Canle Dev</translation>
 <translation id="4513946894732546136">Dános a túa opinión</translation>
+<translation id="4516212064498225455">Escritorio actual: <ph name="CURRENT_DESK_NAME" />. Usa Buscar + Espazo para abrir o menú Todos os escritorios.</translation>
 <translation id="4518404433291145981">Para desbloquear o Chromebook, primeiro desbloquea o teléfono</translation>
 <translation id="4527045527269911712">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" quere obter permiso para sincronizarse.</translation>
 <translation id="4533343294786968049">Estamos ampliando a duración da batería. Esta rematará de cargar á seguinte hora: <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -878,6 +884,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4813311884204119883">Arrastra a ligazón a unha zona baleira da franxa de pestanas</translation>
 <translation id="4814539958450445987">Pantalla de inicio de sesión</translation>
 <translation id="481455355267255546">Próximos eventos</translation>
+<translation id="4826588772550366629">cámara e micrófono</translation>
 <translation id="4831034276697007977">Seguro que queres desactivar os clics automáticos?</translation>
 <translation id="4849058404725798627">Destacar obxecto co enfoque do teclado</translation>
 <translation id="485592688953820832">Ningunha acción (pausa)</translation>
@@ -971,6 +978,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5207949376430453814">Destacar o cursor de texto</translation>
 <translation id="5208059991603368177">Activado</translation>
 <translation id="5216991270656129561">Función desactivada ata esta hora: <ph name="TIME" /></translation>
+<translation id="5217646019792206018">Seguinte escritorio: <ph name="NEXT_DESK_NAME" />. Usa Buscar + Espazo ou o atallo de teclado Maiúsculas + Buscar + <ph name="NEXT_DESK_INDEX" /> para activalo.</translation>
 <translation id="5221423477036820198">Envía mensaxes e responde rapidamente no teu teléfono con O meu teléfono.</translation>
 <translation id="5222676887888702881">Pechar sesión</translation>
 <translation id="5229343007215035173">Activar ou desactivar a pantalla de privacidade</translation>
@@ -1036,6 +1044,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="550391772491508736">Retomar emisión</translation>
 <translation id="5506975627792768506">Activa ou desactiva a lupa</translation>
 <translation id="5512042095225963688">Elimina a palabra anterior</translation>
+<translation id="5518068085000130971">Eses son os conceptos básicos. Continúa en Explorar, a nosa aplicación integrada, para obter consellos e axuda. Descubrirás ideas sobre como comezar, recomendacións de aplicacións, ofertas especiais e as funcións de Chromebook máis recentes.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">O teu administrador quitou todos os perfís de eSIM. Para obter máis información, ponte en contacto con el.</translation>
 <translation id="5523434445161341166">A función <ph name="FEATURE_NAME" /> estase conectando.</translation>
@@ -1361,6 +1370,7 @@ Nova instalación</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6901883536534621389">Proba a navegar con xestos</translation>
 <translation id="6912841030378044227">Enfocar barra de enderezos</translation>
+<translation id="6912901278692845878">Visita rápida</translation>
 <translation id="6919251195245069855">Non se puido recoñecer a tarxeta intelixente. Téntao de novo.</translation>
 <translation id="6920245099716267363">Activar ou desactivar a zona wifi. A zona wifi está activada. Hai 1 dispositivo conectado.</translation>
 <translation id="6931576957638141829">Gardar en</translation>
@@ -1667,6 +1677,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8297006494302853456">Feble</translation>
 <translation id="8308637677604853869">Menú anterior</translation>
 <translation id="830868413617744215">Beta</translation>
+<translation id="8312557488404088015">Fai unha visita rápida para ir colléndolle o xeito. Son só 6 pasos que che levarán uns minutos.</translation>
 <translation id="8314772463905284467">O bloqueo de maiúsculas está activado</translation>
 <translation id="8315514906653279104">Activando...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
@@ -1716,6 +1727,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8517041960877371778">É posible que o teu <ph name="DEVICE_TYPE" /> non cargue mentres estea acendido.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{<ph name="APP_NAME" /> controla a entrada do micrófono}other{# aplicacións controlan a entrada do micrófono}}</translation>
 <translation id="8535393432370007982">Desfacer orde de clasificación por cor</translation>
+<translation id="853768060447955562">Escritorio anterior: <ph name="PREVIOUS_DESK_NAME" />. Usa Buscar + Espazo ou o atallo de teclado Maiúsculas + Buscar + <ph name="PREVIOUS_DESK_INDEX" /> para activalo.</translation>
 <translation id="8541078764854166027">Zoom automát.</translation>
 <translation id="8542053257095774575">Non hai modelos nin escritorios gardados</translation>
 <translation id="8546059259582788728">A orde desfíxose correctamente</translation>
@@ -1867,11 +1879,13 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="925832987464884575">Ocultar vistas previas</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> require que actualices o teu dispositivo (<ph name="DEVICE_TYPE" />) de inmediato</translation>
 <translation id="938963181863597773">Que hai no meu calendario?</translation>
+<translation id="943067377221312471">Escritorio anterior: <ph name="PREVIOUS_DESK_NAME" />. Usa Buscar + Espazo para activalo.</translation>
 <translation id="945383118875625837">Arrastra a ligazón á barra de marcadores</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="951991426597076286">Rexeitar</translation>
 <translation id="953431725143473984">Queres apagar o dispositivo?</translation>
 <translation id="954052413789300507">Non hai espazo suficiente para o ficheiro <ph name="FILENAME" />. Libera espazo.</translation>
+<translation id="968627661524972577">Usa as aplicacións para facer todo o que necesites no Chromebook. Para acceder a elas, podes ir ao menú de aplicacións ou premer a tecla do menú de aplicacións.</translation>
 <translation id="974545358917229949">Mostrando <ph name="RESULT_COUNT" /> resultados para "<ph name="QUERY" />"</translation>
 <translation id="98120814841227350">Vai ao final do documento</translation>
 <translation id="987589956647469042">Os datos móbiles están activados</translation>

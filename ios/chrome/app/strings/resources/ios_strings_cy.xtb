@@ -388,6 +388,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3311748811247479259">Diffodd</translation>
 <translation id="3324193307694657476">Cyfeiriad 2</translation>
 <translation id="3328801116991980348">Gwybodaeth am y wefan</translation>
+<translation id="3340938510625667914">Chrome Actions</translation>
 <translation id="3344485292736684439">{count,plural, =1{Mae'r nod tudalen wedi'i gadw i "{title}" yn eich cyfrif, {email}}zero{Mae'r nodau tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}}two{Mae'r nodau tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}}few{Mae'r nodau tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}}many{Mae'r nodau tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}}other{Mae'r nodau tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}}}</translation>
 <translation id="3371831930909698441">Mae cyfieithiad ar gael. Mae opsiynau ar gael yn agos at waelod y sgrîn.</translation>
 <translation id="3377063233124932127">Mae eich nodau tudalen, cyfrineiriau a rhagor bellach wedi'u cadw ar y brig.</translation>
@@ -935,6 +936,7 @@ Ceisiwch ddefnyddio cyfrinair unigryw ar gyfer pob gwefan.</translation>
 <translation id="6628106477656132239">Dyddiad Darfod Annilys</translation>
 <translation id="6634432609054530164">Mae eich sefydliad wedi diffodd eich modd Anhysbys</translation>
 <translation id="6638511529934826365">Chwyddo Testun…</translation>
+<translation id="6640268266988685324">Agor Tab</translation>
 <translation id="6642362222295953972">Newid i dab presennol</translation>
 <translation id="6643016212128521049">Clirio</translation>
 <translation id="6645899968535965230">Cod QR: <ph name="PAGE_TITLE" /></translation>

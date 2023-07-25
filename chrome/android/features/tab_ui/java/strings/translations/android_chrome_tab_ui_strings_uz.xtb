@@ -37,6 +37,7 @@
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ta aloqador varaq bor. Ular guruhlansinmi?</translation>
 <translation id="4212246570487010370">Saytlarni kezishda davom etish</translation>
 <translation id="4648718555153979859">Varaqlaringiz shu guruhda jamlanadi</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{Yopilgan varaqlar Chrome asosiy menyusidagi Oxirgi varaqlarda chiqadi.}=1{Yopilgan varaqlar Chrome asosiy menyusidagi Oxirgi varaqlarda chiqadi. Inkognito varagʻi chiqmaydi.}other{Yopilgan varaqlar Chrome asosiy menyusidagi Oxirgi varaqlarda chiqadi. # ta inkognito varagʻi chiqmaydi.}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> ta sharh)}other{(<ph name="REVIEWS_COUNT_MANY" /> ta sharh)}}</translation>
 <translation id="4850886885716139402">Ko‘rish</translation>
 <translation id="4870911314065352661">Barcha varaqlar yopilsinmi?</translation>

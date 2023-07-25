@@ -301,6 +301,7 @@
 <translation id="6439114592976064011">Блокиране на сайтовете, така че да не използват устройствата и данните ви за виртуална реалност</translation>
 <translation id="6447842834002726250">„Бисквитки“</translation>
 <translation id="6467852467360539617">Изчистване на данните и нулиране на разрешенията</translation>
+<translation id="6500423977866688905">Заявяване на изглед за мобилни устройства, когато прозорецът е тесен</translation>
 <translation id="6527303717912515753">Споделяне</translation>
 <translation id="6545864417968258051">Сканиране за устройства с Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Достъпът до <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и още <ph name="NUM_MORE" /> е блокиран}other{Достъпът до <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и още <ph name="NUM_MORE" /> е блокиран}}</translation>

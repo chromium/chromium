@@ -244,6 +244,7 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="2394602618534698961">Filer du laster ned, vises her</translation>
 <translation id="2410754283952462441">Velg en konto</translation>
 <translation id="2414886740292270097">Mørk</translation>
+<translation id="2421705177906985956">Ingen nettsteder å vise akkurat nå</translation>
 <translation id="2426805022920575512">Velg en annen konto</translation>
 <translation id="2433507940547922241">Utseende</translation>
 <translation id="2435457462613246316">Vis passord</translation>
@@ -845,6 +846,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5578795271662203820">Søk etter dette bildet i <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Du kan når som helst velge hva du vil synkronisere, i <ph name="BEGIN_LINK1" />innstillingene<ph name="END_LINK1" />.</translation>
 <translation id="5590372121997663538">Husk denne datamaskinen</translation>
+<translation id="5596627076506792578">Flere alternativer</translation>
 <translation id="5599455543593328020">Inkognitomodus</translation>
 <translation id="5620163320393916465">Ingen lagrede passord</translation>
 <translation id="5620928963363755975">Du finner filene og sidene dine under Nedlastinger via Flere alternativer-knappen</translation>

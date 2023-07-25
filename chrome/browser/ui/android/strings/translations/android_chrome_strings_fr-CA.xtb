@@ -507,6 +507,7 @@ Les jetons de confiance valides améliorent la confidentialité sur le Web et ne
 <translation id="3771694256347217732">Conditions d'utilisation de Google</translation>
 <translation id="3773856050682458546">Des données de base et de l'information sur les sites Web que vous visitez et les applications que vous utilisez</translation>
 <translation id="3775705724665058594">Envoyer à vos appareils</translation>
+<translation id="3777796259512476958">Vous déconnecte de la plupart des sites</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 onglet}one{# onglet}other{# onglets}}</translation>
 <translation id="3795154175078851242">Copier l'image avec le lien</translation>
 <translation id="3810838688059735925">Vidéo</translation>
@@ -844,6 +845,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5578795271662203820">Rechercher cette image avec <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Vous pouvez toujours choisir les éléments à synchroniser dans les <ph name="BEGIN_LINK1" />paramètres<ph name="END_LINK1" />.</translation>
 <translation id="5590372121997663538">Mémoriser cet ordinateur</translation>
+<translation id="5596627076506792578">Autres options</translation>
 <translation id="5599455543593328020">Mode de navigation privée</translation>
 <translation id="5620163320393916465">Aucun mot de passe enregistré</translation>
 <translation id="5620928963363755975">Trouvez vos fichiers et vos pages dans Téléchargements à partir du bouton Plus d'options</translation>

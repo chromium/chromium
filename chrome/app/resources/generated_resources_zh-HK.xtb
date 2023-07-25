@@ -1803,7 +1803,7 @@
 <translation id="2435248616906486374">網絡已中斷連線</translation>
 <translation id="2435457462613246316">顯示密碼</translation>
 <translation id="2436385001956947090">複製連結(&amp;L)</translation>
-<translation id="2438853563451647815">未連上印表機</translation>
+<translation id="2438853563451647815">未連線至打印機</translation>
 <translation id="2439626940657133600">載入緊 <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">檢視原始碼(&amp;O)</translation>
 <translation id="2440823041667407902">位置資料存取權</translation>
@@ -4258,7 +4258,7 @@
 <translation id="4508150454272293946">允許應用程式和網頁使用連接此裝置的相機。如果相機仍無法正常使用，建議你重新啟動應用程式或重新整理網頁。</translation>
 <translation id="450867954911715010">無障礙功能設定</translation>
 <translation id="4508765956121923607">檢視原始碼(&amp;O)</translation>
-<translation id="4509277363725254222">當你分享<ph name="BEGIN_BOLD_USERNAME" />使用者名稱<ph name="END_BOLD_USERNAME" />和<ph name="BEGIN_BOLD_PASSWORD" />密碼<ph name="END_BOLD_PASSWORD" />副本後，家庭成員就能使用 Google 密碼管理工具填寫這類資訊</translation>
+<translation id="4509277363725254222">當你分享<ph name="BEGIN_BOLD_USERNAME" />使用者名稱<ph name="END_BOLD_USERNAME" />和<ph name="BEGIN_BOLD_PASSWORD" />密碼<ph name="END_BOLD_PASSWORD" />副本後，家庭成員就能使用「Google 密碼管理工具」填寫這些資料</translation>
 <translation id="4509421746503122514">重新啟動即可更新</translation>
 <translation id="4510195992002502722">無法傳送意見，正在重試…</translation>
 <translation id="4510479820467554003">家長帳戶清單</translation>
@@ -4398,6 +4398,7 @@
 <translation id="4623167406982293031">驗證帳戶</translation>
 <translation id="4623189117674524348">系統無法將 API 存取權授予此裝置。</translation>
 <translation id="4623341761454569602">在「Google 密碼管理工具」中<ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">色彩主題</translation>
 <translation id="4625078469366263107">啟用應用程式</translation>
 <translation id="4625905218692741757">使用灰色作為預設顏色</translation>
 <translation id="4627427111733173920">已封鎖 Cookie</translation>
@@ -4476,7 +4477,7 @@
 <translation id="4683629100208651599">設為小寫</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (預設)</translation>
 <translation id="4684427112815847243">同步處理所有資料</translation>
-<translation id="4687238339694011189">請確認印表機已開啟並連上 Chromebook 使用的 Wi-Fi 網路，或使用 USB 傳輸線</translation>
+<translation id="4687238339694011189">請確認打印機已開啟並連線至 Chromebook 使用的網絡，或使用 USB 連接線</translation>
 <translation id="4687613760714619596">不明裝置 (<ph name="DEVICE_ID" />)</translation>
 <translation id="4687718960473379118">網站建議的廣告</translation>
 <translation id="4688036121858134881">本機記錄 ID：<ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />。</translation>
@@ -4829,7 +4830,7 @@
 <translation id="4994426888044765950">按住按鍵即可重複輸入按鍵對應的字元</translation>
 <translation id="4994754230098574403">正在設定</translation>
 <translation id="4995293419989417004">進一步了解廣告主題</translation>
-<translation id="4995676741161760215">開啟，擴充功能已啟用</translation>
+<translation id="4995676741161760215">開啟，擴充程式已啟用</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{找不到 <ph name="VM_TYPE" /> 虛擬機器}=1{已找到 <ph name="VM_TYPE" /> 個 <ph name="VM_NAME_LIST" /> 虛擬機器：}other{已找到 {NUM_VMS} 個 <ph name="VM_TYPE" /> 虛擬機器：<ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">沒有互聯網連線。</translation>
 <translation id="4998430619171209993">開啟</translation>
@@ -5496,7 +5497,6 @@
 <translation id="5571832155627049070">自訂你的設定檔</translation>
 <translation id="5572166921642484567">揀選色彩配置模式</translation>
 <translation id="5572252023412311448">顯示 <ph name="SITE_GROUP" /> 嘅網站詳情</translation>
-<translation id="5572648434713976849">您會在網址列取得更貼近需求的建議</translation>
 <translation id="557506220935336383">查看其他網站的擴充程式權限</translation>
 <translation id="5575473780076478375">無痕模式擴充功能：<ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">示範註冊要求發生問題。</translation>
@@ -5613,6 +5613,7 @@
 <translation id="567740581294087470">您要提供哪一類意見？</translation>
 <translation id="5677503058916217575">網頁語言：</translation>
 <translation id="5677928146339483299">已封鎖</translation>
+<translation id="5677946354068040947">更多選項</translation>
 <translation id="5678550637669481956">已授與「<ph name="VOLUME_NAME" />」的讀取和寫入權限。</translation>
 <translation id="5678821117681811450">正在傳送至「<ph name="WEB_DRIVE" />」</translation>
 <translation id="5678955352098267522">讀取您在 <ph name="WEBSITE_1" /> 上的資料</translation>
@@ -6131,7 +6132,7 @@
 <translation id="6113434369102685411">設定 Chrome 瀏覽器和 <ph name="DEVICE_TYPE" /> 啟動器的預設搜尋引擎</translation>
 <translation id="6113942107547980621">如要使用 Smart Lock，請在手機上切換至主要使用者設定檔</translation>
 <translation id="6116921718742659598">變更語言和輸入設定</translation>
-<translation id="6119008366402292080">沒有可用的印表機</translation>
+<translation id="6119008366402292080">沒有可用的打印機</translation>
 <translation id="6119927814891883061">將裝置個名改做 <ph name="DEVICE_NAME" /></translation>
 <translation id="6119972796024789243">色彩校正</translation>
 <translation id="6120707837086723438">系統會根據您最近搜尋的食譜，為您顯示建議的食譜。
@@ -6143,7 +6144,7 @@
 <translation id="6122081475643980456">您的互聯網連線目前受到控制</translation>
 <translation id="6122093587541546701">電郵 (選擇性)：</translation>
 <translation id="6122095009389448667">繼續禁止此網站查看剪貼簿</translation>
-<translation id="6122513630797178831">儲存信用卡驗證碼</translation>
+<translation id="6122513630797178831">儲存 CVC</translation>
 <translation id="6122600716821516697">要與這部裝置分享檔案嗎？</translation>
 <translation id="6122831415929794347">要關閉安全瀏覽嗎？</translation>
 <translation id="6124650939968185064">下列擴充功能依賴此擴充功能：</translation>
@@ -6738,7 +6739,6 @@
 <translation id="6644846457769259194">正在更新裝置 (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">關閉「快速配對」</translation>
 <translation id="6647228709620733774">Netscape 憑證授權撤銷網址</translation>
-<translation id="6647441008198474441">系統會將您瀏覽的網址傳送至 Google，以便預測您接下來可能會瀏覽的網站</translation>
 <translation id="6647690760956378579">播放自然語音</translation>
 <translation id="6648911618876616409">已準備好安裝重要更新。登入即可開始更新。</translation>
 <translation id="6649018507441623493">請稍候...</translation>
@@ -7207,6 +7207,7 @@
 <translation id="7019546817926942979">裝置需要接上電源。升級 Linux 相當耗電。請將裝置連接充電器，然後再試一次。</translation>
 <translation id="7019805045859631636">快</translation>
 <translation id="7022562585984256452">首頁已設定完成。</translation>
+<translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">全新的手勢瀏覽功能</translation>
 <translation id="7025190659207909717">流動數據服務管理</translation>
 <translation id="7025895441903756761">安全和私隱</translation>

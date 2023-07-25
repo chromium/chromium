@@ -158,7 +158,7 @@
 <translation id="1647986356840967552">上一頁</translation>
 <translation id="1651914502370159744">開啟「記錄」頁面</translation>
 <translation id="1654477262762802994">開始語音查詢</translation>
-<translation id="1662667383227796099">你可以在啟動器中搜尋檔案、應用程式等內容，也可以尋找與 Chromebook 問題的解答。</translation>
+<translation id="1662667383227796099">你可在「啟動器」中搜尋檔案、應用程式等內容，亦可尋找與 Chromebook 問題的解答。</translation>
 <translation id="1668469839109562275">內置 VPN</translation>
 <translation id="1675844249244994876">更新右邊視窗</translation>
 <translation id="1677472565718498478">電量尚餘 <ph name="TIME" /></translation>
@@ -563,7 +563,7 @@
 <translation id="3477079411857374384">Control + Shift + 空格鍵</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">自動隱藏捷徑列</translation>
-<translation id="3503243067695520519">你好！Chromebook 不一樣了</translation>
+<translation id="3503243067695520519">你好！Chromebooks 變得不一樣了。</translation>
 <translation id="3505066820268455558">電池充電中</translation>
 <translation id="3509391053705095206">找不到手機。請確保手機的藍牙功能已開啟。</translation>
 <translation id="3510164367642747937">突顯滑鼠遊標</translation>
@@ -688,7 +688,7 @@
 <translation id="3977512764614765090">電量有 <ph name="PERCENTAGE" />%，宜家差緊電。</translation>
 <translation id="3984536049089846927">下一頁</translation>
 <translation id="3986082989454912832">接聽</translation>
-<translation id="3990002060657467458">快速設定內含 Wi-Fi、藍牙和音量等常用控制選項，你也可以透過快速設定拍攝螢幕截圖。</translation>
+<translation id="3990002060657467458">「快速設定」內含 Wi-Fi、藍牙和音量等常用控制項，你亦可透過「快速設定」擷取螢幕截圖。</translation>
 <translation id="3995138139523574647">USB-C 裝置 (右側後方連接埠)</translation>
 <translation id="40062176907008878">手寫</translation>
 <translation id="4017989525502048489">雷射筆</translation>
@@ -752,7 +752,7 @@
 <translation id="4269883910223712419">此裝置的管理員擁有下列權限：</translation>
 <translation id="4274537685965975248">「Ctrl + Alt + 向下箭咀」的鍵盤快速鍵已變更。如要使用 End 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 向右箭咀。</translation>
 <translation id="4275283744500212192">開啟視窗版面配置選項</translation>
-<translation id="4278138729651139331">你可以使用「設定」應用程式自訂 Chromebook，不妨試著變更桌布或設定螢幕保護程式。</translation>
+<translation id="4278138729651139331">你可使用「設定」應用程式自訂 Chromebook，嘗試變更桌布或設定螢幕保護程式。</translation>
 <translation id="4279490309300973883">鏡像</translation>
 <translation id="4280601795273309128">安全更新已結束，請升級裝置。</translation>
 <translation id="4283888303416325161">為安全起見，請輸入密碼</translation>
@@ -884,6 +884,7 @@
 <translation id="4813311884204119883">將連結拖曳至分頁列上的空白區域</translation>
 <translation id="4814539958450445987">登入畫面</translation>
 <translation id="481455355267255546">即將舉行的活動</translation>
+<translation id="4826588772550366629">相機和麥克風</translation>
 <translation id="4831034276697007977">確定要關閉自動點擊功能嗎？</translation>
 <translation id="4849058404725798627">突顯鍵盤焦點所在的物件</translation>
 <translation id="485592688953820832">不執行任何操作 (暫停)</translation>
@@ -1042,7 +1043,7 @@
 <translation id="550391772491508736">繼續投放</translation>
 <translation id="5506975627792768506">開啟或關閉放大鏡</translation>
 <translation id="5512042095225963688">刪除上一個字詞</translation>
-<translation id="5518068085000130971">這些都是基本概念！如需其他使用訣竅和說明，歡迎使用內建的「探索」應用程式，瞭解新手入門秘訣、推薦應用程式、特價優惠和最新的 Chromebook 功能。</translation>
+<translation id="5518068085000130971">這些都是基本概念！如需其他使用提示和說明，歡迎使用內置的「探索」應用程式，瞭解新手入門提示、建議的應用程式、特別優惠和最新的 Chromebook 功能。</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">管理員已移除所有 eSIM 設定檔。如需更多資訊，請聯絡管理員。</translation>
 <translation id="5523434445161341166">「<ph name="FEATURE_NAME" />」正在連線。</translation>
@@ -1674,7 +1675,7 @@
 <translation id="8297006494302853456">弱</translation>
 <translation id="8308637677604853869">前一個選單</translation>
 <translation id="830868413617744215">測試版</translation>
-<translation id="8312557488404088015">觀看快速導覽即可輕鬆上手。快速導覽分成 6 個步驟，只需幾分鐘就能完成。</translation>
+<translation id="8312557488404088015">觀看快速導覽即可輕鬆上手。只需幾分鐘便可完成所需的 6 個步驟。</translation>
 <translation id="8314772463905284467">啟用咗 Caps Lock 鍵</translation>
 <translation id="8315514906653279104">正在開啟…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
@@ -1882,7 +1883,7 @@
 <translation id="951991426597076286">拒絕</translation>
 <translation id="953431725143473984">確定要關閉裝置嗎？</translation>
 <translation id="954052413789300507">可用空間不足，無法下載「<ph name="FILENAME" />」。請騰出空間。</translation>
-<translation id="968627661524972577">你可以在 Chromebook 上使用應用程式處理大小事。如要尋找應用程式，可以使用啟動器，只要按下鍵盤上的啟動器按鍵即可開啟。</translation>
+<translation id="968627661524972577">你可在 Chromebook 上使用應用程式處理大小事。如要尋找應用程式，可以使用「啟動器」，只要按下鍵盤上的「啟動器」鍵即可開啟。</translation>
 <translation id="974545358917229949">顯示緊 <ph name="RESULT_COUNT" /> 個同「<ph name="QUERY" />」有關嘅結果</translation>
 <translation id="98120814841227350">前往文件結尾</translation>
 <translation id="987589956647469042">流動數據已開啟</translation>

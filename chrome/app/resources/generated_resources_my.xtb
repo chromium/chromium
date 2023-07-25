@@ -511,6 +511,7 @@
 <translation id="1418954524306642206">သင့်ပရင်တာ PPD ကို သတ်မှတ်ရန် ဖွင့်ကြည့်ပါ</translation>
 <translation id="1420834118113404499">မီဒီယာလိုင်စင်များ</translation>
 <translation id="1420920093772172268">တွဲချိတ်ခြင်းအား ခွင့်ပြုရန် <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
+<translation id="1421514190500081936">ဤဒေတာကို ဒေါင်းလုဒ်လုပ်ခြင်းအတွက် အကြောင်းပြချက် ထည့်ပါ-</translation>
 <translation id="1422159345171879700">မလုံခြုံသည့် Script များကို ဖွင့်ရန်</translation>
 <translation id="1425040197660226913">အပ်လုဒ်လုပ်၍ မရပါ။ ၂၀ MB ထက်သေးသောပုံ သုံးပါ။</translation>
 <translation id="1426410128494586442">Yes</translation>
@@ -3279,6 +3280,7 @@
 <translation id="3699920817649120894">စင့်ခ်နှင့် ပုဂ္ဂိုလ်ရေးသီးသန့် ပြုလုပ်ခြင်းကို ပိတ်လိုသလား။</translation>
 <translation id="3700888195348409686">(<ph name="PAGE_ORIGIN" />) ကို ပြသနေသည်</translation>
 <translation id="3700993174159313525">သင့်ကင်မရာတည်နေရာကို ခြေရာခံရန် ဝဘ်ဆိုက်များကို ခွင့်မပြုပါနှင့်</translation>
+<translation id="3701515417135397388">ဒေတာကျိုးပေါက်မှုတွင် စကားဝှက် ပါဝင်နေပါက သတိပေးရန်</translation>
 <translation id="3702500414347826004">သင်၏ စဖွင့်စာမျက်နှာများတွင် <ph name="URL" /> ပါအောင် ပြောင်းလဲထားပါသည်။</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />စီစဉ်သတ်မှတ်ထားသော ဤသရုပ်ပြစက်တွင် လက်လီရောင်းသူအမည်နှင့် စတိုးနံပါတ်တို့ ထည့်ပါ*။ <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />စတိုးနံပါတ် မသိပါက ‘သရုပ်ပြမုဒ်’ ထည့်သွင်းခြင်းကို ရှေ့ဆက်ရန် “0000” ထည့်နိုင်သည်။ <ph name="END_PARAGRAPH2" />
@@ -4397,6 +4399,7 @@
 <translation id="4623167406982293031">အကောင့်ကို အတည်ပြုရန်</translation>
 <translation id="4623189117674524348">စနစ်သည် ဤစက်ပစ္စည်းအတွက် API အသုံးပြုခွင့် ပေး၍မရပါ။</translation>
 <translation id="4623341761454569602">Google Password Manager တွင် <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">အရောင် အပြင်အဆင်</translation>
 <translation id="4625078469366263107">အက်ပ်ကို ဖွင့်ရန်</translation>
 <translation id="4625905218692741757">မီးခိုးရောင် မူရင်းအရောင်</translation>
 <translation id="4627427111733173920">ကွတ်ကီးများကို ပိတ်ထားခြင်း</translation>
@@ -5495,7 +5498,6 @@
 <translation id="5571832155627049070">သင့်ပရိုဖိုင်ကို စိတ်ကြိုက်ပြင်ရန်</translation>
 <translation id="5572166921642484567">အရောင် သုံးထားပုံမုဒ် ရွေးရန်</translation>
 <translation id="5572252023412311448"><ph name="SITE_GROUP" /> အတွက် ဝဘ်ဆိုက်အသေးစိတ်များ ပြရန်</translation>
-<translation id="5572648434713976849">ပိုကောင်းမွန်လာသော အကြံပြုချက်များကို လိပ်စာဘားတွင် ရရှိပါမည်</translation>
 <translation id="557506220935336383">အခြားဝဘ်ဆိုက်များအတွက် နောက်ဆက်တွဲခွင့်ပြုချက်များ ကြည့်ရန်</translation>
 <translation id="5575473780076478375">Incognito အိတ်စတန်းရှင်း: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">သရုပ်ပြမုဒ် မှတ်ပုံတင်ခြင်းတောင်းဆိုချက်တွင် အမှားအယွင်းရှိနေသည်။</translation>
@@ -5615,6 +5617,7 @@
 <translation id="567740581294087470">မည်သို့သော အကြံပြုချက်ကို သင်ပို့နေပါသလဲ။</translation>
 <translation id="5677503058916217575">စာမျက်နှာ ဘာသာစကား:</translation>
 <translation id="5677928146339483299">ပိတ်ဆို့ထား</translation>
+<translation id="5677946354068040947">နောက်ထပ် ရွေးချယ်စရာများ</translation>
 <translation id="5678550637669481956"><ph name="VOLUME_NAME" /> အား ဝင်ရောက် ဖတ်ရန် ရေးရန် ခွင့်ပြုပြီးဖြစ်၏။</translation>
 <translation id="5678821117681811450"><ph name="WEB_DRIVE" /> သို့ ပို့နေသည်</translation>
 <translation id="5678955352098267522"><ph name="WEBSITE_1" /> ထဲက သင်၏ ဒေတာကို ဖတ်ရန်</translation>
@@ -6737,7 +6740,6 @@
 <translation id="6644846457769259194">သင့်စက်ပစ္စည်းကို အပ်ဒိတ်လုပ်နေသည် (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">အမြန်တွဲချိတ်ခြင်း ပိတ်ရန်</translation>
 <translation id="6647228709620733774">Netscape အသိမှတ်ပြု အာဏာရုတ်သိမ်းခြင်း URL</translation>
-<translation id="6647441008198474441">နောက်တစ်ကြိမ် သင်ဝင်ကြည့်မည့် ဝဘ်ဆိုက်များကို ခန့်မှန်းရန် သင်ကြည့်ထားသော URL များကို Google သို့ ပို့သည်</translation>
 <translation id="6647690760956378579">သဘာဝဆန်သည့်အသံ အစမ်းကြည့်ရှုခြင်း</translation>
 <translation id="6648911618876616409">အရေးကြီးသည့် အပ်ဒိတ်ကို ထည့်သွင်းရန် အဆင်သင့်ဖြစ်ပါပြီ။ စတင်ရန် လက်မှတ်ထိုးဝင်ပါ။</translation>
 <translation id="6649018507441623493">ခေတ္တစောင့်ပါ...</translation>
@@ -9568,6 +9570,7 @@
 <translation id="9011262023858991985">ဤတဘ်ကို ကာစ်လုပ်နေသည်</translation>
 <translation id="9011393886518328654">ထုတ်ပြန်မှု မှတ်ချက်များ</translation>
 <translation id="9012122671773859802">မောက်စ်ရွှေ့သည့်အတိုင်း ဖန်သားပြင်ကို ဆက်တိုက်ရွှေ့ရန်</translation>
+<translation id="9012585441087414258">အန္တရာယ်ရှိသည်ဟု သိထားသော ဝဘ်ဆိုက်၊ ဒေါင်းလုဒ်နှင့် နောက်ဆက်တွဲများအတွက် ကာကွယ်ပေးသည်။ စာမျက်နှာတစ်ခုသည် သံသယဖြစ်ဖွယ်ကောင်းပါက URL များနှင့် စာမျက်နှာ၏ အကြောင်းအရာအချို့ကို ‘Google လုံခြုံစွာ ကြည့်ရှုခြင်း’ သို့ ပို့ပါသည်။</translation>
 <translation id="9013037634206938463">Linux ထည့်သွင်းရန် နေရာလွတ် <ph name="INSTALL_SIZE" /> လိုအပ်သည်။ နေရာလွတ်ပိုရရန် သင့်စက်မှ ဖိုင်များကို ဖျက်ပါ။</translation>
 <translation id="9014206344398081366">ChromeVox ရှင်းလင်းပို့ချချက်</translation>
 <translation id="901668144954885282">Google Drive သို့ အရန်သိမ်းရန်</translation>

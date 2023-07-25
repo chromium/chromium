@@ -146,6 +146,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1576623706766186887">Pomanjšava, ko je lupa vklopljena</translation>
 <translation id="1586324912145647027">Odpiranje namizja od 1 do 8</translation>
 <translation id="1589090746204042747">dostop do vse dejavnosti v seji;</translation>
+<translation id="1592682369233288537">Naslednje namizje: <ph name="NEXT_DESK_NAME" />, uporabite kombinacijo tipke za iskanje in preslednice, če želite aktivirati.</translation>
 <translation id="1604857178818051494">Začasna zaustavitev predstavnosti</translation>
 <translation id="1610778689852195798">»Razveljavi«</translation>
 <translation id="1611993646327628135">Vklopljeno</translation>
@@ -157,6 +158,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1647986356840967552">Prejšnja stran</translation>
 <translation id="1651914502370159744">Odpiranje strani z zgodovino</translation>
 <translation id="1654477262762802994">Začetek glasovne poizvedbe</translation>
+<translation id="1662667383227796099">Poiščite datoteke, aplikacije in drugo v zaganjalniku. Prejmete lahko tudi odgovore na vprašanja glede Chromebooka.</translation>
 <translation id="1668469839109562275">Vgrajeno omrežje VPN</translation>
 <translation id="1675844249244994876">Posodobitev desnega okna</translation>
 <translation id="1677472565718498478">Še <ph name="TIME" /></translation>
@@ -560,6 +562,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3477079411857374384">Control + Shift + preslednica</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Polica je samodejno skrita</translation>
+<translation id="3503243067695520519">Pozdravljeni. Chromebooki so nekoliko drugačni.</translation>
 <translation id="3505066820268455558">Polnjenje baterije</translation>
 <translation id="3509391053705095206">Telefona ni mogoče najti. Bluetooth v telefonu mora biti vklopljen.</translation>
 <translation id="3510164367642747937">Označitev miškinega kazalca</translation>
@@ -684,6 +687,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="3977512764614765090">Akumulator je <ph name="PERCENTAGE" />-% napolnjen in se polni.</translation>
 <translation id="3984536049089846927">Naslednja stran</translation>
 <translation id="3986082989454912832">Odgovor</translation>
+<translation id="3990002060657467458">Pogosto uporabljeni kontrolniki, kot so Wi-Fi, Bluetooth in glasnost, so v hitrih nastavitvah. Tukaj lahko ustvarite tudi posnetke zaslona.</translation>
 <translation id="3995138139523574647">Naprava USB-C (vrata desno zadaj)</translation>
 <translation id="40062176907008878">Rokopis</translation>
 <translation id="4017989525502048489">Laserski kazalnik</translation>
@@ -747,6 +751,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="4269883910223712419">Skrbniku te naprave je omogočeno to:</translation>
 <translation id="4274537685965975248">Bližnjica na tipkovnici ctrl + alt + puščica dol je spremenjena. Če želite uporabiti tipko End, pritisnite tipko za <ph name="LAUNCHER_KEY_NAME" /> in puščico desno.</translation>
 <translation id="4275283744500212192">Odpiranje možnosti postavitve okna</translation>
+<translation id="4278138729651139331">Prilagodite in osebno prilagodite Chromebook v nastavitvah. Poskusite spremeniti zaslonsko ozadje ali nastaviti ohranjevalnik zaslona.</translation>
 <translation id="4279490309300973883">Zrcaljenje</translation>
 <translation id="4280601795273309128">Zagotavljanje varnostnih posodobitev je končano. Nadgradite napravo.</translation>
 <translation id="4283888303416325161">Vnesite geslo, če želite več varnosti</translation>
@@ -803,6 +808,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="4505050298327493054">Aktivno namizje.</translation>
 <translation id="450584155212756404">Različica za razvijalce</translation>
 <translation id="4513946894732546136">Povratne informacije</translation>
+<translation id="4516212064498225455">Trenutno namizje: <ph name="CURRENT_DESK_NAME" />, uporabite kombinacijo tipke za iskanje in preslednice, če želite odpreti meni z vsemi namizji.</translation>
 <translation id="4518404433291145981">Če želite odkleniti Chromebook, najprej odklenite telefon.</translation>
 <translation id="4527045527269911712">Naprava Bluetooth »<ph name="DEVICE_NAME" />« želi dovoljenje za seznanjanje.</translation>
 <translation id="4533343294786968049">Podaljšanje časa delovanja baterije. Baterija se bo popolnoma napolnila do <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -877,6 +883,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="4813311884204119883">Povlecite povezavo na prazno območje na traku z zavihki</translation>
 <translation id="4814539958450445987">Zaslon za prijavo</translation>
 <translation id="481455355267255546">Sledi</translation>
+<translation id="4826588772550366629">kamero in mikrofon</translation>
 <translation id="4831034276697007977">Ali ste prepričani, da želite izklopiti samodejne klike?</translation>
 <translation id="4849058404725798627">Označitev predmeta s fokusom na tipkovnici</translation>
 <translation id="485592688953820832">Brez dejanj (zaustavitev)</translation>
@@ -970,6 +977,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="5207949376430453814">Označitev kazalke v besedilu</translation>
 <translation id="5208059991603368177">Vklopljeno</translation>
 <translation id="5216991270656129561">Izklopljeno do <ph name="TIME" /></translation>
+<translation id="5217646019792206018">Naslednje namizje: <ph name="NEXT_DESK_NAME" />, uporabite kombinacijo tipke za iskanje in preslednice ali bližnjično tipko: Shift + tipka za iskanje + <ph name="NEXT_DESK_INDEX" /> za aktiviranje.</translation>
 <translation id="5221423477036820198">S telefonskim središčem lahko hitro pošiljate sporočila v telefonu ali odgovarjate nanje.</translation>
 <translation id="5222676887888702881">Odjava</translation>
 <translation id="5229343007215035173">Vklop/izklop zaslona za zasebnost</translation>
@@ -1035,6 +1043,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="550391772491508736">Nadaljuj predvajanje</translation>
 <translation id="5506975627792768506">Vklop ali izklop lupe</translation>
 <translation id="5512042095225963688">Brisanje prejšnje besede</translation>
+<translation id="5518068085000130971">To so osnove. Nadaljujte v Raziskovanju, vgrajeni aplikaciji z nasveti in pomočjo. Tam so na voljo nasveti za začetek, priporočene aplikacije, posebne ponudbe in najnovejše funkcije Chromebooka.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Skrbnik je odstranil vse profile za eSIM. Če želite več informacij, se obrnite na skrbnika.</translation>
 <translation id="5523434445161341166">Vzpostavljanje povezave s funkcijo <ph name="FEATURE_NAME" />.</translation>
@@ -1360,6 +1369,7 @@ Nova namestitev</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
 <translation id="6901883536534621389">Poskusite se premikati s potezami</translation>
 <translation id="6912841030378044227">Preklop na naslovno vrstico</translation>
+<translation id="6912901278692845878">Hitra predstavitev</translation>
 <translation id="6919251195245069855">Pametne kartice ni bilo mogoče prepoznati. Poskusite znova.</translation>
 <translation id="6920245099716267363">Preklop dostopne točke. Dostopna točka je vklopljena, povezana je 1 naprava.</translation>
 <translation id="6931576957638141829">Shrani v</translation>
@@ -1666,6 +1676,7 @@ Nova namestitev</translation>
 <translation id="8297006494302853456">Šibek</translation>
 <translation id="8308637677604853869">Prejšnji meni</translation>
 <translation id="830868413617744215">Beta</translation>
+<translation id="8312557488404088015">Oglejte si kratko predstavitev, če želite začeti nemoteno. Sestavljena je iz šestih korakov, ki trajajo samo nekaj minut.</translation>
 <translation id="8314772463905284467">Tipka Caps Lock je vklopljena</translation>
 <translation id="8315514906653279104">Vklapljanje …</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -1715,6 +1726,7 @@ Nova namestitev</translation>
 <translation id="8517041960877371778">Akumulator naprave <ph name="DEVICE_TYPE" /> se morda ne bo polnil, medtem ko je naprava vklopljena.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Vhod za mikrofon nadzira aplikacija <ph name="APP_NAME" />}one{Vhod za mikrofon nadzira # aplikacija}two{Vhod za mikrofon nadzirata # aplikaciji}few{Vhod za mikrofon nadzirajo # aplikacije}other{Vhod za mikrofon nadzira # aplikacij}}</translation>
 <translation id="8535393432370007982">Razveljavi način razvrščanja po barvi</translation>
+<translation id="853768060447955562">Prejšnje namizje: <ph name="PREVIOUS_DESK_NAME" />, uporabite kombinacijo tipke za iskanje in preslednice ali bližnjico na tipkovnici: Shift + tipka za iskanje + <ph name="PREVIOUS_DESK_INDEX" />, če želite aktivirati.</translation>
 <translation id="8541078764854166027">Kadriranje</translation>
 <translation id="8542053257095774575">Ni shranjenih namizij ali predlogov</translation>
 <translation id="8546059259582788728">Razveljavitev razvrščanja je uspela</translation>
@@ -1866,11 +1878,13 @@ Nova namestitev</translation>
 <translation id="925832987464884575">Skrivanje predogledov</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> zahteva, da takoj posodobite napravo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="938963181863597773">Kaj je v mojem koledarju?</translation>
+<translation id="943067377221312471">Prejšnje namizje: <ph name="PREVIOUS_DESK_NAME" />, uporabite kombinacijo tipke za iskanje in preslednice, če želite aktivirati.</translation>
 <translation id="945383118875625837">Povlecite povezavo v vrstico z zaznamki</translation>
 <translation id="945522503751344254">Pošiljanje povratnih informacij</translation>
 <translation id="951991426597076286">Zavrni</translation>
 <translation id="953431725143473984">Želite izklopiti napravo?</translation>
 <translation id="954052413789300507">Ni dovolj prostora za datoteko <ph name="FILENAME" />. Sprostite prostor.</translation>
+<translation id="968627661524972577">Za vse, kar morate opraviti v Chromebooku, lahko uporabite aplikacije. Aplikacije so na voljo v zaganjalniku. Pritisnete lahko tudi tipko za zaganjalnik na tipkovnici.</translation>
 <translation id="974545358917229949">Prikaz <ph name="RESULT_COUNT" /> rezultatov za poizvedbo <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Premik na konec dokumenta</translation>
 <translation id="987589956647469042">Prenos podatkov v mobilnem omrežju je vklopljen</translation>

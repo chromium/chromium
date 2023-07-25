@@ -146,6 +146,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1576623706766186887">Faire un zoom arrière lorsque la loupe est activée</translation>
 <translation id="1586324912145647027">Accéder aux bureaux 1 à 8</translation>
 <translation id="1589090746204042747">Accéder à toutes vos activités dans cette session</translation>
+<translation id="1592682369233288537">Bureau suivant : <ph name="NEXT_DESK_NAME" />, appuyez sur Recherche+Espace pour l'activer.</translation>
 <translation id="1604857178818051494">Mettre en pause le contenu multimédia</translation>
 <translation id="1610778689852195798">"Annuler"</translation>
 <translation id="1611993646327628135">Activé</translation>
@@ -157,6 +158,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1647986356840967552">Page précédente</translation>
 <translation id="1651914502370159744">Ouvrir la page "Historique"</translation>
 <translation id="1654477262762802994">Soumettre une requête vocale</translation>
+<translation id="1662667383227796099">Recherchez vos fichiers, applis et plus dans le Lanceur d'applications. Vous pouvez également obtenir des réponses aux questions concernant votre Chromebook.</translation>
 <translation id="1668469839109562275">VPN intégré</translation>
 <translation id="1675844249244994876">Mettre à jour la fenêtre de droite</translation>
 <translation id="1677472565718498478">Temps restant : <ph name="TIME" /></translation>
@@ -560,6 +562,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3477079411857374384">Ctrl+Maj+Espace</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Étagère automatiquement masquée</translation>
+<translation id="3503243067695520519">Bonjour. Les Chromebooks proposent une expérience légèrement différente.</translation>
 <translation id="3505066820268455558">Recharge de la batterie</translation>
 <translation id="3509391053705095206">Impossible de trouver votre téléphone. Vérifiez que le Bluetooth y est activé.</translation>
 <translation id="3510164367642747937">Mettre le curseur de la souris en surbrillance</translation>
@@ -683,6 +686,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3977512764614765090">La batterie est en charge, avec un niveau de <ph name="PERCENTAGE" /> % pour l'instant.</translation>
 <translation id="3984536049089846927">Page suivante</translation>
 <translation id="3986082989454912832">Répondre</translation>
+<translation id="3990002060657467458">Les commandes fréquemment utilisées, comme le Wi-Fi, le Bluetooth et le volume, se trouvent dans les Réglages rapides. Vous pouvez également y accéder pour prendre des captures d'écran.</translation>
 <translation id="3995138139523574647">Appareil USB de type C (port situé sur la droite de l'appareil, à l'arrière)</translation>
 <translation id="40062176907008878">Écriture manuscrite</translation>
 <translation id="4017989525502048489">Pointeur laser</translation>
@@ -746,6 +750,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4269883910223712419">L'administrateur de cet appareil peut :</translation>
 <translation id="4274537685965975248">Le raccourci clavier Ctrl+Alt+Flèche vers le bas a été modifié. Pour utiliser la touche Fin, appuyez sur la touche du <ph name="LAUNCHER_KEY_NAME" />+Flèche vers la droite.</translation>
 <translation id="4275283744500212192">Accéder aux options de mise en page des fenêtres</translation>
+<translation id="4278138729651139331">Personnalisez votre Chromebook dans les paramètres. Essayez de modifier votre fond d'écran ou de définir un économiseur d'écran.</translation>
 <translation id="4279490309300973883">Mise en miroir</translation>
 <translation id="4280601795273309128">Mises à jour de sécurité terminées. Mettez à niveau votre appareil.</translation>
 <translation id="4283888303416325161">Veuillez saisir votre mot de passe pour renforcer la sécurité</translation>
@@ -802,6 +807,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4505050298327493054">Bureau actif.</translation>
 <translation id="450584155212756404">Version en développement</translation>
 <translation id="4513946894732546136">Commentaires</translation>
+<translation id="4516212064498225455">Bureau actuel : <ph name="CURRENT_DESK_NAME" />, appuyez sur Recherche+Espace pour ouvrir le menu "Tous les bureaux".</translation>
 <translation id="4518404433291145981">Pour déverrouiller votre Chromebook, déverrouillez d'abord votre téléphone</translation>
 <translation id="4527045527269911712">L'appareil Bluetooth "<ph name="DEVICE_NAME" />" demande l'autorisation de s'associer.</translation>
 <translation id="4533343294786968049">Prolongation de l'autonomie de la batterie. La batterie sera complètement chargée à <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -876,6 +882,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4813311884204119883">Faire glisser un lien vers une zone vide de la barre d'onglets</translation>
 <translation id="4814539958450445987">Écran de connexion</translation>
 <translation id="481455355267255546">Événement suivant</translation>
+<translation id="4826588772550366629">votre caméra et votre micro</translation>
 <translation id="4831034276697007977">Voulez-vous vraiment désactiver les clics automatiques ?</translation>
 <translation id="4849058404725798627">Mettre l'objet sélectionné au clavier en surbrillance</translation>
 <translation id="485592688953820832">Aucune action (pause)</translation>
@@ -969,6 +976,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5207949376430453814">Mettre le curseur de texte en surbrillance</translation>
 <translation id="5208059991603368177">Activé</translation>
 <translation id="5216991270656129561">Désactivé jusqu'à <ph name="TIME" /></translation>
+<translation id="5217646019792206018">Bureau suivant : <ph name="NEXT_DESK_NAME" />, appuyez sur Recherche+Espace ou sur le raccourci clavier Maj+Recherche+<ph name="NEXT_DESK_INDEX" /> pour l'activer.</translation>
 <translation id="5221423477036820198">Envoyez des messages ou répondez rapidement à ceux de votre téléphone avec Phone Hub.</translation>
 <translation id="5222676887888702881">Déconnexion</translation>
 <translation id="5229343007215035173">Activer/Désactiver l'Écran Confidentialité</translation>
@@ -1034,6 +1042,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="550391772491508736">Reprendre la diffusion</translation>
 <translation id="5506975627792768506">Activer ou désactiver la loupe</translation>
 <translation id="5512042095225963688">Supprimer le mot précédent</translation>
+<translation id="5518068085000130971">Vous avez vu les bases. Pour obtenir des conseils et de l'aide, continuez dans Explorer, notre appli intégrée. Vous y trouverez des astuces pour démarrer, des recommandations d'applis, des offres spéciales et les dernières fonctionnalités Chromebook.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Votre administrateur a supprimé tous les profils eSIM. Contactez-le pour en savoir plus.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> est en train de se connecter.</translation>
@@ -1359,6 +1368,7 @@ Nouvelle installation</translation>
 <translation id="6896758677409633944">Copier</translation>
 <translation id="6901883536534621389">Essayez les gestes pour la navigation</translation>
 <translation id="6912841030378044227">Placer le curseur sur la barre d'adresse</translation>
+<translation id="6912901278692845878">Visite rapide</translation>
 <translation id="6919251195245069855">Impossible de reconnaître votre carte à puce. Veuillez réessayer.</translation>
 <translation id="6920245099716267363">Activer/Désactiver le point d'accès. Celui-ci est activé, 1 appareil est connecté.</translation>
 <translation id="6931576957638141829">Enregistrer sous</translation>
@@ -1665,6 +1675,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8297006494302853456">Faible</translation>
 <translation id="8308637677604853869">Menu précédent</translation>
 <translation id="830868413617744215">Bêta</translation>
+<translation id="8312557488404088015">Effectuez une visite guidée en six étapes pour bien démarrer. Cela ne prendra que quelques minutes.</translation>
 <translation id="8314772463905284467">Touche Verr Maj activée</translation>
 <translation id="8315514906653279104">Activation…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -1714,6 +1725,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8517041960877371778">Il est possible que votre appareil <ph name="DEVICE_TYPE" /> ne se recharge pas lorsqu'il est allumé.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Entrée micro contrôlée par <ph name="APP_NAME" />}one{Entrée micro contrôlée par # appli}other{Entrée micro contrôlée par # applis}}</translation>
 <translation id="8535393432370007982">Annuler le tri par couleur</translation>
+<translation id="853768060447955562">Bureau précédent : <ph name="PREVIOUS_DESK_NAME" />, appuyez sur Recherche+Espace ou sur le raccourci clavier Maj+Recherche+<ph name="PREVIOUS_DESK_INDEX" /> pour l'activer.</translation>
 <translation id="8541078764854166027">Cadrage caméra</translation>
 <translation id="8542053257095774575">Aucun bureau ni modèle enregistré</translation>
 <translation id="8546059259582788728">Le tri a bien été annulé</translation>
@@ -1864,11 +1876,13 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="925832987464884575">Masquer les aperçus</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> exige la mise à jour immédiate de votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">Qu'y a-t-il dans mon agenda ?</translation>
+<translation id="943067377221312471">Bureau précédent : <ph name="PREVIOUS_DESK_NAME" />, appuyez sur Recherche+Espace pour l'activer.</translation>
 <translation id="945383118875625837">Faire glisser le lien vers la barre de favoris</translation>
 <translation id="945522503751344254">Envoyer un commentaire</translation>
 <translation id="951991426597076286">Refuser</translation>
 <translation id="953431725143473984">Éteindre l'appareil ?</translation>
 <translation id="954052413789300507">Espace insuffisant pour <ph name="FILENAME" />. Libérez de l'espace.</translation>
+<translation id="968627661524972577">Utilisez des applis pour tout ce dont vous avez besoin sur Chromebook. Vous trouverez vos applis dans le Lanceur d'applications. Vous pouvez aussi appuyer sur la touche du Lanceur d'applications sur le clavier.</translation>
 <translation id="974545358917229949">Affichage de <ph name="RESULT_COUNT" /> résultats pour <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Accéder à la fin du document</translation>
 <translation id="987589956647469042">Les données mobiles sont activées</translation>

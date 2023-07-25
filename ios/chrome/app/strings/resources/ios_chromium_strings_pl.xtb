@@ -51,6 +51,7 @@
 <translation id="3650632991272923014">Użytkownik <ph name="USER_EMAIL1" /> korzystał z Chromium i zapisał na tym urządzeniu swoje zakładki, hasła i inne ustawienia.</translation>
 <translation id="3661862315467204831">Otwórz Ustawienia Chromium na iOS, kliknij „Domyślna przeglądarka” i wybierz Chromium.</translation>
 <translation id="372658070733623520">Aby móc zapisywać dane z Chromium na koncie Google i ich używać, potwierdź swoją tożsamość.</translation>
+<translation id="3780779443901618967">Ostrzega o niebezpiecznych witrynach, nawet takich, które wcześniej nie były znane Google. Jest to możliwe dzięki analizowaniu większej ilości danych z witryn niż w trybie standardowej ochrony. Możesz wybrać pomijanie ostrzeżeń Chromium.</translation>
 <translation id="3805899903892079518">Chromium nie ma dostępu do Twoich zdjęć ani filmów. Aby włączyć dostęp w iOS, wybierz Ustawienia &gt; Prywatność &gt; Zdjęcia.</translation>
 <translation id="3827545470516145620">Na tym urządzeniu korzystasz ze standardowej ochrony</translation>
 <translation id="3955621079070267756">Otwieraj Chromium z dowolnej aplikacji</translation>
@@ -94,6 +95,7 @@
 <translation id="632825460376924298">Zezwalaj na logowanie w Chromium</translation>
 <translation id="6337530241089703714">Zdecyduj, czy chcesz usunąć swoje dane z Chromium z tego urządzenia czy je na nim zachować</translation>
 <translation id="6424492062988593837">Chromium jest teraz jeszcze lepsze! Dostępna jest nowa wersja.</translation>
+<translation id="6563921047760808519">Dowiedz się więcej o tym, <ph name="BEGIN_LINK" />jak Chromium dba o prywatność Twoich danych<ph name="END_LINK" />.</translation>
 <translation id="6625409903340039086">Chromium obsługuje teraz zasady dotyczące użytkowników na koncie zarządzanym</translation>
 <translation id="6752854822223394465">Twoja organizacja konfiguruje Chromium…</translation>
 <translation id="6820823224820483452">Przeglądarce Chromium nie udało się sprawdzić wszystkich haseł. Spróbuj ponownie jutro.</translation>

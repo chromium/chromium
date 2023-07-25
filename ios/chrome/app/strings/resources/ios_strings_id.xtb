@@ -388,6 +388,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3311748811247479259">Nonaktif</translation>
 <translation id="3324193307694657476">Alamat 2</translation>
 <translation id="3328801116991980348">Informasi situs</translation>
+<translation id="3340938510625667914">Tindakan Chrome</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bookmark disimpan ke "{title}" di akun Anda, {email}}other{Bookmark disimpan ke "{title}" di akun Anda, {email}}}</translation>
 <translation id="3371831930909698441">Terjemahan tersedia. Opsi tersedia di dekat bagian bawah layar.</translation>
 <translation id="3377063233124932127">Kini bookmark, sandi, dan data tersimpan lainnya ada di bagian atas.</translation>
@@ -935,6 +936,7 @@ Coba gunakan sandi yang unik untuk setiap situs.</translation>
 <translation id="6628106477656132239">Tanggal Habis Masa Berlaku Tidak Valid</translation>
 <translation id="6634432609054530164">Organisasi Anda menonaktifkan mode Samaran</translation>
 <translation id="6638511529934826365">Zoom Teks…</translation>
+<translation id="6640268266988685324">Tab Terbuka</translation>
 <translation id="6642362222295953972">Beralih ke tab yang ada</translation>
 <translation id="6643016212128521049">Hapus</translation>
 <translation id="6645899968535965230">Kode QR: <ph name="PAGE_TITLE" /></translation>

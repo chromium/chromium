@@ -37,6 +37,7 @@
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> onglets semblent liés. Voulez-vous les regrouper?</translation>
 <translation id="4212246570487010370">Continuer la navigation</translation>
 <translation id="4648718555153979859">Vos onglets sont regroupés ici</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{Vous trouverez vos onglets fermés dans la section des onglets récents du menu principal de Chrome.}=1{Vous trouverez vos onglets fermés dans la section des onglets récents du menu principal de Chrome. Votre onglet de navigation privée ne sera pas accessible.}one{Vous trouverez vos onglets fermés dans la section des onglets récents du menu principal de Chrome. # onglet de navigation privée ne sera pas accessible.}other{Vous trouverez vos onglets fermés dans la section des onglets récents du menu principal de Chrome. Vos # onglets de navigation privée ne seront pas accessibles.}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> avis)}one{(<ph name="REVIEWS_COUNT_MANY" /> avis)}other{(<ph name="REVIEWS_COUNT_MANY" /> avis)}}</translation>
 <translation id="4850886885716139402">Affichage</translation>
 <translation id="4870911314065352661">Fermer tous les onglets?</translation>

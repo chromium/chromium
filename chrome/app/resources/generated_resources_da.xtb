@@ -4254,6 +4254,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4508150454272293946">Tillad, at apps og websider anvender de kameraer, der er knyttet til denne enhed. Hvis du stadig har problemer med dit kamera, kan du prøve at genstarte appen eller opdatere websiden.</translation>
 <translation id="450867954911715010">Indstillinger for hjælpefunktioner</translation>
 <translation id="4508765956121923607">Vis k&amp;ilde</translation>
+<translation id="4509277363725254222">Når du deler en kopi af dit <ph name="BEGIN_BOLD_USERNAME" />brugernavn<ph name="END_BOLD_USERNAME" /> og din <ph name="BEGIN_BOLD_PASSWORD" />adgangskode<ph name="END_BOLD_PASSWORD" />, kan dine familiemedlemmer udfylde dem ved hjælp af Google Adgangskodeadministrator</translation>
 <translation id="4509421746503122514">Genstart for at opdatere</translation>
 <translation id="4510195992002502722">Din feedback kunne ikke indsendes. Prøver igen...</translation>
 <translation id="4510479820467554003">Liste over forældrekonti</translation>
@@ -4393,6 +4394,7 @@ Enhedssignaler kan omfatte oplysninger om browseren, operativsystemet, enheden, 
 <translation id="4623167406982293031">Verificer konto</translation>
 <translation id="4623189117674524348">Systemet har ikke godkendt API-adgang for denne enhed.</translation>
 <translation id="4623341761454569602">I Google Adgangskodeadministrator <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">Farvetema</translation>
 <translation id="4625078469366263107">Aktivér app</translation>
 <translation id="4625905218692741757">Grå standardfarve</translation>
 <translation id="4627427111733173920">Cookies er blokeret</translation>
@@ -4824,6 +4826,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4994426888044765950">Hvis du holder en tast nede, gentages tastens tegn</translation>
 <translation id="4994754230098574403">Konfigurerer</translation>
 <translation id="4995293419989417004">Få flere oplysninger om annonceemner</translation>
+<translation id="4995676741161760215">Til, udvidelsen er aktiveret</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Der blev ikke fundet nogen <ph name="VM_TYPE" />-VM'er}=1{Der blev fundet 1 <ph name="VM_TYPE" />-VM: <ph name="VM_NAME_LIST" />}one{Der blev fundet {NUM_VMS} <ph name="VM_TYPE" />-VM: <ph name="VM_NAME_LIST" />}other{Der blev fundet {NUM_VMS} <ph name="VM_TYPE" />-VM'er: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Der er ingen internetforbindelse.</translation>
 <translation id="4998430619171209993">Til</translation>
@@ -5376,6 +5379,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5474859849784484111"><ph name="MANAGER" /> kræver, at du opretter forbindelse til Wi-Fi nu og downloader en opdatering. Du kan også downloade via en forbrugsafregnet forbindelse (du opkræves muligvis et gebyr).</translation>
 <translation id="5481273127572794904">Har ikke tilladelse til at downloade flere filer automatisk</translation>
 <translation id="5481941284378890518">Tilføj printere i nærheden</translation>
+<translation id="5484462543003267273">Administrer familie</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> kræver, at du sikkerhedskopierer dine data og returnerer denne <ph name="DEVICE_TYPE" /> i dag. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" />}one{<ph name="MANAGER" /> kræver, at du sikkerhedskopierer dine data og returnerer denne <ph name="DEVICE_TYPE" /> inden for {NUM_DAYS} dag.<ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" />}other{<ph name="MANAGER" /> kræver, at du sikkerhedskopierer dine data og returnerer denne <ph name="DEVICE_TYPE" /> inden for {NUM_DAYS} dage.<ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Tilføj app</translation>
 <translation id="5485435764083510385">Foretrukket sprog til undertekster</translation>
@@ -5489,7 +5493,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5571832155627049070">Tilpas din profil</translation>
 <translation id="5572166921642484567">Vælg en tilstand for farvesammensætning</translation>
 <translation id="5572252023412311448">Vis websiteoplysninger for <ph name="SITE_GROUP" /></translation>
-<translation id="5572648434713976849">Du får vist forbedrede forslag i adresselinjen</translation>
 <translation id="557506220935336383">Se udvidelsestilladelser for de øvrige websites</translation>
 <translation id="5575473780076478375">Inkognitoudvidelse: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Der opstod et problem med anmodningen om demoregistrering.</translation>
@@ -5608,6 +5611,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="567740581294087470">Hvilken slags feedback, giver du?</translation>
 <translation id="5677503058916217575">Sidens sprog:</translation>
 <translation id="5677928146339483299">Blokeret</translation>
+<translation id="5677946354068040947">flere valgmuligheder</translation>
 <translation id="5678550637669481956">Læse- og skriveadgang til <ph name="VOLUME_NAME" /> er blevet tildelt.</translation>
 <translation id="5678821117681811450">Sender til <ph name="WEB_DRIVE" /></translation>
 <translation id="5678955352098267522">Læs dine data på <ph name="WEBSITE_1" /></translation>
@@ -6735,7 +6739,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6644846457769259194">Opdaterer din enhed (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Slå Hurtig parring fra</translation>
 <translation id="6647228709620733774">Webadresse for tilbagekaldelse af Netscape-certifikatautoritet</translation>
-<translation id="6647441008198474441">De websites, du besøger, sendes til Google for at forudsige, hvilke websites du kunne have lyst til at besøge som det næste</translation>
 <translation id="6647690760956378579">Eksempel på naturlig stemme</translation>
 <translation id="6648911618876616409">En vigtig opdatering er klar til at blive installeret. Log ind for at komme godt i gang.</translation>
 <translation id="6649018507441623493">Vent et øjeblik…</translation>
@@ -7204,6 +7207,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7019546817926942979">Din enhed skal være tilsluttet en oplader. Opgradering af Linux kan dræne dit batteri betydeligt hurtigere. Slut din enhed til en oplader, og prøv igen.</translation>
 <translation id="7019805045859631636">Hurtig</translation>
 <translation id="7022562585984256452">Din startside er blevet konfigureret.</translation>
+<translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">En ny måde at navigere på ved hjælp af bevægelser</translation>
 <translation id="7025190659207909717">Administration af mobildatatjeneste</translation>
 <translation id="7025895441903756761">Sikkerhed og privatliv</translation>
@@ -8980,6 +8984,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8514746246728959655">Prøv med en anden sikkerhedsnøgle</translation>
 <translation id="8514955299594277296">Tillad ikke, at websites gemmer data på din enhed (anbefales ikke)</translation>
 <translation id="8517759303731677493">Rediger…</translation>
+<translation id="8518942514525208851">Skjul ukvemsord</translation>
 <translation id="8519895319663397036">Adgangskoderne kan ikke importeres. Filen må maks. være på 150 kB.</translation>
 <translation id="851991974800416566">Brug hurtigt en stærk adgangskode</translation>
 <translation id="8523493869875972733">Behold ændringerne</translation>

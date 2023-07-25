@@ -2658,6 +2658,7 @@
 <translation id="6691397311652656001">ເພີ່ມພື້ນທີ່ຫວ່າງຫຼາຍກວ່າ <ph name="REQUIRED_FREE_DISK_SPACE" /></translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອຊອກຫາອຸປະກອນຂອງທ່ານໃນບັນຊີ Google</translation>
 <translation id="6698381487523150993">ສ້າງຂຶ້ນແລ້ວ:</translation>
+<translation id="67007264085648978">ຕົວຄວບຄຸມເວລາ</translation>
 <translation id="6702919718839027939">ປັດຈຸບັນ</translation>
 <translation id="6704458454638854812">ຕັ້ງຄ່າຄຸນສົມບັດ "custom_size" ແລ້ວ, ຊື່ທີ່ຄາດຄະເນໄວ້ຈະເປັນ "ກໍານົດເອງ".</translation>
 <translation id="6706005862292023715">ການຮັກສາຜ້າກັ້ງ ແລະ ປ່ອງຢ້ຽມ</translation>
@@ -3296,7 +3297,7 @@
 <translation id="8022542098135319050">ຕົວແທນ ແລະ ບໍລິການທ່ອງທ່ຽວ</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດແຖບ ຈາກນັ້ນກົດ Enter ເພື່ອຕັ້ງ Chrome ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງລະບົບ</translation>
 <translation id="8025119109950072390">ຜູ້ໂຈມຕີໃນເວັບໄຊນີ້ອາດຈະຫຼອກໃຫ້ທ່ານເຮັດບາງຢ່າງທີ່ອັນຕະລາຍ ເຊັ່ນ ການຕິດຕັ້ງຊອບແວ ຫຼື ເປີດເຜີຍຂໍ້ມູນສ່ວນຕົວຂອງທ່ານ (ຕົວຢ່າງ: ລະຫັດຜ່ານ, ເບີໂທລະສັບ ຫຼື ບັດເຄຣດິດ).</translation>
-<translation id="8026334261755873520">ລຶບຂໍ້​ມູນການທ່ອງ​ເນັດ</translation>
+<translation id="8026334261755873520">ລຶບຂໍ້ມູນການທ່ອງເວັບ</translation>
 <translation id="8027077570865220386">ຖາດ 15</translation>
 <translation id="8027585818882015174">ປຸ່ມເອີ້ນໃຊ້ການກວດສອບຄວາມປອດໄພຂອງ Chrome, ເປີດນຳໃຊ້ເພື່ອເອີ້ນໃຊ້ການກວດສອບຄວາມປອດໄພໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອສ້າງແບບຟອມໃໝ່ໃນ Google Forms ໄດ້ຢ່າງວ່ອງໄວ</translation>

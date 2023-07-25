@@ -388,6 +388,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3311748811247479259">Naka-off</translation>
 <translation id="3324193307694657476">Address 2</translation>
 <translation id="3328801116991980348">Impormasyon ng site</translation>
+<translation id="3340938510625667914">Mga Pagkilos sa Chrome</translation>
 <translation id="3344485292736684439">{count,plural, =1{Na-save ang bookmark sa "{title}" sa iyong account, {email}}one{Na-save ang mga bookmark sa "{title}" sa iyong account, {email}}other{Na-save ang mga bookmark sa "{title}" sa iyong account, {email}}}</translation>
 <translation id="3371831930909698441">Available ang pagsasalin. May mga opsyon malapit sa ibaba ng screen.</translation>
 <translation id="3377063233124932127">Nasa taas na ngayon ang iyong mga naka-save na bookmark, password, at higit pa.</translation>
@@ -935,6 +936,7 @@ Subukang gumamit ng natatanging password para sa bawat site.</translation>
 <translation id="6628106477656132239">Invalid ang Petsa ng Pag-expire</translation>
 <translation id="6634432609054530164">Na-off ng iyong organisasyon ang Incognito mode</translation>
 <translation id="6638511529934826365">I-zoom ang Text…</translation>
+<translation id="6640268266988685324">Bukas na Tab</translation>
 <translation id="6642362222295953972">Lumipat sa kasalukuyang tab</translation>
 <translation id="6643016212128521049">I-clear</translation>
 <translation id="6645899968535965230">QR Code: <ph name="PAGE_TITLE" /></translation>

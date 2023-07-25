@@ -51,6 +51,7 @@
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> har brukt Chromium og etterlatt seg bokmerker, passord og andre innstillinger på denne enheten.</translation>
 <translation id="3661862315467204831">Åpne Chromium-innstillingene i iOS, trykk på «Standard nettleserapp», og velg Chromium.</translation>
 <translation id="372658070733623520">For å bruke og lagre Chromium-data i Google-kontoen din, bekreft at det er deg.</translation>
+<translation id="3780779443901618967">Advarer deg om farlige nettsteder, også nettsteder som Google ikke kjenner til fra før, ved å analysere mer data fra nettsteder enn ved standardbeskyttelse. Du kan velge å hoppe over Chromium-advarsler.</translation>
 <translation id="3805899903892079518">Chromium har ikke tilgang til bildene eller videoene dine. Slå på tilgangen i iOS-innstillingene &gt; Personvern &gt; Bilder.</translation>
 <translation id="3827545470516145620">Du får standard sikkerhetsbeskyttelse på denne enheten</translation>
 <translation id="3955621079070267756">Åpne Chromium fra hvilken som helst app</translation>
@@ -94,6 +95,7 @@
 <translation id="632825460376924298">Tillat Chromium-pålogging</translation>
 <translation id="6337530241089703714">Velg om du vil slette Chromium-dataene dine fra denne enheten eller beholde dem</translation>
 <translation id="6424492062988593837">Chromium har blitt enda bedre. En ny versjon er nå tilgjengelig.</translation>
+<translation id="6563921047760808519">Finn ut mer om <ph name="BEGIN_LINK" />hvordan Chromium holder dataene dine private<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">Chromium støtter nå brukerinnstillinger for den administrerte kontoen din</translation>
 <translation id="6752854822223394465">Organisasjonen din konfigurerer Chromium …</translation>
 <translation id="6820823224820483452">Chromium kunne ikke sjekke alle passordene. Prøv på nytt i morgen.</translation>

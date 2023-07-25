@@ -37,6 +37,7 @@
 <translation id="4133493477912226187">Šķiet, ka <ph name="NUMBER_OF_TABS" /> cilnes ir saistītas. Vai grupēt tās?</translation>
 <translation id="4212246570487010370">Turpiniet pārlūkošanu</translation>
 <translation id="4648718555153979859">Jūsu cilnes šeit ir grupētas kopā</translation>
+<translation id="4763557557015254160">{INCOGNITO_TABS_COUNT,plural, =0{Aizvērtās cilnes varat atrast Chrome galvenās izvēlnes sadaļā “Nesen atvērtas cilnes”.}=1{Aizvērtās cilnes varat atrast Chrome galvenās izvēlnes sadaļā “Nesen atvērtas cilnes”. Inkognito cilne nebūs pieejama.}zero{Aizvērtās cilnes varat atrast Chrome galvenās izvēlnes sadaļā “Nesen atvērtas cilnes”. # inkognito cilnes nebūs pieejamas.}one{Aizvērtās cilnes varat atrast Chrome galvenās izvēlnes sadaļā “Nesen atvērtas cilnes”. # inkognito cilne nebūs pieejama.}other{Aizvērtās cilnes varat atrast Chrome galvenās izvēlnes sadaļā “Nesen atvērtas cilnes”. # inkognito cilnes nebūs pieejamas.}}</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> atsauksme)}zero{(<ph name="REVIEWS_COUNT_MANY" /> atsauksmju)}one{(<ph name="REVIEWS_COUNT_MANY" /> atsauksme)}other{(<ph name="REVIEWS_COUNT_MANY" /> atsauksmes)}}</translation>
 <translation id="4850886885716139402">Skatīt</translation>
 <translation id="4870911314065352661">Vai aizvērt visas cilnes?</translation>

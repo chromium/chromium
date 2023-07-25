@@ -4381,6 +4381,7 @@ Gli indicatori dei dispositivi possono includere informazioni su browser, sistem
 <translation id="4623167406982293031">Verifica account</translation>
 <translation id="4623189117674524348">Il sistema non è riuscito ad autorizzare l'accesso all'API per questo dispositivo.</translation>
 <translation id="4623341761454569602">In Gestore delle password di Google <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">Tema a colori</translation>
 <translation id="4625078469366263107">Attiva app</translation>
 <translation id="4625905218692741757">Colore predefinito grigio</translation>
 <translation id="4627427111733173920">Cookie bloccati</translation>
@@ -5479,7 +5480,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5571832155627049070">Personalizza il tuo profilo</translation>
 <translation id="5572166921642484567">Scegli modalità combinazione di colori</translation>
 <translation id="5572252023412311448">Mostra i dettagli del sito per <ph name="SITE_GROUP" /></translation>
-<translation id="5572648434713976849">Riceverai suggerimenti migliori nella barra degli indirizzi</translation>
 <translation id="557506220935336383">Visualizza autorizzazioni per le estensioni per altri siti</translation>
 <translation id="5575473780076478375">Estensione in incognito: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Si è verificato un problema con la richiesta di registrazione alla modalità demo.</translation>
@@ -5596,6 +5596,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="567740581294087470">Quale tipo di feedback vuoi fornire?</translation>
 <translation id="5677503058916217575">Lingua della pagina:</translation>
 <translation id="5677928146339483299">Autorizzazione bloccata</translation>
+<translation id="5677946354068040947">altre opzioni</translation>
 <translation id="5678550637669481956">È stato concesso l'accesso in lettura e scrittura a <ph name="VOLUME_NAME" />.</translation>
 <translation id="5678821117681811450">Invio a <ph name="WEB_DRIVE" /> in corso…</translation>
 <translation id="5678955352098267522">Lettura dei dati su <ph name="WEBSITE_1" /></translation>
@@ -6720,7 +6721,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6644846457769259194">Aggiornamento del dispositivo in corso (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Disattiva l'Accoppiamento rapido</translation>
 <translation id="6647228709620733774">URL di revoca dell'autorità di certificazione Netscape</translation>
-<translation id="6647441008198474441">Gli URL che visiti vengono inviati a Google per prevedere quali siti potresti visitare in futuro</translation>
 <translation id="6647690760956378579">Anteprima della voce naturale</translation>
 <translation id="6648911618876616409">Un aggiornamento critico è pronto per essere installato. Accedi per iniziare.</translation>
 <translation id="6649018507441623493">Solo un secondo...</translation>
@@ -7189,6 +7189,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7019546817926942979">Devi collegare il dispositivo alla corrente. L'upgrade di Linux potrebbe comportare un notevole consumo della batteria. Collega il dispositivo a un caricabatterie e riprova.</translation>
 <translation id="7019805045859631636">Veloce</translation>
 <translation id="7022562585984256452">La tua pagina iniziale è stata impostata.</translation>
+<translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">Scopri un nuovo modo per navigare tramite gesti</translation>
 <translation id="7025190659207909717">Gestione del servizio dati mobile</translation>
 <translation id="7025895441903756761">Sicurezza e privacy</translation>

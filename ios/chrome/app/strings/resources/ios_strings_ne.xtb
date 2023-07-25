@@ -388,6 +388,7 @@
 <translation id="3311748811247479259">निष्क्रिय छ</translation>
 <translation id="3324193307694657476">ठेगाना 2</translation>
 <translation id="3328801116991980348">साइट जानकारी</translation>
+<translation id="3340938510625667914">Chrome सम्बन्धित कारबाही</translation>
 <translation id="3344485292736684439">{count,plural, =1{यो बुकमार्क तपाईंको खाता ({email}) मा भएको "{title}" मा सेभ गरियो}other{यी बुकमार्कहरू तपाईंको खाता ({email}) मा भएको "{title}" मा सेभ गरिए}}</translation>
 <translation id="3371831930909698441">अनुवाद उपलब्ध छ। विकल्पहरू स्क्रिनका पुछारतिर उपलब्ध छन्।</translation>
 <translation id="3377063233124932127">अब तपाईंले सेभ गर्नुभएका बुकमार्क तथा पासवर्डलगायतका कुराहरू सिरानमा देखिन्छन्।</translation>
@@ -935,6 +936,7 @@
 <translation id="6628106477656132239">म्याद सकिने मिति अमान्य छ</translation>
 <translation id="6634432609054530164">तपाईंको सङ्गठनले इन्कोग्निटो मोड अफ गरेको छ</translation>
 <translation id="6638511529934826365">पाठ जुम गर्नुहोस्…</translation>
+<translation id="6640268266988685324">ट्याब खोल्नुहोस्</translation>
 <translation id="6642362222295953972">विद्यमान ट्याबमा जानुहोस्</translation>
 <translation id="6643016212128521049">खालि गर्नुहोस्</translation>
 <translation id="6645899968535965230">QR कोड: <ph name="PAGE_TITLE" /></translation>

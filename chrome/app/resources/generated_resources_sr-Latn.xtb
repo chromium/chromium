@@ -4236,6 +4236,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4508150454272293946">Dozvolite aplikacijama i veb-stranicama da koriste kamere povezane sa ovim uređajem. Ako i dalje imate problem sa kamerom, probajte da ponovo pokrenete aplikaciju ili osvežite veb-stranicu.</translation>
 <translation id="450867954911715010">Podešavanja pristupačnosti</translation>
 <translation id="4508765956121923607">Prikaži i&amp;zvor</translation>
+<translation id="4509277363725254222">Kada delite kopiju <ph name="BEGIN_BOLD_USERNAME" />korisničkog imena<ph name="END_BOLD_USERNAME" /> i <ph name="BEGIN_BOLD_PASSWORD" />lozinke<ph name="END_BOLD_PASSWORD" />, član porodice može da ih popuni pomoću Google menadžera lozinki</translation>
 <translation id="4509421746503122514">Ponovo pokrenite radi ažuriranja</translation>
 <translation id="4510195992002502722">Slanje povratnih informacija nije uspelo. Ponovo se šalju…</translation>
 <translation id="4510479820467554003">Lista naloga roditelja</translation>
@@ -4375,6 +4376,7 @@ Signali uređaja mogu da obuhvataju informacije o pregledaču, OS-u, uređaju, i
 <translation id="4623167406982293031">Verifikujte nalog</translation>
 <translation id="4623189117674524348">Sistem nije uspeo da odobri pristup API-ju za ovaj uređaj.</translation>
 <translation id="4623341761454569602">U Google menadžeru lozinki <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
+<translation id="4624054169152573743">Tema sa bojom</translation>
 <translation id="4625078469366263107">Omogući aplikaciju</translation>
 <translation id="4625905218692741757">Podrazumevana siva boja</translation>
 <translation id="4627427111733173920">Kolačići su blokirani</translation>
@@ -4806,6 +4808,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="4994426888044765950">Ako pritisnete i zadržite taster, znak tastera će se ponoviti</translation>
 <translation id="4994754230098574403">Podešava se</translation>
 <translation id="4995293419989417004">Saznajte više o temama oglasa</translation>
+<translation id="4995676741161760215">Uključeno, dodatak je omogućen</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Nije pronađena nijedna virtuelna mašina <ph name="VM_TYPE" />}=1{Pronađena je 1 virtuelna mašina<ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}one{Pronađena je{NUM_VMS} virtuelna mašina<ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}few{Pronađene su{NUM_VMS} virtuelne mašine<ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}other{Pronađeno je{NUM_VMS} virtuelnih mašina<ph name="VM_TYPE" />: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Nema internet veze.</translation>
 <translation id="4998430619171209993">Uključeno</translation>
@@ -5357,6 +5360,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="5474859849784484111"><ph name="MANAGER" /> zahteva da se odmah povežete na WiFi i da preuzmete ažuriranje. Ili preuzmite pomoću veze sa ograničenjem (možda se naplaćuju troškovi).</translation>
 <translation id="5481273127572794904">Nije im dozvoljeno da automatski preuzimaju više fajlova</translation>
 <translation id="5481941284378890518">Dodaj obližnje štampače</translation>
+<translation id="5484462543003267273">Upravljaj porodicom</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> zahteva da napravite rezervnu kopiju podataka i da vratite ovaj <ph name="DEVICE_TYPE" /> danas. <ph name="LINK_BEGIN" />Pogledajte detalje<ph name="LINK_END" />}one{<ph name="MANAGER" /> zahteva da napravite rezervnu kopiju podataka i da vratite ovaj <ph name="DEVICE_TYPE" /> u roku od {NUM_DAYS} dana.<ph name="LINK_BEGIN" />Pogledajte detalje<ph name="LINK_END" />}few{<ph name="MANAGER" /> zahteva da napravite rezervnu kopiju podataka i da vratite ovaj <ph name="DEVICE_TYPE" /> u roku od {NUM_DAYS} dana.<ph name="LINK_BEGIN" />Pogledajte detalje<ph name="LINK_END" />}other{<ph name="MANAGER" /> zahteva da napravite rezervnu kopiju podataka i da vratite ovaj <ph name="DEVICE_TYPE" /> u roku od {NUM_DAYS} dana.<ph name="LINK_BEGIN" />Pogledajte detalje<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Dodaj aplikaciju</translation>
 <translation id="5485435764083510385">Željeni jezik titla</translation>
@@ -5470,7 +5474,6 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="5571832155627049070">Prilagodite profil</translation>
 <translation id="5572166921642484567">Izaberite režim kombinacije boja</translation>
 <translation id="5572252023412311448">Pregledajte detalje sajta za <ph name="SITE_GROUP" /></translation>
-<translation id="5572648434713976849">Dobijaćete poboljšane predloge na traci za adresu</translation>
 <translation id="557506220935336383">Pogledajte dozvole za dodatke za druge sajtove</translation>
 <translation id="5575473780076478375">Dodatak u režimu bez arhiviranja: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Došlo je do problema sa zahtevom za registraciju za režim demonstracije.</translation>
@@ -5590,6 +5593,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="567740581294087470">Kakvu vrstu povratnih informacija šaljete?</translation>
 <translation id="5677503058916217575">Jezik stranice:</translation>
 <translation id="5677928146339483299">Blokirano</translation>
+<translation id="5677946354068040947">još opcija</translation>
 <translation id="5678550637669481956">Odobren je pristup za <ph name="VOLUME_NAME" /> radi čitanja i pisanja.</translation>
 <translation id="5678821117681811450">Šalje se na: <ph name="WEB_DRIVE" /></translation>
 <translation id="5678955352098267522">Čitanje vaših podataka na <ph name="WEBSITE_1" /></translation>
@@ -6719,7 +6723,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6644846457769259194">Ažuriranje uređaja (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Isključi Brzo uparivanje</translation>
 <translation id="6647228709620733774">URL adresa za opoziv autoriteta za izdavanje Netscape sertifikata</translation>
-<translation id="6647441008198474441">URL-ovi koje posećujete se šalju Google-u da bi se predvideli sajtovi koje ćete možda sledeće posetiti</translation>
 <translation id="6647690760956378579">Pregled prirodnog glasa</translation>
 <translation id="6648911618876616409">Važno ažuriranje je spremno za instalaciju. Prijavite se da biste započeli.</translation>
 <translation id="6649018507441623493">Samo trenutak…</translation>
@@ -7188,6 +7191,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7019546817926942979">Uređaj treba da bude priključen. Nadogradnjom Linux-a možete značajno da ispraznite bateriju. Povežite uređaj sa punjačem i probajte ponovo.</translation>
 <translation id="7019805045859631636">Brzo</translation>
 <translation id="7022562585984256452">Početna stranica je podešena.</translation>
+<translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">Predstavljamo novi način za virtuelno kretanje pomoću pokreta</translation>
 <translation id="7025190659207909717">Upravljanje uslugom mobilnih podataka</translation>
 <translation id="7025895441903756761">Bezbednost i privatnost</translation>
@@ -8965,6 +8969,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8514746246728959655">Probajte sa nekim drugim bezbednosnim ključem</translation>
 <translation id="8514955299594277296">Ne dozvoljavajte sajtovima da čuvaju podatke na uređaju (ne preporučuje se)</translation>
 <translation id="8517759303731677493">Izmeni…</translation>
+<translation id="8518942514525208851">Sakrij vulgarnosti</translation>
 <translation id="8519895319663397036">Uvoz lozinki nije uspeo. Veličina fajla mora da bude manja od 150 kB.</translation>
 <translation id="851991974800416566">Brzo upotrebite jaku lozinku</translation>
 <translation id="8523493869875972733">Zadrži promene</translation>

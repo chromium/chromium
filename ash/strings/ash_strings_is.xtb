@@ -146,6 +146,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1576623706766186887">Minnka þegar kveikt er á stækkunargleri</translation>
 <translation id="1586324912145647027">Opna skrifborð 1 til 8</translation>
 <translation id="1589090746204042747">Fengið aðgang að öllum aðgerðum þínum í þessari lotu</translation>
+<translation id="1592682369233288537">Næsta skrifborð: <ph name="NEXT_DESK_NAME" />, notaðu leitarlykilinn+bilslá til að virkja.</translation>
 <translation id="1604857178818051494">Gera hlé á efni</translation>
 <translation id="1610778689852195798">„Afturkalla“</translation>
 <translation id="1611993646327628135">Kveikt</translation>
@@ -157,6 +158,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1647986356840967552">Fyrri síða</translation>
 <translation id="1651914502370159744">Opna síðu ferils</translation>
 <translation id="1654477262762802994">Hefja raddfyrirspurn</translation>
+<translation id="1662667383227796099">Leitaðu að skrám, forritum og fleiru í ræsiforritinu. Þú getur einnig fengið svör við spurningum um Chromebook-tækið þitt.</translation>
 <translation id="1668469839109562275">Innbyggt VPN</translation>
 <translation id="1675844249244994876">Uppfæra hægri glugga</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> eftir</translation>
@@ -560,6 +562,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3477079411857374384">Control-Shift-bilslá</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> sendistyrkur</translation>
 <translation id="348799646910989694">Hilla falin sjálfkrafa</translation>
+<translation id="3503243067695520519">Hæ. Chromebook-tæki eru örlítið frábrugðin öðrum tækjum.</translation>
 <translation id="3505066820268455558">Rafhlaða í hleðslu</translation>
 <translation id="3509391053705095206">Ekki tókst að finna símann þinn. Gakktu úr skugga um að kveikt sé á Bluetooth í símanum.</translation>
 <translation id="3510164367642747937">Auðkenna músarbendil</translation>
@@ -684,6 +687,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="3977512764614765090">Rafhlaða í <ph name="PERCENTAGE" />% og í hleðslu.</translation>
 <translation id="3984536049089846927">Næsta síða</translation>
 <translation id="3986082989454912832">Svara</translation>
+<translation id="3990002060657467458">Þú finnur algengar stýringar á borð við Wi-Fi, Bluetooth og hljóðstyrkur í flýtistillingunum. Hér geturðu einnig tekið skjámyndir.</translation>
 <translation id="3995138139523574647">USB-C tæki (tengi hægra megin að aftan)</translation>
 <translation id="40062176907008878">Handskrift</translation>
 <translation id="4017989525502048489">Laser-bendill</translation>
@@ -747,6 +751,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="4269883910223712419">Stjórnandi þessa tækis getur:</translation>
 <translation id="4274537685965975248">Flýtilyklinum „Ctrl + Alt + ör niður“ hefur verið breytt. Ýttu á <ph name="LAUNCHER_KEY_NAME" />-lykilinn + ör til hægri til að nota End-lykilinn.</translation>
 <translation id="4275283744500212192">Opna valkosti fyrir uppsetningu glugga</translation>
+<translation id="4278138729651139331">Sérsníddu Chromebook-tækið þitt í stillingunum. Prófaðu að skipta um veggfóður eða stilla skjávara.</translation>
 <translation id="4279490309300973883">Speglun</translation>
 <translation id="4280601795273309128">Öryggisuppfærslum er lokið. Uppfærðu tækið þitt.</translation>
 <translation id="4283888303416325161">Sláðu inn aðgangsorð til að auka öryggið</translation>
@@ -803,6 +808,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="4505050298327493054">Virkt svæði.</translation>
 <translation id="450584155212756404">Forritararás</translation>
 <translation id="4513946894732546136">Ábendingar</translation>
+<translation id="4516212064498225455">Núverandi skrifborð: <ph name="CURRENT_DESK_NAME" />, notaðu leitarlykilinn+bilslá til að opna valmynd allra skrifborða.</translation>
 <translation id="4518404433291145981">Taktu símann þinn fyrst úr lás áður en þú tekur Chromebook úr lás</translation>
 <translation id="4527045527269911712">Bluetooth-tækið „<ph name="DEVICE_NAME" />“ vill fá heimild til að parast.</translation>
 <translation id="4533343294786968049">Lengir rafhlöðuendingu. Rafhlaðan verður fullhlaðin fyrir <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -877,6 +883,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="4813311884204119883">Dragðu tengilinn yfir á auðan hluta á fliparæmunni</translation>
 <translation id="4814539958450445987">Innskráningarskjár</translation>
 <translation id="481455355267255546">Næst á dagskrá</translation>
+<translation id="4826588772550366629">myndavél og hljóðnema</translation>
 <translation id="4831034276697007977">Viltu örugglega slökkva á sjálfvirkum smellum?</translation>
 <translation id="4849058404725798627">Auðkenna hlut með lyklaborðsfókus</translation>
 <translation id="485592688953820832">Engin aðgerð (hlé)</translation>
@@ -970,6 +977,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="5207949376430453814">Auðkenna textainnskotsmerki</translation>
 <translation id="5208059991603368177">Kveikt</translation>
 <translation id="5216991270656129561">Slökkt til kl. <ph name="TIME" /></translation>
+<translation id="5217646019792206018">Næsta skrifborð: <ph name="NEXT_DESK_NAME" />, notaðu leitarlykilinn+bilslá eða flýtileiðina shift+leitarlykil+<ph name="NEXT_DESK_INDEX" /> til að virkja.</translation>
 <translation id="5221423477036820198">Notaðu símstöð til að senda og svara skilaboðum símans á fljótlegan hátt.</translation>
 <translation id="5222676887888702881">Skrá út</translation>
 <translation id="5229343007215035173">Kveikja/slökkva á persónuverndarskjá</translation>
@@ -1035,6 +1043,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="550391772491508736">Halda vörpun áfram</translation>
 <translation id="5506975627792768506">Kveikja eða slökkva á stækkunargleri</translation>
 <translation id="5512042095225963688">Eyða fyrra orði</translation>
+<translation id="5518068085000130971">Þetta voru grunnatriðin! Frekari upplýsingar og aðstoð er að finna í innbyggða forritinu okkar „Kanna“. Þar finnurðu ábendingar til að hefjast handa, forrit sem mælt er með, sértilboð og nýjustu Chromebook-eiginleikana.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Kerfisstjórinn hefur fjarlægt alla eSIM-prófíla. Hafðu samband við kerfisstjórann til að fá frekari upplýsingar.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> tengist.</translation>
@@ -1360,6 +1369,7 @@ Ný uppsetning</translation>
 <translation id="6896758677409633944">Afrita</translation>
 <translation id="6901883536534621389">Prófaðu að nota bendingar til að fletta</translation>
 <translation id="6912841030378044227">Fókusa á veffangastiku</translation>
+<translation id="6912901278692845878">Stutt kynning</translation>
 <translation id="6919251195245069855">Ekki var hægt að bera kennsl á snjallkortið þitt. Reyndu aftur.</translation>
 <translation id="6920245099716267363">Kveikja/slökkva á heitum reit. Kveikt er á heitum reit, 1 tæki er tengt.</translation>
 <translation id="6931576957638141829">Vista í</translation>
@@ -1666,6 +1676,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8297006494302853456">Veikt</translation>
 <translation id="8308637677604853869">Fyrri valmynd</translation>
 <translation id="830868413617744215">Beta</translation>
+<translation id="8312557488404088015">Horfðu á stutta kynningu til að allt fari hnökralaust af stað. Þessi 6 skref taka aðeins nokkrar mínútur.</translation>
 <translation id="8314772463905284467">Kveikt er á hástafalás</translation>
 <translation id="8315514906653279104">Kveikir...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -1715,6 +1726,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8517041960877371778">Ekki er víst að <ph name="DEVICE_TYPE" /> hlaðist á meðan kveikt er á tölvunni.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{<ph name="APP_NAME" /> stjórnar inntaki hljóðnema}one{# forrit stjórnar inntaki hljóðnema}other{# forrit stjórna inntaki hljóðnema}}</translation>
 <translation id="8535393432370007982">Afturkalla röðun eftir lit</translation>
+<translation id="853768060447955562">Fyrra skrifborð: <ph name="PREVIOUS_DESK_NAME" />, notaðu leitarlykilinn+bilslá eða flýtileiðina shift+leitarlykil+<ph name="PREVIOUS_DESK_INDEX" /> til að virkja.</translation>
 <translation id="8541078764854166027">Myndavélarrammi</translation>
 <translation id="8542053257095774575">Engin vistuð skrifborð eða sniðmát</translation>
 <translation id="8546059259582788728">Röðun var afturkölluð</translation>
@@ -1866,11 +1878,13 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="925832987464884575">Fela forskoðun</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> krefst þess að þú uppfærir <ph name="DEVICE_TYPE" /> strax</translation>
 <translation id="938963181863597773">Hvað er á dagskránni hjá mér?</translation>
+<translation id="943067377221312471">Fyrra skrifborð: <ph name="PREVIOUS_DESK_NAME" />, notaðu leitarlykilinn+bilslá til að virkja.</translation>
 <translation id="945383118875625837">Dragðu tengil á bókamerkjastikuna</translation>
 <translation id="945522503751344254">Senda ábendingu</translation>
 <translation id="951991426597076286">Hafna</translation>
 <translation id="953431725143473984">Slökkva á tækinu?</translation>
 <translation id="954052413789300507">Ekki nægilegt pláss fyrir <ph name="FILENAME" />. Losaðu um pláss.</translation>
+<translation id="968627661524972577">Notaðu forrit til að gera allt sem þú þarft í Chromebook-tækinu þínu. Þú finnur forritin þín í ræsiforritinu. Þú getur einnig ýtt á ræsilykilinn á lyklaborðinu.</translation>
 <translation id="974545358917229949">Sýnir niðurstöður <ph name="RESULT_COUNT" /> fyrir „<ph name="QUERY" />“</translation>
 <translation id="98120814841227350">Fara aftast í skjal</translation>
 <translation id="987589956647469042">Kveikt er á farsímagögnum</translation>
