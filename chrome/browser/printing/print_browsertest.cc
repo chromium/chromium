@@ -331,6 +331,7 @@ class TestPrintRenderFrame
   mojo::AssociatedReceiver<mojom::PrintRenderFrame> receiver_{this};
 };
 
+// Lives on the UI thread.
 class TestPrintViewManagerForDLP : public TestPrintViewManager {
  public:
   // Used to simulate Data Leak Prevention polices and possible user actions.
@@ -371,21 +372,27 @@ class TestPrintViewManagerForDLP : public TestPrintViewManager {
                              RestrictionLevel restriction_level)
       : TestPrintViewManager(web_contents),
         restriction_level_(restriction_level) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     PrintViewManager::SetReceiverImplForTesting(this);
   }
   TestPrintViewManagerForDLP(const TestPrintViewManagerForDLP&) = delete;
   TestPrintViewManagerForDLP& operator=(const TestPrintViewManagerForDLP&) =
       delete;
   ~TestPrintViewManagerForDLP() override {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     PrintViewManager::SetReceiverImplForTesting(nullptr);
   }
 
-  PrintAllowance GetPrintAllowance() const { return allowance_; }
+  PrintAllowance GetPrintAllowance() const {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    return allowance_;
+  }
 
  private:
   void RejectPrintPreviewRequestIfRestricted(
       content::GlobalRenderFrameHostId rfh_id,
       base::OnceCallback<void(bool)> callback) override {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     switch (restriction_level_) {
       case RestrictionLevel::kNotSet:
       case RestrictionLevel::kWarnAllow:
@@ -399,11 +406,13 @@ class TestPrintViewManagerForDLP : public TestPrintViewManager {
   }
 
   void PrintPreviewRejectedForTesting() override {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     run_loop_->Quit();
     allowance_ = PrintAllowance::kDisallowed;
   }
 
   void PrintPreviewAllowedForTesting() override {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     run_loop_->Quit();
     allowance_ = PrintAllowance::kAllowed;
   }
@@ -485,6 +494,7 @@ void PrintBrowserTest::TearDown() {
 }
 
 void PrintBrowserTest::AddPrinter(const std::string& printer_name) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   PrinterBasicInfo printer_info(
       printer_name,
       /*display_name=*/"test printer",
@@ -505,6 +515,7 @@ void PrintBrowserTest::AddPrinter(const std::string& printer_name) {
 
 void PrintBrowserTest::SetPrinterNameForSubsequentContexts(
     const std::string& printer_name) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   test_printing_context_factory_.SetPrinterNameForSubsequentContexts(
       printer_name);
 }
@@ -536,6 +547,7 @@ content::WebContents*
 PrintBrowserTest::PrintAndWaitUntilPreviewIsReadyAndMaybeLoaded(
     const PrintParams& params,
     bool wait_for_loaded) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   TestPrintPreviewObserver print_preview_observer(wait_for_loaded,
                                                   params.pages_per_sheet);
 
@@ -556,20 +568,24 @@ PrintBrowserTest::PrintAndWaitUntilPreviewIsReadyAndMaybeLoaded(
 // The following are helper functions for having a wait loop in the test and
 // exit when all expected messages are received.
 void PrintBrowserTest::SetNumExpectedMessages(unsigned int num) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   num_expected_messages_ = num;
 }
 
 void PrintBrowserTest::ResetNumReceivedMessages() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   num_received_messages_ = 0;
 }
 
 void PrintBrowserTest::WaitUntilCallbackReceived() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::RunLoop run_loop;
   quit_callback_ = run_loop.QuitClosure();
   run_loop.Run();
 }
 
 void PrintBrowserTest::CheckForQuit() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (++num_received_messages_ != num_expected_messages_) {
     return;
   }
@@ -581,6 +597,7 @@ void PrintBrowserTest::CheckForQuit() {
 void PrintBrowserTest::CreateTestPrintRenderFrame(
     content::RenderFrameHost* frame_host,
     content::WebContents* web_contents) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   frame_content_.emplace(
       frame_host, std::make_unique<TestPrintRenderFrame>(
                       frame_host, web_contents, kDefaultDocumentCookie,
@@ -598,6 +615,7 @@ PrintBrowserTest::GetDefaultPrintFrameParams() {
 
 const mojo::AssociatedRemote<mojom::PrintRenderFrame>&
 PrintBrowserTest::GetPrintRenderFrame(content::RenderFrameHost* rfh) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!remote_) {
     rfh->GetRemoteAssociatedInterfaces()->GetInterface(&remote_);
   }
@@ -606,12 +624,14 @@ PrintBrowserTest::GetPrintRenderFrame(content::RenderFrameHost* rfh) {
 
 TestPrintRenderFrame* PrintBrowserTest::GetFrameContent(
     content::RenderFrameHost* host) const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto iter = frame_content_.find(host);
   return iter != frame_content_.end() ? iter->second.get() : nullptr;
 }
 
 void PrintBrowserTest::OverrideBinderForTesting(
     content::RenderFrameHost* render_frame_host) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   render_frame_host->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
       mojom::PrintRenderFrame::Name_,
       base::BindRepeating(
@@ -628,6 +648,7 @@ void PrintBrowserTest::OnNewDocument(const PrintSettings& settings) {
 }
 
 void PrintBrowserTest::ShowPrintErrorDialog() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   ++error_dialog_shown_count_;
   CheckForQuit();
 }
