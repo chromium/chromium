@@ -71,20 +71,12 @@ class MenuScrollButton : public View {
                      pref_height_);
   }
 
-  void OnThemeChanged() override {
-    View::OnThemeChanged();
-    arrow_color_ = GetColorProvider()->GetColor(ui::kColorMenuItemForeground);
-  }
-
   bool CanDrop(const OSExchangeData& data) override {
-    DCHECK(host_->GetMenuItem()->GetMenuController());
     return true;  // Always return true so that drop events are targeted to us.
   }
 
   void OnDragEntered(const ui::DropTargetEvent& event) override {
-    DCHECK(host_->GetMenuItem()->GetMenuController());
-    host_->GetMenuItem()->GetMenuController()->OnDragEnteredScrollButton(
-        host_, is_up_);
+    GetMenuController()->OnDragEnteredScrollButton(host_, is_up_);
   }
 
   int OnDragUpdated(const ui::DropTargetEvent& event) override {
@@ -92,8 +84,7 @@ class MenuScrollButton : public View {
   }
 
   void OnDragExited() override {
-    DCHECK(host_->GetMenuItem()->GetMenuController());
-    host_->GetMenuItem()->GetMenuController()->OnDragExitedScrollButton(host_);
+    GetMenuController()->OnDragExitedScrollButton(host_);
   }
 
   DropCallback GetDropCallback(const ui::DropTargetEvent& event) override {
@@ -101,54 +92,52 @@ class MenuScrollButton : public View {
   }
 
   void OnPaint(gfx::Canvas* canvas) override {
-    const MenuConfig& config = MenuConfig::instance();
-
     // The background.
-    gfx::Rect item_bounds(0, 0, width(), height());
-    ui::NativeTheme::ExtraParams extra;
-    GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(),
+    const auto* const color_provider = GetColorProvider();
+    GetNativeTheme()->Paint(canvas->sk_canvas(), color_provider,
                             ui::NativeTheme::kMenuItemBackground,
-                            ui::NativeTheme::kNormal, item_bounds, extra);
+                            ui::NativeTheme::kNormal, GetLocalBounds(),
+                            ui::NativeTheme::ExtraParams());
 
     // Then the arrow.
-    int x = width() / 2;
+    const int x = width() / 2;
+    const MenuConfig& config = MenuConfig::instance();
     int y = (height() - config.scroll_arrow_height) / 2;
-
-    int x_left = x - config.scroll_arrow_height;
-    int x_right = x + config.scroll_arrow_height;
-    int y_bottom;
-
+    int y_bottom = y + config.scroll_arrow_height;
     if (!is_up_) {
-      y_bottom = y;
-      y = y_bottom + config.scroll_arrow_height;
-    } else {
-      y_bottom = y + config.scroll_arrow_height;
+      std::swap(y, y_bottom);
     }
+
     SkPath path;
     path.setFillType(SkPathFillType::kWinding);
     path.moveTo(SkIntToScalar(x), SkIntToScalar(y));
-    path.lineTo(SkIntToScalar(x_left), SkIntToScalar(y_bottom));
-    path.lineTo(SkIntToScalar(x_right), SkIntToScalar(y_bottom));
+    path.lineTo(SkIntToScalar(x - config.scroll_arrow_height),
+                SkIntToScalar(y_bottom));
+    path.lineTo(SkIntToScalar(x + config.scroll_arrow_height),
+                SkIntToScalar(y_bottom));
     path.lineTo(SkIntToScalar(x), SkIntToScalar(y));
     cc::PaintFlags flags;
     flags.setStyle(cc::PaintFlags::kFill_Style);
     flags.setAntiAlias(true);
-    flags.setColor(arrow_color_);
+    flags.setColor(color_provider->GetColor(ui::kColorMenuItemForeground));
     canvas->DrawPath(path, flags);
   }
 
  private:
+  MenuController* GetMenuController() {
+    auto* const menu_controller = host_->GetMenuItem()->GetMenuController();
+    CHECK(menu_controller);
+    return menu_controller;
+  }
+
   // SubmenuView we were created for.
-  raw_ptr<SubmenuView> host_;
+  const raw_ptr<SubmenuView> host_;
 
   // Direction of the button.
-  bool is_up_;
+  const bool is_up_;
 
   // Preferred height.
-  int pref_height_;
-
-  // Color for the arrow to scroll.
-  SkColor arrow_color_;
+  const int pref_height_;
 };
 
 BEGIN_METADATA(MenuScrollButton, View)

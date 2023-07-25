@@ -14,6 +14,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -447,9 +448,7 @@ struct MenuController::MenuPart {
 
 class MenuController::MenuScrollTask {
  public:
-  MenuScrollTask() {
-    pixels_per_second_ = MenuItemView::pref_menu_height() * 20;
-  }
+  MenuScrollTask() = default;
 
   MenuScrollTask(const MenuScrollTask&) = delete;
   MenuScrollTask& operator=(const MenuScrollTask&) = delete;
@@ -459,19 +458,20 @@ class MenuController::MenuScrollTask {
       StopScrolling();
       return;
     }
-    DCHECK(part.submenu);
-    SubmenuView* new_menu = part.submenu;
-    bool new_is_up = part.type == MenuPartType::kScrollUp;
-    if (new_menu == submenu_ && is_scrolling_up_ == new_is_up)
+
+    SubmenuView* const new_menu = part.submenu;
+    CHECK(new_menu);
+    const bool new_is_up = part.type == MenuPartType::kScrollUp;
+    if (std::exchange(submenu_, new_menu) == new_menu &&
+        std::exchange(is_scrolling_up_, new_is_up) == new_is_up) {
       return;
+    }
 
     start_scroll_time_ = base::Time::Now();
-    start_y_ = part.submenu->GetVisibleBounds().y();
-    submenu_ = new_menu;
-    is_scrolling_up_ = new_is_up;
-
+    pixels_per_second_ = MenuItemView::pref_menu_height() * 20;
+    start_y_ = submenu_->GetVisibleBounds().y();
     if (!scrolling_timer_.IsRunning()) {
-      scrolling_timer_.Start(FROM_HERE, base::Milliseconds(30), this,
+      scrolling_timer_.Start(FROM_HERE, base::Hertz(60), this,
                              &MenuScrollTask::Run);
     }
   }
@@ -484,15 +484,15 @@ class MenuController::MenuScrollTask {
   }
 
   // The menu being scrolled. Returns null if not scrolling.
-  SubmenuView* submenu() const { return submenu_; }
+  const SubmenuView* submenu() const { return submenu_; }
 
  private:
   void Run() {
-    DCHECK(submenu_);
+    CHECK(submenu_);
     gfx::Rect vis_rect = submenu_->GetVisibleBounds();
-    const int delta_y = static_cast<int>(
-        (base::Time::Now() - start_scroll_time_).InMilliseconds() *
-        pixels_per_second_ / 1000);
+    const int delta_y =
+        base::ClampRound((base::Time::Now() - start_scroll_time_).InSecondsF() *
+                         pixels_per_second_);
     vis_rect.set_y(is_scrolling_up_
                        ? std::max(0, start_y_ - delta_y)
                        : std::min(submenu_->height() - vis_rect.height(),

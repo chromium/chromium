@@ -302,6 +302,9 @@ class VIEWS_EXPORT MenuItemView : public View {
   // SetIcon(). MenuItemView takes ownership of |icon_view|.
   void SetIconView(std::unique_ptr<ImageView> icon_view);
 
+  // Returns the preferred width of the icon view if any, or 0 if none.
+  int GetIconPreferredWidth() const;
+
   // Sets the command id of this menu item.
   void SetCommand(int command) { command_ = command; }
 
@@ -456,6 +459,10 @@ class VIEWS_EXPORT MenuItemView : public View {
                Type type,
                MenuDelegate* delegate);
 
+  const SubmenuView* GetContainingSubmenu() const {
+    return parent_menu_item_->GetSubmenu();
+  }
+
   // Calculates all sizes that we can from the OS.
   //
   // This is invoked prior to Running a menu.
@@ -468,7 +475,7 @@ class VIEWS_EXPORT MenuItemView : public View {
                      bool show_mnemonics);
 
   // Returns the flags passed to DrawStringRect.
-  int GetDrawStringFlags();
+  int GetDrawStringFlags() const;
 
   // Returns the font list and font color to use for menu text.
   const gfx::FontList GetFontList() const;

@@ -555,6 +555,10 @@ void MenuItemView::SetIconView(std::unique_ptr<ImageView> icon_view) {
   SchedulePaint();
 }
 
+int MenuItemView::GetIconPreferredWidth() const {
+  return icon_view_ ? icon_view_->GetPreferredSize().width() : 0;
+}
+
 void MenuItemView::OnDropOrSelectionStatusMayHaveChanged() {
   UpdateSelectionBasedStateIfChanged(PaintMode::kNormal);
 }
@@ -608,23 +612,23 @@ const MenuController* MenuItemView::GetMenuController() const {
 }
 
 MenuDelegate* MenuItemView::GetDelegate() {
-  return GetRootMenuItem()->delegate_;
+  return const_cast<MenuDelegate*>(std::as_const(*this).GetDelegate());
 }
 
 const MenuDelegate* MenuItemView::GetDelegate() const {
-  return GetRootMenuItem()->delegate_;
+  const auto* const root = GetRootMenuItem();
+  return root ? root->delegate_ : nullptr;
 }
 
 MenuItemView* MenuItemView::GetRootMenuItem() {
-  return const_cast<MenuItemView*>(
-      static_cast<const MenuItemView*>(this)->GetRootMenuItem());
+  return const_cast<MenuItemView*>(std::as_const(*this).GetRootMenuItem());
 }
 
 const MenuItemView* MenuItemView::GetRootMenuItem() const {
   const MenuItemView* item = this;
-  for (const MenuItemView* parent = GetParentMenuItem(); parent;
-       parent = item->GetParentMenuItem())
-    item = parent;
+  while (item->parent_menu_item_) {
+    item = item->parent_menu_item_;
+  }
   return item;
 }
 
@@ -821,21 +825,25 @@ void MenuItemView::UpdateMenuPartSizes() {
 
   trailing_padding_ =
       config.item_horizontal_padding + config.item_horizontal_border_padding;
+  const auto& menu_items = submenu_->GetMenuItems();
   if (config.reserve_dedicated_arrow_column &&
-      base::ranges::any_of(submenu_->GetMenuItems(),
-                           &MenuItemView::HasSubmenu)) {
+      base::ranges::any_of(menu_items, &MenuItemView::HasSubmenu)) {
     trailing_padding_ += kSubmenuArrowSize +
                          (ContainsActionableSubmenu()
                               ? config.actionable_submenu_arrow_to_edge_padding
                               : config.arrow_to_edge_padding);
   }
-  icon_area_width_ = std::max(
-      ContainsChecksOrRadioButtons() ? config.check_width : 0,
-      (has_icons_ && !config.icons_in_label) ? GetMaxIconViewWidth() : 0);
+
+  icon_area_width_ = ContainsChecksOrRadioButtons() ? config.check_width : 0;
+  int max_icon_width = has_icons_ ? GetMaxIconViewWidth() : 0;
+  if (!config.icons_in_label) {
+    icon_area_width_ = std::max(icon_area_width_, max_icon_width);
+  }
+
   label_start_ = GetContentStart() + icon_area_width_;
   if (icon_area_width_) {
-    if (GetMenuController() &&
-        GetMenuController()->use_ash_system_ui_layout()) {
+    const auto* const controller = GetMenuController();
+    if (controller && controller->use_ash_system_ui_layout()) {
       label_start_ += config.touchable_item_horizontal_padding;
     } else if (config.icons_in_label) {
       label_start_ += config.item_horizontal_padding;
@@ -844,8 +852,9 @@ void MenuItemView::UpdateMenuPartSizes() {
           DISTANCE_RELATED_LABEL_HORIZONTAL);
     }
   }
-  if (has_icons_ && config.icons_in_label) {
-    icon_area_width_ = GetMaxIconViewWidth();
+
+  if (config.icons_in_label) {
+    icon_area_width_ = max_icon_width;
   }
 
   EmptyMenuMenuItem menu_item(this);
@@ -903,20 +912,15 @@ void MenuItemView::PrepareForRun(bool is_first_menu,
   }
 }
 
-int MenuItemView::GetDrawStringFlags() {
-  int flags = 0;
-  if (base::i18n::IsRTL())
-    flags |= gfx::Canvas::TEXT_ALIGN_RIGHT;
-  else
-    flags |= gfx::Canvas::TEXT_ALIGN_LEFT;
+int MenuItemView::GetDrawStringFlags() const {
+  int flags = base::i18n::IsRTL() ? gfx::Canvas::TEXT_ALIGN_RIGHT
+                                  : gfx::Canvas::TEXT_ALIGN_LEFT;
 
   if (GetRootMenuItem()->has_mnemonics_ && may_have_mnemonics()) {
-    if (MenuConfig::instance().show_mnemonics ||
-        GetRootMenuItem()->show_mnemonics_) {
-      flags |= gfx::Canvas::SHOW_PREFIX;
-    } else {
-      flags |= gfx::Canvas::HIDE_PREFIX;
-    }
+    flags |= (MenuConfig::instance().show_mnemonics ||
+              GetRootMenuItem()->show_mnemonics_)
+                 ? gfx::Canvas::SHOW_PREFIX
+                 : gfx::Canvas::HIDE_PREFIX;
   }
   return flags;
 }
@@ -1005,7 +1009,7 @@ void MenuItemView::OnPaintImpl(gfx::Canvas* canvas, PaintMode mode) {
       vertical_margin() + (available_height - total_text_height) / 2;
 
   // Render the foreground.
-  int accel_width = parent_menu_item_->GetSubmenu()->max_minor_text_width();
+  int accel_width = GetContainingSubmenu()->max_minor_text_width();
   int label_start = GetLabelStartForThisItem();
 
   int width = this->width() - trailing_padding_ - accel_width - label_start;
@@ -1115,7 +1119,7 @@ void MenuItemView::PaintMinorIconAndText(gfx::Canvas* canvas, SkColor color) {
   }
 
   const int max_minor_text_width =
-      parent_menu_item_->GetSubmenu()->max_minor_text_width();
+      GetContainingSubmenu()->max_minor_text_width();
   const MenuConfig& config = MenuConfig::instance();
   gfx::Rect minor_text_bounds(
       width() - trailing_padding_ - max_minor_text_width, vertical_margin(),
@@ -1355,11 +1359,11 @@ void MenuItemView::ApplyMinimumDimensions(MenuItemDimensions* dims) const {
 
 int MenuItemView::GetContentStart() const {
   const MenuConfig& config = MenuConfig::instance();
-  const bool use_ash_system_ui_layout =
-      GetMenuController() && GetMenuController()->use_ash_system_ui_layout();
+  const auto* const controller = GetMenuController();
   return config.item_horizontal_border_padding +
-         (use_ash_system_ui_layout ? config.touchable_item_horizontal_padding
-                                   : config.item_horizontal_padding);
+         ((controller && controller->use_ash_system_ui_layout())
+              ? config.touchable_item_horizontal_padding
+              : config.item_horizontal_padding);
 }
 
 int MenuItemView::GetLabelStartForThisItem() const {
@@ -1431,23 +1435,23 @@ int MenuItemView::NonIconChildViewsCount() const {
 }
 
 int MenuItemView::GetMaxIconViewWidth() const {
-  DCHECK(submenu_);
+  CHECK(submenu_);
   const auto menu_items = submenu_->GetMenuItems();
   if (menu_items.empty())
     return 0;
 
   std::vector<int> widths(menu_items.size());
-  base::ranges::transform(menu_items, widths.begin(), [](MenuItemView* item) {
-    if (!MenuConfig::instance().icons_in_label &&
-        (item->type_ == Type::kCheckbox || item->type_ == Type::kRadio)) {
-      // If this item has a radio or checkbox, the icon will not affect
-      // alignment of other items.
-      return 0;
-    }
-    return std::max(
-        item->icon_view_ ? item->icon_view_->GetPreferredSize().width() : 0,
-        item->HasSubmenu() ? item->GetMaxIconViewWidth() : 0);
-  });
+  base::ranges::transform(
+      menu_items, widths.begin(), [](const MenuItemView* item) {
+        if (!MenuConfig::instance().icons_in_label &&
+            (item->type_ == Type::kCheckbox || item->type_ == Type::kRadio)) {
+          // If this item has a radio or checkbox, the icon will not affect
+          // alignment of other items.
+          return 0;
+        }
+        return std::max(item->icon_view_ ? item->GetIconPreferredWidth() : 0,
+                        item->HasSubmenu() ? item->GetMaxIconViewWidth() : 0);
+      });
   return base::ranges::max(widths);
 }
 
@@ -1521,19 +1525,17 @@ void MenuItemView::UpdateSelectionBasedState(bool paint_as_selected) {
 }
 
 bool MenuItemView::ShouldPaintAsSelected(PaintMode mode) const {
-  if (forced_visual_selection_.has_value())
-    return true;
-
-  return (parent_menu_item_ && mode == PaintMode::kNormal && IsSelected() &&
-          parent_menu_item_->GetSubmenu()->GetShowSelection(this) &&
-          (NonIconChildViewsCount() == 0 ||
-           highlight_when_selected_with_child_views_));
+  return forced_visual_selection_.value_or(
+      mode == PaintMode::kNormal && IsSelected() &&
+      GetContainingSubmenu()->GetShowSelection(this) &&
+      (NonIconChildViewsCount() == 0 ||
+       highlight_when_selected_with_child_views_));
 }
 
 bool MenuItemView::IsScheduledForDeletion() const {
-  const MenuItemView* parent = GetParentMenuItem();
-  return parent && (base::Contains(parent->removed_items_, this) ||
-                    parent->IsScheduledForDeletion());
+  return parent_menu_item_ &&
+         (base::Contains(parent_menu_item_->removed_items_, this) ||
+          parent_menu_item_->IsScheduledForDeletion());
 }
 
 BEGIN_METADATA(MenuItemView, View)

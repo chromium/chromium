@@ -7,8 +7,10 @@
 #include <algorithm>
 #include <numeric>
 #include <set>
+#include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -32,26 +34,29 @@
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
 
+namespace views {
+
 namespace {
 
 // Height of the drop indicator. This should be an even number.
 constexpr int kDropIndicatorHeight = 2;
 
+template <typename MIV, typename V>
+std::vector<MIV*> GetMenuItemsFromChildren(const View::Views& children) {
+  std::vector<MIV*> menu_items;
+  base::ranges::transform(
+      children, std::back_inserter(menu_items),
+      static_cast<MIV* (*)(V*)>(&AsViewClass<MenuItemView>));
+  base::EraseIf(menu_items, [](MIV* item) {
+    return !item || IsViewClass<EmptyMenuMenuItem>(item);
+  });
+  return menu_items;
+}
+
 }  // namespace
 
-namespace views {
-
-SubmenuView::SubmenuView(MenuItemView* parent)
-    : parent_menu_item_(parent),
-      host_(nullptr),
-      drop_item_(nullptr),
-
-      scroll_view_container_(nullptr),
-
-      scroll_animator_(new ScrollAnimator(this)),
-
-      prefix_selector_(this, this) {
-  DCHECK(parent);
+SubmenuView::SubmenuView(MenuItemView* parent) : parent_menu_item_(parent) {
+  CHECK(parent_menu_item_);
   // We'll delete ourselves, otherwise the ScrollView would delete us on close.
   set_owned_by_client();
 }
@@ -60,32 +65,27 @@ SubmenuView::~SubmenuView() {
   // The menu may not have been closed yet (it will be hidden, but not
   // necessarily closed).
   Close();
-
-  delete scroll_view_container_;
 }
 
 bool SubmenuView::HasEmptyMenuItemView() const {
-  return base::ranges::any_of(children(), IsViewClass<EmptyMenuMenuItem>);
+  return base::ranges::any_of(children(), &IsViewClass<EmptyMenuMenuItem>);
 }
 
 bool SubmenuView::HasVisibleChildren() const {
   return base::ranges::any_of(GetMenuItems(), &MenuItemView::GetVisible);
 }
 
-SubmenuView::MenuItems SubmenuView::GetMenuItems() const {
-  MenuItems menu_items;
-  for (View* child : children()) {
-    if (auto* menu_item = AsViewClass<MenuItemView>(child);
-        menu_item && !IsViewClass<EmptyMenuMenuItem>(child)) {
-      menu_items.push_back(menu_item);
-    }
-  }
-  return menu_items;
+std::vector<MenuItemView*> SubmenuView::GetMenuItems() {
+  return GetMenuItemsFromChildren<MenuItemView, View>(children());
+}
+
+std::vector<const MenuItemView*> SubmenuView::GetMenuItems() const {
+  return GetMenuItemsFromChildren<const MenuItemView, const View>(children());
 }
 
 MenuItemView* SubmenuView::GetMenuItemAt(size_t index) {
-  const MenuItems menu_items = GetMenuItems();
-  DCHECK_LT(index, menu_items.size());
+  const auto menu_items = GetMenuItems();
+  CHECK_LT(index, menu_items.size());
   return menu_items[index];
 }
 
@@ -270,6 +270,7 @@ void SubmenuView::OnDragExited() {
 views::View::DropCallback SubmenuView::GetDropCallback(
     const ui::DropTargetEvent& event) {
   DCHECK(parent_menu_item_->GetMenuController());
+  drop_item_ = nullptr;
   return parent_menu_item_->GetMenuController()->GetDropCallback(this, event);
 }
 
@@ -394,7 +395,7 @@ void SubmenuView::ShowAt(const MenuHost::InitParams& init_params) {
     InvalidateLayout();
 
     MenuHost::InitParams new_init_params = init_params;
-    new_init_params.contents_view = scroll_view_container_;
+    new_init_params.contents_view = scroll_view_container_.get();
     host_->InitMenuHost(new_init_params);
   }
 
@@ -468,8 +469,7 @@ void SubmenuView::SetDropMenuItem(MenuItemView* item,
   if (drop_item_ == item && drop_position_ == position)
     return;
   SchedulePaintForDropIndicator(drop_item_, drop_position_);
-  MenuItemView* old_drop_item = drop_item_;
-  drop_item_ = item;
+  MenuItemView* old_drop_item = std::exchange(drop_item_, item);
   drop_position_ = position;
   if (!old_drop_item || !item) {
     // Whether the selection is actually drawn
@@ -496,23 +496,18 @@ void SubmenuView::SetDropMenuItem(MenuItemView* item,
 }
 
 bool SubmenuView::GetShowSelection(const MenuItemView* item) const {
-  if (drop_item_ == nullptr)
-    return true;
-  // Something is being dropped on one of this menus items. Show the
-  // selection if the drop is on the passed in item and the drop position is
-  // ON.
-  return (drop_item_ == item &&
-          drop_position_ == MenuDelegate::DropPosition::kOn);
+  return !drop_item_ || (drop_item_ == item &&
+                         drop_position_ == MenuDelegate::DropPosition::kOn);
 }
 
 MenuScrollViewContainer* SubmenuView::GetScrollViewContainer() {
   if (!scroll_view_container_) {
-    scroll_view_container_ = new MenuScrollViewContainer(this);
+    scroll_view_container_ = std::make_unique<MenuScrollViewContainer>(this);
     // Otherwise MenuHost would delete us.
     scroll_view_container_->set_owned_by_client();
     scroll_view_container_->SetBorderColorId(border_color_id_);
   }
-  return scroll_view_container_;
+  return scroll_view_container_.get();
 }
 
 MenuItemView* SubmenuView::GetLastItem() {
