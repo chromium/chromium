@@ -67,7 +67,7 @@ bool ShouldHideMVT() {
       kHideContentSuggestionsTilesParamMostVisited, false);
 }
 
-bool ShoudHideShortcuts() {
+bool ShouldHideShortcuts() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kHideContentSuggestionsTiles, kHideContentSuggestionsTilesParamShortcuts,
       false);

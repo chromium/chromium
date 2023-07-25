@@ -310,7 +310,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     [self.consumer
         showReturnToRecentTabTileWithConfig:self.returnToRecentTabItem];
   }
-  if ([self.mostVisitedItems count] && ![self shouldHideMVTTiles]) {
+  if ([self.mostVisitedItems count] && !ShouldHideMVT()) {
     [self.consumer setMostVisitedTilesWithConfigs:self.mostVisitedItems];
   }
   if ([self shouldShowSetUpList]) {
@@ -334,7 +334,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   // 1) Magic Stack is enabled (always show shortcuts in Magic Stack).
   // 2) The Set Up List and Magic Stack are not enabled (Set Up List replaced
   // Shortcuts).
-  if (![self shouldHideShortcuts] &&
+  if (!ShouldHideShortcuts() &&
       (IsMagicStackEnabled() || ![self shouldShowSetUpList])) {
     [self.consumer setShortcutTilesWithConfigs:self.actionButtonItems];
   }
@@ -585,7 +585,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 - (void)onMostVisitedURLsAvailable:
     (const ntp_tiles::NTPTilesVector&)mostVisited {
-  if ([self shouldHideMVTTiles]) {
+  if (ShouldHideMVT()) {
     return;
   }
 
@@ -658,7 +658,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 // Replaces the Most Visited items currently displayed by the most recent ones.
 - (void)useFreshMostVisited {
-  if ([self shouldHideMVTTiles]) {
+  if (ShouldHideMVT()) {
     return;
   }
   self.mostVisitedItems = self.freshMostVisitedItems;
@@ -734,22 +734,6 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
       authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
 
   return !isSignedIn;
-}
-
-// Returns whether the shortcut tiles should be hidden.
-- (BOOL)shouldHideShortcuts {
-  if (ShoudHideShortcuts()) {
-    return YES;
-  }
-  return NO;
-}
-
-// Returns whether the MVT tiles should be hidden.
-- (BOOL)shouldHideMVTTiles {
-  if (ShouldHideMVT()) {
-    return YES;
-  }
-  return NO;
 }
 
 // Returns an array that represents the order of the modules to be shown in the

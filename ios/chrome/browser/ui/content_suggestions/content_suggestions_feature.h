@@ -59,6 +59,6 @@ double ReducedNTPTopMarginSpaceForMagicStack();
 bool ShouldHideMVT();
 
 // Whether the Shortcuts Tiles should be hidden.
-bool ShoudHideShortcuts();
+bool ShouldHideShortcuts();
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_FEATURE_H_
