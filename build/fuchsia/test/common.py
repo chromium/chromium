@@ -18,8 +18,19 @@ from typing import Iterable, List, Optional, Tuple
 
 from compatible_utils import get_ssh_prefix, get_host_arch
 
-DIR_SRC_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
+
+def _find_src_root() -> str:
+    """Find the root of the src folder."""
+    if os.environ.get('SRC_ROOT'):
+        return os.environ['SRC_ROOT']
+    return os.path.join(os.path.dirname(__file__), os.pardir, os.pardir,
+                        os.pardir)
+
+
+# The absolute path of the root folder to work on. It may not always be the
+# src folder since there may not be source code at all, but it's expected to
+# have folders like third_party/fuchsia-sdk in it.
+DIR_SRC_ROOT = os.path.abspath(_find_src_root())
 IMAGES_ROOT = os.path.join(DIR_SRC_ROOT, 'third_party', 'fuchsia-sdk',
                            'images')
 REPO_ALIAS = 'fuchsia.com'
