@@ -7,8 +7,10 @@
 #import <Foundation/Foundation.h>
 
 #import "base/metrics/field_trial_params.h"
+#import "components/variations/service/variations_service.h"
 #import "components/version_info/channel.h"
 #import "ios/chrome/app/background_mode_buildflags.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/common/channel_info.h"
 
@@ -48,7 +50,7 @@ bool IsFeedOverrideForegroundDefaultsEnabled() {
 
 BASE_FEATURE(kEnableWebChannels,
              "EnableWebChannels",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableFeedBackgroundRefresh,
              "EnableFeedBackgroundRefresh",
@@ -125,6 +127,12 @@ const char kEnableFeedUseInteractivityInvalidationForForegroundRefreshes[] =
     "EnableFeedUseInteractivityInvalidationForForegroundRefreshes";
 
 bool IsWebChannelsEnabled() {
+  variations::VariationsService* variations_service =
+      GetApplicationContext()->GetVariationsService();
+  if (variations_service &&
+      variations_service->GetStoredPermanentCountry() == "us") {
+    return true;
+  }
   return base::FeatureList::IsEnabled(kEnableWebChannels);
 }
 
