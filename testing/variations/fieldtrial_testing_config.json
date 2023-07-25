@@ -13794,6 +13794,29 @@
             ]
         }
     ],
+    "TextEmbeddingModelValidation": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230724",
+                    "params": {
+                        "TextEmbedding": "true"
+                    },
+                    "enable_features": [
+                        "PageContentAnnotationsValidation"
+                    ]
+                }
+            ]
+        }
+    ],
     "ThemeProviderColorProviderRedirection": [
         {
             "platforms": [
