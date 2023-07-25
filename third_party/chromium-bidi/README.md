@@ -399,3 +399,20 @@ We use [release-please](https://github.com/googleapis/release-please) to automat
 
 1. After the PR is reviewed, [create a GitHub release](https://github.com/GoogleChromeLabs/chromium-bidi/releases/new) specifying the tag name matching the bumped version.
    Our CI then automatically publishes the new release to npm based on the tag name.
+
+#### Roll into Chromium
+
+> Assuming that you already have a Chromium set-up locally, and knowledge on how to submit changes to the repo.
+> Else submit an issue for a project maintainer to do.
+
+1. Create a new branch.
+2. Navigate to `third_party/bidimapper/`.
+3. Then run the following commands:
+
+```bash
+./pull.sh
+./build.sh
+```
+
+4. Submit a CL with bug `chromedriver:4226`
+5. Add appropriate reviewers or comment the CL link on the PR

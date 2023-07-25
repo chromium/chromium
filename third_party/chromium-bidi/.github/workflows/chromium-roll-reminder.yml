@@ -1,0 +1,27 @@
+name: Chromium roll reminder
+
+on:
+  pull_request:
+    types: [labeled]
+
+jobs:
+  post-message:
+    name: Build Puppeteer
+    runs-on: ubuntu-latest
+    if: contains(github.event.label.name, 'autorelease') && contains(github.event.label.name, 'tagged')
+    steps:
+      - name: Find Comment Id
+        uses: peter-evans/find-comment@a54c31d7fa095754bfef525c0c8e5e5674c4b4b1 # v2.4.0
+        id: find-comment-id
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+      - name: Upsert comment
+        uses: peter-evans/create-or-update-comment@c6c9a1a66007646a28c153e2a8580a5bad27bcfa # v3.0.2
+        with:
+          comment-id: ${{ steps.find-comment-id.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request }}
+          edit-mode: replace
+          body: |
+            Please create a Chromium CL to roll latest version of Mapper.
+            Follow the instructions in [Roll into Chromium](https://github.com/GoogleChromeLabs/chromium-bidi#roll-into-chromium).
