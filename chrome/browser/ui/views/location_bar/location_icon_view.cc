@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 
 #include "base/functional/bind.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -32,8 +33,10 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider_utils.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
@@ -43,6 +46,10 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "components/vector_icons/vector_icons.h"  // nogncheck
+#endif
 
 using content::WebContents;
 using security_state::SecurityLevel;
@@ -83,8 +90,7 @@ bool LocationIconView::OnMouseDragged(const ui::MouseEvent& event) {
 }
 
 SkColor LocationIconView::GetForegroundColor() const {
-  const std::u16string& display_text =
-      delegate_->GetLocationBarModel()->GetSecureDisplayText();
+  const std::u16string& display_text = GetText();
   const bool is_text_dangerous =
       display_text == l10n_util::GetStringUTF16(IDS_DANGEROUS_VERBOSE_STATE);
 
@@ -264,6 +270,22 @@ void LocationIconView::UpdateIcon() {
   ui::ImageModel icon = delegate_->GetLocationIcon(
       base::BindOnce(&LocationIconView::OnIconFetched,
                      icon_fetch_weak_ptr_factory_.GetWeakPtr()));
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
+    bool has_custom_theme =
+        this->GetWidget() && this->GetWidget()->GetCustomTheme();
+
+    if (has_custom_theme && !icon.IsEmpty() && icon.IsVectorIcon() &&
+        icon.GetVectorIcon().vector_icon()->name ==
+            vector_icons::kGoogleSuperGIcon.name) {
+      SetBackground(
+          views::CreateRoundedRectBackground(SK_ColorWHITE, height() / 2));
+    }
+  }
+#endif
+
   if (!icon.IsEmpty())
     SetImageModel(icon);
 }
@@ -271,8 +293,7 @@ void LocationIconView::UpdateIcon() {
 void LocationIconView::UpdateBackground() {
   if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
     CHECK(GetColorProvider());
-    const std::u16string& display_text =
-        delegate_->GetLocationBarModel()->GetSecureDisplayText();
+    const std::u16string& display_text = GetText();
     const bool is_text_dangerous =
         display_text == l10n_util::GetStringUTF16(IDS_DANGEROUS_VERBOSE_STATE);
 
