@@ -28,18 +28,18 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
+import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './os_search_page.html.js';
 
 const OsSettingsSearchPageElementBase =
-    DeepLinkingMixin(RouteObserverMixin(I18nMixin(PolymerElement)));
+    DeepLinkingMixin(RouteOriginMixin(I18nMixin(PolymerElement)));
 
 export class OsSettingsSearchPageElement extends
     OsSettingsSearchPageElementBase {
   static get is() {
-    return 'os-settings-search-page';
+    return 'os-settings-search-page' as const;
   }
 
   static get template() {
@@ -53,8 +53,6 @@ export class OsSettingsSearchPageElement extends
         value: Section.kSearchAndAssistant,
         readOnly: true,
       },
-
-      focusConfig_: Object,
 
       shouldShowQuickAnswersSettings_: {
         type: Boolean,
@@ -82,22 +80,28 @@ export class OsSettingsSearchPageElement extends
   }
 
   private isAssistantAllowed_: boolean;
-  private focusConfig_: Map<string, string>;
   private section_: Section;
   private shouldShowQuickAnswersSettings_: boolean;
 
-  override ready() {
-    super.ready();
+  constructor() {
+    super();
 
-    this.focusConfig_ = new Map();
-    this.focusConfig_.set(routes.SEARCH_SUBPAGE.path, '#searchSubpageTrigger');
-    this.focusConfig_.set(
-        routes.GOOGLE_ASSISTANT.path, '#assistantSubpageTrigger');
+    /** RouteOriginMixin overrde */
+    this.route = routes.OS_SEARCH;
   }
 
-  override currentRouteChanged(route: Route, _oldRoute?: Route) {
+  override ready(): void {
+    super.ready();
+
+    this.addFocusConfig(routes.SEARCH_SUBPAGE, '#searchRow');
+    this.addFocusConfig(routes.GOOGLE_ASSISTANT, '#assistantRow');
+  }
+
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
+    super.currentRouteChanged(newRoute, oldRoute);
+
     // Does not apply to this page.
-    if (route !== routes.OS_SEARCH) {
+    if (newRoute !== this.route) {
       return;
     }
 
@@ -122,7 +126,7 @@ export class OsSettingsSearchPageElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'os-settings-search-page': OsSettingsSearchPageElement;
+    [OsSettingsSearchPageElement.is]: OsSettingsSearchPageElement;
   }
 }
 

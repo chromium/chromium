@@ -9,9 +9,7 @@
     padding-inline-end: 8px;
   }
 </style>
-<os-settings-animated-pages id="pages"
-    section="[[section_]]"
-    focus-config="[[focusConfig_]]">
+<os-settings-animated-pages id="pages" section="[[section_]]">
   <div route-path="default">
     <settings-card header-text="$i18n{osSearchPageTitle}">
       <template is="dom-if" if="[[!shouldShowQuickAnswersSettings_]]">
@@ -21,7 +19,7 @@
       </template>
       <template is="dom-if" if="[[shouldShowQuickAnswersSettings_]]">
         <cr-link-row
-            id="searchSubpageTrigger"
+            id="searchRow"
             label="$i18n{searchSubpageTitle}"
             on-click="onSearchClick_"
             role-description="$i18n{subpageArrowRoleDescription}">
@@ -30,8 +28,8 @@
       <!-- Google Assistant -->
       <template is="dom-if" if="[[isAssistantAllowed_]]">
         <cr-link-row
+            id="assistantRow"
             class="hr"
-            id="assistantSubpageTrigger"
             label="$i18n{searchGoogleAssistant}"
             sub-label="[[getAssistantEnabledDisabledLabel_(
                 prefs.settings.voice_interaction.enabled.value)]]"
