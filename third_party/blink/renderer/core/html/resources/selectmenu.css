@@ -10,7 +10,7 @@
 @namespace "http://www.w3.org/1999/xhtml";
 
 selectmenu {
-  display: inline-block;
+  display: inline-flex;
   user-select: none;
   font-family: sans-serif;
   font-size: .875em;
