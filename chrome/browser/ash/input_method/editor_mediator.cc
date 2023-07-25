@@ -5,8 +5,6 @@
 #include "chrome/browser/ash/input_method/editor_mediator.h"
 
 #include "base/check_op.h"
-#include "base/logging.h"
-#include "base/no_destructor.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_ui.h"
 
 namespace ash {
@@ -29,6 +27,11 @@ EditorMediator::~EditorMediator() {
 
 EditorMediator* EditorMediator::Get() {
   return g_instance_;
+}
+
+void EditorMediator::BindEditorInstance(
+    mojo::PendingReceiver<mojom::EditorInstance> pending_receiver) {
+  editor_instance_impl_.BindReceiver(std::move(pending_receiver));
 }
 
 void EditorMediator::HandleTrigger() {

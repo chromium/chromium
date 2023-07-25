@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_MEDIATOR_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_MEDIATOR_H_
 
+#include "chrome/browser/ash/input_method/editor_instance_impl.h"
+#include "chrome/browser/ash/input_method/mojom/editor.mojom.h"
+
 namespace ash {
 namespace input_method {
 
@@ -17,9 +20,20 @@ class EditorMediator {
   EditorMediator();
   ~EditorMediator();
 
+  // Fetch the current instance of this class. Note that this class MUST be
+  // constructed prior to calling this method.
   static EditorMediator* Get();
 
+  // Binds a new editor instance request from a client.
+  void BindEditorInstance(
+      mojo::PendingReceiver<mojom::EditorInstance> pending_receiver);
+
+  // Handles a trigger event received from the system. This event could come
+  // from a number of system locations.
   void HandleTrigger();
+
+ private:
+  EditorInstanceImpl editor_instance_impl_;
 };
 
 }  // namespace input_method
