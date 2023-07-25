@@ -102,13 +102,14 @@ TEST(StructTraitsTest, KeyEvent) {
       {ET_KEY_RELEASED, VKEY_MENU, EF_ALT_DOWN},
       {ET_KEY_PRESSED, VKEY_A, DomCode::US_A, EF_NONE},
       {ET_KEY_PRESSED, VKEY_B, DomCode::US_B, EF_CONTROL_DOWN | EF_ALT_DOWN},
-      {'\x12', VKEY_2, DomCode::NONE, EF_CONTROL_DOWN},
-      {'Z', VKEY_Z, DomCode::NONE, EF_CAPS_LOCK_ON},
-      {'z', VKEY_Z, DomCode::NONE, EF_NONE},
+      ui::KeyEvent::FromCharacter('\x12', VKEY_2, DomCode::NONE,
+                                  EF_CONTROL_DOWN),
+      ui::KeyEvent::FromCharacter('Z', VKEY_Z, DomCode::NONE, EF_CAPS_LOCK_ON),
+      ui::KeyEvent::FromCharacter('z', VKEY_Z, DomCode::NONE, EF_NONE),
       {ET_KEY_PRESSED, VKEY_Z, EF_NONE,
        base::TimeTicks() + base::Microseconds(101)},
-      {'Z', VKEY_Z, DomCode::NONE, EF_NONE,
-       base::TimeTicks() + base::Microseconds(102)},
+      ui::KeyEvent::FromCharacter('Z', VKEY_Z, DomCode::NONE, EF_NONE,
+                                  base::TimeTicks() + base::Microseconds(102)),
   };
 
   for (size_t i = 0; i < std::size(kTestData); i++) {

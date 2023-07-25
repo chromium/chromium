@@ -161,8 +161,8 @@ TEST_F(RootViewTest, ContextMenuFromKeyEvent) {
   focused_view->RequestFocus();
 
   // No context menu should be shown for a keypress of 'A'.
-  ui::KeyEvent nomenu_key_event('a', ui::VKEY_A, ui::DomCode::NONE,
-                                ui::EF_NONE);
+  ui::KeyEvent nomenu_key_event = ui::KeyEvent::FromCharacter(
+      'a', ui::VKEY_A, ui::DomCode::NONE, ui::EF_NONE);
   ui::EventDispatchDetails details =
       root_view->OnEventFromSource(&nomenu_key_event);
   EXPECT_FALSE(details.target_destroyed);

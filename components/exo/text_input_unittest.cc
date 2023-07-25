@@ -653,7 +653,8 @@ TEST_P(TextInputTestWithConsumedByIme, InsertCharNormalKey) {
                          ui::TextInputClient::FOCUS_REASON_OTHER);
 
   char16_t ch = 'x';
-  ui::KeyEvent ev(ch, ui::VKEY_X, ui::DomCode::US_X, 0);
+  ui::KeyEvent ev =
+      ui::KeyEvent::FromCharacter(ch, ui::VKEY_X, ui::DomCode::US_X, 0);
   ui::SetKeyboardImeFlags(&ev, ui::kPropertyKeyboardImeHandledFlag);
 
   EXPECT_CALL(*delegate(), SendKey(testing::Ref(ev))).Times(1);

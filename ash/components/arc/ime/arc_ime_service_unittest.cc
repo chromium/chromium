@@ -339,13 +339,15 @@ TEST_F(ArcImeServiceTest, InsertChar) {
   // When text input type is NONE, the event is not forwarded.
   instance_->OnTextInputTypeChanged(ui::TEXT_INPUT_TYPE_NONE, false,
                                     mojom::TEXT_INPUT_FLAG_NONE);
-  instance_->InsertChar(ui::KeyEvent('a', ui::VKEY_A, ui::DomCode::NONE, 0));
+  instance_->InsertChar(
+      ui::KeyEvent::FromCharacter('a', ui::VKEY_A, ui::DomCode::NONE, 0));
   EXPECT_EQ(0, fake_arc_ime_bridge_->count_send_insert_text());
 
   // When the bridge is accepting text inputs, forward the event.
   instance_->OnTextInputTypeChanged(ui::TEXT_INPUT_TYPE_TEXT, true,
                                     mojom::TEXT_INPUT_FLAG_NONE);
-  instance_->InsertChar(ui::KeyEvent('a', ui::VKEY_A, ui::DomCode::NONE, 0));
+  instance_->InsertChar(
+      ui::KeyEvent::FromCharacter('a', ui::VKEY_A, ui::DomCode::NONE, 0));
   EXPECT_EQ(1, fake_arc_ime_bridge_->count_send_insert_text());
 }
 

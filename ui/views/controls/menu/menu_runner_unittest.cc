@@ -199,7 +199,8 @@ TEST_F(MenuRunnerTest, NonLatinMnemonic) {
   EXPECT_TRUE(runner->IsRunning());
 
   ui::test::EventGenerator generator(GetContext(), owner()->GetNativeWindow());
-  ui::KeyEvent key_press(0x062f, ui::VKEY_N, ui::DomCode::NONE, 0);
+  ui::KeyEvent key_press =
+      ui::KeyEvent::FromCharacter(0x062f, ui::VKEY_N, ui::DomCode::NONE, 0);
   generator.Dispatch(&key_press);
   views::test::WaitForMenuClosureAnimation();
   EXPECT_FALSE(runner->IsRunning());

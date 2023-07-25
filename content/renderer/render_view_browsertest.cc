@@ -418,9 +418,9 @@ class RenderViewImplTest : public RenderViewTest {
     NativeWebKeyboardEvent keydown_web_event(keydown_event);
     SendNativeKeyEvent(keydown_web_event);
 
-    ui::KeyEvent char_event(keydown_event.GetCharacter(),
-                            static_cast<ui::KeyboardCode>(key_code),
-                            ui::DomCode::NONE, flags);
+    ui::KeyEvent char_event = ui::KeyEvent::FromCharacter(
+        keydown_event.GetCharacter(), static_cast<ui::KeyboardCode>(key_code),
+        ui::DomCode::NONE, flags);
     NativeWebKeyboardEvent char_web_event(char_event);
     SendNativeKeyEvent(char_web_event);
 

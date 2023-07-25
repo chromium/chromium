@@ -133,7 +133,8 @@ TEST_F(ShellDesktopControllerAuraTest, InputEvents) {
   EXPECT_EQ(0, client.insert_char_count());
 
   // Dispatch a keypress on the window tree host to verify it is processed.
-  ui::KeyEvent key_press(u'a', ui::VKEY_A, ui::DomCode::NONE, ui::EF_NONE);
+  ui::KeyEvent key_press = ui::KeyEvent::FromCharacter(
+      u'a', ui::VKEY_A, ui::DomCode::NONE, ui::EF_NONE);
 #if BUILDFLAG(IS_OZONE)
   // Mark IME ignoring flag for ozone platform to be just a key event skipping
   // IME handling, which is referred in some IME handling code based on ozone.

@@ -1344,7 +1344,8 @@ TEST_F(AcceleratorControllerTest, ProcessOnce) {
   ui::EventDispatchDetails details = sink->OnEventFromSource(&key_event1);
   EXPECT_TRUE(key_event1.handled() || details.dispatcher_destroyed);
 
-  ui::KeyEvent key_event2('A', ui::VKEY_A, ui::DomCode::NONE, ui::EF_NONE);
+  ui::KeyEvent key_event2 = ui::KeyEvent::FromCharacter(
+      'A', ui::VKEY_A, ui::DomCode::NONE, ui::EF_NONE);
   details = sink->OnEventFromSource(&key_event2);
   EXPECT_FALSE(key_event2.handled() || details.dispatcher_destroyed);
 

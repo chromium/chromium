@@ -62,8 +62,8 @@ TEST(EventTest, GetCharacter) {
   // contains Control.
   // e.g. Control+Shift+2 produces U+200C on "Persian" keyboard.
   // http://crbug.com/582453
-  KeyEvent keyev5(0x200C, VKEY_UNKNOWN, ui::DomCode::NONE,
-                  EF_CONTROL_DOWN | EF_SHIFT_DOWN);
+  KeyEvent keyev5 = ui::KeyEvent::FromCharacter(
+      0x200C, VKEY_UNKNOWN, ui::DomCode::NONE, EF_CONTROL_DOWN | EF_SHIFT_DOWN);
   EXPECT_EQ(0x200C, keyev5.GetCharacter());
 }
 
@@ -325,7 +325,8 @@ TEST(EventTest, KeyEvent) {
 }
 
 TEST(EventTest, KeyEventDirectUnicode) {
-  KeyEvent key(0x1234U, ui::VKEY_UNKNOWN, ui::DomCode::NONE, ui::EF_NONE);
+  KeyEvent key = ui::KeyEvent::FromCharacter(0x1234U, ui::VKEY_UNKNOWN,
+                                             ui::DomCode::NONE, ui::EF_NONE);
   EXPECT_EQ(0x1234U, key.GetCharacter());
   EXPECT_EQ(ET_KEY_PRESSED, key.type());
   EXPECT_TRUE(key.is_char());
@@ -1132,6 +1133,16 @@ TEST(EventTest, NeverCopyTarget) {
   ui::MouseEvent targeted_copy2 = targeted;
 
   EXPECT_EQ(nullptr, targeted_copy2.target());
+}
+
+// Verify if a character event is created.
+TEST(EventTest, CreateCharcterEvent) {
+  KeyEvent key_event =
+      ui::KeyEvent::FromCharacter(0x5A, VKEY_Z, ui::DomCode::NONE, EF_NONE);
+  EXPECT_TRUE(key_event.is_char());
+  EXPECT_EQ(0x5A, key_event.GetCharacter());
+  EXPECT_EQ(VKEY_Z, key_event.key_code());
+  EXPECT_EQ(EF_NONE, key_event.flags());
 }
 
 }  // namespace ui

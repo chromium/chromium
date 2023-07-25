@@ -584,7 +584,8 @@ void TextfieldTest::SendKeyEvent(char16_t ch, int flags, bool from_vk) {
     // keyboard. So they are dispatched directly to the input method. But on
     // Mac, key events don't pass through InputMethod. Hence they are
     // dispatched regularly.
-    ui::KeyEvent event(ch, ui::VKEY_UNKNOWN, ui::DomCode::NONE, flags);
+    ui::KeyEvent event = ui::KeyEvent::FromCharacter(ch, ui::VKEY_UNKNOWN,
+                                                     ui::DomCode::NONE, flags);
     if (from_vk) {
       ui::Event::Properties properties;
       properties[ui::kPropertyFromVK] =

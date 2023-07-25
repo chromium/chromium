@@ -869,16 +869,12 @@ KeyEvent::KeyEvent(EventType type,
       is_char_(is_char),
       key_(key) {}
 
-KeyEvent::KeyEvent(char16_t character,
+KeyEvent::KeyEvent(EventType type,
                    KeyboardCode key_code,
                    DomCode code,
                    int flags,
                    base::TimeTicks time_stamp)
-    : Event(ET_KEY_PRESSED, time_stamp, flags),
-      key_code_(key_code),
-      code_(code),
-      is_char_(true),
-      key_(DomKey::FromCharacter(character)) {}
+    : Event(type, time_stamp, flags), key_code_(key_code), code_(code) {}
 
 KeyEvent::KeyEvent(const KeyEvent& rhs)
     : Event(rhs),
@@ -919,6 +915,15 @@ bool KeyEvent::IsSynthesizeKeyRepeatEnabled() {
 // static
 void KeyEvent::SetSynthesizeKeyRepeatEnabled(bool enabled) {
   synthesize_key_repeat_enabled_ = enabled;
+}
+
+KeyEvent KeyEvent::FromCharacter(char16_t character,
+                                 KeyboardCode key_code,
+                                 DomCode code,
+                                 int flags,
+                                 base::TimeTicks time_stamp) {
+  return KeyEvent(ET_KEY_PRESSED, key_code, code, flags,
+                  DomKey::FromCharacter(character), time_stamp, true);
 }
 
 void KeyEvent::InitializeNative() {

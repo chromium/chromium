@@ -8,6 +8,7 @@
 namespace ui {
 
 // Event types. (prefixed because of a conflict with windows headers)
+// TODO(b/285921876): Refactor EventType enum to enum class.
 enum EventType {
   ET_UNKNOWN = 0,
   ET_MOUSE_PRESSED,

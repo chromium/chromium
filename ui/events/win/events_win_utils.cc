@@ -496,7 +496,8 @@ KeyEvent KeyEventFromMSG(const CHROME_MSG& msg) {
 
   if (IsCharFromMSG(msg)) {
     flags = PlatformKeyMap::ReplaceControlAndAltWithAltGraph(flags);
-    return KeyEvent(msg.wParam, key_code, code, flags, time_stamp);
+    return KeyEvent::FromCharacter(msg.wParam, key_code, code, flags,
+                                   time_stamp);
   } else {
     key = PlatformKeyMap::DomKeyFromKeyboardCode(key_code, &flags);
     return KeyEvent(type, key_code, code, flags, key, time_stamp);

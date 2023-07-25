@@ -556,9 +556,9 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
     int flags = ui::EF_NONE;
     if ([_keyDownEvent isARepeat])
       flags |= ui::EF_IS_REPEAT;
-    ui::KeyEvent charEvent([text characterAtIndex:0],
-                           ui::KeyboardCodeFromNSEvent(_keyDownEvent),
-                           ui::DomCodeFromNSEvent(_keyDownEvent), flags);
+    ui::KeyEvent charEvent = ui::KeyEvent::FromCharacter(
+        [text characterAtIndex:0], ui::KeyboardCodeFromNSEvent(_keyDownEvent),
+        ui::DomCodeFromNSEvent(_keyDownEvent), flags);
     [self handleKeyEvent:&charEvent];
     _hasUnhandledKeyDownEvent = NO;
     if (charEvent.handled())

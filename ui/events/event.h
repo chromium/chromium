@@ -811,12 +811,12 @@ class EVENTS_EXPORT KeyEvent : public Event {
            base::TimeTicks time_stamp,
            bool is_char = false);
 
-  // Create a character event.
-  KeyEvent(char16_t character,
+  // Create an event with event type.
+  KeyEvent(EventType type,
            KeyboardCode key_code,
            DomCode code,
            int flags,
-           base::TimeTicks time_stamp = base::TimeTicks());
+           base::TimeTicks time_stamp);
 
   // Used for synthetic events with code of DOM KeyboardEvent (e.g. 'KeyA')
   // See also: ui/events/keycodes/dom/dom_values.txt
@@ -833,6 +833,13 @@ class EVENTS_EXPORT KeyEvent : public Event {
 
   // Sets whether to enable synthesizing key repeat in InitializeNative().
   static void SetSynthesizeKeyRepeatEnabled(bool enabled);
+
+  static ui::KeyEvent FromCharacter(
+      char16_t character,
+      KeyboardCode key_code,
+      DomCode code,
+      int flags,
+      base::TimeTicks time_stamp = base::TimeTicks());
 
   void InitializeNative();
 

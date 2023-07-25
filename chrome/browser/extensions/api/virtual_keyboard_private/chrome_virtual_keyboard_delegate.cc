@@ -127,7 +127,8 @@ bool SendKeyEventImpl(const std::string& type,
 
       SendProcessKeyEvent(ui::ET_KEY_PRESSED, host);
 
-      ui::KeyEvent char_event(key_value, code, ui::DomCode::NONE, ui::EF_NONE);
+      ui::KeyEvent char_event = ui::KeyEvent::FromCharacter(
+          key_value, code, ui::DomCode::NONE, ui::EF_NONE);
       if (tic)
         tic->InsertChar(char_event);
       SendProcessKeyEvent(ui::ET_KEY_RELEASED, host);
