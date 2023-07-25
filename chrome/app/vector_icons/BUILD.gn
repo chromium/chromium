@@ -108,6 +108,8 @@ aggregate_vector_icons("chrome_vector_icons") {
     "input.icon",
     "install_desktop_chrome_refresh.icon",
     "journeys.icon",
+    "keep_pin_chrome_refresh.icon",
+    "keep_pin_filled_chrome_refresh.icon",
     "key.icon",
     "key_chrome_refresh.icon",
     "key_open_chrome_refresh.icon",

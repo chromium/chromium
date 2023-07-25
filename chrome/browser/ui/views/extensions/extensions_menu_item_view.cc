@@ -118,6 +118,15 @@ std::u16string GetSitePermissionsButtonText(
   return l10n_util::GetStringUTF16(label_id);
 }
 
+const gfx::VectorIcon& GetPinIcon(bool is_pinned) {
+  if (is_pinned) {
+    return features::IsChromeRefresh2023() ? kKeepPinFilledChromeRefreshIcon
+                                           : views::kUnpinIcon;
+  }
+  return features::IsChromeRefresh2023() ? kKeepPinChromeRefreshIcon
+                                         : views::kPinIcon;
+}
+
 }  // namespace
 
 ExtensionMenuItemView::ExtensionMenuItemView(
@@ -326,8 +335,10 @@ void ExtensionMenuItemView::OnThemeChanged() {
     UpdateContextMenuButton(is_pinned);
   } else {
     SetButtonIconWithColor(
-        context_menu_button_, kBrowserToolsIcon, icon_color,
-        color_provider->GetColor(kColorExtensionMenuIconDisabled));
+        context_menu_button_,
+        features::IsChromeRefresh2023() ? kBrowserToolsChromeRefreshIcon
+                                        : kBrowserToolsIcon,
+        icon_color, color_provider->GetColor(kColorExtensionMenuIconDisabled));
     if (pin_button_) {
       views::InkDrop::Get(pin_button_)->SetBaseColor(icon_color);
       bool is_pinned = model_ && model_->IsActionPinned(controller_->GetId());
@@ -386,9 +397,8 @@ void ExtensionMenuItemView::UpdatePinButton(bool is_force_pinned,
   const SkColor disabled_icon_color = color_provider->GetColor(
       is_pinned ? kColorExtensionMenuPinButtonIconDisabled
                 : kColorExtensionMenuIconDisabled);
-  SetButtonIconWithColor(pin_button_,
-                         is_pinned ? views::kUnpinIcon : views::kPinIcon,
-                         icon_color, disabled_icon_color);
+  SetButtonIconWithColor(pin_button_, GetPinIcon(is_pinned), icon_color,
+                         disabled_icon_color);
 }
 
 void ExtensionMenuItemView::UpdateContextMenuButton(bool is_action_pinned) {
@@ -409,7 +419,8 @@ void ExtensionMenuItemView::UpdateContextMenuButton(bool is_action_pinned) {
       views::Button::STATE_NORMAL,
       is_action_pinned
           ? ui::ImageModel::FromVectorIcon(
-                views::kPinIcon,
+                features::IsChromeRefresh2023() ? kKeepPinChromeRefreshIcon
+                                                : views::kUnpinIcon,
                 color_provider->GetColor(kColorExtensionMenuPinButtonIcon),
                 icon_size)
           : three_dot_icon);
