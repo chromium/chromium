@@ -236,12 +236,11 @@ void RealtimeReportingClient::InitRealtimeReportingClient(
   if (!ShouldInitRealtimeReportingClient())
     return;
 
-  // |identity_manager_| may be null in tests. If there is no identity
-  // manager don't enable the real-time reporting API since the router won't
-  // be able to fill in all the info needed for the reports.
+  // |identity_manager_| may be null in tests and in guest profiles. If there
+  // is no identity manager then the profile username will be empty.
   if (!identity_manager_) {
-    DVLOG(2) << "Safe browsing real-time event requires an identity manager.";
-    return;
+    DVLOG(2)
+        << "Safe browsing real-time event reporting empty profile username.";
   }
 
   policy::CloudPolicyClient* client = nullptr;
@@ -510,7 +509,8 @@ void RealtimeReportingClient::ReportEventWithTimestamp(
 }
 
 std::string RealtimeReportingClient::GetProfileUserName() const {
-  return safe_browsing::GetProfileEmail(identity_manager_);
+  return identity_manager_ ? safe_browsing::GetProfileEmail(identity_manager_)
+                           : std::string();
 }
 
 std::string RealtimeReportingClient::GetProfileIdentifier() const {

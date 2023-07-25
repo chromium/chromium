@@ -171,8 +171,10 @@ GCMProfileService::GCMProfileService(
       product_category_for_subtypes, ui_task_runner, io_task_runner,
       blocking_task_runner);
 
-  identity_observer_ = std::make_unique<IdentityObserver>(
-      identity_manager_, url_loader_factory_, driver_.get());
+  if (identity_manager_) {
+    identity_observer_ = std::make_unique<IdentityObserver>(
+        identity_manager_, url_loader_factory_, driver_.get());
+  }
 }
 #endif  // BUILDFLAG(USE_GCM_FROM_PLATFORM)
 

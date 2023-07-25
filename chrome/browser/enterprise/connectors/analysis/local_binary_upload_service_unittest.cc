@@ -5,11 +5,14 @@
 #include "chrome/browser/enterprise/connectors/analysis/local_binary_upload_service.h"
 
 #include "base/barrier_closure.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/analysis/analysis_settings.h"
 #include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_sdk_manager.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/device_signals/core/browser/mock_system_signals_service_host.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -48,33 +51,57 @@ class MockRequest : public BinaryUploadService::Request {
 class FakeLocalBinaryUploadService : public LocalBinaryUploadService {
  public:
   explicit FakeLocalBinaryUploadService(Profile* profile,
-                                        bool auto_verify = true)
-      : LocalBinaryUploadService(profile), auto_verify_(auto_verify) {}
-
-  // Finish a call to StartAgentVerification() with the given information.
-  void FinishAgentVerification(
-      content_analysis::sdk::Client::Config config,
-      const base::span<const char* const> subject_names,
-      const std::vector<device_signals::FileSystemItem>& items) {
-    OnFileSystemSignals(config, subject_names, items);
+                                        bool auto_verify = true,
+                                        bool use_system_signals_service = true)
+      : LocalBinaryUploadService(profile),
+        use_system_signals_service_(use_system_signals_service) {
+    if (auto_verify && use_system_signals_service_) {
+      SetFileSystemSignals(/*is_os_verified=*/true, "Foo");
+    }
   }
 
   void set_cancel_quit_closure(base::RepeatingClosure closure) {
     cancel_quit_closure_ = closure;
   }
 
- private:
-  void StartAgentVerification(
-      const content_analysis::sdk::Client::Config& config,
-      const base::span<const char* const> subject_names) override {
-    if (auto_verify_) {
-      GetAgentVerifiedMapForTesting()[config] = true;
-    }
+  void SetFileSystemSignals(bool is_os_verified,
+                            const char* subject_name = nullptr) {
+    EXPECT_CALL(mock_system_signals_service_, GetFileSystemSignals(_, _))
+        .WillRepeatedly(Invoke(
+            [is_os_verified, subject_name](
+                const std::vector<device_signals::GetFileSystemInfoOptions>&
+                    options,
+                device_signals::mojom::SystemSignalsService::
+                    GetFileSystemSignalsCallback callback) {
+              // The real implementation is always async, so post a task to
+              // reply later.
+              base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                  FROM_HERE,
+                  base::BindOnce(
+                      [](bool is_os_verified, const char* subject_name,
+                         device_signals::mojom::SystemSignalsService::
+                             GetFileSystemSignalsCallback callback) {
+                        device_signals::ExecutableMetadata metadata;
+                        metadata.is_os_verified = is_os_verified;
+                        if (subject_name) {
+                          metadata.subject_name = subject_name;
+                        }
+                        device_signals::FileSystemItem item;
+                        item.executable_metadata = metadata;
+                        std::move(callback).Run({item});
+                      },
+                      is_os_verified, subject_name, std::move(callback)));
+            }));
   }
 
-  bool IsAgentVerified(
-      const content_analysis::sdk::Client::Config& config) override {
-    return auto_verify_ || LocalBinaryUploadService::IsAgentVerified(config);
+ private:
+  device_signals::mojom::SystemSignalsService* GetSystemSignalsService()
+      override {
+    if (!use_system_signals_service_) {
+      return nullptr;
+    }
+
+    return &mock_system_signals_service_;
   }
 
   void OnCancelRequestSent(std::unique_ptr<CancelRequests> cancel) override {
@@ -84,7 +111,8 @@ class FakeLocalBinaryUploadService : public LocalBinaryUploadService {
   }
 
   base::RepeatingClosure cancel_quit_closure_;
-  bool auto_verify_;
+  device_signals::MockSystemSignalsService mock_system_signals_service_;
+  bool use_system_signals_service_;
 };
 
 class LocalBinaryUploadServiceTest : public testing::Test {
@@ -100,10 +128,13 @@ class LocalBinaryUploadServiceTest : public testing::Test {
       const content_analysis::sdk::Client::Config& config,
       BinaryUploadService::Result* scanning_result,
       ContentAnalysisResponse* scanning_response,
-      base::RepeatingClosure barrier_closure = base::DoNothing()) {
+      base::RepeatingClosure barrier_closure = base::DoNothing(),
+      base::span<const char* const> subject_names =
+          base::span<const char* const>()) {
     LocalAnalysisSettings settings;
     settings.local_path = config.name;
     settings.user_specific = config.user_specific;
+    settings.subject_names = subject_names;
     auto request = std::make_unique<NiceMock<MockRequest>>(
         base::BindOnce(
             [](BinaryUploadService::Result* target_result,
@@ -601,26 +632,18 @@ TEST_F(LocalBinaryUploadServiceTest, VerifyAgent) {
   content_analysis::sdk::Client::Config config{"local_system_path", false};
   FakeLocalBinaryUploadService lbus(&profile_, /*auto_verify=*/false);
 
+  // Set agent verification info.
+  lbus.SetFileSystemSignals(true, "Foo");
+
   BinaryUploadService::Result result;
   ContentAnalysisResponse response;
   auto barrier_closure = CreateQuitBarrier(1u);
+  std::vector<const char*> kSubjectNames = {"Foo"};
   lbus.MaybeUploadForDeepScanning(
-      MakeRequest(config, &result, &response, barrier_closure));
-
-  task_environment_.RunUntilIdle();
+      MakeRequest(config, &result, &response, barrier_closure, kSubjectNames));
 
   EXPECT_EQ(1u, lbus.GetActiveRequestCountForTesting());
   EXPECT_EQ(0u, lbus.GetPendingRequestCountForTesting());
-
-  // Mark the agent as verified.
-  device_signals::ExecutableMetadata metadata;
-  metadata.is_os_verified = true;
-  metadata.subject_name = "Foo";
-  device_signals::FileSystemItem item;
-  item.executable_metadata = metadata;
-  std::array<const char*, 1> subject_names = {{"Foo"}};
-  lbus.FinishAgentVerification(
-      config, base::span<const char* const>(subject_names), {item});
 
   task_environment_.RunUntilQuit();
 
@@ -633,26 +656,18 @@ TEST_F(LocalBinaryUploadServiceTest, VerifyAgent_NotOSVerified) {
   content_analysis::sdk::Client::Config config{"local_system_path", false};
   FakeLocalBinaryUploadService lbus(&profile_, /*auto_verify=*/false);
 
+  // Set agent verification info.
+  lbus.SetFileSystemSignals(false);
+
   BinaryUploadService::Result result;
   ContentAnalysisResponse response;
   auto barrier_closure = CreateQuitBarrier(1u);
+  std::vector<const char*> kSubjectNames = {"Foo"};
   lbus.MaybeUploadForDeepScanning(
-      MakeRequest(config, &result, &response, barrier_closure));
-
-  task_environment_.RunUntilIdle();
+      MakeRequest(config, &result, &response, barrier_closure, kSubjectNames));
 
   EXPECT_EQ(1u, lbus.GetActiveRequestCountForTesting());
   EXPECT_EQ(0u, lbus.GetPendingRequestCountForTesting());
-
-  // Mark the agent as verified.
-  device_signals::ExecutableMetadata metadata;
-  metadata.is_os_verified = false;
-  metadata.subject_name = "Foo";
-  device_signals::FileSystemItem item;
-  item.executable_metadata = metadata;
-  std::array<const char*, 1> subject_names = {{"Foo"}};
-  lbus.FinishAgentVerification(
-      config, base::span<const char* const>(subject_names), {item});
 
   task_environment_.RunUntilQuit();
 
@@ -665,26 +680,18 @@ TEST_F(LocalBinaryUploadServiceTest, VerifyAgent_NoSubject) {
   content_analysis::sdk::Client::Config config{"local_system_path", false};
   FakeLocalBinaryUploadService lbus(&profile_, /*auto_verify=*/false);
 
+  // Set agent verification info.
+  lbus.SetFileSystemSignals(true);
+
   BinaryUploadService::Result result;
   ContentAnalysisResponse response;
   auto barrier_closure = CreateQuitBarrier(1u);
+  std::vector<const char*> kSubjectNames = {"Foo"};
   lbus.MaybeUploadForDeepScanning(
-      MakeRequest(config, &result, &response, barrier_closure));
-
-  task_environment_.RunUntilIdle();
+      MakeRequest(config, &result, &response, barrier_closure, kSubjectNames));
 
   EXPECT_EQ(1u, lbus.GetActiveRequestCountForTesting());
   EXPECT_EQ(0u, lbus.GetPendingRequestCountForTesting());
-
-  // Mark the agent as verified.
-  device_signals::ExecutableMetadata metadata;
-  metadata.is_os_verified = false;
-  metadata.subject_name = "Foo";
-  device_signals::FileSystemItem item;
-  item.executable_metadata = metadata;
-  std::array<const char*, 1> subject_names = {{"Foo"}};
-  lbus.FinishAgentVerification(
-      config, base::span<const char* const>(subject_names), {item});
 
   task_environment_.RunUntilQuit();
 
@@ -697,24 +704,39 @@ TEST_F(LocalBinaryUploadServiceTest, VerifyAgent_VerifyNotNeeded) {
   content_analysis::sdk::Client::Config config{"local_system_path", false};
   FakeLocalBinaryUploadService lbus(&profile_, /*auto_verify=*/false);
 
+  // Set agent verification info.
+  lbus.SetFileSystemSignals(false);
+
   BinaryUploadService::Result result;
   ContentAnalysisResponse response;
   auto barrier_closure = CreateQuitBarrier(1u);
   lbus.MaybeUploadForDeepScanning(
       MakeRequest(config, &result, &response, barrier_closure));
 
-  task_environment_.RunUntilIdle();
-
   EXPECT_EQ(1u, lbus.GetActiveRequestCountForTesting());
   EXPECT_EQ(0u, lbus.GetPendingRequestCountForTesting());
 
-  // Mark the agent as verified.
-  device_signals::ExecutableMetadata metadata;
-  metadata.is_os_verified = false;
-  metadata.subject_name = "";
-  device_signals::FileSystemItem item;
-  item.executable_metadata = metadata;
-  lbus.FinishAgentVerification(config, base::span<const char* const>(), {item});
+  task_environment_.RunUntilQuit();
+
+  EXPECT_EQ(BinaryUploadService::Result::SUCCESS, result);
+  EXPECT_EQ(0u, lbus.GetActiveRequestCountForTesting());
+  EXPECT_EQ(0u, lbus.GetPendingRequestCountForTesting());
+}
+
+TEST_F(LocalBinaryUploadServiceTest, VerifyAgent_MissingSystemSignalService) {
+  content_analysis::sdk::Client::Config config{"local_system_path", false};
+  FakeLocalBinaryUploadService lbus(&profile_, /*auto_verify=*/false,
+                                    /*use_system_signals_service=*/false);
+
+  BinaryUploadService::Result result;
+  ContentAnalysisResponse response;
+  auto barrier_closure = CreateQuitBarrier(1u);
+  std::vector<const char*> kSubjectNames = {"Foo"};
+  lbus.MaybeUploadForDeepScanning(
+      MakeRequest(config, &result, &response, barrier_closure, kSubjectNames));
+
+  EXPECT_EQ(1u, lbus.GetActiveRequestCountForTesting());
+  EXPECT_EQ(0u, lbus.GetPendingRequestCountForTesting());
 
   task_environment_.RunUntilQuit();
 

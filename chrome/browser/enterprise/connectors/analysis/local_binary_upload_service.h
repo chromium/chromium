@@ -106,6 +106,11 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
     return is_agent_verified_;
   }
 
+  // Gets the SystemSignalsService to extract the subject name from the
+  // agent.  This method is virtual to allow overriding in tests.
+  virtual device_signals::mojom::SystemSignalsService*
+  GetSystemSignalsService();
+
   // Starts verification of the agent specified by the given config.  This
   // method virtual so that tests can override the dependency on
   // SystemsignalsServiceHost.

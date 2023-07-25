@@ -16,9 +16,23 @@ namespace instance_id {
 // static
 InstanceIDProfileService* InstanceIDProfileServiceFactory::GetForProfile(
     content::BrowserContext* profile) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // On desktop, the guest profile is actually the primary OTR profile of
+  // the "regular" guest profile.  The regular guest profile is never used
+  // directly by users.  Also, user are not able to create child OTR profiles
+  // from guest profiles, the menu item "New incognito window" is not
+  // available.  So, if this is a guest session, allow it only if it is a
+  // child OTR profile as well.
+  bool is_profile_supported =
+      !Profile::FromBrowserContext(profile)->IsIncognitoProfile();
+#else
+  bool is_profile_supported = !profile->IsOffTheRecord();
+#endif
+
   // Instance ID is not supported in incognito mode.
-  if (profile->IsOffTheRecord())
+  if (!is_profile_supported) {
     return nullptr;
+  }
 
   return static_cast<InstanceIDProfileService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
@@ -36,8 +50,6 @@ InstanceIDProfileServiceFactory::InstanceIDProfileServiceFactory()
           "InstanceIDProfileService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
-              // TODO(crbug.com/1418376): Check if this service is needed in
-              // Guest mode.
               .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {
   // GCM is needed for device ID.
@@ -49,9 +61,17 @@ InstanceIDProfileServiceFactory::~InstanceIDProfileServiceFactory() = default;
 KeyedService* InstanceIDProfileServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // On desktop, incognito profiles are checked with IsIncognitoProfile().
+  // It's possible for non-incognito profiles to also be off-the-record.
+  bool is_incognito = profile->IsIncognitoProfile();
+#else
+  bool is_incognito = profile->IsOffTheRecord();
+#endif
+
   return new InstanceIDProfileService(
       gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver(),
-      profile->IsOffTheRecord());
+      is_incognito);
 }
 
 }  // namespace instance_id

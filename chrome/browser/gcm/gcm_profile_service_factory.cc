@@ -89,9 +89,19 @@ GCMProfileServiceFactory::ScopedTestingFactoryInstaller::
 // static
 GCMProfileService* GCMProfileServiceFactory::GetForProfile(
     content::BrowserContext* profile) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // On desktop, incognito profiles are checked with IsIncognitoProfile().
+  // It's possible for non-incognito profiles to also be off-the-record.
+  bool is_profile_supported =
+      !Profile::FromBrowserContext(profile)->IsIncognitoProfile();
+#else
+  bool is_profile_supported = !profile->IsOffTheRecord();
+#endif
+
   // GCM is not supported in incognito mode.
-  if (profile->IsOffTheRecord())
+  if (!is_profile_supported) {
     return nullptr;
+  }
 
   return static_cast<GCMProfileService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
@@ -108,8 +118,6 @@ GCMProfileServiceFactory::GCMProfileServiceFactory()
           "GCMProfileService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
-              // TODO(crbug.com/1418376): Check if this service is needed in
-              // Guest mode.
               .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
@@ -121,7 +129,11 @@ GCMProfileServiceFactory::~GCMProfileServiceFactory() {
 KeyedService* GCMProfileServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  DCHECK(!profile->IsIncognitoProfile());
+#else
   DCHECK(!profile->IsOffTheRecord());
+#endif
 
   TestingFactory& testing_factory = GetTestingFactory();
   if (testing_factory)
