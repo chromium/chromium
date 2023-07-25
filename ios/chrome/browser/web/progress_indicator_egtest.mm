@@ -46,9 +46,56 @@ const char kInfinitePendingPageURL[] = "http://infinite";
 // URL string for a simple page containing `kPageText`.
 const char kSimplePageURL[] = "http://simplepage";
 
-// Matcher for progress view.
-id<GREYMatcher> ProgressView() {
-  return grey_kindOfClassName(@"MDCProgressView");
+// ProgressView from primary toolbar.
+id<GREYMatcher> ProgressViewInPrimaryToolbar() {
+  return grey_allOf(grey_ancestor(grey_kindOfClassName(@"PrimaryToolbarView")),
+                    grey_kindOfClassName(@"MDCProgressView"), nil);
+}
+
+// ProgresView from secondary toolbar.
+id<GREYMatcher> ProgressViewInSecondaryToolbar() {
+  return grey_allOf(
+      grey_ancestor(grey_kindOfClassName(@"SecondaryToolbarView")),
+      grey_kindOfClassName(@"MDCProgressView"), nil);
+}
+
+// Matcher for `progressView` that should be visible at `progress`.
+id<GREYMatcher> ProgressViewAtProgress(id<GREYMatcher> progressView,
+                                       CGFloat progress) {
+  return grey_allOf(
+      progressView,
+      [ProgressIndicatorAppInterface progressViewWithProgress:progress], nil);
+}
+
+// Checks that the progress view is visible with `progress` in the toolbar
+// containing the omnibox.
+void CheckProgressViewVisibleWithProgress(CGFloat progress) {
+  id<GREYMatcher> visibleProgressView = ProgressViewInPrimaryToolbar();
+  id<GREYMatcher> hiddenProgressView = ProgressViewInSecondaryToolbar();
+  if ([ChromeEarlGrey isUnfocusedOmniboxAtBottom]) {
+    visibleProgressView = ProgressViewInSecondaryToolbar();
+    hiddenProgressView = ProgressViewInPrimaryToolbar();
+  }
+
+  [[EarlGrey selectElementWithMatcher:ProgressViewAtProgress(
+                                          visibleProgressView, progress)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  if ([ChromeEarlGrey isBottomOmniboxSteadyStateEnabled]) {
+    [[EarlGrey selectElementWithMatcher:hiddenProgressView]
+        assertWithMatcher:grey_notVisible()];
+  }
+}
+
+// Checks that progress view from both toolbars are not visible.
+void CheckProgressViewNotVisible() {
+  [[EarlGrey selectElementWithMatcher:ProgressViewInPrimaryToolbar()]
+      assertWithMatcher:grey_notVisible()];
+
+  if ([ChromeEarlGrey isBottomOmniboxSteadyStateEnabled]) {
+    [[EarlGrey selectElementWithMatcher:ProgressViewInSecondaryToolbar()]
+        assertWithMatcher:grey_notVisible()];
+  }
 }
 
 // Response provider that serves the page which never finishes loading.
@@ -177,9 +224,7 @@ class InfinitePendingResponseProvider : public HtmlResponseProvider {
   [ChromeEarlGrey waitForWebStateContainingText:kPageText];
 
   // Verify progress view visible and halfway progress.
-  [[EarlGrey selectElementWithMatcher:[ProgressIndicatorAppInterface
-                                          progressViewWithProgress:0.5]]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  CheckProgressViewVisibleWithProgress(0.5);
 
   [ChromeEarlGreyUI waitForToolbarVisible:YES];
   infinitePendingProvider->Abort();
@@ -222,9 +267,7 @@ class InfinitePendingResponseProvider : public HtmlResponseProvider {
   [ChromeEarlGrey waitForWebStateContainingText:kPageText];
 
   // Verify progress view visible and halfway progress.
-  [[EarlGrey selectElementWithMatcher:[ProgressIndicatorAppInterface
-                                          progressViewWithProgress:0.5]]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  CheckProgressViewVisibleWithProgress(0.5);
 
   [ChromeEarlGreyUI waitForToolbarVisible:YES];
   infinitePendingProvider->Abort();
@@ -255,8 +298,7 @@ class InfinitePendingResponseProvider : public HtmlResponseProvider {
   [ChromeEarlGrey waitForWebStateContainingText:kPageText];
 
   // Verify progress view is not visible.
-  [[EarlGrey selectElementWithMatcher:ProgressView()]
-      assertWithMatcher:grey_notVisible()];
+  CheckProgressViewNotVisible();
 }
 
 // Tests that the progress indicator disappears after form post attempt with a
@@ -280,8 +322,7 @@ class InfinitePendingResponseProvider : public HtmlResponseProvider {
   [ChromeEarlGrey submitWebStateFormWithID:kFormID];
 
   // Verify progress view is not visible.
-  [[EarlGrey selectElementWithMatcher:grey_kindOfClassName(@"MDCProgressView")]
-      assertWithMatcher:grey_notVisible()];
+  CheckProgressViewNotVisible();
 }
 
 @end
