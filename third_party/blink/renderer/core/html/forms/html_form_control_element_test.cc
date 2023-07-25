@@ -21,7 +21,7 @@ class MockFormValidationMessageClient
     : public GarbageCollected<MockFormValidationMessageClient>,
       public ValidationMessageClient {
  public:
-  void ShowValidationMessage(const Element& anchor,
+  void ShowValidationMessage(Element& anchor,
                              const String&,
                              TextDirection,
                              const String&,

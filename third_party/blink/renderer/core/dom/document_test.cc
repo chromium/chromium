@@ -326,7 +326,7 @@ class MockDocumentValidationMessageClient
   bool document_detached_was_called;
 
   // ValidationMessageClient functions.
-  void ShowValidationMessage(const Element& anchor,
+  void ShowValidationMessage(Element& anchor,
                              const String& main_message,
                              TextDirection,
                              const String& sub_message,

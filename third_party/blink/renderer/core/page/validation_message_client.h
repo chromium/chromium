@@ -43,7 +43,7 @@ class ValidationMessageClient : public GarbageCollectedMixin {
   // Show validation message for the specified anchor element. An
   // implementation of this function may hide the message automatically after
   // some period.
-  virtual void ShowValidationMessage(const Element& anchor,
+  virtual void ShowValidationMessage(Element& anchor,
                                      const String& main_message,
                                      TextDirection,
                                      const String& sub_message,
