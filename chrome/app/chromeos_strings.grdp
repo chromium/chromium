@@ -5291,10 +5291,13 @@
   <message name="IDS_BRUSCHETTA_NAME" desc="Bruschetta" translateable="false">
     Bruschetta
   </message>
+  <message name="IDS_BRUSCHETTA_INSTALLER_WINDOW_TITLE" desc="Title for the installer window while Bruschetta (codename) is installing." translateable="false">
+    Bruschetta Installer
+  </message>
   <message name="IDS_BRUSCHETTA_INSTALLER_INSTALL_BUTTON" desc="Label for the button in the Bruschetta (codename) installer dialog to begin installing.">
     Install
   </message>
-  <message name="IDS_BRUSCHETTA_INSTALLER_CONFIRMATION_TITLE" desc="Title for the installer for Bruschetta (codename_).">
+  <message name="IDS_BRUSCHETTA_INSTALLER_CONFIRMATION_TITLE" desc="Title for the installer for Bruschetta (codename).">
     Welcome
   </message>
   <message name="IDS_BRUSCHETTA_INSTALLER_ONGOING_TITLE" desc="Title for the installer while Bruschetta (codename) is installing.">

@@ -100,6 +100,7 @@ BruschettaInstallerView::BruschettaInstallerView(Profile* profile,
   constexpr int kProgressBarHeight = 5;
   constexpr int kProgressBarTopMargin = 32;
 
+  SetTitle(IDS_BRUSCHETTA_INSTALLER_WINDOW_TITLE);
   SetCanMinimize(true);
   set_draggable(true);
   // Removed margins so dialog insets specify it instead.
