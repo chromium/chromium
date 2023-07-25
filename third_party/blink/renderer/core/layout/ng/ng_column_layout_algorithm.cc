@@ -1098,8 +1098,9 @@ NGBreakStatus NGColumnLayoutAlgorithm::LayoutSpanner(
   NGFragment logical_fragment(ConstraintSpace().GetWritingDirection(),
                               spanner_fragment);
 
-  ResolveInlineMargins(spanner_style, Style(), ChildAvailableSize().inline_size,
-                       logical_fragment.InlineSize(), &margins);
+  ResolveInlineAutoMargins(spanner_style, Style(),
+                           ChildAvailableSize().inline_size,
+                           logical_fragment.InlineSize(), &margins);
 
   LogicalOffset offset(
       BorderScrollbarPadding().inline_start + margins.inline_start,

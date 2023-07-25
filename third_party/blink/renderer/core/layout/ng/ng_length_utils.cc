@@ -25,43 +25,6 @@
 
 namespace blink {
 
-namespace {
-
-enum class EBlockAlignment { kStart, kCenter, kEnd };
-
-inline EBlockAlignment BlockAlignment(const ComputedStyle& style,
-                                      const ComputedStyle& container_style) {
-  if (style.MayHaveMargin()) {
-    bool start_auto = style.MarginStartUsing(container_style).IsAuto();
-    bool end_auto = style.MarginEndUsing(container_style).IsAuto();
-    if (start_auto || end_auto) {
-      if (start_auto)
-        return end_auto ? EBlockAlignment::kCenter : EBlockAlignment::kEnd;
-      return EBlockAlignment::kStart;
-    }
-  }
-
-  // If none of the inline margins are auto, look for -webkit- text-align
-  // values (which are really about block alignment). These are typically
-  // mapped from the legacy "align" HTML attribute.
-  switch (container_style.GetTextAlign()) {
-    case ETextAlign::kWebkitLeft:
-      if (container_style.IsLeftToRightDirection())
-        return EBlockAlignment::kStart;
-      return EBlockAlignment::kEnd;
-    case ETextAlign::kWebkitRight:
-      if (container_style.IsLeftToRightDirection())
-        return EBlockAlignment::kEnd;
-      return EBlockAlignment::kStart;
-    case ETextAlign::kWebkitCenter:
-      return EBlockAlignment::kCenter;
-    default:
-      return EBlockAlignment::kStart;
-  }
-}
-
-}  // anonymous namespace
-
 // Check if we shouldn't resolve a percentage/calc()/-webkit-fill-available
 // if we are in the intrinsic sizes phase.
 bool InlineLengthUnresolvable(const NGConstraintSpace& constraint_space,
@@ -1363,33 +1326,25 @@ NGBoxStrut ComputeScrollbarsForNonAnonymous(const NGBlockNode& node) {
   return layout_box->ComputeLogicalScrollbars();
 }
 
-bool NeedsInlineSizeToResolveLineLeft(const ComputedStyle& style,
-                                      const ComputedStyle& container_style) {
-  // In RTL, there's no block alignment where we can guarantee that line-left
-  // doesn't depend on the inline size of a fragment.
-  if (IsRtl(container_style.Direction()))
-    return true;
-
-  return BlockAlignment(style, container_style) != EBlockAlignment::kStart;
-}
-
-void ResolveInlineMargins(const ComputedStyle& style,
-                          const ComputedStyle& container_style,
-                          LayoutUnit available_inline_size,
-                          LayoutUnit inline_size,
-                          NGBoxStrut* margins) {
-  DCHECK(margins) << "Margins cannot be NULL here";
+void ResolveInlineAutoMargins(const ComputedStyle& style,
+                              const ComputedStyle& container_style,
+                              LayoutUnit available_inline_size,
+                              LayoutUnit inline_size,
+                              NGBoxStrut* margins) {
   const LayoutUnit used_space = inline_size + margins->InlineSum();
   const LayoutUnit available_space = available_inline_size - used_space;
-  if (available_space > LayoutUnit()) {
-    EBlockAlignment alignment = BlockAlignment(style, container_style);
-    if (alignment == EBlockAlignment::kCenter)
-      margins->inline_start += available_space / 2;
-    else if (alignment == EBlockAlignment::kEnd)
-      margins->inline_start += available_space;
+  bool is_start_auto = style.MarginStartUsing(container_style).IsAuto();
+  bool is_end_auto = style.MarginEndUsing(container_style).IsAuto();
+  if (is_start_auto && is_end_auto) {
+    margins->inline_start = (available_space / 2).ClampNegativeToZero();
+    margins->inline_end =
+        available_inline_size - inline_size - margins->inline_start;
+  } else if (is_start_auto) {
+    margins->inline_start = available_space.ClampNegativeToZero();
+  } else if (is_end_auto) {
+    margins->inline_end =
+        available_inline_size - inline_size - margins->inline_start;
   }
-  margins->inline_end =
-      available_inline_size - inline_size - margins->inline_start;
 }
 
 LayoutUnit LineOffsetForTextAlign(ETextAlign text_align,

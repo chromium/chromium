@@ -99,8 +99,8 @@ NGTableLayoutAlgorithm::CaptionResult LayoutCaption(
   if (layout_result->Status() == NGLayoutResult::kSuccess) {
     NGFragment fragment(table_constraint_space.GetWritingDirection(),
                         layout_result->PhysicalFragment());
-    ResolveInlineMargins(caption.Style(), table_style, table_inline_size,
-                         fragment.InlineSize(), &margins);
+    ResolveInlineAutoMargins(caption.Style(), table_style, table_inline_size,
+                             fragment.InlineSize(), &margins);
   } else {
     DCHECK(caption_constraint_space.HasBlockFragmentation());
     DCHECK_EQ(layout_result->Status(),

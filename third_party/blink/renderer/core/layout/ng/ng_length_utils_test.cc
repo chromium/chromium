@@ -540,8 +540,8 @@ TEST_F(NGLengthUtilsTest, TestAutoMargins) {
   LayoutUnit kAvailableInlineSize(200);
 
   NGBoxStrut margins;
-  ResolveInlineMargins(*style, *style, kAvailableInlineSize, kInlineSize,
-                       &margins);
+  ResolveInlineAutoMargins(*style, *style, kAvailableInlineSize, kInlineSize,
+                           &margins);
 
   EXPECT_EQ(LayoutUnit(), margins.block_start);
   EXPECT_EQ(LayoutUnit(), margins.block_end);
@@ -552,8 +552,8 @@ TEST_F(NGLengthUtilsTest, TestAutoMargins) {
   builder.SetMarginLeft(Length::Fixed(0));
   style = builder.TakeStyle();
   margins = NGBoxStrut();
-  ResolveInlineMargins(*style, *style, kAvailableInlineSize, kInlineSize,
-                       &margins);
+  ResolveInlineAutoMargins(*style, *style, kAvailableInlineSize, kInlineSize,
+                           &margins);
   EXPECT_EQ(LayoutUnit(0), margins.inline_start);
   EXPECT_EQ(LayoutUnit(50), margins.inline_end);
 
@@ -562,8 +562,8 @@ TEST_F(NGLengthUtilsTest, TestAutoMargins) {
   builder.SetMarginRight(Length::Fixed(0));
   style = builder.TakeStyle();
   margins = NGBoxStrut();
-  ResolveInlineMargins(*style, *style, kAvailableInlineSize, kInlineSize,
-                       &margins);
+  ResolveInlineAutoMargins(*style, *style, kAvailableInlineSize, kInlineSize,
+                           &margins);
   EXPECT_EQ(LayoutUnit(50), margins.inline_start);
   EXPECT_EQ(LayoutUnit(0), margins.inline_end);
 
@@ -575,10 +575,10 @@ TEST_F(NGLengthUtilsTest, TestAutoMargins) {
   style = builder.TakeStyle();
   margins = NGBoxStrut();
   margins.inline_end = LayoutUnit(5000);
-  ResolveInlineMargins(*style, *style, kAvailableInlineSize, kInlineSize,
-                       &margins);
+  ResolveInlineAutoMargins(*style, *style, kAvailableInlineSize, kInlineSize,
+                           &margins);
   EXPECT_EQ(LayoutUnit(0), margins.inline_start);
-  EXPECT_EQ(LayoutUnit(50), margins.inline_end);
+  EXPECT_EQ(LayoutUnit(5000), margins.inline_end);
 }
 
 // Simple wrappers that don't use LayoutUnit(). Their only purpose is to make
