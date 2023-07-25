@@ -13,12 +13,14 @@
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/policy/policy_ui_handler.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/core/common/features.h"
+#include "components/policy/core/common/local_test_policy_provider.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -26,6 +28,7 @@
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
+#include "components/version_info/channel.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -203,6 +206,9 @@ class PolicyTestHandlerTest : public PlatformBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest,
                        HandleSetAndRevertLocalTestPolicies) {
+  if (!policy::LocalTestPolicyProvider::IsAllowed(chrome::GetChannel())) {
+    return;
+  }
   std::unique_ptr<PolicyUIHandler> handler = SetUpHandler();
   const std::string jsonString =
       R"([
@@ -283,6 +289,9 @@ IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest, FilterSensitivePolicies) {
+  if (!policy::LocalTestPolicyProvider::IsAllowed(chrome::GetChannel())) {
+    return;
+  }
   std::unique_ptr<PolicyUIHandler> handler = SetUpHandler();
   const std::string jsonString =
       R"([

@@ -24,6 +24,8 @@ class POLICY_EXPORT LocalTestPolicyProvider
   static std::unique_ptr<LocalTestPolicyProvider> CreateIfAllowed(
       version_info::Channel channel);
 
+  static bool IsAllowed(version_info::Channel channel);
+
   LocalTestPolicyProvider(const LocalTestPolicyProvider&) = delete;
   LocalTestPolicyProvider& operator=(const LocalTestPolicyProvider&) = delete;
 
