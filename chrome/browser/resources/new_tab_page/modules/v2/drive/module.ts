@@ -77,10 +77,13 @@ export class DriveModuleElement extends I18nMixin
 
 customElements.define(DriveModuleElement.is, DriveModuleElement);
 
-async function createDriveElement(): Promise<DriveModuleElement> {
+async function createDriveElement(): Promise<DriveModuleElement|null> {
   const {files} = await DriveProxy.getHandler().getFiles();
+  if (files.length === 0) {
+    return null;
+  }
   const element = new DriveModuleElement();
-  element.files = files.slice(0, 2);
+  element.files = files.slice(0, 3);
   return element;
 }
 
