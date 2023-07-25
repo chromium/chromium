@@ -1427,7 +1427,8 @@ void AppMenuModel::Build() {
     const auto update_icon =
         features::IsChromeRefresh2023()
             ? ui::ImageModel::FromVectorIcon(
-                  kBrowserToolsUpdateIcon, ui::kColorMenuIcon, kDefaultIconSize)
+                  kBrowserToolsUpdateChromeRefreshIcon, ui::kColorMenuIcon,
+                  kDefaultIconSize)
             : ui::ImageModel::FromVectorIcon(
                   kBrowserToolsUpdateIcon,
                   app_menu_icon_controller_->GetIconColor(absl::nullopt));
