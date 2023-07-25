@@ -21,6 +21,10 @@ namespace policy {
 // Stores file events and filters most non-user-initiated duplicate events.
 class DlpFilesEventStorage {
  public:
+  // File are identified by a pair of inode number and crtime
+  // (creation time).
+  typedef std::pair<ino64_t, time_t> FileId;
+
   DlpFilesEventStorage(base::TimeDelta cooldown_timeout, size_t entries_limit);
   DlpFilesEventStorage(const DlpFilesEventStorage& other) = delete;
   DlpFilesEventStorage(DlpFilesEventStorage&& other) = delete;
@@ -28,14 +32,14 @@ class DlpFilesEventStorage {
 
   // Upserts an event entry into `events_` and returns true if
   // enough time has passed from a previous call to
-  // `StoreEventAndCheckIfItShouldBeReported` with the same `inode` and `dst`.
+  // `StoreEventAndCheckIfItShouldBeReported` with the same `file_id` and `dst`.
   // When `dst` has `dst.component` equal to
   // `DlpRulesManager::Component::kUnknownComponent` and `dst.url_or_path` not
   // set, `StoreEventAndCheckIfItShouldBeReported` returns true only if no other
-  // recent previous call has been performed with the same `inode` and any
+  // recent previous call has been performed with the same `file_id` and any
   // `dst`. Finally, it returns false also when the current number of entries
   // in `events_` is `entries_limit_`.
-  bool StoreEventAndCheckIfItShouldBeReported(ino64_t inode,
+  bool StoreEventAndCheckIfItShouldBeReported(FileId file_id,
                                               const DlpFileDestination& dst);
 
   // Returns the time during which an event is filtered if an exactly similar
@@ -50,7 +54,7 @@ class DlpFilesEventStorage {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
  private:
-  // Contains the information stored for every (inode, destination) entry in
+  // Contains the information stored for every (file_id, destination) entry in
   // `events_`.
   struct EventEntry {
     explicit EventEntry(base::TimeTicks timestamp);
@@ -62,31 +66,31 @@ class DlpFilesEventStorage {
   };
 
   using DestinationsMap = std::map<DlpFileDestination, EventEntry>;
-  using EventsMap = base::flat_map<ino64_t, DestinationsMap>;
+  using EventsMap = base::flat_map<FileId, DestinationsMap>;
 
-  // Adds a new destination for an existing inode.
-  void AddDestinationToInode(EventsMap::iterator inode_it,
-                             ino64_t inode,
-                             const DlpFileDestination& dst,
-                             const base::TimeTicks timestamp);
+  // Adds a new destination for an existing file_id.
+  void AddDestinationToFile(EventsMap::iterator file_it,
+                            FileId file_id,
+                            const DlpFileDestination& dst,
+                            const base::TimeTicks timestamp);
 
-  // Inserts a new (inode, destination) pair.
-  void InsertNewInodeAndDestinationPair(ino64_t inode,
-                                        const DlpFileDestination& dst,
-                                        const base::TimeTicks timestamp);
+  // Inserts a new (file_id, destination) pair.
+  void InsertNewFileAndDestinationPair(FileId file_id,
+                                       const DlpFileDestination& dst,
+                                       const base::TimeTicks timestamp);
 
-  // Updates an existing (inode, destination) pair.
-  void UpdateInodeAndDestinationPair(DestinationsMap::iterator dst_it,
-                                     const base::TimeTicks timestamp);
+  // Updates an existing (file_id, destination) pair.
+  void UpdateFileAndDestinationPair(DestinationsMap::iterator dst_it,
+                                    const base::TimeTicks timestamp);
 
-  // Starts the eviction timer for an (inode, destination) pair. When the timer
-  // runs out of time, it calls `OnEvictionTimerUp`.
-  void StartEvictionTimer(ino64_t inode,
+  // Starts the eviction timer for an (file_id, destination) pair. When the
+  // timer runs out of time, it calls `OnEvictionTimerUp`.
+  void StartEvictionTimer(FileId file_id,
                           const DlpFileDestination& dst,
                           EventEntry& event_value);
 
-  // Removes the given (inode, destination) pair from `events_`.
-  void OnEvictionTimerUp(ino64_t inode, DlpFileDestination dst);
+  // Removes the given (file_id, destination) pair from `events_`.
+  void OnEvictionTimerUp(FileId file_id, DlpFileDestination dst);
 
   EventsMap events_;
 

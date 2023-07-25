@@ -541,7 +541,8 @@ void DlpFilesControllerAsh::CheckIfDownloadAllowed(
   }
 
   // TODO(b/290200170): Check whether referrer_url could be set too.
-  FileDaemonInfo file_info({}, file_path, download_src.url_or_path().value(),
+  FileDaemonInfo file_info({}, {}, file_path,
+                           download_src.url_or_path().value(),
                            /*referrer_url=*/"");
   IsFilesTransferRestricted(
       absl::nullopt, {std::move(file_info)},
@@ -698,8 +699,8 @@ void DlpFilesControllerAsh::IsFilesTransferRestricted(
           DlpRulesManager::Restriction::kFiles, &source_pattern,
           &rule_metadata);
       actual_dst = DlpFileDestination(dst_component.value());
-      MaybeReportEvent(file.inode, file.path, source_pattern, actual_dst,
-                       absl::nullopt, rule_metadata, level);
+      MaybeReportEvent(file.inode, file.crtime, file.path, source_pattern,
+                       actual_dst, absl::nullopt, rule_metadata, level);
       // TODO(http://b/287003462) find better way to figure out if this is a url
       // or path than parsing the string
     } else if (destination.url_or_path() &&
@@ -714,8 +715,8 @@ void DlpFilesControllerAsh::IsFilesTransferRestricted(
           GURL(file.source_url), GURL(*destination.url_or_path()),
           DlpRulesManager::Restriction::kFiles, &source_pattern,
           &destination_pattern.value(), &rule_metadata);
-      MaybeReportEvent(file.inode, file.path, source_pattern, actual_dst,
-                       destination_pattern, rule_metadata, level);
+      MaybeReportEvent(file.inode, file.crtime, file.path, source_pattern,
+                       actual_dst, destination_pattern, rule_metadata, level);
     }
 
     switch (level) {
@@ -855,7 +856,7 @@ bool DlpFilesControllerAsh::IsDlpPolicyMatched(const FileDaemonInfo& file) {
   }
 
   MaybeReportEvent(
-      file.inode, file.path, src_pattern,
+      file.inode, file.crtime, file.path, src_pattern,
       DlpFileDestination(data_controls::Component::kUnknownComponent),
       absl::nullopt, rule_metadata, level);
 
@@ -971,9 +972,9 @@ void DlpFilesControllerAsh::OnDlpWarnDialogReply(
   for (size_t i = 0; i < warned_files.size(); ++i) {
     if (should_proceed) {
       DlpHistogramEnumeration(dlp::kFileActionWarnProceededUMA, files_action);
-      MaybeReportEvent(warned_files[i].inode, warned_files[i].path,
-                       warned_src_patterns[i], dst, dst_pattern,
-                       warned_rules_metadata[i], absl::nullopt);
+      MaybeReportEvent(warned_files[i].inode, warned_files[i].crtime,
+                       warned_files[i].path, warned_src_patterns[i], dst,
+                       dst_pattern, warned_rules_metadata[i], absl::nullopt);
     }
     files_levels.emplace_back(warned_files[i],
                               should_proceed
@@ -1136,6 +1137,7 @@ void DlpFilesControllerAsh::ReturnIfActionAllowed(
 
 void DlpFilesControllerAsh::MaybeReportEvent(
     ino64_t inode,
+    time_t crtime,
     const base::FilePath& path,
     const std::string& source_pattern,
     const DlpFileDestination& dst,
@@ -1159,7 +1161,8 @@ void DlpFilesControllerAsh::MaybeReportEvent(
   // Warning proceeded events are always user-initiated since they are triggered
   // only when the user interacts with the warning dialog.
   if (!is_warning_proceeded_event &&
-      !event_storage_->StoreEventAndCheckIfItShouldBeReported(inode, dst)) {
+      !event_storage_->StoreEventAndCheckIfItShouldBeReported({inode, crtime},
+                                                              dst)) {
     return;
   }
 

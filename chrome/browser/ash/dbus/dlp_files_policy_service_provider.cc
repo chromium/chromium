@@ -118,7 +118,8 @@ void DlpFilesPolicyServiceProvider::IsDlpPolicyMatched(
       files_controller
           ? files_controller->IsDlpPolicyMatched(
                 policy::DlpFilesControllerAsh::FileDaemonInfo(
-                    request.file_metadata().inode(), base::FilePath(),
+                    request.file_metadata().inode(),
+                    request.file_metadata().crtime(), base::FilePath(),
                     request.file_metadata().source_url(),
                     request.file_metadata().referrer_url()))
           : false;
@@ -158,8 +159,9 @@ void DlpFilesPolicyServiceProvider::IsFilesTransferRestricted(
       LOG(ERROR) << "Missing file path or file source url";
       continue;
     }
-    files_info.emplace_back(file.inode(), base::FilePath(file.path()),
-                            file.source_url(), file.referrer_url());
+    files_info.emplace_back(file.inode(), file.crtime(),
+                            base::FilePath(file.path()), file.source_url(),
+                            file.referrer_url());
   }
 
   policy::DlpFilesControllerAsh* files_controller =
@@ -215,6 +217,7 @@ void DlpFilesPolicyServiceProvider::RespondWithRestrictedFilesTransfer(
     dlp::FileRestriction* files_restriction =
         response_proto.add_files_restrictions();
     files_restriction->mutable_file_metadata()->set_inode(file.inode);
+    files_restriction->mutable_file_metadata()->set_crtime(file.crtime);
     files_restriction->mutable_file_metadata()->set_path(file.path.value());
     files_restriction->mutable_file_metadata()->set_source_url(
         file.source_url.spec());

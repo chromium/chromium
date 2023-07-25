@@ -27,13 +27,14 @@ class DlpFilesController {
   struct FileDaemonInfo {
     FileDaemonInfo() = delete;
     FileDaemonInfo(ino64_t inode,
+                   time_t crtime,
                    const base::FilePath& path,
                    const std::string& source_url,
                    const std::string& referrer_url);
     FileDaemonInfo(const FileDaemonInfo&);
 
     friend bool operator==(const FileDaemonInfo& a, const FileDaemonInfo& b) {
-      return a.inode == b.inode && a.path == b.path &&
+      return a.inode == b.inode && a.crtime == b.crtime && a.path == b.path &&
              a.source_url == b.source_url && a.referrer_url == b.referrer_url;
     }
     friend bool operator!=(const FileDaemonInfo& a, const FileDaemonInfo& b) {
@@ -42,6 +43,8 @@ class DlpFilesController {
 
     // File inode.
     ino64_t inode;
+    // File creation time.
+    time_t crtime;
     // File path.
     base::FilePath path;
     // Source URL from which the file was downloaded.

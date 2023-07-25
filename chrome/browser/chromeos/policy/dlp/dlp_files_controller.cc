@@ -107,16 +107,19 @@ bool IsInLocalFileSystem(const base::FilePath& file_path) {
 
 DlpFilesController::FileDaemonInfo::FileDaemonInfo(
     ino64_t inode,
+    time_t crtime,
     const base::FilePath& path,
     const std::string& source_url,
     const std::string& referrer_url)
     : inode(inode),
+      crtime(crtime),
       path(path),
       source_url(source_url),
       referrer_url(referrer_url) {}
 
 DlpFilesController::FileDaemonInfo::FileDaemonInfo(const FileDaemonInfo& o)
     : inode(o.inode),
+      crtime(o.crtime),
       path(o.path),
       source_url(o.source_url),
       referrer_url(o.referrer_url) {}

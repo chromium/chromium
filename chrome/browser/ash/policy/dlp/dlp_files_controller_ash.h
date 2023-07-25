@@ -246,6 +246,7 @@ class DlpFilesControllerAsh : public DlpFilesController {
   // `dst_pattern` is missing, we report `dst.component.value()` instead. When
   // `level` is missing, we report a warning proceeded event.
   void MaybeReportEvent(ino64_t inode,
+                        time_t crtime,
                         const base::FilePath& path,
                         const std::string& source_pattern,
                         const DlpFileDestination& dst,
