@@ -981,8 +981,7 @@ ScriptPromise FetchManager::Fetch(ScriptState* script_state,
                                   ExceptionState& exception_state) {
   DCHECK(signal);
   if (signal->aborted()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
-                                      "The user aborted a request.");
+    exception_state.RethrowV8Exception(signal->reason(script_state).V8Value());
     return ScriptPromise();
   }
 
