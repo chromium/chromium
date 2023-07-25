@@ -70,10 +70,6 @@ EXCLUDED_TESTS = [
     os.path.join('tests', 'codegen', 'issue-45222.rs'),
     # https://github.com/rust-lang/rust/issues/96497
     os.path.join('tests', 'codegen', 'issue-96497-slice-size-nowrap.rs'),
-    # TODO(crbug.com/1347563): Re-enable when fixed.
-    os.path.join('tests', 'codegen', 'sanitizer-cfi-emit-type-checks.rs'),
-    os.path.join('tests', 'codegen',
-                 'sanitizer-cfi-emit-type-metadata-itanium-cxx-abi.rs'),
     # https://github.com/rust-lang/rust/issues/109671 the test is being
     # optimized in newer LLVM which breaks its expectations.
     os.path.join('tests', 'ui', 'abi', 'stack-protector.rs'),
