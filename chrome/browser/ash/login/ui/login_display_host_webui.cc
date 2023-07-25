@@ -982,6 +982,7 @@ void LoginDisplayHostWebUI::CreateExistingUserController() {
 
 void LoginDisplayHostWebUI::ShowGaiaDialog(const AccountId& prefilled_account) {
   ShowGaiaDialogCommon(prefilled_account);
+  UpdateWallpaper(prefilled_account);
 }
 
 void LoginDisplayHostWebUI::ShowOsInstallScreen() {

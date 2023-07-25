@@ -1218,7 +1218,7 @@ void LockContentsView::OnOobeDialogStateChanged(OobeDialogState state) {
   UpdateBottomStatusIndicatorVisibility();
 
   if (main_dialog_closed && CurrentBigUserView()) {
-    CurrentBigUserView()->RequestFocus();
+    OnBigUserChanged();
   } else if (oobe_dialog_closed && login_camera_timeout_view_) {
     login_camera_timeout_view_->RequestFocus();
   }

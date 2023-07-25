@@ -57,8 +57,7 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   void OnGaiaScreenReady() final;
   void SetDisplayEmail(const std::string& email) final;
   void ShowAllowlistCheckFailedError() final;
-  void LoadWallpaper(const AccountId& account_id) final;
-  void LoadSigninWallpaper() final;
+  void UpdateWallpaper(const AccountId& prefilled_account) final;
   bool IsUserAllowlisted(
       const AccountId& account_id,
       const absl::optional<user_manager::UserType>& user_type) final;

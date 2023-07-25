@@ -432,12 +432,14 @@ void LoginDisplayHostCommon::ShowAllowlistCheckFailedError() {
   gaia_screen->ShowAllowlistCheckFailedError();
 }
 
-void LoginDisplayHostCommon::LoadWallpaper(const AccountId& account_id) {
-  WallpaperControllerClientImpl::Get()->ShowUserWallpaper(account_id);
-}
-
-void LoginDisplayHostCommon::LoadSigninWallpaper() {
-  WallpaperControllerClientImpl::Get()->ShowSigninWallpaper();
+void LoginDisplayHostCommon::UpdateWallpaper(
+    const AccountId& prefilled_account) {
+  auto* wallpaper_controller = WallpaperControllerClientImpl::Get();
+  if (prefilled_account.is_valid()) {
+    wallpaper_controller->ShowUserWallpaper(prefilled_account);
+    return;
+  }
+  wallpaper_controller->ShowSigninWallpaper();
 }
 
 bool LoginDisplayHostCommon::IsUserAllowlisted(
@@ -723,15 +725,9 @@ void LoginDisplayHostCommon::OnStartSignInScreenCommon() {
 
 void LoginDisplayHostCommon::ShowGaiaDialogCommon(
     const AccountId& prefilled_account) {
-  if (prefilled_account.is_valid()) {
-    LoadWallpaper(prefilled_account);
-    if (GetExistingUserController()->IsSigninInProgress()) {
-      return;
-    }
-  } else {
-    LoadSigninWallpaper();
+  if (GetExistingUserController()->IsSigninInProgress()) {
+    return;
   }
-
   SetGaiaInputMethods(prefilled_account);
 
   if (!prefilled_account.is_valid()) {

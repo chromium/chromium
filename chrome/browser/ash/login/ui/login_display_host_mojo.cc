@@ -546,6 +546,9 @@ void LoginDisplayHostMojo::ShowGaiaDialog(const AccountId& prefilled_account) {
   ShowGaiaDialogCommon(prefilled_account);
 
   ShowDialog();
+  // Refresh wallpaper once OobeDialogState is propagated after showing the
+  // dialog.
+  UpdateWallpaper(prefilled_account);
 }
 
 void LoginDisplayHostMojo::ShowOsInstallScreen() {
@@ -579,12 +582,13 @@ void LoginDisplayHostMojo::HideOobeDialog(bool saml_page_closed) {
   }
 
   user_selection_screen_->OnBeforeShow();
-  LoadWallpaper(focused_pod_account_id_);
   if (features::IsInputDeviceSettingsSplitEnabled()) {
     InputDeviceSettingsController::Get()->OnLoginScreenFocusedPodChanged(
         focused_pod_account_id_);
   }
   HideDialog();
+  // Update wallpaper once a new OobeDialogState is propagated.
+  UpdateWallpaper(focused_pod_account_id_);
 
   // If the OOBE dialog was hidden due to closing of the SAML page (camera
   // timeout or ESC button) and there are no user pods and the user isn't using

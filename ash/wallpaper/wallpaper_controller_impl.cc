@@ -1267,9 +1267,7 @@ void WallpaperControllerImpl::ShowSigninWallpaper() {
     return;
   }
 
-  session_manager::SessionState session_state =
-      Shell::Get()->session_controller()->GetSessionState();
-  if (session_state == session_manager::SessionState::OOBE) {
+  if (IsOobeState()) {
     ShowOobeWallpaper();
     return;
   }
