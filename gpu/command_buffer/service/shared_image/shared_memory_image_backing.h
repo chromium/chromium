@@ -15,20 +15,23 @@
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace gpu {
 
 // Implementation of SharedImageBacking that uses Shared Memory GMB.
 class GPU_GLES2_EXPORT SharedMemoryImageBacking : public SharedImageBacking {
  public:
-  SharedMemoryImageBacking(const Mailbox& mailbox,
-                           viz::SharedImageFormat format,
-                           const gfx::Size& size,
-                           const gfx::ColorSpace& color_space,
-                           GrSurfaceOrigin surface_origin,
-                           SkAlphaType alpha_type,
-                           uint32_t usage,
-                           SharedMemoryRegionWrapper wrapper);
+  SharedMemoryImageBacking(
+      const Mailbox& mailbox,
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      SharedMemoryRegionWrapper wrapper,
+      gfx::GpuMemoryBufferHandle handle = gfx::GpuMemoryBufferHandle());
 
   ~SharedMemoryImageBacking() override;
 
@@ -78,6 +81,9 @@ class GPU_GLES2_EXPORT SharedMemoryImageBacking : public SharedImageBacking {
 
   // Set for shared memory GMB.
   SharedMemoryRegionWrapper shared_memory_wrapper_;
+
+  // Initialized when backing is created as CPU mappable.
+  gfx::GpuMemoryBufferHandle handle_;
 
   // SkPixmap(s) for accessing memory.
   std::vector<SkPixmap> pixmaps_;

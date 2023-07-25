@@ -197,7 +197,8 @@ SharedMemoryImageBacking::SharedMemoryImageBacking(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
-    SharedMemoryRegionWrapper wrapper)
+    SharedMemoryRegionWrapper wrapper,
+    gfx::GpuMemoryBufferHandle handle)
     : SharedImageBacking(mailbox,
                          format,
                          size,
@@ -207,7 +208,8 @@ SharedMemoryImageBacking::SharedMemoryImageBacking(
                          usage,
                          format.EstimatedSizeInBytes(size),
                          false),
-      shared_memory_wrapper_(std::move(wrapper)) {
+      shared_memory_wrapper_(std::move(wrapper)),
+      handle_(std::move(handle)) {
   DCHECK(shared_memory_wrapper_.IsValid());
 
   for (int plane = 0; plane < format.NumberOfPlanes(); ++plane) {
