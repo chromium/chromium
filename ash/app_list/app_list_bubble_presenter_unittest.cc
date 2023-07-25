@@ -7,7 +7,6 @@
 #include <set>
 #include <string>
 
-#include "ash/app_list/app_list_constants.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/test_app_list_client.h"
@@ -610,28 +609,6 @@ TEST_F(AppListBubblePresenterTest, CreatingActiveWidgetClosesBubble) {
 
   // Bubble is closed.
   EXPECT_FALSE(presenter->IsShowing());
-}
-
-// Verifies that a window with `kAllowGainFocusFromAppListBubble` can gain focus
-// from the app list bubble without closing the bubble.
-TEST_F(AppListBubblePresenterTest, FocusWindowWithPropertyDoesNotCloseBubble) {
-  AppListBubblePresenter* const presenter = GetBubblePresenter();
-  presenter->Show(GetPrimaryDisplay().id());
-  ASSERT_TRUE(presenter->IsShowing());
-
-  std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(/*delegate=*/nullptr,
-                       /*container_id=*/desks_util::GetActiveDeskContainerId(),
-                       /*bounds=*/gfx::Rect(),
-                       /*show=*/false);
-  widget->GetNativeView()->SetProperty(kAllowGainFocusFromAppListBubble, true);
-  widget->Show();
-  EXPECT_TRUE(widget->GetNativeView()->HasFocus());
-
-  // Bubble is shown without focus.
-  EXPECT_TRUE(presenter->IsShowing());
-  EXPECT_FALSE(
-      presenter->bubble_widget_for_test()->GetNativeView()->HasFocus());
 }
 
 // Regression test for https://crbug.com/1268220.

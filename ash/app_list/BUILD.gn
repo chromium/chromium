@@ -6,21 +6,6 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-component("constants") {
-  defines = [ "APP_LIST_CONSTANTS_IMPLEMENTATION" ]
-
-  sources = [
-    "app_list_constants.cc",
-    "app_list_constants.h",
-    "app_list_constants_export.h",
-  ]
-
-  deps = [
-    "//ash/public/cpp",
-    "//ui/base",
-  ]
-}
-
 source_set("app_list") {
   sources = [
     "app_list_badge_controller.cc",
@@ -176,7 +161,6 @@ source_set("app_list") {
   defines = [ "ASH_IMPLEMENTATION" ]
 
   deps = [
-    ":constants",
     "//ash/app_menu",
     "//ash/assistant/model",
     "//ash/assistant/ui",
@@ -323,7 +307,6 @@ source_set("unit_tests") {
 
   deps = [
     ":app_list",
-    ":constants",
     ":test_support",
     "//ash:test_support",
     "//ash/app_menu",
