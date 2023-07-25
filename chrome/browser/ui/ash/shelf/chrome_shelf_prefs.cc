@@ -197,6 +197,12 @@ bool IsSafeToApplyDefaultPinLayout(Profile* profile) {
   return true;
 }
 
+bool IsOnlyPolicyPinned(app_list::AppListSyncableService::SyncItem* sync_item) {
+  return sync_item->is_user_pinned.has_value() &&
+         !sync_item->is_user_pinned.value() &&
+         ash::features::IsRemoveStalePolicyPinnedAppsFromShelfEnabled();
+}
+
 }  // namespace
 
 const char ChromeShelfPrefs::kPinnedAppsPrefAppIDKey[] = "id";
@@ -340,7 +346,14 @@ void InsertPinsAfterChromeAndBeforeFirstPinnedApp(
 
   for (const auto& app_id : app_ids) {
     // Check if we already processed the current app.
-    if (syncable_service->GetPinPosition(app_id).IsValid()) {
+    auto* sync_item = syncable_service->GetSyncItem(app_id);
+    if (sync_item && sync_item->item_pin_ordinal.IsValid()) {
+      // If `is_user_pinned` is currently unknown but the incoming pin is
+      // triggered by a change to policy, set `is_user_pinned` to false.
+      if (is_policy_initiated && !sync_item->is_user_pinned.has_value() &&
+          ash::features::IsRemoveStalePolicyPinnedAppsFromShelfEnabled()) {
+        syncable_service->SetIsPolicyPinned(app_id);
+      }
       continue;
     }
     const syncer::StringOrdinal position = after.CreateBetween(before);
@@ -404,6 +417,8 @@ std::vector<ash::ShelfID> ChromeShelfPrefs::GetPinnedAppsFromSync(
     }
   }
 
+  std::vector<std::string> policy_delta_remove_from_shelf;
+
   std::vector<PinInfo> pin_infos;
 
   // Empty pins indicates that sync based pin model is used for the first
@@ -432,7 +447,18 @@ std::vector<ash::ShelfID> ChromeShelfPrefs::GetPinnedAppsFromSync(
     if (!is_ash_chrome && !helper->IsValidIDForCurrentUser(app_id))
       continue;
 
+    // Prune apps that used to be policy-pinned (`is_user_pinned = false`), but
+    // are not a part of the policy anymore.
+    if (!is_ash_chrome && IsOnlyPolicyPinned(sync_item.get()) &&
+        !base::Contains(policy_pinned_apps, item_id)) {
+      policy_delta_remove_from_shelf.push_back(item_id);
+      continue;
+    }
     pin_infos.emplace_back(std::move(app_id), sync_item->item_pin_ordinal);
+  }
+
+  for (const auto& item_id : policy_delta_remove_from_shelf) {
+    syncable_service->RemovePinPosition(item_id);
   }
 
   // Sort pins according their ordinals.

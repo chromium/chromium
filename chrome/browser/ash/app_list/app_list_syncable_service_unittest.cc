@@ -694,12 +694,14 @@ TEST_F(AppListSyncableServiceTest, InitialMergeAndUpdate) {
       FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
       CreateAppRemoteData(kItemId1, "item_name1x", GenerateId("parent_id1x"),
                           "ordinalx", "pinordinalx",
-                          sync_pb::AppListSpecifics_AppListItemType_TYPE_APP)));
+                          sync_pb::AppListSpecifics_AppListItemType_TYPE_APP,
+                          /*is_user_pinned=*/true)));
   change_list.push_back(syncer::SyncChange(
       FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
       CreateAppRemoteData(kItemId2, "item_name2x", GenerateId("parent_id2x"),
                           "ordinalx", "pinordinalx",
-                          sync_pb::AppListSpecifics_AppListItemType_TYPE_APP)));
+                          sync_pb::AppListSpecifics_AppListItemType_TYPE_APP,
+                          /*is_user_pinned=*/false)));
 
   app_list_syncable_service()->ProcessSyncChanges(base::Location(),
                                                   change_list);
@@ -711,7 +713,8 @@ TEST_F(AppListSyncableServiceTest, InitialMergeAndUpdate) {
   EXPECT_EQ("ordinalx", GetSyncItem(kItemId1)->item_ordinal.ToDebugString());
   EXPECT_EQ("pinordinalx",
             GetSyncItem(kItemId1)->item_pin_ordinal.ToDebugString());
-  EXPECT_FALSE(GetSyncItem(kItemId1)->is_user_pinned.has_value());
+  EXPECT_TRUE(GetSyncItem(kItemId1)->is_user_pinned.has_value());
+  EXPECT_TRUE(*GetSyncItem(kItemId1)->is_user_pinned);
 
   ASSERT_TRUE(GetSyncItem(kItemId2));
   EXPECT_EQ("item_name2x", GetSyncItem(kItemId2)->item_name);
@@ -719,7 +722,8 @@ TEST_F(AppListSyncableServiceTest, InitialMergeAndUpdate) {
   EXPECT_EQ("ordinalx", GetSyncItem(kItemId2)->item_ordinal.ToDebugString());
   EXPECT_EQ("pinordinalx",
             GetSyncItem(kItemId2)->item_pin_ordinal.ToDebugString());
-  EXPECT_FALSE(GetSyncItem(kItemId2)->is_user_pinned.has_value());
+  EXPECT_TRUE(GetSyncItem(kItemId2)->is_user_pinned.has_value());
+  EXPECT_FALSE(*GetSyncItem(kItemId2)->is_user_pinned);
 }
 
 TEST_F(AppListSyncableServiceTest, InitialMergeAndUpdate_BadData) {

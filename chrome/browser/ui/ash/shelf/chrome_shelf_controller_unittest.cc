@@ -64,7 +64,9 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/apps/app_service/policy_util.h"
+#include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
+#include "chrome/browser/ash/app_list/app_list_test_util.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_app_icon_loader.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_icon.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
@@ -158,6 +160,7 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/fake_sync_change_processor.h"
+#include "components/sync/test/sync_change_processor_wrapper_for_test.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/pref_model_associator.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -258,6 +261,24 @@ bool ValidateImageIsFullyLoaded(const gfx::ImageSkia& image) {
 
   return true;
 }
+
+std::unique_ptr<syncer::SyncChangeProcessor> CreateSyncChangeProcessor(
+    syncer::SyncChangeProcessor* processor) {
+  if (processor) {
+    return std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+        processor);
+  }
+  return std::make_unique<syncer::FakeSyncChangeProcessor>();
+}
+
+enum class PinAssertion {
+  kNotPinned,
+  kUnknownPinSource,
+  kOnlyPolicyPinned,
+  kUserPinned
+};
+
+using PinAssertionMap = base::flat_map<std::string, PinAssertion>;
 
 // Test implementation of AppIconLoader.
 class TestAppIconLoaderImpl : public AppIconLoader {
@@ -738,10 +759,10 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     return CreateShelfController();
   }
 
-  void StartAppSyncService(const syncer::SyncDataList& init_sync_list) {
+  void StartAppSyncService(const syncer::SyncDataList& init_sync_list,
+                           syncer::SyncChangeProcessor* processor = nullptr) {
     app_list_syncable_service_->MergeDataAndStartSyncing(
-        syncer::APP_LIST, init_sync_list,
-        std::make_unique<syncer::FakeSyncChangeProcessor>());
+        syncer::APP_LIST, init_sync_list, CreateSyncChangeProcessor(processor));
     EXPECT_EQ(init_sync_list.size(),
               app_list_syncable_service_->sync_items().size());
   }
@@ -798,18 +819,29 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   }
 
   void AppendPrefValue(base::Value::List& pref_values,
-                       const std::string& policy_id) {
-    base::Value::Dict entry;
-    entry.Set(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey, policy_id);
-    pref_values.Append(std::move(entry));
+                       base::StringPiece policy_id) {
+    pref_values.Append(base::Value::Dict().Set(
+        ChromeShelfPrefs::kPinnedAppsPrefAppIDKey, policy_id));
+  }
+
+  void AppendPrefValue(base::Value::List& pref_values,
+                       ash::SystemWebAppType app_type) {
+    AppendPrefValue(pref_values,
+                    *apps_util::GetPolicyIdForSystemWebAppType(app_type));
   }
 
   void RemovePrefValue(base::Value::List& pref_values,
-                       const std::string& policy_id) {
+                       base::StringPiece policy_id) {
     pref_values.EraseIf([&policy_id](const auto& entry) {
       return *entry.GetDict().FindString(
                  ChromeShelfPrefs::kPinnedAppsPrefAppIDKey) == policy_id;
     });
+  }
+
+  void RemovePrefValue(base::Value::List& pref_values,
+                       ash::SystemWebAppType app_type) {
+    RemovePrefValue(pref_values,
+                    *apps_util::GetPolicyIdForSystemWebAppType(app_type));
   }
 
   void InsertRemoveAllPinsChange(syncer::SyncChangeList* list) {
@@ -1259,6 +1291,67 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     Observe(nullptr);
   }
 
+  void UpdateSyncPinAssertion(const std::string& app_id,
+                              PinAssertion pin_assertion) {
+    pin_assertions_[app_id] = pin_assertion;
+  }
+
+  void ValidateSyncPinAssertions() {
+    base::flat_set<std::string> processed_assertions;
+    for (const auto& [item_id, sync_item] :
+         app_list_syncable_service_->sync_items()) {
+      auto itr = pin_assertions_.find(item_id);
+      if (itr == pin_assertions_.end()) {
+        continue;
+      }
+      switch (itr->second) {
+        case PinAssertion::kNotPinned:
+          ASSERT_FALSE(sync_item->item_pin_ordinal.IsValid());
+          ASSERT_FALSE(sync_item->is_user_pinned.has_value());
+          break;
+        case PinAssertion::kUnknownPinSource:
+          ASSERT_TRUE(sync_item->item_pin_ordinal.IsValid());
+          ASSERT_FALSE(sync_item->is_user_pinned.has_value());
+          break;
+        case PinAssertion::kOnlyPolicyPinned:
+          ASSERT_TRUE(sync_item->item_pin_ordinal.IsValid());
+          ASSERT_TRUE(sync_item->is_user_pinned.has_value());
+          ASSERT_FALSE(*sync_item->is_user_pinned);
+          break;
+        case PinAssertion::kUserPinned:
+          ASSERT_TRUE(sync_item->item_pin_ordinal.IsValid());
+          ASSERT_TRUE(sync_item->is_user_pinned.has_value());
+          ASSERT_TRUE(*sync_item->is_user_pinned);
+          break;
+      }
+      processed_assertions.insert(item_id);
+    }
+    ASSERT_EQ(processed_assertions.size(), pin_assertions_.size());
+  }
+
+  syncer::SyncData GetSyncDataFor(base::StringPiece app_id) const {
+    auto sync_data = app_list_syncable_service_->GetAllSyncDataForTesting();
+    auto itr = base::ranges::find(sync_data, app_id, [](const auto& sync_item) {
+      return sync_item.GetSpecifics().app_list().item_id();
+    });
+    EXPECT_FALSE(itr == sync_data.end());
+    return *itr;
+  }
+
+  sync_pb::AppListSpecifics GetAppListSpecificsFor(
+      base::StringPiece app_id) const {
+    return GetSyncDataFor(app_id).GetSpecifics().app_list();
+  }
+
+  template <class... Args>
+  void SetPinnedLauncherAppsPolicy(Args&&... args) {
+    base::Value::List pinned_launcher_apps;
+    (AppendPrefValue(pinned_launcher_apps, std::forward<Args>(args)), ...);
+    profile()->GetTestingPrefService()->SetManagedPref(
+        prefs::kPolicyPinnedLauncherApps,
+        base::Value(std::move(pinned_launcher_apps)));
+  }
+
   apps::AppServiceTest& app_service_test() { return app_service_test_; }
 
   // Needed for extension service & friends to work.
@@ -1290,6 +1383,8 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
 
   raw_ptr<app_list::AppListSyncableService, ExperimentalAsh>
       app_list_syncable_service_ = nullptr;
+
+  PinAssertionMap pin_assertions_;
 
  private:
   TestBrowserWindow* CreateTestBrowserWindowAura() {
@@ -1329,7 +1424,11 @@ class ChromeShelfControllerTest : public ChromeShelfControllerTestBase {
   ChromeShelfControllerTest() {
     // `media_router::kMediaRouter` is disabled because it has unmet
     // dependencies and is unrelated to this unit test.
-    feature_list_.InitAndDisableFeature(media_router::kMediaRouter);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {ash::features::
+             kRemoveStalePolicyPinnedAppsFromShelf}, /*disabled_features=*/
+        {media_router::kMediaRouter});
   }
   ~ChromeShelfControllerTest() override = default;
 
@@ -3646,6 +3745,7 @@ TEST_F(ChromeShelfControllerTest,
 }
 
 TEST_F(ChromeShelfControllerTest, Policy) {
+  // Install some apps.
   InstallSystemWebApp(std::make_unique<CameraSystemAppDelegate>(profile()));
 
   extension_service_->AddExtension(extension2_.get());
@@ -3670,20 +3770,30 @@ TEST_F(ChromeShelfControllerTest, Policy) {
   auto gmail_install_url = gmail_start_url;
   InstallExternalWebApp(gmail_start_url, gmail_install_url);
 
-  // Pin policy should be initilized before controller start.
+  // Start the controller.
+  InitShelfController();
+
+  // Pin Camera and Gmail to shelf; they should be synced with `is_user_pinned =
+  // true`.
+  PinAppWithIDToShelf(web_app::kCameraAppId);
+  PinAppWithIDToShelf(web_app::kGmailAppId);
+
+  // `extension2_` is not pinned yet.
+  UpdateSyncPinAssertion(extension2_->id(), PinAssertion::kNotPinned);
+  UpdateSyncPinAssertion(web_app::kCameraAppId, PinAssertion::kUserPinned);
+  UpdateSyncPinAssertion(web_app::kGmailAppId, PinAssertion::kUserPinned);
+  ValidateSyncPinAssertions();
+
+  // Construct a pinning policy.
   base::Value::List policy_value;
   AppendPrefValue(policy_value, extension1_->id());
   AppendPrefValue(policy_value, extension2_->id());
-  AppendPrefValue(policy_value,
-                  std::string{*apps_util::GetPolicyIdForSystemWebAppType(
-                      ash::SystemWebAppType::CAMERA)});
+  AppendPrefValue(policy_value, ash::SystemWebAppType::CAMERA);
   // Pin Gmail by its install_url (see above).
   AppendPrefValue(policy_value, gmail_install_url.spec());
 
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
-
-  InitShelfController();
 
   // |extension2_|, Camera and Gmail should get pinned. |extension1_| is
   // specified but not installed, and Youtube is part of the default set, but
@@ -3693,34 +3803,201 @@ TEST_F(ChromeShelfControllerTest, Policy) {
   EXPECT_TRUE(IsAppPolicyPinned(web_app::kCameraAppId));
   EXPECT_TRUE(IsAppPolicyPinned(web_app::kGmailAppId));
 
+  // `extension2_` is only pinned by the policy, whereas the other two apps have
+  // also been previously pinned by us directly.
+  UpdateSyncPinAssertion(extension2_->id(), PinAssertion::kOnlyPolicyPinned);
+  ValidateSyncPinAssertions();
+
   // Installing |extension1_| should add it to the shelf. Note, App1 goes
   // before App2 that is aligned with the pin order in policy.
   AddExtension(extension1_.get());
   EXPECT_EQ("Chrome, App1, App2, Camera, Gmail", GetPinnedAppStatus());
   EXPECT_TRUE(IsAppPolicyPinned(extension1_->id()));
 
-  // Removing |extension1_| from the policy should not be reflected in the
-  // shelf and pin will exist.
+  // `extension1_` is now installed and is present in the pinning policy.
+  UpdateSyncPinAssertion(extension1_->id(), PinAssertion::kOnlyPolicyPinned);
+  ValidateSyncPinAssertions();
+
+  // Removing `extension1_` from the policy should be reflected in the shelf and
+  // the pin should get removed as it was only policy-pinned.
   RemovePrefValue(policy_value, extension1_->id());
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
-  EXPECT_EQ("Chrome, App1, App2, Camera, Gmail", GetPinnedAppStatus());
+  EXPECT_EQ("Chrome, App2, Camera, Gmail", GetPinnedAppStatus());
   EXPECT_FALSE(IsAppPolicyPinned(extension1_->id()));
 
-  // Remove Gmail from the policy. It should stay pinned, but is no longer
-  // fixed.
+  // `extension1_` was introduced by the policy but is no longer a part of it,
+  // so we unpin it.
+  UpdateSyncPinAssertion(extension1_->id(), PinAssertion::kNotPinned);
+  ValidateSyncPinAssertions();
+
+  // Remove Gmail from the policy. It should stay pinned as it was originally
+  // pinned by the user (as simulated in the test), but is no longer fixed.
   RemovePrefValue(policy_value, gmail_install_url.spec());
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
-  EXPECT_EQ("Chrome, App1, App2, Camera, Gmail", GetPinnedAppStatus());
+  EXPECT_EQ("Chrome, App2, Camera, Gmail", GetPinnedAppStatus());
   EXPECT_FALSE(IsAppPolicyPinned(web_app::kGmailAppId));
+
+  // Gmail was backed by both the policy and the user, but now that it's removed
+  // from the policy, only the user pin should persist.
+  UpdateSyncPinAssertion(web_app::kGmailAppId, PinAssertion::kUserPinned);
+  ValidateSyncPinAssertions();
 
   // Check that Gmail can also be pinned by direct mapping.
   AppendPrefValue(policy_value, std::string(kGmailPolicyId));
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
-  EXPECT_EQ("Chrome, App1, App2, Camera, Gmail", GetPinnedAppStatus());
+  EXPECT_EQ("Chrome, App2, Camera, Gmail", GetPinnedAppStatus());
   EXPECT_TRUE(IsAppPolicyPinned(web_app::kGmailAppId));
+
+  ValidateSyncPinAssertions();
+
+  // Assert that this configuration can be restored from sync data.
+  auto sync_data = app_list_syncable_service_->GetAllSyncDataForTesting();
+  ResetShelfController();
+  SendPinChanges(syncer::SyncChangeList(), /*reset_pin_model=*/true);
+  StopAppSyncService();
+  EXPECT_EQ(0U, app_list_syncable_service_->sync_items().size());
+
+  // Remove `extension2_` from the policy and add `extension1_` again to
+  // validate that policy deltas are handled correctly.
+  RemovePrefValue(policy_value, extension2_->id());
+  AppendPrefValue(policy_value, extension1_->id());
+  profile()->GetTestingPrefService()->SetManagedPref(
+      prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
+
+  // Simulate UI start.
+  StartAppSyncService(sync_data);
+
+  RecreateShelfController()->Init();
+
+  EXPECT_EQ("Chrome, App1, Camera, Gmail", GetPinnedAppStatus());
+  UpdateSyncPinAssertion(extension2_->id(), PinAssertion::kNotPinned);
+  UpdateSyncPinAssertion(extension1_->id(), PinAssertion::kOnlyPolicyPinned);
+  ValidateSyncPinAssertions();
+}
+
+TEST_F(ChromeShelfControllerTest, ChromeCannotBeUnpinnedByPolicy) {
+  SetPinnedLauncherAppsPolicy(app_constants::kChromeAppId);
+
+  // Start the controller.
+  InitShelfController();
+  EXPECT_EQ("Chrome", GetPinnedAppStatus());
+  UpdateSyncPinAssertion(app_constants::kChromeAppId,
+                         PinAssertion::kUserPinned);
+  ValidateSyncPinAssertions();
+
+  EXPECT_EQ(app_list_syncable_service_->sync_items().size(), 1U);
+  auto chrome_item = GetAppListSpecificsFor(app_constants::kChromeAppId);
+
+  // Simulate an update from an older version with unset `is_user_pinned` paired
+  // with valid `item_pin_ordinal`. The expected result is for the client to
+  // ignore this empty value and retain the current state.
+  app_list_syncable_service_->ProcessSyncChanges(
+      FROM_HERE,
+      {syncer::SyncChange(
+          FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
+          app_list::CreateAppRemoteData(
+              chrome_item.item_id(), chrome_item.item_name(),
+              chrome_item.parent_id(), chrome_item.item_ordinal(),
+              chrome_item.item_pin_ordinal(), chrome_item.item_type(),
+              /*is_user_pinned=*/absl::nullopt))});
+
+  EXPECT_EQ("Chrome", GetPinnedAppStatus());
+  UpdateSyncPinAssertion(app_constants::kChromeAppId,
+                         PinAssertion::kUserPinned);
+  ValidateSyncPinAssertions();
+
+  SetPinnedLauncherAppsPolicy(/**/);
+
+  EXPECT_EQ("Chrome", GetPinnedAppStatus());
+  UpdateSyncPinAssertion(app_constants::kChromeAppId,
+                         PinAssertion::kUserPinned);
+  ValidateSyncPinAssertions();
+}
+
+// Tests that an app that is pinned to shelf but doesn't have a pin source
+// receives `is_user_pinned = false` during initial merge if the app is listed
+// in PinnedLauncherApps policy.
+TEST_F(ChromeShelfControllerTest, InitialMergeAndUpdateForPolicyPinnedApps) {
+  InstallSystemWebApp(std::make_unique<CameraSystemAppDelegate>(profile()));
+
+  EXPECT_EQ(app_list_syncable_service_->sync_items().size(), 2U);
+  auto camera_item = GetAppListSpecificsFor(web_app::kCameraAppId);
+
+  StopAppSyncService();
+
+  // Pin camera by policy.
+  SetPinnedLauncherAppsPolicy(ash::SystemWebAppType::CAMERA);
+
+  auto sync_processor = std::make_unique<syncer::FakeSyncChangeProcessor>();
+  // Create a pinned app.
+  StartAppSyncService(
+      {GetSyncDataFor(app_constants::kChromeAppId),
+       app_list::CreateAppRemoteData(
+           camera_item.item_id(), camera_item.item_name(),
+           camera_item.parent_id(), camera_item.item_ordinal(), "pinordinalx")},
+      sync_processor.get());
+
+  EXPECT_EQ(sync_processor->changes().size(), 1U);
+  const auto& camera_change =
+      sync_processor->changes()[0].sync_data().GetSpecifics().app_list();
+  EXPECT_EQ(camera_change.item_id(), web_app::kCameraAppId);
+  EXPECT_TRUE(
+      syncer::StringOrdinal(camera_change.item_pin_ordinal()).IsValid());
+  EXPECT_TRUE(camera_change.has_is_user_pinned());
+  EXPECT_FALSE(camera_change.is_user_pinned());
+}
+
+// Tests that an app can be unpinned by the admin by correctly toggling the
+// policy even after the initial sync.
+TEST_F(ChromeShelfControllerTest, PostFactumPolicyUnpin) {
+  InstallSystemWebApp(std::make_unique<CameraSystemAppDelegate>(profile()));
+
+  auto sync_changes = app_list_syncable_service_->GetAllSyncDataForTesting();
+  ASSERT_EQ(sync_changes.size(), 2U);
+  auto camera_sync = std::move(sync_changes[1]);
+  sync_changes.pop_back();
+
+  const auto& camera_sync_specs = camera_sync.GetSpecifics().app_list();
+  ASSERT_EQ(camera_sync_specs.item_id(), web_app::kCameraAppId);
+
+  StopAppSyncService();
+
+  // Create a pinned app.
+  StartAppSyncService(
+      {std::move(sync_changes[0]),
+       app_list::CreateAppRemoteData(
+           camera_sync_specs.item_id(), camera_sync_specs.item_name(),
+           camera_sync_specs.parent_id(), camera_sync_specs.item_ordinal(),
+           "pinordinalx")});
+
+  // Start the controller.
+  InitShelfController();
+
+  // App should be pinned, but the exact pin source is unclear.
+  EXPECT_EQ("Chrome, Camera", GetPinnedAppStatus());
+  UpdateSyncPinAssertion(web_app::kCameraAppId,
+                         PinAssertion::kUnknownPinSource);
+  ValidateSyncPinAssertions();
+
+  // Pin camera by policy.
+  SetPinnedLauncherAppsPolicy(ash::SystemWebAppType::CAMERA);
+
+  // App should be pinned with source = policy.
+  EXPECT_EQ("Chrome, Camera", GetPinnedAppStatus());
+  UpdateSyncPinAssertion(web_app::kCameraAppId,
+                         PinAssertion::kOnlyPolicyPinned);
+  ValidateSyncPinAssertions();
+
+  // Reset policy value.
+  SetPinnedLauncherAppsPolicy(/**/);
+
+  // App should no longer be pinned.
+  EXPECT_EQ("Chrome", GetPinnedAppStatus());
+  UpdateSyncPinAssertion(web_app::kCameraAppId, PinAssertion::kNotPinned);
+  ValidateSyncPinAssertions();
 }
 
 TEST_F(ChromeShelfControllerTest, UnpinWithUninstall) {
@@ -4708,10 +4985,7 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcAppPinPolicy) {
 
   // Sets up policy that pins this ARC app. Unlike native extensions, ARC apps
   // are pinned by |package_name| rather than the actual |app_id|.
-  base::Value::List policy_value;
-  AppendPrefValue(policy_value, kExampleArcPackageName);
-  profile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
+  SetPinnedLauncherAppsPolicy(kExampleArcPackageName);
 
   EXPECT_TRUE(shelf_controller_->IsAppPinned(example_app_id));
   EXPECT_EQ(AppListControllerDelegate::PIN_FIXED,
@@ -4744,10 +5018,7 @@ TEST_F(ChromeShelfControllerWithArcTest, ApkWebAppPinPolicy) {
   // Sets up policy that pins this apk-based Web App. Unlike regular Web Apps,
   // Web Apps originating from apks are pinned by |package_name| rather than
   // their |install_url|.
-  base::Value::List policy_value;
-  AppendPrefValue(policy_value, kMapsWebPackageName);
-  profile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
+  SetPinnedLauncherAppsPolicy(kMapsWebPackageName);
 
   EXPECT_TRUE(shelf_controller_->IsAppPinned(maps_app_id));
   EXPECT_EQ(AppListControllerDelegate::PIN_FIXED,
@@ -5333,12 +5604,8 @@ TEST_F(ChromeShelfControllerDemoModeTest, MAYBE_PinnedAppsOnline) {
 
   InitShelfControllerWithBrowser();
 
-  base::Value::List policy_value;
-
   extension_service_->AddExtension(extension1_.get());
   extension_service_->AddExtension(extension2_.get());
-  AppendPrefValue(policy_value, extension1_->id());
-  AppendPrefValue(policy_value, extension2_->id());
 
   arc::mojom::AppInfoPtr appinfo =
       CreateAppInfo("Some App", "SomeActivity", "com.example.app");
@@ -5349,12 +5616,8 @@ TEST_F(ChromeShelfControllerDemoModeTest, MAYBE_PinnedAppsOnline) {
   const std::string online_only_app_id =
       AddArcAppAndShortcut(*online_only_appinfo);
 
-  AppendPrefValue(policy_value, appinfo->package_name);
-  AppendPrefValue(policy_value, online_only_appinfo->package_name);
-
   constexpr char kWebAppUrl[] = "https://test-pwa.com/";
   web_app::AppId web_app_id = InstallExternalWebApp(kWebAppUrl);
-  AppendPrefValue(policy_value, kWebAppUrl);
 
   // If the device is offline, extension2, onlineonly, and TestPWA should be
   // unpinned. Since the device is online here, these apps should still be
@@ -5362,8 +5625,9 @@ TEST_F(ChromeShelfControllerDemoModeTest, MAYBE_PinnedAppsOnline) {
   ash::DemoSession::Get()->OverrideIgnorePinPolicyAppsForTesting(
       {extension2_->id(), online_only_appinfo->package_name});
 
-  profile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
+  SetPinnedLauncherAppsPolicy(extension1_->id(), extension2_->id(),
+                              appinfo->package_name,
+                              online_only_appinfo->package_name, kWebAppUrl);
 
   // Since the device is online, all policy pinned apps are pinned.
   EXPECT_TRUE(shelf_controller_->IsAppPinned(extension1_->id()));
@@ -5393,12 +5657,8 @@ TEST_F(ChromeShelfControllerDemoModeTest, PinnedAppsOffline) {
 
   InitShelfControllerWithBrowser();
 
-  base::Value::List policy_value;
-
   extension_service_->AddExtension(extension1_.get());
   extension_service_->AddExtension(extension2_.get());
-  AppendPrefValue(policy_value, extension1_->id());
-  AppendPrefValue(policy_value, extension2_->id());
 
   arc::mojom::AppInfoPtr appinfo =
       CreateAppInfo("Some App", "SomeActivity", "com.example.app");
@@ -5409,20 +5669,17 @@ TEST_F(ChromeShelfControllerDemoModeTest, PinnedAppsOffline) {
   const std::string online_only_app_id =
       AddArcAppAndShortcut(*online_only_appinfo);
 
-  AppendPrefValue(policy_value, appinfo->package_name);
-  AppendPrefValue(policy_value, online_only_appinfo->package_name);
-
   constexpr char kWebAppUrl[] = "https://test-pwa.com/";
   web_app::AppId web_app_id = InstallExternalWebApp(kWebAppUrl);
-  AppendPrefValue(policy_value, kWebAppUrl);
 
   // If the device is offline, extension2 and onlineonly, and TestPWA should be
   // unpinned.
   ash::DemoSession::Get()->OverrideIgnorePinPolicyAppsForTesting(
       {extension2_->id(), online_only_appinfo->package_name, kWebAppUrl});
 
-  profile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
+  SetPinnedLauncherAppsPolicy(extension1_->id(), extension2_->id(),
+                              appinfo->package_name,
+                              online_only_appinfo->package_name, kWebAppUrl);
 
   // Since the device is offline, the policy pinned apps that shouldn't be
   // pinned in Demo Mode are unpinned.
@@ -5841,10 +6098,7 @@ TEST_F(ChromeShelfControllerTest, AppsHiddenFromShelfDontGetPinnedByPolicy) {
   AddExtension(extension1_.get());
 
   // Pin a test app by policy.
-  base::Value::List policy_value;
-  AppendPrefValue(policy_value, extension1_->id());
-  profile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
+  SetPinnedLauncherAppsPolicy(extension1_->id());
 
   InitShelfController();
   EXPECT_EQ(2, model_->item_count());

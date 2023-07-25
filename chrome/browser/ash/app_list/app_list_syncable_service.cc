@@ -43,6 +43,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/app_list/app_list_util.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -79,6 +80,7 @@ constexpr char kTypeKey[] = "type";
 constexpr char kBackgroundColorKey[] = "background_color";
 constexpr char kHueKey[] = "hue";
 constexpr char kEmptyItemOrdinalFixable[] = "empty_item_ordinal_fixable";
+constexpr char kIsUserPinned[] = "is_user_pinned";
 
 void GetSyncSpecificsFromSyncItem(const AppListSyncableService::SyncItem* item,
                                   sync_pb::AppListSpecifics* specifics) {
@@ -193,6 +195,13 @@ void UpdateSyncItemInLocalStorage(
   dict_item->Set(kEmptyItemOrdinalFixable,
                  sync_item->item_ordinal.IsValid() ||
                      sync_item->empty_item_ordinal_fixable);
+
+  if (sync_item->is_user_pinned.has_value() &&
+      ash::features::IsRemoveStalePolicyPinnedAppsFromShelfEnabled()) {
+    dict_item->Set(kIsUserPinned, *sync_item->is_user_pinned);
+  } else {
+    dict_item->Remove(kIsUserPinned);
+  }
 
   // Handle the item color.
   if (sync_item->item_color.IsValid()) {
@@ -790,9 +799,35 @@ void AppListSyncableService::SetPinPosition(
   }
 
   sync_item->item_pin_ordinal = item_pin_ordinal;
+  if (ash::features::IsRemoveStalePolicyPinnedAppsFromShelfEnabled()) {
+    // If `is_user_pinned` is currently `true`, it cannot become `false` unless
+    // the user decides to unpin the app manually.
+    // Conversely, `is_user_pinned` which is currently `false` can only become
+    // `true` if the policy changes and the app gets removed from the shelf,
+    // after which the user decides to pin the app again.
+    // In other words, transitions from `true` to `false` and vice versa must
+    // involve the `absl::nullopt` phase.
+    if (!sync_item->is_user_pinned.has_value()) {
+      sync_item->is_user_pinned = !pinned_by_policy;
+    }
+  }
 
   UpdateSyncItemInLocalStorage(profile_, sync_item);
   SendSyncChange(sync_item, sync_change_type);
+}
+
+void AppListSyncableService::SetIsPolicyPinned(const std::string& app_id) {
+  // Pin position can be set only after model is built.
+  DCHECK(IsInitialized());
+
+  SyncItem* sync_item = FindSyncItem(app_id);
+  CHECK(sync_item);
+  CHECK(sync_item->item_pin_ordinal.IsValid());
+  CHECK(!sync_item->is_user_pinned.has_value());
+  sync_item->is_user_pinned = false;
+
+  UpdateSyncItemInLocalStorage(profile_, sync_item);
+  SendSyncChange(sync_item, SyncChange::ACTION_UPDATE);
 }
 
 void AppListSyncableService::RemovePinPosition(const std::string& app_id) {
@@ -1137,8 +1172,8 @@ AppListSyncableService::MergeDataAndStartSyncing(
     }
 
     UpdateSyncItemInLocalStorage(profile_, sync_item);
-    change_list.push_back(SyncChange(FROM_HERE, SyncChange::ACTION_ADD,
-                                     GetSyncDataFromSyncItem(sync_item)));
+    change_list.emplace_back(FROM_HERE, SyncChange::ACTION_ADD,
+                             GetSyncDataFromSyncItem(sync_item));
   }
 
   oem_folder_using_provisional_default_position_ = false;
@@ -1167,8 +1202,28 @@ AppListSyncableService::MergeDataAndStartSyncing(
       VLOG(2) << "Fixing sync item by generating new position ordinal: "
               << sync_item;
     }
-    change_list.push_back(SyncChange(FROM_HERE, SyncChange::ACTION_UPDATE,
-                                     GetSyncDataFromSyncItem(sync_item.get())));
+    change_list.emplace_back(FROM_HERE, SyncChange::ACTION_UPDATE,
+                             GetSyncDataFromSyncItem(sync_item.get()));
+  }
+
+  if (ash::features::IsRemoveStalePolicyPinnedAppsFromShelfEnabled()) {
+    std::vector<std::string> policy_pinned_apps =
+        ChromeShelfPrefs::GetAppsPinnedByPolicy(profile_);
+    if (!policy_pinned_apps.empty()) {
+      for (const auto& [item_id, sync_item] : sync_items_) {
+        // Only current policy-pinned apps that do not yet have a pinning source
+        // defined are processed to minimize the number of sync messages
+        // exchanged. This helps keep the logic flexible and gives the admins a
+        // chance to unpin unwanted apps later during the transition period.
+        if (sync_item->item_pin_ordinal.IsValid() &&
+            !sync_item->is_user_pinned.has_value() &&
+            base::Contains(policy_pinned_apps, item_id)) {
+          sync_item->is_user_pinned = false;
+          change_list.emplace_back(FROM_HERE, SyncChange::ACTION_UPDATE,
+                                   GetSyncDataFromSyncItem(sync_item.get()));
+        }
+      }
+    }
   }
 
   sync_processor_->ProcessSyncChanges(FROM_HERE, change_list);
@@ -1611,6 +1666,23 @@ void AppListSyncableService::UpdateSyncItemFromSync(
     item->item_pin_ordinal =
         syncer::StringOrdinal(specifics.item_pin_ordinal());
   }
+  if (ash::features::IsRemoveStalePolicyPinnedAppsFromShelfEnabled()) {
+    if (specifics.has_is_user_pinned()) {
+      item->is_user_pinned = specifics.is_user_pinned();
+      // Valid `item_pin_ordinal` without set `is_user_pinned` in the proto
+      // means an update from an older version -- do not overwrite the saved
+      // value. Note that this is a best-effort heuristic which is not
+      // consistent with the behavior in MergeDataAndStartSyncing.
+    } else if (!item->item_pin_ordinal.IsValid()) {
+      item->is_user_pinned = absl::nullopt;
+    }
+  } else {
+    // Nullify pin info if the feature is not supported.
+    item->is_user_pinned = absl::nullopt;
+  }
+  // `is_user_pinned` cannot be set while `item_pin_ordinal` is invalid.
+  DCHECK(
+      !(!item->item_pin_ordinal.IsValid() && item->is_user_pinned.has_value()));
 
   if (specifics.has_item_color()) {
     const sync_pb::AppListSpecifics_IconColor& specifics_icon_color =

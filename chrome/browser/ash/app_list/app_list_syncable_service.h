@@ -230,6 +230,11 @@ class AppListSyncableService : public syncer::SyncableService,
                               const syncer::StringOrdinal& item_pin_ordinal,
                               bool pinned_by_policy);
 
+  // Sets |is_user_pinned| to false for the given item specified by |item_id|.
+  // Item must exist, |item_pin_ordinal| must be valid, and |is_user_pinned|
+  // must be unset by the time of the call.
+  void SetIsPolicyPinned(const std::string& app_id);
+
   // Removes pin position for the app specified by |app_id|.
   virtual void RemovePinPosition(const std::string& app_id);
 
