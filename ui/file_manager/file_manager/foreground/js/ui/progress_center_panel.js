@@ -307,15 +307,12 @@ export class ProgressCenterPanel {
               console.warn(`Unexpected task type: ${item.type}`);
               return '';
           }
-        // TODO(b/279435843): Replace with translation strings.
         case PolicyErrorType.DLP_WARNING_TIMEOUT:
           switch (item.type) {
             case ProgressItemType.COPY:
-              return 'Copy cancelled';
+              return str('DLP_FILES_COPY_TIMEOUT_TITLE');
             case ProgressItemType.MOVE:
-              return 'Move cancelled';
-            case ProgressItemType.TRANSFER:
-              return 'Transfer cancelled';
+              return str('DLP_FILES_MOVE_TIMEOUT_TITLE');
             default:
               console.warn(`Unexpected task type: ${item.type}`);
               return '';
@@ -400,17 +397,11 @@ export class ProgressCenterPanel {
             return str('DLP_FILES_BLOCKED_MESSAGE_MULTIPLE');
           }
         case PolicyErrorType.DLP_WARNING_TIMEOUT:
-          // TODO(b/279435843): Replace with translation strings.
           switch (item.type) {
             case ProgressItemType.COPY:
-              return 'Confirmation was required to continue copying' +
-                  ' your files. Please try again';
+              return str('DLP_FILES_COPY_TIMEOUT_MESSAGE');
             case ProgressItemType.MOVE:
-              return 'Confirmation was required to continue moving' +
-                  ' your files. Please try again';
-            case ProgressItemType.TRANSFER:
-              return 'Confirmation was required to continue' +
-                  ' transferring your files. Please try again';
+              return str('DLP_FILES_MOVE_TIMEOUT_MESSAGE');
             default:
               console.warn(`Unexpected task type: ${item.type}`);
               return '';
