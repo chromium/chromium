@@ -14,15 +14,12 @@ namespace blink {
 class LocalDOMWindow;
 
 // Interface exposing additional per-screen information.
-// https://w3c.github.io/window-placement/
+// https://w3c.github.io/window-management/
 class MODULES_EXPORT ScreenDetailed final : public Screen {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  ScreenDetailed(LocalDOMWindow* window,
-                 int64_t display_id,
-                 bool label_is_internal,
-                 uint32_t label_idx);
+  ScreenDetailed(LocalDOMWindow* window, int64_t display_id);
 
   static bool AreWebExposedScreenDetailedPropertiesEqual(
       const display::ScreenInfo& prev,
@@ -47,13 +44,6 @@ class MODULES_EXPORT ScreenDetailed final : public Screen {
   float bluePrimaryY() const;
   float whitePointX() const;
   float whitePointY() const;
-
-  uint32_t label_idx() const { return label_idx_; }
-  bool label_is_internal() const { return label_is_internal_; }
-
- private:
-  uint32_t label_idx_;
-  bool label_is_internal_;
 };
 
 }  // namespace blink

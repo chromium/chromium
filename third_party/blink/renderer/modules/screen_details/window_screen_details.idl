@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Permission-gated access to multi-screen information.
-// https://w3c.github.io/window-placement/
+// https://w3c.github.io/window-management/
 [
     SecureContext,
     ImplementedAs=WindowScreenDetails

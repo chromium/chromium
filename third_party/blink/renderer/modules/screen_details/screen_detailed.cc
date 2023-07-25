@@ -17,13 +17,8 @@
 
 namespace blink {
 
-ScreenDetailed::ScreenDetailed(LocalDOMWindow* window,
-                               int64_t display_id,
-                               bool label_is_internal,
-                               uint32_t label_idx)
-    : Screen(window, display_id),
-      label_idx_(label_idx),
-      label_is_internal_(label_is_internal) {}
+ScreenDetailed::ScreenDetailed(LocalDOMWindow* window, int64_t display_id)
+    : Screen(window, display_id) {}
 
 // static
 bool ScreenDetailed::AreWebExposedScreenDetailedPropertiesEqual(
