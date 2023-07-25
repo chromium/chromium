@@ -421,33 +421,16 @@ class TestPrintViewManagerForDLP : public TestPrintViewManager {
   PrintAllowance allowance_ = PrintAllowance::kUnknown;
 };
 
-PrintBrowserTest::WorkerHelper::WorkerHelper(
-    base::WeakPtr<PrintBrowserTest> owner)
-    : owner_(owner) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-}
-
-PrintBrowserTest::WorkerHelper::~WorkerHelper() = default;
-
-void PrintBrowserTest::WorkerHelper::OnNewDocument(
-    const PrintSettings& settings) {
-  if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
-    content::GetUIThreadTaskRunner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&WorkerHelper::OnNewDocument, this, settings));
-    return;
-  }
-  if (owner_) {
-    owner_->OnNewDocument(settings);
-  }
-}
-
 PrintBrowserTest::PrintBrowserTest() = default;
 PrintBrowserTest::~PrintBrowserTest() = default;
 
 void PrintBrowserTest::SetUp() {
   test_print_backend_ = base::MakeRefCounted<TestPrintBackend>();
   PrintBackend::SetPrintBackendForTesting(test_print_backend_.get());
+  test_printing_context_factory_.SetOnNewDocumentCallback(base::BindRepeating(
+      &PrintBrowserTest::OnNewDocument, base::Unretained(this)));
+  PrintingContext::SetPrintingContextFactoryForTest(
+      &test_printing_context_factory_);
 
   num_expected_messages_ = 1;  // By default, only wait on one message.
   num_received_messages_ = 0;
@@ -455,14 +438,6 @@ void PrintBrowserTest::SetUp() {
 }
 
 void PrintBrowserTest::SetUpOnMainThread() {
-  // Create `worker_helper_` here, once the UI thread exists.
-  worker_helper_ =
-      base::MakeRefCounted<WorkerHelper>(weak_factory_.GetWeakPtr());
-  test_printing_context_factory_.SetOnNewDocumentCallback(
-      base::BindRepeating(&WorkerHelper::OnNewDocument, worker_helper_));
-  PrintingContext::SetPrintingContextFactoryForTest(
-      &test_printing_context_factory_);
-
   // Safe to use `base::Unretained(this)` since this testing class
   // necessarily must outlive all interactions from the tests which will
   // run through the printing stack using derivatives of
@@ -481,15 +456,12 @@ void PrintBrowserTest::TearDownOnMainThread() {
   frame_content_.clear();
 
   SetShowPrintErrorDialogForTest(base::NullCallback());
-
-  PrintingContext::SetPrintingContextFactoryForTest(/*factory=*/nullptr);
-  test_printing_context_factory_.SetOnNewDocumentCallback(base::NullCallback());
-
   InProcessBrowserTest::TearDownOnMainThread();
 }
 
 void PrintBrowserTest::TearDown() {
   InProcessBrowserTest::TearDown();
+  PrintingContext::SetPrintingContextFactoryForTest(/*factory=*/nullptr);
   PrintBackend::SetPrintBackendForTesting(/*print_backend=*/nullptr);
 }
 
@@ -640,10 +612,8 @@ void PrintBrowserTest::OverrideBinderForTesting(
 }
 
 void PrintBrowserTest::OnNewDocument(const PrintSettings& settings) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  DVLOG(1) << " Observed: new document";
   new_document_called_count_++;
+  DVLOG(1) << " Observed: new document";
   document_print_settings_ = settings;
 }
 
