@@ -1040,6 +1040,72 @@ std::vector<WebFormControlElement>::iterator SearchInSortedVector(
   return it;
 }
 
+bool ShouldSkipFillField(const FormFieldData& field,
+                         const WebFormControlElement& element,
+                         const WebFormControlElement& trigger_element) {
+  // Skip all non-modifiable elements, except select fields because some
+  // synthetic select element use a hidden select element.
+  if (!element.IsEnabled() || element.IsReadOnly() ||
+      (!IsWebElementFocusableForAutofill(element) &&
+       !IsSelectElement(element))) {
+    return true;
+  }
+
+  if (element == trigger_element) {
+    return false;
+  }
+
+  // Skip if there is no value to fill.
+  if (field.value.empty() || !field.is_autofilled) {
+    return true;
+  }
+
+  // Skip filling previously autofilled fields unless autofill is instructed to
+  // override it.
+  if (element.GetAutofillState() == WebAutofillState::kAutofilled &&
+      !field.force_override) {
+    return true;
+  }
+
+  // A text field is skipped if it has a non-empty value that is entered by
+  // the user and is NOT the value of the input field's "value" or "placeholder"
+  // attribute. (The "value" attribute in <input value="foo"> indicates the
+  // value of the input element at loading time, not its runtime value after the
+  // user entered something into the field.)
+  //
+  // Some sites fill the fields with a formatting string like (___)-___-____.
+  // To tell the difference between the values entered by the user nd the site,
+  // we'll sanitize the value. If the sanitized value is empty, it means that
+  // the site has filled the field, in this case, the field is not skipped.
+  // Nevertheless the below condition does not hold for sites set the |kValue|
+  // attribute to the user-input value.
+  auto HasAttributeWithValue = [&element](const auto& attribute,
+                                          const auto& value) {
+    return element.HasAttribute(attribute) &&
+           base::i18n::ToLower(element.GetAttribute(attribute).Utf16()) ==
+               base::i18n::ToLower(value);
+  };
+  const WebInputElement input_element = element.DynamicTo<WebInputElement>();
+  const std::u16string current_element_value = element.Value().Utf16();
+  if ((IsAutofillableInputElement(input_element) ||
+       IsTextAreaElement(element)) &&
+      element.UserHasEditedTheField() &&
+      !SanitizedFieldIsEmpty(current_element_value) && !field.force_override &&
+      !HasAttributeWithValue(GetWebString<kValue>(), current_element_value) &&
+      !HasAttributeWithValue(GetWebString<kPlaceholder>(),
+                             current_element_value)) {
+    return true;
+  }
+
+  // Check if we should autofill/preview/clear a select element or leave it.
+  if (IsSelectOrSelectMenuElement(element) && element.UserHasEditedTheField() &&
+      !SanitizedFieldIsEmpty(current_element_value) && !field.force_override) {
+    return true;
+  }
+
+  return false;
+}
+
 // The callback type used by |ForEachMatchingFormField()|.
 typedef void (*Callback)(const FormFieldData&,
                          bool, /* is_initiating_element */
@@ -1103,9 +1169,9 @@ std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
     // user is currently editing and interacting with.
     const WebInputElement input_element = element.DynamicTo<WebInputElement>();
 
-    if (!element.IsEnabled() || element.IsReadOnly() ||
-        (!IsWebElementFocusableForAutofill(element) &&
-         !IsSelectElement(element))) {
+    if (ShouldSkipFillField(
+            data.fields[i], element,
+            initiating_element.DynamicTo<WebFormControlElement>())) {
       continue;
     }
 
@@ -1127,56 +1193,7 @@ std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
       }
       continue;
     }
-
-    // Skip the field if there's nothing to fill or preview from the browser.
-    if (data.fields[i].value.empty() || !data.fields[i].is_autofilled) {
-      continue;
-    }
-
-    if (element.GetAutofillState() == WebAutofillState::kAutofilled &&
-        !data.fields[i].force_override) {
-      continue;
-    }
-
-    const std::u16string current_element_value = element.Value().Utf16();
-
-    // A text field is skipped if it has a non-empty value that is entered by
-    // the user and is NOT the value of the input field's "value" or
-    // "placeholder" attribute. (The "value" attribute in <input value="foo">
-    // indicates the value of the input element at loading time, not its runtime
-    // value after the user entered something into the field.)
-    //
-    // Some sites fill the fields with a formatting string like (___)-___-____.
-    // To tell the difference between the values entered by the user
-    // and the site, we'll sanitize the value. If the sanitized value is
-    // empty, it means that the site has filled the field, in this case, the
-    // field is not skipped. Nevertheless the below condition does not hold
-    // for sites set the |kValue| attribute to the user-input value.
-    auto HasAttributeWithValue = [&element](const auto& attribute,
-                                            const auto& value) {
-      return element.HasAttribute(attribute) &&
-             base::i18n::ToLower(element.GetAttribute(attribute).Utf16()) ==
-                 base::i18n::ToLower(value);
-    };
-    if ((IsAutofillableInputElement(input_element) ||
-         IsTextAreaElement(element)) &&
-        element.UserHasEditedTheField() &&
-        !SanitizedFieldIsEmpty(current_element_value) &&
-        !data.fields[i].force_override &&
-        !HasAttributeWithValue(GetWebString<kValue>(), current_element_value) &&
-        !HasAttributeWithValue(GetWebString<kPlaceholder>(),
-                               current_element_value)) {
-      continue;
-    }
-
-    // Check if we should autofill/preview/clear a select element or leave it.
-    if (IsSelectOrSelectMenuElement(element) &&
-        element.UserHasEditedTheField() &&
-        !SanitizedFieldIsEmpty(current_element_value) &&
-        !data.fields[i].force_override) {
-      continue;
-    }
-
+    CHECK(element != initiating_element);
     // Storing the indexes of non-initiating elements to be autofilled after
     // triggering the blur event for the initiating element.
     autofillable_elements_index_pairs.emplace_back(&element, i);
