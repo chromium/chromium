@@ -155,6 +155,17 @@ bool Printer::IsIppEverywhere() const {
   return ppd_reference_.autoconf;
 }
 
+bool Printer::RequiresDriverlessUsb() const {
+  // TODO(b/184293121): Replace this list with more generic logic after general
+  // IPP-USB evaluation is complete.
+  static constexpr auto kDriverlessUsbMakeModels =
+      base::MakeFixedFlatSetSorted<base::StringPiece>({
+          "epson wf-110 series",     // b/287159028
+          "hp deskjet 4100 series",  // b/279387801
+      });
+  return kDriverlessUsbMakeModels.contains(base::ToLowerASCII(make_and_model_));
+}
+
 net::HostPortPair Printer::GetHostAndPort() const {
   if (!HasUri()) {
     return net::HostPortPair();

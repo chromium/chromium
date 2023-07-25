@@ -26,6 +26,7 @@
 #include "chromeos/printing/printer_config_cache.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/printing/printing_constants.h"
+#include "components/device_event_log/device_event_log.h"
 #include "net/base/filename_util.h"
 
 namespace chromeos {
@@ -850,6 +851,8 @@ class PpdProviderImpl : public PpdProvider {
 
     // The forward index does advertise a best-fit PPD basename. We
     // check the local PpdCache to see if we already have it.
+    PRINTER_LOG(DEBUG) << reference.effective_make_and_model << " mapped to "
+                       << leaf->ppd_basename;
     ppd_cache_->Find(
         PpdBasenameToCacheKey(leaf->ppd_basename),
         base::BindOnce(&PpdProviderImpl::OnPpdFromServingRootSoughtInPpdCache,

@@ -1223,7 +1223,7 @@ void CupsPrintersHandler::HandleAddDiscoveredPrinter(
   const std::string& callback_id = args[0].GetString();
   const std::string& printer_id = args[1].GetString();
 
-  PRINTER_LOG(USER) << "Adding discovered printer";
+  PRINTER_LOG(USER) << "Adding discovered printer " << printer_id;
   absl::optional<Printer> printer = printers_manager_->GetPrinter(printer_id);
   if (!printer) {
     PRINTER_LOG(ERROR) << "Discovered printer disappeared";

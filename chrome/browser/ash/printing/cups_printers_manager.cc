@@ -52,6 +52,7 @@
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "printer_configurer.h"
 #include "printing/printer_query_result.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -681,10 +682,42 @@ class CupsPrintersManagerImpl
       // Sometimes the detector can flag a printer as IPP-everywhere compatible;
       // those printers can go directly into the automatic class without further
       // processing.
-      if (detected.printer.IsIppEverywhere()) {
-        printers_.Insert(PrinterClass::kAutomatic, detected.printer);
+      auto printer = detected.printer;
+      if (printer.IsIppEverywhere()) {
+        printers_.Insert(PrinterClass::kAutomatic, printer);
         continue;
       }
+
+      if (printer.GetProtocol() == Printer::PrinterProtocol::kUsb &&
+          printer.RequiresDriverlessUsb()) {
+        if (ppd_resolution_tracker_.IsMarkedAsNotAutoconfigurable(
+                detected_printer_id)) {
+          LOG(ERROR) << "Printer " << detected_printer_id
+                     << " requires autoconfiguration but has previously failed"
+                     << " setup.";
+          printers_.Insert(PrinterClass::kDiscovered, printer);
+        } else {
+          // This model should attempt autoconfiguration with IPP-USB instead of
+          // looking up a PPD for the USB printer class.
+          printer.SetUri(chromeos::Uri(
+              base::StringPrintf("ippusb://%04x_%04x/ipp/print",
+                                 detected.ppd_search_data.usb_vendor_id,
+                                 detected.ppd_search_data.usb_product_id)));
+          printer.mutable_ppd_reference()->autoconf = true;
+          printers_.Insert(PrinterClass::kAutomatic, printer);
+
+          // Mark PPD resolution as a failure so that it doesn't get retried
+          // later if something goes wrong with driverless setup.
+          if (!ppd_resolution_tracker_.IsResolutionComplete(
+                  detected_printer_id)) {
+            ppd_resolution_tracker_.MarkResolutionPending(detected_printer_id);
+            ppd_resolution_tracker_.MarkResolutionFailed(detected_printer_id);
+          }
+        }
+
+        continue;
+      }
+
       if (!ppd_resolution_tracker_.IsResolutionComplete(detected_printer_id)) {
         // Didn't find an entry for this printer in the PpdReferences cache.  We
         // need to ask PpdProvider whether or not it can determine a
@@ -701,7 +734,6 @@ class CupsPrintersManagerImpl
         }
         continue;
       }
-      auto printer = detected.printer;
       if (ppd_resolution_tracker_.WasResolutionSuccessful(
               detected_printer_id)) {
         // We have a ppd reference, so we think we can set this up

@@ -559,6 +559,20 @@ TEST_F(CupsPrintersManagerTest, GetZeroconfPrinters) {
   ExpectPrintersInClassAre(PrinterClass::kAutomatic, {"AutomaticPrinter"});
 }
 
+// Test that USB printers that prefer IPP-USB end up in the automatic class
+// instead of the discovered class.
+TEST_F(CupsPrintersManagerTest, GetIppUsbPrinters) {
+  PrinterDetector::DetectedPrinter printer;
+  printer.printer.set_id("IppUsbPrinter");
+  printer.printer.SetUri("usb://1234/5678");
+  printer.printer.set_make_and_model("EPSON WF-110 Series");
+
+  usb_detector_->AddDetections({printer});
+  task_environment_.RunUntilIdle();
+  ExpectPrintersInClassAre(PrinterClass::kDiscovered, {});
+  ExpectPrintersInClassAre(PrinterClass::kAutomatic, {"IppUsbPrinter"});
+}
+
 // Test that printers that appear in either a Saved or Enterprise set do
 // *not* appear in Discovered or Automatic, even if they are detected as such.
 TEST_F(CupsPrintersManagerTest, SyncedPrintersTrumpDetections) {

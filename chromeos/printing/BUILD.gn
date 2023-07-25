@@ -21,6 +21,7 @@ component("printing") {
     "//base",
     "//base:i18n",
     "//chromeos/crosapi/mojom",
+    "//components/device_event_log",
     "//services/network/public/cpp:cpp",
   ]
 
