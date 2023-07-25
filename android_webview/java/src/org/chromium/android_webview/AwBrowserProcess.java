@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.ApplicationInfo;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.os.StrictMode;
@@ -29,6 +30,7 @@ import org.chromium.android_webview.common.services.ServiceNames;
 import org.chromium.android_webview.metrics.AwMetricsLogUploader;
 import org.chromium.android_webview.metrics.AwMetricsServiceClient;
 import org.chromium.android_webview.metrics.AwNonembeddedUmaReplayer;
+import org.chromium.android_webview.metrics.TrackExitReasonsOfInterest;
 import org.chromium.android_webview.policy.AwPolicyProvider;
 import org.chromium.android_webview.proto.MetricsBridgeRecords.HistogramRecord;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConfigHelper;
@@ -191,6 +193,9 @@ public final class AwBrowserProcess {
 
                 PowerMonitor.create();
             });
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                TrackExitReasonsOfInterest.runTask();
+            }
         }
     }
 
