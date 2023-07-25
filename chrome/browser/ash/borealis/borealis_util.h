@@ -13,6 +13,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/widget.h"
 
+class Profile;
+
 namespace borealis {
 
 // This is used by the Borealis installer app.
@@ -32,8 +34,6 @@ extern const char kLauncherSearchAppId[];
 extern const char kIgnoredAppIdPrefix[];
 // This is used to install the Borealis DLC component.
 extern const char kBorealisDlcName[];
-// The regex used for extracting the Borealis app ID of an application.
-extern const char kBorealisAppIdRegex[];
 // Base64-encoded allowed x-scheme for Borealis apps.
 extern const char kAllowedScheme[];
 // Error string to replace Proton version info in the event that a GameID
@@ -75,6 +75,13 @@ absl::optional<int> ParseSteamGameId(std::string exec);
 // https://partner.steamgames.com/doc/store/application. We use the term
 // "Steam Game ID" here to differentiate from other kinds of "application ID".
 absl::optional<int> SteamGameId(const aura::Window* window);
+
+// Get the steam app id (a.k.a. STEAM_GAME cardinal) for the app with the
+// given chromeos |app_id|, registered with |profile|, or nullopt if we can't
+// work it out/there isn't one.
+//
+// Works for anonymous apps of the form "borealis_anon:.*xprop.<id>".
+absl::optional<int> SteamGameId(Profile* profile, const std::string& app_id);
 
 // Checks that a given URL has the allowed scheme and that its contents starts
 // with one of the URLs in the allowlist.
