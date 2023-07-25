@@ -777,6 +777,7 @@ public class CompositorViewHolder extends FrameLayout
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent e) {
+        assert e != null : "The motion event dispatched shouldn't be null!";
         updateLastActiveTouchEvent(e);
         updateIsInGesture(e);
         for (TouchEventObserver o : mTouchEventObservers) o.handleTouchEvent(e);
