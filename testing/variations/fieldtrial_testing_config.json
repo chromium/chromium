@@ -8813,6 +8813,22 @@
             ]
         }
     ],
+    "MergeSubprocessMetricsOnBgAndFg": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MergeSubprocessMetricsOnBgAndFg"
+                    ]
+                }
+            ]
+        }
+    ],
     "MessagePumpEpoll": [
         {
             "platforms": [
@@ -8877,6 +8893,28 @@
                     "name": "Enabled",
                     "enable_features": [
                         "MetricsClearLogsOnClonedInstall"
+                    ]
+                }
+            ]
+        }
+    ],
+    "MetricsServiceAsyncIndependentLogs": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MetricsServiceAsyncIndependentLogs"
                     ]
                 }
             ]
@@ -12233,6 +12271,28 @@
             ]
         }
     ],
+    "RestoreUmaClientIdIndependentLogs": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RestoreUmaClientIdIndependentLogs"
+                    ]
+                }
+            ]
+        }
+    ],
     "RetryGetVideoCaptureDeviceInfos": [
         {
             "platforms": [
@@ -13472,6 +13532,32 @@
                     "name": "Enabled_20230313",
                     "enable_features": [
                         "StylusRichGestures"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SubprocessMetricsAsync": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled,PeriodicMergeAsync,DeregisterAsync",
+                    "params": {
+                        "DeregisterAsync": "true",
+                        "DeregisterSequenced": "false",
+                        "PeriodicMergeAsync": "true"
+                    },
+                    "enable_features": [
+                        "SubprocessMetricsAsync"
                     ]
                 }
             ]
