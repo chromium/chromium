@@ -1,3 +1,4 @@
 per-file RenderTestRule.java=peconn@chromium.org
 per-file OmniboxTestUtils.java=file://components/omnibox/browser/android/OWNERS
 per-file BookmarkTestUtil.java=file://chrome/android/java/src/org/chromium/chrome/browser/bookmarks/OWNERS
+per-file TabStripUtils.java=file://chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/OWNERS
