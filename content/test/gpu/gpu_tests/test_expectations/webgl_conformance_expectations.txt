@@ -476,8 +476,8 @@ crbug.com/1259977 [ win nvidia-0x2184 angle-vulkan passthrough ] conformance/gls
 
 crbug.com/1291276 [ win nvidia angle-vulkan passthrough ] conformance/ogles/GL/mod/mod_001_to_008.html [ Failure ]
 
-## Win / Intel / D3D9
-crbug.com/1450353 [ win intel angle-d3d9 passthrough ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ Failure ]
+## Win / D3D9
+crbug.com/1450353 [ win angle-d3d9 passthrough ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ Failure ]
 
 ####################
 # Mac failures     #
