@@ -78,14 +78,14 @@ XrIntegrationClient* WolvicContentBrowserClient::GetXrIntegrationClient() {
 
 std::string WolvicContentBrowserClient::GetUserAgent() {
   typedef wolvic::SessionSettings::UserAgentMode UserAgentMode;
-  auto* session_settings = wolvic::SessionSettings::Get();
 
-  auto user_agent_override = session_settings->GetUserAgentOverride();
+  auto user_agent_override =
+      wolvic::SessionSettings::Get()->GetUserAgentOverride();
   if (user_agent_override)
     return *user_agent_override;
 
-  std::string user_agent = session_settings->GetDefaultUserAgent();
-  auto user_agent_mode = session_settings->GetUserAgentMode();
+  std::string user_agent = embedder_support::GetUserAgent();
+  auto user_agent_mode = wolvic::SessionSettings::Get()->GetUserAgentMode();
   switch (user_agent_mode) {
     case UserAgentMode::kMobile:
       AddPlatformToUserAgent("Mobile", user_agent);

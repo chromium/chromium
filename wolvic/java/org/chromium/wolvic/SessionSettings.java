@@ -52,10 +52,6 @@ public class SessionSettings {
         return SessionSettingsJni.get().getUserAgentOverride();
     }
 
-    public String getDefaultUserAgent() {
-        return SessionSettingsJni.get().getDefaultUserAgent();
-    }
-
     @NativeMethods
     public interface Natives {
         void setUserAgentMode(int value);
@@ -63,6 +59,5 @@ public class SessionSettings {
         void setUserAgentOverride(@Nullable String value);
         @Nullable
         String getUserAgentOverride();
-        String getDefaultUserAgent();
     }
 }
