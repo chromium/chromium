@@ -443,8 +443,7 @@ std::string UnescapeURLWithAdjustmentsImpl(
     if (!ShouldUnescapeCodePoint(rules, code_point)) {
       // If it's a valid UTF-8 character, but not safe to unescape, copy all
       // bytes directly.
-      result.append(escaped_text.begin() + i,
-                    escaped_text.begin() + i + 3 * unescaped.length());
+      result.append(escaped_text.substr(i, 3 * unescaped.length()));
       i += unescaped.length() * 3;
       continue;
     }
