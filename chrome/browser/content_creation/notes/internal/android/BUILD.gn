@@ -47,6 +47,7 @@ android_library("java") {
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/widget/android:java",
     "//components/content_creation/notes/android:java",
+    "//components/embedder_support/android:simple_factory_key_java",
     "//components/image_fetcher:java",
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_java_resources",

@@ -115,6 +115,7 @@ robolectric_library("junit") {
     ":java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base:jni_java",
     "//base/test:test_support_java",
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/flags:java",
@@ -130,10 +131,12 @@ robolectric_library("junit") {
     "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
+    "//url:gurl_java",
     "//url:gurl_junit_test_support",
   ]
 }
@@ -145,6 +148,7 @@ android_library("javatests") {
   deps = [
     ":java",
     "//base:base_java_test_support",
+    "//base:jni_java",
     "//chrome/android:chrome_java",
     "//chrome/android/features/tab_ui:test_support_javalib",
     "//chrome/browser/feature_engagement:java",
@@ -154,14 +158,17 @@ android_library("javatests") {
     "//chrome/browser/recent_tabs:java",
     "//chrome/test/android:chrome_java_integration_test_support",
     "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/bottomsheet/android:manager_java",
     "//components/feature_engagement/public:public_java",
     "//components/sync_device_info:sync_device_info_java",
     "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",
+    "//url:gurl_java",
     "//url:gurl_junit_test_support",
   ]
 }
@@ -174,8 +181,10 @@ android_library("unit_device_javatests") {
   deps = [
     ":java",
     "//base:base_java_test_support",
+    "//base:jni_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/recent_tabs:java",
+    "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/favicon:java",
     "//chrome/test/android:chrome_java_test_support_common",
     "//components/browser_ui/bottomsheet/android:java",
@@ -185,10 +194,12 @@ android_library("unit_device_javatests") {
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_java_test_support",
+    "//url:gurl_java",
     "//url:gurl_junit_test_support",
   ]
 }

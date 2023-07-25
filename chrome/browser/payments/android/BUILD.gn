@@ -11,6 +11,7 @@ import("//build/config/android/rules.gni")
 # TODO(crbug.com/1164979): remove the dependency on chrome_java.
 robolectric_library("junit_test_support") {
   deps = [
+    "//base:base_java",
     "//chrome/android:chrome_java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/profiles/android:java",
@@ -43,6 +44,7 @@ robolectric_library("junit") {
     ":junit_test_support",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base:jni_java",
     "//chrome/android:chrome_java",
     "//chrome/browser/autofill/android:java",
     "//chrome/browser/profiles/android:java",

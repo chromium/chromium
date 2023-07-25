@@ -143,6 +143,7 @@ android_library("javatests") {
     ":player_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//components/paint_preview/browser/android:java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:espresso_java",

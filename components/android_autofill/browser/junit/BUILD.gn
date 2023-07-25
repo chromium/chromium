@@ -13,6 +13,7 @@ robolectric_library("components_autofill_junit_tests") {
   deps = [
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base:jni_java",
     "//components/android_autofill/browser:features_java",
     "//components/android_autofill/browser:java",
     "//components/android_autofill/browser/test_support:java",

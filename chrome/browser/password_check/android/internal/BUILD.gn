@@ -59,6 +59,7 @@ android_library("internal_ui_factory_java") {
     "//chrome/browser/settings:java",
     "//components/browser_ui/settings/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_preference_preference_java",
     _public_target,
     _public_ui_target,
   ]

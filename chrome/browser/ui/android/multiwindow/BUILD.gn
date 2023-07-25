@@ -102,6 +102,7 @@ android_library("javatests") {
   deps = [
     ":java",
     ":java_resources",
+    "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
@@ -119,5 +120,6 @@ android_library("javatests") {
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_java_test_support",
+    "//url:gurl_java",
   ]
 }

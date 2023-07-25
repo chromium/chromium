@@ -38,6 +38,7 @@ android_library("java") {
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/settings/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
@@ -59,6 +60,7 @@ robolectric_library("junit") {
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_test_core_java",
+    "//third_party/hamcrest:hamcrest_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
@@ -74,6 +76,8 @@ android_library("javatests") {
   deps = [
     ":java",
     "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/feedback/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/password_entry_edit/android:java",
     "//chrome/browser/password_entry_edit/android:java_resources",

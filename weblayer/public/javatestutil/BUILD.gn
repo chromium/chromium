@@ -16,6 +16,7 @@ android_library("test_java") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/junit:junit",
     "//weblayer/browser/java:base_module_interfaces_java",
     "//weblayer/browser/java:interfaces_java",

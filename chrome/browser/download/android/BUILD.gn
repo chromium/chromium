@@ -193,6 +193,7 @@ robolectric_library("junit_tests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base:jni_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/test/android:chrome_java_unit_test_support",

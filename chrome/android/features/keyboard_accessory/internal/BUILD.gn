@@ -42,6 +42,7 @@ android_library("internal_java") {
     "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
+    "//components/embedder_support/android:content_view_java",
     "//components/embedder_support/android:util_java",
     "//components/feature_engagement/public:public_java",
     "//components/image_fetcher:java",

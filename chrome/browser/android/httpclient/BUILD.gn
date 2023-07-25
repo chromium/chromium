@@ -94,6 +94,7 @@ java_library("junit_tests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base:jni_java",
     "//chrome/browser/profiles/android:java",
     "//net/android:net_java",
     "//third_party/junit:junit",

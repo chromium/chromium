@@ -142,6 +142,7 @@ android_library_factory("factory_java") {
   deps = [
     ":java",
     ":manager_java",
+    "//base:base_java",
     "//ui/android:ui_full_java",
   ]
 }
@@ -165,6 +166,7 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base:jni_java",
     "//components/browser_ui/widget/android:java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_core_java",

@@ -24,6 +24,7 @@ android_library("java") {
     ":java_resources",
     "//chrome/browser/android/lifecycle:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_interpolator_interpolator_java",
     "//ui/android:ui_java",
   ]
   resources_package = "org.chromium.chrome.browser.ui.appmenu"

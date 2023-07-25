@@ -45,6 +45,7 @@ android_library("java") {
     "//components/location/android:location_java",
     "//components/search_engines/android:java",
     "//components/version_info/android:version_constants_java",
+    "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//ui/android:ui_full_java",

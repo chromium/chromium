@@ -21,6 +21,7 @@ android_library("java") {
     "//build/android:build_java",
     "//components/browser_ui/widget/android:java",
     "//content/public/android:content_java",
+    "//third_party/androidx:androidx_interpolator_interpolator_java",
     "//ui/android:ui_java",
   ]
   resources_package = "org.chromium.components.find_in_page"

@@ -584,6 +584,7 @@ if (is_android) {
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_collection_collection_java",
       "//third_party/androidx:androidx_core_core_java",
+      "//third_party/androidx:androidx_interpolator_interpolator_java",
       "//third_party/metrics_proto:metrics_proto_java",
       "//ui/android:ui_full_java",
       "//url:gurl_java",
@@ -630,6 +631,7 @@ if (is_android) {
     deps = [
       "//components/omnibox/browser:browser_java",
       "//components/query_tiles:query_tile_java",
+      "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_collection_collection_java",
       "//url:gurl_java",

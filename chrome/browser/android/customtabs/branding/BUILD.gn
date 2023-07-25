@@ -51,6 +51,7 @@ robolectric_library("junit") {
     "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/flags:java",
     "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/crash/android:java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/hamcrest:hamcrest_core_java",

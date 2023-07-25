@@ -68,6 +68,7 @@ robolectric_library("junit") {
     ":java_resources",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base:jni_java",
     "//base/test:test_support_java",
     "//components/autofill/android:main_autofill_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",

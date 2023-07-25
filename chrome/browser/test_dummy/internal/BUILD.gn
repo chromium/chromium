@@ -50,6 +50,7 @@ android_library("base_module_java") {
     "//chrome/android/modules/test_dummy/provider:java",
     "//chrome/android/modules/test_dummy/public:java",
     "//chrome/browser/test_dummy:java",
+    "//components/module_installer/android:module_installer_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
   ]
   sources = [ "android/java/src/org/chromium/chrome/browser/test_dummy/TestDummyActivity.java" ]

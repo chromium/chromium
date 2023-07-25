@@ -369,6 +369,7 @@ android_library("test_java") {
     "//components/permissions/android:java",
     "//components/webauthn/android:java",
     "//components/webauthn/android:test_support_java",
+    "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//net/android:net_java",
     "//services/device/public/java:geolocation_java",
@@ -383,6 +384,7 @@ android_library("test_java") {
 robolectric_library("junit_test_support") {
   deps = [
     ":java",
+    "//base:base_java",
     "//components/payments/content/android:java",
     "//components/payments/content/android:junit_test_support",
     "//components/payments/content/android:service_java",
@@ -414,6 +416,7 @@ robolectric_binary("weblayer_junit_tests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base:jni_java",
     "//components/content_relationship_verification:java",
     "//components/content_relationship_verification/android:java",
     "//components/content_relationship_verification/android:junit_test_support",

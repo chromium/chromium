@@ -103,6 +103,7 @@ android_library("test_support_java") {
     ":java",
     ":java_resources",
     ":test_jni_headers",
+    "$google_play_services_package:google_play_services_cast_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:jni_java",
@@ -146,6 +147,7 @@ robolectric_library("junit") {
   deps = [
     ":java",
     ":test_support_java",
+    "$google_play_services_package:google_play_services_base_java",
     "$google_play_services_package:google_play_services_basement_java",
     "$google_play_services_package:google_play_services_cast_framework_java",
     "$google_play_services_package:google_play_services_cast_java",
