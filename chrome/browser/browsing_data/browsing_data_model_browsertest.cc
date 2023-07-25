@@ -226,7 +226,7 @@ void EnsurePageAccessedStorage(content::WebContents* web_contents) {
 }  // namespace
 
 using browsing_data_model_test_util::ValidateBrowsingDataEntries;
-using browsing_data_model_test_util::ValidateBrowsingDataEntriesIgnoreUsage;
+using browsing_data_model_test_util::ValidateBrowsingDataEntriesNonZeroUsage;
 using OperationResult = storage::SharedStorageDatabase::OperationResult;
 using browsing_data_test_util::HasDataForType;
 using browsing_data_test_util::SetDataForType;
@@ -800,13 +800,24 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
       // Validate that quota data is fetched to browsing data model.
       url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
       auto data_key = blink::StorageKey::CreateFirstParty(testOrigin);
-      ValidateBrowsingDataEntriesIgnoreUsage(
-          browsing_data_model.get(),
-          {{kTestHost,
-            data_key,
-            {{BrowsingDataModel::StorageType::kQuotaStorage},
-             /*storage_size=*/0,
-             /*cookie_count=*/0}}});
+      if (data_type == "MediaLicense") {
+        ValidateBrowsingDataEntries(
+            browsing_data_model.get(),
+            {{kTestHost,
+              data_key,
+              {{BrowsingDataModel::StorageType::kQuotaStorage},
+               /*storage_size=*/0,
+               /*cookie_count=*/0}}});
+      } else {
+        ValidateBrowsingDataEntriesNonZeroUsage(
+            browsing_data_model.get(),
+            {{kTestHost,
+              data_key,
+              {{BrowsingDataModel::StorageType::kQuotaStorage},
+               /*storage_size=*/0,
+               /*cookie_count=*/0}}});
+      }
+
       ASSERT_EQ(browsing_data_model->size(), 1u);
 
       // Remove quota entry.
@@ -869,7 +880,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   // Validate that local storage is fetched to browsing data model.
   url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
   auto data_key = blink::StorageKey::CreateFirstParty(testOrigin);
-  ValidateBrowsingDataEntriesIgnoreUsage(
+  ValidateBrowsingDataEntries(
       browsing_data_model.get(),
       {{kTestHost,
         data_key,
@@ -1179,7 +1190,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
   auto isolation_key = net::SharedDictionaryIsolationKey(
       testOrigin, net::SchemefulSite(testOrigin));
-  ValidateBrowsingDataEntriesIgnoreUsage(
+  ValidateBrowsingDataEntriesNonZeroUsage(
       browsing_data_model.get(),
       {{kTestHost,
         isolation_key,
