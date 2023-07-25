@@ -49,6 +49,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
@@ -377,6 +378,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private final AppLaunchDrawBlocker mAppLaunchDrawBlocker;
 
     private ReturnToChromeBackPressHandler mReturnToChromeBackPressHandler;
+
+    // Only true if both Start surface and Start surface refactor are enabled.
+    private Boolean mIsHandleTabSwitcherShownEnabled;
     private ReadingListBackPressHandler mReadingListBackPressHandler;
     private MinimizeAppAndCloseTabBackPressHandler mMinimizeAppAndCloseTabBackPressHandler;
 
@@ -726,7 +730,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 /* rootView= */ tabSwitcherContainer,
                 compositorViewHolder::getDynamicResourceLoader, getSnackbarManager(),
                 getModalDialogManager(), mRootUiCoordinator.getIncognitoReauthControllerSupplier(),
-                mBackPressManager));
+                mBackPressManager, mLayoutStateProviderSupplier));
     }
 
     private void setupCompositorContentPostNative() {
@@ -973,7 +977,16 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             getTabObscuringHandler().addObserver(mOverviewListLayout);
 
             ChromeAccessibilityUtil.get().addObserver(mLayoutManager);
-            if (isTablet()) ChromeAccessibilityUtil.get().addObserver(mCompositorViewHolder);
+            if (isTablet()) {
+                ChromeAccessibilityUtil.get().addObserver(mCompositorViewHolder);
+            }
+
+            if (mReturnToChromeBackPressHandler == null && !isTablet()) {
+                if (mIsHandleTabSwitcherShownEnabled == null) {
+                    mIsHandleTabSwitcherShownEnabled = isStartSurfaceRefactorEnabled()
+                            && ReturnToChromeUtil.isStartSurfaceEnabled(this);
+                }
+            }
 
             mInactivityTracker.setLastVisibleTimeMsAndRecord(System.currentTimeMillis());
         }
@@ -2339,6 +2352,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 ? getActivityTabProvider().get()
                 : getActivityTab();
         final Tab currentTab = isStartSurfaceHomepageShowing ? null : activityTab;
+        // Handles the case of Start surface homepage is showing.
         if (currentTab == null) {
             minimizeAppAndCloseTabOnBackPress(null);
             return true;
@@ -2358,10 +2372,21 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             return true;
         }
 
+        // Handles the case of showing Tab switcher and will return to the Start surface.
+        if (ReturnToChromeUtil.shouldHandleTabSwitcherShown(
+                    mIsHandleTabSwitcherShownEnabled, mLayoutStateProviderSupplier.get())) {
+            // Passes true since Tab switcher is showing and we should handle this case to return to
+            // the Start surface.
+            returnToOverviewModeOnBackPressed(true);
+            BackPressManager.record(BackPressHandler.Type.TAB_RETURN_TO_CHROME_START_SURFACE);
+            return true;
+        }
+
         // If we aren't in the overview mode, we handle the Tab that is opened from Start Surface.
         if (!isInOverviewMode() && !isTablet()
                 && ReturnToChromeUtil.isTabFromStartSurface(currentTab)) {
-            returnToOverviewModeOnBackPressed();
+            // Passes false since Tab switcher isn't showing.
+            returnToOverviewModeOnBackPressed(false);
             BackPressManager.record(BackPressHandler.Type.TAB_RETURN_TO_CHROME_START_SURFACE);
             return true;
         }
@@ -2445,10 +2470,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private void initializeBackPressHandlers() {
         mBackPressManager.setHasSystemBackArm(true);
         if (mReturnToChromeBackPressHandler == null && !isTablet()) {
-            mReturnToChromeBackPressHandler =
-                    new ReturnToChromeBackPressHandler(getActivityTabProvider(),
-                            this::returnToOverviewModeOnBackPressed, this::getActivityTab,
-                            mLayoutStateProviderSupplier, mBackPressManager::getLastPressMs);
+            mIsHandleTabSwitcherShownEnabled = isStartSurfaceRefactorEnabled()
+                    && ReturnToChromeUtil.isStartSurfaceEnabled(this);
+
+            mReturnToChromeBackPressHandler = new ReturnToChromeBackPressHandler(
+                    getActivityTabProvider(), this::returnToOverviewModeOnBackPressed,
+                    this::getActivityTab, mLayoutStateProviderSupplier,
+                    mBackPressManager::getLastPressMs, mIsHandleTabSwitcherShownEnabled);
             mBackPressManager.addHandler(mReturnToChromeBackPressHandler,
                     BackPressHandler.Type.TAB_RETURN_TO_CHROME_START_SURFACE);
         }
@@ -2897,6 +2925,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     @VisibleForTesting
+    public OneshotSupplier<LayoutStateProvider> getLayoutStateProviderSupplier() {
+        return mLayoutStateProviderSupplier;
+    }
+
+    @VisibleForTesting
     public Layout getOverviewListLayout() {
         return getLayoutManager().getOverviewListLayout();
     }
@@ -3001,7 +3034,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             super.performOnConfigurationChanged(newConfig);
         }
     }
-    private void returnToOverviewModeOnBackPressed() {
+    private void returnToOverviewModeOnBackPressed(boolean handleTabSwitcherShown) {
+        // When TabSwitcherLayout is shown while TabSwitcherMediator doesn't handle the back
+        // operation, it means it should return to the Start surface and is handled here.
+        if (ReturnToChromeUtil.mayReturnToStartSurface(handleTabSwitcherShown, mLayoutManager)) {
+            return;
+        }
+
         Tab currentTab = getActivityTab();
         assert currentTab != null && !currentTab.canGoBack();
 

@@ -218,20 +218,11 @@ public class StartSurfaceTest {
         waitForView(allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(cta))),
                 withId(R.id.tab_list_view)));
 
-        // When the start surface refactoring is enabled, tapping the back button on Tab switcher
-        // will show the last tab.
-        if (TabUiTestHelper.getIsStartSurfaceRefactorEnabledFromUIThread(
-                    mActivityTestRule.getActivity())) {
-            StartSurfaceTestUtils.pressBack(mActivityTestRule);
-            // Verifies that the last tab is opening.
-            LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
-        } else {
-            StartSurfaceTestUtils.pressBack(mActivityTestRule);
-            onViewWaiting(allOf(withId(R.id.primary_tasks_surface_view), isDisplayed()));
+        StartSurfaceTestUtils.pressBack(mActivityTestRule);
+        onViewWaiting(allOf(withId(R.id.primary_tasks_surface_view), isDisplayed()));
 
-            StartSurfaceTestUtils.clickFirstTabInCarousel();
-            LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
-        }
+        StartSurfaceTestUtils.clickFirstTabInCarousel();
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
     }
 
     @Test
@@ -287,31 +278,7 @@ public class StartSurfaceTest {
     Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS + "/hide_switch_when_no_incognito_tabs/false"})
     @EnableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
     public void testShow_SingleAsHomepage_NoIncognitoSwitch_RefactorEnabled() {
-        if (!mImmediateReturn) {
-            StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
-        }
-
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForStartSurfaceVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
-
-        onViewWaiting(withId(R.id.primary_tasks_surface_view));
-        onViewWaiting(withId(R.id.search_box_text));
-        onViewWaiting(withId(R.id.mv_tiles_container)).check(matches(isDisplayed()));
-        onViewWaiting(withId(R.id.tab_switcher_title)).check(matches(isDisplayed()));
-        onViewWaiting(withId(R.id.tab_switcher_module_container)).check(matches(isDisplayed()));
-        onView(withId(R.id.tasks_surface_body)).check(matches(isDisplayed()));
-
-        // TODO(crbug.com/1076274): fix toolbar to make incognito switch part of the view.
-        onView(withId(R.id.incognito_toggle_tabs)).check(matches(withEffectiveVisibility(GONE)));
-
-        StartSurfaceTestUtils.clickMoreTabs(cta);
-        StartSurfaceTestUtils.waitForTabSwitcherVisible(cta);
-        onView(withId(R.id.incognito_toggle_tabs)).check(matches(withEffectiveVisibility(VISIBLE)));
-
-        // Verifies that the tab switcher is hidden.
-        StartSurfaceTestUtils.pressBack(mActivityTestRule);
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
+        testShow_SingleAsHomepage_NoIncognitoSwitch();
     }
 
     @Test
@@ -357,20 +324,11 @@ public class StartSurfaceTest {
             return;
         }
 
-        // When the start surface refactoring is enabled, tapping the back button on Tab switcher
-        // will show the last tab.
-        if (TabUiTestHelper.getIsStartSurfaceRefactorEnabledFromUIThread(
-                    mActivityTestRule.getActivity())) {
-            StartSurfaceTestUtils.pressBack(mActivityTestRule);
-            // Verifies that the last tab is opening.
-            LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
-        } else {
-            StartSurfaceTestUtils.pressBack(mActivityTestRule);
-            onViewWaiting(withId(R.id.primary_tasks_surface_view));
+        StartSurfaceTestUtils.pressBack(mActivityTestRule);
+        onViewWaiting(withId(R.id.primary_tasks_surface_view));
 
-            onViewWaiting(withId(R.id.single_tab_view)).perform(click());
-            LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
-        }
+        onViewWaiting(withId(R.id.single_tab_view)).perform(click());
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
     }
 
     @Test

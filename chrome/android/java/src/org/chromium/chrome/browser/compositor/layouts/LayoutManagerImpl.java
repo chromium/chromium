@@ -1137,8 +1137,8 @@ public class LayoutManagerImpl
         mAnimateNextLayout = animate;
     }
 
-    /** @return The ID of the next layout to show or {@code LayoutType.NONE} if one isn't set. */
-    public int getNextLayoutType() {
+    @Override
+    public @LayoutType int getNextLayoutType() {
         return mNextActiveLayout != null ? mNextActiveLayout.getLayoutType() : LayoutType.NONE;
     }
 

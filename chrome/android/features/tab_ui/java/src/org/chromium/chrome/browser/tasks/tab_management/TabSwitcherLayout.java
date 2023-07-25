@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.scene_layer.TabListSceneLayer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.EventFilter;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
@@ -94,6 +95,7 @@ public class TabSwitcherLayout extends Layout {
     @Nullable
     private final ScrimCoordinator mScrimCoordinator;
     private final TabSwitcher.TabListDelegate mGridTabListDelegate;
+    private final LayoutStateProvider mLayoutStateProvider;
 
     private boolean mIsInitialized;
 
@@ -112,6 +114,7 @@ public class TabSwitcherLayout extends Layout {
 
     private Handler mHandler;
     private Runnable mFinishedShowingRunnable;
+    private boolean mBackToStartSurface;
 
     /**
      * Notified when the animation is complete.
@@ -124,12 +127,14 @@ public class TabSwitcherLayout extends Layout {
     private PerfListener mPerfListenerForTesting;
 
     public TabSwitcherLayout(Context context, LayoutUpdateHost updateHost,
-            LayoutRenderHost renderHost, BrowserControlsStateProvider browserControlsStateProvider,
-            TabSwitcher tabSwitcher, @Nullable ViewGroup tabSwitcherScrimAnchor,
+            LayoutStateProvider layoutStateProvider, LayoutRenderHost renderHost,
+            BrowserControlsStateProvider browserControlsStateProvider, TabSwitcher tabSwitcher,
+            @Nullable ViewGroup tabSwitcherScrimAnchor,
             @Nullable ScrimCoordinator scrimCoordinator) {
         super(context, updateHost, renderHost);
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mTabSwitcher = tabSwitcher;
+        mLayoutStateProvider = layoutStateProvider;
         mController = mTabSwitcher.getController();
         mTabSwitcher.setOnTabSelectingListener(this::onTabSelecting);
         mGridTabListDelegate = mTabSwitcher.getTabListDelegate();
@@ -186,7 +191,8 @@ public class TabSwitcherLayout extends Layout {
                 // The Android View version of GTS overview is hidden.
                 // If not doing GTS-to-Tab transition animation, we show the fade-out instead, which
                 // was already done.
-                if (!isTabGtsAnimationEnabled(false)) {
+                if (!isTabGtsAnimationEnabled(false) || mBackToStartSurface) {
+                    mBackToStartSurface = false;
                     postHiding();
                     return;
                 }
@@ -312,6 +318,13 @@ public class TabSwitcherLayout extends Layout {
     public void startHiding(int nextId, boolean hintAtTabSelection) {
         try (TraceEvent e = TraceEvent.scoped(TRACE_HIDE_TAB_SWITCHER)) {
             super.startHiding(nextId, hintAtTabSelection);
+
+            // If the hiding of TabSwitcherLayout is triggered by
+            // {@link ChromeTabbedActivity#returnToOverviewModeOnBackPressed()} to return to the
+            // Start surface, we set the flag here to skip GTS-to-Tab transition animation when
+            // hiding.
+            mBackToStartSurface =
+                    mLayoutStateProvider.getNextLayoutType() == LayoutType.START_SURFACE;
 
             int sourceTabId = nextId;
             if (sourceTabId == Tab.INVALID_TAB_ID) {

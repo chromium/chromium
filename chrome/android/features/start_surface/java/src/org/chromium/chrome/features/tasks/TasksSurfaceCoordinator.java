@@ -136,7 +136,8 @@ public class TasksSurfaceCoordinator implements TasksSurface {
                     browserControlsStateProvider, tabCreatorManager, menuOrKeyboardActionController,
                     mView.getBodyViewContainer(), multiWindowModeStateDispatcher, scrimCoordinator,
                     rootView, dynamicResourceLoaderSupplier, snackbarManager, modalDialogManager,
-                    incognitoReauthControllerSupplier, null /*BackPressManager*/);
+                    incognitoReauthControllerSupplier, /*BackPressManager*/ null,
+                    /* layoutStateProviderSupplier */ null);
         } else if (tabSwitcherType == TabSwitcherType.SINGLE) {
             mTabSwitcher = new SingleTabSwitcherCoordinator(activity,
                     mView.getCarouselTabSwitcherContainer(), null, tabModelSelector,

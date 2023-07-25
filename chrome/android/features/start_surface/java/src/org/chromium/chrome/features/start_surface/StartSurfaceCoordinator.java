@@ -333,7 +333,8 @@ public class StartSurfaceCoordinator implements StartSurface {
                     browserControlsManager, tabCreatorManager, menuOrKeyboardActionController,
                     containerView, multiWindowModeStateDispatcher, scrimCoordinator,
                     /* rootView= */ containerView, dynamicResourceLoaderSupplier, snackbarManager,
-                    modalDialogManager, incognitoReauthControllerSupplier, backPressManager);
+                    modalDialogManager, incognitoReauthControllerSupplier, backPressManager,
+                    /* layoutStateProviderSupplier */ null);
             mTabSwitcherCustomViewManagerSupplier.set(
                     mGridTabSwitcher.getTabSwitcherCustomViewManager());
             controller = mGridTabSwitcher.getController();

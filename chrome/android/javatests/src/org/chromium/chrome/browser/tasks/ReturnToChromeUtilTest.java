@@ -256,10 +256,11 @@ public class ReturnToChromeUtilTest {
         mBackPressHandler = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             return new ReturnToChromeBackPressHandler(
                     mActivityTestRule.getActivity().getActivityTabProvider(),
-                    ()
+                    (shouldHandleTabSwitcherShown)
                             -> {},
                     mActivityTestRule.getActivity()::getActivityTab,
-                    mActivityTestRule.getActivity()::getLayoutManager, () -> { return -1L; });
+                    mActivityTestRule.getActivity().getLayoutStateProviderSupplier(),
+                    () -> { return -1L; }, false);
         });
     }
 

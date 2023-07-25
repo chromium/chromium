@@ -44,11 +44,12 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 public class TabManagementDelegateImpl implements TabManagementDelegate {
     @Override
     public Layout createTabSwitcherLayout(Context context, LayoutUpdateHost updateHost,
-            LayoutRenderHost renderHost, BrowserControlsStateProvider browserControlsStateProvider,
-            TabSwitcher tabSwitcher, ViewGroup tabSwitcherScrimAnchor,
-            ScrimCoordinator scrimCoordinator) {
-        return new TabSwitcherLayout(context, updateHost, renderHost, browserControlsStateProvider,
-                tabSwitcher, tabSwitcherScrimAnchor, scrimCoordinator);
+            LayoutStateProvider layoutStateProvider, LayoutRenderHost renderHost,
+            BrowserControlsStateProvider browserControlsStateProvider, TabSwitcher tabSwitcher,
+            ViewGroup tabSwitcherScrimAnchor, ScrimCoordinator scrimCoordinator) {
+        return new TabSwitcherLayout(context, updateHost, layoutStateProvider, renderHost,
+                browserControlsStateProvider, tabSwitcher, tabSwitcherScrimAnchor,
+                scrimCoordinator);
     }
 
     @Override
@@ -66,7 +67,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull SnackbarManager snackbarManager,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
-            @Nullable BackPressManager backPressManager) {
+            @Nullable BackPressManager backPressManager,
+            @Nullable OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier) {
         return new TabSwitcherCoordinator(activity, activityLifecycleDispatcher, tabModelSelector,
                 tabContentManager, browserControlsStateProvider, tabCreatorManager,
                 menuOrKeyboardActionController, containerView, multiWindowModeStateDispatcher,
@@ -75,7 +77,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                         ? TabListCoordinator.TabListMode.LIST
                         : TabListCoordinator.TabListMode.GRID,
                 rootView, dynamicResourceLoaderSupplier, snackbarManager, modalDialogManager,
-                incognitoReauthControllerSupplier, backPressManager);
+                incognitoReauthControllerSupplier, backPressManager, layoutStateProviderSupplier);
     }
 
     @Override
@@ -96,7 +98,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                 tabContentManager, browserControls, tabCreatorManager,
                 menuOrKeyboardActionController, containerView, multiWindowModeStateDispatcher,
                 scrimCoordinator, TabListCoordinator.TabListMode.CAROUSEL, rootView,
-                dynamicResourceLoaderSupplier, snackbarManager, modalDialogManager, null, null);
+                dynamicResourceLoaderSupplier, snackbarManager, modalDialogManager, null, null,
+                null);
     }
 
     @Override

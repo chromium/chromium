@@ -45,6 +45,9 @@ import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.tab.Tab;
@@ -187,6 +190,14 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     private boolean mIsTransitionInProgress;
     private boolean mIsTabSwitcherShowing;
 
+    @Nullable
+    private LayoutStateProvider mLayoutStateProvider;
+    @Nullable
+    private LayoutStateObserver mLayoutStateObserver;
+    // The layout type of the last active layout which was shown before showing the TAB_SWITCHER
+    // layout.
+    private @LayoutType int mLastActiveLayoutType;
+
     /**
      * Interface to delegate resetting the tab grid.
      */
@@ -282,7 +293,9 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
      *         supplier for lazy initialization on first use.
      * @param onTabSwitcherShownCallback is a callback method to notify {@link
      *         TabSwitcherCoordinator} class to attach empty view when #showTabSwitcherView is
-     * invoked.
+     *         invoked.
+     * @param layoutStateProviderSupplier {@link OneshotSupplier<LayoutStateProvider>} to provide
+     *         layout state changes.
      */
     TabSwitcherMediator(Context context, ResetHandler resetHandler,
             PropertyModel containerViewModel, TabModelSelector tabModelSelector,
@@ -294,7 +307,8 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
             @Nullable BackPressManager backPressManager,
             @Nullable OneshotSupplier<TabGridDialogMediator.DialogController>
                     tabGridDialogControllerSupplier,
-            Runnable onTabSwitcherShownCallback) {
+            Runnable onTabSwitcherShownCallback,
+            @Nullable OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier) {
         mResetHandler = resetHandler;
         mContainerViewModel = containerViewModel;
         mTabModelSelector = tabModelSelector;
@@ -307,6 +321,9 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         mIsStartSurfaceRefactorEnabled = ReturnToChromeUtil.isStartSurfaceRefactorEnabled(context);
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
         mOnTabSwitcherShownCallback = onTabSwitcherShownCallback;
+        if (layoutStateProviderSupplier != null) {
+            layoutStateProviderSupplier.onAvailable(this::onLayoutStateProviderAvailable);
+        }
 
         if (incognitoReauthControllerSupplier != null) {
             mCallbackController = new CallbackController();
@@ -909,6 +926,12 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
             return false;
         }
 
+        // Going back to the Start surface isn't handled by the TabSwitcherMediator any more, but in
+        // {@link ReturnToChromeBackPressHandler}.
+        if (mLastActiveLayoutType == LayoutType.START_SURFACE) {
+            return false;
+        }
+
         onTabSelecting(mTabModelSelector.getCurrentTabId(), false);
 
         return true;
@@ -1086,6 +1109,10 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
             mCallbackController.destroy();
         }
 
+        if (mLayoutStateProvider != null) {
+            mLayoutStateProvider.removeObserver(mLayoutStateObserver);
+        }
+
         mTabModelSelector.removeObserver(mTabModelSelectorObserver);
         mBrowserControlsStateProvider.removeObserver(mBrowserControlsObserver);
         mTabModelSelector.getTabModelFilterProvider().removeTabModelFilterObserver(
@@ -1201,6 +1228,10 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
 
         if (mTabModelSelector.getCurrentTab() == null) return false;
 
+        // Going back to the Start surface isn't handled by the TabSwitcherMediator any more, but in
+        // {@link ReturnToChromeBackPressHandler}.
+        if (mLastActiveLayoutType == LayoutType.START_SURFACE) return false;
+
         return true;
     }
 
@@ -1219,5 +1250,22 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         }
 
         return false;
+    }
+
+    private void onLayoutStateProviderAvailable(LayoutStateProvider layoutStateProvider) {
+        mLayoutStateProvider = layoutStateProvider;
+        if (mLayoutStateObserver == null) {
+            mLayoutStateObserver = new LayoutStateObserver() {
+                @Override
+                public void onFinishedHiding(int layoutType) {
+                    mLastActiveLayoutType = layoutType;
+                }
+            };
+        }
+        mLayoutStateProvider.addObserver(mLayoutStateObserver);
+    }
+
+    public void setLastActiveLayoutTypeForTesting(@LayoutType int lastActiveLayoutType) {
+        mLastActiveLayoutType = lastActiveLayoutType;
     }
 }

@@ -59,6 +59,7 @@ public interface TabManagementDelegate {
      * Create the {@link TabSwitcherLayout}.
      * @param context The current Android's context.
      * @param updateHost The parent {@link LayoutUpdateHost}.
+     * @param layoutStateProvider The {@link LayoutStateProvider} to provide layout state changes.
      * @param renderHost The parent {@link LayoutRenderHost}.
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} for the top
      *         controls.
@@ -69,9 +70,9 @@ public interface TabManagementDelegate {
      * @return The {@link TabSwitcherLayout}.
      */
     Layout createTabSwitcherLayout(Context context, LayoutUpdateHost updateHost,
-            LayoutRenderHost renderHost, BrowserControlsStateProvider browserControlsStateProvider,
-            TabSwitcher tabSwitcher, ViewGroup tabSwitcherScrimAnchor,
-            ScrimCoordinator scrimCoordinator);
+            LayoutStateProvider layoutStateProvider, LayoutRenderHost renderHost,
+            BrowserControlsStateProvider browserControlsStateProvider, TabSwitcher tabSwitcher,
+            ViewGroup tabSwitcherScrimAnchor, ScrimCoordinator scrimCoordinator);
 
     /**
      * Create the {@link TabSwitcher} to display Tabs in grid.
@@ -92,6 +93,8 @@ public interface TabManagementDelegate {
      * @param incognitoReauthControllerSupplier {@link OneshotSupplier<IncognitoReauthController>}
      *         to detect pending re-auth when tab switcher is shown.
      * @param backPressManager {@link BackPressManager} to handle back press gesture.
+     * @param layoutStateProviderSupplier {@link OneshotSupplier<LayoutStateProvider>} to provide
+     *                                    the layout state changes.
      * @return The {@link TabSwitcher}.
      */
     TabSwitcher createGridTabSwitcher(@NonNull Activity activity,
@@ -108,7 +111,8 @@ public interface TabManagementDelegate {
             @NonNull SnackbarManager snackbarManager,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
-            @Nullable BackPressManager backPressManager);
+            @Nullable BackPressManager backPressManager,
+            @Nullable OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier);
 
     /**
      * Create the {@link TabSwitcher} to display Tabs in carousel.

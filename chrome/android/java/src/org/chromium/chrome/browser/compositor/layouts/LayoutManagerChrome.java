@@ -173,7 +173,7 @@ public class LayoutManagerChrome
                     TabManagementDelegateProvider.getDelegate();
             assert tabManagementDelegate != null;
 
-            mTabSwitcherLayout = tabManagementDelegate.createTabSwitcherLayout(context, this,
+            mTabSwitcherLayout = tabManagementDelegate.createTabSwitcherLayout(context, this, this,
                     renderHost, browserControlsStateProvider, tabSwitcher, tabSwitcherScrimAnchor,
                     scrimCoordinator);
 
