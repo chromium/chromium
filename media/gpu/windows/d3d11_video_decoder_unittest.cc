@@ -28,7 +28,6 @@
 #include "media/base/test_helpers.h"
 #include "media/base/win/d3d11_mocks.h"
 #include "media/gpu/test/fake_command_buffer_helper.h"
-#include "media/gpu/windows/d3d11_video_decoder_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

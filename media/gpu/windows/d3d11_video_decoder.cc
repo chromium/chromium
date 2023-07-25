@@ -36,8 +36,8 @@
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 #include "media/gpu/windows/d3d11_picture_buffer.h"
 #include "media/gpu/windows/d3d11_status.h"
-#include "media/gpu/windows/d3d11_video_decoder_impl.h"
 #include "media/gpu/windows/d3d11_video_device_format_support.h"
+#include "media/gpu/windows/d3d11_video_frame_mailbox_release_helper.h"
 #include "media/gpu/windows/supported_profile_helpers.h"
 #include "media/media_buildflags.h"
 #include "ui/gfx/hdr_metadata.h"
@@ -120,8 +120,10 @@ D3D11VideoDecoder::D3D11VideoDecoder(
     SupportedConfigs supported_configs,
     bool system_hdr_enabled)
     : media_log_(std::move(media_log)),
-      impl_(base::MakeRefCounted<D3D11VideoDecoderImpl>(media_log_->Clone(),
-                                                        get_helper_cb)),
+      mailbox_release_helper_(
+          base::MakeRefCounted<D3D11VideoFrameMailboxReleaseHelper>(
+              media_log_->Clone(),
+              get_helper_cb)),
       gpu_task_runner_(std::move(gpu_task_runner)),
       decoder_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       gpu_preferences_(gpu_preferences),
@@ -420,22 +422,25 @@ void D3D11VideoDecoder::Initialize(const VideoDecoderConfig& config,
   // us figure that out.
   MEDIA_LOG(INFO, media_log_) << "Video is supported by D3D11VideoDecoder";
 
-  // Initialize `impl_` so we have a ReleaseMailboxCB which knows how to wait
-  // for SyncToken resolution. No need to reinitialize if we've done it once.
+  // Initialize `mailbox_release_helper_` so we have a ReleaseMailboxCB which
+  // knows how to wait for SyncToken resolution. No need to reinitialize if
+  // we've done it once.
   if (release_mailbox_cb_) {
     OnGpuInitComplete(true, release_mailbox_cb_);
     return;
   }
 
-  auto impl_init_cb = base::BindOnce(&D3D11VideoDecoder::OnGpuInitComplete,
-                                     weak_factory_.GetWeakPtr());
+  auto mailbox_helper_init_cb = base::BindOnce(
+      &D3D11VideoDecoder::OnGpuInitComplete, weak_factory_.GetWeakPtr());
   if (gpu_task_runner_->BelongsToCurrentThread()) {
-    impl_->Initialize(std::move(impl_init_cb));
+    mailbox_release_helper_->Initialize(std::move(mailbox_helper_init_cb));
   } else {
     gpu_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&D3D11VideoDecoderImpl::Initialize, impl_,
-                                  base::BindPostTaskToCurrentDefault(
-                                      std::move(impl_init_cb))));
+        FROM_HERE,
+        base::BindOnce(&D3D11VideoFrameMailboxReleaseHelper::Initialize,
+                       mailbox_release_helper_,
+                       base::BindPostTaskToCurrentDefault(
+                           std::move(mailbox_helper_init_cb))));
   }
 }
 
@@ -472,7 +477,7 @@ void D3D11VideoDecoder::PictureBufferGPUResourceInitDone(
 
 void D3D11VideoDecoder::OnGpuInitComplete(
     bool success,
-    D3D11VideoDecoderImpl::ReleaseMailboxCB release_mailbox_cb) {
+    D3D11VideoFrameMailboxReleaseHelper::ReleaseMailboxCB release_mailbox_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("gpu", "D3D11VideoDecoder::OnGpuInitComplete");
 
