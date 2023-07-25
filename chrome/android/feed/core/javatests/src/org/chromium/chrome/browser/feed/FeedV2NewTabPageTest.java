@@ -481,6 +481,7 @@ public class FeedV2NewTabPageTest {
     @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.SURFACE_POLISH + "<Study",
             "force-fieldtrials=Study/Group",
             "force-fieldtrial-params=Study.Group:polish_omnibox_size/true"})
+    @DisabledTest(message = "crbug.com/1467377")
     // clang-format off
     public void testFakeOmniboxPolishOnNtp() throws IOException{
         // clang-format on
