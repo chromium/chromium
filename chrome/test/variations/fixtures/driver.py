@@ -45,10 +45,9 @@ def pytest_addoption(parser):
     help='Enable graphical window display on the emulator.')
 
   # Options for CrOS VMs.
-  parser.addoption('--cros-args',
-                   nargs='+',
-                   dest='cros_args',
-                   help='A list of launching args passed to CrOS VM.')
+  parser.addoption('--board',
+                   default='betty-pi-arc',
+                   help='The board name of the CrOS VM.')
 
 
 # pylint: disable=redefined-outer-name
@@ -135,7 +134,7 @@ def driver_factory(
     from chrome.test.variations.drivers import chromeos
     factory = chromeos.CrOSDriverFactory(
       channel=pytestconfig.getoption('channel'),
-      cros_args=pytestconfig.getoption('cros_args'),
+      board=pytestconfig.getoption('board'),
       chromedriver_path=chromedriver_path,
       server_port=local_http_server.server_port
       )

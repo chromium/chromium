@@ -36,6 +36,8 @@ from telemetry.internal.platform.cros_platform_backend import CrosPlatformBacken
 from telemetry.internal.backends.chrome import cros_browser_finder
 
 
+CACHE_DIR = os.path.join(SRC_DIR, "build", "cros_cache")
+
 class _PossibleCrOSBrowser(cros_browser_finder.PossibleCrOSBrowser):
   """The CrOS browser wrapper to filter out start-up args."""
 
@@ -93,13 +95,21 @@ def _wait_for_port(
 @attr.attrs()
 class CrOSDriverFactory(DriverFactory):
   channel: str = attr.attrib()
-  cros_args: List[str] = attr.attrib()
+  board: str = attr.attrib()
   server_port: int = attr.attrib()
   chromedriver_path: str = attr.attrib()
 
-  def _launch_vm(self, cros_args: Optional[List[str]]):
+  def __attrs_post_init__(self):
+    # We use this to check whether we have started the VM before we attempt to
+    # shut it down.
+    self._vm_started = False
+
+  def _launch_vm(self) -> vm.VM:
     parser = vm.VM.GetParser()
-    opts = parser.parse_args(cros_args or [])
+    opts = parser.parse_args([
+      f'--board={self.board}',
+      f'--cache-dir={CACHE_DIR}',
+    ])
     _device = device.Device.Create(opts)
 
     # VM will usually be started on a test bot already.
@@ -119,19 +129,30 @@ class CrOSDriverFactory(DriverFactory):
   def _copy_seed_file(self, seed_file: str) -> str:
     assert os.path.exists(seed_file)
     remote_seed_path = f'/tmp/{os.path.basename(seed_file)}'
-    assert self.device.remote.IsDirWritable('/tmp/'), 'tmp dir not writable'
-    self.device.remote.CopyToDevice(src=seed_file,
-                                    dest=remote_seed_path,
-                                    mode='scp',
-                                    verbose=True)
-    assert self.device.remote.IfFileExists(remote_seed_path), (
+    remote_device = self.device.remote
+    assert remote_device.IsDirWritable('/tmp/'), 'tmp dir not writable'
+    remote_device.CopyToDevice(src=seed_file,
+                               dest=remote_seed_path,
+                               mode='scp',
+                               verbose=True)
+    assert remote_device.IfFileExists(remote_seed_path), (
       'file not pushed to device'
     )
+
+    # The default owner is root, we need to chmod to any user.
+    remote_device.run(
+      ['chmod', 'a+rw', remote_seed_path], remote_sudo=True, print_cmd=True)
     return remote_seed_path
 
   @functools.cached_property
   def device(self) -> device.Device:
-    return self._launch_vm(self.cros_args)
+    device_ = self._launch_vm()
+    self._vm_started = True
+    return device_
+
+  @property
+  def vm_started(self) -> bool:
+    return self._vm_started
 
   @contextmanager
   def tunnel_context(self, debugging_port, server_port):
@@ -157,6 +178,8 @@ class CrOSDriverFactory(DriverFactory):
     seed_file: Optional[str] = None,
     options: Optional[webdriver.ChromeOptions] = None
     ):
+    # This has a side-effect to boot up the VM if not yet already.
+    assert self.device, "VM fails to boot."
 
     browser_args = []
     if seed_file:
@@ -184,5 +207,6 @@ class CrOSDriverFactory(DriverFactory):
         driver.quit()
 
   def close(self):
-    # We leave the VM up and running and let the runner to clean up.
+    if self.vm_started and self.device.IsRunning():
+      self.device.Stop()
     pass
