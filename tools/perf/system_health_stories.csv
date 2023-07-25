@@ -102,6 +102,7 @@ load:search:baidu:2018,,"desktop,mobile","2018,international"
 load:search:ebay:2018,,"desktop,mobile",2018
 load:search:flipkart:2018,,desktop,"2018,international"
 load:search:google:2018,,"desktop,mobile",2018
+load:search:naver:2023,,mobile,"2023,international"
 load:search:taobao:2018,,desktop,"2018,international"
 load:search:taobao:2019,,mobile,"2019,international"
 load:search:yahoo:2018,,"desktop,mobile",2018

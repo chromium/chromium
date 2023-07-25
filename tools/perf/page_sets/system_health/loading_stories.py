@@ -105,6 +105,16 @@ class LoadEbayStory2018(_LoadingStory):
   TAGS = [story_tags.YEAR_2018]
 
 
+class LoadNaverStory2023(_LoadingStory):
+  NAME = 'load:search:naver:2023'
+  URL = 'https://m.naver.com/'
+  TAGS = [story_tags.INTERNATIONAL, story_tags.YEAR_2023]
+  SUPPORTED_PLATFORMS = platforms.MOBILE_ONLY
+
+  @classmethod
+  def Name(cls):
+    return 'UNSCHEDULED_load:search:naver:2023'
+
 ################################################################################
 # Social networks.
 ################################################################################

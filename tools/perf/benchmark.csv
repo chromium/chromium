@@ -15,7 +15,7 @@ UNSCHEDULED_speedometer1.0,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaSc
 UNSCHEDULED_speedometer2.0,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://browserbench.org/Speedometer2.0,all
 UNSCHEDULED_speedometer2.1,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://browserbench.org/Speedometer2.1,all
 UNSCHEDULED_v8.loading_desktop,"cbruni@chromium.org, vahl@chromium.org, almuthanna@chromium.org",Blink>JavaScript,https://bit.ly/system-health-v8-benchmarks,"2016,2018,2019,2020,emerging_market,health_check,international,javascript_heavy"
-UNSCHEDULED_v8.loading_mobile,"cbruni@chromium.org, leszeks@chromium.org",Blink>JavaScript,https://bit.ly/system-health-v8-benchmarks,"2016,2018,2019,2020,emerging_market,health_check,international,javascript_heavy"
+UNSCHEDULED_v8.loading_mobile,"cbruni@chromium.org, leszeks@chromium.org",Blink>JavaScript,https://bit.ly/system-health-v8-benchmarks,"2016,2018,2019,2020,2023,emerging_market,health_check,international,javascript_heavy"
 ad_frames.fencedframe,lbrady@google.com,Blink>FencedFrames,https://tinyurl.com/fenced-frame-benchmark,
 base_perftests,"skyostil@chromium.org, gab@chromium.org",Internals>SequenceManager,https://chromium.googlesource.com/chromium/src/+/HEAD/base/README.md#performance-testing,
 blink_perf.accessibility,aleventhal@chromium.org,Blink>Accessibility,https://bit.ly/blink-perf-benchmarks,all
@@ -72,9 +72,9 @@ speedometer2-minormc,omerkatz@chromium.org,Blink>JavaScript>GarbageCollection,ht
 startup.mobile,"pasko@chromium.org, lizeb@chromium.org",Speed>Metrics>SystemHealthRegressions,,
 sync_performance_tests,mastiz@chromium.org,Services>Sync,https://chromium.googlesource.com/chromium/src/+/HEAD/components/sync/README.md,
 system_health.common_desktop,kouhei@chromium.org,Speed>Metrics>SystemHealthRegressions,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,accessibility,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,scroll,wasm,webgl"
-system_health.common_mobile,kouhei@chromium.org,Speed>Metrics>SystemHealthRegressions,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy"
+system_health.common_mobile,kouhei@chromium.org,Speed>Metrics>SystemHealthRegressions,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,2023,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy"
 system_health.memory_desktop,"pasko@chromium.org, lizeb@chromium.org",,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,accessibility,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,scroll,wasm,webgl"
-system_health.memory_mobile,"pasko@chromium.org, lizeb@chromium.org",,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy"
+system_health.memory_mobile,"pasko@chromium.org, lizeb@chromium.org",,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,2023,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy"
 system_health.webview_startup,"oksamyt@chromium.org, torne@chromium.org",Mobile>WebView>Perf,,2016
 tracing_perftests,"eseckler@chromium.org, khokhlov@chromium.org, kraskevich@chromium.org",Speed>Tracing,,
 v8.browsing_desktop,"cbruni@chromium.org, vahl@chromium.org, almuthanna@chromium.org",Blink>JavaScript,https://bit.ly/system-health-v8-benchmarks,"2016,2018,2019,2020,2021,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,wasm,webgl"
