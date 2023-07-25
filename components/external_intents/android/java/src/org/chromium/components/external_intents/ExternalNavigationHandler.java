@@ -1225,6 +1225,9 @@ public class ExternalNavigationHandler {
             QueryIntentActivitiesSupplier resolvingInfos, ResolveActivitySupplier resolveActivity,
             boolean isExternalProtocol) {
         if (sAllowIntentsToSelfForTesting) return false;
+        if (!ExternalIntentsFeatures.BLOCK_INTENTS_TO_SELF.isEnabled() && params.isMainFrame()) {
+            return false;
+        }
         if (!isExternalProtocol) return false;
         if (!resolveInfoContainsSelf(resolvingInfos.get())) return false;
         if (resolveActivity.get() == null) return false;
@@ -1352,6 +1355,8 @@ public class ExternalNavigationHandler {
      * performing a navigation when it's actually a background tab doing the navigation.
      */
     private boolean isCrossFrameRenavigation(ExternalNavigationParams params) {
+        if (!ExternalIntentsFeatures.BLOCK_FRAME_RENAVIGATIONS.isEnabled()) return false;
+
         if (params.getRedirectHandler().navigationChainPerformedCrossFrameNavigation()) {
             if (debug()) Log.i(TAG, "Navigation chain used cross-frame re-navigation.");
             return true;
