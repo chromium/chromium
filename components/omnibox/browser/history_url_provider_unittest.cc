@@ -1483,18 +1483,59 @@ TEST_F(HistoryURLProviderTest, MaxMatches) {
 
   matches_ = autocomplete_->matches();
   EXPECT_EQ(matches_.size(), autocomplete_->provider_max_matches());
+  // These matches are saved to compare with the ML scoring results below.
+  ACMatches original_matches = matches_;
 
   // Turn keyword mode on. we should be able to get more matches now.
   input.set_keyword_mode_entry_method(
       metrics::OmniboxEventProto_KeywordModeEntryMethod_TAB);
   input.set_prefer_keyword(true);
   autocomplete_->Start(input, false);
-  if (!autocomplete_->done())
+  if (!autocomplete_->done()) {
     base::RunLoop().Run();
+  }
 
   matches_ = autocomplete_->matches();
   EXPECT_EQ(matches_.size(),
             autocomplete_->provider_max_matches_in_keyword_mode());
+
+  // The provider should not limit the number of suggestions when ML scoring
+  // w/increased candidates is enabled. Any matches beyond the limit should be
+  // marked as culled_by_provider and have a relevance of 0.
+  input.set_keyword_mode_entry_method(
+      metrics::OmniboxEventProto_KeywordModeEntryMethod_INVALID);
+  input.set_prefer_keyword(false);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{omnibox::kUrlScoringModel, {}},
+       {omnibox::kMlUrlScoring,
+        {{"MlUrlScoringIncreaseNumCandidates", "true"},
+         {"MlUrlScoringHUPMaxResults", "50"}}}},
+      /*disabled_features=*/{});
+  OmniboxFieldTrial::ScopedMLConfigForTesting scoped_ml_config;
+
+  autocomplete_->Start(input, false);
+  if (!autocomplete_->done()) {
+    base::RunLoop().Run();
+  }
+
+  matches_ = autocomplete_->matches();
+  EXPECT_EQ(matches_.size(), 14u);
+
+  // Matches below the provider limit should match the matches with the flag
+  // disabled, as well as NOT marked as extra.
+  for (size_t i = 0; i < original_matches.size(); i++) {
+    EXPECT_EQ(original_matches[i].destination_url, matches_[i].destination_url);
+    EXPECT_GT(matches_[i].relevance, 0);
+    EXPECT_FALSE(matches_[i].culled_by_provider);
+  }
+  // Matches above the provider limit should be marked as zero relevance and
+  // culled by provider.
+  for (size_t i = original_matches.size(); i < matches_.size(); i++) {
+    EXPECT_EQ(matches_[i].relevance, 0);
+    EXPECT_TRUE(matches_[i].culled_by_provider);
+  }
 }
 
 TEST_F(HistoryURLProviderTest, HistoryMatchToACMatchWithScoringSignals) {

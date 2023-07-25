@@ -570,6 +570,7 @@ extern const base::FeatureParam<bool> kDomainSuggestionsAlternativeScoring;
 // on the main thread. After that, it can be called from any thread.
 struct MLConfig {
   MLConfig();
+  MLConfig(const MLConfig&);
 
   // If true, logs Omnibox URL scoring signals to OmniboxEventProto.
   // Equivalent to omnibox::kLogUrlScoringSignals.
@@ -608,6 +609,12 @@ struct MLConfig {
   // re-ranking with the new scores.  This param has no effect if
   // `ml_url_scoring_rerank_final_matches_only` above is false.
   bool ml_url_scoring_preserve_default{false};
+
+  // Without ML Scoring enabled, the History URL Provider queries the history
+  // database for `MaxMatches` * 2 matches and sorts and limits to `MaxMatches`.
+  // When ML Scoring is enabled, this max is ignored.  This parameter sets how
+  // the max number of results to query the database for.
+  int ml_url_scoring_hup_max_results{0};
 
   // If true, creates Omnibox autocompete URL scoring model.
   // Equivalent to omnibox::kUrlScoringModel.

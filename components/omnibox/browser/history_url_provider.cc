@@ -635,9 +635,15 @@ void HistoryURLProvider::DoAutocomplete(history::HistoryBackend* backend,
       // more results than we need, of every prefix type, in hopes this will
       // give us far more than enough to work with.  CullRedirects() will then
       // reduce the list to the best `max_matches` results.
+      // If Ml scoring is enabled, the provider should return a larger subset of
+      // suggestions.
+      int db_query_limit =
+          OmniboxFieldTrial::IsMlUrlScoringIncreaseNumCandidatesEnabled()
+              ? OmniboxFieldTrial::GetMLConfig().ml_url_scoring_hup_max_results
+              : max_matches * 2;
       std::string prefixed_input =
           base::UTF16ToUTF8(i->prefix + params->input.text());
-      db->AutocompleteForPrefix(prefixed_input, max_matches * 2, !backend,
+      db->AutocompleteForPrefix(prefixed_input, db_query_limit, !backend,
                                 &url_matches);
       for (history::URLRows::const_iterator j(url_matches.begin());
            j != url_matches.end(); ++j) {
@@ -737,21 +743,22 @@ void HistoryURLProvider::DoAutocomplete(history::HistoryBackend* backend,
                                : HistoryURLProviderParams::NEITHER;
   }
 
-  const size_t max_results =
+  params->max_results =
       max_matches + (params->exact_suggestion_is_in_history ? 1 : 0);
   if (backend) {
     // Remove redirects and trim list to size.  We want to provide up to
     // `max_matches` results plus the What You Typed result, if it was
     // added to `params->matches` above.
-    CullRedirects(backend, &params->matches, max_results);
-  } else if (params->matches.size() > max_results) {
+    CullRedirects(backend, &params->matches, params->max_results);
+  } else if (!OmniboxFieldTrial::IsMlUrlScoringIncreaseNumCandidatesEnabled() &&
+             params->matches.size() > params->max_results) {
     // Simply trim the list to size.
-    params->matches.resize(max_results);
+    params->matches.resize(params->max_results);
   }
 }
 
 void HistoryURLProvider::PromoteMatchesIfNecessary(
-    const HistoryURLProviderParams& params) {
+    HistoryURLProviderParams& params) {
   bool populate_scoring_signals =
       OmniboxFieldTrial::IsPopulatingUrlScoringSignalsEnabled();
   if (params.promote_type == HistoryURLProviderParams::NEITHER)
@@ -778,6 +785,7 @@ void HistoryURLProvider::PromoteMatchesIfNecessary(
       (!matches_.back().allowed_to_be_default_match &&
        params.have_what_you_typed_match)) {
     matches_.push_back(params.what_you_typed_match);
+    params.max_results++;
   }
 }
 
@@ -830,6 +838,10 @@ void HistoryURLProvider::QueryComplete(
                                                populate_scoring_signals));
     }
   }
+
+  ResizeMatches(
+      params->max_results,
+      OmniboxFieldTrial::IsMlUrlScoringIncreaseNumCandidatesEnabled());
 
   done_ = true;
   NotifyListeners(true);
@@ -1069,9 +1081,10 @@ void HistoryURLProvider::CullRedirects(history::HistoryBackend* backend,
       source++;
     }
   }
-
-  if (matches->size() > max_results)
+  if (!OmniboxFieldTrial::IsMlUrlScoringIncreaseNumCandidatesEnabled() &&
+      matches->size() > max_results) {
     matches->resize(max_results);
+  }
 }
 
 size_t HistoryURLProvider::RemoveSubsequentMatchesOf(

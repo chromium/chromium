@@ -189,7 +189,15 @@ struct HistoryURLProviderParams {
   // we aren't allowed to read user preferences from the History sequence.
   const bool allow_deleting_browser_history;
 
+  // Set when the input is in keyword mode for a starter pack engine, otherwise
+  // set to nullptr.  This is used to keep the user in keyword mode for the
+  // appropriate search engine.
   raw_ptr<const TemplateURL> starter_pack_engine;
+
+  // The provider limit plus the What-You-Typed result if valid. This is also
+  // used to mark all suggestions above max_results as "extra" when the number
+  // of suggestions is increased for ML Scoring.
+  size_t max_results;
 };
 
 // This class is an autocomplete provider and is also a pseudo-internal
@@ -272,7 +280,7 @@ class HistoryURLProvider : public HistoryProvider {
   // params->matches, or both to the front of `matches_`, depending on the
   // values of params->promote_type, params->have_what_you_typed_match, and
   // params->prevent_inline_autocomplete.
-  void PromoteMatchesIfNecessary(const HistoryURLProviderParams& params);
+  void PromoteMatchesIfNecessary(HistoryURLProviderParams& params);
 
   // Dispatches the results to the autocomplete controller. Called on the
   // main thread by ExecuteWithDB when the results are available.
