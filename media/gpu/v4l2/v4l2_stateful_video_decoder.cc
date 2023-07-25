@@ -277,8 +277,11 @@ void V4L2StatefulVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   DVLOGF(3) << buffer->AsHumanReadableString(/*verbose=*/false);
 
   if (buffer->end_of_stream()) {
-    NOTIMPLEMENTED() << "EOS is not supported yet";
-    std::move(decode_cb).Run(DecoderStatus::Codes::kAborted);
+    if (!OUTPUT_queue_->SendStopCommand()) {
+      std::move(decode_cb).Run(DecoderStatus::Codes::kFailed);
+      return;
+    }
+    flush_cb_ = std::move(decode_cb);
     return;
   }
 
@@ -674,6 +677,17 @@ void V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers() {
   for (std::tie(success, dequeued_buffer) = CAPTURE_queue_->DequeueBuffer();
        success && dequeued_buffer;
        std::tie(success, dequeued_buffer) = CAPTURE_queue_->DequeueBuffer()) {
+    // A buffer marked "last" indicates the end of a flush. Note that, according
+    // to spec, this buffer may or may not have zero |bytesused|.
+    // https://www.kernel.org/doc/html/v5.15/userspace-api/media/v4l/dev-decoder.html#drain
+    if (dequeued_buffer->IsLast()) {
+      VLOGF(3) << "Buffer marked LAST in |CAPTURE_queue_|";
+      if (flush_cb_) {
+        std::move(flush_cb_).Run(DecoderStatus::Codes::kOk);
+      }
+      return;
+    }
+
     VLOGF(3) << "There's at least one |CAPTURE_queue_| buffer ready.";
     scoped_refptr<VideoFrame> video_frame = dequeued_buffer->GetVideoFrame();
     CHECK(video_frame);

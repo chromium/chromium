@@ -1496,6 +1496,19 @@ absl::optional<struct v4l2_format> V4L2Queue::SetModifierFormat(
   return absl::nullopt;
 }
 
+bool V4L2Queue::SendStopCommand() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(mcasas): Restrict this to V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE, after
+  // deprecating V4L2StatefulVideoDecoderBackend.
+
+  struct v4l2_decoder_cmd cmd;
+  memset(&cmd, 0, sizeof(cmd));  // Must use memset() due to unions.
+  cmd.cmd = V4L2_DEC_CMD_STOP;
+  const bool success = ioctl_cb_.Run(VIDIOC_DECODER_CMD, &cmd) == kIoctlOk;
+  PLOG_IF(ERROR, !success) << "Failed to issue V4L2_DEC_CMD_STOP command";
+  return success;
+}
+
 class V4L2Request {
  public:
   V4L2Request(const V4L2Request&) = delete;

@@ -45,9 +45,6 @@
 
 namespace media {
 
-// Numerical value of ioctl() OK return value;
-constexpr int kIoctlOk = 0;
-
 void RecordMediaIoctlUMA(MediaIoctlRequests function) {
   base::UmaHistogramEnumeration("Media.V4l2VideoDecoder.MediaIoctlError",
                                 function);

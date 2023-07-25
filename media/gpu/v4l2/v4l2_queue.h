@@ -534,6 +534,9 @@ class MEDIA_GPU_EXPORT V4L2Queue
       uint64_t modifier,
       const gfx::Size& size);
 
+  // Sends a V4L2_DEC_CMD_STOP to this queue.
+  [[nodiscard]] bool SendStopCommand();
+
  private:
   ~V4L2Queue();
 

@@ -119,6 +119,7 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
       VIDEO_CODEC_PROFILE_UNKNOWN;
   VideoAspectRatio aspect_ratio_ GUARDED_BY_CONTEXT(sequence_checker_);
   OutputCB output_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
+  DecodeCB flush_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // OUTPUT in V4L2 terminology is the queue holding encoded chunks of
   // bitstream. CAPTURE is the queue holding decoded pictures. See e.g. [1].

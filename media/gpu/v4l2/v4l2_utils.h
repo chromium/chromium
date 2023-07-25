@@ -39,6 +39,9 @@ using IoctlAsCallback = base::RepeatingCallback<int(int, void*)>;
 using MmapAsCallback =
     base::RepeatingCallback<void*(void*, unsigned int, int, int, unsigned int)>;
 
+// Numerical value of ioctl() OK return value;
+constexpr int kIoctlOk = 0;
+
 // These values are logged to UMA. Entries should not be renumbered and numeric
 // values should never be reused. Please keep in sync with
 // "MediaIoctlRequests" in src/tools/metrics/histograms/enums.xml.
