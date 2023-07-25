@@ -4443,6 +4443,13 @@ WebAppIntegrationTest::~WebAppIntegrationTest() = default;
 
 void WebAppIntegrationTest::SetUp() {
   helper_.SetUp();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  StartUniqueAshChrome(
+      /*enabled_features=*/{}, /*disabled_features=*/{},
+      /*additional_cmdline_switches=*/{},
+      "crbug/1466885 switch to shared ash when WebAppIntegrationTest issue is "
+      "fixed");
+#endif
   InProcessBrowserTest::SetUp();
 }
 
