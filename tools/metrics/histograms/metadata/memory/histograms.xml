@@ -1655,7 +1655,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.ParkableImage.DiskIsUsable.5min" enum="BooleanYesNo"
-    expires_after="2022-12-25">
+    expires_after="2023-12-25">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -1667,7 +1667,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.ParkableImage.OnDiskSize.5min" units="KiB"
-    expires_after="2023-02-26">
+    expires_after="2023-12-25">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -1677,7 +1677,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.ParkableImage.Read.Latency" units="microseconds"
-    expires_after="2023-07-02">
+    expires_after="2023-12-25">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -1690,7 +1690,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.ParkableImage.Read.Throughput" units="MiBps"
-    expires_after="2023-07-02">
+    expires_after="2023-12-25">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -1700,7 +1700,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.ParkableImage.TotalReadTime.5min" units="ms"
-    expires_after="2023-07-02">
+    expires_after="2023-12-25">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -1710,7 +1710,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.ParkableImage.TotalSize.5min" units="KiB"
-    expires_after="2022-10-23">
+    expires_after="2023-12-25">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -1720,7 +1720,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.ParkableImage.TotalWriteTime.5min" units="ms"
-    expires_after="2022-10-23">
+    expires_after="2023-12-25">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -1730,7 +1730,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.ParkableImage.UnparkedSize.5min" units="KiB"
-    expires_after="2023-07-02">
+    expires_after="2023-12-25">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -1740,7 +1740,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.ParkableImage.Write.Latency" units="microseconds"
-    expires_after="2023-07-02">
+    expires_after="2023-12-25">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -1753,7 +1753,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.ParkableImage.Write.Size" units="KiB"
-    expires_after="2023-07-02">
+    expires_after="2023-12-25">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
