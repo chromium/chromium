@@ -78,8 +78,7 @@ void EnclaveAuthenticator::GetAssertion(CtapGetAssertionRequest request,
                    });
   CHECK(found_passkey_it != available_passkeys_.end());
 
-  BuildGetAssertionRequestBody(*found_passkey_it,
-                               CtapGetAssertionRequestToJson(request),
+  BuildGetAssertionRequestBody(*found_passkey_it, std::move(options.json),
                                &pending_request_body_);
   pending_get_assertion_callback_ = std::move(callback);
 
@@ -139,7 +138,7 @@ void EnclaveAuthenticator::OnResponseReceived(
     }
     std::string plaintext_json(plaintext.begin(), plaintext.end());
     auto decode_result =
-        AuthenticatorGetAssertionRequestFromJson(plaintext_json);
+        AuthenticatorGetAssertionResponseFromJson(plaintext_json);
     if (!decode_result.first) {
       FIDO_LOG(ERROR) << "Failed to parse decrypted JSON: "
                       << decode_result.second;

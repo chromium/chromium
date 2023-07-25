@@ -7,11 +7,14 @@
 
 #include "base/at_exit.h"
 #include "base/functional/bind.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/values.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/cable/v2_constants.h"
@@ -64,10 +67,15 @@ int EnclaveTestClient::StartTransaction() {
   request.allow_list.emplace_back(PublicKeyCredentialDescriptor(
       CredentialType::kPublicKey, cred_id, {FidoTransportProtocol::kInternal}));
   passkeys[0].set_credential_id(cred_id.data(), cred_id.size());
+  CtapGetAssertionOptions options;
+  absl::optional<base::Value> parsed_json = base::JSONReader::Read(
+      R"({"attestation":"direct","authenticatorSelection":{"authenticatorAttachment":"platform","residentKey":"required","userVerification":"required"},"challenge":"dGVzdCBjaGFsbGVuZ2U","excludeCredentials":[{"id":"FBUW","transports":["usb"],"type":"public-key"},{"id":"Hh8g","type":"public-key"}],"extensions":{"appIdExclude":"https://example.test/appid.json","credBlob":"dGVzdCBjcmVkIGJsb2I","credProps":true,"credentialProtectionPolicy":"userVerificationRequired","enforceCredentialProtectionPolicy":true,"hmacCreateSecret":true,"largeBlob":{"support":"required"},"minPinLength":true,"payment":{"isPayment":true},"prf":{},"remoteDesktopClientOverride":{"origin":"https://login.example.test","sameOriginWithAncestors":true}},"pubKeyCredParams":[{"alg":-7,"type":"public-key"},{"alg":-257,"type":"public-key"}],"rp":{"id":"passkey.example","name":"Example LLC"},"user":{"displayName":"Example User","id":"dGVzdCB1c2VyIGlk","name":"user@example.test"}})");
+  options.json = base::MakeRefCounted<JSONRequest>(std::move(*parsed_json));
+
   device_ = std::make_unique<enclave::EnclaveAuthenticator>(
       kLocalUrl, kPeerPublicKey, std::move(passkeys));
   device_->GetAssertion(
-      request, CtapGetAssertionOptions(),
+      request, options,
       base::BindOnce(&EnclaveTestClient::Terminate, base::Unretained(this)));
 
   run_loop_.Run();
