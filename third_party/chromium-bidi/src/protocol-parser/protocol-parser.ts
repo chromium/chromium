@@ -19,7 +19,7 @@
  * @fileoverview Provides parsing and validator for WebDriver BiDi protocol.
  * Parser types should match the `../protocol` types.
  */
-import {z as zod, type ZodType} from 'zod';
+import {z, type ZodType} from 'zod';
 
 import type * as Protocol from '../protocol/protocol.js';
 import {InvalidArgumentException} from '../protocol/protocol.js';
@@ -29,7 +29,7 @@ import * as WebDriverBidi from './webdriver-bidi.js';
 export function parseObject<T extends ZodType>(
   obj: unknown,
   schema: T
-): zod.infer<T> {
+): z.infer<T> {
   const parseResult = schema.safeParse(obj);
   if (parseResult.success) {
     return parseResult.data;
@@ -201,16 +201,16 @@ export namespace Input {
 }
 
 export namespace Cdp {
-  const SendCommandRequestSchema = zod.object({
+  const SendCommandRequestSchema = z.object({
     // Allowing any cdpMethod, and casting to proper type later on.
-    method: zod.string(),
+    method: z.string(),
     // `passthrough` allows object to have any fields.
     // https://github.com/colinhacks/zod#passthrough
-    params: zod.object({}).passthrough().optional(),
-    session: zod.string().optional(),
+    params: z.object({}).passthrough().optional(),
+    session: z.string().optional(),
   });
 
-  const GetSessionRequestSchema = zod.object({
+  const GetSessionRequestSchema = z.object({
     context: WebDriverBidi.BrowsingContext.BrowsingContextSchema,
   });
 
