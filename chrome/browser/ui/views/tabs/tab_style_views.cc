@@ -32,6 +32,7 @@
 #include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/favicon_size.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_canvas.h"
@@ -1142,7 +1143,8 @@ SkPath ChromeRefresh2023TabStyleViews::GetPath(
   // and inactive tab fills are a detached squarcle tab.
   if ((path_type == TabStyle::PathType::kFill &&
        state != TabStyle::TabSelectionState::kActive) ||
-      (path_type == TabStyle::PathType::kHighlight)) {
+      path_type == TabStyle::PathType::kHighlight ||
+      path_type == TabStyle::PathType::kInteriorClip) {
     // TODO (crbug.com/1451400): This constant should be unified with
     // kCRtabstripRegionViewControlPadding in tab_strip_region_view.
     constexpr int kChromeRefreshDetachedTabBottomPadding = 6;
@@ -1156,17 +1158,32 @@ SkPath ChromeRefresh2023TabStyleViews::GetPath(
         GetTopCornerRadiusForWidth(tab()->width()) * scale;
     const float extension_corner_radius =
         tab_style()->GetBottomCornerRadius() * scale;
-    const float tab_height =
-        (tab_style()->GetHeight() - kChromeRefreshDetachedTabBottomPadding) *
-        scale;
+    float tab_height = tab_style()->GetHeight() * scale;
 
-    SkPath path;
+    // The tab displays favicon animations that can emerge from the toolbar. The
+    // interior clip needs to extend the entire height of the toolbar to support
+    // this. Detached tab shapes do not need to respect this.
+    if (path_type != TabStyle::PathType::kInteriorClip) {
+      tab_height -= kChromeRefreshDetachedTabBottomPadding * scale;
+    }
 
-    const int left = aligned_bounds.x() + extension_corner_radius;
+    int left = aligned_bounds.x() + extension_corner_radius;
     const int top = aligned_bounds.y();
-    const int right = aligned_bounds.right() - extension_corner_radius;
+    int right = aligned_bounds.right() - extension_corner_radius;
     const int bottom = top + tab_height;
 
+    // If the width is less than the favicon size, the separator margins are
+    // shrunk so that there is exactly 1 pixel of margins.
+    constexpr int kMinWidthSeparatorMarginPx = 1;
+    if ((right - left) < (gfx::kFaviconSize * scale)) {
+      // extend the interior clip to the separators by exactly 1 pixel.
+      left -= (tab_style()->GetSeparatorMargins().left() * scale) -
+              kMinWidthSeparatorMarginPx;
+      right += (tab_style()->GetSeparatorMargins().right() * scale) -
+               kMinWidthSeparatorMarginPx;
+    }
+
+    SkPath path;
     SkRRect rrect =
         SkRRect::MakeRectXY(SkRect::MakeLTRB(left, top, right, bottom),
                             content_corner_radius, content_corner_radius);
