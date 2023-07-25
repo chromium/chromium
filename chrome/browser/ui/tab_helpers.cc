@@ -397,7 +397,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
                 profile));
 
 #if BUILDFLAG(IS_ANDROID)
-    // Do not create for Incognito mode.
+    // If enabled, save sensitivity data for each non-incognito android tab
+    // TODO(crbug.com/1466970): Consider moving check conditions or the
+    // registration logic to sensitivity_persisted_tab_data_android.*
     if (!profile->IsOffTheRecord() &&
         base::FeatureList::IsEnabled(
             chrome::android::kAndroidAppIntegrationSafeSearch)) {

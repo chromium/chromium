@@ -51,7 +51,7 @@ class SensitivityPersistedTabDataAndroid
   raw_ptr<TabAndroid> tab_;
 
   // Not owned. Register manually through RegisterPCAService
-  raw_ptr<optimization_guide::PageContentAnnotationsService, DanglingUntriaged>
+  raw_ptr<optimization_guide::PageContentAnnotationsService>
       page_content_annotations_service_;
 
   TAB_ANDROID_USER_DATA_KEY_DECL();
