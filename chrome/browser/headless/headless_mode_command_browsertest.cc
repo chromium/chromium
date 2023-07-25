@@ -15,9 +15,12 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "base/test/test_timeouts.h"
+#include "base/test/values_test_util.h"
 #include "base/threading/platform_thread.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/headless/command_handler/headless_command_handler.h"
 #include "components/headless/command_handler/headless_command_switches.h"
@@ -66,17 +69,13 @@ class HeadlessModeCommandBrowserTest : public HeadlessModeBrowserTest {
     return embedded_test_server()->GetURL(url);
   }
 
-  void RunLoop() {
+  absl::optional<HeadlessCommandHandler::Result> ProcessCommands() {
     if (!test_complete_) {
       run_loop_ = std::make_unique<base::RunLoop>();
       run_loop_->Run();
       run_loop_.reset();
     }
-  }
 
-  bool test_complete() const { return test_complete_; }
-
-  absl::optional<HeadlessCommandHandler::Result> result() const {
     return result_;
   }
 
@@ -147,13 +146,10 @@ class HeadlessModeDumpDomCommandBrowserTest
 #endif
 IN_PROC_BROWSER_TEST_F(HeadlessModeDumpDomCommandBrowserTest,
                        MAYBE_HeadlessDumpDom) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
+  ASSERT_THAT(ProcessCommands(),
+              testing::Eq(HeadlessCommandHandler::Result::kSuccess));
 
-  RunLoop();
   capture_stdout_.StopCapture();
-
-  ASSERT_THAT(result(), testing::Eq(HeadlessCommandHandler::Result::kSuccess));
-
   std::string captured_stdout = capture_stdout_.TakeCapturedData();
 
   static const char kDomDump[] =
@@ -211,16 +207,11 @@ class HeadlessModeDumpDomCommandBrowserTestWithTimeout
 
 IN_PROC_BROWSER_TEST_F(HeadlessModeDumpDomCommandBrowserTestWithTimeout,
                        HeadlessDumpDomWithTimeout) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-
-  RunLoop();
-
-  capture_stdout_.StopCapture();
-
   // Main page timeout should be reported.
-  EXPECT_THAT(result(),
+  EXPECT_THAT(ProcessCommands(),
               testing::Eq(HeadlessCommandHandler::Result::kPageLoadTimeout));
 
+  capture_stdout_.StopCapture();
   std::string captured_stdout = capture_stdout_.TakeCapturedData();
   RemoveSpaces(captured_stdout);
 
@@ -295,25 +286,21 @@ INSTANTIATE_TEST_SUITE_P(
 IN_PROC_BROWSER_TEST_P(
     HeadlessModeDumpDomCommandBrowserTestWithSubResourceTimeout,
     HeadlessDumpDomWithSubResourceTimeout) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-
-  RunLoop();
+  absl::optional<HeadlessCommandHandler::Result> result = ProcessCommands();
 
   capture_stdout_.StopCapture();
-
   std::string captured_stdout = capture_stdout_.TakeCapturedData();
   RemoveSpaces(captured_stdout);
 
   if (delay_response()) {
-    EXPECT_THAT(result(),
+    EXPECT_THAT(result,
                 testing::Eq(HeadlessCommandHandler::Result::kPageLoadTimeout));
     EXPECT_THAT(captured_stdout,
                 testing::HasSubstr(
                     "<html><head></head><body><divid=\"thediv\">INITIAL</"
                     "div><scriptsrc=\"./script.js\"></script></body></html>"));
   } else {
-    EXPECT_THAT(result(),
-                testing::Eq(HeadlessCommandHandler::Result::kSuccess));
+    EXPECT_THAT(result, testing::Eq(HeadlessCommandHandler::Result::kSuccess));
     EXPECT_THAT(captured_stdout,
                 testing::HasSubstr(
                     "<html><head></head><body><divid=\"thediv\">REPLACED</"
@@ -349,13 +336,10 @@ class HeadlessModeScreenshotCommandBrowserTest
 #endif
 IN_PROC_BROWSER_TEST_F(HeadlessModeScreenshotCommandBrowserTest,
                        MAYBE_HeadlessScreenshot) {
+  ASSERT_THAT(ProcessCommands(),
+              testing::Eq(HeadlessCommandHandler::Result::kSuccess));
+
   base::ScopedAllowBlockingForTesting allow_blocking;
-
-  RunLoop();
-
-  ASSERT_THAT(result(), testing::Eq(HeadlessCommandHandler::Result::kSuccess));
-
-  ASSERT_TRUE(base::PathExists(screenshot_filename_)) << screenshot_filename_;
 
   std::string png_data;
   ASSERT_TRUE(base::ReadFileToString(screenshot_filename_, &png_data))
@@ -380,7 +364,7 @@ class HeadlessModePrintToPdfCommandBrowserTestBase
     HeadlessModeCommandBrowserTestWithTempDir::SetUpCommandLine(command_line);
 
     print_to_pdf_filename_ =
-        temp_dir().Append(FILE_PATH_LITERAL("print_to.pdf"));
+        temp_dir().Append(FILE_PATH_LITERAL("print-to.pdf"));
     command_line->AppendSwitchPath(switches::kPrintToPDF,
                                    print_to_pdf_filename_);
     command_line->AppendSwitch(switches::kNoPDFHeaderFooter);
@@ -411,14 +395,10 @@ class HeadlessModePrintToPdfCommandBrowserTest
 #endif
 IN_PROC_BROWSER_TEST_F(HeadlessModePrintToPdfCommandBrowserTest,
                        MAYBE_HeadlessPrintToPdf) {
+  ASSERT_THAT(ProcessCommands(),
+              testing::Eq(HeadlessCommandHandler::Result::kSuccess));
+
   base::ScopedAllowBlockingForTesting allow_blocking;
-
-  RunLoop();
-
-  ASSERT_THAT(result(), testing::Eq(HeadlessCommandHandler::Result::kSuccess));
-
-  ASSERT_TRUE(base::PathExists(print_to_pdf_filename_))
-      << print_to_pdf_filename_;
 
   std::string pdf_data;
   ASSERT_TRUE(base::ReadFileToString(print_to_pdf_filename_, &pdf_data))
@@ -446,14 +426,10 @@ class HeadlessModeLazyLoadingPrintToPdfCommandBrowserTest
 
 IN_PROC_BROWSER_TEST_F(HeadlessModeLazyLoadingPrintToPdfCommandBrowserTest,
                        HeadlessLazyLoadingPrintToPdf) {
+  ASSERT_THAT(ProcessCommands(),
+              testing::Eq(HeadlessCommandHandler::Result::kSuccess));
+
   base::ScopedAllowBlockingForTesting allow_blocking;
-
-  RunLoop();
-
-  ASSERT_THAT(result(), testing::Eq(HeadlessCommandHandler::Result::kSuccess));
-
-  ASSERT_TRUE(base::PathExists(print_to_pdf_filename_))
-      << print_to_pdf_filename_;
 
   std::string pdf_data;
   ASSERT_TRUE(base::ReadFileToString(print_to_pdf_filename_, &pdf_data))
