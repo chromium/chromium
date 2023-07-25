@@ -276,8 +276,6 @@ TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_No_Auth) {
                                       std::u16string(u"p4ssw0rd")));
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
   histogram_tester().ExpectUniqueSample(
-      "PasswordManager.TouchToFill.NumCredentialsShown", 1, 1);
-  histogram_tester().ExpectUniqueSample(
       "PasswordManager.TouchToFill.Outcome",
       TouchToFillControllerAutofillDelegate::TouchToFillOutcome::
           kCredentialFilled,
@@ -474,8 +472,6 @@ TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_No_Auth_Available) {
       .WillOnce(Return(false));
 
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.TouchToFill.NumCredentialsShown", 1, 1);
 
   auto entries = test_recorder().GetEntriesByName(UkmBuilder::kEntryName);
   ASSERT_EQ(1u, entries.size());
@@ -565,8 +561,6 @@ TEST_F(TouchToFillControllerAutofillTest, Show_Empty) {
           CreateMockFiller(),
           TouchToFillControllerAutofillDelegate::ShowHybridOption(false)),
       /*render_widget_host=*/nullptr);
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.TouchToFill.NumCredentialsShown", 0, 1);
 }
 
 TEST_F(TouchToFillControllerAutofillTest, Show_Insecure_Origin) {
@@ -626,8 +620,6 @@ TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_Android_Credential) {
   EXPECT_CALL(*authenticator(), CanAuthenticateWithBiometrics)
       .WillOnce(Return(false));
   touch_to_fill_controller().OnCredentialSelected(credentials[1]);
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.TouchToFill.NumCredentialsShown", 2, 1);
 
   auto entries = test_recorder().GetEntriesByName(UkmBuilder::kEntryName);
   ASSERT_EQ(1u, entries.size());
@@ -798,8 +790,6 @@ TEST_F(TouchToFillControllerAutofillTest, ShowWebAuthnCredential) {
   EXPECT_CALL(*last_mock_filler(), Dismiss(ToShowVirtualKeyboard(false)));
   EXPECT_CALL(*last_mock_filler(), FillUsernameAndPassword(_, _)).Times(0);
   touch_to_fill_controller().OnPasskeyCredentialSelected(credentials[0]);
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.TouchToFill.NumCredentialsShown", 1, 1);
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.TouchToFill.Outcome",
       TouchToFillControllerAutofillDelegate::TouchToFillOutcome::

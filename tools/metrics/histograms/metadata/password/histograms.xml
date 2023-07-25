@@ -194,7 +194,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="KeyboardAccessory.GenerationDialogChoice.{GenerationType}"
-    enum="GenerationDialogChoice" expires_after="M118">
+    enum="GenerationDialogChoice" expires_after="M121">
   <owner>ioanap@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -3415,13 +3415,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.TouchToFill.NumCredentialsShown"
-    units="credentials" expires_after="M92">
-  <owner>ioanap@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
-  <summary>The number of credentials shown in the Touch To Fill sheet.</summary>
-</histogram>
-
 <histogram name="PasswordManager.TouchToFill.Outcome"
     enum="TouchToFill.Outcome" expires_after="2024-01-14">
   <owner>ioanap@chromium.org</owner>
@@ -3479,15 +3472,6 @@ chromium-metrics-reviews@google.com.
     reported). Used to compare the times when automated submission is enabled
     and disabled. Thus, we measure the time saved for a user. Recorded when the
     password manager detects that the login was successful.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.TouchToFill.UserAction"
-    enum="TouchToFill.UserAction" expires_after="M92">
-  <owner>ioanap@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
-  <summary>
-    The action a user took when interacting with the Touch To Fill sheet.
   </summary>
 </histogram>
 

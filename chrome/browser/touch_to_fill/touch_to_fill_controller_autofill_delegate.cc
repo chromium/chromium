@@ -111,9 +111,6 @@ void TouchToFillControllerAutofillDelegate::OnShow(
       .SetSubmissionReadiness(
           static_cast<int64_t>(filler_->GetSubmissionReadinessState()))
       .Record(ukm::UkmRecorder::Get());
-
-  base::UmaHistogramCounts100("PasswordManager.TouchToFill.NumCredentialsShown",
-                              credentials.size() + passkey_credentials.size());
 }
 
 void TouchToFillControllerAutofillDelegate::OnCredentialSelected(
