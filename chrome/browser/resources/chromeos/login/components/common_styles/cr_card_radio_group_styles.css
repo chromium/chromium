@@ -47,6 +47,7 @@ cr-card-radio-button {
 
 :host-context(.jelly-enabled) cr-card-radio-button {
   --focus-shadow-color: var(--cros-sys-focus_ring);
+  box-shadow: none;
 }
 
 cr-card-radio-button:not(:last-child) {
