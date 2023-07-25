@@ -9,6 +9,9 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/printing/browser_printing_context_factory_for_test.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -89,6 +92,22 @@ class PrintBrowserTest : public InProcessBrowserTest {
   }
 
  private:
+  // Helper to bounce worker thread callbacks onto PrintBrowserTest's callback
+  // equivalent on the UI thread.
+  class WorkerHelper : public base::RefCountedThreadSafe<WorkerHelper> {
+   public:
+    explicit WorkerHelper(base::WeakPtr<PrintBrowserTest> owner);
+
+    void OnNewDocument(const PrintSettings& settings);
+
+   private:
+    friend class base::RefCountedThreadSafe<WorkerHelper>;
+    ~WorkerHelper();
+
+    // Only accessed on the UI thread.
+    const base::WeakPtr<PrintBrowserTest> owner_;
+  };
+
   content::WebContents* PrintAndWaitUntilPreviewIsReadyAndMaybeLoaded(
       const PrintParams& params,
       bool wait_for_loaded);
@@ -108,6 +127,8 @@ class PrintBrowserTest : public InProcessBrowserTest {
       frame_content_;
   scoped_refptr<TestPrintBackend> test_print_backend_;
   BrowserPrintingContextFactoryForTest test_printing_context_factory_;
+  scoped_refptr<WorkerHelper> worker_helper_;
+  base::WeakPtrFactory<PrintBrowserTest> weak_factory_{this};
 };
 
 }  // namespace printing
