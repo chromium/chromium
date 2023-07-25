@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {GraphicsTablet, GraphicsTabletObserverInterface, InputDeviceSettingsProviderInterface, Keyboard, KeyboardObserverInterface, KeyboardSettings, MetaKey, ModifierKey, Mouse, MouseObserverInterface, MouseSettings, PointingStick, PointingStickObserverInterface, PointingStickSettings, SixPackShortcutModifier, Stylus, StylusObserverInterface, Touchpad, TouchpadObserverInterface, TouchpadSettings} from './input_device_settings_types.js';
+import {ActionChoice, GraphicsTablet, GraphicsTabletObserverInterface, InputDeviceSettingsProviderInterface, Keyboard, KeyboardObserverInterface, KeyboardSettings, MetaKey, ModifierKey, Mouse, MouseObserverInterface, MouseSettings, PointingStick, PointingStickObserverInterface, PointingStickSettings, SixPackShortcutModifier, Stylus, StylusObserverInterface, Touchpad, TouchpadObserverInterface, TouchpadSettings} from './input_device_settings_types.js';
 
 /**
  * @fileoverview
@@ -12,13 +12,15 @@ import {GraphicsTablet, GraphicsTabletObserverInterface, InputDeviceSettingsProv
  * interface.
  */
 
-interface InputDeviceType {
+interface InputDeviceSettingsType {
   fakeKeyboards: Keyboard[];
   fakeTouchpads: Touchpad[];
   fakeMice: Mouse[];
   fakePointingSticks: PointingStick[];
   fakeStyluses: Stylus[];
   fakeGraphicsTablets: GraphicsTablet[];
+  fakeMouseButtonActions: ActionChoice[];
+  fakeGraphicsTabletButtonActions: ActionChoice[];
 }
 
 class FakeMethodState {
@@ -51,19 +53,19 @@ export class FakeMethodResolver {
     this.methodMap.set(methodName, new FakeMethodState());
   }
 
-  getResult<K extends keyof InputDeviceType, T>(methodName: K):
-      InputDeviceType[K] extends T? InputDeviceType[K]: never {
+  getResult<K extends keyof InputDeviceSettingsType, T>(methodName: K):
+      InputDeviceSettingsType[K] extends T? InputDeviceSettingsType[K]: never {
     return this.getState(methodName).getResult();
   }
 
-  setResult<K extends keyof InputDeviceType, T>(
-      methodName: K,
-      result: InputDeviceType[K] extends T ? InputDeviceType[K]: never): void {
+  setResult<K extends keyof InputDeviceSettingsType, T>(
+      methodName: K, result: InputDeviceSettingsType[K] extends T?
+      InputDeviceSettingsType[K]: never): void {
     this.getState(methodName).setResult(result);
   }
 
-  resolveMethod<T extends keyof InputDeviceType>(methodName: T):
-      Promise<InputDeviceType[T]> {
+  resolveMethod<T extends keyof InputDeviceSettingsType>(methodName: T):
+      Promise<InputDeviceSettingsType[T]> {
     return this.getState(methodName).resolveMethod();
   }
 
@@ -92,6 +94,8 @@ export class FakeInputDeviceSettingsProvider implements
     this.methods.register('fakePointingSticks');
     this.methods.register('fakeStyluses');
     this.methods.register('fakeGraphicsTablets');
+    this.methods.register('fakeMouseButtonActions');
+    this.methods.register('fakeGraphicsTabletButtonActions');
   }
 
   setFakeKeyboards(keyboards: Keyboard[]): void {
@@ -284,5 +288,23 @@ export class FakeInputDeviceSettingsProvider implements
       void {
     this.graphicsTabletObservers.push(observer);
     this.notifyGraphicsTabletUpdated();
+  }
+
+  getActionsForMouseButtonCustomization(): Promise<ActionChoice[]> {
+    return this.methods.resolveMethod('fakeMouseButtonActions');
+  }
+
+  setFakeActionsForMouseButtonCustomization(actionChoices: ActionChoice[]):
+      void {
+    this.methods.setResult('fakeMouseButtonActions', actionChoices);
+  }
+
+  getActionsForGraphicsTabletButtonCustomization(): Promise<ActionChoice[]> {
+    return this.methods.resolveMethod('fakeGraphicsTabletButtonActions');
+  }
+
+  setFakeActionsForGraphicsTabletButtonCustomization(actionChoices:
+                                                         ActionChoice[]): void {
+    this.methods.setResult('fakeGraphicsTabletButtonActions', actionChoices);
   }
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {GraphicsTablet, Keyboard, MetaKey, ModifierKey, Mouse, PointingStick, SimulateRightClickModifier, SixPackKeyInfo, SixPackShortcutModifier, Stylus, Touchpad} from './input_device_settings_types.js';
+import {ActionChoice, GraphicsTablet, Keyboard, MetaKey, ModifierKey, Mouse, PointingStick, SimulateRightClickModifier, SixPackKeyInfo, SixPackShortcutModifier, Stylus, Touchpad} from './input_device_settings_types.js';
 
 const defaultSixPackKeyRemappings: SixPackKeyInfo = {
   pageDown: SixPackShortcutModifier.kSearch,
@@ -308,4 +308,23 @@ export const fakeGraphicsTablets: GraphicsTablet[] = [
     deviceKey: 'test:key',
     name: 'XPPen Artist13.3 Pro',
   },
+];
+
+export const fakeMouseButtonActions: ActionChoice[] = [
+  {actionId: 3, name: 'Back'},
+  {actionId: 4, name: 'Forward'},
+  {actionId: 43, name: 'Lock screen'},
+  {actionId: 99, name: 'Open clipboard'},
+  {actionId: 103, name: 'Fullscreen'},
+  {actionId: 126, name: 'Mute'},
+  {actionId: 130, name: 'Minimize window'},
+];
+
+export const fakeGraphicsTabletButtonActions: ActionChoice[] = [
+  {actionId: 1, name: 'Brightness down'},
+  {actionId: 2, name: 'Brightness up'},
+  {actionId: 3, name: 'Back'},
+  {actionId: 4, name: 'Forward'},
+  {actionId: 44, name: 'Zoom in'},
+  {actionId: 45, name: 'Zoom out'},
 ];

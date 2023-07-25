@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {fakeGraphicsTablets, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeStyluses, fakeTouchpads, Keyboard, ModifierKey, SixPackKeyInfo, SixPackShortcutModifier} from 'chrome://os-settings/os_settings.js';
+import {fakeGraphicsTabletButtonActions, fakeGraphicsTablets, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakeMouseButtonActions, fakePointingSticks, fakeStyluses, fakeTouchpads, Keyboard, ModifierKey, SixPackKeyInfo, SixPackShortcutModifier} from 'chrome://os-settings/os_settings.js';
 import {assertDeepEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('FakeInputDeviceSettings', () => {
@@ -120,5 +120,16 @@ suite('FakeInputDeviceSettings', () => {
         Object
             .values((keyboard.settings.sixPackKeyRemappings as SixPackKeyInfo))
             .every(modifier => modifier === SixPackShortcutModifier.kSearch));
+  });
+
+  test('getActionsForButtonCustomization', async () => {
+    provider.setFakeActionsForMouseButtonCustomization(fakeMouseButtonActions);
+    const mouseActions = await provider.getActionsForMouseButtonCustomization();
+    assertDeepEquals(mouseActions, fakeMouseButtonActions);
+    provider.setFakeActionsForGraphicsTabletButtonCustomization(
+        fakeGraphicsTabletButtonActions);
+    const graphicsTabletActions =
+        await provider.getActionsForGraphicsTabletButtonCustomization();
+    assertDeepEquals(graphicsTabletActions, fakeGraphicsTabletButtonActions);
   });
 });

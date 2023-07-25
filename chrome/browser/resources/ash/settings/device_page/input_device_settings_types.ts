@@ -79,6 +79,10 @@ export type InputDeviceSettingsPolicy =
     InputDeviceSettingsTypes.InputDeviceSettingsPolicy;
 export type KeyboardPolicies = InputDeviceSettingsTypes.KeyboardPolicies;
 export type MousePolicies = InputDeviceSettingsTypes.MousePolicies;
+export interface ActionChoice {
+  actionId: number;
+  name: string;
+}
 
 export interface KeyboardObserverInterface {
   // Fired when the keyboard list is updated.

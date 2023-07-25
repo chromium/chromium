@@ -76,8 +76,8 @@ export class SettingsCustomizePenButtonsSubpageElement extends
   private initializePen(): void {
     const graphicsTabletId = this.getGraphicsTabletIdFromUrl();
     const searchedGraphicsTablet = this.graphicsTablets.find(
-        (grahpicsTablet: GraphicsTablet) =>
-            grahpicsTablet.id === graphicsTabletId);
+        (graphicsTablet: GraphicsTablet) =>
+            graphicsTablet.id === graphicsTabletId);
     this.selectedTablet = castExists(searchedGraphicsTablet);
   }
 

@@ -75,7 +75,7 @@ export class SettingsCustomizeTabletButtonsSubpageElement extends
   private initializeTablet(): void {
     const tabletId = this.getGraphicsTabletIdFromUrl();
     const searchedGraphicsTablet = this.graphicsTablets.find(
-        (grahpicsTablet: GraphicsTablet) => grahpicsTablet.id === tabletId);
+        (graphicsTablet: GraphicsTablet) => graphicsTablet.id === tabletId);
     this.selectedTablet = castExists(searchedGraphicsTablet);
   }
 
