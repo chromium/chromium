@@ -29,6 +29,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/dot_indicator.h"
 #include "ash/style/style_util.h"
+#include "ash/style/system_textfield.h"
 #include "ash/style/typography.h"
 #include "ash/user_education/user_education_class_properties.h"
 #include "ash/user_education/user_education_controller.h"
@@ -1078,9 +1079,17 @@ void AppListItemView::OnContextMenuModelReceived(
 
   // Clear the existing focus in other elements to prevent having a focus
   // indicator on other non-selected views.
-  if (GetFocusManager()->GetFocusedView()) {
+  views::View* focused_view = GetFocusManager()->GetFocusedView();
+  if (focused_view) {
+    // Set `focus_removed_by_context_menu_` to restore focus when the context
+    // menu closes. As an exception, do not restore focus on an inactive system
+    // textfield (e.g. the folder name view).
+    ash::SystemTextfield* as_system_textfield =
+        views::AsViewClass<ash::SystemTextfield>(focused_view);
+    focus_removed_by_context_menu_ =
+        !as_system_textfield || as_system_textfield->IsActive();
+
     GetFocusManager()->ClearFocus();
-    focus_removed_by_context_menu_ = true;
   }
 
   if (!grid_delegate_->IsSelectedView(this))

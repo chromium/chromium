@@ -36,6 +36,7 @@
 #include "ui/views/painter.h"
 #include "ui/views/view.h"
 #include "ui/views/view_targeter_delegate.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -349,6 +350,18 @@ class FolderHeaderView::FolderNameViewController
                        const std::u16string& new_contents) override {
     contents_changed_callback_.Run(new_contents);
   }
+  bool HandleKeyEvent(views::Textfield* sender,
+                      const ui::KeyEvent& key_event) override {
+    if (SystemTextfieldController::HandleKeyEvent(sender, key_event)) {
+      return true;
+    }
+
+    if (IsUnhandledLeftRightKeyEvent(key_event)) {
+      return ProcessLeftRightKeyTraversalForTextfield(sender, key_event);
+    }
+
+    return false;
+  }
 
  private:
   const ContentsChangedCallback contents_changed_callback_;
@@ -467,6 +480,15 @@ void FolderHeaderView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
 
 views::Textfield* FolderHeaderView::GetFolderNameViewForTest() const {
   return folder_name_view_;
+}
+
+bool FolderHeaderView::IsFolderNameViewActiveForTest() const {
+  ash::SystemTextfield* const as_system_textfield =
+      views::AsViewClass<ash::SystemTextfield>(folder_name_view_);
+  if (as_system_textfield) {
+    return as_system_textfield->IsActive();
+  }
+  return folder_name_view_->HasFocus();
 }
 
 int FolderHeaderView::GetMaxFolderNameCharLengthForTest() const {

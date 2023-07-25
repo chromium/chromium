@@ -6143,7 +6143,9 @@ TEST_F(AppsGridViewTest, FocusNotRestoredIfNoViewWasFocused) {
 
   // Press Enter, the title should not have focus.
   GetEventGenerator()->PressAndReleaseKey(ui::VKEY_RETURN);
-  ASSERT_FALSE(app_list_folder_view()->folder_header_view()->HasTextFocus());
+  ASSERT_FALSE(app_list_folder_view()
+                   ->folder_header_view()
+                   ->IsFolderNameViewActiveForTest());
 
   // Right click on another element.
   AppListItemView* const item_view =
