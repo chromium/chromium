@@ -1,12 +1,15 @@
 name: Chromium roll reminder
 
+# Declare default permissions as read only.
+permissions: read-all
+
 on:
   pull_request:
     types: [labeled]
 
 jobs:
   post-message:
-    name: Build Puppeteer
+    name: Post Chromium roll reminder
     runs-on: ubuntu-latest
     if: contains(github.event.label.name, 'autorelease') && contains(github.event.label.name, 'tagged')
     steps:
