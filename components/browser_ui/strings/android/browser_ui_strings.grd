@@ -568,24 +568,24 @@
       <message name="IDS_PAGE_INFO_COOKIES_DESCRIPTION" desc="Description in the Page Info UI explaining cookies.">
         Cookies and other site data are used to remember you, for example to sign you in or to personalize ads. To manage cookies for all sites, see <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
-      <message name="IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_TITLE" desc="" translateable="false">
+      <message name="IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_TITLE" desc="Subtitle shown on the Page Info UI when cookies are allowed temporarily, indicating how long until they are no longer allowed." translateable="false">
         {DAYS, plural,
           =1 {1 day until Chrome starts blocking cookies again}
           other {# days until Chrome starts blocking cookies again}}
       </message>
-      <message name="IDS_PAGE_INFO_COOKIES_SEND_FEEDBACK_DESCRIPTION" desc="" translateable="false">
+      <message name="IDS_PAGE_INFO_COOKIES_SEND_FEEDBACK_DESCRIPTION" desc="Text asking the user for feedback on why they allowed third-party cookies for this particular site." translateable="false">
         Help us improve Chrome by telling us why you allowed third-party cookies. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Send feedback<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
-      <message name="IDS_PAGE_INFO_COOKIES_PERMANENT_ALLOWED_TITLE" desc="" translateable="false">
+      <message name="IDS_PAGE_INFO_COOKIES_PERMANENT_ALLOWED_TITLE" desc="A subtitle in the Page Info UI if cookies were allowed by the user and they won't be automatically blocked again the future." translateable="false">
         You allowed third-party cookies for this site
       </message>
-      <message name="IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_TITLE" desc="" translateable="false">
+      <message name="IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_TITLE" desc="Label shown on a dialog that allows users to turn off third-party cookie blocking for a specific site." translateable="false">
         Site not working?
       </message>
-      <message name="IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY" desc="" translateable="false">
+      <message name="IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY" desc="Descriptive text in the Page Info UI explaining the trade-off of temporarily allowing third-party cookies for this site, a change that will automatically expire in the future." translateable="false">
         Try temporarily allowing third-party cookies, which means less protection but site features are more likely to work
       </message>
-      <message name="IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_DESCRIPTION_PERMANENT" desc="" translateable="false">
+      <message name="IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_DESCRIPTION_PERMANENT" desc="Descriptive text in the Page Info UI explaining the trade-off of allowing third-party cookies for this site, a change that will not automatically expire in the future." translateable="false">
         Try allowing third-party cookies, which means less protection but site features are more likely to work
       </message>
       <message name="IDS_PAGE_INFO_COOKIES_BLOCK" desc="Label for a toggle to allow or block third-party cookies for a site.">
