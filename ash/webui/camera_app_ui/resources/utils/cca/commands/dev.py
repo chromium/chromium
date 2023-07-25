@@ -2,13 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import functools
 import http.server
 import json
 import logging
 import mimetypes
 import os
 import re
-from typing import Callable, Dict, Optional, NamedTuple
+from typing import Callable, Dict, List, NamedTuple, Optional
 from xml.dom import minidom
 
 from cca import build
@@ -16,78 +17,31 @@ from cca import cli
 from cca import util
 
 
-class PathHandler(NamedTuple):
-    # Root of the target file. Default to cca_root.
-    root: Optional[str] = None
-    # Relative path of the target file from root. Default to self.path with
-    # leading '/' removed.
-    path: Optional[str] = None
-    # Transformation to be applied to the target file content. Default to no
-    # transformation.
-    transform: Optional[Callable[[str], str]] = None
-
-
 # Replaces all chrome:// reference to /chrome_stub/
-def stub_chrome_url(s: str) -> str:
-    return s.replace('chrome://', '/chrome_stub/')
+def _stub_chrome_url(s: str) -> str:
+    return s.replace("chrome://", "/chrome_stub/")
 
 
-class DevServerHandler(http.server.SimpleHTTPRequestHandler):
+class _Route(NamedTuple):
+    # The url pattern for the route. Can be a regex.
+    pattern: str | re.Pattern
+    # Handler of the route, takes path as argument and returns response in
+    # bytes.
+    handler: Callable[[str], bytes]
+
+
+class RequestHandler:
     def __init__(
         self,
         cca_root: str,
         tsc_root: str,
         gen_dir: str,
-        *args,
-        **kwargs,
     ):
-        self.cca_root = cca_root
-        self.tsc_root = tsc_root
-        self.gen_dir = gen_dir
-        self.directory = self.cca_root
-
-        self.path_mapping: Dict[str, PathHandler] = {
-            "/views/main.html":
-            PathHandler(transform=self._transform_main_html),
-            "/js/mojo/type.js":
-            PathHandler(root=tsc_root, transform=self._transform_js_mojo_js),
-            "/chrome_stub/resources/mwc/lit/index.js":
-            PathHandler(
-                root=gen_dir,
-                path="ui/webui/resources/tsc/mwc/lit/index.js",
-            ),
-            "/chrome_stub/resources/js/load_time_data.js":
-            PathHandler(
-                root=gen_dir,
-                path="ui/webui/resources/tsc/js/load_time_data.js",
-            ),
-            "/chrome_stub/resources/js/assert_ts.js":
-            PathHandler(
-                root=gen_dir,
-                path="ui/webui/resources/tsc/js/assert_ts.js",
-            ),
-        }
-
-        super().__init__(*args, **kwargs)
-
-    def end_headers(self):
-        self.send_header("Cache-Control", "no-cache")
-        super().end_headers()
-
-    def _send_200(self, content: str, *, content_type: Optional[str] = None):
-        if content_type is None:
-            content_type = mimetypes.guess_type(self.path)[0]
-            if content_type is None:
-                raise RuntimeError(
-                    f"Can't guess MIME type for {self.path}, please specify it."
-                )
-
-        content_bytes = content.encode("utf-8")
-        self.send_response(200)
-        self.send_header("Content-Type", content_type)
-        self.send_header("Content-Length", str(len(content_bytes)))
-        self.end_headers()
-        self.wfile.write(content_bytes)
+        self._cca_root = cca_root
+        self._tsc_root = tsc_root
+        self._gen_dir = gen_dir
+        self._directory = self._cca_root
+        self.routes = self._build_routes()
 
     def _load_grd_strings(self) -> Dict[str, str]:
         def get_message_text_content(message: minidom.Element) -> str:
@@ -96,13 +50,13 @@ class DevServerHandler(http.server.SimpleHTTPRequestHandler):
                 if child.nodeType == minidom.Element.TEXT_NODE:
                     pieces.append(child.nodeValue)
                 if child.nodeType == minidom.Element.ELEMENT_NODE:
-                    if child.tagName == 'ex':
+                    if child.tagName == "ex":
                         continue
                     pieces.append(get_message_text_content(child))
             return "".join(pieces)
 
         strings = {}
-        grd_path = os.path.join(self.cca_root, "strings/camera_strings.grd")
+        grd_path = os.path.join(self._cca_root, "strings/camera_strings.grd")
         dom = minidom.parse(grd_path)
         messages = dom.getElementsByTagName("messages")[0]
         for message in messages.getElementsByTagName("message"):
@@ -113,7 +67,8 @@ class DevServerHandler(http.server.SimpleHTTPRequestHandler):
             strings[id] = value
         return strings
 
-    def _handle_strings_m_js(self):
+    def _handle_strings_m_js(self, request_path: str) -> bytes:
+        del request_path  # Unused.
         load_time_data = {
             "board_name": "local-dev",
             "browser_version": "unknown",
@@ -128,27 +83,28 @@ class DevServerHandler(http.server.SimpleHTTPRequestHandler):
         }
         load_time_data.update(self._load_grd_strings())
 
-        self._send_200("import {loadTimeData} from "
-                       "'/chrome_stub/resources/js/load_time_data.js';"
-                       f"loadTimeData.data = {json.dumps(load_time_data)}")
+        return ("import {loadTimeData} from "
+                "'/chrome_stub/resources/js/load_time_data.js';"
+                f"loadTimeData.data = {json.dumps(load_time_data)}").encode()
 
-    def _handle_preload_images_js(self):
+    def _handle_preload_images_js(self, request_path: str) -> bytes:
+        del request_path  # Unused.
         # TODO(pihsun): With watch, we can cache the result and only
         # re-generate when any image files are changed.
-        self._send_200(stub_chrome_url(build.gen_preload_images_js()))
+        return _stub_chrome_url(build.gen_preload_images_js()).encode()
 
     def _transform_main_html(self, html: str) -> str:
         name = self._load_grd_strings()["name"]
 
         html = html.replace("$i18n{name}", name)
-        html = stub_chrome_url(html)
+        html = _stub_chrome_url(html)
         return html
 
     def _transform_js(self, js: str) -> str:
-        return stub_chrome_url(js)
+        return _stub_chrome_url(js)
 
     def _load_camera_app_helper_mojo_enums(self) -> Dict[str, Dict[str, int]]:
-        with open(os.path.join(self.cca_root, "../camera_app_helper.mojom"),
+        with open(os.path.join(self._cca_root, "../camera_app_helper.mojom"),
                   "r") as f:
             mojom = f.read()
         enum_blocks = re.findall(r"enum (.*?) \{(.*?)\}", mojom, re.DOTALL)
@@ -187,8 +143,8 @@ class DevServerHandler(http.server.SimpleHTTPRequestHandler):
 
         # Stub the real enum values for enum in camera_app_helper.mojom, since
         # those enum values are used by CCA.
-        camera_app_helper_mojo_enums = (
-            self._load_camera_app_helper_mojo_enums())
+        camera_app_helper_mojo_enums = self._load_camera_app_helper_mojo_enums(
+        )
 
         js = "\n".join(
             f"export const {export} = "
@@ -196,49 +152,158 @@ class DevServerHandler(http.server.SimpleHTTPRequestHandler):
             for export in exports)
         return js
 
-    def _run_handler(self, handler: PathHandler):
-        root = handler.root or self.cca_root
-        path = handler.path or self.path[1:]
-        transform = handler.transform or (lambda s: s)
-        with open(os.path.join(root, path), "r") as f:
-            self._send_200(transform(f.read()))
+    def _handle_theme_typography_css(self, request_path: str) -> bytes:
+        del request_path  # Unused.
+        return b""
+
+    def _handle_color_css_updater_js(self, request_path: str) -> bytes:
+        del request_path  # Unused.
+        return b"export const ColorChangeUpdater = null;"
+
+    def _handle_static_file(
+        self,
+        request_path: str,
+        *,
+        root: Optional[str] = None,
+        path: Optional[str] = None,
+        transform: Optional[Callable[[str], str]] = None,
+    ) -> bytes:
+        root = root or self._cca_root
+        path = path or request_path[1:]
+
+        with open(os.path.join(root, path), "rb") as f:
+            content = f.read()
+            if transform is not None:
+                content = transform(content.decode()).encode()
+            return content
+
+    def _build_routes(self) -> List[_Route]:
+        """
+        Returns a list of routes served by the dev server.
+
+        Note that bundle.py also use this same set of routes for generating
+        static files bundle, so anything specific to dev server should be in
+        DevServerHandler.
+        """
+        return [
+            # Stubbed file from chrome://.
+            _Route(
+                "/chrome_stub/resources/cr_components/"
+                "color_change_listener/colors_css_updater.js",
+                self._handle_color_css_updater_js,
+            ),
+            _Route(
+                "/chrome_stub/resources/js/load_time_data.js",
+                functools.partial(
+                    self._handle_static_file,
+                    root=self._gen_dir,
+                    path="ui/webui/resources/tsc/js/load_time_data.js",
+                ),
+            ),
+            _Route(
+                "/chrome_stub/resources/js/assert_ts.js",
+                functools.partial(
+                    self._handle_static_file,
+                    root=self._gen_dir,
+                    path="ui/webui/resources/tsc/js/assert_ts.js",
+                ),
+            ),
+            _Route(
+                "/chrome_stub/resources/mwc/lit/index.js",
+                functools.partial(
+                    self._handle_static_file,
+                    root=self._gen_dir,
+                    path="ui/webui/resources/tsc/mwc/lit/index.js",
+                ),
+            ),
+            _Route("/chrome_stub/theme/typography.css",
+                   self._handle_theme_typography_css),
+            # main.html, we need to replace references of chrome:// to
+            # /chrome_stub/.
+            _Route(
+                "/views/main.html",
+                functools.partial(self._handle_static_file,
+                                  transform=self._transform_main_html),
+            ),
+            # strings are generated dynamically from grd file.
+            _Route("/strings.m.js", self._handle_strings_m_js),
+            # All mojo imports are stubbed.
+            _Route(
+                "/js/mojo/type.js",
+                functools.partial(
+                    self._handle_static_file,
+                    root=self._tsc_root,
+                    transform=self._transform_js_mojo_js,
+                ),
+            ),
+            # preload_images.js are dynamically generated from images.
+            _Route("/js/preload_images.js", self._handle_preload_images_js),
+            # These two files are not compiled and need to be served from
+            # self.cca_root.
+            _Route("/js/lib/analytics.js", self._handle_static_file),
+            _Route("/js/lib/ffmpeg.js", self._handle_static_file),
+            # All other .js files.
+            _Route(
+                re.compile(r"/.*\.js"),
+                functools.partial(
+                    self._handle_static_file,
+                    root=self._tsc_root,
+                    transform=self._transform_js,
+                ),
+            ),
+            # All other static files.
+            _Route(re.compile(r"/.*"), self._handle_static_file),
+        ]
+
+
+class DevServerHandler(http.server.SimpleHTTPRequestHandler):
+    def __init__(
+        self,
+        handler: RequestHandler,
+        *args,
+        **kwargs,
+    ):
+        self._handler = handler
+
+        super().__init__(*args, **kwargs)
+
+    def end_headers(self):
+        self.send_header("Cache-Control", "no-cache")
+        super().end_headers()
+
+    def _send_200(self, request_path: str, content: bytes):
+        content_type = mimetypes.guess_type(request_path)[0]
+        if content_type is None:
+            raise RuntimeError(f"Can't guess MIME type for {request_path}.")
+
+        self.send_response(200)
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", str(len(content)))
+        self.end_headers()
+        self.wfile.write(content)
+
+    def _handle_root(self):
+        self.send_response(301)
+        self.send_header("Location", "/views/main.html")
+        self.end_headers()
 
     def do_GET(self):
         path = self.path
 
-        handler = self.path_mapping.get(path)
-        if handler is not None:
-            return self._run_handler(handler)
-
         if path == "/":
-            self.send_response(301)
-            self.send_header("Location", "/views/main.html")
-            self.end_headers()
-            return
+            return self._handle_root()
 
-        if path == "/strings.m.js":
-            return self._handle_strings_m_js()
+        def _route_match(route: _Route) -> bool:
+            if isinstance(route.pattern, str):
+                return path == route.pattern
+            return route.pattern.fullmatch(path) is not None
 
-        if path == "/js/preload_images.js":
-            return self._handle_preload_images_js()
+        routes = self._handler.routes
+        for route in routes:
+            if _route_match(route):
+                return self._send_200(path, route.handler(path))
 
-        if path == "/chrome_stub/theme/typography.css":
-            return self._send_200("")
-
-        if path == ("/chrome_stub/resources/cr_components/"
-                    "color_change_listener/colors_css_updater.js"):
-            # This is not actually use since we returns jelly = false.
-            return self._send_200("export const ColorChangeUpdater = null;")
-
-        if path == "/js/lib/analytics.js" or path == "/js/lib/ffmpeg.js":
-            # These two files aren't compiled.
-            return super().do_GET()
-
-        if path.endswith('.js'):
-            return self._run_handler(
-                PathHandler(root=self.tsc_root, transform=self._transform_js))
-
-        return super().do_GET()
+        self.send_response(404)
 
 
 _DEV_OUTPUT_TEMP_DIR = "/tmp/cca-dev-out"
@@ -294,10 +359,11 @@ def cmd(board: str, port: int) -> int:
         "false",
     ])
 
+    handler = RequestHandler(cca_root, _DEV_OUTPUT_TEMP_DIR,
+                             util.get_gen_dir(board))
     dev_server = http.server.ThreadingHTTPServer(
         ("localhost", port),
-        lambda *args: DevServerHandler(cca_root, _DEV_OUTPUT_TEMP_DIR,
-                                       util.get_gen_dir(board), *args),
+        lambda *args: DevServerHandler(handler, *args),
     )
 
     logging.info(f"Starting server on http://localhost:{port}")

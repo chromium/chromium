@@ -6,6 +6,7 @@ import logging
 import os
 
 from cca import cli
+from cca.commands import bundle
 from cca.commands import check_color_tokens
 from cca.commands import check_strings
 from cca.commands import deploy
@@ -16,6 +17,7 @@ from cca.commands import tsc
 
 
 @cli.root(children=[
+    bundle.cmd,
     check_color_tokens.cmd,
     check_strings.cmd,
     deploy.cmd,
