@@ -182,6 +182,10 @@ bool DawnContextProvider::Initialize(CacheBlobCallback callback) {
   adapter_options.powerPreference = wgpu::PowerPreference::LowPower;
 
 #if BUILDFLAG(IS_WIN)
+  if (adapter_options.backendType == wgpu::BackendType::D3D11) {
+    features.push_back(wgpu::FeatureName::D3D11MultithreadProtected);
+  }
+
   // Request the GPU that ANGLE is using if possible.
   dawn::native::d3d::RequestAdapterOptionsLUID adapter_options_luid;
   if (GetANGLED3D11DeviceLUID(&adapter_options_luid.adapterLUID)) {
@@ -197,11 +201,7 @@ bool DawnContextProvider::Initialize(CacheBlobCallback callback) {
   }
 
   wgpu::Adapter adapter(adapters[0].Get());
-
-  wgpu::AdapterProperties properties;
-  adapter.GetProperties(&properties);
-  if (wgpu::Adapter(adapter.Get())
-          .HasFeature(wgpu::FeatureName::TransientAttachments)) {
+  if (adapter.HasFeature(wgpu::FeatureName::TransientAttachments)) {
     features.push_back(wgpu::FeatureName::TransientAttachments);
   }
 
@@ -244,7 +244,10 @@ wgpu::Instance DawnContextProvider::GetInstance() const {
 #if BUILDFLAG(IS_WIN)
 Microsoft::WRL::ComPtr<ID3D11Device> DawnContextProvider::GetD3D11Device()
     const {
-  return dawn::native::d3d11::GetD3D11Device(device_.Get());
+  if (GetDefaultBackendType() == wgpu::BackendType::D3D11) {
+    return dawn::native::d3d11::GetD3D11Device(device_.Get());
+  }
+  return nullptr;
 }
 #endif
 
