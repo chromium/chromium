@@ -1151,9 +1151,8 @@ void MenuItemView::PaintMinorIconAndText(gfx::Canvas* canvas, SkColor color) {
         render_text->GetContentWidth() -
         (minor_text.empty() ? 0 : config.item_horizontal_padding) -
         image.width();
-    const int image_y =
-        (minor_text_bounds.y() + minor_text_bounds.height() - image.height()) /
-        2;
+    const int image_y = minor_text_bounds.y() +
+                        (minor_text_bounds.height() - image.height()) / 2;
     canvas->DrawImageInt(
         image, GetMirroredXWithWidthInView(image_x, image.width()), image_y);
   }
