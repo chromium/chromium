@@ -145,6 +145,7 @@ class BorealisDisallowedDialog : public DialogDelegate {
       std::unique_ptr<BehaviourProvider> behaviour) {
     DCHECK(!g_instance_);
 
+    SetTitle(IDS_BOREALIS_INSTALLER_APP_NAME);
     set_internal_name("BorealisDisallowedDialog");
     MaybeAction second_action = behaviour->GetAction();
     if (second_action.has_value()) {
@@ -171,6 +172,8 @@ class BorealisDisallowedDialog : public DialogDelegate {
     DCHECK(g_instance_);
     g_instance_ = nullptr;
   }
+
+  bool ShouldShowWindowTitle() const override { return false; }
 
  private:
   void InitializeView(const BehaviourProvider& behaviour) {

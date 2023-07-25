@@ -77,6 +77,7 @@ BorealisSplashScreenView::BorealisSplashScreenView(Profile* profile)
       ->WindowManager()
       .AddObserver(this);
 
+  SetTitle(IDS_BOREALIS_SPLASHSCREEN_TITLE);
   SetShowCloseButton(false);
   SetHasWindowSizeControls(false);
   SetButtons(ui::DIALOG_BUTTON_NONE);
@@ -163,6 +164,10 @@ void BorealisSplashScreenView::OnThemeChanged() {
   // The splash screen defies dark/light mode, so re-update the colour after
   // views changes it.
   UpdateColors();
+}
+
+bool BorealisSplashScreenView::ShouldShowWindowTitle() const {
+  return false;
 }
 
 void BorealisSplashScreenView::UpdateColors() {

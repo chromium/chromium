@@ -31,6 +31,7 @@ class BorealisSplashScreenView
 
   // views::DialogDelegateView:
   void OnThemeChanged() override;
+  bool ShouldShowWindowTitle() const override;
 
   // Overrides for AppWindowLifetimeObserver
   void OnWindowManagerDeleted(

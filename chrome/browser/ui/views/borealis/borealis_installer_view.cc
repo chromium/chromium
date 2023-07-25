@@ -133,6 +133,7 @@ END_METADATA
 
 BorealisInstallerView::BorealisInstallerView(Profile* profile)
     : profile_(profile), observation_(this) {
+  SetTitle(IDS_BOREALIS_INSTALLER_APP_NAME);
   SetCanMinimize(true);
   set_draggable(true);
   set_margins(gfx::Insets::TLBR(80, 40, 40, 40));
