@@ -5,6 +5,7 @@
 package org.chromium.content_public.browser;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.view.Menu;
@@ -73,12 +74,16 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
     @Nullable
     public Drawable getIcon(Context context) {
         if (mIconAttr != 0) {
-            TypedArray a = context.obtainStyledAttributes(new int[] {mIconAttr});
-            int iconResId = a.getResourceId(0, 0);
-            Drawable icon =
-                    iconResId == 0 ? null : AppCompatResources.getDrawable(context, iconResId);
-            a.recycle();
-            return icon;
+            try {
+                TypedArray a = context.obtainStyledAttributes(new int[] {mIconAttr});
+                int iconResId = a.getResourceId(0, 0);
+                Drawable icon =
+                        iconResId == 0 ? null : AppCompatResources.getDrawable(context, iconResId);
+                a.recycle();
+                return icon;
+            } catch (Resources.NotFoundException e) {
+                return null;
+            }
         }
         return mIcon;
     }
