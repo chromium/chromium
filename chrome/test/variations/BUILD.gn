@@ -37,9 +37,30 @@ python_library("fixtures") {
   }
 
   if (is_chromeos) {
-    data += [ "//third_party/chromite/" ]
+    data += [
+      "//third_party/catapult/common/py_utils/",
+      "//third_party/catapult/common/py_trace_event/",
+      "//third_party/catapult/common/py_vulcanize/",
+      "//third_party/catapult/dependency_manager/",
+      "//third_party/catapult/systrace/",
+      "//third_party/catapult/tracing/",
+      "//third_party/catapult/third_party/typ/",
+      "//third_party/catapult/third_party/six/",
+      "//third_party/catapult/tracing/",
+      "//third_party/chromite/",
 
-    data_deps += [ "//third_party/catapult/telemetry:telemetry" ]
+      # VM image caches for the test bot to load.
+      "//build/cros_cache/chrome-sdk/",
+
+      # The LKGM file controls what version of the VM image to download. Add it
+      # as data here so that changes to it will trigger analyze.
+      "//chromeos/CHROMEOS_LKGM",
+    ]
+
+    data_deps += [
+      "//third_party/catapult/devil:devil",
+      "//third_party/catapult/telemetry:telemetry",
+    ]
   }
 }
 
