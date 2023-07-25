@@ -14,6 +14,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/controls/button/toggle_button.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
@@ -22,6 +23,12 @@
 namespace {
 
 constexpr int kDefaultIconSize = 16;
+constexpr int kDefaultIconSizeChromeRefresh = 20;
+
+int GetDefaultIconSize() {
+  return features::IsChromeRefresh2023() ? kDefaultIconSizeChromeRefresh
+                                         : kDefaultIconSize;
+}
 
 std::unique_ptr<views::View> CreateSeparator() {
   const int separator_padding = ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -89,8 +96,24 @@ void CookieControlsContentView::SetToggleIsOn(bool is_on) {
 }
 
 void CookieControlsContentView::SetToggleIcon(const gfx::VectorIcon& icon) {
-  toggle_row_->SetIcon(
-      ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon, kDefaultIconSize));
+  toggle_row_->SetIcon(ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon,
+                                                      GetDefaultIconSize()));
+}
+
+void CookieControlsContentView::SetToggleVisible(bool visible) {
+  toggle_button_->SetVisible(visible);
+  PreferredSizeChanged();
+}
+
+void CookieControlsContentView::SetEnforcedIcon(const gfx::VectorIcon& icon,
+                                                const std::u16string& tooltip) {
+  enforced_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+      icon, ui::kColorIcon, GetDefaultIconSize()));
+  enforced_icon_->SetTooltipText(tooltip);
+}
+
+void CookieControlsContentView::SetEnforcedIconVisible(bool visible) {
+  enforced_icon_->SetVisible(visible);
 }
 
 void CookieControlsContentView::SetFeedbackSectionVisibility(bool visible) {
@@ -107,7 +130,9 @@ void CookieControlsContentView::AddToggleRow() {
   // actual blocked sites.
   toggle_row_->AddSecondaryLabel(u"17 sites blocked");
 
-  // TODO(crbug.com/1446230): Handle managed states
+  enforced_icon_ =
+      toggle_row_->AddControl(std::make_unique<views::ImageView>());
+
   toggle_button_ = toggle_row_->AddControl(
       std::make_unique<views::ToggleButton>(base::BindRepeating(
           &CookieControlsContentView::NotifyToggleButtonPressedCallback,
@@ -157,6 +182,12 @@ void CookieControlsContentView::UpdateContentLabels(
     const std::u16string& description) {
   title_->SetText(title);
   description_->SetText(description);
+  PreferredSizeChanged();
+}
+
+void CookieControlsContentView::SetContentLabelsVisible(bool visible) {
+  title_->SetVisible(visible);
+  description_->SetVisible(visible);
   PreferredSizeChanged();
 }
 

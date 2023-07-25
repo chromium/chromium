@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_content_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/content_settings/browser/ui/cookie_controls_util.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/favicon/core/favicon_service.h"
 #include "content/public/browser/navigation_controller.h"
@@ -160,6 +161,27 @@ void CookieControlsBubbleViewController::OnStatusChanged(
       break;
     default:
       NOTREACHED();
+      break;
+  }
+
+  switch (enforcement) {
+    case CookieControlsEnforcement::kNoEnforcement:
+      bubble_view_->GetContentView()->SetContentLabelsVisible(true);
+      bubble_view_->GetContentView()->SetToggleVisible(true);
+      bubble_view_->GetContentView()->SetEnforcedIconVisible(false);
+      break;
+    case CookieControlsEnforcement::kEnforcedByPolicy:
+    case CookieControlsEnforcement::kEnforcedByExtension:
+    case CookieControlsEnforcement::kEnforcedByCookieSetting:
+      bubble_view_->GetContentView()->SetFeedbackSectionVisibility(false);
+      bubble_view_->GetContentView()->SetContentLabelsVisible(false);
+      bubble_view_->GetContentView()->SetToggleVisible(false);
+      bubble_view_->GetContentView()->SetEnforcedIcon(
+          content_settings::CookieControlsUtil::GetEnforcedIcon(enforcement),
+          l10n_util::GetStringUTF16(
+              content_settings::CookieControlsUtil::GetEnforcedTooltipTextId(
+                  enforcement))),
+          bubble_view_->GetContentView()->SetEnforcedIconVisible(true);
       break;
   }
 }

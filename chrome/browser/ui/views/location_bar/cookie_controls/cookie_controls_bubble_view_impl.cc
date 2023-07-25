@@ -12,6 +12,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -137,3 +138,6 @@ bool CookieControlsBubbleViewImpl::OnCloseRequested(
   on_user_closed_content_view_callback_list_.Notify();
   return false;
 }
+
+BEGIN_METADATA(CookieControlsBubbleViewImpl, views::BubbleDialogDelegateView)
+END_METADATA

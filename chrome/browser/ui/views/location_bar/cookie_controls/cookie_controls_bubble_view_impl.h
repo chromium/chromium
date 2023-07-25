@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget.h"
 
 class CookieControlsContentView;
@@ -22,6 +23,7 @@ using OnCloseBubbleCallback = base::OnceCallback<void(views::View*)>;
 class CookieControlsBubbleViewImpl : public CookieControlsBubbleView,
                                      public LocationBarBubbleDelegateView {
  public:
+  METADATA_HEADER(CookieControlsBubbleViewImpl);
   CookieControlsBubbleViewImpl(views::View* anchor_view,
                                content::WebContents* web_contents,
                                OnCloseBubbleCallback callback);
