@@ -25,6 +25,10 @@
     color: var(--cros-textfield-label-color-error);
   }
 
+  :host-context(.jelly-enabled) cr-input.language-selection-title {
+    --cr-input-background-color: var(--cros-sys-input_field_on_shaded);
+  }
+
 </style>
 <oobe-adaptive-dialog id="demoPreferencesDialog" role="dialog"
     aria-label$="[[i18nDynamic(locale, 'demoPreferencesScreenTitle')]]">

@@ -191,6 +191,10 @@
     direction: rtl;
   }
 
+  :host-context(.jelly-enabled) cr-input#pinInput {
+    --cr-input-background-color: var(--cros-sys-input_field_on_shaded);
+  }
+
   /* Ensure that all children of cr-button do not consume events. This
     * simplifies the event handler code. */
   cr-button * {

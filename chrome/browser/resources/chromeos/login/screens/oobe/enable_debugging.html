@@ -9,6 +9,12 @@ found in the LICENSE file.
     color: var(--cros-color-secondary);
     font-size: var(--oobe-enable-debugging-font-size);
   }
+
+  :host-context(.jelly-enabled)
+    cr-input#password,
+    cr-input#passwordRepeat {
+      --cr-input-background-color: var(--cros-sys-input_field_on_shaded);
+  }
 </style>
 <oobe-adaptive-dialog id="removeProtectionDialog" role="dialog"
     for-step="remove-protection"

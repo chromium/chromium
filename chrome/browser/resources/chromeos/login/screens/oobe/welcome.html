@@ -15,6 +15,11 @@ found in the LICENSE file.
     line-height: var(--oobe-default-line-height);
   }
 
+  /************* Edit Requisition Dialog **************/
+  :host-context(.jelly-enabled) cr-input#editRequisitionInput {
+    --cr-input-background-color: var(--cros-sys-input_field_on_shaded);
+  }
+
   /************* Language Screen **************/
   #languageScreen .language-selection-entry {
     border-top: var(--oobe-dialog-list-item-border);

@@ -95,6 +95,21 @@ Methods:
   #orgUnitInput {
     padding-bottom: 28px;
   }
+
+  :host-context(.jelly-enabled)
+    cr-input#unlockPasswordInput,
+    cr-input#machineNameInput,
+    cr-input#userInput,
+    cr-input#passwordInput,
+    cr-input#orgUnitInput {
+      --cr-input-background-color: var(--cros-sys-input_field_on_shaded);
+  }
+
+  :host-context(.jelly-enabled)
+    select#joinConfigSelect,
+    select#encryptionList {
+      --md-select-bg-color: var(--cros-sys-input_field_on_shaded);
+  }
 </style>
 <oobe-adaptive-dialog id="unlockStep" for-step="unlock" role="dialog"
     aria-label$="[[i18nDynamic(locale, adWelcomeMessageKey)]]">

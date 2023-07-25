@@ -54,6 +54,10 @@ found in the LICENSE file.
     --cr-input-padding-start: 0px;
   }
 
+  :host-context(.jelly-enabled) cr-input#emailInput, cr-input#passwordInput {
+    --cr-input-background-color: var(--cros-sys-input_field_on_shaded);
+  }
+
   /* icon, title, subtitle styles must approximate current Gaia style. */
 
   #icon {
