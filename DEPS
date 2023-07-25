@@ -3953,7 +3953,7 @@ deps = {
        'version': 'version:2@5.3.2.1',
     }],
     'dep_type': 'cipd',
-    'condition': 'checkout_linux and checkout_bazel',
+    'condition': 'host_os == "linux" and checkout_bazel',
   },
 
   'src/tools/bazel/mac-amd64': {
@@ -3962,7 +3962,7 @@ deps = {
        'version': 'version:2@5.3.2.1',
     }],
     'dep_type': 'cipd',
-    'condition': 'checkout_mac and checkout_bazel',
+    'condition': 'host_os == "mac" and host_cpu == "x64" and checkout_bazel',
   },
 
   'src/tools/bazel/mac-arm64': {
@@ -3971,7 +3971,7 @@ deps = {
        'version': 'version:2@5.3.2.1',
     }],
     'dep_type': 'cipd',
-    'condition': 'checkout_mac and checkout_bazel',
+    'condition': 'host_os == "mac" and host_cpu == "arm64" and checkout_bazel',
   },
 
   'src/tools/bazel/windows-amd64': {
@@ -3980,7 +3980,7 @@ deps = {
        'version': 'version:2@5.3.2',
     }],
     'dep_type': 'cipd',
-    'condition': 'checkout_win and checkout_bazel',
+    'condition': 'host_os == "win" and checkout_bazel',
   },
 
   # Dependencies from src_internal
