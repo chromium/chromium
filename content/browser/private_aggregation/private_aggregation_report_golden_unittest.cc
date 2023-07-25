@@ -384,6 +384,12 @@ TEST_F(PrivateAggregationReportGoldenLatestVersionTest, VerifyGoldenReport) {
        .api_identifier = PrivateAggregationBudgetKey::Api::kProtectedAudience,
        .report_file = "report_6.json",
        .cleartext_payloads_file = "report_6_cleartext_payloads.json"},
+      {.debug_details = blink::mojom::DebugModeDetails::New(),
+       .contributions = {blink::mojom::AggregatableReportHistogramContribution(
+           /*bucket==*/0, /*value=*/0)},
+       .api_identifier = PrivateAggregationBudgetKey::Api::kSharedStorage,
+       .report_file = "report_7.json",
+       .cleartext_payloads_file = "report_7_cleartext_payloads.json"},
   };
 
   for (auto& test_case : kTestCases) {

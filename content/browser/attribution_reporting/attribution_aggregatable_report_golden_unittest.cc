@@ -126,8 +126,17 @@ class AttributionAggregatableReportGoldenLatestVersionTest
               auto* data =
                   absl::get_if<AttributionReport::AggregatableAttributionData>(
                       &report.data());
-              ASSERT_TRUE(data);
-              data->common_data.assembled_report = std::move(*assembled_report);
+              if (data) {
+                data->common_data.assembled_report =
+                    std::move(*assembled_report);
+              } else {
+                auto* null_data =
+                    absl::get_if<AttributionReport::NullAggregatableData>(
+                        &report.data());
+                ASSERT_TRUE(null_data);
+                null_data->common_data.assembled_report =
+                    std::move(*assembled_report);
+              }
               EXPECT_TRUE(VerifyReport(
                   report.ReportBody(), std::move(expected_report).TakeDict(),
                   *base64_encoded_expected_cleartext_payload))
@@ -394,6 +403,17 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                .BuildAggregatableAttribution(),
        .report_file = "report_7.json",
        .cleartext_payloads_file = "report_7_cleartext_payloads.json"},
+      {.report =
+           ReportBuilder(AttributionInfoBuilder().Build(),
+                         SourceBuilder(base::Time::FromJavaTime(1234483200000))
+                             .BuildStored())
+               .SetReportTime(base::Time::FromJavaTime(1234486400000))
+               .SetSourceRegistrationTimeConfig(
+                   attribution_reporting::mojom::SourceRegistrationTimeConfig::
+                       kExclude)
+               .BuildNullAggregatable(),
+       .report_file = "report_8.json",
+       .cleartext_payloads_file = "report_8_cleartext_payloads.json"},
   };
 
   for (auto& test_case : kTestCases) {

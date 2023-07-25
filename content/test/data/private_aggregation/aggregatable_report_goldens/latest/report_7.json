@@ -1,0 +1,9 @@
+{
+  "aggregation_service_payloads": [
+    {
+      "key_id": "example_id",
+      "payload": "EPyP/5TdrLzCncYsaJ0qqXHI1v5sNKVn6mmK6eG9CA1bgmllEuhp50eqcTDjKAyrVNpy3yLZX748VWE5H95goEnoTIWoawmnD8cV4rN1IgMygTBjGJIeuujVZDixfpVdoF9DZtH/YVCJnJaXgu83"
+    }
+  ],
+  "shared_info": "{\"api\":\"shared-storage\",\"report_id\":\"21abd97f-73e8-4b88-9389-a9fee6abda5e\",\"reporting_origin\":\"https://report.test\",\"scheduled_report_time\":\"1234486400\",\"version\":\"0.1\"}"
+}

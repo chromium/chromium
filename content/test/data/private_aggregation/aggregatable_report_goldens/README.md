@@ -40,3 +40,4 @@ TODO: Replace past explainer links with draft spec when available.
 4. Non-debug report, 2 contributions, Shared Storage API.
 5. Debug report, key with extreme value, Protected Audience API.
 6. Non-debug report, key with extreme value, Protected Audience API.
+7. Non-debug report, null report, Shared Storage API
