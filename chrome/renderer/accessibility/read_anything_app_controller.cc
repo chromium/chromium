@@ -590,7 +590,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("letterSpacing", &ReadAnythingAppController::LetterSpacing)
       .SetProperty("lineSpacing", &ReadAnythingAppController::LineSpacing)
       .SetProperty("isWebUIToolbarVisible",
-                   &ReadAnythingAppController::isWebUIToolbarEnabled)
+                   &ReadAnythingAppController::IsWebUIToolbarEnabled)
       .SetProperty("isSelectable", &ReadAnythingAppController::IsSelectable)
       .SetMethod("getChildren", &ReadAnythingAppController::GetChildren)
       .SetMethod("getTextDirection",
@@ -768,7 +768,7 @@ bool ReadAnythingAppController::IsSelectable() const {
   return model_.active_tree_selectable();
 }
 
-bool ReadAnythingAppController::isWebUIToolbarEnabled() const {
+bool ReadAnythingAppController::IsWebUIToolbarEnabled() const {
   return features::IsReadAnythingWebUIToolbarEnabled();
 }
 
