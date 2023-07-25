@@ -1316,6 +1316,17 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </token>
 </histogram>
 
+<histogram name="ChromeOS.Healthd.EventSubscription"
+    enum="CrosHealthdEventCategory" expires_after="2024-06-30">
+  <owner>weiluanwang@google.com</owner>
+  <owner>dennyh@google.com</owner>
+  <owner>cros-tdm-tpe-eng@google.com</owner>
+  <summary>
+    Records the event subscription to healthd to analyze the usage. Emitted when
+    the specific category is requested from a client.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Healthd.TelemetryResult.{Category}"
     enum="CrosHealthdTelemetryResult" expires_after="2023-12-31">
   <owner>weiluanwang@google.com</owner>
