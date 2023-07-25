@@ -74,6 +74,10 @@
     border-top: var(--cr-separator-line);
   }
 
+  :host([is-printer-settings-revamp-enabled_]) #enterprisePrintersContainer {
+    padding-inline-start: var(--cr-section-padding);
+  }
+
   :host(:not([can-add-printer])) .add-printer-section,
   :host(:not([can-add-printer])) .nearby-printers-section {
     opacity: var(--cr-disabled-opacity);
