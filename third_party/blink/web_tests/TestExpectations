@@ -6495,6 +6495,9 @@ crbug.com/626703 virtual/css-highlight-overlay-painting/external/wpt/css/css-hig
 # Gardening 2023-07-06
 crbug.com/1462500 [ Win ] media/picture-in-picture/picture-in-picture-interstitial-sizing.html [ Failure Pass ]
 
+# Until LCPP is unflagged, LCPP tests run in virtual tests.
+crbug.com/1419756 http/tests/lcp_critical_path_predictor/* [ Crash ]
+
 # Gardnener 2023-07-07
 crbug.com/1462462 http/tests/history/replacestate-post-to-get-2.html [ Failure Pass Timeout ]
 

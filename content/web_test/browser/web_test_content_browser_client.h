@@ -160,6 +160,9 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
       int render_process_id,
       mojo::PendingAssociatedReceiver<mojom::WebTestControlHost> receiver);
 
+  void BindNonAssociatedWebTestControlHost(
+      mojo::PendingReceiver<mojom::NonAssociatedWebTestControlHost> receiver);
+
   bool block_popups_ = true;
   bool screen_orientation_changed_ = false;
 

@@ -366,6 +366,12 @@ void WebTestContentBrowserClient::ExposeInterfacesToRenderer(
       base::BindRepeating(&WebTestContentBrowserClient::BindWebTestControlHost,
                           base::Unretained(this),
                           render_process_host->GetID()));
+
+  registry->AddInterface(
+      base::BindRepeating(
+          &WebTestContentBrowserClient::BindNonAssociatedWebTestControlHost,
+          base::Unretained(this)),
+      ui_task_runner);
 }
 
 void WebTestContentBrowserClient::BindPermissionAutomation(
@@ -655,6 +661,14 @@ void WebTestContentBrowserClient::BindWebTestControlHost(
   if (WebTestControlHost::Get())
     WebTestControlHost::Get()->BindWebTestControlHostForRenderer(
         render_process_id, std::move(receiver));
+}
+
+void WebTestContentBrowserClient::BindNonAssociatedWebTestControlHost(
+    mojo::PendingReceiver<mojom::NonAssociatedWebTestControlHost> receiver) {
+  if (WebTestControlHost::Get()) {
+    WebTestControlHost::Get()->BindNonAssociatedWebTestControlHost(
+        std::move(receiver));
+  }
 }
 
 #if BUILDFLAG(IS_WIN)

@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "skia/public/mojom/bitmap.mojom";
+import "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom"; // presubmit: ignore-long-line
 import "third_party/blink/public/mojom/permissions/permission_status.mojom";
 import "third_party/blink/public/mojom/webpreferences/web_preferences.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -337,4 +338,16 @@ interface WebTestControlHost {
 
   // Disable Auto Resize mode, resizing the contents to `new_size`.
   DisableAutoResize(gfx.mojom.Size new_size);
+};
+
+// Web test messages sent from the renderer process to the browser.
+// This provides a message pipe from each renderer to the global
+// WebTestControlHost in the browser.
+// This is very similar to WebTestControlHost, but the interface is not
+// associated to the legacy IPC channel, so can be used from mojo JS binding
+// directly.
+interface NonAssociatedWebTestControlHost {
+  // Provide the specified LCPP navigation time hint to next navigation.
+  SetLCPPNavigationHint(
+      blink.mojom.LCPCriticalPathPredictorNavigationTimeHint hint);
 };

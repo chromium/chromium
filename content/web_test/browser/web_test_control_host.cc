@@ -685,6 +685,7 @@ bool WebTestControlHost::ResetBrowserAfterWebTest() {
   expected_pixel_hash_.clear();
   test_url_ = GURL();
   prefs_ = blink::web_pref::WebPreferences();
+  lcpp_hint_ = absl::nullopt;
   should_override_prefs_ = false;
   WebTestContentBrowserClient::Get()->SetPopupBlockingEnabled(true);
   WebTestContentBrowserClient::Get()->ResetMockClipboardHosts();
@@ -1063,6 +1064,13 @@ void WebTestControlHost::RenderFrameHostChanged(RenderFrameHost* old_host,
 
 void WebTestControlHost::RenderViewDeleted(RenderViewHost* render_view_host) {
   main_window_render_view_hosts_.erase(render_view_host);
+}
+
+void WebTestControlHost::DidStartNavigation(
+    NavigationHandle* navigation_handle) {
+  if (lcpp_hint_) {
+    navigation_handle->SetLCPPNavigationHint(lcpp_hint_.value());
+  }
 }
 
 void WebTestControlHost::ReadyToCommitNavigation(
@@ -1783,6 +1791,11 @@ void WebTestControlHost::DisableAutoResize(const gfx::Size& new_size) {
   main_window_->ResizeWebContentForTests(new_size);
 }
 
+void WebTestControlHost::SetLCPPNavigationHint(
+    blink::mojom::LCPCriticalPathPredictorNavigationTimeHintPtr hint) {
+  lcpp_hint_ = *hint.get();
+}
+
 void WebTestControlHost::GoToOffset(int offset) {
   main_window_->GoBackOrForward(offset);
 }
@@ -1844,6 +1857,10 @@ void WebTestControlHost::PrepareRendererForNextWebTest() {
   //
   // Note: this navigation might happen in a new process, depending on the
   // COOP policy of the previous document.
+
+  // Avoid sending LCPP hint on the about:blank navigation.
+  lcpp_hint_ = absl::nullopt;
+
   NavigationController::LoadURLParams params((GURL(kAboutBlankResetWebTest)));
   params.transition_type = ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED);
   params.should_clear_history_list = true;
@@ -1999,6 +2016,11 @@ void WebTestControlHost::BindWebTestControlHostForRenderer(
     int render_process_id,
     mojo::PendingAssociatedReceiver<mojom::WebTestControlHost> receiver) {
   receiver_bindings_.Add(this, std::move(receiver), render_process_id);
+}
+
+void WebTestControlHost::BindNonAssociatedWebTestControlHost(
+    mojo::PendingReceiver<mojom::NonAssociatedWebTestControlHost> receiver) {
+  non_associated_receiver_bindings_.Add(this, std::move(receiver));
 }
 
 mojo::AssociatedRemote<mojom::WebTestRenderFrame>&

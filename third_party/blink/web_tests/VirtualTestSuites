@@ -2230,5 +2230,24 @@
     "args": ["--enable-features=ServiceWorkerStaticRouter"],
     "expires": "Jul 14, 2024",
     "owners": ["yyanagisawa@chromium.org", "sisidovski@chromium.org"]
+  },
+  {
+    "prefix": "lcpp",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "http/tests/lcp_critical_path_predictor"
+    ],
+    "args": [
+      "--enable-features=LCPCriticalPathPredictor"
+    ],
+    "expires": "Jul 10, 2024",
+    "owners": [
+      "chikamune@chromium.org",
+      "kouhei@chromium.org"
+    ]
   }
 ]
