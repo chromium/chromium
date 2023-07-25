@@ -669,13 +669,23 @@ void HidServiceWin::OnDeviceRemoved(const GUID& class_guid,
 // static
 base::win::ScopedHandle HidServiceWin::OpenDevice(
     const std::wstring& device_path) {
-  base::win::ScopedHandle file(
-      CreateFile(device_path.c_str(), GENERIC_WRITE | GENERIC_READ,
-                 FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING,
-                 FILE_FLAG_OVERLAPPED, nullptr));
-  if (!file.IsValid() && GetLastError() == ERROR_ACCESS_DENIED) {
-    file.Set(CreateFile(device_path.c_str(), GENERIC_READ, FILE_SHARE_READ,
-                        nullptr, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, nullptr));
+  constexpr DWORD kDesiredAccessModes[] = {
+      // Request read and write access.
+      GENERIC_WRITE | GENERIC_READ,
+      // Request read-only access.
+      GENERIC_READ,
+      // Don't request read or write access.
+      0,
+  };
+  base::win::ScopedHandle file;
+  for (const auto& desired_access : kDesiredAccessModes) {
+    file.Set(CreateFile(device_path.c_str(), desired_access,
+                        FILE_SHARE_READ | FILE_SHARE_WRITE,
+                        /*lpSecurityAttributes=*/nullptr, OPEN_EXISTING,
+                        FILE_FLAG_OVERLAPPED, /*hTemplateFile=*/nullptr));
+    if (file.IsValid() || GetLastError() != ERROR_ACCESS_DENIED) {
+      break;
+    }
   }
   return file;
 }

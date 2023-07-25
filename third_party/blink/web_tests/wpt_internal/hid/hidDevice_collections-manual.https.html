@@ -18,6 +18,7 @@
       <li>Philips Speech Mike III (0911:0fa0) [USB]
       <li>Jabra Evolve 65 Stereo Headset with Link (0b0e:0306) [USB]
       <li>Google Stadia Controller (18d1:9400) [USB]
+      <li>RFIdeas pcProx badge reader (0c27:3bfa) [USB]
     </ul>
     <script>
       // Formats a 32-bit integer |value| in hexadecimal with leading zeros.
@@ -60,52 +61,6 @@
                       'Incorrect bit index for usage 0x' + hex32(usage) + '.');
         assert_equals(item.reportSize, expectedBitWidth,
                       'Incorrect bit width for usage 0x' + hex32(usage) + '.');
-      };
-
-      // Returns the first top-level collection in |device.collections| with a
-      // usage matching |usagePage| and |usage|, or undefined if no matching
-      // collection was found.
-      const getCollectionByUsage = (device, usagePage, usage) => {
-        return device.collections.find(c => {
-            return c.usagePage == usagePage && c.usage == usage;});
-      }
-
-      // Returns the first device in |devices| with a top-level collection
-      // matching |usagePage| and |usage|, or undefined if no matching device
-      // was found.
-      const getDeviceByCollectionUsage = (devices, usagePage, usage) => {
-        return devices.find(d => {
-          return getCollectionByUsage(d, usagePage, usage);
-        }) !== undefined;
-      }
-
-      // Returns the first report in |devices| with matching |reportType| and
-      // |reportId|, or undefined if no matching report was found.
-      const getReport = (devices, reportType, reportId) => {
-        for (const d of devices) {
-          for (const c of d.collections) {
-            let reports = [];
-            if (reportType == 'input')
-              reports = c.inputReports;
-            else if (reportType == 'output')
-              reports = c.outputReports;
-            else if (reportType == 'feature')
-              reports = c.featureReports;
-
-            const r = reports.find(r => { return r.reportId == reportId; });
-            if (r !== undefined)
-              return r;
-          }
-        }
-        return undefined;
-      };
-
-      // Returns true if |devices| contains a device with matching |vendorId|
-      // and |productId|.
-      const hasDeviceIds = (devices, vendorId, productId) => {
-        return devices.find(d => {
-          return d.vendorId == vendorId && d.productId == productId;
-        }) !== undefined;
       };
 
       const checkReportMapDualshock4 = devices => {
@@ -458,10 +413,10 @@
       };
 
       checkReportMapSpeechMike = devices => {
-        // Speech Mike exposes five HID interfaces, two of which are blocked by
-        // WebHID. None of the interfaces use report IDs. Distinguish the
-        // interfaces by their top-level collection usage information.
-        assert_equals(devices.length, 3, 'device count');
+        // Speech Mike exposes five HID interfaces. None of the interfaces use
+        // report IDs. Distinguish the interfaces by their top-level collection
+        // usage information.
+        assert_equals(devices.length, 5, 'device count');
         const device0 = getDeviceByCollectionUsage(devices, 0xffa0, 0x0001);
         assert_not_equals(device0, undefined, 'vendor device');
         assert_equals(device0.collections.length, 1,
@@ -474,12 +429,14 @@
         assert_not_equals(device2, undefined, 'joystick device');
         assert_equals(device2.collections.length, 1,
                       'joystick device collection count');
-
-        // These devices should be blocked by WebHID.
         const device3 = getDeviceByCollectionUsage(devices, 0x0001, 0x0002);
-        assert_equals(device3, undefined, 'mouse device');
+        assert_not_equals(device3, undefined, 'mouse device');
+        assert_equals(device3.collections.length, 1,
+                      'mouse device collection count');
         const device4 = getDeviceByCollectionUsage(devices, 0x0001, 0x0006);
-        assert_equals(device4, undefined, 'keyboard device');
+        assert_not_equals(device4, undefined, 'keyboard device');
+        assert_equals(device4.collections.length, 1,
+                      'keyboard device collection count');
 
         const device0Input = getReport([device0], 'input', 0x00);
         assert_not_equals(device0Input, undefined, 'vendor input report');
@@ -520,6 +477,14 @@
         checkReportUsage(device2Input, 0x00090014, 19, 1);
         checkReportUsage(device2Input, 0x00010030, 24, 8);
         checkReportUsage(device2Input, 0x00010031, 32, 8);
+
+        // The mouse and keyboard interfaces are enumerated, but no reports are
+        // accessible because these interfaces only define input reports which
+        // are blocked by WebHID.
+        const device3Input = getReport([device3], 'input', 0x00);
+        assert_equals(device3Input, undefined, 'mouse input report');
+        const device4Input = getReport([device4], 'input', 0x00);
+        assert_equals(device4Input, undefined, 'keyboard input report');
       };
 
       checkReportMapEvolveLink = devices => {
@@ -691,6 +656,27 @@
         checkReportUsage(output05, 0x000f0097, 0, 16);
       };
 
+      checkReportMapPcProx = devices => {
+        // Expect one device with one top-level collection.
+        assert_equals(devices.length, 1, 'device count');
+        assert_equals(devices[0].collections.length, 1, 'collection count');
+        const collection = getCollectionByUsage(devices[0], 0x0001, 0x0006);
+        assert_not_equals(collection, undefined, 'keyboard collection');
+
+        // Feature report 0x00
+        const feature00 = getReport(devices, 'feature', 0x00);
+        assert_not_equals(feature00, undefined, 'feature report 0x00');
+        // The report is defined as eight 8-bit fields all with the same usage
+        // but only one usage value is provided, indicating that the same usage
+        // should be applied to all eight fields. checkReportUsage only checks
+        // the extent of the first field with a given usage. Also check that the
+        // report count and usages length have the expected values.
+        checkReportUsage(feature00, 0x000700A0, 0, 8);
+        assert_equals(feature00.items.length, 1, 'items length');
+        assert_equals(feature00.items[0].reportCount, 8, 'report count');
+        assert_equals(feature00.items[0].usages.length, 1, 'usages length');
+      };
+
       // The content of the HIDDevice.collections member can differ by platform,
       // so this test aims to only test the properties that are expected to
       // remain consistent. In particular, the test verifies that all reports
@@ -709,6 +695,8 @@
           checkReportMapEvolveLink(devices);
         else if (hasDeviceIds(devices, 0x18d1, 0x9400))
           checkReportMapStadiaController(devices);
+        else if (hasDeviceIds(devices, 0x0c27, 0x3bfa))
+          checkReportMapPcProx(devices);
         else
           assert_unreached('Select a supported device.');
       }, 'Collection info matches the expected report map.');
