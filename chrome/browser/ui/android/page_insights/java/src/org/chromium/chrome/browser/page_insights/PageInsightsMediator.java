@@ -6,7 +6,9 @@ package org.chromium.chrome.browser.page_insights;
 
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
-import android.os.SystemClock;
+import android.os.Handler;
+import android.os.Looper;
+import android.text.format.DateUtils;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -15,6 +17,7 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -40,7 +43,7 @@ import java.util.function.BooleanSupplier;
  * </ul>
  */
 public class PageInsightsMediator extends EmptyTabObserver implements BottomSheetObserver {
-    private static final int DEFAULT_TRIGGER_DELAY_MS = 60000;
+    private static final long DEFAULT_TRIGGER_DELAY_MS = DateUtils.SECOND_IN_MILLIS * 60;
     private static final double MINIMUM_CONFIDENCE = 50;
 
     private final PageInsightsSheetContent mSheetContent;
@@ -72,10 +75,12 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     private View mSheetContainer;
 
     private final BooleanSupplier mIsPageInsightsHubEnabled;
+    private final Handler mHandler;
+    private final Runnable mAutoTriggerRunnable = this::autoTriggerPageInsightsFromTimer;
 
     private PageInsightsDataLoader mPageInsightsDataLoader;
 
-    private Long mTabLoadTimestamp;
+    private boolean mAutoTriggerReady;
 
     // Caches the sheet height at the current state. Avoids the repeated call to resize the content
     // if the size hasn't changed since.
@@ -84,8 +89,6 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     // Whether the sheet was hidden due to another bottom sheet UI, and needs to be restored
     // when notified when the UI was closed.
     private boolean mShouldRestore;
-
-    private boolean mLoadingFirstPage;
 
     public PageInsightsMediator(Context context, ObservableSupplier<Tab> tabObservable,
             ManagedBottomSheetController bottomSheetController,
@@ -101,9 +104,8 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
                 tab.addObserver(this);
             }
         });
-        mLoadingFirstPage = true;
         mExpandedSheetHelper = expandedSheetHelper;
-        updatePageLoadTimestamp();
+        mHandler = new Handler(Looper.getMainLooper());
         mBrowserControlsSizer = browserControlsSizer;
         mBrowserControlsObserver = new BrowserControlsStateProvider.Observer() {
             @Override
@@ -111,11 +113,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
                     int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
                 bottomSheetController.setBrowserControlsHiddenRatio(
                         controlsStateProvider.getBrowserControlHiddenRatio());
-            }
-
-            @Override
-            public void onAndroidControlsVisibilityChanged(int visibility) {
-                if (visibility == View.VISIBLE) maybeAutoTriggerPageInsights();
+                if (mAutoTriggerReady) maybeAutoTriggerPageInsights();
             }
         };
         controlsStateProvider.addObserver(mBrowserControlsObserver);
@@ -139,6 +137,11 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         mMaxCornerRadiusPx = bottomSheetContainer.getResources().getDimensionPixelSize(
                 R.dimen.bottom_sheet_corner_radius);
         setCornerRadiusPx(0);
+
+        // Initialize the hidden ratio, otherwise it won't be set until the first offset
+        // change event occurs.
+        mSheetController.setBrowserControlsHiddenRatio(
+                mControlsStateProvider.getBrowserControlHiddenRatio());
     }
 
     void onBottomUiStateChanged(boolean opened) {
@@ -164,34 +167,46 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
 
     // TabObserver
 
-    @Override
-    public void onPageLoadFinished(Tab tab, GURL url) {
-        // Close the sheet when a new page is loaded.
-        if (mLoadingFirstPage) {
-            mLoadingFirstPage = false;
-            return;
-        }
-        mSheetController.hideContent(mSheetContent, true);
-        updatePageLoadTimestamp();
+    private void autoTriggerPageInsightsFromTimer() {
+        mAutoTriggerReady = true;
+        maybeAutoTriggerPageInsights();
     }
 
-    private void updatePageLoadTimestamp() {
-        mTabLoadTimestamp = SystemClock.elapsedRealtime();
+    private void resetAutoTriggerTimer() {
+        mAutoTriggerReady = false;
+        mHandler.removeCallbacks(mAutoTriggerRunnable);
+    }
+
+    @Override
+    public void onPageLoadStarted(Tab tab, GURL url) {
+        resetAutoTriggerTimer();
+        if (mSheetContent == mSheetController.getCurrentSheetContent()) {
+            mSheetController.hideContent(mSheetContent, false);
+        }
+    }
+
+    @Override
+    public void onLoadStopped(Tab tab, boolean toDifferentDocument) {
+        // onPageLoadFinished is not suitable as it is not fired when going back to a cached page.
+        if (!toDifferentDocument) return;
+        resetAutoTriggerTimer();
+        // TODO(ggeorgiana): read duration from flag
+        mHandler.postDelayed(mAutoTriggerRunnable, DEFAULT_TRIGGER_DELAY_MS);
     }
 
     private void maybeAutoTriggerPageInsights() {
-        if (!mIsPageInsightsHubEnabled.getAsBoolean()) return;
-
-        // TODO(ggeorgiana): read duration from flag
-        long currentTimeMs = SystemClock.elapsedRealtime();
-        long elapsedMs = currentTimeMs - mTabLoadTimestamp;
-        if (elapsedMs < DEFAULT_TRIGGER_DELAY_MS) return;
-
+        if (!mIsPageInsightsHubEnabled.getAsBoolean()
+                || !BrowserControlsUtils.areBrowserControlsOffScreen(mControlsStateProvider)
+                || mSheetContent == mSheetController.getCurrentSheetContent()
+                || !mAutoTriggerReady) {
+            return;
+        }
         boolean hasEnoughConfidence =
                 mPageInsightsDataLoader.loadInsightsData().getConfidence() * 100
                 > MINIMUM_CONFIDENCE;
         if (hasEnoughConfidence) {
             requestShowContent();
+            resetAutoTriggerTimer();
         }
     }
 
@@ -203,6 +218,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
 
     @Override
     public void onSheetStateChanged(@SheetState int newState, @StateChangeReason int reason) {
+        if (newState == SheetState.HIDDEN) resetAutoTriggerTimer();
         if (newState == SheetState.HIDDEN || newState == SheetState.PEEK) {
             setBottomControlsHeight(mSheetController.getCurrentOffset());
         }
@@ -255,6 +271,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {}
 
     void destroy() {
+        resetAutoTriggerTimer();
         mBottomUiController.removeObserver(mBottomUiObserver);
     }
 
@@ -264,11 +281,16 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         return radii[0];
     }
 
-    void setTabLoadTimestampForTesting(Long elapsedRealtime) {
-        mTabLoadTimestamp = elapsedRealtime;
+    void setAutoTriggerReadyForTesting() {
+        mHandler.removeCallbacks(mAutoTriggerRunnable);
+        mAutoTriggerReady = true;
     }
 
     void setPageInsightsDataLoaderForTesting(PageInsightsDataLoader pageInsightsDataLoader) {
         mPageInsightsDataLoader = pageInsightsDataLoader;
+    }
+
+    View getContainerForTesting() {
+        return mSheetContainer;
     }
 }

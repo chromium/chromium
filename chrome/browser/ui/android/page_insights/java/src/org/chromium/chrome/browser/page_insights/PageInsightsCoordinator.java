@@ -104,11 +104,15 @@ public class PageInsightsCoordinator {
         return mMediator.getCornerRadiusForTesting();
     }
 
-    void setTabLoadTimestampForTesting(Long elapsedRealtime) {
-        mMediator.setTabLoadTimestampForTesting(elapsedRealtime);
+    void setAutoTriggerReadyForTesting() {
+        mMediator.setAutoTriggerReadyForTesting();
     }
 
     void setPageInsightsDataLoaderForTesting(PageInsightsDataLoader pageInsightsDataLoader) {
         mMediator.setPageInsightsDataLoaderForTesting(pageInsightsDataLoader);
+    }
+
+    View getContainerForTesting() {
+        return mMediator.getContainerForTesting();
     }
 }

@@ -171,14 +171,23 @@ public class PageInsightsCoordinatorTest {
         waitForAnimationToFinish();
     }
 
-    private void showTopBar() throws Exception {
+    private void hideTopBar() throws Exception {
+        doReturn(1.f).when(mBrowserControlsStateProvider).getBrowserControlHiddenRatio();
         verify(mBrowserControlsStateProvider)
                 .addObserver(mBrowserControlsStateObserverCaptor.capture());
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> mBrowserControlsStateObserverCaptor.getValue()
-                                   .onAndroidControlsVisibilityChanged(View.VISIBLE));
+                        -> mBrowserControlsStateObserverCaptor.getValue().onControlsOffsetChanged(
+                                0, 0, 0, 0, false));
         waitForAnimationToFinish();
+
+        // Sheet might not have opened.
+        if (mPageInsightsController.getSheetState() == SheetState.HIDDEN) return;
+
+        // Assert that the sheet is translated all the way down below the container i.e. the bottom
+        // of the screen, thus invisible.
+        View container = mPageInsightsCoordinator.getContainerForTesting();
+        assertEquals(container.getHeight(), container.getTranslationY(), 0.01f);
     }
 
     private void setConfidenceTooLowForAutoTrigger() {
@@ -187,8 +196,8 @@ public class PageInsightsCoordinatorTest {
         mPageInsightsCoordinator.setPageInsightsDataLoaderForTesting(testingPageInsightsDataLoader);
     }
 
-    private void setTabLoadTimestampOldEnoughForAutoTrigger() {
-        mPageInsightsCoordinator.setTabLoadTimestampForTesting(1000L);
+    private void setAutoTriggerReady() {
+        mPageInsightsCoordinator.setAutoTriggerReadyForTesting();
     }
 
     @Test
@@ -202,26 +211,6 @@ public class PageInsightsCoordinatorTest {
                 R.dimen.bottom_sheet_corner_radius);
         assertEquals(maxCornerRadiusPx, mPageInsightsCoordinator.getCornerRadiusForTesting(),
                 ASSERTION_DELTA);
-    }
-
-    @Test
-    @MediumTest
-    public void testHideOnPageLoad() throws Exception {
-        createAndLaunchPageInsightsCoordinator();
-        verify(mTabProvider).addObserver(mTabCallbackCaptor.capture());
-        mTabCallbackCaptor.getValue().onResult(mTab);
-        verify(mTab).addObserver(mTabObserverCaptor.capture());
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mTabObserverCaptor.getValue().onPageLoadFinished(mTab, null));
-        waitForAnimationToFinish();
-
-        // The very first page load should be kept.
-        assertEquals(SheetState.PEEK, mPageInsightsController.getSheetState());
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mTabObserverCaptor.getValue().onPageLoadFinished(mTab, null));
-        waitForAnimationToFinish();
-        assertEquals(SheetState.HIDDEN, mPageInsightsController.getSheetState());
     }
 
     @Test
@@ -293,9 +282,9 @@ public class PageInsightsCoordinatorTest {
     public void testAutoTrigger() throws Exception {
         createPageInsightsCoordinator();
         assertEquals(SheetState.HIDDEN, mPageInsightsController.getSheetState());
-        setTabLoadTimestampOldEnoughForAutoTrigger();
+        setAutoTriggerReady();
 
-        showTopBar(); // Signal for auto triggering the PIH
+        hideTopBar(); // Signal for auto triggering the PIH
 
         assertEquals(SheetState.PEEK, mPageInsightsController.getSheetState());
     }
@@ -306,7 +295,7 @@ public class PageInsightsCoordinatorTest {
         createPageInsightsCoordinator();
         assertEquals(SheetState.HIDDEN, mPageInsightsController.getSheetState());
 
-        showTopBar(); // Signal for auto triggering the PIH
+        hideTopBar(); // Signal for auto triggering the PIH
 
         assertEquals(SheetState.HIDDEN, mPageInsightsController.getSheetState());
     }
@@ -316,10 +305,10 @@ public class PageInsightsCoordinatorTest {
     public void testAutoTrigger_notEnoughConfidence() throws Exception {
         createPageInsightsCoordinator();
         assertEquals(SheetState.HIDDEN, mPageInsightsController.getSheetState());
-        setTabLoadTimestampOldEnoughForAutoTrigger();
-        setConfidenceTooLowForAutoTrigger(); // By default, the confidence is over the threashold
+        setAutoTriggerReady();
+        setConfidenceTooLowForAutoTrigger(); // By default, the confidence is over the threshold
 
-        showTopBar(); // Signal for auto triggering the PIH
+        hideTopBar(); // Signal for auto triggering the PIH
 
         assertEquals(SheetState.HIDDEN, mPageInsightsController.getSheetState());
     }
@@ -329,10 +318,10 @@ public class PageInsightsCoordinatorTest {
     public void testAutoTrigger_notEnabled() throws Exception {
         createPageInsightsCoordinator();
         assertEquals(SheetState.HIDDEN, mPageInsightsController.getSheetState());
-        setTabLoadTimestampOldEnoughForAutoTrigger();
+        setAutoTriggerReady();
         doReturn(false).when(mIsPageInsightsHubEnabled).getAsBoolean();
 
-        showTopBar(); // Signal for auto triggering the PIH
+        hideTopBar(); // Signal for auto triggering the PIH
 
         assertEquals(SheetState.HIDDEN, mPageInsightsController.getSheetState());
     }

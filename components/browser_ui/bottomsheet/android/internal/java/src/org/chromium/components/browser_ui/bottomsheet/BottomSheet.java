@@ -663,6 +663,13 @@ class BottomSheet extends FrameLayout
 
         // We only care about peek/half state.
         int state = getSheetState();
+
+        // Returns non-zero offset for the opening animation. This keeps the animation running
+        // below the bottom of the screen.
+        if (mAlwaysFullWidth && state == SheetState.SCROLLING && mTargetState == SheetState.PEEK
+                && mBrowserControlsHiddenRatio == 1.f) {
+            state = mTargetState;
+        }
         if (state != SheetState.PEEK && state != SheetState.HALF) return 0;
         return getSheetHeightForState(state) * mBrowserControlsHiddenRatio;
     }

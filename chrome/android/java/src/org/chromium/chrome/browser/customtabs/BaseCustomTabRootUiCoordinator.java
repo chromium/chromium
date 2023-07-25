@@ -283,7 +283,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     }
 
     private void maybeCreatePageInsightsComponent() {
-        if (!isPageInsightsHubEnabled()) return;
+        if (!isPageInsightsHubEnabled() || mPageInsightsCoordinator != null) return;
 
         ViewStub containerStub = mActivity.findViewById(R.id.page_insights_hub_container_stub);
         if (containerStub != null) containerStub.inflate();
