@@ -18,3 +18,8 @@
 -checkdiscard class !cr_allowunused,kotlinx.coroutines.internal.FastServiceLoader {
   *;
 }
+
+# Remove kotlin assertions since they add a lot of string and rarely fail.
+-assumenosideeffects class kotlin.jvm.internal.Intrinsics {
+  public static void check*(...);
+}
