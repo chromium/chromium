@@ -104,7 +104,7 @@ const CSSValue* ConsumeSyntaxComponent(const CSSSyntaxComponent& syntax,
       }
       list->Append(*value);
     } while (css_parsing_utils::ConsumeCommaIncludingWhitespace(range));
-    return list->length() ? list : nullptr;
+    return list->length() && range.AtEnd() ? list : nullptr;
   }
   const CSSValue* result = ConsumeSingleType(syntax, range, context);
   if (!range.AtEnd()) {
