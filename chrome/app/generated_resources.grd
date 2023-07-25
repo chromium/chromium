@@ -3709,54 +3709,54 @@ are declared in tools/grit/grit_rule.gni.
       </message>
 
       <!-- User Bypass Bubble -->
-      <message name="IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_BLOCKED_TITLE" translateable="false"  desc="">
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_BLOCKED_TITLE" translateable="false"  desc="Title shown on the cookie controls bubble when third-party cookies are blocked.">
         Third-party cookies blocked
       </message>
-      <message name="IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_ALLOWED_TITLE" translateable="false"  desc="">
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_ALLOWED_TITLE" translateable="false"  desc="Title shown on the cookie controls bubble when third-party cookies are allowed.">
         Third-party cookies allowed
       </message>
-      <message name="IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_TITLE " translateable="false"  desc="">
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_TITLE " translateable="false"  desc="Subtitle shown on the cookie controls bubble when cookies are blocked guiding the user to the cookie controls toggle button.">
         Site not working?
       </message>
-      <message name="IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY" translateable="false"  desc="">
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY" translateable="false"  desc="Descriptive text in the cookie controls bubble explaining the trade-off of temporarily allowing third-party cookies for this site, a change that will automatically expire in the future.">
         Try temporarily allowing third-party cookies, which means less protection but site features are more likely to work
       </message>
-      <message name="IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_PERMANENT" translateable="false" desc="">
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_PERMANENT" translateable="false" desc="Descriptive text in the cookie controls bubble explaining the trade-off of allowing third-party cookies for this site, a change that will not automatically expire in the future.">
         Try allowing third-party cookies, which means less protection but site features are more likely to work
       </message>
-      <message name="IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_TITLE" translateable="false"  desc="">
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_TITLE" translateable="false"  desc="Subtitle shown on the cookie controls bubble when cookies are allowed temporarily, indicating how long until they are no longer allowed.">
         {COUNT, plural,
               =1 {1 day until Chrome starts blocking cookies again}
               other {# days until Chrome starts blocking cookies again}}
       </message>
-      <message name="IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_DESCRIPTION_TODAY" translateable="false"  desc="">
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_DESCRIPTION_TODAY" translateable="false"  desc="Descriptive text in the cookie controls bubble after the user has allowed third-party cookies on a site explaining the trade-off of their decision.">
         You allowed this site to use third-party cookies. This means that most site features should work, but you have less protection.
       </message>
-      <message name="IDS_COOKIE_CONTROLS_BUBBLE_PERMANENT_ALLOWED_TITLE" translateable="false"  desc="">
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_PERMANENT_ALLOWED_TITLE" translateable="false"  desc="A subtitle in the cookie controls bubble if cookies were allowed by the user and they won't be automatically blocked again the future.">
         You allowed third-party cookies for this site
       </message>
-      <message name="IDS_COOKIE_CONTROLS_BUBBLE_PERMANENT_ALLOWED_DESCRIPTION" translateable="false"  desc="">
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_PERMANENT_ALLOWED_DESCRIPTION" translateable="false"  desc="A description in the cookie controls bubble of the impact of current user settings for this site if cookies are allowed and they won't be automatically blocked again in the future.">
         This means that most site features should work, but you have less protection
       </message>
-      <message name="IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_BUTTON_TITLE" translateable="false"  desc="">
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_BUTTON_TITLE" translateable="false"  desc="A subtitle for a portion of the cookie controls bubble soliciting feedback from users.">
         Send feedback
       </message>
-      <message name="IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_BUTTON_DESCRIPTION" translateable="false"  desc="">
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_BUTTON_DESCRIPTION" translateable="false"  desc="Text asking the user for feedback on why they allowed third-party cookies for this particular site.">
         Help us improve Chrome by telling us why you allowed third-party cookies
       </message>
-      <message name="IDS_COOKIE_CONTROLS_BUBBLE_RELOADING_LABEL" translateable="false" desc="">
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_RELOADING_LABEL" translateable="false" desc="Descriptive text informing the user that the page is reloading after they toggled third-party cookies in the cookie controls bubble.">
         Reloading <ph name="DOMAIN">$1<ex>example.com</ex></ph>...
       </message>
-      <message name="IDS_COOKIE_CONTROLS_BUBBLE_THIRD_PARTY_COOKIES_LABEL" translateable="false" desc="">
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_THIRD_PARTY_COOKIES_LABEL" translateable="false" desc="Label in the Page Info bubble for the third-party cookie controls toggle.">
         Third-party cookies
       </message>
-      <message name="IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_FORM_PLACEHOLDER" translateable="false"  desc="">
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_FORM_PLACEHOLDER" translateable="false"  desc="In the feedback text box accessible from the cookie controls bubble, this is the default text the user replaces with their feedback.">
         Tell us why you allowed third-party cookies on this site
       </message>
-      <message name="IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_ALLOWED_LABEL" translateable="false"  desc="">
+      <message name="IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_ALLOWED_LABEL" translateable="false"  desc="Label in the Page Action (omnibox) icon indicating that cookies are allowed on the current site.">
         Third-party cookies allowed
       </message>
-      <message name="IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_BLOCKED_LABEL" translateable="false"  desc="">
+      <message name="IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_BLOCKED_LABEL" translateable="false"  desc="Label in the Page Action (omnibox) icon indicating that cookies are blocked on the current site.">
         Third-party cookies blocked
       </message>
 
