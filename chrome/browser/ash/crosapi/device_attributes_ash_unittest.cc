@@ -14,6 +14,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/crosapi/mojom/device_attributes.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -80,6 +81,8 @@ class DeviceAttributesAshTest
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
+    profile_ = profile_manager_->CreateTestingProfile(
+        TestingProfile::kDefaultProfileUserName);
 
     switch (GetParam()) {
       case TestProfileChoice::kSigninProfile:
@@ -102,7 +105,8 @@ class DeviceAttributesAshTest
   void TearDown() override { device_attributes_ash_.reset(); }
 
   void AddUser(bool is_affiliated = true) {
-    AccountId account_id = AccountId::FromUserEmail("user@test.com");
+    AccountId account_id =
+        AccountId::FromUserEmail(TestingProfile::kDefaultProfileUserName);
     ash::FakeChromeUserManager* user_manager =
         static_cast<ash::FakeChromeUserManager*>(
             user_manager::UserManager::Get());
@@ -111,8 +115,6 @@ class DeviceAttributesAshTest
     user_manager->UserLoggedIn(account_id, user->username_hash(),
                                /*browser_restart=*/false, /*is_child=*/false);
     user_manager->SimulateUserProfileLoad(account_id);
-    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
-                                                                 &profile_);
   }
 
   bool IsSigninProfileOrBelongsToAffiliatedUser() {
@@ -129,7 +131,7 @@ class DeviceAttributesAshTest
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile profile_;
+  raw_ptr<TestingProfile> profile_;
 
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 

@@ -10,8 +10,9 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
@@ -34,6 +35,12 @@ class CrosapiUtilTest : public testing::Test {
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(fake_user_manager_.get()));
     browser_util::RegisterLocalStatePrefs(pref_service_.registry());
+
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+    testing_profile_ = profile_manager_->CreateTestingProfile(
+        TestingProfile::kDefaultProfileUserName);
   }
 
   void AddRegularUser(const std::string& email) {
@@ -42,14 +49,13 @@ class CrosapiUtilTest : public testing::Test {
     fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
                                      /*browser_restart=*/false,
                                      /*is_child=*/false);
-    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-        user, &testing_profile_);
   }
 
   // The order of these members is relevant for both construction and
   // destruction timing.
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile testing_profile_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
+  raw_ptr<TestingProfile> testing_profile_;
   raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_ =
       nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
@@ -80,7 +86,7 @@ TEST_F(CrosapiUtilTest, IsSigninProfileOrBelongsToAffiliatedUserSigninProfile) {
 }
 
 TEST_F(CrosapiUtilTest, IsSigninProfileOrBelongsToAffiliatedUserOffTheRecord) {
-  Profile* otr_profile = testing_profile_.GetOffTheRecordProfile(
+  Profile* otr_profile = testing_profile_->GetOffTheRecordProfile(
       Profile::OTRProfileID::CreateUniqueForTesting(),
       /*create_if_needed=*/true);
 
@@ -90,25 +96,24 @@ TEST_F(CrosapiUtilTest, IsSigninProfileOrBelongsToAffiliatedUserOffTheRecord) {
 
 TEST_F(CrosapiUtilTest,
        IsSigninProfileOrBelongsToAffiliatedUserAffiliatedUser) {
-  AccountId account_id = AccountId::FromUserEmail("user@test.com");
+  AccountId account_id =
+      AccountId::FromUserEmail(TestingProfile::kDefaultProfileUserName);
   const User* user = fake_user_manager_->AddUserWithAffiliation(
       account_id, /*is_affiliated=*/true);
   fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
                                    /*browser_restart=*/false,
                                    /*is_child=*/false);
-  ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-      user, &testing_profile_);
 
-  EXPECT_TRUE(browser_util::IsSigninProfileOrBelongsToAffiliatedUser(
-      &testing_profile_));
+  EXPECT_TRUE(
+      browser_util::IsSigninProfileOrBelongsToAffiliatedUser(testing_profile_));
 }
 
 TEST_F(CrosapiUtilTest,
        IsSigninProfileOrBelongsToAffiliatedUserNotAffiliatedUser) {
-  AddRegularUser("user@test.com");
+  AddRegularUser(TestingProfile::kDefaultProfileUserName);
 
-  EXPECT_FALSE(browser_util::IsSigninProfileOrBelongsToAffiliatedUser(
-      &testing_profile_));
+  EXPECT_FALSE(
+      browser_util::IsSigninProfileOrBelongsToAffiliatedUser(testing_profile_));
 }
 
 TEST_F(CrosapiUtilTest,
@@ -137,32 +142,32 @@ TEST_F(CrosapiUtilTest, EmptyDeviceSettings) {
 }
 
 TEST_F(CrosapiUtilTest, DeviceSettingsWithData) {
-  testing_profile_.ScopedCrosSettingsTestHelper()
+  testing_profile_->ScopedCrosSettingsTestHelper()
       ->ReplaceDeviceSettingsProviderWithStub();
-  testing_profile_.ScopedCrosSettingsTestHelper()->SetTrustedStatus(
+  testing_profile_->ScopedCrosSettingsTestHelper()->SetTrustedStatus(
       ash::CrosSettingsProvider::TRUSTED);
   base::RunLoop().RunUntilIdle();
-  testing_profile_.ScopedCrosSettingsTestHelper()
+  testing_profile_->ScopedCrosSettingsTestHelper()
       ->GetStubbedProvider()
       ->SetBoolean(ash::kAttestationForContentProtectionEnabled, true);
-  testing_profile_.ScopedCrosSettingsTestHelper()
+  testing_profile_->ScopedCrosSettingsTestHelper()
       ->GetStubbedProvider()
       ->SetBoolean(ash::kAccountsPrefEphemeralUsersEnabled, false);
-  testing_profile_.ScopedCrosSettingsTestHelper()
+  testing_profile_->ScopedCrosSettingsTestHelper()
       ->GetStubbedProvider()
       ->SetBoolean(ash::kDeviceRestrictedManagedGuestSessionEnabled, true);
-  testing_profile_.ScopedCrosSettingsTestHelper()
+  testing_profile_->ScopedCrosSettingsTestHelper()
       ->GetStubbedProvider()
       ->SetBoolean(ash::kReportDeviceNetworkStatus, true);
 
   const int64_t kReportUploadFrequencyMs = base::Hours(1).InMilliseconds();
-  testing_profile_.ScopedCrosSettingsTestHelper()
+  testing_profile_->ScopedCrosSettingsTestHelper()
       ->GetStubbedProvider()
       ->SetInteger(ash::kReportUploadFrequency, kReportUploadFrequencyMs);
 
   const int64_t kReportDeviceNetworkTelemetryCollectionRateMs =
       base::Minutes(15).InMilliseconds();
-  testing_profile_.ScopedCrosSettingsTestHelper()
+  testing_profile_->ScopedCrosSettingsTestHelper()
       ->GetStubbedProvider()
       ->SetInteger(ash::kReportDeviceNetworkTelemetryCollectionRateMs,
                    kReportDeviceNetworkTelemetryCollectionRateMs);
@@ -173,11 +178,11 @@ TEST_F(CrosapiUtilTest, DeviceSettingsWithData) {
   ids.Set(ash::kUsbDetachableAllowlistKeyPid, 3);
   allowlist.Append(std::move(ids));
 
-  testing_profile_.ScopedCrosSettingsTestHelper()->GetStubbedProvider()->Set(
+  testing_profile_->ScopedCrosSettingsTestHelper()->GetStubbedProvider()->Set(
       ash::kUsbDetachableAllowlist, base::Value(std::move(allowlist)));
 
   auto settings = browser_util::GetDeviceSettings();
-  testing_profile_.ScopedCrosSettingsTestHelper()
+  testing_profile_->ScopedCrosSettingsTestHelper()
       ->RestoreRealDeviceSettingsProvider();
 
   EXPECT_EQ(settings->attestation_for_content_protection_enabled,
