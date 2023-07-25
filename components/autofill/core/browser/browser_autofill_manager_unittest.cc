@@ -1497,10 +1497,40 @@ TEST_F(BrowserAutofillManagerTest,
 
 // Tests that when `kAutofillPredictionsForAutocompleteUnrecognized` is enabled,
 // ac=unrecognized fields only activate suggestions when triggered through
-// manual fallbacks (even though the field has a type in both cases).
+// manual fallbacks (even though the field has a type in both cases) on
+// desktop.
+// On mobile, suggestions are shown even for ac=unrecognized fields due to
+// `kAutofillSuggestionsForAutocompleteUnrecognizedFieldsOnMobile`.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 TEST_F(BrowserAutofillManagerTest,
-       GetProfileSuggestions_UnrecognizedAttribute_Predictions) {
-  base::test::ScopedFeatureList feature(
+       GetProfileSuggestions_UnrecognizedAttribute_Predictions_Mobile) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillPredictionsForAutocompleteUnrecognized,
+       features::kAutofillSuggestionsForAutocompleteUnrecognizedFieldsOnMobile},
+      /*disabled_features=*/{});
+
+  // Create a form where the first field has ac=unrecognized.
+  FormData form;
+  test::CreateTestAddressFormData(&form);
+  form.fields[0].parsed_autocomplete =
+      AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized};
+  FormsSeen({form});
+
+  // Expect that two suggestions are returned for all fields, independently of
+  // the autocomplete attribute. Two, because the fixture created three profiles
+  // during set up, one of which is empty and cannot be suggested
+  // (see `CreateTestAutofillProfiles()`).
+  for (const FormFieldData& field : form.fields) {
+    GetAutofillSuggestions(form, field);
+    external_delegate_->CheckSuggestionCount(field.global_id(), 2);
+  }
+}
+#else
+TEST_F(BrowserAutofillManagerTest,
+       GetProfileSuggestions_UnrecognizedAttribute_Predictions_Desktop) {
+  base::test::ScopedFeatureList features(
       features::kAutofillPredictionsForAutocompleteUnrecognized);
 
   // Create a form where the first field has ac=unrecognized.
@@ -1530,6 +1560,7 @@ TEST_F(BrowserAutofillManagerTest,
     external_delegate_->CheckSuggestionCount(form.fields[i].global_id(), 2);
   }
 }
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 // Test that when small forms are disabled (min required fields enforced) no
 // suggestions are returned when there are less than three fields and none of

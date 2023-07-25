@@ -663,6 +663,17 @@ BASE_FEATURE(kAutofillUseMobileLabelDisambiguation,
 const char kAutofillUseMobileLabelDisambiguationParameterName[] = "variant";
 const char kAutofillUseMobileLabelDisambiguationParameterShowAll[] = "show-all";
 const char kAutofillUseMobileLabelDisambiguationParameterShowOne[] = "show-one";
+
+// When enabled, the keyboard accessory is shown for autocomplete=unrecognized
+// fields. Selecting a keyboard accessory suggestion will fill the triggering
+// field (independently of the autocomplete attribute) and all
+// autocomplete != unrecognized fields in the triggering field's section.
+// Note that this only affects address fields, since credit cards already ignore
+// autocomplete=unrecognized.
+// TODO(crbug.com/1446318): Remove when launched.
+BASE_FEATURE(kAutofillSuggestionsForAutocompleteUnrecognizedFieldsOnMobile,
+             "AutofillSuggestionsForAutocompleteUnrecognizedFieldsOnMobile",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 namespace test {

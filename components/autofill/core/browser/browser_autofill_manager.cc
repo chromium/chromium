@@ -537,6 +537,23 @@ base::StringPiece RenderFormDataActionToString(
   }
 }
 
+// Returns true if autocomplete=unrecognized (address) fields should receive
+// suggestions. On desktop, suggestion can only be triggered for them through
+// manual fallbacks. On mobile, it depends on
+// `kAutofillSuggestionsForAutocompleteUnrecognizedFieldsOnMobile`.
+// Note that this only affects address fields, since credit card fields ignore
+// autocomplete=unrecognized.
+bool ShouldShowSuggestionsForAutocompleteUnrecognizedFields(
+    AutofillSuggestionTriggerSource trigger_source) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  return base::FeatureList::IsEnabled(
+      features::kAutofillSuggestionsForAutocompleteUnrecognizedFieldsOnMobile);
+#else
+  return trigger_source == AutofillSuggestionTriggerSource::
+                               kManualFallbackForAutocompleteUnrecognized;
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+}
+
 }  // namespace
 
 BrowserAutofillManager::FillingContext::FillingContext(
@@ -2282,21 +2299,22 @@ std::vector<SkipStatus> BrowserAutofillManager::GetSkipStatuses(
   for (size_t i = 0; i < form_structure.field_count(); ++i) {
     // Log events when the fields on the form are filled by autofill suggestion.
     const AutofillField* autofill_field = form_structure.field(i);
+    const bool is_triggering_field =
+        FormFieldData::DeepEqual(*autofill_field, trigger_field);
 
     if (autofill_field->section != filling_section) {
       skip_statuses[i] = SkipStatus::kNotInFilledSection;
       continue;
     }
 
-    if (autofill_field->only_fill_when_focused() &&
-        !FormFieldData::DeepEqual(*autofill_field, trigger_field)) {
+    if (autofill_field->only_fill_when_focused() && !is_triggering_field) {
       skip_statuses[i] = SkipStatus::kNotFocused;
       continue;
     }
 
     // Address fields with unrecognized autocomplete attribute are only filled
     // when triggered through manual fallbacks.
-    if (skip_unrecognized_autocomplete_fields &&
+    if (!is_triggering_field && skip_unrecognized_autocomplete_fields &&
         autofill_field->ShouldSuppressSuggestionsAndFillingByDefault()) {
       skip_statuses[i] = SkipStatus::kUnrecognizedAutocompleteAttribute;
       continue;
@@ -2322,16 +2340,14 @@ std::vector<SkipStatus> BrowserAutofillManager::GetSkipStatuses(
     // frequently has false negatives.
     if ((form.fields[i].properties_mask & kUserTyped) &&
         (!form.fields[i].value.empty() || !autofill_field->value.empty()) &&
-        !FormFieldData::DeepEqual(*autofill_field, trigger_field)) {
+        !is_triggering_field) {
       skip_statuses[i] = SkipStatus::kUserFilledFields;
       continue;
     }
 
     // Don't fill previously autofilled fields except the initiating field or
     // when it's a refill.
-    if (form.fields[i].is_autofilled &&
-        !FormFieldData::DeepEqual(*autofill_field, trigger_field) &&
-        !is_refill) {
+    if (form.fields[i].is_autofilled && !is_triggering_field && !is_refill) {
       skip_statuses[i] = SkipStatus::kAutofilledFieldsNotRefill;
       continue;
     }
@@ -3328,10 +3344,7 @@ void BrowserAutofillManager::GetAvailableSuggestions(
       // Don't send suggestions or track forms that should not be parsed.
       context->form_structure->ShouldBeParsed();
 
-  // Do not offer suggestions for address fields that have an unrecognized
-  // autocomplete attribute, unless triggered through manual fallbacks.
-  if (trigger_source != AutofillSuggestionTriggerSource::
-                            kManualFallbackForAutocompleteUnrecognized &&
+  if (!ShouldShowSuggestionsForAutocompleteUnrecognizedFields(trigger_source) &&
       context->focused_field &&
       context->focused_field->ShouldSuppressSuggestionsAndFillingByDefault()) {
     context->suppress_reason = SuppressReason::kAutocompleteUnrecognized;

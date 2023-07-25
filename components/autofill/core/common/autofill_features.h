@@ -243,6 +243,9 @@ COMPONENT_EXPORT(AUTOFILL)
 extern const char kAutofillUseMobileLabelDisambiguationParameterShowOne[];
 COMPONENT_EXPORT(AUTOFILL)
 extern const char kAutofillUseMobileLabelDisambiguationParameterShowAll[];
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(
+    kAutofillSuggestionsForAutocompleteUnrecognizedFieldsOnMobile);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_APPLE)
