@@ -1014,6 +1014,8 @@ BASE_FEATURE(kLightweightNoStatePrefetch,
 #endif
 );
 
+BASE_FEATURE(kLinkPreview, "LinkPreview", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Makes network loading tasks unfreezable so that they can be processed while
 // the page is frozen.
 BASE_FEATURE(kLoadingTasksUnfreezable,
