@@ -516,6 +516,12 @@ export class StatsRatesCalculator {
           jitterBufferDelay: new RateCalculator(
               'jitterBufferDelay', 'jitterBufferEmittedCount',
               CalculatorModifier.kMillisecondsFromSeconds),
+          jitterBufferTargetDelay: new RateCalculator(
+              'jitterBufferTargetDelay', 'jitterBufferEmittedCount',
+              CalculatorModifier.kMillisecondsFromSeconds),
+          jitterBufferMinimumDelay: new RateCalculator(
+              'jitterBufferMinimumDelay', 'jitterBufferEmittedCount',
+              CalculatorModifier.kMillisecondsFromSeconds),
           lastPacketReceivedTimestamp: new DateCalculator(
               'lastPacketReceivedTimestamp'),
           estimatedPlayoutTimestamp: new DateCalculator(
