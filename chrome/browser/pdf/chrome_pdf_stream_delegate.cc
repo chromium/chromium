@@ -17,6 +17,8 @@
 #include "chrome/grit/pdf_resources.h"
 #include "components/pdf/browser/pdf_stream_delegate.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/common/api/mime_handler.mojom.h"
@@ -82,8 +84,8 @@ ChromePdfStreamDelegate::ChromePdfStreamDelegate() = default;
 ChromePdfStreamDelegate::~ChromePdfStreamDelegate() = default;
 
 absl::optional<GURL> ChromePdfStreamDelegate::MapToOriginalUrl(
-    content::WebContents* contents,
-    const GURL& stream_url) {
+    content::NavigationHandle& navigation_handle) {
+  content::WebContents* contents = navigation_handle.GetWebContents();
   StreamInfoHelper* helper = StreamInfoHelper::FromWebContents(contents);
   if (helper) {
     // PDF viewer and Print Preview only do this once per WebContents.
@@ -93,6 +95,7 @@ absl::optional<GURL> ChromePdfStreamDelegate::MapToOriginalUrl(
   GURL original_url;
   StreamInfo info;
 
+  const GURL& stream_url = navigation_handle.GetURL();
   extensions::MimeHandlerViewGuest* guest =
       extensions::MimeHandlerViewGuest::FromWebContents(contents);
   if (guest) {

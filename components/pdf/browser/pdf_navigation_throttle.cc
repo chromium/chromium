@@ -53,12 +53,8 @@ const char* PdfNavigationThrottle::GetNameForLogging() {
 content::NavigationThrottle::ThrottleCheckResult
 PdfNavigationThrottle::WillStartRequest() {
   // Ignore unless navigating to the stream URL.
-  content::WebContents* contents = navigation_handle()->GetWebContents();
-  if (!contents)
-    return PROCEED;
-
-  const absl::optional<GURL> original_url = stream_delegate_->MapToOriginalUrl(
-      contents, navigation_handle()->GetURL());
+  const absl::optional<GURL> original_url =
+      stream_delegate_->MapToOriginalUrl(*navigation_handle());
   if (!original_url.has_value())
     return PROCEED;
 
@@ -92,6 +88,7 @@ PdfNavigationThrottle::WillStartRequest() {
   // SiteInstance at that point.
   //
   // TODO(crbug.com/1382761): This should be fixed in a more systematic way.
+  content::WebContents* contents = navigation_handle()->GetWebContents();
   DCHECK_EQ(params.source_site_instance,
             contents->GetPrimaryMainFrame()->GetSiteInstance());
   params.source_site_instance.reset();

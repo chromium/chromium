@@ -13,6 +13,7 @@
 #include "url/gurl.h"
 
 namespace content {
+class NavigationHandle;
 class WebContents;
 }  // namespace content
 
@@ -51,11 +52,11 @@ class PdfStreamDelegate {
   PdfStreamDelegate& operator=(const PdfStreamDelegate&) = delete;
   virtual ~PdfStreamDelegate();
 
-  // Maps the incoming stream URL to the original URL. This method should
-  // associate a `StreamInfo` with the given `WebContents`, for later retrieval
-  // by `GetStreamInfo()`.
-  virtual absl::optional<GURL> MapToOriginalUrl(content::WebContents* contents,
-                                                const GURL& stream_url);
+  // Maps the navigation to the original URL. This method should associate a
+  // `StreamInfo` with the `WebContents` in `navigation_handle`, for later
+  // retrieval by `GetStreamInfo()`.
+  virtual absl::optional<GURL> MapToOriginalUrl(
+      content::NavigationHandle& navigation_handle);
 
   // Gets the stream information associated with the given `WebContents`.
   // Returns null if there is no associated stream.
