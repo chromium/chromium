@@ -1,10 +1,13 @@
 import("//build/config/android/config.gni")
 import("//build/config/python.gni")
+import("//testing/test.gni")
 
 python_library("test_utils") {
   testonly = true
 
   data = [ "//chrome/test/variations/test_utils/" ]
+
+  data_deps = [ "//third_party/catapult/third_party/gsutil:gsutil" ]
 }
 
 python_library("fixtures") {
@@ -40,21 +43,34 @@ python_library("fixtures") {
   }
 }
 
-python_library("variations_desktop_smoke_tests") {
+python_library("variations_desktop_smoke_tests_lib") {
   testonly = true
 
   data = [
     "conftest.py",
     "smoke_test.py",
     "//chrome/test/data/variations/",
-    "//chrome/test/variations/run_variations_tests.py",
   ]
 
   data_deps = [
     ":fixtures",
     ":test_utils",
-    "//testing:run_isolated_script_test",
+  ]
+}
+
+script_test("variations_desktop_smoke_tests") {
+  script = "//testing/xvfb.py"
+  args = [ "@WrappedPath(" +
+           rebase_path("//chrome/test/variations/run_variations_tests.py",
+                       root_build_dir) + ")" ]
+
+  data_deps = [
+    ":variations_desktop_smoke_tests_lib",
     "//testing:test_scripts_shared",
-    "//third_party/catapult/third_party/gsutil:gsutil",
+  ]
+
+  data = [
+    "run_variations_tests.py",
+    "//.vpython3",
   ]
 }

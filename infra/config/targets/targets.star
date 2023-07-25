@@ -638,14 +638,9 @@ targets.generated_script(
     label = "//chrome/test:variations_smoke_tests",
 )
 
-targets.script(
+targets.generated_script(
     name = "variations_desktop_smoke_tests",
     label = "//chrome/test/variations:variations_desktop_smoke_tests",
-    script = "//testing/scripts/run_isolated_script_test.py",
-    args = [
-        "--xvfb",
-        "../../chrome/test/variations/run_variations_tests.py",
-    ],
 )
 
 targets.script(

@@ -27,7 +27,8 @@ if __name__ == "__main__":
   # ignore them for now so it will not stop the script.
   parser.add_argument('--isolated-script-test-repeat',
                       '--isolated-script-test-filter',
-                      '--isolated-script-test-launcher-retry-limit')
+                      '--isolated-script-test-launcher-retry-limit',
+                      '--isolated-script-test-perf-output')
 
   parser.add_argument('--isolated-script-test-output',
                       '--write-full-results-to',
