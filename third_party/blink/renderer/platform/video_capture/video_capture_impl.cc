@@ -532,29 +532,67 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
   usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU;
 #endif
 
-  bool create_multiplanar_image = false;
+  // The feature flags here are a little subtle:
+  // * IsMultiPlaneFormatForHardwareVideoEnabled() controls whether Multiplanar
+  //   SI is used (i.e., whether a single SharedImage is created via passing a
+  //   viz::MultiPlaneFormat rather than the legacy codepath of passing a
+  //   GMB).
+  // * kMultiPlaneVideoCaptureSharedImages controls whether planes are sampled
+  //   individually rather than using external sampling.
+  //
+  // These two flags are orthogonal:
+  // * If both flags are true, one SharedImage with format MultiPlaneFormat::
+  //   kNV12 will be created.
+  // * If using multiplane SI without per-plane sampling, one SharedImage with
+  //   format MultiPlaneFormat::kNV12 configured to use external sampling
+  //   will be created (this is supported only on Ozone-based platforms and
+  //   not expected to be requested on other platforms).
+  // * If using per-plane sampling without multiplane SI, one SharedImage will
+  //   be created for each plane via the legacy "pass GMB" entrypoint.
+  // * If both flags are false, one SharedImage will be created via the legacy
+  //   "pass GMB" entrypoint (this uses external sampling on the other side
+  //   based on the format of the GMB).
+  bool create_multiplanar_image =
+      media::IsMultiPlaneFormatForHardwareVideoEnabled();
+  bool use_per_plane_sampling =
+      base::FeatureList::IsEnabled(media::kMultiPlaneVideoCaptureSharedImages);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  // External sampling isn't supported on Windows/Mac with Multiplane SI (it's
+  // not supported with legacy SI either for that matter, but we restricted
+  // the CHECK here to Multiplane SI as in the case of legacy SI the flow is
+  // more nebulous and we wanted to restrict any impact here to the Multiplane
+  // SI flow).
+  // NOTE: This CHECK would ideally be done if !BUILDFLAG(IS_OZONE), but this
+  // codepath is entered in tests for Android, which does not have
+  // kMultiPlaneVideoCaptureSharedImages set. This codepath is not entered in
+  // production for Android (see
+  // https://chromium-review.googlesource.com/c/chromium/src/+/4640009/comment/29c99ef9_587e49dc/
+  // for a detailed discussion).
+  CHECK(!create_multiplanar_image || use_per_plane_sampling);
+#endif
 
-  if (base::FeatureList::IsEnabled(
-          media::kMultiPlaneVideoCaptureSharedImages) &&
-      media::IsMultiPlaneFormatForHardwareVideoEnabled()) {
-    create_multiplanar_image = true;
+  if (create_multiplanar_image || !use_per_plane_sampling) {
     planes.push_back(gfx::BufferPlane::DEFAULT);
-  } else if (base::FeatureList::IsEnabled(
-                 media::kMultiPlaneVideoCaptureSharedImages)) {
+  } else {
+    // Using per-plane sampling without multiplane SI.
     planes.push_back(gfx::BufferPlane::Y);
     planes.push_back(gfx::BufferPlane::UV);
-  } else {
-    planes.push_back(gfx::BufferPlane::DEFAULT);
   }
   CHECK(planes.size() == 1 || !create_multiplanar_image);
 
   for (size_t plane = 0; plane < planes.size(); ++plane) {
     if (should_recreate_shared_image ||
         buffer_context_->gmb_resources()->mailboxes[plane].IsZero()) {
+      auto multiplanar_si_format = viz::MultiPlaneFormat::kNV12;
+#if BUILDFLAG(IS_OZONE)
+      if (!use_per_plane_sampling) {
+        multiplanar_si_format.SetPrefersExternalSampler();
+      }
+#endif
       buffer_context_->gmb_resources()->mailboxes[plane] =
           create_multiplanar_image
               ? sii->CreateSharedImage(
-                    viz::MultiPlaneFormat::kNV12, gpu_memory_buffer_->GetSize(),
+                    multiplanar_si_format, gpu_memory_buffer_->GetSize(),
                     frame_info_->color_space, kTopLeft_GrSurfaceOrigin,
                     kPremul_SkAlphaType, usage, "VideoCaptureFrameBuffer",
                     gpu_memory_buffer_->CloneHandle())
@@ -610,7 +648,9 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
   // codepath used for legacy multiplanar formats.
   if (create_multiplanar_image) {
     frame_->set_shared_image_format_type(
-        media::SharedImageFormatType::kSharedImageFormat);
+        use_per_plane_sampling
+            ? media::SharedImageFormatType::kSharedImageFormat
+            : media::SharedImageFormatType::kSharedImageFormatExternalSampler);
   }
 
   frame_->metadata().allow_overlay = true;
