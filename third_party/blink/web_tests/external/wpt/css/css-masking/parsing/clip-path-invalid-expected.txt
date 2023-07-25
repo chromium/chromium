@@ -35,5 +35,8 @@ PASS e.style['clip-path'] = "path(\"m 20 0 h -100\", nonzero)" should not set th
 PASS e.style['clip-path'] = "xywh(0px)" should not set the property value
 PASS e.style['clip-path'] = "xywh(0px 1%)" should not set the property value
 PASS e.style['clip-path'] = "xywh(0px 1% 2em)" should not set the property value
+PASS e.style['clip-path'] = "rect(0px)" should not set the property value
+PASS e.style['clip-path'] = "rect(0px 1%)" should not set the property value
+PASS e.style['clip-path'] = "rect(0px 1% auto)" should not set the property value
 Harness: the test ran to completion.
 

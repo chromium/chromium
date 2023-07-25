@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 55 tests; 50 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 61 tests; 50 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Property offset-path value 'none'
 PASS Property offset-path value 'ray(0deg)'
 PASS Property offset-path value 'ray(0rad closest-side)'
@@ -48,6 +48,12 @@ FAIL Property offset-path value 'xywh(0px 1% 2px 3em round 0)' assert_equals: ex
 FAIL Property offset-path value 'xywh(0px 1% 2px 3em round 0 1px)' assert_equals: expected "inset(1% calc(100% - 2px) calc(99% - 48px) 0px round 0px 1px)" but got "rect(0px 1% 2px 48px round 0px 1px)"
 FAIL Property offset-path value 'xywh(0px 1% 2px 3% round 0px 1px 2em)' assert_equals: expected "inset(1% calc(100% - 2px) 96% 0px round 0px 1px 32px)" but got "rect(0px 1% 2px 3% round 0px 1px 32px)"
 FAIL Property offset-path value 'xywh(0px 1% 2px 3% round 0px 1px 2% 3px)' assert_equals: expected "inset(1% calc(100% - 2px) 96% 0px round 0px 1px 2% 3px)" but got "rect(0px 1% 2px 3% round 0px 1px 2% 3px)"
+FAIL Property offset-path value 'rect(auto auto auto auto)' assert_equals: expected "inset(0%)" but got "rect(auto auto auto auto)"
+FAIL Property offset-path value 'rect(0 1% 2px 3em)' assert_equals: expected "inset(0px 99% calc(100% - 2px) 48px)" but got "rect(0px 1% 2px 48px)"
+FAIL Property offset-path value 'rect(0px 1% auto 3em round 0)' assert_equals: expected "inset(0px 99% 0% 48px)" but got "rect(0px 1% auto 48px)"
+FAIL Property offset-path value 'rect(0px 1% auto 3% round 0 1px)' assert_equals: expected "inset(0px 99% 0% 3% round 0px 1px)" but got "rect(0px 1% auto 3% round 0px 1px)"
+FAIL Property offset-path value 'rect(0px 1% auto 3% round 0px 1px 2em)' assert_equals: expected "inset(0px 99% 0% 3% round 0px 1px 32px)" but got "rect(0px 1% auto 3% round 0px 1px 32px)"
+FAIL Property offset-path value 'rect(0px 1% auto 3% round 0px 1px 2% 3px)' assert_equals: expected "inset(0px 99% 0% 3% round 0px 1px 2% 3px)" but got "rect(0px 1% auto 3% round 0px 1px 2% 3px)"
 PASS Property offset-path value 'content-box'
 PASS Property offset-path value 'border-box'
 PASS Property offset-path value 'view-box'
