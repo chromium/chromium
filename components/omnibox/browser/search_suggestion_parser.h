@@ -179,6 +179,7 @@ class SearchSuggestionParser {
     void SetAnswer(const SuggestionAnswer& answer);
     const absl::optional<SuggestionAnswer>& answer() const { return answer_; }
 
+    void SetEntityInfo(const omnibox::EntityInfo&);
     const omnibox::EntityInfo& entity_info() const { return entity_info_; }
 
     bool should_prefetch() const { return should_prefetch_; }

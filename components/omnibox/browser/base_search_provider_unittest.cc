@@ -220,6 +220,93 @@ TEST_P(BaseSearchProviderTest, PreserveAnswersWhenDeduplicating) {
   EXPECT_EQ(850, duplicate.relevance);
 }
 
+TEST_P(BaseSearchProviderTest, PreserveImageWhenDeduplicating) {
+  // Ensure categorical suggestions are enabled.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(omnibox::kCategoricalSuggestions);
+
+  TemplateURLData data;
+  data.SetURL("http://foo.com/url?bar={searchTerms}");
+  auto template_url = std::make_unique<TemplateURL>(data);
+
+  TestBaseSearchProvider::MatchMap map;
+  std::u16string query = u"wrist wa";
+  omnibox::EntityInfo entity_info;
+  entity_info.set_image_url("https://picsum.photos/200");
+
+  SearchSuggestionParser::SuggestResult more_relevant(
+      query, AutocompleteMatchType::SEARCH_HISTORY, omnibox::TYPE_NATIVE_CHROME,
+      /*subtypes=*/{}, /*from_keyword=*/false,
+      /*relevance=*/1300, /*relevance_from_server=*/true,
+      /*input_text=*/query);
+  provider_->AddMatchToMap(
+      more_relevant, std::string(), AutocompleteInput(), template_url.get(),
+      client_->GetTemplateURLService()->search_terms_data(),
+      TemplateURLRef::NO_SUGGESTION_CHOSEN, false, false, &map);
+
+  SearchSuggestionParser::SuggestResult less_relevant(
+      query, AutocompleteMatchType::SEARCH_SUGGEST_ENTITY,
+      omnibox::TYPE_CATEGORICAL_QUERY,
+      /*subtypes=*/{}, /*from_keyword=*/false,
+      /*relevance=*/850, /*relevance_from_server=*/true,
+      /*input_text=*/query);
+  less_relevant.SetEntityInfo(entity_info);
+  provider_->AddMatchToMap(
+      less_relevant, std::string(), AutocompleteInput(), template_url.get(),
+      client_->GetTemplateURLService()->search_terms_data(),
+      TemplateURLRef::NO_SUGGESTION_CHOSEN, false, false, &map);
+
+  ASSERT_EQ(1U, map.size());
+
+  AutocompleteMatch match = map.begin()->second;
+  EXPECT_EQ(entity_info.image_url(), match.image_url.spec());
+  EXPECT_EQ(AutocompleteMatchType::SEARCH_HISTORY, match.type);
+  EXPECT_EQ(omnibox::TYPE_NATIVE_CHROME, match.suggest_type);
+  EXPECT_EQ(1300, match.relevance);
+
+  ASSERT_EQ(1U, match.duplicate_matches.size());
+  AutocompleteMatch duplicate = match.duplicate_matches[0];
+  EXPECT_EQ(entity_info.image_url(), duplicate.image_url.spec());
+  EXPECT_EQ(AutocompleteMatchType::SEARCH_SUGGEST_ENTITY, duplicate.type);
+  EXPECT_EQ(omnibox::TYPE_CATEGORICAL_QUERY, duplicate.suggest_type);
+  EXPECT_EQ(850, duplicate.relevance);
+
+  // Ensure images are not copied over existing images.
+  map.clear();
+  omnibox::EntityInfo entity_info2;
+  entity_info2.set_image_url("https://picsum.photos/300");
+  more_relevant = SearchSuggestionParser::SuggestResult(
+      query, AutocompleteMatchType::SEARCH_SUGGEST_ENTITY,
+      omnibox::TYPE_CATEGORICAL_QUERY,
+      /*subtypes=*/{}, /*from_keyword=*/false,
+      /*relevance=*/1300, /*relevance_from_server=*/true,
+      /*input_text=*/query);
+  more_relevant.SetEntityInfo(entity_info2);
+  provider_->AddMatchToMap(
+      more_relevant, std::string(), AutocompleteInput(), template_url.get(),
+      client_->GetTemplateURLService()->search_terms_data(),
+      TemplateURLRef::NO_SUGGESTION_CHOSEN, false, false, &map);
+  provider_->AddMatchToMap(
+      less_relevant, std::string(), AutocompleteInput(), template_url.get(),
+      client_->GetTemplateURLService()->search_terms_data(),
+      TemplateURLRef::NO_SUGGESTION_CHOSEN, false, false, &map);
+
+  ASSERT_EQ(1U, map.size());
+
+  match = map.begin()->second;
+  EXPECT_EQ(entity_info2.image_url(), match.image_url.spec());
+  EXPECT_EQ(AutocompleteMatchType::SEARCH_SUGGEST_ENTITY, match.type);
+  EXPECT_EQ(omnibox::TYPE_CATEGORICAL_QUERY, match.suggest_type);
+  EXPECT_EQ(1300, match.relevance);
+
+  ASSERT_EQ(1U, match.duplicate_matches.size());
+  duplicate = match.duplicate_matches[0];
+  EXPECT_EQ(entity_info.image_url(), duplicate.image_url.spec());
+  EXPECT_EQ(AutocompleteMatchType::SEARCH_SUGGEST_ENTITY, duplicate.type);
+  EXPECT_EQ(omnibox::TYPE_CATEGORICAL_QUERY, duplicate.suggest_type);
+  EXPECT_EQ(850, duplicate.relevance);
+}
+
 TEST_P(BaseSearchProviderTest, PreserveAdditionalQueryParamsWhenDeduplicating) {
   TemplateURLData data;
   data.SetURL("http://example.com/?q={searchTerms}");

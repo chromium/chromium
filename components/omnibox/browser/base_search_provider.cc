@@ -574,14 +574,41 @@ void BaseSearchProvider::AddMatchToMap(
       existing_match.duplicate_matches.push_back(std::move(match));
     }
 
-    // Copy over `answer` and `stripped_destination_url` from the lower-ranking
-    // duplicate, if necessary. Note that this requires the lower-ranking
-    // duplicate being added last. See the use of push_back above.
+    // Copy over necessary fields from the lower-ranking duplicate. Note that
+    // this requires the lower-ranking duplicate being added last. See the use
+    // of push_back above:
+
+    // This is to avoid losing the Answers in Suggest information.
     const auto& less_relevant_duplicate_match =
         existing_match.duplicate_matches.back();
     if (less_relevant_duplicate_match.answer && !existing_match.answer) {
       existing_match.answer = less_relevant_duplicate_match.answer;
     }
+    // This is to avoid having shopping categorical queries lose their images to
+    // higher-relevance local history and verbatim matches. This works for the
+    // shopping categorical queries because they only provide images at the
+    // moment. That assumption may not hold in the future.
+    // Ideally the entire `entity_info`, when available on a suggestion, should
+    // be copied over. However `entity_info` is broken down to its constituents
+    // in the constructor of SearchSuggestionParser::SuggestResult and used to
+    // set individual fields on the AutocompleteMatch. This is in contrast to
+    // Answers in Suggest which is kept on the match in its entirety. This is
+    // partly because the entity name is used to set and classify the match
+    // contents. Ideally `entity_info` should also be kept on the match in its
+    // entirety so it can be carried over when deduplicating the matches here or
+    // later in the Autocomplete process.
+    // TODO(crbug.com/1467002): rework how `entity_info` is used in the match.
+    if (base::FeatureList::IsEnabled(omnibox::kCategoricalSuggestions)) {
+      if (!less_relevant_duplicate_match.image_url.is_empty() &&
+          existing_match.image_url.is_empty()) {
+        existing_match.image_url = less_relevant_duplicate_match.image_url;
+      }
+    }
+    // This is to avoid having `stripped_destination_url` being later set by
+    // `AutocompleteResult::ComputeStrippedDestinationURL()` which strips away
+    // the additional query params from `destination_url` leaving only the
+    // search terms. That would result in these matches to be erroneously
+    // deduped despite having unique additional query params.
     if (!less_relevant_duplicate_match.stripped_destination_url.is_empty() &&
         existing_match.stripped_destination_url.is_empty()) {
       existing_match.stripped_destination_url =
