@@ -240,6 +240,9 @@ class TextInputClientForTesting : public DummyTextInputClient {
   bool CanComposeInline() const override { return can_compose_inline; }
 
   void SetCompositionText(const CompositionText& composition) override {
+    // TODO(crbug.com/1465683) According to the documentation for
+    // SetCompositionText, if there is no composition, any existing text
+    // selection should be deleted.
     composition_text = composition.text;
     TestResult::GetInstance()->RecordAction(u"compositionstart");
     TestResult::GetInstance()->RecordAction(u"compositionupdate:" +
@@ -1295,6 +1298,47 @@ TEST_F(InputMethodAuraLinuxTest, CanComposeInline) {
 
   input_method_auralinux_->SetFocusedTextInputClient(client2.get());
   EXPECT_EQ(context_->can_compose_inline(), true);
+}
+
+TEST_F(InputMethodAuraLinuxTest, UpdateCompositionIfTextSelected) {
+  auto client =
+      std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
+  InstallFirstClient(client.get());
+
+  // SetCompositionText("") should not be called when nothing is selected.
+  client->surrounding_text = u"abcdef";
+  client->text_range = gfx::Range(0, 6);
+  client->selection_range = gfx::Range(3, 3);
+  input_method_auralinux_->OnCaretBoundsChanged(client.get());
+  test_result_->ExpectAction("surroundingtext:abcdef");
+  test_result_->ExpectAction("textrangestart:0");
+  test_result_->ExpectAction("textrangeend:6");
+  test_result_->ExpectAction("selectionrangestart:3");
+  test_result_->ExpectAction("selectionrangeend:3");
+  test_result_->Verify();
+  input_method_auralinux_->OnPreeditChanged(CompositionText());
+  test_result_->Verify();
+
+  // SetCompositionText("") should be called when there is a text selection.
+  client->selection_range = gfx::Range(2, 5);
+  input_method_auralinux_->OnCaretBoundsChanged(client.get());
+  test_result_->ExpectAction("surroundingtext:abcdef");
+  test_result_->ExpectAction("textrangestart:0");
+  test_result_->ExpectAction("textrangeend:6");
+  test_result_->ExpectAction("selectionrangestart:2");
+  test_result_->ExpectAction("selectionrangeend:5");
+  test_result_->Verify();
+  input_method_auralinux_->OnPreeditChanged(CompositionText());
+  test_result_->ExpectAction("compositionstart");
+  test_result_->ExpectAction("compositionupdate:");
+  test_result_->Verify();
+
+  // TODO(crbug.com/1465683) This test verifies that SetCompositionText is
+  // called when there is a selection, but it doesn't verify that it deletes
+  // the existing text selection. This is because the mock TextInputClient
+  // doesn't do anything with the selection.
+
+  RemoveLastClient(client.get());
 }
 
 }  // namespace

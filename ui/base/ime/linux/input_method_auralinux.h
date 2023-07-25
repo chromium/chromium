@@ -73,7 +73,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) InputMethodAuraLinux
     kTargetDestroyed,  // Target was destroyed during the commit.
   };
   CommitResult MaybeCommitResult(bool filtered, const KeyEvent& event);
-  bool MaybeUpdateComposition(bool text_committed);
+  bool UpdateCompositionIfTextSelected();
+  bool UpdateCompositionIfChanged(bool text_committed);
 
   // Shared implementation of OnPreeditChanged and OnPreeditEnd.
   // |force_update_client| is designed to dispatch key event/update

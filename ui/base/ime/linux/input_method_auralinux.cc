@@ -6,6 +6,7 @@
 
 #include "base/auto_reset.h"
 #include "base/environment.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -14,6 +15,7 @@
 #include "ui/base/ime/linux/linux_input_method_context_factory.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_flags.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
 
 namespace {
@@ -202,7 +204,7 @@ ui::EventDispatchDetails InputMethodAuraLinux::DispatchKeyEvent(
   // Should stop propagation of the event when composition is updated,
   // because the event is considered to be used for the composition.
   should_stop_propagation |=
-      MaybeUpdateComposition(commit_result == CommitResult::kSuccess);
+      UpdateCompositionIfChanged(commit_result == CommitResult::kSuccess);
 
   // If the IME has not handled the key event, passes the keyevent back to the
   // previous processing flow.
@@ -319,7 +321,26 @@ InputMethodAuraLinux::CommitResult InputMethodAuraLinux::MaybeCommitResult(
   return CommitResult::kSuccess;
 }
 
-bool InputMethodAuraLinux::MaybeUpdateComposition(bool text_committed) {
+bool InputMethodAuraLinux::UpdateCompositionIfTextSelected() {
+  TextInputClient* client = GetTextInputClient();
+  if (!client || IsTextInputTypeNone()) {
+    return false;
+  }
+  // In the special case where (1) there is no composition and (2) there is a
+  // non-empty selection, calling SetCompositionText should delete the
+  // selection, even when the call would otherwise be considered redundant.
+  // For example, calling SetCompositionText('') when there is no composition
+  // seems like it would have no effect, but it does if there is a non-empty
+  // selection, so we make sure it is called in such cases. See b/223500609.
+  if (!client->HasCompositionText() && composition_.text.empty() &&
+      selection_range_.IsValid() && !selection_range_.is_empty()) {
+    client->SetCompositionText(composition_);
+    return true;
+  }
+  return false;
+}
+
+bool InputMethodAuraLinux::UpdateCompositionIfChanged(bool text_committed) {
   TextInputClient* client = GetTextInputClient();
   bool update_composition =
       client && composition_changed_ && !IsTextInputTypeNone();
@@ -613,7 +634,16 @@ void InputMethodAuraLinux::OnPreeditUpdate(
       return;
     }
   }
-  MaybeUpdateComposition(last_commit_result_ == CommitResult::kSuccess);
+  {
+    bool set_composition_text_called = false;
+    if (base::FeatureList::IsEnabled(
+            features::kRedundantImeCompositionClearing)) {
+      set_composition_text_called = UpdateCompositionIfTextSelected();
+    }
+    if (!set_composition_text_called) {
+      UpdateCompositionIfChanged(last_commit_result_ == CommitResult::kSuccess);
+    }
+  }
   last_commit_result_.reset();
 }
 
