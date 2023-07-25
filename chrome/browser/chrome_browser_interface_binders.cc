@@ -192,7 +192,7 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_ui.h"
 #include "chrome/browser/ui/webui/side_panel/history_clusters/history_clusters_side_panel_ui.h"
-#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_ui.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
 #include "chrome/browser/ui/webui/side_panel/user_notes/user_notes.mojom.h"
@@ -1209,7 +1209,8 @@ void PopulateChromeWebUIFrameBinders(
 
   if (features::IsReadAnythingEnabled()) {
     RegisterWebUIControllerInterfaceBinder<
-        read_anything::mojom::UntrustedPageHandlerFactory, ReadAnythingUI>(map);
+        read_anything::mojom::UntrustedPageHandlerFactory,
+        ReadAnythingUntrustedUI>(map);
   }
 
   RegisterWebUIControllerInterfaceBinder<tab_search::mojom::PageHandlerFactory,

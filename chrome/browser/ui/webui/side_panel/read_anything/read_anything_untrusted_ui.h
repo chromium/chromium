@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_UI_H_
-#define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_UI_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_UNTRUSTED_UI_H_
+#define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_UNTRUSTED_UI_H_
 
 #include <memory>
 
@@ -29,19 +29,19 @@ class ReadAnythingUIUntrustedConfig : public content::WebUIConfig {
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-// ReadAnythingUI
+// ReadAnythingUntrustedUI
 //
 //  A WebUI that holds distilled page contents for the Read Anything feature.
 //  This class has the same lifetime as the Side Panel view.
 //
-class ReadAnythingUI
+class ReadAnythingUntrustedUI
     : public ui::UntrustedBubbleWebUIController,
       public read_anything::mojom::UntrustedPageHandlerFactory {
  public:
-  explicit ReadAnythingUI(content::WebUI* web_ui);
-  ReadAnythingUI(const ReadAnythingUI&) = delete;
-  ReadAnythingUI& operator=(const ReadAnythingUI&) = delete;
-  ~ReadAnythingUI() override;
+  explicit ReadAnythingUntrustedUI(content::WebUI* web_ui);
+  ReadAnythingUntrustedUI(const ReadAnythingUntrustedUI&) = delete;
+  ReadAnythingUntrustedUI& operator=(const ReadAnythingUntrustedUI&) = delete;
+  ~ReadAnythingUntrustedUI() override;
 
   // Instantiates the implementor of the mojom::UntrustedPageHandlerFactory mojo
   // interface passing the pending receiver that will be internally bound.
@@ -64,4 +64,4 @@ class ReadAnythingUI
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_UI_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_UNTRUSTED_UI_H_

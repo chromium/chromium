@@ -29,8 +29,8 @@
 //
 //  A handler of the Read Anything app
 //  (chrome/browser/resources/side_panel/read_anything/app.ts).
-//  This class is created and owned by ReadAnythingUI and has the same lifetime
-//  as the Side Panel view.
+//  This class is created and owned by ReadAnythingUntrustedUI and has the same
+//  lifetime as the Side Panel view.
 //
 class ReadAnythingUntrustedPageHandler
     : public ui::AXActionHandlerObserver,

@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/webui/feed/feed_ui_config.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion_side_panel_untrusted_ui.h"
-#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_ui.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
 #include "components/lens/buildflags.h"
 #include "content/public/browser/webui_config_map.h"
 #include "ui/accessibility/accessibility_features.h"

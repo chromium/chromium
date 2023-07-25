@@ -21,7 +21,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
-#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_ui.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -178,17 +178,18 @@ void ReadAnythingCoordinator::OnEntryHidden(SidePanelEntry* entry) {
 
 std::unique_ptr<views::View> ReadAnythingCoordinator::CreateContainerView() {
   Browser* browser = &GetBrowser();
-  auto web_view = std::make_unique<SidePanelWebUIViewT<ReadAnythingUI>>(
-      /* on_show_cb= */ base::RepeatingClosure(),
-      /* close_cb= */ base::RepeatingClosure(),
-      /* contents_wrapper= */
-      std::make_unique<BubbleContentsWrapperT<ReadAnythingUI>>(
-          /* webui_url= */ GURL(
-              chrome::kChromeUIUntrustedReadAnythingSidePanelURL),
-          /* browser_context= */ browser->profile(),
-          /* task_manager_string_id= */ IDS_READING_MODE_TITLE,
-          /* webui_resizes_host= */ false,
-          /* esc_closes_ui= */ false));
+  auto web_view =
+      std::make_unique<SidePanelWebUIViewT<ReadAnythingUntrustedUI>>(
+          /* on_show_cb= */ base::RepeatingClosure(),
+          /* close_cb= */ base::RepeatingClosure(),
+          /* contents_wrapper= */
+          std::make_unique<BubbleContentsWrapperT<ReadAnythingUntrustedUI>>(
+              /* webui_url= */ GURL(
+                  chrome::kChromeUIUntrustedReadAnythingSidePanelURL),
+              /* browser_context= */ browser->profile(),
+              /* task_manager_string_id= */ IDS_READING_MODE_TITLE,
+              /* webui_resizes_host= */ false,
+              /* esc_closes_ui= */ false));
 
   if (features::IsReadAnythingWebUIToolbarEnabled()) {
     return std::move(web_view);
