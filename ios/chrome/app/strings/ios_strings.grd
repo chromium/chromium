@@ -1240,30 +1240,29 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_GOOGLE_SYNC_SETTINGS_TITLE" desc="Title for the view in the Settings for enabling/disabling Sync. [Length: 26em] [iOS only]">
         Sync
       </message>
-      <!-- TODO(crbug.com/1449220): Introduce final strings. -->
-      <message translateable="false" name="IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_TITLE" desc="Title for the view in the Settings for account features management UI. [Length: 26em] [iOS only]">
-        **Account**
+      <message name="IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_TITLE" desc="Title for the view in the Settings for account features management UI. [iOS only]">
+        Account
       </message>
-      <message translateable="false" name="IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_TYPES_LIST_HEADER" desc="Title for the types list in the account features management UI. [Length: 26em] [iOS only]">
-        **In Your Google Account**
+      <message name="IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_TYPES_LIST_HEADER" desc="Title for the types list in the account features management UI. [CHAR_LIMIT=32] [iOS only]">
+        In Your Google Account
       </message>
-      <message translateable="false" name="IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_TYPES_LIST_DESCRIPTION" desc="Description of what happens when switching a type in the types list in the account features management UI. [Length: 26em] [iOS only]">
-        **When on, data is saved in your Google Account. When off, data is saved only to this device.**
+      <message name="IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_TYPES_LIST_DESCRIPTION" desc="Description of what happens when switching a type in the types list in the account features management UI. [CHAR_LIMIT=150] [iOS only]">
+        When on, use and save data in your Google Account. When off, data is saved only to this device.
       </message>
-      <message translateable="false" name="IDS_IOS_GOOGLE_ACCOUNTS_MANAGEMENT_FROM_ACCOUNT_SETTINGS_TITLE" desc="Title for the management UI of the accounts on the device.[iOS only]">
-        **Accounts on This Device**
+      <message name="IDS_IOS_GOOGLE_ACCOUNTS_MANAGEMENT_FROM_ACCOUNT_SETTINGS_TITLE" desc="Title for the management UI of the accounts on the device.[iOS only]">
+        Accounts on This Device
       </message>
-      <message translateable="false" name="IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_GOOGLE_ACCOUNT_ITEM" desc="Title shown on the manage your Google Account button item. [iOS only]">
-        **Manage Your Google Account**
+      <message name="IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_GOOGLE_ACCOUNT_ITEM" desc="Title shown on the manage your Google Account button item. [iOS only]">
+        Manage Your Google Account
       </message>
-      <message translateable="false" name="IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_ACCOUNTS_ITEM" desc="Title shown on the manage accounts on this device button item. [iOS only]">
-        **Manage Accounts on This Device**
+      <message name="IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_ACCOUNTS_ITEM" desc="Title shown on the manage accounts on this device button item. [iOS only]">
+        Manage Accounts on This Device...
       </message>
-      <message translateable="false" name="IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM" desc="Title shown on the sign out button item. [iOS only]">
-        **Sign Out**
+      <message name="IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM" desc="Title shown on the sign out button item. [iOS only]">
+        Sign Out
       </message>
-      <message translateable="false" name="IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE" desc="Snackbar message shown after signing out from account settings. [iOS only]">
-        **Signed out. Sign back in to see the bookmarks, passwords, and more in your account.**
+      <message name="IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE" desc="Snackbar message shown after signing out from account settings. [iOS only]">
+        Signed out. Sign back in to see the bookmarks, passwords, and more in your account.
       </message>
       <message name="IDS_IOS_SYNC_SETTINGS_TITLE" desc="Title for the navigation item in Advanced Settings. [Length: 26em] [iOS only]">
         Sync
@@ -2982,9 +2981,8 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_ENTERPRISE_MANAGED_SYNC" desc="Text displayed to inform the user that syncable types are limited (i.e. managed). [iOS only]">
         Your organization limits what you can sync.
       </message>
-      <!-- TODO(crbug.com/1449220): Introduce final strings. -->
-      <message translateable="false" name="IDS_IOS_ENTERPRISE_MANAGED_SAVE_IN_ACCOUNT" desc="Text displayed to inform the user that types that can be stored on their account are limited (i.e. managed). [iOS only]">
-        **Your organization limits what you can save in your Google Account.**
+      <message name="IDS_IOS_ENTERPRISE_MANAGED_SAVE_IN_ACCOUNT" desc="Text displayed to inform the user that types that can be stored on their account are limited (i.e. managed). [iOS only]">
+        Your organization limits what you can save in your Google Account.
       </message>
       <message name="IDS_IOS_ENTERPRISE_SIGNED_OUT" desc="Text displayed in an alert when the user is signed out due to browser sign-in becoming disabled by policy. [iOS only]">
         You're Signed Out
