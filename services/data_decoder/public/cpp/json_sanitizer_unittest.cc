@@ -64,7 +64,7 @@ void CheckError(const std::string& json) {
 
 class DataDecoderJsonSanitizerTest : public ::testing::Test {
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   test::InProcessDataDecoder in_process_data_decoder_;
 };
 

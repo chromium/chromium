@@ -169,7 +169,7 @@ class DeviceTrustServiceTest
     EXPECT_FALSE(dt_response.attestation_result);
   }
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<DeviceTrustConnectorService> connector_;

@@ -262,7 +262,7 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
 
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester_;
