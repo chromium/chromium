@@ -155,6 +155,9 @@ MATCHER_P2(ShownStep, element_specifier, context_mode, "") {
 // A mocked view to expose received events.
 class MockView : public views::View {
  public:
+  MockView() { SetFocusBehavior(views::View::FocusBehavior::ALWAYS); }
+
+  // views::View:
   MOCK_METHOD(void, OnEvent, (ui::Event*), (override));
 };
 

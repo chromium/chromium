@@ -33,6 +33,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
@@ -649,7 +650,13 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
   SizeToContents();
   UpdateRoundedCorners();
 
-  widget->ShowInactive();
+  if (widget->IsModal()) {
+    // If the help bubble widget is a system modal widget, then it should be the
+    // only interactive widget on the screen. Therefore, activate `widget`.
+    widget->Show();
+  } else {
+    widget->ShowInactive();
+  }
 
   auto* const anchor_bubble =
       anchor.view->GetWidget()->widget_delegate()->AsBubbleDialogDelegate();
