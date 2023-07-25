@@ -6,3 +6,6 @@
 # ash-chrome < 116 checks the policy AttestationEnabledForUser when building a
 # response for a Verified Access challenge which leads to a different error.
 -KeystoreServiceLacrosBrowserTest.WrongFormattingUser
+
+# The test verifies code which is implemented in ash-chrome 117
+-LoginScreenStorageLacrosBrowserTest.StoreRetrieve

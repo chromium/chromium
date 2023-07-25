@@ -313,27 +313,41 @@ void FakeSessionManagerClient::LoginScreenStorageStore(
     const login_manager::LoginScreenStorageMetadata& metadata,
     const std::string& data,
     LoginScreenStorageStoreCallback callback) {
+  // `metadata` is ignored. To implement it (`clear_on_session_exit` flag) we'd
+  // need to store data into the file. Currently all the data is cleared on
+  // session exit.
+  login_screen_storage_[key] = data;
   PostReply(FROM_HERE, std::move(callback), absl::nullopt /* error */);
 }
 
 void FakeSessionManagerClient::LoginScreenStorageRetrieve(
     const std::string& key,
     LoginScreenStorageRetrieveCallback callback) {
+  // Default value which is checked in tests.
+  std::string data = "Test";
+  if (base::Contains(login_screen_storage_, key)) {
+    data = login_screen_storage_[key];
+  }
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), "Test" /* data */,
-                                absl::nullopt /* error */));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), data, absl::nullopt /* error */));
 }
 
 void FakeSessionManagerClient::LoginScreenStorageListKeys(
     LoginScreenStorageListKeysCallback callback) {
+  std::vector<std::string> keys;
+  for (const auto& [key, value] : login_screen_storage_) {
+    keys.push_back(key);
+  }
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback), std::vector<std::string>() /* keys */,
-                     absl::nullopt /* error */));
+      base::BindOnce(std::move(callback), keys, absl::nullopt /* error */));
 }
 
 void FakeSessionManagerClient::LoginScreenStorageDelete(
-    const std::string& key) {}
+    const std::string& key) {
+  login_screen_storage_.erase(key);
+}
 
 void FakeSessionManagerClient::StartSession(
     const cryptohome::AccountIdentifier& cryptohome_id) {
