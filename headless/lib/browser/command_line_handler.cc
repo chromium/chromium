@@ -41,7 +41,6 @@ void HandleDeterministicModeSwitch(base::CommandLine& command_line) {
 
   // Renderer flags
   command_line.AppendSwitch(cc::switches::kDisableThreadedAnimation);
-  command_line.AppendSwitch(blink::switches::kDisableThreadedScrolling);
   command_line.AppendSwitch(cc::switches::kDisableCheckerImaging);
 }
 

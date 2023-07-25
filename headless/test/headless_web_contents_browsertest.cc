@@ -368,7 +368,6 @@ class HeadlessWebContentsBeginFrameControlTest : public HeadlessBrowserTest {
     command_line->AppendSwitch(::switches::kDisableNewContentRenderingTimeout);
     command_line->AppendSwitch(cc::switches::kDisableCheckerImaging);
     command_line->AppendSwitch(cc::switches::kDisableThreadedAnimation);
-    command_line->AppendSwitch(blink::switches::kDisableThreadedScrolling);
   }
 
   void RunTest() {
