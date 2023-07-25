@@ -88,6 +88,8 @@ class ArcAccessibilityTreeTracker : public aura::EnvObserver {
 
   void OnNotificationSurfaceRemoved(ash::ArcNotificationSurface* surface);
 
+  void OnNotificationWindowRemoved(aura::Window* window);
+
   void OnNotificationStateChanged(
       const std::string& notification_key,
       const ax::android::mojom::AccessibilityNotificationStateType& state);
@@ -136,7 +138,7 @@ class ArcAccessibilityTreeTracker : public aura::EnvObserver {
   class ChildWindowsObserver;
   class ArcInputMethodManagerServiceObserver;
   class MojoConnectionObserver;
-  class ArcNotificationSurfaceManagerObserver;
+  class NotificationObserver;
   class UmaRecorder;
 
   ax::android::AXTreeSourceAndroid* GetFromKey(const TreeKey&);
@@ -178,8 +180,7 @@ class ArcAccessibilityTreeTracker : public aura::EnvObserver {
   std::unique_ptr<ArcInputMethodManagerServiceObserver>
       input_manager_service_observer_;
   std::unique_ptr<MojoConnectionObserver> connection_observer_;
-  std::unique_ptr<ArcNotificationSurfaceManagerObserver>
-      notification_surface_observer_;
+  std::unique_ptr<NotificationObserver> notification_observer_;
 
   std::unique_ptr<UmaRecorder> uma_recorder_;
 
