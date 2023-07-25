@@ -137,6 +137,9 @@ export class BookmarksListElement extends PolymerElement {
         callbackRouter.priceTrackedForBookmark.addListener(
             (product: BookmarkProductInfo) =>
                 this.onBookmarkPriceTracked(product)),
+        callbackRouter.priceUntrackedForBookmark.addListener(
+            (product: BookmarkProductInfo) =>
+                this.onBookmarkPriceUntracked(product)),
     );
   }
 
@@ -440,6 +443,11 @@ export class BookmarksListElement extends PolymerElement {
     this.push('productInfos_', product);
     chrome.metricsPrivate.recordUserAction(
         'Commerce.PriceTracking.SidePanel.TrackedProductsShown');
+  }
+
+  private onBookmarkPriceUntracked(product: BookmarkProductInfo) {
+    this.productInfos_ = this.productInfos_.filter(
+        item => item.bookmarkId !== product.bookmarkId);
   }
 }
 

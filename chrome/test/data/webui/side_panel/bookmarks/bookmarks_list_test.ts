@@ -296,6 +296,14 @@ suite('SidePanelBookmarksListTest', () => {
     assertEquals(
         2,
         metrics.count('Commerce.PriceTracking.SidePanel.TrackedProductsShown'));
+
+    shoppingListApi.getCallbackRouterRemote().priceUntrackedForBookmark(
+        products[0]!);
+    await flushTasks();
+    checkShoppingListVisibility(newbookmarksList, false);
+    assertEquals(
+        2,
+        metrics.count('Commerce.PriceTracking.SidePanel.TrackedProductsShown'));
   });
 
   test('RemovesBookmarksInShoppingList', async () => {
