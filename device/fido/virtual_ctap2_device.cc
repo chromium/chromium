@@ -1496,10 +1496,9 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
     }
 
     registration.is_resident = true;
-    registration.user = request.user;
-    registration.rp = request.rp;
   }
-
+  registration.user = request.user;
+  registration.rp = request.rp;
   registration.protection = cred_protect;
   registration.device_key = std::move(device_key);
   registration.cred_blob = std::move(request.cred_blob);
