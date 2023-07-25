@@ -45,6 +45,7 @@ VULKAN_INSTANCE_FUNCTIONS = [
       'vkEnumerateDeviceLayerProperties',
       'vkEnumeratePhysicalDevices',
       'vkGetDeviceProcAddr',
+      'vkGetPhysicalDeviceExternalSemaphoreProperties',
       'vkGetPhysicalDeviceFeatures2',
       'vkGetPhysicalDeviceFormatProperties',
       'vkGetPhysicalDeviceFormatProperties2',

@@ -77,22 +77,27 @@ class COMPONENT_EXPORT(VULKAN) VulkanImplementation {
       VkFence vk_fence) = 0;
 
   // Creates a semaphore that can be exported using GetSemaphoreHandle().
-  virtual VkSemaphore CreateExternalSemaphore(VkDevice vk_device) = 0;
+  virtual VkSemaphore CreateExternalSemaphore(VkDevice vk_device);
 
   // Import a VkSemaphore from a platform-specific handle.
   // Handle types that don't allow permanent import are imported with
   // temporary permanence (VK_SEMAPHORE_IMPORT_TEMPORARY_BIT).
   virtual VkSemaphore ImportSemaphoreHandle(VkDevice vk_device,
-                                            SemaphoreHandle handle) = 0;
+                                            SemaphoreHandle handle);
 
   // Export a platform-specific handle for a Vulkan semaphore. Returns a null
   // handle in case of a failure.
   virtual SemaphoreHandle GetSemaphoreHandle(VkDevice vk_device,
-                                             VkSemaphore vk_semaphore) = 0;
+                                             VkSemaphore vk_semaphore);
 
   // Returns VkExternalMemoryHandleTypeFlagBits that should be set when creating
   // external images and memory.
   virtual VkExternalMemoryHandleTypeFlagBits GetExternalImageHandleType() = 0;
+
+  // Returns VkExternalSemaphoreHandleTypeFlagBits that should be used when
+  // creating and exporting external semaphores.
+  virtual VkExternalSemaphoreHandleTypeFlagBits
+  GetExternalSemaphoreHandleType() = 0;
 
   // Returns true if the GpuMemoryBuffer of the specified type can be imported
   // into VkImage using CreateImageFromGpuMemoryHandle().
@@ -109,6 +114,9 @@ class COMPONENT_EXPORT(VULKAN) VulkanImplementation {
       gfx::Size size,
       VkFormat vk_format,
       const gfx::ColorSpace& color_space) = 0;
+
+  // Returns whether external semaphores are supported by this device.
+  virtual bool IsExternalSemaphoreSupported(VulkanDeviceQueue* device_queue);
 
 #if BUILDFLAG(IS_ANDROID)
   // Get the sampler ycbcr conversion information from the AHB.

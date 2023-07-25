@@ -516,4 +516,39 @@ uint32_t VkImageLayoutToGLImageLayout(VkImageLayout layout) {
   }
 }
 
+bool IsVkExternalSemaphoreHandleTypeSupported(
+    VulkanDeviceQueue* device_queue,
+    VkExternalSemaphoreHandleTypeFlagBits handle_type) {
+  if (!gfx::HasExtension(device_queue->enabled_extensions(),
+#if BUILDFLAG(IS_WIN)
+                         VK_KHR_EXTERNAL_SEMAPHORE_WIN32_EXTENSION_NAME
+#elif BUILDFLAG(IS_POSIX)
+                         VK_KHR_EXTERNAL_SEMAPHORE_FD_EXTENSION_NAME
+#elif BUILDFLAG(IS_FUCHSIA)
+                         VK_FUCHSIA_EXTERNAL_SEMAPHORE_EXTENSION_NAME
+#endif
+                         )) {
+    return false;
+  }
+
+  VkPhysicalDevice physical_device = device_queue->GetVulkanPhysicalDevice();
+
+  VkPhysicalDeviceExternalSemaphoreInfo semaphore_info = {
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_SEMAPHORE_INFO,
+      .handleType = handle_type,
+  };
+
+  VkExternalSemaphoreProperties semaphore_properties = {
+      .sType = VK_STRUCTURE_TYPE_EXTERNAL_SEMAPHORE_PROPERTIES,
+  };
+
+  vkGetPhysicalDeviceExternalSemaphoreProperties(
+      physical_device, &semaphore_info, &semaphore_properties);
+
+  return (semaphore_properties.externalSemaphoreFeatures &
+          VK_EXTERNAL_SEMAPHORE_FEATURE_EXPORTABLE_BIT) &&
+         (semaphore_properties.externalSemaphoreFeatures &
+          VK_EXTERNAL_SEMAPHORE_FEATURE_IMPORTABLE_BIT);
+}
+
 }  // namespace gpu

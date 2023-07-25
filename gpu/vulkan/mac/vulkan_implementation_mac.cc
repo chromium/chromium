@@ -81,28 +81,14 @@ std::unique_ptr<gfx::GpuFence> VulkanImplementationMac::ExportVkFenceToGpuFence(
   return nullptr;
 }
 
-VkSemaphore VulkanImplementationMac::CreateExternalSemaphore(
-    VkDevice vk_device) {
-  return CreateExternalVkSemaphore(
-      vk_device, VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT);
-}
-
-VkSemaphore VulkanImplementationMac::ImportSemaphoreHandle(
-    VkDevice vk_device,
-    SemaphoreHandle handle) {
-  return ImportVkSemaphoreHandle(vk_device, std::move(handle));
-}
-
-SemaphoreHandle VulkanImplementationMac::GetSemaphoreHandle(
-    VkDevice vk_device,
-    VkSemaphore vk_semaphore) {
-  return GetVkSemaphoreHandle(vk_device, vk_semaphore,
-                              VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT);
-}
-
 VkExternalMemoryHandleTypeFlagBits
 VulkanImplementationMac::GetExternalImageHandleType() {
   return VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT;
+}
+
+VkExternalSemaphoreHandleTypeFlagBits
+VulkanImplementationMac::GetExternalSemaphoreHandleType() {
+  return VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT;
 }
 
 bool VulkanImplementationMac::CanImportGpuMemoryBuffer(

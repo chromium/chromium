@@ -15,6 +15,7 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "gpu/vulkan/semaphore_handle.h"
+#include "gpu/vulkan/vulkan_device_queue.h"
 
 namespace gpu {
 
@@ -114,6 +115,11 @@ VkImageLayout GLImageLayoutToVkImageLayout(uint32_t layout);
 
 COMPONENT_EXPORT(VULKAN)
 uint32_t VkImageLayoutToGLImageLayout(VkImageLayout layout);
+
+COMPONENT_EXPORT(VULKAN)
+bool IsVkExternalSemaphoreHandleTypeSupported(
+    VulkanDeviceQueue* device_queue,
+    VkExternalSemaphoreHandleTypeFlagBits handle_type);
 
 }  // namespace gpu
 

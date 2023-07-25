@@ -110,29 +110,14 @@ VulkanImplementationFlatland::ExportVkFenceToGpuFence(VkDevice vk_device,
   return nullptr;
 }
 
-VkSemaphore VulkanImplementationFlatland::CreateExternalSemaphore(
-    VkDevice vk_device) {
-  return gpu::CreateExternalVkSemaphore(
-      vk_device, VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA);
-}
-
-VkSemaphore VulkanImplementationFlatland::ImportSemaphoreHandle(
-    VkDevice vk_device,
-    gpu::SemaphoreHandle handle) {
-  return gpu::ImportVkSemaphoreHandle(vk_device, std::move(handle));
-}
-
-gpu::SemaphoreHandle VulkanImplementationFlatland::GetSemaphoreHandle(
-    VkDevice vk_device,
-    VkSemaphore vk_semaphore) {
-  return gpu::GetVkSemaphoreHandle(
-      vk_device, vk_semaphore,
-      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA);
-}
-
 VkExternalMemoryHandleTypeFlagBits
 VulkanImplementationFlatland::GetExternalImageHandleType() {
   return VK_EXTERNAL_MEMORY_HANDLE_TYPE_ZIRCON_VMO_BIT_FUCHSIA;
+}
+
+VkExternalSemaphoreHandleTypeFlagBits
+VulkanImplementationFlatland::GetExternalSemaphoreHandleType() {
+  return VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA;
 }
 
 bool VulkanImplementationFlatland::CanImportGpuMemoryBuffer(
