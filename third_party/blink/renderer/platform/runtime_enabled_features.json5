@@ -1935,11 +1935,6 @@
       base_feature: "none",
     },
     {
-      name: "IDBBatchGetAll",
-      status:"experimental",
-      base_feature: "none",
-    },
-    {
       name: "IdleDetection",
       public: true,
       status: "stable",

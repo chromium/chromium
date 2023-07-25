@@ -87,8 +87,6 @@ const char* RequestTypeToName(IDBRequest::TypeForMetrics type) {
       return "IDBIndex::get";
     case IDBRequest::TypeForMetrics::kIndexGetAll:
       return "IDBIndex::getAll";
-    case IDBRequest::TypeForMetrics::kIndexBatchGetAll:
-      return "IDBIndex::batchGetAll";
     case IDBRequest::TypeForMetrics::kIndexGetAllKeys:
       return "IDBIndex::getAllKeys";
     case IDBRequest::TypeForMetrics::kIndexGetKey:
@@ -100,8 +98,6 @@ const char* RequestTypeToName(IDBRequest::TypeForMetrics type) {
       return "IDBObjectStore::getKey";
     case IDBRequest::TypeForMetrics::kObjectStoreGetAll:
       return "IDBObjectStore::getAll";
-    case IDBRequest::TypeForMetrics::kObjectStoreBatchGetAll:
-      return "IDBObjectStore::batchGetAll";
     case IDBRequest::TypeForMetrics::kObjectStoreGetAllKeys:
       return "IDBObjectStore::getAllKeys";
     case IDBRequest::TypeForMetrics::kObjectStoreDelete:
@@ -153,12 +149,10 @@ void RecordHistogram(IDBRequest::TypeForMetrics type,
     case IDBRequest::TypeForMetrics::kIndexOpenKeyCursor:
     case IDBRequest::TypeForMetrics::kIndexGet:
     case IDBRequest::TypeForMetrics::kIndexGetAll:
-    case IDBRequest::TypeForMetrics::kIndexBatchGetAll:
     case IDBRequest::TypeForMetrics::kIndexGetAllKeys:
     case IDBRequest::TypeForMetrics::kIndexGetKey:
     case IDBRequest::TypeForMetrics::kObjectStoreGetKey:
     case IDBRequest::TypeForMetrics::kObjectStoreGetAll:
-    case IDBRequest::TypeForMetrics::kObjectStoreBatchGetAll:
     case IDBRequest::TypeForMetrics::kObjectStoreGetAllKeys:
     case IDBRequest::TypeForMetrics::kObjectStoreDelete:
     case IDBRequest::TypeForMetrics::kObjectStoreClear:
@@ -540,46 +534,6 @@ void IDBRequest::OnGetAll(
                     WrapPersistent(transaction_.Get()))));
 }
 
-void IDBRequest::OnBatchGetAll(
-    mojom::blink::IDBDatabaseBatchGetAllResultPtr result) {
-  if (result->is_error_result()) {
-    HandleResponse(MakeGarbageCollected<DOMException>(
-        static_cast<DOMExceptionCode>(result->get_error_result()->error_code),
-        std::move(result->get_error_result()->error_message)));
-    return;
-  }
-
-  if (!result->is_values()) {
-    return;
-  }
-
-  probe::AsyncTask async_task(GetExecutionContext(), &async_task_context_,
-                              "success");
-  Vector<Vector<std::unique_ptr<IDBValue>>> all_idb_values;
-  for (const auto& values : result->get_values()) {
-    Vector<std::unique_ptr<IDBValue>> idb_values;
-    idb_values.ReserveInitialCapacity(values.size());
-    for (const mojom::blink::IDBReturnValuePtr& value : values) {
-      std::unique_ptr<IDBValue> idb_value = IDBValue::ConvertReturnValue(value);
-      idb_value->SetIsolate(GetIsolate());
-      idb_values.push_back(std::move(idb_value));
-    }
-    all_idb_values.push_back(std::move(idb_values));
-  }
-
-  DCHECK(transit_blob_handles_.empty());
-  DCHECK(transaction_);
-
-  bool is_wrapped = IDBValueUnwrapper::IsWrapped(all_idb_values);
-  if (!transaction_->HasQueuedResults() && !is_wrapped) {
-    return EnqueueResponse(std::move(all_idb_values));
-  }
-  transaction_->EnqueueResult(std::make_unique<IDBRequestQueueItem>(
-      this, std::move(all_idb_values), is_wrapped,
-      WTF::BindOnce(&IDBTransaction::OnResultReady,
-                    WrapPersistent(transaction_.Get()))));
-}
-
 void IDBRequest::OnDelete(bool success) {
   if (success) {
     probe::AsyncTask async_task(GetExecutionContext(), &async_task_context_,
@@ -807,17 +761,6 @@ size_t SizeOfValues(const Vector<std::unique_ptr<IDBValue>>& values) {
   return size;
 }
 
-size_t SizeOfValues(
-    const Vector<Vector<std::unique_ptr<IDBValue>>>& all_values) {
-  size_t size = 0;
-
-  for (const auto& values : all_values) {
-    for (const auto& value : values)
-      size += value->DataSize();
-  }
-
-  return size;
-}
 }  // namespace
 
 void IDBRequest::EnqueueResponse(Vector<std::unique_ptr<IDBValue>> values) {
@@ -829,17 +772,6 @@ void IDBRequest::EnqueueResponse(Vector<std::unique_ptr<IDBValue>> values) {
   }
 
   EnqueueResultInternal(MakeGarbageCollected<IDBAny>(std::move(values)));
-}
-
-void IDBRequest::EnqueueResponse(
-    Vector<Vector<std::unique_ptr<IDBValue>>> all_values) {
-  TRACE_EVENT1("IndexedDB", "IDBRequest::EnqueueResponse([[IDBValue]])", "size",
-               SizeOfValues(all_values));
-  if (!ShouldEnqueueEvent()) {
-    metrics_.RecordAndReset();
-    return;
-  }
-  EnqueueResultInternal(MakeGarbageCollected<IDBAny>(std::move(all_values)));
 }
 
 #if DCHECK_IS_ON()

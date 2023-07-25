@@ -89,14 +89,12 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
     kIndexOpenKeyCursor,
     kIndexGet,
     kIndexGetAll,
-    kIndexBatchGetAll,
     kIndexGetAllKeys,
     kIndexGetKey,
 
     kObjectStoreGet,
     kObjectStoreGetKey,
     kObjectStoreGetAll,
-    kObjectStoreBatchGetAll,
     kObjectStoreGetAllKeys,
     kObjectStoreDelete,
     kObjectStoreClear,
@@ -310,7 +308,6 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
   void OnGetAll(bool key_only,
                 mojo::PendingReceiver<mojom::blink::IDBDatabaseGetAllResultSink>
                     receiver);
-  void OnBatchGetAll(mojom::blink::IDBDatabaseBatchGetAllResultPtr result);
   void OnOpenCursor(mojom::blink::IDBDatabaseOpenCursorResultPtr result);
   void OnAdvanceCursor(mojom::blink::IDBCursorResultPtr result);
   void OnGotKeyGeneratorCurrentNumber(int64_t number,
@@ -429,7 +426,6 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
                        std::unique_ptr<IDBValue>);
   void EnqueueResponse(std::unique_ptr<IDBValue>);
   void EnqueueResponse(Vector<std::unique_ptr<IDBValue>>);
-  void EnqueueResponse(Vector<Vector<std::unique_ptr<IDBValue>>>);
   void EnqueueResponse();
 
   void ClearPutOperationBlobs() { transit_blob_handles_.clear(); }

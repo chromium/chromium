@@ -74,21 +74,6 @@ void WebIDBDatabase::Get(
                  std::move(result_callback));
 }
 
-void WebIDBDatabase::BatchGetAll(
-    int64_t transaction_id,
-    int64_t object_store_id,
-    int64_t index_id,
-    Vector<mojom::blink::IDBKeyRangePtr> key_range_ptrs,
-    uint32_t max_count,
-    IDBRequest* request) {
-  IndexedDBDispatcher::ResetCursorPrefetchCaches(transaction_id, nullptr);
-
-  database_->BatchGetAll(
-      transaction_id, object_store_id, index_id, std::move(key_range_ptrs),
-      max_count,
-      WTF::BindOnce(&IDBRequest::OnBatchGetAll, WrapWeakPersistent(request)));
-}
-
 void WebIDBDatabase::GetAll(int64_t transaction_id,
                             int64_t object_store_id,
                             int64_t index_id,

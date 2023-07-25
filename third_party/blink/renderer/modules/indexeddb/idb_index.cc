@@ -264,25 +264,6 @@ IDBRequest* IDBIndex::getAll(ScriptState* script_state,
                         std::move(metrics));
 }
 
-IDBRequest* IDBIndex::batchGetAll(ScriptState* script_state,
-                                  const HeapVector<ScriptValue>& key_ranges,
-                                  ExceptionState& exception_state) {
-  return batchGetAll(script_state, key_ranges,
-                     std::numeric_limits<uint32_t>::max(), exception_state);
-}
-
-IDBRequest* IDBIndex::batchGetAll(ScriptState* script_state,
-                                  const HeapVector<ScriptValue>& key_ranges,
-                                  uint32_t max_count,
-                                  ExceptionState& exception_state) {
-  TRACE_EVENT1("IndexedDB", "IDBIndex::batchGetAllRequestSetup", "index_name",
-               metadata_->name.Utf8());
-  IDBRequest::AsyncTraceState metrics(
-      IDBRequest::TypeForMetrics::kIndexBatchGetAll);
-  return BatchGetAllInternal(script_state, key_ranges, max_count,
-                             exception_state, std::move(metrics));
-}
-
 IDBRequest* IDBIndex::getAllKeys(ScriptState* script_state,
                                  const ScriptValue& range,
                                  ExceptionState& exception_state) {
@@ -387,53 +368,6 @@ IDBRequest* IDBIndex::GetAllInternal(ScriptState* script_state,
       script_state, this, transaction_.Get(), std::move(metrics));
   BackendDB()->GetAll(transaction_->Id(), object_store_->Id(), Id(), key_range,
                       max_count, key_only, request);
-  return request;
-}
-
-IDBRequest* IDBIndex::BatchGetAllInternal(
-    ScriptState* script_state,
-    const HeapVector<ScriptValue>& key_ranges,
-    uint32_t max_count,
-    ExceptionState& exception_state,
-    IDBRequest::AsyncTraceState metrics) {
-  if (!max_count)
-    max_count = std::numeric_limits<uint32_t>::max();
-
-  if (IsDeleted()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        IDBDatabase::kObjectStoreDeletedErrorMessage);
-    return nullptr;
-  }
-  if (!transaction_->IsActive()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kTransactionInactiveError,
-        transaction_->InactiveErrorMessage());
-    return nullptr;
-  }
-
-  if (!BackendDB()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      IDBDatabase::kDatabaseClosedErrorMessage);
-    return nullptr;
-  }
-
-  Vector<blink::mojom::blink::IDBKeyRangePtr> key_range_ptrs;
-
-  for (const auto& key_range : key_ranges) {
-    IDBKeyRange* range = IDBKeyRange::FromScriptValue(
-        ExecutionContext::From(script_state), key_range, exception_state);
-    if (exception_state.HadException())
-      return nullptr;
-    key_range_ptrs.push_back(blink::mojom::blink::IDBKeyRange::From(range));
-  }
-
-  IDBRequest* request = IDBRequest::Create(
-      script_state, this, transaction_.Get(), std::move(metrics));
-
-  BackendDB()->BatchGetAll(transaction_->Id(), object_store_->Id(), Id(),
-                           std::move(key_range_ptrs), max_count, request);
-
   return request;
 }
 

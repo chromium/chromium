@@ -217,15 +217,6 @@ class CONTENT_EXPORT IndexedDBDatabase {
       blink::mojom::IDBDatabase::GetAllCallback callback,
       IndexedDBTransaction* transaction);
 
-  leveldb::Status BatchGetAllOperation(
-      base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
-      int64_t object_store_id,
-      int64_t index_id,
-      const std::vector<blink::IndexedDBKeyRange>& key_ranges,
-      uint64_t max_count,
-      blink::mojom::IDBDatabase::BatchGetAllCallback callback,
-      IndexedDBTransaction* transaction);
-
   struct CONTENT_EXPORT PutOperationParams {
     PutOperationParams();
 

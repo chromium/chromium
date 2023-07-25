@@ -177,13 +177,6 @@ String ExceptionMessages::NotAFiniteNumber(const Decimal& value,
                         value.IsInfinity() ? "infinite" : "not a number");
 }
 
-String ExceptionMessages::InputArrayTooLong(unsigned int expected_size,
-                                            unsigned int actual_size) {
-  return "Input array's length should be less than " +
-         String::Number(expected_size) + ". Actual length is " +
-         String::Number(actual_size) + ".";
-}
-
 String ExceptionMessages::OrdinalNumber(int number) {
   String suffix("th");
   switch (number % 10) {

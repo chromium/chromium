@@ -1413,14 +1413,6 @@ crbug.com/1255482 external/wpt/css/css-fonts/crash-large-grapheme-cluster.html [
 
 crbug.com/1298800 http/tests/misc/drag-bookmark.html [ Slow ]
 
-crbug.com/1314927 external/wpt/IndexedDB/idbobjectstore_batchGetAll_largeValue.tentative.any.worker.html [ Slow ]
-crbug.com/1314927 [ Linux ] external/wpt/IndexedDB/idbobjectstore_batchGetAll_largeValue.tentative.any.html [ Slow ]
-crbug.com/1314927 [ Mac10.15 Release ] external/wpt/IndexedDB/idbobjectstore_batchGetAll_largeValue.tentative.any.html [ Slow ]
-crbug.com/1314927 [ Mac11 Release ] external/wpt/IndexedDB/idbobjectstore_batchGetAll_largeValue.tentative.any.html [ Slow ]
-crbug.com/1314927 [ Mac12 ] external/wpt/IndexedDB/idbobjectstore_batchGetAll_largeValue.tentative.any.html [ Slow ]
-crbug.com/1314927 [ Mac12-arm64 Release ] external/wpt/IndexedDB/idbobjectstore_batchGetAll_largeValue.tentative.any.html [ Slow ]
-crbug.com/1314927 [ Release Win ] external/wpt/IndexedDB/idbobjectstore_batchGetAll_largeValue.tentative.any.html [ Slow ]
-
 crbug.com/1327869 css3/calc/simple-calcs-prefixed.html [ Slow ]
 
 crbug.com/1228246 http/tests/inspector-protocol/network/same-site-issue-warn-cookie-strict-subresource-context-downgrade.js [ Slow ]

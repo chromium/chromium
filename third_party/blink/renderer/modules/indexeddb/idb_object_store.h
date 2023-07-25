@@ -98,13 +98,6 @@ class MODULES_EXPORT IDBObjectStore final : public ScriptWrappable {
   IDBRequest* getAllKeys(ScriptState*,
                          const ScriptValue& range,
                          ExceptionState&);
-  IDBRequest* batchGetAll(ScriptState*,
-                          const HeapVector<ScriptValue>& ranges,
-                          uint32_t max_count,
-                          ExceptionState&);
-  IDBRequest* batchGetAll(ScriptState*,
-                          const HeapVector<ScriptValue>& ranges,
-                          ExceptionState&);
   IDBRequest* add(ScriptState*, const ScriptValue& value, ExceptionState&);
   IDBRequest* add(ScriptState*,
                   const ScriptValue& value,

@@ -276200,10 +276200,6 @@
      "6f0150ab787c0be71138e2a4d72992f5adb5e187",
      []
     ],
-    "idbobjectstore_batchGetAll_largeValue.tentative.any.js.ini": [
-     "534d44774aa3e03be6014b7ba91a3d3c14130344",
-     []
-    ],
     "resources": {
      "cross-origin-helper-frame.html": [
       "997c5a2b72bafcad3421ccb48e48e323de6ef6f0",
@@ -412560,39 +412556,6 @@
       {}
      ]
     ],
-    "idbindex_batchGetAll.tentative.any.js": [
-     "fe21445e83f8c414c3091b2699f451aef7310e2e",
-     [
-      "IndexedDB/idbindex_batchGetAll.tentative.any.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Batch Get All Index"
-        ],
-        [
-         "script",
-         "resources/support.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "IndexedDB/idbindex_batchGetAll.tentative.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Batch Get All Index"
-        ],
-        [
-         "script",
-         "resources/support.js"
-        ]
-       ]
-      }
-     ]
-    ],
     "idbindex_count.htm": [
      "5b45b5223bdaccd24a0974dfcb7ebc7f73a177ac",
      [
@@ -413133,80 +413096,6 @@
      [
       null,
       {}
-     ]
-    ],
-    "idbobjectstore_batchGetAll.tentative.any.js": [
-     "3aeb8553598692f6fd418cb729deb5bd4af1ac32",
-     [
-      "IndexedDB/idbobjectstore_batchGetAll.tentative.any.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Batch Get All"
-        ],
-        [
-         "script",
-         "resources/support.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "IndexedDB/idbobjectstore_batchGetAll.tentative.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Batch Get All"
-        ],
-        [
-         "script",
-         "resources/support.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "idbobjectstore_batchGetAll_largeValue.tentative.any.js": [
-     "497196e642f313070e26371c79aab6769e64bf00",
-     [
-      "IndexedDB/idbobjectstore_batchGetAll_largeValue.tentative.any.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Batch Get All (big value)"
-        ],
-        [
-         "script",
-         "resources/support.js"
-        ],
-        [
-         "script",
-         "resources/support-promises.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "IndexedDB/idbobjectstore_batchGetAll_largeValue.tentative.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Batch Get All (big value)"
-        ],
-        [
-         "script",
-         "resources/support.js"
-        ],
-        [
-         "script",
-         "resources/support-promises.js"
-        ]
-       ]
-      }
      ]
     ],
     "idbobjectstore_clear.htm": [

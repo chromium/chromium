@@ -34,13 +34,6 @@
     readonly attribute boolean multiEntry;
     readonly attribute boolean unique;
 
-    [
-      NewObject,
-      CallWith=ScriptState,
-      RaisesException,
-      RuntimeEnabled=IDBBatchGetAll
-    ] IDBRequest batchGetAll(optional sequence<any> keys = [],
-                             optional [EnforceRange] unsigned long count);
     [NewObject, CallWith=ScriptState, RaisesException] IDBRequest get(any key);
     [NewObject, CallWith=ScriptState, RaisesException] IDBRequest getKey(any key);
     [NewObject, CallWith=ScriptState, RaisesException] IDBRequest getAll(optional any query = null,
