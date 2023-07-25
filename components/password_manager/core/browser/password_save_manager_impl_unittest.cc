@@ -1321,6 +1321,23 @@ TEST_P(PasswordSaveManagerImplTest, UsernameCorrectionVote) {
   password_save_manager_impl()->Save(&observed_form_, parsed_submitted_form);
 }
 
+TEST_P(PasswordSaveManagerImplTest, MarkSharedCredentialAsNotifiedUponSave) {
+  PasswordForm saved_shared_credentials = saved_match_;
+  saved_shared_credentials.type = PasswordForm::Type::kReceivedViaSharing;
+  saved_shared_credentials.sharing_notification_displayed = false;
+  SetNonFederatedAndNotifyFetchCompleted({&saved_shared_credentials});
+
+  password_save_manager_impl()->CreatePendingCredentials(
+      saved_shared_credentials, &observed_form_, submitted_form_,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  EXPECT_CALL(
+      *mock_profile_form_saver(),
+      Update(Field(&PasswordForm::sharing_notification_displayed, true), _, _));
+  password_save_manager_impl()->Save(&observed_form_, saved_shared_credentials);
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          PasswordSaveManagerImplTest,
                          testing::Values(false, true));

@@ -718,6 +718,14 @@ void PasswordSaveManagerImpl::SavePendingToStoreImpl(
       if (form_to_update.scheme == PasswordForm::Scheme::kHtml) {
         form_to_update.times_used_in_html_form++;
       }
+      // Password saving is mostly a result of a user action interacting with
+      // the password, (e.g. using a password to sign-in, results in updating
+      // the last_used_timestamp). Since the user interacts with the password,
+      // this counts as the user has been notified of the shared password and no
+      // need to display further notifications to the user.
+      if (form_to_update.type == PasswordForm::Type::kReceivedViaSharing) {
+        form_to_update.sharing_notification_displayed = true;
+      }
       profile_store_form_saver_->Update(form_to_update, profile_matches,
                                         old_profile_password);
     } break;
