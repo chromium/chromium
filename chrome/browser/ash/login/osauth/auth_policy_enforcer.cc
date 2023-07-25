@@ -9,14 +9,19 @@
 
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
+#include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "components/user_manager/known_user.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
 AuthPolicyEnforcer::AuthPolicyEnforcer(AuthPolicyConnector* connector,
-                                       UserDataAuthClient* user_data_auth)
-    : connector_(connector), user_data_auth_(user_data_auth) {}
+                                       UserDataAuthClient* user_data_auth,
+                                       PrefService* local_state)
+    : connector_(connector),
+      user_data_auth_(user_data_auth),
+      local_state_(local_state) {}
 AuthPolicyEnforcer::~AuthPolicyEnforcer() = default;
 
 void AuthPolicyEnforcer::CheckAndEnforcePolicies(
@@ -77,12 +82,25 @@ void AuthPolicyEnforcer::EnforceRecoveryPolicies(
     OnPolicesApplied(std::move(context), std::move(callback));
     return;
   }
+
   if (*mandatory_recovery) {
+    LOG(WARNING) << "Recovery factor mandated by policy";
+    if (context->GetDeviceId().empty()) {
+      user_manager::KnownUser known_user(local_state_);
+      std::string device_id = known_user.GetDeviceId(context->GetAccountId());
+      if (device_id.empty()) {
+        LOG(ERROR) << "Can not enforce recovery factor: no device ID.";
+        OnPolicesApplied(std::move(context), std::move(callback));
+        return;
+      }
+      context->SetDeviceId(device_id);
+    }
     editor_->AddRecoveryFactor(
         std::move(context),
         base::BindOnce(&AuthPolicyEnforcer::OnRecoveryUpdated,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   } else {
+    LOG(WARNING) << "Recovery factor prohibited by policy";
     editor_->RemoveRecoveryFactor(
         std::move(context),
         base::BindOnce(&AuthPolicyEnforcer::OnRecoveryUpdated,
@@ -95,9 +113,12 @@ void AuthPolicyEnforcer::OnRecoveryUpdated(
     std::unique_ptr<UserContext> context,
     absl::optional<AuthenticationError> error) {
   if (error.has_value()) {
+    LOG(ERROR) << "Failed to enforce recovery factor policy "
+               << error->ToDebugString();
     std::move(callback).Run(std::move(context), error);
     return;
   }
+  LOG(WARNING) << "Recovery factor policy applied";
   OnPolicesApplied(std::move(context), std::move(callback));
 }
 

@@ -68,7 +68,7 @@ void EarlyPrefsReader::OnFileRead(ResultCallback callback,
     return;
   }
   root_ = std::move(root);
-  data_ = root->GetDict().FindDict(early_prefs::kDataKey);
+  data_ = root_->GetDict().FindDict(early_prefs::kDataKey);
   CHECK(data_);
   std::move(callback).Run(true);
 }

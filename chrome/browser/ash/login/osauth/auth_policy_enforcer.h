@@ -13,6 +13,7 @@
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
 #include "chromeos/ash/components/osauth/public/auth_policy_connector.h"
+#include "components/prefs/pref_service.h"
 
 namespace ash {
 
@@ -24,7 +25,8 @@ class UserContext;
 class AuthPolicyEnforcer {
  public:
   AuthPolicyEnforcer(AuthPolicyConnector* connector,
-                     UserDataAuthClient* user_data_auth);
+                     UserDataAuthClient* user_data_auth,
+                     PrefService* local_state);
   ~AuthPolicyEnforcer();
 
   AuthPolicyEnforcer(const AuthPolicyEnforcer&) = delete;
@@ -61,6 +63,7 @@ class AuthPolicyEnforcer {
   std::unique_ptr<AuthFactorEditor> editor_;
   base::raw_ptr<AuthPolicyConnector> connector_;
   base::raw_ptr<UserDataAuthClient> user_data_auth_;
+  base::raw_ptr<PrefService> local_state_;
   // Must be the last member.
   base::WeakPtrFactory<AuthPolicyEnforcer> weak_factory_{this};
 };

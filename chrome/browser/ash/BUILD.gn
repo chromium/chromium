@@ -3931,6 +3931,7 @@ source_set("ash") {
     "//chromeos/ash/components/dbus/upstart",
     "//chromeos/ash/components/dbus/virtual_file_provider",
     "//chromeos/ash/components/device_activity",
+    "//chromeos/ash/components/early_prefs:reader",
     "//chromeos/ash/components/early_prefs:writer",
     "//chromeos/ash/components/fwupd",
     "//chromeos/ash/components/local_search_service/public/cpp",

@@ -5,10 +5,14 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_EARLY_LOGIN_AUTH_POLICY_CONNECTOR_H_
 #define CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_EARLY_LOGIN_AUTH_POLICY_CONNECTOR_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
+#include "chromeos/ash/components/early_prefs/early_prefs_reader.h"
 #include "chromeos/ash/components/osauth/impl/login_screen_auth_policy_connector.h"
 #include "chromeos/ash/components/osauth/public/auth_policy_connector.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
+#include "components/account_id/account_id.h"
 
 namespace ash {
 
@@ -18,7 +22,8 @@ namespace ash {
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH)
     EarlyLoginAuthPolicyConnector : public AuthPolicyConnector {
  public:
-  EarlyLoginAuthPolicyConnector();
+  EarlyLoginAuthPolicyConnector(const AccountId& account_id,
+                                std::unique_ptr<EarlyPrefsReader> reader);
   ~EarlyLoginAuthPolicyConnector() override;
 
   void SetLoginScreenAuthPolicyConnector(
@@ -37,6 +42,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH)
                                   AshAuthFactor auth_factor) override;
 
  private:
+  AccountId account_id_;
+  std::unique_ptr<EarlyPrefsReader> early_prefs_;
   raw_ptr<AuthPolicyConnector> login_screen_connector_ = nullptr;
 };
 
