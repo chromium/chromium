@@ -143,7 +143,7 @@ void SystemLiveCaptionService::SpeechRecognitionLanguageChanged(
 
 void SystemLiveCaptionService::SpeechRecognitionMaskOffensiveWordsChanged(
     bool mask_offensive_words) {
-  // TODO: pipe through offensive word mask.
+  // TODO(crbug.com/1467525): pipe through offensive word mask.
 }
 
 void SystemLiveCaptionService::StopRecognizing() {

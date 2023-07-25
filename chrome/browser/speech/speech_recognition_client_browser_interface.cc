@@ -118,17 +118,19 @@ void SpeechRecognitionClientBrowserInterface::
 
 void SpeechRecognitionClientBrowserInterface::
     OnSpeechRecognitionLanguageChanged() {
+  const std::string language =
+      prefs::GetLiveCaptionLanguageCode(profile_prefs_);
   for (auto& observer : speech_recognition_availibility_observers_) {
-    observer->SpeechRecognitionLanguageChanged(
-        prefs::GetLiveCaptionLanguageCode(profile_prefs_));
+    observer->SpeechRecognitionLanguageChanged(language);
   }
 }
 
 void SpeechRecognitionClientBrowserInterface::
     OnSpeechRecognitionMaskOffensiveWordsChanged() {
+  bool mask_offensive_words =
+      profile_prefs_->GetBoolean(prefs::kLiveCaptionMaskOffensiveWords);
   for (auto& observer : speech_recognition_availibility_observers_) {
-    observer->SpeechRecognitionMaskOffensiveWordsChanged(
-        profile_prefs_->GetBoolean(prefs::kLiveCaptionMaskOffensiveWords));
+    observer->SpeechRecognitionMaskOffensiveWordsChanged(mask_offensive_words);
   }
 }
 
