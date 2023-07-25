@@ -75,43 +75,48 @@
         </div>
     </settings-collapse-radio-button>
     <settings-collapse-radio-button id="safeBrowsingRadioStandard"
+        no-collapse="[[enableFriendlierSafeBrowsingSettings_]]"
         pref="[[prefs.generated.safe_browsing]]"
         name="[[safeBrowsingSettingEnum_.STANDARD]]"
         label="$i18n{safeBrowsingStandard}"
-        sub-label="$i18n{safeBrowsingStandardDesc}"
+        sub-label="[[getSafeBrowsingStandardSubLabel_(
+                    enableFriendlierSafeBrowsingSettings_)]]"
         expand-aria-label="$i18n{safeBrowsingStandardExpandA11yLabel}"
         on-click="onSafeBrowsingStandardClick_">
-        <div slot="collapse" class="description-wrapper-radio two-column">
-          <div class="description-column description-column-first">
-            <div class="description-header">
-              $i18n{privacyGuideFeatureDescriptionHeader}
+        <template is="dom-if" if="[[!enableFriendlierSafeBrowsingSettings_]]">
+          <div slot="collapse" class="description-wrapper-radio two-column"
+            id="whenOnThingsToConsiderStandardProtection">
+            <div class="description-column description-column-first">
+              <div class="description-header">
+                $i18n{privacyGuideFeatureDescriptionHeader}
+              </div>
+              <div role="list">
+                <privacy-guide-description-item
+                    role="listitem"
+                    icon="settings20:security"
+                    label="$i18n{privacyGuideSafeBrowsingCardStandardProtectionFeatureDescription1}">
+                </privacy-guide-description-item>
+                <privacy-guide-description-item
+                    role="listitem"
+                    icon="settings20:googleg"
+                    label="$i18n{privacyGuideSafeBrowsingCardStandardProtectionFeatureDescription2}">
+                </privacy-guide-description-item>
+              </div>
             </div>
-            <div role="list">
-              <privacy-guide-description-item
-                  role="listitem"
-                  icon="settings20:security"
-                  label="$i18n{privacyGuideSafeBrowsingCardStandardProtectionFeatureDescription1}">
-              </privacy-guide-description-item>
-              <privacy-guide-description-item
-                  role="listitem"
-                  icon="settings20:googleg"
-                  label="$i18n{privacyGuideSafeBrowsingCardStandardProtectionFeatureDescription2}">
-              </privacy-guide-description-item>
+            <div class="description-column">
+              <div class="description-header">
+                $i18n{privacyGuideThingsToConsider}
+              </div>
+              <div role="list">
+                <privacy-guide-description-item
+                    role="listitem"
+                    icon="settings20:data"
+                    label="$i18n{privacyGuideSafeBrowsingCardStandardProtectionPrivacyDescription1}">
+                </privacy-guide-description-item>
+              </div>
             </div>
           </div>
-          <div class="description-column">
-            <div class="description-header">
-              $i18n{privacyGuideThingsToConsider}
-            </div>
-            <div role="list">
-              <privacy-guide-description-item
-                  role="listitem"
-                  icon="settings20:data"
-                  label="$i18n{privacyGuideSafeBrowsingCardStandardProtectionPrivacyDescription1}">
-              </privacy-guide-description-item>
-            </div>
-          </div>
-        </div>
+        </template>
     </settings-collapse-radio-button>
   </settings-radio-group>
 </div>

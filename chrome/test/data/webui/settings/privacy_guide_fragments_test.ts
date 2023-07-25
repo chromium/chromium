@@ -6,7 +6,7 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CookiePrimarySetting, PrivacyGuideCompletionFragmentElement, PrivacyGuideCookiesFragmentElement, PrivacyGuideHistorySyncFragmentElement, PrivacyGuideMsbbFragmentElement, PrivacyGuideSafeBrowsingFragmentElement, PrivacyGuideWelcomeFragmentElement, SafeBrowsingSetting, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
+import {CookiePrimarySetting, PrivacyGuideCompletionFragmentElement, PrivacyGuideCookiesFragmentElement, PrivacyGuideHistorySyncFragmentElement, PrivacyGuideMsbbFragmentElement, PrivacyGuideSafeBrowsingFragmentElement, PrivacyGuideWelcomeFragmentElement, SafeBrowsingSetting, SettingsCollapseRadioButtonElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyGuideSettingsStates, Router, routes, SettingsPrefsElement, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isChildVisible} from 'chrome://webui-test/test_util.js';
@@ -389,6 +389,7 @@ suite('SafeBrowsingFragment', function() {
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
+    loadTimeData.overrideValues({enableFriendlierSafeBrowsingSettings: true});
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
@@ -450,6 +451,19 @@ suite('SafeBrowsingFragment', function() {
     assertEquals(result, expectedMetric);
   }
 
+  test('UpdatedStandardProtectionPrivacyGuide', function() {
+    const standardProtection =
+        fragment.shadowRoot!.querySelector<SettingsCollapseRadioButtonElement>(
+            '#safeBrowsingRadioStandard');
+    assertTrue(!!standardProtection);
+    const spSubLabel =
+        loadTimeData.getString('safeBrowsingStandardDescUpdated');
+    assertEquals(spSubLabel, standardProtection.subLabel);
+    assertTrue(standardProtection.noCollapse);
+    assertFalse(
+        isChildVisible(fragment, '#whenOnThingsToConsiderStandardProtection'));
+  });
+
   test('safeBrowsingMetricsEnhancedToStandard', function() {
     return assertSafeBrowsingMetrics({
       safeBrowsingStartsEnhanced: true,
@@ -502,6 +516,27 @@ suite('SafeBrowsingFragment', function() {
     assertEquals(
         Number(radioButtonGroup.selected), SafeBrowsingSetting.STANDARD);
   });
+
+  suite('SafeBrowsingFragment_FlagsDisabled', function() {
+    suiteSetup(function() {
+      loadTimeData.overrideValues(
+          {enableFriendlierSafeBrowsingSettings: false});
+    });
+
+    test('NotUpdatedStandardProtectionPrivacyGuide', function() {
+      const standardProtection =
+          fragment.shadowRoot!
+              .querySelector<SettingsCollapseRadioButtonElement>(
+                  '#safeBrowsingRadioStandard');
+      assertTrue(!!standardProtection);
+      const spSubLabel = loadTimeData.getString('safeBrowsingStandardDesc');
+      assertEquals(spSubLabel, standardProtection.subLabel);
+      assertFalse(standardProtection.noCollapse);
+      assertTrue(isChildVisible(
+          fragment, '#whenOnThingsToConsiderStandardProtection'));
+    });
+  });
+
 });
 
 suite('CookiesFragment', function() {
