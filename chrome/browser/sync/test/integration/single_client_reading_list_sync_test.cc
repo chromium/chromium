@@ -28,7 +28,6 @@ namespace {
 class ServerReadingListURLsEqualityChecker
     : public fake_server::FakeServerMatchStatusChecker {
  public:
-  // |fake_server| must not be nullptr and must outlive this object.
   explicit ServerReadingListURLsEqualityChecker(std::set<GURL> expected_urls)
       : expected_urls_(std::move(expected_urls)) {}
 
@@ -59,6 +58,45 @@ class ServerReadingListURLsEqualityChecker
 
  private:
   const std::set<GURL> expected_urls_;
+};
+
+// Checker used to block until the reading set titles on the server match a
+// given set of expected reading list titles.
+class ServerReadingListTitlesEqualityChecker
+    : public fake_server::FakeServerMatchStatusChecker {
+ public:
+  explicit ServerReadingListTitlesEqualityChecker(
+      std::set<std::string> expected_titles)
+      : expected_titles_(std::move(expected_titles)) {}
+
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for server-side reading list titles to match expected.";
+
+    std::vector<sync_pb::SyncEntity> entities =
+        fake_server()->GetSyncEntitiesByModelType(syncer::READING_LIST);
+
+    std::set<std::string> actual_titles;
+    for (const sync_pb::SyncEntity& entity : entities) {
+      actual_titles.insert(entity.specifics().reading_list().title());
+    }
+
+    testing::StringMatchResultListener result_listener;
+    const bool matches =
+        ExplainMatchResult(testing::ContainerEq(expected_titles_),
+                           actual_titles, &result_listener);
+    *os << result_listener.str();
+    return matches;
+  }
+
+  ServerReadingListTitlesEqualityChecker(
+      const ServerReadingListTitlesEqualityChecker&) = delete;
+  ServerReadingListTitlesEqualityChecker& operator=(
+      const ServerReadingListTitlesEqualityChecker&) = delete;
+
+  ~ServerReadingListTitlesEqualityChecker() override = default;
+
+ private:
+  const std::set<std::string> expected_titles_;
 };
 
 void WaitForReadingListModelLoaded(ReadingListModel* reading_list_model) {
@@ -131,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
   const GURL kUrl("http://url.com/");
   fake_server_->InjectEntity(CreateTestReadingListEntity(kUrl, "entry_title"));
 
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   ASSERT_THAT(model()->size(), Eq(0ul));
 
@@ -147,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
                        ShouldUploadOnlyEntriesCreatedAfterSignin) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
   ASSERT_THAT(model()->size(), Eq(0ul));
 
   const GURL kLocalUrl("http://local_url.com/");
@@ -182,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
   const GURL kUrl("http://url.com/");
   fake_server_->InjectEntity(CreateTestReadingListEntity(kUrl, "entry_title"));
 
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   ASSERT_THAT(model()->size(), Eq(0ul));
 
@@ -208,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
   const GURL kUrl("http://url.com/");
   fake_server_->InjectEntity(CreateTestReadingListEntity(kUrl, "entry_title"));
 
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
 
   ASSERT_THAT(model()->size(), Eq(0ul));
 
@@ -222,6 +260,74 @@ IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
 
   GetClient(0)->SignOutPrimaryAccount();
   EXPECT_THAT(model()->size(), Eq(0ul));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
+                       ShouldUpdateEntriesLocallyAndServerSide) {
+  const GURL kAccountUrl("http://account_url.com/");
+  fake_server_->InjectEntity(
+      CreateTestReadingListEntity(kAccountUrl, "account_title"));
+  const GURL kCommonUrl("http://common_url.com/");
+  fake_server_->InjectEntity(
+      CreateTestReadingListEntity(kCommonUrl, "common_title"));
+
+  ASSERT_TRUE(SetupClients());
+  ASSERT_THAT(model()->size(), Eq(0ul));
+
+  model()->AddOrReplaceEntry(kCommonUrl, "common_title",
+                             reading_list::ADDED_VIA_CURRENT_APP,
+                             /*estimated_read_time=*/base::TimeDelta());
+  const GURL kLocalUrl("http://local_url.com/");
+  model()->AddOrReplaceEntry(kLocalUrl, "local_title",
+                             reading_list::ADDED_VIA_CURRENT_APP,
+                             /*estimated_read_time=*/base::TimeDelta());
+
+  ASSERT_THAT(model()->size(), Eq(2ul));
+
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+  ASSERT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::READING_LIST));
+
+  ASSERT_THAT(model()->size(), Eq(3ul));
+  ASSERT_TRUE(model()->NeedsExplicitUploadToSyncServer(kLocalUrl));
+  ASSERT_FALSE(model()->NeedsExplicitUploadToSyncServer(kCommonUrl));
+  ASSERT_FALSE(model()->NeedsExplicitUploadToSyncServer(kAccountUrl));
+
+  const std::string kNewLocalTitle("new_local_title");
+  model()->SetEntryTitleIfExists(kLocalUrl, kNewLocalTitle);
+  const std::string kNewCommonTitle("new_common_title");
+  model()->SetEntryTitleIfExists(kCommonUrl, kNewCommonTitle);
+  const std::string kNewAccountTitle("new_account_title");
+  model()->SetEntryTitleIfExists(kAccountUrl, kNewAccountTitle);
+
+  EXPECT_TRUE(model()->NeedsExplicitUploadToSyncServer(kLocalUrl));
+  EXPECT_FALSE(model()->NeedsExplicitUploadToSyncServer(kCommonUrl));
+  EXPECT_FALSE(model()->NeedsExplicitUploadToSyncServer(kAccountUrl));
+
+  // Verify the merged view is updated.
+  EXPECT_THAT(model()->GetEntryByURL(kLocalUrl)->Title(), Eq(kNewLocalTitle));
+  EXPECT_THAT(model()->GetEntryByURL(kCommonUrl)->Title(), Eq(kNewCommonTitle));
+  EXPECT_THAT(model()->GetEntryByURL(kAccountUrl)->Title(),
+              Eq(kNewAccountTitle));
+
+  // Verify that the server entries are updated.
+  EXPECT_TRUE(ServerReadingListTitlesEqualityChecker(
+                  {{kNewAccountTitle, kNewCommonTitle}})
+                  .Wait());
+
+  GetClient(0)->SignOutPrimaryAccount();
+
+  // `NeedsExplicitUploadToSyncServer()` should return false when the user is
+  // signed out.
+  EXPECT_FALSE(model()->NeedsExplicitUploadToSyncServer(kLocalUrl));
+
+  EXPECT_THAT(model()->size(), Eq(2ul));
+
+  // Verify entries in the local storage are updated.
+  EXPECT_THAT(model()->GetEntryByURL(kLocalUrl)->Title(), Eq(kNewLocalTitle));
+  EXPECT_THAT(model()->GetEntryByURL(kCommonUrl)->Title(), Eq(kNewCommonTitle));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
