@@ -10,11 +10,14 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/frame/window_frame_util.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_win.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/grit/theme_resources.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -48,6 +51,20 @@ WindowsCaptionButton::CreateIconPainter() {
 }
 
 gfx::Size WindowsCaptionButton::CalculatePreferredSize() const {
+  const int width =
+      WindowFrameUtil::kWindowsCaptionButtonWidth + GetBetweenButtonSpacing();
+  if (features::IsChromeRefresh2023()) {
+    const gfx::Rect tab_strip_region_bounds =
+        frame_view_->GetBoundsForTabStripRegion(frame_view_->browser_view()
+                                                    ->tab_strip_region_view()
+                                                    ->GetMinimumSize());
+
+    const int bottom_y = tab_strip_region_bounds.bottom() -
+                         GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
+
+    return gfx::Size(width, bottom_y - frame_view_->WindowTopY());
+  }
+
   // TODO(bsep): The sizes in this function are for 1x device scale and don't
   // match Windows button sizes at hidpi.
   int height = WindowFrameUtil::kWindowsCaptionButtonHeightRestored;
@@ -61,8 +78,7 @@ gfx::Size WindowsCaptionButton::CalculatePreferredSize() const {
     maximized_height -= kMaximizedBottomMargin;
     height = std::min(height, maximized_height);
   }
-  int base_width = WindowFrameUtil::kWindowsCaptionButtonWidth;
-  return gfx::Size(base_width + GetBetweenButtonSpacing(), height);
+  return gfx::Size(width, height);
 }
 
 SkColor WindowsCaptionButton::GetBaseForegroundColor() const {

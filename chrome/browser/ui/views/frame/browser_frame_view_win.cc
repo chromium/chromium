@@ -33,6 +33,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle_win.h"
 #include "ui/base/theme_provider.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/win/hwnd_metrics.h"
 #include "ui/display/win/dpi.h"
 #include "ui/display/win/screen_win.h"
@@ -70,6 +71,8 @@ base::win::ScopedHICON CreateHICONFromSkBitmapSizedTo(
 constexpr int kMaximizedLeftMargin = 2;
 
 constexpr int kIconTitleSpacing = 5;
+
+constexpr int kCR23TopAreaHeight = 6;
 
 }  // namespace
 
@@ -517,7 +520,7 @@ int BrowserFrameViewWin::FrameTopBorderThicknessPx(bool restored) const {
 
 int BrowserFrameViewWin::TopAreaHeight(bool restored) const {
   if (frame()->IsFullscreen() && !restored) {
-    return 0;
+    return features::IsChromeRefresh2023() ? kCR23TopAreaHeight : 0;
   }
 
   const bool maximized = IsMaximized() && !restored;
@@ -529,6 +532,10 @@ int BrowserFrameViewWin::TopAreaHeight(bool restored) const {
     top += maximized ? TitlebarMaximizedVisualHeight()
                      : caption_button_container_->GetPreferredSize().height();
     return top;
+  }
+
+  if (features::IsChromeRefresh2023()) {
+    return top + kCR23TopAreaHeight;
   }
 
   // In maximized mode, we do not add any additional thickness to the grab

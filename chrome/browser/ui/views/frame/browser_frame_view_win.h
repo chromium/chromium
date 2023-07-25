@@ -69,6 +69,11 @@ class BrowserFrameViewWin : public BrowserNonClientFrameView,
   bool IsMaximized() const;
   bool IsWebUITabStrip() const;
 
+  // Returns the y coordinate for the top of the frame, which in maximized mode
+  // is the top of the screen and in restored mode is 1 pixel below the top of
+  // the window to leave room for the visual border that Windows draws.
+  int WindowTopY() const;
+
   // Visual height of the titlebar when the window is maximized (i.e. excluding
   // the area above the top of the screen).
   int TitlebarMaximizedVisualHeight() const;
@@ -124,11 +129,6 @@ class BrowserFrameViewWin : public BrowserNonClientFrameView,
   // Returns the height of the titlebar for popups or other browser types that
   // don't have tabs.
   int TitlebarHeight(bool restored) const;
-
-  // Returns the y coordinate for the top of the frame, which in maximized mode
-  // is the top of the screen and in restored mode is 1 pixel below the top of
-  // the window to leave room for the visual border that Windows draws.
-  int WindowTopY() const;
 
   // Returns the width of the caption buttons region, including visible
   // system-drawn and custom-drawn caption buttons.
