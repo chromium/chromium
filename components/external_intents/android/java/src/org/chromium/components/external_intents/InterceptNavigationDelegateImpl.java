@@ -442,9 +442,11 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
     }
 
     private void clobberMainFrame(GURL targetUrl, ExternalNavigationParams params) {
-        // Our current tab clobbering strategy doesn't support persisting sandbox attributes, so
-        // for sandboxed main frames, drop the navigation.
-        if (params.isSandboxedMainFrame()) return;
+        if (ExternalIntentsFeatures.BLOCK_INTENTS_TO_SELF.isEnabled()) {
+            // Our current tab clobbering strategy doesn't support persisting sandbox attributes, so
+            // for sandboxed main frames, drop the navigation.
+            if (params.isSandboxedMainFrame()) return;
+        }
 
         int transitionType = PageTransition.LINK;
         final LoadUrlParams loadUrlParams = new LoadUrlParams(targetUrl, transitionType);

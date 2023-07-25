@@ -206,7 +206,6 @@ public class UrlOverridingTest {
             "intent://test/#Intent;scheme=externalappscheme;end;";
 
     private static final String OTHER_BROWSER_PACKAGE = "com.other.browser";
-    private static final String TRUSTED_CCT_PACKAGE = "com.trusted.cct";
 
     private static final String EXTERNAL_APP_SCHEME = "externalappscheme";
 
@@ -251,7 +250,6 @@ public class UrlOverridingTest {
 
     private static class TestContext extends ContextWrapper {
         private boolean mResolveToNonBrowserPackage;
-        private boolean mResolveToTrustedCaller;
         private String mNonBrowserPackageName;
         private String mHostToMatch;
         private String mSchemeToMatch;
@@ -265,10 +263,6 @@ public class UrlOverridingTest {
 
         public void setResolveBrowserIntentToNonBrowserPackage(boolean toNonBrowser) {
             mResolveToNonBrowserPackage = toNonBrowser;
-        }
-
-        public void setResolveToTrustedCaller(boolean toTrustedCaller) {
-            mResolveToTrustedCaller = toTrustedCaller;
         }
 
         private boolean targetsPlay(Intent intent) {
@@ -301,23 +295,20 @@ public class UrlOverridingTest {
                         return Arrays.asList(newResolveInfo(OTHER_BROWSER_PACKAGE));
                     }
 
-                    String targetPackage =
-                            mResolveToTrustedCaller ? TRUSTED_CCT_PACKAGE : mNonBrowserPackageName;
-
                     // Behave as though play store is not installed - this matches bot emulator
                     // images.
                     if (targetsPlay(intent)) return null;
 
                     if (mHostToMatch != null && intent.getData() != null
                             && intent.getData().getHost().equals(mHostToMatch)) {
-                        ResolveInfo info = newResolveInfo(targetPackage);
+                        ResolveInfo info = newResolveInfo(mNonBrowserPackageName);
                         info.filter = mFilterForHostMatch;
                         return Arrays.asList(info);
                     }
 
                     if (mSchemeToMatch != null && intent.getScheme() != null
                             && intent.getScheme().equals(mSchemeToMatch)) {
-                        ResolveInfo info = newResolveInfo(targetPackage);
+                        ResolveInfo info = newResolveInfo(mNonBrowserPackageName);
                         info.filter = mFilterForSchemeMatch;
                         return Arrays.asList(info);
                     }
@@ -336,12 +327,9 @@ public class UrlOverridingTest {
                         return newResolveInfo(OTHER_BROWSER_PACKAGE);
                     }
 
-                    String targetPackage =
-                            mResolveToTrustedCaller ? TRUSTED_CCT_PACKAGE : mNonBrowserPackageName;
-
                     if (mSchemeToMatch != null && intent.getScheme() != null
                             && intent.getScheme().equals(mSchemeToMatch)) {
-                        ResolveInfo info = newResolveInfo(targetPackage);
+                        ResolveInfo info = newResolveInfo(mNonBrowserPackageName);
                         info.filter = mFilterForSchemeMatch;
                         return info;
                     }
@@ -601,10 +589,8 @@ public class UrlOverridingTest {
 
     private PropertyModel getCurrentExternalNavigationMessage() throws Exception {
         return TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ChromeActivity activity = mActivityTestRule.getActivity();
-            if (activity == null) activity = mCustomTabActivityRule.getActivity();
-            MessageDispatcher messageDispatcher =
-                    MessageDispatcherProvider.from(activity.getWindowAndroid());
+            MessageDispatcher messageDispatcher = MessageDispatcherProvider.from(
+                    mActivityTestRule.getActivity().getWindowAndroid());
             List<MessageStateHandler> messages = MessagesTestHelper.getEnqueuedMessages(
                     messageDispatcher, MessageIdentifier.EXTERNAL_NAVIGATION);
             if (messages.isEmpty()) return null;
@@ -1443,54 +1429,6 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures({ExternalIntentsFeatures.TRUSTED_CLIENT_GESTURE_BYPASS_NAME})
-    public void testRedirectToTrustedCaller() throws Exception {
-        final String url = mTestServer.getURL(HELLO_PAGE);
-        final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
-        Context context = ContextUtils.getApplicationContext();
-        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, url);
-        final CustomTabsSessionToken token =
-                CustomTabsSessionToken.getSessionTokenFromIntent(intent);
-        Assert.assertTrue(connection.newSession(token));
-        connection.overridePackageNameForSessionForTesting(token, TRUSTED_CCT_PACKAGE);
-
-        mCustomTabActivityRule.startCustomTabActivityWithIntent(intent);
-
-        final Tab tab = mCustomTabActivityRule.getActivity().getActivityTab();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> RedirectHandlerTabHelper.swapHandlerFor(tab, mSpyRedirectHandler));
-
-        mCustomTabActivityRule.loadUrl(
-                mTestServer.getURL(NAVIGATION_FROM_XHR_CALLBACK_AND_SHORT_TIMEOUT_PAGE));
-
-        // This is a little fragile to code changes, but better than waiting 15 real seconds.
-        Mockito.doReturn(SystemClock.elapsedRealtime()) // XHR Navigation create
-                .doReturn(SystemClock.elapsedRealtime()) // XHR callback navigation create
-                .doReturn(SystemClock.elapsedRealtime()
-                        + RedirectHandler.NAVIGATION_CHAIN_TIMEOUT_MILLIS + 1) // xhr callback
-                .doReturn(SystemClock.elapsedRealtime()) // XHR Navigation create
-                .doReturn(SystemClock.elapsedRealtime()) // XHR callback navigation create
-                .doReturn(SystemClock.elapsedRealtime()
-                        + RedirectHandler.NAVIGATION_CHAIN_TIMEOUT_MILLIS + 1) // xhr callback
-                .when(mSpyRedirectHandler)
-                .currentRealtime();
-
-        TouchCommon.singleClickView(tab.getView());
-        // Wait for blocked Message to show.
-        CriteriaHelper.pollInstrumentationThread(
-                () -> getCurrentExternalNavigationMessage() != null);
-        Assert.assertEquals(0, mActivityMonitor.getHits());
-
-        mTestContext.setResolveToTrustedCaller(true);
-        TouchCommon.singleClickView(tab.getView());
-
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mActivityMonitor.getHits(), Matchers.is(1));
-        }, 10000L, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-    }
-
-    @Test
-    @LargeTest
     public void testSubframeNavigationToSelf() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
 
@@ -1616,6 +1554,7 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
+    @Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_FRAME_RENAVIGATIONS_NAME})
     public void testWindowRenavigation() throws Exception {
         String finalUrl = mTestServer.getURL(HELLO_PAGE);
         mActivityTestRule.startMainActivityOnBlankPage();
@@ -1628,6 +1567,7 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
+    @Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_FRAME_RENAVIGATIONS_NAME})
     public void testWindowRenavigationServerRedirect() throws Exception {
         String finalUrl = mTestServer.getURL(HELLO_PAGE);
         mActivityTestRule.startMainActivityOnBlankPage();
@@ -1640,6 +1580,7 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
+    @Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_FRAME_RENAVIGATIONS_NAME})
     public void testWindowServerRedirect() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
         loadUrlAndWaitForIntentUrl(
@@ -1648,7 +1589,9 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    public void testIntentToSelf() {
+    @Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_INTENTS_TO_SELF_NAME})
+    public void
+    testIntentToSelf() {
         String targetUrl = mTestServer.getURL(HELLO_PAGE);
         // Strip off the https: from the URL.
         String strippedTargetUrl = targetUrl.substring(6);
@@ -1668,7 +1611,9 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    public void testIntentToSelfWithFallback() throws Exception {
+    @Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_INTENTS_TO_SELF_NAME})
+    public void
+    testIntentToSelfWithFallback() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
 
         String targetUrl = mTestServer.getURL(HELLO_PAGE);
@@ -1713,7 +1658,9 @@ public class UrlOverridingTest {
     // that would escape the sandbox by clobbering the main frame.
     @Test
     @LargeTest
-    public void testIntentToSelfWithFallback_Sandboxed() throws Exception {
+    @Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_INTENTS_TO_SELF_NAME})
+    public void
+    testIntentToSelfWithFallback_Sandboxed() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
 
         String targetUrl = mTestServer.getURL(HELLO_PAGE);

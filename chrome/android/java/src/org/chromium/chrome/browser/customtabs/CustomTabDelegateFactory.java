@@ -114,13 +114,15 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         @Override
         public boolean isForTrustedCallingApp(Supplier<List<ResolveInfo>> resolveInfoSupplier) {
             if (TextUtils.isEmpty(mClientPackageName)) return false;
-            if (!ExternalIntentsFeatures.TRUSTED_CLIENT_GESTURE_BYPASS.isEnabled()
-                    && !mExternalAuthUtils.isGoogleSigned(mClientPackageName)) {
-                return false;
-            }
+            if (!mExternalAuthUtils.isGoogleSigned(mClientPackageName)) return false;
 
-            return ExternalNavigationHandler.resolveInfoContainsPackage(
-                    resolveInfoSupplier.get(), mClientPackageName);
+            if (ExternalIntentsFeatures.DO_NOT_REQUIRE_SPECIALIZED_CCT_HANDLER.isEnabled()) {
+                return ExternalNavigationHandler.resolveInfoContainsPackage(
+                        resolveInfoSupplier.get(), mClientPackageName);
+            } else {
+                return ExternalNavigationHandler.isPackageSpecializedHandler(
+                        mClientPackageName, resolveInfoSupplier.get());
+            }
         }
 
         @Override
