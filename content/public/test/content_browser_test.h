@@ -35,6 +35,8 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/test/scoped_path_override.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 namespace content {
@@ -79,6 +81,8 @@ class ContentBrowserTest : public BrowserTestBase {
   // browser shutdown). To avoid this, the following pool is recycled after each
   // time code is directly executed.
   raw_ptr<base::mac::ScopedNSAutoreleasePool> pool_ = nullptr;
+
+  absl::optional<base::ScopedPathOverride> file_exe_override_;
 #endif
 
   // Used to detect incorrect overriding of PreRunTestOnMainThread() with
