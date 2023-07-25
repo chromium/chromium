@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.password_manager;
 
 import static org.chromium.base.test.util.Matchers.is;
+import static org.chromium.content_public.browser.test.util.DOMUtils.enterInputIntoTextField;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
 import android.widget.TextView;
@@ -22,7 +23,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -81,6 +81,7 @@ public class PasswordSavingIntegrationTest {
     private PasswordStoreBridge mPasswordStoreBridge;
     private BottomSheetController mBottomSheetController;
     private WebContents mWebContents;
+    private TestInputMethodManagerWrapper mInputMethodManagerWrapper;
 
     @Before
     public void setup() throws Exception {
@@ -106,6 +107,9 @@ public class PasswordSavingIntegrationTest {
         });
 
         mWebContents = mActivityTestRule.getWebContents();
+        ImeAdapter imeAdapter = WebContentsUtils.getImeAdapter(mWebContents);
+        mInputMethodManagerWrapper = TestInputMethodManagerWrapper.create(imeAdapter);
+        imeAdapter.setInputMethodManagerWrapper(mInputMethodManagerWrapper);
     }
 
     @After
@@ -119,8 +123,10 @@ public class PasswordSavingIntegrationTest {
     public void testSavingNewPassword() throws InterruptedException, TimeoutException {
         mActivityTestRule.loadUrl(mActivityTestRule.getTestServer().getURL(SIGNIN_FORM_URL));
 
-        enterInput(mWebContents, USERNAME_FIELD_ID, USERNAME_TEXT);
-        enterInput(mWebContents, PASSWORD_NODE_ID, PASSWORD_TEXT);
+        enterInputIntoTextField(
+                mWebContents, mInputMethodManagerWrapper, USERNAME_FIELD_ID, USERNAME_TEXT);
+        enterInputIntoTextField(
+                mWebContents, mInputMethodManagerWrapper, PASSWORD_NODE_ID, PASSWORD_TEXT);
         waitForPmParserAnnotation(mWebContents, PASSWORD_NODE_ID);
 
         DOMUtils.clickNodeWithJavaScript(mWebContents, SUBMIT_BUTTON_ID);
@@ -139,7 +145,6 @@ public class PasswordSavingIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1359305")
     public void testUpdatingPassword() throws InterruptedException, TimeoutException {
         // Store the test credential.
         PasswordStoreCredential testCredential = new PasswordStoreCredential(
@@ -168,8 +173,10 @@ public class PasswordSavingIntegrationTest {
         BottomSheetTestSupport.waitForState(mBottomSheetController, SheetState.HIDDEN);
 
         // Enter the new password.
-        enterInput(mWebContents, NEW_PASSWORD_NODE_ID, NEW_PASSWORD_TEXT);
-        enterInput(mWebContents, NEW_PASSWORD_REPEAT_NODE_ID, NEW_PASSWORD_TEXT);
+        enterInputIntoTextField(
+                mWebContents, mInputMethodManagerWrapper, NEW_PASSWORD_NODE_ID, NEW_PASSWORD_TEXT);
+        enterInputIntoTextField(mWebContents, mInputMethodManagerWrapper,
+                NEW_PASSWORD_REPEAT_NODE_ID, NEW_PASSWORD_TEXT);
 
         // Submit the form and wait for the success page to load.
         DOMUtils.clickNodeWithJavaScript(mWebContents, CHANGE_PASSWORD_BUTTON_ID);
@@ -187,21 +194,6 @@ public class PasswordSavingIntegrationTest {
             Criteria.checkThat(credentials[0].getUsername(), is(USERNAME_TEXT));
             Criteria.checkThat(credentials[0].getPassword(), is(NEW_PASSWORD_TEXT));
         });
-    }
-
-    private void enterInput(WebContents webContents, String nodeId, String input)
-            throws TimeoutException {
-        ImeAdapter imeAdapter = WebContentsUtils.getImeAdapter(webContents);
-        TestInputMethodManagerWrapper inputMethodManagerWrapper =
-                TestInputMethodManagerWrapper.create(imeAdapter);
-        imeAdapter.setInputMethodManagerWrapper(inputMethodManagerWrapper);
-
-        DOMUtils.clickNode(webContents, nodeId);
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(inputMethodManagerWrapper.getShowSoftInputCounter(), Matchers.is(1));
-        });
-
-        imeAdapter.setComposingTextForTest(input, input.length());
     }
 
     private void clickSaveUpdateButtonOnMessage() {
