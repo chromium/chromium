@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 
+#include <tuple>
+
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -13,8 +16,11 @@
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_warn_dialog.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
+#include "chrome/browser/enterprise/data_controls/component.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -78,16 +84,17 @@ class WarningDialogBrowserTest : public FilesPolicyDialogBrowserTest {
 
  protected:
   std::vector<DlpConfidentialFile> warning_files_;
+  base::MockCallback<OnDlpRestrictionCheckedCallback> cb_;
 };
 
 // Tests that the warning dialog is created as a system modal if no parent is
-// passed.
+// passed, and that accepting the dialog runs the callback with true.
 IN_PROC_BROWSER_TEST_P(WarningDialogBrowserTest, NoParent) {
   dlp::FileAction action = GetParam();
 
-  auto* widget = FilesPolicyDialog::CreateWarnDialog(base::DoNothing(),
-                                                     warning_files_, action,
-                                                     /*modal_parent=*/nullptr);
+  auto* widget =
+      FilesPolicyDialog::CreateWarnDialog(cb_.Get(), warning_files_, action,
+                                          /*modal_parent=*/nullptr);
   ASSERT_TRUE(widget);
 
   FilesPolicyWarnDialog* dialog = static_cast<FilesPolicyWarnDialog*>(
@@ -95,10 +102,15 @@ IN_PROC_BROWSER_TEST_P(WarningDialogBrowserTest, NoParent) {
   ASSERT_TRUE(dialog);
 
   EXPECT_EQ(dialog->GetModalType(), ui::ModalType::MODAL_TYPE_SYSTEM);
+  // Proceed.
+  EXPECT_CALL(cb_, Run(/*should_proceed=*/true)).Times(1);
+  dialog->AcceptDialog();
+  EXPECT_TRUE(widget->IsClosed());
 }
 
 // Tests that the warning dialog is created as a window modal if a Files app
-// window is passed as the parent.
+// window is passed as the parent, and that cancelling the dialog runs the
+// callback with false.
 IN_PROC_BROWSER_TEST_P(WarningDialogBrowserTest, WithParent) {
   dlp::FileAction action = GetParam();
 
@@ -108,7 +120,7 @@ IN_PROC_BROWSER_TEST_P(WarningDialogBrowserTest, WithParent) {
   ASSERT_EQ(files_app, FindFilesApp());
 
   auto* widget = FilesPolicyDialog::CreateWarnDialog(
-      base::DoNothing(), warning_files_, action,
+      cb_.Get(), warning_files_, action,
       files_app->window()->GetNativeWindow());
   ASSERT_TRUE(widget);
 
@@ -119,6 +131,10 @@ IN_PROC_BROWSER_TEST_P(WarningDialogBrowserTest, WithParent) {
   EXPECT_EQ(dialog->GetModalType(), ui::ModalType::MODAL_TYPE_WINDOW);
   EXPECT_EQ(widget->parent()->GetNativeWindow(),
             files_app->window()->GetNativeWindow());
+  // Cancel.
+  EXPECT_CALL(cb_, Run(/*should_proceed=*/false)).Times(1);
+  dialog->CancelDialog();
+  EXPECT_TRUE(widget->IsClosed());
 }
 
 INSTANTIATE_TEST_SUITE_P(FilesPolicyDialog,
@@ -147,9 +163,13 @@ class ErrorDialogBrowserTest : public FilesPolicyDialogBrowserTest {
 };
 
 // Tests that the error dialog is created as a system modal if no parent is
-// passed.
+// passed, and that accepting the dialog dismisses it without any other action.
 IN_PROC_BROWSER_TEST_P(ErrorDialogBrowserTest, NoParent) {
   dlp::FileAction action = GetParam();
+  // Add another blocked file to test the mixed error case.
+  blocked_files_.emplace(DlpConfidentialFile(base::FilePath("file3.txt")),
+                         Policy::kEnterpriseConnectors);
+
   auto* widget = FilesPolicyDialog::CreateErrorDialog(blocked_files_, action,
                                                       /*modal_parent=*/nullptr);
   ASSERT_TRUE(widget);
@@ -159,10 +179,14 @@ IN_PROC_BROWSER_TEST_P(ErrorDialogBrowserTest, NoParent) {
   ASSERT_TRUE(dialog);
 
   EXPECT_EQ(dialog->GetModalType(), ui::ModalType::MODAL_TYPE_SYSTEM);
+  // Accept -> dismiss.
+  dialog->AcceptDialog();
+  EXPECT_TRUE(widget->IsClosed());
 }
 
-// Tests that the warning dialog is created as a window modal if a Files app
-// window is passed as the parent.
+// Tests that the error dialog is created as a window modal if a Files app
+// window is passed as the parent, and that cancelling the dialog opens the help
+// article page.
 IN_PROC_BROWSER_TEST_P(ErrorDialogBrowserTest, WithParent) {
   dlp::FileAction action = GetParam();
 
@@ -182,6 +206,15 @@ IN_PROC_BROWSER_TEST_P(ErrorDialogBrowserTest, WithParent) {
   EXPECT_EQ(dialog->GetModalType(), ui::ModalType::MODAL_TYPE_WINDOW);
   EXPECT_EQ(widget->parent()->GetNativeWindow(),
             files_app->window()->GetNativeWindow());
+  // Cancel -> Learn more.
+  EXPECT_NE(
+      browser()->tab_strip_model()->GetActiveWebContents()->GetURL().spec(),
+      dlp::kDlpLearnMoreUrl);
+  dialog->CancelDialog();
+  EXPECT_TRUE(widget->IsClosed());
+  EXPECT_EQ(
+      browser()->tab_strip_model()->GetActiveWebContents()->GetURL().spec(),
+      dlp::kDlpLearnMoreUrl);
 }
 
 INSTANTIATE_TEST_SUITE_P(FilesPolicyDialog,
@@ -244,5 +277,38 @@ IN_PROC_BROWSER_TEST_F(DlpWarningDialogDestinationBrowserTest, Download) {
       /*modal_parent=*/nullptr,
       DlpFileDestination(data_controls::Component::kDrive)));
 }
+
+class WarningComponentBrowserTest
+    : public DlpWarningDialogDestinationBrowserTest,
+      public ::testing::WithParamInterface<
+          std::tuple<dlp::FileAction, DlpFileDestination>> {};
+
+IN_PROC_BROWSER_TEST_P(WarningComponentBrowserTest, CreateDialog) {
+  auto [action, destination] = GetParam();
+
+  ASSERT_TRUE(FilesPolicyDialog::CreateWarnDialog(
+      base::DoNothing(), warning_files_, action,
+      /*modal_parent=*/nullptr, destination));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    FilesPolicyDialog,
+    WarningComponentBrowserTest,
+    ::testing::Values(
+        std::make_tuple(dlp::FileAction::kUpload,
+                        DlpFileDestination("htpps://example.com")),
+        std::make_tuple(dlp::FileAction::kTransfer,
+                        DlpFileDestination(data_controls::Component::kArc)),
+        std::make_tuple(
+            dlp::FileAction::kUnknown,
+            DlpFileDestination(data_controls::Component::kCrostini)),
+        std::make_tuple(dlp::FileAction::kOpen,
+                        DlpFileDestination(data_controls::Component::kUsb)),
+        std::make_tuple(
+            dlp::FileAction::kMove,
+            DlpFileDestination(data_controls::Component::kPluginVm)),
+        std::make_tuple(
+            dlp::FileAction::kShare,
+            DlpFileDestination(data_controls::Component::kOneDrive))));
 
 }  // namespace policy
