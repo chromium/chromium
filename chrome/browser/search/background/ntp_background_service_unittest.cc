@@ -361,7 +361,8 @@ TEST_P(NtpBackgroundServiceTest, GoodCollectionImagesResponse) {
             ErrorType::NONE);
 }
 
-TEST_P(NtpBackgroundServiceTest, MultipleRequests) {
+TEST_P(NtpBackgroundServiceTest,
+       CollectionImageInfoRequestsAreIgnoredIfAnotherIsInProgress) {
   ntp::background::Collection collection;
   collection.set_collection_id("shapes");
   collection.set_collection_name("Shapes");
@@ -423,6 +424,35 @@ TEST_P(NtpBackgroundServiceTest, MultipleRequests) {
   EXPECT_THAT(service()->collection_info().at(0), Eq(collection_info));
   EXPECT_FALSE(service()->collection_images().empty());
   EXPECT_THAT(service()->collection_images().at(0), Eq(collection_image));
+}
+
+TEST_P(NtpBackgroundServiceTest,
+       CollectionImageInfoCanBeSuccessfullyFetchedMultipleTimes) {
+  ntp::background::Image image;
+  image.set_image_url(kTestImageUrl);
+  ntp::background::GetImagesInCollectionResponse response;
+  *response.add_images() = image;
+  std::string response_string;
+  response.SerializeToString(&response_string);
+
+  SetUpResponseWithData(service()->GetImagesURLForTesting(), response_string);
+  if (BackgroundImageErrorDetectionEnabled()) {
+    SetUpResponseWithNetworkSuccess(
+        GURL(image.image_url() + GetThumbnailImageOptions()));
+  }
+
+  ASSERT_TRUE(service()->collection_images().empty());
+
+  EXPECT_CALL(observer_, OnCollectionImagesAvailable).Times(2);
+  service()->FetchCollectionImageInfo("shapes");
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(service()->collection_images().empty());
+  EXPECT_THAT(service()->collection_images().at(0).collection_id, "shapes");
+
+  service()->FetchCollectionImageInfo("colors");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_THAT(service()->collection_images().at(0).collection_id, "colors");
 }
 
 TEST_P(NtpBackgroundServiceTest, NextImageNetworkError) {

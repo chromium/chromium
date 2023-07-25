@@ -276,7 +276,6 @@ void NtpBackgroundService::OnCollectionImageInfoFetchComplete(
           AddOptionsToImageURL(image.image_url(), thumbnail_image_options_)));
     }
     NotifyObservers(FetchComplete::COLLECTION_IMAGE_INFO);
-    requested_collection_id_.clear();
   }
 }
 
@@ -695,6 +694,7 @@ void NtpBackgroundService::NotifyObservers(FetchComplete fetch_complete) {
         observer.OnCollectionInfoAvailable();
         break;
       case FetchComplete::COLLECTION_IMAGE_INFO:
+        requested_collection_id_.clear();
         observer.OnCollectionImagesAvailable();
         break;
       case FetchComplete::NEXT_IMAGE_INFO:
