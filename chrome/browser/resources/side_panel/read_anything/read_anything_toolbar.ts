@@ -19,12 +19,14 @@ export interface ReadAnythingToolbar {
   $: {
     menu: CrActionMenuElement,
     colorSubmenu: CrActionMenuElement,
+    lineSpacingSubmenu: CrActionMenuElement,
   };
 }
 
 
 const ReadAnythingToolbarBase = WebUiListenerMixin(PolymerElement);
 export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
+  contentPage = document.querySelector('read-anything-app');
   static get is() {
     return 'read-anything-toolbar';
   }
@@ -51,6 +53,10 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     this.openMenu_(this.$.colorSubmenu);
   }
 
+  private onShowLineSpacingSubMenuClick_() {
+    this.openMenu_(this.$.lineSpacingSubmenu);
+  }
+
   private onBackClick_() {
     this.openMenu_(this.$.menu);
   }
@@ -58,12 +64,35 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
   private openMenu_(menuToOpen: CrActionMenuElement) {
     this.$.menu.close();
     this.$.colorSubmenu.close();
+    this.$.lineSpacingSubmenu.close();
 
     const shadowRoot = this.shadowRoot;
     assert(shadowRoot);
     const button = shadowRoot.getElementById('settings');
     assert(button);
     menuToOpen.showAt(button, this.showAtPositionConfig_);
+  }
+
+  // TODO(b/1465029): While there is a toolbar in both WebUI and View,
+  // investigate if there's an easy way to keep the line spacing numbers
+  // consistent with the numbers defined for View in
+  // ReadAnythingAppModel#GetLineSpacingValue.
+  private onLineSpacingStandardClick_() {
+    if (this.contentPage) {
+      this.contentPage.updateLineSpacing('1.35');
+    }
+  }
+
+  private onLineSpacingLooseClick_() {
+    if (this.contentPage) {
+      this.contentPage.updateLineSpacing('1.5');
+    }
+  }
+
+  private onLineSpacingVeryLooseClick_() {
+    if (this.contentPage) {
+      this.contentPage.updateLineSpacing('2');
+    }
   }
 }
 

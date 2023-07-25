@@ -377,6 +377,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
   }
 
+  updateLineSpacing(newLineHeight: string) {
+    this.updateStyles({
+      '--line-height': newLineHeight,
+    });
+  }
+
   updateTheme() {
     const foregroundColor:
         SkColor = {value: chrome.readingMode.foregroundColor};

@@ -18,6 +18,7 @@
       iron-icon="cr:settings_icon"
       on-click="onShowSettingsMenuClick_">
   </cr-icon-button>
+
   <cr-action-menu id="menu">
     <span class="dropdown-item section">
       $i18n{displaySectionTitle}
@@ -37,7 +38,7 @@
       </iron-icon>
       $i18n{themeTitle}
     </button>
-    <button class="dropdown-item">
+    <button class="dropdown-item" on-click="onShowLineSpacingSubMenuClick_">
       <iron-icon class="button-image" icon="read-anything:line-spacing">
       </iron-icon>
       $i18n{lineSpacingTitle}
@@ -72,6 +73,27 @@
     <button class="dropdown-item">
       <iron-icon class="button-image" icon="read-anything:blue-theme"></iron-icon>
       $i18n{blueColorTitle}
+    </button>
+  </cr-action-menu>
+  <cr-action-menu id="lineSpacingSubmenu">
+    <button class="dropdown-item back" on-click="onBackClick_">
+      <iron-icon class="button-image" icon="cr:arrow-back"></iron-icon>
+      $i18n{back}
+    </button>
+    <button class="dropdown-item" on-click="onLineSpacingStandardClick_">
+      <iron-icon class="button-image"
+      icon="read-anything:line-spacing-standard"></iron-icon>
+      $i18n{lineSpacingStandardTitle}
+    </button>
+    <button class="dropdown-item" on-click="onLineSpacingLooseClick_">
+      <iron-icon class="button-image"
+      icon="read-anything:line-spacing-loose"></iron-icon>
+      $i18n{lineSpacingLooseTitle}
+    </button>
+    <button class="dropdown-item" on-click="onLineSpacingVeryLooseClick_">
+      <iron-icon class="button-image"
+      icon="read-anything:line-spacing-very-loose"></iron-icon>
+      $i18n{lineSpacingVeryLooseTitle}
     </button>
   </cr-action-menu>
 </div>
