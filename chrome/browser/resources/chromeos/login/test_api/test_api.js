@@ -211,7 +211,41 @@ class EnrollmentScreenTester extends ScreenElementApi {
 class UserCreationScreenTester extends ScreenElementApi {
   constructor() {
     super('user-creation');
+    this.personalCrButton = new PolymerElementApi(this, '#selfButton');
+    this.enrollCrButton = new PolymerElementApi(this, '#enrollButton');
+    this.enrollTriageCrButton =
+        new PolymerElementApi(this, '#triageEnrollButton');
     this.nextButton = new PolymerElementApi(this, '#nextButton');
+    this.enrollNextButton =
+        new PolymerElementApi(this, '#enrollTriageNextButton');
+  }
+
+  /**
+   * Presses enroll device button to select it in enroll triage step.
+   */
+  selectEnrollTriageButton() {
+    this.enrollTriageCrButton.click();
+  }
+
+  /**
+   * Presses for personal use button to select it.
+   */
+  selectPersonalUser() {
+    this.personalCrButton.click();
+  }
+
+  /**
+   * Presses for work button to select it.
+   */
+  selectForWork() {
+    this.enrollCrButton.click();
+  }
+
+  /**
+   * Presses next button in enroll-triage step.
+   */
+  clickEnrollNextButton() {
+    this.enrollNextButton.click();
   }
 }
 
@@ -941,6 +975,17 @@ class GaiaInfoScreenTester extends ScreenElementApi {
   }
 }
 
+class ConsumerUpdateScreenTester extends ScreenElementApi {
+  constructor() {
+    super('consumer-update');
+    this.skipButton = new PolymerElementApi(this, '#skipButton');
+  }
+
+  clickSkip() {
+    this.skipButton.click();
+  }
+}
+
 export class OobeApiProvider {
   constructor() {
     this.screens = {
@@ -968,6 +1013,7 @@ export class OobeApiProvider {
       SmartPrivacyProtectionScreen: new SmartPrivacyProtectionScreenTester(),
       CryptohomeRecoverySetupScreen: new CryptohomeRecoverySetupScreenTester(),
       GaiaInfoScreen: new GaiaInfoScreenTester(),
+      ConsumerUpdateScreen: new ConsumerUpdateScreenTester(),
     };
 
     this.loginWithPin = function(username, pin) {
