@@ -93,6 +93,10 @@ bool DrivePinningScreen::ShouldBeSkipped(const WizardContext& context) const {
     return true;
   }
 
+  if (!drive_pinning_available_) {
+    return true;
+  }
+
   if (features::IsOobeChoobeEnabled()) {
     auto* choobe_controller =
         WizardController::default_controller()->choobe_flow_controller();
@@ -102,7 +106,7 @@ bool DrivePinningScreen::ShouldBeSkipped(const WizardContext& context) const {
     }
   }
 
-  return !drive_pinning_available_;
+  return false;
 }
 
 bool DrivePinningScreen::MaybeSkip(WizardContext& context) {
