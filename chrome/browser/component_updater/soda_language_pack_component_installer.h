@@ -25,16 +25,12 @@ class FilePath;
 
 namespace component_updater {
 
-// Success callback to be run after the component is downloaded.
-using OnSodaLanguagePackComponentInstalledCallback =
-    base::RepeatingCallback<void(const base::FilePath&)>;
-
 class SodaLanguagePackComponentInstallerPolicy
     : public ComponentInstallerPolicy {
  public:
   SodaLanguagePackComponentInstallerPolicy(
       speech::SodaLanguagePackComponentConfig language_config,
-      OnSodaLanguagePackComponentInstalledCallback on_installed_callback,
+      PrefService* prefs,
       OnSodaLanguagePackComponentReadyCallback on_ready_callback);
   ~SodaLanguagePackComponentInstallerPolicy() override;
 
@@ -71,7 +67,7 @@ class SodaLanguagePackComponentInstallerPolicy
 
   speech::SodaLanguagePackComponentConfig language_config_;
 
-  OnSodaLanguagePackComponentInstalledCallback on_installed_callback_;
+  raw_ptr<PrefService> prefs_;
   OnSodaLanguagePackComponentReadyCallback on_ready_callback_;
 };
 
