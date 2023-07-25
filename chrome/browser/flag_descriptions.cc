@@ -5869,6 +5869,12 @@ const char kEnablePerDeskZOrderDescription[] =
     "means that all-desk windows will not keep popping to the front when "
     "switching desks.";
 
+const char kEnableRemoveStalePolicyPinnedAppsFromShelfName[] =
+    "Enable removing stale policy-pinned apps from shelf.";
+const char kEnableRemoveStalePolicyPinnedAppsFromShelfDescription[] =
+    "If enabled, allows the system to remove apps that were once pinned to the "
+    "shelf by PinnedLauncherApps policy but are no longer listed in it.";
+
 const char kEnableSeamlessRefreshRateSwitchingName[] =
     "Seamless Refresh Rate Switching";
 const char kEnableSeamlessRefreshRateSwitchingDescription[] =

@@ -6378,6 +6378,11 @@ const FeatureEntry kFeatureEntries[] = {
          optimization_guide::features::kPageVisibilityPageContentAnnotations)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-remove-stale-policy-pinned-apps-from-shelf",
+     flag_descriptions::kEnableRemoveStalePolicyPinnedAppsFromShelfName,
+     flag_descriptions::kEnableRemoveStalePolicyPinnedAppsFromShelfDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kRemoveStalePolicyPinnedAppsFromShelf)},
     {"handwriting-gesture-editing",
      flag_descriptions::kHandwritingGestureEditingName,
      flag_descriptions::kHandwritingGestureEditingDescription, kOsCrOS,

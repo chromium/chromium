@@ -3374,6 +3374,9 @@ extern const char kEnablePalmSuppressionDescription[];
 extern const char kEnablePerDeskZOrderName[];
 extern const char kEnablePerDeskZOrderDescription[];
 
+extern const char kEnableRemoveStalePolicyPinnedAppsFromShelfName[];
+extern const char kEnableRemoveStalePolicyPinnedAppsFromShelfDescription[];
+
 extern const char kEnableSeamlessRefreshRateSwitchingName[];
 extern const char kEnableSeamlessRefreshRateSwitchingDescription[];
 

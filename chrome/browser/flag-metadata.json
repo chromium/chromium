@@ -3294,6 +3294,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "enable-remove-stale-policy-pinned-apps-from-shelf",
+    "owners": [ "greengrape" ],
+    "expiry_milestone": 122
+  },
+  {
     "name": "enable-resampling-scroll-events-experimental-prediction",
     "owners": [ "input-dev" ],
     "expiry_milestone": 95
