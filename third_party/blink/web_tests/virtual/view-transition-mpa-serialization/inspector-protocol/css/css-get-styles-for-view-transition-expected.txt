@@ -329,6 +329,10 @@ The test verifies functionality of querying style information for view-transitio
                                         name : writing-mode
                                         value : horizontal-tb
                                     }
+                                    [4] : {
+                                        name : mix-blend-mode
+                                        value : normal
+                                    }
                                 ]
                                 shorthandEntries : [
                                 ]
@@ -546,6 +550,10 @@ The test verifies functionality of querying style information for view-transitio
                                     [3] : {
                                         name : writing-mode
                                         value : horizontal-tb
+                                    }
+                                    [4] : {
+                                        name : mix-blend-mode
+                                        value : normal
                                     }
                                 ]
                                 shorthandEntries : [
@@ -2181,6 +2189,10 @@ Dumping styles for : ::view-transition-group with id root{
                                 name : writing-mode
                                 value : horizontal-tb
                             }
+                            [4] : {
+                                name : mix-blend-mode
+                                value : normal
+                            }
                         ]
                         shorthandEntries : [
                         ]
@@ -3052,6 +3064,10 @@ Dumping styles for : ::view-transition-group with id shared{
                             [3] : {
                                 name : writing-mode
                                 value : horizontal-tb
+                            }
+                            [4] : {
+                                name : mix-blend-mode
+                                value : normal
                             }
                         ]
                         shorthandEntries : [

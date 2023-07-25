@@ -55,6 +55,10 @@ struct BLINK_COMMON_EXPORT
     return r.container_writing_mode;
   }
 
+  static uint8_t mix_blend_mode(const blink::ViewTransitionElement& r) {
+    return r.mix_blend_mode;
+  }
+
   static bool Read(blink::mojom::ViewTransitionElementDataView r,
                    blink::ViewTransitionElement* out);
 };

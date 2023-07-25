@@ -18,6 +18,7 @@ struct ViewTransitionElement {
   int32 paint_order;
   gfx.mojom.RectF? captured_rect_in_layout_space;
   uint8 container_writing_mode;
+  uint8 mix_blend_mode;
 };
 
 struct ViewTransitionState {

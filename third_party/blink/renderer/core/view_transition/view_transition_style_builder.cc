@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition_style_builder.h"
 
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -119,7 +120,8 @@ String ViewTransitionStyleBuilder::AddKeyframes(
 void ViewTransitionStyleBuilder::AddContainerStyles(
     const String& tag,
     const ContainerProperties& properties,
-    WritingMode writing_mode) {
+    WritingMode writing_mode,
+    BlendMode blend_mode) {
   std::ostringstream writing_mode_stream;
   writing_mode_stream << writing_mode;
 
@@ -130,6 +132,7 @@ void ViewTransitionStyleBuilder::AddContainerStyles(
         height: %.3fpx;
         transform: %s;
         writing-mode: %s;
+        mix-blend-mode: %s;
       )CSS",
       properties.border_box_size_in_css_space.width.ToFloat(),
       properties.border_box_size_in_css_space.height.ToFloat(),
@@ -138,7 +141,8 @@ void ViewTransitionStyleBuilder::AddContainerStyles(
           ->CssText()
           .Utf8()
           .c_str(),
-      writing_mode_stream.str().c_str());
+      writing_mode_stream.str().c_str(),
+      BlendModeToString(blend_mode).Utf8().c_str());
 
   AddRules(kGroupTagName, tag, rule_builder.ReleaseString());
 }
