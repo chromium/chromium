@@ -302,6 +302,7 @@ public class TabListCoordinator
                                                   : LinearLayoutManager.HORIZONTAL,
                         false));
             }
+            mMediator.setRecyclerViewItemAnimationToggle(mRecyclerView::setDisableItemAnimations);
         }
 
         if (mMode == TabListMode.GRID) {
