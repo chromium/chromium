@@ -6484,6 +6484,9 @@ crbug.com/1459347 [ Fuchsia ] paint/invalidation/shadow-multiple.html [ Failure 
 # Remove when crbug.com/1453780 is fixed
 crbug.com/1453780 external/wpt/infrastructure/testdriver/test_win_open_with_interaction.html [ Failure Pass ]
 
+# Temporarily disable test to land frontend color and margin changes
+crbug.com/1456690 http/tests/devtools/console/console-viewport-control.js [ Failure Pass ]
+
 # Sheriff 2023-07-04
 crbug.com/391068 http/tests/websocket/close-code-and-reason.html [ Failure Pass ]
 
