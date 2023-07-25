@@ -149,6 +149,12 @@
 
 #pragma mark - Private
 
+- (void)stopUMACoordinator {
+  [self.UMACoordinator stop];
+  self.UMACoordinator.delegate = nil;
+  self.UMACoordinator = nil;
+}
+
 // Starts the coordinator to present the Add Account module.
 - (void)triggerAddAccount {
   [self.mediator userAttemptedToSignin];
@@ -317,7 +323,7 @@
                         UMAReportingUserChoice:(BOOL)UMAReportingUserChoice {
   DCHECK(self.UMACoordinator);
   DCHECK_EQ(self.UMACoordinator, coordinator);
-  self.UMACoordinator = nil;
+  [self stopUMACoordinator];
   DCHECK(self.mediator);
   self.mediator.UMAReportingUserChoice = UMAReportingUserChoice;
 }
