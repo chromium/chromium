@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_PRIVACY_HUB_PRIVACY_HUB_UTIL_H_
 #define CHROME_BROWSER_ASH_PRIVACY_HUB_PRIVACY_HUB_UTIL_H_
 
-#include "ash/public/cpp/privacy_hub_delegate.h"
+#include <string>
+
+class AppAccessNotifier;
 
 namespace ash {
 
@@ -43,6 +45,9 @@ class ScopedCameraLedFallbackForTesting {
   explicit ScopedCameraLedFallbackForTesting(bool value);
   ~ScopedCameraLedFallbackForTesting();
 };
+
+// Sets an AppAccessNotifier instance to be used by the privacy hub
+void SetAppAccessNotifier(AppAccessNotifier* app_access_notifier);
 
 }  // namespace privacy_hub_util
 

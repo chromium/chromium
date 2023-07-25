@@ -30,6 +30,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shell.h"
+#include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/pixel/ash_pixel_diff_util.h"
@@ -158,10 +159,25 @@ void AshTestBase::SetUp(std::unique_ptr<TestShellDelegate> delegate) {
   ash_test_helper_ = std::make_unique<AshTestHelper>(
       test_context_factories_->GetContextFactory());
   ash_test_helper_->SetUp(std::move(params));
+
+  // Creates a dummy `SensorDisabledNotificationDelegate` to avoid a crash due
+  // to it missing in tests.
+  class DummyDelegate : public SensorDisabledNotificationDelegate {
+    std::vector<std::u16string> GetAppsAccessingSensor(Sensor sensor) override {
+      return {};
+    }
+  };
+  scoped_disabled_notification_delegate_ =
+      std::make_unique<ScopedSensorDisabledNotificationDelegateForTest>(
+          std::make_unique<DummyDelegate>());
 }
 
 void AshTestBase::TearDown() {
   teardown_called_ = true;
+
+  // We need to destroy the delegate while the Ash still exists.
+  scoped_disabled_notification_delegate_.reset();
+
   // Make sure that we can exit tablet mode before shutdown correctly.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
   Shell::Get()->session_controller()->NotifyChromeTerminating();

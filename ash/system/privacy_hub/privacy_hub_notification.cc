@@ -7,15 +7,16 @@
 #include <iterator>
 #include <string>
 
-#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/shell.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_metrics.h"
 #include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
+#include "ash/system/privacy_hub/sensor_disabled_notification_delegate.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/enum_set.h"
 #include "components/vector_icons/vector_icons.h"
+#include "privacy_hub_notification_controller.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
@@ -267,8 +268,11 @@ std::vector<std::u16string> PrivacyHubNotification::GetAppsAccessingSensors(
         sensor_apps = controller->GetActiveApps(remaining_capacity);
       }
     } else {
-      if (SensorDisabledNotificationDelegate* delegate =
-              SensorDisabledNotificationDelegate::Get()) {
+      if (PrivacyHubNotificationController* controller =
+              PrivacyHubNotificationController::Get()) {
+        SensorDisabledNotificationDelegate* delegate =
+            controller->sensor_disabled_notification_delegate();
+        CHECK(delegate);
         sensor_apps = delegate->GetAppsAccessingSensor(sensor);
       }
     }

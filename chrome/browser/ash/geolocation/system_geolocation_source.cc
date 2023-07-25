@@ -7,9 +7,9 @@
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
-#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/privacy_hub/sensor_disabled_notification_delegate.h"
 #include "base/check.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"

@@ -1909,6 +1909,8 @@ component("ash") {
     "system/privacy_hub/privacy_hub_notification.h",
     "system/privacy_hub/privacy_hub_notification_controller.cc",
     "system/privacy_hub/privacy_hub_notification_controller.h",
+    "system/privacy_hub/sensor_disabled_notification_delegate.cc",
+    "system/privacy_hub/sensor_disabled_notification_delegate.h",
     "system/privacy_hub/speak_on_mute_detection_privacy_switch_controller.cc",
     "system/privacy_hub/speak_on_mute_detection_privacy_switch_controller.h",
     "system/privacy_screen/privacy_screen_feature_pod_controller.cc",

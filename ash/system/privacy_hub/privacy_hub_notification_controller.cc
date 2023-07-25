@@ -7,7 +7,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/new_window_delegate.h"
-#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -19,12 +18,14 @@
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_metrics.h"
 #include "ash/system/privacy_hub/privacy_hub_notification.h"
+#include "ash/system/privacy_hub/sensor_disabled_notification_delegate.h"
 #include "ash/system/system_notification_controller.h"
 #include "base/containers/ring_buffer.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "components/prefs/pref_service.h"
+#include "privacy_hub_notification_controller.h"
 #include "ui/message_center/message_center.h"
 
 namespace ash {
@@ -389,6 +390,21 @@ void PrivacyHubNotificationController::
 
   pref_service->SetBoolean(pref_name, enabled);
   privacy_hub_metrics::LogSensorEnabledFromNotification(sensor, enabled);
+}
+
+std::unique_ptr<SensorDisabledNotificationDelegate>
+PrivacyHubNotificationController::SetSensorDisabledNotificationDelegate(
+    std::unique_ptr<SensorDisabledNotificationDelegate> delegate) {
+  std::swap(sensor_disabled_notification_delegate_, delegate);
+  return delegate;
+}
+
+SensorDisabledNotificationDelegate*
+PrivacyHubNotificationController::sensor_disabled_notification_delegate() {
+  SensorDisabledNotificationDelegate* delegate =
+      sensor_disabled_notification_delegate_.get();
+  CHECK(delegate);
+  return delegate;
 }
 
 void PrivacyHubNotificationController::AddSensor(Sensor sensor) {

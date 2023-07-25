@@ -6,11 +6,15 @@
 
 #include <string>
 
+#include "ash/public/cpp/privacy_hub_delegate.h"
 #include "ash/shell.h"
 #include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
+#include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
+#include "ash/system/privacy_hub/sensor_disabled_notification_delegate.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/ash/camera_presence_notifier.h"
+#include "chrome/browser/ui/ash/app_access_notifier.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::privacy_hub_util {
@@ -93,6 +97,38 @@ ScopedCameraLedFallbackForTesting::~ScopedCameraLedFallbackForTesting() {
   CHECK(camera_led_fallback_for_testing.has_value());
   camera_led_fallback_for_testing.reset();
   CHECK(!camera_led_fallback_for_testing.has_value());
+}
+
+void SetAppAccessNotifier(AppAccessNotifier* app_access_notifier) {
+  // Wraps the `AppAccessNotifier` to be used from
+  // `PrivacyHubNotificationController`.
+  class Wrapper : public SensorDisabledNotificationDelegate {
+   public:
+    explicit Wrapper(AppAccessNotifier* notifier)
+        : notifier_(raw_ref<AppAccessNotifier>::from_ptr(notifier)) {}
+
+    std::vector<std::u16string> GetAppsAccessingSensor(Sensor sensor) override {
+      switch (sensor) {
+        case Sensor::kCamera:
+          return notifier_->GetAppsAccessingCamera();
+        case Sensor::kMicrophone:
+          return notifier_->GetAppsAccessingMicrophone();
+        case Sensor::kLocation:
+          break;
+      }
+      NOTREACHED_NORETURN();
+    }
+
+   private:
+    raw_ref<AppAccessNotifier> notifier_;
+  };
+
+  PrivacyHubNotificationController* controller =
+      PrivacyHubNotificationController::Get();
+  CHECK(controller);
+  controller->SetSensorDisabledNotificationDelegate(
+      app_access_notifier ? std::make_unique<Wrapper>(app_access_notifier)
+                          : nullptr);
 }
 
 }  // namespace ash::privacy_hub_util

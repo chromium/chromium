@@ -6,7 +6,7 @@
 #define ASH_SYSTEM_PRIVACY_HUB_PRIVACY_HUB_METRICS_H_
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
+#include "ash/system/privacy_hub/sensor_disabled_notification_delegate.h"
 
 namespace ash::privacy_hub_metrics {
 using Sensor = SensorDisabledNotificationDelegate::Sensor;

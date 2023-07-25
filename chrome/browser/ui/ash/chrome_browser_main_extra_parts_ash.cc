@@ -306,9 +306,8 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
   // Passes (and continues passing) the current camera count to the PrivacyHub.
   ash::privacy_hub_util::SetUpCameraCountObserver();
 
-  if (ash::features::IsMicMuteNotificationsEnabled()) {
-    app_access_notifier_ = std::make_unique<AppAccessNotifier>();
-  }
+  app_access_notifier_ = std::make_unique<AppAccessNotifier>();
+  ash::privacy_hub_util::SetAppAccessNotifier(app_access_notifier_.get());
 
   // Instantiate DisplaySettingsHandler after CrosSettings has been
   // initialized.
@@ -382,9 +381,8 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   media_client_.reset();
   login_screen_client_.reset();
 
-  if (ash::features::IsMicMuteNotificationsEnabled()) {
-    app_access_notifier_.reset();
-  }
+  ash::privacy_hub_util::SetAppAccessNotifier(nullptr);
+  app_access_notifier_.reset();
 
   // Initialized in PreProfileInit (which may not get called in some tests).
   device::GeolocationManager::SetInstance(nullptr);

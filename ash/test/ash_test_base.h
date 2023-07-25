@@ -14,6 +14,7 @@
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/test_session_controller_client.h"
+#include "ash/system/privacy_hub/sensor_disabled_notification_delegate.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_types.h"
@@ -421,6 +422,9 @@ class AshTestBase : public testing::Test {
   std::unique_ptr<AshTestHelper> ash_test_helper_;
 
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
+
+  std::unique_ptr<ScopedSensorDisabledNotificationDelegateForTest>
+      scoped_disabled_notification_delegate_;
 };
 
 class NoSessionAshTestBase : public AshTestBase {

@@ -6,13 +6,13 @@
 
 #include <memory>
 
-#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
+#include "ash/system/privacy_hub/sensor_disabled_notification_delegate.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
-#include "privacy_hub_notification.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
@@ -93,7 +93,9 @@ class PrivacyHubNotificationTest : public AshTestBase {
   PrivacyHubNotification& notification() { return *notification_; }
 
   FakeSensorDisabledNotificationDelegate& sensor_delegate() {
-    return sensor_delegate_;
+    return static_cast<FakeSensorDisabledNotificationDelegate&>(
+        *PrivacyHubNotificationController::Get()
+             ->sensor_disabled_notification_delegate());
   }
 
   // testing::Test
@@ -116,9 +118,17 @@ class PrivacyHubNotificationTest : public AshTestBase {
                 IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES},
             base::MakeRefCounted<PrivacyHubNotificationClickDelegate>(
                 base::DoNothing())});
+
+    // Set up the fake SensorDisabledNotificationDelegate.
+    scoped_delegate_ =
+        std::make_unique<ScopedSensorDisabledNotificationDelegateForTest>(
+            std::make_unique<FakeSensorDisabledNotificationDelegate>());
   }
   // testing::Test
   void TearDown() override {
+    // We need to destroy the delegate while the Ash still exists.
+    scoped_delegate_.reset();
+
     notification_.reset();
     AshTestBase::TearDown();
   }
@@ -129,7 +139,8 @@ class PrivacyHubNotificationTest : public AshTestBase {
   }
 
  private:
-  FakeSensorDisabledNotificationDelegate sensor_delegate_;
+  std::unique_ptr<ScopedSensorDisabledNotificationDelegateForTest>
+      scoped_delegate_;
   std::unique_ptr<PrivacyHubNotification> notification_;
 };
 

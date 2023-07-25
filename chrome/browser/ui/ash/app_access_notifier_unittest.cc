@@ -178,13 +178,11 @@ class AppAccessNotifierBaseTest : public testing::Test {
   }
 
   std::vector<std::u16string> GetAppsAccessingCamera() {
-    return app_access_notifier_->GetAppsAccessingSensor(
-        ash::SensorDisabledNotificationDelegate::Sensor::kCamera);
+    return app_access_notifier_->GetAppsAccessingCamera();
   }
 
   std::vector<std::u16string> GetAppsAccessingMicrophone() {
-    return app_access_notifier_->GetAppsAccessingSensor(
-        ash::SensorDisabledNotificationDelegate::Sensor::kMicrophone);
+    return app_access_notifier_->GetAppsAccessingMicrophone();
   }
 
   static apps::AppPtr MakeApp(const std::string app_id,

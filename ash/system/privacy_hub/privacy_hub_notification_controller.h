@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/system/privacy_hub/privacy_hub_notification.h"
+#include "ash/system/privacy_hub/sensor_disabled_notification_delegate.h"
 
 namespace ash {
 
@@ -90,6 +90,15 @@ class ASH_EXPORT PrivacyHubNotificationController {
       SensorDisabledNotificationDelegate::Sensor sensor,
       const bool enabled);
 
+  // Sets the `SensorDisabledNotification` delegate. The original one is
+  // returned.
+  std::unique_ptr<SensorDisabledNotificationDelegate>
+  SetSensorDisabledNotificationDelegate(
+      std::unique_ptr<SensorDisabledNotificationDelegate> delegate);
+
+  // Retrieves the `SensorDisabledNotificationDelegate` or nullptr.
+  SensorDisabledNotificationDelegate* sensor_disabled_notification_delegate();
+
  private:
   void AddSensor(SensorDisabledNotificationDelegate::Sensor sensor);
   void RemoveSensor(SensorDisabledNotificationDelegate::Sensor sensor);
@@ -108,6 +117,8 @@ class ASH_EXPORT PrivacyHubNotificationController {
   std::unique_ptr<PrivacyHubNotification> combined_notification_;
   std::unique_ptr<PrivacyHubNotification> microphone_hw_switch_notification_;
   std::unique_ptr<PrivacyHubNotification> geolocation_notification_;
+  std::unique_ptr<SensorDisabledNotificationDelegate>
+      sensor_disabled_notification_delegate_;
 };
 
 }  // namespace ash

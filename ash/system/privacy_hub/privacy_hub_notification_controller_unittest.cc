@@ -8,13 +8,13 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_metrics.h"
+#include "ash/system/privacy_hub/sensor_disabled_notification_delegate.h"
 #include "ash/system/system_notification_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -30,14 +30,6 @@
 
 namespace ash {
 namespace {
-
-class FakeSensorDisabledNotificationDelegate
-    : public SensorDisabledNotificationDelegate {
- public:
-  std::vector<std::u16string> GetAppsAccessingSensor(Sensor sensor) override {
-    return {};
-  }
-};
 
 class MockNewWindowDelegate
     : public testing::NiceMock<ash::TestNewWindowDelegate> {
@@ -153,7 +145,6 @@ class PrivacyHubNotificationControllerTest : public AshTestBase {
   }
 
   raw_ptr<PrivacyHubNotificationController, DanglingUntriaged> controller_;
-  const FakeSensorDisabledNotificationDelegate delegate_;
   const base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<MockNewWindowDelegate, DanglingUntriaged> new_window_delegate_ =

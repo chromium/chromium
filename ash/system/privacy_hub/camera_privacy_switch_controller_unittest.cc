@@ -10,7 +10,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -18,6 +17,7 @@
 #include "ash/system/privacy_hub/privacy_hub_metrics.h"
 #include "ash/system/privacy_hub/privacy_hub_notification.h"
 #include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
+#include "ash/system/privacy_hub/sensor_disabled_notification_delegate.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
@@ -132,6 +132,17 @@ class PrivacyHubCameraControllerTestBase : public AshTestBase {
 
     controller_ = &Shell::Get()->privacy_hub_controller()->camera_controller();
     controller_->SetCameraPrivacySwitchAPIForTest(std::move(mock_switch));
+
+    // Set up the fake `SensorDisabledNotificationDelegate`.
+    scoped_delegate_ =
+        std::make_unique<ScopedSensorDisabledNotificationDelegateForTest>(
+            std::make_unique<FakeSensorDisabledNotificationDelegate>());
+  }
+
+  void TearDown() override {
+    // We need to destroy the delegate while the Ash still exists.
+    scoped_delegate_.reset();
+    AshTestBase::TearDown();
   }
 
   void SetUserPref(bool allowed) {
@@ -147,12 +158,12 @@ class PrivacyHubCameraControllerTestBase : public AshTestBase {
   }
 
   void LaunchAppAccessingCamera(const std::u16string& app_name) {
-    delegate_.LaunchAppAccessingCamera(app_name);
+    delegate()->LaunchAppAccessingCamera(app_name);
     controller_->ActiveApplicationsChanged(/*application_added=*/true);
   }
 
   void CloseAppAccessingCamera(const std::u16string& app_name) {
-    delegate_.CloseAppAccessingCamera(app_name);
+    delegate()->CloseAppAccessingCamera(app_name);
     controller_->ActiveApplicationsChanged(/*application_added=*/false);
   }
 
@@ -161,12 +172,19 @@ class PrivacyHubCameraControllerTestBase : public AshTestBase {
         PrivacyHubNotificationController::kCombinedNotificationId);
   }
 
+  FakeSensorDisabledNotificationDelegate* delegate() {
+    return static_cast<FakeSensorDisabledNotificationDelegate*>(
+        PrivacyHubNotificationController::Get()
+            ->sensor_disabled_notification_delegate());
+  }
+
   raw_ptr<::testing::NiceMock<MockSwitchAPI>, ExperimentalAsh> mock_switch_;
 
   raw_ptr<CameraPrivacySwitchController, ExperimentalAsh> controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
   const base::HistogramTester histogram_tester_;
-  FakeSensorDisabledNotificationDelegate delegate_;
+  std::unique_ptr<ScopedSensorDisabledNotificationDelegateForTest>
+      scoped_delegate_;
 };
 
 class PrivacyHubCameraControllerTest

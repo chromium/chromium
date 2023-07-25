@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/public/cpp/system_notification_builder.h"
+#include "ash/system/privacy_hub/sensor_disabled_notification_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"

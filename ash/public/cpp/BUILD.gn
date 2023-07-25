@@ -294,8 +294,6 @@ component("cpp") {
     "screen_backlight_observer.h",
     "screen_backlight_type.h",
     "select_to_speak_event_handler_delegate.h",
-    "sensor_disabled_notification_delegate.cc",
-    "sensor_disabled_notification_delegate.h",
     "session/scoped_screen_lock_blocker.h",
     "session/session_activation_observer.h",
     "session/session_controller.cc",
