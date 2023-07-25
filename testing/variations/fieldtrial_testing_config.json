@@ -5613,6 +5613,23 @@
             ]
         }
     ],
+    "EnterpriseReportingConnectorCrowdstrikeSignals": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrowdstrikeSignalReporting"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnterpriseReportingConnectorExtensionEvents": [
         {
             "platforms": [
