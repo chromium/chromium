@@ -92,6 +92,7 @@ export {setDarkModeEnabledAction, SetDarkModeEnabledAction, setColorSchemeAction
 export {setThemeProviderForTesting} from './theme/theme_interface_provider.js';
 export {ColorSchemeIconSvgElement} from './theme/color_scheme_icon_svg_element.js';
 export {DynamicColorElement} from './theme/dynamic_color_element.js';
+export {getThemeProvider} from './theme/theme_interface_provider.js';
 export {ThemeObserver} from './theme/theme_observer.js';
 export {TimeOfDayBannerElement} from './time_of_day_banner_element.js';
 export {AvatarCamera, AvatarCameraMode} from './user/avatar_camera_element.js';

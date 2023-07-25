@@ -4,9 +4,11 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {isGooglePhotosIntegrationEnabled} from './load_time_booleans.js';
+import {isGooglePhotosIntegrationEnabled, isPersonalizationJellyEnabled} from './load_time_booleans.js';
 import {Paths, PersonalizationRouter} from './personalization_router_element.js';
 import {PersonalizationStore} from './personalization_store.js';
+import {getThemeProvider} from './theme/theme_interface_provider.js';
+import {DEFAULT_COLOR_SCHEME} from './theme/utils.js';
 import {setFullscreenEnabledAction} from './wallpaper/wallpaper_actions.js';
 import {getWallpaperProvider} from './wallpaper/wallpaper_interface_provider.js';
 
@@ -29,6 +31,16 @@ function makeTransparent() {
 async function reset() {
   const wallpaperProvider = getWallpaperProvider();
   await wallpaperProvider.selectDefaultImage();
+
+  if (isPersonalizationJellyEnabled()) {
+    // Turn on dynamic color with default scheme.
+    const themeProvider = getThemeProvider();
+    themeProvider.setColorScheme(DEFAULT_COLOR_SCHEME);
+    const {colorScheme} = await themeProvider.getColorScheme();
+    assert(
+        colorScheme === DEFAULT_COLOR_SCHEME, 'reset to default color scheme');
+  }
+
   const router = PersonalizationRouter.instance();
   router.goToRoute(Paths.ROOT);
 }
