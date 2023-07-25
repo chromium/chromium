@@ -347,7 +347,7 @@ struct VectorTypeOperations {
       static_assert(sizeof(T) == sizeof(char), "size of type should be one");
       static_assert(!Allocator::kIsGarbageCollected,
                     "memset is unsupported for garbage-collected vectors.");
-      memset(dst, val, dst_end - dst);
+      memset(dst, static_cast<unsigned char>(val), dst_end - dst);
     } else if (origin == VectorOperationOrigin::kConstruction) {
       while (dst != dst_end) {
         ConstructTraits::Construct(dst, T(val));
