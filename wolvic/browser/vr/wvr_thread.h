@@ -22,6 +22,7 @@ class WvrThread : public base::android::JavaHandlerThread {
 
   ~WvrThread() override;
   WvrManager* GetWvrManager() { return wvr_manager_.get(); }
+  WvrGraphicsDelegate* GetWvrGraphics() { return wvr_graphics_.get(); }
 
  protected:
   void Init() override;
@@ -32,6 +33,7 @@ class WvrThread : public base::android::JavaHandlerThread {
 
   // Created on GL thread.
   std::unique_ptr<WvrManager> wvr_manager_;
+  std::unique_ptr<WvrGraphicsDelegate> wvr_graphics_;
 };
 
 }  // namespace wolvic

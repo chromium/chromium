@@ -5,23 +5,10 @@
 #include "wolvic/browser/vr/wvr_manager.h"
 
 #include "base/android/jni_string.h"
-#include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkEncodedImageFormat.h"
-#include "third_party/skia/include/core/SkImageEncoder.h"
-#include "third_party/skia/include/core/SkPixmap.h"
-#include "third_party/skia/include/core/SkStream.h"
 #include "ui/gfx/geometry/decomposed_transform.h"
 #include "ui/gfx/geometry/quaternion.h"
 #include "ui/gfx/geometry/transform.h"
-#include "ui/gl/android/surface_texture.h"
-#include "ui/gl/gl_context.h"
-#include "ui/gl/gl_display.h"
-#include "ui/gl/gl_implementation.h"
-#include "ui/gl/gl_surface.h"
-#include "ui/gl/gl_utils.h"
-#include "ui/gl/init/gl_factory.h"
 #include "wolvic/jni_headers/VRManager_jni.h"
-#include "wolvic/jni_headers/WVRSurfaceTexture_jni.h"
 
 namespace wolvic {
 
@@ -144,18 +131,10 @@ std::vector<device::mojom::XRViewPtr> CreateViews(
   return views;
 }
 
-int32_t GetNextTextureHandleId() {
-  static int32_t s_next_texture_handle_id = 0;
-  if (s_next_texture_handle_id == std::numeric_limits<int32_t>::max())
-    s_next_texture_handle_id = 0;
-  return ++s_next_texture_handle_id;
-}
-
 }  // namespace
 
 WvrManager::WvrManager(WvrGraphicsDelegate* graphics)
-    : texture_handle_id_(GetNextTextureHandleId()),
-      graphics_(graphics),
+    : graphics_(graphics),
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   JNIEnv* env = base::android::AttachCurrentThread();
   shmem_ = reinterpret_cast<mozilla::gfx::VRExternalShmem*>(
@@ -168,54 +147,6 @@ WvrManager::~WvrManager() {
   ClosePresentationBindings();
   ExitWebXRPresentation(base::NullCallback());
   webxr_.EndPresentation();
-
-  if (j_surface_texture_) {
-    JNIEnv* env = base::android::AttachCurrentThread();
-    Java_WVRSurfaceTexture_release(env, j_surface_texture_);
-  }
-}
-
-void WvrManager::InitializeGl(const gfx::Size& frame_size,
-                              base::OnceClosure callback) {
-  screen_size_ = frame_size;
-
-  gl::init::DisableANGLE();
-
-  gl::GLDisplay* display = nullptr;
-  if (gl::GetGLImplementation() == gl::kGLImplementationNone) {
-    display = gl::init::InitializeGLOneOff(/*system_device_id=*/0);
-    if (!display) {
-      LOG(ERROR) << "gl::init::InitializeGLOneOff failed";
-      return;
-    }
-  } else {
-    display = gl::GetDefaultDisplayEGL();
-  }
-
-  surface_ = gl::init::CreateOffscreenGLSurface(display, gfx::Size());
-
-  if (!surface_.get()) {
-    LOG(ERROR) << "gl::init::CreateOffscreenGLSurface failed";
-    return;
-  }
-
-  context_ = gl::init::CreateGLContext(nullptr, surface_.get(),
-                                       gl::GLContextAttribs());
-  if (!context_.get()) {
-    LOG(ERROR) << "gl::init::CreateGLContext failed";
-    return;
-  }
-  if (!context_->MakeCurrent(surface_.get())) {
-    LOG(ERROR) << "gl::GLContext::MakeCurrent() failed";
-    return;
-  }
-
-  glDisable(GL_DEPTH_TEST);
-  glDepthMask(GL_FALSE);
-
-  glGenTextures(1, &texture_id_);
-
-  std::move(callback).Run();
 }
 
 void WvrManager::StartWebXRPresentation(
@@ -260,26 +191,16 @@ bool WvrManager::IsOnWvrThread() const {
 
 void WvrManager::CreateOrResizeWebXrSurface(const gfx::Size& size) {
   DCHECK(IsOnWvrThread());
-  if (!surface_texture_) {
-    surface_texture_ = gl::SurfaceTexture::Create(texture_id_);
-    surface_texture_->SetFrameAvailableCallback(
-        base::BindRepeating(&WvrManager::OnWebXrFrameAvailable, GetWeakPtr()));
+  if (!graphics_->CreateOrResizeWebXrSurface(
+          size,
+          base::BindRepeating(&WvrManager::OnWebXrFrameAvailable,
+                              weak_ptr_factory_.GetWeakPtr()))) {
+    return;
   }
-
-  if (!j_surface_texture_) {
-    JNIEnv* env = base::android::AttachCurrentThread();
-    j_surface_texture_ = Java_WVRSurfaceTexture_create(
-        env, texture_handle_id_, surface_texture_->j_surface_texture());
-  }
-
-  surface_size_ = size;
-  surface_texture_->SetDefaultBufferSize(surface_size_.width(),
-                                         surface_size_.height());
-
   if (mailbox_bridge_)
     mailbox_bridge_->ResizeSurface(size.width(), size.height());
   else
-    CreateSurfaceBridge();
+    CreateSurfaceBridge(graphics_->webxr_surface_texture());
 }
 
 void WvrManager::OnGpuProcessConnectionReady() {
@@ -289,13 +210,16 @@ void WvrManager::OnGpuProcessConnectionReady() {
   webxr_.NotifyMailboxBridgeReady();
 }
 
-void WvrManager::CreateSurfaceBridge() {
+void WvrManager::CreateSurfaceBridge(
+    gl::SurfaceTexture* surface_texture) {
   DCHECK(!mailbox_bridge_);
-  DCHECK(surface_texture_);
+  DCHECK(!webxr_.mailbox_bridge_ready());
   mailbox_bridge_ = std::make_unique<webxr::MailboxToSurfaceBridgeImpl>();
-  mailbox_bridge_->CreateSurface(surface_texture_.get());
+  if (surface_texture)
+    mailbox_bridge_->CreateSurface(surface_texture);
   mailbox_bridge_->CreateAndBindContextProvider(
-      base::BindOnce(&WvrManager::OnGpuProcessConnectionReady, GetWeakPtr()));
+      base::BindOnce(&WvrManager::OnGpuProcessConnectionReady,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void WvrManager::ConnectPresentingService(
@@ -305,7 +229,8 @@ void WvrManager::ConnectPresentingService(
   ClosePresentationBindings();
 
   std::vector<device::mojom::XRViewPtr> views =
-      CreateViews(system_state_.displayState, nullptr /*pose*/, screen_size_);
+      CreateViews(system_state_.displayState, nullptr /*pose*/,
+                  graphics_->get_screen_size());
   int width = 0;
   int height = 0;
   for (const auto& view : views) {
@@ -524,7 +449,7 @@ void WvrManager::TryStartAnimatingFrame() {
   frame_data->frame_id = webxr_.StartFrameAnimating();
   frame_data->views =
       CreateViews(system_state_.displayState, &system_state_.sensorState.pose,
-                  surface_size_);
+                  graphics_->webxr_surface_size());
 
   frame_data->mojo_space_reset = true;
 
@@ -570,9 +495,9 @@ bool WvrManager::SubmitFrameInternal(int16_t frame_index) {
 
   auto& layer = browser_state_.layerState[0].layer_stereo_immersive;
   layer.frameId = frame_index;
-  layer.textureSize.width = surface_size_.width();
-  layer.textureSize.height = surface_size_.height();
-  layer.textureHandle = texture_handle_id_;
+  layer.textureSize.width = graphics_->webxr_surface_size().width();
+  layer.textureSize.height = graphics_->webxr_surface_size().height();
+  layer.textureHandle = graphics_->webxr_texture_handle();
 
   // for (auto& view: views) {
   for (int i = 0; i < 2; ++i) {

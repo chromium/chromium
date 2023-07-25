@@ -16,8 +16,9 @@ WvrThread::~WvrThread() {
 
 void WvrThread::Init() {
   DCHECK(!wvr_manager_);
-  auto graphics_delegate = std::make_unique<WvrGraphicsDelegate>();
-  wvr_manager_ = std::make_unique<WvrManager>(graphics_delegate.get());
+  wvr_graphics_ = std::make_unique<WvrGraphicsDelegate>();
+  wvr_manager_ = std::make_unique<WvrManager>(wvr_graphics_.get());
+  wvr_graphics_->set_webxr_presentation_state(wvr_manager_->webxr());
 
   std::move(initialized_callback_).Run();
 }
