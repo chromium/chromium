@@ -104,22 +104,31 @@ Log.d(TAG, "There are %d cats", countCats());  // countCats() not stripped.
 
 ### Asserts
 
-The Chromium build system strips asserts in release builds (via ProGuard) and
-enables them in debug builds (or when `dcheck_always_on=true`) (via a [build
-step](https://codereview.chromium.org/2517203002)). You should use asserts in
-the [same
-scenarios](https://chromium.googlesource.com/chromium/src/+/main/styleguide/c++/c++.md#CHECK_DCHECK_and-NOTREACHED)
-where C++ DCHECK()s make sense. For multi-statement asserts, use
-`org.chromium.build.BuildConfig.ENABLE_ASSERTS` to guard your code (similar to
-`#if DCHECK_IS_ON()` in C++).
-
-Example assert:
+The build system:
+ * strips asserts in release builds (via R8),
+ * enables them in debug builds,
+ * and enables them in report-only mode for Canary builds.
 
 ```java
-assert someCallWithoutSideEffects() : "assert description";
+// Code for assert expressions & messages is removed when asserts are disabled.
+assert someCallWithoutSideEffects(param) : "Call failed with: " + param;
 ```
 
-Example use of `BuildConfig.ENABLE_ASSERTS`:
+Use your judgement for when to use asserts vs exceptions. Generally speaking,
+use asserts to check program invariants (e.g. parameter constraints) and
+exceptions for unrecoverable error conditions (e.g. OS errors). You should tend
+to use exceptions more in privacy / security-sensitive code.
+
+Do not add checks when the code will crash anyways. E.g.:
+
+```java
+// Don't do this.
+assert(foo != null);
+foo.method(); // This will throw anyways.
+```
+
+For multi-statement asserts, use [`BuildConfig.ENABLE_ASSERTS`] to guard your
+code (similar to `#if DCHECK_IS_ON()` in C++). E.g.:
 
 ```java
 import org.chromium.build.BuildConfig;
@@ -127,10 +136,20 @@ import org.chromium.build.BuildConfig;
 ...
 
 if (BuildConfig.ENABLE_ASSERTS) {
-  // Any code here will be stripped in Release by ProGuard.
+  // Any code here will be stripped in release builds by R8.
   ...
 }
 ```
+
+[`BuildConfig.ENABLE_ASSERTS`]: https://source.chromium.org/search?q=symbol:BuildConfig%5C.ENABLE_ASSERTS
+
+#### DCHECKS vs Java Asserts
+
+`DCHECK` and `assert` are similar, but our guidance for them differs:
+ * CHECKs are preferred in C++, whereas asserts are preferred in Java.
+
+This is because as a memory-safe language, logic bugs in Java are much less
+likely to be exploitable.
 
 ### Streams
 
