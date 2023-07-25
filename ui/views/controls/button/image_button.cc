@@ -205,6 +205,7 @@ std::unique_ptr<ImageButton> ImageButton::CreateIconButton(
           icon_button.get()));
 
   icon_button->SetAccessibleName(accessible_name);
+  icon_button->SetTooltipText(accessible_name);
 
   return icon_button;
 }
