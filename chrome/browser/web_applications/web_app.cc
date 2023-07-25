@@ -690,9 +690,10 @@ void WebApp::SetIsolationData(IsolationData isolation_data) {
   isolation_data_ = isolation_data;
 }
 
-void WebApp::SetIsDefaultAppForSupportedLinks(
-    bool is_default_app_for_supported_links) {
-  is_default_app_for_supported_links_ = is_default_app_for_supported_links;
+void WebApp::SetIsUserSelectedAppForSupportedLinks(
+    bool is_user_selected_app_for_capturing_links) {
+  is_user_selected_app_for_capturing_links_ =
+      is_user_selected_app_for_capturing_links;
 }
 
 void WebApp::AddPlaceholderInfoToManagementExternalConfigMap(
@@ -967,7 +968,7 @@ bool WebApp::operator==(const WebApp& other) const {
         app.always_show_toolbar_in_fullscreen_,
         app.current_os_integration_states_,
         app.isolation_data_,
-        app.is_default_app_for_supported_links_
+        app.is_user_selected_app_for_capturing_links_
         // clang-format on
     );
   };
@@ -1178,8 +1179,8 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
 
   root.Set("isolation_data", OptionalAsDebugValue(isolation_data_));
 
-  root.Set("is_default_app_for_supported_links",
-           is_default_app_for_supported_links_);
+  root.Set("is_user_selected_app_for_capturing_links",
+           is_user_selected_app_for_capturing_links_);
 
   return base::Value(std::move(root));
 }

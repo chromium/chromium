@@ -26,7 +26,7 @@
    "file_handler_os_integration_state": "kDisabled",
    "file_handlers": [  ],
    "install_time": "1601-01-01 00:00:00.000 UTC",
-   "is_default_app_for_supported_links": false,
+   "is_user_selected_app_for_capturing_links": false,
    "is_from_sync_and_pending_installation": false,
    "is_generated_icon": false,
    "is_locally_installed": false,

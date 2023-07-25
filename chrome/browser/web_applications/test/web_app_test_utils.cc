@@ -932,7 +932,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
     app->SetIsolationData(isolation_data);
   }
 
-  app->SetIsDefaultAppForSupportedLinks(random.next_bool());
+  app->SetIsUserSelectedAppForSupportedLinks(random.next_bool());
   return app;
 }
 

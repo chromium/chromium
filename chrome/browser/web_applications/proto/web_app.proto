@@ -442,5 +442,5 @@ message WebAppProto {
 
   // Stores whether the current web app is set as the default app to capture
   // links.
-  optional bool is_default_app_for_supported_links = 63;
+  optional bool is_user_selected_app_for_capturing_links = 63;
 }
