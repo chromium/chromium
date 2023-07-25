@@ -14,6 +14,7 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Bookmark} from '../bookmark_type.js';
+import {Attachment} from '../constants.js';
 import {record, UserAction} from '../metrics.js';
 
 import {getTemplate} from './viewer-pdf-sidenav.html.js';
@@ -37,6 +38,11 @@ export class ViewerPdfSidenavElement extends PolymerElement {
     return {
       activePage: Number,
 
+      attachments: {
+        type: Array,
+        value: () => [],
+      },
+
       bookmarks: {
         type: Array,
         value: () => [],
@@ -54,6 +60,7 @@ export class ViewerPdfSidenavElement extends PolymerElement {
   }
 
   activePage: number;
+  attachments: Attachment[];
   bookmarks: Bookmark[];
   clockwiseRotations: number;
   docLength: number;
