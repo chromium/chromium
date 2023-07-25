@@ -2505,17 +2505,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithFlagForIndexedDB,
       FROM_HERE);
 }
 
-// TODO(crbug.com/1467261): Re-enable after fixing flaky test on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_DoesNotCacheIfBroadcastChannelStillOpen \
-  DISABLED_DoesNotCacheIfBroadcastChannelStillOpen
-#else
-#define MAYBE_DoesNotCacheIfBroadcastChannelStillOpen \
-  DoesNotCacheIfBroadcastChannelStillOpen
-#endif
-
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       MAYBE_DoesNotCacheIfBroadcastChannelStillOpen) {
+                       DoesNotCacheIfBroadcastChannelStillOpen) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
 
   // 1) Navigate to an empty page.
@@ -2537,7 +2528,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
   // 4) Go back.
-  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ASSERT_TRUE(HistoryGoBackAndWaitForNavigationFinished(web_contents()));
 
   // Because the RenderFrameHostManager changed, the blocklisted features will
   // be tracked in RenderFrameHostManager::UnloadOldFrame.
