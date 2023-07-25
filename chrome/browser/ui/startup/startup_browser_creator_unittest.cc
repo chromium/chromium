@@ -13,6 +13,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -22,10 +23,9 @@ TEST(StartupBrowserCreatorTest, ShouldLoadProfileWithoutWindow) {
   {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Forcibly set ash-chrome as the primary browser.
-    // This is the current default behavior.
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitWithFeatures(
-        {}, {ash::features::kLacrosSupport, ash::features::kLacrosPrimary});
+        {}, ash::standalone_browser::GetFeatureRefs());
 #endif
     EXPECT_FALSE(StartupBrowserCreator::ShouldLoadProfileWithoutWindow(
         base::CommandLine(base::CommandLine::NO_PROGRAM)));
@@ -40,10 +40,7 @@ TEST(StartupBrowserCreatorTest, ShouldLoadProfileWithoutWindow) {
     // Check what happens if lacros-chrome becomes the primary browser.
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitWithFeatures(
-        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-         ash::features::kLacrosOnly,
-         ash::features::kLacrosProfileMigrationForceOff},
-        {});
+        ash::standalone_browser::GetFeatureRefs(), {});
     auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
     auto* primary_user =
         fake_user_manager->AddUser(AccountId::FromUserEmail("test@test"));

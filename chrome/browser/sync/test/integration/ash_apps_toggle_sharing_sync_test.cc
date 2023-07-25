@@ -12,6 +12,7 @@
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "chromeos/crosapi/mojom/sync.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/sync.mojom.h"
 #include "components/sync/base/features.h"
@@ -69,11 +70,10 @@ class AppsSyncIsEnabledNotifiedToCrosapiObserverChecker
 class AshAppsToggleSharingSyncTest : public SyncTest {
  public:
   AshAppsToggleSharingSyncTest() : SyncTest(SINGLE_CLIENT) {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kLacrosSupport,
-                              ash::features::kLacrosPrimary,
-                              syncer::kSyncChromeOSAppsToggleSharing},
-        /*disabled_features=*/{});
+    std::vector<base::test::FeatureRef> enabled_features =
+        ash::standalone_browser::GetFeatureRefs();
+    enabled_features.push_back(syncer::kSyncChromeOSAppsToggleSharing);
+    feature_list_.InitWithFeatures(enabled_features, /*disabled_features=*/{});
   }
 
   ~AshAppsToggleSharingSyncTest() override = default;

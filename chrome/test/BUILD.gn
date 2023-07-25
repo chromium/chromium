@@ -8115,6 +8115,7 @@ test("unit_tests") {
       "//chromeos/ash/components/proximity_auth",
       "//chromeos/ash/components/proximity_auth:test_support",
       "//chromeos/ash/components/standalone_browser:standalone_browser",
+      "//chromeos/ash/components/standalone_browser:test_support",
       "//chromeos/ash/components/string_matching",
       "//chromeos/ash/components/sync_wifi",
       "//chromeos/ash/components/system",
@@ -11152,6 +11153,7 @@ if (!is_android) {
       deps += [
         "//chromeos/ash/components/browser_context_helper",
         "//chromeos/ash/components/dbus/shill",
+        "//chromeos/ash/components/standalone_browser:test_support",
         "//chromeos/ash/components/sync_wifi",
         "//chromeos/ash/components/sync_wifi:test_support",
         "//chromeos/printing",

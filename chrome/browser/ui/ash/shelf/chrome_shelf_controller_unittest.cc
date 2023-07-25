@@ -75,7 +75,6 @@
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/eche_app/app_id.h"
@@ -140,6 +139,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/exo/shell_surface_util.h"
@@ -1347,11 +1347,8 @@ class ChromeShelfControllerLacrosTest : public ChromeShelfControllerTestBase {
  public:
   ChromeShelfControllerLacrosTest() {
     feature_list_.InitWithFeatures(
-        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-         ash::features::kLacrosOnly,
-         ash::features::kLacrosProfileMigrationForceOff},
-        {});
-    crosapi::browser_util::SetProfileMigrationCompletedForTest(true);
+        /*enabled_features=*/ash::standalone_browser::GetFeatureRefs(),
+        /*disabled_features=*/{});
   }
   ChromeShelfControllerLacrosTest(const ChromeShelfControllerLacrosTest&) =
       delete;
@@ -1391,10 +1388,8 @@ class ChromeShelfControllerLacrosOnlyTest
  public:
   ChromeShelfControllerLacrosOnlyTest() {
     scoped_feature_list_.InitWithFeatures(
-        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-         ash::features::kLacrosOnly,
-         ash::features::kLacrosProfileMigrationForceOff},
-        {});
+        /*enabled_features=*/ash::standalone_browser::GetFeatureRefs(),
+        /*disabled_features=*/{});
   }
   ChromeShelfControllerLacrosOnlyTest(
       const ChromeShelfControllerLacrosOnlyTest&) = delete;
@@ -1521,12 +1516,13 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
     : public ChromeShelfControllerTestBase {
  protected:
   MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest() {
-    // `kLacrosSupport` is disabled since Lacros does not support the ChromeOS
-    // Legacy multi profile feature. `kMediaRouter` is disabled because it has
-    // unmet dependencies and is unrelated to this unit test.
+    // Lacros (standalone browser) is disabled since Lacros does not support the
+    // ChromeOS Legacy multi profile feature. `kMediaRouter` is disabled because
+    // it has unmet dependencies and is unrelated to this unit test.
+    auto disabled_features = ash::standalone_browser::GetFeatureRefs();
+    disabled_features.push_back(media_router::kMediaRouter);
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{}, /*disabled_features=*/{
-            ash::features::kLacrosSupport, media_router::kMediaRouter});
+        /*enabled_features=*/{}, disabled_features);
   }
   MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest(
       const MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest&) =

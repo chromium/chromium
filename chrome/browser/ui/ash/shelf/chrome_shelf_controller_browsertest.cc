@@ -108,6 +108,7 @@
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/app_constants/constants.h"
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
@@ -317,7 +318,9 @@ class ShelfAppBrowserTest : public extensions::ExtensionBrowserTest {
  protected:
   ShelfAppBrowserTest() {
     // TODO(crbug.com/1258445): Update expectations to support Lacros.
-    scoped_feature_list_.InitAndDisableFeature(ash::features::kLacrosSupport);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/ash::standalone_browser::GetFeatureRefs());
   }
   ShelfAppBrowserTest(const ShelfAppBrowserTest&) = delete;
   ShelfAppBrowserTest& operator=(const ShelfAppBrowserTest&) = delete;
@@ -639,10 +642,8 @@ class UnpinnedBrowserShortcutTest : public extensions::ExtensionBrowserTest {
  protected:
   UnpinnedBrowserShortcutTest() {
     scoped_feature_list_.InitWithFeatures(
-        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-         ash::features::kLacrosOnly,
-         ash::features::kLacrosProfileMigrationForceOff},
-        {});
+        /*enabled_features=*/ash::standalone_browser::GetFeatureRefs(),
+        /*disabled_features=*/{});
   }
   UnpinnedBrowserShortcutTest(const UnpinnedBrowserShortcutTest&) = delete;
   UnpinnedBrowserShortcutTest& operator=(const UnpinnedBrowserShortcutTest&) =

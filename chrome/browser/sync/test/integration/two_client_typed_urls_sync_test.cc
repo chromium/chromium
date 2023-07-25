@@ -26,6 +26,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #endif
 
 using base::ASCIIToUTF16;
@@ -824,7 +825,9 @@ class TwoClientTypedUrlsSyncTestWithoutLacrosSupport
   TwoClientTypedUrlsSyncTestWithoutLacrosSupport() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // TODO(crbug.com/1263014): Update test to pass with Lacros enabled.
-    feature_list_.InitAndDisableFeature(ash::features::kLacrosSupport);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/ash::standalone_browser::GetFeatureRefs());
 #endif
   }
   ~TwoClientTypedUrlsSyncTestWithoutLacrosSupport() override = default;
