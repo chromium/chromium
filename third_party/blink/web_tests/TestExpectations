@@ -6554,3 +6554,7 @@ crbug.com/1466474 fast/history/history-back-twice-with-subframes-assert.html [ P
 crbug.com/1466702 [ Mac ] inspector-protocol/debugger/debugger-evaluate-in-worker-while-pause-in-page.js [ Failure Pass Timeout ]
 
 crbug.com/1462784 rootscroller/fixed-chaining-with-implicit.html [ Failure Pass ]
+
+# Gardener 2023-07-25
+crbug.com/1409152 http/tests/forms/color-picker-keyboard-cross-domain.php [ Failure Pass ]
+crbug.com/1409152 http/tests/forms/date-picker-keyboard-cross-domain.php [ Failure Pass ]
