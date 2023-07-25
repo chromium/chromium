@@ -93,7 +93,8 @@ TEST(ChromeOSSystemExtensionInfo, PwaOriginOverride) {
 }
 
 TEST(ChromeOSSystemExtensionInfo, IwaIdOverride) {
-  constexpr char kIwaIdOverride[] = "FakeIwaId";
+  constexpr char kIwaIdOverride[] =
+      "pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic";
 
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       chromeos::switches::kTelemetryExtensionIwaIdOverrideForTesting,
@@ -106,7 +107,7 @@ TEST(ChromeOSSystemExtensionInfo, IwaIdOverride) {
             google_extension_info.pwa_origin);
   EXPECT_THAT(google_extension_info.manufacturers,
               testing::UnorderedElementsAre("HP", "ASUS"));
-  EXPECT_EQ(kIwaIdOverride, google_extension_info.iwa_id);
+  EXPECT_EQ(kIwaIdOverride, google_extension_info.iwa_id->id());
 
   const auto& hp_extension_info = chromeos::GetChromeOSExtensionInfoById(
       "alnedpmllcfpgldkagbfbjkloonjlfjb");
@@ -114,5 +115,5 @@ TEST(ChromeOSSystemExtensionInfo, IwaIdOverride) {
             hp_extension_info.pwa_origin);
   EXPECT_THAT(hp_extension_info.manufacturers,
               testing::UnorderedElementsAre("HP"));
-  EXPECT_EQ(kIwaIdOverride, hp_extension_info.iwa_id);
+  EXPECT_EQ(kIwaIdOverride, hp_extension_info.iwa_id->id());
 }

@@ -10,6 +10,8 @@
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/logging.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
@@ -66,8 +68,8 @@ ChromeOSSystemExtensionInfoMap ConstructMap() {
           switches::kTelemetryExtensionPwaOriginOverrideForTesting)) {
     auto pwa_origin = command_line->GetSwitchValueASCII(
         switches::kTelemetryExtensionPwaOriginOverrideForTesting);
-    for (auto& it : map) {
-      it.second.pwa_origin = pwa_origin;
+    for (auto& [extension_id, extension_info] : map) {
+      extension_info.pwa_origin = pwa_origin;
     }
   }
 
@@ -75,17 +77,23 @@ ChromeOSSystemExtensionInfoMap ConstructMap() {
           switches::kTelemetryExtensionManufacturerOverrideForTesting)) {
     auto manufacturer = command_line->GetSwitchValueASCII(
         switches::kTelemetryExtensionManufacturerOverrideForTesting);
-    for (auto& it : map) {
-      it.second.manufacturers = {manufacturer};
+    for (auto& [extension_id, extension_info] : map) {
+      extension_info.manufacturers = {manufacturer};
     }
   }
 
   if (command_line->HasSwitch(
           switches::kTelemetryExtensionIwaIdOverrideForTesting)) {
-    auto iwa_id = command_line->GetSwitchValueASCII(
+    auto iwa_id_str = command_line->GetSwitchValueASCII(
         switches::kTelemetryExtensionIwaIdOverrideForTesting);
-    for (auto& it : map) {
-      it.second.iwa_id = iwa_id;
+    auto iwa_id_res = web_package::SignedWebBundleId::Create(iwa_id_str);
+    if (iwa_id_res.has_value()) {
+      for (auto& [extension_id, extension_info] : map) {
+        extension_info.iwa_id = iwa_id_res.value();
+      }
+    } else {
+      LOG(ERROR) << "Failed to parse iwa id " << iwa_id_str << ": "
+                 << iwa_id_res.error();
     }
   }
 
@@ -103,7 +111,7 @@ ChromeOSSystemExtensionInfoMap*& GetMap() {
 ChromeOSSystemExtensionInfo::ChromeOSSystemExtensionInfo(
     const base::flat_set<std::string>& manufacturers,
     const absl::optional<std::string>& pwa_origin,
-    const absl::optional<std::string>& iwa_id)
+    const absl::optional<web_package::SignedWebBundleId>& iwa_id)
     : manufacturers(manufacturers), pwa_origin(pwa_origin), iwa_id(iwa_id) {}
 
 ChromeOSSystemExtensionInfo::ChromeOSSystemExtensionInfo(

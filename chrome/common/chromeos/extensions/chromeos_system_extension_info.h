@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
@@ -22,9 +23,10 @@ extern const char kTelemetryExtensionIwaIdOverrideForTesting[];
 
 // Information related to a ChromeOS system extension.
 struct ChromeOSSystemExtensionInfo {
-  ChromeOSSystemExtensionInfo(const base::flat_set<std::string>& manufacturers,
-                              const absl::optional<std::string>& pwa_origin,
-                              const absl::optional<std::string>& iwa_id);
+  ChromeOSSystemExtensionInfo(
+      const base::flat_set<std::string>& manufacturers,
+      const absl::optional<std::string>& pwa_origin,
+      const absl::optional<web_package::SignedWebBundleId>& iwa_id);
   ChromeOSSystemExtensionInfo(const ChromeOSSystemExtensionInfo&);
   ChromeOSSystemExtensionInfo& operator=(const ChromeOSSystemExtensionInfo&);
   ~ChromeOSSystemExtensionInfo();
@@ -34,7 +36,7 @@ struct ChromeOSSystemExtensionInfo {
   // The connected pwa origin. |nullopt| if no connected pwa.
   absl::optional<std::string> pwa_origin;
   // The connected iwa id. |nullopt| if no connected iwa.
-  absl::optional<std::string> iwa_id;
+  absl::optional<web_package::SignedWebBundleId> iwa_id;
 };
 
 // Check if |id| is a ChromeOS system extension id.
