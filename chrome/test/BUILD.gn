@@ -9744,8 +9744,6 @@ if (!is_android) {
       "interaction/tracked_element_webcontents.h",
       "interaction/webcontents_interaction_test_util.cc",
       "interaction/webcontents_interaction_test_util.h",
-      "interaction/widget_focus_waiter.cc",
-      "interaction/widget_focus_waiter.h",
       "permissions/permission_request_manager_test_api.cc",
       "permissions/permission_request_manager_test_api.h",
     ]

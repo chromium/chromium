@@ -7,6 +7,7 @@
 
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation_traits.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/views_export.h"
 
@@ -75,5 +76,24 @@ class VIEWS_EXPORT AutoNativeNotificationDisabler {
 };
 
 }  // namespace views
+
+namespace base {
+
+// Specialization for use with base::ScopedObservation:
+template <>
+struct ScopedObservationTraits<views::WidgetFocusManager,
+                               views::WidgetFocusChangeListener> {
+ public:
+  static void AddObserver(views::WidgetFocusManager* source,
+                          views::WidgetFocusChangeListener* observer) {
+    source->AddFocusChangeListener(observer);
+  }
+  static void RemoveObserver(views::WidgetFocusManager* source,
+                             views::WidgetFocusChangeListener* observer) {
+    source->RemoveFocusChangeListener(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // UI_VIEWS_FOCUS_WIDGET_FOCUS_MANAGER_H_
