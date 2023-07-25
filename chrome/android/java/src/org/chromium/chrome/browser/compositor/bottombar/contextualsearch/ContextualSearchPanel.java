@@ -447,7 +447,12 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
     @Override
     public float getBarHeight() {
-        return super.getBarHeight() + getInBarRelatedSearchesAnimatedHeightDps();
+        // If the font is scaled, the preset bar height obtained from super.getBarHeight() may be
+        // smaller than the height required to display the bar's content. In such cases, it is
+        // necessary to select the larger value between the preset height and the actual content
+        // height.
+        return Math.max(super.getBarHeight(), getSearchBarControlMinHeightDps())
+                + getInBarRelatedSearchesAnimatedHeightDps();
     }
 
     @Override
@@ -952,6 +957,11 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     /** Returns whether we currently have a Search Bar created. */
     private boolean haveSearchBarControl() {
         return mSearchBarControl != null;
+    }
+
+    /** Returns the search bar's minimum required height. */
+    private float getSearchBarControlMinHeightDps() {
+        return mSearchBarControl == null ? 0 : mSearchBarControl.getMinHeightDps();
     }
 
     // ============================================================================================

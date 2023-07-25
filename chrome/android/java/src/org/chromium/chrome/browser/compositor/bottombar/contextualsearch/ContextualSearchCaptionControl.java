@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.Px;
+
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelAnimation;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelTextViewInflater;
@@ -172,9 +174,15 @@ public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater
         return mCaption.getText();
     }
 
-    /** Returns whether there's already a visible caption. */
+    /** @return whether there's already a visible caption. */
     boolean hasCaption() {
         return getIsVisible() && !TextUtils.isEmpty(getCaptionText());
+    }
+
+    /** @return the caption's TextView height if it is visible. */
+    @Px
+    int getTextViewHeight() {
+        return getIsVisible() ? mCaption.getHeight() : 0;
     }
 
     //========================================================================================

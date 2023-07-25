@@ -16,6 +16,7 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.SmallTest;
@@ -75,6 +76,7 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.url.GURL;
 
@@ -1025,5 +1027,38 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         // Check UMA metrics recorded.
         Assert.assertEquals(2, userActionMonitor.get("ContextualSearch.ManualRefine"));
         Assert.assertEquals(2, userActionMonitor.get("ContextualSearch.SelectionEstablished"));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"ContextualSearch"})
+    public void testPeekStateHeight() throws Exception {
+        final float defaultHeight = 70;
+        longPressNode("states");
+        assertLoadedNoUrl();
+        assertSearchTermRequested();
+
+        Assert.assertEquals("Default height for the bar should be 70 DP.", defaultHeight,
+                mPanel.getBarHeight(), 0.001f);
+
+        // Increase the selected TextView height to be taller than the default height.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mPanel.getSearchBarControl().setCaption("Increase Height");
+            TextView textView = mPanel.getSearchBarControl().getCaptionTextView();
+            float dpToPx = InstrumentationRegistry.getInstrumentation()
+                                   .getContext()
+                                   .getResources()
+                                   .getDisplayMetrics()
+                                   .density;
+            textView.getLayoutParams().height = (int) ((defaultHeight * 2) * dpToPx);
+            ViewUtils.requestLayout(textView, "Update the selected TextView height");
+        });
+
+        fakeResponse(false, 200, "states", "United States Intelligence", "alternate-term", false);
+        waitForPanelToPeek();
+
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(mPanel.getBarHeight(), Matchers.greaterThan(defaultHeight));
+        });
     }
 }
