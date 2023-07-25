@@ -808,6 +808,40 @@ public class ManageSyncSettingsTest {
     }
 
     @Test
+    @LargeTest
+    @Feature({"Sync", "RenderTest"})
+    @Policies.Add({
+        @Policies.Item(key = "SyncTypesListDisabled",
+                string =
+                        "[\"bookmarks\", \"readingList\", \"preferences\", \"passwords\", \"autofill\", \"typedUrls\", \"tabs\"]")
+    })
+    public void
+    testSyncSettingsTopViewWithSyncTypesManagedByPolicy() throws Exception {
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        final ManageSyncSettings fragment = startManageSyncPreferences();
+        render(fragment, "sync_settings_top_view_with_sync_types_disabled_by_policy");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync", "RenderTest"})
+    @Policies.Add({
+        @Policies.Item(key = "SyncTypesListDisabled",
+                string =
+                        "[\"bookmarks\", \"readingList\", \"preferences\", \"passwords\", \"autofill\", \"typedUrls\", \"tabs\"]")
+    })
+    public void
+    testSyncSettingsBottomViewWithSyncTypesManagedByPolicy() throws Exception {
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        final ManageSyncSettings fragment = startManageSyncPreferences();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
+            recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
+        });
+        render(fragment, "sync_settings_bottom_view_with_sync_types_disabled_by_policy");
+    }
+
+    @Test
     @SmallTest
     @Feature({"Sync"})
     public void testAdvancedSyncFlowFromSyncConsentDoesNotEnableUKM() throws Exception {

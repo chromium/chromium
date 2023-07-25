@@ -108,6 +108,7 @@ android_resources("managed_prefs_java_resources") {
 android_library("unit_device_javatests") {
   testonly = true
   sources = [
+    "widget/java/src/org/chromium/components/browser_ui/settings/ChromeBaseCheckBoxPreferenceTest.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeBasePreferenceTest.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeImageViewPreferenceTest.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeSwitchPreferenceTest.java",
@@ -187,6 +188,7 @@ android_resources("java_test_resources") {
   testonly = true
   sources = [
     "widget/java_test_resources/res/layout/chrome_managed_preference_with_custom_layout.xml",
+    "widget/java_test_resources/res/xml/test_chrome_base_checkbox_preference_screen.xml",
     "widget/java_test_resources/res/xml/test_chrome_base_preference_screen.xml",
     "widget/java_test_resources/res/xml/test_chrome_switch_preference_screen.xml",
   ]
