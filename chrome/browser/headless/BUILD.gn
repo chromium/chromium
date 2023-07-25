@@ -55,6 +55,7 @@ source_set("command_processor") {
   deps = [
     ":headless",
     "//base",
+    "//chrome/common:non_code_constants",
     "//components/headless/command_handler",
     "//content/public/browser",
   ]

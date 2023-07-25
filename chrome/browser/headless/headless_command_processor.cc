@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/headless/headless_mode_util.h"
+#include "chrome/common/chrome_switches.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -26,6 +27,12 @@ void ProcessHeadlessCommands(
     const GURL& target_url,
     HeadlessCommandHandler::DoneCallback done_callback) {
   DCHECK(browser_context);
+
+  // Ensure lazy loaded content is being captured by the commands.
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(switches::kDisableLazyLoading)) {
+    command_line->AppendSwitch(switches::kDisableLazyLoading);
+  }
 
   // Create web contents to run the command processing in.
   content::WebContents::CreateParams create_params(browser_context);
