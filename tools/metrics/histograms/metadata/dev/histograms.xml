@@ -193,16 +193,25 @@ chromium-metrics-reviews@google.com.
 <histogram name="DevTools.ExperimentDisabled" enum="DevtoolsExperiments"
     expires_after="2023-12-24">
   <owner>yangguo@chromium.org</owner>
-  <owner>changhao@chromium.org</owner>
+  <owner>changhaohan@chromium.org</owner>
   <summary>
     Fired when a devtools experiment is disabled from the experiments tab.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.ExperimentDisabledAtLaunch"
+    enum="DevtoolsExperiments" expires_after="2024-07-24">
+  <owner>yangguo@chromium.org</owner>
+  <owner>changhaohan@chromium.org</owner>
+  <summary>
+    Fires for each experiment that is disabled at the time of Devtools Launch.
   </summary>
 </histogram>
 
 <histogram name="DevTools.ExperimentEnabled" enum="DevtoolsExperiments"
     expires_after="2023-12-24">
   <owner>yangguo@chromium.org</owner>
-  <owner>changhao@chromium.org</owner>
+  <owner>changhaohan@chromium.org</owner>
   <summary>
     Fired when a devtools experiment is enabled from the experiments tab.
   </summary>
@@ -211,7 +220,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="DevTools.ExperimentEnabledAtLaunch" enum="DevtoolsExperiments"
     expires_after="2023-12-24">
   <owner>yangguo@chromium.org</owner>
-  <owner>changhao@chromium.org</owner>
+  <owner>changhaohan@chromium.org</owner>
   <summary>
     Fires for each experiment that is enabled at the time of Devtools Launch.
   </summary>
