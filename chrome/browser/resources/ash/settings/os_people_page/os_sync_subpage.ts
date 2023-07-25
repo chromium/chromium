@@ -87,11 +87,6 @@ export class OsSettingsSyncSubpageElement extends
       },
 
       /**
-       * Dictionary defining page availability.
-       */
-      pageAvailability: Object,
-
-      /**
        * The current sync preferences, supplied by SyncBrowserProxy.
        */
       syncPrefs: Object,

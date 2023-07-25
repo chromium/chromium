@@ -32,7 +32,6 @@ import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {LockStateMixin} from '../lock_state_mixin.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {OsPageAvailability} from '../os_page_availability.js';
 import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
@@ -69,11 +68,6 @@ export class OsSettingsPeoplePageElement extends
        * The current sync status, supplied by SyncBrowserProxy.
        */
       syncStatus: Object,
-
-      /**
-       * Dictionary defining page availability.
-       */
-      pageAvailability: Object,
 
       authTokenInfo_: {
         type: Object,
@@ -150,7 +144,6 @@ export class OsSettingsPeoplePageElement extends
   }
 
   syncStatus: SyncStatus;
-  pageAvailability: OsPageAvailability;
   private authTokenInfo_: chrome.quickUnlockPrivate.TokenInfo|undefined;
   private profileIconUrl_: string;
   private profileName_: string;

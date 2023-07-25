@@ -5,7 +5,7 @@
 import 'chrome://os-settings/os_settings.js';
 
 import {AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
-import {createPageAvailabilityForTesting, OsSettingsPeoplePageElement, OsSettingsRoutes, PageStatus, ProfileInfoBrowserProxy, ProfileInfoBrowserProxyImpl, Router, routes, settingMojom, SyncBrowserProxy, SyncBrowserProxyImpl} from 'chrome://os-settings/os_settings.js';
+import {OsSettingsPeoplePageElement, OsSettingsRoutes, PageStatus, ProfileInfoBrowserProxy, ProfileInfoBrowserProxyImpl, Router, routes, settingMojom, SyncBrowserProxy, SyncBrowserProxyImpl} from 'chrome://os-settings/os_settings.js';
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
@@ -36,7 +36,6 @@ suite('<os-settings-people-page>', () => {
 
   function createPage(): void {
     peoplePage = document.createElement('os-settings-people-page');
-    peoplePage.pageAvailability = createPageAvailabilityForTesting();
     document.body.appendChild(peoplePage);
     flush();
   }
