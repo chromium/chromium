@@ -31,6 +31,9 @@ class ChromiumDepGraph {
             licenseName: 'MIT License'),
         com_google_android_datatransport_transport_api: new PropertyOverride(
             description: 'Interfaces for data logging in GmsCore SDKs.'),
+        // Exclude androidx_window_window since it currently addes <uses-library>
+        // to our AndroidManfest.xml, which we don't allow. http://crbug.com/1302987
+        androidx_window_window: new PropertyOverride(exclude: true),
         com_google_android_datatransport_transport_backend_cct: new PropertyOverride(
             exclude: true),  // We're not using datatransport functionality.
         com_google_android_datatransport_transport_runtime: new PropertyOverride(
