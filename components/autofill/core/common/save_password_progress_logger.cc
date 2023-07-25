@@ -262,6 +262,8 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "PasswordManager::OnPasswordFormsRendered";
     case SavePasswordProgressLogger::STRING_ON_DYNAMIC_FORM_SUBMISSION:
       return "PasswordManager::OnDynamicFormSubmission";
+    case SavePasswordProgressLogger::STRING_ON_PASSWORD_FORM_CLEARED:
+      return "PasswordManager::OnPasswordFormCleared";
     case SavePasswordProgressLogger::STRING_ON_SUBFRAME_FORM_SUBMISSION:
       return "PasswordManager::OnSubframeFormSubmission";
     case SavePasswordProgressLogger::STRING_ON_ASK_USER_OR_SAVE_PASSWORD:
