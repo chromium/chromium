@@ -436,21 +436,6 @@ export class StatsRatesCalculator {
         },
       },
       {
-        type: 'track',
-        metricCalculators: {
-          framesSent: new RateCalculator('framesSent', 'timestamp'),
-          framesReceived: [
-            new RateCalculator('framesReceived', 'timestamp'),
-            new DifferenceCalculator('framesReceived',
-                'framesDecoded', 'framesDropped'),
-          ],
-          totalAudioEnergy: new AudioLevelRmsCalculator(),
-          jitterBufferDelay: new RateCalculator(
-              'jitterBufferDelay', 'jitterBufferEmittedCount',
-              CalculatorModifier.kMillisecondsFromSeconds),
-        },
-      },
-      {
         type: 'outbound-rtp',
         metricCalculators: {
           bytesSent: new RateCalculator(
