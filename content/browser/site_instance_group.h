@@ -205,6 +205,7 @@ class CONTENT_EXPORT SiteInstanceGroup
   base::flat_set<raw_ptr<SiteInstanceImpl>> site_instances_;
 
   base::ObserverList<Observer, true>::Unchecked observers_;
+  bool is_notifying_observers_ = false;
 
   base::WeakPtrFactory<SiteInstanceGroup> weak_ptr_factory_{this};
 };
