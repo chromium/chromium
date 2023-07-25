@@ -223,6 +223,7 @@ source_set("metrics_browser_agent") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/components/webui:url_constants",
     "//ios/web",
+    "//ios/web/common:features",
     "//ios/web/common:user_agent",
     "//services/metrics/public/cpp:ukm_builders",
     "//ui/base",

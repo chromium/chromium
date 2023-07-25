@@ -23,6 +23,10 @@
 #import "services/metrics/public/cpp/ukm_builders.h"
 #import "ui/base/page_transition_types.h"
 
+// To get access to UseSessionSerializationOptimizations().
+// TODO(crbug.com/1383087): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -43,10 +47,13 @@ TabUsageRecorderBrowserAgent::TabUsageRecorderBrowserAgent(Browser* browser)
     web_state->AddObserver(this);
   }
 
-  SessionRestorationBrowserAgent* restoration_agent =
-      SessionRestorationBrowserAgent::FromBrowser(browser);
-  if (restoration_agent)
-    restoration_agent->AddObserver(this);
+  if (!web::features::UseSessionSerializationOptimizations()) {
+    SessionRestorationBrowserAgent* restoration_agent =
+        SessionRestorationBrowserAgent::FromBrowser(browser);
+    if (restoration_agent) {
+      restoration_agent->AddObserver(this);
+    }
+  }
 
   // Register for backgrounding and foregrounding notifications. It is safe for
   // the block to capture a pointer to `this` as they are unregistered in the
@@ -82,10 +89,13 @@ void TabUsageRecorderBrowserAgent::BrowserDestroyed(Browser* browser) {
 
   web_state_list_->RemoveObserver(this);
   browser->RemoveObserver(this);
-  SessionRestorationBrowserAgent* restoration_agent =
-      SessionRestorationBrowserAgent::FromBrowser(browser);
-  if (restoration_agent)
-    restoration_agent->RemoveObserver(this);
+  if (!web::features::UseSessionSerializationOptimizations()) {
+    SessionRestorationBrowserAgent* restoration_agent =
+        SessionRestorationBrowserAgent::FromBrowser(browser);
+    if (restoration_agent) {
+      restoration_agent->RemoveObserver(this);
+    }
+  }
   if (application_backgrounding_observer_) {
     [[NSNotificationCenter defaultCenter]
         removeObserver:application_backgrounding_observer_];
