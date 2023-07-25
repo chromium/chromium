@@ -9,11 +9,13 @@ import("//ios/web/public/js_messaging/optimize_js.gni")
 source_set("annotations") {
   deps = [
     "//base",
+    "//components/prefs",
     "//components/shared_highlighting/ios",
     "//components/ukm/ios:ukm_url_recorder",
     "//ios/chrome/browser/mailto_handler",
     "//ios/chrome/browser/mailto_handler:mailto_handler_factory",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/text_selection",
     "//ios/public/provider/chrome/browser/context_menu:context_menu_api",
     "//ios/web/annotations",
@@ -31,6 +33,8 @@ source_set("annotations") {
   sources = [
     "annotations_tab_helper.h",
     "annotations_tab_helper.mm",
+    "annotations_util.h",
+    "annotations_util.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

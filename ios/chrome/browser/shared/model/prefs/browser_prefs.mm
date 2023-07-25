@@ -433,6 +433,10 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   // Deprecated 07/2023.
   registry->RegisterIntegerPref(kUnifiedConsentMigrationState, 0);
+
+  // Register pref used to detect addresses in web page
+  registry->RegisterBooleanPref(prefs::kDetectAddressesEnabled, true);
+  registry->RegisterBooleanPref(prefs::kDetectAddressesAccepted, false);
 }
 
 // This method should be periodically pruned of year+ old migrations.

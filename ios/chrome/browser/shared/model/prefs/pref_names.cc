@@ -54,6 +54,10 @@ const char kContextualSearchEnabled[] = "search.contextual_search_enabled";
 // absence of MIME charset specification
 const char kDefaultCharset[] = "intl.charset_default";
 
+// The prefs to enable address detection in web pages.
+const char kDetectAddressesAccepted[] = "ios.detect_addresses_accepted";
+const char kDetectAddressesEnabled[] = "ios.settings.detect_addresses_enabled";
+
 // Whether to send the DNT header.
 const char kEnableDoNotTrack[] = "enable_do_not_track";
 

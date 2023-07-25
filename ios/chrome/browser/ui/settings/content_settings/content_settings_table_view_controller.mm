@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/utils/content_setting_backed_boolean.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
+#import "ios/chrome/browser/web/annotations/annotations_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/common/features.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -60,6 +61,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeSettingsComposeEmail,
   ItemTypeSettingsShowLinkPreview,
   ItemTypeSettingsDefaultSiteMode,
+  ItemTypeSettingsDetectAddresses,
   ItemTypeSettingsWebInspector,
 };
 
@@ -80,8 +82,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // PrefBackedBoolean for "Show Link Preview" setting state.
 @property(nonatomic, strong, readonly) PrefBackedBoolean* linkPreviewEnabled;
 
+// PrefBackedBoolean for "Detect addresses" setting state.
+@property(nonatomic, strong, readonly)
+    PrefBackedBoolean* detectAddressesEnabled;
+
 // The item related to the switch for the "Show Link Preview" setting.
 @property(nonatomic, strong) TableViewSwitchItem* linkPreviewItem;
+
+// The item related to the switch for the "Detect Addresses" setting.
+@property(nonatomic, strong) TableViewSwitchItem* detectAddressesItem;
 
 // The item related to the default mode used to load the pages.
 @property(nonatomic, strong) TableViewDetailIconItem* defaultModeItem;
@@ -135,6 +144,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
         initWithPrefService:browserState->GetPrefs()
                    prefName:prefs::kLinkPreviewEnabled];
     [_linkPreviewEnabled setObserver:self];
+
+    _detectAddressesEnabled = [[PrefBackedBoolean alloc]
+        initWithPrefService:browserState->GetPrefs()
+                   prefName:prefs::kDetectAddressesEnabled];
+    [_detectAddressesEnabled setObserver:self];
 
     _requestDesktopSetting = [[ContentSettingBackedBoolean alloc]
         initWithHostContentSettingsMap:settingsMap
@@ -220,6 +234,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.defaultModeItem = [self defaultSiteMode];
   [model addItem:self.defaultModeItem
       toSectionWithIdentifier:SectionIdentifierSettings];
+
+  if (IsAddressDetectionEnabled()) {
+    [model addItem:[self detectAddressItem]
+        toSectionWithIdentifier:SectionIdentifierSettings];
+  }
 
   if (web::features::IsWebInspectorSupportEnabled()) {
     self.webInspectorItem = [self webInspectorStateItem];
@@ -324,6 +343,22 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return _linkPreviewItem;
 }
 
+- (TableViewSwitchItem*)detectAddressItem {
+  if (!_detectAddressesItem) {
+    _detectAddressesItem = [[TableViewSwitchItem alloc]
+        initWithType:ItemTypeSettingsDetectAddresses];
+
+    _detectAddressesItem.text =
+        l10n_util::GetNSString(IDS_IOS_DETECT_ADDRESSES_SETTING_TITLE);
+    _detectAddressesItem.detailText =
+        l10n_util::GetNSString(IDS_IOS_DETECT_ADDRESSES_SETTING_DESCRIPTION);
+    _detectAddressesItem.on = [self.detectAddressesEnabled value];
+    _detectAddressesItem.accessibilityIdentifier =
+        kSettingsDetectAddressesCellId;
+  }
+  return _detectAddressesItem;
+}
+
 - (TableViewDetailIconItem*)webInspectorStateItem {
   _webInspectorStateItem = [[TableViewDetailIconItem alloc]
       initWithType:ItemTypeSettingsWebInspector];
@@ -349,6 +384,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
         base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
     [switchCell.switchView addTarget:self
                               action:@selector(showLinkPreviewSwitchToggled:)
+                    forControlEvents:UIControlEventValueChanged];
+  }
+
+  if (itemType == ItemTypeSettingsDetectAddresses) {
+    TableViewSwitchCell* switchCell =
+        base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
+    [switchCell.switchView addTarget:self
+                              action:@selector(detectAddressesSwitchToggled:)
                     forControlEvents:UIControlEventValueChanged];
   }
   return cell;
@@ -431,6 +474,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
              observableBoolean == self.webInspectorEnabled) {
     self.webInspectorItem.detailText = [self webInspectorStateDescription];
     [self reconfigureCellsForItems:@[ self.webInspectorItem ]];
+  } else if (observableBoolean == self.detectAddressesEnabled) {
+    self.detectAddressItem.on = [self.detectAddressesEnabled value];
+    [self reconfigureCellsForItems:@[ self.detectAddressItem ]];
   } else {
     NOTREACHED();
   }
@@ -442,6 +488,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   BOOL newSwitchValue = sender.isOn;
   self.linkPreviewItem.on = newSwitchValue;
   [self.linkPreviewEnabled setValue:newSwitchValue];
+}
+
+- (void)detectAddressesSwitchToggled:(UISwitch*)sender {
+  BOOL newSwitchValue = sender.isOn;
+  self.detectAddressesItem.on = newSwitchValue;
+  [self.detectAddressesEnabled setValue:newSwitchValue];
 }
 
 #pragma mark - Private
