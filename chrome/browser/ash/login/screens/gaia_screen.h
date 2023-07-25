@@ -73,6 +73,8 @@ class GaiaScreen : public BaseScreen, public ScreenBacklightObserver {
   // Calls authenticator reload on JS side.
   void ReloadGaiaAuthenticator();
 
+  const std::string& EnrollmentNudgeEmail();
+
   // ScreenBacklightObserver:
   void OnScreenBacklightStateChanged(
       ScreenBacklightState screen_backlight_state) override;
@@ -119,6 +121,10 @@ class GaiaScreen : public BaseScreen, public ScreenBacklightObserver {
 
   base::WeakPtr<quick_start::TargetDeviceBootstrapController>
       bootstrap_controller_;
+
+  // Used to cache email between "identifierEntered" event and a switch to
+  // enrollment screen.
+  std::string enrollment_nudge_email_;
 
   base::WeakPtrFactory<GaiaScreen> weak_ptr_factory_{this};
 };

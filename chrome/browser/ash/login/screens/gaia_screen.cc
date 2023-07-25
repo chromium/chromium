@@ -171,6 +171,10 @@ void GaiaScreen::ReloadGaiaAuthenticator() {
   view_->ReloadGaiaAuthenticator();
 }
 
+const std::string& GaiaScreen::EnrollmentNudgeEmail() {
+  return enrollment_nudge_email_;
+}
+
 void GaiaScreen::ShowImpl() {
   if (!view_)
     return;
@@ -195,6 +199,11 @@ void GaiaScreen::ShowImpl() {
 }
 
 void GaiaScreen::HideImpl() {
+  // In the enrollment nudge flow it is assumed that `enrollment_nudge_email_`
+  // was passed to enrollment screen before the execution of
+  // `GaiaScreen::HideImpl()`. Here we are resetting it to make sure that we
+  // don't accidentally reuse it in the future.
+  enrollment_nudge_email_.clear();
   if (!view_)
     return;
   view_->SetGaiaPath(GaiaView::GaiaPath::kDefault);
@@ -329,6 +338,8 @@ void GaiaScreen::OnAccountStatusFetched(const std::string& user_email,
   if (status.enrollment_required) {
     const std::string email_domain =
         chrome::enterprise_util::GetDomainFromEmail(user_email);
+    // Cache email in case we will need to pass it to the enrollment screen.
+    enrollment_nudge_email_ = user_email;
     view_->ShowEnrollmentNudge(email_domain);
   }
 }

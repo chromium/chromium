@@ -870,10 +870,13 @@ base::Value::Dict EnrollmentScreenHandler::ScreenDataForOAuthEnrollment() {
   screen_data.Set("management_domain", config_.management_domain);
   screen_data.Set("gaia_buttons_type",
                   GetGaiaButtonsTypeString(gaia_buttons_type_));
-  const std::string app_locale = g_browser_process->GetApplicationLocale();
+  const std::string& app_locale = g_browser_process->GetApplicationLocale();
   if (!app_locale.empty())
     screen_data.Set("hl", app_locale);
-
+  const std::string& email = config_.enrollment_nudge_email;
+  if (!email.empty()) {
+    screen_data.Set("email", email);
+  }
   return screen_data;
 }
 

@@ -2990,6 +2990,9 @@ void WizardController::StartEnrollmentScreen(bool force_interactive) {
             : policy::EnrollmentConfig::MODE_MANUAL_REENROLLMENT;
   }
 
+  effective_config.enrollment_nudge_email =
+      GetScreen<GaiaScreen>()->EnrollmentNudgeEmail();
+
   EnrollmentScreen* screen = EnrollmentScreen::Get(screen_manager());
   screen->SetEnrollmentConfig(effective_config);
   UpdateStatusAreaVisibilityForScreen(EnrollmentScreenView::kScreenId);

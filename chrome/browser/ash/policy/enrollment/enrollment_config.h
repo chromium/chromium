@@ -246,6 +246,10 @@ struct EnrollmentConfig {
   // The path for the device policy blob data for the offline demo mode. This
   // should be empty and never used for other modes.
   base::FilePath offline_policy_path;
+
+  // User's email which can be passed from the Gaia screen in the enrollment
+  // nudge flow.
+  std::string enrollment_nudge_email;
 };
 
 }  // namespace policy

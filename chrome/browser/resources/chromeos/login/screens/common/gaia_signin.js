@@ -977,7 +977,6 @@ class GaiaSigninElement extends GaiaSigninElementBase {
    */
   onEnrollmentNudgeEnroll_() {
     this.$.enrollmentNudge.hideDialog();
-    // TODO(b/271104781): pass user's email to autofill it on enrollment screen
     this.userActed('startEnrollment');
   }
 

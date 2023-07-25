@@ -6,6 +6,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen_view.h"
+#include "chrome/browser/ash/login/test/enrollment_ui_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
@@ -64,9 +65,11 @@ class EnrollmentNudgeTest : public OobeBaseTest {
         {kSigninWebview, ".src.indexOf('#challengepassword') != -1"}));
   }
 
+  FakeGaiaMixin fake_gaia{&mixin_host_};
+  test::EnrollmentUIMixin enrollment_ui{&mixin_host_};
+
  private:
   base::test::ScopedFeatureList feature_list_;
-  FakeGaiaMixin fake_gaia_{&mixin_host_};
   EmbeddedPolicyTestServerMixin policy_server_{&mixin_host_};
 };
 
@@ -85,6 +88,11 @@ IN_PROC_BROWSER_TEST_F(EnrollmentNudgeTest, SwitchToEnrollment) {
   // Clicking on `kEnterpriseEnrollmentButton` should lead to enrollment screen.
   test::OobeJS().ClickOnPath(kEnterpriseEnrollmentButton);
   OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
+  enrollment_ui.WaitForStep(test::ui::kEnrollmentStepSignin);
+
+  // Check that email field on the enrollment screen is prefilled.
+  EXPECT_EQ(fake_gaia.fake_gaia()->prefilled_email(),
+            FakeGaiaMixin::kEnterpriseUser1);
 }
 
 IN_PROC_BROWSER_TEST_F(EnrollmentNudgeTest, UseAnotherAccountButton) {

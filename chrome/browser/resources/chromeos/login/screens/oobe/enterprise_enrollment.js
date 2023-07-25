@@ -333,6 +333,12 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
       }
       gaiaParams.flow = data.flow;
       gaiaParams.enableGaiaActionButtons = true;
+      if (data.email) {
+        // TODO(b/292087570): we have to set `readOnlyEmail` even though email
+        // will in fact be modifiable.
+        gaiaParams.readOnlyEmail = true;
+        gaiaParams.email = data.email;
+      }
 
       this.authenticator_.setWebviewPartition(
           'webviewPartitionName' in data ? data.webviewPartitionName : '');

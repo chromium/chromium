@@ -199,23 +199,16 @@ export const SUPPORTED_PARAMS = [
   'ssoProfile',  // An identifier for the device's managing OU's
                  // SAML SSO setting. Used by the login screen to
                  // pass to Gaia.
-
-  // The email fields allow for the following possibilities:
-  //
-  // 1/ If 'email' is not supplied, then the email text field is blank and the
-  // user must type an email to proceed.
-  //
-  // 2/ If 'email' is supplied, and 'readOnlyEmail' is truthy, then the email
-  // is hardcoded and the user cannot change it.  The user is asked for
-  // password.  This is useful for re-auth scenarios, where chrome needs the
-  // user to authenticate for a specific account and only that account.
-  //
-  // 3/ If 'email' is supplied, and 'readOnlyEmail' is falsy, gaia will
-  // prefill the email text field using the given email address, but the user
-  // can still change it and then proceed.  This is used on desktop when the
-  // user disconnects their profile then reconnects, to encourage them to use
-  // the same account.
+  // The email can be passed to Gaia to let it know which user is trying to
+  // sign in. Gaia behavior can be different depending on the `gaiaPath`: it
+  // can either simply prefill the email field, but still allow modifying it,
+  // or it can proceed straight to the authentication challenge for the
+  // corresponding account, not allowing the user to modify the email.
   'email',
+   // Determines which URL parameter will be used to pass the email to Gaia.
+   // TODO(b/292087570): misleading name, should be either renamed or
+   // removed completely (need to confirm if email_hint URL parameter
+   // is still relevant for some flows).
   'readOnlyEmail',
   'realm',
   // If the authentication is done via external IdP, 'startsOnSamlPage'
