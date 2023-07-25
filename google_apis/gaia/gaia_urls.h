@@ -64,6 +64,9 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaUrls {
   const GURL& classroom_api_origin_url() const;
   const GURL& tasks_api_origin_url() const;
 
+  // URL to a blank page on the Gaia domain.
+  const GURL& blank_page_url() const;
+
   // The base URL for communicating with the google api server.
   const GURL& google_apis_origin_url() const;
 
@@ -97,7 +100,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaUrls {
   GURL signin_chrome_sync_keys_retrieval_url_;
   GURL signin_chrome_sync_keys_recoverability_degraded_url_;
   GURL service_logout_url_;
-  GURL continue_url_for_logout_;
+  GURL blank_page_url_;
   GURL merge_session_url_;
   GURL oauth_multilogin_url_;
   GURL oauth_user_info_url_;

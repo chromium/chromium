@@ -13,11 +13,10 @@
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "components/signin/public/base/signin_metrics.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-struct CoreAccountInfo;
+class DiceTabHelper;
 class ProfilePickerWebContentsHost;
 
 namespace content {
@@ -29,8 +28,7 @@ class WebContents;
 // Class responsible for the GAIA sign-in within profile management flows.
 class ProfilePickerDiceSignInProvider
     : public content::WebContentsDelegate,
-      public ChromeWebModalDialogManagerDelegate,
-      public signin::IdentityManager::Observer {
+      public ChromeWebModalDialogManagerDelegate {
  public:
   // The callback returns the newly created profile and a valid WebContents
   // instance within this profile. If `is_saml` is true, sign-in is not
@@ -101,19 +99,10 @@ class ProfilePickerDiceSignInProvider
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
       override;
 
-  // IdentityManager::Observer:
-  void OnRefreshTokenUpdatedForAccount(
-      const CoreAccountInfo& account_info) override;
-  void OnPrimaryAccountChanged(
-      const signin::PrimaryAccountChangeEvent& event_details) override;
-
   // Initializes the flow with the newly created or loaded profile.
   void OnProfileInitialized(
       base::OnceCallback<void(bool)> switch_finished_callback,
       Profile* new_profile);
-
-  // Finishes the sign-in (if there is a primary account with refresh tokens).
-  void FinishFlowIfSignedIn();
 
   // Finishes the sign-in (if `is_saml` is true, it's due to SAML signin getting
   // detected).
@@ -122,6 +111,19 @@ class ProfilePickerDiceSignInProvider
   void OnSignInContentsFreedUp();
 
   GURL BuildSigninURL() const;
+
+  // The sync confirmation screen is triggered by the `DiceTabHelper`. This can
+  // happen in two cases: in the picker for normal accounts, and  in the
+  // browser for SAML account.
+  enum class DiceTabHelperMode {
+    kInPicker,   // The sync confirmation screen opens in the picker.
+    kInBrowser,  // The sync confirmation screen opens in the browser.
+  };
+
+  // Initializes the `DiceTabHelper`. It is initialized once at the beginning,
+  // with the `kInPicker` mode, and in case of SAML it is initialized again
+  // with the `kInBrowser` mode as the web contents is extracted to a tab.
+  void InitializeDiceTabHelper(DiceTabHelper& helper, DiceTabHelperMode mode);
 
   // The host must outlive this object.
   const raw_ptr<ProfilePickerWebContentsHost> host_;
@@ -147,10 +149,6 @@ class ProfilePickerDiceSignInProvider
   // finish before both the notification gets called.
   // TODO(crbug.com/1249488): Remove this if the bug gets resolved.
   bool refresh_token_updated_ = false;
-
-  base::ScopedObservation<signin::IdentityManager,
-                          signin::IdentityManager::Observer>
-      identity_manager_observation_{this};
 
   base::WeakPtrFactory<ProfilePickerDiceSignInProvider> weak_ptr_factory_{this};
 };

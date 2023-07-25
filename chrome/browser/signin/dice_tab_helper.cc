@@ -11,6 +11,7 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -57,6 +58,7 @@ void DiceTabHelper::InitializeSigninFlow(
     signin_metrics::Reason reason,
     signin_metrics::PromoAction promo_action,
     const GURL& redirect_url,
+    bool record_signin_started_metrics,
     EnableSyncCallback enable_sync_callback) {
   DCHECK(signin_url.is_valid());
   DCHECK(state_.signin_url.is_empty() || state_.signin_url == signin_url);
@@ -72,19 +74,24 @@ void DiceTabHelper::InitializeSigninFlow(
   is_chrome_signin_page_ = true;
   signin_page_load_recorded_ = false;
 
+  if (reason == signin_metrics::Reason::kSigninPrimaryAccount) {
+    state_.sync_signin_flow_status = SyncSigninFlowStatus::kStarted;
+  }
+
+  if (!record_signin_started_metrics) {
+    return;
+  }
+
   // Note: if a Dice signin tab is reused, `InitializeSigninFlow()` is not
   // called again, and the tab reuse does not generate new metrics.
 
   if (reason == signin_metrics::Reason::kSigninPrimaryAccount ||
       reason == signin_metrics::Reason::kAddSecondaryAccount) {
     // See details at go/chrome-signin-metrics-revamp.
-    base::UmaHistogramEnumeration(
-        "Signin.SignIn.Started", access_point,
-        signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+    signin_metrics::LogSignInStarted(access_point);
   }
 
   if (reason == signin_metrics::Reason::kSigninPrimaryAccount) {
-    state_.sync_signin_flow_status = SyncSigninFlowStatus::kStarted;
     signin_metrics::LogSigninAccessPointStarted(access_point, promo_action);
     signin_metrics::RecordSigninUserActionForAccessPoint(access_point);
     base::RecordAction(base::UserMetricsAction("Signin_SigninPage_Loading"));
@@ -106,8 +113,9 @@ void DiceTabHelper::OnSyncSigninFlowComplete() {
 
 void DiceTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!is_chrome_signin_page_)
+  if (!is_chrome_signin_page_) {
     return;
+  }
 
   // Ignore internal navigations.
   if (!navigation_handle->IsInPrimaryMainFrame() ||
@@ -126,8 +134,9 @@ void DiceTabHelper::DidStartNavigation(
 
 void DiceTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!is_chrome_signin_page_)
+  if (!is_chrome_signin_page_) {
     return;
+  }
 
   // Ignore internal navigations.
   if (!navigation_handle->IsInPrimaryMainFrame() ||

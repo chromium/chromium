@@ -126,8 +126,9 @@ class ProcessDiceHeaderDelegateImplTest
       bool is_sync_signin_tab,
       Reason reason = Reason::kSigninPrimaryAccount) {
     signin_reason_ = reason;
-    if (!identity_test_environment_profile_adaptor_)
+    if (!identity_test_environment_profile_adaptor_) {
       InitializeIdentityTestEnvironment();
+    }
     // Load the signin page.
     std::unique_ptr<content::NavigationSimulator> simulator =
         content::NavigationSimulator::CreateRendererInitiated(signin_url_,
@@ -140,6 +141,7 @@ class ProcessDiceHeaderDelegateImplTest
       dice_tab_helper->InitializeSigninFlow(
           signin_url_, kTestAccessPoint, signin_reason_, kTestPromoAction,
           GURL::EmptyGURL(),
+          /*record_signin_started_metrics=*/true,
           base::BindRepeating(
               &ProcessDiceHeaderDelegateImplTest::StartSyncCallback,
               base::Unretained(this)));
@@ -268,8 +270,9 @@ class ProcessDiceHeaderDelegateImplTestEnableSync
 
 // Test the EnableSync() method in all configurations.
 TEST_P(ProcessDiceHeaderDelegateImplTestEnableSync, EnableSync) {
-  if (GetParam().signed_in)
+  if (GetParam().signed_in) {
     AddAccount(/*is_primary=*/true);
+  }
   std::unique_ptr<ProcessDiceHeaderDelegateImpl> delegate =
       CreateDelegateAndNavigateToSignin(GetParam().signin_tab);
   delegate->EnableSync(account_id_);
@@ -309,8 +312,9 @@ class ProcessDiceHeaderDelegateImplTestHandleTokenExchangeFailure
 // Test the HandleTokenExchangeFailure() method in all configurations.
 TEST_P(ProcessDiceHeaderDelegateImplTestHandleTokenExchangeFailure,
        HandleTokenExchangeFailure) {
-  if (GetParam().signed_in)
+  if (GetParam().signed_in) {
     AddAccount(/*is_primary=*/true);
+  }
   std::unique_ptr<ProcessDiceHeaderDelegateImpl> delegate =
       CreateDelegateAndNavigateToSignin(GetParam().signin_tab);
   delegate->HandleTokenExchangeFailure(email_, auth_error_);
@@ -360,8 +364,9 @@ class ProcessDiceHeaderDelegateImplTestHandleTokenExchangeSuccess
 // Test the HandleTokenExchangeSuccess() method in all configurations.
 TEST_P(ProcessDiceHeaderDelegateImplTestHandleTokenExchangeSuccess,
        HandleTokenExchangeSuccess) {
-  if (GetParam().is_reauth)
+  if (GetParam().is_reauth) {
     AddAccount(/*is_primary=*/false);
+  }
   std::unique_ptr<ProcessDiceHeaderDelegateImpl> delegate =
       CreateDelegateAndNavigateToSignin(GetParam().signin_tab,
                                         GetParam().reason);

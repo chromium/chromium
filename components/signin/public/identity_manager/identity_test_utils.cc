@@ -134,14 +134,16 @@ AccountAvailabilityOptions::AccountAvailabilityOptions(base::StringPiece email)
 AccountAvailabilityOptions::AccountAvailabilityOptions(
     base::StringPiece email,
     base::StringPiece gaia_id,
-    const absl::optional<ConsentLevel> consent_level,
-    const absl::optional<std::string> refresh_token,
-    const raw_ptr<network::TestURLLoaderFactory> url_loader_factory_for_cookies)
+    absl::optional<ConsentLevel> consent_level,
+    absl::optional<std::string> refresh_token,
+    raw_ptr<network::TestURLLoaderFactory> url_loader_factory_for_cookies,
+    signin_metrics::AccessPoint access_point)
     : email(email),
       gaia_id(gaia_id),
       consent_level(consent_level),
       refresh_token(refresh_token),
-      url_loader_factory_for_cookies(url_loader_factory_for_cookies) {
+      url_loader_factory_for_cookies(url_loader_factory_for_cookies),
+      access_point(access_point) {
   CHECK(!email.empty());
 }
 
@@ -202,11 +204,18 @@ AccountAvailabilityOptionsBuilder::WithoutRefreshToken() {
   return *this;
 }
 
+AccountAvailabilityOptionsBuilder&
+AccountAvailabilityOptionsBuilder::WithAccessPoint(
+    signin_metrics::AccessPoint access_point) {
+  access_point_ = access_point;
+  return *this;
+}
+
 AccountAvailabilityOptions AccountAvailabilityOptionsBuilder::Build(
     base::StringPiece email) {
   return AccountAvailabilityOptions(
       email, gaia_id_, primary_account_consent_level_, refresh_token_,
-      with_cookie_ ? url_loader_factory_for_cookies_ : nullptr);
+      with_cookie_ ? url_loader_factory_for_cookies_ : nullptr, access_point_);
 }
 
 // -----------------------------------------------------------------------------
@@ -388,7 +397,8 @@ AccountInfo MakeAccountAvailable(IdentityManager* identity_manager,
           .IsEmpty()) {
     auto gaia = options.gaia_id.empty() ? GetTestGaiaIdForEmail(options.email)
                                         : options.gaia_id;
-    account_tracker_service->SeedAccountInfo(gaia, options.email);
+    account_tracker_service->SeedAccountInfo(gaia, options.email,
+                                             options.access_point);
   }
 
   AccountInfo account_info =

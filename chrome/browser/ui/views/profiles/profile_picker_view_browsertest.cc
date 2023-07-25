@@ -41,7 +41,6 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
-#include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_promo.h"
@@ -86,6 +85,8 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -120,6 +121,11 @@
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/signin/dice_tab_helper.h"
+#include "chrome/browser/signin/process_dice_header_delegate_impl.h"
+#endif
 
 namespace {
 const SkColor kProfileColor = SK_ColorRED;
@@ -557,7 +563,23 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
     // The DICE navigation happens in a new web contents (for the profile being
     // created), wait for it.
     WaitForLoadStop(GetSigninChromeSyncDiceUrl());
+
+    // Check that the `DiceTabHelper` was created.
+    DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(web_contents());
+    CHECK(tab_helper);
+    EXPECT_EQ(tab_helper->signin_access_point(),
+              signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER);
+
     return static_cast<Profile*>(web_contents()->GetBrowserContext());
+  }
+
+  void SimulateEnableSyncDiceHeader(content::WebContents* contents,
+                                    const CoreAccountId& account_id) {
+    // Simulate the Dice "ENABLE_SYNC" header parameter.
+    auto process_dice_header_delegate_impl =
+        ProcessDiceHeaderDelegateImpl::Create(
+            contents, ProcessDiceHeaderDelegateImpl::ShowSigninErrorCallback());
+    process_dice_header_delegate_impl->EnableSync(account_id);
   }
 
   AccountInfo FinishDiceSignIn(
@@ -572,6 +594,8 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
         identity_manager,
         signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
             .WithCookie()
+            .WithAccessPoint(
+                signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER)
             .Build(email));
     EXPECT_TRUE(identity_manager->HasAccountWithRefreshToken(
         core_account_info.account_id));
@@ -579,6 +603,12 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
     AccountInfo account_info =
         FillAccountInfo(core_account_info, given_name, hosted_domain);
     signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+
+    if (web_contents()) {
+      SimulateEnableSyncDiceHeader(web_contents(),
+                                   core_account_info.account_id);
+    }
+
     return account_info;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -713,11 +743,23 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, ShowChoice) {
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        CreateSignedInProfile) {
+  base::HistogramTester histogram_tester;
+
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
   // flow, resulting in sync confirmation screen getting displayed.
   Profile* profile_being_created = SignInForNewProfile(
       GetSyncConfirmationURL(), "joe.consumer@gmail.com", "Joe");
+
+  signin_metrics::AccessPoint expected_access_point =
+      signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(https://crbug.com/1261772): Record signin access point on Lacros.
+  expected_access_point =
+      signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER;
+#endif
+  histogram_tester.ExpectUniqueSample("Signin.SignIn.Completed",
+                                      expected_access_point, 1);
 
   // Simulate closing the UI with "No, thanks".
   LoginUIServiceFactory::GetForProfile(profile_being_created)
@@ -1171,11 +1213,12 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   ASSERT_TRUE(identity_manager->HasAccountWithRefreshToken(
       core_account_info.account_id));
 
-  // Wait for the sign-in to propagate to the flow, resulting in sync
+  // Simulate the Dice "ENABLE_SYNC" header parameter, resulting in sync
   // confirmation screen getting displayed.
+  SimulateEnableSyncDiceHeader(web_contents(), core_account_info.account_id);
   WaitForLoadStop(GetSyncConfirmationURL());
 
-  // Simulate closing the UI with "Yes, I'm in".
+  // Simulate closing the UI with "No, Thanks".
   LoginUIServiceFactory::GetForProfile(profile_being_created)
       ->SyncConfirmationUIClosed(LoginUIService::ABORT_SYNC);
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
@@ -1222,8 +1265,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   ASSERT_TRUE(identity_manager->HasAccountWithRefreshToken(
       core_account_info.account_id));
 
-  // Wait for the sign-in to propagate to the flow, resulting in sync
+  // Simulate the Dice "ENABLE_SYNC" header parameter, resulting in sync
   // confirmation screen getting displayed.
+  SimulateEnableSyncDiceHeader(web_contents(), core_account_info.account_id);
   WaitForLoadStop(GetSyncConfirmationURL());
 
   // Simulate closing the UI with "No, thanks".
@@ -1786,7 +1830,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
 
   profiles::testing::ExpectPickerWelcomeScreenTypeAndProceed(
       /*expected_type=*/
-      EnterpriseProfileWelcomeUI::ScreenType::kConsumerAccountSyncDisabled,
+      EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncDisabled,
       /*choice=*/signin::SIGNIN_CHOICE_NEW_PROFILE);
 
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();

@@ -13,7 +13,9 @@
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
+#include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/process_dice_header_delegate_impl.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/profile_picker.h"
@@ -104,6 +106,8 @@ class FirstRunInteractiveUiTest
         identity_manager,
         signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
             .WithCookie()
+            .WithAccessPoint(
+                signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE)
             .Build(account_email));
 
     FillNonCoreInfo(account_info, account_given_name);
@@ -111,6 +115,21 @@ class FirstRunInteractiveUiTest
 
     // Kombucha note: This function waits on a `base::RunLoop`.
     signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+
+    content::WebContents* picker_contents =
+        ProfilePicker::GetWebViewForTesting()->GetWebContents();
+    DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(picker_contents);
+    CHECK(tab_helper);
+    EXPECT_EQ(tab_helper->signin_access_point(),
+              signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE);
+    // Simulate the Dice "ENABLE_SYNC" header parameter.
+    {
+      auto process_dice_header_delegate_impl =
+          ProcessDiceHeaderDelegateImpl::Create(
+              web_contents(),
+              ProcessDiceHeaderDelegateImpl::ShowSigninErrorCallback());
+      process_dice_header_delegate_impl->EnableSync(account_info.account_id);
+    }
   }
 
   void OpenFirstRun(base::OnceCallback<void(bool)> first_run_exited_callback =
@@ -288,7 +307,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
       GURL("chrome://sync-confirmation/"), SyncConfirmationStyle::kWindow);
   histogram_tester.ExpectUniqueSample(
       "Signin.SignIn.Completed",
-      signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER, 1);
+      signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
 
   RunTestSequenceInContext(
       views::ElementTrackerViews::GetContextForView(view()),
@@ -333,7 +352,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
   histogram_tester.ExpectUniqueSample(
       "Signin.SignIn.Completed",
-      signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER, 1);
+      signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
   histogram_tester.ExpectUniqueSample(
       "Signin.SyncOptIn.Started",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
@@ -404,7 +423,7 @@ IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, DeclineSync) {
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
   histogram_tester.ExpectUniqueSample(
       "Signin.SignIn.Completed",
-      signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER, 1);
+      signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
   histogram_tester.ExpectUniqueSample(
       "Signin.SyncOptIn.Started",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);

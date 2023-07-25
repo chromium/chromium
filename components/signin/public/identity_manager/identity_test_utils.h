@@ -12,6 +12,7 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -152,6 +153,9 @@ struct AccountAvailabilityOptions {
   const raw_ptr<network::TestURLLoaderFactory> url_loader_factory_for_cookies =
       nullptr;
 
+  const signin_metrics::AccessPoint access_point =
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
+
   explicit AccountAvailabilityOptions(base::StringPiece email);
   ~AccountAvailabilityOptions();
 
@@ -159,12 +163,13 @@ struct AccountAvailabilityOptions {
   friend class AccountAvailabilityOptionsBuilder;
 
   // For complex options, prefer using `AccountAvailabilityOptionsBuilder`.
-  AccountAvailabilityOptions(base::StringPiece email,
-                             base::StringPiece gaia_id,
-                             const absl::optional<ConsentLevel> consent_level,
-                             const absl::optional<std::string> refresh_token,
-                             const raw_ptr<network::TestURLLoaderFactory>
-                                 url_loader_factory_for_cookies);
+  AccountAvailabilityOptions(
+      base::StringPiece email,
+      base::StringPiece gaia_id,
+      absl::optional<ConsentLevel> consent_level,
+      absl::optional<std::string> refresh_token,
+      raw_ptr<network::TestURLLoaderFactory> url_loader_factory_for_cookies,
+      signin_metrics::AccessPoint access_point);
 };
 
 class AccountAvailabilityOptionsBuilder {
@@ -206,6 +211,9 @@ class AccountAvailabilityOptionsBuilder {
   // Request that we should not attempt to set a refresh token for the account.
   AccountAvailabilityOptionsBuilder& WithoutRefreshToken();
 
+  AccountAvailabilityOptionsBuilder& WithAccessPoint(
+      signin_metrics::AccessPoint access_point);
+
   AccountAvailabilityOptions Build(base::StringPiece email);
 
  private:
@@ -216,6 +224,8 @@ class AccountAvailabilityOptionsBuilder {
   absl::optional<ConsentLevel> primary_account_consent_level_;
   absl::optional<std::string> refresh_token_ = std::string();
   bool with_cookie_ = false;
+  signin_metrics::AccessPoint access_point_ =
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
 };
 
 // Sets up an account identified by `email` according to options provided. See

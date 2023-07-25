@@ -64,6 +64,7 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
                             signin_metrics::Reason reason,
                             signin_metrics::PromoAction promo_action,
                             const GURL& redirect_url,
+                            bool record_signin_started_metrics,
                             EnableSyncCallback enable_sync_callback);
 
   // Returns true if this the tab is a re-usable chrome sign-in page (the signin

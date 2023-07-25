@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_provider.h"
 
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -25,12 +28,12 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/base/signin_metrics.h"
-#include "components/signin/public/identity_manager/account_info.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
@@ -167,17 +170,9 @@ void ProfilePickerDiceSignInProvider::NavigationStateChanged(
   if (source == contents_.get() && IsExternalURL(contents_->GetVisibleURL())) {
     // Attach DiceTabHelper to `contents_` so that sync consent dialog appears
     // after a successful sign-in.
-    DiceTabHelper::CreateForWebContents(contents_.get());
     DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(contents_.get());
-    // Use |redirect_url| and not |continue_url|, so that the DiceTabHelper can
-    // redirect to chrome:// URLs such as the NTP.
-    tab_helper->InitializeSigninFlow(
-        BuildSigninURL(), signin_access_point_,
-        signin_metrics::Reason::kSigninPrimaryAccount,
-        signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
-        GURL(chrome::kChromeUINewTabURL),
-        DiceTabHelper::GetEnableSyncCallbackForBrowser());
-
+    CHECK(tab_helper);
+    InitializeDiceTabHelper(*tab_helper, DiceTabHelperMode::kInBrowser);
     // The rest of the SAML flow logic is handled by the signed-in flow
     // controller.
     FinishFlow(/*is_saml=*/true);
@@ -187,29 +182,6 @@ void ProfilePickerDiceSignInProvider::NavigationStateChanged(
 web_modal::WebContentsModalDialogHost*
 ProfilePickerDiceSignInProvider::GetWebContentsModalDialogHost() {
   return host_->GetWebContentsModalDialogHost();
-}
-
-void ProfilePickerDiceSignInProvider::OnRefreshTokenUpdatedForAccount(
-    const CoreAccountInfo& account_info) {
-  DCHECK(IsInitialized());
-  refresh_token_updated_ = true;
-  FinishFlowIfSignedIn();
-}
-
-void ProfilePickerDiceSignInProvider::OnPrimaryAccountChanged(
-    const signin::PrimaryAccountChangeEvent& event_details) {
-  DCHECK(IsInitialized());
-  FinishFlowIfSignedIn();
-}
-
-void ProfilePickerDiceSignInProvider::FinishFlowIfSignedIn() {
-  DCHECK(IsInitialized());
-
-  if (IdentityManagerFactory::GetForProfile(profile_)
-          ->HasPrimaryAccountWithRefreshToken(signin::ConsentLevel::kSignin) &&
-      refresh_token_updated_) {
-    FinishFlow(/*is_saml=*/false);
-  }
 }
 
 void ProfilePickerDiceSignInProvider::OnProfileInitialized(
@@ -239,23 +211,12 @@ void ProfilePickerDiceSignInProvider::OnProfileInitialized(
   // instantiate TrustedVaultEncryptionKeysTabHelper.
   TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(contents());
 
-  // Listen for sign-in getting completed.
-  identity_manager_observation_.Observe(
-      IdentityManagerFactory::GetForProfile(profile_));
-
   // Record that the sign in process starts. Its end is recorded automatically
   // when the primary account is set.
   signin_metrics::RecordSigninUserActionForAccessPoint(signin_access_point_);
   signin_metrics::LogSigninAccessPointStarted(
       signin_access_point_,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
-  if (signin_access_point_ ==
-      signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE) {
-    // This metric is logged for only one access point for now. Others should
-    // audit all their flows to make sure the reflected data is accurate.
-    // `LogSigninAccessPointStarted()` covers them in the meantime.
-    signin_metrics::LogSignInStarted(signin_access_point_);
-  }
 
   // Apply the default theme to get consistent colors for toolbars in newly
   // created profiles (this matters for linux where the 'system' theme is used
@@ -278,6 +239,12 @@ void ProfilePickerDiceSignInProvider::OnProfileInitialized(
           .Then(base::BindOnce(std::move(switch_finished_callback), true));
   host_->ShowScreen(contents(), BuildSigninURL(),
                     std::move(navigation_finished_closure));
+  // Attach a `DiceTabHelper` to the `WebContents` to trigger the completion
+  // of the step.
+  DiceTabHelper::CreateForWebContents(contents());
+  DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(contents());
+  CHECK(tab_helper);
+  InitializeDiceTabHelper(*tab_helper, DiceTabHelperMode::kInPicker);
 }
 
 bool ProfilePickerDiceSignInProvider::IsInitialized() const {
@@ -288,7 +255,6 @@ void ProfilePickerDiceSignInProvider::FinishFlow(bool is_saml) {
   DCHECK(IsInitialized());
   host_->SetNativeToolbarVisible(false);
   contents()->SetDelegate(nullptr);
-  identity_manager_observation_.Reset();
   std::move(callback_).Run(profile_.get(), is_saml, std::move(contents_));
 }
 
@@ -297,4 +263,45 @@ GURL ProfilePickerDiceSignInProvider::BuildSigninURL() const {
       .request_dark_scheme = host_->ShouldUseDarkColors(),
       .for_promo_flow = true,
   });
+}
+
+void ProfilePickerDiceSignInProvider::InitializeDiceTabHelper(
+    DiceTabHelper& helper,
+    DiceTabHelperMode mode) {
+  DiceTabHelper::EnableSyncCallback callback;
+  // Use |redirect_url| and not |continue_url|, so that the DiceTabHelper can
+  // redirect to chrome:// URLs such as the NTP.
+  GURL redirect_url;
+  bool record_signin_started_metrics = true;
+  switch (mode) {
+    case DiceTabHelperMode::kInPicker:
+      // This is the default case. The signin flow starts in the picker,
+      // assuming that this is not SAML. If the user uses a SAML account, a
+      // browser window will open, and the `DiceTabHelper` will be reinitialized
+      // with the `kInBrowser` mode.
+      callback =
+          base::IgnoreArgs<Profile*, signin_metrics::AccessPoint,
+                           signin_metrics::PromoAction, signin_metrics::Reason,
+                           content::WebContents*, const CoreAccountId&>(
+              base::BindRepeating(&ProfilePickerDiceSignInProvider::FinishFlow,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  /*is_saml=*/false));
+      redirect_url = GaiaUrls::GetInstance()->blank_page_url();
+      break;
+    case DiceTabHelperMode::kInBrowser:
+      // This is used when a SAML flow is detected (through a navigation outside
+      // of Gaia).
+      callback = DiceTabHelper::GetEnableSyncCallbackForBrowser();
+      redirect_url = GURL(chrome::kChromeUINewTabURL);
+      // The metrics were already recorded once when starting the flow in the
+      // profile picker.
+      record_signin_started_metrics = false;
+      break;
+  }
+  helper.InitializeSigninFlow(
+      BuildSigninURL(), signin_access_point_,
+      signin_metrics::Reason::kSigninPrimaryAccount,
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
+      std::move(redirect_url), record_signin_started_metrics,
+      std::move(callback));
 }
