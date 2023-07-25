@@ -468,7 +468,7 @@ class MenuController::MenuScrollTask {
     }
 
     start_scroll_time_ = base::Time::Now();
-    pixels_per_second_ = MenuItemView::pref_menu_height() * 20;
+    pixels_per_second_ = submenu_->GetPreferredItemHeight() * 20;
     start_y_ = submenu_->GetVisibleBounds().y();
     if (!scrolling_timer_.IsRunning()) {
       scrolling_timer_.Start(FROM_HERE, base::Hertz(60), this,
@@ -1968,8 +1968,7 @@ bool MenuController::ShowSiblingMenu(SubmenuView* source,
                                   button->width(), button->height()),
                         anchor, state_.context_menu);
   alt_menu->PrepareForRun(
-      false, has_mnemonics,
-      source->GetMenuItem()->GetRootMenuItem()->show_mnemonics_);
+      has_mnemonics, source->GetMenuItem()->GetRootMenuItem()->show_mnemonics_);
   alt_menu->controller_ = AsWeakPtr();
   SetSelection(alt_menu, SELECTION_OPEN_SUBMENU | SELECTION_UPDATE_IMMEDIATELY);
   return true;

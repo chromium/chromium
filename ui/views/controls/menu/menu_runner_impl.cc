@@ -178,7 +178,7 @@ void MenuRunnerImpl::RunMenuAt(Widget* parent,
       (run_types & MenuRunner::USE_ASH_SYS_UI_LAYOUT) != 0);
   controller_ = controller->AsWeakPtr();
   menu_->set_controller(controller_.get());
-  menu_->PrepareForRun(owns_controller_, has_mnemonics,
+  menu_->PrepareForRun(has_mnemonics,
                        !for_drop_ && ShouldShowMnemonics(run_types));
 
   controller->Run(parent, button_controller, menu_, bounds, anchor,
