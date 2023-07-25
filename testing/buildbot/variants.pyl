@@ -831,7 +831,6 @@
       'autotest_name': 'tast.chrome-from-gcs',
       'shards': 10,
     },
-    'enabled': True,
     'identifier': 'VOLTEER_RELEASE_LKGM',
   },
   'LACROS_AMD64_GENERIC': {
