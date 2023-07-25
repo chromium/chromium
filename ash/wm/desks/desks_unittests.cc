@@ -157,6 +157,7 @@ namespace ash {
 namespace {
 
 using ::testing::ElementsAre;
+using ::testing::ElementsAreArray;
 using ::testing::ValuesIn;
 
 void NewDesk() {
@@ -4158,6 +4159,10 @@ struct PerDeskZOrderTestCase {
   // this will push it to the front of the MRU list.
   std::vector<int> move_windows;
 
+  // Windows to move from the first display to the second. This can include both
+  // normal and adw windows.
+  std::vector<int> move_windows_to_other_display;
+
   // Windows to close while on the second desk. Can include any windows.
   std::vector<int> close_windows;
 
@@ -4204,6 +4209,11 @@ class DesksPerDeskZOrderTest : public AshTestBase {
         UpdateDisplay("700x600");
       }
 
+      // This is only used for multi-displays tests and will in those cases
+      // represent the secondary display.
+      display::Display secondary_display =
+          display::Screen::GetScreen()->GetAllDisplays().back();
+
       std::map<int, std::unique_ptr<aura::Window>> id_to_window;
       std::map<aura::Window*, int> window_to_id;
 
@@ -4220,12 +4230,13 @@ class DesksPerDeskZOrderTest : public AshTestBase {
               for (int id : window_ids) {
                 auto window =
                     CreateAppWindow(gfx::Rect(offset + id, 0 + id, 100, 100));
+                window->SetTitle(u"TestWindow" + base::NumberToString16(id));
                 window_to_id[window.get()] = id;
                 id_to_window[id] = std::move(window);
               }
               // Increment the offset to ensure that the window will be created
               // on the next root window.
-              offset += 700;
+              offset += secondary_display.bounds().x();
             }
           };
 
@@ -4268,10 +4279,14 @@ class DesksPerDeskZOrderTest : public AshTestBase {
 
             // Tests that `mirrored_layers` and `expected_windows` are sync'ed.
             ASSERT_EQ(expected_windows.size(), mirrored_layers.size());
+
+            std::vector<gfx::Rect> actual_bounds, expected_bounds;
             for (size_t i = 0; i < expected_windows.size(); i++) {
-              EXPECT_EQ(id_to_window[expected_windows[i]]->layer()->bounds(),
-                        mirrored_layers[i]->bounds());
+              expected_bounds.push_back(
+                  id_to_window[expected_windows[i]]->layer()->bounds());
+              actual_bounds.push_back(mirrored_layers[i]->bounds());
             }
+            EXPECT_THAT(actual_bounds, ElementsAreArray(expected_bounds));
 
             ToggleOverview();
           };
@@ -4282,8 +4297,6 @@ class DesksPerDeskZOrderTest : public AshTestBase {
       auto verify_windows = [&](Desk* desk, aura::Window* root,
                                 const std::vector<int>& expected_windows,
                                 const std::string& debug_info) {
-        SCOPED_TRACE("Verify " + base::UTF16ToUTF8(desk->name()) + " " +
-                     root->GetName() + " " + debug_info);
         aura::Window* container = desk->GetDeskContainerForRoot(root);
 
         // Collect any test windows present on the desk.
@@ -4295,8 +4308,9 @@ class DesksPerDeskZOrderTest : public AshTestBase {
           }
         }
 
-        ASSERT_EQ(expected_windows.size(), actual_windows.size());
-        EXPECT_EQ(expected_windows, actual_windows);
+        ASSERT_EQ(expected_windows, actual_windows)
+            << "Window mismatch " << debug_info << " on " << root->GetName()
+            << ":" << desk->name();
       };
 
       auto root_windows = Shell::GetAllRootWindows();
@@ -4306,7 +4320,7 @@ class DesksPerDeskZOrderTest : public AshTestBase {
       ActivateDesk(desk_2);
       for (size_t i = 0; i < root_windows.size(); i++) {
         verify_windows(desk_2, root_windows[i],
-                       test.expected_desk_2_windows_before[i], "before");
+                       test.expected_desk_2_windows_before[i], "before moving");
         verify_desk_preview_mirrored_layer_tree(
             desk_1, root_windows[i], test.expected_desk_1_windows_before[i],
             "before");
@@ -4324,6 +4338,16 @@ class DesksPerDeskZOrderTest : public AshTestBase {
             DesksMoveWindowFromActiveDeskSource::kShortcut));
       }
 
+      // Move specified windows to display 2.
+      for (int id : test.move_windows_to_other_display) {
+        const auto& window = id_to_window.at(id);
+        aura::Window* root_before_moving = window->GetRootWindow();
+        auto bounds = window->GetBoundsInScreen();
+        bounds.Offset(secondary_display.bounds().origin().x(), 0);
+        window->SetBoundsInScreen(bounds, secondary_display);
+        ASSERT_NE(root_before_moving, window->GetRootWindow());
+      }
+
       // Close specified windows.
       for (int id : test.close_windows) {
         auto it = id_to_window.find(id);
@@ -4335,7 +4359,7 @@ class DesksPerDeskZOrderTest : public AshTestBase {
       ActivateDesk(desk_1);
       for (size_t i = 0; i < root_windows.size(); i++) {
         verify_windows(desk_1, root_windows[i],
-                       test.expected_desk_1_windows_after[i], "after");
+                       test.expected_desk_1_windows_after[i], "after moving");
         verify_desk_preview_mirrored_layer_tree(
             desk_1, root_windows[i], test.expected_desk_1_windows_after[i],
             "after");
@@ -4347,8 +4371,13 @@ class DesksPerDeskZOrderTest : public AshTestBase {
       // Verify that the correct window is activated. This is particularly
       // important for when we have all desk windows and multiple displays.
       // Please refer to b/274110274.
-      EXPECT_EQ(id_to_window[test.expected_desk_1_final_active_window].get(),
-                window_util::GetActiveWindow());
+      int actual_active_window_id = -1;
+      auto active_window_it = window_to_id.find(window_util::GetActiveWindow());
+      if (active_window_it != window_to_id.end()) {
+        actual_active_window_id = active_window_it->second;
+      }
+      ASSERT_EQ(test.expected_desk_1_final_active_window,
+                actual_active_window_id);
     }
   }
 
@@ -4740,6 +4769,53 @@ TEST_F(DesksPerDeskZOrderTest, MultiDisplayMultipleADW) {
        .expected_desk_1_windows_after = {{2, 1}, {4, 3, 5}},
        .expected_desk_2_windows_after = {{1, 2}, {}},
        .expected_desk_1_final_active_window = 5},
+  });
+}
+
+TEST_F(DesksPerDeskZOrderTest, MultiDisplayMultipleAdwWithMoving) {
+  RunTests(std::vector<const PerDeskZOrderTestCase>{
+      {.test_name = "Multiple displays moving windows 1",
+       .multi_display = true,
+       .desk_1_windows = {{1}, {}},
+       .desk_2_windows = {{}, {}},
+       .adw_windows = {1},
+       .activate_windows = {1},
+       .expected_desk_1_windows_before = {{1}, {}},
+       .expected_desk_2_windows_before = {{1}, {}},
+       .move_windows = {},
+       .move_windows_to_other_display = {1},
+       .close_windows = {},
+       .expected_desk_1_windows_after = {{}, {1}},
+       .expected_desk_2_windows_after = {{}, {1}},
+       .expected_desk_1_final_active_window = 1},
+      {.test_name = "Multiple displays moving windows 2",
+       .multi_display = true,
+       .desk_1_windows = {{1, 2}, {}},
+       .desk_2_windows = {{}, {}},
+       .adw_windows = {1, 2},
+       .activate_windows = {1, 2},
+       .expected_desk_1_windows_before = {{1, 2}, {}},
+       .expected_desk_2_windows_before = {{1, 2}, {}},
+       .move_windows = {},
+       .move_windows_to_other_display = {1},
+       .close_windows = {},
+       .expected_desk_1_windows_after = {{2}, {1}},
+       .expected_desk_2_windows_after = {{2}, {1}},
+       .expected_desk_1_final_active_window = 1},
+      {.test_name = "Multiple displays moving windows 3",
+       .multi_display = true,
+       .desk_1_windows = {{1}, {2, 3}},
+       .desk_2_windows = {{}, {4}},
+       .adw_windows = {1, 4},
+       .activate_windows = {1, 2, 3},
+       .expected_desk_1_windows_before = {{1}, {2, 3, 4}},
+       .expected_desk_2_windows_before = {{1}, {4}},
+       .move_windows = {},
+       .move_windows_to_other_display = {1},
+       .close_windows = {},
+       .expected_desk_1_windows_after = {{}, {2, 3, 4, 1}},
+       .expected_desk_2_windows_after = {{}, {1, 4}},
+       .expected_desk_1_final_active_window = 1},
   });
 }
 

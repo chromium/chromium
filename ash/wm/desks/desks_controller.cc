@@ -990,8 +990,9 @@ void DesksController::AddVisibleOnAllDesksWindow(aura::Window* window) {
     return;
 
   if (features::IsPerDeskZOrderEnabled()) {
-    for (auto& desk : desks_)
-      desk->AddAllDeskWindow(window);
+    for (auto& desk : desks_) {
+      desk->TrackAllDeskWindow(window);
+    }
   }
 
   wm::AnimateWindow(window, wm::WINDOW_ANIMATION_TYPE_BOUNCE);
@@ -1005,8 +1006,10 @@ void DesksController::AddVisibleOnAllDesksWindow(aura::Window* window) {
 void DesksController::MaybeRemoveVisibleOnAllDesksWindow(aura::Window* window) {
   if (visible_on_all_desks_windows_.erase(window)) {
     if (features::IsPerDeskZOrderEnabled()) {
-      for (auto& desk : desks_)
-        desk->RemoveAllDeskWindow(window);
+      for (auto& desk : desks_) {
+        desk->UntrackAllDeskWindow(window,
+                                   /*recent_root=*/window->GetRootWindow());
+      }
     }
 
     wm::AnimateWindow(window, wm::WINDOW_ANIMATION_TYPE_BOUNCE);
@@ -1016,6 +1019,13 @@ void DesksController::MaybeRemoveVisibleOnAllDesksWindow(aura::Window* window) {
         ->TriggerAccessibilityAlertWithMessage(l10n_util::GetStringFUTF8(
             IDS_ASH_VIRTUAL_DESKS_UNASSIGNED_FROM_ALL_DESKS, window->GetTitle(),
             active_desk_->name()));
+  }
+}
+
+void DesksController::NotifyAllDeskWindowMovedToNewRoot(aura::Window* window) {
+  CHECK(features::IsPerDeskZOrderEnabled());
+  for (auto& desk : desks_) {
+    desk->AllDeskWindowMovedToNewRoot(window);
   }
 }
 

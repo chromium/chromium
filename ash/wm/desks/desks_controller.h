@@ -260,6 +260,9 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   // Removes |window| if it is in |visible_on_all_desks_windows_|.
   void MaybeRemoveVisibleOnAllDesksWindow(aura::Window* window);
 
+  // Used to indicate that the all-desk `window` has moved to a new root.
+  void NotifyAllDeskWindowMovedToNewRoot(aura::Window* window);
+
   // Notifies each desk in |desks_| that their contents has changed.
   void NotifyAllDesksForContentChanged();
 

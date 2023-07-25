@@ -249,12 +249,18 @@ class ASH_EXPORT Desk {
   // windows. This is a no-op if there is no data for the current desk.
   void RestackAllDeskWindows();
 
-  // Called when an all-desk window has been added.
-  void AddAllDeskWindow(aura::Window* window);
+  // Start tracking the z-order of `window`. Called when `window` has been
+  // turned into an all-desk window, or if it has been moved to a new root.
+  void TrackAllDeskWindow(aura::Window* window);
 
-  // Called when an all-desk window has been removed (either from being closed
-  // or not longer being all-desk).
-  void RemoveAllDeskWindow(aura::Window* window);
+  // Remove all-desk window tracking for `window`. Called when an all-desk
+  // window has been removed, or moved to a new root. `recent_root` is the root
+  // that we have all desk window data associated with and when the window has
+  // moved to a new root, it will be different than `window->GetRootWindow()`.
+  void UntrackAllDeskWindow(aura::Window* window, aura::Window* recent_root);
+
+  // Called when an all-desk window has been moved from one root to another.
+  void AllDeskWindowMovedToNewRoot(aura::Window* window);
 
   // Returns true if notification of content update is suspended.
   bool ContentUpdateNotificationSuspended() const;
@@ -290,6 +296,11 @@ class ASH_EXPORT Desk {
   // if there are no remaining pending suspensions, e.g. there are no other
   // content update notification disablers.
   void ResumeContentUpdateNotification(bool notify_when_fully_resumed);
+
+  // Returns true if this desk has ADW tracking data for `window` on a root
+  // other than its current root. This indicates that `window` has been moved
+  // from one root to another.
+  bool HasAllDeskWindowDataOnOtherRoot(aura::Window* window) const;
 
   // Uniquely identifies the desk.
   base::Uuid uuid_;
