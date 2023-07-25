@@ -511,7 +511,8 @@ bool LoginDisplayHostCommon::HandleAccelerator(LoginAcceleratorAction action) {
   }
 
   if (action == LoginAcceleratorAction::kCancelScreenAction) {
-    if (!GetOobeUI()) {
+    if (!GetOobeUI() || !GetLoginWindowWidget() ||
+        !GetLoginWindowWidget()->IsVisible()) {
       return false;
     }
     GetOobeUI()->GetCoreOobe()->ForwardCancel();
