@@ -81515,17 +81515,13 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Passed"/>
 </enum>
 
-<enum name="PasswordFormType">
-  <int value="0" label="Login form"/>
-  <int value="1" label="Login form without username"/>
-  <int value="2"
-      label="Enabled change password form (saved credentials match username)"/>
-  <int value="3"
-      label="Disabled change password form (no matching credentials)"/>
-  <int value="4" label="Disabled change password form without username"/>
-  <int value="5" label="Signup form"/>
-  <int value="6" label="Signup form without username"/>
-  <int value="7" label="Combined login and signup form (obsolete)"/>
+<enum name="PasswordFormType2">
+  <int value="0" label="Undefined"/>
+  <int value="1" label="Login form"/>
+  <int value="2" label="Signup form"/>
+  <int value="3" label="Change password form"/>
+  <int value="4" label="Reset password form"/>
+  <int value="5" label="Single username"/>
 </enum>
 
 <enum name="PasswordGenerationEvent">

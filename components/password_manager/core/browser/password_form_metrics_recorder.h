@@ -97,27 +97,6 @@ class PasswordFormMetricsRecorder
     kManagerFillEventAutofilled
   };
 
-  // What the form is used for. SubmittedFormType::kUnspecified is only set
-  // before the SetSubmittedFormType() is called, and should never be actually
-  // uploaded.
-  //
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  //
-  // Needs to stay in sync with PasswordFormType in enums.xml.
-  enum class SubmittedFormType {
-    kLogin = 0,
-    kLoginNoUsername = 1,
-    kChangePasswordEnabled = 2,
-    kChangePasswordDisabled = 3,
-    kChangePasswordNoUsername = 4,
-    kSignup = 5,
-    kSignupNoUsername = 6,
-    kLoginAndSignup = 7,
-    kUnspecified = 8,
-    kCount = 9,
-  };
-
   // The reason why a password bubble was shown on the screen.
   //
   // These values are persisted to logs. Entries should not be renumbered and
@@ -355,7 +334,7 @@ class PasswordFormMetricsRecorder
                                        bool is_manual_generation);
 
   // Call this once the submitted form type has been determined.
-  void SetSubmittedFormType(SubmittedFormType form_type);
+  void SetSubmittedFormType(metrics_util::SubmittedFormType form_type);
 
   // Call this when a password is saved to indicate which path led to
   // submission.
@@ -493,10 +472,10 @@ class PasswordFormMetricsRecorder
   ManagerAction manager_action_ = kManagerActionNone;
   SubmitResult submit_result_ = SubmitResult::kNotSubmitted;
 
-  // Form type of the form that the PasswordFormManager is managing. Set after
-  // submission as the classification of the form can change depending on what
-  // data the user has entered.
-  SubmittedFormType submitted_form_type_ = SubmittedFormType::kUnspecified;
+  // Presumed form type of the form that the PasswordFormManager is managing.
+  // Set after submission, as the form type can change depending on the
+  // user-entered data.
+  absl::optional<metrics_util::SubmittedFormType> submitted_form_type_;
 
   // The UKM SourceId of the document the form belongs to.
   ukm::SourceId source_id_;

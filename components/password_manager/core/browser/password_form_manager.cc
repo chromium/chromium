@@ -549,9 +549,10 @@ void PasswordFormManager::SetGenerationElement(
   votes_uploader_.set_generation_element(generation_element);
 }
 
-bool PasswordFormManager::HasLikelyChangePasswordFormSubmitted() const {
+bool PasswordFormManager::HasLikelyChangeOrResetFormSubmitted() const {
   return parsed_submitted_form_ &&
-         parsed_submitted_form_->IsLikelyChangePasswordForm();
+         (parsed_submitted_form_->IsLikelyChangePasswordForm() ||
+          parsed_submitted_form_->IsLikelyResetPasswordForm());
 }
 
 bool PasswordFormManager::IsPasswordUpdate() const {
@@ -704,7 +705,8 @@ void PasswordFormManager::OnFetchCompleted() {
           parser_.Parse(*observed_form(), FormDataParser::Mode::kFilling);
       client_->ShowPasswordManagerErrorMessage(
           password_form && (password_form->IsLikelySignupForm() ||
-                  password_form->IsLikelyChangePasswordForm())
+                            password_form->IsLikelyChangePasswordForm() ||
+                            password_form->IsLikelyResetPasswordForm())
               ? password_manager::ErrorMessageFlowType::kSaveFlow
               : password_manager::ErrorMessageFlowType::kFillFlow,
           backend_error->type);
@@ -799,6 +801,7 @@ bool PasswordFormManager::ProvisionallySave(
   is_submitted_ = true;
   CalculateFillingAssistanceMetric(submitted_form);
   CalculateSubmittedFormFrameMetric();
+  CalculateSubmittedFormTypeMetric();
   metrics_recorder_->set_possible_username_used(false);
   votes_uploader_.clear_single_username_vote_data();
 
@@ -1160,6 +1163,26 @@ void PasswordFormManager::CalculateSubmittedFormFrameMetric() {
     }
   }
   metrics_recorder_->set_submitted_form_frame(frame);
+}
+
+void PasswordFormManager::CalculateSubmittedFormTypeMetric() {
+  if (!parsed_submitted_form_) {
+    return;
+  }
+  metrics_util::SubmittedFormType form_type(
+      metrics_util::SubmittedFormType::kUndefined);
+  if (parsed_submitted_form_->IsLikelyLoginForm()) {
+    form_type = metrics_util::SubmittedFormType::kLogin;
+  } else if (parsed_submitted_form_->IsLikelySignupForm()) {
+    form_type = metrics_util::SubmittedFormType::kSignup;
+  } else if (parsed_submitted_form_->IsLikelyChangePasswordForm()) {
+    form_type = metrics_util::SubmittedFormType::kChangePassword;
+  } else if (parsed_submitted_form_->IsLikelyResetPasswordForm()) {
+    form_type = metrics_util::SubmittedFormType::kResetPassword;
+  } else if (parsed_submitted_form_->IsSingleUsername()) {
+    form_type = metrics_util::SubmittedFormType::kSingleUsername;
+  }
+  metrics_recorder_->SetSubmittedFormType(form_type);
 }
 
 bool PasswordFormManager::IsPossibleSingleUsernameAvailable(

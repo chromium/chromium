@@ -33,6 +33,7 @@
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/credential_cache.h"
+#include "components/password_manager/core/browser/field_info_manager.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_autofill_manager.h"
@@ -573,7 +574,7 @@ void PasswordManager::OnPasswordFormCleared(
   PasswordFormManager* manager =
       GetMatchedManager(driver, form_data.unique_renderer_id);
   if (!manager || !IsAutomaticSavePromptAvailable(manager) ||
-      !manager->GetSubmittedForm()->IsLikelyChangePasswordForm()) {
+      !manager->HasLikelyChangeOrResetFormSubmitted()) {
     return;
   }
   // If a password form was cleared, login is successful.
@@ -1002,7 +1003,7 @@ void PasswordManager::OnPasswordFormsRendered(
       PasswordForm::Scheme::kHtml) {
     for (const FormData& form_data : visible_forms_data_) {
       if (submitted_manager->IsEqualToSubmittedForm(form_data)) {
-        if (submitted_manager->HasLikelyChangePasswordFormSubmitted() &&
+        if (submitted_manager->HasLikelyChangeOrResetFormSubmitted() &&
             AreChangePasswordFieldsEmpty(
                 form_data, *submitted_manager->GetSubmittedForm())) {
           continue;

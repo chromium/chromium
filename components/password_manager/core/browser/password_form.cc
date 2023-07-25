@@ -335,8 +335,12 @@ bool PasswordForm::IsLikelySignupForm() const {
 }
 
 bool PasswordForm::IsLikelyChangePasswordForm() const {
-  return HasNewPasswordElement() &&
-         (!HasUsernameElement() || HasPasswordElement());
+  return HasNewPasswordElement() && HasPasswordElement();
+}
+
+bool PasswordForm::IsLikelyResetPasswordForm() const {
+  return HasNewPasswordElement() && !HasPasswordElement() &&
+         !HasUsernameElement();
 }
 
 bool PasswordForm::HasUsernameElement() const {

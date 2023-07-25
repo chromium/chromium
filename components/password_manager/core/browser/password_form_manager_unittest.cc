@@ -2732,16 +2732,16 @@ TEST_P(PasswordFormManagerTest, PossibleUsernameFromAutocomplete) {
 }
 
 // Tests that probable change password submission is detected for a form that
-// does not contain a username fields.
+// does not contain a username fields, but contains old and new password fields.
 TEST_P(PasswordFormManagerTest, ChangePasswordFormWithoutUsernameSubmitted) {
-  // A form with new and confirmation password fields without username.
+  // A form with old and new password fields without username.
   FormData submitted_form = observed_form_only_password_fields_;
-  submitted_form.fields[0].value = u"newpassword";
+  submitted_form.fields[0].value = u"oldpassword";
   submitted_form.fields[1].value = u"newpassword";
 
   ASSERT_TRUE(
       form_manager_->ProvisionallySave(submitted_form, &driver_, nullptr));
-  EXPECT_TRUE(form_manager_->HasLikelyChangePasswordFormSubmitted());
+  EXPECT_TRUE(form_manager_->HasLikelyChangeOrResetFormSubmitted());
 }
 
 // Tests that probable change password submission is detected properly for forms
@@ -2762,14 +2762,27 @@ TEST_P(PasswordFormManagerTest, ChangePasswordFormWithUsernameSubmitted) {
 
   ASSERT_TRUE(
       form_manager_->ProvisionallySave(submitted_form, &driver_, nullptr));
-  EXPECT_TRUE(form_manager_->HasLikelyChangePasswordFormSubmitted());
+  EXPECT_TRUE(form_manager_->HasLikelyChangeOrResetFormSubmitted());
 
   // A form with username and new password fields (most likely sign-up).
   submitted_form.fields[1].value = u"newpassword";
 
   ASSERT_TRUE(
       form_manager_->ProvisionallySave(submitted_form, &driver_, nullptr));
-  EXPECT_FALSE(form_manager_->HasLikelyChangePasswordFormSubmitted());
+  EXPECT_FALSE(form_manager_->HasLikelyChangeOrResetFormSubmitted());
+}
+
+// Tests that probable reset password submission is detected for a form that
+// does not contain a username and current password fields.
+TEST_P(PasswordFormManagerTest, ResetPasswordFormSubmitted) {
+  // A form with new and confirmation password fields without username.
+  FormData submitted_form = observed_form_only_password_fields_;
+  submitted_form.fields[0].value = u"newpassword";
+  submitted_form.fields[1].value = u"newpassword";
+
+  ASSERT_TRUE(
+      form_manager_->ProvisionallySave(submitted_form, &driver_, nullptr));
+  EXPECT_TRUE(form_manager_->HasLikelyChangeOrResetFormSubmitted());
 }
 
 // Tests that the a form with the username field but without a password field is

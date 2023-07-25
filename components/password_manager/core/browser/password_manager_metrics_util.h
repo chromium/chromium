@@ -667,6 +667,20 @@ enum class PasswordManagerShortcutMetric {
   kMaxValue = kProfileSwitched,
 };
 
+// Presumed password form type. Calculated using heuristics after form parsing.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Needs to stay in sync with PasswordFormType2 in enums.xml.
+enum class SubmittedFormType {
+  kUndefined = 0,
+  kLogin = 1,
+  kSignup = 2,
+  kChangePassword = 3,
+  kResetPassword = 4,
+  kSingleUsername = 5,
+  kMaxValue = kSingleUsername,
+};
+
 std::string GetPasswordAccountStorageUsageLevelHistogramSuffix(
     PasswordAccountStorageUsageLevel usage_level);
 

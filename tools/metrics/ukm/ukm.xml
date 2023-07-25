@@ -18351,11 +18351,12 @@ be describing additional metrics about the same event.
       Records the outcome of a password form submission.
     </summary>
   </metric>
-  <metric name="Submission.SubmittedFormType" enum="PasswordFormType">
+  <metric name="Submission.SubmittedFormType2" enum="PasswordFormType2">
     <summary>
-      Records the classification of a form at submission time.
+      Records the presumed type (e.g. signup, login, change password) of a
+      submitted password form.
 
-      This is replicated as PasswordManager.SubmittedFormType in UMA.
+      This is replicated as PasswordManager.SubmittedFormType2 in UMA.
     </summary>
   </metric>
   <metric name="SuppressedAccount.Generated.HTTPSNotHTTP">

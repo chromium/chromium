@@ -182,7 +182,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   void SetGenerationPopupWasShown(
       autofill::password_generation::PasswordGenerationType type);
   void SetGenerationElement(autofill::FieldRendererId generation_element);
-  bool HasLikelyChangePasswordFormSubmitted() const;
+  bool HasLikelyChangeOrResetFormSubmitted() const;
   bool IsPasswordUpdate() const;
   base::WeakPtr<PasswordManagerDriver> GetDriver() const;
   const PasswordForm* GetSubmittedForm() const;
@@ -315,6 +315,10 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // etc) for |submitted_form|. The metric is recorded when the form manager is
   // destroyed.
   void CalculateSubmittedFormFrameMetric();
+
+  // Calculates SubmittedFormType metric for |parsed_submitted_form_|. The
+  // metric is recorded when the form manager is destroyed.
+  void CalculateSubmittedFormTypeMetric();
 
   // Save/update |pending_credentials_| to the password store.
   void SavePendingToStore(bool update);
