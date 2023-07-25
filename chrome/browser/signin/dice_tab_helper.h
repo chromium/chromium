@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SIGNIN_DICE_TAB_HELPER_H_
 #define CHROME_BROWSER_SIGNIN_DICE_TAB_HELPER_H_
 
+#include "base/functional/callback_forward.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -13,10 +14,26 @@ namespace content {
 class NavigationHandle;
 }
 
+struct CoreAccountId;
+
 // Tab helper used for DICE to tag signin tabs. Signin tabs can be reused.
 class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
                       public content::WebContentsObserver {
  public:
+  // Callback starting Sync. This is a repeating callback, because multiple
+  // `ProcessDiceHeaderDelegateImpl` may make copies of it.
+  using EnableSyncCallback =
+      base::RepeatingCallback<void(Profile*,
+                                   signin_metrics::AccessPoint,
+                                   signin_metrics::PromoAction,
+                                   signin_metrics::Reason,
+                                   content::WebContents*,
+                                   const CoreAccountId&)>;
+
+  // Returns the default callback to enable sync in a browser window. Does
+  // nothing if there is no browser associated with the web contents.
+  static EnableSyncCallback GetEnableSyncCallbackForBrowser();
+
   DiceTabHelper(const DiceTabHelper&) = delete;
   DiceTabHelper& operator=(const DiceTabHelper&) = delete;
 
@@ -36,13 +53,18 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
 
   const GURL& signin_url() const { return state_.signin_url; }
 
+  const EnableSyncCallback& GetEnableSyncCallback() {
+    return state_.enable_sync_callback;
+  }
+
   // Initializes the DiceTabHelper for a new signin flow. Must be called once
   // per signin flow happening in the tab, when the signin URL is being loaded.
   void InitializeSigninFlow(const GURL& signin_url,
                             signin_metrics::AccessPoint access_point,
                             signin_metrics::Reason reason,
                             signin_metrics::PromoAction promo_action,
-                            const GURL& redirect_url);
+                            const GURL& redirect_url,
+                            EnableSyncCallback enable_sync_callback);
 
   // Returns true if this the tab is a re-usable chrome sign-in page (the signin
   // page is loading or loaded in the tab).
@@ -70,11 +92,16 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
 
   struct ResetableState {
     ResetableState();
-    ResetableState(const ResetableState& other);
-    ResetableState& operator=(const ResetableState& other);
+    ~ResetableState();
+    ResetableState(const ResetableState& other) = delete;
+    ResetableState& operator=(const ResetableState& other) = delete;
+
+    ResetableState(ResetableState&& other);
+    ResetableState& operator=(ResetableState&& other);
 
     GURL redirect_url;
     GURL signin_url;
+    EnableSyncCallback enable_sync_callback;
 
     // By default the access point refers to web signin, as after a reset the
     // user may sign in again in the same tab.

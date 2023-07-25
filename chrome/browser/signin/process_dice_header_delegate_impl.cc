@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "chrome/browser/profiles/profile.h"
@@ -44,7 +45,6 @@ DiceTabHelper* GetDiceTabHelperFromWebContents(content::WebContents* contents) {
 std::unique_ptr<ProcessDiceHeaderDelegateImpl>
 ProcessDiceHeaderDelegateImpl::Create(
     content::WebContents* web_contents,
-    EnableSyncCallback enable_sync_callback,
     ShowSigninErrorCallback show_signin_error_callback) {
   bool is_sync_signin_tab = false;
   signin_metrics::AccessPoint access_point =
@@ -53,6 +53,7 @@ ProcessDiceHeaderDelegateImpl::Create(
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
   signin_metrics::Reason reason = signin_metrics::Reason::kUnknownReason;
   GURL redirect_url;
+  EnableSyncCallback enable_sync_callback;
 
   DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(web_contents);
   if (tab_helper) {
@@ -61,9 +62,13 @@ ProcessDiceHeaderDelegateImpl::Create(
     access_point = tab_helper->signin_access_point();
     promo_action = tab_helper->signin_promo_action();
     reason = tab_helper->signin_reason();
+    if (is_sync_signin_tab) {
+      enable_sync_callback = tab_helper->GetEnableSyncCallback();
+    }
   } else {
     access_point = signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN;
   }
+
   return std::make_unique<ProcessDiceHeaderDelegateImpl>(
       web_contents, is_sync_signin_tab, access_point, promo_action, reason,
       std::move(redirect_url), std::move(enable_sync_callback),
@@ -88,7 +93,9 @@ ProcessDiceHeaderDelegateImpl::ProcessDiceHeaderDelegateImpl(
       reason_(reason),
       redirect_url_(std::move(redirect_url)),
       enable_sync_callback_(std::move(enable_sync_callback)),
-      show_signin_error_callback_(std::move(show_signin_error_callback)) {}
+      show_signin_error_callback_(std::move(show_signin_error_callback)) {
+  DCHECK_EQ(!is_sync_signin_tab_, enable_sync_callback_.is_null());
+}
 
 ProcessDiceHeaderDelegateImpl::~ProcessDiceHeaderDelegateImpl() = default;
 

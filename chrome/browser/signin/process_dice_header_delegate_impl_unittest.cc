@@ -137,16 +137,17 @@ class ProcessDiceHeaderDelegateImplTest
       DiceTabHelper::CreateForWebContents(web_contents());
       DiceTabHelper* dice_tab_helper =
           DiceTabHelper::FromWebContents(web_contents());
-      dice_tab_helper->InitializeSigninFlow(signin_url_, kTestAccessPoint,
-                                            signin_reason_, kTestPromoAction,
-                                            GURL::EmptyGURL());
+      dice_tab_helper->InitializeSigninFlow(
+          signin_url_, kTestAccessPoint, signin_reason_, kTestPromoAction,
+          GURL::EmptyGURL(),
+          base::BindRepeating(
+              &ProcessDiceHeaderDelegateImplTest::StartSyncCallback,
+              base::Unretained(this)));
     }
     simulator->Commit();
     DCHECK_EQ(signin_url_, web_contents()->GetVisibleURL());
     return ProcessDiceHeaderDelegateImpl::Create(
         web_contents(),
-        base::BindOnce(&ProcessDiceHeaderDelegateImplTest::StartSyncCallback,
-                       base::Unretained(this)),
         base::BindOnce(
             &ProcessDiceHeaderDelegateImplTest::ShowSigninErrorCallback,
             base::Unretained(this)));

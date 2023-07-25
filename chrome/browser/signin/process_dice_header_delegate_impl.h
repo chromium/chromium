@@ -24,6 +24,8 @@ class SigninUIError;
 class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate {
  public:
   // Callback starting Sync.
+  // This is similar to `DiceTabHelper::EnableSyncCallback` but is a once
+  // callback (vs repeating).
   using EnableSyncCallback =
       base::OnceCallback<void(Profile*,
                               signin_metrics::AccessPoint,
@@ -40,7 +42,6 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate {
   // `content::WebContents`.
   static std::unique_ptr<ProcessDiceHeaderDelegateImpl> Create(
       content::WebContents* web_contents,
-      EnableSyncCallback enable_sync_callback,
       ShowSigninErrorCallback show_signin_error_callback);
 
   // |is_sync_signin_tab| is true if a sync signin flow has been started in that

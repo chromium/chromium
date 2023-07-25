@@ -402,8 +402,9 @@ void SigninViewController::ShowDiceSigninTab(
 
   // Use |redirect_url| and not |continue_url|, so that the DiceTabHelper can
   // redirect to chrome:// URLs such as the NTP.
-  tab_helper->InitializeSigninFlow(signin_url, access_point, signin_reason,
-                                   promo_action, redirect_url);
+  tab_helper->InitializeSigninFlow(
+      signin_url, access_point, signin_reason, promo_action, redirect_url,
+      DiceTabHelper::GetEnableSyncCallbackForBrowser());
 }
 
 void SigninViewController::ShowDiceEnableSyncTab(

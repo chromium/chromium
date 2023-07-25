@@ -41,7 +41,7 @@ class DiceTabHelperTest : public ChromeRenderViewHostTestHarness {
     helper->InitializeSigninFlow(
         signin_url_, access_point, reason,
         signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
-        GURL::EmptyGURL());
+        GURL::EmptyGURL(), DiceTabHelper::EnableSyncCallback());
     EXPECT_TRUE(helper->IsChromeSigninPage());
     simulator->Commit();
   }
@@ -152,7 +152,7 @@ TEST_F(DiceTabHelperTest, SigninPrimaryAccountMetrics) {
       signin_url_, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
       signin_metrics::Reason::kSigninPrimaryAccount,
       signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
-      GURL::EmptyGURL());
+      GURL::EmptyGURL(), DiceTabHelper::EnableSyncCallback());
   EXPECT_EQ(1, ua_tester.GetActionCount("Signin_Signin_FromSettings"));
   EXPECT_EQ(1, ua_tester.GetActionCount("Signin_SigninPage_Loading"));
   EXPECT_EQ(0, ua_tester.GetActionCount("Signin_SigninPage_Shown"));
@@ -184,8 +184,8 @@ TEST_F(DiceTabHelperTest, SigninPrimaryAccountMetrics) {
   dice_tab_helper->InitializeSigninFlow(
       signin_url_, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
       signin_metrics::Reason::kSigninPrimaryAccount,
-      signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
-      GURL::EmptyGURL());
+      signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT, GURL::EmptyGURL(),
+      DiceTabHelper::EnableSyncCallback());
   EXPECT_EQ(2, ua_tester.GetActionCount("Signin_Signin_FromSettings"));
   EXPECT_EQ(2, ua_tester.GetActionCount("Signin_SigninPage_Loading"));
   h_tester.ExpectUniqueSample(
@@ -216,7 +216,7 @@ TEST_F(DiceTabHelperTest, AddSecondaryAccountMetrics) {
       signin_url_, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
       signin_metrics::Reason::kAddSecondaryAccount,
       signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
-      GURL::EmptyGURL());
+      GURL::EmptyGURL(), DiceTabHelper::EnableSyncCallback());
   h_tester.ExpectUniqueSample(
       "Signin.SignIn.Started",
       signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS, 1);

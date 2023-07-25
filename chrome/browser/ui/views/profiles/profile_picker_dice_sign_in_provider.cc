@@ -175,7 +175,8 @@ void ProfilePickerDiceSignInProvider::NavigationStateChanged(
         BuildSigninURL(), signin_access_point_,
         signin_metrics::Reason::kSigninPrimaryAccount,
         signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
-        GURL(chrome::kChromeUINewTabURL));
+        GURL(chrome::kChromeUINewTabURL),
+        DiceTabHelper::GetEnableSyncCallbackForBrowser());
 
     // The rest of the SAML flow logic is handled by the signed-in flow
     // controller.
