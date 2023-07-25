@@ -117,51 +117,52 @@ std::u16string GetCancelButton(NotificationType type) {
   }
 }
 
-// TODO(b/279435843): Replace with translation strings.
 std::u16string GetTimeoutNotificationTitle(dlp::FileAction action) {
   switch (action) {
     case dlp::FileAction::kDownload:
-      return u"Download cancelled";
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_FILES_DOWNLOAD_TIMEOUT_TITLE);
     case dlp::FileAction::kTransfer:
     case dlp::FileAction::kUnknown:
       // kUnknown is used for internal checks - treat as kTransfer.
-      return u"Transfer cancelled";
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_FILES_TRANSFER_TIMEOUT_TITLE);
     case dlp::FileAction::kUpload:
-      return u"Upload cancelled";
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_FILES_UPLOAD_TIMEOUT_TITLE);
     case dlp::FileAction::kCopy:
-      return u"Copy cancelled";
+      return l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_COPY_TIMEOUT_TITLE);
     case dlp::FileAction::kMove:
-      return u"Move cancelled";
+      return l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_MOVE_TIMEOUT_TITLE);
     case dlp::FileAction::kOpen:
     case dlp::FileAction::kShare:
-      return u"Open cancelled";
+      return l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_OPEN_TIMEOUT_TITLE);
   }
 }
 
-// TODO(b/279435843): Replace with translation strings.
 std::u16string GetTimeoutNotificationMessage(dlp::FileAction action) {
   switch (action) {
     case dlp::FileAction::kDownload:
-      return u"Confirmation was required to continue downloading your files. "
-             u"Please try again";
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_FILES_DOWNLOAD_TIMEOUT_MESSAGE);
     case dlp::FileAction::kTransfer:
     case dlp::FileAction::kUnknown:
       // kUnknown is used for internal checks - treat as kTransfer.
-      return u"Confirmation was required to continue transferring your files. "
-             u"Please try again";
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_FILES_TRANSFER_TIMEOUT_MESSAGE);
     case dlp::FileAction::kUpload:
-      return u"Confirmation was required to continue uploading your files. "
-             u"Please try again";
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_FILES_UPLOAD_TIMEOUT_MESSAGE);
     case dlp::FileAction::kCopy:
-      return u"Confirmation was required to continue copying your files. "
-             u"Please try again";
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_FILES_COPY_TIMEOUT_MESSAGE);
     case dlp::FileAction::kMove:
-      return u"Confirmation was required to continue moving your files. "
-             u"Please try again";
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_FILES_MOVE_TIMEOUT_MESSAGE);
     case dlp::FileAction::kOpen:
     case dlp::FileAction::kShare:
-      return u"Confirmation was required to continue opening your files. "
-             u"Please try again";
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_FILES_OPEN_TIMEOUT_MESSAGE);
   }
 }
 

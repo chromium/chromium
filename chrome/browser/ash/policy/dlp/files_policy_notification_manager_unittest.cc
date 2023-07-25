@@ -780,11 +780,11 @@ class FPNMTimeoutStatusNotification
       public ::testing::WithParamInterface<
           std::tuple<file_manager::io_task::OperationType,
                      dlp::FileAction,
-                     std::u16string,
-                     std::u16string>> {};
+                     int,
+                     int>> {};
 
 TEST_P(FPNMTimeoutStatusNotification, TimeoutErrorShowsTimeoutNotification) {
-  auto [type, action, title, message] = GetParam();
+  auto [type, action, title_id, message_id] = GetParam();
   NotificationDisplayServiceTester display_service_tester(profile_.get());
   const std::string notification_id = "notification_id";
   EXPECT_FALSE(display_service_tester.GetNotification(notification_id));
@@ -816,8 +816,8 @@ TEST_P(FPNMTimeoutStatusNotification, TimeoutErrorShowsTimeoutNotification) {
   fpnm_->ShowFilesPolicyNotification(notification_id, status);
   auto notification = display_service_tester.GetNotification(notification_id);
   ASSERT_TRUE(notification.has_value());
-  EXPECT_EQ(notification->title(), title);
-  EXPECT_EQ(notification->message(), message);
+  EXPECT_EQ(notification->title(), l10n_util::GetStringUTF16(title_id));
+  EXPECT_EQ(notification->message(), l10n_util::GetStringUTF16(message_id));
   EXPECT_EQ(notification->buttons()[0].title,
             l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_DISMISS_BUTTON));
   EXPECT_TRUE(notification->never_timeout());
@@ -829,14 +829,12 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         std::make_tuple(file_manager::io_task::OperationType::kCopy,
                         dlp::FileAction::kCopy,
-                        u"Copy cancelled",
-                        u"Confirmation was required to continue copying your "
-                        u"files. Please try again"),
+                        IDS_POLICY_DLP_FILES_COPY_TIMEOUT_TITLE,
+                        IDS_POLICY_DLP_FILES_COPY_TIMEOUT_MESSAGE),
         std::make_tuple(file_manager::io_task::OperationType::kMove,
                         dlp::FileAction::kMove,
-                        u"Move cancelled",
-                        u"Confirmation was required to continue moving your "
-                        u"files. Please try again")));
+                        IDS_POLICY_DLP_FILES_MOVE_TIMEOUT_TITLE,
+                        IDS_POLICY_DLP_FILES_MOVE_TIMEOUT_MESSAGE)));
 
 class FPNMShowBlockTest
     : public FilesPolicyNotificationManagerTest,
@@ -985,13 +983,12 @@ INSTANTIATE_TEST_SUITE_P(PolicyFilesNotify,
                                            dlp::FileAction::kMove,
                                            dlp::FileAction::kTransfer));
 
-class FPNMShowTimeoutTest
-    : public FilesPolicyNotificationManagerTest,
-      public ::testing::WithParamInterface<
-          std::tuple<dlp::FileAction, std::u16string, std::u16string>> {};
+class FPNMShowTimeoutTest : public FilesPolicyNotificationManagerTest,
+                            public ::testing::WithParamInterface<
+                                std::tuple<dlp::FileAction, int, int>> {};
 
 TEST_P(FPNMShowTimeoutTest, TimeoutErrorShowsTimeoutNotification) {
-  auto [action, title, message] = GetParam();
+  auto [action, title_id, message_id] = GetParam();
   NotificationDisplayServiceTester display_service_tester(profile_.get());
 
   EXPECT_FALSE(display_service_tester.GetNotification(kNotificationId));
@@ -999,8 +996,8 @@ TEST_P(FPNMShowTimeoutTest, TimeoutErrorShowsTimeoutNotification) {
                                            /*notification_id=*/absl::nullopt);
   auto notification = display_service_tester.GetNotification(kNotificationId);
   ASSERT_TRUE(notification.has_value());
-  EXPECT_EQ(notification->title(), title);
-  EXPECT_EQ(notification->message(), message);
+  EXPECT_EQ(notification->title(), l10n_util::GetStringUTF16(title_id));
+  EXPECT_EQ(notification->message(), l10n_util::GetStringUTF16(message_id));
   EXPECT_EQ(notification->buttons()[0].title,
             l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_DISMISS_BUTTON));
   EXPECT_TRUE(notification->never_timeout());
@@ -1010,27 +1007,23 @@ INSTANTIATE_TEST_SUITE_P(
     PolicyFilesNotify,
     FPNMShowTimeoutTest,
     ::testing::Values(
-        std::make_tuple(
-            dlp::FileAction::kDownload,
-            u"Download cancelled",
-            u"Confirmation was required to continue downloading your "
-            u"files. Please try again"),
-        std::make_tuple(
-            dlp::FileAction::kTransfer,
-            u"Transfer cancelled",
-            u"Confirmation was required to continue transferring your "
-            u"files. Please try again"),
+        std::make_tuple(dlp::FileAction::kDownload,
+                        IDS_POLICY_DLP_FILES_DOWNLOAD_TIMEOUT_TITLE,
+                        IDS_POLICY_DLP_FILES_DOWNLOAD_TIMEOUT_MESSAGE),
+        std::make_tuple(dlp::FileAction::kTransfer,
+                        IDS_POLICY_DLP_FILES_TRANSFER_TIMEOUT_TITLE,
+                        IDS_POLICY_DLP_FILES_TRANSFER_TIMEOUT_MESSAGE),
+        std::make_tuple(dlp::FileAction::kUnknown,
+                        IDS_POLICY_DLP_FILES_TRANSFER_TIMEOUT_TITLE,
+                        IDS_POLICY_DLP_FILES_TRANSFER_TIMEOUT_MESSAGE),
         std::make_tuple(dlp::FileAction::kUpload,
-                        u"Upload cancelled",
-                        u"Confirmation was required to continue uploading your "
-                        u"files. Please try again"),
+                        IDS_POLICY_DLP_FILES_UPLOAD_TIMEOUT_TITLE,
+                        IDS_POLICY_DLP_FILES_UPLOAD_TIMEOUT_MESSAGE),
         std::make_tuple(dlp::FileAction::kOpen,
-                        u"Open cancelled",
-                        u"Confirmation was required to continue opening your "
-                        u"files. Please try again"),
+                        IDS_POLICY_DLP_FILES_OPEN_TIMEOUT_TITLE,
+                        IDS_POLICY_DLP_FILES_OPEN_TIMEOUT_MESSAGE),
         std::make_tuple(dlp::FileAction::kShare,
-                        u"Open cancelled",
-                        u"Confirmation was required to continue opening your "
-                        u"files. Please try again")));
+                        IDS_POLICY_DLP_FILES_OPEN_TIMEOUT_TITLE,
+                        IDS_POLICY_DLP_FILES_OPEN_TIMEOUT_MESSAGE)));
 
 }  // namespace policy

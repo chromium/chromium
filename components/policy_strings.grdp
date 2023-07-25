@@ -1073,6 +1073,42 @@ Additional details:
   <message name="IDS_POLICY_DLP_FILES_BLOCK_MESSAGE" desc="The message for notification shown when an action (e.g. open, upload) of several files was blocked, that the user can review in more detail by opening a dialog.">
     Review for further details
   </message>
+  <message name="IDS_POLICY_DLP_FILES_DOWNLOAD_TIMEOUT_TITLE" desc="The title for notification shown after a DLP files warning times out.">
+    Downloading timed out
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_TRANSFER_TIMEOUT_TITLE" desc="The title for notification shown after a DLP files warning times out.">
+    Transferring timed out
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_UPLOAD_TIMEOUT_TITLE" desc="The title for notification shown after a DLP files warning times out.">
+    Uploading timed out
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_MOVE_TIMEOUT_TITLE" desc="The title for notification shown after a DLP files warning times out.">
+    Moving timed out
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_COPY_TIMEOUT_TITLE" desc="The title for notification shown after a DLP files warning times out.">
+    Copying timed out
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_OPEN_TIMEOUT_TITLE" desc="The title for notification shown after a DLP files warning times out.">
+    Opening timed out
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_DOWNLOAD_TIMEOUT_MESSAGE" desc="The message for notification shown after a DLP files warning times out.">
+    Try downloading your files again
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_TRANSFER_TIMEOUT_MESSAGE" desc="The message for notification shown after a DLP files warning times out.">
+    Try transferring your files again
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_UPLOAD_TIMEOUT_MESSAGE" desc="The message for notification shown after a DLP files warning times out.">
+    Try uploading your files again
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_MOVE_TIMEOUT_MESSAGE" desc="The message for notification shown after a DLP files warning times out.">
+    Try moving your files again
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_COPY_TIMEOUT_MESSAGE" desc="The message for notification shown after a DLP files warning times out.">
+    Try copying your files again
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_OPEN_TIMEOUT_MESSAGE" desc="The message for notification shown after a DLP files warning times out.">
+    Try opening your files again
+  </message>
   <message name="IDS_POLICY_DEVICE_SCHEDULED_REBOOT_TITLE" desc="The title for notification informing the user that the device will restart soon.">
     Device will restart very soon
   </message>
