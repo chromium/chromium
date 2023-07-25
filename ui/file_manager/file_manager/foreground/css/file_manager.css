@@ -1975,6 +1975,9 @@ li[renaming=''] .filename-label {
   margin-inline-end: 10px;
   margin-inline-start: auto;
   width: 24px;
+}
+
+.dlp-managed-icon {
   visibility: hidden;
 }
 

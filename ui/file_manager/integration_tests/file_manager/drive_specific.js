@@ -919,8 +919,9 @@ testcase.driveEncryptionBadge = async () => {
   // Check: encrypted file has a badge.
   const encrypted = await remoteCall.waitForElementStyles(
       appId, '#file-list [file-name="test-encrypted.txt"] .encrypted-icon',
-      ['display']);
+      ['display', 'visibility']);
   chrome.test.assertNe('none', encrypted.styles.display);
+  chrome.test.assertEq('visible', encrypted.styles.visibility);
 
   // Check: non-encrypted file doesn't have a badge.
   const plain = await remoteCall.callRemoteTestUtil(

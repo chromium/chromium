@@ -1703,6 +1703,9 @@ li[renaming=''] .filename-label {
   margin-inline-start: auto;
   padding-inline-start: 8px;
   width: 24px;
+}
+
+.dlp-managed-icon {
   visibility: hidden;
 }
 
