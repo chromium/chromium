@@ -5,7 +5,7 @@
 // https://gpuweb.github.io/gpuweb/
 
 [
-    Exposed(Window WebGPU, DedicatedWorker WebGPU),
+    Exposed=(Window, DedicatedWorker),
     SecureContext
 ] interface GPUTexture {
     [RaisesException] GPUTextureView createView(optional GPUTextureViewDescriptor descriptor = {});

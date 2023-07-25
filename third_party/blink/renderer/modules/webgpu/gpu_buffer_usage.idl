@@ -6,7 +6,7 @@
 
 typedef [EnforceRange] unsigned long GPUBufferUsageFlags;
 [
-    Exposed(Window WebGPU, DedicatedWorker WebGPU),
+    Exposed=(Window, DedicatedWorker),
     SecureContext
 ] namespace GPUBufferUsage {
     const GPUFlagsConstant MAP_READ = 1;

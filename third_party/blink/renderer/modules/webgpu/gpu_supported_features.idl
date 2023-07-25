@@ -24,7 +24,7 @@ enum GPUFeatureName {
 };
 
 [
-    Exposed(Window WebGPU, DedicatedWorker WebGPU),
+    Exposed=(Window, DedicatedWorker),
     SecureContext
 ] interface GPUSupportedFeatures {
     readonly setlike<DOMString>;

@@ -7,7 +7,7 @@
 typedef unsigned long long GPUSize64Out;
 
 [
-    Exposed(Window WebGPU, DedicatedWorker WebGPU),
+    Exposed=(Window, DedicatedWorker),
     SecureContext
 ] interface GPUBuffer {
     [CallWith=ScriptState, RaisesException] Promise<void> mapAsync(

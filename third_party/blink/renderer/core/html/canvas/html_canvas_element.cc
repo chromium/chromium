@@ -425,8 +425,7 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContext(
     IdentifiabilityMetricBuilder(doc.UkmSourceID())
         .Add(IdentifiableSurface::FromTypeAndToken(
                  IdentifiableSurface::Type::kCanvasRenderingContext,
-                 CanvasRenderingContext::RenderingAPIFromId(
-                     type, GetExecutionContext())),
+                 CanvasRenderingContext::RenderingAPIFromId(type)),
              !!result)
         .Record(doc.UkmRecorder());
   }
@@ -444,7 +443,7 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
     const String& type,
     const CanvasContextCreationAttributesCore& attributes) {
   CanvasRenderingContext::CanvasRenderingAPI rendering_api =
-      CanvasRenderingContext::RenderingAPIFromId(type, GetExecutionContext());
+      CanvasRenderingContext::RenderingAPIFromId(type);
 
   // Unknown type.
   if (rendering_api == CanvasRenderingContext::CanvasRenderingAPI::kUnknown) {

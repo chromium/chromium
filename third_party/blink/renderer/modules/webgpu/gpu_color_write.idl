@@ -6,7 +6,7 @@
 
 typedef [EnforceRange] unsigned long GPUColorWriteFlags;
 [
-    Exposed(Window WebGPU, DedicatedWorker WebGPU),
+    Exposed=(Window, DedicatedWorker),
     SecureContext
 ] namespace GPUColorWrite {
     const GPUFlagsConstant RED = 1;

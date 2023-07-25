@@ -191,22 +191,25 @@ void CanvasRenderingContext::RecordUKMCanvasDrawnToRenderingAPI() {
 }
 
 CanvasRenderingContext::CanvasRenderingAPI
-CanvasRenderingContext::RenderingAPIFromId(
-    const String& id,
-    const ExecutionContext* execution_context) {
-  if (id == "2d")
+CanvasRenderingContext::RenderingAPIFromId(const String& id) {
+  if (id == "2d") {
     return CanvasRenderingAPI::k2D;
-  if (id == "experimental-webgl")
+  }
+  if (id == "experimental-webgl") {
     return CanvasRenderingAPI::kWebgl;
-  if (id == "webgl")
+  }
+  if (id == "webgl") {
     return CanvasRenderingAPI::kWebgl;
-  if (id == "webgl2")
+  }
+  if (id == "webgl2") {
     return CanvasRenderingAPI::kWebgl2;
-  if (id == "bitmaprenderer")
+  }
+  if (id == "bitmaprenderer") {
     return CanvasRenderingAPI::kBitmaprenderer;
-  if ((id == "webgpu") &&
-      RuntimeEnabledFeatures::WebGPUEnabled(execution_context))
+  }
+  if (id == "webgpu") {
     return CanvasRenderingAPI::kWebgpu;
+  }
   return CanvasRenderingAPI::kUnknown;
 }
 

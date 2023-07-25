@@ -3949,14 +3949,6 @@
       public: true,
     },
     {
-      name: "WebGPU",
-      base_feature: "none",
-      // Note that this isn't enough to enable WebGPU and that access to
-      // WebGPU is further gated on the "WebGPUService" feature exposing GPU
-      // process access to WebGPU to the renderer process.
-      status: "stable",
-    },
-    {
       // WebGPU developer features are deliberately not enabled by experimental
       // web platform features.
       name: "WebGPUDeveloperFeatures",

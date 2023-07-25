@@ -149,9 +149,7 @@ class CORE_EXPORT CanvasRenderingContext
   // This is only used in WebGL
   void RecordUKMCanvasDrawnToRenderingAPI();
 
-  static CanvasRenderingAPI RenderingAPIFromId(
-      const String& id,
-      const ExecutionContext* execution_context);
+  static CanvasRenderingAPI RenderingAPIFromId(const String& id);
 
   CanvasRenderingContextHost* Host() const { return host_; }
   virtual SkColorInfo CanvasRenderingContextSkColorInfo() const;
