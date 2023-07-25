@@ -163,10 +163,12 @@ class MediaStreamCaptureIndicator::WebContentsDeviceUsage
 
   // Increment ref-counts up based on the type of each device provided.
   void AddDevices(const blink::mojom::StreamDevices& devices,
-                  base::OnceClosure stop_callback);
+                  base::OnceClosure stop_callback,
+                  int stop_callback_id);
 
   // Decrement ref-counts up based on the type of each device provided.
-  void RemoveDevices(const blink::mojom::StreamDevices& devices);
+  void RemoveDevices(const blink::mojom::StreamDevices& devices,
+                     int stop_callback_id);
 
   void StopMediaCapturing(int media_type);
 
@@ -182,7 +184,7 @@ class MediaStreamCaptureIndicator::WebContentsDeviceUsage
     indicator_->UnregisterWebContents(web_contents());
   }
 
-  void StopCallbacks(std::map<std::string, base::OnceClosure>& stop_callbacks);
+  void StopCallbacks(std::map<int, base::OnceClosure>& stop_callbacks);
 
   scoped_refptr<MediaStreamCaptureIndicator> indicator_;
   int audio_stream_count_ = 0;
@@ -191,8 +193,8 @@ class MediaStreamCaptureIndicator::WebContentsDeviceUsage
   int window_stream_count_ = 0;
   int display_stream_count_ = 0;
 
-  std::map<std::string, base::OnceClosure> display_media_stop_callbacks_;
-  std::map<std::string, base::OnceClosure> user_media_stop_callbacks_;
+  std::map<int, base::OnceClosure> display_media_stop_callbacks_;
+  std::map<int, base::OnceClosure> user_media_stop_callbacks_;
   base::WeakPtrFactory<WebContentsDeviceUsage> weak_factory_{this};
 };
 
@@ -214,7 +216,8 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
 #if !BUILDFLAG(IS_ANDROID)
         focus_delegate_(web_contents),
 #endif
-        application_title_(std::move(application_title)) {
+        application_title_(std::move(application_title)),
+        stop_callback_id_(MediaStreamCaptureIndicator::g_stop_callback_id_++) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     DCHECK(devices_.audio_device.has_value() ||
            devices_.video_device.has_value());
@@ -225,7 +228,7 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
 
   ~UIDelegate() override {
     if (started_ && device_usage_)
-      device_usage_->RemoveDevices(devices_);
+      device_usage_->RemoveDevices(devices_, stop_callback_id_);
   }
 
  private:
@@ -246,7 +249,7 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
 
     if (device_usage_) {
       // |device_usage_| handles |stop_callback| when |ui_| is unspecified.
-      device_usage_->AddDevices(devices_, stop_callback);
+      device_usage_->AddDevices(devices_, stop_callback, stop_callback_id_);
     }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -306,6 +309,7 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
 #endif
   const std::u16string application_title_;
   bool started_ = false;
+  const int stop_callback_id_;
 };
 
 std::unique_ptr<content::MediaStreamUI>
@@ -322,28 +326,26 @@ MediaStreamCaptureIndicator::WebContentsDeviceUsage::RegisterMediaStream(
 
 void MediaStreamCaptureIndicator::WebContentsDeviceUsage::AddDevices(
     const blink::mojom::StreamDevices& devices,
-    base::OnceClosure stop_callback) {
-  std::string device_id;
+    base::OnceClosure stop_callback,
+    int stop_callback_id) {
   MediaType type = MediaType::kUnknown;
 
   if (devices.audio_device.has_value()) {
     AddDevice(devices.audio_device.value());
     type = MediaStreamCaptureIndicator::GetMediaType(
         devices.audio_device.value().type);
-    device_id = devices.audio_device.value().id;
   }
 
   if (devices.video_device.has_value()) {
     AddDevice(devices.video_device.value());
     type = MediaStreamCaptureIndicator::GetMediaType(
         devices.video_device.value().type);
-    device_id = devices.video_device.value().id;
   }
 
   if (type == MediaType::kUserMedia) {
-    user_media_stop_callbacks_[device_id] = std::move(stop_callback);
+    user_media_stop_callbacks_[stop_callback_id] = std::move(stop_callback);
   } else if (type == MediaType::kDisplayMedia) {
-    display_media_stop_callbacks_[device_id] = std::move(stop_callback);
+    display_media_stop_callbacks_[stop_callback_id] = std::move(stop_callback);
   }
 
   if (web_contents()) {
@@ -354,29 +356,27 @@ void MediaStreamCaptureIndicator::WebContentsDeviceUsage::AddDevices(
 }
 
 void MediaStreamCaptureIndicator::WebContentsDeviceUsage::RemoveDevices(
-    const blink::mojom::StreamDevices& devices) {
-  std::string device_id;
+    const blink::mojom::StreamDevices& devices,
+    int stop_callback_id) {
   MediaType type = MediaType::kUnknown;
 
   if (devices.audio_device.has_value()) {
     RemoveDevice(devices.audio_device.value());
     type = MediaStreamCaptureIndicator::GetMediaType(
         devices.audio_device.value().type);
-    device_id = devices.audio_device.value().id;
   }
 
   if (devices.video_device.has_value()) {
     RemoveDevice(devices.video_device.value());
     type = MediaStreamCaptureIndicator::GetMediaType(
         devices.video_device.value().type);
-    device_id = devices.video_device.value().id;
   }
   if (type == MediaType::kUserMedia) {
-    user_media_stop_callbacks_.erase(device_id);
+    user_media_stop_callbacks_.erase(stop_callback_id);
   }
 
   if (type == MediaType::kDisplayMedia) {
-    display_media_stop_callbacks_.erase(device_id);
+    display_media_stop_callbacks_.erase(stop_callback_id);
   }
 
   if (web_contents() && !web_contents()->IsBeingDestroyed()) {
@@ -398,7 +398,7 @@ void MediaStreamCaptureIndicator::WebContentsDeviceUsage::StopMediaCapturing(
 }
 
 void MediaStreamCaptureIndicator::WebContentsDeviceUsage::StopCallbacks(
-    std::map<std::string, base::OnceClosure>& stop_callbacks) {
+    std::map<int, base::OnceClosure>& stop_callbacks) {
   // This for loop is implemented in a weird way because std::move on the value
   // will invalid the iterator; we need to record the next iter before
   // std::move.
@@ -494,7 +494,9 @@ MediaStreamCaptureIndicator::Observer::~Observer() {
   DCHECK(!IsInObserverList());
 }
 
-MediaStreamCaptureIndicator::MediaStreamCaptureIndicator() {}
+int MediaStreamCaptureIndicator::g_stop_callback_id_ = 0;
+
+MediaStreamCaptureIndicator::MediaStreamCaptureIndicator() = default;
 
 MediaStreamCaptureIndicator::~MediaStreamCaptureIndicator() {
   // The user is responsible for cleaning up by reporting the closure of any

@@ -180,6 +180,11 @@ class MediaStreamCaptureIndicator
                      std::unique_ptr<WebContentsDeviceUsage>>
       usage_map_;
 
+  // g_stop_callback_id_ is used to identify each stop_callbacks when
+  // AddDevices or RemoveDevices is called. We need this because the device_id
+  // are not unique.
+  static int g_stop_callback_id_;
+
   // A vector which maps command IDs to their associated WebContents
   // instance. This is rebuilt each time the status tray icon context menu is
   // updated.
