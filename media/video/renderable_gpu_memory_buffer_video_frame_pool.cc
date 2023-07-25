@@ -173,9 +173,9 @@ bool FrameResources::Initialize() {
 
   // Align number of rows to 2, because it's required by YUV_420_BIPLANAR
   // buffer allocation code.
-  // Align buffer stride to 4, because our rendering code at
-  // GLImageMemory::Initialize() requires it, since it sometimes treats
-  // Y-planes are 4 bytes per pixel textures.
+  // Align buffer stride to 4, because our SharedImage shared memory backing
+  // code requires it, since it sometimes treats Y-planes are 4 bytes per pixel
+  // textures.
   gfx::Size buffer_size_in_pixels(base::bits::AlignUp(coded_size_.width(), 4),
                                   base::bits::AlignUp(coded_size_.height(), 2));
 

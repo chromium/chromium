@@ -28,12 +28,12 @@ class ScopedHardwareBufferFenceSync;
 
 namespace media {
 
-// A GLImage that renders MediaCodec buffers to a TextureOwner or overlay
-// as needed in order to draw them. Note that when DrDc is enabled(kEnableDrDc),
-// a per codec dr-dc lock is expected to be held while calling methods of this
-// class. This is ensured by adding AssertAcquiredDrDcLock() to those methods.
-// We are not adding a Locked suffix on those methods since many of those
-// methods are either overrides or virtual.
+// A StreamTextureSharedImageInterface implementation that renders MediaCodec
+// buffers to a TextureOwner or overlay as needed in order to draw them. Note
+// that when DrDc is enabled(kEnableDrDc), a per codec dr-dc lock is expected to
+// be held while calling methods of this class. This is ensured by adding
+// AssertAcquiredDrDcLock() to those methods.  We are not adding a Locked suffix
+// on those methods since many of those methods are either overrides or virtual.
 class MEDIA_GPU_EXPORT CodecImage
     : public gpu::StreamTextureSharedImageInterface,
       gpu::RefCountedLockHelperDrDc {

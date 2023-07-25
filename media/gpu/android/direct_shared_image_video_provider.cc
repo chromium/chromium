@@ -81,7 +81,7 @@ void DirectSharedImageVideoProvider::RequestImage(ImageReadyCB cb,
   //
   // Also note that CodecImage shouldn't be the thing that's added to the
   // group anyway.  The thing that owns buffer management is all we really
-  // care about, and that doesn't have anything to do with GLImage.
+  // care about.
 
   // Note: `cb` is only run on successful creation, so this does not use
   // `AsyncCall()` + `Then()` to chain the callbacks.
