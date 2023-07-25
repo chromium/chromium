@@ -58,7 +58,7 @@ bool IsTesting() {
 // TODO(dtapuska): Change this to be UITextInput and handle the other
 // events to implement the composition and selection ranges.
 @interface RenderWidgetUIViewTextInput : UIView <UIKeyInput> {
-  raw_ptr<content::RenderWidgetHostViewIOS> _view;
+  base::WeakPtr<content::RenderWidgetHostViewIOS> _view;
 }
 - (void)onUpdateTextInputState:(const ui::mojom::TextInputState&)state
                     withBounds:(CGRect)bounds;
@@ -68,7 +68,7 @@ bool IsTesting() {
 @end
 
 @interface RenderWidgetUIView : CALayerFrameSinkProvider {
-  raw_ptr<content::RenderWidgetHostViewIOS> _view;
+  base::WeakPtr<content::RenderWidgetHostViewIOS> _view;
   absl::optional<gfx::Vector2dF> _viewOffsetDuringTouchSequence;
 }
 
@@ -91,7 +91,8 @@ bool IsTesting() {
   BOOL _hasText;
 }
 
-- (instancetype)initWithWidget:(content::RenderWidgetHostViewIOS*)view {
+- (instancetype)initWithWidget:
+    (base::WeakPtr<content::RenderWidgetHostViewIOS>)view {
   _view = view;
   _hasText = NO;
   self.multipleTouchEnabled = YES;
@@ -144,11 +145,13 @@ bool IsTesting() {
 }
 
 - (void)insertText:(NSString*)text {
+  CHECK(_view);
   _view->ImeCommitText(base::SysNSStringToUTF16(text),
                        gfx::Range::InvalidRange(), 0);
 }
 
 - (void)deleteBackward {
+  CHECK(_view);
   std::vector<ui::ImeTextSpan> ime_text_spans;
   _view->ImeSetComposition(std::u16string(), ime_text_spans,
                            gfx::Range::InvalidRange(), -1, 0);
@@ -157,7 +160,7 @@ bool IsTesting() {
 
 - (BOOL)becomeFirstResponder {
   BOOL result = [super becomeFirstResponder];
-  if (result) {
+  if (result && _view) {
     _view->OnFirstResponderChanged();
   }
   return result;
@@ -165,7 +168,7 @@ bool IsTesting() {
 
 - (BOOL)resignFirstResponder {
   BOOL result = [super resignFirstResponder];
-  if (result) {
+  if (result && _view) {
     _view->OnFirstResponderChanged();
   }
   return result;
@@ -176,7 +179,8 @@ bool IsTesting() {
 @implementation RenderWidgetUIView
 @synthesize textInput = _textInput;
 
-- (instancetype)initWithWidget:(content::RenderWidgetHostViewIOS*)view {
+- (instancetype)initWithWidget:
+    (base::WeakPtr<content::RenderWidgetHostViewIOS>)view {
   self = [self init];
   if (self) {
     _view = view;
@@ -190,6 +194,7 @@ bool IsTesting() {
 }
 
 - (void)layoutSubviews {
+  CHECK(_view);
   [super layoutSubviews];
   _view->UpdateScreenInfo();
 
@@ -199,7 +204,7 @@ bool IsTesting() {
 }
 
 - (ui::CALayerFrameSink*)frameSink {
-  return _view;
+  return _view.get();
 }
 
 - (BOOL)canBecomeFirstResponder {
@@ -207,6 +212,7 @@ bool IsTesting() {
 }
 
 - (BOOL)becomeFirstResponder {
+  CHECK(_view);
   BOOL result = [super becomeFirstResponder];
   if (result || _view->CanBecomeFirstResponderForTesting()) {
     _view->OnFirstResponderChanged();
@@ -216,13 +222,14 @@ bool IsTesting() {
 
 - (BOOL)resignFirstResponder {
   BOOL result = [super resignFirstResponder];
-  if (result || _view->CanResignFirstResponderForTesting()) {
+  if (_view && (result || _view->CanResignFirstResponderForTesting())) {
     _view->OnFirstResponderChanged();
   }
   return result;
 }
 
 - (void)touchesBegan:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
+  CHECK(_view);
   if (!_view->HasFocus()) {
     if ([self becomeFirstResponder]) {
       _view->OnFirstResponderChanged();
@@ -242,6 +249,7 @@ bool IsTesting() {
 }
 
 - (void)touchesEnded:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
+  CHECK(_view);
   for (UITouch* touch in touches) {
     _view->OnTouchEvent(content::WebTouchEventBuilder::Build(
         blink::WebInputEvent::Type::kTouchEnd, touch, event, self,
@@ -253,6 +261,7 @@ bool IsTesting() {
 }
 
 - (void)touchesMoved:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
+  CHECK(_view);
   for (UITouch* touch in touches) {
     _view->OnTouchEvent(content::WebTouchEventBuilder::Build(
         blink::WebInputEvent::Type::kTouchMove, touch, event, self,
@@ -261,6 +270,7 @@ bool IsTesting() {
 }
 
 - (void)touchesCancelled:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
+  CHECK(_view);
   for (UITouch* touch in touches) {
     _view->OnTouchEvent(content::WebTouchEventBuilder::Build(
         blink::WebInputEvent::Type::kTouchCancel, touch, event, self,
@@ -273,6 +283,7 @@ bool IsTesting() {
                       ofObject:(id)object
                         change:(NSDictionary*)change
                        context:(void*)context {
+  CHECK(_view);
   if (context == kObservingContext) {
     _view->ContentInsetChanged();
   } else {
@@ -325,7 +336,8 @@ RenderWidgetHostViewIOS::RenderWidgetHostViewIOS(RenderWidgetHost* widget)
               content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput})),
           this) {
   ui_view_ = std::make_unique<UIViewHolder>();
-  ui_view_->view_ = [[RenderWidgetUIView alloc] initWithWidget:this];
+  ui_view_->view_ =
+      [[RenderWidgetUIView alloc] initWithWidget:weak_factory_.GetWeakPtr()];
 
   display_tree_ =
       std::make_unique<ui::DisplayCALayerTree>([ui_view_->view_ layer]);
