@@ -2461,7 +2461,7 @@ void SiteSettingsHandler::RemoveNonTreeModelData(
     }
   }
 
-  // Remove any Browsing Data Model data associated with the origins host.
+  // Remove any Browsing Data Model data associated with the origins.
   // TODO(crbug.com/1271155) - When the browsing data model supports all storage
   // types, re-work this handler to work directly with primary hosts as defined
   // by the model.
@@ -2471,8 +2471,13 @@ void SiteSettingsHandler::RemoveNonTreeModelData(
   // been created by permission info).
   if (browsing_data_model_) {
     for (const auto& origin : origins) {
-      browsing_data_model_->RemoveBrowsingData(origin.host(),
-                                               base::DoNothing());
+      browsing_data_model_->RemoveBrowsingData(origin, base::DoNothing());
+
+      // Also remove Browsing Data Model data associated with the origin's host.
+      if (origin.GetURL().SchemeIsHTTPOrHTTPS()) {
+        browsing_data_model_->RemoveBrowsingData(origin.host(),
+                                                 base::DoNothing());
+      }
     }
   }
 

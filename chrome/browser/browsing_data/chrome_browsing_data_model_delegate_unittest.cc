@@ -7,11 +7,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browsing_topics/test_util.h"
 #include "components/media_device_salt/media_device_salt_service.h"
+#include "content/public/browser/browsing_data_remover.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -178,3 +180,29 @@ TEST_F(ChromeBrowsingDataModelDelegateTest, GetAllDataKeysAndGetDataOwner) {
   }
   EXPECT_TRUE(expected_keys.empty());
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ChromeBrowsingDataModelDelegateTest, RemoveIsolatedWebAppData) {
+  auto testOrigin = url::Origin::Create(
+      GURL("isolated-app://"
+           "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic/"));
+  std::unique_ptr<ChromeBrowsingDataModelDelegate> delegate =
+      ChromeBrowsingDataModelDelegate::CreateForProfile(profile());
+  EXPECT_TRUE(delegate);
+
+  content::BrowsingDataRemover* remover = profile()->GetBrowsingDataRemover();
+  EXPECT_EQ(~0ULL, remover->GetLastUsedRemovalMaskForTesting());
+
+  base::RunLoop run_loop;
+  delegate->RemoveDataKey(
+      testOrigin,
+      {static_cast<BrowsingDataModel::StorageType>(
+          ChromeBrowsingDataModelDelegate::StorageType::kIsolatedWebApp)},
+      run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_EQ(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA &
+                ~content::BrowsingDataRemover::DATA_TYPE_COOKIES,
+            remover->GetLastUsedRemovalMaskForTesting());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)

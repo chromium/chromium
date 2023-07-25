@@ -6,6 +6,9 @@
 
 #include <memory>
 
+#include "base/functional/callback_helpers.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "components/browsing_topics/browsing_topics_service.h"
@@ -16,11 +19,33 @@
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
+#include "chrome/browser/web_applications/isolated_web_apps/remove_isolated_web_app_browsing_data.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #endif
 
 namespace {
+
+class DynamicBarrierClosure : public base::RefCounted<DynamicBarrierClosure> {
+ public:
+  explicit DynamicBarrierClosure(base::OnceClosure closure)
+      : scoped_closure_(std::move(closure)) {}
+
+  DynamicBarrierClosure(const DynamicBarrierClosure&) = delete;
+  DynamicBarrierClosure& operator=(const DynamicBarrierClosure&) = delete;
+
+  base::OnceClosure CreateCallback() {
+    return base::DoNothingWithBoundArgs(base::WrapRefCounted(this));
+  }
+
+ private:
+  friend class base::RefCounted<DynamicBarrierClosure>;
+
+  ~DynamicBarrierClosure() = default;
+
+  base::ScopedClosureRunner scoped_closure_;
+};
 
 #if !BUILDFLAG(IS_ANDROID)
 std::vector<ChromeBrowsingDataModelDelegate::DelegateEntry>
@@ -36,7 +61,7 @@ IsolatedWebAppBrowsingDataToDelegateEntries(
   }
   return entries;
 }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -84,12 +109,11 @@ void ChromeBrowsingDataModelDelegate::GetAllDataKeys(
             .Then(base::BindOnce(
                 &ChromeBrowsingDataModelDelegate::GetAllMediaDeviceSaltDataKeys,
                 weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
-  } else {
-    GetAllMediaDeviceSaltDataKeys(std::move(callback), {});
+    return;
   }
-#else
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   GetAllMediaDeviceSaltDataKeys(std::move(callback), {});
-#endif
 
   // TODO(crbug.com/1271155): Implement data retrieval for remaining data types.
 }
@@ -98,6 +122,9 @@ void ChromeBrowsingDataModelDelegate::RemoveDataKey(
     BrowsingDataModel::DataKey data_key,
     BrowsingDataModel::StorageTypeSet storage_types,
     base::OnceClosure callback) {
+  auto dynamic_barrier_closure =
+      base::MakeRefCounted<DynamicBarrierClosure>(std::move(callback));
+
   if (storage_types.Has(
           static_cast<BrowsingDataModel::StorageType>(StorageType::kTopics))) {
     // Topics can be deleted but not queried from disk as the creating origins
@@ -106,18 +133,27 @@ void ChromeBrowsingDataModelDelegate::RemoveDataKey(
     auto* browsing_topics_service =
         browsing_topics::BrowsingTopicsServiceFactory::GetForProfile(profile_);
     browsing_topics_service->ClearTopicsDataForOrigin(*origin);
-  } else if (storage_types.Has(static_cast<BrowsingDataModel::StorageType>(
-                 StorageType::kMediaDeviceSalt))) {
+  }
+
+  if (storage_types.Has(static_cast<BrowsingDataModel::StorageType>(
+          StorageType::kMediaDeviceSalt))) {
     if (const blink::StorageKey* storage_key =
             absl::get_if<blink::StorageKey>(&data_key)) {
-      RemoveMediaDeviceSalt(*storage_key, std::move(callback));
-      return;
+      RemoveMediaDeviceSalt(*storage_key,
+                            dynamic_barrier_closure->CreateCallback());
     }
   }
 
-  // TODO(crbug.com/1271155): Utilize the callback in remaining data
-  // typesdeletion methods that require a callback.
-  std::move(callback).Run();
+#if !BUILDFLAG(IS_ANDROID)
+  if (storage_types.Has(static_cast<BrowsingDataModel::StorageType>(
+          StorageType::kIsolatedWebApp))) {
+    CHECK(absl::holds_alternative<url::Origin>(data_key));
+    const url::Origin& origin = *absl::get_if<url::Origin>(&data_key);
+
+    web_app::RemoveIsolatedWebAppBrowsingData(
+        profile_, origin, dynamic_barrier_closure->CreateCallback());
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 absl::optional<BrowsingDataModel::DataOwner>

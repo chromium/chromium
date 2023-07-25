@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/remove_isolated_web_app_browsing_data.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
@@ -165,15 +166,8 @@ class IsolatedWebAppBrowsingDataClearingTest
           std::move(callback).Run();
         }));
 
-    auto filter = content::BrowsingDataFilterBuilder::Create(
-        content::BrowsingDataFilterBuilder::Mode::kDelete);
-    filter->AddOrigin(url_info.origin());
-
-    browsing_data_remover->RemoveWithFilter(
-        /*delete_begin=*/base::Time(), /*delete_end=*/base::Time::Max(),
-        chrome_browsing_data_remover::DATA_TYPE_SITE_DATA &
-            ~content::BrowsingDataRemover::DATA_TYPE_COOKIES,
-        chrome_browsing_data_remover::ALL_ORIGIN_TYPES, std::move(filter));
+    web_app::RemoveIsolatedWebAppBrowsingData(profile(), url_info.origin(),
+                                              base::DoNothing());
     run_loop.Run();
 
     browsing_data_remover->SetWouldCompleteCallbackForTesting(

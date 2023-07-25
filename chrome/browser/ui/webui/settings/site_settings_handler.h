@@ -207,6 +207,11 @@ class SiteSettingsHandler
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, HandleGetUsageInfo);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
                            HandleGetFpsMembershipLabel);
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
+                           IsolatedWebAppClearSiteGroupDataAndCookies);
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
+                           IsolatedWebAppClearUnpartitionedUsage);
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, IsolatedWebAppUsageInfo);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, NonTreeModelDeletion);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, FirstPartySetsMembership);
   FRIEND_TEST_ALL_PREFIXES(
@@ -215,7 +220,6 @@ class SiteSettingsHandler
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, HandleGetExtensionName);
 #endif
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, IsolatedWebAppUsageInfo);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, StorageAccessExceptions);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
                            StorageAccessExceptions_DiffType);
