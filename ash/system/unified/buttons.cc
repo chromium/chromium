@@ -286,18 +286,19 @@ BEGIN_METADATA(SupervisedUserView, ManagedStateView)
 END_METADATA
 
 ////////////////////////////////////////////////////////////////////////////////
-
 UserAvatarButton::UserAvatarButton(PressedCallback callback)
     : Button(std::move(callback)) {
-  // QsRevamp doesn't use an avatar button. DCHECK because it's a map lookup.
-  DCHECK(!features::IsQsRevampEnabled());
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  SetBorder(views::CreateEmptyBorder(kUnifiedCircularButtonFocusPadding));
+  SetBorder(views::CreateEmptyBorder(features::IsQsRevampEnabled()
+                                         ? gfx::Insets(0)
+                                         : kUnifiedCircularButtonFocusPadding));
   AddChildView(CreateUserAvatarView(0 /* user_index */));
   SetTooltipText(GetUserItemAccessibleString(0 /* user_index */));
   SetInstallFocusRingOnFocus(true);
-  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
-
+  views::FocusRing::Get(this)->SetColorId(
+      features::IsQsRevampEnabled()
+          ? cros_tokens::kCrosSysFocusRing
+          : static_cast<ui::ColorId>(ui::kColorAshFocusRing));
   views::InstallCircleHighlightPathGenerator(this);
 }
 
