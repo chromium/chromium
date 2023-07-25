@@ -73,6 +73,14 @@ imageset("widget_dino_background") {
   ]
 }
 
+imageset("widget_password_manager_logo") {
+  sources = [
+    "widget_password_manager_logo.imageset/Contents.json",
+    "widget_password_manager_logo.imageset/widget_password_manager_logo@2x.png",
+    "widget_password_manager_logo.imageset/widget_password_manager_logo@3x.png",
+  ]
+}
+
 symbolset("widget_incognito_icon") {
   sources = [
     "widget_incognito_icon.symbolset/Contents.json",

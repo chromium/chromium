@@ -21,8 +21,8 @@ config("ios_enable_shortcuts_widget") {
   swiftflags = [ "-DIOS_ENABLE_SHORTCUTS_WIDGET" ]
 }
 
-config("ios_enable_password_manager_widget") {
-  swiftflags = [ "-DIOS_ENABLE_PASSWORD_MANAGER_WIDGET" ]
+config("ios_enable_search_passwords_widget") {
+  swiftflags = [ "-DIOS_ENABLE_SEARCH_PASSWORDS_WIDGET" ]
 }
 
 source_set("crash_helper") {
@@ -63,6 +63,7 @@ swift_source_set("widget_kit_extension_swift") {
     "resources:widget_dino_background_placeholder",
     "resources:widget_incognito_icon",
     "resources:widget_lens_icon",
+    "resources:widget_password_manager_logo",
     "resources:widget_search_bar_color",
     "resources:widget_separator_color",
     "resources:widget_text_color",
@@ -88,9 +89,9 @@ swift_source_set("widget_kit_extension_swift") {
     sources += [ "shortcuts_widget.swift" ]
   }
 
-  if (ios_enable_password_manager_widget) {
-    configs += [ ":ios_enable_password_manager_widget" ]
-    sources += [ "password_manager_widget.swift" ]
+  if (ios_enable_search_passwords_widget) {
+    configs += [ ":ios_enable_search_passwords_widget" ]
+    sources += [ "search_passwords_widget.swift" ]
   }
 
   frameworks = [

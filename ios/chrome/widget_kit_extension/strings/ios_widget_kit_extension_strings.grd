@@ -273,8 +273,8 @@ all other OS specific variables will be false.
 type URL
       </message>
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_A11Y_LABEL" desc="Accessibility label for the search widget" meaning="Accessibility label for the search widget [CHAR_LIMIT=40][iOS only]">
-              Search or Type URL
-            </message>
+        Search or Type URL
+      </message>
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_DISPLAY_NAME" desc="Name for the chrome shortcuts widget" meaning="String that appears as title in the installation window for the Chrome Shortcuts widget [iOS only]">
         Chrome Shortcuts
       </message>
@@ -292,6 +292,19 @@ type URL
       </message>
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_NO_SHORTCUTS_AVAILABLE_LABEL" desc="No shortcuts available label for the shortcuts widget [CHAR_LIMIT=70]" meaning="No shortcuts available label for the shortcuts widget [CHAR_LIMIT=70][iOS only]">
           Your most visited sites will show up here.
+      </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_PASSWORDS_DISPLAY_NAME" desc="Name for the Search Passwords widget. [CHAR_LIMIT=30][iOS only]" meaning="String that appears as title in the installation window for the Search Passwords widget. Title-cased.">
+        Search Passwords
+      </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_PASSWORDS_DESCRIPTION" desc="Description for the Search Passwords widget. [CHAR_LIMIT=150][iOS only]">
+        Safely search for your saved passwords on Google Password Manager
+      </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_PASSWORDS_TITLE" desc="Title for the Search Passwords widget. Should be split in two lines, each line with a max of 15 characters. [CHAR_LIMIT=25][iOS only]" meaning="String that appears in the Search Passwords widget. Sentence-cased.">
+        Search
+passwords
+      </message>
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_PASSWORDS_A11Y_LABEL" desc="Accessibility label for the search widget. [CHAR_LIMIT=40][iOS only]" meaning="Accessibility label for the search widget. Sentence-cased.">
+        Search passwords
       </message>
     </messages>
   </release>
