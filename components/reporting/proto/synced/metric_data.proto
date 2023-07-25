@@ -434,6 +434,8 @@ message TelemetryData {
   optional AppTelemetry app_telemetry = 7;
   // Fatal crash data.
   optional FatalCrashTelemetry fatal_crash_telemetry = 9;
+  // Runtime counter data.
+  optional RuntimeCountersTelemetry runtime_counters_telemetry = 10;
 }
 
 enum MetricEventType {
@@ -604,6 +606,31 @@ message FatalCrashTelemetry {
   // crash report ID and only has a crash report ID when it is reported for the
   // second time.
   optional bool was_reported_without_id = 7;
+}
+
+// Runtime counters retrieved from CPU. Currently the runtime counters telemetry
+// is only supported by Intel vPro PSR on Gen 14+.
+message RuntimeCountersTelemetry {
+  // All fields below are currently required since Intel vPro is the only
+  // supported source, but we reserve the possibility that absence of a field
+  // implies that it is unavailable on the device in the future.
+
+  // Hardly any of the following fields can be beyond the size of int32.
+  // However, we use int64 because: (a) healthD retrieves uint32 integers from
+  // the hardware, and therefore using int32 here risks overflow. (b) Server
+  // side requires signed integers and therefore uint32 is not an option.
+
+  // Total lifetime runtime. Currently always S0 runtime from Intel vPro PSR.
+  optional int64 uptime_runtime_s = 1;
+  // Number of times that the device has entered into the sleep state. Currently
+  // obtained via the PSR, count from S0->S3.
+  optional int64 counter_enter_sleep = 2;
+  // Number of times that the device has entered into the hibernation state.
+  // Currently obtained via the PSR, count from S0->S4.
+  optional int64 counter_enter_hibernation = 3;
+  // Number of times that the device has entered into the power-off state.
+  // Currently obtained via the PSR, count from S0->S5.
+  optional int64 counter_enter_poweroff = 4;
 }
 
 // Indicates one of the following conditions occurred on the device, data
