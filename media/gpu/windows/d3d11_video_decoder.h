@@ -121,7 +121,6 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
       std::unique_ptr<MediaLog> media_log,
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-      base::SequenceBound<D3D11VideoDecoderImpl> impl,
       base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
           get_helper_cb,
       GetD3D11DeviceCB get_d3d11_device_cb,
@@ -201,17 +200,16 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   // Posts |status| to any pending initialization or decode callbacks.
   void PostDecoderStatus(DecoderStatus status);
 
-  // The implementation, which lives on the GPU main thread.
-  base::SequenceBound<D3D11VideoDecoderImpl> impl_;
+  // Mailbox release helper; which lives on the GPU main thread. Note: This must
+  // be ref counted to outlive D3D11VideoDecoder since each output VideoFrame
+  // uses it to wait on a SyncToken during mailbox release.
+  scoped_refptr<D3D11VideoDecoderImpl> impl_;
 
   // GPU main thread task runner.
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
 
   // Task runner on which |this| lives.
   scoped_refptr<base::SequencedTaskRunner> decoder_task_runner_;
-
-  // Set in initialize, and used to determine reinitializations.
-  bool already_initialized_;
 
   gpu::GpuPreferences gpu_preferences_;
   gpu::GpuDriverBugWorkarounds gpu_workarounds_;
