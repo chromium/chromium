@@ -6785,6 +6785,28 @@
             ]
         }
     ],
+    "HappinessTrackingSystemPeripherals": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "histogram_name": "ChromeOS.HaTS.Peripherals",
+                        "prob": "0.02",
+                        "survey_cycle_length": "7",
+                        "survey_start_date_ms": "1686747998371",
+                        "trigger_id": "f4LxbstpP0jBnuKU19R0P4FWKuAs"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingSystemPeripherals"
+                    ]
+                }
+            ]
+        }
+    ],
     "HatsArcGames": [
         {
             "platforms": [
