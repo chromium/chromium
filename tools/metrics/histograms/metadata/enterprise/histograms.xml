@@ -45,6 +45,13 @@ chromium-metrics-reviews@google.com.
   <variant name="WebApp" summary="Handler for web apps"/>
 </variants>
 
+<variants name="ContentAnalysisType">
+  <variant name="Cloud"
+      summary="Content analysis of user action is done in the cloud."/>
+  <variant name="Local"
+      summary="Content analysis of user action is done with a local agent."/>
+</variants>
+
 <variants name="Enterprise_CrdSessionType">
   <variant name="RemoteAccess"
       summary="A CRD session where the admin has exclusive control of the
@@ -2199,6 +2206,18 @@ chromium-metrics-reviews@google.com.
     expires_after="M85">
   <owner>mnissler@chromium.org</owner>
   <summary>Result of the OpenNetworkConfiguration policy validation.</summary>
+</histogram>
+
+<histogram name="Enterprise.OnPrint.{ContentAnalysisType}.PrintType"
+    enum="PrintScanningContext" expires_after="2024-07-12">
+  <owner>domfc@chromium.org</owner>
+  <owner>dpr-eng@google.com</owner>
+  <summary>
+    Records the type of printing the user attempted that triggered content
+    analysis. Is is logged once per user action that would trigger this
+    Connector.
+  </summary>
+  <token key="ContentAnalysisType" variants="ContentAnalysisType"/>
 </histogram>
 
 <histogram name="Enterprise.PlatformAuth.GetAuthData.Count" units="count"

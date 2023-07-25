@@ -36,8 +36,8 @@ bool ShouldDoLocalScan(PrintScanningContext context) {
       // For "system dialog" prints, the scanning waits until the user picks
       // settings from the system dialog, and happens right before the document
       // is printed through an existing print job.
-      // TODO(b/285048545): Update the `kSystemPrintAfterPreview` to return true
-      // and `kSystemPrintAfterPreview` to return false.
+      // TODO(b/285048545): Update the `kSystemPrintBeforePrintDocument` to
+      // return true and `kSystemPrintAfterPreview` to return false.
       case PrintScanningContext::kBeforeSystemDialog:
       case PrintScanningContext::kSystemPrintAfterPreview:
         return true;
@@ -82,6 +82,17 @@ bool ShouldScan(PrintScanningContext context,
   return scanning_data.settings.cloud_or_local_settings.is_local_analysis()
              ? ShouldDoLocalScan(context)
              : ShouldDoCloudScan(context);
+}
+
+void RecordPrintType(PrintScanningContext context,
+                     const ContentAnalysisDelegate::Data& scanning_data) {
+  if (scanning_data.settings.cloud_or_local_settings.is_local_analysis()) {
+    base::UmaHistogramEnumeration("Enterprise.OnPrint.Local.PrintType",
+                                  context);
+  } else {
+    base::UmaHistogramEnumeration("Enterprise.OnPrint.Cloud.PrintType",
+                                  context);
+  }
 }
 
 }  // namespace
@@ -173,6 +184,11 @@ absl::optional<ContentAnalysisDelegate::Data> GetPrintAnalysisData(
       &scanning_data, AnalysisConnector::PRINT);
 
   if (enabled && ShouldScan(context, scanning_data)) {
+    // Returning a non-null value here means the user triggered an action
+    // leading to a scan, so logging the print type metric here will apply it to
+    // every print content analysis workflow.
+    RecordPrintType(context, scanning_data);
+
     return scanning_data;
   }
 

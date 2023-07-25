@@ -21,6 +21,15 @@ namespace enterprise_connectors {
 // scanning should happen. This is used in conjunction with the
 // `kEnableCloudScanAfterPreview` and `kEnableLocalScanAfterPreview` to control
 // the timing at which scanning occurs.
+//
+//                 +-------------#3-------------+
+//                 |                            V
+//        +---------+        +--------+    +----------+        +-------+
+// --#1-> | Preview | --#2-> | System | -> | Print    | --#4-> | Print |
+//        | dialog  |        | dialog |    | document | --#5-> | job   |
+//        +---------+        +--------+    +----------+        +-------+
+//                               ^
+// --#0--------------------------+
 enum class PrintScanningContext {
   // Represents the moment the user presses ctrl-p/shift-ctrl-p or an equivalent
   // action before any preview/system dialog is shown.
