@@ -1688,7 +1688,8 @@ INSTANTIATE_TEST_SUITE_P(
 //
 // Flaky on Mac, iOS, Windows and Linux: https://crbug.com/1446474
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_LINUX)
 #define MAYBE_TestPagehidePersistedValue DISABLED_TestPagehidePersistedValue
 #else
 #define MAYBE_TestPagehidePersistedValue TestPagehidePersistedValue
