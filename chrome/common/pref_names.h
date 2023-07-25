@@ -2365,13 +2365,14 @@ inline constexpr char kMediaStorageIdSalt[] = "media.storage_id_salt";
 // Mapping of origin to their origin id (UnguessableToken). Origin IDs are only
 // stored for origins using MediaFoundation-based CDMs.
 inline constexpr char kMediaCdmOriginData[] = "media.cdm.origin_data";
+#endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 // A boolean pref to determine whether or not the network service is running
 // sandboxed.
 inline constexpr char kNetworkServiceSandboxEnabled[] =
     "net.network_service_sandbox";
-
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
 // The last used printer and its settings.
 inline constexpr char kPrintPreviewStickySettings[] =

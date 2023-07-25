@@ -212,6 +212,9 @@ NetworkSandboxState IsNetworkSandboxEnabledInternal() {
 #if BUILDFLAG(IS_WIN)
   if (!sandbox::features::IsAppContainerSandboxSupported())
     return NetworkSandboxState::kDisabledByPlatform;
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
   auto* local_state = g_browser_process->local_state();
   if (local_state &&
       local_state->HasPrefPath(prefs::kNetworkServiceSandboxEnabled)) {
@@ -219,7 +222,8 @@ NetworkSandboxState IsNetworkSandboxEnabledInternal() {
                ? NetworkSandboxState::kEnabledByPolicy
                : NetworkSandboxState::kDisabledByPolicy;
   }
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+
   // If no policy is specified, then delegate to global sandbox configuration.
   return sandbox::policy::features::IsNetworkSandboxEnabled()
              ? NetworkSandboxState::kEnabledByPlatform
@@ -576,9 +580,9 @@ void SystemNetworkContextManager::RegisterPrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterListPref(prefs::kExplicitlyAllowedNetworkPorts);
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
   registry->RegisterBooleanPref(prefs::kNetworkServiceSandboxEnabled, true);
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 }
 
 // static

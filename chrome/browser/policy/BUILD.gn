@@ -395,9 +395,12 @@ source_set("browser_tests") {
     sources += [
       "test/audio_process_high_priority_enabled_browsertest.cc",
       "test/locale_policy_browsertest.cc",
-      "test/network_service_sandbox_enabled_browsertest.cc",
       "test/renderer_app_container_enabled_win_browsertest.cc",
     ]
+  }
+
+  if (is_win || is_linux) {
+    sources += [ "test/network_service_sandbox_enabled_browsertest.cc" ]
   }
 
   if (!is_android) {

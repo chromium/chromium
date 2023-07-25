@@ -20391,7 +20391,7 @@
     ]
   },
   "NetworkServiceSandboxEnabled": {
-    "os": ["win"],
+    "os": ["win", "linux"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "NetworkServiceSandboxEnabled": false },
