@@ -51,6 +51,22 @@
     "expires": "Jan 1, 2024"
   },
   {
+    "prefix": "pna-iframes-enabled",
+    "platforms": ["Linux", "Mac", "win"],
+    "bases": ["external/wpt/fetch/private-network-access"],
+    "args": ["--enable-features=PrivateNetworkAccessForIframes"],
+    "owners": ["phao@google.com", "lyf@google.com"],
+    "expires": "Jan 1, 2024"
+  },
+  {
+    "prefix": "pna-iframes-warning",
+    "platforms": ["Linux", "Mac", "win"],
+    "bases": ["external/wpt/fetch/private-network-access"],
+    "args": ["--enable-features=PrivateNetworkAccessForIframes,PrivateNetworkAccessForIframesWarningOnly"],
+    "owners": ["phao@google.com", "lyf@google.com"],
+    "expires": "Jan 1, 2024"
+  },
+  {
     "prefix": "reduce-accept-language",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["http/tests/navigation/language",

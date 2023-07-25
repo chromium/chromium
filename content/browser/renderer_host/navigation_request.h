@@ -757,8 +757,23 @@ class CONTENT_EXPORT NavigationRequest
     return response_should_be_rendered_;
   }
 
-  // Must only be called after ReadyToCommitNavigation().
-  network::mojom::ClientSecurityStatePtr BuildClientSecurityState();
+  // Returns the `ClientSecurityState` we should pass to
+  // `NavigationURLLoaderFactory`.
+  //
+  // For subresource requests the `ClientSecurityState` is passed through
+  // `URLLoaderFactoryParams`, since each request client has a dedicated
+  // factory. That does not work for navigation requests because they all share
+  // a common factory, so each request is tagged with a `ClientSecurityState` to
+  // use instead.
+  network::mojom::ClientSecurityStatePtr
+  BuildClientSecurityStateForNavigationFetch();
+
+  // Returns the `ClientSecurityState` to be used for subresource fetches by the
+  // document we are navigating to.
+  //
+  // Must only be called after `ReadyToCommitNavigation()`.
+  network::mojom::ClientSecurityStatePtr
+  BuildClientSecurityStateForCommittedDocument();
 
   bool ua_change_requires_reload() const { return ua_change_requires_reload_; }
 

@@ -4771,68 +4771,6 @@ void NavigationRequest::OnStartChecksComplete(
   net::HttpRequestHeaders cors_exempt_headers;
   std::swap(cors_exempt_headers, cors_exempt_request_headers_);
 
-  // For subresource requests the ClientSecurityState is passed through
-  // URLLoaderFactoryParams. That does not work for navigation requests
-  // because they all share a common factory, so each request is tagged with
-  // a ClientSecurityState to use instead.
-  //
-  // We currently define the client of the fetch as the parent frame, if any.
-  // This is incorrect: frames can cause others in the same browsing context
-  // group to navigate to pages, without being the parent. Additionally
-  // there is no client security state for top-level navigations, which mainly
-  // means that Private Network Access checks are skipped for such requests.
-  //
-  // For fenced frames, document fetch initiator can only be the parent. Fenced
-  // frames can only be navigated in two ways:
-  // 1. Directly by their parent, and never by another frame at a distance via
-  // `window.location` or `window.open`; in this case the `ClientSecurityState`
-  // needs to come from the parent.
-  // 2. By themselves; in this case the `ClientSecurityState` needs to come
-  // from the initiator. However, currently the support for getting the
-  // initator's client security state has not been implemented yet. The one from
-  // its embedder/parent is used instead. Fenced frame always has an outer
-  // document, `GetParentFrameOrOuterDocument()` will never be nullptr.
-  //
-  // NOTE: For embedder initiated fenced frame navigation that is subject to
-  // private network access checks:
-  // 1. The preflight request is sent with an opaque origin: "Origin: null".
-  // See: `FencedFrame::Navigate()`.
-  // 2. The credentials mode of the preflight request is "include". This
-  // prevents response header `Access-Control-Allow-Origin: '*'` from working.
-  // The response header must explicitly specify the origin.
-  // 3. However, we cannot know the origin because of 1.
-  // 4. It is also unsafe to respond to the preflight with response header
-  // `Access-Control-Allow-Origin: 'null'`. See:
-  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
-  //
-  // This implies there is a limitation for fenced frame that sends a preflight
-  // request because of private network access. Fenced frame embedder
-  // initiated private network access always fails.
-  //
-  // TODO(https://crbug.com/1291252): Use the client security state of the
-  // navigation initiator instead.
-  //
-  // TODO(https://crbug.com/1129326): Figure out the UX story for main-frame
-  // navigations, then revisit the exception made in that case.
-  network::mojom::ClientSecurityStatePtr client_security_state = nullptr;
-  RenderFrameHostImpl* parent = (frame_tree_node()->IsFencedFrameRoot())
-                                    ? GetParentFrameOrOuterDocument()
-                                    : GetParentFrame();
-  if (parent) {
-    client_security_state = parent->BuildClientSecurityState();
-
-    // If the right feature is not enabled, disable blocking of private network
-    // requests for navigation fetches.
-    if (!base::FeatureList::IsEnabled(
-            features::kBlockInsecurePrivateNetworkRequestsForNavigations)) {
-      // Only show warnings for requests initiated from non-secure contexts.
-      client_security_state->private_network_request_policy =
-          client_security_state->is_web_secure_context
-              ? network::mojom::PrivateNetworkRequestPolicy::kAllow
-              : network::mojom::PrivateNetworkRequestPolicy::kWarn;
-    }
-  }
-
   auto loader_type = NavigationURLLoader::LoaderType::kRegular;
   network::mojom::URLResponseHeadPtr cached_response_head = nullptr;
   if (IsServedFromBackForwardCache()) {
@@ -4886,7 +4824,8 @@ void NavigationRequest::OnStartChecksComplete(
                                    : nullptr,
           devtools_navigation_token(),
           frame_tree_node_->current_frame_host()->devtools_frame_token(),
-          std::move(cors_exempt_headers), std::move(client_security_state),
+          std::move(cors_exempt_headers),
+          BuildClientSecurityStateForNavigationFetch(),
           devtools_accepted_stream_types, is_pdf_, initiator_document_,
           GetPreviousRenderFrameHostId(), allow_cookies_from_browser_,
           navigation_id_),
@@ -8464,20 +8403,115 @@ NavigationRequest::TakeEarlyHintsManager() {
 }
 
 network::mojom::ClientSecurityStatePtr
-NavigationRequest::BuildClientSecurityState() {
-  auto client_security_state = network::mojom::ClientSecurityState::New();
+NavigationRequest::BuildClientSecurityStateForNavigationFetch() {
+  switch (GetNavigatingFrameType()) {
+    // The client [1] of the navigation fetch request is the navigation
+    // initiator, so use the initiator's policies to set the
+    // `ClientSecurityState`.
+    //
+    // [1] https://fetch.spec.whatwg.org/#concept-request-client
+    //
+    // This intentionally only applies to subframes (of any frame tree). Main
+    // frames of primary and secondary frame trees are handled separately.
+    //
+    // NOTE: ShadowDOM-based fenced frames are treated as `kSubframe`.
+    case FrameType::kSubframe: {
+      CHECK(!IsInMainFrame());
+      if (!policy_container_builder_->InitiatorPolicies()) {
+        return nullptr;
+      }
 
+      network::mojom::ClientSecurityStatePtr state = DeriveClientSecurityState(
+          *policy_container_builder_->InitiatorPolicies(),
+          PrivateNetworkRequestContext::kIframe);
+
+      // Remove the initiator's COEP, it is unused. For iframes, the parent's
+      // COEP should be used: that is checked in `EnforceCOEP()`. The value
+      // in `ClientSecurityState` is used for subresources only, in which case
+      // the network service performs the check on behalf of the client.
+      state->cross_origin_embedder_policy =
+          network::CrossOriginEmbedderPolicy();
+
+      return state;
+    }
+
+    // Fenced frames can only be navigated in two ways:
+    //
+    // 1. By the embedder document, via the fencedframe.config attribute.
+    //    The implementation uses the parent policies directly, because
+    //    initiator policies are not currently plumbed in this case. This is
+    //    correct anyway because the initiator is the parent.
+    //    Note: contrary to an iframe, the navigation can never happens at
+    //    distance, using e.g. `window.open(url, target)` or `<a target>`.
+    //
+    // 2. By a document in the <fencedframe> frame tree. In this case the
+    //    initiator policies are properly plumbed and should be used.
+    //    TODO(https://crbug.com/1420626): Use the initiator policies. On can
+    //    use `is_embedder_initiated_fenced_frame_navigation_` to discriminate
+    //    (1) from (2).
+    //
+    // NOTE: For an embedder initiated fenced frame navigation that is subject
+    // to private network access checks:
+    //
+    // 1. The preflight request is sent with an opaque origin: "Origin: null".
+    //    See: `FencedFrame::Navigate()`.
+    // 2. The credentials mode of the preflight request is "include". This
+    //    prevents response header `Access-Control-Allow-Origin: '*'` from
+    //    working. The response header must explicitly specify the origin.
+    // 3. However, we cannot know the origin because of (1).
+    // 4. It is also unsafe to respond to the preflight with response header
+    //    `Access-Control-Allow-Origin: 'null'`. See:
+    //    https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
+    //
+    // This implies there is a limitation for fenced frames that send a
+    // preflight request because of private network access. Fenced frame
+    // embedder initiated private network accesses always fail.
+    //
+    // NOTE: Fenced frames always have an outer document,
+    // `GetParentFrameOrOuterDocument()` is never nullptr.
+    case FrameType::kFencedFrameRoot: {
+      auto client_security_state =
+          GetParentFrameOrOuterDocument()->BuildClientSecurityState();
+
+      // TODO(https://crbug.com/1420626): Remove COEP from
+      // `client_security_state`, see the reasoning for subframes above.
+
+      // TODO(https://crbug.com/1420626): Consider enabling PNA for fenced
+      // frames independently of PNA for iframes.
+      client_security_state->private_network_request_policy =
+          DerivePrivateNetworkRequestPolicy(
+              client_security_state->ip_address_space,
+              client_security_state->is_web_secure_context,
+              PrivateNetworkRequestContext::kIframe);
+
+      return client_security_state;
+    }
+
+    // TODO(https://crbug.com/1129326): Figure out the UX story for main-frame
+    // navigations, then revisit the exception made in that case.
+    //
+    // The `kPrimaryMainFrame` case also covers portals
+    // (https://crbug.com/1254770) and guest views (https://crbug.com/1261928)
+    // since those do not use MPArch.
+    //
+    // TODO(https://crbug.com/1420576): Determine how to treat portals.
+    // TODO(https://crbug.com/1420577): Determine how to treat guest views.
+    // TODO(https://crbug.com/1420574): Determine how to treat prerendered
+    // main frames.
+    case FrameType::kPrimaryMainFrame:
+    case FrameType::kPrerenderMainFrame:
+      return nullptr;
+  }
+}
+
+network::mojom::ClientSecurityStatePtr
+NavigationRequest::BuildClientSecurityStateForCommittedDocument() {
   const PolicyContainerPolicies& policies =
       policy_container_builder_->FinalPolicies();
-  client_security_state->is_web_secure_context = policies.is_web_secure_context;
-  client_security_state->ip_address_space = policies.ip_address_space;
 
-  client_security_state->cross_origin_embedder_policy =
-      policies.cross_origin_embedder_policy;
-  client_security_state->private_network_request_policy =
-      private_network_request_policy_;
-
-  return client_security_state;
+  return network::mojom::ClientSecurityState::New(
+      policies.cross_origin_embedder_policy, policies.is_web_secure_context,
+      policies.ip_address_space, private_network_request_policy_);
 }
 
 std::string NavigationRequest::GetUserAgentOverride() {

@@ -17,8 +17,9 @@ class ContentBrowserClient;
 struct PolicyContainerPolicies;
 
 enum class PrivateNetworkRequestContext {
-  kSubresource,  // Subresource fetches initiated by documents
-  kWorker,  // Worker script fetches/updates or fetches within worker scripts
+  kSubresource,  // Subresource fetches initiated by documents.
+  kWorker,  // Worker script fetches/updates or fetches within worker scripts.
+  kIframe,  // Navigation fetches for iframe documents.
 };
 
 // Returns the policy to use for private network requests fetched by a client
@@ -61,6 +62,7 @@ network::mojom::IPAddressSpace CalculateIPAddressSpace(
     const GURL& url,
     network::mojom::URLResponseHead* response_head,
     ContentBrowserClient* client);
+
 }  // namespace content
 
 #endif  //  CONTENT_BROWSER_RENDERER_HOST_LOCAL_NETWORK_ACCESS_UTIL_H_

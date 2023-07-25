@@ -48,6 +48,18 @@ FeatureState FeatureStateForContext(RequestContext request_context) {
       }
 
       return FeatureState::kEnabled;
+    case RequestContext::kIframe:
+      if (!base::FeatureList::IsEnabled(
+              features::kPrivateNetworkAccessForIframes)) {
+        return FeatureState::kDisabled;
+      }
+
+      if (base::FeatureList::IsEnabled(
+              features::kPrivateNetworkAccessForIframesWarningOnly)) {
+        return FeatureState::kWarningOnly;
+      }
+
+      return FeatureState::kEnabled;
   }
 }
 
