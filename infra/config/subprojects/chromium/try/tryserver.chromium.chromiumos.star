@@ -264,9 +264,6 @@ try_.compilator_builder(
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
     check_for_flakiness = True,
     main_list_view = "try",
-    # TODO(b/285080767): increase reclient.jobs.HIGH_JOBS_FOR_CQ to 500 and
-    # remove this.
-    reclient_jobs = 500,
 )
 
 try_.builder(
