@@ -85,7 +85,6 @@ public class InstalledAppTest {
     @After
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> mTab.removeObserver(mUpdateWaiter));
-        mTestServer.stopAndDestroyServer();
     }
 
     /**

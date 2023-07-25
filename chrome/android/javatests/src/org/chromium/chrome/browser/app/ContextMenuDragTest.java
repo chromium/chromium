@@ -115,7 +115,6 @@ public class ContextMenuDragTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             if (mContextMenu != null) mContextMenu.dismiss();
         });
-        mTestServer.stopAndDestroyServer();
         sTestDragAndDropDelegate.reset();
     }
 

@@ -123,7 +123,6 @@ public class PaymentManifestDownloaderTest implements ManifestDownloadCallback {
     @After
     public void tearDown() throws Throwable {
         mActivityTestRule.runOnUiThread((Runnable) () -> mDownloader.destroy());
-        mServer.stopAndDestroyServer();
     }
 
     @Test

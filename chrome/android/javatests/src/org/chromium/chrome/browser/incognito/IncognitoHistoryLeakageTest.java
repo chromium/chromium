@@ -90,7 +90,6 @@ public class IncognitoHistoryLeakageTest {
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> IncognitoDataTestUtils.closeTabs(mChromeActivityTestRule));
-        mTestServer.stopAndDestroyServer();
     }
 
     /**

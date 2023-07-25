@@ -171,7 +171,6 @@ public class IncognitoDownloadLeakageTest {
                                    .removeDownloadObserver(mTestDownloadManagerServiceObserver));
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> IncognitoDataTestUtils.closeTabs(mChromeActivityTestRule));
-        mTestServer.stopAndDestroyServer();
     }
 
     private boolean hasFileDownloaded(String downloadedFileName) {

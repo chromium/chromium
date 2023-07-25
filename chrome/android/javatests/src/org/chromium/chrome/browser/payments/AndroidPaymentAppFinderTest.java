@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -234,11 +233,6 @@ public class AndroidPaymentAppFinderTest
         mAllPaymentAppsCreated = false;
         mPaymentOptions = new PaymentOptions();
         mTwaPackageName = null;
-    }
-
-    @After
-    public void tearDown() {
-        if (mServer != null) mServer.stopAndDestroyServer();
     }
 
     /** Absence of installed apps should result in no payment apps. */

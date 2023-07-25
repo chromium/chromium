@@ -91,7 +91,6 @@ public class TrustedWebActivityPermissionsTest {
     @After
     public void tearDown() {
         mPermissionManager.clearForTesting();
-        mTestServer.stopAndDestroyServer();
     }
 
     @Test

@@ -71,16 +71,12 @@ public class ShareDelegateImplIntegrationTest {
         final String httpCanonicalUrl = testServer.getURL(PAGE_WITH_HTTP_CANONICAL_URL);
         final String noCanonicalUrl = testServer.getURL(PAGE_WITH_NO_CANONICAL_URL);
 
-        try {
-            verifyShareUrl(httpsCanonicalUrl, "https://examplehttps.com/",
-                    CanonicalURLResult.SUCCESS_CANONICAL_URL_DIFFERENT_FROM_VISIBLE);
-            verifyShareUrl(httpCanonicalUrl, "http://examplehttp.com/",
-                    CanonicalURLResult.SUCCESS_CANONICAL_URL_NOT_HTTPS);
-            verifyShareUrl(noCanonicalUrl, noCanonicalUrl,
-                    CanonicalURLResult.FAILED_NO_CANONICAL_URL_DEFINED);
-        } finally {
-            testServer.stopAndDestroyServer();
-        }
+        verifyShareUrl(httpsCanonicalUrl, "https://examplehttps.com/",
+                CanonicalURLResult.SUCCESS_CANONICAL_URL_DIFFERENT_FROM_VISIBLE);
+        verifyShareUrl(httpCanonicalUrl, "http://examplehttp.com/",
+                CanonicalURLResult.SUCCESS_CANONICAL_URL_NOT_HTTPS);
+        verifyShareUrl(
+                noCanonicalUrl, noCanonicalUrl, CanonicalURLResult.FAILED_NO_CANONICAL_URL_DEFINED);
     }
 
     @Test
@@ -92,16 +88,12 @@ public class ShareDelegateImplIntegrationTest {
         final String httpCanonicalUrl = testServer.getURL(PAGE_WITH_HTTP_CANONICAL_URL);
         final String noCanonicalUrl = testServer.getURL(PAGE_WITH_NO_CANONICAL_URL);
 
-        try {
-            verifyShareUrl(httpsCanonicalUrl, httpsCanonicalUrl,
-                    CanonicalURLResult.FAILED_VISIBLE_URL_NOT_HTTPS);
-            verifyShareUrl(httpCanonicalUrl, httpCanonicalUrl,
-                    CanonicalURLResult.FAILED_VISIBLE_URL_NOT_HTTPS);
-            verifyShareUrl(noCanonicalUrl, noCanonicalUrl,
-                    CanonicalURLResult.FAILED_VISIBLE_URL_NOT_HTTPS);
-        } finally {
-            testServer.stopAndDestroyServer();
-        }
+        verifyShareUrl(httpsCanonicalUrl, httpsCanonicalUrl,
+                CanonicalURLResult.FAILED_VISIBLE_URL_NOT_HTTPS);
+        verifyShareUrl(httpCanonicalUrl, httpCanonicalUrl,
+                CanonicalURLResult.FAILED_VISIBLE_URL_NOT_HTTPS);
+        verifyShareUrl(
+                noCanonicalUrl, noCanonicalUrl, CanonicalURLResult.FAILED_VISIBLE_URL_NOT_HTTPS);
     }
 
     private void verifyShareUrl(

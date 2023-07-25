@@ -52,23 +52,16 @@ public class SslPreferencesTest {
         mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
                 InstrumentationRegistry.getInstrumentation().getContext(),
                 ServerCertificate.CERT_OK);
-        try {
-            final String pageUrl = mTestServer.getURL(HELLO_WORLD_HTML);
-            final OnReceivedSslErrorHelper onReceivedSslErrorHelper =
-                    mContentsClient.getOnReceivedSslErrorHelper();
-
-            int onSslErrorCallCount = onReceivedSslErrorHelper.getCallCount();
-
-            mContentsClient.setAllowSslError(true);
-            mActivityTestRule.loadUrlSync(
-                    mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
-
-            if (onSslErrorCallCount != onReceivedSslErrorHelper.getCallCount()) {
-                Assert.fail("onReceivedSslError should not be called, but was called with error "
-                        + onReceivedSslErrorHelper.getError());
-            }
-        } finally {
-            mTestServer.stopAndDestroyServer();
+        final String pageUrl = mTestServer.getURL(HELLO_WORLD_HTML);
+        final OnReceivedSslErrorHelper onReceivedSslErrorHelper =
+                mContentsClient.getOnReceivedSslErrorHelper();
+        int onSslErrorCallCount = onReceivedSslErrorHelper.getCallCount();
+        mContentsClient.setAllowSslError(true);
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
+        if (onSslErrorCallCount != onReceivedSslErrorHelper.getCallCount()) {
+            Assert.fail("onReceivedSslError should not be called, but was called with error "
+                    + onReceivedSslErrorHelper.getError());
         }
     }
 
@@ -79,25 +72,17 @@ public class SslPreferencesTest {
         mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
                 InstrumentationRegistry.getInstrumentation().getContext(),
                 ServerCertificate.CERT_MISMATCHED_NAME);
-        try {
-            final String pageUrl = mTestServer.getURL(HELLO_WORLD_HTML);
-            final OnReceivedSslErrorHelper onReceivedSslErrorHelper =
-                    mContentsClient.getOnReceivedSslErrorHelper();
-
-            int onSslErrorCallCount = onReceivedSslErrorHelper.getCallCount();
-
-            mContentsClient.setAllowSslError(true);
-            mActivityTestRule.loadUrlSync(
-                    mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
-
-            Assert.assertEquals("onReceivedSslError should be called once", onSslErrorCallCount + 1,
-                    onReceivedSslErrorHelper.getCallCount());
-
-            SslError error = onReceivedSslErrorHelper.getError();
-            Assert.assertTrue("Expected SSL_IDMISMATCH", error.hasError(SslError.SSL_IDMISMATCH));
-        } finally {
-            mTestServer.stopAndDestroyServer();
-        }
+        final String pageUrl = mTestServer.getURL(HELLO_WORLD_HTML);
+        final OnReceivedSslErrorHelper onReceivedSslErrorHelper =
+                mContentsClient.getOnReceivedSslErrorHelper();
+        int onSslErrorCallCount = onReceivedSslErrorHelper.getCallCount();
+        mContentsClient.setAllowSslError(true);
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
+        Assert.assertEquals("onReceivedSslError should be called once", onSslErrorCallCount + 1,
+                onReceivedSslErrorHelper.getCallCount());
+        SslError error = onReceivedSslErrorHelper.getError();
+        Assert.assertTrue("Expected SSL_IDMISMATCH", error.hasError(SslError.SSL_IDMISMATCH));
     }
 
     @Test
@@ -108,26 +93,17 @@ public class SslPreferencesTest {
                 InstrumentationRegistry.getInstrumentation().getContext(),
                 // WebView currently returns DATE_INVALID instead of SSL_EXPIRED (see SslUtil.java).
                 ServerCertificate.CERT_EXPIRED);
-        try {
-            final String pageUrl = mTestServer.getURL(HELLO_WORLD_HTML);
-            final OnReceivedSslErrorHelper onReceivedSslErrorHelper =
-                    mContentsClient.getOnReceivedSslErrorHelper();
-
-            int onSslErrorCallCount = onReceivedSslErrorHelper.getCallCount();
-
-            mContentsClient.setAllowSslError(true);
-            mActivityTestRule.loadUrlSync(
-                    mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
-
-            Assert.assertEquals("onReceivedSslError should be called once", onSslErrorCallCount + 1,
-                    onReceivedSslErrorHelper.getCallCount());
-
-            SslError error = onReceivedSslErrorHelper.getError();
-            Assert.assertTrue(
-                    "Expected SSL_DATE_INVALID", error.hasError(SslError.SSL_DATE_INVALID));
-        } finally {
-            mTestServer.stopAndDestroyServer();
-        }
+        final String pageUrl = mTestServer.getURL(HELLO_WORLD_HTML);
+        final OnReceivedSslErrorHelper onReceivedSslErrorHelper =
+                mContentsClient.getOnReceivedSslErrorHelper();
+        int onSslErrorCallCount = onReceivedSslErrorHelper.getCallCount();
+        mContentsClient.setAllowSslError(true);
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
+        Assert.assertEquals("onReceivedSslError should be called once", onSslErrorCallCount + 1,
+                onReceivedSslErrorHelper.getCallCount());
+        SslError error = onReceivedSslErrorHelper.getError();
+        Assert.assertTrue("Expected SSL_DATE_INVALID", error.hasError(SslError.SSL_DATE_INVALID));
     }
 
     @Test
@@ -137,25 +113,17 @@ public class SslPreferencesTest {
         mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
                 InstrumentationRegistry.getInstrumentation().getContext(),
                 ServerCertificate.CERT_COMMON_NAME_ONLY);
-        try {
-            final String pageUrl = mTestServer.getURL(HELLO_WORLD_HTML);
-            final OnReceivedSslErrorHelper onReceivedSslErrorHelper =
-                    mContentsClient.getOnReceivedSslErrorHelper();
-
-            int onSslErrorCallCount = onReceivedSslErrorHelper.getCallCount();
-
-            mContentsClient.setAllowSslError(true);
-            mActivityTestRule.loadUrlSync(
-                    mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
-
-            Assert.assertEquals("onReceivedSslError should be called once", onSslErrorCallCount + 1,
-                    onReceivedSslErrorHelper.getCallCount());
-
-            SslError error = onReceivedSslErrorHelper.getError();
-            Assert.assertTrue("Expected SSL_IDMISMATCH", error.hasError(SslError.SSL_IDMISMATCH));
-        } finally {
-            mTestServer.stopAndDestroyServer();
-        }
+        final String pageUrl = mTestServer.getURL(HELLO_WORLD_HTML);
+        final OnReceivedSslErrorHelper onReceivedSslErrorHelper =
+                mContentsClient.getOnReceivedSslErrorHelper();
+        int onSslErrorCallCount = onReceivedSslErrorHelper.getCallCount();
+        mContentsClient.setAllowSslError(true);
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
+        Assert.assertEquals("onReceivedSslError should be called once", onSslErrorCallCount + 1,
+                onReceivedSslErrorHelper.getCallCount());
+        SslError error = onReceivedSslErrorHelper.getError();
+        Assert.assertTrue("Expected SSL_IDMISMATCH", error.hasError(SslError.SSL_IDMISMATCH));
     }
 
     // onReceivedSslError() does not imply any callbacks other than onPageFinished().
@@ -166,41 +134,32 @@ public class SslPreferencesTest {
         mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
                 InstrumentationRegistry.getInstrumentation().getContext(),
                 ServerCertificate.CERT_EXPIRED);
-        try {
-            final String pageUrl = mTestServer.getURL(HELLO_WORLD_HTML);
-            final OnReceivedSslErrorHelper onReceivedSslErrorHelper =
-                    mContentsClient.getOnReceivedSslErrorHelper();
-
-            int onSslErrorCallCount = onReceivedSslErrorHelper.getCallCount();
-            int errorCount = mContentsClient.getOnReceivedErrorHelper().getCallCount();
-            int httpErrorCount = mContentsClient.getOnReceivedHttpErrorHelper().getCallCount();
-
-            // Load the page and cancel the SslError
-            mContentsClient.setAllowSslError(false);
-            mActivityTestRule.loadUrlSync(
-                    mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
-
-            Assert.assertEquals("onReceivedSslError should be called once", onSslErrorCallCount + 1,
-                    onReceivedSslErrorHelper.getCallCount());
-            Assert.assertEquals("Canceled SslErrors should not trigger network errors", errorCount,
-                    mContentsClient.getOnReceivedErrorHelper().getCallCount());
-            Assert.assertEquals("Canceled SslErrors should not trigger HTTP errors", httpErrorCount,
-                    mContentsClient.getOnReceivedHttpErrorHelper().getCallCount());
-
-            // Same thing, but allow the SslError this time
-            mContentsClient.setAllowSslError(true);
-            mActivityTestRule.loadUrlSync(
-                    mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
-
-            Assert.assertEquals("onReceivedSslError should be called a second time",
-                    onSslErrorCallCount + 2, onReceivedSslErrorHelper.getCallCount());
-            Assert.assertEquals("Allowed SslErrors should not trigger network errors", errorCount,
-                    mContentsClient.getOnReceivedErrorHelper().getCallCount());
-            Assert.assertEquals("Allowed SslErrors should not trigger HTTP errors", httpErrorCount,
-                    mContentsClient.getOnReceivedHttpErrorHelper().getCallCount());
-        } finally {
-            mTestServer.stopAndDestroyServer();
-        }
+        final String pageUrl = mTestServer.getURL(HELLO_WORLD_HTML);
+        final OnReceivedSslErrorHelper onReceivedSslErrorHelper =
+                mContentsClient.getOnReceivedSslErrorHelper();
+        int onSslErrorCallCount = onReceivedSslErrorHelper.getCallCount();
+        int errorCount = mContentsClient.getOnReceivedErrorHelper().getCallCount();
+        int httpErrorCount = mContentsClient.getOnReceivedHttpErrorHelper().getCallCount();
+        // Load the page and cancel the SslError
+        mContentsClient.setAllowSslError(false);
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
+        Assert.assertEquals("onReceivedSslError should be called once", onSslErrorCallCount + 1,
+                onReceivedSslErrorHelper.getCallCount());
+        Assert.assertEquals("Canceled SslErrors should not trigger network errors", errorCount,
+                mContentsClient.getOnReceivedErrorHelper().getCallCount());
+        Assert.assertEquals("Canceled SslErrors should not trigger HTTP errors", httpErrorCount,
+                mContentsClient.getOnReceivedHttpErrorHelper().getCallCount());
+        // Same thing, but allow the SslError this time
+        mContentsClient.setAllowSslError(true);
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
+        Assert.assertEquals("onReceivedSslError should be called a second time",
+                onSslErrorCallCount + 2, onReceivedSslErrorHelper.getCallCount());
+        Assert.assertEquals("Allowed SslErrors should not trigger network errors", errorCount,
+                mContentsClient.getOnReceivedErrorHelper().getCallCount());
+        Assert.assertEquals("Allowed SslErrors should not trigger HTTP errors", httpErrorCount,
+                mContentsClient.getOnReceivedHttpErrorHelper().getCallCount());
     }
 
     @Test
@@ -210,27 +169,19 @@ public class SslPreferencesTest {
         mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
                 InstrumentationRegistry.getInstrumentation().getContext(),
                 ServerCertificate.CERT_EXPIRED);
-        try {
-            final String pageUrl = mTestServer.getURL(HELLO_WORLD_HTML);
-            final OnReceivedSslErrorHelper onReceivedSslErrorHelper =
-                    mContentsClient.getOnReceivedSslErrorHelper();
-
-            int onSslErrorCallCount = onReceivedSslErrorHelper.getCallCount();
-
-            mContentsClient.setAllowSslError(true);
-            mActivityTestRule.loadUrlSync(
-                    mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
-
-            Assert.assertEquals("onReceivedSslError should be called once", onSslErrorCallCount + 1,
-                    onReceivedSslErrorHelper.getCallCount());
-
-            // Assert the page has successfully loaded, which can be indicated by changing the page
-            // title.
-            Assert.assertEquals("Page has loaded and set the title", HELLO_WORLD_TITLE,
-                    mActivityTestRule.getTitleOnUiThread(mAwContents));
-        } finally {
-            mTestServer.stopAndDestroyServer();
-        }
+        final String pageUrl = mTestServer.getURL(HELLO_WORLD_HTML);
+        final OnReceivedSslErrorHelper onReceivedSslErrorHelper =
+                mContentsClient.getOnReceivedSslErrorHelper();
+        int onSslErrorCallCount = onReceivedSslErrorHelper.getCallCount();
+        mContentsClient.setAllowSslError(true);
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
+        Assert.assertEquals("onReceivedSslError should be called once", onSslErrorCallCount + 1,
+                onReceivedSslErrorHelper.getCallCount());
+        // Assert the page has successfully loaded, which can be indicated by changing the page
+        // title.
+        Assert.assertEquals("Page has loaded and set the title", HELLO_WORLD_TITLE,
+                mActivityTestRule.getTitleOnUiThread(mAwContents));
     }
 
     @Test
@@ -240,28 +191,20 @@ public class SslPreferencesTest {
         mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
                 InstrumentationRegistry.getInstrumentation().getContext(),
                 ServerCertificate.CERT_EXPIRED);
-        try {
-            final String pageUrl = mTestServer.getURL(HELLO_WORLD_HTML);
-            final OnReceivedSslErrorHelper onReceivedSslErrorHelper =
-                    mContentsClient.getOnReceivedSslErrorHelper();
-
-            int onSslErrorCallCount = onReceivedSslErrorHelper.getCallCount();
-
-            mContentsClient.setAllowSslError(false);
-            mActivityTestRule.loadUrlSync(
-                    mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
-
-            Assert.assertEquals("onReceivedSslError should be called once", onSslErrorCallCount + 1,
-                    onReceivedSslErrorHelper.getCallCount());
-
-            // Assert the page did not load. This is generally hard to check, so we instead check
-            // that the title is the empty string (as the real HTML sets the title to
-            // HELLO_WORLD_TITLE).
-            Assert.assertEquals("Page should not be loaded and title should be empty", "",
-                    mActivityTestRule.getTitleOnUiThread(mAwContents));
-        } finally {
-            mTestServer.stopAndDestroyServer();
-        }
+        final String pageUrl = mTestServer.getURL(HELLO_WORLD_HTML);
+        final OnReceivedSslErrorHelper onReceivedSslErrorHelper =
+                mContentsClient.getOnReceivedSslErrorHelper();
+        int onSslErrorCallCount = onReceivedSslErrorHelper.getCallCount();
+        mContentsClient.setAllowSslError(false);
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
+        Assert.assertEquals("onReceivedSslError should be called once", onSslErrorCallCount + 1,
+                onReceivedSslErrorHelper.getCallCount());
+        // Assert the page did not load. This is generally hard to check, so we instead check
+        // that the title is the empty string (as the real HTML sets the title to
+        // HELLO_WORLD_TITLE).
+        Assert.assertEquals("Page should not be loaded and title should be empty", "",
+                mActivityTestRule.getTitleOnUiThread(mAwContents));
     }
 
     // If the user allows the ssl error, the same ssl error will not trigger the onReceivedSslError
@@ -273,30 +216,22 @@ public class SslPreferencesTest {
         mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
                 InstrumentationRegistry.getInstrumentation().getContext(),
                 ServerCertificate.CERT_EXPIRED);
-        try {
-            final String pageUrl = mTestServer.getURL(HELLO_WORLD_HTML);
-            final OnReceivedSslErrorHelper onReceivedSslErrorHelper =
-                    mContentsClient.getOnReceivedSslErrorHelper();
-
-            int onSslErrorCallCount = onReceivedSslErrorHelper.getCallCount();
-
-            mContentsClient.setAllowSslError(true);
-            mActivityTestRule.loadUrlSync(
-                    mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
-
-            Assert.assertEquals("onReceivedSslError should be called once", onSslErrorCallCount + 1,
-                    onReceivedSslErrorHelper.getCallCount());
-
-            // Now load the page again. This time, we expect no ssl error, because
-            // user's decision should be remembered.
-            onSslErrorCallCount = onReceivedSslErrorHelper.getCallCount();
-            mActivityTestRule.loadUrlSync(
-                    mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
-            Assert.assertEquals("onReceivedSslError should not be called again",
-                    onSslErrorCallCount, onReceivedSslErrorHelper.getCallCount());
-        } finally {
-            mTestServer.stopAndDestroyServer();
-        }
+        final String pageUrl = mTestServer.getURL(HELLO_WORLD_HTML);
+        final OnReceivedSslErrorHelper onReceivedSslErrorHelper =
+                mContentsClient.getOnReceivedSslErrorHelper();
+        int onSslErrorCallCount = onReceivedSslErrorHelper.getCallCount();
+        mContentsClient.setAllowSslError(true);
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
+        Assert.assertEquals("onReceivedSslError should be called once", onSslErrorCallCount + 1,
+                onReceivedSslErrorHelper.getCallCount());
+        // Now load the page again. This time, we expect no ssl error, because
+        // user's decision should be remembered.
+        onSslErrorCallCount = onReceivedSslErrorHelper.getCallCount();
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
+        Assert.assertEquals("onReceivedSslError should not be called again", onSslErrorCallCount,
+                onReceivedSslErrorHelper.getCallCount());
     }
 
     // If the user cancels the ssl error, the same ssl error should trigger the onReceivedSslError
@@ -308,35 +243,25 @@ public class SslPreferencesTest {
         mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
                 InstrumentationRegistry.getInstrumentation().getContext(),
                 ServerCertificate.CERT_EXPIRED);
-        try {
-            final String pageUrl = mTestServer.getURL(HELLO_WORLD_HTML);
-            final OnReceivedSslErrorHelper onReceivedSslErrorHelper =
-                    mContentsClient.getOnReceivedSslErrorHelper();
-
-            int onSslErrorCallCount = onReceivedSslErrorHelper.getCallCount();
-
-            mContentsClient.setAllowSslError(false);
-            mActivityTestRule.loadUrlSync(
-                    mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
-
-            Assert.assertEquals("onReceivedSslError should be called once", onSslErrorCallCount + 1,
-                    onReceivedSslErrorHelper.getCallCount());
-            SslError error = onReceivedSslErrorHelper.getError();
-            Assert.assertTrue(
-                    "Expected SSL_DATE_INVALID", error.hasError(SslError.SSL_DATE_INVALID));
-
-            // Now load the page again. This time, we expect the same ssl error, because
-            // user's decision should be remembered.
-            mActivityTestRule.loadUrlSync(
-                    mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
-            Assert.assertEquals("onReceivedSslError should be called a second time",
-                    onSslErrorCallCount + 2, onReceivedSslErrorHelper.getCallCount());
-            // And that error should have the same error code.
-            error = onReceivedSslErrorHelper.getError();
-            Assert.assertTrue(
-                    "Expected SSL_DATE_INVALID", error.hasError(SslError.SSL_DATE_INVALID));
-        } finally {
-            mTestServer.stopAndDestroyServer();
-        }
+        final String pageUrl = mTestServer.getURL(HELLO_WORLD_HTML);
+        final OnReceivedSslErrorHelper onReceivedSslErrorHelper =
+                mContentsClient.getOnReceivedSslErrorHelper();
+        int onSslErrorCallCount = onReceivedSslErrorHelper.getCallCount();
+        mContentsClient.setAllowSslError(false);
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
+        Assert.assertEquals("onReceivedSslError should be called once", onSslErrorCallCount + 1,
+                onReceivedSslErrorHelper.getCallCount());
+        SslError error = onReceivedSslErrorHelper.getError();
+        Assert.assertTrue("Expected SSL_DATE_INVALID", error.hasError(SslError.SSL_DATE_INVALID));
+        // Now load the page again. This time, we expect the same ssl error, because
+        // user's decision should be remembered.
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
+        Assert.assertEquals("onReceivedSslError should be called a second time",
+                onSslErrorCallCount + 2, onReceivedSslErrorHelper.getCallCount());
+        // And that error should have the same error code.
+        error = onReceivedSslErrorHelper.getError();
+        Assert.assertTrue("Expected SSL_DATE_INVALID", error.hasError(SslError.SSL_DATE_INVALID));
     }
 }

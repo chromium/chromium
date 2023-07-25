@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.metrics;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -53,11 +52,6 @@ public class ChromiumAndroidLinkerMetricsTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         mTestServer = EmbeddedTestServer.createAndStartServer(
                 ApplicationProvider.getApplicationContext());
-    }
-
-    @After
-    public void tearDown() {
-        mTestServer.stopAndDestroyServer();
     }
 
     /**

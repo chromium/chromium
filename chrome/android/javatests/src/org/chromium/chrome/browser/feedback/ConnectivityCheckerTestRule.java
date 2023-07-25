@@ -34,11 +34,7 @@ public class ConnectivityCheckerTestRule extends ChromeBrowserTestRule {
             @Override
             public void evaluate() throws Throwable {
                 setUp();
-                try {
-                    base.evaluate();
-                } finally {
-                    tearDown();
-                }
+                base.evaluate();
             }
         }, description);
     }
@@ -67,9 +63,5 @@ public class ConnectivityCheckerTestRule extends ChromeBrowserTestRule {
         mGenerated302Url = mTestServer.getURL("/echo?status=302");
         mGenerated404Url = mTestServer.getURL("/echo?status=404");
         mGeneratedSlowUrl = mTestServer.getURL("/slow?5");
-    }
-
-    private void tearDown() {
-        mTestServer.stopAndDestroyServer();
     }
 }

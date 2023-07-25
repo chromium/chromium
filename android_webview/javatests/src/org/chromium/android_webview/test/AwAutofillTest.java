@@ -378,7 +378,6 @@ public class AwAutofillTest {
     @After
     public void tearDown() {
         mWebServer.shutdown();
-        mEmbeddedServer.stopAndDestroyServer();
         mAutofillProvider = null;
     }
 

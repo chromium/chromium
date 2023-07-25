@@ -74,7 +74,6 @@ public class ToastHWATest implements CustomMainActivityStart {
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
 
-        mTestServer.stopAndDestroyServer();
         mDownloadTestRule.deleteFilesInDownloadDirectory(TEST_FILES);
         ToastManager.resetForTesting();
     }

@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.contacts_picker;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -48,11 +47,6 @@ public class ContactsPickerLauncherTest {
                 ApplicationProvider.getApplicationContext());
 
         loadNative();
-    }
-
-    @After
-    public void tearDown() {
-        if (mTestServer != null) mTestServer.stopAndDestroyServer();
     }
 
     // Based on BackgroundMetricsTest.java

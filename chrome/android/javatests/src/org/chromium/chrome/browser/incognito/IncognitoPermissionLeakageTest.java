@@ -103,7 +103,6 @@ public class IncognitoPermissionLeakageTest {
         ModalDialogTestUtils.overrideEnableButtonTapProtection(true);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> IncognitoDataTestUtils.closeTabs(mChromeActivityTestRule));
-        mTestServer.stopAndDestroyServer();
     }
 
     private void requestLocationPermission(Tab tab) throws TimeoutException, ExecutionException {
