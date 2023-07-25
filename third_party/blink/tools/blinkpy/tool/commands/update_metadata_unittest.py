@@ -18,10 +18,10 @@ from blinkpy.tool.mock_tool import MockBlinkTool
 from blinkpy.tool.commands.update_metadata import (
     UpdateMetadata,
     MetadataUpdater,
-    TestConfigurations,
     load_and_update_manifests,
     sort_metadata_ast,
 )
+from blinkpy.w3c.wpt_metadata import TestConfigurations
 from blinkpy.web_tests.builder_list import BuilderList
 
 path_finder.bootstrap_wpt_imports()

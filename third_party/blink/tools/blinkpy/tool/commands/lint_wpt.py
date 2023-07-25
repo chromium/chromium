@@ -21,12 +21,9 @@ from blinkpy.common import path_finder
 from blinkpy.common.host import Host
 from blinkpy.common.system.filesystem import FileSystem
 from blinkpy.tool.commands.command import Command
-from blinkpy.tool.commands.update_metadata import (
-    BUG_PATTERN,
-    TestConfigurations,
-)
 from blinkpy.w3c.common import is_basename_skipped
 from blinkpy.w3c.wpt_manifest import WPTManifest
+from blinkpy.w3c.wpt_metadata import BUG_PATTERN, TestConfigurations
 from blinkpy.web_tests.port.base import Port
 
 path_finder.bootstrap_wpt_imports()
