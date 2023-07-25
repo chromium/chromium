@@ -41,13 +41,22 @@ def _call_profdata_tool(profile_input_file_paths,
   Raises:
     CalledProcessError: An error occurred merging profiles.
   """
+  # There might be too many files in input and argument limit might be
+  # violated, so make the tool read a list of paths from a file.
+  output_dir = os.path.dirname(profile_output_file_path)
+  # Normalize to POSIX style paths for consistent results.
+  input_file = os.path.join(output_dir,
+                            'input-profdata-files.txt').replace('\\', '/')
+  with open(input_file, 'w') as fd:
+    for file_path in profile_input_file_paths:
+      fd.write('%s\n' % file_path)
   try:
     subprocess_cmd = [
         profdata_tool_path, 'merge', '-o', profile_output_file_path,
     ]
     if sparse:
       subprocess_cmd += ['-sparse=true',]
-    subprocess_cmd.extend(profile_input_file_paths)
+    subprocess_cmd.extend(['-f', input_file])
     logging.info('profdata command: %r', subprocess_cmd)
 
     # Redirecting stderr is required because when error happens, llvm-profdata
