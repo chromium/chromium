@@ -23,13 +23,6 @@ class BookmarkModel;
 @class SpotlightInterface;
 @class SearchableItemFactory;
 
-@protocol BookmarkUpdatedDelegate
-
-/// Called when a bookmark is updated.
-- (void)bookmarkUpdated;
-
-@end
-
 /// This class is intended to be used by the SpotlightManager
 /// It maintains an index of bookmark items in spotlightInterface from the
 /// observed bookmarkModel. The methods should be called on main thread, but
@@ -49,9 +42,6 @@ class BookmarkModel;
 
 /// A searchable item factory to create searchable items.
 @property(nonatomic, readonly) SearchableItemFactory* searchableItemFactory;
-
-/// The delegate notified when a bookmark is updated.
-@property(nonatomic, weak) id<BookmarkUpdatedDelegate> delegate;
 
 /// Number of pending large icon tasks.
 @property(nonatomic, assign) NSUInteger pendingLargeIconTasksCount;

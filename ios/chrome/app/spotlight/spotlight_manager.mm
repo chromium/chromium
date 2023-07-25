@@ -22,7 +22,7 @@
 #endif
 
 // Called from the BrowserBookmarkModelBridge from C++ -> ObjC.
-@interface SpotlightManager ()<BookmarkUpdatedDelegate> {
+@interface SpotlightManager () {
   BookmarksSpotlightManager* _bookmarkManager;
   TopSitesSpotlightManager* _topSitesManager;
   ActionsSpotlightManager* _actionsManager;
@@ -58,7 +58,6 @@
         topSitesSpotlightManagerWithBrowserState:browserState];
     _bookmarkManager = [BookmarksSpotlightManager
         bookmarksSpotlightManagerWithBrowserState:browserState];
-    [_bookmarkManager setDelegate:self];
     _actionsManager = [ActionsSpotlightManager actionsSpotlightManager];
     if (base::FeatureList::IsEnabled(kSpotlightReadingListSource)) {
       _readingListManager = [ReadingListSpotlightManager
@@ -86,10 +85,6 @@
                        [self isGoogleDefaultSearchEngine]];
   [self.readingListManager clearAndReindexReadingList];
   [self.openTabsManager clearAndReindexOpenTabs];
-}
-
-- (void)bookmarkUpdated {
-  [_topSitesManager reindexTopSites];
 }
 
 - (void)shutdown {
