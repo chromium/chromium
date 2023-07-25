@@ -8,6 +8,7 @@
 #include <set>
 #include <utility>
 
+#include "base/callback_list.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
@@ -3504,28 +3505,30 @@ void MenuController::SetAnchorParametersForItem(MenuItemView* item,
   }
 }
 
-MenuController::AnnotationCallbackHandle MenuController::SetAnnotationCallback(
+base::CallbackListSubscription MenuController::AddAnnotationCallback(
     AnnotationCallback callback) {
-  // TODO(dfried): change this so multiple annotations can be supported.
-  // This check avoids a potential race/UAF situation.
-  CHECK(!annotation_callback_)
-      << "Only one annotation callback allowed at a time.";
-  return AnnotationCallbackHandle(
-      AsWeakPtr(), &MenuController::annotation_callback_, callback);
+  return annotation_callbacks_.Add(base::BindRepeating(
+      [](AnnotationCallback callback, bool& result,
+         const ui::LocatedEvent& event) {
+        if (result) {
+          // A different annotation has already handled this event.
+          return;
+        }
+        result = callback.Run(event);
+      },
+      std::move(callback)));
 }
 
 bool MenuController::MaybeForwardToAnnotation(SubmenuView* source,
                                               const ui::LocatedEvent& event) {
-  if (!annotation_callback_) {
-    return false;
-  }
-
   const std::unique_ptr<ui::Event> cloned = event.Clone();
   auto* located = static_cast<ui::LocatedEvent*>(cloned.get());
   const gfx::Point screen_loc = View::ConvertPointToScreen(
       source->GetScrollViewContainer(), event.location());
   located->set_root_location(screen_loc);
-  return annotation_callback_.Run(*located);
+  bool result = false;
+  annotation_callbacks_.Notify(result, *located);
+  return result;
 }
 
 bool MenuController::CanProcessInputEvents() const {

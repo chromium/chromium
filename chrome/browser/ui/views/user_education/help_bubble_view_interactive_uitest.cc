@@ -51,7 +51,8 @@ class HelpBubbleViewInteractiveUiTest : public InteractiveBrowserTest {
                    new HelpBubbleView(GetHelpBubbleDelegate(), {anchor},
                                       std::move(params));
                  }),
-        WaitForShow(HelpBubbleView::kHelpBubbleElementIdForTesting),
+        std::move(WaitForShow(HelpBubbleView::kHelpBubbleElementIdForTesting)
+                      .SetTransitionOnlyOnEvent(true)),
         // Prevent direct chaining off the show event.
         FlushEvents());
   }
@@ -61,7 +62,8 @@ class HelpBubbleViewInteractiveUiTest : public InteractiveBrowserTest {
     return Steps(
         WithView(HelpBubbleView::kHelpBubbleElementIdForTesting,
                  [](HelpBubbleView* bubble) { bubble->GetWidget()->Close(); }),
-        WaitForHide(HelpBubbleView::kHelpBubbleElementIdForTesting),
+        std::move(WaitForHide(HelpBubbleView::kHelpBubbleElementIdForTesting)
+                      .SetTransitionOnlyOnEvent(true)),
         // Prevent direct chaining off the hide event.
         FlushEvents());
   }
@@ -219,4 +221,48 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest, AnnotateMenu) {
       ClickMouse(), WaitForHide(HelpBubbleView::kHelpBubbleElementIdForTesting),
       EnsurePresent(AppMenuModel::kDownloadsMenuItem));
 }
+
+// Verifies that we can safely show and then close two help bubbles attached to
+// the same menu. This may happen transiently during tutorials.
+IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest, TwoMenuHelpBubbles) {
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, button_clicked);
+  constexpr char16_t kButtonText[] = u"button";
+
+  // First bubble has no buttons.
+  auto params1 = GetBubbleParams();
+  params1.arrow = user_education::HelpBubbleArrow::kRightCenter;
+
+  // Second bubble has a default button.
+  auto params2 = GetBubbleParams();
+  params2.arrow = user_education::HelpBubbleArrow::kRightCenter;
+
+  user_education::HelpBubbleButtonParams button;
+  button.text = kButtonText;
+  button.is_default = true;
+  button.callback = button_clicked.Get();
+  params2.buttons.emplace_back(std::move(button));
+
+  EXPECT_CALL(button_clicked, Run).Times(1);
+
+  RunTestSequence(
+      // Show the application menu and attach a bubble to two different menu
+      // items.
+      PressButton(kAppMenuButtonElementId),
+      ShowHelpBubble(AppMenuModel::kDownloadsMenuItem, std::move(params1)),
+      ShowHelpBubble(AppMenuModel::kMoreToolsMenuItem, std::move(params2)),
+
+      // Use the mouse to click the default button on the second bubble and wait
+      // for the bubble to disappear.
+      //
+      // The default button should be targetable because it is at the bottom of
+      // the lower of the two help bubbles.
+      MoveMouseTo(HelpBubbleView::kDefaultButtonIdForTesting), ClickMouse(),
+      WaitForHide(HelpBubbleView::kHelpBubbleElementIdForTesting)
+          .SetTransitionOnlyOnEvent(true),
+      FlushEvents(),
+
+      // Close the remaining help bubble.
+      CloseHelpBubble());
+}
+
 #endif

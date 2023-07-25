@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
@@ -319,7 +320,7 @@ class MenuEventMonitor {
  public:
   MenuEventMonitor(HelpBubbleView* help_bubble, views::MenuItemView* menu_item)
       : help_bubble_(help_bubble),
-        callback_handle_(menu_item->GetMenuController()->SetAnnotationCallback(
+        callback_handle_(menu_item->GetMenuController()->AddAnnotationCallback(
             base::BindRepeating(&MenuEventMonitor::OnEvent,
                                 base::Unretained(this)))) {}
 
@@ -454,7 +455,7 @@ class MenuEventMonitor {
   const raw_ptr<HelpBubbleView> help_bubble_;
   raw_ptr<views::Button> hovered_button_ = nullptr;
   // std::unique_ptr<views::EventMonitor> event_monitor_;
-  views::MenuController::AnnotationCallbackHandle callback_handle_;
+  base::CallbackListSubscription callback_handle_;
 };
 
 }  // namespace internal

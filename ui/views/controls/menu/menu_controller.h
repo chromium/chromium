@@ -13,10 +13,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_auto_reset.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -123,8 +123,6 @@ class VIEWS_EXPORT MenuController
   // processed by the menu (except for purposes of e.g. hot-tracking).
   using AnnotationCallback =
       base::RepeatingCallback<bool(const ui::LocatedEvent& event)>;
-  using AnnotationCallbackHandle =
-      base::WeakAutoReset<MenuController, AnnotationCallback>;
 
   // If a menu is currently active, this returns the controller for it.
   static MenuController* GetActiveInstance();
@@ -289,10 +287,11 @@ class VIEWS_EXPORT MenuController
   // Sets the customized rounded corners of the context menu.
   void SetMenuRoundedCorners(absl::optional<gfx::RoundedCornersF> corners);
 
-  // Sets the annotation event handler. The handle should be discarded when the
-  // calling code no longer wants to intercept events for the annotation. It is
-  // safe to discard the handle after the menu controller has been destroyed.
-  AnnotationCallbackHandle SetAnnotationCallback(AnnotationCallback callback);
+  // Adds an annotation event handler. The subscription should be discarded when
+  // the calling code no longer wants to intercept events for the annotation. It
+  // is safe to discard the handle after the menu controller has been destroyed.
+  base::CallbackListSubscription AddAnnotationCallback(
+      AnnotationCallback callback);
 
  private:
   friend class internal::MenuRunnerImpl;
@@ -819,9 +818,11 @@ class VIEWS_EXPORT MenuController
   // The rounded corners of the context menu.
   absl::optional<gfx::RoundedCornersF> rounded_corners_ = absl::nullopt;
 
-  // The current annotation callback. Set if there is a menu annotation; see
-  // `AnnotationCallback` for more information.
-  AnnotationCallback annotation_callback_;
+  // The current annotation callbacks. Callbacks will be wrapped in such a way
+  // that a callback list can be used, with the return value as an out
+  // parameter. See `AnnotationCallback` for more information.
+  base::RepeatingCallbackList<void(bool&, const ui::LocatedEvent& event)>
+      annotation_callbacks_;
 };
 
 }  // namespace views
