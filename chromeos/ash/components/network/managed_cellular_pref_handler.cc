@@ -6,6 +6,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/check.h"
+#include "base/values.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/policy_util.h"
@@ -33,6 +35,22 @@ void ManagedCellularPrefHandler::Init(
 
 void ManagedCellularPrefHandler::SetDevicePrefs(PrefService* device_prefs) {
   device_prefs_ = device_prefs;
+
+  if (!device_prefs_) {
+    return;
+  }
+
+  const bool hasPref =
+      device_prefs_->HasPrefPath(prefs::kManagedCellularESimMetadata);
+  if (!ash::features::IsSmdsSupportEuiccUploadEnabled()) {
+    if (hasPref) {
+      device_prefs_->ClearPref(prefs::kManagedCellularESimMetadata);
+    }
+    return;
+  }
+  if (!hasPref) {
+    MigrateExistingPrefs();
+  }
 }
 
 void ManagedCellularPrefHandler::AddObserver(Observer* observer) {
@@ -215,6 +233,35 @@ bool ManagedCellularPrefHandler::ContainsApnMigratedIccid(
   const base::Value::Dict& apn_migrated_iccids =
       device_prefs_->GetDict(prefs::kApnMigratedIccids);
   return apn_migrated_iccids.FindBool(iccid).value_or(false);
+}
+
+void ManagedCellularPrefHandler::MigrateExistingPrefs() {
+  DCHECK(ash::features::IsSmdsSupportEuiccUploadEnabled());
+  DCHECK(device_prefs_);
+
+  NET_LOG(EVENT) << "Starting migration of existing ICCID and SM-DP+ pairs";
+
+  const base::Value::Dict& existing_prefs =
+      device_prefs_->GetDict(prefs::kManagedCellularIccidSmdpPair);
+
+  for (const auto [iccid, value] : existing_prefs) {
+    const std::string& smdp_activation_code = value.GetString();
+    if (smdp_activation_code.empty()) {
+      NET_LOG(ERROR) << "Failed to migrate ICCID and SM-DP+ pair due to "
+                     << "missing activation code";
+      continue;
+    }
+
+    base::Value::Dict esim_metadata;
+    esim_metadata.Set(::onc::cellular::kSMDPAddress, smdp_activation_code);
+    ScopedDictPrefUpdate update(device_prefs_,
+                                prefs::kManagedCellularESimMetadata);
+    update->Set(iccid, std::move(esim_metadata));
+
+    NET_LOG(EVENT) << "Successfully migrated ICCID and SM-DP+ pair";
+  }
+
+  NET_LOG(EVENT) << "Finished migration of existing ICCID and SM-DP+ pairs";
 }
 
 }  // namespace ash

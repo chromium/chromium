@@ -84,10 +84,19 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedCellularPrefHandler {
   bool HasObserver(Observer* observer) const;
 
  private:
+  // This change migrates the existing prefs, the ICCID and SM-DP+ pairs, to the
+  // new eSIM metadata format that includes the ICCID, SM-DX activation code,
+  // and name of the network as provided by policy. Since the previous format
+  // did not contain a name the migrated entries will not contain a name until
+  // subsequent policy application. This will overwrite existing entries and
+  // should only be called once.
+  void MigrateExistingPrefs();
+
   void NotifyManagedCellularPrefChanged();
 
   raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
       nullptr;
+
   // Initialized to null and set once SetDevicePrefs() is called.
   raw_ptr<PrefService, ExperimentalAsh> device_prefs_ = nullptr;
 
