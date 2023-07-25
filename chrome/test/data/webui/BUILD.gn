@@ -160,8 +160,6 @@ if (include_js_tests) {
       "net_internals/net_internals_browsertest.js",
       "sandboxstatus_browsertest.js",
       "settings/cr_settings_browsertest.js",
-      "settings/privacy_sandbox_browsertest.js",
-      "settings/settings_idle_load_browsertest.js",
     ]
 
     gen_include_files = [

@@ -121,6 +121,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, HelpPage) {
   RunTest("settings/help_page_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, IdleLoad) {
+  RunTest("settings/idle_load_test.js", "mocha.run()");
+}
+
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SettingsTest, ImportDataDialog) {
   RunTest("settings/import_data_dialog_test.js", "mocha.run()");
@@ -206,6 +210,16 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, PerformanceMenu) {
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, PreloadingPage) {
   RunTest("settings/preloading_page_test.js", "mocha.run()");
+}
+
+// TODO(crbug.com/1373779): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_PrivacySandbox DISABLED_PrivacySandbox
+#else
+#define MAYBE_PrivacySandbox PrivacySandbox
+#endif
+IN_PROC_BROWSER_TEST_F(SettingsTest, MAYBE_PrivacySandbox) {
+  RunTest("settings/privacy_sandbox_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, ProtocolHandlers) {
