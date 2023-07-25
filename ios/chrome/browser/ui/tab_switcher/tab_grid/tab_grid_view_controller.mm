@@ -2014,6 +2014,18 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)gridViewController:(GridViewController*)gridViewController
        didSelectItemWithID:(NSString*)itemID {
+  // Check that the current page matches the grid view being interacted with.
+  BOOL isOnRegularTabsPage = self.currentPage == TabGridPageRegularTabs;
+  BOOL isOnIncognitoTabsPage = self.currentPage == TabGridPageIncognitoTabs;
+  BOOL isOnRemoteTabsPage = self.currentPage == TabGridPageRemoteTabs;
+  BOOL gridIsRegularTabs = gridViewController == self.regularTabsViewController;
+  BOOL gridIsIncognitoTabs =
+      gridViewController == self.incognitoTabsViewController;
+  if ((isOnRegularTabsPage && !gridIsRegularTabs) ||
+      (isOnIncognitoTabsPage && !gridIsIncognitoTabs) || isOnRemoteTabsPage) {
+    return;
+  }
+
   if (self.tabGridMode == TabGridModeSelection) {
     [self updateSelectionModeToolbars];
     return;
