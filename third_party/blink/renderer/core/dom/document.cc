@@ -7510,8 +7510,18 @@ void Document::FinishedParsing() {
   // dispatched in a queued task, see https://crbug.com/961428
   if (document_timing_.DomContentLoadedEventStart().is_null())
     document_timing_.MarkDomContentLoadedEventStart();
-  if (!ScriptForbiddenScope::IsScriptForbidden())
+  if (!ScriptForbiddenScope::IsScriptForbidden()) {
     DispatchEvent(*Event::CreateBubble(event_type_names::kDOMContentLoaded));
+
+    if (LocalFrame* frame = GetFrame()) {
+      if (frame->IsAttached()) {
+        DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
+            "MarkDOMContent", inspector_mark_load_event::Data, frame);
+        probe::DomContentLoadedEventFired(frame);
+      }
+    }
+  }
+
   if (document_timing_.DomContentLoadedEventEnd().is_null())
     document_timing_.MarkDomContentLoadedEventEnd();
   SetParsingState(kFinishedParsing);
@@ -7549,17 +7559,13 @@ void Document::FinishedParsing() {
 
     BeginLifecycleUpdatesIfRenderingReady();
 
-    frame->Loader().FinishedParsing();
-
-    if (ShouldMarkFontPerformance())
-      FontPerformance::MarkDomContentLoaded();
-
-    if (frame->IsAttached()) {
-      DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
-          "MarkDOMContent", inspector_mark_load_event::Data, frame);
-      probe::DomContentLoadedEventFired(frame);
-    }
     frame->GetIdlenessDetector()->DomContentLoadedEventFired();
+
+    if (ShouldMarkFontPerformance()) {
+      FontPerformance::MarkDomContentLoaded();
+    }
+
+    frame->Loader().FinishedParsing();
   }
 
   // Schedule dropping of the ElementDataCache. We keep it alive for a while
