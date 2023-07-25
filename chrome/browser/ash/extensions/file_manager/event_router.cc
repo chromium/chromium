@@ -39,13 +39,17 @@
 #include "chrome/browser/ash/extensions/file_manager/file_system_provider_metrics_util.h"
 #include "chrome/browser/ash/extensions/file_manager/private_api_util.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
+#include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/file_system_provider/mount_path_util.h"
+#include "chrome/browser/ash/file_system_provider/operation_request_manager.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
+#include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
@@ -64,6 +68,7 @@
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/components/disks/disks_prefs.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/drive/drive_pref_names.h"
@@ -78,6 +83,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 
@@ -549,6 +555,21 @@ extensions::api::file_manager_private::FileWatchEvent CreateFileWatchEvent(
   }
 
   return event;
+}
+
+std::unique_ptr<ash::file_system_provider::ScopedUserInteraction>
+MaybeStartInteractionWithODFS(const storage::FileSystemURL& url,
+                              Profile* profile) {
+  ash::file_system_provider::util::FileSystemURLParser parser(url);
+  if (!parser.Parse()) {
+    return nullptr;
+  }
+  if (parser.file_system()->GetFileSystemInfo().provider_id() !=
+      ash::file_system_provider::ProviderId::CreateFromExtensionId(
+          file_tasks::GetODFSExtensionId(profile))) {
+    return nullptr;
+  }
+  return parser.file_system()->StartUserInteraction();
 }
 
 }  // namespace
@@ -1283,6 +1304,32 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
   notification_manager_->HandleIOTaskProgress(status);
   if (!DoFilesSwaWindowsExist(profile_) && !force_broadcasting_for_testing_) {
     return;
+  }
+
+  // If copying to/from ODFS, mark the provider's request manager
+  // as "interacting with user" to prevent long operation warnings when
+  // progress UI is already displayed.
+  if (chromeos::features::IsUploadOfficeToCloudEnabled()) {
+    if (status.IsCompleted()) {
+      odfs_interactions_.erase(status.task_id);
+    } else {
+      auto it = odfs_interactions_.find(status.task_id);
+      if (it == odfs_interactions_.end()) {
+        auto interaction = MaybeStartInteractionWithODFS(
+            status.GetDestinationFolder(), profile_);
+        if (!interaction) {
+          for (const io_task::EntryStatus& entry : status.sources) {
+            interaction = MaybeStartInteractionWithODFS(entry.url, profile_);
+            if (interaction) {
+              break;
+            }
+          }
+        }
+        if (interaction) {
+          odfs_interactions_[status.task_id] = std::move(interaction);
+        }
+      }
+    }
   }
 
   // Send directory change events on I/O task completion. inotify is flaky on

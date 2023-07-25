@@ -51,6 +51,12 @@ using OutputsType =
     extensions::api::file_manager_private::ProgressStatus::OutputsType;
 using file_manager::util::EntryDefinition;
 
+namespace ash::file_system_provider {
+
+class ScopedUserInteraction;
+
+}
+
 namespace file_manager {
 
 namespace {
@@ -323,6 +329,11 @@ class EventRouter : public KeyedService,
 
   DispatchDirectoryChangeEventImplCallback
       dispatch_directory_change_event_impl_;
+
+  // Keeps track of IO tasks interacting with ODFS.
+  std::map<io_task::IOTaskId,
+           std::unique_ptr<ash::file_system_provider::ScopedUserInteraction>>
+      odfs_interactions_;
 
   // Set this to true to ignore the DoFilesSwaWindowsExist check for testing.
   bool force_broadcasting_for_testing_ = false;
