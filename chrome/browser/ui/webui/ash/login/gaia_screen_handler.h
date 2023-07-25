@@ -135,7 +135,8 @@ class GaiaScreenHandler
     FRAME_STATE_UNKNOWN = 0,
     FRAME_STATE_LOADING,
     FRAME_STATE_LOADED,
-    FRAME_STATE_ERROR
+    FRAME_STATE_ERROR,
+    FRAME_STATE_BLOCKED
   };
 
   GaiaScreenHandler(
@@ -195,6 +196,12 @@ class GaiaScreenHandler
   void set_offline_timeout_for_testing(base::TimeDelta offline_timeout) {
     offline_timeout_ = offline_timeout;
   }
+
+  // TODO(https://issuetracker.google.com/292489063): Remove these methods to
+  // query the frame state, and instead, allow registering callbacks or futures
+  // to learn of the relevant state transitions e.g. with an Observer class.
+  bool IsLoadedForTesting() const;
+  bool IsNavigationBlockedForTesting() const;
 
  private:
   void LoadGaia(const login::GaiaContext& context);

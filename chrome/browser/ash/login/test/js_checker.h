@@ -139,6 +139,13 @@ class JSChecker {
       const std::string& css_class,
       std::initializer_list<base::StringPiece> element_ids);
 
+  // Waiter that waits until the specified element is (not) present in the
+  // document.
+  [[nodiscard]] std::unique_ptr<TestConditionWaiter>
+  CreateElementTextContentWaiter(
+      const std::string& content,
+      std::initializer_list<base::StringPiece> element_ids);
+
   // Expects that indicated UI element is not hidden.
   // NOTE: This only checks hidden property - it might not work for elements
   // hidden by "display: none" style.

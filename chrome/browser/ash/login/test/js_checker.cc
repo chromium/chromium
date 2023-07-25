@@ -326,6 +326,29 @@ std::unique_ptr<TestConditionWaiter> JSChecker::CreateHasClassWaiter(
   return CreateWaiterWithDescription(js_condition, description);
 }
 
+std::unique_ptr<TestConditionWaiter> JSChecker::CreateElementTextContentWaiter(
+    const std::string& content,
+    std::initializer_list<base::StringPiece> element_ids) {
+  TestPredicateWaiter::PredicateCheck predicate = base::BindRepeating(
+      [](JSChecker* jsChecker, const std::string& content,
+         std::initializer_list<base::StringPiece> element_ids) {
+        const std::string element_text =
+            jsChecker->GetAttributeString("textContent.trim()", element_ids);
+        return std::string::npos != element_text.find(content);
+      },
+      this, content, element_ids);
+
+  auto result = std::make_unique<TestPredicateWaiter>(predicate);
+
+  std::string description;
+  description.append(DescribePath(element_ids))
+      .append(" has text content: ")
+      .append(content);
+  result->set_description(description);
+
+  return result;
+}
+
 void JSChecker::GetBoolImpl(const std::string& expression, bool* result) {
   CHECK(web_contents_);
   *result = content::EvalJs(web_contents_.get(), "!!(" + expression + ")")

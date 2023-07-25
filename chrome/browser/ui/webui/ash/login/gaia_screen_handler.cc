@@ -673,6 +673,15 @@ void GaiaScreenHandler::HandleAuthExtensionLoaded() {
 }
 
 void GaiaScreenHandler::HandleWebviewLoadAborted(int error_code) {
+  if (error_code == net::ERR_BLOCKED_BY_ADMINISTRATOR) {
+    // Navigating to a blocked site displays a network error screen, but it
+    // doesn't indicate that the network is malfunctioning or that we need to
+    // reload the screen after regaining network connectivity, and it doesn't
+    // alter the network state, so we handle this network error with a frame
+    // state of its own.
+    frame_state_ = FRAME_STATE_BLOCKED;
+    return;
+  }
   if (error_code == net::ERR_INVALID_AUTH_CREDENTIALS) {
     // Silently ignore this error - it is used as an intermediate state for
     // committed interstitials (see https://crbug.com/1049349 for details).
@@ -1503,6 +1512,14 @@ void GaiaScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
   if (reload_gaia) {
     ReloadGaia(/*force_reload=*/true);
   }
+}
+
+bool GaiaScreenHandler::IsLoadedForTesting() const {
+  return frame_state_ == FRAME_STATE_LOADED;
+}
+
+bool GaiaScreenHandler::IsNavigationBlockedForTesting() const {
+  return frame_state_ == FRAME_STATE_BLOCKED;
 }
 
 void GaiaScreenHandler::HideOfflineMessage(NetworkStateInformer::State state,

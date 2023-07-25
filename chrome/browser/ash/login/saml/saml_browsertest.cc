@@ -14,6 +14,7 @@
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -37,6 +38,7 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
+#include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/test_users.h"
@@ -52,6 +54,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/login/login_handler_test_utils.h"
@@ -64,6 +67,7 @@
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/attestation/mock_attestation_flow.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
@@ -82,10 +86,13 @@
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "components/policy/core/common/policy_switches.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -136,6 +143,7 @@ constexpr test::UIPath kSamlBackButton = {"gaia-signin", "signin-frame-dialog",
 const test::UIPath kGaiaLoading = {"gaia-signin", "step-loading"};
 constexpr test::UIPath kFatalErrorActionButton = {"signin-fatal-error",
                                                   "actionButton"};
+constexpr test::UIPath kErrorPage = {"main-frame-error"};
 
 constexpr char kGAIASIDCookieName[] = "SID";
 constexpr char kGAIALSIDCookieName[] = "LSID";
@@ -168,6 +176,11 @@ constexpr char kDeviceTrustMatchHistogramName[] =
     "Enterprise.VerifiedAccess.SAML.DeviceTrustMatchesEndpoints";
 constexpr char kDeviceTrustAttestationFunnelStep[] =
     "Enterprise.DeviceTrust.Attestation.Funnel";
+
+constexpr char kSAMLLink[] = "link";
+constexpr char kSAMLLinkedPageURLPattern[] =
+    "*"
+    "/linked";
 
 // A FakeUserDataAuthClient that stores the salted and hashed secret passed
 // to AddAuthFactor().
@@ -1709,6 +1722,51 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SsoProfileInAddNewUserFlow) {
 
   SigninFrameJS().TapOn("Submit");
   test::WaitForPrimaryUserSessionStart();
+}
+
+IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SAMLBlocklistNavigationDisallowed) {
+  fake_saml_idp()->SetLoginHTMLTemplate("saml_login_link.html");
+  SetLoginBehaviorPolicyToSAMLInterstitial();
+
+  // TODO(https://issuetracker.google.com/290830337): Make this test class
+  // support propagating device policies to prefs with the logic in
+  // `LoginProfilePolicyProvider`, and instead of setting prefs here directly,
+  // just set the right device policies using
+  // `DeviceStateMixin::RequestDevicePolicyUpdate`.
+  // TODO(https://issuetracker.google.com/290821299): Add browser tests for
+  // allowlisting and for the lock screen.
+  Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetSigninBrowserContext())
+      ->GetPrefs()
+      ->SetList(policy::policy_prefs::kUrlBlocklist,
+                base::Value::List().Append(kSAMLLinkedPageURLPattern));
+
+  ShowSAMLLoginForm();
+
+  test::TestPredicateWaiter(base::BindRepeating([]() {
+    return LoginDisplayHost::default_host()
+        ->GetOobeUI()
+        ->GetHandler<GaiaScreenHandler>()
+        ->IsLoadedForTesting();
+  })).Wait();
+
+  SigninFrameJS().CreateVisibilityWaiter(true, kSAMLLink)->Wait();
+  SigninFrameJS().TapOn(kSAMLLink);
+  WaitForLoadStop(SigninFrameJS().web_contents());
+
+  SigninFrameJS()
+      .CreateElementTextContentWaiter(
+          l10n_util::GetStringUTF8(
+              IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_ADMINISTRATOR),
+          kErrorPage)
+      ->Wait();
+
+  test::TestPredicateWaiter(base::BindRepeating([]() {
+    return LoginDisplayHost::default_host()
+        ->GetOobeUI()
+        ->GetHandler<GaiaScreenHandler>()
+        ->IsNavigationBlockedForTesting();
+  })).Wait();
 }
 
 // Pushes DeviceLoginScreenLocales into the device policy.
