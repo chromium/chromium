@@ -67,5 +67,7 @@ steps:
     artifact_paths:
       - "build_id/windows/x86_64/**"
   - trigger: "testing-runtime-e2e"
-    label: ":hammer: Trigger Runtime Tests (Linux)"
-    depends_on: "build-chromium-linux-x86_64"
+    label: ":hammer: Trigger Runtime Tests"
+    depends_on:
+      - "build-chromium-linux-x86_64"
+      - "build-chromium-mac-x86_64"
