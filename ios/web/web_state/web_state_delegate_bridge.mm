@@ -51,11 +51,9 @@ void WebStateDelegateBridge::ShowRepostFormWarningDialog(
     base::OnceCallback<void(bool)> callback) {
   SEL selector = @selector(webState:runRepostFormDialogWithCompletionHandler:);
   if ([delegate_ respondsToSelector:selector]) {
-    __block base::OnceCallback<void(bool)> block_callback = std::move(callback);
     [delegate_ webState:source
-        runRepostFormDialogWithCompletionHandler:^(BOOL should_continue) {
-          std::move(block_callback).Run(should_continue);
-        }];
+        runRepostFormDialogWithCompletionHandler:base::CallbackToBlock(
+                                                     std::move(callback))];
   } else {
     std::move(callback).Run(true);
   }

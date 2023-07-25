@@ -152,13 +152,9 @@ bool WebIntTest::LoadWithParams(
 void WebIntTest::RemoveWKWebViewCreatedData(WKWebsiteDataStore* data_store,
                                             NSSet* websiteDataTypes) {
   base::RunLoop run_loop;
-  __block base::OnceClosure quit_closure = run_loop.QuitClosure();
-
   [data_store removeDataOfTypes:websiteDataTypes
                   modifiedSince:NSDate.distantPast
-              completionHandler:^{
-                std::move(quit_closure).Run();
-              }];
+              completionHandler:base::CallbackToBlock(run_loop.QuitClosure())];
 
   // Wait until the data is removed. We increase the timeout to 90 seconds here
   // since this action has been timing out frequently on the bots.
