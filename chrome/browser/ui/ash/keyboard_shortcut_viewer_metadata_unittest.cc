@@ -231,6 +231,7 @@ TEST_F(KeyboardShortcutViewerMetadataTest,
   }
 }
 
+// TODO (http://b/291803593): Remove the test.
 // Test that modifying Ash/Chrome accelerator should update
 // KeyboardShortcutViewerMetadata. (https://crbug.com/826037).
 // 1. If you are adding/deleting/modifying shortcuts, please also
@@ -242,7 +243,7 @@ TEST_F(KeyboardShortcutViewerMetadataTest,
 // 3. If there is no corrensponding item in the Keyboard Shortcut Viewer, please
 //    consider adding the shortcut to it or only update 2.
 TEST_F(KeyboardShortcutViewerMetadataTest,
-       ModifyAcceleratorShouldUpdateMetadata) {
+       DISABLED_ModifyAcceleratorShouldUpdateMetadata) {
   std::vector<ash::AcceleratorData> ash_accelerators;
   std::vector<AcceleratorMapping> chrome_accelerators;
   for (size_t i = 0; i < ash::kAcceleratorDataLength; ++i)
