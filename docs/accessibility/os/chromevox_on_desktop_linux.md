@@ -97,7 +97,7 @@ If you want speech, you just need to copy the speech synthesis data files to
 /usr/share like it would be on a Chrome OS device:
 
 ```
-gsutil ls gs://chromeos-localmirror/distfiles/espeak*
+gsutil ls gs://chromeos-localmirror/distfiles/espeak\*
 ```
 
 Pick the latest version and
