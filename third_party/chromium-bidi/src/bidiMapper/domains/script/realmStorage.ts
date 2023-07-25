@@ -32,7 +32,7 @@ type RealmFilter = {
   origin?: string;
   type?: Script.RealmType;
   sandbox?: string;
-  cdpSessionId?: string;
+  cdpSessionId?: Protocol.Target.SessionID;
 };
 
 /** Container class for browsing realms. */

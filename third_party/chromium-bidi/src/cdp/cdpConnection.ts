@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
+import type Protocol from 'devtools-protocol';
 
 import type {ITransport} from '../utils/transport.js';
 import {LogType} from '../utils/log.js';
@@ -31,7 +32,7 @@ interface CdpCallbacks {
 
 export interface ICdpConnection {
   browserClient(): ICdpClient;
-  getCdpClient(sessionId: string): ICdpClient;
+  getCdpClient(sessionId: Protocol.Target.SessionID): ICdpClient;
 }
 
 /**
@@ -44,7 +45,7 @@ export class CdpConnection implements ICdpConnection {
   /** The CdpClient object attached to the root browser session. */
   readonly #browserCdpClient: CdpClient;
   /** Map from session ID to CdpClient. */
-  readonly #sessionCdpClients = new Map<string, CdpClient>();
+  readonly #sessionCdpClients = new Map<Protocol.Target.SessionID, CdpClient>();
   readonly #commandCallbacks = new Map<number, CdpCallbacks>();
   readonly #logger?: LoggerFn;
   #nextId = 0;
@@ -75,7 +76,7 @@ export class CdpConnection implements ICdpConnection {
    * Gets a CdpClient instance attached to the given session ID,
    * or null if the session is not attached.
    */
-  getCdpClient(sessionId: string): CdpClient {
+  getCdpClient(sessionId: Protocol.Target.SessionID): CdpClient {
     const cdpClient = this.#sessionCdpClients.get(sessionId);
     if (!cdpClient) {
       throw new Error('Unknown CDP session ID');
@@ -86,7 +87,7 @@ export class CdpConnection implements ICdpConnection {
   sendCommand<CdpMethod extends keyof ProtocolMapping.Commands>(
     method: CdpMethod,
     params?: ProtocolMapping.Commands[CdpMethod]['paramsType'][0],
-    sessionId?: string
+    sessionId?: Protocol.Target.SessionID
   ): Promise<object> {
     return new Promise((resolve, reject) => {
       const id = this.#nextId++;

@@ -16,6 +16,7 @@
  *
  */
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
+import type Protocol from 'devtools-protocol';
 
 import type {ICdpClient} from '../../../cdp/cdpClient.js';
 import {Deferred} from '../../../utils/deferred.js';
@@ -27,18 +28,18 @@ import type {RealmStorage} from '../script/realmStorage.js';
 import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
 
 export class CdpTarget {
-  readonly #targetId: string;
+  readonly #targetId: Protocol.Target.TargetID;
   readonly #cdpClient: ICdpClient;
-  readonly #cdpSessionId: string;
+  readonly #cdpSessionId: Protocol.Target.SessionID;
   readonly #eventManager: IEventManager;
   readonly #preloadScriptStorage: PreloadScriptStorage;
 
   readonly #targetUnblocked = new Deferred<void>();
 
   static create(
-    targetId: string,
+    targetId: Protocol.Target.TargetID,
     cdpClient: ICdpClient,
-    cdpSessionId: string,
+    cdpSessionId: Protocol.Target.SessionID,
     realmStorage: RealmStorage,
     eventManager: IEventManager,
     preloadScriptStorage: PreloadScriptStorage
@@ -64,9 +65,9 @@ export class CdpTarget {
   }
 
   private constructor(
-    targetId: string,
+    targetId: Protocol.Target.TargetID,
     cdpClient: ICdpClient,
-    cdpSessionId: string,
+    cdpSessionId: Protocol.Target.SessionID,
     eventManager: IEventManager,
     preloadScriptStorage: PreloadScriptStorage
   ) {
@@ -82,7 +83,7 @@ export class CdpTarget {
     return this.#targetUnblocked;
   }
 
-  get targetId(): string {
+  get targetId(): Protocol.Target.TargetID {
     return this.#targetId;
   }
 
@@ -93,7 +94,7 @@ export class CdpTarget {
   /**
    * Needed for CDP escape path.
    */
-  get cdpSessionId(): string {
+  get cdpSessionId(): Protocol.Target.SessionID {
     return this.#cdpSessionId;
   }
 

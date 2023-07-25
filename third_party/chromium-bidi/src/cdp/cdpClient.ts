@@ -16,6 +16,7 @@
  */
 
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
+import type Protocol from 'devtools-protocol';
 
 import {EventEmitter} from '../utils/EventEmitter.js';
 
@@ -29,10 +30,8 @@ export type CdpEvents = {
 export class CloseError extends Error {}
 
 export interface ICdpClient extends EventEmitter<CdpEvents> {
-  /**
-   * Unique session identifier.
-   */
-  sessionId: string | undefined;
+  /** Unique session identifier. */
+  sessionId: Protocol.Target.SessionID | undefined;
 
   /**
    * Get the default browser client (no sessionId)
@@ -64,15 +63,18 @@ export interface ICdpClient extends EventEmitter<CdpEvents> {
 /** Represents a high-level CDP connection to the browser. */
 export class CdpClient extends EventEmitter<CdpEvents> implements ICdpClient {
   #cdpConnection: CdpConnection;
-  #sessionId?: string;
+  #sessionId?: Protocol.Target.SessionID;
 
-  constructor(cdpConnection: CdpConnection, sessionId?: string) {
+  constructor(
+    cdpConnection: CdpConnection,
+    sessionId?: Protocol.Target.SessionID
+  ) {
     super();
     this.#cdpConnection = cdpConnection;
     this.#sessionId = sessionId;
   }
 
-  get sessionId(): string | undefined {
+  get sessionId(): Protocol.Target.SessionID | undefined {
     return this.#sessionId;
   }
 

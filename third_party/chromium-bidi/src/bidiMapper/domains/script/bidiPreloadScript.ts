@@ -16,6 +16,8 @@
  *
  */
 
+import type Protocol from 'devtools-protocol';
+
 import type {Script} from '../../../protocol/protocol.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import type {CdpTarget} from '../context/cdpTarget.js';
@@ -47,7 +49,7 @@ export class BidiPreloadScript {
   /** The script itself, in a format expected by the spec i.e. a function. */
   readonly #functionDeclaration: string;
   /** Targets, in which the preload script is initialized. */
-  readonly #targetIds = new Set<string>();
+  readonly #targetIds = new Set<Protocol.Target.TargetID>();
   /** Channels to be added as arguments to functionDeclaration. */
   readonly #channels: ChannelProxy[];
   /** The script sandbox / world name. */
@@ -57,7 +59,7 @@ export class BidiPreloadScript {
     return this.#id;
   }
 
-  get targetIds(): Set<string> {
+  get targetIds(): Set<Protocol.Target.TargetID> {
     return this.#targetIds;
   }
 
@@ -141,7 +143,7 @@ export class BidiPreloadScript {
   }
 
   /** Removes the provided cdp target from the list of cdp preload scripts. */
-  dispose(cdpTargetId: string) {
+  dispose(cdpTargetId: Protocol.Target.TargetID) {
     this.#cdpPreloadScripts = this.#cdpPreloadScripts.filter(
       (cdpPreloadScript) => cdpPreloadScript.target?.targetId !== cdpTargetId
     );

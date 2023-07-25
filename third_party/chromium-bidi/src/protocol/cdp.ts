@@ -16,6 +16,7 @@
  */
 
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
+import type Protocol from 'devtools-protocol';
 
 import type {BrowsingContext, JsUint} from './webdriver-bidi.js';
 
@@ -49,12 +50,12 @@ export type SendCommandParameters<
 > = {
   method: Command;
   params?: ProtocolMapping.Commands[Command]['paramsType'][0];
-  session?: string;
+  session?: Protocol.Target.SessionID;
 };
 
 export type SendCommandResult = {
   result: ProtocolMapping.Commands[keyof ProtocolMapping.Commands]['returnType'];
-  session?: string;
+  session?: Protocol.Target.SessionID;
 };
 export type GetSessionCommand = {
   method: 'cdp.getSession';
@@ -66,7 +67,7 @@ export type GetSessionParameters = {
 };
 
 export type GetSessionResult = {
-  session?: string;
+  session?: Protocol.Target.SessionID;
 };
 
 export type EventReceivedEvent = {
@@ -79,7 +80,7 @@ export type EventParameters<
 > = {
   event: EventName;
   params: ProtocolMapping.Events[EventName];
-  session: string;
+  session: Protocol.Target.SessionID;
 };
 
 // XXX: Support `cdp` (all events)
