@@ -3256,51 +3256,45 @@ void LocalFrameView::DisableAutoSizeMode() {
 
 void LocalFrameView::ForceLayoutForPagination(const gfx::SizeF& page_size,
                                               float maximum_shrink_factor) {
-  // Dumping externalRepresentation(m_frame->layoutObject()).ascii() is a good
-  // trick to see the state of things before and after the layout
-  if (LayoutView* layout_view = GetLayoutView()) {
-    layout_view->SetPageSize(
-        {LayoutUnit(page_size.width()), LayoutUnit(page_size.height())});
+  LayoutView* layout_view = GetLayoutView();
+  if (!layout_view) {
+    return;
+  }
+
+  layout_view->SetPageSize(
+      {LayoutUnit(page_size.width()), LayoutUnit(page_size.height())});
+  layout_view->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
+      layout_invalidation_reason::kPrintingChanged);
+  frame_->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kPrinting);
+
+  // If we don't fit in the given page width, we'll lay out again. If we don't
+  // fit in the page width when shrunk, we will lay out at maximum shrink and
+  // clip extra content.
+  // FIXME: We are assuming a shrink-to-fit printing implementation. A cropping
+  // implementation should not do this!
+  bool horizontal_writing_mode =
+      layout_view->StyleRef().IsHorizontalWritingMode();
+  PhysicalRect document_rect(layout_view->DocumentRect());
+  LayoutUnit doc_logical_width =
+      horizontal_writing_mode ? document_rect.Width() : document_rect.Height();
+  float page_logical_width =
+      horizontal_writing_mode ? page_size.width() : page_size.height();
+  if (doc_logical_width > page_logical_width) {
+    // ResizePageRectsKeepingRatio would truncate the expected page size, while
+    // we want it rounded -- so make sure it's rounded here.
+    gfx::SizeF expected_page_size(
+        std::min<float>(document_rect.Width().Round(),
+                        page_size.width() * maximum_shrink_factor),
+        std::min<float>(document_rect.Height().Round(),
+                        page_size.height() * maximum_shrink_factor));
+    gfx::SizeF max_page_size = frame_->ResizePageRectsKeepingRatio(
+        /* aspect_ratio */ page_size, expected_page_size);
+    layout_view->SetPageSize({LayoutUnit(max_page_size.width()),
+                              LayoutUnit(max_page_size.height())});
     layout_view->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
         layout_invalidation_reason::kPrintingChanged);
     frame_->GetDocument()->UpdateStyleAndLayout(
         DocumentUpdateReason::kPrinting);
-
-    // If we don't fit in the given page width, we'll lay out again. If we don't
-    // fit in the page width when shrunk, we will lay out at maximum shrink and
-    // clip extra content.
-    // FIXME: We are assuming a shrink-to-fit printing implementation.  A
-    // cropping implementation should not do this!
-    bool horizontal_writing_mode =
-        layout_view->StyleRef().IsHorizontalWritingMode();
-    PhysicalRect document_rect(layout_view->DocumentRect());
-    LayoutUnit doc_logical_width = horizontal_writing_mode
-                                       ? document_rect.Width()
-                                       : document_rect.Height();
-    float page_logical_width =
-        horizontal_writing_mode ? page_size.width() : page_size.height();
-    if (doc_logical_width > page_logical_width) {
-      // ResizePageRectsKeepingRatio would truncate the expected page size,
-      // while we want it rounded -- so make sure it's rounded here.
-      gfx::SizeF expected_page_size(
-          std::min<float>(document_rect.Width().Round(),
-                          page_size.width() * maximum_shrink_factor),
-          std::min<float>(document_rect.Height().Round(),
-                          page_size.height() * maximum_shrink_factor));
-      gfx::SizeF max_page_size = frame_->ResizePageRectsKeepingRatio(
-          /* aspect_ratio */ page_size, expected_page_size);
-      layout_view->SetPageSize({LayoutUnit(max_page_size.width()),
-                                LayoutUnit(max_page_size.height())});
-      layout_view
-          ->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
-              layout_invalidation_reason::kPrintingChanged);
-      frame_->GetDocument()->UpdateStyleAndLayout(
-          DocumentUpdateReason::kPrinting);
-
-      AdjustViewSize();
-      UpdateStyleAndLayout();
-      return;
-    }
   }
 
   if (TextAutosizer* text_autosizer = frame_->GetDocument()->GetTextAutosizer())
