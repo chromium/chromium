@@ -15,14 +15,7 @@
 
 namespace crosapi {
 
-AshRequiresLacrosBrowserTestBase::AshRequiresLacrosBrowserTestBase() {
-  scoped_feature_list_.InitWithFeatures(
-      {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-       ash::features::kLacrosOnly,
-       ash::features::kLacrosProfileMigrationForceOff},
-      {});
-}
-
+AshRequiresLacrosBrowserTestBase::AshRequiresLacrosBrowserTestBase() = default;
 AshRequiresLacrosBrowserTestBase::~AshRequiresLacrosBrowserTestBase() = default;
 
 void AshRequiresLacrosBrowserTestBase::SetUpInProcessBrowserTestFixture() {

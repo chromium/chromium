@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -127,9 +128,7 @@ bool AshBrowserTestStarter::PrepareEnvironmentForLacros() {
   }
 
   scoped_feature_list_.InitWithFeatures(
-      {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-       ash::features::kLacrosOnly},
-      {});
+      ash::standalone_browser::GetFeatureRefs(), {});
   command_line->AppendSwitch(ash::switches::kAshEnableWaylandServer);
   command_line->AppendSwitch(
       views::switches::kDisableInputEventActivationProtectionForTesting);

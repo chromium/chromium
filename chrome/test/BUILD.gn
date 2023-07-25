@@ -737,6 +737,7 @@ static_library("test_support") {
       "//chromeos/ash/components/dbus/concierge",
       "//chromeos/ash/components/dbus/shill",
       "//chromeos/ash/components/disks:test_support",
+      "//chromeos/ash/components/standalone_browser:test_support",
       "//chromeos/ash/components/system",
       "//chromeos/dbus/power",
       "//components/policy/test_support",
