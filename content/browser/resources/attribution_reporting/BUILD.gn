@@ -31,7 +31,6 @@ build_webui("build") {
 
   mojo_files = [
     "$root_gen_dir/$attribution_reporting_component_folder/registration.mojom-webui.ts",
-    "$root_gen_dir/$attribution_reporting_component_folder/source_registration_error.mojom-webui.ts",
     "$root_gen_dir/$attribution_reporting_component_folder/source_registration_time_config.mojom-webui.ts",
     "$root_gen_dir/$attribution_reporting_component_folder/source_type.mojom-webui.ts",
     "$root_gen_dir/$attribution_reporting_content_folder/attribution_internals.mojom-webui.ts",

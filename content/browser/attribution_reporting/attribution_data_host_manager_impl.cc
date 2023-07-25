@@ -925,9 +925,6 @@ void AttributionDataHostManagerImpl::OnWebSourceParsed(
                     /*request_url=*/pending_decode.reporting_url,
                     *registrations->devtools_request_id(),
                     /*invalid_parameter=*/pending_decode.header);
-      attribution_manager_->NotifyFailedSourceRegistration(
-          pending_decode.header, registrations->source_origin(),
-          pending_decode.reporting_origin, source_type, source.error());
       attribution_reporting::RecordSourceRegistrationError(source.error());
     }
   }

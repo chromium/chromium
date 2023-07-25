@@ -5,7 +5,6 @@
 module attribution_internals.mojom;
 
 import "components/attribution_reporting/registration.mojom";
-import "components/attribution_reporting/source_registration_error.mojom";
 import "components/attribution_reporting/source_type.mojom";
 import "content/browser/attribution_reporting/store_source_result.mojom";
 import "content/browser/attribution_reporting/attribution_reporting.mojom";
@@ -159,15 +158,10 @@ struct WebUITrigger {
   Status aggregatable_status;
 };
 
-union SourceStatus {
-  attribution_reporting.mojom.StoreSourceResult store_source_result;
-  attribution_reporting.mojom.SourceRegistrationError json_error;
-};
-
 struct WebUISourceRegistration {
   WebUIRegistration registration;
   attribution_reporting.mojom.SourceType type;
-  SourceStatus status;
+  attribution_reporting.mojom.StoreSourceResult status;
 };
 
 // Struct containing info of successfully passed OS registrations to be

@@ -9,10 +9,9 @@ import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
 import {AttributionSupport, TriggerVerification} from './attribution.mojom-webui.js';
-import {Factory, HandlerInterface, HandlerRemote, ObserverInterface, ObserverReceiver, ReportID, SourceStatus, WebUIDebugReport, WebUIOsRegistration, WebUIRegistration, WebUIReport, WebUISource, WebUISource_Attributability, WebUISourceRegistration, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
+import {Factory, HandlerInterface, HandlerRemote, ObserverInterface, ObserverReceiver, ReportID, WebUIDebugReport, WebUIOsRegistration, WebUIRegistration, WebUIReport, WebUISource, WebUISource_Attributability, WebUISourceRegistration, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
 import {AttributionInternalsTableElement} from './attribution_internals_table.js';
 import {OsRegistrationResult, RegistrationType} from './attribution_reporting.mojom-webui.js';
-import {SourceRegistrationError} from './source_registration_error.mojom-webui.js';
 import {SourceType} from './source_type.mojom-webui.js';
 import {StoreSourceResult} from './store_source_result.mojom-webui.js';
 import {Column, TableModel} from './table_model.js';
@@ -867,51 +866,6 @@ class DebugReportTableModel extends TableModel<DebugReport> {
   }
 }
 
-function sourceRegistrationErrorToText(error: SourceRegistrationError) {
-  switch (error) {
-    case SourceRegistrationError.kInvalidJson:
-      return 'invalid syntax';
-    case SourceRegistrationError.kRootWrongType:
-      return 'root JSON value has wrong type (must be a dictionary)';
-    case SourceRegistrationError.kDestinationMissing:
-      return 'destination missing';
-    case SourceRegistrationError.kDestinationWrongType:
-      return 'destination has wrong type (must be a string)';
-    case SourceRegistrationError.kDestinationListTooLong:
-      return 'number of destinations exceeds limit';
-    case SourceRegistrationError.kDestinationUntrustworthy:
-      return 'destination not potentially trustworthy';
-    case SourceRegistrationError.kFilterDataWrongType:
-      return 'filter_data has wrong type (must be a dictionary)';
-    case SourceRegistrationError.kFilterDataTooManyKeys:
-      return 'filter_data has too many keys';
-    case SourceRegistrationError.kFilterDataHasSourceTypeKey:
-      return 'filter_data must not have a source_type key';
-    case SourceRegistrationError.kFilterDataKeyTooLong:
-      return 'filter_data key too long';
-    case SourceRegistrationError.kFilterDataListWrongType:
-      return 'filter_data value has wrong type (must be a list)';
-    case SourceRegistrationError.kFilterDataListTooLong:
-      return 'filter_data list too long';
-    case SourceRegistrationError.kFilterDataValueWrongType:
-      return 'filter_data list value has wrong type (must be a string)';
-    case SourceRegistrationError.kFilterDataValueTooLong:
-      return 'filter_data list value too long';
-    case SourceRegistrationError.kAggregationKeysWrongType:
-      return 'aggregation_keys has wrong type (must be a dictionary)';
-    case SourceRegistrationError.kAggregationKeysTooManyKeys:
-      return 'aggregation_keys has too many keys';
-    case SourceRegistrationError.kAggregationKeysKeyTooLong:
-      return 'aggregation_keys key too long';
-    case SourceRegistrationError.kAggregationKeysValueWrongType:
-      return 'aggregation_keys value has wrong type (must be a string)';
-    case SourceRegistrationError.kAggregationKeysValueWrongFormat:
-      return 'aggregation_keys value must be a base-16 integer starting with 0x';
-    default:
-      return 'unknown error';
-  }
-}
-
 /**
  * Converts a mojo origin into a user-readable string, omitting default ports.
  * @param origin Origin to convert
@@ -965,38 +919,31 @@ function attributabilityToText(attributability: WebUISource_Attributability):
   }
 }
 
-function sourceRegistrationStatusToText(status: SourceStatus): string {
-  if (status.storeSourceResult !== undefined) {
-    switch (status.storeSourceResult) {
-      case StoreSourceResult.kSuccess:
-      case StoreSourceResult.kSuccessNoised:
-        return 'Success';
-      case StoreSourceResult.kInternalError:
-        return 'Rejected: internal error';
-      case StoreSourceResult.kInsufficientSourceCapacity:
-        return 'Rejected: insufficient source capacity';
-      case StoreSourceResult.kInsufficientUniqueDestinationCapacity:
-        return 'Rejected: insufficient unique destination capacity';
-      case StoreSourceResult.kExcessiveReportingOrigins:
-        return 'Rejected: excessive reporting origins';
-      case StoreSourceResult.kProhibitedByBrowserPolicy:
-        return 'Rejected: prohibited by browser policy';
-      case StoreSourceResult.kDestinationReportingLimitReached:
-        return 'Rejected: destination reporting limit reached';
-      case StoreSourceResult.kDestinationGlobalLimitReached:
-        return 'Rejected: destination global limit reached';
-      case StoreSourceResult.kDestinationBothLimitsReached:
-        return 'Rejected: destination both limits reached';
-      case StoreSourceResult.kReportingOriginsPerSiteLimitReached:
-        return 'Rejected: excessive reporting origins per source and reporting site';
-      default:
-        return status.toString();
-    }
-  } else if (status.jsonError !== undefined) {
-    return `Rejected: invalid JSON: ${
-        sourceRegistrationErrorToText(status.jsonError)}`;
-  } else {
-    return 'Unknown';
+function sourceRegistrationStatusToText(status: StoreSourceResult): string {
+  switch (status) {
+    case StoreSourceResult.kSuccess:
+    case StoreSourceResult.kSuccessNoised:
+      return 'Success';
+    case StoreSourceResult.kInternalError:
+      return 'Rejected: internal error';
+    case StoreSourceResult.kInsufficientSourceCapacity:
+      return 'Rejected: insufficient source capacity';
+    case StoreSourceResult.kInsufficientUniqueDestinationCapacity:
+      return 'Rejected: insufficient unique destination capacity';
+    case StoreSourceResult.kExcessiveReportingOrigins:
+      return 'Rejected: excessive reporting origins';
+    case StoreSourceResult.kProhibitedByBrowserPolicy:
+      return 'Rejected: prohibited by browser policy';
+    case StoreSourceResult.kDestinationReportingLimitReached:
+      return 'Rejected: destination reporting limit reached';
+    case StoreSourceResult.kDestinationGlobalLimitReached:
+      return 'Rejected: destination global limit reached';
+    case StoreSourceResult.kDestinationBothLimitsReached:
+      return 'Rejected: destination both limits reached';
+    case StoreSourceResult.kReportingOriginsPerSiteLimitReached:
+      return 'Rejected: excessive reporting origins per source and reporting site';
+    default:
+      assertNotReached();
   }
 }
 

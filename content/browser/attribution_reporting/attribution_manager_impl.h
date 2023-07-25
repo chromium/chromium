@@ -31,10 +31,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-namespace attribution_reporting {
-class SuitableOrigin;
-}  // namespace attribution_reporting
-
 namespace base {
 class FilePath;
 class TimeDelta;
@@ -133,12 +129,6 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
                  BrowsingDataFilterBuilder* filter_builder,
                  bool delete_rate_limit_data,
                  base::OnceClosure done) override;
-  void NotifyFailedSourceRegistration(
-      const std::string& header_value,
-      const attribution_reporting::SuitableOrigin& source_origin,
-      const attribution_reporting::SuitableOrigin& reporting_origin,
-      attribution_reporting::mojom::SourceType,
-      attribution_reporting::mojom::SourceRegistrationError) override;
   void SetDebugMode(absl::optional<bool> enabled,
                     base::OnceClosure done) override;
 

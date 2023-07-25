@@ -33,7 +33,6 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/attribution_reporting/source_registration.h"
-#include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
@@ -1219,20 +1218,6 @@ void AttributionManagerImpl::NotifySourcesChanged() {
 void AttributionManagerImpl::NotifyReportsChanged() {
   for (auto& observer : observers_) {
     observer.OnReportsChanged();
-  }
-}
-
-void AttributionManagerImpl::NotifyFailedSourceRegistration(
-    const std::string& header_value,
-    const attribution_reporting::SuitableOrigin& source_origin,
-    const attribution_reporting::SuitableOrigin& reporting_origin,
-    attribution_reporting::mojom::SourceType source_type,
-    attribution_reporting::mojom::SourceRegistrationError error) {
-  base::Time source_time = base::Time::Now();
-  for (auto& observer : observers_) {
-    observer.OnFailedSourceRegistration(header_value, source_time,
-                                        source_origin, reporting_origin,
-                                        source_type, error);
   }
 }
 

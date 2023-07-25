@@ -1372,11 +1372,6 @@ TEST_F(AttributionDataHostManagerImplTest,
   const auto reporter = *SuitableOrigin::Create(reporter_url);
   auto source_site = *SuitableOrigin::Deserialize("https://source.test");
 
-  EXPECT_CALL(mock_manager_, NotifyFailedSourceRegistration(
-                                 "!!!invalid json", source_site, reporter,
-                                 SourceType::kNavigation,
-                                 SourceRegistrationError::kInvalidJson));
-
   const blink::AttributionSrcToken attribution_src_token;
   data_host_manager_.NotifyNavigationRegistrationStarted(
       attribution_src_token, AttributionInputEvent(), source_site,
@@ -1962,12 +1957,6 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   GURL reporting_url("https://report.test");
   auto source_origin = *SuitableOrigin::Deserialize("https://source.test");
-
-  EXPECT_CALL(mock_manager_, NotifyFailedSourceRegistration(
-                                 "!!!invalid json", source_origin,
-                                 *SuitableOrigin::Create(reporting_url),
-                                 SourceType::kNavigation,
-                                 SourceRegistrationError::kInvalidJson));
 
   data_host_manager_.NotifyFencedFrameReportingBeaconStarted(
       kBeaconId, kNavigationId, source_origin, /*is_within_fenced_frame=*/false,

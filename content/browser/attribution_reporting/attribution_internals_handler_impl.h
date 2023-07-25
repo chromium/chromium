@@ -74,13 +74,6 @@ class AttributionInternalsHandlerImpl
   void OnTriggerHandled(const AttributionTrigger& trigger,
                         absl::optional<uint64_t> cleared_debug_key,
                         const CreateReportResult& result) override;
-  void OnFailedSourceRegistration(
-      const std::string& header_value,
-      base::Time source_time,
-      const attribution_reporting::SuitableOrigin& source_origin,
-      const attribution_reporting::SuitableOrigin& reporting_origin,
-      attribution_reporting::mojom::SourceType,
-      attribution_reporting::mojom::SourceRegistrationError) override;
   void OnOsRegistration(
       base::Time time,
       const OsRegistration&,

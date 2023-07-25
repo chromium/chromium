@@ -22,7 +22,6 @@
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
-#include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
@@ -68,7 +67,6 @@ namespace {
 
 using ::attribution_reporting::FilterPair;
 using ::attribution_reporting::SuitableOrigin;
-using ::attribution_reporting::mojom::SourceRegistrationError;
 using ::attribution_reporting::mojom::SourceType;
 
 using ::base::test::RunOnceCallback;
@@ -380,39 +378,6 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
   ClickRefreshButton();
-  EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
-}
-
-IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
-                       FailedSourceRegistrationLogShown) {
-  ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
-
-  static constexpr char kScript[] = R"(
-    const table = document.querySelector('#sourceRegistrationTable')
-        .shadowRoot.querySelector('tbody');
-
-    const obs = new MutationObserver((_, obs) => {
-      if (table.children.length === 1 &&
-          table.children[0].children[1]?.innerText === 'https://b.test' &&
-          table.children[0].children[2]?.innerText === 'https://a.test' &&
-          table.children[0].children[3]?.innerText === '!' &&
-          table.children[0].children[4]?.innerText === '' &&
-          table.children[0].children[5]?.innerText === 'Event' &&
-          table.children[0].children[6]?.innerText === 'Rejected: invalid JSON: invalid syntax') {
-        obs.disconnect();
-        document.title = $1;
-      }
-    });
-    obs.observe(table, {childList: true, subtree: true, characterData: true});
-  )";
-  ASSERT_TRUE(ExecJsInWebUI(JsReplace(kScript, kCompleteTitle)));
-
-  TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
-
-  manager()->NotifySourceRegistrationFailure(
-      "!", *SuitableOrigin::Deserialize("https://b.test"),
-      *SuitableOrigin::Deserialize("https://a.test"), SourceType::kEvent,
-      SourceRegistrationError::kInvalidJson);
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 }
 

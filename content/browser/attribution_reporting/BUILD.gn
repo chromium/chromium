@@ -27,7 +27,6 @@ mojom("internals_mojo_bindings") {
   public_deps = [
     ":mojo_bindings",
     ":store_source_result_mojom",
-    "//components/attribution_reporting:mojom",
     "//components/attribution_reporting:registration_mojom",
     "//components/attribution_reporting:source_type_mojom",
     "//services/network/public/mojom:mojom_attribution",
