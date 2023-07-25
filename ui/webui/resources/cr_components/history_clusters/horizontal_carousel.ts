@@ -15,8 +15,6 @@ import {getTemplate} from './horizontal_carousel.html.js';
  * carousel for the carousel elements.
  */
 
-const SCROLL_INTERVAL = 80;
-
 declare global {
   interface HTMLElementTagNameMap {
     'horizontal-carousel': HorizontalCarouselElement;
@@ -91,20 +89,20 @@ export class HorizontalCarouselElement extends HorizontalCarouselElementBase {
   //============================================================================
 
   private onCarouselBackClick_() {
-    this.$.carouselContainer.scrollLeft -= SCROLL_INTERVAL;
-    if (this.$.carouselContainer.scrollLeft <= 0) {
-      this.showBackButton_ = false;
-    }
+    const targetPosition = this.calculateTargetPosition_(-1);
+    this.$.carouselContainer.scrollTo(
+        {left: targetPosition, behavior: 'smooth'});
+    this.showBackButton_ = targetPosition > 0;
     this.showForwardButton_ = true;
   }
 
   private onCarouselForwardClick_() {
-    this.$.carouselContainer.scrollLeft += SCROLL_INTERVAL;
-    if (Math.round(this.$.carouselContainer.scrollLeft) +
-            this.$.carouselContainer.clientWidth >=
-        this.$.carouselContainer.scrollWidth) {
-      this.showForwardButton_ = false;
-    }
+    const targetPosition = this.calculateTargetPosition_(1);
+    this.$.carouselContainer.scrollTo(
+        {left: targetPosition, behavior: 'smooth'});
+    this.showForwardButton_ =
+        targetPosition + this.$.carouselContainer.clientWidth <
+        this.$.carouselContainer.scrollWidth;
     this.showBackButton_ = true;
   }
 
@@ -120,11 +118,21 @@ export class HorizontalCarouselElement extends HorizontalCarouselElementBase {
       this.showForwardButton_ = true;
     } else {
       // On expanding the window, the back and forward buttons should disappear.
-      if (this.$.carouselContainer.scrollLeft <= 0) {
-        this.showBackButton_ = false;
-      }
+      this.showBackButton_ = this.$.carouselContainer.scrollLeft > 0;
       this.showForwardButton_ = false;
     }
+  }
+
+  private calculateTargetPosition_(direction: number) {
+    const offset = this.$.carouselContainer.clientWidth / 2 * direction;
+    const targetPosition =
+        Math.floor(this.$.carouselContainer.scrollLeft + offset);
+    return Math.max(
+        0,
+        Math.min(
+            targetPosition,
+            this.$.carouselContainer.scrollWidth -
+                this.$.carouselContainer.clientWidth));
   }
 }
 
