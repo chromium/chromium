@@ -249,6 +249,11 @@ const char kEnableCriticalPersistedTabData[] =
 // Enables Domain Reliability Monitoring.
 const char kEnableDomainReliability[] = "enable-domain-reliability";
 
+// Enables a number of UI improvements to downloads, download scanning, and
+// download warnings.
+const char kEnableDownloadWarningImprovements[] =
+    "enable-download-warning-improvements";
+
 // Enables the early process singleton feature. The process singleton will be
 // held for the whole lifetime of BrowserImpl (see https://crbug.com/1340599).
 const char kEnableEarlyProcessSingleton[] = "enable-early-process-singleton";

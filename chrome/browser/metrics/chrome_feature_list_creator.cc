@@ -48,6 +48,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service_factory.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/variations_crash_keys.h"
@@ -67,13 +68,15 @@ namespace {
 
 // Returns a list of extra switch-dependent feature overrides to be applied
 // during FeatureList initialization. Combines the overrides defined at the
-// content layer with additional chrome layer overrides.
+// content layer with additional chrome layer overrides. The overrides
+// specified in this list each cause a feature's state to be overridden based on
+// the presence of a command line switch.
 std::vector<base::FeatureList::FeatureOverrideInfo>
 GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
   std::vector<base::FeatureList::FeatureOverrideInfo> overrides =
       content::GetSwitchDependentFeatureOverrides(command_line);
 
-  // Describes a switch-dependent override.
+  // Describes a switch-dependent override. See also content layer overrides.
   struct SwitchDependentFeatureOverrideInfo {
     // Switch that the override depends upon. The override will be registered if
     // this switch is present.
@@ -83,8 +86,27 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
     // State to override the feature with.
     base::FeatureList::OverrideState override_state;
   } chrome_layer_override_info[] = {
-      // Override for --privacy-sandbox-ads-apis. See also content layer
-      // overrides.
+      // Overrides for --enable-download-warning-improvements.
+      {switches::kEnableDownloadWarningImprovements,
+       std::cref(safe_browsing::kDeepScanningUpdatedUX),
+       base::FeatureList::OVERRIDE_ENABLE_FEATURE},
+      {switches::kEnableDownloadWarningImprovements,
+       std::cref(safe_browsing::kDownloadBubble),
+       base::FeatureList::OVERRIDE_ENABLE_FEATURE},
+      {switches::kEnableDownloadWarningImprovements,
+       std::cref(safe_browsing::kDownloadBubbleV2),
+       base::FeatureList::OVERRIDE_ENABLE_FEATURE},
+      {switches::kEnableDownloadWarningImprovements,
+       std::cref(safe_browsing::kDownloadTailoredWarnings),
+       base::FeatureList::OVERRIDE_ENABLE_FEATURE},
+      {switches::kEnableDownloadWarningImprovements,
+       std::cref(safe_browsing::kImprovedDownloadBubbleWarnings),
+       base::FeatureList::OVERRIDE_ENABLE_FEATURE},
+      {switches::kEnableDownloadWarningImprovements,
+       std::cref(safe_browsing::kImprovedDownloadPageWarnings),
+       base::FeatureList::OVERRIDE_ENABLE_FEATURE},
+
+      // Override for --privacy-sandbox-ads-apis.
       {switches::kEnablePrivacySandboxAdsApis,
        std::cref(privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting),
        base::FeatureList::OVERRIDE_ENABLE_FEATURE},

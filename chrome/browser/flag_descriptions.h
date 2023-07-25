@@ -139,6 +139,9 @@ extern const char kDIPSDescription[];
 extern const char kDocumentPictureInPictureApiName[];
 extern const char kDocumentPictureInPictureApiDescription[];
 
+extern const char kDownloadWarningImprovementsName[];
+extern const char kDownloadWarningImprovementsDescription[];
+
 extern const char kEnableBenchmarkingName[];
 extern const char kEnableBenchmarkingDescription[];
 

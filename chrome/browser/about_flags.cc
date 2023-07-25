@@ -2851,6 +2851,16 @@ const FeatureEntry::Choice kQueryTilesCountryChoices[] = {
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// The choices for --enable-download-warning-improvements. This really should
+// just be a SINGLE_VALUE_TYPE, but it is misleading to have the choices be
+// labeled "Disabled"/"Enabled". So instead this is made to be a
+// MULTI_VALUE_TYPE with choices "Default"/"Enabled".
+const FeatureEntry::Choice kDownloadWarningImprovementsChoices[] = {
+    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
+    {flags_ui::kGenericExperimentChoiceEnabled,
+     switches::kEnableDownloadWarningImprovements, ""},
+};
+
 // The choices for --enable-experimental-cookie-features. This really should
 // just be a SINGLE_VALUE_TYPE, but it is misleading to have the choices be
 // labeled "Disabled"/"Enabled". So instead this is made to be a
@@ -9489,6 +9499,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDownloadBubbleV2Description,
      kOsLinux | kOsLacros | kOsMac | kOsWin,
      FEATURE_VALUE_TYPE(safe_browsing::kDownloadBubbleV2)},
+
+    {"download-warning-improvements",
+     flag_descriptions::kDownloadWarningImprovementsName,
+     flag_descriptions::kDownloadWarningImprovementsDescription,
+     kOsLinux | kOsLacros | kOsMac | kOsWin,
+     MULTI_VALUE_TYPE(kDownloadWarningImprovementsChoices)},
 
     {"unthrottled-nested-timeout",
      flag_descriptions::kUnthrottledNestedTimeoutName,

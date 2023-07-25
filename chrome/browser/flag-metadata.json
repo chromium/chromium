@@ -1793,6 +1793,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "download-warning-improvements",
+    "owners": [ "chlily", "chrome-counter-abuse-alerts@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "drag-drop-into-omnibox",
     "owners": ["jtanaristy", "wenyufu"],
     "expiry_milestone": 120
