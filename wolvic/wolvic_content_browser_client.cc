@@ -19,18 +19,6 @@ namespace {
 
 WolvicContentBrowserClient* g_instance = nullptr;
 
-// Adds the given platform to the user agent string. For example, if
-// we add "Mobile VR" platform to the following user agent
-// "Mozilla/5.0 (Linux; Android 8.0.0; Quest 2)", the result will be:
-// "Mozilla/5.0 (Linux; Android 8.0.0; Quest 2; Mobile VR)".
-void AddPlatformToUserAgent(const std::string& platform,
-                            std::string& user_agent) {
-  size_t pos = user_agent.find(')');
-  if (pos != std::string::npos) {
-    user_agent.insert(pos, "; " + platform);
-  }
-}
-
 }  // namespace
 
 WolvicContentBrowserClient::WolvicContentBrowserClient()
@@ -77,27 +65,11 @@ XrIntegrationClient* WolvicContentBrowserClient::GetXrIntegrationClient() {
 #endif
 
 std::string WolvicContentBrowserClient::GetUserAgent() {
-  typedef wolvic::SessionSettings::UserAgentMode UserAgentMode;
-
-  auto user_agent_override =
-      wolvic::SessionSettings::Get()->GetUserAgentOverride();
-  if (user_agent_override)
+  auto* settings = wolvic::SessionSettings::Get();
+  if (auto user_agent_override = settings->GetUserAgentOverride())
     return *user_agent_override;
 
-  std::string user_agent = embedder_support::GetUserAgent();
-  auto user_agent_mode = wolvic::SessionSettings::Get()->GetUserAgentMode();
-  switch (user_agent_mode) {
-    case UserAgentMode::kMobile:
-      AddPlatformToUserAgent("Mobile", user_agent);
-      break;
-    case UserAgentMode::kMobileVR:
-      AddPlatformToUserAgent("Mobile VR", user_agent);
-      break;
-    case UserAgentMode::kDesktop:
-      // do nothing
-      break;
-  }
-  return user_agent;
+  return settings->GetDefaultUserAgent(settings->GetUserAgentMode());
 }
 
 blink::UserAgentMetadata WolvicContentBrowserClient::GetUserAgentMetadata() {
