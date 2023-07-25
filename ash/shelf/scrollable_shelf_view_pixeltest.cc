@@ -84,6 +84,7 @@ class ScrollableShelfViewWithGuestModePixelTest
   }
 
   void SetUp() override {
+    scoped_features_.InitAndEnableFeature(chromeos::features::kJelly);
     set_start_session(false);
 
     ShelfTestBase::SetUp();
@@ -93,6 +94,9 @@ class ScrollableShelfViewWithGuestModePixelTest
       SimulateUserLogin("user@gmail.com");
     StabilizeUIForPixelTest();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_features_;
 };
 
 INSTANTIATE_TEST_SUITE_P(EnableGuestMode,
@@ -110,7 +114,7 @@ TEST_P(ScrollableShelfViewWithGuestModePixelTest, VerifyShelfContextMenu) {
   // Verify the shelf context menu and the shelf.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "shelf_context_menu",
-      /*revision_number=*/3,
+      /*revision_number=*/4,
       GetPrimaryShelf()
           ->shelf_widget()
           ->shelf_view_for_testing()
