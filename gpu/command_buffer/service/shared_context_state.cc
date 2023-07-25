@@ -15,6 +15,7 @@
 #include "gpu/command_buffer/service/context_state.h"
 #include "gpu/command_buffer/service/gl_context_virtual.h"
 #include "gpu/command_buffer/service/gr_shader_cache.h"
+#include "gpu/command_buffer/service/graphite_image_provider.h"
 #include "gpu/command_buffer/service/service_transfer_cache.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/skia_utils.h"
@@ -25,8 +26,6 @@
 #include "gpu/vulkan/buildflags.h"
 #include "skia/buildflags.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
-#include "third_party/skia/include/gpu/graphite/Image.h"
-#include "third_party/skia/include/gpu/graphite/ImageProvider.h"
 #include "third_party/skia/include/gpu/mock/GrMockTypes.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
@@ -78,34 +77,11 @@ size_t MaxNumSkSurface() {
 #endif
 }
 
-// This class is used by Graphite to create Graphite-backed SkImages from non-
-// Graphite-backed SkImages. It is given to a Graphite Recorder on creation. If
-// no ImageProvider is given to a Recorder, then any non-Graphite-backed SkImage
-// draws on that Recorder will fail.
-//
-// See https://crsrc.org/c/third_party/skia/include/gpu/graphite/ImageProvider.h
-// for details on Skia's requirements for ImageProvider.
-//
-// TODO(https://crbug.com/1457525): Currently this class uploads every image it
-// encounters to a new texture. Instead, it could do some caching to avoid
-// redundant work.
-class GraphiteImageProvider : public skgpu::graphite::ImageProvider {
- public:
-  ~GraphiteImageProvider() override = default;
-
-  sk_sp<SkImage> findOrCreate(
-      skgpu::graphite::Recorder* recorder,
-      const SkImage* image,
-      SkImage::RequiredProperties requiredProps) override {
-    return SkImages::TextureFromImage(recorder, image, requiredProps);
-  }
-};
-
 // Creates a Graphite recorder, supplying it with a GraphiteImageProvider.
 std::unique_ptr<skgpu::graphite::Recorder>
 MakeGraphiteRecorderWithImageProvider(skgpu::graphite::Context* context) {
   skgpu::graphite::RecorderOptions options;
-  options.fImageProvider = sk_make_sp<GraphiteImageProvider>();
+  options.fImageProvider = sk_make_sp<gpu::GraphiteImageProvider>();
   return context->makeRecorder(options);
 }
 
