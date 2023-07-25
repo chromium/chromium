@@ -262,12 +262,6 @@ BASE_FEATURE(kConsolidatedMovementXY,
              "ConsolidatedMovementXY",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, the Clear-Site-Data HTTP Response header supports clearing the
-// client hints cache. When disabled, this header cannot clear the cache.
-BASE_FEATURE(kClearSiteDataClientHintsSupport,
-             "ClearSiteDataClientHintsSupport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables Blink cooperative scheduling.
 BASE_FEATURE(kCooperativeScheduling,
              "CooperativeScheduling",

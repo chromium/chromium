@@ -463,7 +463,7 @@ const struct PersistData persistence_tests[] = {
      "HTTP/1.1 200 OK\n"
      "Set-Cookie: foo=bar\n"
      "Foo: 2\n"
-     "Clear-Site-Data: { \"types\" : [ \"cookies\" ] }\n"
+     "Clear-Site-Data: \"cookies\"\n"
      "Bar: 3\n",
 
      "HTTP/1.1 200 OK\n"

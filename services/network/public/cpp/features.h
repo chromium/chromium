@@ -156,6 +156,11 @@ BASE_DECLARE_FEATURE(kCompressionDictionaryTransport);
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kVisibilityAwareResourceScheduler);
 
+// When enabled, the Clear-Site-Data HTTP Response header supports clearing the
+// client hints cache. When disabled, this header cannot clear the cache.
+COMPONENT_EXPORT(NETWORK_CPP)
+BASE_DECLARE_FEATURE(kClearSiteDataClientHintsSupport);
+
 }  // namespace features
 }  // namespace network
 

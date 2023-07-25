@@ -301,5 +301,206 @@ NoVarySearchTestData response_headers_tests[] = {
 INSTANTIATE_TEST_SUITE_P(NoVarySearchPrefetchEnabledTest,
                          NoVarySearchPrefetchEnabledTest,
                          testing::ValuesIn(response_headers_tests));
+
+class ParseHeadersClientHintsTest
+    : public testing::Test,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  ParseHeadersClientHintsTest() {
+    std::vector<base::test::FeatureRef> features_to_enable;
+    std::vector<base::test::FeatureRef> features_to_disable;
+    if (IsClearSiteDataClientHintsSupportEnabled()) {
+      features_to_enable.push_back(
+          network::features::kClearSiteDataClientHintsSupport);
+    } else {
+      features_to_disable.push_back(
+          network::features::kClearSiteDataClientHintsSupport);
+    }
+    if (IsClearSiteDataWildcardSupportEnabled()) {
+      features_to_enable.push_back(
+          net::features::kClearSiteDataWildcardSupport);
+    } else {
+      features_to_disable.push_back(
+          net::features::kClearSiteDataWildcardSupport);
+    }
+    scoped_feature_list_.InitWithFeatures(features_to_enable,
+                                          features_to_disable);
+  }
+
+  bool IsClearSiteDataClientHintsSupportEnabled() {
+    return std::get<0>(GetParam());
+  }
+
+  bool IsClearSiteDataWildcardSupportEnabled() {
+    return std::get<1>(GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ParseHeadersClientHintsTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
+
+TEST_P(ParseHeadersClientHintsTest,
+       AcceptCHAndClearCHWithoutClearSiteDataTest) {
+  const base::StringPiece& headers =
+      "HTTP/1.1 200 OK\r\n"
+      "Accept-CH: sec-ch-dpr\r\n"
+      "Critical-CH: sec-ch-dpr\r\n\r\n";
+  const auto parsed_headers = ParseHeaders(headers);
+
+  EXPECT_TRUE(parsed_headers);
+  EXPECT_FALSE(
+      parsed_headers->client_hints_ignored_due_to_clear_site_data_header);
+  EXPECT_TRUE(parsed_headers->accept_ch);
+  EXPECT_EQ(parsed_headers->accept_ch->size(), 1u);
+  EXPECT_EQ(parsed_headers->accept_ch->at(0),
+            network::mojom::WebClientHintsType::kDpr);
+  EXPECT_TRUE(parsed_headers->critical_ch);
+  EXPECT_EQ(parsed_headers->critical_ch->size(), 1u);
+  EXPECT_EQ(parsed_headers->critical_ch->at(0),
+            network::mojom::WebClientHintsType::kDpr);
+}
+
+TEST_P(ParseHeadersClientHintsTest,
+       AcceptCHAndClearCHWithClearSiteDataCacheTest) {
+  const base::StringPiece& headers =
+      "HTTP/1.1 200 OK\r\n"
+      "Accept-CH: sec-ch-dpr\r\n"
+      "Critical-CH: sec-ch-dpr\r\n"
+      "Clear-Site-Data: \"cache\"\r\n\r\n";
+  const auto parsed_headers = ParseHeaders(headers);
+
+  EXPECT_TRUE(parsed_headers);
+  if (IsClearSiteDataClientHintsSupportEnabled()) {
+    EXPECT_TRUE(
+        parsed_headers->client_hints_ignored_due_to_clear_site_data_header);
+    EXPECT_FALSE(parsed_headers->accept_ch);
+    EXPECT_FALSE(parsed_headers->critical_ch);
+  } else {
+    EXPECT_FALSE(
+        parsed_headers->client_hints_ignored_due_to_clear_site_data_header);
+    EXPECT_TRUE(parsed_headers->accept_ch);
+    EXPECT_EQ(parsed_headers->accept_ch->size(), 1u);
+    EXPECT_EQ(parsed_headers->accept_ch->at(0),
+              network::mojom::WebClientHintsType::kDpr);
+    EXPECT_TRUE(parsed_headers->critical_ch);
+    EXPECT_EQ(parsed_headers->critical_ch->size(), 1u);
+    EXPECT_EQ(parsed_headers->critical_ch->at(0),
+              network::mojom::WebClientHintsType::kDpr);
+  }
+}
+
+TEST_P(ParseHeadersClientHintsTest,
+       AcceptCHAndClearCHWithClearSiteDataClientHintsTest) {
+  const base::StringPiece& headers =
+      "HTTP/1.1 200 OK\r\n"
+      "Accept-CH: sec-ch-dpr\r\n"
+      "Critical-CH: sec-ch-dpr\r\n"
+      "Clear-Site-Data: \"clientHints\"\r\n\r\n";
+  const auto parsed_headers = ParseHeaders(headers);
+
+  EXPECT_TRUE(parsed_headers);
+  if (IsClearSiteDataClientHintsSupportEnabled()) {
+    EXPECT_TRUE(
+        parsed_headers->client_hints_ignored_due_to_clear_site_data_header);
+    EXPECT_FALSE(parsed_headers->accept_ch);
+    EXPECT_FALSE(parsed_headers->critical_ch);
+  } else {
+    EXPECT_FALSE(
+        parsed_headers->client_hints_ignored_due_to_clear_site_data_header);
+    EXPECT_TRUE(parsed_headers->accept_ch);
+    EXPECT_EQ(parsed_headers->accept_ch->size(), 1u);
+    EXPECT_EQ(parsed_headers->accept_ch->at(0),
+              network::mojom::WebClientHintsType::kDpr);
+    EXPECT_TRUE(parsed_headers->critical_ch);
+    EXPECT_EQ(parsed_headers->critical_ch->size(), 1u);
+    EXPECT_EQ(parsed_headers->critical_ch->at(0),
+              network::mojom::WebClientHintsType::kDpr);
+  }
+}
+
+TEST_P(ParseHeadersClientHintsTest,
+       AcceptCHAndClearCHWithClearSiteDataCookiesTest) {
+  const base::StringPiece& headers =
+      "HTTP/1.1 200 OK\r\n"
+      "Accept-CH: sec-ch-dpr\r\n"
+      "Critical-CH: sec-ch-dpr\r\n"
+      "Clear-Site-Data: \"cookies\"\r\n\r\n";
+  const auto parsed_headers = ParseHeaders(headers);
+
+  EXPECT_TRUE(parsed_headers);
+  if (IsClearSiteDataClientHintsSupportEnabled()) {
+    EXPECT_TRUE(
+        parsed_headers->client_hints_ignored_due_to_clear_site_data_header);
+    EXPECT_FALSE(parsed_headers->accept_ch);
+    EXPECT_FALSE(parsed_headers->critical_ch);
+  } else {
+    EXPECT_FALSE(
+        parsed_headers->client_hints_ignored_due_to_clear_site_data_header);
+    EXPECT_TRUE(parsed_headers->accept_ch);
+    EXPECT_EQ(parsed_headers->accept_ch->size(), 1u);
+    EXPECT_EQ(parsed_headers->accept_ch->at(0),
+              network::mojom::WebClientHintsType::kDpr);
+    EXPECT_TRUE(parsed_headers->critical_ch);
+    EXPECT_EQ(parsed_headers->critical_ch->size(), 1u);
+    EXPECT_EQ(parsed_headers->critical_ch->at(0),
+              network::mojom::WebClientHintsType::kDpr);
+  }
+}
+
+TEST_P(ParseHeadersClientHintsTest,
+       AcceptCHAndClearCHWithClearSiteDataStorageTest) {
+  const base::StringPiece& headers =
+      "HTTP/1.1 200 OK\r\n"
+      "Accept-CH: sec-ch-dpr\r\n"
+      "Critical-CH: sec-ch-dpr\r\n"
+      "Clear-Site-Data: \"storage\"\r\n\r\n";
+  const auto parsed_headers = ParseHeaders(headers);
+
+  EXPECT_TRUE(parsed_headers);
+  EXPECT_FALSE(
+      parsed_headers->client_hints_ignored_due_to_clear_site_data_header);
+  EXPECT_TRUE(parsed_headers->accept_ch);
+  EXPECT_EQ(parsed_headers->accept_ch->size(), 1u);
+  EXPECT_EQ(parsed_headers->accept_ch->at(0),
+            network::mojom::WebClientHintsType::kDpr);
+  EXPECT_TRUE(parsed_headers->critical_ch);
+  EXPECT_EQ(parsed_headers->critical_ch->size(), 1u);
+  EXPECT_EQ(parsed_headers->critical_ch->at(0),
+            network::mojom::WebClientHintsType::kDpr);
+}
+
+TEST_P(ParseHeadersClientHintsTest,
+       AcceptCHAndClearCHWithClearSiteDataAllTest) {
+  const base::StringPiece& headers =
+      "HTTP/1.1 200 OK\r\n"
+      "Accept-CH: sec-ch-dpr\r\n"
+      "Critical-CH: sec-ch-dpr\r\n"
+      "Clear-Site-Data: \"*\"\r\n\r\n";
+  const auto parsed_headers = ParseHeaders(headers);
+
+  EXPECT_TRUE(parsed_headers);
+  if (IsClearSiteDataClientHintsSupportEnabled() &&
+      IsClearSiteDataWildcardSupportEnabled()) {
+    EXPECT_TRUE(
+        parsed_headers->client_hints_ignored_due_to_clear_site_data_header);
+    EXPECT_FALSE(parsed_headers->accept_ch);
+    EXPECT_FALSE(parsed_headers->critical_ch);
+  } else {
+    EXPECT_FALSE(
+        parsed_headers->client_hints_ignored_due_to_clear_site_data_header);
+    EXPECT_TRUE(parsed_headers->accept_ch);
+    EXPECT_EQ(parsed_headers->accept_ch->size(), 1u);
+    EXPECT_EQ(parsed_headers->accept_ch->at(0),
+              network::mojom::WebClientHintsType::kDpr);
+    EXPECT_TRUE(parsed_headers->critical_ch);
+    EXPECT_EQ(parsed_headers->critical_ch->size(), 1u);
+    EXPECT_EQ(parsed_headers->critical_ch->at(0),
+              network::mojom::WebClientHintsType::kDpr);
+  }
+}
 }  // namespace
 }  // namespace network

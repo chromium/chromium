@@ -73,6 +73,12 @@ struct ParsedHeaders {
   // https://tools.ietf.org/html/draft-davidben-http-client-hint-reliability#section-3
   array<WebClientHintsType>? critical_ch;
 
+  // If the client hint headers should be ignored due to a Clear-Site-Data
+  // header this is true so that when re-parsing the headers from cache we know
+  // to keep them cleared. If this field is true but accept_ch or critical_ch
+  // contain values, accept_ch and critical_ch should take precedence.
+  bool client_hints_ignored_due_to_clear_site_data_header;
+
   // The parsed value of the X-Frame-Options header.
   XFrameOptionsValue xfo = XFrameOptionsValue.kNone;
 
