@@ -26,6 +26,7 @@
 #include "ash/shelf/shelf_view.h"
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/status_area_widget.h"
@@ -44,6 +45,7 @@
 #include "base/run_loop.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/models/image_model.h"
@@ -161,18 +163,30 @@ TEST_F(ShelfWidgetTest, TestAlignmentForMultipleDisplays) {
   }
 }
 
-class ShelfWidgetDarkLightModeTest : public ShelfWidgetTest {
+class ShelfWidgetDarkLightModeTest : public ShelfWidgetTest,
+                                     public testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
+    scoped_features_.InitWithFeatureState(chromeos::features::kJelly,
+                                          GetParam());
     ShelfWidgetTest::SetUp();
 
     // Enable tablet mode transition screenshots to simulate production behavior
     // where shelf layers get recreated during the tablet mode transition.
     TabletModeController::SetUseScreenshotForTest(true);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_features_;
 };
 
-TEST_F(ShelfWidgetDarkLightModeTest, TabletModeTransition) {
+INSTANTIATE_TEST_SUITE_P(
+    // Empty to simplify gtest output
+    ,
+    ShelfWidgetDarkLightModeTest,
+    testing::Bool());
+
+TEST_P(ShelfWidgetDarkLightModeTest, TabletModeTransition) {
   ShelfWidget* const shelf_widget = GetShelfWidget();
 
   TabletMode::Waiter enter_waiter(/*enable=*/true);
@@ -181,17 +195,29 @@ TEST_F(ShelfWidgetDarkLightModeTest, TabletModeTransition) {
   shelf_widget->background_animator_for_testing()
       ->CompleteAnimationForTesting();
 
-  EXPECT_EQ(AshColorProvider::Get()->GetBaseLayerColor(
-                AshColorProvider::BaseLayerType::kTransparent60),
-            shelf_widget->GetShelfBackgroundColor());
+  if (GetParam()) {
+    EXPECT_EQ(shelf_widget->GetColorProvider()->GetColor(
+                  cros_tokens::kCrosSysSystemBaseElevated),
+              shelf_widget->GetShelfBackgroundColor());
+  } else {
+    EXPECT_EQ(
+        shelf_widget->GetColorProvider()->GetColor(kColorAshShieldAndBase60),
+        shelf_widget->GetShelfBackgroundColor());
+  }
   EXPECT_EQ(0.0, shelf_widget->GetOpaqueBackground()->background_blur());
 
   auto* dark_light_mode_controller = ash::DarkLightModeControllerImpl::Get();
   dark_light_mode_controller->ToggleColorMode();
 
-  EXPECT_EQ(AshColorProvider::Get()->GetBaseLayerColor(
-                AshColorProvider::BaseLayerType::kTransparent60),
-            shelf_widget->GetShelfBackgroundColor());
+  if (GetParam()) {
+    EXPECT_EQ(shelf_widget->GetColorProvider()->GetColor(
+                  cros_tokens::kCrosSysSystemBaseElevated),
+              shelf_widget->GetShelfBackgroundColor());
+  } else {
+    EXPECT_EQ(
+        shelf_widget->GetColorProvider()->GetColor(kColorAshShieldAndBase60),
+        shelf_widget->GetShelfBackgroundColor());
+  }
   EXPECT_EQ(0.0f, shelf_widget->GetOpaqueBackground()->background_blur());
 
   TabletMode::Waiter leave_waiter(/*enable=*/false);
@@ -200,20 +226,32 @@ TEST_F(ShelfWidgetDarkLightModeTest, TabletModeTransition) {
   shelf_widget->background_animator_for_testing()
       ->CompleteAnimationForTesting();
 
-  EXPECT_EQ(AshColorProvider::Get()->GetBaseLayerColor(
-                AshColorProvider::BaseLayerType::kTransparent80),
-            shelf_widget->GetShelfBackgroundColor());
+  if (GetParam()) {
+    EXPECT_EQ(shelf_widget->GetColorProvider()->GetColor(
+                  cros_tokens::kCrosSysSystemBaseElevated),
+              shelf_widget->GetShelfBackgroundColor());
+  } else {
+    EXPECT_EQ(
+        shelf_widget->GetColorProvider()->GetColor(kColorAshShieldAndBase80),
+        shelf_widget->GetShelfBackgroundColor());
+  }
   EXPECT_GT(shelf_widget->GetOpaqueBackground()->background_blur(), 0.0f);
 
   dark_light_mode_controller->ToggleColorMode();
 
-  EXPECT_EQ(AshColorProvider::Get()->GetBaseLayerColor(
-                AshColorProvider::BaseLayerType::kTransparent80),
-            shelf_widget->GetShelfBackgroundColor());
+  if (GetParam()) {
+    EXPECT_EQ(shelf_widget->GetColorProvider()->GetColor(
+                  cros_tokens::kCrosSysSystemBaseElevated),
+              shelf_widget->GetShelfBackgroundColor());
+  } else {
+    EXPECT_EQ(
+        shelf_widget->GetColorProvider()->GetColor(kColorAshShieldAndBase80),
+        shelf_widget->GetShelfBackgroundColor());
+  }
   EXPECT_GT(shelf_widget->GetOpaqueBackground()->background_blur(), 0.0f);
 }
 
-TEST_F(ShelfWidgetDarkLightModeTest, TabletModeTransitionWithWindowOpen) {
+TEST_P(ShelfWidgetDarkLightModeTest, TabletModeTransitionWithWindowOpen) {
   ShelfWidget* const shelf_widget = GetShelfWidget();
   auto window = AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 800, 800));
 
@@ -223,17 +261,29 @@ TEST_F(ShelfWidgetDarkLightModeTest, TabletModeTransitionWithWindowOpen) {
   shelf_widget->background_animator_for_testing()
       ->CompleteAnimationForTesting();
 
-  EXPECT_EQ(AshColorProvider::Get()->GetBaseLayerColor(
-                AshColorProvider::BaseLayerType::kOpaque),
-            shelf_widget->GetShelfBackgroundColor());
+  if (GetParam()) {
+    EXPECT_EQ(shelf_widget->GetColorProvider()->GetColor(
+                  cros_tokens::kCrosSysSystemBase),
+              shelf_widget->GetShelfBackgroundColor());
+  } else {
+    EXPECT_EQ(shelf_widget->GetColorProvider()->GetColor(
+                  kColorAshShieldAndBaseOpaque),
+              shelf_widget->GetShelfBackgroundColor());
+  }
   EXPECT_EQ(0.0f, shelf_widget->GetOpaqueBackground()->background_blur());
 
   auto* dark_light_mode_controller = ash::DarkLightModeControllerImpl::Get();
   dark_light_mode_controller->ToggleColorMode();
 
-  EXPECT_EQ(AshColorProvider::Get()->GetBaseLayerColor(
-                AshColorProvider::BaseLayerType::kOpaque),
-            shelf_widget->GetShelfBackgroundColor());
+  if (GetParam()) {
+    EXPECT_EQ(shelf_widget->GetColorProvider()->GetColor(
+                  cros_tokens::kCrosSysSystemBase),
+              shelf_widget->GetShelfBackgroundColor());
+  } else {
+    EXPECT_EQ(shelf_widget->GetColorProvider()->GetColor(
+                  kColorAshShieldAndBaseOpaque),
+              shelf_widget->GetShelfBackgroundColor());
+  }
   EXPECT_EQ(0.0f, shelf_widget->GetOpaqueBackground()->background_blur());
 
   TabletMode::Waiter leave_waiter(/*enable=*/false);
@@ -242,16 +292,28 @@ TEST_F(ShelfWidgetDarkLightModeTest, TabletModeTransitionWithWindowOpen) {
   shelf_widget->background_animator_for_testing()
       ->CompleteAnimationForTesting();
 
-  EXPECT_EQ(AshColorProvider::Get()->GetBaseLayerColor(
-                AshColorProvider::BaseLayerType::kTransparent80),
-            shelf_widget->GetShelfBackgroundColor());
+  if (GetParam()) {
+    EXPECT_EQ(shelf_widget->GetColorProvider()->GetColor(
+                  cros_tokens::kCrosSysSystemBaseElevated),
+              shelf_widget->GetShelfBackgroundColor());
+  } else {
+    EXPECT_EQ(
+        shelf_widget->GetColorProvider()->GetColor(kColorAshShieldAndBase80),
+        shelf_widget->GetShelfBackgroundColor());
+  }
   EXPECT_GT(shelf_widget->GetOpaqueBackground()->background_blur(), 0.0f);
 
   dark_light_mode_controller->ToggleColorMode();
 
-  EXPECT_EQ(AshColorProvider::Get()->GetBaseLayerColor(
-                AshColorProvider::BaseLayerType::kTransparent80),
-            shelf_widget->GetShelfBackgroundColor());
+  if (GetParam()) {
+    EXPECT_EQ(shelf_widget->GetColorProvider()->GetColor(
+                  cros_tokens::kCrosSysSystemBaseElevated),
+              shelf_widget->GetShelfBackgroundColor());
+  } else {
+    EXPECT_EQ(
+        shelf_widget->GetColorProvider()->GetColor(kColorAshShieldAndBase80),
+        shelf_widget->GetShelfBackgroundColor());
+  }
   EXPECT_GT(shelf_widget->GetOpaqueBackground()->background_blur(), 0.0f);
 }
 
