@@ -336,8 +336,6 @@ crbug.com/949249 [ linux passthrough angle-opengl ] conformance2/extensions/ovr_
 # New validation was not implemented on the validating command decoder.
 crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test.html [ Failure ]
 
-# Flaky on multiple platforms
-crbug.com/1462694 deqp/functional/gles3/vertexarrays/multiple_attributes.stride.html [ RetryOnFailure ]
 
 
 ####################
