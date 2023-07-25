@@ -15,6 +15,10 @@
 #include "third_party/abseil-cpp/absl/synchronization/notification.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#if !defined(IPCZ_STANDALONE)
+#include "base/sanitizer_buildflags.h"  // nogncheck
+#endif
+
 namespace ipcz {
 namespace {
 
@@ -70,7 +74,17 @@ MULTINODE_TEST_NODE(ConnectTestNode, ExpectDisconnectFromBroker) {
   Close(b);
 }
 
-MULTINODE_TEST(ConnectTest, DISABLED_DisconnectWithoutBrokerHandshake) {
+#if defined(IPCZ_STANDALONE)
+#define MAYBE_DisconnectWithoutBrokerHandshake \
+  DISABLED_DisconnectWithoutBrokerHandshake
+#elif BUILDFLAG(USING_SANITIZER)
+// TODO(crbug.com/1400965): Fix the failing MojoIpczInProcess on linux tsan.
+#define MAYBE_DisconnectWithoutBrokerHandshake \
+  DISABLED_DisconnectWithoutBrokerHandshake
+#else
+#define MAYBE_DisconnectWithoutBrokerHandshake DisconnectWithoutBrokerHandshake
+#endif
+MULTINODE_TEST(ConnectTest, MAYBE_DisconnectWithoutBrokerHandshake) {
   IpczDriverHandle our_transport;
   auto controller =
       SpawnTestNodeNoConnect<ExpectDisconnectFromBroker>(our_transport);
