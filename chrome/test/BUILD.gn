@@ -7944,6 +7944,7 @@ test("unit_tests") {
       "../browser/support_tool/ash/system_state_data_collector_unittest.cc",
       "../browser/support_tool/ash/ui_hierarchy_data_collector_unittest.cc",
       "../browser/task_manager/providers/crosapi/crosapi_task_provider_ash_unittest.cc",
+      "../browser/ui/ash/accelerator_metadata_unittest.cc",
       "../browser/ui/ash/accessibility/accessibility_controller_client_unittest.cc",
       "../browser/ui/ash/accessibility/ax_tree_source_aura_unittest.cc",
       "../browser/ui/ash/ambient/ambient_client_impl_unittest.cc",
