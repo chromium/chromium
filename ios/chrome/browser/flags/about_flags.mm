@@ -95,7 +95,6 @@
 #import "ios/chrome/browser/ui/default_promo/post_restore/features.h"
 #import "ios/chrome/browser/ui/download/features.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_field_trial_constants.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
@@ -530,18 +529,6 @@ const FeatureEntry::FeatureVariation kAutofillBrandingIOSVariations[] = {
      "accessories)",
      kAutofillBrandingIOSSlideOutWhenInteracted,
      std::size(kAutofillBrandingIOSSlideOutWhenInteracted), nullptr}};
-
-const FeatureEntry::FeatureParam kNewTabPageFieldTrialTileAblationHideAll[] = {
-    {ntp_tiles::kNewTabPageFieldTrialParam, "1"}};
-const FeatureEntry::FeatureParam
-    kNewTabPageFieldTrialTileAblationHideMVTOnly[] = {
-        {ntp_tiles::kNewTabPageFieldTrialParam, "2"}};
-const FeatureEntry::FeatureVariation kNewTabPageFieldTrialVariations[] = {
-    {"- Tile ablation, Hide all", kNewTabPageFieldTrialTileAblationHideAll,
-     std::size(kNewTabPageFieldTrialTileAblationHideAll), nullptr},
-    {"- Tile ablation, Hide MVT only",
-     kNewTabPageFieldTrialTileAblationHideMVTOnly,
-     std::size(kNewTabPageFieldTrialTileAblationHideMVTOnly), nullptr}};
 
 const FeatureEntry::FeatureParam kEnableExpKitTextClassifierDate[] = {
     {"date", "true"}};
@@ -1137,11 +1124,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSPaymentsBottomSheetName,
      flag_descriptions::kIOSPaymentsBottomSheetDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSPaymentsBottomSheet)},
-    {"ios-new-tab-page-retention", flag_descriptions::kNewTabPageFieldTrialName,
-     flag_descriptions::kNewTabPageFieldTrialDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_tiles::kNewTabPageFieldTrial,
-                                    kNewTabPageFieldTrialVariations,
-                                    ntp_tiles::kNewTabPageFieldTrialName)},
     {"autofill-parse-iban-fields",
      flag_descriptions::kAutofillParseIBANFieldsName,
      flag_descriptions::kAutofillParseIBANFieldsDescription, flags_ui::kOsIos,

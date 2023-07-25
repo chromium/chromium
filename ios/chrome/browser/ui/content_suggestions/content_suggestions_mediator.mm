@@ -330,7 +330,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
           recordSetUpListItemShown:item.type];
     }
   }
-  // Show Shortcuts if the Tile Ablation is not enabled and either:
+  // Show shorcuts if:
   // 1) Magic Stack is enabled (always show shortcuts in Magic Stack).
   // 2) The Set Up List and Magic Stack are not enabled (Set Up List replaced
   // Shortcuts).
@@ -736,70 +736,12 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   return !isSignedIn;
 }
 
-// Checks if users have met conditions to drop from the experiment to hide the
-// Most Visited Tiles and Shortcuts from the NTP.
-- (BOOL)isTileAblationComplete {
-  // Conditions:
-  // MVT/Shortcuts Should be shown again if:
-  // 1. User has used Bling < `kTileAblationMinimumUseThresholdInDays` days AND
-  // NTP Impressions > `kMinimumImpressionThresholdTileAblation`; or
-  // 2. User has used Bling >= `kTileAblationMaximumUseThresholdInDays` days
-  // or
-  // 3. NTP Impressions > `kMaximumImpressionThresholdTileAblation`;
-  // NTP impression time threshold is >=
-  // `kTileAblationImpressionThresholdMinutes` minutes per impression.
-  // (eg. 2 NTP impressions within <5 minutes of each other will count as 1 NTP
-  // impression for the purposes of this test.
-
-  // Return NO if the experimental setting to ignore `isTileAblationComplete` is
-  // true.
-  if (experimental_flags::ShouldIgnoreTileAblationConditions()) {
-    return NO;
-  }
-
-  // Return early if ablation was already complete.
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  if ([defaults boolForKey:kDoneWithTileAblationKey]) {
-    return YES;
-  }
-
-  int impressions = [defaults integerForKey:kNumberOfNTPImpressionsRecordedKey];
-  NSDate* firstImpressionDate = base::mac::ObjCCast<NSDate>(
-      [defaults objectForKey:kFirstImpressionRecordedTileAblationKey]);
-  // Return early if no NTP impression has been recorded.
-  if (firstImpressionDate == nil) {
-    return NO;
-  }
-  base::Time firstImpressionTime = base::Time::FromNSDate(firstImpressionDate);
-
-  if (  // User has used Bling < `kTileAblationMinimumUseThresholdInDays` days
-        // AND NTP Impressions > `kMinimumImpressionThresholdTileAblation`; or
-      (base::Time::Now() - firstImpressionTime >=
-           base::Days(kTileAblationMinimumUseThresholdInDays) &&
-       impressions >= kMinimumImpressionThresholdTileAblation) ||
-      // User has used Bling >= `kTileAblationMaximumUseThresholdInDays` days
-      (base::Time::Now() - firstImpressionTime >=
-       base::Days(kTileAblationMaximumUseThresholdInDays)) ||
-      // NTP Impressions >= `kMaximumImpressionThresholdTileAblation`;
-      (impressions >= kMaximumImpressionThresholdTileAblation)) {
-    [defaults setBool:YES forKey:kDoneWithTileAblationKey];
-    return YES;
-  }
-  return NO;
-}
-
 // Returns whether the shortcut tiles should be hidden.
 - (BOOL)shouldHideShortcuts {
   if (ShoudHideShortcuts()) {
     return YES;
   }
-  if ([self isTileAblationComplete]) {
-    return NO;
-  }
-  ntp_tiles::NewTabPageFieldTrialExperimentBehavior behavior =
-      ntp_tiles::GetNewTabPageFieldTrialExperimentType();
-  return behavior == ntp_tiles::NewTabPageFieldTrialExperimentBehavior::
-                         kTileAblationHideAll;
+  return NO;
 }
 
 // Returns whether the MVT tiles should be hidden.
@@ -807,16 +749,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   if (ShouldHideMVT()) {
     return YES;
   }
-  if ([self isTileAblationComplete]) {
-    return NO;
-  }
-  ntp_tiles::NewTabPageFieldTrialExperimentBehavior behavior =
-      ntp_tiles::GetNewTabPageFieldTrialExperimentType();
-
-  return behavior == ntp_tiles::NewTabPageFieldTrialExperimentBehavior::
-                         kTileAblationHideAll ||
-         behavior == ntp_tiles::NewTabPageFieldTrialExperimentBehavior::
-                         kTileAblationHideMVTOnly;
+  return NO;
 }
 
 // Returns an array that represents the order of the modules to be shown in the

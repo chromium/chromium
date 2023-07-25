@@ -392,10 +392,6 @@ const char kEnableDiscoverFeedDiscoFeedEndpointName[] =
 const char kEnableDiscoverFeedDiscoFeedEndpointDescription[] =
     "Enable using the discofeed endpoint for the discover feed.";
 
-const char kTileAblationName[] = "Enables tile ablation";
-const char kTileAblationDescription[] =
-    "Hides the shortcuts and most visited tiles on the NTP for new users.";
-
 const char kEnableFeedAblationName[] = "Enables Feed Ablation";
 const char kEnableFeedAblationDescription[] =
     "If Enabled the Feed will be removed from the NTP";
@@ -535,9 +531,8 @@ const char kFullscreenSmoothScrollingDescription[] =
     "When enabled, the web view's insets are updated for scoll events. If "
     "disabled, the the web view's frame are updated.";
 
-extern const char kHideContentSuggestionTilesName[] =
-    "Hide content suggestions tiles";
-extern const char kHideContentSuggestionTilesDescription[] =
+const char kHideContentSuggestionTilesName[] = "Hide content suggestions tiles";
+const char kHideContentSuggestionTilesDescription[] =
     "Hides content suggestions tiles from the new tab page.";
 
 const char kHttpsOnlyModeName[] = "HTTPS-Only Mode Setting";

@@ -152,9 +152,6 @@ source_set("coordinator") {
 source_set("field_trial") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "new_tab_page_field_trial.cc",
-    "new_tab_page_field_trial.h",
-    "new_tab_page_field_trial_constants.h",
     "synced_segments_field_trial.cc",
     "synced_segments_field_trial.h",
     "synced_segments_field_trial_constants.cc",
@@ -296,7 +293,6 @@ source_set("unit_tests") {
   sources = [
     "feed_menu_coordinator_unittest.mm",
     "new_tab_page_coordinator_unittest.mm",
-    "new_tab_page_field_trial_unittest.mm",
     "new_tab_page_mediator_unittest.mm",
   ]
   deps = [
@@ -304,7 +300,6 @@ source_set("unit_tests") {
     ":coordinator",
     ":feature_flags",
     ":feed_menu",
-    ":field_trial",
     ":logo",
     ":ntp",
     ":ntp_internal",
