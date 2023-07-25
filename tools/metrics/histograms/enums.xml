@@ -17640,6 +17640,8 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="7" label="RichTextTouch"/>
   <int value="8" label="PlainTextVirtualKeyboard"/>
   <int value="9" label="RichTextVirtualKeyboard"/>
+  <int value="10" label="PlainTextCtrlV"/>
+  <int value="11" label="RichTextCtrlV"/>
 </enum>
 
 <enum name="ClipboardHistoryReorderType">
