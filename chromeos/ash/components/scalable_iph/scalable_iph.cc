@@ -13,8 +13,10 @@
 #include "base/location.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/scalable_iph/iph_session.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
@@ -32,10 +34,11 @@ using BubbleParams = ::scalable_iph::ScalableIphDelegate::BubbleParams;
 constexpr char kFunctionCallAfterKeyedServiceShutdown[] =
     "Function call after keyed service shutdown.";
 
-const std::map<ScalableIph::Event, std::string>& GetEventNamesMap() {
+const base::flat_map<ScalableIph::Event, std::string>& GetEventNamesMap() {
   // IPH events are put in a global namespace. Prefix with ScalableIph for all
   // events.
-  static const base::NoDestructor<std::map<ScalableIph::Event, std::string>>
+  static const base::NoDestructor<
+      base::flat_map<ScalableIph::Event, std::string>>
       event_names_map(
           {{ScalableIph::Event::kFiveMinTick, kEventNameFiveMinTick}});
   return *event_names_map;
@@ -60,6 +63,25 @@ const std::vector<const base::Feature*>& GetFeatureListConstant() {
           &feature_engagement::kIPHScalableIphTimerBasedTenFeature,
       });
   return *feature_list;
+}
+
+const base::flat_map<std::string, ActionType>& GetActionTypesMap() {
+  // Key will be set in server side config.
+  static const base::NoDestructor<base::flat_map<std::string, ActionType>>
+      action_types_map({
+          {kActionTypeOpenChrome, ActionType::kOpenChrome},
+          {kActionTypeOpenLauncher, ActionType::kOpenLauncher},
+          {kActionTypeOpenPersonalizationApp,
+           ActionType::kOpenPersonalizationApp},
+          {kActionTypeOpenPlayStore, ActionType::kOpenPlayStore},
+          {kActionTypeOpenGoogleDocs, ActionType::kOpenGoogleDocs},
+          {kActionTypeOpenGooglePhotos, ActionType::kOpenGooglePhotos},
+          {kActionTypeOpenSettingsPrinter, ActionType::kOpenSettingsPrinter},
+          {kActionTypeOpenPhoneHub, ActionType::kOpenPhoneHub},
+          {kActionTypeOpenYouTube, ActionType::kOpenYouTube},
+          {kActionTypeOpenFileManager, ActionType::kOpenFileManager},
+      });
+  return *action_types_map;
 }
 
 constexpr base::TimeDelta kTimeTickEventInterval = base::Minutes(5);
@@ -95,6 +117,36 @@ UiType ParseUiType(const base::Feature& feature) {
   return UiType::kBubble;
 }
 
+ActionType ParseActionType(const std::string& action_type_string) {
+  auto it = GetActionTypesMap().find(action_type_string);
+  if (it == GetActionTypesMap().end()) {
+    // If the server side config action type cannot be parsed, will return the
+    // kInvalid as the parsed result.
+    return ActionType::kInvalid;
+  }
+  return it->second;
+}
+
+std::string ParseActionEventName(const std::string& event_used_param) {
+  // The `event_used_param` is in this format:
+  // `name:ScalableIphTimerBasedOneEventUsed;comparator:any;window:365;storage:365`.
+  auto key_values = base::SplitString(
+      event_used_param, ";", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  if (key_values.size() != 4) {
+    return "";
+  }
+  auto name_value = base::SplitString(key_values[0], ":", base::TRIM_WHITESPACE,
+                                      base::SPLIT_WANT_NONEMPTY);
+  if (name_value.size() != 2) {
+    return "";
+  }
+
+  if (name_value[0] != "name") {
+    return "";
+  }
+  return name_value[1];
+}
+
 NotificationParams ParseNotificationParams(const base::Feature& feature) {
   // TODO(b/288167957): Implement a fallback for an invalid config, e.g. Do not
   // show an IPH for the case instead of CHECK failure. Config is served from
@@ -114,6 +166,19 @@ NotificationParams ParseNotificationParams(const base::Feature& feature) {
       GetParamValue(feature, kCustomNotificationButtonTextParamName);
   CHECK(!param.button.text.empty())
       << kCustomNotificationButtonTextParamName << " is a required field";
+  std::string action_type =
+      GetParamValue(feature, kCustomButtonActionTypeParamName);
+  CHECK(!action_type.empty()) << kCustomButtonActionTypeParamName
+                              << " is a required field for notification";
+  param.button.action.action_type = ParseActionType(action_type);
+  CHECK(param.button.action.action_type != ActionType::kInvalid)
+      << " action type cannot be parsed";
+  std::string event_used =
+      GetParamValue(feature, kCustomButtonActionEventParamName);
+  CHECK(!event_used.empty())
+      << kCustomButtonActionEventParamName << " is a required field";
+  param.button.action.iph_event_name = ParseActionEventName(event_used);
+  CHECK(!event_used.empty()) << " ihp_event_name cannot be parsed";
 
   std::string image_type =
       GetParamValue(feature, kCustomNotificationImageTypeParamName);
@@ -206,7 +271,6 @@ void ScalableIph::OverrideTaskRunnerForTesting(
 }
 
 void ScalableIph::PerformAction(ActionType action_type) {
-  // TODO(b/289108135): Implement this.
   delegate_->PerformActionForScalableIph(action_type);
 }
 

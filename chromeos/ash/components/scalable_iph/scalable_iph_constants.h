@@ -8,8 +8,8 @@
 namespace scalable_iph {
 
 enum class ActionType {
-  // `kInvalid` is reserved to be used as an initial value. This must not be
-  // used in prod.
+  // `kInvalid` is reserved to be used as an initial value or when the server
+  // side config cannot be parsed.
   kInvalid = 0,
   kOpenChrome = 1,
   kOpenLauncher = 2,  // Not implemented for V1 of Scalable IPH
@@ -23,6 +23,19 @@ enum class ActionType {
   kOpenFileManager = 10,
   kLastAction = kOpenFileManager,
 };
+
+// Constants for action types, has 1 to 1 mapping with the ActionType.
+// Used in server side config.
+constexpr char kActionTypeOpenChrome[] = "OpenChrome";
+constexpr char kActionTypeOpenLauncher[] = "OpenLauncher";
+constexpr char kActionTypeOpenPersonalizationApp[] = "OpenPersonalizationApp";
+constexpr char kActionTypeOpenPlayStore[] = "OpenPlayStore";
+constexpr char kActionTypeOpenGoogleDocs[] = "OpenGoogleDocs";
+constexpr char kActionTypeOpenGooglePhotos[] = "OpenGooglePhotos";
+constexpr char kActionTypeOpenSettingsPrinter[] = "OpenSettingsPrinter";
+constexpr char kActionTypeOpenPhoneHub[] = "OpenPhoneHub";
+constexpr char kActionTypeOpenYouTube[] = "OpenYouTube";
+constexpr char kActionTypeOpenFileManager[] = "OpenFileManager";
 
 // Constants for events.
 // Naming convention: Camel case starting with a capital letter. Note that
@@ -101,6 +114,10 @@ constexpr char kCustomNotificationImageTypeValueWallpaper[] = "Wallpaper";
 constexpr char kCustomBubbleIdParamName[] = "x_CustomBubbleId";
 constexpr char kCustomBubbleTextParamName[] = "x_CustomBubbleText";
 constexpr char kCustomBubbleButtonTextParamName[] = "x_CustomBubbleButtonText";
+
+// Parameters for action.
+constexpr char kCustomButtonActionTypeParamName[] = "x_CustomButtonActionType";
+constexpr char kCustomButtonActionEventParamName[] = "event_used";
 
 }  // namespace scalable_iph
 

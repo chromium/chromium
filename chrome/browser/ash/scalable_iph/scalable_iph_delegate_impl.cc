@@ -51,6 +51,7 @@ using ::chromeos::network_config::mojom::NetworkFilter;
 using ::chromeos::network_config::mojom::NetworkStatePropertiesPtr;
 using ::chromeos::network_config::mojom::NetworkType;
 using Observer = ::scalable_iph::ScalableIphDelegate::Observer;
+using Action = ::scalable_iph::ScalableIphDelegate::Action;
 using NotificationParams =
     ::scalable_iph::ScalableIphDelegate::NotificationParams;
 using NotificationImageType =
@@ -151,14 +152,13 @@ void OpenUrlForProfile(Profile* profile, const GURL& url) {
 class ScalableIphNotificationDelegate
     : public message_center::NotificationDelegate {
  public:
-  // TODO(b/284158779): Add `ActionType`.
   ScalableIphNotificationDelegate(
       std::unique_ptr<scalable_iph::IphSession> iph_session,
       std::string notification_id,
-      ActionType action_type)
+      Action action)
       : iph_session_(std::move(iph_session)),
         notification_id_(notification_id),
-        action_type_(action_type) {}
+        action_(action) {}
 
   // message_center::NotificationDelegate:
   void Click(const absl::optional<int>& button_index,
@@ -167,7 +167,7 @@ class ScalableIphNotificationDelegate
       return;
     }
 
-    iph_session_->PerformAction(action_type_);
+    iph_session_->PerformAction(action_.action_type, action_.iph_event_name);
     message_center::MessageCenter::Get()->RemoveNotification(notification_id_,
                                                              /*by_user=*/false);
   }
@@ -177,7 +177,7 @@ class ScalableIphNotificationDelegate
 
   std::unique_ptr<scalable_iph::IphSession> iph_session_;
   std::string notification_id_;
-  ActionType action_type_;
+  Action action_;
 };
 
 }  // namespace
@@ -218,10 +218,9 @@ void ScalableIphDelegateImpl::ShowBubble(
       base::UTF8ToUTF16(params.text), /*anchor_view=*/nullptr);
 
   nudge_data.first_button_text = base::UTF8ToUTF16(params.button.text);
-  nudge_data.first_button_callback =
-      base::BindRepeating(&ScalableIphDelegateImpl::OnNudgeButtonClicked,
-                          weak_ptr_factory_.GetWeakPtr(), params.bubble_id,
-                          params.button.action.action_type);
+  nudge_data.first_button_callback = base::BindRepeating(
+      &ScalableIphDelegateImpl::OnNudgeButtonClicked,
+      weak_ptr_factory_.GetWeakPtr(), params.bubble_id, params.button.action);
   nudge_data.dismiss_callback =
       base::BindRepeating(&ScalableIphDelegateImpl::OnNudgeDismissed,
                           weak_ptr_factory_.GetWeakPtr(), params.bubble_id);
@@ -253,7 +252,7 @@ void ScalableIphDelegateImpl::ShowNotification(
           rich_notification_data,
           base::MakeRefCounted<ScalableIphNotificationDelegate>(
               std::move(iph_session), params.notification_id,
-              params.button.action.action_type),
+              params.button.action),
           gfx::kNoneIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
   if (IsWallpaperNotification(params)) {
@@ -386,15 +385,14 @@ void ScalableIphDelegateImpl::OnNetworkStateList(
   SetHasOnlineNetwork(HasOnlineNetwork(networks));
 }
 
-void ScalableIphDelegateImpl::OnNudgeButtonClicked(
-    const std::string& bubble_id,
-    ActionType action_type) {
+void ScalableIphDelegateImpl::OnNudgeButtonClicked(const std::string& bubble_id,
+                                                   Action action) {
   if (bubble_id_ != bubble_id) {
     DCHECK(false) << "Callback for an obsolete bubble id gets called "
                   << bubble_id;
     return;
   }
-  bubble_iph_session_->PerformAction(action_type);
+  bubble_iph_session_->PerformAction(action.action_type, action.iph_event_name);
 }
 
 void ScalableIphDelegateImpl::OnNudgeDismissed(const std::string& bubble_id) {

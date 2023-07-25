@@ -53,7 +53,7 @@ class ScalableIphDelegateImpl
       std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
           networks);
   void OnNudgeButtonClicked(const std::string& bubble_id,
-                            scalable_iph::ActionType action_type);
+                            scalable_iph::ScalableIphDelegate::Action action);
   void OnNudgeDismissed(const std::string& bubble_id);
 
   raw_ptr<Profile> profile_;

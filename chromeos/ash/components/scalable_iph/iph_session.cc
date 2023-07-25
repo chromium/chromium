@@ -21,7 +21,11 @@ IphSession::~IphSession() {
   tracker_->Dismissed(feature_);
 }
 
-void IphSession::PerformAction(ActionType action_type) {
+void IphSession::PerformAction(ActionType action_type,
+                               const std::string& event_name) {
+  if (!event_name.empty()) {
+    tracker_->NotifyEvent(event_name);
+  }
   delegate_->PerformActionForIphSession(action_type);
 }
 

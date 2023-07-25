@@ -219,6 +219,10 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, InvokeIph) {
   expected_params.text = ScalableIphBrowserTestBase::kTestNotificationBodyText;
   expected_params.button.text =
       ScalableIphBrowserTestBase::kTestNotificationButtonText;
+  expected_params.button.action.action_type =
+      scalable_iph::ActionType::kOpenChrome;
+  expected_params.button.action.iph_event_name =
+      ScalableIphBrowserTestBase::kTestButtonActionEvent;
 
   EXPECT_CALL(*mock_delegate(), ShowNotification(::testing::Eq(expected_params),
                                                  ::testing::NotNull()))
@@ -374,6 +378,10 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestNotification, ShowNotification) {
 
   // Tracker::Dismissed must be called when an IPH gets dismissed.
   EXPECT_CALL(*mock_tracker(), Dismissed(::testing::Ref(TestIphFeature())));
+  EXPECT_CALL(*mock_tracker(),
+              NotifyEvent(scalable_iph::kEventNameFiveMinTick));
+  // The action is not performed.
+  EXPECT_CALL(*mock_tracker(), NotifyEvent(kTestButtonActionEvent)).Times(0);
 
   TriggerConditionsCheckWithAFakeEvent();
 
@@ -392,6 +400,10 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestNotification,
 
   // Tracker::Dismissed must be called when an IPH gets dismissed.
   EXPECT_CALL(*mock_tracker(), Dismissed(::testing::Ref(TestIphFeature())));
+  EXPECT_CALL(*mock_tracker(),
+              NotifyEvent(scalable_iph::kEventNameFiveMinTick));
+  // The action is performed.
+  EXPECT_CALL(*mock_tracker(), NotifyEvent(kTestButtonActionEvent));
 
   TriggerConditionsCheckWithAFakeEvent();
 

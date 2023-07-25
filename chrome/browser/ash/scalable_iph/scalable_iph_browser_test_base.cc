@@ -165,6 +165,12 @@ void ScalableIphBrowserTestBase::AppendFakeUiParamsNotification(
   params[FullyQualified(kScalableIphTest,
                         scalable_iph::kCustomNotificationButtonTextParamName)] =
       kTestNotificationButtonText;
+  params[FullyQualified(kScalableIphTest,
+                        scalable_iph::kCustomButtonActionTypeParamName)] =
+      kTestButtonActionType;
+  params[FullyQualified(kScalableIphTest,
+                        scalable_iph::kCustomButtonActionEventParamName)] =
+      kTestActionEventName;
 }
 
 void ScalableIphBrowserTestBase::AppendFakeUiParamsBubble(

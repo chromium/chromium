@@ -32,8 +32,8 @@ class IphSession {
   IphSession& operator=(const IphSession& iph_session) = delete;
 
   // Perform `action_type` as a result of a user action. This records a
-  // corresponding IPH event to the feature engagement framework.
-  void PerformAction(ActionType action_type);
+  // corresponding IPH `event_name` to the feature engagement framework.
+  void PerformAction(ActionType action_type, const std::string& event_name);
 
  private:
   // This is an IPH feature which is tied to this IPH session. See
