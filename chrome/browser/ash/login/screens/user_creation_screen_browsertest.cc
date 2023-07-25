@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
@@ -243,21 +244,13 @@ class UserCreationScreenSoftwareUpdateTest : public UserCreationScreenTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/1467313): Disabled due to flakiness.
-// Verify flow for setting up the device for self.
-IN_PROC_BROWSER_TEST_F(UserCreationScreenSoftwareUpdateTest,
-                       DISABLED_SignInForSelf) {
+IN_PROC_BROWSER_TEST_F(UserCreationScreenSoftwareUpdateTest, SignInForSelf) {
   SelectUserTypeOnUserCreationScreen(kSelfButton);
   WaitForScreenExit();
   EXPECT_FALSE(LoginDisplayHost::default_host()
                    ->GetWizardContextForTesting()
                    ->sign_in_as_child);
   EXPECT_EQ(screen_result_.value(), UserCreationScreen::Result::SIGNIN);
-  if (features::IsOobeGaiaInfoScreenEnabled()) {
-    OobeScreenWaiter(GaiaInfoScreenView::kScreenId).Wait();
-  } else {
-    OobeScreenWaiter(GaiaView::kScreenId).Wait();
-  }
 }
 
 // Verify that google account in the child setup step in user creation
