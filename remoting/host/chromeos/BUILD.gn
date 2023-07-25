@@ -95,6 +95,7 @@ source_set("remoting_service") {
   deps = [
     ":browser_interop",
     ":features",
+    "//chrome/common:constants",
     "//mojo/public/cpp/bindings",
     "//remoting/base:base",
     "//remoting/host",

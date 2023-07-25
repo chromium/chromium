@@ -11,8 +11,10 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/path_service.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
+#include "chrome/common/chrome_paths.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
@@ -20,7 +22,6 @@ namespace remoting {
 namespace {
 
 constexpr char kStoredSessionFileName[] = "session";
-constexpr char kCrdSessionStorageDirectory[] = "/run/crd";
 
 template <class T>
 absl::optional<T> make_nullopt() {
@@ -78,11 +79,16 @@ void ReadFileAsync(
       std::move(on_done));
 }
 
+base::FilePath GetDefaultDirectory() {
+  base::FilePath result;
+  base::PathService::Get(chrome::DIR_CHROMEOS_CRD_DATA, &result);
+  return result;
+}
+
 }  // namespace
 
 FileSessionStorage::FileSessionStorage()
-    : FileSessionStorage(
-          base::FilePath::FromASCII(kCrdSessionStorageDirectory)) {}
+    : FileSessionStorage(GetDefaultDirectory()) {}
 
 FileSessionStorage::FileSessionStorage(const base::FilePath& storage_directory)
     : storage_directory_(storage_directory) {}

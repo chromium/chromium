@@ -25,5 +25,8 @@ specific_include_rules = {
   ],
   "frame_sink_desktop_capturer_unittest.cc": [
     "+components/viz/service/frame_sinks/video_capture/shared_memory_video_frame_pool.h"
+  ],
+  "file_session_storage.cc": [
+    "+chrome/common/chrome_paths.h"
   ]
 }

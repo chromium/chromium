@@ -4,6 +4,7 @@
 
 #include "chrome/common/chrome_paths.h"
 
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
@@ -76,6 +77,29 @@ const base::FilePath::CharType kChromeOSCryptohomeMountRoot[] =
 const base::FilePath::CharType kFakeCryptohomeMountRootDirname[] =
     FILE_PATH_LITERAL(".home_user");
 #endif  // BUILDFLAG(IS_CHROMEOS_DEVICE)
+
+bool GetChromeOsCrdDataDirInternal(base::FilePath* result,
+                                   bool* should_be_created) {
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
+  *result = base::FilePath::FromASCII("/run/crd");
+  // The directory is created by ChromeOS (since we do not have the permissions
+  // to create anything in /run).
+  *should_be_created = false;
+  return true;
+#else
+  // On glinux-ChromeOS builds `/run/` doesn't exist, so we simply use the temp
+  // directory.
+  base::FilePath temp_directory;
+  if (!base::PathService::Get(base::DIR_TEMP, &temp_directory)) {
+    return false;
+  }
+
+  *result = temp_directory.Append(FILE_PATH_LITERAL("crd"));
+  *should_be_created = true;
+  return true;
+#endif  // BUILDFLAG(IS_CHROMEOS_DEVICE)
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 base::FilePath& GetInvalidSpecifiedUserDataDirInternal() {
@@ -434,6 +458,12 @@ bool PathProvider(int key, base::FilePath* result) {
         return false;
       }
       cur = cur.Append(FILE_PATH_LITERAL("custom_wallpapers"));
+      break;
+    case chrome::DIR_CHROMEOS_CRD_DATA:
+      if (!GetChromeOsCrdDataDirInternal(&cur,
+                                         /*should_be_created=*/&create_dir)) {
+        return false;
+      }
       break;
 #endif
     // The following are only valid in the development environment, and

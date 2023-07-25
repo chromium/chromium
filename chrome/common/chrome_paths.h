@@ -118,6 +118,10 @@ enum {
                                       // wallpaper thumbnails reside.
   DIR_CHROMEOS_CUSTOM_WALLPAPERS,     // Directory where custom wallpapers
                                       // reside.
+  DIR_CHROMEOS_CRD_DATA,  // Directory where Chrome Remote Desktop can store
+                          // data that must persist a Chrome restart but that
+                          // must be cleared on device reboot.
+
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
   DIR_NATIVE_MESSAGING,       // System directory where native messaging host

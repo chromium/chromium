@@ -231,7 +231,7 @@ void RemoteSupportHostAsh::OnClientConnected(
   }
 
   if (enterprise_params.has_value() && enterprise_params->allow_reconnections) {
-    LOG(INFO) << "Storing information for reconnectable session";
+    LOG(INFO) << "Storing information for reconnectable CRD session";
     session_storage_->StoreSession(
         base::Value::Dict()
             .Set(kReconnectParamsDictKey, ConnectionDetailsToDict(details))
