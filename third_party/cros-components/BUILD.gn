@@ -17,6 +17,7 @@ _cros_components_ts_files = [
   "async_helpers/async_helpers.ts",
   "lottie_renderer/lottie-renderer.ts",
   "lottie_renderer/worker.ts",
+  "lottie_renderer/event_binders.ts",
   "slider/slider.ts",
 ]
 
@@ -40,7 +41,10 @@ ts_library("cros_components__ts_library") {
   }
 
   composite = true
-  deps = [ "//third_party/material_web_components:library" ]
+  deps = [
+    "//third_party/material_web_components:library",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
+  ]
 }
 
 # Downstream ts_library targets that depend on `cros_components_ts` expect
@@ -75,6 +79,7 @@ rewrite_imports("cros_components_ts") {
     "../async_helpers/async_helpers|../async_helpers/async_helpers.js",
     "../helpers/helpers|../helpers/helpers.js",
     "./worker|./worker.js",
+    "./event_binders|./event_binders.js",
   ]
 
   deps = [
