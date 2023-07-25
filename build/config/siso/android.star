@@ -71,15 +71,15 @@ def __step_config(ctx, step_config):
             "inputs": [
                 "third_party/protobuf/python/google:pyprotolib",
             ],
-            "outputs_map": {
-                # Slow actions that exceed deadline on the default worker pool.
-                "./gen/android_webview/system_webview_64_base_bundle_module__compile_resources.srcjar": {"platform_ref": "large"},
-                "./gen/chrome/android/chrome_public_apk__compile_resources.srcjar": {"platform_ref": "large"},
-                "./gen/chrome/android/chrome_public_bundle__base_bundle_module__compile_resources.srcjar": {"platform_ref": "large"},
-                "./gen/chrome/android/monochrome_64_public_apk__compile_resources.srcjar": {"platform_ref": "large"},
-                "./gen/chrome/android/monochrome_64_public_bundle__base_bundle_module__compile_resources.srcjar": {"platform_ref": "large"},
-                "./gen/chrome/android/trichrome_chrome_64_bundle__base_bundle_module__compile_resources.srcjar": {"platform_ref": "large"},
-            },
+            "exclude_input_patterns": [
+                "*.h",
+                "*.o",
+                "*.cc",
+                "*.a",
+                "*.info",
+                "*.pak",
+                "*.inc",
+            ],
             "remote": remote_run,
             "canonicalize_dir": True,
             "timeout": "2m",
