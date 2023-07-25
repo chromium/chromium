@@ -26,22 +26,10 @@ class ASH_EXPORT SystemTextfield : public views::Textfield {
     kLarge,
   };
 
-  // The delegate that handles the textfield behaviors on focused and blurred.
-  class Delegate {
-   public:
-    virtual void OnTextfieldFocused(SystemTextfield* textfield) = 0;
-    virtual void OnTextfieldBlurred(SystemTextfield* textfield) = 0;
-
-   protected:
-    virtual ~Delegate() = default;
-  };
-
   explicit SystemTextfield(Type type);
   SystemTextfield(const SystemTextfield&) = delete;
   SystemTextfield& operator=(const SystemTextfield&) = delete;
   ~SystemTextfield() override;
-
-  void set_delegate(Delegate* delegate) { delegate_ = delegate; }
 
   // Set custom colors of text, selected text, selection background, and
   // textfield background color.
@@ -89,7 +77,6 @@ class ASH_EXPORT SystemTextfield : public views::Textfield {
   Type type_;
   // Text content to restore when changes are discarded.
   std::u16string restored_text_content_;
-  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
   // Indicates if the textfield should show focus ring.
   bool show_focus_ring_ = false;
   // Indicates if the textfield should show background.

@@ -196,22 +196,14 @@ void SystemTextfield::OnThemeChanged() {
 }
 
 void SystemTextfield::OnFocus() {
-  if (delegate_) {
-    delegate_->OnTextfieldFocused(this);
-  } else {
-    SetActive(true);
-  }
-
+  views::Textfield::OnFocus();
+  SetShowFocusRing(true);
   UpdateBackground();
 }
 
 void SystemTextfield::OnBlur() {
-  if (delegate_) {
-    delegate_->OnTextfieldBlurred(this);
-  } else {
-    SetActive(false);
-  }
-
+  views::Textfield::OnBlur();
+  SetShowFocusRing(false);
   UpdateBackground();
 }
 
