@@ -1252,7 +1252,7 @@ TEST_F(IntegrationTest, RecoveryNoUpdater) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) && !defined(COMPONENT_BUILD)
 // TODO(crbug.com/1281688): standalone installers are supported on Windows only.
 TEST_F(IntegrationTest, OfflineInstall) {
   ASSERT_NO_FATAL_FAILURE(Install());
@@ -1304,7 +1304,7 @@ TEST_F(IntegrationTest, OfflineInstallOsNotSupportedSilentLegacy) {
                                       /*is_silent_install=*/true));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN) && !defined(COMPONENT_BUILD)
 
 TEST_F(IntegrationTest, CrashUsageStatsEnabled) {
 #if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)

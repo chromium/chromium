@@ -1045,12 +1045,10 @@ if (is_win || is_mac || is_linux) {
       ]
     }
     if (is_win) {
-      deps += [
-        "//chrome/installer/util:with_no_strings",
-        "//chrome/updater/test/test_installer:test_app1_installer",
-      ]
+      deps += [ "//chrome/installer/util:with_no_strings" ]
       data_deps = [
         ":test_service_files",
+        "//chrome/updater/test/test_installer:test_installer",
         "//chrome/updater/win:updater_test",
         "//third_party/updater:old_updater",
       ]
@@ -1090,6 +1088,7 @@ if (is_win || is_mac || is_linux) {
       deps += [ "//chrome/installer/util:with_no_strings" ]
       data_deps += [
         ":test_service_files",
+        "//chrome/updater/test/test_installer:test_installer",
         "//chrome/updater/win:updater_test",
         "//third_party/updater:old_updater",
       ]
