@@ -110,6 +110,14 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
                         completion:nil];
 }
 
+- (void)setTabGridButtonIPHHighlighted:(BOOL)iphHighlighted {
+  self.view.tabGridButton.iphHighlighted = iphHighlighted;
+}
+
+- (void)setNewTabButtonIPHHighlighted:(BOOL)iphHighlighted {
+  self.view.openNewTabButton.iphHighlighted = iphHighlighted;
+}
+
 - (BOOL)hasOmnibox {
   return self.locationBarViewController != nil;
 }

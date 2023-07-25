@@ -13,6 +13,7 @@
 class HostContentSettingsMap;
 @class LayoutGuideCenter;
 @class SceneState;
+@protocol ToolbarCommands;
 class UrlLoadingNotifierBrowserAgent;
 class WebStateList;
 
@@ -53,6 +54,7 @@ class DeviceSwitcherResultDispatcher;
 @property(nonatomic, weak) id<BubblePresenterDelegate> delegate;
 @property(nonatomic, weak) UIViewController* rootViewController;
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
+@property(nonatomic, weak) id<ToolbarCommands> toolbarCommandsHandler;
 
 // Stops this presenter.
 - (void)stop;

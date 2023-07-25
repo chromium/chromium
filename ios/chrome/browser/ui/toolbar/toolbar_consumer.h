@@ -29,6 +29,10 @@
 - (void)setIsNTP:(BOOL)isNTP;
 // Sets the page theme color.
 - (void)setPageThemeColor:(UIColor*)themeColor;
+// Sets the IPH highlighted state of the tab grid button.
+- (void)setTabGridButtonIPHHighlighted:(BOOL)iphHighlighted;
+// Sets the IPH highlighted state of the new tab button.
+- (void)setNewTabButtonIPHHighlighted:(BOOL)iphHighlighted;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_TOOLBAR_CONSUMER_H_
