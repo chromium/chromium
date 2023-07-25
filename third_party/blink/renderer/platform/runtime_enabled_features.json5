@@ -2696,9 +2696,9 @@
     {
       // Tracking bug for the implementation: https://crbug.com/1462930
       name: "PermissionElement",
-      // We don’t set the feature's status because the feature is implemented
+      // We don't set the feature's status because the feature is implemented
       // at both Chromium side and blink side. This runtime blink feature
-      // doesn‘t fully work by itself.
+      // doesn't fully work by itself.
       base_feature: "none",
     },
     {
