@@ -175,12 +175,13 @@ def main():
     # Work around for "-l<foo>.lib", where ".lib" suffix is undesirable.
     # Full fix will come from https://gn-review.googlesource.com/c/gn/+/12480
     rsp_args = [remove_lib_suffix_from_l_args(arg) for arg in rsp_args]
-  with open(args.rsp, 'w') as rspfile:
+  out_rsp = str(args.rsp) + ".rsp"
+  with open(out_rsp, 'w') as rspfile:
     # rustc needs the rsp file to be separated by newlines. Note that GN
     # generates the file separated by spaces:
     # https://bugs.chromium.org/p/gn/issues/detail?id=249,
     rspfile.write("\n".join(rsp_args))
-  rustc_args.append(f'@{args.rsp}')
+  rustc_args.append(f'@{out_rsp}')
 
   env = os.environ.copy()
   fixed_env_vars = []
@@ -189,7 +190,10 @@ def main():
     env[k] = v
     fixed_env_vars.append(k)
 
-  r = subprocess.run([args.rustc, *rustc_args], env=env, check=False)
+  try:
+    r = subprocess.run([args.rustc, *rustc_args], env=env, check=False)
+  finally:
+    os.remove(out_rsp)
   if r.returncode != 0:
     sys.exit(r.returncode)
 
