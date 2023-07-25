@@ -497,18 +497,36 @@ void TileManager::ScheduleReduceTileMemoryWhenIdle(
 
   has_pending_idle_task_ = true;
   base::TimeDelta delay = kDelayBeforeTimeReclaim - time_since_last_active;
-  base::TaskRunner* task_runner =
-      task_runner_for_testing_ ? task_runner_for_testing_.get() : task_runner_;
 
-  task_runner->PostDelayedTask(
+  TaskRunnerWithOverride()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&TileManager::ReduceTileMemoryWhenIdle,
                      ready_to_draw_callback_weak_ptr_factory_.GetWeakPtr()),
       delay);
 }
 
+// static
+base::TimeDelta TileManager::GetTrimPrepaintTilesDelay() {
+  return base::Seconds(::features::kReclaimDelayInSeconds.Get());
+}
+
+void TileManager::ScheduleTrimPrepaintTiles() {
+  if (!base::FeatureList::IsEnabled(features::kReclaimOldPrepaintTiles) ||
+      has_pending_tile_trimming_task_) {
+    return;
+  }
+
+  has_pending_tile_trimming_task_ = true;
+  TaskRunnerWithOverride()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&TileManager::TrimPrepaintTiles,
+                     ready_to_draw_callback_weak_ptr_factory_.GetWeakPtr()),
+      GetTrimPrepaintTilesDelay());
+}
+
 void TileManager::ReduceTileMemoryWhenIdle() {
   has_pending_idle_task_ = false;
+
   base::TimeDelta time_since_last_active =
       NowWithOverride() - last_active_time_;
 
@@ -530,6 +548,57 @@ void TileManager::ReduceTileMemoryWhenIdle() {
   // flush after a few seconds when a resource becomes unused.
   FreeTileResourcesWithLowerPriorityUntilUsageIsWithinLimit(
       nullptr, limit, kVisiblePriority, &usage);
+}
+
+void TileManager::TrimPrepaintTiles() {
+  has_pending_tile_trimming_task_ = false;
+
+  std::unique_ptr<EvictionTilePriorityQueue> eviction_priority_queue =
+      client_->BuildEvictionQueue(global_state_.tree_priority);
+  bool has_eligible_used_tiles = false;
+  for (; !eviction_priority_queue->IsEmpty(); eviction_priority_queue->Pop()) {
+    const auto& prioritized_tile = eviction_priority_queue->Top();
+    Tile* tile = prioritized_tile.tile();
+    // Evict tiles that haven't been used in a while, that are not close to the
+    // viewport or part of the skewport (the SOON tiles).
+    //
+    // The last part of the eligibility condition is to make sure that we are
+    // not evicting a tile that would be re-rasterized at the next frame. Since
+    // it violates the current memory policy, it will not get rasterized. In
+    // practice, as of 2023, the memory policy generally doesn't allow tiles are
+    // not in the SOON bin to be rasterized anyway, but this is to ensure that
+    // we are not wasting CPU and GPU time.
+    bool eligible =
+        prioritized_tile.priority().priority_bin > TilePriority::SOON &&
+        TilePriorityViolatesMemoryPolicy(prioritized_tile.priority());
+    if (!eligible) {
+      continue;
+    }
+
+    if (!tile->used()) {
+      // Tiles prioritized in the "EVENTUALLY" region should never be required
+      // for draw.
+      DCHECK(tile->is_prepaint());
+      DCHECK(!tile->required_for_draw());
+      FreeResourcesForTileAndNotifyClientIfTileWasReadyToDraw(tile);
+    } else {
+      // Tile has been used recently, reset this so that if it's not used until
+      // the next reclaim task, then we know it has been at least
+      // `kPrepaintTilesTrimDelay` since the last time it was used, and thus can
+      // be reclaimed.
+      tile->clear_used();
+      has_eligible_used_tiles = true;
+    }
+  }
+
+  // Reschedule the task, since there are tiles that would be eligible to evict
+  // if they were old enough. Note that we don't choose the smallest delay
+  // possible to make progress, on purpose, resource reclaim can wait. Eligible
+  // tiles are marked as "not used" above, so unless they are used before the
+  // next scheduled task, they will be reclaimed then.
+  if (has_eligible_used_tiles) {
+    ScheduleTrimPrepaintTiles();
+  }
 }
 
 void TileManager::SetResources(ResourcePool* resource_pool,
@@ -612,6 +681,7 @@ bool TileManager::PrepareTiles(
   ++prepare_tiles_count_;
   last_active_time_ = NowWithOverride();
   ScheduleReduceTileMemoryWhenIdle(base::TimeDelta());
+  ScheduleTrimPrepaintTiles();
 
   TRACE_EVENT1("cc,benchmark", "TileManager::PrepareTiles", "prepare_tiles_id",
                prepare_tiles_count_);
@@ -807,7 +877,6 @@ TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
 
     DCHECK(!prioritized_tile.is_occluded() || raster_occluded_tiles);
 
-    bool tile_is_needed_now = priority.priority_bin == TilePriority::NOW;
     if (!tile->is_solid_color_analysis_performed() &&
         tile->use_picture_analysis() && kUseColorEstimator) {
       // We analyze for solid color here, to decide to continue
@@ -883,6 +952,7 @@ TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
           tile->desired_texture_size(), DetermineFormat(tile));
     }
 
+    bool tile_is_needed_now = priority.priority_bin == TilePriority::NOW;
     // This is the memory limit that will be used by this tile. Depending on
     // the tile priority, it will be one of hard_memory_limit or
     // soft_memory_limit.
@@ -933,6 +1003,9 @@ TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
       }
 
       tile->raster_task_ = std::move(raster_task);
+      // Even if the tile is pre-paint, mark it used here to make sure that the
+      // next reclaim task doesn't evict it right away.
+      tile->mark_used();
     }
 
     tile->scheduled_priority_ = schedule_priority++;
@@ -1021,6 +1094,7 @@ void TileManager::FreeResourcesForTile(Tile* tile) {
 
 void TileManager::FreeResourcesForTileAndNotifyClientIfTileWasReadyToDraw(
     Tile* tile) {
+  TRACE_EVENT0("viz", __PRETTY_FUNCTION__);
   bool was_ready_to_draw = tile->draw_info().IsReadyToDraw();
   FreeResourcesForTile(tile);
   if (was_ready_to_draw)
@@ -1996,6 +2070,7 @@ bool TileManager::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
     auto size = tile.tile()->desired_texture_size();
     tile_dump->AddScalar("width", "px", size.width());
     tile_dump->AddScalar("height", "px", size.height());
+    tile_dump->AddScalar("young", "bool", tile.tile()->used());
 
     eviction_priority_queue->Pop();
   }
@@ -2011,6 +2086,11 @@ bool TileManager::ShouldRasterOccludedTiles() const {
 base::TimeTicks TileManager::NowWithOverride() const {
   return tick_clock_for_testing_ ? tick_clock_for_testing_->NowTicks()
                                  : base::TimeTicks::Now();
+}
+
+base::TaskRunner* TileManager::TaskRunnerWithOverride() const {
+  return task_runner_for_testing_ ? task_runner_for_testing_.get()
+                                  : task_runner_;
 }
 
 TileManager::MemoryUsage::MemoryUsage()

@@ -457,6 +457,9 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
     bool has_draw_quad = false;
     if (*iter && iter->draw_info().IsReadyToDraw()) {
       const TileDrawInfo& draw_info = iter->draw_info();
+      // Mark the tile used for raster. This is used to reclaim old prepaint
+      // tiles in TileManager.
+      iter->mark_used();
 
       switch (draw_info.mode()) {
         case TileDrawInfo::RESOURCE_MODE: {

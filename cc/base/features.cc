@@ -129,4 +129,11 @@ BASE_FEATURE(kImageCacheNoCache,
              "ImageCacheNoCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kReclaimOldPrepaintTiles,
+             "ReclaimOldPrepaintTiles",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kReclaimDelayInSeconds{&kSmallerInterestArea,
+                                                     "reclaim_delay_s", 30};
+
 }  // namespace features
