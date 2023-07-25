@@ -19,9 +19,10 @@ using base::test::ios::kWaitForPageLoadTimeout;
 
 namespace ios_web_view {
 
+using WebViewRestorableStateTest = ios_web_view::WebViewInttestBase;
+
 // Tests encodeRestorableStateWithCoder: and decodeRestorableStateWithCoder:
 // methods.
-typedef ios_web_view::WebViewInttestBase WebViewRestorableStateTest;
 TEST_F(WebViewRestorableStateTest, EncodeDecode) {
   // Load 2 URLs to create non-default state.
   ASSERT_FALSE([web_view_ lastCommittedURL]);
@@ -40,6 +41,7 @@ TEST_F(WebViewRestorableStateTest, EncodeDecode) {
   // Create second web view and restore its state from the first web view.
   CWVWebView* restored_web_view = test::CreateWebView();
   test::CopyWebViewState(web_view_, restored_web_view);
+
   // The WKWebView must be present in the view hierarchy in order to prevent
   // WebKit optimizations which may pause internal parts of the web view
   // without notice. Work around this by adding the view directly.
@@ -48,15 +50,15 @@ TEST_F(WebViewRestorableStateTest, EncodeDecode) {
 
   // Wait for restore to finish.
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
-    return [restored_web_view lastCommittedURL] != nil;
+    return ![restored_web_view isLoading];
   }));
 
   // Verify that the state has been restored correctly.
   EXPECT_NSEQ(@"about:blank",
               [restored_web_view lastCommittedURL].absoluteString);
   EXPECT_NSEQ(@"about:blank", [restored_web_view visibleURL].absoluteString);
-  EXPECT_TRUE([web_view_ canGoBack]);
-  EXPECT_FALSE([web_view_ canGoForward]);
+  EXPECT_TRUE([restored_web_view canGoBack]);
+  EXPECT_FALSE([restored_web_view canGoForward]);
 }
 
 }  // namespace ios_web_view
