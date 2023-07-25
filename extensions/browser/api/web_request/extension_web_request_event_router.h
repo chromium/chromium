@@ -149,6 +149,17 @@ class ExtensionWebRequestEventRouter {
   };
   using AuthCallback = base::OnceCallback<void(AuthRequiredResponse)>;
 
+  // The type of listener removal.
+  enum class ListenerUpdateType {
+    // The listener was fully removed by the extension and the registration
+    // should be removed here.
+    kRemove,
+    // This is for a lazy listener where the "active" listener's process is shut
+    // down, but the listener should still be registered (and will be stored in
+    // `BrowserContextData::inactive_listeners`).
+    kDeactivate,
+  };
+
   static ExtensionWebRequestEventRouter* GetInstance();
 
   // Registers a rule registry. Pass null for |rules_registry| to unregister
@@ -318,11 +329,25 @@ class ExtensionWebRequestEventRouter {
       content::BrowserContext* browser_context,
       const std::string& event_name);
 
+  bool HasAnyExtraHeadersListenerForTesting(
+      content::BrowserContext* browser_context) {
+    return HasAnyExtraHeadersListenerImpl(browser_context);
+  }
+
+  void UpdateActiveListenerForTesting(ListenerUpdateType update_type,
+                                      BrowserContextID browser_context_id,
+                                      const ExtensionId& extension_id,
+                                      const std::string& sub_event_name,
+                                      int worker_thread_id,
+                                      int64_t service_worker_version_id) {
+    UpdateActiveListener(update_type, browser_context_id, extension_id,
+                         sub_event_name, worker_thread_id,
+                         service_worker_version_id);
+  }
+
  private:
   friend class WebRequestAPI;
   friend class base::NoDestructor<ExtensionWebRequestEventRouter>;
-  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest, AddAndRemoveListeners);
-  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest, BrowserContextShutdown);
 
   struct EventListener {
     struct ID {
@@ -409,17 +434,6 @@ class ExtensionWebRequestEventRouter {
   using BlockedRequestMap = std::map<uint64_t, BlockedRequest>;
   // Map of request_id -> bit vector of EventTypes already signaled
   using SignaledRequestMap = std::map<uint64_t, int>;
-
-  // The type of listener removal.
-  enum class ListenerUpdateType {
-    // The listener was fully removed by the extension and the registration
-    // should be removed here.
-    kRemove,
-    // This is for a lazy listener where the "active" listener's process is shut
-    // down, but the listener should still be registered (and will be stored in
-    // `BrowserContextData::inactive_listeners`).
-    kDeactivate,
-  };
 
   ExtensionWebRequestEventRouter();
 

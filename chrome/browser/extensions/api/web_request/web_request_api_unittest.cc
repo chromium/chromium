@@ -168,7 +168,7 @@ TEST_F(ExtensionWebRequestTest, AddAndRemoveListeners) {
 
   // Now remove the listeners one at a time, verifying the counts after each
   // removal.
-  ExtensionWebRequestEventRouter::GetInstance()->UpdateActiveListener(
+  ExtensionWebRequestEventRouter::GetInstance()->UpdateActiveListenerForTesting(
       ExtensionWebRequestEventRouter::ListenerUpdateType::kRemove,
       ExtensionWebRequestEventRouter::GetBrowserContextID(&profile_), ext_id,
       kSubEventName1, extensions::kMainThreadId,
@@ -178,7 +178,7 @@ TEST_F(ExtensionWebRequestTest, AddAndRemoveListeners) {
       ExtensionWebRequestEventRouter::GetInstance()->GetListenerCountForTesting(
           &profile_, kEventName));
 
-  ExtensionWebRequestEventRouter::GetInstance()->UpdateActiveListener(
+  ExtensionWebRequestEventRouter::GetInstance()->UpdateActiveListenerForTesting(
       ExtensionWebRequestEventRouter::ListenerUpdateType::kRemove,
       ExtensionWebRequestEventRouter::GetBrowserContextID(&profile_), ext_id,
       kSubEventName2, extensions::kMainThreadId,
@@ -201,7 +201,7 @@ TEST_F(ExtensionWebRequestTest, BrowserContextShutdown) {
   const std::string kSubEventName = kEventName + "/1";
   EXPECT_EQ(0u,
             event_router->GetListenerCountForTesting(&profile_, kEventName));
-  EXPECT_FALSE(event_router->HasAnyExtraHeadersListenerImpl(&profile_));
+  EXPECT_FALSE(event_router->HasAnyExtraHeadersListenerForTesting(&profile_));
 
   // Add two listeners for the main profile.
   event_router->AddEventListener(
@@ -217,7 +217,7 @@ TEST_F(ExtensionWebRequestTest, BrowserContextShutdown) {
   event_router->IncrementExtraHeadersListenerCount(&profile_);
   EXPECT_EQ(2u,
             event_router->GetListenerCountForTesting(&profile_, kEventName));
-  EXPECT_TRUE(event_router->HasAnyExtraHeadersListenerImpl(&profile_));
+  EXPECT_TRUE(event_router->HasAnyExtraHeadersListenerForTesting(&profile_));
 
   // Create an off-the-record profile.
   auto otr_profile_id = Profile::OTRProfileID::CreateUniqueForTesting();
@@ -233,7 +233,7 @@ TEST_F(ExtensionWebRequestTest, BrowserContextShutdown) {
   event_router->OnOTRBrowserContextCreated(&profile_, otr_profile);
   EXPECT_EQ(0u,
             event_router->GetListenerCountForTesting(otr_profile, kEventName));
-  EXPECT_FALSE(event_router->HasAnyExtraHeadersListenerImpl(otr_profile));
+  EXPECT_FALSE(event_router->HasAnyExtraHeadersListenerForTesting(otr_profile));
 
   // Add two listeners for the otr profile.
   event_router->AddEventListener(
@@ -249,13 +249,13 @@ TEST_F(ExtensionWebRequestTest, BrowserContextShutdown) {
   event_router->IncrementExtraHeadersListenerCount(otr_profile);
   EXPECT_EQ(2u,
             event_router->GetListenerCountForTesting(otr_profile, kEventName));
-  EXPECT_TRUE(event_router->HasAnyExtraHeadersListenerImpl(otr_profile));
+  EXPECT_TRUE(event_router->HasAnyExtraHeadersListenerForTesting(otr_profile));
 
   // Simulate the OTR being destroyed.
   event_router->OnOTRBrowserContextDestroyed(&profile_, otr_profile);
   EXPECT_EQ(0u,
             event_router->GetListenerCountForTesting(otr_profile, kEventName));
-  EXPECT_FALSE(event_router->HasAnyExtraHeadersListenerImpl(otr_profile));
+  EXPECT_FALSE(event_router->HasAnyExtraHeadersListenerForTesting(otr_profile));
 
   // We can't just delete the profile, because the call comes through the
   // WebRequestAPI instance for that profile, and creating that requires
@@ -264,7 +264,7 @@ TEST_F(ExtensionWebRequestTest, BrowserContextShutdown) {
   event_router->OnBrowserContextShutdown(&profile_);
   EXPECT_EQ(0u,
             event_router->GetListenerCountForTesting(&profile_, kEventName));
-  EXPECT_FALSE(event_router->HasAnyExtraHeadersListenerImpl(&profile_));
+  EXPECT_FALSE(event_router->HasAnyExtraHeadersListenerForTesting(&profile_));
 }
 
 namespace {
