@@ -4621,4 +4621,15 @@
   <message name="IDS_SETTINGS_EXTENSION_OR_APP_DISPLAY_NAME" desc="The title of a page containing site settings for an extension or Isolated Web App (IWA). The display name contains a human-readable extension/IWA name followed by the extension/IWA ID.">
     <ph name="EXTENSION_OR_APP_NAME">$1<ex>Google Docs Offline</ex></ph> (ID: <ph name="EXTENSION_OR_APP_ID">$2<ex>ghbmnnjooekpmoecnnnilnnbdlolhkhi</ex></ph>)
   </message>
+
+  <!-- Safety Hub -->
+  <message name="IDS_SETTINGS_SAFETY_HUB_PAGE_CARD_SECTION_HEADER" desc="The title of the first section in the Safety Hub page. The 'Safety at a glance' section gives an overview about the current state of passwords, browser version and safe browsing setting of the browser. ">
+    Safety at a glance
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_PAGE_MODULE_SECTION_HEADER" desc="The title of the second section in the Safety Hub page. The 'Safety recommendation' section shows actionable modules about permissions and extensions based on the current state of the browser.">
+    Safety recommendation
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_PAGE_USER_EDU_SECTION_HEADER" desc="The title of the last section in the Safety Hub page. The 'Safety tips' section shows three safety related features to provide user education on how Chrome keeps the user safe.">
+    Safety tips
+  </message>
 </grit-part>

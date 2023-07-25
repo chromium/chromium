@@ -1,10 +1,15 @@
-<style>
+<style include="cr-shared-style">
+  :host {
+    display: flex;
+    flex-direction: column;
+    pointer-events:none;
+  }
+
   .tile-container {
     align-items: stretch;
     display: flex;
-    gap: 16px;
+    gap: 13px;
     justify-content: space-between;
-    margin-bottom: 24px;
     width: 100%;
   }
 
@@ -12,13 +17,74 @@
     background-color: var(--cr-card-background-color);
     border-radius: var(--cr-card-border-radius);
     box-shadow: var(--cr-card-shadow);
+    padding: 16px 16px 18px 16px;
+    display: flex;
     flex: 1;
+  }
+
+  .tile-header {
+    /* Should be 12px when html font-size is 16px */
+    font-size: 0.75rem;
+  }
+
+  .tile-subheader {
+    /* Should be 11px when html font-size is 16px */
+    font-size: 0.6875rem;
+  }
+
+  .section-header {
+    /* Should be 13px when html font-size is 16px */
+    font-size: 0.8125rem;
+    margin: 16px 0px;
+    width: 100%;
+    flex: 1;
+  }
+
+  .tile iron-icon {
+    padding-inline-end: 8px;
+    height: 20px;
+    margin-top: 2px;
+    width: 20px;
   }
 </style>
 
-<!-- TODO(crbug.com/1443466): Add correct strings here. -->
+<div class="section-header cr-secondary-text">
+  $i18n{safetyHubPageCardSectionHeader}
+</div>
 <div class="tile-container">
-  <div class="tile">$i18n{privacyPageTitle}</div>
-  <div class="tile">$i18n{privacyPageTitle}</div>
-  <div class="tile">$i18n{privacyPageTitle}</div>
+  <div class="tile box">
+    <iron-icon icon="cr:info"></iron-icon>
+    <div class="header-container">
+      <div class="tile-header">[[passwordStateHeader_]]</div>
+      <div class="tile-subheader cr-secondary-text">
+        [[passwordStateSubheader_]]
+      </div>
+    </div>
+  </div>
+  <div class="tile box">
+    <iron-icon icon="cr:info"></iron-icon>
+    <div class="header-container">
+      <div class="tile-header">[[versionStateHeader_]]</div>
+      <div class="tile-subheader cr-secondary-text">
+        [[versionStateSubheader_]]
+      </div>
+    </div>
+  </div>
+  <div class="tile box">
+    <iron-icon icon="cr:info"></iron-icon>
+    <div class="header-container">
+      <div class="tile-header">[[safeBrowsingHeader_]]</div>
+      <div class="tile-subheader cr-secondary-text">
+        [[safeBrowsingSubheader_]]
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section-header cr-secondary-text">
+  $i18n{safetyHubPageModuleSectionHeader}
+</div>
+
+<div class="section-header cr-secondary-text">
+  $i18n{safetyHubPageUserEduSectionHeader}
 </div>

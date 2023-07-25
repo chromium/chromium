@@ -2481,6 +2481,24 @@ void AddSafetyCheckStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_SETTING_LABEL},
       {"safetyCheckUnusedSitePermissionsSettingSublabel",
        IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_SETTING_SUBLABEL},
+      {"safetyHubPageCardSectionHeader",
+       IDS_SETTINGS_SAFETY_HUB_PAGE_CARD_SECTION_HEADER},
+      {"safetyHubPageModuleSectionHeader",
+       IDS_SETTINGS_SAFETY_HUB_PAGE_MODULE_SECTION_HEADER},
+      {"safetyHubPageUserEduSectionHeader",
+       IDS_SETTINGS_SAFETY_HUB_PAGE_USER_EDU_SECTION_HEADER},
+  };
+  html_source->AddLocalizedStrings(kLocalizedStrings);
+}
+
+void AddSafetyHubStrings(content::WebUIDataSource* html_source) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"safetyHubPageCardSectionHeader",
+       IDS_SETTINGS_SAFETY_HUB_PAGE_CARD_SECTION_HEADER},
+      {"safetyHubPageModuleSectionHeader",
+       IDS_SETTINGS_SAFETY_HUB_PAGE_MODULE_SECTION_HEADER},
+      {"safetyHubPageUserEduSectionHeader",
+       IDS_SETTINGS_SAFETY_HUB_PAGE_USER_EDU_SECTION_HEADER},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
@@ -3634,6 +3652,7 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
   AddPrivacyGuideStrings(html_source);
   AddPrivacyStrings(html_source, profile);
   AddSafetyCheckStrings(html_source);
+  AddSafetyHubStrings(html_source);
   AddResetStrings(html_source, profile);
   AddSearchEnginesStrings(html_source);
   AddSearchInSettingsStrings(html_source);
