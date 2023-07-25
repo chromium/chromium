@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.NetworkChangeNotifier;
@@ -28,6 +29,7 @@ import java.util.concurrent.TimeUnit;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
+@DisabledTest(message = "crbug.com/1467517")
 public class ConnectivityDetectorTest implements ConnectivityDetector.Observer {
     private static final int TIMEOUT_MS = 5000;
 
