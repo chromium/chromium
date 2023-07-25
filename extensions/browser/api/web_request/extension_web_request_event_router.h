@@ -334,13 +334,13 @@ class ExtensionWebRequestEventRouter {
     return HasAnyExtraHeadersListenerImpl(browser_context);
   }
 
-  void UpdateActiveListenerForTesting(ListenerUpdateType update_type,
-                                      BrowserContextID browser_context_id,
+  void UpdateActiveListenerForTesting(content::BrowserContext* browser_context,
+                                      ListenerUpdateType update_type,
                                       const ExtensionId& extension_id,
                                       const std::string& sub_event_name,
                                       int worker_thread_id,
                                       int64_t service_worker_version_id) {
-    UpdateActiveListener(update_type, browser_context_id, extension_id,
+    UpdateActiveListener(browser_context, update_type, extension_id,
                          sub_event_name, worker_thread_id,
                          service_worker_version_id);
   }
@@ -448,8 +448,8 @@ class ExtensionWebRequestEventRouter {
   // Updates the active listener registration indicated by the given criteria.
   // `update_type` indicates whether the listener is fully removed or if it's
   // a lazy listener that had its context shut down.
-  void UpdateActiveListener(ListenerUpdateType update_type,
-                            BrowserContextID browser_context_id,
+  void UpdateActiveListener(content::BrowserContext* browser_context,
+                            ListenerUpdateType update_type,
                             const ExtensionId& extension_id,
                             const std::string& sub_event_name,
                             int worker_thread_id,

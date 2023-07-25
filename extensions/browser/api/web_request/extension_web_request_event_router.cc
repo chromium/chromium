@@ -1637,14 +1637,16 @@ void ExtensionWebRequestEventRouter::RemoveLazyListener(
 }
 
 void ExtensionWebRequestEventRouter::UpdateActiveListener(
+    content::BrowserContext* browser_context,
     ListenerUpdateType update_type,
-    BrowserContextID browser_context_id,
     const ExtensionId& extension_id,
     const std::string& sub_event_name,
     int worker_thread_id,
     int64_t service_worker_version_id) {
   std::string event_name = EventRouter::GetBaseEventName(sub_event_name);
 
+  const BrowserContextID browser_context_id =
+      GetBrowserContextID(browser_context);
   BrowserContextData& data = data_[browser_context_id];
   auto matching_listener = RemoveMatchingListener(
       data.active_listeners[event_name], extension_id, sub_event_name,

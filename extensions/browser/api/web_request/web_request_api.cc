@@ -357,10 +357,8 @@ void WebRequestAPI::OnListenerRemoved(const EventListenerInfo& details) {
     remove_listener = base::BindOnce(
         &ExtensionWebRequestEventRouter::UpdateActiveListener,
         base::Unretained(ExtensionWebRequestEventRouter::GetInstance()),
-        update_type,
-        ExtensionWebRequestEventRouter::GetBrowserContextID(
-            details.browser_context.get()),
-        details.extension_id, sub_event_name, details.worker_thread_id,
+        details.browser_context.get(), update_type, details.extension_id,
+        sub_event_name, details.worker_thread_id,
         details.service_worker_version_id);
   }
 
