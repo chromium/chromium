@@ -80,6 +80,14 @@ class SearchResultViewWidgetTest : public views::test::WidgetTest {
     return merged_string;
   }
 
+  std::u16string GetRightDetailsText(SearchResultView* view) {
+    std::u16string merged_string = u"";
+    for (const auto& label_tag_pair : view->right_details_label_tags_) {
+      merged_string += label_tag_pair.GetLabel()->GetText();
+    }
+    return merged_string;
+  }
+
   bool IsProgressBarChart(SearchResultView* view) {
     return view->is_progress_bar_answer_card_;
   }
@@ -321,6 +329,7 @@ TEST_F(SearchResultViewTest, FlexWeightCalculation) {
 TEST_F(SearchResultViewWidgetTest, ProgressBarResult) {
   auto progress_bar_result = std::make_unique<TestSearchResult>();
   auto system_info_data = std::make_unique<ash::SystemInfoAnswerCardData>(0.5);
+  system_info_data->SetExtraDetails(u"right description");
   progress_bar_result->SetSystemInfoAnswerCardData(*system_info_data.get());
   SetupTestSearchResult(progress_bar_result.get());
   answer_card_view()->SetResult(progress_bar_result.get());
@@ -328,6 +337,7 @@ TEST_F(SearchResultViewWidgetTest, ProgressBarResult) {
   EXPECT_EQ(true, IsProgressBarChart(answer_card_view()));
   EXPECT_EQ(u"Test Search Result Details 0",
             GetDetailsText(answer_card_view()));
+  EXPECT_EQ(u"right description", GetRightDetailsText(answer_card_view()));
 }
 
 }  // namespace ash

@@ -240,9 +240,9 @@ SystemInfoAnswerCardData::~SystemInfoAnswerCardData() = default;
 SystemInfoAnswerCardData::SystemInfoAnswerCardData(
     const SystemInfoAnswerCardData& other) = default;
 
-void SystemInfoAnswerCardData::SetDescriptionOnRight(
+void SystemInfoAnswerCardData::SetExtraDetails(
     const std::u16string& description_on_right) {
-  right_hand_description = description_on_right;
+  extra_details = description_on_right;
 }
 
 void SystemInfoAnswerCardData::SetUpperLimitForBarChart(double upper_limit) {

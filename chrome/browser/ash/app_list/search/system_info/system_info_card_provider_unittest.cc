@@ -636,9 +636,8 @@ TEST_F(SystemInfoCardProviderTest, Battery) {
   EXPECT_EQ(details.GetText(), u"Battery 94% | 17 minutes until full");
   EXPECT_TRUE(details.GetTextTags().empty());
 
-  EXPECT_EQ(
-      results()[0]->system_info_answer_card_data()->right_hand_description,
-      u"Battery health 76% | Cycle count 500");
+  EXPECT_EQ(results()[0]->system_info_answer_card_data()->extra_details,
+            u"Battery health 76% | Cycle count 500");
 
   const int64_t new_time_to_full_secs = time_to_full_secs - 100;
   const double new_battery_percent = 96.0;

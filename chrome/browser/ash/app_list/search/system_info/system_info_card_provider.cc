@@ -368,7 +368,7 @@ void SystemInfoCardProvider::OnBatteryInfoUpdated(
   // The bar chart will turn red if there is less than 20 of battery
   // charge left.
   answer_card_info.SetLowerLimitForBarChart(20);
-  answer_card_info.SetDescriptionOnRight(battery_health_info);
+  answer_card_info.SetExtraDetails(battery_health_info);
   SearchProvider::Results new_results;
   new_results.emplace_back(std::make_unique<BatteryAnswerResult>(
       profile_, last_query_, /*url_path=*/base::EmptyString(),

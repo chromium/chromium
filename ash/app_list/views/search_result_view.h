@@ -49,8 +49,11 @@ class SearchResultPageDialogController;
 // | |                      | | |`keyboard_shortcut_container_`|        | |
 // | |                      | | +------------------------------+        | |
 // | |                      | | +-------------------------------------+ | |
-// | |                      | | |`progress_bar_and_details_container_`| | |
+// | |                      | | |`progress_bar_container_`| | |
 // | |                      | | +-------------------------------------+ | |
+// | |                      | | +---------------------------+           | |
+// | |                      | | |`system_details_container_`|           | |
+// | |                      | | +---------------------------+           | |
 // | +----------------------+ +-----------------------------------------+ |
 // +----------------------------------------------------------------------+
 //
@@ -86,7 +89,7 @@ class SearchResultPageDialogController;
 // | +--------------------+        |
 // +-------------------------------+
 //
-// layout used when `is_progress_bar_answer_card_` is true.
+// Layout used when `is_progress_bar_answer_card_` is true.
 // +-------------------------------+
 // |`title_and_details_container_` |
 // | +---------------------------+ |
@@ -96,6 +99,21 @@ class SearchResultPageDialogController;
 // | |'details_container_'|        |
 // | +--------------------+        |
 // +-------------------------------+
+//
+// Layout used when the result is a System Info Answer Card and the result
+// contains a right hand description.
+// +---------------------------------------------------------------+
+// |`title_and_details_container_`                                 |
+// | +---------------------------+                                 |
+// | | `progress_bar_container_` |                                 |
+// | +-------------------------- +                                 |
+// | +-----------------------------------------------------------+ |
+// | | `system_details_container_`                               | |
+// | | +-------------------------+  +--------------------------+ | |
+// | | |`left_details_container_`|  |`right_details_container_`| | |
+// | | +-------------------------+  +--------------------------+ | |
+// | +-----------------------------------------------------------+ |
+// +---------------------------------------------------------------+
 
 class ASH_EXPORT SearchResultView : public SearchResultBaseView,
                                     public SearchResultActionsViewDelegate {
@@ -302,6 +320,13 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
       nullptr;  // Owned by views hierarchy.
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> progress_bar_container_ =
       nullptr;                                     // Owned by views hierarchy.
+  raw_ptr<views::FlexLayoutView, ExperimentalAsh> system_details_container_ =
+      nullptr;  // Owned by views hierarchy.
+  raw_ptr<views::FlexLayoutView, ExperimentalAsh> left_details_container_ =
+      nullptr;  // Owned by views hierarchy.
+  raw_ptr<views::FlexLayoutView, ExperimentalAsh> right_details_container_ =
+      nullptr;  // Owned by views hierarchy.
+
   std::vector<LabelAndTag> big_title_label_tags_;  // Owned by views hierarchy.
   std::vector<LabelAndTag>
       big_title_superscript_label_tags_;         // Owned by views hierarchy.
@@ -309,6 +334,8 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   std::vector<LabelAndTag> details_label_tags_;  // Owned by views hierarchy.
   std::vector<LabelAndTag>
       keyboard_shortcut_container_tags_;  // Owned by views hierarchy.
+  std::vector<LabelAndTag>
+      right_details_label_tags_;  // Owned by views hierarchy.
 
   raw_ptr<views::Label, ExperimentalAsh> result_text_separator_label_ =
       nullptr;  // Owned by views hierarchy.

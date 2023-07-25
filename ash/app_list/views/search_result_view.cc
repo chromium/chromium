@@ -43,6 +43,7 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
@@ -512,6 +513,40 @@ SearchResultView::SearchResultView(
       gfx::Insets::TLBR(kBarChartAnswerCardVerticalOffset, 0,
                         kBarChartAnswerCardVerticalOffset, 0)));
 
+  system_details_container_ = title_and_details_container_->AddChildView(
+      std::make_unique<views::FlexLayoutView>());
+  system_details_container_->SetCrossAxisAlignment(
+      views::LayoutAlignment::kStretch);
+  system_details_container_->SetOrientation(
+      views::LayoutOrientation::kHorizontal);
+
+  left_details_container_ = system_details_container_->AddChildView(
+      std::make_unique<views::FlexLayoutView>());
+  left_details_container_->SetCrossAxisAlignment(
+      views::LayoutAlignment::kStretch);
+  left_details_container_->SetOrientation(
+      views::LayoutOrientation::kHorizontal);
+  left_details_container_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                               views::MaximumFlexSizeRule::kPreferred)
+          .WithOrder(TitleDetailContainerOrder)
+          .WithWeight(1));
+
+  right_details_container_ = system_details_container_->AddChildView(
+      std::make_unique<views::FlexLayoutView>());
+  right_details_container_->SetCrossAxisAlignment(
+      views::LayoutAlignment::kStretch);
+  right_details_container_->SetMainAxisAlignment(views::LayoutAlignment::kEnd);
+  right_details_container_->SetOrientation(
+      views::LayoutOrientation::kHorizontal);
+  right_details_container_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                               views::MaximumFlexSizeRule::kPreferred)
+          .WithOrder(TitleDetailContainerOrder)
+          .WithWeight(1));
+
   result_text_separator_label_ = SetupChildLabelView(
       title_and_details_container_, view_type_, LabelType::kDetails,
       kColorAshTextColorSecondary,
@@ -955,6 +990,9 @@ void SearchResultView::UpdateDetailsContainer() {
   non_elided_details_label_width_ = 0;
   details_container_->RemoveAllChildViews();
   details_label_tags_.clear();
+  right_details_container_->RemoveAllChildViews();
+  left_details_container_->RemoveAllChildViews();
+  right_details_label_tags_.clear();
 
   // Hide details container for answer cards with multiline titles.
   bool hide_details_container_for_answer_card =
@@ -965,6 +1003,29 @@ void SearchResultView::UpdateDetailsContainer() {
       hide_details_container_for_answer_card) {
     details_container_->SetVisible(false);
     result_text_separator_label_->SetVisible(false);
+  } else if (result() && result()->has_extra_system_data_details()) {
+    details_container_->SetVisible(false);
+    details_label_tags_ = SetupContainerViewForTextVector(
+        left_details_container_, result()->details_text_vector(),
+        LabelType::kDetails, has_keyboard_shortcut_contents_,
+        /*is_multi_line=*/result()->multiline_details());
+
+    absl::optional<std::u16string> right_details =
+        result()->system_info_extra_details();
+    ash::SearchResultTextItem text_item(SearchResultTextItemType::kString);
+    text_item.SetText(right_details.value());
+    text_item.SetTextTags({});
+
+    right_details_label_tags_ = SetupContainerViewForTextVector(
+        right_details_container_, {text_item}, LabelType::kDetails,
+        has_keyboard_shortcut_contents_,
+        /*is_multi_line=*/result()->multiline_details());
+    StyleDetailsContainer();
+
+    left_details_container_->SetVisible(true);
+    system_details_container_->SetVisible(true);
+    right_details_container_->SetVisible(true);
+
   } else {
     // Create details labels from text vector metadata.
     details_label_tags_ = SetupContainerViewForTextVector(
@@ -1093,6 +1154,11 @@ void SearchResultView::StyleTitleContainer() {
 void SearchResultView::StyleDetailsContainer() {
   for (auto& span : details_label_tags_) {
     StyleLabel(span.GetLabel(), span.GetTags());
+  }
+  if (result() && result()->has_extra_system_data_details()) {
+    for (auto& span : right_details_label_tags_) {
+      StyleLabel(span.GetLabel(), span.GetTags());
+    }
   }
 }
 

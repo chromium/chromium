@@ -487,6 +487,7 @@ struct ASH_PUBLIC_EXPORT SystemInfoAnswerCardData {
   void SetDescriptionOnRight(const std::u16string& description_on_right);
   void SetUpperLimitForBarChart(double upper_warning_limit_bar_chart);
   void SetLowerLimitForBarChart(double lower_warning_limit_bar_chart);
+  void SetExtraDetails(const std::u16string& description_on_right);
   void UpdateBarChartPercentage(double new_bar_chart_percentage);
 
   SystemInfoAnswerCardData(const SystemInfoAnswerCardData&);
@@ -508,7 +509,7 @@ struct ASH_PUBLIC_EXPORT SystemInfoAnswerCardData {
 
   // This is only set if the description has 2 components to it. This
   // description will be places on the right hand side of the details container.
-  absl::optional<std::u16string> right_hand_description;
+  absl::optional<std::u16string> extra_details;
 };
 
 // A tagged range in search result text.

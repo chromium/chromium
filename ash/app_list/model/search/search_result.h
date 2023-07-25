@@ -169,6 +169,17 @@ class APP_LIST_MODEL_EXPORT SearchResult {
                .has_value();
   }
 
+  bool has_extra_system_data_details() const {
+    return metadata_->system_info_answer_card_data.has_value() &&
+           metadata_->system_info_answer_card_data->extra_details.has_value();
+  }
+
+  absl::optional<std::u16string> system_info_extra_details() const {
+    return has_extra_system_data_details()
+               ? metadata_->system_info_answer_card_data->extra_details
+               : absl::nullopt;
+  }
+
   absl::optional<double> bar_chart_value() const {
     return is_system_info_card_bar_chart()
                ? metadata_->system_info_answer_card_data->bar_chart_percentage
