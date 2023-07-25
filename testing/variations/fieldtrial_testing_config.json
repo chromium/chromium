@@ -7677,6 +7677,21 @@
             ]
         }
     ],
+    "IOSRestoreDefaultyPromo": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PostRestoreDefaultBrowserPromo"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSRestoreSessionFromCache": [
         {
             "platforms": [
