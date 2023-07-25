@@ -17,6 +17,7 @@ __filegroups = {}
 def __parse_rewrapper_cmdline(ctx, cmd):
     if not "rewrapper" in cmd.args[0]:
         return [], "", False
+
     # Example command:
     #   ../../buildtools/reclient/rewrapper
     #     -cfg=../../buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_linux.cfg
