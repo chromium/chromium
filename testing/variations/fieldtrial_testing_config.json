@@ -10219,10 +10219,14 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20230515",
+                    "name": "Enabled_20230724",
                     "enable_features": [
+                        "ClearingCookiesKeepsSupervisedUsersSignedIn",
+                        "EnableExtensionsPermissionsForSupervisedUsersOnDesktop",
+                        "EnableManagedByParentUi",
                         "EnableSupervisionOnDesktopAndIOS",
-                        "FilterWebsitesForSupervisedUsersOnDesktopAndIOS"
+                        "FilterWebsitesForSupervisedUsersOnDesktopAndIOS",
+                        "SupervisedPrefsControlledBySupervisedStore"
                     ]
                 }
             ]
