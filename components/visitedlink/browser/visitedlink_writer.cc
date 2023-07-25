@@ -11,7 +11,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/stack_container.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
@@ -29,6 +28,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -554,12 +554,12 @@ bool VisitedLinkWriter::DeleteFingerprint(Fingerprint fingerprint,
   // instead we just remove them all and re-add them (minus our deleted one).
   // This will mean there's a small window of time where the affected links
   // won't be marked visited.
-  base::StackVector<Fingerprint, 32> shuffled_fingerprints;
+  absl::InlinedVector<Fingerprint, 32> shuffled_fingerprints;
   Hash stop_loop = IncrementHash(end_range);  // The end range is inclusive.
   for (Hash i = deleted_hash; i != stop_loop; i = IncrementHash(i)) {
     if (hash_table_[i] != fingerprint) {
       // Don't save the one we're deleting!
-      shuffled_fingerprints->push_back(hash_table_[i]);
+      shuffled_fingerprints.push_back(hash_table_[i]);
 
       // This will balance the increment of this value in AddFingerprint below
       // so there is no net change.
@@ -568,10 +568,11 @@ bool VisitedLinkWriter::DeleteFingerprint(Fingerprint fingerprint,
     hash_table_[i] = null_fingerprint_;
   }
 
-  if (!shuffled_fingerprints->empty()) {
+  if (!shuffled_fingerprints.empty()) {
     // Need to add the new items back.
-    for (size_t i = 0; i < shuffled_fingerprints->size(); i++)
+    for (size_t i = 0; i < shuffled_fingerprints.size(); i++) {
       AddFingerprint(shuffled_fingerprints[i], false);
+    }
   }
 
   // Write the affected range to disk [deleted_hash, end_range].
