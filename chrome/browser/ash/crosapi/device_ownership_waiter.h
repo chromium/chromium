@@ -19,9 +19,14 @@ class DeviceOwnershipWaiter {
   // Delays execution of `callback` until the device owner is initialized in
   // `UserManager`. The delay is skipped (and the callback invoked immediately)
   // in the following cases:
-  // - we are launching at the login screen.
-  // - this is a guest session.
-  // - this is a demo mode session.
+  // - we are launching at the login screen: The device owner might not be
+  // determined yet.
+  // - this is a guest session: Guest sessions can occur before the initial OOBE
+  // and are by design without an owner.
+  // - this is a demo mode session: Same as guest session.
+  // - we are running ChromeOS on Linux: The `DeviceSettingsService` is not
+  // behaving as in the real world for these builds, hence we can skip the
+  // check.
   virtual void WaitForOwnerhipFetched(base::OnceClosure callback,
                                       bool launching_at_login_screen) = 0;
 };

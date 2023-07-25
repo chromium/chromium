@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_chromeos_version_info.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/device_ownership_waiter_impl.h"
 
 #include <memory>
@@ -40,7 +42,13 @@ class DeviceOwnershipWaiterTest : public testing::Test {
 };
 
 TEST_F(DeviceOwnershipWaiterTest, DelaysCorrectly) {
+  // Since we skip the actual delay for ownership if we're running in a ChromeOS
+  // on Linux build, we mock that behavior by pretending to be ChromeOS.
+  const char kLsbReleaseValidChromeOs[] = "CHROMEOS_RELEASE_NAME=Chrome OS\n";
+
   {
+    base::test::ScopedChromeOSVersionInfo version(kLsbReleaseValidChromeOs,
+                                                  base::Time());
     DeviceOwnershipWaiterImpl waiter;
 
     base::test::TestFuture<void> future;
@@ -52,6 +60,8 @@ TEST_F(DeviceOwnershipWaiterTest, DelaysCorrectly) {
     EXPECT_TRUE(future.Wait());
   }
   {
+    base::test::ScopedChromeOSVersionInfo version(kLsbReleaseValidChromeOs,
+                                                  base::Time());
     DeviceOwnershipWaiterImpl waiter;
 
     base::test::TestFuture<void> future;
@@ -62,6 +72,22 @@ TEST_F(DeviceOwnershipWaiterTest, DelaysCorrectly) {
 
     EXPECT_TRUE(future.Wait());
   }
+}
+
+// Tests that on a ChromeOS on Linux build, the delay
+// is skipped and instead the callback invoked immediately.
+TEST_F(DeviceOwnershipWaiterTest, DoesNotDelayForChromeOsOnLinux) {
+  const char kLsbReleaseNonChromeOs[] = "CHROMEOS_RELEASE_NAME=Non Chrome OS\n";
+  base::test::ScopedChromeOSVersionInfo version(kLsbReleaseNonChromeOs,
+                                                base::Time());
+
+  DeviceOwnershipWaiterImpl waiter;
+
+  base::test::TestFuture<void> future;
+  waiter.WaitForOwnerhipFetched(future.GetCallback(),
+                                /*launching_at_login_screen=*/false);
+
+  EXPECT_TRUE(future.Wait());
 }
 
 }  // namespace crosapi

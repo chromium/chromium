@@ -8,6 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/system/sys_info.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_manager.h"
@@ -19,7 +20,7 @@ void DeviceOwnershipWaiterImpl::WaitForOwnerhipFetched(
     bool launching_at_login_screen) {
   if (launching_at_login_screen ||
       user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
-      profiles::IsDemoSession()) {
+      profiles::IsDemoSession() || !base::SysInfo::IsRunningOnChromeOS()) {
     std::move(callback).Run();
     return;
   }
