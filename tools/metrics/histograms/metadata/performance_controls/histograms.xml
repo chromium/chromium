@@ -77,7 +77,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.HighEfficiency.IPHEnableMode"
-    units="BooleanEnableMode" expires_after="2023-11-19">
+    units="BooleanEnableMode" expires_after="2024-01-21">
   <owner>agale@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>

@@ -123,7 +123,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.ManifestVerifierCacheHitPaymentMethod"
-    enum="Boolean" expires_after="M120">
+    enum="Boolean" expires_after="2024-01-21">
   <owner>pkotwicz@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -134,7 +134,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PaymentRequest.ManifestVerifierCheckCachePaymentMethodDuration"
-    units="ms" expires_after="M120">
+    units="ms" expires_after="2024-01-21">
   <owner>pkotwicz@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -145,7 +145,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PaymentRequest.ManifestVerifierDownloadAndParseMethodManifestDuration"
-    units="ms" expires_after="M120">
+    units="ms" expires_after="2024-01-21">
   <owner>pkotwicz@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
