@@ -105,7 +105,7 @@ void WvrDevice::OnWvrThreadReady(
     device::mojom::XRRuntimeSessionOptionsPtr options) {
   display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
   PostTaskToWvrThread(base::BindOnce(
-      &WvrManager::InitializeGl, wvr_thread_->GetWvrManager()->GetWeakPtr(),
+      &WvrGraphicsDelegate::InitializeGl, wvr_thread_->GetWvrGraphics()->GetWeakPtr(),
       display.GetSizeInPixel(),
       CreateMainThreadCallback(
           base::BindOnce(&WvrDevice::OnWvrGlInitializationComplete,

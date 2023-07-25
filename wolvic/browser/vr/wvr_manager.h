@@ -27,11 +27,6 @@
 #include "wolvic/browser/vr/moz_external_vr.h"
 #include "wolvic/browser/vr/wvr_graphics_delegate.h"
 
-namespace gl {
-class GLSurface;
-class SurfaceTexture;
-}  // namespace gl
-
 namespace wolvic {
 
 class WvrManager : public device::mojom::XRPresentationProvider,
@@ -44,8 +39,7 @@ class WvrManager : public device::mojom::XRPresentationProvider,
 
   ~WvrManager() override;
 
-  void InitializeGl(const gfx::Size& frame_size,
-                    base::OnceClosure callback);
+  device::WebXrPresentationState* webxr() { return &webxr_; }
 
   // XRFrameDataProvider
   void GetFrameData(device::mojom::XRFrameDataRequestOptionsPtr options,
@@ -94,7 +88,7 @@ class WvrManager : public device::mojom::XRPresentationProvider,
       base::OnceCallback<void(device::mojom::XRSessionPtr)> callback);
   void CreateOrResizeWebXrSurface(const gfx::Size& size);
   void OnGpuProcessConnectionReady();
-  void CreateSurfaceBridge();
+  void CreateSurfaceBridge(gl::SurfaceTexture* surface_texture);
 
   void OnWebXrFrameAvailable();
   void OnWebXrTimedOut();
@@ -118,19 +112,7 @@ class WvrManager : public device::mojom::XRPresentationProvider,
   device::mojom::XRFrameDataProvider::GetFrameDataCallback
       get_frame_data_callback_;
 
-  // samplerExternalOES texture data for WebVR content image.
-  GLuint texture_id_ = 0;
-  int32_t texture_handle_id_;
-  scoped_refptr<gl::GLSurface> surface_;
-  scoped_refptr<gl::GLContext> context_;
-
-  scoped_refptr<gl::SurfaceTexture> surface_texture_;
-  gfx::Size surface_size_ = {0, 0};
-  gfx::Size screen_size_ = {0, 0};
   uint64_t last_frame_index_ = 0;
-
-  // Java WVRSurfaceTexture instance.
-  base::android::ScopedJavaGlobalRef<jobject> j_surface_texture_;
 
   // Communicate with the renderer.
   mojo::Receiver<device::mojom::XRPresentationProvider> presentation_receiver_{
