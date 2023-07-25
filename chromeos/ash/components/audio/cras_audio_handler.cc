@@ -2559,4 +2559,12 @@ CrasAudioHandler& ScopedCrasAudioHandlerForTesting::Get() {
   return *CrasAudioHandler::Get();
 }
 
+int32_t CrasAudioHandler::NumberOfNonChromeOutputStreams() const {
+  return num_active_nonchrome_output_streams_;
+}
+
+int32_t CrasAudioHandler::NumberOfChromeOutputStreams() const {
+  return num_active_output_streams_;
+}
+
 }  // namespace ash

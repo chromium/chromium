@@ -550,6 +550,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   void SetPrefHandlerForTesting(
       scoped_refptr<AudioDevicesPrefHandler> audio_pref_handler);
 
+  int32_t NumberOfNonChromeOutputStreams() const;
+  int32_t NumberOfChromeOutputStreams() const;
+
  protected:
   CrasAudioHandler(
       mojo::PendingRemote<media_session::mojom::MediaControllerManager>

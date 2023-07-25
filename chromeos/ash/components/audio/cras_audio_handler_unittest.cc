@@ -1007,26 +1007,31 @@ TEST_P(CrasAudioHandlerTest, NumberNonChromeOutputs) {
   // start at 0.
   EXPECT_EQ(test_observer_->nonchrome_output_started_change_count(), 0);
   EXPECT_EQ(test_observer_->nonchrome_output_stopped_change_count(), 0);
-
+  EXPECT_EQ(cras_audio_handler_->NumberOfNonChromeOutputStreams(), 0);
   fake_cras_audio_client()->SetNumberOfNonChromeOutputStreams(1);
   EXPECT_EQ(test_observer_->nonchrome_output_started_change_count(), 1);
   EXPECT_EQ(test_observer_->nonchrome_output_stopped_change_count(), 0);
+  EXPECT_EQ(cras_audio_handler_->NumberOfNonChromeOutputStreams(), 1);
   // And again, to 2. No change expected.
   fake_cras_audio_client()->SetNumberOfNonChromeOutputStreams(2);
   EXPECT_EQ(test_observer_->nonchrome_output_started_change_count(), 1);
   EXPECT_EQ(test_observer_->nonchrome_output_stopped_change_count(), 0);
+  EXPECT_EQ(cras_audio_handler_->NumberOfNonChromeOutputStreams(), 2);
   // Down to 0? it gets stopped.
   fake_cras_audio_client()->SetNumberOfNonChromeOutputStreams(0);
   EXPECT_EQ(test_observer_->nonchrome_output_started_change_count(), 1);
   EXPECT_EQ(test_observer_->nonchrome_output_stopped_change_count(), 1);
+  EXPECT_EQ(cras_audio_handler_->NumberOfNonChromeOutputStreams(), 0);
   // Down to 0 again for some reason: already stopped.
   fake_cras_audio_client()->SetNumberOfNonChromeOutputStreams(0);
   EXPECT_EQ(test_observer_->nonchrome_output_started_change_count(), 1);
   EXPECT_EQ(test_observer_->nonchrome_output_stopped_change_count(), 1);
+  EXPECT_EQ(cras_audio_handler_->NumberOfNonChromeOutputStreams(), 0);
   // And again, to 2. Up we go.
   fake_cras_audio_client()->SetNumberOfNonChromeOutputStreams(2);
   EXPECT_EQ(test_observer_->nonchrome_output_started_change_count(), 2);
   EXPECT_EQ(test_observer_->nonchrome_output_stopped_change_count(), 1);
+  EXPECT_EQ(cras_audio_handler_->NumberOfNonChromeOutputStreams(), 2);
 }
 
 TEST_P(CrasAudioHandlerTest, InitializeWithHDMIOutput) {
