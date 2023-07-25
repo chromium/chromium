@@ -203,21 +203,23 @@ found in the LICENSE file.
     flex-direction: column;
   }
 
-  .bottom-buttons-container {
+  .buttons-common {
     /* Always allocate height for buttons even a container is empty */
-    min-height: var(--oobe-button-height);
+    /* Compensate for 2*1px border of buttons */
+    min-height: calc(var(--oobe-button-height) + 2px);
+    z-index: 1;
+  }
+
+  .bottom-buttons-container {
     padding-bottom: var(--oobe-adaptive-dialog-buttons-vertical-padding);
     padding-inline-end:
       var(--oobe-adaptive-dialog-buttons-horizontal-padding);
     padding-inline-start:
       var(--oobe-adaptive-dialog-buttons-horizontal-padding);
     padding-top: var(--oobe-adaptive-dialog-buttons-vertical-padding);
-    z-index: 1;
   }
 
   .back-button-container {
-    /* Always allocate height for buttons even a container is empty */
-    min-height: var(--oobe-button-height);
     padding-bottom:
       var(--oobe-adaptive-dialog-back-button-vertical-padding);
     padding-inline-end:
@@ -225,7 +227,6 @@ found in the LICENSE file.
     padding-inline-start:
       var(--oobe-adaptive-dialog-back-button-horizontal-padding);
     padding-top: var(--oobe-adaptive-dialog-back-button-vertical-padding);
-    z-index: 1;
   }
 
   #oobe-icon-div ::slotted(hd-iron-icon),
@@ -237,7 +238,7 @@ found in the LICENSE file.
 </style>
 <cr-lazy-render id="lazy">
   <template>
-    <div class="back-button-container">
+    <div class="buttons-common back-button-container">
       <slot name="back-navigation"></slot>
     </div>
     <div id="main-container" class="layout vertical flex">
@@ -270,7 +271,8 @@ found in the LICENSE file.
         </div>
       </div>
     </div>
-    <div class="bottom-buttons-container vertical-mode-centering">
+    <div class="buttons-common bottom-buttons-container
+        vertical-mode-centering">
       <slot class="layout horizontal end-justified" name="bottom-buttons"
           hidden="[[showReadMoreButton_]]">
       </slot>

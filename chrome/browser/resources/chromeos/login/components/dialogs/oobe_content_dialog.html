@@ -95,7 +95,8 @@ found in the LICENSE file.
 
   .buttons-common {
     /* Always allocate height for buttons even a container is empty */
-    min-height: var(--oobe-button-height);
+    /* Compensate for 2*1px border of buttons */
+    min-height: calc(var(--oobe-button-height) + 2px);
     z-index: 1;
   }
 

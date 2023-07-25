@@ -65,12 +65,12 @@
               + var(--oobe-adaptive-dialog-icon-size)
               + var(--oobe-adaptive-dialog-title-top-padding));
         }
-        :host-context(.jelly-enabled [orientation=horizontal])
+        :host-context(.jelly-enabled[orientation=horizontal])
         .landscape-header-aligned {
           padding-top: calc(var(--oobe-adaptive-dialog-icon-size)
               + var(--oobe-adaptive-dialog-item-vertical-padding));
         }
-        :host-context(.jelly-enabled [orientation=vertical])
+        :host-context(.jelly-enabled[orientation=vertical])
         .landscape-header-aligned {
           padding-top: var(--oobe-adaptive-dialog-item-vertical-padding);
         }
