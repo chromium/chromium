@@ -1545,12 +1545,16 @@ void RenderViewContextMenu::AppendLinkItems() {
     absl::optional<ash::SystemWebAppType> link_system_app_type =
         GetLinkSystemAppType(profile, params_.link_url);
 
-    // Links to system web app can't be opened in incognito / off-the-record.
-    show_open_link_off_the_record = !link_system_app_type;
+    // true if the link points to a WebUI page, including SWA.
+    const bool link_to_webui = content::HasWebUIScheme(params_.link_url);
+
+    // Opening a WebUI page in an incognito window makes little sense, so we
+    // don't show the item.
+    show_open_link_off_the_record = !link_to_webui;
 
     // Basically, we don't show "Open link in new tab" and "Open link in new
-    // window" items inside SWAs/SystemWebDialogs if that link is to SWAs
-    if ((system_app_ || in_system_web_dialog) && link_system_app_type) {
+    // window" items inside SWAs/SystemWebDialogs if that link is to WebUI.
+    if ((system_app_ || in_system_web_dialog) && link_to_webui) {
       // We don't show "Open in new tab" if the current app doesn't have a tab
       // strip.
       //

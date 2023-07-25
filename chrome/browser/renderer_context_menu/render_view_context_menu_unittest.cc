@@ -899,7 +899,12 @@ TEST_F(RenderViewContextMenuPrefsTest,
   std::unique_ptr<TestRenderViewContextMenu> menu(
       CreateContextMenuOnChromeLink());
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // We hide the item for links to WebUI.
+#else
   ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   EXPECT_FALSE(
       menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD));
 }
