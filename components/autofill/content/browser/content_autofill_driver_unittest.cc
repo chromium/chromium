@@ -368,7 +368,7 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness {
     return *client()->GetAutofillDriverFactory();
   }
 
-  ContentAutofillRouter& router() { return test_api(factory()).router(); }
+  ContentAutofillRouter& router() { return factory().autofill_router(); }
 
   ContentAutofillDriver& driver() {
     return *autofill_driver_injector_[web_contents()];

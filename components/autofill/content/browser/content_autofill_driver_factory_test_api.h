@@ -49,8 +49,6 @@ class ContentAutofillDriverFactoryTestApi {
 
   void set_client(AutofillClient* client) { factory_->client_ = client; }
 
-  ContentAutofillRouter& router() { return factory_->router_; }
-
  private:
   const raw_ref<ContentAutofillDriverFactory> factory_;
 };
