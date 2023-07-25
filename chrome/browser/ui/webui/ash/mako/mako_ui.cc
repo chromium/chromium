@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
+#include "chrome/browser/ash/input_method/editor_mediator.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_source.h"
 #include "chrome/browser/ui/webui/ash/mako/url_constants.h"
 #include "content/public/browser/browser_context.h"
@@ -33,7 +34,7 @@ bool MakoUntrustedUIConfig::IsWebUIEnabled(
 }
 
 MakoUntrustedUI::MakoUntrustedUI(content::WebUI* web_ui)
-    : content::WebUIController(web_ui) {
+    : ui::MojoWebUIController(web_ui) {
   CHECK(base::FeatureList::IsEnabled(features::kOrca));
   content::URLDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                               std::make_unique<MakoSource>());
@@ -43,5 +44,12 @@ MakoUntrustedUI::~MakoUntrustedUI() = default;
 void MakoUntrustedUI::Show() {
   LOG(ERROR) << "Mako UI shown";
 }
+
+void MakoUntrustedUI::BindInterface(
+    mojo::PendingReceiver<input_method::mojom::EditorInstance> receiver) {
+  input_method::EditorMediator::Get()->BindEditorInstance(std::move(receiver));
+}
+
+WEB_UI_CONTROLLER_TYPE_IMPL(MakoUntrustedUI)
 
 }  // namespace ash

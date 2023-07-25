@@ -4,9 +4,10 @@
 
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_MAKO_MAKO_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_MAKO_MAKO_UI_H_
-#include "content/public/browser/web_ui_controller.h"
 
+#include "chrome/browser/ash/input_method/mojom/editor.mojom.h"
 #include "content/public/browser/webui_config.h"
+#include "ui/webui/mojo_web_ui_controller.h"
 
 namespace ash {
 
@@ -24,11 +25,16 @@ class MakoUntrustedUIConfig : public content::WebUIConfig {
 };
 
 // The WebUI for chrome://mako
-class MakoUntrustedUI : public content::WebUIController {
+class MakoUntrustedUI : public ui::MojoWebUIController {
  public:
   static void Show();
   explicit MakoUntrustedUI(content::WebUI* web_ui);
   ~MakoUntrustedUI() override;
+
+  void BindInterface(
+      mojo::PendingReceiver<input_method::mojom::EditorInstance> receiver);
+
+  WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
 }  // namespace ash
