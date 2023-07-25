@@ -110,6 +110,8 @@ const AcceleratorData kDebugAcceleratorData[] = {
      AcceleratorAction::kDebugToggleDynamicColor},
     {true, ui::VKEY_E, kDebugModifier,
      AcceleratorAction::kDebugTogglePowerButtonMenu},
+    {true, ui::VKEY_C, kDebugModifier,
+     AcceleratorAction::kDebugClearUseKMeansPref},
 };
 
 const size_t kDebugAcceleratorDataLength = std::size(kDebugAcceleratorData);

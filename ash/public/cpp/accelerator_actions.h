@@ -158,6 +158,7 @@ namespace ash {
   /* Debug accelerators are intentionally at the end, so that if you */ \
   /* remove one, you don't need to update tests which check*/           \
   /* hashes of the ids.*/                                               \
+  ACCELERATOR_ACTION_ENTRY(DebugClearUseKMeansPref)                     \
   ACCELERATOR_ACTION_ENTRY(DebugKeyboardBacklightToggle)                \
   ACCELERATOR_ACTION_ENTRY(DebugMicrophoneMuteToggle)                   \
   ACCELERATOR_ACTION_ENTRY(DebugPrintLayerHierarchy)                    \
