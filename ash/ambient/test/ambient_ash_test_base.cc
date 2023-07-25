@@ -57,6 +57,11 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
+namespace {
+
+constexpr base::TimeDelta kWaitForWidgetsTimeout = base::Seconds(10);
+
+}  // namespace
 
 class TestAmbientPhotoCacheImpl : public AmbientPhotoCache {
  public:
@@ -269,10 +274,17 @@ void AmbientAshTestBase::DisableJitter() {
 
 void AmbientAshTestBase::SetAmbientShownAndWaitForWidgets() {
   // The widget will be destroyed in |AshTestBase::TearDown()|.
-  ambient_controller()->SetUiVisibilityShown();
+  ambient_controller()->SetUiVisibilityShouldShow();
+  WaitForWidgets(kWaitForWidgetsTimeout);
+}
 
-  static constexpr base::TimeDelta kTimeout = base::Seconds(10);
-  base::test::ScopedRunLoopTimeout loop_timeout(FROM_HERE, kTimeout);
+void AmbientAshTestBase::SetAmbientPreviewAndWaitForWidgets() {
+  ambient_controller()->SetUiVisibilityPreview();
+  WaitForWidgets(kWaitForWidgetsTimeout);
+}
+
+void AmbientAshTestBase::WaitForWidgets(base::TimeDelta timeout) {
+  base::test::ScopedRunLoopTimeout loop_timeout(FROM_HERE, timeout);
   base::RunLoop run_loop;
   task_environment()->GetMainThreadTaskRunner()->PostTask(
       FROM_HERE,

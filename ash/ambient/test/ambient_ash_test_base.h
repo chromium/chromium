@@ -85,6 +85,7 @@ class AmbientAshTestBase : public AshTestBase {
 
   // Creates ambient screen in its own widget.
   void SetAmbientShownAndWaitForWidgets();
+  void SetAmbientPreviewAndWaitForWidgets();
 
   // Hides ambient screen. Can only be called after |ShowAmbientScreen| has been
   // called.
@@ -259,6 +260,10 @@ class AmbientAshTestBase : public AshTestBase {
   int GetScreenSaverDuration();
 
  private:
+  // Waits for the ambient UI to start rendering (i.e. a widget is created and
+  // the ambient UI is visible to the user). A fatal error occurs if the
+  // `timeout` elapses before the UI starts rendering.
+  void WaitForWidgets(base::TimeDelta timeout);
   void SpinWaitForAmbientViewAvailable(
       const base::RepeatingClosure& quit_closure);
 

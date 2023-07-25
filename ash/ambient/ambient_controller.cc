@@ -361,7 +361,7 @@ void AmbientController::OnAutoShowTimeOut() {
   DCHECK(IsUiHidden(ambient_ui_model_.ui_visibility()));
 
   // Show ambient screen after time out.
-  SetUiVisibilityShown();
+  SetUiVisibilityShouldShow();
 }
 
 void AmbientController::OnLoginOrLockScreenCreated() {
@@ -548,7 +548,7 @@ void AmbientController::ScreenIdleStateChanged(
       return;
     }
 
-    SetUiVisibilityShown();
+    SetUiVisibilityShouldShow();
     return;
   }
 
@@ -658,7 +658,7 @@ void AmbientController::OnInteractionStateChanged(
   }
 }
 
-void AmbientController::SetUiVisibilityShown() {
+void AmbientController::SetUiVisibilityShouldShow() {
   DVLOG(1) << __func__;
 
   // TODO(meilinw): move the eligibility check to the idle entry point once

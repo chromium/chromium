@@ -875,7 +875,7 @@ TEST_P(AmbientControllerTestForAnyUiSettings,
   CloseAmbientScreen();
 
   // When ambient is shown, OnUserActivity() should ignore key event.
-  ambient_controller()->SetUiVisibilityShown();
+  ambient_controller()->SetUiVisibilityShouldShow();
   EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
 
   // General key press will exit ambient mode.
@@ -1304,7 +1304,7 @@ TEST_F(AmbientControllerTest, RestartsAmbientAfterSuspend) {
   EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
 
   // This call should be blocked by prior |SuspendImminent| until |SuspendDone|.
-  ambient_controller()->SetUiVisibilityShown();
+  ambient_controller()->SetUiVisibilityShouldShow();
   EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
 
   SimulateSystemResumeAndWait();
@@ -1607,15 +1607,26 @@ TEST_F(AmbientControllerTest, MaybeDismissUIOnMouseMove) {
 }
 
 TEST_F(AmbientControllerTest, ShouldDismissScreenSaverPreviewOnTouch) {
+  SetAmbientTheme(AmbientTheme::kSlideshow);
+
+  // Case 1: Launch slide show, but it hasn't started rendering yet because it's
+  // downloading photos. User hits touchpad, and that should close the ambient
+  // session even though it never started rendering.
   ambient_controller()->SetUiVisibilityPreview();
-  EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
+  ASSERT_TRUE(ambient_controller()->ShouldShowAmbientUi());
+  ASSERT_FALSE(GetContainerView());
 
   GetEventGenerator()->PressTouch();
+  GetEventGenerator()->ReleaseTouch();
   EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
 
-  ambient_controller()->SetUiVisibilityPreview();
-  EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
+  // Case 2: Launch slide show and wait for it to starts rendering. User hits
+  // touchpad, and that should close the ambient session.
+  SetAmbientPreviewAndWaitForWidgets();
+  ASSERT_TRUE(ambient_controller()->ShouldShowAmbientUi());
+  ASSERT_TRUE(GetContainerView());
 
+  GetEventGenerator()->PressTouch();
   GetEventGenerator()->ReleaseTouch();
   EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
 }
