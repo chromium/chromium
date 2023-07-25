@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_menu_view_controller.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/user_metrics.h"
@@ -579,7 +581,21 @@ void ExtensionsMenuViewController::UpdateMainPage(
   ExtensionsMenuMainPageView::MessageSectionState message_section_state =
       GetMessageSectionState(*browser_->profile(), *toolbar_model_,
                              *web_contents);
-  main_page->UpdateMessageSection(message_section_state);
+  bool has_enterprise_extensions = false;
+  // Only kUserBlockedAccess state cares whether there are any extensions
+  // installed by enterprise.
+  if (message_section_state ==
+      ExtensionsMenuMainPageView::MessageSectionState::kUserBlockedAccess) {
+    has_enterprise_extensions = std::any_of(
+        toolbar_model_->action_ids().begin(),
+        toolbar_model_->action_ids().end(),
+        [this](const ToolbarActionsModel::ActionId extension_id) {
+          auto* extension = GetExtension(browser_, extension_id);
+          return HasEnterpriseForcedAccess(*extension, *browser_->profile());
+        });
+  }
+  main_page->UpdateMessageSection(message_section_state,
+                                  has_enterprise_extensions);
 
   if (message_section_state ==
       ExtensionsMenuMainPageView::MessageSectionState::kUserCustomizedAccess) {

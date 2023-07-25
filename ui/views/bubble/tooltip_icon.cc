@@ -50,6 +50,24 @@ TooltipIcon::~TooltipIcon() {
   HideBubble();
 }
 
+void TooltipIcon::SetBubbleWidth(int preferred_width) {
+  preferred_width_ = preferred_width;
+  OnPropertyChanged(&preferred_width_, kPropertyEffectsPreferredSizeChanged);
+}
+
+int TooltipIcon::GetBubbleWidth() const {
+  return preferred_width_;
+}
+
+void TooltipIcon::SetAnchorPointArrow(BubbleBorder::Arrow arrow) {
+  anchor_point_arrow_ = arrow;
+  OnPropertyChanged(&anchor_point_arrow_, kPropertyEffectsPaint);
+}
+
+BubbleBorder::Arrow TooltipIcon::GetAnchorPointArrow() const {
+  return anchor_point_arrow_;
+}
+
 void TooltipIcon::OnMouseEntered(const ui::MouseEvent& event) {
   mouse_inside_ = true;
   show_timer_.Start(FROM_HERE, base::Milliseconds(150), this,
@@ -156,6 +174,8 @@ void TooltipIcon::OnWidgetDestroyed(Widget* widget) {
 }
 
 BEGIN_METADATA(TooltipIcon, ImageView)
+ADD_PROPERTY_METADATA(int, BubbleWidth)
+ADD_PROPERTY_METADATA(BubbleBorder::Arrow, AnchorPointArrow)
 END_METADATA
 
 }  // namespace views

@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   }
 
   ShowUi("");
-  views::Label* text_container = main_page()->GetTextContainerForTesting();
+  views::View* text_container = main_page()->GetTextContainerForTesting();
   views::View* reload_container = main_page()->GetReloadContainerForTesting();
   views::View* requests_access_container =
       main_page()->GetRequestsAccessContainerForTesting();
@@ -237,7 +237,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   EXPECT_TRUE(text_container->GetVisible());
   EXPECT_FALSE(reload_container->GetVisible());
   EXPECT_FALSE(requests_access_container->GetVisible());
-  EXPECT_EQ(text_container->GetText(),
+  EXPECT_EQ(views::AsViewClass<views::Label>(text_container->children()[0])
+                ->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_EXTENSIONS_MENU_MESSAGE_SECTION_USER_BLOCKED_ACCESS_TEXT));
 
@@ -307,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   NavigateTo(urlA);
 
   ShowUi("");
-  views::Label* text_container = main_page()->GetTextContainerForTesting();
+  views::View* text_container = main_page()->GetTextContainerForTesting();
   views::View* reload_container = main_page()->GetReloadContainerForTesting();
   views::View* requests_access_container =
       main_page()->GetRequestsAccessContainerForTesting();

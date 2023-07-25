@@ -9,9 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
-#include "base/functional/callback_helpers.h"
 #include "base/metrics/user_metrics.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -22,9 +20,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_handler.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/grit/theme_resources.h"
 #include "components/vector_icons/vector_icons.h"
-#include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -33,7 +29,9 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/bubble/tooltip_icon.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -94,6 +92,17 @@ ExtensionMenuItemView* GetMenuItem(
 // depending on its state.
 class MessageSection : public views::BoxLayoutView {
  public:
+  // The type of view container in the message section. At most one of this is
+  // visible at all times.
+  enum class ContainerType {
+    // Container with a label.
+    kTextContainer,
+    // Container with labels and reload button.
+    kReloadContainer,
+    // Container with extensions requesting access.
+    kRequestsAccessContainer
+  };
+
   MessageSection(base::RepeatingCallback<void()> reload_callback,
                  base::RepeatingCallback<void(const extensions::ExtensionId&)>
                      allow_callback,
@@ -103,9 +112,10 @@ class MessageSection : public views::BoxLayoutView {
   const MessageSection& operator=(const MessageSection&) = delete;
   ~MessageSection() override = default;
 
-  // Updates the views contents and visibility given `state`. At most only one
-  // of the "containers" will be visible per `state`.
-  void Update(ExtensionsMenuMainPageView::MessageSectionState state);
+  // Updates the views contents and visibility given `state` and
+  // `has_enterprise_extensions`.
+  void Update(ExtensionsMenuMainPageView::MessageSectionState state,
+              bool has_enterprise_extensions);
 
   // Adds an entry in `extensions_container_` for the extension with `id`,
   // `name` and `icon` at `index`. If the extension is already present, it
@@ -122,7 +132,7 @@ class MessageSection : public views::BoxLayoutView {
   void RemoveExtension(const extensions::ExtensionId& id);
 
   // Accessors used by tests:
-  views::Label* GetTextContainerForTesting() { return text_container_; }
+  views::View* GetTextContainerForTesting() { return text_container_; }
   views::View* GetReloadContainerForTesting() { return reload_container_; }
   views::View* GetRequestsAccessContainerForTesting() {
     return requests_access_container_;
@@ -132,6 +142,8 @@ class MessageSection : public views::BoxLayoutView {
       const extensions::ExtensionId& extension_id);
 
  private:
+  static constexpr int kTextContainerTextIndex = 0;
+  static constexpr int kTextContainerTooltipIconIndex = 1;
   static constexpr int kReloadContainerMainTextIndex = 0;
   static constexpr int kExtensionItemsContainerIndex = 1;
   static constexpr int kExtensionItemIconIndex = 0;
@@ -144,11 +156,18 @@ class MessageSection : public views::BoxLayoutView {
   // `extension_entries_`.
   void UpdateVisibility();
 
+  // Updates the containers visibility and content given a `container_type`,
+  // `label_id` and `show_label_tooltip`. At most only one of the "containers"
+  // will be visible.
+  void UpdateContainer(ContainerType container_type,
+                       int label_id = -1,
+                       bool show_label_tooltip = false);
+
   // The current state of the section.
   ExtensionsMenuMainPageView::MessageSectionState state_;
 
   // Text container.
-  raw_ptr<views::Label> text_container_;
+  raw_ptr<views::View> text_container_;
 
   // Reload container.
   raw_ptr<views::View> reload_container_;
@@ -198,11 +217,26 @@ MessageSection::MessageSection(
           gfx::Insets::VH(section_vertical_margin, section_horizontal_margin))
       .AddChildren(
           // Text container.
-          views::Builder<views::Label>()
+          views::Builder<views::FlexLayoutView>()
               .CopyAddressTo(&text_container_)
               .SetVisible(false)
-              .SetTextContext(ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL)
-              .SetHorizontalAlignment(gfx::ALIGN_CENTER),
+              .SetOrientation(views::LayoutOrientation::kHorizontal)
+              .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
+              .AddChildren(
+                  // Main text.
+                  views::Builder<views::Label>()
+                      .SetTextContext(
+                          ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL)
+                      .SetHorizontalAlignment(gfx::ALIGN_CENTER),
+                  // Enterprise info tooltip.
+                  views::Builder<views::TooltipIcon>(
+                      std::make_unique<
+                          views::TooltipIcon>(l10n_util::GetStringUTF16(
+                          IDS_EXTENSIONS_MENU_MESSAGE_SECTION_ENTERPRISE_TOOLTIP_ICON_TEXT)))
+                      .SetBubbleWidth(layout_provider->GetDistanceMetric(
+                          views::DISTANCE_BUBBLE_PREFERRED_WIDTH))
+                      .SetAnchorPointArrow(
+                          views::BubbleBorder::Arrow::TOP_LEFT)),
           // Reload container.
           views::Builder<views::BoxLayoutView>()
               .CopyAddressTo(&reload_container_)
@@ -255,52 +289,83 @@ MessageSection::MessageSection(
 }
 
 void MessageSection::Update(
-    ExtensionsMenuMainPageView::MessageSectionState state) {
+    ExtensionsMenuMainPageView::MessageSectionState state,
+    bool has_enterprise_extensions) {
   state_ = state;
+  ContainerType container_type;
+  int label_id;
+  bool show_label_tooltip;
+
   switch (state_) {
     case ExtensionsMenuMainPageView::MessageSectionState::kRestrictedAccess:
-      text_container_->SetText(l10n_util::GetStringUTF16(
-          IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RESTRICTED_ACCESS_TEXT));
+      container_type = ContainerType::kTextContainer;
+      label_id = IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RESTRICTED_ACCESS_TEXT;
+      show_label_tooltip = false;
+      break;
+    case ExtensionsMenuMainPageView::MessageSectionState::kUserCustomizedAccess:
+      container_type = ContainerType::kRequestsAccessContainer;
+      // This state has a static label, thus we don't need to pass a label id.
+      label_id = -1;
+      show_label_tooltip = false;
+      break;
+    case ExtensionsMenuMainPageView::MessageSectionState::
+        kUserCustomizedAccessReload:
+      container_type = ContainerType::kReloadContainer;
+      label_id =
+          IDS_EXTENSIONS_MENU_MESSAGE_SECTION_USER_CUSTOMIZED_ACCESS_TEXT;
+      show_label_tooltip = false;
+      break;
+    case ExtensionsMenuMainPageView::MessageSectionState::kUserBlockedAccess:
+      container_type = ContainerType::kTextContainer;
+      label_id = IDS_EXTENSIONS_MENU_MESSAGE_SECTION_USER_BLOCKED_ACCESS_TEXT;
+      // Tooltip can only be visible on this state, and if there are any
+      // enterprise extensions installed.
+      show_label_tooltip = has_enterprise_extensions;
+      break;
+    case ExtensionsMenuMainPageView::MessageSectionState::
+        kUserBlockedAccessReload:
+      container_type = ContainerType::kReloadContainer;
+      label_id = IDS_EXTENSIONS_MENU_MESSAGE_SECTION_USER_BLOCKED_ACCESS_TEXT;
+      show_label_tooltip = false;
+      break;
+  }
+
+  UpdateContainer(container_type, label_id, show_label_tooltip);
+  UpdateVisibility();
+}
+
+void MessageSection::UpdateContainer(ContainerType container_type,
+                                     int label_id,
+                                     bool show_label_tooltip) {
+  switch (container_type) {
+    case ContainerType::kTextContainer:
+      DCHECK_NE(label_id, -1);
       text_container_->SetVisible(true);
       reload_container_->SetVisible(false);
       requests_access_container_->SetVisible(false);
+      views::AsViewClass<views::Label>(
+          text_container_->children()[kTextContainerTextIndex])
+          ->SetText(l10n_util::GetStringUTF16(label_id));
+      text_container_->children()[kTextContainerTooltipIconIndex]->SetVisible(
+          show_label_tooltip);
       ClearExtensions();
       break;
-    case ExtensionsMenuMainPageView::MessageSectionState::kUserCustomizedAccess:
+    case ContainerType::kReloadContainer:
+      DCHECK_NE(label_id, -1);
+      text_container_->SetVisible(false);
+      reload_container_->SetVisible(true);
+      requests_access_container_->SetVisible(false);
+      views::AsViewClass<views::Label>(
+          reload_container_->children()[kReloadContainerMainTextIndex])
+          ->SetText(l10n_util::GetStringUTF16(label_id));
+      break;
+    case ContainerType::kRequestsAccessContainer:
+      DCHECK_EQ(label_id, -1);
       text_container_->SetVisible(false);
       reload_container_->SetVisible(false);
       requests_access_container_->SetVisible(!extension_entries_.empty());
       break;
-    case ExtensionsMenuMainPageView::MessageSectionState::
-        kUserCustomizedAccessReload:
-      text_container_->SetVisible(false);
-      reload_container_->SetVisible(true);
-      requests_access_container_->SetVisible(false);
-      views::AsViewClass<views::Label>(
-          reload_container_->children()[kReloadContainerMainTextIndex])
-          ->SetText(l10n_util::GetStringUTF16(
-              IDS_EXTENSIONS_MENU_MESSAGE_SECTION_USER_CUSTOMIZED_ACCESS_TEXT));
-      break;
-    case ExtensionsMenuMainPageView::MessageSectionState::kUserBlockedAccess:
-      text_container_->SetText(l10n_util::GetStringUTF16(
-          IDS_EXTENSIONS_MENU_MESSAGE_SECTION_USER_BLOCKED_ACCESS_TEXT));
-      text_container_->SetVisible(true);
-      reload_container_->SetVisible(false);
-      requests_access_container_->SetVisible(false);
-      ClearExtensions();
-      break;
-    case ExtensionsMenuMainPageView::MessageSectionState::
-        kUserBlockedAccessReload:
-      text_container_->SetVisible(false);
-      reload_container_->SetVisible(true);
-      requests_access_container_->SetVisible(false);
-      views::AsViewClass<views::Label>(
-          reload_container_->children()[kReloadContainerMainTextIndex])
-          ->SetText(l10n_util::GetStringUTF16(
-              IDS_EXTENSIONS_MENU_MESSAGE_SECTION_USER_BLOCKED_ACCESS_TEXT));
-      break;
   }
-  UpdateVisibility();
 }
 
 void MessageSection::AddOrUpdateExtension(const extensions::ExtensionId& id,
@@ -653,8 +718,9 @@ void ExtensionsMenuMainPageView::UpdateSubheader(
 }
 
 void ExtensionsMenuMainPageView::UpdateMessageSection(
-    MessageSectionState state) {
-  message_section_->Update(state);
+    MessageSectionState state,
+    bool has_enterprise_extensions) {
+  message_section_->Update(state, has_enterprise_extensions);
 }
 
 void ExtensionsMenuMainPageView::AddOrUpdateExtensionRequestingAccess(
@@ -684,7 +750,8 @@ const std::u16string&
 ExtensionsMenuMainPageView::GetSubheaderSubtitleTextForTesting() const {
   return subheader_subtitle_->GetText();
 }
-views::Label* ExtensionsMenuMainPageView::GetTextContainerForTesting() {
+
+views::View* ExtensionsMenuMainPageView::GetTextContainerForTesting() {
   return message_section_->GetTextContainerForTesting();  // IN-TEST
 }
 

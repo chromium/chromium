@@ -1080,7 +1080,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, MessageSection_RestrictedAccess) {
   web_contents_tester()->NavigateAndCommit(restricted_url);
 
   ShowMenu();
-  views::Label* text_container = main_page()->GetTextContainerForTesting();
+  views::View* text_container = main_page()->GetTextContainerForTesting();
   views::View* reload_container = main_page()->GetReloadContainerForTesting();
   views::View* requests_access_container =
       main_page()->GetRequestsAccessContainerForTesting();
@@ -1090,7 +1090,8 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, MessageSection_RestrictedAccess) {
   EXPECT_TRUE(text_container->GetVisible());
   EXPECT_FALSE(reload_container->GetVisible());
   EXPECT_FALSE(requests_access_container->GetVisible());
-  EXPECT_EQ(text_container->GetText(),
+  EXPECT_EQ(views::AsViewClass<views::Label>(text_container->children()[0])
+                ->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RESTRICTED_ACCESS_TEXT));
 }
@@ -1110,19 +1111,61 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, MessageSection_UserBlockedAccess) {
             PermissionsManager::UserSiteSetting::kBlockAllExtensions);
 
   ShowMenu();
-  views::Label* text_container = main_page()->GetTextContainerForTesting();
+  views::View* text_container = main_page()->GetTextContainerForTesting();
   views::View* reload_container = main_page()->GetReloadContainerForTesting();
   views::View* requests_access_container =
       main_page()->GetRequestsAccessContainerForTesting();
 
-  // Only the text container is displayed with user blocked site message, when
-  // all the extensions are blocked on this site.
+  // Only the text container is displayed when all the extensions are blocked on
+  // this site.
   EXPECT_TRUE(text_container->GetVisible());
   EXPECT_FALSE(reload_container->GetVisible());
   EXPECT_FALSE(requests_access_container->GetVisible());
-  EXPECT_EQ(text_container->GetText(),
+
+  // Container has blocked site message and tooltip icon is hidden since there
+  // are not enterprise extensions that still have access.
+  EXPECT_EQ(views::AsViewClass<views::Label>(text_container->children()[0])
+                ->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_EXTENSIONS_MENU_MESSAGE_SECTION_USER_BLOCKED_ACCESS_TEXT));
+  EXPECT_FALSE(text_container->children()[1]->GetVisible());
+}
+
+// Tests that the message section only displays the text container (and the
+// tooltip icon is visible since at least one extension is installed by
+// enterprise) when the user has blocked all extensions on the site.
+TEST_F(ExtensionsMenuMainPageViewUnitTest,
+       MessageSection_UserBlockedAccess_Enterprise) {
+  InstallEnterpriseExtension("Extension", {"<all_urls>"});
+
+  const GURL url("http://www.example.com");
+  web_contents_tester()->NavigateAndCommit(url);
+
+  // Block all extensions on `url`.
+  UpdateUserSiteSetting(
+      PermissionsManager::UserSiteSetting::kBlockAllExtensions, url);
+  ASSERT_EQ(GetUserSiteSetting(url),
+            PermissionsManager::UserSiteSetting::kBlockAllExtensions);
+
+  ShowMenu();
+  views::View* text_container = main_page()->GetTextContainerForTesting();
+  views::View* reload_container = main_page()->GetReloadContainerForTesting();
+  views::View* requests_access_container =
+      main_page()->GetRequestsAccessContainerForTesting();
+
+  // Only the text container is displayed when all the extensions are blocked on
+  // this site.
+  EXPECT_TRUE(text_container->GetVisible());
+  EXPECT_FALSE(reload_container->GetVisible());
+  EXPECT_FALSE(requests_access_container->GetVisible());
+
+  // Container has blocked site message and tooltip icon is visible since there
+  // is an enterprise extensions that still has access.
+  EXPECT_EQ(views::AsViewClass<views::Label>(text_container->children()[0])
+                ->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_EXTENSIONS_MENU_MESSAGE_SECTION_USER_BLOCKED_ACCESS_TEXT));
+  EXPECT_TRUE(text_container->children()[1]->GetVisible());
 }
 
 // Tests that all the containers in the message section are hidden when the user
@@ -1141,7 +1184,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   web_contents_tester()->NavigateAndCommit(url);
 
   ShowMenu();
-  views::Label* text_container = main_page()->GetTextContainerForTesting();
+  views::View* text_container = main_page()->GetTextContainerForTesting();
   views::View* reload_container = main_page()->GetReloadContainerForTesting();
   views::View* requests_access_container =
       main_page()->GetRequestsAccessContainerForTesting();
@@ -1176,7 +1219,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
             PermissionsManager::UserSiteSetting::kCustomizeByExtension);
 
   ShowMenu();
-  views::Label* text_container = main_page()->GetTextContainerForTesting();
+  views::View* text_container = main_page()->GetTextContainerForTesting();
   views::View* reload_container = main_page()->GetReloadContainerForTesting();
   views::View* requests_access_container =
       main_page()->GetRequestsAccessContainerForTesting();
