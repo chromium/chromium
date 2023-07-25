@@ -266,12 +266,6 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
     return cros_usb_detector_->usb_devices_.begin()->second.guest_port;
   }
 
-  uint32_t GetSingleAllowedInterfacesMask() const {
-    EXPECT_EQ(1U, cros_usb_detector_->usb_devices_.size());
-    return cros_usb_detector_->usb_devices_.begin()
-        ->second.allowed_interfaces_mask;
-  }
-
   void AddDisk(const std::string& name,
                int bus_number,
                int device_number,
@@ -495,22 +489,6 @@ TEST_F(CrosUsbDetectorTest, UsbNotificationClicked) {
   EXPECT_GE(fake_concierge_client_->attach_usb_device_call_count(), 1);
   // Notification should close.
   EXPECT_FALSE(display_service_->GetNotification(notification_id));
-}
-
-TEST_F(CrosUsbDetectorTest, UsbDeviceClassBlockedAdded) {
-  ConnectToDeviceManager();
-  base::RunLoop().RunUntilIdle();
-
-  scoped_refptr<device::FakeUsbDeviceInfo> device =
-      CreateTestDeviceOfClass(/* USB_CLASS_HUB */ 0x09);
-
-  device_manager_.AddDevice(device);
-  base::RunLoop().RunUntilIdle();
-
-  std::string notification_id =
-      CrosUsbDetector::MakeNotificationId(device->guid());
-  ASSERT_FALSE(display_service_->GetNotification(notification_id));
-  EXPECT_EQ(0U, cros_usb_detector_->GetShareableDevices().size());
 }
 
 TEST_F(CrosUsbDetectorTest, UsbDeviceClassAdbAdded) {
@@ -1013,32 +991,6 @@ TEST_F(CrosUsbDetectorTest, SharedDevicesGetAttachedOnStartup) {
   EXPECT_TRUE(device_info.shared_guest_id.has_value());
   EXPECT_EQ(crostini::kCrostiniDefaultVmName,
             device_info.shared_guest_id->vm_name);
-}
-
-TEST_F(CrosUsbDetectorTest, DeviceAllowedInterfacesMaskSetCorrectly) {
-  ConnectToDeviceManager();
-  base::RunLoop().RunUntilIdle();
-
-  const int kAdbClass = 0xff;
-  const int kAdbSubclass = 0x42;
-  const int kAdbProtocol = 0x1;
-
-  // Adb interface as well as a forbidden interface and allowed interface.
-  scoped_refptr<device::FakeUsbDeviceInfo> device = CreateTestDeviceFromCodes(
-      /* USB_CLASS_HUB */ 0x09,
-      {InterfaceCodes(0x03, 0xff, 0xff),
-       InterfaceCodes(kAdbClass, kAdbSubclass, kAdbProtocol),
-       InterfaceCodes(/*USB_CLASS_AUDIO*/ 0x01, 0xff, 0xff)});
-
-  device_manager_.AddDevice(device);
-  base::RunLoop().RunUntilIdle();
-
-  // The device should notify because it has an allowed, notifiable interface.
-  std::string notification_id =
-      CrosUsbDetector::MakeNotificationId(device->guid());
-  EXPECT_TRUE(display_service_->GetNotification(notification_id));
-
-  EXPECT_EQ(0x00000007U, GetSingleAllowedInterfacesMask());
 }
 
 TEST_F(CrosUsbDetectorTest, SwitchDeviceWithAttachSuccess) {
