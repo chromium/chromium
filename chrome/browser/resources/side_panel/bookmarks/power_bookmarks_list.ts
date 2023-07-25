@@ -305,8 +305,8 @@ export class PowerBookmarksListElement extends PolymerElement {
             (product: BookmarkProductInfo) =>
                 this.onBookmarkPriceTracked_(product)),
         callbackRouter.priceUntrackedForBookmark.addListener(
-            (bookmarkId: bigint) =>
-                this.onBookmarkPriceUntracked_(bookmarkId.toString())),
+            (product: BookmarkProductInfo) =>
+                this.onBookmarkPriceUntracked_(product)),
     );
 
     if (document.documentElement.hasAttribute('chrome-refresh-2023')) {
@@ -494,8 +494,8 @@ export class PowerBookmarksListElement extends PolymerElement {
     this.set(`trackedProductInfos_.${product.bookmarkId.toString()}`, product);
   }
 
-  private onBookmarkPriceUntracked_(bookmarkId: string) {
-    this.set(`trackedProductInfos_.${bookmarkId}`, null);
+  private onBookmarkPriceUntracked_(product: BookmarkProductInfo) {
+    this.set(`trackedProductInfos_.${product.bookmarkId.toString()}`, null);
   }
 
   // TODO(emshack): Once there is more than one bookmark power, remove this
