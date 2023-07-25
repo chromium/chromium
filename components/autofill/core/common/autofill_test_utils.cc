@@ -245,32 +245,19 @@ FormFieldData CreateTestDatalistField(std::string_view label,
                                       std::string_view value,
                                       const std::vector<const char*>& values,
                                       const std::vector<const char*>& labels) {
-  FormFieldData field;
-  CreateTestDatalistField(label, name, value, values, labels, &field);
-  return field;
-}
-
-void CreateTestDatalistField(std::string_view label,
-                             std::string_view name,
-                             std::string_view value,
-                             const std::vector<const char*>& values,
-                             const std::vector<const char*>& labels,
-                             FormFieldData* field) {
   // Fill the base attributes.
-  CreateTestFormField(label, name, value, "text", field);
+  FormFieldData field = CreateTestFormField(label, name, value, "text");
 
-  std::vector<std::u16string> values16(values.size());
-  for (size_t i = 0; i < values.size(); ++i) {
-    values16[i] = base::UTF8ToUTF16(values[i]);
+  field.datalist_values.reserve(values.size());
+  for (const auto* x : values) {
+    field.datalist_values.emplace_back(base::UTF8ToUTF16(x));
+  }
+  field.datalist_labels.reserve(labels.size());
+  for (const auto* x : values) {
+    field.datalist_labels.emplace_back(base::UTF8ToUTF16(x));
   }
 
-  std::vector<std::u16string> label16(labels.size());
-  for (size_t i = 0; i < labels.size(); ++i) {
-    label16[i] = base::UTF8ToUTF16(labels[i]);
-  }
-
-  field->datalist_values = values16;
-  field->datalist_labels = label16;
+  return field;
 }
 
 FormData CreateTestPersonalInformationFormData() {

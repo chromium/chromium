@@ -197,12 +197,6 @@ FormFieldData CreateTestDatalistField(std::string_view label,
                                       std::string_view value,
                                       const std::vector<const char*>& values,
                                       const std::vector<const char*>& labels);
-void CreateTestDatalistField(std::string_view label,
-                             std::string_view name,
-                             std::string_view value,
-                             const std::vector<const char*>& values,
-                             const std::vector<const char*>& labels,
-                             FormFieldData* field);
 
 // Populates `form` with data corresponding to a simple personal information
 // form, including name and email, but no address-related fields.
