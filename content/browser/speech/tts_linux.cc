@@ -317,7 +317,6 @@ void TtsPlatformImplBackgroundWorker::CloseConnection() {
 
 void TtsPlatformImplBackgroundWorker::OnSpeechEvent(int msg_id,
                                                     SPDNotificationType type) {
-  DCHECK(BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   if (!conn_ || msg_id != msg_uid_)
     return;
 
