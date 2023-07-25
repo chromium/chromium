@@ -107,9 +107,7 @@ HlsFallbackImplementation SelectHlsFallbackImplementation() {
   // Android build with both builtin & media player implementations.
   // Prefer builtin if it is enabled.
   if (base::FeatureList::IsEnabled(kBuiltInHlsPlayer)) {
-    // TODO(crbug/1266991): This should return kBuiltinHlsPlayer when the
-    // HlsDemuxer is able to be created.
-    return HlsFallbackImplementation::kNone;
+    return HlsFallbackImplementation::kBuiltinHlsPlayer;
   }
   if (base::FeatureList::IsEnabled(kHlsPlayer)) {
     return HlsFallbackImplementation::kMediaPlayer;
