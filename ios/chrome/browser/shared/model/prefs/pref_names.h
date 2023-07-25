@@ -64,6 +64,7 @@ extern const char kNTPFollowingFeedSortType[];
 extern const char kDefaultFollowingFeedSortTypeChanged[];
 extern const char kOSLockdownModeEnabled[];
 extern const char kOverflowMenuDestinationUsageHistory[];
+extern const char kOverflowMenuDestinationUsageHistoryEnabled[];
 extern const char kOverflowMenuNewDestinations[];
 extern const char kOverflowMenuDestinationsOrder[];
 extern const char kOverflowMenuHiddenDestinations[];

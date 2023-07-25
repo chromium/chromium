@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/destination_usage_history.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
+#import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -115,6 +116,8 @@ using DestinationLookup =
 
   // The data for the current actions ordering and show/hide state.
   ActionOrderData _actionOrderData;
+
+  PrefBackedBoolean* _destinationUsageHistoryEnabled;
 }
 
 @synthesize actionCustomizationModel = _actionCustomizationModel;
@@ -144,6 +147,10 @@ using DestinationLookup =
         self.visibleDestinationsCount;
     [self.destinationUsageHistory start];
   }
+
+  _destinationUsageHistoryEnabled = [[PrefBackedBoolean alloc]
+      initWithPrefService:_localStatePrefs
+                 prefName:prefs::kOverflowMenuDestinationUsageHistoryEnabled];
 
   [self loadDestinationsFromPrefs];
   [self loadActionsFromPrefs];
@@ -213,6 +220,8 @@ using DestinationLookup =
 
   _destinationCustomizationModel =
       [[DestinationCustomizationModel alloc] initWithDestinations:destinations];
+  _destinationCustomizationModel.destinationUsageEnabled =
+      _destinationUsageHistoryEnabled.value;
   return _destinationCustomizationModel;
 }
 
@@ -270,6 +279,20 @@ using DestinationLookup =
   }
 
   _destinationOrderData = orderData;
+  // If Destination Usage History is being reenabled, add all hidden
+  // destinations back to the shown list. Destination Usage History only acts on
+  // all destinations at once.
+  if (!_destinationUsageHistoryEnabled.value &&
+      _destinationCustomizationModel.destinationUsageEnabled) {
+    _destinationOrderData.shownDestinations.insert(
+        _destinationOrderData.shownDestinations.end(),
+        _destinationOrderData.hiddenDestinations.begin(),
+        _destinationOrderData.hiddenDestinations.end());
+    _destinationOrderData.hiddenDestinations.clear();
+    [self.destinationUsageHistory clearStoredClickData];
+  }
+  _destinationUsageHistoryEnabled.value =
+      _destinationCustomizationModel.destinationUsageEnabled;
   [self flushDestinationsToPrefs];
 
   self.model.destinations = [self destinationsFromCurrentRanking];
@@ -306,6 +329,10 @@ using DestinationLookup =
     AppendDestinationsToVector(storedHiddenDestinations,
                                _destinationOrderData.shownDestinations);
     _localStatePrefs->ClearPref(prefs::kOverflowMenuHiddenDestinations);
+
+    _destinationUsageHistoryEnabled.value = YES;
+    [self.destinationUsageHistory clearStoredClickData];
+
     [self flushDestinationsToPrefs];
   }
 }
@@ -614,7 +641,7 @@ using DestinationLookup =
   DestinationRanking availableDestinations =
       [self.destinationProvider baseDestinations];
 
-  if (self.destinationUsageHistory) {
+  if (_destinationUsageHistoryEnabled.value && self.destinationUsageHistory) {
     _destinationOrderData.shownDestinations = [self.destinationUsageHistory
         sortedDestinationsFromCurrentRanking:_destinationOrderData
                                                  .shownDestinations

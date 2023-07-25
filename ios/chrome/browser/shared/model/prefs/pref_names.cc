@@ -254,6 +254,11 @@ const char kOSLockdownModeEnabled[] = "ios.os_lockdown_mode_enabled";
 const char kOverflowMenuDestinationUsageHistory[] =
     "overflow_menu.destination_usage_history";
 
+// Boolean preference that tracks whether the destination usage history feature
+// is enabled on the overflow menu.
+extern const char kOverflowMenuDestinationUsageHistoryEnabled[] =
+    "overflow_menu.destination_usage_history.enabled";
+
 // List preference which tracks new destinations added to the overflow menu
 // carousel.
 const char kOverflowMenuNewDestinations[] = "overflow_menu.new_destinations";

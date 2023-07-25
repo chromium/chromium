@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
@@ -206,6 +207,8 @@ class OverflowMenuOrdererTest : public PlatformTest {
         prefs::kOverflowMenuHiddenDestinations);
     prefs_->registry()->RegisterDictionaryPref(
         prefs::kOverflowMenuActionsOrder);
+    prefs_->registry()->RegisterBooleanPref(
+        prefs::kOverflowMenuDestinationUsageHistoryEnabled, true);
   }
 
   DestinationRanking SampleDestinations() {
@@ -234,6 +237,7 @@ class OverflowMenuOrdererTest : public PlatformTest {
     };
   }
 
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
   OverflowMenuOrderer* overflow_menu_orderer_;
   OverflowMenuModel* overflow_menu_model_;
@@ -290,7 +294,7 @@ TEST_F(OverflowMenuOrdererTest, MigratesDestinationRanking) {
       prefs_->GetDict(prefs::kOverflowMenuDestinationUsageHistory);
 
   EXPECT_EQ(new_ranking, old_ranking);
-  EXPECT_EQ(1ul, new_usage_history.size());
+  EXPECT_EQ(0ul, new_usage_history.size());
 }
 
 TEST_F(OverflowMenuOrdererTest, InsertsNewDestinationInMiddleOfRanking) {
@@ -810,4 +814,77 @@ TEST_F(OverflowMenuOrdererTest,
       prefs_->GetList(prefs::kOverflowMenuDestinationsOrder);
 
   EXPECT_EQ(new_order, all_destinations);
+}
+
+// Tests that reenabling destnation usage history clears the destination usage
+// history and moves all destinations back to shown.
+TEST_F(OverflowMenuOrdererTest, EnablingDestinationUsageHistory) {
+  base::test::ScopedFeatureList features(kOverflowMenuCustomization);
+
+  CreatePrefs();
+
+  // Set the pref state to what it would be with destination usage history
+  // disabled and some destinations hidden.
+  base::Value::List shown_destinations =
+      base::Value::List()
+          .Append(overflow_menu::StringNameForDestination(
+              overflow_menu::Destination::ReadingList))
+          .Append(overflow_menu::StringNameForDestination(
+              overflow_menu::Destination::Downloads));
+  base::Value::List hidden_destinations =
+      base::Value::List()
+          .Append(overflow_menu::StringNameForDestination(
+              overflow_menu::Destination::Bookmarks))
+          .Append(overflow_menu::StringNameForDestination(
+              overflow_menu::Destination::History));
+  prefs_->SetList(prefs::kOverflowMenuDestinationsOrder,
+                  std::move(shown_destinations));
+  prefs_->SetList(prefs::kOverflowMenuHiddenDestinations,
+                  std::move(hidden_destinations));
+
+  prefs_->SetBoolean(prefs::kOverflowMenuDestinationUsageHistoryEnabled, false);
+
+  // Destination Usage History prefs
+  base::TimeDelta day = TodaysDay() - base::Days(1);
+  std::string bookmarkName = overflow_menu::StringNameForDestination(
+      overflow_menu::Destination::Bookmarks);
+  base::Value::Dict day_history =
+      base::Value::Dict().Set(base::NumberToString(day.InDays()),
+                              base::Value::Dict().Set(bookmarkName, 1));
+  prefs_->SetDict(prefs::kOverflowMenuDestinationUsageHistory,
+                  std::move(day_history));
+
+  overflow_menu_orderer_ = [[OverflowMenuOrderer alloc] initWithIsIncognito:NO];
+
+  overflow_menu_model_ = [[OverflowMenuModel alloc] initWithDestinations:@[]
+                                                            actionGroups:@[]];
+  overflow_menu_orderer_.model = overflow_menu_model_;
+  overflow_menu_orderer_.localStatePrefs = prefs_.get();
+  overflow_menu_orderer_.visibleDestinationsCount = kVisibleDestinationsCount;
+  overflow_menu_orderer_.destinationProvider = destination_provider_;
+  overflow_menu_orderer_.actionProvider = action_provider_;
+
+  // Reenable Destination Usage History.
+  DestinationCustomizationModel* customizationModel =
+      overflow_menu_orderer_.destinationCustomizationModel;
+  customizationModel.destinationUsageEnabled = YES;
+  [overflow_menu_orderer_ commitDestinationsUpdate];
+
+  ASSERT_EQ([overflow_menu_model_.destinations count], 4u);
+  EXPECT_EQ(static_cast<overflow_menu::Destination>(
+                overflow_menu_model_.destinations[0].destination),
+            overflow_menu::Destination::ReadingList);
+  EXPECT_EQ(static_cast<overflow_menu::Destination>(
+                overflow_menu_model_.destinations[1].destination),
+            overflow_menu::Destination::Downloads);
+  EXPECT_EQ(static_cast<overflow_menu::Destination>(
+                overflow_menu_model_.destinations[2].destination),
+            overflow_menu::Destination::Bookmarks);
+  EXPECT_EQ(static_cast<overflow_menu::Destination>(
+                overflow_menu_model_.destinations[3].destination),
+            overflow_menu::Destination::History);
+
+  const base::Value::Dict& new_history =
+      prefs_->GetDict(prefs::kOverflowMenuDestinationUsageHistory);
+  EXPECT_EQ(new_history.size(), 0u);
 }

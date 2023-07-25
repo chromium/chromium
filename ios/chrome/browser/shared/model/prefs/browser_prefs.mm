@@ -205,6 +205,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kOverflowMenuDestinationsOrder);
   registry->RegisterListPref(prefs::kOverflowMenuHiddenDestinations);
   registry->RegisterDictionaryPref(prefs::kOverflowMenuActionsOrder);
+  registry->RegisterBooleanPref(
+      prefs::kOverflowMenuDestinationUsageHistoryEnabled, true);
 
   // Preferences related to Enterprise policies.
   registry->RegisterListPref(prefs::kRestrictAccountsToPatterns);
