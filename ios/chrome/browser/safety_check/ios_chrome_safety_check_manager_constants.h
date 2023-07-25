@@ -5,6 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_SAFETY_CHECK_IOS_CHROME_SAFETY_CHECK_MANAGER_CONSTANTS_H_
 #define IOS_CHROME_BROWSER_SAFETY_CHECK_IOS_CHROME_SAFETY_CHECK_MANAGER_CONSTANTS_H_
 
+#include "base/time/time.h"
+
+// The amount of time (inclusive) to wait for an Omaha response before
+// considering the request an Omaha error.
+const base::TimeDelta kOmahaNetworkWaitTime = base::Seconds(30);
+
 // Enum with all possible states of the update check.
 enum class UpdateChromeSafetyCheckState {
   // When the user is up to date.

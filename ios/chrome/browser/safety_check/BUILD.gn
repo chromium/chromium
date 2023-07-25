@@ -19,6 +19,9 @@ source_set("safety_check") {
   deps = [
     "//components/password_manager/core/browser",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//ios/chrome/browser/omaha",
+    "//ios/chrome/browser/upgrade",
+    "//ios/chrome/browser/upgrade:public",
   ]
 }
 
@@ -45,6 +48,7 @@ source_set("factory") {
 source_set("constants") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "ios_chrome_safety_check_manager_constants.h" ]
+  public_deps = [ "//base" ]
 }
 
 source_set("utils") {
@@ -84,6 +88,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/sync:test_support",
+    "//ios/chrome/browser/upgrade",
     "//ios/web/public/test",
     "//testing/gtest",
   ]

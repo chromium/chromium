@@ -10,6 +10,7 @@
 #import "base/task/sequenced_task_runner.h"
 #import "base/test/bind.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/time/time.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/test_password_store.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -26,6 +27,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_mock.h"
+#import "ios/chrome/browser/upgrade/upgrade_recommended_details.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -70,7 +72,9 @@ class IOSChromeSafetyCheckManagerTest : public PlatformTest {
   void TearDown() override { safety_check_manager_->Shutdown(); }
 
  protected:
-  web::WebTaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      web::WebTaskEnvironment::Options::DEFAULT,
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<IOSChromeSafetyCheckManager> safety_check_manager_;
@@ -86,6 +90,31 @@ CreateCredentialsListWithNoInsecurePasswords() {
   password_form.password_value = u"test1";
 
   return {password_manager::CredentialUIEntry(password_form)};
+}
+
+// Returns app upgrade details for an up-to-date application.
+UpgradeRecommendedDetails UpdatedAppDetails() {
+  UpgradeRecommendedDetails details;
+
+  details.is_up_to_date = true;
+
+  // Within Omaha, when the app is up-to-date, `next_version` and `upgrade_url`
+  // are empty.
+  details.next_version = "";
+  details.upgrade_url = GURL();
+
+  return details;
+}
+
+// Returns app upgrade details for an outdated application.
+UpgradeRecommendedDetails OutdatedAppDetails() {
+  UpgradeRecommendedDetails details;
+
+  details.is_up_to_date = false;
+  details.next_version = "9999.9999.9999.9999";
+  details.upgrade_url = GURL("http://foobar.org");
+
+  return details;
 }
 
 }  // namespace
@@ -430,4 +459,69 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
                 PasswordCheckState::kIdle, populated_credentials_list,
                 PasswordSafetyCheckState::kRunning),
             PasswordSafetyCheckState::kSafe);
+}
+
+// Tests an Omaha response that exceeds `kOmahaNetworkWaitTime` wait time is
+// properly handled.
+TEST_F(IOSChromeSafetyCheckManagerTest, HandlesExpiredOmahaResponse) {
+  // Starting the Omaha check sets the Update Chrome check state to running.
+  safety_check_manager_->StartOmahaCheckForTesting();
+  EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
+            UpdateChromeSafetyCheckState::kRunning);
+
+  // Even 1s before `kOmahaNetworkWaitTime` is met, the check state should still
+  // be running.
+  task_environment_.FastForwardBy(kOmahaNetworkWaitTime - base::Seconds(1));
+  EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
+            UpdateChromeSafetyCheckState::kRunning);
+
+  // Once `kOmahaNetworkWaitTime` is met, the current Omaha request should be
+  // considered an Omaha error.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
+            UpdateChromeSafetyCheckState::kOmahaError);
+}
+
+// Tests a valid, app-up-to-date Omaha response is properly handled.
+TEST_F(IOSChromeSafetyCheckManagerTest, HandlesOmahaResponseAppIsUpToDate) {
+  safety_check_manager_->StartOmahaCheckForTesting();
+  EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
+            UpdateChromeSafetyCheckState::kRunning);
+
+  task_environment_.FastForwardBy(kOmahaNetworkWaitTime / 2);
+
+  safety_check_manager_->HandleOmahaResponseForTesting(UpdatedAppDetails());
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
+            UpdateChromeSafetyCheckState::kUpToDate);
+
+  // Once `kOmahaNetworkWaitTime` elapses, nothing should happen, because the
+  // response was received before `kOmahaNetworkWaitTime` was met.
+  task_environment_.FastForwardBy(kOmahaNetworkWaitTime / 2);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
+            UpdateChromeSafetyCheckState::kUpToDate);
+}
+
+// Tests a valid, app-outdated Omaha response is properly handled.
+TEST_F(IOSChromeSafetyCheckManagerTest, HandlesOmahaResponseAppOutdated) {
+  safety_check_manager_->StartOmahaCheckForTesting();
+  EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
+            UpdateChromeSafetyCheckState::kRunning);
+
+  task_environment_.FastForwardBy(kOmahaNetworkWaitTime / 2);
+
+  safety_check_manager_->HandleOmahaResponseForTesting(OutdatedAppDetails());
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
+            UpdateChromeSafetyCheckState::kOutOfDate);
+
+  // Once `kOmahaNetworkWaitTime` elapses, nothing should happen, because the
+  // response was received before `kOmahaNetworkWaitTime` was met.
+  task_environment_.FastForwardBy(kOmahaNetworkWaitTime / 2);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
+            UpdateChromeSafetyCheckState::kOutOfDate);
 }

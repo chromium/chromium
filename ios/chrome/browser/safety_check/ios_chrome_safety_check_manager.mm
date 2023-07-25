@@ -11,7 +11,10 @@
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#import "ios/chrome/browser/omaha/omaha_service.h"
 #import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_utils.h"
+#import "ios/chrome/browser/upgrade/upgrade_recommended_details.h"
+#import "ios/chrome/browser/upgrade/upgrade_utils.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -46,6 +49,9 @@ IOSChromeSafetyCheckManager::IOSChromeSafetyCheckManager(
 
   // Process the initial Safe Browsing pref values.
   OnSafeBrowsingPrefChanged();
+
+  // Query the Omaha service to process the initial Update Chrome check state.
+  StartOmahaCheck();
 }
 
 IOSChromeSafetyCheckManager::~IOSChromeSafetyCheckManager() {
@@ -97,6 +103,12 @@ PasswordSafetyCheckState IOSChromeSafetyCheckManager::GetPasswordCheckState()
   return password_check_state_;
 }
 
+UpdateChromeSafetyCheckState
+IOSChromeSafetyCheckManager::GetUpdateChromeCheckState() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return update_chrome_check_state_;
+}
+
 // TODO(crbug.com/1462786): Add UMA logs related to the Safe Browsing check.
 void IOSChromeSafetyCheckManager::SetSafeBrowsingCheckState(
     SafeBrowsingSafetyCheckState state) {
@@ -114,6 +126,12 @@ void IOSChromeSafetyCheckManager::ConvertAndSetPasswordCheckState(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(password_check_manager_);
 
+  // If the Password check reports the device is offline, propogate this
+  // information to the Update Chrome check.
+  if (state == PasswordCheckState::kOffline) {
+    SetUpdateChromeCheckState(UpdateChromeSafetyCheckState::kNetError);
+  }
+
   const std::vector<password_manager::CredentialUIEntry> insecure_credentials =
       password_check_manager_->GetInsecureCredentials();
 
@@ -129,6 +147,12 @@ void IOSChromeSafetyCheckManager::RefreshOutdatedPasswordCheckState() {
   CHECK(password_check_manager_);
 
   PasswordCheckState state = password_check_manager_->GetPasswordCheckState();
+
+  // If the Password check reports the device is offline, propogate this
+  // information to the Update Chrome check.
+  if (state == PasswordCheckState::kOffline) {
+    SetUpdateChromeCheckState(UpdateChromeSafetyCheckState::kNetError);
+  }
 
   const std::vector<password_manager::CredentialUIEntry> insecure_credentials =
       password_check_manager_->GetInsecureCredentials();
@@ -150,6 +174,26 @@ void IOSChromeSafetyCheckManager::SetPasswordCheckState(
   }
 }
 
+// TODO(crbug.com/1462786): Add UMA logs related to the Update Chrome check.
+void IOSChromeSafetyCheckManager::SetUpdateChromeCheckState(
+    UpdateChromeSafetyCheckState state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  update_chrome_check_state_ = state;
+
+  for (auto& observer : observers_) {
+    observer.UpdateChromeCheckStateChanged(update_chrome_check_state_);
+  }
+}
+
+// TODO(crbug.com/1462786): Add UMA logs related to the Update Chrome check.
+void IOSChromeSafetyCheckManager::SetUpdateChromeDetails(
+    GURL upgrade_url,
+    std::string next_version) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  upgrade_url_ = upgrade_url;
+  next_version_ = next_version;
+}
+
 // TODO(crbug.com/1462786): Add UMA logs related to the Safe Browsing check.
 void IOSChromeSafetyCheckManager::OnSafeBrowsingPrefChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -161,6 +205,69 @@ void IOSChromeSafetyCheckManager::OnSafeBrowsingPrefChanged() {
     SetSafeBrowsingCheckState(SafeBrowsingSafetyCheckState::kSafe);
   } else {
     SetSafeBrowsingCheckState(SafeBrowsingSafetyCheckState::kUnsafe);
+  }
+}
+
+// TODO(crbug.com/1462786): Add UMA logs related to the Update Chrome check.
+void IOSChromeSafetyCheckManager::StartOmahaCheck() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  SetUpdateChromeCheckState(UpdateChromeSafetyCheckState::kRunning);
+
+  OmahaService::CheckNow(
+      base::BindOnce(&IOSChromeSafetyCheckManager::HandleOmahaResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  // If the Omaha response isn't recieved after `kOmahaNetworkWaitTime`,
+  // consider this an Omaha failure.
+  task_runner_->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&IOSChromeSafetyCheckManager::HandleOmahaError,
+                     weak_ptr_factory_.GetWeakPtr()),
+      kOmahaNetworkWaitTime);
+}
+
+// NOTE: In a fast-follow CL, this method may expand to store Omaha results
+// in Prefs or NSUserDefaults.
+//
+// For now, all Omaha data will be maintained in-memory and tied to the
+// lifecycle of the this class.
+void IOSChromeSafetyCheckManager::HandleOmahaResponse(
+    UpgradeRecommendedDetails details) {
+  UpdateChromeSafetyCheckState state = UpdateChromeSafetyCheckState::kDefault;
+
+  if (details.is_up_to_date) {
+    state = UpdateChromeSafetyCheckState::kUpToDate;
+  } else if (!details.upgrade_url.is_valid() || details.next_version.empty() ||
+             !base::Version(details.next_version).IsValid()) {
+    state = UpdateChromeSafetyCheckState::kOmahaError;
+  } else {
+    state = UpdateChromeSafetyCheckState::kOutOfDate;
+  }
+
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&IOSChromeSafetyCheckManager::SetUpdateChromeCheckState,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(state)));
+
+  if (details.upgrade_url.is_valid() && !details.next_version.empty()) {
+    GURL upgrade_url = details.upgrade_url;
+    std::string next_version = details.next_version;
+
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&IOSChromeSafetyCheckManager::SetUpdateChromeDetails,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(upgrade_url),
+                       std::move(next_version)));
+  }
+}
+
+// TODO(crbug.com/1462786): Add UMA logs related to the Update Chrome check.
+void IOSChromeSafetyCheckManager::HandleOmahaError() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (update_chrome_check_state_ == UpdateChromeSafetyCheckState::kRunning) {
+    SetUpdateChromeCheckState(UpdateChromeSafetyCheckState::kOmahaError);
   }
 }
 
@@ -176,4 +283,15 @@ void IOSChromeSafetyCheckManager::RemoveObserver(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   observers_.RemoveObserver(observer);
+}
+
+void IOSChromeSafetyCheckManager::StartOmahaCheckForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  StartOmahaCheck();
+}
+
+void IOSChromeSafetyCheckManager::HandleOmahaResponseForTesting(
+    UpgradeRecommendedDetails details) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  HandleOmahaResponse(details);
 }
