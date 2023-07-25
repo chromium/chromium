@@ -711,10 +711,8 @@ template("test") {
     _runtime_deps_file = "$root_out_dir/${target_name}.runtime_deps"
 
     declare_args() {
-      # Keep the unittest-as-xctest functionality defaulted to off until the
-      # bots are updated to handle it properly.
-      # TODO(crbug.com/1001667): Remove this arg once the iOS test runner
-      # supports running unittests with xctest.
+      # Keep the unittest-as-xctest functionality defaulted to off for
+      # local builds and test executions.
       enable_run_ios_unittests_with_xctest = false
     }
 
