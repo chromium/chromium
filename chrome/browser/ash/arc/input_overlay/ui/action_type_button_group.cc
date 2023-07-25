@@ -9,7 +9,6 @@
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/views/layout/flex_layout.h"
 
 namespace arc::input_overlay {
@@ -42,7 +41,7 @@ void ActionTypeButtonGroup::Init() {
       base::BindRepeating(&ActionTypeButtonGroup::OnActionTapButtonPressed,
                           base::Unretained(this)),
       // TODO(b/274690042): Replace placeholder text with localized strings.
-      u"Single button", vector_icons::kCloseIcon);
+      u"Single button", kGameControlsSingleButtonIcon);
   auto* move_button = AddActionTypeButton(
       base::BindRepeating(&ActionTypeButtonGroup::OnActionMoveButtonPressed,
                           base::Unretained(this)),

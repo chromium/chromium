@@ -327,6 +327,7 @@ aggregate_vector_icons("chrome_vector_icons") {
       "game_controls_done.icon",
       "game_controls_dpad_keyboard.icon",
       "game_controls_gamepad.icon",
+      "game_controls_single_button.icon",
       "mouse_left_click_edit.icon",
       "mouse_left_click_view.icon",
       "mouse_right_click_edit.icon",
