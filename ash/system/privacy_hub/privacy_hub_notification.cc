@@ -22,6 +22,10 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 
+namespace {
+constexpr size_t kMaxNotificationMessageLength = 150;
+}
+
 namespace ash {
 
 bool operator<(const PrivacyHubNotificationDescriptor& descriptor1,
@@ -324,10 +328,15 @@ void PrivacyHubNotification::SetNotificationContent() {
 
   if (const size_t num_apps = apps.size();
       num_apps < descriptor->message_ids().size()) {
-    builder_.SetMessageWithArgs(descriptor->message_ids().at(num_apps), apps);
-  } else {
-    builder_.SetMessageId(descriptor->message_ids().at(0));
+    const std::u16string message =
+        l10n_util::GetStringFUTF16(descriptor->message_ids().at(num_apps), apps,
+                                   /*offsets=*/nullptr);
+    if (message.size() <= kMaxNotificationMessageLength) {
+      builder_.SetMessage(message);
+      return;
+    }
   }
+  builder_.SetMessageId(descriptor->message_ids().at(0));
 }
 
 }  // namespace ash

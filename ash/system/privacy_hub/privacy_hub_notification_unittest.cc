@@ -322,4 +322,29 @@ TEST_F(PrivacyHubNotificationTest, WithApps) {
       notification_ptr->message());
 }
 
+TEST_F(PrivacyHubNotificationTest, NotificationMessageForLongAppNames) {
+  const std::u16string long_app_name =
+      u"0123456789012345678901234567890123456789012345678901234567";
+  sensor_delegate().LaunchApp(long_app_name);
+  notification().Show();
+
+  message_center::Notification* notification_ptr = GetNotification();
+  ASSERT_TRUE(notification_ptr);
+  const std::u16string first_message = notification_ptr->message();
+  EXPECT_EQ(first_message.size(), 150u);
+
+  sensor_delegate().CloseApp(long_app_name);
+
+  // Generate a notification that should now exceed the max length.
+  sensor_delegate().LaunchApp(long_app_name + u'1');
+  notification().Show();
+
+  notification_ptr = GetNotification();
+  ASSERT_TRUE(notification_ptr);
+  // The new notification should also be at most 150 characters long.
+  EXPECT_LE(notification_ptr->message().size(), 150u);
+  // It shouldn't be identical to the old message even with the same length.
+  EXPECT_NE(first_message, notification_ptr->message());
+}
+
 }  // namespace ash
