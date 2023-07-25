@@ -1080,10 +1080,9 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   const bool expect_threat_details =
       SafeBrowsingBlockingPage::ShouldReportThreatDetails(GetThreatType());
 
-  scoped_refptr<content::MessageLoopRunner> threat_report_sent_runner(
-      new content::MessageLoopRunner);
+  base::RunLoop threat_report_sent_loop;
   if (expect_threat_details)
-    SetReportSentCallback(threat_report_sent_runner->QuitClosure());
+    SetReportSentCallback(threat_report_sent_loop.QuitClosure());
 
   // Set up testing url containing iframe and cross site iframe.
   GURL url = SetupThreatIframeWarningAndNavigate();
@@ -1100,7 +1099,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
                      ->GetLastCommittedURL());
 
   if (expect_threat_details) {
-    threat_report_sent_runner->Run();
+    threat_report_sent_loop.Run();
     std::string serialized = GetReportSent();
     ClientSafeBrowsingReportRequest report;
     ASSERT_TRUE(report.ParseFromString(serialized));
@@ -1166,10 +1165,9 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   const bool expect_threat_details =
       SafeBrowsingBlockingPage::ShouldReportThreatDetails(GetThreatType());
 
-  scoped_refptr<content::MessageLoopRunner> threat_report_sent_runner(
-      new content::MessageLoopRunner);
+  base::RunLoop threat_report_sent_loop;
   if (expect_threat_details)
-    SetReportSentCallback(threat_report_sent_runner->QuitClosure());
+    SetReportSentCallback(threat_report_sent_loop.QuitClosure());
 
   // Navigate to a safe page which contains multiple potential DOM details.
   // (Despite the name, kMaliciousPage is not the page flagged as bad in this
@@ -1199,7 +1197,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
                           ->GetLastCommittedURL());
 
   if (expect_threat_details) {
-    threat_report_sent_runner->Run();
+    threat_report_sent_loop.Run();
     std::string serialized = GetReportSent();
     ClientSafeBrowsingReportRequest report;
     ASSERT_TRUE(report.ParseFromString(serialized));
@@ -1219,10 +1217,9 @@ IN_PROC_BROWSER_TEST_P(
   const bool expect_threat_details =
       SafeBrowsingBlockingPage::ShouldReportThreatDetails(GetThreatType());
 
-  scoped_refptr<content::MessageLoopRunner> threat_report_sent_runner(
-      new content::MessageLoopRunner);
+  base::RunLoop threat_report_sent_loop;
   if (expect_threat_details)
-    SetReportSentCallback(threat_report_sent_runner->QuitClosure());
+    SetReportSentCallback(threat_report_sent_loop.QuitClosure());
 
   // Navigate to a safe page which contains multiple potential DOM details.
   // (Despite the name, kMaliciousPage is not the page flagged as bad in this
@@ -1250,7 +1247,7 @@ IN_PROC_BROWSER_TEST_P(
                      ->GetLastCommittedURL());
 
   if (expect_threat_details) {
-    threat_report_sent_runner->Run();
+    threat_report_sent_loop.Run();
     std::string serialized = GetReportSent();
     ClientSafeBrowsingReportRequest report;
     ASSERT_TRUE(report.ParseFromString(serialized));
@@ -1319,9 +1316,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kSafeBrowsingExtendedReportingOptInAllowed, false);
 
-  scoped_refptr<content::MessageLoopRunner> threat_report_sent_runner(
-      new content::MessageLoopRunner);
-  SetReportSentCallback(threat_report_sent_runner->QuitClosure());
+  base::RunLoop threat_report_sent_loop;
+  SetReportSentCallback(threat_report_sent_loop.QuitClosure());
 
   TestReportingDisabledAndDontProceed(
       embedded_test_server()->GetURL(kEmptyPage));
@@ -1719,10 +1715,9 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   const bool expect_threat_details =
       SafeBrowsingBlockingPage::ShouldReportThreatDetails(GetThreatType());
 
-  scoped_refptr<content::MessageLoopRunner> threat_report_sent_runner(
-      new content::MessageLoopRunner);
+  base::RunLoop threat_report_sent_loop;
   if (expect_threat_details)
-    SetReportSentCallback(threat_report_sent_runner->QuitClosure());
+    SetReportSentCallback(threat_report_sent_loop.QuitClosure());
 
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kSafeBrowsingScoutReportingEnabled, true);
@@ -1737,10 +1732,9 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   const bool expect_threat_details =
       SafeBrowsingBlockingPage::ShouldReportThreatDetails(GetThreatType());
 
-  scoped_refptr<content::MessageLoopRunner> threat_report_sent_runner(
-      new content::MessageLoopRunner);
+  base::RunLoop threat_report_sent_loop;
   if (expect_threat_details)
-    SetReportSentCallback(threat_report_sent_runner->QuitClosure());
+    SetReportSentCallback(threat_report_sent_loop.QuitClosure());
 
   Browser* incognito_browser = CreateIncognitoBrowser();
   incognito_browser->profile()->GetPrefs()->SetBoolean(
@@ -1760,10 +1754,9 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   const bool expect_threat_details =
       SafeBrowsingBlockingPage::ShouldReportThreatDetails(GetThreatType());
 
-  scoped_refptr<content::MessageLoopRunner> threat_report_sent_runner(
-      new content::MessageLoopRunner);
+  base::RunLoop threat_report_sent_loop;
   if (expect_threat_details)
-    SetReportSentCallback(threat_report_sent_runner->QuitClosure());
+    SetReportSentCallback(threat_report_sent_loop.QuitClosure());
 
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kSafeBrowsingScoutReportingEnabled, false);     // set up SBER
