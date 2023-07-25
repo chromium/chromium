@@ -544,7 +544,7 @@ export class CameraManager implements EventListener {
       // reconfigure result which may not reflect the setting before calling it.
       // Thus still fallthrough here to start another reconfigure.
     }
-
+    this.scheduler.reconfigurer.resetFailedDevices();
     return this.doReconfigure();
   }
 

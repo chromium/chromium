@@ -238,4 +238,24 @@ void CameraAppDeviceBridgeImpl::SetVirtualDeviceEnabled(
   std::move(callback).Run(true);
 }
 
+void CameraAppDeviceBridgeImpl::SetDeviceInUse(const std::string& device_id,
+                                               bool in_use) {
+  base::AutoLock lock(devices_in_use_lock_);
+  if (in_use) {
+    devices_in_use_.insert(device_id);
+  } else {
+    devices_in_use_.erase(device_id);
+  }
+}
+
+void CameraAppDeviceBridgeImpl::IsDeviceInUse(const std::string& device_id,
+                                              IsDeviceInUseCallback callback) {
+  bool in_use;
+  {
+    base::AutoLock lock(devices_in_use_lock_);
+    in_use = devices_in_use_.contains(device_id);
+  }
+  std::move(callback).Run(in_use);
+}
+
 }  // namespace media

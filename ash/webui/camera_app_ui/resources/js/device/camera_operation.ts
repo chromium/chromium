@@ -71,6 +71,8 @@ class Reconfigurer {
 
   readonly capturePreferrer = new CaptureCandidatePreferrer();
 
+  private readonly failedDevices = new Set<string>();
+
   constructor(
       private readonly preview: Preview,
       private readonly modes: Modes,
@@ -210,6 +212,14 @@ class Reconfigurer {
   }
 
   /**
+   * Reset the failed devices list so the next reconfiguration
+   * will try to open those devices.
+   */
+  resetFailedDevices(): void {
+    this.failedDevices.clear();
+  }
+
+  /**
    * @return If the configuration finished successfully.
    */
   async startConfigure(cameraInfo: CameraInfo): Promise<boolean> {
@@ -224,7 +234,17 @@ class Reconfigurer {
       if (this.shouldSuspend) {
         return false;
       }
-
+      if (this.failedDevices.has(c.deviceId)) {
+        // Check if the devices is released from other apps. If not,
+        // we skip using it as a constraint to open a stream.
+        const deviceOperator = DeviceOperator.getInstance();
+        if (deviceOperator !== null) {
+          const inUse = await deviceOperator.isDeviceInUse(c.deviceId);
+          if (inUse) {
+            continue;
+          }
+        }
+      }
       let facing = c.deviceId !== null ?
           cameraInfo.getCamera3DeviceInfo(c.deviceId)?.facing ?? null :
           null;
@@ -286,6 +306,17 @@ class Reconfigurer {
           if (e.name === 'NotReadableError') {
             // TODO(b/187879603): Remove this hacked once we understand more
             // about such error.
+            const deviceOperator = DeviceOperator.getInstance();
+            if (deviceOperator !== null) {
+              // If 'NotReadableError' is thrown while the device is in use,
+              // it means that the devices is used by Lacros.
+              // In this case, we add it into `failedDevices` and skip using
+              // it to open a stream until it is not in use.
+              const inUse = await deviceOperator.isDeviceInUse(c.deviceId);
+              if (inUse) {
+                this.failedDevices.add(c.deviceId);
+              }
+            }
             // We cannot get the camera facing from stream since it might
             // not be successfully opened. Therefore, we asked the camera
             // facing via Mojo API.

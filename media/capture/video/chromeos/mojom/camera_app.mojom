@@ -59,6 +59,9 @@ interface CameraAppDeviceProvider {
   // The virtual device has the same config as |device_id| except facing
   // attribute.
   SetVirtualDeviceEnabled(string device_id, bool enabled) => (bool success);
+
+  // Check if the device with |source_id| is in use.
+  IsDeviceInUse(string source_id) => (bool in_use);
 };
 
 // Inner interface that used to communicate between browser process (Remote) and
@@ -79,6 +82,9 @@ interface CameraAppDeviceBridge {
   // The virtual device has the same config as |device_id| except facing
   // attribute.
   SetVirtualDeviceEnabled(string device_id, bool enabled) => (bool success);
+
+  // Check if the device with |device_id| is in use.
+  IsDeviceInUse(string device_id) => (bool in_use);
 };
 
 // Interface for communication from the Chrome Camera App (Remote) to the camera

@@ -205,6 +205,17 @@ export class DeviceOperator {
   }
 
   /**
+   * Check if the device is in use.
+   *
+   * @param deviceId The id of target camera device.
+   */
+  async isDeviceInUse(deviceId: string): Promise<boolean> {
+    assert(this.deviceProvider !== null);
+    const {inUse} = await this.deviceProvider.isDeviceInUse(deviceId);
+    return inUse;
+  }
+
+  /**
    * Gets corresponding device remote by given |deviceId|.
    *
    * @throws Thrown when given |deviceId| is invalid.

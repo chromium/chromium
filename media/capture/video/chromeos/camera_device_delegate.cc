@@ -327,6 +327,8 @@ void CameraDeviceDelegate::AllocateAndStart(
   if (camera_app_device) {
     camera_app_device->SetCameraDeviceContext(device_context_);
   }
+  CameraAppDeviceBridgeImpl::GetInstance()->SetDeviceInUse(
+      device_descriptor_.device_id, true);
 
   auto camera_info = camera_hal_delegate_->GetCameraInfoFromDeviceId(
       device_descriptor_.device_id);
@@ -397,6 +399,8 @@ void CameraDeviceDelegate::StopAndDeAllocate(
   if (camera_app_device) {
     camera_app_device->SetCameraDeviceContext(nullptr);
   }
+  CameraAppDeviceBridgeImpl::GetInstance()->SetDeviceInUse(
+      device_descriptor_.device_id, false);
 
   device_close_callback_ = std::move(device_close_callback);
   device_context_->SetState(CameraDeviceContext::State::kStopping);
