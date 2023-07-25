@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
@@ -97,10 +98,13 @@ class KidsChromeManagementClient : public KeyedService {
 
   // Calls the callback provided by the existing RPC client with the response
   // proto and/or error codes.
+  // |error| parameter serves json fetcher, and |status| parameter serves proto
+  // fetcher a/b testing experiment.
   void DispatchResult(
       KidsChromeRequestList::iterator kids_chrome_request,
       std::unique_ptr<google::protobuf::MessageLite> response_proto,
-      ErrorCode error);
+      ErrorCode error,
+      supervised_user::ProtoFetcherStatus::State status);
 
   // TODO(b/276898959): those two accessors are exposed to allow experiment
   // code live next to the decommissioned code. After migrating the fetching
