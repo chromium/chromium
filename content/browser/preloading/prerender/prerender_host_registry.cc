@@ -460,6 +460,12 @@ BASE_FEATURE(kPrerender2BypassMemoryLimitCheck,
              "Prerender2BypassMemoryLimitCheck",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables to introduce the new limit and scheduler for prerender triggers.
+// See crbug.com/1464021 for more details.
+BASE_FEATURE(kPrerender2NewLimitAndScheduler,
+             "Prerender2NewLimitAndScheduler",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 PrerenderHostRegistry::PrerenderHostRegistry(WebContents& web_contents)
     : memory_pressure_listener_(
           FROM_HERE,
