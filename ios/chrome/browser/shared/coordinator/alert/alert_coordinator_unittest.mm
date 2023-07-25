@@ -209,38 +209,21 @@ TEST_F(AlertCoordinatorTest, ValidateActions) {
 }
 
 // Tests that only the first cancel action is added.
-TEST_F(AlertCoordinatorTest, OnlyOneCancelAction) {
+TEST_F(AlertCoordinatorTest, CancelIsRegistered) {
   // Setup.
   UIViewController* view_controller = GetViewController();
   AlertCoordinator* alert_coordinator = GetAlertCoordinator(view_controller);
 
   NSString* firstButtonTitle = @"Cancel1";
 
+  EXPECT_FALSE(alert_coordinator.cancelButtonAdded);
   // Action.
   [alert_coordinator addItemWithTitle:firstButtonTitle
                                action:nil
                                 style:UIAlertActionStyleCancel];
-  [alert_coordinator addItemWithTitle:@"Cancel2"
-                               action:nil
-                                style:UIAlertActionStyleCancel];
-
-  // Test.
-  // Present the alert.
-  StartAlertCoordinator();
-
-  // Get the alert.
-  ASSERT_TRUE([view_controller.presentedViewController
-      isKindOfClass:[UIAlertController class]]);
-  UIAlertController* alert_controller =
-      base::mac::ObjCCastStrict<UIAlertController>(
-          view_controller.presentedViewController);
-
-  // Test the results.
-  EXPECT_EQ(1LU, alert_controller.actions.count);
-
-  UIAlertAction* action = [alert_controller.actions objectAtIndex:0];
-  EXPECT_NSEQ(firstButtonTitle, action.title);
-  EXPECT_EQ(UIAlertActionStyleCancel, action.style);
+  EXPECT_TRUE(alert_coordinator.cancelButtonAdded);
+  //  If death test becomes available, check that adding a second cancel item
+  // lead to a CHECK failure.
 }
 
 // Tests that the `noInteractionAction` block is called for an alert coordinator

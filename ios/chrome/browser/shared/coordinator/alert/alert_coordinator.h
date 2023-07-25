@@ -43,11 +43,11 @@
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
-// Adds an item at the end of the menu. It does nothing if `visible` is true or
-// if trying to add an item with a UIAlertActionStyleCancel while
-// `cancelButtonAdded` is true. If `enabled` is NO, the action appears dimmed
-// and non-interactable. If `preferred` is YES, the action will be in bold
-// letters. Only one item can be preferred.
+// Adds an item at the end of the menu. It does nothing if `visible` is true.
+// Asserts that at moste one element with style UIAlertActionStyleCancel is
+// added. If `enabled` is NO, the action appears dimmed and non-interactable. If
+// `preferred` is YES, the action will be in bold letters. Only one item can be
+// preferred.
 - (void)addItemWithTitle:(NSString*)title
                   action:(ProceduralBlock)actionBlock
                    style:(UIAlertActionStyle)style

@@ -615,12 +615,6 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
                   [weakSelf dismissMarkConfirmationSheet];
                 }
                  style:UIAlertActionStyleDefault];
-  [self.markConfirmationSheet
-      addItemWithTitle:l10n_util::GetNSString(IDS_APP_CANCEL)
-                action:^{
-                  [weakSelf dismissMarkConfirmationSheet];
-                }
-                 style:UIAlertActionStyleCancel];
   [self.markConfirmationSheet start];
 }
 
@@ -647,12 +641,6 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
                   [weakSelf dismissMarkConfirmationSheet];
                 }
                  style:UIAlertActionStyleDefault];
-  [self.markConfirmationSheet
-      addItemWithTitle:l10n_util::GetNSString(IDS_APP_CANCEL)
-                action:^{
-                  [weakSelf dismissMarkConfirmationSheet];
-                }
-                 style:UIAlertActionStyleCancel];
   [self.markConfirmationSheet start];
 }
 
