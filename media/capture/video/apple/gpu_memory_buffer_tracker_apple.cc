@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/capture/video/mac/gpu_memory_buffer_tracker_mac.h"
+#include "media/capture/video/apple/gpu_memory_buffer_tracker_apple.h"
 
 #include "base/logging.h"
 
 namespace media {
 
-GpuMemoryBufferTrackerMac::GpuMemoryBufferTrackerMac() {}
+GpuMemoryBufferTrackerApple::GpuMemoryBufferTrackerApple() {}
 
-GpuMemoryBufferTrackerMac::GpuMemoryBufferTrackerMac(
+GpuMemoryBufferTrackerApple::GpuMemoryBufferTrackerApple(
     base::ScopedCFTypeRef<IOSurfaceRef> io_surface)
     : is_external_io_surface_(true), io_surface_(std::move(io_surface)) {}
 
-GpuMemoryBufferTrackerMac::~GpuMemoryBufferTrackerMac() {}
+GpuMemoryBufferTrackerApple::~GpuMemoryBufferTrackerApple() {}
 
-bool GpuMemoryBufferTrackerMac::Init(const gfx::Size& dimensions,
-                                     VideoPixelFormat format,
-                                     const mojom::PlaneStridesPtr& strides) {
+bool GpuMemoryBufferTrackerApple::Init(const gfx::Size& dimensions,
+                                       VideoPixelFormat format,
+                                       const mojom::PlaneStridesPtr& strides) {
   DCHECK(!io_surface_);
   if (format != PIXEL_FORMAT_NV12) {
     NOTREACHED() << "Unsupported VideoPixelFormat "
@@ -36,48 +36,50 @@ bool GpuMemoryBufferTrackerMac::Init(const gfx::Size& dimensions,
   }
 }
 
-bool GpuMemoryBufferTrackerMac::IsSameGpuMemoryBuffer(
+bool GpuMemoryBufferTrackerApple::IsSameGpuMemoryBuffer(
     const gfx::GpuMemoryBufferHandle& handle) const {
-  if (!is_external_io_surface_)
+  if (!is_external_io_surface_) {
     return false;
+  }
   return IOSurfaceGetID(io_surface_) == IOSurfaceGetID(handle.io_surface);
 }
 
-bool GpuMemoryBufferTrackerMac::IsReusableForFormat(
+bool GpuMemoryBufferTrackerApple::IsReusableForFormat(
     const gfx::Size& dimensions,
     VideoPixelFormat format,
     const mojom::PlaneStridesPtr& strides) {
-  if (is_external_io_surface_)
+  if (is_external_io_surface_) {
     return false;
+  }
   gfx::Size surface_size(IOSurfaceGetWidth(io_surface_),
                          IOSurfaceGetHeight(io_surface_));
   return format == PIXEL_FORMAT_NV12 && dimensions == surface_size;
 }
 
-uint32_t GpuMemoryBufferTrackerMac::GetMemorySizeInBytes() {
+uint32_t GpuMemoryBufferTrackerApple::GetMemorySizeInBytes() {
   return IOSurfaceGetAllocSize(io_surface_);
 }
 
 std::unique_ptr<VideoCaptureBufferHandle>
-GpuMemoryBufferTrackerMac::GetMemoryMappedAccess() {
+GpuMemoryBufferTrackerApple::GetMemoryMappedAccess() {
   NOTREACHED() << "Unsupported operation";
   return std::make_unique<NullHandle>();
 }
 
 base::UnsafeSharedMemoryRegion
-GpuMemoryBufferTrackerMac::DuplicateAsUnsafeRegion() {
+GpuMemoryBufferTrackerApple::DuplicateAsUnsafeRegion() {
   NOTREACHED() << "Unsupported operation";
   return base::UnsafeSharedMemoryRegion();
 }
 
 mojo::ScopedSharedBufferHandle
-GpuMemoryBufferTrackerMac::DuplicateAsMojoBuffer() {
+GpuMemoryBufferTrackerApple::DuplicateAsMojoBuffer() {
   NOTREACHED() << "Unsupported operation";
   return mojo::ScopedSharedBufferHandle();
 }
 
 gfx::GpuMemoryBufferHandle
-GpuMemoryBufferTrackerMac::GetGpuMemoryBufferHandle() {
+GpuMemoryBufferTrackerApple::GetGpuMemoryBufferHandle() {
   DVLOG(2) << __func__ << " id " << IOSurfaceGetID(io_surface_);
   gfx::GpuMemoryBufferHandle gmb_handle;
   gmb_handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
@@ -86,10 +88,11 @@ GpuMemoryBufferTrackerMac::GetGpuMemoryBufferHandle() {
   return gmb_handle;
 }
 
-void GpuMemoryBufferTrackerMac::OnHeldByConsumersChanged(
+void GpuMemoryBufferTrackerApple::OnHeldByConsumersChanged(
     bool is_held_by_consumers) {
-  if (!is_external_io_surface_)
+  if (!is_external_io_surface_) {
     return;
+  }
 
   if (is_held_by_consumers) {
     DCHECK(!in_use_for_consumers_);

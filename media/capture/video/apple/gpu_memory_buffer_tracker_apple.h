@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CAPTURE_VIDEO_MAC_GPU_MEMORY_BUFFER_TRACKER_MAC_H_
-#define MEDIA_CAPTURE_VIDEO_MAC_GPU_MEMORY_BUFFER_TRACKER_MAC_H_
+#ifndef MEDIA_CAPTURE_VIDEO_APPLE_GPU_MEMORY_BUFFER_TRACKER_APPLE_H_
+#define MEDIA_CAPTURE_VIDEO_APPLE_GPU_MEMORY_BUFFER_TRACKER_APPLE_H_
 
 #include "media/capture/video/video_capture_buffer_tracker.h"
 #include "ui/gfx/geometry/size.h"
@@ -11,18 +11,18 @@
 
 namespace media {
 
-class CAPTURE_EXPORT GpuMemoryBufferTrackerMac final
+class CAPTURE_EXPORT GpuMemoryBufferTrackerApple final
     : public VideoCaptureBufferTracker {
  public:
-  GpuMemoryBufferTrackerMac();
-  explicit GpuMemoryBufferTrackerMac(
+  GpuMemoryBufferTrackerApple();
+  explicit GpuMemoryBufferTrackerApple(
       base::ScopedCFTypeRef<IOSurfaceRef> io_surface);
 
-  GpuMemoryBufferTrackerMac(const GpuMemoryBufferTrackerMac&) = delete;
-  GpuMemoryBufferTrackerMac& operator=(const GpuMemoryBufferTrackerMac&) =
+  GpuMemoryBufferTrackerApple(const GpuMemoryBufferTrackerApple&) = delete;
+  GpuMemoryBufferTrackerApple& operator=(const GpuMemoryBufferTrackerApple&) =
       delete;
 
-  ~GpuMemoryBufferTrackerMac() override;
+  ~GpuMemoryBufferTrackerApple() override;
 
   // VideoCaptureBufferTracker
   bool Init(const gfx::Size& dimensions,
