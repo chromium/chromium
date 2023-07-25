@@ -320,6 +320,7 @@ public class LocationBarLayout extends FrameLayout {
     }
 
     /* package */ void setUrlActionContainerVisibility(int visibility) {
+        if (mHidingActionContainerForNarrowWindow && visibility == VISIBLE) return;
         mUrlActionContainer.setVisibility(visibility);
     }
 

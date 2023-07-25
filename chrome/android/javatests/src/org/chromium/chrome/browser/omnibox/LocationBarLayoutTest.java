@@ -305,7 +305,7 @@ public class LocationBarLayoutTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             View urlBar = getUrlBar();
-            View locationBar = getLocationBar();
+            LocationBarLayout locationBar = getLocationBar();
 
             int constrainedWidth = ((MarginLayoutParams) urlBar.getLayoutParams()).getMarginStart()
                     + locationBar.getResources().getDimensionPixelSize(
@@ -331,6 +331,10 @@ public class LocationBarLayoutTest {
                     MeasureSpec.makeMeasureSpec(200, MeasureSpec.EXACTLY));
             Assert.assertEquals(locationBar.findViewById(R.id.url_action_container).getVisibility(),
                     View.INVISIBLE);
+
+            locationBar.setUrlActionContainerVisibility(VISIBLE);
+            Assert.assertEquals(locationBar.findViewById(R.id.url_action_container).getVisibility(),
+                View.INVISIBLE);
         });
     }
 }
