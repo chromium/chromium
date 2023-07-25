@@ -4,6 +4,10 @@
 
 #include "components/password_manager/core/browser/password_reuse_manager_impl.h"
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -107,8 +111,7 @@ void PasswordReuseManagerImpl::Shutdown() {
     notifier_->UnsubscribeFromSigninEvents();
 
   if (reuse_detector_) {
-    background_task_runner_->DeleteSoon(FROM_HERE, reuse_detector_.get());
-    reuse_detector_ = nullptr;
+    background_task_runner_->DeleteSoon(FROM_HERE, std::move(reuse_detector_));
   }
 }
 
@@ -128,7 +131,7 @@ void PasswordReuseManagerImpl::Init(PrefService* prefs,
   DCHECK(background_task_runner_);
   DCHECK(profile_store);
 
-  reuse_detector_ = new PasswordReuseDetector();
+  reuse_detector_ = std::make_unique<PasswordReuseDetector>();
 
   account_store_ = account_store;
   profile_store_ = profile_store;
@@ -178,7 +181,7 @@ void PasswordReuseManagerImpl::CheckReuse(
   }
   ScheduleTask(base::BindOnce(
       &CheckReuseHelper, std::make_unique<CheckReuseRequest>(consumer), input,
-      domain, base::Unretained(reuse_detector_)));
+      domain, base::Unretained(reuse_detector_.get())));
 }
 
 void PasswordReuseManagerImpl::PreparePasswordHashData(
@@ -255,7 +258,8 @@ void PasswordReuseManagerImpl::ClearGaiaPasswordHash(
   if (!reuse_detector_)
     return;
   ScheduleTask(base::BindOnce(&PasswordReuseDetector::ClearGaiaPasswordHash,
-                              base::Unretained(reuse_detector_), username));
+                              base::Unretained(reuse_detector_.get()),
+                              username));
 }
 
 void PasswordReuseManagerImpl::ClearAllGaiaPasswordHash() {
@@ -264,7 +268,7 @@ void PasswordReuseManagerImpl::ClearAllGaiaPasswordHash() {
   if (!reuse_detector_)
     return;
   ScheduleTask(base::BindOnce(&PasswordReuseDetector::ClearAllGaiaPasswordHash,
-                              base::Unretained(reuse_detector_)));
+                              base::Unretained(reuse_detector_.get())));
 }
 
 void PasswordReuseManagerImpl::ClearAllEnterprisePasswordHash() {
@@ -274,7 +278,7 @@ void PasswordReuseManagerImpl::ClearAllEnterprisePasswordHash() {
     return;
   ScheduleTask(
       base::BindOnce(&PasswordReuseDetector::ClearAllEnterprisePasswordHash,
-                     base::Unretained(reuse_detector_)));
+                     base::Unretained(reuse_detector_.get())));
 }
 
 void PasswordReuseManagerImpl::ClearAllNonGmailPasswordHash() {
@@ -284,7 +288,7 @@ void PasswordReuseManagerImpl::ClearAllNonGmailPasswordHash() {
     return;
   ScheduleTask(
       base::BindOnce(&PasswordReuseDetector::ClearAllNonGmailPasswordHash,
-                     base::Unretained(reuse_detector_)));
+                     base::Unretained(reuse_detector_.get())));
 }
 
 base::CallbackListSubscription
@@ -331,12 +335,12 @@ void PasswordReuseManagerImpl::SchedulePasswordHashUpdate(
   }
 
   ScheduleTask(base::BindOnce(&PasswordReuseDetector::UseGaiaPasswordHash,
-                              base::Unretained(reuse_detector_),
+                              base::Unretained(reuse_detector_.get()),
                               std::move(gaia_password_hash_list)));
 
   ScheduleTask(
       base::BindOnce(&PasswordReuseDetector::UseNonGaiaEnterprisePasswordHash,
-                     base::Unretained(reuse_detector_),
+                     base::Unretained(reuse_detector_.get()),
                      std::move(enterprise_password_hash_list)));
 }
 
@@ -353,7 +357,7 @@ void PasswordReuseManagerImpl::ScheduleEnterprisePasswordURLUpdate() {
   if (!reuse_detector_)
     return;
   ScheduleTask(base::BindOnce(&PasswordReuseDetector::UseEnterprisePasswordURLs,
-                              base::Unretained(reuse_detector_),
+                              base::Unretained(reuse_detector_.get()),
                               std::move(enterprise_login_urls),
                               std::move(enterprise_change_password_url)));
 }
@@ -380,7 +384,7 @@ void PasswordReuseManagerImpl::OnGetPasswordStoreResults(
   if (!reuse_detector_)
     return;
   ScheduleTask(base::BindOnce(&PasswordReuseDetector::OnGetPasswordStoreResults,
-                              base::Unretained(reuse_detector_),
+                              base::Unretained(reuse_detector_.get()),
                               std::move(results)));
 }
 
@@ -388,14 +392,15 @@ void PasswordReuseManagerImpl::OnLoginsChanged(
     password_manager::PasswordStoreInterface* store,
     const password_manager::PasswordStoreChangeList& changes) {
   ScheduleTask(base::BindOnce(&PasswordReuseDetector::OnLoginsChanged,
-                              base::Unretained(reuse_detector_), changes));
+                              base::Unretained(reuse_detector_.get()),
+                              changes));
 }
 
 void PasswordReuseManagerImpl::OnLoginsRetained(
     PasswordStoreInterface* store,
     const std::vector<PasswordForm>& retained_passwords) {
   ScheduleTask(base::BindOnce(&PasswordReuseDetector::OnLoginsRetained,
-                              base::Unretained(reuse_detector_),
+                              base::Unretained(reuse_detector_.get()),
                               retained_passwords));
 }
 
@@ -408,7 +413,7 @@ void PasswordReuseManagerImpl::AccountStoreStateChanged() {
   DCHECK(account_store_);
   ScheduleTask(
       base::BindOnce(&PasswordReuseDetector::ClearCachedAccountStorePasswords,
-                     base::Unretained(reuse_detector_)));
+                     base::Unretained(reuse_detector_.get())));
   account_store_->GetAutofillableLogins(weak_ptr_factory_.GetWeakPtr());
 }
 
