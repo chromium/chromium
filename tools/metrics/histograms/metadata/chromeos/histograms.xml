@@ -2196,6 +2196,34 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Sandboxing.NoNewPrivsProcPercentage" units="%"
+    expires_after="2024-01-31">
+  <owner>enlightened@chromium.org</owner>
+  <owner>chromeos-hardening@google.com</owner>
+  <summary>
+    Records the percentage of processes on the system that have the NoNewPrivs
+    bit set in the /proc/self/status file. For more information on no_new_privs,
+    see https://docs.kernel.org/userspace-api/no_new_privs.html
+
+    No new privs process percentage for the system is sent once per boot and
+    only when a user is logged in.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Sandboxing.NonInitNsProcPercentage" units="%"
+    expires_after="2024-01-31">
+  <owner>enlightened@chromium.org</owner>
+  <owner>chromeos-hardening@google.com</owner>
+  <summary>
+    Records the percentage of processes on the system that are not in the same
+    PID and mount namespace as the init process. Namespace information is
+    collected from /proc/self/ns/pid and /proc/self/ns/mnt symlinks.
+
+    Non-init-namespace process percentage for the system is sent once per boot
+    and only when a user is logged in.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Sandboxing.NonRootProcPercentage" units="%"
     expires_after="2024-01-31">
   <owner>enlightened@chromium.org</owner>
