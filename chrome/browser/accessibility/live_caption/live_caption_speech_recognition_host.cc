@@ -33,6 +33,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/icu/source/common/unicode/brkiter.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
+#include "third_party/icu/source/common/unicode/uscript.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -101,6 +102,22 @@ std::string GetTranslationCacheKey(const std::string& source_language,
                                    const std::string& transcription) {
   return base::StrCat({source_language, target_language, "|",
                        RemovePunctuationToLower(transcription)});
+}
+
+bool IsIdeographicLocale(const std::string& locale) {
+  // Retrieve the script codes used by the given language from ICU. When the
+  // given language consists of two or more scripts, we just use the first
+  // script. The size of returned script codes is always < 8. Therefore, we use
+  // an array of size 8 so we can include all script codes without insufficient
+  // buffer errors.
+  UErrorCode error = U_ZERO_ERROR;
+  UScriptCode script_code[8];
+  int scripts = uscript_getCode(locale.c_str(), script_code,
+                                std::size(script_code), &error);
+
+  return U_SUCCESS(error) && scripts >= 1 &&
+         (script_code[0] == USCRIPT_HAN || script_code[0] == USCRIPT_HIRAGANA ||
+          script_code[0] == USCRIPT_YI || script_code[0] == USCRIPT_KATAKANA);
 }
 
 }  // namespace
@@ -261,29 +278,47 @@ void LiveCaptionSpeechRecognitionHost::OnTranslationCallback(
     const std::string& target_language,
     bool is_final,
     const std::string& result) {
-  auto original_sentences =
-      SplitSentences(original_transcription, source_language);
-  auto translated_sentences = SplitSentences(result, target_language);
-  if (is_final) {
-    translation_cache_.clear();
-  } else {
-    if (original_sentences.size() > 1 &&
-        original_sentences.size() == translated_sentences.size()) {
-      for (size_t i = 0; i < original_sentences.size() - 1; i++) {
-        // Sentences are always cached without the trailing space.
-        std::string sentence = RemoveTrailingSpace(original_sentences[i]);
-        translation_cache_.insert(
-            {GetTranslationCacheKey(source_language, target_language, sentence),
-             RemoveTrailingSpace(translated_sentences[i])});
+  std::string formatted_result = result;
+  // Don't cache the translation if the source language is an ideographic
+  // language but the target language is not to avoid translate
+  // sentence by sentence because the Cloud Translation API does not properly
+  // translate ideographic punctuation marks.
+  if (!IsIdeographicLocale(source_language) ||
+      IsIdeographicLocale(target_language)) {
+    auto original_sentences =
+        SplitSentences(original_transcription, source_language);
+    auto translated_sentences = SplitSentences(result, target_language);
+    if (is_final) {
+      translation_cache_.clear();
+    } else {
+      if (original_sentences.size() > 1 &&
+          original_sentences.size() == translated_sentences.size()) {
+        for (size_t i = 0; i < original_sentences.size() - 1; i++) {
+          // Sentences are always cached without the trailing space.
+          std::string sentence = RemoveTrailingSpace(original_sentences[i]);
+          translation_cache_.insert(
+              {GetTranslationCacheKey(source_language, target_language,
+                                      sentence),
+               RemoveTrailingSpace(translated_sentences[i])});
+        }
       }
+    }
+  } else {
+    // Append a space after final results when translating from an ideographic
+    // to non-ideographic locale. The Speech On-Device API (SODA) automatically
+    // prepends a space to recognition events after a final event, but only for
+    // non-ideographic locales.
+    // TODO(crbug.com/1426899): Consider moving this to the LiveTranslateController.
+    if (is_final) {
+      formatted_result += " ";
     }
   }
 
   LiveCaptionController* live_caption_controller = GetLiveCaptionController();
   stop_transcriptions_ = !live_caption_controller->DispatchTranscription(
       context_.get(),
-      media::SpeechRecognitionResult(base::StrCat({cached_translation, result}),
-                                     is_final));
+      media::SpeechRecognitionResult(
+          base::StrCat({cached_translation, formatted_result}), is_final));
 }
 
 content::WebContents* LiveCaptionSpeechRecognitionHost::GetWebContents() {
