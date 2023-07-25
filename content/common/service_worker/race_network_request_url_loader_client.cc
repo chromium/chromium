@@ -104,20 +104,20 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveResponse(
       body_.get(), MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
       base::BindRepeating(
           &ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite,
-          base::Unretained(this)));
+          weak_factory_.GetWeakPtr()));
   body_consumer_watcher_.ArmOrNotify();
   data_pipe_for_race_network_request_.watcher.Watch(
       data_pipe_for_race_network_request_.producer.get(),
       MOJO_HANDLE_SIGNAL_WRITABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
       base::BindRepeating(
           &ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite,
-          base::Unretained(this)));
+          weak_factory_.GetWeakPtr()));
   data_pipe_for_fetch_handler_.watcher.Watch(
       data_pipe_for_fetch_handler_.producer.get(),
       MOJO_HANDLE_SIGNAL_WRITABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
       base::BindRepeating(
           &ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite,
-          base::Unretained(this)));
+          weak_factory_.GetWeakPtr()));
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveRedirect(
@@ -193,6 +193,9 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::Bind(
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::CommitResponse() {
+  if (!owner_) {
+    return;
+  }
   owner_->CommitResponseHeaders(head_);
   owner_->CommitResponseBody(
       head_, std::move(data_pipe_for_race_network_request_.consumer),
@@ -200,7 +203,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::CommitResponse() {
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::MaybeCommitResponse() {
-  if (state_ != State::kWaitForBody) {
+  if (!owner_ || state_ != State::kWaitForBody) {
     return;
   }
   TransitionState(State::kResponseCommitted);
@@ -253,6 +256,9 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::MaybeCompleteResponse() {
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteResponse() {
+  if (!owner_) {
+    return;
+  }
   TransitionState(State::kCompleted);
   switch (owner_->commit_responsibility()) {
     case FetchResponseFrom::kNoResponseYet:
@@ -406,13 +412,14 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::TransitionState(
       state_ = new_state;
       break;
     case State::kDataTransferFinished:
-      CHECK(state_ == State::kResponseCommitted);
+      CHECK_EQ(state_, State::kResponseCommitted);
       state_ = new_state;
       break;
     case State::kCompleted:
       CHECK(state_ == State::kWaitForBody ||
             state_ == State::kResponseCommitted ||
-            state_ == State::kDataTransferFinished);
+            state_ == State::kDataTransferFinished)
+          << "state_:" << static_cast<int>(state_);
       state_ = new_state;
       break;
     case State::kAborted:
