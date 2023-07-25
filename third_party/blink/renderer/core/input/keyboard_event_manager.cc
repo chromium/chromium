@@ -646,9 +646,11 @@ void KeyboardEventManager::DefaultEscapeEventHandler(KeyboardEvent* event) {
     }
   }
 
-  auto* target_node = event->GetEventPath()[0].Target()->ToNode();
-  DCHECK(target_node);
-  HTMLElement::HandlePopoverLightDismiss(*event, *target_node);
+  if (!RuntimeEnabledFeatures::CloseWatcherEnabled()) {
+    auto* target_node = event->GetEventPath()[0].Target()->ToNode();
+    DCHECK(target_node);
+    HTMLElement::HandlePopoverLightDismiss(*event, *target_node);
+  }
 }
 
 void KeyboardEventManager::DefaultEnterEventHandler(KeyboardEvent* event) {

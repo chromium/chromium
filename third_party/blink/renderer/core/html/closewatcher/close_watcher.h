@@ -39,6 +39,8 @@ class CloseWatcher final : public EventTarget, public ExecutionContextClient {
   static CloseWatcher* Create(LocalDOMWindow*,
                               HTMLDialogElement* dialog_for_use_counters);
 
+  static CloseWatcher* Create(LocalDOMWindow*);
+
   explicit CloseWatcher(LocalDOMWindow*,
                         HTMLDialogElement* dialog_for_use_counters);
   void Trace(Visitor*) const override;

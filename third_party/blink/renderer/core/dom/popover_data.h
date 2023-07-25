@@ -8,6 +8,7 @@
 #include "base/check_op.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
+#include "third_party/blink/renderer/core/html/closewatcher/close_watcher.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_menu_element.h"
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -117,11 +118,17 @@ class PopoverData final : public GarbageCollected<PopoverData>,
     owner_select_menu_element_ = element;
   }
 
+  CloseWatcher* closeWatcher() { return close_watcher_; }
+  void setCloseWatcher(CloseWatcher* close_watcher) {
+    close_watcher_ = close_watcher;
+  }
+
   void Trace(Visitor* visitor) const override {
     visitor->Trace(invoker_);
     visitor->Trace(previously_focused_element_);
     visitor->Trace(hover_show_tasks_);
     visitor->Trace(owner_select_menu_element_);
+    visitor->Trace(close_watcher_);
     ElementRareDataField::Trace(visitor);
   }
 
@@ -147,6 +154,8 @@ class PopoverData final : public GarbageCollected<PopoverData>,
   TaskHandle hover_hide_task_;
 
   WeakMember<HTMLSelectMenuElement> owner_select_menu_element_;
+
+  Member<CloseWatcher> close_watcher_;
 };
 
 }  // namespace blink
