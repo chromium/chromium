@@ -2057,6 +2057,19 @@ void BrowserAutofillManager::OnSuggestionsReturned(
                                             trigger_source);
 }
 
+void BrowserAutofillManager::
+    FetchPotentialCardLastFourDigitsCombinationFromDOM() {
+  driver()->GetFourDigitCombinationsFromDOM(base::BindOnce(
+      [](base::WeakPtr<BrowserAutofillManager> self,
+         const std::vector<std::string>& four_digit_combinations_in_dom) {
+        if (!self) {
+          return;
+        }
+        self->four_digit_combinations_in_dom_ = four_digit_combinations_in_dom;
+      },
+      weak_ptr_factory_.GetWeakPtr()));
+}
+
 void BrowserAutofillManager::StoreUploadVotesAndLogQualityCallback(
     FormSignature form_signature,
     base::OnceClosure callback) {
@@ -2219,6 +2232,7 @@ void BrowserAutofillManager::Reset() {
   filling_context_.clear();
   form_autofill_history_.Reset();
   form_submitted_timestamp_ = TimeTicks();
+  four_digit_combinations_in_dom_.clear();
 }
 
 void BrowserAutofillManager::OnContextMenuShownInField(
@@ -2821,6 +2835,47 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
   return suggestions;
 }
 
+base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
+BrowserAutofillManager::GetVirtualCreditCardsForStandaloneCvcField(
+    const url::Origin& origin) {
+  base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
+      virtual_card_guid_to_last_four_map;
+  const std::vector<CreditCard*> cards =
+      client()->GetPersonalDataManager()->GetCreditCards();
+  const std::vector<VirtualCardUsageData*> usage_data =
+      client()->GetPersonalDataManager()->GetVirtualCardUsageData();
+
+  for (const CreditCard* credit_card : cards) {
+    // As we only provide virtual card suggestions for standalone CVC fields,
+    // check if the card is an enrolled virtual card.
+    if (credit_card->virtual_card_enrollment_state() !=
+        CreditCard::VirtualCardEnrollmentState::kEnrolled) {
+      continue;
+    }
+    // Check if card has virtual card usage data on the url origin.
+    auto usage_data_iter = base::ranges::find_if(
+        usage_data,
+        [&origin, &credit_card](VirtualCardUsageData* virtual_card_usage_data) {
+          return virtual_card_usage_data->instrument_id().value() ==
+                     credit_card->instrument_id() &&
+                 virtual_card_usage_data->merchant_origin() == origin;
+        });
+
+    // If card has eligible usage data, check if last four is in the url DOM.
+    if (usage_data_iter != usage_data.end()) {
+      VirtualCardUsageData::VirtualCardLastFour virtual_card_last_four =
+          (*usage_data_iter)->virtual_card_last_four();
+      if (base::Contains(four_digit_combinations_in_dom_,
+                         base::UTF16ToUTF8(virtual_card_last_four.value()))) {
+        // Card has usage data on webpage and last four is present in DOM.
+        virtual_card_guid_to_last_four_map.insert(
+            {credit_card->guid(), virtual_card_last_four});
+      }
+    }
+  }
+  return virtual_card_guid_to_last_four_map;
+}
+
 // TODO(crbug.com/1309848) Eliminate and replace with a listener?
 // Should we do the same with all the other BrowserAutofillManager events?
 void BrowserAutofillManager::OnBeforeProcessParsedForms() {
@@ -2836,6 +2891,21 @@ void BrowserAutofillManager::OnBeforeProcessParsedForms() {
 void BrowserAutofillManager::OnFormProcessed(
     const FormData& form,
     const FormStructure& form_structure) {
+  // If a standalone cvc field is found in the form, query the DOM for last four
+  // combinations. Used to search for the virtual card last four for a virtual
+  // card saved on file of a merchant webpage.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillParseVcnCardOnFileStandaloneCvcFields)) {
+    auto contains_standalone_cvc_field =
+        base::ranges::any_of(form_structure.fields(), [](const auto& field) {
+          return field->Type().GetStorableType() ==
+                 CREDIT_CARD_STANDALONE_VERIFICATION_CODE;
+        });
+    if (contains_standalone_cvc_field) {
+      FetchPotentialCardLastFourDigitsCombinationFromDOM();
+    }
+  }
+
   if (data_util::ContainsPhone(data_util::DetermineGroups(form_structure))) {
     has_observed_phone_number_field_ = true;
   }

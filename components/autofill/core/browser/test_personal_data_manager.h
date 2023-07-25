@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
@@ -110,6 +111,9 @@ class TestPersonalDataManager : public PersonalDataManager {
   // Adds a `url` to `image` mapping to the local `credit_card_art_images_`
   // cache.
   void AddCardArtImage(const GURL& url, const gfx::Image& image);
+
+  // Adds `usage_data` to `autofill_virtual_card_usage_data_`.
+  void AddVirtualCardUsageData(const VirtualCardUsageData& usage_data);
 
   // Sets a local/server card's nickname based on the provided |guid|.
   void SetNicknameForCardWithGUID(std::string_view guid,

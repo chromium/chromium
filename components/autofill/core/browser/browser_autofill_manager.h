@@ -279,12 +279,16 @@ class BrowserAutofillManager : public AutofillManager,
   void Reset() override;
   void OnContextMenuShownInField(const FormGlobalId& form_global_id,
                                  const FieldGlobalId& field_global_id) override;
-
   // SingleFieldFormFiller::SuggestionsHandler:
   void OnSuggestionsReturned(
       FieldGlobalId field_id,
       AutofillSuggestionTriggerSource trigger_source,
       const std::vector<Suggestion>& suggestions) override;
+
+  // Retrieves the four digit combinations from the DOM of the current web page
+  // and stores them in `four_digit_combinations_in_dom_`. This is used to check
+  // for the virtual card last four when checking for standalone CVC field.
+  void FetchPotentialCardLastFourDigitsCombinationFromDOM();
 
   // Returns true if either Profile or CreditCard Autofill is enabled.
   virtual bool IsAutofillEnabled() const;
@@ -567,6 +571,13 @@ class BrowserAutofillManager : public AutofillManager,
       const AutofillType& type,
       bool& should_display_gpay_logo) const;
 
+  // Returns a mapping of credit card guid values to virtual card last fours for
+  // standalone CVC field. Cards will only be added to the returned map if they
+  // have usage data on the webpage and the VCN last four was found on webpage
+  // DOM.
+  base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
+  GetVirtualCreditCardsForStandaloneCvcField(const url::Origin& origin);
+
   // If |initial_interaction_timestamp_| is unset or is set to a later time than
   // |interaction_timestamp|, updates the cached timestamp.  The latter check is
   // needed because IPC messages can arrive out of order.
@@ -833,6 +844,12 @@ class BrowserAutofillManager : public AutofillManager,
 
   // The source that triggered unlocking a server card with the CVC.
   absl::optional<AutofillTriggerSource> fetched_credit_card_trigger_source_;
+
+  // Contains a list of four digit combinations that were found in the webpage
+  // DOM. Populated after a standalone cvc field is processed on a form. Used to
+  // confirm that the virtual card last four is present in the webpage for card
+  // on file case.
+  std::vector<std::string> four_digit_combinations_in_dom_;
 
   base::WeakPtrFactory<BrowserAutofillManager> weak_ptr_factory_{this};
 };

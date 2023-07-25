@@ -371,6 +371,13 @@ void TestPersonalDataManager::AddCardArtImage(const GURL& url,
   NotifyPersonalDataObserver();
 }
 
+void TestPersonalDataManager::AddVirtualCardUsageData(
+    const VirtualCardUsageData& usage_data) {
+  autofill_virtual_card_usage_data_.push_back(
+      std::make_unique<VirtualCardUsageData>(usage_data));
+  NotifyPersonalDataObserver();
+}
+
 void TestPersonalDataManager::SetNicknameForCardWithGUID(
     std::string_view guid,
     std::string_view nickname) {

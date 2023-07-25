@@ -105,11 +105,21 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
         form_structure, autofill_field, AutofillTriggerSource::kPopup);
   }
 
+  base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
+  GetVirtualCreditCardsForStandaloneCvcField(const url::Origin& origin) {
+    return manager_->GetVirtualCreditCardsForStandaloneCvcField(origin);
+  }
+
   FormData* pending_form_data() { return manager_->pending_form_data_.get(); }
 
   void OnFormProcessed(const FormData& form,
                        const FormStructure& form_structure) {
     manager_->OnFormProcessed(form, form_structure);
+  }
+
+  void SetFourDigitCombinationsInDOM(
+      const std::vector<std::string>& combinations) {
+    manager_->four_digit_combinations_in_dom_ = combinations;
   }
 
  private:
