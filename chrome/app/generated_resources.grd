@@ -3721,7 +3721,7 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY" desc="Descriptive text in the cookie controls bubble explaining the trade-off of temporarily allowing third-party cookies for this site, a change that will automatically expire in the future.">
         Try temporarily allowing third-party cookies, which means less protection but site features are more likely to work
       </message>
-      <message name="IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_PERMANENT" translateable="false" desc="Descriptive text in the cookie controls bubble explaining the trade-off of allowing third-party cookies for this site, a change that will not automatically expire in the future.">
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_PERMANENT" desc="Descriptive text in the cookie controls bubble explaining the trade-off of allowing third-party cookies for this site, a change that will not automatically expire in the future.">
         Try allowing third-party cookies, which means less protection but site features are more likely to work
       </message>
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_TITLE" desc="Subtitle shown on the cookie controls bubble when cookies are allowed temporarily, indicating how long until they are no longer allowed.">
@@ -3732,10 +3732,10 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_DESCRIPTION_TODAY" desc="Descriptive text in the cookie controls bubble after the user has allowed third-party cookies on a site explaining the trade-off of their decision.">
         You allowed this site to use third-party cookies. This means that most site features should work, but you have less protection.
       </message>
-      <message name="IDS_COOKIE_CONTROLS_BUBBLE_PERMANENT_ALLOWED_TITLE" translateable="false"  desc="A subtitle in the cookie controls bubble if cookies were allowed by the user and they won't be automatically blocked again the future.">
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_PERMANENT_ALLOWED_TITLE" desc="A subtitle in the cookie controls bubble if cookies were allowed by the user and they won't be automatically blocked again the future.">
         You allowed third-party cookies for this site
       </message>
-      <message name="IDS_COOKIE_CONTROLS_BUBBLE_PERMANENT_ALLOWED_DESCRIPTION" translateable="false"  desc="A description in the cookie controls bubble of the impact of current user settings for this site if cookies are allowed and they won't be automatically blocked again in the future.">
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_PERMANENT_ALLOWED_DESCRIPTION" desc="A description in the cookie controls bubble of the impact of current user settings for this site if cookies are allowed and they won't be automatically blocked again in the future.">
         This means that most site features should work, but you have less protection
       </message>
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_SEND_FEEDBACK_BUTTON_TITLE" desc="A subtitle for a portion of the cookie controls bubble soliciting feedback from users.">
