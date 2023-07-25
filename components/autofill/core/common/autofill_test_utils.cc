@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
+#include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -211,33 +212,20 @@ FormFieldData CreateTestSelectOrSelectMenuField(
     const std::vector<const char*>& values,
     const std::vector<const char*>& contents,
     std::string_view field_type) {
-  FormFieldData field;
-  CreateTestSelectOrSelectMenuField(label, name, value, autocomplete, values,
-                                    contents, field_type, &field);
-  return field;
-}
-
-void CreateTestSelectOrSelectMenuField(std::string_view label,
-                                       std::string_view name,
-                                       std::string_view value,
-                                       std::string_view autocomplete,
-                                       const std::vector<const char*>& values,
-                                       const std::vector<const char*>& contents,
-                                       std::string_view field_type,
-                                       FormFieldData* field) {
   CHECK(field_type == "select-one" || field_type == "selectmenu");
-  CreateTestFormField(label, name, value, field_type, field);
-  field->autocomplete_attribute = autocomplete;
-  field->parsed_autocomplete = ParseAutocompleteAttribute(autocomplete);
+  FormFieldData field = CreateTestFormField(label, name, value, field_type);
+  field.autocomplete_attribute = autocomplete;
+  field.parsed_autocomplete = ParseAutocompleteAttribute(autocomplete);
 
-  field->options.clear();
   CHECK_EQ(values.size(), contents.size());
-  for (size_t i = 0; i < std::min(values.size(), contents.size()); ++i) {
-    field->options.push_back({
+  field.options.reserve(values.size());
+  for (size_t i = 0; i < values.size(); ++i) {
+    field.options.push_back({
         .value = base::UTF8ToUTF16(values[i]),
         .content = base::UTF8ToUTF16(contents[i]),
     });
   }
+  return field;
 }
 
 FormFieldData CreateTestDatalistField(std::string_view label,

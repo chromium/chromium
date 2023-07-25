@@ -1806,11 +1806,10 @@ class AutofillFillAugmentedPhoneCountryCodeTest
 void DoTestFillAugmentedPhoneCountryCodeField(
     const FillAugmentedPhoneCountryCodeTestCase& test_case,
     const char* field_type) {
-  AutofillField field;
-  test::CreateTestSelectOrSelectMenuField(
+  AutofillField field(test::CreateTestSelectOrSelectMenuField(
       /*label=*/"", /*name=*/"", /*value=*/"", /*autocomplete=*/"",
       test_case.phone_country_code_selection_options,
-      test_case.phone_country_code_selection_options, field_type, &field);
+      test_case.phone_country_code_selection_options, field_type));
   field.set_heuristic_type(GetActivePatternSource(), PHONE_HOME_COUNTRY_CODE);
 
   AutofillProfile address;

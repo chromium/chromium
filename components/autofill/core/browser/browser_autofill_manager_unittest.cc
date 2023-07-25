@@ -123,6 +123,7 @@ namespace autofill {
 using mojom::SubmissionIndicatorEvent;
 using mojom::SubmissionSource;
 using test::CreateTestSelectField;
+using test::CreateTestSelectOrSelectMenuField;
 
 namespace {
 
@@ -4538,22 +4539,19 @@ TEST_F(BrowserAutofillManagerTest, DoNotFillUnfocusableFieldsExceptForSelect) {
   field.is_focusable = false;
   form.fields.push_back(field);
 
-  test::CreateTestSelectOrSelectMenuField(
+  form.fields.push_back(test::CreateTestSelectOrSelectMenuField(
       "Country", "country", "", "", {"CA", "US"}, {"Canada", "United States"},
-      "selectmenu", &field);
-  field.is_focusable = false;
-  form.fields.push_back(field);
+      "selectmenu"));
+  form.fields.back().is_focusable = false;
 
-  test::CreateTestSelectOrSelectMenuField(
+  form.fields.push_back(test::CreateTestSelectOrSelectMenuField(
       "Country", "country", "", "", {"CA", "US"}, {"Canada", "United States"},
-      "selectmenu", &field);
-  form.fields.push_back(field);
+      "selectmenu"));
 
-  test::CreateTestSelectOrSelectMenuField(
+  form.fields.push_back(test::CreateTestSelectOrSelectMenuField(
       "Country", "country", "", "", {"CA", "US"}, {"Canada", "United States"},
-      "select-one", &field);
-  field.is_focusable = false;
-  form.fields.push_back(field);
+      "select-one"));
+  form.fields.back().is_focusable = false;
 
   FormsSeen({form});
 
@@ -7391,22 +7389,18 @@ void DoTestDeterminePossibleFieldTypesForUploadOfSelect(
 
   // We want the "Memphis" in <option value="2">Memphis</option> to be
   // recognized.
-  FormFieldData city_field;
-  test::CreateTestSelectOrSelectMenuField(
+  FormFieldData city_field = CreateTestSelectOrSelectMenuField(
       "label", "name", /*value=*/"2", /*autocomplete=*/"",
       /*values=*/{"1", "2", "3"},
-      /*contents=*/{"New York", "Memphis", "Gotham City"}, field_type,
-      &city_field);
+      /*contents=*/{"New York", "Memphis", "Gotham City"}, field_type);
 
   // We want the +1 in <option value="US">USA (+1)</option> to be recognized
   // as a phone country code. Despite the value "US", we don't want this to be
   // recognized as a country field.
-  FormFieldData phone_country_code_field;
-  test::CreateTestSelectOrSelectMenuField(
+  FormFieldData phone_country_code_field = CreateTestSelectOrSelectMenuField(
       "label", "name", /*value=*/"US", /*autocomplete=*/"",
       /*values=*/{"US", "DE"},
-      /*contents=*/{"USA (+1)", "Germany (+49)"}, field_type,
-      &phone_country_code_field);
+      /*contents=*/{"USA (+1)", "Germany (+49)"}, field_type);
 
   form.fields = {city_field, phone_country_code_field};
 

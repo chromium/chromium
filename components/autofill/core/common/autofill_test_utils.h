@@ -182,14 +182,6 @@ FormFieldData CreateTestSelectOrSelectMenuField(
     const std::vector<const char*>& values,
     const std::vector<const char*>& contents,
     std::string_view field_type);
-void CreateTestSelectOrSelectMenuField(std::string_view label,
-                                       std::string_view name,
-                                       std::string_view value,
-                                       std::string_view autocomplete,
-                                       const std::vector<const char*>& values,
-                                       const std::vector<const char*>& contents,
-                                       std::string_view field_type,
-                                       FormFieldData* field);
 
 // Provides a quick way to populate a datalist field.
 FormFieldData CreateTestDatalistField(std::string_view label,
