@@ -38,6 +38,7 @@ struct CONTENT_EXPORT StoredCapabilities {
 // This class represents the stored payment app.
 struct CONTENT_EXPORT StoredPaymentApp {
   StoredPaymentApp();
+  StoredPaymentApp(const StoredPaymentApp& other);
   ~StoredPaymentApp();
 
   // Id of the service worker registration this app is associated with.

@@ -54,6 +54,11 @@ BASE_DECLARE_FEATURE(kPaymentHandlerMinimalHeaderUX);
 BASE_DECLARE_FEATURE(kPaymentHandlerWindowInTaskManager);
 #endif
 
+// If enabled, the web-app manifest for already-installed service-worker apps
+// will always be refetched for every Payment Request, in order to potentially
+// refresh the icon for the app.
+BASE_DECLARE_FEATURE(kPaymentHandlerAlwaysRefreshIcon);
+
 }  // namespace features
 }  // namespace payments
 

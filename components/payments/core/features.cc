@@ -69,5 +69,9 @@ BASE_FEATURE(kPaymentHandlerWindowInTaskManager,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kPaymentHandlerAlwaysRefreshIcon,
+             "PaymentHandlerAlwaysRefreshIcon",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace payments

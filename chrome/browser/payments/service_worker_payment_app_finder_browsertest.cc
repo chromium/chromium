@@ -33,12 +33,19 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace payments {
 namespace {
-
 static const char kDefaultScope[] = "/app1/";
 
+void GetAllInstalledPaymentAppsCallback(
+    base::OnceClosure done_callback,
+    content::InstalledPaymentAppsFinder::PaymentApps* out_apps,
+    content::InstalledPaymentAppsFinder::PaymentApps apps) {
+  *out_apps = std::move(apps);
+  std::move(done_callback).Run();
+}
 }  // namespace
 
 // Tests for the service worker payment app finder.
@@ -88,6 +95,7 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
 
   // Starts the test severs and opens a test page on alicepay.test.
   void SetUpOnMainThread() override {
+    ASSERT_TRUE(StartTestServer("", &https_server_));
     ASSERT_TRUE(StartTestServer("alicepay.test", &alicepay_));
     ASSERT_TRUE(StartTestServer("bobpay.test", &bobpay_));
     ASSERT_TRUE(StartTestServer("charliepay.test", &charliepay_));
@@ -179,9 +187,6 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
     downloader->AddTestServerURL(
         "https://larry.example.test/",
         larry_example_.GetURL("larry.example.test", "/"));
-
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), alicepay_.GetURL("chromium.org", "/")));
 
     auto* finder = ServiceWorkerPaymentAppFinder::GetOrCreateForCurrentDocument(
         browser()
@@ -300,6 +305,10 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
     return true;
   }
 
+ protected:
+  // Main test server, which serves components/test/data/payments.
+  net::EmbeddedTestServer https_server_;
+
   // https://alicepay.test hosts the payment app.
   net::EmbeddedTestServer alicepay_;
 
@@ -363,6 +372,7 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
   // https://harry.example.test/webpay/.
   net::EmbeddedTestServer larry_example_;
 
+ private:
   // The installed apps that have been found by the factory in
   // GetAllPaymentAppsForMethods() method.
   content::InstalledPaymentAppsFinder::PaymentApps apps_;
@@ -846,6 +856,106 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderBrowserTest,
     EXPECT_TRUE(installable_apps().empty());
     EXPECT_EQ(expected_error_message, error_message());
   }
+}
+
+// Tests that service worker payment apps are able to respond to the icon
+// changing in their manifest file.
+class ServiceWorkerPaymentAppFinderIconRefreshBrowserTest
+    : public ServiceWorkerPaymentAppFinderBrowserTest {
+ public:
+  ServiceWorkerPaymentAppFinderIconRefreshBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kPaymentHandlerAlwaysRefreshIcon);
+  }
+  ~ServiceWorkerPaymentAppFinderIconRefreshBrowserTest() override = default;
+
+  content::InstalledPaymentAppsFinder::PaymentApps GetInstalledPaymentApps() {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+
+    base::RunLoop run_loop;
+    content::InstalledPaymentAppsFinder::PaymentApps apps;
+    content::InstalledPaymentAppsFinder::GetInstance(
+        web_contents->GetBrowserContext())
+        ->GetAllPaymentApps(base::BindOnce(&GetAllInstalledPaymentAppsCallback,
+                                           run_loop.QuitClosure(), &apps));
+    run_loop.Run();
+
+    return apps;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderIconRefreshBrowserTest,
+                       PaymentAppUpdatesWhenIconChanges) {
+  // Start by installing the KylePay app directly, with an initial icon.
+  ASSERT_TRUE(
+      PaymentAppInstallUtil::InstallPaymentAppForPaymentMethodIdentifier(
+          *browser()->tab_strip_model()->GetActiveWebContents(),
+          kylepay_.GetURL("kylepay.test", "/app.js"),
+          "https://kylepay.test/webpay",
+          PaymentAppInstallUtil::IconInstall::kWithIcon));
+
+  content::InstalledPaymentAppsFinder::PaymentApps original_apps =
+      GetInstalledPaymentApps();
+  ASSERT_EQ(original_apps.size(), 1u);
+  SkBitmap original_icon = *original_apps.begin()->second->icon;
+
+  // Next, initialize a lookup against KylePay. This should trigger a manifest
+  // fetch, and asynchronously pick up the icon specified in KylePay's manifest
+  // - which is different than InstallPaymentAppForPaymentMethodIdentifier.
+  GetAllPaymentAppsForMethods({"https://kylepay.test/webpay"});
+
+  // Because icon update is asynchronous, the app returned by
+  // GetAllPaymentAppsForMethods will still have the old icon.
+  ASSERT_EQ(apps().size(), 1u);
+  EXPECT_TRUE(
+      gfx::test::AreBitmapsEqual(*apps().begin()->second->icon, original_icon));
+  EXPECT_TRUE(installable_apps().empty());
+  EXPECT_TRUE(error_message().empty());
+
+  // But if we now get updated information on the installed app, it should have
+  // the new icon associated with it.
+  content::InstalledPaymentAppsFinder::PaymentApps updated_apps =
+      GetInstalledPaymentApps();
+  ASSERT_EQ(updated_apps.size(), 1u);
+  EXPECT_FALSE(gfx::test::AreBitmapsEqual(*updated_apps.begin()->second->icon,
+                                          original_icon));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderIconRefreshBrowserTest,
+                       FailedIconFetchDoesNotOverrideOldIcon) {
+  // Start by installing the KylePay app directly, with an initial icon.
+  ASSERT_TRUE(
+      PaymentAppInstallUtil::InstallPaymentAppForPaymentMethodIdentifier(
+          *browser()->tab_strip_model()->GetActiveWebContents(),
+          kylepay_.GetURL("kylepay.test", "/app.js"),
+          "https://kylepay.test/webpay",
+          PaymentAppInstallUtil::IconInstall::kWithIcon));
+
+  content::InstalledPaymentAppsFinder::PaymentApps original_apps =
+      GetInstalledPaymentApps();
+  ASSERT_EQ(original_apps.size(), 1u);
+  SkBitmap original_icon = *original_apps.begin()->second->icon;
+
+  // Navigate to a page with strict CSP so that Kylepay's icon fetch fails.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("/csp_prevent_icon_download.html")));
+
+  // Next, initialize a lookup against KylePay. This should trigger a manifest
+  // fetch, and asynchronously try to fetch the icon specified in KylePay's
+  // manifest - but the fetch will fail due to CSP.
+  GetAllPaymentAppsForMethods({"https://kylepay.test/webpay"});
+
+  // If we now get updated information on the installed app, it should still
+  // have the origin icon - the failed fetch should have no effect.
+  content::InstalledPaymentAppsFinder::PaymentApps updated_apps =
+      GetInstalledPaymentApps();
+  ASSERT_EQ(updated_apps.size(), 1u);
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(*updated_apps.begin()->second->icon,
+                                         original_icon));
 }
 
 // The parameterized test fixture that resets the CSP checker after N=GetParam()
