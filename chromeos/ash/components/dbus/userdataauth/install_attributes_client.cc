@@ -238,8 +238,7 @@ class InstallAttributesClientImpl : public InstallAttributesClient {
     }
 
     std::unique_ptr<dbus::Response> response(
-        blocking_method_caller_->CallMethodAndBlock(&method_call)
-            .value_or(nullptr));
+        blocking_method_caller_->CallMethodAndBlock(&method_call));
 
     if (!response) {
       LOG(ERROR) << "DBus call failed for InstallAttributes method (blocking) "
