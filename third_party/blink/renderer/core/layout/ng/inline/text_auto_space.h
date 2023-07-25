@@ -35,6 +35,11 @@ class CORE_EXPORT TextAutoSpace {
   static CharType GetTypeAndNext(const String& text, wtf_size_t& offset);
   // `GetType` of the character before `offset`.
   static CharType GetPrevType(const String& text, wtf_size_t offset);
+
+  // `CharType::kIdeograph` is `USCRIPT_HAN`, except characters in this range
+  // may be other scripts.
+  constexpr static UChar32 kNonHanIdeographMin = 0x3041;
+  constexpr static UChar32 kNonHanIdeographMax = 0x31FF;
 };
 
 CORE_EXPORT std::ostream& operator<<(std::ostream& ostream,

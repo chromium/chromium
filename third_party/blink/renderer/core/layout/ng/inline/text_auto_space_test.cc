@@ -13,11 +13,28 @@ namespace blink {
 
 namespace {
 
+using testing::ElementsAre;
 using testing::ElementsAreArray;
 
 class TextAutoSpaceTest : public RenderingTest, ScopedCSSTextAutoSpaceForTest {
 public:
   explicit TextAutoSpaceTest() : ScopedCSSTextAutoSpaceForTest(true) {}
+
+  Vector<wtf_size_t> AutoSpaceOffsets(String html) {
+    SetBodyInnerHTML(String(R"HTML(
+    <style>
+    #container {
+      font-size: 10px;
+    }
+    </style>
+    <div id="container">)HTML") +
+                     html + "</div>");
+    const auto* container = GetLayoutBlockFlowByElementId("container");
+    NGInlineNodeData* node_data = container->GetNGInlineNodeData();
+    Vector<wtf_size_t> offsets;
+    TextAutoSpace::ApplyIfNeeded(*node_data, &offsets);
+    return offsets;
+  }
 };
 
 TEST_F(TextAutoSpaceTest, Check8Bit) {
@@ -58,6 +75,26 @@ TEST_P(TextAutoSpaceTypeTest, Char) {
   EXPECT_EQ(TextAutoSpace::GetType(data.ch), data.type);
 }
 
+// Test the optimizations in `ApplyIfNeeded` don't affect results.
+TEST_F(TextAutoSpaceTest, NonHanIdeograph) {
+  // For boundary-check, extend the range by 1 to lower and to upper.
+  for (UChar ch = TextAutoSpace::kNonHanIdeographMin - 1;
+       ch <= TextAutoSpace::kNonHanIdeographMax + 1; ++ch) {
+    StringBuilder builder;
+    builder.Append("X");
+    builder.Append(ch);
+    builder.Append("X");
+    const String html = builder.ToString();
+    Vector<wtf_size_t> offsets = AutoSpaceOffsets(html);
+    TextAutoSpace::CharType type = TextAutoSpace::GetType(ch);
+    if (type == TextAutoSpace::kIdeograph) {
+      EXPECT_THAT(offsets, ElementsAre(1, 2)) << String::Format("U+%04X", ch);
+    } else {
+      EXPECT_THAT(offsets, ElementsAre()) << String::Format("U+%04X", ch);
+    }
+  }
+}
+
 struct HtmlData {
   const UChar* html;
   std::vector<wtf_size_t> offsets;
@@ -79,7 +116,7 @@ struct HtmlData {
     {u"ああ<span>Aああ</span>", {2, 3}},
     {u"ああ 12 ああ", {}},
 };
-class HtmlTest : public RenderingTest,
+class HtmlTest : public TextAutoSpaceTest,
                  public testing::WithParamInterface<HtmlData> {};
 INSTANTIATE_TEST_SUITE_P(TextAutoSpaceTest,
                          HtmlTest,
@@ -87,18 +124,7 @@ INSTANTIATE_TEST_SUITE_P(TextAutoSpaceTest,
 
 TEST_P(HtmlTest, Apply) {
   const auto& test = GetParam();
-  SetBodyInnerHTML(String(R"HTML(
-    <style>
-    #container {
-      font-size: 10px;
-    }
-    </style>
-    <div id="container">)HTML") +
-                   test.html + "</div>");
-  const auto* container = GetLayoutBlockFlowByElementId("container");
-  NGInlineNodeData* node_data = container->GetNGInlineNodeData();
-  Vector<wtf_size_t> offsets;
-  TextAutoSpace::ApplyIfNeeded(*node_data, &offsets);
+  Vector<wtf_size_t> offsets = AutoSpaceOffsets(test.html);
   EXPECT_THAT(offsets, ElementsAreArray(test.offsets));
 }
 

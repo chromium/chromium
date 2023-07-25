@@ -16,14 +16,31 @@ namespace blink {
 
 namespace {
 
-// True if the script is one of "Ideographs" defined in CSS Text:
+// Check if the argument maybe "Ideographs" defined in CSS Text:
 // https://drafts.csswg.org/css-text-4/#text-spacing-classes
+// without getting Unicode properties, which is not slow but also not trivial.
+//
+// If this returns `false`, the text with the script does not contain
+// "Ideographs."
+//
 // Note, this doesn't cover all ideographs as defined in Unicode.
-inline bool IsIdeograph(UScriptCode script) {
+inline bool MaybeIdeograph(UScriptCode script, StringView text) {
   // `ScriptRunIterator` normalizes these scripts to `USCRIPT_HIRAGANA`.
   DCHECK_NE(script, USCRIPT_KATAKANA);
   DCHECK_NE(script, USCRIPT_KATAKANA_OR_HIRAGANA);
-  return script == USCRIPT_HAN || script == USCRIPT_HIRAGANA;
+  if (script == USCRIPT_HAN || script == USCRIPT_HIRAGANA) {
+    return true;
+  }
+  // The "Ideographs" definition contains `USCRIPT_COMMON` and
+  // `USCRIPT_INHERITED`, which can inherit scripts from its previous character.
+  // They will be, for example, `USCRIPT_LATIN` if the previous character is
+  // `USCRIPT_LATIN`. Check if we have any such characters.
+  CHECK(!text.Is8Bit());
+  return std::any_of(text.Characters16(), text.Characters16() + text.length(),
+                     [](const UChar ch) {
+                       return ch >= TextAutoSpace::kNonHanIdeographMin &&
+                              ch <= TextAutoSpace::kNonHanIdeographMax;
+                     });
 }
 
 }  // namespace
@@ -41,13 +58,14 @@ void TextAutoSpace::ApplyIfNeeded(NGInlineItemsData& data,
     return;
   }
 
-  // Compute `RunSegmenterRange` for the whole text content. It's pre-computed,
-  // but packed in `NGInlineItemSegments` to save memory.
+  // `RunSegmenterRange` is used to find where we can skip computing Unicode
+  // properties. Compute them for the whole text content. It's pre-computed, but
+  // packed in `NGInlineItemSegments` to save memory.
   NGInlineItemSegments::RunSegmenterRanges ranges;
   if (!data.segments) {
     const NGInlineItem& item0 = items.front();
     RunSegmenter::RunSegmenterRange range = item0.CreateRunSegmenterRange();
-    if (!IsIdeograph(range.script)) {
+    if (!MaybeIdeograph(range.script, text)) {
       return;
     }
     range.end = text.length();
@@ -55,8 +73,10 @@ void TextAutoSpace::ApplyIfNeeded(NGInlineItemsData& data,
   } else {
     data.segments->ToRanges(ranges);
     if (std::none_of(ranges.begin(), ranges.end(),
-                     [](const RunSegmenter::RunSegmenterRange& range) {
-                       return IsIdeograph(range.script);
+                     [&text](const RunSegmenter::RunSegmenterRange& range) {
+                       return MaybeIdeograph(
+                           range.script, StringView(text, range.start,
+                                                    range.end - range.start));
                      })) {
       return;
     }
@@ -95,27 +115,12 @@ void TextAutoSpace::ApplyIfNeeded(NGInlineItemsData& data,
       DCHECK_GE(offset, range->start);
       DCHECK_LT(offset, range->end);
 
+      // If the range is known not to contain any `kIdeograph` characters, check
+      // only the first and the last character.
       const wtf_size_t end_offset = std::min(range->end, item.EndOffset());
       DCHECK_LT(offset, end_offset);
-      if (IsIdeograph(range->script)) {
-        // When the script is ideograph, it may contain digits because they are
-        // COMMON. Scan the text.
-        if (!last_type) {
-          DCHECK_GT(offset, 0u);
-          last_type = GetPrevType(text, offset);
-        }
-        while (offset < end_offset) {
-          const wtf_size_t saved_offset = offset;
-          const CharType type = GetTypeAndNext(text, offset);
-          if ((type == kIdeograph && last_type == kLetterOrNumeral) ||
-              (last_type == kIdeograph && type == kLetterOrNumeral)) {
-            offsets.push_back(saved_offset);
-          }
-          last_type = type;
-        }
-      } else {
-        // When the script isn't ideograph, it must not contain ideographs.
-        // Check the first and the last character.
+      if (!MaybeIdeograph(range->script,
+                          StringView(text, offset, end_offset - offset))) {
         if (last_type == kIdeograph) {
           const wtf_size_t saved_offset = offset;
           const CharType type = GetTypeAndNext(text, offset);
@@ -133,6 +138,23 @@ void TextAutoSpace::ApplyIfNeeded(NGInlineItemsData& data,
           last_type.reset();
           offset = end_offset;
         }
+        continue;
+      }
+
+      // Compute the `CharType` for each character and check if spacings should
+      // be inserted.
+      if (!last_type) {
+        DCHECK_GT(offset, 0u);
+        last_type = GetPrevType(text, offset);
+      }
+      while (offset < end_offset) {
+        const wtf_size_t saved_offset = offset;
+        const CharType type = GetTypeAndNext(text, offset);
+        if ((type == kIdeograph && last_type == kLetterOrNumeral) ||
+            (last_type == kIdeograph && type == kLetterOrNumeral)) {
+          offsets.push_back(saved_offset);
+        }
+        last_type = type;
       }
     } while (offset < item.EndOffset());
 
@@ -169,10 +191,12 @@ TextAutoSpace::CharType TextAutoSpace::GetType(UChar32 ch) {
   // This logic is based on:
   // https://drafts.csswg.org/css-text-4/#text-spacing-classes
   const uint32_t gc_mask = U_GET_GC_MASK(ch);
-  if (ch >= 0x3041 && ch <= 0x30FF && !(gc_mask & U_GC_P_MASK)) {
+  static_assert(kNonHanIdeographMin <= 0x30FF && 0x30FF <= kNonHanIdeographMax);
+  if (ch >= kNonHanIdeographMin && ch <= 0x30FF && !(gc_mask & U_GC_P_MASK)) {
     return kIdeograph;
   }
-  if (ch >= 0x31C0 && ch <= 0x31FF) {
+  static_assert(kNonHanIdeographMin <= 0x31C0 && 0x31C0 <= kNonHanIdeographMax);
+  if (ch >= 0x31C0 && ch <= kNonHanIdeographMax) {
     return kIdeograph;
   }
   UErrorCode err = U_ZERO_ERROR;
