@@ -169,7 +169,7 @@ bool UpdateTaskCategory(
   if (!base::PathService::Get(base::FILE_EXE, &chrome_path))
     return false;
 
-  int icon_index = install_static::GetIconResourceIndex();
+  int icon_index = install_static::GetAppIconResourceIndex();
 
   ShellLinkItemList items;
 

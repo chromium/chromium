@@ -155,8 +155,15 @@ bool SupportsSetAsDefaultBrowser();
 // installer following updates.
 bool SupportsRetentionExperiments();
 
-// Returns the index of the icon resource in the main executable for the mode.
-int GetIconResourceIndex();
+// Returns the index of the app icon resource in the main executable for the
+// mode.
+int GetAppIconResourceIndex();
+
+// Returns the index of the HTML icon resource for .html and related files.
+int GetHTMLIconResourceIndex();
+
+// Returns the index of the PDF icon resource for pdf files.
+int GetPDFIconResourceIndex();
 
 // Get sandbox id of current install mode.
 const wchar_t* GetSandboxSidPrefix();

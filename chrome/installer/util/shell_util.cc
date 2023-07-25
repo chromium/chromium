@@ -335,20 +335,19 @@ void GetProgIdEntries(const ShellUtil::ApplicationInfo& app_info,
 }
 
 // This method returns a list of all the registry entries that are needed to
-// register this installation's ProgId and AppId. These entries need to be
-// registered in HKLM prior to Win8.
+// register this installation's ProgIds and AppId.
 void GetChromeProgIdEntries(
     const base::FilePath& chrome_exe,
     const std::wstring& suffix,
     std::vector<std::unique_ptr<RegistryEntry>>* entries) {
-  int chrome_icon_index = install_static::GetIconResourceIndex();
+  int chrome_html_icon_index = install_static::GetHTMLIconResourceIndex();
 
   ShellUtil::ApplicationInfo app_info;
   app_info.prog_id = GetBrowserProgId(suffix);
   app_info.file_type_name = install_static::GetProgIdDescription();
   // File types associated with Chrome are just given the Chrome icon.
   app_info.file_type_icon_path = chrome_exe;
-  app_info.file_type_icon_index = chrome_icon_index;
+  app_info.file_type_icon_index = chrome_html_icon_index;
   app_info.command_line = ShellUtil::GetChromeShellOpenCmd(chrome_exe);
   // For user-level installs: entries for the app id will be in HKCU; thus we
   // do not need a suffix on those entries.
@@ -359,7 +358,7 @@ void GetChromeProgIdEntries(
   // resource for name, description, and company.
   app_info.application_name = InstallUtil::GetDisplayName();
   app_info.application_icon_path = chrome_exe;
-  app_info.application_icon_index = chrome_icon_index;
+  app_info.application_icon_index = chrome_html_icon_index;
   app_info.application_description = InstallUtil::GetAppDescription();
   app_info.publisher_name = InstallUtil::GetPublisherName();
   app_info.delegate_clsid = install_static::GetLegacyCommandExecuteImplClsid();
@@ -395,15 +394,14 @@ void GetProtocolCapabilityEntries(
 
 // This method returns a list of the registry entries required to register this
 // installation in "RegisteredApplications" on Windows (to appear in Default
-// Programs, StartMenuInternet, etc.). These entries need to be registered in
-// HKLM prior to Win8. If |suffix| is not empty, these entries are guaranteed to
-// be unique on this machine.
+// Programs, StartMenuInternet, etc.). If `suffix` is not empty, these entries
+// are guaranteed to be unique on this machine.
 void GetShellIntegrationEntries(
     const base::FilePath& chrome_exe,
     const std::wstring& suffix,
     std::vector<std::unique_ptr<RegistryEntry>>* entries) {
   const std::wstring icon_path(ShellUtil::FormatIconLocation(
-      chrome_exe, install_static::GetIconResourceIndex()));
+      chrome_exe, install_static::GetAppIconResourceIndex()));
   const std::wstring quoted_exe_path(L"\"" + chrome_exe.value() + L"\"");
 
   // Register for the Start Menu "Internet" link (pre-Win7).
@@ -597,7 +595,7 @@ void GetXPStyleDefaultBrowserUserEntries(
   // Protocols associations.
   std::wstring chrome_open = ShellUtil::GetChromeShellOpenCmd(chrome_exe);
   std::wstring chrome_icon = ShellUtil::FormatIconLocation(
-      chrome_exe, install_static::GetIconResourceIndex());
+      chrome_exe, install_static::GetAppIconResourceIndex());
   for (int i = 0; ShellUtil::kBrowserProtocolAssociations[i] != nullptr; i++) {
     GetXPStyleUserProtocolEntries(ShellUtil::kBrowserProtocolAssociations[i],
                                   chrome_icon, chrome_open, entries);
@@ -867,7 +865,7 @@ bool RegisterChromeAsDefaultProtocolClientXPStyle(
   std::vector<std::unique_ptr<RegistryEntry>> entries;
   const std::wstring chrome_open(ShellUtil::GetChromeShellOpenCmd(chrome_exe));
   const std::wstring chrome_icon(ShellUtil::FormatIconLocation(
-      chrome_exe, install_static::GetIconResourceIndex()));
+      chrome_exe, install_static::GetAppIconResourceIndex()));
   GetXPStyleUserProtocolEntries(protocol, chrome_icon, chrome_open, &entries);
   // Change the default protocol handler for current user.
   if (!ShellUtil::AddRegistryEntries(HKEY_CURRENT_USER, entries)) {
@@ -1862,7 +1860,7 @@ void ShellUtil::AddDefaultShortcutProperties(const base::FilePath& target_exe,
     properties->set_target(target_exe);
 
   if (!properties->has_icon())
-    properties->set_icon(target_exe, install_static::GetIconResourceIndex());
+    properties->set_icon(target_exe, install_static::GetAppIconResourceIndex());
 
   if (!properties->has_app_id()) {
     properties->set_app_id(
