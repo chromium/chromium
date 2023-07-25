@@ -10,14 +10,14 @@ __filegroups = {}
 
 __handlers = {}
 
-def __step_rules():
+def __step_config(ctx, step_config):
     # mojom_bindings_generator.py will run faster on n2-highmem-8 than
     # n2-custom-2-3840
     # e.g.
     #  n2-highmem-8: exec: 880.202978ms
     #  n2-custom-2-3840: exec: 2.42808488s
     platform_ref = "large"
-    return [
+    step_config["rules"].extend([
         {
             "name": "mojo/mojom_bindings_generator",
             "command_prefix": "python3 ../../mojo/public/tools/bindings/mojom_bindings_generator.py",
@@ -159,10 +159,7 @@ def __step_rules():
             "output_local": True,
             "platform_ref": platform_ref,
         },
-    ]
-
-def __step_config(ctx, step_config):
-    step_config["rules"].extend(__step_rules())
+    ])
     return step_config
 
 mojo = module(
@@ -170,6 +167,4 @@ mojo = module(
     step_config = __step_config,
     filegroups = __filegroups,
     handlers = __handlers,
-    # Export the step rules so that it can be reused in rewrapper_to_reproxy.
-    step_rules = __step_rules,
 )
