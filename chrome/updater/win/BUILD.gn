@@ -125,42 +125,10 @@ process_version_rc_template("version_resources_test") {
   ]
 }
 
-source_set("tag_extractor") {
-  public = [ "tag_extractor.h" ]
-
-  sources = [
-    "tag_extractor.cc",
-    "tag_extractor_impl.h",
-  ]
-
-  friend = [
-    "//chrome/updater:updater_test_sources",
-    ":updater_fuzzer",
-  ]
-
-  # In the future, we want to rely on the base numerics headers and
-  # PeImageReader directly, but right now that isn't possible due to the
-  # visibility of the lib, so we depend on the entire base temporarily.
-  deps = [ "//base" ]
-}
-
 fuzzer_test("updater_fuzzer") {
   sources = [ "tag_extractor_fuzzer.cc" ]
 
-  deps = [ ":tag_extractor" ]
+  deps = [ "//chrome/updater:tagging" ]
 
   seed_corpus = "../test/data/tag_extractor_corpus/"
-}
-
-source_set("msi_tag") {
-  sources = [
-    "msi_tag.cc",
-    "msi_tag.h",
-  ]
-
-  deps = [
-    ":tag_extractor",
-    "//base",
-    "//chrome/updater:public_sources",
-  ]
 }

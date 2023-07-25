@@ -13,21 +13,6 @@
 
 namespace updater {
 
-// These functions are available for unit testing.
-
-// Advances the iterator by |distance| and makes sure that it remains valid,
-// else returns |end|.
-std::vector<uint8_t>::const_iterator AdvanceIt(
-    std::vector<uint8_t>::const_iterator it,
-    size_t distance,
-    std::vector<uint8_t>::const_iterator end);
-
-// Checks that the range [it, it + size) is found within the binary. |size| must
-// be > 0.
-bool CheckRange(std::vector<uint8_t>::const_iterator it,
-                size_t size,
-                std::vector<uint8_t>::const_iterator end);
-
 // Included in this header for fuzz testing.
 std::string ExtractTagFromBuffer(const std::vector<uint8_t>& binary,
                                  TagEncoding encoding);

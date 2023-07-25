@@ -5,15 +5,9 @@
 #ifndef CHROME_UPDATER_WIN_TAG_EXTRACTOR_H_
 #define CHROME_UPDATER_WIN_TAG_EXTRACTOR_H_
 
-#include <cstdint>
 #include <string>
-#include <vector>
 
 namespace updater {
-
-std::string ReadTagUtf8(std::vector<uint8_t>::const_iterator cert_begin,
-                        std::vector<uint8_t>::const_iterator cert_end);
-std::vector<uint8_t> GetTagFromTagString(const std::string& tag_string);
 
 // The character encoding of tag in the binary. The tag is stored differently
 // depending on the encoding:

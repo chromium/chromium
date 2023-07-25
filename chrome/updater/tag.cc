@@ -4,17 +4,24 @@
 
 #include "chrome/updater/tag.h"
 
+#include <algorithm>
+#include <cstdint>
 #include <map>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "chrome/updater/util/util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
@@ -85,6 +92,16 @@ constexpr base::StringPiece kAppArgInstallerData = "installerdata";
 // Character that is disallowed from appearing in the tag.
 constexpr char kDisallowedCharInTag = '/';
 
+// Magic strings used to identify the tag in the binary.
+constexpr uint8_t kTagMagicUtf8[] = {'G', 'a', 'c', 't', '2', '.',
+                                     '0', 'O', 'm', 'a', 'h', 'a'};
+constexpr uint8_t kTagStartMagicUtf16[] = {0, 'G', 0, 'a', 0, 'c', 0, 't',
+                                           0, '2', 0, '.', 0, '0', 0, 'O',
+                                           0, 'm', 0, 'a', 0, 'h', 0, 'a'};
+constexpr uint8_t kTagEndMagicUtf16[] = {0, 'a', 0, 'h', 0, 'a', 0, 'm',
+                                         0, 'O', 0, '0', 0, '.', 0, '2',
+                                         0, 't', 0, 'c', 0, 'a', 0, 'G'};
+
 absl::optional<AppArgs::NeedsAdmin> ParseNeedsAdminEnum(base::StringPiece str) {
   if (base::EqualsCaseInsensitiveASCII("false", str))
     return AppArgs::NeedsAdmin::kNo;
@@ -109,8 +126,15 @@ absl::optional<bool> ParseBool(base::StringPiece str) {
   return absl::nullopt;
 }
 
-// A custom comparator functor class for the parse tables.
-using ParseTableCompare = CaseInsensitiveASCIICompare;
+// Functor used by associative containers of strings as a case-insensitive ASCII
+// compare. `StringT` could be either UTF-8 or UTF-16.
+struct CaseInsensitiveASCIICompare {
+ public:
+  template <typename StringT>
+  bool operator()(const StringT& x, const StringT& y) const {
+    return base::CompareCaseInsensitiveASCII(x, y) > 0;
+  }
+};
 
 namespace global_attributes {
 
@@ -215,8 +239,9 @@ ErrorCode ParseAppId(base::StringPiece value, TagArgs* args) {
 using ParseGlobalAttributeFunPtr = ErrorCode (*)(base::StringPiece value,
                                                  TagArgs* args);
 
-using GlobalParseTable =
-    std::map<base::StringPiece, ParseGlobalAttributeFunPtr, ParseTableCompare>;
+using GlobalParseTable = std::map<base::StringPiece,
+                                  ParseGlobalAttributeFunPtr,
+                                  CaseInsensitiveASCIICompare>;
 
 const GlobalParseTable& GetTable() {
   static const base::NoDestructor<GlobalParseTable> instance{{
@@ -286,8 +311,9 @@ ErrorCode ParseUntrustedData(base::StringPiece value, AppArgs* args) {
 using ParseAppAttributeFunPtr = ErrorCode (*)(base::StringPiece value,
                                               AppArgs* args);
 
-using AppParseTable =
-    std::map<base::StringPiece, ParseAppAttributeFunPtr, ParseTableCompare>;
+using AppParseTable = std::map<base::StringPiece,
+                               ParseAppAttributeFunPtr,
+                               CaseInsensitiveASCIICompare>;
 
 const AppParseTable& GetTable() {
   static const base::NoDestructor<AppParseTable> instance{{
@@ -351,7 +377,7 @@ using ParseInstallerDataAttributeFunPtr =
 
 using InstallerDataParseTable = std::map<base::StringPiece,
                                          ParseInstallerDataAttributeFunPtr,
-                                         ParseTableCompare>;
+                                         CaseInsensitiveASCIICompare>;
 
 const InstallerDataParseTable& GetTable() {
   static const base::NoDestructor<InstallerDataParseTable> instance{{
@@ -485,7 +511,104 @@ bool IsValidArgs(base::StringPiece args) {
   return !base::Contains(args, kDisallowedCharInTag);
 }
 
+// Returns a `uint16_t` value as big-endian bytes.
+std::array<uint8_t, 2> U16IntToBigEndian(uint16_t value) {
+  return {static_cast<uint8_t>((value & 0xFF00) >> 8),
+          static_cast<uint8_t>(value & 0x00FF)};
+}
+
+// Converts a big-endian 2-byte value to little-endian and returns it
+// as a uint16_t.
+uint16_t BigEndianReadU16(std::vector<uint8_t>::const_iterator it) {
+  static_assert(ARCH_CPU_LITTLE_ENDIAN, "Machine should be little-endian.");
+  return (uint16_t{*it} << 8) + (uint16_t{*(it + 1)});
+}
+
+// Loads up to the last 80K bytes from `filename`.
+std::vector<uint8_t> ReadFileTail(const base::FilePath& filename) {
+  constexpr size_t kMaxBufferLength = 81920;  // 80K
+
+  base::File file(filename, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  if (!file.IsValid()) {
+    return {};
+  }
+
+  const int64_t file_length = file.GetLength();
+
+  int bytes_to_read = kMaxBufferLength;
+  if (file_length > static_cast<int64_t>(kMaxBufferLength)) {
+    if (file.Seek(base::File::FROM_END, -kMaxBufferLength) !=
+        kMaxBufferLength) {
+      return {};
+    }
+  } else {
+    bytes_to_read = file_length;
+  }
+
+  std::vector<uint8_t> buffer(bytes_to_read + 1);
+  const int num_bytes_read =
+      file.ReadAtCurrentPos(reinterpret_cast<char*>(&buffer[0]), bytes_to_read);
+  if (num_bytes_read != bytes_to_read) {
+    return {};
+  }
+
+  return buffer;
+}
+
+absl::optional<tagging::TagArgs> ParseTagBuffer(
+    const std::vector<uint8_t>& tag_buffer) {
+  if (tag_buffer.empty()) {
+    return {};
+  }
+
+  const std::string tag_string =
+      ReadTagUtf8(tag_buffer.begin(), tag_buffer.end());
+  if (tag_string.empty()) {
+    return {};
+  }
+
+  tagging::TagArgs tag_args;
+  const tagging::ErrorCode error = tagging::Parse(tag_string, {}, &tag_args);
+  if (error != tagging::ErrorCode::kSuccess) {
+    return {};
+  }
+  return tag_args;
+}
+
 }  // namespace
+
+namespace internal {
+std::vector<uint8_t>::const_iterator AdvanceIt(
+    std::vector<uint8_t>::const_iterator it,
+    size_t distance,
+    std::vector<uint8_t>::const_iterator end) {
+  if (it >= end) {
+    return end;
+  }
+
+  ptrdiff_t dist_to_end = 0;
+  if (!base::CheckedNumeric<ptrdiff_t>(end - it).AssignIfValid(&dist_to_end)) {
+    return end;
+  }
+
+  return it + std::min(distance, static_cast<size_t>(dist_to_end));
+}
+
+bool CheckRange(std::vector<uint8_t>::const_iterator it,
+                size_t size,
+                std::vector<uint8_t>::const_iterator end) {
+  if (it >= end || size == 0) {
+    return false;
+  }
+
+  ptrdiff_t dist_to_end = 0;
+  if (!base::CheckedNumeric<ptrdiff_t>(end - it).AssignIfValid(&dist_to_end)) {
+    return false;
+  }
+
+  return size <= static_cast<size_t>(dist_to_end);
+}
+}  // namespace internal
 
 AppArgs::AppArgs(base::StringPiece app_id)
     : app_id(base::ToLowerASCII(app_id)) {
@@ -590,6 +713,127 @@ std::ostream& operator<<(std::ostream& os,
     default:
       return os << "TagArgs::BrowserType(" << browser_type << ")";
   }
+}
+
+std::vector<uint8_t> GetTagFromTagString(const std::string& tag_string) {
+  std::vector<uint8_t> tag(std::begin(kTagMagicUtf8), std::end(kTagMagicUtf8));
+  const std::array<uint8_t, 2> tag_length =
+      U16IntToBigEndian(tag_string.length());
+  tag.insert(tag.end(), tag_length.begin(), tag_length.end());
+  tag.insert(tag.end(), tag_string.begin(), tag_string.end());
+  return tag;
+}
+
+std::string ReadTagUtf8(std::vector<uint8_t>::const_iterator cert_begin,
+                        std::vector<uint8_t>::const_iterator cert_end) {
+  const uint8_t* magic_begin = std::begin(kTagMagicUtf8);
+  const uint8_t* magic_end = std::end(kTagMagicUtf8);
+
+  std::vector<uint8_t>::const_iterator magic_str =
+      std::search(cert_begin, cert_end, magic_begin, magic_end);
+  if (magic_str == cert_end) {
+    return std::string();
+  }
+
+  std::vector<uint8_t>::const_iterator taglen_buf =
+      internal::AdvanceIt(magic_str, magic_end - magic_begin, cert_end);
+
+  // Checks that the stored tag length is found within the binary.
+  if (!internal::CheckRange(taglen_buf, sizeof(uint16_t), cert_end)) {
+    return std::string();
+  }
+
+  // Tag length is stored as a big-endian uint16_t.
+  const uint16_t tag_len = BigEndianReadU16(taglen_buf);
+
+  std::vector<uint8_t>::const_iterator tag_buf =
+      internal::AdvanceIt(taglen_buf, sizeof(uint16_t), cert_end);
+  if (tag_buf == cert_end) {
+    return std::string();
+  }
+
+  // Checks that the specified tag is found within the binary.
+  if (!internal::CheckRange(tag_buf, tag_len, cert_end)) {
+    return std::string();
+  }
+
+  return std::string(tag_buf, tag_buf + tag_len);
+}
+
+std::string ReadTagUtf16(std::vector<uint8_t>::const_iterator cert_begin,
+                         std::vector<uint8_t>::const_iterator cert_end) {
+  const uint8_t* magic_begin = std::begin(kTagStartMagicUtf16);
+  const uint8_t* magic_end = std::end(kTagStartMagicUtf16);
+
+  std::vector<uint8_t>::const_iterator magic_str =
+      std::search(cert_begin, cert_end, magic_begin, magic_end);
+  if (magic_str == cert_end) {
+    return std::string();
+  }
+
+  std::vector<uint8_t>::const_iterator tag_buf =
+      internal::AdvanceIt(magic_str, magic_end - magic_begin, cert_end);
+
+  std::vector<uint8_t>::const_iterator tag_buf_end =
+      std::search(tag_buf, cert_end, std::begin(kTagEndMagicUtf16),
+                  std::end(kTagEndMagicUtf16));
+  if (tag_buf_end == cert_end) {
+    return std::string();
+  }
+
+  // UTF-16 strings can only have an even number of bytes since each
+  // character occupies two bytes.
+  if ((tag_buf_end - tag_buf) % 2 != 0) {
+    return std::string();
+  }
+
+  std::wstring tag_utf16;
+  tag_utf16.resize((tag_buf_end - tag_buf) / sizeof(uint16_t));
+
+  // Converts the UTF-16 tag from big-endian to little-endian.
+  size_t tag_utf16_idx = 0;
+  for (auto it = tag_buf; it < tag_buf_end; it += sizeof(uint16_t)) {
+    tag_utf16[tag_utf16_idx] = std::wstring::value_type{BigEndianReadU16(it)};
+    ++tag_utf16_idx;
+  }
+
+  return base::WideToUTF8(tag_utf16);
+}
+
+absl::optional<tagging::TagArgs> MsiReadTag(const base::FilePath& filename) {
+  return ParseTagBuffer(ReadFileTail(filename));
+}
+
+bool MsiWriteTag(const base::FilePath& in_file,
+                 const std::string& tag_string,
+                 const base::FilePath& out_file) {
+  if (tag_string.empty()) {
+    return false;
+  }
+
+  // Check if the file is already tagged.
+  if (MsiReadTag(in_file)) {
+    return false;
+  }
+
+  // Validate the tag string.
+  tagging::TagArgs tag_args;
+  const tagging::ErrorCode error = tagging::Parse(tag_string, {}, &tag_args);
+  if (error != tagging::ErrorCode::kSuccess) {
+    return false;
+  }
+
+  if (!base::CopyFile(in_file, out_file)) {
+    return false;
+  }
+  base::File out(out_file, base::File::FLAG_OPEN | base::File::FLAG_APPEND);
+  if (!out.IsValid()) {
+    return false;
+  }
+
+  const std::vector<uint8_t> tag = GetTagFromTagString(tag_string);
+  return out.WriteAtCurrentPos(reinterpret_cast<const char*>(tag.data()),
+                               tag.size()) == static_cast<int>(tag.size());
 }
 
 }  // namespace tagging

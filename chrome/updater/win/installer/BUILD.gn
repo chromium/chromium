@@ -32,7 +32,7 @@ source_set("lib") {
     "//chrome/updater:base",
     "//chrome/updater:branding_header",
     "//chrome/updater:constants_prod",
-    "//chrome/updater/win:tag_extractor",
+    "//chrome/updater:tagging",
     "//third_party/abseil-cpp:absl",
   ]
 }

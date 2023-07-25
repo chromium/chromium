@@ -37,38 +37,4 @@ TEST(TagExtractorTest, TaggedExeMagicUtf16) {
                "TestTag123");
 }
 
-TEST(TagExtractorTest, AdvanceIt) {
-  const std::vector<uint8_t> empty_binary;
-  ASSERT_TRUE(AdvanceIt(empty_binary.begin(), 0, empty_binary.end()) ==
-              empty_binary.end());
-
-  const std::vector<uint8_t> binary(5);
-  std::vector<uint8_t>::const_iterator it = binary.begin();
-  ASSERT_TRUE(AdvanceIt(it, 0, binary.end()) == it);
-  ASSERT_TRUE(AdvanceIt(it, 4, binary.end()) == (it + 4));
-  ASSERT_TRUE(AdvanceIt(it, 5, binary.end()) == binary.end());
-  ASSERT_TRUE(AdvanceIt(it, 6, binary.end()) == binary.end());
-}
-
-TEST(TagExtractorTest, CheckRange) {
-  const std::vector<uint8_t> empty_binary;
-  ASSERT_FALSE(CheckRange(empty_binary.end(), 1, empty_binary.end()));
-
-  const std::vector<uint8_t> binary(5);
-
-  std::vector<uint8_t>::const_iterator it = binary.begin();
-  ASSERT_FALSE(CheckRange(it, 0, binary.end()));
-  ASSERT_TRUE(CheckRange(it, 1, binary.end()));
-  ASSERT_TRUE(CheckRange(it, 5, binary.end()));
-  ASSERT_FALSE(CheckRange(it, 6, binary.end()));
-
-  it = binary.begin() + 2;
-  ASSERT_TRUE(CheckRange(it, 3, binary.end()));
-  ASSERT_FALSE(CheckRange(it, 4, binary.end()));
-
-  it = binary.begin() + 5;
-  ASSERT_FALSE(CheckRange(it, 0, binary.end()));
-  ASSERT_FALSE(CheckRange(it, 1, binary.end()));
-}
-
 }  // namespace updater

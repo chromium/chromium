@@ -10,20 +10,11 @@ group("tools") {
   }
 }
 
-source_set("certificate_tag_lib") {
-  sources = [
-    "certificate_tag.cc",
-    "certificate_tag.h",
-  ]
-
-  deps = [ "//base" ]
-}
-
 executable("certificate_tag_exe") {
   sources = [ "main.cc" ]
   deps = [
-    ":certificate_tag_lib",
     "//base",
+    "//chrome/updater:tagging",
   ]
 }
 
@@ -76,9 +67,9 @@ source_set("unittest") {
   sources = [ "certificate_tag_unittest.cc" ]
 
   deps = [
-    ":certificate_tag_lib",
     "//base",
     "//base/test:test_support",
+    "//chrome/updater:tagging",
     "//chrome/updater:unit_test_util_sources",
     "//testing/gtest",
     "//third_party/zlib/google:compression_utils",

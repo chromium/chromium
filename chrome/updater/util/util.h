@@ -125,16 +125,6 @@ absl::optional<base::FilePath> GetLogFilePath(UpdaterScope scope);
 // Initializes logging for an executable.
 void InitLogging(UpdaterScope updater_scope);
 
-// Functor used by associative containers of strings as a case-insensitive ASCII
-// compare. `StringT` could be either UTF-8 or UTF-16.
-struct CaseInsensitiveASCIICompare {
- public:
-  template <typename StringT>
-  bool operator()(const StringT& x, const StringT& y) const {
-    return base::CompareCaseInsensitiveASCII(x, y) > 0;
-  }
-};
-
 // Returns a new GURL by appending the given query parameter name and the
 // value. Unsafe characters in the name and the value are escaped like
 // %XX%XX. The original query component is preserved if it's present.
