@@ -101,7 +101,6 @@ class HitTestLatencyRecorder {
 LayoutView::LayoutView(ContainerNode* document)
     : LayoutBlockFlow(document),
       frame_view_(To<Document>(document)->View()),
-      layout_quote_head_(nullptr),
       layout_counter_count_(0),
       hit_test_count_(0),
       hit_test_cache_hits_(0),
@@ -128,7 +127,6 @@ LayoutView::~LayoutView() = default;
 void LayoutView::Trace(Visitor* visitor) const {
   visitor->Trace(frame_view_);
   visitor->Trace(fragmentation_context_);
-  visitor->Trace(layout_quote_head_);
   visitor->Trace(svg_text_descendants_);
   visitor->Trace(hit_test_cache_);
   LayoutBlockFlow::Trace(visitor);
@@ -412,12 +410,6 @@ void LayoutView::Paint(const PaintInfo& paint_info) const {
   NOTREACHED_NORETURN();
 }
 
-void LayoutView::PaintBoxDecorationBackground(const PaintInfo& paint_info,
-                                              const PhysicalOffset&) const {
-  NOT_DESTROYED();
-  NOTREACHED_NORETURN();
-}
-
 void LayoutView::InvalidatePaintForViewAndDescendants() {
   NOT_DESTROYED();
   SetSubtreeShouldDoFullPaintInvalidation();
@@ -485,11 +477,6 @@ bool LayoutView::MapToVisualRectInAncestorSpaceInternal(
 PhysicalOffset LayoutView::OffsetForFixedPosition() const {
   NOT_DESTROYED();
   return IsScrollContainer() ? ScrolledContentOffset() : PhysicalOffset();
-}
-
-PhysicalOffset LayoutView::PixelSnappedOffsetForFixedPosition() const {
-  NOT_DESTROYED();
-  return PhysicalOffset(ToFlooredPoint(OffsetForFixedPosition()));
 }
 
 void LayoutView::AbsoluteQuads(Vector<gfx::QuadF>& quads,
@@ -791,12 +778,6 @@ bool LayoutView::BackgroundIsKnownToBeOpaqueInRect(const PhysicalRect&) const {
   // The base background color applies to the main frame only.
   return GetFrame()->IsMainFrame() &&
          frame_view_->BaseBackgroundColor().IsOpaque();
-}
-
-gfx::SizeF LayoutView::ViewportSizeForViewportUnits() const {
-  NOT_DESTROYED();
-  return GetFrameView() ? GetFrameView()->ViewportSizeForViewportUnits()
-                        : gfx::SizeF();
 }
 
 gfx::SizeF LayoutView::SmallViewportSizeForViewportUnits() const {

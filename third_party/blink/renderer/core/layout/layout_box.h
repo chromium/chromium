@@ -1256,9 +1256,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // for this object.
   PhysicalRect ClippingRect(const PhysicalOffset& location) const;
 
-  virtual void PaintBoxDecorationBackground(
-      const PaintInfo&,
-      const PhysicalOffset& paint_offset) const;
   virtual void PaintMask(const PaintInfo&,
                          const PhysicalOffset& paint_offset) const;
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;

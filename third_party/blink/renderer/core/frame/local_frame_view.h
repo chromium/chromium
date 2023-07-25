@@ -642,7 +642,6 @@ class CORE_EXPORT LocalFrameView final
   // Viewport size that should be used for viewport units (i.e. 'vh'/'vw').
   // May include the size of browser controls. See implementation for further
   // documentation.
-  gfx::SizeF ViewportSizeForViewportUnits() const;
   // https://drafts.csswg.org/css-values-4/#small-viewport-size
   gfx::SizeF SmallViewportSizeForViewportUnits() const;
   // https://drafts.csswg.org/css-values-4/#large-viewport-size

@@ -929,10 +929,6 @@ void LocalFrameView::SetNeedsPaintPropertyUpdate() {
     layout_view->SetNeedsPaintPropertyUpdate();
 }
 
-gfx::SizeF LocalFrameView::ViewportSizeForViewportUnits() const {
-  return LargeViewportSizeForViewportUnits();
-}
-
 gfx::SizeF LocalFrameView::SmallViewportSizeForViewportUnits() const {
   float zoom = 1;
   if (!frame_->GetDocument() || !frame_->GetDocument()->Printing())

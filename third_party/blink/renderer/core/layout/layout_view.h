@@ -37,7 +37,6 @@
 
 namespace blink {
 
-class LayoutQuote;
 class LayoutViewTransitionRoot;
 class LocalFrameView;
 class ViewFragmentationContext;
@@ -153,12 +152,8 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
       VisualRectFlags = kDefaultVisualRectFlags) const override;
 
   PhysicalOffset OffsetForFixedPosition() const;
-  PhysicalOffset PixelSnappedOffsetForFixedPosition() const;
 
   void Paint(const PaintInfo&) const override;
-  void PaintBoxDecorationBackground(
-      const PaintInfo&,
-      const PhysicalOffset& paint_offset) const override;
 
   void CommitPendingSelection();
 
@@ -217,15 +212,6 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
 
   PhysicalRect DocumentRect() const;
 
-  void SetLayoutQuoteHead(LayoutQuote* head) {
-    NOT_DESTROYED();
-    layout_quote_head_ = head;
-  }
-  LayoutQuote* LayoutQuoteHead() const {
-    NOT_DESTROYED();
-    return layout_quote_head_;
-  }
-
   // FIXME: This is a work around because the current implementation of counters
   // requires walking the entire tree repeatedly and most pages don't actually
   // use either feature so we shouldn't take the performance hit when not
@@ -281,7 +267,6 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
 
   // Returns the viewport size in (CSS pixels) that vh and vw units are
   // calculated from.
-  gfx::SizeF ViewportSizeForViewportUnits() const;
   // https://drafts.csswg.org/css-values-4/#small-viewport-size
   gfx::SizeF SmallViewportSizeForViewportUnits() const;
   // https://drafts.csswg.org/css-values-4/#large-viewport-size
@@ -385,7 +370,6 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
 
  private:
   Member<LocalFrameView> frame_view_;
-  Member<LayoutQuote> layout_quote_head_;
   unsigned layout_counter_count_ = 0;
   unsigned layout_list_item_count_ = 0;
   bool needs_marker_counter_update_ = false;

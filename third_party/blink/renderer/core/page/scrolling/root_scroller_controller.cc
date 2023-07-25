@@ -65,7 +65,7 @@ bool FillsViewport(const Element& element) {
 
   float zoom = top_document.GetFrame()->PageZoomFactor();
   gfx::Size controls_hidden_size = gfx::ToCeiledSize(gfx::ScaleSize(
-      top_document.View()->ViewportSizeForViewportUnits(), zoom));
+      top_document.View()->LargeViewportSizeForViewportUnits(), zoom));
 
   if (bounding_box.size() != icb_size &&
       bounding_box.size() != controls_hidden_size)

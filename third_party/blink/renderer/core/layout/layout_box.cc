@@ -2337,13 +2337,6 @@ void LayoutBox::Paint(const PaintInfo& paint_info) const {
   NOTREACHED_NORETURN();
 }
 
-void LayoutBox::PaintBoxDecorationBackground(
-    const PaintInfo& paint_info,
-    const PhysicalOffset& paint_offset) const {
-  NOT_DESTROYED();
-  NOTREACHED_NORETURN();
-}
-
 PhysicalRect LayoutBox::BackgroundPaintedExtent() const {
   NOT_DESTROYED();
   return PhysicalBackgroundRect(kBackgroundPaintedExtent);
