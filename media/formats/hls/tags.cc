@@ -867,12 +867,23 @@ ParseStatus::Or<InfTag> InfTag::Parse(TagItem tag) {
   // Inf tags have the form #EXTINF:<duration>,[<title>]
   // Find the comma.
   auto comma = content.Str().find_first_of(',');
+  SourceString duration_str = content;
+  SourceString title_str = content;
   if (comma == base::StringPiece::npos) {
-    return ParseStatusCode::kMalformedTag;
+    // While the HLS spec does require commas at the end of inf tags, it's
+    // incredibly common for sites to elide the comma if there is no title
+    // attribute present. In this case, we should assert that there is at least
+    // a trailing newline, and then strip it to generate a nameless tag.
+    title_str = content.Substr(0, 0);
+    if (*content.Str().end() != '\n') {
+      duration_str = content;
+    } else {
+      duration_str = content.Substr(0, content.Str().length() - 1);
+    }
+  } else {
+    duration_str = content.Substr(0, comma);
+    title_str = content.Substr(comma + 1);
   }
-
-  auto duration_str = content.Substr(0, comma);
-  auto title_str = content.Substr(comma + 1);
 
   // Extract duration
   // TODO(crbug.com/1284763): Below version 3 this should be rounded to an
