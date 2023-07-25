@@ -550,14 +550,6 @@ targets.script(
     ],
 )
 
-targets.generated_script(
-    name = "chrome_variations_tast_tests",
-    label = "//chromeos:chrome_variations_tast_tests",
-    args = [
-        "--logs-dir=${ISOLATED_OUTDIR}",
-    ],
-)
-
 targets.compile_target(
     name = "chromedriver_webview_shell_apk",
     label = "//chrome/test/chromedriver/test/webview_shell:chromedriver_webview_shell_apk",

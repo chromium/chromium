@@ -431,7 +431,6 @@
         },
       },
     },
-
     'chrome_isolated_script_tests': {
       'chrome_sizes': {
         'merge': {
@@ -579,17 +578,6 @@
         'args': [
           '--tast-retries=1',
         ],
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-      },
-    },
-
-    'chromeos_browser_finch_tests': {
-      'chrome_variations_tast_tests': {
-        'swarming': {
-          'idempotent': False,  # https://crbug.com/923426#c27
-        },
         'mixins': [
           'has_native_resultdb_integration',
         ],

@@ -296,6 +296,7 @@ targets.mixin(
 targets.mixin(
     name = "chromeos-betty-finch",
     args = [
+        "--board=betty-pi-arc",
         "--magic-vm-cache=magic_cros_vm_cache",
     ],
     swarming = targets.swarming(

@@ -438,13 +438,6 @@
       "--log-path=${ISOLATED_OUTDIR}/chromedriver.log",
     ],
   },
-  "chrome_variations_tast_tests": {
-    "label": "//chromeos:chrome_variations_tast_tests",
-    "type": "generated_script",
-    "args": [
-      "--logs-dir=${ISOLATED_OUTDIR}",
-    ],
-  },
   "chromedriver_webview_shell_apk": {
     "label": "//chrome/test/chromedriver/test/webview_shell:chromedriver_webview_shell_apk",
     "type": "additional_compile_target",
