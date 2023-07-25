@@ -1686,9 +1686,9 @@ INSTANTIATE_TEST_SUITE_P(
 // Test pagehide's persisted value and whether the page can be BFCached when a
 // sticky/non-sticky feature is used on the mainframe/subframe.
 //
-// Flaky on Mac and iOS: https://crbug.com/1446474
+// Flaky on Mac, iOS, Windows and Linux: https://crbug.com/1446474
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #define MAYBE_TestPagehidePersistedValue DISABLED_TestPagehidePersistedValue
 #else
 #define MAYBE_TestPagehidePersistedValue TestPagehidePersistedValue
