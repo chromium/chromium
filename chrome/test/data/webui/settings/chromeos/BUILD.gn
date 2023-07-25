@@ -18,7 +18,6 @@ build_webui_tests("build") {
   files = [
     "apn_subpage_tests.js",
     "apn_detail_dialog_tests.js",
-    "app_notifications_subpage_tests.js",
     "apps_page_test.js",
     "cellular_networks_list_test.js",
     "cellular_roaming_toggle_button_test.js",
@@ -197,6 +196,9 @@ build_webui_tests("build") {
     "os_apps_page/app_management_page/reducers_test.ts",
     "os_apps_page/app_management_page/resize_lock_item_test.ts",
     "os_apps_page/app_management_page/supported_links_item_test.ts",
+
+    "os_apps_page/app_notifications_page/app_notifications_subpage_test.ts",
+    "os_apps_page/app_notifications_page/fake_app_notification_handler.ts",
 
     "os_bluetooth_page/os_bluetooth_change_device_name_dialog_tests.js",
     "os_bluetooth_page/os_bluetooth_device_detail_subpage_tests.js",

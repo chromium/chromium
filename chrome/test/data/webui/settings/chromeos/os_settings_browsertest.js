@@ -188,7 +188,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  //   {enabled: ['ash::features::kApnRevamp']}
  // ],
  ['AppsPage', 'apps_page_test.js'],
- ['AppNotificationsSubpage', 'app_notifications_subpage_tests.js'],
  ['AppManagementFileHandlingItem', 'app_management/file_handling_item_test.js'],
  ['AppManagementManagedApps', 'app_management/managed_apps_test.js'],
  ['AppManagementToggleRow', 'app_management/toggle_row_test.js'],
@@ -566,6 +565,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  [
    'OsAppsPageAppManagementPageSupportedLinksItem',
    'os_apps_page/app_management_page/supported_links_item_test.js',
+ ],
+ [
+   'OsAppsPageAppNotificationsPageAppNotificationsSubpage',
+   'os_apps_page/app_notifications_page/app_notifications_subpage_test.js'
  ],
  ['OsBluetoothPage', 'os_bluetooth_page/os_bluetooth_page_tests.js'],
  [
