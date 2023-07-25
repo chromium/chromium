@@ -5,11 +5,11 @@
     width: var(--icon-size);
     padding: 0 8px 0 0;
   }
-  #display-section {
-    font-weight: bold;
-  }
   cr-icon-button {
     margin: 10px 8px;
+  }
+  .back, .section {
+    font-weight: bold;
   }
 </style>
 <div>
@@ -19,7 +19,7 @@
       on-click="onShowSettingsMenuClick_">
   </cr-icon-button>
   <cr-action-menu id="menu">
-    <span class="dropdown-item" id="display-section">
+    <span class="dropdown-item section">
       $i18n{displaySectionTitle}
     </span>
     <button class="dropdown-item">
@@ -32,7 +32,7 @@
       </iron-icon>
       $i18n{fontNameTitle}
     </button>
-    <button class="dropdown-item">
+    <button class="dropdown-item" on-click="onShowColorSubMenuClick_">
       <iron-icon class="button-image" icon="read-anything:color">
       </iron-icon>
       $i18n{themeTitle}
@@ -46,6 +46,32 @@
       <iron-icon class="button-image" icon="read-anything:letter-spacing">
       </iron-icon>
       $i18n{letterSpacingTitle}
+    </button>
+  </cr-action-menu>
+  <cr-action-menu id="colorSubmenu">
+    <button class="dropdown-item back" on-click="onBackClick_">
+      <iron-icon class="button-image" icon="cr:arrow-back"></iron-icon>
+      $i18n{back}
+    </button>
+    <button class="dropdown-item">
+      <iron-icon class="button-image" icon="read-anything:default-theme"></iron-icon>
+      $i18n{defaultColorTitle}
+    </button>
+    <button class="dropdown-item">
+      <iron-icon class="button-image" icon="read-anything:light-theme"></iron-icon>
+      $i18n{lightColorTitle}
+    </button>
+    <button class="dropdown-item">
+      <iron-icon class="button-image" icon="read-anything:dark-theme"></iron-icon>
+      $i18n{darkColorTitle}
+    </button>
+    <button class="dropdown-item">
+      <iron-icon class="button-image" icon="read-anything:yellow-theme"></iron-icon>
+      $i18n{yellowColorTitle}
+    </button>
+    <button class="dropdown-item">
+      <iron-icon class="button-image" icon="read-anything:blue-theme"></iron-icon>
+      $i18n{blueColorTitle}
     </button>
   </cr-action-menu>
 </div>

@@ -58,6 +58,12 @@ ReadAnythingUI::ReadAnythingUI(content::WebUI* web_ui)
       {"letterSpacingTitle", IDS_READING_MODE_LETTER_SPACING_COMBOBOX_LABEL},
       {"fontSizeTitle", IDS_READING_MODE_FONT_SIZE},
       {"displaySectionTitle", IDS_READING_MODE_DISPLAY_SETTINGS},
+      {"defaultColorTitle", IDS_READING_MODE_DEFAULT_COLOR_LABEL},
+      {"lightColorTitle", IDS_READING_MODE_LIGHT_COLOR_LABEL},
+      {"darkColorTitle", IDS_READING_MODE_DARK_COLOR_LABEL},
+      {"yellowColorTitle", IDS_READING_MODE_YELLOW_COLOR_LABEL},
+      {"blueColorTitle", IDS_READING_MODE_BLUE_COLOR_LABEL},
+      {"back", IDS_READING_MODE_BACK},
   };
   for (const auto& str : kLocalizedStrings)
     webui::AddLocalizedString(source, str.name, str.id);

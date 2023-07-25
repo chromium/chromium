@@ -18,6 +18,7 @@ import {getTemplate} from './read_anything_toolbar.html.js';
 export interface ReadAnythingToolbar {
   $: {
     menu: CrActionMenuElement,
+    colorSubmenu: CrActionMenuElement,
   };
 }
 
@@ -42,13 +43,27 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     anchorAlignmentY: AnchorAlignment.AFTER_END,
   };
 
-
   private onShowSettingsMenuClick_() {
+    this.openMenu_(this.$.menu);
+  }
+
+  private onShowColorSubMenuClick_() {
+    this.openMenu_(this.$.colorSubmenu);
+  }
+
+  private onBackClick_() {
+    this.openMenu_(this.$.menu);
+  }
+
+  private openMenu_(menuToOpen: CrActionMenuElement) {
+    this.$.menu.close();
+    this.$.colorSubmenu.close();
+
     const shadowRoot = this.shadowRoot;
     assert(shadowRoot);
     const button = shadowRoot.getElementById('settings');
     assert(button);
-    this.$.menu.showAt(button, this.showAtPositionConfig_);
+    menuToOpen.showAt(button, this.showAtPositionConfig_);
   }
 }
 
