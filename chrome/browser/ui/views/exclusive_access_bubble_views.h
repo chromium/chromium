@@ -74,8 +74,6 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
 
   gfx::SlideAnimation* animation_for_test() { return animation_.get(); }
 
-  bool IsVisibleForTesting() const { return IsVisible(); }
-
  private:
   // Starts or stops polling the mouse location based on |popup_| and
   // |bubble_type_|.
@@ -87,7 +85,7 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
   void UpdateViewContent(ExclusiveAccessBubbleType bubble_type);
 
   // Returns whether the popup is visible.
-  bool IsVisible() const;
+  bool IsVisible();
 
   // Returns the root view containing |browser_view_|.
   views::View* GetBrowserRootView() const;

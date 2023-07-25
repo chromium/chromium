@@ -52,10 +52,6 @@ class DownloadToolbarButtonView : public ToolbarButton,
                                   public BrowserListObserver {
  public:
   METADATA_HEADER(DownloadToolbarButtonView);
-
-  // Identifies the bubble dialog widget for testing.
-  static constexpr char kBubbleName[] = "DownloadBubbleDialog";
-
   explicit DownloadToolbarButtonView(BrowserView* browser_view);
   DownloadToolbarButtonView(const DownloadToolbarButtonView&) = delete;
   DownloadToolbarButtonView& operator=(const DownloadToolbarButtonView&) =
