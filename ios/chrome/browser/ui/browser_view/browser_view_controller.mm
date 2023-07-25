@@ -51,7 +51,6 @@
 #import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_view.h"
-#import "ios/chrome/browser/ui/lens/lens_coordinator.h"
 #import "ios/chrome/browser/ui/main_content/main_content_ui.h"
 #import "ios/chrome/browser/ui/main_content/main_content_ui_broadcasting_util.h"
 #import "ios/chrome/browser/ui/main_content/main_content_ui_state.h"
@@ -159,8 +158,7 @@ enum HeaderBehaviour {
 #pragma mark - BVC
 
 // Note other delegates defined in the Delegates category header.
-@interface BrowserViewController () <LensPresentationDelegate,
-                                     FullscreenUIElement,
+@interface BrowserViewController () <FullscreenUIElement,
                                      MainContentUI,
                                      SideSwipeMediatorDelegate,
                                      TabStripPresentation,
@@ -384,8 +382,6 @@ enum HeaderBehaviour {
     self.safeAreaProvider = dependencies.safeAreaProvider;
     _pagePlaceholderBrowserAgent = dependencies.pagePlaceholderBrowserAgent;
     _webStateUpdateBrowserAgent = dependencies.webStateUpdateBrowserAgent;
-
-    dependencies.lensCoordinator.delegate = self;
 
     self.inNewTabAnimation = NO;
     self.fullscreenController = dependencies.fullscreenController;

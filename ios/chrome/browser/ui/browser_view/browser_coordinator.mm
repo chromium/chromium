@@ -885,7 +885,6 @@ enum class ToolbarKind {
       _toolbarAccessoryPresenter;
   _viewControllerDependencies.popupMenuCoordinator = self.popupMenuCoordinator;
   _viewControllerDependencies.ntpCoordinator = _NTPCoordinator;
-  _viewControllerDependencies.lensCoordinator = _lensCoordinator;
   _viewControllerDependencies.toolbarCoordinator = _toolbarCoordinator;
   _viewControllerDependencies.tabStripCoordinator = _tabStripCoordinator;
   _viewControllerDependencies.legacyTabStripCoordinator =
@@ -936,6 +935,7 @@ enum class ToolbarKind {
   // coordinator so that the LensCommands dispatcher is correctly registered in
   // time.
   _lensCoordinator.baseViewController = self.viewController;
+  _lensCoordinator.delegate = self.viewController;
   [_lensCoordinator start];
 
   _toolbarCoordinator.omniboxFocusDelegate = self.viewController;
@@ -963,7 +963,6 @@ enum class ToolbarKind {
   _viewControllerDependencies.toolbarAccessoryPresenter = nil;
   _viewControllerDependencies.popupMenuCoordinator = nil;
   _viewControllerDependencies.ntpCoordinator = nil;
-  _viewControllerDependencies.lensCoordinator = nil;
   _viewControllerDependencies.toolbarCoordinator = nil;
   _viewControllerDependencies.tabStripCoordinator = nil;
   _viewControllerDependencies.legacyTabStripCoordinator = nil;

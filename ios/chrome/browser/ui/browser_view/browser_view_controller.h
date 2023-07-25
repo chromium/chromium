@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/browser_view/tab_consumer.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_coordinator.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_consumer.h"
+#import "ios/chrome/browser/ui/lens/lens_coordinator.h"
 #import "ios/chrome/browser/ui/ntp/logo_animation_controller.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
@@ -32,7 +33,6 @@ class FullscreenController;
 @protocol HelpCommands;
 @class KeyCommandsProvider;
 @class NewTabPageCoordinator;
-@class LensCoordinator;
 @protocol OmniboxCommands;
 class PagePlaceholderBrowserAgent;
 @protocol PopupMenuCommands;
@@ -58,7 +58,6 @@ typedef struct {
   ToolbarAccessoryPresenter* toolbarAccessoryPresenter;
   PopupMenuCoordinator* popupMenuCoordinator;
   NewTabPageCoordinator* ntpCoordinator;
-  LensCoordinator* lensCoordinator;
   ToolbarCoordinator* toolbarCoordinator;
   TabStripCoordinator* tabStripCoordinator;
   TabStripLegacyCoordinator* legacyTabStripCoordinator;
@@ -87,6 +86,7 @@ typedef struct {
 @interface BrowserViewController
     : UIViewController <FindBarPresentationDelegate,
                         IncognitoReauthConsumer,
+                        LensPresentationDelegate,
                         LogoAnimationControllerOwnerOwner,
                         TabConsumer,
                         OmniboxFocusDelegate,
