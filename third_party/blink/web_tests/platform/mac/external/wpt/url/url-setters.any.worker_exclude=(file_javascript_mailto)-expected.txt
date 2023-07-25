@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 222 tests; 146 PASS, 76 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 222 tests; 147 PASS, 75 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS URL: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged.
 PASS URL: Setting <a://example.net>.protocol = 'b'
@@ -190,7 +190,7 @@ FAIL URL: Setting <non-spec:/.//>.pathname = 'p' Drop /. from path assert_equals
 FAIL URL: Setting <data:/nospace>.pathname = 'space ' Non-special URLs with non-opaque paths percent-encode U+0020 assert_equals: expected "data:/space%20" but got "data:/nospace"
 FAIL URL: Setting <sc:/nospace>.pathname = 'space ' assert_equals: expected "sc:/space%20" but got "sc:/nospace"
 PASS URL: Setting <http://example.net>.pathname = ' ' Trailing space should be encoded
-FAIL URL: Setting <http://example.net>.pathname = '\0' Trailing C0 control should be encoded assert_equals: expected "http://example.net/%00" but got "http://example.net/"
+PASS URL: Setting <http://example.net>.pathname = '\0' Trailing C0 control should be encoded
 PASS URL: Setting <https://example.net#nav>.search = 'lang=fr'
 PASS URL: Setting <https://example.net?lang=en-US#nav>.search = 'lang=fr'
 PASS URL: Setting <https://example.net?lang=en-US#nav>.search = '?lang=fr'

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 443 tests; 301 PASS, 142 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 443 tests; 303 PASS, 140 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS <a>: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged.
 PASS <area>: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged.
@@ -379,8 +379,8 @@ FAIL <a>: Setting <sc:/nospace>.pathname = 'space ' assert_equals: expected "sc:
 FAIL <area>: Setting <sc:/nospace>.pathname = 'space ' assert_equals: expected "sc:/space%20" but got "sc:/nospace"
 PASS <a>: Setting <http://example.net>.pathname = ' ' Trailing space should be encoded
 PASS <area>: Setting <http://example.net>.pathname = ' ' Trailing space should be encoded
-FAIL <a>: Setting <http://example.net>.pathname = '\0' Trailing C0 control should be encoded assert_equals: expected "http://example.net/%00" but got "http://example.net/"
-FAIL <area>: Setting <http://example.net>.pathname = '\0' Trailing C0 control should be encoded assert_equals: expected "http://example.net/%00" but got "http://example.net/"
+PASS <a>: Setting <http://example.net>.pathname = '\0' Trailing C0 control should be encoded
+PASS <area>: Setting <http://example.net>.pathname = '\0' Trailing C0 control should be encoded
 PASS <a>: Setting <https://example.net#nav>.search = 'lang=fr'
 PASS <area>: Setting <https://example.net#nav>.search = 'lang=fr'
 PASS <a>: Setting <https://example.net?lang=en-US#nav>.search = 'lang=fr'

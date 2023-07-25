@@ -304,7 +304,7 @@ TEST_F(ValidateBlinkInterestGroupTest, RejectedUrls) {
       KURL(String::FromUTF8("invalid url")),
       KURL(String::FromUTF8("https://!@#$%^&*()/")),
       KURL(String::FromUTF8("https://[1::::::2]/")),
-      KURL(String::FromUTF8("https://origin.test/%00")),
+      KURL(String::FromUTF8("https://origin%00.test")),
   };
 
   for (const KURL& rejected_url : kRejectedUrls) {
@@ -373,6 +373,9 @@ TEST_F(ValidateBlinkInterestGroupTest, AdRenderUrlValidation) {
       // Cross origin URLs are allowed, as long as they're HTTPS.
       {true, "https://b.test/"},
       {true, "https://a.test:1234/"},
+
+      // URLs with %00 escaped path are allowed.
+      {true, "https://origin.test/%00"},
 
       // URLs with the wrong scheme are rejected.
       {false, "http://a.test/"},
@@ -445,6 +448,9 @@ TEST_F(ValidateBlinkInterestGroupTest, AdComponentRenderUrlValidation) {
       // Cross origin URLs are allowed, as long as they're HTTPS.
       {true, "https://b.test/"},
       {true, "https://a.test:1234/"},
+
+      // URLs with %00 escaped path are allowed.
+      {true, "https://origin.test/%00"},
 
       // URLs with the wrong scheme are rejected.
       {false, "http://a.test/"},

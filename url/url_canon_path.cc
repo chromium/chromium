@@ -37,25 +37,24 @@ enum CharacterFlags {
   // ESCAPE or PASS. We DON'T set the SPECIAL flag since if we encounter these
   // characters unescaped, they should just be copied.
   UNESCAPE = 4,
-
-  // This character is disallowed in URLs. Note that the "special" bit is also
-  // set to trigger handling.
-  INVALID_BIT = 8,
-  INVALID = INVALID_BIT | SPECIAL,
 };
 
 // This table contains one of the above flag values. Note some flags are more
 // than one bits because they also turn on the "special" flag. Special is the
 // only flag that may be combined with others.
 //
-// This table is designed to match exactly what IE does with the characters.
+// This table was used to be designed to match exactly what IE did with the
+// characters, however, which doesn't comply with the URL Standard as of Jun
+// 2023. See http://crbug.com/1400251 and http://crbug.com/1252531 for efforts
+// to comply with the URL Standard.
 //
 // Dot is even more special, and the escaped version is handled specially by
 // IsDot. Therefore, we don't need the "escape" flag, and even the "unescape"
 // bit is never handled (we just need the "special") bit.
+// clang-format off
 const unsigned char kPathCharLookup[0x100] = {
 //   NULL     control chars...
-     INVALID, ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,
+     ESCAPE , ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,
 //   control chars...
      ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,
 //   ' '      !        "        #        $        %        &        '        (        )        *        +        ,        -        .        /
@@ -79,6 +78,7 @@ const unsigned char kPathCharLookup[0x100] = {
      ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,
      ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,
      ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE,  ESCAPE};
+// clang-format on
 
 enum DotDisposition {
   // The given dot is just part of a filename and is not special.
@@ -354,8 +354,6 @@ bool DoPartialPathInternal(const CHAR* spec,
               output->push_back('%');
               output->push_back(static_cast<char>(spec[i - 1]));
               output->push_back(static_cast<char>(spec[i]));
-              if (unescaped_flags & INVALID_BIT)
-                success = false;
             }
           } else {
             // Invalid escape sequence. IE7+ rejects any URLs with such
@@ -366,12 +364,6 @@ bool DoPartialPathInternal(const CHAR* spec,
             last_invalid_percent_index = output->length();
             output->push_back('%');
           }
-
-        } else if (flags & INVALID_BIT) {
-          // For NULLs, etc. fail.
-          AppendEscapedChar(out_ch, output);
-          success = false;
-
         } else if (flags & ESCAPE_BIT) {
           // This character should be escaped.
           AppendEscapedChar(out_ch, output);

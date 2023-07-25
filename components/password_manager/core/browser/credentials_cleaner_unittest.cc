@@ -45,8 +45,16 @@ TEST(CredentialsCleaner, RemoveNonHTTPOrHTTPSForms) {
   // Note: We are using std::string_literals to be able to construct a
   // std::string with an embedded null character.
   using std::string_literals::operator""s;
+  PasswordForm basic_auth_form_with_null_character;
+  basic_auth_form_with_null_character.signon_realm =
+      "http://example.com/valid\0Realm"s;
+  forms.push_back(
+      std::make_unique<PasswordForm>(basic_auth_form_with_null_character));
+  EXPECT_TRUE(
+      GURL(basic_auth_form_with_null_character.signon_realm).is_valid());
+
   PasswordForm invalid_basic_auth_form;
-  invalid_basic_auth_form.signon_realm = "http://example.com/Invalid\0Realm"s;
+  invalid_basic_auth_form.signon_realm = "http://example[invalid].com/";
   forms.push_back(std::make_unique<PasswordForm>(invalid_basic_auth_form));
   EXPECT_FALSE(GURL(invalid_basic_auth_form.signon_realm).is_valid());
 
@@ -56,11 +64,12 @@ TEST(CredentialsCleaner, RemoveNonHTTPOrHTTPSForms) {
   EXPECT_FALSE(GURL(another_invalid_form.signon_realm).is_valid());
 
   // Expect that only the federated and Android form got removed.
-  EXPECT_THAT(
-      CredentialsCleaner::RemoveNonHTTPOrHTTPSForms(std::move(forms)),
-      ElementsAre(Pointee(http_form), Pointee(https_form),
-                  Pointee(basic_auth_form), Pointee(invalid_basic_auth_form),
-                  Pointee(another_invalid_form)));
+  EXPECT_THAT(CredentialsCleaner::RemoveNonHTTPOrHTTPSForms(std::move(forms)),
+              ElementsAre(Pointee(http_form), Pointee(https_form),
+                          Pointee(basic_auth_form),
+                          Pointee(basic_auth_form_with_null_character),
+                          Pointee(invalid_basic_auth_form),
+                          Pointee(another_invalid_form)));
 }
 
 }  // namespace password_manager

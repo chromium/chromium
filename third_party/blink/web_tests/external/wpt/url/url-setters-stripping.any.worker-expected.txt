@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 260 tests; 155 PASS, 105 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 260 tests; 158 PASS, 102 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Setting protocol with leading U+0000 (https:)
 PASS Setting protocol with U+0000 before inserted colon (https:)
 PASS Setting username with leading U+0000 (https:)
@@ -17,9 +17,9 @@ PASS Setting hostname with trailing U+0000 (https:)
 PASS Setting port with leading U+0000 (https:)
 PASS Setting port with middle U+0000 (https:)
 PASS Setting port with trailing U+0000 (https:)
-FAIL Setting pathname with leading U+0000 (https:) assert_equals: property expected "/%00test" but got "/path"
-FAIL Setting pathname with middle U+0000 (https:) assert_equals: property expected "/te%00st" but got "/path"
-FAIL Setting pathname with trailing U+0000 (https:) assert_equals: property expected "/test%00" but got "/path"
+PASS Setting pathname with leading U+0000 (https:)
+PASS Setting pathname with middle U+0000 (https:)
+PASS Setting pathname with trailing U+0000 (https:)
 PASS Setting search with leading U+0000 (https:)
 PASS Setting search with middle U+0000 (https:)
 PASS Setting search with trailing U+0000 (https:)

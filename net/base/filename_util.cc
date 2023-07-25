@@ -109,7 +109,11 @@ bool FileURLToFilePath(const GURL& url, base::FilePath* file_path) {
   // https://crbug.com/585422 that this represents a potential security risk).
   // It isn't correct to keep it as "%2F", so this just fails. This is fine,
   // because '/' is not a valid filename character on either POSIX or Windows.
-  std::set<unsigned char> illegal_encoded_bytes{'/'};
+  //
+  // A valid URL may include "%00" (NULL) in its path (see
+  // https://crbug.com/1400251), which is considered an illegal filename and
+  // results in failure.
+  std::set<unsigned char> illegal_encoded_bytes{'/', '\0'};
 
 #if BUILDFLAG(IS_WIN)
   // "%5C" ('\\') on Windows results in failure, for the same reason as '/'
