@@ -40,7 +40,6 @@ class VersionUpdater : public UpdateEngineClient::Observer,
 
   enum class State {
     STATE_IDLE = 0,
-    STATE_FIRST_PORTAL_CHECK,
     STATE_REQUESTING_USER_PERMISSION,
     STATE_UPDATE,
     STATE_ERROR

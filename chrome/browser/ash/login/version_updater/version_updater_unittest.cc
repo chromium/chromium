@@ -339,8 +339,8 @@ TEST_F(VersionUpdaterUnitTest, HandlesPortalOnline) {
   EXPECT_CALL(*mock_network_portal_detector_, IsEnabled())
       .WillOnce(Return(true));
 
-  // StartNetworkCheck will call PortalStateChanged with update_info.state
-  // == STATE_FIRST_PORTAL_CHECK with an unknown portal state.
+  // StartNetworkCheck will call PortalStateChanged with an unknown portal
+  // state.
   EXPECT_CALL(*mock_delegate_,
               UpdateErrorMessage(NetworkState::PortalState::kUnknown,
                                  NetworkError::ERROR_STATE_OFFLINE, _))
@@ -364,8 +364,8 @@ TEST_F(VersionUpdaterUnitTest, HandlesPortalError) {
   EXPECT_CALL(*mock_network_portal_detector_, IsEnabled())
       .WillOnce(Return(true));
 
-  // StartNetworkCheck will call PortalStateChanged with update_info.state
-  // == STATE_FIRST_PORTAL_CHECK with an unknown portal state.
+  // StartNetworkCheck will call PortalStateChanged with update_info.state with
+  // an unknown portal state.
   EXPECT_CALL(*mock_delegate_,
               UpdateErrorMessage(NetworkState::PortalState::kUnknown,
                                  NetworkError::ERROR_STATE_OFFLINE, _))
