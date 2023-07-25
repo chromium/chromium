@@ -315,7 +315,8 @@ message ClientToServerMessage {
   // The ID that our invalidation client used to identify itself to the server.
   // Sending the ID here allows the server to not send notifications of our own
   // changes to our invalidator.
-  optional string invalidator_client_id = 14;
+  // The field was deprecated in M117 and is no longer populated.
+  optional string invalidator_client_id = 14 [deprecated = true];
 
   // Identifies this ClientToServerMessage as a clear server data request. This
   // field is present when message_contents is CLEAR_SERVER_DATA.

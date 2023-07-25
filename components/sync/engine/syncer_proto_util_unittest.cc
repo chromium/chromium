@@ -60,7 +60,6 @@ ClientToServerMessage DefaultGetUpdatesRequest() {
   msg.mutable_bag_of_chips();
   msg.set_api_key("api_key");
   msg.mutable_client_status();
-  msg.set_invalidator_client_id("client_id");
 
   return msg;
 }
