@@ -671,7 +671,7 @@ class BookmarkBarView::ButtonSeparatorView : public views::Separator {
  public:
   METADATA_HEADER(ButtonSeparatorView);
   ButtonSeparatorView() {
-    const int leading_padding = features::IsChromeRefresh2023() ? 16 : 4;
+    const int leading_padding = features::IsChromeRefresh2023() ? 8 : 4;
     const int trailing_padding = features::IsChromeRefresh2023() ? 8 : 3;
     // TODO(1465541): Rely on kThickness once value is updated for refresh.
     separator_thickness_ = features::IsChromeRefresh2023()
@@ -1063,7 +1063,6 @@ void BookmarkBarView::Layout() {
     // Calculate the maximum size needed for the tab group buttons.
     saved_tab_group_bar_width =
         saved_tab_group_bar_->CalculatePreferredWidthRestrictedBy(max_x - x);
-
     saved_tab_group_bar_->SetBounds(x, y, saved_tab_group_bar_width,
                                     button_height);
 
@@ -1072,9 +1071,6 @@ void BookmarkBarView::Layout() {
     // Add the separator width even if its not shown for correct positioning of
     // the bookmark buttons.
     if (saved_tab_group_bar_width > 0) {
-      // Add extra button padding for centering
-      x += bookmark_bar_button_padding;
-
       // Update the bounds for the separator.
       gfx::Size saved_tab_groups_separator_view_pref =
           saved_tab_groups_separator_view_->GetPreferredSize();

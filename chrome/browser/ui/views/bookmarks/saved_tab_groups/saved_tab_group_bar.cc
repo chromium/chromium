@@ -54,8 +54,9 @@ constexpr int kMaxVisibleButtons = 4;
 const int kOverflowMenuButtonPadding = 8;
 // The padding at the top and bottom of the bar used to center all displayed
 // buttons.
-constexpr int kButtonPadding = 2;
-
+constexpr int kButtonPadding = 4;
+// The amount of padding between buttons in the view.
+constexpr int kBetweenElementSpacing = 8;
 // The thickness, in dips, of the drop indicators during drop sessions.
 constexpr int kDropIndicatorThicknessDips = 2;
 
@@ -65,7 +66,6 @@ SavedTabGroupModel* GetSavedTabGroupModelFromBrowser(Browser* browser) {
       SavedTabGroupServiceFactory::GetForProfile(browser->profile());
   return keyed_service ? keyed_service->model() : nullptr;
 }
-
 }  // namespace
 
 // OverflowMenu generally handles drop sessions by delegating to `parent_bar_`.
@@ -191,14 +191,12 @@ SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
 
   SetProperty(views::kElementIdentifierKey, kSavedTabGroupBarElementId);
 
-  const int element_padding = GetLayoutConstant(BOOKMARK_BAR_BUTTON_PADDING);
-
+  // TODO(dljames): Add a container view which only houses the saved buttons.
+  // The overflow will continue to be directly added to the bar.
   std::unique_ptr<views::LayoutManager> layout_manager =
       std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
-          gfx::Insets::TLBR(kButtonPadding, element_padding / 2, kButtonPadding,
-                            0),
-          element_padding);
+          gfx::Insets::VH(kButtonPadding, 0), kBetweenElementSpacing);
   SetLayoutManager(std::move(layout_manager));
 
   if (!saved_tab_group_model_) {
@@ -461,20 +459,24 @@ void SavedTabGroupBar::OnWidgetDestroying(views::Widget* widget) {
 }
 
 int SavedTabGroupBar::CalculatePreferredWidthRestrictedBy(int max_x) {
-  const int button_padding = GetLayoutConstant(BOOKMARK_BAR_BUTTON_PADDING);
-  int current_x = 0;
+  // Remove extra padding from the last button in the following loop if there is
+  // a button visible. children() is never empty because the overflow button is
+  // always added even when there are no groups.
+  int current_x = children()[0]->GetVisible() ? -kBetweenElementSpacing : 0;
+
   // Calculate the amount of space that the SavedTabGroupBar can utilize
   // restricted by `max_x`.
   for (auto* button : children()) {
     gfx::Size preferred_size = button->GetPreferredSize();
-    int next_x =
-        current_x +
-        (button->GetVisible() ? preferred_size.width() + button_padding : 0);
+    int next_x = current_x + (button->GetVisible() ? preferred_size.width() +
+                                                         kBetweenElementSpacing
+                                                   : 0);
     if (next_x > max_x) {
       return current_x;
     }
     current_x = next_x;
   }
+
   return current_x;
 }
 

@@ -53,9 +53,7 @@ const tab_groups::TabGroupColorId kNewColor = tab_groups::TabGroupColorId::kRed;
 class SavedTabGroupBarUnitTest : public ChromeViewsTestBase {
  public:
   SavedTabGroupBarUnitTest()
-      : saved_tab_group_model_(std::make_unique<SavedTabGroupModel>()),
-        button_padding_(GetLayoutConstant(TOOLBAR_ELEMENT_PADDING)),
-        button_height_(GetLayoutConstant(BOOKMARK_BAR_BUTTON_HEIGHT)) {}
+      : saved_tab_group_model_(std::make_unique<SavedTabGroupModel>()) {}
 
   SavedTabGroupBar* saved_tab_group_bar() { return saved_tab_group_bar_.get(); }
   SavedTabGroupModel* saved_tab_group_model() {
@@ -93,9 +91,13 @@ class SavedTabGroupBarUnitTest : public ChromeViewsTestBase {
   }
 
   int GetWidthOfButtonsAndPadding() {
-    // iterate through bubble getting size plus button padding
-    // calculated button_sizes + extra_padding
-    int size = 0;
+    // Remove extra padding from the last button.
+    int size = saved_tab_group_bar_->children()[0]->GetVisible()
+                   ? -button_padding_
+                   : 0;
+
+    // Iterate through bubble getting size plus button padding calculated
+    // button_sizes + extra_padding
     for (const auto* const button : saved_tab_group_bar_->children()) {
       size += button->GetVisible()
                   ? button->GetPreferredSize().width() + button_padding_
@@ -125,8 +127,8 @@ class SavedTabGroupBarUnitTest : public ChromeViewsTestBase {
   std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
 
-  const int button_padding_;
-  const int button_height_;
+  static constexpr int button_padding_ = 8;
+  static constexpr int button_height_ = 20;
 };
 
 TEST_F(SavedTabGroupBarUnitTest, AddsButtonFromModelAdd) {

@@ -17,6 +17,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/controls/button/menu_button.h"
@@ -63,8 +64,10 @@ void SavedTabGroupOverflowButton::OnThemeChanged() {
   ui::ColorProvider* color_provider = GetColorProvider();
   const SkColor overflow_color =
       color_provider->GetColor(kColorBookmarkButtonIcon);
-  SetImageModel(
-      views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(kOverflowChevronIcon, overflow_color));
+  const gfx::VectorIcon& icon = features::IsChromeRefresh2023()
+                                    ? kBookmarkbarOverflowRefreshIcon
+                                    : kOverflowChevronIcon;
+  SetImageModel(views::Button::STATE_NORMAL,
+                ui::ImageModel::FromVectorIcon(icon, overflow_color));
   return;
 }
