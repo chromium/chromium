@@ -14,4 +14,8 @@ source_set("common") {
     "//base",
     "//components/version_info",
   ]
+
+  # Do not add to this list. Depend on //components/startup_metric_utils rather
+  # than this.
+  visibility = [ "//components/startup_metric_utils/*" ]
 }

@@ -15,4 +15,8 @@ source_set("browser") {
     "//components/startup_metric_utils/common",
     "//components/version_info",
   ]
+
+  # Do not add to this list. Depend on //components/startup_metric_utils rather
+  # than this.
+  visibility = [ "//components/startup_metric_utils/*" ]
 }
