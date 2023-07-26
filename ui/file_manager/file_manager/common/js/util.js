@@ -1141,6 +1141,14 @@ util.isJellyEnabled = () => {
 };
 
 /**
+ * Returns true if the cros-components flag is enabled.
+ * @return {boolean}
+ */
+util.isCrosComponentsEnabled = () => {
+  return loadTimeData.getBoolean('CROS_COMPONENTS');
+};
+
+/**
  * Returns true if DriveFsMirroring flag is enabled.
  * @return {boolean}
  */

@@ -1034,10 +1034,10 @@ export class RemoteCallFilesApp extends RemoteCall {
    * @param {string} appId app window ID
    * @returns {Promise<boolean>}
    */
-  async isJellybean(appId) {
+  async isCrosComponents(appId) {
     return await sendTestMessage({
              appId,
-             name: 'isJellybean',
+             name: 'isCrosComponents',
            }) === 'true';
   }
 
@@ -1185,7 +1185,7 @@ export class RemoteCallFilesApp extends RemoteCall {
    *     element appears.
    */
   waitForElementJelly(appId, query_jelly, query_old) {
-    return this.isJellybean(appId).then(
+    return this.isCrosComponents(appId).then(
         isJellybean =>
             this.waitForElement(appId, isJellybean ? query_jelly : query_old));
   }
@@ -1203,7 +1203,7 @@ export class RemoteCallFilesApp extends RemoteCall {
    */
   async waitAndClickElementJelly(
       appId, query_jelly, query_old, opt_keyModifiers) {
-    const isJellybean = await this.isJellybean(appId);
+    const isJellybean = await this.isCrosComponents(appId);
     return await this.waitAndClickElement(
         appId, isJellybean ? query_jelly : query_old, opt_keyModifiers);
   }

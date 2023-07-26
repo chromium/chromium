@@ -1312,6 +1312,8 @@ void AddFileManagerFeatureStrings(const std::string& locale,
   dict->Set("DRIVE_FS_BULK_PINNING",
             drive::util::IsDriveFsBulkPinningEnabled(profile));
 
+  dict->Set("CROS_COMPONENTS", chromeos::features::IsCrosComponentsEnabled());
+
   if (base::FeatureList::IsEnabled(features::kDataLeakPreventionPolicy) &&
       base::FeatureList::IsEnabled(
           features::kDataLeakPreventionFilesRestriction)) {

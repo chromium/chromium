@@ -509,7 +509,7 @@ export class ToolbarController {
   /** @private */
   updatePinnedToggle_() {
     this.pinnedToggleWrapper_.hidden = this.togglePinnedCommand_.hidden;
-    if (util.isJellyEnabled()) {
+    if (util.isCrosComponentsEnabled()) {
       this.pinnedToggleJelly_.selected = this.togglePinnedCommand_.checked;
       this.pinnedToggleJelly_.disabled = this.togglePinnedCommand_.disabled;
     } else {
@@ -524,7 +524,7 @@ export class ToolbarController {
 
     // Optimistally update the command's properties so we get notified if they
     // change back.
-    this.togglePinnedCommand_.checked = util.isJellyEnabled() ?
+    this.togglePinnedCommand_.checked = util.isCrosComponentsEnabled() ?
         this.pinnedToggleJelly_.selected :
         this.pinnedToggle_.checked;
   }

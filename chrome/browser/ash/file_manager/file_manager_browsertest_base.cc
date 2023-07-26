@@ -2232,6 +2232,14 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(chromeos::features::kJelly);
   }
 
+  if (options.enable_cros_components) {
+    enabled_features.push_back(chromeos::features::kCrosComponents);
+    DCHECK(options.enable_jellybean)
+        << "Cannot enable cros-components without jellybean";
+  } else {
+    disabled_features.push_back(chromeos::features::kCrosComponents);
+  }
+
   if (options.feature_ids.size() > 0) {
     for (const std::string& feature_id : options.feature_ids) {
       base::AddTagToTestResult("feature_id", feature_id);
@@ -3682,6 +3690,11 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
   if (name == "isJellybean") {
     *output = options.enable_jellybean ? "true" : "false";
+    return;
+  }
+
+  if (name == "isCrosComponents") {
+    *output = options.enable_cros_components ? "true" : "false";
     return;
   }
 

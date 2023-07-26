@@ -1497,8 +1497,9 @@ testcase.drivePinToggleIsDisabledAndHiddenWhenBulkPinningEnabled = async () => {
       await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
 
 
-  const toggleId = await remoteCall.isJellybean(appId) ? 'pinned-toggle-jelly' :
-                                                         'pinned-toggle';
+  const toggleId = await remoteCall.isCrosComponents(appId) ?
+      'pinned-toggle-jelly' :
+      'pinned-toggle';
 
   // Bring up the context menu for test.txt.
   await remoteCall.waitAndRightClick(
@@ -1591,8 +1592,9 @@ testcase.drivePinToggleIsEnabledInSharedWithMeWhenBulkPinningEnabled =
     ENTRIES.sharedWithMeDirectoryFile,
   ]);
 
-  const toggleId = await remoteCall.isJellybean(appId) ? 'pinned-toggle-jelly' :
-                                                         'pinned-toggle';
+  const toggleId = await remoteCall.isCrosComponents(appId) ?
+      'pinned-toggle-jelly' :
+      'pinned-toggle';
 
   // Click the Shared with me volume, it has no children so navigating using the
   // directory tree doesn't work.

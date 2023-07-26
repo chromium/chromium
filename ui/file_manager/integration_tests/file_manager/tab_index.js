@@ -159,7 +159,7 @@ testcase.tabindexFocusDirectorySelected = async () => {
         appId, ['#delete-button:not([hidden]):not([disabled])']),
   ]);
 
-  const pinnedToggleId = await remoteCall.isJellybean(appId) ?
+  const pinnedToggleId = await remoteCall.isCrosComponents(appId) ?
       'pinned-toggle-jelly' :
       'pinned-toggle';
 

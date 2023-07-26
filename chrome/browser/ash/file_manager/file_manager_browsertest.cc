@@ -268,7 +268,8 @@ struct TestCase {
     return *this;
   }
 
-  TestCase& EnableJellybean() {
+  TestCase& EnableCrosComponents() {
+    options.enable_cros_components = true;
     options.enable_jellybean = true;
     return *this;
   }
@@ -348,8 +349,8 @@ struct TestCase {
       full_name += "_DriveShortcuts";
     }
 
-    if (options.enable_jellybean) {
-      full_name += "_Jellybean";
+    if (options.enable_cros_components) {
+      full_name += "_CrosComponents";
     }
 
     switch (options.device_mode) {
@@ -1628,12 +1629,12 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         // TODO(b/189173190): Enable
         // TestCase("drivePinFileMobileNetwork"),
         TestCase("drivePinToggleUpdatesInFakeEntries"),
-        TestCase("drivePinToggleUpdatesInFakeEntries").EnableJellybean(),
+        TestCase("drivePinToggleUpdatesInFakeEntries").EnableCrosComponents(),
         TestCase("drivePinToggleIsDisabledAndHiddenWhenBulkPinningEnabled")
             .EnableBulkPinning(),
         TestCase("drivePinToggleIsDisabledAndHiddenWhenBulkPinningEnabled")
             .EnableBulkPinning()
-            .EnableJellybean(),
+            .EnableCrosComponents(),
         TestCase("driveClickFirstSearchResult"),
         TestCase("drivePressEnterToSearch"),
         TestCase("drivePressClearSearch"),
@@ -1642,7 +1643,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveAvailableOfflineGearMenu"),
         TestCase("driveAvailableOfflineDirectoryGearMenu"),
         TestCase("driveAvailableOfflineActionBar"),
-        TestCase("driveAvailableOfflineActionBar").EnableJellybean(),
+        TestCase("driveAvailableOfflineActionBar").EnableCrosComponents(),
         TestCase("driveLinkToDirectory"),
         TestCase("driveLinkToDirectory").EnableDriveShortcuts(),
         TestCase("driveLinkOpenFileThroughLinkedDirectory"),
@@ -1663,7 +1664,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .EnableBulkPinning(),
         TestCase("drivePinToggleIsEnabledInSharedWithMeWhenBulkPinningEnabled")
             .EnableBulkPinning()
-            .EnableJellybean(),
+            .EnableCrosComponents(),
         TestCase("driveCantPinItemsShouldHaveClassNameAndGetUpdatedWhenCanPin")
             .EnableBulkPinning(),
         TestCase("driveItemsOutOfViewportShouldUpdateTheirSyncStatus")
@@ -1993,7 +1994,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("tabindexFocusDownloads"),
         TestCase("tabindexFocusDownloads").InGuestMode(),
         TestCase("tabindexFocusDirectorySelected"),
-        TestCase("tabindexFocusDirectorySelected").EnableJellybean(),
+        TestCase("tabindexFocusDirectorySelected").EnableCrosComponents(),
         TestCase("tabindexOpenDialogDownloads").WithBrowser()
         // TODO(b/189173190): Enable
         // TestCase("tabindexOpenDialogDownloads").WithBrowser(),
