@@ -15553,6 +15553,21 @@
             ]
         }
     ],
+    "VulkanV2": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "VulkanV2",
+                    "enable_features": [
+                        "VulkanV2"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebApkAllowIconUpdate": [
         {
             "platforms": [
