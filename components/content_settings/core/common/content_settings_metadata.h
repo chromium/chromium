@@ -30,6 +30,9 @@ class RuleMetaData {
     last_modified_ = last_modified;
   }
 
+  base::Time last_used() const { return last_used_; }
+  void set_last_used(base::Time last_used) { last_used_ = last_used; }
+
   base::Time last_visited() const { return last_visited_; }
   void set_last_visited(base::Time visited) { last_visited_ = visited; }
 
@@ -65,6 +68,9 @@ class RuleMetaData {
   // Last Modified data as specified by some UserModifiableProvider
   // implementations. May be zero.
   base::Time last_modified_;
+  // Date when a permission-gate feature was used the last time. Verifying
+  // and/or changing the value of `ContentSetting` is not considered as `used`.
+  base::Time last_used_;
   // Last visited data as specified by some UserModifiableProvider
   // implementations. Only non-zero when
   // ContentSettingsConstraint::track_last_visit_for_autoexpiration is enabled.

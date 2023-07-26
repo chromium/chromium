@@ -72,6 +72,7 @@ enum SessionModel {
 // This mirrors the C++ type in content_settings_metadata.h.
 struct RuleMetaData {
   mojo_base.mojom.Time last_modified;
+  mojo_base.mojom.Time last_used;
   mojo_base.mojom.Time last_visited;
   mojo_base.mojom.Time expiration;
   SessionModel session_model;

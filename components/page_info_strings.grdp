@@ -513,6 +513,16 @@
       </message>
     </if>
 
+    <!-- Permission usage strings -->
+    <message name="IDS_PAGE_INFO_PERMISSION_USING_NOW" desc="The label used underneath a permission listed in the Page Info bubble if a feature gated behind the permission is used by a page.">
+      Using now
+    </message>
+    <message name="IDS_PAGE_INFO_PERMISSION_RECENTLY_USED" desc="The label used underneath a permission listed in the Page Info bubble if a feature gated behind the permission was used less than 1 minute ago.">
+      Recently used
+    </message>
+    <message name="IDS_PAGE_INFO_PERMISSION_USED_TIME_AGO" desc="The label used underneath a permission listed in the Page Info bubble if a feature gated behind the permission was used less than 24 hours ago.">
+      Last used <ph name="NUM_HOURS_MINUTES_SECONDS">$1<ex>2 minutes</ex></ph> ago
+    </message>
     <!-- Password Protection -->
     <if expr="_google_chrome">
       <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS" desc="A short paragraph explaining to the user that they has reuse their google password on current website.">

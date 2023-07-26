@@ -30,10 +30,10 @@ void RuleMetaData::SetExpirationAndLifetime(base::Time expiration,
 }
 
 bool RuleMetaData::operator==(const RuleMetaData& other) const {
-  return std::tie(last_modified_, last_visited_, expiration_, session_model_,
-                  lifetime_) == std::tie(other.last_modified_,
-                                         other.last_visited_, other.expiration_,
-                                         other.session_model_, other.lifetime_);
+  return std::tie(last_modified_, last_used_, last_visited_, expiration_,
+                  session_model_, lifetime_) ==
+         std::tie(other.last_modified_, other.last_used_, other.last_visited_,
+                  other.expiration_, other.session_model_, other.lifetime_);
 }
 
 // static

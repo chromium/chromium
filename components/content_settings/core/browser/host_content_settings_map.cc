@@ -726,6 +726,15 @@ void HostContentSettingsMap::FlushLossyWebsiteSettings() {
   prefs_->SchedulePendingLossyWrites();
 }
 
+void HostContentSettingsMap::UpdateLastUsedTime(const GURL& primary_url,
+                                                const GURL& secondary_url,
+                                                ContentSettingsType type,
+                                                const base::Time time) {
+  for (auto* provider : user_modifiable_providers_) {
+    provider->UpdateLastUsedTime(primary_url, secondary_url, type, time);
+  }
+}
+
 void HostContentSettingsMap::ResetLastVisitedTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,

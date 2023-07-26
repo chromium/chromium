@@ -201,6 +201,10 @@ class PageInfo : private content_settings::CookieControlsObserver,
     // Only set for settings that can have multiple permissions for different
     // embedded origins.
     absl::optional<url::Origin> requesting_origin;
+    // When the permission was used.
+    base::Time last_used;
+    // Whether the permission is in use.
+    bool is_in_use = false;
   };
 
   // Creates a PageInfo for the passed |url| using the given |ssl| status

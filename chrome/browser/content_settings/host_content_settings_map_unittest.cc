@@ -93,6 +93,11 @@ class MockUserModifiableProvider
 
   MOCK_METHOD0(ShutdownOnUIThread, void());
 
+  MOCK_METHOD4(UpdateLastUsedTime,
+               bool(const GURL& primary_url,
+                    const GURL& secondary_url,
+                    ContentSettingsType content_type,
+                    const base::Time time));
   MOCK_METHOD3(UpdateLastVisitTime,
                bool(const ContentSettingsPattern& primary_pattern,
                     const ContentSettingsPattern& secondary_pattern,

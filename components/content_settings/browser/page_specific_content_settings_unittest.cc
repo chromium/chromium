@@ -1274,6 +1274,9 @@ TEST_F(PageSpecificContentSettingsTest, MediaIndicatorsMinHoldDurationDelay) {
       web_contents()->GetPrimaryMainFrame());
   ASSERT_NE(pscs, nullptr);
 
+  pscs->set_media_stream_access_origin_for_testing(
+      web_contents()->GetLastCommittedURL());
+
   EXPECT_FALSE(pscs->GetMicrophoneCameraState().Has(
       PageSpecificContentSettings::kCameraAccessed));
   pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_CAMERA, true);
@@ -1310,6 +1313,9 @@ TEST_F(PageSpecificContentSettingsTest,
       web_contents()->GetPrimaryMainFrame());
   ASSERT_NE(pscs, nullptr);
 
+  pscs->set_media_stream_access_origin_for_testing(
+      web_contents()->GetLastCommittedURL());
+
   EXPECT_FALSE(pscs->GetMicrophoneCameraState().Has(
       PageSpecificContentSettings::kCameraAccessed));
   pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_CAMERA, true);
@@ -1343,6 +1349,9 @@ TEST_F(PageSpecificContentSettingsTest,
       web_contents()->GetPrimaryMainFrame());
   ASSERT_NE(pscs, nullptr);
 
+  pscs->set_media_stream_access_origin_for_testing(
+      web_contents()->GetLastCommittedURL());
+
   EXPECT_FALSE(pscs->GetMicrophoneCameraState().Has(
       PageSpecificContentSettings::kCameraAccessed));
   pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_CAMERA, true);
@@ -1367,6 +1376,62 @@ TEST_F(PageSpecificContentSettingsTest,
 
   EXPECT_TRUE(pscs->GetMicrophoneCameraState().Has(
       PageSpecificContentSettings::kCameraAccessed));
+}
+
+// Tests that `PageSpecificContentSettings` will return locally saved last used
+// time if it exists.
+TEST_F(PageSpecificContentSettingsTest, GetLastUsedTimeLocalTimeTest) {
+  NavigateAndCommit(GURL("http://google.com"));
+
+  PageSpecificContentSettings* pscs = PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+  ASSERT_NE(pscs, nullptr);
+
+  base::Time time = base::Time::Now() - base::Seconds(30);
+
+  pscs->set_last_used_time_for_testing(ContentSettingsType::MEDIASTREAM_CAMERA,
+                                       time);
+
+  EXPECT_EQ(time,
+            pscs->GetLastUsedTime(ContentSettingsType::MEDIASTREAM_CAMERA));
+}
+
+TEST_F(PageSpecificContentSettingsTest, GetLastUsedReturnsDefaultTimeTest) {
+  NavigateAndCommit(GURL("http://google.com"));
+
+  HostContentSettingsMap* map = settings_map();
+
+  const GURL& url = web_contents()->GetLastCommittedURL();
+  map->SetContentSettingDefaultScope(
+      url, url, ContentSettingsType::MEDIASTREAM_CAMERA, CONTENT_SETTING_ALLOW);
+
+  PageSpecificContentSettings* pscs = PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+  ASSERT_NE(pscs, nullptr);
+
+  EXPECT_EQ(base::Time(),
+            pscs->GetLastUsedTime(ContentSettingsType::MEDIASTREAM_CAMERA));
+}
+
+TEST_F(PageSpecificContentSettingsTest, GetLastUsedReturnCorrectTimeTest) {
+  NavigateAndCommit(GURL("http://google.com"));
+
+  HostContentSettingsMap* map = settings_map();
+
+  const GURL& url = web_contents()->GetLastCommittedURL();
+  map->SetContentSettingDefaultScope(
+      url, url, ContentSettingsType::MEDIASTREAM_CAMERA, CONTENT_SETTING_ALLOW);
+
+  base::Time time = base::Time::Now() - base::Hours(20);
+  map->UpdateLastUsedTime(url, url, ContentSettingsType::MEDIASTREAM_CAMERA,
+                          time);
+
+  PageSpecificContentSettings* pscs = PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+  ASSERT_NE(pscs, nullptr);
+
+  EXPECT_EQ(time,
+            pscs->GetLastUsedTime(ContentSettingsType::MEDIASTREAM_CAMERA));
 }
 
 }  // namespace content_settings

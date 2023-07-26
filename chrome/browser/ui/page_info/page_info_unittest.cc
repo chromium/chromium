@@ -1797,6 +1797,101 @@ TEST_F(PageInfoTest, SubresourceFilterSetting_MatchesActivation) {
   EXPECT_TRUE(showing_setting(last_permission_info_list()));
 }
 
+// Tests that permissions substring is empty if permission is blocked.
+TEST_F(PageInfoTest, PermissionBlockedStrings) {
+  SetURL("https://example.com/");
+  page_info();
+
+  auto web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  ChromePageInfoUiDelegate delegate(web_contents.get(),
+                                    GURL("http://www.example.com"));
+
+  PageInfo::PermissionInfo camera_permission;
+  camera_permission.type = ContentSettingsType::MEDIASTREAM_CAMERA;
+  camera_permission.setting = CONTENT_SETTING_BLOCK;
+  camera_permission.default_setting = CONTENT_SETTING_ASK;
+  camera_permission.source = content_settings::SETTING_SOURCE_USER;
+  camera_permission.is_one_time = false;
+
+  EXPECT_EQ(std::u16string(), PageInfoUI::PermissionMainPageStateToUIString(
+                                  &delegate, camera_permission));
+}
+
+// Tests that permissions substring says "Using now" if permission is in use.
+TEST_F(PageInfoTest, PermissionUsingNowStrings) {
+  SetURL("https://example.com/");
+  page_info();
+
+  auto web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  ChromePageInfoUiDelegate delegate(web_contents.get(),
+                                    GURL("http://www.example.com"));
+
+  PageInfo::PermissionInfo camera_permission;
+  camera_permission.type = ContentSettingsType::MEDIASTREAM_CAMERA;
+  camera_permission.setting = CONTENT_SETTING_ALLOW;
+  camera_permission.default_setting = CONTENT_SETTING_ASK;
+  camera_permission.source = content_settings::SETTING_SOURCE_USER;
+  camera_permission.is_one_time = false;
+  camera_permission.is_in_use = true;
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PAGE_INFO_PERMISSION_USING_NOW),
+            PageInfoUI::PermissionMainPageStateToUIString(&delegate,
+                                                          camera_permission));
+}
+
+// Tests that permissions substring says "Recently used" if permission was used
+// less than 1 minute ago.
+TEST_F(PageInfoTest, PermissionRecentlyUsedStrings) {
+  SetURL("https://example.com/");
+  page_info();
+
+  auto web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  ChromePageInfoUiDelegate delegate(web_contents.get(),
+                                    GURL("http://www.example.com"));
+
+  PageInfo::PermissionInfo camera_permission;
+  camera_permission.type = ContentSettingsType::MEDIASTREAM_CAMERA;
+  camera_permission.setting = CONTENT_SETTING_ALLOW;
+  camera_permission.default_setting = CONTENT_SETTING_ASK;
+  camera_permission.source = content_settings::SETTING_SOURCE_USER;
+  camera_permission.is_one_time = false;
+  camera_permission.is_in_use = false;
+  camera_permission.last_used = base::Time::Now() - base::Seconds(30);
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PAGE_INFO_PERMISSION_RECENTLY_USED),
+            PageInfoUI::PermissionMainPageStateToUIString(&delegate,
+                                                          camera_permission));
+}
+
+// Tests that permissions substring says "Used X minutes/hours ago" if
+// permission was used more than 1 minute ago.
+TEST_F(PageInfoTest, PermissionUsed30MinutesAgoStrings) {
+  SetURL("https://example.com/");
+  page_info();
+
+  auto web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  ChromePageInfoUiDelegate delegate(web_contents.get(),
+                                    GURL("http://www.example.com"));
+
+  PageInfo::PermissionInfo camera_permission;
+  camera_permission.type = ContentSettingsType::MEDIASTREAM_CAMERA;
+  camera_permission.setting = CONTENT_SETTING_ALLOW;
+  camera_permission.default_setting = CONTENT_SETTING_ASK;
+  camera_permission.source = content_settings::SETTING_SOURCE_USER;
+  camera_permission.is_one_time = false;
+  camera_permission.is_in_use = false;
+  camera_permission.last_used = base::Time::Now() - base::Minutes(30);
+
+  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_PAGE_INFO_PERMISSION_USED_TIME_AGO,
+                                       u"30 minutes"),
+            PageInfoUI::PermissionMainPageStateToUIString(&delegate,
+                                                          camera_permission));
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 
 // Unit tests with the unified autoplay sound settings UI enabled. When enabled

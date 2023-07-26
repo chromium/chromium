@@ -105,6 +105,10 @@ struct StructTraits<content_settings::mojom::RuleMetaDataDataView,
     return r.last_modified_;
   }
 
+  static const base::Time& last_used(const content_settings::RuleMetaData& r) {
+    return r.last_used_;
+  }
+
   static const base::Time& last_visited(
       const content_settings::RuleMetaData& r) {
     return r.last_visited_;

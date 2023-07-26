@@ -378,6 +378,15 @@ void NotificationChannelsProviderAndroid::ShutdownOnUIThread() {
   RemoveAllObservers();
 }
 
+bool NotificationChannelsProviderAndroid::UpdateLastUsedTime(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType content_type,
+    const base::Time time) {
+  // Last used tracking is not implemented for this type.
+  return false;
+}
+
 bool NotificationChannelsProviderAndroid::ResetLastVisitTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,

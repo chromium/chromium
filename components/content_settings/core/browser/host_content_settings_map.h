@@ -263,6 +263,12 @@ class HostContentSettingsMap : public content_settings::Observer,
       ContentSetting setting,
       const content_settings::ContentSettingConstraints& constraints = {});
 
+  // Updates the last used time to a recent timestamp.
+  void UpdateLastUsedTime(const GURL& primary_url,
+                          const GURL& secondary_url,
+                          ContentSettingsType type,
+                          const base::Time time);
+
   // Reset the last visited time to base::Time().
   void ResetLastVisitedTime(const ContentSettingsPattern& primary_pattern,
                             const ContentSettingsPattern& secondary_pattern,

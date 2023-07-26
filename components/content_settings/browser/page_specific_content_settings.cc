@@ -563,7 +563,21 @@ PageSpecificContentSettings::PageSpecificContentSettings(content::Page& page,
   }
 }
 
-PageSpecificContentSettings::~PageSpecificContentSettings() = default;
+PageSpecificContentSettings::~PageSpecificContentSettings() {
+  for (auto last_used_entry : last_used_time_) {
+    switch (last_used_entry.first) {
+      case ContentSettingsType::MEDIASTREAM_MIC:
+      case ContentSettingsType::MEDIASTREAM_CAMERA:
+        map_->UpdateLastUsedTime(media_stream_access_origin_,
+                                 media_stream_access_origin_,
+                                 last_used_entry.first, last_used_entry.second);
+        break;
+      default:
+        // Currently, only camera and mic permissions are supported.
+        NOTREACHED();
+    }
+  }
+}
 
 // static
 void PageSpecificContentSettings::CreateForWebContents(
@@ -652,8 +666,9 @@ void PageSpecificContentSettings::BrowsingDataAccessed(
     bool blocked) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   PageSpecificContentSettings* settings = GetForFrame(rfh);
-  if(settings)
+  if (settings) {
     settings->OnBrowsingDataAccessed(data_key, storage_type, blocked);
+  }
 }
 
 // static
@@ -664,11 +679,13 @@ void PageSpecificContentSettings::ContentBlocked(int render_process_id,
       content::RenderFrameHost::FromID(render_process_id, render_frame_id);
   if (DelayUntilCommitIfNecessary(rfh,
                                   &PageSpecificContentSettings::ContentBlocked,
-                                  render_process_id, render_frame_id, type))
+                                  render_process_id, render_frame_id, type)) {
     return;
+  }
   PageSpecificContentSettings* settings = GetForFrame(rfh);
-  if (settings)
+  if (settings) {
     settings->OnContentBlocked(type);
+  }
 }
 
 // static
@@ -682,9 +699,10 @@ void PageSpecificContentSettings::SharedWorkerAccessed(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   PageSpecificContentSettings* settings = GetForFrame(
       content::RenderFrameHost::FromID(render_process_id, render_frame_id));
-  if (settings)
+  if (settings) {
     settings->OnSharedWorkerAccessed(worker_url, name, storage_key,
                                      blocked_by_policy);
+  }
 }
 
 // static
@@ -694,8 +712,9 @@ void PageSpecificContentSettings::InterestGroupJoined(
     bool blocked_by_policy) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   PageSpecificContentSettings* settings = GetForFrame(rfh);
-  if (settings)
+  if (settings) {
     settings->OnInterestGroupJoined(api_origin, blocked_by_policy);
+  }
 }
 
 // static
@@ -706,8 +725,9 @@ void PageSpecificContentSettings::TopicAccessed(
     privacy_sandbox::CanonicalTopic topic) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   PageSpecificContentSettings* settings = GetForFrame(rfh);
-  if (settings)
+  if (settings) {
     settings->OnTopicAccessed(api_origin, blocked_by_policy, topic);
+  }
 }
 
 // static
@@ -741,8 +761,9 @@ bool PageSpecificContentSettings::IsContentBlocked(
       content_type == ContentSettingsType::SENSORS ||
       content_type == ContentSettingsType::GEOLOCATION) {
     const auto& it = content_settings_status_.find(content_type);
-    if (it != content_settings_status_.end())
+    if (it != content_settings_status_.end()) {
       return it->second.blocked;
+    }
   }
 
   return false;
@@ -768,8 +789,9 @@ bool PageSpecificContentSettings::IsContentAllowed(
   }
 
   const auto& it = content_settings_status_.find(content_type);
-  if (it != content_settings_status_.end())
+  if (it != content_settings_status_.end()) {
     return it->second.allowed;
+  }
   return false;
 }
 
@@ -783,8 +805,9 @@ void PageSpecificContentSettings::OnContentBlocked(ContentSettingsType type) {
   DCHECK(type != ContentSettingsType::MEDIASTREAM_MIC &&
          type != ContentSettingsType::MEDIASTREAM_CAMERA)
       << "Media stream settings handled by OnMediaStreamPermissionSet";
-  if (!content_settings::ContentSettingsRegistry::GetInstance()->Get(type))
+  if (!content_settings::ContentSettingsRegistry::GetInstance()->Get(type)) {
     return;
+  }
 
   ContentSettingsStatus& status = content_settings_status_[type];
   if (!status.blocked) {
@@ -817,15 +840,18 @@ void PageSpecificContentSettings::OnContentAllowed(ContentSettingsType type) {
   // access was previously allowed but the last decision was to block.
   // Reset the blocked flag so that the UI will properly indicate that the
   // last decision here instead was to allow sensor access.
-  if (type == ContentSettingsType::SENSORS)
+  if (type == ContentSettingsType::SENSORS) {
     must_reset_blocked_status = true;
+  }
 
-  // If this content settings is for the PiP window, must reset |blocked| status
-  // since it will not be updated in OnContentSettingChanged() like the normal
-  // browser window. We need the status to be precise to display the UI.
+  // If this content settings is for the PiP window, must reset |blocked|
+  // status since it will not be updated in OnContentSettingChanged() like the
+  // normal browser window. We need the status to be precise to display the
+  // UI.
   auto* synced_pccs = MaybeGetSyncedSettingsForPictureInPicture();
-  if (synced_pccs)
+  if (synced_pccs) {
     must_reset_blocked_status = true;
+  }
 
 #if BUILDFLAG(IS_ANDROID)
   // content_settings_status_[type].allowed is always set to true in
@@ -1430,6 +1456,10 @@ void PageSpecificContentSettings::OnCapturingStateChanged(
     }
     OnCapturingStateChangedInternal(type, is_capturing);
   } else {
+    // When audio/video capturing is over, save a time so it can be stored in
+    // HCSM.
+    last_used_time_[type] = base::Time::Now();
+
     // Add a delay before the media indicator disappears.
     if ((type == ContentSettingsType::MEDIASTREAM_CAMERA &&
          !microphone_camera_state_.Has(kMicrophoneAccessed)) ||
@@ -1467,8 +1497,10 @@ void PageSpecificContentSettings::OnCapturingStateChangedInternal(
 
   if (is_capturing) {
     microphone_camera_state_.Put(state);
+    in_use_.insert(type);
   } else {
     microphone_camera_state_.Remove(state);
+    in_use_.erase(type);
   }
 
   // If `kMicrophoneAccessed` and `kCameraAccessed` not set, reset
@@ -1480,6 +1512,22 @@ void PageSpecificContentSettings::OnCapturingStateChangedInternal(
   }
 
   MaybeUpdateLocationBar();
+}
+
+const base::Time PageSpecificContentSettings::GetLastUsedTime(
+    ContentSettingsType type) {
+  auto it = last_used_time_.find(type);
+  if (it != last_used_time_.end()) {
+    // After a recent usage HCSM will not have an updated last used time. HCSM
+    // will be update in PSCS dtor.
+    return it->second;
+  }
+
+  content_settings::SettingInfo info;
+  map_->GetContentSetting(GetWebContents()->GetLastCommittedURL(),
+                          GetWebContents()->GetLastCommittedURL(), type, &info);
+
+  return info.metadata.last_used();
 }
 
 void PageSpecificContentSettings::MaybeNotifySiteDataObservers(

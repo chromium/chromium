@@ -29,6 +29,7 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/cpp/device_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/l10n/time_format.h"
 #include "url/gurl.h"
 #if BUILDFLAG(IS_ANDROID)
 #include "components/resources/android/theme_resources.h"
@@ -732,7 +733,25 @@ std::u16string PageInfoUI::PermissionMainPageStateToUIString(
     return PermissionStateToUIString(delegate, permission);
   }
 
-  return std::u16string();
+  if (permission.is_in_use) {
+    return l10n_util::GetStringUTF16(IDS_PAGE_INFO_PERMISSION_USING_NOW);
+  }
+
+  if (permission.setting != CONTENT_SETTING_ALLOW ||
+      permission.last_used == base::Time()) {
+    return std::u16string();
+  }
+
+  base::TimeDelta time_delta = base::Time::Now() - permission.last_used;
+  if (time_delta < base::Minutes(1)) {
+    return l10n_util::GetStringUTF16(IDS_PAGE_INFO_PERMISSION_RECENTLY_USED);
+  }
+
+  std::u16string used_time_string =
+      ui::TimeFormat::Simple(ui::TimeFormat::Format::FORMAT_DURATION,
+                             ui::TimeFormat::Length::LENGTH_LONG, time_delta);
+  return l10n_util::GetStringFUTF16(IDS_PAGE_INFO_PERMISSION_USED_TIME_AGO,
+                                    used_time_string);
 }
 
 // static
