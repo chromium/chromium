@@ -16,9 +16,10 @@
 #include "ash/wm/desks/desk_button/desk_button.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "base/i18n/rtl.h"
-#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/transform_util.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -230,11 +231,42 @@ gfx::Rect DeskButtonWidget::GetTargetBounds() const {
 }
 
 void DeskButtonWidget::UpdateLayout(bool animate) {
-  if (ShouldBeVisible()) {
-    SetBounds(GetTargetBounds());
+  // Having a window which is visible but does not have an opacity is an
+  // illegal state.
+  if (shelf_->shelf_layout_manager()->GetOpacity() == 1.0f &&
+      ShouldBeVisible()) {
     ShowInactive();
   } else {
     Hide();
+  }
+
+  if (!animate) {
+    SetBounds(target_bounds_);
+    return;
+  }
+
+  const gfx::Rect initial_bounds = GetNativeView()->layer()->bounds();
+  const bool animate_transform = initial_bounds.size() == target_bounds_.size();
+
+  if (animate_transform) {
+    const gfx::Transform initial_transform = gfx::TransformBetweenRects(
+        gfx::RectF(target_bounds_), gfx::RectF(initial_bounds));
+    SetBounds(target_bounds_);
+    GetNativeView()->layer()->SetTransform(initial_transform);
+  }
+
+  ui::ScopedLayerAnimationSettings animation_setter(
+      GetNativeView()->layer()->GetAnimator());
+  animation_setter.SetTransitionDuration(
+      ShelfConfig::Get()->shelf_animation_duration());
+  animation_setter.SetTweenType(gfx::Tween::EASE_OUT);
+  animation_setter.SetPreemptionStrategy(
+      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
+
+  if (animate_transform) {
+    GetNativeView()->layer()->SetTransform(gfx::Transform());
+  } else {
+    SetBounds(target_bounds_);
   }
 }
 
