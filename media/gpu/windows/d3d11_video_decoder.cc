@@ -131,7 +131,10 @@ D3D11VideoDecoder::D3D11VideoDecoder(
       get_d3d11_device_cb_(std::move(get_d3d11_device_cb)),
       get_helper_cb_(std::move(get_helper_cb)),
       supported_configs_(std::move(supported_configs)),
-      system_hdr_enabled_(system_hdr_enabled) {
+      system_hdr_enabled_(system_hdr_enabled),
+      use_shared_handle_(
+          base::FeatureList::IsEnabled(kD3D11VideoDecoderUseSharedHandle) ||
+          gpu_preferences.gr_context_type != gpu::GrContextType::kGL) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(media_log_);
 }
@@ -209,13 +212,10 @@ D3D11Status::Or<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
                  ? 10
                  : 8);
 
-  const bool use_shared_handle =
-      base::FeatureList::IsEnabled(kD3D11VideoDecoderUseSharedHandle);
-
   // TODO: supported check?
   decoder_configurator_ = D3D11DecoderConfigurator::Create(
       gpu_preferences_, gpu_workarounds_, config_, bit_depth_, chroma_sampling_,
-      media_log_.get(), use_shared_handle);
+      media_log_.get(), use_shared_handle_);
   if (!decoder_configurator_)
     return D3D11Status::Codes::kDecoderUnsupportedProfile;
 
@@ -237,7 +237,7 @@ D3D11Status::Or<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
       system_hdr_enabled_ ? TextureSelector::HDRMode::kSDROrHDR
                           : TextureSelector::HDRMode::kSDROnly,
       &format_checker, video_device_, device_context_, media_log_.get(),
-      config_.color_space_info().ToGfxColorSpace(), use_shared_handle);
+      config_.color_space_info().ToGfxColorSpace(), use_shared_handle_);
   if (!texture_selector_)
     return D3D11Status::Codes::kCreateTextureSelectorFailed;
 
@@ -294,8 +294,10 @@ D3D11Status::Or<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
   // For more information, please see:
   // https://download.microsoft.com/download/9/2/A/92A4E198-67E0-4ABD-9DB7-635D711C2752/DXVA_VPx.pdf
   // https://download.microsoft.com/download/5/f/c/5fc4ec5c-bd8c-4624-8034-319c1bab7671/DXVA_H264.pdf
+  // TODO(crbug.com/dawn/1932): Use array textures if preferred with shared
+  // handles once Dawn supports importing those.
   use_single_video_decoder_texture_ =
-      !!(dec_config.ConfigDecoderSpecific & (1 << 14));
+      !!(dec_config.ConfigDecoderSpecific & (1 << 14)) || use_shared_handle_;
   if (use_single_video_decoder_texture_)
     MEDIA_LOG(INFO, media_log_) << "D3D11VideoDecoder is using single textures";
   else
@@ -943,7 +945,6 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
                      scoped_refptr<D3D11PictureBuffer>(picture_buffer)));
   frame->SetReleaseMailboxCB(
       base::BindOnce(release_mailbox_cb_, std::move(wait_complete_cb)));
-
   // For NV12, overlay is allowed by default. If the decoder is going to support
   // non-NV12 textures, then this may have to be conditionally set. Also note
   // that ALLOW_OVERLAY is required for encrypted video path.
@@ -953,8 +954,8 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
   // the finch flag is enabled.  We may not choose to set ALLOW_OVERLAY if the
   // flag is off, however.
   frame->metadata().allow_overlay = true;
-
   frame->metadata().power_efficient = true;
+
   frame->set_color_space(output_color_space);
   if (output_color_space.IsHDR()) {
     // Some streams may have varying metadata, so bitstream metadata should be
@@ -968,12 +969,8 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
         SharedImageFormatType::kSharedImageFormat);
   }
 
-  // TODO(crbug.com/1236801): WebGPU cannot import and create texture view on
-  // correct slice of texture array. Still some works need to be done in both
-  // chromium side and dawn side.
-  frame->metadata().is_webgpu_compatible =
-      base::FeatureList::IsEnabled(kD3D11VideoDecoderUseSharedHandle) &&
-      use_single_video_decoder_texture_;
+  frame->metadata().is_webgpu_compatible = use_shared_handle_;
+
   output_cb_.Run(frame);
   return true;
 }
