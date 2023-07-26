@@ -510,8 +510,10 @@
     (UIPresentationController*)presentationController {
   base::RecordAction(
       base::UserMetricsAction("IOSClearBrowsingDataCloseWithSwipe"));
-  // Call prepareForDismissal to clean up state and stop the Coordinator.
+  // Call prepareForDismissal to clean up state and stop the Coordinators the
+  // current class own.
   [self prepareForDismissal];
+  [self.delegate clearBrowsingDataTableViewControllerWasRemoved:self];
 }
 
 - (BOOL)presentationControllerShouldDismiss:
