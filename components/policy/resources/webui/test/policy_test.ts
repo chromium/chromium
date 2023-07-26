@@ -114,6 +114,7 @@ function clearPolicies() {
 function resetPolicies(event: Event) {
   sendWithPromise('revertLocalTestPolicies');
   (event.target as HTMLButtonElement).disabled = true;
+  sendWithPromise('revertLocalTestPolicies');
 }
 
 document.addEventListener('DOMContentLoaded', initialize);
