@@ -14,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -208,7 +209,7 @@ bool ProfileTokenQuality::AddObservationsForFilledForm(
     return p->guid() == profile_->guid();
   });
 
-  bool added_observation = false;
+  std::vector<std::pair<ServerFieldType, Observation>> possible_observations;
   for (size_t i = 0; i < form_structure.field_count(); i++) {
     const AutofillField& field = *form_structure.field(i);
     if (field.autofill_source_profile_guid() != profile_->guid()) {
@@ -227,14 +228,13 @@ bool ProfileTokenQuality::AddObservationsForFilledForm(
       // An observation for the `stored_type` and `hash` was already collected.
       continue;
     }
-    AddObservation(stored_type,
-                   Observation{.type = GetObservationTypeFromField(
-                                   field, form_data.fields[i].value,
-                                   other_profiles, pdm.app_locale()),
-                               .form_hash = hash});
-    added_observation = true;
+    possible_observations.emplace_back(
+        stored_type, Observation{.type = GetObservationTypeFromField(
+                                     field, form_data.fields[i].value,
+                                     other_profiles, pdm.app_locale()),
+                                 .form_hash = hash});
   }
-  return added_observation;
+  return AddSubsetOfObservations(std::move(possible_observations)) > 0;
 }
 
 void ProfileTokenQuality::AddObservationForTesting(
@@ -279,6 +279,25 @@ void ProfileTokenQuality::AddObservation(ServerFieldType type,
     observations.pop_front();
   }
   observations.push_back(std::move(observation));
+}
+
+size_t ProfileTokenQuality::AddSubsetOfObservations(
+    std::vector<std::pair<ServerFieldType, Observation>> observations) {
+  if (observations.empty()) {
+    return 0;
+  }
+  const size_t observations_to_add =
+      diable_randomization_for_testing_ ? observations.size()
+      : observations_.size() >= 11      ? 8
+      : observations.size() > 3         ? observations.size() - 3
+                                        : 1;
+  // Shuffle the `observations` and add the first `observations_to_add` many.
+  base::RandomShuffle(observations.begin(), observations.end());
+  for (auto& [type, observation] : base::make_span(
+           observations.begin(), observations.begin() + observations_to_add)) {
+    AddObservation(type, std::move(observation));
+  }
+  return observations_to_add;
 }
 
 ObservationType ProfileTokenQuality::GetObservationTypeFromField(

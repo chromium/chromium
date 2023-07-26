@@ -104,6 +104,8 @@ class ProfileTokenQuality {
   // autofilled with the `profile_`. Only fields with no existing observation
   // for the same type are considered.
   // The observations are associated with the fields' `Type()`.
+  // Because the set of types of the form is form identifying, some observations
+  // are randomly dropped for privacy reasons (see `AddSubsetOfObservations()`).
   // The values of the `form_structure`'s fields represent the initial values
   // of those fields. To derive the observation types, the current value in the
   // fields is required. For this reason, the `form_data` is passed in.
@@ -131,6 +133,10 @@ class ProfileTokenQuality {
   static bool IsWithinLevenshteinDistanceForTesting(base::StringPiece16 a,
                                                     base::StringPiece16 b,
                                                     size_t k);
+
+  void disable_randomization_for_testing() {
+    diable_randomization_for_testing_ = true;
+  }
 
  private:
   // For every form and stored type, at most a single observation is stored
@@ -162,6 +168,16 @@ class ProfileTokenQuality {
   // the limit of `kMaxObservationsPerToken` is exceeded.
   void AddObservation(ServerFieldType type, Observation observation);
 
+  // The set of types of the form is form identifying. To avoid tracking
+  // browsing history, this function randomly drops 3 observations from all
+  // possible `observations` that could be collected. For the non-dropped
+  // observations, `AddObservation()` is called.
+  // If there are less than 3 or more than 11 observations, at least 1 and at
+  // most 8 are added.
+  // Returns the number of observations added.
+  size_t AddSubsetOfObservations(
+      std::vector<std::pair<ServerFieldType, Observation>> observations);
+
   // Deduces the `ObservationType` from a `field` that was autofilled with
   // `profile_`. `other_profiles` are all the other profiles that the user has
   // stored. `*profile_` should not be part of `other_profiles`.
@@ -187,6 +203,9 @@ class ProfileTokenQuality {
   // - No more than `kMaxObservationsPerToken` elements are stored.
   base::flat_map<ServerFieldType, base::circular_deque<Observation>>
       observations_;
+
+  // When true, `AddSubsetOfObservations()` adds all observations.
+  bool diable_randomization_for_testing_ = false;
 };
 
 }  // namespace autofill

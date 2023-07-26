@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -125,6 +126,7 @@ TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_Accepted) {
   AutofillProfile profile = test::GetFullProfile();
   pdm_.AddProfile(profile);
   ProfileTokenQuality quality(&profile);
+  quality.disable_randomization_for_testing();
 
   FormData form = GetFormWithTypes({NAME_FIRST, NAME_MIDDLE_INITIAL});
   FillForm(form, profile);
@@ -148,6 +150,7 @@ TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_Edited) {
   AutofillProfile profile = test::GetFullProfile();
   pdm_.AddProfile(profile);
   ProfileTokenQuality quality(&profile);
+  quality.disable_randomization_for_testing();
 
   FormData form = GetFormWithTypes(
       {NAME_FIRST, NAME_LAST, ADDRESS_HOME_LINE1, ADDRESS_HOME_CITY});
@@ -188,6 +191,7 @@ TEST_F(ProfileTokenQualityTest,
   pdm_.AddProfile(profile);
   pdm_.AddProfile(other_profile);
   ProfileTokenQuality quality(&profile);
+  quality.disable_randomization_for_testing();
 
   FormData form = GetFormWithTypes({EMAIL_ADDRESS, ADDRESS_HOME_ZIP});
   FillForm(form, profile);
@@ -253,5 +257,57 @@ TEST_F(ProfileTokenQualityTest, IsWithinLevenshteinDistance) {
   EXPECT_TRUE(has_levenshtein_distance(std::u16string(100, 'a'),
                                        std::u16string(200, 'a'), 100));
 }
+
+// Tests the dropping of random observations during
+// `AddObservationsForFilledForm()`. In particular, tests that for a form
+// containing fields of the the given `form_types`, the
+// `expected_number_of_observations` are collected.
+struct DropObservationTest {
+  std::vector<ServerFieldType> form_types;
+  int expected_number_of_observations;
+};
+
+class ProfileTokenQualityObservationDroppingTest
+    : public ProfileTokenQualityTest,
+      public testing::WithParamInterface<DropObservationTest> {};
+
+TEST_P(ProfileTokenQualityObservationDroppingTest,
+       AddObservationsForFilledForm_DropObservations) {
+  const DropObservationTest& test = GetParam();
+  AutofillProfile profile = test::GetFullProfile();
+  pdm_.AddProfile(profile);
+  ProfileTokenQuality quality(&profile);
+
+  FormData form = GetFormWithTypes(test.form_types);
+  FillForm(form, profile);
+
+  EXPECT_TRUE(quality.AddObservationsForFilledForm(
+      *bam_.FindCachedFormById(form.global_id()), form, pdm_));
+  EXPECT_EQ(test.expected_number_of_observations,
+            base::ranges::count_if(test.form_types, [&](ServerFieldType type) {
+              return !quality.GetObservationTypesForFieldType(type).empty();
+            }));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ProfileTokenQualityObservationDroppingTest,
+    testing::Values(
+        // Average size form: Expect that three observations are dropped, such
+        // that 2 observations are collected.
+        DropObservationTest{{NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_ADDRESS,
+                             ADDRESS_HOME_CITY, ADDRESS_HOME_ZIP},
+                            2},
+        // Small form: Expect that one observation is dropped, such that only
+        // a single observation is collected.
+        DropObservationTest{{NAME_FIRST, NAME_LAST}, 1},
+        // Large form: Expect that four observations are dropped, such that
+        // the limit of eight observations are collected.
+        DropObservationTest{
+            {NAME_FIRST, NAME_LAST_FIRST, NAME_LAST_SECOND, COMPANY_NAME,
+             ADDRESS_HOME_STREET_NAME, ADDRESS_HOME_HOUSE_NUMBER,
+             ADDRESS_HOME_CITY, ADDRESS_HOME_ZIP, ADDRESS_HOME_STATE,
+             ADDRESS_HOME_COUNTRY, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER},
+            8}));
 
 }  // namespace autofill
