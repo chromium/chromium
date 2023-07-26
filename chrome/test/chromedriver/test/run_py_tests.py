@@ -90,7 +90,6 @@ _NEGATIVE_FILTER = [
     # Flaky https://bugs.chromium.org/p/chromium/issues/detail?id=1143940
     'ChromeDriverTest.testTakeLargeElementFullPageScreenshot',
     # Flaky https://bugs.chromium.org/p/chromium/issues/detail?id=1306504
-    'ChromeSwitchesCapabilityTest.*',
     'ChromeExtensionsCapabilityTest.*',
     # crbug.com/chromedriver/4379
     'ChromeDriverTest.testClickElementInAnotherFrame',
@@ -265,8 +264,6 @@ _ANDROID_NEGATIVE_FILTER['chrome'] = (
         # https://bugs.chromium.org/p/chromedriver/issues/detail?id=3560
         'ChromeDriverTest.testTakeLargeElementViewportScreenshot',
         'ChromeDriverTest.testTakeLargeElementFullPageScreenshot'
-        # Pipe are supported only on Posix platforms crbug.com/chromedriver/3480
-        'ChromeSwitchesCapabilityTest.testRemoteDebuggingPipe',
     ]
 )
 _ANDROID_NEGATIVE_FILTER['chrome_stable'] = (
@@ -280,7 +277,7 @@ _ANDROID_NEGATIVE_FILTER['chrome_stable'] = (
         'ChromeDriverTest.testSwitchToWindow',
         # Feature not yet supported in this version
         'ChromeDriverTest.testGenerateTestReport',
-        # Pipe are supported only on Posix platforms crbug.com/chromedriver/3480
+        # Pipe are supported only on Posix and Windows platforms
         'ChromeSwitchesCapabilityTest.testRemoteDebuggingPipe',
     ]
 )
@@ -293,7 +290,7 @@ _ANDROID_NEGATIVE_FILTER['chrome_beta'] = (
         'ChromeDriverTest.testSwitchToWindow',
         # Feature not yet supported in this version
         'ChromeDriverTest.testGenerateTestReport',
-        # Pipe are supported only on Posix platforms crbug.com/chromedriver/3480
+        # Pipe are supported only on Posix and Windows platforms
         'ChromeSwitchesCapabilityTest.testRemoteDebuggingPipe',
     ]
 )
@@ -334,7 +331,7 @@ _ANDROID_NEGATIVE_FILTER['chromedriver_webview_shell'] = (
         'ChromeDriverTest.testUnexpectedAlertOpenExceptionMessage',
         # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2332
         'ChromeDriverTestLegacy.testTouchScrollElement',
-        # Pipe are supported only on Posix platforms crbug.com/chromedriver/3480
+        # Pipe are supported only on Posix and Windows platforms
         'ChromeSwitchesCapabilityTest.testRemoteDebuggingPipe',
     ]
 )
@@ -4983,20 +4980,23 @@ class ChromeSwitchesCapabilityTest(ChromeDriverBaseTest):
     # Must use retries since there is an inherent race condition in port
     # selection.
     ports_generator = util.FindProbableFreePorts()
+    exception = None
     for _ in range(3):
       port = next(ports_generator)
       port_flag = 'remote-debugging-port=%s' % port
       try:
         driver = self.CreateDriver(chrome_switches=[port_flag])
-      except:
+      except Exception as e:
+        exception = e
         continue
       driver.Load('chrome:version')
       command_line = driver.FindElement('css selector',
                                         '#command_line').GetText()
+      driver.Quit()
       self.assertIn(port_flag, command_line)
       break
-    else:  # Else clause gets invoked if "break" never happens.
-      raise  # This re-raises the most recent exception.
+    if exception is not None:
+      raise exception
 
   def testRemoteDebuggingPipe(self):
     """Tests that passing --remote-debugging-pipe through capabilities works.
@@ -5680,6 +5680,7 @@ class RemoteBrowserTest(ChromeDriverBaseTest):
     # Must use retries since there is an inherent race condition in port
     # selection.
     ports_generator = util.FindProbableFreePorts()
+    exception = None
     for _ in range(3):
       port = next(ports_generator)
       temp_dir = util.MakeTempDir()
@@ -5694,24 +5695,24 @@ class RemoteBrowserTest(ChromeDriverBaseTest):
         driver = self.CreateDriver(debugger_address='localhost:%d' % port)
         driver.ExecuteScript('console.info("%s")' % 'connecting at %d!' % port)
         driver.Quit()
-      except:
+      except Exception as e:
+        exception = e
         continue
-      finally:
-        if process.poll() is None:
-          process.terminate()
-          # Wait for Chrome to exit here to prevent a race with Chrome to
-          # delete/modify the temporary user-data-dir.
-          # Maximum wait ~1 second.
-          for _ in range(20):
-            if process.poll() is not None:
-              break
-            print('continuing to wait for Chrome to exit')
-            time.sleep(.05)
-          else:
-            process.kill()
+      if process.poll() is None:
+        process.terminate()
+        # Wait for Chrome to exit here to prevent a race with Chrome to
+        # delete/modify the temporary user-data-dir.
+        # Maximum wait ~1 second.
+        for _ in range(20):
+          if process.poll() is not None:
+            break
+          print('continuing to wait for Chrome to exit')
+          time.sleep(.05)
+        else:
+          process.kill()
       break
-    else:  # Else clause gets invoked if "break" never happens.
-      raise  # This re-raises the most recent exception.
+    if exception is not None:
+      raise exception
 
   def testConnectToRemoteBrowserLiteralAddressHeadless(self):
     debug_addrs = ['127.0.0.1', '::1']
@@ -5721,6 +5722,7 @@ class RemoteBrowserTest(ChromeDriverBaseTest):
       # Must use retries since there is an inherent race condition in port
       # selection.
       ports_generator = util.FindProbableFreePorts()
+      exception = None
       for _ in range(3):
         port = next(ports_generator)
         temp_dir = util.MakeTempDir()
@@ -5740,24 +5742,24 @@ class RemoteBrowserTest(ChromeDriverBaseTest):
           driver.ExecuteScript(
             'console.info("%s")' % 'connecting at %d!' % port)
           driver.Quit()
-        except:
+        except Exception as e:
+          exception = e
           continue
-        finally:
-          if process.poll() is None:
-            process.terminate()
-            # Wait for Chrome to exit here to prevent a race with Chrome to
-            # delete/modify the temporary user-data-dir.
-            # Maximum wait ~1 second.
-            for _ in range(20):
-              if process.poll() is not None:
-                break
-              print('continuing to wait for Chrome to exit')
-              time.sleep(.05)
-            else:
-              process.kill()
+        if process.poll() is None:
+          process.terminate()
+          # Wait for Chrome to exit here to prevent a race with Chrome to
+          # delete/modify the temporary user-data-dir.
+          # Maximum wait ~1 second.
+          for _ in range(20):
+            if process.poll() is not None:
+              break
+            print('continuing to wait for Chrome to exit')
+            time.sleep(.05)
+          else:
+            process.kill()
         break
-      else:  # Else clause gets invoked if "break" never happens.
-        raise  # This re-raises the most recent exception.
+      if exception is not None:
+        raise exception
 
 
 class LaunchDesktopTest(ChromeDriverBaseTest):
