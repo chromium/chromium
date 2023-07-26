@@ -29,6 +29,21 @@
             ]
         }
     ],
+    "AccessibilityPerformanceFiltering": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AccessibilityPerformanceFiltering"
+                    ]
+                }
+            ]
+        }
+    ],
     "AdaptiveCharging": [
         {
             "platforms": [
