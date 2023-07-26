@@ -207,6 +207,16 @@ InactiveTabsThresholdSetting InactiveTabsSettingFromPreference(int preference) {
       return InactiveTabsThresholdSetting::kUnknown;
   }
 }
+
+const char kHistogramPrefixIncludingMismatch[] = "IOS.IncludingMismatch.";
+const char kHistogramPrefix[] = "IOS.";
+
+// Returns the warm start histogram prefix based on whether or not the metrics
+// were collected for the same current app version or a previous version.
+std::string WarmStartHistogramPrefix(bool version_mismatch) {
+  return version_mismatch ? kHistogramPrefixIncludingMismatch
+                          : kHistogramPrefix;
+}
 }  // namespace
 
 // A class to log the "load" time in uma.
@@ -524,7 +534,9 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
     [self recordStartupOldTabCount:oldTabCount];
     [self recordStartupDuplicatedTabCount:duplicatedTabCount];
     [self recordTabsAgeAtStartup:timesSinceCreation];
+    [self recordAndResetWarmStartCount];
   } else {
+    [[PreviousSessionInfo sharedInstance] incrementWarmStartCount];
     [self recordResumeTabCount:tabCount];
     [self recordResumeNTPTabCount:NTPTabCount];
     // Only log at resume since there are likely no live NTPs on startup.
@@ -792,6 +804,21 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
         [self tabsAgeGroupFromTimeSinceCreation:timeSinceCreation];
     UMA_HISTOGRAM_ENUMERATION("Tabs.TimeSinceCreationAtStartup", tabsAgeGroup);
   }
+}
+
++ (void)recordAndResetWarmStartCount {
+  bool afterUpgrade =
+      [PreviousSessionInfo sharedInstance].isFirstSessionAfterUpgrade;
+  const std::string prefix = WarmStartHistogramPrefix(afterUpgrade);
+
+  NSInteger warmStartCount =
+      [PreviousSessionInfo sharedInstance].warmStartCount;
+  base::UmaHistogramCounts100(prefix + "WarmStartCount", warmStartCount);
+  // The total number of launches from the session is the number of warm starts,
+  // plus the initial cold start.
+  base::UmaHistogramCounts100(prefix + "AppLaunchesPerSession",
+                              warmStartCount + 1);
+  [[PreviousSessionInfo sharedInstance] resetWarmStartCount];
 }
 
 + (TabsAgeGroup)tabsAgeGroupFromTimeSinceCreation:

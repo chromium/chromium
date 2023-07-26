@@ -22,6 +22,17 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="AppVersion">
+  <variant name=""
+      summary="Recorded when the current app version number matches the last
+               run version number."/>
+  <variant name="IncludingMismatch."
+      summary="The last session app version does not match the current app's
+               version. This is very common on app updates, which would
+               otherwise lead to losing multiple days of data. Instead,
+               record them here."/>
+</variants>
+
 <variants name="MXVersion">
   <variant name=""
       summary="The default MXPayload, only recorded when the app version
@@ -3004,6 +3015,45 @@ chromium-metrics-reviews@google.com.
 
     Expired between M77 and M117.
   </summary>
+</histogram>
+
+<histogram name="IOS.{AppVersion}AppLaunchesPerSession" units="launches"
+    expires_after="2024-07-12">
+  <owner>michaeldo@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    The number of application launches per &quot;cold start&quot;. (A &quot;cold
+    start&quot; is an application launch which occurs when the app is not
+    already running in the background.) Even when the application is in the
+    background, the system may keep it alive if the resource usage is low. This
+    will result in subsequent launches being faster by resuming the exisiting
+    launched application instead of requiring a full, new launch. In the context
+    of feature experiments, a decrease in this metric may signal that a feature
+    is doing more work than necessary while the application is in the background
+    and thus being terminated more frequently by the system.
+  </summary>
+  <token key="AppVersion" variants="AppVersion"/>
+</histogram>
+
+<histogram name="IOS.{AppVersion}WarmStartCount" units="launches"
+    expires_after="2024-07-12">
+  <owner>michaeldo@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    This event is recorded on application launch when the app was not already
+    running in the background (a &quot;cold start&quot;). The value represents
+    how many times the application was brought to the foreground while already
+    running in the background (a &quot;warm start&quot;) during the previous
+    session. Cold starts are slower because the entire application must be
+    re-launched, while warm starts are merely a transistion from background to
+    foreground state. In the context of feature experiments, a decrease in this
+    metric may signal that a feature is doing more work than necessary while the
+    application is in the background and thus being terminated more frequently
+    by the system. NOTE: This metric is logged for the prior session, which may
+    have been a different application version than the version logging this
+    metric.
+  </summary>
+  <token key="AppVersion" variants="AppVersion"/>
 </histogram>
 
 <histogram name="ManualFallback.PresentedOptions.AllPasswords"
