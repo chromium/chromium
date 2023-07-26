@@ -5568,7 +5568,12 @@
   {
     "name": "ntp-drive-module",
     "owners": [ "mahmadi", "tiborg" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
+  },
+  {
+    "name": "ntp-drive-module-segmentation",
+    "owners": [ "pauladedeji", "tiborg" ],
+    "expiry_milestone": 125
   },
   {
     "name": "ntp-dummy-modules",

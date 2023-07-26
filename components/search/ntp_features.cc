@@ -104,6 +104,12 @@ BASE_FEATURE(kNtpDriveModule,
              "NtpDriveModule",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, segmentation data will be collected to decide whether or not to
+// show the Drive module.
+BASE_FEATURE(kNtpDriveModuleSegmentation,
+             "NtpDriveModuleSegmentation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, handles navigations from the Most Visited tiles explicitly and
 // overrides the navigation's transition type to bookmark navigation before the
 // navigation is issued.

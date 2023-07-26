@@ -2681,6 +2681,9 @@ extern const char kNtpDesktopLensDescription[];
 extern const char kNtpDriveModuleName[];
 extern const char kNtpDriveModuleDescription[];
 
+extern const char kNtpDriveModuleSegmentationName[];
+extern const char kNtpDriveModuleSegmentationDescription[];
+
 #if !defined(OFFICIAL_BUILD)
 extern const char kNtpDummyModulesName[];
 extern const char kNtpDummyModulesDescription[];
