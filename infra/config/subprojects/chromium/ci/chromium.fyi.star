@@ -1002,6 +1002,7 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     execution_timeout = 15 * time.hour,
     reclient_cache_silo = "Comparison Android - cache siloed",
     reclient_instance = reclient.instance.TEST_TRUSTED,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
 )
 
 fyi_reclient_comparison_builder(
@@ -1021,6 +1022,7 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     execution_timeout = 15 * time.hour,
     reclient_cache_silo = "Comparison Android (reproxy cache) - cache siloed",
     reclient_instance = reclient.instance.TEST_TRUSTED,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
 )
 
 fyi_reclient_comparison_builder(
@@ -1033,6 +1035,7 @@ fyi_reclient_comparison_builder(
     execution_timeout = 6 * time.hour,
     reclient_cache_silo = "Comparison Linux - cache siloed",
     reclient_instance = reclient.instance.TEST_TRUSTED,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
 )
 
 fyi_mac_reclient_comparison_builder(
@@ -1049,6 +1052,7 @@ fyi_mac_reclient_comparison_builder(
     },
     reclient_cache_silo = "Comparison Mac - cache siloed",
     reclient_instance = reclient.instance.TEST_TRUSTED,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
 )
 
 fyi_mac_reclient_comparison_builder(
@@ -1065,6 +1069,7 @@ fyi_mac_reclient_comparison_builder(
     },
     reclient_cache_silo = "Comparison Mac - cache siloed",
     reclient_instance = reclient.instance.TEST_TRUSTED,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
 )
 
 fyi_mac_reclient_comparison_builder(
@@ -1082,6 +1087,7 @@ fyi_mac_reclient_comparison_builder(
     },
     reclient_cache_silo = "Comparison Mac - cache siloed",
     reclient_instance = reclient.instance.TEST_TRUSTED,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
 )
 
 fyi_reclient_comparison_builder(
@@ -1097,6 +1103,7 @@ fyi_reclient_comparison_builder(
     reclient_cache_silo = "Comparison Windows 8 cores - cache siloed",
     reclient_instance = reclient.instance.TEST_TRUSTED,
     reclient_jobs = 80,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
 )
 
 fyi_reclient_comparison_builder(
@@ -1112,6 +1119,7 @@ fyi_reclient_comparison_builder(
     execution_timeout = 6 * time.hour,
     reclient_cache_silo = "Comparison Windows - cache siloed",
     reclient_instance = reclient.instance.TEST_TRUSTED,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
 )
 
 fyi_reclient_comparison_builder(
@@ -1125,6 +1133,7 @@ fyi_reclient_comparison_builder(
     execution_timeout = 10 * time.hour,
     reclient_cache_silo = "Comparison Simple Chrome - cache siloed",
     reclient_instance = reclient.instance.TEST_TRUSTED,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
 )
 
 fyi_mac_reclient_comparison_builder(
@@ -1138,6 +1147,7 @@ fyi_mac_reclient_comparison_builder(
     execution_timeout = 10 * time.hour,
     reclient_cache_silo = "Comparison ios - cache siloed",
     reclient_instance = reclient.instance.TEST_TRUSTED,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
     xcode = xcode.x15main,
 )
 
@@ -1158,6 +1168,7 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     reclient_cache_silo = "Comparison Android CQ - cache siloed",
     reclient_instance = reclient.instance.TEST_UNTRUSTED,
     reclient_jobs = 300,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
 )
 
 fyi_reclient_comparison_builder(
@@ -1177,6 +1188,7 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     reclient_cache_silo = "Comparison Linux CQ - cache siloed",
     reclient_instance = reclient.instance.TEST_UNTRUSTED,
     reclient_jobs = 150,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
 )
 
 fyi_mac_reclient_comparison_builder(
@@ -1199,6 +1211,7 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     reclient_cache_silo = "Comparison Mac CQ - cache siloed",
     reclient_instance = reclient.instance.TEST_UNTRUSTED,
     reclient_jobs = 150,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
 )
 
 fyi_reclient_comparison_builder(
@@ -1220,6 +1233,7 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     reclient_cache_silo = "Comparison Windows CQ - cache siloed",
     reclient_instance = reclient.instance.TEST_UNTRUSTED,
     reclient_jobs = 300,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
 )
 
 fyi_reclient_comparison_builder(
@@ -1240,6 +1254,7 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     reclient_cache_silo = "Comparison Simple Chrome CQ - cache siloed",
     reclient_instance = reclient.instance.TEST_UNTRUSTED,
     reclient_jobs = 300,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
 )
 
 fyi_mac_reclient_comparison_builder(
@@ -1259,6 +1274,7 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     reclient_cache_silo = "Comparison ios CQ - cache siloed",
     reclient_instance = reclient.instance.TEST_UNTRUSTED,
     reclient_jobs = 150,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
     xcode = xcode.x15main,
 )
 
@@ -1388,6 +1404,7 @@ This builder measures build performance for Android developer builds, by simulat
     ),
     reclient_instance = reclient.instance.DEVELOPER,
     reclient_jobs = 5120,
+    shadow_reclient_instance = None,
     use_clang_coverage = None,
 )
 
@@ -1470,6 +1487,7 @@ This builder measures build performance for Linux developer builds, by simulatin
     ),
     reclient_instance = reclient.instance.DEVELOPER,
     reclient_jobs = 5120,
+    shadow_reclient_instance = None,
     use_clang_coverage = None,
 )
 
@@ -1552,6 +1570,7 @@ This builder measures build performance for Windows developer builds, by simulat
     ),
     reclient_instance = reclient.instance.DEVELOPER,
     reclient_jobs = 1000,
+    shadow_reclient_instance = None,
     use_clang_coverage = None,
 )
 
@@ -1669,6 +1688,7 @@ ci.builder(
     reclient_rewrapper_env = {
         "RBE_compare": "true",
     },
+    shadow_reclient_instance = None,
 )
 
 ci.builder(
@@ -1698,6 +1718,7 @@ ci.builder(
     ),
     reclient_instance = reclient.instance.TEST_TRUSTED,
     reclient_jobs = None,
+    shadow_reclient_instance = None,
 )
 
 ci.builder(
@@ -1728,6 +1749,7 @@ ci.builder(
     reclient_rewrapper_env = {
         "RBE_compare": "true",
     },
+    shadow_reclient_instance = None,
 )
 
 fyi_mac_builder(
@@ -1763,6 +1785,7 @@ fyi_mac_builder(
     reclient_rewrapper_env = {
         "RBE_compare": "true",
     },
+    shadow_reclient_instance = None,
 )
 
 fyi_mac_builder(
@@ -2448,6 +2471,7 @@ ci.builder(
     experimental = True,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
+    shadow_reclient_instance = None,
 )
 
 ci.builder(
