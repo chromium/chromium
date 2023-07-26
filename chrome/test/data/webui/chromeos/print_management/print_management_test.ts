@@ -10,7 +10,7 @@ import {setMetadataProviderForTesting, setPrintManagementHandlerForTesting} from
 import {PrintJobEntryElement} from 'chrome://print-management/print_job_entry.js';
 import {PrintManagementElement} from 'chrome://print-management/print_management.js';
 import {PrinterSetupInfoElement} from 'chrome://print-management/printer_setup_info.js';
-import {ActivePrintJobInfo, ActivePrintJobState, CompletedPrintJobInfo, PrinterErrorCode, PrintingMetadataProviderInterface, PrintJobCompletionStatus, PrintJobInfo, PrintJobsObserverRemote} from 'chrome://print-management/printing_manager.mojom-webui.js';
+import {ActivePrintJobInfo, ActivePrintJobState, CompletedPrintJobInfo, LaunchSource, PrinterErrorCode, PrintingMetadataProviderInterface, PrintJobCompletionStatus, PrintJobInfo, PrintJobsObserverRemote} from 'chrome://print-management/printing_manager.mojom-webui.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -1020,7 +1020,8 @@ suite('PrintManagementTest', () => {
   });
 
   // Verifies clicking 'manage printers' button triggers invokes
-  // `PrintManagementHandler.LaunchPrinterSettings`.
+  // `PrintManagementHandler.LaunchPrinterSettings` with `source` set to
+  // `LaunchSource.kHeaderButton`.
   test('HeaderManagePrinterButtonCallsLaunchPrinterSettings', async () => {
     const kId = 'fileA';
     const kTitle = 'titleA';
@@ -1042,12 +1043,14 @@ suite('PrintManagementTest', () => {
 
     await initializePrintManagementApp(jobsArr);
     assertEquals(0, pageHandler.getLaunchPrinterSettingsCount());
+    assertEquals(null, pageHandler.getLastLaunchSource());
 
     const managePrintersButton: CrButtonElement =
         querySelector<CrButtonElement>(page!, '#managePrinters')!;
     managePrintersButton.click();
 
     assertEquals(1, pageHandler.getLaunchPrinterSettingsCount());
+    assertEquals(LaunchSource.kHeaderButton, pageHandler.getLastLaunchSource());
   });
 });
 
@@ -1403,10 +1406,12 @@ suite('PrinterSetupInfoTest', () => {
   });
 
   // Verify clicking 'Manage Printers' button calls
-  // `PrintManagementHandler.LaunchPrinterSettings`
+  // `PrintManagementHandler.LaunchPrinterSettings` and passes `source`
+  // set to `LaunchSource.kEmptyStateButton`.
   test('launchPrinterSettingsCalled', async () => {
     await initPrinterSetupInfoElement();
     assertEquals(0, pageHandler.getLaunchPrinterSettingsCount());
+    assertEquals(null, pageHandler.getLastLaunchSource());
 
     // Click button.
     const managePrintersButton =
@@ -1414,7 +1419,9 @@ suite('PrinterSetupInfoTest', () => {
     assertTrue(isVisible(managePrintersButton));
     managePrintersButton!.click();
 
-    // Verify fake page handler count update.
+    // Verify fake page handler count update and call is from empty state.
     assertEquals(1, pageHandler.getLaunchPrinterSettingsCount());
+    assertEquals(
+        LaunchSource.kEmptyStateButton, pageHandler.getLastLaunchSource());
   });
 });

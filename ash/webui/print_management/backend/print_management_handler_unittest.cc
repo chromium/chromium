@@ -8,11 +8,17 @@
 
 #include "ash/webui/print_management/backend/print_management_delegate.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::printing::printing_manager {
 
 namespace {
+
+constexpr char kRecordUserActionMetric[] =
+    "ChromeOS.PrintManagement.PrinterSettingsLaunchSource";
+
+using chromeos::printing::printing_manager::mojom::LaunchSource;
 
 class FakePrintManagementDelegate : public PrintManagementDelegate {
  public:
@@ -53,9 +59,38 @@ class PrintManagementHandlerTest : public testing::Test {
 TEST_F(PrintManagementHandlerTest, LaunchPrinterSettingsCallsDelegate) {
   EXPECT_EQ(0, delegate()->launch_printer_settings_count());
 
-  handler()->LaunchPrinterSettings();
+  handler()->LaunchPrinterSettings(LaunchSource::kEmptyStateButton);
 
   EXPECT_EQ(1, delegate()->launch_printer_settings_count());
+}
+
+// Verifies handler records expected metrics when launch printer settings
+// called.
+TEST_F(PrintManagementHandlerTest, LaunchPrinterSettingsTriggersMetric) {
+  base::HistogramTester tester;
+  tester.ExpectBucketCount(kRecordUserActionMetric,
+                           LaunchSource::kEmptyStateButton,
+                           /*expected_count=*/0);
+  tester.ExpectBucketCount(kRecordUserActionMetric, LaunchSource::kHeaderButton,
+                           /*expected_count=*/0);
+
+  // Simulate launch from empty state 'manage printers' button.
+  handler()->LaunchPrinterSettings(LaunchSource::kEmptyStateButton);
+
+  tester.ExpectBucketCount(kRecordUserActionMetric,
+                           LaunchSource::kEmptyStateButton,
+                           /*expected_count=*/1);
+  tester.ExpectBucketCount(kRecordUserActionMetric, LaunchSource::kHeaderButton,
+                           /*expected_count=*/0);
+
+  // Simulate launch from header 'manage printers' button.
+  handler()->LaunchPrinterSettings(LaunchSource::kHeaderButton);
+
+  tester.ExpectBucketCount(kRecordUserActionMetric,
+                           LaunchSource::kEmptyStateButton,
+                           /*expected_count=*/1);
+  tester.ExpectBucketCount(kRecordUserActionMetric, LaunchSource::kHeaderButton,
+                           /*expected_count=*/1);
 }
 
 }  // namespace ash::printing::printing_manager

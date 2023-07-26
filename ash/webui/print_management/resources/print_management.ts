@@ -26,7 +26,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getMetadataProvider, getPrintManagementHandler} from './mojo_interface_provider.js';
 import {getTemplate} from './print_management.html.js';
-import {ActivePrintJobState, PrintingMetadataProviderInterface, PrintJobInfo, PrintJobsObserverInterface, PrintJobsObserverReceiver, PrintManagementHandlerInterface} from './printing_manager.mojom-webui.js';
+import {ActivePrintJobState, LaunchSource, PrintingMetadataProviderInterface, PrintJobInfo, PrintJobsObserverInterface, PrintJobsObserverReceiver, PrintManagementHandlerInterface} from './printing_manager.mojom-webui.js';
 
 const METADATA_STORED_INDEFINITELY = -1;
 const METADATA_STORED_FOR_ONE_DAY = 1;
@@ -370,7 +370,7 @@ export class PrintManagementElement extends PrintManagementElementBase
   }
 
   private onManagePrintersClicked(): void {
-    this.pageHandler.launchPrinterSettings();
+    this.pageHandler.launchPrinterSettings(LaunchSource.kHeaderButton);
   }
 }
 

@@ -87979,6 +87979,11 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="3" label="Browser"/>
 </enum>
 
+<enum name="PrintManagementLaunchSourceType">
+  <int value="0" label="Launch Printer settings from empty state button"/>
+  <int value="1" label="Launch Printer settings from header button"/>
+</enum>
+
 <enum name="PrintOopResult">
   <int value="0" label="Successful"/>
   <int value="1" label="Cancelled"/>

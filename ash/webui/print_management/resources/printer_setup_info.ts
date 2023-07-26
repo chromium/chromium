@@ -14,7 +14,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getPrintManagementHandler} from './mojo_interface_provider.js';
 import {getTemplate} from './printer_setup_info.html.js';
-import {PrintManagementHandlerInterface} from './printing_manager.mojom-webui.js';
+import {LaunchSource, PrintManagementHandlerInterface} from './printing_manager.mojom-webui.js';
 
 /**
  * @fileoverview
@@ -43,7 +43,7 @@ export class PrinterSetupInfoElement extends PrinterSetupInfoElementBase {
   }
 
   onManagePrintersClicked(): void {
-    this.pageHandler.launchPrinterSettings();
+    this.pageHandler.launchPrinterSettings(LaunchSource.kEmptyStateButton);
   }
 }
 

@@ -25,7 +25,9 @@ class PrintManagementHandler : public chromeos::printing::printing_manager::
   ~PrintManagementHandler() override;
 
   // PrintManagementHandler:
-  void LaunchPrinterSettings() override;
+  void LaunchPrinterSettings(
+      chromeos::printing::printing_manager::mojom::LaunchSource source)
+      override;
 
   void BindInterface(
       mojo::PendingReceiver<

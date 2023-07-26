@@ -2041,6 +2041,20 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.PrintManagement.PrinterSettingsLaunchSource"
+    enum="PrintManagementLaunchSourceType" expires_after="2024-01-23">
+  <owner>ashleydp@google.com</owner>
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@chromium.org</owner>
+  <summary>
+    Tracks the source element that triggers navigation to Printer settings from
+    Print Management SWA. It attempts to capture the state of Print Management
+    when a user clicks the Printer settings button. Possible states include: no
+    active or historical print jobs and with at least one active or historical
+    print job.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.PrivacyHub.LearnMorePage.Opened"
     enum="PrivacyHubLearnMoreSensor" expires_after="2024-01-16">
   <owner>cschlosser@chromium.org</owner>
