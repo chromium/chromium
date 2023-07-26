@@ -517,10 +517,10 @@ targets = struct(
     skylab = _skylab,
 )
 
-GN_ISOLATE_MAP_PYL = """\
+_PYL_HEADER_FMT = """\
 # THIS IS A GENERATED FILE DO NOT EDIT!!!
 # Instead:
-# 1. Modify //infra/config/targets/targets.star
+# 1. Modify //infra/config/targets/{star_file}
 # 2. Run //infra/config/main.star
 # 3. Run //infra/config/scripts/sync-py-files.py
 
@@ -551,21 +551,12 @@ def _generate_gn_isolate_map_pyl(ctx):
                 entries.append('      "{}",'.format(a))
             entries.append("    ],")
         entries.append("  },")
-    ctx.output["testing/gn_isolate_map.pyl"] = GN_ISOLATE_MAP_PYL.format(entries = "\n".join(entries))
+    ctx.output["testing/gn_isolate_map.pyl"] = _PYL_HEADER_FMT.format(
+        star_file = "targets.star",
+        entries = "\n".join(entries),
+    )
 
 lucicfg.generator(_generate_gn_isolate_map_pyl)
-
-MIXINS_PYL = """\
-# THIS IS A GENERATED FILE DO NOT EDIT!!!
-# Instead:
-# 1. Modify //infra/config/targets/mixins.star
-# 2. Run //infra/config/main.star
-# 3. Run //infra/config/scripts/sync-py-files.py
-
-{{
-{entries}
-}}
-"""
 
 def _formatter(*, indent_level = 1, indent_size = 2):
     state = dict(
@@ -748,7 +739,10 @@ def _generate_mixins_pyl(ctx):
 
         formatter.close_scope("},")
 
-    ctx.output["testing/mixins.pyl"] = MIXINS_PYL.format(entries = formatter.output())
+    ctx.output["testing/mixins.pyl"] = _PYL_HEADER_FMT.format(
+        star_file = "mixins.star",
+        entries = formatter.output(),
+    )
 
 lucicfg.generator(_generate_mixins_pyl)
 
@@ -774,6 +768,9 @@ def _generate_variants_pyl(ctx):
 
         formatter.close_scope("},")
 
-    ctx.output["testing/variants.pyl"] = MIXINS_PYL.format(entries = formatter.output())
+    ctx.output["testing/variants.pyl"] = _PYL_HEADER_FMT.format(
+        star_file = "variants.pyl",
+        entries = formatter.output(),
+    )
 
 lucicfg.generator(_generate_variants_pyl)
