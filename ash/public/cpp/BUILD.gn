@@ -10,8 +10,6 @@ assert(is_chromeos_ash)
 # C++ headers and sources that can be used outside ash.
 component("cpp") {
   sources = [
-    "accelerator_actions.cc",
-    "accelerator_actions.h",
     "accelerator_configuration.cc",
     "accelerator_configuration.h",
     "accelerator_keycode_lookup_cache.cc",
@@ -407,6 +405,7 @@ component("cpp") {
   ]
 
   deps = [
+    ":accelerator_actions",
     "//ash/constants",
     "//ash/public/cpp/ambient/proto",
     "//ash/resources/vector_icons",
@@ -538,6 +537,16 @@ source_set("unit_tests") {
     "//ui/views",
     "//ui/views:test_support",
   ]
+}
+
+source_set("accelerator_actions") {
+  sources = [
+    "accelerator_actions.cc",
+    "accelerator_actions.h",
+    "ash_public_export.h",
+  ]
+
+  deps = [ "//base" ]
 }
 
 source_set("test_support") {

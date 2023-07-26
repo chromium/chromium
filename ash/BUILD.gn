@@ -3237,6 +3237,7 @@ test("ash_unittests") {
     "projector/projector_controller_unittest.cc",
     "projector/projector_metadata_model_unittest.cc",
     "projector/projector_ui_controller_unittest.cc",
+    "public/mojom/accelerator_actions_mojom_traits_unittest.cc",
     "public/mojom/accelerator_keys_mojom_traits_unittest.cc",
     "rgb_keyboard/rgb_keyboard_manager_unittest.cc",
     "root_window_controller_unittest.cc",

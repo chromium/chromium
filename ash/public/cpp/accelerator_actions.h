@@ -23,6 +23,7 @@ namespace ash {
 //
 // The added enum member is kNewAction. Its string name is NewAction.
 //
+// LINT.IfChange
 #define ACCELERATOR_ACTIONS                                             \
   ACCELERATOR_ACTION_ENTRY(BrightnessDown)                              \
   ACCELERATOR_ACTION_ENTRY(BrightnessUp)                                \
@@ -187,6 +188,7 @@ namespace ash {
   /* rules for enabling the accelerator. */                             \
   ACCELERATOR_ACTION_ENTRY(DevToggleAppList)                            \
   ACCELERATOR_ACTION_ENTRY(DevToggleUnifiedDesktop)
+// LINT.ThenChange(//ash/public/mojom/accelerator_actions.mojom)
 
 enum AcceleratorAction {
 #define ACCELERATOR_ACTION_ENTRY(action) k##action,
