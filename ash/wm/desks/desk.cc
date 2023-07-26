@@ -356,6 +356,10 @@ void Desk::OnRootWindowClosing(aura::Window* root) {
       base::Erase(windows_, window);
   }
 
+  if (last_active_root_ == root) {
+    last_active_root_ = nullptr;
+  }
+
   all_desk_window_stacking_.erase(root);
 }
 
@@ -370,7 +374,8 @@ void Desk::AddWindowToDesk(aura::Window* window) {
     aura::Window* root = window->GetRootWindow();
     auto& adw_data = all_desk_window_stacking_[root];
 
-    if (!is_active_) {
+    // Update `last_active_root_` in case it has changed.
+    if (!is_active_ && last_active_root_ != root) {
       last_active_root_ = root;
     }
 
@@ -888,8 +893,9 @@ void Desk::RestackAllDeskWindows() {
 
   for (aura::Window* root : Shell::GetAllRootWindows()) {
     auto& adw_data = all_desk_window_stacking_[root];
-    if (adw_data.empty())
-      return;
+    if (adw_data.empty()) {
+      continue;
+    }
 
     aura::Window* container = GetDeskContainerForRoot(root);
 
@@ -936,7 +942,8 @@ void Desk::TrackAllDeskWindow(aura::Window* window) {
   aura::Window* root = window->GetRootWindow();
   auto& adw_data = all_desk_window_stacking_[root];
 
-  if (!is_active_) {
+  // Update `last_active_root_` in case it has changed.
+  if (!is_active_ && last_active_root_ != root) {
     last_active_root_ = root;
   }
 
