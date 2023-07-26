@@ -145,10 +145,6 @@ static_library("web_test_browser") {
     "browser/web_test_tts_platform.h",
   ]
 
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
-
   if (is_mac) {
     sources += [
       "browser/web_test_browser_main_platform_support_mac.mm",

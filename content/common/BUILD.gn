@@ -325,7 +325,6 @@ source_set("common") {
 
   if (is_apple) {
     sources += [ "font_list_mac.mm" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_win) {

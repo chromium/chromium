@@ -105,7 +105,6 @@ static_library("content_shell_app") {
     ]
   }
   if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
     sources += [
       "app/paths_mac.h",
       "app/paths_mac.mm",
@@ -209,7 +208,6 @@ static_library("content_shell_lib") {
       "browser/shell_platform_delegate_mac.mm",
       "browser/shell_web_contents_view_delegate_mac.mm",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_ios) {
@@ -232,7 +230,6 @@ static_library("content_shell_lib") {
       "browser/shell_platform_delegate_ios.mm",
       "browser/shell_web_contents_view_delegate_ios.mm",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_win) {
@@ -636,8 +633,6 @@ if (is_android) {
     ]
     entitlements_path = ios_content_shell_entitlements_path
     bundle_identifier = ios_content_shell_bundle_identifier
-
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 } else {
   executable("content_shell") {

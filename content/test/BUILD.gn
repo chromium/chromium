@@ -693,10 +693,6 @@ static_library("test_support") {
     ]
   }
 
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
-
   if (is_mac) {
     sources += [
       "../browser/renderer_host/test_render_widget_host_view_mac_factory.h",
@@ -1031,9 +1027,6 @@ static_library("browsertest_support") {
     deps += [ "//ui/views" ]
   }
 
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
   if (is_mac) {
     sources += [ "../public/test/content_browser_test_utils_mac.mm" ]
     deps += [ "//ui/base/mojom" ]
@@ -2044,10 +2037,6 @@ test("content_browsertests") {
     ]
   }
 
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
-
   if (is_mac) {
     sources += [
       "../app_shim_remote_cocoa/window_occlusion_browsertest_mac.mm",
@@ -2764,10 +2753,6 @@ test("content_unittests") {
     "test_page_unittest.cc",
     "test_render_frame_host_unittest.cc",
   ]
-
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
 
   if (is_mac) {
     sources += [

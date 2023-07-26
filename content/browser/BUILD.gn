@@ -2547,7 +2547,6 @@ source_set("browser") {
       "child_process_task_port_provider_mac.cc",
       "child_process_task_port_provider_mac.h",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_mac) {

@@ -200,10 +200,6 @@ target(link_target_type, "renderer") {
     ]
   }
 
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
-
   if (is_mac) {
     sources += [
       "renderer_main_platform_delegate_mac.mm",
