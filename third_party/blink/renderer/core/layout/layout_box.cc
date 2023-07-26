@@ -4856,23 +4856,16 @@ RecalcLayoutOverflowResult LayoutBox::RecalcLayoutOverflowNG() {
         }
       }
 
-      if (RuntimeEnabledFeatures::LayoutOverflowNoCloneEnabled()) {
-        if (layout_overflow) {
-          fragment.GetMutableForStyleRecalc().SetLayoutOverflow(
-              *layout_overflow);
-        }
-      } else {
-        // Create and set a new result (potentially with an updated
-        // layout-overflow) if either:
-        //  - The layout-overflow changed.
-        //  - An arbitrary descendant had its layout-overflow change (as
-        //    indicated by |rebuild_fragment_tree|).
-        if (rebuild_fragment_tree || layout_overflow) {
-          SCOPED_BLINK_UMA_HISTOGRAM_TIMER_HIGHRES(
-              "Blink.Layout.CloneFragmentsForLayoutOverflow");
-          layout_result = NGLayoutResult::CloneWithPostLayoutFragments(
-              *layout_result, layout_overflow);
-        }
+      // Create and set a new result (potentially with an updated
+      // layout-overflow) if either:
+      //  - The layout-overflow changed.
+      //  - An arbitrary descendant had its layout-overflow change (as
+      //    indicated by |rebuild_fragment_tree|).
+      if (rebuild_fragment_tree || layout_overflow) {
+        SCOPED_BLINK_UMA_HISTOGRAM_TIMER_HIGHRES(
+            "Blink.Layout.CloneFragmentsForLayoutOverflow");
+        layout_result = NGLayoutResult::CloneWithPostLayoutFragments(
+            *layout_result, layout_overflow);
       }
     }
     SetLayoutOverflowFromLayoutResults();

@@ -220,21 +220,12 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
 
   // Returns the layout-overflow for this fragment.
   const PhysicalRect LayoutOverflow() const {
-    if (RuntimeEnabledFeatures::LayoutOverflowNoCloneEnabled()) {
-      if (const auto* field = GetRareField(FieldId::kLayoutOverflow)) {
-        return field->layout_overflow;
-      }
-      return {{}, Size()};
-    }
     if (!HasLayoutOverflow())
       return {{}, Size()};
     return *ComputeLayoutOverflowAddress();
   }
 
   bool HasLayoutOverflow() const {
-    if (RuntimeEnabledFeatures::LayoutOverflowNoCloneEnabled()) {
-      return GetRareField(FieldId::kLayoutOverflow);
-    }
     return bit_field_.get<HasLayoutOverflowFlag>();
   }
 
@@ -461,19 +452,6 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
                 ->mathml_paint_info.get();
   }
 
-  class MutableForStyleRecalc {
-    STACK_ALLOCATED();
-
-   public:
-    MutableForStyleRecalc(base::PassKey<NGPhysicalBoxFragment>,
-                          NGPhysicalBoxFragment& fragment);
-    void SetLayoutOverflow(const PhysicalRect& layout_overflow);
-
-   private:
-    NGPhysicalBoxFragment& fragment_;
-  };
-  MutableForStyleRecalc GetMutableForStyleRecalc() const;
-
   class MutableForContainerLayout {
     STACK_ALLOCATED();
 
@@ -630,23 +608,15 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     }
     return nullptr;
   }
-  PhysicalFragmentRareData::RareField& EnsureRareField(FieldId id);
 
   const NGFragmentItems* ComputeItemsAddress() const {
-#if DCHECK_IS_ON()
-    if (RuntimeEnabledFeatures::LayoutOverflowNoCloneEnabled()) {
-      DCHECK(HasItems() || HasBorders() || HasPadding() || HasInflowBounds());
-    } else {
-      DCHECK(HasItems() || HasLayoutOverflow() || HasBorders() ||
-             HasPadding() || HasInflowBounds());
-    }
-#endif
+    DCHECK(HasItems() || HasLayoutOverflow() || HasBorders() || HasPadding() ||
+           HasInflowBounds());
     return reinterpret_cast<const NGFragmentItems*>(base::bits::AlignUp(
         reinterpret_cast<const uint8_t*>(this + 1), alignof(NGFragmentItems)));
   }
 
   const PhysicalRect* ComputeLayoutOverflowAddress() const {
-    DCHECK(!RuntimeEnabledFeatures::LayoutOverflowNoCloneEnabled());
     DCHECK(HasLayoutOverflow() || HasBorders() || HasPadding() ||
            HasInflowBounds());
     const NGFragmentItems* items = ComputeItemsAddress();
@@ -660,14 +630,6 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   const NGPhysicalBoxStrut* ComputeBordersAddress() const {
     DCHECK(!RuntimeEnabledFeatures::RareBorderPaddingInflowEnabled());
     DCHECK(HasBorders() || HasPadding() || HasInflowBounds());
-    if (RuntimeEnabledFeatures::LayoutOverflowNoCloneEnabled()) {
-      const NGFragmentItems* address = ComputeItemsAddress();
-      const uint8_t* unaligned_border_address =
-          HasItems() ? reinterpret_cast<const uint8_t*>(address + 1)
-                     : reinterpret_cast<const uint8_t*>(address);
-      return reinterpret_cast<const NGPhysicalBoxStrut*>(base::bits::AlignUp(
-          unaligned_border_address, alignof(NGPhysicalBoxStrut)));
-    }
     const PhysicalRect* address = ComputeLayoutOverflowAddress();
     const uint8_t* unaligned_border_address =
         HasLayoutOverflow() ? reinterpret_cast<const uint8_t*>(address + 1)
