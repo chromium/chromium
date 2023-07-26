@@ -349,7 +349,7 @@ uint8_t BodyPrediction(uint8_t up_left,
 // loops.
 struct MT21Subblock {
   const uint8_t* src;
-  uint8_t* dest;
+  RAW_PTR_EXCLUSION uint8_t* dest;
   size_t len;
 };
 struct MT21YSubblock : MT21Subblock {};
