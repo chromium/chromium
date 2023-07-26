@@ -661,15 +661,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
                              withReuseIdentifier:
                                  kInactiveTabsButtonHeaderIdentifier
                                     forIndexPath:indexPath];
-      header.parent = self;
-      __weak __typeof(self) weakSelf = self;
-      header.buttonAction = ^{
-        [weakSelf didTapInactiveTabsButton];
-      };
-      [header configureWithDaysThreshold:self.inactiveTabsDaysThreshold];
-      if (IsShowInactiveTabsCountEnabled()) {
-        [header configureWithCount:self.inactiveTabsCount];
-      }
+      [self configureInactiveTabsButtonHeader:header];
       return header;
     }
     case TabGridModeSelection:
@@ -684,9 +676,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
         case kOpenTabsSectionIndex: {
           headerView.title = l10n_util::GetNSString(
               IDS_IOS_TABS_SEARCH_OPEN_TABS_SECTION_HEADER_TITLE);
-          NSString* resultsCount = [NSString
-              stringWithFormat:@"%ld",
-                               base::checked_cast<NSInteger>(self.items.count)];
+          NSString* resultsCount = [@(self.items.count) stringValue];
           headerView.value =
               l10n_util::GetNSStringF(IDS_IOS_TABS_SEARCH_OPEN_TABS_COUNT,
                                       base::SysNSStringToUTF16(resultsCount));
@@ -709,13 +699,30 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
                              withReuseIdentifier:
                                  kInactiveTabsPreambleHeaderIdentifier
                                     forIndexPath:indexPath];
-      __weak __typeof(self) weakSelf = self;
-      header.settingsLinkAction = ^{
-        [weakSelf didTapInactiveTabsSettingsLink];
-      };
-      header.daysThreshold = self.inactiveTabsDaysThreshold;
+      [self configureInactiveTabsPreambleHeader:header];
       return header;
   }
+}
+
+- (void)configureInactiveTabsButtonHeader:(InactiveTabsButtonHeader*)header {
+  header.parent = self;
+  __weak __typeof(self) weakSelf = self;
+  header.buttonAction = ^{
+    [weakSelf didTapInactiveTabsButton];
+  };
+  [header configureWithDaysThreshold:self.inactiveTabsDaysThreshold];
+  if (IsShowInactiveTabsCountEnabled()) {
+    [header configureWithCount:self.inactiveTabsCount];
+  }
+}
+
+- (void)configureInactiveTabsPreambleHeader:
+    (InactiveTabsPreambleHeader*)header {
+  __weak __typeof(self) weakSelf = self;
+  header.settingsLinkAction = ^{
+    [weakSelf didTapInactiveTabsSettingsLink];
+  };
+  header.daysThreshold = self.inactiveTabsDaysThreshold;
 }
 
 - (UICollectionViewCell*)collectionView:(UICollectionView*)collectionView
@@ -2058,8 +2065,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
                                         inSection:kOpenTabsSectionIndex]];
   if (!headerView)
     return;
-  NSString* resultsCount = [NSString
-      stringWithFormat:@"%ld", base::checked_cast<NSInteger>(self.items.count)];
+  NSString* resultsCount = [@(self.items.count) stringValue];
   headerView.value =
       l10n_util::GetNSStringF(IDS_IOS_TABS_SEARCH_OPEN_TABS_COUNT,
                               base::SysNSStringToUTF16(resultsCount));
@@ -2208,10 +2214,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
                               atIndexPath:indexPath]);
   // Note: At this point, `header` could be nil if not visible, or if the
   // supplementary view is not an InactiveTabsButtonHeader.
-  [header configureWithDaysThreshold:self.inactiveTabsDaysThreshold];
-  if (IsShowInactiveTabsCountEnabled()) {
-    [header configureWithCount:self.inactiveTabsCount];
-  }
+  [self configureInactiveTabsButtonHeader:header];
 }
 
 // Reconfigures the Inactive Tabs preamble header.
