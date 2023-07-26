@@ -115,6 +115,8 @@
       --oobe-optin-title-font-family: var(--oobe-default-font-family);
       --oobe-optin-title-font-weight: var(--oobe-header-font-weight);
 
+      --oobe-autolaunch-app-name-font-size: 22px;
+
       /* Select */
       --oobe-select-height: 32px;
 
@@ -235,6 +237,38 @@
           var(--cros-display-6_regular-font-size);
       --oobe-welcome-subheader-line-height:
           var(--cros-display-6_regular-line-height);
+
+      --oobe-header-text-color: var(--cros-sys-on_surface);
+      --oobe-subheader-text-color: var(--cros-sys-on_surface_variant);
+      --oobe-text-color: var(--cros-sys-on_surface);
+
+      --oobe-autolaunch-app-name-font-size: var(--cros-button-1-font-size);
+
+      --oobe-touchpad-scroll-font-size: var(--cros-button-1-font-size);
+      --oobe-touchpad-scroll-font-weight: var(--cros-button-1-font-weight);
+      --oobe-touchpad-scroll-line-height: var(--cros-button-1-line-height);
+
+      --oobe-drive-pinning-title-font-family: var(--cros-button-2-font-family);
+      --oobe-drive-pinning-title-font-size: var(--cros-button-2-font-size);
+      --oobe-drive-pinning-title-font-weight: var(--cros-button-2-font-weight);
+      --oobe-drive-pinning-title-line-height: var(--cros-button-2-line-height);
+
+      --oobe-drive-pinning-subtitle-font-family:
+          var(--oobe-default-font-family);
+      --oobe-drive-pinning-subtitle-font-size:
+          var(--oobe-default-font-size);
+      --oobe-drive-pinning-subtitle-font-weight:
+          var(--oobe-default-font-weight);
+      --oobe-drive-pinning-subtitle-line-height:
+          var(--oobe-default-line-height);
+
+      --oobe-security-token-pin-font-family:
+          var(--cros-annotation-1-font-family);
+      --oobe-security-token-pin-font-size: var(--cros-annotation-1-font-size);
+      --oobe-security-token-pin-font-weight:
+          var(--cros-annotation-1-font-weight);
+      --oobe-security-token-pin-line-height:
+          var(--cros-annotation-1-line-height);
 
       /* Dialog */
       --oobe-adaptive-dialog-icon-size: 48px;

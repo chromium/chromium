@@ -107,9 +107,17 @@ found in the LICENSE file.
     font: var(--oobe-sync-consent-card-title-font);
   }
 
+  :host-context(.jelly-enabled) .card-title {
+    color: var(--oobe-text-color);
+  }
+
   .card-subtitle {
     color: var(--cros-text-color-secondary);
     font: var(--oobe-sync-consent-card-subtitle-font);
+  }
+
+  :host-context(.jelly-enabled) .card-subtitle {
+    color: var(--oobe-subheader-text-color);
   }
 
   .tooltip-text {
@@ -117,12 +125,17 @@ found in the LICENSE file.
   }
 
   #tooltip-element {
-    --paper-tooltip-background: var(--cros-bg-color) ;
+    --paper-tooltip-background: var(--cros-bg-color);
     --paper-tooltip-text-color: var(--cros-text-color-primary);
     border-radius: 6px;
     box-shadow: 0 1px 3px var(--cros-shadow-color-key),
                 0 4px 8px var(--cros-separator-color);
     width: 444px;
+  }
+
+  :host-context(.jelly-enabled) #tooltip-element {
+    --paper-tooltip-background: var(--cros-sys-base_elevated);
+    --paper-tooltip-text-color: var(--oobe-text-color);
   }
 
   #bottomButtons {

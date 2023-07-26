@@ -16,6 +16,9 @@ found in the LICENSE file.
     color: var(--cros-color-secondary);
     font-size: 18px;
   }
+  :host-context(.jelly-enabled) ul li::marker {
+    color: var(--cros-sys-on_surface);
+  }
   li:not(:last-child) {
     margin-bottom: 14px;
   }
@@ -35,6 +38,9 @@ found in the LICENSE file.
   }
   .intro-footer {
     color: var(--cros-color-primary);
+  }
+  :host-context(.jelly-enabled) .intro-footer {
+    color: var(--oobe-header-text-color);
   }
 </style>
 

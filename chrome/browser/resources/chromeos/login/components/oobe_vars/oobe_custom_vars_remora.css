@@ -112,6 +112,8 @@
       --oobe-optin-title-font-family: var(--oobe-default-font-family);
       --oobe-optin-title-font-weight: var(--oobe-header-font-weight);
 
+      --oobe-autolaunch-app-name-font-size: 22px;
+
       /* Select */
       --oobe-select-height: 44px;
 

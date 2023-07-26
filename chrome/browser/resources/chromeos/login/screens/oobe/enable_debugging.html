@@ -15,6 +15,10 @@ found in the LICENSE file.
     cr-input#passwordRepeat {
       --cr-input-background-color: var(--cros-sys-input_field_on_shaded);
   }
+
+  :host-context(.jelly-enabled) #password-note {
+    color: var(--oobe-subheader-text-color);
+  }
 </style>
 <oobe-adaptive-dialog id="removeProtectionDialog" role="dialog"
     for-step="remove-protection"

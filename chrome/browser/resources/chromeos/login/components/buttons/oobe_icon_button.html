@@ -8,6 +8,7 @@ found in the LICENSE file.
     cros-color-overrides">
   :host {
     --oobe-button-icon-fill-color: currentColor;
+    --oobe-icon-button-text-color: var(--text-color);
   }
   cr-button {
     --border-color: var(--oobe-bg-color);
@@ -32,6 +33,9 @@ found in the LICENSE file.
   }
   :host-context(body.jelly-enabled):host(.bg-transparent) cr-button {
     background-color: transparent !important;
+  }
+  :host-context(body.jelly-enabled) cr-button {
+    --text-color: var(--oobe-icon-button-text-color);
   }
 </style>
 <cr-button id="button" disabled="[[disabled]]"

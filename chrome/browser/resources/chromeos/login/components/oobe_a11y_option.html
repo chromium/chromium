@@ -24,8 +24,16 @@ found in the LICENSE file.
     color: var(--cros-text-color-primary);
   }
 
+  :host-context(.jelly-enabled) #titleContainer ::slotted(*) {
+    color: var(--oobe-text-color);
+  }
+
   .display-value ::slotted(*) {
     color: var(--cros-color-secondary);
+  }
+
+  :host-context(.jelly-enabled) .display-value ::slotted(*) {
+    color: var(--oobe-subheader-text-color);
   }
 </style>
 <div id="elementBox" class="layout horizontal">

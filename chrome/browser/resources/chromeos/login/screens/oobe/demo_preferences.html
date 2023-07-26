@@ -11,6 +11,10 @@
     color: var(--cros-text-color-primary);
     font-size: var(--oobe-demo-preferences-selection-title-font-size);
   }
+  :host-context(.jelly-enabled)
+    #demoPreferencesDialog .language-selection-title {
+      color: var(--oobe-text-color);
+  }
   #store-number-input-display-text {
     color: var(--cros-text-color-secondary);
     display: var(--cr-input-error-display, block);
@@ -21,8 +25,15 @@
     visibility: visible;
     white-space: var(--cr-input-error-white-space);
   }
+  :host-context(.jelly-enabled) #store-number-input-display-text {
+    color: var(--oobe-subheader-text-color);
+  }
   :host([store_number_input_invalid_]) #store-number-input-display-text {
     color: var(--cros-textfield-label-color-error);
+  }
+  :host-context(.jelly-enabled):host([store_number_input_invalid_])
+    #store-number-input-display-text {
+      color: var(--cros-sys-error);
   }
 
   :host-context(.jelly-enabled) cr-input.language-selection-title {

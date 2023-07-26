@@ -44,10 +44,18 @@ Methods:
     padding-inline-end: 16px;
   }
 
+  :host-context(.jelly-enabled) .select-title {
+    color: var(--oobe-text-color);
+  }
+
   .encryption-subtitle {
     color: var(--cros-text-color-secondary);
     padding-bottom: 9px;
     padding-top: 9px;
+  }
+
+  :host-context(.jelly-enabled) .encryption-subtitle {
+    color: var(--oobe-subheader-text-color);
   }
 
   .encryption-select-row {

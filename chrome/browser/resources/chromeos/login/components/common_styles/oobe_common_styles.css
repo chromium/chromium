@@ -49,9 +49,17 @@
         text-decoration: none;
       }
 
+      :host-context(.jelly-enabled) .oobe-local-link {
+        color: var(--cros-sys-primary);
+      }
+
       .oobe-local-link:focus {
         outline-color: var(--cros-focus-ring-color);
         transition: outline-color 200ms;
+      }
+
+      :host-context(.jelly-enabled) .oobe-local-link:focus {
+        outline-color: var(--cros-sys-focus_ring);
       }
 
       .oobe-optin-row {
