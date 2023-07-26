@@ -25,7 +25,7 @@ const BruschettaSubpageElementBase =
 
 class BruschettaSubpageElement extends BruschettaSubpageElementBase {
   static get is() {
-    return 'settings-bruschetta-subpage';
+    return 'settings-bruschetta-subpage' as const;
   }
 
   static get template() {
@@ -56,9 +56,9 @@ class BruschettaSubpageElement extends BruschettaSubpageElementBase {
     super.ready();
 
     this.addFocusConfig(
-        routes.BRUSCHETTA_SHARED_USB_DEVICES, '#bruschetta-shared-usb-devices');
+        routes.BRUSCHETTA_SHARED_USB_DEVICES, '#bruschettaSharedUsbDevicesRow');
     this.addFocusConfig(
-        routes.BRUSCHETTA_SHARED_PATHS, '#bruschetta-shared-paths');
+        routes.BRUSCHETTA_SHARED_PATHS, '#bruschettaSharedPathsRow');
   }
 
   private onSharedUsbDevicesClick_(): void {
@@ -83,7 +83,7 @@ class BruschettaSubpageElement extends BruschettaSubpageElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-bruschetta-subpage': BruschettaSubpageElement;
+    [BruschettaSubpageElement.is]: BruschettaSubpageElement;
   }
 }
 

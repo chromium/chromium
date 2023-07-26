@@ -248,23 +248,22 @@ class SettingsCrostiniSubpageElement extends
     super.ready();
 
     const r = routes;
-    this.addFocusConfig(r.CROSTINI_SHARED_PATHS, '#crostini-shared-paths');
-    this.addFocusConfig(r.BRUSCHETTA_SHARED_PATHS, '#bruschetta-shared-paths');
+    this.addFocusConfig(r.CROSTINI_SHARED_PATHS, '#crostiniSharedPathsRow');
     this.addFocusConfig(
-        r.CROSTINI_SHARED_USB_DEVICES, '#crostini-shared-usb-devices');
+        r.CROSTINI_SHARED_USB_DEVICES, '#crostiniSharedUsbDevicesRow');
+    this.addFocusConfig(r.CROSTINI_EXPORT_IMPORT, '#crostiniExportImportRow');
+    this.addFocusConfig(r.CROSTINI_ANDROID_ADB, '#crostiniEnableArcAdbRow');
     this.addFocusConfig(
-        r.BRUSCHETTA_SHARED_USB_DEVICES, '#bruschetta-shared-usb-devices');
-    this.addFocusConfig(r.CROSTINI_EXPORT_IMPORT, '#crostini-export-import');
-    this.addFocusConfig(r.CROSTINI_ANDROID_ADB, '#crostini-enable-arc-adb');
+        r.CROSTINI_PORT_FORWARDING, '#crostiniPortForwardingRow');
     this.addFocusConfig(
-        r.CROSTINI_PORT_FORWARDING, '#crostini-port-forwarding');
-    this.addFocusConfig(
-        r.CROSTINI_EXTRA_CONTAINERS, '#crostini-extra-containers');
+        r.CROSTINI_EXTRA_CONTAINERS, '#crostiniExtraContainersRow');
   }
 
-  override currentRouteChanged(route: Route) {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+    super.currentRouteChanged(newRoute, oldRoute);
+
     // Does not apply to this page.
-    if (route !== this.route) {
+    if (newRoute !== this.route) {
       return;
     }
 
@@ -386,10 +385,6 @@ class SettingsCrostiniSubpageElement extends
 
   private onSharedUsbDevicesClick_() {
     Router.getInstance().navigateTo(routes.CROSTINI_SHARED_USB_DEVICES);
-  }
-
-  private onBruschettaSharedUsbDevicesClick_() {
-    Router.getInstance().navigateTo(routes.BRUSCHETTA_SHARED_USB_DEVICES);
   }
 
   private onPortForwardingClick_() {

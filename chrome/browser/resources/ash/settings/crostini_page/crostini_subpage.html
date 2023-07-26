@@ -21,56 +21,56 @@
   </div>
 </template>
 <cr-link-row
+    id="crostiniSharedPathsRow"
     class="hr"
-    id="crostini-shared-paths"
     label="$i18n{guestOsSharedPaths}"
     on-click="onSharedPathsClick_"
     role-description="$i18n{subpageArrowRoleDescription}">
 </cr-link-row>
 <cr-link-row
+    id="crostiniSharedUsbDevicesRow"
     class="hr"
     label="$i18n{guestOsSharedUsbDevicesLabel}"
-    id="crostini-shared-usb-devices"
     on-click="onSharedUsbDevicesClick_"
     role-description="$i18n{subpageArrowRoleDescription}">
 </cr-link-row>
 <template is="dom-if" if="[[showCrostiniExtraContainers_]]">
   <cr-link-row
+      id="crostiniExtraContainersRow"
       class="hr"
       label="$i18n{crostiniExtraContainersLabel}"
-      id="crostini-extra-containers"
       on-click="onExtraContainersClick_"
       role-description="$i18n{subpageArrowRoleDescription}">
   </cr-link-row>
 </template>
 <template is="dom-if" if="[[showCrostiniExportImport_]]">
   <cr-link-row
+      id="crostiniExportImportRow"
       class="hr"
       label="$i18n{crostiniExportImportTitle}"
-      id="crostini-export-import"
       on-click="onExportImportClick_"
       role-description="$i18n{subpageArrowRoleDescription}">
   </cr-link-row>
 </template>
 <template is="dom-if" if="[[showArcAdbSideloading_]]">
   <cr-link-row
+      id="crostiniEnableArcAdbRow"
       class="hr"
       label="$i18n{crostiniArcAdbTitle}"
-      id="crostini-enable-arc-adb"
       on-click="onEnableArcAdbClick_"
       role-description="$i18n{subpageArrowRoleDescription}">
   </cr-link-row>
 </template>
 <template is="dom-if" if="[[showCrostiniPortForwarding_]]">
   <cr-link-row
+      id="crostiniPortForwardingRow"
       class="hr"
       label="$i18n{crostiniPortForwarding}"
-      id="crostini-port-forwarding"
       on-click="onPortForwardingClick_"
       role-description="$i18n{subpageArrowRoleDescription}">
   </cr-link-row>
 </template>
-<div class="settings-box hr" id="crostini-disk-resize">
+<div class="settings-box hr" id="crostiniDiskResizeRow">
   <div class="start">
     <div>
       $i18n{crostiniDiskResizeLabel}

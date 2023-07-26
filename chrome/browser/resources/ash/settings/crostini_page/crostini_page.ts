@@ -37,18 +37,18 @@ import {isCrostiniAllowed, isCrostiniSupported} from '../common/load_time_boolea
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
+import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_browser_proxy.js';
 import {getTemplate} from './crostini_page.html.js';
 
 const SettingsCrostiniPageElementBase = DeepLinkingMixin(PrefsMixin(
-    RouteObserverMixin(I18nMixin(WebUiListenerMixin(PolymerElement)))));
+    RouteOriginMixin(I18nMixin(WebUiListenerMixin(PolymerElement)))));
 
 class SettingsCrostiniPageElement extends SettingsCrostiniPageElementBase {
   static get is() {
-    return 'settings-crostini-page';
+    return 'settings-crostini-page' as const;
   }
 
   static get template() {
@@ -61,57 +61,6 @@ class SettingsCrostiniPageElement extends SettingsCrostiniPageElementBase {
         type: Number,
         value: Section.kCrostini,
         readOnly: true,
-      },
-
-      focusConfig_: {
-        type: Object,
-        value() {
-          const map = new Map();
-          if (routes.CROSTINI_DETAILS) {
-            map.set(routes.CROSTINI_DETAILS.path, '#crostini .subpage-arrow');
-          }
-          if (routes.CROSTINI_DISK_RESIZE) {
-            map.set(
-                routes.CROSTINI_DISK_RESIZE.path, '#crostini .subpage-arrow');
-          }
-          if (routes.CROSTINI_EXPORT_IMPORT) {
-            map.set(
-                routes.CROSTINI_EXPORT_IMPORT.path, '#crostini .subpage-arrow');
-          }
-          if (routes.CROSTINI_EXTRA_CONTAINERS) {
-            map.set(
-                routes.CROSTINI_EXTRA_CONTAINERS.path,
-                '#crostini .subpage-arrow');
-          }
-          if (routes.CROSTINI_PORT_FORWARDING) {
-            map.set(
-                routes.CROSTINI_PORT_FORWARDING.path,
-                '#crostini .subpage-arrow');
-          }
-          if (routes.CROSTINI_SHARED_PATHS) {
-            map.set(
-                routes.CROSTINI_SHARED_PATHS.path, '#crostini .subpage-arrow');
-          }
-          if (routes.CROSTINI_SHARED_USB_DEVICES) {
-            map.set(
-                routes.CROSTINI_SHARED_USB_DEVICES.path,
-                '#crostini .subpage-arrow');
-          }
-          if (routes.BRUSCHETTA_DETAILS) {
-            map.set(routes.BRUSCHETTA_DETAILS.path, '#crostini .subpage-arrow');
-          }
-          if (routes.BRUSCHETTA_SHARED_USB_DEVICES) {
-            map.set(
-                routes.BRUSCHETTA_SHARED_USB_DEVICES.path,
-                '#crostini .subpage-arrow');
-          }
-          if (routes.BRUSCHETTA_SHARED_PATHS) {
-            map.set(
-                routes.BRUSCHETTA_SHARED_PATHS.path,
-                '#crostini .subpage-arrow');
-          }
-          return map;
-        },
       },
 
       /**
@@ -159,6 +108,9 @@ class SettingsCrostiniPageElement extends SettingsCrostiniPageElementBase {
   constructor() {
     super();
 
+    /** RouteOriginMixin override */
+    this.route = routes.CROSTINI;
+
     this.browserProxy_ = CrostiniBrowserProxyImpl.getInstance();
   }
 
@@ -176,9 +128,19 @@ class SettingsCrostiniPageElement extends SettingsCrostiniPageElementBase {
     this.browserProxy_.requestCrostiniInstallerStatus();
   }
 
-  override currentRouteChanged(route: Route) {
+  override ready(): void {
+    super.ready();
+
+    this.addFocusConfig(routes.CROSTINI_DETAILS, '#crostini .subpage-arrow');
+    this.addFocusConfig(
+        routes.BRUSCHETTA_DETAILS, '#bruschetta .subpage-arrow');
+  }
+
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
+    super.currentRouteChanged(newRoute, oldRoute);
+
     // Does not apply to this page.
-    if (route !== routes.CROSTINI) {
+    if (newRoute !== this.route) {
       return;
     }
 
@@ -218,7 +180,7 @@ class SettingsCrostiniPageElement extends SettingsCrostiniPageElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-crostini-page': SettingsCrostiniPageElement;
+    [SettingsCrostiniPageElement.is]: SettingsCrostiniPageElement;
   }
 }
 
