@@ -196,12 +196,6 @@ unit tests.
       {768-rsa,1024-rsa,2048-rsa,prime256v1-ecdsa}-intermediate.pem
       Test certificates used to ensure that weak keys are detected and rejected
 
-===== From net/data/ssl/scripts/generate-cross-signed-certs.sh
-- cross-signed-leaf.pem
-- cross-signed-root-md5.pem
-- cross-signed-root-sha256.pem
-     A certificate chain for regression testing http://crbug.com/108514
-
 ===== From net/data/ssl/scripts/generate-redundant-test-chains.sh
 - redundant-validated-chain.pem
 - redundant-server-chain.pem

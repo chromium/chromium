@@ -937,20 +937,30 @@ TEST_P(CertVerifyProcInternalTest, RejectWeakKeys) {
 }
 
 // Regression test for http://crbug.com/108514.
-TEST_P(CertVerifyProcInternalTest, ExtraneousMD5RootCert) {
-  base::FilePath certs_dir = GetTestCertsDirectory();
+// Generates a chain with a root with a SHA256 signature, and another root with
+// the same name/SPKI/keyid but with a SHA1 signature. The SHA256 root is
+// trusted. The SHA1 certificate is supplied as an extra cert, but should be
+// ignored as the verifier should prefer the trusted cert when path building
+// from the leaf, generating the shortest chain of "leaf -> sha256root". If the
+// path builder doesn't prioritize it could build an unoptimal but valid path
+// like "leaf -> sha1root -> sha256root".
+TEST_P(CertVerifyProcInternalTest, ExtraneousRootCert) {
+  auto [leaf_builder, root_builder] = CertBuilder::CreateSimpleChain2();
+
+  root_builder->SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha256);
+  scoped_refptr<X509Certificate> root_cert = root_builder->GetX509Certificate();
 
   scoped_refptr<X509Certificate> server_cert =
-      ImportCertFromFile(certs_dir, "cross-signed-leaf.pem");
-  ASSERT_NE(static_cast<X509Certificate*>(nullptr), server_cert.get());
+      leaf_builder->GetX509Certificate();
 
+  // Use the same root_builder but with a new serial number and setting the
+  // signature to SHA1, to generate an extraneous self-signed certificate that
+  // also signs the leaf cert and which could be used in path-building if the
+  // path builder doesn't prioritize trusted roots above other certs.
+  root_builder->SetRandomSerialNumber();
+  root_builder->SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha1);
   scoped_refptr<X509Certificate> extra_cert =
-      ImportCertFromFile(certs_dir, "cross-signed-root-md5.pem");
-  ASSERT_NE(static_cast<X509Certificate*>(nullptr), extra_cert.get());
-
-  scoped_refptr<X509Certificate> root_cert =
-      ImportCertFromFile(certs_dir, "cross-signed-root-sha256.pem");
-  ASSERT_NE(static_cast<X509Certificate*>(nullptr), root_cert.get());
+      root_builder->GetX509Certificate();
 
   ScopedTestRoot scoped_root(root_cert.get());
 
@@ -962,11 +972,11 @@ TEST_P(CertVerifyProcInternalTest, ExtraneousMD5RootCert) {
 
   CertVerifyResult verify_result;
   int flags = 0;
-  int error = Verify(cert_chain.get(), "127.0.0.1", flags, CertificateList(),
-                     &verify_result);
+  int error = Verify(cert_chain.get(), "www.example.com", flags,
+                     CertificateList(), &verify_result);
   EXPECT_THAT(error, IsOk());
 
-  // The extra MD5 root should be discarded
+  // The extra root should be discarded.
   ASSERT_TRUE(verify_result.verified_cert.get());
   ASSERT_EQ(1u, verify_result.verified_cert->intermediate_buffers().size());
   EXPECT_TRUE(x509_util::CryptoBufferEqual(
