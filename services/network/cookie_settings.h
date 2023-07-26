@@ -10,10 +10,8 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/feature_list.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/cookie_settings_base.h"
-#include "net/base/features.h"
 #include "net/base/network_delegate.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_setting_override.h"
@@ -48,6 +46,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
 
   void set_content_settings(const ContentSettingsForOneType& content_settings) {
     content_settings_ = content_settings;
+    // Ensure that a default setting is specified.
+    if (content_settings.empty() ||
+        content_settings.back().primary_pattern !=
+            ContentSettingsPattern::Wildcard() ||
+        content_settings.back().secondary_pattern !=
+            ContentSettingsPattern::Wildcard()) {
+      content_settings_.emplace_back(ContentSettingsPattern::Wildcard(),
+                                     ContentSettingsPattern::Wildcard(),
+                                     base::Value(CONTENT_SETTING_ALLOW),
+                                     std::string(), false);
+    }
   }
 
   void set_block_third_party_cookies(bool block_third_party_cookies) {
@@ -148,27 +157,21 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       net::CookieAccessResultList& excluded_cookies) const;
 
  private:
-  // Returns whether third-party cookie blocking should be bypassed (i.e. always
-  // allow the cookie regardless of cookie content settings and third-party
-  // cookie blocking settings.
-  // This just checks the scheme of the |url| and |site_for_cookies|:
-  //  - Allow cookies if the |site_for_cookies| is a chrome:// scheme URL, and
-  //    the |url| has a secure scheme.
-  //  - Allow cookies if the |site_for_cookies| and the |url| match in scheme
-  //    and both have the Chrome extensions scheme.
-  bool ShouldAlwaysAllowCookies(const GURL& url,
-                                const GURL& first_party_url) const;
-
   // content_settings::CookieSettingsBase:
-  //
-  // Note: |info| are not supported in the network service.
-  // It contains properties of content setting exceptions.
-  ContentSetting GetCookieSettingInternal(
-      const GURL& url,
-      const GURL& first_party_url,
-      bool is_third_party_request,
-      net::CookieSettingOverrides overrides,
-      content_settings::SettingInfo* info) const override;
+  bool ShouldAlwaysAllowCookies(const GURL& url,
+                                const GURL& first_party_url) const override;
+  ContentSetting GetContentSetting(
+      const GURL& primary_url,
+      const GURL& secondary_url,
+      ContentSettingsType content_type,
+      content_settings::SettingInfo* info = nullptr) const override;
+  bool IsThirdPartyCookiesAllowedScheme(
+      const std::string& scheme) const override;
+  bool ShouldBlockThirdPartyCookies() const override;
+  bool IsStorageAccessApiEnabled() const override;
+
+  const ContentSettingsForOneType& GetContentSettings(
+      ContentSettingsType type) const;
 
   // An enum that represents the scope of cookies to which the user's
   // third-party-cookie-blocking setting applies, in a given context.

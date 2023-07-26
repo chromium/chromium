@@ -122,7 +122,7 @@ enum SettingSource {
 // contains the source of a value. |primary_pattern| and |secondary_pattern|
 // contains the patterns of the appling rule.
 struct SettingInfo {
-  SettingSource source;
+  SettingSource source = SETTING_SOURCE_NONE;
   ContentSettingsPattern primary_pattern;
   ContentSettingsPattern secondary_pattern;
   RuleMetaData metadata;

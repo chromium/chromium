@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/containers/enum_set.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_setting_override.h"
@@ -151,11 +150,10 @@ class CookieSettingsBase {
   bool IsCookieSessionOnly(const GURL& url) const;
 
   // A helper for applying third party cookie blocking rules.
-  ContentSetting GetCookieSetting(
-      const GURL& url,
-      const GURL& first_party_url,
-      net::CookieSettingOverrides overrides,
-      content_settings::SettingInfo* info = nullptr) const;
+  ContentSetting GetCookieSetting(const GURL& url,
+                                  const GURL& first_party_url,
+                                  net::CookieSettingOverrides overrides,
+                                  SettingInfo* info = nullptr) const;
 
   // Returns the cookie access semantics (legacy or nonlegacy) to be applied for
   // cookies on the given domain. The |cookie_domain| can be provided as the
@@ -248,12 +246,39 @@ class CookieSettingsBase {
                                const url::Origin* top_frame_origin);
 
  private:
-  virtual ContentSetting GetCookieSettingInternal(
-      const GURL& url,
-      const GURL& first_party_url,
-      bool is_third_party_request,
-      net::CookieSettingOverrides overrides,
-      content_settings::SettingInfo* info) const = 0;
+  ContentSetting GetCookieSettingInternal(const GURL& url,
+                                          const GURL& first_party_url,
+                                          bool is_third_party_request,
+                                          net::CookieSettingOverrides overrides,
+                                          SettingInfo* info) const;
+
+  // Returns a content setting for the requested parameters and populates |info|
+  // if not null. Implementations might only implement a subset of all
+  // ContentSettingsTypes. Currently only COOKIES, STORAGE_ACCESS and
+  // TOP_LEVEL_STORAGE_ACCESS are required.
+  virtual ContentSetting GetContentSetting(
+      const GURL& primary_url,
+      const GURL& secondary_url,
+      ContentSettingsType content_type,
+      SettingInfo* info = nullptr) const = 0;
+
+  bool IsAllowedByStorageAccessGrant(const GURL& url,
+                                     const GURL& first_party_url) const;
+
+  // Returns whether requests for |url| and |first_party_url| should always
+  // be allowed. Called before checking other cookie settings.
+  virtual bool ShouldAlwaysAllowCookies(const GURL& url,
+                                        const GURL& first_party_url) const = 0;
+
+  // Returns whether the global 3p cookie blocking setting is enabled.
+  virtual bool ShouldBlockThirdPartyCookies() const = 0;
+
+  // Returns whether |scheme| is always allowed to access 3p cookies.
+  virtual bool IsThirdPartyCookiesAllowedScheme(
+      const std::string& scheme) const = 0;
+
+  // Returns whether the StorageAccessAPI feature is enabled.
+  virtual bool IsStorageAccessApiEnabled() const = 0;
 
   static bool storage_access_api_grants_unpartitioned_storage_;
   const bool is_storage_partitioned_;

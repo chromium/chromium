@@ -7,22 +7,19 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/i18n/time_formatting.h"
-#include "base/observer_list.h"
-#include "base/time/time.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
-#include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/cookie_settings_base.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/buildflags/buildflags.h"
-#include "net/base/features.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
@@ -31,7 +28,9 @@
 
 #if BUILDFLAG(IS_IOS)
 #include "components/content_settings/core/common/features.h"
-#else
+#endif
+
+#if BUILDFLAG(USE_BLINK)
 #include "third_party/blink/public/common/features_generated.h"
 #endif
 
@@ -215,6 +214,14 @@ void CookieSettings::ShutdownOnUIThread() {
   pref_change_registrar_.RemoveAll();
 }
 
+// Returns whether third-party cookie blocking should be bypassed (i.e. always
+// allow the cookie regardless of cookie content settings and third-party
+// cookie blocking settings.
+// This just checks the scheme of the |url| and |site_for_cookies|:
+//  - Allow cookies if the |site_for_cookies| is a chrome:// scheme URL, and
+//    the |url| has a secure scheme.
+//  - Allow cookies if the |site_for_cookies| and the |url| match in scheme
+//    and both have the Chrome extensions scheme.
 bool CookieSettings::ShouldAlwaysAllowCookies(
     const GURL& url,
     const GURL& first_party_url) const {
@@ -233,95 +240,29 @@ bool CookieSettings::ShouldAlwaysAllowCookies(
   return false;
 }
 
-ContentSetting CookieSettings::GetCookieSettingInternal(
-    const GURL& url,
-    const GURL& first_party_url,
-    bool is_third_party_request,
-    net::CookieSettingOverrides overrides,
+ContentSetting CookieSettings::GetContentSetting(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType content_type,
     content_settings::SettingInfo* info) const {
-  // Auto-allow in extensions or for WebUI embedding a secure origin.
-  if (ShouldAlwaysAllowCookies(url, first_party_url)) {
-    return CONTENT_SETTING_ALLOW;
-  }
+  return host_content_settings_map_->GetContentSetting(
+      primary_url, secondary_url, content_type, info);
+}
 
-  // First get any host-specific settings.
-  SettingInfo setting_info;
-  ContentSetting setting = host_content_settings_map_->GetContentSetting(
-      url, first_party_url, ContentSettingsType::COOKIES, &setting_info);
-  if (info) {
-    *info = setting_info;
-  }
+bool CookieSettings::IsThirdPartyCookiesAllowedScheme(
+    const std::string& scheme) const {
+  return scheme == extension_scheme_;
+}
 
-  // If no explicit exception has been made and third-party cookies are blocked
-  // by default, apply CONTENT_SETTING_BLOCKED.
-  bool block_third = setting_info.primary_pattern.MatchesAllHosts() &&
-                     setting_info.secondary_pattern.MatchesAllHosts() &&
-                     ShouldBlockThirdPartyCookies() &&
-                     !first_party_url.SchemeIs(extension_scheme_);
-
-  bool block = block_third && is_third_party_request;
-  if (!block) {
-    FireStorageAccessHistogram(
-        net::cookie_util::StorageAccessResult::ACCESS_ALLOWED);
-  }
-
-#if !BUILDFLAG(IS_IOS)
-  // IOS doesn't use blink and as such cannot check our feature flag. Disabling
-  // by default there should be no-op as the lack of Blink also means no grants
-  // would be generated. Everywhere else we'll use |kStorageAccessAPI| to gate
-  // our checking logic.
-  // We'll perform this check after we know if we will |block| or not to avoid
-  // performing extra work in scenarios we already allow.
-
+bool CookieSettings::IsStorageAccessApiEnabled() const {
   // TODO(https://crbug.com/1411765): instead of using a BUILDFLAG and checking
   // the feature here, we should rely on CookieSettingsFactory to plumb in this
   // boolean instead.
-  bool storage_access_api_enabled =
-      base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI);
-  if (block && storage_access_api_enabled &&
-      ShouldConsiderStorageAccessGrants(overrides)) {
-    // The Storage Access API allows access in A(B(A)) case (or similar). Do the
-    // same-origin check first for performance reasons.
-    const url::Origin origin = url::Origin::Create(url);
-    const url::Origin first_party_origin = url::Origin::Create(first_party_url);
-    if (origin.IsSameOriginWith(first_party_origin) ||
-        net::SchemefulSite(origin) == net::SchemefulSite(first_party_origin) ||
-        host_content_settings_map_->GetContentSetting(
-            url, first_party_url, ContentSettingsType::STORAGE_ACCESS) ==
-            CONTENT_SETTING_ALLOW) {
-      block = false;
-      FireStorageAccessHistogram(net::cookie_util::StorageAccessResult::
-                                     ACCESS_ALLOWED_STORAGE_ACCESS_GRANT);
-    }
-  }
-
-  if (block && storage_access_api_enabled &&
-      ShouldConsiderTopLevelStorageAccessGrants(overrides)) {
-    ContentSetting host_setting = host_content_settings_map_->GetContentSetting(
-        url, first_party_url, ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS);
-
-    if (host_setting == CONTENT_SETTING_ALLOW) {
-      block = false;
-      FireStorageAccessHistogram(
-          net::cookie_util::StorageAccessResult::
-              ACCESS_ALLOWED_TOP_LEVEL_STORAGE_ACCESS_GRANT);
-    }
-  }
+#if BUILDFLAG(USE_BLINK)
+  return base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI);
+#else
+  return false;
 #endif
-
-  if (block && is_third_party_request &&
-      overrides.Has(net::CookieSettingOverride::kForceThirdPartyByUser)) {
-    block = false;
-    FireStorageAccessHistogram(
-        net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_FORCED);
-  }
-
-  if (block) {
-    FireStorageAccessHistogram(
-        net::cookie_util::StorageAccessResult::ACCESS_BLOCKED);
-  }
-
-  return block ? CONTENT_SETTING_BLOCK : setting;
 }
 
 CookieSettings::~CookieSettings() = default;

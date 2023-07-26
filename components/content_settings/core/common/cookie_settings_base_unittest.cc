@@ -45,21 +45,36 @@ class CallbackCookieSettings : public CookieSettingsBase {
   explicit CallbackCookieSettings(GetSettingCallback callback)
       : callback_(std::move(callback)) {}
 
-  // CookieSettingsBase:
-  ContentSetting GetCookieSettingInternal(
-      const GURL& url,
-      const GURL& first_party_url,
-      bool is_third_party_request,
-      net::CookieSettingOverrides overrides,
+  ContentSetting GetContentSetting(
+      const GURL& primary_url,
+      const GURL& secondary_url,
+      ContentSettingsType content_type,
       content_settings::SettingInfo* info) const override {
-    return callback_.Run(url);
+    return callback_.Run(primary_url);
   }
+
+  // CookieSettingsBase:
+  bool ShouldAlwaysAllowCookies(const GURL& url,
+                                const GURL& first_party_url) const override {
+    return false;
+  }
+
+  bool ShouldBlockThirdPartyCookies() const override { return false; }
+
+  bool IsThirdPartyCookiesAllowedScheme(
+      const std::string& scheme) const override {
+    return false;
+  }
+
+  bool IsStorageAccessApiEnabled() const override { return true; }
+
   ContentSetting GetSettingForLegacyCookieAccess(
       const std::string& cookie_domain) const override {
     GURL cookie_domain_url =
         net::cookie_util::CookieOriginToURL(cookie_domain, false);
     return callback_.Run(cookie_domain_url);
   }
+
   bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies) const override {

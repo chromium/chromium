@@ -193,6 +193,98 @@ bool CookieSettingsBase::ShouldConsiderTopLevelStorageAccessGrants(
       net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible);
 }
 
+ContentSetting CookieSettingsBase::GetCookieSettingInternal(
+    const GURL& url,
+    const GURL& first_party_url,
+    bool is_third_party_request,
+    net::CookieSettingOverrides overrides,
+    SettingInfo* info) const {
+  // Auto-allow in extensions or for WebUI embedding a secure origin.
+  if (ShouldAlwaysAllowCookies(url, first_party_url)) {
+    return CONTENT_SETTING_ALLOW;
+  }
+
+  // First get any host-specific settings.
+  SettingInfo setting_info;
+  ContentSetting setting = GetContentSetting(
+      url, first_party_url, ContentSettingsType::COOKIES, &setting_info);
+  if (info) {
+    *info = setting_info;
+  }
+
+  // If no explicit exception has been made and third-party cookies are blocked
+  // by default, apply CONTENT_SETTING_BLOCKED.
+  bool block_third =
+      IsAllowed(setting) && is_third_party_request &&
+      setting_info.primary_pattern.MatchesAllHosts() &&
+      setting_info.secondary_pattern.MatchesAllHosts() &&
+      ShouldBlockThirdPartyCookies() &&
+      !IsThirdPartyCookiesAllowedScheme(first_party_url.scheme());
+
+  if (IsAllowed(setting) && !block_third) {
+    FireStorageAccessHistogram(
+        net::cookie_util::StorageAccessResult::ACCESS_ALLOWED);
+  }
+
+  if (block_third) {
+    bool has_storage_access_opt_in =
+        ShouldConsiderStorageAccessGrants(overrides);
+    bool has_storage_access_permission_grant =
+        IsAllowedByStorageAccessGrant(url, first_party_url);
+
+    net::cookie_util::FireStorageAccessInputHistogram(
+        has_storage_access_opt_in, has_storage_access_permission_grant);
+
+    if (IsStorageAccessApiEnabled() && has_storage_access_opt_in &&
+        has_storage_access_permission_grant) {
+      block_third = false;
+      FireStorageAccessHistogram(net::cookie_util::StorageAccessResult::
+                                     ACCESS_ALLOWED_STORAGE_ACCESS_GRANT);
+    }
+
+    if (IsStorageAccessApiEnabled() &&
+        ShouldConsiderTopLevelStorageAccessGrants(overrides) &&
+        GetContentSetting(url, first_party_url,
+                          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS) ==
+            CONTENT_SETTING_ALLOW) {
+      block_third = false;
+      FireStorageAccessHistogram(
+          net::cookie_util::StorageAccessResult::
+              ACCESS_ALLOWED_TOP_LEVEL_STORAGE_ACCESS_GRANT);
+    }
+  }
+
+  if (block_third &&
+      overrides.Has(net::CookieSettingOverride::kForceThirdPartyByUser)) {
+    block_third = false;
+    FireStorageAccessHistogram(
+        net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_FORCED);
+  }
+
+  if (!IsAllowed(setting) || block_third) {
+    FireStorageAccessHistogram(
+        net::cookie_util::StorageAccessResult::ACCESS_BLOCKED);
+  }
+  return block_third ? CONTENT_SETTING_BLOCK : setting;
+}
+
+bool CookieSettingsBase::IsAllowedByStorageAccessGrant(
+    const GURL& url,
+    const GURL& first_party_url) const {
+  // The Storage Access API allows access in A(B(A)) case (or similar). Do the
+  // same-origin check first for performance reasons.
+  const url::Origin origin = url::Origin::Create(url);
+  const url::Origin first_party_origin = url::Origin::Create(first_party_url);
+  if (origin.IsSameOriginWith(first_party_origin) ||
+      net::SchemefulSite(origin) == net::SchemefulSite(first_party_origin)) {
+    return true;
+  }
+
+  return GetContentSetting(url, first_party_url,
+                           ContentSettingsType::STORAGE_ACCESS) ==
+         CONTENT_SETTING_ALLOW;
+}
+
 // static
 bool CookieSettingsBase::IsValidSetting(ContentSetting setting) {
   return (setting == CONTENT_SETTING_ALLOW ||

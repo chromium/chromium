@@ -47,6 +47,7 @@ static_library("browser") {
 
   deps = [
     "//base",
+    "//build:blink_buildflags",
     "//build:chromeos_buildflags",
     "//components/content_settings/core/common",
     "//components/keyed_service/core",

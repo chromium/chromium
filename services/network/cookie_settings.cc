@@ -9,13 +9,13 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/optional_util.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/cookie_settings_base.h"
-#include "net/base/features.h"
-#include "net/base/net_errors.h"
 #include "net/base/network_delegate.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/canonical_cookie.h"
@@ -92,7 +92,10 @@ bool CookieSettings::CookieSettingWithMetadata::IsPartitionedStateAllowed()
              ThirdPartyBlockingScope::kUnpartitionedOnly;
 }
 
-CookieSettings::CookieSettings() = default;
+CookieSettings::CookieSettings() {
+  // Allow cookies by default until we receive CookieSettings.
+  set_content_settings({});
+}
 
 CookieSettings::~CookieSettings() = default;
 
@@ -160,11 +163,9 @@ bool CookieSettings::IsCookieAccessible(
     net::CookieSettingOverrides overrides,
     net::CookieInclusionStatus* cookie_inclusion_status) const {
   const CookieSettingWithMetadata setting_with_metadata =
-      GetCookieSettingWithMetadata(
-          url,
-          GetFirstPartyURL(site_for_cookies,
-                           base::OptionalToPtr(top_frame_origin)),
-          IsThirdPartyRequest(url, site_for_cookies), overrides);
+      GetCookieSettingWithMetadata(url, site_for_cookies,
+                                   base::OptionalToPtr(top_frame_origin),
+                                   overrides);
   bool allowed = setting_with_metadata.IsCookieAllowed(cookie);
 
   if (cookie_inclusion_status &&
@@ -178,6 +179,14 @@ bool CookieSettings::IsCookieAccessible(
   return allowed;
 }
 
+// Returns whether third-party cookie blocking should be bypassed (i.e. always
+// allow the cookie regardless of cookie content settings and third-party
+// cookie blocking settings.
+// This just checks the scheme of the |url| and |site_for_cookies|:
+//  - Allow cookies if the |site_for_cookies| is a chrome:// scheme URL, and
+//    the |url| has a secure scheme.
+//  - Allow cookies if the |site_for_cookies| and the |url| match in scheme
+//    and both have the Chrome extensions scheme.
 bool CookieSettings::ShouldAlwaysAllowCookies(
     const GURL& url,
     const GURL& first_party_url) const {
@@ -297,17 +306,6 @@ CookieSettings::GetCookieSettingWithMetadata(
       IsThirdPartyRequest(url, site_for_cookies), overrides);
 }
 
-ContentSetting CookieSettings::GetCookieSettingInternal(
-    const GURL& url,
-    const GURL& first_party_url,
-    bool is_third_party_request,
-    net::CookieSettingOverrides overrides,
-    content_settings::SettingInfo* info) const {
-  return GetCookieSettingWithMetadata(url, first_party_url,
-                                      is_third_party_request, overrides)
-      .cookie_setting();
-}
-
 bool CookieSettings::AnnotateAndMoveUserBlockedCookies(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
@@ -375,6 +373,61 @@ bool CookieSettings::HasSessionOnlyOrigins() const {
   return base::ranges::any_of(content_settings_, [](const auto& entry) {
     return entry.GetContentSetting() == CONTENT_SETTING_SESSION_ONLY;
   });
+}
+
+const ContentSettingsForOneType& CookieSettings::GetContentSettings(
+    ContentSettingsType type) const {
+  switch (type) {
+    case ContentSettingsType::COOKIES:
+      return content_settings_;
+    case ContentSettingsType::STORAGE_ACCESS:
+      return storage_access_grants_;
+    case ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS:
+      return top_level_storage_access_grants_;
+    default:
+      // Only implements types that are actually used by CookieSettings since
+      // settings need to be copied to the network service.
+      NOTREACHED_NORETURN() << static_cast<int>(type);
+  }
+}
+
+ContentSetting CookieSettings::GetContentSetting(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType content_type,
+    content_settings::SettingInfo* info) const {
+  const ContentSettingPatternSource* result = FindMatchingSetting(
+      primary_url, secondary_url, GetContentSettings(content_type));
+
+  if (!result) {
+    if (info) {
+      info->primary_pattern = ContentSettingsPattern::Wildcard();
+      info->secondary_pattern = ContentSettingsPattern::Wildcard();
+    }
+    return CONTENT_SETTING_BLOCK;
+  }
+
+  if (info) {
+    info->primary_pattern = result->primary_pattern;
+    info->secondary_pattern = result->secondary_pattern;
+    info->metadata = result->metadata;
+  }
+  return result->GetContentSetting();
+}
+
+bool CookieSettings::IsThirdPartyCookiesAllowedScheme(
+    const std::string& scheme) const {
+  return base::Contains(third_party_cookies_allowed_schemes_, scheme);
+}
+
+bool CookieSettings::ShouldBlockThirdPartyCookies() const {
+  return block_third_party_cookies_;
+}
+
+bool CookieSettings::IsStorageAccessApiEnabled() const {
+  // The network service relies on the browser process passing
+  // storage_access_grants_ correctly.
+  return true;
 }
 
 bool CookieSettings::IsAllowedByStorageAccessGrant(
