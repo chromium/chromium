@@ -362,6 +362,10 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       kind: ScreenKind.NORMAL,
     },
     {
+      id: 'consumer-update',
+      kind: ScreenKind.NORMAL,
+    },
+    {
       id: 'auto-enrollment-check',
       kind: ScreenKind.NORMAL,
     },
