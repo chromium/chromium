@@ -6,6 +6,8 @@ source_set("toolbars") {
   sources = [
     "tab_grid_toolbars_coordinator.h",
     "tab_grid_toolbars_coordinator.mm",
+    "tab_grid_toolbars_mediator.h",
+    "tab_grid_toolbars_mediator.mm",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [

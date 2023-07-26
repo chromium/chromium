@@ -9,15 +9,21 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_page_control.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_action_wrangler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_delegate_wrangler.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_top_toolbar.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@implementation TabGridToolbarsCoordinator
+@implementation TabGridToolbarsCoordinator {
+  // Mediator of all tab grid toolbars.
+  TabGridToolbarsMediator* _mediator;
+}
 
 - (void)start {
+  _mediator = [[TabGridToolbarsMediator alloc] init];
+
   [self setupTopToolbar];
   [self setupBottomToolbar];
   [self updateToolbarButtons];
