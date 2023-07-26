@@ -19,6 +19,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/icu/source/i18n/astro.h"
 
 namespace ash {
@@ -45,10 +46,10 @@ constexpr int kDefaultSunriseTimeOffsetMinutes = 6 * 60;
 
 GeolocationController::GeolocationController(
     scoped_refptr<network::SharedURLLoaderFactory> factory)
-    : factory_(factory.get()),
-      provider_(this,
-                std::move(factory),
-                SimpleGeolocationProvider::DefaultGeolocationProviderURL()),
+    : simple_geolocation_provider_(std::make_unique<SimpleGeolocationProvider>(
+          this,
+          std::move(factory),
+          SimpleGeolocationProvider::DefaultGeolocationProviderURL())),
       backoff_delay_(kMinimumDelayAfterFailure),
       timer_(std::make_unique<base::OneShotTimer>()),
       scoped_session_observer_(this) {
@@ -160,6 +161,11 @@ GeolocationController::GetNextRequestDelayAfterSuccessForTesting() {
   return kNextRequestDelayAfterSuccess;
 }
 
+network::SharedURLLoaderFactory*
+GeolocationController::GetSharedURLLoaderFactoryForTesting() {
+  return simple_geolocation_provider_->GetSharedURLLoaderFactoryForTesting();
+}
+
 void GeolocationController::SetTimerForTesting(
     std::unique_ptr<base::OneShotTimer> timer) {
   timer_ = std::move(timer);
@@ -260,7 +266,7 @@ void GeolocationController::NotifyGeopositionChange(
 
 void GeolocationController::RequestGeoposition() {
   VLOG(1) << "Requesting a new geoposition";
-  provider_.RequestGeolocation(
+  simple_geolocation_provider_->RequestGeolocation(
       kGeolocationRequestTimeout, /*send_wifi_access_points=*/false,
       /*send_cell_towers=*/false,
       base::BindOnce(&GeolocationController::OnGeoposition,

@@ -199,7 +199,11 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
     return geolocation_controller_;
   }
   const base::OneShotTimer* timer_ptr() const { return timer_ptr_; }
-  TestGeolocationUrlLoaderFactory* factory() const { return factory_; }
+
+  TestGeolocationUrlLoaderFactory* factory() const {
+    return static_cast<TestGeolocationUrlLoaderFactory*>(
+        geolocation_controller_->GetSharedURLLoaderFactoryForTesting());
+  }
 
   // AshTestBase:
   void SetUp() override {
@@ -234,11 +238,6 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
         Shell::Get()->session_controller()->GetActivePrefService());
 
     timer_ptr_ = geolocation_controller()->GetTimerForTesting();
-
-    // `factory_` allows the test to control the value of geoposition
-    // that the geolocation provider sends back upon geolocation request.
-    factory_ = static_cast<TestGeolocationUrlLoaderFactory*>(
-        geolocation_controller()->GetFactoryForTesting());
   }
 
   void TearDown() override {
@@ -353,7 +352,7 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
   // `GeolocationController` request.
   void SetServerPosition(const Geoposition& position) {
     position_ = position;
-    factory_->set_position(position_);
+    factory()->set_position(position_);
   }
 
   // Checks if the feature is observing geoposition changes.
@@ -406,7 +405,6 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
   std::unique_ptr<TestScheduledFeature> feature_;
   raw_ptr<GeolocationController, ExperimentalAsh> geolocation_controller_;
   raw_ptr<base::OneShotTimer, ExperimentalAsh> timer_ptr_;
-  raw_ptr<TestGeolocationUrlLoaderFactory, ExperimentalAsh> factory_;
   Geoposition position_;
 };
 

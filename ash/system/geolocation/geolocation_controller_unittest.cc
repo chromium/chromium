@@ -113,9 +113,6 @@ class GeolocationControllerTest : public AshTestBase {
     controller_->SetClockForTesting(&test_clock_);
     timer_ptr_ = controller_->GetTimerForTesting();
 
-    factory_ = static_cast<TestGeolocationUrlLoaderFactory*>(
-        controller_->GetFactoryForTesting());
-
     // Prepare a valid geoposition.
     Geoposition position;
     position.latitude = 32.0;
@@ -175,8 +172,10 @@ class GeolocationControllerTest : public AshTestBase {
   // `GeolocationController` request.
   void SetServerPosition(const Geoposition& position) {
     position_ = position;
-    factory_->ClearResponses();
-    factory_->set_position(position_);
+    auto* factory = static_cast<TestGeolocationUrlLoaderFactory*>(
+        controller_->GetSharedURLLoaderFactoryForTesting());
+    factory->ClearResponses();
+    factory->set_position(position_);
   }
 
   void UpdateUserGeolocationPermission(bool enabled) {
@@ -189,7 +188,6 @@ class GeolocationControllerTest : public AshTestBase {
   std::unique_ptr<FakeGeolocationController> controller_;
   base::SimpleTestClock test_clock_;
   raw_ptr<base::OneShotTimer, ExperimentalAsh> timer_ptr_;
-  raw_ptr<TestGeolocationUrlLoaderFactory, ExperimentalAsh> factory_;
   Geoposition position_;
 };
 

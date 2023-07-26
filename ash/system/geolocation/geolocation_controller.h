@@ -117,7 +117,7 @@ class ASH_EXPORT GeolocationController
 
   static base::TimeDelta GetNextRequestDelayAfterSuccessForTesting();
 
-  network::SharedURLLoaderFactory* GetFactoryForTesting() { return factory_; }
+  network::SharedURLLoaderFactory* GetSharedURLLoaderFactoryForTesting();
 
   base::OneShotTimer* GetTimerForTesting() { return timer_.get(); }
 
@@ -175,14 +175,12 @@ class ASH_EXPORT GeolocationController
   // being able to retrieve a valid geoposition.
   void StoreCachedGeoposition() const;
 
-  const raw_ptr<network::SharedURLLoaderFactory, ExperimentalAsh> factory_;
-
   // May be null if a user has not logged in yet.
   raw_ptr<PrefService> active_user_pref_service_ = nullptr;
   std::unique_ptr<PrefChangeRegistrar> registrar_;
 
   // The IP-based geolocation provider.
-  SimpleGeolocationProvider provider_;
+  std::unique_ptr<SimpleGeolocationProvider> simple_geolocation_provider_;
 
   // Delay after which a new request is retried after a failed one.
   base::TimeDelta backoff_delay_;

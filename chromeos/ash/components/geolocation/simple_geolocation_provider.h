@@ -70,6 +70,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
                           bool send_cell_towers,
                           SimpleGeolocationRequest::ResponseCallback callback);
 
+  network::SharedURLLoaderFactory* GetSharedURLLoaderFactoryForTesting() {
+    return shared_url_loader_factory_.get();
+  }
+
   // Returns default geolocation service URL.
   static GURL DefaultGeolocationProviderURL();
 
