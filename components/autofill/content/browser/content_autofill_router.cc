@@ -70,7 +70,6 @@ void ContentAutofillRouter::SetLastQueriedSource(
     ContentAutofillDriver* source) {
   if (last_queried_source_ && last_queried_source_ != source) {
     last_queried_source_->UnsetKeyPressHandlerCallback();
-    last_queried_source_->SetShouldSuppressKeyboardCallback(false);
   }
   last_queried_source_ = source;
 }
@@ -107,17 +106,6 @@ void ContentAutofillRouter::UnsetKeyPressHandler(
     return;
 
   callback(last_queried_source_);
-}
-
-void ContentAutofillRouter::SetShouldSuppressKeyboard(
-    ContentAutofillDriver* source,
-    bool suppress,
-    void (*callback)(ContentAutofillDriver* target, bool suppress)) {
-  // TODO(crbug.com/1247698): Double check if this could happen.
-  if (!last_queried_source_)
-    return;
-
-  callback(last_queried_source_, suppress);
 }
 
 // Routing of events called by the renderer:

@@ -733,14 +733,6 @@ TEST_F(ContentAutofillDriverTest, PreviewFieldWithValue) {
   EXPECT_EQ(input_value, fake_agent_.GetString16PreviewFieldWithValue(field));
 }
 
-TEST_F(ContentAutofillDriverTest, SetShouldSuppressKeyboard) {
-  ASSERT_FALSE(test_api(driver()).should_suppress_keyboard());
-  test_api(router()).set_last_queried_source(&driver());
-
-  driver().SetShouldSuppressKeyboard(true);
-  EXPECT_TRUE(test_api(driver()).should_suppress_keyboard());
-}
-
 TEST_F(ContentAutofillDriverTest, TriggerFormExtractionInAllFrames) {
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());

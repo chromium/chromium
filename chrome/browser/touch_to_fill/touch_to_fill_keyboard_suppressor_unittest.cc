@@ -22,12 +22,6 @@ using ::testing::Return;
 namespace autofill {
 namespace {
 
-class MockBrowserAutofillManager : public TestBrowserAutofillManager {
- public:
-  using TestBrowserAutofillManager::TestBrowserAutofillManager;
-  MOCK_METHOD(void, SetShouldSuppressKeyboard, (bool), (override));
-};
-
 class TouchToFillKeyboardSuppressorTest
     : public ChromeRenderViewHostTestHarness {
  public:
@@ -56,24 +50,11 @@ class TouchToFillKeyboardSuppressorTest
     ASSERT_TRUE(&autofill_manager());
     ASSERT_TRUE(&child_autofill_manager());
     ASSERT_NE(&autofill_manager(), &child_autofill_manager());
+    ASSERT_FALSE(suppressor_->is_suppressing());
   }
 
   void TearDown() override {
-    // The unsuppress timer isn't active.
-    EXPECT_CALL(autofill_manager(), SetShouldSuppressKeyboard(_)).Times(0);
-    EXPECT_CALL(child_autofill_manager(), SetShouldSuppressKeyboard(_))
-        .Times(0);
-    FastForwardBy(base::Hours(1));
-    // The destructor may do a final SetShouldSuppressKeyboard().
-    size_t num_calls = 0;
-    EXPECT_CALL(autofill_manager(), SetShouldSuppressKeyboard(false))
-        .Times(AtMost(1))
-        .WillOnce([&](auto) { ++num_calls; });
-    EXPECT_CALL(child_autofill_manager(), SetShouldSuppressKeyboard(false))
-        .Times(AtMost(1))
-        .WillOnce([&](auto) { ++num_calls; });
     suppressor_.reset();
-    EXPECT_LE(num_calls, 1u);
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -81,11 +62,11 @@ class TouchToFillKeyboardSuppressorTest
     return *autofill_client_injector_[web_contents()];
   }
 
-  MockBrowserAutofillManager& autofill_manager() {
+  TestBrowserAutofillManager& autofill_manager() {
     return *autofill_manager_injector_[web_contents()];
   }
 
-  MockBrowserAutofillManager& child_autofill_manager() {
+  TestBrowserAutofillManager& child_autofill_manager() {
     return *autofill_manager_injector_[child_rfh_];
   }
 
@@ -115,7 +96,7 @@ class TouchToFillKeyboardSuppressorTest
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   TestAutofillClientInjector<TestContentAutofillClient>
       autofill_client_injector_;
-  TestAutofillManagerInjector<MockBrowserAutofillManager>
+  TestAutofillManagerInjector<TestBrowserAutofillManager>
       autofill_manager_injector_;
   std::unique_ptr<TouchToFillKeyboardSuppressor> suppressor_;
 
@@ -130,50 +111,59 @@ class TouchToFillKeyboardSuppressorTest
 TEST_F(TouchToFillKeyboardSuppressorTest, SuppressIfWillShow) {
   EXPECT_CALL(*this, IsShowing).WillOnce(Return(false));
   EXPECT_CALL(*this, IntendsToShow).WillOnce(Return(true));
-  EXPECT_CALL(autofill_manager(), SetShouldSuppressKeyboard(true));
-  EXPECT_CALL(autofill_manager(), SetShouldSuppressKeyboard(false)).Times(0);
+  EXPECT_FALSE(suppressor().is_suppressing());
   OnBeforeAskForValuesToFill(autofill_manager());
+  EXPECT_TRUE(suppressor().is_suppressing());
   EXPECT_CALL(*this, IsShowing).WillOnce(Return(true));
   OnAfterAskForValuesToFill(autofill_manager());
+  EXPECT_TRUE(suppressor().is_suppressing());
 }
 
 // Tests that the keyboard is and remains suppressed if TTF is already showing.
 TEST_F(TouchToFillKeyboardSuppressorTest, SuppressIfAlreadyShown) {
   EXPECT_CALL(*this, IsShowing).WillOnce(Return(true));
-  EXPECT_CALL(autofill_manager(), SetShouldSuppressKeyboard(true));
-  EXPECT_CALL(autofill_manager(), SetShouldSuppressKeyboard(false)).Times(0);
+  EXPECT_FALSE(suppressor().is_suppressing());
   OnBeforeAskForValuesToFill(autofill_manager());
+  EXPECT_TRUE(suppressor().is_suppressing());
   EXPECT_CALL(*this, IsShowing).WillOnce(Return(true));
   OnAfterAskForValuesToFill(autofill_manager());
+  EXPECT_TRUE(suppressor().is_suppressing());
+}
+
+// Tests that the keyboard is suppressed in at most one frame at a  time.
+TEST_F(TouchToFillKeyboardSuppressorTest, SuppressAlsoInOneFrame) {
+  EXPECT_CALL(*this, IsShowing).WillOnce(Return(false));
+  EXPECT_CALL(*this, IntendsToShow).WillOnce(Return(true));
+  OnBeforeAskForValuesToFill(child_autofill_manager());
+  EXPECT_TRUE(suppressor().is_suppressing());
+  EXPECT_CALL(*this, IsShowing).WillOnce(Return(true));
+  OnAfterAskForValuesToFill(child_autofill_manager());
+  EXPECT_TRUE(suppressor().is_suppressing());
 }
 
 // Tests that the keyboard is suppressed in at most one frame at a  time.
 TEST_F(TouchToFillKeyboardSuppressorTest, SuppressOnlyInOneFrame) {
   EXPECT_CALL(*this, IsShowing).WillOnce(Return(false));
   EXPECT_CALL(*this, IntendsToShow).WillOnce(Return(true));
-  EXPECT_CALL(autofill_manager(), SetShouldSuppressKeyboard(true));
-  EXPECT_CALL(autofill_manager(), SetShouldSuppressKeyboard(false)).Times(0);
-  EXPECT_CALL(child_autofill_manager(), SetShouldSuppressKeyboard).Times(0);
   OnBeforeAskForValuesToFill(autofill_manager());
+  EXPECT_TRUE(suppressor().is_suppressing());
   EXPECT_CALL(*this, IsShowing).WillOnce(Return(true));
   OnAfterAskForValuesToFill(autofill_manager());
+  EXPECT_TRUE(suppressor().is_suppressing());
   // Now the same in another frame.
   EXPECT_CALL(*this, IsShowing).WillOnce(Return(false));
   EXPECT_CALL(*this, IntendsToShow).WillOnce(Return(true));
-  EXPECT_CALL(autofill_manager(), SetShouldSuppressKeyboard(false));
-  EXPECT_CALL(child_autofill_manager(), SetShouldSuppressKeyboard(true));
-  EXPECT_CALL(child_autofill_manager(), SetShouldSuppressKeyboard(false))
-      .Times(0);
   OnBeforeAskForValuesToFill(child_autofill_manager());
+  EXPECT_TRUE(suppressor().is_suppressing());
   EXPECT_CALL(*this, IsShowing).WillOnce(Return(true));
   OnAfterAskForValuesToFill(child_autofill_manager());
+  EXPECT_TRUE(suppressor().is_suppressing());
 }
 
 // Tests that the keyboard is not suppressed if TTF isn't and won't be shown.
 TEST_F(TouchToFillKeyboardSuppressorTest, NotSuppressIfWillNotShow) {
   EXPECT_CALL(*this, IsShowing).WillOnce(Return(false));
   EXPECT_CALL(*this, IntendsToShow).WillOnce(Return(false));
-  EXPECT_CALL(autofill_manager(), SetShouldSuppressKeyboard(_)).Times(0);
   OnBeforeAskForValuesToFill(autofill_manager());
   EXPECT_CALL(*this, IsShowing).WillOnce(Return(false));
   OnAfterAskForValuesToFill(autofill_manager());
@@ -184,11 +174,11 @@ TEST_F(TouchToFillKeyboardSuppressorTest, NotSuppressIfWillNotShow) {
 TEST_F(TouchToFillKeyboardSuppressorTest, UnsuppressIfNotShowing) {
   EXPECT_CALL(*this, IsShowing).WillOnce(Return(false));
   EXPECT_CALL(*this, IntendsToShow).WillOnce(Return(true));
-  EXPECT_CALL(autofill_manager(), SetShouldSuppressKeyboard(true));
   OnBeforeAskForValuesToFill(autofill_manager());
+  EXPECT_TRUE(suppressor().is_suppressing());
   EXPECT_CALL(*this, IsShowing).WillOnce(Return(false));
-  EXPECT_CALL(autofill_manager(), SetShouldSuppressKeyboard(false));
   OnAfterAskForValuesToFill(autofill_manager());
+  EXPECT_FALSE(suppressor().is_suppressing());
 }
 
 // Tests that the keyboard is first suppressed but then unsuppressed if too much
@@ -196,11 +186,10 @@ TEST_F(TouchToFillKeyboardSuppressorTest, UnsuppressIfNotShowing) {
 TEST_F(TouchToFillKeyboardSuppressorTest, UnsuppressIfParsingIsTooSlow) {
   EXPECT_CALL(*this, IsShowing).WillOnce(Return(false));
   EXPECT_CALL(*this, IntendsToShow).WillOnce(Return(true));
-  EXPECT_CALL(autofill_manager(), SetShouldSuppressKeyboard(true));
   OnBeforeAskForValuesToFill(autofill_manager());
-  EXPECT_CALL(autofill_manager(), SetShouldSuppressKeyboard(false));
+  EXPECT_TRUE(suppressor().is_suppressing());
   FastForwardBy(base::Seconds(2));
-  EXPECT_CALL(autofill_manager(), SetShouldSuppressKeyboard(_)).Times(0);
+  EXPECT_FALSE(suppressor().is_suppressing());
   EXPECT_CALL(*this, IsShowing).WillOnce(Return(false));
   OnAfterAskForValuesToFill(autofill_manager());
 }
@@ -211,12 +200,12 @@ TEST_F(TouchToFillKeyboardSuppressorTest,
        KeepSuppressingIfParsingTakesShortTime) {
   EXPECT_CALL(*this, IsShowing).WillOnce(Return(false));
   EXPECT_CALL(*this, IntendsToShow).WillOnce(Return(true));
-  EXPECT_CALL(autofill_manager(), SetShouldSuppressKeyboard(true));
-  EXPECT_CALL(autofill_manager(), SetShouldSuppressKeyboard(false)).Times(0);
   OnBeforeAskForValuesToFill(autofill_manager());
+  EXPECT_TRUE(suppressor().is_suppressing());
   EXPECT_CALL(*this, IsShowing).WillOnce(Return(true));
   FastForwardBy(base::Milliseconds(150));
   OnAfterAskForValuesToFill(autofill_manager());
+  EXPECT_TRUE(suppressor().is_suppressing());
 }
 
 // Tests that the destructor unsuppresses the keyboard.
@@ -224,10 +213,7 @@ TEST_F(TouchToFillKeyboardSuppressorTest,
        UnsuppressOnDestructionIfSuppressing) {
   EXPECT_CALL(*this, IsShowing).WillOnce(Return(false));
   EXPECT_CALL(*this, IntendsToShow).WillOnce(Return(true));
-  EXPECT_CALL(autofill_manager(), SetShouldSuppressKeyboard(true));
-  EXPECT_CALL(autofill_manager(), SetShouldSuppressKeyboard(false)).Times(0);
   OnBeforeAskForValuesToFill(autofill_manager());
-  EXPECT_CALL(autofill_manager(), SetShouldSuppressKeyboard(false));
   DestroySuppressor();
 }
 

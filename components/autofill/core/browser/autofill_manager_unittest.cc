@@ -68,7 +68,6 @@ class MockAutofillDriver : public TestAutofillDriver {
   MockAutofillDriver& operator=(const MockAutofillDriver&) = delete;
   ~MockAutofillDriver() override = default;
 
-  MOCK_METHOD(void, SetShouldSuppressKeyboard, (bool), ());
   MOCK_METHOD(bool, CanShowAutofillUi, (), (const));
   MOCK_METHOD(void,
               TriggerFormExtractionInAllFrames,
@@ -411,11 +410,6 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   manager_->RemoveObserver(&observer);
   EXPECT_CALL(observer, OnTextFieldDidChange).Times(0);
   manager_->OnTextFieldDidChange(form, field, bounds, time);
-}
-
-TEST_F(AutofillManagerTest, SetShouldSuppressKeyboard) {
-  EXPECT_CALL(*driver_, SetShouldSuppressKeyboard(true));
-  manager_->SetShouldSuppressKeyboard(true);
 }
 
 TEST_F(AutofillManagerTest, CanShowAutofillUi) {

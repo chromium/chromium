@@ -78,7 +78,6 @@ class AutofillDriverIOS : public AutofillDriver,
       const std::u16string& value) override;
   void SendFieldsEligibleForManualFillingToRenderer(
       const std::vector<FieldGlobalId>& fields) override;
-  void SetShouldSuppressKeyboard(bool suppress) override;
   void TriggerFormExtraction() override;
   void TriggerFormExtractionInAllFrames(
       base::OnceCallback<void(bool)> form_extraction_finished_callback)

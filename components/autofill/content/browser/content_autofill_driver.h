@@ -168,7 +168,6 @@ class ContentAutofillDriver : public AutofillDriver,
   void HandleParsedForms(const std::vector<FormData>& forms) override {}
   void PopupHidden() override;
   net::IsolationInfo IsolationInfo() override;
-  void SetShouldSuppressKeyboard(bool suppress) override;
 
   // Called to inform the browser that in the field with `form_global_id` and
   // `field_global_id`, the context menu was triggered. This is different from
@@ -200,7 +199,6 @@ class ContentAutofillDriver : public AutofillDriver,
   // Callbacks that are called also in other functions by ContentAutofillRouter.
   void FocusNoLongerOnFormCallback(bool had_interacted_form);
   void UnsetKeyPressHandlerCallback();
-  void SetShouldSuppressKeyboardCallback(bool suppress);
   void OnContextMenuShownInFieldCallback(const FormGlobalId& form_global_id,
                                          const FieldGlobalId& field_global_id);
 
@@ -346,11 +344,6 @@ class ContentAutofillDriver : public AutofillDriver,
   mojo::AssociatedReceiver<mojom::AutofillDriver> receiver_{this};
 
   mojo::AssociatedRemote<mojom::AutofillAgent> autofill_agent_;
-
-  bool should_suppress_keyboard_ = false;
-
-  content::RenderWidgetHost::SuppressShowingImeCallback
-      suppress_showing_ime_callback_;
 };
 
 }  // namespace autofill

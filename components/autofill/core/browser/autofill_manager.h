@@ -307,9 +307,6 @@ class AutofillManager
   size_t NumFormsDetected() const { return form_structures_.size(); }
 
   // Forwards call to the same-named `AutofillDriver` function.
-  virtual void SetShouldSuppressKeyboard(bool suppress);
-
-  // Forwards call to the same-named `AutofillDriver` function.
   virtual bool CanShowAutofillUi() const;
 
   // Forwards call to the same-named `AutofillDriver` function.

@@ -111,6 +111,8 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver {
     observers_.RemoveObserver(observer);
   }
 
+  size_t num_drivers() const { return driver_map_.size(); }
+
  private:
   friend class ContentAutofillDriverFactoryTestApi;
 

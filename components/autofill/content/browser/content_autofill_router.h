@@ -171,13 +171,6 @@ class ContentAutofillRouter {
   void UnsetKeyPressHandler(ContentAutofillDriver* source,
                             void (*callback)(ContentAutofillDriver* target));
 
-  // Sets the suppress state in the driver that last called
-  // AskForValuesToFill(), that is, |last_queried_source_|.
-  void SetShouldSuppressKeyboard(ContentAutofillDriver* source,
-                                 bool suppress,
-                                 void (*callback)(ContentAutofillDriver* target,
-                                                  bool suppress));
-
   // Routing of events called by the renderer:
   void SetFormToBeProbablySubmitted(
       ContentAutofillDriver* source,

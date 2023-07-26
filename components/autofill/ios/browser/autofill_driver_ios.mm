@@ -148,10 +148,6 @@ void AutofillDriverIOS::RendererShouldAcceptDataListSuggestion(
 void AutofillDriverIOS::SendFieldsEligibleForManualFillingToRenderer(
     const std::vector<FieldGlobalId>& fields) {}
 
-void AutofillDriverIOS::SetShouldSuppressKeyboard(bool suppress) {
-  NOTIMPLEMENTED();
-}
-
 void AutofillDriverIOS::TriggerFormExtraction() {
   NOTIMPLEMENTED();  // TODO(crbug.com/1441921) implement.
 }

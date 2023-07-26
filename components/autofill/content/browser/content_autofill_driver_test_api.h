@@ -24,8 +24,6 @@ class ContentAutofillDriverTestApi {
     return driver_->GetFormWithFrameAndFormMetaData(form);
   }
 
-  bool should_suppress_keyboard() { return driver_->should_suppress_keyboard_; }
-
  private:
   const raw_ref<ContentAutofillDriver> driver_;
 };
