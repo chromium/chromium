@@ -6672,6 +6672,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_SHARED_PASSWORDS_NOTIFICATION_GOT_IT_BUTTON" desc="The button text on the shared passwords notification bubble to inform the user that one of the stored passwords for this website has been received via the password sharing feature.">
         Got it
       </message>
+      <message name="IDS_SHARED_PASSWORDS_NOTIFICATION_TEXT_SINGLE_PASSWORD" desc="The text that is displayed in the shared passwords notification bubble to inform the user that one the stored passwords for this website has been received via the password sharing feature.">
+        <ph name="SENDER_NAME">$1<ex>Elisa Becket</ex></ph> has shared a password with you for <ph name="WEBSITE_NAME">$2<ex>amazon.com</ex></ph>. To use it, click the sign-in form.
+      </message>
+      <message name="IDS_SHARED_PASSWORDS_NOTIFICATION_TEXT_MULTIPLE_PASSWORD" desc="The text that is displayed in the shared passwords notification bubble to inform the user that many of the stored passwords for this website has been received via the password sharing feature.">
+        There are passwords shared with you for <ph name="WEBSITE_NAME">$1<ex>amazon.com</ex></ph>. To use them, click the sign-in form.
+      </message>
       <message name="IDS_SHARED_PASSWORDS_NOTIFICATION_TITLE" desc="The title text that is used in the shared passwords notification bubble to inform the user that one of the stored passwords for this website has been received via the password sharing feature.">
         {NUM_PASSWORDS, plural,
         =1 {New password for this site}

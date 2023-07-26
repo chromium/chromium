@@ -4,7 +4,12 @@
 
 #include "chrome/browser/ui/views/passwords/shared_passwords_notification_view.h"
 
+#include <memory>
+
+#include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_test_base.h"
+#include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "ui/events/test/test_event.h"
 #include "ui/views/test/button_test_api.h"
@@ -32,9 +37,19 @@ void SharedPasswordsNotificationViewTest::CreateViewAndShow() {
 
 void SharedPasswordsNotificationViewTest::SetUp() {
   PasswordBubbleViewTestBase::SetUp();
+  CreateAndUseTestPasswordStore(profile());
   ON_CALL(*model_delegate_mock(), GetState)
       .WillByDefault(testing::Return(
           password_manager::ui::NOTIFY_RECEIVED_SHARED_CREDENTIALS));
+
+  auto shared_credentials = std::make_unique<password_manager::PasswordForm>();
+  shared_credentials->url = GURL("http://example.com/login");
+  shared_credentials->signon_realm = shared_credentials->url.spec();
+  shared_credentials->username_value = u"username";
+  shared_credentials->password_value = u"12345";
+  shared_credentials->type =
+      password_manager::PasswordForm::Type::kReceivedViaSharing;
+  current_forms_.push_back(std::move(shared_credentials));
   ON_CALL(*model_delegate_mock(), GetCurrentForms)
       .WillByDefault(testing::ReturnRef(current_forms_));
 }

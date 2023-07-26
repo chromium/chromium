@@ -35,6 +35,7 @@ std::unique_ptr<PasswordForm> CreateUnnoitifiedSharedPasswordForm(
   shared_credentials->match_type = PasswordForm::MatchType::kExact;
   shared_credentials->type = PasswordForm::Type::kReceivedViaSharing;
   shared_credentials->sharing_notification_displayed = false;
+  shared_credentials->sender_name = u"Sender Name";
   return shared_credentials;
 }
 
@@ -142,4 +143,24 @@ TEST_F(SharedPasswordsNotificationBubbleControllerTest,
 
   EXPECT_THAT(store().stored_passwords().at(GURL(kUrl).spec()),
               Each(Field(&PasswordForm::sharing_notification_displayed, true)));
+}
+
+TEST_F(SharedPasswordsNotificationBubbleControllerTest,
+       ShouldComputeNotificationBodyTextForSingleSharedCredential) {
+  current_forms().push_back(CreateUnnoitifiedSharedPasswordForm(u"username1"));
+
+  EXPECT_NE(std::u16string(), controller()->GetNotificationBody());
+  // For single shared credential, sender name is displayed in the notification.
+  EXPECT_NE(gfx::Range(), controller()->GetSenderNameRange());
+}
+
+TEST_F(SharedPasswordsNotificationBubbleControllerTest,
+       ShouldComputeNotificationBodyTextForMultipleSharedCredential) {
+  current_forms().push_back(CreateUnnoitifiedSharedPasswordForm(u"username1"));
+  current_forms().push_back(CreateUnnoitifiedSharedPasswordForm(u"username2"));
+
+  EXPECT_NE(std::u16string(), controller()->GetNotificationBody());
+  // For multiple shared credentials, sender name is *not* displayed in the
+  // notification.
+  EXPECT_EQ(gfx::Range(), controller()->GetSenderNameRange());
 }
