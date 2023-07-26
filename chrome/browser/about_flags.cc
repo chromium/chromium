@@ -3433,13 +3433,13 @@ const FeatureEntry::FeatureVariation kDiscardedTabTreatmentVariations[] = {
 };
 
 const FeatureEntry::FeatureParam
-    kMemoryUsageInHovercardsUpdateOnNavigationVariations[] = {
-        {"update_memory_on_navigation", "true"},
+    kMemoryUsageInHovercardsUpdateTriggerVariations[] = {
+        {"memory_update_trigger", "navigation"},
 };
 const FeatureEntry::FeatureVariation kMemoryUsageInHovercardsVariations[] = {
     {"With Update on Navigation",
-     kMemoryUsageInHovercardsUpdateOnNavigationVariations,
-     std::size(kMemoryUsageInHovercardsUpdateOnNavigationVariations), nullptr},
+     kMemoryUsageInHovercardsUpdateTriggerVariations,
+     std::size(kMemoryUsageInHovercardsUpdateTriggerVariations), nullptr},
 };
 
 const FeatureEntry::FeatureParam kMemorySavingsReportingFrequent[] = {

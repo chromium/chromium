@@ -136,8 +136,18 @@ const base::FeatureParam<int> kMemoryUsageInHovercardsHighThresholdBytes{
     &kMemoryUsageInHovercards,
     "memory_usage_in_hovercards_high_threshold_bytes", 800 * 1024 * 1024};
 
-const base::FeatureParam<bool> kMemoryUsageInHovercardsUpdateOnNavigation{
-    &kMemoryUsageInHovercards, "update_memory_on_navigation", false};
+// Mapping of enum value to parameter string for "memory_update_trigger" param.
+constexpr base::FeatureParam<MemoryUsageInHovercardsUpdateTrigger>::Option
+    kMemoryUsageInHovercardsUpdateTriggerOptions[] = {
+        {MemoryUsageInHovercardsUpdateTrigger::kBackground, "background"},
+        {MemoryUsageInHovercardsUpdateTrigger::kNavigation, "navigation"},
+};
+
+const base::FeatureParam<MemoryUsageInHovercardsUpdateTrigger>
+    kMemoryUsageInHovercardsUpdateTrigger{
+        &kMemoryUsageInHovercards, "memory_update_trigger",
+        MemoryUsageInHovercardsUpdateTrigger::kBackground,
+        &kMemoryUsageInHovercardsUpdateTriggerOptions};
 
 #endif
 

@@ -181,7 +181,7 @@ TEST_F(UserPerformanceTuningNotifierTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kMemoryUsageInHovercards,
-      {{"update_memory_on_navigation", "true"}});
+      {{"memory_update_trigger", "navigation"}});
 
   // Memory Metrics are available
   auto process = CreateNode<ProcessNodeImpl>();

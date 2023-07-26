@@ -192,10 +192,16 @@ extern const base::FeatureParam<int> kDiscardedTabTreatmentOption;
 // Threshold for when memory usage is labeled as "high".
 extern const base::FeatureParam<int> kMemoryUsageInHovercardsHighThresholdBytes;
 
-// When true, memory usage metrics will be fetched after a navigation is idle
-// in addition to every 2 minutes.
-extern const base::FeatureParam<bool>
-    kMemoryUsageInHovercardsUpdateOnNavigation;
+// Options for when memory usage metrics are fetched for hovercards.
+enum class MemoryUsageInHovercardsUpdateTrigger {
+  kBackground,  // Metrics are fetched in the background every 2 minutes
+                // (default).
+  kNavigation,  // Metrics are also fetched after a navigation becomes idle.
+};
+
+// Sets when memory usage metrics will be fetched to display in hovercards.
+extern const base::FeatureParam<MemoryUsageInHovercardsUpdateTrigger>
+    kMemoryUsageInHovercardsUpdateTrigger;
 
 enum class DiscardTabTreatmentOptions {
   kNone = 0,

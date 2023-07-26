@@ -70,7 +70,8 @@ void UserPerformanceTuningNotifier::OnTypeChanged(const PageNode* page_node,
 void UserPerformanceTuningNotifier::OnLoadingStateChanged(
     const PageNode* page_node,
     PageNode::LoadingState previous_state) {
-  if (features::kMemoryUsageInHovercardsUpdateOnNavigation.Get() &&
+  if (features::kMemoryUsageInHovercardsUpdateTrigger.Get() ==
+          features::MemoryUsageInHovercardsUpdateTrigger::kNavigation &&
       page_node->GetType() == PageType::kTab &&
       page_node->GetLoadingState() == PageNode::LoadingState::kLoadedIdle) {
     auto* metrics_decorator =
