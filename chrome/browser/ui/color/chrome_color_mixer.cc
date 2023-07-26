@@ -96,7 +96,7 @@ void ApplyGM3OmniboxBackgroundColor(ui::ColorMixer& mixer,
 
   // Apply omnibox background color updates only to non-themed clients.
   if (gm3_background_color_enabled && !key.custom_theme) {
-    mixer[kColorLocationBarBackground] = {ui::kColorSysBaseContainer};
+    mixer[kColorLocationBarBackground] = {ui::kColorSysOmniboxContainer};
     mixer[kColorLocationBarBackgroundHovered] =
         ui::GetResultingPaintColor(ui::kColorSysStateHoverBrightBlendProtection,
                                    kColorLocationBarBackground);
