@@ -26,7 +26,7 @@ class BoundSessionTestCookieManager : public network::TestCookieManager {
                           const net::CookieOptions& cookie_options,
                           SetCanonicalCookieCallback callback) override;
 
-  net::CanonicalCookie& cookie() { return cookie_; }
+  const base::flat_set<net::CanonicalCookie>& cookies() { return cookies_; }
 
   void GetCookieList(
       const GURL& url,
@@ -43,7 +43,7 @@ class BoundSessionTestCookieManager : public network::TestCookieManager {
   void DispatchCookieChange(const net::CookieChangeInfo& change) override;
 
  private:
-  net::CanonicalCookie cookie_;
+  base::flat_set<net::CanonicalCookie> cookies_;
   base::flat_map<std::string,
                  mojo::Remote<network::mojom::CookieChangeListener>>
       cookie_to_listener_;

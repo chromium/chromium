@@ -15,7 +15,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-constexpr char kSIDTSCookieName[] = "__Secure-1PSIDTS";
+constexpr char k1PSIDTSCookieName[] = "__Secure-1PSIDTS";
+constexpr char k3PSIDTSCookieName[] = "__Secure-3PSIDTS";
 
 class FakeBoundSessionRefreshCookieFetcherTest : public testing::Test {
  public:
@@ -33,7 +34,8 @@ class FakeBoundSessionRefreshCookieFetcherTest : public testing::Test {
   void InitializeFetcher(base::OnceClosure on_done) {
     fetcher_ = std::make_unique<FakeBoundSessionRefreshCookieFetcher>(
         &signin_client_, GaiaUrls::GetInstance()->secure_google_url(),
-        kSIDTSCookieName, /*unlock_automatically_in=*/base::Milliseconds(100));
+        base::flat_set<std::string>({k1PSIDTSCookieName, k3PSIDTSCookieName}),
+        /*unlock_automatically_in=*/base::Milliseconds(100));
 
     fetcher_->Start(
         base::BindOnce(&FakeBoundSessionRefreshCookieFetcherTest::OnCookieSet,
@@ -45,17 +47,22 @@ class FakeBoundSessionRefreshCookieFetcherTest : public testing::Test {
     std::move(on_done).Run();
   }
 
-  void VerifyCookie() {
+  void VerifyCookies() {
     EXPECT_TRUE(cookie_manager_);
     constexpr char kFakeCookieValue[] = "FakeCookieValue";
 
-    net::CanonicalCookie& cookie = cookie_manager_->cookie();
-    EXPECT_TRUE(cookie.IsCanonical());
-    EXPECT_EQ(cookie.Domain(), ".google.com");
-    EXPECT_EQ(cookie.Name(), kSIDTSCookieName);
-    EXPECT_EQ(cookie.Value(), kFakeCookieValue);
-    EXPECT_GT(cookie.ExpiryDate(), base::Time::Now());
-    EXPECT_TRUE(cookie.IsExpired(base::Time::Now() + base::Minutes(10)));
+    const base::flat_set<net::CanonicalCookie>& cookies =
+        cookie_manager_->cookies();
+    EXPECT_EQ(cookies.size(), 2u);
+    for (const auto& cookie : cookies) {
+      EXPECT_TRUE(cookie.IsCanonical());
+      EXPECT_EQ(cookie.Domain(), ".google.com");
+      EXPECT_TRUE(cookie.Name() == k1PSIDTSCookieName ||
+                  cookie.Name() == k3PSIDTSCookieName);
+      EXPECT_EQ(cookie.Value(), kFakeCookieValue);
+      EXPECT_GT(cookie.ExpiryDate(), base::Time::Now());
+      EXPECT_TRUE(cookie.IsExpired(base::Time::Now() + base::Minutes(10)));
+    }
   }
 
  protected:
@@ -67,11 +74,11 @@ class FakeBoundSessionRefreshCookieFetcherTest : public testing::Test {
   raw_ptr<BoundSessionTestCookieManager> cookie_manager_ = nullptr;
 };
 
-TEST_F(FakeBoundSessionRefreshCookieFetcherTest, SetSIDTSCookie) {
+TEST_F(FakeBoundSessionRefreshCookieFetcherTest, SetSIDTSCookies) {
   base::RunLoop run_loop;
   InitializeFetcher(run_loop.QuitClosure());
   task_environment_.FastForwardBy(base::Milliseconds(100));
   run_loop.Run();
-  VerifyCookie();
+  VerifyCookies();
 }
 }  // namespace

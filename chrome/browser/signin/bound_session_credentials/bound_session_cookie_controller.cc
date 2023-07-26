@@ -9,7 +9,7 @@
 
 BoundSessionCookieController::BoundSessionCookieController(
     const GURL& url,
-    const std::vector<std::string>& cookie_names,
+    const base::flat_set<std::string>& cookie_names,
     Delegate* delegate)
     : url_(url), delegate_(delegate) {
   CHECK(!url.is_empty());
@@ -23,11 +23,17 @@ BoundSessionCookieController::~BoundSessionCookieController() = default;
 
 void BoundSessionCookieController::Initialize() {}
 
-const std::string& BoundSessionCookieController::cookie_name() const {
+base::Time BoundSessionCookieController::min_cookie_expiration_time() {
   CHECK(!bound_cookies_info_.empty());
-  return bound_cookies_info_.begin()->first;
+  return base::ranges::min_element(bound_cookies_info_, {},
+                                   [](const auto& bound_cookie_info) {
+                                     return bound_cookie_info.second;
+                                   })
+      ->second;
 }
-base::Time BoundSessionCookieController::cookie_expiration_time() {
-  CHECK(!bound_cookies_info_.empty());
-  return bound_cookies_info_.begin()->second;
+
+chrome::mojom::BoundSessionParamsPtr
+BoundSessionCookieController::bound_session_params() {
+  return chrome::mojom::BoundSessionParams::New(url().host(), url().path(),
+                                                min_cookie_expiration_time());
 }

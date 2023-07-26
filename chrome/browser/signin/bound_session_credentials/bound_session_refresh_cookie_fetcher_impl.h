@@ -26,9 +26,10 @@ class BoundSessionRefreshCookieFetcherImpl
     : public BoundSessionRefreshCookieFetcher,
       public network::mojom::CookieAccessObserver {
  public:
-  explicit BoundSessionRefreshCookieFetcherImpl(SigninClient* client,
-                                                const GURL& cookie_url,
-                                                const std::string& cookie_name);
+  explicit BoundSessionRefreshCookieFetcherImpl(
+      SigninClient* client,
+      const GURL& cookie_url,
+      base::flat_set<std::string> cookie_names);
   ~BoundSessionRefreshCookieFetcherImpl() override;
 
   // BoundSessionRefreshCookieFetcher:
@@ -61,12 +62,12 @@ class BoundSessionRefreshCookieFetcherImpl
   // Used to check whether the refresh request has set the required cookie.
   // Otherwise, the request is considered a failure.
   const GURL expected_cookie_domain_;
-  const std::string expected_cookie_name_;
+  const base::flat_set<std::string> expected_cookie_names_;
 
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   RefreshCookieCompleteCallback callback_;
 
-  bool expected_cookie_set_ = false;
+  bool expected_cookies_set_ = false;
   base::OneShotTimer reported_cookies_notified_timer_;
   bool reported_cookies_notified_ = false;
 

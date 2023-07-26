@@ -70,7 +70,7 @@ class BoundSessionCookieRefreshServiceImpl
   using BoundSessionCookieControllerFactoryForTesting =
       base::RepeatingCallback<std::unique_ptr<BoundSessionCookieController>(
           const GURL& url,
-          const std::vector<std::string>& cookie_names,
+          const base::flat_set<std::string>& cookie_names,
           base::span<const uint8_t> wrapped_key,
           Delegate* delegate)>;
 
@@ -95,13 +95,14 @@ class BoundSessionCookieRefreshServiceImpl
   GetRegistrationParams();
 
   // BoundSessionCookieController::Delegate
-  void OnCookieExpirationDateChanged() override;
+  void OnBoundSessionParamsChanged() override;
   void TerminateSession() override;
 
   std::unique_ptr<BoundSessionCookieController>
-  CreateBoundSessionCookieController(const GURL& url,
-                                     const std::string& cookie_name,
-                                     base::span<const uint8_t> wrapped_key);
+  CreateBoundSessionCookieController(
+      const GURL& url,
+      const base::flat_set<std::string>& cookie_names,
+      base::span<const uint8_t> wrapped_key);
   void InitializeBoundSession();
   void ResetBoundSession();
   void OnBoundSessionUpdated();

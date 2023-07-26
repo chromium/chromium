@@ -26,7 +26,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-constexpr char kSIDTSCookieName[] = "__Secure-1PSIDTS";
+constexpr char k1PSIDTSCookieName[] = "__Secure-1PSIDTS";
+constexpr char k3PSIDTSCookieName[] = "__Secure-3PSIDTS";
 constexpr char kRegistrationParamsPref[] =
     "bound_session_credentials_registration_params";
 constexpr char kWrappedKey[] = "wrapped_key";
@@ -35,7 +36,7 @@ class FakeBoundSessionCookieController : public BoundSessionCookieController {
  public:
   explicit FakeBoundSessionCookieController(
       const GURL& url,
-      const std::vector<std::string>& cookie_names,
+      const base::flat_set<std::string>& cookie_names,
       base::span<const uint8_t> wrapped_key,
       Delegate* delegate)
       : BoundSessionCookieController(url, cookie_names, delegate),
@@ -44,6 +45,14 @@ class FakeBoundSessionCookieController : public BoundSessionCookieController {
   ~FakeBoundSessionCookieController() override {
     DCHECK(on_destroy_callback_);
     std::move(on_destroy_callback_).Run();
+  }
+
+  base::flat_set<std::string> cookie_names() {
+    base::flat_set<std::string> cookie_names;
+    for (const auto& [cookie_name, _] : bound_cookies_info_) {
+      cookie_names.insert(cookie_name);
+    }
+    return cookie_names;
   }
 
   const std::vector<uint8_t>& wrapped_key() { return wrapped_key_; }
@@ -60,8 +69,11 @@ class FakeBoundSessionCookieController : public BoundSessionCookieController {
   void SimulateOnCookieExpirationDateChanged(
       const std::string& cookie_name,
       const base::Time& cookie_expiration_date) {
+    base::Time old_min_cookie_expiration_time = min_cookie_expiration_time();
     bound_cookies_info_[cookie_name] = cookie_expiration_date;
-    delegate_->OnCookieExpirationDateChanged();
+    if (min_cookie_expiration_time() != old_min_cookie_expiration_time) {
+      delegate_->OnBoundSessionParamsChanged();
+    }
   }
 
   void SimulateTerminateSession() { delegate_->TerminateSession(); }
@@ -104,7 +116,7 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
 
   std::unique_ptr<BoundSessionCookieController> GetBoundSessionCookieController(
       const GURL& url,
-      const std::vector<std::string>& cookie_names,
+      const base::flat_set<std::string>& cookie_names,
       base::span<const uint8_t> wrapped_key,
       BoundSessionCookieController::Delegate* delegate) {
     std::unique_ptr<FakeBoundSessionCookieController> controller =
@@ -195,8 +207,10 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest, VerifyControllerParams) {
   FakeBoundSessionCookieController* controller = cookie_controller();
   EXPECT_TRUE(controller);
   EXPECT_EQ(controller->url(), kTestGaiaURL);
-  EXPECT_EQ(controller->cookie_name(), kSIDTSCookieName);
-  EXPECT_EQ(controller->cookie_expiration_time(), base::Time());
+  EXPECT_EQ(
+      controller->cookie_names(),
+      base::flat_set<std::string>({k1PSIDTSCookieName, k3PSIDTSCookieName}));
+  EXPECT_EQ(controller->min_cookie_expiration_time(), base::Time());
   EXPECT_EQ(controller->wrapped_key(),
             std::vector<uint8_t>(std::begin(kWrappedKey),
                                  // Omit `\0`.
@@ -265,7 +279,7 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
-       UpdateAllRenderersOnCookieExpirationDateChanged) {
+       UpdateAllRenderersOnBoundSessionParamsChanged) {
   base::MockRepeatingCallback<void()> renderer_updater;
   EXPECT_CALL(renderer_updater, Run()).Times(0);
   SetupPreConditionForBoundSession();
@@ -274,12 +288,17 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   SetRendererUpdater(renderer_updater.Get());
   testing::Mock::VerifyAndClearExpectations(&renderer_updater);
 
+  EXPECT_CALL(renderer_updater, Run()).Times(0);
+  cookie_controller()->SimulateOnCookieExpirationDateChanged(k1PSIDTSCookieName,
+                                                             base::Time::Now());
+  testing::Mock::VerifyAndClearExpectations(&renderer_updater);
+
   EXPECT_CALL(renderer_updater, Run()).WillOnce([&] {
     EXPECT_TRUE(service->IsBoundSession());
     EXPECT_FALSE(service->GetBoundSessionParams().is_null());
   });
-  cookie_controller()->SimulateOnCookieExpirationDateChanged(
-      cookie_controller()->cookie_name(), base::Time::Now());
+  cookie_controller()->SimulateOnCookieExpirationDateChanged(k3PSIDTSCookieName,
+                                                             base::Time::Now());
   testing::Mock::VerifyAndClearExpectations(&renderer_updater);
 }
 

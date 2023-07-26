@@ -30,7 +30,7 @@ class BoundSessionCookieControllerImpl : public BoundSessionCookieController {
       unexportable_keys::UnexportableKeyService& key_service,
       SigninClient* client,
       const GURL& url,
-      const std::vector<std::string>& cookie_names,
+      const base::flat_set<std::string>& cookie_names,
       base::span<const uint8_t> wrapped_key,
       Delegate* delegate);
 
@@ -55,13 +55,13 @@ class BoundSessionCookieControllerImpl : public BoundSessionCookieController {
       base::RepeatingCallback<std::unique_ptr<BoundSessionRefreshCookieFetcher>(
           SigninClient* client,
           const GURL& url,
-          const std::string& cookie_name)>;
+          base::flat_set<std::string> cookie_names)>;
 
   std::unique_ptr<BoundSessionRefreshCookieFetcher> CreateRefreshCookieFetcher()
       const;
   void CreateBoundCookiesObservers();
 
-  bool IsCookieFresh();
+  bool AreAllCookiesFresh();
   void MaybeRefreshCookie();
   void SetCookieExpirationTimeAndNotify(const std::string& cookie_name,
                                         base::Time expiration_time);

@@ -9,6 +9,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "chrome/common/renderer_configuration.mojom.h"
 #include "url/gurl.h"
 
 // This class is responsible for tracking a single bound session cookie:
@@ -35,14 +36,14 @@ class BoundSessionCookieController {
     // be deleted after this call.
     virtual void TerminateSession() = 0;
 
-    // Called when the cookie tracked in this controller has a change in its
-    // expiration date. Cookie deletion is considered as a change in the
-    // expiration date to the null time.
-    virtual void OnCookieExpirationDateChanged() = 0;
+    // Called when the bound session parameters change, for example the minimum
+    // cookie expiration date changes. Cookie deletion is considered as a change
+    // in the expiration date to the null time.
+    virtual void OnBoundSessionParamsChanged() = 0;
   };
 
   BoundSessionCookieController(const GURL& url,
-                               const std::vector<std::string>& cookie_names,
+                               const base::flat_set<std::string>& cookie_names,
                                Delegate* delegate);
 
   virtual ~BoundSessionCookieController();
@@ -57,8 +58,8 @@ class BoundSessionCookieController {
       base::OnceClosure resume_blocked_request) = 0;
 
   const GURL& url() const { return url_; }
-  const std::string& cookie_name() const;
-  base::Time cookie_expiration_time();
+  base::Time min_cookie_expiration_time();
+  chrome::mojom::BoundSessionParamsPtr bound_session_params();
 
  protected:
   const GURL url_;

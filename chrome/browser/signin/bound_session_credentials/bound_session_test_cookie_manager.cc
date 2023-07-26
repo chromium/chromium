@@ -32,8 +32,8 @@ void BoundSessionTestCookieManager::SetCanonicalCookie(
     const GURL& source_url,
     const net::CookieOptions& cookie_options,
     SetCanonicalCookieCallback callback) {
-  cookie_ = cookie;
-  DispatchCookieChange(net::CookieChangeInfo(cookie_, net::CookieAccessResult(),
+  cookies_.insert(cookie);
+  DispatchCookieChange(net::CookieChangeInfo(cookie, net::CookieAccessResult(),
                                              net::CookieChangeCause::INSERTED));
   if (callback) {
     std::move(callback).Run(net::CookieAccessResult());
@@ -45,7 +45,11 @@ void BoundSessionTestCookieManager::GetCookieList(
     const net::CookieOptions& cookie_options,
     const net::CookiePartitionKeyCollection& cookie_partition_key_collection,
     GetCookieListCallback callback) {
-  std::move(callback).Run({{cookie_, net::CookieAccessResult()}}, {});
+  std::vector<net::CookieWithAccessResult> cookie_result;
+  for (const auto& cookie : cookies_) {
+    cookie_result.emplace_back(cookie, net::CookieAccessResult());
+  }
+  std::move(callback).Run(cookie_result, {});
 }
 
 void BoundSessionTestCookieManager::AddCookieChangeListener(

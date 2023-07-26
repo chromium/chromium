@@ -69,9 +69,7 @@ BoundSessionCookieRefreshServiceImpl::GetBoundSessionParams() const {
     return chrome::mojom::BoundSessionParamsPtr();
   }
 
-  return chrome::mojom::BoundSessionParams::New(
-      cookie_controller_->url().host(), cookie_controller_->url().path(),
-      cookie_controller_->cookie_expiration_time());
+  return cookie_controller_->bound_session_params();
 }
 
 void BoundSessionCookieRefreshServiceImpl::
@@ -174,7 +172,7 @@ BoundSessionCookieRefreshServiceImpl::GetRegistrationParams() {
   return absl::nullopt;
 }
 
-void BoundSessionCookieRefreshServiceImpl::OnCookieExpirationDateChanged() {
+void BoundSessionCookieRefreshServiceImpl::OnBoundSessionParamsChanged() {
   UpdateAllRenderers();
 }
 
@@ -186,19 +184,20 @@ void BoundSessionCookieRefreshServiceImpl::TerminateSession() {
 std::unique_ptr<BoundSessionCookieController>
 BoundSessionCookieRefreshServiceImpl::CreateBoundSessionCookieController(
     const GURL& url,
-    const std::string& cookie_name,
+    const base::flat_set<std::string>& cookie_names,
     base::span<const uint8_t> wrapped_key) {
   return controller_factory_for_testing_.is_null()
              ? std::make_unique<BoundSessionCookieControllerImpl>(
-                   key_service_.get(), client_, url,
-                   std::vector<std::string>({cookie_name}), wrapped_key, this)
-             : controller_factory_for_testing_.Run(url, {cookie_name},
+                   key_service_.get(), client_, url, cookie_names, wrapped_key,
+                   this)
+             : controller_factory_for_testing_.Run(url, cookie_names,
                                                    wrapped_key, this);
 }
 
 void BoundSessionCookieRefreshServiceImpl::InitializeBoundSession() {
   CHECK(!cookie_controller_);
-  constexpr char kSIDTSCookieName[] = "__Secure-1PSIDTS";
+  constexpr char k1PSIDTSCookieName[] = "__Secure-1PSIDTS";
+  constexpr char k3PSIDTSCookieName[] = "__Secure-3PSIDTS";
 
   // TODO(http://b/286222327): pass registration params to controller.
   absl::optional<bound_session_credentials::RegistrationParams> params =
@@ -211,8 +210,8 @@ void BoundSessionCookieRefreshServiceImpl::InitializeBoundSession() {
   base::span<const uint8_t> wrapped_key =
       base::as_bytes(base::make_span(params->wrapped_key()));
   cookie_controller_ = CreateBoundSessionCookieController(
-      GaiaUrls::GetInstance()->secure_google_url(), kSIDTSCookieName,
-      wrapped_key);
+      GaiaUrls::GetInstance()->secure_google_url(),
+      {k1PSIDTSCookieName, k3PSIDTSCookieName}, wrapped_key);
   cookie_controller_->Initialize();
 }
 

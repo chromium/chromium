@@ -33,20 +33,24 @@ class BoundSessionRefreshCookieFetcherImplTest : public ::testing::Test {
   BoundSessionRefreshCookieFetcherImplTest() {
     test_url_loader_factory_ = signin_client_.GetTestURLLoaderFactory();
     fetcher_ = std::make_unique<BoundSessionRefreshCookieFetcherImpl>(
-        &signin_client_, kGaiaUrl, kExpectedCookieName);
+        &signin_client_, kGaiaUrl,
+        base::flat_set<std::string>{k1PSIDTSCookieName, k3PSIDTSCookieName});
     UpdateCookieList();
   }
 
  protected:
   const GURL kGaiaUrl = GURL("https://google.com");
-  const std::string kExpectedCookieName = "__Secure-1PSIDTS";
+  const std::string k1PSIDTSCookieName = "__Secure-1PSIDTS";
+  const std::string k3PSIDTSCookieName = "__Secure-3PSIDTS";
 
-  void UpdateCookieList(bool add_expected_cookie = true) {
-    const std::string kCookiesNames[3] = {
-        "__Secure-cookie1", kExpectedCookieName, "__Secure-cookie2"};
+  void UpdateCookieList(
+      const base::flat_set<std::string>& excluded_cookies = {}) {
+    const std::string kCookiesNames[4] = {
+        "__Secure-cookie1", k1PSIDTSCookieName, "__Secure-cookie2",
+        k3PSIDTSCookieName};
     cookies_.clear();
     for (const auto& cookie_name : kCookiesNames) {
-      if (!add_expected_cookie && cookie_name == kExpectedCookieName) {
+      if (excluded_cookies.contains(cookie_name)) {
         continue;
       }
       cookies_.emplace_back(
@@ -81,7 +85,7 @@ class BoundSessionRefreshCookieFetcherImplTest : public ::testing::Test {
     return fetcher_->reported_cookies_notified_;
   }
 
-  bool expected_cookie_set() { return fetcher_->expected_cookie_set_; }
+  bool expected_cookies_set() { return fetcher_->expected_cookies_set_; }
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -109,7 +113,7 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, SuccessExpectedCookieSet) {
   SimulateOnCookiesAccessed(network::mojom::CookieAccessDetails::Type::kChange);
   EXPECT_FALSE(future.IsReady());
   EXPECT_TRUE(reported_cookies_notified());
-  EXPECT_TRUE(expected_cookie_set());
+  EXPECT_TRUE(expected_cookies_set());
 
   test_url_loader_factory_->SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), "");
@@ -136,7 +140,7 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest,
   SimulateOnCookiesAccessed(network::mojom::CookieAccessDetails::Type::kChange);
   EXPECT_TRUE(future.IsReady());
   EXPECT_TRUE(reported_cookies_notified());
-  EXPECT_TRUE(expected_cookie_set());
+  EXPECT_TRUE(expected_cookies_set());
 
   EXPECT_EQ(future.Get(), BoundSessionRefreshCookieFetcher::Result::kSuccess);
 }
@@ -196,11 +200,38 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest,
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       test_url_loader_factory_->GetPendingRequest(0);
 
-  UpdateCookieList(/*add_expected_cookie=*/false);
+  UpdateCookieList(
+      /*excluded_cookies=*/{k1PSIDTSCookieName, k3PSIDTSCookieName});
   SimulateOnCookiesAccessed(network::mojom::CookieAccessDetails::Type::kChange);
   EXPECT_FALSE(future.IsReady());
   EXPECT_TRUE(reported_cookies_notified());
-  EXPECT_FALSE(expected_cookie_set());
+  EXPECT_FALSE(expected_cookies_set());
+
+  test_url_loader_factory_->SimulateResponseForPendingRequest(
+      pending_request->request.url.spec(), "");
+
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_EQ(
+      future.Get(),
+      BoundSessionRefreshCookieFetcher::Result::kServerUnexepectedResponse);
+}
+
+TEST_F(BoundSessionRefreshCookieFetcherImplTest,
+       CookiesReportedNotAllExpectedCookiesSet) {
+  EXPECT_FALSE(signin_client_.AreNetworkCallsDelayed());
+  RefreshTestFuture future;
+  fetcher_->Start(future.GetCallback());
+
+  EXPECT_EQ(test_url_loader_factory_->total_requests(), 1u);
+  network::TestURLLoaderFactory::PendingRequest* pending_request =
+      test_url_loader_factory_->GetPendingRequest(0);
+
+  // Remove one of the expected cookies
+  UpdateCookieList(/*excluded_cookies=*/{k3PSIDTSCookieName});
+  SimulateOnCookiesAccessed(network::mojom::CookieAccessDetails::Type::kChange);
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_TRUE(reported_cookies_notified());
+  EXPECT_FALSE(expected_cookies_set());
 
   test_url_loader_factory_->SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), "");
@@ -302,12 +333,12 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, OnCookiesAccessedRead) {
   EXPECT_FALSE(reported_cookies_notified());
   SimulateOnCookiesAccessed(network::mojom::CookieAccessDetails::Type::kRead);
   EXPECT_FALSE(reported_cookies_notified());
-  EXPECT_FALSE(expected_cookie_set());
+  EXPECT_FALSE(expected_cookies_set());
 }
 
 TEST_F(BoundSessionRefreshCookieFetcherImplTest, OnCookiesAccessedChange) {
   EXPECT_FALSE(reported_cookies_notified());
   SimulateOnCookiesAccessed(network::mojom::CookieAccessDetails::Type::kChange);
   EXPECT_TRUE(reported_cookies_notified());
-  EXPECT_TRUE(expected_cookie_set());
+  EXPECT_TRUE(expected_cookies_set());
 }

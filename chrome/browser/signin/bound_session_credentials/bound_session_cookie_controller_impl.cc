@@ -22,7 +22,7 @@ BoundSessionCookieControllerImpl::BoundSessionCookieControllerImpl(
     unexportable_keys::UnexportableKeyService& key_service,
     SigninClient* client,
     const GURL& url,
-    const std::vector<std::string>& cookie_names,
+    const base::flat_set<std::string>& cookie_names,
     base::span<const uint8_t> wrapped_key,
     Delegate* delegate)
     : BoundSessionCookieController(url, cookie_names, delegate),
@@ -52,7 +52,7 @@ void BoundSessionCookieControllerImpl::Initialize() {
 
 void BoundSessionCookieControllerImpl::OnRequestBlockedOnCookie(
     base::OnceClosure resume_blocked_request) {
-  if (IsCookieFresh()) {
+  if (AreAllCookiesFresh()) {
     // Cookie is fresh.
     std::move(resume_blocked_request).Run();
     return;
@@ -76,12 +76,16 @@ void BoundSessionCookieControllerImpl::SetCookieExpirationTimeAndNotify(
     return;
   }
 
+  base::Time old_min_expiration_time = min_cookie_expiration_time();
   it->second = expiration_time;
-  if (IsCookieFresh()) {
+  if (AreAllCookiesFresh()) {
     ResumeBlockedRequests();
   }
-  delegate_->OnCookieExpirationDateChanged();
-  MaybeScheduleCookieRotation();
+
+  if (min_cookie_expiration_time() != old_min_expiration_time) {
+    delegate_->OnBoundSessionParamsChanged();
+    MaybeScheduleCookieRotation();
+  }
 }
 
 void BoundSessionCookieControllerImpl::CreateBoundCookiesObservers() {
@@ -100,15 +104,20 @@ void BoundSessionCookieControllerImpl::CreateBoundCookiesObservers() {
 
 std::unique_ptr<BoundSessionRefreshCookieFetcher>
 BoundSessionCookieControllerImpl::CreateRefreshCookieFetcher() const {
+  base::flat_set<std::string> cookie_names;
+  for (const auto& [cookie_name, _] : bound_cookies_info_) {
+    cookie_names.insert(cookie_name);
+  }
+
   return refresh_cookie_fetcher_factory_for_testing_.is_null()
              ? std::make_unique<BoundSessionRefreshCookieFetcherImpl>(
-                   client_, url_, cookie_name())
-             : refresh_cookie_fetcher_factory_for_testing_.Run(client_, url_,
-                                                               cookie_name());
+                   client_, url_, std::move(cookie_names))
+             : refresh_cookie_fetcher_factory_for_testing_.Run(
+                   client_, url_, std::move(cookie_names));
 }
 
-bool BoundSessionCookieControllerImpl::IsCookieFresh() {
-  return cookie_expiration_time() > base::Time::Now();
+bool BoundSessionCookieControllerImpl::AreAllCookiesFresh() {
+  return min_cookie_expiration_time() > base::Time::Now();
 }
 
 void BoundSessionCookieControllerImpl::MaybeRefreshCookie() {
@@ -146,7 +155,7 @@ void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(
 void BoundSessionCookieControllerImpl::MaybeScheduleCookieRotation() {
   const base::TimeDelta kCookieRefreshInterval = base::Minutes(2);
   base::TimeDelta refresh_in =
-      cookie_expiration_time() - base::Time::Now() - kCookieRefreshInterval;
+      min_cookie_expiration_time() - base::Time::Now() - kCookieRefreshInterval;
   if (!refresh_in.is_positive()) {
     MaybeRefreshCookie();
     return;

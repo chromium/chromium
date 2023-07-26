@@ -26,20 +26,27 @@ namespace {
 constexpr char kRotationChallengeResponseHeader[] =
     "Sec-Session-Google-Response";
 
-bool IsExpectedCookie(const GURL& url,
-                      const std::string& cookie_name,
-                      const net::CanonicalCookie& cookie) {
-  return (cookie.Name() == cookie_name) && cookie.IsDomainMatch(url.host());
+bool IsExpectedCookie(
+    const GURL& url,
+    const std::string& cookie_name,
+    const network::mojom::CookieOrLineWithAccessResultPtr& cookie_ptr) {
+  if (cookie_ptr->access_result.status.IsInclude()) {
+    CHECK(cookie_ptr->cookie_or_line->is_cookie());
+    const net::CanonicalCookie& cookie =
+        cookie_ptr->cookie_or_line->get_cookie();
+    return (cookie.Name() == cookie_name) && cookie.IsDomainMatch(url.host());
+  }
+  return false;
 }
 }  // namespace
 
 BoundSessionRefreshCookieFetcherImpl::BoundSessionRefreshCookieFetcherImpl(
     SigninClient* client,
     const GURL& cookie_url,
-    const std::string& cookie_name)
+    base::flat_set<std::string> cookie_names)
     : client_(client),
       expected_cookie_domain_(cookie_url),
-      expected_cookie_name_(cookie_name),
+      expected_cookie_names_(std::move(cookie_names)),
       url_loader_factory_(client->GetURLLoaderFactory()) {}
 
 BoundSessionRefreshCookieFetcherImpl::~BoundSessionRefreshCookieFetcherImpl() =
@@ -192,7 +199,7 @@ BoundSessionRefreshCookieFetcherImpl::GetResultFromNetErrorAndHttpStatusCode(
 void BoundSessionRefreshCookieFetcherImpl::ReportRefreshResult() {
   reported_cookies_notified_timer_.Stop();
   CHECK(url_loader_completed_);
-  if (result_ == Result::kSuccess && !expected_cookie_set_) {
+  if (result_ == Result::kSuccess && !expected_cookies_set_) {
     result_ = Result::kServerUnexepectedResponse;
   }
 
@@ -208,16 +215,21 @@ void BoundSessionRefreshCookieFetcherImpl::OnCookiesAccessed(
     }
 
     reported_cookies_notified_ = true;
-    for (const network::mojom::CookieOrLineWithAccessResultPtr& cookie :
-         cookie_details->cookie_list) {
-      if (cookie->access_result.status.IsInclude()) {
-        CHECK(cookie->cookie_or_line->is_cookie());
-        expected_cookie_set_ =
-            expected_cookie_set_ ||
-            IsExpectedCookie(expected_cookie_domain_, expected_cookie_name_,
-                             cookie->cookie_or_line->get_cookie());
+    bool all_cookies_set = true;
+    for (const std::string& expected_cookie_name : expected_cookie_names_) {
+      auto it = base::ranges::find_if(
+          cookie_details->cookie_list,
+          [this, &expected_cookie_name](
+              const network::mojom::CookieOrLineWithAccessResultPtr& cookie) {
+            return IsExpectedCookie(expected_cookie_domain_,
+                                    expected_cookie_name, cookie);
+          });
+      if (it == cookie_details->cookie_list.end()) {
+        all_cookies_set = false;
+        break;
       }
     }
+    expected_cookies_set_ = expected_cookies_set_ || all_cookies_set;
   }
 
   if (url_loader_completed_ && reported_cookies_notified_) {
