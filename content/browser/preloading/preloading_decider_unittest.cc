@@ -675,7 +675,7 @@ TEST_F(PreloadingDeciderTest, CandidateCanBeReprefetchedAfterEviction) {
 // a reinserted candidate with the same url is re-processed.
 TEST_F(PreloadingDeciderTest, ProcessCandidates_EagerCandidateRemoval) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kPrefetchNewLimits}, {});
+  scoped_feature_list.InitWithFeatures({::features::kPrefetchNewLimits}, {});
 
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
@@ -727,7 +727,7 @@ TEST_F(PreloadingDeciderTest, ProcessCandidates_EagerCandidateRemoval) {
 // that a non-eager candidate is reprocessed correctly after re-insertion.
 TEST_F(PreloadingDeciderTest, ProcessCandidates_NonEagerCandidateRemoval) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kPrefetchNewLimits}, {});
+  scoped_feature_list.InitWithFeatures({::features::kPrefetchNewLimits}, {});
 
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
@@ -791,7 +791,7 @@ TEST_F(PreloadingDeciderTest, ProcessCandidates_NonEagerCandidateRemoval) {
 TEST_F(PreloadingDeciderTest,
        ProcessCandidates_SecondCandidateWithSameUrlKeepsPrefetchAlive) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kPrefetchNewLimits}, {});
+  scoped_feature_list.InitWithFeatures({::features::kPrefetchNewLimits}, {});
 
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());

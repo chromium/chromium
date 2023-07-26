@@ -772,6 +772,12 @@ BASE_FEATURE(kHighPriorityBeforeUnload,
              "HighPriorityBeforeUnload",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, then an updated prefetch request limit policy will be used that
+// separates eager and non-eager prefetches, and allows for evictions.
+BASE_FEATURE(kPrefetchNewLimits,
+             "PrefetchNewLimits",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Preload cookie database on NetworkContext creation.
 BASE_FEATURE(kPreloadCookies,
              "PreloadCookies",

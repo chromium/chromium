@@ -9,6 +9,7 @@
 #include "base/rand_util.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/public/browser/prefetch_service_delegate.h"
+#include "content/public/common/content_features.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 
 namespace content {
@@ -284,18 +285,18 @@ base::TimeDelta PrefetchMaximumRetryAfterDelta() {
 }
 
 bool PrefetchNewLimitsEnabled() {
-  return base::FeatureList::IsEnabled(features::kPrefetchNewLimits);
+  return base::FeatureList::IsEnabled(::features::kPrefetchNewLimits);
 }
 
 size_t MaxNumberOfEagerPrefetchesPerPageForPrefetchNewLimits() {
-  int max = base::GetFieldTrialParamByFeatureAsInt(features::kPrefetchNewLimits,
-                                                   "max_eager_prefetches", 50);
+  int max = base::GetFieldTrialParamByFeatureAsInt(
+      ::features::kPrefetchNewLimits, "max_eager_prefetches", 50);
   return std::max(0, max);
 }
 
 size_t MaxNumberOfNonEagerPrefetchesPerPageForPrefetchNewLimits() {
   int max = base::GetFieldTrialParamByFeatureAsInt(
-      features::kPrefetchNewLimits, "max_non_eager_prefetches", 2);
+      ::features::kPrefetchNewLimits, "max_non_eager_prefetches", 2);
   return std::max(0, max);
 }
 

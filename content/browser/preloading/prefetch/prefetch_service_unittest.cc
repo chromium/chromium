@@ -5699,7 +5699,7 @@ class PrefetchServiceNewLimitsTest : public PrefetchServiceTest {
         {{features::kPrefetchUseContentRefactor,
           {{"ineligible_decoy_request_probability", "0"},
            {"prefetch_container_lifetime_s", "-1"}}},
-         {features::kPrefetchNewLimits,
+         {::features::kPrefetchNewLimits,
           {{"max_eager_prefetches", "2"}, {"max_non_eager_prefetches", "2"}}}},
         {network::features::kPrefetchNoVarySearch,
          ::features::kPreloadingConfig});
@@ -6117,7 +6117,7 @@ TEST_F(PrefetchServiceNewLimitsTest, NextPrefetchQueuedImmediatelyAfterReset) {
       {{features::kPrefetchUseContentRefactor,
         {{"ineligible_decoy_request_probability", "0"},
          {"prefetch_container_lifetime_s", "1"}}},
-       {features::kPrefetchNewLimits, {{"max_eager_prefetches", "1"}}}},
+       {::features::kPrefetchNewLimits, {{"max_eager_prefetches", "1"}}}},
       {});
 
   NavigateAndCommit(GURL("https://example.com"));

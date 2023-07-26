@@ -475,6 +475,8 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.WEB_ENVIRONMENT_INTEGRITY,
                     "Enables Web Environment Integrity APIs. "
                             + "See https://chromestatus.com/feature/5796524191121408."),
+            Flag.baseFeature(ContentFeatures.PREFETCH_NEW_LIMITS,
+                    "Enables new limits policy for SpeculationRules Prefetch."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
