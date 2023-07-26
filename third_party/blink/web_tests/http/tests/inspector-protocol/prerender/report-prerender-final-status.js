@@ -10,7 +10,8 @@
   await dp1.Preload.enable();
 
   // Navigate to speculation rules Prerender Page.
-  await session1.navigate('resources/simple-prerender.html');
+  session1.navigate('resources/simple-prerender.html');
+  await dp1.Preload.oncePrerenderStatusUpdated(e => e.params.status === 'Ready');
 
   const session2 = childTargetManager.findAttachedSessionPrerender();
   const dp2 = session2.protocol;

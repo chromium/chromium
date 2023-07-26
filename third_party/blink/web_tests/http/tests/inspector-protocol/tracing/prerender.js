@@ -26,10 +26,14 @@
   await dp.Preload.oncePrerenderStatusUpdated(e => e.params.status == 'Ready');
   const prerenderSession = childTargetManager.findAttachedSessionPrerender();
   const pp = prerenderSession.protocol;
-  await pp.Preload.enable();
+  await Promise.all([pp.Preload.enable(), pp.Page.enable()]);
   primarySession.evaluate(`document.getElementById('link').click()`);
 
-  await pp.Preload.oncePrerenderAttemptCompleted();
+  await Promise.all([
+    pp.Preload.oncePrerenderAttemptCompleted(),
+    pp.Page.setLifecycleEventsEnabled({ enabled: true }),
+    pp.Page.onceLifecycleEvent(event => event.params.name === 'load'),
+  ]);
 
   const devtoolsEvents = await tracingHelper.stopTracing();
   const prerenderFrameCommitted =
