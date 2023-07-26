@@ -30,6 +30,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -249,6 +250,13 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest, ShowsAppIconInChip) {
+  // With ChromeRefresh2023, the same icon is always shown in the chip and this
+  // test is no longer meaningful.
+  if (features::IsChromeRefresh2023()) {
+    GTEST_SKIP() << "With ChromeRefresh2023, the same icon is always shown in "
+                    "the chip and this test is no longer meaningful.";
+  }
+
   InstallOverlappingApp();
 
   const GURL root_url = https_server().GetURL(GetAppUrlHost(), "/");
