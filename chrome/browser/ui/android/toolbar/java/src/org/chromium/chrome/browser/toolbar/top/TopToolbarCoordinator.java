@@ -336,6 +336,13 @@ public class TopToolbarCoordinator implements Toolbar {
     }
 
     /**
+     * @see View#removeOnAttachStateChangeListener(View.OnAttachStateChangeListener)
+     */
+    public void removeOnAttachStateChangeListener(View.OnAttachStateChangeListener listener) {
+        mToolbarLayout.removeOnAttachStateChangeListener(listener);
+    }
+
+    /**
      * Cleans up any code as necessary.
      */
     public void destroy() {

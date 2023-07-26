@@ -264,6 +264,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private final TabObscuringHandler mTabObscuringHandler;
     private ToolbarDragDropCoordinator mToolbarDragDropCoordinator;
     private final SnackbarManager mSnackbarManager;
+    private OnAttachStateChangeListener mAttachStateChangeListener;
     private final OneshotSupplier<TabReparentingController> mTabReparentingControllerSupplier;
 
     private HomeButtonCoordinator mHomeButtonCoordinator;
@@ -1412,7 +1413,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 mAppMenuDelegate, layoutManager, mActivityTabProvider, mBrowserControlsSizer,
                 mTopUiThemeColorProvider);
 
-        mToolbar.addOnAttachStateChangeListener(new OnAttachStateChangeListener() {
+        mAttachStateChangeListener = new OnAttachStateChangeListener() {
             @Override
             public void onViewDetachedFromWindow(View v) {}
 
@@ -1423,7 +1424,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 // the initial selection notification.
                 refreshSelectedTab(mActivityTabProvider.get());
             }
-        });
+        };
+
+        mToolbar.addOnAttachStateChangeListener(mAttachStateChangeListener);
 
         if (layoutManager != null) {
             mLayoutManager = layoutManager;
@@ -1580,6 +1583,10 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             mLocationBar = null;
         }
 
+        if (mAttachStateChangeListener != null) {
+            mToolbar.removeOnAttachStateChangeListener(mAttachStateChangeListener);
+            mAttachStateChangeListener = null;
+        }
         mToolbar.removeUrlExpansionObserver(mStatusBarColorController);
         mToolbar.destroy();
 
