@@ -89,8 +89,6 @@ _NEGATIVE_FILTER = [
     'ChromeDriverPageLoadTimeoutTest.testRefreshWithPageLoadTimeout',
     # Flaky https://bugs.chromium.org/p/chromium/issues/detail?id=1143940
     'ChromeDriverTest.testTakeLargeElementFullPageScreenshot',
-    # Flaky https://bugs.chromium.org/p/chromium/issues/detail?id=1306504
-    'ChromeExtensionsCapabilityTest.*',
     # crbug.com/chromedriver/4379
     'ChromeDriverTest.testClickElementInAnotherFrame',
     # crbug.com/chromedriver/4362
