@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/eye_dropper.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "ui/display/display_switches.h"
@@ -39,6 +40,7 @@ class EyeDropperBrowserTest : public UiBrowserTest,
                                                  ->tab_strip_model()
                                                  ->GetActiveWebContents()
                                                  ->GetPrimaryMainFrame();
+    parent_frame->GetView()->Focus();
     eye_dropper_ = ShowEyeDropper(parent_frame, /*listener=*/nullptr);
 #endif
   }
