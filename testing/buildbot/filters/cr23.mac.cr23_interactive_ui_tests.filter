@@ -1,4 +1,5 @@
 # cr23_interactive_ui_tests that are expected to fail on mac bots:
+-All/ExtensionsMenuModelPresenceTest.MenuPresence/0
 -AppMenuFullscreenInteractiveTest.ClosingTab
 -TabDragging/DetachToBrowserTabDragControllerTest.DragMultipleTabsRightIntoGroup/0
 -TabDragging/DetachToBrowserTabDragControllerTest.DragMultipleTabsRightIntoGroup/1

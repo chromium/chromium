@@ -1756,7 +1756,6 @@
       },
       'cr23_browser_tests': {
         'args': [
-          '--enable-features=ChromeRefresh2023',
           ('--test-launcher-filter-file='
            '../../testing/buildbot/filters/cr23.linux.cr23_browser_tests.filter'
           ),
@@ -1765,10 +1764,10 @@
           'shards': 20,
         },
         'test': 'browser_tests',
+        'mixins': [ 'chrome-refresh-2023' ],
       },
       'cr23_interactive_ui_tests': {
         'args': [
-          '--enable-features=ChromeRefresh2023',
           ('--test-launcher-filter-file='
            '../../testing/buildbot/filters/cr23.linux.cr23_interactive_ui_tests.filter'
           ),
@@ -1777,6 +1776,7 @@
           'shards': 10,
         },
         'test': 'interactive_ui_tests',
+        'mixins': [ 'chrome-refresh-2023' ],
       },
       'interactive_ui_tests': {
         'swarming': {
@@ -1794,7 +1794,6 @@
       },
       'cr23_browser_tests': {
         'args': [
-          '--enable-features=ChromeRefresh2023',
           ('--test-launcher-filter-file='
            '../../testing/buildbot/filters/cr23.mac.cr23_browser_tests.filter'
           ),
@@ -1804,10 +1803,10 @@
         },
         'test': 'browser_tests',
         'ci_only': True,
+        'mixins': [ 'chrome-refresh-2023' ],
       },
       'cr23_interactive_ui_tests': {
         'args': [
-          '--enable-features=ChromeRefresh2023',
           ('--test-launcher-filter-file='
            '../../testing/buildbot/filters/cr23.mac.cr23_interactive_ui_tests.filter'
           ),
@@ -1816,6 +1815,7 @@
           'shards': 10,
         },
         'test': 'interactive_ui_tests',
+        'mixins': [ 'chrome-refresh-2023' ],
       },
       'interactive_ui_tests': {
         'swarming': {
@@ -1832,7 +1832,6 @@
       },
       'cr23_browser_tests': {
         'args': [
-          '--enable-features=ChromeRefresh2023',
           ('--test-launcher-filter-file='
            '../../testing/buildbot/filters/cr23.win.cr23_browser_tests.filter'
           ),
@@ -1841,15 +1840,16 @@
           'shards': 20,
         },
         'test': 'browser_tests',
+        'mixins': [ 'chrome-refresh-2023' ],
       },
       'cr23_interactive_ui_tests': {
         'args': [
-          '--enable-features=ChromeRefresh2023',
           ('--test-launcher-filter-file='
            '../../testing/buildbot/filters/cr23.win.cr23_interactive_ui_tests.filter'
           ),
         ],
         'test': 'interactive_ui_tests',
+        'mixins': [ 'chrome-refresh-2023' ],
       },
       'interactive_ui_tests': {
         'swarming': {
@@ -1861,7 +1861,6 @@
     'cr23_main_linux_gtests': {
       'cr23_regressed_browser_tests': {
         'args': [
-          '--enable-features=ChromeRefresh2023',
           ('--test-launcher-filter-file='
            '../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;'
            '../../testing/buildbot/filters/cr23.linux.cr23_browser_tests.filter'
@@ -1869,10 +1868,10 @@
         ],
         'experiment_percentage': 1,
         'test': 'browser_tests',
+        'mixins': [ 'chrome-refresh-2023' ],
       },
       'cr23_regressed_interactive_ui_tests': {
         'args': [
-          '--enable-features=ChromeRefresh2023',
           ('--test-launcher-filter-file='
            '../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;'
            '../../testing/buildbot/filters/cr23.linux.cr23_interactive_ui_tests.filter'
@@ -1880,22 +1879,22 @@
         ],
         'experiment_percentage': 1,
         'test': 'interactive_ui_tests',
+        'mixins': [ 'chrome-refresh-2023' ],
       },
       'cr23_views_unittests': {
         'args': [
-          '--enable-features=ChromeRefresh2023',
           ('--test-launcher-filter-file='
            '../../testing/buildbot/filters/cr23.linux.cr23_views_unittests.filter'
           ),
         ],
         'experiment_percentage': 1,
         'test': 'views_unittests',
+        'mixins': [ 'chrome-refresh-2023' ],
       },
     },
     'cr23_main_mac_gtests': {
       'cr23_regressed_browser_tests': {
         'args': [
-          '--enable-features=ChromeRefresh2023',
           ('--test-launcher-filter-file='
            '../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;'
            '../../testing/buildbot/filters/cr23.mac.cr23_browser_tests.filter'
@@ -1903,10 +1902,10 @@
         ],
         'experiment_percentage': 1,
         'test': 'browser_tests',
+        'mixins': [ 'chrome-refresh-2023' ],
       },
       'cr23_regressed_interactive_ui_tests': {
         'args': [
-          '--enable-features=ChromeRefresh2023',
           ('--test-launcher-filter-file='
            '../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;'
            '../../testing/buildbot/filters/cr23.mac.cr23_interactive_ui_tests.filter'
@@ -1914,22 +1913,22 @@
         ],
         'experiment_percentage': 1,
         'test': 'interactive_ui_tests',
+        'mixins': [ 'chrome-refresh-2023' ],
       },
       'cr23_views_unittests': {
         'args': [
-          '--enable-features=ChromeRefresh2023',
           ('--test-launcher-filter-file='
            '../../testing/buildbot/filters/cr23.mac.cr23_views_unittests.filter'
           ),
         ],
         'experiment_percentage': 1,
         'test': 'views_unittests',
+        'mixins': [ 'chrome-refresh-2023' ],
       },
     },
     'cr23_main_win_gtests': {
       'cr23_regressed_browser_tests': {
         'args': [
-          '--enable-features=ChromeRefresh2023',
           ('--test-launcher-filter-file='
            '../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;'
            '../../testing/buildbot/filters/cr23.win.cr23_browser_tests.filter'
@@ -1937,10 +1936,10 @@
         ],
         'experiment_percentage': 1,
         'test': 'browser_tests',
+        'mixins': [ 'chrome-refresh-2023' ],
       },
       'cr23_regressed_interactive_ui_tests': {
         'args': [
-          '--enable-features=ChromeRefresh2023',
           ('--test-launcher-filter-file='
            '../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;'
            '../../testing/buildbot/filters/cr23.win.cr23_interactive_ui_tests.filter'
@@ -1948,16 +1947,17 @@
         ],
         'experiment_percentage': 1,
         'test': 'interactive_ui_tests',
+        'mixins': [ 'chrome-refresh-2023' ],
       },
       'cr23_views_unittests': {
         'args': [
-          '--enable-features=ChromeRefresh2023',
           ('--test-launcher-filter-file='
            '../../testing/buildbot/filters/cr23.win.cr23_views_unittests.filter'
           ),
         ],
         'experiment_percentage': 1,
         'test': 'views_unittests',
+        'mixins': [ 'chrome-refresh-2023' ],
       },
     },
     'cronet_gtests': {

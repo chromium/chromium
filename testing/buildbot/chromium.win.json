@@ -377,8 +377,8 @@
       },
       {
         "args": [
-          "--enable-features=ChromeRefresh2023",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;../../testing/buildbot/filters/cr23.win.cr23_browser_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;../../testing/buildbot/filters/cr23.win.cr23_browser_tests.filter",
+          "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
         ],
         "experiment_percentage": 1,
         "isolate_profile_data": true,
@@ -1109,8 +1109,8 @@
       },
       {
         "args": [
-          "--enable-features=ChromeRefresh2023",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;../../testing/buildbot/filters/cr23.win.cr23_interactive_ui_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;../../testing/buildbot/filters/cr23.win.cr23_interactive_ui_tests.filter",
+          "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
         ],
         "experiment_percentage": 1,
         "isolate_profile_data": true,
@@ -1881,8 +1881,8 @@
       },
       {
         "args": [
-          "--enable-features=ChromeRefresh2023",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.win.cr23_views_unittests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.win.cr23_views_unittests.filter",
+          "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
         ],
         "experiment_percentage": 1,
         "isolate_profile_data": true,
@@ -2616,8 +2616,8 @@
       },
       {
         "args": [
-          "--enable-features=ChromeRefresh2023",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;../../testing/buildbot/filters/cr23.win.cr23_browser_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;../../testing/buildbot/filters/cr23.win.cr23_browser_tests.filter",
+          "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
         ],
         "experiment_percentage": 1,
         "merge": {
@@ -3259,8 +3259,8 @@
       },
       {
         "args": [
-          "--enable-features=ChromeRefresh2023",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;../../testing/buildbot/filters/cr23.win.cr23_interactive_ui_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;../../testing/buildbot/filters/cr23.win.cr23_interactive_ui_tests.filter",
+          "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
         ],
         "experiment_percentage": 1,
         "merge": {
@@ -3895,8 +3895,8 @@
       },
       {
         "args": [
-          "--enable-features=ChromeRefresh2023",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.win.cr23_views_unittests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.win.cr23_views_unittests.filter",
+          "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
         ],
         "experiment_percentage": 1,
         "merge": {
@@ -4488,8 +4488,8 @@
       },
       {
         "args": [
-          "--enable-features=ChromeRefresh2023",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;../../testing/buildbot/filters/cr23.win.cr23_browser_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;../../testing/buildbot/filters/cr23.win.cr23_browser_tests.filter",
+          "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
         ],
         "experiment_percentage": 1,
         "isolate_profile_data": true,
@@ -5167,8 +5167,8 @@
       },
       {
         "args": [
-          "--enable-features=ChromeRefresh2023",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;../../testing/buildbot/filters/cr23.win.cr23_interactive_ui_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;../../testing/buildbot/filters/cr23.win.cr23_interactive_ui_tests.filter",
+          "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
         ],
         "experiment_percentage": 1,
         "isolate_profile_data": true,
@@ -5895,8 +5895,8 @@
       },
       {
         "args": [
-          "--enable-features=ChromeRefresh2023",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.win.cr23_views_unittests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.win.cr23_views_unittests.filter",
+          "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
         ],
         "experiment_percentage": 1,
         "isolate_profile_data": true,
