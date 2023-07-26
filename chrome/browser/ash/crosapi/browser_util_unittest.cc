@@ -1097,52 +1097,6 @@ TEST_F(BrowserUtilTest, RecordDataVerWithMultipleUsers) {
   EXPECT_EQ(dict, expected);
 }
 
-TEST_F(BrowserUtilTest, IsDataWipeRequiredInvalid) {
-  const base::Version data_version;
-  const base::Version current{"3"};
-  const base::Version required{"2"};
-
-  ASSERT_FALSE(data_version.IsValid());
-  EXPECT_TRUE(browser_util::IsDataWipeRequiredForTesting(data_version, current,
-                                                         required));
-}
-
-TEST_F(BrowserUtilTest, IsDataWipeRequiredFutureVersion) {
-  const base::Version data_version{"1"};
-  const base::Version current{"2"};
-  const base::Version required{"3"};
-
-  EXPECT_FALSE(browser_util::IsDataWipeRequiredForTesting(data_version, current,
-                                                          required));
-}
-
-TEST_F(BrowserUtilTest, IsDataWipeRequiredSameVersion) {
-  const base::Version data_version{"3"};
-  const base::Version current{"4"};
-  const base::Version required{"3"};
-
-  EXPECT_FALSE(browser_util::IsDataWipeRequiredForTesting(data_version, current,
-                                                          required));
-}
-
-TEST_F(BrowserUtilTest, IsDataWipeRequired) {
-  const base::Version data_version{"1"};
-  const base::Version current{"3"};
-  const base::Version required{"2"};
-
-  EXPECT_TRUE(browser_util::IsDataWipeRequiredForTesting(data_version, current,
-                                                         required));
-}
-
-TEST_F(BrowserUtilTest, IsDataWipeRequired2) {
-  const base::Version data_version{"1"};
-  const base::Version current{"3"};
-  const base::Version required{"3"};
-
-  EXPECT_TRUE(browser_util::IsDataWipeRequiredForTesting(data_version, current,
-                                                         required));
-}
-
 TEST_F(BrowserUtilTest, GetRootfsLacrosVersionMayBlock) {
   base::ScopedTempDir tmp_dir;
   ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());

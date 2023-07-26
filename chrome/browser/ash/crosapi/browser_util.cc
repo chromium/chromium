@@ -370,37 +370,6 @@ bool IsAshWebBrowserEnabledInternal(const User* user,
   }
 }
 
-// Called from `IsDataWipeRequired()` or `IsDataWipeRequiredForTesting()`.
-// data_version` is the version of last data wipe. `current_version` is the
-// version of ash-chrome. `required_version` is the version that introduces some
-// breaking change. `data_version` needs to be greater or equal to
-// `required_version`. If `required_version` is newer than `current_version`,
-// data wipe is not required.
-bool IsDataWipeRequiredInternal(base::Version data_version,
-                                const base::Version& current_version,
-                                const base::Version& required_version) {
-  // `data_version` is invalid if any wipe has not been recorded yet. In
-  // such a case, assume that the last data wipe happened significantly long
-  // time ago.
-  if (!data_version.IsValid())
-    data_version = base::Version("0");
-
-  if (current_version < required_version) {
-    // If `current_version` is smaller than the `required_version`, that means
-    // that the data wipe doesn't need to happen yet.
-    return false;
-  }
-
-  if (data_version >= required_version) {
-    // If `data_version` is greater or equal to `required_version`, this means
-    // data wipe has already happened and that user data is compatible with the
-    // current lacros.
-    return false;
-  }
-
-  return true;
-}
-
 // Returns the string value for the kLacrosStabilitySwitch if present.
 absl::optional<std::string> GetLacrosStabilitySwitchValue() {
   const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
@@ -515,8 +484,8 @@ const char kLacrosAvailabilityPolicyLacrosOnly[] = "lacros_only";
 
 const char kLaunchOnLoginPref[] = "lacros.launch_on_login";
 const char kClearUserDataDir1Pref[] = "lacros.clear_user_data_dir_1";
+// Marks the Chrome version at which profile migration was completed.
 const char kDataVerPref[] = "lacros.data_version";
-const char kRequiredDataVersion[] = "92.0.0.0";
 const char kProfileDataBackwardMigrationCompletedForUserPref[] =
     "lacros.profile_data_backward_migration_completed_for_user";
 // This pref is to record whether the user clicks "Go to files" button
@@ -748,24 +717,6 @@ void RecordDataVer(PrefService* local_state,
   ScopedDictPrefUpdate update(local_state, kDataVerPref);
   base::Value::Dict& dict = update.Get();
   dict.Set(user_id_hash, version.GetString());
-}
-
-bool IsDataWipeRequired(PrefService* local_state,
-                        const std::string& user_id_hash) {
-  base::Version data_version = GetDataVer(local_state, user_id_hash);
-  const base::Version& current_version = version_info::GetVersion();
-  base::Version required_version =
-      base::Version(base::StringPiece(kRequiredDataVersion));
-
-  return IsDataWipeRequiredInternal(data_version, current_version,
-                                    required_version);
-}
-
-bool IsDataWipeRequiredForTesting(base::Version data_version,
-                                  const base::Version& current_version,
-                                  const base::Version& required_version) {
-  return IsDataWipeRequiredInternal(data_version, current_version,
-                                    required_version);
 }
 
 base::Version GetRootfsLacrosVersionMayBlock(

@@ -18,6 +18,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
+#include "base/version.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/move_migrator.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -282,19 +283,12 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
     return false;
   }
 
-  if (crosapi::browser_util::IsDataWipeRequired(local_state, user_id_hash)) {
-    // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove
-    // this log message.
-    LOG(WARNING)
-        << "Restarting to run profile migration since data wipe is required.";
-    // If data wipe is required, no need for a further check to determine if
-    // lacros data dir exists or not.
-    return true;
-  }
-
   if (crosapi::browser_util::IsProfileMigrationCompletedForUser(
           local_state, user_id_hash, true /* print_mode */)) {
-    LOG(WARNING) << "Profile migration is already completed.";
+    LOG(WARNING) << "Profile migration is already completed at version "
+                 << crosapi::browser_util::GetDataVer(local_state, user_id_hash)
+                        .GetString();
+
     return false;
   }
 

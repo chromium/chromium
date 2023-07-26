@@ -203,9 +203,6 @@ extern const char kClearUserDataDir1Pref[];
 // lacros-chrome.
 extern const char kDataVerPref[];
 
-// Lacros' user data is backward compatible up until this version.
-extern const char kRequiredDataVersion[];
-
 // Registers user profile preferences related to the lacros-chrome binary.
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
@@ -324,17 +321,6 @@ base::Version GetDataVer(PrefService* local_state,
 void RecordDataVer(PrefService* local_state,
                    const std::string& user_id_hash,
                    const base::Version& version);
-
-// Checks if lacros' data directory needs to be wiped for backward incompatible
-// data.
-bool IsDataWipeRequired(PrefService* local_state,
-                        const std::string& user_id_hash);
-
-// Exposed for testing. The arguments are passed to
-// `IsDataWipeRequiredInternal()`.
-bool IsDataWipeRequiredForTesting(base::Version data_version,
-                                  const base::Version& current_version,
-                                  const base::Version& required_version);
 
 // Gets the version of the rootfs lacros-chrome. By reading the metadata json
 // file in the correct format.

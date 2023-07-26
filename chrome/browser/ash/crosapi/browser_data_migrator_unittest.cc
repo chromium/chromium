@@ -391,11 +391,6 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateMoveAfterCopy) {
   AddRegularUser("user@gmail.com");
   const user_manager::User* const user = user_manager()->GetPrimaryUser();
 
-  crosapi::browser_util::RecordDataVer(
-      local_state(), user->username_hash(),
-      base::Version(
-          base::StringPiece(crosapi::browser_util::kRequiredDataVersion)));
-
   {
     // If Lacros is not enabled, migration should not run.
     base::test::ScopedFeatureList feature_list;
