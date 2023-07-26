@@ -140,9 +140,6 @@ class ArcVmmManager : public KeyedService,
   absl::optional<base::Time> last_shrink_timestamp_;
   absl::optional<bool> last_shrink_result_;
 
-  absl::optional<vm_tools::concierge::SwappingState>
-      last_swapping_state_from_signal_;
-
   // Repeat timer for checking and trimming ARCVM memory regularly. According
   // current design in concierge, if the vmm swap status is enabled, the vmm
   // manager needs to go through the "enable" process (i.e. trim memory, set
