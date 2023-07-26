@@ -63,9 +63,6 @@
 # crbug.com/1063975
 -org.chromium.chrome.browser.feed.FeedAppLifecycleTest.testSecondWindowDoesNotTriggerForegroundOrBackground
 
-# crbug.com/1063981
--org.chromium.chrome.browser.toolbar.IdentityDiscControllerTest.testIdentityDiscWithSignInState
-
 # crbug.com/1067673
 -org.chromium.chrome.browser.ntp.cards.NewTabPageRecyclerViewTest.testDismissArticleWithContextMenu
 
