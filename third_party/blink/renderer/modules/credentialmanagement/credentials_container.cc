@@ -1445,18 +1445,6 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
       identity_provider_ptrs.push_back(std::move(identity_provider));
     }
 
-    std::unique_ptr<ScopedAbortState> scoped_abort_state = nullptr;
-    if (auto* signal = options->getSignalOr(nullptr)) {
-      if (signal->aborted()) {
-        resolver->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kAbortError, "Request has been aborted."));
-        return promise;
-      }
-      auto* handle = signal->AddAlgorithm(WTF::BindOnce(
-          &AbortIdentityCredentialRequest, WrapPersistent(script_state)));
-      scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
-    }
-
     mojom::blink::RpContext rp_context = mojom::blink::RpContext::kSignIn;
     if (options->identity()->hasContext()) {
       UseCounter::Count(resolver->GetExecutionContext(),
@@ -1485,6 +1473,27 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
     if (!web_identity_requester_) {
       web_identity_requester_ = MakeGarbageCollected<WebIdentityRequester>(
           WrapPersistent(context), mediation_requirement);
+    }
+
+    std::unique_ptr<ScopedAbortState> scoped_abort_state;
+    if (auto* signal = options->getSignalOr(nullptr)) {
+      if (signal->aborted()) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kAbortError, "Request has been aborted."));
+        return promise;
+      }
+
+      auto callback =
+          !RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(
+              context)
+              ? WTF::BindOnce(&AbortIdentityCredentialRequest,
+                              WrapPersistent(script_state))
+              : WTF::BindOnce(&WebIdentityRequester::AbortRequest,
+                              WrapPersistent(web_identity_requester_.Get()),
+                              WrapPersistent(script_state));
+
+      auto* handle = signal->AddAlgorithm(std::move(callback));
+      scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
     }
 
     if (!RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(

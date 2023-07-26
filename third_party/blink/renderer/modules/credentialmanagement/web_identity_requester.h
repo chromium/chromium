@@ -51,6 +51,10 @@ class MODULES_EXPORT WebIdentityRequester final
   // WebIdentityRequester.
   void StopDelayTimer(bool timer_started_before_onload);
 
+  // Abort an ongoing IdentityCredential request. This will only be called
+  // before the request finishes due to `scoped_abort_state`.
+  void AbortRequest(ScriptState* script_state);
+
   void Trace(Visitor* visitor) const;
 
  private:

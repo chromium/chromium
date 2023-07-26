@@ -59,6 +59,7 @@ void WebIdentityRequester::OnRequestToken(
     }
   }
   provider_to_resolver_.clear();
+  scoped_abort_states_.clear();
   is_requesting_token_ = false;
 }
 
@@ -187,6 +188,22 @@ void WebIdentityRequester::StopDelayTimer(bool timer_started_before_onload) {
   }
   UMA_HISTOGRAM_MEDIUM_TIMES("Blink.FedCm.Timing.PostTaskDelayDuration",
                              delay_duration);
+}
+
+void WebIdentityRequester::AbortRequest(ScriptState* script_state) {
+  if (!script_state->ContextIsValid()) {
+    return;
+  }
+
+  if (!is_requesting_token_) {
+    OnRequestToken(mojom::blink::RequestTokenStatus::kErrorCanceled,
+                   absl::nullopt, "");
+    return;
+  }
+
+  auto* auth_request =
+      CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
+  auth_request->CancelTokenRequest();
 }
 
 void WebIdentityRequester::Trace(Visitor* visitor) const {
