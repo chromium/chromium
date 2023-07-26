@@ -251,20 +251,14 @@ export class FileTransferController {
   /**
    * @param {!List} list List itself and its directory items will could
    *                          be drop target.
-   * @param {boolean=} opt_onlyIntoDirectories If true only directory list
-   *     items could be drop targets. Otherwise any other place of the list
-   *     accetps files (putting it into the current directory).
    * @private
    */
-  attachFileListDropTarget_(list, opt_onlyIntoDirectories) {
-    list.addEventListener(
-        'dragover',
-        this.onDragOver_.bind(this, !!opt_onlyIntoDirectories, list));
+  attachFileListDropTarget_(list) {
+    list.addEventListener('dragover', this.onDragOver_.bind(this, false, list));
     list.addEventListener(
         'dragenter', this.onDragEnterFileList_.bind(this, list));
     list.addEventListener('dragleave', this.onDragLeave_.bind(this, list));
-    list.addEventListener(
-        'drop', this.onDrop_.bind(this, !!opt_onlyIntoDirectories));
+    list.addEventListener('drop', this.onDrop_.bind(this, false));
   }
 
   /**
