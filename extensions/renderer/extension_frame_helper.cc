@@ -381,7 +381,7 @@ void ExtensionFrameHelper::DidCreateScriptContext(
     // second time here.
     if (is_initializing_main_world_script_context_)
       return;
-    if (render_frame()->IsBrowserSideNavigationPending()) {
+    if (render_frame()->IsRequestingNavigation()) {
       // Defer initializing the extensions script context now because it depends
       // on having the URL of the provisional load which isn't available at this
       // point.

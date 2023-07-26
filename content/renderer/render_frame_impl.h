@@ -382,7 +382,7 @@ class CONTENT_EXPORT RenderFrameImpl
   void AddMessageToConsole(blink::mojom::ConsoleMessageLevel level,
                            const std::string& message) override;
   bool IsPasting() override;
-  bool IsBrowserSideNavigationPending() override;
+  bool IsRequestingNavigation() override;
   void LoadHTMLStringForTesting(const std::string& html,
                                 const GURL& base_url,
                                 const std::string& text_encoding,
@@ -1381,7 +1381,7 @@ class CONTENT_EXPORT RenderFrameImpl
   // This flag is true while browser process is processing a pending navigation,
   // as a result of mojom::FrameHost::BeginNavigation call. It is reset when the
   // navigation is either committed or cancelled.
-  bool browser_side_navigation_pending_ = false;
+  bool is_requesting_navigation_ = false;
 
   // Set to true on the first time the RenderFrame started any navigation.
   // Note that when a frame is created it will trigger a navigation (either
