@@ -25,8 +25,7 @@
 #include "extensions/browser/api/file_handlers/non_native_file_system_delegate.h"
 #endif
 
-namespace extensions {
-namespace app_file_handler_util {
+namespace extensions::app_file_handler_util {
 
 const char kMimeTypeApplicationOctetStream[] = "application/octet-stream";
 const char kMimeTypeInodeDirectory[] = "inode/directory";
@@ -228,5 +227,4 @@ void MimeTypeCollector::OnMimeTypeCollected(size_t index,
   }
 }
 
-}  // namespace app_file_handler_util
-}  // namespace extensions
+}  // namespace extensions::app_file_handler_util
