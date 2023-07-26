@@ -15,7 +15,7 @@ EditorMediator* g_instance_ = nullptr;
 
 }  // namespace
 
-EditorMediator::EditorMediator() {
+EditorMediator::EditorMediator() : editor_instance_impl_(this) {
   DCHECK(!g_instance_);
   g_instance_ = this;
 }
@@ -36,6 +36,24 @@ void EditorMediator::BindEditorInstance(
 
 void EditorMediator::HandleTrigger() {
   MakoUntrustedUI::Show();
+}
+
+void EditorMediator::OnFocus(int context_id) {
+  text_actuator_.OnFocus(context_id);
+}
+
+void EditorMediator::OnBlur() {
+  text_actuator_.OnBlur();
+}
+
+void EditorMediator::CommitEditorResult(const std::string& text) {
+  // This assumes that focus will return to the original text input client after
+  // the mako web ui is hidden from view. Thus we queue the text to be inserted
+  // here rather then insert it directly into the input.
+  text_actuator_.InsertTextOnNextFocus(text);
+  // After queuing the text to be inserted, closing the mako web ui should
+  // return the focus back to the original input.
+  MakoUntrustedUI::Hide();
 }
 
 }  // namespace input_method

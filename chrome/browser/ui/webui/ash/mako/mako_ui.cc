@@ -45,6 +45,10 @@ void MakoUntrustedUI::Show() {
   LOG(ERROR) << "Mako UI shown";
 }
 
+void MakoUntrustedUI::Hide() {
+  LOG(ERROR) << "Mako UI hidden";
+}
+
 void MakoUntrustedUI::BindInterface(
     mojo::PendingReceiver<input_method::mojom::EditorInstance> receiver) {
   input_method::EditorMediator::Get()->BindEditorInstance(std::move(receiver));

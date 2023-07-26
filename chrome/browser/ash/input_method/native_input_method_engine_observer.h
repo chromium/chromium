@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/input_method/assistive_suggester.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
 #include "chrome/browser/ash/input_method/autocorrect_manager.h"
+#include "chrome/browser/ash/input_method/editor_event_sink.h"
 #include "chrome/browser/ash/input_method/grammar_manager.h"
 #include "chrome/browser/ash/input_method/input_method_engine.h"
 #include "chrome/browser/ash/input_method/pref_change_recorder.h"
@@ -48,6 +49,7 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
   // to e2e Tast tests and unit tests, then dismantle this for-test-only flag.
   NativeInputMethodEngineObserver(
       PrefService* prefs,
+      EditorEventSink* editor_event_sink,
       std::unique_ptr<InputMethodEngineObserver> ime_base_observer,
       std::unique_ptr<AssistiveSuggester> assistive_suggester,
       std::unique_ptr<AutocorrectManager> autocorrect_manager,
@@ -180,7 +182,9 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
                   bool on_focus_success,
                   ime::mojom::InputMethodMetadataPtr metadata);
 
+  // Not owned by this class.
   raw_ptr<PrefService, ExperimentalAsh> prefs_ = nullptr;
+  raw_ptr<EditorEventSink> editor_event_sink_;
 
   std::unique_ptr<InputMethodEngineObserver> ime_base_observer_;
   mojo::Remote<ime::mojom::InputEngineManager> remote_manager_;

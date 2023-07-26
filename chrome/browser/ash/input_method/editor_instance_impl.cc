@@ -4,11 +4,6 @@
 
 #include "chrome/browser/ash/input_method/editor_instance_impl.h"
 
-#include "base/strings/utf_string_conversions.h"
-#include "ui/base/ime/ash/ime_bridge.h"
-#include "ui/base/ime/ash/text_input_target.h"
-#include "ui/base/ime/text_input_client.h"
-
 namespace ash {
 namespace input_method {
 namespace {
@@ -37,7 +32,9 @@ std::vector<mojom::PresetTextQueryPtr> GenerateFakeQueries() {
 
 }  // namespace
 
-EditorInstanceImpl::EditorInstanceImpl() = default;
+EditorInstanceImpl::EditorInstanceImpl(Delegate* delegate)
+    : delegate_(delegate) {}
+
 EditorInstanceImpl::~EditorInstanceImpl() = default;
 
 void EditorInstanceImpl::GetRewritePresetTextQueries(
@@ -48,15 +45,7 @@ void EditorInstanceImpl::GetRewritePresetTextQueries(
 void EditorInstanceImpl::CommitEditorResult(
     const std::string& text,
     CommitEditorResultCallback callback) {
-  TextInputTarget* input = IMEBridge::Get()->GetInputContextHandler();
-  if (!input) {
-    std::move(callback).Run(/*success=*/false);
-    return;
-  }
-
-  input->CommitText(
-      base::UTF8ToUTF16(text),
-      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  delegate_->CommitEditorResult(text);
   std::move(callback).Run(/*success=*/true);
 }
 

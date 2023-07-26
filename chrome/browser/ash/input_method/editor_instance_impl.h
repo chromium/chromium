@@ -9,14 +9,19 @@
 
 #include "chrome/browser/ash/input_method/mojom/editor.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace input_method {
 
 class EditorInstanceImpl : public mojom::EditorInstance {
  public:
-  EditorInstanceImpl();
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+    virtual void CommitEditorResult(const std::string& text) = 0;
+  };
+
+  explicit EditorInstanceImpl(Delegate* delegate);
   ~EditorInstanceImpl() override;
 
   // mojom::EditorInstance overrides
@@ -32,6 +37,9 @@ class EditorInstanceImpl : public mojom::EditorInstance {
       mojo::PendingReceiver<mojom::EditorInstance> pending_receiver);
 
  private:
+  // Not owned by this class.
+  raw_ptr<Delegate> delegate_;
+
   // Holds any connections from the ui to an EditorInstance. A set of receivers
   // is maintained to ensure we can handle multiple connections.
   mojo::ReceiverSet<mojom::EditorInstance> receivers_;

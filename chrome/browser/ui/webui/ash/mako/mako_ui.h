@@ -28,6 +28,8 @@ class MakoUntrustedUIConfig : public content::WebUIConfig {
 class MakoUntrustedUI : public ui::MojoWebUIController {
  public:
   static void Show();
+  static void Hide();
+
   explicit MakoUntrustedUI(content::WebUI* web_ui);
   ~MakoUntrustedUI() override;
 

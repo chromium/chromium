@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/input_method/assistive_suggester_client_filter.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
 #include "chrome/browser/ash/input_method/autocorrect_manager.h"
+#include "chrome/browser/ash/input_method/editor_mediator.h"
 #include "chrome/browser/ash/input_method/get_current_window_properties.h"
 #include "chrome/browser/ash/input_method/grammar_service_client.h"
 #include "chrome/browser/ash/input_method/native_input_method_engine_observer.h"
@@ -72,14 +73,18 @@ void NativeInputMethodEngine::Initialize(
                 assistive_suggester_, std::move(suggestions_service_client))
           : nullptr;
 
+  EditorMediator* editor_event_sink =
+      features::IsOrcaEnabled() ? EditorMediator::Get() : nullptr;
+
   chrome_keyboard_controller_client_observer_.Observe(
       ChromeKeyboardControllerClient::Get());
 
   // Wrap the given observer in our observer that will decide whether to call
   // Mojo directly or forward to the extension.
   auto native_observer = std::make_unique<NativeInputMethodEngineObserver>(
-      profile->GetPrefs(), std::move(observer), std::move(assistive_suggester),
-      std::move(autocorrect_manager), std::move(suggestions_collector),
+      profile->GetPrefs(), editor_event_sink, std::move(observer),
+      std::move(assistive_suggester), std::move(autocorrect_manager),
+      std::move(suggestions_collector),
       std::make_unique<GrammarManager>(
           profile, std::make_unique<GrammarServiceClient>(), this),
       use_ime_service_);
