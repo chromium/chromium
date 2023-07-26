@@ -4,23 +4,71 @@
 
 #include "components/autofill/core/browser/profile_token_quality.h"
 
+#include <memory>
+#include <string>
 #include <vector>
 
+#include "base/test/task_environment.h"
+#include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_form_test_utils.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/autofill/core/browser/test_autofill_driver.h"
+#include "components/autofill/core/browser/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/common/autofill_tick_clock.h"
+#include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 
 using ObservationType = ProfileTokenQuality::ObservationType;
+using testing::UnorderedElementsAre;
+
+class ProfileTokenQualityTest : public testing::Test {
+ public:
+  ProfileTokenQualityTest() : bam_(&driver_, &client_) {}
+
+  // Creates a form and registers it with the `bam_` as-if it had the given
+  // `types` as predictions.
+  FormData GetFormWithTypes(const std::vector<ServerFieldType>& types) {
+    test::FormDescription form_description;
+    for (ServerFieldType type : types) {
+      form_description.fields.emplace_back(type);
+    }
+    FormData form_data = test::GetFormData(form_description);
+    bam_.AddSeenForm(form_data, types);
+    return form_data;
+  }
+
+  // Fills the `form` with the `profile`, as-if autofilling was triggered from
+  // the first field.
+  void FillForm(const FormData& form, const AutofillProfile& profile) {
+    bam_.FillProfileForm(profile, form, form.fields[0],
+                         AutofillTriggerSource::kPopup);
+  }
+
+ protected:
+  base::test::TaskEnvironment task_environment_;
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
+  TestAutofillDriver driver_;
+  TestAutofillClient client_;
+  TestBrowserAutofillManager bam_;
+  TestPersonalDataManager pdm_;
+};
 
 // Ensures that `ProfileTokenQualityTest` supports all supported types of
 // `AutofillProfile`. In particular, this test ensures that whenever a new
 // non-stored type is added, the map in `GetStoredTypeOf()` is updated
 // accordingly. If the type is supposed to be stored, it should be added to
 // `AutofillTable::GetStoredTypesForAutofillProfile()`.
-TEST(ProfileTokenQualityTest, AllSupportedTypesHandled) {
+TEST_F(ProfileTokenQualityTest, AllSupportedTypesHandled) {
   ServerFieldTypeSet supported_types;
   AutofillProfile profile;
   profile.GetSupportedTypes(&supported_types);
@@ -36,7 +84,7 @@ TEST(ProfileTokenQualityTest, AllSupportedTypesHandled) {
   }
 }
 
-TEST(ProfileTokenQualityTest, GetObservationTypesForFieldType) {
+TEST_F(ProfileTokenQualityTest, GetObservationTypesForFieldType) {
   AutofillProfile profile;
   ProfileTokenQuality quality(&profile);
 
@@ -44,7 +92,7 @@ TEST(ProfileTokenQualityTest, GetObservationTypesForFieldType) {
 
   quality.AddObservationForTesting(NAME_FIRST, ObservationType::kAccepted);
   EXPECT_THAT(quality.GetObservationTypesForFieldType(NAME_FIRST),
-              testing::UnorderedElementsAre(ObservationType::kAccepted));
+              UnorderedElementsAre(ObservationType::kAccepted));
   EXPECT_TRUE(quality.GetObservationTypesForFieldType(NAME_LAST).empty());
 
   // Test that if more than `kMaxObservationsPerToken` observations are added,
@@ -57,6 +105,49 @@ TEST(ProfileTokenQualityTest, GetObservationTypesForFieldType) {
               testing::UnorderedElementsAreArray(std::vector<ObservationType>(
                   ProfileTokenQuality::kMaxObservationsPerToken,
                   ObservationType::kEditedToSimilarValue)));
+}
+
+// Tests that `AddObservationsForFilledForm()` derives the correct observation
+// types when fields are not edited.
+TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_Accepted) {
+  AutofillProfile profile = test::GetFullProfile();
+  pdm_.AddProfile(profile);
+  ProfileTokenQuality quality(&profile);
+
+  FormData form = GetFormWithTypes({NAME_FIRST, NAME_MIDDLE_INITIAL});
+  FillForm(form, profile);
+  // Accept field 0 as-is.
+  // Accept field 1 as-is too. But since it has a derived type, it counts as
+  // a partial accept for the middle name (its stored type).
+
+  FormStructure* form_structure = bam_.FindCachedFormById(form.global_id());
+  EXPECT_TRUE(
+      quality.AddObservationsForFilledForm(*form_structure, form, pdm_));
+
+  EXPECT_THAT(quality.GetObservationTypesForFieldType(NAME_FIRST),
+              UnorderedElementsAre(ObservationType::kAccepted));
+  EXPECT_THAT(quality.GetObservationTypesForFieldType(NAME_MIDDLE),
+              UnorderedElementsAre(ObservationType::kPartiallyAccepted));
+}
+
+// Tests that only a single observation is collected per field.
+TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_SameField) {
+  AutofillProfile profile = test::GetFullProfile();
+  pdm_.AddProfile(profile);
+  ProfileTokenQuality quality(&profile);
+
+  FormData form = GetFormWithTypes({NAME_FIRST});
+  FillForm(form, profile);
+
+  FormStructure* form_structure = bam_.FindCachedFormById(form.global_id());
+  EXPECT_TRUE(
+      quality.AddObservationsForFilledForm(*form_structure, form, pdm_));
+  EXPECT_THAT(quality.GetObservationTypesForFieldType(NAME_FIRST),
+              UnorderedElementsAre(ObservationType::kAccepted));
+  EXPECT_FALSE(
+      quality.AddObservationsForFilledForm(*form_structure, form, pdm_));
+  EXPECT_THAT(quality.GetObservationTypesForFieldType(NAME_FIRST),
+              UnorderedElementsAre(ObservationType::kAccepted));
 }
 
 }  // namespace autofill

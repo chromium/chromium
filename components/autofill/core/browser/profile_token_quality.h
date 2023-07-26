@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -14,6 +16,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/types/strong_alias.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -148,6 +151,19 @@ class ProfileTokenQuality {
   // `type`. The oldest existing observation for that type is discarded, if
   // the limit of `kMaxObservationsPerToken` is exceeded.
   void AddObservation(ServerFieldType type, Observation observation);
+
+  // Deduces the `ObservationType` from a `field` that was autofilled with
+  // `profile_`. `other_profiles` are all the other profiles that the user has
+  // stored. `*profile_` should not be part of `other_profiles`.
+  // Since the `field.value` represents the initial value of the field,
+  // the `current_field_value` is required.
+  // The `app_locale` is necessary to access the profile information via
+  // `GetInfo()`, which are the values that Autofill fills.
+  ObservationType GetObservationTypeFromField(
+      const AutofillField& field,
+      std::u16string_view current_field_value,
+      const std::vector<AutofillProfile*>& other_profiles,
+      const std::string& app_locale) const;
 
   // The profile for which observations are collected. Not null.
   base::raw_ptr<AutofillProfile> profile_;

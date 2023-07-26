@@ -4,12 +4,14 @@
 
 #include "components/autofill/core/browser/profile_token_quality.h"
 
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -73,8 +75,40 @@ bool ProfileTokenQuality::AddObservationsForFilledForm(
     const FormStructure& form_structure,
     const FormData& form_data,
     const PersonalDataManager& pdm) {
-  NOTIMPLEMENTED();
-  return false;
+  CHECK_EQ(form_structure.field_count(), form_data.fields.size());
+
+  std::vector<AutofillProfile*> other_profiles = pdm.GetProfiles();
+  base::EraseIf(other_profiles, [&](AutofillProfile* p) {
+    return p->guid() == profile_->guid();
+  });
+
+  bool added_observation = false;
+  for (size_t i = 0; i < form_structure.field_count(); i++) {
+    const AutofillField& field = *form_structure.field(i);
+    if (field.autofill_source_profile_guid() != profile_->guid()) {
+      // The field was not autofilled or autofilled with a different profile.
+      continue;
+    }
+
+    const ServerFieldType stored_type =
+        GetStoredTypeOf(field.Type().GetStorableType());
+    const FormSignatureHash hash =
+        GetFormSignatureHash(form_structure.form_signature());
+    if (auto observations = observations_.find(stored_type);
+        observations != observations_.end() &&
+        base::Contains(observations->second, hash,
+                       [](const Observation& o) { return o.form_hash; })) {
+      // An observation for the `stored_type` and `hash` was already collected.
+      continue;
+    }
+    AddObservation(stored_type,
+                   Observation{.type = GetObservationTypeFromField(
+                                   field, form_data.fields[i].value,
+                                   other_profiles, pdm.app_locale()),
+                               .form_hash = hash});
+    added_observation = true;
+  }
+  return added_observation;
 }
 
 void ProfileTokenQuality::AddObservationForTesting(
@@ -111,6 +145,32 @@ void ProfileTokenQuality::AddObservation(ServerFieldType type,
     observations.pop_front();
   }
   observations.push_back(std::move(observation));
+}
+
+ProfileTokenQuality::ObservationType
+ProfileTokenQuality::GetObservationTypeFromField(
+    const AutofillField& field,
+    std::u16string_view current_field_value,
+    const std::vector<AutofillProfile*>& other_profiles,
+    const std::string& app_locale) const {
+  CHECK(field.autofill_source_profile_guid() == profile_->guid());
+  DCHECK(!base::Contains(other_profiles, profile_->guid(),
+                         [](AutofillProfile* p) { return p->guid(); }));
+
+  const ServerFieldType type = field.Type().GetStorableType();
+  if (field.is_autofilled) {
+    // The filled value was accepted without editing.
+    return base::Contains(AutofillTable::GetStoredTypesForAutofillProfile(),
+                          type)
+               ? ObservationType::kAccepted
+               : ObservationType::kPartiallyAccepted;
+  }
+
+  // Since the `autofill_source_profile_guid()` is set and the field is not
+  // autofilled anymore, it must have been previously autofilled.
+  CHECK(field.previously_autofilled());
+  NOTIMPLEMENTED();
+  return ObservationType::kNone;
 }
 
 ProfileTokenQuality::FormSignatureHash
