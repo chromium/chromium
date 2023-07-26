@@ -115,7 +115,7 @@ source_set("interactive_ui_tests") {
   ]
 }
 
-if (include_js_tests) {
+if (include_js2gtest_tests) {
   js2gtest("interactive_ui_tests_js_webui") {
     test_type = "webui"
 

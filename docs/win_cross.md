@@ -13,6 +13,9 @@ swarming.  This document describes how to set that up, and current restrictions.
 What does *not* work:
 
 * `js2gtest` tests are omitted from the build ([bug](https://crbug.com/1010561))
+  Note that newer WebUI tests are not based on js2gtest
+  (see migration progress at [crbug.com/1457360](https://crbug.com/1457360)) and
+  are included in the build.
 * on Mac hosts, 32-bit builds don't work ([bug](https://crbug.com/794838) has
   more information, and this is unlikely to ever change)
 
