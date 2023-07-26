@@ -57,8 +57,6 @@ const char kFollowingFeedCardShownAtIndex[] =
     "ContentSuggestions.Feed.WebFeed.Shown";
 const char kAllFeedsActivityBucketsHistogram[] =
     "ContentSuggestions.Feed.AllFeeds.Activity";
-const char kAllFeedsActivityBucketsByProviderHistogram[] =
-    "ContentSuggestions.Feed.AllFeeds.Activity.ByProvider";
 const char kDiscoverFeedNoticeCardFulfilled[] =
     "ContentSuggestions.Feed.NoticeCardFulfilled2";
 const char kDiscoverFeedArticlesFetchNetworkDurationSuccess[] =

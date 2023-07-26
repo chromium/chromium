@@ -217,7 +217,6 @@ enum class FeedSortType {
   kMaxValue = kSortedByLatest,
 };
 
-// TODO(crbug.com/1447234): Clean up the kError enum.
 // The values for the Feed Activity Buckets metric.
 enum class FeedActivityBucket {
   // No activity bucket for users active 0/28 days.
@@ -249,9 +248,6 @@ extern const char kAllFeedsEngagementTypeHistogram[];
 
 // Histogram name for the feed activity bucket metric.
 extern const char kAllFeedsActivityBucketsHistogram[];
-
-// Histogram name for the feed activity bucket filter.
-extern const char kAllFeedsActivityBucketsByProviderHistogram[];
 
 // Histogram name for a Discover feed card shown at index.
 extern const char kDiscoverFeedCardShownAtIndex[];
