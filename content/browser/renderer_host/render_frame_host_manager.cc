@@ -2270,10 +2270,6 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
 
   // Experimental mode to swap BrowsingInstances on most navigations when there
   // are no other windows in the BrowsingInstance.
-  // TODO(https://crbug.com/1221127): For single-page websites, do we want to
-  // do a full proactive swap if `coop_swap_result` is kSwapRelated? See if a
-  // different BrowsingInstance in the same CoopRelatedGroup
-  // provides the same guarantees.
   return ShouldProactivelySwapBrowsingInstance(destination_url_info, is_reload,
                                                is_same_site,
                                                should_replace_current_entry);
@@ -3399,7 +3395,7 @@ void RenderFrameHostManager::CreateProxiesForNewNamedFrame(
   // BrowsingInstances, even if they are in the same CoopRelatedGroup. In that
   // case we do not need proxies and do not want to expose more than what is
   // strictly required to the renderer.
-  // TODO(https://crbug.com/1370357): this will likely need to change once we
+  // TODO(https://crbug.com/1467184): this will likely need to change once we
   // implement a more robust approach to named targeting, using per-
   // BrowsingInstance names. In that case, we'll need to create proxies across
   // BrowsingInstances to support named targeting.

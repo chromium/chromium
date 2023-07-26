@@ -895,7 +895,7 @@ bool DOMWindow::IsAccessBlockedByCoopRestrictProperties(
   // restrict window proxy access here. This prevents restricting things that
   // were not meant to. These are the cross browsing context group  accesses
   // that already existed before COOP: restrict-properties.
-  // TODO(https://crbug.com/1221127): Is there actually any scenario where
+  // TODO(https://crbug.com/1464618): Is there actually any scenario where
   // cross browsing context group was allowed before COOP: restrict-properties?
   // Verify that we need to have this check.
   if (accessing_frame->GetPage()->CoopRelatedGroupToken() !=

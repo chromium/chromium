@@ -380,7 +380,7 @@ class NoSharedArrayBufferByDefault : public CrossOriginOpenerPolicyBrowserTest {
 };
 
 // Same as CrossOriginOpenerPolicyBrowserTest, but enables COOP:
-// restrict-properties. See https://crbug.com/1221127.
+// restrict-properties.
 class CoopRestrictPropertiesBrowserTest
     : public CrossOriginOpenerPolicyBrowserTest {
  public:
@@ -7174,7 +7174,7 @@ class FrameNameChangedWaiter : public WebContentsObserver {
 
 // This test verifies that proxies usually created to support named targeting
 // are not created for cross-BrowsingInstance frames.
-// TODO(https://crbug.com/1370357): This test will likely need to change if we
+// TODO(https://crbug.com/1467184): This test will likely need to change if we
 // implement per-BrowsingInstance names. In that case, named targeting would be
 // possible using the per-BrowsingContextGroup names, and proxies should be
 // created.
@@ -8102,7 +8102,7 @@ IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesProxiesBrowserTest,
 
 // This test verifies that named targeting does not resolve across
 // BrowsingInstances.
-// TODO(https://crbug.com/1370357): Named targeting will evolve in the future,
+// TODO(https://crbug.com/1467184): Named targeting might evolve in the future,
 // when we're able to have per-BrowsingInstance names. For now, we're simply
 // blocking all named targeting.
 IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesBrowserTest,
@@ -9698,7 +9698,7 @@ IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesAccessBrowserTest,
   // Because they are in different browsing context groups in different
   // CoopRelatedGroups, access to cross-origin properties should conservatively
   // NOT be restricted.
-  // TODO(https://crbug.com/1370351): This might change in the future, if we
+  // TODO(https://crbug.com/1464618): This might change in the future, if we
   // decide to impose restrictions on all accesses from different browsing
   // context groups.
   EXPECT_TRUE(ExecJs(current_frame_host(), "window.w.blur()"));

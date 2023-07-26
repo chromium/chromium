@@ -215,7 +215,7 @@ int CrossOriginOpenerPolicyAccessReportManager::GetVirtualBrowsingContextGroup(
 
   // If a swap in the same CoopRelatedGroup would be required, create a new
   // virtual browsing context group in the current virtual CoopRelatedGroup.
-  // TODO(https://crbug.com/1424417): This is not strictly correct, because
+  // TODO(https://crbug.com/1467238): This is not strictly correct, because
   // browsing context groups can be reused when navigating in the same
   // CoopRelatedGroup. Pass in the isolation information to make it as close
   // to reality as possible.

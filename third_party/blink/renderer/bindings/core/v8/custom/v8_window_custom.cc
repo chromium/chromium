@@ -196,7 +196,7 @@ void V8Window::NamedPropertyGetterCustom(
     return;
 
   // Verify that COOP: restrict-properties does not prevent this access.
-  // TODO(https://crbug.com/1370351): This will block all same-origin only
+  // TODO(https://crbug.com/1467216): This will block all same-origin only
   // properties accesses with a "Named property" access failure, because the
   // properties will be tried here as part of the algorithm. See if we need to
   // have a custom message in that case, possibly by actually printing the
