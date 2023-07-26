@@ -2178,7 +2178,7 @@
         'filepath': 'third_party/blink/renderer/modules/webgpu/',
     },
     'webid': {
-        'filepath': 'third_party/blink/renderer/modules/webid/'\
+        'filepath': 'third_party/blink/renderer/modules/credentialmanagement/'\
                     '|third_party/blink/public/mojom/webid/'\
                     '|content/browser/webid'\
                     '|chrome/browser/.*webid',
