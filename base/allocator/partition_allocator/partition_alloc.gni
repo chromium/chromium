@@ -62,7 +62,8 @@ declare_args() {
   # PartitionAlloc.
   partition_alloc_optimized_debug = true
 
-  # PartitionAlloc-Everywhere (PA-E).
+  # PartitionAlloc-Everywhere (PA-E). Causes allocator_shim.cc to route
+  # calls to PartitionAlloc, rather than some other platform allocator.
   use_partition_alloc_as_malloc =
       use_partition_alloc && use_partition_alloc_as_malloc_default
 }
@@ -128,6 +129,10 @@ assert(!enable_pointer_compression_support || glue_core_pools,
        "Pointer compression relies on core pools being contiguous.")
 
 declare_args() {
+  # Make explicit calls to ASAN at runtime, e.g. to mark quarrantined memory
+  # as poisoned. Allows ASAN to tell if a particular memory error is protected
+  # by BRP in its reports.
+  #
   # The implementation of ASan BRP is purpose-built to inspect Chromium
   # internals and is entangled with `//base` s.t. it cannot be used
   # outside of Chromium.
@@ -167,6 +172,8 @@ declare_args() {
   # scripts to pass command line arguments.
   enable_backup_ref_ptr_feature_flag = false
 
+  # Build support for Dangling Ptr Detection (DPD) via BackupRefPtr (BRP),
+  # making the raw_ptr<T> implementation to RawPtrBackupRefImpl if active.
   enable_dangling_raw_ptr_checks =
       enable_dangling_raw_ptr_checks_default && enable_backup_ref_ptr_support
 
