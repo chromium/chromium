@@ -40,6 +40,7 @@ CLANG_SUB_REVISION = 3
 
 PACKAGE_VERSION = '%s-%s' % (CLANG_REVISION, CLANG_SUB_REVISION)
 RELEASE_VERSION = '17'
+# TODO(crbug.com/1467585): Bump to 18 in next Clang roll.
 
 CDS_URL = os.environ.get('CDS_CLANG_BUCKET_OVERRIDE',
     'https://commondatastorage.googleapis.com/chromium-browser-clang')
@@ -333,6 +334,11 @@ def main():
   parser.add_argument('--verify-version',
                       help='Verify that clang has the passed-in version.')
   args = parser.parse_args()
+
+  # TODO(crbug.com/1467585): Remove in next Clang roll.
+  if args.llvm_force_head_revision:
+    global RELEASE_VERSION
+    RELEASE_VERSION = '18'
 
   if args.verify_version and args.verify_version != RELEASE_VERSION:
     print('RELEASE_VERSION is %s but --verify-version argument was %s.' % (
