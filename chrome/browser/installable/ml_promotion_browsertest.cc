@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -26,6 +27,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/input_context.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
 #include "components/segmentation_platform/public/trigger.h"
 #include "components/segmentation_platform/public/types/processed_value.h"

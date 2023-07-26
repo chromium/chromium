@@ -19,6 +19,7 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
@@ -69,6 +70,8 @@ class FetchManifestAndInstallCommand : public WebAppCommandTemplate<NoopLock>,
   // content::WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void OnVisibilityChanged(content::Visibility visibility) override;
+  void WebContentsDestroyed() override;
 
   void Abort(webapps::InstallResultCode code);
   bool IsWebContentsDestroyed();
@@ -133,6 +136,9 @@ class FetchManifestAndInstallCommand : public WebAppCommandTemplate<NoopLock>,
   bool bypass_service_worker_check_;
   WebAppInstallDialogCallback dialog_callback_;
   OnceInstallCallback install_callback_;
+
+  bool did_navigation_occur_before_start_ = false;
+
   // Whether using fallback installation data from the document.
   bool use_fallback_ = false;
 

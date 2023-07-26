@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
@@ -690,6 +691,29 @@ TEST_F(FetchManifestAndInstallCommandTest, WriteDataToDiskFailed) {
   const base::FilePath app_dir =
       manifest_resources_directory.AppendASCII(kWebAppId);
   EXPECT_FALSE(file_utils().DirectoryExists(app_dir));
+}
+
+TEST_F(FetchManifestAndInstallCommandTest, WebContentsNavigates) {
+  SetupPageState();
+  base::test::TestFuture<const AppId&, webapps::InstallResultCode>
+      install_future;
+  provider()->scheduler().FetchManifestAndInstall(
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+      web_contents()->GetWeakPtr(),
+      /*bypass_service_worker_check=*/false,
+      CreateDialogCallback(true, mojom::UserDisplayMode::kStandalone),
+      install_future.GetCallback(), /*use_fallback=*/false);
+  // The command is always started asynchronously, so this immediate
+  // navigation should test that it correctly handles navigation before
+  // starting.
+  content::WebContentsTester* tester =
+      content::WebContentsTester::For(web_contents());
+  ASSERT_TRUE(tester);
+  tester->NavigateAndCommit(GURL("https://other_origin.com/path/index.html"));
+  ASSERT_TRUE(install_future.Wait());
+  EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
+            webapps::InstallResultCode::kCancelledDueToMainFrameNavigation);
+  EXPECT_FALSE(provider()->registrar_unsafe().IsLocallyInstalled(kWebAppId));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

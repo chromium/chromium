@@ -77,7 +77,7 @@ MATCHER(TrainingLabelEmpty, "no training labels present") {
 MATCHER_P2(HasTrainingLabel,
            histogram_name,
            histogram_value,
-           base::StrCat({"histogram with name", histogram_name, " and value ",
+           base::StrCat({"histogram with name ", histogram_name, " and value ",
                          testing::PrintToString(histogram_value)})) {
   return testing::ExplainMatchResult(
       testing::Field(

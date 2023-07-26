@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_SEGMENTATION_PLATFORM_SERVICE_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_SEGMENTATION_PLATFORM_SERVICE_H_
 
+#include <iosfwd>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -45,6 +46,9 @@ struct TrainingLabels {
   absl::optional<std::pair<std::string, base::HistogramBase::Sample>>
       output_metric;
 };
+
+// For test support & debugging.
+std::ostream& operator<<(std::ostream& out, const TrainingLabels& labels);
 
 // The core class of segmentation platform that integrates all the required
 // pieces on the client side.
