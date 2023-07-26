@@ -459,6 +459,12 @@ void SavedTabGroupBar::OnWidgetDestroying(views::Widget* widget) {
 }
 
 int SavedTabGroupBar::CalculatePreferredWidthRestrictedBy(int max_x) {
+  // Happens when the browser is in incognito mode.
+  // TODO(crbug/1467894): Only add SavedTabGroupBar with regular profiles.
+  if (children().empty()) {
+    return 0;
+  }
+
   // Remove extra padding from the last button in the following loop if there is
   // a button visible. children() is never empty because the overflow button is
   // always added even when there are no groups.
