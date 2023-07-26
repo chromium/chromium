@@ -37,7 +37,7 @@ sys.path.append(
 # this back to its previous value _AND_ set `OVERRIDE_CLANG_REVISION` below
 # to the `CLANG_REVISION` that was in place before the roll.
 RUST_REVISION = '006a26c0b546abc0fbef59a773639582b641e500'
-RUST_SUB_REVISION = 6
+RUST_SUB_REVISION = 8
 
 # If not None, this overrides the `CLANG_REVISION` in
 # //tools/clang/scripts/update.py in order to download a Rust toolchain that
@@ -140,10 +140,7 @@ def main():
         DownloadAndUnpack(url, THIRD_PARTY_DIR)
         # The archive contains a VERSION file. Copy it to INSTALLED_VERSION as
         # the very last step in case the unpack fails after writing VERSION.
-        #
-        # TODO(danakj): Re-enable this when build_rust.py generates a
-        #  VERSION_SRC_PATH file instead of a VERSION_STAMP_PATH file.
-        # shutil.copyfile(VERSION_SRC_PATH, VERSION_STAMP_PATH)
+        shutil.copyfile(VERSION_SRC_PATH, VERSION_STAMP_PATH)
     except urllib.error.HTTPError as e:
         print(f'error: Failed to download Rust package')
         return 1

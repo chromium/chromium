@@ -25,7 +25,7 @@ sys.path.append(
                  'scripts'))
 
 from build import (CheckoutGitRepo, DownloadAndUnpack, LLVM_BUILD_TOOLS_DIR,
-                   MaybeDownloadHostGcc, RunCommand)
+                   DownloadDebianSysroot, MaybeDownloadHostGcc, RunCommand)
 from update import (RmTree)
 
 # The git hash to use.
@@ -97,11 +97,16 @@ def main():
         return 1
 
     args.gcc_toolchain = None
+    debian_sysroot = None
     if sys.platform.startswith('linux'):
         # Fetch GCC package to build against same libstdc++ as Clang. This
         # function will only download it if necessary, and it will set the
         # `args.gcc_toolchain` if so.
         MaybeDownloadHostGcc(args)
+
+        # Fetch debian sysroot, so that we don't require system dylibs to be
+        # newer than our minimum supported build host.
+        debian_sysroot = DownloadDebianSysroot('amd64')
 
     ncursesw_dir = None
     if sys.platform.startswith('linux'):
@@ -193,6 +198,12 @@ def main():
     env['LD'] = linker
     env['RUSTFLAGS'] += f' -Clinker={linker}'
 
+    if debian_sysroot:
+        sysroot_flag = f'--sysroot={debian_sysroot}'
+        env['CFLAGS'] += f' {sysroot_flag}'
+        env['CXXFLAGS'] += f' {sysroot_flag}'
+        env['LDFLAGS'] += f' {sysroot_flag}'
+        env['RUSTFLAGS'] += f' -Clink-arg={sysroot_flag} -L native={debian_sysroot}/usr/lib/gcc/x86_64-linux-gnu/10/'
     if args.gcc_toolchain:
         # We use these flags to avoid linking with the system libstdc++.
         gcc_toolchain_flag = f'--gcc-toolchain={args.gcc_toolchain}'

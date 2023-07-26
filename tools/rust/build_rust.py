@@ -54,14 +54,14 @@ sys.path.append(
                  'scripts'))
 
 from build import (AddCMakeToPath, AddZlibToPath, CheckoutGitRepo,
-                   GetLibXml2Dirs, LLVM_BUILD_TOOLS_DIR, MaybeDownloadHostGcc,
-                   RunCommand)
+                   DownloadDebianSysroot, GetLibXml2Dirs, LLVM_BUILD_TOOLS_DIR,
+                   MaybeDownloadHostGcc, RunCommand)
 from update import (CHROMIUM_DIR, DownloadAndUnpack, EnsureDirExists,
                     GetDefaultHostOs, RmTree, UpdatePackage)
 
 from update_rust import (RUST_REVISION, RUST_TOOLCHAIN_OUT_DIR,
-                         STAGE0_JSON_SHA256, THIRD_PARTY_DIR,
-                         VERSION_STAMP_PATH, GetRustClangRevision)
+                         STAGE0_JSON_SHA256, THIRD_PARTY_DIR, VERSION_SRC_PATH,
+                         GetRustClangRevision)
 
 EXCLUDED_TESTS = [
     # https://github.com/rust-lang/rust/issues/45222 which appears to have
@@ -298,7 +298,7 @@ class XPy:
     runs. '''
 
     def __init__(self, zlib_path, libxml2_dirs, build_mac_arm,
-                 gcc_toolchain_path, verbose):
+                 gcc_toolchain_path, debian_sysroot, verbose):
         self._env = collections.defaultdict(str, os.environ)
         self._build_mac_arm = build_mac_arm
         self._verbose = verbose
@@ -374,19 +374,61 @@ class XPy:
             self._env['RUSTFLAGS_NOT_BOOTSTRAP'] += (
                 f' -Clink-arg={LD_PATH_FLAG}{libxml2_dirs.lib_dir}')
 
+        if debian_sysroot:
+            # This mainly influences the glibc version that rustc itself needs.
+            sysroot_cflag = f'--sysroot={debian_sysroot}'
+
+            # TODO(crbug.com/1459650): fix the next two lines to refer to
+            # CXXFLAGS and LDFLAGS. Although just setting CFLAGS gets the
+            # correct result, all three should be set in case the Rust build
+            # changes later.
+            self._env['CFLAGS_x86_64-unknown-linux-gnu'] += f' {sysroot_cflag}'
+            # self._env['CFLAGS_x86_64-unknown-linux-gnu'] += f' {sysroot_cflag}'
+            # self._env['CFLAGS_x86_64-unknown-linux-gnu'] += f' {sysroot_cflag}'
+
+            # Note: we only set the sysroot for 64-bit since only libstd is
+            # built for 32-bit, and that is only built as a workaround.
+            #
+            # TODO(crbug.com/1467003): once we only target 64-bit replace the
+            # target-specific env vars with the regular ones.
+            self._env['CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAGS'] += (
+                f' -Clink-arg={sysroot_cflag}')
+
+            # pkg-config will by default look for system-wide libs. This tells
+            # it to look exclusively in the sysroot instead.
+            self._env['PKG_CONFIG_SYSROOT_DIR'] = debian_sysroot
+
+            # Due to an interaction with the above flags, we must tell lzma-sys
+            # explicitly to build it from source.
+            self._env['LZMA_API_STATIC'] = '1'
+
         if gcc_toolchain_path:
             # We use these flags to avoid linking with the system libstdc++.
             gcc_toolchain_flag = f'--gcc-toolchain={gcc_toolchain_path}'
-            self._env['CFLAGS'] += f' {gcc_toolchain_flag}'
-            self._env['CXXFLAGS'] += f' {gcc_toolchain_flag}'
-            self._env['LDFLAGS'] += f' {gcc_toolchain_flag}'
+            self._env[
+                'CFLAGS'] += f' {gcc_toolchain_flag} -B{gcc_toolchain_path}/lib64'
+            self._env[
+                'CXXFLAGS'] += f' {gcc_toolchain_flag} -B{gcc_toolchain_path}/lib64'
+            self._env[
+                'LDFLAGS'] += f' {gcc_toolchain_flag} -B{gcc_toolchain_path}/lib64'
             # A `-Clink-arg=<foo>` arg passes `foo`` to the linker invovation.
+            # clang also misses a path that contains the appropriate
+            # libgcc_s.so, so add that explicitly to rustc invocations (since
+            # -lgcc_s comes from rustc through a #[link] directive in libstd).
             self._env['RUSTFLAGS_BOOTSTRAP'] += (
                 f' -Clink-arg={gcc_toolchain_flag}')
             self._env['RUSTFLAGS_NOT_BOOTSTRAP'] += (
                 f' -Clink-arg={gcc_toolchain_flag}')
             self._env['RUSTFLAGS_BOOTSTRAP'] += (
+                f' -L native={gcc_toolchain_path}/lib32')
+            self._env['RUSTFLAGS_BOOTSTRAP'] += (
                 f' -L native={gcc_toolchain_path}/lib64')
+            self._env['RUSTFLAGS_NOT_BOOTSTRAP'] += (
+                f' -L native={gcc_toolchain_path}/lib32')
+            self._env['RUSTFLAGS_NOT_BOOTSTRAP'] += (
+                f' -L native={gcc_toolchain_path}/lib64')
+            # TODO(crbug.com/1467003): once we only target 64-bit replace the
+            # target-specific env vars with the regular ones.
             self._env['CARGO_TARGET_I686_UNKNOWN_LINUX_GNU_RUSTFLAGS'] += (
                 f' -L native={gcc_toolchain_path}/lib32')
             self._env['CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAGS'] += (
@@ -461,6 +503,10 @@ class XPy:
             cmd.append('-' + self._verbose * 'v')
         RunCommand(cmd + args, setenv=True, env=self._env)
         os.chdir(CHROMIUM_DIR)
+
+    def get_env(self):
+        ''' The environment variables set for x.py invocations, as a dict. '''
+        return self._env
 
 
 # Get arguments to run desired test suites, minus disabled tests.
@@ -612,6 +658,12 @@ def main():
         help=
         'checkout Rust, verify the stage0 hash, then quit without building. '
         'Will print the actual hash if different than expected.')
+    parser.add_argument(
+        '--dump-env',
+        action='store_true',
+        help=
+        'dump all environment variables set for x.py to a file `rust-build-env`'
+    )
     parser.add_argument('--skip-checkout',
                         action='store_true',
                         help='do not create or update any checkouts')
@@ -657,11 +709,17 @@ def main():
         return 1
 
     args.gcc_toolchain = None
+    debian_sysroot = None
     if sys.platform.startswith('linux') and not args.sync_for_gnrt:
         # Fetch GCC package here and pass it to build.py to avoid it doing the
         # same again. Used for the LLVM build and for any C/C++ targets inside
         # the Rust toolchain build.
         MaybeDownloadHostGcc(args)
+
+        # Fetch sysroot we build rustc against. This ensures a minimum supported
+        # host (not Chromium target). Since the rustc linux package is for
+        # x86_64 only, that is the sole needed sysroot.
+        debian_sysroot = DownloadDebianSysroot('amd64')
 
     # Require zlib compression.
     if sys.platform == 'win32':
@@ -684,7 +742,12 @@ def main():
         AddOpenSSLToEnv(args.build_mac_arm)
 
     xpy = XPy(zlib_path, libxml2_dirs, args.build_mac_arm, args.gcc_toolchain,
-              args.verbose)
+              debian_sysroot, args.verbose)
+
+    if args.dump_env:
+        with open('rust-build-env', 'w') as f:
+            for name, val in xpy.get_env().items():
+                print(f'{name}={val}', file=f)
 
     # Assume the checkout has already been prepared. A full build or a
     # --prepare-run-xpy run will set it up.
@@ -762,12 +825,12 @@ def main():
             building_for_host_triple
         ])
     elif sys.platform.startswith('linux'):
-        # We have Linux x86 machines, and they need the prebuilt stdlib to be
-        # available for them in the same package.
+        # TODO(crbug.com/1467003): remove the 32-bit linux libstd build, which
+        # is no longer needed.
         #
-        # TODO(crbug.com/1448334): or sys.platform == 'win32':
-        # Windows x64 targeting x86 uses x86 as the host toolchain too in our
-        # GN rules, so we need the stdlib to be available for x86.
+        # TODO(crbug.com/1448334): or sys.platform == 'win32': Windows x64
+        # targeting x86 uses x86 as the host toolchain too in our GN rules, so
+        # we need the stdlib to be available for x86.
         x86_target_triple = RustTargetTriple(target_x86=True)
         xpy_args.extend([
             # The compiler will build stuff for the host, and
@@ -813,7 +876,7 @@ def main():
     print(f'Copying vendored dependencies to {RUST_TOOLCHAIN_OUT_DIR} ...')
     shutil.copytree(RUST_SRC_VENDOR_DIR, RUST_TOOLCHAIN_SRC_DIST_VENDOR_DIR)
 
-    with open(VERSION_STAMP_PATH, 'w') as stamp:
+    with open(VERSION_SRC_PATH, 'w') as stamp:
         stamp.write(MakeVersionStamp(checkout_revision))
 
     return 0

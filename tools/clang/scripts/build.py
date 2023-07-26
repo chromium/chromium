@@ -436,8 +436,6 @@ def MaybeDownloadHostGcc(args):
   if args.gcc_toolchain:
     return
   gcc_dir = os.path.join(LLVM_BUILD_TOOLS_DIR, 'gcc-10.2.0-bionic')
-  if os.path.isdir(gcc_dir):
-    RmTree(gcc_dir)  # TODO(thakis): Remove this branch after a few weeks.
   if not os.path.exists(gcc_dir):
     DownloadAndUnpack(CDS_URL + '/tools/gcc-10.2.0-bionic.tgz', gcc_dir)
   args.gcc_toolchain = gcc_dir
@@ -496,6 +494,36 @@ def CopyLibstdcpp(args, build_dir):
 
   EnsureDirExists(os.path.join(build_dir, 'lib'))
   CopyFile(libstdcpp, os.path.join(build_dir, 'lib'))
+
+
+def DownloadDebianSysroot(platform_name):
+  # Download sysroots. This uses basically Chromium's sysroots, but with
+  # minor changes:
+  # - glibc version bumped to 2.18 to make __cxa_thread_atexit_impl
+  #   work (clang can require 2.18; chromium currently doesn't)
+  # - libcrypt.so.1 reversioned so that crypt() is picked up from glibc
+  # The sysroot was built at
+  # https://chromium-review.googlesource.com/c/chromium/src/+/3684954/1
+  # and the hashes here are from sysroots.json in that CL.
+  toolchain_bucket = 'https://commondatastorage.googleapis.com/chrome-linux-sysroot/toolchain/'
+
+  hashes = {
+      # hash from https://chromium-review.googlesource.com/c/chromium/src/+/3684954/1/build/linux/sysroot_scripts/sysroots.json#3
+      'amd64': '2028cdaf24259d23adcff95393b8cc4f0eef714b',
+      # hash from https://chromium-review.googlesource.com/c/chromium/src/+/3684954/1/build/linux/sysroot_scripts/sysroots.json#23
+      'i386': 'a033618b5e092c86e96d62d3c43f7363df6cebe7',
+      # hash from https://chromium-review.googlesource.com/c/chromium/src/+/3684954/1/build/linux/sysroot_scripts/sysroots.json#8
+      'arm': '0b9a3c54d2d5f6b1a428369aaa8d7ba7b227f701',
+      # hash from https://chromium-review.googlesource.com/c/chromium/src/+/3684954/1/build/linux/sysroot_scripts/sysroots.json#12
+      'arm64': '0e28d9832614729bb5b731161ff96cb4d516f345',
+  }
+
+  toolchain_name = f'debian_bullseye_{platform_name}_sysroot'
+  output = os.path.join(LLVM_BUILD_TOOLS_DIR, toolchain_name)
+  U = toolchain_bucket + hashes[platform_name] + '/' + toolchain_name + '.tar.xz'
+  DownloadAndUnpack(U, output)
+
+  return output
 
 
 def compiler_rt_cmake_flags(*, sanitizers, profile):
@@ -789,47 +817,10 @@ def main():
       base_cmake_args += [ '-DLLVM_STATIC_LINK_CXX_STDLIB=ON' ]
 
   if sys.platform.startswith('linux'):
-    # Download sysroots. This uses basically Chromium's sysroots, but with
-    # minor changes:
-    # - glibc version bumped to 2.18 to make __cxa_thread_atexit_impl
-    #   work (clang can require 2.18; chromium currently doesn't)
-    # - libcrypt.so.1 reversioned so that crypt() is picked up from glibc
-    # The sysroot was built at
-    # https://chromium-review.googlesource.com/c/chromium/src/+/3684954/1
-    # and the hashes here are from sysroots.json in that CL.
-    toolchain_bucket = 'https://commondatastorage.googleapis.com/chrome-linux-sysroot/toolchain/'
-
-    # amd64
-    # hash from https://chromium-review.googlesource.com/c/chromium/src/+/3684954/1/build/linux/sysroot_scripts/sysroots.json#3
-    toolchain_hash = '2028cdaf24259d23adcff95393b8cc4f0eef714b'
-    toolchain_name = 'debian_bullseye_amd64_sysroot'
-    U = toolchain_bucket + toolchain_hash + '/' + toolchain_name + '.tar.xz'
-    sysroot_amd64 = os.path.join(LLVM_BUILD_TOOLS_DIR, toolchain_name)
-    DownloadAndUnpack(U, sysroot_amd64)
-
-    # i386
-    # hash from https://chromium-review.googlesource.com/c/chromium/src/+/3684954/1/build/linux/sysroot_scripts/sysroots.json#23
-    toolchain_hash = 'a033618b5e092c86e96d62d3c43f7363df6cebe7'
-    toolchain_name = 'debian_bullseye_i386_sysroot'
-    U = toolchain_bucket + toolchain_hash + '/' + toolchain_name + '.tar.xz'
-    sysroot_i386 = os.path.join(LLVM_BUILD_TOOLS_DIR, toolchain_name)
-    DownloadAndUnpack(U, sysroot_i386)
-
-    # arm
-    # hash from https://chromium-review.googlesource.com/c/chromium/src/+/3684954/1/build/linux/sysroot_scripts/sysroots.json#8
-    toolchain_hash = '0b9a3c54d2d5f6b1a428369aaa8d7ba7b227f701'
-    toolchain_name = 'debian_bullseye_arm_sysroot'
-    U = toolchain_bucket + toolchain_hash + '/' + toolchain_name + '.tar.xz'
-    sysroot_arm = os.path.join(LLVM_BUILD_TOOLS_DIR, toolchain_name)
-    DownloadAndUnpack(U, sysroot_arm)
-
-    # arm64
-    # hash from https://chromium-review.googlesource.com/c/chromium/src/+/3684954/1/build/linux/sysroot_scripts/sysroots.json#12
-    toolchain_hash = '0e28d9832614729bb5b731161ff96cb4d516f345'
-    toolchain_name = 'debian_bullseye_arm64_sysroot'
-    U = toolchain_bucket + toolchain_hash + '/' + toolchain_name + '.tar.xz'
-    sysroot_arm64 = os.path.join(LLVM_BUILD_TOOLS_DIR, toolchain_name)
-    DownloadAndUnpack(U, sysroot_arm64)
+    sysroot_amd64 = DownloadDebianSysroot('amd64')
+    sysroot_i386 = DownloadDebianSysroot('i386')
+    sysroot_arm = DownloadDebianSysroot('arm')
+    sysroot_arm64 = DownloadDebianSysroot('arm64')
 
     # Add the sysroot to base_cmake_args.
     if platform.machine() == 'aarch64':
