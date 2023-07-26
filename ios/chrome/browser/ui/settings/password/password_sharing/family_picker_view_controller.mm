@@ -8,6 +8,9 @@
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_cell.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/recipient_info.h"
+#import "ios/chrome/common/string_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -53,14 +56,18 @@ const CGFloat kAccessorySymbolSize = 22;
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  [tableView cellForRowAtIndexPath:indexPath].accessoryView =
-      [[UIImageView alloc] initWithImage:[self checkmarkCircleIcon]];
+  if (_recipients[indexPath.row].isEligible) {
+    [tableView cellForRowAtIndexPath:indexPath].accessoryView =
+        [[UIImageView alloc] initWithImage:[self checkmarkCircleIcon]];
+  }
 }
 
 - (void)tableView:(UITableView*)tableView
     didDeselectRowAtIndexPath:(NSIndexPath*)indexPath {
-  [tableView cellForRowAtIndexPath:indexPath].accessoryView =
-      [[UIImageView alloc] initWithImage:[self circleIcon]];
+  if (_recipients[indexPath.row].isEligible) {
+    [tableView cellForRowAtIndexPath:indexPath].accessoryView =
+        [[UIImageView alloc] initWithImage:[self circleIcon]];
+  }
 }
 
 #pragma mark - UITableViewDataSource
@@ -85,9 +92,17 @@ const CGFloat kAccessorySymbolSize = 22;
   // TODO(crbug.com/1463882): Replace with the actual image of the recipient.
   cell.image = DefaultSymbolTemplateWithPointSize(
       kPersonCropCircleSymbol, kAccountProfilePhotoDimension);
-  cell.accessoryView = [[UIImageView alloc] initWithImage:[self circleIcon]];
-
   cell.userInteractionEnabled = YES;
+  if (_recipients[indexPath.row].isEligible) {
+    cell.accessoryView = [[UIImageView alloc] initWithImage:[self circleIcon]];
+  } else {
+    UIButton* infoButton = [UIButton buttonWithType:UIButtonTypeInfoLight];
+    [infoButton setImage:[self infoCircleIcon] forState:UIControlStateNormal];
+    [infoButton addTarget:self
+                   action:@selector(infoButtonTapped:)
+         forControlEvents:UIControlEventTouchUpInside];
+    cell.accessoryView = infoButton;
+  }
 
   return cell;
 }
@@ -118,6 +133,46 @@ const CGFloat kAccessorySymbolSize = 22;
 
 - (UIImage*)circleIcon {
   return DefaultSymbolWithPointSize(kCircleSymbol, kAccessorySymbolSize);
+}
+
+- (UIImage*)infoCircleIcon {
+  return DefaultSymbolWithPointSize(kInfoCircleSymbol, kAccessorySymbolSize);
+}
+
+- (void)infoButtonTapped:(UIButton*)button {
+  NSString* text =
+      l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_FAMILY_MEMBER_INELIGIBLE);
+
+  NSDictionary* textAttributes = @{
+    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
+    NSFontAttributeName :
+        [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]
+  };
+
+  NSDictionary* linkAttributes = @{
+    NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
+    NSFontAttributeName :
+        [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline],
+    // TODO(crbug.com/1463882): Add HC article link once it's ready.
+    NSLinkAttributeName : @"",
+  };
+
+  PopoverLabelViewController* popoverViewController =
+      [[PopoverLabelViewController alloc]
+          initWithPrimaryAttributedString:AttributedStringFromStringWithLink(
+                                              text, textAttributes,
+                                              linkAttributes)
+                secondaryAttributedString:nil];
+
+  popoverViewController.popoverPresentationController.sourceView = button;
+  popoverViewController.popoverPresentationController.sourceRect =
+      button.bounds;
+  popoverViewController.popoverPresentationController.permittedArrowDirections =
+      UIPopoverArrowDirectionAny;
+
+  [self presentViewController:popoverViewController
+                     animated:YES
+                   completion:nil];
 }
 
 @end

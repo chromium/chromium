@@ -2845,6 +2845,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION_OPTED_IN_LEARN_MORE" desc="Section title in settings > password, allow to learn more about on-device encryption. [iOS Only]">
         Learn More
       </message>
+      <message name="IDS_IOS_PASSWORD_SHARING_FAMILY_MEMBER_INELIGIBLE" desc="Info text in the recipient picker view of the password sharing flow explaining why one of the family members is not eligible to be a recipient. [iOS Only]">
+        Your family member can't receive passwords right now. Ask them to update Chrome and sync their passwords. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
+      </message>
       <message name="IDS_IOS_PASSWORD_SHARING_FAMILY_PICKER_SUBTITLE" desc="Header text in the view that allows to choose recipients for password sharing from a list of family members explaining what happens when the user shares their password with them. [iOS Only]">
         When you share a copy of your username and password, your family member can fill them using Google Password Manager.
       </message>

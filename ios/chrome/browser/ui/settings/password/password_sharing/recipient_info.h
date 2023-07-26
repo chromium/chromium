@@ -17,6 +17,9 @@
 // Email address of the recipient.
 @property(nonatomic, copy) NSString* email;
 
+// Whether the recipient is eligible to receive a shared password.
+@property(nonatomic, assign) BOOL isEligible;
+
 // TODO(crbug.com/1463882): Replace with constructor taking
 // password_manager::RecipientInfo struct once its implementation is finalized.
 - (instancetype)init;
