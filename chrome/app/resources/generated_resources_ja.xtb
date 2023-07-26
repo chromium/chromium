@@ -192,7 +192,7 @@
 <translation id="1155816283571436363">スマートフォンに接続しています</translation>
 <translation id="1158080958325422608">大文字にする</translation>
 <translation id="1158238185437008462">思い出の写真を表示</translation>
-<translation id="1160842321113409343">ユーザーのプライバシーを保護するために、4 週間以上経過したサイトはリストから自動削除されます。再度アクセスしたサイトが、またリストに表示される場合があります。ユーザーの興味 / 関心を定義させたくないサイトを完全に削除することもできます。</translation>
+<translation id="1160842321113409343">ユーザーのプライバシーを保護するため、4 週間以上経過したウェブサイトはリストから自動削除されます。ウェブサイトにもう一度アクセスすると、リストに再度表示される場合もあります。ユーザーの興味 / 関心を定義させたくないウェブサイトを完全に削除することもできます。</translation>
 <translation id="1161575384898972166">クライアント証明書をエクスポートするには <ph name="TOKEN_NAME" /> にログインしてください。</translation>
 <translation id="116173250649946226">デフォルトのテーマは管理者が設定しており、変更できません。</translation>
 <translation id="1162213688509394031">タイトルバーを非表示</translation>
@@ -791,7 +791,7 @@
 <translation id="164936512206786300">Bluetooth デバイスのペア設定の解除</translation>
 <translation id="1651008383952180276">同じパスフレーズを 2 回入力する必要があります</translation>
 <translation id="1652326691684645429">ニアバイシェアを有効にする</translation>
-<translation id="1654580009054503925">リクエストの表示を許可しないサイト</translation>
+<translation id="1654580009054503925">リクエストの表示を許可しないウェブサイト</translation>
 <translation id="1656528038316521561">背景の透明度</translation>
 <translation id="1657406563541664238">使用統計データや障害レポートを Google に自動送信して <ph name="PRODUCT_NAME" /> の機能向上に役立てる</translation>
 <translation id="1657937299377480641">教育リソースにアクセスするために再度ログインするには、保護者の方に許可してもらってください</translation>
@@ -1846,7 +1846,7 @@
 <translation id="2532589005999780174">ハイコントラスト モード</translation>
 <translation id="2533649878691950253">通常、正確な位置情報の共有が許可されていないため、このサイトでも許可されていません</translation>
 <translation id="253434972992662860">一時停止(&amp;P)</translation>
-<translation id="253498598929009420">サイトは画面上のコンテンツを読み取ることができます</translation>
+<translation id="253498598929009420">ウェブサイトは画面上のコンテンツを読み取ることができます</translation>
 <translation id="253557089021624350">キープアライブ カウント</translation>
 <translation id="2535799430745250929">モバイル ネットワークがありません</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" /> は次のファイルとフォルダを表示、編集できます</translation>
@@ -3169,7 +3169,7 @@
 <translation id="3708295717182051206">字幕</translation>
 <translation id="3708684582558000260">閉じたサイトにデータの送受信の完了を許可しない</translation>
 <translation id="3709244229496787112">ダウンロードの完了前に、ブラウザがシャットダウンされました。</translation>
-<translation id="371174301504454251">ユーザーのプライバシーを保護するために、4 週間以上経過したサイトはリストから自動削除されます。再度アクセスしたサイトが、またリストに表示される場合があります。ユーザーの興味 / 関心を定義させたくないサイトを完全に削除することもできます。</translation>
+<translation id="371174301504454251">ユーザーのプライバシーを保護するため、4 週間以上経過したウェブサイトはリストから自動削除されます。ウェブサイトにもう一度アクセスすると、リストに再度表示される場合もあります。ユーザーの興味 / 関心を定義させたくないウェブサイトを完全に削除することもできます。</translation>
 <translation id="3711931198657368127">貼り付けて <ph name="URL" /> に移動</translation>
 <translation id="3711945201266135623">プリント サーバーで <ph name="NUM_PRINTERS" /> 個のプリンタが見つかりました</translation>
 <translation id="3712050472459130149">アカウントの更新が必要です</translation>
@@ -3477,7 +3477,7 @@
 <translation id="3957079323242030166">バックアップ データは、ドライブの保存容量にはカウントされません。</translation>
 <translation id="3957844511978444971">[同意する] をタップすると、この Google サービスの設定の選択内容を確認したことになります。</translation>
 <translation id="3958088479270651626">ブックマークと設定のインポート</translation>
-<translation id="3958110062351175311">ツールバーでのリクエストの表示を許可するサイト</translation>
+<translation id="3958110062351175311">ツールバーでのリクエストの表示を許可するウェブサイト</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" /> に対するその他の操作</translation>
 <translation id="3962119236270174787">危険だと認識されているウェブサイト、ダウンロード、拡張機能から標準的な方法で保護します</translation>
@@ -3739,7 +3739,7 @@
 <translation id="4205157409548006256">Linux の設定中にエラーが発生しました。</translation>
 <translation id="4206144641569145248">エイリアン</translation>
 <translation id="4206323443866416204">ご意見の報告</translation>
-<translation id="4206585797409671301">リクエストの表示を許可するサイト</translation>
+<translation id="4206585797409671301">リクエストの表示を許可するウェブサイト</translation>
 <translation id="4207932031282227921">権限がリクエストされました。対応するには、F6 キーを押してください</translation>
 <translation id="4208390505124702064"><ph name="SITE_NAME" /> を検索</translation>
 <translation id="4209092469652827314">大</translation>
@@ -5322,7 +5322,7 @@
 <translation id="5633149627228920745">システム要件の詳細</translation>
 <translation id="563371367637259496">モバイル</translation>
 <translation id="5634446357546764049">最近の旅行の思い出などを見る</translation>
-<translation id="5635091213277904818">Chrome では、30 日以上経過したウェブサイトは自動削除されます。再度アクセスすると、リストに再度表示される場合があります。広告の提案を行わないようウェブサイトをブロックすることもできます。</translation>
+<translation id="5635091213277904818">Chrome では、30 日以上経過したウェブサイトは自動削除されます。ウェブサイトにもう一度アクセスすると、リストに再度表示される場合もあります。広告の提案を行わないようウェブサイトをブロックすることもできます。</translation>
 <translation id="5635312199252507107">特定のサイトで許可する</translation>
 <translation id="563535393368633106">アクセスする前に確認する（推奨）</translation>
 <translation id="5636012309446422"><ph name="PRIMARY_EMAIL" /> から <ph name="DEVICE" /> を削除しますか？</translation>
@@ -8174,7 +8174,7 @@
 <translation id="8141725884565838206">パスワードを管理する</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{動画}other{# 件の動画}}</translation>
 <translation id="8143442547342702591">無効なアプリケーション</translation>
-<translation id="8143609395536282994">データを管理する方法:</translation>
+<translation id="8143609395536282994">データの管理方法:</translation>
 <translation id="8145170459658034418">メモリセーバー</translation>
 <translation id="8146177459103116374">このデバイスでの登録が済んでいる場合は<ph name="LINK2_START" />既存のユーザー<ph name="LINK2_END" />としてログインできます。</translation>
 <translation id="8146287226035613638">使用する言語とその順序を設定できます。ウェブサイトは指定した言語で表示されるようになります（可能な場合）。これらの設定はブラウザの設定と同期されています。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -9028,7 +9028,7 @@
 <translation id="8881020143150461183">もう一度お試しください。技術的なサポートについては、<ph name="CARRIER_NAME" /> にお問い合わせください。</translation>
 <translation id="888256071122006425">マウスとタッチパッドの設定</translation>
 <translation id="8883273463630735858">タッチパッド アクセラレーションを有効にする</translation>
-<translation id="8884023684057697730"><ph name="BEGIN_BOLD" />データを管理する方法:<ph name="END_BOLD" /> ユーザーのプライバシーを保護するために、4 週間以上経過したサイトはリストから自動削除されます。再度アクセスしたサイトが、またリストに表示される場合があります。ユーザーの興味 / 関心を定義させたくないサイトを完全に削除することもできます。</translation>
+<translation id="8884023684057697730"><ph name="BEGIN_BOLD" />データの管理方法:<ph name="END_BOLD" /> ユーザーのプライバシーを保護するため、4 週間以上経過したウェブサイトはリストから自動削除されます。ウェブサイトにもう一度アクセスすると、リストに再度表示される場合もあります。ユーザーの興味 / 関心を定義させたくないウェブサイトを完全に削除することもできます。</translation>
 <translation id="8884570509232205463">デバイスは <ph name="UNLOCK_TIME" /> にロックされるようになりました。</translation>
 <translation id="8888253246822647887">アップグレードが完了するとアプリが起動します。アップグレードには数分かかることがあります。</translation>
 <translation id="8889294078294184559">それ以降にアクセスしたサイトは、あなたが実在のユーザーであることを、前にアクセスしたサイトから Chrome を介して確認できます。</translation>
@@ -9099,7 +9099,7 @@
 <translation id="8953476467359856141">充電時</translation>
 <translation id="895347679606913382">開始しています...</translation>
 <translation id="8957757410289731985">プロフィールをカスタマイズ</translation>
-<translation id="8959144235813727886">サイトとアプリ</translation>
+<translation id="8959144235813727886">ウェブサイトとアプリ</translation>
 <translation id="895944840846194039">JavaScript メモリ</translation>
 <translation id="8960208913905765425">クイック アンサーの単位変換</translation>
 <translation id="8960638196855923532">スマートフォンの通知とアプリを表示できるようになりました</translation>

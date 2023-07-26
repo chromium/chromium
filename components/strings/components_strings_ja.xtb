@@ -312,7 +312,7 @@
 <translation id="168693727862418163">このポリシーの値は、スキーマの検証でエラーとなったため無視されます。</translation>
 <translation id="168841957122794586">サーバー証明書に脆弱な暗号鍵が含まれています。</translation>
 <translation id="1689333818294560261">ニックネーム</translation>
-<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />データを管理する方法:<ph name="END_BOLD" /> Chrome では、4 週間以上経過したトピックが自動削除されます。サイトを引き続きブラウジングしていると、トピックがリストに再度表示される場合もあります。また、Chrome の設定では、サイトと共有しないトピックをブロックしたり、広告のトピックを無効にしたりすることがいつでも可能です。</translation>
+<translation id="1697430960030447570"><ph name="BEGIN_BOLD" />データの管理方法:<ph name="END_BOLD" /> Chrome では、4 週間以上経過したトピックは自動削除されます。ウェブサイトを引き続き閲覧していると、トピックがリストに再度表示される場合もあります。また、Chrome の設定で、いつでもウェブサイトと共有しないトピックをブロックしたり、広告のトピックを無効にしたりすることができます。</translation>
 <translation id="1697532407822776718">設定が完了しました。</translation>
 <translation id="1699651774646344471">Google アカウントに保存した住所を使用できるようになりました</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1188,7 +1188,7 @@
 <translation id="3906954721959377182">タブレット</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">この設定は Chrome の設定でいつでも変更できます</translation>
-<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />データを管理する方法:<ph name="END_BOLD" /> 30 日以上経過したサイトは自動削除されます。サイトにもう一度アクセスすると、リストに再度表示される場合もあります。また、Chrome の設定でいつでも、ウェブサイトによる広告の提案をブロックしたり、サイト提案広告を無効にしたりできます。</translation>
+<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />データの管理方法:<ph name="END_BOLD" /> 30 日以上経過したウェブサイトは自動削除されます。ウェブサイトにもう一度アクセスすると、リストに再度表示される場合もあります。また、Chrome の設定でいつでも、ウェブサイトによる広告の提案をブロックしたり、無効にしたりすることができます。</translation>
 <translation id="3921869355029467742">セキュリティ コードを入力する</translation>
 <translation id="3927932062596804919">拒否</translation>
 <translation id="393316646445601645">インターネット、通信</translation>
