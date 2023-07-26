@@ -107,6 +107,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/common/channel_info.h"
+#include "chromeos/ash/components/memory/swap_configuration.h"
 #include "components/arc/common/intent_helper/arc_icon_cache_delegate.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/prefs/pref_member.h"
@@ -213,6 +214,15 @@ void ArcServiceLauncher::MaybeSetProfile(Profile* profile) {
 void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   DCHECK(arc_service_manager_);
   DCHECK(arc_session_manager_);
+
+  // We want to configure swap exactly once for the session. We wait for after
+  // the user profile is prepared to make sure policy has been loaded. The
+  // function IsArcPlayStoreEnabledForProfile has many conditionals, but the
+  // main one we're checking for is if ARC is disabled by policy (which is the
+  // default). Note that there's a known edge case where during a session policy
+  // changes from disabled to enabled. This is expected to be rare, and logging
+  // out will update the swap configuration.
+  ash::ConfigureSwap(IsArcPlayStoreEnabledForProfile(profile));
 
   if (arc_session_manager_->profile() != profile) {
     // Profile is not matched, so the given |profile| is not allowed to use

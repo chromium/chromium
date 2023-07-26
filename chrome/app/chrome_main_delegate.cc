@@ -159,7 +159,6 @@
 #include "chrome/browser/ash/startup_settings_cache.h"
 #include "chromeos/ash/components/memory/memory.h"
 #include "chromeos/ash/components/memory/mglru.h"
-#include "chromeos/ash/components/memory/swap_configuration.h"
 #include "ui/lottie/resource.h"  // nogncheck
 #endif
 
@@ -946,7 +945,6 @@ void ChromeMainDelegate::CommonEarlyInitialization() {
 
   if (is_browser_process) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    ash::ConfigureSwap(arc::IsArcAvailable());
     ash::InitializeMGLRU();
 #endif
   }

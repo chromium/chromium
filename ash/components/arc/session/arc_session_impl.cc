@@ -670,9 +670,6 @@ void ArcSessionImpl::OnMojoConnected(
 
   VLOG(0) << "ARC ready.";
   state_ = State::RUNNING_FULL_INSTANCE;
-
-  // Some memory parameters may be changed when ARC is launched.
-  ash::UpdateMemoryParameters(arc::IsArcAvailable());
 }
 
 void ArcSessionImpl::Stop() {

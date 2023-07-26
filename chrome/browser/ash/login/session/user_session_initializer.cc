@@ -224,6 +224,12 @@ void UserSessionInitializer::InitializeCRLSetFetcher() {
 void UserSessionInitializer::InitializePrimaryProfileServices(
     Profile* profile,
     const user_manager::User* user) {
+  // We should call this method at most once, when a user logs in. Logging out
+  // kills the chrome process.
+  static int call_count = 0;
+  ++call_count;
+  CHECK_EQ(call_count, 1);
+
   lock_screen_apps::StateController::Get()->SetPrimaryProfile(profile);
 
   if (user->GetType() == user_manager::USER_TYPE_REGULAR) {
