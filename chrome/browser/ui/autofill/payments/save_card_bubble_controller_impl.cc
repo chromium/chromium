@@ -180,7 +180,9 @@ std::u16string SaveCardBubbleControllerImpl::GetWindowTitle() const {
                  : l10n_util::GetStringUTF16(
                        IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V3);
     case BubbleType::MANAGE_CARDS:
-      return l10n_util::GetStringUTF16(IDS_AUTOFILL_CARD_SAVED);
+      return options_.cvc_save_only
+                 ? l10n_util::GetStringUTF16(IDS_AUTOFILL_CVC_SAVED)
+                 : l10n_util::GetStringUTF16(IDS_AUTOFILL_CARD_SAVED);
     case BubbleType::FAILURE:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_FAILURE_BUBBLE_TITLE);
     case BubbleType::UPLOAD_IN_PROGRESS:
@@ -439,7 +441,9 @@ std::u16string SaveCardBubbleControllerImpl::GetSavePaymentIconTooltipText()
     case BubbleType::LOCAL_SAVE:
     case BubbleType::UPLOAD_SAVE:
     case BubbleType::MANAGE_CARDS:
-      return l10n_util::GetStringUTF16(IDS_TOOLTIP_SAVE_CREDIT_CARD);
+      return options_.cvc_save_only
+                 ? l10n_util::GetStringUTF16(IDS_TOOLTIP_SAVE_CVC)
+                 : l10n_util::GetStringUTF16(IDS_TOOLTIP_SAVE_CREDIT_CARD);
     case BubbleType::LOCAL_CVC_SAVE:
       return l10n_util::GetStringUTF16(IDS_TOOLTIP_SAVE_CVC);
     case BubbleType::UPLOAD_IN_PROGRESS:

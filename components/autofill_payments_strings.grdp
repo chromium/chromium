@@ -154,6 +154,9 @@
   <message name="IDS_AUTOFILL_CARD_SAVED" desc="Title text for the Autofill save card manager bubble when the card has been saved either locally or to Google Payments. Also label for icon animation.">
     Card saved
   </message>
+  <message name="IDS_AUTOFILL_CVC_SAVED" desc="Title text for the Autofill save card manager bubble when a CVC has been saved either to a local card or to a server card. Also label for icon animation.">
+    CVC saved
+  </message>
   <message name="IDS_AUTOFILL_DONE" desc="Text to show for the button in the save card manager bubble when the card has been saved either locally or to Google Payments.">
     Done
   </message>

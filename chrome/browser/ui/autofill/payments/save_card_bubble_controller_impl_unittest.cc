@@ -495,15 +495,43 @@ TEST_P(SaveCardBubbleLoggingTest, Metrics_LegalMessageLinkedClicked) {
 }
 
 TEST_F(SaveCardBubbleControllerImplTest,
-       Local_FirstShow_SaveButton_SigninPromo_Close_Reshow_ManageCards) {
+       LocalCard_FirstShow_SaveButton_SigninPromo_Close_Reshow_ManageCards) {
   EXPECT_CALL(*mock_sentiment_service_, SavedCard()).Times(1);
-  ShowLocalBubble();
+
+  // Show the local card save bubble.
+  ShowLocalBubble(
+      /*card=*/nullptr,
+      /*options=*/AutofillClient::SaveCreditCardOptions().with_cvc_save_only(
+          false));
   ClickSaveButton();
   CloseAndReshowBubble();
-  // After closing the sign-in promo, clicking the icon should bring
-  // up the Manage cards bubble.
+  // After closing the sign-in promo, clicking the icon should bring up the
+  // Manage cards bubble. Verify that the icon tooltip and the title for the
+  // bubble reflect the correct info.
   EXPECT_EQ(BubbleType::MANAGE_CARDS, controller()->GetBubbleType());
   EXPECT_NE(nullptr, controller()->GetPaymentBubbleView());
+  EXPECT_EQ(controller()->GetWindowTitle(), u"Card saved");
+  EXPECT_EQ(controller()->GetSavePaymentIconTooltipText(), u"Save card");
+}
+
+TEST_F(SaveCardBubbleControllerImplTest,
+       LocalCvc_FirstShow_SaveButton_SigninPromo_Close_Reshow_ManageCards) {
+  EXPECT_CALL(*mock_sentiment_service_, SavedCard()).Times(1);
+
+  // Show the local CVC save bubble.
+  ShowLocalBubble(
+      /*card=*/nullptr,
+      /*options=*/AutofillClient::SaveCreditCardOptions().with_cvc_save_only(
+          true));
+  ClickSaveButton();
+  CloseAndReshowBubble();
+  // After closing the sign-in promo, clicking the icon should bring up the
+  // Manage cards bubble. Verify that the icon tooltip and the title for the
+  // bubble reflect the correct info.
+  EXPECT_EQ(BubbleType::MANAGE_CARDS, controller()->GetBubbleType());
+  EXPECT_NE(nullptr, controller()->GetPaymentBubbleView());
+  EXPECT_EQ(controller()->GetWindowTitle(), u"CVC saved");
+  EXPECT_EQ(controller()->GetSavePaymentIconTooltipText(), u"Save CVC");
 }
 
 TEST_F(SaveCardBubbleControllerImplTest,
