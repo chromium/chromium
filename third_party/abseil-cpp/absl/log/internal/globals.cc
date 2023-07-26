@@ -16,6 +16,7 @@
 
 #include <atomic>
 #include <cstdio>
+
 #if defined(__EMSCRIPTEN__)
 #include <emscripten/console.h>
 #endif
@@ -25,6 +26,7 @@
 #include "absl/base/internal/raw_logging.h"
 #include "absl/base/log_severity.h"
 #include "absl/strings/string_view.h"
+#include "absl/strings/strip.h"
 #include "absl/time/time.h"
 
 namespace absl {
@@ -58,16 +60,19 @@ void SetInitialized() {
 }
 
 void WriteToStderr(absl::string_view message, absl::LogSeverity severity) {
+  if (message.empty()) return;
 #if defined(__EMSCRIPTEN__)
   // In WebAssembly, bypass filesystem emulation via fwrite.
-  // TODO(b/282811932): Avoid this copy if these emscripten functions can
-  // be updated to accept size directly.
-  std::string null_terminated_message(message);
-  if (!null_terminated_message.empty() &&
-      null_terminated_message.back() == '\n') {
-    null_terminated_message.pop_back();
-  }
+  // Skip a trailing newline character as emscripten_errn adds one itself.
+  const auto message_minus_newline = absl::StripSuffix(message, "\n");
+  // emscripten_errn was introduced in 3.1.41 but broken in standalone mode
+  // until 3.1.43.
+#if ABSL_INTERNAL_EMSCRIPTEN_VERSION >= 3001043
+  emscripten_errn(message_minus_newline.data(), message_minus_newline.size());
+#else
+  std::string null_terminated_message(message_minus_newline);
   _emscripten_err(null_terminated_message.c_str());
+#endif
 #else
   // Avoid using std::cerr from this module since we may get called during
   // exit code, and cerr may be partially or fully destroyed by then.

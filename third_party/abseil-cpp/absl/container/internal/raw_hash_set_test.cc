@@ -17,6 +17,7 @@
 #include <algorithm>
 #include <atomic>
 #include <cmath>
+#include <cstddef>
 #include <cstdint>
 #include <deque>
 #include <functional>
@@ -436,6 +437,41 @@ struct CustomAllocIntTable
   using Base::Base;
 };
 
+// Tries to allocate memory at the minimum alignment even when the default
+// allocator uses a higher alignment.
+template <typename T>
+struct MinimumAlignmentAlloc : std::allocator<T> {
+  MinimumAlignmentAlloc() = default;
+
+  template <typename U>
+  explicit MinimumAlignmentAlloc(const MinimumAlignmentAlloc<U>& /*other*/) {}
+
+  template <class U>
+  struct rebind {
+    using other = MinimumAlignmentAlloc<U>;
+  };
+
+  T* allocate(size_t n) {
+    T* ptr = std::allocator<T>::allocate(n + 1);
+    char* cptr = reinterpret_cast<char*>(ptr);
+    cptr += alignof(T);
+    return reinterpret_cast<T*>(cptr);
+  }
+
+  void deallocate(T* ptr, size_t n) {
+    char* cptr = reinterpret_cast<char*>(ptr);
+    cptr -= alignof(T);
+    std::allocator<T>::deallocate(reinterpret_cast<T*>(cptr), n + 1);
+  }
+};
+
+struct MinimumAlignmentUint8Table
+    : raw_hash_set<Uint8Policy, container_internal::hash_default_hash<uint8_t>,
+                   std::equal_to<uint8_t>, MinimumAlignmentAlloc<uint8_t>> {
+  using Base = typename MinimumAlignmentUint8Table::raw_hash_set;
+  using Base::Base;
+};
+
 struct BadFastHash {
   template <class T>
   size_t operator()(const T&) const {
@@ -460,14 +496,12 @@ TEST(Table, EmptyFunctorOptimization) {
     void* slots;
     size_t size;
     size_t capacity;
-    size_t growth_left;
   };
   struct MockTableInfozDisabled {
     void* ctrl;
     void* slots;
     size_t size;
     size_t capacity;
-    size_t growth_left;
   };
   struct StatelessHash {
     size_t operator()(absl::string_view) const { return 0; }
@@ -1057,6 +1091,14 @@ TEST(Table, EraseMaintainsValidIterator) {
 
   EXPECT_TRUE(t.empty());
   EXPECT_EQ(num_erase_calls, kNumElements);
+}
+
+TEST(Table, EraseBeginEnd) {
+  IntTable t;
+  for (int i = 0; i < 10; ++i) t.insert(i);
+  EXPECT_EQ(t.size(), 10);
+  t.erase(t.begin(), t.end());
+  EXPECT_EQ(t.size(), 0);
 }
 
 // Collect N bad keys by following algorithm:
@@ -2247,11 +2289,17 @@ TEST(Sanitizer, PoisoningOnErase) {
 }
 #endif  // ABSL_HAVE_ADDRESS_SANITIZER
 
-TEST(Table, AlignOne) {
+template <typename T>
+class AlignOneTest : public ::testing::Test {};
+using AlignOneTestTypes =
+    ::testing::Types<Uint8Table, MinimumAlignmentUint8Table>;
+TYPED_TEST_SUITE(AlignOneTest, AlignOneTestTypes);
+
+TYPED_TEST(AlignOneTest, AlignOne) {
   // We previously had a bug in which we were copying a control byte over the
   // first slot when alignof(value_type) is 1. We test repeated
   // insertions/erases and verify that the behavior is correct.
-  Uint8Table t;
+  TypeParam t;
   std::unordered_set<uint8_t> verifier;  // NOLINT
 
   // Do repeated insertions/erases from the table.

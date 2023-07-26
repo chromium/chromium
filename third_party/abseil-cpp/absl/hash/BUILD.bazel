@@ -183,6 +183,7 @@ cc_library(
     deps = [
         "//absl/base:config",
         "//absl/base:endian",
+        "//absl/base:prefetch",
         "//absl/numeric:int128",
     ],
 )

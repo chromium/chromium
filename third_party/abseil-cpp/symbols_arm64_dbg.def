@@ -2660,8 +2660,8 @@ EXPORTS
     ?GetInlinedData@?$Storage@PEAVLogSink@absl@@$0BA@V?$allocator@PEAVLogSink@absl@@@__Cr@std@@@inlined_vector_internal@absl@@QEAAPEAPEAVLogSink@3@XZ
     ?GetInlinedData@?$Storage@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@__Cr@std@@@inlined_vector_internal@absl@@QEAAPEAUPayload@status_internal@3@XZ
     ?GetInlinedData@?$Storage@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@__Cr@std@@@inlined_vector_internal@absl@@QEBAPEBUPayload@status_internal@3@XZ
-    ?GetInlinedData@?$Storage@VFormatArgImpl@str_format_internal@absl@@$03V?$allocator@VFormatArgImpl@str_format_internal@absl@@@__Cr@std@@@inlined_vector_internal@absl@@QEAAPEAVFormatArgImpl@str_format_internal@3@XZ
     ?GetInlinedData@?$Storage@VFormatArgImpl@str_format_internal@absl@@$03V?$allocator@VFormatArgImpl@str_format_internal@absl@@@__Cr@std@@@inlined_vector_internal@absl@@QEBAPEBVFormatArgImpl@str_format_internal@3@XZ
+    ?GetInlinedDataUninitialized@?$Storage@VFormatArgImpl@str_format_internal@absl@@$03V?$allocator@VFormatArgImpl@str_format_internal@absl@@@__Cr@std@@@inlined_vector_internal@absl@@QEAAPEAVFormatArgImpl@str_format_internal@3@XZ
     ?GetIsAllocated@?$Storage@H$0CP@V?$allocator@H@__Cr@std@@@inlined_vector_internal@absl@@QEBA_NXZ
     ?GetIsAllocated@?$Storage@PEAUCordRep@cord_internal@absl@@$01V?$allocator@PEAUCordRep@cord_internal@absl@@@__Cr@std@@@inlined_vector_internal@absl@@QEBA_NXZ
     ?GetIsAllocated@?$Storage@PEAUCordRep@cord_internal@absl@@$0CP@V?$allocator@PEAUCordRep@cord_internal@absl@@@__Cr@std@@@inlined_vector_internal@absl@@QEBA_NXZ
@@ -3012,6 +3012,7 @@ EXPORTS
     ?Post@PerThreadSem@synchronization_internal@absl@@CAXPEAUThreadIdentity@base_internal@3@@Z
     ?Post@StdcppWaiter@synchronization_internal@absl@@QEAAXXZ
     ?Post@Win32Waiter@synchronization_internal@absl@@QEAAXXZ
+    ?PrefetchToLocalCache@absl@@YAXPEBX@Z
     ?PrefetchToLocalCacheNta@absl@@YAXPEBX@Z
     ?PrepareForSampling@HashtablezInfo@container_internal@absl@@QEAAX_J_K@Z
     ?PrepareToDie@LogMessage@log_internal@absl@@AEAAXXZ
@@ -3926,6 +3927,7 @@ EXPORTS
     ?back@?$vector@UTransitionType@cctz@time_internal@absl@@V?$allocator@UTransitionType@cctz@time_internal@absl@@@__Cr@std@@@__Cr@std@@QEAAAEAUTransitionType@cctz@time_internal@absl@@XZ
     ?back@?$vector@UViableSubstitution@strings_internal@absl@@V?$allocator@UViableSubstitution@strings_internal@absl@@@__Cr@std@@@__Cr@std@@QEAAAEAUViableSubstitution@strings_internal@absl@@XZ
     ?back@CordRepBtree@cord_internal@absl@@QEBA_KXZ
+    ?backing_array_start@CommonFields@container_internal@absl@@QEBAPEAXXZ
     ?base@?$__wrap_iter@PEAPEAVCordzHandle@cord_internal@absl@@@__Cr@std@@QEBAPEAPEAVCordzHandle@cord_internal@absl@@XZ
     ?base@?$__wrap_iter@PEAPEAVLogSink@absl@@@__Cr@std@@QEBAPEAPEAVLogSink@absl@@XZ
     ?base@?$__wrap_iter@PEAUTransition@cctz@time_internal@absl@@@__Cr@std@@QEBAPEAUTransition@cctz@time_internal@absl@@XZ
@@ -4631,7 +4633,7 @@ EXPORTS
     ?size@Cord@absl@@QEBA_KXZ
     ?size@CordRepBtree@cord_internal@absl@@QEBA_KXZ
     ?size@InlineRep@Cord@absl@@QEBA_KXZ
-    ?slots_ptr@CommonFields@container_internal@absl@@QEBAPEAXXZ
+    ?slot_array@CommonFields@container_internal@absl@@QEBAPEAXXZ
     ?source_basename@LogEntry@absl@@QEBA?AV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@XZ
     ?source_line@LogEntry@absl@@QEBAHXZ
     ?stacktrace@LogEntry@absl@@QEBA?AV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@XZ

@@ -37,6 +37,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cinttypes>
 #include <limits>
 #include "absl/base/internal/hide_ptr.h"
 #include "absl/base/internal/raw_logging.h"
@@ -386,19 +387,22 @@ bool GraphCycles::CheckInvariants() const {
     Node* nx = r->nodes_[x];
     void* ptr = base_internal::UnhidePtr<void>(nx->masked_ptr);
     if (ptr != nullptr && static_cast<uint32_t>(r->ptrmap_.Find(ptr)) != x) {
-      ABSL_RAW_LOG(FATAL, "Did not find live node in hash table %u %p", x, ptr);
+      ABSL_RAW_LOG(FATAL, "Did not find live node in hash table %" PRIu32 " %p",
+                   x, ptr);
     }
     if (nx->visited) {
-      ABSL_RAW_LOG(FATAL, "Did not clear visited marker on node %u", x);
+      ABSL_RAW_LOG(FATAL, "Did not clear visited marker on node %" PRIu32, x);
     }
     if (!ranks.insert(nx->rank)) {
-      ABSL_RAW_LOG(FATAL, "Duplicate occurrence of rank %d", nx->rank);
+      ABSL_RAW_LOG(FATAL, "Duplicate occurrence of rank %" PRId32, nx->rank);
     }
     HASH_FOR_EACH(y, nx->out) {
       Node* ny = r->nodes_[static_cast<uint32_t>(y)];
       if (nx->rank >= ny->rank) {
-        ABSL_RAW_LOG(FATAL, "Edge %u->%d has bad rank assignment %d->%d", x, y,
-                     nx->rank, ny->rank);
+        ABSL_RAW_LOG(FATAL,
+                     "Edge %" PRIu32 " ->%" PRId32
+                     " has bad rank assignment %" PRId32 "->%" PRId32,
+                     x, y, nx->rank, ny->rank);
       }
     }
   }

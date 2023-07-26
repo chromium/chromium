@@ -206,27 +206,32 @@ void DefaultInternalLog(absl::LogSeverity severity, const char* file, int line,
 }  // namespace
 
 void AsyncSignalSafeWriteError(const char* s, size_t len) {
+  if (!len) return;
   absl::base_internal::ErrnoSaver errno_saver;
 #if defined(__EMSCRIPTEN__)
   // In WebAssembly, bypass filesystem emulation via fwrite.
-  // TODO(b/282811932): Avoid this copy if these emscripten functions can
-  // be updated to accept size directly.
+  if (s[len - 1] == '\n') {
+    // Skip a trailing newline character as emscripten_errn adds one itself.
+    len--;
+  }
+  // emscripten_errn was introduced in 3.1.41 but broken in standalone mode
+  // until 3.1.43.
+#if ABSL_INTERNAL_EMSCRIPTEN_VERSION >= 3001043
+  emscripten_errn(s, len);
+#else
   char buf[kLogBufSize];
   if (len >= kLogBufSize) {
     len = kLogBufSize - 1;
-    size_t trunc_len = sizeof(kTruncated) - 2;
-    strncpy(buf + len - trunc_len, kTruncated, trunc_len);
+    constexpr size_t trunc_len = sizeof(kTruncated) - 2;
+    memcpy(buf + len - trunc_len, kTruncated, trunc_len);
     buf[len] = '\0';
     len -= trunc_len;
-  } else if (len && s[len - 1] == '\n') {
-    len--;
-  }
-  strncpy(buf, s, len);
-  if (len) {
+  } else {
     buf[len] = '\0';
-    // Skip a trailing newline character as emscripten_err adds one itself.
-    _emscripten_err(buf);
   }
+  memcpy(buf, s, len);
+  _emscripten_err(buf);
+#endif
 #elif defined(ABSL_HAVE_SYSCALL_WRITE)
   // We prefer calling write via `syscall` to minimize the risk of libc doing
   // something "helpful".

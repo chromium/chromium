@@ -391,13 +391,22 @@ class Storage {
   }
 
   Pointer<A> GetInlinedData() {
-    return reinterpret_cast<Pointer<A>>(
-        std::addressof(data_.inlined.inlined_data[0]));
+    return reinterpret_cast<Pointer<A>>(data_.inlined.inlined_data);
   }
 
   ConstPointer<A> GetInlinedData() const {
-    return reinterpret_cast<ConstPointer<A>>(
-        std::addressof(data_.inlined.inlined_data[0]));
+    return reinterpret_cast<ConstPointer<A>>(data_.inlined.inlined_data);
+  }
+
+  // Like GetInlinedData(), but for data that has not been constructed yet.  The
+  // only difference is ABSL_ATTRIBUTE_NO_SANITIZE_CFI, which is necessary
+  // because the object is uninitialized.
+  // https://clang.llvm.org/docs/ControlFlowIntegrity.html#bad-cast-checking
+  // NOTE: When this was written, LLVM documentation did not explicitly
+  // mention that casting `char*` and using `reinterpret_cast` qualifies
+  // as a bad cast.
+  ABSL_ATTRIBUTE_NO_SANITIZE_CFI Pointer<A> GetInlinedDataUninitialized() {
+    return reinterpret_cast<Pointer<A>>(data_.inlined.inlined_data);
   }
 
   SizeType<A> GetAllocatedCapacity() const {
@@ -628,7 +637,7 @@ auto Storage<T, N, A>::Initialize(ValueAdapter values, SizeType<A> new_size)
     SetAllocation(allocation);
     SetIsAllocated();
   } else {
-    construct_data = GetInlinedData();
+    construct_data = GetInlinedDataUninitialized();
   }
 
   ConstructElements<A>(GetAllocator(), construct_data, values, new_size);

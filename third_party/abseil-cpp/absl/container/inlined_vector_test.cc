@@ -1621,6 +1621,11 @@ TEST(DynamicVec, DynamicVecCompiles) {
   (void)v;
 }
 
+TEST(DynamicVec, CreateNonEmptyDynamicVec) {
+  DynamicVec v(1);
+  EXPECT_EQ(v.size(), 1u);
+}
+
 TEST(AllocatorSupportTest, Constructors) {
   using MyAlloc = CountingAllocator<int>;
   using AllocVec = absl::InlinedVector<int, 4, MyAlloc>;

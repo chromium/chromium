@@ -58,7 +58,7 @@
 #include "absl/base/internal/spinlock.h"
 
 // MAP_ANONYMOUS
-#if defined(__APPLE__)
+#if defined(__APPLE__) || defined(__hexagon__)
 // For mmap, Linux defines both MAP_ANONYMOUS and MAP_ANON and says MAP_ANON is
 // deprecated. In Darwin, MAP_ANON is all there is.
 #if !defined MAP_ANONYMOUS

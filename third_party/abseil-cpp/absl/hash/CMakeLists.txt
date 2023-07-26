@@ -165,6 +165,7 @@ absl_cc_library(
     absl::config
     absl::endian
     absl::int128
+    absl::prefetch
 )
 
 absl_cc_test(
