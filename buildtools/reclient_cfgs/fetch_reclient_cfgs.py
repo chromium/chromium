@@ -45,9 +45,12 @@ def NaclRevision():
 class CipdError(Exception):
   """Raised by fetch_reclient_cfgs on fatal cipd error."""
 
+class CipdAuthError(CipdError):
+  """Raised by fetch_reclient_cfgs on cipd auth error."""
+
 def CipdEnsure(pkg_name, ref, directory, quiet):
-    logging.info('ensure %s %s in %s' % (pkg_name, ref, directory))
-    log_level = 'warning' if quiet else 'debug'
+    print('ensure %s %s in %s' % (pkg_name, ref, directory))
+    log_level = 'warning' if quiet else 'info'
     ensure_file = """
 $ParanoidMode CheckIntegrity
 {pkg} {ref}
@@ -60,8 +63,16 @@ $ParanoidMode CheckIntegrity
           universal_newlines=True)
       logging.info(output)
     except subprocess.CalledProcessError as e:
+      if not IsCipdLoggedIn():
+         raise CipdAuthError(e.output) from e
       raise CipdError(e.output) from e
 
+def IsCipdLoggedIn():
+    ret = subprocess.call(
+       ['cipd', 'auth-info'],
+       stderr=subprocess.PIPE,
+       stdout=subprocess.DEVNULL)
+    return ret == 0
 
 def RbeProjectFromInstance(instance):
     m = re.fullmatch(r'projects/([-\w]+)/instances/[-\w]+', instance)
@@ -95,6 +106,26 @@ def GenerateReproxyCfg(reproxy_cfg_template, rbe_instance, rbe_project):
       f.write(reproxy_cfg)
     return True
 
+
+def RequestCipdAuthentication():
+  """Requests that the user authenticate to access CIPD packages."""
+
+  print('Access to remoteexec config CIPD package requires authentication.')
+  print('-----------------------------------------------------------------')
+  print()
+  print('I\'m sorry for the hassle, but you may need to do a one-time manual')
+  print('authentication. Please run:')
+  print()
+  print('    cipd auth-login')
+  print()
+  print('and follow the instructions.')
+  print()
+  print('NOTE: Use your google.com credentials, not chromium.org.')
+  print()
+  print('-----------------------------------------------------------------')
+  print()
+  sys.stdout.flush()
+
 def main():
     parser = argparse.ArgumentParser(
        description='fetch reclient cfgs',
@@ -118,10 +149,6 @@ def main():
     parser.add_argument(
         '--quiet',
         help='Suppresses info logs',
-        action='store_true')
-    parser.add_argument(
-        '--hook',
-        help='Indicates that this script was run as a gclient hook',
         action='store_true')
 
     args = parser.parse_args()
@@ -171,12 +198,11 @@ def main():
                     ref=cipd_ref,
                     directory=toolchain_root,
                     quiet=args.quiet)
+      except CipdAuthError as e:
+        RequestCipdAuthentication()
+        return 1
       except CipdError as e:
         logging.error(e)
-        if args.hook:
-          logging.error(
-             "Developer builds are not supported yet. "
-             "Remove '\"download_remoteexec_cfg\":True' from .gclient")
         return 1
       # support legacy (win-cross-experiments) and new (win-cross)
       # TODO(crbug.com/1407557): drop -experiments support
