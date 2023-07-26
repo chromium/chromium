@@ -23,7 +23,6 @@ component("geolocation") {
       "system_geolocation_source_mac.h",
       "system_geolocation_source_mac.mm",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
     frameworks = [
       "CoreLocation.framework",
       "Foundation.framework",

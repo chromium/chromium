@@ -379,7 +379,6 @@ source_set("tests") {
 
   if (is_apple) {
     sources += [ "geolocation/core_location_provider_unittest.mm" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_mac) {
