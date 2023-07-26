@@ -1391,6 +1391,14 @@ TEST_F(RenderWidgetHostTest, Background) {
     EXPECT_EQ(unsigned{SK_ColorBLUE}, *view->GetBackgroundColor());
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  // Surface Eviction attempts to crawl the FrameTree. This makes use of
+  // RenderViewHostImpl::From which performs a static_cast on the
+  // RenderWidgetHostOwnerDelegate. Our MockRenderWidgetHostOwnerDelegate is not
+  // a RenderViewHostImpl, so it crashes. Clear this here as it is not needed
+  // for TearDown.
+  host_->set_owner_delegate(nullptr);
+#endif  // BUILDFLAG(IS_ANDROID)
   host_->SetView(nullptr);
   view->Destroy();
 }

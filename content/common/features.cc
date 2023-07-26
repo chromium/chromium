@@ -17,7 +17,7 @@ BASE_FEATURE(kBeforeUnloadBrowserResponseQueue,
 
 BASE_FEATURE(kNavigationUpdatesChildViewsVisibility,
              "NavigationUpdatesChildViewsVisibility",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kOptimizeImmHideCalls,
