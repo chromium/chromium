@@ -28,11 +28,8 @@ constexpr float kOmniboxHighContrastRatio = 6.0f;
 // Apply updates to the Omnibox text color tokens per GM3 spec.
 void ApplyGM3OmniboxTextColor(ui::ColorMixer& mixer,
                               const ui::ColorProviderKey& key) {
-  const bool gm3_text_color_enabled =
-      features::GetChromeRefresh2023Level() ==
-          features::ChromeRefresh2023Level::kLevel2 ||
-      base::FeatureList::IsEnabled(omnibox::kOmniboxSteadyStateTextColor);
-  if (!gm3_text_color_enabled) {
+  if (!omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
+          omnibox::kOmniboxSteadyStateTextColor)) {
     return;
   }
 
@@ -65,12 +62,8 @@ void ApplyGM3OmniboxTextColor(ui::ColorMixer& mixer,
 
 void ApplyCR2023OmniboxIconColors(ui::ColorMixer& mixer,
                                   const ui::ColorProviderKey& key) {
-  const bool cr2023_icons_colors_enabled =
-      features::GetChromeRefresh2023Level() ==
-          features::ChromeRefresh2023Level::kLevel2 ||
-      base::FeatureList::IsEnabled(omnibox::kOmniboxCR23SteadyStateIcons);
-
-  if (!cr2023_icons_colors_enabled) {
+  if (!omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
+          omnibox::kOmniboxCR23SteadyStateIcons)) {
     return;
   }
 
@@ -94,12 +87,8 @@ void ApplyCR2023OmniboxIconColors(ui::ColorMixer& mixer,
 // Apply updates to the Omnibox "expanded state" color tokens per CR2023 spec.
 void ApplyCR2023OmniboxExpandedStateColors(ui::ColorMixer& mixer,
                                            const ui::ColorProviderKey& key) {
-  const bool cr2023_expanded_state_colors_enabled =
-      features::GetChromeRefresh2023Level() ==
-          features::ChromeRefresh2023Level::kLevel2 ||
-      base::FeatureList::IsEnabled(omnibox::kExpandedStateColors);
-
-  if (!cr2023_expanded_state_colors_enabled) {
+  if (!omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
+          omnibox::kExpandedStateColors)) {
     return;
   }
 

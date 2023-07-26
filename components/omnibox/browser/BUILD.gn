@@ -468,6 +468,7 @@ static_library("location_bar") {
     ":buildflags",
     "//build:chromeos_buildflags",
     "//components/dom_distiller/core:core",
+    "//components/search:features",
     "//components/search_engines",
     "//components/strings",
     "//components/url_formatter",

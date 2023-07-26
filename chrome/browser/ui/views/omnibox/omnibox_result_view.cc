@@ -106,9 +106,8 @@ class OmniboxResultSelectionIndicator : public views::View {
   METADATA_HEADER(OmniboxResultSelectionIndicator);
 
   const bool cr2023_expanded_state_colors_enabled =
-      features::GetChromeRefresh2023Level() ==
-          features::ChromeRefresh2023Level::kLevel2 ||
-      base::FeatureList::IsEnabled(omnibox::kExpandedStateColors);
+      omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
+          omnibox::kExpandedStateColors);
   const int kStrokeThickness = cr2023_expanded_state_colors_enabled ? 4 : 3;
 
   explicit OmniboxResultSelectionIndicator(OmniboxResultView* result_view)

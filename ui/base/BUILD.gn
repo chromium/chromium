@@ -716,6 +716,7 @@ component("features") {
     ":buildflags",
     "//base",
     "//build:chromeos_buildflags",
+    "//components/search:features",
   ]
 }
 
