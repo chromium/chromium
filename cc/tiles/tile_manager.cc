@@ -576,10 +576,14 @@ void TileManager::TrimPrepaintTiles() {
     }
 
     if (!tile->used()) {
-      // Tiles prioritized in the "EVENTUALLY" region should never be required
-      // for draw.
-      DCHECK(tile->is_prepaint());
-      DCHECK(!tile->required_for_draw());
+      // Note: we may want to add `DCHECK(!tile->required_for_draw())` but it is
+      // not possible, as some tiles in the EVENTUALLY priority bin are marked
+      // as required for draw.
+      //
+      // This is the case if they are part of a non-drawing layer, in which case
+      // PictureLayerTiling::ComputePriorityForTile() sets the bin to EVENTUALLY
+      // regardless (because the client doesn't have valid priorities).
+      // We don't want to keep these tiles, so no DCHECK() or exclusion here.
       FreeResourcesForTileAndNotifyClientIfTileWasReadyToDraw(tile);
     } else {
       // Tile has been used recently, reset this so that if it's not used until
