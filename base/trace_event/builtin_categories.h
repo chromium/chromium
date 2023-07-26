@@ -287,6 +287,7 @@
   X(TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"))                    \
   X(TRACE_DISABLED_BY_DEFAULT("viz.surface_lifetime"))                   \
   X(TRACE_DISABLED_BY_DEFAULT("viz.triangles"))                          \
+  X(TRACE_DISABLED_BY_DEFAULT("viz.visual_debugger"))                    \
   X(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"))                     \
   X(TRACE_DISABLED_BY_DEFAULT("webgpu"))                                 \
   X(TRACE_DISABLED_BY_DEFAULT("webrtc"))                                 \
