@@ -502,6 +502,25 @@ bool DeleteWhereColumnEq(sql::Database* db,
   return statement.Run();
 }
 
+// Inserts all data from the given `column_names` of table `from` to table `to`.
+// Then, replaces table `from` with table `to` by dropping `from` and renaming
+// `to` into `from`.
+// This is useful when dropping columns from a table. Since the SQL version
+// Chromium uses doesn't support the "ALTER TABLE DROP COLUMN" syntax, the
+// usual approach is to create a new table without the column to drop, and
+// `MoveDataAndReplaceTable()` the existing data into it.
+bool MoveDataAndReplaceTable(
+    sql::Database* db,
+    base::StringPiece from,
+    base::StringPiece to,
+    std::initializer_list<base::StringPiece> column_names) {
+  return db->Execute(base::StrCat({"INSERT INTO ", to, " SELECT ",
+                                   base::JoinString(column_names, ", "),
+                                   " FROM ", from})
+                         .c_str()) &&
+         DropTable(db, from) && RenameTable(db, to, from);
+}
+
 // Initializes `statement` with UPDATE `table_name` SET `column_names` = ?, with
 // a placeholder for every `column_names`. A WHERE clause can optionally be
 // specified in `where_clause`.
@@ -3056,8 +3075,6 @@ bool AutofillTable::ClearModelTypeState(syncer::ModelType model_type) {
 }
 
 bool AutofillTable::MigrateToVersion83RemoveServerCardTypeColumn() {
-  // Sqlite does not support "alter table drop column" syntax, so it has be done
-  // manually.
   constexpr base::StringPiece kMaskedCreditCardsTempTable =
       "masked_credit_cards_temp";
   sql::Transaction transaction(db_);
@@ -3071,14 +3088,10 @@ bool AutofillTable::MigrateToVersion83RemoveServerCardTypeColumn() {
                       {kExpMonth, "INTEGER DEFAULT 0"},
                       {kExpYear, "INTEGER DEFAULT 0"},
                       {kBankName, "VARCHAR"}}) &&
-         db_->Execute(
-             "INSERT INTO masked_credit_cards_temp "
-             "SELECT id, status, name_on_card, network, last_four, exp_month,"
-             "exp_year, bank_name "
-             "FROM masked_credit_cards") &&
-         DropTable(db_, kMaskedCreditCardsTable) &&
-         RenameTable(db_, kMaskedCreditCardsTempTable,
-                     kMaskedCreditCardsTable) &&
+         MoveDataAndReplaceTable(db_, kMaskedCreditCardsTable,
+                                 kMaskedCreditCardsTempTable,
+                                 {kId, kStatus, kNameOnCard, kNetwork,
+                                  kLastFour, kExpMonth, kExpYear, kBankName}) &&
          transaction.Commit();
 }
 
@@ -3127,8 +3140,6 @@ bool AutofillTable::MigrateToVersion92AddNewPrefixedNameColumn() {
 }
 
 bool AutofillTable::MigrateToVersion86RemoveUnmaskedCreditCardsUseColumns() {
-  // Sqlite does not support "alter table drop column" syntax, so it has be
-  // done manually.
   constexpr base::StringPiece kUnmaskedCreditCardsTempTable =
       "unmasked_credit_cards_temp";
   sql::Transaction transaction(db_);
@@ -3137,13 +3148,9 @@ bool AutofillTable::MigrateToVersion86RemoveUnmaskedCreditCardsUseColumns() {
                      {{kId, "VARCHAR"},
                       {kCardNumberEncrypted, "VARCHAR"},
                       {kUnmaskDate, "INTEGER NOT NULL DEFAULT 0"}}) &&
-         db_->Execute(
-             "INSERT INTO unmasked_credit_cards_temp "
-             "SELECT id, card_number_encrypted, unmask_date "
-             "FROM unmasked_credit_cards") &&
-         DropTable(db_, kUnmaskedCreditCardsTable) &&
-         RenameTable(db_, kUnmaskedCreditCardsTempTable,
-                     kUnmaskedCreditCardsTable) &&
+         MoveDataAndReplaceTable(db_, kUnmaskedCreditCardsTable,
+                                 kUnmaskedCreditCardsTempTable,
+                                 {kId, kCardNumberEncrypted, kUnmaskDate}) &&
          transaction.Commit();
 }
 
@@ -3267,8 +3274,6 @@ bool AutofillTable::MigrateToVersion95AddVirtualCardMetadata() {
 }
 
 bool AutofillTable::MigrateToVersion98RemoveStatusColumnMaskedCreditCards() {
-  // Sqlite does not support "alter table drop column" syntax, so it has be done
-  // manually.
   constexpr base::StringPiece kMaskedCreditCardsTempTable =
       "masked_credit_cards_temp";
   sql::Transaction transaction(db_);
@@ -3286,15 +3291,11 @@ bool AutofillTable::MigrateToVersion98RemoveStatusColumnMaskedCreditCards() {
                       {kInstrumentId, "INTEGER DEFAULT 0"},
                       {kVirtualCardEnrollmentState, "INTEGER DEFAULT 0"},
                       {kCardArtUrl, "VARCHAR"}}) &&
-         db_->Execute(
-             "INSERT INTO masked_credit_cards_temp "
-             "SELECT id, name_on_card, network, last_four, exp_month, "
-             "exp_year, bank_name, nickname, card_issuer, instrument_id, "
-             "virtual_card_enrollment_state, card_art_url "
-             "FROM masked_credit_cards") &&
-         DropTable(db_, kMaskedCreditCardsTable) &&
-         RenameTable(db_, kMaskedCreditCardsTempTable,
-                     kMaskedCreditCardsTable) &&
+         MoveDataAndReplaceTable(
+             db_, kMaskedCreditCardsTable, kMaskedCreditCardsTempTable,
+             {kId, kNameOnCard, kNetwork, kLastFour, kExpMonth, kExpYear,
+              kBankName, kNickname, kCardIssuer, kInstrumentId,
+              kVirtualCardEnrollmentState, kCardArtUrl}) &&
          transaction.Commit();
 }
 
@@ -3303,12 +3304,10 @@ bool AutofillTable::MigrateToVersion99RemoveAutofillProfilesTrashTable() {
 }
 
 bool AutofillTable::MigrateToVersion100RemoveProfileValidityBitfieldColumn() {
-  // Sqlite does not support "alter table drop column" syntax, so it has be done
-  // manually.
+  const base::StringPiece kAutofillProfilesTempTable = "autofill_profiles_temp";
   sql::Transaction transaction(db_);
-
   return transaction.Begin() &&
-         CreateTable(db_, "autofill_profiles_tmp",
+         CreateTable(db_, kAutofillProfilesTempTable,
                      {{kGuid, "VARCHAR PRIMARY KEY"},
                       {kCompanyName, "VARCHAR"},
                       {kStreetAddress, "VARCHAR"},
@@ -3326,15 +3325,12 @@ bool AutofillTable::MigrateToVersion100RemoveProfileValidityBitfieldColumn() {
                       {kLabel, "VARCHAR"},
                       {kDisallowSettingsVisibleUpdates,
                        "INTEGER NOT NULL DEFAULT 0"}}) &&
-         db_->Execute(
-             "INSERT INTO autofill_profiles_tmp "
-             "SELECT guid, company_name, street_address, dependent_locality, "
-             "city, state, zipcode, sorting_code, country_code, date_modified, "
-             "origin, language_code, use_count, use_date, label, "
-             "disallow_settings_visible_updates "
-             " FROM autofill_profiles") &&
-         DropTable(db_, kAutofillProfilesTable) &&
-         RenameTable(db_, "autofill_profiles_tmp", kAutofillProfilesTable) &&
+         MoveDataAndReplaceTable(
+             db_, kAutofillProfilesTable, kAutofillProfilesTempTable,
+             {kGuid, kCompanyName, kStreetAddress, kDependentLocality, kCity,
+              kState, kZipcode, kSortingCode, kCountryCode, kDateModified,
+              kOrigin, kLanguageCode, kUseCount, kUseDate, kLabel,
+              kDisallowSettingsVisibleUpdates}) &&
          transaction.Commit();
 }
 
