@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_primary_view.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/focus/focus_manager.h"
 
@@ -35,7 +36,7 @@ class DownloadBubblePartialView : public DownloadBubblePrimaryView,
       delete;
   ~DownloadBubblePartialView() override;
 
-  // DownloadBubblePrimaryView
+  // DownloadBubblePrimaryView:
   base::StringPiece GetVisibleTimeHistogramName() const override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
@@ -52,6 +53,9 @@ class DownloadBubblePartialView : public DownloadBubblePrimaryView,
   // A callback to be run when this view has been hovered over by the mouse or
   // focused by the keyboard.
   base::OnceClosure on_interacted_closure_;
+
+  // Records the end time of the last download if it is successful.
+  absl::optional<base::Time> last_download_completed_time_;
 };
 
 #endif

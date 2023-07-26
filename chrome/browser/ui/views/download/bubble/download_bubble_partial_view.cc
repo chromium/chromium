@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/download/bubble/download_bubble_partial_view.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/ui/browser.h"
@@ -16,6 +17,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/compositor.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/border.h"
@@ -220,6 +222,10 @@ DownloadBubblePartialView::DownloadBubblePartialView(
         std::max(preferred_width, setting_row->GetPreferredSize().width());
   }
 
+  if (!rows.empty() && rows.front()->GetEndTime() != base::Time()) {
+    last_download_completed_time_ = rows.front()->GetEndTime();
+  }
+
   BuildAndAddScrollView(std::move(browser), std::move(bubble_controller),
                         std::move(navigation_handler), std::move(rows),
                         preferred_width);
@@ -253,6 +259,19 @@ void DownloadBubblePartialView::AddedToWidget() {
   auto* focus_manager = GetFocusManager();
   if (focus_manager) {
     focus_manager->AddFocusChangeListener(this);
+  }
+
+  if (last_download_completed_time_.has_value()) {
+    GetWidget()->GetCompositor()->RequestSuccessfulPresentationTimeForNextFrame(
+        base::BindOnce(
+            [](base::Time download_completed_time_,
+               base::TimeTicks presentation_time) {
+              UmaHistogramTimes(
+                  "Download.Bubble.DownloadCompletionToPartialViewShownLatency",
+                  (presentation_time - base::TimeTicks::UnixEpoch()) -
+                      (download_completed_time_ - base::Time::UnixEpoch()));
+            },
+            *last_download_completed_time_));
   }
 }
 
