@@ -388,46 +388,15 @@ const char kInfobarOverflowBadgeShownUserAction[] =
   [self disconnectOverlayPresenter];
 }
 
-#pragma mark - WebStateListObserver
+#pragma mark - WebStateListObserving
 
 - (void)didChangeWebStateList:(WebStateList*)webStateList
                        change:(const WebStateListChange&)change
                        status:(const WebStateListStatus&)status {
-  switch (change.type()) {
-    case WebStateListChange::Type::kStatusOnly:
-      // TODO(crbug.com/1442546): Move the implementation from
-      // webStateList:didChangeActiveWebState:oldWebState:atIndex:reason to
-      // here. Note that here is reachable only when `reason` ==
-      // ActiveWebStateChangeReason::Activated.
-      break;
-    case WebStateListChange::Type::kDetach:
-      // Do nothing when a WebState is detached.
-      break;
-    case WebStateListChange::Type::kMove:
-      // Do nothing when a WebState is moved.
-      break;
-    case WebStateListChange::Type::kReplace: {
-      DCHECK_EQ(self.webStateList, webStateList);
-      const WebStateListChangeReplace& replaceChange =
-          change.As<WebStateListChangeReplace>();
-      if (status.index == webStateList->active_index()) {
-        self.webState = replaceChange.inserted_web_state();
-      }
-      break;
-    }
-    case WebStateListChange::Type::kInsert:
-      // Do nothing when a new WebState is inserted.
-      break;
-  }
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    didChangeActiveWebState:(web::WebState*)newWebState
-                oldWebState:(web::WebState*)oldWebState
-                    atIndex:(int)atIndex
-                     reason:(ActiveWebStateChangeReason)reason {
   DCHECK_EQ(self.webStateList, webStateList);
-  self.webState = newWebState;
+  if (status.active_web_state_change()) {
+    self.webState = status.new_active_web_state;
+  }
 }
 
 #pragma mark - CRWWebStateObserver
