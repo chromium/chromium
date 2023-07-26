@@ -9,6 +9,98 @@
 
 namespace browsing_data_model_test_util {
 
+namespace {
+
+struct DataKeyDebugStringVisitor {
+  template <class T>
+  std::string operator()(const T& data_key);
+};
+
+template <>
+std::string DataKeyDebugStringVisitor::operator()<url::Origin>(
+    const url::Origin& origin) {
+  std::stringstream debug_string;
+  debug_string << "Origin:" << origin.Serialize();
+  return debug_string.str();
+}
+
+template <>
+std::string DataKeyDebugStringVisitor::operator()<blink::StorageKey>(
+    const blink::StorageKey& storage_key) {
+  std::stringstream debug_string;
+  debug_string << "blink::StorageKey:" << storage_key.GetDebugString();
+  return debug_string.str();
+}
+
+template <>
+std::string DataKeyDebugStringVisitor::operator()<
+    content::InterestGroupManager::InterestGroupDataKey>(
+    const content::InterestGroupManager::InterestGroupDataKey&
+        interest_group_data_key) {
+  std::stringstream debug_string;
+  debug_string << "InterestGroupDataKey:";
+  debug_string << "{owner:";
+  debug_string << interest_group_data_key.owner.Serialize();
+  debug_string << " joining_origin:";
+  debug_string << interest_group_data_key.joining_origin.Serialize() << "}";
+  return debug_string.str();
+}
+
+template <>
+std::string
+DataKeyDebugStringVisitor::operator()<content::AttributionDataModel::DataKey>(
+    const content::AttributionDataModel::DataKey& attribution_data_key) {
+  std::stringstream debug_string;
+  debug_string << "AttributionDataKey:";
+  debug_string << attribution_data_key.reporting_origin();
+  return debug_string.str();
+}
+
+template <>
+std::string DataKeyDebugStringVisitor::operator()<
+    content::PrivateAggregationDataModel::DataKey>(
+    const content::PrivateAggregationDataModel::DataKey&
+        private_aggregation_data_key) {
+  std::stringstream debug_string;
+  debug_string << "PrivateAggregationDataKey:";
+  debug_string << private_aggregation_data_key.reporting_origin();
+  return debug_string.str();
+}
+
+template <>
+std::string
+DataKeyDebugStringVisitor::operator()<net::SharedDictionaryIsolationKey>(
+    const net::SharedDictionaryIsolationKey& shared_dictionary_isolation_key) {
+  std::stringstream debug_string;
+  debug_string << "SharedDictionaryIsolationKey:{";
+  debug_string << "{frame_origin:";
+  debug_string << shared_dictionary_isolation_key.frame_origin().Serialize();
+  debug_string << "top_frame_site:";
+  debug_string
+      << shared_dictionary_isolation_key.top_frame_site().GetDebugString()
+      << "}";
+  return debug_string.str();
+}
+
+struct DataOwnerDebugStringVisitor {
+  template <class T>
+  std::string operator()(const T& data_owner);
+};
+
+template <>
+std::string DataOwnerDebugStringVisitor::operator()<std::string>(
+    const std::string& host) {
+  return host;
+}
+
+template <>
+std::string DataOwnerDebugStringVisitor::operator()<url::Origin>(
+    const url::Origin& origin) {
+  return origin.Serialize();
+}
+
+}  // namespace
+
 BrowsingDataEntry::BrowsingDataEntry(
     const BrowsingDataModel::DataOwner& data_owner,
     BrowsingDataModel::DataKey data_key,
@@ -29,6 +121,26 @@ bool BrowsingDataEntry::operator==(const BrowsingDataEntry& other) const {
          data_details == other.data_details;
 }
 
+std::string BrowsingDataEntry::ToDebugString() const {
+  std::stringstream debug_string;
+  debug_string << "Data Owner:";
+  debug_string << absl::visit(DataOwnerDebugStringVisitor(), data_owner);
+
+  debug_string << " Data Key:";
+  debug_string << absl::visit(DataKeyDebugStringVisitor(), data_key);
+
+  debug_string << " Storage Types:";
+  debug_string << data_details.storage_types.ToEnumBitmask();
+
+  debug_string << " Storage Size:";
+  debug_string << data_details.storage_size;
+
+  debug_string << " Cookie count:";
+  debug_string << data_details.cookie_count;
+
+  return debug_string.str();
+}
+
 void ValidateBrowsingDataEntries(
     BrowsingDataModel* model,
     const std::vector<BrowsingDataEntry>& expected_entries) {
@@ -37,6 +149,25 @@ void ValidateBrowsingDataEntries(
   for (const auto& entry : *model) {
     model_entries.emplace_back(entry);
   }
+
+  std::string model_entries_debug_string = "[";
+  for (const auto& entry : model_entries) {
+    model_entries_debug_string += "{";
+    model_entries_debug_string += entry.ToDebugString();
+    model_entries_debug_string += "},";
+  }
+  model_entries_debug_string += "]";
+
+  std::string expected_entries_debug_string = "[";
+  for (const auto& entry : expected_entries) {
+    expected_entries_debug_string += "{";
+    expected_entries_debug_string += entry.ToDebugString();
+    expected_entries_debug_string += "},";
+  }
+  expected_entries_debug_string += "]";
+
+  SCOPED_TRACE("Model Entries:" + model_entries_debug_string +
+               " Expected Entries:" + expected_entries_debug_string);
 
   EXPECT_THAT(model_entries,
               testing::UnorderedElementsAreArray(expected_entries));

@@ -21,6 +21,8 @@ struct BrowsingDataEntry {
   BrowsingDataEntry(const BrowsingDataEntry& other);
   bool operator==(const BrowsingDataEntry& other) const;
 
+  std::string ToDebugString() const;
+
   BrowsingDataModel::DataOwner data_owner;
   BrowsingDataModel::DataKey data_key;
   BrowsingDataModel::DataDetails data_details;

@@ -420,7 +420,7 @@ class FakeWebLocalFrameDelegate
   bool IsCrossOriginToOutermostMainFrame() override { return is_cross_origin_; }
   bool AllowStorageAccessSync(
       WebContentSettingsClient::StorageType storage_type) override {
-    if (storage_type == WebContentSettingsClient::StorageType::kLocalStorage) {
+    if (storage_type == WebContentSettingsClient::StorageType::kIndexedDB) {
       return local_storage_allowed_;
     }
     return true;

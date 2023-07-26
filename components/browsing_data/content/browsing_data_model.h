@@ -55,7 +55,7 @@ class BrowsingDataModel {
     kFirstType = kTrustTokens,
     kLastType = kSharedDictionary,
     kExtendedDelegateRange =
-        64,  // This is needed to include delegate values when adding delegate
+        63,  // This is needed to include delegate values when adding delegate
              // browsing data to the model.
   };
   using StorageTypeSet = base::EnumSet<StorageType,

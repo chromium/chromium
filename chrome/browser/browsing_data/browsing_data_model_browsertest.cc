@@ -997,26 +997,32 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
                        QuotaManagedDataAccessReportedCorrectly) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      https_test_server()->GetURL(kTestHost, "/browsing_data/site_data.html")));
-
-  auto* content_settings =
-      content_settings::PageSpecificContentSettings::GetForFrame(
-          web_contents()->GetPrimaryMainFrame());
-
-  // Validate that the allowed browsing data model is empty.
-  auto* allowed_browsing_data_model =
-      content_settings->allowed_browsing_data_model();
-  ValidateBrowsingDataEntries(allowed_browsing_data_model, {});
-  ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
-
   // TODO(crbug.com/1442473): Investigate and include remaining quota managed
-  // data types ["ServiceWorker", "MediaLicense"].
-  std::string quota_managed_data_types[] = {"IndexedDb", "FileSystem",
-                                            "WebSql"};
+  // data types ["ServiceWorker"].
+  std::vector<std::string> quota_managed_data_types = {"IndexedDb",
+                                                       "FileSystem", "WebSql"};
+
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+  quota_managed_data_types.push_back("MediaLicense");
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
   for (auto data_type : quota_managed_data_types) {
+    // Re-Navigate to the page for every data type, to prevent any cached data
+    // access results from impacting whether access is reported or not.
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), https_test_server()->GetURL(
+                       kTestHost, "/browsing_data/site_data.html")));
+
+    auto* content_settings =
+        content_settings::PageSpecificContentSettings::GetForFrame(
+            web_contents()->GetPrimaryMainFrame());
+
+    // Validate that the allowed browsing data model is empty.
+    auto* allowed_browsing_data_model =
+        content_settings->allowed_browsing_data_model();
+    ValidateBrowsingDataEntries(allowed_browsing_data_model, {});
+    ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
+
     SetDataForType(data_type, web_contents());
     if (GetParam()) {
       WaitForModelUpdate(allowed_browsing_data_model, /*expected_size=*/1);

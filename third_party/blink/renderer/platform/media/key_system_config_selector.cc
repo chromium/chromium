@@ -740,10 +740,13 @@ KeySystemConfigSelector::GetSupportedConfiguration(
   //         return NotSupported.
   EmeFeatureSupport persistent_state_support =
       key_systems_->GetPersistentStateSupport(key_system);
-  // If preferences disallow local storage, then indicate persistent state is
-  // not supported.
+  // If preferences disallow storage access, then indicate persistent state is
+  // not supported. A quota managed storage type is used in lieu of a dedicated
+  // StorageType, as Media Licenses are a quota managed managed type.
+  // TODO(crbug.com/1465299): Simplify the WebContentSettingsClient::StorageType
+  // to remove unnecessary distinctions between storage types.
   if (!web_frame_delegate_->AllowStorageAccessSync(
-          WebContentSettingsClient::StorageType::kLocalStorage)) {
+          WebContentSettingsClient::StorageType::kIndexedDB)) {
     if (persistent_state_support == EmeFeatureSupport::ALWAYS_ENABLED)
       return CONFIGURATION_NOT_SUPPORTED;
     persistent_state_support = EmeFeatureSupport::NOT_SUPPORTED;
