@@ -25,8 +25,6 @@ namespace media {
 class MEDIA_GPU_EXPORT CodecOutputBufferRenderer
     : public gpu::RefCountedLockHelperDrDc {
  public:
-  using BindingsMode = gpu::StreamTextureSharedImageInterface::BindingsMode;
-
   CodecOutputBufferRenderer(
       std::unique_ptr<CodecOutputBuffer> output_buffer,
       scoped_refptr<CodecBufferWaitCoordinator> codec_buffer_wait_coordinator,
@@ -44,7 +42,7 @@ class MEDIA_GPU_EXPORT CodecOutputBufferRenderer
   // Renders this image to the texture owner front buffer by first rendering
   // it to the back buffer if it's not already there, and then waiting for the
   // frame available event before calling UpdateTexImage().
-  bool RenderToTextureOwnerFrontBuffer(BindingsMode bindings_mode);
+  bool RenderToTextureOwnerFrontBuffer();
 
   // Renders this image to the front buffer of its backing surface.
   // Returns true if the buffer is in the front buffer. Returns false if the
@@ -86,8 +84,6 @@ class MEDIA_GPU_EXPORT CodecOutputBufferRenderer
     return output_buffer_->color_space();
   }
 
-  bool was_tex_image_bound() const { return was_tex_image_bound_; }
-
   scoped_refptr<gpu::TextureOwner> texture_owner() const {
     return codec_buffer_wait_coordinator_
                ? codec_buffer_wait_coordinator_->texture_owner()
@@ -105,9 +101,6 @@ class MEDIA_GPU_EXPORT CodecOutputBufferRenderer
   // kInFrontBuffer and kInvalidated are terminal.
   enum class Phase { kInCodec, kInBackBuffer, kInFrontBuffer, kInvalidated };
 
-  // Updates `was_tex_image_bound_` if mode is `kBindImage`.
-  void MaybeMarkTexImageBound(BindingsMode mode);
-
   // Sets `phase_` to Phase::kInvalidated and clears `frame_info_callback_` if
   // needed.
   void Invalidate();
@@ -121,8 +114,6 @@ class MEDIA_GPU_EXPORT CodecOutputBufferRenderer
   // The CodecBufferWaitCoordinator that |output_buffer_| will be rendered to.
   // Or null, if this image is backed by an overlay.
   scoped_refptr<CodecBufferWaitCoordinator> codec_buffer_wait_coordinator_;
-
-  bool was_tex_image_bound_ = false;
 
   FrameInfoCallback frame_info_callback_;
 };

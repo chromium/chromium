@@ -97,8 +97,7 @@ class FrameInfoHelperImpl : public FrameInfoHelper,
 
       absl::optional<FrameInfo> info;
 
-      if (buffer_renderer->RenderToTextureOwnerFrontBuffer(
-              CodecOutputBufferRenderer::BindingsMode::kDontBindImage)) {
+      if (buffer_renderer->RenderToTextureOwnerFrontBuffer()) {
         gfx::Size coded_size;
         gfx::Rect visible_rect;
         if (texture_owner->GetCodedSizeAndVisibleRect(

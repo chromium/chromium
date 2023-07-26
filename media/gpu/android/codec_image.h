@@ -93,7 +93,6 @@ class MEDIA_GPU_EXPORT CodecImage
                : false;
   }
 
-
   // Whether this image is backed by a texture owner.
   bool is_texture_owner_backed() const { return is_texture_owner_backed_; }
 
@@ -130,12 +129,18 @@ class MEDIA_GPU_EXPORT CodecImage
  private:
   FRIEND_TEST_ALL_PREFIXES(CodecImageTest, RenderAfterUnusedDoesntCrash);
 
+  bool TextureOwnerBindsOnUpdate() const;
+
   std::unique_ptr<CodecOutputBufferRenderer> output_buffer_renderer_;
 
   // Renders this image to the texture owner front buffer by first rendering
   // it to the back buffer if it's not already there, and then waiting for the
   // frame available event before calling UpdateTexImage().
-  bool RenderToTextureOwnerFrontBuffer(BindingsMode bindings_mode);
+  bool RenderToTextureOwnerFrontBuffer();
+
+  // Whether this image has been rendered to the front buffer via a flow that
+  // intentionally binds the texture.
+  bool rendered_via_binding_flow_ = false;
 
   // Whether this image is texture_owner or overlay backed.
   bool is_texture_owner_backed_ = false;

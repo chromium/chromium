@@ -24,15 +24,6 @@ class TextureBase;
 class GPU_GLES2_EXPORT StreamTextureSharedImageInterface
     : public base::RefCounted<StreamTextureSharedImageInterface> {
  public:
-  enum class BindingsMode {
-    // Binds image to the texture with service id. Doesn't alter current gl
-    // bindings.
-    kBindImage,
-
-    // Updates the current image but does not bind it.
-    kDontBindImage
-  };
-
   // Release the underlying resources. This should be called when the image is
   // not longer valid or the context is lost.
   virtual void ReleaseResources() = 0;
