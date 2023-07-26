@@ -8,6 +8,20 @@
   cr-icon-button {
     margin: 10px 8px;
   }
+  :host-context([chrome-refresh-2023]) cr-icon-button {
+    color: var(--color-side-panel-entry-icon);
+  }
+  :host-context([chrome-refresh-2023]) .dropdown-item {
+    background: none;
+  }
+  :host-context([chrome-refresh-2023]) .dropdown-item:focus {
+    background-color: var(--cr-hover-background-color);
+  }
+  :host-context([chrome-refresh-2023]) cr-action-menu {
+    --cr-menu-background-color: var(--color-side-panel-menu-background);
+    --cr-menu-border-radius: 8px;
+    --cr-primary-text-color: var(--color-side-panel-menu-foreground);
+  }
   .back, .section {
     font-weight: bold;
   }
@@ -15,7 +29,7 @@
 <div>
   <cr-icon-button
       id="settings"
-      iron-icon="cr:settings_icon"
+      iron-icon="read-anything:settings-outline"
       on-click="onShowSettingsMenuClick_">
   </cr-icon-button>
 

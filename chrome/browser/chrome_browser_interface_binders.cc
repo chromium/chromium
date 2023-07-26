@@ -1673,6 +1673,11 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
     registry.ForWebUI<CompanionSidePanelUntrustedUI>()
         .Add<side_panel::mojom::CompanionPageHandlerFactory>();
   }
+  if (features::IsReadAnythingEnabled() &&
+      features::IsReadAnythingWebUIToolbarEnabled()) {
+    registry.ForWebUI<ReadAnythingUntrustedUI>()
+        .Add<color_change_listener::mojom::PageHandler>();
+  }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 

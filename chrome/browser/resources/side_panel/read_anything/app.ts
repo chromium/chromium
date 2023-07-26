@@ -7,6 +7,7 @@ import '//resources/cr_elements/cr_hidden_style.css.js';
 import '../strings.m.js';
 import './read_anything_toolbar.js';
 
+import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from '//resources/js/assert_ts.js';
 import {rgbToSkColor, skColorToRgba} from '//resources/js/color_utils.js';
@@ -149,6 +150,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // If the WebUI toolbar should be shown. This happens when the WebUI feature
   // flag is enabled.
   private isWebUIToolbarVisible_: boolean;
+
+  constructor() {
+    super();
+    if (chrome.readingMode && chrome.readingMode.isWebUIToolbarVisible) {
+      ColorChangeUpdater.forDocument().start();
+    }
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -391,6 +399,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     const linkColor = this.getLinkColor_(backgroundColor);
 
     this.updateStyles({
+      '--background-color': skColorToRgba(backgroundColor),
       '--font-family': this.validatedFontName_(),
       '--font-size': chrome.readingMode.fontSize + 'em',
       '--foreground-color': skColorToRgba(foregroundColor),
@@ -403,7 +412,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
           this.getEmptyStateBodyColor_(backgroundColor),
       '--visited-link-color': linkColor.visited,
     });
-    document.body.style.background = skColorToRgba(backgroundColor);
+    if (!chrome.readingMode.isWebUIToolbarVisible) {
+      document.body.style.background = skColorToRgba(backgroundColor);
+    }
   }
 }
 

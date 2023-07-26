@@ -79,6 +79,7 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
   source->UseStringsJs();
   source->EnableReplaceI18nInJS();
   webui::EnableTrustedTypesCSP(source);
+  webui::SetupChromeRefresh2023(source);
   source->AddResourcePaths(base::make_span(
       kSidePanelReadAnythingResources, kSidePanelReadAnythingResourcesSize));
   source->AddResourcePath("", IDR_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_HTML);
@@ -89,7 +90,7 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       "script-src 'self' chrome-untrusted://resources;");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::StyleSrc,
-      "style-src 'self' chrome-untrusted://resources "
+      "style-src 'self' chrome-untrusted://resources chrome-untrusted://theme "
       "https://fonts.googleapis.com 'unsafe-inline';");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FontSrc,
@@ -103,6 +104,15 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
 ReadAnythingUntrustedUI::~ReadAnythingUntrustedUI() = default;
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ReadAnythingUntrustedUI)
+
+void ReadAnythingUntrustedUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+        pending_receiver) {
+  if (features::IsReadAnythingWebUIToolbarEnabled()) {
+    color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+        web_ui()->GetWebContents(), std::move(pending_receiver));
+  }
+}
 
 void ReadAnythingUntrustedUI::BindInterface(
     mojo::PendingReceiver<read_anything::mojom::UntrustedPageHandlerFactory>
