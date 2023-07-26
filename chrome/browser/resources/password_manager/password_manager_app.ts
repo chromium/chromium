@@ -172,8 +172,12 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
     if (modalContextOpen) {
       return false;
     }
-    this.$.toolbar.searchField.showAndFocus();
-    return true;
+    // Redirect to Password Manager search on Passwords page.
+    if (Router.getInstance().currentRoute.page === Page.PASSWORDS) {
+      this.$.toolbar.searchField.showAndFocus();
+      return true;
+    }
+    return false;
   }
 
   // Override FindShortcutMixin methods.
