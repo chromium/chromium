@@ -14,6 +14,7 @@
 #include "crypto/scoped_test_nss_db.h"
 #include "net/cert/cert_database.h"
 #include "net/cert/x509_util_nss.h"
+#include "net/test/cert_builder.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
@@ -142,9 +143,10 @@ TEST_F(NSSCertDatabaseChromeOSTest, ImportCACerts) {
       X509Certificate::FORMAT_AUTO);
   ASSERT_EQ(1U, certs_1.size());
 
-  ScopedCERTCertificateList certs_2 = CreateCERTCertificateListFromFile(
-      GetTestCertsDirectory(), "2048-rsa-root.pem",
-      X509Certificate::FORMAT_AUTO);
+  auto [leaf2, root2] = CertBuilder::CreateSimpleChain2();
+  ScopedCERTCertificateList certs_2 =
+      x509_util::CreateCERTCertificateListFromX509Certificate(
+          root2->GetX509Certificate().get());
   ASSERT_EQ(1U, certs_2.size());
 
   // Import one cert for each user.
@@ -188,9 +190,10 @@ TEST_F(NSSCertDatabaseChromeOSTest, ImportServerCert) {
       GetTestCertsDirectory(), "ok_cert.pem", X509Certificate::FORMAT_AUTO);
   ASSERT_EQ(1U, certs_1.size());
 
-  ScopedCERTCertificateList certs_2 = CreateCERTCertificateListFromFile(
-      GetTestCertsDirectory(), "2048-rsa-ee-by-2048-rsa-intermediate.pem",
-      X509Certificate::FORMAT_AUTO);
+  auto [leaf2, root2] = CertBuilder::CreateSimpleChain2();
+  ScopedCERTCertificateList certs_2 =
+      x509_util::CreateCERTCertificateListFromX509Certificate(
+          leaf2->GetX509Certificate().get());
   ASSERT_EQ(1U, certs_2.size());
 
   // Import one cert for each user.
