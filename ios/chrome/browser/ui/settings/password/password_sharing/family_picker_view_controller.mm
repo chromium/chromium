@@ -15,7 +15,15 @@
 #error "This file requires ARC support."
 #endif
 
-@interface FamilyPickerViewController () <UITableViewDataSource> {
+namespace {
+
+// Size of the accessory view symbol.
+const CGFloat kAccessorySymbolSize = 22;
+
+}  // namespace
+
+@interface FamilyPickerViewController () <UITableViewDataSource,
+                                          UITableViewDelegate> {
   // Height constraint for the bottom sheet.
   NSLayoutConstraint* _heightConstraint;
 
@@ -41,6 +49,20 @@
   [super viewDidLoad];
 }
 
+#pragma mark - UITableViewDelegate
+
+- (void)tableView:(UITableView*)tableView
+    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  [tableView cellForRowAtIndexPath:indexPath].accessoryView =
+      [[UIImageView alloc] initWithImage:[self checkmarkCircleIcon]];
+}
+
+- (void)tableView:(UITableView*)tableView
+    didDeselectRowAtIndexPath:(NSIndexPath*)indexPath {
+  [tableView cellForRowAtIndexPath:indexPath].accessoryView =
+      [[UIImageView alloc] initWithImage:[self circleIcon]];
+}
+
 #pragma mark - UITableViewDataSource
 
 - (NSInteger)tableView:(UITableView*)tableView
@@ -63,6 +85,7 @@
   // TODO(crbug.com/1463882): Replace with the actual image of the recipient.
   cell.image = DefaultSymbolTemplateWithPointSize(
       kPersonCropCircleSymbol, kAccountProfilePhotoDimension);
+  cell.accessoryView = [[UIImageView alloc] initWithImage:[self circleIcon]];
 
   cell.userInteractionEnabled = YES;
 
@@ -76,6 +99,7 @@
 
   tableView.dataSource = self;
   tableView.accessibilityIdentifier = @"FamilyPickerBottomSheetViewId";
+  tableView.allowsMultipleSelection = YES;
   [tableView registerClass:SettingsImageDetailTextCell.class
       forCellReuseIdentifier:@"cell"];
 
@@ -85,6 +109,15 @@
   _heightConstraint.active = YES;
 
   return tableView;
+}
+
+- (UIImage*)checkmarkCircleIcon {
+  return DefaultSymbolWithPointSize(kCheckmarkCircleFillSymbol,
+                                    kAccessorySymbolSize);
+}
+
+- (UIImage*)circleIcon {
+  return DefaultSymbolWithPointSize(kCircleSymbol, kAccessorySymbolSize);
 }
 
 @end
