@@ -147,14 +147,15 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
   // Used for validation.
   GURL url_;
 
-  // Pointers to view widgets; weak.
-  raw_ptr<views::ImageView, DanglingUntriaged> qr_code_image_ = nullptr;
-  raw_ptr<views::Textfield, DanglingUntriaged> textfield_url_ = nullptr;
-  raw_ptr<views::LabelButton, DanglingUntriaged> copy_button_ = nullptr;
-  raw_ptr<views::LabelButton, DanglingUntriaged> download_button_ = nullptr;
-  raw_ptr<views::TooltipIcon, DanglingUntriaged> tooltip_icon_ = nullptr;
-  raw_ptr<views::Label, DanglingUntriaged> center_error_label_ = nullptr;
-  raw_ptr<views::Label, DanglingUntriaged> bottom_error_label_ = nullptr;
+  // Pointers to subviews that we need to update the contents or visibility of
+  // after creation.
+  raw_ptr<views::ImageView> qr_code_image_ = nullptr;
+  raw_ptr<views::Textfield> textfield_url_ = nullptr;
+  raw_ptr<views::LabelButton> copy_button_ = nullptr;
+  raw_ptr<views::LabelButton> download_button_ = nullptr;
+  raw_ptr<views::TooltipIcon> tooltip_icon_ = nullptr;
+  raw_ptr<views::Label> center_error_label_ = nullptr;
+  raw_ptr<views::Label> bottom_error_label_ = nullptr;
 
   base::OnceClosure on_closing_;
   base::OnceClosure on_back_button_pressed_;
