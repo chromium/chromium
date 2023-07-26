@@ -444,6 +444,7 @@ public class AwMetricsIntegrationTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "https://crbug.com/1467656")
     public void testMetadata_chromeComponents() throws Throwable {
         final String allowlistComponentVersion = "123.456.78.9";
         // A fake expiry date, the allowlist component info should be recorded regardless of the
