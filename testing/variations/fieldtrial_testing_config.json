@@ -8550,21 +8550,6 @@
             ]
         }
     ],
-    "LockProfileCookieDatabase": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230418",
-                    "enable_features": [
-                        "LockProfileCookieDatabase"
-                    ]
-                }
-            ]
-        }
-    ],
     "LowerMemoryLimitForNonMainRenderers": [
         {
             "platforms": [
