@@ -19,6 +19,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
@@ -225,8 +226,10 @@ void KeyboardShortcutResult::PopulateTextVector(
       // KeyboardCode does not have a corresponding IconCode. The
       // key text will be styled to look like an icon ("iconified
       // text").
-      text_vector->push_back(
-          CreateIconifiedTextTextItem(ash::GetStringForKeyboardCode(key_code)));
+      //
+      // All keys including modifiers should be displayed in lower case.
+      text_vector->push_back(CreateIconifiedTextTextItem(
+          base::ToLowerASCII(ash::GetStringForKeyboardCode(key_code))));
     }
   }
 }
@@ -257,7 +260,9 @@ void KeyboardShortcutResult::PopulateTextVectorWithTextParts(
         if (icon_code) {
           text_vector->push_back(CreateIconCodeTextItem(icon_code.value()));
         } else {
-          text_vector->push_back(CreateIconifiedTextTextItem(part->text));
+          // All keys including modifiers should be displayed in lower case.
+          text_vector->push_back(
+              CreateIconifiedTextTextItem(base::ToLowerASCII(part->text)));
         }
         break;
     }

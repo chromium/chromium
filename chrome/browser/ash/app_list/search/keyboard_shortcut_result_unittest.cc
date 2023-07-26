@@ -242,7 +242,7 @@ TEST_F(KeyboardShortcutResultTest, PopulateTextVector_One_Key) {
   PopulateTextVector(&text_vector, accelerator);
 
   ASSERT_EQ(text_vector.size(), 1u);
-  VerifyTextItem(text_vector[0], u"Space", TextType::kIconifiedText);
+  VerifyTextItem(text_vector[0], u"space", TextType::kIconifiedText);
 }
 
 TEST_F(KeyboardShortcutResultTest, PopulateTextVector_ModifierKeysOrder) {
@@ -254,10 +254,10 @@ TEST_F(KeyboardShortcutResultTest, PopulateTextVector_ModifierKeysOrder) {
   PopulateTextVector(&text_vector, accelerator);
 
   ASSERT_EQ(text_vector.size(), 5u);
-  VerifyTextItem(text_vector[0], u"Ctrl", TextType::kIconifiedText);
-  VerifyTextItem(text_vector[1], u"Alt", TextType::kIconifiedText);
-  VerifyTextItem(text_vector[2], u"Shift", TextType::kIconifiedText);
-  VerifyTextItem(text_vector[3], u"Search", TextType::kIconifiedText);
+  VerifyTextItem(text_vector[0], u"ctrl", TextType::kIconifiedText);
+  VerifyTextItem(text_vector[1], u"alt", TextType::kIconifiedText);
+  VerifyTextItem(text_vector[2], u"shift", TextType::kIconifiedText);
+  VerifyTextItem(text_vector[3], u"search", TextType::kIconifiedText);
   VerifyTextItem(text_vector[4], u"f", TextType::kIconifiedText);
 }
 
@@ -285,10 +285,10 @@ TEST_F(KeyboardShortcutResultTest,
       /* profile= */ nullptr, search_result_ptr);
   const auto& text_vector = result->keyboard_shortcut_text_vector();
   ASSERT_EQ(text_vector.size(), 5u);
-  VerifyTextItem(text_vector[0], u"Alt", TextType::kIconifiedText);
+  VerifyTextItem(text_vector[0], u"alt", TextType::kIconifiedText);
   VerifyTextItem(text_vector[1], u"f", TextType::kIconifiedText);
   VerifyTextItem(text_vector[2], u" or ", TextType::kString);
-  VerifyTextItem(text_vector[3], u"Ctrl", TextType::kIconifiedText);
+  VerifyTextItem(text_vector[3], u"ctrl", TextType::kIconifiedText);
   VerifyTextItem(text_vector[4], u"g", TextType::kIconifiedText);
 }
 
@@ -312,8 +312,8 @@ TEST_F(KeyboardShortcutResultTest, PopulateTextVectorWithText) {
 
   ASSERT_EQ(text_vector.size(), 5u);
   VerifyTextItem(text_vector[0], u"Press ", TextType::kString);
-  VerifyTextItem(text_vector[1], u"Ctrl", TextType::kIconifiedText);
-  VerifyTextItem(text_vector[2], u"A", TextType::kIconifiedText);
+  VerifyTextItem(text_vector[1], u"ctrl", TextType::kIconifiedText);
+  VerifyTextItem(text_vector[2], u"a", TextType::kIconifiedText);
   VerifyTextItem(text_vector[3], u"Or ", TextType::kString);
   VerifyTextItem(text_vector[4], u"", TextType::kIconCode);
 }
