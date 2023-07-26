@@ -1264,7 +1264,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
 
                 if (mBrowserBridge == null) {
                     mBrowserBridge = new WebAuthnBrowserBridge();
-                };
+                }
                 mConditionalUiState = ConditionalUiState.WAITING_FOR_SELECTION;
                 mBrowserBridge.onCredManConditionalRequestPending(mFrameHost,
                         hasPublicKeyCredentials,
