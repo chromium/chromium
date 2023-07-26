@@ -23,7 +23,8 @@
       assert_equals(ss.rules.length, 1, "Outer rule should exist.");
       const rule = ss.rules[0];
       assert_equals(rule.cssRules.length, 1, "Inner rule should exist.");
-      assert_equals(rule.selectorText, expected, `Inner rule's selector should be "${expected}".`);
+      const inner_rule = rule.cssRules[0];
+      assert_equals(inner_rule.selectorText, expected, `Inner rule's selector should be "${expected}".`);
     }, ruleText);
   }
 
