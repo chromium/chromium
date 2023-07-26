@@ -162,7 +162,9 @@ void AXTreeSourceAndroid::SerializeNode(AccessibilityInfoDataWrapper* info_data,
 void AXTreeSourceAndroid::NotifyAccessibilityEventInternal(
     const AXEventData& event_data) {
   if (window_id_ != event_data.window_id) {
+    // Root window id is changed. Resetting variables that depends on id.
     android_focused_id_.reset();
+    hooks_.clear();
     window_id_ = event_data.window_id;
   }
   is_notification_ = event_data.notification_key.has_value();
