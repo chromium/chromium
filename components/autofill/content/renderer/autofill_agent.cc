@@ -928,8 +928,9 @@ bool AutofillAgent::CollectFormlessElements(FormData* output) const {
 void AutofillAgent::ShowSuggestions(
     const WebFormControlElement& element,
     AutofillSuggestionTriggerSource trigger_source) {
-  CHECK(!unsafe_render_frame() ||
-        IsOwnedByFrame(element, unsafe_render_frame()));
+  // TODO(crbug.com/1467359): Make this a CHECK.
+  DCHECK(!unsafe_render_frame() ||
+         IsOwnedByFrame(element, unsafe_render_frame()));
   CHECK_NE(trigger_source, AutofillSuggestionTriggerSource::kUnspecified);
 
   if (!element.IsEnabled() || element.IsReadOnly())
