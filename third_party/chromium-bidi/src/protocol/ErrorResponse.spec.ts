@@ -21,24 +21,24 @@ import {ErrorCode} from './webdriver-bidi.js';
 
 describe('Exception', () => {
   const errors: {
-    [key in ErrorCode]: boolean;
+    [key in ErrorCode]: undefined;
   } = {
     // keep-sorted start
-    [ErrorCode.InvalidArgument]: false,
-    [ErrorCode.InvalidSessionId]: false,
-    [ErrorCode.MoveTargetOutOfBounds]: false,
-    [ErrorCode.NoSuchAlert]: false,
-    [ErrorCode.NoSuchElement]: false,
-    [ErrorCode.NoSuchFrame]: false,
-    [ErrorCode.NoSuchHandle]: false,
-    [ErrorCode.NoSuchNode]: false,
-    [ErrorCode.NoSuchScript]: false,
-    [ErrorCode.SessionNotCreated]: false,
-    [ErrorCode.UnableToCaptureScreen]: false,
-    [ErrorCode.UnableToCloseBrowser]: false,
-    [ErrorCode.UnknownCommand]: false,
-    [ErrorCode.UnknownError]: false,
-    [ErrorCode.UnsupportedOperation]: false,
+    [ErrorCode.InvalidArgument]: undefined,
+    [ErrorCode.InvalidSessionId]: undefined,
+    [ErrorCode.MoveTargetOutOfBounds]: undefined,
+    [ErrorCode.NoSuchAlert]: undefined,
+    [ErrorCode.NoSuchElement]: undefined,
+    [ErrorCode.NoSuchFrame]: undefined,
+    [ErrorCode.NoSuchHandle]: undefined,
+    [ErrorCode.NoSuchNode]: undefined,
+    [ErrorCode.NoSuchScript]: undefined,
+    [ErrorCode.SessionNotCreated]: undefined,
+    [ErrorCode.UnableToCaptureScreen]: undefined,
+    [ErrorCode.UnableToCloseBrowser]: undefined,
+    [ErrorCode.UnknownCommand]: undefined,
+    [ErrorCode.UnknownError]: undefined,
+    [ErrorCode.UnsupportedOperation]: undefined,
     // keep-sorted end
   };
 
