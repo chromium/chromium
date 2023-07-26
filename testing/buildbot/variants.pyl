@@ -11,12 +11,10 @@
 {
   'IPHONE_7_15_4_1': {
     'swarming': {
-      'dimension_sets': [
-        {
-          'os': 'iOS-15.4.1',
-          'device': 'iPhone9,1'
-        }
-      ]
+      'dimensions': {
+        'os': 'iOS-15.4.1',
+        'device': 'iPhone9,1'
+      },
     },
     'identifier': 'iPhone 7 15.4.1'
   },
@@ -176,13 +174,11 @@
       'ios_runtime_cache_16_2',
     ],
     'swarming': {
-      'dimension_sets': [
-        {
-          'cpu': 'x86-64',
-          'mac_model': 'Macmini8,1',
-          'os': 'Mac-12'
-        }
-      ],
+      'dimensions': {
+        'cpu': 'x86-64',
+        'mac_model': 'Macmini8,1',
+        'os': 'Mac-12'
+      },
     }
   },
   'SIM_IPAD_PRO_3RD_GEN_16_4': {
@@ -763,13 +759,11 @@
     ],
     'identifier': 'amd64-generic',
     'swarming': {
-       'dimension_sets': [
-        {
-          'cpu': 'x86',
-          'kvm': '1',
-          'os': 'Ubuntu-22.04',
-        }
-      ],
+      'dimensions': {
+        'cpu': 'x86',
+        'kvm': '1',
+        'os': 'Ubuntu-22.04',
+      },
     },
   },
   'LACROS_ASH_TOT': {
@@ -785,12 +779,10 @@
     ],
     'identifier': 'eve',
     'swarming': {
-      'dimension_sets': [
-        {
-          'os': 'ChromeOS',
-          'device_type': 'eve',
-        }
-      ],
+      'dimensions': {
+        'os': 'ChromeOS',
+        'device_type': 'eve',
+      },
     },
   },
   'LACROS_JACUZZI': {

@@ -4,7 +4,6 @@
   "Fake Tester": {
     "skylab_tests": [
       {
-        "args": [],
         "cros_board": "octopus",
         "cros_img": "octopus-release/R89-13655.0.0",
         "name": "tast.basic OCTOPUS_TOT",

@@ -4,7 +4,6 @@
   "Fake Tester": {
     "gtest_tests": [
       {
-        "args": [],
         "description": "Variant description.",
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"

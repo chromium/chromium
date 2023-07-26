@@ -184,7 +184,6 @@
         "variant_id": "8086:9bc5"
       },
       {
-        "args": [],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -206,7 +205,6 @@
         "variant_id": "10de:2184"
       },
       {
-        "args": [],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
