@@ -975,19 +975,18 @@ class ColorTransformToneMapInRec2020Linear : public ColorTransformStep {
     ComputeToneMapConstants(options, a, b);
 
     for (size_t i = 0; i < num; i++) {
-      float L = kLr * color[i].x() + kLg * color[i].y() + kLb * color[i].z();
-      if (L > 0.f)
-        color[i].Scale((1.f + a * L) / (1.f + b * L));
+      float maximum = std::max({color[i].x(), color[i].y(), color[i].z()});
+      if (maximum > 0.f) {
+        color[i].Scale((1.f + a * maximum) / (1.f + b * maximum));
+      }
     }
   }
   void AppendSkShaderSource(std::stringstream* src) const override {
     *src << "{\n"
-         << "  half4 luma_vec = half4(" << kLr << ", " << kLg << ", " << kLb
-         << ", 0.0);\n"
-         << "  half L = dot(color, luma_vec);\n"
-         << "  if (L > 0.0) {\n"
-         << "    color.rgb *= (1.0 + pq_tonemap_a * L) / \n"
-         << "                 (1.0 + pq_tonemap_b * L);\n"
+         << "  half maximum = max(color.r, max(color.g, color.b));\n"
+         << "  if (maximum > 0.0) {\n"
+         << "    color.rgb *= (1.0 + pq_tonemap_a * maximum) / \n"
+         << "                 (1.0 + pq_tonemap_b * maximum);\n"
          << "  }\n"
          << "}\n";
   }
