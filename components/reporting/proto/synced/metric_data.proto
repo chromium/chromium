@@ -621,7 +621,7 @@ message RuntimeCountersTelemetry {
   // side requires signed integers and therefore uint32 is not an option.
 
   // Total lifetime runtime. Currently always S0 runtime from Intel vPro PSR.
-  optional int64 uptime_runtime_s = 1;
+  optional int64 uptime_runtime_seconds = 1;
   // Number of times that the device has entered into the sleep state. Currently
   // obtained via the PSR, count from S0->S3.
   optional int64 counter_enter_sleep = 2;
