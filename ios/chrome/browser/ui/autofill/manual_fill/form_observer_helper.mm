@@ -94,14 +94,14 @@
   }
 }
 
-#pragma mark - CRWWebStateListObserver
+#pragma mark - WebStateListObserving
 
-- (void)webStateList:(WebStateList*)webStateList
-    didChangeActiveWebState:(web::WebState*)newWebState
-                oldWebState:(web::WebState*)oldWebState
-                    atIndex:(int)atIndex
-                     reason:(ActiveWebStateChangeReason)reason {
-  self.webState = newWebState;
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                       status:(const WebStateListStatus&)status {
+  if (status.active_web_state_change()) {
+    self.webState = status.new_active_web_state;
+  }
 }
 
 #pragma mark - Setters
