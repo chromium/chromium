@@ -48,14 +48,6 @@ IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, CheckMarkWrapper) {
           "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, Color) {
-  RunTest("side_panel/customize_chrome/color_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, Colors) {
-  RunTest("side_panel/customize_chrome/colors_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, HoverButton) {
   RunTest("side_panel/customize_chrome/hover_button_test.js", "mocha.run()");
 }

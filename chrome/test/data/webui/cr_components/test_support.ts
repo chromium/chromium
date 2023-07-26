@@ -1,8 +1,7 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BackgroundImage, Theme, ThirdPartyThemeInfo} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
@@ -36,35 +35,6 @@ export function $$<E extends Element = Element>(
     element: Element, selector: string): E|null;
 export function $$(element: Element, selector: string) {
   return element.shadowRoot!.querySelector(selector);
-}
-
-export function createBackgroundImage(url: string): BackgroundImage {
-  return {
-    url: {url},
-    snapshotUrl: {url},
-    isUploadedImage: false,
-    title: '',
-    collectionId: '',
-    dailyRefreshEnabled: false,
-  };
-}
-
-export function createThirdPartyThemeInfo(
-    id: string, name: string): ThirdPartyThemeInfo {
-  return {
-    id: id,
-    name: name,
-  };
-}
-
-export function createTheme(): Theme {
-  return {
-    backgroundImage: undefined,
-    thirdPartyThemeInfo: undefined,
-    backgroundColor: {value: 0xffff0000},
-    foregroundColor: undefined,
-    backgroundManagedByPolicy: false,
-  };
 }
 
 export function capture(

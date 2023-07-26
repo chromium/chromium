@@ -49,11 +49,11 @@
     width: 20px;
   }
 
-  customize-chrome-color {
-    --customize-chrome-color-border-radius: 12px;
-    --customize-chrome-color-check-mark-end: -4px;
-    --customize-chrome-color-check-mark-size: 20px;
-    --customize-chrome-color-check-mark-top: -6px;
+  cr-theme-color {
+    --cr-theme-color-border-radius: 12px;
+    --cr-theme-color-check-mark-end: -4px;
+    --cr-theme-color-check-mark-size: 20px;
+    --cr-theme-color-check-mark-top: -6px;
     padding: 0;
   }
 
@@ -80,17 +80,17 @@
         aria-current$="[[boolToString_(isCustomColorSelected_)]]"
         tabindex="0"
         on-click="onCustomColorClick_">
-      <customize-chrome-color
+      <cr-theme-color
           id="customColor"
           background-color="[[customColor_.background]]"
           foreground-color="[[customColor_.foreground]]"
           checked="[[isCustomColorSelected_]]">
-      </customize-chrome-color>
+      </cr-theme-color>
       <div id="colorPickerIcon"></div>
       <input id="colorPicker" type="color" tabindex="-1" aria-hidden="true"
           on-change="onCustomColorChange_">
     </div>
-    <customize-chrome-color
+    <cr-theme-color
         id="defaultColor"
         class="tile"
         title="$i18n{defaultColorName}"
@@ -102,9 +102,9 @@
         background-color="[[defaultColor_.background]]"
         foreground-color="[[defaultColor_.foreground]]"
         checked="[[isDefaultColorSelected_]]">
-    </customize-chrome-color>
+    </cr-theme-color>
     <template is="dom-repeat" id="chromeColorsRepeat" items="[[colors_]]">
-      <customize-chrome-color
+      <cr-theme-color
           class="chrome-color tile"
           title="[[item.name]]"
           aria-label$="[[item.name]]"
@@ -116,7 +116,7 @@
           background-color="[[item.background]]"
           foreground-color="[[item.foreground]]"
           checked="[[isChromeColorSelected_(item.seed, selectedColor_)]]">
-      </customize-chrome-color>
+      </cr-theme-color>
     </template>
   </cr-grid>
 </div>

@@ -15,16 +15,4 @@ mojom("mojo_bindings") {
     "//skia/public/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
-
-  cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "side_panel.mojom.BrowserColorVariant"
-          cpp = "ThemeService::BrowserColorVariant"
-        },
-      ]
-      traits_headers = [ "customize_chrome_enum_mojom_traits.h" ]
-    },
-  ]
 }

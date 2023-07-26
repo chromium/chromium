@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
-import {BrowserColorVariant} from './customize_chrome.mojom-webui.js';
+import {BrowserColorVariant} from './theme_color_picker.mojom-webui.js';
 
 export interface Color {
   background: SkColor;
@@ -58,9 +58,6 @@ export enum ColorType {
 
 export interface SelectedColor {
   type: ColorType;
-  // The color value. It is only set for ColorType CHROME.
   chromeColor?: SkColor;
-  // The color variant to use with the color value. It is only set for color
-  // type CHROME.
   variant?: BrowserColorVariant;
 }

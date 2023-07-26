@@ -14,6 +14,7 @@
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/cr_components/customize_color_scheme_mode/customize_color_scheme_mode_handler.h"
+#include "chrome/browser/ui/webui/cr_components/theme_color_picker/theme_color_picker_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
@@ -182,6 +183,17 @@ void CustomizeChromeUI::BindInterface(
 }
 
 void CustomizeChromeUI::BindInterface(
+    mojo::PendingReceiver<
+        theme_color_picker::mojom::ThemeColorPickerHandlerFactory>
+        pending_receiver) {
+  if (theme_color_picker_handler_factory_receiver_.is_bound()) {
+    theme_color_picker_handler_factory_receiver_.reset();
+  }
+  theme_color_picker_handler_factory_receiver_.Bind(
+      std::move(pending_receiver));
+}
+
+void CustomizeChromeUI::BindInterface(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
         pending_receiver) {
   color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
@@ -226,4 +238,15 @@ void CustomizeChromeUI::CreateCustomizeColorSchemeModeHandler(
   customize_color_scheme_mode_handler_ =
       std::make_unique<CustomizeColorSchemeModeHandler>(
           std::move(client), std::move(handler), profile_);
+}
+
+void CustomizeChromeUI::CreateThemeColorPickerHandler(
+    mojo::PendingReceiver<theme_color_picker::mojom::ThemeColorPickerHandler>
+        handler,
+    mojo::PendingRemote<theme_color_picker::mojom::ThemeColorPickerClient>
+        client) {
+  theme_color_picker_handler_ = std::make_unique<ThemeColorPickerHandler>(
+      std::move(handler), std::move(client),
+      NtpCustomBackgroundServiceFactory::GetForProfile(profile_),
+      web_contents_);
 }

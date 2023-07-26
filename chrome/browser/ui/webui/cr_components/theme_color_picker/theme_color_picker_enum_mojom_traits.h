@@ -2,29 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_ENUM_MOJOM_TRAITS_H_
-#define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_ENUM_MOJOM_TRAITS_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_CR_COMPONENTS_THEME_COLOR_PICKER_THEME_COLOR_PICKER_ENUM_MOJOM_TRAITS_H_
+#define CHROME_BROWSER_UI_WEBUI_CR_COMPONENTS_THEME_COLOR_PICKER_THEME_COLOR_PICKER_ENUM_MOJOM_TRAITS_H_
 
 #include "chrome/browser/themes/theme_service.h"
 
 namespace mojo {
 
 template <>
-struct EnumTraits<side_panel::mojom::BrowserColorVariant,
+struct EnumTraits<theme_color_picker::mojom::BrowserColorVariant,
                   ThemeService::BrowserColorVariant> {
-  static side_panel::mojom::BrowserColorVariant ToMojom(
+  static theme_color_picker::mojom::BrowserColorVariant ToMojom(
       ThemeService::BrowserColorVariant input) {
     switch (input) {
       case ThemeService::BrowserColorVariant::kSystem:
-        return side_panel::mojom::BrowserColorVariant::kSystem;
+        return theme_color_picker::mojom::BrowserColorVariant::kSystem;
       case ThemeService::BrowserColorVariant::kTonalSpot:
-        return side_panel::mojom::BrowserColorVariant::kTonalSpot;
+        return theme_color_picker::mojom::BrowserColorVariant::kTonalSpot;
       case ThemeService::BrowserColorVariant::kNeutral:
-        return side_panel::mojom::BrowserColorVariant::kNeutral;
+        return theme_color_picker::mojom::BrowserColorVariant::kNeutral;
       case ThemeService::BrowserColorVariant::kVibrant:
-        return side_panel::mojom::BrowserColorVariant::kVibrant;
+        return theme_color_picker::mojom::BrowserColorVariant::kVibrant;
       case ThemeService::BrowserColorVariant::kExpressive:
-        return side_panel::mojom::BrowserColorVariant::kExpressive;
+        return theme_color_picker::mojom::BrowserColorVariant::kExpressive;
     }
 
     NOTREACHED_NORETURN();
@@ -32,30 +32,30 @@ struct EnumTraits<side_panel::mojom::BrowserColorVariant,
 
   // Returning false results in deserialization failure and causes the
   // message pipe receiving it to be disconnected.
-  static bool FromMojom(side_panel::mojom::BrowserColorVariant input,
+  static bool FromMojom(theme_color_picker::mojom::BrowserColorVariant input,
                         ThemeService::BrowserColorVariant* output) {
     switch (input) {
-      case side_panel::mojom::BrowserColorVariant::kSystem:
+      case theme_color_picker::mojom::BrowserColorVariant::kSystem:
         *output = ThemeService::BrowserColorVariant::kSystem;
         return true;
-      case side_panel::mojom::BrowserColorVariant::kTonalSpot:
+      case theme_color_picker::mojom::BrowserColorVariant::kTonalSpot:
         *output = ThemeService::BrowserColorVariant::kTonalSpot;
         return true;
-      case side_panel::mojom::BrowserColorVariant::kNeutral:
+      case theme_color_picker::mojom::BrowserColorVariant::kNeutral:
         *output = ThemeService::BrowserColorVariant::kNeutral;
         return true;
-      case side_panel::mojom::BrowserColorVariant::kVibrant:
+      case theme_color_picker::mojom::BrowserColorVariant::kVibrant:
         *output = ThemeService::BrowserColorVariant::kVibrant;
         return true;
-      case side_panel::mojom::BrowserColorVariant::kExpressive:
+      case theme_color_picker::mojom::BrowserColorVariant::kExpressive:
         *output = ThemeService::BrowserColorVariant::kExpressive;
         return true;
     }
 
-    NOTREACHED_NORETURN();
+    return false;
   }
 };
 
 }  // namespace mojo
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_ENUM_MOJOM_TRAITS_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_CR_COMPONENTS_THEME_COLOR_PICKER_THEME_COLOR_PICKER_ENUM_MOJOM_TRAITS_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_colors.h"
+#include "chrome/browser/ui/webui/cr_components/theme_color_picker/customize_chrome_colors.h"
 
 #include <array>
 #include <utility>

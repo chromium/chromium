@@ -211,6 +211,7 @@
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 #include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom.h"
 #include "ui/webui/resources/cr_components/most_visited/most_visited.mojom.h"
+#include "ui/webui/resources/cr_components/theme_color_picker/theme_color_picker.mojom.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
 #include "ui/webui/resources/js/metrics_reporter/metrics_reporter.mojom.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -1125,6 +1126,10 @@ void PopulateChromeWebUIFrameBinders(
       customize_color_scheme_mode::mojom::
           CustomizeColorSchemeModeHandlerFactory,
       CustomizeChromeUI, settings::SettingsUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<
+      theme_color_picker::mojom::ThemeColorPickerHandlerFactory,
+      CustomizeChromeUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       customize_themes::mojom::CustomizeThemesHandlerFactory, NewTabPageUI

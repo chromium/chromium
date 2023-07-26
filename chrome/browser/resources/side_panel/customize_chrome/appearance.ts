@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './colors.js';
 import './theme_snapshot.js';
 import './hover_button.js';
 import './strings.m.js'; // Required by <managed-dialog>.
 import 'chrome://resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.js';
+import 'chrome://resources/cr_components/theme_color_picker/theme_color_picker.js';
+import 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';

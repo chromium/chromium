@@ -9,18 +9,18 @@ import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.j
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './customize_color.html.js';
+import {getTemplate} from './theme_color.html.js';
 
-export interface CustomizeColorElement {
+export interface ThemeColorElement {
   $: {
     background: Element,
     foreground: Element,
   };
 }
 
-export class CustomizeColorElement extends PolymerElement {
+export class ThemeColorElement extends PolymerElement {
   static get is() {
-    return 'customize-color';
+    return 'cr-theme-color';
   }
 
   static get template() {
@@ -68,19 +68,19 @@ export class CustomizeColorElement extends PolymerElement {
 
   private onColorChange_() {
     this.updateStyles({
-      '--customize-color-foreground-color':
+      '--cr-theme-color-foreground-color':
           skColorToRgba(this.foregroundColor ?? 0),
-      '--customize-color-background-color':
+      '--cr-theme-color-background-color':
           skColorToRgba(this.backgroundColor ?? 0),
-      '--customize-color-base-color': skColorToRgba(this.baseColor ?? 0),
+      '--cr-theme-color-base-color': skColorToRgba(this.baseColor ?? 0),
     });
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'customize-color': CustomizeColorElement;
+    'cr-theme-color': ThemeColorElement;
   }
 }
 
-customElements.define(CustomizeColorElement.is, CustomizeColorElement);
+customElements.define(ThemeColorElement.is, ThemeColorElement);
