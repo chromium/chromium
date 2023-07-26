@@ -4540,8 +4540,17 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_OPTIONS_LOGIN_LOCK" desc="Text on the lock screen which is the subheader for the screen locking options.">
     Lock screen from sleep mode
   </message>
+  <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_REMOVE_PIN_BUTTON" desc="Label of the button that removes the user's PIN.">
+    Remove
+  </message>
+  <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PIN_LABEL" desc="Label for PIN authentication factor on the lock screen page.">
+    PIN
+  </message>
   <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_SETUP_PIN_BUTTON" desc="Button that is used to setup a new PIN when the user does not have a PIN yet.">
-    Set up PIN
+    Set up
+  </message>
+  <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_SIGN_IN_OPTIONS" desc="Heading for the list of sign-in factor options on the lock screen page.">
+    Sign-in options
   </message>
   <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_TITLE_LOCK" desc="Text on the people page which opens up the quick unlock subpage and the title of the quick unlock subpage.">
     Lock screen

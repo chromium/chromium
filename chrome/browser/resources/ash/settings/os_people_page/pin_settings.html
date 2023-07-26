@@ -1,0 +1,87 @@
+<style include="settings-shared">
+  /* Putting this class on an element with two children will align the first
+     child at left edge and the second child at the right edge.
+  */
+  .two-elements-left-right {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  :host {
+    display: block;
+  }
+
+  :host > div {
+    width: 100%;
+  }
+
+  cr-policy-indicator {
+    /* Same margins as a .separator element. */
+    margin-left: 16px;
+    margin-right: 16px;
+  }
+</style>
+<div>
+  <div class="two-elements-left-right">
+    <div class="label">$i18n{lockScreenPinLabel}</div>
+    <div class="settings-row">
+      <template is="dom-if" if="[[quickUnlockDisabledByPolicy_]]">
+        <cr-policy-indicator indicator-type="userPolicy">
+        </cr-policy-indicator>
+      </template>
+      <template is="dom-if" if="[[!hasPin_]]" restamp>
+        <cr-button
+            class="set-pin-button"
+            on-click="onSetPinButtonClicked_"
+            disabled$="[[quickUnlockDisabledByPolicy_]]">
+          $i18n{lockScreenSetupPinButton}
+        </cr-button>
+      </template>
+      <template is="dom-if" if="[[hasPin_]]" restamp>
+        <cr-button
+            class="set-pin-button"
+            on-click="onSetPinButtonClicked_"
+            disabled$="[[quickUnlockDisabledByPolicy_]]">
+          $i18n{lockScreenChangePinButton}
+        </cr-button>
+        <div class="separator"></div>
+        <cr-icon-button
+            id="moreButton"
+            class="icon-more-vert"
+            aria-haspopup="menu"
+            on-click="onMoreButtonClicked_"
+            disabled$="[[quickUnlockDisabledByPolicy_]]">
+        </cr-icon-button>
+        <cr-action-menu id="moreMenu">
+          <button
+              class="dropdown-item"
+              on-click="onRemovePinButtonClicked_"
+              disabled$="[[quickUnlockDisabledByPolicy_]]">
+            $i18n{lockScreenRemovePinButton}
+          </button>
+        </cr-action-menu>
+      </template>
+    </div>
+  </div>
+  <template is="dom-if" if="[[hasPin_]]">
+    <settings-toggle-button id="enablePinAutoSubmit"
+        pref="{{prefs.pin_unlock_autosubmit_enabled}}" no-set-pref
+        on-settings-boolean-control-change="onPinAutosubmitChange_"
+        label="$i18n{lockScreenPinAutoSubmit}"
+        disabled$="[[quickUnlockDisabledByPolicy_]]">
+    </settings-toggle-button>
+  </template>
+  <template is="dom-if" if="[[showSetPinDialog_]]" restamp>
+    <settings-setup-pin-dialog id="setupPin" auth-token="[[authToken]]"
+        on-close="onSetPinDialogClose_">
+    </settings-setup-pin-dialog>
+  </template>
+  <template is="dom-if" if="[[showPinAutosubmitDialog_]]" restamp>
+    <settings-pin-autosubmit-dialog id="pinAutosubmitDialog"
+        auth-token="[[authToken]]"
+        on-close="onPinAutosubmitDialogClose_">
+    </settings-pin-autosubmit-dialog>
+  </template>
+</div>

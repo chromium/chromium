@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_storage_prefs.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
@@ -11,6 +13,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_lock_screen_browser_test_base.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/data/webui/settings/chromeos/os_people_page/pin_settings_api.test-mojom-test-utils.h"
+#include "chrome/test/data/webui/settings/chromeos/test_api.test-mojom-test-utils.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 
@@ -65,6 +73,19 @@ class OSSettingsPinSetupTest : public OSSettingsLockScreenBrowserTestBase,
     }
   }
 
+  void SetUpInProcessBrowserTestFixture() override {
+    OSSettingsLockScreenBrowserTestBase::SetUpInProcessBrowserTestFixture();
+
+    // Override the policy provider for testing. The `ON_CALL` lines here are
+    // necessary because something inside the policy stack expects those return
+    // values.
+    ON_CALL(provider_, IsInitializationComplete(testing::_))
+        .WillByDefault(testing::Return(true));
+    ON_CALL(provider_, IsFirstPolicyLoadComplete(testing::_))
+        .WillByDefault(testing::Return(true));
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
+  }
+
   PrefService& Prefs() {
     PrefService* service =
         ProfileHelper::Get()->GetProfileByAccountId(GetAccountId())->GetPrefs();
@@ -110,8 +131,34 @@ class OSSettingsPinSetupTest : public OSSettingsLockScreenBrowserTestBase,
     }
   }
 
+  mojom::PinSettingsApiAsyncWaiter GoToPinSettings(
+      mojom::LockScreenSettingsAsyncWaiter& lock_screen_settings) {
+    pin_settings_remote_ = mojo::Remote(lock_screen_settings.GoToPinSettings());
+    return mojom::PinSettingsApiAsyncWaiter(pin_settings_remote_.get());
+  }
+
+  void SetPinDisabledPolicy(bool disabled) {
+    policy::PolicyMap policies;
+    base::Value policy_value{disabled ? base::Value::List()
+                                      : base::Value::List().Append("PIN")};
+
+    policies.Set("QuickUnlockModeAllowlist", policy::POLICY_LEVEL_MANDATORY,
+                 policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+                 policy_value.Clone(),
+                 /*external_data_fetcher=*/nullptr);
+
+    policies.Set("WebAuthnFactors", policy::POLICY_LEVEL_MANDATORY,
+                 policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+                 policy_value.Clone(),
+                 /*external_data_fetcher=*/nullptr);
+
+    provider_.UpdateChromePolicy(policies);
+  }
+
  private:
   PinType pin_type_;
+  mojo::Remote<mojom::PinSettingsApi> pin_settings_remote_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -119,104 +166,78 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Values(PinType::kPrefs,
                                          PinType::kCryptohome));
 
-// Tests that the happy path of setting and removing PINs works, and that all
-// relevant metrics are recorded.
-IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, SetRemove) {
-  // Launch first instance of the settings page, setup and remove PIN a few
-  // times.
-  {
-    auto lock_screen_settings = OpenLockScreenSettingsAndAuthenticate();
-    lock_screen_settings.AssertIsUsingPin(false);
-    EXPECT_EQ(false, IsPinConfigured());
-
-    // Remove the pin. Nothing should happen.
-    lock_screen_settings.RemovePin();
-    lock_screen_settings.AssertIsUsingPin(false);
-    EXPECT_EQ(false, IsPinConfigured());
-
-    // Set a pin. Cryptohome should be aware of the pin, and we should record
-    // that all stages of PIN setup were completed in UMA.
-    {
-      base::HistogramTester histograms;
-      lock_screen_settings.SetPin(kFirstPin);
-      EXPECT_EQ(true, IsPinConfigured());
-      histograms.ExpectBucketCount(kPinUnlockUmaHistogramName,
-                                   kChoosePinOrPassword, 1);
-      histograms.ExpectBucketCount(kPinUnlockUmaHistogramName, kEnterPin, 1);
-      histograms.ExpectBucketCount(kPinUnlockUmaHistogramName, kConfirmPin, 1);
-      histograms.ExpectTotalCount(kPinUnlockUmaHistogramName, 3);
-    }
-    // TODO(b/243696986): Lock the screen or sign out and check that the PIN
-    // works.
-
-    // Change the pin.
-    lock_screen_settings.SetPin(kSecondPin);
-    EXPECT_EQ(true, IsPinConfigured());
-
-    // Change the pin, but to the same value.
-    lock_screen_settings.SetPin(kSecondPin);
-    EXPECT_EQ(true, IsPinConfigured());
-
-    // Remove the pin.
-    lock_screen_settings.RemovePin();
-    // TODO(b/256584110): We need the `RunUntilIdle` loop here because the UI
-    // reports the PIN as being already removed when it triggers the removal
-    // process, not when the removal is actually done.
-    base::RunLoop().RunUntilIdle();
-    EXPECT_EQ(false, IsPinConfigured());
-
-    // Setting up a pin should still work.
-    lock_screen_settings.SetPin(kFirstPin);
-    lock_screen_settings.AssertIsUsingPin(true);
-    EXPECT_EQ(true, IsPinConfigured());
-  }
-
-  // Opening the settings page again should display that a PIN is configured.
+// Tests that adding a PIN works.
+IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, AddPin) {
   auto lock_screen_settings = OpenLockScreenSettingsAndAuthenticate();
-  lock_screen_settings.AssertIsUsingPin(true);
+  auto pin_settings = GoToPinSettings(lock_screen_settings);
+
+  pin_settings.AssertHasPin(false);
+  EXPECT_EQ(false, IsPinConfigured());
+
+  pin_settings.SetPin(kFirstPin);
+
+  pin_settings.AssertHasPin(true);
   EXPECT_EQ(true, IsPinConfigured());
 }
 
-// Tests that nothing is persisted when just selecting the "PIN and password"
-// checkbox. This only makes another "setup PIN" button appear, and ony after
-// clicking that button and going through the PIN setup flow is the PIN fully
-// set up.
-// We do have to check that the relevant metric is recorded though.
-IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, SelectPinAndPassword) {
+// Tests that changing a PIN works.
+IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, ChangePin) {
   auto lock_screen_settings = OpenLockScreenSettingsAndAuthenticate();
+  auto pin_settings = GoToPinSettings(lock_screen_settings);
+  pin_settings.SetPin(kFirstPin);
+  pin_settings.AssertHasPin(true);
+  EXPECT_EQ(true, IsPinConfigured());
 
-  lock_screen_settings.AssertIsUsingPin(false);
+  pin_settings.SetPin(kSecondPin);
+
+  pin_settings.AssertHasPin(true);
+  EXPECT_EQ(true, IsPinConfigured());
+}
+
+// Tests that removing a PIN works.
+IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, RemovePin) {
+  auto lock_screen_settings = OpenLockScreenSettingsAndAuthenticate();
+  auto pin_settings = GoToPinSettings(lock_screen_settings);
+  pin_settings.SetPin(kFirstPin);
+  pin_settings.AssertHasPin(true);
+  EXPECT_EQ(true, IsPinConfigured());
+
+  pin_settings.RemovePin();
+
   EXPECT_EQ(false, IsPinConfigured());
+  pin_settings.AssertHasPin(false);
+}
 
-  base::HistogramTester histograms;
-  lock_screen_settings.SelectPinAndPassword();
+// Tests that PIN changes are persistent over relaunching os-settings.
+IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, PinPersists) {
+  {
+    auto lock_screen_settings = OpenLockScreenSettingsAndAuthenticate();
+    auto pin_settings = GoToPinSettings(lock_screen_settings);
+    pin_settings.SetPin(kFirstPin);
 
-  lock_screen_settings.AssertIsUsingPin(true);
-  EXPECT_EQ(false, IsPinConfigured());
-  // TODO(b/270962495): See Comment #2 in the linked bug. We don't record
-  // kChoosePinOrPassword when the user clicks on "PIN and password" but when
-  // they click "setup pin". That might be a bug.
-  histograms.ExpectBucketCount(kPinUnlockUmaHistogramName, kChoosePinOrPassword,
-                               0);
-  histograms.ExpectTotalCount(kPinUnlockUmaHistogramName, 0);
+    pin_settings.AssertHasPin(true);
+    EXPECT_EQ(true, IsPinConfigured());
+  }
+
+  auto lock_screen_settings = OpenLockScreenSettingsAndAuthenticate();
+  auto pin_settings = GoToPinSettings(lock_screen_settings);
+
+  pin_settings.AssertHasPin(true);
+  EXPECT_EQ(true, IsPinConfigured());
 }
 
 // Tests that nothing is persisted when cancelling the PIN setup dialog after
-// entering the PIN only once. We should record this in UMA though.
+// entering the PIN only once.
 IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, SetPinButCancelConfirmation) {
   auto lock_screen_settings = OpenLockScreenSettingsAndAuthenticate();
-
-  lock_screen_settings.AssertIsUsingPin(false);
+  auto pin_settings = GoToPinSettings(lock_screen_settings);
+  pin_settings.AssertHasPin(false);
   EXPECT_EQ(false, IsPinConfigured());
 
-  base::HistogramTester histograms;
-  lock_screen_settings.SetPinButCancelConfirmation(kFirstPin);
+  pin_settings.SetPinButCancelConfirmation(kFirstPin);
 
+  pin_settings.AssertHasPin(false);
   EXPECT_EQ(false, IsPinConfigured());
-  histograms.ExpectBucketCount(kPinUnlockUmaHistogramName, kChoosePinOrPassword,
-                               1);
-  histograms.ExpectBucketCount(kPinUnlockUmaHistogramName, kEnterPin, 1);
-  histograms.ExpectTotalCount(kPinUnlockUmaHistogramName, 2);
 }
 
 // Tests that nothing is persisted during setup when the PIN that is entered
@@ -224,18 +245,14 @@ IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, SetPinButCancelConfirmation) {
 // record this in UMA though.
 IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, SetPinButFailConfirmation) {
   auto lock_screen_settings = OpenLockScreenSettingsAndAuthenticate();
-
-  lock_screen_settings.AssertIsUsingPin(false);
+  auto pin_settings = GoToPinSettings(lock_screen_settings);
+  pin_settings.AssertHasPin(false);
   EXPECT_EQ(false, IsPinConfigured());
 
-  base::HistogramTester histograms;
-  lock_screen_settings.SetPinButFailConfirmation(kFirstPin, kIncorrectPin);
+  pin_settings.SetPinButFailConfirmation(kFirstPin, kIncorrectPin);
 
+  pin_settings.AssertHasPin(false);
   EXPECT_EQ(false, IsPinConfigured());
-  histograms.ExpectBucketCount(kPinUnlockUmaHistogramName, kChoosePinOrPassword,
-                               1);
-  histograms.ExpectBucketCount(kPinUnlockUmaHistogramName, kEnterPin, 1);
-  histograms.ExpectTotalCount(kPinUnlockUmaHistogramName, 2);
 }
 
 // Tests that PIN setup UI validates minimal pin lengths.
@@ -243,6 +260,7 @@ IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, MinimumPinLength) {
   Prefs().SetInteger(prefs::kPinUnlockMinimumLength, kMinimumPinLengthForTest);
 
   auto lock_screen_settings = OpenLockScreenSettingsAndAuthenticate();
+  auto pin_settings = GoToPinSettings(lock_screen_settings);
 
   // Check that a minimum length PIN is accepted, but that the PIN obtained by
   // removing the last digit is rejected.
@@ -250,8 +268,7 @@ IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, MinimumPinLength) {
   too_short_pin.pop_back();
 
   // SetPinButTooShort checks that a warning is displayed.
-  lock_screen_settings.SetPinButTooShort(std::move(too_short_pin),
-                                         kMinimumLengthPin);
+  pin_settings.SetPinButTooShort(std::move(too_short_pin), kMinimumLengthPin);
 }
 
 // Tests that PIN setup UI validates maximal pin lengths.
@@ -259,6 +276,7 @@ IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, MaximumPinLength) {
   Prefs().SetInteger(prefs::kPinUnlockMaximumLength, kMaximumPinLengthForTest);
 
   auto lock_screen_settings = OpenLockScreenSettingsAndAuthenticate();
+  auto pin_settings = GoToPinSettings(lock_screen_settings);
 
   // Check that a maximum length PIN is accepted, but that the PIN obtained by
   // duplicating the last digit is rejected.
@@ -266,101 +284,184 @@ IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, MaximumPinLength) {
   too_long_pin += too_long_pin.back();
 
   // SetPinButTooLong checks that a warning is displayed.
-  lock_screen_settings.SetPinButTooLong(std::move(too_long_pin),
-                                        kMaximumLengthPin);
+  pin_settings.SetPinButTooLong(std::move(too_long_pin), kMaximumLengthPin);
 }
 
 // Tests that a warning is displayed when setting up a weak PIN, but that it is
 // still possible.
 IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, WeakPinWarning) {
   auto lock_screen_settings = OpenLockScreenSettingsAndAuthenticate();
+  auto pin_settings = GoToPinSettings(lock_screen_settings);
 
   // SetPinWithWarning checks that a warning is displayed.
-  lock_screen_settings.SetPinWithWarning(kWeakPin);
+  pin_settings.SetPinWithWarning(kWeakPin);
 
-  lock_screen_settings.AssertIsUsingPin(true);
+  pin_settings.AssertHasPin(true);
   EXPECT_EQ(true, IsPinConfigured());
 }
 
 // Tests that the PIN setup dialog handles key events appropriately.
 IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, PressKeysInPinSetupDialog) {
   auto lock_screen_settings = OpenLockScreenSettingsAndAuthenticate();
-  // CheckPinSetupDialogKeyInput checks that some relevant keys (digit,
-  // character, function) have an effect or have no effect.
-  lock_screen_settings.CheckPinSetupDialogKeyInput();
+  auto pin_settings = GoToPinSettings(lock_screen_settings);
+
+  pin_settings.CheckPinSetupDialogKeyInput();
+}
+
+// Tests that all relevant metrics are recorded when cancelling PIN setup
+// immediately.
+IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, SetPinMetricsCancelImmediately) {
+  auto lock_screen_settings = OpenLockScreenSettingsAndAuthenticate();
+  auto pin_settings = GoToPinSettings(lock_screen_settings);
+  base::HistogramTester histograms;
+
+  pin_settings.SetPinButCancelImmediately();
+
+  // The UI doesn't wait for the asynchronous metrics calls to finish, which is
+  // why we need the RunLoop here:
+  base::RunLoop().RunUntilIdle();
+  histograms.ExpectBucketCount(kPinUnlockUmaHistogramName, kChoosePinOrPassword,
+                               1);
+  histograms.ExpectTotalCount(kPinUnlockUmaHistogramName, 1);
+}
+
+// Tests that all relevant metrics are recorded when cancelling PIN setup in
+// the confirmation step.
+IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest,
+                       SetPinMetricsCancelConfirmation) {
+  auto lock_screen_settings = OpenLockScreenSettingsAndAuthenticate();
+  auto pin_settings = GoToPinSettings(lock_screen_settings);
+  base::HistogramTester histograms;
+
+  pin_settings.SetPinButCancelConfirmation(kFirstPin);
+
+  // The UI doesn't wait for the asynchronous metrics calls to finish, which is
+  // why we need the RunLoop here:
+  base::RunLoop().RunUntilIdle();
+  histograms.ExpectBucketCount(kPinUnlockUmaHistogramName, kChoosePinOrPassword,
+                               1);
+  histograms.ExpectBucketCount(kPinUnlockUmaHistogramName, kEnterPin, 1);
+  histograms.ExpectTotalCount(kPinUnlockUmaHistogramName, 2);
+}
+
+// Tests that all relevant metrics are recorded when adding a PIN.
+IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, SetPinMetricsFull) {
+  auto lock_screen_settings = OpenLockScreenSettingsAndAuthenticate();
+  auto pin_settings = GoToPinSettings(lock_screen_settings);
+  base::HistogramTester histograms;
+
+  pin_settings.SetPin(kFirstPin);
+
+  // The UI doesn't wait for the asynchronous metrics calls to finish, which is
+  // why we need the RunLoop here:
+  base::RunLoop().RunUntilIdle();
+  histograms.ExpectBucketCount(kPinUnlockUmaHistogramName, kChoosePinOrPassword,
+                               1);
+  histograms.ExpectBucketCount(kPinUnlockUmaHistogramName, kEnterPin, 1);
+  histograms.ExpectBucketCount(kPinUnlockUmaHistogramName, kConfirmPin, 1);
+  histograms.ExpectTotalCount(kPinUnlockUmaHistogramName, 3);
+}
+
+// Tests that the PIN control is disabled when PIN is disabled by policy.
+IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, PinDisabledByPolicy) {
+  SetPinDisabledPolicy(true);
+
+  auto lock_screen_settings = OpenLockScreenSettingsAndAuthenticate();
+  auto pin_settings = GoToPinSettings(lock_screen_settings);
+
+  pin_settings.AssertDisabled(true);
+}
+
+// Tests that the PIN control is enabled when PIN is allowed policy.
+IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, PinNotDisabledByPolicy) {
+  SetPinDisabledPolicy(false);
+
+  auto lock_screen_settings = OpenLockScreenSettingsAndAuthenticate();
+  auto pin_settings = GoToPinSettings(lock_screen_settings);
+
+  pin_settings.AssertDisabled(false);
+}
+
+// Tests that the PIN control gets disabled when the policy disabling PIN is
+// activated while the settings page is opened.
+IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, PinDisabledPolicyWhileOpen) {
+  auto lock_screen_settings = OpenLockScreenSettingsAndAuthenticate();
+  auto pin_settings = GoToPinSettings(lock_screen_settings);
+  pin_settings.AssertDisabled(false);
+
+  SetPinDisabledPolicy(true);
+
+  pin_settings.AssertDisabled(true);
 }
 
 // Tests enabling and disabling autosubmit.
 IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, Autosubmit) {
   auto lock_screen_settings = OpenLockScreenSettingsAndAuthenticate();
+  auto pin_settings = GoToPinSettings(lock_screen_settings);
 
   // Set a pin. Autosubmit should be enabled.
-  lock_screen_settings.SetPin(kFirstPin);
-  lock_screen_settings.AssertPinAutosubmitEnabled(true);
+  pin_settings.SetPin(kFirstPin);
+  pin_settings.AssertPinAutosubmitEnabled(true);
   EXPECT_EQ(true, GetPinAutoSubmitState());
 
   // Change, remove and add pin again. Nothing of this should affect the pin
   // autosubmit pref.
-  lock_screen_settings.SetPin(kSecondPin);
-  lock_screen_settings.AssertPinAutosubmitEnabled(true);
+  pin_settings.SetPin(kSecondPin);
+  pin_settings.AssertPinAutosubmitEnabled(true);
   EXPECT_EQ(true, GetPinAutoSubmitState());
 
-  lock_screen_settings.RemovePin();
-  lock_screen_settings.AssertPinAutosubmitEnabled(true);
+  pin_settings.RemovePin();
+  pin_settings.AssertPinAutosubmitEnabled(true);
   EXPECT_EQ(true, GetPinAutoSubmitState());
 
-  lock_screen_settings.SetPin(kSecondPin);
-  lock_screen_settings.AssertPinAutosubmitEnabled(true);
+  pin_settings.SetPin(kSecondPin);
+  pin_settings.AssertPinAutosubmitEnabled(true);
   EXPECT_EQ(true, GetPinAutoSubmitState());
 
   // Disable pin autosubmit. This should turn the pref off, but the pin should
   // still be active.
-  lock_screen_settings.DisablePinAutosubmit();
-  lock_screen_settings.AssertPinAutosubmitEnabled(false);
+  pin_settings.DisablePinAutosubmit();
+  pin_settings.AssertPinAutosubmitEnabled(false);
   EXPECT_EQ(false, GetPinAutoSubmitState());
   EXPECT_EQ(true, IsPinConfigured());
 
   // Try to enable pin autosubmit using the wrong pin. This should not succeed.
-  lock_screen_settings.EnablePinAutosubmitIncorrectly(kIncorrectPin);
-  lock_screen_settings.AssertPinAutosubmitEnabled(false);
+  pin_settings.EnablePinAutosubmitIncorrectly(kIncorrectPin);
+  pin_settings.AssertPinAutosubmitEnabled(false);
   EXPECT_EQ(false, GetPinAutoSubmitState());
 
   // Try to enable pin autosubmit using the correct pin. This should succeed.
-  lock_screen_settings.EnablePinAutosubmit(kSecondPin);
-  lock_screen_settings.AssertPinAutosubmitEnabled(true);
+  pin_settings.EnablePinAutosubmit(kSecondPin);
+  pin_settings.AssertPinAutosubmitEnabled(true);
   EXPECT_EQ(true, GetPinAutoSubmitState());
 
   // Even after we have authenticated with the correct pin, we should be able
   // to remove the pin.
-  lock_screen_settings.RemovePin();
-  lock_screen_settings.AssertIsUsingPin(false);
-  // TODO(b/256584110): We can't reliable test the following:
-  //
-  //   EXPECT_EQ(false, IsPinConfigured());
-  //
-  // because the UI reports the pin as being removed before it's actually
-  // removed.
+  pin_settings.RemovePin();
+  pin_settings.AssertHasPin(false);
+  EXPECT_EQ(false, IsPinConfigured());
 }
 
 // Tests the maximum length of PINs for autosubmit.
 IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, MaximumLengthAutosubmit) {
   auto lock_screen_settings = OpenLockScreenSettingsAndAuthenticate();
+  auto pin_settings = GoToPinSettings(lock_screen_settings);
 
   // Set a maximum length pin. Autosubmit should be enabled.
-  lock_screen_settings.SetPin(kMaximumLengthPinForAutosubmit);
-  lock_screen_settings.AssertPinAutosubmitEnabled(true);
+  pin_settings.SetPin(kMaximumLengthPinForAutosubmit);
+  pin_settings.AssertPinAutosubmitEnabled(true);
   EXPECT_EQ(true, GetPinAutoSubmitState());
   // Remove the PIN again.
-  lock_screen_settings.RemovePin();
+  pin_settings.RemovePin();
 
   // Set an overly long PIN. Autosubmit should be disabled, and we shouldn't be
   // able to turn it on.
-  lock_screen_settings.SetPin(kTooLongPinForAutosubmit);
-  lock_screen_settings.AssertPinAutosubmitEnabled(false);
+  pin_settings.SetPin(kTooLongPinForAutosubmit);
+  pin_settings.AssertPinAutosubmitEnabled(false);
   EXPECT_EQ(false, GetPinAutoSubmitState());
 
-  lock_screen_settings.EnablePinAutosubmitTooLong(kTooLongPinForAutosubmit);
-  lock_screen_settings.AssertPinAutosubmitEnabled(false);
+  pin_settings.EnablePinAutosubmitTooLong(kTooLongPinForAutosubmit);
+  pin_settings.AssertPinAutosubmitEnabled(false);
   EXPECT_EQ(false, GetPinAutoSubmitState());
 }
 
@@ -368,17 +469,20 @@ IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, MaximumLengthAutosubmit) {
 // autosubmit but with a locked-out PIN.
 IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, AutosubmitWithLockedPin) {
   auto lock_screen_settings = OpenLockScreenSettingsAndAuthenticate();
-
-  lock_screen_settings.SetPin(kFirstPin);
+  auto pin_settings = GoToPinSettings(lock_screen_settings);
+  pin_settings.SetPin(kFirstPin);
   // We disable autosubmit so that we can try to reenable.
-  lock_screen_settings.DisablePinAutosubmit();
-
+  pin_settings.DisablePinAutosubmit();
   SetPinLocked();
 
-  lock_screen_settings.TryEnablePinAutosubmitWithLockedPin(
-      kFirstPin, OSSettingsLockScreenBrowserTestBase::kPassword);
+  pin_settings.TryEnablePinAutosubmit(kFirstPin);
+
+  lock_screen_settings.AssertAuthenticated(false);
+
+  lock_screen_settings.Authenticate(
+      OSSettingsLockScreenBrowserTestBase::kPassword);
   EXPECT_EQ(false, GetPinAutoSubmitState());
-  lock_screen_settings.AssertPinAutosubmitEnabled(false);
+  pin_settings.AssertPinAutosubmitEnabled(false);
 }
 
 }  // namespace ash::settings

@@ -1,11 +1,4 @@
 <style include="settings-shared">
-  cr-policy-indicator {
-    margin-inline-start: auto;
-    /* Align the indicator with the h2 that it is associated with. */
-    padding-bottom: 12px;
-    padding-top: 24px;
-  }
-
   cr-radio-group {
     display: flex;
     flex-wrap: wrap;
@@ -15,36 +8,8 @@
     width: 100%;
   }
 
-  .list-item-end {
-    align-items: center;
-    display: flex;
-  }
-
-  .list-item-start {
-    flex: 1;
-  }
-
   #lockOptionsDiv {
     display: block;
-  }
-
-  #pinPasswordLabel,
-  #pinPasswordSecondaryActionDiv {
-    margin: auto;
-  }
-
-  .underbar {
-    border-bottom: var(--cr-separator-line);
-  }
-
-  #unlockType[disabled] {
-    opacity: 0.65;
-    pointer-events: none;
-  }
-
-  #autosubmitToggle {
-    padding-inline-start: 16px;
-    width: 100%;
   }
 </style>
 <div>
@@ -54,60 +19,18 @@
       label="$i18n{enableScreenlock}"
       deep-link-focus-id$="[[Setting.kLockScreenV2]]">
   </settings-toggle-button>
-  <template is="dom-if" if="[[quickUnlockEnabled_]]">
-    <div id="lockOptionsDiv">
-      <div class="settings-box">
-        <h2 id=lockScreenOptionsTitle aria-hidden="true">
-          [[selectLockScreenOptionsString(hasPinLogin)]]
-        </h2>
-        <template is="dom-if" if="[[quickUnlockDisabledByPolicy_]]">
-          <cr-policy-indicator indicator-type="userPolicy">
-          </cr-policy-indicator>
-        </template>
-      </div>
-      <div class="list-frame" >
-        <cr-radio-group id="unlockType"
-            disabled$="[[quickUnlockDisabledByPolicy_]]"
-            selected="{{selectedUnlockType}}"
-            aria-labelledby="lockScreenOptionsTitle"
-            deep-link-focus-id$="[[Setting.kChangeAuthPinV2]]">
-          <cr-radio-button name="password" class="list-item underbar"
-              label="$i18n{lockScreenPasswordOnly}">
-          </cr-radio-button>
-          <cr-radio-button name="pin+password" class="list-item-start"
-              label="$i18n{lockScreenPinOrPassword}">
-          </cr-radio-button>
-          <template is="dom-if"
-              if="[[showConfigurePinButton_(selectedUnlockType)]]">
-            <div class="list-item-end">
-              <div class="separator"></div>
-              <div id="pinPasswordSecondaryActionDiv"
-                  class="secondary-action">
-                <!-- Use stop-keyboard-event-propagation to prevent
-                     triggering this when focused after closing the
-                     dialog. -->
-                <cr-button id="setupPinButton" on-click="onConfigurePin_"
-                    stop-keyboard-event-propagation>
-                  [[getSetupPinText_(hasPin)]]
-                </cr-button>
-              </div>
-            </div>
-          </template>
-          <template is="dom-if"
-              if="[[quickUnlockPinAutosubmitFeatureEnabled_]]">
-            <div id="autosubmitToggle"
-                hidden="[[!hasPin]]">
-              <settings-toggle-button id="enablePinAutoSubmit"
-                  pref="{{prefs.pin_unlock_autosubmit_enabled}}" no-set-pref
-                  on-settings-boolean-control-change="onPinAutosubmitChange_"
-                  label="$i18n{lockScreenPinAutoSubmit}">
-              </settings-toggle-button>
-            </div>
-          </template>
-        </cr-radio-group>
-      </div>
-    </div>
-  </template>
+  <h2 class="settings-box">
+    $i18n{lockScreenSignInOptions}
+  </h2>
+  <div class="list-frame" id="signInOptionsList">
+    <settings-pin-settings
+        id="pinSettings"
+        auth-token="[[authToken]]"
+        prefs="{{prefs}}"
+        class="list-item"
+        deep-link-focus-id$="[[Setting.kChangeAuthPinV2]]">
+    </settings-pin-settings>
+  </div>
   <template is="dom-if" if="[[lockScreenNotificationsEnabled_]]">
     <h2 class="settings-box">
       $i18n{lockScreenNotificationTitle}
@@ -177,16 +100,5 @@
     <settings-multidevice-smartlock-item
       auth-token="[[authToken]]">
     </settings-multidevice-smartlock-item>
-  </template>
-  <template is="dom-if" if="[[showSetupPinDialog_]]" restamp>
-    <settings-setup-pin-dialog id="setupPin" auth-token="[[authToken]]"
-        on-close="onSetupPinDialogClose_">
-    </settings-setup-pin-dialog>
-  </template>
-  <template is="dom-if" if="[[showPinAutosubmitDialog_]]" restamp>
-    <settings-pin-autosubmit-dialog id="pinAutosubmitDialog"
-        auth-token="[[authToken]]"
-        on-close="onPinAutosubmitDialogClose_">
-    </settings-pin-autosubmit-dialog>
   </template>
 </div>

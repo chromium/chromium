@@ -1,0 +1,66 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.settings.mojom;
+
+// The test API for the settings-pin-settings element.
+interface PinSettingsApi {
+  // Sets the pin to a given value.
+  SetPin(string pin) => ();
+
+  // Removes the PIN. Fails if there was no PIN.
+  RemovePin() => ();
+
+  // Checks whether the user has a PIN.
+  AssertHasPin(bool has_pin) => ();
+
+  // Checks whether the control is disabled.
+  AssertDisabled(bool disabled) => ();
+
+  // Starts PIN setup but cancels immediately.
+  SetPinButCancelImmediately() => ();
+
+  // Starts PIN setup and enters the PIN once, but cancels confirmation.
+  SetPinButCancelConfirmation(string pin) => ();
+
+  // Starts PIN setup but expect to fail due because second PIN entered for
+  // confirmation does not match the first PIN.
+  SetPinButFailConfirmation(string first_pin, string second_pin) => ();
+
+  // Tries to set the PIN to |short_pin|, but expects that the PIN cannot be
+  // submitted. Then enters |ok_pin| before entering |short_pin| again to check
+  // that an error message is displayed.
+  SetPinButTooShort(string short_pin, string ok_pin) => ();
+
+  // Verifies that |ok_pin| can be submitted as PIN, but that |long_pin| is
+  // rejected with an error message.
+  SetPinButTooLong(string long_pin, string ok_pin) => ();
+
+  // Verifies that PIN setup works with |weak_pin| but with a warning.
+  SetPinWithWarning(string weak) => ();
+
+  // Opens the PIN setup dialog and checks that the dialog handles key events
+  // appropriately.
+  CheckPinSetupDialogKeyInput() => ();
+
+  // Checks that pin autosubmit is enabled or disabled.
+  AssertPinAutosubmitEnabled(bool is_enabled) => ();
+
+  // Enable pin autosubmit. Can only be called if pin autosubmit is currently
+  // disabled. The parameter is used to confirm the pin and must be correct.
+  EnablePinAutosubmit(string pin) => ();
+
+  // Disable pin autosubmit. Can only be called if pin autosubmit is currently
+  // disabled.
+  DisablePinAutosubmit() => ();
+
+  // Try to enable pin autosubmit, but expect to fail due to a wrong pin.
+  EnablePinAutosubmitIncorrectly(string incorrect_pin) => ();
+
+  // Try to enable PIN autosubmit, but do not expect to fail or succeed.
+  TryEnablePinAutosubmit(string pin) => ();
+
+  // Try to enable pin autosubmit, but fail because the provided PIN is too long.
+  EnablePinAutosubmitTooLong(string long_pin) => ();
+};
