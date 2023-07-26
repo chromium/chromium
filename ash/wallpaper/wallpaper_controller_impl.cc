@@ -3161,7 +3161,7 @@ bool WallpaperControllerImpl::IsOobeState() const {
       session_state == session_manager::SessionState::LOGIN_PRIMARY &&
       oobe_state_ != OobeDialogState::HIDDEN;
   DVLOG(1) << __func__ << " is_default_oobe_flow=" << is_default_oobe_flow
-           << " is_add_person_flow" << is_add_person_flow;
+           << " is_add_person_flow=" << is_add_person_flow;
   return is_default_oobe_flow || is_add_person_flow;
 }
 
