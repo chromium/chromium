@@ -2083,6 +2083,17 @@ deps = {
     'dep_type': 'cipd',
   },
 
+  'src/ash/webui/shimless_rma/resources': {
+    'packages': [
+      {
+        'package': 'chromeos_internal/ash/peripherals-and-serviceability/shimless-rma-project-simon-strings',
+        'version': '-uRXiZeA4Yl-Nv-6jP69DyDs5cGroZgGsa1NHnVySQwC',
+      },
+    ],
+    'condition': 'checkout_chromeos and checkout_src_internal',
+    'dep_type': 'cipd',
+  },
+
   'src/ash/webui/projector_app/resources/prod': {
     'packages': [
       {

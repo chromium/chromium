@@ -22,6 +22,7 @@ static_library("shimless_rma") {
     "//ash/webui/resources:shimless_rma_resources",
     "//ash/webui/shimless_rma/backend",
     "//ash/webui/shimless_rma/mojom",
+    "//build:branding_buildflags",
     "//chromeos/strings/",
     "//content/public/browser",
     "//dbus",
