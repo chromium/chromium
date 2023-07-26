@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/extensions/api/braille_display_private/stub_braille_controller.h"
+#include "chrome/test/base/chromeos/ash_browser_test_starter.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -64,6 +65,7 @@ class LoggedInSpokenFeedbackTest : public InProcessBrowserTest {
   void PressRepeatedlyUntilUtterance(ui::KeyboardCode key,
                                      const std::string& expected_utterance);
   void ImportJSModuleForChromeVox(std::string name, std::string path);
+  void NavigateToUrl(const GURL& url);
 
   test::SpeechMonitor sm_;
 
@@ -74,6 +76,7 @@ class LoggedInSpokenFeedbackTest : public InProcessBrowserTest {
   ui::ScopedAnimationDurationScaleMode animation_mode_;
   std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<::test::AshBrowserTestStarter> ash_starter_;
 };
 
 }  // namespace ash
