@@ -69,7 +69,7 @@ enum APIPermissionID {
   kDeclarativeContent = 43,
   kDeclarativeWebRequest = 44,
   kDesktopCapture = 45,
-  kDesktopCapturePrivate = 46,
+  kDeleted_DesktopCapturePrivate = 46,
   kDeveloperPrivate = 47,
   kDevtools = 48,
   kDns = 49,

@@ -37391,7 +37391,7 @@ Called by update_extension_permission.py.-->
   <int value="43" label="kDeclarativeContent"/>
   <int value="44" label="kDeclarativeWebRequest"/>
   <int value="45" label="kDesktopCapture"/>
-  <int value="46" label="kDesktopCapturePrivate"/>
+  <int value="46" label="kDeleted_DesktopCapturePrivate"/>
   <int value="47" label="kDeveloperPrivate"/>
   <int value="48" label="kDevtools"/>
   <int value="49" label="kDns"/>

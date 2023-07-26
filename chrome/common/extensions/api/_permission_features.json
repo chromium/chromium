@@ -229,10 +229,6 @@
     "channel": "stable",
     "extension_types": ["extension", "platform_app"]
   },
-  "desktopCapturePrivate": {
-    "channel": "stable",
-    "extension_types": ["extension", "platform_app"]
-  },
   "documentScan": {
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],

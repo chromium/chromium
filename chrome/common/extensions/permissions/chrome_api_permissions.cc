@@ -36,7 +36,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kDeclarativeContent, "declarativeContent"},
     {APIPermissionID::kDesktopCapture, "desktopCapture"},
-    {APIPermissionID::kDesktopCapturePrivate, "desktopCapturePrivate"},
     {APIPermissionID::kDocumentScan, "documentScan"},
     {APIPermissionID::kDownloads, "downloads"},
     {APIPermissionID::kDownloadsOpen, "downloads.open"},
