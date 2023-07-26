@@ -1,9 +1,7 @@
 {
   "_default": {
     "build_time": {
-      "p50_mins": 60,
-      "p95_mins": 90,
-      "p99_mins": 120
+      "p50_mins": 60
     },
     "fail_rate": {
       "average": 0.2
@@ -12,14 +10,7 @@
       "average": 0.05
     },
     "pending_time": {
-      "p50_mins": 10,
-      "p95_mins": 20,
-      "p99_mins": 30
-    },
-    "test_pending_time": {
-      "p50_mins": 10,
-      "p95_mins": 20,
-      "p99_mins": 30
+      "p50_mins": 20
     }
   },
   "thresholds": {
@@ -112,14 +103,7 @@
           "average": 0.05
         },
         "pending_time": {
-          "p50_mins": 10,
-          "p95_mins": 20,
-          "p99_mins": 30
-        },
-        "test_pending_time": {
-          "p50_mins": 10,
-          "p95_mins": 20,
-          "p99_mins": 30
+          "p50_mins": 20
         }
       }
     }

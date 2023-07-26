@@ -21,18 +21,9 @@ _default_thresholds = struct(
     ),
     build_time = struct(
         p50_mins = 60,
-        p95_mins = 90,
-        p99_mins = 120,
     ),
     pending_time = struct(
-        p50_mins = 10,
-        p95_mins = 20,
-        p99_mins = 30,
-    ),
-    test_pending_time = struct(
-        p50_mins = 10,
-        p95_mins = 20,
-        p99_mins = 30,
+        p50_mins = 20,
     ),
 )
 
