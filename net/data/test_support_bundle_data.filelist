@@ -198,8 +198,6 @@ data/ssl/certificates/start_after_expiry.pem
 data/ssl/certificates/subjectAltName_sanity_check.pem
 data/ssl/certificates/subjectAltName_www_example_com.pem
 data/ssl/certificates/test_names.pem
-data/ssl/certificates/treadclimber.pem
-data/ssl/certificates/treadclimber.sctlist
 data/ssl/certificates/unescaped.pem
 data/ssl/certificates/unittest.key.bin
 data/ssl/certificates/unittest.selfsigned.der

@@ -1956,41 +1956,6 @@ TEST_P(CertVerifyProcInternalTest, IsIssuedByKnownRootIgnoresTestRoots) {
   EXPECT_FALSE(verify_result.is_issued_by_known_root);
 }
 
-// Test verification with a leaf that does not contain embedded SCTs, and which
-// has a notBefore date after 2018/10/15, and passing a valid |sct_list| to
-// Verify(). Verification should succeed on all platforms. (Assuming the
-// verifier trusts the SCT Logs used in |sct_list|.)
-//
-// Fails on multiple plaforms, see crbug.com/1050152.
-TEST_P(CertVerifyProcInternalTest,
-       DISABLED_LeafNewerThan20181015WithTlsSctList) {
-  scoped_refptr<X509Certificate> chain = CreateCertificateChainFromFile(
-      GetTestCertsDirectory(), "treadclimber.pem",
-      X509Certificate::FORMAT_PEM_CERT_SEQUENCE);
-  ASSERT_TRUE(chain);
-  if (base::Time::Now() > chain->valid_expiry()) {
-    FAIL() << "This test uses a certificate chain which is now expired. Please "
-              "disable and file a bug against mattm.";
-  }
-
-  std::string sct_list;
-  ASSERT_TRUE(base::ReadFileToString(
-      GetTestCertsDirectory().AppendASCII("treadclimber.sctlist"), &sct_list));
-
-  int flags = 0;
-  CertVerifyResult verify_result;
-  int error = verify_proc()->Verify(chain.get(), "treadclimber.com",
-                                    /*ocsp_response=*/std::string(), sct_list,
-                                    flags, CertificateList(), &verify_result,
-                                    NetLogWithSource());
-
-  // Since the valid |sct_list| was passed to Verify, verification should
-  // succeed on all verifiers and OS versions.
-  EXPECT_THAT(error, IsOk());
-  EXPECT_EQ(0U, verify_result.cert_status);
-  EXPECT_TRUE(verify_result.is_issued_by_known_root);
-}
-
 // Test that CRLSets are effective in making a certificate appear to be
 // revoked.
 TEST_P(CertVerifyProcInternalTest, CRLSet) {
