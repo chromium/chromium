@@ -102,8 +102,6 @@ component("crypto") {
       "CoreFoundation.framework",
       "Security.framework",
     ]
-
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_mac) {
