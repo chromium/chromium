@@ -6,9 +6,11 @@
 
 #include <utility>
 
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "media/base/media_switches.h"
 
 namespace media {
 
@@ -46,6 +48,14 @@ std::string MediaLog::GetErrorMessageLocked() {
 
 // Default implementation.
 void MediaLog::Stop() {}
+
+bool MediaLog::ShouldLogToDebugConsole() const {
+#if DCHECK_IS_ON()
+  return true;
+#else
+  return false;
+#endif
+}
 
 void MediaLog::AddMessage(MediaLogMessageLevel level, std::string message) {
   std::unique_ptr<MediaLogRecord> record(
@@ -109,17 +119,46 @@ void MediaLog::InvalidateLog() {
 MediaLog::ParentLogRecord::ParentLogRecord(MediaLog* log) : media_log(log) {}
 MediaLog::ParentLogRecord::~ParentLogRecord() = default;
 
-LogHelper::LogHelper(MediaLogMessageLevel level, MediaLog* media_log)
-    : level_(level), media_log_(media_log) {
+LogHelper::LogHelper(MediaLogMessageLevel level,
+                     MediaLog* media_log,
+                     const char* file,
+                     int line)
+    : file_(file), line_(line), level_(level), media_log_(media_log) {
   DCHECK(media_log_);
 }
 
 LogHelper::LogHelper(MediaLogMessageLevel level,
-                     const std::unique_ptr<MediaLog>& media_log)
-    : LogHelper(level, media_log.get()) {}
+                     const std::unique_ptr<MediaLog>& media_log,
+                     const char* file,
+                     int line)
+    : LogHelper(level, media_log.get(), file, line) {}
 
 LogHelper::~LogHelper() {
-  media_log_->AddMessage(level_, stream_.str());
+  const auto log = stream_.str();
+
+  if (media_log_->ShouldLogToDebugConsole()) {
+    switch (level_) {
+      case MediaLogMessageLevel::kERROR:
+        if (DLOG_IS_ON(ERROR)) {
+          logging::LogMessage(file_, line_, logging::LOG_ERROR).stream() << log;
+        }
+        break;
+      case MediaLogMessageLevel::kWARNING:
+        if (DLOG_IS_ON(WARNING)) {
+          logging::LogMessage(file_, line_, logging::LOG_WARNING).stream()
+              << log;
+        }
+        break;
+      case MediaLogMessageLevel::kINFO:
+      case MediaLogMessageLevel::kDEBUG:
+        if (DLOG_IS_ON(INFO)) {
+          logging::LogMessage(file_, line_, logging::LOG_INFO).stream() << log;
+        }
+        break;
+    }
+  }
+
+  media_log_->AddMessage(level_, log);
 }
 
-}  //namespace media
+}  // namespace media

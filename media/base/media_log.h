@@ -135,6 +135,10 @@ class MEDIA_EXPORT MediaLog {
   // sequence.
   virtual void Stop();
 
+  // Returns true if logs should be emitted to the console in debug mode. Some
+  // subclasses will disable this.
+  virtual bool ShouldLogToDebugConsole() const;
+
  protected:
   // Ensures only subclasses and factories (e.g. Clone()) can create MediaLog.
   MediaLog();
@@ -208,14 +212,21 @@ class MEDIA_EXPORT MediaLog {
 // Helper class to make it easier to use MediaLog like DVLOG().
 class MEDIA_EXPORT LogHelper {
  public:
-  LogHelper(MediaLogMessageLevel level, MediaLog* media_log);
   LogHelper(MediaLogMessageLevel level,
-            const std::unique_ptr<MediaLog>& media_log);
+            MediaLog* media_log,
+            const char* file,
+            int line);
+  LogHelper(MediaLogMessageLevel level,
+            const std::unique_ptr<MediaLog>& media_log,
+            const char* file,
+            int line);
   ~LogHelper();
 
   std::ostream& stream() { return stream_; }
 
  private:
+  const char* file_;
+  const int line_;
   const MediaLogMessageLevel level_;
   const raw_ptr<MediaLog> media_log_;
   std::stringstream stream_;
@@ -223,9 +234,17 @@ class MEDIA_EXPORT LogHelper {
 
 // Provides a stringstream to collect a log entry to pass to the provided
 // MediaLog at the requested level.
+#if DCHECK_IS_ON()
 #define MEDIA_LOG(level, media_log)                                      \
-  media::LogHelper((media::MediaLogMessageLevel::k##level), (media_log)) \
+  media::LogHelper((media::MediaLogMessageLevel::k##level), (media_log), \
+                   __FILE__, __LINE__)                                   \
       .stream()
+#else
+#define MEDIA_LOG(level, media_log)                                      \
+  media::LogHelper((media::MediaLogMessageLevel::k##level), (media_log), \
+                   nullptr, 0)                                           \
+      .stream()
+#endif
 
 #if BUILDFLAG(IS_APPLE)
 // Prepends a description of an OSStatus to the log entry produced with
