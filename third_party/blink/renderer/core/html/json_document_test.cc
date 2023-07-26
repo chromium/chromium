@@ -1,3 +1,7 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 #include "third_party/blink/renderer/core/html/json_document.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -11,10 +15,10 @@ class JSONDocumentTest : public SimTest {
  public:
   void SetUp() override { SimTest::SetUp(); }
 
-  void LoadResource(const String& JSON) {
+  void LoadResource(const String& json) {
     SimRequest request("https://foobar.com", "application/json");
     LoadURL("https://foobar.com");
-    request.Complete(JSON);
+    request.Complete(json);
     Compositor().BeginFrame();
   }
   void ClickPrettyPrintCheckbox() {
