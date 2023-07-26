@@ -127624,6 +127624,32 @@
       ]
      },
      "math-script-level-and-math-style": {
+      "font-size-math-001.tentative.html": [
+       "b9964985600f01aa38e9fdf32cfe5f33a835d052",
+       [
+        null,
+        [
+         [
+          "/css/css-fonts/math-script-level-and-math-style/font-size-math-001.tentative-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "font-size-math-002.tentative.html": [
+       "7491409f2fa1e15397be8c96cfd68a9e594893ed",
+       [
+        null,
+        [
+         [
+          "/css/css-fonts/math-script-level-and-math-style/font-size-math-002.tentative-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "math-script-level-003.tentative.html": [
        "47b67aa8a819d3c75d205ce493f753108f767829",
        [
@@ -255434,6 +255460,21 @@
          ]
         }
        },
+       "drawing-text-to-the-canvas": {
+        "canvas.2d.disconnected-font-size-math.html": [
+         "2cecff68f113c1330637e83dd8e36feff000ecce",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/drawing-text-to-the-canvas/canvas.2d.disconnected-font-size-math-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ]
+       },
        "fill-and-stroke-styles": {
         "conic-gradient-rotation.html": [
          "e8b213b3d83d416bac353693747f3d06b9e8b64f",
@@ -275955,11 +275996,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "54886df4ae8b58f8f7017a76e171d572ceaf1d73",
+     "47c0cb488802d0a3711e7533851ea5ec28ee8c1c",
      []
     ],
     "mtime.json": [
-     "a03024d9496bf86edae7a986288c6c388ce8d6f0",
+     "66d74d8a2f4eb862b3cb2b7eb098d352d92c758b",
      []
     ]
    },
@@ -279151,12 +279192,20 @@
       "9768d865bc40974c031623993720dd090f39a686",
       []
      ],
+     "set-client-hints-after-clear-all.https.html.ini": [
+      "03e063beb917719213fd645fc1874aaa4252e385",
+      []
+     ],
      "set-client-hints-after-clear-cache.https-expected.txt": [
       "74886a80a99af40d973c4936de4dfd72f974cc3f",
       []
      ],
      "set-client-hints-after-clear-cache.https.html.headers": [
       "bb61032edea2904eb2f3166835cc8f9f8126149c",
+      []
+     ],
+     "set-client-hints-after-clear-cache.https.html.ini": [
+      "0f95790bcceb625b70616e7372eefd08fe0f8fd2",
       []
      ],
      "set-client-hints-after-clear-client-hints.https-expected.txt": [
@@ -279167,12 +279216,20 @@
       "e815201076e192c1ccc08f74d263249f9bc55315",
       []
      ],
+     "set-client-hints-after-clear-client-hints.https.html.ini": [
+      "536c2129149959a97ad4c43653894d59716db3c4",
+      []
+     ],
      "set-client-hints-after-clear-cookies.https-expected.txt": [
       "00e3aad4ef362bcf11aa51a559babc56b1227ebc",
       []
      ],
      "set-client-hints-after-clear-cookies.https.html.headers": [
       "d0c1afae775b3ca3a2b97adaca25462de2fe3b3e",
+      []
+     ],
+     "set-client-hints-after-clear-cookies.https.html.ini": [
+      "99b064dfa809f8d3bd8eed4ef9d6de7ca90fdd37",
       []
      ],
      "set-client-hints-after-clear-storage.https.html.headers": [
@@ -279187,12 +279244,20 @@
       "ebd7a88cc6ce0060d6028cd49c5d3b56bf4c87ad",
       []
      ],
+     "set-critical-client-hints-after-clear-all.https.html.ini": [
+      "ba3735b793eeca7e1b9c3f8198016838a6b8407d",
+      []
+     ],
      "set-critical-client-hints-after-clear-cache.https-expected.txt": [
       "00cecf7d15a175696d5e04908b06d97edd9e98c7",
       []
      ],
      "set-critical-client-hints-after-clear-cache.https.html.headers": [
       "03d39b6fd753cffb42b98f864a5cd0992a2be729",
+      []
+     ],
+     "set-critical-client-hints-after-clear-cache.https.html.ini": [
+      "3d646bbc7068f9d4f3c12c53540956b080293e9d",
       []
      ],
      "set-critical-client-hints-after-clear-client-hints.https-expected.txt": [
@@ -279203,12 +279268,20 @@
       "f55913cb5b6591d6cfac3e43e2e8bacc280d3af8",
       []
      ],
+     "set-critical-client-hints-after-clear-client-hints.https.html.ini": [
+      "99ac4cc6ec9842fe1c2bc380c54f1629f9563741",
+      []
+     ],
      "set-critical-client-hints-after-clear-cookies.https-expected.txt": [
       "869ef8ef77c8e634cfc9d3292f04a8d3f5f26412",
       []
      ],
      "set-critical-client-hints-after-clear-cookies.https.html.headers": [
       "69c7e720ac0b91b6c786c4c1e610e1f7ad4e745f",
+      []
+     ],
+     "set-critical-client-hints-after-clear-cookies.https.html.ini": [
+      "a053446b30b54f4963516df552607bcb23bbff5d",
       []
      ],
      "set-critical-client-hints-after-clear-storage.https.html.headers": [
@@ -303354,6 +303427,14 @@
       ]
      },
      "math-script-level-and-math-style": {
+      "font-size-math-001.tentative-ref.html": [
+       "45e72ffcf57d48778fb8a66a6e678ed6aee8b359",
+       []
+      ],
+      "font-size-math-002.tentative-ref.html": [
+       "caf4183693e4a99f1b41b8bcb1f33ab9aec25137",
+       []
+      ],
       "math-script-level-003.tentative-ref.html": [
        "d73e71f41c90154f7d72e63c86aa268bd3424c9a",
        []
@@ -346312,7 +346393,7 @@
     },
     "parts": {
      "basic-dom-part-objects.tentative-expected.txt": [
-      "95715874f9db283221ac37fb9b2dfe2c948cc79e",
+      "534938b6361c76efe837b3d90c9536040311739b",
       []
      ],
      "basic-dom-part-objects.tentative.html.ini": [
@@ -352280,6 +352361,24 @@
       ]
      }
     },
+    "fetch-later": {
+     "META.yml": [
+      "f8fd46bec3e7d4750c627f2fa6149f5b7b675429",
+      []
+     ],
+     "README.md": [
+      "661e2b918438fabcdee9e160f79ba8dddb2877d4",
+      []
+     ],
+     "basic.tentative.https.window-expected.txt": [
+      "9d431ede4cae9c9aa70b08455cf5f17cba3e128f",
+      []
+     ],
+     "basic.tentative.https.window.js.ini": [
+      "39303d8b7f5304017762bc22583a8ad61ad280d3",
+      []
+     ]
+    },
     "h1-parsing": {
      "README.md": [
       "487a892dcffb09acb8bfa8e369757ed51fa17947",
@@ -353165,12 +353264,24 @@
       "5cf8a87504bcb141f51965ec98829eb61f1d4811",
       []
      ],
-     "iframe.tentative.https.window-expected.txt": [
-      "5097c148bcb8797380453f1870ffa4a3fc64136d",
+     "iframe.tentative.https.window.js.ini": [
+      "d272d0d8d991bc9fe014c12dd22002a6474c0006",
       []
      ],
-     "iframe.tentative.https.window.js.ini": [
-      "29a1ee33aba20ddd3e561ac78d81a200e8e911bc",
+     "iframe.tentative.https.window_include=from-private-expected.txt": [
+      "f94c4c9b21f89c9332580a4ad696ee85b2397c1d",
+      []
+     ],
+     "iframe.tentative.https.window_include=from-public-expected.txt": [
+      "0e025ef3603a80e060304eff5ba3e99cb3bacb04",
+      []
+     ],
+     "iframe.tentative.https.window_include=from-treat-as-public-expected.txt": [
+      "7f3d4a264960488e073f9c2e31f9fe2502bf12e5",
+      []
+     ],
+     "iframe.tentative.https.window_include=grandparent-expected.txt": [
+      "5843a88c670182a82a0e1a658a84af9d43cb7caa",
       []
      ],
      "iframe.tentative.window-expected.txt": [
@@ -353178,7 +353289,7 @@
       []
      ],
      "iframe.tentative.window.js.ini": [
-      "748f04ef3af6a77924259ed88ba277dc171f1520",
+      "039362f178a97d4eb514fea03852e912d03ed0a9",
       []
      ],
      "mixed-content-fetch.tentative.https.window-expected.txt": [
@@ -359962,6 +360073,16 @@
           []
          ]
         }
+       },
+       "drawing-text-to-the-canvas": {
+        "canvas.2d.disconnected-font-size-math-ref.html": [
+         "6c5dab9f41331a77be8be8e59b17adec6f1909ee",
+         []
+        ],
+        "canvas.2d.disconnected-font-size-math.html.ini": [
+         "c60a6821bb1a5929136813ba93ee802e733d1c78",
+         []
+        ]
        },
        "fill-and-stroke-styles": {
         "conic-gradient-expected.html": [
@@ -514006,6 +514127,44 @@
       ]
      ]
     },
+    "fetch-later": {
+     "basic.tentative.https.window.js": [
+      "a8ca011a7c992878ddd51df65742939b8fbf6337",
+      [
+       "fetch/fetch-later/basic.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testharness.js"
+         ],
+         [
+          "script",
+          "/resources/testharnessreport.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "non-secure.window.js": [
+      "2f2c3ea8d34b9dfaf8bbc6b12acc304a4beb791d",
+      [
+       "fetch/fetch-later/non-secure.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testharness.js"
+         ],
+         [
+          "script",
+          "/resources/testharnessreport.js"
+         ]
+        ]
+       }
+      ]
+     ]
+    },
     "h1-parsing": {
      "lone-cr.window.js": [
       "6b46ed632f43771fac527dc65c5e3d9dd0d197e6",
@@ -516956,11 +517115,15 @@
       ]
      ],
      "iframe.tentative.https.window.js": [
-      "0208b715eaf22384c1fbdca4d8f95dd0ceb7119e",
+      "0c12970557d234093d77735dc2d422160c2da19f",
       [
-       "fetch/private-network-access/iframe.tentative.https.window.html",
+       "fetch/private-network-access/iframe.tentative.https.window.html?include=from-local",
        {
         "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
          [
           "script",
           "/common/dispatcher/dispatcher.js"
@@ -516976,6 +517139,218 @@
          [
           "timeout",
           "long"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ],
+         [
+          "variant",
+          "?include=from-treat-as-public"
+         ],
+         [
+          "variant",
+          "?include=grandparent"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/private-network-access/iframe.tentative.https.window.html?include=from-private",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ],
+         [
+          "variant",
+          "?include=from-treat-as-public"
+         ],
+         [
+          "variant",
+          "?include=grandparent"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/private-network-access/iframe.tentative.https.window.html?include=from-public",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ],
+         [
+          "variant",
+          "?include=from-treat-as-public"
+         ],
+         [
+          "variant",
+          "?include=grandparent"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/private-network-access/iframe.tentative.https.window.html?include=from-treat-as-public",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ],
+         [
+          "variant",
+          "?include=from-treat-as-public"
+         ],
+         [
+          "variant",
+          "?include=grandparent"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/private-network-access/iframe.tentative.https.window.html?include=grandparent",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ],
+         [
+          "variant",
+          "?include=from-treat-as-public"
+         ],
+         [
+          "variant",
+          "?include=grandparent"
          ]
         ],
         "timeout": "long"
