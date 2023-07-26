@@ -32,7 +32,7 @@ declare namespace chrome {
     enum DriveConnectionStateType {
       OFFLINE = 'OFFLINE',
       METERED = 'METERED',
-      ONLINE = 'ONELINE',
+      ONLINE = 'ONLINE',
     }
 
     enum DriveOfflineReason {
