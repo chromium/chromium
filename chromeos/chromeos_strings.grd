@@ -444,11 +444,10 @@
         <message name="IDS_ASH_ENTERPRISE_ENROLLMENT_BUTTON" desc="Text shown on enterprise enrollment button on oobe screen.">
           Enterprise enrollment
         </message>
-        <!-- TODO(b/290598534): Add final string and remove translateable tags -->
-        <message name="IDS_ASH_DEVICE_ENROLLMENT_BUTTON" translateable="false" desc="New text shown on enterprise enrollment button on oobe screen on the shelf button.">
+        <message name="IDS_ASH_DEVICE_ENROLLMENT_BUTTON" desc="New text shown on enterprise enrollment button on oobe screen on the shelf button.">
           Device enrollment
         </message>
-        <message name="IDS_ASH_SCHOOL_ENROLLMENT_BUTTON" translateable="false" desc="Text shown on school enrollment button on oobe screen child setup on the shelf button.">
+        <message name="IDS_ASH_SCHOOL_ENROLLMENT_BUTTON" desc="Text shown on school enrollment button on oobe screen child setup on the shelf button.">
           School enrollment
         </message>
         <message name="IDS_ASH_SHELF_SIGNIN_BUTTON" desc="Text shown on sign in button on enrollment screen.">

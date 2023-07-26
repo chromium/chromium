@@ -793,14 +793,13 @@
   </message>
 
   <!-- Strings for the OOBE user creation screen -->
-  <!-- TODO(b/290598534): Add final string and remove translateable tags -->
   <message name="IDS_OOBE_USER_CREATION_TITLE" desc="Title of the screen which allows users to choose whom the device is set up for.">
     Who's using this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>?
   </message>
-  <message name="IDS_OOBE_USER_CREATION_NEW_TITLE" translateable="false" desc="New Title of the screen which allows users to choose whom the device is set up for.">
+  <message name="IDS_OOBE_USER_CREATION_NEW_TITLE" desc="New Title of the screen which allows users to choose whom the device is set up for.">
     Choose your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>’s setup
   </message>
-  <message name="IDS_OOBE_USER_CREATION_NEW_SUBTITLE" translateable="false" desc="New Subtitle of the screen which allows users to choose whom the device is set up for.">
+  <message name="IDS_OOBE_USER_CREATION_NEW_SUBTITLE" desc="New Subtitle of the screen which allows users to choose whom the device is set up for.">
     You can always add another person to the device after setup. Each person can personalize their experience and keep data private.
   </message>
   <message name="IDS_OOBE_USER_CREATION_SUBTITLE" desc="Subtitle of the screen which allows users to choose whom the device is set up for.">
@@ -812,10 +811,10 @@
   <message name="IDS_OOBE_USER_CREATION_ADD_PERSON_SUBTITLE" desc="Subtitle of the screen which allows users to add person to the device.">
     Each person can personalize their account and keep data private.
   </message>
-  <message name="IDS_OOBE_USER_CREATION_ADD_PERSON_NEW_TITLE" translateable="false" desc="Title of the screen which allows users to add person to the device.">
+  <message name="IDS_OOBE_USER_CREATION_ADD_PERSON_NEW_TITLE" desc="Title of the screen which allows users to add person to the device.">
     Choose your setup
   </message>
-  <message name="IDS_OOBE_USER_CREATION_ADD_PERSON_NEW_SUBTITLE" translateable="false" desc="Subtitle of the screen which allows users to add person to the device.">
+  <message name="IDS_OOBE_USER_CREATION_ADD_PERSON_NEW_SUBTITLE" desc="Subtitle of the screen which allows users to add person to the device.">
     Each person can personalize their experience and keep data private.
   </message>
   <message name="IDS_OOBE_USER_CREATION_SELF_BUTTON_LABEL" desc="The label of the button that leads to set up device for self.">
@@ -830,22 +829,22 @@
   <message name="IDS_OOBE_USER_CREATION_CHILD_BUTTON_DESCRIPTION" desc="The description of the button that leads to set up device for child.">
     Set digital ground rules to help children play, explore and do schoolwork at home
   </message>
-  <message name="IDS_OOBE_USER_CREATION_PERSONEL_USE_BUTTON_LABEL" translateable="false" desc="The label of the button that leads to set up device for personal use.">
+  <message name="IDS_OOBE_USER_CREATION_PERSONEL_USE_BUTTON_LABEL" desc="The label of the button that leads to set up device for personal use.">
     For personal use
   </message>
-  <message name="IDS_OOBE_USER_CREATION_PERSONEL_USE_BUTTON_DESCRIPTION" translateable="false" desc="The description of the button that leads to set up device for personal use.">
+  <message name="IDS_OOBE_USER_CREATION_PERSONEL_USE_BUTTON_DESCRIPTION" desc="The description of the button that leads to set up device for personal use.">
     Use your personal Google Account
   </message>
-  <message name="IDS_OOBE_USER_CREATION_CHILD_USE_BUTTON_LABEL" translateable="false" desc="The label of the button that leads to set up device for child.">
+  <message name="IDS_OOBE_USER_CREATION_CHILD_USE_BUTTON_LABEL" desc="The label of the button that leads to set up device for child.">
     For a child
   </message>
-  <message name="IDS_OOBE_USER_CREATION_CHILD_USE_BUTTON_DESCRIPTION" translateable="false" desc="The description of the button that leads to set up device for child.">
+  <message name="IDS_OOBE_USER_CREATION_CHILD_USE_BUTTON_DESCRIPTION" desc="The description of the button that leads to set up device for child.">
     Use your child’s Google Account or a school account. You can also set parental controls.
   </message>
-  <message name="IDS_OOBE_USER_CREATION_ENROLL_USE_BUTTON_LABEL" translateable="false" desc="The label of the button that leads to set up device for work or school.">
+  <message name="IDS_OOBE_USER_CREATION_ENROLL_USE_BUTTON_LABEL" desc="The label of the button that leads to set up device for work or school.">
     For work or school
   </message>
-  <message name="IDS_OOBE_USER_CREATION_ENROLL_USE_BUTTON_DESCRIPTION" translateable="false" desc="The description of the button that leads to set up device for work or shcool.">
+  <message name="IDS_OOBE_USER_CREATION_ENROLL_USE_BUTTON_DESCRIPTION"  desc="The description of the button that leads to set up device for work or shcool.">
    Use your organization’s email address
   </message>
   <message name="IDS_OOBE_USER_CREATION_CHILD_SIGNIN_TITLE" desc="Title of the screen which allows users to choose signin method for child.">
@@ -872,48 +871,48 @@
   <message name="IDS_OOBE_USER_CREATION_CHILD_SIGN_IN_LEARN_MORE_DIALOG_TEXT" desc="Text of the learn more dialog on child account creation screen.">
     Parental controls are not supported for school accounts. To add a school account to access Google Classroom and other websites for schoolwork at home, sign in with the child's personal account first. You can add the school account later in setup.
   </message>
-  <message name="IDS_OOBE_USER_CREATION_ENROLL_TRIAGE_TITLE" translateable="false" desc="Title of the screen which allows triage users to choose signin or enroll.">
+  <message name="IDS_OOBE_USER_CREATION_ENROLL_TRIAGE_TITLE" desc="Title of the screen which allows triage users to choose signin or enroll.">
     Enroll the device in your organization?
   </message>
-    <message name="IDS_OOBE_USER_CREATION_ENROLL_SUBTITLE" translateable="false" desc="Subtitle of the screen which allows triage users to choose signin or enroll.">
+    <message name="IDS_OOBE_USER_CREATION_ENROLL_SUBTITLE" desc="Subtitle of the screen which allows triage users to choose signin or enroll.">
     Your organization may require enrollment so you can access apps, extensions, and more. This also allows your organization to manage things like security and device settings.
   </message>
-   <message name="IDS_OOBE_USER_CREATION_ENROLL_LEARN_MORE" translateable="false" desc="Learn more link text in enroll triage step in user creation screen.">
+   <message name="IDS_OOBE_USER_CREATION_ENROLL_LEARN_MORE"  desc="Learn more link text in enroll triage step in user creation screen.">
     Learn more
   </message>
-  <message name="IDS_OOBE_USER_CREATION_ENROLL_ADDITIONAL_DESCRIPTION_TITLE" translateable="false" desc="The title of additional description in enroll triage step in user creation screen.">
+  <message name="IDS_OOBE_USER_CREATION_ENROLL_ADDITIONAL_DESCRIPTION_TITLE"  desc="The title of additional description in enroll triage step in user creation screen.">
     Not sure if you should enroll?
   </message>
-  <message name="IDS_OOBE_USER_CREATION_ENROLL_ADDITIONAL_DESCRIPTION" translateable="false" desc="The additional description in enroll triage step in user creation screen.">
+  <message name="IDS_OOBE_USER_CREATION_ENROLL_ADDITIONAL_DESCRIPTION" desc="The additional description in enroll triage step in user creation screen.">
     Ask your organization, or enroll with your work email to check if your account is eligible.
   </message>
-  <message name="IDS_OOBE_USER_CREATION_ENROLL_TRIAGE_ACCEPT_ENROLL_BUTTON_LABEL" translateable="false" desc="The label of the button that leads to enroll the device in the in enroll triage step in user creation screen.">
+  <message name="IDS_OOBE_USER_CREATION_ENROLL_TRIAGE_ACCEPT_ENROLL_BUTTON_LABEL" desc="The label of the button that leads to enroll the device in the in enroll triage step in user creation screen.">
     Enroll the device
   </message>
-  <message name="IDS_OOBE_USER_CREATION_ENROLL_TRIAGE_DECLINE_ENROLL_BUTTON_LABEL" translateable="false" desc="The label of the button that leads that leads to not enroll the device and normal signin in the in enroll triage step in user creation screen.">
+  <message name="IDS_OOBE_USER_CREATION_ENROLL_TRIAGE_DECLINE_ENROLL_BUTTON_LABEL" desc="The label of the button that leads that leads to not enroll the device and normal signin in the in enroll triage step in user creation screen.">
     Don’t enroll the device
   </message>
-  <message name="IDS_OOBE_USER_CREATION_CHILD_SETUP_TITLE" translateable="false" desc="Title of the child setup step in the user creation screen which allows users to choose setup with child’s Google account (to setup Family Link) or setup with child’s school.">
+  <message name="IDS_OOBE_USER_CREATION_CHILD_SETUP_TITLE" desc="Title of the child setup step in the user creation screen which allows users to choose setup with child’s Google account (to setup Family Link) or setup with child’s school.">
     Choose the account to use for setup
   </message>
-  <message name="IDS_OOBE_USER_CREATION_CHILD_SETUP_CHILD_ACCOUNT_BUTTON_LABEL" translateable="false" desc="The label of the button that leads to set up device setup with child’s Google account (to setup Family Link).">
+  <message name="IDS_OOBE_USER_CREATION_CHILD_SETUP_CHILD_ACCOUNT_BUTTON_LABEL"  desc="The label of the button that leads to set up device setup with child’s Google account (to setup Family Link).">
     Child’s Google Account
   </message>
-  <message name="IDS_OOBE_USER_CREATION_CHILD_SETUP_CHILD_ACCOUNT_BUTTON_DESCRIPTION" translateable="false" desc="The description of the button that leads to set up device setup with child’s Google account (to setup Family Link).">
+  <message name="IDS_OOBE_USER_CREATION_CHILD_SETUP_CHILD_ACCOUNT_BUTTON_DESCRIPTION"  desc="The description of the button that leads to set up device setup with child’s Google account (to setup Family Link).">
     Parents can approve or block apps, set time limits, and control web browsing. A school account can be added later to access most school resources.
   </message>
-  <message name="IDS_OOBE_USER_CREATION_CHILD_SETUP_SCHOOL_ACCOUNT_BUTTON_LABEL" translateable="false" desc="The label of the button that leads to set up device setup with child’s school.">
+  <message name="IDS_OOBE_USER_CREATION_CHILD_SETUP_SCHOOL_ACCOUNT_BUTTON_LABEL" desc="The label of the button that leads to set up device setup with child’s school.">
     Child’s school account
   </message>
-  <message name="IDS_OOBE_USER_CREATION_CHILD_SETUP_SCHOOL_ACCOUNT_BUTTON_DESCRIPTION" translateable="false" desc="The description of the button that leads to set up device setup with child’s school">
+  <message name="IDS_OOBE_USER_CREATION_CHILD_SETUP_SCHOOL_ACCOUNT_BUTTON_DESCRIPTION" desc="The description of the button that leads to set up device setup with child’s school">
     Your child can use all of their school apps, bookmarks, and resources just like they do in class. The school sets the ground rules.
   </message>
 
    <!-- Strings for Learn more in Enroll Triage-->
-  <message name="IDS_OOBE_USER_CREATION_ENROLL_LEARN_MORE_TITLE" translateable="false" desc="The title of the learn more dialogue in the enrollment triage step in user creation screen.">
+  <message name="IDS_OOBE_USER_CREATION_ENROLL_LEARN_MORE_TITLE" desc="The title of the learn more dialogue in the enrollment triage step in user creation screen.">
     Device enrollment
   </message>
-  <message name="IDS_OOBE_USER_CREATION_ENROLL_LEARN_MORE_TEXT" translateable="false" desc="The description of the learn more dialogue in the enrollment triage step in user creation screen.">
+  <message name="IDS_OOBE_USER_CREATION_ENROLL_LEARN_MORE_TEXT" desc="The description of the learn more dialogue in the enrollment triage step in user creation screen.">
     <ph name="BEGIN_DESCRIPTION">&lt;p&gt;</ph>Enrolling your devices in your organization sets it up for centralized device management. Your organization may require enrollment for multiple reasons:<ph name="END_DESCRIPTION">&lt;/p&gt;</ph>
     <ph name="BEGIN_SUBTITLE1">&lt;p&gt;</ph><ph name="BEGIN_BOLD">&lt;b&gt;</ph>Enhance security<ph name="END_BOLD">&lt;/b&gt;</ph><ph name="END_SUBTITLE1">&lt;/p&gt;</ph>
     <ph name="BEGIN_DESCRIPTION1">&lt;p&gt;</ph>By configuring additional security settings, the organization can keep user and device data safe. It can also perform actions such as remote reset or disabling a lost device.<ph name="END_DESCRIPTION1">&lt;/p&gt;</ph>
