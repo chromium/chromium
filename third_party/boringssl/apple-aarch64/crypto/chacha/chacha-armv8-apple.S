@@ -28,7 +28,7 @@ Lone:
 _ChaCha20_ctr32:
 	AARCH64_VALID_CALL_TARGET
 	cbz	x2,Labort
-#if __has_feature(hwaddress_sanitizer) && __clang_major__ >= 10
+#if defined(OPENSSL_HWASAN) && __clang_major__ >= 10
 	adrp	x5,:pg_hi21_nc:_OPENSSL_armcap_P
 #else
 	adrp	x5,_OPENSSL_armcap_P@PAGE
