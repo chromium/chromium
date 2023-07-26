@@ -10,7 +10,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/search/ntp_features.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
@@ -465,11 +464,6 @@ BASE_FEATURE(kChromeRefreshSecondary2023,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsChromeRefresh2023() {
-  if (!ntp_features::CustomizeChromeSupportsChromeRefresh2023()) {
-    // Bail before checking any other feature flags so that associated studies
-    // don't get activated.
-    return false;
-  }
   return base::FeatureList::IsEnabled(kChromeRefresh2023) ||
          base::FeatureList::IsEnabled(kChromeRefreshSecondary2023);
 }
@@ -479,11 +473,6 @@ BASE_FEATURE(kChromeWebuiRefresh2023,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsChromeWebuiRefresh2023() {
-  if (!ntp_features::CustomizeChromeSupportsChromeRefresh2023()) {
-    // Bail before checking any other feature flags so that associated studies
-    // don't get activated.
-    return false;
-  }
   return IsChromeRefresh2023() &&
          (base::FeatureList::IsEnabled(kChromeWebuiRefresh2023) ||
           base::FeatureList::IsEnabled(kChromeRefreshSecondary2023));
@@ -500,11 +489,6 @@ const base::FeatureParam<ChromeRefresh2023Level> kChromeRefresh2023Level(
     &kChromeRefresh2023LevelOption);
 
 ChromeRefresh2023Level GetChromeRefresh2023Level() {
-  if (!ntp_features::CustomizeChromeSupportsChromeRefresh2023()) {
-    // Bail before checking any other feature flags so that associated studies
-    // don't get activated.
-    return ChromeRefresh2023Level::kDisabled;
-  }
   // For simplicity, the secondary field trial to enable chrome refresh will
   // also enable the omnibox refresh.
   if (base::FeatureList::IsEnabled(kChromeRefreshSecondary2023)) {

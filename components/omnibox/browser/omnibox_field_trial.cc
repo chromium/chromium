@@ -675,24 +675,29 @@ const base::FeatureParam<int> OmniboxFieldTrial::kRichSuggestionVerticalMargin(
     6);
 
 bool OmniboxFieldTrial::IsChromeRefreshIconsEnabled() {
-  static bool enabled = omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
-      omnibox::kOmniboxCR23SteadyStateIcons);
+  static bool enabled =
+      features::GetChromeRefresh2023Level() ==
+          features::ChromeRefresh2023Level::kLevel2 ||
+      base::FeatureList::IsEnabled(omnibox::kOmniboxCR23SteadyStateIcons);
   return enabled;
 }
 
 bool OmniboxFieldTrial::IsChromeRefreshSuggestIconsEnabled() {
-  return omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
-      omnibox::kExpandedStateSuggestIcons);
+  return features::GetChromeRefresh2023Level() ==
+             features::ChromeRefresh2023Level::kLevel2 ||
+         base::FeatureList::IsEnabled(omnibox::kExpandedStateSuggestIcons);
 }
 
 bool OmniboxFieldTrial::IsChromeRefreshActionChipIconsEnabled() {
-  return omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
-      omnibox::kCr2023ActionChipsIcons);
+  return features::GetChromeRefresh2023Level() ==
+             features::ChromeRefresh2023Level::kLevel2 ||
+         base::FeatureList::IsEnabled(omnibox::kCr2023ActionChipsIcons);
 }
 
 bool OmniboxFieldTrial::IsChromeRefreshSuggestHoverFillShapeEnabled() {
-  return omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
-      omnibox::kSuggestionHoverFillShape);
+  return features::GetChromeRefresh2023Level() ==
+             features::ChromeRefresh2023Level::kLevel2 ||
+         base::FeatureList::IsEnabled(omnibox::kSuggestionHoverFillShape);
 }
 
 bool OmniboxFieldTrial::IsGM3TextStyleEnabled() {
@@ -736,8 +741,10 @@ bool OmniboxFieldTrial::IsCr23LayoutEnabled() {
 }
 
 bool OmniboxFieldTrial::IsChromeRefreshSteadyStateBackgroundColorEnabled() {
-  return omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
-      omnibox::kOmniboxSteadyStateBackgroundColor);
+  return features::GetChromeRefresh2023Level() ==
+             features::ChromeRefresh2023Level::kLevel2 ||
+         base::FeatureList::IsEnabled(
+             omnibox::kOmniboxSteadyStateBackgroundColor);
 }
 
 const char OmniboxFieldTrial::kBundledExperimentFieldTrialName[] =
