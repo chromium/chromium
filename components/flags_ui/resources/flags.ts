@@ -153,12 +153,12 @@ function registerFocusEvents(el: HTMLElement) {
  */
 function highlightReferencedFlag() {
   if (window.location.hash) {
-    const el = document.body.querySelector(window.location.hash);
-    if (!el) {
+    const experiment = document.body.querySelector(window.location.hash);
+    if (!experiment) {
       return;
     }
-    const experiment = el.querySelector('flags-experiment');
-    if (experiment && !experiment.classList.contains('referenced')) {
+
+    if (!experiment.classList.contains('referenced')) {
       // Unhighlight whatever's highlighted.
       const previous = document.body.querySelector('.referenced');
       if (previous) {
@@ -169,11 +169,11 @@ function highlightReferencedFlag() {
 
       // <if expr="not is_ios">
       // Switch to unavailable tab if the flag is in this section.
-      if (getRequiredElement('tab-content-unavailable').contains(el)) {
+      if (getRequiredElement('tab-content-unavailable').contains(experiment)) {
         selectTab(getRequiredElement('tab-unavailable'));
       }
       // </if>
-      el.scrollIntoView();
+      experiment.scrollIntoView();
     }
   }
 }

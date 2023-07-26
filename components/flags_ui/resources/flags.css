@@ -3,12 +3,10 @@
  * found in the LICENSE file. */
 
 /* Adjustment for anchor links which would normally be hidden underneath the
-   fixed header. */
-:target::before {
-  content: '';
-  display: block;
-  height: 80px;
-  margin: -80px 0 0;
+   sticky header. */
+flags-experiment {
+  margin-top: calc(-1 * var(--header-height));
+  padding-top: var(--header-height);
 }
 
 html {
@@ -46,6 +44,8 @@ html {
   --link-color: var(--google-blue-700);
   --separator-color: rgba(0, 0, 0, .06);
   --toolbar-color: white;
+
+  --header-height: 57px;
 
   background: white;
   overflow-y: scroll;
@@ -160,6 +160,8 @@ button {
 }
 
 #header .flex-container {
+  box-sizing: border-box;
+  height: var(--header-height);
   margin: 0 auto;
   max-width: 700px;
 }
