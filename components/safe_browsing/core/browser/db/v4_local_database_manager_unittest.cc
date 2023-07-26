@@ -1713,9 +1713,13 @@ TEST_F(V4LocalDatabaseManagerTest, SyncedLists) {
                                              GetUrlSuspiciousSiteId(),
                                              GetUrlHighConfidenceAllowlistId()};
 #else
-  std::vector<ListIdentifier> expected_lists{
-      GetUrlSocEngId(), GetUrlMalwareId(),       GetUrlUwsId(),
-      GetUrlMalBinId(), GetChromeExtMalwareId(), GetUrlBillingId()};
+  std::vector<ListIdentifier> expected_lists{GetUrlSocEngId(),
+                                             GetUrlMalwareId(),
+                                             GetUrlUwsId(),
+                                             GetUrlMalBinId(),
+                                             GetChromeExtMalwareId(),
+                                             GetUrlBillingId(),
+                                             GetUrlCsdDownloadAllowlistId()};
 #endif
 
   std::vector<ListIdentifier> synced_lists;

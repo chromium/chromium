@@ -109,7 +109,7 @@ ListInfos GetListInfos() {
                SB_THREAT_TYPE_BLOCKLISTED_RESOURCE),
       ListInfo(kSyncAlways, "UrlBilling.store", GetUrlBillingId(),
                SB_THREAT_TYPE_BILLING),
-      ListInfo(kSyncOnChromeDesktopBuilds, "UrlCsdDownloadAllowlist.store",
+      ListInfo(kSyncOnDesktopBuilds, "UrlCsdDownloadAllowlist.store",
                GetUrlCsdDownloadAllowlistId(), SB_THREAT_TYPE_UNUSED),
       ListInfo(kSyncOnChromeDesktopBuilds || kSyncOnIos,
                "UrlCsdAllowlist.store", GetUrlCsdAllowlistId(),
